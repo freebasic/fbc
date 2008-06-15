@@ -23,7 +23,7 @@ Reads from a hardware port with a mask
 
 	
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/hardware/wait.bas"}}%%(freebasic)
 wait &h3da, &h8 'Old Qbasic way of waiting for the monitor's vsync
 screensync 'FreeBASIC way of accomplishing the same thing
 %%

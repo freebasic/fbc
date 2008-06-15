@@ -20,7 +20,7 @@ Writes a list of values to a file or device
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/print.bas"}}%%(freebasic)
 open "bleh.dat"  for output as #1
 	
 	print #1, "abc def"

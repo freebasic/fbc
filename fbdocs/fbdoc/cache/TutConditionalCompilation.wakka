@@ -6,7 +6,7 @@ Conditional Compilation is one of those parts of programming that sit in the dus
 
 The preprocessor allows you flexibility in changing the way code is generated through the use of conditional compilation. Take this scenario: you are debugging the code in your program, and you want to add some extra code to output a few variables, but remove them in the final version. The code would be something like this: 
 
-##%%(qbasic)
+##%%(freebasic)
 	#define DEBUG
 	
 	#ifdef DEBUG
@@ -18,7 +18,7 @@ The preprocessor allows you flexibility in changing the way code is generated th
 
 Basically, the above code checks to see whether ##DEBUG## has been defined, and if it has, then the code between the ##[[KeyPgPpifdef #ifdef]]...[[KeyPgPpendif #endif]]## will be executed. While this may seem silly, the uses this has are amazing. If you simply remove one line at the top of your program (##[[KeyPgPpdefine #define]] DEBUG##), then all the 'debug code' that you've added won't be sent to the compiler -- the preprocessor removes it, reducing the bloat of the final executable.
 
-##%%(qbasic)
+##%%(freebasic)
 	'Turn on debugging
 	#define DEBUG
 	
@@ -28,7 +28,7 @@ Basically, the above code checks to see whether ##DEBUG## has been defined, and 
 
 The ##[[KeyPgPpundef #undef]]## directive is a way of 'undefining' something, in this case ##DEBUG##. While it is strictly not needed (just commenting out the line '##[[KeyPgPpdefine #define]] DEBUG##' is enough), it makes the code much clearer, and has other uses:
 
-##%%(qbasic)
+##%%(freebasic)
 	#ifndef DEBUG
 		Print "Production Version"
 	#endif 'DEBUG
@@ -38,7 +38,7 @@ While not the most useful example, this demonstrates the use of another directiv
 
 Much like a normal programming language, the sense of the conditional can be reversed using a variant of else, ##[[KeyPgElse #else]]##:
 
-##%%(qbasic)
+##%%(freebasic)
 	#ifdef DEBUG
 		Print "Test Version"
 	#else
@@ -48,7 +48,7 @@ Much like a normal programming language, the sense of the conditional can be rev
 
 Of course, there are many applications to this. Who says you need to do this on debug code only? You could actually check the effect of a new piece of code, or some test routines by simply defining a name like ##TESTCODE## and using the preprocessor directives to encompass your code for conditional compilation:
 
-##%%(qbasic)
+##%%(freebasic)
 	#define TESTCODE
 	
 	#ifdef TESTCODE

@@ -17,7 +17,7 @@ Declaration specifier to explicitly pass a parameter by value
 	Opposite of ##[[KeyPgByref ByRef]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/byval.bas"}}%%(freebasic)
 Sub MySub(byval value as integer)
 	value += 1
 End Sub

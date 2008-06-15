@@ -20,7 +20,8 @@ Allocates a certain number of bytes from the free store and clears the contents
 	The same as ##[[KeyPgAllocate Allocate]]##, but clears the contents.
 	This function is not part of the FB RTLib, it is an alias for the C lib's //calloc//, so it's not garanteed to be thread safe in all platforms.
 {{fbdoc item="ex"}}
-%%(qbasic)' Create an integer pointer.
+{{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
+' Create an integer pointer.
 Dim p As Integer Ptr
 dim fill_p as integer
 dim show_p as integer

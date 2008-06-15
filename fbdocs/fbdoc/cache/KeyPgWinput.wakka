@@ -27,7 +27,8 @@ Reads a number of wide-characters from console or file
 ~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim char as wstring * 2
+{{fbdoc item="filename" value="examples/manual/console/winput.bas"}}%%(freebasic)
+dim char as wstring * 2
 
 dim filename as string, enc as string
 dim f as integer
@@ -71,7 +72,8 @@ else
 	
 	print "There was an error opening the file."
 	
-end if%%
+end if
+%%
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode

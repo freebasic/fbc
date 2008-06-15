@@ -1,25 +1,35 @@
 {{fbdoc item="title" value="PASCAL"}}----
-Procedure calling convention specifier
+Specifies a //Pascal//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] { [[KeyPgFunction function]] | [[KeyPgSub sub]] } //proc_name// **pascal** ( [ //parameterlist// ) [ [[KeyPgAs as]] //return_type// ]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Pascal** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Pascal** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Pascal** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Pascal** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	Forces the standard pascal calling convention when calling a sub/function.
+	In procedure declarations, ##**Pascal**## specifies that a procedure will use the //Pascal// calling convention. In the //Pascal// calling convention, any parameters are to be passed (pushed onto the stack) in the same order in which they are listed, that is, from left to right. The procedures need not preserve the EAX, ECX or EDX registers, and must clean up the stack (pop any parameters) before it returns.
 
-	This exists for compatibility with pascal libraries, so that they can be used with FreeBasic.
+	//Pascal// is the default calling convention for Microsoft ""QuickBASIC"" procedures, and is the standard convention used in the Windows 3.1 API.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-declare function MyFunc pascal alias "MyFunc" (MyParm as integer) as integer
+{{fbdoc item="filename" value="examples/manual/procs/pascal.bas"}}%%(freebasic)
+Declare Function MyFunc pascal Alias "MyFunc" (MyParm As Integer) As Integer
 %%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare declare]]##
-	- ##[[KeyPgCdecl cdecl]]##
-	- ##[[KeyPgStdcall stdcall]]##
+	- [[KeyPgCdecl Cdecl]], [[KeyPgStdcall Stdcall]]
+	- [[KeyPgDeclare Declare]]
+	- [[KeyPgSub Sub]], [[KeyPgFunction Function]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

@@ -1,6 +1,10 @@
 {{fbdoc item="title" value="Missing Documentation"}}----
 Please edit this page to remove items when they are written.
 
+{{fbdoc item="section" value="External Library Information needed"}}
+	See [[ExtLibTOC ExtLibTOC]] for complete list.
+	Example for pages are [[ExtLibgtk ExtLibgtk]] and [[ExtLibquicklz ExtLibquicklz]]
+
 {{fbdoc item="section" value="Language and non-keyword related texts needed"}}
 	Variable Declaration/Initialisation (including implicit declaration)
 	Differences between versions (windows, linux, DOS)
@@ -11,39 +15,17 @@ Please edit this page to remove items when they are written.
 	Expressions
 	See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
 
-{{fbdoc item="section" value="Missing keyword pages"}}
-	None
-
 {{fbdoc item="section" value="Pages with !!! Write me, or similar"}}
 	ProPgControlFlow
 
 {{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
-	[[KeyPgOpenCom Open Com]]
-	[[KeyPgExternCpp Extern...End Extern]]
-	[[KeyPgType Type...End Type]]
 	static members
-	for/next/step overloads
-	more overloaded ops? (need to check this)
-	command line options need updating [[CompilerCmdLine command line options]]
-	The Operator precedence table do not include FOR-NEXT, array indexing or CAST
-		
-----
-The documents listed and linked below need to be updated or enhanced in some way.
+	all overloaded ops documented? (need to check this)
+	[[OpPrecedence Operator Precedence]] table does not include FOR-NEXT, array indexing or CAST
 
 {{fbdoc item="section" value="Pages with missing examples"}}
-	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
 	[[KeyPgFlip Flip]]
 	[[KeyPgPmap Pmap]]
 	[[KeyPgEncoding Encoding]]
-	[[KeyPgEndblock End (Block)]]
-
-{{fbdoc item="section" value="Pages with examples needing review"}}
-	None
-
-{{fbdoc item="section" value="Pages no longer needed and can be deleted"}}
-	None
-
-{{fbdoc item="section" value="Pages requiring new syntax/format update"}}
-	None
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

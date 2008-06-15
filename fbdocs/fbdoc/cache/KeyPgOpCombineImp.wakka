@@ -27,7 +27,7 @@ Performs a bitwise-imp (implication) and assigns the result to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/imp-assign.bas"}}%%(freebasic)
 dim as ubyte a = &b00110011
 dim as ubyte b = &b01010101
 a Imp= b

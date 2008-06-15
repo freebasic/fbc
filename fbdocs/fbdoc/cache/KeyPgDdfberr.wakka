@@ -13,7 +13,7 @@ Intrinsic define (macro value) set by the compiler
 	##""__FB_ERR__""## is always defined.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
 'Example code to demonstrate a use of __FB_ERR__
 dim err_command_line as ubyte
 err_command_line = __FB_ERR__

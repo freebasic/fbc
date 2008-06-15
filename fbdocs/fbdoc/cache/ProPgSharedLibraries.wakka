@@ -15,14 +15,14 @@ Once the library is made, we can then use the code that it contains just as if w
 
 	Our library will be a single module providing a single function:
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mylib.bas"}}%%(freebasic)
 '' mylib.bas
 '' compile with: fbc -dll mylib.bas
 
 '' Add two numbers together and return the result
-public function Add2( byval x as integer, byval y as integer ) as integer export
-  return( x + y )
-end function
+Public Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer Export
+  Return( x + y )
+End Function
 %%
 	Compile the library with:
 	##fbc -dll mylib.bas##
@@ -33,20 +33,20 @@ end function
 
 	To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mylib.bi"}}%%(freebasic)
 '' mylib.bi
 #inclib "mylib"
-declare function Add2( byval x as integer, byval y as integer ) as integer
+Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
 %%
 	There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib #inclib]]## statement will tell the compiler the name of a shared library that we need to link with at runtime running an executable that needs it.
 
 	With our library (.dll / .so file) and a header (.bi file) we can try them out in a test program:
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mytest.bas"}}%%(freebasic)
 '' mytest.bas
 '' compile with: fbc mytest.bas
 #include once "mylib.bi"
-print Add2(1,2)
+Print Add2(1,2)
 %%
 	The ##[[KeyPgInclude #include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
 

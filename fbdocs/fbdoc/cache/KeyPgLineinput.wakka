@@ -14,7 +14,7 @@ Reads one line of input from the keyboard
 	Reads a line of text from the keyboard and stores it in a string variable.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/lineinput.bas"}}%%(freebasic)
 dim x as string
 
 line input "Enter a line:", x

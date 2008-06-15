@@ -21,7 +21,8 @@ Returns an upper case copy of a string
 	If ##//str//## is empty, the null string (##"####"##) is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)print ucase("AbCdEfG")
+{{fbdoc item="filename" value="examples/manual/strings/ucase.bas"}}%%(freebasic)
+print ucase("AbCdEfG")
 %%
 	will produce the output:
 

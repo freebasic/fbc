@@ -26,7 +26,8 @@ Overwrites a substring of a string with another
 	##**Mid**## can also be used as a function to return part of another string.  See [[KeyPgMidfunction Mid (Function)]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim text as string
+{{fbdoc item="filename" value="examples/manual/strings/mid-stmt.bas"}}%%(freebasic)
+dim text as string
 
 text = "abc 123"
 print text 'displays "abc 123"

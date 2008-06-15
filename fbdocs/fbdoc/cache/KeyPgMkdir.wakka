@@ -18,10 +18,11 @@ Makes a folder/directory on the local file system
 	Creates a folder on the local file system.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim pathname as string = "foo\bar\baz"
-dim result as integer = mkdir( pathname )
+{{fbdoc item="filename" value="examples/manual/system/mkdir.bas"}}%%(freebasic)
+Dim pathname As String = "foo\bar\baz"
+Dim result As Integer = MkDir( pathname )
 
-if 0 <> result then print "error: unable to create folder " & pathname & " in the current path."
+If 0 <> result Then Print "error: unable to create folder " & pathname & " in the current path."
 %%
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS  are case insensitive. 

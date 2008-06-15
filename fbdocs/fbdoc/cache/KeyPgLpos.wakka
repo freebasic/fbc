@@ -18,7 +18,8 @@ Returns the number of characters sent to the printer port in the last ##[[KeyPgL
 	Used to determine, from the last ##[[KeyPgLprint Lprint]]##, how many characters were sent to the printer port.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/hardware/lpos.bas"}}%%(freebasic)
+' compile with -lang deprecated or qb
 DIM test AS STRING = "LPrint Example test"
 
 PRINT "Sending '" + test + "' to LPT1 (default)"

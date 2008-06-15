@@ -30,7 +30,7 @@ Converts numeric or string expression to ##[[KeyPgDouble Double]]## precision fl
 	If the argument to ##**CDbl**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal Val]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/cdbl.bas"}}%%(freebasic)
 ' Using the CDBL function to convert a numeric value
 
 'Create an DOUBLE variable

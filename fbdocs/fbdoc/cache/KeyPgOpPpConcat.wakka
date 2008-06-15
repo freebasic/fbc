@@ -11,7 +11,7 @@ Preprocessor operator to concatenate strings
 
 {{fbdoc item="ex"}}
 	Example :
-		%%(qbasic)
+		{{fbdoc item="filename" value="examples/manual/prepro/concat.bas"}}%%(freebasic)
 #define Concat(t,n) t##n
 
 Print concat (12,34)

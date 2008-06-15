@@ -37,7 +37,7 @@ Specifies text file to be opened for input mode
 	##//filenum//## Is a valid FB file number (in the range 1-255) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile Freefile]]## function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/for-input.bas"}}%%(freebasic)
 Dim ff As Ubyte
 Dim randomvar As Integer
 Dim name_str as string
@@ -74,3 +74,4 @@ Print "Your age is: " + str(age_ubyte)
 	- ##[[KeyPgOutput Output]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+   

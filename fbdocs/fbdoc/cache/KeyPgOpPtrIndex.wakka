@@ -21,7 +21,8 @@ Returns a reference to memory offset from an address
 	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf *]](//lhs// [[KeyPgOpAdd +]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer POINTER]]## can be indexed except for an ##[[KeyPgAny ANY]]## ##[[KeyPgPointer POINTER]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' initialize a 5-element array
+{{fbdoc item="filename" value="examples/manual/operator/pointer-index.bas"}}%%(freebasic)
+'' initialize a 5-element array
 dim array(4) as integer = { 0, 1, 2, 3, 4 }
 
 '' point to the first element

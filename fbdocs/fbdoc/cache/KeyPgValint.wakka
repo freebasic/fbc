@@ -26,7 +26,7 @@ Converts a string to an integer number
 	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/valint.bas"}}%%(freebasic)
 dim a as string, b as integer
 a = "20xa211"
 b = valint(a)

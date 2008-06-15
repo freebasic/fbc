@@ -10,7 +10,7 @@ Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements
 	##**Until**## is used with the ##[[KeyPgDoloop Do...Loop]]## structure.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/until.bas"}}%%(freebasic)
 DIM a AS INTEGER
 
 a = 1

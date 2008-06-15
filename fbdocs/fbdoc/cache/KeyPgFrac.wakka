@@ -19,7 +19,7 @@ Returns the decimal part of a number
 		##(//number// - [[KeyPgFix Fix]](//number//))##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/frac.bas"}}%%(freebasic)
 Print frac(10.625)  '' will print  0.625
 Print frac(-10.625) '' will print -0.625 
 %%

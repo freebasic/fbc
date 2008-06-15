@@ -13,7 +13,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects t
 	For 8-bit color images, the mask color is palette index 0.  For 16/32-bit color images, the mask color is Magenta, which is ##[[KeyPgRgb RGB]](255, 0, 255)##.  The alpha value is ignored when checking for the mask color in 32-bit images.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/put-trans.bas"}}%%(freebasic)
 '' set up a screen: 320 * 200, 16 bits per pixel
 screenres 320, 200, 16
 

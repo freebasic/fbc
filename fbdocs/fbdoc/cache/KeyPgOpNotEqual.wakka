@@ -38,16 +38,21 @@ Compares two expressions for inequality
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
-dim as string a = "hello", b = "world"
-dim as integer i = 10, j = i
+{{fbdoc item="filename" value="examples/manual/operator/not-equal.bas"}}%%(freebasic)
+Dim As String a = "hello", b = "world"
+Dim As Integer i = 10, j = i
 
-if (a <> b) then print a & " does not equal " & b
-if (i <> j) then print "error: " & i " does not equal " & j
+If (a <> b) Then
+  Print a & " does not equal " & b
+End If
+
+If (i <> j) Then
+  Print "error: " & i & " does not equal " & j
+End If
 %%
 	##[[KeyPgOpEqual Operator =]]## (Equal) is complement to **##Operator <>## (Not equal)**, and is functionally identical when combined with ##[[KeyPgOpNot Operator Not]]## (Bit-wise Complement).
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/not-equal2.bas"}}%%(freebasic)
    if (69 <> 420) then print "(420 <> 420) is true."
    if not (69 = 420) then print "not (69 = 420) is true."
 %%

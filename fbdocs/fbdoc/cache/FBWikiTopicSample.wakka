@@ -74,16 +74,16 @@ Brief sentence describing intent of function.
 
 {{fbdoc item="ex"}}
 Example #1:
-%%(qbasic)
-const param1 as string = "a string"
-const param2 as integer = &Hdeadbeef
+{{fbdoc item="filename" value="examples/manual/check/FBWikiTopicSample_1.bas"}}%%(freebasic)
+Const param1 As String = "a string"
+Const param2 As Integer = &Hdeadbeef
 
-function func( a as string, b as integer = 0) as integer
-	return val(a)+b
-end function
+Function func( a As String, b As Integer = 0) As Integer
+	Return Val(a)+b
+End Function
 
 	'' acquire result
-	dim as integer result
+	Dim As Integer result
 	result = func( param1 )
 	
 	'' acquire new result with param2

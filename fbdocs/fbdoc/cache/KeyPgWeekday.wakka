@@ -28,7 +28,8 @@ Gets the number of day of the week from a [[ProPgDates Date Serial]]
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#include "vbcompat.bi"
+{{fbdoc item="filename" value="examples/manual/dates/weekday.bas"}}%%(freebasic)
+#include "vbcompat.bi"
 
 dim a as double = dateserial (2005, 11, 28) + timeserial(7, 30, 50)
 

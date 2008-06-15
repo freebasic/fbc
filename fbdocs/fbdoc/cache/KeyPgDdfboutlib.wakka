@@ -12,7 +12,8 @@ Intrinsic define (macro value) set by the compiler
 	Only one of ##[[KeyPgDdfboutdll __FB_OUT_DLL__]]##, ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##, ##""__FB_OUT_LIB__""##, or ##[[KeyPgDdfboutobj __FB_OUT_OBJ__]]## will evaluate to non-zero (-1).  All others will evaluate to zero (0).
 
 {{fbdoc item="ex"}}
-%%(qbasic)#if __FB_OUT_LIB__ 
+{{fbdoc item="filename" value="examples/manual/defines/fboutlib.bas"}}%%(freebasic)
+#if __FB_OUT_LIB__ 
 	    '... specific instructions when making a static library
 #else
 	    '... specific instructions when not making a static library

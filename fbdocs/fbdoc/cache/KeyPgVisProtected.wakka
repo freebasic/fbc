@@ -23,7 +23,7 @@ Specifies protected member access control in a ##[[KeyPgType Type]]## or ##[[Key
 	NOTE: This keyword is supported in the latest fbc compiler, however, its usefulness is limited since classes and inheritance are **Not** yet supported.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/protected.bas"}}%%(freebasic)
   '' Example pending classes feature ...
 %%
 {{fbdoc item="lang"}}

@@ -27,7 +27,7 @@ Example:
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/screencopy.bas"}}%%(freebasic)
 '' 320x200x8, with 3 pages
 screen 13,,3
 

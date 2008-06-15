@@ -28,7 +28,8 @@ Declares variables and objects having static storage
 	##**Static**## is also used to specify static member procedures.  See ##[[KeyPgStaticMember Static (Member)]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)sub f
+{{fbdoc item="filename" value="examples/manual/variable/static.bas"}}%%(freebasic)
+sub f
 	'' static variables are initialized to 0 by default
 	static i as integer
 	i += 1

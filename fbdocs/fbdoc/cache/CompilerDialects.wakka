@@ -1,61 +1,60 @@
 {{fbdoc item="title" value="FreeBASIC Dialects"}}----
 
-	FreeBASIC version 0.17 introduces a ##-lang## command-line option, used to change the language compatibility mode for different dialects of the basic language.
+	FreeBASIC version 0.17b introduces a ##-lang## command-line option, used to change the language compatibility mode for different dialects of the basic language.
 
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;deprecated;previous fbc version compatibility"}}
 
-	The ##-lang## option was needed to allow FB to support object-orientation and other features in the future, without crippling the QuickBASIC support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The QB support can continue to be improved, if needed, without breaking the sources written specifically for FB.
+	The ##-lang## option was needed to allow FB to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FB.
 
-	To compile old GW-BASIC and QB(ASIC) sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with qb code.
+	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 
-	To compile FreeBASIC 0.16 or below sources, use the ##-lang deprecated## option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when FB reaches a non-beta release.
+	To compile ""FreeBASIC"" 0.16b or below sources, use the ##-lang deprecated## option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
 
-	It is recommended to use -lang fb for new projects, as new features (Objects, inheritance,...) will be added exclusively to this option.
+	It is recommended to use ##-lang fb## for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
 	
 	
 ===-lang fb (the default mode)===
 	
 	**Not supported:**
 
-	""1"") implicit variables
-		- All variables must be always explicitly declared.
+	""1"") implicit variable declaration
+		- All variables must be explicitly declared, using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgVar Var]]##, ##[[KeyPgConst Const]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##.
 
-	""2"") suffixes (##! # $ % &##)
-		- They are only allowed for numeric constants, but it's recommended to use type-casting or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##uinteger##), ##ull## (##ulongint##) suffixes with constants to resolve overloading.
+	""2"") type suffixes (##!, #, $, %, &##)
+		- They are only allowed for numeric literals, but it's recommended to use ##[[KeyPgCast Cast]]## or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##uinteger##), ##ull## (##ulongint##) numeric literal suffixes to resolve overloading.
 
-	""3"") ##DEF""###""##, so there are no implicit types
-		- ##AS## is always needed when declaring **any** symbol but ##CONST##'s, where types are inferred.
+	""3"") ##[[KeyPgDefbyte Defbyte]]##, ##[[KeyPgDefubyte Defubyte]]##, ##[[KeyPgDefshort Defshort]]##, ##[[KeyPgDefushort Defushort]]##, ##[[KeyPgDefint Defint]]##, ##[[KeyPgDefuint Defuint]]##, ##[[KeyPgDeflng Deflng]]##, ##[[KeyPgDeflngint Deflngint]]##, ##[[KeyPgDefulngint Defulngint]]##, ##[[KeyPgDefsng Defsng]]##, ##[[KeyPgDefdbl Defdbl]]##, ##[[KeyPgDefstr Defstr]]##
+		- An explicit type ("##As //T//##") is needed when declaring variables using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##. Variables declared using ##[[KeyPgVar Var]]## or ##[[KeyPgConst Const]]## have their types inferred from an initialization value (an explicit type is optional using ##[[KeyPgConst Const]]##).
 
-	""4"") default ##BYREF## parameters
-		- All parameters are passed by value (##BYVAL##) by default 
-		- Use the ##-w pedantic## command-line option to have paramaters without explicit ##BYREF## or ##BYVAL## reported.
+	""4"") all parameters passed by reference by default
+		- By default, all intrinsic scalar types - numeric and pointer types - are passed by value (##[[KeyPgByval Byval]]##). Any other type - ##[[KeyPgString String]]## or user-defined type - is passed by reference (##[[KeyPgByref Byref]]##).
+		- Use the ##-w pedantic## command-line option to have parameters without explicit ##[[KeyPgByval Byval]]## or ##[[KeyPgByref Byref]]## reported.
 
 	""5"") ##OPTION##s of any kind (no context-sensitivity)
-		- Instead of ##NOKEYWORD##, use ###undef##.
-		- Instead of ##ESCAPE##, use: ##!"some esc seq \n\r"## (notice the '##!##' char) and pass ##-w pedantic## to check for possible escape sequences.
-		- ##EXPLICIT## isn't needed, see item 1.
-		- ##BYVAL## isn't needed, see item 4.
-		- Instead of ##DYNAMIC##, use ##REDIM## to create dynamic arrays, or declare them with empty subcripts: ##DIM array() AS sometype##.
-		- Instead of ##BASE##, use explicit lower-bound subcripts in arrays.
-		- Instead of ##PRIVATE##, declare each function as ##PRIVATE##.
+		- Instead of ##[[KeyPgOptionnokeyword Option Nokeyword]]##, use ###undef##.
+		- Instead of ##[[KeyPgOptionescape Option Escape]]##, use: ##!"some esc seq \n\r"## (notice the '##!##' char) and pass ##-w pedantic## to check for possible escape sequences.
+		- ##[[KeyPgOptionexplicit Option Explicit]]## isn't needed, see item 1.
+		- Instead of ##[[KeyPgOptiondynamic Option Dynamic]]##, declare variable-length arrays using ##[[KeyPgRedim Redim]]##. ##[[KeyPgDim Dim]]## can also be used to declare variable-length arrays using variable or no subscripts.
+		- Instead of ##[[KeyPgOptionbase Option Base]]##, use explicit lower-bound subscripts in arrays declarations.
+		- Instead of ##[[KeyPgOptionprivate Option Private]]##, use ##[[KeyPgPrivate Private]]## to declare procedures with internal linkage.
 
 	""6"") periods in symbol names 
 		- Use namespaces instead.
 	 
-	""7"") ##GOSUB##/##RETURN##
-		- Nested functions may be allowed in future.
+	""7"") ##[[KeyPgGosub Gosub]]## or ##[[KeyPgReturn Return (from Gosub)]]##
+		- Nested procedures may be allowed in future.
 
-	""8"") ##ON .. GOSUB##|##GOTO##
+	""8"") ##[[KeyPgOngosub On Gosub]]## or ##[[KeyPgOngoto On Goto]]##
 		- Use ##SELECT expr AS CONST## for the latter.
 
-	""9"") ##ON ERROR## | ##RESUME##
-		- All statements can be used as functions to check for run-time errors like:  ##IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error##... 
+	""9"") ##[[KeyPgOnerror On Error]]## or ##[[KeyPgResume Resume]]##
+		- Most runtime and graphics library procedures now return an error code, like:  ##IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error##... 
 
 	""10"") ##'$DYNAMIC##, ##'$STATIC##, ##'$INCLUDE## meta-commands embedded in comments
-		- See item 5 about ##OPTION DYNAMIC##.
+		- See item 5 about ##[[KeyPgOptiondynamic Option Dynamic]]##.
 		- Use ###include "filename"## instead of ##'$include##.
 
-	""11"") ##CALL## or ##LET##
+	""11"") ##[[KeyPgCall Call]]## or ##[[KeyPgLet Let]]##
 		- Just remove them.
 
 	""12"") numeric labels
@@ -63,7 +62,7 @@
 
 ===-lang deprecated===
 	 
-	**Supported: anything allowed in version 0.16, but:**
+	**Supported:** //Anything allowed in version 0.16b, but://
 
 	""1"") ##GOSUB##/##RETURN## and ##ON ... GOSUB## (even at module-level)
 		- so the ##GOSUB## implementation could be thread-unsafe in the ##-lang qb## mode, allowing fast execution (##-lang qb## doesn't support multi-threading, while ##-lang deprecated## does).
@@ -82,34 +81,33 @@
 
 ===-lang qb===
 	
-	**Supported: Everything not supported/allowed in the fb mode, plus:**
+	**Supported:** //Everything not supported/allowed in the fb mode, plus..//
 
-	""1"") ##CALL## can be used with forward-referenced functions. (W.I.P.)
+	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions. (W.I.P.)
 
-	""2"") ##SHARED## can be used inside functions. (W.I.P.)
+	""2"") ##[[KeyPgShared Shared]]## can be used inside functions. (W.I.P.)
 
-	""3"") All variables, implicit or explicit, are always allocated in the function scope, as in QB.
+	""3"") All variables, implicitly or explicitly declared, are always allocated in the procedure scope, like in ""QuickBASIC"".
 
-	""4"") the ##DATA## statement won't look up symbols, every token is assumed to be a literal string even without quotes (as in QB)
+	""4"") The ##[[KeyPgData Data]]## statement won't look up symbols, every token is assumed to be a literal string even without quotes, like in ""QuickBASIC"".
 
 
 	**Not supported:**
 
 	""1"") Multi-threading
-		- The ##thread*##, ##mutex*## and ##cond*## functions can't be used.
+		- None of the ##[[CatPgThreading threading]]## procedures may be used.
 
 	""2"") Classes and Namespaces
 
-	""3"") Function and operator overloading
+	""3"") Procedure and operator overloading
 
-	""4"") Constructors, destructors and methods in ##TYPE##s
+	""4"") Constructors, destructors and other member procedures in ##[[KeyPgType Type]]## definitions.
 
-	""5"") ##SCOPE## blocks
+	""5"") ##[[KeyPgScope Scope]]## blocks
 
-	""6"") ##EXTERN## blocks
+	""6"") ##[[KeyPgExternBlock Extern]]## blocks.
 
-	""7"") Variable initializers
-		- All variables are moved to the function scope (as in QB), making local initializers too difficult to support.
-
+	""7"") Variable initialization
+		- All variables are moved to the procedure scope (like in ""QuickBASIC""), making initializing local variables too difficult to support.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

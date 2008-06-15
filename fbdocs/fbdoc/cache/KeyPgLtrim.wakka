@@ -25,7 +25,8 @@ Removes surrounding substrings or characters on the left side of a string
 	All comparisons are case-sensitive.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim s1 as string = "  101 Things to do."
+{{fbdoc item="filename" value="examples/manual/strings/ltrim.bas"}}%%(freebasic)
+dim s1 as string = "  101 Things to do."
 print "'" + ltrim(s1) + "'"
 print "'" + ltrim(s1, " 01") + "'"
 print "'" + ltrim(s1, any " 01") + "'"

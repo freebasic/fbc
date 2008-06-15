@@ -12,7 +12,7 @@ Converts an expression to unsigned
 	This is the opposite of ##[[KeyPgCsign Csign]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/cunsg.bas"}}%%(freebasic)
 dim value as short = -1
 print cunsg(value)  '' will print 65535
 %%

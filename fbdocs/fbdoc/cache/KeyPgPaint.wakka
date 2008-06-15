@@ -34,7 +34,7 @@ Fills an area delimited by a border of a specified color
 	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/paint.bas"}}%%(freebasic)
 ' draws a white circle painted blue inside
 screen 13
 circle (160, 100), 30, 15
@@ -42,7 +42,8 @@ paint (160, 100), 1, 15
 sleep
 %%
 
-%%(qbasic)' draws a circle and fills it with a checkered pattern
+{{fbdoc item="filename" value="examples/manual/gfx/paint2.bas"}}%%(freebasic)
+' draws a circle and fills it with a checkered pattern
 
 '' choose the bit depth for the Screen
 '' try setting this to other values: 8, 16 or 32

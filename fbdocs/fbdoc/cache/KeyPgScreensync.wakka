@@ -16,7 +16,7 @@ Synchronizes display updates with hardware
 	The use of the QB-compatible form WAIT &H3DA,8 is deprecated.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/screensync.bas"}}%%(freebasic)
 'main loop
 DO
   

@@ -10,7 +10,8 @@ Jumps to a label based on an expression
 	It is recommended that the structured ##[[KeyPgSelectcase Select Case]]## condtitional statement be used instead of ##**On...Goto**##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/control/on-goto.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 
 choice = 3
 on choice goto labela, labelb, labelc

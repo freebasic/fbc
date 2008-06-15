@@ -3,7 +3,7 @@ Declares or defines a member procedure returning a value.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] ] **Function** //fieldname// [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
 	End Type
 
 	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
@@ -19,7 +19,9 @@ Declares or defines a member procedure returning a value.
 		name of field as seen when externally linked
 	##//parameters//## 
 		the parameters to be passed to the procedure
-
+	##//calling convention specifier//##	
+		can be one of: [[KeyPgCdecl CDECL]], [[KeyPgStdcall STDCALL]] or [[KeyPgPascal PASCAL]]
+		
 {{fbdoc item="desc"}}
 	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## to call a member procedure that returns a value.  The procedure may optionally accept parameters either ##[[KeyPgByval byval]]## or ##[[KeyPgByref byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload Overload]]## keyword.
 
@@ -30,7 +32,7 @@ Declares or defines a member procedure returning a value.
 	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/function.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 type Date

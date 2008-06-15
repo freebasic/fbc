@@ -9,6 +9,7 @@
 	{{fbdoc item="section" value="Debugging"}}
 		- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
 		- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
+		- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
 
 	{{fbdoc item="section" value="Hardware Access"}}
 		- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
@@ -20,7 +21,6 @@
 	{{fbdoc item="section" value="Operating System"}}
 		- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 		- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
-		- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
 		- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
 
 	{{fbdoc item="section" value="Stub Pages"}}

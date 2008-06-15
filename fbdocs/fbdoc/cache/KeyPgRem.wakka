@@ -17,25 +17,25 @@ Indicates comments in the source code
 	Multi-line comments are marked with the tokens ##**/'**## and ##**'/**##.  All text between the two markers is considered comment text and is not compiled.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/misc/rem.bas"}}%%(freebasic)
 /' this is a multi line 
 comment as a header of
 this example '/
 
-REM this is a single line comment
+Rem This Is a Single Line comment
 
 ' this is a single line comment
 
-? "Hello" : REM comment following a statement
+? "Hello" : Rem comment following a statement
 
-dim a as integer ' comment following a statement
+Dim a As Integer ' comment following a statement
 
 ? "FreeBASIC" : ' also acceptable 
 
-dim b as /' can comment in here also '/    integer
+Dim b As /' can comment in here also '/    Integer
 
 #if 0
-	this way of commenting out code was
+	This way of commenting Out code was
 	required before version 0.16
 #endif
 

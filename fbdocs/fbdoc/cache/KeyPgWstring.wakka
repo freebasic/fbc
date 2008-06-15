@@ -19,14 +19,14 @@ Standard data type: wide character string
 	##[[KeyPgSizeof sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/wstring.bas"}}%%(freebasic)
 dim as wstring * 14 str1 => "hello, world"
 print str1
 print len(str1)    'returns 12, the length of the string it contains 
 print sizeof(str1) 'returns 14 * sizeof(wstring), the number of bytes used by the variable
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/wstring2.bas"}}%%(freebasic)
 dim as wstring ptr str2
 str2 = allocate( 14 * len(wstring) )
 *str2 = "hello, world"

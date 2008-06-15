@@ -22,7 +22,8 @@ Specifies execution of a procedure at program termination
 	Destructors will be called if the program terminates normally or if error-checking is enabled and the program terminates abnormally.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)sub pauseonexit destructor
+	{{fbdoc item="filename" value="examples/manual/procs/mod-dtor.bas"}}%%(freebasic)
+sub pauseonexit destructor
 	
 	'' If the program reaches the end, or aborts with an error, 
 	'' it will run this destructor before closing

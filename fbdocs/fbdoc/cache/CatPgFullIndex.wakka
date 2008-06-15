@@ -208,7 +208,7 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
 {{fbdoc item="section" value="F"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}

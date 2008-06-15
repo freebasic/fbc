@@ -10,7 +10,7 @@ Used with ##[[KeyPgRedim Redim]]## to preserve contents will resizing an array
 	In arrays with more than one dimension, only the first subscription can be redimensioned (arrays are stored in row-major order, so it's the first, not the last subscription).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/array/preserve.bas"}}%%(freebasic)
 redim array(1 to 3) as integer
 Dim i as integer
 

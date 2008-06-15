@@ -20,7 +20,7 @@ Gets the hour of day from a [[ProPgDates Date Serial]]
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/hour.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim ds as double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)

@@ -23,30 +23,32 @@ Returns the address of a string's character data.
 	The related ##[[KeyPgOpVarptr Operator Varptr (Variable pointer)]]## and ##[[KeyPgOpAt Operator @ (Address of)]]##, when used with a ##[[KeyPgString String]]##, return the address of the internal string descriptor.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-' This example uses Strptr to demonstrate using pointers with strings
-Dim myString as String
-Dim toMyString as ZString Ptr
+{{fbdoc item="filename" value="examples/manual/operator/strptr.bas"}}%%(freebasic)
+'' This example uses Strptr to demonstrate using pointers with strings
+Dim myString As String
+Dim toMyStringDesc as any ptr
+Dim toMyString As ZString Ptr
 
-' Note that using standard VARPTR notation will return a pointer to the descriptor, not the string data itself
+'' Note that using standard VARPTR notation will return a pointer to the
+'' descriptor, not the string data itself
 myString = "Improper method for Strings"
-toMyString = @myString
-print myString
-print *toMyString
-print
+toMyStringDesc = @myString
+Print myString
+Print hex( toMyStringDesc )
+Print
 
-' However, using Strptr returns the proper pointer
+'' However, using Strptr returns the proper pointer
 myString = "Hello World Examples Are Silly"
-toMyString = Strptr(myString)
-print myString
-print *toMyString
-print
+toMyString = StrPtr(myString)
+Print myString
+Print *toMyString
+Print
 
-' And the pointer acts like pointers to other types
+'' And the pointer acts like pointers to other types
 myString = "MyString has now changed"
-print myString
-print *toMyString
-print
+Print myString
+Print *toMyString
+Print
 %%
 
 {{fbdoc item="see"}}

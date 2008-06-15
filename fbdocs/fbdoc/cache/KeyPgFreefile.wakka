@@ -14,7 +14,8 @@ Returns a free file number
 	Returns the number of the next free file number. This value is a required argument to ##[[KeyPgOpen Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' Create a string and fill it.
+{{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)
+' Create a string and fill it.
 Dim buffer As String, f as integer
 buffer = "Hello World within a file."
 
@@ -35,7 +36,8 @@ End
 %%
 
 	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen Open]]## statement:
-%%(qbasic)dim fr as integer, fs as integer
+{{fbdoc item="filename" value="examples/manual/fileio/freefile-good.bas"}}%%(freebasic)
+dim fr as integer, fs as integer
 ' The CORRECT WAY:
 fr = FREEFILE
 OPEN "File1" FOR INPUT AS #fr
@@ -43,7 +45,8 @@ fs = FREEFILE
 OPEN "file2" FOR INPUT AS #fs
 %%
 	As opposed to:
-%%(qbasic)dim fr as integer, fs as integer
+{{fbdoc item="filename" value="examples/manual/fileio/freefile-bad.bas"}}%%(freebasic)
+dim fr as integer, fs as integer
  ' The WRONG way:
 fr = FREEFILE
 fs = FREEFILE

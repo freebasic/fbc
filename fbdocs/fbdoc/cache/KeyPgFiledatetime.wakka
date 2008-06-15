@@ -24,7 +24,7 @@ Returns the last modified date and time of a file as [[ProPgDates Date Serial]]
 	Returns the file's last modified date and time as [[ProPgDates Date Serial]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/filedatetime.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim filename as string, d as double

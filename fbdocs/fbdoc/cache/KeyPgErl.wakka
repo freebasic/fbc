@@ -19,7 +19,8 @@ Error handling function to return the line where the error occured
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)' compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/error/erl.bas"}}%%(freebasic)
+' compile with -lang deprecated or qb
 ' note: compilation with '-ex' option is required
 
 on error goto ErrorHandler

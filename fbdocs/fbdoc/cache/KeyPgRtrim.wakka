@@ -25,14 +25,15 @@ Removes surrounding substrings or characters on the right side of a string
 	All comparisons are case-sensitive.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim s1 as string = "Article 101  "
+{{fbdoc item="filename" value="examples/manual/strings/rtrim.bas"}}%%(freebasic)
+dim s1 as string = "Article 101  "
 print "'" + rtrim(s1) + "'"
 print "'" + rtrim(s1, " 01") + "'"
 print "'" + rtrim(s1, any " 10") + "'"
 
 dim s2 as string = "Test Pattern aaBBaaBaa"
-print "'" + rtrim(t, "Baa") + "'"
-print "'" + rtrim(t, any "Ba") + "'"
+print "'" + rtrim(s2, "Baa") + "'"
+print "'" + rtrim(s2, any "Ba") + "'"
 %%
 	will produce the output:
 

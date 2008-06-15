@@ -18,7 +18,7 @@ Returns the natural logarithm of a given number
 	There can be some confusion with this notation given that in mathematics the natural logarithm function is usually denoted **LN**, while the logarithm of base 10 is often denoted as LOG. FreeBASIC, like most computer programming languages, uses LOG to denote the natural logarithm. The required //number// argument can be any valid numeric expression greater than zero. If ##//number//## is zero, FreeBASIC returns -infinity. If ##//number//## is less than zero, FreeBASIC returns a domain error (-1#IND). If ##//number//## is an uninitialized variable, -infinity is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/log.bas"}}%%(freebasic)
 'Find the logarithm of any base
 FUNCTION LogBaseX (BYVAL Number AS DOUBLE, BYVAL BaseX AS DOUBLE) AS DOUBLE
 	LogBaseX = LOG( Number ) / LOG( BaseX )

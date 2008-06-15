@@ -21,50 +21,51 @@ Statement modifier to specify a range
 	In the second and third syntaxes, the TO keyword defines lower and upper bounds for CASE comparisons, and array bounds in a DIM statement. For more information, see [[KeyPgFornext FOR...NEXT]], [[KeyPgDim DIM]] and [[KeyPgSelectcase SELECT CASE]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' this program uses bound variables along with the TO keyword to create an array, store random
+{{fbdoc item="filename" value="examples/manual/misc/to.bas"}}%%(freebasic)
+'' this program uses bound variables along with the TO keyword to create an array, store random
 '' temperatures inside the array, and to determine output based upon the value of the temperatures
-randomize timer
+Randomize Timer
 
 '' define minimum and maximum number of temperatures we will create
-const minimum_temp_count as integer = 1
-const maximum_temp_count as integer = 10
+Const minimum_temp_count As Integer = 1
+Const maximum_temp_count As Integer = 10
 
 '' define the range of temperatures zones in which bacteria breed rapidly (in degrees)
-const min_low_danger as integer = 40
-const max_low_danger as integer = 69
-const min_medium_danger as integer = 70
-const max_medium_danger as integer = 99
-const min_high_danger as integer = 100
-const max_high_danger as integer = 130
+Const min_low_danger As Integer = 40
+Const max_low_danger As Integer = 69
+Const min_medium_danger As Integer = 70
+Const max_medium_danger As Integer = 99
+Const min_high_danger As Integer = 100
+Const max_high_danger As Integer = 130
 
 '' define array to hold temperatures using our min/max temp count bounds
-dim as integer array( minimum_temp_count to maximum_temp_count )
+Dim As Integer array( minimum_temp_count To maximum_temp_count )
 
 '' declare a for loop that iterates from minimum to maximum temp count
-dim as integer it
-for it = minimum_temp_count to maximum_temp_count
+Dim As Integer it
+For it = minimum_temp_count To maximum_temp_count
 
-   array( it ) = int( rnd( 1 ) * 200 ) + 1
+   array( it ) = Int( Rnd( 1 ) * 200 ) + 1
 
    '' display a message based on temperature using our min/max danger zone bounds
-   select case array( it )
-	  case min_low_danger to max_low_danger
-	     color 11
-	     print "Temperature" ; it ; " is in the low danger zone at" ; array( it ) ; " degrees!"
-	  case min_medium_danger to max_medium_danger
-	     color 14
-	     print "Temperature" ; it ; " is in the medium danger zone at" ; array( it ) ; " degrees!"
-	  case min_high_danger to max_high_danger
-	     color 12
-	     print "Temperature" ; it ; " is in the high danger zone at" ; array( it ) ; " degrees!"
-	  case else
-	     color 3
-	     print "Temperature" ; it ; " is safe at" ; array( it ) ; " degrees."
-   end select
+   Select Case array( it )
+	  Case min_low_danger To max_low_danger
+	     Color 11
+	     Print "Temperature" ; it ; " is in the low danger zone at" ; array( it ) ; " degrees!"
+	  Case min_medium_danger To max_medium_danger
+	     Color 14
+	     Print "Temperature" ; it ; " is in the medium danger zone at" ; array( it ) ; " degrees!"
+	  Case min_high_danger To max_high_danger
+	     Color 12
+	     Print "Temperature" ; it ; " is in the high danger zone at" ; array( it ) ; " degrees!"
+	  Case Else
+	     Color 3
+	     Print "Temperature" ; it ; " is safe at" ; array( it ) ; " degrees."
+   End Select
 
-next it
+Next it
 
-sleep
+Sleep
 %%
 
 {{fbdoc item="diff"}}

@@ -22,7 +22,7 @@ Returns the address of a procedure
 	##[[KeyPgOpAt Operator @ (Address of)]]##, when used with procedures, has identical behavior.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
 ' This example uses ProcPtr to demonstrate function pointers
 Declare Function Subtract( x as Integer, y as Integer) as Integer
 Declare Function Add( x as Integer, y as Integer) as Integer

@@ -26,7 +26,7 @@ Divides two ##[[KeyPgInteger Integer]]## expressions
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/integer-divide.bas"}}%%(freebasic)
 DIM n AS DOUBLE
 PRINT n \ 5
 n = 7 \ 2.6  '' => 7 \ 3  => 2.33333  => 2

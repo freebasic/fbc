@@ -24,7 +24,7 @@ Tests the existence of a file
 	##**""FileExists""**## tests for the existence of a file.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/fileexists.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim filename as string

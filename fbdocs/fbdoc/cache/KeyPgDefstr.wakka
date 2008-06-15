@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'sMessage' a ##[[KeyPgString String]]## since it starts with s.
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defstr.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defstr s
 dim sMessage
 %%

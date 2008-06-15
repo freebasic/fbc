@@ -27,7 +27,8 @@ Converts a row of image data into another color depth
 	Copies the row of an image from one memory location to another, converting the color information in each pixel to match the destination image.
 
 {{fbdoc item="ex"}}
-%%(qbasic)const as integer w = 64, h = 64
+{{fbdoc item="filename" value="examples/manual/gfx/imageconvertrow.bas"}}%%(freebasic)
+const as integer w = 64, h = 64
 dim as any ptr img8, img32
 dim as integer i, y
 
@@ -67,7 +68,8 @@ sleep
 
 '' remove the images from memory:
 imagedestroy img8
-imagedestroy img32%%
+imagedestroy img32
+%%
 
 {{fbdoc item="diff"}}
 	- New to FB

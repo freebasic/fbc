@@ -114,7 +114,8 @@ Sets or gets internal graphics library settings
 	- ##POLL_EVENTS## (200) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for OpenGL code where FLIP is not used, as normally FLIP will cause these events to be polled.
 	- 
 {{fbdoc item="ex"}}
-%%(qbasic)'' include fbgfx.bi for some useful definitions
+{{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
+'' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
 using fb
@@ -154,7 +155,8 @@ do
 		end select
 	end if
 	sleep 5
-loop while not multikey(1)%%
+loop while not multikey(1)
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

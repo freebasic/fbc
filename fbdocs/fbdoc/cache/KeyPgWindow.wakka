@@ -14,7 +14,7 @@ Sets new view coordinates mapping for current viewport
 	##**Window**## is used to define a new coordinates system. ##(//x1//,//y1//)## and ##(//x2//,//y2//)## are the new coordinates to be mapped to the opposite corners of the current viewport; all future coordinates passed to gfx primitive statements will be affected by this new mapping. If ##SCREEN## is omitted, the new coordinates system will be cartesian, that is, with y coordinates increasing from bottom to top. Call ##**Window**## with no argument to disable the coordinates transformation.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/window.bas"}}%%(freebasic)
 screen 13
 
 '' define clipping area

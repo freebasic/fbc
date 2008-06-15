@@ -36,7 +36,8 @@ Declares a module-level or member procedure
 
 {{fbdoc item="ex"}}
 Module-level Function:
-%%(qbasic)'' declare the function sum which takes two integers and returns an integer
+{{fbdoc item="filename" value="examples/manual/procs/declare.bas"}}%%(freebasic)
+'' declare the function sum which takes two integers and returns an integer
 declare function sum( as integer, as integer ) as integer
 
    print "the sum of 420 and 69 is: " & sum( 420, 69 )    '' call the function sum
@@ -48,7 +49,7 @@ end function
 %%
 
 Type-level Sub:
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/declare2.bas"}}%%(freebasic)
 type my_type
 	my_data as integer
 	declare sub increment_data( )

@@ -8,7 +8,7 @@ Preprocessor diagnositc directive
 	Causes compiler to output ##//text//## to screen during compilation.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/print.bas"}}%%(freebasic)
 #PRINT Now compiling module foo
 %%
 

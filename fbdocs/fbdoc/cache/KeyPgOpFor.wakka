@@ -54,7 +54,7 @@ Declares or defines operators used by a ##[[KeyPgFornext For...Next]]## loop wit
 	If ##//step_value//## is not given in the ##[[KeyPgFornext For...Next]]## statement, then the ##**For**()##, ##**Step**()##, and ##**Next**(//cond//)## operators are invoked.  If ##//step_value//## is given, then the ##**For**(//stp//)##, ##**Step**(//stp//)##, and ##**Next**(//cond//,//stp//)## operators are invoked.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/for.bas"}}%%(freebasic)
 '' Example Type
 
 type T

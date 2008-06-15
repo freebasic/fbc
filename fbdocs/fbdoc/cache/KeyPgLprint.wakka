@@ -22,7 +22,8 @@ Writes text to the default printer
 	Internally, FreeBASIC uses the special file number -1 for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]]## -1.  Next use of **##Lprint##** will automatically reopen it as needed.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/hardware/lprint.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 
 '' new-line
 LPRINT "Hello World!"

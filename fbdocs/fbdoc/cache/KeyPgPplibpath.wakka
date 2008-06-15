@@ -12,7 +12,7 @@ Preprocessor statement to add a search path for libraries
 	No error is generated if the path does not exist and compilation and linking will continue.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/libpath.bas"}}%%(freebasic)
 ' search the lib directory for external libraries
 #libpath "lib"
 %%

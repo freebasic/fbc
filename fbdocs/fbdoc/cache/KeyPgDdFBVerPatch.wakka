@@ -8,7 +8,8 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_VER_PATCH__"" will return the revision number the version of FreeBASIC currently being used. For Freebasic 0.14, for example, the minor version is 0.
 
 {{fbdoc item="ex"}}
-%%(qbasic)Dim fbMajorVersion As Integer
+{{fbdoc item="filename" value="examples/manual/defines/fbverpatch.bas"}}%%(freebasic)
+Dim fbMajorVersion As Integer
 Dim fbMinorVersion As Integer
 Dim fbPatchVersion As Integer
 

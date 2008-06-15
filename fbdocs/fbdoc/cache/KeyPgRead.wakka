@@ -18,7 +18,8 @@ Reads values stored with the ##[[KeyPgData Data]]## statement
 	The ##[[KeyPgRestore Restore]]## statement resets the next-element pointer to the start of the ##[[KeyPgData Data]]## following the label. This allows to alter the order in which the data is read. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)' Create an array of 5 integers and a string to hold the data.
+{{fbdoc item="filename" value="examples/manual/data/read.bas"}}%%(freebasic)
+' Create an array of 5 integers and a string to hold the data.
 DIM h(4) AS INTEGER
 DIM hs AS STRING
 DIM read_data as INTEGER

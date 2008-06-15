@@ -18,7 +18,8 @@ Returns the ascii code of the first key in the keyboard buffer
 	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey Inkey]]## or GfxLib's ##[[KeyPgMultikey Multikey]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim as integer foo
+{{fbdoc item="filename" value="examples/manual/input/getkey.bas"}}%%(freebasic)
+dim as integer foo
 do
 	foo = getkey
 	print "total return: " & foo

@@ -27,7 +27,7 @@ Returns the file position where the last file read/write was performed
 	When used with a serial device, ##**Loc**## returns the number of bytes waiting to be read from the serial device's input buffer.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/loc.bas"}}%%(freebasic)
 dim b as string
 
 if open com ("com1:9600,n,8,1,cs,rs,ds,bin" for binary as #1) <> 0 then

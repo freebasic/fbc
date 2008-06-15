@@ -8,7 +8,7 @@ Used in place of procedure parameter to pass a variable number of arguments
 The ellipsis (three dots "...") is used in procedure declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/ellipsis.bas"}}%%(freebasic)
 DECLARE FUNCTION FOO CDECL (X AS INTEGER, ...) AS INTEGER
 %%
 

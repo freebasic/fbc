@@ -1,27 +1,36 @@
 {{fbdoc item="title" value="CDECL"}}----
-Procedure calling convention specifier
+Specifies a //cdecl//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] { [[KeyPgFunction function]] | [[KeyPgSub sub]] } //proc_name// **cdecl** ( [ //parameterlist// ) [ [[KeyPgAs as]] //return_type// ]
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	Indicates a C declaration, which when used with a declare statement passes the arguments from right to left (C convention), rather than left to right (see ##[[KeyPgPascal Pascal]]## convention). Stack is cleaned up by the caller, not by the called function.
+	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the //cdecl// calling convention. In the //cdecl// calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the EAX, ECX or EDX registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
+
+	//cdecl// is the default calling convention for procedures declared within ##[[KeyPgExternBlock Extern "C"]]## and ##[[KeyPgExternBlock Extern "C++"]]## blocks. //cdecl// is also typically the default calling convention for many C compilers.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'declaring 'pixelColor' from the SDL library.
-declare function pixelColor cdecl alias "pixelColor" (byval dst as SDL_Surface ptr, _
-	                                                  byval x as Sint16, _
-	                                                  byval y as Sint16, _
-	                                                  byval color as Uint32) as integer
+{{fbdoc item="filename" value="examples/manual/procs/cdecl.bas"}}%%(freebasic)
+' declaring 'strcpy' from the standard C library
+Declare Function strcpy cdecl Alias "strcpy" (ByVal dest As ZString Ptr, ByVal src As ZString Ptr) As ZString Ptr
 %%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgPascal pascal]]##
-	- ##[[KeyPgStdcall stdcall]]##
+	- [[KeyPgPascal Pascal]], [[KeyPgStdcall Stdcall]]
+	- [[KeyPgDeclare Declare]]
+	- [[KeyPgSub Sub]], [[KeyPgFunction Function]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

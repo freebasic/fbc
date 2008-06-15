@@ -21,7 +21,8 @@ Returns the rightmost substring of a string
 	Returns the rightmost ##//n//## characters starting from the right (end) of ##//str//##. If ##//str//## is empty, then the null string (##"####"##) is returned. If ##//n// <= 0## then the null string (##"####"##) is returned. If ##//n// > len(//str//)## then the entire source string is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim text as string = "hello world"
+{{fbdoc item="filename" value="examples/manual/strings/right.bas"}}%%(freebasic)
+dim text as string = "hello world"
 print right(text, 5)
 %%
 	will produce the output:

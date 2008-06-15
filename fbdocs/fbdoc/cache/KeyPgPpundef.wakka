@@ -12,7 +12,7 @@ Preprocessor directive to undefine a macro
 	(Note: ###undef## should not be used to undefine variable or function names used in the current function scope.  The names are needed internally by the compiler and removing them can cause strange and unexpected results.)
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/undef.bas"}}%%(freebasic)
 #DEFINE ADD2(a_, b_)  ((a_) + (b_))
 Print ADD2(1, 2)
 ' Macro no longer needed so get rid of it ...

@@ -8,7 +8,7 @@ A variable declaration type modifier
 	Declares a pointer variable. The same as ##[[KeyPgPtr Ptr]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/pointer.bas"}}%%(freebasic)
 dim p as zstring pointer
 dim text as string
 text = "Hello World!"

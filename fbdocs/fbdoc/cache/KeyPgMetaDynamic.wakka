@@ -16,7 +16,8 @@ Metacommand to change the way arrays are allocated
 	The deprecated  ##**$Dynamic**## form exists for compatibility with QB and can be used too. ##[[KeyPgOptiondynamic Option Dynamic]]## is the VB-like version of the same command.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/meta/dynamic.bas"}}%%(freebasic)
+' compile with -lang deprecated or qb
 '$DYNAMIC
 Dim a(100)
 '......

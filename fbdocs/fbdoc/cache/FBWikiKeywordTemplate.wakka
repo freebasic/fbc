@@ -20,7 +20,7 @@ Keyword template.
 	This topic can be copied and pasted in to a newly created keyword.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/check/FBWikiKeywordTemplate_1.bas"}}%%(freebasic)
 '' sample code
 '' sample code
 '' sample code

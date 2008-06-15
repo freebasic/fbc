@@ -15,7 +15,7 @@ Outputs a comma-seperated list of values to the screen
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/write.bas"}}%%(freebasic)
 dim i as integer = 10
 dim d as double = 123.456
 dim s as string = "text"

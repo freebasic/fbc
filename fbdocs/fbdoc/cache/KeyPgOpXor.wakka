@@ -36,7 +36,7 @@ Returns the bitwise-xor (exclusive disjunction) of two numeric values
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/xor-bitwise.bas"}}%%(freebasic)
 ' Using the XOR operator on two numeric values
 DIM AS UBYTE numeric_value1, numeric_value2
 numeric_value1 = 15 '00001111
@@ -47,7 +47,7 @@ PRINT numeric_value1 XOR numeric_value2
 SLEEP
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/xor-logical.bas"}}%%(freebasic)
 ' Using the XOR operator on two conditional expressions
 Dim As UByte numeric_value1, numeric_value2
 numeric_value1 = 10

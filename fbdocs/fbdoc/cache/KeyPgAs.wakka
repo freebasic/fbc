@@ -11,24 +11,25 @@ Optional part of a declaration which specifies a data type, or part of the [[Key
 	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen Open]]## statement to determine the file handle. ##**As**## is also used with the ##[[KeyPgTypeAlias Type (Alias)]]## syntax, similar to C's typedef statement.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' don't try to compile this code, the examples are unrelated
-DECLARE SUB mySub (X AS integer, Y as single, Z as String)
+{{fbdoc item="filename" value="examples/manual/misc/as.bas"}}%%(freebasic)
+'' don't try to compile this code, the examples are unrelated
+Declare Sub mySub (X As Integer, Y As Single, Z As String)
 ' ...
 
-DIM X AS integer
+Dim X As Integer
 ' ...
 
 Type myType
-  X AS integer
-  Y as single
-  Z as String
-END Type
+  X As Integer
+  Y As Single
+  Z As String
+End Type
 ' ...
 
-type TheNewType as myType
+Type TheNewType As myType
 ' ...
 
-OPEN "test" FOR INPUT AS #1
+Open "test" For Input As #1
 ' ...
 %%
 

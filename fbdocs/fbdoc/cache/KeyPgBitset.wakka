@@ -21,7 +21,7 @@ Macro that sets a bit in an integer
 	##foo = **Bitset**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/bits/bitset.bas"}}%%(freebasic)
 print bitset(4, 0)
 print hex(bitset(1ull, 63))
 %%

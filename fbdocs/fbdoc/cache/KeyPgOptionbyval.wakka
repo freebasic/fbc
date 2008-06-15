@@ -14,7 +14,8 @@ Compiler switch to set default method for passing parameters
 	##**Option Byval**## not allowed when '-lang qb' is used for compilation where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated
+{{fbdoc item="filename" value="examples/manual/switches/option-byval.bas"}}%%(freebasic)
+' compile with -lang deprecated
 
 sub TestDefaultByref( a as integer )
   '' change the value

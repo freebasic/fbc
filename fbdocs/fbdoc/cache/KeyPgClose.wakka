@@ -16,7 +16,8 @@ Stream I/O function to terminate access to a device
 	Terminating the program using an ##[[KeyPgEnd End]]## statement will automatically close all files.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' Create a string and fill it.
+{{fbdoc item="filename" value="examples/manual/fileio/close.bas"}}%%(freebasic)
+' Create a string and fill it.
 Dim buffer As String, f as integer
 
 buffer = "Hello World within a file."

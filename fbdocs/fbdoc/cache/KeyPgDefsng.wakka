@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'sNumber' and 'yNumber' a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defsng.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defsng s-z
 dim sNumber, yNumber
 %%

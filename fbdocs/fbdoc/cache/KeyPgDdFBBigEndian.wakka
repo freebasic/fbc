@@ -10,7 +10,8 @@ Intrinsic define set by the compiler
 	It can be used to compile parts of the program only if the target is big endian.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#IFDEF __FB_BIGENDIAN__
+{{fbdoc item="filename" value="examples/manual/defines/fbbigendian.bas"}}%%(freebasic)
+#IFDEF __FB_BIGENDIAN__
    '...instructions only for big endian machines
 #ELSE
   '...instructions only for little endian machines

@@ -17,7 +17,8 @@ Error handling statement to set the current error handler
 	Notice the program must be compiled with -e or -ex option for the QB-like error handling to work.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/error/local.bas"}}%%(freebasic)
+'' compile with -lang deprecated or qb
 declare sub foo
 
 foo

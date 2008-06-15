@@ -8,7 +8,7 @@ Non-modifiable variable declaration
 	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred if //DataType// isn't explicitly given.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/variable/const.bas"}}%%(freebasic)
 const Red = RGB(252, 2, 4)
 const Black as uinteger = RGB(0, 0, 0)
 const Text = "This is red text on a black bkgnd."

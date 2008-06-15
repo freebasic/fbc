@@ -27,7 +27,7 @@ Converts a string to a long integer
 	(**Note**: In early versions of FB, this function was called ##**""Val64""**##)
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/vallng.bas"}}%%(freebasic)
 dim a as string, b as integer
 a = "20xa211"
 b = vallng(a)

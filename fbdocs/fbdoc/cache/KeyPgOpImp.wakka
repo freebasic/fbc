@@ -36,7 +36,7 @@ Returns the bitwise-and (implication) of two numeric values
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/imp-bitwise.bas"}}%%(freebasic)
 dim as ubyte a, b, c
 a = &b00001111
 b = &b01010101

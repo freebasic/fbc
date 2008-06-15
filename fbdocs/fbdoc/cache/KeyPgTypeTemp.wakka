@@ -23,26 +23,26 @@ Creates a temporary copy of a user defined type
 	It can also be used as an even shorter shortcut than ##[[KeyPgWith With]]## (see below) if you are changing all the records.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-type Example
-	as integer field1
-	as integer field2
-end type
+{{fbdoc item="filename" value="examples/manual/udt/temp-type.bas"}}%%(freebasic)
+Type Example
+	As Integer field1
+	As Integer field2
+End Type
 
-dim ex as Example
+Dim ex As Example
 
 '' First method of filling the type
 ex.field1 = 1
 ex.field2 = 2
 
 '' Second method
-with ex
+With ex
 	.field1 = 1
 	.field2 = 2
-end with
+End With
 
 '' Third method, using temporary types
-ex = type( 1, 2 )
+ex = Type( 1, 2 )
 %%
 
 {{fbdoc item="diff"}}

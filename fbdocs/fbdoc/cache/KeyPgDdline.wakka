@@ -10,7 +10,8 @@ Intrinsic define (macro value) set by the compiler
 	Its normal use is to report wrong values in debugging.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer
+{{fbdoc item="filename" value="examples/manual/defines/line.bas"}}%%(freebasic)
+dim a as integer
 
 If a < 0 Then 
 	Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__

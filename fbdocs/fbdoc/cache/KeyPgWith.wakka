@@ -10,7 +10,7 @@ Statement block to allow implicit access to fields in a user defined type variab
 	The ##**With...End With**## block allows the ommision of the name of a user defined variable when referring to its fields. It's a shorthand to save typing and avoid cluttering the source. ##**With**## can also be used with dereferenced pointers, as the second example shows.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/with-1.bas"}}%%(freebasic)
 type rect_type
 	x as single
 	y as single
@@ -27,7 +27,7 @@ end with
 
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/with-2.bas"}}%%(freebasic)
 type rect_type
 	x as single
 	y as single

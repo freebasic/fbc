@@ -23,7 +23,7 @@ Plots a single pixel
 	##//color//## specifies the colour attribute.  If omitted, ##//color//## defaults to the current background colour.  See ##[[KeyPgColor Color]]##.  ##//color//## is graphics mode specific, see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/preset.bas"}}%%(freebasic)
 SCREEN 13
 
 'Set background color to 15

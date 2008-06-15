@@ -25,7 +25,8 @@ Fills a wstring with a certain length of a certain wide character
 	##**Wstring**## generates a temporal wstring filled with ##//count//## copies of an [[Unicode Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim Dim]]##ed ##**Wstring**##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)PRINT WSTRING( 4, 934 )         
+{{fbdoc item="filename" value="examples/manual/strings/wstring.bas"}}%%(freebasic)
+PRINT WSTRING( 4, 934 )         
 PRINT WSTRING( 5, Wstr("Indeed") )   
 end 0
 %%

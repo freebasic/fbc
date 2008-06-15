@@ -10,7 +10,7 @@ Intrinsic define set by the compiler
 	The main module is determined by the compiler as either the first source file listed on the command line or explicitly named using the -m option on the command line.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fbmain.bas"}}%%(freebasic)
 #ifdef __FB_MAIN__
   #print Compiling the main module
 #else

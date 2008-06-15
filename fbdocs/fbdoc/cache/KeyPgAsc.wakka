@@ -28,7 +28,8 @@ Returns the corresponding ASCII or Unicode integer representation of a character
 	##[[KeyPgChr Chr]]## performs the opposite function for ASCII strings, while ##[[KeyPgWchr WChr]]## is the opposite for Unicode strings, returning a string containing the character represented by the code passed as an argument.
 
 {{fbdoc item="ex"}}
-%%(qbasic)print "the ascii code of 'a' is:"; asc("a")
+{{fbdoc item="filename" value="examples/manual/strings/asc.bas"}}%%(freebasic)
+print "the ascii code of 'a' is:"; asc("a")
 print "the ascii code of 'b' is:"; asc("abc", 2)
 %%
 	will produce the output:

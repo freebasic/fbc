@@ -23,16 +23,16 @@ Finds available fullscreen video modes
 
 	It is safe to call this function before any graphics mode has been set.
 
-%%(qbasic)
-DIM AS INTEGER mode, w, h
+{{fbdoc item="filename" value="examples/manual/gfx/screenlist.bas"}}%%(freebasic)
+Dim As Integer mode, w, h
 '' Find which 8bit resolutions are supported
-mode = SCREENLIST(8)
-WHILE (mode)
-	w = HIWORD(mode)
-	h = LOWORD(mode)
-	PRINT STR(w) + "x" + STR(h)
-	mode = SCREENLIST
-WEND
+mode = ScreenList(8)
+While (mode)
+	w = HiWord(mode)
+	h = LoWord(mode)
+	Print Str(w) + "x" + Str(h)
+	mode = ScreenList
+Wend
 %%
 
 {{fbdoc item="diff"}}

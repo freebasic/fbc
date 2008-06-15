@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="JPGAlleg"}}----
+JPGalleg is a small addon for Allegro that adds JPG images handling capabilities to the library
+
+Website: http://www.ecplusplus.com/index.php?page=projects&pid=1
+Platforms supported: Win32, Linux
+Headers to include: jpgalleg.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

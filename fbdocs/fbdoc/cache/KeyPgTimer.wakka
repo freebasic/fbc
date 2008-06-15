@@ -17,7 +17,7 @@ Returns the number of seconds passed since starting the computer
 	Note: if the program must wait for  periods of 0,1 second or more, ##[[KeyPgSleep Sleep]]## should be used instead, as this allows other programs to run during the waiting period.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/timer.bas"}}%%(freebasic)
 Dim Start As Double
 Print "Wait 2.5 seconds."
 Start = Timer

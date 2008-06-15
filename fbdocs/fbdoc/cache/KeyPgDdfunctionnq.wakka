@@ -8,7 +8,7 @@ Intrinsic define (macro string) set by the compiler
 	Substituted with the non-quoted name of the current function block where used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/functionnq.bas"}}%%(freebasic)
 
 sub MySub
   print "Address of " + __FUNCTION__ + " is ";

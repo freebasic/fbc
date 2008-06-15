@@ -36,7 +36,7 @@ Outputs formatted text to the screen
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/print-using.bas"}}%%(freebasic)
 Print Using "The value is #.## seconds"; 1.019
 Print Using "The ASCII code for the pound sign (_#) is ###"; asc("#")
 Print Using "The last day in the year is ## \ \"; 31, "December"

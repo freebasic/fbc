@@ -53,7 +53,8 @@ Opens a file or device for read or write access
 	##**Open**## can be used as a function which returns the error code that the operation sets in ##[[KeyPgErr Err]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' Create a string and fill it.
+{{fbdoc item="filename" value="examples/manual/fileio/open.bas"}}%%(freebasic)
+' Create a string and fill it.
 Dim buffer As String, f as integer
 buffer = "Hello World within a file."
 
@@ -73,13 +74,13 @@ Close
 End
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/opencom.bas"}}%%(freebasic)
 'OPEN A COM PORT
-OPEN COM "COM1:9600,N,8,1" AS #1
+Open Com "COM1:9600,N,8,1" As #1
 'COM1, 9600 BAUD, NO PARITY BIT, EIGHT DATA BITS, ONE STOP BIT
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/openfunc.bas"}}%%(freebasic)
 dim openerror as integer
 
 openerror = OPEN("file.ext" FOR BINARY ACCESS READ AS #1)

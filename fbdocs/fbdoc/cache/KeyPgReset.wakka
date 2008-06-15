@@ -11,7 +11,7 @@ Closes all open files
 	Closes all disk files.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/reset.bas"}}%%(freebasic)
 open "test.txt" for output as #1
 print #1, "testing 123"
 reset

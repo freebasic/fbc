@@ -26,7 +26,7 @@ Sets the display foreground / background color that is used with console output 
 	A [[GfxDefPalettes Default Palette]] is automatically set when entering a ##[[KeyPgScreengraphics Screen]]## mode. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
 ' Sets 320x240 in 32bpp color depth
 screen 14, 32
 
@@ -43,7 +43,7 @@ print "Hello World!"
 sleep
 %%
 {{image class="center" title="Color example" url="http://img133.imageshack.us/img133/3086/keypgcolorexamplett0.png" link="http://img133.imageshack.us/my.php?image=keypgcolorexamplett0.png"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
 Dim c As Uinteger
 
 'retrieve current color values

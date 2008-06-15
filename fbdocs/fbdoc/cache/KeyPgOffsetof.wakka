@@ -17,8 +17,9 @@ Returns the offset of a field within a type
 	##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of ##//typename//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)Type MyType
-  x as Single
+{{fbdoc item="filename" value="examples/manual/misc/offsetof.bas"}}%%(freebasic)
+Type MyType
+  x As Single
   y As Single
   Union
 	b As Byte
@@ -26,10 +27,10 @@ Returns the offset of a field within a type
   End Union
 End Type
 
-Print "OffsetOf x = "; offsetof(MyType, x)
-Print "OffsetOf y = "; offsetof(MyType, y)
-Print "OffsetOf b = "; offsetof(MyType, b)
-Print "OffsetOf i = "; offsetof(MyType, i)
+Print "OffsetOf x = "; OffsetOf(MyType, x)
+Print "OffsetOf y = "; OffsetOf(MyType, y)
+Print "OffsetOf b = "; OffsetOf(MyType, b)
+Print "OffsetOf i = "; OffsetOf(MyType, i)
 %%
 
 **Output**

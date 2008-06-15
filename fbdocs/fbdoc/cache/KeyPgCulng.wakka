@@ -32,7 +32,7 @@ Converts numeric or string expression to ##[[KeyPgUlong Ulong]]## having the sam
 	##[[KeyPgUlong Ulong]]## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/culng.bas"}}%%(freebasic)
 ' Using the CULNG function to convert a numeric value
 
 'Create an UNSIGNED LONG variable

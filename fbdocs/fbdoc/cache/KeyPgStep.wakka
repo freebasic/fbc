@@ -16,13 +16,14 @@ Statement modifier
 	In a ##[[KeyPgLinegraphics Line]]##, ##[[KeyPgCircle Circle]]## or ##[[KeyPgPaint Paint]]## statement, ##**Step**## indicates that the following coordinate has values relative to the graphics cursor.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim i as integer
+{{fbdoc item="filename" value="examples/manual/control/step.bas"}}%%(freebasic)
+dim i as integer
 FOR I=10 TO 1 STEP -1
 NEXT
 
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/step.bas"}}%%(freebasic)
 LINE -STEP(10,10),13
 %%
 

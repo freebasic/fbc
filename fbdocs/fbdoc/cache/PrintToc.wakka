@@ -398,7 +398,7 @@
 		[[KeyPgExp EXP]]
 		[[KeyPgExport EXPORT]]
 		[[KeyPgExtern EXTERN]]
-		[[KeyPgExternCpp EXTERN...END EXTERN]]
+		[[KeyPgExternBlock EXTERN...END EXTERN]]
 
 	{{fbdoc item="subsect" value="F"}}
 		[[KeyPgField FIELD]]
@@ -749,11 +749,11 @@
 	[[FaqDOS DOS related FAQ]]
 
 {{fbdoc item="section" value="Miscellaneous"}}
-	[[CVSCompile Compiling from CVS]]
-		[[CVSCygwin Compiling from CVS for Cygwin]]
-		[[CVSWin32MSYS Compiling from CVS for Win32, using MSYS]]
-		[[CVSLinux Compiling from CVS for Linux]]
-		[[CVSDOSWin32 Compiling from CVS for DOS on Win32]]
+	[[SVNCompile Compiling from SVN]]
+		[[SVNCygwin Compiling from SVN for Cygwin]]
+		[[SVNWin32MSYS Compiling from SVN for Win32, using MSYS]]
+		[[SVNLinux Compiling from SVN for Linux]]
+		[[SVNDOSWin32 Compiling from SVN for DOS on Win32]]
 	[[DebuggerRunning Debugging]]
 	[[GnuLicenses Licenses]]
 		[[LicenseGPL GPL]]
@@ -762,6 +762,91 @@
 	[[ObsoletedKwds Obsoleted Keywords]]
 	[[GlossaryIndex Glossary]]
 	[[CatPgMisc Miscellaneous Keywords]]
+	[[ProPgCruntime C Standard Library Functions]]
+	[[ExtLibTOC Library Headers Index]]
+
+		{{fbdoc item="subsect" value="Graphics"}}
+			[[ExtLibOpenGL OpenGL]]
+			[[ExtLibSDL SDL]]
+			[[ExtLiballegro allegro]]
+			[[ExtLibfreetype2 Freetype2]]
+			[[ExtLibgtk GTK]]
+			[[ExtLibwxc wx-c]]
+			[[ExtLibfreeimage FreeImage]]
+			[[ExtLibjpeglib jpeglib]]
+			[[ExtLibjpgalleg jpgalleg]]
+			[[ExtLibgiflib gif_lib]]
+			[[ExtLibpdflib pdflib]]
+			[[ExtLiblibpng libpng]]
+			[[ExtLibtinyptc tinyptc]]
+			[[ExtLibmini mini]]
+			[[ExtLibcairo cairo]]
+			[[ExtLibgd gd]]
+			[[ExtLibcurses Curses]]
+			[[ExtLibIUP IUP]]
+			[[ExtLibIL IL]]
+			[[ExtLibcgui cgui]]
+			[[ExtLibcaca caca]]
+			[[ExtLibgrx grx]]
+			[[ExtLibdislin dislin]]
+			[[ExtLibjapi japi]]
+
+		{{fbdoc item="subsect" value="Database"}}
+			[[ExtLibmysql mysql]]
+			[[ExtLibpostgresql postgresql]]
+			[[ExtLibsqlite sqlite]]
+
+		{{fbdoc item="subsect" value="Music / Sound"}}
+			[[ExtLibbass BASS]]
+			[[ExtLibbassmod BASSMOD]]
+			[[ExtLibfmod FMOD]]
+			[[ExtLibal OpenAL]]
+
+		{{fbdoc item="subsect" value="Develpment Helpers"}}
+			[[ExtLibCUnit CUnit]]
+			[[ExtLibbfd bfd]]
+			[[ExtLibgdsl gdsl]]
+
+		{{fbdoc item="subsect" value="Embeddable Languages"}}
+			[[ExtLibspidermonkey spidermonkey]]
+			[[ExtLibLua Lua]]
+			[[ExtLibjni jni]]
+
+		{{fbdoc item="subsect" value="Cryptography"}}
+			[[ExtLibcryptlib cryptlib]]
+
+		{{fbdoc item="subsect" value="Mathematics"}}
+			[[ExtLibbigint big_int]]
+			[[ExtLibgmp gmp]]
+			[[ExtLibgsl gsl]]
+			[[ExtLibnewton Newton]]
+			[[ExtLibode ode]]
+
+		{{fbdoc item="subsect" value="Networking"}}
+			[[ExtLibFastCGI FastCGI]]
+			[[ExtLibcgiutil cgi-util]]
+			[[ExtLibcurl curl]]
+
+		{{fbdoc item="subsect" value="eXtensible Markup Language (XML)"}}
+			[[ExtLiblibxml libxml]]
+			[[ExtLiblibxslt libxslt]]
+			[[ExtLibmxml mxml]]
+			[[ExtLibexpat expat]]
+
+		{{fbdoc item="subsect" value="Regular Expressions"}}
+			[[ExtLibtre tre]]
+			[[ExtLibpcre pcre]]
+
+		{{fbdoc item="subsect" value="Compression"}}
+			[[ExtLibLzo LZO]]
+			[[ExtLibquicklz QuickLZ]]
+			[[ExtLibzlib zlib]]
+
+		{{fbdoc item="subsect" value="System Specific"}}
+			[[ExtLibCRT C Runtime Library]]
+			[[ExtLibwindows Windows API]]
+			[[ExtLibdos DOS API]]
+			[[ExtLibdisphelper disphelper]]
 
 {{fbdoc item="section" value="Tables"}}
 	[[CptAscii ASCII Character Codes]]
@@ -776,4 +861,3 @@
 	[[CompilerReportingBugs How to report a bug]]
 	[[MissingDocs Docs pages that need to be written]]
 	[[ContributorList Documentation Contributors]]
-

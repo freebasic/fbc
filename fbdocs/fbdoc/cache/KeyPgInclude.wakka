@@ -21,7 +21,7 @@ Preprocessor statement to include contents of another source file
 	- Relative from addition directories specified with the //-i// command line option
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/header.bi"}}%%(freebasic)
 ' header.bi file
 TYPE FooType
 	Bar AS BYTE
@@ -30,7 +30,7 @@ END TYPE
 DIM Foo as FooType
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/include.bas"}}%%(freebasic)
 ' main.bas file
 #INCLUDE "header.bi"
 Foo.Bar = 1

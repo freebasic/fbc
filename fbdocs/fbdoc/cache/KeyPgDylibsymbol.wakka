@@ -30,27 +30,40 @@ Returns the address of a function or variable in a dll
 	**Note:** The dylibsymbol, if failing, will attempt to automatically decorate the proc, from @0 to @256, in 4 byte increments.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'mydll.dll
-'in the DLL the function must be declared as CDECL and export
-function AddNumbers alias "AddNumbers" ( byval operand1 as integer, byval operand2 as integer ) as integer export
+{{fbdoc item="filename" value="examples/manual/module/mydll2.bas"}}%%(freebasic)
+'' mydll.dll
+
+'' in the DLL the function must be declared as CDECL and export
+
+Function AddNumbers cdecl Alias "AddNumbers" _
+  ( _
+	ByVal operand1 As Integer, ByVal operand2 As Integer _
+  ) As Integer Export
+
    AddNumbers = operand1 + operand2
-end function
+
+End Function
 %%
 
-%%(qbasic)
-'main program
-' create a function pointer, arguments must be the same as in the original function
-dim AddNumbers as function ( byval operand1 as integer, byval operand2 as integer ) as integer
-dim hndl as any ptr
-'
-hndl=dylibload("mydll.dll")
-' find the proc address (case matters!)
-AddNumbers = dylibsymbol( hndl, "AddNumbers" )
-' call it..
-print "1 + 2 ="; AddNumbers( 1, 2 )
-dylibfree hndl
-sleep
+{{fbdoc item="filename" value="examples/manual/module/dylibsymbol.bas"}}%%(freebasic)
+'' create a function pointer, arguments must be the same
+'' as in the original function
+
+Dim AddNumbers As Function ( ByVal operand1 As Integer, ByVal operand2 As Integer ) As Integer
+
+Dim hndl As Any Ptr
+
+hndl=DyLibLoad("mydll.dll")
+
+'' find the proc address (case matters!)
+AddNumbers = DyLibSymbol( hndl, "AddNumbers" )
+
+'' then call it..
+Print "1 + 2 ="; AddNumbers( 1, 2 )
+
+DyLibFree hndl
+
+Sleep
 %%
 
 {{fbdoc item="target"}}

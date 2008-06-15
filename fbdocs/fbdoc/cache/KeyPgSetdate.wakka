@@ -18,11 +18,12 @@ Sets the current system date
 	To set the date you just format ##//newdate//## and send to ##**Setdate**## in a valid format following one of the following: "mm-dd-yy",  "mm-dd-yyyy", "mm/dd/yy", or "mm/dd/yyyy" (mm is the month, dd is the day, yy and yyyy is the year.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim m as string, d as string, y as string
+{{fbdoc item="filename" value="examples/manual/system/setdate.bas"}}%%(freebasic)
+Dim m As String, d As String, y As String
 m = "03" 'march
 d = "13" 'the 13th
 y = "1994" 'good ol' days
-SETDATE m + "/" + d + "/" + y
+SetDate m + "/" + d + "/" + y
 %%
 
 {{fbdoc item="diff"}}

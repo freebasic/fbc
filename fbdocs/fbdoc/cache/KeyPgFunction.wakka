@@ -43,7 +43,7 @@ Defines a procedure returning a value
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/func-1.bas"}}%%(freebasic)
 'This program demonstrates the declaration of a function and said function returning a value.
 
 Declare Function ReturnTen () as integer
@@ -56,7 +56,8 @@ End Function
 
 %%
 
-%%(qbasic)'This program demonstrates the declaration of a function and said function returning a value.
+{{fbdoc item="filename" value="examples/manual/procs/func-2.bas"}}%%(freebasic)
+'This program demonstrates the declaration of a function and said function returning a value.
 
 Declare Function ReturnTen () as integer
 
@@ -68,7 +69,8 @@ End Function
 
 %%
 
-%%(qbasic)'This program demonstrates function overloading.
+{{fbdoc item="filename" value="examples/manual/procs/func-3.bas"}}%%(freebasic)
+'This program demonstrates function overloading.
 
 'The overloaded functions must be FIRST.
 Declare Function ReturnTen Overload (a As Double) as integer
@@ -92,7 +94,7 @@ Function ReturnTen (a As Integer) as integer
 End Function
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/func-4.bas"}}%%(freebasic)
 ' The following demonstrates optional parameters.
 
 Function TestFunc(P As String = "Default") As String
@@ -104,7 +106,7 @@ Print TestFunc
 %%
 
 This example shows how to declare and call functions that take array arguments.
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/func-5.bas"}}%%(freebasic)
 Function x(b() As Double) As Integer
   x = UBound(b)-LBound(b)+1
 End Function

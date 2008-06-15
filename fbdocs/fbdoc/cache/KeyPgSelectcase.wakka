@@ -35,7 +35,8 @@ Conditional statement block
 	If AS CONST is used, only integer constants in the range 0..4097 can be evaluated and the expression list supports  single constants and enumerations only. Being limited to integer values allows ##**Select Case As Const**## to be faster than ##**Select Case**##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim choice as integer
+{{fbdoc item="filename" value="examples/manual/control/select.bas"}}%%(freebasic)
+dim choice as integer
 
 input "Choose a number between 1 and 10: "; choice
 

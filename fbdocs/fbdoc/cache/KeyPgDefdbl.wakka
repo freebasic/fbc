@@ -10,7 +10,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defdbl.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defdbl a-d
 dim aNum 'implicit: As Double
 

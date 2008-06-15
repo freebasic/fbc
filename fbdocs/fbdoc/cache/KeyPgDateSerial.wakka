@@ -23,7 +23,8 @@ Creates a [[ProPgDates date serial]]
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#include "vbcompat.bi"
+{{fbdoc item="filename" value="examples/manual/dates/dateserial.bas"}}%%(freebasic)
+#include "vbcompat.bi"
 
 dim a as double = dateserial(2005, 11, 28)
 

@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="The Mini Library"}}----
+The Mini Library is a real-time terrain rendering system
+
+Website: http://www.stereofx.org/terrain.html
+Platforms supported: Win32, Linux
+Headers to include: mini.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

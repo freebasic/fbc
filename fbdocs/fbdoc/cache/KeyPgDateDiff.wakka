@@ -44,7 +44,7 @@ Gets the difference of two dates measured by a specified interval
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/datediff.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim s as string, d1 as double, d2 as double

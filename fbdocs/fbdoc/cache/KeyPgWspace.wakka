@@ -18,7 +18,7 @@ Fills a certain length of a wstring with spaces (" ")
 	##**Wspace**## creates a wstring (wide character string- Unicode) with the specified number of spaces.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/wspace.bas"}}%%(freebasic)
 DIM A AS WSTRING *14
 A="x"+wspace(10)+"x"  'prints x             x
 %%

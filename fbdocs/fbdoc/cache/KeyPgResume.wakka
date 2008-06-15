@@ -10,7 +10,8 @@ Error handling statement to resume execution after a jump to an error handler
 	##**Resume**## resets the ##[[KeyPgErr Err]]## value to 0
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/error/resume.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 Dim As Single i, j
 
 On Error Goto ErrHandler
@@ -30,8 +31,10 @@ Resume ' execution jumps back to 'j = 1 / i' line, which does not cause an error
 
 {{fbdoc item="lang"}}
 	-  ON ERROR is not supported in //-lang fb//. Statements can be used in its function form to return an error code
-%%(qbasic)
-IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN handle_error
+{{fbdoc item="filename" value="examples/manual/check/KeyPgResume_1.bas"}}%%(freebasic)
+If Open( "text" For Input As #1 ) <> 0 Then
+  Print "Unable to open file"
+End If
 %% 
 
 {{fbdoc item="diff"}}

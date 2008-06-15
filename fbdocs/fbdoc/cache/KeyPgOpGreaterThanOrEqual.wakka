@@ -39,7 +39,7 @@ Compares an expression greater than or equal to another expression
 {{fbdoc item="ex"}}
 	##[[KeyPgOpLessThan Operator <]]## (Less than) is complement to **##Operator >=## (Greater than or Equal)**, and is functionally identical when combined with ##[[KeyPgOpNot Operator Not]]## (Bit-wise Complement).
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/greater-than-or-equal.bas"}}%%(freebasic)
    if (420 >= 69) then print "(420 >= 69) is true."
    if not (420 < 69) then print "not (420 < 69) is true."
 %%

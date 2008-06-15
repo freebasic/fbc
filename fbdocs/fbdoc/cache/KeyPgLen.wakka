@@ -27,7 +27,7 @@ Returns the length of a variable or data type
 	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)
 print len("hello world") 'returns "11"
 print len(Integer) ' returns 4
 

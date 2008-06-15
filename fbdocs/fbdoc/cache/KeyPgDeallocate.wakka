@@ -19,7 +19,8 @@ Frees previously allocated memory
 {{fbdoc item="ex"}}
 The following example shows how to free previously allocated memory. Note that the pointer is set to null following the deallocation:
 
-%%(qbasic)sub DeallocateExample1()
+{{fbdoc item="filename" value="examples/manual/memory/deallocate.bas"}}%%(freebasic)
+sub DeallocateExample1()
    dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
 	                                                           '' new memory address
 
@@ -38,7 +39,8 @@ Although in this case it is unnecessary - since 1. the pointer is not a referenc
 
 In the following example, a different pointer is used to free previously allocated memory.
 
-%%(qbasic)sub DeallocateExample2()
+{{fbdoc item="filename" value="examples/manual/memory/deallocate2.bas"}}%%(freebasic)
+sub DeallocateExample2()
    dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
 	                                                           '' new memory
 
@@ -61,7 +63,8 @@ end sub
 
 Note that after the deallocation, //both// pointers are rendered invalid. This illustrates another one of the ways that bugs can arise when working with pointers. As a general rule, only deallocate memory previously allocated when you know that there is only one (1) pointer currently pointing at it.
 
-%%(qbasic)function createInteger() as integer ptr
+{{fbdoc item="filename" value="examples/manual/memory/deallocate3.bas"}}%%(freebasic)
+function createInteger() as integer ptr
    return allocate( len( integer ) )                     '' return pointer to newly
 end function                                             '' allocated memory
 

@@ -25,7 +25,8 @@ Creates and fills a string of a certain length with a certain character
 	A list of [[CptAscii ASCII character codes]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)PRINT STRING( 4, 69 )         '' prints "EEEE"
+{{fbdoc item="filename" value="examples/manual/strings/string.bas"}}%%(freebasic)
+PRINT STRING( 4, 69 )         '' prints "EEEE"
 PRINT STRING( 5, "Indeed" )   '' prints "IIIII"
 end 0
 %%

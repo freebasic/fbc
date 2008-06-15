@@ -35,7 +35,8 @@ Gets the character or color attribute at a given location
 		{{table columns="4" cellpadding="2" cells="Value;Color;Value;Color;0;Black;8;Gray;1;Blue;9;Bright Blue;2;Green;10;Bright Green;3;Cyan;11;Bright Cyan;4;Red;12;Bright Red;5;Magenta;13;Pink;6;Brown;14;Yellow;7;White;15;Bright White"}}
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim character_ascii_value as integer
+{{fbdoc item="filename" value="examples/manual/console/screen-func.bas"}}%%(freebasic)
+dim character_ascii_value as integer
 dim attribute as integer
 dim background as integer
 dim cell_color as integer
@@ -47,7 +48,8 @@ background = attribute shr 4
 cell_color = attribute and &hf
 %%
 
-%%(qbasic)'' open a graphics screen with 4 bits per pixel
+{{fbdoc item="filename" value="examples/manual/gfx/screen-func1.bas"}}%%(freebasic)
+'' open a graphics screen with 4 bits per pixel
 '' (alternatively, omit this line to use the console)
 screenres 320, 200, 4
 
@@ -71,7 +73,7 @@ print using "Background color: ##"; bg
 sleep
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/screen-func2.bas"}}%%(freebasic)
 '' open a graphics screen with 8 bits per pixel
 screenres 320, 200, 8
 
@@ -95,7 +97,7 @@ print using "Background color: ###"; bg
 sleep
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/screen-func3.bas"}}%%(freebasic)
 '' open a full-color graphics screen
 screenres 320, 200, 32
 

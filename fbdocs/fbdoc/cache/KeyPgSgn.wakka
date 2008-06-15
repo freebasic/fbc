@@ -21,7 +21,7 @@ Returns the sign part of a number
 	The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/sgn.bas"}}%%(freebasic)
 DIM N AS INTEGER
 
 PRINT SGN ( -1.87 )

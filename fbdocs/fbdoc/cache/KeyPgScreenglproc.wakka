@@ -12,7 +12,8 @@ Gets the address of an OpenGL procedure
 	This function can be used to get the address of any OpenGL procedure, to be used to retrieve the pointers to new functions associated with OpenGL extensions. If given procedure named ##//procname//## cannot be found, ##**screenglproc**## will return NULL (0).
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' include fbgfx.bi for some useful definitions
+{{fbdoc item="filename" value="examples/manual/gfx/screenglproc.bas"}}%%(freebasic)
+'' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
 dim SwapInterval as function(byval interval as integer) as integer

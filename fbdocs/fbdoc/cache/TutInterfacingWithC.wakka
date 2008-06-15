@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
 ==Translating the C header file to a FreeBASIC header file==
 myClib.bi: To interface the static library and automatically include it (#inclib "myClib" ) i have this file.
-%%(qbasic)
+%%(freebasic)
 ''include file for libmyClib.a
 #IfNDef __myClib_bi__
 #Define __myClib_bi__
@@ -86,7 +86,7 @@ Declare Function SampleFunction2 Cdecl Alias "SampleFunction2" () As Integer
 
 ==And finally the FreeBASIC file using the library==
 myClibFBTest.bas:
-%%(qbasic)
+%%(freebasic)
 ''Testing functions in myClib.bi
 #include "myClib.bi"
 ''
@@ -168,11 +168,11 @@ Press any key to continue . . .
 %%
 
 To resolve this you will have to locate function declarations in a *.bi file that look like this:
-%%(qbasic)
+%%(freebasic)
 Declare Function SampleAddInt(Byval i1 As Integer, Byval i2 As Integer) As Integer
 %%
 And change it to something like this:
-%%(qbasic)
+%%(freebasic)
 Declare Function SampleAddInt Cdecl Alias "SampleAddInt" (Byval i1 As Integer, Byval i2 As Integer) As Integer
 %%
 

@@ -24,7 +24,7 @@ Shifts right and assigns a value to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/shr-assign.bas"}}%%(freebasic)
 DIM i AS INTEGER
 i = &b00011000   '' = 24
 i shr= 3         '' = i\2^3

@@ -14,14 +14,14 @@ Following is a simple example of creating a static library using these three fil
 
 Our library will be a single module providing a single function:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bas"}}%%(freebasic)
 '' mylib.bas
 '' compile with: fbc -lib mylib.bas
 
 '' Add two numbers together and return the result
-public function Add2( byval x as integer, byval y as integer ) as integer
-  return( x + y )
-end function
+Public Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
+  Return( x + y )
+End Function
 %%
 Compile the library with:
 	##fbc -lib mylib.bas##
@@ -30,20 +30,20 @@ The ##-lib## option tells the compiler to take the source code, ##mylib.bas##, a
 
 To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bi"}}%%(freebasic)
 '' mylib.bi
 #inclib "mylib"
-declare function Add2( byval x as integer, byval y as integer ) as integer
+Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
 %%
 There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib #inclib]]## statement will tell the compiler the name of a static library that we need to link with when eventually making an executable.
 
 With our library (.a file) and a header (.bi file) we can try them out in a test program:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mytest.bas"}}%%(freebasic)
 '' mytest.bas
 '' compile with: fbc mytest.bas
 #include once "mylib.bi"
-print Add2(1,2)
+Print Add2(1,2)
 %%
 The ##[[KeyPgInclude #include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
 

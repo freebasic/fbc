@@ -47,7 +47,7 @@ Graphics statement to draw a circle
 	Custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## affect the drawing operation; clipping set by ##[[KeyPgViewgraphics View]]## also applies. When ##**Circle**## finishes drawing, the current graphics cursor position is set to the supplied center.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/circle.bas"}}%%(freebasic)
 ' Set 640x480 mode, 256 colors
 screen 18
 

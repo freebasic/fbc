@@ -18,7 +18,7 @@ Control flow statement to exit a compound statement block
 	For example: ##**Exit While, While**##
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/exit.bas"}}%%(freebasic)
 'e.g. the print command will not be seen
 
 Do
@@ -27,7 +27,7 @@ Do
 Loop
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/exit2.bas"}}%%(freebasic)
 Dim As Integer i, j
 For i = 1 to 10
 	

@@ -24,7 +24,7 @@ Raises a numeric expression to some power
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/exponent.bas"}}%%(freebasic)
 DIM n AS DOUBLE
 INPUT "Please enter a positive number: ", n
 PRINT ""

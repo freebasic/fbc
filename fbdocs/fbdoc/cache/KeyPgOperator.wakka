@@ -11,7 +11,7 @@ Declares or defines an overloaded operator
 		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 	End Type
 
-	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 
 	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
@@ -48,7 +48,7 @@ Declares or defines an overloaded operator
 	
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/operator.bas"}}%%(freebasic)
 Type Vector2D
   as single x, y
 

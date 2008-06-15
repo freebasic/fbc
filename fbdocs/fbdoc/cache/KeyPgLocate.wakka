@@ -23,7 +23,7 @@ Sets the current cursor position
 	Sets the text cursor in both graphics and console modes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/locate.bas"}}%%(freebasic)
 locate 10
 print "Current line:"; CSRLIN
 %%

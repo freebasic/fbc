@@ -10,7 +10,8 @@ Variable declaration modifier specifying visibility throughout a module
 	##Shared## makes module-level variables visible inside ##[[KeyPgSub Sub]]##s and ##[[KeyPgFunction Function]]##s.  If ##Shared## is not used on a module-level variable's declaration, it is stored on the stack of the implicit main function and therefore only visible to the module-level code in that file.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang qb or deprecated
+{{fbdoc item="filename" value="examples/manual/variable/shared.bas"}}%%(freebasic)
+'' Compile with -lang qb or deprecated
 declare sub MySub
 dim shared x as integer
 dim y as integer

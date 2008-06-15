@@ -26,7 +26,8 @@ Returns the address of a string literal, variable, object or procedure
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'This program demonstrates the use of the @ operator.
+{{fbdoc item="filename" value="examples/manual/operator/address-var.bas"}}%%(freebasic)
+'This program demonstrates the use of the @ operator.
 
 Dim a As Integer
 Dim b As Integer
@@ -53,7 +54,8 @@ addr = @b
 Print "The pointer addr is now pointing at the memory address to b, value: ";*addr
 %%
 
-%%(qbasic)'This program demonstrates how the @ symbol can be used
+{{fbdoc item="filename" value="examples/manual/operator/address-func.bas"}}%%(freebasic)
+'This program demonstrates how the @ symbol can be used
 'to create pointers to subroutines.
 
 Declare Sub mySubroutine ()

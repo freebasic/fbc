@@ -8,13 +8,13 @@ Standard data type: 8 bit unsigned
 	8-bit unsigned whole-number data type. Can hold a value in the range of 0 to 255.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/ubyte2.bas"}}%%(freebasic)
 DIM ubytevar AS UBYTE
 ubytevar = 200
 PRINT "ubytevar= ", ubytevar
 %%
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/ubyte.bas"}}%%(freebasic)
   Dim x As UByte = 0
   Dim y As UByte = &HFF
   Print "UByte Range = "; x; " to "; y

@@ -6,39 +6,48 @@ Compiler switch to indicate all string literals are to be processed for escape c
 ##
 {{fbdoc item="desc"}}
 	Activates the expansion of escape sequences in literal strings.
+
 	If ##**Option Escape**## is not used, to insert a carriage return in a string this must be done:
-	%%(qbasic)PRINT "First line" & chr(13, 10) & "Second line"%%
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionescape_1.bas"}}%%(freebasic)
+Print "First line" & Chr(13, 10) & "Second line"
+%%
+
 	If ##**Option Escape**## has been specified this syntax can be used to save typing:
-	%%(qbasic)PRINT "Firstline\r\nSecond line"%%
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionescape_2.bas"}}%%(freebasic)
+Print "Firstline\r\nSecond line"
+%%
+
 	The escape sequences start with a backslash.  With ##**Option Escape**## on true backslashes must be doubled.
+
 	The accepted escape sequences are:
 	{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\n;newline;\r;carriage return;\t;tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\a_double_quote;double quote;\';single quote"}} 
-	
+
 	##**Option Escape**## is useful when the C-style formatted print functions in crt.bi (as printf) are to be used.
-	
-	
+
 {{fbdoc item="lang"}}
 	- The use of OPTION ESCAPE is not allowed in the -lang fb option. In there a literal string can be prefixed with "!" to make it expand escape sequences, and can be prefixed with "$" to prevent it expanding them.  
-	
 
 {{fbdoc item="ex"}}
-	%%(qbasic)' compile with -lang deprecated
+	{{fbdoc item="filename" value="examples/manual/switches/option-escape.bas"}}%%(freebasic)
+' compile with -lang deprecated
 option escape
 print "Warning \a\t The path is:\r\n c:\\Freebasic\\Examples"
 %%
-	
-	%%(qbasic)' Compile with -lang deprecated
+
+	{{fbdoc item="filename" value="examples/manual/switches/option-escape2.bas"}}%%(freebasic)
+' Compile with -lang deprecated
 option escape
 print $"This string doesn't have expanded escape sequences: \r\n\t"
 %%
-	
-	%%(qbasic)' compile with -lang deprecated
+
+	{{fbdoc item="filename" value="examples/manual/switches/option-escape3.bas"}}%%(freebasic)
+' compile with -lang deprecated
 #include "crt.bi"
 option escape
 dim as integer a = 2, b = 3
 printf("%d * %d = %d\r\n", a, b, a * b)
 %%
-	
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

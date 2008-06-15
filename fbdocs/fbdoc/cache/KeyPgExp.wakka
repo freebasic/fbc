@@ -18,7 +18,7 @@ Returns //**e**// raised to the power of a given number
 	The mathematical constant //e// is the base of the ##[[KeyPgLog Log]]## and is a transcendental number. The value of //e//, to twenty places is. 2.7182818284590452354. The required ##//number//## argument can be any valid numeric expression within range of the function. If ##//number//## is too large, FreeBASIC returns infinity. If ##//number//## is too small, FreeBASIC returns zero. The exact limit on //number// is based on processer. If ##//number//## is an uninitialized variable, 1 is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/exp.bas"}}%%(freebasic)
 'Compute Continuous Compound Interest
 DIM r AS DOUBLE
 DIM p AS DOUBLE

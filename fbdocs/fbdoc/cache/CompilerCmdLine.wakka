@@ -80,6 +80,8 @@ fbc command-line usage
 			Show compiler version.
 		**##-Wa < //options// >##**
 			Pass options to GAS, the assembler.  Options must be separated by commas only.
+		**##-prefix < //path // >##**
+			Set the compiler prefix (where the compiler finds the bin, lib, and inc directories); defaults to the path where fbc resides, if this can be determined.
 <<>>{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
 		**##[ -a ] < //object file// >##**
@@ -90,7 +92,7 @@ fbc command-line usage
 			Set the executable/library name, with extension. Defaults to the name of the first source file passed on the command line. When compiling libraries, be sure to add the "lib" prefix to your file name, otherwise the linker will not be able to find it. If compiling and linking separately, this option must be set only in the linker.
 		**##-p < //library path// >##**
 			Add a path to search for libraries. By default, libraries are looked for in the system FreeBASIC libraries directory and in the current directory.
-		**##-Wl < options >##**
+		**##-Wl < //options// >##**
 			Pass options to LD, the linker.  Options must be separated by commas only.
 
 	{{fbdoc item="subsect" value="Runtime"}}

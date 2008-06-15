@@ -10,7 +10,7 @@ Intrinsic define (macro value) set by the compiler
 	Returns zero (0) if the current state is Dynamic.  Returns non-zero (-1) if the current state is Static.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fboptiondynamic.bas"}}%%(freebasic)
 #if __FB_OPTION_DYNAMIC__ <> 0
 #error This module must not use Option Dynamic
 #endif

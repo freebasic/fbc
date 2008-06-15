@@ -22,7 +22,7 @@ Returns a wide-character string containing one or more Unicode characters
 	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode characterss, as the GfxLib built-in font is not Unicode.
  
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/wchr.bas"}}%%(freebasic)
 print "the character represented by the UNICODE code of 934 is:"; WCHR(934)
 print "multiple UNICODE characters:"; WCHR(933, 934, 935)
 %%

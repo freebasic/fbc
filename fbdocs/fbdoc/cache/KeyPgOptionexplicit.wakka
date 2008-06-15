@@ -8,9 +8,15 @@ Compiler switch to require all symbols to be declared before use
 	Requires all variables to be declared with ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##  or ##[[KeyPgStatic Static]]## before they can be used. By default this option is off. ##**Option Explicit**## requires more typing but can help detect mistyped variables.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated or qb
-option explicit
-a = 1 '' this will fail with variable not declared
+{{fbdoc item="filename" value="examples/manual/switches/option-explicit.bas"}}%%(freebasic)
+' compile with -lang deprecated or qb
+Option Explicit
+
+'' a must be declared ...
+Dim a As Integer
+
+'' ... or else this statement will fail to compile
+a = 1
 %%
 	
 {{fbdoc item="lang"}}

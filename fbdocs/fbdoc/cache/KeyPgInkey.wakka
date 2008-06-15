@@ -20,7 +20,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 	To wait for a keypress ##**Inkey**## can be polled in a loop. See also ##[[KeyPgInputnum Input]]## or ##[[KeyPgGetkey Getkey]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/input/inkey.bas"}}%%(freebasic)
 print "press q to quit"
 do
 loop until inkey = "q"

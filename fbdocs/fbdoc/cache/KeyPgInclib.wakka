@@ -8,9 +8,11 @@ Preprocessor directive
 	Includes a library (.a file) in the linking process, making it easier for the user to compile, since the user doesn't have to explicitly type at the command line: "fbc sourcefile -a libfile".
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'' incomplete code snipet
-#inclib "mylib" 'this will include libmylib.a in the link process
+{{fbdoc item="filename" value="examples/manual/prepro/inclib.bas"}}%%(freebasic)
+'' incomplete code snippet
+
+'' this will include libmystuff.a in the link process
+#inclib "mystuff" 
 %%
 
 {{fbdoc item="diff"}}

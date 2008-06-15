@@ -1,3 +1,6 @@
+{{fbdoc item="title" value="Introduction to the Extended Type"}}----
+//Written by [[WikiRick rdc]]//
+
 === Introduction===
 
 FreeBasic is moving towards implementing Object Oriented programming. While classes have not yet been added to the language, the Type definition has been extended to include some Object Oriented constructs as a first step towards full class support. This article introduces some of the concepts of Object Oriented design and explains some of the extended type constructs.
@@ -39,7 +42,7 @@ This list is called the object definition. In FreeBasic you define an object usi
 === A Rectangle Type Definition===
 
 The following code snippet is a partial rectangle definition:
-%%(qbasic)
+%%(freebasic)
 Type myRect
   Private:
 	X_ As Integer
@@ -56,7 +59,7 @@ End Type
 As you can see, the extended Type looks much like a standard Type except for the Private: and Public: keywords and the sub declaration. The Private: keyword tells the compiler that the data members that follow are private to the type, that is cannot be accessed outside of the type. The private state extends to all object members until a new qualifier is encountered, which in this case is the Public: qualifier just above the Sub declaration. All of the data members are hidden from the outside world and cannot be changed from outside the scope of the Type, a process called information hiding. The underscore appended to the private variables is the common way to define private variables.
 
 Information hiding is a way to maintain the integrity of the object. You should never allow an outside process to directly access a data member. All data access should be through the use of Property members so that you can control what is being passed to your object. Strict control over your object’s data will help prevent many errors that may occur when a programmer uses your object.
-%%(qbasic)
+%%(freebasic)
 Type myRect
   Private:
 	X_ As Integer
@@ -93,7 +96,7 @@ In this example, the variables can be both written and read. The compiler distin
 The definition looks complete at this point, but there is a problem. What would happen if some or all of the variables were not initialized? The object would not perform correctly and potentially generate a runtime error. It would be better to have a set of default values for the object variables just in case one or more variables did not get initialized. You can initialize the object at the moment of creation by using a Constructor.
 
 A Constructor is a subroutine that is called when the object is created using the Dim (or New) statement. Constructors are useful for initializing an object, either with default values, or values you pass to the Constructor. The updated type definition now looks like the following:
-%%(qbasic)
+%%(freebasic)
 Type myRect
   Private:
 	X_ As Integer
@@ -135,7 +138,7 @@ There is also a Destructor method that is called when the object is destroyed. Y
 === Filling in the Object Methods===
 
 The type definition is a template for the object type and tells the compiler how to set up the object in memory. However, in order to actually use the object, you need to create the actual method calls, which is shown in the next listing.
-%%(qbasic)
+%%(freebasic)
 Type myRect
   Private:
 	X_ As Integer
@@ -258,7 +261,7 @@ The Methods and Properties are defined using the Sub/Function/Property methodnam
 === Using Your Object===
 
 The object is now complete can be used in a program which is listed below.
-%%(qbasic)
+%%(freebasic)
 Type myRect
   Private:
 	X_ As Integer

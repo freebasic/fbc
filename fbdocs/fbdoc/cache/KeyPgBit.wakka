@@ -22,7 +22,7 @@ Macro that returns the value of one bit of an integer
 	##foo = **Bit**( bar, 10 )##  is the same as ##foo = (bar and 1 shl 10) <> 0##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/bits/bit.bas"}}%%(freebasic)
 PRINT BIT(4,2)
 PRINT BIT(5,1)
 PRINT BIT(&H8000000000000000ULL,63)

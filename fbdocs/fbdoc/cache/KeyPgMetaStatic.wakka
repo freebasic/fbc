@@ -14,11 +14,12 @@ Metacommand to change the way arrays are allocated
 	The deprecated  ##**$Static**## form exists for compatibility with QB and can be used too. ##[[KeyPgOptionstatic Option Static]]## is the VB-like version of the same command.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated or qb
-option dynamic
-dim a(100)   '<<this array will be dynamic
-option STATIC
-dim b(100)   '<<this array will be static
+{{fbdoc item="filename" value="examples/manual/meta/static.bas"}}%%(freebasic)
+' compile with -lang deprecated or qb
+Option Dynamic
+Dim a(100)   '<<this array will be dynamic
+Option Static
+Dim b(100)   '<<this array will be static
 %%
 
 {{fbdoc item="lang"}} 

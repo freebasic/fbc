@@ -46,7 +46,7 @@ Customizes colours in modes with paletted colours
 	If the ##GET## option is specified, ##**Palette**## retrieves instead of setting color values for the current palette. The parameters have the same meaning as specified for the form being used, but in this case color, ##//r//##, ##//g//## and ##//b//## must be variables passed by reference that will hold the color RGB values on function exit.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/palette.bas"}}%%(freebasic)
 ' Setting a single color, form 1.
 screen 15
 locate 1,1: color 15
@@ -57,7 +57,7 @@ palette 15, &h00003F
 sleep
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/palette2.bas"}}%%(freebasic)
 ' Getting a single color, form 2.
 dim as integer r, g, b
 screen 13
@@ -67,7 +67,7 @@ print using "Red:### Green:### Blue:###"; r; g; b
 sleep
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/palette3.bas"}}%%(freebasic)
 ' Getting whole palette, form 3.
 dim pal(1 to 256) as integer
 dim i as integer

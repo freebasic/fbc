@@ -23,7 +23,7 @@ Tests if a string can be converted to a [[ProPgDates Date Serial]]
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/isdate.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim s as string, d as integer

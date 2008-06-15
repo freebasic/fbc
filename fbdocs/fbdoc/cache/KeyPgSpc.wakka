@@ -15,7 +15,8 @@ Output function to skip spaces when writing to screen or file
 	##**Spc**## skips n-//columns// when ##[[KeyPgPrint Print]]##ing to screen or to a file.
 
 {{fbdoc item="ex"}}
-%%(qbasic)DIM AS STRING A, B, N, M
+{{fbdoc item="filename" value="examples/manual/console/spc.bas"}}%%(freebasic)
+DIM AS STRING A, B, N, M
 
 A = "Jane"
 B = "DOE"

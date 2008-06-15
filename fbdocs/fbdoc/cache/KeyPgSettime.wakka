@@ -18,7 +18,7 @@ Sets the current system time
 	To set the time, format the date and send to ##Settime## in one of the following formats: "hh:mm:ss",  "hh:mm", or "hh" (hh is the hour, mm is the minute, and ss is the second).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/settime.bas"}}%%(freebasic)
 SETTIME "1:20:30"
 %%
 

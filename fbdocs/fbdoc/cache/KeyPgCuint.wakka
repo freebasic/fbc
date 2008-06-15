@@ -30,7 +30,7 @@ Converts numeric or string expression to an unsigned integer (##[[KeyPgUinteger 
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint Valuint]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/cuint.bas"}}%%(freebasic)
 ' Using the CUINT function to convert a numeric value
 
 'Create an UNSIGNED INTEGER variable

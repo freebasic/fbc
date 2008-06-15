@@ -5,7 +5,7 @@ A linked list is a structure that is easily expandible by using a single functio
 The only downside to using a linked list is that in order to store say an integer, you have to allocate space not only for that integer, but also a structure that contains a pointer to the integer and a pointer to the surrounding nodes. This doesn't make much of a difference on today's computers however, unless you are storing millions of nodes.
 
 The basic structure of the linked list is the node. The declaration is this:
-%%(qbasic)
+%%(freebasic)
 type listnode
 	as any ptr pData
 	as listnode ptr pNext
@@ -21,7 +21,7 @@ since each node contains a pointer to another node. The problem with the above s
 
 Before we go any further, let's see all the declarations for using linked lists. Note that every function has a prefix of "List".
 
-%%(qbasic)
+%%(freebasic)
 declare function ListCreate() as listnode ptr
 declare function ListAdd(list as listnode ptr, item as any ptr) as any ptr
 declare function ListAddHead(list as listnode ptr, item as any ptr) as any ptr
@@ -38,7 +38,7 @@ Edit: Hmm, it doesn't seem to like my use of "Rem" in a function. It compiles fi
 You can see that there is a function to create a linked list, to add an item, to get various nodes, get data, and to remove nodes. Currently we'll focus on the ""ListCreate"" function. It takes no parameters and returns a listnode pointer. The structure that it creates has no data filled out. The whole structure is null, but it is still a structure. If you add a node, the pNext member will change and point to the new item, so it won't stay as a null node, since there would be no purpose of that. However, the value returned by ""ListCreate"" won't have any data stored in it and it won't have a previous node.
 
 The function ""ListCreate"" looks like this:
-%%(qbasic)
+%%(freebasic)
 ' CREATE
 function ListCreate() as any ptr
 	dim as listnode ptr pTemp
@@ -54,7 +54,7 @@ The point of this function is easy to see, a node is allocated and returned. The
 
 The next functions, ""ListAdd"" and ""ListAddHead"", add a node to the list. ""ListAdd"" appends a node to the end of the list (the tail), while ""ListAddHead"" puts a node at the very top (the head).
 
-%%(qbasic)
+%%(freebasic)
 ' ADD, ADDHEAD
 
 function ListAdd(list as listnode ptr, item as any ptr) as any ptr
@@ -100,7 +100,7 @@ The ""ListAddHead"" function is a little more complicated, since we're actually 
 
 The next functions are ""ListGetFirst"" and ""ListGetLast"". I implemented them next because ""ListGetLast"" was referenced in an above function.
 
-%%(qbasic)
+%%(freebasic)
 ' GETFIRST, GETLAST
 
 function ListGetFirst(list as listnode ptr) as any ptr
@@ -129,7 +129,7 @@ The second function, ""ListGetLast"", loops through the list until it finds a nu
 
 The next 3 functions are just helper functions, and could be easily accomplished with one line of code. They really exist because the original implementation not written by me had a ""ListGetNext"" function.
 
-%%(qbasic)
+%%(freebasic)
 ' GETNEXT, GETPREV
 
 function ListGetNext(list as listnode ptr) as any ptr
@@ -166,7 +166,7 @@ The ""ListGetPrev"" function is a little more complicated, since I don't want to
 The ""ListGetData"" function is as easy and brief as the ""ListGetFirst"" and ""ListGetNext"" functions. It just returns a pointer to the node's data.
 
 The final two functions remove nodes from the list.
-%%(qbasic)
+%%(freebasic)
 ' REMOVE, REMOVEALL
 
 function ListRemove(list as listnode ptr, bDelete as integer = 0) as any ptr
@@ -215,7 +215,7 @@ so it has been changed.
 
 That's it, here's the whole file that includes a sample at the top of how to use them. This is my first time writing a tutorial, so feel free to leave comments on ways I could improve. Also, if you catch a bug in my code (I found a couple while writing this), please let me know. Feel free to edit the bug out also, but I'd like to know about it too.
 
-%%(qbasic)
+%%(freebasic)
 type listnode
 	as any ptr pData
 	as listnode ptr pNext

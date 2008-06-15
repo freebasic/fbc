@@ -22,7 +22,7 @@ Gets a [[ProPgDates Date Serial]] from a time string
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/timevalue.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 Dim ds As Double = TimeValue("07:12:28AM")

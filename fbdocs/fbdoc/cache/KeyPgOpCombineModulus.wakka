@@ -21,7 +21,7 @@ Divides a value and assigns the remainder to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/mod-assign.bas"}}%%(freebasic)
 DIM n AS INTEGER
 n = 11
 n mod= 3

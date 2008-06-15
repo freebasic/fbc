@@ -23,7 +23,7 @@ Declares an enumerated type
 	An ##**Enum**## can be passed as a user defined type to overloaded operator functions.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/enum.bas"}}%%(freebasic)
 enum MyEnum
 	option1 = 1
 	option2

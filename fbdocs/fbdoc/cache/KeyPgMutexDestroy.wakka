@@ -17,14 +17,14 @@ Destroys a mutex
 	    See ##[[KeyPgMutexCreate Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/threads/mutexdestroy.bas"}}%%(freebasic)
 '' Threading synchronization using Mutexes
 '' If you comment out the lines containing "MutexLock" and "MutexUnlock",
 '' the threads will not be in sync and some of the data may be printed
 '' out of place.
 
-DECLARE SUB thread1
-DECLARE SUB thread2
+DECLARE SUB thread1( param as any ptr )
+DECLARE SUB thread2( param as any ptr )
 DECLARE SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 
 DIM SHARED threadsync AS any ptr
@@ -60,12 +60,12 @@ SLEEP
 END
 
 '' Thread 1 calls a simple "teletype" routine
-SUB thread1
+SUB thread1( param as any ptr )
 	teletype "This is a test...", 4, 1
 END SUB
 
 '' ...As does thread 2
-SUB thread2
+SUB thread2( param as any ptr )
 	teletype "This is another test...", 7, 1
 END SUB
 

@@ -14,10 +14,11 @@ Indicates the assignment operator
 	**Let** is used with operator overloading to refer the assignment operator.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/misc/let.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 
 ' these two lines have the same effect:
-let x = 100
+Let x = 100
 x = 100
 %%
 

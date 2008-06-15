@@ -21,7 +21,7 @@ Specifies public member access control in a ##[[KeyPgType Type]]## or ##[[KeyPgC
 	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/public.bas"}}%%(freebasic)
 TYPE testing
   PRIVATE:
 	nome as string

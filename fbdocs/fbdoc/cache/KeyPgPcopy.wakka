@@ -19,7 +19,7 @@ Copies one graphical page onto another
 	##//source//## and ##//destination//## refer to page numbers. The 'source' page is copied over the 'destination' page when pcopy is called.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)
 screenres 320, 240, 32, 2    'Sets up the screen to be 320x240 in 32-bit color with 2 video pages.
 dim as integer max_x_value = 270, x_value = 50    'Dimension our working variables.
 

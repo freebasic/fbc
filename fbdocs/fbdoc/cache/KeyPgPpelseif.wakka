@@ -15,7 +15,7 @@ Preprocessor conditional directive
 	**#elseif** can be added to an ##[[KeyPgPpif #if]]## block to provide an additional conditions.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/elseif.bas"}}%%(freebasic)
 #DEFINE WORDSIZE 16
 #IF (WORDSIZE = 16)
   ' Do some some 16 bit stuff

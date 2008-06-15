@@ -287,7 +287,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}

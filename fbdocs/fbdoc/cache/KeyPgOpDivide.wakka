@@ -34,7 +34,7 @@ Divides two numeric expressions
 	This operator can be overloaded to accept user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/divide.bas"}}%%(freebasic)
 DIM n AS DOUBLE
 PRINT n / 5
 n = 6 / 2.3

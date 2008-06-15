@@ -14,7 +14,7 @@ Sets the printable area of the screen
 	Sets the boundaries of the console screen text area to the lines starting at first up to and including last.  Lines are counted starting with 1.  The text cursor is moved to the beginning of the first line specified.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/view.bas"}}%%(freebasic)
 Cls
 View Print 5 To 6
 Color , 1 
@@ -24,7 +24,8 @@ Cls
 
 **View Print** can be used in graphics mode to avoid the text output overwriting graphics.
 {{fbdoc item="ex"}}
-%%(qbasic)screen 12
+{{fbdoc item="filename" value="examples/manual/console/view-gfx.bas"}}%%(freebasic)
+screen 12
 dim as integer R,Y,x,y1
 dim as single y2
 view print 20 to 27

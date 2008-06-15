@@ -25,13 +25,14 @@ Left-justifies a string
 	For compatibility with QBasic, ##**Lset**## can also copy a user defined type variable into another one. The copy is made byte for byte, without any care for fields or alignment. It's up to the programmer to take care for the  validity of the result.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim buffer as string
+{{fbdoc item="filename" value="examples/manual/strings/lset.bas"}}%%(freebasic)
+dim buffer as string
 buffer = space(10)
 lset buffer, "91.5"
 print "-[" & buffer & "]-"
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/lset-udt.bas"}}%%(freebasic)
 type mytype1
 	x as integer
 	y as integer

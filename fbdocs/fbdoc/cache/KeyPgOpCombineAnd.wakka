@@ -29,7 +29,7 @@ Performs a bitwise-and (conjunction) and assigns the result to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/and-assign.bas"}}%%(freebasic)
 ' Using the AND= operator on two numeric values
 DIM AS UBYTE numeric_value1, numeric_value2
 numeric_value1 = 15 '' 00001111

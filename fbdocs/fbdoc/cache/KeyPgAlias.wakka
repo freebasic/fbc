@@ -27,12 +27,12 @@ Clause of the ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## statements
 {{fbdoc item="ex"}}
 
 If there is a sub called ##xClearScreen## in an external library and you want to reference it with the name ##""ClearVideoScreen""##, here is sample code to do so:
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/alias.bas"}}%%(freebasic)
 DECLARE SUB ClearVideoScreen ALIAS "xClearScreen" ()
 %%
 
 A procedure meant to be used by external C code, exported as ##""MyExportedProc""##:
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/alias2.bas"}}%%(freebasic)
 FUNCTION MultiplyByFive CDECL ALIAS "MyExportedProc" (BYVAL Parameter AS INTEGER) AS INTEGER EXPORT
   RETURN Parameter * 5
 END FUNCTION

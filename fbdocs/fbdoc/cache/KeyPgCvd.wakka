@@ -20,7 +20,8 @@ Converts an eight byte string to a double-precision variable
 	This function is useful to read numeric values from buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as double, b as string
+{{fbdoc item="filename" value="examples/manual/strings/cvd.bas"}}%%(freebasic)
+dim a as double, b as string
 a=4534.4243
 b=mkd(a)
 print a, cvd(b)

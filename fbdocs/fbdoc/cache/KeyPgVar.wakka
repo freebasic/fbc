@@ -16,7 +16,7 @@ Declares a variable whose type is implied from the initializer expression
 	Note: Suffixes must appear on the initializer, not on the variable. Trying to use ##**Var**## with a variable that has a suffix will throw a compile error.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/variable/var.bas"}}%%(freebasic)
 var a  = cast(byte, 0)
 var b  = cast(short, 0)
 var c  = cast(integer, 0)

@@ -1,3 +1,6 @@
+{{fbdoc item="title" value="The Pointer Data Type"}}----
+//Written by [[WikiRick rdc]]//
+
 The pointer data type is unique among the FreeBasic numeric data types. Instead of containing data, like the other numeric types, a pointer contains the memory address of data.
 
 On a 32-bit system, the pointer data type is 4 bytes. FreeBasic uses pointers for a number of functions such as ImageCreate, and pointers are used heavily in external libraries such as the Windows API. Pointers are also quite fast, since the compiler can directly access the memory location that a pointer points to. A proper understanding of pointers is essential to effective programming in FreeBasic.
@@ -20,7 +23,7 @@ This isn't really any different than using a standard variable, and you use poin
 
 FreeBasic has two types of pointers, typed and untyped. A typed pointer is declared with an asscoaited data type.
 
-%%(qbasic)
+%%(freebasic)
 Dim myPointer as Integer Ptr
 %%
 
@@ -28,7 +31,7 @@ This tells the compiler that this pointer will be used for integer data. Using t
 
 Untyped pointers are declared using the Any keyword.
 
-%%(qbasic)
+%%(freebasic)
 Dim myPointer as Any Ptr
 %%
 
@@ -94,13 +97,13 @@ Before using a function pointer, it must be initialized to the address of a subr
 
 You declare a function pointer using the anonymous declaration syntax.
 
-%%(qbasic)
+%%(freebasic)
 Dim FuncPtr As Function(x As Integer, y As Integer) As Integer
 %%
 
 You then need to asscoate this function pointer with an actual subroutine or function within your code.
 
-%%(qbasic)
+%%(freebasic)
 Function Power(number As Integer, pwr As Integer) As Integer
 Return number^pwr
 End Function
@@ -111,7 +114,7 @@ FuncPtr = @Power
 
 You can then call the function pointer much like you would call the real function.
 
-%%(qbasic)
+%%(freebasic)
 FuncPtr(2, 4)
 %%
 
@@ -125,7 +128,7 @@ One of the primary uses for function pointers is to create callback functions. A
 
 The qsort, function contained within the C Runtime Library sorts the elements of an array using a callback function to determine the sort order. The prototype for the qsort function is contained in stdlib.bi:
 
-%%(qbasic)
+%%(freebasic)
 declare sub qsort cdecl alias "qsort" (byval as any ptr, byval as size_t, byval as size_t, byval as function cdecl(byval as any ptr, byval as any ptr) as integer)
 %%
 
@@ -143,13 +146,13 @@ Qsort will take two array elements, pass them to your user defined compare funct
 
 You need to declare the function prototype as Cdecl which ensures that the parameters are passed in the correct order.
 
-%%(qbasic)
+%%(freebasic)
 Declare Function QCompare Cdecl (Byval e1 As Any Ptr, Byval e2 As Any Ptr) As Integer
 %%
 
 You would then define the function like the following.
 
-%%(qbasic)
+%%(freebasic)
 'The qsort function expects three numbers
 'from the compare function:
 '-1: if e1 is less than e2
@@ -179,7 +182,7 @@ End Function
 
 You would then call the QSort function passing the address of the callback function.
 
-%%(qbasic)
+%%(freebasic)
 qsort @myArray(0), 10, Sizeof(Integer), @QCompare
 %%
 
@@ -189,20 +192,20 @@ In FreeBasic you can create a pointer to any of the supported data types, includ
 
 One application of a pointer to pointer is the creation of a memory segment that behaves just like an array. For example, suppose you want to create a memory segment to hold an unknown number of integers. You can create a dynamic memory segment that you can resize as needed during runtime to handle as many integers as you need. You would start by creating a pointer-to-pointer variable.
 
-%%(qbasic)
+%%(freebasic)
 Dim myMemArray As Integer Ptr Ptr
 %%
 
 You would then initialize the pointer reference by using Allocate or Callocate.
 
-%%(qbasic)
+%%(freebasic)
 'Create 10 rows of integer pointers
 myMemArray = Callocate(10, Sizeof(Integer Ptr))
 %%
 
 Notice that the variable is initialized to an //Integer Ptr// since this list is going to point to another list; this is the pointer that points to another pointer. You can then initialize the individual pointer references just created to point to the needed memory segments.
 
-%%(qbasic)
+%%(freebasic)
 'Add 10 columns of integers to each row
 For i = 0 To 9
 myMemArray[i] = Callocate(10, Sizeof(Integer))
@@ -211,7 +214,7 @@ Next
 
 In this code snippet, the individual pointers in the list are initialized to 10 memory segments that will contain the actual integer data.
 
-%%(qbasic)
+%%(freebasic)
 'Add some data to the memory segment
 For i = 0 To 9
 For j = 0 To 9
@@ -224,7 +227,7 @@ This code snippet uses the index method to load the actual data into the memory 
 
 One thing you need to be aware of is how to deallocate a structure such as this. The rule is to just do the reverse of the allocation operations. Since the last allocate operation initialized the data memory segments, you deallocate these memory segments first and then you can deallocate the base pointer.
 
-%%(qbasic)
+%%(freebasic)
 'Free memory segment
 For i = 0 To 9
 Deallocate myMemArray[i]

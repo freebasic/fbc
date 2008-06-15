@@ -18,7 +18,7 @@ Returns the integer part of a number
 	 e.g. int(4.9) will return 4.0, and int(-1.3) will return -2.0
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/int.bas"}}%%(freebasic)
 Print int(1.9)  '' will print  1
 Print int(-1.9) '' will print -2 
 %%

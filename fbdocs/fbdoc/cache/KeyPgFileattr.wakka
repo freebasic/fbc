@@ -39,7 +39,7 @@ Returns information about an open file number
 		{{table columns="3" cellpadding="1" cells="Value;Encoding;Constant;0;Ascii;fbFileEncodASCII;1;UTF-8;fbFileEncodUTF8;2;UTF-16;fbFileEncodUTF16;3;UTF-32;fbFileEncodUTF32"}}
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/fileattr.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 #include "crt.bi"
 

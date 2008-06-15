@@ -9,7 +9,8 @@ Statement used to undefine a keyword in deprecated mode
 	This statement form is now deprecated.  See ##[[KeyPgPpundef #undef]]## for an alternative method of removing keywords.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)' compile with -lang deprecated
+	{{fbdoc item="filename" value="examples/manual/switches/option-nokeyword.bas"}}%%(freebasic)
+' compile with -lang deprecated
 option nokeyword int
 dim int as integer
 '' Do some processing with the variable "int"

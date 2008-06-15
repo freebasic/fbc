@@ -18,7 +18,7 @@ Returns a pointer to the current work page's framebuffer
 	Each row in the frame buffer is //width// * //bytes_per_pixel// bytes long.  The frame buffer consists of //height// rows, stored in order of their position on the screen, from the top downwards.  There is no padding between the rows; each row follows straight on from the last.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/screenptr.bas"}}%%(freebasic)
 const w As integer = 297
 const h As integer = 210
 Dim As integer x, y
@@ -43,8 +43,9 @@ buffer[y * w + x] = 10
 ' Unlock the screen.
 screenunlock()
 
-sleep%%
-%%(qbasic)
+sleep
+%%
+{{fbdoc item="filename" value="examples/manual/gfx/screenptr2.bas"}}%%(freebasic)
 const w as integer = 800
 const h as integer = 600
 

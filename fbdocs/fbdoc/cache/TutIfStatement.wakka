@@ -1,8 +1,11 @@
+{{fbdoc item="title" value="The IF Statement"}}----
+//Written by [[WikiRick rdc]]//
+
 You can think of the If statement block as a question that requires a True or False answer. The answer determines which section of code your program will execute. Since computers only work with numbers, you frame the question as a conditional equation that will result in either 0 for False or non-zero for True. 
 
 The If statement has the following formats.
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then do something[:do something]
 %%
 
@@ -10,7 +13,7 @@ The <expression> is the question that requires a True or False answer. If the an
 
 You can execute more than one statement after the Then if you separate the statements with a colon. All of the statements must be on the same line. An easier format is to use the IF code block, as shown below.
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then
 	do something 1
 	do something 2
@@ -20,7 +23,7 @@ End If
 
 In this format if the answer is True then the code block following the Then is executed, starting with statement 1 and executing all statements until the End If is reached. The program will then start executing code after the End If. If the answer is False, the code in the code block is skipped and the code following the End If is executed.
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then
 	do something
 	...
@@ -32,7 +35,7 @@ End If
 
 In this format if <expression> is True then the code following the Then is executed. If the answer is False then the code following the Else is executed. In this format you can address both the True and False answers of the <expression>. 
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then
 	do something
 ElseIf <expression> Then
@@ -42,7 +45,7 @@ End If
 
 In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the End If is executed. You can have as many ElseIf statements as you need to fully cover the range of questions you need to ask.
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then
 	do something
 ElseIf <expression> Then
@@ -62,7 +65,7 @@ The <expression> is the question that needs an answer and you frame the question
 
 You can mix arithmetic and logical operators, as well as parenthesis, within an If statement. The compiler evaluates the conditional statements from left to right, taking into account the precedence of the operators.  For example, all of the following code snippets are legal If statement constructs.
 
-%%(qbasic)
+%%(freebasic)
 If var1 = 5 Then
 If (var1 = 5) And (var2 < 3) Then
 If (var1 + 6) > 10 Then
@@ -76,7 +79,7 @@ Remember that the operators And, Or and Not are bitwise operators. That is, they
 
 Take the second code snippet listed above. 
 
-%%(qbasic)
+%%(freebasic)
 If (var1 = 5) And (var2 < 3) Then
 %%
 
@@ -98,7 +101,7 @@ When using compound conditions care must be taken to ensure that the conditions 
 
 At times it may become necessary to nest If statements in order to better describe the decision making process of the evaluation. While the If statement can handle multiple arguments within an expression, there are times when  you may want to incrementally check for certain ranges of values which you can do using a nested If block.
 
-%%(qbasic)
+%%(freebasic)
 If <expression> Then 
 	<statement>
 	...
@@ -116,7 +119,7 @@ It is important to close each block properly with an End If when opened by an If
 
 The Iif, or “immediate If” function returns one of two numeric values based on an expression. You can think if the Iif function as an in-line If statement that acts as a function call.
 
-%%(qbasic)
+%%(freebasic)
 Value = Iif(<expression>, numeric_value_if_true, numeric_value_if_false)
 %%
 
@@ -140,7 +143,7 @@ Suppose that you have a range of values and you want to do something special if 
 
 You can frame this as a question that can then be translated into code.
 
-%%(qbasic)
+%%(freebasic)
 Is the value a number less than or equal to 1 or a number greater than or equal to 10?
 If Yes, then do special action.
 If No, then do standard action.
@@ -148,7 +151,7 @@ If No, then do standard action.
 
 The key here is the OR. If the lower bound of the value is equal to or less than 1 OR the upper bound of the value is equal to or greater than 10 then do the special action.
 
-%%(qbasic)
+%%(freebasic)
 If (value <= 1) Or (value >= 10) Then
 	do_special
 Else
@@ -164,7 +167,7 @@ Inclusion is the opposite of exclusion. As you might guess, the format is simila
 
 Suppose you want to do something special if the value is a 5, 6 or 7. That is you want to include these numbers within your range expression. Again, you can start by asking a question.
 
-%%(qbasic)
+%%(freebasic)
 Is the value a number between 5 and 7 (inclusive)?
 If Yes, then do special action
 If No, then do standard action
@@ -172,7 +175,7 @@ If No, then do standard action
 
 Here you want to include the numbers 5, 6, 7 for consideration. That is if the value is 5 or greater AND the value is 7 or less then do something special. This translates to the following code snippet.
 
-%%(qbasic)
+%%(freebasic)
 If (value >= 5) And (value <= 7) Then
 	do_special
 Else

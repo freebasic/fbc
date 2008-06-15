@@ -14,7 +14,7 @@ Preprocessor conditional directive
 	##**#ifndef** //symbol//## is equivalent to ##[[KeyPgPpif #if]] Not [[KeyPgDefined defined]](//symbol//)##
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/ifndef.bas"}}%%(freebasic)
 #IFNDEF __MYFILE_BI__
 #DEFINE __MYFILE_BI__
 	' Declarations 

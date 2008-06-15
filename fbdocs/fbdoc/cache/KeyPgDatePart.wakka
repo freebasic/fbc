@@ -38,7 +38,7 @@ Gets an interval from a date
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/datepart.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 dim d as double

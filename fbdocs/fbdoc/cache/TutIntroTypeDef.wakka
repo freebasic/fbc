@@ -1,3 +1,6 @@
+{{fbdoc item="title" value="Introduction to the Type Def"}}----
+//Written by [[WikiRick rdc]]//
+
 There are times when creating a program that you may want to define an aggregate structure such as a personnel record, or an enemy in a game. While you can do this using individual data types, it is hard to manage within  a program. Composite data types allow you to group together related data items into a single structure that can be manipulated as a single entity. FreeBasic offers two composite data types, the Type and Union. 
 
 ==== Types ====
@@ -6,7 +9,7 @@ FreeBasic allows you to group several data types into a unified structure called
 
 The basic structure of a type definition is:
 
-%%(qbasic)
+%%(freebasic)
 Type typename
 	var definition
 	var definition
@@ -16,7 +19,7 @@ End Type
 
 The Type-End Type block defines the scope of the definition. You define the elements of the type structure in the same manner as using the Dim keyword, without using Dim. The following code snippet shows how to build an employee type.
 
-%%(qbasic)
+%%(freebasic)
 Type EmployeeType
 	fname As String * 10
 	lname As String * 10
@@ -27,7 +30,7 @@ End Type
 
 You can use any of the supported data types as data elements, including pointers and other type definitions. When you create the type definition, such as in the example above, you are just creating a template for the compiler. In order to use the type definition, you need to create a variable of the type, as the following code snippet illustrates.
 
-%%(qbasic)
+%%(freebasic)
 Dim Employee As EmployeeType
 %%
 
@@ -35,7 +38,7 @@ Once you have created a variable of the type, you can access each element within
 
 Using the above example, to access the fname field you would use: 
 
-%%(qbasic)
+%%(freebasic)
 Employee.fname = “Susan”
 %%
 
@@ -43,7 +46,7 @@ Employee.fname = “Susan”
 
 To access multiple fields at a time, you can use the With-End With block. The following code snippet shows how to use the With block with the above example.
 
-%%(qbasic)
+%%(freebasic)
 With Employee
 	.fname = "Susan"
 	.lname = "Jones"
@@ -58,7 +61,7 @@ The compiler will automatically bind the variable Employee to the individual dat
 
 One advantage to using types in your program is that you can pass the structure to a subroutine or function and operate on the structure as a whole. The following code fragment shows a partial subroutine definition.
 
-%%(qbasic)
+%%(freebasic)
 Sub UpdateEmployeeDept(Byref Emp as EmployeeType)
 	.
 	.
@@ -78,7 +81,7 @@ The default for FreeBasic .17 is to pass parameters using Byval. In order to cha
 
 On the other hand you may not need to update the type as in the following code fragment.
 
-%%(qbasic)
+%%(freebasic)
 Sub PrintEmployeeRecord(Emp as EmployeeType)
 	.
 	.
@@ -98,7 +101,7 @@ Using the Employee example, suppose for a moment that you needed to track more d
 
 Using a type within a type is the same as using one of the intrinsic data types. The following code snippets illustrates an expanded department type and an updated employee type.
 
-%%(qbasic)
+%%(freebasic)
 Type DepartmentType
 	id As integer
 	managerid as integer
@@ -117,7 +120,7 @@ Dim Employee As EmployeeType
 
 Notice that in the Employee definition the dept field is defined as DepartmentType rather than as one of the intrinsic data types. To access the department information within the Employee type, you use the compound dot notation to access the dept fields.
 
-%%(qbasic)
+%%(freebasic)
 Employee.dept.id = 24
 Employee.dept.managerid = 1012
 Employee.dept.floor = 13
@@ -131,7 +134,7 @@ You can even carry this further, by including a type within a type within a type
 
 You can also use the With-End With block with nested types, by nesting the With block, as illustrated in the following code snippet.
 
-%%(qbasic)
+%%(freebasic)
 With Employee
    	.fname = "Susan"
 		.lname = "Jones"
@@ -154,7 +157,7 @@ Just as you can assign one intrinsic data type to another, you can assign one ty
 
 The following code snippet abstracts the department initialization function and assigns the result to the department type within the Employee type.
 
-%%(qbasic)
+%%(freebasic)
 'This function will init the dept type and return it to caller
 Function InitDept(deptid As Integer) As DepartmentType
 	Dim tmpDpt As DepartmentType
@@ -206,7 +209,7 @@ There is yet another data type that can be used in type definitions, the bit fie
 
 The following code snippet illustrates a bit field definition.
 
-%%(qbasic)
+%%(freebasic)
 Type BitType
 	b1: 1 As Integer
 	b2: 4 As Integer
@@ -215,7 +218,7 @@ End Type
 
 b1 is defined as a single bit, and b2 is defined as four bits. You initialize the bitfields by passing the individual bits to the type fields.
 
-%%(qbasic)
+%%(freebasic)
 myBitType.b1 = 1
 myBitType.b2 = 1101
 %%
@@ -228,7 +231,7 @@ When you create a variable of a type definition, the type is padded in memory. T
 
 The field keyword is used right after the type name and can have the values 1, for 1 byte alignment (no padding), 2 for 2 byte alignment and 4 for 4 byte alignment. To define a type with no padding you would use the following syntax.
 
-%%(qbasic)
+%%(freebasic)
 Type myType field = 1
  	v1 As Integer
 	v2 As Byte
@@ -243,7 +246,7 @@ For 2 byte alignment you would use field = 2. If no field = property is assigned
 
 You can initialize a type definition when you dimension the type just as you can any of the intrinsic variables. The following code snippet illustrates the syntax.
 
-%%(qbasic)
+%%(freebasic)
 Type aType
 		a As Integer
 		b As Byte
@@ -263,7 +266,7 @@ Initializing a type definition in a Dim statement is useful when you need to hav
 
 Unions look similar to Types in their definition.
 
-%%(qbasic)
+%%(freebasic)
 Union aUnion
 	b As Byte
 	s As Short
@@ -279,7 +282,7 @@ In this case, the Union would occupy four bytes, the size of an Integer, with th
 
 A good example of using a type definition in a union is the Large_Integer definition found in winnt.bi. The Large_Integer data type is used in a number of Windows functions within the C Runtime Library. The following code snippet shows the Large_Integer definition.
 
-%%(qbasic)
+%%(freebasic)
 union LARGE_INTEGER
 	type
 		LowPart as DWORD
@@ -305,7 +308,7 @@ A union within a type definition is an efficient way to manage data when one fie
 
 When using a Union within a type it is common practice to create an id field within the type that indicates what the union contains at any given moment. The following code snippet illustrates this concept.
 
-%%(qbasic)
+%%(freebasic)
 'Union field ids
 #define vInteger 0
 #define vDouble 1
@@ -322,7 +325,7 @@ End Type
 
 The union definition here is called an anonymous union since it isn't defined with a name. The //vt_id// field of the type definition indicates the value of the union. To initialize the type you would use code like the following.
 
-%%(qbasic)
+%%(freebasic)
 Dim myVarianti As vType
 Dim myVariantd As vType
 

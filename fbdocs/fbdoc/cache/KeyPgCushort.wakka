@@ -30,7 +30,7 @@ Converts numeric or string expression to an unsigned integer (##[[KeyPgUshort Us
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint Valuint]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/cushort.bas"}}%%(freebasic)
 ' Using the CUSHORT function to convert a numeric value
 
 'Create an USHORT variable

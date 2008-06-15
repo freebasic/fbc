@@ -37,14 +37,15 @@ Graphics statement to load a block of binary data or a BMP from a file
 	##**Bload**## may only be used to load graphics files.  For loading other types of files use ##[[KeyPgOpen Open]]## and ##[[KeyPgGetfileio Get (File I/O)]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/bload.bas"}}%%(freebasic)
 'Load a graphic to current work page
 SCREEN 18, 32
 cls
 bload "picture.bmp"
-sleep%%
+sleep
+%%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/bload2.bas"}}%%(freebasic)
 'Load a 48x48 bitmap into an array
 SCREEN 18, 32
 dim myImage as any ptr = imagecreate( 48, 48 )

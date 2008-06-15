@@ -39,7 +39,7 @@ Returns a file or directory
 	The result will be an empty string when no files were found.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
 #include "dir.bi" 'provides constants to use for the attrib_mask parameter
 
 Sub list_files (byref filespec as string, byval attrib as integer)

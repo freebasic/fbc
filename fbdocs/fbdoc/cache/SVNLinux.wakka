@@ -1,0 +1,82 @@
+{{fbdoc item="title" value="Compiling from SVN for Linux"}}----
+If you want the very latest version of ""FreeBASIC"" on Linux, it can be compiled from the latest code in the SVN repository.  Most users should stay with the stable Linux build!  But the latest additions and corrections are available in this way.
+
+	=={{anchor name="setup|Setting up the Linux environment"}}==
+		- {{anchor name="setup1|Install the development libraries"}}
+
+	=={{anchor name="making|Making the FreeBASIC executable and libraries"}}==
+		- {{anchor name="making1|Download the FreeBASIC sources"}}
+		- {{anchor name="making2|Make rtlib"}}
+		- {{anchor name="making3|Make gfxlib"}}
+		- {{anchor name="making4|Make fbc"}}
+
+	=={{anchor name="updating|Updating the installed FreeBASIC software"}}==
+		- {{anchor name="updating1|Install the freshly built compiler, runtime and headers"}}
+
+	{{anchor name="setup"}}===Setting up the Linux environment===
+		
+		{{anchor name="setup1"}}==Install the development libraries==
+			You will need many standard development tools and libraries, including but not limited to:
+				- svn
+				- gcc
+				- perl
+				- autoconf
+				- libncurses-dev
+				- libgpmg1-dev
+				- libx11-dev
+				- libxpm-dev
+				- libxrandr-dev
+				- libglitz-glx1-dev
+			At least some of these are likely to not come with a 'stock' desktop Linux distribution.  All of them are easily available using apt-get on distributions that use the Debian (.deb) packaging system.
+
+	{{anchor name="making"}}===Making the ""FreeBASIC"" executable and libraries===
+		
+		{{anchor name="making1"}}==Download the ""FreeBASIC"" sources==
+			
+			For the latest source code, you will need to download it from ""SourceForge"" using SVN.
+
+			%%mkdir -p ~/fbcSVN/lib/linux
+cd ~/fbcSVN/
+svn co https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC
+%%
+
+		{{anchor name="making2"}}==Make rtlib==
+			%%
+cd ~/fbcSVN/FreeBASIC/src/rtlib/obj/linux
+../../configure
+make && make MULTITHREADED=1
+cp *.a ~/fbcSVN/FreeBASIC/lib/linux/
+cp fbrt0.o ~/fbcSVN/FreeBASIC/lib/linux/
+%%
+
+		{{anchor name="making3"}}==Make gfxlib==
+			
+			%%cd ~/fbcSVN/FreeBASIC/src/gfxlib2/obj/linux
+../../configure
+make
+cp *.a ~/fbcSVN/FreeBASIC/lib/linux/
+%%
+		
+		{{anchor name="making4"}}==Make fbc==
+			
+			%%cd ~/fbcSVN/FreeBASIC/src/compiler/obj/linux
+../../configure
+make
+cp fbc_new ~/fbcSVN/FreeBASIC/fbc
+%%
+
+	{{anchor name="updating"}}===Updating the installed ""FreeBASIC"" software===
+		
+		The following will update the copy of ""FreeBASIC"" you have installed. In order for the install script to create a symlink at /usr/bin/fbc, it needs to be run with root privelages, for example, with sudo. //The -i switch allows an installation directory to be specified, and there can be no trailing '/'. The default install directory is /usr/share/freebasic/. Run the script without arguments to see all of the options available.//
+		
+		{{anchor name="updating1"}}==Install the freshly built compiler, runtime and headers==
+			
+			%%cd ~/fbcSVN/FreeBASIC
+sudo ./install.sh -i %%
+
+That's it!  If you run 'fbc -version', and you should see the correct build-date.
+
+Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
+http://www.freebasic.net/forum/viewtopic.php?p=32260#32260
+
+{{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

@@ -19,7 +19,7 @@ Waits until the designated thread has been completed before returning
 	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/threads/threadwait.bas"}}%%(freebasic)
 dim shared printsync as any ptr
 
 sub mythread(byval idp as any ptr)

@@ -18,7 +18,8 @@ Reads a list of values from a file
 	Values are separated by spaces, commas and line breaks.  To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer
+{{fbdoc item="filename" value="examples/manual/fileio/input.bas"}}%%(freebasic)
+dim a as integer
 dim b as string
 dim c as single
 

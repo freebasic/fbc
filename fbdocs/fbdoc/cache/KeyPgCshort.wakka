@@ -30,7 +30,7 @@ Converts numeric or string expression to an integer (##[[KeyPgShort Short]]##)
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/cshort.bas"}}%%(freebasic)
 ' Using the CSHORT function to convert a numeric value
 
 'Create an SHORT variable

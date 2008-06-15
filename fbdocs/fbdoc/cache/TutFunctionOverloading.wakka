@@ -11,7 +11,7 @@ Function overloading is as close as you can come to generic programming without 
 Simply put, function overloading involves defining functions that have the same name, but different //signatures//. A function's signature is a combination of all the information needed to correctly reference the function, and includes the function's parameter list and return type. These are what we redefine, or overload. Let's start off with a small example. Say we need functions that output the string respresentation of a number. We simply write:
 
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit      '' force explicit declaration of variables
 option byval         '' default passing convention as by value
 
@@ -43,7 +43,7 @@ The problem here is that not only do we have two different function signatures, 
 There is, and don't call me Shirley. I mentioned before that the compiler uses two primary components to establish a function signature: the parameter list and the return type. I also mentioned that through overloading, we can define multiple functions with different signatures, and still keep the same function name for all of them. You may be thinking this is our way out of our dilema, convoluted name space and all. Well, you're right - check this out:
 
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit      '' force explicit declaration of variables
 option byval         '' default passing convention as by value
 

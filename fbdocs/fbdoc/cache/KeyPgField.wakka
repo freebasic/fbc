@@ -11,7 +11,8 @@ End [[KeyPgType Type]]
 to one byte (##**Field**## 1) or two bytes (##**Field**## 2). This helps ""FreeBASIC"" maintain compatibility with structures created in other languages.
 
 {{fbdoc item="ex"}}
-%%(qbasic)type bitmap_header field = 1
+{{fbdoc item="filename" value="examples/manual/udt/field.bas"}}%%(freebasic)
+type bitmap_header field = 1
 	bfType          as ushort
 	bfsize          as uinteger
 	bfReserved1     as ushort

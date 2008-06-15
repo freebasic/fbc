@@ -7,14 +7,18 @@ Compiler switch to set the default base index for arrays
 {{fbdoc item="desc"}}
 	Sets the default lower bound of an array subscript. For example:
 
-	%%(qbasic)option base 1
-dim foo(10)
-	%%
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionbase_1.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
+Option Base 1
+Dim foo(10)
+
+%%
 
 	foo is now an array that ranges from ##foo(1)## to ##foo(10)##. This is the same as ##dim foo(1 to 10)##. If ##**Option Base** 0## were used or there were no preceding ##**Option Base**## statement, foo would range from 0 to 10.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)'' Compile with -lang deprecated or qb
+	{{fbdoc item="filename" value="examples/manual/switches/option-base.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 option base 1
 dim foo(10)
 print "foo contains elements between " & lbound(foo) & " and " & ubound(foo)

@@ -1,4 +1,5 @@
-====New to Programming?====
+{{fbdoc item="title" value="New to Programming?"}}----
+//Written by [[WikiRick rdc]]//
 
 If you're new to programming in general, you should probably learn what some basic concepts are:
 
@@ -39,7 +40,7 @@ FreeBASIC is *not* case sensitive.  Calling a command '""DRaW""' is the same as 
 
 FreeBASIC's code is read from the TOP of the code, to the BOTTOM, one line at a time.  When the line of code is read by the compiler, or the compiled code for that line is read by the computer, the command that's on the line will be executed (it will be ran, it will happen, your computer will do what the code tells it to).  Example code can be:
 
-%%(qbasic)
+%%(freebasic)
 PRINT "HI"
 SLEEP
 %%
@@ -48,7 +49,7 @@ Since the code PRINT is on the line above SLEEP, PRINT will be run first.  SLEEP
 
 Comments can be made in FreeBASIC, which are ignored, and will not become a part of your program.  Comments can take up a full line if you begin them with ', or can be multiple line comments if you begin them with /' and end them with '/.  Here's an example of using comments.  Notice how none of the code or characters within the comments are even noticed by the compiler.
 
-%%(qbasic)
+%%(freebasic)
 '  ABLASHD
 ' PRINT "HI!" ' This line of code will never even be printed, because it's commented.
 Print "This is not a comment.  This event will occur."  ' Print that it's not a comment onto the screen.
@@ -73,7 +74,7 @@ What this does, is it tells FreeBASIC:
 - We can also assign the value of the variable by putting EQUALS (=) after our variable creation.
 
 Example:
-%%(qbasic)
+%%(freebasic)
 DIM foo AS INTEGER = 5
 PRINT foo
 SLEEP
@@ -93,7 +94,7 @@ Remember, follow the proper DIM syntax.  DIM variablename as INTEGER will make a
 
 Here is a really cool example, which demonstrates how you can use variables to store your name.
 
-%%(qbasic)
+%%(freebasic)
 '' Create the variable MyName.  Assign it's value to be 'Alex'
 DIM as STRING MyName = "Alex"
 
@@ -120,7 +121,7 @@ You remember the command PRINT in the above examples?  That's OUTPUT.  PRINT OUT
 Print [""WhatToPrint""]
 Example:
 
-%%(qbasic)
+%%(freebasic)
 '' Print the words, HI! to the screen
 Print "HI!"
 
@@ -148,7 +149,7 @@ The first version of INPUT will let you get input, and put it right into the var
 
 Example:
 
-%%(qbasic)
+%%(freebasic)
 '' Create a string.  We will hold the user's name in the string!
 Dim as STRING MyName
 

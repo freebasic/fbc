@@ -20,7 +20,7 @@ Does a binary copy from a ##[[KeyPgDouble double]]## variable to a ##[[KeyPgStri
 	This function is useful to write numeric values to buffers without using a TYPE definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/mkd.bas"}}%%(freebasic)
 dim n as double, e as string
 n = 1.2345
 e = mkd(n)

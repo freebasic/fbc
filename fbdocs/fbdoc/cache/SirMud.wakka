@@ -1,14 +1,18 @@
+{{fbdoc item="title" value="SirMud's Wiki User page"}}----
 I am SirMud or sir_mud on the forums.
-I have written a couple programs:
-=====Recipe Database - Get it [[http://recipedatabase.org here]]=====
-	Store, search and organize your recipe collection. Works great for small, large and in-between collections.
-=====BombSquad!=====
-	A very simple game, but provides minutes and minutes of fun. Defuse the bomb or the world will explode.
 
-I've also created a simple library for managing INI files. Every concievable function for INI files is in there. The code is
-very well documented and licensed under the LGPL. Get it at [[http://hmcsoft.org/p/libini.php http://hmcsoft.org/p/libini.php]]
+{{fbdoc item="section" value="My Code"}}
+	- Recipe Database - Get it [[http://recipedatabase.org here]]
+		Store, search and organize your recipe collection. Works great for small, large and in-between collections.
+	- Bomb Squad!
+		A very simple game, but provides minutes and minutes of fun. Defuse the bomb or the world will explode. Only download is no longer available, I will get this online again soon.
+	- libINI - Get it [[http://hmcsoft.org/p/libini.php here]]
+		A simple library for managing INI files. Every concievable function for INI files is in there. The code is
+		very well documented and licensed under the LGPL.
+	- Extended String Input Routine
+		Simple Object for various input needs. See code in this topic: [[http://www.freebasic.net/forum/viewtopic.php?t=6574 http://www.freebasic.net/forum/viewtopic.php?t=6574]] First code post will work with all version of freebasic > .15, last post by me is designed for the new OO like features present in .17 and higher.
 
-=====Contact Info:=====
+{{fbdoc item="section" value="Contact Info"}}
 You can usually find me in the IRC room #freebasic on the FreeNode network.
-
 You can also instant message me on Yahoo! at imadirtypr0nbot
+You can also email me here: ebben[dot]feagan[at]g[removethis]mail[dot]com

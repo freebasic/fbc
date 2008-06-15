@@ -59,7 +59,7 @@ The mouse will be visible if visibility is set to 1, and invisible if visibility
 ==THE CODING BEGINS==
 
 Here are a set of constants that I declare at the beginning of the module. This is simply to gain a bit of clarity of code in the rest of the programming example.
-%%(qbasic)
+%%(freebasic)
 	CONST LEFTBUTTON = 1 
 	CONST MIDDLEBUTTON = 4 
 	CONST RIGHTBUTTON = 2 
@@ -67,7 +67,7 @@ Here are a set of constants that I declare at the beginning of the module. This 
 	CONST HIDEMOUSE = 0 
 %%
 As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice.
-%%(qbasic)
+%%(freebasic)
 	DIM CurrentX AS INTEGER 
 	DIM CurrentY AS INTEGER
 	DIM MouseButtons AS INTEGER
@@ -75,7 +75,7 @@ As a first step in this example, we will be declaring variables that we will be 
 	DIM AS STRING A,B,C
 %%
 The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll Interrogate the mouse and print some basic values. (this part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
-%%(qbasic)
+%%(freebasic)
 SCREEN 12 
 CanExit = 1
  
@@ -95,7 +95,7 @@ LOOP
 This sample will basically continuously display information about Where the mouse is, if it's on the program window and which mouse button is pressed if any. the GETMOUSE statement basically puts the current X and Y coordinates in our Current********X and Current********Y variables and the status of the mouse buttons in our Mouse********Buttons variable. The Three If Statements will print L if the left button was pressed, M if the middle button (or the wheel) was pressed and R if the Right button was pressed.
 
 For the next step, since we want to control a bit what's happening with the mouse, will display a few extra things at the beginning of the program and control what happens with them afterwards, in the loop. This is regular text being displayed, this could be replaced by a series of line commands or something to draw a button for the different options. But that is outside the scope of this tutorial. So far, by getting rid of the unwanted print statements from the code above, the loop should now look like this:
-%%(qbasic)
+%%(freebasic)
 	SCREEN 12 
 	SETMOUSE 1, 1, 1
 	CanExit = 1
@@ -107,7 +107,7 @@ For the next step, since we want to control a bit what's happening with the mous
 	LOOP 
 %%
 Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truely outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
-%%(qbasic)
+%%(freebasic)
 CONST LEFTBUTTON   = 1
 CONST MIDDLEBUTTON = 4   ' UNUSED IN THIS DEMO
 CONST RIGHTBUTTON  = 2   ' UNUSED IN THIS DEMO

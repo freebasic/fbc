@@ -36,7 +36,7 @@ Control flow statement for looping
 	//**note**: When a negative //increment// is specified, the ##**For**## statement loops until //iterator// compares //less than// //end_value//.//
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/for-next.bas"}}%%(freebasic)
 Dim i As Single
 Print "counting from 3 to 0, with a step of -0.5"
 For i = 3 To 0 Step -0.5

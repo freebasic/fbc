@@ -34,7 +34,8 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	See the details in ##[[KeyPgScreengraphics Screen (Graphics)]]## keyword.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer, b as integer
+{{fbdoc item="filename" value="examples/manual/gfx/screenres.bas"}}%%(freebasic)
+dim a as integer, b as integer
 
 ScreenRes 640, 480, 8       'This line will set the screen mode to 640x480x8.
 	                        'The following code block will draw diagonal lines over the whole screen.

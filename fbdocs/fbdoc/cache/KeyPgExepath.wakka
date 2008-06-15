@@ -14,8 +14,9 @@ Returns the path of the running program
 	Returns the path (the location) of the calling program. This is not necessarily the same as ##[[KeyPgCurdir Curdir]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim pathname as string = Exepath
-print "This program's initial directory is: " & pathname
+{{fbdoc item="filename" value="examples/manual/system/exepath.bas"}}%%(freebasic)
+Dim pathname As String = ExePath
+Print "This program's initial directory is: " & pathname
 %%
 
 {{fbdoc item="diff"}}

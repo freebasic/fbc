@@ -14,7 +14,8 @@ Exchanges the values of two variables
 	Swaps the value of two variables.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' using swap to order 2 numbers:
+{{fbdoc item="filename" value="examples/manual/memory/swap.bas"}}%%(freebasic)
+' using swap to order 2 numbers:
 dim a as integer, b as integer
 
 input "input a number: "; a

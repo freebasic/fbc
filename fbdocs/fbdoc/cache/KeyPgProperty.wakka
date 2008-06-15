@@ -40,12 +40,12 @@ Declares or defines a property in a type or class
 
 	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
 
-	A **Property** may optionally have one index parameter.
+	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as Property(Index) = Value.
 
 	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/property.bas"}}%%(freebasic)
 type Vector2D
   as single x, y
   declare operator cast() as string
@@ -88,6 +88,73 @@ a.length =  5
 
 a = (6, 8)
 a.length =  10
+%%
+Property Indexing:
+{{fbdoc item="filename" value="examples/manual/udt/property2.bas"}}%%(freebasic)
+  '' True/False
+Namespace BOOL
+  Const FALSE = 0
+  Const TRUE = NOT FALSE
+End Namespace
+
+Type BitNum
+  Num as uInteger
+  
+	'' Get/Set Properties each with an Index.
+  Declare Property NumBit( ByVal Index as Integer ) as Integer
+  Declare Property NumBit( ByVal Index as Integer, ByVal Value as Byte )
+End Type
+
+  '' Get a bit by it's index.
+Property BitNum.NumBit( ByVal Index as Integer ) as Integer
+  Return Bit( This.Num, Index )
+End Property
+
+  '' Set a bit by it's index.
+Property BitNum.NumBit( ByVal Index as Integer, ByVal Value as Byte )
+
+	'' Make sure index is in Integer range.
+  If Index >= ( Sizeof(This.Num) * 8 ) then
+	Print "Out of uInteger Range!"
+	exit property
+  else
+	If Index < 0 then exit property
+  End if
+  
+  If Value = BOOL.FALSE then
+	This.Num = BitReSet( This.Num, Index )
+  End if
+  
+  If Value = BOOL.TRUE then
+	This.Num = BitSet( This.Num, Index )
+  End if
+  
+End Property
+
+
+Dim as BitNum Foo
+
+
+Print "Testing property indexing with datatypes:"
+Print "FOO Number's Value: " & Foo.Num
+
+  '' Set the bit in the number as true.
+Foo.NumBit(31) = BOOL.TRUE
+Print "Set the 31st bit of FOO"
+
+  '' Print to see if our bit has been changed.
+Print "FOO Number's Value: " & Foo.Num
+Print "FOO 31st Bit Set? " & Foo.NumBit(31)
+sleep
+Print ""
+%%
+Output:
+%%
+Testing property indexing with datatypes:
+FOO Number's Value: 0
+Set the 31st bit of FOO
+FOO Number's Value: 2147483648
+FOO 31st Bit Set? -1
 %%
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Class]]##

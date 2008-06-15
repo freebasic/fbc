@@ -1,4 +1,6 @@
+{{fbdoc item="title" value="Table of ASCII Characters"}}----
 FreeBasic supports in all versions the same "ASCII extended" character set the old DOS (and QBasic) supported. It's also called CP437 or Code page 437.  Each character is represented with one (1) byte of data.  Here is a table.  Each entry has decimal code, hex code, and printed representation.
+
 ""<!-- MetaCommand Begin_HTML -->""
 	##""<table cols=24 RULES=GROUPS CELLSPACING=1 CELLPADDING=2>
 <colgroup span=3 style='padding:0,3px,0,3px;'>

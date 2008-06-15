@@ -20,7 +20,8 @@ Specifies execution of a procedure before module-level code
 	When linking with modules that also define constructors, the order of execution is not guaranteed at link-time unless the ##//priority//## attribute is used. Therefore, special care should be taken when using constructors that may call on a secondary module also defining a constructor.  In such a case it is advisable to use a single constructor that explicitly calls initialization procedures in those modules.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' ConDesExample.bas : An example program that defines two sets of
+{{fbdoc item="filename" value="examples/manual/procs/mod-ctor.bas"}}%%(freebasic)
+'' ConDesExample.bas : An example program that defines two sets of
 '' constructors and destructors. Demonstrates when and in what order
 '' they are called when linking a single module.
 

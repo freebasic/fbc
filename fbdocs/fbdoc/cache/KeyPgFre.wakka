@@ -18,13 +18,14 @@ Returns the amount of free memory available
 	Returns the free memory (ram) available, in bytes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim mem as integer = fre
+{{fbdoc item="filename" value="examples/manual/system/fre.bas"}}%%(freebasic)
+Dim mem As Integer = Fre
 
-print "Free memory:"
-print
-print mem; " bytes"
-print mem  \ 1024; " kilobytes"
-print mem  \ (1024 * 1024); " megabytes"
+Print "Free memory:"
+Print
+Print mem; " bytes"
+Print mem  \ 1024; " kilobytes"
+Print mem  \ (1024 * 1024); " megabytes"
 %%
 
 {{fbdoc item="diff"}}

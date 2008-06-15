@@ -44,12 +44,12 @@ Opens a serial port for input and output
 	All items except for the COM port are optional. The order of baudrate, parity, data_bits, stop_bits is fixed. Any skipped fixed item (baudrate, etc...) must be empty.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/opencom1.bas"}}%%(freebasic)
 OPEN COM "COM1:9600,N,,2" as 1
 %%
 	Opens COM1 with 9600 baud, no parity, 7 data bits and 2 stop bits.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/opencom2.bas"}}%%(freebasic)
 OPEN COM "COM1:115200" as 1
 %%
 	Opens COM1 with 115200 baud, "even" parity, 7 data bits and 1 stop bits. 

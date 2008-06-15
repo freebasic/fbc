@@ -16,14 +16,14 @@ Detects the status of keys by keyboard scancode
 
 {{fbdoc item="desc"}}
 	##**Multikey**## is a function which will detect the status of any key, determined by scancode, at any time. It will return -1 if the key is pressed, otherwise it will return 0. The keyboard input buffer is not disabled while you use ##**Multikey**##; that is, pressed keys will be stored and subsequently returned by your next call to ##[[KeyPgInkey Inkey]]##. This means you have to empty ##[[KeyPgInkey Inkey]]## when you finish using ##**Multikey**##:
-%%(qbasic)
-WHILE INKEY <> "": WEND
+{{fbdoc item="filename" value="examples/manual/check/KeyPgMultikey_1.bas"}}%%(freebasic)
+While Inkey <> "": Wend
 %%
 	Keeping ##[[KeyPgInkey Inkey]]## to work while you use ##**Multikey**## allows more flexibility and can be useful to detect [[KeyPgChr Chr]](255)+"k" combo returned on window close button click, if a windowed gfx mode has been set via the ##[[KeyPgScreengraphics Screen]]## statement. For a list of accepted scancodes, see [[GfxScancodes DOS keyboard scancodes]]; these are guaranteed to be valid for all FreeBASIC supported platforms.
 	##**Multikey**## works both in console and graphics mode.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/input/multikey.bas"}}%%(freebasic)
 #include "fbgfx.bi"
 DIM work_page AS INTEGER, x AS INTEGER, y AS INTEGER
 ' Request 640x480 with 2 pages

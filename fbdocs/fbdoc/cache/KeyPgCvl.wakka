@@ -20,7 +20,8 @@ Converts an four byte string to an integer (long) variable
 	This function is useful to read numeric values from buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer, b as string
+{{fbdoc item="filename" value="examples/manual/strings/cvl.bas"}}%%(freebasic)
+dim a as integer, b as string
 a=4534
 b=mki(a)
 print a, cvi(b)

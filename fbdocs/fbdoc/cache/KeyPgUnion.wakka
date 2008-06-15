@@ -26,7 +26,7 @@ Declares a union user defined type
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)
 'define our union
 union AUnion
 	a as ubyte

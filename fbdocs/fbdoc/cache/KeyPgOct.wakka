@@ -36,7 +36,7 @@ Converts a number to octal representation
 	If you want to convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it as a normal numeric string, using ##[[KeyPgValint Valint]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/oct.bas"}}%%(freebasic)
 Print Oct(54321)
 Print Oct(54321, 4)
 Print Oct(54321, 8)

@@ -10,7 +10,7 @@ Preprocessor conditional directive
 	See ##[[KeyPgPpif #if]]##, ##[[KeyPgPpifdef #ifdef]]##, or ##[[KeyPgPpifndef #ifndef]]## for examples of usage.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/endif.bas"}}%%(freebasic)
 #DEFINE DEBUG_LEVEL 1
 #IF (DEBUG_LEVEL = 1)
   'Conditional statements

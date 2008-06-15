@@ -15,7 +15,7 @@ Sends a command to the system command interpreter
 	Program execution will be suspended until the command interpreter exits.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/shell.bas"}}%%(freebasic)
 'e.g. for windows:
 shell "dir c:*.*"
 

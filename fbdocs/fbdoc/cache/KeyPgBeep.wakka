@@ -11,7 +11,7 @@ Produces a beep sound
 	##Beep## tells the system to sound a beep noise. Note that this might not work on some platforms.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/beep.bas"}}%%(freebasic)
 Beep
 %%
 

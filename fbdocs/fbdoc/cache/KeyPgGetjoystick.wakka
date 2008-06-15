@@ -42,7 +42,8 @@ Reads buttons and axis information from attached gaming devices
 	##**Getjoystick**## will only function after a video mode has been set using the ##[[KeyPgScreengraphics Screen]]## command.
 
 {{fbdoc item="ex"}}
-%%(qbasic)screen 12
+{{fbdoc item="filename" value="examples/manual/input/getjoystick.bas"}}%%(freebasic)
+screen 12
 
 dim x as single
 dim y as single

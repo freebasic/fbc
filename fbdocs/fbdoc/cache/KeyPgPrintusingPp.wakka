@@ -38,7 +38,7 @@ Outputs formatted text to a file or device
 
 {{fbdoc item="ex"}}
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/fileio/print-using.bas"}}%%(freebasic)
 const filename as string = "file.txt"
 
 dim filenum as integer = freefile()

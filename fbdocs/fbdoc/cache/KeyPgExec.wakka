@@ -20,7 +20,7 @@ Temporarily transfers execution to an external program
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Exec**##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/exec.bas"}}%%(freebasic)
 'A Windows based example but the same idea applies to Linux
 CONST exename = "NoSuchProgram.exe"
 CONST cmdline = "arg1 arg2 arg3"

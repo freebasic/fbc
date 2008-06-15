@@ -21,28 +21,27 @@ Specifies private member access control in a ##[[KeyPgType Type]]## or ##[[KeyPg
 	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-'' NOTE: This example code will not compile, to demonstrate the compiler checks.
-TYPE testing
-  number as integer
-  PRIVATE:
-	nome as string
-  declare sub setNome( byref newnome as string )
-END TYPE
+{{fbdoc item="filename" value="examples/manual/udt/private.bas"}}%%(freebasic)
+Type testing
+  number As Integer
+  Private:
+	nome As String
+  Declare Sub setNome( ByRef newnome As String )
+End Type
 
-sub testing.setnome( byref newnome as string )
+Sub testing.setnome( ByRef newnome As String )
   '' This is OK. We're inside a member function for the type
   this.nome = newnome
-end sub
+End Sub
 
-dim as testing myVariable
+Dim As testing myVariable
 
 '' This is OK, number is public
 myVariable.number = 69
 
-'' compile error - nome is private and we're trying to access it 
-'' outside any of this TYPE's member functions
-myVariable.nome = "FreeBASIC"
+'' this would generate a compile error 
+'' - nome is private and we're trying to access it outside any of this TYPE's member functions 
+'' myVariable.nome = "FreeBASIC"
 %%
 {{fbdoc item="lang"}}
 	- Suported only in the -lang fb option

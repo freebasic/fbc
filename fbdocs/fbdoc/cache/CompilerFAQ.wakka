@@ -22,7 +22,7 @@
 	==- {{anchor name="item31|How do I link to C libraries?"}}==
 	==- {{anchor name="item32|Can I use a debugger?"}}==
 	==- {{anchor name="item33|What's the goal of the AR.EXE, AS.EXE and LD.EXE files included with FB ?"}}==
-
+	==- {{anchor name="item34|Is there a limit on how big my source files can be?"}}==
 ----
 @@**FreeBASIC questions**@@
 
@@ -72,7 +72,7 @@
 	See [[LangQB Differences between FreeBASIC and QuickBasic]].
 
 {{anchor name="item8"}}==Does FreeBASIC support Object Oriented Programming?==
-	FreeBASIC does not support Object Oriented Programming in versions up to 0.16. It will be supported in 0.18.
+	FreeBASIC versions up to 0.16 did not include any Object Oriented features. Starting with .17 FreeBASIC has very basic OOP style methods in types. For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
 
 {{anchor name="item9"}}==What are the future plans with FB / ""ToDo"" list ?==
 
@@ -103,7 +103,7 @@
 @@**Advanced FreeBASIC**@@
 
 {{anchor name="item31"}}==How do I link to C libraries?==
-	C libraries are set up in much the same way in FreeBASIC as they are in C. Every library included with FreeBASIC has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommand to include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. FreeBASIC includes hundreds of BI files, so take a look!
+	C libraries are set up in much the same way in FreeBASIC as they are in C. Every library included with FreeBASIC has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommand to include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. FreeBASIC includes hundreds of BI files, see full list of library headers [[ExtLibTOC here]].
 
 {{anchor name="item32"}}==Can I use a debugger?==
 	FreeBASIC can use any debugger compatible with gnu's GDB. Insight is an user friendly wrapper for GDB 
@@ -116,5 +116,8 @@
 
 {{anchor name="item33"}}==What's the goal of the AR.EXE, AS.EXE and LD.EXE files included with FB ?==
 	AS.EXE is GAS, the "GNU assembler". It is always involved in compilation. LD.EXE is the "GNU linker", involved in creation of executables. AR.EXE is the "GNU archiver", in fact a librarian, creating ##.A## libraries. 
+
+{{anchor name="item34"}}==Is there a limit on how big my source files can be?==
+	Yes, since FreeBASIC is a fully 32-bit compiler it may operate on source files up to 4GB or 4294967296 bytes.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

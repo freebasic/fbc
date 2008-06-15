@@ -8,8 +8,8 @@ Declares a user-defined type
 		[ [[KeyPgVisProtected Protected]]: ]
 		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] [ ( [ //parameters// ] ) ]
 		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
-		[[KeyPgDeclare declare]] [[KeyPgMemberSub sub]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ]
-		[[KeyPgDeclare declare]] [[KeyPgMemberFunction function]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
 		//fieldname// [ ( //static array dimensions// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
 		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //static array dimensions// ) | : //bits// ], ...
 		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
@@ -32,6 +32,8 @@ Declares a user-defined type
 		number of bits a data field occupies
 	##//operatorname//##
 		the name of the operator to be overloaded
+	##//calling convention specifier//##
+		can be [[KeyPgCdecl CDECL]], [[KeyPgStdcall STDCALL]] or [[KeyPgPascal PASCAL]].
 {{fbdoc item="desc"}}
 	##**Type**## is used to declare custom data types containing one or more bit, scalar, array or other ##**Type**## fields.
 
@@ -50,7 +52,7 @@ Declares a user-defined type
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/type1.bas"}}%%(freebasic)
 TYPE clr
 	red AS UBYTE
 	green AS UBYTE
@@ -64,7 +66,7 @@ c.blue = 64
 %%
 
 And this is an example of a type working as an object
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Destructor()

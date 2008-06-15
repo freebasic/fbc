@@ -1,3 +1,6 @@
+{{fbdoc item="title" value="Introduction to Variable Scope"}}----
+//Written by [[WikiRick rdc]]//
+
 === Variable Scope ===
 
 Scope refers to the visibility of a variable, where you can access a variable within a program. Before you can understand the different levels of scope, you need to understand the structure of a program in FreeBasic.
@@ -6,7 +9,7 @@ Scope refers to the visibility of a variable, where you can access a variable wi
 
 A complete program is composed of one or more .bas files, called modules. Each module can contain both module level code, and code contained within subroutines and functions. Module level code is code that is //not// contained within a subroutine or function. The following snippet illustrates the various parts of a module.
 
-%%(qbasic)
+%%(freebasic)
 Dim aInt as Integer 'Variable declared at module level
 
 Sub DoSomething
@@ -59,7 +62,7 @@ You can add the Shared attribute to Common, that is //Common Shared// to not onl
 
 You can create a temporary scope block by using the Scope, End Scope keywords. The scope block is very useful when creating multi-line macros where you may need to create some temporary working variables but do not want to introduce name conflicts in the program. The following snippet illustrates how to create a scope block.
 
-%%(qbasic)
+%%(freebasic)
 Scope
 	Dim tmp as Integer
 	... 'Some code

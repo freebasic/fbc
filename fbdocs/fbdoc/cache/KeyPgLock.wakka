@@ -21,7 +21,8 @@ Restricts read/write access to a file or portion of a file
 	After modifying the data, an ##[[KeyPgUnlock Unlock]]## with the same parameters as the ##**Lock**## should be issued.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' e.g. locking a file, reading 100 bytes, and unlocking it. 
+{{fbdoc item="filename" value="examples/manual/fileio/lock.bas"}}%%(freebasic)
+'' e.g. locking a file, reading 100 bytes, and unlocking it. 
 '' To run, make sure there exists a file called 'file.ext' 
 '' in the current directory that is at least 100 bytes.
 

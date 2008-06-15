@@ -20,8 +20,8 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 
 
 {{fbdoc item="ex"}}
-This example compares the two different ##**Alpha**## modes, including how they react to the mask color
-	%%(qbasic)
+	This example compares the two different ##**Alpha**## modes, including how they react to the mask color
+{{fbdoc item="filename" value="examples/manual/gfx/put-alpha.bas"}}%%(freebasic)
 '' Set up a 32-bit screen
 screenres 320, 200, 32
 
@@ -70,11 +70,12 @@ put (240 - 16, 100 - 16), img, alpha
 imagedestroy img
 
 '' Wait for a keypress
-sleep%%
+sleep
+%%
 {{image class="center" title="Put Alpha example output" url="http://img109.imageshack.us/img109/6937/putalphaexamplerz9.png" link="http://img109.imageshack.us/my.php?image=putalphaexamplerz9.png"}}
 
 	This example shows the special method for setting a 32-bit alpha channel using an 8-bit image
-	%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/put-alpha-8bit.bas"}}%%(freebasic)
 dim as any ptr img8, img32
 dim as integer x, y, i
 

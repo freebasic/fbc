@@ -47,7 +47,7 @@ Sums two expressions
 	This operator can be overloaded to accept user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/add.bas"}}%%(freebasic)
 DIM n AS SINGLE
 n = 4.54 + 5.46
 PRINT n

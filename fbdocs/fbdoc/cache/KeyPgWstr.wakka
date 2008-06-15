@@ -35,7 +35,7 @@ Returns a wide-character string representation of a number or ASCII character st
 	##**Wstr**## also converts ASCII character strings to Unicode character strings. If a wide-character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/wstr.bas"}}%%(freebasic)
 #include "windows.bi"
 dim zs as zstring * 20
 dim ws as wstring * 20

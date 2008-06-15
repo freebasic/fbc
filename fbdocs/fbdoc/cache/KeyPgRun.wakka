@@ -20,8 +20,9 @@ Transfers execution to an external program
 	Transfers control over to an external program. When the program exits, execution will return to the system.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Attempt to transfer control to "program.exe" in the current directory.
-dim result as integer = run("program.exe")
+{{fbdoc item="filename" value="examples/manual/system/run.bas"}}%%(freebasic)
+'' Attempt to transfer control to "program.exe" in the current directory.
+Dim result As Integer = Run("program.exe")
 
 '' at this point, "program.exe" has failed to execute, and
 '' result will be set to -1.

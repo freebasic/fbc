@@ -8,7 +8,7 @@ Integer data type modifier
 	Forces an integer-based data type to be unsigned (cannot contain negative numbers, but has it's maximum value doubled).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/unsigned.bas"}}%%(freebasic)
 'e.g. notice what is displayed:
 
 dim x as unsigned integer

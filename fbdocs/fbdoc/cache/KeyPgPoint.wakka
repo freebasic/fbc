@@ -22,7 +22,7 @@ The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics
 	The function ##**Point**## does not work in text modes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/point.bas"}}%%(freebasic)
 screen 13 
 line (10,10)-(100,100),12
 print point(20,20)

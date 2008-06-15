@@ -34,7 +34,8 @@ Creates and initializes storage for an image
 	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FB releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' set screen mode (400 * 300, 32 bits per pixel)
+{{fbdoc item="filename" value="examples/manual/gfx/imagecreate.bas"}}%%(freebasic)
+'' set screen mode (400 * 300, 32 bits per pixel)
 screen 15, 32
 
 '' allocate and draw to an image buffer

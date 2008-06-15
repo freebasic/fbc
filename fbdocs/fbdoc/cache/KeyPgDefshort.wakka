@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defshort.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defshort s
 dim sNumber
 %%

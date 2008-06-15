@@ -8,7 +8,7 @@ Standard data type: 32 bit signed
 	32-bit signed whole-number data type. Can hold values from -2147483648 to 2147483647.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/integer.bas"}}%%(freebasic)
   Dim x As Integer = &H80000000
   Dim y As Integer = &H7FFFFFFF
   Print "Integer Range = "; x; " to "; y

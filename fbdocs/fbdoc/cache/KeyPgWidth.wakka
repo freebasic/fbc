@@ -30,12 +30,13 @@ Sets or gets the number of rows and columns of the display
 	In graphics modes ##**Width**## is used to indirectly select the font size by setting one of the height x width pairs allowed (See ##[[KeyPgScreengraphics Screen (Graphics)]]##). If  rows x cols is an invalid combination, no changes are made to the screen display. Using the width command forces a screen clear (##[[KeyPgCls Cls]]##) 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/width.bas"}}%%(freebasic)
 width 40, 25
 print "hello"
 %%
 
-%%(qbasic)Dim As Integer w
+{{fbdoc item="filename" value="examples/manual/console/width-func.bas"}}%%(freebasic)
+Dim As Integer w
 w = Width
 Print "rows: " & hiword(w)
 Print "cols: " & loword(w)

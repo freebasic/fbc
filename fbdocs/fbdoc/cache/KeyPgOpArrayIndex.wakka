@@ -24,7 +24,7 @@ Returns a reference to an element in an array
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/arrayindex.bas"}}%%(freebasic)
 dim array(4) as integer = { 0, 1, 2, 3, 4 }
 
 for index as integer = 0 to 4

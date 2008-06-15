@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="caca"}}----
+A colour ASCII art library.
+
+Website: http://libcaca.zoy.org/
+Platforms supported: Win32, Linux, DOS
+Headers to include: caca.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

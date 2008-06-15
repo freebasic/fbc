@@ -17,7 +17,7 @@ Control flow statement to end the program.
 	Usage of this statement does not cleanly close scope.   Variables and memory are not destroyed automatically and object destructors are not called.  Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/end.bas"}}%%(freebasic)
 '' This program stores input from the user in a string, checks the strings length,
 '' by calling valid_string, and either displays the string, or an error message
 

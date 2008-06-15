@@ -38,7 +38,7 @@ Specifies text file to be opened for output mode
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/for-output.bas"}}%%(freebasic)
 Dim ff As Ubyte
 Dim randomvar As Integer
 Dim name_str As String

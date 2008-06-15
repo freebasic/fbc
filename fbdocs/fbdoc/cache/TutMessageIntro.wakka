@@ -19,7 +19,7 @@ FreeBasic doesn’t have a RAD system for Windows programming. To create a Windows
 
 Putting aside all the gritty details of the Windows API for the moment, it is important to understand the mechanism of messages in an SDK program. This is best accomplished by looking at our old friend, the Hello World program. In the examples\Windows\gui folder of the FreeBasic .15b distribution (which is required for the code in this article), there is a nice Hello World program that I am going to steal--I mean borrow, as the base for this example.
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit
 option private
 
@@ -201,7 +201,7 @@ A queue is a data structure where data in added to the “back” of the queue and r
 
 For a program, the message queue will hold one or more messages, lined up like the folks in a movie ticket line. The idle loop of a Windows program sits and waits for messages to arrive and then translates and dispatches the messages to the program. This message loop is contained within the following code excerpt from ""WinMain"".
 
-##%%(qbasic)
+##%%(freebasic)
 	''
 	'' Process windows messages
 	''
@@ -213,7 +213,7 @@ For a program, the message queue will hold one or more messages, lined up like t
 
 The **""GetMessage""** procedure retrieves a message from the queue via the **wMsg** parameter. The wMsg parameter is a MSG type-def that contains the necessary information related to a particular message. Here is the definition of the MSG type-def.
 
-##%%(qbasic)
+##%%(freebasic)
 type MSG
 hwnd as HWND
 	message as UINT
@@ -238,7 +238,7 @@ To summarize the actions here, a user generated message will be placed into the 
 
 Before we discuss the ""WinProc"" procedure however, we need to ask a question: What happens if there is more than one window in a program? How does ""WinMain"" know what procedure to use? The answer is contained within the **WNDCLASS** structure. In our example, **wcls** is defined as WNDCLASS in the ""WinMain"" procedure.
 
-##%%(qbasic)
+##%%(freebasic)
 	with wcls
 		.style         = CS_HREDRAW or CS_VREDRAW
 		.lpfnWndProc   = @WndProc

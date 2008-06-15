@@ -24,7 +24,7 @@ Finds the remainder from a division operation
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/mod.bas"}}%%(freebasic)
 PRINT 47 MOD 7
 PRINT 5.6 MOD 2.1
 PRINT 5.1 MOD 2.8

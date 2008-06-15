@@ -10,16 +10,16 @@ Returns the size of a variable or type in bytes
 	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of bytes allocated, and when used with variable-length strings, it will return the size of the string descriptor.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-print sizeof(byte) ' returns 1
+{{fbdoc item="filename" value="examples/manual/misc/sizeof.bas"}}%%(freebasic)
+Print SizeOf(Byte) ' returns 1
 %%
-%%(qbasic)
-type bar
-	a as integer
-	b as double
-end type
-dim foo as bar
-print sizeof(foo)
+{{fbdoc item="filename" value="examples/manual/misc/sizeof-udt.bas"}}%%(freebasic)
+Type bar
+	a As Integer
+	b As Double
+End Type
+Dim foo As bar
+Print SizeOf(foo)
 %%
 
 {{fbdoc item="diff"}}

@@ -10,7 +10,7 @@ Intrinsic define (macro value) set by the compiler
 	**""__FB_ARGV__""** is the name of a parameter passed to the program's implicit main function, and therefore is only defined in the module level code of the main module for an application.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fbargv.bas"}}%%(freebasic)
 declare function main _
   ( _
 	byval argc as integer, _

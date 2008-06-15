@@ -24,10 +24,12 @@ Gets the value of an arbitrary type at an address in memory
 		##*cast(//datatype// ptr, //address//)##
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim i as integer, p as integer ptr = @i
+{{fbdoc item="filename" value="examples/manual/memory/peek.bas"}}%%(freebasic)
+Dim i As Integer, p As Integer Ptr
+p = @i
 
-poke(integer, p, 420)
-print peek(integer, p)
+Poke Integer, p, 420
+Print Peek(Integer, p)
 %%
 	will produce the output:
 

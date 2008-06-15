@@ -18,10 +18,11 @@ Removes a folder/directory from the file system
 	Removes a folder from the file system. The function will fail if the folder is not empty.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim pathname as string = "foo\bar\baz"
-dim result as integer = rmdir( pathname )
+{{fbdoc item="filename" value="examples/manual/system/rmdir.bas"}}%%(freebasic)
+Dim pathname As String = "foo\bar\baz"
+Dim result As Integer = RmDir( pathname )
 
-if 0 <> result then print "error: unable to remove folder " & pathname & " in the current path."
+If 0 <> result Then Print "error: unable to remove folder " & pathname & " in the current path."
 %%
 
 {{fbdoc item="target"}}

@@ -15,15 +15,56 @@ Sets a system environment variable
 	Return zero (0) if successful, non-zero otherwise.
 
 {{fbdoc item="desc"}}
-	Modifies system environment variables.
+	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver FBGfxLib will use.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)
 'e.g. to set the system variable "path" to "c:":
 
 shell "set path" 'shows the value of path
 setenviron "path=c:"
 shell "set path" 'shows the new value of path
+%%
+
+%%(freebasic)
+  '' WINDOWS ONLY EXAMPLE! - We just set the graphics method to use
+  '' GDI rather than OpenGL, DirectX, or X Driver.
+  '' Try changing this to OpenGL or DirectX On Windows
+  '' Or xlib on Linux
+  '' You may note a difference in FPS.
+setenviron("fbgfx=GDI")
+
+  '' Desktop width/height
+Dim as Integer ScrW, ScrH, BPP
+Screeninfo ScrW, ScrH, BPP
+
+  '' Create a screen at the width/height of your monitor.
+  '' Normally this would be slow, but GDI is fairly fast for this kind
+  '' of thing.
+Screenres ScrW, ScrH, BPP
+
+  '' Start our timer/
+Dim as Double T = Timer
+
+  '' Lock our page
+Screenlock
+Do
+  
+	'' Print time since last frame
+  locate 1, 1
+  Print "FPS: " & 1 / ( Timer - T )
+  T = Timer
+  
+	'' Flip our screen
+  Screenunlock
+  Screenlock
+	'' Commit a graphical change to our screen.
+  cls
+  
+Loop until len(inkey)
+
+  '' unlock our page.
+Screenunlock
 %%
 
 {{fbdoc item="diff"}}

@@ -29,24 +29,24 @@ Returns command line parameters used to call the program
 
 	__Disabling filename globbing under Win32__
 		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
-		%%(qbasic)
-extern _CRT_glob alias "_CRT_glob" as integer
-dim shared _CRT_glob as integer = 0
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_1.bas"}}%%(freebasic)
+Extern _CRT_glob Alias "_CRT_glob" As Integer
+Dim Shared _CRT_glob As Integer = 0
 %%
 
 	__Disabling filename globbing under Dos__
 		Define the following function somewhere in the source:
-		%%(qbasic)
-public function __crt0_glob_function alias "__crt0_glob_function" ( byval arg as ubyte ptr ) as ubyte ptr ptr
-  return 0
-end function
+		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_2.bas"}}%%(freebasic)
+Public Function __crt0_glob_function Alias "__crt0_glob_function" ( ByVal arg As UByte Ptr ) As UByte Ptr Ptr
+  Return 0
+End Function
 %%
 
 	__Disabling filename globbing under Linux__
 		Filename globbing is handled by the command shell.  Quote the argument containing wildcards or disable filename globbing in the shell prior to executing the command.  For example in bash use 'set -f' to disable wildcard expansion
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/command.bas"}}%%(freebasic)
 ''
 '' command-line arguments example
 ''

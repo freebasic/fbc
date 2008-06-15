@@ -16,7 +16,7 @@ Preprocessor directive to define a multiline macro
 	The ##[[KeyPgPpundef #undef]]## preprocessor directive will undefine a macro so that it may be redefined with another definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)
 '' macro as an expression value
 #macro Print1( a, b )
   a + b
@@ -28,7 +28,7 @@ print Print1( "Hello", "World" )
 '' Hello World!
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/macro2.bas"}}%%(freebasic)
 '' macro as multiple statements
 #macro Print2( a, b )
   print a;

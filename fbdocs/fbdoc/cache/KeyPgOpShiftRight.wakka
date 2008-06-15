@@ -29,7 +29,7 @@ Shifts the bits of a numeric expression to the right
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/shift-right.bas"}}%%(freebasic)
 'Half a number
 DIM i AS INTEGER
 

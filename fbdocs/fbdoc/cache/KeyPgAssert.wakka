@@ -19,7 +19,8 @@ Debugging macro that halts program execution if an expression is not true
 	If ##-g## is not passed to fbc, the macro does not generate any code.
 
 {{fbdoc item="ex"}}
-%%(qbasic)sub foo
+{{fbdoc item="filename" value="examples/manual/debug/assert.bas"}}%%(freebasic)
+sub foo
  dim a as integer
  a=0
  assert(a=1)

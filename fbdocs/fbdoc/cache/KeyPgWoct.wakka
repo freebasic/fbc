@@ -34,7 +34,7 @@ Converts a number to a Unicode octal representation
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte byte]]##, 6 for ##[[KeyPgShort short]]##, 11 for ##[[KeyPgInteger integer]]##, and 22 for ##[[KeyPgLongint longint]]##)
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/woct.bas"}}%%(freebasic)
 print Woct(54321)
 print Woct(54321, 4)
 print Woct(54321, 8)

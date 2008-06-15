@@ -8,7 +8,8 @@ Standard data type: 16 bit signed
 	16-bit signed whole-number data type. Can hold values from -32768 to 32767.
 
 {{fbdoc item="ex"}}
-%%(qbasic)  Dim x As Short = CShort(&H8000)
+{{fbdoc item="filename" value="examples/manual/datatype/short.bas"}}%%(freebasic)
+  Dim x As Short = CShort(&H8000)
   Dim y As Short = CShort(&H7FFF)
   Print "Short Range = "; x; " to "; y
 %%

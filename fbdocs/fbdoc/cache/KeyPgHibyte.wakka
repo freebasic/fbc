@@ -18,7 +18,7 @@ Macro to return the high byte of an expression
 	A ##[[KeyPgByte Byte]]## is 8 bits. This is best understood by an example. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/bits/hibyte.bas"}}%%(freebasic)
 DIM N AS UINTEGER
 
 'Note there are 16 bits

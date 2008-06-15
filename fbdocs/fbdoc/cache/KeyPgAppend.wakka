@@ -37,7 +37,8 @@ Specifies text file to be opened for append mode
 	##//filenum//## Is a valid FB file number (in the range 1-255) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile Freefile]]## function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim i as integer
+{{fbdoc item="filename" value="examples/manual/fileio/for-append.bas"}}%%(freebasic)
+dim i as integer
 FOR i = 1 to 10
 	OPEN "test.txt" FOR APPEND as #1
 	PRINT #1, "extending test.txt"

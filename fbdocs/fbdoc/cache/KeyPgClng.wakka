@@ -33,7 +33,7 @@ Converts numeric or string expression to ##[[KeyPgLong Long]]## having the same 
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/clng.bas"}}%%(freebasic)
 ' Using the CLNG function to convert a numeric value
 
 'Create an LONG variable

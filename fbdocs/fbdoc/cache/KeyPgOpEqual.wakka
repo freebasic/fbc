@@ -40,7 +40,7 @@ Compares two expressions for equality
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/equal.bas"}}%%(freebasic)
 dim i as integer = 0    '' initialization: initialise i with a value of 0
 i = 420                 '' assignment: assign to i the value of 420
 
@@ -51,7 +51,7 @@ end if
 %%
 	##[[KeyPgOpNotEqual Operator <>]]## (Inequality) is complement to **##Operator =## (Equality)**, and is functionally identical when combined with ##[[KeyPgOpNot Operator Not]]## (Bit-wise Complement).
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/equal2.bas"}}%%(freebasic)
    if (420 = 420) then print "(420 = 420) is true."
    if not (69 <> 69) then print "not (69 <> 69) is true."
 %%

@@ -38,7 +38,7 @@ Compares an expression less than another expression
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/less-than1.bas"}}%%(freebasic)
 const size as integer = 4
 dim array(size - 1) as integer = { 1, 2, 3, 4 }
 
@@ -50,7 +50,7 @@ wend
 %%
 	##[[KeyPgOpGreaterThanOrEqual Operator >=]]## (Greater than or equal) is complement to **##Operator <## (Less than)**, and is functionally identical when combined with ##[[KeyPgOpNot Operator Not]]## (Bit-wise Complement).
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/less-than3.bas"}}%%(freebasic)
    if (69 < 420) then print "(69 < 420) is true."
    if not (69 >= 420) then print "not (69 >= 420) is true."
 %%

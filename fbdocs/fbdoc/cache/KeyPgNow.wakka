@@ -17,7 +17,8 @@ Gets the current system time as a [[ProPgDates Date Serial]]
 	The compiler will not recognise this function unless "vbcompat.bi" is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#include "vbcompat.bi"
+{{fbdoc item="filename" value="examples/manual/dates/now.bas"}}%%(freebasic)
+#include "vbcompat.bi"
 
 dim a as double = now()
 

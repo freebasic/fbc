@@ -18,7 +18,7 @@ Preprocessor directive to set the current line number and file name
 	This directive allows other programs to generate source code for the FreeBASIC compiler and have it return warning and/or error messages that refer to the original source used by the other program.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/line.bas"}}%%(freebasic)
 #line 155 "outside.src"
 
 error 1000

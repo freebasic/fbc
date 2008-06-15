@@ -12,7 +12,8 @@ Control flow statement to use a section of code and return
 	
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Compile with -lang qb
+{{fbdoc item="filename" value="examples/manual/control/gosub.bas"}}%%(freebasic)
+'' Compile with -lang qb
 gosub message
 end
 

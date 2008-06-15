@@ -8,7 +8,8 @@ Preprocessor operator to convert macro arguments to strings
 	This operator converts the ##//macro_argument//## into a string whose value is the name of the argument. This substitution is made during the macro expansion, previous to compilation. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)#define SEE(x) print #x;" = "; x
+{{fbdoc item="filename" value="examples/manual/prepro/stringize.bas"}}%%(freebasic)
+#define SEE(x) print #x;" = "; x
 dim variable as integer, another_one as integer
 variable=1
 another_one=2

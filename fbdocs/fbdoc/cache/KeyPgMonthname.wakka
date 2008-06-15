@@ -24,7 +24,7 @@ Gets the name of a month from it's integral representation
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/monthname.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)

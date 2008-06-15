@@ -29,7 +29,8 @@ Reads data from a file to a buffer
 	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim buffer as integer
+{{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)
+dim buffer as integer
 dim an_array(0 to 9) as integer
 dim pmem as integer ptr
 dim f as integer
@@ -71,7 +72,8 @@ close #f
 end
 %%
 
-%%(qbasic)' Load a small text file to a string
+{{fbdoc item="filename" value="examples/manual/fileio/get-file.bas"}}%%(freebasic)
+' Load a small text file to a string
 
 Function LoadFile(f As string) As String
   Dim h As Integer

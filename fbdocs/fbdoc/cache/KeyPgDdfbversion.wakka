@@ -8,7 +8,8 @@ Intrinsic define (macro string) set by the compiler
 	 Substituted by the version number of the compiler where used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#if __FB_VERSION__ < "0.17" 
+{{fbdoc item="filename" value="examples/manual/defines/fbversion.bas"}}%%(freebasic)
+#if __FB_VERSION__ < "0.17" 
 #error  Please compile with FB version 0.17 or above 
 #endif
 %%

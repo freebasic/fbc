@@ -8,7 +8,7 @@ Returns the first argument in a variable argument list
 	The ##**va_first**## function initializes a [[ProPgPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/va_first.bas"}}%%(freebasic)
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0

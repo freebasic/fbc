@@ -18,7 +18,8 @@ Sets new physical coordinate mapping and clipping region
 	Use this statement to set a new clipping region, also known as viewport. The new viewport will override the previous one, if any; if the ##SCREEN## argument is omitted, all future coordinates specifications will be relative to the top-left corner of the new viewport, instead of relative to the top-left corner of the screen. Any graphical primitive will be affected by the new viewport, and drawing outside specified region will produce no effect. If ##//color//## is specified, in the same format as the one supported by ##[[KeyPgColor Color]]##, the new viewport is cleared with it; if ##//border//## is specified, also in ##[[KeyPgColor Color]]## format, a box using ##//border//## as color will be drawn surrounding given region. If all arguments are omitted, the viewport is reset to the screen mode size.
 
 {{fbdoc item="ex"}}
-%%(qbasic)screen 12
+{{fbdoc item="filename" value="examples/manual/gfx/view.bas"}}%%(freebasic)
+screen 12
 dim ip as integer ptr
 dim as integer i, j, k
 'simple sprite

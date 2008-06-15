@@ -98,12 +98,14 @@ FreeBASIC Manual Table of Contents
 	{{fbdoc item="keyword" value="FaqDOS|DOS related FAQ"}}
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
-	{{fbdoc item="keyword" value="CVSCompile|Compiling from CVS"}}
+	{{fbdoc item="keyword" value="SVNCompile|Compiling from SVN"}}
 	{{fbdoc item="keyword" value="DebuggerRunning|Debugging"}}
 	{{fbdoc item="keyword" value="GnuLicenses|Licenses"}}
 	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted Keywords"}}
 	{{fbdoc item="keyword" value="GlossaryIndex|Glossary"}}
 	{{fbdoc item="keyword" value="CatPgMisc|Miscellaneous Keywords"}}
+	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
+	{{fbdoc item="keyword" value="ExtLibTOC|Library Headers Index"}}
 
 {{anchor name="TABLES"}}{{fbdoc item="section" value="Tables"}}
 	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}

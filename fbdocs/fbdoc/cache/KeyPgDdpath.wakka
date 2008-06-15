@@ -8,7 +8,7 @@ Intrinsic define (macro string) set by the compiler
 	Set to the quoted absolute path of the source file at the time of compilation.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/path.bas"}}%%(freebasic)
 ' Tell the compiler to seach the source file's
 ' directory for libraries
 

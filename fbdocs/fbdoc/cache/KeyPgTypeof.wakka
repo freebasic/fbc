@@ -19,19 +19,19 @@ Returns the type of a variable
 
 {{fbdoc item="ex"}}
 Example 1:
-%%(qbasic)
-dim as integer foo
-dim as typeof(67.2) bar '' '67.2' is a literal double
-dim as typeof( foo + bar ) teh_double '' double + integer results in double
-print len(teh_double)
+{{fbdoc item="filename" value="examples/manual/misc/typeof1.bas"}}%%(freebasic)
+Dim As Integer foo
+Dim As TypeOf(67.2) bar '' '67.2' is a literal double
+Dim As TypeOf( foo + bar ) teh_double '' double + integer results in double
+Print Len(teh_double)
 %%
 Example 2:
-%%(qbasic)
-dim as string foo
-#print typeof(foo)
-#if typeof(foo) = integer
+{{fbdoc item="filename" value="examples/manual/misc/typeof2.bas"}}%%(freebasic)
+Dim As String foo
+#print TypeOf(foo)
+#if TypeOf(foo) = Integer
   #print "Never happened!"
-#end if
+#endIf
 %%
 
 {{fbdoc item="diff"}}

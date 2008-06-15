@@ -26,7 +26,7 @@ Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/timeserial.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)

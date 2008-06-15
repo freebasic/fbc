@@ -18,7 +18,7 @@ Returns the sine of a number
 	 The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required ##//number//## argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/sin.bas"}}%%(freebasic)
 CONST PI AS DOUBLE = 3.1415926535897932
 DIM a AS DOUBLE
 DIM r AS DOUBLE

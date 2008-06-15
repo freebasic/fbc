@@ -29,7 +29,7 @@ Returns a reference to a member from a reference to an object
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/access.bas"}}%%(freebasic)
 type T
 	as integer a, b
 end type

@@ -16,7 +16,7 @@ Error handling statement to force an error to be generated
 
 {{fbdoc item="ex"}}
 	To send an error alert of error 150 (just some arbitrary error code) one would do the following:
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/error/error.bas"}}%%(freebasic)
 error 150
 %%
 ~Freebasic uses these runtime error codes:

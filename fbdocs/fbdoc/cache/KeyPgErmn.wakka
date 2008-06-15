@@ -16,7 +16,8 @@ Error reporting function
 	An error reporting function returning a pointer to the name of the module.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' test.bas
+{{fbdoc item="filename" value="examples/manual/error/ermn.bas"}}%%(freebasic)
+'' test.bas
 '' compile with fbc -exx -lang deprecated test.bas
 
 sub Generate_Error

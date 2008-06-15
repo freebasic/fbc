@@ -17,7 +17,7 @@ Outputs a comma-seperated list of values to a file or device
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/write.bas"}}%%(freebasic)
 const filename as string = "file.txt"
 
 dim filenum as integer = freefile()

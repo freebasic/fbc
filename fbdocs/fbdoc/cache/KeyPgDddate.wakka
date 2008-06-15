@@ -8,7 +8,7 @@ Intrinsic define (macro value) set by the compiler
 	Substitutes the compiler date (yyyy-mm-dd format) were used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/date.bas"}}%%(freebasic)
 Print "CompileDate: ";__DATE__
 %%
 

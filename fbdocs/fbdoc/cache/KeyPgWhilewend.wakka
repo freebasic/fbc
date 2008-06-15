@@ -19,7 +19,8 @@ Control flow statement for looping
 
 {{fbdoc item="ex"}}
 	In this example, a ##**While**## loop is used to reverse a string by iterating through it backwards. The loop stops if index is less than 0 //(0 being the first index in the string)//.
-%%(qbasic)dim as string sentence                          '' string to reverse
+{{fbdoc item="filename" value="examples/manual/control/while-wend.bas"}}%%(freebasic)
+dim as string sentence                          '' string to reverse
 sentence = "The quick brown fox jumps over the lazy dog."
 
 dim as string ecnetnes

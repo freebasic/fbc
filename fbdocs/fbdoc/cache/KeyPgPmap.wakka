@@ -23,7 +23,7 @@ Maps coordinates between view and physical mapping
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/pmap.bas"}}%%(freebasic)
 %%
 
 {{fbdoc item="diff"}}

@@ -15,7 +15,7 @@ Statement to erase arrays
 	Erases one or more dynamic arrays from memory, or clears all elements in a static array.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)
 dim MyArray1(1 to 10) as integer
 redim MyArray2(1 to 10) as integer 
 

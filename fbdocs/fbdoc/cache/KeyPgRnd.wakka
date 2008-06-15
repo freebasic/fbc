@@ -20,7 +20,8 @@ Returns a random [[KeyPgDouble double]] precision number in the range [0, 1)
 	##**Rnd**## can use a variety of different algorithms.  (See ##[[KeyPgRandomize Randomize]]##) for details of the default and selectable algorithms
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Returns a random number in the range [first, last), or {first <= x < last}.
+{{fbdoc item="filename" value="examples/manual/math/rnd.bas"}}%%(freebasic)
+'' Returns a random number in the range [first, last), or {first <= x < last}.
 declare function rnd_range (first as double, last as double) as double
 
 '::

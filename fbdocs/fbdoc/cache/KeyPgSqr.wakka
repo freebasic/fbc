@@ -22,7 +22,7 @@ Returns a square root of a number
 	This is the same as raising the argument //number// to the one-half power ( ^ 1/2). The required ##//number//## argument can be any valid numeric expression greater than zero.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
 DIM a AS SINGLE
 DIM b AS SINGLE
 

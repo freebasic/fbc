@@ -16,7 +16,7 @@ Sets the program window title
 	This command has no effect for consoles.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/windowtitle.bas"}}%%(freebasic)
 'Set the window title
 WINDOWTITLE "FreeBASIC example program"
 

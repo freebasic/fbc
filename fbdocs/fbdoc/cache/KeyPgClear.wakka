@@ -19,7 +19,7 @@ Clears or initializes the contents of an array.
 	Sets the contents of an array to a value (usually 0 is useful). Does the same as C's memset.  If the value is omitted, 0 is used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/array/clear.bas"}}%%(freebasic)
 dim array(1 to 100) as integer
 clear Array(1), 0, len(Array(1)) * ubound(Array)
 %%

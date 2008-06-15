@@ -21,22 +21,32 @@ Declares a variable
 	**Declaring Multiple Variables**
 		##**Dim**## is a special keyword and supports a number of different syntaxes.  When declaring multiple variables, the first syntax specified above allows multiple variables of multiple types to be declared in one statement.  However, for compactness, the second syntax shown is the preferred method for declaring multiple variables of the same type.  Using the first syntax, the ##As //type//## portion refers only to the variable of that clause.  For instance:
 		
-			%%(qbasic)Dim var1, var2, var3 As Double    '' RISKY%%	
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_1.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
+Dim var1, var2, var3 As Double    '' RISKY
+%%	
 		This code will declare **only** var3 as a double-precision floating point: //var1// and //var2// will be set to the latest ##**Def""###""**## used, ##[[KeyPgDefint DefInt]]## by default, because no type was specified in their respective clauses.  The same example using the alternative syntax:
 	
-			%%(qbasic)Dim As Double var1, var2, var3%%	
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_2.bas"}}%%(freebasic)
+Dim As Double var1, var2, var3
+%%	
 		Will declare and allocate var1, var2, var3 all as ##[[KeyPgDouble Double]]##s.
 
 	**Arrays**
 		As with most BASIC dialects, FreeBASIC supports arrays with indexes ranging from a lower bound to an upper bound.  In the syntaxes shown above, lbound refers to the lower bound, or the smallest index.  Ubound refers to the upper bound, or the largest index.  If a lower bound is not specified, lbound is automatically assumed to be zero, unless ##[[KeyPgOptionbase Option Base]]## is used,  so an array declared with the following code:
 	
-			%%(qbasic)Dim array(upperbound) As type%%
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_3.bas"}}%%(freebasic)
+Const upperbound = 10
+Dim array(upperbound) As Single
+%%
 		Will declare an array with indexes ranging from 0 to ##//upperbound//##, for a total of (upperbound + 1) indexes.  
 
 		Multidimensional arrays can be declared as well.  The following example will declare a three-dimensional array of single precision floating-point numbers. The maximum number of dimensions of a multidimensional array is 8. 
 		Multidimensional arrays are stored in row-major order: values with the same last index are contiguous. This is different from QB's default.
 
-			%%(qbasic)Dim array(1 TO 2, 6, 3 TO 5) As Single%%			
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_4.bas"}}%%(freebasic)
+Dim array(1 To 2, 6, 3 To 5) As Single
+%%			
 		The first dimension of the declared array has indices from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[ProPgArrays page]].
 		If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic Static]]## (unless ##[[KeyPgOptiondynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it dynamic, even if ##[[KeyPgOptionstatic Option Static]]## has been issued.
 	
@@ -53,23 +63,27 @@ Declares a variable
 		
 		These methods of initializing variables can be nested within one another for complex assignments.  For instance, to initialize a multidimensional array:
 
-			%%(qbasic)Dim array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}%%			
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_5.bas"}}%%(freebasic)
+Dim array(1 To 2, 1 To 5) As Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}
+%%			
 		In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be initialized.
 
 		UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs
 			
-			%%(qbasic)Type mytype
+			{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_6.bas"}}%%(freebasic)
+Type mytype
 	var1 As Double
 	var2 As Integer
 End Type
 		
-Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}%%		
+Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}
+%%		
 		For module-level, static, or global variables, initialized values must be constant expressions.  FreeBASIC will report a compile-time error if otherwise.
 		
 		Note: Initializing UDT's with strings is not supported at this time.
-		
+
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/variable/dim.bas"}}%%(freebasic)
 Dim a As Byte
 Dim b As Short
 Dim c As Integer

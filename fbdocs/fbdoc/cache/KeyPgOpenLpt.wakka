@@ -52,13 +52,13 @@ Platform specific notes:
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/openlpt1.bas"}}%%(freebasic)
 ' Send some text to the Windows printer on LPT1:, using driver text imaging.
 Open LPT "LPT1:EMU=TTY" For Output  As #1
 Print #1, "Testing!" 
 Close
 %%
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/openlpt2.bas"}}%%(freebasic)
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
 Dim PrintFileNum as integer, RptFileFileNum as integer
@@ -84,7 +84,25 @@ GetKey
 
 End
 %%
+{{fbdoc item="filename" value="examples/manual/fileio/openlpt.bas"}}%%(freebasic)
+'This simple program will print a PostScript file to a PostScript compatible printer.
+Dim As UByte FFI, PPO
+Dim As String temp
 
+FFI = FreeFile()
+Open "sample.ps" For Input Access Read As #FFI
+PPO = FreeFile()
+Open Lpt "LPT1:" For Output As #PPO
+While (EOF(FFI) = 0)
+Line Input #FFI, temp
+Print #PPO, temp
+Wend
+
+Close #FFI
+Close #PPO
+
+Print "Printing Completed!"
+%%
 {{fbdoc item="diff"}}
 	- In QB the syntax was OPEN "LPT" or OPEN "PRN"
 

@@ -16,7 +16,7 @@ Declares an alternative name for a type
 	A type alias can be used to allow forward declarations of [[CatPgUserDefTypes User Defined Types]].
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/type-fwd.bas"}}%%(freebasic)
 TYPE ParentFwd as Parent
 TYPE Child
 	Name as zstring * 32

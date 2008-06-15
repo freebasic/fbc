@@ -1,23 +1,29 @@
 {{fbdoc item="title" value="PRIVATE"}}----
-Specifies procedure visibility to other modules
+Specifies a procedure having internal linkage
 
 {{fbdoc item="syntax"}}##
-	**Private** //procedure_definition// ...
+	**Private** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	**Private** [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	Explicitly sets an individual sub/function to be private (instead of ##[[KeyPgPublic Public]]## by default). This means the sub/function is only accessible within the module and is hidden to other modules. This means two subs/functions can have the same name, as long as they are private and are in seperate modules.
+	In procedure definitions, ##**Private**## specifies that a procedure has internal linkage, meaning it's name is not visible to external modules.
 
-	Subs/functions are private by default if the command ##[[KeyPgOptionprivate Option Private]]## is used, otherwise they are public by default.
+	The deprecated ##[[KeyPgOptionprivate Option Private]]## statement allows procedures to be defined with internal linkage by default.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/module/sub-private.bas"}}%%(freebasic)
 'e.g.
 
-private sub i_am_private
-end sub
+Private Sub i_am_private
+End Sub
 
-sub i_am_public
-end sub
+Sub i_am_public
+End Sub
 %%
 
 {{fbdoc item="diff"}}

@@ -22,7 +22,8 @@ Returns the length of an open disk file
 	The length is given in bytes.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim f as integer
+{{fbdoc item="filename" value="examples/manual/fileio/lof.bas"}}%%(freebasic)
+dim f as integer
 f = freefile
 open "file.ext" for binary as #f
 print lof(f)

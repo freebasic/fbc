@@ -29,7 +29,8 @@ Returns a reference to a member from a pointer to an object
 
 {{fbdoc item="ex"}}
 
-%%(qbasic)Type rect
+{{fbdoc item="filename" value="examples/manual/udt/ptr-access.bas"}}%%(freebasic)
+Type rect
 	x As Integer
 	y As Integer
 End Type

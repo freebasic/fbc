@@ -20,9 +20,18 @@ Renames a file on disk
 	Renames a file originally called ##//oldname//## to ##//newname//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim result as integer = name( "dsc001.jpg", "landscape.jpg" )
+{{fbdoc item="filename" value="examples/manual/system/name.bas"}}%%(freebasic)
+Dim OldName As String
+Dim NewName As String
+Dim result As Integer 
 
-if 0 <> result then print "error renaming " & oldname & " to " & newname & "."
+OldName = "dsc001.jpg"
+NewName = "landscape.jpg"
+
+result = Name( OldName, NewName )
+If 0 <> result Then 
+	Print "error renaming " & oldname & " to " & newname & "."
+End If
 %%
 
 {{fbdoc item="diff"}}

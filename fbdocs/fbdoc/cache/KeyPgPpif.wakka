@@ -14,7 +14,7 @@ Preprocessor conditional directive
 	This conditional directive differs from the ##[[KeyPgIfthen If]]## conditional statement in that ##**#if**## is evalulated at compile-time and ##[[KeyPgIfthen If]]## is evaluated at run-time.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/if.bas"}}%%(freebasic)
 #define DEBUG_LEVEL 1
 #IF (DEBUG_LEVEL >= 2)
   ' This line is not compiled since the expression is False

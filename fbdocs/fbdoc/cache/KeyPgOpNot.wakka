@@ -31,7 +31,7 @@ Returns the bitwise-not (complement) of a numeric value
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/not-bitwise.bas"}}%%(freebasic)
 ' Using the NOT operator on a numeric value
 
 DIM numeric_value AS BYTE
@@ -41,7 +41,7 @@ numeric_value = 15 '00001111
 PRINT NOT numeric_value
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/not-logical.bas"}}%%(freebasic)
 ' Using the NOT operator on conditional expressions
 DIM AS UBYTE numeric_value1, numeric_value2
 numeric_value1 = 15

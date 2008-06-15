@@ -10,7 +10,7 @@ Intrinsic define (macro value) set by the compiler
 	Returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fboptionexplicit.bas"}}%%(freebasic)
 #if( __FB_OPTION_EXPLICIT__ = 0 )
   #error Option Explicit must used with this module
 #endif

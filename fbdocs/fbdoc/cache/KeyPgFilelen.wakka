@@ -21,7 +21,7 @@ Finds the length of a file given its filename
 	Returns the size in bytes of the file specified by //filename//.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/filelen.bas"}}%%(freebasic)
 #include "file.bi"
 dim length as integer
 length = FILELEN("file.txt")

@@ -20,7 +20,8 @@ Converts an two byte string to a short variable
 	This function is useful to read numeric values from buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as short, b as string
+{{fbdoc item="filename" value="examples/manual/strings/cvshort.bas"}}%%(freebasic)
+dim a as short, b as string
 a=4534
 b=mkshort(a)
 print a, cvshort(b)

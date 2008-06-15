@@ -5,7 +5,7 @@ If you read the article [[TutPointers Introduction to Pointers]] you know that p
 
 A single memory location in a computer is 1 byte long. Big enough to hold a single ANSI character (as opposed to Unicode characters, which are wide characters and are two bytes. We won?t be discussing Unicode characters in this article.) However, all data types are not a single byte in width. Here is a simple program that displays the length in bytes of each data type.
 
-##%%(qbasic)
+##%%(freebasic)
 dim a as byte
 dim b as short
 dim c as integer
@@ -51,7 +51,7 @@ sleep
 
 The output is:
 
-##%%(qbasic)
+##%%(freebasic)
 Byte:  1
 Short:  2
 Integer:  4
@@ -73,7 +73,7 @@ Notice that the length of a pointer is always 4 bytes long (the same as an integ
 
 Looking at the length of the different data types, you can see that if you were to [[KeyPgAllocate allocate]] enough space for 10 integers, it would take 40 bytes of memory. Each integer takes up 4 bytes. So the question is, how do you access each integer value from the memory buffer? The answer, pointer math. Take a look at the following program.
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit
 
 dim a as integer
@@ -102,7 +102,7 @@ Now, le me ask you a question: How does the compiler know that the value 1 requi
 
 To load the second value into our buffer, we use:
 
-##%%(qbasic)
+##%%(freebasic)
 *(aptr + 4) = 2
 %%##
 

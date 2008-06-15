@@ -36,7 +36,7 @@ Returns the bitwise-and (equivalence) of two numeric values
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/eqv-bitwise.bas"}}%%(freebasic)
 dim as ubyte a = &b00110011
 dim as ubyte b = &b01010101, c
 c = a eqv b '' c = &b10011001

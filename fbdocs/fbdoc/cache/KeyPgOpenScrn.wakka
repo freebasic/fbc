@@ -32,7 +32,7 @@ Opens the console directly for input and output as a file
 	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/openscrn.bas"}}%%(freebasic)
 dim a as string
 OPEN SCRN for input  AS #1
 print #1,"Please write something and press ENTER"

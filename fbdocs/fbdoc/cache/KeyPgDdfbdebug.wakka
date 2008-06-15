@@ -10,7 +10,7 @@ Intrinsic define (macro value) set by the compiler
 	Returns non-zero (-1) if the option was specified.  Returns zero (0) otherwise.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fbdebug.bas"}}%%(freebasic)
 #if __FB_DEBUG__ 
 	    #print Debug mode 
 #else 

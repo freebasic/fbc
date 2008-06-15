@@ -20,7 +20,8 @@ Does a binary copy from a ##[[KeyPgInteger integer]]## variable to a ##[[KeyPgSt
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer, b as string
+{{fbdoc item="filename" value="examples/manual/strings/mki.bas"}}%%(freebasic)
+dim a as integer, b as string
 a=4534
 b=mki(a)
 print a, cvi(b)

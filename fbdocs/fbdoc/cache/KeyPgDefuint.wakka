@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'uNumber' a ##[[KeyPgUinteger Uinteger]]## number since it's first letter starts with u.
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defuint.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defint u
 dim uNumber
 %%

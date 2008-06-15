@@ -12,7 +12,7 @@ Preprocessor conditional directive
 	**#else** can be added to an ##[[KeyPgPpif #if]]##, ##[[KeyPgPpifdef #ifdef]]##, or ##[[KeyPgPpifndef #ifndef]]## block to provide an alternate result to the conditional expression.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/else.bas"}}%%(freebasic)
 #DEFINE MODULE_VERSION 1
 Dim a as String
 #IF (MODULE_VERSION > 0)

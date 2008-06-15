@@ -3,13 +3,13 @@ Comments are regions of text that the compiler will ignore but may contain infor
 
 {{fbdoc item="section" value="Single Line comments"}}
 	The single quote character (##**'**##) may be used to indicate a comment and may appear after other keywords on a source line.  The rest of the statement will be treated as a comment.
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment1.bas"}}%%(freebasic)
 ' comment text
 %%
 
 {{fbdoc item="section" value="The comment statement: Rem"}}
 	A source code statement beginning with ##[[KeyPgRem Rem]]## indicates that the rest of the line is comment and will not be compiled.  ##[[KeyPgRem Rem]]## behaviour is the same as above, except it must be the first keyword in the statement.
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment2.bas"}}%%(freebasic)
 Rem comment
 %%
 
@@ -17,7 +17,7 @@ Rem comment
 	Multi-line comments are marked with the tokens ##**/'**## and ##**'/**##.  All text between the two markers is considered comment text and is not compiled.
 
 	Multi-line comments can span several lines, and can also be used in the middle of statements.  After the end of the comment, the statement will continue to be parsed as normal (even if the comment crosses line breaks).
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment3.bas"}}%%(freebasic)
 /' Multi-line
    comment '/
 
@@ -28,7 +28,7 @@ Print "Hello" /' embedded comment'/ " world"
 {{fbdoc item="section" value="Nested Comments"}}
 	A multi-line comment can contain other multi-line comments inside it.  Each inner comment has its own open- and close-comment markers.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment4.bas"}}%%(freebasic)
 /'
 	This is a comment.
 	/'
@@ -42,16 +42,17 @@ Print "Hello" /' embedded comment'/ " world"
 {{fbdoc item="section" value="Comments after line continuation"}}
 	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.  FBC does not parse the text after the line continuation character, though, so you can't open multi-line comments after them.
 
-	%%(qbasic)
-print _ ' line
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment5.bas"}}%%(freebasic)
+Print _ ' line
 	"This is part of the previous line's statement"
 %%
 
 {{fbdoc item="section" value="Metacommands"}}
 	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgMetaInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
 
-	%%(qbasic)
-rem $static
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment6.bas"}}%%(freebasic)
+Rem compile with -lang deprecated or qb
+Rem $Static
 ' $include: 'vbcompat.bi'
 %%
 
@@ -60,31 +61,31 @@ rem $static
 
 	If you want to prevent FBC parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  FBC will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.  Other words encountered in a comment will also stop the parsing.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment7.bas"}}%%(freebasic)
 '' $static <-- will not get parsed
 '' this multiline comment marker ("/'") will be ignored
-print "This line is not a comment."
+Print "This line is not a comment."
 %%
 
 {{fbdoc item="ex"}}
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment8.bas"}}%%(freebasic)
 /' this is a multi line 
 comment as a header of
 this example '/
 
-rem this is a single line comment
+Rem This Is a Single Line comment
 
 'this is a single line comment
 
-dim a as integer   'comment following a statement
+Dim a As Integer   'comment following a statement
 
-dim b as /' can comment in here also '/    integer
+Dim b As /' can comment in here also '/    Integer
 
 
 #if 0
-	before version 0.16, this was the
-	only way of commenting out sections
-	with multiple lines of code.
+	before version 0.16, This was the
+	only way of commenting Out sections
+	With multiple lines of code.
 #endif
 
 %%

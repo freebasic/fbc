@@ -27,7 +27,7 @@ Called automatically when a class or user defined type goes out of scope or is d
 	Since the ##[[KeyPgEnd End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd End]]## statement is used to terminate the program.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/destructor.bas"}}%%(freebasic)
 type T
   value as zstring * 32
   declare constructor ( init_value as string )

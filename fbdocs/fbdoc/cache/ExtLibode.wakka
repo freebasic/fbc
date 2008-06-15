@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="ODE"}}----
+Open source, high performance library for simulating rigid body dynamics and collision detection.
+Website: http://www.ode.org/
+Platforms supported: Win32, Linux
+
+The 'ode/ode.bi' headers are not complete and not helpful.
+
+You can get working FreeBASIC headers from sourcefourge.net plus short examples.
+http://downloads.sourceforge.net/fsr/fbodewin.zip
+and
+http://downloads.sourceforge.net/fsr/fbodelin.tar.gz
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

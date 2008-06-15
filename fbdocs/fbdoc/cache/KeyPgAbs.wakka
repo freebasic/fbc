@@ -20,7 +20,7 @@ Calculates the absolute value of a number
 	The absolute value of a number is its unsigned magnitude. For example, ##Abs(-1)## and ##Abs(1)## both return ##1##. The required ##//number//## argument can be any valid numeric expression. ##Abs## returns its value as the same data type as the argument ##//number//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/abs.bas"}}%%(freebasic)
 dim n as integer
 
 print Abs( -1 )

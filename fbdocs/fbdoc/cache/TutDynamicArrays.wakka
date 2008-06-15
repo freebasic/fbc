@@ -4,7 +4,7 @@ Hello, this page explains the proper use of dynamic arrays in FreeBASIC. While i
 
 Arrays are neat; they can be used and resized throughout a program, with little difficulties. Firstly, we should discuss both ways a dynamic array can be created. In the same code, I will explain how to redimension a Dynamic Shared Array within a sub or function. Read the comments within the code to understand it better.
 
-%%(qbasic)
+%%(freebasic)
 declare sub mySub ()
 
 ' as of 0.17, OPTION DYNAMIC and '$DYNAMIC are unecessary. you must define an array to be dynamic each time
@@ -29,7 +29,7 @@ end sub
 
 Now, you may be wondering how you can redimension an array while using the PRESERVE keyword. Normally, you simply add PRESERVE as the syntax for REDIM will state. Yet in fact, this only works if the first array dimension is the only one changing! For example, the following program would not work properly:
 
-%%(qbasic)
+%%(freebasic)
 ' declare the dynamic array the cleaner way
 redim shared myArray(0 to 9, 0 to 9) as ubyte
 dim as ubyte x, y, i

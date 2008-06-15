@@ -12,7 +12,8 @@ Compiler switch to change the way arrays are allocated
 	If an array is defined using ##[[KeyPgDim Dim]]## using variables to specify dimensions, the array is implicitly declared as dynamic, even if the keyword ##**Option Dynamic**## is not used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated
+{{fbdoc item="filename" value="examples/manual/switches/option-dynamic.bas"}}%%(freebasic)
+' compile with -lang deprecated
 Option Dynamic
 Dim a(100)
 '......

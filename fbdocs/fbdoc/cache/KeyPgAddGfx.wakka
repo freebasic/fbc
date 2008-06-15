@@ -17,7 +17,8 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 	This method will work in all color modes.  Mask colors (color 0 for indexed images, magenta (##[[KeyPgRgb RGB]](255, 0, 255)##) for full color images) will be skipped, though full color values of 0 (##[[KeyPgRgba RGBA]](0, 0, 0, 0)##) will have also have no effect.
 	
 {{fbdoc item="ex"}}
-	%%(qbasic)''open a graphics window
+	{{fbdoc item="filename" value="examples/manual/gfx/put-add.bas"}}%%(freebasic)
+''open a graphics window
 screenres 320, 200, 16
 
 ''create a sprite containing a circle
@@ -35,7 +36,8 @@ put (160 - r,  84 - r), c, add, 192
 imagedestroy c
 
 ''pause the program before closing
-sleep%%
+sleep
+%%
 {{image class="center" title="Put Add example output" url="http://img91.imageshack.us/img91/8206/keypgputaddexamplerq6.png" link="http://img91.imageshack.us/my.php?image=keypgputaddexamplerq6.png"}}
 {{fbdoc item="diff"}}
 	- New to Freebasic

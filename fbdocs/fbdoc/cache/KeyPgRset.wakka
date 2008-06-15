@@ -18,7 +18,8 @@ Right justifies a string in a string buffer
 	##**Rset**## right justifies text into the string buffer ##//dst//##, filling the right part of the string with ##//src//## and the left part with spaces.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim buffer as string
+{{fbdoc item="filename" value="examples/manual/strings/rset.bas"}}%%(freebasic)
+dim buffer as string
 buffer = space(10)
 rset buffer, "91.5"
 print "-[" & buffer & "]-"

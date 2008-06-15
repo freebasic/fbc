@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'bNumber' a ##[[KeyPgByte Byte]]## number since it's first letter starts with b:
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/defbyte.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 defbyte b
 dim bNumber
 %%

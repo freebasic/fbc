@@ -10,7 +10,7 @@ Standard data type: 64 bit floating point
 	As precise as doubles are, they still have limited accuracy which can lead to significant inaccuracies if not used properly.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/double.bas"}}%%(freebasic)
 'Example of using a double variable.
 
 dim a as double

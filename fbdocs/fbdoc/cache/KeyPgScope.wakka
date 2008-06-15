@@ -14,7 +14,7 @@ Statement to begin a new scope block
 	##**Scope..End Scope**## is not permitted when compiling with the -lang qb switch.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/variable/scope.bas"}}%%(freebasic)
 Dim As Integer x = 5, y = 2
 Print "x ="; x; ", "; "y ="; y
 Scope

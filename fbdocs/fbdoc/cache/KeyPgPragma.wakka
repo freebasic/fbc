@@ -17,7 +17,7 @@ Preprocessor directive
 	Allows the setting of compiler options inside the source code.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/pragma.bas"}}%%(freebasic)
 '' save the current pragma setting
 #pragma push(msbitfields)
 '' switch to MSVC-compatible bitfields

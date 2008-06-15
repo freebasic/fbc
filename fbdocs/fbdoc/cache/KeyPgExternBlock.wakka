@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="EXTERN...END EXTERN"}}----
+Statement block to give external linkage to declarative statements
+
+{{fbdoc item="syntax"}}##
+	**Extern """c++""" | """c""" | """windows"""**
+		//declarative statements//
+	**End Extern**
+##
+{{fbdoc item="desc"}}
+	**Extern** blocks give external linkage to the names declared within them. They also provide default calling conventions for procedures and mandate a certain name decoration.
+
+	**Extern """C"""** blocks provide a default [[KeyPgCdecl Cdecl]] calling convention to procedures, and also preserve the case of all names declared within them.
+
+	**Extern """C++"""** blocks are exactly like **Extern """C"""** blocks but they also mangle the names declared within them in a way compatible to that of //g""++""-4.x//.
+
+	**Extern """Windows"""** blocks provide a default [[KeyPgStdcall Stdcall]] calling convention to procedures, and also preserve the case of all names declared within them.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/module/extern-block.bas"}}%%(freebasic)
+Extern "c++"
+	'' This namespace uses C++ mangling
+	Namespace Ns1
+		Declare Function theFunction( ByVal As Integer ) As UInteger
+	End Namespace
+End Extern
+
+'' This namespace uses FreeBASIC mangling.
+Namespace Ns2
+	Declare Function theFunction( ByVal As Integer ) As UInteger
+End Namespace
+
+'' Both the functions don't exist, but this demonstrates the point that GNU LD recognizes C++ symbols and reports an understandable name.
+'' Compare Ns1::theFunction(int) with _ZN3NS211THEFUNCTIONEi@4.
+
+Print Ns1.theFunction( 1 )
+Print Ns2.theFunction( 1 )
+%%
+
+{{fbdoc item="lang"}}
+	- **Extern** blocks are only allowed in the //FB// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCdecl Cdecl]]##
+	- ##[[KeyPgStdcall Stdcall]]##
+	- ##[[KeyPgExtern Extern]]##
+
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

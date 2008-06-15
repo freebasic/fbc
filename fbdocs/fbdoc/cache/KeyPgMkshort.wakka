@@ -20,7 +20,8 @@ Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgString
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as short, b as string
+{{fbdoc item="filename" value="examples/manual/strings/mkshort.bas"}}%%(freebasic)
+dim a as short, b as string
 a = 4534
 b = mkshort(a)
 print a, cvshort(b)

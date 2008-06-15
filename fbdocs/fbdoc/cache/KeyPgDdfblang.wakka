@@ -13,7 +13,7 @@ Intrinsic define (macro value) set by the compiler
 	##""__FB_LANG__""## is always defined.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fblang.bas"}}%%(freebasic)
 ' Set option explicit always on
 
 #ifdef __FB_LANG__

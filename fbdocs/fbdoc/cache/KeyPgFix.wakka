@@ -19,7 +19,7 @@ Returns the integer part of a number
 		##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/fix.bas"}}%%(freebasic)
 Print fix(1.9)  '' will print  1
 Print fix(-1.9) '' will print -1 
 %%

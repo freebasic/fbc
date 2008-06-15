@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="FastCGI"}}----
+Open extension to CGI that provides high performance without the limitations of server specific APIs.
+
+Website: http://www.fastcgi.com
+Platforms supported: Win32, Linux
+Headers to include: fastcgi/fastcgi.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -44,7 +44,8 @@ Defines a procedure
 	The second syntax defines either a constructor or destructor using the ##[[KeyPgModuleConstructor Constructor]]## and ##[[KeyPgModuleDestructor Destructor]]## keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' Example of writing colored text using a sub:
+{{fbdoc item="filename" value="examples/manual/procs/sub-1.bas"}}%%(freebasic)
+'' Example of writing colored text using a sub:
 
 sub PrintColoredText( byval colour as integer, byref text as string )
    color colour
@@ -61,7 +62,7 @@ end sub
 	  PrintColoredText( i, ("color " & i) )
    next i
 %%
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/sub-2.bas"}}%%(freebasic)
 ' The following demonstrates optional parameters.
 
 Sub TestSub(P As String = "Default")

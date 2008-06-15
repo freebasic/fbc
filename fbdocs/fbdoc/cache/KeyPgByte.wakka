@@ -8,13 +8,14 @@ Standard data type: 8 bit signed
 	8-bit signed whole-number data type. Can hold a value in the range of -128 to 127.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/byte2.bas"}}%%(freebasic)
   DIM bytevar AS BYTE
   bytevar = 100
   PRINT "bytevar= ", bytevar
 %%
 {{fbdoc item="ex"}}
-%%(qbasic)Dim x As Byte = Cbyte(&H80)
+{{fbdoc item="filename" value="examples/manual/datatype/byte.bas"}}%%(freebasic)
+Dim x As Byte = Cbyte(&H80)
 Dim y As Byte = CByte(&H7F)
 Print "Byte Range = "; x; " to "; y
 %%

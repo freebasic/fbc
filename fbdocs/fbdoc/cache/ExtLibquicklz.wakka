@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="QuickLZ"}}----
+Cross-platform fast compression library
+
+Website: http://www.quicklz.com
+Platforms supported: Win32, Linux, DOS
+Headers to include: quicklz.bi
+Example Usage: yes, in examples/quicklz/
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -18,7 +18,7 @@ Writes text to the screen
 	Printing to graphics screen may not work in all modes. All QB standard modes available in the port are supported. With extended ##[[KeyPgScreengraphics Screen (Graphics)]]## 14 to 21, printing to screen is allowed only in 8 bits resolution (the default one).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/print.bas"}}%%(freebasic)
 '' new-line
 PRINT "Hello World!"
 

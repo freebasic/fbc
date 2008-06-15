@@ -9,7 +9,8 @@ Preprocessor diagnositc directive
 	This keyword must be surrounded by an ##[[KeyPgPpif #if]]## <condition> ...##[[KeyPgPpendif #endif]]## so compiler can reach ##**#error**## only if <condition> is meet.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)#define c 1
+{{fbdoc item="filename" value="examples/manual/prepro/error.bas"}}%%(freebasic)
+#define c 1
 
 #if c = 1
   #error Bad value of c 

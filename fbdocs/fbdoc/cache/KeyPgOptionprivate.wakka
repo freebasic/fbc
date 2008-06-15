@@ -8,7 +8,8 @@ Specifies all procedures to be private
 	Sets subs/functions to be private by default (instead of ##[[KeyPgPublic Public]]## by default). This means subs/functions are only accessible within the module and are hidden from other modules, unless they have 'public' before them. This means two subs/functions can have the same name, as long as at least one is private and they are in separate modules.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated
+{{fbdoc item="filename" value="examples/manual/switches/option-private.bas"}}%%(freebasic)
+' compile with -lang deprecated
 option private
 
 sub I_am_private()

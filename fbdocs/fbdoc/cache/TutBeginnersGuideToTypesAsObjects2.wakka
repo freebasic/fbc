@@ -10,7 +10,7 @@ Welcome to the second part of the tutorial, In this part I assume that you have 
 
 An indexed property is a property that behaves like an array, except that like in the case of a regular property, a function gets called when you access it.  I'll start with a very short example just to show the syntax.
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Property bar(ByVal index As Integer, ByVal value As Integer)
   Declare Property bar(ByVal index As Integer) As Integer
@@ -34,7 +34,7 @@ Print baz.bar(0)
 
 As you can see, the declaration for our indexed property is very similar to a regular one, except this time we add an argument for the index.  I include a dummy integer member, because a type must have at least one data member.  As you can see, the property is then used with (0), to denote we want to get/set the zeroth index, just the same as we would for an ordinary array.  Now I'll show you a slightly more useful example, and I will describe it:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor(ByVal num_elements As Integer)
   Declare Destructor()
@@ -83,7 +83,7 @@ This time, i've added a constructor and destructor, which will allocate and deal
 
 A copy constructor is a special type of constructor, that is used to make a copy from an existing object.  When you write code like this:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
 ...
 End Type
@@ -94,7 +94,7 @@ Dim As foo b = a
 
 What happens is FreeBASIC automatically generates hidden code to construct b, by making a copy of a, this is the default copy constructor, and simply copies the data fields (members) across.  We can define our own copy constructor, here's just a brief snippet to show how we declare it.
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor(ByRef obj As foo)
   ...
@@ -108,7 +108,7 @@ This will come in very useful for a reason I will now explain.
 
 In that previous example, where we did the code 'Dim As foo b = a', that was what is known a shallow copy, it just simply copied the data fields across, however sometimes this is not desirable, imagine that one of the members is a pointer, what will happen is that the address that pointer points to will be copied across, so both objects will point to the same memory.  An example of this follows:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   x As Integer ptr
 End Type
@@ -131,7 +131,7 @@ DeAllocate(a.x)
 
 As you see, because they both point to the same memory, changing one affects the other.  As explained in the previous section on the copy constructor, FreeBASIC creates the code to do shallow copies by default.  This is also true if we do an assignment like:
 
-%%(qbasic)
+%%(freebasic)
 Dim As foo a, b
 
 b = a
@@ -139,7 +139,7 @@ b = a
 
 In this case also, FreeBASIC creates a default assignment operator (Let) to perform a shallow copy.  In order to do deep copies, we need to define a copy constructor, and an assignment operator, that is overloaded to accept our type.  Here's an example using them.
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor()
   Declare Constructor(ByRef obj As foo)
@@ -184,7 +184,7 @@ Print *a.x, *b.x
 
 As you can see, the copy constructor gets called on the line 'Dim As foo b = a' and this time, we allocate some memory, and copy the data in the new copy constructor, so that we can adjust x in one object without it affecting the other.  If we change the main code as follows:
 
-%%(qbasic)
+%%(freebasic)
 Dim As foo a, b
 
 *a.x = 42
@@ -199,7 +199,7 @@ Print *a.x, *b.x
 
 Then this time the assignment operator is used, note that in the assignment operator code, we don't need to allocate any memory because it has already been allocated in the default constructor, we just need to copy the data across.  The line '*x = *obj.x' performs this copy.  If we had something more advanced, like a dynamic memory array, then we would need to reallocate the memory to be the correct size to fit the data being copied.  Here's a more advanced version just to show that.
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor(ByVal num_elements As Integer)
   Declare Constructor(ByRef obj As foo)
@@ -271,7 +271,7 @@ New and delete are special operators for dynamically allocating memory, then des
 
 There are two different varieties of the new/delete.  The first type, creates just a single element or object, for example:
 
-%%(qbasic)
+%%(freebasic)
 Dim As Integer ptr foo = new Integer
 
 *foo = 1
@@ -282,7 +282,7 @@ Delete foo
 
 This will create a new Integer, then destroy it when we call delete.  Remember I used ptr, because it is dynamic memory.  For simple data types you can also specify a default value, by placing it in parenthesis after the data type, ie:
 
-%%(qbasic)
+%%(freebasic)
 Dim As Integer ptr foo = new Integer(42)
 
 Print *foo
@@ -292,7 +292,7 @@ Delete foo
 
 This also works for UDT's with just simple data fields:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   x As Integer
   y As Integer
@@ -307,7 +307,7 @@ Delete bar
 
 This initialization won't work for more complex types involving constructors/destructors etc., however a useful feature is that when using new/delete with objects, it also calls the constructor and destructor, try the following example:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor()
   Declare Destructor()
@@ -332,7 +332,7 @@ You will see that the constructor and destructor for the object are called.
 
 The second type of new/delete is for creating arrays, this time the number of elements is placed after the dataype in square brackets '[]'.  When using the array version, you must also use 'delete[]' instead of 'delete', so that FreeBASIC knows you are deleting an array, here is a simple example using the Integer type:
 
-%%(qbasic)
+%%(freebasic)
 Dim As Integer ptr foo = new Integer[20]
 
 foo[1] = 1
@@ -343,7 +343,7 @@ Delete[] foo
 
 This will create a dynamic array, with 20 Integer elements.  It should be noted this is different from Allocate, which takes the number of bytes as its argument; using new, you should specify the number of elements.  The array method works just the same for objects:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Constructor()
   Declare Destructor()
@@ -373,7 +373,7 @@ You must remember to call Delete, or Delete[] for any memory allocated with New,
 
 Name mangling, also known as name decoration, is something that happens behind the scenes, at a lower level, and as such is not essential to know about.  The reason for name mangling is to resolve problems that are involved with more than one function sharing the same name, which happens when functions are overloaded, or are part of a type.  Take for example the overloaded subs shown below:
 
-%%(qbasic)
+%%(freebasic)
 Sub foo overload ()
 
 End Sub
@@ -390,7 +390,7 @@ If we didn't have name mangling, then both might be known at a lower level as FO
 
 This again is not necessary to know about mostly, its something that happens behind the scenes at a lower level.  When you call a member function of an object, what actually happens is a hidden first parameter is passed, so that the function knows which instance of the object is being refered to.  This is also true for the property/constructor/destructor/operator members.  If we look at a very simple example:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   Declare Sub bar(ByVal n As Integer)
   x As Integer
@@ -406,7 +406,7 @@ baz.bar(5)
 
 What actually happens behind the scenes is something essentially equivalent to this:
 
-%%(qbasic)
+%%(freebasic)
 Type foo
   x As Integer
 End Type
@@ -428,7 +428,7 @@ When using GDB or other debuggers, and the gprof profiling tool, the information
 
 Here's an example type:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Constructor(ByRef obj As bar)

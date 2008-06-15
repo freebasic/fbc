@@ -28,7 +28,7 @@ Reads a list of values from the keyboard
 {{fbdoc item="ex"}}
 
 	**Example #1**
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/input.bas"}}%%(freebasic)
 Dim n As String, a As Integer
 Input "Enter [Name, Age]: ", n, a
 Print n
@@ -36,7 +36,8 @@ Print a
 %%
 
 	**Example #2**
-%%(qbasic)dim as double a, b
+{{fbdoc item="filename" value="examples/manual/console/input2.bas"}}%%(freebasic)
+dim as double a, b
 dim as string yn
 
 do

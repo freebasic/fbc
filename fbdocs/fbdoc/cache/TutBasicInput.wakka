@@ -5,7 +5,7 @@ Input is the life of any program.  If you can't get something into your program,
 
 Here's a very basic program that will ask for your name:
 
-%%(qbasic)
+%%(freebasic)
 'Create a place to to put the user's name
 dim as string strMyName
 
@@ -29,7 +29,7 @@ INPUT is the easiest way to get information from someone.  They just type in som
 
 What if you you only want one key stroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="CptAscii|ASCII"}} value of a key that was pressed.
 
-%%(qbasic)
+%%(freebasic)
 ' Ask the user for input
 Print "Press your favorite key:"
 

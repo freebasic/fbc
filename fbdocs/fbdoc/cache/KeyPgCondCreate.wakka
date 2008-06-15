@@ -17,7 +17,8 @@ Creates a conditional variable to be used in synchronizing threads
 	
 	
 {{fbdoc item="ex"}}
-%%(qbasic)declare sub mythread( byval id as integer )
+{{fbdoc item="filename" value="examples/manual/threads/condcreate.bas"}}%%(freebasic)
+declare sub mythread( byval id_ptr as any ptr )
 
   dim i as integer
   dim shared hcondready as any ptr
@@ -40,7 +41,7 @@ Creates a conditional variable to be used in synchronizing threads
  
 	'' create some threads
 	for i = 1 to 9
-	  threads(i) = Threadcreate(@mythread, i)
+	  threads(i) = Threadcreate(@mythread, @i)
 	  if threads(i) = 0 then
 	    print "Unable to create thread"
 	  else
@@ -79,8 +80,12 @@ Creates a conditional variable to be used in synchronizing threads
 
   end
 
-sub mythread( byval id as integer )
+sub mythread( byval id_ptr as any ptr )
+
   dim i as integer
+  dim id as integer
+
+  id = *cast( integer ptr, id_ptr )
 
   print "Thread #"; id; " is waiting ... "
 

@@ -8,7 +8,7 @@ Standard data type: 64 bit signed
 	A 64-bit signed whole-number data type. Can hold values from -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/longint.bas"}}%%(freebasic)
   Dim x As LongInt = &H8000000000000000
   Dim y As Longint = &H7FFFFFFFFFFFFFFF
   Print "LongInt Range = "; x; " to "; y

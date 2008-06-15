@@ -10,19 +10,20 @@ Specifies the DLL where a sub or function can be found as part of a declaration
 	When specifying ##//dllname//##, do not include the extension of the file name.  For example, if the declaration is meant to reference the file ##mydll.dll## or ##mydll.so##, use ##**Lib** "mydll"##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-' mydll.bas
-'   compile with
-'     fbc -dll mydll.bas
-public function GetValue() as integer export
-  function = &h1234
-end function
+{{fbdoc item="filename" value="examples/manual/procs/mydll.bas"}}%%(freebasic)
+'' mydll.bas
+'' compile with:
+''   fbc -dll mydll.bas
+
+Public Function GetValue() As Integer Export
+  Function = &h1234
+End Function
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/lib.bas"}}%%(freebasic)
 Declare Function GetValue Lib "mydll" () As Integer
 
-Print "GetValue = &h"; hex(GetValue())
+Print "GetValue = &h"; Hex(GetValue())
 
 ' Expected Output :
 ' GetValue = &h1234

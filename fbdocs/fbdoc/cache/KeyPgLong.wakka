@@ -10,7 +10,7 @@ Standard data type: signed integer having same size as ##[[KeyPgSizeof Sizeof]](
 	##**Long**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/long.bas"}}%%(freebasic)
   Dim x As Long = &H80000000
   Dim y As Long = &H7FFFFFFF
   Print "Long Range = "; x; " to "; y

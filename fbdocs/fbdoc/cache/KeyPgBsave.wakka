@@ -30,7 +30,7 @@ Graphics statement to save a block of binary data into a file
 	If raw pixel data is being saved in a paletted gfx mode, ##**Bsave**## will attach the palette at the end of the file. Palette data is taken either from the ##//pal//## parameter, which must be an array holding the palette in [[KeyPgPalette Palette Using]] format, either from the currently set palette if ##//pal//## is 0 or not specified. When saving a BMP file in paletted mode, the same rules for the ##//pal//## parameter apply.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/bsave.bas"}}%%(freebasic)
 ' Set gfx mode
 SCREENRES 320, 200, 32
 

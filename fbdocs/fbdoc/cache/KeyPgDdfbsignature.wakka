@@ -8,7 +8,7 @@ Intrinsic define (macro string) set by the compiler
 	Substituted by a signature of the compiler where used.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fbsignature.bas"}}%%(freebasic)
 PRINT __FB_SIGNATURE__
 %%
 

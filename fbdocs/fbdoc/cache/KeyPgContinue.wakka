@@ -10,7 +10,7 @@ Control flow statement to continue next iteration of a loop
 	Where there are multiple ##[[KeyPgDoloop Do]]## / ##[[KeyPgFornext For]]## / ##[[KeyPgWhilewend While]]## blocks nested, it will continue on the innermost block of that type, i.e. the last one entered.  You can continue an earlier block of that type by giving the word multiple times, separated by commas.  e.g. ##**continue while, while**##
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/continue.bas"}}%%(freebasic)
 Dim As Integer n
 
 Print "Here are odd numbers between 0 and 10!"
@@ -26,7 +26,7 @@ For n = 0 To 10
 Next n
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/control/continue2.bas"}}%%(freebasic)
  '' simple prime number finder
 
 Print "Here are the prime numbers between 1 and 20!"

@@ -27,7 +27,7 @@ Offset a date with a specified interval
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/dateadd.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 const fmt = "ddddd ttttt"

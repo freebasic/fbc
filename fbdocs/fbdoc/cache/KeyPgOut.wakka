@@ -17,7 +17,7 @@ Outputs a value to a hardware port
 	This function sends ##//value//## to ##//port//## and returns immediately.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/hardware/out.bas"}}%%(freebasic)
 'speakersound.bas 
 Sub Sound(ByVal freq As uInteger, dur As uInteger)
   Dim t As Double,f1 as unsigned short

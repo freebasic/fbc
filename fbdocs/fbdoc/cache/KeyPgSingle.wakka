@@ -10,7 +10,7 @@ Standard data type: 32 bit floating point
 	They are similar to ##[[KeyPgDouble Double]]## data types, but less precise. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/single.bas"}}%%(freebasic)
 'Example of using a single variable.
 
 dim a as single

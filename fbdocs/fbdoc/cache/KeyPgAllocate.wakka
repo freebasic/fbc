@@ -22,7 +22,8 @@ Allocates a certain number of bytes from the free store
 ~&##**Allocate**## is an alias for the C runtime library's ##**malloc**## function, which is not guaranteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is
+{{fbdoc item="filename" value="examples/manual/memory/allocate.bas"}}%%(freebasic)
+'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is
 '' then filled with the first 15 numbers of the Fibonacci Sequence, then output to the
 '' screen. Note the call to DEALLOCATE(...) at the end of the program.
 
@@ -61,7 +62,8 @@ Allocates a certain number of bytes from the free store
 
 	It is important to free allocated memory if it's not going to be used anymore. Unused memory that isn't freed is simply wasting memory, and if the address of that memory is somehow overwritten or forgotten, that memory can never be freed (this condition is known as a memory leak, and should be avoided at all costs). The following example demonstrates a function with a memory leak, where the address of allocated memory is lost, never to be freed (if this function is called frequently, the memory that is wasted can add up quickly).
 
-%%(qbasic)sub AllocateExample2()
+{{fbdoc item="filename" value="examples/manual/memory/allocate2.bas"}}%%(freebasic)
+sub AllocateExample2()
    dim p as byte ptr = 0
 
    p = allocate(420)               '' assign pointer to new memory

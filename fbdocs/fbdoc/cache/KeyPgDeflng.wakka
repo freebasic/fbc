@@ -11,7 +11,8 @@ Sets a default data type for variables
 
 {{fbdoc item="ex"}}
 	This will make 'lNumber' a ##[[KeyPgLong Long]]## integer number since it starts with l.
-%%(qbasic)'' Compile with -lang deprecated or qb
+{{fbdoc item="filename" value="examples/manual/switches/deflng.bas"}}%%(freebasic)
+'' Compile with -lang deprecated or qb
 deflng l
 dim lNumber ' implicit: As Long
 

@@ -16,16 +16,16 @@ External linkage attribute for public data located in DLL's
 __declspec( dllexport ) int MyDll_Data = 0x1234;
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/module/import.bas"}}%%(freebasic)
 /'  import.bas :
 	Compile with
 	  fbc import.bas
 '/
 #inclib "mydll"
 
-extern import MyDll_Data alias "MyDll_Data" as integer
+Extern Import MyDll_Data Alias "MyDll_Data" As Integer
 
-print "&h" + hex( MyDll_Data )
+Print "&h" + Hex( MyDll_Data )
 
 ' Output:
 ' &h1234

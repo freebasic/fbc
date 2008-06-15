@@ -37,7 +37,7 @@ Operator to dynamically allocate memory and construct data of a specified type
 	Specifiying an initial value of ##[[KeyPgAny Any]]##, as in ##new datatype[count]{any}## will allocate memory for the array, but not initialize the data.  This is only valid on data types that do not have constructors.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/new.bas"}}%%(freebasic)
 type Rational
 	as integer	numerator, denominator
 end type

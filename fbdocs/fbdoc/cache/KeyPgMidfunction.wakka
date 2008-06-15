@@ -24,7 +24,8 @@ Returns a substring of a string
 	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// >= len(//str//)## then all of the remaining characters are returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)PRINT MID("abcdefg", 3, 2)
+{{fbdoc item="filename" value="examples/manual/strings/mid-func.bas"}}%%(freebasic)
+PRINT MID("abcdefg", 3, 2)
 PRINT MID("abcdefg", 3)
 PRINT MID("abcdefg", 2, 1)
 %%

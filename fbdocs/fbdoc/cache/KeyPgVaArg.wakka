@@ -8,7 +8,7 @@ Returns the current argument from a variable argument list
 	The ##**va_arg**## macro allows the use of a variable number of arguments within a function. ##**va_arg**## returns the current argument in the list, ##//argument_list//##, with an expected data type of //datatype//. Before ##**va_arg**## can be used, it must be Initialized with the command ##[[KeyPgVaFirst va_first]]##. Unlike the C macro with the same name, ##**va_arg**## does not automatically increment //argument_list// to the next argument within the list. The command ##[[KeyPgVaNext va_next]]## must be used for this purpose.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/va_arg.bas"}}%%(freebasic)
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0

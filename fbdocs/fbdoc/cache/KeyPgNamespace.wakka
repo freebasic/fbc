@@ -14,34 +14,34 @@ Declares a namespace block
 	To access duplicated symbols defined in the global namespace use: .""SomeSymbol"" (or ..""SomeSymbol"" if inside a [[KeyPgWith With..End With]] block).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-namespace Forms
-	type Point '' A 2D point
-		as integer x
-		as integer y
-	end type
+{{fbdoc item="filename" value="examples/manual/module/namespace.bas"}}%%(freebasic)
+Namespace Forms
+	Type Point '' A 2D point
+		As Integer x
+		As Integer y
+	End Type
 	'' Since we are inside of the namespace, Point resolves to Forms.Point.
-	sub AdjustPoint( byref pt as Point, byval newx as integer, byval newy as integer )
+	Sub AdjustPoint( ByRef pt As Point, ByVal newx As Integer, ByVal newy As Integer )
 		pt.x = newx
 		pt.y = newy
-	end sub
-end namespace
+	End Sub
+End Namespace
 
-type Point '' A 3D point
-	as integer x
-	as integer y
-	as integer z
-end type
+Type Point '' A 3D point
+	As Integer x
+	As Integer y
+	As Integer z
+End Type
 
-sub AdjustPoint( byref pt as Point, byval newx as integer, byval newy as integer, byval newz as integer )
+Sub AdjustPoint( ByRef pt As Point, ByVal newx As Integer, ByVal newy As Integer, ByVal newz As Integer )
 	pt.x = newx
 	pt.y = newy
 	pt.z = newz
-end sub
+End Sub
 
-dim pt1 as Point
+Dim pt1 As Point
 AdjustPoint( pt1, 1, 1, 1 )
-dim pt2 as Forms.Point
+Dim pt2 As Forms.Point
 Forms.AdjustPoint( pt2, 1, 1 )
 %%
 {{fbdoc item="lang"}}

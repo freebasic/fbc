@@ -24,7 +24,7 @@ Seeds the random number generator
 	An good example of a non-predictable seed is the ##[[KeyPgDouble double]]## precision number returned by (##[[KeyPgTimer Timer]]##).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/randomize.bas"}}%%(freebasic)
 'e.g.
 randomize timer
 %%

@@ -18,7 +18,7 @@ Temporarily transfers control to an external program
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Chain**##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/chain.bas"}}%%(freebasic)
 #ifdef FB__LINUX
 #define CHAIN2	"chain2"
 #else

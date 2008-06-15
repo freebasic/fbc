@@ -19,7 +19,7 @@ Returns the horizontal (left-right) position of the text cursor
 Returns the horizontal (left-right) position of the text cursor. 1 means the very left.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/pos.bas"}}%%(freebasic)
 print "position: "; pos
 print "hello world";
 print "position: "; pos

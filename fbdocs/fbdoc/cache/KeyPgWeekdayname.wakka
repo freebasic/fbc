@@ -31,7 +31,7 @@ Gets the name of a week day from its integral representation
 	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/dates/weekdayname.bas"}}%%(freebasic)
 #include "vbcompat.bi"
 
 Dim a As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)

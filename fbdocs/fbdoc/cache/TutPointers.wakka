@@ -13,7 +13,7 @@ Using pointers is a bit different. Imagine you have a little scrap of paper that
 
 In FreeBasic we define a pointer using the [[KeyPgDim Dim]] and [[KeyPgPtr Ptr]] statements:
 
-##%%(qbasic)
+##%%(freebasic)
 dim aptr as integer ptr
 %%##
 
@@ -21,7 +21,7 @@ This statement corresponds to our blank piece of paper in the above example. The
 
 In order for a pointer to be useful, it must be initialized:
 
-##%%(qbasic)
+##%%(freebasic)
 dim aptr as integer ptr
 
 aptr = allocate(sizeof(integer))
@@ -31,7 +31,7 @@ Here we are using [[KeyPgAllocate Allocate]] to set aside enough space in memory
 
 Once we have initialized the pointer, we can now use it:
 
-##%%(qbasic)
+##%%(freebasic)
 *aptr = 5
 print "aptr: "; *aptr
 %%##
@@ -40,7 +40,7 @@ Notice the ***** prefix on aptr. The * is the reference operator. This is like m
 
 Here is a complete example program:
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit
 
 dim aptr as integer ptr
@@ -62,7 +62,7 @@ Another use of a pointer is in a [[KeyPgType Type]] definition. [[KeyPgType Type
 
 (It should be stated that the Type definitions can now support variable length strings.)
 
-##%%(qbasic)
+##%%(freebasic)
 option explicit
 
 type mytptr
@@ -97,13 +97,13 @@ end function
 
 Here we define our type with a field sptr as [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]. Zstrings are null terminated strings and are used by many external libraries and are designed for dynamic allocations. Once we define our type we create an instance of it with the [[KeyPgDim dim]] statement:
 
-##%%(qbasic)
+##%%(freebasic)
 dim mytype as mytptr
 %%##
 
 We then call our function pSetString to get the address of the variable length string we want in our [[KeyPgType type]] def.
 
-##%%(qbasic)
+##%%(freebasic)
 mytype.sptr = pSetString("Hello World From FreeBasic!")
 %%##
 
@@ -111,28 +111,28 @@ Remember sptr is defined as a pointer, not a string variable, so pSetString is r
 
 The function pSetString uses a temporary [[KeyPgZstring zstring]] sz, to [[KeyPgAllocate allocate]] space for the passed string parameter s. Because a [[KeyPgZstring zstring]] is a null terminated string, we must add 1 to the length of s for the null terminator in the [[KeyPgAllocate allocate]] function.
 
-##%%(qbasic)
+##%%(freebasic)
 'allocate some space + 1 for the chr(0)
 sz = allocate(len(s) + 1)
 %%##
 
 Once we have allocated space for the string, we use the reference operator * to load the data into the memory location.
 
-##%%(qbasic)
+##%%(freebasic)
 'load the string into the memory location
 *sz = s
 %%##
 
 We then return a pointer (the address of the string) back to our type, which is saved in mytype.sptr.
 
-##%%(qbasic)
+##%%(freebasic)
 'return the pointer
 return sz
 %%##
 
 We can now reference the string in our type using the reference operator.
 
-##%%(qbasic)
+##%%(freebasic)
 print "aptr: "; *mytype.sptr
 %%##
 

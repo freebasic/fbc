@@ -20,7 +20,8 @@ Control flow statement for conditional branching
 	The expresion is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of if's.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'e.g. here is a simple "guess the number" game using if...then for a decision.
+{{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
+'e.g. here is a simple "guess the number" game using if...then for a decision.
 dim x as integer, y as integer
 
 RANDOMIZE TIMER 

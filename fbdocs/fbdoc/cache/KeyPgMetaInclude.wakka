@@ -14,18 +14,21 @@ Metacommand statement to include contents of another source file
 	##**'$Include:**## exists for compatibility with QuickBasic. It is recommended to use ##[[KeyPgInclude #include]]## instead.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/meta/header.bi"}}%%(freebasic)
 ' header.bi file
-TYPE FooType
-	Bar AS BYTE
-	Barbeque AS BYTE 
-END TYPE
-DIM Foo as FooType
+Type FooType
+	Bar As Byte
+	Barbeque As Byte 
+End Type
+Dim Foo As FooType
 %%
 
-%%(qbasic)
-' main.bas file
+{{fbdoc item="filename" value="examples/manual/meta/include.bas"}}%%(freebasic)
+'' compile with -lang deprecated or qb
+'' main.bas file
+
 '$INCLUDE: "header.bi"
+
 Foo.Bar = 1
 Foo.Barbeque = 2
 %%

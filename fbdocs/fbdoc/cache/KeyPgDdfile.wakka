@@ -10,7 +10,8 @@ Intrinsic define (macro string) set by the compiler
 	An example of normal use is to report wrong values in debugging.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer
+{{fbdoc item="filename" value="examples/manual/defines/file.bas"}}%%(freebasic)
+dim a as integer
 if a<0 then
 	Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__
 end if

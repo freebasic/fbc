@@ -26,7 +26,8 @@ Opens standard input and standard error as a file
 	The ##[For Input|Output]## ##//mode//## is allowed for compatibility, but is ignored.
 
 {{fbdoc item="ex"}}
-%%(qbasic)Dim a as string
+{{fbdoc item="filename" value="examples/manual/fileio/openerr.bas"}}%%(freebasic)
+Dim a as string
 OPEN ERR for input  AS #1
 print #1,"Please write something and press ENTER"
 line input #1, a 

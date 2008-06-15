@@ -25,7 +25,7 @@ Builtin macro function to test minimum compiler version
 	##""__FB_MIN_VERSION__""## tests for a minimum version of the compiler.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/defines/fbminversion.bas"}}%%(freebasic)
 #if Not __FB_MIN_VERSION__(0, 17, 0)
   #error fbc must be at least version 0.17 to compiler this module
 #endif

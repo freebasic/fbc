@@ -18,7 +18,7 @@ Returns the value of a system environment variable
 	##**Environ**## returns the text value of a system environment variable.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/environ.bas"}}%%(freebasic)
 'e.g. to show the system variable "path":
 
 print environ("path")

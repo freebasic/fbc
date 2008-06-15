@@ -10,7 +10,7 @@ Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]
 	##**Ulong**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/datatype/ulong.bas"}}%%(freebasic)
   Dim x As ULong = 0
   Dim y As ULong = &HFFFFFFFF
   Print "ULong Range = "; x; " to "; y

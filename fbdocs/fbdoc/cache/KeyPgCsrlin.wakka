@@ -14,7 +14,7 @@ Returns the row position of the cursor
 	Returns the current line position (row) of the cursor (##//csr//## for cursor, ##//lin//## for line).
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/csrlin.bas"}}%%(freebasic)
 print "The cursor is on row:"; CSRLIN
 %%
 

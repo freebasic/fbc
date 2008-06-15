@@ -30,7 +30,7 @@ Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlong
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValulng Valulng]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/casting/culngint.bas"}}%%(freebasic)
 ' Using the CLNGINT function to convert a numeric value
 
 'Create an UNSIGNED LONG INTEGER variable

@@ -19,7 +19,7 @@ Returns a value at a hardware port
 	
 	
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/hardware/inp.bas"}}%%(freebasic)
 '' Turn off PC speaker
 out &h61,inp(&h61) and &hfc
 %%	

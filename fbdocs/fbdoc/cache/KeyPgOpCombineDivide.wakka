@@ -27,7 +27,7 @@ Divides and assigns a value to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/divide-assign.bas"}}%%(freebasic)
 DIM n AS DOUBLE
 n = 6
 n /= 2.2

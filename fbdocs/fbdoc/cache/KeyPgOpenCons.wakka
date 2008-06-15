@@ -30,7 +30,7 @@ Opens the console for input or output as a file
 	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/opencons.bas"}}%%(freebasic)
 dim a as string
 
 Open CONS For input As #1

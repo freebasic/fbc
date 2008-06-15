@@ -20,7 +20,8 @@ Statement to store data at compile time
 	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[ProPgInitialization Variable Initializers]] for more information.
 
 {{fbdoc item="ex"}}
-%%(qbasic)' Create an array of 5 integers and a string to hold the data.
+{{fbdoc item="filename" value="examples/manual/data/data.bas"}}%%(freebasic)
+' Create an array of 5 integers and a string to hold the data.
 DIM h(4) AS INTEGER
 DIM hs AS STRING
 dim read_data as integer

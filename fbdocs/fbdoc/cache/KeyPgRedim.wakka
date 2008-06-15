@@ -24,23 +24,26 @@ Defines or resizes a dynamic array
 
 	When a dynamic array is resized without the [[KeyPgPreserve Preserve]] clause, it's elements are destroyed, and new elements are default constructed. The [[KeyPgPreserve Preserve]] clause does not destroy existing elements unless the new size of the dynamic array is smaller that it was previously. When resizing an array larger, the new elements are default constructed at the end of the array.
 
-{{fbdoc item="ex"}}
-%%(qbasic)'' Define a dynamic array with 5 elements
-''
-redim array(1 to 5) as integer
+	**NOTE**: [[KeyPgRedim Redim]]'ing an array inside an object function, when that array contains the parent object of the function, is undefined, and will likely result in horrible crashes.
 
-for index as integer = lbound(array) to ubound(array)
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/array/redim.bas"}}%%(freebasic)
+'' Define a dynamic array with 5 elements
+''
+ReDim array(1 To 5) As Integer
+
+For index As Integer = LBound(array) To UBound(array)
 	array(index) = index
-next
+Next
 
 '' Redefine a dynamic array with 10 elements
 ''
-redim preserve array(9) as integer
+ReDim Preserve array(9) As Integer
 
-print "index", "value"
-for index as integer = lbound(array) to ubound(array)
-	print index, array(index)
-next
+Print "index", "value"
+For index As Integer = LBound(array) To UBound(array)
+	Print index, array(index)
+Next
 %%
 	The previous program will produce the following output:
 

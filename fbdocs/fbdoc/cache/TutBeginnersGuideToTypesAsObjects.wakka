@@ -4,7 +4,7 @@
 
   This tutorial is aimed at people who want to know more about the new features added to ##Type##, commonly being referred to as 'types as objects', and 'that OOP stuff'.  It aims to walk you through these new features, so is aimed at people who don't really understand it yet, but want to learn.  A ##Type## in FreeBASIC is an aggregate data type, like a struct in C, or a record in Pascal.  Here's just a short sample of typical ##Type## usage.
 
-%%(qbasic)
+%%(freebasic)
 Type person_info
   first_name As String
   last_name As String
@@ -20,7 +20,7 @@ In this usage it's used as a kind of container for related data; in this example
 
 We'll start by looking at property.  When you add a property to a ##Type##, you access it as if it were an ordinary member, but what happens, is instead of just getting or setting a variable as normal, it calls a function instead.  Take a look at this example:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Property x() As Integer
   Declare Property x(ByVal n As Integer)
@@ -57,7 +57,7 @@ Now this code is fairly trivial, but as you get used to the idea you'll see it c
 
 ##Constructor##s are functions that are called when the ##Type## gets created - when you use ##Dim##, for example.  A ##Destructor## is a function that gets called when the ##Type## goes out of scope; this could be when the program ends, for a ##Type## in the main code, or when a function ends, for a local ##Type##.  Look at the following example, expanded from the last.
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Destructor()
@@ -102,7 +102,7 @@ Again the syntax is somewhat similar to normal functions.  Note that this time I
 
 You can also have regular ##Sub##s and ##Function##s inside your ##Type##; in some terminology, these are referred to as methods.  We'll carry on our example:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Destructor()
@@ -160,7 +160,7 @@ So this time we added a ##Sub##, that multiplies the integer pointed to by ##p_x
 
 By default all of the members of the bar type are public; that means that we can read/write or call them.  However, sometimes you might want to make them private.  Take for example our member ##p_x##; we can currently do ##Print *foo.p_x##, and it will allow us to print the value it points to.  We might want to make it private, so that only the members of the ##bar## type (the constructor, destructor, property, and methods) can access it.  That way we can make sure we only deal with ##p_x## by the ways we choose.  If for example we did '##""DeAllocate""(foo.p_x)##' in our main code, then when the destructor runs, it would try to free it again, known as a 'double free'.  Change the ##Type## declaration as follows:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Destructor()
@@ -175,7 +175,7 @@ End Type
 
 Now try adding ##Print *foo.p_x## to the main code and compile it.  You'll get a message from fbc "##error 173: Illegal member access, found 'p_x' in 'Print *foo.p_x'##", showing that indeed the compiler is now enforcing the fact we made ##p_x## private.  When you use ##private:## or ##public:##, any members following that statement follow the rule.  Here's a rather pointless example just to show the syntax:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
 private:
   a As Integer
@@ -194,7 +194,7 @@ In the above type, the members ##a##, ##b##, and ##e## are private; ##c## and ##
 
 Operator overloading is a way of telling the compiler what to do in the case where we want to perform some kind of operation involving our ##Type##.  Take this example:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   n As Integer
 End Type
@@ -206,7 +206,7 @@ z = x + y
 
 Now normally the compiler will throw an error when it sees this, as it has no idea how to add together two ##Type##s, but we can define what we want to happen.  Here's how:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   n As Integer
 End Type
@@ -225,7 +225,7 @@ Print z.n
 
 In this code, I use ##lhs## and ##rhs## to refer to the left and right hand side operands of the operator.  Note also the expression ##type(lhs.n + rhs.n)##; this builds the ##Type## that will be returned.  If you had a type like:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   x As Integer
   y As Integer
@@ -241,7 +241,7 @@ There are some special cases where they have to be declared inside the ##Type##;
 
 Assignment operators are things like ##+= -= mod=## etc, and also ##Let##.  ##Let## is used when you do an assignment like:
 
-%%(qbasic)
+%%(freebasic)
 Dim As bar foo
 Dim As Integer x
 foo = x
@@ -249,7 +249,7 @@ foo = x
 
 And casts are kind of the reverse; they are used when you cast to another datatype like:
 
-%%(qbasic)
+%%(freebasic)
 Dim As bar foo
 Dim As Integer x
 x = foo
@@ -257,7 +257,7 @@ x = foo
 
 Heres a short example using ##Let## and ##Cast##:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   n As Integer
   Declare Operator Let(ByRef rhs As Integer)
@@ -302,7 +302,7 @@ Binary ops:
 
 As with normal functions, our ##Type##'s constructor and methods can be overloaded.  For constructors, this provides a way to specify details on how the instance should be constructed.  Here's a short example:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Constructor()
   Declare Constructor(ByVal initial_val As Integer)
@@ -328,7 +328,7 @@ The first ##Constructor##, that had no arguments, is known as the default constr
 
 Overloaded methods are very similar:
 
-%%(qbasic)
+%%(freebasic)
 Type bar
   Declare Sub foo()
   Declare Sub foo(ByVal some_value As Integer)

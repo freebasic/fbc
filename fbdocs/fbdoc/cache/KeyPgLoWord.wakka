@@ -18,7 +18,7 @@ Macro to return the low word of an expression
 	 A word is 2 bytes and a byte is 8 bits. This is best understood by an example. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/bits/loword.bas"}}%%(freebasic)
 DIM N AS UINTEGER
 
 'Note there are 32 bits

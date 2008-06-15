@@ -24,8 +24,7 @@ Clears the screen in both text modes and graphics modes
 
 
 {{fbdoc item="ex"}}
-
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/console/cls.bas"}}%%(freebasic)
 Color , 1
 Cls
 Locate 12, 35
@@ -34,7 +33,8 @@ Print "Hello Universe!"
 
 Using C's memset instead of CLS might give you a speed boost:
 
-%%(qbasic)#include "crt.bi"
+{{fbdoc item="filename" value="examples/manual/gfx/cls-memset.bas"}}%%(freebasic)
+#include "crt.bi"
 const x_res = 640, y_res = 480, bpp = 32
 dim scrbuf as any ptr, scrsize as integer
 dim i as integer, j as integer

@@ -13,7 +13,7 @@ Preprocessor directive to define a macro
 		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced.  **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)
 #define DEBUGGING
 #ifdef DEBUGGING
   ' ... statements

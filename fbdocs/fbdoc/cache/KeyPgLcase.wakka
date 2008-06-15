@@ -21,7 +21,8 @@ Returns a lower case copy of a string
 	If ##//str//## is empty, the null string (##"####"##) is returned.
 
 {{fbdoc item="ex"}}
-%%(qbasic)print lcase("AbCdEfG")
+{{fbdoc item="filename" value="examples/manual/strings/lcase.bas"}}%%(freebasic)
+print lcase("AbCdEfG")
 %%
 	will produce the output:
 

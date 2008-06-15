@@ -19,23 +19,25 @@ Queries for and retrieves system events
 
 	The event data if available will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user datatype, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
 		
-	%%(qbasic)type EVENT field = 1
-	type as integer
-	union
-		type
-			scancode as integer
-			ascii as integer
-		end type
-		type
-			x as integer
-			y as integer
-			dx as integer
-			dy as integer
-		end type
-		button as integer
-		z as integer
-	end union
-end type%%
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgScreenevent_1.bas"}}%%(freebasic)
+Type EVENT Field = 1
+	Type As Integer
+	Union
+		Type
+			scancode As Integer
+			ascii As Integer
+		End Type
+		Type
+			x As Integer
+			y As Integer
+			dx As Integer
+			dy As Integer
+		End Type
+		button As Integer
+		z As Integer
+	End Union
+End Type
+%%
 		
 	__Event types__
 		The event type is identified by an ID number returned into the first integer of the ##//event//## buffer (the ##.type## field in the ##EVENT## structure). Known event type IDs are:
@@ -58,7 +60,8 @@ end type%%
 		The function returns -1 if there are pending events to be retrieved, 0 otherwise. If the ##//event//## parameter is set to 0 (the default if omitted) ##[[KeyPgScreenevent ScreenEvent]]## will not be able to copy the event data and it will not dequeue it from the internal events queue. Calling the function this way can be useful to check if there are pending events without actually fetching them.
 
 {{fbdoc item="ex"}}
-%%(qbasic)'' include fbgfx.bi for some useful definitions
+{{fbdoc item="filename" value="examples/manual/gfx/screenevent.bas"}}%%(freebasic)
+'' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
 
 using fb
@@ -136,7 +139,8 @@ do
 			end
 		end select
 	end if
-loop%%
+loop
+%%
 
 {{fbdoc item="target"}}
 	- ##**Screenevent**## does not return window related events in the DOS version, but does return input events.

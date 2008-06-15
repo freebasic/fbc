@@ -1,16 +1,28 @@
 {{fbdoc item="title" value="OVERLOAD"}}----
-Declaration specifier to overload number and types of parameters passed to procedures
+Specifies that a procedure name can be overloaded
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] //proc_name// **Overload** ( //argumentlist// ) [[KeyPgAs as]] [[DataType datatype]]
-//or//
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] //proc_name// **Overload** ( [ //argumentlist// ] )
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// **Overload** [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	When declaring overloaded functions, this is: functions with the same name and different argument sets, the first declared function must have the keyword ##**Overload**##, to avoid a "Symbol already defined" error. ##**Overload**## specifier may be used on ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## procedures. It is not necessary to use the ##**Overload**## specifier on every declaration of a given proc, but it is allowed, so making macros to build overloaded procs is simple.
+	In procedure declarations, **Overload** allows procedure names to be overloaded, that is, other procedures can then be declared with the same name if their parameter lists are unique. Two parameter lists are unique if they contain a different number of parameters, or have parameters of different types. Note that this means that two or more procedures cannot be declared with the same name if they differ in return type alone.
+
+	Once a procedure name has been declared overloadable, further declarations using the name need not specifiy *Overload*, but it is allowed.
+
+	**Overload** is not necessary in member procedure declarations, as they are always implicitly overloadable.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/procs/overload.bas"}}%%(freebasic)
 DECLARE FUNCTION SUM OVERLOAD (A AS INTEGER,B AS INTEGER) AS INTEGER
 DECLARE FUNCTION SUM OVERLOAD (A AS SINGLE,B AS SINGLE) AS SINGLE
 FUNCTION SUM  (A AS INTEGER,B AS INTEGER) AS INTEGER
@@ -34,6 +46,7 @@ SLEEP
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare declare]]##
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

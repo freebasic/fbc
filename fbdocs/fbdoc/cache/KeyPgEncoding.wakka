@@ -22,7 +22,7 @@ Specifies character format of a text file
 		-"ascii" (the default)
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/encoding.bas"}}%%(freebasic)
 %%
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FB

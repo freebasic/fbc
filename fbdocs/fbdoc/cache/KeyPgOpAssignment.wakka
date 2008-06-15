@@ -29,7 +29,7 @@ Assigns a value to a variable
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/assign.bas"}}%%(freebasic)
 dim i as integer
 i = 420    ' <- this is the assignment operator
 
@@ -42,7 +42,7 @@ print "All is good."
 end 0
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/assign-let.bas"}}%%(freebasic)
 ' compile with -lang deprecated or qb
 dim i as integer
 LET i = 300 ' <-alternate syntax

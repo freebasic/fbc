@@ -19,7 +19,7 @@ Finds the arcsine of a number
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/math/asin.bas"}}%%(freebasic)
 DIM h AS DOUBLE
 DIM o AS DOUBLE
 INPUT "Please enter the length of the hypotenuse of a triangle: ", h

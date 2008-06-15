@@ -32,7 +32,7 @@ Draws a line
 	##//Style//##, if specified, allows styled line drawing; its value is interpreted as a 16bit bitmask, and **Line** will use it to skip pixel drawing. Starting at ##(//x1//,//y1//)##, the most significant bit of the style mask is checked: if 1, the pixel is drawn, if 0, it's skipped. This repeats for all the line pixels with the other bits, with the mask being reused when the 16 bits are all checked.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/line.bas"}}%%(freebasic)
 '' draws a diagonal red line with a white box, and waits for 3 seconds
 screen 13
 line (20, 20)-(300, 180), 4

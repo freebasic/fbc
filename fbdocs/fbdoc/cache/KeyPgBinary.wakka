@@ -40,7 +40,7 @@ Specifies file or device to be opened for binary mode
 	##//filenum//## is a valid file number (in the range 1-255) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/binary-write.bas"}}%%(freebasic)
 '' Create a binary data file with one number in it
 Dim x As Single = 17.164
 Open "MyFile.Dat" For Binary As #1
@@ -48,7 +48,7 @@ Put #1, , x
 Close #1
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/binary-read.bas"}}%%(freebasic)
 '' Now read the number from the file
 Dim x As Single = 0
 Open "MyFile.Dat" For Binary As #1
@@ -57,7 +57,7 @@ Close #1
 Print x
 %%
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/fileio/binary-text.bas"}}%%(freebasic)
 '' Read entire contents of a file to a string
   Dim txt As String
   Open "myfile.txt" For Binary Access Read As #1

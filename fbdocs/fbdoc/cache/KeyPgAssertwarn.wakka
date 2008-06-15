@@ -18,7 +18,8 @@ Debugging macro that prints a warning if an expression is not true
 	If ##-g## is not passed to fbc, the macro does not generate any code.
 
 {{fbdoc item="ex"}}
-%%(qbasic)sub foo
+{{fbdoc item="filename" value="examples/manual/debug/assertwarn.bas"}}%%(freebasic)
+sub foo
   dim a as integer
   a=0
   assertwarn(a=1)

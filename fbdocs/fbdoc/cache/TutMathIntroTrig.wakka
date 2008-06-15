@@ -18,7 +18,7 @@ A triangle has three sides and in 'normal' (i.e. Euclidean) space has three angl
 **Right Triangles**
 To begin with, we will deal with a special class of triangles known as right triangles. A right triangle has one angle that measures 90 degrees. Because the angles of a triangles must be exactly 180 degrees, there can be only one 90 degree angle in a triangle (and it is the largest angle in a right triangle). Below is FreeBASIC code to draw an image of a right triangle. (This image will be referred to throughout the tutorial.) In this image, uppercase letters denote sides, and their corresponding lowercase letters denote the angle opposite of the side. For example, angle y is the angle opposite side Y.
 
-##%%(qbasic)
+##%%(freebasic)
 SCREENRES 640,480,8
 
 'Triangle
@@ -89,7 +89,7 @@ Before we can write a program to solve this, we must remember that FreeBASIC, li
 
 In FreeBASIC we could get the answer with this code.
 
-##%%(qbasic)
+##%%(freebasic)
 CONST PI AS DOUBLE = 3.1415926535897932
 DIM Opposite AS DOUBLE
 DIM Hypotenuse AS DOUBLE
@@ -118,7 +118,7 @@ But what if you know the sides of a triangle and need to find the angle? You wou
 
 For example, using the above set-up, if player two was 30 meters off the ground and 50 meters away from player one (along the hypotenuse) what is the measure of angle y? Looking at our trigonometric functions it looks like we have need of the sine function (an opposite and a hypotenuse). {{fbdoc item="keyword" value="KeyPgSin|SIN"}} ( y ) = opposite/hypotenuse, Arc********Sine (opposite/hypotenuse) = y.
 
-##%%(qbasic)
+##%%(freebasic)
 PRINT ASIN (30/50)
 %%##
 This gives an angle of about 0.6435 radians, or around 36.9 degrees. The FreeBASIC command for each of these inverse functions are:

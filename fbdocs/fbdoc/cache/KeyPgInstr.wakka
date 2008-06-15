@@ -29,14 +29,14 @@ Locates the first occurrence of a substring or character within a string
 	If the ##**Any**## keyword is specified, ##**Instr**## returns the first occurance of any character in ##//substring//##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/instr.bas"}}%%(freebasic)
 ' It will return 4
 PRINT INSTR("abcdefg", "de")
 
 ' It will return 0
 PRINT INSTR("abcdefg", "h")
 %%
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/strings/instr2.bas"}}%%(freebasic)
 dim test as string
 dim idx as integer
 

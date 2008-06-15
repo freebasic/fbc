@@ -1,20 +1,25 @@
 {{fbdoc item="title" value="PUBLIC"}}----
-Specifies procedure visibility to other modules
+Specifies a procedure having external linkage
 
 {{fbdoc item="syntax"}}##
-	**Public** //procedure_definition// ...
+	**Public** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	**Public** [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
 ##
 {{fbdoc item="desc"}}
-	Explicitly sets an individual sub/function to be public. This means the sub/function is freely accessible between other modules.
-
-	The only reason one needs to use the public prefix on subs/functions is if they are private by default (using ##[[KeyPgOptionprivate Option Private]]##), because subs/functions are public by default normally.
+	In procedure definitions, ##**Public**## specifies that a procedure has external linkage, meaning it's name is visible to external modules. If ##**Public**## or ##[[KeyPgPrivate Private]]## is not specified, a procedure is defined as if ##**Public**## was specified.
 
 {{fbdoc item="ex"}}
-%%(qbasic)private sub i_am_private
-end sub
+{{fbdoc item="filename" value="examples/manual/module/sub-public.bas"}}%%(freebasic)
+Private Sub i_am_private
+End Sub
 
-public sub i_am_public
-end sub
+Public Sub i_am_public
+End Sub
 %%
 
 {{fbdoc item="diff"}}

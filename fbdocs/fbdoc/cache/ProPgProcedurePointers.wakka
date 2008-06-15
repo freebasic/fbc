@@ -88,7 +88,7 @@ wend
 print "Value of 'i' after all operations performed: " & i
 %%
 
-{fbdoc item="see"}}
+{{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgPointer Pointer]]##

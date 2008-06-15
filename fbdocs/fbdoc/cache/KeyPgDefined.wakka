@@ -19,7 +19,7 @@ Preprocessor function to test if a symbol has been defined
 	Similar to ##[[KeyPgPpifdef #ifdef]]## except it allows more than one check to occur because of its flexibility.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/prepro/defined.bas"}}%%(freebasic)
 'e.g. - which symbols are defined out of a, b, c, and d ?
 
 const a = 300

@@ -28,7 +28,7 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 	Example:	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/gfx/rgba.bas"}}%%(freebasic)
 screenres 640,480,32
 
 dim as any ptr img

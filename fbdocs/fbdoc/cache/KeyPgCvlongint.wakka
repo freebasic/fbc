@@ -20,7 +20,8 @@ Converts an eight byte string to a long integer variable
 	This function is useful to read numeric values from buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as longint, b as string
+{{fbdoc item="filename" value="examples/manual/strings/cvlongint.bas"}}%%(freebasic)
+dim a as longint, b as string
 a=4534
 b=mklongint(a)
 print a, cvlongint(b)

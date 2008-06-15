@@ -14,7 +14,7 @@ Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgTyp
 	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in which the procedure is declared.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/udt/this.bas"}}%%(freebasic)
 TYPE sometype
 	DECLARE SUB MyCall()
 	value AS INTEGER

@@ -25,7 +25,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 	##//parameter//## is the parameter that is passed by the ##[[KeyPgPutgraphics Put]]## command.  If it was omitted, its value will be zero.
 
 {{fbdoc item="ex"}}
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/gfx/custom.bas"}}%%(freebasic)
 function dither ( byval source_pixel as uinteger, byval destination_pixel as uinteger, byval parameter as any ptr ) as uinteger
 	
 	''either returns the source pixel or the destination pixel, depending on the outcome of rnd
@@ -75,7 +75,8 @@ do until len(inkey)
 loop
 
 '' free the image memory
-imagedestroy img%%
+imagedestroy img
+%%
 {{image class="center" title="Put Custom example output" url="http://img127.imageshack.us/img127/2554/keypgcustomgfxexampleze6.png" link="http://img127.imageshack.us/my.php?image=keypgcustomgfxexampleze6.png"}}
 
 {{fbdoc item="diff"}}

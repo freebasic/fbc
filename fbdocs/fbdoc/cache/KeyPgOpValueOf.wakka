@@ -26,7 +26,7 @@ Dereferences a pointer
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/operator/valueof.bas"}}%%(freebasic)
 'This program demonstrates the use of * to utilize the value a pointer points to.
 Dim a As Integer
 Dim pa As Integer Ptr

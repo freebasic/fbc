@@ -26,7 +26,7 @@ Waits until a specified time has elapsed, or a key is pressed
 	##**Sleep**## does not clear the keyboard buffer and any keys pressed during a call to ##**Sleep**## are retained and can be read using ##[[KeyPgInkey Inkey]]##.  In order to wait for a key press, and remove the key from the buffer, ##[[KeyPgGetkey Getkey]]## can be used instead.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/system/sleep.bas"}}%%(freebasic)
 print "press a key"
 sleep
 getkey 'clear the keyboard buffer
