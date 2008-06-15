@@ -8,7 +8,7 @@
 
 	The //[[CompilerOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.
 
-	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
+	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the //[[CompilerOptlang -lang qb]]// option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 
 	To compile ""FreeBASIC"" sources from 0.16b, use the //[[CompilerOptlang -lang deprecated]]// option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
 
@@ -42,6 +42,7 @@
 		- Instead of ##[[KeyPgOptiondynamic Option Dynamic]]##, declare variable-length arrays using ##[[KeyPgRedim Redim]]##. ##[[KeyPgDim Dim]]## can also be used to declare variable-length arrays using variable or no subscripts.
 		- Instead of ##[[KeyPgOptionbase Option Base]]##, use explicit lower-bound subscripts in arrays declarations.
 		- Instead of ##[[KeyPgOptionprivate Option Private]]##, use ##[[KeyPgPrivate Private]]## to declare procedures with internal linkage.
+		- Instead of ##[[KeyPgOptiongosub Option Gosub]]## and ##[[KeyPgOptionnogosub Option Nogosub]]##, use procedures with ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##.
 
 	""6"") periods in symbol names 
 		- Use namespaces instead.
@@ -90,7 +91,12 @@
 
 {{fbdoc item="section" value="-lang fblite"}}
 	 
-	**Supported:** //Anything allowed in the //[[CompilerOptlang -lang deprecated]]// dialect, but://
+	**Supported:** //Anything allowed in the //[[CompilerOptlang -lang deprecated]]// dialect, plus..//
+	
+	""1"") ##GOSUB##/##RETURN##
+	    - Use ##[[KeyPgOptiongosub Option Gosub]]## to enable.  This will disable ##RETURN## from exiting a procedure, due to ambiguity.
+	
+	**Not supported:**
 
 	""1"") ##[[KeyPgScope Scope]]## blocks
 		- All variables are given procedure scope.  Explicit ##[[KeyPgScope Scope]]## blocks may be added later.

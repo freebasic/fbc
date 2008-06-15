@@ -36,6 +36,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiongosub|OPTION GOSUB"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnogosub|OPTION NOGOSUB"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
@@ -230,6 +232,10 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpNot|NOT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpXor|XOR"}}
 
+{{fbdoc item="section" value="Short Circuit operators"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAndAlso|ANDALSO"}}
+	- {{fbdoc item="keyword" value="KeyPgOpOrElse|ORELSE"}}
+
 {{fbdoc item="section" value="Math"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
 	- {{fbdoc item="keyword" value="KeyPgAcos|ACOS"}}
@@ -358,12 +364,14 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptiongosub|__FB_OPTION_GOSUB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}

@@ -49,6 +49,9 @@ sleep
 {{fbdoc item="lang"}}
 	-In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Field**## alignment is always one, no padding is ever done, as in QB.
 
+{{fbdoc item="diff"}}
+	- In QB ##**Field**##  was used to define fields in a file buffer at run time. This feature is not implemented in FB, so the keyword has been redefined. To define fields in a file buffer, ##**[[KeyPgType Type]]s**## must be used.
+	
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##
 

@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="__FB_SSE__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_SSE__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time if SSE floating point arithmetics is enabled.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbsse.bas"}}%%(freebasic)
+#ifdef __FB_SSE__
+  ' ... instructions only for SSE ...
+#else
+  ' ... instructions not for SSE ...
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[CompilerOptfpu Compiler Option: -fpu]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

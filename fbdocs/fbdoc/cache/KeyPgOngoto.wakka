@@ -31,7 +31,7 @@ End
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- FreeBASIC does not generate a run-time error if ##//expression//## is negative or greater than 255.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSelectcase Select Case]]##

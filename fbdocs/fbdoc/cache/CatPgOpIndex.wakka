@@ -61,6 +61,10 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpOr|OR (Inclusive Disjunction)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpXor|XOR (Exclusive Disjunction)"}}
 
+{{fbdoc item="section" value="Short Circuit Operators"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAndAlso|ANDALSO (Short Circuit Conjunction)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpOrElse|ORELSE (Short Circuit Inclusive Disjunction)"}}
+
 {{fbdoc item="section" value="Preprocessor Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPpStringize|# (Argument stringize)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPpConcat|## (Argument concatenation)"}}

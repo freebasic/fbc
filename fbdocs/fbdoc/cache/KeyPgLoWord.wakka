@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="LOWORD"}}----
-Macro to return the low word of an expression
+Gets the least-significant word (LSW, or //lo-word//) of an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Loword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgOpAnd and]] &h0000FFFF)
+	[[KeyPgPpdefine #define]] **Loword**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h0000FFFF )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Loword**(//x//)
+	//result// = **Loword**(//expr//)
 ##
 {{fbdoc item="param"}}
-	##//x//##
-		Number to retrieve low-word from.
+	##//expr//##
+		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="ret"}}
-	The least significant word of ##//x//##.
+	Returns the LSW value of `##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##`.
 
 {{fbdoc item="desc"}}
-	 A word is 2 bytes and a byte is 8 bits. This is best understood by an example. 
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an [[KeyPgUinteger Uinteger]] representing the value of its LSW.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/loword.bas"}}%%(freebasic)
@@ -52,8 +52,8 @@ The Binary representation of the LSW Is    1111111111111111
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgHiword Hiword]]##
-	- ##[[KeyPgHibyte Hibyte]]##
 	- ##[[KeyPgLoByte Lobyte]]##
+	- ##[[KeyPgHibyte Hibyte]]##
+	- ##[[KeyPgHiword Hiword]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

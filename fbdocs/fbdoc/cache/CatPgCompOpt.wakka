@@ -9,6 +9,8 @@ Command line compiler options for the fbc compiler:
 		- Add a source file to compilation
 	{{fbdoc item="keyword" value="CompilerOptc|-c"}}
 		- Compile only, do not link
+	{{fbdoc item="keyword" value="CompilerOptcupp|-C"}}
+		- Do not delete the object file(s)
 	{{fbdoc item="keyword" value="CompilerOptd|-d < name=val >"}}
 		- Add a preprocessor's define
 	{{fbdoc item="keyword" value="CompilerOptdll|-dll"}}
@@ -25,6 +27,8 @@ Command line compiler options for the fbc compiler:
 		- Same as -ex plus array bounds and null-pointer checking
 	{{fbdoc item="keyword" value="CompilerOptexport|-export"}}
 		- Export symbols for dynamic linkage
+	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
+		- Set the floating point arithmetics unit (default: FPU)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
 		- Add debug info
 	{{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}
@@ -58,6 +62,8 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
 		- Enable function profiling
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}
+		- Write asm file(s) only, do not compile or link
+	{{fbdoc item="keyword" value="CompilerOptrupp|-R"}}
 		- Do not delete the asm file(s)
 	{{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}
 		- Set subsystem (##gui##, ##console##)

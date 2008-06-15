@@ -22,7 +22,7 @@ dim int as integer          ' declare a variable with the name 'int'
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

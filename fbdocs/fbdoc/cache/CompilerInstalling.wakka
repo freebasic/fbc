@@ -15,7 +15,7 @@ FreeBASIC installation.
 			//(attempt to create a temporary directory and change to it)//
 		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux.tar.gz""##
 			//(unpack the archive)//
-		##cd freebasic##
+		##cd FreeBASIC##
 			//(change to the root installation directory)//
 
 	Run the installation script ##install.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
@@ -36,7 +36,7 @@ FreeBASIC installation.
 			//(attempt to create a temporary directory and change to it)//
 		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""##
 			//(unpack the archive)//
-		##cd freebasic##
+		##cd FreeBASIC##
 			//(change to the root installation directory)//
 
 	Run the installation script ##install-standalone.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,

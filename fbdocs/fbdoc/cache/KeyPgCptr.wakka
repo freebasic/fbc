@@ -2,10 +2,12 @@
 Converts a pointer expression to a specified data type pointer
 
 {{fbdoc item="syntax"}}##
-	**Cptr**( [[DataType DataType]] [[KeyPgPtr ptr]], //expression// )
+	**Cptr**( //""PointerDataType""//, //expression// )
 ##
 {{fbdoc item="desc"}}
-	Converts ##//expression//## to a pointer to a [[DataType DataType]]. ##//expression//## may be a another pointer type or an ##[[KeyPgInteger Integer]]##.
+	Converts ##//expression//## to ##//""PointerDataType""//##.
+	##//""PointerDataType""//## must be a ##[[KeyPgPointer Pointer]]## type (e.g. a [[DataType]] or ##[[KeyPgAny Any]]## ##[[KeyPgPtr Ptr]]##), or a ##[[KeyPgTypeAlias Type (Alias)]]## to one.
+	##//expression//## may have a different pointer type or be an ##[[KeyPgInteger Integer]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/cptr.bas"}}%%(freebasic)
@@ -24,6 +26,7 @@ print *cptr( byte ptr, intptr ), *intptr
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPtr Ptr]]##
 	- ##[[KeyPgCast Cast]]##
 	- ##[[KeyPgCbyte Cbyte]]##
 	- ##[[KeyPgCshort Cshort]]##

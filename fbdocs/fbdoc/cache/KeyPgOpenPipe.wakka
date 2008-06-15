@@ -36,6 +36,15 @@ Opens an external process' standard input (//stdin//) or output (//stdout//) str
 
 {{fbdoc item="target"}}
 	- The ##[[KeyPgBinary Binary]]## //file mode// is not supported on all platforms; ##**Open Pipe**## will throw an error if it is unable to open the external process' //stdin// or //stdout// streams in binary mode.
+	
+	
+	
+**Runtime errors:**
+	    ##**Open Pipe**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+
+	//(##1##) Illegal function call//
+		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
+
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openpipe.bas"}}%%(freebasic)

@@ -16,7 +16,7 @@ Returns a pointer to the current work page's framebuffer
 	##**Screenptr**## can also be used to test if a call to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## was successful, indicated by a non-NULL (<> 0) return value.
 
 	In order to access a pixel in the screen buffer, you will need to know the screen's width, height, bytes per pixel and pitch (bytes per row).  This information can be found out using ##[[KeyPgScreeninfo Screeninfo]]##.
-	Each row in the frame buffer is ##//width//## * ##//pitch//## bytes long.  The frame buffer consists of ##//height//## rows, stored in order of their position on the screen, running from top to bottom, left to right.
+	Each row in the frame buffer is ##//pitch//## bytes long.  The frame buffer consists of ##//height//## rows, stored in order of their position on the screen, running from top to bottom, left to right.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenptr.bas"}}%%(freebasic)

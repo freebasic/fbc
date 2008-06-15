@@ -150,6 +150,10 @@
 		[[KeyPgOpOr Operator Or (Inclusive Disjunction)]]
 		[[KeyPgOpXor Operator Xor (Exclusive Disjunction)]]
 
+	{{fbdoc item="subsect" value="Short circuit operators"}}
+		[[KeyPgOpAndAlso Operator AndAlso (Short Circuit Conjunction)]]
+		[[KeyPgOpOrElse Operator OrElse (Short Circuit Inclusive Disjunction)]]
+
 	{{fbdoc item="subsect" value="Indexing operators"}}
 		[[KeyPgOpArrayIndex Operator () (Array index)]]
 		{{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}
@@ -225,6 +229,7 @@
 		[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]
 		[[KeyPgDdfboptionescape __FB_OPTION_ESCAPE__]]
 		[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]
+		[[KeyPgDdfboptiongosub __FB_OPTION_GOSUB__]]
 		[[KeyPgDdfboptionprivate __FB_OPTION_PRIVATE__]]
 		[[KeyPgDdfboutdll __FB_OUT_DLL__]]
 		[[KeyPgDdfboutexe __FB_OUT_EXE__]]
@@ -278,6 +283,7 @@
 		[[KeyPgAllocate ALLOCATE]]
 		[[KeyPgAlphaGfx ALPHA (Graphics PUT)]]
 		[[KeyPgOpAnd AND]]
+		[[KeyPgOpAndAlso ANDALSO]]
 		[[KeyPgAndGfx AND (GRAPHICS PUT)]]
 		[[KeyPgAny ANY]]
 		[[KeyPgAppend APPEND]]
@@ -554,12 +560,15 @@
 		[[KeyPgOptiondynamic OPTION DYNAMIC]]
 		[[KeyPgOptionescape OPTION ESCAPE]]
 		[[KeyPgOptionexplicit OPTION EXPLICIT]]
+		[[KeyPgOptiongosub OPTION GOSUB]]
+		[[KeyPgOptionnogosub OPTION NOGOSUB]]
 		[[KeyPgOptionnokeyword OPTION NOKEYWORD]]
 		[[KeyPgOptionprivate OPTION PRIVATE]]
 		[[KeyPgOptionstatic OPTION STATIC]]
 		[[KeyPgOperator OPERATOR]]
 		[[KeyPgOpOr OR]]
 		[[KeyPgOrGfx OR (GRAPHICS PUT)]]
+		[[KeyPgOpOrElse ORELSE]]
 		[[KeyPgOut OUT]]
 		[[KeyPgOutput OUTPUT]]
 		[[KeyPgOverload OVERLOAD]]
@@ -757,6 +766,7 @@
 		[[CompilerOptarch -arch < type >]]
 		[[CompilerOptb -b < name >]]
 		[[CompilerOptc -c]]
+		[[CompilerOptcupp -C]]
 		[[CompilerOptd -d < name=val >]]
 		[[CompilerOptdll -dll]]
 		[[CompilerOptdylib -dylib]]
@@ -782,6 +792,7 @@
 		[[CompilerOptprefix -prefix < path >]]
 		[[CompilerOptprofile -profile]]
 		[[CompilerOptr -r]]
+		[[CompilerOptrupp -R]]
 		[[CompilerOpts -s < name >]]
 		[[CompilerOpttarget -target < platform >]]
 		[[CompilerOptt -t < value >]]

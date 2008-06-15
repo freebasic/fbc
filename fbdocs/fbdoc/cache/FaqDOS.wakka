@@ -50,6 +50,8 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 	==- {{anchor name="item24|24. Executables from FB DOS are bloated !"}}==
 	==- {{anchor name="item25|25. SLEEP doesn't work ! How to cause a delay ?"}}==
 
+{{anchor name="item999|See also"}}
+
 ----
 
 @@**FreeBASIC DOS related questions**@@
@@ -64,7 +66,7 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 	You need a DPMI kernel (DPMI host, DPMI server), means the file "CWSDPMI.EXE" (cca 20 KiB) or HDPMI32.EXE (cca 34 KiB). See requirements, and FAQ 4 for more details.  
 
 {{anchor name="item4"}}==4. Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP ?==
-	Yes, 2 possibilities. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KiB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KiB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package. Alternatively, you can use the **WDOSX** or **D3X** extender. They don't swap and create standalone executables. Since they run your executable in Ring 0, the crash handling of them is not very good and can cause freezers or reboots on bugs where other hosts exit the "civil" way with a register dump. Also, spawning might not work well / at all with WDOSX or D3X. Finally, you can use **HDPMI** . Download the "HXRT.ZIP" file (here: [[http://japheth.de/HX.html]]), extract "HDPMI32.EXE" (cca 34 KiB) and "HDPMI.TXT" (not required by the code, just for your information), and include it to your DOS startup ("HDPMI32 -r"). This will make HDPMI resident and prevent all FreeBASIC (also ""FreePASCAL"" and DJGPP) programs from both crying about missing DPMI and swapping. HDPMI can **not** (easily / yet) be included into your executables. Running an executable containing CWSDPMI inside under HDPMI is fine - the built-in CWSDPMI will be simply skipped. Using DPMI is definitely required for FreeBASIC, since it can't generate 16-bit real mode code, and there is no other good way to execute 32-bit code in DOS.
+	Yes, 2 possibilities. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KiB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KiB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package. Alternatively, you can use the **WDOSX** or **D3X** extender. They don't swap and create standalone executables. Since they run your executable in Ring 0, the crash handling of them is not very good and can cause freezers or reboots on bugs where other hosts exit the "civil" way with a register dump. Also, spawning might not work well / at all with WDOSX or D3X. Finally, you can use **HDPMI** . Download the "HXRT.ZIP" file (here: [[http://japheth.de/HX.html japheth.de/HX.html]]), extract "HDPMI32.EXE" (cca 34 KiB) and "HDPMI.TXT" (not required by the code, just for your information), and include it to your DOS startup ("HDPMI32 -r"). This will make HDPMI resident and prevent all FreeBASIC (also ""FreePASCAL"" and DJGPP) programs from both crying about missing DPMI and swapping. HDPMI can **not** (easily / yet) be included into your executables. Running an executable containing CWSDPMI inside under HDPMI is fine - the built-in CWSDPMI will be simply skipped. Using DPMI is definitely required for FreeBASIC, since it can't generate 16-bit real mode code, and there is no other good way to execute 32-bit code in DOS.
 
 {{anchor name="item5"}}==5. Can I use other DOS extenders, like DOS/4GW, Causeway, DOS/32A ?==
 	Not any extender around. So-called WATCOM-like extenders can't be used because of important differences in memory management and executable structure. WDOSX and D3X do work, since they are a multi-standard extenders, not only WATCOM-like. You also can use PMODE/DJ (not "original" Tran's PMODE, nor PMODE/W (!), saves cca 5 KiB compared to CWSDPMI, can be included into the EXE, but might affect stability or performance) or, as aforementioned, HDPMI.
@@ -73,13 +75,13 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 	The FreeBASIC project focuses on the compiler, generating the executables from your BAS sources. It looks unspectacular, but is most important for the quality of software developed by you. The project does not include an IDE. There are several external IDE's for FreeBASIC, but probably none does have a DOS version by now.  If you really need one, you could try Rhide, but note that it is complicated and buggy, so use it at your own risk. See also FAQ 7 and 8.
 
 {{anchor name="item7"}}==7. How to view the documentation in CHM or PDF format in DOS ?==
-	There is no good way to view CHM or PDF files in DOS by now. But you can view the FreeBASIC documentation nevertheless. One of the FreeBASIC developers, "coderJeff" provides a FreeBASIC documentation viewer with the docs included in a special format, and having also a DOS version. It looks similar the QB's built-in help viewer, but does not contain an editor or IDE. Download here: [[http://www.execulink.com/~coder/freebasic/docs.html]]
+	There is no good way to view CHM or PDF files in DOS by now. But you can view the FreeBASIC documentation nevertheless. One of the FreeBASIC developers, "coderJeff" provides a FreeBASIC documentation viewer with the docs included in a special format, and having also a DOS version. It looks similar the QB's built-in help viewer, but does not contain an editor or IDE. Download here: [[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/~coder/freebasic/docs.html]]
 
 {{anchor name="item8"}}==8. How to write / edit my sources ?==
-	There are not many **good** editors for DOS, some possibilities are FreeDOS EDIT (use version 0.7d (!!), 64 KiB limit, suboptimal stability (save your work regularly) ), SETEDIT, INFOPAD (comes with CC386 compiler, can edit big texts also, has syntax highlighting for C and ASM, but not for BASIC).
+	There are many editors for DOS around, but only few of them are **good** - some possibilities are FreeDOS EDIT (use version 0.7d (!!), 64 KiB limit, suboptimal stability (save your work regularly) ), SETEDIT, INFOPAD (comes with CC386 compiler, can edit big texts also, has syntax highlighting for C and ASM, but not for BASIC).
 
 {{anchor name="item9"}}==9. How can I play sound in DOS ?==
-	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard. The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), you can re-use most of existing QB code easily (example: [[http://www.o-bizz.de/qbdown/qbsound/speaker.zip]]) or ASM code via inline ASM,  but provides one channel and 6 bits only, and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. For old ISA soundcards, there is much example code around, a newer PCI soundcard can be accessed (supposing bare DOS in this category) either using a ( "emulation" SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). There are a few sources of inspiration like the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods (native + "emu" drivers), see an up-to-date list here: [[http://www.unet.univie.ac.at/~a0503736/php/drdoswiki/index.php?n=Main.SoundCardChip drdos.org/...wiki...SoundCardChip]]. Support of sound in DOS is **not** business FB DOS port, actually FB doesn't "support" sound on Win32 and Linux either - the games "connect to the API" rather than use FreeBASIC commands or libraries. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code, existing DJGPP ports of those libraries should be usable for this.  
+	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard. The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), you can re-use most of existing QB code easily (example: [[http://www.o-bizz.de/qbdown/qbsound/speaker.zip o-bizz.de/qb...speaker.zip]]) or ASM code via inline ASM,  but provides one channel and 6 bits only, and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. For old ISA soundcards, there is much example code around, a newer PCI soundcard can be accessed (supposing bare DOS in this category) either using a ( "emulation" SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). There are a few sources of inspiration like the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods (native + "emu" drivers), see an up-to-date list here: [[http://www.unet.univie.ac.at/~a0503736/php/drdoswiki/index.php?n=Main.SoundCardChip drdos.org/...wiki...SoundCardChip]]. Support of sound in DOS is **not** business FB DOS port, actually FB doesn't "support" sound on Win32 and Linux either - the games "connect to the API" rather than use FreeBASIC commands or libraries. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code, existing DJGPP ports of those libraries should be usable for this.  
 
 {{anchor name="item10"}}==10. How can I use USB in DOS ?==
 
@@ -87,7 +89,7 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 
 {{anchor name="item11"}}==11. How can I do graphics in DOS ?==
 	GUI or graphics in DOS is definitely possible, there are several approaches: 
-		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.4** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
+		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.5** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "ModeX" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
@@ -103,7 +105,7 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 '' Run in text mode 80x25 only
 ''
 
-'' including dos/go32.bi Will define "_dos_ds"
+'' Including dos/go32.bi will define "_dos_ds"
 '' "pointing" into GO32 block
 
 #include "dos/go32.bi" 
@@ -162,16 +164,16 @@ type RegTypeX as __dpmi_regs
 #define INTERRUPTX(v,r) __dpmi_int( v, @r )
 %%
 
-	Alternatively you can call INT's via inline ASM, 2 important things you have to care about are the fact that FB's memory model is not zero-based (see also FAQ 11), and additionally "direct" passing of addresses (like DS:DX) to an INT will not work except you have a DPMI host with "DOS API translation".  
+	Alternatively you can call INT's via inline ASM, 2 important things you have to care about are the fact that FB's memory model is not zero-based (see also FAQ 12, "DEF SEG" issues), and additionally "direct" passing of addresses (like DS:[E]DX) to an INT will not work except you have a DPMI host with "DOS API translation".  
 
 {{anchor name="item14"}}==14. How to rewrite QB's XMS/EMS handling ?==
-	Depends why original code uses it. If it's just to bypass low memory limits, simply remove it and use "ordinary" FB's data types / memory handling features instead. If it is used for (sound) DMA, you are out of luck and have to redesign the code completely, about sound see FAQ 9.
+	Depends why original code uses it. If it's just to bypass low memory limits, simply remove it and use "ordinary" FB's data types / memory handling features instead. If it is used for (sound) DMA, you are out of luck and have to redesign the code completely, about sound see FAQ 9. For DMA use preferably the low memory (should be no big problem, since the application code and most buffers are in DPMI memory instead), DMA in DPMI memory is possible but more difficult.  
 
 {{anchor name="item15"}}==15. FBC gives me a 'cannot find lsupcxx' error !==
 	The source of this problem is the **libsupcxx.a** file in **LIB\DOS\** directory, having 9 characters in the name. Your fault is to have extracted the ZIP with long file names enabled, usually in Windows, and then using FB in DOS with no LFN support, resulting in this file looks **LIBSUP~1.A** and can't be found. Rename the file in **LIBSUPCX.A** (one **X** only) or extract the ZIP again in DOS. Note: changes in FB 0.18, retest needed. 
 
 {{anchor name="item16"}}==16. How to use the serial or parallel port ?==
-	The DOS INT14 is not very useful/efficient as it sends/reads a single char in each call. So it's better to use an external DOS32 comms library. /* does someone know a good one ? */ FB up to 0.18.2 doesn't support OPEN COM on DOS target, CoderJeff has an experimental library/driver available, included with FB 0.18.3. 
+	The DOS INT14 is not very useful/efficient as it sends/reads a single char in each call. So it's better to use an external DOS32 comms library. /* does someone know a good one ? */ FB up to 0.18.2 doesn't support OPEN COM on DOS target, CoderJeff has an experimental library/driver available, included with FB since 0.18.3. 
 
 {{anchor name="item17"}}==17. How to print ?==
 	DOS kernel won't help you here, so you have to prepare the text (trivial) or bitmap data (acceptably easy for printers compatible with the "ESC/P" standard) yourself and send in to the printer via the parallel port or USB using an additional driver (see FAQ 10). So-called "GDI" or "Windows" printers can't be made working in DOS with reasonable effort.
@@ -190,14 +192,14 @@ type RegTypeX as __dpmi_regs
 		- For some old cards there are VESA drivers available (S3VBE/UVIVBE). Test both with and without, and include this info into your report. 
 		- Remove potentially problematic content (memory managers, drivers) from DOS startup files. Nothing of such is required for FB, except a DPMI host (see also FAQ 4.).
 		- Post info about your graphics card, CPU (if old), DOS type and version, bug symptoms, and a simple example code.
-	VESATEST and CPUID can be downloaded here: [[http://rayer.ic.cz/programm/programe.htm]] , VBEDIAG here [[http://drv.nu/vbediag/]].
+	VESATEST and CPUID can be downloaded here: [[http://rayer.ic.cz/programm/programe.htm rayer.ic.cz/programm/programe.htm]] , VBEDIAG here [[http://drv.nu/vbediag/ drv.nu/vbediag/]].
 
 {{anchor name="item20"}}==20. Mouse trouble ! Mouse doesn't work at all in DOS / arrow "jumps" / etc. ...==
-	To use a mouse in DOS, you need a compatible driver, recognizing your mouse. For optimal results, you need a **good** driver and a **suitable** mouse. 
+	To use a mouse in DOS, you need a compatible driver, recognizing your mouse, and recognized by FreeBASIC library. For optimal results, you need a **good** driver and a **suitable** mouse. 
 
 	Mouse: the optimal choice, and pretty well available nowadays, is a PS/2 mouse. The old type would be a serial mouse, also this one should work. The newest is USB mouse - but is not very suitable for use in DOS, since it would need a compatible (INT33) high quality native USB mouse driver (none available by now, only some experimental), or rely on BIOS emulation (not always available, or "unprecise").
 
-	Driver: the preferred choice is CTMOUSE, coming with FreeDOS. There are versions 1.9a1, 2.0a4, and 2.1xx available. None is perfect, but still they are well usable and better than most competitors. 1.9xx and 2.1xx will cooperate with BIOS, allowing USB emulation, 2.0xx bypasses BIOS and thus USB emulation will **NOT** work. Also Logitech mouse drivers usually do a good job. Known for problems are DRMOUSE and some (old ?) versions of MSMOUSE.
+	Driver: the preferred choice is CTMOUSE from FreeDOS project. There are versions 1.9a1, 2.0a4, and 2.1xx available. It is included with (but not limited to) FreeDOS, or download a version from here: [[http://www.ibiblio.org/pub/micro/pc-stuff/freedos/files/dos/mouse/ ibiblio.org/pub/...mouse]] . None of them is perfect, but still they are well usable and better than most competitors. 1.9xx and 2.1xx will cooperate with BIOS, allowing USB emulation, 2.0xx bypasses BIOS and thus USB emulation will **NOT** work. Also Logitech mouse drivers usually do a good job, download from here: [[http://www.uwe-sieber.de/util_e.html uwe-sieber.de/util_e.html]] - version 6.50 is a good start. Known for problems are DRMOUSE and some (old ?) versions of MSMOUSE.
 
 	If the mouse does not work at all, then most likely the driver is not loaded, doesn't recognize the mouse (see driver messages), or is not compatible with the INT33 "standard". For USB mouse, activating the "USB mouse emulation" in BIOS settings can help. 
 
@@ -221,7 +223,7 @@ type RegTypeX as __dpmi_regs
 {{anchor name="item25"}}==25. SLEEP doesn't work ! How to cause a delay ?==
 	SLEEP does work ... but has a resolution of cca 55ms = 1/18s only, thus "SLEEP 500" is fine, while using "SLEEP 2" for 2 milliseconds won't work. !writeme! / !fixme! PIT RDTSC loops
 
-{{fbdoc item="see"}}
+{{anchor name="item999"}}{{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]].
 	- [[FaqPgrtlib FB Run-Time Library FAQ]].
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]

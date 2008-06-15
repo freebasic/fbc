@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BIT"}}----
-Macro that returns the value of one bit of an integer
+Gets the state of an individual bit in an integer value.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgOpAnd and]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//))) <> 0)
@@ -9,17 +9,15 @@ Macro that returns the value of one bit of an integer
 ##
 {{fbdoc item="param"}}
 	##//value//##
-		Value in which to test the bit.
+		The integer value.
 	##//bit_number//##
-		Zero-based number of the bit to test, where 0 is the least-significant bit.
+		The index of the bit.
 
 {{fbdoc item="ret"}}
-	""-1"" if bit ##//bit_number//## is set in ##//value//##, else 0.
+	Returns an ##[[KeyPgInteger Integer]]## value of `##-1##` if the bit is set, or `##0##` if the bit is cleared.
 
 {{fbdoc item="desc"}}
-	##**Bit**## returns -1 if the bit ##//bit_number//## of ##//value//## is 1, returns 0 if bit is 0.
-
-	##foo = **Bit**( bar, 10 )##  is the same as ##foo = (bar and 1 shl 10) <> 0##.
+	This macro expands to an integer value indicating whether or not the bit specified by ##//bit_number//## is set in the integer ##//value//##. Behaves as `##//value// [[KeyPgOpAnd And]] 1 [[KeyPgOpShiftLeft Shl]] //bit_number//##`.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bit.bas"}}%%(freebasic)

@@ -17,9 +17,9 @@ Declares a union user defined type.
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. Since they occupy the same space, only a single element can be used. 
+	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType Type]]## . Since they occupy the same space, only a single element can be used. 
 
-	Unions can be nested inside a type structure. See Example.
+	Unnamed unions can be nested inside a type structure and unnamed types can be nested inside an union . See Example.
 
 	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##.  All members of a union are public and access control is not supported.
 

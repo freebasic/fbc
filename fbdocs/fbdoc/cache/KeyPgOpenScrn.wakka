@@ -31,6 +31,15 @@ Opens the console directly for input and output as a file
 
 	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
 
+	
+**Runtime errors:**
+	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+
+	//(##1##) Illegal function call//
+		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
+		
+		
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openscrn.bas"}}%%(freebasic)
 dim a as string

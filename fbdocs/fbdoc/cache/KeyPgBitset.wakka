@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BITSET"}}----
-Macro that sets a bit in an integer
+Gets the value of an integer with a specified bit set.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpOr or]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
@@ -9,16 +9,17 @@ Macro that sets a bit in an integer
 ##
 {{fbdoc item="param"}}
 	##//value//##
-		The integer value to set a bit in.  It is not modified.
+		The integer value.
 	##//bit_number//##
-		The zero-based number of the bit to set; 0 is the least-significant bit.  The valid range for this number is 0 to 31, unless ##//value//## is a ##[[KeyPgLongint LongInt]]##, in which case the range is from 0 to 63.
+		The index of the bit to set.
 
 {{fbdoc item="ret"}}
-	##//value//## with bit ##//bit_number//## set to 1.
+	Returns the integer value with the specified bit set.
 
 {{fbdoc item="desc"}}
-	Macro returning ##//value//## with the bit ##//bit_number//## set to 1.
-	##foo = **Bitset**( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
+	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## set (to //on//, or `##1##`). Behaves as `##//value// [[KeyPgOpOr Or]] (1 [[KeyPgOpShiftLeft Shl]] //bit_number//)##`.
+
+	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof Typeof]](//value//)##`, which is `##0##` through `##[[KeyPgSizeof Sizeof]](//value//) * 8 - 1##`. See [[TblVarTypes Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bitset.bas"}}%%(freebasic)

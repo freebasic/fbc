@@ -2,30 +2,30 @@
 Macros that work with the bits and bytes of numbers.
 
 {{fbdoc item="desc"}}
-	The macros listed here manipulate bits and bytes. The "Byte Manipulation" macros return the value of a specific byte or word of an ##[[KeyPgInteger Integer]]## value, while the "Bit Manipulation" macros set or test individual bits in an ##[[KeyPgInteger Integer]]## value.
+	The macros documented here provide access to the individual bits, bytes and words of integer values.
 
 **{{anchor name="BYTEMACROS|Byte Manipulation Macros"}}**
-	Byte and word manipulation macros.
+	Gets the value of individual bytes or words of ##[[KeyPgUinteger Uinteger]]## values.
 **{{anchor name="BITMACROS|Bit Manipulation Macros"}}**
-	Bit manipulation macros.
+	Gets the state of individual bits of numeric values.
 
 <<{{anchor name="BYTEMACROS"}}{{fbdoc item="section" value="Byte Manipulation Macros"}}
 	=={{fbdoc item="keyword" value="KeyPgLoByte|LOBYTE"}}==
-		Returns the least significant byte of an unsigned integer.
+		Gets the least significant byte (LSB, or //lo-byte//) value of an ##[[KeyPgUinteger Uinteger]]## value.
 	=={{fbdoc item="keyword" value="KeyPgHibyte|HIBYTE"}}==
-		Returns the most significant byte of an unsigned integer.
+		Gets the most significant byte (MSB, or //hi-byte//) value of the least significant word (LSW, or //lo-word//) of an ##[[KeyPgUinteger Uinteger]]## value.
 	=={{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}==
-		Returns the least significant word of an unsigned integer.
+		Gets the least significant word (LSW, or //lo-word//) value of an ##[[KeyPgUinteger Uinteger]]## value.
 	=={{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}==
-		Returns the most significant word of an unsigned integer.
+		Gets the most significant word (LSW, or //hi-word//) value of an ##[[KeyPgUinteger Uinteger]]## value.
 
 <<>>{{anchor name="BITMACROS"}}{{fbdoc item="section" value="Bit Manipulation Macros"}}
 	=={{fbdoc item="keyword" value="KeyPgBit|BIT"}}==
-		Returns 0 or -1 if the specified bit in an integer is clear or set.
+		Gets the state of an individual bit in an integer value.
 	=={{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}==
-		Returns an integer with the specified bit set to 0.
+		Gets the value of an integer with a specified bit set.
 	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
-		Returns an integer with the specified bit set to 1.
+		Gets the value of an integer with a specified bit cleared.
 
 >>::c::
 

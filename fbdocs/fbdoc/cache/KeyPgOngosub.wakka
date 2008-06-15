@@ -34,15 +34,17 @@ return
 %%
 
 {{fbdoc item="lang"}}
-	- ON x GOSUB can be used only with the //[[CompilerOptlang -lang qb]]// dialect.  
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- ##**On Gosub**## support is disabled by default in the //[[CompilerOptlang -lang fblite]]// unless the ##[[KeyPgOptiongosub Option Gosub]]## statement is used.
 
 {{fbdoc item="diff"}}
-	- None
+	- FreeBASIC does not generate a run-time error if ##//expression//## is negative or greater than 255.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSelectcase Select Case]]##
 	- ##[[KeyPgOngoto On...Goto]]##
 	- ##[[KeyPgGosub Gosub]]##
 	- ##[[KeyPgReturn Return]]##
+	- ##[[KeyPgOptiongosub Option Gosub]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

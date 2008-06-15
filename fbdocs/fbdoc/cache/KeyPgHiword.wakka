@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="HIWORD"}}----
-Macro to return the high word of an expression
+Gets the most-significant word (MSW, or //hi-word//) of an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Hiword**( //x// ) ([[KeyPgCuint CUint]](//x//) [[KeyPgOpShiftRight shr]] 16)
+	[[KeyPgPpdefine #define]] **Hiword**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpShiftRight shr]] 16 )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Hiword**(//x//)
+	//result// = **Hiword**(//expr//)
 ##
 {{fbdoc item="param"}}
-	##//x//##
-		Number to retrieve high-word from.
+	##//expr//##
+		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="ret"}}
-	The most significant word of ##//x//##.
+	Returns the MSW value of `##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##`.
 
 {{fbdoc item="desc"}}
-	A word is 2 bytes and a byte is 8 bits. This is best understood by an example. 
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an [[KeyPgUinteger Uinteger]] representing the value of its MSW.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/hiword.bas"}}%%(freebasic)
@@ -51,8 +51,8 @@ The Binary representation of the LSW Is    1111111111111111
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoWord Loword]]##
-	- ##[[KeyPgHibyte Hibyte]]##
 	- ##[[KeyPgLoByte Lobyte]]##
+	- ##[[KeyPgHibyte Hibyte]]##
+	- ##[[KeyPgLoWord Loword]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

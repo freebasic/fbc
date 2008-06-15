@@ -11,6 +11,8 @@ Procedures that operate on one or more operands.
 	Operators that compare the relationship between their operands.
 =={{fbdoc item="keyword" value="CatPgOpLogical|Logical operators"}}==
 	Operators that perform bitwise computations with their operands and return the result.
+=={{fbdoc item="keyword" value="CatPgOpShortCircuit|Short circuit operators"}}==
+	Operators that perform short circuit evaluations with their operands and return the result.
 =={{fbdoc item="keyword" value="CatPgOpIndexing|Indexing operators"}}==
 	Operators that return references to variables or objects based on an index value.
 <<>>=={{fbdoc item="keyword" value="CatPgOpString|String operators"}}==

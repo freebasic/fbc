@@ -20,7 +20,7 @@ Shifts the bits of a numeric expression to the left
 	Returns the result of ##//lhs//## being shifted left ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, ##&b0101 **Shl** 1## returns the binary number ##&b01010##, and ##5 **Shl** 1## returns ##10##.
+	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, "##&b0101 **Shl** 1##" returns the binary number ##&b01010##, and "##5 **Shl** 1##" returns ##10##.
 
 	Neither of the operands are modified in any way.
 
@@ -29,25 +29,25 @@ Shifts the bits of a numeric expression to the left
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/shift-left.bas"}}%%(freebasic)
 'Double a number
-DIM i AS INTEGER
-
-FOR i = 1 TO 10
-	PRINT 1 SHL i
-NEXT i
-SLEEP
+For i As Integer = 0 To 10
+	
+	Print 5 Shl i, Bin(5 Shl i, 16)
+	
+Next i
 %%
 Output:
 %%
-2
-4
-8
-16
-32
-64
-128
-256
-512
-1024
+ 5            0000000000000101
+ 10           0000000000001010
+ 20           0000000000010100
+ 40           0000000000101000
+ 80           0000000001010000
+ 160          0000000010100000
+ 320          0000000101000000
+ 640          0000001010000000
+ 1280         0000010100000000
+ 2560         0000101000000000
+ 5120         0001010000000000
 %%
 
 
@@ -60,7 +60,7 @@ Output:
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpCombineShiftLeft Operator Shl= (Shift Left and Assign)]]##
 	- ##[[KeyPgOpShiftRight Operator Shr (Shift right)]]##
-	- [[CatPgOpArithmetic Arithmetic Operators]]
+	- ##[[KeyPgBin Bin]]##
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

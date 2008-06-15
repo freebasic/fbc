@@ -16,6 +16,8 @@ Statements that affect how code is compiled.
 	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiongosub|OPTION GOSUB"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnogosub|OPTION NOGOSUB"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
@@ -40,7 +42,7 @@ Statements that affect how code is compiled.
 ::c::
 {{fbdoc item="lang"}}
 	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## available only in the //[[CompilerOptlang -lang fblite]]// dialect.
-	- ##OPTION## statements available only in the //[[CompilerOptlang -lang fblite]]// dialect except for ##[[KeyPgOptionbase OPTION BASE]]## and ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## which are also available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- ##OPTION## statements are available only in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects only.
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]

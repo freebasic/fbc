@@ -15,6 +15,7 @@
 	==- {{anchor name="item10|Can I program GUI applications in FB ?"}}==
 	==- {{anchor name="item11|Is FB suitable for complex / big applications?"}}==
 	==- {{anchor name="item12|Can I use a non-latin charset in my FreeBASIC apps?"}}==
+	==- {{anchor name="item13|Can I use Serial/COM and Hardware/CPU ports in FB?"}}==
 
 **Getting Started with FreeBASIC questions**
 	
@@ -102,7 +103,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does FreeBASIC support Object Oriented Programming?==
-	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future. At the moment (V18.3b) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented . For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
+	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future. At the moment (V0.18.5) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented . For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -121,7 +122,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item11"}}==Is FB suitable for complex / big applications?==
-	The FB compiler is self-hosting, it is programmed itself in FB. That means more than 100 000 lines of code at the moment, a fairly complex application.
+	The FB compiler is self-hosting, it is programmed itself in FB. That means more than 120 000 lines of code at the moment, a fairly complex application.
 
 {{anchor name="item0|Back to top"}}
 
@@ -129,6 +130,11 @@
 
 	FreeBASIC has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As FreeBASIC is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
 	For the output to screen the support is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font supports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item13"}}==Can I use Serial/COM and Hardware/CPU ports in FB?==
+	 Yes, FB has built in functions to access the serial/COM port and hardware/CPU ports with no need of external libraries. See the {{anchor name="item999|OS specific FAQ's"}} for details for your OS, and [[KeyPgOpenCom Open Com]], [[KeyPgInp INP]] and [[KeyPgOut OUT]] .
 
 {{anchor name="item0|Back to top"}}
 ----
@@ -147,7 +153,7 @@
 {{anchor name="item21"}}==Why doesn't the QB GUI open when I start FreeBASIC?==
 	QB had an Integrated Development Environment (IDE).  FreeBASIC does not.
 	FreeBASIC is only a compiler, not a complete QuickBasic clone. It is a console mode application. It will accept a BAS file on the command line, and spit out an EXE file.
-	You can create the BAS file with the simplest plain text editor in your OS (Notepad, EDIT , nano,...), then run the compiler. 
+	You can create the BAS file with the simplest plain text editor in your OS (Notepad, EDIT, nano,...), then run the compiler. 
 	If you can't live without  syntax coloring, error highlighting, multiple file managing, integrated debugger, context help or other features, you need an IDE. See the {{anchor name="item999|OS specific FAQ's"}} for the IDE's and editors available.
  
 {{anchor name="item0|Back to top"}}
@@ -232,10 +238,10 @@ Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (cons
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item999"}}
-See also:
+{{anchor name="item999"}}{{fbdoc item="see"}}
 	- [[FaqPgWin32 Win32 related FAQ]]
 	- [[FaqDOS DOS related FAQ]]
+	- [[FaqPgLinux Linux related FAQ]]
 and
 	- [[FaqPgrtlib FB Run-Time Library FAQ]]
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BITRESET"}}----
-Macro that clears a bit in an integer
+Gets the value of an integer with a specified bit cleared.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpAnd and]] [[KeyPgOpNot not]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
@@ -9,16 +9,17 @@ Macro that clears a bit in an integer
 ##
 {{fbdoc item="param"}}
 	##//value//##
-		The integer value to clear a bit in.  It is not modified.
+		The integer value.
 	##//bit_number//##
-		The zero-based number of the bit to clear; 0 is the least-significant bit.
+		The index of the bit to clear.
 
 {{fbdoc item="ret"}}
-	##//value//## with bit ##//bit_number//## cleared.
+	Returns the integer value with the specified bit cleared.
 
 {{fbdoc item="desc"}}
-	Macro returning ##//value//## with the bit ##//bit_number//## reset to 0.
-	##foo = **Bitreset**( bar, 5 )##  does the same as ##foo = bar and not (1 shl 5)##.
+	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## cleared (to //off//, or `##0##`). Behaves as `##//value// [[KeyPgOpAnd And]] [[KeyPgOpNot Not]] (1 [[KeyPgOpShiftLeft Shl]] //bit_number//)##`.
+
+	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof Typeof]](//value//)##`, which is `##0##` through `##[[KeyPgSizeof Sizeof]](//value//) * 8 - 1##`. See [[TblVarTypes Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bitreset.bas"}}%%(freebasic)

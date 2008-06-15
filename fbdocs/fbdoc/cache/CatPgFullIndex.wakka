@@ -27,12 +27,14 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfboptiongosub|__FB_OPTION_GOSUB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
@@ -77,6 +79,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAllocate|ALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAnd|AND"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAndAlso|ANDALSO"}}
 	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
 	- {{fbdoc item="keyword" value="KeyPgAppend|APPEND"}}
@@ -341,12 +344,15 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiongosub|OPTION GOSUB"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnogosub|OPTION NOGOSUB"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOpOr|OR"}}
 	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpOrElse|ORELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}

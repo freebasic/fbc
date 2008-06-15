@@ -20,7 +20,7 @@ Shifts the bits of a numeric expression to the right
 	Returns the result of ##//lhs//## being shifted right ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (##//lhs//##) right a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of dividing ##//lhs//## by two for each shift. For example, ##&b0101 **Shr** 1## returns the binary number ##&b010##, and ##5 **Shr** 1## and returns ##2##.
+	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (##//lhs//##) right a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of dividing ##//lhs//## by two for each shift. For example, "##&b0101 **Shr** 1##" returns the binary number ##&b010##, and "##5 **Shr** 1##" returns ##2##.
 
 	If the left-hand side expression is signed, the sign bit is copied in the newly created bits on the left after the shift.
 
@@ -30,26 +30,26 @@ Shifts the bits of a numeric expression to the right
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/shift-right.bas"}}%%(freebasic)
-'Half a number
-DIM i AS INTEGER
-
-FOR i = 1 TO 10
-	PRINT 1000 SHR i
-NEXT i
-SLEEP
+'Halve a number
+For i As Integer = 0 To 10
+	
+	Print 1000 Shr i, Bin(1000 Shr i, 16)
+	
+Next i
 %%
 Output:
 %%
-500
-250
-125
-62
-31
-15
-7
-3
-1
-0
+ 1000         0000001111101000
+ 500          0000000111110100
+ 250          0000000011111010
+ 125          0000000001111101
+ 62           0000000000111110
+ 31           0000000000011111
+ 15           0000000000001111
+ 7            0000000000000111
+ 3            0000000000000011
+ 1            0000000000000001
+ 0            0000000000000000
 %%
 
 {{fbdoc item="lang"}}
@@ -61,6 +61,7 @@ Output:
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpCombineShiftRight Operator Shr= (Shift Right and Assign)]]##
 	- ##[[KeyPgOpShiftLeft Operator Shl (Shift left)]]##
+	- ##[[KeyPgBin Bin]]##
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

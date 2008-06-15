@@ -26,7 +26,15 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	The //stdin// and //stdout// streams are the ones used when the calling process' input or output is redirected (piped) by OS commands, or when it is opened with ##[[KeyPgOpenPipe Open Pipe]]##.
 
 	To open both the //stdin// and //stdout// streams for file operations, a process must use multiple //file numbers//.
+	
+	
+**Runtime errors:**
+	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
+	//(##1##) Illegal function call//
+		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
+		
+		
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/opencons.bas"}}%%(freebasic)
 dim a as string

@@ -62,6 +62,17 @@ End
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgScreengraphics Screen]]## The QB-like way to do
+	- ##[[KeyPgScreenCons Screen (Console)]]##
+	- ##[[KeyPgScreenlist Screenlist]]## Check available modes
+	- ##[[KeyPgScreencontrol Screencontrol]]##
+	- ##[[KeyPgScreenlock Screenlock]]##
+	- ##[[KeyPgScreenunlock Screenunlock]]##
+	- ##[[KeyPgScreenptr Screenptr]]## Semi-low level access
+	- ##[[KeyPgScreenset Screenset]]##
+	- ##[[KeyPgScreencopy Screencopy]]##
+	- ##[[KeyPgScreeninfo Screeninfo]]##
+	- ##[[KeyPgScreenglproc Screenglproc]]##
+	- ##[[GfxInternalFormats Internal pixel formats]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

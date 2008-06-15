@@ -20,7 +20,7 @@ If you want the very latest version of ""FreeBASIC"" on Linux, it can be compile
 
 		You will need many standard development tools and libraries, including but not limited to:
 			- fbc
-			- svn
+			- subversion
 			- gcc
 			- perl
 			- autoconf
@@ -30,6 +30,11 @@ If you want the very latest version of ""FreeBASIC"" on Linux, it can be compile
 			- libxpm-dev
 			- libxrandr-dev
 			- libglitz-glx1-dev
+			- binutils-dev
+
+		Here is an easy to paste list of the packages:
+
+		%%subversion gcc perl autoconf libncurses-dev libgpmg1-dev libx11-dev libxpm-dev libxrandr-dev libglitz-glx1-dev binutils-dev%%
 
 		At least some of these are likely to not come with a 'stock' desktop Linux distribution.  All of them are easily available using apt-get on distributions that use the Debian (.deb) packaging system.
 
@@ -83,13 +88,13 @@ cp fbc_new ~/fbcSVN/FreeBASIC/fbc
 
 	{{anchor name="updating1"}}{{fbdoc item="subsect" value="Installing the compiler to an absolute prefix"}}
 
-		If the compiler was configured with an absolute prefix, it will be installed to /usr/local/ by default unless it was configured with some other prefix.  In order for the install script to work correctly it needs to be run with root privelages, for example, with sudo.  Run the script without arguments to see all of the options available.
+		If the compiler was configured with an absolute prefix, it will be installed to /usr/local/ by default unless it was configured with some other prefix.  In order for the install script to work correctly it needs to be run with root privileges, for example, with sudo.  Run the script without arguments to see all of the options available.
 		%%cd ~/fbcSVN/FreeBASIC
 sudo ./install.sh -i %%
 
 	{{anchor name="updating2"}}{{fbdoc item="subsect" value="Installing the standalone compiler"}}
 
-		If the compiler was configured as standalone, it will be installed to /usr/share/freebasic/ by default.  In order for the install script to work correctly and create a symlink at /usr/bin/fbc, it needs to be run with root privelages, for example, with sudo. The -i switch allows an installation directory to be specified, and there can be no trailing '/'.  Run the script without arguments to see all of the options available.
+		If the compiler was configured as standalone, it will be installed to /usr/share/freebasic/ by default.  In order for the install script to work correctly and create a symlink at /usr/bin/fbc, it needs to be run with root privileges, for example, with sudo. The -i switch allows an installation directory to be specified, and there can be no trailing '/'.  Run the script without arguments to see all of the options available.
 		%%cd ~/fbcSVN/FreeBASIC
 sudo ./install-standalone.sh -i %%
 

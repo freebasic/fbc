@@ -14,6 +14,8 @@ Compile source file only, do not link
 	Note that the ##**[[CompilerOpto -o]]**## option only has an effect when used with the ##**-c**## option (compile only), as object files are not saved otherwise.
 
 {{fbdoc item="see"}}
+	- [[CompilerOptcupp Compiler Option: -C]]
+	- [[CompilerOptr Compiler Option: -r]]
 	- [[CompilerOptb Compiler Option: -b]]
 	- [[CompilerCmdLine Using the Command Line]]
 

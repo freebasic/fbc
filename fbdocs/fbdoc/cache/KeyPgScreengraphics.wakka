@@ -111,12 +111,12 @@ END IF
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenCons Screen (Console)]]##
-	- ##[[KeyPgScreenres Screenres]]##
-	- ##[[KeyPgScreenlist Screenlist]]##
+	- ##[[KeyPgScreenres Screenres]]## Better (?) alternative for Screen
+	- ##[[KeyPgScreenlist Screenlist]]## Check available modes
 	- ##[[KeyPgScreencontrol Screencontrol]]##
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenunlock Screenunlock]]##
-	- ##[[KeyPgScreenptr Screenptr]]##
+	- ##[[KeyPgScreenptr Screenptr]]## Semi-low level access
 	- ##[[KeyPgScreenset Screenset]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
 	- ##[[KeyPgScreeninfo Screeninfo]]##

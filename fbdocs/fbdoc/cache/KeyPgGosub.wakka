@@ -21,7 +21,8 @@ return
 %%
 
 {{fbdoc item="lang"}}
-	- In v0.17b and up, ##**Gosub**## may only be used when compiling with the //[[CompilerOptlang -lang qb]]// switch.
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- ##**Gosub**## support is disabled by default in the //[[CompilerOptlang -lang fblite]]// unless the ##[[KeyPgOptiongosub Option Gosub]]## statement is used.
 
 {{fbdoc item="diff"}}
 	- None when using the //[[CompilerOptlang -lang qb]]// dialect.
@@ -31,5 +32,6 @@ return
 	- ##[[KeyPgReturn Return]]##
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgOptiongosub Option Gosub]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

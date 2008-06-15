@@ -1,0 +1,10 @@
+{{fbdoc item="title" value="Short Circuit Operators"}}----
+Operators that perform a short circuit logical evaluation.
+
+The short circuit operators perform a evaluation on the left hand operand, and depending on the result, may go on to evaluate the right hand side.  The evaluations take place logically, in a comparison to zero.
+
+<<=={{fbdoc item="keyword" value="KeyPgOpAndAlso|Operator AndAlso (Short Circuit Conjunction)"}}==
+	Returns the result of a short circuit conjunction of two operands.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpOrElse|Operator OrElse (Short Circuit Inclusive Disjunction)"}}==
+	Returns the result of a short circuit inclusive or of two operands.>>
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -20,7 +20,7 @@ dim bar(99) as integer      ' declares a variable-length array
 redim bar(199) as integer   ' resize the array
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

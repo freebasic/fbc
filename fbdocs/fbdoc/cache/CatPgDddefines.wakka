@@ -30,6 +30,8 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for Xbox.
 	=={{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}==
 		Defined if compiling on a system using big-endian byte-order.
+	=={{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}==
+		Defined if compiling for SSE floating point unit.
 
 {{anchor name="VERSION"}}{{fbdoc item="section" value="Version Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}==
@@ -91,6 +93,8 @@ Preprocessor symbols defined by the compiler.
 		True (-1) if all arrays are variable-length, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}==
 		True (-1) if string literals are processed for escape sequences, zero (0) otherwise.
+	=={{fbdoc item="keyword" value="KeyPgDdfboptiongosub|__FB_OPTION_GOSUB__"}}==
+		True (-1) if gosub support is enabled, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}==
 		True (-1) if variables and objects need to be explicitly declared, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}==

@@ -25,7 +25,7 @@ printf("%d * %d = %d\r\n", a, b, a * b)
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

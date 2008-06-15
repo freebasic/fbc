@@ -31,10 +31,13 @@ Locates the first occurrence of a substring or character within a string
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/instr.bas"}}%%(freebasic)
 ' It will return 4
-PRINT INSTR("abcdefg", "de")
+Print InStr("abcdefg", "de")
 
 ' It will return 0
-PRINT INSTR("abcdefg", "h")
+Print InStr("abcdefg", "h")
+
+' It will search for any of the characters "f", "b", "c", and return 2 as "b" is encountered first
+Print InStr("abcdefg", Any "fbc")
 %%
 {{fbdoc item="filename" value="examples/manual/strings/instr2.bas"}}%%(freebasic)
 dim test as string
@@ -57,7 +60,7 @@ print instr(text,"&#1077;&#1090;") ' displays 5
 	- DOS does not support the wide-character string versions of ##**Instr**##.
 
 {{fbdoc item="diff"}}
-	- QB returns //start// if //search// is a zero length string.
+	- QB returns ##//start//## if ##//search//## is a zero length string.
 	- QB does not support Unicode.
 
 {{fbdoc item="see"}}

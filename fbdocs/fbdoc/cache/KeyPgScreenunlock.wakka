@@ -14,9 +14,13 @@ Unlocks work page's framebuffer
 		optional argument specifying last screen line to be updated. If omitted, bottom screen line is assumed.
 
 {{fbdoc item="desc"}}
-	##**Screenunlock**## unlocks the current work page assuming it was previously locked by calling ##[[KeyPgScreenlock Screenlock]]##.  ##**Screenunlock**## must not be called without a previous call to ##[[KeyPgScreenlock Screenlock]]##. This function lets the system restart updating the screen regularly, and when called produces the immediate update of the screen region marked by the given start and end lines. 
+	##**Screenunlock**## unlocks the current work page assuming it was previously locked by calling ##[[KeyPgScreenlock Screenlock]]## and lets the system restart updating the screen regularly. When called with ##start_line## and ##end_line## , only the screen area between those lines is assumed to have changed, and will be updated. 
 
-	After ##**Screenunlock**## is called, all graphics statements may be safely used.  Accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
+	An internal flag exists remembering the screen lock state, thus ##**Screenunlock**## has an effect only on a screen that is locked - or in other words, a screen that is not locked with ##**Screenlock**## cannot get unlocked, however ##**Screenunlock**## still will force an update of given area or full screen.   
+
+	After ##**Screenunlock**## is called, all graphics statements still may be safely used, OTOH accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only be used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
+
+	Warning (Win32, Linux) : The screen is locked by stopping the thread that processes also the OS' events. This means the screen should be locked only for the short time required to redraw it, and no user input will be received while the screen is locked.
 
 {{fbdoc item="ex"}}
 	See ##[[KeyPgScreenptr Screenptr]]## example.
