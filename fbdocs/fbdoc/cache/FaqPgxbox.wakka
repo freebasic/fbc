@@ -107,7 +107,7 @@ The port isn't currently working, but when it is ready, you will only need a cop
 
 {{anchor name="item22"}}==How would you get input?==
 
-Initially, input will be acquired through SDL, as a gfxlib port is not yet complete. One of the developers is working on a generic SDL version of gfxlib, however, and it will provide full gfxlib functionality to the xbox port.
+Initially, input will be acquired through SDL, as a gfxlib port is not yet complete. One of the developers is working on a generic SDL version of gfxlib, however, and it will provide full gfxlib functionality to the Xbox port.
 
 
 {{anchor name="item23"}}==Does it only run on certain Xboxes?==

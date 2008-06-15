@@ -16,7 +16,7 @@ Additional names for variable or object types
 
 	The following example declares a type alias to ##[[KeyPgSingle Single]]## called "##//float//##", a procedure, and defines and initializes two variables of that type:
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/builtin.bas"}}%%(freebasic)
 type float as single
 
 declare function add (a as float, b as float) as float
@@ -27,32 +27,38 @@ dim bar as float = -4.56
 
 	Procedure pointer type aliases are declared in the same fashion, as shown in the following example:
 
-	%%(qbasic)
-declare function f (byref as string) as integer
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/procptr_1.bas"}}%%(freebasic)
+Declare Function f (ByRef As String) As Integer
 
-type func_t as function (byref as string) as integer
+Type func_t As Function (ByRef As String) As Integer
 
-dim func as func_t = @f
-		%%
+Dim func As func_t = @f
+		
+Function f (Byref arg as String) as Integer
+	Function = Cint(arg)
+End Function
+%%
 
 {{anchor name="OVERLOAD"}}{{fbdoc item="section" value="Overload resolution"}}
 	Type aliases are just that - aliases. For all intents and purposes, a type alias **is** the type it aliases. So as far as procedure overload resolution is concerned, a procedure declared with a parameter of type "##//alias_to_T//##" is the same as a procedure declared with a parameter of type "##//T//##" (the same applies to overloading member procedures as well).
 
 	In other words, it is an error - duplicated definition - to declare a procedure where parameters differ only in a type and its alias, as the following example shows:
 
-	%%(qbasic)
-type float as single
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/overload.bas"}}%%(freebasic)
+Type float As Single
 
-declare sub f overload (a as single)
-declare sub f (a as float)
-	%%
+Declare Sub f Overload (a As Single)
+
+'' If uncommented, this will generate a duplicated definition error
+'' Declare Sub f (a As float)
+%%
 
 {{anchor name="PROCPTRPTR"}}{{fbdoc item="section" value="Pointers to procedure pointers"}}
 	Pointers to procedure pointers are just like any other pointer type, except they point to procedure pointers. Because the syntax for declaring procedure pointers doesn't allow directly creating a pointer to procedure pointer, a type alias is used.
 
 	The following example declares a pointer to a procedure returning an integer pointer, and then a pointer to a pointer to a procedure returning an integer:
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/procptr_2.bas"}}%%(freebasic)
 dim pf as function() as integer ptr
 
 type pf_t as function() as integer
@@ -62,7 +68,7 @@ dim ppf as pf_t ptr
 {{anchor name="TYPEFORWARD"}}{{fbdoc item="section" value="Type forwarding"}}
 	Type aliases can be forward referencing: an alias can refer to some other type not yet fully defined.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/fwd_1.bas"}}%%(freebasic)
 TYPE foo AS bar
 
 TYPE sometype
@@ -77,7 +83,7 @@ END TYPE
 
 	Using a type alias and forward referencing allows circular dependencies between types.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/fwd_2.bas"}}%%(freebasic)
 TYPE list as list_
 
 TYPE listnode
@@ -96,7 +102,7 @@ END TYPE
 	
 	However, pointers to incomplete types may be allocated, declared as members in other types, or passed as parameters to a procedures since the size of a pointer is known.
 
-	%%(qbasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/typalias/incomp.bas"}}%%(freebasic)
 TYPE sometype AS sometype_
 
 '' Not allowed since size of sometype is unknown
@@ -130,3 +136,4 @@ DIM size_completed AS INTEGER = SIZEOF( completed )
 
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="STATIC"}}----
-Declares variables and objects having static storage
+Defines variables, objects and arrays having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol// [ ( //subscripts// ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
+	**Static** //symbol// [ ( [ //subscripts// ] ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
 		//or//
 	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
 		[ ... ]
@@ -12,20 +12,20 @@ Declares variables and objects having static storage
 	##//symbol//##
 		variable or array symbol name.
 	##//subscripts//##
-		subscript dimension(s) when defining arrays.
+		a comma-separated list of subscript ranges.
 	##//proc_header//##
 		procedure header for a procedure definition.
 
 {{fbdoc item="desc"}}
-	Specifies static storage for variables and objects; they are allocated at program startup and deallocated upon exit. Objects are only constructed when execution reaches their defintion however, and destructed upon program exit.
+	Specifies [[ProPgStorageClasses static storage]] for variables, objects and arrays; they are allocated at program startup and deallocated upon exit. Objects are constructed once when they are defined, and destructed upon program exit.
 
-	In iterative blocks, like looping [[CatPgControlFlow control flow statements]] or non-recursive procedures, static variables and objects are guaranteed to occupy the same storage throughout multiple instantiations of the block. For example, it's safe for a procedure to return the address of one of its static variables or objects, as it will always occupy the same storage, and will not be destroyed until the program ends.
+	When declaring static arrays, only [[ProPgLiterals numeric literals]], [[KeyPgConst constants]] or [[KeyPgEnum enumerations]] may be used as subscript range values. Static variable-length arrays must be declared empty (no subscript range list) and resized using ##[[KeyPgRedim Redim]]## before used.
 
-	In recursive blocks, where multiple instantiations of the block occur, static variables and objects are guaranteed to occupy the same storage across all of the blocks. For example, procedures that call themselves - either directly or indirectly - share the same instances of their static variables or objects. 
+	In both iterative and recursive blocks, like looping [[CatPgControlFlow control flow statements]] or procedures, static variables, objects and arrays local to the block are guaranteed to occupy the same storage across all instantiations of the block. For example, procedures that call themselves - either directly or indirectly - share the same instances of their local static variables.
 
-	When modifying a module-level procedure declaration, ##**Static**## specifies all variables and objects declared in the procedure to have static storage.
+	When used with module-level and member procedure declarations, ##**Static**## specifies [[ProPgStorageClasses static storage]] for all local variables, objects and arrays.
 
-	##**Static**## is also used to specify static member procedures.  See ##[[KeyPgStaticMember Static (Member)]]##.
+	##[[KeyPgStaticMember Static (Member)]]## is also used in member procedure declarations to specify static member procedures.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/static.bas"}}%%(freebasic)
@@ -49,13 +49,16 @@ Number of times called: 2
 %%
 
 {{fbdoc item="diff"}}
-	- ##**Static**## can declare arrays, too.
+	- ""QuickBASIC"" allows variables and arrays to be declared using the ##**Static**## keyword within procedures and ##DEF FN## routines only.
+	- ##**Static**## forces local visibility of variables and arrays in ""QuickBASIC"" ##DEF FN## routines. ""FreeBASIC"" supports neither ##DEF FN## routines nor this usage of ##**Static**##.
+	- Using ##[[KeyPgStaticMember Static]]## to specify static member procedures is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub Sub (Module)]]## and ##[[KeyPgFunction Function (Module)]]##
-	- ##[[KeyPgMemberSub Sub (Member)]]## and ##[[KeyPgMemberFunction Function (Member)]]##
+	- ##[[KeyPgStaticMember Static (Member)]]##
+	- ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgSub Sub (Module)]]##, ##[[KeyPgFunction Function (Module)]]##
+	- ##[[KeyPgMemberSub Sub (Member)]]##, ##[[KeyPgMemberFunction Function (Member)]]##
 	- ##[[KeyPgOptionstatic Option Static]]##
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgDim Dim]]##
+	- [[ProPgStorageClasses Storage Classes]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

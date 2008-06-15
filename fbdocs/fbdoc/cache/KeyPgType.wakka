@@ -10,10 +10,10 @@ Declares a user-defined type
 		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
-		//fieldname// [ ( //static array dimensions// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
-		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //static array dimensions// ) | : //bits// ], ...
+		//fieldname// [ ( //array subscripts// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
+		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //array subscripts// ) | : //bits// ], ...
 		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
-		[[KeyPgDeclare declare]] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
 		...
 	**End Type**
 ##
@@ -26,8 +26,8 @@ Declares a user-defined type
 		name of field as seen when externally linked
 	##//parameters//##
 		the parameters to be passed to a member procedure
-	##//static array dimensions//##
-		dimensions of an array
+	##//array subscripts//##
+		subscripts to declare a fixed-length array
 	##//bits//##
 		number of bits a data field occupies
 	##//operatorname//##
@@ -47,7 +47,7 @@ Declares a user-defined type
 
 	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
 
-	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already delcared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
+	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already declared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
 
 
 {{fbdoc item="ex"}}

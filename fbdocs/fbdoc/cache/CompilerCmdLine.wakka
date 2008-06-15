@@ -65,7 +65,7 @@ fbc command-line usage
 		**##-arch < //architecture// >##**
 			Set the target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
 		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin" >##**
-			( Windows ) Used with the Windows version of the compiler to create DOS32, Linux or XBOX executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.
+			( Windows ) Used with the Windows version of the compiler to create DOS32, Linux or Xbox executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.
 		**##-s < //subsystem// >##**
 			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a gui subsystem prevents the console window from appearing behind the program window.
 		**##-t < //stack size// >##**

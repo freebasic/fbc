@@ -57,18 +57,22 @@
 
 	Each byte in a colour attribute corresponds with the red, green, blue, and alpha components.  The following example shows how to extract the component values from a 16, 24, or 32 bit colour attribute.
 	
-	%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/RGB-component.bas"}}%%(freebasic)
 #define rgb_a(x) ((x) Shr 24)
 #define rgb_r(x) ((x) Shr 16 And 255)
 #define rgb_g(x) ((x) Shr 8 And 255)
 #define rgb_b(x) ((x) And 255)
 
+dim as uinteger c
+dim as integer x, y
+dim as ubyte red, green, blue, alpha
+
 '' Assume a 16, 24, or 32 bit screen mode has been set
-c = point(x, y)
+c = Point(x, y)
 red = rgb_r(c)
 green = rgb_g(c)
 blue = rgb_b(c)
-alpha = rgb_a(c)
+Alpha = rgb_a(c)
 %%
 
 	{{anchor name="item0|Back to top"}}
@@ -78,7 +82,7 @@ alpha = rgb_a(c)
 
 	Here is a small example of how to enable the "x":
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/check-for-close.bas"}}%%(freebasic)
 Screen 13
 Do
   Print "Click the 'x' to close this app."

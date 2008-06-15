@@ -25,7 +25,7 @@ Draws a line
 {{fbdoc item="desc"}}
 	Graphics statement that draws a straight line or a box between two points. The action will take place on the current work page set via [[KeyPgScreenset ScreenSet]], or onto the buffer [[KeyPgGetgraphics Get]]/[[KeyPgPutgraphics Put]] buffer if specified.
 	
-	**Line** coordinates are affected by custom coordinates system set via [[KeyPgWindow Window]] and [[KeyPgViewgraphics View (Graphics)]] statements, and respect clipping rect set by [[KeyPgViewgraphics View (Graphics)]]. If a pair of coordinates is preceeded by the ##STEP## keyword, the coordinates are assumed to be relative to the last graphics cursor position. If the ##B## flag is specified, a rectangle will be drawn instead of a line, with ##(//x1//,//y1//)-(//x2//,//y2//)## as the coordinates of the opposite rectangle corners. If ##BF## is specified, a filled rectangle will be drawn.
+	**Line** coordinates are affected by custom coordinates system set via [[KeyPgWindow Window]] and [[KeyPgViewgraphics View (Graphics)]] statements, and respect clipping rect set by [[KeyPgViewgraphics View (Graphics)]]. If a pair of coordinates is preceded by the ##STEP## keyword, the coordinates are assumed to be relative to the last graphics cursor position. If the ##B## flag is specified, a rectangle will be drawn instead of a line, with ##(//x1//,//y1//)-(//x2//,//y2//)## as the coordinates of the opposite rectangle corners. If ##BF## is specified, a filled rectangle will be drawn.
 	
 	##//Color//## denotes the colour attribute, which is mode specific (see [[KeyPgColor Color]] and [[KeyPgScreengraphics Screen (Graphics)]] for details). If omitted, the current foreground color as set by the [[KeyPgColor Color]] statement is used.
 	

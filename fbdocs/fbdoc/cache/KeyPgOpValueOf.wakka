@@ -55,7 +55,6 @@ The new value of 'a' is 1
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
-	- [[CatPgOpPoint Pointer Operators]]
 	- [[ProPgPointers Pointers]]
 	
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

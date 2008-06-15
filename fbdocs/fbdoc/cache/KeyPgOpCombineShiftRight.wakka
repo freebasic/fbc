@@ -41,6 +41,6 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpShiftRight Operator Shr (Shift right)]]##
-	- [[CatPgOpAssignment Assignment Operators]]
-
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+	- [[CatPgMath Mathematical Functions]]
+	
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

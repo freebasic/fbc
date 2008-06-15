@@ -2,18 +2,22 @@
 Multi-dimensional container types
 
 {{fbdoc item="desc"}}
-	Arrays are [[ProPgVariables Variables]] which hold one or more values, or elements. You can think of them as a heterogenous container, that is, a container that can hold a number of elements of a single type.
+	Arrays are [[ProPgVariables Variables]] which hold one or more values, or elements. You can think of them as heterogenous containers, that is, containers that can hold a number of elements of a single type.
 
 	FreeBASIC arrays can be multi-dimensional; they can be used to represent, for example, a line of elements (1 dimension), a grid of elements (2 dimensions), a cube of elements (3 dimensions) and more (a 4-dimensional array could perhaps be modelled by a line of cubes). The number of dimensions an array has is determined where it is declared or defined, and like all FreeBASIC variables, arrays must be declared or defined before they're used.
 
-	- See ##[[KeyPgExtern Extern]]## for declaring arrays
-	- See ##[[KeyPgDim Dim]]## and ##[[KeyPgRedim Redim]]## for defining arrays
+	- See ##[[KeyPgExtern Extern]]## and ##[[KeyPgCommon Common]]## for declaring arrays
+	- See ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]## and ##[[KeyPgStatic Static]]## for defining arrays
 
-	Arrays come in two flavors: static and dynamic. Static arrays are allocated at compile-time, on the stack, while dynamic (non-static) arrays are allocated at run-time, on the free store (the heap). FreeBASIC reserves a limited amount of stack space by default (1024 KB), which may not be enough memory if you have many large static arrays. Dynamic arrays, on the other hand, have the entire free store available to them, and so can potentially be much larger.
+	Arrays come in two flavors: //Fixed-length// and //variable-length//. Fixed-length arrays are allocated at compile-time, while variable-length arrays are allocated at run-time, in the free store (the heap). FreeBASIC reserves a limited amount of stack space by default (1024 KB), which may not be enough memory if you have many large fixed-length arrays with //[[ProPgStorageClasses automatic storage]]//.
+
+	- See [[ProPgFixLenArrays Fixed-length Arrays]] and [[ProPgVarLenArrays Variable-length Arrays]]
 
 	Whenever an array is defined and allocated, its memory is always allocated in a single block. The elements of an array are stored contiguously in memory, that is, one after the other. More specifically, elements are stored in row-major order - i.e. for multi-dimensional arrays, elements whose positions only differ in their last index are stored next to one another. These elements can be accessed using array notation or, because they're stored contiguously, using pointer notation.
+
 	Here's an example of how to access a multi-dimensional array using pointer notation:
-	%%(qbasic)
+
+{{fbdoc item="filename" value="examples/manual/proguide/arrays/array.bas"}}%%(freebasic)
 type arraytype as integer
 
 'set up bounds for a 4d array'
@@ -78,6 +82,8 @@ print arrayptr[i + 1]
 	- See ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer Index)"}}## for accessing elements with pointer notation
 
 {{fbdoc item="see"}}
+	- [[ProPgFixLenArrays Fixed-length Arrays]]
+	- [[ProPgVarLenArrays Variable-length Arrays]]
 	- [[ProPgVariableScope Variable Scope]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

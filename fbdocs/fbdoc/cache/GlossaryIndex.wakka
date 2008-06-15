@@ -12,7 +12,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A variable or expression that points to a memory address where it is not known, at least from the compiler's point of view, what type of data is stored at that address.  In C this would be the same as a void pointer or (void *).  See ##[[KeyPgPtr ptr]]##.
 
 **archive**
-	An archive is a group or files or a single file packed into a container format and usually compressed before or afterwards. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
+	An archive is a group or files or a single file packed into a container format and usually compressed before or afterward. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
 	
 	
 **argument**
@@ -25,7 +25,13 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A collection of data whose elements are stored contiguously in memory (one after the other, in increasing order). Because of this, an array offers random-access to it's elements (any element can be accessed at any time). Insertion or removal of elements anywhere but at the back of the container requires that those elements that follow be relocated, so a linked-list is typically preferred when insertion or removal needs to be efficient.
 
 **assignment**
-	Asignment is one of the fundamental operations of computing.  All it means is copying a value into the memory location pointed at by a variable.  The value might be a literal, another variable, or the result of some expression. For an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, this involves calling one of it's assignment operators. Not to be confused with initialization.
+	Assignment is one of the fundamental operations of computing.  All it means is copying a value into the memory location pointed at by a variable.  The value might be a literal, another variable, or the result of some expression. For an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, this involves calling one of it's assignment operators. Not to be confused with initialization.
+
+**automatic storage**
+	Refers to storage on the call stack. Local procedure variables, objects and arrays with automatic storage are allocated when the procedure is called, initialized when defined, destroyed (in the case of objects) when leaving the scope they're declared in and deallocated when returning from the procedure.
+
+**automatic variable/object/array**
+	A variable, object or array with **automatic storage**.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -38,7 +44,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	##[[KeyPgByref Byval]]## specifies passing arguments to procedures by value. Procedures receive a copy of the argument passed. With ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## instances, this involves instantiating temporary objects by calling their copy constructor. These temporaries are destroyed upon procedure exit.
 
 **binaries**
-	Binaries are the end result of source code. Binaries include executable files (.exe on windows), static library files (.a), dynamic library files (.dll on windows, .so on linux), and relocatable object files. (.o)
+	Binaries are the end result of source code. Binaries include executable files (.exe on windows), static library files (.a), dynamic library files (.dll on windows, .so on Linux), and relocatable object files. (.o)
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -47,8 +53,11 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **caller**
 	A misnomer used to refer to the point in code in which a procedure is called.
 
+**call stack**
+	A chunk of memory reserved for a process or thread that is used as a stack for storing various information needed by procedures when they are called. Among the information stored on the call stack are all of the local automatic variables, objects and array data and usually whatever parameters are passed to the procedure. These items are allocated (//pushed// onto the call stack) when the procedure is called and deallocated (//popped// from the call stack) when the procedure returns, either by the caller or the callee, depending on the calling convention used. The initial and maximum sizes of this reserved memory vary by platform.
+
 **cast**
-	A cast operation changes one datatype to another using specified rules. A ##[[KeyPgType Type]]## structure can implement a custom ##[[KeyPgCast Cast]]## for any intrinsic datatype, and/or other TYPEs, See ##[[KeyPgCast Cast]]##.
+	A cast operation changes one data type to another using specified rules. A ##[[KeyPgType Type]]## structure can implement a custom ##[[KeyPgCast Cast]]## for any intrinsic data type, and/or other TYPEs, See ##[[KeyPgCast Cast]]##.
 
 **compiler**
 	A compiler is a computer program which takes source code and transforms it into machine or object code.
@@ -162,7 +171,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	The act of giving a variable a value at the point of it's creation. For object instances, this involves calling one of it's constructors. Not to be confused with assignment, which gives an already existing variable another value.
 
 **instance**
-	An instanciated object of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	An instantiated object of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
 **instantiate**
 	The act of creating an object of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, either directly with ##[[KeyPgDim Dim]]##, or indirectly by, for example, passing an object to a procedure by value.
@@ -208,7 +217,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	See **member function**.
 
 **module**
-	A source file in it's entirety, including any ##include files## that may be present as well. Typically, a module is a logical unit of code, containing parts of a program that relate to one another. For example, if making a game, one may seperate the procedures needed for error logging from the procedures that control graphics into their own modules.
+	A source file in it's entirety, including any ##include files## that may be present as well. Typically, a module is a logical unit of code, containing parts of a program that relate to one another. For example, if making a game, one may separate the procedures needed for error logging from the procedures that control graphics into their own modules.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -247,10 +256,10 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	The name used by a procedure that corresponds to the argument that is passed to it.
 
 **parameter list**
-	The parenthesized comma-seperated list of parameters in a procedure declaration or definition.
+	The parenthesized comma-separated list of parameters in a procedure declaration or definition.
 
 **pointer**
-	A datatype used to hold addresses. The kind of pointer determines how the data at the address is interpretted when the pointer is dereferenced, or when used with ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##. See ##[[ProPgPointers Pointers]]##.
+	A data type used to hold addresses. The kind of pointer determines how the data at the address is interpreted when the pointer is dereferenced, or when used with ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##. See ##[[ProPgPointers Pointers]]##.
 
 **preprocessor**
 	The FreeBASIC preprocessor is responsible for expanding Macros and replacing Defined values with their values.
@@ -294,10 +303,6 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **stack (container)**
 	A collection of data that offers last-in first-out (LIFO) storage and retrieval. Typically, elements can only be inserted, accessed and removed from the top of the stack.
 
-**stack (FreeBASIC memory)**
-	The place in memory where FB puts all the variables your program uses, apart from shared variables, string data and dynamic arrays.  Each time you call a procedure, FB puts all its variables on the stack, and when the procedure exits, it takes them all off again.
-	It is quite small compared to the amount of system memory, and its size is fixed at compile time - the default size is 1024 kilobytes.  If a program runs out of stack space, it exits abruptly.
-
 **statement block**
 	One or more lines of code bookended by a compound statement.
 
@@ -309,6 +314,12 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **static member function**
 	A **member function** without an implicit ##this## reference as an argument. Static member functions can be called normally through a variable, or directly using the type's name and the scope resolution operator (!! <- no wiki page ? !!).
+
+**static storage**
+	Refers to storage in the ##.BSS## or ##.DATA## sections of an executable. Variables, objects and arrays with static storage are allocated and initialized at compile-time and destroyed (in the case of objects) and deallocated at program-termination. Explicitly initialized variables, objects and arrays are allocated in the ##.DATA## section.
+
+**static variable/object/array**
+	A variable, object or array with **static storage**.
 
 **sub**
 	A procedure defined using ##[[KeyPgSub Sub]]##, optionally taking parameters and not returning a value.
@@ -348,7 +359,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 ======----{{anchor name="W"}} W----======
 
 **wiki**
-	An online system that provides a set of pages containing information that can be viewed and modified by the public. In this context, it is typically used to refer to the FreeBASIC online documentation.
+	An on-line system that provides a set of pages containing information that can be viewed and modified by the public. In this context, it is typically used to refer to the FreeBASIC on line documentation.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -361,6 +372,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="F"}} Z----======
+
+**zstring**
+	A zstring is in essence a standard C style string ending with an embedded null character. This data type is provided for greater compatibility with C libraries.
 
 @@{{anchor name="Index|Back to top"}}@@
 

@@ -41,7 +41,6 @@ Output:
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpExponentiate Operator ^ (Exponentiate)]]##
-	- [[CatPgOpAssignment Assignment Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

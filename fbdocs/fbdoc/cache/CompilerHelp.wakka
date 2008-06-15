@@ -9,6 +9,7 @@ There are several options available for getting help with FreeBASIC.
 	If you are unfamiliar with FreeBASIC or the documentation, you may find these pages a good place to start:
 		- [[DocToc Table of Contents]]
 		- [[CatPgProgrammer Programmer's Guide]]
+		- [[ExtLibTOC Library Headers Index]]
 		- [[GlossaryIndex Glossary]]
 		- [[CompilerFAQ Compiler FAQ]]
 		- [[FaqPggfxlib2 Graphics Library FAQ]]
@@ -17,6 +18,11 @@ There are several options available for getting help with FreeBASIC.
 	A downloadable CHM format is available from the sourceforge project page at [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] which features a full table of contents, searching capabilities, an index, plus all the same content as the on-line version.
 
 	Searching the manual on or off line would be an excellent place to start in finding help about how to write and use FreeBASIC programs.
+
+{{fbdoc item="section" value="Examples and Source Code"}}
+	In the ./examples directory located where FreeBASIC was installed on your system are hundreds of examples to be compiled and run.  Most of the external library examples will need additional libraries to be downloaded to allow them to work.  See [[ExtLibTOC Library Headers Index]] for a full list.
+
+	FreeBASIC's official code archive is located at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]].  This archive can host user contributed libraries and tools, or links to source code located on other sites on the web.
 
 {{fbdoc item="section" value="Tutorials"}}
 	Community created tutorials about FreeBASIC can be found at [[http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials]].  Some selected tutorials are included in this manual.

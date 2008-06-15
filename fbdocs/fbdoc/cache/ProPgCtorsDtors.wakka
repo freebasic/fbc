@@ -30,7 +30,7 @@ In charge of the creation and destruction of objects
 
 	When specifying an initializer for an object, the name of the type followed by any arguments it requires is used.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor.bas"}}%%(freebasic)
 type foo
 	'' Declare a default ctor, copy ctor and normal ctor
 	declare constructor

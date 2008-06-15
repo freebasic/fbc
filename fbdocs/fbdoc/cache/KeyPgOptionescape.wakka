@@ -1,58 +1,38 @@
 {{fbdoc item="title" value="OPTION ESCAPE"}}----
-Compiler switch to indicate all string literals are to be processed for escape characters
+Specifies that string literals should be processed for C-like escape sequences by default
 
 {{fbdoc item="syntax"}}##
 	**Option Escape**
 ##
 {{fbdoc item="desc"}}
-	Activates the expansion of escape sequences in literal strings.
+	##**Option Escape**## is a statement that causes string literals to be processed for C-like escape sequences by default. Normally, escape sequences have no effect in string literals unless the string is prefixed with a //bang// (!). This default remains in effect for the rest of the module in which ##**Option Escape**## is used, and can be overridden by prefixing string literals with a //dollar// ($).
 
-	If ##**Option Escape**## is not used, to insert a carriage return in a string this must be done:
-	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionescape_1.bas"}}%%(freebasic)
-Print "First line" & Chr(13, 10) & "Second line"
-%%
-
-	If ##**Option Escape**## has been specified this syntax can be used to save typing:
-	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionescape_2.bas"}}%%(freebasic)
-Print "Firstline\r\nSecond line"
-%%
-
-	The escape sequences start with a backslash.  With ##**Option Escape**## on true backslashes must be doubled.
-
-	The accepted escape sequences are:
-	{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\n;newline;\r;carriage return;\t;tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\a_double_quote;double quote;\';single quote"}} 
-
-	##**Option Escape**## is useful when the C-style formatted print functions in crt.bi (as printf) are to be used.
-
-{{fbdoc item="lang"}}
-	- The use of OPTION ESCAPE is not allowed in the -lang fb option. In there a literal string can be prefixed with "!" to make it expand escape sequences, and can be prefixed with "$" to prevent it expanding them.  
+	See [[ProPgLiterals Literals]] in the Programmer's Guide to learn more about escape sequences.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/switches/option-escape.bas"}}%%(freebasic)
-' compile with -lang deprecated
+'' Compile with the "-lang deprecated" compiler switch
+
 option escape
+
 print "Warning \a\t The path is:\r\n c:\\Freebasic\\Examples"
-%%
-
-	{{fbdoc item="filename" value="examples/manual/switches/option-escape2.bas"}}%%(freebasic)
-' Compile with -lang deprecated
-option escape
 print $"This string doesn't have expanded escape sequences: \r\n\t"
-%%
 
-	{{fbdoc item="filename" value="examples/manual/switches/option-escape3.bas"}}%%(freebasic)
-' compile with -lang deprecated
 #include "crt.bi"
-option escape
+
 dim as integer a = 2, b = 3
 printf("%d * %d = %d\r\n", a, b, a * b)
 %%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionescape __FB_OPTION_ESCAPE__]]##
-	- ##[[KeyPgChr Chr]]##
+	- [[ProPgLiterals Literals]]
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}
+   

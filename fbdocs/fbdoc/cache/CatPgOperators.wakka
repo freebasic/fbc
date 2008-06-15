@@ -3,158 +3,27 @@ Procedures that operate on one or more operands
 
 ""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment Operator = (Assignment)]]## or ##[[KeyPgOpAdd Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr Operator Strptr]]##.
 
-<<**{{anchor name="ASSIGN|Assignment Operators"}}**
+<<=={{fbdoc item="keyword" value="CatPgOpAssignment|Assignment operators"}}==
 	Operators that assign the value of one operand to the other.
-**{{anchor name="ARITHMETIC|Arithmetic Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpArithmetic|Arithmetic operators"}}==
 	Operators that perform mathematical computations on their operands and return the result.
-**{{anchor name="INDEX|Indexing Operators"}}**
-	Operators that return references to variables or objects based on an index value.
-**{{anchor name="STRING|String Operators"}}**
-	Operators overloaded to work with strings.
-**{{anchor name="RELATIONAL|Relational Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpConditional|Conditional operators"}}==
 	Operators that compare the relationship between their operands.
-**{{anchor name="LOGICAL|Logical Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpLogical|Logical operators"}}==
 	Operators that perform bitwise computations with their operands and return the result.
-<<>>**{{anchor name="PREPROC|Preprocessor Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpIndexing|Indexing operators"}}==
+	Operators that return references to variables or objects based on an index value.
+<<>>=={{fbdoc item="keyword" value="CatPgOpString|String operators"}}==
+	Operators overloaded to work with strings.
+=={{fbdoc item="keyword" value="CatPgOpPrepro|Preprocessor operators"}}==
 	Operators that control preprocessor behavior.
-**{{anchor name="POINTER|Pointer Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpPoint|Pointer operators"}}==
 	Operators that work with pointers and addresses.
-**{{anchor name="TYPE|Type or Class Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpTypeclass|Type or Class operators"}}==
 	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
-**{{anchor name="MEMORY|Memory Operators"}}**
+=={{fbdoc item="keyword" value="CatPgOpMemory|Memory operators"}}==
 	Operators that allocate and construct objects.
-**{{anchor name="ITERATION|Iteration Operators"}}**
-	Operators that allow user defined types to be used with [[KeyPgFornext For...Next]] loops.
+=={{fbdoc item="keyword" value="CatPgOpIterating|Iterating operators"}}==
+	Operators that use iterator objects in ##[[KeyPgFornext For...Next]]## statements.
 >>::c::
-<<{{anchor name="ASSIGN"}}{{fbdoc item="section" value="Assignment Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}==
-		Assigns the value of one operand to the other.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineConcat|&= (Concatenate and Assign)"}}==
-		Assigns the value of a concatenation between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineAdd|+= (Add and Assign)"}}==
-		Assigns the value of an addition between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineSub|-= (Subtract and Assign)"}}==
-		Assigns the value of a subtraction between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineMultiply|*= (Multiply and Assign)"}}==
-		Assigns the value of a multiplication between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineDivide|/= (Divide and Assign)"}}==
-		Assigns the value of a division between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineIntegerDivide|\= (Integer Divide and Assign)"}}==
-		Assigns the value of an integer divide between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineExponentiate|^= (Exponentiate and Assign)"}}==
-		Assigns the value of a exponentiation between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineModulus|MOD= (Modulus and Assign)"}}==
-		Assigns the value of a modulus between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineAnd|AND= (Conjunction and Assign)"}}==
-		Assigns the value of a bitwise conjunction between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineEqv|EQV= (Equivalence and Assign)"}}==
-		Assigns the value of a bitwise equivalence between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineImp|IMP= (Implication and Assign)"}}==
-		Assigns the value of a bitwise implication between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineOr|OR= (Inclusive Disjunction and Assign)"}}==
-		Assigns the value of a bitwise inclusive or between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineXor|XOR= (Exclusive Disjunction and Assign)"}}==
-		Assigns the value of a bitwise exclusive or between two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|SHL= (Shift Left and Assign)"}}==
-		Assigns the value of a bitwise shift left of an operand.
-	=={{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|SHR= (Shift Right and Assign)"}}==
-		Assigns the value of a bitwise shift right of an operand.
-
-{{anchor name="ARITHMETIC"}}{{fbdoc item="section" value="Arithmetic Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpAdd|+ (Add)"}}==
-		Returns the result of an addition of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpSubtract|- (Subtract)"}}==
-		Returns the result of a subtraction of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpMultiply|* (Multiply)"}}==
-		Returns the result of a multiplication of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpDivide|/ (Divide)"}}==
-		Returns the result of a division of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpIntegerDivide|\ (Integer divide)"}}==
-		Returns the result of an integer divide of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpExponentiate|^ (Exponentiate)"}}==
-		Returns the result of an exponentiation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpModulus|MOD (Modulus)"}}==
-		Returns the result of a modulus of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpNegate|- (Negate)"}}==
-		Returns the result of a negation of an operand.
-	=={{fbdoc item="keyword" value="KeyPgOpShiftLeft|SHL (Shift left)"}}==
-		Returns the result of a bitwise shift left of an operand.
-	=={{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR (Shift right)"}}==
-		Returns the result of a bitwise shift right of an operand.
-
-{{anchor name="INDEX"}}{{fbdoc item="section" value="Indexing Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpArrayIndex|() (Array index)"}}==
-		Returns a reference to an element in an array.
-	=={{fbdoc item="keyword" value="KeyPgOpStringIndex|[] (String index)"}}==
-		Returns a reference to a character in a string.
-	=={{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}==
-		Returns a reference to memory offset from a base address.
-
-{{anchor name="STRING"}}{{fbdoc item="section" value="String Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpConcatConvert|& (String concatenation with conversion)"}}==
-		Concatenates two values converted to strings.
-	=={{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR (String pointer)"}}==
-		Returns the address of a string's character data.
-
-<<>>{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpEqual|= (Equal)"}}==
-		Compares the equal relation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpNotEqual|<> (Not equal)"}}==
-		Compares the inequality relation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpLessThan|< (Less than)"}}==
-		Compares the less than relation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpLessThanOrEqual|<= (Less than or equal)"}}==
-		Compares the less than or equal relation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpGreaterThanOrEqual|>= (Greater than or equal)"}}==
-		Compares the greater than or equal relation of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpGreaterThan|> (Greater than)"}}==
-		Compares the greater than relation of two operands.
-
-{{anchor name="LOGICAL"}}{{fbdoc item="section" value="Bitwise Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpAnd|AND (Conjunction)"}}==
-		Returns the result of a bitwise conjunction of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpEqv|EQV (Equivalence)"}}==
-		Returns the result of a bitwise equivalence of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpImp|IMP (Implication)"}}==
-		Returns the result of a bitwise implication of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpNot|NOT (Complement)"}}==
-		Returns the result of a bitwise complement of an operand.
-	=={{fbdoc item="keyword" value="KeyPgOpOr|OR (Inclusive Disjunction)"}}==
-		Returns the result of a bitwise inclusive or of two operands.
-	=={{fbdoc item="keyword" value="KeyPgOpXor|XOR (Exclusive Disjunction)"}}==
-		Returns the result of a bitwise exclusive or of two operands.
-
-{{anchor name="PREPROC"}}{{fbdoc item="section" value="Preprocessor Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpPpStringize|# (Argument stringize)"}}==
-		Returns a text operand converted to a [[KeyPgString String]] literal.
-	=={{fbdoc item="keyword" value="KeyPgOpPpConcat|## (Argument concatenation)"}}==
-		Concatenates two text operands.
-
-{{anchor name="POINTER"}}{{fbdoc item="section" value="Pointer Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpAt|@ (Address of)"}}==
-		Returns the address in memory of its operand.
-	=={{fbdoc item="keyword" value="KeyPgOpValueOf|* (Value of)"}}==
-		Returns a reference to the value at an address.
-	=={{fbdoc item="keyword" value="KeyPgOpVarptr|VARPTR (Variable pointer)"}}==
-		Returns the address of a variable or object.
-	=={{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR (Procedure pointer)"}}==
-		Returns the address of a procedure.
-
-{{anchor name="TYPE"}}{{fbdoc item="section" value="Type or Class Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpMemberAccess|. (Member access)"}}==
-		Returns a reference to a member.
-	=={{fbdoc item="keyword" value="KeyPgOpPtrMemberAccess|-> (Pointer to member access)"}}==
-		Returns a reference to a member from a pointer.
-
-{{anchor name="MEMORY"}}{{fbdoc item="section" value="Memory Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpNew|New"}}==
-		Allocates memory for and constructs objects.
-	=={{fbdoc item="keyword" value="KeyPgOpDelete|Delete"}}==
-		Destroys and deallocates memory for objects.
-
-{{anchor name="ITERATION"}}{{fbdoc item="section" value="Iteration Operators"}}
-	=={{fbdoc item="keyword" value="KeyPgOpFor|For"}}, [[KeyPgOpFor Next]], and [[KeyPgOpFor Step]]==
-		Allows user defined types to be used as iterators in a ##[[KeyPgFornext For...Next]]## loop.
->>::c::
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

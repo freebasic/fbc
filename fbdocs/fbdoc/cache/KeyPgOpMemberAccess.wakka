@@ -55,7 +55,7 @@ end with
 	- ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
-	- [[CatPgOpStructure Structure Operators]]
 	- ##[[KeyPgWith With..End With]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

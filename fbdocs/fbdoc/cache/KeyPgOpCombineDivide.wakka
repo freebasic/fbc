@@ -47,7 +47,6 @@ Output:
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpDivide Operator / (Divide)]]##
-	- [[CatPgOpAssignment Assignment Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

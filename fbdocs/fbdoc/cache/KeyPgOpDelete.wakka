@@ -35,4 +35,4 @@ Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpNew New]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

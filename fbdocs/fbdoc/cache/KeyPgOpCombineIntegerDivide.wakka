@@ -45,7 +45,6 @@ Output:
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpIntegerDivide Operator \ (Integer divide)]]##
-	- [[CatPgOpAssignment Assignment Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

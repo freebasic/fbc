@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="GET/PUT image header example"}}----
 Example showing the two different headers used for image buffers.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/image-header.bas"}}%%(freebasic)
 '' here we define the image buffer header structure
 type _OLD_HEADER field = 1
 	bpp : 3 as ushort
@@ -56,6 +56,6 @@ sleep%%
 
 NOTE: To use this code with an array, pass your array to the function, like this:
 
-%%(qbasic)
+%%(freebasic)
 show_image_info( varptr( myarray( 0 ) ) )
 %%

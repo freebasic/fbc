@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="Compiler Switches"}}----
-Declarative statements retained for backwards compatibility purposes only.
+Statements that affect how code is compiled
 
 {{fbdoc item="desc"}}
-	These compiler switches and options have been kept for backwards compatibility with QB and previous development versions of FreeBASIC.
+	These statements affect how the compiler declares variables, arrays and procedures, parses string literals, passes procedure parameters and more. They are kept for backwards compatibility with Microsoft ""QuickBASIC"" and previous development versions of ""FreeBASIC"" within the //[[CompilerDialects QB and deprecated dialects]]//.
 
 <<
 {{fbdoc item="section" value="Metacommands"}}
@@ -39,8 +39,8 @@ Declarative statements retained for backwards compatibility purposes only.
 >>
 ::c::
 {{fbdoc item="lang"}}
-	- DEFLNGINT and DEFULNGINT only allowed in //-lang deprecated//.
-	- OPTION statements only allowed in //-lang deprecated// except for BASE and EXPLICIT which are also allowed in //-lang qb//.
+	- ##[[KeyPgDeflngint DEFLNGINT]]## and ##[[KeyPgDefulngint DEFULNGINT]]## only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- The various ##OPTION## statements only available in the //[[CompilerDialects deprecated dialect]]// except for ##[[KeyPgOptionbase OPTION BASE]]## and ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## which are also available in the //[[CompilerDialects QB dialect]]//.
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]

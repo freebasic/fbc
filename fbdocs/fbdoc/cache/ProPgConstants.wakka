@@ -10,7 +10,7 @@
 	After being defined with the ##[[KeyPgConst Const]]## command, constants cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/constants/constants.bas"}}%%(freebasic)
 DECLARE SUB PrintConstants ()
 
 const FirstNumber = 1

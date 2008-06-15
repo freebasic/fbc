@@ -9,7 +9,7 @@ Preprocessor operator to convert macro arguments to strings
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/stringize.bas"}}%%(freebasic)
-#define SEE(x) print #x;" = "; x
+#define SEE(x) print #x ;" = "; x
 dim variable as integer, another_one as integer
 variable=1
 another_one=2
@@ -28,6 +28,6 @@ another_one = 2
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]
-	- [[CatPgOpPrepro Preprocessor Operators]]
 
-{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpPrepro|Preprocessor Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

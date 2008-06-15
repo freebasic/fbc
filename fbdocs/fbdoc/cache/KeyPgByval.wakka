@@ -10,9 +10,9 @@ Declaration specifier to explicitly pass a parameter by value
 {{fbdoc item="desc"}}
 	##**Byval**## in a parameter list of a declare statement causes a copy of the variable to be passed to the procedure (for example, a sub or function) by its value.
 
-	This means that if you pass say the value of the variable //##x##// then the original variable //##x##// will be modified in any way, where as if you send the address the procedure could modify the value of //##x##// to anything.
+	This means that if the value of the variable //##x##// is passed, then the original variable //##x##// will not be modified in any way; however, if the variable were passed ##[[KeyPgByref Byref]]##, the value of the original variable //##x##// could be modified by the called function.
 
-	For string arguments, ##**Byval**## currently has a different meaning: it passes a pointer to the string, while ##[[KeyPgByref Byref]]## passes a pointer to the FB string descriptor. This behavior allows passing a ##[[KeyPgString String]]## to C procedures. The string passed this way should not be changed by the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing a ##[[KeyPgString String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
+	For string arguments, ##**Byval**## currently has a different meaning: it passes a pointer to the string, while ##[[KeyPgByref Byref]]## passes a pointer to the FB string descriptor. This behavior allows passing a ##**Byval**## ##[[KeyPgString String]]## directly to C procedures. The string passed this way should not be changed by the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. The meaning of passing a ##[[KeyPgString String]]## ##**Byval**## might change in the future; therefore, passing a ##[[KeyPgString String]]## ##**Byval**## should be avoided.  ##[[KeyPgZstring Zstring]]## is more suited for the purpose of passing zero-terminated strings to C functions.
 
 	Opposite of ##[[KeyPgByref ByRef]]##.
 
@@ -32,7 +32,7 @@ Sleep
 End
 %%
 {{fbdoc item="lang"}}
-	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention.
+	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
 	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
 
 {{fbdoc item="diff"}}

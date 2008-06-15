@@ -12,7 +12,7 @@ Statement to erase arrays
 		An array to be erase.
 
 {{fbdoc item="desc"}}
-	Erases one or more dynamic arrays from memory, or clears all elements in a static array.
+	Erases the element data of one or more variable-length arrays from memory, or clears (initializes) all elements in a fixed-length array.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)

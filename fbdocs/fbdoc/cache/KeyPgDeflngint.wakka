@@ -1,13 +1,17 @@
 {{fbdoc item="title" value="DEFLNGINT"}}----
-Sets a default data type for variables
+Specifies a default data type for a range of variable names
 
 {{fbdoc item="syntax"}}##
-	**Deflngint** //letterrange//[, //letterrange//]...
+	**Deflngint** //start_letter//[**-**//end_letter// ][, ...]
 ##
-{{fbdoc item="desc"}}
-	##**Deflngint**## is used to make variables whose name starts with a letter in the range given to defaut to a ##[[KeyPgLongint Longint]]## number .
+{{fbdoc item="param"}}
+	##//start_letter//##
+		the first letter in the range
+	##//end_letter//##
+		the last letter in the range
 
-	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+{{fbdoc item="desc"}}
+	##**Deflngint**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgLongint Longint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
 	This will make 'lNumber' a ##[[KeyPgLongint Longint]]## number since it's first letter starts with l.
@@ -18,7 +22,7 @@ dim lNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Allowed only with //-lang deprecated//.
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

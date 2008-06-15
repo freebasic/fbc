@@ -3,7 +3,9 @@ Provides a wide range of mathematical routines such as random number generators,
 
 Website: http://www.gnu.org/software/gsl/
 Platforms supported: Win32, Linux
-Headers to include: gsl/
+Headers to include: gsl/*.bi
+Example Usage: yes, in examples/libraries/GSL/
 
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

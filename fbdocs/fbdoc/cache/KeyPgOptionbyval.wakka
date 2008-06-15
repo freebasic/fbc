@@ -1,21 +1,15 @@
 {{fbdoc item="title" value="OPTION BYVAL"}}----
-Compiler switch to set default method for passing parameters
+Specifies parameters are to be passed by value by default in procedure declarations
 
 {{fbdoc item="syntax"}}##
 	**Option Byval**
 ##
 {{fbdoc item="desc"}}
-	Sets ##[[KeyPgByval Byval]]## as the default method for passing arguments to ##[[KeyPgFunction Function]]##'s and ##[[KeyPgSub Sub]]##'s.
-
-	##**Option Byval**## is only allowed in sources compiled with '-lang vb' or '-lang deprecated' where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
-
-	##**Option Byval**## not allowed when '-lang fb' is used for compilation since the default method for passing arguments is ##[[KeyPgByval Byval]]##.
-
-	##**Option Byval**## not allowed when '-lang qb' is used for compilation where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
+	##**Option Byval**## is a statement that sets the default passing convention for procedure parameters to //by value//, as if declared with ##[[KeyPgByval Byval]]##. This default remains in effect for the rest of the module in which ##**Option Byval**## is used, and can be overridden by specifying ##[[KeyPgByref Byref]]## in parameter lists.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-byval.bas"}}%%(freebasic)
-' compile with -lang deprecated
+'' compile with the "-lang deprecated" compiler switch
 
 sub TestDefaultByref( a as integer )
   '' change the value
@@ -40,6 +34,9 @@ TestDefaultByval( a )
 print "After TestDefaultByval : a = "; a
 print
 %%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

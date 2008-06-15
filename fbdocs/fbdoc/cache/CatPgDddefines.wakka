@@ -82,7 +82,7 @@ Preprocessor symbols defined by the compiler
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}==
 		True (-1) if parameters are declared by value by default, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}==
-		True (-1) if all arrays are dynamic, zero (0) otherwise.
+		True (-1) if all arrays are variable-length, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}==
 		True (-1) if string literals are processed for escape sequences, zero (0) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}==

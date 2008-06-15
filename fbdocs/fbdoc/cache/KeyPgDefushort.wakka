@@ -1,13 +1,17 @@
 {{fbdoc item="title" value="DEFUSHORT"}}----
-Sets a default data type for variables
+Specifies a default data type for a range of variable names
 
 {{fbdoc item="syntax"}}##
-	**Defushort** //letterrange//[, //letterrange//]...
+	**Defushort** //start_letter//[**-**//end_letter// ][, ...]
 ##
-{{fbdoc item="desc"}}
-	##**Defushort**## is used to default variables to a ##[[KeyPgUshort Ushort]]## number that start with a letter in the range given.
+{{fbdoc item="param"}}
+	##//start_letter//##
+		the first letter in the range
+	##//end_letter//##
+		the last letter in the range
 
-	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+{{fbdoc item="desc"}}
+	##**Defushort**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgUshort Ushort]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
 	This will make 'uNumber' a ##[[KeyPgUshort Ushort]]## number since it's first letter starts with u.
@@ -17,7 +21,7 @@ defushort u
 dim uNumber
 %%
 {{fbdoc item="lang"}}
-	- Allowed only with //-lang deprecated// or //-lang qb//.
+	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

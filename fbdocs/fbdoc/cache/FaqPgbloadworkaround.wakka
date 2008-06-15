@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="BLOAD/BSAVE text mode work-around"}}----
 These functions allow you to use BSAVE and BLOAD in a text mode.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/bload-workaround.bas"}}%%(freebasic)
 Sub _bsave( file As String, p As Any Ptr, sz As Integer ) 
 
   Dim As Integer ff 

@@ -44,8 +44,7 @@ Hello, world!
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgOpConcatConvert|Operator & (String concatenation with conversion)"}}
-	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|Operator += (Add and Assign)"}}
-	- [[CatPgOpAssignment Assignment Operators]]
+	- ##[[KeyPgOpConcatConvert Operator & (String concatenation with conversion)]]##
+	- ##[[KeyPgOpCombineAdd Operator +=  (Add and Assign)]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

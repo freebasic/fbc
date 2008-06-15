@@ -50,7 +50,6 @@ c = a imp b '' c = &b11110101
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

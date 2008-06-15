@@ -2,27 +2,23 @@
 Datatypes whose values are addresses in memory
 
 {{fbdoc item="section" value="Declaration"}}
-	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an ##[[KeyPgInteger Integer]] [[KeyPgPointer Pointer]]## points to ##[[KeyPgInteger Integer]]## data). Pointers are declared like any other variable, with the suffix "##pointer##" or "##ptr##" following the type name. The following,
-
-%%(qbasic)
-Dim myInteger As Integer = 10
-Dim myPointer As Integer Pointer = @myInteger
-%%
-	defines an ##[[KeyPgInteger Integer]]## variable called ##myInteger## and an ##[[KeyPgInteger Integer]]## pointer called ##myPointer## that points to the location in memory where ##myInteger## is stored. ##[[KeyPgOpAt Operator @]]## (Address of) is used to retrieve the address of ##myInteger##.
+	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an ##[[KeyPgInteger Integer]] [[KeyPgPointer Pointer]]## points to ##[[KeyPgInteger Integer]]## data). Pointers are declared like any other variable, with the suffix "##pointer##" or "##ptr##" following the type name.
 
 {{fbdoc item="section" value="Accessing pointed to data"}}
 	The data pointed to by a pointer can be accessed with ##[[KeyPgOpValueOf Operator *]]## (Value of). This operator returns a reference to the data that its operand points to. The following,
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/builtin.bas"}}%%(freebasic)
+Dim myInteger As Integer = 10
+Dim myPointer As Integer Pointer = @myInteger
 *myPointer = 20
 Print myInteger
 %%
-	assigns the value of ##20## to the location at which ##myPointer## points - the address of ##myInteger##, or ##@myInteger##. Changes to ##*myPointer## directly affect the value of ##myInteger## (the expression "##*myPointer##" is the same thing as "##myInteger##").
+	defines an ##[[KeyPgInteger Integer]]## variable called ##myInteger## and an ##[[KeyPgInteger Integer]]## pointer called ##myPointer## that points to the location in memory where ##myInteger## is stored. ##[[KeyPgOpAt Operator @]]## (Address of) is used to retrieve the address of ##myInteger##. The value of ##20## is assigned to the location at which ##myPointer## points - the address of ##myInteger##, or ##@myInteger##. Changes to ##*myPointer## directly affect the value of ##myInteger## (the expression "##*myPointer##" is the same thing as "##myInteger##").
 
 {{fbdoc item="section" value="Pointers to user-defined types"}}
 	Pointers to user-defined types are defined and used like all other pointers. Accessing a member of a [[KeyPgType Type]] or [[KeyPgClass Class]] requires one of the following two methods:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/udt.bas"}}%%(freebasic)
 Type myType
 	a As Integer
 	b As Double

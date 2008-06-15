@@ -47,7 +47,6 @@ The fifth root of 3.4 is 1.27730844458754
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

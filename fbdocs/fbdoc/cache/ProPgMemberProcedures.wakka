@@ -23,22 +23,24 @@ Procedures with full access to members of a ##[[KeyPgType Type]]## or ##[[KeyPgC
 
 	The following example declares and defines a ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## member procedure:
 
-	%%(qbasic)
-type foo
-	declare sub f (as integer)
-	declare function g as integer
+	{{fbdoc item="filename" value="examples/manual/proguide/members/foo1.bi"}}%%(freebasic)
+'' foo1.bi
 
-	i as integer
-end type
+Type foo
+	Declare Sub f (As Integer)
+	Declare Function g As Integer
 
-sub foo.f (n as integer)
-	print n
-end sub
+	i As Integer
+End Type
 
-function foo.g as integer
-	return 420
-end function
-	%%
+Sub foo.f (n As Integer)
+	Print n
+End Sub
+
+Function foo.g As Integer
+	Return 420
+End Function
+%%
 
 	* //In the future, member procedures may be able to be defined within the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition.//
 
@@ -47,12 +49,13 @@ end function
 
 	The following example, using the code from the last example, calls ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## member procedures:
 
-	%%(qbasic)
-'' ... foo as before ...
+	{{fbdoc item="filename" value="examples/manual/proguide/members/usage1.bas"}}%%(freebasic)
+'' ... foo with non-static members as before ...
+#include once "foo1.bi"
 
-dim bar as foo
+Dim bar As foo
 bar.f(bar.g())
-	%%
+%%
 
 	* //Static member procedures do not require an object instance in order to be called.//
 
@@ -65,25 +68,25 @@ bar.f(bar.g())
 
 	The following example uses the ##[[KeyPgThis This]]## keyword to refer to member data whose name is hidden by a parameter and local variable:
 
-	%%(qbasic)
-	type foo
-		declare sub f (i as integer)
-		declare sub g ()
-	
-		i as integer = 420
-	end type
-	
-	sub foo.f (i as integer)
-		'' A parameter hides T.i, so it needs to be qualified to be used:
-		print this.i
-	end sub
-	
-	sub foo.g ()
-		'' A local variable hides T.i, so it needs to be qualified to be used:
-		dim i as integer
-		print this.i
-	end sub
-	%%
+	{{fbdoc item="filename" value="examples/manual/proguide/members/this.bas"}}%%(freebasic)
+Type foo
+	Declare Sub f (i As Integer)
+	Declare Sub g ()
+
+	i As Integer = 420
+End Type
+
+Sub foo.f (i As Integer)
+	'' A parameter hides T.i, so it needs to be qualified to be used:
+	Print this.i
+End Sub
+
+Sub foo.g ()
+	'' A local variable hides T.i, so it needs to be qualified to be used:
+	Dim i As Integer
+	Print this.i
+End Sub
+%%
 	
 	* //Static member procedures do not have this extra parameter added by the compiler, and so cannot access the object instance from which it was called with.//
 
@@ -97,27 +100,30 @@ bar.f(bar.g())
 
 	Unlike a module-level procedure, which needs to specify the ##[[KeyPgOverload Overload]]## clause in the declaration to allow overloading it, a member procedure is overloadable by default, and does not need the ##[[KeyPgOverload Overload]]## clause.
 
-	%%(qbasic)
-	type T
-		declare sub f
-		
-		'' Different number of parameters:
-		declare sub f (as integer)
-		
-		'' Different type of parameters:
-		declare sub f (byref as string)
-		
-		'' Again, parameters are different:
-		declare function f (as ubyte) as integer
-		
-		'' error: parameters do not differ:
-		declare function f as integer
-		declare function f (as ubyte) as string
-		declare static function f (as ubyte) as integer
+	{{fbdoc item="filename" value="examples/manual/proguide/members/overload.bas"}}%%(freebasic)
+Type T
+	Declare Sub f
 	
-		'' ...
-	end type
-	%%
+	'' Different number of parameters:
+	Declare Sub f (As Integer)
+	
+	'' Different type of parameters:
+	Declare Sub f (ByRef As String)
+	
+	'' Again, parameters are different:
+	Declare Function f (As UByte) As Integer
+	
+	'' following three members would cause an error,
+	'' number of parameters and/or types do not differ:
+
+	'' Declare Function f As Integer
+	'' Declare Function f (As UByte) As String
+	'' Declare Static Function f (As UByte) As Integer
+
+	'' ...
+	somedata as any ptr
+End Type
+%%
 
 {{anchor name="STATIC"}}{{fbdoc item="section" value="Static member procedures"}}
 	Static member procedures are declared and defined much in the same way as non-static member procedures, with the ##[[KeyPgStatic Static]]## keyword preceding the declaration and definition.
@@ -128,22 +134,24 @@ bar.f(bar.g())
 
 	The following example declares two static member procedures, the first of which also has static variable and object storage. Note that the ##[[KeyPgStatic Static]]## keyword is optional in the member procedure definition:
 
-	%%(qbasic)
-	type foo
-		declare static sub f (as integer)
-		declare static function g as integer
-	
-		i as integer
-	end type
+	{{fbdoc item="filename" value="examples/manual/proguide/members/foo2.bi"}}%%(freebasic)
+'' foo2.bi
 
-	static sub foo.f (n as integer) static
-		'' ...
-	end sub
+Type foo
+	Declare Static Sub f (As Integer)
+	Declare Static Function g As Integer
+
+	i As Integer
+End Type
+
+Static Sub foo.f (n As Integer) Static
+	Print n
+End Sub
 	
-	function foo.g as integer
-		'' ...
-	end function
-	%%
+Function foo.g As Integer
+	Return 420
+End Function
+%%
 
 	Static member procedures can be called like non-static member procedures, qualifying the name of the procedure with the name of an instance and the member access operator (##[[KeyPgOpMemberAccess Operator . (Member access)]]##).
 
@@ -151,31 +159,33 @@ bar.f(bar.g())
 
 	The following example, using the code from the last example, uses both ways to call static member procedures:
 	
-	%%(qbasic)
-	'' ... foo as before ...
+	{{fbdoc item="filename" value="examples/manual/proguide/members/usage2.bas"}}%%(freebasic)
+'' ... foo with static members as before ...
+#include once "foo2.bi"
 
-	dim bar as foo
-	bar.f(foo.g())
-	%%
+Dim bar As foo
+bar.f(foo.g())
+%%
 
 	Unlike non-static member procedures, which are declared with an extra ##[[KeyPgThis This]]## parameter, static member procedures do not get passed an instance when called. Because of this, static member procedures can only refer to constants, enumerations, other static members (data or procedures), etc., without qualifying their names. Static member procedures can still refer to non-static members when qualified with an instance, for example: a parameter or local variable.
 
 	The following example refers to a non-static member from a static procedure:
 
-	%%(qbasic)
-	type foo
-		declare static sub f (byref as foo)
+	{{fbdoc item="filename" value="examples/manual/proguide/members/static.bas"}}%%(freebasic)
+Type foo
+	Declare Static Sub f (ByRef As foo)
 
-		i as integer
-	end type
+	i As Integer
+End Type
 
-	sub foo.f (byref self as foo)
-		'' Ok, self is an instance of foo:
-		print self.i
+Sub foo.f (ByRef self As foo)
+	'' Ok, self is an instance of foo:
+	Print self.i
 
-		'' error, cannot access non-static members, no foo instance:
-		print i
-	end sub
-	%%
+	'' would cause error
+	'' cannot access non-static members, no foo instance:
+	'' Print i
+End Sub
+%%
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -2,23 +2,26 @@
 Declares a module-level or member procedure
 
 {{fbdoc item="syntax"}}##
-	**Declare** [[KeyPgSub Sub]] [ //param_list// ] [ [[KeyPgModuleConstructor Constructor]] | [[KeyPgModuleDestructor Destructor]] ]
-	**Declare** [[KeyPgFunction Function]] [ //param_list// ] [[KeyPgAs As]] //return_type//
+	**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ] [ [[KeyPgModuleConstructor Constructor]] | [[KeyPgModuleDestructor Destructor]] ]
+	**Declare** [[KeyPgFunction Function]] //name// [ //param_list// ] [[KeyPgAs As]] //return_type//
 	**Declare** [[KeyPgOperator Operator]] //op_symbol// //param_list// [ [[KeyPgAs As]] //return_type// ]
 	
 	Type //T//
 		**Declare** [[KeyPgConstructor Constructor]] [ //param_list// ]
 		**Declare** [[KeyPgDestructor Destructor]]
-		**Declare** [[KeyPgSub Sub]] [ //param_list// ]
-		**Declare** [[KeyPgFunction Function]] [ //param_list// ] [[KeyPgAs As]] //return_type//
-		**Declare** [[KeyPgOperator Operator]] [ //param_list// ] [ [[KeyPgAs As]] //return_type// ]
+		**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ]
+		**Declare** [[KeyPgFunction Function]] //name// [ //param_list// ] [[KeyPgAs As]] //return_type//
+		**Declare** [[KeyPgOperator Operator]] //name// [ //param_list// ] [ [[KeyPgAs As]] //return_type// ]
+		**Declare** [[KeyPgProperty Property]] //name// [ ( [ //param_list// ] ) ] [ [[KeyPgAs As]] //return_type// ]
 	End Type
 ##
 {{fbdoc item="param"}}
 	##//param_list//##
 		Parenthesized comma-separated list of parameters.
 	##//return_type//##
-		The return type of a [[KeyPgFunction FUNCTION]] or [[KeyPgOperator OPERATOR]] procedure.
+		The return type of a ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]## procedure.
+	##//name//##
+		The name or symbol of the routine.
 	##//op_symbol//##
 		The name or symbol of an operator.
 	##//T//##
@@ -79,6 +82,7 @@ Print an_instance.my_data
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgOperator Operator]]##
+	- ##[[KeyPgProperty Property]]##
 	- ##[[KeyPgConstructor Constructor]]##
 	- ##[[KeyPgDestructor Destructor]]##
 	- ##[[KeyPgModuleConstructor Constructor (module)]]##

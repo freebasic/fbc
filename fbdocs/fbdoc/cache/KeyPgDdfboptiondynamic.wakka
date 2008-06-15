@@ -5,9 +5,7 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_OPTION_DYNAMIC__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_OPTION_DYNAMIC__""## indicates if the compiler is currently set to either Dynamic or Static array allocation by default for all array allocations.
-
-	Returns zero (0) if the current state is Dynamic.  Returns non-zero (-1) if the current state is Static.
+	##""__FB_OPTION_DYNAMIC__""## is defined as true (negative one (-1)) if a recent ##[[KeyPgOptiondynamic Option Dynamic]]## statement or ##[[KeyPgMetaDynamic '$Dynamic]]## meta-command was issued. Otherwise, it is defined as zero (0).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fboptiondynamic.bas"}}%%(freebasic)

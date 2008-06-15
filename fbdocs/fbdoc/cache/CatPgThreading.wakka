@@ -39,6 +39,7 @@ Procedures for working with multithreaded applications
 	=={{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}==
 		Destroys a mutex that is no longer needed.
 >>::c::
-~&NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
+{{fbdoc item="target"}}
+	- These procedures are not supported in DOS.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

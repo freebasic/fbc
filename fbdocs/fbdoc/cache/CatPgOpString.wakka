@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="String Operators"}}----
 Operators that work with strings
 
-<<
-	- {{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}
-	- {{fbdoc item="keyword" value="KeyPgOpConcatConvert|Operator & (String concatenation with conversion)"}}
+These operators provide conversion to string, concatenation and retrieval of character data.
 
->>
-::c::
-
+<<=={{fbdoc item="keyword" value="KeyPgOpConcatConvert|Operator & (String concatenation with conversion)"}}==
+	Concatenates two values converted to strings.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpStrptr|Operator Strptr (String pointer)"}}==
+	Returns the address of a string's character data.
+>>::c::
 {{fbdoc item="back" value="CatPgOperators|Operators"}}
    

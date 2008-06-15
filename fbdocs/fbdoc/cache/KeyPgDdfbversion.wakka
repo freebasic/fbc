@@ -9,11 +9,11 @@ Intrinsic define (macro string) set by the compiler
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbversion.bas"}}%%(freebasic)
-#if __FB_VERSION__ < "0.17" 
-#error  Please compile with FB version 0.17 or above 
+#if __FB_VERSION__ < "0.18" 
+#error  Please compile with FB version 0.18 or above 
 #endif
 %%
-	This will stop the compilation if the compiler version is not below 0.13
+	This will stop the compilation if the compiler version is below 0.18
 
 
 {{fbdoc item="diff"}}

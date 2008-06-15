@@ -48,7 +48,6 @@ This is because:
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

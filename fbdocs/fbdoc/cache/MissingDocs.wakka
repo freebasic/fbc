@@ -17,11 +17,13 @@ Please edit this page to remove items when they are written.
 {{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
 	static members
 	all overloaded ops documented? (need to check this)
-	[[OpPrecedence Operator Precedence]] table does not include FOR-NEXT, array indexing or CAST
+	[[OpPrecedence Operator Precedence]] table needs everything @[[CatPgOperators Operators]] plus [[KeyPgCast Operator Cast]]
 
 {{fbdoc item="section" value="Pages with missing examples"}}
-	[[KeyPgFlip Flip]]
 	[[KeyPgPmap Pmap]]
 	[[KeyPgEncoding Encoding]]
+	[[KeyPgOpStep Operator Step]]
+	[[KeyPgOpNext Operator Next]]
+	[[KeyPgOpDelete Operator Delete]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

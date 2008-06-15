@@ -3,29 +3,24 @@
 
 The value of a function can be returned in three ways:
 
-Using the name of the function to set the return value and continue executing the function:
-%%(qbasic)
-function myfunc() as integer
-  myfunc = 1
-end function
+{{fbdoc item="filename" value="examples/manual/proguide/procs/return-methods.bas"}}%%(freebasic)
+'' Using the name of the function to set the return value and continue executing the function:
+Function myfunc1() As Integer
+   myfunc1 = 1
+End Function
+
+'' Using the keyword 'Function' to set the return value and continue executing the function:
+Function myfunc2() As Integer
+   Function = 2
+End Function
+
+'' Using the keyword 'Return' to set the return value and immediately exit the function:
+Function myfunc3() As Integer
+   Return 3
+End Function
 %%
 
-Using the keyword ##**Function**## to set the return value and continue executing the function:
-%%(qbasic)
-function myfunc() as integer
-  function = 2
-end function
-%%
-
-Using the keyword ##**Return**## to set the return value and immediately exit the function:
-%%(qbasic)
-function myfunc() as integer
-  function = 3
-end function
-%%
-
-{{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/returnval.bas"}}%%(freebasic)
 '' This program demonstrates a function returning a value.
 
 Declare Function myFunction () As Integer
@@ -48,3 +43,6 @@ End Function
 	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   
+
+   

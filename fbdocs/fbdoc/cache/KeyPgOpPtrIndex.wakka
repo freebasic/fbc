@@ -43,9 +43,8 @@ next
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##{{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}##
 	- ##[[KeyPgOpAdd Operator + (Add)]]##
 	- ##[[KeyPgOpSubtract Operator - (Subtract)]]##
 	- [[CatPgOpPoint Pointer Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpIndexing|Indexing Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

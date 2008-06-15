@@ -57,7 +57,7 @@ Index        Data
 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/arrays/indexing.bas"}}%%(freebasic)
 DECLARE SUB PrintArray()
 
 DIM Numbers(1 to 10) AS INTEGER

@@ -2,16 +2,18 @@
 Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //stack_size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Threadcreate** ( //proc// [, //param// ] )
+	//result// = **Threadcreate** ( //proc// [, [ //param// ] [, //stack_size// ] ] )
 ##
 {{fbdoc item="param"}}
 	##//proc//##
 		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread.
 	##//param//##
 		Optional [[KeyPgAny any]] [[KeyPgPtr ptr]] argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be a pointer to a structure or an array if more arguments are needed).
+	##//stack_size//##
+		Optional number of bytes to reserve for this thread's stack.
 
 {{fbdoc item="ret"}}
 	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (0) on failure.
@@ -22,6 +24,8 @@ Starts a user-defined procedure in a separate execution thread
 	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
 
 	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+
+	On some systems, the stack automatically grows beyond ##//stack_size//## if more space is needed; on others, this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not growable.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/threads/threadcreate.bas"}}%%(freebasic)

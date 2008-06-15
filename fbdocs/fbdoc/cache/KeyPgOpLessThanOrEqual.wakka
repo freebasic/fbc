@@ -51,6 +51,6 @@ Compares an expression less than or equal to another expression
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOpConditional Relational Operators]]
+	- ##[[KeyPgOpGreaterThan Operator >]]## (Greater than)
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,32 +1,30 @@
 {{fbdoc item="title" value="OPTION BASE"}}----
-Compiler switch to set the default base index for arrays
+Specifies a default lower bound for array declarations
 
 {{fbdoc item="syntax"}}##
-	**Option Base** {0 | 1}
+	**Option Base** //base_subscript//
 ##
+{{fbdoc item="param"}}
+	##//base_subscript//##
+		an integral value
+
 {{fbdoc item="desc"}}
-	Sets the default lower bound of an array subscript. For example:
-
-	{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionbase_1.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
-Option Base 1
-Dim foo(10)
-
-%%
-
-	foo is now an array that ranges from ##foo(1)## to ##foo(10)##. This is the same as ##dim foo(1 to 10)##. If ##**Option Base** 0## were used or there were no preceding ##**Option Base**## statement, foo would range from 0 to 10.
+	##**Option Base**## is a statement that sets the default lower bound for any following array declarations. This default remains in effect for the rest of the module in which ##**Option Base**## is used, and can be overridden by declaring arrays with an explicit lower bound, or with another ##**Option Base**## statement.
 
 {{fbdoc item="ex"}}
-	{{fbdoc item="filename" value="examples/manual/switches/option-base.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
-option base 1
-dim foo(10)
-print "foo contains elements between " & lbound(foo) & " and " & ubound(foo)
+{{fbdoc item="filename" value="examples/manual/check/KeyPgOptionbase_1.bas"}}%%(freebasic)
+'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
+
+dim foo(10) as integer      ' declares an array with indices 0-10
+
+option base 5
+
+dim bar(15) as integer      ' declares an array with indices 5-15
+dim baz(0 to 4) as integer  ' declares an array with indices 0-4
 %%
 
 {{fbdoc item="lang"}}
-	- The use of OPTION BASE is allowed only in the //-lang qb// and //-lang deprecated//.
-	- With the //-lang fb// option, the lower index of the arrays must be specified with the [[KeyPgTo TO]] clause if different from 0.
+	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	- None

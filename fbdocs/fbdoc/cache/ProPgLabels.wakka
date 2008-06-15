@@ -12,14 +12,15 @@ Defines a location in a program.
 	A label can be a positive integer line number or a //symbolname//. In both cases, the label must start at the first column of line. A //symbolname// label must end with a colon (:) character.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/labels/labels_1.bas"}}%%(freebasic)
 '' Compile with -lang deprecated or qb
 beginning:
 3 print "Hello World!"
 goto beginning
 %%
 
-%%(qbasic)'' compile with -lang qb
+{{fbdoc item="filename" value="examples/manual/proguide/labels/labels_2.bas"}}%%(freebasic)
+'' compile with -lang qb
 
 '' Labels can be used to "bookmark" DATA blocks, allowing RESTORE to alter the READ sequence.
 read a,b,c
@@ -47,3 +48,4 @@ Output:
 	- ##[[KeyPgGoto Goto]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

@@ -50,6 +50,5 @@ SLEEP
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAnd And]]##
-	- [[CatPgOpAssignment Assignment Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

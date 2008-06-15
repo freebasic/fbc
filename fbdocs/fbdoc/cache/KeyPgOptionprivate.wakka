@@ -1,30 +1,38 @@
 {{fbdoc item="title" value="OPTION PRIVATE"}}----
-Specifies all procedures to be private
+Specifies internal linkage by default for procedure declarations
 
 {{fbdoc item="syntax"}}##
 	**Option Private**
 ##
 {{fbdoc item="desc"}}
-	Sets subs/functions to be private by default (instead of ##[[KeyPgPublic Public]]## by default). This means subs/functions are only accessible within the module and are hidden from other modules, unless they have 'public' before them. This means two subs/functions can have the same name, as long as at least one is private and they are in separate modules.
+	##**Option Private**## is a statement that gives any following procedure declarations internal linkage by default, as if declared with ##[[KeyPgPrivate Private]]##. This default remains in effect for the rest of the module in which ##**Option Private**## is used, and can be overriden by declaring procedures with ##[[KeyPgPublic Public]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-private.bas"}}%%(freebasic)
-' compile with -lang deprecated
-option private
+'' Compile with the "-lang deprecated" compiler switch
 
-sub I_am_private()
+sub ProcWithExternalLinkage()
+   ' ...
 end sub
 
-public sub I_am_public()
+option private
+
+sub ProcWithInternalLinkage()
+   ' ...
+end sub
+
+public sub AnotherProcWithExternalLinkage()
+   ' ...
 end sub
 %%
 {{fbdoc item="lang"}}
-	- The use of OPTION PRIVATE is not allowed with the -lang fb option.  With -lang fb, each function must be defined as PRIVATE if needed.
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDdfboptionprivate __FB_OPTION_PRIVATE__]]##
 	- ##[[KeyPgPrivate Private]]##
 	- ##[[KeyPgPublic Public]]##
 

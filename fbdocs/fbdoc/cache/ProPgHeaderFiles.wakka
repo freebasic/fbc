@@ -26,7 +26,7 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="#ifndef guards in the header file"}}
 	The use of ##[[KeyPgPpifndef #ifndef]]## and ##[[KeyPgPpdefine #define]]## is a common practice in nearly any language that supports preprocessing.  The first time a file is included, a unique symbol is defined.  The next time the same header file is included, the definition of the symbol is checked, and if it is already defined, the contents of the header file are skipped.
-%%(qbasic)
+%%(freebasic)
 '' header.bi
 #ifndef __HEADER_BI__
 #define __HEADER_BI__
@@ -40,11 +40,11 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="#include once"}}
 	At the point in the source code where the header file is included, the optional ##"once"## specifier of the ##[[KeyPgInclude #include]]## directive can tell the compiler to only include the source file one time.
-%%(qbasic)
+%%(freebasic)
 '' header.bi
 #include once "fbgfx.bi"
 %%
-%%(qbasic)
+%%(freebasic)
 '' module.bas
 #include once "fbgfx.bi"
 #include once "header.bi"
@@ -52,7 +52,7 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="section" value="#pragma once"}}
 	##[[KeyPgPragma #pragma]] **once**## can be used in a header file to indicate that the header file should only be included once.  
-%%(qbasic)
+%%(freebasic)
 '' header.bi
 #pragma once
 #print this header will only ever be included once per module
@@ -60,5 +60,6 @@ A header file is a special kind of source file that typically only contains prep
 
 {{fbdoc item="see"}}
 	- [[ProPgSourceFiles Source Files (.bas)]]
+	- [[ExtLibTOC Header Files Index]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

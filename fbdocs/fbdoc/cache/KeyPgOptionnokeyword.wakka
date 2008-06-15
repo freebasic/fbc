@@ -1,20 +1,28 @@
 {{fbdoc item="title" value="OPTION NOKEYWORD"}}----
-Statement used to undefine a keyword in deprecated mode
+"Undefines" a reserved keyword
 
 {{fbdoc item="syntax"}}##
 	**Option Nokeyword** //keyword//
 ##
+{{fbdoc item="param"}}
+	##//keyword//##
+		the keyword to undefine
+
 {{fbdoc item="desc"}}
-	Causes the compiler to not find a keyword in its internal keyword table so it can be reused in another way. Useful when linking a library having a symbol with the same name as a FB keyword.
-	This statement form is now deprecated.  See ##[[KeyPgPpundef #undef]]## for an alternative method of removing keywords.
+	##**Option Nokeyword**## is a statement that undefines a ""FreeBASIC"" reserved keyword, meaning it can be used as an identifier for a variable, object, procedure or any other symbol. The keyword is undefined for the rest of the module in which ##**Option Nokeyword**## is used.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/switches/option-nokeyword.bas"}}%%(freebasic)
-' compile with -lang deprecated
-option nokeyword int
-dim int as integer
-'' Do some processing with the variable "int"
+'' Compile with the "-lang deprecated" compiler switch
+
+option nokeyword int        ' remove the keyword 'int' from the internal
+	                        ' symbol table
+
+dim int as integer          ' declare a variable with the name 'int'
 %%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

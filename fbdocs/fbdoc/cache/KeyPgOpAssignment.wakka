@@ -56,7 +56,6 @@ LET i = 300 ' <-alternate syntax
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOpAssignment Assignment Operators]]
 	- ##[[KeyPgOpEqual Operator = (Equal)]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

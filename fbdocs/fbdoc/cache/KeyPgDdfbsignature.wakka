@@ -13,7 +13,7 @@ PRINT __FB_SIGNATURE__
 %%
 
 %%
-FreeBASIC v0.13b
+FreeBASIC v0.18b
 %%
 
 {{fbdoc item="diff"}}

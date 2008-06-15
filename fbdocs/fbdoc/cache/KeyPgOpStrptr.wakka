@@ -52,9 +52,7 @@ Print
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpVarptr Operator Varptr (Variable pointer)]]##
-	- ##[[KeyPgOpAt Operator @ (Address of)]]##
-	- ##[[KeyPgString String]]##
 	- [[ProPgPointers Pointers]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOpString|String Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

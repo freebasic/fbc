@@ -16,7 +16,7 @@ Manipulating address values mathematically
 
 	For example, the following,
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/addsub.bas"}}%%(freebasic)
 dim p as integer ptr = new integer[2]
 
 *p = 1
@@ -30,7 +30,7 @@ dim p as integer ptr = new integer[2]
 
 	Sometimes it is more convenient to modify the pointer itself, in which case the combination addition and subtraction operators will work just like above. For example, the following,
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/incdec.bas"}}%%(freebasic)
 dim array(5) as short = { 32, 43, 66, 348, 112, 0 }
 dim p as short ptr = @array(0)
 
@@ -45,7 +45,7 @@ wend
 
 	The distance between two pointers is retrieved with ##[[KeyPgOpSubtract Operator - (Subtract)]]##, and is measured in values, not bytes. For example, the following
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/distance.bas"}}%%(freebasic)
 type T as single
 
 dim array(5) as T = { 32, 43, 66, 348, 112, 0 }

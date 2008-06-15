@@ -4,7 +4,7 @@ An example of the overloadable operators and member procedures
 {{fbdoc item="desc"}}
 !!! WRITEME !!!
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/object-class.bas"}}%%(freebasic)
 '' Sample Type showing available methods and operators
 '' Practically this is a pointless example, as the only
 '' data member is an Integer.  It serves only as a

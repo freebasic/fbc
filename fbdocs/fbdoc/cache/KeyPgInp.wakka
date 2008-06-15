@@ -34,4 +34,5 @@ out &h61,inp(&h61) and &hfc
 	- ##[[KeyPgWait Wait]]##
 	- ##[[KeyPgPalette Palette]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

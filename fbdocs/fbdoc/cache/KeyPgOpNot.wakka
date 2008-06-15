@@ -63,7 +63,6 @@ IF NOT numeric_value2 = 25 THEN PRINT "Numeric_Value2 is not equal to 25"
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

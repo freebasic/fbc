@@ -13,7 +13,7 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- A scalar variable and an array with the same name and suffix can no longer share the same name.
 	- A variable name can't be a keyword plus a type suffix (%,#,!,#,$) as in DIM FOR%, or a keyword less the suffix (DIM LEFT as INTEGER).
 	- SHARED can't be used inside a SUB or FUNCTION as it resulted in shared variables not defined in the main program. A proper DIM SHARED in the main program must be used.
-	- COMMON declarations do not depend on the order they are made, variables are matched by name and for that reason named COMMON is no more supported. All COMMON arrays are DYNAMIC in FB.
+	- COMMON declarations do not depend on the order they are made, variables are matched by name and for that reason named COMMON is no longer supported. All COMMON arrays are variable-length arrays in FB.
 	- If a single line [[KeyPgIfthen IF]] has an (unnecessary) colon directly after the THEN, it has to be terminated by an [[KeyPgEndif END IF]] in FB. If that unneeded colon is removed, FB will behave as QB.
 
 ==Design differences==

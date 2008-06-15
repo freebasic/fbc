@@ -7,23 +7,19 @@ Metacommand to change the way arrays are allocated
 	[[KeyPgRem rem]] **$Static**
 ##
 {{fbdoc item="desc"}}
-	##**$Static**## ends the action of a previous ##[[KeyPgMetaDynamic $Dynamic]]##, so from this point all arrays declared with ##[[KeyPgDim Dim]]## are static.
-
-	By default, arrays declared with ##[[KeyPgDim Dim]]## are static. An array declared with ##[[KeyPgRedim Redim]]## is always dynamic.  Arrays declared in a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## are always dynamic.
-
-	The deprecated  ##**$Static**## form exists for compatibility with QB and can be used too. ##[[KeyPgOptionstatic Option Static]]## is the VB-like version of the same command.
+	##**'$Static**## is a metacommand that overrides the behavior of ##[[KeyPgMetaDynamic $Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**'$Static**## is used, and can be overridden with ##[[KeyPgMetaDynamic $Dynamic]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/static.bas"}}%%(freebasic)
 ' compile with -lang deprecated or qb
-Option Dynamic
-Dim a(100)   '<<this array will be dynamic
-Option Static
-Dim b(100)   '<<this array will be static
+'$dynamic
+Dim a(100)   '<<this array will be variable-length
+'$static
+Dim b(100)   '<<this array will be fixed-length
 %%
 
-{{fbdoc item="lang"}} 
-	- Allowed only in //-lang qb// and //-lang deprecated//.
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	- When used inside comments it must be the first token

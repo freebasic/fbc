@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Internal graphics formats"}}----
-When a graphics mode is set via the [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres ScreenRes]] functions, GfxLib creates a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, as described in the following table:
+When a graphics mode is set via the [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres ScreenRes]] functions, GfxLib creates also a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, as described in the following table:
 
-{{table columns="4" cellpadding="1" cells="Depth;Bytes per pixel;Range bitmask;Pixel format;1bpp; 1; &h1;palette color index;2bpp; 1; &h3;palette color index;4bpp; 1; &hF;palette color index;8bpp; 1; &hFF;palette color index;15/16bpp; 2; &hFFFF;RRRRRGGGGGGBBBBB;24/32bpp; 4; &hFFFFFFFF;AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB"}}
+{{table columns="4" cellpadding="1" cells="Screen depth;Internal bytes per pixel;Range bitmask;Pixel format;1bpp; 1; &h1;palette color index;2bpp; 1; &h3;palette color index;4bpp; 1; &hF;palette color index;8bpp; 1; &hFF;palette color index;15/16bpp; 2; &hFFFF;RRRRRGGGGGGBBBBB;24/32bpp; 4; &hFFFFFFFF;AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB"}}
 
 All drawing operations work on this RAM framebuffer; when the actual display needs to be updated, GfxLib copies the contents of the framebuffer to the real display memory, automatically converting in the process from the current internal pixel format to whatever pixel format the real display uses. By limiting the internal pixel formats to 3, the library let you not care about the pletora of real display formats.
 

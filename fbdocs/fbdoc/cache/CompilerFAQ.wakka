@@ -29,7 +29,7 @@
 {{anchor name="item1"}}==What is FreeBASIC?==
 	FreeBASIC is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft QuickBasic, but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, and many others with its default installation.
 
-	Aside from having a syntax nearly 100% compatible with QuickBasic, FreeBASIC introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
+	Aside from having a syntax mostly compatible with QuickBasic, FreeBASIC introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
 
 	FreeBASIC compiler is self-hosting - written in FreeBASIC, most libraries however are written in C.
 
@@ -67,7 +67,7 @@
 {{anchor name="item7"}}==How compatible is FreeBASIC with Windows? DOS? Linux? QBasic code?==
 	FreeBASIC is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availability in mind -- code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
 
-	FreeBASIC is 99% backward compatible with QB code. There are some minor differences, but they are either minor, or a result of the new 32-bit platform upon which FreeBASIC is built.
+	FreeBASIC is 95% backward compatible with QB code. There are some minor differences, but they are either minor, or a result of the new 32-bit platform upon which FreeBASIC is built.
 
 	See [[LangQB Differences between FreeBASIC and QuickBasic]].
 
@@ -118,6 +118,6 @@
 	AS.EXE is GAS, the "GNU assembler". It is always involved in compilation. LD.EXE is the "GNU linker", involved in creation of executables. AR.EXE is the "GNU archiver", in fact a librarian, creating ##.A## libraries. 
 
 {{anchor name="item34"}}==Is there a limit on how big my source files can be?==
-	Yes, since FreeBASIC is a fully 32-bit compiler it may operate on source files up to 4GB or 4294967296 bytes.
+	Yes, since FreeBASIC is a fully 32-bit compiler it may operate on source files up to theoretically 4GB or 4294967296 bytes, however your RAM capacity should be significantly above the size of your source, otherwise the compilation won't finish or will be very slow at least. 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

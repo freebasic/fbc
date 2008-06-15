@@ -5,7 +5,7 @@ Seeds the random number generator
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Randomize** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgDouble double]] = -1,  [[KeyPgByval byval]] //algorithm// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
 ##
 {{fbdoc item="usage"}}##
-	**Randomize** [ //seed, algorithm// ]
+	**Randomize** [ //seed// ][, //algorithm// ]
 ##
 {{fbdoc item="param"}}
 	##//seed//##
@@ -14,25 +14,25 @@ Seeds the random number generator
 		An ##[[KeyPgInteger integer]]## value to select the algorithm used.
 
 {{fbdoc item="desc"}}
-	Sets the random seed that helps rnd generate random numbers, and selects the algorithm to use. For good results, using a seed that is not quite predictable provides good results for random numbers.  The algorithm choices are
-	  0 - Default for current mode.  This is algorithm 4 for -lang qb , 1 for lang deprecated , and 3 for lang fb.
-	  1 - Uses the CRT rand() function.  This will give different results depending on the platform.
-	  2 - Uses a fast implementation.  This should be stable across all platforms, and provides 32-bit granularity, reasonable degree of randomness.
-	  3 - Uses the Marsenne Twister.  This should be stable across all platforms, provides 32-bit granularity, and gives a high degree of randomness.
-	  4 - Uses a QB compatible function.  This should be stable across all platforms, and provides 24-bit precision, with a low degree of randomness.
+	Sets the random seed that helps ##[[KeyPgRnd Rnd]]## generate random numbers, and selects the algorithm to use. For good results, using a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer Timer]]##. Valid values for //algorithm// are:
 
-	An good example of a non-predictable seed is the ##[[KeyPgDouble double]]## precision number returned by (##[[KeyPgTimer Timer]]##).
+		##0## - Default for current [[CompilerDialects language dialect]]. This is algorithm ##3## in the //FB// dialect, ##4## in the //QB// dialect and ##1## in the //deprecated// dialect.
+		##1## - Uses the C runtime library's ##rand()## function. This will give different results depending on the platform.
+		##2## - Uses a fast implementation. This should be stable across all platforms, and provides 32-bit granularity, reasonable degree of randomness.
+		##3## - Uses the Marsenne Twister. This should be stable across all platforms, provides 32-bit granularity, and gives a high degree of randomness.
+		##4## - Uses a QB compatible function. This should be stable across all platforms, and provides 24-bit precision, with a low degree of randomness.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/randomize.bas"}}%%(freebasic)
-'e.g.
-randomize timer
+'' Seed the RNG, which is set to C's rand().
+randomize timer, 1
 %%
 
 {{fbdoc item="diff"}}
-	- Optional parameter to choose algorithm used.
+	- Second parameter new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRnd Rnd]]##
+	- [[CompilerDialects Language dialects]]
 
 {{fbdoc item="back" value="CatPgMath|Mathematical Functions"}}

@@ -52,6 +52,6 @@ Sleep
 	- ##[[KeyPgOpMemberAccess Operator . (Member access)]]##
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
-	- [[CatPgOpStructure Structure Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

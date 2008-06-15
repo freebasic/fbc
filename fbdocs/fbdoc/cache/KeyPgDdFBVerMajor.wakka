@@ -5,7 +5,7 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_VER_MAJOR__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_VER_MAJOR__""## will return the major version of FreeBASIC currently being used. For Freebasic 0.15, for example, the major version is 0.
+	##""__FB_VER_MAJOR__""## will return the major version of FreeBASIC currently being used. For  example, the major version is 0 for Freebasic 0.18, and will remain 0 until FreeBASIC 1.0 is released.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbvermajor.bas"}}%%(freebasic)

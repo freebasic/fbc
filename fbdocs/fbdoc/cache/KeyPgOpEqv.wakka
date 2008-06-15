@@ -49,7 +49,6 @@ c = a eqv b '' c = &b10011001
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgOpLogical Logical Operators]]
 	- [[TblTruth Operator Truth Tables]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

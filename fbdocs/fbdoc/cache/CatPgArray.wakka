@@ -12,19 +12,17 @@ Statements and procedures for working with arrays
 
 <<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
 	=={{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}==
-		Forces arrays to be defined as dynamic arrays.
+		Forces arrays to be defined as variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}==
 		Reverts a previous [[KeyPgOptiondynamic OPTION DYNAMIC]] command.
 	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
-		Defines and resizes dynamic arrays.
+		Defines and resizes variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
 		Preserves array contents when used with [[KeyPgRedim REDIM]].
 
 {{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
-	=={{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}==
-		Writes data of a specified value to an array.
 	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==
-		Frees dynamic arrays and clears static arrays.
+		Destroys variable-length array elements and initializes fixed-length array elements.
 <<>>{{anchor name="SIZE"}}{{fbdoc item="section" value="Retrieving Array Size"}}
 	=={{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}==
 		Returns the lower bound of an array's dimension.

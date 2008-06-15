@@ -46,9 +46,8 @@ end function
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##
 	- [[ProPgPointers Pointers]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

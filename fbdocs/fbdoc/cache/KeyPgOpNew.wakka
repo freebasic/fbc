@@ -78,4 +78,4 @@ end scope
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpDelete Delete]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

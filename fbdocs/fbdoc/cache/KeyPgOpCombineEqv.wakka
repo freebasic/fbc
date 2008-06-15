@@ -43,6 +43,5 @@ print bin(a)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpEqv Eqv]]##
-	- [[CatPgOpAssignment Assignment Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

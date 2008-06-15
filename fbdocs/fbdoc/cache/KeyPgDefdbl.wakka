@@ -1,12 +1,17 @@
 {{fbdoc item="title" value="DEFDBL"}}----
-Sets a default data type for variables
+Specifies a default data type for a range of variable names
 
 {{fbdoc item="syntax"}}##
-	**Defdbl** //letterrange//[, //letterrange//]...
+	**Defdbl** //start_letter//[**-**//end_letter// ][, ...]
 ##
+{{fbdoc item="param"}}
+	##//start_letter//##
+		the first letter in the range
+	##//end_letter//##
+		the last letter in the range
+
 {{fbdoc item="desc"}}
-	##**Defdbl**## is used to default variables to a ##[[KeyPgDouble Double]]##-precision decimal number that start with a letter in the range given.
-	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
+	##**Defdbl**## specifies that variables and arrays which aren't declared with a datatype - or not declared at all - are implicitly declared of type ##[[KeyPgDouble Double]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
 	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
@@ -18,7 +23,7 @@ dim aNum 'implicit: As Double
 print len(aNum) ' Prints 8, the number of bytes in a double.
 %%
 {{fbdoc item="lang"}}
-	- Allowed only with //-lang deprecated// or //-lang qb//.
+	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	- None

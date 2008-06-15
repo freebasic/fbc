@@ -28,9 +28,9 @@ Returns a file or directory
 		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h02;Hidden;fbHidden;&h04;System;fbSystem;&h10;Directory;fbDirectory;&h20;Archive;fbArchive;&h21;Normal;fbNormal"}}
 	Constants can be used by including ##"dir.bi"##
 
-	By default //attrib_mask// is set to &h21 (ie.: search for files with the archive or read-only flags set).
+	By default //attrib_mask// is set to &h21 (ie.: search for files with possibly the archive or read-only flags set).
 
-	    The value 63 returns all files and directories, incl. "." and "..", but no Volume, the value 8 returns the Volume, even if current directory is not the main directory. 
+	The value of 55 (63 usually works also, but 55 is safer) returns all files and directories, incl. "." and "..", but no Volume, the value 8 returns the Volume, even if current directory is not the main directory. 
 
 	The //out_attrib// optional parameter if passed will be loaded with the attributes of the file been returned.
 

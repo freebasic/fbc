@@ -11,21 +11,25 @@ Variable initializers are supported for initializing Arrays, variables and UDTs.
 
 	These methods of initializing variables can be nested within one another for complex assignments.  For instance, to initialize a multidimensional array:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/init/array.bas"}}%%(freebasic)
 DIM array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}
 %%
 	In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be intialized.
 
 	UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs
 
-%%(qbasic)
-TYPE mytype
-	var1 AS DOUBLE
-	var2 AS INTEGER
-	var3 AS STRING
-END TYPE
+{{fbdoc item="filename" value="examples/manual/proguide/init/udtarray.bas"}}%%(freebasic)
+Type mytype
+	var1 As Double
+	var2 As Integer
+	var3 As ZString Ptr
+End Type
 
-DIM var(2) AS mtype => {(1.0, 1, "Hello"), (2.0, 2, "GoodBye")}
+Dim MyVar(2) As mytype => _
+	{ _
+		(1.0, 1, @"Hello"), _
+		(2.0, 2, @"GoodBye") _
+	}
 %%
 	For module-level, static, or global variables, initialized values must be constant expressions.  FreeBASIC will report a compile-time error if otherwise.
 
@@ -36,3 +40,4 @@ DIM var(2) AS mtype => {(1.0, 1, "Hello"), (2.0, 2, "GoodBye")}
 	- ##[[KeyPgDim Dim]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

@@ -8,27 +8,31 @@ Literals are numbers or strings of characters specified directly in the source c
 	__Decimal__
 	Decimal digits ( 0 1 2 3 4 5 6 7 8 9 ).  A decimal integer may be prefixed with a minus sign (-) to indicate that the number is negative.
 
-	%%(qbasic)Dim x as integer = 123456
+{{fbdoc item="filename" value="examples/manual/proguide/literals/dec.bas"}}%%(freebasic)
+Dim x as integer = 123456
 Dim b as byte = -128
 %%
 
 	__Hexadecimal__
 	"&h" or "&H", followed by hexadecimal digits ( 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F )
 
-	%%(qbasic)Dim x as integer = &h1E240
+{{fbdoc item="filename" value="examples/manual/proguide/literals/hex.bas"}}%%(freebasic)
+Dim x as integer = &h1E240
 Dim b as byte = &H80
 %%
 		
 	__Octal__
 	"&o" or "&O" ( O as in Octal ), followed by octal digits ( 0 1 2 3 4 5 6 7 )
 
-	%%(qbasic)Dim x as integer = &O361100
+{{fbdoc item="filename" value="examples/manual/proguide/literals/oct.bas"}}%%(freebasic)
+Dim x as integer = &O361100
 Dim b as byte = &O400
 %%
 	__Binary__
 	"&b" or "&B", followed by binary digits ( 0 1 )
 
-	%%(qbasic)Dim x as integer = &B11110001001000000
+{{fbdoc item="filename" value="examples/manual/proguide/literals/bin.bas"}}%%(freebasic)
+Dim x as integer = &B11110001001000000
 Dim b as byte = &B10000000
 %%
 
@@ -41,7 +45,8 @@ Dim b as byte = &B10000000
 	- "ll" or "LL", are considered as signed 64 bit integers. (LONGINT)
 	- "ull" or "ULL", are considered as unsigned 64 bit integers. (ULONGINT)
 
-	%%(qbasic)Dim a as integer = 123L
+{{fbdoc item="filename" value="examples/manual/proguide/literals/intsuff.bas"}}%%(freebasic)
+Dim a as integer = 123L
 Dim b as uinteger = &h1234u
 Dim c as longint = 76543LL
 Dim d as ulongint = &b1010101ULL
@@ -55,16 +60,19 @@ Dim d as ulongint = &b1010101ULL
 	##[-].fraction[suffix[-|+]exponent]##
 
 	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value.
-	%%(qbasic)Dim a as double = 123.456
+{{fbdoc item="filename" value="examples/manual/proguide/literals/floats.bas"}}%%(freebasic)
+Dim a as double = 123.456
 Dim b as double = -123.0
 %%
 
 	A suffix of "d", "D", "e", or "E" on the number portion indicates a double precision (64 bit total) floating point value.  
-	%%(qbasic)Dim a as double = -123.0d
+{{fbdoc item="filename" value="examples/manual/proguide/literals/hex2.bas"}}%%(freebasic)
+Dim a as double = -123.0d
 Dim b as double = -123.0e
 %%
 	An exponent may immediately follow the suffix.  The exponent may be specified as either positive or negative with a plus (+) or minus (-) sign.  Exponents that do not have a sign are positive.
-	%%(qbasic)Dim c as double = 743.1e+13
+{{fbdoc item="filename" value="examples/manual/proguide/literals/dblsuff.bas"}}%%(freebasic)
+Dim c as double = 743.1e+13
 Dim d as double = 743.1d-13
 Dim e as double = 743.1e13
 %%
@@ -72,7 +80,8 @@ Dim e as double = 743.1e13
 
 	A suffix of "f" or "F" on a fixed point number indicates a single precision (32 bit total) floating point value.
 	(Note that an exponent cannot follow this suffix, nor can this suffix follow a number with an exponent.  For floating point literals, the type may be forced using ##[[KeyPgCsng CSng]]##.)
-	%%(qbasic)Dim a as single = -123.456f
+{{fbdoc item="filename" value="examples/manual/proguide/literals/singsuff.bas"}}%%(freebasic)
+Dim a as single = -123.456f
 Const b = csng(3.1e8)
 %%
 
@@ -80,18 +89,25 @@ Const b = csng(3.1e8)
 	String literals are a sequence of characters.
 
 	All printable characters may be contained between two double quotes.  Double quotes can be specified in the string literal by using two double quotes together.
-	%%(qbasic)print "Hello World!"
+{{fbdoc item="filename" value="examples/manual/proguide/literals/string.bas"}}%%(freebasic)
+print "Hello World!"
 print "That's right!"
 print "See the ""word"" contained in double quotes."
 %%
 
 	Strings of characters can contain escape sequences if the string literal is prefixed by a bang character (!).
-	%%(qbasic)print !"Hello\nWorld!"
+{{fbdoc item="filename" value="examples/manual/proguide/literals/escape.bas"}}%%(freebasic)
+print !"Hello\nWorld!"
 %%
 
 	If the compilation mode of the compiler is to consider all string literals as escaped, a string may be explicity specified as unescaped when prefixed by the dollar sign character ($)
-	%%(qbasic)print $"C:\temp"
+{{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
+print $"C:\temp"
 %%
+
+	The accepted escape sequences are:
+
+		{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\n;newline;\r;carriage return;\t;tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\a_double_quote;double quote;\';single quote"}} 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##
@@ -99,3 +115,4 @@ print "See the ""word"" contained in double quotes."
 	- [[CatPgStdDataTypes Standard Data Types]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

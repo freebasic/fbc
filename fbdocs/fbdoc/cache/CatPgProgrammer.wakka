@@ -28,9 +28,9 @@ FreeBASIC programmer's guide
 
 	{{fbdoc item="subsect" value="Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrays|Overview"}}
+		{{fbdoc item="keyword" value="ProPgFixLenArrays|Fixed-length Arrays"}}
+		{{fbdoc item="keyword" value="ProPgVarLenArrays|Variable-length Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
-		{{fbdoc item="keyword" value="ProPgStaticArrays|Static Arrays"}}
-		{{fbdoc item="keyword" value="ProPgDynamicArrays|Dynamic Arrays"}}
 		Passing Arrays to Procedures
 
 	{{fbdoc item="subsect" value="Pointers"}}
@@ -40,6 +40,7 @@ FreeBASIC programmer's guide
 {{fbdoc item="section" value="Declarations"}}
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
 	{{fbdoc item="keyword" value="ProPgInitialization|Initialization"}}
+	{{fbdoc item="keyword" value="ProPgStorageClasses|Storage Classes"}}
 	Variable Lifetime
 	{{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}
 	Namespaces
@@ -67,7 +68,7 @@ FreeBASIC programmer's guide
 	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
 	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
 	Procedure Scopes
-	Calling Conventions
+	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	Recursion
 	Constructors and Destructors
 	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}

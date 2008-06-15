@@ -14,20 +14,23 @@
 	The ##[[KeyPgFormat Format]]## function has formatting expresions to print date serials in a human readable way.
 
 {{fbdoc item="ex"}}
-%%(qbasic)#include "vbcompat.bi"
-dim a as double, b as double
+{{fbdoc item="filename" value="examples/manual/proguide/dates.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+Dim a As Double, b As Double
 
 a = 0
-print "The origin of the date serials is:"
-print format(a, "yyyy/mm/dd hh:mm:ss")
-print
+Print "The origin of the date serials is:"
+Print Format(a, "yyyy/mm/dd hh:mm:ss")
+Print
 
-a = now
-print "The time now is: "
-print format(a, "yyyy/mm/dd hh:mm:ss")
-print
+a = Now
+Print "The time now is: "
+Print Format(a, "yyyy/mm/dd hh:mm:ss")
+Print
 
-b = dateserial(2000,1,1)
-print int(a-b) & " days have passed since 2000/01/01"%%
+b = DateSerial(2000,1,1)
+Print Int(a-b) & " days have passed since 2000/01/01"
+%%
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

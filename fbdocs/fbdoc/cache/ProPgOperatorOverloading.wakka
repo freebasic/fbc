@@ -10,11 +10,11 @@ Changing the way user defined types work with built-in operators
 
 	Most operators are not called like procedures. Instead, their operator symbol is placed next to their operands. For unary operators, their sole operand is placed to the right of the symbol. For binary operators, their operands - referred to as the left and right-hand side operands - are placed to the left and right of the operator symbol. FreeBASIC has one ternary operator, ##[[KeyPgIif Operator Iif]]##, and it is called like a procedure, with its operands comma-seperated surrounded by parenthesis. For example, the following code calls ##[[KeyPgIif Operator Iif]]## to determine if a pointer is valid. If it is, ##[[KeyPgOpValueOf Operator * (Value of)]]## is called to dereference the pointer, and if not, ##[[KeyPgOpDivide Operator / (Divide)]]## is called to find the value of twenty divided by four.
 
-%%(qbasic)
-dim i as integer = 420
-dim p as integer ptr = @i
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/iif.bas"}}%%(freebasic)
+Dim i As Integer = 420
+Dim p As Integer Ptr = @i
 
-dim result as integer = iif(p, *p, 20 / 4)
+Dim result As Integer = IIf( p, *p, cint( 20 / 4 ) )
 %%
 	Notice the call to ##[[KeyPgIif Operator Iif]]## is similar to a procedure call, while the calls to ##[[KeyPgOpValueOf Operator * (Value of)]]## and ##[[KeyPgOpDivide Operator / (Divide)]]## are not. In the example, ##//p//## is the operand to ##[[KeyPgOpValueOf Operator * (Value of)]]##, and ##//20//## and ##//4//## are the left and right-hand side operands of ##[[KeyPgOpDivide Operator / (Divide)]]##, respectively.
 
@@ -27,7 +27,7 @@ dim result as integer = iif(p, *p, 20 / 4)
 
 	The following example declares the global operators ##[[KeyPgOpNegate - (Negate)]]## and ##[[KeyPgOpMultiply + (Multiply)]]## to accept operands of a user-defined type.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/global-ops.bas"}}%%(freebasic)
 type Rational
 	as integer numerator, denominator
 end type
@@ -54,7 +54,7 @@ print r3.numerator & "/" & r3.denominator
 
 	The following example overloads the member operators ##[[KeyPgCast Cast (Cast)]]## and ##[[KeyPgOpCombineMultiply *= (Multiply and assign)]]## for objects of a user-defined type.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/member-ops.bas"}}%%(freebasic)
 type Rational
 	as integer numerator, denominator
 	

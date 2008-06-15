@@ -1,35 +1,3 @@
-<<{{anchor name="FBPROJECT"}}{{fbdoc item="section" value="The FreeBASIC Project"}}
-	{{fbdoc item="keyword" value="CompilerAbout|About"}}
-	{{fbdoc item="keyword" value="CompilerRequirements|Requirements"}}
-	{{fbdoc item="keyword" value="CompilerInstalling|Installing"}}
-	{{fbdoc item="keyword" value="CatPgLibraries|Bindings to Existing Libraries"}}
-	{{fbdoc item="keyword" value="CompilerHelp|Getting Help with FreeBASIC"}}
-	{{fbdoc item="keyword" value="CompilerCredits|Credits"}}
-	
-	{{fbdoc item="subsect" value="The Language"}}
-		{{fbdoc item="keyword" value="CompilerQB|FreeBASIC and Qbasic"}}
-		{{fbdoc item="keyword" value="CompilerDialects|FreeBASIC Dialects"}}
-		{{fbdoc item="keyword" value="LangQB|Differences from QB"}}
-	{{fbdoc item="subsect" value="The Compiler"}}: //fbc//
-		{{fbdoc item="keyword" value="FbcAbout|About"}}
-		{{fbdoc item="keyword" value="FbcFaq|F.A.Q."}}
-		{{fbdoc item="keyword" value="CompilerFeatures|Main Features"}}
-		{{fbdoc item="keyword" value="CompilerRunning|Running"}}
-		{{fbdoc item="keyword" value="CompilerCmdLine|Using the Command Line"}}
-		{{fbdoc item="keyword" value="CompilerErrMsg|Compiler Error Messages"}}
-	{{fbdoc item="subsect" value="The Runtime Library"}}: //rtlib//
-		{{fbdoc item="keyword" value="RtlibAbout|About"}}
-		{{fbdoc item="keyword" value="RtlibFaq|F.A.Q."}}
-		...
-	{{fbdoc item="subsect" value="The Graphics Library"}}: //gfxlib2//
-		{{fbdoc item="keyword" value="Gfxlib2About|About"}}
-		{{fbdoc item="keyword" value="Gfxlib2Faq|F.A.Q."}}
-		...
-
-{{anchor name="PROGGUIDE"}}{{fbdoc item="section" value="Programmer's Guide (W.I.P.)"}}
-...
-<<::c::
-
 {{fbdoc item="title" value="Laanan Fisher"}}----
 //(a.k.a. stylin)//
 

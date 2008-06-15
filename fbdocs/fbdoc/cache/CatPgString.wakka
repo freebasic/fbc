@@ -22,6 +22,8 @@ Statements and Procedures that work with strings
 		Standard data type: 8 bit character string.
 	=={{fbdoc item="keyword" value="KeyPgStringFunction|STRING (Function)"}}==
 		Returns a [[KeyPgString String]] of multiple characters.
+	=={{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}==
+		Standard data type: null terminated 8 bit character string.
 	=={{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}==
 		Standard data type: wide character string.
 	=={{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING (Function)"}}==

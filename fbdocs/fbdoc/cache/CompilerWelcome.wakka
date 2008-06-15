@@ -1,0 +1,16 @@
+{{fbdoc item="title" value="Welcome to FreeBASIC"}}----
+All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  The online documentation is the primary source used for converting the FreeBASIC manual to other downloadable formats.  Whenever there is a discrepency between a downloadable version of the manual and the online version, the online version can be regarded as the correct version.
+
+{{fbdoc item="section" value="Starting points in this Manual"}}
+
+	- [[DocToc Table of Contents]]
+	- [[CompilerHelp Getting Help with FreeBASIC]]
+	- [[CatPgProgrammer Programmer's Guide]]
+
+{{fbdoc item="section" value="Starting points on the Web"}}
+
+	- FreeBASIC Official Website at [[http://www.freebasic.net http://www.freebasic.net]]
+	- FreeBASIC Official Forums at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]]
+	- FreeBASIC Official Archive at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]]
+
+Thank you for using FreeBASIC.  Happy coding!

@@ -7,7 +7,7 @@
 	==- {{anchor name="item5|How do I access the serial ports?"}}==
 	==- {{anchor name="item6|How do I print?"}}==
 	==- {{anchor name="item7|How do I access the hardware ports?"}}==
-	==- {{anchor name="item8|Why does my array crash when I set it larger than _____?"}}==
+	==- {{anchor name="item8|Why does my program crash when I define an array larger than _____?"}}==
 	==- {{anchor name="item9|What is the behavior of strings passed byval?"}}==
 
 
@@ -53,19 +53,19 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item8"}}==Why does my array crash when I set it larger than _____?==
+{{anchor name="item8"}}==Why does my program crash when I define an array larger than _____?==
 
-	This generally happens because you made a static array too large. You have a couple of options:
+	This generally happens because you made an //automatic// fixed-length array too large, and it is corrupting the program stack. You have a couple of options:
 
-	- reduce the size of the static array
-	- reserve more memory for the stack by using the -t command-line option. The default is -t 1024 (kilobytes).
-	- create a dynamic array, by
-		- defining the array with an empty subscript list (using [[KeyPgDim Dim]])
-		- defining the array with variable subscripts instead of constants or literals (using [[KeyPgDim Dim]])
-		- defining the array with [[KeyPgShared Shared]] access (using [[KeyPgDim Dim]])
-		- defining the array with [[KeyPgRedim Redim]]
+	- reduce the size of the //automatic// array
+	- reserve more memory for the program stack by using the ##-t## command-line option. The default is ##-t 1024## (kilobytes).
+	- create a //static// array by defining the array with ##[[KeyPgStatic Static]]## rather than ##[[KeyPgDim Dim]]##, or
+	- create a variable-length array, by
+		- defining the array with an empty subscript list (using ##[[KeyPgDim Dim]]##), or
+		- defining the array with variable subscripts instead of numeric literals, [[KeyPgConst constants]] or [[KeyPgEnum enums]] (using ##[[KeyPgDim Dim]]##), or
+		- defining the array with ##[[KeyPgRedim Redim]]##
 
-	The maximum number of elements in a static array is (//stack size//) / sizeof(//element type//). The maximum number of elements of any array is 2 ^ 31 (2147483648). 
+	//Static// and //variable-length// arrays don't use the program stack for their element data, so do not have the problem associated with //automatic// fixed-length arrays. See [[ProPgStorageClasses Storage Classes]] for more information.
 
 {{anchor name="item0|Back to top"}}
 

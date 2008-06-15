@@ -6,7 +6,7 @@ Passing information to procedures
 
 	To specify that a procedure should get passed arguments when called, declare the procedure with a parameter list. A parameter list is a list of one or more names and types that the procedure will use when referring to the arguments that are passed to it. Parameter lists are surrounded by parenthesis.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/passargs.bas"}}%%(freebasic)
 sub Procedure (s as string, n as integer)
 	print "The parameters have the values: " & s & " and " & n
 end sub
@@ -27,7 +27,7 @@ The parameters have the values: abc and 123
 
 	To specify that an argument should be passed by value, precede the parameter name in the procedure declaration with the ##[[KeyPgByval Byval]]## keyword:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/passbyval.bas"}}%%(freebasic)
 sub Procedure (byval param as integer)
 	param *= 2
 	print "The parameter 'param' = " & param
@@ -54,7 +54,7 @@ The variable 'arg' after the call = 10
 
 	To specify that an argument should be passed by reference, precede the parameter name in the procedure declaration with the ##[[KeyPgByref Byref]]## keyword:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/passbyref.bas"}}%%(freebasic)
 sub Procedure (byref param as integer)
 	param *= 2
 	print "The parameter 'param' = " & param

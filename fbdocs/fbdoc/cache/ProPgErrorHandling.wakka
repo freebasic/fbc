@@ -12,19 +12,19 @@ Handling runtime errors
 
 	The default FB behavior is to set the ERR variable and continue. 
 
-%%(qbasic)
-open "xzxwz.zwz" for input as #1
-print ERR
-sleep
+{{fbdoc item="filename" value="examples/manual/proguide/errors/err.bas"}}%%(freebasic)
+Open "xzxwz.zwz" For Input As #1
+Print Err
+Sleep
 %%
 
 	(The example program supposes there is no xzxwz.zwz file). The program does not stop, it sets the ERR variable and continues. The error can be processed in the next line.
 
 	Some IO functions OPEN, PUT... can be used in a FUNCTION form, returning an error number or zero if everything went ok.
 
-%%(qbasic)
-print open ("xzxwz.zwz" for input as #1)
-sleep
+{{fbdoc item="filename" value="examples/manual/proguide/errors/result.bas"}}%%(freebasic)
+Print Open ("xzxwz.zwz" For Input As #1)
+Sleep
 %%
 
 {{fbdoc item="section" value="QuickBasic-like error handling"}}
@@ -33,18 +33,18 @@ sleep
 
 	Notice if QB-Like error handling is used, the programmer should be prepared to handle ALL error conditions. For example GETMOUSE issues an error if the cursor goes off the window.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/errors/on-error.bas"}}%%(freebasic)
 '' Compile with QB (-lang qb) dialect
-ON ERROR GOTO FAILED
-open "xzxwz.zwz" for input as #1
-ON ERROR GOTO 0
-sleep
-END
+On Error Goto FAILED
+Open "xzxwz.zwz" For Input As #1
+On Error Goto 0
+Sleep
+End
 
 FAILED:
-PRINT ERR
-sleep
-END
+Print Err
+Sleep
+End
 %%
 
 	ON ERROR sets an error handling routine, the program will jump to it when an error is found. ON ERROR GOTO 0 disables the error handling.
@@ -56,26 +56,26 @@ Aborting program due to runtime error 2 (file not found)
 ::c::
 	The error handler routine can be at the end of the program, as in QB. The ON LOCAL ERROR allows to set a local error handler routine at the end of  the same SUB or FUNCTION
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/errors/on-local.bas"}}%%(freebasic)
 '' Compile with QB (-lang qb) dialect
-declare sub foo
+Declare Sub foo
 foo
-sleep
+Sleep
 
-sub foo
+Sub foo
 	
-	dim filename as string
+	Dim filename As String
 	filename = ""
-	on local error goto fail
-	open "" for input as #1
-	print "No error"
-	on local error goto 0
-	exit sub
+	On Local Error Goto fail
+	Open "" For Input As #1
+	Print "No error"
+	On Local Error Goto 0
+	Exit Sub
 	
   fail:
-	print ("Error " & err & " in function " & *erfn & " on line " & erl)
+	Print ("Error " & Err & " in function " & *Erfn & " on line " & Erl)
 	
-end sub
+End Sub
 %%
 
 	If the -e switch is used the error handler must terminate the program. 
@@ -93,3 +93,4 @@ end sub
 	- [[CatPgError Error Handling Functions]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

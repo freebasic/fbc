@@ -63,7 +63,7 @@ end if
 	- none
 
 {{fbdoc item="see"}}
-	- [[CatPgOpConditional Relational Operators]]
+	- ##[[KeyPgOpNotEqual Operator <>]]## (Inequality)
 	- ##[[KeyPgOpAssignment Operator Let]]##
  
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

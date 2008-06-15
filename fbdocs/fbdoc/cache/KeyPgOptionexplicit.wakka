@@ -1,33 +1,29 @@
 {{fbdoc item="title" value="OPTION EXPLICIT"}}----
-Compiler switch to require all symbols to be declared before use
+Forces variables, objects and arrays to be declared before they are used
 
 {{fbdoc item="syntax"}}##
 	**Option Explicit**
 ##
 {{fbdoc item="desc"}}
-	Requires all variables to be declared with ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##  or ##[[KeyPgStatic Static]]## before they can be used. By default this option is off. ##**Option Explicit**## requires more typing but can help detect mistyped variables.
+	##**Option Explicit**## is a statement that forces any following variable, object or array usage to be preceded by a declaration, with, for example, ##[[KeyPgDim Dim]]## or ##[[KeyPgStatic Static]]##. This rule remains in effect for the rest of the module in which ##**Option Explicit**## is used, and cannot be overridden.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-explicit.bas"}}%%(freebasic)
-' compile with -lang deprecated or qb
-Option Explicit
+'' Compile with the "-lang qb" or "-lang deprecated" compiler switches
 
-'' a must be declared ...
-Dim a As Integer
+option explicit
 
-'' ... or else this statement will fail to compile
-a = 1
+dim a as integer            ' 'a' must be declared..
+a = 1                       ' ..or this statement will fail to compile.
 %%
 	
 {{fbdoc item="lang"}}
-	-With -lang fb, the declaration of variables is always enforced.  The compiler will reject OPTION EXPLICIT as an error.
-	-With -lang qb or deprecated, OPTION EXPLICIT is supported.  The compiler doesn't enforce the declaration of the variables unless OPTION EXPLICIT is used.
+	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	-New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]##
-	- ##[[KeyPgDim Dim]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

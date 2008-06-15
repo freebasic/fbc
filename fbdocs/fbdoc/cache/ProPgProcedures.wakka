@@ -6,7 +6,7 @@ Procedures overview
 {{fbdoc item="section" value="Subs"}}
 	//Subs// are procedures that don't return values. They are declared using the ##[[KeyPgDeclare Declare]]## keyword, and defined using the ##[[KeyPgSub Sub]]## keyword. Declaring a procedure introduces its name so that it can be called, and a procedure definition lists the statements of code that will be executed when called. A //sub// is called simply by using its name somewhere in the program.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/subs.bas"}}%%(freebasic)
 ' introduces the sub 'MyProcedure'
 declare sub MyProcedure
 
@@ -20,7 +20,7 @@ end sub
 %%
 	will produce the output:
 
-%%(qbasic)
+%%
 the body of MyProcedure
 %%
 
@@ -29,7 +29,7 @@ the body of MyProcedure
 {{fbdoc item="section" value="Functions"}}
 	//Functions// are procedures that return a value back to the point in code in which they are called. You can think of a //function// call as evaluating to some expression, just like a variable or object. They are declared using the ##[[KeyPgDeclare Declare]]## keyword, and defined using the ##[[KeyPgFunction Function]]## keyword. The type of value that //functions// return is specified at the end of the declaration.
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/procs/functions.bas"}}%%(freebasic)
 ' introduces and defines a procedure that returns an integer value
 function MyProcedure as integer
 	return 10
@@ -41,7 +41,7 @@ print i
 %%
 	will produce the output:
 
-%%(qbasic)
+%%
 10
 %%
 	Since a definition is a declaration, a procedure can be called after it has been defined, as well.

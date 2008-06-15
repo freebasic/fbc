@@ -1,27 +1,23 @@
-chklinks: 2007/08/04 08:58:04
+chklinks: 2007/09/04 08:10:38
 
-Loaded 838 page names from 'PageIndex.txt'
+Loaded 848 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 12915 links
-Saved 12915 links to 'linklist.csv'
-Saved 716 page names to 'DocPages.txt'
+Found 13158 links
+Saved 13158 links to 'linklist.csv'
+Saved 725 page names to 'DocPages.txt'
+Saved 699 file names to 'samplist.csv'
 
 Checking missing pages:
-Missing page 'CatPgLibraries'
-Missing page 'FbcAbout'
-Missing page 'FbcFaq'
-Missing page 'RtlibAbout'
-Missing page 'RtlibFaq'
-Missing page 'Gfxlib2About'
-Missing page 'Gfxlib2Faq'
-Missing page 'V1ctor'
-Found 8 links to missing pages
+Missing page 'ProPgCallingConventions'
+Found 1 links to missing pages
 
 Checking 'CatPgFullIndex':
+	Ignoring 'KeyPgOp*' pages
 All keypages on 'CatPgFullIndex'
 
 Checking 'CatPgFunctIndex':
+	Ignoring 'KeyPgOp*' pages
 All keypages on 'CatPgFunctIndex'
 
 Checking missing backlinks:
@@ -29,58 +25,27 @@ Checking missing backlinks:
 	Ignoring missing backlinks to 'catpgfullindex'
 	Ignoring missing backlinks to 'catpggfx'
 	Ignoring missing backlinks to 'catpgprogrammer'
+	Ignoring missing backlinks to 'catpgopindex'
 'ProPgErrorHandling' does not have backlink to 'DocToc'
-'KeyPgInp' does not have backlink to 'CatPgMisc'
-'KeyPgOut' does not have backlink to 'CatPgMisc'
-'KeyPgWait' does not have backlink to 'CatPgMisc'
 'KeyPgSleep' does not have backlink to 'CatPgMisc'
 'KeyPgEnd' does not have backlink to 'CatPgMisc'
-'KeyPgDo' does not have backlink to 'CatPgMisc'
-'KeyPgEndif' does not have backlink to 'CatPgMisc'
-'KeyPgIif' does not have backlink to 'CatPgMisc'
-'KeyPgLoop' does not have backlink to 'CatPgMisc'
-'KeyPgNext' does not have backlink to 'CatPgMisc'
-'KeyPgThen' does not have backlink to 'CatPgMisc'
-'KeyPgUntil' does not have backlink to 'CatPgMisc'
-'KeyPgWend' does not have backlink to 'CatPgMisc'
-'KeyPgWhile' does not have backlink to 'CatPgMisc'
 'KeyPgEndblock' does not have backlink to 'CatPgMisc'
 'ProPgCruntime' does not have backlink to 'DocToc'
 'GfxScancodes' does not have backlink to 'DocToc'
-Found 18 missing backlinks
+Found 6 missing backlinks
 
 Checking invalid backlinks:
 'CatPgProgrammer' should be removed from 'ProPgCompOptlang'
-'CatPgControlFlow' should be removed from 'KeyPgThen'
-'CatPgOperators' should be removed from 'CatPgOpPrepro'
-'CatPgControlFlow' should be removed from 'KeyPgEndif'
-'CatPgOperators' should be removed from 'CatPgOpLogical'
-'CatPgControlFlow' should be removed from 'KeyPgSleep'
-'CatPgOperators' should be removed from 'CatPgOpArithmetic'
 'CatPgControlFlow' should be removed from 'KeyPgEnd'
-'CatPgOperators' should be removed from 'CatPgOpString'
-'CatPgOperators' should be removed from 'CatPgOpPoint'
-'CatPgOperators' should be removed from 'CatPgOpStructure'
 'CatPgControlFlow' should be removed from 'KeyPgEndblock'
+'CatPgControlFlow' should be removed from 'KeyPgSleep'
 'CatPgUserDefTypes' should be removed from 'KeyPgClass'
-'CatPgOperators' should be removed from 'CatPgOpConditional'
-'CatPgOperators' should be removed from 'CatPgOpAssignment'
 'DocToc' should be removed from 'DataType'
-'CatPgControlFlow' should be removed from 'KeyPgDo'
-'CatPgControlFlow' should be removed from 'KeyPgIif'
-'DocToc' should be removed from 'CatPgVarArg'
-'CatPgControlFlow' should be removed from 'KeyPgFor'
-'CatPgControlFlow' should be removed from 'KeyPgLoop'
-'CatPgControlFlow' should be removed from 'KeyPgNext'
-'CatPgControlFlow' should be removed from 'KeyPgUntil'
-'CatPgControlFlow' should be removed from 'KeyPgWend'
-'CatPgControlFlow' should be removed from 'KeyPgWhile'
 'DocToc' should be removed from 'FreeBASIC'
 'CatPgProgrammer' should be removed from 'ProPgTypeObjects'
 'DocToc' should be removed from 'CVSCompile'
-'DocToc' should be removed from 'FBhistory'
 'CommunityTutorials' should be removed from 'FBWikiTutorialTemplate'
-Found 30 invalid backlinks
+Found 10 invalid backlinks
 
 Checking headers:
 Found 0 invalid headers
@@ -89,15 +54,7 @@ Checking mismatched name case in links:
 No mismatched name case in links
 
 Checking pages not linked from any CatPg:
-'CatPgOpArithmetic' not linked from any CatPg
-'CatPgOpAssignment' not linked from any CatPg
-'CatPgOpConditional' not linked from any CatPg
-'CatPgOpLogical' not linked from any CatPg
-'CatPgOpPoint' not linked from any CatPg
-'CatPgOpPrepro' not linked from any CatPg
-'CatPgOpString' not linked from any CatPg
-'CatPgOpStructure' not linked from any CatPg
-Found 8 not linked from any CatPg
+Found 0 not linked from any CatPg
 
 Checking pages with no back link:
 Found 0 pages with no backlink at all
@@ -112,48 +69,54 @@ Missing 'CatPgOpArithmetic'
 Missing 'CatPgOpAssignment'
 Missing 'CatPgOpConditional'
 Missing 'CatPgOperators'
+Missing 'CatPgOpIndexing'
+Missing 'CatPgOpIterating'
 Missing 'CatPgOpLogical'
+Missing 'CatPgOpMemory'
 Missing 'CatPgOpPoint'
 Missing 'CatPgOpPrepro'
 Missing 'CatPgOpString'
-Missing 'CatPgOpStructure'
+Missing 'CatPgOpTypeclass'
 Missing 'CatPgProgrammer'
 Missing 'DataType'
 Missing 'DocToc'
 Missing 'DrV'
+Missing 'ExtLibTOC'
 Missing 'FaqPgbloadworkaround'
 Missing 'FaqPggetputstructure'
 Missing 'FreeBASIC'
 Missing 'GarvanOKeeffe'
-Missing 'GD'
 Missing 'GfxLib'
 Missing 'JeffMarshall'
 Missing 'LaananFisher'
 Missing 'LilloWiki'
 Missing 'ProPgCompOptlang'
 Missing 'RandyKeeling'
+Missing 'SirMud'
 Missing 'SotSvart'
 Missing 'SrcPgGfxNull'
 Missing 'TutMathAngles'
 Missing 'TutMathIntroTrig'
 Missing 'Unicode'
 Missing 'x86'
-Found 34 missing pages
+Found 38 missing pages
 
 Checking DOC pages with no title:
 'AntoniGual' has no title
 'DrV' has no title
 'GarvanOKeeffe' has no title
-'GD' has no title
 'JeffMarshall' has no title
 'LilloWiki' has no title
 'RandyKeeling' has no title
 'SotSvart' has no title
-'x86' has no title
-Found 9 DOC pages with no title
+Found 7 DOC pages with no title
 
-Checking Duplicate filenames:
+Checking duplicate filenames:
 No duplicate file names
 
+Checking Image References:
+Missing 'fblogoto9.png', but is not on a DOC page
+Found 1 references to missing image files
 
-Execution time: 63 seconds.
+
+Execution time: 38 seconds.

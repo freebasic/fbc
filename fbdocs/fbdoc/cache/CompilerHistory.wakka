@@ -1,0 +1,85 @@
+{{fbdoc item="title" value="Project History"}}----
+Chronology of the FreeBASIC project.
+
+{{fbdoc item="section" value="Chronology"}}
+
+	**2004 September** 
+		- Project started by Andre Victor T. Vicentini, written in VBDOS
+
+	**2004 October 22**
+		- Project Registered on Sourcefourge.net
+
+	**2004 November ???**
+		- FreeBASIC compiles itself, becoming a self hosting compiler.
+
+	**2004 November 30**
+		- Version 0.01 released.
+
+	**2004 December 31**
+		- Version 0.09 released
+
+	**2005 January 31**
+		- Version 0.11 released
+		- Improved GFXLib2 by [[LilloWiki Angelo Mottola]]
+		- DOS port added by [[DrV Daniel R. Verkamp]]
+
+	**2005 July 27**
+		- Version 0.14 released
+		- Full debugging support
+		- Function overloading
+
+	**2005 December 6**
+		- Version 0.15 released.
+		- Support for Unicode strings
+		- Complete WinAPI headers
+
+	**2006 June 11 - 19** 
+		- Version 0.16 released
+		- Namespaces
+		- Implicit scope blocks
+	
+	**2006 July 30** 
+		- First 0.17 "testing" version
+		- addition of ##[[KeyPgPpmacro macro]]## support, which would be later used in the compiler itself
+	
+	**2006 August 1**
+		- DOS graphics bug fixed (worked never before), "unofficial" patch provided
+	
+	**2006 September - December**
+		- Heavy rewrite of FreeBASIC, neither "stable" nor "testing" releases
+		- introduced [[CompilerDialects compiler dialects]]  qb, deprecated, and fb, along with a new //-lang// compiler switch.
+		- beginnings of OOP
+		- Introduction of the BFD library from the GNU binutils, providing additional link-time information in libraries.
+	
+	**2006 November** 
+		- Started providing CVS versions of FB, Win and Linux, later also DOS
+	
+	**2007 January - April**
+		- Types (structures) allow member functions, operator overloading, properties, constructors and destructors. 
+		- Graphics library has capabilities for screen control, events, and alpha blending. 
+		- Built-in support for 64 bit file operations.
+
+	**2007 May 2** 
+		- The next 0.17 "testing" version, very much new. 
+		- Shortly after this release, the version number in CVS was increased to 0.18, but before any full release of 0.17 had been made.
+
+	**2007 May 14**
+		- Version 0.17 released, similar to previous testing releases, but complete with installers.
+		- Because the 0.17 sources can only be compiled with a version 0.16+2006-July-Testing combination, a release was made to allow users to install and compile FreeBASIC without applying any patch.
+		- Major installation problems on the Linux release, so an additional Linux release was made a week later to correct the problems.
+		- Some users found minor installation problems on DOS/Windows and workarounds made available.
+		- The major change in this full release compared to version 0.16, was that all procedure paramaters are passed BYVAL.
+
+	**2007 Jun 7**
+		- The FreeBASIC source code moved from CVS to SVN.   
+
+	**2007 Aug 16**
+		- FreeBASIC 0.18.1 full release uploaded. 
+		- No ground breaking additions, only minor fixes compared to previous version 0.17.
+		- Strings and UDT's are passed BYREF with other data types being passed BYVAL.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+   
+   
+
+   

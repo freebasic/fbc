@@ -20,8 +20,10 @@ The current maintainer of this port is [[DrV DrV]].
 	==- {{anchor name="item8|8. What about the 64KB and 640KB problems / how much memory is supported by FB in DOS ?"}}==
 	==- {{anchor name="item9|9. How can I play sound in DOS ?"}}==
 	==- {{anchor name="item10|10. How can I do graphics in DOS ?"}}==
-	==- {{anchor name="item11|11. How do I access the DOS and BIOS interrupts?"}}==
-	==- {{anchor name="item12|12. FBC gives me a 'cannot find lsupcxx' error !"}}==
+	==- {{anchor name="item11|11. DEF SEG is missing in FB ! How to rewrite the code ?"}}==	
+	==- {{anchor name="item12|12. How to rewrite QB's CALL INTERRUPT / access the DOS and BIOS interrupts?"}}==
+	==- {{anchor name="item13|13. How to rewrite QB's XMS/EMS handling ?"}}==
+	==- {{anchor name="item14|14. FBC gives me a 'cannot find lsupcxx' error !"}}==
 
 ----
 
@@ -37,10 +39,10 @@ The current maintainer of this port is [[DrV DrV]].
 	You need a DPMI kernel (DPMI host, DPMI server), means the file "CWSDPMI.EXE" (cca 20 KB) or HDPMI32.EXE (cca 34 KB). See requirements, and FAQ 4 for more details.  
 
 {{anchor name="item4"}}==4. Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP ?==
-	Yes. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package. Alternatively, you can use HDPMI. Download the "HXRT.ZIP" file (here: [[http://japheth.de/HX.html]]), extract "HDPMI32.EXE" (cca 34 KB) and "HDPMI.TXT" (not required by the code, just for your information), and include it to your DOS startup ("HDPMI32 -r"). This will make HDPMI resident and prevent all FreeBASIC (also ""FreePASCAL"" and DJGPP) programs from both crying about missing DPMI and swapping. HDPMI can **not** be included into your executables. Running an executable containing CWSDPMI inside under HDPMI is fine - the built-in CWSDPMI will be simply skipped. A DPMI is definitely required for FreeBASIC, since it can't generate 16-bit real mode code, and there is no other good way to execute 32-bit code in DOS.
+	Yes, 2 possibilities. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package. Alternatively, you can use the **WDOSX** extender. It doesn't swap and creates standalone executables. Since it runs the executables in Ring 0, it's crash handling is not very good and can cause freezers or reboots on bugs where other hosts exit the "civil" way with a register dump. Finally, you can use **HDPMI** . Download the "HXRT.ZIP" file (here: [[http://japheth.de/HX.html]]), extract "HDPMI32.EXE" (cca 34 KB) and "HDPMI.TXT" (not required by the code, just for your information), and include it to your DOS startup ("HDPMI32 -r"). This will make HDPMI resident and prevent all FreeBASIC (also ""FreePASCAL"" and DJGPP) programs from both crying about missing DPMI and swapping. HDPMI can **not** be included into your executables. Running an executable containing CWSDPMI inside under HDPMI is fine - the built-in CWSDPMI will be simply skipped. A DPMI is definitely required for FreeBASIC, since it can't generate 16-bit real mode code, and there is no other good way to execute 32-bit code in DOS.
 
 {{anchor name="item5"}}==5. Can I use other DOS extenders, like DOS/4GW, Causeway, DOS/32A ?==
-	No. So-called Watcom-like extenders can't be used because of important differences in memory management and executable structure. What you only can change is the DPMI kernel, the default CWSDPMI can be replaced with PMODE/DJ (not PMODE/W (!), saves cca 5 KB, can be included into the EXE, but might affect performance) or HDPMI (can't be included, cca 10 KB bigger, but can improve performace). 
+	No. So-called WATCOM-like extenders can't be used because of important differences in memory management and executable structure. WDOSX works, since it's a multi-standard extender, not a WATCOM-only one. What you can additionally change is the DPMI kernel, the default CWSDPMI can be replaced with PMODE/DJ (not PMODE/W (!), saves cca 5 KB, can be included into the EXE, but might affect performance) or HDPMI (can't be included, cca 10 KB bigger, but can improve performance). 
 
 {{anchor name="item6"}}==6. Where is the nice blue screen with all the ... / Where is the IDE ?==
 	The FreeBASIC project focuses on the compiler, generating the executables from your BAS sources. It looks unspectacular, but is most important for the quality of software developed by you. The project does not include an IDE. There are several external IDE's for FreeBASIC, but probably none does have a DOS version by now.  If you really need one, you could try Rhide, but note that it is complicated and buggy, so use it at your own risk. See also FAQ 7.
@@ -52,26 +54,29 @@ The current maintainer of this port is [[DrV DrV]].
 	FreeBASIC and executables generated by it do **not** suffer from this problem, since they use 32-bit DPMI code. You can use almost all the memory of your PC, with some limitations, but they are **far** above 64 or 640 KB. CWSDPMI **r5** is verified to work well up to cca 256 MB...512 MB only, additional memory does not crash it (unlike some older versions), but is silently ignored. HDPMI is supposed to support more: up to 4 GB (the limit of 32-bit addressing), but there was not much testing on such huge machines - verified up to cca 1.5 GB. FreeBASIC and code generated by it do **not** require classical DOS based memory managers (HIMEM/XMS and EMM386/EMS), but are supposed to coexist with them if they are present. All this of course applies to true DOS only, things like "Dos Box" will keep the controll over the memory management and provide only a small piece of memory (depends, up to cca 64 MB) to your DOS code. 
 
 {{anchor name="item9"}}==9. How do I play sound in DOS ?==
-	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard.  The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), but provides one channel and 6 bits only and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. A soundcard can be accessed (supposing bare DOS in this category) either using a (mostly SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). The probably only source of inspiration is the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code.  
+	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard.  The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), you can re-use most of existing QB code easily (example: [[http://www.o-bizz.de/qbdown/qbsound/speaker.zip]]) or ASM code via inline ASM,  but provides one channel and 6 bits only, and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. A soundcard can be accessed (supposing bare DOS in this category) either using a ( "emulation" SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). The probably only source of inspiration is the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code.  
 
 {{anchor name="item10"}}==10. How can I do graphics in DOS ?==
 	There are several possibilities: 
 		-Use the FB graphics library. It uses VESA (banked or linear) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use the **0.17 full 2007-May-14** version of FB or newer, the FB DOS graphics does **not work** at all in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
-		-VGA mode 320x240x8bpp: similar to above, less easy, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
-		-VGA mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
-		-Some other "odd" VGA modes (like 360x240x8bpp) : possible, but for freaks only ;-)
+		-VGA "ModeX" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
+		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
+		-Some other "odd" VGA "ModeX" modes (like 360x240x8bpp) : possible, but for freaks only ;-)
 		-Write your own VESA code: More difficult, good compatibility, high-res and true color possible, there might be reliability problems if not implemented carefully.
 		-Use an external library (DUGL, Allegro, MGL, ""WxWidgets""): Allows to create "expensive" graphics & GUI's, bloats EXE size, need to respect library license, potential loss of reliability.
 
-{{anchor name="item11"}}==11. How do I access the DOS and BIOS interrupts?==
+{{anchor name="item11"}}==11. DEF SEG is missing in FB ! How to rewrite the code ?==
+	DEF SEG is related to 16-bit RM addressing and was removed because of this. "direct" access is not possible, because FreeBASIC's memory model (same as DJGPP's) is not zero-based. For accessing low DOS memory, use DOSMEMGET and DOSMEMPUT , see "vga13h.bas" example. From inline ASM, prefix low memory accesses with GS segment - it is a zero-based data segment set up for this purpose.
+
+{{anchor name="item12"}}==12. How to rewrite QB's CALL INTERRUPT / access the DOS and BIOS interrupts?==
 	Those interrupts can be accessed only using the DOS version/target of FB.
 
 	The access to interrupts is slower than in QB: in FB the DPMI server will have to do 2 context switches, going to real-mode and coming back. All of that will eat hundreds of clocks in raw DOS and thousands of clocks if emm386 is loaded or if inside a Windows' DOS box. The slow down might be negligible or relevant, it depends. You should try to minimize the number of such calls.
 	 
 	Use DJGPP's DPMI wrapper:
 
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/faq/DOS/call-int.bas"}}%%(freebasic)
 #include "dos/dpmi.bi"
 
 type RegTypeX as __dpmi_regs
@@ -79,7 +84,12 @@ type RegTypeX as __dpmi_regs
 #define INTERRUPTX(v,r) __dpmi_int( v, @r )
 %%
 
-{{anchor name="item12"}}==12. FBC gives me a 'cannot find lsupcxx' error !==
-	The source of this problem is the **libsupcxx.a** file in **LIB\DOS\** directory, having 9 characters in the name. Your fault is to have extracted the ZIP with long file names enabled, usually in Windows, and then using FB in DOS with no LFN support, resulting in this file looks **LIBSUP~1.A** and can't be found. Rename the file in **LIBSUPCX.A** (one **X** only) or extract the ZIP again in DOS.  
+	Alternatively you can call INT's via inline ASM, 2 important things you have to care about are the fact that FB's memory model is not zero-based, and "direct" passing of addresses (like DS:DX) to an INT will not work except you have a DPMI host with "DOS API translation".  
+
+{{anchor name="item13"}}==13. How to rewrite QB's XMS/EMS handling ?==
+	Depends why original code uses it. If it's just to bypass low memory limits, simply remove it and use "ordinary" FB's data types / memory handling features instead. If it is used for (sound) DMA, you are out of luck and have to redesign the code completely. 
+
+{{anchor name="item14"}}==14. FBC gives me a 'cannot find lsupcxx' error !==
+	The source of this problem is the **libsupcxx.a** file in **LIB\DOS\** directory, having 9 characters in the name. Your fault is to have extracted the ZIP with long file names enabled, usually in Windows, and then using FB in DOS with no LFN support, resulting in this file looks **LIBSUP~1.A** and can't be found. Rename the file in **LIBSUPCX.A** (one **X** only) or extract the ZIP again in DOS. Note: changes in FB 0.18, retest needed. 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -41,7 +41,5 @@ next
 	- None
 
 {{fbdoc item="see"}}
-	- ##{{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}##
-	- ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpIndexing|Indexing Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

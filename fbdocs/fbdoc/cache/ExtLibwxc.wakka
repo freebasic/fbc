@@ -4,6 +4,8 @@ Cross-platform Graphical User Interface library
 Website: http://wxc.sourceforge.net
 Platforms supported: Win32, Linux
 Headers to include: wx-c/wx.bi
-Example Usage: yes, in examples/wx-c/
+Example Usage: yes, in examples/libraries/wx-c/
+
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

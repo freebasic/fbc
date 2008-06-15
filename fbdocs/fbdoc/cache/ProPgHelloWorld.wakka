@@ -4,7 +4,7 @@ This example is a classic in any programming language.
 More as a sanity check than anything else, a good place to start with any programming language is to try a very simple program to test that the compiler is installed correctly and that a valid executable can be made.
 
 Open up any editor capable of saving text files and type in the following source code:
-%%(qbasic)
+{{fbdoc item="filename" value="examples/manual/proguide/helloworld.bas"}}%%(freebasic)
 print "Hello World"
 %%
 Save the file with a '##.bas##' extension.  For example '##hello.bas##'

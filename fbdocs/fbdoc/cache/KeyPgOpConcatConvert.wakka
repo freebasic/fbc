@@ -44,6 +44,5 @@ The result is: 124.3
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgStr Str]]##
-	- [[CatPgOpString String Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpString|String Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
