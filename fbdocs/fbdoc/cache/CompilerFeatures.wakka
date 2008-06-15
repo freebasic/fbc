@@ -24,7 +24,7 @@
 	- more to come...
 
 ==Multi-platform==
-	- FreeBASIC currently runs on 32-bit Windows, Linux, and MS-DOS and also creates applications for the Xbox console. More platforms to come.
+	- FreeBASIC currently runs on 32-bit Windows, Linux, and DOS (a 16-bit DOS is good enough, although FreeBASIC itself and compiler output are 32-bit) and also creates applications for the Xbox console. More platforms to come.
 	- The run-time library was written with portability in mind. All third-party tools used exist on most operating systems already as they are from the GNU binutils. The compiler is written in 100% FreeBASIC code (that is, FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it doesn't depend on non-portable tools.
 
 ==Unicode support==

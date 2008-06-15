@@ -5,7 +5,6 @@
 **FreeBASIC Run-Time Library questions:**
 	==- {{anchor name="item1|Why is BSAVE/BLOAD crashing?"}}==
 	==- {{anchor name="item8|How do I play sound?"}}==
-	==- {{anchor name="item2|How do I play sound through a soundcard in DOS?"}}==
 	==- {{anchor name="item3|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
 	==- {{anchor name="item4|How do I access the DOS interrupts?"}}==
 	==- {{anchor name="item5|How do I access the serial ports?"}}==
@@ -27,12 +26,7 @@
 	Of the QB's sound keywords only BEEP is implemented in FB. 
 	If PC speaker sound is required, it should be programmed using IN and OUT. See the example in the OUT keyword for a replacement of SOUND. 
 	There is a library called QBSound that allows to emulate qb's ability to PLAY in the background tunes encoded in strings, it uses the soundcard's synthesizer.
-	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the next answer.
-
-{{anchor name="item0|Back to top"}}
-
-{{anchor name="item2"}}==How do I play sound through a soundcard in DOS?==
-	This is not easy in bare DOS; there is built-in access to standard libraries which works well if you're in a DOS box under Windows. If you are in bare DOS, you can either access the soundcard using a (mostly SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). The probably only source of inspiration is the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods. To play compressed files (MP3, OGG, FLAC, ...) , you additionally need the decompressing code.  
+	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the DOS FAQ section.
 
 {{anchor name="item0|Back to top"}}
 	
@@ -42,9 +36,10 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item4"}}==How do I access the DOS interrupts?==
-	The DOS interrupts can be accessed only from the DOS version, only because you must be in a DOS session for the interrupts to exist. 
-
-	The access to interrupts is much slower than QB's: in FB the DPMI server will have to do 2 context switches, going to real-mode and coming back. All of that will eat hundreds of clocks in raw DOS and thousands of clocks if emm386 is loaded or if inside a Windows' DOS box. 
+	The DOS interrupts can be accessed only from the DOS version.
+	
+		The access to interrupts is slower than in QB: in FB the DPMI server will have to do 2 context switches, going to real-mode and coming back. All of that will eat hundreds of clocks in raw DOS and thousands of clocks if emm386 is loaded or if inside a Windows' DOS box. The slow down might be negligible or relevant, it depends. You should try to minimize the number of such calls.
+		 
 Use DJGPP's DPMI wrapper:
 
 %%(qbasic)

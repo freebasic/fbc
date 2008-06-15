@@ -12,7 +12,10 @@
 
 
 ==DOS==
-	- Unpack the zip archive to any folder you want, but give preference to one with no white-spaces in its name and not longer than 8 characters. The directory structure as used inside the archive must be preserved.
+	- Find a place for FreeBASIC with at least 10 MB free space.
+	- Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
+	- The top-level directory is named FreeBASIC (will be truncated to "FREEBASI" in DOS without full  LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
+	- All the important files used by the compiler (includes, libs) inside the archive do have DOS-compliant names, therefore DOSLFN is not required to use FreeBASIC, however, some examples and texts do have longer names and will be truncated when extracted without full LFN support.  
 
 	(Note: if you are installing the DOS version over the Windows one or vice-versa, rename the fbc.exe file of the previous installation to fbc-win.exe or such, or it will be overwritten by the new one.)
 

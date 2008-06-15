@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Running"}}----
 
 ==Windows version==
-	- A desktop icon and start-menu links should be created by the installer, use them to open the console directly into the directory where FreeBASIC was installed (or follow the DOS guide below if nothing works).
+	- A desktop icon and start-menu links should be created by the installer, use them to open the console directly into the directory where FreeBASIC was installed. Alternatively, start the console mode / "MS-DOS prompt" ("cmd.exe" or "command.com") and find and enter the directory "FreeBASIC" containing the "fbc.exe" file.
 	- Type "fbc" (without quotes) to see a list of options. To compile the hello example type: "fbc examples\hello.bas", the hello.exe file will be created at the "examples" dir.
 
 
@@ -11,9 +11,9 @@
 
 
 ==DOS version==
-	- Open the Command-Prompt if in Windows and change to the dir where the FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC" (without quotes) and press Enter, if the archive was expanded to C:\.
+	- Change to the top-level directory of the FreeBASIC installation, containing the file "fbc.exe" . For example, type "C:" and "CD FB" (some DOSes also accept "CDD C:\FB")  (without quotes) and press Enter.
 	- Type "fbc" (without quotes) to see a list of options. To compile the hello example type: "fbc examples\hello.bas", the hello.exe file will be created at the "examples" dir.
-	- You can also add the FreeBASIC dir to your PATH environment variable, so you will not have to switch to or type the FB's dir every time you want to compile your project's files.
+	- You can also add the FreeBASIC directory to your PATH environment variable ( command like "SET PATH=C:\FB\;%PATH%" ) , so you will not have to switch to or type the FB's dir every time you want to compile your project's files.
 
 
 [[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; **Running** &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]

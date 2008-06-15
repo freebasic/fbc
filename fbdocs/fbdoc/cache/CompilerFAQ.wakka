@@ -13,8 +13,7 @@
 	==- {{anchor name="item9|What are the planned features for FreeBASIC?"}}==
 
 **Getting Started with FreeBASIC questions**
-	==- {{anchor name="item21|When running FreeBASIC in DOS, I get a 'Error: No DPMI' message."}}==
-	==- {{anchor name="item22|Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP?"}}==
+	
 	==- {{anchor name="item23|Why doesn't the QB gui open when I start FreeBASIC?"}}==
 	==- {{anchor name="item24|I double-click on fbc.exe and it doesn't open!"}}==
 	==- {{anchor name="item25|Where can I find more information about FreeBASIC?"}}==
@@ -82,12 +81,6 @@
 
 ----
 @@**Getting Started with FreeBASIC questions**@@
-
-{{anchor name="item21"}}==When running FreeBASIC in DOS, I get a "Error: No DPMI" message.==
-	     You need the file "CWSDPMI.EXE". See requirements, and see below how to get rid of it.
-
-{{anchor name="item22"}}==Is there a possibility how to get rid of this CWSDPMI.EXE and CWSDPMI.SWP ?==
-	     Yes. To get rid of CWSDPMI.EXE and create a standalone DOS executable, you need the CWSDPMI package and the "EXE2COFF.EXE" file. Using EXE2COFF, you remove the CWSDPMI.EXE loader (file loses 2 KB of size, a "COFF" file without extension results), and then glue the file "CWSDSTUB.EXE" before this COFF. The new executable is cca 21 KB bigger than the original one, but it is standalone, no additional files are needed. To get rid of CWSDPMI.SWP, you can then edit your executable with CWSPARAM.EXE, and disable the swapping / paging.  Note, however, that this will limit the memory that can be allocated to the amount of physical memory that is installed in a system. This work can be done both with the FBC.EXE file and all executables created by FBC. The method is also described in the CWSDPMI docs in the package.
 
 {{anchor name="item23"}}==Why doesn't the QB gui open when I start FreeBASIC?==
 	QB had a GUI.  FreeBASIC does not.

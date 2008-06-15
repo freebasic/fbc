@@ -1,10 +1,10 @@
 Although FreeBASIC has extremely similar syntax to QuickBASIC, there are subtle differences, so some legacy code may not compile right away. 
 
 ==Architecture/Platform incompatibilities==
-	- FreeBASIC is written for 32-bit operating systems, and cannot utilize code which depends on 16-bit DOS.
 	- The [[KeyPgInteger INTEGER]] data type is 32 bits, rather than 16 bits in QuickBASIC.
-	- DEF SEG is no longer necessary and will not work - any code which POKEs to video memory will no longer function.
-	- CALL INTERRUPT no longer functions, as it relies on 16-bit MS-DOS to function. DOS interrupts can be called in the DOS32 version by using external  libraries, but they will work very slowly because of the 32bit-16bit-32bit  mode changes the processor will have to perform. 
+	- FreeBASIC is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS, ...). 	
+	- DEF SEG is no longer necessary and will not work - any code which POKEs to video memory this way will no longer function, however, for DOS it can be easily rewritten using DPMI features. 
+	- CALL INTERRUPT no longer functions, as it relies on 16-bit DOS. DOS interrupts can be called in the DOS32 version by using the DPMI library, but they might work slowly because of the 32bit-16bit-32bit  mode changes the processor will have to perform. 
 	- Text mode has a single screen, so you can't use PCOPY or screen switching.
 	- Direct access to text screen is not possible in FB.
 
