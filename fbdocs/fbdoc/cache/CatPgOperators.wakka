@@ -16,7 +16,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCombineShl|SHL= (Shift Left and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgCombineShr|SHR= (Shift Right and Assign)"}}
 
-==[[OpArithmatic Arithmetic Operators]]==
+==Arithmetic Operators==
 	- {{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}
 	- {{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}
 	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
@@ -42,6 +42,7 @@
 	- {{fbdoc item="keyword" value="KeyPgXor|XOR (Exclusive Or)"}}
 	- {{fbdoc item="keyword" value="KeyPgShl|SHL (Shift-left)"}}
 	- {{fbdoc item="keyword" value="KeyPgShr|SHR (Shift-right)"}}
+
 ==String Operators==
 	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}
 	- {{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}

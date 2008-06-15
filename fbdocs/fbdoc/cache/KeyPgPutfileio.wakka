@@ -19,7 +19,10 @@
 
 {{fbdoc item="desc"}}
 	Writes binary data from a buffer variable to a file.
-	##Put## can be used as a function, and will return 0 on success or an error code on failure.	
+
+	##**Put**## can be used as a function, and will return 0 on success or an error code on failure.	
+
+	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to write must match the specified record size.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -76,9 +79,9 @@ End
 	- PUT can now be used as a function.
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpen OPEN]]
-	- [[KeyPgClose CLOSE]] 
-	- [[KeyPgGetfileio GET (FILE I/O)]] 
-	- [[KeyPgFreefile FREEFILE]] 
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgClose Close]]##
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgFreefile Freefile]]##
 
 {{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

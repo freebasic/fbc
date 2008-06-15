@@ -151,6 +151,13 @@
 	- {{fbdoc item="keyword" value="KeyPgUnlock|UNLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
 
+==EXTENDED LIBRARY (FILE.BI)==
+	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
+	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
+	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
+
 ==FUNCTIONS==
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
 	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
@@ -277,6 +284,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
@@ -326,6 +334,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMinVersion|__FB_MIN_VERSION__"}}
@@ -350,6 +359,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 
 ==PREPROCESSOR==

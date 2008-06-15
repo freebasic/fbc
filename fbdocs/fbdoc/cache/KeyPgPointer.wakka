@@ -9,7 +9,18 @@ A variable declaration type modifier
 	Declares a pointer variable. The same as ##[[KeyPgPtr Ptr]]##.
 
 {{fbdoc item="ex"}}
-	     For example see ##[[KeyPgPtr Ptr]]##.
+%%(qbasic)
+dim p as zstring pointer
+dim text as string
+text = "Hello World!"
+p = strptr(text) + 6
+print text
+print *p
+
+'' Output:
+'' Hello World!
+'' World!
+%%
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPtr Ptr]]##

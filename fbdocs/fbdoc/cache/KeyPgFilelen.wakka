@@ -32,5 +32,6 @@ length = FILELEN("file.txt")
 	- New to FreeBasic.  Existed in Visual Basic.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgLof Lof]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -4,13 +4,13 @@
 
 **FreeBASIC Run-Time Library questions:**
 	==- {{anchor name="item1|Why is BSAVE/BLOAD crashing?"}}==
-	==- {{anchor name="item8|How do I play sound?"}}==
+	==- {{anchor name="item2|How do I play sound?"}}==
 	==- {{anchor name="item3|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
 	==- {{anchor name="item5|How do I access the serial ports?"}}==
 	==- {{anchor name="item6|How do I print?"}}==
-	==- {{anchor name="item7|How do I access the harware ports?"}}==
-
-
+	==- {{anchor name="item7|How do I access the hardware ports?"}}==
+	==- {{anchor name="item8|Why does my array crash when I set it larger than _____?"}}==
+	==- {{anchor name="item9|What is the behavior of strings passed byval?"}}==
 
 
 ----
@@ -21,7 +21,7 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item8"}}== How do I play sound?==
+{{anchor name="item2"}}== How do I play sound?==
 	Of the QB's sound keywords only BEEP is implemented in FB. 
 	If PC speaker sound is required, it should be programmed using IN and OUT. See the example in the OUT keyword for a replacement of SOUND. 
 	There is a library called QBSound that allows to emulate qb's ability to PLAY in the background tunes encoded in strings, it uses the soundcard's synthesizer.
@@ -58,11 +58,125 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item7"}}==How do I access the harware ports?==
+{{anchor name="item7"}}==How do I access the hardware ports?==
 
 	As of V0.15 QB's INP, OUT and WAIT are implemented. 
 	The GfxLib intercepts the calls to some VGA ports to emulate the widely used QB's palete manipulation and vsync methods. So ports &H3DA, &H3C7, &H3C8 and &H3C9 can't be accessed it GfxLib is used. All other ports are accessible. 
 	No further care is required to use INP and OUT in Linux or DOS. For the Windows version the required device driver is installed each first time the program is run in a windows session; this requires Administrator rights for this first run or the program will end with an error. 
 
 {{anchor name="item0|Back to top"}}
-	
+
+
+{{anchor name="item8"}}==Why does my array crash when I set it larger than _____?==
+
+	    This generally happens because you made an array too large to fit on the stack. You have a couple of options:
+
+
+	       - DIM the array SHARED
+	       - STATIC the array instead of DIMming it
+	       - REDIM the array instead of DIMming it
+	       - Set the stack space larger by using the -t command-line option. The default is -t 1024.
+
+
+	    Aside from this, the maximum array size is a total span of 2 ^ 31 elements. ( 2147483648 total elements. )
+
+
+{{anchor name="item0|Back to top"}}
+
+
+
+{{anchor name="item9"}}==What is the behavior of strings passed byval?==
+
+
+
+In order to understand this, you have to understand the way that FreeBASIC
+represents its strings internally. It is like this:
+
+
+%%(qbasic)Type FBSTRING
+
+  dat as ubyte ptr
+  length as integer
+  size as integer
+  
+End Type%%
+
+
+For now, we will forget about the "size" member.
+
+
+The dat member is just like a ubyte array of characters. Let's take "Hello" as an example.
+
+
+%%(qbasic)FBSTRING = "hello"
+
+FBSTRING.dat = ( asc( "H" ), asc( "e" ), asc( "l" ), asc( "l" ), asc( "o" ), 0 )
+FBSTRING.length = 5%%
+
+NOTE: That's just an example, you can't play with the string internals so easily ;)
+
+As you can see, the last char in the ubyte 'array' is 0. That is to be compatible with c
+libraries, but truth is, you never see that 0 because FB limits any operation to the length
+specified in the 'length' member.
+
+
+That's where byval comes in. When you pass a string byval to a proc, the string itself 
+isn't passed. The only part that is passed is the 'dat' member. The string is
+treated internally in the sub as a null-terminated c-style string.
+
+This could lead to odd behaviors:
+
+
+%%(qbasic)sub foo( byval s as string )
+
+  s = "Hello"
+  
+end sub
+
+
+dim as string s
+
+foo( s )
+
+? s%%
+
+
+
+Why doesn't it print s? Because like I said before, all operations FB does on strings
+depend on the 'length' member. That wasn't passed to the proc, only the 'dat' member
+was. So FB thinks the string still contains 0 characters.
+
+
+NOTE: It is better not to EVER modify a string passed byval inside a proc, if you do,
+you risk memory corruption by writing out of bounds:
+
+
+%%(qbasic)declare sub foo( byval s as string )
+
+
+dim as string s = "hi"
+
+foo( s )
+
+? s
+
+
+
+sub foo( byval s as string )
+  
+  /' s.dat = ( asc( "h" ), asc( "i" ), 0 ) '/
+  s = "Hello"
+
+  /' s.dat = ( asc( "h" ), asc( "e" ), asc( "l" ) ) '/
+  /' where did the "lo" go? no one knows. it went somewhere
+	 that you should not have written. BAD! '/
+  
+end sub%%
+
+{{anchor name="item0|Back to top"}}
+
+
+
+
+
+

@@ -14,6 +14,11 @@ Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#if __FB_OUT_OBJ__ 
+	    ... specific instructions when compiling to an object file only
+#else
+	    ... specific instructions when not compiling to an object file only
+#endif
 %%
 
 {{fbdoc item="diff"}}

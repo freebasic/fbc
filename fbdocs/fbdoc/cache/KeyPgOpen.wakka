@@ -36,7 +36,7 @@
 	##//slot//##
 		A valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the ##[[KeyPgFreefile FreeFile]]## function.
 	##//record_length//##
-		Optional parameter, meaningful only for files opened ##For Random##; the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##.  It must match the size of the bufer variable used when reading and writing data. The default is 128 bytes.
+		Optional parameter, meaningful only for files opened ##For Random##; the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##.  It must match the size of the buffer variable used when reading and writing data. The default is 128 bytes.
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing in the given file //slot//, with the given file //mode//. 

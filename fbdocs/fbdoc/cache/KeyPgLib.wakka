@@ -1,17 +1,37 @@
 {{fbdoc item="title" value="LIB"}}
 ----
-{{fbdoc item="syntax"}}
-~DECLARE [SUB|FUNCTION] foo ALIAS "myfoo" LIB "mydll" ( arguments list ) AS typename 
+Specifies the DLL where a sub or function can be found as part of a declaration.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc name// **Lib** "//dllname//" [[KeyPgAlias alias]] "//symbol_name//" ( //arguments list// ) [[KeyPgAs as]] //return_type//
+##
 {{fbdoc item="desc"}}
-~In function declarations, LIB indicates the dll containing the function. The compiler generates the needed code to link to it.
+	In ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## declarations, ##**Lib**## indicates the dll containing the function. Libraries specified in this way are linked as if the library had been specified with ##[[KeyPgInclib #inclib]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+' mydll.bas
+'   compile with
+'     fbc -dll mydll.bas
+public function GetValue() as integer export
+  function = &h1234
+end function
+%%
+
+%%(qbasic)
+Declare Function GetValue Lib "mydll" () As Integer
+
+Print "GetValue = &h"; hex(GetValue())
+
+' Expected Output :
+' GetValue = &h1234
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgInclib #inclib]]##
+
+{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

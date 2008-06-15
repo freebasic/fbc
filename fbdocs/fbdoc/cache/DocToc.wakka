@@ -10,7 +10,8 @@
 	[[CompilerRunning Running]]
 	[[CompileCmdLine Using the Command Line]]
 	[[CompileErrMsg Compiler Error Messages]]
-	
+
+	[[CompilerDialects FreeBasic Dialects]]
 	[[CompilerQB FreeBasic and Qbasic]]
 	[[LangQB Differences from QB]]
 

@@ -14,6 +14,11 @@ Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#if __FB_OUT_DLL__ 
+	    ... specific instructions when making a shared library (DLL)
+#else
+	    ... specific instructions when not making a shared library (DLL)
+#endif
 %%
 
 {{fbdoc item="diff"}}

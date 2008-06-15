@@ -11,6 +11,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdFBMinVersion|__FB_MIN_VERSION__"}} 
@@ -35,6 +36,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfunction|__FUNCTION__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfunctionnq|__FUNCTION_NQ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
 ====#====
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
@@ -189,10 +191,13 @@
 	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN ''C++''"}}
+	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN""}}
 ====F====
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
+	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
+	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
@@ -233,9 +238,9 @@
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
+<<>>
 ====K====
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
-<<>>
 ====L====
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
@@ -284,6 +289,7 @@
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
+	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}
 	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}
 	-  {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
 ====O====
@@ -326,6 +332,7 @@
 	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}

@@ -12,14 +12,17 @@
 	##//buffer//##
 		The buffer where data is written. It can be a numeric variable, a string , an array, an user defined type or a pointer to memory. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached. 
 	##//amount//##
-		Limits GET to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//buffer//## is a dereferenced pointer, ##//amount//## is mandatory. For other data types, if ##//amount//## is omitted, ##Get## tries to fill completely the buffer.
+		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//buffer//## is a dereferenced pointer, ##//amount//## is mandatory. For other data types, if ##//amount//## is omitted, ##Get## tries to fill completely the buffer.
 
 {{fbdoc item="ret"}}
 	0 on success; nonzero on error.
 
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
+
 	GET can be used as a function, and will return 0 on success or an error code on failure.	
+
+	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -92,9 +95,9 @@ Print ExampleStr
 	- GET can now be used as a function.
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpen OPEN]]
-	- [[KeyPgClose CLOSE]] 
-	- [[KeyPgPutfileio PUT (FILE I/O)]] 
-	- [[KeyPgFreefile FREEFILE]] 
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgClose Close]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgFreefile Freefile]]##
 
 {{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

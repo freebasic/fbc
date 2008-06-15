@@ -3,10 +3,10 @@
 Input function to read buttons and axis information from attached gaming devices.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a7// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 , [[KeyPgByref byref]] //a8// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Getjoystick** (//id//, //buttons//, //x//, //y//[, //z//[, //r//[, //u//[, //v//]]]])
+	//result// = **Getjoystick** (//id//, //buttons//, //x//, //y//[, //z//[, //r//[, //u//[, //v//[, //a7//[, //a8//]]]]]])
 ##
 {{fbdoc item="param"}}
 	##//id//##
@@ -25,12 +25,16 @@ Input function to read buttons and axis information from attached gaming devices
 		fifth axis value
 	##//v//##
 		sixth axis value
+	##//a7//##
+		seventh axis value
+	##//a8//##
+		eighth axis value
 
 {{fbdoc item="ret"}}
-	0 on success or 1 on failure.
+	0 on success or 1 on failure.  All of the axis positions are returned in floating point format.
 
 {{fbdoc item="desc"}}
-	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 6 axes, for the joystick determined by ##//id//##, a number between 0 and 15. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button. all of the axis positions stored in ##//x//##, ##//y//##, ##//z//##, ##//r//##, ##//u//##, and ##//v//## are stored in floating point format.
+	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between 0 and 15. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button.
 
 	##**Getjoystick**## will return 0 upon successful completion; It will return 1 upon failure. Failure can be caused by specifying an illegal joystick number, specifying a joystick which doesn't exist, or a failure in the joystick API.
 

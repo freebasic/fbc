@@ -2,14 +2,15 @@
 ----
 {{fbdoc item="syntax"}}
 ~DECLARE FUNCTION foo OVERLOAD (arguments) as outputtype
+~DECLARE SUB bar OVERLOAD (arguments)
 
 {{fbdoc item="desc"}}
-~When declaring overloaded functions, this is: functions with the same name and different argument sets, the first declared function must have the keyword OVERLOAD, to avoid a "Symbol already defined" error..
+~When declaring overloaded functions, this is: functions with the same name and different argument sets, the first declared function must have the keyword OVERLOAD, to avoid a "Symbol already defined" error. You may use the OVERLOAD specifier on SUBs and FUNCTIONs. It is not necessary to use the OVERLOAD specifier on every declaration of a given proc, but it is allowed, so making macros to build overloaded procs is simple.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 DECLARE FUNCTION SUM OVERLOAD (A AS INTEGER,B AS INTEGER) AS INTEGER
-DECLARE FUNCTION SUM  (A AS SINGLE,B AS SINGLE) AS SINGLE
+DECLARE FUNCTION SUM OVERLOAD (A AS SINGLE,B AS SINGLE) AS SINGLE
 FUNCTION SUM  (A AS INTEGER,B AS INTEGER) AS INTEGER
    FUNCTION=A+B
 END FUNCTION   

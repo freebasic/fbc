@@ -20,9 +20,9 @@
 	- {{fbdoc item="keyword" value="KeyPgLof|LOF"}}
 	- {{fbdoc item="keyword" value="KeyPgLset|LSET"}}
 	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 
 <<>>
-	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
@@ -39,9 +39,11 @@
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE (FILE I/O)"}}
 
 ==Extended library (file.bi)==
+	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
+	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
-
 
 >>
 

@@ -1,0 +1,73 @@
+{{fbdoc item="title" value="FILEATTR"}}
+----
+Function to return information about an open file handle.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileAttr""** ( //handle//, [ //returntype// ] )
+##
+//or//
+##
+	#include "vbcompat.bi"
+	//result// = **""FileAttr""** ( //handle//, [ //returntype// ] )
+##
+{{fbdoc item="param"}}
+	##//handle//##
+		The handle of a file or device opened with ##[[KeyPgOpen Open]]##
+	##//returntype//##
+		An ##[[KeyPgInteger integer]]## indicating the type of information to return.
+
+{{fbdoc item="ret"}}
+	A value associated with the return type, otherwise 0 on error.
+
+{{fbdoc item="desc"}}
+	Information about the file handle is returned based on the supplied ##//returntype//##
+		{{table columns="3" cellpadding="1" cells="Value;Description;constant;1;File Mode;fbFileAttrMode;2;File Handle;fbFileAttrHandle;3;Encoding;fbFileAttrEncoding"}}
+
+	For File Mode, //returntype// = 1 (##fbFileAttrMode##) the return value is the sum of one or more of the following values: 
+		{{table columns="3" cellpadding="1" cells="Value;File Mode;Constant;1;Input;fbFileModeOutput;2;Output;fbFileModeOutput;4;Random;fbFileModeRandom;8;Append;fbFileModeAppend;32;Binary;fbFileModeBinary"}}
+
+	For File Handle, //returntype// = 2 (##fbFileAttrHandle##), the return value is the file handle as supplied by the C Runtime for file-type devices, or pointer an internal data structure for COM and LPT devices.  !!! WRITE ME !!! internal structures for devices?
+
+	For Encoding, //returntype// = 3 (##fbFileAttrEncoding##), the return value is one of the following values:
+		{{table columns="3" cellpadding="1" cells="Value;Encoding;Constant;0;Ascii;fbFileEncodASCII;1;UTF-8;fbFileEncodUTF8;2;UTF-16;fbFileEncodUTF16;3;UTF-32;fbFileEncodUTF32"}}
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+#include "crt.bi"
+
+dim f as FILE ptr, i as integer
+
+'' Open a file and write some text to it
+
+open "test.txt" for output as #1
+f = cast( FILE ptr, FileAttr( 1, fbFileAttrHandle ))
+for i = 1 to 10
+  fprintf( f, !"Line %i\n", i )
+next i
+close #1
+
+'' re-open the file and read the text back
+
+open "test.txt" for input as #1
+f = cast( FILE ptr, FileAttr( 1, fbFileAttrHandle ))
+while feof(f) = 0
+  i = fgetc(f)
+  print chr(i);
+wend
+close #1
+%%
+
+{{fbdoc item="diff"}}
+	- None for returntype = 1
+	- QBasic and 16-bit Visual Basic returned DOS file handle for returntype = 2
+	- returntype = 3 is new to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

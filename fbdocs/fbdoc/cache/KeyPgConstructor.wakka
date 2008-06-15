@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="CONSTRUCTOR"}}
 ----
 {{fbdoc item="syntax"}}
-	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Constructor** [[[KeyPgStatic Static]]]
+	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Constructor** [[[KeyPgStatic Static]]]
 		{ //procedure body// }
 	[[KeyPgEnd End]] [[KeyPgSub Sub]]
 

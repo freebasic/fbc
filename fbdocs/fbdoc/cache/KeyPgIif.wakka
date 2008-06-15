@@ -1,27 +1,33 @@
 {{fbdoc item="title" value="IIF"}}
 ----
 {{fbdoc item="syntax"}}
-IIF (condition, numeric_value_if_true, numeric_value_if_false)
+IIF (//condition//, //expr_if_true//, //expr_if_false//)
+
+{{fbdoc item="param"}}
+	##//condition//##
+		The condition to test.
+		A non-zero value evaluates as true, while a value of zero evaluates as false
+	##//expr_if_true//##
+		An expression to evaluate and return if ##//condition//## is true.
+		It must return a numeric value, which can be an integer, floating point number or a pointer
+	##//expr_if_false//##
+		An expression to evaluate and return if ##//condition//## is false.
+		It must be the same type of number as ##//expr_if_true//##
 
 {{fbdoc item="desc"}}
 IIF returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
 
-{{fbdoc item="ex"}}
-%%(qbasic)
-a= (x + y + iif(b > 0, 4, 7)) / z
-%%
-is equivalent to:
-%%(qbasic)
-temp = x + y
-if b > 0 then temp = temp + 4 else temp = temp + 7
-a = temp / z
-%%
+IIF only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
 
+{{fbdoc item="ex"}}
+%%(qbasic)a = (x + y + iif(b > 0, 4, 7)) / z%%
+is equivalent to:
+%%(qbasic)if b > 0 then temp = 4 else temp = 7
+a = (x + y + temp) / z%%
 {{fbdoc item="diff"}}
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgIfthen If...Then]]##
 
 {{fbdoc item="back" value="|"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
-

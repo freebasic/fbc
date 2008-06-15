@@ -14,6 +14,7 @@
 
 {{fbdoc item="desc"}}
 	IF...THEN is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
+	The expresion is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of if's.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

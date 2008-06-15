@@ -26,12 +26,46 @@ Function to compute valid color value including alpha (translucency) for hi/true
 
 	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an integer  in the format &hRRGGBBAA, where RR, GG, BB, AA  equals the values passed to this function, in hexadecimal format.
 
-Example:
-	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
-
+	Example:	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+screenres 640,480,32
+
+dim as any ptr img
+dim as integer x,y
+
+'make an image that varies in transparency and color
+img = imagecreate(128,128,0)
+for x = 0 to 127
+  for y = 0 to 127
+	pset img,(x,y),rgba(x*2,0,y*2,x+y)
+  next y
+next x
+circle img,(64,64),50,rgba(0,127,192,192),,,,f
+line img,(50,40)-(78,88),rgba(255,255,255,0),bf
+
+'draw a background
+for x=-480 to 639 step 20
+  line (x,0)-(x+480,480),rgb(255,255,255)
+next
+line (10,10)-(630,86),rgb(127,0,0),bf
+line (10,290)-(630,438),rgb(0,127,0),bf
+
+'draw the image and some text with PSET
+draw string(96,64),"PUT AN IMAGE WITH PSET"
+put(96,96),img,pset
+put(96,300),img,pset
+
+'draw the image and some text with ALPHA
+draw string (416,64),"PUT AN IMAGE WITH ALPHA"
+
+put(416,96),img,alpha
+put(416,300),img,alpha
+
+sleep
+
+imagedestroy img
 %%
 
 {{fbdoc item="diff"}}

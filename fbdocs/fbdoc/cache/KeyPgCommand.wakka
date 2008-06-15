@@ -24,6 +24,26 @@ Returns command line parameters used to call the program.
 
 	When the command line is parsed for arguments, everthing between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 
+	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the commandline containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for rediection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
+
+	__Disabling filename globbing under Win32__
+		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
+		%%(qbasic)
+extern _CRT_glob alias "_CRT_glob" as integer
+dim shared _CRT_glob as integer = 0
+%%
+
+	__Disabling filename globbing under Dos__
+		Define the following function somewhere in the source:
+		%%(qbasic)
+public function __crt0_glob_function alias "__crt0_glob_function" ( byval arg as ubyte ptr ) as ubyte ptr ptr
+  return 0
+end function
+%%
+
+	__Disabling filename globbing under Linux__
+		Filename globbing is handled by the command shell.  Quote the argument containing wildcards or disable filename globbing in the shell prior to executing the command.  For example in bash use 'set -f' to disable wildcard expansion
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 ''
@@ -58,6 +78,7 @@ Returns command line parameters used to call the program.
 {{fbdoc item="diff"}}
 	- The numeric argument was not supported in QB.
 	- QB converted  the parameter list to uppercase before returning it.
+	- by default arguments containing wildcard characters are expanded (filename globbing)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExec Exec]]##

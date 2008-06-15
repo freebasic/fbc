@@ -18,36 +18,17 @@ Please edit this page to remove items when they are written.
 
 ==Undocumented keywords== 
 
-	##[[KeyPgPpline #line]]##
-	##[[KeyPgPpmacro #macro]]##
-	##[[KeyPgPplibpath #libpath]]##
-	##[[KeyPgFiledate Filedate]]##
-	##[[KeyPgFileattr Fileattr]]##
-	##[[KeyPgFileexists Fileexists]]##
-	
-	dir.bi:
-	
-	fbReadOnly
-	fbHidden
-	fbSystem
-	fbDirectory
-	fbArchive
-	fbNormal
-
 ==Incomplete Documentation==
 
-	Pages that have '!!! WRITE ME !!!' or '!!! DELETE ME !!!'
+	[[KeyPgExternCpp Extern...End Extern]]
+
+	Pages that have '!!!'
 	
 	1. MissingDocs
-	2. FaqPgrtlib
-	3. KeyPgPpline
-	4. KeyPgPplibpath
-	5. KeyPgPpmacro
-	6. LangMeta
-	7. KeyPgOpenLpt
-	8. KeyPgFunction
-	9. CatPgUser
-	10. KeyPgDeclare
+	2. KeyPgFileattr
+	3. KeyPgOpenLpt
+	4. KeyPgFunction
+	5. KeyPgDeclare
 ----
 
 The documents listed and linked below need to be updated or enhanced in some way.
@@ -58,30 +39,13 @@ The documents listed and linked below need to be updated or enhanced in some way
 Needs Code Examples:
 
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
-	[[KeyPgPplibpath #LIBPATH]]
-	[[KeyPgPpline #LINE]]
 	[[KeyPgDdfberr __FB_ERR__]]
-	[[KeyPgDdfboutexe __FB_OUT_EXE__]]
-	[[KeyPgDdfboutlib __FB_OUT_LIB__]]
-	[[KeyPgDdfboutdll __FB_OUT_DLL__]]
-	[[KeyPgDdfboutobj __FB_OUT_OBJ__]]
-	[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]
-	[[KeyPgDdfilenq __FILE_NQ__]]
-	[[KeyPgDateadd Dateadd]]
-	[[KeyPgDatediff Datediff]]
-	[[KeyPgDatepart Datepart]]
 	[[KeyPgFlip Flip]]
-	[[KeyPgImport Import]]
 	[[KeyPgInputfilemode Input(file i/o)]]
-	[[KeyPgLib Lib]]
-	[[KeyPgOptionbyval Option byval]]
 	[[KeyPgOutput Output]]
 	[[KeyPgPcopy Pcopy]]
 	[[KeyPgPmap Pmap]]
-	[[KeyPgPointer Pointer]] (links to Ptr example?)
 	[[KeyPgRandom Random]]
-	[[KeyPgRgba Rgba]]
-	[[KeyPgScreencopy Screencopy]]
 	[[KeyPgWait Wait]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

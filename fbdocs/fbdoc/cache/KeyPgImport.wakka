@@ -1,14 +1,40 @@
-{{fbdoc item="title" value="IMPORT"}}----
+{{fbdoc item="title" value="IMPORT"}}
+----
+External linkage attribute for public data located in DLL's
 
-{{fbdoc item="syntax"}}
-	[[KeyPgExtern EXTERN]] [IMPORT] //symbolname//[( //subscripts//)] [ALIAS "//aliasname//"] [AS [[DataType DataType]]] [, ...]
-
+{{fbdoc item="syntax"}}##
+	[[KeyPgExtern Extern]] **Import** //symbolname//[( //subscripts//)] [ [[KeyPgAlias alias]] "//aliasname//"] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
+##
 {{fbdoc item="desc"}}
-	Is used only on Win32 platforms with the [[KeyPgExtern EXTERN]] keyword; is needed to access global variables in DLLs.  This is because there is a level of indirection on any such access: an implicit pointer dereference.
+	Is used only on Win32 platforms with the ##[[KeyPgExtern Extern]]## keyword and is needed to access global variables in DLLs.  This is due to the level of indirection on any such access: an implicit pointer dereference.
+
+{{fbdoc item="ex"}}
+%%
+/* mydll.c :
+	compile with
+	  gcc -shared -Wl,--strip-all -o mydll.dll mydll.c
+*/
+__declspec( dllexport ) int MyDll_Data = 0x1234;
+%%
+
+%%(qbasic)
+/'  import.bas :
+	Compile with
+	  fbc import.bas
+'/
+#inclib "mydll"
+
+extern import MyDll_Data alias "MyDll_Data" as integer
+
+print "&h" + hex( MyDll_Data )
+
+' Output:
+' &h1234
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgExtern EXTERN]]
+	- ##[[KeyPgExtern Extern]]##
 

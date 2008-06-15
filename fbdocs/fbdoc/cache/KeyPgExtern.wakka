@@ -1,4 +1,5 @@
-{{fbdoc item="title" value="EXTERN"}}----
+{{fbdoc item="title" value="EXTERN"}}
+----
 
 {{fbdoc item="syntax"}}
 	EXTERN [[[KeyPgImport IMPORT]]] //symbolname//[( //subscripts//)] [ALIAS "//aliasname//"] [AS [[DataType DataType]]] [, ...]
@@ -34,16 +35,12 @@ Print Foo
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgCommon COMMON]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgErase ERASE]]
-	- [[KeyPgExtern EXTERN]]
-	- [[KeyPgLbound LBOUND]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgPreserve PRESERVE]]
-	- [[KeyPgShared SHARED]]
-	- [[KeyPgStatic STATIC]]
-	- [[KeyPgUbound UBOUND]]
-
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgExternCpp Extern...End Extern]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgShared Shared]]##
+	- ##[[KeyPgStatic Static]]##
 
 {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

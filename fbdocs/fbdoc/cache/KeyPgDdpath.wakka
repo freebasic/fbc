@@ -1,16 +1,19 @@
-{{fbdoc item="title" value="__FILE_NQ__"}}
+{{fbdoc item="title" value="__PATH__"}}
 ----
 Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="syntax"}}##
-	""__FILE_NQ__""
+	""__PATH__""
 ##
 {{fbdoc item="desc"}}
-	Substituted with the non-quoted source file name where used.
+	Set to the quoted absolute path of the source file at the time of compilation.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-#print __FILE_NQ__
+' Tell the compiler to seach the source file's
+' directory for libraries
+
+#libpath __PATH__
 %%
 
 {{fbdoc item="diff"}}
@@ -18,7 +21,5 @@ Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfile __FILE__]]##
-	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
-	- ##[[KeyPgDdline __LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

@@ -6,12 +6,15 @@ Intrinsic define (macro value) set by the compiler.
 	""__FB_OPTION_DYNAMIC__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_OPTION_DYNAMIC__""## indicates if the compiler is currently set to either Dynamic or Static array allocation.
+	##""__FB_OPTION_DYNAMIC__""## indicates if the compiler is currently set to either Dynamic or Static array allocation by default for all array allocations.
 
 	Returns zero (0) if the current state is Dynamic.  Returns non-zero (-1) if the current state is Static.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#if __FB_OPTION_DYNAMIC__ <> 0
+#error This module must not use Option Dynamic
+#endif
 %%
 
 {{fbdoc item="diff"}}

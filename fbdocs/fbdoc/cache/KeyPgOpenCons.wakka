@@ -21,12 +21,14 @@
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+dim a as string
+
 Open CONS For input As #1
 Open CONS For output as #2
 
 Print #2,"Please write something and press ENTER"
-Line Input #1,a$
-Print #2, "You wrote : ";a$
+Line Input #1,a
+Print #2, "You wrote : ";a
 
 Close
 Sleep

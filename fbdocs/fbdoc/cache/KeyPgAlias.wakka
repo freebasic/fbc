@@ -46,4 +46,4 @@ END FUNCTION
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgExport Export]]##
 
-{{fbdoc item="back" value="CatPgClause|CLAUSE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|MISC"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

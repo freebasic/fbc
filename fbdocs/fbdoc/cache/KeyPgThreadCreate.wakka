@@ -3,7 +3,7 @@
 **Threadcreate** starts a user function in a separate execution thread.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Threadcreate** ( //proc// )
@@ -12,21 +12,21 @@
 ##
 {{fbdoc item="param"}}
 	##//proc//##
-		A pointer to the ##[[KeyPgSub SUB]]## intended to work as a thread.
+		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread.
 	##//param//##
-		Optional integer argument for the ##[[KeyPgSub SUB]]## pointed to by //proc// (it can be an integer, or a pointer to a structure or an array if more arguments are needed). //param// is passed BYVAL so it can't be used to return a result.
+		Optional integer argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be an integer, or a pointer to a structure or an array if more arguments are needed). //param// is passed ##[[KeyPgByval Byval]]## so it can't be used to return a result.
 
 {{fbdoc item="ret"}}
-	**Threadcreate** returns an ##[[KeyPgInteger integer]]## handle to the thread created. If the handle is 0, the thread creation has failed.
+	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created. If the handle is 0, the thread creation has failed.
 
 {{fbdoc item="desc"}}
-	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or  using the waiting times in the main program.
+	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or using the waiting times in the main program.
 
 	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
 
-	Before closing, a program must wait for the termination of all the threads it has launched, see ##[[KeyPgThreadWait Threadwait]]##.
+	Before closing, a program must wait for the termination of all the threads it has launched; see ##[[KeyPgThreadWait Threadwait]]##.
 
-	To avoid different threads simultaneous access to shared resources, FB implements Mutexes, flags that can be "owned" by a single thread when doing a critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -47,9 +47,11 @@ while 1
 wend
 end sub
 
+dim thread as any ptr
+
 print "Main program prints dots"
 print "Thread prints asterisks"
-i=threadcreate(@mythread,0)
+thread=threadcreate(@mythread,0)
 print "Thread launched";
 b=0
   while b<80
@@ -63,7 +65,7 @@ b=0
   wend
 terminate=1
 print "Terminate launched";
-threadwait (i)
+threadwait (thread)
 print "Thread terminated"
 sleep
 %%

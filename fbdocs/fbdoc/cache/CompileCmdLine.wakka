@@ -19,6 +19,7 @@
 		- **##-include < //include file// >##** :	Set a file to be #INCLUDEd in all the modules.
 		- **##-d < //name//=//value// >##** :	Add a preprocessor's define. The same as adding #define name value in the source.
 		- **##-c##** :	Compile only (make an object file), do not link.
+		- **##-lang < //name// >##** :  Since version 0.17: Select language compatibility: deprecated, qb, fb (default). ##-lang fb## does not support line numbers variable suffixes (!,#), or dotted variable names. Specify ##-lang qb## if any of the former is required. ##-lang deprecated## allows to compile old fb sources. See ##migrating.txt## included with the distribution for more details. 
 		- **##{ -m|-entry } < //source file// >##** : Main file without extension. This sets specified file as the program entry point (defaults to the first .bas file passed to the compiler). If compiling sources separately it must be specified when compiling the main source.
 
 	//error checking/debugging//
@@ -29,6 +30,7 @@
 		- **##-noerrline##** : Do not show the place in source where error occured. Useful if an IDE is parsing the error messages.
 		- **##-profile##** : Enable function profiling. After running an executable compiled with this option, a profile.txt file will be created in the program directory, showing the time spent in each sub/function during the program execution.
 		-**##-maxerr<//value|inf//>##** Sets the number of errors the compiler must find before stopping. The default is 10. If **inf**, for infinite, is specified the compiler continues until it finds the end of the source. Useful if an IDE is parsing the error messages.
+
 	//platform specific//
 		- **##-arch < //CPU// >##** : Set target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
 		- **##-target < dos|linux|win32|xbox|cygwin >##** : Used with the Windows version of the compiler to create DOS32, Linux or XBOX executables . The bin and lib folders must have the /dos, /linux or /xbox subfolders from the appropiate distribution.

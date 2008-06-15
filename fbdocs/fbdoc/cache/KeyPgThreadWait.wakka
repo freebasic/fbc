@@ -1,31 +1,31 @@
 {{fbdoc item="title" value="THREADWAIT"}}
 ----
-**Threadwait** waits until the designated thread has been completed before returning.
+Waits until the designated thread has been completed before returning.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Threadwait** ( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##
-	    [[KeyPgInteger integer]] handle of a thread created by ##[[KeyPgThreadCreate Threadcreate]]##
+		##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of a thread created by ##[[KeyPgThreadCreate Threadcreate]]##
 
 {{fbdoc item="desc"}}
-	**Threadwait** doesn't return until the tread designed by ##//id//## ends. **Threadwait** does not force the thread to end; If a thread requires a signal to force it's end, a mechanism such as shared variables must be used.
+	##Threadwait## doesn't return until the thread designated by ##//id//## ends. ##Threadwait## does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables must be used.
 
 	NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
 
 	Threads are launched by the ##[[KeyPgThreadCreate Threadcreate]]## function.
 
-	To avoid different threads simultaneous access to shared resources, FB implements Mutexes, flags that can be "owned" by a single thread when doing a critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
+	To avoid simultaneous access to shared resources from different threads, FB implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
 
 
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-dim shared printsync as integer
+dim shared printsync as any ptr
 
 sub mythread(byval id as integer)
 
@@ -58,6 +58,8 @@ sub mythread(byval id as integer)
   mutexunlock printsync
 
 end sub
+
+dim as any ptr t1, t2
 
 print "Starting threads ... "
 

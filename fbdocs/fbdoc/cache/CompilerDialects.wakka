@@ -1,0 +1,113 @@
+{{fbdoc item="title" value="FreeBASIC Dialects"}}----
+
+	FreeBASIC version 0.17 introduces a -lang command-line option, used to change the language compatibility mode for different dialects of the basic language.
+
+	{{table columns="2" cellpadding="1" cells="-lang option;description;''fb'';FreeBASIC compatibility (default);''qb'';qbasic compatibility;''deprecated'';previous fbc version compatibility"}}
+
+	The "-lang" option was needed to allow FB to support object-orientation and other features in the future, without crippling the QuickBASIC support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The QB support can continue to be improved, if needed, without breaking the sources written specifically for FB.
+
+	To compile old GW-BASIC and QB(ASIC) sources without too many changes, use "-lang qb" (without quotes) option on the command-line when running FBC.
+
+	To compile 0.16 or below sources, use the "-lang deprecated" option.
+
+==fb (the default mode)==
+	
+	**Not supported:**
+
+	""1"") implicit variables
+		- All variables must be always explicitly declared.
+
+	""2"") suffixes (! # $ % &)
+		- They are only allowed for numeric constants, but it's recommended to use type-casting or the f (single), d (double), ll (longint), ul (uinteger), ull (ulongint) suffixes with constants to resolve overloading.
+
+	""3"") DEF""###"", so there are no implicit types
+		- AS is always needed when declaring *any* symbol but CONST's, where types are inferred.
+
+	""4"") default BYREF parameters
+		- All parameters are passed by value (BYVAL) by default 
+		- Use the "-w pedantic" command-line option to have paramaters without explicit BYREF or BYVAL reported.
+
+	""5"") OPTION's of any kind (no context-sensitivity)
+		- Instead of NOKEYWORD, use #undef.
+		- Instead of ESCAPE, use: !"some esc seq \n\r" (notice the '!' char) and pass "-w pedantic" to check for possible escape sequences.
+		- EXPLICIT isn't needed, see item 1.
+		- BYVAL isn't needed, see item 4.
+		- Instead of DYNAMIC, use REDIM to create dynamic arrays, or declare them with empty subcripts: DIM array() AS sometype.
+		- Instead of BASE, use explicit lbound subcripts in arrays.
+		- Instead of PRIVATE, declare each function as PRIVATE.
+
+	""6"") periods in symbol names 
+		- Use namespaces instead.
+	 
+	""7"") GOSUB/RETURN 
+		- Nested functions may be allowed in future.
+
+	""8"") ON .. GOSUB|GOTO 
+		- Use SELECT expr AS CONST for the latter.
+
+	""9"") ON ERROR | RESUME 
+		- All statements can be used as functions to check for run-time errors like:  IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error... 
+
+	""10"") '$DYNAMIC, '$STATIC, '$INCLUDE meta-commands embedded in comments
+		- See item 5 about OPTION DYNAMIC.
+		- Use #include "filename" instead of '$include.
+
+	""11"") CALL or LET
+		- Just remove them.
+
+	""12"") numeric labels
+		- No comment.
+
+==deprecated==
+	 
+	**Supported: anything allowed in version 0.16, but:**
+
+	""1"") GOSUB/RETURN and ON ... GOSUB (even at module-level)
+		- so the GOSUB implementation could be thread-unsafe in the "-lang qb" mode, allowing fast execution ("-lang qb" doesn't support multi-threading, while "-lang deprecated" does).
+
+	""2"") Variable scope
+		- Implicit or explicit variables will always respect the scope blocks, implicit (opened by compound statements like IF, DO, etc) or explicit (SCOPE .. END SCOPE), use "-lang qb" to compile old sources that depend on the absence of scope rules.
+
+	**Not supported:**
+
+	""1"") Classes
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
+	""2"") Operator overloading
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
+
+==qb==
+	 
+	**Supported: Everything not supported/allowed in the fb mode, plus:**
+
+	""1"") CALL can be used with forward-referenced functions. 
+		- (W.I.P.)
+
+	""2"") SHARED can be used inside functions.   
+		- (W.I.P.)
+
+	""3"") Variable scope
+		- All variables, implicit or explicit, are always allocated in the function scope, as in QB.
+
+
+	**Not supported:**
+
+	""1"") Multi-threading
+		- The thread*, mutex* and cond* functions can't be used.
+
+	""2"") Classes and Namespaces
+
+	""3"") Function and operator overloading
+
+	""4"") SCOPE blocks
+
+	""5"") EXTERN blocks
+
+	""6"") Variable initializers
+		- All variables are moved to the function scope (as in QB), making local initializers too difficult to support.
+
+The -lang qb and -lang deprecated options will always be supported in
+future versions.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

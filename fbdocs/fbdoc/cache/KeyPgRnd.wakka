@@ -21,24 +21,32 @@ Returns a [[KeyPgDouble double]] precision random number between 0 and 1.
 	RND is a wrapper for the C runtime function rand. Because of the different C runtimes provided by each system, the resolution of RND is 31 bits for the DOS and Linux versions and 15 bits for the Win32 version. 
 
 {{fbdoc item="ex"}}
-%%(qbasic)
- Dim X as Integer
- Dim Y as Double
+%%(qbasic)dim x as single
+dim y as single
+dim z as integer
 
- x = RND(1) 'will give a floating point number between 0 and 1
- print x
+dim as integer min, max
 
- y = rnd(1) * 10 'willl give a floating point number between 0 and 9
- print Y
+randomize timer
 
- Z = int(Rnd(1) * 10) + 1 'Will give an integer number between 1 and 10
- print Z
-%%
+x = rnd '' will give a floating point number between 0 and 1
+print x
+
+y = rnd * 10 '' will give a floating point number between 0 and 10 (0 <= y < 10)
+print y
+
+z = int(rnd * 10) + 1 '' will give an integer number between 1 and 10, inclusive
+print z
+
+min = 10
+max = 20
+z = int(rnd * (max - min + 1)) + min '' will give an integer number between 10 and 20 (11 different possibilities)
+print z%%
 
 {{fbdoc item="diff"}}
 	- A different algorithm finds the random number than QB, so the random numbers will be different for a given RANDOMIZEd seed.
 	- If the optional argument is less than 0, it has the same meaning as passing an argument of 1.
-	-  QB's RND resolution is approx 24 bits, while FB for Win32 gives 15 bits, FB for DOS and Linux give 31 bits.
+	- QB's RND resolution is approx 24 bits, while FB for Win32 gives 15 bits, FB for DOS and Linux give 31 bits.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRandomize Randomize]]##

@@ -1,20 +1,51 @@
 {{fbdoc item="title" value="OPTION BYVAL"}}
 ----
-{{fbdoc item="syntax"}}
-	OPTION BYVAL
+Compiler option to set default method for passing parameters.
 
+{{fbdoc item="syntax"}}##
+	**Option Byval**
+##
 {{fbdoc item="desc"}}
-	Sets BYVAL as the default method for passing arguments to FUNCTIONS and SUBS. If OPTION BYVAL is not used, the default methode is BYREF, as in QB.
+	Sets ##[[KeyPgByval Byval]]## as the default method for passing arguments to ##[[KeyPgFunction Function]]##'s and ##[[KeyPgSub Sub]]##'s.
 
-	
+	##**Option Byval**## is only allowed in sources compiled with '-lang vb' or '-lang deprecated' where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
+
+	##**Option Byval**## not allowed when '-lang fb' is used for compilation since the default method for passing arguments is ##[[KeyPgByval Byval]]##.
+
+	##**Option Byval**## not allowed when '-lang qb' is used for compilation where the default method for passing arguments is ##[[KeyPgByref Byref]]##.
+
 {{fbdoc item="ex"}}
-	%%(qbasic)
-	%%
+%%(qbasic)
+'' Compile with -lang vb or deprecated
+
+sub TestDefaultByref( a as integer )
+  '' change the value
+  a = a * 2
+end sub
+
+option byval
+
+sub TestDefaultByval( a as integer )
+  a = a * 2
+end sub
+
+dim a as integer = 1
+
+print "a = "; a
+TestDefaultByref( a )
+print "After TestDefaultByref : a = "; a
+print
+
+print "a = "; a
+TestDefaultByval( a )
+print "After TestDefaultByval : a = "; a
+print
+%%
 
 {{fbdoc item="diff"}}
-	- 
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgDdfboptionbyval __FB_OPTION_BYVAL__]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}  {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}

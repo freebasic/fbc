@@ -1,20 +1,20 @@
 {{fbdoc item="title" value="MUTEXCREATE"}}
 ----
-Creates a Mutex used for synchronizing the execution of threads.
+Creates a mutex used for synchronizing the execution of threads.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mutexcreate** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mutexcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mutexcreate**
 ##
 {{fbdoc item="ret"}}
-	The ##[[KeyPgInteger integer]]## handle of the mutex created.
+	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created.
 
 {{fbdoc item="desc"}}
-	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local variable used by a single thread, called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexUnlock Mutexunlock]]## with that mutex, until it is unlocked with ##[[KeyPgMutexLock Mutexlock]]##.
+	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local variable used by a single thread, called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex, until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.
 
-	**Mutexcreate** creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with **Mutexcreate** should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy Mutexdestroy]]##.
 	
 	A  mutex is a lock that guarantees three things:
 	1. Atomicity - Locking a mutex is an atomic operation, meaning that the operating system (or threads library) assures you that if you locked a mutex, no other thread succeeded in locking this mutex at the same time.
@@ -33,9 +33,9 @@ const MAX_THREADS = 10
 DECLARE SUB thread( byval id as integer )
 DECLARE SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
 
-DIM SHARED threadsync AS INTEGER
+DIM SHARED threadsync AS any ptr
 
-DIM handleTb(0 to MAX_THREADS-1) AS INTEGER
+DIM handleTb(0 to MAX_THREADS-1) AS any ptr
 
 '' Create a mutex to syncronize the threads
 threadsync = MUTEXCREATE

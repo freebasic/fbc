@@ -27,12 +27,13 @@ Output statement to write text to screen or file.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-print USING " The value is  #.##  \ \  "; 1.019, "seconds"
-%%
+Print Using "The value is #.## seconds"; 1.019
+Print Using "Number sign is _# and its ASCII code is ### "; asc("#")
+Print Using "The last day in the year is ## \ \"; 31, "December"%%
 
-%%
-The value is 1.02 sec
-%%
+%%The value is 1.02 seconds
+Number sign is # and its ASCII code is  35
+The last day in the year is 31 Dec%%
 
 {{fbdoc item="diff"}}
 	- In QB a not-to-be-formatted //expressionlist// could be entered before the USING clause;

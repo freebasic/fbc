@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="DESTRUCTOR"}}
 ----
 {{fbdoc item="syntax"}}
-	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Destructor** [[[KeyPgStatic Static]]]
+	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //identifier// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Destructor** [[[KeyPgStatic Static]]]
 		{ //procedure body// }
 	[[KeyPgEnd End]] [[KeyPgSub Sub]]
 
@@ -17,7 +17,22 @@
 	The order in which destructors defined in multiple modules are executed is known only at link time.  Therefore, special care should be taken when using destructors that may call on a secondary module also defining a destructors.  In such a case it is advisable to use a single destructor that explicit calls termination procedures in multiple modules to ensure a graceful termination of the application.
 
 {{fbdoc item="ex"}}
-	//See the example for the [[KeyPgConstructor Constructor]] keyword for how to use a destructor procedure.//
+	%%(qbasic)sub pauseonexit destructor
+	
+	'' If the program reaches the end, or aborts with an error, 
+	'' it will run this destructor before closing
+	
+	print "Press any key to end the program..."
+	sleep
+	
+end sub
+
+dim array(0 to 10, 0 to 10) as integer
+dim as integer i = 0, j = 11
+
+'' this next line will cause the program to abort with an 
+'' error if you compile with array bounds checking enabled (fbc -exx ...)
+print array(i, j)%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

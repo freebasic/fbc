@@ -20,6 +20,10 @@ During the program compilation three types of errors can arise:
 	-//13 Missing closing quote in literal string//
 	-//14 Function result was not explicitly set//
 	-//15 Branch crossing local variable definition//
+	-//16 No explicit BYREF or BYVAL//
+	-//17 Possible escape sequence found in//
+	-//18 The type length is too large, consider passing BYREF//
+	-//19 The length of the parameters list is too large, consider passing UDT's BYREF//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -101,48 +105,66 @@ During the program compilation three types of errors can arise:
 	- //75 Invalid command-line option//
 	- //76 Cannot initialize dynamic strings//
 	- //77 Recursive TYPE or UNION not allowed//
-	- //78 Array fields cannot be redimensioned//
-	- //79 Identifier cannot include periods//
-	- //80 Executable not found//
-	- //81 Array out-of-bounds//
-	- //82 Missing command-line option for//
-	- //83 Math overflow//
-	- //84 Expected 'ANY'//
-	- //85 Expected 'END SCOPE'//
-	- //86 Illegal inside a SCOPE block//
-	- //87 Cannot pass an UDT result by reference//
-	- //88 Ambiguous call to overloaded function//
-	- //89 No matching overloaded function//
-	- //90 Division by zero//
-	- //91 Cannot pop stack, underflow//
-	- //92 Cannot initialize UDT's containing dynamic string fields//
-	- //93 Branching to scope blocks containing local variables//
-	- //94 Branching to other SUB's/FUNCTION's or to module-level//
-	- //95 Branch crossing local array or object definition//
-	- //95 LOOP without DO//
-	- //96 NEXT without FOR//
-	- //97 WEND without WHILE//
-	- //98 END WITH without WITH//
-	- //99 END IF without IF//
-	- //100 END SELECT without SELECT//
-	- //101 END SUB or FUNCTION without SUB or FUNCTION//
-	- //102 END SCOPE without SCOPE//
-	- //103 END MAMESPACE without NAMESPACE//
-	- //104 END EXTERN without EXTERN//
-	- //105 ELSEIF without IF//
-	- //106 ELSE without IF//
-	- //107 CASE without SELECT//
-	- //108 Cannot modify a constant//
-	- //109 Expected period ('.')//
-	- //110 Expected END NAMESPACE//
-	- //111 Illegal inside a NAMESPACE block//
-	- //112 Symbols defined in other namespaces cannot be removed//
-	- //113 Expected END EXTERN//
-	- //114 Expected 'END SUB'//
-	- //115 Expected 'END FUNCTION'//
-	- //116 Declaration outside the original namespace//
-	- //117 No end of multi-line comment, expected //
-	- //119 Too many errors, exiting//
+	- //78 Recursive DEFINE not allowed//
+	- //79 Array fields cannot be redimensioned//
+	- //80 Identifier cannot include periods//
+	- //81 Executable not found//
+	- //82 Array out-of-bounds//
+	- //83 Missing command-line option for//
+	- //84 Math overflow//
+	- //85 Expected 'ANY'//
+	- //86 Expected 'END SCOPE'//
+	- //87 Illegal inside a SCOPE block//
+	- //88 UDT function results cannot be passed by reference//
+	- //89 Ambiguous call to overloaded function//
+	- //90 No matching overloaded function//
+	- //91 Division by zero//
+	- //92 Cannot pop stack, underflow//
+	- //93 UDT's containing dynamic string fields cannot be initialized//
+	- //94 Branching to scope blocks containing local variables//
+	- //95 Branching to other SUB's/FUNCTION's or to module-level//
+	- //96 Branch crossing local array or object definition//
+	- //97 LOOP without DO//
+	- //98 NEXT without FOR//
+	- //99 WEND without WHILE//
+	- //100 END WITH without WITH//
+	- //101 END IF without IF//
+	- //102 END SELECT without SELECT//
+	- //103 END SUB or FUNCTION without SUB or FUNCTION//
+	- //104 END SCOPE without SCOPE//
+	- //105 END NAMESPACE without NAMESPACE//
+	- //106 END EXTERN without EXTERN//
+	- //107 ELSEIF without IF//
+	- //108 ELSE without IF//
+	- //109 CASE without SELECT//
+	- //110 Cannot modify a constant//
+	- //111 Expected period ('.')//
+	- //112 Expected END NAMESPACE//
+	- //113 Illegal inside a NAMESPACE block//
+	- //114 Symbols defined in other namespaces cannot be removed//
+	- //115 Expected END EXTERN//
+	- //116 Expected 'END SUB'//
+	- //117 Expected 'END FUNCTION'//
+	- //118 Expected 'END CONSTRUCTOR'//
+	- //119 Expected 'END DESTRUCTOR'//
+	- //120 Expected 'END OPERATOR'//
+	- //121 Declaration outside the original namespace//
+	- //122 No end of multi-line comment, expected //
+	- //123 Too many errors, exiting//
+	- //124 Expected 'ENDMACRO'//
+	- //125 EXTERN or COMMON variables cannot be initialized//
+	- //126 At least one parameter must be a user-defined type//
+	- //127 Parameter or result must be a user-defined type//
+	- //128 Both parameters can't be of the same type//
+	- //129 Parameter and result can't be of the same type//
+	- //130 Invalid result type for this operator//
+	- //131 Vararg parameters are not allowed in overloaded functions//
+	- //132 Illegal outside an OPERATOR function//
+	- //133 Parameter cannot be optional//
+	- //134 Only valid in -lang//
+	- //135 Default types or suffixes are only valid in -lang//
+	- //136 Suffixes are only valid in -lang//
+	- //137 Implicit variables are only valid in -lang//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

@@ -6,14 +6,16 @@ Intrinsic define (macro value) set by the compiler.
 	""__FB_OPTION_ESCAPE__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_OPTION_ESCAPE__""## indicates if ##[[KeyPgOptionescape Option Escape]]## has been used previously in the source.
+	Indicates if by default, string literals are processed for escape characters when not explicity prefixed with $ for non-escaped strings, or !  for escaped strings.
 
-	Returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
+	The default method for processing string literals is set by usage of the '-lang' command line option during compilation or usage of ##[[KeyPgOptionescape Option Escape]]## in the source file.
+
+	##""__FB_OPTION_ESCAPE__""## returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 #if( __FB_OPTION_ESCAPE__ <> 0 )
-  #error Option Escape must not bew used with this include file
+  #error Option Escape must not be used with this include file
 #endif
 %%
 

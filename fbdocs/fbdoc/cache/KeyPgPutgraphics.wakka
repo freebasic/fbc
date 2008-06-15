@@ -3,7 +3,7 @@
 Graphics statement to copy an image on to another image or screen
 
 {{fbdoc item="syntax"}}##
-	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alpha//|//blender// ) ] ]
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alpha//|//blender// [ ,//param//]) ] ]
 ##
 {{fbdoc item="param"}}
 	##//target//##
@@ -34,6 +34,8 @@ Graphics statement to copy an image on to another image or screen
 		is a 0-255 value specifying the opacity of an ALPHA method blit.
 	##//blender//## 
 		specifies the address of a user-defined function to be called in a CUSTOM method blit. See below.
+	##//param//## 
+		specifies a parameter to pass to the custom blender.
 
 {{fbdoc item="desc"}}
 	The ##**Put**## statement can be used to draw an image onto another image. The 'x' and 'y' coordinates are affected by the last call to the ##[[KeyPgViewgraphics View]]## and ##[[KeyPgWindow Window]]## statements, and plotted image respects the current clipping region set by last call to the ##[[KeyPgViewgraphics View]]## statement. The source image is clipped if it is drawn outside the destination buffer.
@@ -56,18 +58,19 @@ Graphics statement to copy an image on to another image or screen
 		The ##ALPHA## method can be used in two modes. If the ##//alpha//## parameter is specified, this is used to specify the level of translucency for the whole image to be drawn; a value of 0 will draw a completely transparent image, whereas a value of 255 will draw a completely solid one. This mode works only in hi/truecolor modes (15, 16, 24 and 32 bpp). If the ##//alpha//## parameter is omitted, the ##ALPHA## method will take the alpha level value on a per-pixel basis, allowing to draw images with an alpha channel (certain parts of the image can be made more or less translucent than others). This mode works only in 32 bpp mode, as this is the only color depth that allows for an embedded alpha value in each pixel.
 
 	**Custom Blend Function**
-		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the PUT function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 
-		##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
+		##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //parameter// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
 
 			##//identifier//## is the name of the function. Can be anything.
 			##//source_pixel//## is the current pixel value of the source image.
 			##//destination_pixel//## is the current pixel value of the destination image.
+			##//parameter//## is the parameter that is passed by the PUT command.  If it was omitted, its value will be zero.
 
 {{fbdoc item="ex"}}
 	The following example shows how to allocate memory for an image, draw that image using various methods including a custom blender, and free the memory for the image:
 ##%%(qbasic)option explicit
-declare function checkered_blend( byval src as uinteger, byval dest as uinteger ) as uinteger
+declare function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
 
    screen 14, 16                                   '' set 320x240x16 gfx mode
    
@@ -99,7 +102,7 @@ declare function checkered_blend( byval src as uinteger, byval dest as uinteger 
    sleep : end 0
 
 '' custom blender function: chequered put
-function checkered_blend( byval src as uinteger, byval dest as uinteger ) as uinteger
+function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
    static CNT
    dim as uinteger pixel = iif(((CNT and 4)shr 2) XOR ((CNT and 128)shr 7),src,dest) 
    CNT += 1

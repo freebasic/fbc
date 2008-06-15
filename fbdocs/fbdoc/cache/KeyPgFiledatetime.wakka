@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="FILEDATETIME"}}
+----
+Function to return the last modified date and time of a file as [[DtDateSer Date Serial]] 
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileDateTime""**( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileDateTime""** ( //filename// )
+##
+//or//
+##
+	#include "vbcompat.bi"
+	//result// = **""FileDateTime""** ( //filename// )
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		Filename to retrieve date and time for.
+
+{{fbdoc item="ret"}}
+	Returns a [[DtDateSer Date Serial]].
+
+{{fbdoc item="desc"}}
+	Returns the file's last modified date and time as [[DtDateSer Date Serial]].
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+#include "vbcompat.bi"
+
+dim filename as string, d as double
+
+print "Enter a filename: "
+line input filename
+
+if fileexists( filename ) then
+
+  print "File last modified: ";
+
+  d = Filedatetime( filename )
+
+  print Format( d, "yyyy-mm-dd h:MM AM/PM" )
+
+else
+
+  print "File not found"
+
+end if
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[DtDateSer Date Serials]]
+
+{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
