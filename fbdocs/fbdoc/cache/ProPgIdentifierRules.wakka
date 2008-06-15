@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Identifier Rules"}}----
-Naming conventions for FreeBASIC symbols
+Naming conventions for FreeBASIC symbols.
 
 {{fbdoc item="desc"}}
 	An identifier is a symbolic name which uniquely identifies a [[ProPgVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##, within its [[ProPgVariableScope scope]] or ##[[KeyPgNamespace Namespace]]##.
@@ -8,7 +8,7 @@ Naming conventions for FreeBASIC symbols
 
 	Identifiers are case-insensitive: ##FOO## and ##foo## (and all other permutations of uppercase and lowercase) refer to the same symbol.
 
-	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, identifiers may have a type suffix at the end indicating one of the standard data types:
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, identifiers may have a type suffix at the end indicating one of the standard data types:
 
 	- ##%## for ##[[KeyPgInteger Integer]]##
 	- ##&## for ##[[KeyPgLong Long]]##
@@ -16,14 +16,14 @@ Naming conventions for FreeBASIC symbols
 	- ##### for ##[[KeyPgDouble Double]]##
 	- ##$## for ##[[KeyPgString String]]##
 
-	The use of these symbols is generally discouraged in and is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect (the default).
+	The use of these symbols is generally discouraged in and is not allowed in the //[[CompilerOptlang -lang fb]]// dialect (the default).
 
-	The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##
+	The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##.
 
-	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, identifiers may contain one or more periods (##.##).
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, identifiers may contain one or more periods (##.##).
 
 {{fbdoc item="lang"}}
-	- Periods in symbol names are only supported in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+	- Periods in symbol names are only supported in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- Support for the underscore character (##_##) in symbol names is new to FreeBASIC.

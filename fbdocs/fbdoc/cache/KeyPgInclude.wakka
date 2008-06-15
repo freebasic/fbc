@@ -41,6 +41,6 @@ Foo.Barbeque = 2
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##
-	- [[ProPgCompOpti Compiler Option: -i]]
+	- [[CompilerOpti Compiler Option: -i]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

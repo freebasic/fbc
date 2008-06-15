@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Default Palettes"}}----
-Default color values for FreeBASIC graphics and text screen modes
+Default color values for FreeBASIC graphics and text screen modes.
 
 	FreeBASIC initializes the palette indexes with the colors in the tables below. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. There is no portable way of changing the palette in console mode.
 
@@ -14,24 +14,24 @@ Default color values for FreeBASIC graphics and text screen modes
 
 <<{{anchor name="SCRN1"}}{{fbdoc item="section" value="Screen mode 1"}}
 
-	{{image title="4 color palette" url="http://img405.imageshack.us/img405/3870/gfxdefpalettespal4lw0.png"}}
+	{{image title="4 color palette" url="/images/pal4.png"}}
 	
 	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;cyan;2;magenta;3;white"}}
 	
 {{anchor name="SCRN2_10_11"}}{{fbdoc item="section" value="Screen modes 2, 10 and 11"}}
 
-	{{image title="2 color palette" url="http://img367.imageshack.us/img367/2378/gfxdefpalettespal2qz4.png"}}
+	{{image title="2 color palette" url="/images/pal2.png"}}
 
 	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;white"}}
 
 {{anchor name="SCRN7_8_9_12_CON"}}{{fbdoc item="section" value="Screen modes 7, 8, 9, 12, and Console"}}
 
-	{{image title="16 color palette" url="http://img367.imageshack.us/img367/6214/gfxdefpalettespal16ij4.png"}}
+	{{image title="16 color palette" url="/images/pal16.png"}}
 
 	{{table columns="4" cellpadding="2" cells="Normal Value;Normal Name;Intense Value;Intense Name;0;black;8;dark grey;1;blue;9;bright blue;2;green;10;bright green;3;cyan;11;bright cyan;4;red;12;bright red;5;pink;13;bright pink;6;yellow;14;bright yellow;7;grey;15;white"}}
 <<>>{{anchor name="SCRN13_8BIT"}}{{fbdoc item="section" value="Screen 13 and 8-bit modes"}}
 
-	{{image title="256 color palette" url="http://img405.imageshack.us/img405/4093/gfxdefpalettespal256zc4.png"}}
+	{{image title="256 color palette" url="/images/pal256.png"}}
 
 	{{fbdoc item="subsect" value="Screen 12 color band"}}
 	

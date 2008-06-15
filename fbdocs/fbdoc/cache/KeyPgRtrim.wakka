@@ -6,7 +6,7 @@ Removes surrounding substrings or characters on the right side of a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Rtrim**( //str// [, [ **Any** ] //trimset// ] )
+	//result// = **Rtrim**[$]( //str// [, [ **Any** ] //trimset// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##
@@ -46,6 +46,8 @@ print "'" + rtrim(s2, any "Ba") + "'"
 %%
 {{fbdoc item="lang"}}
 	- DOS does not support the wide-character version of ##**Rtrim**##.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support specifying a ##//trimset//## string or the ##ANY## clause.

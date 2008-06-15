@@ -38,10 +38,10 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- Line numbers with decimals is available only in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Line numbers with decimals is available only in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- None if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- None if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGosub Gosub]]##

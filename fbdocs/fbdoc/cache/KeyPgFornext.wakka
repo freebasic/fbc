@@ -47,8 +47,8 @@ Next i
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, variables declared inside a FOR..NEXT loop have a function-wide [[ProPgVariableScope scope]]  as in QB 
-	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, variables declared inside a FOR..NEXT loop have a function-wide [[ProPgVariableScope scope]]  as in QB 
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and can't be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- ##[[KeyPgByref Byref]]## arguments cannot be used as counters.

@@ -14,14 +14,7 @@ Please edit this page to remove items when they are written.
 	ProPgControlFlow
 
 {{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
-	Const Qualifiers
 
 {{fbdoc item="section" value="Pages with missing examples"}}
-	[[KeyPgPmap Pmap]]
-	[[KeyPgEncoding Encoding]]
-	[[KeyPgOpStep Operator Step]]
-	[[KeyPgOpNext Operator Next]]
-	[[KeyPgOpDelete Operator Delete]]
-	[[KeyPgReset Reset]] - need Reset(streamno) stdio example
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

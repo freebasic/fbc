@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Preprocessor"}}----
-Commands that control the preprocessor
+Commands that control the preprocessor.
 
 {{fbdoc item="desc"}}
 	Preprocessor commands are sent to the compiler to control what gets compiled and how. They can be used to choose to compile one block of code rather than another for cross-platform compatibility, include headers or other source files, define small inline functions called macros, or alter how the compiler handles variables.

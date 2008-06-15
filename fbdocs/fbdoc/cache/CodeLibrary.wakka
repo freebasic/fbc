@@ -47,11 +47,12 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://lachie.phatcode.net/articles.php Chain-Like Animation Tutorial by Lachie Dazdarian]]
 
 {{anchor name="SND"}}{{fbdoc item="section" value="Sound Code"}}
-	[[http://sourceforge.net/project/showfiles.php?group_id=149199 FBSound (free for comercial apps too) D.J.Peters]]
+	[[http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfbsound FBSound (free for comercial apps too) D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=2294 Mic Input using FMod by mambazo]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=11 Using FMod In-Game by shiftlynx]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=20477 Using the PC Speaker by several]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9226 Wave synthesizer by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=82140 PC keyboard as MIDI controller by D.J.Peters]]
 
 {{anchor name="MATH"}}{{fbdoc item="section" value="Math Code"}}
 	[[http://sourceforge.net/projects/fbmath/ FBMath by jdebord]]
@@ -79,11 +80,11 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.execulink.com/~coder/freebasic/docs.html Portable help (not .chm) viewer by coderjeff]]
 	[[http://www.execulink.com/~coder/freebasic/lisp.html Lisp interpreter by coderjeff]]
 	
-	==crypto==
+	==Cryptography==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7379 MARS encryption by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7667 AES Encryption/Decryption by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7273 DES/LUCIFER Encryption/Decryption by Zamaster]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=5288 MD5 Calculator by StopTCPA]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5288 MD5 Calculator by DOS386]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9496 Tiger Hash by Mindless]]
 
 <<>>{{anchor name="GAME"}}{{fbdoc item="section" value="FreeBASIC Games"}}
@@ -97,6 +98,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 		[[http://lachie.phatcode.net/starcage.php Star Cage by Lachie Dazdarian]]
 		[[http://syn9.thingie.net/?table=griffonlegend The Griffon Legend by syn9]]
 		[[http://www.freebasic.net/forum/viewtopic.php?t=9065 100 Line Tetris by Deleter]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=9738 Any PNG or JPEG as a Jigsaw Puzzle by Mysoft]]
 
 {{anchor name="GUI"}}{{fbdoc item="section" value="GUI Code"}}
 	[[http://www.execulink.com/~coder/freebasic/jmgui.html In Game GUI by coderJeff]]
@@ -130,6 +132,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php? Video capture Win by  D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70771 ShellExecute wrapper by RayBritton]]
 	[[http://www.execulink.com/~coder/freebasic/fbwiki.html FBWiki to chm format converter by coderjeff]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=75625 FB ODBC library by KaraK]]
 
 	==Linux==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8040 Printing on Linux by coderJeff]]
@@ -140,8 +143,12 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70185 Detect system codepage by DrV]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=5993 Calling an Interrupt requiring a pointer by DrV]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=2766 Access BTRIEVE files by mjs]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8981 "GetDiskFreeSpaceEx" Check for disk total/free space on FAT32 by DOS386]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4899 DPMI host detection version/capabilities by DrV]]
 
 {{anchor name="OTHER"}}{{fbdoc item="section" value="Miscellaneous Code"}}
+	[[http://code.google.com/p/fb-extended-lib/ FreeBASIC Extended Library]]
+	
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7441 FB  CAD by owen]]
 	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]

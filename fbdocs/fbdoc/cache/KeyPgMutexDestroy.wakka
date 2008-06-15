@@ -92,7 +92,7 @@ END SUB
 %%
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.

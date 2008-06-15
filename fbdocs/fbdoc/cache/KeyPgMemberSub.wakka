@@ -29,7 +29,7 @@ Declares or defines a member procedure.
 
 	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##.
 
-	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.
+	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember Const (Member)]]## may be declared using the ##**Const**## specifier.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/sub.bas"}}%%(freebasic)
@@ -71,7 +71,7 @@ Average          =  19.2
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

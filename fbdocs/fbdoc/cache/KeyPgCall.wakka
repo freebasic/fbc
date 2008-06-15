@@ -9,7 +9,7 @@ Statement to invoke a subroutine
 
 	This keyword is a holdover from earlier dialects of BASIC, and is mainly deprecated.
 
-	In //[[ProPgCompOptlang -lang qb]]//, it can be used to call ##[[KeyPgSub sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare Declare]]##'d, with any parameters passed ##[[KeyPgByref Byref]] As [[KeyPgAny Any]]##
+	In //[[CompilerOptlang -lang qb]]//, it can be used to call ##[[KeyPgSub sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare Declare]]##'d, with any parameters passed ##[[KeyPgByref Byref]] As [[KeyPgAny Any]]##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/callsub.bas"}}%%(freebasic)
@@ -46,8 +46,8 @@ end sub
 %%
 
 {{fbdoc item="lang"}}
-	- The use of ##**Call**## is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect.
-	- The //[[ProPgCompOptlang -lang deprecated]]// dialect does not allow you to call functions that have not been previously declared.
+	- The use of ##**Call**## is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
+	- The //[[CompilerOptlang -lang deprecated]]// dialect does not allow you to call functions that have not been previously declared.
 
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.

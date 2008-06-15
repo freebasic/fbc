@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MULTIKEY"}}----
-Detects the status of keys by keyboard scancode
+Detects the status of keys by keyboard scancode.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Multikey** ( [[KeyPgByval byval]] //scancode// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -57,7 +57,7 @@ LOOP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

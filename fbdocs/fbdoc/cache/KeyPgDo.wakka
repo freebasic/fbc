@@ -1,14 +1,14 @@
 {{fbdoc item="title" value="DO"}}----
-Control flow statement for looping
+Control flow statement for looping.
 
 {{fbdoc item="syntax"}}##
-	**Do** [ { Until | While } //condition// ]
+	**Do** [ { **Until** | **While** } //condition// ]
 		[ //statement block// ]
-	Loop
+	**Loop**
 
 	**Do**
 		[ //statement block// ]
-	Loop [ { Until | While } //condition// ]
+	**Loop** [ { **Until** | **While** } //condition// ]
 ##
 {{fbdoc item="diff"}}
 	- None

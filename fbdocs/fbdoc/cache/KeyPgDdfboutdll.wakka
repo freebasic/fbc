@@ -27,6 +27,6 @@ Intrinsic define (macro value) set by the compiler
 	- ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##
 	- ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##
 	- ##[[KeyPgDdfboutobj __FB_OUT_OBJ__]]##
-	- [[ProPgCompOptdll Compiler Option: -dll]]
+	- [[CompilerOptdll Compiler Option: -dll]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

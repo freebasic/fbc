@@ -1,9 +1,10 @@
 {{fbdoc item="title" value="Graphics Keyword List"}}----
-A list of the keywords and procedures of ""FreeBASIC""'s graphics library
+A list of the keywords and procedures of ""FreeBASIC""'s graphics library.
 
 <<
 	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA"}}
+	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}
 	- {{fbdoc item="keyword" value="KeyPgCircle|CIRCLE"}}
@@ -22,6 +23,7 @@ A list of the keywords and procedures of ""FreeBASIC""'s graphics library
 	- {{fbdoc item="keyword" value="KeyPgLinegraphics|LINE (GRAPHICS)"}}
 	- {{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
+	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
 	- {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}}
@@ -31,6 +33,7 @@ A list of the keywords and procedures of ""FreeBASIC""'s graphics library
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
+	- {{fbdoc item="keyword" value="KeyPgPsetGfx|PSET (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (GRAPHICS)"}}
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
@@ -53,6 +56,7 @@ A list of the keywords and procedures of ""FreeBASIC""'s graphics library
 	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}
 	- {{fbdoc item="keyword" value="KeyPgWindowtitle|WINDOWTITLE"}}
+	- {{fbdoc item="keyword" value="KeyPgXorGfx|XOR (GRAPHICS PUT)"}}
 
 >>
 

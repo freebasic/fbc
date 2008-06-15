@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Operators List"}}----
-Listing of operators
+List of operators used in FreeBASIC.
 
 <<
 {{fbdoc item="section" value="Assignment Operators"}}
@@ -40,6 +40,7 @@ Listing of operators
 	- {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}
 
 {{fbdoc item="section" value="String Operators"}}
+	- {{fbdoc item="keyword" value="KeyPgOpConcat|+ (String concatenation)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpConcatConvert|& (String concatenation with conversion)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR (String pointer)"}}
 

@@ -9,7 +9,7 @@ Control flow statement to end the program.
 ##
 {{fbdoc item="param"}}
 	##//retval//##
-		Error code returned to system
+		Error code returned to system.
 
 {{fbdoc item="desc"}}
 	Used to terminate the program, and return to the operating system.  An optional integer return value can be specified to indicate an error code to the system.  If no return value is given, a value of 0 is automatically returned.

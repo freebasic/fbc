@@ -11,7 +11,7 @@ Intrinsic define (macro value) set by the compiler
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbdebug.bas"}}%%(freebasic)
-#if __FB_DEBUG__ 
+#if __FB_DEBUG__ <> 0
 	    #print Debug mode 
 #else 
 	    #print Release mode 
@@ -24,6 +24,6 @@ Intrinsic define (macro value) set by the compiler
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr __FB_ERR__]]##
 	- ##[[KeyPgDdfbmt __FB_MT__]]##
-	- [[ProPgCompOptg Compiler Option: -g]]
+	- [[CompilerOptg Compiler Option: -g]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

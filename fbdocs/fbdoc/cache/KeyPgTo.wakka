@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TO"}}----
-Statement modifier to specify a range
+Statement modifier to specify a range.
 
 {{fbdoc item="syntax"}}##
 	FOR //iterator// //intial_value// TO //ending_value//
@@ -16,9 +16,13 @@ Statement modifier to specify a range
 {{fbdoc item="desc"}}
 	The TO keyword is used to define a certain numerical range. This keyword is valid only if used with [[KeyPgFornext FOR ... NEXT]], [[KeyPgSelectcase SELECT / CASE]] and [[KeyPgDim DIM]] statements.
 
-	In the first syntax, the TO keyword defines the initial value of the iterator in a FOR statement, and the ending value.
+	In the first syntax, the TO keyword defines the initial and ending values of the iterator in a FOR statement.
 
-	In the second and third syntaxes, the TO keyword defines lower and upper bounds for CASE comparisons, and array bounds in a DIM statement. For more information, see [[KeyPgFornext FOR...NEXT]], [[KeyPgDim DIM]] and [[KeyPgSelectcase SELECT CASE]].
+	In the second syntax, the TO keyword defines lower and upper bounds for CASE comparisons.
+
+	In the third syntax, the TO keyword defines the array bounds in a DIM statement
+
+	For more information, see [[KeyPgFornext FOR...NEXT]], [[KeyPgDim DIM]] and [[KeyPgSelectcase SELECT CASE]].
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/to.bas"}}%%(freebasic)

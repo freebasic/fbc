@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="READ"}}----
-Reads values stored with the ##[[KeyPgData Data]]## statement
+Reads values stored with the ##[[KeyPgData Data]]## statement.
 
 {{fbdoc item="syntax"}}##
 	**Read** //variable_list//
@@ -55,8 +55,8 @@ DATA 3, 234, 4354, 23433, 87643, "Bye!"
 %%
 
 {{fbdoc item="lang"}}
-	- The //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects consider data items as constant expressions that are evaluated during compilation and its result stored in the program.
-	- The //[[ProPgCompOptlang -lang qb]]// dialect considers data items as literals and stores then without change, as in QB.  
+	- The //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects consider data items as constant expressions that are evaluated during compilation and its result stored in the program.
+	- The //[[CompilerOptlang -lang qb]]// dialect considers data items as literals and stores then without change, as in QB.  
 
 {{fbdoc item="diff"}}
 	- Alphabetic string literals now MUST be enclosed within quotation marks  

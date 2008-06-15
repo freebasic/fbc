@@ -13,7 +13,7 @@ Add a library file to linker's list
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInclib #inclib]]##
-	- [[ProPgCompOptp Compiler Option: -p]]
+	- [[CompilerOptp Compiler Option: -p]]
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

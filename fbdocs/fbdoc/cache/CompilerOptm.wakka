@@ -15,8 +15,8 @@ Main file without extension to indicate the main module
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdFBMain __FB_MAIN__]]##
-	- [[ProPgCompOptc Compiler Option: -c]]
-	- [[ProPgCompOptentry Compiler Option: -entry]]
+	- [[CompilerOptc Compiler Option: -c]]
+	- [[CompilerOptentry Compiler Option: -entry]]
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

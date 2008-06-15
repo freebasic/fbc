@@ -6,7 +6,7 @@ Formats a number in a specified format
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **Format**( //numerical_expression//, //formatting_expression// )
+	//result// = **Format**[$]( //numerical_expression//, //formatting_expression// )
 ##
 {{fbdoc item="param"}}
 	##//numerical_expression//##
@@ -57,6 +57,10 @@ The following are examples of Date And Time formats:
 	     h:mm:ss                20:50:35
 	     m/d/yy h:mm            12/7/58 20:50 
 %%
+
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- Does not exist in QB 4.5. This function appeared first in PDS 7.1

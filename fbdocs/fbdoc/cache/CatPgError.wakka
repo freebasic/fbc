@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Error Handling Functions"}}----
-Statements and procedures that provide runtime error-handling capabilities
+Statements and procedures that provide runtime error-handling capabilities.
 
 {{fbdoc item="desc"}}
 	These statements and procedures provide ways of dealing with runtime errors. Specific modules, procedures and source code lines can be retrieved, and error handlers can be set up.

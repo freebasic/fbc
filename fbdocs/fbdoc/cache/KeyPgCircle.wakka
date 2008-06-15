@@ -63,7 +63,7 @@ circle (320, 240), 200, 4, 0.83, 1.67, 3
 sleep
 %%
 
-{{image class="center" title="Circle example output" url="http://img183.imageshack.us/img183/8964/keypgcircleexamplefm3.png" link="http://img183.imageshack.us/my.php?image=keypgcircleexamplefm3.png"}}
+{{image class="center" title="Circle example output" url="/images/circle.png"}}
 
 {{fbdoc item="diff"}}
 	- As the FreeBASIC implementation obviously uses a different algorithm for ellipse/arc drawing than QB, the result may not be equal to QB for every pixel.

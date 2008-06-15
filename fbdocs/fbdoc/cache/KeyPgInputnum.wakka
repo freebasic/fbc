@@ -6,7 +6,7 @@ Reads a number of characters from console or file
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]], //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Input**( //n// [, [#]//filenum// ] )
+	//result// = **Input**[$]( //n// [, [#]//filenum// ] )
 ##
 {{fbdoc item="param"}}
 	##//n//##
@@ -37,7 +37,7 @@ loop until choice >= "1" and choice <= "3"
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWinput Winput()]]##

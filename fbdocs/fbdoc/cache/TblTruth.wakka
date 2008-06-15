@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Bitwise Operators Truth Tables"}}----
-Computed values for the bitwise logical operators
+Computed values for the bitwise logical operators.
 
 **{{anchor name="BINARY|Binary operators"}}**
 	Operators that take two operands.

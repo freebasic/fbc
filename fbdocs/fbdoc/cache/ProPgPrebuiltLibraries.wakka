@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="Using Prebuilt Libraries"}}----
 FreeBASIC is distributed with many headers for common or popular libraries.  The headers allow a programmer to use functions available in these existing static or shared libraries (DLLs).  
 
-The libraries themselves are not distributed with FreeBASIC, but most can be downloaded from the web and readily installed.  Some other libraries may need to be first compiled from sources to be used.  Please see the documentation for the specific library on how to configure, install, and use.
+The libraries themselves are not distributed with FreeBASIC, but most can be downloaded from the web and readily installed.  Some other libraries may need to be first compiled from sources to be used.  Please see the documentation for the specific library on how to configure, install, and use them.
 
 Some static or shared libraries (DLLs) may be already present on the system since they might be part of FreeBASIC itself or the operating system.
 
-Although many of headers can be used on any of the platforms supported by FreeBASIC, some headers are platform specific and will not be usable on other platforms.
+Although many headers can be used on any of the platforms supported by FreeBASIC, some headers are platform specific and will not be usable on other platforms.
 
 {{fbdoc item="section" value="FreeBASIC headers"}}
 	There are a few headers that are specific to FreeBASIC and expose some functions that are otherwise not available:

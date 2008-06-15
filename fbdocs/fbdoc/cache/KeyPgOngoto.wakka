@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ON...GOTO"}}----
-Jumps to a label based on an expression
+Jumps to a label based on an expression.
 
 {{fbdoc item="syntax"}}##
 	**On** //expression// **Goto** label1[, ...]

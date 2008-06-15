@@ -24,46 +24,6 @@
 		[[ProPgHelloWorld Hello World]]
 		[[ProPgPrimer1 FreeBASIC Primer #1]]
 
-	{{fbdoc item="section" value="Compiler Options"}}
-		[[ProPgCompOpta -a < name >]]
-		[[ProPgCompOptarch -arch < type >]]
-		[[ProPgCompOptb -b < name >]]
-		[[ProPgCompOptc -c]]
-		[[ProPgCompOptd -d < name=val >]]
-		[[ProPgCompOptdll -dll]]
-		[[ProPgCompOptdylib -dylib]]
-		[[ProPgCompOptentry -entry < name >]]
-		[[ProPgCompOpte -e]]
-		[[ProPgCompOptex -ex]]
-		[[ProPgCompOptexx -exx]]
-		[[ProPgCompOptexport -export]]
-		[[ProPgCompOptg -g]]
-		[[ProPgCompOpti -i < name >]]
-		[[ProPgCompOptinclude -include < name >]]
-		[[ProPgCompOptl -l < name >]]
-		[[ProPgCompOptlang -lang < name >]]
-		[[ProPgCompOptlib -lib]]
-		[[ProPgCompOptm -m < name >]]
-		[[ProPgCompOptmap -map < name >]]
-		[[ProPgCompOptmaxerr -maxerr < val >]]
-		[[ProPgCompOptmt -mt]]
-		[[ProPgCompOptnodeflibs -nodeflibs]]
-		[[ProPgCompOptnoerrline -noerrline]]
-		[[ProPgCompOpto -o < name >]]
-		[[ProPgCompOptp -p < name >]]
-		[[ProPgCompOptprefix -prefix < path >]]
-		[[ProPgCompOptprofile -profile]]
-		[[ProPgCompOptr -r]]
-		[[ProPgCompOpts -s < name >]]
-		[[ProPgCompOpttarget -target < platform >]]
-		[[ProPgCompOptt -t < value >]]
-		[[ProPgCompOptv -v]]
-		[[ProPgCompOptversion -version]]
-		[[ProPgCompOptw -w < value >]]
-		[[ProPgCompOptWa -Wa < opt >]]
-		[[ProPgCompOptWl -Wl < opt >]]
-		[[ProPgCompOptx -x < name >]]
-
 	{{fbdoc item="subsect" value="Source Files"}}
 		[[ProPgSourceFiles Source Files (.bas)]]
 		[[ProPgHeaderFiles Header Files (.bi)]]
@@ -196,6 +156,7 @@
 		{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}
 
 	{{fbdoc item="subsect" value="String operators"}}
+		[[KeyPgOpConcat Operator + (String concatenation)]]
 		[[KeyPgOpConcatConvert Operator & (String concatenation with conversion)]]
 		[[KeyPgOpStrptr Operator Strptr (String pointer)]]
 
@@ -236,7 +197,7 @@
 		[[ProPgErrorHandling Error Handling]]
 		[[KeyPgAsm Inline ASM]]
 
-{{fbdoc item="section" value="Indexes"}}
+{{fbdoc item="section" value="Keyword Index"}}
 
 	{{fbdoc item="subsect" value="."}}
 		[[KeyPgDots ...]]
@@ -314,6 +275,7 @@
 		[[KeyPgAllocate ALLOCATE]]
 		[[KeyPgAlphaGfx ALPHA (Graphics PUT)]]
 		[[KeyPgOpAnd AND]]
+		[[KeyPgAndGfx AND (GRAPHICS PUT)]]
 		[[KeyPgAny ANY]]
 		[[KeyPgAppend APPEND]]
 		[[KeyPgAs AS]]
@@ -366,6 +328,8 @@
 		[[KeyPgCondSignal CONDSIGNAL]]
 		[[KeyPgCondWait CONDWAIT]]
 		[[KeyPgConst CONST]]
+		[[KeyPgConstMember CONST (Member)]]
+		[[KeyPgConstQualifier CONST (Qualifier)]]
 		[[KeyPgConstructor CONSTRUCTOR]]
 		[[KeyPgModuleConstructor CONSTRUCTOR (Module)]]
 		[[KeyPgContinue CONTINUE]]
@@ -502,6 +466,7 @@
 		[[KeyPgInputPp INPUT #]]
 		[[KeyPgInputnum INPUT$]]
 		[[KeyPgInstr INSTR]]
+		[[KeyPgInstrrev INSTRREV]]
 		[[KeyPgInt INT]]
 		[[KeyPgInteger INTEGER]]
 		[[KeyPgIs IS]]
@@ -589,6 +554,7 @@
 		[[KeyPgOptionstatic OPTION STATIC]]
 		[[KeyPgOperator OPERATOR]]
 		[[KeyPgOpOr OR]]
+		[[KeyPgOrGfx OR (GRAPHICS PUT)]]
 		[[KeyPgOut OUT]]
 		[[KeyPgOutput OUTPUT]]
 		[[KeyPgOverload OVERLOAD]]
@@ -615,7 +581,8 @@
 		[[KeyPgOpProcptr PROCPTR]]
 		[[KeyPgProperty PROPERTY]]
 		[[KeyPgVisProtected PROTECTED: (Access Control)]]
-		[[KeyPgPset PSET]]
+		[[KeyPgPset PSET (Statement)]]
+		[[KeyPgPsetGfx PSET (Graphics PUT)]]
 		[[KeyPgPtr PTR]]
 		[[KeyPgPublic PUBLIC]]
 		[[KeyPgVisPublic PUBLIC: (Access Control)]]
@@ -766,11 +733,12 @@
 		[[KeyPgWriteFile WRITE (File Access)]]
 		[[KeyPgWspace WSPACE]]
 		[[KeyPgWstr WSTR]]
-		[[KeyPgWstring WSTRING(Data Type)]]
-		[[KeyPgWstringFunction WSTRING(Function)]]
+		[[KeyPgWstring WSTRING (Data Type)]]
+		[[KeyPgWstringFunction WSTRING (Function)]]
 
 	{{fbdoc item="subsect" value="X"}}
 		[[KeyPgOpXor XOR]]
+		[[KeyPgXorGfx XOR (GRAPHICS PUT)]]
 
 	{{fbdoc item="subsect" value="Y"}}
 		[[KeyPgYear YEAR]]
@@ -778,6 +746,46 @@
 	{{fbdoc item="subsect" value="Z"}}
 		[[KeyPgZstring ZSTRING]]
 	[[CatPgOpIndex Operators List]]
+
+	{{fbdoc item="section" value="Compiler Options List"}}
+		[[CompilerOpta -a < name >]]
+		[[CompilerOptarch -arch < type >]]
+		[[CompilerOptb -b < name >]]
+		[[CompilerOptc -c]]
+		[[CompilerOptd -d < name=val >]]
+		[[CompilerOptdll -dll]]
+		[[CompilerOptdylib -dylib]]
+		[[CompilerOptentry -entry < name >]]
+		[[CompilerOpte -e]]
+		[[CompilerOptex -ex]]
+		[[CompilerOptexx -exx]]
+		[[CompilerOptexport -export]]
+		[[CompilerOptg -g]]
+		[[CompilerOpti -i < name >]]
+		[[CompilerOptinclude -include < name >]]
+		[[CompilerOptl -l < name >]]
+		[[CompilerOptlang -lang < name >]]
+		[[CompilerOptlib -lib]]
+		[[CompilerOptm -m < name >]]
+		[[CompilerOptmap -map < name >]]
+		[[CompilerOptmaxerr -maxerr < val >]]
+		[[CompilerOptmt -mt]]
+		[[CompilerOptnodeflibs -nodeflibs]]
+		[[CompilerOptnoerrline -noerrline]]
+		[[CompilerOpto -o < name >]]
+		[[CompilerOptp -p < name >]]
+		[[CompilerOptprefix -prefix < path >]]
+		[[CompilerOptprofile -profile]]
+		[[CompilerOptr -r]]
+		[[CompilerOpts -s < name >]]
+		[[CompilerOpttarget -target < platform >]]
+		[[CompilerOptt -t < value >]]
+		[[CompilerOptv -v]]
+		[[CompilerOptversion -version]]
+		[[CompilerOptw -w < value >]]
+		[[CompilerOptWa -Wa < opt >]]
+		[[CompilerOptWl -Wl < opt >]]
+		[[CompilerOptx -x < name >]]
 
 {{fbdoc item="section" value="Runtime Library Reference"}}
 	[[CatPgArray Array Functions]]
@@ -824,30 +832,30 @@
 {{fbdoc item="section" value="Library Headers Index"}}
 
 	{{fbdoc item="subsect" value="Graphics"}}
-		[[ExtLibOpenGL OpenGL]]
-		[[ExtLibSDL SDL]]
 		[[ExtLiballegro allegro]]
-		[[ExtLibfreetype2 Freetype2]]
-		[[ExtLibgtk GTK]]
-		[[ExtLibwxc wx-c]]
+		[[ExtLibcaca caca]]
+		[[ExtLibcairo cairo]]
+		[[ExtLibcgui cgui]]
+		[[ExtLibcurses Curses]]
+		[[ExtLibdislin dislin]]
 		[[ExtLibfreeimage FreeImage]]
+		[[ExtLibfreetype2 Freetype2]]
+		[[ExtLibgd gd]]
+		[[ExtLibgiflib gif_lib]]
+		[[ExtLibgrx grx]]
+		[[ExtLibgtk GTK]]
+		[[ExtLibIL IL]]
+		[[ExtLibIUP IUP]]
+		[[ExtLibjapi japi]]
 		[[ExtLibjpeglib jpeglib]]
 		[[ExtLibjpgalleg jpgalleg]]
-		[[ExtLibgiflib gif_lib]]
-		[[ExtLibpdflib pdflib]]
 		[[ExtLiblibpng libpng]]
-		[[ExtLibtinyptc tinyptc]]
 		[[ExtLibmini mini]]
-		[[ExtLibcairo cairo]]
-		[[ExtLibgd gd]]
-		[[ExtLibcurses Curses]]
-		[[ExtLibIUP IUP]]
-		[[ExtLibIL IL]]
-		[[ExtLibcgui cgui]]
-		[[ExtLibcaca caca]]
-		[[ExtLibgrx grx]]
-		[[ExtLibdislin dislin]]
-		[[ExtLibjapi japi]]
+		[[ExtLibOpenGL OpenGL]]
+		[[ExtLibpdflib pdflib]]
+		[[ExtLibSDL SDL]]
+		[[ExtLibtinyptc tinyptc]]
+		[[ExtLibwxc wx-c]]
 
 	{{fbdoc item="subsect" value="Database"}}
 		[[ExtLibmysql mysql]]
@@ -861,16 +869,16 @@
 		[[ExtLibfmod FMOD]]
 		[[ExtLibal OpenAL]]
 
-	{{fbdoc item="subsect" value="Develpment Helpers"}}
-		[[ExtLibCUnit CUnit]]
+	{{fbdoc item="subsect" value="Development Helpers"}}
 		[[ExtLibbfd bfd]]
+		[[ExtLibCUnit CUnit]]
 		[[ExtLibgdsl gdsl]]
 		[[ExtLibaspell GNU ASpell]]
 
 	{{fbdoc item="subsect" value="Embeddable Languages"}}
-		[[ExtLibspidermonkey spidermonkey]]
-		[[ExtLibLua Lua]]
 		[[ExtLibjni jni]]
+		[[ExtLibLua Lua]]
+		[[ExtLibspidermonkey spidermonkey]]
 
 	{{fbdoc item="subsect" value="Cryptography"}}
 		[[ExtLibcryptlib cryptlib]]
@@ -883,19 +891,19 @@
 		[[ExtLibode ode]]
 
 	{{fbdoc item="subsect" value="Networking"}}
-		[[ExtLibFastCGI FastCGI]]
 		[[ExtLibcgiutil cgi-util]]
 		[[ExtLibcurl curl]]
+		[[ExtLibFastCGI FastCGI]]
 
 	{{fbdoc item="subsect" value="eXtensible Markup Language (XML)"}}
+		[[ExtLibexpat expat]]
 		[[ExtLiblibxml libxml]]
 		[[ExtLiblibxslt libxslt]]
 		[[ExtLibmxml mxml]]
-		[[ExtLibexpat expat]]
 
 	{{fbdoc item="subsect" value="Regular Expressions"}}
-		[[ExtLibtre tre]]
 		[[ExtLibpcre pcre]]
+		[[ExtLibtre tre]]
 
 	{{fbdoc item="subsect" value="Compression"}}
 		[[ExtLibLzo LZO]]
@@ -904,9 +912,9 @@
 
 	{{fbdoc item="subsect" value="System Specific"}}
 		[[ExtLibCRT C Runtime Library]]
-		[[ExtLibwindows Windows API]]
 		[[ExtLibdos DOS API]]
 		[[ExtLibdisphelper disphelper]]
+		[[ExtLibwindows Windows API]]
 
 	{{fbdoc item="subsect" value="User Contributed Libraries"}}
 

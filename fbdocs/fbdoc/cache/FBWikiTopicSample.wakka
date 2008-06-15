@@ -99,8 +99,8 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
-	- In the ////[[ProPgCompOptlang -lang qb]]// dialect, ...
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- In the ////[[CompilerOptlang -lang qb]]// dialect, ...
 	- etc
 
 {{fbdoc item="target"}}

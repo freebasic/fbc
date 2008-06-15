@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CONST"}}----
-Non-modifiable variable declaration
+Non-modifiable variable declaration.
 
 {{fbdoc item="syntax"}}##
 	**Const** //symbolname// [AS [[DataType DataType]]] = //value// [, ...]
@@ -21,12 +21,13 @@ end
 %%
 
 {{fbdoc item="diff"}}
-	- QB didn't support the //AS DataType// syntax
+	- QB does not support the ##[[KeyPgAs as]]## ##[[DataType datatype]]## syntax.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgConstQualifier Const (Qualifier)]]##
+	- ##[[KeyPgConstMember Const (Member)]]##
 	- ##[[KeyPgEnum Enum]]##
 	- ##[[KeyPgVar Var]]##
-
 
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

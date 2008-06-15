@@ -18,7 +18,7 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 	See ##[[KeyPgCondCreate Condcreate]]##
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in //[[ProPgCompOptlang -lang qb]]//
+	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
 
 {{fbdoc item="target"}}
 	- **Condsignal** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.

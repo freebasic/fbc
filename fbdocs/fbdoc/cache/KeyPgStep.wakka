@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STEP"}}----
-Statement modifier
+Statement modifier.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgFornext For]] //iterator// = //initial_value// To //end_value// **Step** //increment//

@@ -34,7 +34,7 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Supported only with //[[ProPgCompOptlang -lang fb]]//.
+	- Supported only with //[[CompilerOptlang -lang fb]]//.
 
 {{fbdoc item="target"}}
 	- None

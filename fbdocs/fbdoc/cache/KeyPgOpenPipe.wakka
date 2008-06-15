@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPEN PIPE"}}----
-Opens an external process' standard input (//stdin//) or output (//stdout//) stream for file operations
+Opens an external process' standard input (//stdin//) or output (//stdout//) stream for file operations.
 
 {{fbdoc item="syntax"}}##
 	**Open Pipe** //shell_command// **For** **[[KeyPgInputfilemode Input]]** **As** [**#**]//filenumber//
@@ -17,7 +17,7 @@ Opens an external process' standard input (//stdin//) or output (//stdout//) str
 ##
 {{fbdoc item="param"}}
 	##//shell_command//##
-		The external process to execute in the operating system command shell. Relative file paths are relative to the current directory (see ##[[KeyPgCurdir Curdir]]##).
+		The external process to execute in the operating system command shell. Relative file paths are relative to the current directory (see ##[[KeyPgCurdir Curdir]]##).  When opening a pipe for a process that requires double quotes in either its executable path, or its arguments, the entire pipe string should be nested inside of double quotes.
 	##//access_type//##
 		The type of read or write access requested by the calling process.
 			- ##[[KeyPgAccess Access]]## {##Read##|##Write##} //(either the //stdin// or //stdout// stream of the external process can be opened)//

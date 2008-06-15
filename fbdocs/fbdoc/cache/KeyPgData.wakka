@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DATA"}}----
-Statement to store data at compile time
+Statement to store data at compile time.
 
 {{fbdoc item="syntax"}}##
 	**Data** //constant_expression1// [,//constant_expression2//]...
@@ -58,8 +58,8 @@ DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
 %%
 
 {{fbdoc item="lang"}}
-	- //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// considers  data items as constant expressions that are evaluated during compilation and its result stored in the program.
-	- //[[ProPgCompOptlang -lang qb]]// considers data items as literals and stores then without change, as in QB.  
+	- //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// considers  data items as constant expressions that are evaluated during compilation and its result stored in the program.
+	- //[[CompilerOptlang -lang qb]]// considers data items as literals and stores then without change, as in QB.  
 
 {{fbdoc item="diff"}}
 	- Alphabetic string literals now must be enclosed within quotation marks.

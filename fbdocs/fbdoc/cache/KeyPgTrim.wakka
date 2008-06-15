@@ -24,8 +24,6 @@ Removes surrounding substrings or characters on the left and right side of a str
 	
 	All comparisons are case-sensitive.
 
-	The Dollar "$" sign suffix is tolerated for compatibility with [[KeyPgLtrim Ltrim]] and [[KeyPgRtrim Rtrim]] but deprecated.
-
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/trim.bas"}}%%(freebasic)
 dim s1 as string = " ... Stuck in the middle ... "
@@ -49,7 +47,7 @@ Print "'" + trim(s2, any "Ba") + "'"
 	- DOS version/target of FreeBASIC does not support the wide-character version of ##**Trim**##.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

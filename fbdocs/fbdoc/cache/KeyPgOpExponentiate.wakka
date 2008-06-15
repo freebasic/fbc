@@ -17,7 +17,7 @@ Raises a numeric expression to some power
 	Returns the exponentiation of a base expression raised to some exponent.
 
 {{fbdoc item="desc"}}
-	**##Operator ^## (Exponentiate)** returns the result of a base expression (##//lhs//##) raised to some exponent expression (##//rhs//##). If the exponent is a fractional value, a root is taken. For example, 2 **^** (1/3) is the cubed root of 2.
+	**##Operator ^## (Exponentiate)** returns the result of a base expression (##//lhs//##) raised to some exponent expression (##//rhs//##). **^** works with double float numbers only, operands of other types will be converted into double before performing the exponentiation. Exponent of a fractional value (1/n) is the same as taking n-th root from the base, for example, 2 **^** (1/3) is the cubed root of 2.
 
 	Neither of the operands are modified in any way.
 
@@ -25,11 +25,11 @@ Raises a numeric expression to some power
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/exponent.bas"}}%%(freebasic)
-DIM n AS DOUBLE
+DIM AS DOUBLE n
 INPUT "Please enter a positive number: ", n
-PRINT ""
-PRINT n;" squared is"; n ^ 2
-PRINT "The fifth root of"; n;" is"; n ^ 0.2
+PRINT 
+PRINT n;" squared is "; n ^ 2
+PRINT "The fifth root of "; n;" is "; n ^ 0.2
 SLEEP
 %%
 Output:
@@ -41,7 +41,7 @@ The fifth root of 3.4 is 1.27730844458754
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None

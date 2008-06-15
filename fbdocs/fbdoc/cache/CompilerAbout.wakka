@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="About"}}----
-About the ""FreeBASIC"" project
+About the ""FreeBASIC"" project.
 
 	The ""FreeBASIC"" project is a set of cross-platform development tools initially created by Andre Victor, consisting of a compiler, GNU-based assembler, linker and archiver, and supporting runtime libraries, including a software-based graphics library. The compiler, //##fbc##//, currently supports building for i386-based architectures on the DOS, Linux, Windows and Xbox platforms. The project also contains thin bindings (header files) to some popular 3rd party libraries such as the [[en.wikipedia.org/wiki/C_standard_library C runtime library]], [[http://www.talula.demon.co.uk/allegro/ Allegro]], [[libsdl.org SDL]], [[opengl.org OpenGL]], [[gtk.org Gtk]], [[msdn2.microsoft.com/en-us/library/aa383750.aspx the Windows API]] and many others, as well as example programs for many of these libraries.
 

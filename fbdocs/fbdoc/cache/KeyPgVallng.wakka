@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VALLNG"}}----
-Converts a string to a long integer
+Converts a string to a long integer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
@@ -10,7 +10,7 @@ Converts a string to a long integer
 ##
 {{fbdoc item="param"}}
 	##//strnum//##
-		the string containing a number to convert
+		The string containing a number to convert.
 
 {{fbdoc item="ret"}}
 	Returns a converted ##[[KeyPgLongint longint]]## number.
@@ -39,7 +39,7 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

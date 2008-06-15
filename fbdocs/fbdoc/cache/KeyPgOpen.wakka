@@ -105,11 +105,11 @@ END IF
 	- Path separators in Linux are forward slashes /. Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward \ slashes. 
 
 {{fbdoc item="diff"}}
-	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[ProPgCompOptlang -lang qb]]// dialect; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
+	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
 	- ##**Open**## can be called as a procedure that returns an error code.
 
 {{fbdoc item="lang"}}
-	- The //[[ProPgCompOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being "I" for input, "O" for output , "A" for append, "R" for random, "B" for binary. 
+	- The //[[CompilerOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being "I" for input, "O" for output , "A" for append, "R" for random, "B" for binary. 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClose Close]]##

@@ -26,6 +26,31 @@ print #1, "testing 123"
 reset
 %%
 
+{{fbdoc item="filename" value="examples/manual/fileio/resetio.bas"}}%%(freebasic)
+dim x as string
+
+'' Read from STDIN from piped input
+open cons for input as #1
+while eof(1) = 0
+  input #1, x
+  print """"; x; """"
+wend
+close #1
+
+'' Reset to read from the keyboard
+Reset(0)
+
+print "Enter some text:"
+input x
+
+'' Read from STDIN (now from keyboard)
+open cons for input as #1
+while eof(1) = 0
+  input #1, x
+  print """"; x; """"
+wend
+close #1
+%%
 {{fbdoc item="diff"}}
 	- None for ##**Reset**()##.
 	- The ##**Reset**(//streamno//)## usage is new to FreeBASIC.

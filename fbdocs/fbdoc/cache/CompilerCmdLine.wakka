@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="fbc command-line"}}----
-fbc command-line usage
+Using the **fbc** command-line.
 
 	The official FreeBASIC distribution comes with **fbc**, FreeBASIC's flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
 
@@ -26,88 +26,94 @@ fbc command-line usage
 
 <<{{fbdoc item="section" value="Compiling options"}}
 	{{fbdoc item="subsect" value="Source code"}}
-		**##[ -b ] < //source file// >##**
-			Add a source file to compilation. The "-b" is optional.
-		**##-o < //output file// >##**
-			Set the output file name of a compiled source file, or object file (.o). The "-o" switch needs to follow immediately after source files specified with the "-b" switch. This switch only has an effect when used with the "-c" switch, as object files are not saved otherwise. If "-o" is not specified for a given file, the output file name will be the same as the source file name with an ".o" extension.
-		**##-i < //include path// >##**
-			Add a path to search for include files. If multiple ##-i## switches are used, the order that they are listed determines the order in which directories are searched.
-		**##-include < //include file// >##**
-			Specifies a file to be ###include##d before processing source files. If multiple ##-include## switches are used, the order that they are listed determines the order in which the files are ###include##d.
-		**##-d < //name//=//value// >##**
-			Add a preprocessor macro to all source files. The same as using the preprocessor directive ###define## or ###macro##.
-		**##-c##**
-			Compile only (make an object file), do not link.
-		**##-lang < "fb"|"qb"|"deprecated" >##**
-			Select language compatibility dialect. The default dialect is ##"fb"##. See [[CompilerDialects Compiler Dialects]] or the ##migrating.txt## included with the distribution for more details on the differences between FreeBASIC dialects.
-		**##-{ m|entry } < //source file// >##**
-			Determines a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" or "-entry" is not specified, the first source file listed is given a main entry point. When using the "-c" switch, "-m" or "-entry" must be specified when compiling a main source file.
+		=={{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}==
+			Add a source file to compilation
+		=={{fbdoc item="keyword" value="CompilerOptc|-c"}}==
+			Compile only, do not link
+		=={{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}==
+			Set object file path/name (must be passed after the .bas file)
+		=={{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}==
+			Add a path to search for include files
+		=={{fbdoc item="keyword" value="CompilerOptinclude|-include < name >"}}==
+			Include a header file on each source compiled
+		=={{fbdoc item="keyword" value="CompilerOptd|-d < name=val >"}}==
+			Add a preprocessor's define
+		=={{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}==
+			Select language compatibility: ##deprecated##, ##qb##, ##fb##
+		=={{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}==
+			Main file without extension, the entry point (default is the first .bas file on the command line)
+		=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
+			Main file without extension, the entry point (default is the first .bas file on the command line)
 
 	{{fbdoc item="subsect" value="Error checking and Debugging"}}
-		**##-w < "0"|"1"|"all"|"pedantic" >##**
-			Set minimum warning level. "-w 0" shows all compiler warnings, while "-w 1" hides them. The default behavior is "-w 0".
-		**##-e##**
-			Add QuickBASIC-like error checking. See Error Handling.
-		**##-ex##**
-			The same as ##-e## plus RESUME support. See Error Handling.
-		**##-exx##**
-			The same as ##-ex## plus array bounds and null-pointer checking. See Error Handling.
-		**##-g##**
-			Insert debugging symbols into output files, to use with GDB-compatible debuggers.
-		**##-noerrline##**
-			Do not show the place in source where error occurred. Useful if an IDE is parsing the error messages.
-		**##-profile##**
-			Enable function profiling. After running an executable compiled with this option, a gmon.out file will be created in the program directory, allowing use of GPROF for analysis of the program's execution.
-		**##-maxerr < //value//|"inf" >##**
-			Sets the number of errors the compiler must find before stopping. The default is 10. If **inf**, for infinite, is specified the compiler continues until it finds the end of the source. Useful if an IDE is parsing the error messages.
+		=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
+			Set min warning level: all, pedantic or a value
+		=={{fbdoc item="keyword" value="CompilerOpte|-e"}}==
+			Add error checking
+		=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
+			Add error checking with RESUME support
+		=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
+			Same as -ex plus array bounds and null-pointer checking
+		=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
+			Add debug info
+		=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
+			Do not show source line where error occurred
+		=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
+			Enable function profiling
+		=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
+			Only stop parsing if <val> errors occurred
 
 	{{fbdoc item="subsect" value="Platform specific"}}
-		**##-arch < //architecture// >##**
-			Set the target CPU architecture (defaults to 486 if not specified, can be 386, 486, 586, 686).
-		**##-target < "dos"|"linux"|"win32"|"xbox"|"cygwin"|"freebsd" >##**
-			Used with (typically the Windows version) of the compiler to create an executable for a platform that is different from platform on which the source is being compiled and linked. The bin and lib folders must have the ##/dos##, ##/linux## or ##/xbox## sub-folders from the appropriate distribution.  This option is only available if the fbc compiler was built with cross compilation targets enabled.
-		**##-s < //subsystem// >##**
-			( Windows ) Specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a ##gui## subsystem prevents the console window from appearing behind the program window.
-		**##-t < //stack size// >##**
-			( Windows/DOS ) Set stack size in kilobytes (defaults to 1024 KBytes). The local arrays are created in the stack, so 1MB of stack is not always enough.
+		=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
+			Set target architecture (default: 486)
+		=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
+			Set the target platform for cross compilation
+		=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==
+			Set subsystem (##gui##, ##console##)
+		=={{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}==
+			Set stack size in kbytes (default: 1M)
 
 	{{fbdoc item="subsect" value="Miscellaneous"}}
-		**##-r##**
-			Do not delete the asm file(s) that are generated during the compile process. Preprocessor macros are expanded in these files.
-		**##-v##**
-			Activate verbose mode. In this mode the compiler shows its actions step by step.
-		**##-version##**
-			Show compiler version.
-		**##-Wa < //options// >##**
-			Pass options to GAS, the assembler.  Options must be separated by commas only.
-		**##-prefix < //path // >##**
-			Set the compiler prefix (where the compiler finds the bin, lib, and inc directories); defaults to the path where fbc resides, if this can be determined.
+		=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
+			Do not delete the asm file(s)
+		=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
+			Be verbose
+		=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
+			Show compiler version
+		=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
+			Pass options to GAS (separated by commas)
+		=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
+			Set the compiler prefix path
 <<>>{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
-		**##[ -a ] < //object file// >##**
-			Add a compiled object file to linker's list. The "-a" is optional.
-		**##-l < //library file// >##**
-			Add a library file to linker's list.
-		**##-x < //name// >##**
-			Set the executable/library name, with extension. Defaults to the name of the first source file passed on the command line. When compiling libraries, be sure to add the "lib" prefix to your file name, otherwise the linker will not be able to find it. If compiling and linking separately, this option must be set only in the linker.
-		**##-p < //library path// >##**
-			Add a path to search for libraries. By default, libraries are looked for in the system FreeBASIC libraries directory and in the current directory.
-		**##-Wl < //options// >##**
-			Pass options to LD, the linker.  Options must be separated by commas only.
+		=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==
+			Add an object file to linker's list
+		=={{fbdoc item="keyword" value="CompilerOptl|-l < name >"}}==
+			Add a library file to linker's list
+		=={{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}==
+			Set executable/library path/name
+		=={{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}==
+			Add a path to search for libraries
+		=={{fbdoc item="keyword" value="CompilerOptWl|-Wl < opt >"}}==
+			Pass options to LD (separated by commas)
 
 	{{fbdoc item="subsect" value="Runtime"}}
-		**##-lib##**
-			Create a static library.
-		**##-dll, -dylib##**
-			Create a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
-		**##-mt##**
-			Force linking with thread-safe runtime library for multi-threaded apps. Normally the thread-safe version is always used automatically if the FreeBASIC built-in threading functions are used, so you only need to specify this option if using your own threading routines.
-		**##-nodeflibs##**
-			Do not include the default libraries when linking.
+		=={{fbdoc item="keyword" value="CompilerOptlib|-lib"}}==
+			Create a static library
+		=={{fbdoc item="keyword" value="CompilerOptdll|-dll"}}==
+			Create a DLL, including the import library.  (Same as ##-dylib##)
+		=={{fbdoc item="keyword" value="CompilerOptdylib|-dylib"}}==
+			Create a DLL, including the import library
+		=={{fbdoc item="keyword" value="CompilerOptmt|-mt"}}==
+			Link with thread-safe runtime library
+		=={{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}==
+			Do not include the default libraries
 	
 	{{fbdoc item="subsect" value="Miscellaneous"}}
-		**##-export##**
-			Export symbols for dynamic linkage. See EXPORT.
+		=={{fbdoc item="keyword" value="CompilerOptexport|-export"}}==
+			Export symbols for dynamic linkage
+		=={{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}==
+			Save the linking map to file name
 >>::c::
 
 {{fbdoc item="ex"}}

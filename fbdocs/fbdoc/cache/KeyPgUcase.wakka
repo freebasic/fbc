@@ -6,7 +6,7 @@ Returns an upper case copy of a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Ucase**( //str// )
+	//result// = **Ucase**[$]( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
@@ -31,6 +31,10 @@ print ucase("AbCdEfG")
 
 {{fbdoc item="see"}}
 	- DOS does not support the wide-character string version of ##**Ucase**##.
+
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.

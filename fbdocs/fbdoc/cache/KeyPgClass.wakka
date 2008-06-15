@@ -22,7 +22,7 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //[[ProPgCompOptlang -lang fb]]// option
+	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
@@ -30,5 +30,3 @@ sample output
 {{fbdoc item="see"}}
 	- ##[[KeyPgEnum Enum]]##
 	- ##[[KeyPgType Type]]##
-
-{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

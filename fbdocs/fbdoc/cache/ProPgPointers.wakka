@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Pointers"}}----
-Data types whose values are addresses in memory
+Data types whose values are addresses in memory.
 
 {{fbdoc item="section" value="Declaration"}}
 	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an ##[[KeyPgInteger Integer]] [[KeyPgPointer Pointer]]## points to ##[[KeyPgInteger Integer]]## data). Pointers are declared like any other variable, with the suffix "##pointer##" or "##ptr##" following the type name.

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Screen Functions"}}----
-Statements and procedures that work with the graphics display
+Statements and procedures that work with the graphics display.
 
 {{fbdoc item="desc"}}
 	These statements and procedures control the graphics capabilities of the ""FreeBASIC"" graphics library. Screen modes can be set with varying resolutions and color depths, window events can be handled, and specific OpenGL procedures can be retrieved.

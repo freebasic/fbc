@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Control Flow Statements"}}----
-Statements that direct the flow of execution
+Statements that direct the flow of execution.
 
 {{fbdoc item="desc"}}
 	Control flow statements control program execution from one statement to the next; they determine what statements get executed and when, based on some kind of condition. The condition is always some expression that evaluates to true or false. Most control flow statements check for some kind of condition, and direct code flow accordingly, that is, they do or do not execute a block of code (except for the transferring control flow statements and ##[[KeyPgDoloop DO..LOOP]]##, which has an optional condition). Additionally, all control flow statements can be nested, that is, they can have other control flow statements within the statement block.

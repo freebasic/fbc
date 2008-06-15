@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Welcome to FreeBASIC"}}----
-Welcome to our world!  This page is an overview to our online warehouse of knowledge.  Enjoy your surfing and we hope this will be the first of many visits.
+Welcome to our world!  This page is an overview of our online warehouse of knowledge.  Enjoy your surfing and we hope this will be the first of many visits.
 
 {{fbdoc item="section" value="Introduction"}}
 	FreeBASIC is a free 32-bit compiler for the BASIC language.  It is open source and //[[GnuLicenses licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It can create programs for MS-Windows, DOS and Linux, and is being ported to other platforms. See //[[CompilerAbout About FreeBASIC]]// and //[[CompilerFeatures Main Features]]//.

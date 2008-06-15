@@ -49,8 +49,8 @@ LET i = 300 ' <-alternate syntax
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
 
 {{fbdoc item="diff"}}
 	- None

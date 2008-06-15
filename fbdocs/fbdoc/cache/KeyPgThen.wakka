@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="THEN"}}----
-Control flow statement for conditional branching
+Control flow statement for conditional branching.
 
 {{fbdoc item="syntax"}}##
 	**If** //expression// **Then** //statement(s)// [**Else** //statement(s)//]

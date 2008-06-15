@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENINFO"}}----
-Retrieves information about current video mode or the desktop
+Retrieves information about current video mode or the desktop.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screeninfo** ( [[KeyPgByref byref]] //w// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //h// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bpp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //driver// [[KeyPgAs as]] [[KeyPgString string]] = "" )
@@ -9,19 +9,19 @@ Retrieves information about current video mode or the desktop
 ##
 {{fbdoc item="param"}}
 	##//w//##
-		width
+		Width.
 	##//h//##
-		height
+		Height.
 	##//depth//##
-		color depth in bits
+		Color depth in bits.
 	##//bpp//##
-		bytes per pixel
+		Bytes per pixel.
 	##//pitch//##
-		bytes per scan line
+		Bytes per scan line.
 	##//rate//##
-		refresh rate
+		Refresh rate.
 	##//driver//##
-		driver name
+		Driver name.
 
 {{fbdoc item="desc"}}
 	This function can be useful to get current mode informations like graphics driver name, color depth, screen size and more.
@@ -51,7 +51,7 @@ PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth);
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

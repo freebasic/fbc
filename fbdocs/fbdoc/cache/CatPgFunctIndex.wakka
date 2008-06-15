@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Functional Keyword List"}}----
-List of ""FreeBASIC"" keywords sorted by the function they perform
+List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 <<
 {{fbdoc item="section" value="Arrays"}}
@@ -65,6 +65,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
+	- {{fbdoc item="keyword" value="KeyPgConstQualifier|CONST (Qualifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
@@ -167,6 +168,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 {{fbdoc item="section" value="Graphics"}}
 	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgAndGfx|AND (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgCircle|CIRCLE"}}
 	- {{fbdoc item="keyword" value="KeyPgCls|CLS"}}
 	- {{fbdoc item="keyword" value="KeyPgColor|COLOR"}}
@@ -179,6 +181,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgImagecreate|IMAGECREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgLinegraphics|LINE"}}
+	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
 	- {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}}
@@ -186,6 +189,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
+	- {{fbdoc item="keyword" value="KeyPgPsetGfx|PSET (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgRgb|RGB"}}
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
@@ -205,6 +209,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgTransGfx|TRANS (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}
+	- {{fbdoc item="keyword" value="KeyPgXorGfx|XOR (GRAPHICS PUT)"}}
 
 {{fbdoc item="section" value="Hardware access"}}
 	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
@@ -402,6 +407,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
+	- {{fbdoc item="keyword" value="KeyPgConstMember|CONST (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
@@ -458,6 +464,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 
 {{fbdoc item="section" value="String functions"}}
 	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}
+	- {{fbdoc item="keyword" value="KeyPgInstrrev|INSTRREV"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgLeft|LEFT"}}
 	- {{fbdoc item="keyword" value="KeyPgLen|LEN"}}

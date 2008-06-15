@@ -34,10 +34,13 @@ dim s as string = chr(97, 98, 99)
 print s
 %%
 
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
+
 {{fbdoc item="diff"}}
 	- FreeBASIC accepts multiple integer values as arguments, QB accepted only one.
 	- FreeBASIC evaluates the CHR function at compile time when used with constants or literals.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FreeBASIC.
 
 {{fbdoc item="see"}}
 	- [[CptAscii ASCII Character Codes]]

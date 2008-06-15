@@ -5,7 +5,7 @@ Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgString
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkshort** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Mkshort**(//number//)
+	//result// = **Mkshort**[$](//number//)
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -29,7 +29,7 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- In QBasic this function is called ##**Mki**##.

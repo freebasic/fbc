@@ -70,7 +70,7 @@ scope
 end scope
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

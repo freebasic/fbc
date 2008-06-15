@@ -14,10 +14,6 @@ Sums two expressions
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgZstring zstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgZstring zstring]] ) [[KeyPgAs as]] [[KeyPgZstring zstring]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T//
 ##
@@ -60,12 +56,13 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
+	- [[KeyPgOpConcat Operator + (String concatenation)]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

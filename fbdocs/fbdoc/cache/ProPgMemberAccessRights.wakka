@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Member Access Rights"}}----
-Restricting member access to certain parts of code
+Restricting member access to certain parts of code.
 
 {{anchor name="OVERVIEW|Overview"}}
 {{anchor name="PUBLIC|Public members"}}

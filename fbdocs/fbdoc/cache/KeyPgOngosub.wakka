@@ -34,7 +34,7 @@ return
 %%
 
 {{fbdoc item="lang"}}
-	- ON x GOSUB can be used only with the //[[ProPgCompOptlang -lang qb]]// dialect.  
+	- ON x GOSUB can be used only with the //[[CompilerOptlang -lang qb]]// dialect.  
 
 {{fbdoc item="diff"}}
 	- None

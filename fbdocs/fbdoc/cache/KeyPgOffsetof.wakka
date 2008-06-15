@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OFFSETOF"}}----
-Returns the offset of a field within a type
+Returns the offset of a field within a type.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **Offsetof**(//typename//, //fieldname//) [[KeyPgCint cint]]( @[[KeyPgCast cast]]( //typename// [[KeyPgPtr ptr]], 0 )->//fieldname// )	
@@ -41,7 +41,7 @@ OffsetOf i =  8
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

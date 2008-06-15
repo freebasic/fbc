@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SCREENEVENT"}}----
-Queries for and retrieves system events
+Queries for and retrieves system events.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenEvent""** ( [[KeyPgByval byval]] event [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -9,7 +9,7 @@ Queries for and retrieves system events
 ##
 {{fbdoc item="param"}}
 	##//event//##
-		specifies the buffer where the function should store the event data
+		Specifies the buffer where the function should store the event data.
 
 {{fbdoc item="ret"}}
 	Returns -1 if there are pending events to be retrieved, 0 otherwise.
@@ -17,7 +17,7 @@ Queries for and retrieves system events
 {{fbdoc item="desc"}}
 	This function returns the latest available system event from the internal GfxLib events queue. By "event" we mean any mouse or keyboard activity for example.
 
-	The event data if available will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user data type, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
+	The event data (if available) will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user data type, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
 		
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgScreenevent_1.bas"}}%%(freebasic)
 Type EVENT Field = 1
@@ -146,7 +146,7 @@ loop
 	- ##**Screenevent**## does not return window related events in the DOS version, but does return input events.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

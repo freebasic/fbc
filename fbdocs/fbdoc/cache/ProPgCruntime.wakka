@@ -98,7 +98,8 @@ This is a list of function prototypes in the standard C library in alphabetical 
 {{anchor name="SORTING"}}{{fbdoc item="section" value="Searching and Sorting"}}
 
 	##**#include "crt/stdlib.bi"**##
-			    **Note:** The compare callback function required by ##bsearch## and ##qsort## must be declared as ##[[KeyPgCdecl cdecl]]##. It must return a value <0 if its first argument is smaller than the second one, >0 if the first argument is bigger than the second one, and zero if both are equal.
+			    **Note:** The //compare// callback function required by ##bsearch## and ##qsort## must be declared as ##[[KeyPgCdecl cdecl]]##. It must return a value <0 if its first argument should be located before the second one in the sorted array, >0 if the first argument should be located after the second one, and zero if their relative positions are indifferent (equal values).  
+			
 	{{table columns="2" cellpadding="1" cells="Prototype (with parameters);Comments;bsearch(key as any ptr, base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer) as any ptr;Perform binary search.;qsort(base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer);Use the quicksort algorithm to sort an array."}}
 
 {{anchor name="STRING"}}{{fbdoc item="section" value="String Manipulation"}}

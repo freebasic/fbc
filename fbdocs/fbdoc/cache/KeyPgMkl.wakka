@@ -28,6 +28,10 @@ print a, cvl(b)
 sleep
 %%
 
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
+
 {{fbdoc item="diff"}}
 	- None
 

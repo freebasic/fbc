@@ -18,7 +18,7 @@ Error handling statement to set the current error handler
 	
 	##**On Error GOTO 0**## deactivates the current error handler.
 
-	The use of QB-like error handling requires compilation with switch //[[ProPgCompOpte -e]]//, //[[ProPgCompOptex -ex]]// or //[[ProPgCompOptexx -exx]]// activated.
+	The use of QB-like error handling requires compilation with switch //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]// or //[[CompilerOptexx -exx]]// activated.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/onerror.bas"}}%%(freebasic)
@@ -33,7 +33,7 @@ end
 %%
 
 {{fbdoc item="lang"}}
-	- ON ERROR is supported in the //[[ProPgCompOptlang -lang qb]]// dialect only. In the //[[ProPgCompOptlang -lang fb]]// dialect, statements can be used in function form to return an error code
+	- ON ERROR is supported in the //[[CompilerOptlang -lang qb]]// dialect only. In the //[[CompilerOptlang -lang fb]]// dialect, statements can be used in function form to return an error code
 {{fbdoc item="filename" value="examples/manual/check/KeyPgOnerror_2.bas"}}%%(freebasic)
 '' Compile with FB default (-lang fb) dialect 
 If Open( "text" For Input As #1 ) <> 0 Then

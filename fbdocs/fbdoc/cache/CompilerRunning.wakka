@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Running"}}----
-Invoking the compiler after installation
+Invoking the compiler after installation.
 
 {{fbdoc item="section" value="Windows"}}
 	A desktop icon and start-menu links should have been created by the installer, and can be used to open the console directly into the directory where FreeBASIC was installed - ##C:\Program Files\FreeBASIC## by default. Alternatively, using the console ("MS-DOS prompt"), navigate to the directory where FreeBASIC was installed.
@@ -28,7 +28,7 @@ Invoking the compiler after installation
 	and a ##./hello## executable file will be created in the ##examples## directory.
 
 
-==DOS version==
+{{fbdoc item="section" value="DOS"}}
 	Navigate to the directory where FreeBASIC was installed. For example, if FreeBASIC is installed in the directory ##C:\FB##, type,
 
 		##C:##

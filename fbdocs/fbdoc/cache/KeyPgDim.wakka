@@ -18,12 +18,14 @@ Declares a variable
 {{fbdoc item="desc"}}
 	Declares a variable by name and reserves memory to accommodate it.
 
-	Variables must be declared before they can be used in the //[[ProPgCompOptlang -lang fb]]// dialect or when using ##[[KeyPgOptionexplicit Option Explicit]]## in the other dialects.  Only in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects may variables be used without first declaring them.  Variables that are used without first declaring them are called implicit variables.
+	Variables must be declared before they can be used in the //[[CompilerOptlang -lang fb]]// dialect or when using ##[[KeyPgOptionexplicit Option Explicit]]## in the other dialects.  Only in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects may variables be used without first declaring them.  Variables that are used without first declaring them are called implicit variables.
 
 	##**Dim**## can be used to declare and assign variables of any of the supported data types, user defined types, or enumerations.
 
+	Depending on where and how a variable or array is declared can change how it is allocated in memory.  See //[[ProPgStorageClasses Storage Classes]]//.
+
 {{fbdoc item="section" value="Explicit Variables with Explicit Data Types"}}
-	In the default dialect //[[ProPgCompOptlang -lang fb]]//, each variable must be explicitly declared with a desired data type. Type suffixes are not allowed.
+	In the default dialect //[[CompilerOptlang -lang fb]]//, each variable must be explicitly declared with a desired data type. Type suffixes are not allowed.
 
 	More than one variable may be declared in a single ##**Dim**## statement by separating each variable declaration with a comma.
 
@@ -45,7 +47,7 @@ dim px as double ptr = @x
 %%
 
 {{fbdoc item="section" value="Explicit Variables with Implicit Data Types"}}
-	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, even if the variable is declared explicitly, it will be given a default data type if the data type is not explicitly given either by name or by type suffix.  The default data type is ##[[KeyPgSingle Single]]## in the //[[ProPgCompOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[ProPgCompOptlang -lang deprecated]]// dialect.  The default data type can be changed throughout a source listing by use of the ##**Def""###""**## statements. (for example, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefstr DefStr]]##, ##[[KeyPgDefsng DefSng]]##)
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, even if the variable is declared explicitly, it will be given a default data type if the data type is not explicitly given either by name or by type suffix.  The default data type is ##[[KeyPgSingle Single]]## in the //[[CompilerOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[CompilerOptlang -lang deprecated]]// dialect.  The default data type can be changed throughout a source listing by use of the ##**Def""###""**## statements. (for example, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefstr DefStr]]##, ##[[KeyPgDefsng DefSng]]##)
 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_2.bas"}}%%(freebasic)
 '' Compile with -lang qb
@@ -63,32 +65,35 @@ DIM I, J, X, Y, T$, D AS DOUBLE
 %%
 
 {{fbdoc item="section" value="Arrays"}}
-	As with most BASIC dialects, FreeBASIC supports arrays with indexes ranging from a lower bound to an upper bound.  In the syntaxes shown above, lbound refers to the lower bound, or the smallest index.  Ubound refers to the upper bound, or the largest index.  If a lower bound is not specified, lbound is automatically assumed to be zero, unless ##[[KeyPgOptionbase Option Base]]## is used,  so an array declared with the following code:
-	
+	As with most BASIC dialects, FreeBASIC supports arrays with indexes ranging from a lower bound to an upper bound.  In the syntaxes shown, ##//lbound//## refers to the lower bound, or the smallest index.  And ##//Ubound//## refers to the upper bound, or the largest index.  If a lower bound is not specified, it is assumed to be zero by default, unless ##[[KeyPgOptionbase Option Base]]## is used.
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_3.bas"}}%%(freebasic)
 Const upperbound = 10
+
+'' Declare an array with indexes ranging from 0 to upperbound, 
+'' for a total of (upperbound + 1) indexes.
 Dim array(upperbound) As Single
 %%
 
-	Will declare an array with indexes ranging from 0 to ##//upperbound//##, for a total of (upperbound + 1) indexes.  
-
-	Multidimensional arrays can be declared as well.  The following example will declare a three-dimensional array of single precision floating-point numbers. The maximum number of dimensions of a multidimensional array is 8. 
-	
-	Multidimensional arrays are stored in row-major order: values with the same last index are contiguous. This is different from QB's default.
-
+	Multidimensional arrays can be declared as well.  and are stored in row-major order: values with the same last index are contiguous. (This is different from QB's default).  The maximum number of dimensions of a multidimensional array is 8. 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_4.bas"}}%%(freebasic)
+'' declare a three-dimensional array of single 
+'' precision floating-point numbers.
 Dim array(1 To 2, 6, 3 To 5) As Single
+
+'' The first dimension of the declared array 
+'' has indices from 1 to 2, the second, 0 to 6, 
+'' and the third, 3 to 5.
 %%			
 
-	The first dimension of the declared array has indices from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays see [[ProPgArrays Arrays Overview]].
+	For more information on arrays see [[ProPgArrays Arrays Overview]].
 
 	If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic Static]]## (unless ##[[KeyPgOptiondynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it variable length, even if ##[[KeyPgOptionstatic Option Static]]## is in effect.
-
-	Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using ##[[KeyPgShared Shared]]## to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB. Using the //-t  stack_size_in_kbytes// in the command line while compiling can help too, if you need to store more than 1 MB on the stack. 
 
 	Arrays can be declared as variable length in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim Redim]]##, or declaring it past the metacommand ##[[KeyPgMetaDynamic $Dynamic]]##. Variable length arrays can't use initializers.
 
 	Arrays declared with ##**Dim**## having constant indexes and not preceeded by ##[[KeyPgOptiondynamic Option Dynamic]]## are fixed length (not resizable at runtime) and can use initializers.
+
+	See also //[[ProPgFixLenArrays Fixed-Length Arrays]]// and //[[ProPgVarLenArrays Variable-Length Arrays]]//.
 
 {{fbdoc item="section" value="Initializers"}}
 	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero or null strings by default when they are created.
@@ -121,7 +126,7 @@ Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}
 	Note: Initializing UDT's with strings is not supported at this time.
 
 {{fbdoc item="section" value="Explicit Variables with Type Suffixes"}}
-	In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the data type of a variable may be indicated with a type suffix ( $ % # ! & ).
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the data type of a variable may be indicated with a type suffix ( $ % # ! & ).
 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_7.bas"}}%%(freebasic)
 '' Compile with -lang qb or deprecated
@@ -185,15 +190,15 @@ Deallocate(s3)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, variable [[ProPgVariableScope scope]] is for the procedure if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.
-	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialect, variables defined inside compound block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) have local [[ProPgVariableScope scopes]], and are visible only within these blocks.
-	- In the //[[ProPgCompOptlang -lang fb]]// dialect, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, variable [[ProPgVariableScope scope]] is for the procedure if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialect, variables defined inside compound block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) have local [[ProPgVariableScope scopes]], and are visible only within these blocks.
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
 
 {{fbdoc item="diff"}}
 	- Variable Initializers are new to FreeBASIC
 	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to FreeBASIC
 	- Multidimensional arrays are stored in row-major order in FreeBASIC, they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
-	- Dynamic arrays up to 2GB in size are possible in FreeBASIC. In QB static arrays were limited to 64KB and to the DOS memory available (several 100 KB at best) if made dynamic and ///AH// was used.
+	- Variable length arrays up to 2GB in size are possible in FreeBASIC. In QB, $Static arrays were limited to 64KB and to the DOS memory available (several 100 KB at best) if made $Dynamic and ///AH// was used.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCommon Common]]##

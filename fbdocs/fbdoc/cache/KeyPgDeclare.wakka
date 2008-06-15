@@ -71,9 +71,9 @@ an_instance.increment_data( )
 Print an_instance.my_data
 %%
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention.
-	- In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
-	- Type-level ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##/##[[KeyPgOperator Operator]]##/##[[KeyPgConstructor Constructor]]##/##[[KeyPgDestructor Destructor]]##'s are only allowed in //[[ProPgCompOptlang -lang fb]]//
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- Type-level ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##/##[[KeyPgOperator Operator]]##/##[[KeyPgConstructor Constructor]]##/##[[KeyPgDestructor Destructor]]##'s are only allowed in //[[CompilerOptlang -lang fb]]//
 
 {{fbdoc item="diff"}}
 	- In FreeBASIC, the parameter names are optional.

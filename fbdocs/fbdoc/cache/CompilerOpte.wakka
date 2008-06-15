@@ -9,8 +9,8 @@ Add error checking
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr __FB_ERR__]]##
-	- [[ProPgCompOptex Compiler Option: -ex]]
-	- [[ProPgCompOptexx Compiler Option: -exx]]
+	- [[CompilerOptex Compiler Option: -ex]]
+	- [[CompilerOptexx Compiler Option: -exx]]
 	- [[ProPgErrorHandling Error Handling]]
 	- [[CompilerCmdLine Using the Command Line]]
 

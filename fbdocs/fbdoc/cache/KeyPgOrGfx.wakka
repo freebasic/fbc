@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="OR"}}----
+Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which uses a bit-wise ##[[KeyPgOpOr Or]]## as the blitting method
+
+{{fbdoc item="syntax"}}##
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Or**
+##
+{{fbdoc item="param"}}
+	##**Or**##
+		Required.
+
+{{fbdoc item="desc"}}
+	The ##**Or**## method combines each source pixel with the corresponding destination pixel, using the bit-wise ##[[KeyPgOpOr Or]]## function.  The result of this is output as the destination pixel.
+	This method works in all graphics modes.  There is no mask color, although color values of ##0## (##[[KeyPgRgba RGBA]](0, 0, 0, 0)## in full-color modes) will have no effect, because of the behavior of ##[[KeyPgOpOr Or]]##.
+
+	In full-color modes, each component (red, green, blue and alpha) is kept in a discrete set of bits, so the operation can be made to only affect some of the channels, by making sure the all the values of the other channels are set to ##0##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/put-or.bas"}}%%(freebasic)
+''open a graphics window
+ScreenRes 320, 200, 16
+
+''create 3 sprites containing red, green and blue circles
+Const As Integer r = 32
+dim as any ptr cr, cg, cb
+cr = ImageCreate(r * 2 + 1, r * 2 + 1, RGBA(0, 0, 0, 0))
+cg = ImageCreate(r * 2 + 1, r * 2 + 1, RGBA(0, 0, 0, 0))
+cb = ImageCreate(r * 2 + 1, r * 2 + 1, RGBA(0, 0, 0, 0))
+Circle cr, (r, r), r, RGB(255, 0, 0), , , 1, f
+Circle cg, (r, r), r, RGB(0, 255, 0), , , 1, f
+Circle cb, (r, r), r, RGB(0, 0, 255), , , 1, f
+
+''put the sprite at three different multipier
+''levels, overlapping each other in the middle
+Put (146 - r, 108 - r), cr, or
+Put (174 - r, 108 - r), cg, or
+Put (160 - r,  84 - r), cb, or
+
+''free the memory used by the sprites
+ImageDestroy cr
+ImageDestroy cg
+ImageDestroy cb
+
+''pause the program before closing
+Sleep
+%%
+{{image class="center" title="Put Or example output" url="/images/put-or.png"}}
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpOr Or]]##
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Literals"}}----
-Non-variable compile-time string and numeric values
+Non-variable compile-time string and numeric values.
 
 Literals are numbers or strings of characters specified directly in the source code.  Literals may be used to assign a variable or constant a value, passed to a procedure, or used in an expression.
 
@@ -77,11 +77,11 @@ Dim d as double = 743.1d-13
 Dim e as double = 743.1e13
 %%
 
-	A suffix of "f" or "F" on a fixed point number indicates a single precision (32 bit total) floating point value.
-	(Note that an exponent cannot follow this suffix, nor can this suffix follow a number with an exponent.  For floating point literals, the type may be forced using ##[[KeyPgCsng CSng]]##.)
+	A suffix of "!", "f" or "F" on a number indicates a single precision (32 bit total) floating point value.  An equivalent suffix, "#", indicates double precision.  Note that an exponent cannot follow this kind of suffix.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/singsuff.bas"}}%%(freebasic)
-Dim a as single = -123.456f
-Const b = csng(3.1e8)
+Dim a as single = 3.1!
+Dim b as single = -123.456e-7f
+Dim c as double = 3.14159265e3#
 %%
 
 {{fbdoc item="section" value="String Literals"}}
@@ -114,5 +114,5 @@ print $"C:\temp"
 	- ##[[KeyPgConst Const]]##
 	- [[CatPgStdDataTypes Standard Data Types]]
 
-{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
    

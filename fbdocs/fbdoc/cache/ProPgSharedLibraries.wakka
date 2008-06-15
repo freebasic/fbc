@@ -58,7 +58,7 @@ Print Add2(1,2)
 
 	More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making shared libraries out of some code modules that seldom change can improve compile times and link times dramatically.
 
-	Shared libraries can optionally contain debugging information specified with the //[[ProPgCompOptg -g]]// command line option.
+	Shared libraries can optionally contain debugging information specified with the //[[CompilerOptg -g]]// command line option.
 
 	Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC run-time library.
 
@@ -85,9 +85,9 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./mytest
 %%
 
 {{fbdoc item="section" value="Executables that export symbols"}}
-	If an executable has symbols that must be available to other shared libraries when those shared libraries are loaded, use the ##[[KeyPgExport Export]]## procedure declaration specifier, and the //[[ProPgCompOptexport -export]]// command line option when making (linking) the executable.
+	If an executable has symbols that must be available to other shared libraries when those shared libraries are loaded, use the ##[[KeyPgExport Export]]## procedure declaration specifier, and the //[[CompilerOptexport -export]]// command line option when making (linking) the executable.
 
-	The //[[ProPgCompOptexport -export]]// option has no extra effect when used with the //[[ProPgCompOptdylib -dylib]]// or //[[ProPgCompOptdll -dll]]// command line options.
+	The //[[CompilerOptexport -export]]// option has no extra effect when used with the //[[CompilerOptdylib -dylib]]// or //[[CompilerOptdll -dll]]// command line options.
 
 {{fbdoc item="section" value="Loading Shared Libraries Dynamically"}}
 	Shared libraries can be loaded and used at run time by dynamically loading the library and its symbols at runtime.
@@ -101,8 +101,8 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./mytest
 	- [[ProPgStaticLibraries Static Libraries]]
 	- ##[[KeyPgInclib #inclib]]##
 	- ##[[KeyPgInclude #include]]##
-	- [[ProPgCompOptexport Compiler Option: -dll]]
-	- [[ProPgCompOptdll Compiler Option: -export]]
-	- [[ProPgCompOptdylib Compiler Option: -dylib]]
+	- [[CompilerOptexport Compiler Option: -dll]]
+	- [[CompilerOptdll Compiler Option: -export]]
+	- [[CompilerOptdylib Compiler Option: -dylib]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

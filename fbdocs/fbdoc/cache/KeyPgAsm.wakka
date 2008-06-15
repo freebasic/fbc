@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ASM"}}----
-Code block that allows the use of architecture-specific instructions
+Code block that allows the use of architecture-specific instructions.
 
 {{fbdoc item="syntax"}}##
 	**Asm**
@@ -93,11 +93,11 @@ Print "4 + 5 ="; AddFive(i)
 ##%%4 + 5 = 9%%##
 
 	FreeBASIC's Assembler is AS, the GCC assembler, so an external program. Some quirks apply:
-		The error lines  returned by FBC for asm / end asm blocks are not related the source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make FreeBASIC preserve it, the compiler must be invoked with the //[[ProPgCompOptr -r]]// option.
+		The error lines  returned by FBC for asm / end asm blocks are not related the source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make FreeBASIC preserve it, the compiler must be invoked with the //[[CompilerOptr -r]]// option.
 		The label names are case sensitive inside asm /end asm blocks.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
@@ -105,4 +105,4 @@ Print "4 + 5 ="; AddFive(i)
 {{fbdoc item="see"}}
 	- ##[[KeyPgFunction Function]]##
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

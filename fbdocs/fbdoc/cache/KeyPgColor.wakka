@@ -42,7 +42,7 @@ print "Hello World!"
 
 sleep
 %%
-{{image class="center" title="Color example" url="http://img133.imageshack.us/img133/3086/keypgcolorexamplett0.png" link="http://img133.imageshack.us/my.php?image=keypgcolorexamplett0.png"}}
+{{image class="center" title="Color example" url="/images/color.png"}}
 {{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
 Dim c As Uinteger
 

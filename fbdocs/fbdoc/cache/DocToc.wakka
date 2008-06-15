@@ -1,4 +1,4 @@
-{{image class="center" alt="FB Logo" title="FB Logo" url="/images/fblogo.gif" link="RecentChanges"}}{{fbdoc item="title" value="Table of Contents"}}----
+{{image class="center" alt="FB Logo" title="FB Logo" url="/images/FBLOGO.PNG" link="RecentChanges"}}{{fbdoc item="title" value="Table of Contents"}}----
 FreeBASIC Manual Table of Contents
 
 <<{{anchor name="INTRO|Introduction"}}
@@ -76,6 +76,7 @@ FreeBASIC Manual Table of Contents
 	{{fbdoc item="keyword" value="CatPgFunctIndex|Functional Keywords List"}}
 	{{fbdoc item="keyword" value="CatPgGfx|Graphics Keywords List"}}
 	{{fbdoc item="keyword" value="CatPgOpIndex|Operators List"}}
+	{{fbdoc item="keyword" value="CatPgCompOpt|Compiler Options List"}}
 	
 <<>>{{anchor name="RTLIB"}}{{fbdoc item="section" value="Runtime Library Reference"}}
 	{{fbdoc item="keyword" value="CatPgArray|Array Functions"}}

@@ -46,7 +46,7 @@ Forms.AdjustPoint( pt2, 1, 1 )
 %%
 
 {{fbdoc item="lang"}}
-	- Namespaces are not supported in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Namespaces are not supported in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

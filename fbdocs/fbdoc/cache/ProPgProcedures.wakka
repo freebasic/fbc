@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Procedures Overview"}}----
-Procedures overview
+Overview of the different FB procedure types.
 
 	Procedures are blocks of code that can be executed, or called, from anywhere in a program, any number of times. The code that is executed is called the procedure body. There are two types of procedures in FreeBASIC: procedures that don't return a value and procedures that do.
 

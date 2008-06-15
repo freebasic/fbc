@@ -8,6 +8,8 @@ The current maintainer of this port is [[DrV DrV]].
 
 //To be written: platform-specific information, differences from Win32/Linux, differences from QB?, tutorials, etc. //
 
+**WANTED TESTERS** : The DOS version/target of FreeBASIC needs more testers. If you are interested in using FreeBASIC on DOS, please don't wait for 1.0 release, give it a try now. Tests from running in DOS on both old and new PC's are welcome (graphics, file I/O, serial port, ...). If something doesn't work, please place a detailed bug report into the forum. If all works well, you can write about it as well. Make sure to test a recent version of FB (reports from FB older than 0.18 will be probably considered as obsolete and useless), and check this document **before** complaining about anything. 
+
 **FreeBASIC DOS related questions:**
 
 	==- {{anchor name="item1|1. FB is a 32-bit compiler - do I need a 32-bit DOS ?"}}==
@@ -24,6 +26,10 @@ The current maintainer of this port is [[DrV DrV]].
 	==- {{anchor name="item12|12. How to rewrite QB's CALL INTERRUPT / access the DOS and BIOS interrupts?"}}==
 	==- {{anchor name="item13|13. How to rewrite QB's XMS/EMS handling ?"}}==
 	==- {{anchor name="item14|14. FBC gives me a 'cannot find lsupcxx' error !"}}==
+	==- {{anchor name="item15|15. How to use the serial or parallel port ?"}}==
+	==- {{anchor name="item16|16. How to print ?"}}==
+	==- {{anchor name="item17|17. How to make a screenshot of a FreeBASIC program running in DOS ?"}}==
+	==- {{anchor name="item18|18. Graphics doesn't work  (freezer / black screen / garbage output) !"}}==
 
 ----
 
@@ -58,7 +64,7 @@ The current maintainer of this port is [[DrV DrV]].
 
 {{anchor name="item10"}}==10. How can I do graphics in DOS ?==
 	There are several possibilities: 
-		-Use the FB graphics library. It uses VESA (banked or linear) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use the **0.17 full 2007-May-14** version of FB or newer, the FB DOS graphics does **not work** at all in previous releases.
+		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.3** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "ModeX" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
@@ -67,7 +73,7 @@ The current maintainer of this port is [[DrV DrV]].
 		-Use an external library (DUGL, Allegro, MGL, ""WxWidgets""): Allows to create "expensive" graphics & GUI's, bloats EXE size, need to respect library license, potential loss of reliability.
 
 {{anchor name="item11"}}==11. DEF SEG is missing in FB ! How to rewrite the code ?==
-	DEF SEG is related to 16-bit RM addressing and was removed because of this. "direct" access is not possible, because FreeBASIC's memory model (same as DJGPP's) is not zero-based. For accessing low DOS memory, use DOSMEMGET and DOSMEMPUT , see "vga13h.bas" example. From inline ASM, prefix low memory accesses with GS segment - it is a zero-based data segment set up for this purpose.
+	DEF SEG is related to 16-bit RM addressing and was removed because of this. "direct" access is not possible, because FreeBASIC's memory model (same as DJGPP's) is not zero-based. For accessing low DOS memory, use DOSMEMGET and DOSMEMPUT , see "vga13h.bas" example.
 
 {{anchor name="item12"}}==12. How to rewrite QB's CALL INTERRUPT / access the DOS and BIOS interrupts?==
 	Those interrupts can be accessed only using the DOS version/target of FB.
@@ -91,5 +97,27 @@ type RegTypeX as __dpmi_regs
 
 {{anchor name="item14"}}==14. FBC gives me a 'cannot find lsupcxx' error !==
 	The source of this problem is the **libsupcxx.a** file in **LIB\DOS\** directory, having 9 characters in the name. Your fault is to have extracted the ZIP with long file names enabled, usually in Windows, and then using FB in DOS with no LFN support, resulting in this file looks **LIBSUP~1.A** and can't be found. Rename the file in **LIBSUPCX.A** (one **X** only) or extract the ZIP again in DOS. Note: changes in FB 0.18, retest needed. 
+
+{{anchor name="item15"}}==15. How to use the serial or parallel port ?==
+	The DOS INT14 is not very useful/efficient as it sends/reads a single char in each call. So it's better to use an external DOS32 comms library. /* does someone know a good one ? */ FB up to 0.18.2 doesn't support OPEN COM on DOS target, CoderJeff has an experimental library/driver available, included with FB 0.18.3. 
+
+{{anchor name="item16"}}==16. How to print ?==
+	DOS kernel won't help you here, so you have to prepare the text (trivial) or bitmap data (acceptably easy for printers compatible with the "ESC/P" standard) yourself and send in to the printer via the parallel port or USB using an additional driver. So-called "GDI" or "Windows" printers can't be made working in DOS with reasonable effort. 
+
+{{anchor name="item17"}}==17. How to make a screenshot of a FreeBASIC program running in DOS ?==
+	Ideally include this feature into **your** code. DOS TSR based screenshooters like SNARF mostly will work with text based screens, but probably none of them with FreeBASIC's GfX library. It's not a bug, it's a problem "by design".
+
+{{anchor name="item18"}}==18. Graphics doesn't work  (freezer / black screen / garbage output) !==
+	Place a bug report into the forum. To make it as useful and productive as possible, please beware of the following, proceed given steps and provide all related information:
+		- The graphics might not work well / at all on very old PC's. If your CPU has less than cca 500 MHz, provide exact info about it, if you don't know, use RayeR's CPUID or similar program to test. 
+		-  Exact info about your graphics card is needed. Test on DOS using DrV's VBEDIAG (reports info only) and RayeR's VESATEST (also tries to set mode). Find out what "useful" modes (640x480, 800x600) are supported and with what bitdepths (8, 16, 24, 32 bpp), and whether they can be set and look correctly.  
+		- Find out and describe exactly what's wrong ("mode works with VESATEST but not with FB", "no graphics but no error either", "black screen and freezer", "graphics is messy/incomplete", ...).
+		- If some sophisticated program doesn't work, try also a minimal test like placing a circle in middle of the screen.
+		- Try without a mouse driver (this reduces the CPU "cost").
+		- Find out what modes are affected. If a mode doesn't work, reduce the resolution or bitdeph, make sure to test the "cheapest"/safest modes 640x480 with 32/24/16/8 bpp, 640x480 with 4 bpp, and 320x200 with 8bpp.
+		- For some old cards there are VESA drivers available (S3VBE/UVIVBE). Test both with and without, and include this info into your report. 
+		- Remove potentially problematic content (memory managers, drivers) from DOS startup files. Nothing of such is required for FB, except a DPMI host (see also FAQ 4.).
+		- Post info about your graphics card, CPU (if old), DOS type and version, bug symptoms, and a simple example code.
+	VESATEST anf CPUID can be downloaded here: [[http://rayer.ic.cz/programm/programe.htm]] , VBEDIAG here [[http://drv.nu/vbediag/]].
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -28,7 +28,7 @@ hndl=DyLibLoad("MYLIB.DLL")
 	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -35,31 +35,30 @@ Using C's ##memset## instead of CLS might give you a speed boost:
 
 {{fbdoc item="filename" value="examples/manual/gfx/cls-memset.bas"}}%%(freebasic)
 #include "crt.bi"
-const x_res = 640, y_res = 480, bpp = 32
-dim scrbuf as any ptr, scrsize as integer
-dim i as integer, j as integer
+Const x_res = 640, y_res = 480, bpp = 32
+Dim scrbuf As Any Ptr, scrsize As Integer
+Dim i As Integer, j As Integer
 
-screenres x_res, y_res, bpp, 2
-screenset 1, 0
-scrbuf = screenptr
+ScreenRes x_res, y_res, bpp
+scrbuf = ScreenPtr
 scrsize = x_res * y_res * bpp / 8
 
-i=1: j=1
-do
-	screenlock
-	memset scrbuf, 0, scrsize
-	screenunlock
-	circle (320, 240), i
-	flip
-	if j = 1 then
+Do
+	ScreenLock
+	    memset scrbuf, 0, scrsize
+	    Circle (320, 240), i
+	ScreenUnlock
+   
+	If j = 0 Then
 	    i = i + 1
-	    if i >= 100 then j = 2
-	elseif j = 2 then
+	    If i >= 100 Then j = 1
+	ElseIf j = 1 Then
 	    i = i - 1
-	    if i <= 0 then j = 1
-	end if
-loop while inkey=""
-%%
+	    If i <= 0 Then j = 0
+	End If
+   
+	Sleep 1, 1
+Loop While Inkey=""%%
 
 {{fbdoc item="diff"}}
 	- None

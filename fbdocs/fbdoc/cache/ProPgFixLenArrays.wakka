@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Fixed-length Arrays"}}----
-Fixed-size homogeneous data structures
+Fixed-size homogeneous data structures.
 
 {{fbdoc item="section" value="Overview"}}
 	Fixed-length arrays are [[ProPgArrays arrays]] that have a fixed constant size throughout the execution of a program. The memory used by a fixed-length array to store its elements is allocated at compile-time, either on the stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether ##[[KeyPgStatic Static]]## was used to define it. This may allow for quicker program execution since the memory for the array is already allocated, unlike [[ProPgVarLenArrays variable-length arrays]], whose element memory isn't allocated until runtime.

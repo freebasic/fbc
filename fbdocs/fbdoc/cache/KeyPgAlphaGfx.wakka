@@ -73,7 +73,7 @@ imagedestroy img
 '' Wait for a keypress
 sleep
 %%
-{{image class="center" title="Put Alpha example output" url="http://img109.imageshack.us/img109/6937/putalphaexamplerz9.png" link="http://img109.imageshack.us/my.php?image=putalphaexamplerz9.png"}}
+{{image class="center" title="Put Alpha example output"  url="/images/AL0.PNG"}}
 
 	This example shows the special method for setting a 32-bit alpha channel using an 8-bit image
 {{fbdoc item="filename" value="examples/manual/gfx/put-alpha-8bit.bas"}}%%(freebasic)
@@ -132,7 +132,7 @@ imagedestroy img8
 imagedestroy img32
 
 sleep%%
-{{image class="center" title="Put Alpha example 2 output" url="http://img410.imageshack.us/img410/7645/keypgputalphaexample2sc7.png" link="http://img410.imageshack.us/my.php?image=keypgputalphaexample2sc7.png"}}
+{{image class="center" title="Put Alpha example 2 output" url="/images/AL1.PNG" }}
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Control Flow Statements"}}----
-Statements that direct the flow of execution
+Statements that direct the flow of program execution.
 
 **{{anchor name="TRANSFERRING|Transferring Statements"}}**
 	Statements that transfer control to another part of a program.

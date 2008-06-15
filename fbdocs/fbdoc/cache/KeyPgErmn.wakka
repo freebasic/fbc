@@ -10,7 +10,7 @@ Error reporting function
 {{fbdoc item="ret"}}
 	Returns a pointer to the string identifying the module where the error occurred.
 
-	Returns NULL if the source is not compiled with the //[[ProPgCompOptexx -exx]]// compiler option.
+	Returns NULL if the source is not compiled with the //[[CompilerOptexx -exx]]// compiler option.
 
 {{fbdoc item="desc"}}
 	An error reporting function returning a pointer to the name of the module.
@@ -38,7 +38,7 @@ Error Module  : test.bas
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

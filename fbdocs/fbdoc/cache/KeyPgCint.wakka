@@ -44,6 +44,9 @@ PRINT numeric_value
 SLEEP
 %%
 
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cint**## will return a 16-bit integer, like in QB.
+
 {{fbdoc item="diff"}}
 	- The string argument was not allowed in QB
 

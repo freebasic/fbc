@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TIMER"}}----
-Returns the number of seconds passed since starting the computer
+Returns the number of seconds passed since starting the computer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Timer** ( ) [[KeyPgAs as]] [[KeyPgDouble double]]
@@ -12,7 +12,7 @@ Returns the number of seconds passed since starting the computer
 
 {{fbdoc item="desc"}}
 
-	If the processor has a precision timer (as the Performance Counter  Intel processors from Pentium  have) the precision is linked to the processor clock and microseconds can be expected. With older processors ( 486)  the resolution is 1/18 second.
+	If the processor has a precision timer (as the Performance Counter Pentium processors from Intel have) the precision is linked to the processor clock and microseconds can be expected. With older processors (486)  the resolution is 1/18 second.
 
 	Note: if the program must wait for  periods of 0,1 second or more, ##[[KeyPgSleep Sleep]]## should be used instead, as this allows other programs to run during the waiting period.
 

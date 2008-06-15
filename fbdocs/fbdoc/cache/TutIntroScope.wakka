@@ -32,7 +32,7 @@ aInt = DoSomethingElse()
 
 == Local Variables ==
 
-If you define a variable at the module level (and not using Shared), the variable is said to have local module level scope. It is visible to the module level code, but not to any subroutine or function within the module. In the example above the module variable aInt is only visible to the module level code. 
+If you define a variable at the module level (and not using ##Shared##), the variable is said to have local module level scope. It is visible to the module level code, but not to any subroutine or function within the module. In the example above the module variable ##aInt## is only visible to the module level code. 
 
 Variables defined within a subroutine or function are local to the subroutine or function and are not visible to module level code or any other subroutine or function.
 
@@ -42,25 +42,25 @@ Variables that are defined within If, For-Next, While-Wend and Do-Loop construct
 
 == Shared Variables ==
 
-In the example, if you wanted aInt to be visible within the subroutine or function, you would need to declare the variable as Shared and then not declare a variable with the same name within any subroutine, function or control block. Shared variables are visible to module level code, subroutine or function level code and within control structure blocks.
+In the example, if you wanted ##aInt## to be visible within the subroutine or function, you would need to declare the variable as ##Shared## and then not declare a variable with the same name within any subroutine, function or control block. ##Shared## variables are visible to module level code, subroutine or function level code and within control structure blocks.
 
 == Scope Conflicts ==
 
-In the code snippet above, if aInt were declared as Shared, and each subroutine and function declared aInt, there would be a scope conflict, since there is one variable name used for different levels of scope.
+In the code snippet above, if ##aInt## were declared as ##Shared##, and each subroutine and function declared ##aInt##, there would be a scope conflict, since there is one variable name used for different levels of scope.
 
-The compiler resolves this by taking the current scope into account and mapping the variable within that scope. Since subroutines and functions have a lower level of scope than the module, aInt would refer to the variable declared within the sub or func, and not the one declared at the module level, even though it is declared as a shared variable.
+The compiler resolves this by taking the current scope into account and mapping the variable within that scope. Since subroutines and functions have a lower level of scope than the module, ##aInt## would refer to the variable declared within the sub or func, and not the one declared at the module level, even though it is declared as a shared variable.
 
 == Multiple Modules ==
 
-Scope is limited to a single module, that is a single .bas file. However, it is sometimes necessary to extend the scope from one module to another. You would use the Common statement when you declare a variable that needs to be shared among modules.
+Scope is limited to a single module, that is a single .bas file. However, it is sometimes necessary to extend the scope from one module to another. You would use the ##Common## statement when you declare a variable that needs to be shared among modules.
 
-Each module must have the same Common declaration in order for the compiler to match up the common variables. If you declare a variable in module1 as //Common aInt as Integer// then module2 must also have //Common aInt as Integer//. Without the common declaration aInt would not be visible within module2.
+Each module must have the same ##Common## declaration in order for the compiler to match up the common variables. If you declare a variable in module1 as ##Common aInt as Integer## then module2 must also have ##Common aInt as Integer##. Without the common declaration ##aInt## would not be visible within module2.
 
-You can add the Shared attribute to Common, that is //Common Shared// to not only extend scope to multiple modules, but to extend scope within a module. Common Shared operates the same as Shared within a single module. As with Common, you need to have matching declarations in each module that needs access to the variable.
+You can add the ##Shared## attribute to ##Common##, that is ##Common Shared## to not only extend scope to multiple modules, but to extend scope within a module. ##Common Shared## operates the same as ##Shared## within a single module. As with ##Common##, you need to have matching declarations in each module that needs access to the variable.
 
 === Scope...End Scope ===
 
-You can create a temporary scope block by using the Scope, End Scope keywords. The scope block is very useful when creating multi-line macros where you may need to create some temporary working variables but do not want to introduce name conflicts in the program. The following snippet illustrates how to create a scope block.
+You can create a temporary scope block by using the ##Scope##, ##End Scope## keywords. The scope block is very useful when creating multi-line macros where you may need to create some temporary working variables but do not want to introduce name conflicts in the program. The following snippet illustrates how to create a scope block.
 
 %%(freebasic)
 Scope
@@ -71,7 +71,7 @@ End Scope
 
 The scope of any variable created within a scope block is limited to the block itself. However, the scope block inherits the visibility of the surrounding scope so that variables created at the same scope as the scope block are visible within the block.
 
-For example, if you have aInt which is at module level scope, and the scope block is at module level scope, then aInt would be visible inside the scope block. Unless of course there is a scope conflict, in which case the variable inside the scope block would override the variable with the same name outside the scope block.
+For example, if you have aInt which is at module level scope, and the scope block is at module level scope, then ##aInt## would be visible inside the scope block. Unless of course there is a scope conflict, in which case the variable inside the scope block would override the variable with the same name outside the scope block.
 
 === Variable Lifetime ===
 
@@ -87,7 +87,7 @@ Variables declared within a subroutine and function exist as long as the program
 
 == Static Variables  ==
 
-One exception to the declared sub/func variable is the Static variable. Static variables maintain their value between calls to the subroutine or function and so have a module level lifespan. 
+One exception to the declared sub/func variable is the ##Static## variable. ##Static## variables maintain their value between calls to the subroutine or function and so have a module level lifespan. 
 
 == Control Block Variables ==
 

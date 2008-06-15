@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Arrays"}}----
-Multi-dimensional container types
+Multi-dimensional container types.
 
 {{fbdoc item="section" value="Overview"}}
 	//Arrays// are special kinds of [[ProPgVariables variables]] which act as containers for a number of values, or //elements//. An array can store elements of any type, and all of its elements share the same type. For example, an array can store ##[[KeyPgInteger Integer]]## elements or ##[[KeyPgSingle Single]]## elements, but not both. These elements are accessed--read from or written to--through an ##[[KeyPgInteger Integer]]## value representing their //position// in the array. Arrays have lengths, or //sizes//, which are equal to the number of elements they are storing at any given time. //Fixed-length// arrays have constant sizes throughout their lifetimes, while the sizes of //variable-length// arrays can change dynamically.

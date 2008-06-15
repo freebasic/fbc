@@ -118,10 +118,10 @@ Print x(c())
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
-	- In the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
-	- In the //[[ProPgCompOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
-	- In the //[[ProPgCompOptlang -lang fb]]// dialect the parameters are passed ##[[KeyPgByval ByVal]]## by default. //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- In the //[[CompilerOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
+	- In the //[[CompilerOptlang -lang fb]]// dialect the parameters are passed ##[[KeyPgByval ByVal]]## by default. //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
 
 {{fbdoc item="diff"}}
 	- Parameters can be optional in FreeBASIC.

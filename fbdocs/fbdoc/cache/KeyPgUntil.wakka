@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UNTIL"}}----
-Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements
+Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements.
 
 {{fbdoc item="syntax"}}##
 	Do **Until** //condition//

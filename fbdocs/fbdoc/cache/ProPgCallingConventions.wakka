@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Calling Conventions"}}----
-Specifying how procedures are called
+Specifying how procedures are called.
 
 Calling conventions determine how calling code interacts with procedures when called. They specify rules about how parameters are pushed onto the call stack, how values are returned and when the call stack is cleaned up. This information is useful when interacting with code written in other languages, particularly assembly language. In some cases, calling conventions also apply some kind of name decoration to procedure names.
 

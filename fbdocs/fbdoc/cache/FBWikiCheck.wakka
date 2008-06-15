@@ -1,12 +1,12 @@
-chklinks: 2007/12/12 09:01:42
+chklinks: 2008/02/14 14:32:22
 
-Loaded 900 page names from 'PageIndex.txt'
+Loaded 911 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 14158 links
-Saved 14158 links to 'linklist.csv'
-Saved 773 page names to 'DocPages.txt'
-Saved 710 file names to 'samplist.csv'
+Found 14458 links
+Saved 14458 links to 'linklist.csv'
+Saved 781 page names to 'DocPages.txt'
+Saved 727 file names to 'samplist.csv'
 
 Checking missing pages:
 No missing pages
@@ -23,24 +23,19 @@ Checking missing backlinks:
 	Ignoring missing backlinks to 'catpgfunctindex'
 	Ignoring missing backlinks to 'catpgfullindex'
 	Ignoring missing backlinks to 'catpggfx'
-	Ignoring missing backlinks to 'catpgprogrammer'
 	Ignoring missing backlinks to 'catpgopindex'
-'ProPgLiterals' does not have backlink to 'DocToc'
+	Ignoring missing backlinks to 'catpgcompopt'
+'KeyPgConstMember' does not have backlink to 'CatPgProcedures'
 Found 1 missing backlinks
 
 Checking invalid backlinks:
-'CatPgUserDefTypes' should be removed from 'KeyPgClass'
-'DocToc' should be removed from 'DataType'
 'DocToc' should be removed from 'FreeBASIC'
-'CatPgProgrammer' should be removed from 'ProPgTypeObjects'
 'DocToc' should be removed from 'CVSCompile'
-'CommunityTutorials' should be removed from 'FBWikiTutorialTemplate'
-'CommunityTutorials' should be removed from 'TutHackResetConsoleHandles'
-Found 7 invalid backlinks
+'CatPgProgrammer' should be removed from 'ProPgUDTs'
+Found 3 invalid backlinks
 
 Checking headers:
-'TutConstQualifiers' has invalid horzline
-Found 1 invalid headers
+Found 0 invalid headers
 
 Checking mismatched name case in links:
 No mismatched name case in links
@@ -49,7 +44,8 @@ Checking pages not linked from any CatPg:
 Found 0 not linked from any CatPg
 
 Checking pages with no back link:
-Found 0 pages with no backlink at all
+'KeyPgClass' has no backlink
+Found 1 pages with no backlink at all
 
 Checking PrintToc for missing pages:
 Reading '../fbdoc/cache/PrintToc.wakka'
@@ -107,8 +103,7 @@ Checking duplicate filenames:
 No duplicate file names
 
 Checking Image References:
-Missing 'fblogoto9.png', but is not on a DOC page
-Found 1 references to missing image files
+No references to missing image files
 
 
-Execution time: 29 seconds.
+Execution time: 33 seconds.

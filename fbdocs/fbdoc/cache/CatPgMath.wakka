@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Mathematical Functions"}}----
-Procedures that work with numbers mathematically
+Procedures that work with numbers mathematically.
 
 {{fbdoc item="desc"}}
 	This set of procedures provide basic algebraic and trigonometric function. Random numbers can also be retrieved, using a variety of random number generators.

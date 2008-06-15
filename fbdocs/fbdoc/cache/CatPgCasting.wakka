@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Converting Data Types"}}----
-Operators and procedures that convert between different types
+Operators and procedures that convert between different types.
 
 **{{anchor name="GENERIC|Generic conversions"}}**
 	Operators to convert between arbitrary types.

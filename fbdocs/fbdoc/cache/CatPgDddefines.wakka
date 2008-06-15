@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Intrinsic Defines"}}----
-Preprocessor symbols defined by the compiler
+Preprocessor symbols defined by the compiler.
 
 {{fbdoc item="desc"}}
 	Intrinsic defines are set by the compiler and may be used as any other defined symbol.  Intrinsic defines often convey information about the state of the compiler, either in general or at a specific point in the compilation process.  Most intrinsic defines are associated with a value.
@@ -97,4 +97,4 @@ Preprocessor symbols defined by the compiler
 		True (-1) if all procedures are private by default, zero (0) otherwise.
 >>::c::
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

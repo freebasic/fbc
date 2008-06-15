@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DRAW STRING"}}----
-Graphics statement to render text to an image or screen
+Graphics statement to render text to an image or screen.
 
 {{fbdoc item="syntax"}}##
 	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) ] ] ] ]
@@ -61,7 +61,7 @@ draw string (x, y), s
 '' Wait for a keypress before ending the program
 sleep
 %%
-{{image class="center" title="Draw String Example 1" url="http://img355.imageshack.us/img355/5697/keypgdrawstringexample1fl0.png" link="http://img355.imageshack.us/my.php?image=keypgdrawstringexample1fl0.png"}}
+{{image class="center" title="Draw String Example 1" url="/images/drawstr1.png"}}
 
 	This example shows you how to create and use your own custom font.  For simplicity, it uses ##**Draw String**## with the default font to create the glyphs.
 {{fbdoc item="filename" value="examples/manual/gfx/drawstring-custom.bas"}}%%(freebasic)
@@ -106,10 +106,10 @@ imagedestroy myFont
 
 sleep
 %%
-{{image class="center" title="Draw String Example 2" url="http://img363.imageshack.us/img363/9928/keypgdrawstringexample2ja3.png" link="http://img363.imageshack.us/my.php?image=keypgdrawstringexample2ja3.png"}}
+{{image class="center" title="Draw String Example 2" url="/images/drawstr2.png"}}
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint Print]]##

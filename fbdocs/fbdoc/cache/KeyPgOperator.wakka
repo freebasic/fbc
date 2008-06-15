@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OPERATOR"}}----
-Declares or defines an overloaded operator
+Declares or defines an overloaded operator.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
@@ -34,7 +34,7 @@ Declares or defines an overloaded operator
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##
+		Name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##.
 	##//assignment_op//## 
 		##let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
 	##//unary_op//##
@@ -55,7 +55,7 @@ Declares or defines an overloaded operator
 
 	Binary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicitly declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger Integer]]##.
 
-	##[[KeyPgLet Let]]## refers to the assignment operator, as in ##LET a=b##. The ##[[KeyPgLet Let]]## keyword is omitted in common practice, and is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect.  However, ##[[KeyPgOpLetlist Let()]]## can be used to assign the fields of a UDT to multiple variables.
+	##[[KeyPgLet Let]]## refers to the assignment operator, as in ##LET a=b##. The ##[[KeyPgLet Let]]## keyword is omitted in common practice, and is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.  However, ##[[KeyPgOpLetlist Let()]]## can be used to assign the fields of a UDT to multiple variables.
 
 	See ##[[KeyPgOpFor For]]##, ##[[KeyPgOpStep Step]]##, and ##[[KeyPgOpNext Next]]## for more information on overloading the ##[[KeyPgFornext For..Next]]## statement for use with user defined types.
 
@@ -87,7 +87,7 @@ Print "b = "; b
 Print "a + b = "; a + b
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

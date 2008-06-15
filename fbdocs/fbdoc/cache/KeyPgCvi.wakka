@@ -30,10 +30,11 @@ print a, cvi(b)
 sleep
 %%
 
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cvi**## expects a 2-byte-string, since a QB integer is only 16 bits.  Only the first two bytes of the string are used, even if the string happens to be longer than two bytes.
+
 {{fbdoc item="diff"}}
-	- In QB, ##**Cvi**## expects a 2-byte-string, since a QB integer is only 16 bits.
-	- In QB, an error occurs if the string passed is less than two bytes in length.
-	- In QB, only the first two bytes of the string are used even if the string happens to be longer than two bytes.
+	- In QB an error occurs if the string passed is less than two bytes in length.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgMki Mki]]##

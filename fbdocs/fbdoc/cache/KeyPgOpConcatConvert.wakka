@@ -43,6 +43,7 @@ The result is: 124.3
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- [[KeyPgOpConcat Operator + (String concatenation)]]
 	- ##[[KeyPgStr Str]]##
 
 {{fbdoc item="back" value="CatPgOpString|String Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

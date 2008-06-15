@@ -1,14 +1,14 @@
 {{fbdoc item="title" value="LPRINT"}}----
-Writes text to the default printer
+Writes text to the default printer.
 
 {{fbdoc item="syntax"}}##
 	**Lprint**  [ [[KeyPgPrintusing Using]] //formatstring//,] [//expressionlist//] [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
 	##//formatstring//##
-		string specifying the output format
+		String specifying the output format.
 	##//expressionlist//##
-		list of variables to output according to the specified format
+		List of variables to output according to the specified format.
 
 {{fbdoc item="desc"}}
 	Prints ##//expressionlist//## to the printer attached to the parallel port LPT1, or if it does not exist, to the default printer.  To print to a printer different from the default one, use ##[[KeyPgOpenLpt OPEN LPT]]##.
@@ -41,7 +41,7 @@ LPRINT CHR(12)
 	- None
 
 {{fbdoc item="lang"}}
-	- ##**Lprint**## is not supported in the //[[ProPgCompOptlang -lang fb]]// dialect. In this dialect the printer must be properly opened with ##[[KeyPgOpenLpt Open LPT]]## and ##[[KeyPgPrintPp Print #]]## must be used to print.
+	- ##**Lprint**## is not supported in the //[[CompilerOptlang -lang fb]]// dialect. In this dialect the printer must be properly opened with ##[[KeyPgOpenLpt Open LPT]]## and ##[[KeyPgPrintPp Print #]]## must be used to print.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpenLpt Open LPT]]##

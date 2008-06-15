@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TYPEOF"}}----
-Returns the type of a variable
+Returns the type of a variable.
 
 {{fbdoc item="syntax"}}##
 	**Typeof** ( //variable// | //datatype// )
@@ -35,7 +35,7 @@ Dim As String foo
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

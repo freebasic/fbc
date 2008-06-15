@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FIELD"}}----
-Specifies alignment
+Specifies alignment.
 
 {{fbdoc item="syntax"}}##
 [[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
@@ -47,7 +47,7 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	-In the //[[ProPgCompOptlang -lang qb]]// dialect, the ##**Field**## alignment is always one, no padding is ever done, as in QB.
+	-In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Field**## alignment is always one, no padding is ever done, as in QB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##

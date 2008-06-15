@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="String Functions"}}----
-Statements and Procedures that work with strings
+Statements and Procedures that work with strings.
 
 {{fbdoc item="desc"}}
-	These statements and procedures provide a myriad of ways to create and manipulate strings and substrings. Numbers can be converted to strings and vice-versa. Procedures are also provided to aid in serialization of numeric data, perhaps for persistent storage.
+	These statements and procedures provide many ways to create and manipulate strings and substrings. Numbers can be converted to strings and vice-versa. Procedures are also provided to aid in serialization of numeric data, perhaps for persistent storage.
 
 **{{anchor name="CREATESTR|Creating Strings"}}**
 	String data types and procedures that create new strings.
@@ -120,6 +120,8 @@ Statements and Procedures that work with strings
 		Removes surrounding substrings or characters on the left and right side of a string.
 	=={{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}==
 		Returns the first occurrence of a substring or character within a string.
+	=={{fbdoc item="keyword" value="KeyPgInstrrev|INSTRREV"}}==
+		Returns the last occurrence of a substring or character within a string.
 	=={{fbdoc item="keyword" value="KeyPgMidstatement|MID (Statement)"}}==
 		Copies a substring to a substring of a string.
 	=={{fbdoc item="keyword" value="KeyPgLset|LSET"}}==

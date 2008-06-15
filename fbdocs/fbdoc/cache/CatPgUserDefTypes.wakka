@@ -23,6 +23,7 @@
 	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgStaticMember|STATIC (Member)"}}
+	- {{fbdoc item="keyword" value="KeyPgConstMember|CONST (Member)"}}
 
 {{fbdoc item="section" value="Member Access Control"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}

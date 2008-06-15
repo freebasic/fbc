@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CBYTE"}}----
-Converts numeric or string expression to ##[[KeyPgByte Byte]]##
+Converts numeric or string expression to ##[[KeyPgByte Byte]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cbyte** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgByte byte]]
@@ -15,11 +15,11 @@ Converts numeric or string expression to ##[[KeyPgByte Byte]]##
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgByte Byte]]## value
+		A numeric, string, or pointer expression to cast to a ##[[KeyPgByte Byte]]## value.
 	##//datatype//##
-		any numeric, string, or pointer data type
+		Any numeric, string, or pointer data type.
 	##//typename//##
-		a user defined type
+		A user defined type.
 
 {{fbdoc item="ret"}}
 	A ##[[KeyPgByte Byte]]## value.
@@ -45,7 +45,7 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

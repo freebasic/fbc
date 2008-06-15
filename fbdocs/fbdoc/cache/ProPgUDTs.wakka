@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="User Defined Types"}}----
+Custom types.
+
+{{fbdoc item="section" value="Overview"}}
+	//User-Defined Types// are special kinds of [[ProPgVariables variables]] which can be created by the programmer.  A User-Defined Type (UDT) is really just a container that contains a bunch of other variables, like an [[ProPgArrays array]], but unlike arrays UDTs can hold //different// variable types (whereas arrays always hold many variables of the //same// type).  In fact, UDTs can even have [[ProPgProcedures procedures]] inside of them!
+
+{{fbdoc item="section" value="Members"}}
+	The different variables and/or procedures stored inside a UDT are called "members", or more generally, items.  Members can be variables of just about any type, including numerical types, strings, [[ProPgPointers pointers]], [[KeyPgEnum enums]], and even arrays (the only exception being [[ProPgVarLenArrays variable-length arrays]] declared using [[KeyPgRedim ReDim]], which cannot be used in UDTs because of the way they are used internally.  Variables are created in UDTs much the same way variables are created 	normally, except that the Dim keyword is optional.  UDT members are accessed via the [[KeyPgOpMemberAccess . operator]], so for example if you created a variable called someVar in a UDT you would access it with the name of the UDT variable followed by ".someVar".  Here is an example:
+
+{{fbdoc item="filename" value="examples/manual/proguide/udt/simple.bas"}}%%(freebasic)
+'Define a UDT called myType, with an Integer member named someVar
+Type myType
+  As Integer someVar
+End Type
+
+'Create a variable of that type
+Dim myUDT As myType
+
+'Set the member someVar to 23, then display its contents on the screen
+myUDT.someVar = 23
+Print myUDT.someVar
+%%
+
+	Notice that the [[KeyPgType Type...End Type]] does not actually create a variable of that type, it only defines what variables of that type contain.  You must create a variable of that type to actually use it!
+
+{{fbdoc item="section" value="UDT Pointers"}}
+	UDT Pointers are, as the name implies, pointers to UDTs.  They are created like regular pointers, but there is a special way to use them.  To access the member of a UDT pointed to by a pointer, you use the [[KeyPgOpPtrMemberAccess -> operator]].  For example, if myUDTPtr is a pointer to a UDT which has a member someVar, you would access the member as myUDTPtr->someVar, which is a much cleaner shorthand for the equally valid *(myUDTPtr).someVar.
+
+{{fbdoc item="filename" value="examples/manual/proguide/udt/ptr-access.bas"}}%%(freebasic)
+Type rect
+	x As Integer
+	y As Integer
+End Type
+
+Dim r As rect
+Dim rp As rect Pointer = @r
+
+rp->x = 4
+rp->y = 2
+
+Print "x = " & rp->x & ", y = " & rp->y
+Sleep
+%%
+
+
+{{fbdoc item="see"}}
+	- [[ProPgTypeAliases Type Aliases]]
+	- [[KeyPgTypeTemp Temporary Types]]
+	- [[ProPgCtorsDtors Constructors and Destructors]]
+	- [[ProPgMemberProcedures Member Procedures]]
+	- [[ProPgMemberAccessRights Member Access Rights]]
+	- [[ProPgOperatorOverloading Operator Overloading]]
+
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

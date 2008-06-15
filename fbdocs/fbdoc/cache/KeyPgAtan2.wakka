@@ -33,7 +33,7 @@ The output would be:
 	- New to FreeBASIC
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTan Tan]]##

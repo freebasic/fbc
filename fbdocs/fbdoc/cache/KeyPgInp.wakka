@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="INP"}}----
-Returns a value at a hardware port
+Returns a value at a hardware port.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inp** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -9,10 +9,10 @@ Returns a value at a hardware port
 ##
 {{fbdoc item="param"}}
 	##//port//##
-		port number to read
+		Port number to read.
 
 {{fbdoc item="ret"}}
-	The value at the specified port
+	The value at the specified port.
 
 {{fbdoc item="desc"}}
 	This function retrieves the value at 'port' and returns immediately.

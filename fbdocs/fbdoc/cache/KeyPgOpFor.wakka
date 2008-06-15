@@ -86,7 +86,7 @@ for i as T = 1 to 10
 next i
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpNext Operator Next]]##

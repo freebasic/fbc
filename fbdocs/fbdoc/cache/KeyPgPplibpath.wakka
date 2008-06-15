@@ -23,6 +23,6 @@ Preprocessor statement to add a search path for libraries
 {{fbdoc item="see"}}
 	- ##[[KeyPgInclude #inclib]]##
 	- ##[[KeyPgInclude #include]]##
-	- [[ProPgCompOptp Compiler Option: -p]]
+	- [[CompilerOptp Compiler Option: -p]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -72,7 +72,7 @@ loop
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC. QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.

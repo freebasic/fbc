@@ -35,7 +35,7 @@ print "multiple UNICODE characters:"; WCHR(933, 934, 935)
 	- DOS does not support ##**Wchr**##.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

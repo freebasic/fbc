@@ -31,18 +31,71 @@ End Type
 
 Dim ex As Example
 
-'' First method of filling the type
+'' Filling the type by setting each field
 ex.field1 = 1
 ex.field2 = 2
 
-'' Second method
+'' Filling the type by setting each field using WITH
 With ex
 	.field1 = 1
 	.field2 = 2
 End With
 
-'' Third method, using temporary types
+'' Fill the variable's fields with a  temporary type
 ex = Type( 1, 2 )
+%%
+
+{{fbdoc item="filename" value="examples/manual/udt/temp-type2.bas"}}%%(freebasic)
+'' Passing a user-defined types to a procedure using a temporary type
+'' where the type can be inferred.
+
+Type S
+  As Single x, y
+End Type
+
+Sub test ( v As S )
+  Print "S", v.x, v.y
+End Sub
+
+test( type( 1, 2 ) )
+%%
+
+{{fbdoc item="filename" value="examples/manual/udt/temp-type3.bas"}}%%(freebasic)
+'' Passing a user-defined type to a procedure using temporary types
+'' where the type is ambiguous and the name of the type must be specified.
+
+Type S
+  As Single x, y
+End Type
+
+Type T
+  As Integer x, y
+End Type
+
+Union U
+  As Integer x, y
+End Union
+
+'' Overloaded procedure test()
+Sub test overload ( v As S )
+  Print "S", v.x, v.y
+End Sub
+
+Sub test ( v As T )
+  Print "T", v.x, v.y
+End Sub
+
+Sub test ( v As U )
+  Print "U", v.x, v.y
+End Sub
+
+'' Won't work: ambiguous
+'' test( type( 1, 2 ) )
+
+'' Specify name of type instead
+test( type<S>( 1, 2 ) )
+test( type<T>( 1, 2 ) )
+test( type<U>( 1 ) )
 %%
 
 {{fbdoc item="diff"}}
@@ -52,4 +105,4 @@ ex = Type( 1, 2 )
 	- ##[[KeyPgType Type...End Type]]##
 	- ##[[KeyPgTypeAlias Type (Alias)]]##
 
-{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

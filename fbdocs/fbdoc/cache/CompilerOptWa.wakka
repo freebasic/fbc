@@ -12,7 +12,7 @@ Pass options to the assembler.
 	The ##-Wa## compiler option passes additional options to GAS, the assembler.  Options must be separated by commas only.
 
 {{fbdoc item="see"}}
-	- [[ProPgCompOptWl Compiler Option: -Wl]]
+	- [[CompilerOptWl Compiler Option: -Wl]]
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

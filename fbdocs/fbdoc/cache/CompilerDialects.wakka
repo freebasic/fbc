@@ -1,18 +1,18 @@
 {{fbdoc item="title" value="FreeBASIC Dialects"}}----
 
-	FreeBASIC version 0.17b introduces a //[[ProPgCompOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
+	FreeBASIC version 0.17b introduces a //[[CompilerOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
 
-	And starting with version 0.18.3b the //[[ProPgCompOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in QuickBASIC.
+	Starting with version 0.18.3b the //[[CompilerOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in QuickBASIC.
 
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;deprecated;previous fbc version compatibility"}}
 
-	The //[[ProPgCompOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.
+	The //[[CompilerOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.
 
 	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 
-	To compile ""FreeBASIC"" 0.16b or below sources, use the //[[ProPgCompOptlang -lang deprecated]]// option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
+	To compile ""FreeBASIC"" 0.16b or below sources, use the //[[CompilerOptlang -lang deprecated]]// option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
 
-	It is recommended to use //[[ProPgCompOptlang -lang fb]]// for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
+	It is recommended to use //[[CompilerOptlang -lang fb]]// for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
 	
 	
 {{fbdoc item="section" value="-lang fb (the default mode)"}}
@@ -87,7 +87,7 @@
 
 {{fbdoc item="section" value="-lang qb"}}
 	
-	**Supported:** //Everything not supported/allowed in the //[[ProPgCompOptlang -lang fb]]// dialect, plus..//
+	**Supported:** //Everything not supported/allowed in the //[[CompilerOptlang -lang fb]]// dialect, plus..//
 
 	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions.
 

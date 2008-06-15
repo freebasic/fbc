@@ -65,7 +65,7 @@ list_files "*", fbArchive
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- The //attrib_mask// and //out_attrib// parameters are new to FreeBASIC

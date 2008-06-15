@@ -22,7 +22,7 @@ dim lNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available only in the //[[ProPgCompOptlang -lang deprecated]]// dialect.
+	- Only available only in the //[[CompilerOptlang -lang deprecated]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

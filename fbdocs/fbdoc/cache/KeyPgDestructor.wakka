@@ -65,7 +65,7 @@ Destroying: A.x
 Destroying: main.x
 %%
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

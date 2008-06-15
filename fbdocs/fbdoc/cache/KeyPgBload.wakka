@@ -56,7 +56,7 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	- ##//addr//## must be an array in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- ##//addr//## must be an array in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- loads bitmaps (##.bmp##) to screen or buffer in addition to ##[[KeyPgBsave Bsave]]##'d files

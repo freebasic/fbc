@@ -456,5 +456,3 @@ delete[] Xlist
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type]]##
-
-{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

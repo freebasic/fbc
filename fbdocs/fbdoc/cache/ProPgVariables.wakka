@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Variables"}}----
-Symbols representing data in memory
+Symbols representing data in memory.
 
 {{fbdoc item="desc"}}
 	Variables are name symbols which can be manipulated. They are declared and referenced using names composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces.  See //[[ProPgIdentifierRules Indentifier Rules]]//.

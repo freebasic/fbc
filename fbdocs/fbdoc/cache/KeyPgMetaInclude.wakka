@@ -33,7 +33,7 @@ Foo.Bar = 1
 Foo.Barbeque = 2
 %%
 {{fbdoc item="lang"}}
-	- Not supported in the //[[ProPgCompOptlang -lang fb]]//
+	- Not supported in the //[[CompilerOptlang -lang fb]]//
 
 {{fbdoc item="diff"}}
 	- None

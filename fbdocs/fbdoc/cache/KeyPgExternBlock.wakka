@@ -40,7 +40,7 @@ end extern
 %%
 
 {{fbdoc item="lang"}}
-	- ##**Extern**## blocks are only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- ##**Extern**## blocks are only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

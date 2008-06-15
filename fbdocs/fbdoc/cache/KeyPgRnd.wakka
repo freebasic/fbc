@@ -47,13 +47,13 @@ end function
 
 {{fbdoc item="lang"}}
 	The default algorithm used depends on the current dialect in use:
-		- With the //[[ProPgCompOptlang -lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.
-		- With the //[[ProPgCompOptlang -lang qb]]// dialect, a function giving the same output as ##**Rnd**## in QB is used. The granularity is 24 bits.
-		- With the //[[ProPgCompOptlang -lang deprecated]]// dialect, the function in the C runtime available in the system is used. The function available in Win32 has a granularity of 15 bits, and 32 bits in Linux and DOS.
+		- With the //[[CompilerOptlang -lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.
+		- With the //[[CompilerOptlang -lang qb]]// dialect, a function giving the same output as ##**Rnd**## in QB is used. The granularity is 24 bits.
+		- With the //[[CompilerOptlang -lang deprecated]]// dialect, the function in the C runtime available in the system is used. The function available in Win32 has a granularity of 15 bits, and 32 bits in Linux and DOS.
 		- ##[[KeyPgRandomize Randomize]]## accepts an additional parameter, allowing to select the algorithm used in ##**Rnd**##.
 
 {{fbdoc item="diff"}}
-	- None, if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- None, if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
 	- For the non-QB-compatible algorithms, if the optional argument is less than 0, it has the same meaning as passing an argument of 1.
 
 {{fbdoc item="see"}}

@@ -44,7 +44,7 @@ myVariable.setNome( "FreeBASIC" )
 %%
 
 {{fbdoc item="lang"}}
-	- Available only in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Available only in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

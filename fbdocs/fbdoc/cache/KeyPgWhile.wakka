@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WHILE"}}----
-Control flow statement
+Control flow statement.
 
 {{fbdoc item="syntax"}}##
 	Do **While** //condition//
@@ -14,6 +14,9 @@ Control flow statement
 		[//statement block//]
 	**Wend**
 ##
+{{fbdoc item="desc"}}
+	While specifies that a loop block will continue if the ##//condition//## following it evaluates as true. This ##//condition//## is checked during each loop iteration.
+
 {{fbdoc item="diff"}}
 	- None
 

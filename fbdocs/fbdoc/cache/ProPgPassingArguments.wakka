@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Passing Arguments to Procedures"}}----
-Passing information to procedures
+Passing information to procedures.
 
 {{fbdoc item="section" value="Declaring parameters"}}
 	Procedures can get passed information in the form of variables and objects when they are called. In the context of a procedure call, these variables and objects are called arguments. These arguments are then represented as so-called parameters inside the procedure body. Parameters can be used just like any other variable or object.

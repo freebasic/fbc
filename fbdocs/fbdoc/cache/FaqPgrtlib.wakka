@@ -30,7 +30,7 @@
 {{anchor name="item5"}}==How do I access the serial ports?==
 
 	**DOS**
-	The DOS INT14 is not very useful as it sends/reads a single char in each call. So it's better to use  an external DOS32 comms library. /* does someone know a good one ? */
+	See [[FaqDOS DOS FAQ section]].
 
 	**Windows and Linux**
 	See [[KeyPgOpenCom Open Com]].
@@ -38,9 +38,9 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item6"}}==How do I print?==
-	FB Version 0.15 supports character output to printer. 
+	Since version 0.15 FB supports character output to printer. 
 	To print graphics two approaches are possible:
-	- Preprocess the graphics, program the printer and send the pixels in FB. This is portable but depends on the printer model.  
+	- Preprocess the graphics, program the printer and send the pixels in FB. This is OS-portable but depends on the printer model. The only way for DOS, see also [[FaqDOS DOS FAQ section]].
 	- In Windows and Linux there are specific API calls. This is not OS-portable but the OS's printer driver makes it printer-independent 
 
 {{anchor name="item0|Back to top"}}

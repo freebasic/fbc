@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PUBLIC"}}----
-Specifies a procedure having external linkage
+Specifies a procedure having external linkage.
 
 {{fbdoc item="syntax"}}##
 	**Public** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]

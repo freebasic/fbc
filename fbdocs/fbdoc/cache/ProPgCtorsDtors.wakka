@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Constructors and Destructors"}}----
-In charge of the creation and destruction of objects
+In charge of the creation and destruction of objects.
 
 **{{anchor name="OVERVIEW|Overview"}}**
 **{{anchor name="DECLARATION|Declaration"}}**

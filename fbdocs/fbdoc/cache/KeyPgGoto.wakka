@@ -11,15 +11,29 @@ Control flow statement to jump to another part of the program
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/goto.bas"}}%%(freebasic)
-'' Compile with -lang deprecated or qb
+	goto there
+
+backagain:
+	end
+
+there:
+	print "Welcome!"
+	goto backagain
+%%
+
+{{fbdoc item="filename" value="examples/manual/control/gotonum.bas"}}%%(freebasic)
+'' Compile with -lang qb or deprecated
 1 goto 3
 2 end
 3 print "Welcome!"
 4 goto 2
 %%
 
+{{fbdoc item="lang"}}
+	- Line numbers are allowed only in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
+
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGosub Gosub]]##

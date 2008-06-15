@@ -3,7 +3,7 @@ Declares or defines a member procedure returning a value.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] | [[KeyPgConstMember const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
 	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
 
 	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
@@ -29,7 +29,7 @@ Declares or defines a member procedure returning a value.
 
 	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##.
 
-	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.
+	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember Const (Member)]]## may be declared using the ##**Const**## specifier.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/function.bas"}}%%(freebasic)
@@ -72,7 +72,7 @@ print "Day   = "; d.Day
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

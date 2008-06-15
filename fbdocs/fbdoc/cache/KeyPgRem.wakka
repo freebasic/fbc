@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="REM"}}----
-Indicates comments in the source code
+Indicates comments in the source code.
 
 {{fbdoc item="syntax"}}##
 	**Rem** comment
@@ -10,7 +10,7 @@ Indicates comments in the source code
 	   comment '/
 ##
 {{fbdoc item="desc"}}
-	A source code line beginning with ##**Rem**## indicates that the line is comment and will not be compiled.  
+	A source code line beginning with ##**Rem**## indicates that the line is a comment and will not be compiled.  
 	
 	The single quote character (') may also be used to indicate a comment and may appear after other keywords on a source line.
 

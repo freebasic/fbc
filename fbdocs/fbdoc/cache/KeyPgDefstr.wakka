@@ -22,7 +22,7 @@ dim sMessage
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[ProPgCompOptlang -lang qb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None

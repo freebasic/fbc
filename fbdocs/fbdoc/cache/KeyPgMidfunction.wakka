@@ -8,7 +8,7 @@ Returns a substring of a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Mid**( //str//, //start// [, //n// ] )
+	//result// = **Mid**[$]( //str//, //start// [, //n// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##
@@ -43,6 +43,10 @@ A Unicode example:
 
 {{fbdoc item="target"}}
 	- DOS does not support the wide-character string versions of **##Mid##**.
+
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang deprecated]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.

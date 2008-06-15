@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Bit Manipulation"}}----
-Macros that work with the bits and bytes of numbers
+Macros that work with the bits and bytes of numbers.
 
 {{fbdoc item="desc"}}
 	The macros listed here manipulate bits and bytes. The "Byte Manipulation" macros return the value of a specific byte or word of an ##[[KeyPgInteger Integer]]## value, while the "Bit Manipulation" macros set or test individual bits in an ##[[KeyPgInteger Integer]]## value.

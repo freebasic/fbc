@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="IIF"}}----
-Conditional function to return one of two values
+Conditional function that returns one of two values.
 
 {{fbdoc item="syntax"}}##
 	**IIf** ( //condition//, //expr_if_true//, //expr_if_false// )
@@ -7,13 +7,13 @@ Conditional function to return one of two values
 {{fbdoc item="param"}}
 	##//condition//##
 		The condition to test.
-		A non-zero value evaluates as true, while a value of zero evaluates as false
+		A non-zero value evaluates as true, while a value of zero evaluates as false.
 	##//expr_if_true//##
 		An expression to evaluate and return if ##//condition//## is true.
-		It must return a numeric value, which can be an integer, floating point number or a pointer
+		It must return a numeric value, which can be an integer, floating point number or a pointer.
 	##//expr_if_false//##
 		An expression to evaluate and return if ##//condition//## is false.
-		It must be the same type of number as ##//expr_if_true//##
+		It must be the same type of number as ##//expr_if_true//##.
 
 {{fbdoc item="desc"}}
 	##**IIf**## returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
@@ -33,7 +33,7 @@ a = (x + y + temp) \ z
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

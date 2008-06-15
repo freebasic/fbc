@@ -1,12 +1,11 @@
 {{fbdoc item="title" value="Programmer's Guide"}}----
-FreeBASIC programmer's guide
+FreeBASIC programmer's guide.
 
 //Work in Progress: **New pages created for this guide should use the ""ProPg""* prefix.**//
 
 <<{{fbdoc item="section" value="Getting Started"}}
 	{{fbdoc item="keyword" value="ProPgHelloWorld|Hello World"}}
 	{{fbdoc item="keyword" value="ProPgPrimer1|FreeBASIC Primer #1"}}
-	{{fbdoc item="keyword" value="CatPgCompOpt|Compiler Options"}}
 
 {{fbdoc item="section" value="Source Files"}}
 	{{fbdoc item="keyword" value="ProPgSourceFiles|Source Files (.bas)"}}

@@ -7,8 +7,6 @@ Preprocessor operator to concatenate strings
 {{fbdoc item="desc"}}
 	This operator creates a new token by concatenating the texts at both sides of it.  This text can be recognized by other macros and further expanded.  One use, is to create a macro that expands to different macro names, variable names, and function names depending on the arguments received.
 
-	Because this preprocessor operator creates new symbol names at compile time, it is recommended that ##[[KeyPgOptionexplicit Option Explicit]]## be used when working with macros that make use of this operator.
-
 {{fbdoc item="ex"}}
 	Example :
 		{{fbdoc item="filename" value="examples/manual/prepro/concat.bas"}}%%(freebasic)

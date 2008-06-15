@@ -1,10 +1,10 @@
 {{fbdoc item="title" value="Operators"}}----
-Procedures that operate on one or more operands
+Procedures that operate on one or more operands.
 
 ""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment Operator = (Assignment)]]## or ##[[KeyPgOpAdd Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr Operator Strptr]]##.
 
 <<=={{fbdoc item="keyword" value="CatPgOpAssignment|Assignment operators"}}==
-	Operators that assign the value of one operand to the other.
+	Operators that assign the value of one operand to the other operand.
 =={{fbdoc item="keyword" value="CatPgOpArithmetic|Arithmetic operators"}}==
 	Operators that perform mathematical computations on their operands and return the result.
 =={{fbdoc item="keyword" value="CatPgOpConditional|Conditional operators"}}==
@@ -22,8 +22,8 @@ Procedures that operate on one or more operands
 =={{fbdoc item="keyword" value="CatPgOpTypeclass|Type or Class operators"}}==
 	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
 =={{fbdoc item="keyword" value="CatPgOpMemory|Memory operators"}}==
-	Operators that allocate and construct objects.
+	Operators that allocate memory for and construct objects.
 =={{fbdoc item="keyword" value="CatPgOpIterating|Iterating operators"}}==
 	Operators that use iterator objects in ##[[KeyPgFornext For...Next]]## statements.
 >>::c::
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

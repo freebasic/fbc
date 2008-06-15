@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Date and Time Functions"}}----
-Procedures that work with dates and time
+Procedures that work with dates and time.
 
 {{fbdoc item="desc"}}
 	These procedures provide ways to deal with date and time intervals in a consistent way. Additional procedures are provided to set and get the current system date and time, and to retrieve a time stamp for sensitive timing algorithms.

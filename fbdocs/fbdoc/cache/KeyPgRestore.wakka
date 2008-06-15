@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RESTORE"}}----
-Changes the next read location for values stored with the ##[[KeyPgData Data]]## statement
+Changes the next read location for values stored with the ##[[KeyPgData Data]]## statement.
 
 {{fbdoc item="syntax"}}##
 	**Restore** //label//

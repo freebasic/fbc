@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Pointer Arithmetic"}}----
-Manipulating address values mathematically
+Manipulating address values mathematically.
 
 **{{anchor name="OVERVIEW|Overview"}}**
 **{{anchor name="ADDSUB|Adding and subtracting from pointers"}}**
@@ -43,7 +43,7 @@ wend
 
 {{anchor name="DISTANCE"}}{{fbdoc item="section" value="Distance between two pointers"}}
 
-	The distance between two pointers is retrieved with ##[[KeyPgOpSubtract Operator - (Subtract)]]##, and is measured in values, not bytes. For example, the following
+	The distance between two pointers is retrieved with ##[[KeyPgOpSubtract Operator - (Subtract)]]##, and is measured in values, not bytes. For example, the following,
 
 {{fbdoc item="filename" value="examples/manual/proguide/pointers/distance.bas"}}%%(freebasic)
 type T as single

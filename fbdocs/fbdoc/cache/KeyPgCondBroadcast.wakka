@@ -22,7 +22,7 @@ Restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle
 	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in //[[ProPgCompOptlang -lang qb]]//
+	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

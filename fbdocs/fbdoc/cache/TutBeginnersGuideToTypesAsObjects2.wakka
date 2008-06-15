@@ -76,7 +76,7 @@ baz.bar(1) = 42
 Print baz.bar(1)
 %%
 
-This time, i've added a constructor and destructor, which will allocate and deallocate a dynamic memory array, x, with the number of elements specified in the constructor.  Then when the property functions are invoked, I check if the index is within the bounds of the array, if it is then I perform the requested get or set.  If the index specified is out of bounds, then 'Error 6' occurs, which is a way to abort the program with FB's 'out of bounds error', you could replace this with your own error handling routines.  Try this out, by changing the code 'baz.bar(1) = 42' to 'baz.bar(10) = 42', and you'll see it in action, as we specified only 10 elements (index 0-9)
+This time, I've added a constructor and destructor, which will allocate and deallocate a dynamic memory array, x, with the number of elements specified in the constructor.  Then when the property functions are invoked, I check if the index is within the bounds of the array, if it is then I perform the requested get or set.  If the index specified is out of bounds, then 'Error 6' occurs, which is a way to abort the program with FB's 'out of bounds error', you could replace this with your own error handling routines.  Try this out, by changing the code 'baz.bar(1) = 42' to 'baz.bar(10) = 42', and you'll see it in action, as we specified only 10 elements (index 0-9)
 
 **Copy constructor.**
 ----
@@ -197,7 +197,7 @@ Print *a.x, *b.x
 Print *a.x, *b.x
 %%
 
-Then this time the assignment operator is used, note that in the assignment operator code, we don't need to allocate any memory because it has already been allocated in the default constructor, we just need to copy the data across.  The line '*x = *obj.x' performs this copy.  If we had something more advanced, like a dynamic memory array, then we would need to reallocate the memory to be the correct size to fit the data being copied.  Here's a more advanced version just to show that.
+Then this time the assignment operator is used. Note that in the assignment operator code, we don't need to allocate any memory because it has already been allocated in the default constructor, we just need to copy the data across.  The line '*x = *obj.x' performs this copy.  If we had something more advanced, like a dynamic memory array, then we would need to reallocate the memory to be the correct size to fit the data being copied.  Here's a more advanced version just to show that.
 
 %%(freebasic)
 Type foo

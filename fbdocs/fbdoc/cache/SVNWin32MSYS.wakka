@@ -57,8 +57,7 @@ cp -rv "/c/Program Files/FreeBASIC"/* /FBbin%%
 		{{anchor name="making1"}}==Download the ""FreeBASIC"" sources==
 			
 			For the latest source code, you will need to download it from ""SourceForge"" using SVN.
-			MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C.
-						
+			MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C. There is a certificate problem when executing svn and Msys will hang after you select (t) or (p). To correct this; navigate to the fbcsvn directory using a windows command prompt window and enter the svn line from below. You should be asked to select (t) or (p)when the certificate fails. If you select (p) svn will not ask again and the Msys call should work the next time. 			
 			%%mkdir ~/fbcsvn
 cd ~/fbcsvn
 svn co https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC FreeBASIC%%
@@ -103,7 +102,7 @@ make%%
 		
 		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
 			
-			%%cp -fv ~/fbcsvn/fbc/FreeBASIC/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
+			%%cp -fv ~/fbcsvn/FreeBASIC/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
 cp -fv ~/fbcsvn/FreeBASIC/src/rtlib/obj/win32/*.a /FBbin/lib/win32
 cp -fv ~/fbcsvn/FreeBASIC/src/rtlib/obj/win32/fbrt0.o /FBbin/lib/win32
 cp -fv ~/fbcsvn/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%

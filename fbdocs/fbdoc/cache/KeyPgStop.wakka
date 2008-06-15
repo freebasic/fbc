@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STOP"}}----
-Halts program execution, and waits for a key press before ending the program
+Halts program execution, and waits for a key press before ending the program.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Stop** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
@@ -9,7 +9,7 @@ Halts program execution, and waits for a key press before ending the program
 ##
 {{fbdoc item="param"}}
 	##//retval//##
-		Error code returned to system
+		Error code returned to system.
 
 {{fbdoc item="desc"}}
 	Halts the execution of the program and stands by. It's  provided as a help to debugging, as it preserves the memory and doesn't close files. For normal program termination the ##[[KeyPgEnd End]]## keyword should be used. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
@@ -23,7 +23,7 @@ print "this text will never be shown"
 %%
 
 {{fbdoc item="diff"}}
-	-
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgEnd End]]##

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ASSERTWARN"}}----
-Debugging macro that prints a warning if an expression is not true
+Debugging macro that prints a warning if an expression evaluates to 0.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **ASSERTWARN**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_AssertWarn( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
@@ -9,7 +9,8 @@ Debugging macro that prints a warning if an expression is not true
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		Any valid Boolean expression that evaluates to true (nonzero) or false (0).  If ##//expression//## evaluates to 0, a warning message is printed to stdout (console).
+		Any valid expression.  If ##//expression//## evaluates to 0, a warning message is printed to stdout (console).
+
 {{fbdoc item="desc"}}
 	The ##**ASSERTWARN**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints a warning message if ##//expression//## evaluates to 0. It doesn't stop the program execution like [[KeyPgAssert ASSERT]] does.
 	
@@ -31,7 +32,7 @@ foo
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UNION"}}----
-Declares a union user defined type
+Declares a union user defined type.
 
 {{fbdoc item="syntax"}}##
 	**Union** //typename//
@@ -71,7 +71,7 @@ end if
 sleep
 %%
 {{fbdoc item="lang"}}
-	- Object-related features as functions defined inside the ##**Union**## block are supported only in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Object-related features as functions defined inside the ##**Union**## block are supported only in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

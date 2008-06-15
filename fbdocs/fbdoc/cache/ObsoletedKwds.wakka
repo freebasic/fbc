@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Obsoleted Keywords"}}----
 
-	Along its way FB has had a few keywords changed. Here is the list of those no more supported. Old code must be updated if recompiled.
+	Along the way FB has had a few keywords changed. Here is the list of those no longer supported. Old code must be updated if recompiled.
 
 	OPEN "CON:" 
 		Use [[KeyPgOpenCons OPEN CONS]]    
@@ -12,7 +12,7 @@
 		Use [[KeyPgPoke POKE (integer,address,n)]]  
 	POKES 
 		Use [[KeyPgPoke POKE (short,address,n)]] 
-	SCREENINFO(Function returning a pointer to a structure)  
+	SCREENINFO (Function returning a pointer to a structure)  
 		Use [[KeyPgScreeninfo SCREENINFO, Sub returning values in its arguments]]
 	VAL64  
 		Use [[KeyPgVallng VALLNG()]] 

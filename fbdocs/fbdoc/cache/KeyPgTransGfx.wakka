@@ -38,10 +38,10 @@ imagedestroy img
 '' wait for a keypress
 sleep
 %%
-{{image class="center" title="Put Trans example output" url="http://img338.imageshack.us/img338/2623/keypgtransgfxexampleaz1.png" link="http://img338.imageshack.us/my.php?image=keypgtransgfxexampleaz1.png"}}
+{{image class="center" title="Put Trans example output" url="/images/trans.png"}}
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##

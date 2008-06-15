@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Procedures"}}----
-Keywords that work with procedures
+Keywords that work with procedures.
 
 {{fbdoc item="desc"}}
 	These keywords control the declaration and definition of both module-level procedures and member procedures, how they are called, how arguments are passed and how their names are seen externally to other modules. Procedures can also be declared to be executed automatically before any module-level code is executed.
@@ -30,6 +30,8 @@ Keywords that work with procedures
 		Specifies that the procedure name can be used in other procedure declarations.
 	=={{fbdoc item="keyword" value="KeyPgStatic|Static"}}==
 		Specifies static storage for all variables and objects in the procedure body.
+	=={{fbdoc item="keyword" value="KeyPgConstMember|Const (Member)"}}==
+		Specifies a const member procedure in user-defined type definitions.
 	=={{fbdoc item="keyword" value="KeyPgStaticMember|Static (Member)"}}==
 		Specifies a static member procedure in user-defined type definitions.
 

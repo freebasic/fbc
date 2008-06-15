@@ -1,13 +1,13 @@
 {{fbdoc item="title" value="New to Programming?"}}----
-
 If you're new to programming in general, you should probably learn what some basic concepts are:
 
-- How Your Program Is Run
--- What a Compiler Is
--- Syntax
--- Program Flow
-- Variables
-- Input/Output (IO)
+**How Your Program Is Run**
+	-What a Compiler Is
+	-Syntax
+	-Program Flow
+**Variables**
+	-Basic DataTypes
+**Input/Output (IO)**
 
 The above being the most important programming concepts for an absolute beginner to programming to learn.  I will go over how these concepts work in FreeBASIC.  It is also important to learn how to use the manual, located at www.freebasic.net/wiki  Most programming communities and language will have manuals with both descriptions and demonstrations.  ALWAYS refer to the manual before looking elsewhere.  Chances are the information you want is in the manual, and if it's not, it can be added.
 

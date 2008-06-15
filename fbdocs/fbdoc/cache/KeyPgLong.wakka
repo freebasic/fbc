@@ -19,12 +19,12 @@ Standard data type: signed integer having same size as ##[[KeyPgSizeof Sizeof]](
 	%%Long Range = -2147483648 to  2147483647%%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the ##**Long**## data type has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect, the ##**Long**## data type is always 32-bit.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the ##**Long**## data type has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Long**## data type is always 32-bit.
 
 {{fbdoc item="diff"}}
 	- In QB, LONG is always 32-bit.
-	- None, if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- None, if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInteger Integer]]##

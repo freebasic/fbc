@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="LET"}}----
-Indicates the assignment operator
+Indicates the assignment operator.
 
 {{fbdoc item="syntax"}}##
 	**Let** //variable// = //value//
@@ -27,12 +27,12 @@ x = 100
 %%
 
 {{fbdoc item="lang"}}
-	- The use of LET to indicate an assignment statement (##//LET variable = expr//##) is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect.
-	- The UDT to multi-variable Let assignment is only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
-	- Overloading of operators is not available in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+	- The use of LET to indicate an assignment statement (##//LET variable = expr//##) is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
+	- The UDT to multi-variable Let assignment is only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Overloading of operators is not available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
-	- None in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- None in the //[[CompilerOptlang -lang fb]]// dialect.
 	- The Let operator is new to FreeBASIC.
 	- The UDT to multi-variable Let assignment is new to FreeBASIC.
 

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OUT"}}----
-Outputs a value to a hardware port
+Outputs a value to a hardware port.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Out** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] , [[KeyPgByval byval]] //data// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -9,9 +9,9 @@ Outputs a value to a hardware port
 ##
 {{fbdoc item="param"}}
 	##//port//##
-		hardware port to write to
+		Hardware port to write to.
 	##//data//##
-		data value to write
+		Data value to write.
 
 {{fbdoc item="desc"}}
 	This function sends ##//value//## to ##//port//## and returns immediately.

@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Glossary"}}----
 Brief definitions and explanations for words and phrases used in the ""FreeBASIC"" manual.
 
-{{anchor name="Index"}}Index: {{anchor name="A|A"}} - {{anchor name="B|B"}} - {{anchor name="C|C"}} - {{anchor name="D|D"}} -  {{anchor name="E|E"}} -  {{anchor name="F|F"}} -  {{anchor name="G|G"}} -  {{anchor name="H|H"}} -  {{anchor name="I|I"}} -  {{anchor name="J|J"}} - {{anchor name="K|K"}} - {{anchor name="L|L"}} - {{anchor name="M|M"}} - {{anchor name="N|N"}} - {{anchor name="O|O"}} - {{anchor name="P|P"}} - {{anchor name="Q|Q"}} - {{anchor name="R|R"}} - {{anchor name="S|S"}} - {{anchor name="T|T"}} - {{anchor name="U|U"}} - {{anchor name="V|V"}} - {{anchor name="X|X"}} - {{anchor name="Y|Y"}} - {{anchor name="Z|Z"}}
+{{anchor name="Index"}}Index: {{anchor name="A|A"}} - {{anchor name="B|B"}} - {{anchor name="C|C"}} - {{anchor name="D|D"}} -  {{anchor name="E|E"}} -  {{anchor name="F|F"}} -  {{anchor name="G|G"}} -  {{anchor name="H|H"}} -  {{anchor name="I|I"}} -  {{anchor name="J|J"}} - {{anchor name="K|K"}} - {{anchor name="L|L"}} - {{anchor name="M|M"}} - {{anchor name="N|N"}} - {{anchor name="O|O"}} - {{anchor name="P|P"}} - {{anchor name="Q|Q"}} - {{anchor name="R|R"}} - {{anchor name="S|S"}} - {{anchor name="T|T"}} - {{anchor name="U|U"}} - {{anchor name="V|V"}} - {{anchor name="W|W"}} - {{anchor name="X|X"}} - {{anchor name="Y|Y"}} - {{anchor name="Z|Z"}}
 
 ======----{{anchor name="A"}} A----======
 
@@ -13,8 +13,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **archive**
 	An archive is a group or files or a single file packed into a container format and usually compressed before or afterward. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
-	
-	
+
 **argument**
 	Data that is passed to a procedure. The procedure refers to this data using the parameter(s) in it's parameter list.
 
@@ -23,6 +22,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **array (container)**
 	A collection of data whose elements are stored contiguously in memory (one after the other, in increasing order). Because of this, an array offers random-access to it's elements (any element can be accessed at any time). Insertion or removal of elements anywhere but at the back of the container requires that those elements that follow be relocated, so a linked-list is typically preferred when insertion or removal needs to be efficient.
+
+**assembler**
+	A component in the tool chain for translating source code in to executable programs.  The assembler converts the low level assembly instruction mnemonics emitted by the compiler to object code.
 
 **assignment**
 	Assignment is one of the fundamental operations of computing.  All it means is copying a value into the memory location pointed at by a variable.  The value might be a literal, another variable, or the result of some expression. For an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, this involves calling one of it's assignment operators. Not to be confused with initialization.
@@ -46,18 +48,33 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **binaries**
 	Binaries are the end result of source code. Binaries include executable files (.exe on windows), static library files (.a), dynamic library files (.dll on windows, .so on Linux), and relocatable object files. (.o)
 
+**.BSS section**
+	The part of the executable program that will contain zero bytes only when the program starts.  Since all of the bytes are zero, the final size of the executable can often be reduced by placing uninitialized data, or zero initialized data in this section.
+
+**buffer**
+	A region of memory that allows data to be saved or manipulated before being copied somewhere else.  In a communications device this may hold incoming or outgoing data yet to be processed.  In graphics, a buffer may contain an image before being copied to the screen.
+
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="C"}} C----======
 
-**caller**
-	A misnomer used to refer to the point in code in which a procedure is called.
+**call back**
+	A control mechanism where a caller lets a procedure call another procedure (the call back) provided by the caller typically through a function pointer.
 
 **call stack**
 	A chunk of memory reserved for a process or thread that is used as a stack for storing various information needed by procedures when they are called. Among the information stored on the call stack are all of the local automatic variables, objects and array data and usually whatever parameters are passed to the procedure. These items are allocated (//pushed// onto the call stack) when the procedure is called and deallocated (//popped// from the call stack) when the procedure returns, either by the caller or the callee, depending on the calling convention used. The initial and maximum sizes of this reserved memory vary by platform.
 
+**caller**
+	A misnomer used to refer to the point in code in which a procedure is called.
+
 **cast**
 	A cast operation changes one data type to another using specified rules. A ##[[KeyPgType Type]]## structure can implement a custom ##[[KeyPgCast Cast]]## for any intrinsic data type, and/or other TYPEs, See ##[[KeyPgCast Cast]]##.
+
+**code block**
+	Several lines of source code grouped together all sharing at least one common scope.  For example a procedure's code block will be all the lines of code between ##[[KeyPgSub Sub]]## and ##[[KeyPgEnd End Sub]]##.
+
+**com port**
+	A short name for serial communications port.  A program can communicate with an external device, such as modem or another computer through a com port.  See ##[[KeyPgOpenCom Open Com]]##.
 
 **compiler**
 	A compiler is a computer program which takes source code and transforms it into machine or object code.
@@ -78,11 +95,15 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A special member function of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## that is called when an object is instantiated.
 
 **CVS**
-	Concurrent Versions System. The file manager implemented at Sourceforge where the sources of FB are stored, it keeps an history of the changes introduced by the developers.  All the users can browse and download sources  [[http://fbc.cvs.sourceforge.net/fbc/FreeBASIC/ here]]
+	Concurrent Versions System. The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB in the past. (see also SVN)
 
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="D"}} D----======
+
+
+**.DATA section**
+	The part of the executable program that will data that can be changed while to program is running.
 
 **debugger**
 	A program that allows controlled execution of compiled code. The values of variables can be tracked, execution can be paused, stepped or accelerated, etc. A debugger is typically used to help find the source of programmer errors in source code, called 'bugs'.
@@ -96,6 +117,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **dereference**
 	The act of obtaining a value from memory at a given address. See ##[[KeyPgOpValueOf Operator * (ValueOf)]]##, ##[[ProPgPointers Pointers]]##.
 
+**descriptor**
+	Refers to the internal data structure used by the compiler and runtime library for managing variable length strings and arrays.
+
 **destroy (TYPE or CLASS)**
 	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, it's destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete Delete]]## is called with a pointer to an object.
 
@@ -105,9 +129,18 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **destructor (TYPE or CLASS)**
 	A special member function of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## that is called when an object is destroyed.
 
-** DPMI **
+**dll**
+	Shorthand for **dynamically linked library**.
+
+**DPMI**
 	A method / standard allowing to execute protected mode code (mostly also 32-bit) on a 16-bit real mode DOS kernel. Affects only DOS version of FreeBASIC. See also ##[[FaqDOS DOS related FAQ]]## 
 
+**DJGPP**
+	A complete 32-bit C/C""++"" development system for Intel 80386 (and higher) PCs running DOS and includes ports of many GNU development utilities.
+
+**dynamically linked library**
+	A file containing executable code that is loaded by another application when it is started.  Also referred to as a **dll** or shared library.  See ##[[ProPgSharedLibraries Shared Libraries (DLLs)]]##.
+	
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="E"}} E----======
@@ -134,8 +167,14 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **file number**
 	An integer associated with an open file or device as given in ##[[KeyPgOpen Open]]##.  All subsequent operations on the opened file or device must use the same file number.
 
+**format string**
+	A sequence of characters that controls how data should be presented.  See ##[[KeyPgFormat Format]]##, ##[[KeyPgPrintusing Print Using]]##.
+
 **function**
 	A procedure defined using ##[[KeyPgFunction Function]]##, optionally taking parameters and returning a value.
+
+**function pointer**
+	A variable containing the address of a function.  The address (function) to which the variable points can be changed while the program is running allowing for dynamic program flow, such as call back functions.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -150,12 +189,24 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **global variable**
 	A variable that is visible to all procedures within a module, across multiple modules, or both. See ##[[KeyPgCommon Common]]## and ##[[KeyPgExtern Extern]]##.
 
+**GNU**
+	A mass collaboration project with the primary goal to provide a free and non-proprietary Unix-like operating system.
+
+**GPL**
+	Short hand for GNU General Public License: a free, copyleft license for software and other kinds of works.
+		
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="H"}} H----======
 
+**hash table**
+	A data structure that associates keys with values allowing for efficient look-up of values based on a given key.
+
 **header**
-	When talking about a collection of data, this is generally the first part of that data that describes the rest. When talking about (header) files, this refers to an include file.
+	When talking about a collection of data, this is generally the first part of that data that describes the rest. When talking about (header) files, this refers to an include file. In FreeBASIC the file extension '.bi' is usually used.
+
+**heap**
+	The area of memory (free store) provided by the runtime library (and operating system) from which the program can dynamically allocate memory.  See ##[[KeyPgAllocate Allocate]]##.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -197,8 +248,14 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **linker**
 	A program which combines a number of programs to form a complete set of instructions which can be loaded into the computer's memory and followed by the computer.
 
+**LGPL**
+	Shorthand for GNU Lesser General Public License.  Like the GNU GPL, but more permissive allowing non-(L)GPL'd works to be statically linked to the LGPL'd work, provided that the new work can have the LGPL'd portion relinked or replaced.
+
 **local variable**
 	A variable that is visible only within the scope in which it is declared, and that is destroyed when program execution leaves that scope.
+
+**lock**
+	A synchronization mechanism such that only one thread or process can have access to a shared object, for example a global variable, a device, or a file.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -252,11 +309,17 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 ======----{{anchor name="P"}} P----======
 
+**page buffer**
+	A buffer used for holding the contents of the screen before being displayed on screen.  Where multiple page buffers are allowed, one page will be visible to the users while all others are hidden.  Also the active page (the one to which changes are made) need not be the visible one allowing changes to one page while showing another.
+
 **parameter**
 	The name used by a procedure that corresponds to the argument that is passed to it.
 
 **parameter list**
 	The parenthesized comma-separated list of parameters in a procedure declaration or definition.
+
+**PDS**
+	Professional Development System.  Sometimes referred to as QB7.1.
 
 **pitch**
 	The number of bytes per row, in an image or screen buffer.  If there is no padding between rows, then this can be calculated by ##width * bytes_per_pixel##, but this is not necessarily safe to assume.  The screen's pitch can be found using ##[[KeyPgScreeninfo Screeninfo]]##, and an image buffer's pitch can be found by checking the ##pitch## value in the image's header.
@@ -274,7 +337,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A property is a special sort of type/class members, intermediate between a field (or data member) and a method. See ##[[KeyPgProperty Property]]##.
 
 **ptr**
-	Shorthand for pointer. See above.
+	Shorthand for pointer. See **pointer**.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -291,11 +354,20 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A ragged array is an array having rows of differing lengths.
 
 **real number**
-	Any positive or negative number including fractions.  Variables containing a real number have a limited range and precision depending on the number of bits used to represent the number.  See: ##[[KeyPgSingle Single]]## and ##[[KeyPgDouble Double]]##.
+	Any positive or negative number including fractions, irrational and transcendental numbers (like ##pi## or ##e##) and zero.  Variables containing a real number have a limited range and precision depending on the number of bits used to represent the number.  See: ##[[KeyPgSingle Single]]## and ##[[KeyPgDouble Double]]##.
 
+**registers**
+	Places inside the CPU for data storage. 80386 and compatible 32-bit models have EAX, EBX, ECX, EDX, ESI, EDI, EBP and ESP, plus some special (control/test/debug) registers. **NOT** related to "Windows registry".
+	
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="S"}} S----======
+
+**scope**
+	Refers to the life-time and visibility of some component of the program, like a variable or a procedure.  For example, a variable defined inside a procedure would have procedure scope: it is visible throughout the procedure, but not outside the procedure's code block.  When the procedure ends, the variable goes out of scope and no longer exists.
+
+**scope block**
+	A code block where all the lines of source have the same scope.  An explicit scope block can be indicated with the ##[[KeyPgScope Scope]]## statement.  Scope blocks may also be implicit with the usage of ##[[KeyPgIfthen If..Then]]##, ##[[KeyPgFornext For..Next]]##, and other compound statements.
 
 **shared library**
 	A library that exists once on a system that multiple executables can link to at runtime. See ##[[ProPgSharedLibraries Shared Libraries (DLLs)]]##.
@@ -316,7 +388,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Member data that each instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## shares. This data is defined outside of any ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, and takes up no space in the resulting object instance.
 
 **static member function**
-	A **member function** without an implicit ##this## reference as an argument. Static member functions can be called normally through a variable, or directly using the type's name and the scope resolution operator (!! <- no wiki page ? !!).
+	A **member function** without an implicit ##this## reference as an argument. Static member functions can be called normally through a variable, or directly using the type's name and the scope resolution operator See ##[[KeyPgStaticMember Static (Member)]]##.
 
 **static storage**
 	Refers to storage in the ##.BSS## or ##.DATA## sections of an executable. Variables, objects and arrays with static storage are allocated and initialized at compile-time and destroyed (in the case of objects) and deallocated at program-termination. Explicitly initialized variables, objects and arrays are allocated in the ##.DATA## section.
@@ -327,6 +399,12 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **sub**
 	A procedure defined using ##[[KeyPgSub Sub]]##, optionally taking parameters and not returning a value.
 
+**SVN**
+	Subversion. A version control system that allows users to keep track of changes made to sources and documents. All the users can browse and download sources here:  [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/ fbc.svn.sf.net/viewvc/fbc/trunk]] , but only developers have write access as well. (see also CVS)
+
+**SWIG**
+	A tool that automatically translates C headers to FreeBASIC (although not always perfectly).
+
 **symbol**
 	Used to refer to variables, labels, functions, methods, procedures, or other programmatic constructs in a program.
 
@@ -334,8 +412,17 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 ======----{{anchor name="T"}} T----======
 
+**.TEXT section**
+	The part of the executable program that will contain program instructions and constant data.
+
 **this reference**
 	A reference to an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## that is passed as a hidden argument to non-static member functions of that type or class. Throughout the member function, this instance is referred to using the ##this## keyword, See ##[[KeyPgThis This]]##.
+
+**thread**
+	A thread of execution within a process (running program) that shares execution time with other threads in the same process.  See [[CatPgThreading Threading]].
+
+**trace**
+	To follow the execution of a program step-by-step either manually by examining the source code, or more practically with a debugger.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -354,6 +441,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **variable**
 	A symbol representing data in memory.
 
+**VBDOS**
+	Visual BASIC for DOS, a historical BASIC compiler by M$ from 1992, following after QBASIC. DOS platform dropped very soon, VBDOS never became popular.
+
 **vector**
 	A series of data items in memory that can be accessed by an index number.  Similar to an array except that vector elements are not necessarily all contained within a single block of memory.
 
@@ -361,12 +451,18 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 ======----{{anchor name="W"}} W----======
 
+**warning**
+	A message displayed by the compiler during compilation that suggests there may be potential problems with the current code.
+   
 **wiki**
 	An on-line system that provides a set of pages containing information that can be viewed and modified by the public. In this context, it is typically used to refer to the FreeBASIC on line documentation.
 
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="X"}} X----======
+
+**x86**
+	Refers to the instruction set compatible with the 80386 (and later) CPU architecture.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -382,6 +478,5 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 @@{{anchor name="Index|Back to top"}}@@
 
 ----
-
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

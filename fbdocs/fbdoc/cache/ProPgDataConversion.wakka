@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Coercion and Conversion"}}----
-Coercion of Numeric Data Types in Expressions
+Coercion of Numeric Data Types in Expressions.
 
 When two different data types are used in a binary operation, like ##//+//## (Addition) or ##//=//## (Assignment), the smaller data type is automatically promoted to the larger data type regardless of the order in which the arguments are given.  
 

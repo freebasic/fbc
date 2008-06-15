@@ -105,7 +105,7 @@ Print "Printing Completed!"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[ProPgCompOptlang -lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
+	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##

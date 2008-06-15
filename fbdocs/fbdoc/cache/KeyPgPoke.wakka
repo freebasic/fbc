@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="POKE"}}----
-Assigns a value to a location in memory
+Assigns a value to a location in memory.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] )
@@ -33,7 +33,7 @@ p = @i
 Poke Integer, p, 420
 Print Peek(Integer, p)
 %%
-	will produce the output:
+	Will produce the output:
 
 %%420
 %%

@@ -37,7 +37,10 @@ Chronology of the FreeBASIC project.
 		- Version 0.16 released
 		- Namespaces
 		- Implicit scope blocks
-	
+
+	**2006 July 15**
+		- FBHELP "help viewer" 0.1 released, some bugs present, fixing in following months
+
 	**2006 July 30** 
 		- First 0.17 "testing" version
 		- addition of ##[[KeyPgPpmacro macro]]## support, which would be later used in the compiler itself
@@ -54,6 +57,9 @@ Chronology of the FreeBASIC project.
 	**2006 November** 
 		- Started providing CVS versions of FB, Win and Linux, later also DOS
 	
+	**2006 December 08**
+		- FBHELP "help viewer" 0.5 released, pretty mature now
+
 	**2007 January - April**
 		- Types (structures) allow member functions, operator overloading, properties, constructors and destructors. 
 		- Graphics library has capabilities for screen control, events, and alpha blending. 
@@ -69,7 +75,7 @@ Chronology of the FreeBASIC project.
 		- Major installation problems on the Linux release, so an additional Linux release was made a week later to correct the problems.
 		- Some users found minor installation problems on DOS/Windows and workarounds made available.
 		- First full release with graphics working (almost) with DOS target also
-		- The major change in this full release compared to version 0.16, was that all procedure parameters are passed BYVAL.
+		- The major change in this full release compared to version 0.16, was that all procedure parameters now defaulted to passing BYVAL.
 
 	**2007 Jun 7**
 		- The FreeBASIC source code moved from CVS to SVN.   
@@ -86,5 +92,10 @@ Chronology of the FreeBASIC project.
 		- QB Compatibility improvements for RND, SCREEN, ERASE
 		- Changed default field alignment to 4 bytes on DOS and Linux such that the BFD in binutils-2.17 compatibility problems should **finally** be resolved for DOS and Linux users.
 
+	**2007 Dec 29**
+		- FreeBASIC 0.18.3 full release uploaded. 
+		- Various bug fixes (graphics, threading)
+		- QB compatibility mode further restricted compared to FB mode, and improved compatibility to QB 
+		- Experimental serial port driver for DOS added 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

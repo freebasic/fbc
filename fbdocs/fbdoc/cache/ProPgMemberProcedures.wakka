@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Member Procedures"}}----
-Procedures with full access to members of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+Procedures with full access to members of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 
 **{{anchor name="DECL|Declaration and definition"}}**
 	Declaring and defining member procedures.

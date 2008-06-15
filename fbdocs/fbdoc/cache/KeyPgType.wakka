@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TYPE"}}----
-Declares a user-defined type
+Declares a user-defined type.
 
 {{fbdoc item="syntax"}}##
 	**Type** //typename// [ [[KeyPgField Field]] = //alignment// ]
@@ -8,8 +8,8 @@ Declares a user-defined type
 		[ [[KeyPgVisProtected Protected]]: ]
 		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] [ ( [ //parameters// ] ) ]
 		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] | [[KeyPgConstMember Const]] ] [[KeyPgMemberSub sub]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgStatic Static]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember Static]] | [[KeyPgConstMember Const]] ] [[KeyPgMemberFunction function]] //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ] [ [[KeyPgStatic Static]] ]
 		//fieldname// [ ( //array subscripts// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]// [ = //initializer// ]
 		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //array subscripts// ) | : //bits// ] [ = //initializer// ], ...
 		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
@@ -19,23 +19,23 @@ Declares a user-defined type
 ##
 {{fbdoc item="param"}}
 	##//alignment//##
-		specifies the byte alignment for data fields
+		Specifies the byte alignment for data fields.
 	##//fieldname//##
-		name of the data field or member procedure
+		Name of the data field or member procedure.
 	##//external_name//##
-		name of field as seen when externally linked
+		Name of field as seen when externally linked.
 	##//parameters//##
-		the parameters to be passed to a member procedure
+		The parameters to be passed to a member procedure.
 	##//array subscripts//##
-		subscripts to declare a fixed-length array
+		Subscripts to declare a fixed-length array.
 	##//bits//##
-		number of bits a data field occupies
+		Number of bits a data field occupies.
 	##//initializer//##
-		default initializer for the data field
+		Default initializer for the data field.
 	##//operatorname//##
-		the name of the operator to be overloaded
+		The name of the operator to be overloaded.
 	##//calling convention specifier//##
-		can be ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##.
+		Can be ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##.
 
 {{fbdoc item="desc"}}
 	##**Type**## is used to declare custom data types containing one or more bit, scalar, array or other ##**Type**## fields.
@@ -54,6 +54,10 @@ Declares a user-defined type
 
 	Data fields may have an optional default ##//initializer//## value.  This default value initializes the data field immediately before any constructor is called.
 
+	##[[KeyPgStaticMember Static]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that no hidden ##[[KeyPgThis This]]## parameter is to be passed to the member procedure.
+
+	##[[KeyPgConstMember Const]]## immediately preceding ##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]## indicates that the hidden ##[[KeyPgThis This]]## parameter is to be considered read-only.
+
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
 {{fbdoc item="filename" value="examples/manual/udt/type1.bas"}}%%(freebasic)
@@ -69,7 +73,7 @@ c.green = 128
 c.blue = 64
 %%
 
-And this is an example of a type working as an object
+And this is an example of a type working as an object:
 {{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
 Type bar
   Declare Constructor()
@@ -89,13 +93,13 @@ End Type
 	- Special care must be taken when using a user defined type for file I/O.  It is recommended to use ##Field = 1## for such cases, as it saves space and is more cross platform compatible.
 
 {{fbdoc item="lang"}}
-	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[ProPgCompOptlang -lang fb]]// dialect since version 0.17b
-	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the default field alignment depends on the target platform.
-	- With the //[[ProPgCompOptlang -lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
+	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[CompilerOptlang -lang fb]]// dialect since version 0.17b
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, the default field alignment depends on the target platform.
+	- With the //[[CompilerOptlang -lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
 	- To force byte alignment use ##FIELD=1##.
 
 {{fbdoc item="diff"}}
-	- None, in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- None, in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgUnion Union]]##

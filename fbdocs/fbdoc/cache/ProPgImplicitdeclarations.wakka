@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Implicit Declarations"}}----
-Lazy declaration of variables
+Lazy declaration of variables.
 
-	The //[[ProPgCompOptlang QB]]// and //[[ProPgCompOptlang Deprecated]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
+	The //[[CompilerOptlang QB]]// and //[[CompilerOptlang Deprecated]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
 
 {{fbdoc item="section" value="Variable Type"}}
 
@@ -29,6 +29,6 @@ Lazy declaration of variables
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOptionexplicit Option Explicit]]##
-	- [[ProPgCompOptlang FreeBASIC Language Dialects]]
+	- [[CompilerOptlang FreeBASIC Language Dialects]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}} 
