@@ -20,11 +20,19 @@ Keyword template.
 	This topic can be copied and pasted in to a newly created keyword.
 
 {{fbdoc item="ex"}}
-%%(qbasic)sample code
-sample code
-sample code
-sample code
+%%(qbasic)
+'' sample code
+'' sample code
+'' sample code
+'' sample code
 %%
+
+Output:
+%%
+sample output
+sample output
+%%
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

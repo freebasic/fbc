@@ -6,7 +6,7 @@
 	==- {{anchor name="item2|Who is responsible for the documentation?"}}==
 	==- {{anchor name="item3|Who should I contact when I find a mistake in the documentation?"}}==
 	==- {{anchor name="item4|How do I add my tutorial to the community tutorials?"}}==
-	==- {{anchor name="item5|What formatting should I use on my tutorial?"}}==
+	==- {{anchor name="item5|What formatting style should I use on my tutorial?"}}==
 	==- {{anchor name="item6|Why haven't I been recognized for my contributions to the wiki?"}}==
 	==- {{anchor name="item7|How can I help with the documentation?"}}==
 	==- {{anchor name="item8|When should new content get added or updated?"}}==
@@ -45,7 +45,7 @@
 		- If the tutorial is a work in progress, please return to finish it.
 
 
-{{anchor name="item5"}}==What formatting tyle should I use on my tutorial?==
+{{anchor name="item5"}}==What formatting style should I use on my tutorial?==
 	The overall style for your tutorial is up to you.  There are no specific rules for how you //must// format it, but you may want to look at other tutorials of pages in the FreeBASIC manual for some ideas.  The [[FormattingRules formatting codes]] used are the same as any other page in the wiki.  We only ask that all sample code be enclosed between tags where ##**""%""""%""( qbasic )**## is the starting tag and ##**""%""""%""**## is the ending tag so it is recognized by our document converters.
 
 

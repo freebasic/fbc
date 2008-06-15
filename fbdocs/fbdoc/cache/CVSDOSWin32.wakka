@@ -90,7 +90,7 @@ make%%
 			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/dos
 ../../configure%%
 
-			Now switch to a ""Win32"" command prompt and make sure you are using the ""Win32"" versions of fbc and make (execute ##fbc -version## and ##make -v## to check).
+			Now switch to a ""Win32"" command prompt and make sure you are using the ""Win32"" versions of ##fbc## and ##make## (execute ##fbc -version## and ##make -v## to check).
 
 			%%cd \fbcvs\FreeBASIC\src\compiler\obj\dos
 make%%

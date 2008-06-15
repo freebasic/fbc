@@ -2,13 +2,12 @@
 Read a number of characters from console or file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [#]filenum [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Winput**( //num// )
+	//result// = **Winput**( //num//, //filenum// )
 //or//
-	//result// = **Winput**( //num//, [#]//filenum// )
+	//result// = **Winput**( //num// )
 ##
 {{fbdoc item="param"}}
 	##//num//##
@@ -17,26 +16,63 @@ Read a number of characters from console or file
 		file number of an open file
 
 {{fbdoc item="desc"}}
-	The first version waits for the user to input ##//num//## characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
+	The first version reads ##//num//## characters from a text file, updating the file position accordingly, and returns them in a wstring.
 
-	The second version reads ##//num//## characters from a text file and updates the pointer
+	The second version waits for the user to input ##//num//## characters at the keyboard and returns them in a wstring. Extended keys are not read. The characters are not echoed to the screen.
+	This version currently doesn't work, as FreeBASIC doesn't yet support reading wide-characters from the console.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as wstring * 1
+%%(qbasic)dim char as wstring * 2
 
-PRINT "Select a color number" 
-PRINT "1.-BLUE"
-PRINT "2.-RED"
-PRINT "3.-GREEN"
-do
- a=winput(1)
-loop until a>=wstr("1") and a<=wstr("3")
-%%
+dim filename as string, enc as string
+dim f as integer
+
+line input "Please enter a file name: ", filename
+line input "Please enter an encoding type (optional): ", enc
+if enc = "" then enc = "ascii"
+
+f = freefile
+if open(filename for input encoding enc as #f) = 0 then
+	
+	print "Press space to read a character from the file, or escape to exit."
+	
+	do
+	    
+	    select case input(1)
+	    
+	    case " " 'Space
+	        
+	        if eof(f) then
+	            
+	            print "You have reached the end of the file."
+	            exit do
+	            
+	        end if
+	        
+	        char = winput(1, f)
+	        print char & " (char no " & asc(char) & ")"
+	        
+	    case chr(27) 'Escape
+	        
+	        exit do
+	        
+	    end select
+	    
+	loop
+	
+	close #f
+	
+else
+	
+	print "There was an error opening the file."
+	
+end if%%
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInput Input]]##
+	- ##[[KeyPgInputnum Input()]]##
+	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

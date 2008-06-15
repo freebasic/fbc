@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="Label"}}
-----
+{{fbdoc item="title" value="Label"}}----
 Defines a location in a program.
 
 {{fbdoc item="syntax"}}##
@@ -10,19 +9,20 @@ Defines a location in a program.
 	//literalnumber//
 ##
 {{fbdoc item="desc"}}
-	        
 	Defines a place in a program where ##[[KeyPgGoto Goto]]## or ##[[KeyPgGosub Gosub]]## can jump to.
-	       
-	   A label can be an positive integer line number or a //symbolname//. In both cases, the label must start at the first column of line. A //symbolname// label must end with a colon (:) character.
+
+	A label can be a positive integer line number or a //symbolname//. In both cases, the label must start at the first column of line. A //symbolname// label must end with a colon (:) character.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+'' Compile with -lang deprecated or qb
 beginning:
 3 print "Hello World!"
 goto beginning
 %%
 
-%%(qbasic)
+%%(qbasic)'' compile with -lang qb
+
 '' Labels can be used to "bookmark" DATA blocks, allowing RESTORE to alter the READ sequence.
 read a,b,c
 restore here
@@ -32,7 +32,9 @@ print a,b,c,d,e
 data 1,2,3,4,5
 here:
 data 6,7,8
-
+%%
+Output:
+%%
 1,2,3,6,7
 %%
 

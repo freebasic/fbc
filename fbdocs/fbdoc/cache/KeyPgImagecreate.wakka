@@ -2,12 +2,14 @@
 Creates and initializes storage for an image.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, //color// [[KeyPgAs as]] [[KeyPgInteger integer]]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, [ //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ] [, //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] ]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//buffer// = ""ImageCreate""( //width//, //height// )
 		##//or//##
 	//buffer// = ""ImageCreate""( //width//, //height//, //color// )
+		##//or//##
+	//buffer// = ""ImageCreate""( //width//, //height//, //color//, //depth// )
 ##
 {{fbdoc item="param"}}
 	##//width//##
@@ -16,14 +18,16 @@ Creates and initializes storage for an image.
 		Desired height of the image buffer to create.
 	##//color//##
 		The pixel value to fill the image buffer with upon creation.
+	##//depth//##
+		Desired color depth of the image buffer, in bits.
 
 {{fbdoc item="ret"}}
-	The address of the image buffer, or zero (0) if the buffer could not be created.
+	The address of the image buffer, or NULL (0) if the buffer could not be created.
 
 {{fbdoc item="desc"}}
-	Allocates and initializes a memory buffer for an image. If ##//color//## is not specified, a value of zero (0) for paletted modes, or &HFF00FF for hi/truecolor modes will be used to fill the image buffer.
+	Allocates and initializes a memory buffer for an image. If ##//color//## is omitted, a value of zero (&H0) will be used for paletted (8-bit or less) modes, or &HF81F and &HFF00FF for 16-bit and 24/32-bit modes, respectively. The latter two are special mask colors.
 	
-	##**""ImageCreate""**## can only be used after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  The created image buffer remains valid between mode changes as long as the different modes use the same pixel format.  Images can be deleted with ##[[KeyPgImageDestroy ImageDestroy]]##.
+	##**""ImageCreate""**## can be used to create an image buffer with a color depth that differs from the current color depth, but only after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  An image buffer can be passed to graphics functions across mode changes as long as the different modes use the same color depth.  Images can be deleted with ##[[KeyPgImageDestroy ImageDestroy]]##.
 
 	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FB releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
 

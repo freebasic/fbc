@@ -2,7 +2,7 @@
 Graphics statement to save a block of binary data into a file.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bsave** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bsave** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	**Bsave** //filename//, //addr// [, //size//]
@@ -14,6 +14,8 @@ Graphics statement to save a block of binary data into a file.
 		the address where to save data from. If 0 (NULL), data is taken from current work page.
 	##//size//##
 		size of the data block to be saved, in bytes.
+	##//pal//##
+		the address where to save the image palette from, if any. If 0 (NULL), data is taken from the current palette.
 
 {{fbdoc item="ret"}}
 	Zero is returned if ##**Bsave**## completed successfully, otherwise a non-zero value is returned to indicate failure.
@@ -33,6 +35,8 @@ Graphics statement to save a block of binary data into a file.
 	When saving pixel data, the data will be saved in the current gfx mode pixel format; see Internal pixel formats for details. Also keep in mind a pixel may require more than one byte, so the size argument will need to be adjusted accordingly.
 
 	##**Bsave**## can also be used to save images as standard BMP files; just specify a filename with the .bmp extension to use this feature. In this case, the size parameter can be omitted, as the image size is directly taken from the screen or buffer, depending on if addr is 0 or not.
+
+	If raw pixel data is being saved in a paletted gfx mode, ##**Bsave**## will attach the palette at the end of the file. Palette data is taken either from the ##//pal//## parameter, which must be an array holding the palette in [[KeyPgPalette Palette Using]] format, either from the currently set palette if ##//pal//## is 0 or not specified. When saving a BMP file in paletted mode, the same rules for the ##//pal//## parameter apply.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

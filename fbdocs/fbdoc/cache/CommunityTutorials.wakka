@@ -21,7 +21,8 @@
 		-[[TutMessageIntro Introduction to Message-Based Programming]] //by [[WikiRick rdc]]//
 	-**GTK Reference**
 		-[[TutIndexGTK GTK Reference]] //by Joseph Cohen//
-	-**Net Works**
+	-**Libraries**
+		-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
 		-[[TutIndexSDLNET SDL_NET]] //by Paragon//
 
 

@@ -1,17 +1,18 @@
 {{fbdoc item="title" value="OPTION NOKEYWORD"}}----
-Compiler switch to undefine a symbol
+Statement used to undefine a keyword
 
 {{fbdoc item="syntax"}}##
 	**Option Nokeyword** //keyword//
 ##
 {{fbdoc item="desc"}}
-	Causes the compiler to not find a keyword in it's internal keyword table so it can be redefined in an external library. Useful when linking a library having a symbol with the same name as a FB keyword.
+	Causes the compiler to not find a keyword in its internal keyword table so it can be reused in another way. Useful when linking a library having a symbol with the same name as a FB keyword.
+	This statement form is now deprecated.  See ##[[KeyPgPpundef #undef]]## for an alternative method of removing keywords.
 
 {{fbdoc item="ex"}}
 	%%(qbasic)' compile with -lang deprecated
-option nokeyword pos
-dim pos as integer
-'' Do some processing with the variable "pos"
+option nokeyword int
+dim int as integer
+'' Do some processing with the variable "int"
 %%
 
 {{fbdoc item="diff"}}

@@ -48,14 +48,22 @@ Graphics statement to draw a circle
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-' Set 640x480 mode and draws a circle in the center
-SCREEN 18
-CIRCLE (320, 240), 200, 15
+' Set 640x480 mode, 256 colors
+screen 18
+
+' Draws a circle in the center
+circle (320, 240), 200, 15
+
 ' Draws a filled ellipse
-CIRCLE (320, 240), 200, 2, , , 0.2, F
+circle (320, 240), 200, 2, , , 0.2, F
+
 ' Draws a small arc
-CIRCLE (320, 240), 200, 4, 0.83, 1.67, 3
+circle (320, 240), 200, 4, 0.83, 1.67, 3
+
+sleep
 %%
+
+{{image class="center" title="Circle example output" url="http://img183.imageshack.us/img183/8964/keypgcircleexamplefm3.png" link="http://img183.imageshack.us/my.php?image=keypgcircleexamplefm3.png"}}
 
 {{fbdoc item="diff"}}
 	- As the FB implementation obviously uses a different algorithm for ellipse/arc drawing than QB, the result may not be equal to QB for every pixel.

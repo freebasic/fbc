@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="IMAGECONVERTROW"}}----
-Converts a row of image data into a different bit depth.
+Converts a row of image data into another color depth.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
@@ -8,10 +8,6 @@ Converts a row of image data into a different bit depth.
 	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// )
 		##//or//##
 	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width//, //isrgb// )
-		##//or//##
-	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels// )	
-		##//or//##
-	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels//, //isrgb// )	
 ##
 {{fbdoc item="param"}}
 	##//src//##
@@ -22,56 +18,56 @@ Converts a row of image data into a different bit depth.
 		The address of the start of the destination row.  The image can be a full-color image of 16 or 32 bits per pixel.  If the source is a paletted image, the destination can also be a paletted image of 1 to 8 bits per pixel.
 	##//dst_bpp//##
 		The number of bits per pixel in the destination row.  Valid values for this are 1-8, 16 and 32.
-	##//width//## or ##//numofpixels//##
-		The size of the row in pixels.
-		Alternatively, the number of pixels in the image = (width*height) to convert an entire image at once.
-		This only works properly if the rows are all contiguous, with no spare bytes in between.  This is the case with a standard FreeBASIC image buffer, but not necessarily the case with other image formats.  For example, for BMP images a row must take up a multiple of 4 bytes, and so may have padding bytes at the end of the row for bit depths less than 32 bits; and PNG images always have a filter byte at the start of each row.
+	##//width//##
+		The length of the row in pixels.
 	##//isrgb//##
 		A value of zero indicates that the Red and Blue channels are the other way round in the source image.  Use this switch if you want the Red and Blue channels to be swapped in the conversion.
 
 {{fbdoc item="desc"}}
-	Copies the row of an image from one address to another, converting the number of bits per pixel to match the destination image.
+	Copies the row of an image from one memory location to another, converting the color information in each pixel to match the destination image.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim as any ptr img8, img32
+%%(qbasic)const as integer w = 64, h = 64
+dim as any ptr img8, img32
 dim as integer i, y
 
-'' create a 32-bit image, size 100*100:
+'' create a 32-bit image, size w*h:
 screenres 320, 200, 32, , -1
-img32 = imagecreate(100, 100)
+img32 = imagecreate(w, h)
 
-'' create an 8-bit image, size 100*100:
+'' create an 8-bit image, size w*h:
 screenres 320, 200, 8, , -1
-img8 = imagecreate(100, 100)
+img8 = imagecreate(w, h)
 
-'' spatter some random dots into the image, to make it more interesting:
+'' spatter some random dots into the image:
 for i = 1 to 1000
-	pset img8, (int(rnd * 100), int(rnd * 100)), int(rnd * 256)
+	pset img8, ( int(rnd * w), int(rnd * h) ), int(rnd * 256)
 next i
 
 '' open a graphics window in 8-bit mode, and PUT the image into it:
 screenres 320, 200, 8
+windowtitle "8-bit color mode"
 put (10, 10), img8
 
 sleep
 
 '' copy the image data into a 32-bit image
-for y = 0 to 99
-	imageconvertrow(img8 + (4 + y * 100), 8, _
-	                img32 + (4 + y * 100 * 4), _
-	                32, 100)
+for y = 0 to h - 1
+	imageconvertrow(img8  + (4 + y * w    ),  8, _
+	                img32 + (4 + y * w * 4), 32, _
+	                w)
 next y
 
-'' open a graphics window in 32-bit and PUT the image into it:
+'' open a graphics window in 32-bit mode and PUT the image into it:
 screenres 320, 200, 32
+windowtitle "32-bit color mode"
 put (10, 10), img32
 
 sleep
 
-'' deallocate the images:
+'' remove the images from memory:
 imagedestroy img8
-imagedestroy img32
-%%
+imagedestroy img32%%
 
 {{fbdoc item="diff"}}
 	- New to FB

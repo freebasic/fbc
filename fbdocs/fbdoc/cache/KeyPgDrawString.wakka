@@ -38,60 +38,106 @@ Graphics statement to render text to an image or screen
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-DIM TextBuffer AS ANY PTR
-SCREEN 14, 32
-' Red Background
-PAINT (0, 0), &HFF0000
-' Output "Hello World"
-DRAW STRING ( 0,  0), "Hello World"
-' Using PRINT results in losing the information about text-background
-LOCATE 1, 15
-PRINT "Hello World"
-' output "Hello World" in yellow
-DRAW STRING ( 0, 10), "Hello World", &HFFFF00
-' set standard-Color to green, so that "hello world" is outputted in this color
-COLOR &H00FF00, &HFFFFFF ' Background-Color does not have any influence on DRAW STRING.
-DRAW STRING ( 0, 20), "Hello World"
-' Using Print, you aren't able to position the Text on y=40
-' Background-color has influence on PRINT, too
-LOCATE 3, 15
-PRINT "Hello World"
-' Re-Direction to a buffer:
-TextBuffer = IMAGECREATE(88, 8)
-DRAW STRING TextBuffer, (0, 0),"Hello World",&H00FFFF
-PUT (100, 100), TextBuffer, PSET
-SLEEP
+dim s as string
+dim as integer x, y
+
+const w = 320, h = 200 '' screen dimensions
+const cw = 8, ch = 16  '' character dimensions
+
+
+'open a graphics window
+screenres w, h
+
+
+'draw a string in the centre of the screen:
+
+s = "Hello world"
+x = (w - len(s) * cw) \ 2
+y = (h - ch) \ 2
+
+draw string (x, y), s
+
+sleep
 %%
+{{image class="center" title="Draw String Example 1" url="http://img110.imageshack.us/img110/7010/keypgdrawstringexample1nj4.png" link="http://img110.imageshack.us/my.php?image=keypgdrawstringexample1nj4.png"}}
+
+%%(qbasic)
+const RED = rgb(255, 0, 0)
+const YELLOW = rgb(255, 255, 0)
+const GREEN = rgb(0, 255, 0)
+const CYAN = rgb(0, 255, 0)
+const WHITE = rgba(255, 255, 255, 0)
+dim TextBuffer as any ptr
+
+screen 14, 32
+
+' Red Background
+paint (0, 0), RED
+
+' Output "Hello World"
+draw string (0,  0), "Hello World"
+
+' Using PRINT results in losing the information about text-background
+locate 1, 15
+print "Hello World"
+
+' Output "Hello World" in yellow
+draw string (0, 10), "Hello World", YELLOW
+
+' Set standard color to green, so that "Hello World" is outputted in this color
+color GREEN, WHITE ' Background color does not have any influence on DRAW STRING.
+draw string (0, 20), "Hello World"
+
+' Using Print, you aren't able to position the Text on y=40
+' Background color has influence on Print, too
+locate 3, 15
+print "Hello World"
+
+' Redirection to a buffer:
+TextBuffer = IMAGECREATE(88, 8)
+draw string TextBuffer, (0, 0), "Hello World", CYAN
+put (100, 100), TextBuffer, pset
+
+sleep
+%%
+{{image class="center" title="Draw String Example 2" url="http://img201.imageshack.us/img201/3599/keypgdrawstringexample2fr2.png" link="http://img201.imageshack.us/my.php?image=keypgdrawstringexample2fr2.png"}}
+
 %%(qbasic)#DEFINE FIRST    32
 #DEFINE LAST    128
-DIM AS UBYTE PTR p, myFont
-DIM AS single w,ws
-DIM as INTEGER value, i
-ws=6.28/255
-SCREENRES 320, 200, 32, 2
+dim as ubyte ptr p, myFont
+dim as single w
+dim as integer value, i
+const ws = 6.28 / 255
+
+screenres 320, 200, 32, 2
+screenset 0, 1
+
 ' Create custom font into GET/PUT buffer
 myFont = IMAGECREATE((LAST - FIRST + 1) * 8, 9)
-p = myFont + 32
+p = myFont + iif(myFont[0] = 7, 32, 4)
 p[0] = 0
 p[1] = FIRST
 p[2] = LAST
-FOR i = FIRST TO LAST
+for i = FIRST to LAST
 	' Here we could define a custom width for each letter, but for simplicity we use
 	' a fixed width of 8 since we are reusing the default font glyphs
 	p[3 + i - FIRST] = 8
 	' Create character onto custom font buffer by drawing using default font
-	DRAW STRING myFont, ((i - FIRST) * 8, 1), CHR(i)
-NEXT i
+	draw string myFont, ((i - FIRST) * 8, 1), chr(i)
+next i
+
+
 ' Now the font buffer is ready; we could save it using BSAVE for later use
 ' Here we draw a string using the custom font and the ALPHA method
-WHILE len(INKEY)=0
-  value=sin(w)*127+127:w+=ws
+while len(inkey)=0
+  value = sin(w)*127+127: w += ws
   cls
-  DRAW STRING (100, 100), "Hello world!",, myFont, ALPHA, Value
-  SLEEP 10
-WEND
-END
+  draw string (100, 100), "Hello world!",, myFont, ALPHA, Value
+  screencopy
+  sleep 10
+wend
 %%
+{{image class="center" title="Draw String Example 3 (cycles through shades of grey between black and white)" url="http://img201.imageshack.us/img201/7518/keypgdrawstringexample3dt8.png" link="http://img201.imageshack.us/my.php?image=keypgdrawstringexample3dt8.png"}}
 
 {{fbdoc item="diff"}}
 	- New to Freebasic

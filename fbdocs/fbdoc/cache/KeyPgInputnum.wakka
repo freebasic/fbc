@@ -42,6 +42,6 @@ loop until a>="1" and a<="3"
 {{fbdoc item="see"}}
 	- ##[[KeyPgInput Input]]##
 	- ##[[KeyPgGetkey  Getkey]]##
-	- ##[[KeyPgInput Inkey]]##
+	- ##[[KeyPgInkey Inkey]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

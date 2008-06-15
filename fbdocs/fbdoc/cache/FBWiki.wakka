@@ -6,6 +6,12 @@ Welcome to the official home of the FreeBASIC Manual.
 	- **[[DocToc FreeBASIC Manual - Table of Contents]]**
 	- **[[CommunityTutorials Community Tutorials]]**
 
+==Other ""FreeBASIC"" Resources:==
+	Maybe the ""FreeBASIC"" manual wasn't quite what you were looking for?  Check out these other ""FreeBASIC"" resources online:
+
+	- [[http://freebasic.net freebasic.net]] - //The// start page for all things ""FreeBASIC"".  Downloads, links, examples, an active forum, and more.  Join the ""FreeBASIC"" community today - it's free!.
+	- [[http://sourceforge.net/projects/fbc FreeBASIC Project Page on sourceforge.net]] - Download the latest software releases, submit bug reports, feature requests, or contact the developers.
+
 ==About this wiki:==
 	The FreeBASIC compiler is currently in active development and this wiki is updated whenever possible to document the latest version of the compiler available.  Some features of the compiler documented here might not be available in the binary distributions of the compiler and may only be available when building the FreeBASIC compiler and runtime library from sources.
 

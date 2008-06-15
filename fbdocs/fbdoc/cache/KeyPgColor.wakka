@@ -2,10 +2,11 @@
 Sets the display foreground / background color that is used with console output and graphics output of text.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //fc// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 , [[KeyPgByval byval]] //bc// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Color** [//foreground//] [, [//background//]]
+	**Color** [//foreground//] [, //background//]
+	//result// = **Color** [( [//foreground//] [, //background//] )]
 ##
 {{fbdoc item="param"}}
 	##//foreground//##
@@ -14,29 +15,34 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	the current foreground color in the low word and the current background color in the high word.
+	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoword low word]] and the current background color in the [[KeyPgHiword high word]].
 
 {{fbdoc item="desc"}}
 	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle Circle]]##, ##[[KeyPgDraw Draw]]##, ##[[KeyPgLinegraphics Line (Graphics)]]##, ##[[KeyPgCls Cls]]##, ##[[KeyPgPaint Paint]]##, ##[[KeyPgPrint Print]]##, ##[[KeyPgPreset PReset]]## and ##[[KeyPgPset PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values COLOR accepts depend on the current gfx mode.
 
 	{{table columns="2" cellpadding="1" cells="Mode;Meaning;1;foreground is screen color (ranging 0-15). background modulo 4 is the emulated CGA palette to be used: 0 (green, red, and brown), 1 (cyan, magenta and white), 2 (same as 0, but with bright colors) or 3 (same as 1, but with bright colors);2, 11;foreground is a color index in current palette (ranging 0-1). background is a color index in current palette (ranging 0-1).;7, 8;foreground is a color index in current palette (ranging 0-15). background is screen color index in current palette (ranging 0-15).;9;foreground is a color index in current palette (ranging 0-63). background is screen color index in current palette (ranging 0-63).;12;foreground is a color index in current palette (ranging 0-15). background is a color index in current palette (ranging 0-15).;13 and up;foreground is a color index in current palette (ranging 0-255). background is a color index in current palette (ranging 0-255)."}}
 
-	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb RGB]]## color values in the form &hRRGGBB, where RR, GG and BB are the red, green and blue components ranging &h00-&hFF (0-255 in decimal notation). While in hi/truecolor modes, you can also use the ##[[KeyPgRgb RGB]]## macro to obtain a valid color value.
+	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb RGB]]## color values in the form &hAARRGGBB, where AA, RR, GG and BB are the alpha, red, green and blue components ranging &h00-&hFF (0-255 in decimal notation). While in hi/truecolor modes, you can use the ##[[KeyPgRgb RGB]]## or ##[[KeyPgRgba RGBA]]## macro to obtain a valid color value.
 	A [[GfxDefPalettes Default Palette]] is automatically set when entering a [[KeyPgScreengraphics Screen]] mode. 
-	
+
 {{fbdoc item="ex"}}
 %%(qbasic)
-' Sets 800x600 in 32bpp color depth
-SCREEN 19, 32
+' Sets 320x240 in 32bpp color depth
+screen 14, 32
 
 ' Sets orange foreground and dark blue background color
-COLOR &hFF8000, &h000040
+color RGB(255, 128, 0), RGB(0, 0, 64)
 
-' Say hello
-CLS
-LOCATE 19, 44: PRINT "Hello World!"
-SLEEP
+' Clears the screen to the background color
+cls                     
+
+' Prints "Hello World!" in the middle of the screen
+locate 15, 14
+print "Hello World!"
+
+sleep
 %%
+{{image class="center" title="Color example" url="http://img133.imageshack.us/img133/3086/keypgcolorexamplett0.png" link="http://img133.imageshack.us/my.php?image=keypgcolorexamplett0.png"}}
 
 {{fbdoc item="diff"}}
 	- Direct color modes were not supported in QB.

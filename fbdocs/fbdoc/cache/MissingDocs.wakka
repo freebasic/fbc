@@ -20,12 +20,15 @@ Please edit this page to remove items when they are written.
 	[[KeyPgNew New]]
 	[[KeyPgDelete Delete]]
 	[[KeyPgClass Class]]
+	[[KeyPgProtected Protected]]
 
 ==Incomplete Documentation==
 
 	[[KeyPgExternCpp Extern...End Extern]]
 	[[KeyPgProperty Property]]
-	
+	[[KeyPgPrivate Private]]
+	[[KeyPgPublic Public]]
+		
 	Pages that have '!!!'
 	
 	1. MissingDocs
@@ -42,7 +45,7 @@ The documents listed and linked below need to be updated or enhanced in some way
 	[[KeyPgPmap Pmap]]
 
 ==Examples to be reviewed==
-	[[KeyPgOptionnokeyword Option NoKeyword]] - won't compile - error - bug, can't undef overloaded funcs.
+	[[KeyPgOptionnokeyword Option NoKeyword]] - won't compile - error - bug, can't undef overloaded funcs.  (Example changed so it compiles.  Does a bug report need to be made?)
 ----
 
 ==To be deleted==

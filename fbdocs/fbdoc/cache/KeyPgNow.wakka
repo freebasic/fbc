@@ -30,3 +30,4 @@ print format(a,"yyyy/mm/dd hh:mm:ss")
 	- [[DtDateSer Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
+   

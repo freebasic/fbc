@@ -61,31 +61,34 @@ The mouse will be visible if visibility is set to 1, and invisible if visibility
 Here are a set of constants that I declare at the beginning of the module. This is simply to gain a bit of clarity of code in the rest of the programming example.
 %%(qbasic)
 	CONST LEFTBUTTON = 1 
-	CONST MIDDLEBUTTON = 2 
-	CONST RIGHTBUTTON = 4 
-	CONST SHOWMOUSE = 0
-	CONST HIDEMOUSE = 1 
+	CONST MIDDLEBUTTON = 4 
+	CONST RIGHTBUTTON = 2 
+	CONST SHOWMOUSE = 1
+	CONST HIDEMOUSE = 0 
 %%
 As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice.
 %%(qbasic)
 	DIM CurrentX AS INTEGER 
 	DIM CurrentY AS INTEGER
 	DIM MouseButtons AS INTEGER
-	DIM CanExit AS INTEGER 
+	DIM CanExit AS INTEGER
+	DIM AS STRING A,B,C
 %%
 The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll Interrogate the mouse and print some basic values. (this part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
 %%(qbasic)
 SCREEN 12 
-CanExit = 1 
+CanExit = 1
+ 
 DO WHILE CanExit <> 0 
 	GETMOUSE CurrentX, CurrentY, , MouseButtons 
 	IF CurrentX < 0 THEN
 	 PRINT "Mouse is out of context." 
-	ELSE 
-	 PRINT USING "Mouse position: ###:### Buttons: "; CurrentX; CurrentY; 
-	 IF MouseButtons AND LEFTBUTTON THEN PRINT "L"; 
-	 IF MouseButtons AND MIDDLEBUTTON THEN PRINT "R"; 
-	 IF MouseButtons AND RIGHTBUTTON THEN PRINT "M"; 
+	ELSE
+	IF MouseButtons AND LEFTBUTTON THEN A="L"
+	IF MouseButtons AND MIDDLEBUTTON THEN B="M"
+	IF MouseButtons AND RIGHTBUTTON THEN C="R"
+	 PRINT USING "Mouse position: ###:### Buttons: &&&"; CurrentX; CurrentY;A;B;C 
+	 A="":B="":C=""	 
 	END IF 
 LOOP
 %%
@@ -106,10 +109,10 @@ For the next step, since we want to control a bit what's happening with the mous
 Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truely outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
 %%(qbasic)
 CONST LEFTBUTTON   = 1
-CONST MIDDLEBUTTON = 2   ' UNUSED IN THIS DEMO
-CONST RIGHTBUTTON  = 4   ' UNUSED IN THIS DEMO
-CONST SHOWMOUSE    = 0
-CONST HIDEMOUSE    = 1
+CONST MIDDLEBUTTON = 4   ' UNUSED IN THIS DEMO
+CONST RIGHTBUTTON  = 2   ' UNUSED IN THIS DEMO
+CONST SHOWMOUSE    = 1
+CONST HIDEMOUSE    = 0
 
 DIM CurrentX     AS INTEGER
 DIM CurrentY     AS INTEGER
@@ -159,5 +162,5 @@ As always, if you have any questions regarding this tutorial or any other I've w
 
 
 MystikShadows
-St?phane Richard
+Stéphane Richard
 srichard@adaworld.com 

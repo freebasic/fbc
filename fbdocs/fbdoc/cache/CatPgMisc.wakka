@@ -1,24 +1,69 @@
 {{fbdoc item="title" value="Miscellaneous"}}----
 
 <<
-	- [[KeyPgAny ANY]]
-	- [[KeyPgAlias ALIAS]]
-	- [[KeyPgBeep BEEP]]
-	- [[KeyPgLib LIB]]
-	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
-	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
-
-
-<<>>
+	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
+	- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
+	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
+	- {{fbdoc item="keyword" value="KeyPgBit|BIT"}}
+	- {{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}
+	- {{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
+	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
+	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
+	- {{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
 	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
+	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
+
+{{fbdoc item="section" value="Uncategorized"}}
+	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
+	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
+	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
+	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
+	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREENCONS"}}
+	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
+	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
+
+<<>>
+{{fbdoc item="section" value="Compiler Switches"}}
+	- {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgDefbyte|DEFBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgDefdbl|DEFDBL"}}
+	- {{fbdoc item="keyword" value="KeyPgDefint|DEFINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDeflng|DEFLNG"}}
+	- {{fbdoc item="keyword" value="KeyPgDeflngint|DEFLNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefshort|DEFSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefsng|DEFSNG"}}
+	- {{fbdoc item="keyword" value="KeyPgDefstr|DEFSTR"}}
+	- {{fbdoc item="keyword" value="KeyPgDefubyte|DEFUBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefulngint|DEFULNGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
+	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
 
 >>
 
 ::c::
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
