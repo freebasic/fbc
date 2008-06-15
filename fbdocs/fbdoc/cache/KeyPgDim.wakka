@@ -123,15 +123,15 @@ sleep
 
 	      
 {{fbdoc item="see"}}
-	- [[KeyPgCommon COMMON]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgErase ERASE]]
-	- [[KeyPgExtern EXTERN]]
-	- [[KeyPgLbound LBOUND]]
-	- [[KeyPgRedim REDIM]]
-	- [[KeyPgPreserve PRESERVE]]
-	- [[KeyPgShared SHARED]]
-	- [[KeyPgStatic STATIC]]
-	- [[KeyPgUbound UBOUND]]
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgLbound LBound]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgShared Shared]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgUbound UBound]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

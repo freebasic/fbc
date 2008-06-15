@@ -9,10 +9,12 @@ Control flow statement for looping
 {{fbdoc item="param"}}
 	##//iterator//##
 		a variable identifier that is used to iterate from an initial value to an end value
+	##//datatype//##
+		If specified, the variable ##//iterator//## will automatically be declared with the type ##//datatype//##.
 	##//startvalue//##
 		an expression that denotes the starting value of the iterator
 	##//endvalue//##
-			an expression used to compare with the value of the iterator
+		an expression used to compare with the value of the iterator
 	##//stepvalue//##
 		an expression that is added to the iterator after every iteration
 
@@ -25,7 +27,7 @@ Control flow statement for looping
 
 	If //endvalue// is less than //startvalue// then a negative //stepvalue// must be specified or the //statement block// will not execute at all, since //startvalue// compares greater than //endvalue//.
 
-	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**##FOR statement is encountered, the rest of the //statement block// is skipped and execution resumes at the FOR statement.
+	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**## statement is encountered, the rest of the //statement block// is skipped and execution resumes at the FOR statement.
 
 	Like all control flow statements, the ##**For**## statement can be nested, ie., it can be used in a statement block of another FOR statement.
 
@@ -35,11 +37,11 @@ Control flow statement for looping
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-dim i as single
-print "counting from 3 to 0, with a step of -1"
-FOR i = 3 TO 0 STEP -1
-	print "i is "; i
-NEXT
+Dim i As Single
+Print "counting from 3 to 0, with a step of -0.5"
+For i = 3 To 0 Step -0.5
+	Print "i is " & i
+Next i
 %%
 
 {{fbdoc item="lang"}}

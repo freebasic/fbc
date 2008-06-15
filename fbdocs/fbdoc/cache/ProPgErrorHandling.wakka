@@ -57,17 +57,21 @@ Aborting program due to runtime error 2 (file not found)
 %%(qbasic)
 declare sub foo
 foo
-print "ok"
 sleep
 
 sub foo
-on local error goto fail
-open "xzxwz.zwz" for input as #1
-on local error goto 0
-exit sub
-fail:
-print "Error "err
-sleep
+	
+	dim filename as string
+	filename = ""
+	on local error goto fail
+	open "" for input as #1
+	print "No error"
+	on local error goto 0
+	exit sub
+	
+  fail:
+	print ("Error " & err & " in function " & *erfn & " on line " & erl)
+	
 end sub
 %%
 

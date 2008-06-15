@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Missing Documentation"}}----
 Please edit this page to remove items when they are written.
 
-==Language and non-keyword related texts==
+==Language and non-keyword related texts Needed==
 	- Variable Declaration/Initialisation (including implicit declaration)
 	- Differences between versions (windows, linux, DOS)
 	- Cross compiling
@@ -9,24 +9,22 @@ Please edit this page to remove items when they are written.
 	- Source and Include Files
 	- Statements and Statement blocks
 	- Expressions
-	- Unnamed udt (TYPE)
 	- Finish formatting the style change that was started beginning of 2006.
 	- See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
 
-==Undocumented keywords== 
-
-	[[KeyPgVar Var]]
-	
+==Missing Keywords== 
+	None
 
 ==Incomplete Documentation==
 
 	[[KeyPgExternCpp Extern...End Extern]]
+	[[KeyPgVar Var]]
+
+	- static members
+	- for/next/step overloads
+	- more overloaded ops? (need to check this)
+	- command line options need updating [[CompilerCmdLine command line options]]
 		
-	Pages that have '!!!'
-	
-	1. MissingDocs
-	2. ProPgTypeObjects
-	3. KeyPgDeclare
 ----
 
 The documents listed and linked below need to be updated or enhanced in some way.
@@ -35,8 +33,12 @@ The documents listed and linked below need to be updated or enhanced in some way
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
 	[[KeyPgFlip Flip]]
 	[[KeyPgPmap Pmap]]
+	[[KeyPgEncoding Encoding]]
 
 ==Examples to be reviewed==
+	None
+
+==Pages that are no longer needed and can be deleted==
 	None
 
 ==Pages requiring new style update==
@@ -49,44 +51,28 @@ KeyPgChr
 KeyPgCustomgfx
 KeyPgDeclare
 KeyPgDim
-KeyPgEncoding
 KeyPgExtern
 KeyPgField
 KeyPgFunction
-KeyPgInputfilemode
-KeyPgLock
 KeyPgLset
 KeyPgLtrim
-KeyPgMidfunction
-KeyPgMidstatement
 KeyPgOpenCom
-KeyPgOpenErr
-KeyPgOpenScrn
-KeyPgOutput
 KeyPgPeek
 KeyPgPoke
 KeyPgPrintPp
 KeyPgPrivate
 KeyPgPublic
 KeyPgRandom
-KeyPgReadFile
 KeyPgRtrim
 KeyPgScreenCons
-KeyPgSeekset
 KeyPgSub
 KeyPgSwap
 KeyPgTransGfx
 KeyPgTrim
 KeyPgType
 KeyPgTypeDef
-KeyPgUnlock
 KeyPgUsing
+KeyPgVar
 KeyPgWchr
-KeyPgWriteFile
-
-----
-
-==To be deleted==
-	None
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

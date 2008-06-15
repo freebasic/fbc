@@ -1,4 +1,5 @@
-    Since version 0.17, FreeBASIC introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the QB compatible parser. All differences listed below assume that -lang qb was used.
+{{fbdoc item="title" value="Differences from QB"}}----
+Since version 0.17, FreeBASIC introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the QB compatible parser. All differences listed below assume that -lang qb was used.
 
 ==Architecture/Platform incompatibilities==
 	- The [[KeyPgInteger INTEGER]] data type is 32 bits, rather than 16 bits in QuickBASIC.

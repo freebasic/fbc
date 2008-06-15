@@ -52,4 +52,4 @@ The Binary representation of the LSW Is    1111111111111111
 	- ##[[KeyPgHibyte HIBYTE]]##
 	- ##[[KeyPgLoByte LOBYTE]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}}
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

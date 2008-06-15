@@ -1,64 +1,20 @@
-{{fbdoc item="title" value="Arrays"}}
-----
+{{fbdoc item="title" value="Arrays"}}----
+Multi-dimensional container types
 
 {{fbdoc item="desc"}}
-	Arrays are [[DtVariables Variables]] which contain more than one value. The value decided upon is chosen using an [[ProPgArrayIndex Array Index]]. In FreeBASIC, Any array must be declared before it's first use using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command.
-	
-	The best way to conceptualize an array is look at it like a spreadsheet. For example, if you had an array called myArray which contained elements (1 to 10), and was filled with random numbers, you could look at it like this:
-%%
-Index        Data
-1              5
-2              2
-3              6
-4              5
-5              9
-6              1
-7              0
-8              4
-9              5
-10             7
-%%
-	Keep in mind that the numbers in the Data column are completely arbitrary in our example. When you create an array in FreeBASIC using the DIM command, the elements are all set to 0.
-	If you were to look at myArray(1), you'd find it's equal to 5. If you were to look at myArray(5), you'd find it equal to 9. In FreeBASIC, you can for the most part treat arrays with indexes the same as you would all [[DtVariables Variables]].
-	
-	Arrays are available based on the rules of {{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}. Depending on the Scope of a variable, an array you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
+	Arrays are [[DtVariables Variables]] which hold one or more values, or elements. You can think of them as a heterogenous container, that is, a container that can hold a number of elements of a single type.
 
-{{fbdoc item="ex"}}
-%%(qbasic)DECLARE SUB PrintArray()
+	FreeBASIC arrays can be multi-dimensional; they can be used to represent, for example, a line of elements (1 dimension), a grid of elements (2 dimensions), a cube of elements (3 dimensions) and more (a 4-dimensional array could perhaps be modelled by a line of cubes). The number of dimensions an array has is determined where it is declared or defined, and like all FreeBASIC variables, arrays must be declared or defined before they're used.
 
-DIM Numbers(1 to 10) AS INTEGER
-DIM SHARED OtherNumbers(1 to 10) as INTEGER
-dim a as integer
+	- See ##[[KeyPgExtern Extern]]## for declaring arrays
+	- See ##[[KeyPgDim Dim]]## and ##[[KeyPgRedim Redim]]## for defining arrays
 
-Numbers(1) = 1
-Numbers(2) = 2
-OtherNumbers(1) = 3
-OtherNumbers(2) = 4
+	Arrays come in two flavors: static and dynamic. Static arrays are allocated at compile-time, on the stack, while dynamic (non-static) arrays are allocated at run-time, on the free store (the heap). FreeBASIC reserves a limited amount of stack space by default (1,024 KB), which may not be enough memory if you have many large static arrays. Dynamic arrays, on the other hand, have the entire free store available to them, and so can potentially be much larger.
 
-PrintArray ()
+	Wherever an array's memory is located, it's always allocated in a single block. The elements of an array are stored contiguously in memory, that is, one after the other. More specifically, elements are stored in row-major order. So for multi-dimensional arrays, elements with the same highest dimension are next to one another. These elements can be accessed using array notation, or, because they're stored contiguously, pointer notation. !!!WRITEME a brief about the math involved in using pointer notation with multidimensional arrays? WRITEME!!!
 
-for a = 1 to 10
- print Numbers(a)
-next a
-
-print OtherNumbers(1)
-print OtherNumbers(2)
-print OtherNumbers(3)
-print OtherNumbers(4)
-print OtherNumbers(5)
-print OtherNumbers(6)
-print OtherNumbers(7)
-print OtherNumbers(8)
-print OtherNumbers(9)
-print OtherNumbers(10)
-
-SUB PrintArray ()
- dim a as integer
- for a = 1 to 10
-  print otherNumbers(a)
- next a
-END SUB
-%%
+	- See [[ProPgArrayIndex Array Indexing]] for accessing elements with array notation
+	- See [[KeyPgPtrIndex Pointer Indexing]] for accessing elements with pointer notation
 
 {{fbdoc item="see"}}
 	- [[ProPgArrayIndex Array Index]]

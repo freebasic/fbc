@@ -1,75 +1,145 @@
 {{fbdoc item="title" value="Operators"}}----
-<<
-==Assignment Operators==
-	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineConcat|+= (Concatenate and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineSub|-= (Subtract and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Multiply and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineDiv|/= (Divide and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineIntDiv|\= (Integer Divide and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineMod|MOD= (Modulus and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineAnd|AND= (Conjunction and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineEqv|EQV= (Equivalence and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineImp|IMP= (Implication and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineOr|OR= (Inclusive Or and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineXor|XOR= (Exclusive Or and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineShl|SHL= (Shift Left and Assign)"}}
-	- {{fbdoc item="keyword" value="KeyPgCombineShr|SHR= (Shift Right and Assign)"}}
+Procedures that operate on one or more operands
 
-==Arithmetic Operators==
-	- {{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}
-	- {{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}
-	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
-	- {{fbdoc item="keyword" value="KeyPgDivision|/ (Division)"}}
-	- {{fbdoc item="keyword" value="KeyPgIntegerDivision|\ (Integer division)"}}
-	- {{fbdoc item="keyword" value="KeyPgExponentiation|^ (Exponentiation)"}}
-	- {{fbdoc item="keyword" value="KeyPgMod|MOD (Integer modulo)"}}
-	- {{fbdoc item="keyword" value="KeyPgNegation|- (Negation)"}}
-	- {{fbdoc item="keyword" value="KeyPgShl|SHL (Shift-left)"}}
-	- {{fbdoc item="keyword" value="KeyPgShr|SHR (Shift-right)"}}
+**{{anchor name="ASSIGN|Assignment Operators"}}**
+	Operators that assign the value of one operand to the other.
+**{{anchor name="ARITHMETIC|Arithmetic Operators"}}**
+	Operators that perform mathematical computations on their operands and return the result.
+**{{anchor name="STRING|String Operators"}}**
+	Operators overloaded to work with [[KeyPgString String]]s.
+**{{anchor name="RELATIONAL|Relational Operators"}}**
+	Operators that compare the relationship between their operands.
+**{{anchor name="LOGICAL|Logical Operators"}}**
+	Operators that perform bitwise computation with their operands and return the result.
+**{{anchor name="PREPROC|Preprocessor Operators"}}**
+	Operators that control preprocessor behavior.
+**{{anchor name="POINTER|Pointer Operators"}}**
+	Operators that work with pointers and addresses.
+**{{anchor name="TYPE|Type or Class Operators"}}**
+	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
+**{{anchor name="MEMORY|Memory Operators"}}**
+	Operators that allocate and construct objects.
 
-==String Operators==
-	- {{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}
-	- {{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}
-	- {{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}
+<<{{anchor name="ASSIGN"}}{{fbdoc item="section" value="Assignment Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}==
+		Assigns the value of one operand to the other.
+	=={{fbdoc item="keyword" value="KeyPgCombineConcat|&= (Concatenate and Assign)"}}==
+		Assigns the value of a concatenation between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineAdd|+= (Add and Assign)"}}==
+		Assigns the value of an addition between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineSub|-= (Subtract and Assign)"}}==
+		Assigns the value of a subtraction between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineMulti|*= (Multiply and Assign)"}}==
+		Assigns the value of a multiplication between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineDiv|/= (Divide and Assign)"}}==
+		Assigns the value of a division between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineIntDiv|\= (Integer Divide and Assign)"}}==
+		Assigns the value of an integer divide between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineExp|^= (Exponentiate and Assign)"}}==
+		Assigns the value of a exponentiation between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineMod|MOD= (Modulus and Assign)"}}==
+		Assigns the value of a modulus between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineAnd|AND= (Conjunction and Assign)"}}==
+		Assigns the value of a bitwise conjunction between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineEqv|EQV= (Equivalence and Assign)"}}==
+		Assigns the value of a bitwise equivalence between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineImp|IMP= (Implication and Assign)"}}==
+		Assigns the value of a bitwise implication between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineOr|OR= (Inclusive Or and Assign)"}}==
+		Assigns the value of a bitwise inclusive or between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineXor|XOR= (Exclusive Or and Assign)"}}==
+		Assigns the value of a bitwise exclusive or between two operands.
+	=={{fbdoc item="keyword" value="KeyPgCombineShl|SHL= (Shift Left and Assign)"}}==
+		Assigns the value of a bitwise shift left of an operand.
+	=={{fbdoc item="keyword" value="KeyPgCombineShr|SHR= (Shift Right and Assign)"}}==
+		Assigns the value of a bitwise shift right of an operand.
 
+{{anchor name="ARITHMETIC"}}{{fbdoc item="section" value="Arithmetic Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}==
+		Returns the result of an addition of two operands.
+	=={{fbdoc item="keyword" value="KeyPgSubtraction|- (Subtraction)"}}==
+		Returns the result of a subtraction of two operands.
+	=={{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}==
+		Returns the result of a multiplication of two operands.
+	=={{fbdoc item="keyword" value="KeyPgDivision|/ (Division)"}}==
+		Returns the result of a division of two operands.
+	=={{fbdoc item="keyword" value="KeyPgIntegerDivision|\ (Integer division)"}}==
+		Returns the result of an integer divide of two operands.
+	=={{fbdoc item="keyword" value="KeyPgExponentiation|^ (Exponentiation)"}}==
+		Returns the result of an exponentiation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgMod|MOD (Integer modulo)"}}==
+		Returns the result of a modulus of two operands.
+	=={{fbdoc item="keyword" value="KeyPgNegation|- (Negation)"}}==
+		Returns the result of a negation of an operand.
+	=={{fbdoc item="keyword" value="KeyPgShl|SHL (Shift-left)"}}==
+		Returns the result of a bitwise shift left of an operand.
+	=={{fbdoc item="keyword" value="KeyPgShr|SHR (Shift-right)"}}==
+		Returns the result of a bitwise shift right of an operand.
+
+{{anchor name="STRING"}}{{fbdoc item="section" value="String Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgConcat|+ (String concatenation)"}}==
+		Concatenates two [[KeyPgStringtype String]] values.
+	=={{fbdoc item="keyword" value="KeyPgConcatConv|& (String concatenation with conversion)"}}==
+		Concatenates two values converted to [[KeyPgStringtype String]].
+	=={{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}==
+		Returns a reference to a character in a [[KeyPgStringtype String]].
 <<>>
-==Relational Operators==
-	- {{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}
-	- {{fbdoc item="keyword" value="KeyPgLessThanOrEqual|<= (Less than or equal)"}}
-	- {{fbdoc item="keyword" value="KeyPgEqual|= (Equality)"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|>= (Greater than or equal)"}}
-	- {{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}
+{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}==
+		Compares the inequality relation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}==
+		Compares the less than relation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgLessThanOrEqual|<= (Less than or equal)"}}==
+		Compares the less than or equal relation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgEqual|= (Equality)"}}==
+		Compares the equal relation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgGreaterThanOrEqual|>= (Greater than or equal)"}}==
+		Compares the greater than or equal relation of two operands.
+	=={{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}==
+		Compares the greater than relation of two operands.
 
-==Logical Operators==
-	- {{fbdoc item="keyword" value="KeyPgAnd|AND (Conjunction)"}}
-	- {{fbdoc item="keyword" value="KeyPgEqv|EQV (Equivalence)"}}
-	- {{fbdoc item="keyword" value="KeyPgImp|IMP (Implication)"}}
-	- {{fbdoc item="keyword" value="KeyPgNot|NOT (Complement)"}}
-	- {{fbdoc item="keyword" value="KeyPgOr|OR (Disjunction, Inclusive Or)"}}
-	- {{fbdoc item="keyword" value="KeyPgXor|XOR (Exclusive Or)"}}
+{{anchor name="LOGICAL"}}{{fbdoc item="section" value="Logical Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgAnd|AND (Conjunction)"}}==
+		Returns the result of a bitwise conjunction of two operands.
+	=={{fbdoc item="keyword" value="KeyPgEqv|EQV (Equivalence)"}}==
+		Returns the result of a bitwise equivalence of two operands.
+	=={{fbdoc item="keyword" value="KeyPgImp|IMP (Implication)"}}==
+		Returns the result of a bitwise implication of two operands.
+	=={{fbdoc item="keyword" value="KeyPgNot|NOT (Complement)"}}==
+		Returns the result of a bitwise complement of an operand.
+	=={{fbdoc item="keyword" value="KeyPgOr|OR (Disjunction, Inclusive Or)"}}==
+		Returns the result of a bitwise inclusive or of two operands.
+	=={{fbdoc item="keyword" value="KeyPgXor|XOR (Exclusive Or)"}}==
+		Returns the result of a bitwise exclusive or of two operands.
 
-==Preprocessor Operators==
-	- {{fbdoc item="keyword" value="KeyPgStringize|# (Argument stringize)"}}
-	- {{fbdoc item="keyword" value="KeyPgPreConcat|## (Argument concatenation)"}}
+{{anchor name="PREPROC"}}{{fbdoc item="section" value="Preprocessor Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgStringize|# (Argument stringize)"}}==
+		Returns a text operand converted to a [[KeyPgStringtype String]] literal.
+	=={{fbdoc item="keyword" value="KeyPgPreConcat|## (Argument concatenation)"}}==
+		Concatenates two text operands.
 
-==Pointer Operators==
-	- {{fbdoc item="keyword" value="KeyPgAt|@ (Address of)"}}
-	- {{fbdoc item="keyword" value="KeyPgValOf|* (Value of)"}}
-	- {{fbdoc item="keyword" value="KeyPgPtrAddSub|+ - (Pointer arithmetics)"}}
-	- {{fbdoc item="keyword" value="KeyPgPtrIndex|[] (Pointer indexing)"}}
+{{anchor name="POINTER"}}{{fbdoc item="section" value="Pointer Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgAt|@ (Address of)"}}==
+		Returns the address in memory of its operand.
+	=={{fbdoc item="keyword" value="KeyPgValOf|* (Value of)"}}==
+		Returns a reference to the value at an address.
+	=={{fbdoc item="keyword" value="KeyPgPtrAddSub|+ - (Pointer arithmetics)"}}==
+		Performs pointer arithmetic.
+	=={{fbdoc item="keyword" value="KeyPgPtrIndex|[] (Pointer indexing)"}}==
+		Performs pointer indexing. (short for *(p + index))
 
-==Type Operators==
-	- {{fbdoc item="keyword" value="KeyPgDot|. (Field access)"}}
-	- {{fbdoc item="keyword" value="KeyPgPtrField|-> (Field pointer access)"}}
+{{anchor name="TYPE"}}{{fbdoc item="section" value="Type or Class Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgDot|. (Field access)"}}==
+		Returns a reference to a member.
+	=={{fbdoc item="keyword" value="KeyPgPtrField|-> (Field pointer access)"}}==
+		Returns a reference to a member from a pointer.
 
-==Memory Operators==
-	- {{fbdoc item="keyword" value="KeyPgNew|New"}}
-	- {{fbdoc item="keyword" value="KeyPgDelete|Delete"}}
+{{anchor name="MEMORY"}}{{fbdoc item="section" value="Memory Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgNew|New"}}==
+		Allocates memory for and constructs objects.
+	=={{fbdoc item="keyword" value="KeyPgDelete|Delete"}}==
+		Destroys and deallocates memory for objects.
 
->>	
-::c::
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

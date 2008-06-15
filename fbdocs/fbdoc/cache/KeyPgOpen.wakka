@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="OPEN"}}----
-File Input/Output function for getting a handle to a disk file or device.
+File Input/Output function for accessing a disk file or device.
 
 {{fbdoc item="syntax"}}##
-	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [encoding //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//slot// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]##
-
+	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [[[KeyPgEncoding encoding]] //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]
+##
 {{fbdoc item="param"}}
 	##//filename//##
 		Name of file to open; must be a legal file name in the target OS, without wildcards.  Non-absolute file specs are relative to the current directory. This file must exist if ##//mode//## is ##[[KeyPgInputfilemode Input]]##.
@@ -34,36 +34,36 @@ File Input/Output function for getting a handle to a disk file or device.
 		
 		If no lock type is stated, the file will be ##Shared## for other threads of the program and ##Lock Read Write## for other programs.
 		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to temporarily restrict access to parts of a file.
-	##//slot//##
-		A valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	##//filenum//##
+		A valid file number (in the range 1-255) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
 	##//record_length//##
 		Optional parameter, meaningful only for files opened ##For Random##; the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##.  It must match the size of the buffer variable used when reading and writing data. The default is 128 bytes.
 
 {{fbdoc item="desc"}}
-	Opens a file or device for reading and/or writing in the given file //slot//, with the given file //mode//. 
+	Opens a file or device for reading and/or writing in the given file ##//filenum//##, with the given file ##//mode//##. 
 
-	If the file does not exist, a new file will be created, unless FOR INPUT is specified; in this case, an error is issued.
+	If the file does not exist, a new file will be created, unless ##FOR## ##[[KeyPgInputfilemode Input]]## is specified; in this case, an error is issued.
 
-	The file pointer is initialized by OPEN at the beginning of the file, except if opened FOR APPEND; in this case, the pointer is set at the end of the existing data.
+	The file pointer is initialized by ##**Open**## at the beginning of the file, except if opened ##FOR## ##[[KeyPgAppend Append]]##; in this case, the pointer is set at the end of the existing data.
 
-	The data existing in the file is preserved by OPEN unless FOR [[KeyPgOutput OUTPUT]] is specified; in this case, the file is emptied.
+	The data existing in the file is preserved by ##**Open**## unless ##For## ##[[KeyPgOutput Ouput]]## is specified; in this case, the file is emptied.
 	
-	Using MS-DOS device names to open streams to hardware devices ("LPT:", "SCR:",..) is no longer allowed; FreeBASIC's new composite keywords must be used: see [[KeyPgOpenCom OPEN COM]],  [[KeyPgOpenCons OPEN CONS]],  [[KeyPgOpenErr OPEN ERR]],  [[KeyPgOpenPipe OPEN PIPE]],  [[KeyPgOpenLpt OPEN LPT]],  [[KeyPgOpenScrn OPEN SCRN]].
+	Using MS-DOS device names to open streams to hardware devices ("LPT:", "SCR:",..) is no longer allowed; FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
 
-	OPEN can be used as a function which returns the error code that the operation sets in [[KeyPgErr ERR]].
+	##**Open**## can be used as a function which returns the error code that the operation sets in ##[[KeyPgErr Err]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)' Create a string and fill it.
 Dim buffer As String, f as integer
 buffer = "Hello World within a file."
 
-' Find the first free file handle.
+' Find the first free file number.
 f = Freefile
 
-' Open the file "file.ext" for binary usage, using the handle "f".
+' Open the file "file.ext" for binary usage, using the file number "f".
 Open "file.ext" For Binary As #f
 
-' Place our string inside the file, using handle "f".
+' Place our string inside the file, using number "f".
 Put #f, , buffer
 
 ' Close all open files.  
@@ -98,13 +98,13 @@ END IF
 	- OPEN can now be used as a function.
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpenCom OPEN COM]]
-	- [[KeyPgOpenCons OPEN CONS]]
-	- [[KeyPgOpenErr OPEN ERR]]
-	- [[KeyPgOpenPipe OPEN PIPE]]
-	- [[KeyPgClose CLOSE]]
-	- [[KeyPgInputPp INPUT #]]
-	- [[KeyPgGetfileio GET (FILE I/O)]]
-	- [[KeyPgPutfileio PUT (FILE I/O)]]
+	- ##[[KeyPgOpenCom Open Com]]##
+	- ##[[KeyPgOpenCons Copen Cons]]##
+	- ##[[KeyPgOpenErr Open Err]]##
+	- ##[[KeyPgOpenPipe Open Pipe]]##
+	- ##[[KeyPgClose Close]]##
+	- ##[[KeyPgInputPp Input #]]##
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,5 +1,4 @@
-===Compiling from CVS for Cygwin===
-
+{{fbdoc item="title" value="Compiling from CVS for Cygwin"}}----
 At the moment, there is no standard distribution for Cygwin.  Therefore, if you wish to have a Cygwin-specific build of FreeBASIC, you'll have to build it yourself.  
 
 	=={{anchor name="setup|Setting up the Cygwin environment"}}==
@@ -97,3 +96,5 @@ cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/cygwin/*.a ~/FBbin/lib/cygwin%%
 	
 	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:
 	http://www.freebasic.net/forum/viewtopic.php?p=32260
+
+{{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}

@@ -1,95 +1,54 @@
-{{fbdoc item="title" value="Pointers"}}
-----
+{{fbdoc item="title" value="Pointers"}}----
+Datatypes whose values are addresses in memory
 
 {{fbdoc item="desc"}}
-	Pointers are [[DtVariables Variables]] which, instead of holding data on their own, point to a memory location that the programmer chooses. 
+	Pointers are [[DtVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are defined using [[KeyPgDim Dim]], like other variables, with the suffix "pointer" or "ptr" following the type name. The following,
 
-	In FreeBASIC, pointer variables can defined using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command using the **ptr** (or **pointer**) suffix on the data type name. For example, to define a pointer to an integer named //myPointer//, you'd would type
-
-%%
-DIM myPointer AS INTEGER PTR
-%%
-==Pointer Notation:==
-	After being defined with the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command, pointers have their own notation which must be used. Also, standard variables can be modified using other keywords. 
-
-	In this example, we'll create two variables: //myVariable// and //myPointer//.
-
-%%
-DIM myVariable AS INTEGER
-DIM myPointer AS INTEGER PTR
-%%
-	If we were to write the following lines of code:
-
-%%
-myVariable = 10
-myPointer = 10
-%%
-	we will have two completely different results. //myVariable// will be set to 10 as expected, but //myPointer// is told to point to the memory address at 10. In order to actually write to the address at //myPointer//, the following line of code must be used:
-
-%%
-*myPointer = 5
-%%
-	//(However, if you use the previous three code lines in order, you will effectively be writing the number 5 to the memory location 10. This will most likely cause your program crash, and could possibly crash your operating system, as well.)//
-	
-	This is called "dereferencing", and causes the compiler not to alter the variable, but instead the data to which the variable points.
-
-	In order for //myPointer// to be useful, it has to be pointed at a memory location you have already created. Luckily, we have created one -- //myVariable//. To find out the memory address of //myVariable//, you can use the notation //@myVariable//. Think of the **@** operator as saying, "at the location of," which is logical. In this way, you can write:
-
-%%
-myPointer = @myVariable
-*myPointer = 5
-%%
-	Now you have just set the value of //myVariable// to 5.
-
-	
-==Addressing user-defined TYPEs with pointers:==
-	If you create a [[KeyPgType Type]], then set pointer to point to it, you cannot use the standard dot notation to access the elements within the type. Let's say we set up the following situation:
-	
-%%
-TYPE myType
-   X AS INTEGER
-   Y AS INTEGER
-END TYPE
-
-DIM myVariable AS myType
-DIM myPointer AS myType PTR
-
-myPointer = @myVariable
-%%
-	The following line of code, though it looks vaguely logical, is not valid:
-
-%%
-*myPointer.x = 10
-%%
-	It is not valid because it is vague.  The TYPE element, .x, could conceivably hold a pointer value.  Another way to write it, which is also not valid, is:
-%%
-(*myPointer).x = 10
-%%	
-	The way to do it, is to use a minus sign and a greater than sign to create an arrow operator (->). For example:
-	
-%%
-myPointer->x = 10
-%%
-	
-{{fbdoc item="ex"}}
 %%(qbasic)
-
-DIM FirstNumber AS INTEGER
-DIM SecondNumber as INTEGER ptr
-
-FirstNumber = 1
-SecondNumber = @FirstNumber
-
-print FirstNumber; *SecondNumber ' will display 1 1
+Dim myInteger As Integer = 10
+Dim myPointer As Integer Pointer = @myInteger
 %%
+	defines an integer and an integer pointer that points to it. The [[KeyPgAt address-of operator]] (@) is used to retrieve the address of myInteger.
+
+==Accessing the pointed to data==
+	The data pointed to by a pointer can be accessed with the [[KeyPgValOf dereference operator]] (*). This operator returns a reference to the data that is pointed to, that matches the type of pointer. The following,
+
+%%(qbasic)
+*myPointer = 20
+Print myInteger
+%%
+	assigns the value of 20 to the location	at which myPointer points (which is the address of myInteger, or @myInteger). Changes to this location in memory directly affect the value of myInteger (myInteger is the same thing as *myPointer).
+
+==Working with pointers to user-defined types==
+	Pointers to user-defined types are defined and used like all other pointers. Accessing a member of a [[KeyPgType Type]] or [[KeyPgClass Class]] requires one of the following two methods:
+
+%%(qbasic)
+Type myType
+	a As Integer
+	b As Double
+End Type
+
+Dim x As myType
+Dim p As myType Pointer = @x
+
+'' 1) dereference the pointer and use the member access operator:
+(*p).a = 10
+(*p).b = 12.34
+
+'' 2) use the shorthand form of the member access operator:
+Print p->a
+Print p->b
+%%
+	The first method uses the 'dot' form of the [[KeyPgDot member access operator]]. This operator accesses members from references, so the pointer is dereferenced first. The member access operator has higher priority over the dereference operator, so parenthesis are needed to dereference the pointer before using it with the member access operator.
+	The second method uses the 'arrow' form of the [[KeyPgPtrField member access operator]]. This operator accesses members from pointers, which are automatically dereferenced. This can make code a little clearer, although both forms produce identical results.
 
 {{fbdoc item="see"}}
-	- [[KeyPgAt (@) Address of]]
-	- [[KeyPgValOf (*) Value of]]
-	- [[KeyPgVarptr VARPTR]]
-	- [[KeyPgStrptr STRPTR]]
-	- [[KeyPgProcptr PROCPTR]]
-	- [[KeyPgDim DIM]]
+	- ##[[KeyPgAt (@) Address of]]##
+	- ##[[KeyPgValOf (*) Value of]]##
+	- ##[[KeyPgVarptr VARPTR]]##
+	- ##[[KeyPgStrptr STRPTR]]##
+	- ##[[KeyPgProcptr PROCPTR]]##
+	- ##[[KeyPgDim DIM]]##
 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="__FB_BUILD_TIME__"}}----
+Intrinsic define (macro string) set by the compiler.
+
+{{fbdoc item="syntax"}}##
+	""__FB_BUILD_TIME__""
+##
+{{fbdoc item="desc"}}
+	Substituted with the quoted string containing the time (HH-MM-SS) the compiler was built.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+	Print "This program compiled with a compiler built at this time:" & __FB_BUILD_TIME__
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -12,20 +12,48 @@ Graphics function to return a pointer to the current work page framebuffer memor
 
 {{fbdoc item="desc"}}
 	**Screenptr** provides a way to directly read/write the working page's framebuffer. [[KeyPgScreenlock Screenlock]] should be used before any read or writes are attempted. The pointer returned is valid up until any subsequent call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]], which invalidates it.
-
+	
 	**Screenptr** can also be used to test if a call to [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres Screenres]] was successful, indicated by a non-NULL (<> 0) return value.
 
+	Each row in the frame buffer is //width// * //bytes_per_pixel// bytes long.  The frame buffer consists of //height// rows, stored in order of their position on the screen, from the top downwards.  There is no padding between the rows; each row follows straight on from the last.
+
 {{fbdoc item="ex"}}
+%%(qbasic)
+const w As integer = 297
+const h As integer = 210
+Dim As integer x, y
+
+screenres w, h, 8 ' 8-bit screen.
+
+' Get the address of the 8 bit/pixel frame buffer. A
+' ubyte ptr is used to simplify 8-bit pointer arithmetic.
+dim buffer As ubyte ptr = screenptr()
+If (buffer = 0) Then
+	Print "error: graphics screen not initialized."
+	End -1
+End If
+
+' Lock the screen to allow direct framebuffer access.
+screenlock()
+
+' Plot a green pixel in the middle of the screen.
+x = w \ 2: y = h \ 2
+buffer[y * w + x] = 10
+
+' Unlock the screen.
+screenunlock()
+
+sleep%%
 %%(qbasic)
 const w as integer = 800
 const h as integer = 600
 
-screenres w, h, 32
+screenres w, h, 32 ' 32-bit screen.
 
-' Get the address of the 32 bit/pixel frame buffer. An
+' Get the address of the 32 bit/pixel frame buffer. A
 ' uinteger ptr is used to simplify 32-bit pointer arithmetic.
 dim buffer as uinteger ptr = screenptr()
-if (0 = buffer) then
+if (buffer = 0) then
 	print "error: graphics screen not initialized."
 	end -1
 end if

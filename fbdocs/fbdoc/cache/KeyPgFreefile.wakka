@@ -8,23 +8,23 @@ Returns a free file number.
 	//result// = **Freefile**
 ##
 {{fbdoc item="ret"}}
-	The ##[[KeyPgInteger integer]]## handle of the next available free file number.
+	The next available file number.
 
 {{fbdoc item="desc"}}
-	Returns the number of the next free file slot. This value is a required argument to ##[[KeyPgOpen Open]]## a file. Freefile is useful when opening files in complex programs where the programmer can't keep track of the used slots.
+	Returns the number of the next free file number. This value is a required argument to ##[[KeyPgOpen Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
 
 {{fbdoc item="ex"}}
 %%(qbasic)' Create a string and fill it.
 Dim buffer As String, f as integer
 buffer = "Hello World within a file."
 
-' Find the first free file handle.
+' Find the first free file number.
 f = Freefile
 
-' Open the file "file.ext" for binary usage, using the handle "f".
+' Open the file "file.ext" for binary usage, using the file number "f".
 Open "file.ext" For Binary As #f
 
-' Place our string inside the file, using handle "f".
+' Place our string inside the file, using file number "f".
 Put #f, , buffer
 
 ' Close the file.
@@ -34,7 +34,7 @@ Close
 End
 %%
 
-	When using multiple FREEFILE's, the FREEFILE statement should be used *just* before the [[KeyPgOpen Open]] statement:
+	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen Open]]## statement:
 %%(qbasic)dim fr as integer, fs as integer
 ' The CORRECT WAY:
 fr = FREEFILE

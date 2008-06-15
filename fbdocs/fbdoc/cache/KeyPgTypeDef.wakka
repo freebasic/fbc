@@ -38,7 +38,7 @@ end with
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE...END TYPE]]
-	- [[KeyPgTypeTemp TYPE()]]
+	- ##[[KeyPgType Type...End Type]]##
+	- ##[[KeyPgTypeTemp Type()]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

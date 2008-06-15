@@ -1,19 +1,21 @@
 {{fbdoc item="title" value="INPUT #"}}----
-Reads a list of items from a file
+Reads a list of values from a file
 
 {{fbdoc item="syntax"}}##
 	**Input** # //filenum//, //variable_list//
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		handle to a file, console, or pipe to write the text.
+		a file number bound to a file or device
 	##//variable_list//##
-		list of items to read
+		a list of comma-seperated variables used to hold the values read
 
 {{fbdoc item="desc"}}
-	Gets the variables in the list from the open for ##**Input**## file filenum. The variables must be in the file as text separed with commas and strings enclosed in double quotes, the format ##[[KeyPgWrite Write]]## produces.
+	Reads a list of comma-seperated values from a file or device through a bound file number. Numerical values are converted from their string representation into the corresponding types in the variable list.
 
-	If a value does not match the type of the variable an error is issued. 
+	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]##, ##[[KeyPgValint ValInt]]##, ##[[KeyPgVallng ValLng]]##, ##[[KeyPgValuint ValUint]]##, and ##[[KeyPgValulng ValUlng]]##, converting as many numeric characters as possible.
+
+	If a value does not match the type of the variable an error is issued.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as integer

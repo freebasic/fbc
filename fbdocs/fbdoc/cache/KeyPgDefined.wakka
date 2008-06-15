@@ -46,7 +46,14 @@ dim c as single
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgPpmacro #Macro]]##
+	- ##[[KeyPgPpif #If]]##
+	- ##[[KeyPgPpelse #Else]]## 
+	- ##[[KeyPgPpelseif #ElseIf]]## 
+	- ##[[KeyPgPpendif #EndIf]]## 
+	- ##[[KeyPgPpifdef #IfDef]]##
+	- ##[[KeyPgPpifndef #IfNDef]]##
+	- ##[[KeyPgPpundef #UnDef]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

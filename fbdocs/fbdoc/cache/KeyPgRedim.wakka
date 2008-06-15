@@ -1,27 +1,61 @@
 {{fbdoc item="title" value="REDIM"}}----
-Defines an array variable
+Defines or resizes a dynamic array
 
 {{fbdoc item="syntax"}}##
-	**Redim** [ [[KeyPgShared shared]] ] [ [[KeyPgPreserve preserve]] ] //symbolname//(//subscripts//) AS [[DataType datatype]] [, ...]
+	**Redim** [ [[KeyPgShared Shared]] ] [ [[KeyPgPreserve Preserve]] ] //symbolname//([//subscript// [, ...]]) As [[DataType datatype]] [, ...]
+	**Redim** [ [[KeyPgShared Shared]] ] [ [[KeyPgPreserve Preserve]] ] As [[DataType datatype]] //symbolname//([//subscript// [, ...]]) [, ...]
 ##
+{{fbdoc item="param"}}
+	##[[KeyPgShared Shared]]##
+		Specifies shared (global) access to the array throughout the module.
+	##[[KeyPgPreserve Preserve]]##
+		When used with an existing array, the contents of the array will be preserved during the resize.
+	##//symbolname//##
+		A new or existing variable id.
+	##//subscript//##: [ //lowerbound// TO ] //upperbound//
+		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (0) if not specified.
+	##[[DataType datatype]]##
+		The type of elements contained in the array.
+
 {{fbdoc item="desc"}}
-	##**Redim**## is used  to declare a dynamic array, this is an array that change its size at run time, where as ##[[KeyPgDim Dim]]## forces an array to be static unless  the metacommand ##[[KeyPgDynamic $Dynamic]]## is used.
+	##**Redim**## can be used to define new dynamic arrays, or resize existing dynamic arrays. ##**Redim**## always produces dynamic arrays, so, unlike ##[[KeyPgDim Dim]]##, dynamic arrays can be defined with constant subscripts.
 
-	##**Redim**## is used also to change the size of an array declared as dynamic (upper and lower bounds). The contents of a redimmed array is not preserved unless the clause ##[[KeyPgPreserve Preserve]]## is used.
+	When defining a new dynamic array, its elements are default constructed. For simple datatypes like ##[[KeyPgInteger Integer]]## or ##[[KeyPgDouble Double]]##, the elements are initialized to zero (0).
 
-	
+	When a dynamic array is resized without the [[KeyPgPreserve Preserve]] clause, it's elements are destroyed, and new elements are default constructed. The [[KeyPgPreserve Preserve]] clause does not destroy existing elements unless the new size of the dynamic array is smaller that it was previously. When resizing an array larger, the new elements are default constructed at the end of the array.
+
 {{fbdoc item="ex"}}
-%%(qbasic)' compile with -lang deprecated
-' e.g. on using dynamic arrays:
+%%(qbasic)'' Define a dynamic array with 5 elements
+''
+redim array(1 to 5) as integer
 
-OPTION DYNAMIC
-DIM x(10) AS INTEGER
-PRINT UBOUND(x)
+for index as integer = lbound(array) to ubound(array)
+	array(index) = index
+next
 
-REDIM x(100) AS INTEGER
-PRINT UBOUND(x)
+'' Redefine a dynamic array with 10 elements
+''
+redim preserve array(9) as integer
+
+print "index", "value"
+for index as integer = lbound(array) to ubound(array)
+	print index, array(index)
+next
 %%
+	The previous program will produce the following output:
 
+%%index         value
+ 0             1
+ 1             2
+ 2             3
+ 3             4
+ 4             5
+ 5             0
+ 6             0
+ 7             0
+ 8             0
+ 9             0
+%%
 {{fbdoc item="diff"}}
 	- PRESERVE wasn't supported in QB.
 
@@ -36,5 +70,6 @@ PRINT UBOUND(x)
 	- ##[[KeyPgShared Shared]]##
 	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgUbound Ubound]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

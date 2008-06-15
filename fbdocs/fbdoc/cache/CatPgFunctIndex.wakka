@@ -85,6 +85,7 @@
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION"}}
 	- {{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED"}}
 	- {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgVar|VAR"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}
 	- {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}
@@ -356,6 +357,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}

@@ -44,4 +44,4 @@ PRINT Hex(BITRESET(&h8000000000000000,63LL))
 	- ##[[KeyPgBit BIT]]##
 	- ##[[KeyPgBitset BITSET]]##
 	
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

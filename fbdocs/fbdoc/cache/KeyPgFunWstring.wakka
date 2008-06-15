@@ -29,7 +29,7 @@ PRINT WSTRING( 5, Wstr("Indeed") )
 end 0
 %%
    <<&#934;&#934;&#934;&#934;
-   IIII<<
+   IIIII<<
    ::c::
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FB

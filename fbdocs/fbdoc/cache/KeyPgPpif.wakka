@@ -26,11 +26,14 @@ Preprocessor conditional directive.
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpelseif #elseif]]##
-	- ##[[KeyPgPpelse #else]]##
-	- ##[[KeyPgPpendif #endif]]##
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgIfthen If...Then]]##
+	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgPpmacro #Macro]]##
+	- ##[[KeyPgPpelse #Else]]## 
+	- ##[[KeyPgPpelseif #ElseIf]]## 
+	- ##[[KeyPgPpendif #EndIf]]## 
+	- ##[[KeyPgPpifdef #IfDef]]##
+	- ##[[KeyPgPpifndef #IfNDef]]##
+	- ##[[KeyPgPpundef #UnDef]]##
+	- ##[[KeyPgDefined Defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

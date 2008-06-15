@@ -1,4 +1,5 @@
-===={{fbdoc item="title" value="Reporting a bug"}}====
+{{fbdoc item="title" value="Reporting a bug"}}----
+How to report a bug or problem with the software
 
 	Before reporting a bug, try to make sure it's a bug in FreeBasic and not a bug in your own code.  Try to write a small test that reproduces the problem you are encountering.  Read any relevant documentation; if none exists, try finding the relevant section of code in the compiler or runtime library sources.  If you show people that you have tried to solve your own problem, rather than immediately running for help, you will be more likely to find people willing to help you.
 
@@ -10,3 +11,4 @@
 
 	DO NOT file general "it doesn't work!" bug reports in the [[http://www.sourceforge.net SourceForge]] system. Only isolated, reproducible bugs should be posted there. 
 
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

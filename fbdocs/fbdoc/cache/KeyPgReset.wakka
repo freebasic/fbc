@@ -7,7 +7,6 @@ Closes all open files.
 {{fbdoc item="usage"}}##
 	**Reset**
 ##
-
 {{fbdoc item="desc"}}
 	Closes all disk files.
 
@@ -17,7 +16,6 @@ open "test.txt" for output as #1
 print #1, "testing 123"
 reset
 %%
-
 {{fbdoc item="diff"}}
 	- None
 

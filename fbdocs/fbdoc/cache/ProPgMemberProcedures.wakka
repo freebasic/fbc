@@ -1,0 +1,108 @@
+{{fbdoc item="title" value="Member Procedures"}}{{anchor name="top"}}----
+Items discussed in this wiki:
+
+==={{anchor name="item1|[item 1] What is a member procedure?"}}===
+==={{anchor name="item2|[item 2] What's the difference between member procedures and normal procedures?"}}===
+==={{anchor name="item3|[item 3] What's the difference between static and non-static member procedures?"}}===
+==={{anchor name="item4|[item 4] How do I refer to the hidden instance parameter passed to non-static member procedures?"}}===
+==={{anchor name="item5|[item 5] Do I always need 'This' when referring to members in non-static member procedures?"}}===
+==={{anchor name="item6|[item 6] What restrictions do static member procedures have when referring to other members?"}}===
+
+----
+~&{{anchor name="item1"}}==={{color c="blue" text="[item 1] What is a member procedure?"}}===
+A member procedure is a procedure declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition. There are two kinds of member procedures: static and non-static. Here's an illustration of how you declare and define both kinds of member procedures:
+
+%%(qbasic)
+type foo
+	'' A non-static member procedure declaration:
+	declare sub s (as integer)
+	'' A static member procedure declaration (note the Static specifier):
+	declare static function f () as integer
+
+	'' ... other members ...
+end type
+
+'' non-static member procedure definition:
+sub foo.s (i as integer)
+	print i
+end sub
+
+'' static member procedure definition (note that no Static specifier is needed):
+function foo.f () as integer
+	return 420
+end function
+
+	'' Calling both member procedures, equivalent to 'x.s(foo.f())':
+	dim x as foo
+	x.s(x.f())
+%%
+
+In member procedure definitions, the name of the procedure is qualified with the name of the [[KeyPgType Type]] or [[KeyPgClass Class]] it was declared in. When calling member procedures, it's necessary to qualify them with the name of a variable of that type as well (note that static member procedures can be qualified with the name of the [[KeyPgType Type]] or [[KeyPgClass Class]] as well).
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item2"}}==={{color c="blue" text="[item 2] What's the difference between member procedures and normal procedures?"}}===
+Ok, so what's the point, why member procedures? Member procedures have a large advantage over regular procedures in that the procedure body has full access rights to all members of the [[KeyPgType Type]] or [[KeyPgClass Class]] they're declared in. This allows them to use the [[KeyPgProtected Protected]] and [[KeyPgPrivate Private]] members as well as the [[KeyPgPublic Public]] ones. Normal, module-level, procedures only have access to the [[KeyPgPublic Public]] members of any [[KeyPgType Type]] or [[KeyPgClass Class]].
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item3"}}==={{color c="blue" text="[item 3] What's the difference between static and non-static member procedures?"}}===
+Now that we know how {{anchor name="[item 2]|static and non-static member procedures are the same"}}, how are they different?
+
+Both kinds of procedures are called by qualifying the procedure name with the name of an instance, or variable. In the case of non-static member procedures, this instance is passed by reference as a hidden argument by the compiler. Thus, non-static member procedures always have access to the instance with which they were called. Static member procedures are not passed this instance automatically, so by default have no idea what instance they were called with (which is why they can be called by qualifying their name with the name of a type instead).
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item4"}}==={{color c="blue" text="[item 4] How do I refer to the hidden instance argument passed to non-static member procedures?"}}===
+Pretty intuitively: use the keyword [[KeyPgThis This]]. [[KeyPgThis This]] is the hidden parameter added by the compiler for you; it is a reference to the instance the member procedure was called with. Any changes to [[KeyPgThis This]] are actually changes to that instance. Obvserve:
+
+%%(qbasic)
+type foo
+	declare sub s ()
+	i as integer
+end type
+
+sub foo.s ()
+	this.i = 420
+end sub
+
+	'' x.i is modified by foo.s():
+	dim x as foo
+	x.s()
+	print x.i
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item5"}}==={{color c="blue" text="[item 5] Do I always need 'This' when referring to members in non-static member procedures?"}}===
+Only when that name is hidden by a symbol of the same name, for example, by a parameter or local variable. Otherwise, members can be referred to by using just their names. Here is an example of when [[KeyPgThis This]] is necessary when referring to members:
+
+%%(qbasic)
+type T
+public:
+	declare sub f (i as integer)
+	declare sub g ()
+private:
+	i as integer = 420
+end type
+
+sub T.f (i as integer)
+	'' A parameter hides T.i, the paramter's value is printed:
+	print i
+end sub
+
+sub T.g ()
+	'' A local variable hides T.i, so 69 is printed:
+	dim i as integer = 69
+	print i
+end sub
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item6"}}==={{color c="blue" text="[item 6] What restrictions do static member procedures have when referring to other members?"}}===
+Only one: Besides nested [[KeyPgEnum Enum]]s, [[KeyPgConst Const]]s and the like, static member procedures can only refer to other static members. Why? Since we know that {{anchor name="item3|static member procedures are not passed the instance from which they were called"}}, it should be clear why a static member procedure can't refer to non-static data members - to what instance would the data member belong to? Same with calling non-static member procedures: inside a static member procedure, there is no [[KeyPgThis This]] parameter, so how would the compiler know what instance to pass as the hidden argument to a non-static member procedure? It can't, so, you can't.
+
+Note that because static member procedures take no hidden argument, they are called from other static member procedures just fine. This justifies how {{anchor name="item1|static members can be called without an instance"}}.
+
+{{anchor name="bottom"}}

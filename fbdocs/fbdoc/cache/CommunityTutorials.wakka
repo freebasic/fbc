@@ -7,7 +7,7 @@ Tutorials submitted by the FreeBASIC community:
 		-[[TutUsingMouse Using the Mouse in FreeBASIC]] //by MystikShadows//
 		-[[TutBasicInput Get Information into your program]] //by [[TekRat TekRat]]//
 		-[[TutDynamicArrays Using Dynamic Arrays in FreeBASIC]] //by [[SephKnows]]//
-		-[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects]] //by ""YetiFoot""//
+		-[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects (Part 1)]] //by ""YetiFoot""//
 		-[[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects (Part 2)]] //by ""YetiFoot""//
 	-**Pre Processor**
 		-[[TutConditionalCompilation Conditional Compilation And You]] //by AetherFox//
@@ -18,12 +18,10 @@ Tutorials submitted by the FreeBASIC community:
 	-**Intermediate Techniques**
 		-[[TutFunctionOverloading Introduction to Function Overloading in FreeBASIC]] //by [[LaananFisher :stylin:]]//
 	-**Mathematics**
-		-[[TutMathAngles Angles]] //by RandyKeeling//
+		-[[TutMathAngles Different ways angles are measured]] //by RandyKeeling//
 		-[[TutMathIntroTrig A Brief Introduction To Trigonometry]] //by RandyKeeling//
 	-**Windows API**
 		-[[TutMessageIntro Introduction to Message-Based Programming]] //by [[WikiRick rdc]]//
-	-**GTK Reference**
-		-[[TutIndexGTK GTK Reference]] //by Joseph Cohen//
 	-**Libraries**
 		-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
 		-[[TutIndexSDLNet SDL_NET]] //by Paragon//

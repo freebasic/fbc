@@ -1,30 +1,32 @@
 {{fbdoc item="title" value="INSTR"}}----
-	Locates the first occurrence of a substring within a string.
+Locates the first occurrence of a substring or character within a string.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr**( [//start// [[KeyPgAs as]] [[KeyPgInteger integer]],] //string// [[KeyPgAs as]] [[KeyPgString string]], [any] //substring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-		//first// = Instr( //string//, //substring// )
-			##//or//##
-		//first// = Instr( //start//, //string//, //substring// )
+	//first// = Instr( //string//, //substring// )
+		##//or//##
+	//first// = Instr( //start//, //string//, //substring// )
 ##
 {{fbdoc item="param"}}
 	##//string//##
 		The string to be searched.
 	##//substring//##
-		The string to be searched for. If ##any## is specified, then every character of ##//substring//## is searched for individually.
+		The substring to find.
 	##//start//##
 		The position in ##//string//## at which the search will begin.
 
 {{fbdoc item="ret"}}
 	The position of the first occurrence of ##//substring//## in ##//string//##. Zero (0) is returned if ##//substring//## is not found, either ##//string//## or ##//substring//## are empty strings, or ##//start//## < 0.
 
+	If the [[KeyPgAny Any]] keyword is specified, **Instr** returns the first occurance of any character in ##//substring//##.
+
 {{fbdoc item="desc"}}
-	Locates the position of the first occurrence of a substring within a string. If //start// is omitted, the search will begin with the first character of //string//.
+	Locates the position of the first occurrence of a substring or character within a string. If //start// is omitted, the search will begin with the first character of //string//.
 	
-	The //string// and //substring// can be Unicode.The DOS version does not support Unicode.
-	
+	The //string// and //substring// expressions can be [[KeyPgWstring WString]] (Unicode). The DOS version does not support Unicode.
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 ' It will return 4

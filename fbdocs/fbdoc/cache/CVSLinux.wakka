@@ -1,5 +1,4 @@
-===Compiling from CVS for Linux===
-
+{{fbdoc item="title" value="Compiling from CVS for Linux"}}----
 If you want the very latest version of ""FreeBASIC"" on Linux, it can be compiled from the latest code in the CVS repository.  Most users should stay with the stable Linux build!  But the latest additions and corrections are available in this way.
 
 	=={{anchor name="setup|Setting up the Linux environment"}}==
@@ -13,8 +12,7 @@ If you want the very latest version of ""FreeBASIC"" on Linux, it can be compile
 		- {{anchor name="making4|Make fbc"}}
 
 	=={{anchor name="updating|Updating the installed FreeBASIC software"}}==
-		- {{anchor name="updating1|Replace the old .bi files with the new ones from the source folder"}}
-		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
+		- {{anchor name="updating1|Install the freshly built compiler, runtime and headers"}}
 
 	{{anchor name="setup"}}===Setting up the Linux environment===
 		
@@ -77,24 +75,21 @@ make install%%
 			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/linux
 chmod +x ../../configure
 ../../configure
-make%%
+make
+cp fbc_new ../../../../fbc%%
 
 	{{anchor name="updating"}}===Updating the installed ""FreeBASIC"" software===
 		
-		The following steps will update the copy of ""FreeBASIC"" you installed in ~/FBbin
+		The following will update the copy of ""FreeBASIC"" you installed in ~/FBbin. In order for the install script to create a symlink at /usr/bin/fbc, it needs to be run with root privelages, for example, with sudo. //The -i switch allows an installation directory to be specified, and there can be no trailing '/'. Run the script without arguments to see all of the options available.//
 		
-		{{anchor name="updating1"}}==Replace the old .bi files with the new ones from the source folder==
+		{{anchor name="updating1"}}==Install the freshly built compiler, runtime and headers==
 			
-			%%rm -rfv ~/FBbin/inc/*
-cp -rfv ~/fbccvs/FreeBASIC/inc/* ~/FBbin/inc%%
-		
-		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
-			
-			%%cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/linux/fbc_new ~/FBbin/fbc
-cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/linux/*.a ~/FBbin/lib/linux
-cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux/*.a ~/FBbin/lib/linux%%
+			%%cd ~/fbccvs/FreeBASIC
+sudo ./install.sh -i ~/FBbin%%
 
-That's it!  If you run 'fbc', you should see results.
+That's it!  If you run 'fbc -version', and you should see the correct build-date.
 
 Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
 http://www.freebasic.net/forum/viewtopic.php?p=32260#32260
+
+{{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}

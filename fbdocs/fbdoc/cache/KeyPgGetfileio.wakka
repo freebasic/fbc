@@ -1,24 +1,22 @@
 {{fbdoc item="title" value="GET (File I/O)"}}----
+Reads data from a file to a buffer.
+
 {{fbdoc item="syntax"}}##
-	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //buffer// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
-	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //buffer()// [[KeyPgAs As]] [[KeyPgAny Any]]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
+##
+{{fbdoc item="usage"}}##
+	**Get** #//filenum//, //position//, //data// [, //amount//]
 ##
 {{fbdoc item="param"}}
-
-	##//handle//##
+	##//filenum//##
 		The value passed to ##[[KeyPgOpen Open]]## when the file was opened
-
 	##//position//##
-		The position where the read must start. If the file was opened ##For Random##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.
-		
-	##//buffer//##
-		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached.
-		
-		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by [[KeyPgValOf dereferencing]] the pointer.)  Get will automatically infer that the rest of the buffer continues after the first variable.
-		If you pass a pointer, then Get will overwrite the pointer, not the memory it points to.
-		
+		The position where the read must start. If the file was opened ##For Random##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.  The first byte of the file is located at position 1.
+	##//data//##
+		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached.  Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by [[KeyPgValOf dereferencing]] the pointer.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer, then ##**Get**## will overwrite the pointer, not the memory it points to.
 	##//amount//##
-		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to 1, and ##Get## reads one variable of the buffer's data type.
+		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to 1, and ##Get## reads one variable of the buffer's data type.
 
 {{fbdoc item="ret"}}
 	0 on success; nonzero on error.
@@ -26,7 +24,7 @@
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
 
-	GET can be used as a function, and will return 0 on success or an error code on failure.	
+	##**Get**## can be used as a function, and will return 0 on success or an error code on failure.	
 
 	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
@@ -38,19 +36,19 @@ dim f as integer
 
 dim x as integer
 
-' Find the first free file handle.
+' Find the first free file file number.
 f = freefile
 
-' Open the file "file.ext" for binary usage, using the handle "f".
+' Open the file "file.ext" for binary usage, using the file number "f".
 open "file.ext" for binary as #f
 
-' Read 4 bytes from the file into buffer, using handle "f".
+' Read 4 bytes from the file into buffer, using file number "f".
 get #f, , buffer
 
 ' print out result
 print buffer
 
-' Read 40 (10 * 4) bytes from the file into an_array, using handle "f".
+' Read 40 (10 * 4) bytes from the file into an_array, using file number "f".
 get #f, , an_array()
 
 ' print out result

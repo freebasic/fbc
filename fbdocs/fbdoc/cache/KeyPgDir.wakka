@@ -18,7 +18,7 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 	##//attrib_mask//##
 		Optional ##[[KeyPgInteger integer]]## mask specifying the file attributes of the files or directories to be matched.  
 	##//out_attrib//##
-		Optional ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## which is set to the sttributes of the file or directory returned.
+		Optional ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## which is set to the attributes of the file or directory returned.
 
 {{fbdoc item="ret"}}
 	##//retstr//##
@@ -28,7 +28,7 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 	Returns files and/or directories that match //file_spec// and //attrib_mask//. The //file_spec// parameter can include wildcards ("*" and/or "?") and paths.
 
 	The //attrib_mask// optional parameter is a combination of the following flags (each file with any of them set will be matched):
-		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h02;Hidden;fbHidden;&h04;System;fbSystem;&h08;Directory;fbDirectory;&h10;Archive;fbArchive;&h20;Normal;fbNormal"}}
+		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h02;Hidden;fbHidden;&h04;System;fbSystem;&h10;Directory;fbDirectory;&h20;Archive;fbArchive;&h21;Normal;fbNormal"}}
 	Constants can be used by including ##"dir.bi"##
 
 	By default //attrib_mask// is set to &h21 (ie.: search for files with the archive or read-only flags set).
@@ -41,13 +41,9 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-Const attrib_readonly   = &h01
-Const attrib_hidden     = &h02
-Const attrib_system     = &h04
-Const attrib_directory  = &h10
-Const attrib_archive    = &h20
+#include "dir.bi" 'provides constants to use for the attrib_mask parameter
 
-Sub list_files (filespec as string, byval attrib as integer)
+Sub list_files (byref filespec as string, byval attrib as integer)
 	Dim filename As String
 
 	filename = dir( filespec, attrib )
@@ -58,10 +54,11 @@ Sub list_files (filespec as string, byval attrib as integer)
 End Sub
 
 Print "directories:"
-list_files "*", attrib_directory
+list_files "*", fbDirectory
 
+Print
 Print "archive files:"
-list_files "*", attrib_archive
+list_files "*", fbArchive
 %%
 
 {{fbdoc item="target"}}

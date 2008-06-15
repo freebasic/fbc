@@ -1,0 +1,144 @@
+{{fbdoc item="title" value="Type Aliases"}}{{anchor name="top"}}----
+Items discussed in this wiki:
+
+==={{anchor name="item1|[item 1] What is type aliasing?"}}===
+==={{anchor name="item2|[item 2] Why would I want use it?"}}===
+==={{anchor name="item3|[item 3] How can I return pointers to procedure pointers from functions?"}}===
+==={{anchor name="item4|[item 4] Is a type alias a distinct type? What about overload resolution?"}}===
+==={{anchor name="item5|[item 5] When would I want to alias a user-defined type?"}}===
+==={{anchor name="item6|[item 6] Can variables of an aliased type be declared or defined?"}}===
+==={{anchor name="item7|[item 7] Can procedure parameters of an aliased type be passed by value?"}}===
+
+----
+~&{{anchor name="item1"}}==={{color c="blue" text="[item 1] What is type aliasing?"}}===
+Type aliasing refers to giving a type an additional name. A type alias is another name for some type.
+
+They are declared in code with the [[KeyPgType Type]] keyword, much like declaring variables with [[KeyPgExtern Extern]] or [[KeyPgDim Dim]]:
+
+%%(qbasic)
+'' Declares the type alias float, another name for Single:
+type float as single
+
+'' Defines a variable, foobar, of type float:
+dim foobar as float = 1.23
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item2"}}==={{color c="blue" text="[item 2] Why would I want to use it?"}}===
+That's great, but what's the point? Type aliases are an abstraction - in this case, an abstraction for types (just like variables are abstractions for values). In general, abstractions provide you with the freedom of choice.
+
+Consider the code in the previous item where a type alias for [[KeyPgSingle Single]] was created, called "float". The type alias seems silly here, but imagine if you suddenly needed to use [[KeyPgDouble Double]]s instead of [[KeyPgSingle Single]]s for more precision, and that instead of one float the code contained hundreds (let's not forget procedure parameters, too). The utility of the type alias is most apparent here, since all that needs to modified is a single line - the declaration of "float".
+
+Another useful, {{anchor name="item3|oftentimes necessary"}}, use of the type alias is for procedure pointers. Rather than type a possibly long procedure pointer definition more than once, or in the midts of a parameter list, a shortened name can be given to the type using a type alias:
+
+%%(qbasic)
+'' Declares a procedure pointer type alias, pf_alias.
+type pf_alias as sub(as integer, as integer, byref as string)
+
+'' Uses the type alias in place of the long version.
+dim pf1 as pf_alias
+dim pf2 as pf_alias
+
+declare sub proc (pf1 as pf_alias, pf2 as pf_alias)
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item3"}}==={{color c="blue" text="[item 3] How can I declare a pointer to a procedure pointer?"}}===
+Pointers to procedure pointers are just like any other pointer type, except they point to procedure pointers. Useful if, for example, you were iterating through an array of procedure pointers. Consider the following attempt at trying to declare a pointer to procedure pointer, and the inevitable solution:
+
+%%(qbasic)
+'' Tries to define a pointer to procedure that returns an integer,
+'' actually is declaring a pointer to procedure that returns an
+'' integer pointer. :)
+dim ppf1 as function() as integer ptr
+
+'' Using a type alias, correctly defines a pointer to procedure that
+'' returns as integer.
+type pf_alias as function() as integer
+dim ppf2 as pf_alias ptr
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item4"}}==={{color c="blue" text="[item 4] Is a type alias a distinct type? What about overload resolution?"}}===
+Type aliases are just that - aliases. For all intents and purposes, a type alias **is** the type it aliases. In the above item, "float" **is** [[KeyPgSingle Single]].
+
+So as far as procedure overload resolution is concerned, a procedure declared with the parameter "float" is the same as a procedure declared with the parameter [[KeyPgSingle Single]]. In other words, you can't do it; the compiler will complain about a duplicated definition when it sees the second of the two procedures.
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item5"}}==={{color c="blue" text="[item 5] When would I want to alias a user-defined type?"}}===
+As with built-in datatypes like [[KeyPgSingle Single]], type aliasing can help with global type changes of user-defined types just as well.
+
+Another situation you might face is overcoming circular dependency, eg. when two UDTs need to know about each other (maybe one UDT stores a ptr to the other one, which takes the first UDT as a parameter to some member function). The main issue here is that everything - even types - needs to be declared before it is used. This means that somehow the second UDT must be declared before the first. This is solved with a type alias, here commonly referred to as a 'typedef'. Look at the magic:
+
+%%(qbasic)
+'' Declares bar_alias as an alias to the yet-to-be-defined
+'' bar type.
+type bar_alias as bar
+
+type foo
+	'' p is really a pointer to bar.
+	p as bar_alias ptr
+end type
+
+type bar
+	'' foo can be used directly, since it was defined above.
+	declare sub f(p as foo)
+end type
+%%
+
+One more example. Imagine you have a UDT "foo" with some procedure pointers as some of it's fields, all of the same type, taking a "foo" by reference and some other types. Such a scenario might look like this:
+
+%%(qbasic)
+type foo
+	pf1 as sub(byref x as foo, a as byte, b as integer)
+	pf2 as sub(byref x as foo, a as byte, b as integer)
+	pf3 as sub(byref x as foo, a as byte, b as integer)
+end type
+%%
+
+For the sake of clarity (and sanity) you choose to create a type alias of the procedure pointer, to {{anchor name="item2|minimize code duplication"}}:
+
+%%(qbasic)
+'' Declares a type alias pf_alias, this will not compile as is !!
+type pf_alias as sub(byref x as foo, a as byte, b as integer)
+
+type foo
+	pf1 as pf_alias
+	pf2 as pf_alias
+	pf3 as pf_alias
+end type
+%%
+
+Unfortunately the compiler doesn't like this, as "foo" hasn't been declared yet by the time it tries to create pf_alias. Again, the solution is to declare a type alias for "foo", that the compiler can use to declare pf_alias:
+
+%%(qbasic)
+'' "Forward declaration" of foo..
+type foo_alias as foo
+ 
+'' Now the compiler can use foo_alias in place of foo:
+type pf_alias as sub(byref x as foo_alias, a as byte, b as integer)
+
+type foo
+	pf1 as pf_alias
+	pf2 as pf_alias
+	pf3 as pf_alias
+end type
+%%
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item6"}}==={{color c="blue" text="[item 6] Can variables of an aliased type be declared or defined?"}}===
+!!! WRITEME !!!
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+~&{{anchor name="item7"}}==={{color c="blue" text="[item 7] Can procedure parameters of an aliased type be passed by value?"}}===
+!!! WRITEME !!!
+
+[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
+----
+{{anchor name="bottom"}}

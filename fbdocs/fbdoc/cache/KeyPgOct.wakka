@@ -50,3 +50,4 @@ Print Oct(54321, 8) '' will display 00152061
 	- ##[[KeyPgHex Hex]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
+   

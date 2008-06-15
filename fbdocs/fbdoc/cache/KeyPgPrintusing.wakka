@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PRINT USING"}}
-----
+{{fbdoc item="title" value="PRINT USING"}}----
 Output statement to write text to screen or file. 
 
 {{fbdoc item="syntax"}}##
@@ -7,7 +6,7 @@ Output statement to write text to screen or file.
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		handle to a file, console, or pipe to write the text.
+		file number to a file, console, or pipe to write the text.
 	##//using//##
 		clause to indicate formatting is to be used
 	##//formatstring//##

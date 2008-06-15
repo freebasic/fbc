@@ -1,24 +1,33 @@
 {{fbdoc item="title" value="Error Handling Functions"}}----
-<<
-	- {{fbdoc item="keyword" value="KeyPgErl|ERL"}}
-	- {{fbdoc item="keyword" value="KeyPgErfn|ERFN"}}
-	- {{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}
-	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
-	- {{fbdoc item="keyword" value="KeyPgError|ERROR"}}
+Statements and procedures that provide runtime error-handling capabilities
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgLocal|LOCAL"}}
-	- {{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}
-	- {{fbdoc item="keyword" value="KeyPgResume|RESUME"}}
-	- {{fbdoc item="keyword" value="KeyPgResumenext|RESUME NEXT"}}
+**{{anchor name="DETERMINE|Determining Errors"}}**
+	Procedures that retrive information about an error.
+**{{anchor name="HANDLE|Handling Errors"}}**
+	Statements that allow handling of errors.
 
-
->>
-
-
-::c::
-
+<<{{anchor name="DETERMINE"}}{{fbdoc item="section" value="Determining Errors"}}
+	=={{fbdoc item="keyword" value="KeyPgErl|ERL"}}==
+		Gets the line in source code where the error occurred.
+	=={{fbdoc item="keyword" value="KeyPgErfn|ERFN"}}==
+		Gets the name of the function where the error occurred.
+	=={{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}==
+		Gets the name of the source file where the error occurred.
+	=={{fbdoc item="keyword" value="KeyPgErr|ERR"}}==
+		Gets the error number of the last error that occurred.
+	=={{fbdoc item="keyword" value="KeyPgError|ERROR"}}==
+		Generates an error using an error number.
+<<>>{{anchor name="HANDLE"}}{{fbdoc item="section" value="Handling Errors"}}
+	=={{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}==
+		Sets a global error handler using a label.
+	=={{fbdoc item="keyword" value="KeyPgLocal|ON LOCAL ERROR"}}==
+		Sets a local error handler using a label.
+	=={{fbdoc item="keyword" value="KeyPgResume|RESUME"}}==
+		Resumes execution at the line where the error occurred.
+	=={{fbdoc item="keyword" value="KeyPgResumenext|RESUME NEXT"}}==
+		Resumes execution at the line after where the error occurred.
+>>::c::
 {{fbdoc item="see"}}
-	- [[ProPgErrorHandling Error Handling]]
+	[[ProPgErrorHandling Error Handling]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

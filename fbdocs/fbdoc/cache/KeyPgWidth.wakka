@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WIDTH"}}
-----
+{{fbdoc item="title" value="WIDTH"}}----
 Console function to set or return the number of rows and columns of the display.
 
 {{fbdoc item="syntax"}}##
@@ -14,7 +13,7 @@ Console function to set or return the number of rows and columns of the display.
 	##//rows//##
 		rows (in characters) for output
 	##//filenum//##
-		file handle to apply to
+		file number to apply to
 	##//devicename//##
 		devicenemt to apply to
 

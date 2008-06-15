@@ -1,4 +1,5 @@
-{{fbdoc item="title" value="Using the command line"}}
+{{fbdoc item="title" value="Using the command line"}}----
+
 	FreeBASIC is a command line compiler. This means it will require the user to manually launch it from a console (be it plain DOS, the Windows command prompt or a Linux shell) in order to work. The compiler will take any source file passed to the command line and produce an executable out of them.
 
 {{fbdoc item="syntax"}}
@@ -13,8 +14,8 @@
 
 **Compiling Options:**
 	//source code//
-		- **##[ -b ] < //source file// >##** :	Add a source file to compilation. The "-b" is optional.
-		- **##-o < //output file// >##** :	Set output (executable, library or object) file name. Should be specified one for each source file passed on the command line.
+		- **##[ -b ] < //source file// >##** : Add a source file to compilation. The "-b" is optional.
+		- **##-o < //output file// >##** : Set output (executable, library or object) file name. Should be specified one for each source file passed on the command line.
 		- **##-i < //include path// >##** :	Add a path to search for include files.
 		- **##-include < //include file// >##** :	Set a file to be #INCLUDEd in all the modules.
 		- **##-d < //name//=//value// >##** :	Add a preprocessor's define. The same as adding #define name value in the source.
@@ -23,7 +24,7 @@
 		- **##{ -m|-entry } < //source file// >##** : Main file without extension. This sets specified file as the program entry point (defaults to the first .bas file passed to the compiler). If compiling sources separately it must be specified when compiling the main source.
 
 	//error checking/debugging//
-		- **##-w < //0|1// >##** : Set minimum warning level. "-w 0" (or just "-w") shows all compiler warnings, while "-w 1" hides them.  By default, FBC shows all warnings.
+		- **##-w < //0|1|all|pedantic// >##** : Set minimum warning level. "-w 0" (or just "-w") shows all compiler warnings, while "-w 1" hides them.  By default, FBC shows all warnings.
 		- **##-e##** : Add Qb-like error checking. See Error Handling.
 		- **##-ex##** : Add QB-like error handling with RESUME support. See Error Handling.
 		- **##-exx##** : The same as -ex plus array bounds and null-pointer checking.

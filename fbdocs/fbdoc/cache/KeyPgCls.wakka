@@ -71,4 +71,3 @@ loop while inkey$=""
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
-   

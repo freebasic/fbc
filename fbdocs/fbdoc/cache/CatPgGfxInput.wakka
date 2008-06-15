@@ -1,16 +1,19 @@
 {{fbdoc item="title" value="User Input Functions"}}----
-<<
-	- {{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}
-	- {{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}
-	- {{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}
+Procedures for working with mice, gaming devices and keyboards.
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY$""}}
-	- {{fbdoc item="keyword" value="KeyPgInput|INPUT"}}
-	- {{fbdoc item="keyword" value="KeyPgLineinput|LINE INPUT"}}
+**{{anchor name="MOUSEJOY|Mouse and Joystick Input"}}**
+	Procedures that provide state information of the mouse or joystick.
+**{{anchor name="KEYBOARD|Keyboard Input"}}**
+	Procedures that provide keyboard state information.
 
->>
-
-::c::
+<<{{anchor name="MOUSEJOY"}}{{fbdoc item="section" value="Mouse and Joystick Input"}}
+	=={{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}==
+		Gets button and axis information for the mouse.
+	=={{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}==
+		Gets button and axis information for gaming devices.
+<<>>{{anchor name="KEYBOARD"}}{{fbdoc item="section" value="Keyboard Input"}}
+	=={{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}==
+		Gets key information for the keyboard.
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -4,7 +4,7 @@ Creates a string of a certain length filled with spaces spaces (" ").
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**[$]( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
-{{fbdoc item="syntax"}}##
+{{fbdoc item="usage"}}##
 	//String// = **Space**( //count// )
 ##
 {{fbdoc item="param"}}

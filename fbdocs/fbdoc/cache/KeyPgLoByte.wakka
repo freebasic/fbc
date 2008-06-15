@@ -50,4 +50,4 @@ The Binary representation of the LSB Is    10000001
 	- ##[[KeyPgShl Shl]]##
 	- ##[[KeyPgHibyte HIBYTE]]##
 
-{{fbdoc item="back" value="CatPgMath|Math"}}
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

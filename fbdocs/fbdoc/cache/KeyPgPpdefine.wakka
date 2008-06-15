@@ -33,8 +33,14 @@ print hex( MyRGB(&hff, &h00, &hff) )
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpmacro #Macro]]##
+	- ##[[KeyPgPpif #If]]##
+	- ##[[KeyPgPpelse #Else]]## 
+	- ##[[KeyPgPpelseif #ElseIf]]## 
+	- ##[[KeyPgPpendif #EndIf]]## 
+	- ##[[KeyPgPpifdef #IfDef]]##
+	- ##[[KeyPgPpifndef #IfNDef]]##
+	- ##[[KeyPgPpundef #UnDef]]##
+	- ##[[KeyPgDefined Defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

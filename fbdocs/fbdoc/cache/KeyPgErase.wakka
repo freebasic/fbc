@@ -21,11 +21,11 @@ erase MyArray1, MyArray2
 {{fbdoc item="see"}}
 	- ##[[KeyPgCommon Common]]##
 	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgErase Erase]]##
 	- ##[[KeyPgExtern Extern]]##
 	- ##[[KeyPgLbound Lbound]]##
 	- ##[[KeyPgRedim Redim]]##
 	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgUbound UBound]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

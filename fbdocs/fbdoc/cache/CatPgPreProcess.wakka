@@ -1,45 +1,55 @@
 {{fbdoc item="title" value="Preprocessor"}}----
+Commands that control the preprocessor
 
 {{fbdoc item="desc"}}
 	Preprocessor commands are sent to the compiler to control what gets compiled and how. They can be used to choose to compile one block of code rather than another for cross-platform compatibility, include headers or other source files, define small inline functions called macros, or alter how the compiler handles variables.
 {{fbdoc item="close"}}
 
-<<
-	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
-	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
-	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
-	- {{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}
-	- {{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}
-	- {{fbdoc item="keyword" value="KeyPgPpif|#IF"}}
-	- {{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}
-	- {{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}
+**{{anchor name="CONDCOMP|Conditional Compilation"}}**
+	Commands that allow for branches in compilation based on conditions.
+**{{anchor name="TEXTREPLACE|Text Replacement"}}**
+	Commands that create text-replacement macros.
+**{{anchor name="TODO|TODO"}}**
+	Stuff that needs categorized.
 
-	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
-	- {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}
+<<{{anchor name="CONDCOMP"}}{{fbdoc item="section" value="Conditional Compilation"}}
+	=={{fbdoc item="keyword" value="KeyPgPpif|#IF"}}==
+		Compiles the following code block based on a condition.
+	=={{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}==
+		Compiles the following code block if a symbol is defined.
+	=={{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}==
+		Compiles the following code block if a symbol is not defined.
+	=={{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}==
+		Compiles the following code block if a condition is true and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}==
+		Compiles the following code block if previous conditions were false.
+	=={{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}==
+		Signifies the end of a code block.
+	=={{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}==
+		Returns "-1" if a symbol is defined, otherwise "0".
 
-	- {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}
-	- {{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
+{{anchor name="TEXTREPLACE"}}{{fbdoc item="section" value="Text Replacement"}}
+	=={{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}==
+		Creates a single-line text-replacement macro.
+	=={{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}} and {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}==
+		Creates a multi-line text-replacement macro.
+	=={{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}==
+		Undefines a symbol.
+<<>>{{anchor name="TODO"}}{{fbdoc item="section" value="TODO"}}
+	=={{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}==
+	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
-	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
-	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
-	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
-	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
-	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
-	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
+	=={{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}==
+	=={{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}==
+	=={{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}==
+	=={{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}==
+	=={{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}==
+	=={{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}==
+	=={{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}==
 
-	- [[KeyPgStringize # Preprocessor stringize]]
-	- [[KeyPgPreConcat ## Preprocessor concatenate]]
-
-	- {{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}
-
-
-
-
->>
-
-::c::
+	==[[KeyPgStringize # Preprocessor stringize]]
+	==[[KeyPgPreConcat ## Preprocessor concatenate]]
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -6,7 +6,7 @@ Output statement to write text to screen or file.
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		handle to a file, console, or pipe to write the text.
+		file number to a file, console, or pipe to write the text.
 	##//expression//##
 		list of items to print
 

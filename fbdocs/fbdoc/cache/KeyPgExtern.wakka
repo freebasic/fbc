@@ -45,5 +45,6 @@ Output:
 	- ##[[KeyPgPreserve Preserve]]##
 	- ##[[KeyPgShared Shared]]##
 	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

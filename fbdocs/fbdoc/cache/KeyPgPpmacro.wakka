@@ -47,6 +47,14 @@ Print2( "Hello", "World" )
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgPpif #If]]##
+	- ##[[KeyPgPpelse #Else]]## 
+	- ##[[KeyPgPpelseif #ElseIf]]## 
+	- ##[[KeyPgPpendif #EndIf]]## 
+	- ##[[KeyPgPpifdef #IfDef]]##
+	- ##[[KeyPgPpifndef #IfNDef]]##
+	- ##[[KeyPgPpundef #UnDef]]##
+	- ##[[KeyPgDefined Defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -1,12 +1,26 @@
 {{fbdoc item="title" value="MID (STATEMENT)"}}----
+Overwrites a substring of a string with another.
 
-{{fbdoc item="syntax"}}
-	MID[$]( //text//, //start// [, //length//]) = //expression//
+{{fbdoc item="syntax"}}##
+	**Mid**[$]( //text//, //start// [, //length//]) = //expression//
+##
+{{fbdoc item="usage"}}##
+		**Mid**( //text//, //start// ) = //expression//
+			**//or//**
+		**Mid**( //text//, //start//, //length// ) = //expression//
+##
+{{fbdoc item="param"}}
+	##//text//##
+		The string to work with.
+	##//start//##
+		The start position in ##//text//## of the substring to overwrite.
+	##//length//##
+		The number of characters to overwrite.
 
 {{fbdoc item="desc"}}
-	Copies a maximum of //length// bytes of //expression// into //text//, starting at //start//. 
+	Copies a maximum of ##//length//## characters of ##//expression//## into ##//text//##, starting at ##//start//##.
 
-	If //length// is not specified, all of value is taken. The size of the string //text// is not modified, the copy is ended if it goes past the end. 
+	If ##//length//## is not specified, all of ##//expression//## is copied. The size of the string ##//text//## is unchanged; if ##//expression//## is too big, as much of it is copied up to the end of ##//text//##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim text as string

@@ -1,14 +1,29 @@
 {{fbdoc item="title" value="ENCODING"}}----
-{{fbdoc item="syntax"}}
-	OPEN "//filename//" FOR [INPUT|OUTPUT|APPEND] ENCODING "//utf-8//"|"//utf-16//"| "//utf-32//" |"//ascii//" AS [#]//FILENUM//
+Specifies character format of a text file.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgOpen open]] //filename// for {Input|Output|Append} **Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//" as [#]//filenum// 
+##
+{{fbdoc item="param"}}
+	##//filename//## for {Input|Output|Append}
+		file name to open for ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]##, or ##[[KeyPgAppend Append]]##
+	##**Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//"##
+		indicates encoding type for the file
+	##//filenum//##
+		unused file number to associate with the open file
 
 {{fbdoc item="desc"}}
-	ENCODING specifies the format for an Unicode text file, so  WINPUT # and PRINT # use the correct encoding.
+	##**Encoding**## specifies the format for an Unicode text file, so ##[[KeyPgWinput Winput #]]## and ##[[KeyPgPrintPp Print #]]## use the correct encoding.  If omitted from an ##[[KeyPgOpen Open]]## statement, "ascii" encoding is the default.
+
+	Only little endian character encodings are supported at the moment. 
+		-"utf8", 
+		-"utf16" 
+		-"utf32" 
+		-"ascii" (the default)
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 %%
-
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FB
 
@@ -16,6 +31,6 @@
 	- QB had no support for Unicode
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpen OPEN]]
+	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

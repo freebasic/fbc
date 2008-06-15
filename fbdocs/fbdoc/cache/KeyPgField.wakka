@@ -46,11 +46,9 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-~-New to FreeBasic
-~-Qbasic had its TYPE variables byte aligned,so FIELD=1 is needed to read binary data written by a QB program.
-~-The keyword FIELD was used in QB to create a file buffer with fields variable at run time. This use is not supported in FB.
+~-In -lang qb, the FIELD is always one, no padding is ever done, as in QB.
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE]]
+	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

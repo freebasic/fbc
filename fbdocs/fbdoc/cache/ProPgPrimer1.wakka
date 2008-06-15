@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="FreeBASIC Primer #1"}}----
 This primer is intended for beginning beginners, for those who are just starting to learn how to program and using FreeBASIC do to it.
 
-==Learning to speak the language==
+==Learning the language==
 
 Learning a programming language means learning the words to write it and knowing what they mean when they are written.  We don't need to learn them all at once.  But learning a few important words that do something will help us get started.  Here we are just going to concentrate on these keywords:
 
@@ -13,7 +13,7 @@ Learning a programming language means learning the words to write it and knowing
 	- ##[[KeyPgDoloop Do...Loop]]##
 
 
-==hello, world==
+==Hello World!==
 
 No beginners reference is complete without this example.
 

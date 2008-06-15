@@ -16,63 +16,65 @@ Allocates a certain number of bytes from the free store.
 	The address of the newly allocated memory. A null (0) pointer is returned if the requested memory could not be allocated, or if ##//count//## < 0.
 
 {{fbdoc item="desc"}}
-	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). Initial value of newly allocated memory is unspecified. The pointer returned points to the start of the allocated memory. If ##//count//## is zero, the pointer is guaranteed to be unique.
+	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). The initial value of newly allocated memory is unspecified. The pointer that is returned is an [[KeyPgAny any]] [[KeyPgPtr ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
 
-	Allocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
-	This function is not part of the FB RTLib, it is an alias for the C lib's //malloc//, so it's not garanteed to be thread safe in all platforms.
+	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
+
+~&**##Allocate##** is an alias for the C runtime library's **##malloc##** function, which is not guaranteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' This program uses the ALLOCATE(...) function to create a buffer of 15 integers that is
-'' then filled with the first 15 numbers of the Fibonacci Sequence. Note the call to
-'' DEALLOCATE(...) at the end of the program.
+'' then filled with the first 15 numbers of the Fibonacci Sequence, then output to the
+'' screen. Note the call to DEALLOCATE(...) at the end of the program.
 
-   const integerCount as integer = 15                    '' try to allocate memory for
-   dim as integer ptr buffer                             '' 15 integers; get the address
-   buffer = allocate( integerCount * len( integer ) )    '' of the first integer
+	const integerCount as integer = 15
 
-   if( buffer = 0 ) then                                 '' allocation failed if the
-	  print "Error: unable to allocate memory"           '' pointer returned is 0
-	  end -1
-   end if
+	'' Try allocating memory for a number of integers.
+	''
+	dim buffer as integer ptr
+	buffer = allocate(integerCount * sizeof(integer))
 
-   buffer[ 0 ] = 0                                       '' prime our fibonacci
-   buffer[ 1 ] = 1                                       '' sequence ...
+	if (0 = buffer) then
+		print "Error: unable to allocate memory, quitting."
+		end -1
+	end if
 
-   dim as integer i
-   for i = 2 to integerCount - 1
-	  buffer[ i ] = buffer[ i-1 ] + buffer[ i-2 ]        '' ... and complete it
-   next
+	'' Prime and fill the memory with the fibonacci sequence.
+	''
+	buffer[0] = 0
+	buffer[1] = 1
+	for i as integer = 2 to integerCount - 1
+		buffer[i] = buffer[i - 1] + buffer[i - 2]
+	next
 
-   for i = 0 to integerCount - 1
-	  print buffer[ i ] ;                                '' display the sequence
-   next
-   
-   deallocate( buffer )                                  '' free the memory
-   end 0
+	'' Display the sequence.
+	''
+	for i as integer = 0 to integerCount - 1
+		print buffer[i] ;
+	next
+
+	deallocate(buffer)
+	end 0
 %%
 	Output is:
-	<<  0 1 1 2 3 5 8 13 21 34 55 89 144 233 377>>
+	<<## 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377##>>
 	::c::
 
-There are some things to be aware of when allocating memory. Take a look at the following example, which makes use of a single pointer to point to 2 different newly allocated memory locations.
+	It is important to free allocated memory if it's not going to be used anymore. Unused memory that isn't freed is simply wasting memory, and if the address of that memory is somehow overwritten or forgotten, that memory can never be freed (this condition is known as a memory leak, and should be avoided at all costs). The following example demonstrates a function with a memory leak, where the address of allocated memory is lost, never to be freed (if this function is called frequently, the memory that is wasted can add up quickly).
 
 %%(qbasic)sub AllocateExample2()
-   dim as integer ptr integerPtr = 0                     '' initialize a pointer to null
+   dim p as byte ptr = 0
 
-'' first_allocation:
-   integerPtr = allocate( len( integer ) )               '' assign pointer to new memory
+   p = allocate(420)               '' assign pointer to new memory
 
-'' second_allocation:
-   integerPtr = allocate( len( integer ) )               '' reassign pointer to different
-	                                                     '' memory
-   deallocate( integerPtr )
+   p = allocate(420)               '' reassign pointer to different memory,
+	                               '' old address is lost and that memory is leaked
+   deallocate(p)
 end sub
 
    AllocateExample2()
    end 0
 %%
-
-The above example leaks memory, since the first block of allocated memory is never deallocated. As a general rule, only reassign a pointer if you know that there is more than one reference to that memory location. If there isn't, then the first allocated memory block must be deallocated before reassigning the pointer.
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic

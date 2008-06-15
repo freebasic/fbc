@@ -60,6 +60,7 @@
 <<>>
 {{fbdoc item="section" value="Runtime Library"}}
 	[[CatPgArray Array Functions]]
+	[[CatPgBits Bit Manipulation]]
 	[[CatPgConsole Console Functions]]
 	[[CatPgDate Date and Time Functions]]
 	[[CatPgError Error Handling Functions]]

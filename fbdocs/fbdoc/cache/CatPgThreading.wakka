@@ -1,25 +1,41 @@
 {{fbdoc item="title" value="Threading Support Functions"}}----
+Procedures for working with multithreaded applications
 
-<<
-	- {{fbdoc item="keyword" value="KeyPgCondWait|CONDWAIT"}}
-	- {{fbdoc item="keyword" value="KeyPgCondSignal|CONDSIGNAL"}}
-	- {{fbdoc item="keyword" value="KeyPgCondBroadcast|CONDBROADCAST"}}
-	- {{fbdoc item="keyword" value="KeyPgCondDestroy|CONDDESTROY"}}
-	- {{fbdoc item="keyword" value="KeyPgCondCreate|CONDCREATE"}}
+**{{anchor name="THREADS|Threads"}}**
+	Procedures that start and wait for threaded procedures.
+**{{anchor name="CONDVARS|Conditional Varables"}}**
+	Procedures that create and signal conditional variables.
+**{{anchor name="MUTEXES|Mutexes"}}**
+	Procedures that deal with mutexes.
 
+<<{{anchor name="THREADS"}}{{fbdoc item="section" value="Threads"}}
+	=={{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}==
+		Starts a procedure in a seperate thread of execution.
+	=={{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}==
+		Waits until a threaded procedure has finished.
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
-	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
-	- {{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}
-	- {{fbdoc item="keyword" value="KeyPgMutexCreate|MUTEXCREATE"}}
-	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
-	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
+{{anchor name="CONDVARS"}}{{fbdoc item="section" value="Conditional Variables"}}
+	=={{fbdoc item="keyword" value="KeyPgCondCreate|CONDCREATE"}}==
+		Creates a conditional variable.
+	=={{fbdoc item="keyword" value="KeyPgCondWait|CONDWAIT"}}==
+		Pauses execution of a threaded procedure.
+	=={{fbdoc item="keyword" value="KeyPgCondSignal|CONDSIGNAL"}}==
+		Resumes execution of a threaded procedure waiting for a conditional.
+	=={{fbdoc item="keyword" value="KeyPgCondBroadcast|CONDBROADCAST"}}==
+		Resumes all threaded procedures waiting for a conditional.
+	=={{fbdoc item="keyword" value="KeyPgCondDestroy|CONDDESTROY"}}==
+		Destroys a conditional variable that is no longer needed.
 
->>
-
-NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
-::c::
+<<>>{{anchor name="MUTEXES"}}{{fbdoc item="section" value="Mutexes"}}
+	=={{fbdoc item="keyword" value="KeyPgMutexCreate|MUTEXCREATE"}}==
+		Creates a mutex.
+	=={{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}==
+		Acquires a lock on a mutex.
+	=={{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}==
+		Releases a lock on a mutex.
+	=={{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}==
+		Destroys a mutex that is no longer needed.
+>>::c::
+~&NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-

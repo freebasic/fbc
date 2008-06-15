@@ -58,5 +58,6 @@ end sub
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}

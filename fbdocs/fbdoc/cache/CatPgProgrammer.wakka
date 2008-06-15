@@ -7,7 +7,7 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 
 {{fbdoc item="section" value="Source Files"}}
 	- Module Files (.bas)
-	- Header Files (.bi)
+	- [[ProPgHeaderFiles Header Files (.bi)]]
 	- Using Prebuilt Libraries
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
@@ -24,28 +24,27 @@ Work in Progress: **New pages created for this guide should use the ""ProPg""* p
 	- [[ProPgArrayIndex Array Index]]
 
 	{{fbdoc item="subsect" value="Datatypes"}}
-	- [[CatPgStdDataTypes Standard Data Types]]
-	- [[DtConstants Constants]]
-	- [[DtVariables Variables]]
-	- [[DtArrays Arrays]]
-	- [[DtPointers Pointers]]
-	- [[CatPgUserDefTypes User Defined Types]]
-	- [[CatPgCasting Converting Data Types]]
+		- [[CatPgStdDataTypes Standard Data Types]]
+		- [[DtConstants Constants]]
+		- [[DtVariables Variables]]
+		- [[DtArrays Arrays]]
+		- [[DtPointers Pointers]]
+		- [[CatPgUserDefTypes User Defined Types]]
+		- [[CatPgCasting Converting Data Types]]
 
 {{fbdoc item="section" value="User Defined Types"}}
 	- Overview
 	- Simple User Defined Types
-	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
-	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
+	- [[ProPgTypeAliases Type Aliases]]
+	- [[KeyPgTypeTemp Anonymous Types]]
 	- Complex User Defined Types
 	- Constructors and Destructors
 	- Properties
-	- Methods
-	- Operator Overloading
+	- [[ProPgMemberProcedures Member Procedures]]
+	- [[ProPgOperatorOverloading Operator Overloading]]
 	- Iterators
 	- Member Access Control
 	- New and Delete
-	- Static Member Functions
 
 <<>>
 {{fbdoc item="section" value="Statements and Expressions"}}

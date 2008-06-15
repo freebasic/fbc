@@ -14,9 +14,7 @@ Returns the lower bound of an array's dimension
 	Returns the lowest index that can be used in an array.
  
 {{fbdoc item="desc"}}
-	If the second parameter is included, it will determine the dimension of the array to check for the lowest bound.
-
-	Optionally Dimension says what dimension to check the lowest bound. 1 for first dimension, and 2 for second dimension etc.
+	The optional second parameter, Dimension, says what dimension to check for the lowest bound. 1 for first dimension, and 2 for second dimension etc.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

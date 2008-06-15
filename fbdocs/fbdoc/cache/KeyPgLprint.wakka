@@ -19,7 +19,7 @@ Writes text to the default printer
 
 	Some printers will not print at all until a character 12 (End of Page) is printed.
 
-	Internally, FreeBASIC uses the special file handle -1 for printing using **##Lprint##**.  This handle may be safely closed using ##[[KeyPgClose Close]]## -1.  Next use of **##Lprint##** will automatically reopen it as needed.
+	Internally, FreeBASIC uses the special file number -1 for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]]## -1.  Next use of **##Lprint##** will automatically reopen it as needed.
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' Compile with -lang deprecated or qb

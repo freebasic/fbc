@@ -5,9 +5,6 @@
 	- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
 	- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
-	- {{fbdoc item="keyword" value="KeyPgBit|BIT"}}
-	- {{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}
-	- {{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}

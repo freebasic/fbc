@@ -8,7 +8,7 @@ Graphics statement to copy an image on to another image or screen
 	##//target//##
 		is the address of the buffer where the image is to be drawn. If it's omitted, the image gets blitted to screen. See below.
 	##STEP##
-		indicates that, ##(//x//,  //y//)## offsets are relative to the current graphics cursor position.	
+		indicates that ##(//x//,  //y//)## offsets are relative to the current graphics cursor position.	
 	##(//x//,  //y//)##
 		specify offsets from the upper-left corner of the destination buffer, or screen, that the image gets drawn to. 
 	##//source//##

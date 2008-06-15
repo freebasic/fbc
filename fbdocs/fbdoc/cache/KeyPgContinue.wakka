@@ -7,22 +7,48 @@ Control flow statement to continue next iteration of a loop
 {{fbdoc item="desc"}}
 	Skips all code until the end clause of a loop structure, i.e. ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, or a ##[[KeyPgWhilewend While...Wend]]## block, then executes the limit condition check. In the case of a ##[[KeyPgFornext For...Next]]##, the variable is incremented according to the ##[[KeyPgStep Step]]## specified.
 
+	Where there are multiple ##[[KeyPgDoloop Do]]## / ##[[KeyPgFornext For]]## / ##[[KeyPgWhilewend While]]## blocks nested, it will continue on the innermost block of that type, i.e. the last one entered.  You can continue an earlier block of that type by giving the word multiple times, separated by commas.  e.g. ##**continue while, while**##
+
 {{fbdoc item="ex"}}
 %%(qbasic)
-Dim As Integer o
+Dim As Integer n
 
-Print "Here are odd numbers 0-10!"
+Print "Here are odd numbers between 0 and 10!"
 Print
-For o = 0 To 10
+For n = 0 To 10
 
-  If ( o And 1 ) = 0 Then 
+  If ( n Mod 2 ) = 0 Then 
 	Continue For
   End If
   
-  Print o
+  Print n
   
-Next
-Sleep
+Next n
+%%
+
+%%(qbasic)
+ '' simple prime number finder
+
+Print "Here are the prime numbers between 1 and 20!"
+Print
+
+Dim n As Integer, d As Integer
+
+For n = 2 To 20
+	
+	For d = 2 To Int(Sqr(n))
+	    
+	    If ( n Mod d ) = 0 Then ' d divides n
+	        
+	        Continue For, For ' n is not prime, so try next n
+	        
+	    End If
+	    
+	Next d
+	
+	Print n
+	
+Next n
 %%
 
 {{fbdoc item="diff"}}

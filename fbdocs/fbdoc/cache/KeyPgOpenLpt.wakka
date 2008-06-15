@@ -2,7 +2,12 @@
 Open a printer device
 
 {{fbdoc item="syntax"}}##
-	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [FOR INPUT|OUTPUT] AS #handle
+	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs as]] #//filenum//
+##
+{{fbdoc item="usage"}}##
+	**Open Lpt** "LPT..." [[KeyPgAs as]] [#]//filenum//
+		//or//
+	//result// = **Open Lpt**( "LPT..." [[KeyPgAs as]] [#]//filenum// )
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -13,10 +18,13 @@ Open a printer device
 		Title of the print job as seen by the printer spooler.  This parameter is ignored on DOS.
 	##//EMU=TTY//##
 		Emulation of TTY output on a windows GDI printer, using driver text imaging.  This parameter is ignored on DOS and Linux.
-	##FOR INPUT|OUTPUT##
+	##For Input|Output##
 		clause is allowed for compatibility, but it is ignored.
-	##//handle//##
-		An unused file handle to assign to the device.
+	##//filenum//##
+		An unused file number to assign to the device.
+
+{{fbdoc item="ret"}}
+	Zero is returned if **Open Lpt** completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
 	**Open Lpt** opens a connection to a printer device.  The connection is treated like a file, so data may be written to the printer using ##[[KeyPgPrint Print]]## and ##[[KeyPgPutfileio Put #]]## commands.  
@@ -53,23 +61,23 @@ Close
 %%(qbasic)
 ' Sends contents of text file test.txt to Windows printer named "ReceiptPrinter"
 Dim RptInput As String
-Dim Printhandle as integer, RptFilehandle as integer
+Dim PrintFileNum as integer, RptFileFileNum as integer
 
-RptFilehandle = Freefile
-Open "test.txt" For Input As #RptFilehandle
+RptFileFileNum = Freefile
+Open "test.txt" For Input As #RptFileFileNum
 
-Printhandle = Freefile
+PrintFileNum = Freefile
 OPEN LPT "LPT:ReceiptPrinter,TITLE=ReceiptWinTitle,EMU=TTY" AS _
-	#Printhandle
+	#PrintFilenum
 
-While (EOF(RptFilehandle) = 0)
-	    Line Input #RptFilehandle, RptInput
-	    Print #Printhandle, RptInput
+While (EOF(RptFileFileNum) = 0)
+	    Line Input #RptFileFileNum, RptInput
+	    Print #PrintFileNum, RptInput
 Wend
 
-Close #Printhandle  ' Interestingly, does not require CHR(12).  But if pagination is desired, CHR(12) is the way.
+Close #PrintFileNum  ' Interestingly, does not require CHR(12).  But if pagination is desired, CHR(12) is the way.
 
-Close #RptFilehandle
+Close #RptFileFileNum
 
 Print "Press any key to end program..."
 GetKey
@@ -78,7 +86,7 @@ End
 %%
 
 {{fbdoc item="diff"}}
-	- In QB the syntax was OPEN "LPT"    or OPEN "PRN"
+	- In QB the syntax was OPEN "LPT" or OPEN "PRN"
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##

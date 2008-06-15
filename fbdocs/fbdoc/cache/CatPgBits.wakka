@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="Bit Manipulation"}}----
+Procedures that work with the bits and bytes of numbers.
+
+**{{anchor name="BYTEMACROS|Byte Manipulation Macros"}}**
+	Byte and word manipulation macros.
+**{{anchor name="BITMACROS|Bit Manipulation Macros"}}**
+	Bit manipulation macros.
+
+<<{{anchor name="BYTEMACROS"}}{{fbdoc item="section" value="Byte Manipulation Macros"}}
+	=={{fbdoc item="keyword" value="KeyPgLoByte|LOBYTE"}}==
+		Returns the least significant byte of an unsigned integer.
+	=={{fbdoc item="keyword" value="KeyPgHibyte|HIBYTE"}}==
+		Returns the most significant byte of an unsigned integer.
+	=={{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}==
+		Returns the least significant word of an unsigned integer.
+	=={{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}==
+		Returns the most significant word of an unsigned integer.
+
+<<>>{{anchor name="BITMACROS"}}{{fbdoc item="section" value="Bit Manipulation Macros"}}
+	=={{fbdoc item="keyword" value="KeyPgBit|BIT"}}==
+		Returns 0 or -1 if the specified bit in an integer is clear or set.
+	=={{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}==
+		Returns an integer with the specified bit set to 0.
+	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
+		Returns an integer with the specified bit set to 1.
+
+<<::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

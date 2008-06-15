@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="FILEATTR"}}----
-Function to return information about an open file handle.
+Function to return information about an open file number.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
-	//result// = **""FileAttr""** ( //handle//, [ //returntype// ] )
+	//result// = **""FileAttr""** ( //filenum//, [ //returntype// ] )
 ##
 //or//
 ##
 	#include "vbcompat.bi"
-	//result// = **""FileAttr""** ( //handle//, [ //returntype// ] )
+	//result// = **""FileAttr""** ( //filenum//, [ //returntype// ] )
 ##
 {{fbdoc item="param"}}
-	##//handle//##
-		The handle of a file or device opened with ##[[KeyPgOpen Open]]##
+	##//filenum//##
+		The file number of a file or device opened with ##[[KeyPgOpen Open]]##
 	##//returntype//##
 		An ##[[KeyPgInteger integer]]## indicating the type of information to return.
 
@@ -23,7 +23,7 @@ Function to return information about an open file handle.
 	A value associated with the return type, otherwise 0 on error.
 
 {{fbdoc item="desc"}}
-	Information about the file handle is returned based on the supplied ##//returntype//##
+	Information about the file number is returned based on the supplied ##//returntype//##
 		{{table columns="3" cellpadding="1" cells="Value;Description;constant;1;File Mode;fbFileAttrMode;2;File Handle;fbFileAttrHandle;3;Encoding;fbFileAttrEncoding"}}
 
 	For File Mode, //returntype// = 1 (##fbFileAttrMode##) the return value is the sum of one or more of the following values: 

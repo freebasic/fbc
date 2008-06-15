@@ -62,11 +62,11 @@ TYPE BOOLEAN AS INTEGER
 	- None, if the compiler switch "-lang qb" is used.
 
 {{fbdoc item="see"}}
-	- [[KeyPgUnion UNION...END UNION]]
-	-  [[KeyPgEnum ENUM...END ENUM]]
-	- [[KeyPgOffsetof OFFSETOF]]
-	- [[KeyPgTypeTemp TYPE()]]
-	- [[KeyPgTypeDef TYPE AS]]
-	- [[KeyPgField FIELD]]
+	- ##[[KeyPgUnion Union...End Union]]##
+	- ##[[KeyPgEnum Enum...End Enum]]##
+	- ##[[KeyPgOffsetof OffsetOf]]##
+	- ##[[KeyPgTypeTemp Type()]]##
+	- ##[[KeyPgTypeDef Type As]]##
+	- ##[[KeyPgField Field]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

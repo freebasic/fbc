@@ -5,9 +5,9 @@ Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges.
 	[[KeyPgOpen open]] //file// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] **Access** {**Read** | **Write** | **Read Write**} as #//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	open //filename// for binary Access Read as #//filenum//
-	open //filename// for binary Access Write as #//filenum//
-	open //filename// for binary Access Read Write as #//filenum//
+	open //filename// for binary **Access Read** as #//filenum//
+	open //filename// for binary **Access Write** as #//filenum//
+	open //filename// for binary **Access Read Write** as #//filenum//
 ##
 {{fbdoc item="param"}}
 	##Read##
@@ -22,27 +22,22 @@ Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges.
 
 {{fbdoc item="ex"}}
 
-This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]## and then "data.out" with ##[[KeyPgWriteFile write]]## access, in ##[[KeyPgBinary Binary]]## mode, in an open file slot returned by ##[[KeyPgFreefile FreeFile]]##.
+This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]## and then "data.out" with ##[[KeyPgWriteFile write]]## access, in ##[[KeyPgBinary Binary]]## mode, in an open file number returned by ##[[KeyPgFreefile FreeFile]]##.
 %%(qbasic)Dim As Integer o
-
 
   '' get an open file number.
   o = FreeFile
   
   '' open file for read-only access.    
   Open "data.raw" For Binary Access Read As #o
-
 	
 	'' make a buffer in memory thats the entire size of the file
 	Dim As uByte file_char( Lof( o ) - 1 )
-
 
 	  '' get the file into the buffer.      
 	  Get #o, , file_char()
 	
   Close
-
-
   
   '' get another open file number.
   o = FreeFile
@@ -50,13 +45,10 @@ This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]
   '' open file for write-only access.    
   Open "data.out" For Binary Access Write As #o
 
-	
-
 	'' put the buffer into the new file.      
 	Put #o, , file_char()
 	
   Close
-
 
   Print "Copied file ""data.raw"" to file ""data.out"""
 
@@ -67,8 +59,8 @@ This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]
 	- None known.
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpen OPEN]]
-	- [[KeyPgReadFile READ]]
-	- [[KeyPgWriteFile WRITE]]
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgReadFile Read]]##
+	- ##[[KeyPgWriteFile Write]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,15 +1,35 @@
 {{fbdoc item="title" value="OPEN SCRN"}}----
-{{fbdoc item="syntax"}}
-	OPEN SCRN [FOR INPUT|OUTPUT] AS //n//
+Opens the console directly for input and output as a file.
+
+{{fbdoc item="syntax"}}##
+	**[[KeyPgOpen Open]] Scrn** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Open Scrn** [for //mode//] as [#]//filenum//
+		//or//
+	//result// = **Open Scrn**( [for //mode//] as [#]//filenum// )
+##
+{{fbdoc item="param"}}
+	##//mode//##
+		Either ##[[KeyPgInputfilemode Input]]## or ##[[KeyPgOutput Output]]##.  If omitted, ##[[KeyPgOutput Output]]## is assumed.
+	##//filenum//##
+		An unused file number.
+
+{{fbdoc item="ret"}}
+	Zero is returned if ##**Open Err**## completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
-	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands. 
+	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands.
+
 	This comand may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
-	The normal console options as COLOR, LOCATE do not work in this mode
-	
-	The [FOR INPUT|OUTPUT] clause is allowed for compatibility, but it is ignored.
-	
-	//n// is a FB file handle that must be unused.
+
+	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file number.
+
+	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
+
+	//filenum// is an unused file number.
+
+	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -23,9 +43,9 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- New to FB
+	- 
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpenCons OPEN CONS]]
+	- ##[[KeyPgOpenCons Open Cons]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

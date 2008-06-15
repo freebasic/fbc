@@ -1,5 +1,4 @@
-===Compiling from CVS for DOS on ""Win32""===
-
+{{fbdoc item="title" value="Compiling from CVS for DOS on Win32"}}----
 If you want the very latest version of ""FreeBASIC"" on DOS, it can be compiled using DJGPP on a Win32 system.  Most users should stay with the stable DOS build!  But the latest additions and corrections are available in this way.  These instructions describe how to cross-compile the DOS compiler using a ""Win32"" build of fbc.
 	
 	=={{anchor name="setup|Setting up the DJGPP environment"}}==
@@ -115,3 +114,5 @@ cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/dos/*.a /FBbin/lib/dos%%
 	
 	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:
 	http://www.freebasic.net/forum/viewtopic.php?p=32260
+
+{{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}

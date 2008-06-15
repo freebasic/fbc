@@ -44,5 +44,4 @@ PRINT BITSET(0,63LL)
 	- ##[[KeyPgBit BIT]]##
 	- ##[[KeyPgBitreset BITRESET]]##
 	
-
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

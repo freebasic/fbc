@@ -1,5 +1,4 @@
-===Compiling from CVS for ""Win32"", using MSYS===
-
+{{fbdoc item="title" value="Compiling from CVS for Win32, using MSYS"}}----
 If you want the very latest version of ""FreeBASIC"" on ""Win32"", it can be compiled using ""MSYS"", the Minimal SYStem put out by the ""MinGW"" people.  Most users should stay with the stable ""Win32"" build!  But the latest additions and corrections are available in this way.
 	
 	=={{anchor name="setup|Setting up the MSYS/MinGW environment"}}==
@@ -110,3 +109,5 @@ cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
 	
 	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:
 	http://www.freebasic.net/forum/viewtopic.php?p=32260
+
+{{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}

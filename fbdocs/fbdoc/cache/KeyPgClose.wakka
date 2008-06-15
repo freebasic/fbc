@@ -2,17 +2,18 @@
 Stream I/O function to terminate access to a device.
 
 {{fbdoc item="syntax"}}##
-	**Close** [[#]//slot//][,[#]//slot//]....
+	**Close** [[#]//filenum//][, [#]//filenum//]....
 ##
 {{fbdoc item="param"}}
-	##//slot//##
-		list of file slots to close
+	##//filenum//##
+		list of file numbers to close
 
 {{fbdoc item="desc"}}
-	Closes the files whose slot numbers are passed as arguments. If an unused slot number is passed, **Close** returns an error.
+	Closes the files whose file numbers are passed as arguments. If an unused file number is passed, ##**Close**## returns an error.
 
-	**Close** without arguments closes all the files presently opened.
-	Exiting a program thru an ##[[KeyPgEnd End]]## statement does implicitly close all files.
+	##**Close**## without arguments closes all the files presently opened.
+	
+	Exiting a program using an ##[[KeyPgEnd End]]## statement does implicitly close all files.
 
 {{fbdoc item="ex"}}
 %%(qbasic)' Create a string and fill it.
@@ -20,16 +21,16 @@ Dim buffer As String, f as integer
 
 buffer = "Hello World within a file."
 
-' Find the first free file handle.
+' Find the first free file number.
 f = Freefile
 
-' Open the file "file.ext" for binary usage, using the handle "f".
+' Open the file "file.ext" for binary usage, using the number "f".
 Open "file.ext" For Binary As #f
 
-  ' Place our string inside the file, using handle "f".
+  ' Place our string inside the file, using number "f".
   Put #f, , buffer
 
-' Close the file.  We could also do 'Close #f', but it's only necessary if more than one handle is open.
+' Close the file.  We could also do 'Close #f', but it's only necessary if more than one number is open.
 Close
 
 ' End the program. (Check the file "file.ext" upon running to see the output.)

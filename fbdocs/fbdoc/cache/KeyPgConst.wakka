@@ -6,12 +6,12 @@ Non-modifiable variable declaration
 	**Const** //symbolname// [AS [[DataType DataType]]] = //value// [, ...]
 ##
 {{fbdoc item="desc"}}
-	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred even if explicitly given.
+	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred if //DataType// isn't explicitly given.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
 const Red = RGB(252, 2, 4)
-const Black = RGB(0, 0, 0)
+const Black as uinteger = RGB(0, 0, 0)
 const Text = "This is red text on a black bkgnd."
 
 locate 1, 1
@@ -22,10 +22,12 @@ end
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- QB didn't support the //AS DataType// syntax
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #DEFINE]]##
+	- ##[[KeyPgPpdefine #Define]]##
 	- ##[[KeyPgEnum Enum]]##
+	- ##[[KeyPgVar Var]]##
+
 
 {{fbdoc item="back" value="CatPgStatement|STATEMENT"}}

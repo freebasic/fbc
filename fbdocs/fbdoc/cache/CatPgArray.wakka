@@ -1,20 +1,33 @@
 {{fbdoc item="title" value="Array Functions"}}----
-<<
-	- {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
-	- {{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}
-	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
-	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
+Statements and procedures for working with arrays
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
-	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
-	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}
-	- {{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}
+**{{anchor name="DEFINE|Defining Arrays"}}**
+	Statements that create arrays.
+**{{anchor name="CLEAR|Clearing Array Data"}}**
+	Procedures that work with array memory.
+**{{anchor name="SIZE|Retrieving Array Size"}}**
+	Procedures that return bounds of an array's dimension.
 
->>
+<<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
+	=={{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}} and {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}==
+		Forces arrays to be defined as dynamic arrays.
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}} and {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}==
+		Reverts a previous {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}} or {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}} command.
+	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
+		Defines and resizes dynamic arrays.
+	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
+		Preserves array contents when used with {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}.
 
-::c::
+{{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
+	=={{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}==
+		Writes data of a specified value to an array.
+	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==
+		Frees dynamic arrays and clears static arrays.
+<<>>{{anchor name="SIZE"}}{{fbdoc item="section" value="Retrieving Array Size"}}
+	=={{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}==
+		Returns the lower bound of an array's dimension.
+	=={{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}==
+		Returns the upper bound of an array's dimension.
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

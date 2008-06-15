@@ -1,19 +1,27 @@
 {{fbdoc item="title" value="INPUT"}}----
-Input function to read one or more values entered by the user.
+Reads a list of values from the keyboard
 
 {{fbdoc item="syntax"}}##
-	**Input** [;] ["//prompt//" {;|,} ] //variables_list//
+	**Input** [;] ["//prompt//" //seperator//] //variable_list//
 ##
+{{fbdoc item="param"}}
+	##//prompt//##
+		an optional string literal that is written to the screen.
+	##//seperator//##
+		a semicolon (;), which appends "? " to the prompt, or comma (,), which appends nothing.
+	##//variable_list//##
+		a list of comma-seperated variables used to hold the values read from the user.
+
 {{fbdoc item="desc"}}
-	Presents a prompt to the user and allows him|her to enter the value of one or more variables, separated by a comma.
+	Reads a list of comma-seperated values from the keyboard up until the first carriage return. Numerical values are converted from their string representation into the corresponding types in the variable list. Characters are echoed to the screen as they are typed.
 
-	"//prompt//" is the prompt issued to the screen.  It can be omitted but, if it is present, it must be a literal string, enclosed in quotes. The separator after the prompt can be a semicolon, which will make ##**Input**## add a question mark and a space ("? ") at the end of the prompt; or a comma, in which case input will be immediately after the prompt.
+	The prompt - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately folllowing the prompt. If no prompt is specified, characters are echoed at the current cursor location.
 
-	The optional semicolon before the prompt will cause the program to stay on the same line after the input has been entered.
+	The optional leading semicolon after ##**Input**## is similar to the optional trailing semicolon in a ##[[KeyPgPrint Print]]## statement: the cursor will remain on the same line after all of the characters have been echoed, otherwise, the cursor will move to the beginning of the next line.
 
-	If ##**Input**## gets more variables than it expects, it will ignore the extra ones; if it gets fewer variables than it expects, it will use substitute 0 and "" for the missing variables.
+	If more values are read than are listed in the variable list, extra values will be ignored; if fewer values are read, the remaining variables will be initialized - numeric variables to zero (0), and string variables to the null string (##"####"##).
 
-	If ##**Input**## expects a numerical variable and gets a string that isn't a valid number, it will get the number from the valid characters at the beginning of the string (0 if the first character is invalid).
+	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]##, ##[[KeyPgValint ValInt]]##, ##[[KeyPgVallng ValLng]]##, ##[[KeyPgValuint ValUint]]##, and ##[[KeyPgValulng ValUlng]]##, converting as many numeric characters as possible.
 
 	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
 

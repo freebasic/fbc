@@ -10,6 +10,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
@@ -466,6 +467,7 @@
 	- {{fbdoc item="keyword" value="KeyPgValint|VALINT"}}
 	- {{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}
+	- {{fbdoc item="keyword" value="KeyPgVar|VAR"}}
 	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgViewtext|VIEW PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (Graphics)"}}

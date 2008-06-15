@@ -2,14 +2,15 @@
 Open a sub process and allow input to be read from or output to be written to the sub process.
 
 {{fbdoc item="syntax"}}##
-	**open pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
-	**open pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
+	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
+	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
 ##
 {{fbdoc item="usage"}}##
-	**open pipe** //command// for input as #//filenum//
-	**open pipe** //command// for output as #//filenum//
-	**open pipe** //command// for binary access read as #//filenum//
-	**open pipe** //command// for binary access write as #//filenum//
+	**Open Pipe** //command// for input as #//filenum//
+	**Open Pipe** //command// for output as #//filenum//
+	**Open Pipe** //command// for binary access read as #//filenum//
+	**Open Pipe** //command// for binary access write as #//filenum//
+	//result// = **Open Pipe**( //command// ... )
 ##
 {{fbdoc item="param"}}
 	##//command//##
@@ -19,13 +20,13 @@ Open a sub process and allow input to be read from or output to be written to th
 	##FOR BINARY ACCESS {READ | WRITE}##
 		opens the pipe in binary mode for input (reading) or output (writing)
 	##//filenum//##
-		the unused file handle to associate with the opened pipe on success
+		the unused file number to associate with the opened pipe on success
 
 {{fbdoc item="ret"}}
 	When used as function, OPEN PIPE returns zero (0) on sucess and a non-zero errorcode otherwise.
 
 {{fbdoc item="desc"}}
-	This statement opens a sub-process by running ##//command//## in the operating system's shell.  The output of the sub-process can be read back to the program using standard file commands such as LINE INPUT #.  Input to the sub-process can be supplied using standard file commands such as PRINT #.  OPEN PIPE is uni-directional: the stream of data can only flow one way, either from the program to the sub-process, or from the sub-process to the program.
+	This statement opens a sub-process by running ##//command//## in the operating system's shell.  The output of the sub-process can be read back to the program using standard file commands such as ##[[KeyPgLineinputPp Line Input #]]##.  Input to the sub-process can be supplied using standard file commands such as ##[[KeyPgPrintPp Print #]]##.  ##**Open Pipe**## is uni-directional: the stream of data can only flow one way, either from the program to the sub-process, or from the sub-process to the program.
 
 	##//command//## specifies the sub-process to execute and must use the standard devices stdin / stdout for its input / output.
 
@@ -34,9 +35,9 @@ Open a sub process and allow input to be read from or output to be written to th
 	##BINARY ACCESS READ## allows the program to read the output (stdout) of the sub-process as a binary stream
 	##BINARY ACCESS WRITE## allows the program to send data as input (stdin) to the sub-process as a binary stream
 
-	BINARY streams are not supported on all implementations of the C run time library.  OPEN PIPE returns with an error if it is unable to open a binary stream.
+	BINARY streams are not supported on all implementations of the C run time library.  ##**Open Pipe**## returns with an error if it is unable to open a binary stream.
 
-	##//filenum//## is a FB file handle that must be unused.
+	##//filenum//## is an unsed file number.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim text as string
