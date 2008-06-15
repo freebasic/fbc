@@ -103,6 +103,7 @@ END IF
 {{fbdoc item="target"}}
 	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes /. Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward \ slashes. 
+	- On Windows, a file number used in a dynamic link library is not the same as an identical file number used in the main program.  File numbers can not be passed or returned and then used between a DLL and an executable.
 
 {{fbdoc item="diff"}}
 	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.

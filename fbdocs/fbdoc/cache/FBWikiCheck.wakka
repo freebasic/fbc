@@ -1,12 +1,12 @@
-chklinks: 2008/02/14 14:32:22
+chklinks: 2008/02/29 21:37:04
 
-Loaded 911 page names from 'PageIndex.txt'
+Loaded 913 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 14458 links
-Saved 14458 links to 'linklist.csv'
-Saved 781 page names to 'DocPages.txt'
-Saved 727 file names to 'samplist.csv'
+Found 14502 links
+Saved 14502 links to 'linklist.csv'
+Saved 783 page names to 'DocPages.txt'
+Saved 731 file names to 'samplist.csv'
 
 Checking missing pages:
 No missing pages

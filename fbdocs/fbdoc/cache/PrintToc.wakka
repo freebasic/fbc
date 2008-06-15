@@ -177,6 +177,7 @@
 
 	{{fbdoc item="subsect" value="Memory operators"}}
 		[[KeyPgOpNew Operator New]]
+		[[KeyPgOpPlacementNew Operator Placement New]]
 		[[KeyPgOpDelete Operator Delete]]
 
 	{{fbdoc item="subsect" value="Iterating operators"}}
@@ -526,6 +527,7 @@
 		[[KeyPgNamespace NAMESPACE]]
 		[[KeyPgNext NEXT]]
 		[[KeyPgOpNew NEW]]
+		[[KeyPgOpPlacementNew NEW (Placement)]]
 		[[KeyPgResumenext NEXT (RESUME)]]
 		[[KeyPgOpNot NOT]]
 		[[KeyPgNow NOW]]
@@ -812,6 +814,8 @@
 	[[FaqPgrtlib Run-Time Library FAQ]]
 	[[FaqPgxbox Xbox port FAQ]]
 	[[FaqDOS DOS related FAQ]]
+	[[FaqPgWin32 Windows related FAQ]]
+	[[FaqPgLinux Linux related FAQ]]
 
 {{fbdoc item="section" value="Miscellaneous"}}
 	[[SVNCompile Compiling from SVN]]

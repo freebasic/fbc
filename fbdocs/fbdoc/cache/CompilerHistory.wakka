@@ -7,21 +7,52 @@ Chronology of the FreeBASIC project.
 		- Project started by Andre Victor T. Vicentini, written in VBDOS
 
 	**2004 October 22**
-		- Project Registered on Sourcefourge.net
+		- Project Registered on ""SourceForge.net""
 
 	**2004 November ???**
 		- FreeBASIC compiles itself, becoming a self hosting compiler.
 
 	**2004 November 30**
-		- Version 0.01 released.
+		- Version 0.01 released
+	
+	**2004 December ???**
+		- Version 0.02 released
+	
+	**2004 December 2**
+		- Version 0.03 released
+	
+	**2004 December ???**
+		- Version 0.04 released
+	
+	**2004 December ???**
+		- Version 0.05 released
+	
+	**2004 December 7**
+		- Version 0.06 released
+
+	**2004 December 9**
+		- Version 0.07 released
+
+	**2004 December 15**
+		- Version 0.08 released
 
 	**2004 December 31**
 		- Version 0.09 released
+		- Linux port added by [[LilloWiki Angelo Mottola]]
+	
+	**2005 January 8**
+		- Version 0.10 released
 
 	**2005 January 31**
 		- Version 0.11 released
-		- Improved GFXLib2 by [[LilloWiki Angelo Mottola]]
+		- Improved GFXLib2 by [[LilloWiki Angelo Mottola]] replaced the original SDL-based gfxlib by Sterling Christensen
 		- DOS port added by [[DrV Daniel R. Verkamp]]
+	
+	**2005 March 4**
+		- Version 0.12 released
+	
+	**2005 April 14**
+		- Version 0.13 released
 
 	**2005 July 27**
 		- Version 0.14 released
@@ -29,7 +60,7 @@ Chronology of the FreeBASIC project.
 		- Function overloading
 
 	**2005 December 6**
-		- Version 0.15 released.
+		- Version 0.15 released
 		- Support for Unicode strings
 		- Complete WinAPI headers
 

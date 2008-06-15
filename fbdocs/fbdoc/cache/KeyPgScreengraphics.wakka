@@ -68,6 +68,7 @@ __##flags## details:__
 ~__option flags__
 ~~Flags working in any mode, they activate special behaviors
 ~~-GFX_ALPHA_PRIMITIVES (&h40) Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the [[KeyPgRgba RGBA]] macro or direct color in the form &hAARRGGBB) will always be used by all primitives.
+~~-GFX_HIGH_PRIORITY (&h80) Tells the graphics library to enable a higher priority for graphics processing.  Only has an effect on ##gdi## and ##DirectX## drivers on Win32 platform.
 
 ~__OpenGL Buffer flags__
 ~~These flags work only in OpenGL graphics mode, must be combined with GFX_OPENGL

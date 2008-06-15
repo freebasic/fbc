@@ -103,6 +103,9 @@ FreeBASIC Manual Table of Contents
 	{{fbdoc item="keyword" value="FaqPgrtlib|Run-Time Library FAQ"}}
 	{{fbdoc item="keyword" value="FaqPgxbox|Xbox port FAQ"}}
 	{{fbdoc item="keyword" value="FaqDOS|DOS related FAQ"}}
+	{{fbdoc item="keyword" value="FaqPgWin32|Windows related FAQ"}}
+	{{fbdoc item="keyword" value="FaqPgLinux|Linux related FAQ"}}
+
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
 	{{fbdoc item="keyword" value="SVNCompile|Compiling from SVN"}}

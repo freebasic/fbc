@@ -77,5 +77,6 @@ end scope
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpDelete Delete]]##
+	- ##[[KeyPgOpPlacementNew Placement New]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

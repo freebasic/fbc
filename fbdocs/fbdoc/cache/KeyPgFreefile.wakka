@@ -54,6 +54,9 @@ OPEN "file1" FOR INPUT AS #fr
 OPEN "file2" FOR INPUT AS #fs
 %%
 
+{{fbdoc item="target"}}
+	- On Windows, a file number used in a dynamic link library is not the same as an identical file number used in the main program.  File numbers can not be passed or returned and then used between a DLL and an executable.
+
 {{fbdoc item="diff"}}
 	- None
 

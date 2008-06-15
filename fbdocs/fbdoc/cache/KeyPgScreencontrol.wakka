@@ -69,6 +69,8 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param1//## TRUE (-1) if alpha primitives is enabled, FALSE (0) otherwise
 	- ##GET_GL_EXTENSIONS## (15) Returns a string holding all supported GL extensions, or the empty string if not in OpenGL mode.
 		[OUT] ##//param//## supported GL extensions
+	- ##GET_HIGH_PRIORITY## (16) Returns if GFX_HIGH_PRIORITY was specified in the flags passed to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##.
+		[OUT] ##//param1//## higher priority graphics processing enabled
 
 		**Set operations**
 	- ##SET_WINDOW_POS## (100) Sets the current program window position, in desktop coordinates.
@@ -112,7 +114,7 @@ Sets or gets internal graphics library settings
 
 		**Other operations**
 	- ##POLL_EVENTS## (200) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for OpenGL code where FLIP is not used, as normally FLIP will cause these events to be polled.
-	- 
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions

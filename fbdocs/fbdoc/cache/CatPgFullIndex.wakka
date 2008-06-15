@@ -317,6 +317,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNew|NEW"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPlacementNew|NEW (Placement)"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNot|NOT"}}
 	- {{fbdoc item="keyword" value="KeyPgNow|NOW"}}

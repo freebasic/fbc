@@ -1,0 +1,65 @@
+{{fbdoc item="title" value="Windows Related FAQ"}}----
+
+{{anchor name="item0"}}
+**Windows:**
+
+	==- {{anchor name="item01|Which IDE's are available for Windows?"}}==
+	==- {{anchor name="item02|Are there any guides on how to install any IDE's?"}}==
+	==- {{anchor name="item03|Can I get rid of the console / 'DOS' screen in a graphics application?"}}==
+	==- {{anchor name="item04|How to debug ?"}}==
+	==- {{anchor name="item05|Can I use Serial or Parallel Ports in FB?"}}==
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+----
+
+@@**FreeBASIC Windows questions**@@
+
+{{anchor name="item01"}}==Which IDE's are available for Windows?==
+
+	At the moment three full featured IDE's have been developed specifically for FB: [[http://fbide.freebasic.net/ FBIDE]] (not being updated, avoid using of old versions of FBC bundled with it), [[http://fbedit.freebasic.net/ FBEdit]] and [[http://www.planetsquires.com/jellyfishpro_freebasic.htm JellyFishPro]]. These IDE's require a minimum configuration -as path to the compiler- to work. 
+	You can also download  [[http://fbide.freebasic.net/ FBIDE]] and [[http://fbedit.freebasic.net/ FBEdit]] as bundles  (Editor+ Compiler) that install in a single operation. Notice the version of some of the components on these bundles may not be the latest available. 
+	Commercial "general use" IDE's can be used with FreeBASIC but may require an extensive setup. They are handy for multi language programming, as they provide a unified user interface.
+
+{{anchor name="item0|Back to top"}}	
+
+{{anchor name="item02"}}==Are there any guides on how to install any IDE's?==
+
+   Yes, instructions for installing FB JFish Pro, FBIDE, and FBEdit can be found here:
+	   - [[http://www.freebasic.net/forum/viewtopic.php?t=10350 IDE Installation guide for Windows]]
+
+{{anchor name="item0|Back to top"}}	
+
+{{anchor name="item03"}}==Can I get rid of the console / 'DOS' screen in a graphics application?==
+	Definitely. You have to give FreeBASIC the right command for it when you compile your program.
+	- If you compile from a command prompt, simply add ##"-s gui"## to the end, like ##"fbc myprg.bas -s gui"##
+	- If you compile in a specific IDE, you have to edit the "Compiler Defaults". 
+		- In Jelly-Fish Pro, its "Compiler->Set Compiler Defaults->Compiler Options". Add "-s gui" (NO QUOTES) in that box.
+		- In FBedit select Windows GUI in the targets dropdown list in the right of the tool bar.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item04"}}==How to debug ?==
+	FreeBASIC can use any debugger compatible with GNU GDB. Insight Win32 debugger is an user friendly wrapper for GDB. 
+	- Get Insight from [[http://prdownloads.sourceforge.net/dev-cpp/Insight_Binary.DevPak?download Dev-C++]]
+	- Rename the file to Insight.tar.bz2, and decompress it to an empty folder
+	- Compile your program with the -g switch
+	- Run <Your_Insight_Dir>\bin\usr\bin\Insight.exe
+	- Do File>Open to load your program into Insight
+	- From there you can watch, set breakpoints, step, examine memory and registers. Check Insight's help
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item05"}}==Can I use Serial or Parallel Ports in FB?==
+	 Yes, FB has built in functions to access the serial and parallel ports with no need to use a .dll to do so.
+	 See: [[KeyPgOpenCom Open Com]], [[KeyPgInp INP]], [[KeyPgOut OUT]]
+
+
+{{anchor name="item0|Back to top"}}
+
+See also:
+	[[CompilerFAQ Compiler FAQ]].
+	[[FaqPgrtlib FB Run-Time Library FAQ]].
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+

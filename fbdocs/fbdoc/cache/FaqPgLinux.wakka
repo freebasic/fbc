@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="Linux Related FAQ"}}----
+
+{{anchor name="item0"}}
+**FreeBASIC Linux questions:**
+
+	==- {{anchor name="item1|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
+	==- {{anchor name="item2|How do I install FreeBASIC in Ubuntu?"}}==
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+----
+
+@@**FreeBASIC Linux questions**@@
+
+{{anchor name="item1"}}==FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!==
+	FreeBASIC uses ld to link it's files under linux. This program requires that any libraries you use have the '-dev' versions installed. For example, for the above error message, you'd want to install xlib-dev for your distribution. Other common errors are for glibc, which requires glibc-dev, and sdl, which requires sdl-dev. Most distributions make these easily available on your install media.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item2"}}==How do I install FreeBASIC in Ubuntu?"==
+	See [[http://www.freebasic.net/forum/viewtopic.php?t=3991&postdays=0&postorder=asc&highlight=install+ubuntu&start=0  This thread in the FB forums]] 
+
+{{anchor name="item0|Back to top"}}
+
+See also:
+	[[CompilerFAQ Compiler FAQ]].
+	[[FaqPgrtlib FB Run-Time Library FAQ]].
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

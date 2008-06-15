@@ -1,47 +1,43 @@
 {{fbdoc item="title" value="GET (GRAPHICS)"}}----
-Copies pixel data to an array
+Gets a copy of a portion of the current work page or an image buffer
 
 {{fbdoc item="syntax"}}##
-	**Get** [//target//,] [STEP] (//x1//, //y1//)-[STEP](//x2//, //y2//), //arrayname//[(//idx//)]
+	**Get** [//source//,] [Step] (//x1//, //y1//) - [STEP] (//x2//, //y2//), //dest//]
 ##
 {{fbdoc item="param"}}
-	##//target//##
-		is the address of the image buffer to get from
-	##STEP##
-		indicates that, ##(//x1//,  //y1//)## offsets are relative to the current graphics cursor position.	
-	##(//x1//,  //y1//)##
-		upper-left coordinates of image area to get
-	##STEP##
-		indicates that, ##(//x2//,  //y2//)## offsets are relative
-	##(//x2//,  //y2//)##
-		lower-right coordinates of image area to get
-	##//arrayname//##
-		array variable or pointer to memory location to store the new image
+	##//source//##
+		the address of an image buffer.
+	##Step##
+		indicates that the following co-ordinates are not absolute co-ordinates.
+	##//x1//##,  ##//y1//##
+		co-ordinates of the upper-left corner of the subimage to copy.
+	##//x2//##,  ##//y2//##
+		co-ordinates of the lower-right corner of the subimage to copy.
+	##//dest//##
+		the address of a previously allocated buffer to store the image data.
 
 {{fbdoc item="desc"}}
-	Statement to save a block of pixels data into an array for later use. Pixel data is taken from the current work page as set by ##[[KeyPgScreenset Screenset]]##, or from the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer if specified.
+	##**Get**## copies a rectangular portion of the current work page specified by the co-ordinates (##//x1//##,  ##//y1//##) and (##//x2//##,  ##//y2//##), which represent the upper-left and lower-right corners of the rectangle, respectively. ##**Step**## specifies that the upper-left co-ordinates are relative to the current graphics pen location, and/or that the lower-right co-ordinates are relative to the upper-left co-ordinates. The new image buffer is formatted to match the current screen mode [[GfxInternalFormats pixel format]].
 
-	##(//x1//, //y1//)##  and ##(//x2//, //y2//)## are coordinates of the opposite corners of the graphics blocks to retrieve. The first is the upper-left corner, and the second is the lower-right corner. ##STEP## specifies a pair of coordinates is relative to the last graphics cursor position. ##STEP## before the second pair of coordinates specifies those are relative to the first pair. Pixel data is stored into ##//arrayname//##, which can be an array (with or without index) or a pointer to a buffer big enough to hold the data (for example a buffer created by the ##[[KeyPgImagecreate Imagecreate]]## function).
+	##//dest//## can be an address, an [[ProPgArrays array]], or a reference to the first element in an [[ProPgArrays array]] that will recieve the new image buffer. This memory must be sufficiently allocated to hold the image buffer; the number of bytes required varies with the [[CompilerOptlang -lang dialect]] used to compile the program.
 
-	The coordinates of the block are affected by the most recent ##[[KeyPgWindow Window]]## and ##[[KeyPgViewgraphics View (Graphics)]]## statements, and must be both inside the current clipping region set by ##[[KeyPgViewgraphics View (Graphics)]]##, otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
+	##//source//## can be an address, an [[ProPgArrays array]], or a reference to the first element in an [[ProPgArrays array]] that holds an image buffer to retrieve a portion of. ##//x1//##,  ##//y1//##, ##//x2//##,  ##//y2//##, ##**Step**## and ##//dest//## have the same meaning in this case.
 
-	As previously said, the supplied array must be large enough to hold the block you're going to save; the required array size depends on both the block size in pixels and the current color depth. Use the following formulas to compute the right size in bytes:
+	The co-ordinates of the rectangle are affected by the most recent ##[[KeyPgWindow Window]]## and ##[[KeyPgViewgraphics View (Graphics)]]## statements, and must both be within the current clipping region set by ##[[KeyPgViewgraphics View (Graphics)]]##, otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
 
-	For color depths 1, 2, 4 and 8:
-	##size = 32 + (((w + &hF) and not &hF) * h)##
-	For color depths 15 and 16:
-	##size = 32 + ((((w * 2) + &hF) and not &hF) * h)##
-	For color depths 24 and 32:
-	##size = 32 + ((((w * 4) + &hF) and not &hF) * h)##
+**Runtime errors:**
+	##**Get**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
-	Where w and h are the width and height of the graphics block you want to save. Pixel data starts at the 33th byte in the buffer, and pixel rows are byte-aligned on the paragraph size (16 bytes). Data is stored in the current pixel format.
-	Note that the ##size## formula was changed in FreeBASIC 0.17 to allow for extended sprite header capabilities. Previously the correct formula, which was compatible with QB, was:
+	//(##1##) Illegal function call//
+		- ##//dest//## is an array, but is not big enough to hold the image buffer.
+		- The upper-left or lower-right co-ordinates of the rectangle are outside the current clipping region. See ##[[KeyPgViewgraphics View (Graphics)]]##.
 
-	##size = 4 + (w * h * bpp)##
+{{fbdoc item="lang"}}
+	- In the [[CompilerOptlang -lang fb dialect]], ##//dest//## recieves a new-style image buffer, which consists of a 32-byte image header followed by pixel data which is row-padded to the next paragraph boundary (16 bytes). Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode [[GfxInternalFormats pixel format]]:
+		##size = 32 + (((w * bpp + &hF) and not &hF) * h)##
 
-	Where bpp is the bytes per pixel used by the current video mode. All the graphics primitives working with buffers accept both old-style and new-style buffers. ##**Get**## will always produce new-style (32 bytes extended header) buffers, except while working in a 8 bit or lower color depth mode; in this case the statement will produce an old-style (4 bytes compact header) buffer to retain compatibility with old QB sources.
-
-	The use of ##**Get**## is not recommended; an easier way to create suitable buffers for your images is by using the ##[[KeyPgImagecreate ImageCreate]]## function, you may like to have a look at it.
+	- In the [[CompilerOptlang -lang qb and deprecated dialects]], ##//dest//## recieves a QB-style image buffer, which consists of a 4-byte image header followed by pixel data which is not row-padded. Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode [[GfxInternalFormats pixel format]]:
+		##size = 4 + (w * h * bpp)##
 
 {{fbdoc item="ex"}}
 	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.

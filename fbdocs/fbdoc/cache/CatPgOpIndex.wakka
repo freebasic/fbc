@@ -77,6 +77,7 @@ List of operators used in FreeBASIC.
 
 {{fbdoc item="section" value="Memory Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNew|New"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPlacementNew|Placement New"}}
 	- {{fbdoc item="keyword" value="KeyPgOpDelete|Delete"}}
 
 {{fbdoc item="section" value="Iteration Operators"}}
