@@ -1,4 +1,4 @@
-  fbhelp - FreeBASIC help viewer v0.6b
+  fbhelp - FreeBASIC help viewer v0.7b
   Copyright (C) 2006-2007 Jeffery R. Marshall (coder[at]execulink.com)
 
 
@@ -59,6 +59,7 @@ Running:
   Command line options:
 
       -bw                     black and white display only
+      -blue                   use blue background
       -h -help                this help page
       -version                display version
 

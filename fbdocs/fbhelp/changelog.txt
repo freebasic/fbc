@@ -1,3 +1,9 @@
+Version 0.7b:
+
+[changed]
+- minor changes for fbc 0.18 compatibility
+
+
 Version 0.6b:
 
 [added]:

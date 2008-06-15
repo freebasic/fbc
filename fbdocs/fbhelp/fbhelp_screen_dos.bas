@@ -203,7 +203,7 @@ end sub
 public sub Screen_ShowCursor ( )
 
 	cursor_visible = TRUE
-	setcursortype( _NORMALCURSOR )	
+	_setcursortype( _NORMALCURSOR )	
 
 end sub
 
@@ -211,7 +211,7 @@ end sub
 public sub Screen_HideCursor ( )
 
 	cursor_visible = FALSE
-	setcursortype( _NOCURSOR )	
+	_setcursortype( _NOCURSOR )	
 
 end sub
 

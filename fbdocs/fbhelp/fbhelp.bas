@@ -45,40 +45,83 @@ const opt_char = "-"
 #endif
 #endif
 
+enum OPTIONS
+	opt_INVALID = 1
+	opt_HELP = 2
+	opt_BLUE = 4
+	opt_BW = 8
+	opt_VERSION = 16
+end enum
+
 '' ============================
 '' MAIN
 '' ============================
 
 	dim as string pexepath, filename, filenamez
-	dim i as integer
+	dim as integer i, bAddNL = FALSE, ret = 0
+	dim as integer opt = 0
 
 	i = 1
 	while( len( command(i) ) > 0 )
 		select case lcase(command(i))
 		case "-help", "-h", "/help", "/h", "/?"
+			opt or= opt_HELP
+		case "-bw", "/bw"
+			opt or= opt_BW
+			opt and= (not opt_BLUE)
+			Screen_SetColorMode( FALSE )
+			DEFAULT_BACKCOLOR = 0
+		case "-blue", "/blue"
+			if((  opt and opt_BW ) = 0 ) then
+				'' Blue background
+				DEFAULT_BACKCOLOR = 1
+			end if
+		case "-version", "/version"
+			opt or= opt_VERSION
+		case else
+			? "Invalid option '" + command(i) + "'"
+			opt or= opt_INVALID
+			ret = 1
+			exit while
+		end select
+		i += 1
+	wend
+
+	if( ( opt and ( opt_HELP or opt_VERSION or opt_INVALID )) <> 0 ) then
+
+		if( opt and opt_INVALID ) then
+			? "Use '" + APP_NAME + " " + opt_char + "help' for options"
+			bAddNL = TRUE
+		end if
+
+		if( opt and opt_HELP ) then
+			if( bAddNL ) then
+				?
+			end if
 			? "Usage: " + APP_NAME + " [options]
 			?
 			? "options:
 			? "   " + opt_char + "h " + opt_char + "help      this help page"
+			? "   " + opt_char + "blue         use blue back ground"
 			? "   " + opt_char + "bw           black and white only"
 			? "   " + opt_char + "version      display version"
-			end 0
-		case "-bw", "/bw"
-			Screen_SetColorMode( FALSE )
-		case "-blue", "/blue"
-			DEFAULT_BACKCOLOR = 1 '' Blue background
-		case "-version", "/version"
+			bAddNL = TRUE
+		end if
+
+		if( opt and opt_VERSION ) then
+			if( bAddNL ) then
+				?
+			end if
 			? APP_NAME + " - Version " + APP_VERSION + " for " + APP_TARGET
 			? APP_COPYRIGHT
 			? "Last built on " + __DATE__ + " " + __TIME__
 			? "Please report bugs to " + APP_CONTACT
-			end 0
-		case else
-			? "Invalid option '" + command(i) + "'"
-			end 1
-		end select
-		i += 1
-	wend
+			bAddNL = TRUE
+		end if
+
+		end ret
+
+	end if
 
 	pexepath = FixPath( exepath )
 	filename = pExePath + "fbhelp.dat"

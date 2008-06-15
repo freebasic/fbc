@@ -21,13 +21,18 @@
 #include once "fbhelp_screen.bi"
 #include once "crt/stdio.bi"
 
+#inclib "fbgfx"
+
 dim shared as integer cursor_x = 0, cursor_y = 0
 
 dim shared as integer cursor_visible = FALSE
 
 ''#define SIG_IGN 1
+
 #define SIGWINCH 28
+
 type sighandler_t as sub cdecl ( byval sig as integer )
+
 declare function signal cdecl alias "signal" ( byval sig as integer, byval handler as sighandler_t ) as sighandler_t
 declare function raise cdecl alias "raise" ( byval sig as integer ) as integer
 

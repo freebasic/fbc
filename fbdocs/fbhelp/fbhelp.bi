@@ -3,7 +3,7 @@
 
 #define APP_TITLE     "FreeBASIC Manual"
 #define APP_NAME      "fbhelp"
-#define APP_VERSION   "v0.6b"
+#define APP_VERSION   "v0.7b"
 #define APP_COPYRIGHT "Copyright (C) 2006-2007 Jeffery R. Marshall"
 #define APP_CONTACT   "coder@execulink.com"
 
