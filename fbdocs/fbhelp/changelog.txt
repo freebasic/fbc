@@ -1,0 +1,31 @@
+Version 0.4b:
+
+[changed]
+- minor changes for fbc 0.17b CVS compatibility
+
+
+Version 0.3b:
+
+[changed]
+- minor changes for fbc 0.17b CVS compatibility
+
+
+Version 0.2b:
+
+[added]
+- support for help file compression using gzip as the initial compressor and zlib as decompressor
+- CTRL+W for write topic on 
+- Input box to enter user supplied filename for witing topics to text file
+
+[fixed]
+- fixed problems with scroll bar not scrolling on certain sized topics
+- END key not going to end of line
+- dos version assumes 8.3 filenames unless environment variable LFN=Y
+
+[changed]
+- All io handled by CRT / GZIO compatible routines instead of FBRT I/O routines
+
+
+Version 0.1b:
+
+- initial release
