@@ -8,7 +8,19 @@ The current maintainer of this port is [[DrV DrV]].
 
 //To be written: platform-specific information, differences from Win32/Linux, differences from QB?, tutorials, etc. //
 
-**WANTED TESTERS** : The DOS version/target of FreeBASIC needs more testers. If you are interested in using FreeBASIC on DOS, please don't wait for 1.0 release, give it a try now. Tests from running in DOS on both old and new PC's are welcome (graphics, file I/O, serial port, ...). If something doesn't work, please place a detailed bug report into the forum. If all works well, you can write about your success as well. Make sure to test a recent version of FB (reports from FB older than 0.18 will be probably considered as obsolete and useless), and check this document **before** complaining about anything. 
+**WANTED TESTERS** 
+
+The DOS version/target of FreeBASIC needs more testers. If you are interested in using FreeBASIC on DOS, please don't wait for 1.0 release, give it a try now. Tests from running in DOS on both old and new PC's are welcome (graphics, file I/O, serial port, ...). If something doesn't work, please place a detailed bug report into the forum. If all works well, you can write about your success as well. Make sure to test a recent version of FB (reports from FB older than 0.18 will be probably considered as obsolete and useless), and check this document **before** complaining about anything. 
+
+**Limitations**
+
+The DOS target is fairly well working and supported by FreeBASIC, and up-to-date. A few differences compared to other platforms exist, however. The features missing are mostly those not supported by the operating system or DOS extender or C runtime:
+	- Cross-compiling to an other target
+	- Multithreading (see FAQ 23)
+	- Graphics in windowed mode or using OpenGL
+	- Setting ##Screenres## to a size not matching any resolution supported by the graphics card  
+	- Unicode isn't supported in DOS, WSTRING will be the same as ZSTRING, character sets other than latin aren't supported. (do it yourself)
+	- Shared libraries (DLL's) can't be created/used (at least not "easily"), amount of available static external libraries usable with DOS is limited
 
 **FreeBASIC DOS related questions:**
 
@@ -35,7 +47,7 @@ The current maintainer of this port is [[DrV DrV]].
 	==- {{anchor name="item21|21. What about the 64KiB and 640KiB problems / how much memory is supported by FB in DOS ?"}}==
 	==- {{anchor name="item22|22. My program crashes when I try to use more than cca 1 MiB RAM ! BUG / still limits ?"}}==
 	==- {{anchor name="item23|23. Threading functions are disallowed in DOS ? Help !"}}==
-	==- {{anchor name="item24|24. Which other features are missing in the DOS version and target of FB ?"}}==
+	==- {{anchor name="item24|24. Executables from FB DOS are bloated !"}}==
 	==- {{anchor name="item25|25. SLEEP doesn't work ! How to cause a delay ?"}}==
 
 ----
@@ -203,18 +215,13 @@ type RegTypeX as __dpmi_regs
 		- There is a **pthreads** library for DJGPP allowing to "emulate" Linux-like threading to some degree. It works acceptably for [P]7-ZIP DJGPP port (written in C+ + ), no tests with FB yet.
 		- !writeme!
 
-{{anchor name="item24"}}==24. Which other features are missing in the DOS version and target of FB ?==
-	The features missing are mostly those not supported by the operating system + DOS extender + C runtime:
-		- Cross-compiling to an other target
-		- Multithreading (see FAQ 23)
-		- Graphics in windowed mode or using OpenGL, setting ##Screenres## to a size not matching any resolution supported by the graphics card  
-		- Unicode strings (do it yourself)
-		- Shared libraries (DLL's) can't be created/used (at least not "easily"), amount of available static external libraries usable with DOS is limited
+{{anchor name="item24"}}==24. Executables from FB DOS are bloated !==
+	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme!
 
 {{anchor name="item25"}}==25. SLEEP doesn't work ! How to cause a delay ?==
 	SLEEP does work ... but has a resolution of cca 55ms = 1/18s only, thus "SLEEP 500" is fine, while using "SLEEP 2" for 2 milliseconds won't work. !writeme! / !fixme! PIT RDTSC loops
 
-See also:
+{{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]].
 	- [[FaqPgrtlib FB Run-Time Library FAQ]].
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]

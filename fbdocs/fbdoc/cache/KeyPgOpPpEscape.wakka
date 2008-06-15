@@ -19,6 +19,19 @@ Explicity indicates that a string literal should be processed for escape sequenc
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/prepro/escape.bas"}}%%(freebasic)
+print "Some escape sequence examples:"
+print !"1.\tsingle quote (\\\') : \'"
+print !"2.\tdouble quote (\\\") : \""
+print !"3.\tbackslash    (\\\\) : \\"
+print !"4.\tascii char   (\\65): \65"
+
+'' OUTPUT:
+''
+'' Some escape sequence examples:
+'' 1.	single quote (\') : '
+'' 2.	double quote (\") : "
+'' 3.	backslash    (\\) : \
+'' 4.	ascii char   (\65): A
 %%
 
 {{fbdoc item="diff"}}

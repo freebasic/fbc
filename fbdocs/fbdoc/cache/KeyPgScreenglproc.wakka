@@ -37,6 +37,9 @@ end if
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenglproc""**##.
 
+{{fbdoc item="target"}}
+	- Not available for DOS target.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

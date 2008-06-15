@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="FreeBASIC Manual Downloads"}}----
 Downloads of previous versions of the manual in CHM format.
 
-Since this manual is for a beta compiler still in development, we do not maintain multiple versions of the wiki.  Any downloadable documentation made available from time to time is a snapshot only of this wiki.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
+Since this manual is for a beta compiler still in development, we do not maintain multiple versions of the wiki.  Any downloadable documentation made available from time to time is just a snapshot of this wiki.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
 
 ""FreeBASIC v0.18.3b (2007.12.31)""
 http://downloads.sourceforge.net/fbc/FB-manual-chm-12.dec.2007.zip?download
@@ -24,6 +24,8 @@ http://downloads.sourceforge.net/fbc/FB-manual-chm-10.dec.2005.zip?download
 ""FreeBASIC v0.14b (2005.07.24)""
 http://downloads.sourceforge.net/fbc/FB-manual-chm-5.nov.2005.zip?download
 
+Other formats of the documentation (FBHELP, TXT, HTML) can be downloaded from:
+[[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/~coder/freebasic/docs.html]]
 
 There have actually been more releases of the docs than versions of the compiler.  If you happen to know a version of the manual that is better suited for a specific version of the compiler, please update this list.
 

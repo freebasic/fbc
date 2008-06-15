@@ -61,5 +61,6 @@ Invoking the compiler after installation.
 {{fbdoc item="see"}}
 	- [[CompilerInstalling Installing FreeBASIC]]
 	- [[CompilerCmdLine Compiler Command Line Options]]
+	- [[CompilerFAQ Compiler FAQ]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

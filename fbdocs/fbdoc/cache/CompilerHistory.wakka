@@ -137,4 +137,8 @@ Chronology of the FreeBASIC project.
 		- Fixed Linux packages
 		- Fixed old shell/path/spawn trouble in DOS
 
+	**2008 Apr 18**
+		- FreeBASIC 0.18.5 full release uploaded.
+		- Bugfix release. Linux: packaging,  Win32: graphics, DOS: GDB
+   
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

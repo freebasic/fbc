@@ -19,6 +19,33 @@ Explicity indicates that a string literal should not be processed for escape seq
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/prepro/noescape.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+print "Default"
+print "Backslash  : \\"
+print !"Backslash !: \\"
+print $"Backslash $: \\"
+print
+
+option escape
+
+print "Option Escape"
+print "Backslash  : \\"
+print !"Backslash !: \\"
+print $"Backslash $: \\"
+print
+
+'' OUTPUT:
+
+'' Default
+'' Backslash  : \\
+'' Backslash !: \
+'' Backslash $: \\
+
+'' Option Escape
+'' Backslash  : \
+'' Backslash !: \
+'' Backslash $: \\
 %%
 
 {{fbdoc item="diff"}}
