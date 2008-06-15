@@ -27,6 +27,8 @@ During the program compilation three types of errors can arise:
 	- //20 The ANY initializer has no effect on UDT's with default constructors//
 	- //21 Object files or libraries with mixed multithreading (-mt) options//
 	- //22 Object files or libraries with mixed language (-lang) options//
+	- //23 Deleting ANY pointers is undefined//
+	- //24 Array too large for stack, consider making it dynamic or SHARED//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.

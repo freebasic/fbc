@@ -32,3 +32,5 @@ Intrinsic define (macro value) set by the compiler
 	- ##[[KeyPgDdfbversion __FB_VERSION__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
+
+   

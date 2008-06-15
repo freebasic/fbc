@@ -1,183 +1,86 @@
 {{fbdoc item="title" value="Operator Overloading"}}----
 Changing the way user defined types work with built-in operators
 
-**{{anchor name="item1|What is an operator?"}}**
-**{{anchor name="item2|What is operator overloading?"}}**
-**{{anchor name="item3|What operators can I overload inside a Type definition?"}}**
-**{{anchor name="item4|How can I access Protected or Private members in global operator overloads?"}}**
-**{{anchor name="item5|What's a better way of doing that?"}}**
-**{{anchor name="item6|What about mathematical and logical operators?"}}**
-**{{anchor name="item7|What's special about the assignment operator?"}}**
-**{{anchor name="item8|!!!WRITEME OVERLOADING NEW AND DELETE WRITEME!!!"}}**
+{{anchor name="OVERVIEW|Overview"}}
+{{anchor name="GLOBAL|Global Operators"}}
+{{anchor name="MEMBER|Member Operators"}}
 
-{{anchor name="item1"}}{{fbdoc item="section" value="What is an operator?"}}
-	An operator is just a procedure, like most others. Some operators, like [[KeyPgCast operator cast]], even look like procedures. Others, like ##[[KeyPgOpLessThanOrEqual Operator <=]]##, have a different syntax //(as of the time of this writing, calling these operators by name is not supported, but may be in the future)//. However they are called, the result is the same: some procedure is invoked based on the types of operands - the arguments of an operator call - that are passed to it.
+{{anchor name="OVERVIEW"}}{{fbdoc item="section" value="Overview"}}
+	Simply, operators are procedures, and their arguments are called //operands//. Operators that take one operand (##[[KeyPgOpNot Operator Not]]##) are called //unary operators//, operators that take two operands (##[[KeyPgOpAdd Operator +]]##) are called //binary operators// and operators taking three operands (##[[KeyPgIif Operator Iif]]##) are called //ternary operators//.
 
-{{anchor name="item2"}}{{fbdoc item="section" value="What is operator overloading?"}}
-	Operator overloading is just like normal procedure overloading, that is, an operator with the same name as an existing operator is defined to take different types of operands (parameters). Operators that take built-in types like [[KeyPgInteger integers]] or [[KeyPgString strings]] are already defined by the compiler, and so cannot be redefined. You can define operators with operands of user-defined types, however, and this is what operator overloading is.
-
-	There are two types of operators you can overload: global operators and member operators. Global operators are declared and defined in module-level code - globally. These are !!!WRITEME!!!. Member operators are declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition, and are discussed {{anchor name="item3|in the next item"}}.
-
-	Overloading a global operator is much like overloading a normal procedure, you declare and define an existing operator with new operand types:
+	Most operators are not called like procedures. Instead, their operator symbol is placed next to their operands. For unary operators, their sole operand is placed to the right of the symbol. For binary operators, their operands - referred to as the left and right-hand side operands - are placed to the left and right of the operator symbol. FreeBASIC has one ternary operator, ##[[KeyPgIif Operator Iif]]##, and it is called like a procedure, with its operands comma-seperated surrounded by parenthesis. For example, the following code calls ##[[KeyPgIif Operator Iif]]## to determine if a pointer is valid. If it is, ##[[KeyPgOpValueOf Operator * (Value of)]]## is called to dereference the pointer, and if not, ##[[KeyPgOpDivide Operator / (Divide)]]## is called to find the value of twenty divided by four.
 
 %%(qbasic)
-type Rational
-	as integer num, den
-end type
+dim i as integer = 420
+dim p as integer ptr = @i
 
-'' operator <= declaration:
-declare operator <= (byref as Rational, byref as Rational) as integer
-
-'' operator <= definition:
-operator <= (byref lhs as Rational, byref rhs as Rational) as integer
-	return (lhs.num / lhs.den) <= (rhs.num / rhs.den)
-end operator
-
-'' Call global operator <= and check the result:
-dim as Rational x = (1, 2), y = (3, 4)
-if x <= y then
-	print "Yay, it works!"
-end if
+dim result as integer = iif(p, *p, 20 / 4)
 %%
-	Note that global operators are like module-level procedures in that the [[KeyPgVisProtected Protected]] and [[KeyPgVisPrivate Private]] members of a [[KeyPgType Type]] or [[KeyPgClass Class]] are inaccessible. This is discussed {{anchor name="item4|in this item"}}.
+	Notice the call to ##[[KeyPgIif Operator Iif]]## is similar to a procedure call, while the calls to ##[[KeyPgOpValueOf Operator * (Value of)]]## and ##[[KeyPgOpDivide Operator / (Divide)]]## are not. In the example, ##//p//## is the operand to ##[[KeyPgOpValueOf Operator * (Value of)]]##, and ##//20//## and ##//4//## are the left and right-hand side operands of ##[[KeyPgOpDivide Operator / (Divide)]]##, respectively.
 
-{{anchor name="item3"}}{{fbdoc item="section" value="What operators can I overload inside a Type definition?"}}
-	Member operators are operators declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition. The member operators are the assignment operators - like [[KeyPgOpAssignment operator let]] and [[KeyPgOpCombineOr operator or=]] - [[KeyPgCast operator cast]], [[KeyPgOpNew operator new]] and [[KeyPgOpDelete operator delete]], !!!WRITEME!!!.
+	All of FreeBASIC's operators are pre-defined to take operands of standard data types, like ##[[KeyPgInteger Integer]]## and ##[[KeyPgSingle Single]]##, but they may also be overloaded for user-defined types; that is, they can be defined to accept operands that are objects as well. There are two types of operators that can be overloaded, //global operators// and //member operators//.
 
-	Member operators are declared and defined like member procedures, with the keyword [[KeyPgOperator Operator]] instead of [[KeyPgSub Sub]] or [[KeyPgFunction Function]] and the operator name:
+{{anchor name="GLOBAL"}}{{fbdoc item="section" value="Global Operators"}}
+	Global operators are those that are declared in module-level scope (globally). These are the operators ##[[KeyPgOpNegate - (Negate)]]##, ##[[KeyPgOpNot Not (Bitwise not)]]##, ##[[KeyPgOpPtrMemberAccess -> (Pointer to member access)]]##, ##[[KeyPgOpValueOf * (Value of)]]##, ##[[KeyPgOpAdd + (Add)]]##, ##[[KeyPgOpSubtract - (Subtract)]]##, ##[[KeyPgOpMultiply * (Multiply)]]##, ##[[KeyPgOpDivide / (Divide)]]##, ##[[KeyPgOpIntegerDivide \ (Integer divide)]]##, ##[[KeyPgOpConcatConvert & (Concatenate)]]##, ##[[KeyPgOpModulus Mod (Modulus)]]##, ##[[KeyPgOpShiftLeft Shl (Shift left)]]##, ##[[KeyPgOpShiftRight Shr (Shift right)]]##, ##[[KeyPgOpAnd And (Bitwise and)]]##, ##[[KeyPgOpOr Or (Bitwise or)]]##, ##[[KeyPgOpXor Xor (Bitwise xor)]]##, ##[[KeyPgOpImp Imp (Bitwise imp)]]##, ##[[KeyPgOpEqv Eqv (Bitwise eqv)]]##, ##[[KeyPgOpExponentiate ^ (Exponentiate)]]##, ##[[KeyPgOpEqual = (Equal)]]##, ##[[KeyPgOpNotEqual <> (Not equal)]]##, ##[[KeyPgOpLessThan < (Less than)]]##, ##[[KeyPgOpGreaterThan > (Greater than)]]##, ##[[KeyPgOpLessThanOrEqual <= (Less than or equal)]]## and ##[[KeyPgOpGreaterThanOrEqual >= (Greater than or equal)]]##.
+
+	Declaring a custom global operator is similar to declaring a procedure. The ##[[KeyPgDeclare Declare]]## keyword is used with the ##[[KeyPgOperator Operator]]## keyword. The operator symbol is placed next followed by the comma-seperated list of parameters surrounded in parenthesis that will represent the operands passed to the operator. Unlike procedures, operators are overloadable by default, so the ##[[KeyPgOverload Overload]]## keyword is not necessary when declaring custom operators. At least one of the operator's parameters must be of user-defined type (after all, operators with built-in type parameters are already defined).
+
+	The following example declares the global operators ##[[KeyPgOpNegate - (Negate)]]## and ##[[KeyPgOpMultiply + (Multiply)]]## to accept operands of a user-defined type.
 
 %%(qbasic)
 type Rational
-	declare constructor (num as integer, den as integer)
-
-	'' Declare a copy assignment and cast operator:
-	declare operator let (byref as Rational)
-	declare operator cast () as double
-private:
-	as integer num, den
+	as integer numerator, denominator
 end type
 
-constructor Rational (num as integer, den as integer)
-	this.num = num
-	this.den = den
-end constructor
-
-'' Define Rational's copy assignment and cast operator:
-operator Rational.let (byref rhs as Rational)
-	num = rhs.num
-	den = rhs.den
+operator - (byref rhs as Rational) as Rational
+	return type(-rhs.numerator, rhs.denominator)
 end operator
+
+operator * (byref lhs as Rational, byref rhs as Rational) as Rational
+	return type(lhs.numerator * rhs.numerator, _
+		lhs.denominator * rhs.denominator)
+end operator
+
+dim as Rational r1 = (2, 3), r2 = (3, 4)
+dim as Rational r3 = -(r1 * r2)
+print r3.numerator & "/" & r3.denominator
+%%
+	Here the global operators are defined for type ##//Rational//##, and are used in the initialization expression for ##//r3//##. The output is ##//-6/12//##.
+
+{{anchor name="MEMBER"}}{{fbdoc item="section" value="Member Operators"}}
+	Member operators are declared inside a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition, like member procedures, and they are the cast and assignment operators ##[[KeyPgOpAssignment Let (Assign)]]##, ##[[KeyPgCast Cast (Cast)]]##, ##[[KeyPgOpCombineAdd += (Add and assign)]]##, ##[[KeyPgOpCombineSub -= (Subtract and assign)]]##, ##[[KeyPgOpCombineMultiply *= (Multiply and assign)]]##, ##[[KeyPgOpCombineDivide /= (Divide and assign)]]##, ##[[KeyPgOpCombineIntegerDivide \= (Integer divide and assign)]]##, ##[[KeyPgOpCombineExponentiate ^= (Exponentiate and assign)]]##, ##[[KeyPgOpCombineConcat &= (Concat and assign)]]##, ##[[KeyPgOpCombineModulus Mod= (Modulus and assign)]]##, ##[[KeyPgOpCombineShiftLeft Shl= (Shift left and assign)]]##, ##[[KeyPgOpCombineShiftRight Shr= (Shift right and assign)]]##, ##[[KeyPgOpCombineAnd And= (Conjunction and assign)]]##, ##[[KeyPgOpCombineOr Or= (Inclusive disjunction and assign)]]##, ##[[KeyPgOpCombineXor Xor= (Exclusive disjunction and assign)]]##, ##[[KeyPgOpCombineImp Imp= (Implication and assign)]]## and ##[[KeyPgOpCombineEqv Eqv= (Equivalence and assign)]]##.
+
+	When declaring member operators, the ##[[KeyPgDeclare Declare]]## and ##[[KeyPgOperator Operator]]## keywords are used followed by the operator symbol and its parameter list. Like member procedures, member operators are defined outside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition, and the symbol name is prefixed with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## name.
+
+	The following example overloads the member operators ##[[KeyPgCast Cast (Cast)]]## and ##[[KeyPgOpCombineMultiply *= (Multiply and assign)]]## for objects of a user-defined type.
+
+%%(qbasic)
+type Rational
+	as integer numerator, denominator
+	
+	declare operator cast () as double
+	declare operator cast () as string
+	declare operator *= (byref rhs as Rational)
+end type
 
 operator Rational.cast () as double
-	return iif (0 = den, cast(double, 0), num / den)
+	return numerator / denominator
 end operator
 
-'' Initialize some Rationals by calling their ctors:
-dim as Rational x = Rational(1, 2), y = Rational(3, 4)
-
-'' Call x.operator let(y):
-x = y
-
-dim float as double
-
-'' Implicitly call x.operator cast():
-float = x
-'' Explicitly call y.operator cast():
-float = cast(double, y)
-%%
-
-{{anchor name="item4"}}{{fbdoc item="section" value="How can I access Protected or Private members in global operator overloads?"}}
-	Since global operators are {{anchor name="item2|declared and defined outside of any Type or Class definition"}}, they have only [[KeyPgPublic Public]] access rights to the object operands passed to them. Continuing in our Rational example, if both [[KeyPgInteger Integer]] data members are [[KeyPgPrivate Private]], how can a global operator - like the relational ##[[KeyPgOpLessThanOrEqual Operator <=]]## access them ?
-
-	One way is to simply make them [[KeyPgPublic Public]], for all the world to see. Object-orientated programming practices see this as a severe no-no though, so the more studious of you should be looking for a different approach.
-
-{{anchor name="item5"}}{{fbdoc item="section" value="What's a better way of doing that?"}}
-	Short of {{anchor name="item4|making certain members Public so overloaded global operators can access them"}}, there is a much less disastrous method of solving that problem.
-
-	Static member procedures. After perusing through the [[ProPgMemberProcedures Member Procedures wiki]], you will find out that static member procedures have full access rights to the [[KeyPgType Type]]s or [[KeyPgClass Class]]es they are declared in. This makes them good candidates for handling the job of comparing Rational's [[KeyPgPrivate Private]] members. (in this situation, a non-static member procedure would work fine as well)
-
-%%(qbasic)
-type Rational
-	'' ... Rational declarations as before ...
-
-	declare static function lessThanOrEqual (byref a as Rational, byref b as Rational) as integer
-private:
-	as integer num, den
-end type
-
-function Rational.lessThanOrEqual (byref lhs as Rational, byref rhs as Rational) as integer
-	'' do the actual comparing here:
-	return iif (0 = lhs.den, cast(double, 0), lhs.num / lhs.den) _
-		<= iif (0 = rhs.den, cast(double, 0), rhs.num / rhs.den)
-end function
-
-operator <= (byref lhs as Rational, byref rhs as Rational) as integer
-	'' let the static member function Rational.lessThanOrEqual handle the work:
-	return Rational.lessThanOrEqual(lhs, rhs)
+operator Rational.cast () as string
+	return numerator & "/" & denominator
 end operator
-%%
-	Here, the global [[KeyPgOpLessThanOrEqual operator <=]] passes along it's operands to a the static member procedure that does all of the work. Note that in this case, since we already have the member [[KeyPgCast operator cast]] defined, we could have had global ##[[KeyPgOpLessThanOrEqual Operator <=]]## simply use that instead of creating a static member procedure (##return cast(double, lhs) <= cast(double, rhs)##) - but what's the education in that? :)
-
-	You might be thinking that this method might be good when implementing the mathematical and logical operators, too - as they are also global operators. Typically though it's not, and that's discussed in {{anchor name="item6|the next item"}}.
-
-{{anchor name="item6"}}{{fbdoc item="section" value="What about mathematical and logical operators?"}}
-	In the last item we talked about {{anchor name="item5|using member procedures as the workhorse of global operators"}} to get around the "I-can't-see-these-members-so-what-do-I-do" problem. It would seem that this would be a good way to implement all global operator overloads, but usually this is not the case. Here is a naive approach to implementing ##[[KeyPgOpMultiply Operator *]]## and ##[[KeyPgOpCombineMultiply Operator *=]]##:
-
-%%(qbasic)
-type Rational
-	'' ... Rational as is before ...
-
-	declare operator *= (byref rhs as Rational)
-	declare static function Rational.multiply (byref lhs as Rational, byref rhs as Rational) as Rational
-private:
-	as integer num, den
-end type
-
-'' ... Rational member procedure definitions as before ...
 
 operator Rational.*= (byref rhs as Rational)
-	this = Rational.multiply(lhs, rhs)
+	numerator *= rhs.numerator
+	denominator *= rhs.denominator
 end operator
 
-function Rational.multiply (byref lhs as Rational, byref rhs as Rational) as Rational
-	return Rational(lhs.num * rhs.num, lhs.den * rhs.den)
-end function
-
-operator * (byref lhs as Rational, byref rhs as Rational) as Rational
-	return Rational.multiply(lhs, rhs)
-end operator
+dim as Rational r1 = (2, 3), r2 = (3, 4)
+r1 *= r2
+dim as double d = r1
+print r1, d
 %%
-	While this may look fine, it suffers from some problems, notably the assignment in ##Rational.operator *=## - why assign, why not directly alter Rational's data members, shouldn't we be trying to minimize the temporary Rationals if at all possible? The problem is, if ##Rational.operator *=## directly modified Rational's data members it's essentially doing the same thing as Rational.multiply (for a trivial procedure like this, the code duplication seems negligible, but keep in mind that any changes to Rational.multiply would need to be made in ##Rational.operator *=## as well, which could get hairy with more complicated procedures).
-
-	There is a quite elegant solution to this mishappen situation, and that is to implement ##[[KeyPgOpMultiply Operator *]]## //in terms of// ##[[KeyPgOpCombineMultiply Operator *=]]##. This eliminates the temporary Rational and costly assignment in ##Rational.operator *=##, and it also solves our code duplication problem: any changes made to the implementation of the multiplication algorithm only need to be made to one part of the code, ##Rational.operator *=##. Observe:
-
-%%(qbasic)
-type Rational
-	'' ... Rational as is before, minus static member procedure ...
-
-	declare operator *= (byref rhs as Rational)
-private:
-	as integer num, den
-end type
-
-'' ... Rational member procedure definitions as before, minus static member procedure ...
-
-'' Rational.operator *= directly modifies it's instance:
-operator Rational.*= (byref rhs as Rational)
-	num *= rhs.num
-	den *= rhs.den
-end operator
-
-'' global operator * is protected from changes to Rational.operator *=:
-operator * (byref lhs as Rational, byref rhs as Rational) as Rational
-	dim result as Rational = lhs
-	result *= rhs
-	return result
-end operator
-%%
-	Implementing a mathematical or logical operator in terms of it's combination assignment member operator is a common and healthy technique to utilise. When appropriate, please do.
-
-{{anchor name="item7"}}{{fbdoc item="section" value="What's special about the assignment operator?"}}
-	!!!WRITEME!!!
+	Notice that the member operator ##[[KeyPgCast Cast (Cast)]]## is declared twice, once for the conversion to ##[[KeyPgDouble Double]]## and once for the conversion to ##[[KeyPgString String]]##. This is the only operator (or procedure) that can be declared multiple times when only the return type differs. The compiler decides which cast overload to call based on how the object is used (in the initialization of the ##[[KeyPgDouble Double]]## ##//d//##, ##//Rational.Cast as double//## is called, and in the ##[[KeyPgPrint Print]]## statement, ##//Rational.Cast as string//## is used instead).
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -10,15 +10,16 @@ Returns command line parameters used to call the program
 {{fbdoc item="param"}}
 	##//index//##
 		Zero-based index for a particular command-line argument.
+
 {{fbdoc item="ret"}}
 	  Returns the command-line arguments(s).
 
 {{fbdoc item="desc"}}
-	##**Command**## returns a space-seperated list of the command-line arguments passed to the program when executed.
+	##**Command**## returns command-line arguments passed to the program upon execution.
 
-	If ##//index//## is specified, a single argument is returned. A value of zero (0) returns the name of the executable; and values of one (1) and greater return each command-line argument.
+	If ##//index//## is less than zero (< 0), a space-seperated list of command-line arguments is returned, otherwise, a single argument is returned. A value of zero (0) returns the name of the executable; and values of one (1) and greater return each command-line argument.
 	
-	If ##//index//## is greater than the number of arguments on the command line, the null string (##"####"##) is returned.
+	If ##//index//## is greater than the number of arguments passed to the program, the null string (##"####"##) is returned.
 
 	When the command line is parsed for arguments, everthing between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 

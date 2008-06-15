@@ -2,7 +2,7 @@
 Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Threadcreate** ( //proc// [, //param// ] )
@@ -11,7 +11,7 @@ Starts a user-defined procedure in a separate execution thread
 	##//proc//##
 		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread.
 	##//param//##
-		Optional integer argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be an integer, or a pointer to a structure or an array if more arguments are needed). //param// is passed ##[[KeyPgByval Byval]]## so it can't be used to return a result.
+		Optional [[KeyPgAny any]] [[KeyPgPtr ptr]] argument for the ##[[KeyPgSub Sub]]## pointed to by //proc// (it can be a pointer to a structure or an array if more arguments are needed).
 
 {{fbdoc item="ret"}}
 	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (0) on failure.
@@ -26,7 +26,7 @@ Starts a user-defined procedure in a separate execution thread
 {{fbdoc item="ex"}}
 %%(qbasic)dim shared terminate as integer =0
 
-sub mythread (i as integer)
+sub mythread (param as any ptr)
   dim a as integer, b as integer
   while 1
 	b=0

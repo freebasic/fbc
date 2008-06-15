@@ -2,7 +2,7 @@
 Manipulating address values mathematically
 
 **{{anchor name="OVERVIEW|Overview"}}**
-**{{anchor name="ADDSUB|dding and subtracting from pointers"}}**
+**{{anchor name="ADDSUB|Adding and subtracting from pointers"}}**
 **{{anchor name="INCDEC|Incrementing and decrementing pointers"}}**
 **{{anchor name="DISTANCE|Distance between two pointers"}}**
 

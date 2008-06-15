@@ -40,7 +40,7 @@ Print "Hello" /' embedded comment'/ " world"
 	A multi-line comment can contain unlimited levels of nested comments.  FBC will continue to parse the multi-line comment for more markers until the number of close-comment markers reaches the number of open-comment markers, i.e. when it has closed all the comments it has opened.
 
 {{fbdoc item="section" value="Comments after line continuation"}}
-	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.
+	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.  FBC does not parse the text after the line continuation character, though, so you can't open multi-line comments after them.
 
 	%%(qbasic)
 print _ ' line

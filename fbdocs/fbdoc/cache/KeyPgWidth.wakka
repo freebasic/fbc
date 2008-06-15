@@ -42,7 +42,7 @@ Print "cols: " & loword(w)
 %%
 
 {{fbdoc item="diff"}}
-	- Only 80x25 and 80x50 modes could be set in text mode in QB. Graphics modes work the same.
+	- ##//columns//## was limited to ##40## or ##80##, while ##//rows//## could be ##25##, ##30##, ##43##, ##50## or ##60##, depending on the graphics hardware and screen mode being used.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsrlin Csrlin]]##

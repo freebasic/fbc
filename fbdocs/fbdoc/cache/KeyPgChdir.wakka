@@ -21,7 +21,7 @@ Changes the current drive and directory
 %%(qbasic)dim pathname as string = "x:\folder"
 dim result as integer = chdir(pathname)
 
-if 0 <> result then print "error changing current directory to " & pathname" & "."
+if 0 <> result then print "error changing current directory to " & pathname & "."
 %%
 
 {{fbdoc item="target"}}

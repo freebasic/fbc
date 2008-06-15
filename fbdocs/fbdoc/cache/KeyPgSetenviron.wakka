@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="SETENVIRON"}}----
-Sets a system environemental variable
+Sets a system environment variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -9,7 +9,10 @@ Sets a system environemental variable
 ##
 {{fbdoc item="param"}}
 	##//varname//##
-		The name of the environemental variable to set.
+		The name of the environment variable to set.
+
+{{fbdoc item="ret"}}
+	Return zero (0) if successful, non-zero otherwise.
 
 {{fbdoc item="desc"}}
 	Modifies system environment variables.

@@ -34,3 +34,4 @@ A="x"+wspace(10)+"x"  'prints x             x
 	- ##[[KeyPgSpace Space]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
+   

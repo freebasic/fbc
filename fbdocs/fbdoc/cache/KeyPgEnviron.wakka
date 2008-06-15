@@ -9,13 +9,13 @@ Returns the value of a system environment variable
 ##
 {{fbdoc item="param"}}
 	##//varname//##
-		A ##[[KeyPgString string]]## containing the environemental variable to return.
+		The name of an environment variable.
 
 {{fbdoc item="ret"}}
-	Returns the value of the environmental variable requested.
+	Returns the text value of the environmental variable, or the empty string (##"####"##) if the variable does not exist.
 
 {{fbdoc item="desc"}}
-	Returns the value of a system environment variable.
+	##**Environ**## returns the text value of a system environment variable.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

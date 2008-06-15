@@ -22,8 +22,8 @@ Waits until the designated thread has been completed before returning
 %%(qbasic)
 dim shared printsync as any ptr
 
-sub mythread(byval id as integer)
-
+sub mythread(byval idp as any ptr)
+  var id = cint(idp)
   dim as double t, w
   dim as integer i, n
 
@@ -63,8 +63,8 @@ printsync = MutexCreate()
 
 '' create 2 threads, each taking a different
 '' amount of time to complete
-t1 = threadcreate( @mythread, 1 )
-t2 = threadcreate( @mythread, 2 )
+t1 = threadcreate( @mythread, cast(any ptr, 1) )
+t2 = threadcreate( @mythread, cast(any ptr, 2) )
 
 '' wait for threads to complete
 threadwait( t1 )
@@ -92,4 +92,3 @@ print "All done."
 	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}
-   

@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Pointers to Procedures"}}
+{{fbdoc item="title" value="Pointers to Procedures"}}----
 Pointers that point to procedures
 
 	Just as pointers can be made to point to an ##[[KeyPgInteger Integer]]## or ##[[KeyPgSingle Single]]## type, pointers can also point to procedures, that is, they can store the address of a procedure.

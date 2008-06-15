@@ -7,6 +7,8 @@ Specifies the DLL where a sub or function can be found as part of a declaration
 {{fbdoc item="desc"}}
 	In ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## declarations, ##**Lib**## indicates the dll containing the function. Libraries specified in this way are linked as if the library had been specified with ##[[KeyPgInclib #inclib]]##.
 
+	When specifying ##//dllname//##, do not include the extension of the file name.  For example, if the declaration is meant to reference the file ##mydll.dll## or ##mydll.so##, use ##**Lib** "mydll"##.
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 ' mydll.bas

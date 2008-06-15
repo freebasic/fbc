@@ -42,4 +42,3 @@ Procedures for working with multithreaded applications
 ~&NOTE: The DOS version of FreeBasic does not allow for threads, as the OS does not support them.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

@@ -60,3 +60,4 @@ OPEN "file2" FOR INPUT AS #fs
 	- ##[[KeyPgGetfileio Get (File I/O)]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+   

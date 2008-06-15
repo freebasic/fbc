@@ -11,20 +11,26 @@ Returns the ascii code of the first key in the keyboard buffer
 	The [[KeyPgInteger integer]] value of the ascii code returned.
 
 {{fbdoc item="desc"}}
-	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it. For extended keys (returning two characters) it skips the constant first char and returns the second one.
+	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it. For extended keys (returning two characters), the extended code is returned in the first byte, and the regular code is returned in the second byte. (see example below)
 
 	The key read is not echoed to the screen.
 
 	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey Inkey]]## or GfxLib's ##[[KeyPgMultikey Multikey]]##.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer
-'it returns the getkey value for each key pressed
-print "press ESC to end"
+%%(qbasic)dim as integer foo
 do
-a=getkey
-print a
-loop until a=27
+	foo = getkey
+	print "total return: " & foo
+	
+	if( foo > 255 ) then
+		print "extended code: " & (foo and &hff)
+		print "regular code: " & (foo shr 8)
+	else
+		print "regular code: " & (foo)
+	end if
+	print 
+loop until foo = 27
 %%
 
 {{fbdoc item="diff"}}
