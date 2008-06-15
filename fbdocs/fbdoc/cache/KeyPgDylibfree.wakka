@@ -3,7 +3,7 @@
 Unloads a dynamic link library from memory.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] Any [[KeyPgPointer pointer]] )
 ##
 {{fbdoc item="usage"}}##
 	DYLIBFREE ( //library// )
@@ -18,7 +18,7 @@ Unloads a dynamic link library from memory.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
-dim hndl as integer
+dim hndl as any ptr
 hndl=DYLIBLOAD("MYLIB.DLL")
 .....
 DYLIBFREE(hndl)

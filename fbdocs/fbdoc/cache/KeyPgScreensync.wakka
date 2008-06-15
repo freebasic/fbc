@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENSYNC"}}
-----
+{{fbdoc item="title" value="SCREENSYNC"}}----
 Graphics statement to synchronize display updates with hardware.
 
 {{fbdoc item="syntax"}}##
@@ -37,6 +36,4 @@ LOOP UNTIL INKEY$ <> ""
 {{fbdoc item="see"}}
 	- ##[[KeyPgWait Wait]]##
 	
-
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
-
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

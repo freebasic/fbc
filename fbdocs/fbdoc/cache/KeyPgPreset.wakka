@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PRESET"}}
-----
+{{fbdoc item="title" value="PRESET"}}----
 Graphics statement to plot a single pixel.
 
 {{fbdoc item="syntax"}}##
@@ -44,4 +43,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgPset PSet]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

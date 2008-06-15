@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="REALLOCATE"}}
-----
+{{fbdoc item="title" value="REALLOCATE"}}----
 	Reallocates storage for an existing reserved block of memory.
 
 {{fbdoc item="syntax"}}##
@@ -59,5 +58,5 @@ Deallocate b   ' Clean up
 	- ##[[KeyPgCallocate Callocate]]##
 	- ##[[KeyPgDeallocate Deallocate]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}
 

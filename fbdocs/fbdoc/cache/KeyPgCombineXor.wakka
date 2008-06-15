@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="XOR= (Combined XOR)"}}
-----
+{{fbdoc item="title" value="XOR= (Combined XOR)"}}----
 Operator that finds the bitwise ##**Xor**## (exclusion) of two integers and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -28,4 +27,4 @@ print bin(a)
 {{fbdoc item="see"}}
 	- ##[[KeyPgImp Xor]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

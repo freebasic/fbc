@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="#ELSE"}}
-----
+{{fbdoc item="title" value="#ELSE"}}----
 Preprocessor conditional directive.
 
 {{fbdoc item="syntax"}}##
@@ -34,4 +33,4 @@ Print "Program is "; a
 	- ##[[KeyPgPpifdef #ifdef]]##
 	- ##[[KeyPgPpifndef #ifndef]]##
 
-{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

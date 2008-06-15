@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FREEFILE"}}
-----
+{{fbdoc item="title" value="FREEFILE"}}----
 Returns a free file number.
 
 {{fbdoc item="syntax"}}##
@@ -57,4 +56,4 @@ OPEN "file2" FOR INPUT AS #fs%%
 	- ##[[KeyPgPutfileio Put (File I/O)]]##
 	- ##[[KeyPgGetfileio Get (File I/O)]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

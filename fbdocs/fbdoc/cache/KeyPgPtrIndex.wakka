@@ -1,8 +1,9 @@
 {{fbdoc item="title" value="[] Pointer Indexing"}}----
+Operator to use a pointer as it were a zero based array
 
 {{fbdoc item="syntax"}}
 	//pointer_variable//[//expression//]  
-	
+
 {{fbdoc item="desc"}}
 	Pointer indexing operator [] allows to adress the places contiguous to where a pointer points to. The memory position pointed to is //pointer_variable// +/- (//expression// * SIZEOF(*//pointed_variable//)). The pointer itself is not changed.
 

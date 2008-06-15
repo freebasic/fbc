@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FILEDATETIME"}}
-----
+{{fbdoc item="title" value="FILEDATETIME"}}----
 Function to return the last modified date and time of a file as [[DtDateSer Date Serial]] 
 
 {{fbdoc item="syntax"}}##
@@ -54,4 +53,4 @@ end if
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

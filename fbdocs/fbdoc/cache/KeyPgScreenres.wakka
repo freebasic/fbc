@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENRES"}}
-----
+{{fbdoc item="title" value="SCREENRES"}}----
 Statement to initialize a graphics mode by specifying horizontal and vertical resolution. 
 
 {{fbdoc item="syntax"}}##
@@ -53,4 +52,4 @@ End
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

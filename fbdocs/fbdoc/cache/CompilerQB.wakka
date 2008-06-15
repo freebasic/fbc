@@ -34,6 +34,4 @@
 	Because of its open source, its well-written code and its similarity to QB, FreeBasic has become popular among the "QB Community" and its boundaries continue to grow as it receives more attention and gathers more features that promise to move BASIC into the future
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; **FreeBasic and Qbasic** &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

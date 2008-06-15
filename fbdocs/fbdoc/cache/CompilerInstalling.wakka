@@ -20,6 +20,4 @@
 	(Note: if you are installing the DOS version over the Windows one or vice-versa, rename the fbc.exe file of the previous installation to fbc-win.exe or such, or it will be overwritten by the new one.)
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  **Installing** &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

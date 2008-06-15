@@ -16,7 +16,7 @@ The preprocessor allows you flexibility in changing the way code is generated th
 
 **Note** you do not need the comment after the ##[[KeyPgEndIf #endif]]##, but is it good practice.
 
-Basically, the above code checks to see whether ##DEBUG## has been defined, and if it has, then the code between the ##[[KeyPgPpIfDef #ifdef]]...[[KeyPgPpEndIf #endif]]## will be executed. While this may seem silly, the uses this has are amazing. If you simply remove one line at the top of your program (##[[KeyPgPpDefine #define]] DEBUG##), then all the 'debug code' that you've added won't be sent to the compiler -- the preprocessor removes it, reducing the bloat of the final executable.
+Basically, the above code checks to see whether ##DEBUG## has been defined, and if it has, then the code between the ##[[KeyPgPpIfDef #ifdef]]...[[KeyPgPpEndIf #endif]]## will be executed. While this may seem silly, the uses this has are amazing. If you simply remove one line at the top of your program (##[[KeyPgPpdefine #define]] DEBUG##), then all the 'debug code' that you've added won't be sent to the compiler -- the preprocessor removes it, reducing the bloat of the final executable.
 
 ##%%(qbasic)
 	'Turn on debugging
@@ -26,7 +26,7 @@ Basically, the above code checks to see whether ##DEBUG## has been defined, and 
 	#undef DEBUG
 %%##
 
-The ##[[KeyPgPpUnDef #undef]]## directive is a way of 'undefining' something, in this case ##DEBUG##. While it is strictly not needed (just commenting out the line '##[[KeyPgPpDefine #define]] DEBUG##' is enough), it makes the code much clearer, and has other uses:
+The ##[[KeyPgPpUnDef #undef]]## directive is a way of 'undefining' something, in this case ##DEBUG##. While it is strictly not needed (just commenting out the line '##[[KeyPgPpdefine #define]] DEBUG##' is enough), it makes the code much clearer, and has other uses:
 
 ##%%(qbasic)
 	#ifndef DEBUG

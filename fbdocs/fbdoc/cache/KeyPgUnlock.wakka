@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="UNLOCK"}}
-----
+{{fbdoc item="title" value="UNLOCK"}}----
 {{fbdoc item="syntax"}}
 UNLOCK //fileslot// [, {//record//| [//start//] TO //end//}]
 
@@ -26,4 +25,4 @@ UNLOCK removes the temporal access restriction set by [[KeyPgLock LOCK]].
 	- [[KeyPgLock LOCK]]
 	- [[KeyPgOpen OPEN]]
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

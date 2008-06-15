@@ -1,28 +1,13 @@
-{{fbdoc item="title" value="CASE"}}
-----
-A control flow statement
+{{fbdoc item="title" value="CASE"}}----
+Control flow statement
 
 {{fbdoc item="syntax"}}##
 	**Case** //expression//
 ##
-{{fbdoc item="usage"}}##
-	Select Case expresion
-	**Case** //expression//
-
-	End Select
-##
-{{fbdoc item="desc"}}
-	**Case** is used in a ##[[KeyPgSelectcase Select Case]]## statement block to determine conditions for running a branch of code.
-
-{{fbdoc item="ex"}}
-	See ##[[KeyPgSelectcase Select Case]]##
-
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSelectcase Select Case]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
-
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

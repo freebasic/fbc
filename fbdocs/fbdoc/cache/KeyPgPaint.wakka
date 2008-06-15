@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PAINT"}}
-----
+{{fbdoc item="title" value="PAINT"}}----
 Graphics command to fill an area delimited by a border of specified color.
 
 {{fbdoc item="syntax"}}##
@@ -50,4 +49,4 @@ sleep 3000
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FUNCTION_NQ__"}}
-----
+{{fbdoc item="title" value="__FUNCTION_NQ__"}}----
 Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -31,4 +30,4 @@ Address of MYSUB is 4012D0
 	- ##[[KeyPgDdfunction __FUNCTION__]]##
 	- ##[[KeyPgDdline __LINE__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -8,7 +8,7 @@ Namespaces are used to organize code in distinguishable groups.
 	**End Namespace**##
 
 {{fbdoc item="desc"}}
-	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. The syntax has not yet been decided at the time of this writing as to how global scope resolution will be implemented. Some ideas include: Global.SomeSymbol, .SomeSymbol, ..SomeSymbol, and ::SomeSymbol.
+	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. The syntax has not yet been decided at the time of this writing as to how global scope resolution will be implemented. Some ideas include: Global.""SomeSymbol"", .""SomeSymbol"", ..""SomeSymbol"", and ::""SomeSymbol"".
 
 {{fbdoc item="ex"}}
 ##%%(qbasic)

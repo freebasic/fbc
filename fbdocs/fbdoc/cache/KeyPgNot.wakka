@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="NOT"}}
-----
+{{fbdoc item="title" value="NOT"}}----
 Operator that finds the bitwise ##**Not**## (negation) of an integer.
 
 {{fbdoc item="syntax"}}##
@@ -12,11 +11,11 @@ Operator that finds the bitwise ##**Not**## (negation) of an integer.
 	##**Not**## is a unary bitwise operator, that returns one's complement of ##//number//##.  ##**Not**## inverts all bits in ##//number//##.  Bits with the value zero are inverted to one, and bits with the value one are inverted to zero.
 
 	The boolean math expression below describes this:
-##%%(qbasic)
+%%(qbasic)
 00001111 Not
 -------- equals
 11110000
-%%##
+%%
 	Notice how in the resulting number of the operation, reflects an ##**Not**## operation performed on each bit of the expression. The ##**Not**## operator can be used with any numerical type.
 
 	##**Not**## is a bitwise operator in all cases to be compatible with QB and VB so special care should be taken when checking for FALSE boolean results returned by the Windows API's or by any C/C""++"" function, always use "IF boolFunction( ) = FALSE THEN reportError()" (assuming the FALSE constant was defined already as 0) and **never** "IF NOT boolFunction( ) THEN reportError()".

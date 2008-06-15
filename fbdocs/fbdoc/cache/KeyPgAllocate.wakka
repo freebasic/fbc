@@ -86,4 +86,4 @@ The above example leaks memory, since the first block of allocated memory is nev
 	- ##[[KeyPgReallocate Reallocate]]##
 	- ##[[KeyPgDeallocate Deallocate]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

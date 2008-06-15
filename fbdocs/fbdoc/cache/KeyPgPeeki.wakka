@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="PEEKI"}}
-----
-{{fbdoc item="desc"}}
-See [[KeyPgPeek PEEK]].
-This function was supported up to version 0.11. use PEEK INTEGER (<address>) instead
-
-
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
-

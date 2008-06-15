@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="POINT"}}
-----
+{{fbdoc item="title" value="POINT"}}----
 Graphics function to return the colour attribute of a specified pixel coordinate.
 
 {{fbdoc item="syntax"}}##
@@ -42,4 +41,4 @@ Will print
 	- ##[[KeyPgViewgraphics View (Grpahics)]]##
 	- ##[[KeyPgWindow Window]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

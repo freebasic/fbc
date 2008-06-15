@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="DATA"}}
-----
+{{fbdoc item="title" value="DATA"}}----
+Statement to store data at compile time
+
 {{fbdoc item="syntax"}}##
 	**Data** //constant_expression1// [,//constant_expression2//]...
 ##
@@ -16,7 +17,7 @@
 	
 	##[[KeyPgRestore Restore]]## alters the position from which ##Data## are read.
 
-	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[CatPgInitialisation Variable Initializers]] for more information.
+	##Data## is normally used to initialize variables. FB also allows the initialization of static variables in their declarations; see [[ProPgInitialization Variable Initializers]] for more information.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -71,4 +72,4 @@ DATA 3, 234, 435/4, 23+433, 87643,"Good"+ "Bye!"
 	- ##[[KeyPgRead Read]]##
 	- ##[[KeyPgRestore Restore]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

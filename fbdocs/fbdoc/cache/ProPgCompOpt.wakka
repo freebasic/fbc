@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="Compiler Options"}}----
+
+
+==Error Checking/Debugging==
+	- [[ProPgCompOpte -e]] - Error Checking
+	- [[ProPgCompOptex -ex]] - the above plus [[KeyPgResume RESUME]] support
+	- [[ProPgCompOptexx -exx]] - the above plus array bound and null pointer checks
+	- [[ProPgCompOptg -g]] - Compile with debugging info
+	- [[ProPgCompOptprofile -profile]] - Enable function profiling]]
+
+==Target Modifiers==
+	- [[ProPgCompOptx -x]] - Set executable/library name (Default: First .bas, without extension)
+	- [[ProPgCompOpttarget -target]] - Cross compile to...
+	- [[ProPgCompOpto -o ]] - Set output file name (Default: First .bas, with .o extension)
+	- [[ProPgCompOptlib -lib]] - Compile to a static library
+	- [[ProPgCompOptdll -dll]] - Create a dynamic library with import lib, same as -dylib
+	- [[ProPgCompOptc -c]] - Compile only, do not link
+	- [[ProPgCompOptarch -arch]] - Set target architecture (Default: 486)
+	- [[ProPgCompOptt -t]] - Set stack size (in KB) (Default: 1024)
+
+==Inclusion==
+	- [[ProPgCompOptb -b]] Add a source file to compilation
+	- [[ProPgCompOpti -i]] Add a path to search for include files
+	- [[ProPgCompOptp -p]] Add a path to search for library files
+	- [[ProPgCompOptinclude -include]] Include a header on all sources compiled
+	- [[ProPgCompOptl -l]] Add a library to linker's list
+
+==Misc==
+	- [[ProPgCompOptd -d]] Add a preprocessor #Define to sources
+	- [[ProPgCompOptexport -export]] Export symbols for dynamic linkage
+	- [[ProPgCompOptlang -lang]] Language compatibility (Default: fb)
+	- [[ProPgCompOptm -m]] Specify main module (Default: First .bas)
+	- [[ProPgCompOptmap -map]] Save the linking map to a file
+	- [[ProPgCompOptmaxerr -maxerr]] Only stop parsing if enough errors occured (Default: 10)
+	- [[ProPgCompOptmt -mt]] Force linkage to thread safe run-time library
+	- [[ProPgCompOptnodeflibs -nodeflibs]] Do not include the default libraries
+	- [[ProPgCompOptnoerrline -noerrline]] Do not show the line where an error occured
+	- [[ProPgCompOptr -r]] Preserve the generated .asm file
+	- [[ProPgCompOptv -v]] Be verbose
+	- [[ProPgCompOptversion -version]] Show the compiler version only
+	- [[ProPgCompOptw -w]] Set the the minimum warning level
+	- [[ProPgCompOpts -s]] Set the subsystem (Only on windows) (Default: Console)
+
+
+::c::
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}} 

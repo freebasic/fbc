@@ -65,9 +65,6 @@
 	""1"") GOSUB/RETURN and ON ... GOSUB (even at module-level)
 		- so the GOSUB implementation could be thread-unsafe in the "-lang qb" mode, allowing fast execution ("-lang qb" doesn't support multi-threading, while "-lang deprecated" does).
 
-	""2"") Variable scope
-		- Implicit or explicit variables will always respect the scope blocks, implicit (opened by compound statements like IF, DO, etc) or explicit (SCOPE .. END SCOPE), use "-lang qb" to compile old sources that depend on the absence of scope rules.
-
 	**Not supported:**
 
 	""1"") Classes
@@ -107,7 +104,9 @@
 	""6"") Variable initializers
 		- All variables are moved to the function scope (as in QB), making local initializers too difficult to support.
 
-The -lang qb and -lang deprecated options will always be supported in
-future versions.
+The -lang qb option will always be supported in future versions.
+
+The -lang deprecated option is provided to ease upgrading source code from one development version to the next and may be removed in a major version release like FreeBASIC 1.0.
+
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

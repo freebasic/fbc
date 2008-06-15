@@ -1,11 +1,13 @@
 {{fbdoc item="title" value="Array Functions"}}----
 <<
+	- {{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
-	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
 
 <<>>
+	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}

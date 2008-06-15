@@ -1,8 +1,9 @@
-{{fbdoc item="title" value="IIF"}}
-----
-{{fbdoc item="syntax"}}
-IIF (//condition//, //expr_if_true//, //expr_if_false//)
+{{fbdoc item="title" value="IIF"}}----
+Conditional function to return one of two values
 
+{{fbdoc item="syntax"}}##
+	**IIf** ( //condition//, //expr_if_true//, //expr_if_false// )
+##
 {{fbdoc item="param"}}
 	##//condition//##
 		The condition to test.
@@ -15,9 +16,9 @@ IIF (//condition//, //expr_if_true//, //expr_if_false//)
 		It must be the same type of number as ##//expr_if_true//##
 
 {{fbdoc item="desc"}}
-IIF returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+	##**IIf**## returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
 
-IIF only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
+	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)a = (x + y + iif(b > 0, 4, 7)) / z%%
@@ -30,4 +31,4 @@ a = (x + y + temp) / z%%
 {{fbdoc item="see"}}
 	- ##[[KeyPgIfthen If...Then]]##
 
-{{fbdoc item="back" value="|"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

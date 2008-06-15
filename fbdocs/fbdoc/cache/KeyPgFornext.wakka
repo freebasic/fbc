@@ -1,12 +1,30 @@
-{{fbdoc item="title" value="FOR...NEXT"}}
-----
-{{fbdoc item="syntax"}}
-	FOR //counter// = //startvalue// TO //endvalue// [STEP //stepvalue//] 
-		[//statement block//]
-	NEXT [//counter//]
+{{fbdoc item="title" value="FOR...NEXT"}}----
+Control flow statement for looping
 
+{{fbdoc item="syntax"}}##
+	**For** //iterator// = //startvalue// **To** //endvalue// [ **Step** //stepvalue// ]
+		[ //statement block// ]
+	**Next** [ //iterator// ]
+##
 {{fbdoc item="desc"}}
-A FOR [...] NEXT loop initializes //counter// to //startvalue//, then executes the //statement block//'s, incrementing //counter// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
+	A ##**For...Next**## loop initializes //counter// to //startvalue//, then executes the //statement block//'s, incrementing //counter// by //stepvalue// until it reaches //endvalue//. If //stepvalue// is not explicitly given it will set to 1.
+
+	//iterator//: a variable identifier that is used to iterate from an initial value to an end value
+	//startvalue//: an expression that denotes the starting value of the iterator
+	//endvalue//: an expression used to compare with the value of the iterator
+	//stepvalue//: an expression that is added to the iterator after every iteration
+
+	The ##**For**## statement causes the execution of the statements in the //statement block// until //iterator// compares **greater than** //endvalue//. //iterator// will be incremented the amount of //stepvalue// following each execution of the //statement block//. If an increment is not given, //iterator// will be implicitly incremented by 1.
+
+	If //endvalue// is less than //startvalue// then a negative //stepvalue// must be specified or the //statement block// will not execute at all, since //startvalue// compares greater than //endvalue//.
+
+	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**##FOR statement is encountered, the rest of the //statement block// is skipped and execution resumes at the FOR statement.
+
+	Like all control flow statements, the ##**For**## statement can be nested, ie., it can be used in a statement block of another FOR statement.
+
+	After initial evaluation, the //increment// is stored internally, and thus cannot be changed for subsequent executions.
+
+	//**note**: When a negative //increment// is specified, the ##**For**## statement loops until //iterator// compares //less than// //end_value//.//
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -21,10 +39,8 @@ NEXT
 	- [[KeyPgByref ByRef]] Arguments cannot be used as counters.
 
 {{fbdoc item="see"}}
-	- [[KeyPgStep STEP]]   
-	- [[KeyPgNext NEXT]]
-	- [[KeyPgDoloop DO...LOOP]]
-	- [[KeyPgExit EXIT]]
-	- [[KeyPgContinue CONTINUE]]
+	- ##[[KeyPgContinue Continue]]##
+	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgExit Exit]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

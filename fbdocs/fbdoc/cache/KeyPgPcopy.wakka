@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PCOPY"}}
-----
+{{fbdoc item="title" value="PCOPY"}}----
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgInteger integer]] )
 ##
@@ -28,4 +27,4 @@
 	- ##[[KeyPgFlip Flip]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

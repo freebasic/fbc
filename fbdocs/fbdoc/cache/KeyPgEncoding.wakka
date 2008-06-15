@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ENCODING"}}
-----
+{{fbdoc item="title" value="ENCODING"}}----
 {{fbdoc item="syntax"}}
 	OPEN "//filename//" FOR [INPUT|OUTPUT|APPEND] ENCODING "//utf-8//"|"//utf-16//"| "//utf-32//" |"//ascii//" AS [#]//FILENUM//
 
@@ -16,5 +15,4 @@
 {{fbdoc item="see"}}
 	- [[KeyPgOpen OPEN]]
 
-
-{{fbdoc item="back" value="CatPgFile|File Functions"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -42,4 +42,5 @@ The last day in the year is 31 Dec%%
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgLprint Lprint]]##
 	- ##[[KeyPgPalette Palette]]##
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

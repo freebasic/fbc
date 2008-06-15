@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_SIGNATURE__"}}
-----
+{{fbdoc item="title" value="__FB_SIGNATURE__"}}----
 Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -25,6 +24,5 @@ FreeBASIC v0.13b
 	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
 	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
 	- ##[[KeyPgDdfbdos __FB_DOS__]]##
-	
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

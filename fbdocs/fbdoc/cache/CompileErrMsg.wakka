@@ -24,6 +24,7 @@ During the program compilation three types of errors can arise:
 	-//17 Possible escape sequence found in//
 	-//18 The type length is too large, consider passing BYREF//
 	-//19 The length of the parameters list is too large, consider passing UDT's BYREF//
+	-//20 The ANY initializer has no effect on UDT's with default constructors//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -165,12 +166,28 @@ During the program compilation three types of errors can arise:
 	- //135 Default types or suffixes are only valid in -lang//
 	- //136 Suffixes are only valid in -lang//
 	- //137 Implicit variables are only valid in -lang//
+	- //138 Operator must be a member function//
+	- //139 Operator cannot be a member function//
+	- //140 Member function not allowed in anonymous UDT's//
+	- //141 Expected operator//
+	- //142 Declaration outside the original namespace or class//
+	- //143 A destructor should not have any parameters//
+	- //144 Expected class or UDT identifier//
+	- //145 Dynamic strings cannot be part of UNION's//
+	- //146 Fields with constructors cannot be part of UNION's//
+	- //147 Fields with destructors cannot be part of UNION's//
+	- //148 Illegal outside a constructor//
+	- //149 UDT's with methods must have unique names//
+	- //150 Parent is not a class or UDT//
+	- //151 Call to another constructor must be the first statement//
+	- //152 The constructor or destructor calling convention must be CDECL//
+	- //153 This symbol cannot be undefined//
+	- //154 Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors//
+	- //155 Invalid assignment/conversion//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
 	If an IDE or a make utility are been used, additional errors can arise. These errors are outside the scope of this help.
  
- 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot; **Compiler Error Messages** &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
  
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

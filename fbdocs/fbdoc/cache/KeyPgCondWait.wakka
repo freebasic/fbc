@@ -1,21 +1,20 @@
-{{fbdoc item="title" value="CONDWAIT"}}
-----
+{{fbdoc item="title" value="CONDWAIT"}}----
 Stops execution of current thread until some other thread signals that execution can continue.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condwait** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condwait** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Condwait** ( //handle// )
 ##
 {{fbdoc item="param"}}
 	##//handle//##
-		The ##[[KeyPgInteger integer]]## handle returned by a previous call to ##[[KeyPgCondCreate Condcreate]]##.
+		The handle of a conditional variable.
 
 {{fbdoc item="desc"}}
 	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal Condsignal]]##s or ##[[KeyPgCondBroadcast Condbroadcast]]##s  the handle.
 
-	Once the conditional is ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional variable is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
 
 	Multihtreading is not implemented as a service in MSDOS so this fuction does'nt exist in FB for DOS32.
 
@@ -32,4 +31,4 @@ Stops execution of current thread until some other thread signals that execution
 	- ##[[KeyPgCondSignal Condsignal]]##
 	- ##[[KeyPgThreadCreate Threadcreate]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical  keywords list"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

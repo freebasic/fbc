@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OPEN COM"}}
-----
+{{fbdoc item="title" value="OPEN COM"}}----
 {{fbdoc item="syntax"}}
 	OPEN COM "COMx:[ //baudrate// ][ , //parity// ,[ //data_bits//,[ //stop_bits//,[ //extended_options// ] ] ] ]" as //n//
 
@@ -63,4 +62,4 @@ OPEN COM "COM1:115200" as 1
 {{fbdoc item="see"}}
 	- [[KeyPgOpen OPEN]]	
 
- {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ERR"}}
-----
+{{fbdoc item="title" value="ERR"}}----
 Error handling function to return the error number of the last error.
 
 {{fbdoc item="syntax"}}##
@@ -46,6 +45,6 @@ loop until err=0
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOnerror On Error]]##
-	- {{fbdoc item="keyword" value="LangErrorHandling|Error Handling"}} 
+	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}} 
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

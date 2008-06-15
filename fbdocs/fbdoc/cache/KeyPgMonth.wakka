@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MONTH"}}
-----
+{{fbdoc item="title" value="MONTH"}}----
 Date function to return the month of the year from a specified [[DtDateSer Date Serial]]
 
 {{fbdoc item="syntax"}}##
@@ -35,4 +34,5 @@ Print Format(a!, "yyyy/mm/dd hh:mm:ss "); Month(a)
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

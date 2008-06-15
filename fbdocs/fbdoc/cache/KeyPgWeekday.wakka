@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WEEKDAY"}}
-----
+{{fbdoc item="title" value="WEEKDAY"}}----
 Date function to return the number of day of the week
 
 {{fbdoc item="syntax"}}##
@@ -40,4 +39,5 @@ print format(a!,"yyyy/mm/dd hh:mm:ss ") ;weekday(a!)
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ANY"}}
-----
+{{fbdoc item="title" value="ANY"}}----
 Pseudo-data type that turns off type checking for a parameter.
 
 {{fbdoc item="syntax"}}##
@@ -39,4 +38,4 @@ end sub
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgDeclare Declare]]##
 
-{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

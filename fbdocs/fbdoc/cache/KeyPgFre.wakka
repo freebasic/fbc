@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FRE"}}
-----
+{{fbdoc item="title" value="FRE"}}----
 Returns the amount of free memory available.
 
 {{fbdoc item="syntax"}}##
@@ -36,4 +35,4 @@ print mem  \ (1024 * 1024); " megabytes"
 	- ##[[KeyPgRedim Redim]]##
 	- ##[[KeyPgAllocate Allocate]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

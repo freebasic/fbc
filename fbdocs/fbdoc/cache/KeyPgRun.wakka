@@ -1,14 +1,13 @@
-{{fbdoc item="title" value="RUN"}}
-----
+{{fbdoc item="title" value="RUN"}}----
 Transfers execution to an external program.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run**( //program// [[KeyPgAs as]] [[KeyPgString string]][, //arguments// [[KeyPgAs as]] [[KeyPgString string]]] ) [[KeyPgAs as]] [[KeyPgString integer]]
 ##
 {{fbdoc item="usage"}}##
-		Run( //program//[, //arguments//] )
-			##//or//##
-		//result// = Run( //program//[, //arguments//] )
+	Run( //program//[, //arguments//] )
+		##//or//##
+	//result// = Run( //program//[, //arguments//] )
 ##
 {{fbdoc item="param"}}
 	##//program//##
@@ -37,4 +36,4 @@ run "file.exe"
 	- ##[[KeyPgShell Shell]]##
 	- ##[[KeyPgExec Exec]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

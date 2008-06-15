@@ -1,10 +1,16 @@
 =====FB Wiki - Main Page===== 
 
-	- **[[DocToc Official Documentation]]** (Table of Contents)
+Welcome to the official home of the FreeBASIC Manual. 
 
+==Top Links:==
+	- **[[DocToc FreeBASIC Manual - Table of Contents]]**
 	- **[[CommunityTutorials Community Tutorials]]**
 
-	-**[[WikiPolicies Wiki Policies]]**
+==About this wiki:==
+	The FreeBASIC compiler is currently in active development and this wiki is updated whenever possible to document the latest version of the compiler available.  Some features of the compiler documented here might not be available in the binary distributions of the compiler and may only be available when building the FreeBASIC compiler and runtime library from sources.
+
+==How you can help:==
+	Have you found an error or ommission on one of our pages?  Please register and let us know by adding a comment to the page, or edit the content and help contribute to the wiki.  Have a look at the [[FBWikiHelp FB Wiki - Help]] page to get started.
 ---
 ---
 ---

@@ -1,14 +1,17 @@
-{{fbdoc item="title" value="SCOPE...END SCOPE"}}
-----
-{{fbdoc item="syntax"}}
-	SCOPE
-		[//statements//]
-	END SCOPE
+{{fbdoc item="title" value="SCOPE...END SCOPE"}}----
+Statement to begin a new scope block
 
+{{fbdoc item="syntax"}}##
+	**Scope**
+		[//statements//]
+	**End Scope**
+##
 {{fbdoc item="desc"}}
 	The Scope block allows variables to be temporarily (re)defined and used in a program.  When a variable is DIMensioned within a scope structure, that variable can be used until the end of the scope.  During this time, any variables outside the scope that have the same name will be ignored, and will not be accessible by that name.
 
-Any statements in the Scope block before the variable is dimensioned will use the variable as defined outside the Scope.
+	Any statements in the Scope block before the variable is dimensioned will use the variable as defined outside the Scope.
+
+	##**Scope..End Scope**## is not permitted when compiling with the -lang qb switch.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -29,6 +32,6 @@ Print "x ="; x; ", "; "y ="; y
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgDim DIM]]
+	- ##[[KeyPgDim Dim]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

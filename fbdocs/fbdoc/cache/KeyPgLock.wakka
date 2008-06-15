@@ -33,4 +33,4 @@ close #f
 	- [[KeyPgUnlock UNLOCK]]
 	- [[KeyPgOpen OPEN]]
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

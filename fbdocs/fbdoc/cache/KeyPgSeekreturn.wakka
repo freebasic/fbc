@@ -1,7 +1,6 @@
-{{fbdoc item="title" value="SEEK (Function)"}}
-----
-{{fbdoc item="syntax"}}
-	SEEK(//handle//)
+{{fbdoc item="title" value="SEEK (Function)"}}----
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ([[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]]) [[KeyPgAs as]] [[KeyPgLongint longint]]##
 
 {{fbdoc item="desc"}}
 	Returns the position  of the next read/write in the file //handle//. 
@@ -27,5 +26,4 @@ close #f
 	- [[KeyPgLoc LOC]]
 	- [[KeyPgOpen OPEN]]
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

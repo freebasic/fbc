@@ -27,8 +27,8 @@
 	- FreeBASIC currently runs on 32-bit Windows, Linux, and DOS (a 16-bit DOS is good enough, although FreeBASIC itself and compiler output are 32-bit) and also creates applications for the Xbox console. More platforms to come.
 	- The run-time library was written with portability in mind. All third-party tools used exist on most operating systems already as they are from the GNU binutils. The compiler is written in 100% FreeBASIC code (that is, FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it doesn't depend on non-portable tools.
 
-==Unicode support==
-	- Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
+==[[Unicode Unicode]] support==
+	- Besides ASCII files with [[Unicode Unicode]] escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
 	- Literal strings can be typed in the original non-latin alphabet, just use a text-editor that supports some of the Unicode formats listed above.
 	- The WSTRING type holds wide-characters, all string functions (like LEFT, TRIM, etc) will work with wide-strings too.
 	- OPEN was extended to support the ENCODING "format" option, files in UTF-8, UTF-16LE and UTF-32LE can be read (using INPUT # or LINE INPUT #) and written (using PRINT # or WRITE #) when opened in INPUT, OUTPUT and APPEND modes, all the conversion between Unicode to ASCII will be done automatically if necessary.
@@ -107,8 +107,5 @@
 ==Completely free==
 	- All third-party tools are also free. No piece of abandoned or copyrighted software is used (except GoRC on Win32). The assembler, linker, archiver, and other command-line applications come from the GNU binutil programming tools.
 
-
-
-[[CompilerAbout About]] &middot; **Main Features** &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

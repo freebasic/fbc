@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_BIGENDIAN__"}}
-----
+{{fbdoc item="title" value="__FB_BIGENDIAN__"}}----
 Intrinsic define set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -25,6 +24,5 @@ Intrinsic define set by the compiler.
 
 {{fbdoc item="diff"}}
 	- Did not exist in QB
-	
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

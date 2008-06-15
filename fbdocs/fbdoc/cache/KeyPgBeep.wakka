@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="BEEP"}}
-----
+{{fbdoc item="title" value="BEEP"}}----
 Function that produces a beep sound.
 
 {{fbdoc item="syntax"}}##
@@ -22,4 +21,4 @@ Beep
 {{fbdoc item="see"}}
 	- 
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,9 +1,8 @@
-{{fbdoc item="title" value="LOC"}}
-----
+{{fbdoc item="title" value="LOC"}}----
 Returns the file position where the last file read/write was performed.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Loc** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Loc** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Loc** ( //filenum// )
@@ -61,4 +60,4 @@ close #1
 	- ##[[KeyPgSeekreturn Seek (Function)]]##
 	- ##[[KeyPgOpen Open]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

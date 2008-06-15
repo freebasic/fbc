@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MKDIR"}}
-----
+{{fbdoc item="title" value="MKDIR"}}----
 Makes a folder/directory on the local file system.
 
 {{fbdoc item="syntax"}}##
@@ -28,4 +27,4 @@ mkdir "data" ''creates a folder called 'data' in the current path.
 	- ##[[KeyPgChdir Chdir]]##
 	- ##[[KeyPgRmdir Rmdir]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

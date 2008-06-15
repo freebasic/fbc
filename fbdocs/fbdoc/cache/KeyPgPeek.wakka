@@ -26,4 +26,4 @@ Print Peek( INTEGER, addr )
 {{fbdoc item="see"}}
 	- [[KeyPgPoke POKE]]
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

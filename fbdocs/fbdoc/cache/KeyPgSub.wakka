@@ -8,7 +8,7 @@
 		...
 	[[KeyPgEnd End]] Sub
 
-	[[[KeyPgPublic Public]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [()] [[[KeyPgConstructor Constructor]]|[[KeyPgDestructor Destructor]]] [[[KeyPgStatic Static]]]
+	[[[KeyPgPublic Public]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [()] [[[KeyPgModuleConstructor Constructor]]|[[KeyPgModuleDestructor Destructor]]] [[[KeyPgStatic Static]]]
 		//statements//
 		...
 		[[[KeyPgReturn Return]]]
@@ -41,7 +41,7 @@ The STATIC specifier indicates that the values of all local variables defined in
 
 Sub is the same as [[KeyPgFunction FUNCTION]], except it does not allow a value to be returned.
 
-The second syntax defines either a constructor or destructor using the [[KeyPgConstructor Constructor]] and [[KeyPgDestructor Destructor]] keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
+The second syntax defines either a constructor or destructor using the [[KeyPgModuleConstructor Constructor]] and [[KeyPgModuleDestructor Destructor]] keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

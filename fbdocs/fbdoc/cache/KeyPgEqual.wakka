@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="= (Equality) Operator"}}
-----
+{{fbdoc item="title" value="= (Equality) Operator"}}----
 Operator to compare expressions.
 
 {{fbdoc item="syntax"}}##
@@ -10,7 +9,7 @@ Operator to compare expressions.
 
 {{fbdoc item="ex"}}
 
-Equality comparisons should not be confused with [[CatPgInitialisation Initialisations]] or [[CatPgOpAssignment Assignments]], both of which also use the "=" symbol:
+Equality comparisons should not be confused with [[ProPgInitialization Initializations]] or [[CatPgOpAssignment Assignments]], both of which also use the "=" symbol:
 
 ##%%(qbasic)   dim i as integer = 0    '' initialisation: create and initialise i
    i = 420                 '' assignment: assign the value of i as 420

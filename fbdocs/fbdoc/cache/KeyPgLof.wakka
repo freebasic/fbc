@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LOF"}}
-----
+{{fbdoc item="title" value="LOF"}}----
 Returns the length of an open disk file.
 
 {{fbdoc item="syntax"}}##
@@ -38,4 +37,4 @@ close #f
 	- ##[[KeyPgEof Eof]]##
 	- ##[[KeyPgOpen Open]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

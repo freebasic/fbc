@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WINDOWTITLE"}}
-----
+{{fbdoc item="title" value="WINDOWTITLE"}}----
 Graphics statement to set the program window title.
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

@@ -81,6 +81,5 @@
 		Lastly, the executable name is set to "application.exe", and the two object file are linked together.
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  **Using the Command Line** &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

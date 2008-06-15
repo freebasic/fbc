@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DAY"}}
-----
+{{fbdoc item="title" value="DAY"}}----
 Date function to return the day of the month from a [[DtDateSer Date Serial]]
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,5 @@ print format(a!,"yyyy/mm/dd hh:mm:ss ") ;day(a!)
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

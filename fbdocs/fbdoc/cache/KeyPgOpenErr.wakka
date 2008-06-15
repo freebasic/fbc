@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OPEN ERR"}}
-----
+{{fbdoc item="title" value="OPEN ERR"}}----
 {{fbdoc item="syntax"}}
 	OPEN ERR [FOR INPUT|OUTPUT] AS //n//
 
@@ -28,5 +27,4 @@ sleep
 {{fbdoc item="see"}}
 	- [[KeyPgOpen OPEN]]
 
-
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -29,4 +29,4 @@ rmdir "foo"
 	- ##[[KeyPgChdir Chdir]]##
 	- ##[[KeyPgMkdir Mkdir]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

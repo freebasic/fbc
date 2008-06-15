@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="#ENDIF"}}
-----
+{{fbdoc item="title" value="#ENDIF"}}----
 Preprocessor conditional directive.
 
 {{fbdoc item="syntax"}}##
@@ -26,4 +25,4 @@ Preprocessor conditional directive.
 	- ##[[KeyPgPpifdef #ifdef]]##
 	- ##[[KeyPgPpifndef #ifndef]]##
 
-{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

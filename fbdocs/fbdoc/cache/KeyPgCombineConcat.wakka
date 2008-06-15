@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="+= (Combined Concatenation)"}}
-----
+{{fbdoc item="title" value="+= (Combined Concatenation)"}}----
 Operator to append and assign a string onto another string
 
 {{fbdoc item="syntax"}}##
@@ -29,6 +28,6 @@ Hello world
 	- {{fbdoc item="keyword" value="KeyPgConCat|+ (String concatenation) "}}
 	- {{fbdoc item="keyword" value="KeyPgConCat|& (String concatenation with conversion) "}}
 	- [[CatPgOperators Operators]]
-	- [[OpString String Operators]]
+	- [[CatPgOpString String Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

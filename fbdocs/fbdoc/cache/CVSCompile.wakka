@@ -11,6 +11,7 @@ Windows users should use MSYS to compile the CVS. Linux users will usually have 
 	[[CVSCygwin Compiling from CVS for Cygwin]]
 	[[CVSWin32MSYS Compiling from CVS for Win32, using MSYS]]
 	[[CVSLinux Compiling from CVS for Linux]]
+	[[CVSDOSWin32 Compiling from CVS for DOS on Win32]]
 
 For Windows only, Pritchard is regularly compiling the latest and making it available for download.  His files must be added carefully to the current stable distribution, to replace certain originals.  The web page is here:  
 @@ [[http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid= http://www.qbasic.com/wbb/filebase_entry.php?entryid=77&sid=]] @@

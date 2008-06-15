@@ -1,16 +1,13 @@
-{{fbdoc item="title" value="RSET"}}
-----
+{{fbdoc item="title" value="RSET"}}----
 Right justifies a string in a string buffer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgStringtype string]] , [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgStringtype string]] )
-[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
 ##
-
 {{fbdoc item="usage"}}##
 	RSET //dst//, //src//
 ##
-
 {{fbdoc item="param"}}
 	##//dst//##
 		A ##[[KeyPgStringtype string]]## or ##[[KeyPgWstring wstring]]## buffer to copy the text into.
@@ -39,4 +36,4 @@ print "-["; buffer$; "]-"
 	- ##[[KeyPgMkl Mkl]]##
 	- ##[[KeyPgMks Mks]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

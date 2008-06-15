@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="REDIM"}}
-----
+{{fbdoc item="title" value="REDIM"}}----
 {{fbdoc item="syntax"}}
 	REDIM [[[KeyPgShared SHARED]]] [PRESERVE] //symbolname//(//subscripts//) AS [[DataType DataType]] [, ...]
 
@@ -14,7 +13,7 @@
 %%(qbasic)
 'e.g. on using dynamic arrays:
 
-'$DYNAMIC
+OPTION DYNAMIC
 DIM x(10) AS INTEGER
 PRINT UBOUND(x)
 
@@ -37,4 +36,4 @@ PRINT UBOUND(x)
 	- [[KeyPgStatic STATIC]]
 	- [[KeyPgUbound UBOUND]]
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

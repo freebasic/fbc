@@ -1,11 +1,9 @@
-{{fbdoc item="title" value="TRANS"}}
-----
+{{fbdoc item="title" value="TRANS"}}----
 {{fbdoc item="syntax"}}
 PUT (X,Y),array,TRANS
 
 {{fbdoc item="desc"}}
 TRANS selects transparent background as the method for PUT'ting images
-
 
 {{fbdoc item="ex"}}
 	         For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
@@ -16,4 +14,4 @@ TRANS selects transparent background as the method for PUT'ting images
 {{fbdoc item="see"}}
 	- [[KeyPgPutgraphics PUT]]
 	
-{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

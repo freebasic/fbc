@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="## Preprocessor concatenate"}}
-----
+{{fbdoc item="title" value="## Preprocessor concatenate"}}----
 Preprocessor operator to concatenate strings.
 
 {{fbdoc item="syntax"}}##

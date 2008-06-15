@@ -1,15 +1,17 @@
-{{fbdoc item="title" value="RETURN"}}
-----
+{{fbdoc item="title" value="RETURN"}}----
+Control flow statement to return from a procedure or Gosub
+
 {{fbdoc item="syntax"}}##
 	**Return** [ //return value// ]
 ##
 {{fbdoc item="desc"}}
-	##Return## is used to return control back to the statement immediately following a previous ##[[KeyPgGosub Gosub]]## call. When used in combination with ##Gosub##, no return value can be specified. 
+	##**Return**## is used to return control back to the statement immediately following a previous ##[[KeyPgGosub Gosub]]## call. When used in combination with ##[[KeyPgGosub Gosub]]##, no return value can be specified. 
 	
-	##Return## can also be used inside a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## exit the ##Sub## or ##Function##. In a ##Sub##, ##Return## cannot specify a return value.  In a ##Function##, ##Return## must specify its return value. It is equivalent to the ##Function = //return value// : [[KeyPgExit Exit]] Function## idiom.
+	##**Return**## can also be used inside a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## to exit the ##Sub## or ##[[KeyPgFunction Function]]##. In a ##Sub##, ##Return## cannot specify a return value.  In a ##Function##, ##Return## must specify its return value. It is equivalent to the ##Function = //return value// : [[KeyPgExit Exit]] Function## idiom.
 
-	A ##Gosub## call must always have a matching ##Return## statement, to avoid stack corruption. Thus, it is often preferrable to use a ##[[KeyPgSub Sub]]## rather than ##[[KeyPgGosub Gosub]]##/##Return##.
+	A ##[[KeyPgGosub Gosub]]## call must always have a matching ##**Return**## statement, to avoid stack corruption. Thus, it is often preferrable to use a ##[[KeyPgSub Sub]]## rather than ##[[KeyPgGosub Gosub]]##/##Return##.
 
+	When compiling with the -lang qb switch, ##**Return**## can only be used to return from a ##[[KeyPgGosub Gosub]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -67,4 +69,4 @@ end 0
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgGosub Gosub]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

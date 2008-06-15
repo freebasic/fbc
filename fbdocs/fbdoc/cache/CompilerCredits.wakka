@@ -95,6 +95,4 @@
 		- Wrote many of the examples in the examples/Windows/gui directory.
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  **Credits** &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

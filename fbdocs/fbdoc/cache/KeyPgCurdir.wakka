@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CURDIR$"}}
-----
+{{fbdoc item="title" value="CURDIR$"}}----
 Returns the current directory/folder.
 
 {{fbdoc item="syntax"}}##
@@ -29,4 +28,4 @@ sleep
 	- ##[[KeyPgMkdir Mkdir]]##
 	- ##[[KeyPgRmdir Rmdir]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

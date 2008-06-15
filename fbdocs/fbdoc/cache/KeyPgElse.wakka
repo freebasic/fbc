@@ -1,25 +1,23 @@
-{{fbdoc item="title" value="ELSE"}}
-----
-{{fbdoc item="syntax"}}
-if [condition] then [action] ELSE [action]
+{{fbdoc item="title" value="ELSE"}}----
+Control flow statement for conditional branching
 
-{{fbdoc item="desc"}}
-see [[KeyPgIfthen IF...THEN]].
-
-{{fbdoc item="ex"}}
-%%(qbasic)
-if 1 then
- print "One!"
-else
- print "Nope!"
-end if
- %%
-
+{{fbdoc item="syntax"}}##
+	**If** //expression// **Then** //statement(s)// [**Else** //statement(s)//]
+//or//
+	**If** //expression// **Then** : //statement(s)// [**Else** //statement(s)//] : **End If**
+//or//			
+	**If** //expression// **Then**
+		//statement(s)//
+	[ **Elseif** //expression// **Then** ]
+		//statement(s)//
+	[ **Else** ]
+		//statement(s)//
+	**End If**
+##
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgIfthen If...Then]]##
 
-{{fbdoc item="back" value="CatPgConditional|CONDITIONAL"}}
-
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

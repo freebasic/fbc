@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENCOPY"}}
-----
+{{fbdoc item="title" value="SCREENCOPY"}}----
 Statement to copy the contents of a graphical page into another graphical page.
 
 {{fbdoc item="syntax"}}##
@@ -80,4 +79,4 @@ loop
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreenset Screenset]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

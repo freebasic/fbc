@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CSRLIN"}}
-----
+{{fbdoc item="title" value="CSRLIN"}}----
 Returns the row position of the cursor.
 
 {{fbdoc item="syntax"}}##
@@ -26,4 +25,4 @@ print "The cursor is on row:"; CSRLIN
 	- ##[[KeyPgLocate Locate]]##
 	- ##[[KeyPgPos Pos]]##
 
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

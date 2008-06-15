@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="POS"}}
-----
+{{fbdoc item="title" value="POS"}}----
 Returns the horizontal (left-right) position of the text cursor.
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,4 @@ print "position: "; pos
 {{fbdoc item="see"}}
 	- ##[[KeyPgLocate Locate]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

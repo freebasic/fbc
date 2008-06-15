@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MUTEXLOCK"}}
-----
+{{fbdoc item="title" value="MUTEXLOCK"}}----
 Acquires a mutex.
 
 {{fbdoc item="syntax"}}##
@@ -102,4 +101,4 @@ END SUB
 	- ##[[KeyPgThreadCreate Threadcreate]]##
 	- ##[[KeyPgThreadWait Threadwait]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

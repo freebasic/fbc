@@ -1,23 +1,22 @@
-{{fbdoc item="title" value="RANDOM"}}
-----
+{{fbdoc item="title" value="RANDOM"}}----
 {{fbdoc item="syntax"}}
 	OPEN  //file_name_string// FOR RANDOM [ACCESS //access_type//] [//lock_type//] AS [#]//slot// [Len = //record length//]
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing binary date in the given file //slot//, with records of size //record_length//  
-	If the file does not exist, a new file will be created.	The file pointer is initialized by OPEN at the record no. 1. File operations move the file pointer in //record_length// steps.
-	The data existing in the file is preserved by OPEN. 
-	This file mode uses an user-defined [KeyPgType TYPE]] buffer variable to read/write full records in a file. The buffer variable uses to include several fields. 
+	If the file does not exist, a new file will be created.	The file pointer is initialized by OPEN at record number 1. File operations move the file pointer in //record_length// steps.
+	The data existing in the file is preserved by OPEN.
+	This file mode uses an user-defined [[KeyPgType TYPE]] buffer variable to read/write full records in a file. The buffer variable uses to include several fields.
 	The data is saved in binary mode, in the same internal format FB uses, by means of [[KeyPgGetfileio GET #]] and [[KeyPgPutfileio PUT #]]
 	
 	//file_name_string// must be string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
 			
-	//Access_type// By default RANDOM mode allows to both read and write the file, unless an [[KeyPgAccess ACCESS]] type is specified, it mus be one of: 
+	//Access_type// By default RANDOM mode allows to both read and write the file, unless an [[KeyPgAccess ACCESS]] type is specified, it must be one of:
 		- READ - the file is opened for input only
 		- WRITE - the file is opened for output only
 		- READ WRITE - the file is opened for input and output (the default)
 
-	//Lock_type// indicates the way the file is locked  for other processes (users or threads), it is one of:
+	//Lock_type// indicates the way the file is locked for other processes (users or threads), it is one of:
 		- SHARED - The file can be freely accessed by other processes     
 		- LOCK READ - The file can't be opened simultaneously for reading
 		- LOCK WRITE - The file can't be opened simultaneously for writing
@@ -27,10 +26,24 @@
 
 	//slot// Is a valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the [[KeyPgFreefile FREEFILE]] function.
 	
-	//record_length// Is the amount of bytes the file pointer will move for each individual GET and PUT, it must match the size of the bufer variable used when GETting and PUTting data. If it's omitted, it defaults to 128.
+	//record_length// Is the amount of bytes the file pointer will move for each individual GET and PUT, it must match the size of the buffer variable used when GETting and PUTting data. If it's omitted, it defaults to 128.
 
 	{{fbdoc item="ex"}}
 %%(qbasic)
+dim ff as ubyte
+dim randomvar as integer
+
+ff = freefile
+
+open "testfile" for random as #ff
+write #ff, int(rnd(0)*42)
+close #ff
+
+open "testfile" for random as #ff
+input #ff, randomvar
+close #ff
+
+print "Random Number was: ", randomvar
 %%
 
 {{fbdoc item="diff"}}
@@ -42,4 +55,4 @@
 	- [[KeyPgPutfileio PUT #]]
 	- [[KeyPgGetfileio GET #]]
 
-{{fbdoc item="back" value="CatPgFilemode|FILE MODE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

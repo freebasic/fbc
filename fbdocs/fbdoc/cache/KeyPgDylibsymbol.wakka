@@ -3,14 +3,14 @@
 Returns the address of a function or variable in a dll.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr ]], [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Dylibsymbol** ( //library//, //symbol// )
 ##
 {{fbdoc item="param"}}
 	##//library//##
-		The [[KeyPgInteger integer]] handle of a DLL returned by ##[[KeyPgDylibload Dylibload]]##
+		The [[KeyPgAny any]] [[KeyPgPtr ptr]] handle of a DLL returned by ##[[KeyPgDylibload Dylibload]]##
 	##//symbol//##
 		A [[KeyPgStringtype string]] containing name of the function, or variable in the library to return the address of.
 
@@ -48,7 +48,6 @@ sleep
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-~- ##[[KeyPgDylibload Dylibload]]##
 ~- ##[[KeyPgDylibload Dylibload]]##
 ~- ##[[KeyPgExport Export]]##
 

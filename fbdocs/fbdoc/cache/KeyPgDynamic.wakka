@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="$DYNAMIC"}}
-----
+{{fbdoc item="title" value="$DYNAMIC"}}----
 {{fbdoc item="syntax"}}
 	OPTION DYNAMIC
 
@@ -35,4 +34,4 @@ ReDim a(200)
 	- [[KeyPgRedim REDIM]]
 	- [[KeyPgErase ERASE]]
 
-{{fbdoc item="back" value="CatPgPreProcess|Pre-Processor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

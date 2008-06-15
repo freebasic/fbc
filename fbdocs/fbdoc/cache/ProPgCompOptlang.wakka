@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -lang"}}
+----
+
+The -lang compiler option is supported for backwards compatibility with QB, and previous versions of FreeBASIC.
+
+There are 3 available arguments:
+
+	- fb
+		On by default, the latest version and rules of the FreeBASIC compiler.
+	     
+	- deprecated
+		For backwards compatibility with earlier versions of FreeBASIC.
+	     
+	- qb
+		For backwards compatibility with QB. SINGLE is the default data type, all variables are moved to the function scope, which 		means that compound statements DO NOT open a new scope, as they do in -lang fb and -lang deprecated
+
+{{fbdoc item="back" value="ProPgCompOpt|Compiler Options"}} 

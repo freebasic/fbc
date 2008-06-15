@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="# Preprocessor stringize"}}
-----
+{{fbdoc item="title" value="# Preprocessor stringize"}}----
 Preprocessor operator to convert macro arguments to strings.
 
 {{fbdoc item="syntax"}}##
@@ -28,7 +27,5 @@ another_one = 2
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]
-	
 ::c::
-
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

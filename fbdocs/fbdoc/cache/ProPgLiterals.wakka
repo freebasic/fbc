@@ -1,0 +1,99 @@
+{{fbdoc item="title" value="Literals"}}----
+Literals are numbers or strings of characters specified directly in the source code.  Literals may be used to assign a variable or constant a value, passed to a procedure, or used in an expression.
+
+== Decimal, Hexadecimal, Octal, and Binary Literals ==
+
+	__Decimal__
+		Decimal digits ( 0 1 2 3 4 5 6 7 8 9 ).  A decimal integer may be prefixed with a minus sign (-) to indicate that the number is negative.
+
+		%%(qbasic)Dim x as integer = 123456
+Dim b as byte = -128
+%%
+
+	__Hexadecimal__
+		"&h" or "&H", followed by hexadecimal digits ( 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F )
+
+		%%(qbasic)Dim x as integer = &h1E240
+Dim b as byte = &H80
+%%
+		
+	__Octal__
+		"&o" or "&O" ( O as in Octal ), followed by octal digits ( 0 1 2 3 4 5 6 7 )
+
+		%%(qbasic)Dim x as integer = &O361100
+Dim b as byte = &O
+%%
+	__Binary__
+		"&b" or "&B", followed by binary digits ( 0 1 )
+
+		%%(qbasic)Dim x as integer = &B11110001001000000
+Dim b as byte = &B10000000
+%%
+
+== Integer size suffixes ==
+	If an integer literal suffix is not given, the number field size required to hold the literal is automatically calculated.  Specifying a size suffix guarantees that the compiler will consider a number as a specific integer size.
+
+	Integer literals ending with:
+		- "l" or "L" are considered as signed 32 bit integers. (INTEGER)
+		- "u", "U", "ul", or "UL", are considered as unsigned 32 bit integers. (UINTEGER)
+		- "ll" or "LL", are considered as signed 64 bit integers. (LONGINT)
+		- "ull" or "ULL", are considered as unsigned 64 bit integers. (ULONGINT)
+
+		%%(qbasic)Dim a as integer = 123L
+Dim b as uinteger = &h1234u
+Dim c as longint = 76543LL
+Dim d as ulongint = &b1010101ULL
+%%
+
+== Floating Point Literals ==
+	Floating point numbers are specified in decimal digits, may be positive or negative, have a fractional portion, and optionally an exponent.  The format of a floating point literal is as follows:
+
+	##[-]number[.[fraction]][suffix[-|+]exponent]##
+	//or//
+	##[-].fraction[suffix[-|+]exponent]##
+
+	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value.
+		%%(qbasic)Dim a as double = 123.456
+Dim b as double = -123.0
+%%
+
+	A suffix of "d", "D", "e", or "E" on the number portion indicates a double precision (64 bit total) floating point value.  
+		%%(qbasic)Dim b as double = -123.0d
+Dim b as double = -123.0e
+%%
+
+	A suffix of "f" or "F" on the number portion indicates a double precision (64 bit total) floating point value.  An exponent may immediately follow the suffix.
+		%%(qbasic)Dim a as single = -123.456f
+%%
+
+	An exponent may immediately follow the suffix.  The exponent may be specified as either positive or negative with a plus (+) or minus (-) sign.  Exponents that do not have a sign are positive.
+		%%(qbasic)Dim c as double = 743.1e+13
+Dim d as double = 743.1d-13
+Dim e as double = 743.1e13
+Dim i as single = -1.79f-10
+%%
+
+
+== String Literals ==
+	String literals are a sequence of characters.
+
+	All printable characters may be contained between two double quotes.  Double quotes can be specified in the string literal by using two double quotes together.
+		%%(qbasic)print "Hello World!"
+print "That's right!"
+print "See the ""word"" contained in double quotes."
+%%
+
+	Strings of characters can contain escape sequences if the string literal is prefixed by a bang character (!).
+		%%(qbasic)print !"Hello\nWorld!"
+%%
+
+	If the compilation mode of the compiler is to consider all string literals as escaped, a string may be explicity specified as unescaped when prefixed by the dollar sign character ($)
+		%%(qbasic)print $"Hello\nWorld!"
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgConst Const]]##
+	- [[CatPgStdDataTypes Standard Data Types]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -2,7 +2,7 @@
 ----
 
 {{fbdoc item="desc"}}
-	Arrays are [[DtVariables Variables]] which contain more than one value. The value decided upon is chosen using an [[CptArrayIndex Array Index]]. In FreeBASIC, Any array must be declared before it's first use using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command.
+	Arrays are [[DtVariables Variables]] which contain more than one value. The value decided upon is chosen using an [[ProPgArrayIndex Array Index]]. In FreeBASIC, Any array must be declared before it's first use using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command.
 	
 	The best way to conceptualize an array is look at it like a spreadsheet. For example, if you had an array called myArray which contained elements (1 to 10), and was filled with random numbers, you could look at it like this:
 %%
@@ -21,7 +21,7 @@ Index        Data
 	Keep in mind that the numbers in the Data column are completely arbitrary in our example. When you create an array in FreeBASIC using the DIM command, the elements are all set to 0.
 	If you were to look at myArray(1), you'd find it's equal to 5. If you were to look at myArray(5), you'd find it equal to 9. In FreeBASIC, you can for the most part treat arrays with indexes the same as you would all [[DtVariables Variables]].
 	
-	Arrays are available based on the rules of {{fbdoc item="keyword" value="CptVarScope|Variable Scope"}}. Depending on the Scope of a variable, an array you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
+	Arrays are available based on the rules of {{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}. Depending on the Scope of a variable, an array you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -62,11 +62,9 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[CptArrayIndex Array Index]]
-	- [[CptVarScope Variable Scope]]
+	- [[ProPgArrayIndex Array Index]]
+	- [[ProPgVariableScope Variable Scope]]
 	- [[KeyPgDim DIM]]
 	- [[KeyPgRedim REDIM]]
-
-**Data Types**: [[CatPgStdDataTypes Standard Data Types]] &middot; [[DtConstants Constants]] &middot; [[DtVariables Variables]] &middot; **Arrays** &middot; [[DtPointers Pointers]] &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

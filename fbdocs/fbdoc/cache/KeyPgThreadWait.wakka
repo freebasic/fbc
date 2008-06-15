@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="THREADWAIT"}}
-----
+{{fbdoc item="title" value="THREADWAIT"}}----
 Waits until the designated thread has been completed before returning.
 
 {{fbdoc item="syntax"}}##
@@ -92,4 +91,4 @@ print "All done."
 	- ##[[KeyPgMutexUnlock Mutexunlock]]##
 	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

@@ -60,4 +60,4 @@ sleep
 {{fbdoc item="see"}}
 	- [[KeyPgType TYPE...END TYPE]]
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PMAP"}}
-----
+{{fbdoc item="title" value="PMAP"}}----
 Graphics function to map coordinates between view and physical mapping.
 
 {{fbdoc item="syntax"}}##
@@ -34,4 +33,4 @@ Graphics function to map coordinates between view and physical mapping.
 	- ##[[KeyPgWindow Window]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

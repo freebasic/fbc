@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DatePart"}}
-----
+{{fbdoc item="title" value="DatePart"}}----
 Date function to return a specified part of a [[DtDateSer Date Serial]]
 
 {{fbdoc item="syntax"}}##
@@ -56,4 +55,5 @@ print " of the year " & DatePart( "yyyy", d )
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

@@ -6,7 +6,7 @@
 {{fbdoc item="desc"}}
 	The ##Sizeof## operator returns the length of a //variable// or [[DataType DataType]]. 
 
-	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of characters allocated, and when used with variable-length strings, it will return the size of the string descriptor.
+	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of bytes allocated, and when used with variable-length strings, it will return the size of the string descriptor.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

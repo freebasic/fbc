@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="GETMOUSE"}}
-----
+{{fbdoc item="title" value="GETMOUSE"}}----
 Input function to retrieve status of the mouse pointing device.
 
 {{fbdoc item="syntax"}}##
@@ -65,4 +64,4 @@ END
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetjoystick Getjoystick]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

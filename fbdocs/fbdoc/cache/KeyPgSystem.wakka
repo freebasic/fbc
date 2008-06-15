@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SYSTEM"}}
-----
+{{fbdoc item="title" value="SYSTEM"}}----
 Closes all open files and ends the program.
 
 {{fbdoc item="syntax"}}##
@@ -28,4 +27,4 @@ print "this text will never be shown"
 {{fbdoc item="see"}}
 	- ##[[KeyPgEnd End]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LBOUND"}}
-----
+{{fbdoc item="title" value="LBOUND"}}----
 {{fbdoc item="syntax"}}
 Lbound(array[, dimension])
 
@@ -34,4 +33,4 @@ print Lbound(array, 3) 'returns 1
 	- [[KeyPgStatic STATIC]]
 	- [[KeyPgUbound UBOUND]]
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

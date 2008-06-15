@@ -1,0 +1,83 @@
+{{fbdoc item="title" value="OPERATOR"}}----
+Declares or defines an overloaded operator
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	End Type
+
+	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+
+	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Operator**
+
+	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	**End Operator**
+
+	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Operator**
+
+	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Operator**
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the TYPE of CLASS
+	##//assignment_op//## 
+		let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv=^=
+	##//unary_op//##
+		""-"" not
+	##//binary_op//##
+		+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=
+
+{{fbdoc item="desc"}}
+	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]## or CLASS data type.
+
+	Operators can be overloaded to accept different data types as parameters.  Only the ##[[KeyPgCast Cast]]## Operator can be overloaded to return different types.
+
+	Some operators are static members: they are declared inside the ##[[KeyPgType Type]]## or CLASS.  Other operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
+
+	let, cast, and combined assignment operators must be declared inside the TYPE or CLASS.  The implicitly have a hidden ##//this//## parameter and a return data type of the TYPE or CLASS they are declared in.
+
+	Unary and binary operators must be declared outside the TYPE or CLASS and have the return data type explicity declared.
+
+	An ##**Operator**## method is similiar to overloaded functions in most respects, except there is a hidden ##//this//## parameter having the same type as ##//typename//## for all static members (operators declared inside the TYPE or CLASS).  ##//this//## is optionally used to access the fields of the ##[[KeyPgType Type]]## or CLASS inside the operator procedure.
+
+{{fbdoc item="ex"}}
+%%(qbasic)
+Type Vector2D
+  as single x, y
+
+  declare operator cast() as string
+
+End Type
+
+declare operator + ( lhs as Vector2D, rhs as Vector2D ) as Vector2D
+
+operator Vector2D.cast () as string
+  return "(" + str(x) + ", " + str(y) + ")"
+end operator
+
+operator + ( lhs as Vector2D, rhs as Vector2D ) as Vector2D
+  return type<Vector2D>( lhs.x + rhs.x, lhs.y + rhs.y )
+end operator 
+
+dim a as Vector2D = type<Vector2D>( 1.2, 3.4 )
+dim b as Vector2D = type<Vector2D>( 8.9, 6.7 )
+
+print "a = "; a
+print "b = "; b
+print "a + b = "; a + b
+
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}

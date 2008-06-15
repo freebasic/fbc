@@ -30,4 +30,4 @@ print lcase$("Hello World abCDefGH") '' displays "hello world abcdefgh"
 {{fbdoc item="see"}}
 	- ##[[KeyPgUcase Ucase]]##
 
-{{fbdoc item="back" value="CatPgString|String Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="^ (Exponentiation)"}}
-----
+{{fbdoc item="title" value="^ (Exponentiation)"}}----
 Operator to raise a number to a power.
 
 {{fbdoc item="syntax"}}##
@@ -12,22 +11,22 @@ Operator to raise a number to a power.
 	The exponentiation operator is used to raise ##//number//## to the power of ##//exponent//##. For example 2 **^** 3 is the same thing as 2 {{fbdoc item="keyword" value="KeyPgMultiplication|*"}} 2 {{fbdoc item="keyword" value="KeyPgMultiplication|*"}} 2. If ##//exponent//## is a fractional value, a root is taken. For example, 2 ^ (1/3) is the cubed root of 2. The arguments ##//number//## and ##//exponent//## can be any valid numerical expression.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM n AS DOUBLE
 INPUT "Please enter a positive number: ", n
 PRINT ""
 PRINT n;" squared is"; n ^ 2
 PRINT "The fifth root of"; n;" is"; n ^ 0.2
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%(qbasic)
 Please enter a positive number: 3.4
 
  3.4 squared is 11.56
 The fifth root of 3.4 is 1.27730844458754
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -35,4 +34,4 @@ The fifth root of 3.4 is 1.27730844458754
 {{fbdoc item="see"}}
 	- [[CatPgMath Mathematical Functions]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

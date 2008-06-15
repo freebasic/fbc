@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="EQV"}}
-----
+{{fbdoc item="title" value="EQV"}}----
 Operator that finds the bitwise ##**Eqv**## (equivalence) of two integers.
 
 {{fbdoc item="syntax"}}##

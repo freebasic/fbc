@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="MKLONGINT$"}}
-----
+{{fbdoc item="title" value="MKLONGINT$"}}----
 Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mklongint** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-~//result// = MKLONGINT( //number// )
+	//result// = **Mklongint**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -16,8 +15,9 @@ Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgSt
 	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgLongint longint]]##.
 
 {{fbdoc item="desc"}}
-~Does a binary copy  from a LONGINT variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by CVLONGINT
-~This function is useful to write numeric values to buffers without using a TYPE definition.
+	Does a binary copy  from a ##[[KeyPgLongint Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint Cvlonging]]##
+
+	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -29,9 +29,9 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-~- New to Freebasic.
+	- New to Freebasic.
 
 {{fbdoc item="see"}}
-~- ##[[KeyPgCvlongint Cvlongint]]##
+	- ##[[KeyPgCvlongint Cvlongint]]##
 
-{{fbdoc item="back" value="CatFunctions|Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

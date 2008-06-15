@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_WIN32__"}}
-----
+{{fbdoc item="title" value="__FB_WIN32__"}}----
 Intrinsic define set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -30,6 +29,5 @@ Intrinsic define set by the compiler.
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbdos __FB_DOS__]]##
 	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
-	
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

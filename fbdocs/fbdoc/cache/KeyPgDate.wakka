@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DATE"}}
-----
+{{fbdoc item="title" value="DATE"}}----
 Function to return the current system date as a string
 
 {{fbdoc item="syntax"}}##
@@ -27,5 +26,4 @@ print date ' prints the current date
 	- ##[[KeyPgTime Time]]##
 	- ##[[KeyPgTimer Timer]]##
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

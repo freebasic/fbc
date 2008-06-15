@@ -7,7 +7,4 @@
 	**FreeBASIC** is a self-hosting compiler (that is, written in **FreeBASIC**), and was developed by V1ctor.
 
 
-**About** &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]] 
-
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

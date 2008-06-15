@@ -1,21 +1,22 @@
-{{fbdoc item="title" value=". Field Operator"}}
-----
+{{fbdoc item="title" value=". Field Operator"}}----
+Operator to access fields in a user defined type variable
 
-{{fbdoc item="syntax"}}
-	//UDTvariable//. //fieldname//
+{{fbdoc item="syntax"}}##
+	//UDTvariable//**.**//fieldname//
 	    
-	    with  //UDTvariable//
-	    .//fieldname// =  //expression//
-	    ...
-	    end with
-	       
+	[[KeyPgWith with]]  //UDTvariable//
+		.//fieldname// =  //expression//
+	...
+	end with
+##
 {{fbdoc item="desc"}}
 	The dot (field operator) selects a field of a variable defined as an user defined type.
-	For compatibility with QB, "fake" dot operators are allowed in  the names of simple variables. Good practice recommends to substitute that dots by underscore characters.   
+
+	For compatibility with QB, "fake" dot operators are allowed in  the names of simple variables.  (only when compiled with -lang qb option)
 
 {{fbdoc item="ex"}}
 
-##%%(qbasic)
+%%(qbasic)
   type rect
   x as integer
   y as integer
@@ -39,6 +40,6 @@
 	- [[KeyPgPtrField (.) Pointer to field operator]]
 	- [[KeyPgAt (@) Address of]]
 	- [[KeyPgValOf (*) Value of]]
-	- [[KeyPgType TYPE...END TYPE]]
+	- ##[[KeyPgType Type...End Type]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

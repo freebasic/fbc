@@ -10,9 +10,9 @@
 
 
 {{fbdoc item="see"}}
-	- [[OpArithmatic Arithmetic Operators]]
-	- [[OpConditional Conditional Operators]]
-	- [[OpLogical Logical Operators]]
+	- [[CatPgOpArithmetic Arithmetic Operators]]
+	- [[CatPgOpConditional Conditional Operators]]
+	- [[CatPgOpLogical Logical Operators]]
 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="&  String Concatenation with conversion"}}
-----
+{{fbdoc item="title" value="&  String Concatenation with conversion"}}----
 Operator to concatenate two strings, converting non-strings to strings as needed.
 
 {{fbdoc item="syntax"}}##
@@ -32,7 +31,7 @@ The result is: 124.3
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgConcat|+ String Concatenation"}}
-	- [[OpString String Operators]]
+	- [[CatPgOpString String Operators]]
 	- [[KeyPgStr STR$]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

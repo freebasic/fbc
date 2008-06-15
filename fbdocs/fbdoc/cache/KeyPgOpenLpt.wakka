@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OPEN LPT"}}
-----
+{{fbdoc item="title" value="OPEN LPT"}}----
 Open a printer device
 
 {{fbdoc item="syntax"}}##
@@ -13,7 +12,7 @@ Open a printer device
 	##//TITLE=Doc_Title//##
 		Title of the print job as seen by the printer spooler.  This parameter is ignored on DOS.
 	##//EMU=TTY//##
-		Emulation of TTY output on a windows GDI printer.  This parameter is ignored on DOS and Linux.
+		Emulation of TTY output on a windows GDI printer, using driver text imaging.  This parameter is ignored on DOS and Linux.
 	##FOR INPUT|OUTPUT##
 		clause is allowed for compatibility, but it is ignored.
 	##//handle//##
@@ -83,4 +82,4 @@ End
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##
 
- {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

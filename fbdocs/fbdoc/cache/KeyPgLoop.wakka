@@ -1,10 +1,12 @@
-{{fbdoc item="title" value="LOOP"}}
-----
+{{fbdoc item="title" value="LOOP"}}----
+Control flow statement for looping
 
-{{fbdoc item="desc"}}
-Part of Do [...] Loop.
-See [[KeyPgDoloop DO...LOOP]].
+{{fbdoc item="syntax"}}##
+	Do
+		[ //statement block// ]
+	**Loop** [ { Until | While } //condition// ]
+##
+{{fbdoc item="see"}}
+	- ##[[KeyPgDoloop Do...Loop]]##
 
-
-{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
-
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

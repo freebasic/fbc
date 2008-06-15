@@ -1,16 +1,16 @@
-{{fbdoc item="title" value="DIR"}}
-----
+{{fbdoc item="title" value="DIR"}}----
 Returns files and/or directories that match //file_spec// and //attrib_mask//.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" , [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//retstr// = DIR( //file_spec//, //attrib_mask//, //out_attrib//)
+	//retstr// = DIR( //file_spec//, //attrib_mask//, //out_attrib// )
 
 	or
 
-	//retstr// = DIR( //out_attrib//)
+	//retstr// = DIR( //out_attrib// )
 ##
 {{fbdoc item="param"}}
 	##//file_spec//##
@@ -28,7 +28,7 @@ Returns files and/or directories that match //file_spec// and //attrib_mask//.
 	Returns files and/or directories that match //file_spec// and //attrib_mask//. The //file_spec// parameter can include wildcards ("*" and/or "?") and paths.
 
 	The //attrib_mask// optional parameter is a combination of the following flags (each file with any of them set will be matched):
-		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h03;Hidden;fbHidden;&h05;System;fbSystem;&h08;Directory;fbDirectory;&h10;Archive;fbArchive;&h20;Normal;fbNormal"}}
+		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h02;Hidden;fbHidden;&h04;System;fbSystem;&h08;Directory;fbDirectory;&h10;Archive;fbArchive;&h20;Normal;fbNormal"}}
 	Constants can be used by including ##"dir.bi"##
 
 	By default //attrib_mask// is set to &h21 (ie.: search for files with the archive or read-only flags set).
@@ -73,4 +73,4 @@ list_files "*", attrib_archive
 	- ##[[KeyPgMkdir Mkdir]]##
 	- ##[[KeyPgRmdir Rmdir]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

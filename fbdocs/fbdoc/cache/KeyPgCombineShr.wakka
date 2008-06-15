@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SHR= (Combined SHR)"}}
-----
+{{fbdoc item="title" value="SHR= (Combined SHR)"}}----
 Operator that shifts the bits of an integer right and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -27,4 +26,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgShr Shr]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

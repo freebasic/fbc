@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OUT"}}
-----
+{{fbdoc item="title" value="OUT"}}----
 Function for hardware port accessing.
 
 {{fbdoc item="syntax"}}##
@@ -56,4 +55,4 @@ Sound(1046, 60) 'C6
 	- ##[[KeyPgWait Wait]]##
 	- ##[[KeyPgPalette Palette]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

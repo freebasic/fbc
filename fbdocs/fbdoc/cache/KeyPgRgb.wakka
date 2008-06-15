@@ -1,9 +1,8 @@
-{{fbdoc item="title" value="RGB"}}
-----
+{{fbdoc item="title" value="RGB"}}----
 Function to compute valid color value for hi/truecolor modes.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b))
+	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgShl shl]] 16) [[KeyPgOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgShl shl]] 8) [[KeyPgOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOr or]] &hFF000000)
 ##
 {{fbdoc item="usage"}}##
 	**RGB**(//red//, //green//, //blue//)
@@ -22,7 +21,7 @@ Function to compute valid color value for hi/truecolor modes.
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
 
-	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an integer  in the format &hRRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format.
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an integer  in the format &hAARRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format. AA is the implicit alpha value and is automatically set to &hFF.
 
 Example:
 	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
@@ -40,6 +39,7 @@ Sleep 'wait before exiting
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgRgba RGBA]]##
 	- ##[[KeyPgColor Color]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

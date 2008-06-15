@@ -117,6 +117,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCondWait|CONDWAIT"}} 
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
 	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE"}}
 	- {{fbdoc item="keyword" value="KeyPgCos|COS"}}
 	- {{fbdoc item="keyword" value="KeyPgCptr|CPTR"}}
@@ -162,8 +163,10 @@
 	- {{fbdoc item="keyword" value="KeyPgDefulngint|DEFULNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
 	- {{fbdoc item="keyword" value="KeyPgDir|DIR"}}
+	- {{fbdoc item="keyword" value="KeyPgDo|DO"}}
 	- {{fbdoc item="keyword" value="KeyPgDoloop|DO...LOOP"}}
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgDraw|DRAW"}}
@@ -182,7 +185,9 @@
 	- {{fbdoc item="keyword" value="KeyPgEof|EOF"}}
 	- {{fbdoc item="keyword" value="KeyPgEqv|EQV"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
-	- {{fbdoc item="keyword" value="KeyPgErl|ERL"}}
+	- {{fbdoc item="keyword" value="KeyPgErfn|ERFN"}}
+	- {{fbdoc item="keyword" value="KeyPgErl|ERL"}} 
+	- {{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}
 	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
 	- {{fbdoc item="keyword" value="KeyPgError|ERROR"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
@@ -201,7 +206,8 @@
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
-	- {{fbdoc item="keyword" value="KeyPgFornext|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgFornext|FOR...NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgFormat|FORMAT"}}
 	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
 	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
@@ -314,6 +320,7 @@
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOr|OR"}}
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
@@ -332,6 +339,7 @@
 	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
@@ -344,6 +352,7 @@
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
+	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
@@ -366,6 +375,7 @@
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}
@@ -452,7 +462,8 @@
 	- {{fbdoc item="keyword" value="KeyPgWeekday|WEEKDAY"}}
 	- {{fbdoc item="keyword" value="KeyPgWeekdayname|WEEKDAYNAME"}}
 	- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
-	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE"}}
+	- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
+	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE...WEND"}}
 	- {{fbdoc item="keyword" value="KeyPgWhex|WHEX"}}
 	- {{fbdoc item="keyword" value="KeyPgWidth|WIDTH"}}
 	- {{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}
@@ -461,6 +472,7 @@
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 	- {{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
+	- {{fbdoc item="keyword" value="KeyPgWriteFile|WRITE (File Access)"}}	
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING(Data Type)"}}

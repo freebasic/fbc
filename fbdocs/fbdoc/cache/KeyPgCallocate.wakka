@@ -5,11 +5,9 @@ Allocates a certain number of bytes from the free store and clears the contents.
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
-
 {{fbdoc item="usage"}}##
 	//ptr_var// = CALLOCATE(//bytes//)
 ##
-
 {{fbdoc item="param"}}
 	##//num_elements//##
 		Number of elements to return
@@ -56,4 +54,4 @@ End
 	- ##[[KeyPgDeallocate Deallocate]]##
 	- ##[[KeyPgReallocate Reallocate]]##
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

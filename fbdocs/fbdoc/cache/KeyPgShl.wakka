@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SHL"}}
-----
+{{fbdoc item="title" value="SHL"}}----
 Operator that shifts the bits of an integer left.
 
 {{fbdoc item="syntax"}}##
@@ -41,6 +40,6 @@ The output would look like:
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShr Shr]]##
-	- [[OpArithmatic Arithmetic Operators]]
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

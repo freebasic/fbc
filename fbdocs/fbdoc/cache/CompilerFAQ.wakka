@@ -77,7 +77,7 @@
 {{anchor name="item9"}}==What are the planned features for FreeBASIC?==
 	- Object Oriented Programming
 
-	You can find out what's planned for the future releases by directly looking at the TODO file for the compiler, currently in CVS [[http://cvs.sourceforge.net/viewcvs.py/fbc/FreeBASIC/src/compiler/TODO.txt?view=markup here]].
+	You can find out what's planned for the future releases by directly looking at the TODO file for the compiler, currently in CVS [[http://fbc.cvs.sourceforge.net/fbc/FreeBASIC/src/compiler/TODO.txt?view=markup here]].
 
 ----
 @@**Getting Started with FreeBASIC questions**@@

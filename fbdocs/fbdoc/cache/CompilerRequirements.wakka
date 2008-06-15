@@ -22,6 +22,4 @@
 	- Long filenames are supported under systems that supply the long filename API defined by Windows 95, including DOS with an LFN TSR (for example, [[http://www.geocities.com/jadoxa/doslfn/ DOSLFN]]).  Long filename support is not required to use the compiler; however, care must be taken in unpacking the distribution, for example, with a Windows program which creates short names with numeric tails (FREEBA~1) instead of truncating to 8 characters (FREEBASI).  The filenames of all files in the distribution should be truncated to 8.3 if the compiler is to be used without long filename support.
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  **Requirements** &middot;  [[CompilerInstalling Installing]] &middot; [[CompilerRunning Running]] &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

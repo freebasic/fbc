@@ -11,6 +11,9 @@
 	- {{fbdoc item="keyword" value="KeyPgLongint|LONGINT (64-bit signed)"}}
 	- {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT (64-bit unsigned)"}}
 
+==Integer Modifiers==
+	- {{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED (modifier)"}}
+
 <<>>
 ==Floating-point types==
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE (Single-precision)"}}
@@ -24,7 +27,5 @@
 >>
 
 ::c::
-
-**Data Types**: **Standard Data Types** &middot; [[DtConstants Constants]] &middot; [[DtVariables Variables]] &middot; [[DtArrays Arrays]] &middot; [[DtPointers Pointers]] &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -4,7 +4,7 @@
 	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Single**
 ##
 {{fbdoc item="desc"}}
-	Single is a 32-bit, floating point data type used to store decimal numbers. They can hold values in a renge of  1.1 E-38 to 3.43 E+38. Its precision is of 6 decimal digits. 
+	Single is a 32-bit, floating point data type used to store decimal numbers. They can hold values in a range of  1.1 E-38 to 3.43 E+38. Its precision is of 6 decimal digits. 
 	
 	They are similar to ##[[KeyPgDouble Double]]## data types, but less precise. 
 

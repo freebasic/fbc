@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="RGBA"}}
-----
+{{fbdoc item="title" value="RGBA"}}----
 Function to compute valid color value including alpha (translucency) for hi/truecolor modes.
 
 {{fbdoc item="syntax"}}##
@@ -24,7 +23,7 @@ Function to compute valid color value including alpha (translucency) for hi/true
 {{fbdoc item="desc"}}
 	##//Red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.
 
-	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an integer  in the format &hRRGGBBAA, where RR, GG, BB, AA  equals the values passed to this function, in hexadecimal format.
+	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an integer  in the format &hAARRGGBB, where RR, GG, BB, AA  equals the values passed to this function, in hexadecimal format.
 
 	Example:	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
 
@@ -74,4 +73,5 @@ imagedestroy img
 {{fbdoc item="see"}}
 	- ##[[KeyPgColor Color]]##
 	- ##[[KeyPgRgb RGB]]##
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

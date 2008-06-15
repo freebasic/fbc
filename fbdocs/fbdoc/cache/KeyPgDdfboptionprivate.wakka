@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_OPTION_PRIVATE__"}}
-----
+{{fbdoc item="title" value="__FB_OPTION_PRIVATE__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -27,4 +26,4 @@ Intrinsic define (macro value) set by the compiler.
 	- ##[[KeyPgPrivate Private]]##
 	- ##[[KeyPgPublic Public]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

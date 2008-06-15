@@ -53,9 +53,9 @@
 	- {{fbdoc item="keyword" value="KeyPgOpenErr|OPEN ERR"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenPipe|OPEN PIPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
-	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintusing|USING (PRINT)"}}
+	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgSpc|SPC"}}
 	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
@@ -117,8 +117,10 @@
 	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
 
 ==ERROR HANDLING==
-	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
+	- {{fbdoc item="keyword" value="KeyPgErfn|ERFN"}}
 	- {{fbdoc item="keyword" value="KeyPgErl|ERL"}} 
+	- {{fbdoc item="keyword" value="KeyPgErmn|ERMN"}}
+	- {{fbdoc item="keyword" value="KeyPgErr|ERR"}}
 	- {{fbdoc item="keyword" value="KeyPgError|ERROR"}}
 	- {{fbdoc item="keyword" value="KeyPgLocal|LOCAL"}}
 	- {{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}
@@ -132,6 +134,7 @@
 	- {{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}
 	- {{fbdoc item="keyword" value="KeyPgClose|CLOSE"}}
+	- {{fbdoc item="keyword" value="KeyPgEncoding|ENCODING"}}
 	- {{fbdoc item="keyword" value="KeyPgEof|EOF"}}
 	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
 	- {{fbdoc item="keyword" value="KeyPgGetfileio|GET # (File I/O)"}}
@@ -143,13 +146,16 @@
 	- {{fbdoc item="keyword" value="KeyPgLof|LOF"}}
 	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
+	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
 	- {{fbdoc item="keyword" value="KeyPgReset|RESET"}}	
 	- {{fbdoc item="keyword" value="KeyPgSeekset|SEEK (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgSeekreturn|SEEK (Function)"}}
 	- {{fbdoc item="keyword" value="KeyPgUnlock|UNLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
+	- {{fbdoc item="keyword" value="KeyPgWriteFile|WRITE (File Access)"}}	
 
 ==EXTENDED LIBRARY (FILE.BI)==
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
@@ -167,10 +173,13 @@
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
 	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
+	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
+	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
@@ -206,6 +215,7 @@
 	- {{fbdoc item="keyword" value="KeyPgRgba|RGBA"}}
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
 	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}
@@ -282,14 +292,17 @@
 ==MODULARIZING==
 	- {{fbdoc item="keyword" value="KeyPgChain|CHAIN"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
-	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
-	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
-	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
+	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
+	- {{fbdoc item="keyword" value="KeyPgUsing|USING (Namespaces)"}}
 
 ==MULTITHREADING==
 	- {{fbdoc item="keyword" value="KeyPgCondBroadcast|CONDBROADCAST"}}
@@ -331,6 +344,7 @@
 
 ==PREDEFINED SYMBOLS==
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
@@ -385,6 +399,7 @@
 ==PROGRAM FLOW==
 	- {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE"}}
 	- {{fbdoc item="keyword" value="KeyPgCase|CASE"}}
+	- {{fbdoc item="keyword" value="KeyPgDo|DO"}}
 	- {{fbdoc item="keyword" value="KeyPgDoloop|DO...LOOP"}}
 	- {{fbdoc item="keyword" value="KeyPgElse|ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgElseif|ELSEIF"}}
@@ -395,7 +410,8 @@
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
-	- {{fbdoc item="keyword" value="KeyPgFornext|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgFornext|FOR...NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgLoop|LOOP"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgOngosub|ON...GOSUB"}}
@@ -408,7 +424,8 @@
 	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgUntil|UNTIL"}}
 	- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
-	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE"}}
+	- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
+	- {{fbdoc item="keyword" value="KeyPgWhilewend|WHILE...WEND"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 
 ==STRING FUNCTIONS==
@@ -428,6 +445,7 @@
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
+	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
 
 ==STRING TO/FROM NUMBER==
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}

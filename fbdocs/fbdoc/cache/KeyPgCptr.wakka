@@ -29,4 +29,4 @@ print *cptr( byte ptr, intptr ), *intptr
 	- ##[[KeyPgCsng Csng]]##
 	- ##[[KeyPgCdbl Cdbl]]## 
 
-{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical  keywords list"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

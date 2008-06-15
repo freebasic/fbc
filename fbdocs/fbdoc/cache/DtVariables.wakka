@@ -6,7 +6,7 @@
 	
 	In FreeBASIC, variable names can defined using the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command. 
 
-	Where the variables are available depends on where and how you invoke the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command. This is called the {{fbdoc item="keyword" value="CptVarScope|Variable Scope"}}. Depending on the Scope of a variable, a value you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
+	Where the variables are available depends on where and how you invoke the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command. This is called the {{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}. Depending on the Scope of a variable, a value you define can be available within the main area of a program, within a {{fbdoc item="keyword" value="KeyPgSub|SUB"}} or {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}, or anywhere within your program.. 
 
 	After being defined with the {{fbdoc item="keyword" value="KeyPgDim|DIM"}} command, variables can be altered and used as variables wherever their [[CatPgStdDataTypes Standard Data Types]] are similar.
 
@@ -33,10 +33,8 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[CptVarScope Variable Scope]]
-	- [[cptIdentifierRules Standard Identifier Rules]]
+	- [[ProPgVariableScope Variable Scope]]
+	- [[ProPgIdentifierRules Standard Identifier Rules]]
 	- [[KeyPgDim DIM]]
-
-**Data Types**: [[CatPgStdDataTypes Standard Data Types]] &middot; [[DtConstants Constants]] &middot; **Variables** &middot; [[DtArrays Arrays]] &middot; [[DtPointers Pointers]] &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

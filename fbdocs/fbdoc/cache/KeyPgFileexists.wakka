@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FILEEXISTS"}}
-----
+{{fbdoc item="title" value="FILEEXISTS"}}----
 Function to test existence of a file.
 
 {{fbdoc item="syntax"}}##
@@ -46,4 +45,4 @@ end if
 {{fbdoc item="see"}}
 	- ##[[KeyPgDir Dir]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

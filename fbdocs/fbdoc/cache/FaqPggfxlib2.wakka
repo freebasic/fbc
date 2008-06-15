@@ -4,6 +4,7 @@
 
 **FreeBASIC Graphics Library questions:**
 	==- {{anchor name="item5|How can I link/use Gfxlib?"}}==
+	==- {{anchor name="item6|What about the fbgfx.bi header file?"}}==
 	==- {{anchor name="item1|How are GET/PUT arrays managed?"}}==
 	==- {{anchor name="item2|Can I get rid of the 'DOS' screen?"}}==
 	==- {{anchor name="item3|How can I get the red, green, blue, or alpha component of a colour?"}}==
@@ -14,20 +15,28 @@
 @@**FreeBASIC Graphics Library questions**@@
 
 {{anchor name="item5"}}==How can I link/use Gfxlib?==
-	Gfxlib is "built in" into the language, there's no .bi file to include or library to link. FB detects you want to use Gfxlib when it finds a SCREEN or SCREENRES instruction. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
+	Gfxlib is "built in" into the language, it is not necessary to include any .bi file or to link any library explicitely. FB detects you want to use Gfxlib when it finds a [[KeyPgScreengraphics SCREEN]] or [[KeyPgScreenres SCREENRES]] instruction. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
 	
+	{{anchor name="item0|Back to top"}}
+
+{{anchor name="item6"}}==What about the fbgfx.bi header file?==
+	The fbgfx.bi header file is available for inclusion by your program, and contains constant and type definitions that may be helpful to the programmer when using Gfxlib. You do not have to explicitely include this file to use Gfxlib however; the header is only available as an aid. Contents include [[KeyPgScreengraphics SCREEN]]/[[KeyPgScreenres SCREENRES]] mode flag constants, definitions of [[GfxScancodes Keyboard scancodes]] and more.
+	
+	{{anchor name="item0|Back to top"}}
+
 {{anchor name="item1"}}==How are GET/PUT arrays managed?==
-	In FreeBASIC, images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of a four byte header (32 bits), followed by the image data.
-	The first 3 bits of this header contain the image color depth in bytes-per-pixel. (8-bit color, depth = 1; 16-bit color, depth = 2; 32-bit color, depth = 4). The next 13 bits contain the image width. The last 16 bits contain the image's height.  You can find code examples of how to read this data [[FaqPggetputstructure HERE]].
+	In FreeBASIC, images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data.
+	
+		**Old-style** chunk header consists of 4 bytes (32 bits). The first 3 bits contain the image color depth in bytes per pixel (8-bit color, depth = 1; 16-bit color, depth = 2; 32-bit color, depth = 4). The next 13 bits contain the image width. The last 16 bits contain the image's height. Please note the instrinsic nature of the header allows only for images of sizes up to 8191x65535. The actual pixel data follows the header, and is compacted one row of pixels after another; no data alignment is assumed. The final size of the chunk can then be computed using the formula:
+	
+			##size = 4 + ( width * height * bytes_per_pixel )##
 
-	The actual pixel data then follows, the size of this area can be obtained using the formula
+		**New-style** chunk header consists of 32 bytes. The first word (32 bits) must be equal to the value &h7, allowing Gfxlib to identify the new type of chunk. The secord word contains the image color depth in bytes per pixel. The third and fourth words contain the image width and height respectively, effectively removing the image size limit enforced by the old-style image chunks. The fifth word contains the pixel row pitch in bytes; this tells how many bytes a row of pixels of the image is long. The pitch in new-style chunks is always a multiple of 16, to allow pixels row data to be aligned on the paragraph boundary. The other 3 remaining words (12 bytes) of the header are currently unused and reserved for future use. The final size of the image is:
 
-	pixel_data_size_bytes = ( img_Width * img_Height * img_Depth )
+			##size = 32 + ( ( ( ( width * bytes_per_pixel ) + &hF ) and not &hF ) * height )##
 
-
-	The total size of the image can be obtained using this formula
-
-	image_size_bytes = 4 + ( img_Width * img_Height * img_Depth )
+	The [[KeyPgGetgraphics GET]] and [[KeyPgImagecreate IMAGECREATE]] functions both create a new-style image chunk, with an exception: [[KeyPgGetgraphics GET]] creates an old-style chunk when working in a gfx mode with a color depth equal or less than 8 bits per pixel; this was made to preserve compatibility with old QuickBasic sources, as the old-style chunks use the same internal format as used in QB.
+	All gfx primitives can work with both old-style and new-style image chunks. For more informations on the GET/PUT structure, please refer to [[FaqPggetputstructure this example]].
 
 	{{anchor name="item0|Back to top"}}
 

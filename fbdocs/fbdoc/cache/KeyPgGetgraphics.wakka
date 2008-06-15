@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="GET (GRAPHICS)"}}
-----
+{{fbdoc item="title" value="GET (GRAPHICS)"}}----
 {{fbdoc item="syntax"}}##
 	**Get** [//target//,] [STEP] (//x1//, //y1//)-[STEP](//x2//, //y2//), //arrayname//[(//idx//)]
 ##
@@ -27,15 +26,20 @@
 	As previously said, the supplied array must be large enough to hold the block you're going to save; the required array size depends on both the block size in pixels and the current color depth. Use the following formulas to compute the right size in bytes:
 
 	For color depths 1, 2, 4 and 8:
-	##size = 4 + (w * h)##
+	##size = 32 + (((w + &hF) and not &hF) * h)##
 	For color depths 15 and 16:
-	##size = 4 + (w * h * 2)##
+	##size = 32 + ((((w * 2) + &hF) and not &hF) * h)##
 	For color depths 24 and 32:
-	##size = 4 + (w * h * 4)##
+	##size = 32 + ((((w * 4) + &hF) and not &hF) * h)##
 
-	Where w and h are the width and height of the graphics block you want to save. Assuming you're working with ##[[KeyPgInteger Integer]]## arrays, and as an ##[[KeyPgInteger Integer]]## in FB is 4 bytes long, to save an 8bpp 32x32 block for example, you'll need an array of ((4 + (32 * 32)) / 4) elements.
+	Where w and h are the width and height of the graphics block you want to save. Pixel data starts at the 33th byte in the buffer, and pixel rows are byte-aligned on the paragraph size (16 bytes).
+	Note that the ##size## formula was changed in FB 0.17 to allow for extended sprite header capabilities. Previously the correct formula, which was compatible with QB, was:
 
-	An easier way to create suitable buffers for your images is by using the ##[[KeyPgImagecreate ImageCreate]]## function, you may like to have a look at it.
+	##size = 4 + (w * h * bpp)##
+
+	Where bpp is the bytes per pixel used by the current video mode. All the gfx primitives working with buffers accept both old-style and new-style buffers. ##**Get**## will always produce new-style (32 bytes extended header) buffers, except while working in a 8 bit or lower color depth mode; in this case the statement will produce an old-style (4 bytes compact header) buffer to retain compatibility with old QB sources.
+
+	The use of ##**Get**## is not recommended; an easier way to create suitable buffers for your images is by using the ##[[KeyPgImagecreate ImageCreate]]## function, you may like to have a look at it.
 
 {{fbdoc item="ex"}}
 	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
@@ -47,4 +51,4 @@
 	- ##[[KeyPgWindow Window]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

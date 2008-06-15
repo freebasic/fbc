@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WRITE (File I/O) "}}
-----
+{{fbdoc item="title" value="WRITE (File Access)"}}----
 {{fbdoc item="syntax"}}
 Open //file// As String For Binary Access **Write** As #//filenum// As Integer
 
@@ -17,4 +16,4 @@ See example at [[KeyPgAccess ACCESS]]
 	- [[KeyPgAccess ACCESS]]
 	- [[KeyPgReadFile READ]]
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

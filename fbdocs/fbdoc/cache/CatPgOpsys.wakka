@@ -2,16 +2,31 @@
 
 <<
 	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND$"}}
+	- {{fbdoc item="keyword" value="KeyPgChain|CHAIN"}}
+	- {{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR$"}}
+	- {{fbdoc item="keyword" value="KeyPgDir|DIR$"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
 	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
 	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
+	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
+	- {{fbdoc item="keyword" value="KeyPgMkdir|MKDIR"}}
+	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 
 <<>>
+	- {{fbdoc item="keyword" value="KeyPgRmdir|RMDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgRun|RUN"}}
 	- {{fbdoc item="keyword" value="KeyPgSetenviron|SETENVIRON"}}
 	- {{fbdoc item="keyword" value="KeyPgShell|SHELL"}}
 	- {{fbdoc item="keyword" value="KeyPgSystem|SYSTEM"}}
+
+==Extended library (file.bi)==
+	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
+	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
+	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 
 >>
 

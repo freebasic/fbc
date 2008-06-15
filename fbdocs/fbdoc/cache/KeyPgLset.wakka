@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LSET"}}
-----
+{{fbdoc item="title" value="LSET"}}----
 {{fbdoc item="syntax"}}
 lset string_var, string_expression
 lset dest_udt, origin_udt
@@ -43,5 +42,4 @@ lset  a, b
 	- [[KeyPgMkl MKL$]]
 	- [[KeyPgMks MKS$]]
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
-
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

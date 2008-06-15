@@ -1,57 +1,55 @@
-%%(qbasic)Function img_Width( p As Any Ptr ) As Integer
+%%(qbasic)'' here we define the image buffer header structure
+type _OLD_HEADER field = 1
+	bpp : 3 as ushort
+	width : 13 as ushort
+	height as ushort
+end type
 
-  Dim As uShort Ptr header
-  Dim As Integer w
-  
-  header = p
-  
-  w = header[0] Shr 3 '' first 13 bytes, slice off 3 bits on the right
-  
-  Return w
-  
-End Function
+type PUT_HEADER field = 1
+	union
+		old as _OLD_HEADER
+		type as uinteger
+	end union
+	bpp as integer
+	width as uinteger
+	height as uinteger
+	pitch as uinteger
+	_reserved( 1 to 12 ) as ubyte
+end type
 
-Function img_Depth( p As Any Ptr ) As Integer
-
-  Dim As uShort Ptr header
-  Dim As Integer d
-  
-  header = p
-  
-  d = header[0] And &b0000000000000111 '' last 3 bytes
-  
-  Return d
-  
-End Function
-
-Function img_Height( p As Any Ptr ) As Integer
-
-  Dim As uShort Ptr header
-  Dim As Integer h
-  
-  header = p
-  
-  h = header[1]
-  
-  Return h
-  
-End Function
+#define PUT_HEADER_NEW		&h7
 
 
-Screen 17, 32
+'' function to show info on an image
+sub show_image_info( byval image as any ptr )
+	dim as PUT_HEADER ptr header
+
+	header = image
+	if( header->type = PUT_HEADER_NEW ) then
+		print "New style header"
+		print "Image is " & header->width & "x" & header->height
+		print "Image uses " & header->bpp & " bytes for each pixel"
+		print "A row of image pixels takes " & header->pitch & " bytes"
+	else
+		print "Old style header"
+		print "Image is " & header->old.width & "x" & header->old.height
+		print "Image uses " & header->old.bpp & " bytes for each pixel"
+	end if
+end sub
 
 
-Dim As Any Ptr picture
+dim as any ptr picture
 
-picture = ImageCreate( 10, 10, 7 )
-Put( 30, 30 ), picture
+screen 17, 32
 
-? "This picture's width is: " & img_Width( picture )
-? "This picture's height is: " & img_Height( picture )
-? "This picture uses " & img_Depth( picture ) & " bytes for every pixel."
+picture = imagecreate( 10, 10, 7 )
+
+put( 40, 40 ), picture
+
+show_image_info( picture )
  
-Sleep%%
+sleep%%
 
-NOTE: To use this code with an array, pass your array to the functions, like this:
+NOTE: To use this code with an array, pass your array to the function, like this:
 
-%%(qbasic)? "This picture's height is: " & img_Height( VarPtr( myarray( 0 ) ) )%%
+%%(qbasic)show_image_info( varptr( myarray( 0 ) ) )%%

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="IMP"}}
-----
+{{fbdoc item="title" value="IMP"}}----
 Operator that finds the bitwise ##**Imp**## (implication) of two integers.
 
 {{fbdoc item="syntax"}}##

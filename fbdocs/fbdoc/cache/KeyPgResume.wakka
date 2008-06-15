@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="RESUME"}}
-----
+{{fbdoc item="title" value="RESUME"}}----
 Error handling statement to resume execution after a jump to an error handler.
 
 {{fbdoc item="syntax"}}##
@@ -29,6 +28,8 @@ i = 2
 Resume ' execution jumps back to 'j = 1 / i' line, which does not cause an error this time
 %%
 
+As of FreeBASIC version .17, 'On Error' is disabled by default, and must be enabled by the compiler option [[ProPgCompOptlang -lang qb or -lang deprecated]].
+
 {{fbdoc item="diff"}}
 	- Does not accept line numbers or labels
 	- Must compile with -ex option
@@ -36,7 +37,6 @@ Resume ' execution jumps back to 'j = 1 / i' line, which does not cause an error
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr Err]]##
 	- ##[[KeyPgResumenext Resume Next]]##
-	- [[LangErrorHandling Error Handling]]
+	- [[ProPgErrorHandling Error Handling]]
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}
-
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

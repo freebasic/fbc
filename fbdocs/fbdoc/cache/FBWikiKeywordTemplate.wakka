@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="Keyword Template"}}----
+Keyword template.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""MyFunction""**( //param1// [[KeyPgAs as]] [[KeyPgString string]], //param2// [[KeyPgAs as]] [[KeyPgInteger integer]] = &H1234 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **""MyFunction""**( //param1// [, //param2// ] )
+##
+{{fbdoc item="param"}}
+	##//param1//##
+		Parameter description.
+	##//param2//##
+		Parameter description.
+
+{{fbdoc item="ret"}}
+	Returns a value of zero (0) if sucessful, and a non-zero error code on failure.
+
+{{fbdoc item="desc"}}
+	This topic can be copied and pasted in to a newly created keyword.
+
+{{fbdoc item="ex"}}
+%%(qbasic)sample code
+sample code
+sample code
+sample code
+%%
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[FBWikiKeywordTemplate Keyword Template]]##
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

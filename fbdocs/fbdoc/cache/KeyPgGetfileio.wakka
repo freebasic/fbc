@@ -1,8 +1,7 @@
-{{fbdoc item="title" value="GET (FILE I/O)"}}
-----
+{{fbdoc item="title" value="GET (File I/O)"}}----
 {{fbdoc item="syntax"}}##
-	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //buffer// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
-	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgInteger Integer]]], //buffer()// [[KeyPgAs As]] [[KeyPgAny Any]]
+	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //buffer// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
+	**Get** #//handle// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //buffer()// [[KeyPgAs As]] [[KeyPgAny Any]]
 ##
 {{fbdoc item="param"}}
 	##//handle//##
@@ -100,4 +99,4 @@ Print ExampleStr
 	- ##[[KeyPgPutfileio Put (File I/O)]]##
 	- ##[[KeyPgFreefile Freefile]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

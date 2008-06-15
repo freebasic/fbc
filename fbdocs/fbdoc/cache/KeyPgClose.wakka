@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CLOSE"}}
-----
+{{fbdoc item="title" value="CLOSE"}}----
 Stream I/O function to terminate access to a device.
 
 {{fbdoc item="syntax"}}##
@@ -49,5 +48,4 @@ End
 	- ##[[KeyPgGetfileio Get (File I/O)]]##
 	- ##[[KeyPgFreefile Freefile]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
-
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

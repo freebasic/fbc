@@ -1,15 +1,12 @@
-{{fbdoc item="title" value="CLEAR"}}
-----
+{{fbdoc item="title" value="CLEAR"}}----
 Clears or initializes the contents of an array.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 , [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgInteger integer]] )
 ##
-
 {{fbdoc item="usage"}}##
 	CLEAR( //dst// , //value// , //bytes// )
 ##
-
 {{fbdoc item="param"}}
 	##//dst//##
 		An array to be cleared with a specific character.
@@ -35,4 +32,4 @@ clear Array(1), 0, len(Array(1)) * ubound(Array)
 ~- ##[[KeyPgErase Erase]]##
 ~- ##[[KeyPgReset Reset]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

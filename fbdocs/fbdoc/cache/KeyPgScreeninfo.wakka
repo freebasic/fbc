@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENINFO"}}
-----
+{{fbdoc item="title" value="SCREENINFO"}}----
 Statement to retrieve information about current video mode or the desktop.
 
 {{fbdoc item="syntax"}}##
@@ -54,4 +53,4 @@ PRINT "Desktop running at " + STR$(w) + "x" + STR$(h) + "x" + STR$(depth);
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

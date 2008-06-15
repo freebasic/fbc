@@ -1,11 +1,9 @@
-{{fbdoc item="title" value="COMMAND$"}}
-----
+{{fbdoc item="title" value="COMMAND$"}}----
 Returns command line parameters used to call the program.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Command** ( [[KeyPgByval byval]] //index// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
-
 {{fbdoc item="usage"}}##
 	//args// = COMMAND$
 	//args// = COMMAND$( //index// )
@@ -25,6 +23,9 @@ Returns command line parameters used to call the program.
 	When the command line is parsed for arguments, everthing between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 
 	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the commandline containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for rediection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
+
+	**WARNING**: By nature of FreeBASIC's constructor precedence and main() intialization, calling COMMAND$ within a global constructor is NOT SAFE. At the moment your app will not crash, but you will recieve only a null string. This *may* be able to be fixed in the future, but it would be wise to not rely on that.
+
 
 	__Disabling filename globbing under Win32__
 		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
@@ -83,4 +84,4 @@ end function
 {{fbdoc item="see"}}
 	- ##[[KeyPgExec Exec]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

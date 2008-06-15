@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SLEEP"}}
-----
+{{fbdoc item="title" value="SLEEP"}}----
 Waits until a specified time has elapsed, or a key is pressed.
 
 {{fbdoc item="syntax"}}##
@@ -42,4 +41,4 @@ sleep 500
 	- ##[[KeyPgTimer Timer]]##
 	- ##[[KeyPgInkey Inkey$]]##
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

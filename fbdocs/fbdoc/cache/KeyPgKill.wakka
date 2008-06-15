@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="KILL"}}
-----
+{{fbdoc item="title" value="KILL"}}----
 Deletes a disk file.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	KILL //filename//
+	**Kill** //filename//
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -26,4 +25,4 @@ kill "file.ext"
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell Shell]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

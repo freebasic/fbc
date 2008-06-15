@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="BSAVE"}}
-----
+{{fbdoc item="title" value="BSAVE"}}----
 Graphics statement to save a block of binary data into a file.
 
 {{fbdoc item="syntax"}}##
@@ -58,4 +57,4 @@ BSAVE "hello.bmp", 0
 {{fbdoc item="see"}}
 	- ##[[KeyPgBload Bload]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

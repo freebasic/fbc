@@ -1,24 +1,17 @@
-{{fbdoc item="title" value="END IF"}}
-----
-{{fbdoc item="syntax"}}
-if [statement] then
- [action]
-END IF
+{{fbdoc item="title" value="END IF"}}----
+Control flow statement for conditional branching
 
-{{fbdoc item="desc"}}
-END IF is used to denote the end of a block IF statement.
-{{fbdoc item="ex"}}
-%%(qbasic)
-if a = 1 then
- print "A is equal to one!"
-END IF
-%%
-
+{{fbdoc item="syntax"}}##
+	**If** //expression// **Then** : //statement(s)// [**Else** //statement(s)//] : **End If**
+//or//			
+	**If** //expression// **Then**
+		//statement(s)//
+	**End If**
+##
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgIfthen IFTHEN]]
+	- ##[[KeyPgIfthen If...Then]]##
 
-{{fbdoc item="back" value="CatPgConditional|CONDITIONAL"}}
-
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

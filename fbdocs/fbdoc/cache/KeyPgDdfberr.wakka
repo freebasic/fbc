@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_ERR__"}}
-----
+{{fbdoc item="title" value="__FB_ERR__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -15,6 +14,22 @@ Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+'Example code to demonstrate a use of __FB_ERR__
+dim err_command_line as ubyte
+err_command_line = __FB_ERR__
+select case err_command_line
+case 0
+print "No Error Checking enabled on the Command Line!"
+case 1
+print "Some Error Checking enabled on the Command Line!"
+case 3
+print "QBasic style Error Checking enabled on the Command Line!"
+case 7
+print "Extreme Error Checking enabled on the Command Line!"
+case else
+print "Some Unknown Error level has been set!"
+end select
+
 %%
 
 {{fbdoc item="diff"}}
@@ -24,5 +39,4 @@ Intrinsic define (macro value) set by the compiler.
 	- ##[[KeyPgDdfbmt __FB_MT__]]##
 	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

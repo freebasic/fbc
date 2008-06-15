@@ -21,4 +21,4 @@ print cast( byte, &h0080 )
 	- ##[[KeyPgCptr Cptr]]##
 	- ##[[KeyPgCint Cint]]##
 	 
-{{fbdoc item="back" value="DtConvert|Converting Data Types"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical  keywords list"}}
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENSET"}}
-----
+{{fbdoc item="title" value="SCREENSET"}}----
 Statement to set current work and visible pages.
 
 {{fbdoc item="syntax"}}##
@@ -47,4 +46,4 @@ LOOP WHILE INKEY$ = ""
 	- ##[[KeyPgScreenres Screenres]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="GETJOYSTICK"}}
-----
+{{fbdoc item="title" value="GETJOYSTICK"}}----
 Input function to read buttons and axis information from attached gaming devices.
 
 {{fbdoc item="syntax"}}##
@@ -92,4 +91,4 @@ loop
 	- ##[[KeyPgGetmouse Getmouse]]##
 	- ##[[KeyPgMultikey Multikey]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

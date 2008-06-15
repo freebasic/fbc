@@ -16,6 +16,4 @@
 	- You can also add the FreeBASIC directory to your PATH environment variable ( command like "SET PATH=C:\FB\;%PATH%" ) , so you will not have to switch to or type the FB's dir every time you want to compile your project's files.
 
 
-[[CompilerAbout About]] &middot; [[CompilerFeatures Main Features]] &middot;  [[CompilerCredits Credits]] &middot;  [[CompilerRequirements Requirements]] &middot;  [[CompilerInstalling Installing]] &middot; **Running** &middot;  [[CompileCmdLine Using the Command Line]] &middot;  [[CompileErrMsg Compiler Error Messages]] &middot; [[CompilerQB FreeBasic and Qbasic]] &middot;  [[LangQB Differences from QB]]
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

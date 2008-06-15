@@ -1,16 +1,42 @@
-{{fbdoc item="title" value="OPEN PIPE"}}
-----
-{{fbdoc item="syntax"}}
-	OPEN PIPE "//command//" FOR INPUT|OUTPUT AS //n//
+{{fbdoc item="title" value="OPEN PIPE"}}----
+Open a sub process and allow input to be read from or output to be written to the sub process.
+
+{{fbdoc item="syntax"}}##
+	**open pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
+	**open pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
+##
+{{fbdoc item="usage"}}##
+	**open pipe** //command// for input as #//filenum//
+	**open pipe** //command// for output as #//filenum//
+	**open pipe** //command// for binary access read as #//filenum//
+	**open pipe** //command// for binary access write as #//filenum//
+##
+{{fbdoc item="param"}}
+	##//command//##
+		the sub-process to execute in the operating systems command shell.
+	##FOR {INPUT | OUTPUT}##
+		opens the pipe in text mode for input (reading) or output (writing)
+	##FOR BINARY ACCESS {READ | WRITE}##
+		opens the pipe in binary mode for input (reading) or output (writing)
+	##//filenum//##
+		the unused file handle to associate with the opened pipe on success
+
+{{fbdoc item="ret"}}
+	When used as function, OPEN PIPE returns zero (0) on sucess and a non-zero errorcode otherwise.
 
 {{fbdoc item="desc"}}
-	This command runs an os command and pipes its input or output to the fb exe.  This allows the  FB program to write /read to the command using standard file commands as PRINT #, LINE INPUT #   
-	//command// must be a console mode program using  the standard OS devices stdin / stdout for its input/output.
-	FOR INPUT means the stdout of the external comand will be inputted to the FB program
-	FOR OUTPUT means the FB program output will be sent as input to the external program
-	OPEN PIPE can't link to both the input and output of the program.
-	
-	//n// is a FB file handle that must be unused.
+	This statement opens a sub-process by running ##//command//## in the operating system's shell.  The output of the sub-process can be read back to the program using standard file commands such as LINE INPUT #.  Input to the sub-process can be supplied using standard file commands such as PRINT #.  OPEN PIPE is uni-directional: the stream of data can only flow one way, either from the program to the sub-process, or from the sub-process to the program.
+
+	##//command//## specifies the sub-process to execute and must use the standard devices stdin / stdout for its input / output.
+
+	##FOR INPUT## allows the program to read the output (stdout) of the sub-process as a text stream
+	##FOR OUTPUT## allows the program to send data as input (stdin) to the sub-process as a text stream
+	##BINARY ACCESS READ## allows the program to read the output (stdout) of the sub-process as a binary stream
+	##BINARY ACCESS WRITE## allows the program to send data as input (stdin) to the sub-process as a binary stream
+
+	BINARY streams are not supported on all implementations of the C run time library.  OPEN PIPE returns with an error if it is unable to open a binary stream.
+
+	##//filenum//## is a FB file handle that must be unused.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -26,6 +52,7 @@ loop
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpen OPEN]]
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOpen Close]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

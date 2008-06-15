@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_VER_PATCH__"}}
-----
+{{fbdoc item="title" value="__FB_VER_PATCH__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -29,6 +28,5 @@ Print "Welcome to freebasic ";fbMajorVersion;".";fbMinorVersion;"Revision ";fbPa
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdFBVerMajor __FB_VER_MAJOR__]]##
 	- ##[[KeyPgDdFBVerMinor __FB_VER_MINOR__]]##
- 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
 
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

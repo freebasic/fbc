@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="#DEFINE"}}
-----
+{{fbdoc item="title" value="#DEFINE"}}----
 Preprocessor directive to define a macro.
 
 {{fbdoc item="syntax"}}##
@@ -38,4 +37,4 @@ print hex( MyRGB(&hff, &h00, &hff) )
 	- ##[[KeyPgPpifdef #ifdef]]##
 	- ##[[KeyPgPpmacro #macro]]##
 
-{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

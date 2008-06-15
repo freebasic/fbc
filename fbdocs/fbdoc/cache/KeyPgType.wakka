@@ -55,4 +55,4 @@ TYPE BOOLEAN as integer
 	- [[KeyPgTypeDef TYPE AS]]
 	- [[KeyPgField FIELD]]
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

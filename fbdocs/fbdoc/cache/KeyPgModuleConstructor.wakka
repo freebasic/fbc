@@ -1,0 +1,59 @@
+{{fbdoc item="title" value="CONSTRUCTOR"}}
+----
+{{fbdoc item="syntax"}}
+	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Constructor** [[[KeyPgStatic Static]]]
+		{ //procedure body// }
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+
+{{fbdoc item="desc"}}
+	The Constructor keyword is used in Sub definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, ie., they may be called from within module-level code, as well as other procedures.
+
+	The procedure must have an empty parameter list.  A compile-time error will be generated if the Constructor keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
+
+	A module may define multiple constructor procedures, and multiple modules may define additional constructors provided no two constructors share the same //procedure_name//.
+	
+	In a single module, constructors execute in the order in which they are defined. When linking with modules that also define constructors, the order of execution is not guaranteed at compile-time. Therefore, special care should be taken when using constructors that may call on a secondary module also defining a constructor.  In such a case it is advisable to use a single constructor that explicitly calls initialization procedures in those modules.
+
+{{fbdoc item="ex"}}
+%%(qbasic)'' ConDesExample.bas : An example program that defines two sets of
+'' constructors and destructors. Demonstrates when and in what order
+'' they are called when linking a single module.
+
+sub Constructor1() constructor
+	print "Constructor1() called"
+end sub
+
+sub Destructor1() destructor
+	print "Destructor1() called"
+end sub
+
+sub Constructor2() constructor
+	print "Constructor2() called"
+end sub
+
+sub Destructor2() destructor
+	print "Destructor2() called"
+end sub
+
+	'' ------------------------------------------------------------------------
+	print "module-level code"
+
+	end 0
+	'' ------------------------------------------------------------------------%%
+	**Output:**
+##%%
+	Constructor1() called
+	Constructor2() called
+	module-level code
+	Destructor1() called
+	Destructor2() called
+%%##
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgModuleDestructor DESTRUCTOR (Module)]]
+	- [[KeyPgSub SUB]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}

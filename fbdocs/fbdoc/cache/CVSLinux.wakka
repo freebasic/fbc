@@ -1,91 +1,98 @@
-This procedure works rather well.  You will need many standard development tools and libraries, including but not limited to gcc, perl, autoconf, ncurses-dev, gpm-dev, libx11-dev, libxpm-dev, libxrandr-dev, and libglitz-glx1-dev.  At least some of these are likely to not come with a 'stock' desktop development Linux distribution.  All of them are easily available using apt-get, on Linuxi which use the apt (.deb) packaging system.
+===Compiling from CVS for Linux===
 
-1.  Log in to CVS.  Press Enter when prompted for password.
+If you want the very latest version of ""FreeBASIC"" on Linux, it can be compiled from the latest code in the CVS repository.  Most users should stay with the stable Linux build!  But the latest additions and corrections are available in this way.
 
-	##cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc login##
+	=={{anchor name="setup|Setting up the Linux environment"}}==
+		- {{anchor name="setup1|Install the development libraries"}}
+		- {{anchor name="setup3|Add the FreeBASIC program"}}
 
-2. Get source code via cvs.
+	=={{anchor name="making|Making the FreeBASIC executable and libraries"}}==
+		- {{anchor name="making1|Download the FreeBASIC sources"}}
+		- {{anchor name="making2|Make rtlib"}}
+		- {{anchor name="making3|Make gfxlib"}}
+		- {{anchor name="making4|Make fbc"}}
 
-	##mkdir ~/fbccvs
-	cd ~/fbccvs
-	""cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC""
-	cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc logout##
+	=={{anchor name="updating|Updating the installed FreeBASIC software"}}==
+		- {{anchor name="updating1|Replace the old .bi files with the new ones from the source folder"}}
+		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
 
-3. Copy 0.15b, standard distribution, to ~/FBbin. I have the .tar.gz in my home directory,
-so:
+	{{anchor name="setup"}}===Setting up the Linux environment===
+		
+		{{anchor name="setup1"}}==Install the development libraries==
+			You will need many standard development tools and libraries, including but not limited to:
+				- cvs
+				- gcc
+				- perl
+				- autoconf
+				- ncurses-dev
+				- libgpmg1-dev
+				- libx11-dev
+				- libxpm-dev
+				- libxrandr-dev
+				- libglitz-glx1-dev
+			At least some of these are likely to not come with a 'stock' desktop Linux distribution.  All of them are easily available using apt-get on distributions that use the Debian (.deb) packaging system.
 
-	##cd
-	""tar xzvf FreeBASIC-v0.15b-linux.tar.gz""
-	""mv FreeBASIC FBbin""##
+		{{anchor name="setup3"}}==Add the ""FreeBASIC"" program==
+			(For the following steps, you will need to type these commands into a terminal.)
 
-3. Add ~/FBbin to path
 
-Add the following to the bottom of text file ~/.bashrc:
+			%%cd
+tar xzvf FreeBASIC-v*-linux.tar.gz
+mv FreeBASIC FBbin
+echo 'export PATH=~/FBbin:$PATH' >> ~/.bashrc%%
 
-	##PATH=~/FBbin:$PATH
-	export PATH##
+			Then close the terminal window and start another (or log out and in again if you are working from a text-mode console).
 
-then close the shell window, and start another (or log out and in again).
+	{{anchor name="making"}}===Making the ""FreeBASIC"" executable and libraries===
+		
+		{{anchor name="making1"}}==Download the ""FreeBASIC"" sources==
+			
+			For the latest source code, you will need to download it from ""SourceForge"" using CVS.
 
-4. Copy 0.16b, latest standard, on top of ~/FBbin. I have the .tar.gz in my home directory,
-so:
-	
-	##cd ~/FBbin
-	tar xzvf ~/FB-v0.16b-mar-04-testing-linux.tar.gz##
+			%%cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc login
+mkdir ~/fbccvs
+cd ~/fbccvs
+cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC
+cvs -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc logout%%
 
-5. Make compiler.
+		{{anchor name="making2"}}==Make rtlib==
+			%%cd ~/fbccvs/FreeBASIC/src/rtlib
+autoreconf
+cd ~/fbccvs/FreeBASIC/src/rtlib/obj/linux
+chmod +x ../../configure
+../../configure
+make && make MULTITHREADED=1
+make install%%
 
-Set up to make the compiler, and make it. CFLAGS is set here for a non-debug build, smaller and faster.  You may see a warning or two during autoreconf, but these are safe to ignore.
+		{{anchor name="making3"}}==Make gfxlib==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux
+chmod +x ../../configure
+../../configure
+make
+make install%%
+		
+		{{anchor name="making4"}}==Make fbc==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/linux
+chmod +x ../../configure
+../../configure
+make%%
 
-	##""cd ~/fbccvs/FreeBASIC/src/compiler""
-	autoreconf
-	""cd ~/fbccvs/FreeBASIC/src/compiler/obj/linux""
-	chmod +x ../../configure
-	../../configure
-	make CFLAGS=-O2##
-
-6. Make all libs.
-
-	a. Set up to make rtlib, and make it.  CFLAGS is set here for a non-debug build, smaller and faster.
-
-		##""cd ~/fbccvs/FreeBASIC/src/rtlib""
-		autoreconf
-		""cd ~/fbccvs/FreeBASIC/src/rtlib/obj/linux""
-		chmod +x ../../configure
-		../../configure
-		make CFLAGS=-O2
-		make CFLAGS=-O2 MULTITHREADED=1##
-
-	b. Do the same for rtlibx.
-	
-		##""cd ~/fbccvs/FreeBASIC/src/rtlibx""
-		autoreconf
-		""cd ~/fbccvs/FreeBASIC/src/rtlibx/obj/linux""
-		chmod +x ../../configure
-		../../configure
-		make CFLAGS=-O2
-		make CFLAGS=-O2 MULTITHREADED=1##
-	
-	c. Ditto, gfxlib2.
-	
-		##""cd ~/fbccvs/FreeBASIC/src/gfxlib2""
-		autoreconf
-		""cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux""
-		chmod +x ../../configure
-		../../configure
-		make CFLAGS=-O2##
-
-7. Replace old .bi's with new.
-
-	##rm -rfv ~/FBbin/inc/*
-	""cp -rfv ~/fbccvs/FreeBASIC/inc/* ~/FBbin/inc""##
-
-8. Overwrite old compiler and libs with new.
-
-	##""/bin/cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/linux/fbc_new ~/FBbin/fbc""
-	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/linux/*.a ~/FBbin/lib/linux""
-	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/rtlibx/obj/linux/*.a ~/FBbin/lib/linux""
-	""/bin/cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux/*.a ~/FBbin/lib/linux""##
+	{{anchor name="updating"}}===Updating the installed ""FreeBASIC"" software===
+		
+		The following steps will update the copy of ""FreeBASIC"" you installed in ~/FBbin
+		
+		{{anchor name="updating1"}}==Replace the old .bi files with the new ones from the source folder==
+			
+			%%rm -rfv ~/FBbin/inc/*
+cp -rfv ~/fbccvs/FreeBASIC/inc/* ~/FBbin/inc%%
+		
+		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
+			
+			%%cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/linux/fbc_new ~/FBbin/fbc
+cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/linux/*.a ~/FBbin/lib/linux
+cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/linux/*.a ~/FBbin/lib/linux%%
 
 That's it!  If you run 'fbc', you should see results.
 

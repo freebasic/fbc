@@ -21,13 +21,22 @@ Macro that clears a bit in an integer.
 	Macro returning ##//value//## with the bit ##//bit_number//## reset to 0.
 	##foo = BITRESET( bar, 5 )##  does the same as ##foo = bar and not (1 shl 5)##.
 
+	To reset the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
+
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 PRINT BITRESET(5,0)
-%%##
-##%%
+%%
+%%
 4
-%%##
+%%
+
+%%(qbasic)
+PRINT Hex(BITRESET(&h8000000000000000,63LL))
+%%
+%%
+0
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic.

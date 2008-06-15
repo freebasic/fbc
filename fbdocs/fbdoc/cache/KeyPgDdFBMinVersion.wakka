@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_MIN_VERSION__"}}
-----
+{{fbdoc item="title" value="__FB_MIN_VERSION__"}}----
 Builtin macro function to test minimum compiler version.
 
 {{fbdoc item="syntax"}}##
@@ -38,6 +37,4 @@ Builtin macro function to test minimum compiler version.
 {{fbdoc item="see"}}
 	- [[KeyPgPpif #IF]]
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
-
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

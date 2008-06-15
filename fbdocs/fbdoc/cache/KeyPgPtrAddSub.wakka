@@ -1,4 +1,5 @@
 {{fbdoc item="title" value="Pointer Arithmetics"}}----
+Usage of addition or subtraction on a pointer
 
 {{fbdoc item="syntax"}}
 	pointer_variable + integer_expression 

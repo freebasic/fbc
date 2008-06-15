@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="\ (Integer Division)"}}
-----
+{{fbdoc item="title" value="\ (Integer Division)"}}----
 Operator to divide two numbers to return an integer result.
 
 {{fbdoc item="syntax"}}##
@@ -16,7 +15,7 @@ Operator to divide two numbers to return an integer result.
 	If either argument is an uninitialized variable, that argument will be evaluated as zero. If ##//number2//## is zero, a division by zero error will be raised.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM n AS DOUBLE
 PRINT n \ 5
 n = 7 \ 2.6  '' => 7 \ 3  => 2.33333  => 2
@@ -24,14 +23,14 @@ PRINT n
 n = 7 \ 2.4  '' => 7 \ 2 => 3.5 => 3
 PRINT n
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%(qbasic)
 0
 2
 3
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -41,5 +40,4 @@ The output would look like:
 	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
 	- [[CatPgMath Mathematical Functions]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
-
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LINE (GRAPHICS)"}}
-----
+{{fbdoc item="title" value="LINE (GRAPHICS)"}}----
 Graphics statement to draw a line
 
 {{fbdoc item="syntax"}}##
@@ -49,4 +48,4 @@ sleep 3000
 	- [[KeyPgWindow Window]]
 	- [[KeyPgViewgraphics View (Graphics)]]
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

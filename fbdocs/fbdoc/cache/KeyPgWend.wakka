@@ -1,8 +1,15 @@
-{{fbdoc item="title" value="WEND"}}
-----
-{{fbdoc item="desc"}}
-A component of a While [...] Wend loop.
-See [[KeyPgWhilewend WHILE...WEND]].
+{{fbdoc item="title" value="WEND"}}----
+Control flow statement
 
-{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+{{fbdoc item="syntax"}}##
+	**While** [//condition//]
+		[//statement block//]
+	**Wend**
+##
+{{fbdoc item="diff"}}
+	- None
 
+{{fbdoc item="see"}}
+	- ##[[KeyPgWhilewend While...Wend]]##
+
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SETMOUSE"}}
-----
+{{fbdoc item="title" value="SETMOUSE"}}----
 Graphics function to set the position and visibility of the mouse cursor.
 
 {{fbdoc item="syntax"}}##
@@ -40,4 +39,4 @@ loop until multikey(1)                                    'do loop until esc is 
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetkey Getkey]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

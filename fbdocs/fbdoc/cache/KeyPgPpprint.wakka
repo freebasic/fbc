@@ -1,5 +1,4 @@
-{{fbdoc item="title" value=" #PRINT"}}
-----
+{{fbdoc item="title" value=" #PRINT"}}----
 Preprocessor diagnositc directive.
 
 {{fbdoc item="syntax"}}##
@@ -19,4 +18,4 @@ Preprocessor diagnositc directive.
 {{fbdoc item="see"}}
 	- ##[[KeyPgPperror #error]]##
 
-{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

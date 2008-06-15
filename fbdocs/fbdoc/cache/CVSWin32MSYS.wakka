@@ -1,79 +1,123 @@
-If one desires the very latest Win32 FB, it can be compiled using MSYS, the Minimal SYStem put out by the MinGW people.  Most users should stay with the stable Win32 build!  But the latest additions and corrections are available in this way.
+===Compiling from CVS for ""Win32"", using MSYS===
 
-	**1**)  Install MSYS/MinGW correctly and well.  This is difficult if one uses the info and packages at http://www.mingw.org .  However, it is not bad if one uses the [[http://www.sourceforge.net SourceForge]] package at http://sf.net/projects/mingw-install .  If your install is not working well, it is recommended that you scrag it completely and install using that sf.net package.
-
-	**2**)  Get CVS and unzip it into the MSYS' /bin directory.  It's not included in MSYS.  At this writing, the latest version of CVS can be retrieved from: http://ftp.gnu.org/non-gnu/cvs/binary/stable/x86-woe/cvs-1-11-21.zip
-
-	**3**)  Get the latest FB source code via cvs.  Press Enter when prompted for password.  MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C.  You may also see a few error messages about a file named ~/.cvspass ; it is safe to ignore them.
+If you want the very latest version of ""FreeBASIC"" on ""Win32"", it can be compiled using ""MSYS"", the Minimal SYStem put out by the ""MinGW"" people.  Most users should stay with the stable ""Win32"" build!  But the latest additions and corrections are available in this way.
 	
-	##mkdir ~/fbccvs
-	cd ~/fbccvs
-	cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co ""FreeBASIC""##
+	=={{anchor name="setup|Setting up the MSYS/MinGW environment"}}==
+		- {{anchor name="setup1|Install the packages for MinGW and MSYS"}}
+		- {{anchor name="setup2|Add other necessary files and packages"}}
+		- {{anchor name="setup3|Add the FreeBASIC program"}}
 
-	**4**)  Copy the latest FreeBASIC Win32 distribution (always use the testing/unstable versions that must be installed over the stable one) to /FBbin.  I have it installed in conventional fashion, so:
+	=={{anchor name="making|Making the FreeBASIC executable and libraries"}}==
+		- {{anchor name="making1|Download the FreeBASIC sources"}}
+		- {{anchor name="making2|Make rtlib"}}
+		- {{anchor name="making3|Make gfxlib"}}
+		- {{anchor name="making4|Make fbc"}}
 
-	##mkdir /FBbin
-	cd /FBbin
-	cp -rv "/c/Program Files/""FreeBASIC"""/* .##
+	=={{anchor name="updating|Updating the FreeBASIC software installed in MSYS"}}==
+		- {{anchor name="updating1|Replace the old .bi files with the new ones from the source folder"}}
+		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
+		- {{anchor name="updating3|Copy MSYS/MinGW-specific library to FB linker library directory if it's not included already"}}
+		- {{anchor name="updating4|Optional: Stripping the debug information of the new libs"}}
 
-	**5**)  Add /FBbin to path.  You will need to use a text editor.  Windows Notepad runs fine under MSYS, but unfortunately, you will need a text editor which will handle the Unix/Windows CR/LF divide, and Notepad won't.  Windows Wordpad will; under a default XP install, one can do the following in MSYS: ##"C:\Program Files\Windows NT\Accessories\wordpad.exe" /etc/profile##
-	So, using a text editor of some appropriate sort, add the following to the *bottom* of text file /etc/profile : 
 
-		##export PATH="$PATH:/FBbin"##
+	{{anchor name="setup"}}===Setting up the MSYS/""MinGW"" environment===
 		
-	Then close the MSYS shell window, and start another.
-
-	**6**)  Make rtlib and rtlibx.
+		{{anchor name="setup1"}}==Install the packages for ""MinGW"" and MSYS==
+		
+			The packages you will need can be found on the Downloads page of http://www.mingw.org, in the "Current" section. These should be installed or extracted to C:\""MinGW""
+				-mingw-runtime
+				-binutils
+				-gcc-core
+				-w32api
+				-mingw32-make
+			On this page you will also find an installer for MSYS-1.0.  Download and install this into "C:\msys\1.0" and run the post-install.  When prompted for your ""MinGW"" installation, type: c:/""MinGW""
+		
+		{{anchor name="setup2"}}==Add other necessary files and packages==
+			
+			In order to download the ""FreeBASIC"" source code from CVS, you will need cvs.exe. At the time of writing, the latest version of CVS can be retrieved from: http://ftp.gnu.org/non-gnu/cvs/binary/stable/x86-woe/cvs-1-11-22.zip
+			Download this and extract cvs.exe to c:\""MinGW""\bin 
+			In order to make gfxlib2, you will need ""DirectX"" header files to be installed. At the moment, the only known way to do it is to use a package like the one available at this web site: http://www.streetcds.co.uk/dx/dx80_mgw.zip
+			Download and extract it to C:\""MinGW""
+		
+		{{anchor name="setup3"}}==Add the ""FreeBASIC"" program==
+		
+			(For the following steps, you will need to type these commands into an MSYS terminal.)
+			You will need the latest version of ""FreeBASIC"" in order to compile fbc.exe.  This next step will assume that you have it installed in C:\Program Files\""FreeBASIC""
+			
+			Open up an MSYS terminal.
+			In it, type the following commands:
+				%%mkdir /FBbin
+cp -rv "/c/Program Files/FreeBASIC"/* /FBbin%%
+			This will copy ""FreeBASIC"" into your MSYS installation.
+			In order for MSYS to be able to find ""FreeBASIC"", you will need to add it to the path.
+			Type the following command:
+				%%echo 'export PATH="$PATH:/FBbin"' >> /etc/profile%%
+			This adds a command to the bottom of the startup script so that next time MSYS starts it will add /Fbbin to your path.  You will need to restart MSYS for this to take effect.
+		
+	{{anchor name="making"}}===Making the ""FreeBASIC"" executable and libraries===
+		
+		(For the following steps, you will need to type these commands into an MSYS terminal.)
+		
+		{{anchor name="making1"}}==Download the ""FreeBASIC"" sources==
+			
+			For the latest source code, you will need to download it from ""SourceForge"" using CVS.
+			MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C.  You may also see a few error messages about a file named ~/.cvspass ; it is safe to ignore them.
+			
+			%%mkdir ~/fbccvs
+cd ~/fbccvs
+cvs -z3 -d:pserver:anonymous@fbc.cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC%%
+			During this step you may get a message about "dying gasps" from the ""SourceForge"" server.  It is probably safe to ignore this, but if it happens, I suggest repeating the step and making sure all the files are checked out.  If it gets up to ""FreeBASIC/tests/wstring"" folder it should be OK.
+		
+		{{anchor name="making2"}}==Make rtlib==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/rtlib/obj/win32
+../../configure
+make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1%%
+		
+		{{anchor name="making3"}}==Make gfxlib==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32
+../../configure
+make%%
+		
+		{{anchor name="making4"}}==Make fbc==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/win32
+../../configure
+make%%
 	
-		**a**. Set up to make rtlib, and make it.
+	{{anchor name="updating"}}===Updating the ""FreeBASIC"" software installed in MSYS===
+		
+		The following steps will update the copy of ""FreeBASIC"" you installed in /FBbin
+		(Again, the commands should be typed into an MSYS terminal)
+		
+		{{anchor name="updating1"}}==Replace the old .bi files with the new ones from the source folder==
+			
+			%%rm -rfv /FBbin/inc/*
+cp -rfv ~/fbccvs/FreeBASIC/inc/* /FBbin/inc%%
+		
+		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
+			
+			%%cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
+cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/*.a /FBbin/lib/win32
+cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/win32/libfb_ctor.o /FBbin/lib/win32
+cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
+		
+		{{anchor name="updating3"}}==Copy MSYS/""MinGW""-specific library to FB linker library directory if it's not included already==
+			
+			%%cp /mingw/lib/libmingwex.a /FBbin/lib/win32%%
 
-			##cd ~/fbccvs/""FreeBASIC""/src/rtlib/obj/win32
-			chmod +x ../../configure
-			../../configure
-			make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1##
+		
+		{{anchor name="updating4"}}==Optional: Stripping the debug information of the new libs==
+		
+		You may recognize, that after a successful build, the compiled libs can be very big, (many megabytes, in fact bigger than the whole compiler package), if this bothers you, you can strip the debug information with the strip command. strip.exe should be located in  "C:\MinGW\bin\strip.exe"
+			
+			%%'examples:
+strip -g libfbgfx.a 
+strip -g libfbmt.a 
+strip -g libfb.a%%
 
-		**b**. Do the same for rtlibx.
-
-			##cd ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/win32
-			chmod +x ../../configure
-			../../configure
-			make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1##
-
-	**7**)  Prepare for and make gfxlib2.
+	And you're ready to roll! The newest FB is now in your MSYS /FBbin.
 	
-		**a**.  Compilation of gfxlib2 requires DirectX header files to be installed.  They don't come with MSYS, or Cygwin.  The DirectX header files for Wine don't work.  At the moment, the only known way to do it is to use a package like the one available at this web site: http://www.streetcds.co.uk/dx/dx80_mgw.zip , download and unzip it to the /dx80 directory under the MSYS path.
-
-		**b**.  Make gfxlib2.
-
-			##cd ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/win32
-			chmod +x ../../configure
-			../../configure
-			make CFLAGS=-O2 INCLUDES="-I../.. -I../../win32 -I. -I/dx80/include"##
-
-	**8**)  Set up to make the compiler, and make it.
-
-		##cd ~/fbccvs/""FreeBASIC""/src/compiler/obj/win32
-		chmod +x ../../configure
-		../../configure
-		make##
-
-	**9**)  Replace old .bi's with new.
-
-		##rm -rfv /FBbin/inc/*
-		cp -rfv ~/fbccvs/""FreeBASIC""/inc/* /FBbin/inc##
-
-	**10**)  Overwrite old compiler and libs with new.
-
-		##cp -fv ~/fbccvs/""FreeBASIC""/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
-		cp -fv ~/fbccvs/""FreeBASIC""/src/rtlib/obj/win32/*.a /FBbin/lib/win32
-		cp -fv ~/fbccvs/""FreeBASIC""/src/rtlibx/obj/win32/*.a /FBbin/lib/win32
-		cp -fv ~/fbccvs/""FreeBASIC""/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32##
-
-	**11**)  Copy MSYS/MinGW-specific library to FB linker library directory if it's not included already.
-
-		##cp /mingw/lib/libmingwex.a /FBbin/lib/win32##
-
-And you're ready to roll!  The newest FB is now in your MSYS /FBbin.  
-
-Recently it has come to light that although the above often works, there can be chicken-and-egg-related problems.  Please see this forum thread for info:
-http://www.freebasic.net/forum/viewtopic.php?p=32260#32260
+	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:
+	http://www.freebasic.net/forum/viewtopic.php?p=32260

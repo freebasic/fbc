@@ -1,11 +1,13 @@
-{{fbdoc item="title" value="END"}}
-----
-{{fbdoc item="syntax"}}
-	END { sub | function | if | select | type | enum | scope | with | namespace | extern }
-	END [ //return_value// ]
+{{fbdoc item="title" value="END"}}----
+Control flow statement to end the program or end a statement block
 
+{{fbdoc item="syntax"}}##
+	**End** { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgIfthen If]]  | [[KeyPgSelectcase Select]]  | [[KeyPgType Type]]  | [[KeyPgEnum Enum]]  | [[KeyPgScope Scope]]  | [[KeyPgWith With]]  | [[KeyPgNamespace Namespace]]  | [[KeyPgExtern Extern]]  | [[KeyPgConstructor Constructor]]  | [[KeyPgDestructor Destructor]]  | [[KeyPgOperator Operator]] }
+//or//
+	**End** [ //return_value// ]
+##
 {{fbdoc item="desc"}}
-	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, either [[KeyPgSub SUB]], [[KeyPgFunction FUNCTION]], [[KeyPgIfthen IF]], [[KeyPgSelectcase SELECT]], [[KeyPgType TYPE]], [[KeyPgEnum ENUM]], [[KeyPgScope SCOPE]], [[KeyPgWith WITH]], [[KeyPgNamespace Namespace]], [[KeyPgExtern]].
+	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, one of ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgType Type]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgWith With]]##, ##[[KeyPgNamespace Namespace]]##, ##[[KeyPgExterncpp Extern]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##.
 
 	The second syntax is used to terminate the program, and return to the OS. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
 
@@ -43,15 +45,18 @@ sleep : end 0
 	- The END statement supports specifying a custom return value to be sent to the OS.
 
 {{fbdoc item="see"}}
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
-	- [[KeyPgIfthen IF]]
-	- [[KeyPgSelectcase SELECT]]
-	- [[KeyPgType TYPE]]
-	- [[KeyPgEnum ENUM]]
-	- [[KeyPgScope SCOPE]]
-	- [[KeyPgWith WITH]]
-	- [[KeyPgNamespace Namespace]]
-	- [[KeyPgExtern Extern]]
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgIfthen If...Then]]##
+	- ##[[KeyPgSelectcase Select Case]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgEnum Enum]]##
+	- ##[[KeyPgScope Scope]]##
+	- ##[[KeyPgWith With]]##
+	- ##[[KeyPgNamespace Namespace]]##
+	- ##[[KeyPgExterncpp Extern]]##
+	- ##[[KeyPgConstructor Constructor]]##
+	- ##[[KeyPgDestructor Destructor]]##
+	- ##[[KeyPgOperator Operator]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

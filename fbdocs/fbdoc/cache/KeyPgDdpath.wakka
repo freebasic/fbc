@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__PATH__"}}
-----
+{{fbdoc item="title" value="__PATH__"}}----
 Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -22,4 +21,4 @@ Intrinsic define (macro string) set by the compiler.
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfile __FILE__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

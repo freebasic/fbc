@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="MUTEXCREATE"}}
-----
+{{fbdoc item="title" value="MUTEXCREATE"}}----
 Creates a mutex used for synchronizing the execution of threads.
 
 {{fbdoc item="syntax"}}##
@@ -95,4 +94,4 @@ END SUB%%
 	- ##[[KeyPgThreadCreate Threadcreate]]##
 	- ##[[KeyPgThreadWait Threadwait]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

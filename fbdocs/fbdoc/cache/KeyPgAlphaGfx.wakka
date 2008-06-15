@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ALPHA"}}
-----
+{{fbdoc item="title" value="ALPHA"}}----
 Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects alpha blending as the method.
 
 {{fbdoc item="syntax"}}##
@@ -21,4 +20,4 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutgraphics Put]]##
 	
-{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

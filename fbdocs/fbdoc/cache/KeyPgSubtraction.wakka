@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="- (Subtraction)"}}
-----
+{{fbdoc item="title" value="- (Subtraction)"}}----
 Operator to subtract two numbers
 
 {{fbdoc item="syntax"}}##
@@ -12,17 +11,17 @@ Operator to subtract two numbers
 	The subtraction operator is used to find the difference between two numbers. Subtraction, -, is the inverse of addition, {{fbdoc item="keyword" value="KeyPgAddition|+"}}. The arguments ##//number1//## and ##//number2//## can be any valid numerical expression.
 
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 DIM n AS BYTE
 n = 4 - 5
 PRINT n
 SLEEP
-%%##
+%%
 
 The output would look like:
-##%%(qbasic)
+%%(qbasic)
 -1
-%%##
+%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -31,4 +30,4 @@ The output would look like:
 	- {{fbdoc item="keyword" value="KeyPgAddition|+ (Addition)"}}
 	- [[CatPgMath Mathematical Functions]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OPEN SCRN"}}
-----
+{{fbdoc item="title" value="OPEN SCRN"}}----
 {{fbdoc item="syntax"}}
 	OPEN SCRN [FOR INPUT|OUTPUT] AS //n//
 
@@ -29,4 +28,4 @@ sleep
 {{fbdoc item="see"}}
 	- [[KeyPgOpenCons OPEN CONS]]
 
- {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

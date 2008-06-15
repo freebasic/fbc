@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DATESERIAL"}}
-----
+{{fbdoc item="title" value="DATESERIAL"}}----
 Date function to return [[DtDateSer Date Serial]] for the specified year, month, and day.
 
 {{fbdoc item="syntax"}}##
@@ -39,4 +38,4 @@ print format(a!,"yyyy/mm/dd hh:mm:ss")
 	- ##[[KeyPgTimevalue TimeValue]]##
 	- ##[[KeyPgDatevalue DateValue]]##
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

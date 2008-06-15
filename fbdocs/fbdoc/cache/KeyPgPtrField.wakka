@@ -1,18 +1,15 @@
-{{fbdoc item="title" value="-> Pointer to Field Operator"}}
-----
+{{fbdoc item="title" value="-> Pointer to Field Operator"}}----
+Operator to access fields in a user defined type pointer variable
 
-{{fbdoc item="syntax"}}
-	//UDTPointer// -> //fieldname//
-	    
-	    
-	       
+{{fbdoc item="syntax"}}##
+	//UDTPointer// **->** //fieldname//
+##
 {{fbdoc item="desc"}}
 	The  pointer to field operator selects a field of the UDT variable pointed to by a pointer.
-	
 
 {{fbdoc item="ex"}}
 
-##%%(qbasic)Type rect
+%%(qbasic)Type rect
 	x As Integer
 	y As Integer
 End Type
@@ -27,7 +24,7 @@ Print "x = " & rp->x & ", y = " & rp->y
 Sleep%%
 
 {{fbdoc item="diff"}}
-	- New to FB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[KeyPgDot (.) Field operator]]

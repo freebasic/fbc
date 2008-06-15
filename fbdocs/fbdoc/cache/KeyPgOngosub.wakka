@@ -1,14 +1,15 @@
-{{fbdoc item="title" value="ON...GOSUB"}}
-----
-{{fbdoc item="syntax"}}
-	ON //expression// GOSUB //label1//[, ...]
+{{fbdoc item="title" value="ON...GOSUB"}}----
+Calls a label based on an expression
 
+{{fbdoc item="syntax"}}##
+	**On** //expression// **Gosub** //label1//[, ...]
+##
 {{fbdoc item="desc"}}
-	Branches to different labels depending on the value of //expression//. An expression value of 1 will branch to the first label, a value of 2 to the second, etc.  If the value of //expression// is zero (0) or greater than the number of items in the list, excecution continues on the next statment following the ON..GOSUB.
+	Branches to different labels depending on the value of //expression//. An expression value of 1 will branch to the first label, a value of 2 to the second, etc.  If the value of //expression// is zero (0) or greater than the number of items in the list, excecution continues on the next statment following the ##**On...Gosub**##.
 	
-	This statement behaves exactly like [[KeyPgGosub GOSUB]] and execution may return to the statement following the ON..GOSUB using [[KeyPgReturn RETURN]].
+	This statement behaves exactly like ##[[KeyPgGosub Gosub]]## and execution may return to the statement following the ##**On...Gosub**## using ##[[KeyPgReturn Return]]##.
 
-	It is recommended that the structured [[KeyPgSelectcase SELECT CASE]] condtitional statement be used instead of ON...GOSUB.
+	It is recommended that the structured ##[[KeyPgSelectcase Select Case]]## condtitional statement be used instead of ##**On...Gosub**##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -34,10 +35,9 @@ return
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgSelectcase SELECT CASE]]
-	- [[KeyPgOngoto ON...GOTO]]
-	- [[KeyPgGosub GOSUB]]
-	- [[KeyPgReturn RETURN]]
+	- ##[[KeyPgSelectcase Select Case]]##
+	- ##[[KeyPgOngoto On...Goto]]##
+	- ##[[KeyPgGosub Gosub]]##
+	- ##[[KeyPgReturn Return]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

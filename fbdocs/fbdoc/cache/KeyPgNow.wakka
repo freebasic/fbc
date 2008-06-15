@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="NOW"}}
-----
+{{fbdoc item="title" value="NOW"}}----
 Date function to return the current system time as a [[DtDateSer Date Serial]] 
 
 {{fbdoc item="syntax"}}##
@@ -30,5 +29,4 @@ print format(a!,"yyyy/mm/dd hh:mm:ss")
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

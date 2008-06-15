@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DATEVALUE"}}
-----
+{{fbdoc item="title" value="DATEVALUE"}}----
 Date function to return a [[DtDateSer Date Serial]] from a string.
 
 {{fbdoc item="syntax"}}##
@@ -60,4 +59,5 @@ print "Number of days between dates is " & abs( v2 - v1 )
 	- ##[[KeyPgDateserial DateSerial]]##
 	- ##[[KeyPgTimevalue TimeValue]]##
 	- ##[[KeyPgDatevalue DateValue]]##
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

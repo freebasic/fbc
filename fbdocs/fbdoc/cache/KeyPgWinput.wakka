@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WINPUT()"}}
-----
+{{fbdoc item="title" value="WINPUT()"}}----
 {{fbdoc item="syntax"}}
 //wstring//=WINPUT(num)
 //wstring//=WINPUT(num,[#]filenum)
@@ -27,5 +26,4 @@ loop until a>="1" and a<="3"
 {{fbdoc item="see"}}
 ~- [[KeyPgInput INPUT]]
 
-
-{{fbdoc item="back" value="CatPgInput|INPUT"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

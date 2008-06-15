@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="RESTORE"}}
-----
+{{fbdoc item="title" value="RESTORE"}}----
+Changes the next read location for values stored with the ##[[KeyPgData Data]]## statement
+
 {{fbdoc item="syntax"}}##
 	**Restore** //label//
 ##
@@ -96,4 +97,4 @@ Data 546, 7894, 4589, 64657, 34554, "Hi!"
 	- ##[[KeyPgData Data]]##
 	- ##[[KeyPgRead Read]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

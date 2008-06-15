@@ -1,18 +1,18 @@
-{{fbdoc item="title" value="TO"}}
-----
-{{fbdoc item="syntax"}}
-	FOR //iterator// //intial_value// TO //ending_value//
-	...
-	NEXT [ //iterator// ]
+{{fbdoc item="title" value="TO"}}----
+Statement modifier to specify a range
 
+{{fbdoc item="syntax"}}##
+	FOR //iterator// //intial_value// TO //ending_value//
+		//statement(s)//.
+	NEXT [ //iterator// ]
+//or//
 	SELECT CASE //case_comparison_value//
 	CASE //lower_bound// TO //upper_bound//
-	...
+		//statement(s)//.
 	END SELECT
-
+//or//
 	DIM //variable_identifier//( //lower_bound// TO //upper_bound// ) AS //type_specifier//
-
-
+##
 {{fbdoc item="desc"}}
 	The TO keyword is used to define a certain numerical range. This keyword is valid only if used with [[KeyPgFornext FOR ... NEXT]], [[KeyPgSelectcase SELECT / CASE]] and [[KeyPgDim DIM]] statements.
 
@@ -72,8 +72,8 @@ sleep
 	- none
 
 {{fbdoc item="see"}}
-	- [[KeyPgFornext FOR...NEXT]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgSelectcase SELECT CASE]]
+	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgSelectcase Select Case]]##
 
-{{fbdoc item="back" value="CatPgRange|RANGE"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

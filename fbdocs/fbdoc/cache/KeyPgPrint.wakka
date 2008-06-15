@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PRINT"}}
-----
+{{fbdoc item="title" value="PRINT"}}----
 Output statement to write text to screen or file. 
 
 {{fbdoc item="syntax"}}##
@@ -56,4 +55,4 @@ CLOSE #1
 	- ##[[KeyPgPrintusing Print Using]]##
 	- ##[[KeyPgWrite Write]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

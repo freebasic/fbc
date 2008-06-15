@@ -21,13 +21,22 @@ Macro that sets a bit in an integer.
 	Macro returning ##//value//## with the bit ##//bit_number//## set to 1.
 	##foo = BITSET( bar, 5 )##  does the same as ##foo = bar or (1 shl 5)##.
 
+	To set the bit on a 64 bit integer, pass the ##//bit_number//## as a 64 bit integer.
+
 {{fbdoc item="ex"}}
-##%%(qbasic)
+%%(qbasic)
 PRINT BITSET(4,0)
-%%##
-##%%
+%%
+%%
 5
-%%##
+%%
+
+%%(qbasic)
+PRINT BITSET(0,63LL)
+%%
+%%
+8000000000000000
+%%
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic.

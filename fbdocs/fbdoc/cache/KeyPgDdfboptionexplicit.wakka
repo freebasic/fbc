@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_OPTION_EXPLICIT__"}}
-----
+{{fbdoc item="title" value="__FB_OPTION_EXPLICIT__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -24,4 +23,4 @@ Intrinsic define (macro value) set by the compiler.
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgOptionexplicit Option Explicit]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

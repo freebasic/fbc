@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SHR"}}
-----
+{{fbdoc item="title" value="SHR"}}----
 Operator that shifts the bits of an integer arithmetically right.
 
 {{fbdoc item="syntax"}}##
@@ -43,7 +42,6 @@ The output would look like:
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShl Shl]]##
-	- [[OpArithmatic Arithmetic Operators]]
+	- [[CatPgOpArithmetic Arithmetic Operators]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
-
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

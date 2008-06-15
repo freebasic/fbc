@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="PRINT #"}}
-----
+{{fbdoc item="title" value="PRINT #"}}----
 {{fbdoc item="syntax"}}
 	PRINT #//filenumber//, arg1 [,arg2...]
 
@@ -16,9 +15,9 @@ open "bleh.dat"  for output as #1
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
-	- 
+	- ##[[KeyPgPrint Print]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

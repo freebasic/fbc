@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Memory Functions"}}----
+<<
+	- {{fbdoc item="keyword" value="KeyPgAllocate|ALLOCATE"}}
+	- {{fbdoc item="keyword" value="KeyPgCallocate|CALLOCATE"}}
+	- {{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}
+	- {{fbdoc item="keyword" value="KeyPgDeallocate|DEALLOCATE"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
+	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
+	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
+
+
+>>
+
+
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

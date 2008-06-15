@@ -1,9 +1,8 @@
-{{fbdoc item="title" value="THREADCREATE"}}
-----
+{{fbdoc item="title" value="THREADCREATE"}}----
 **Threadcreate** starts a user function in a separate execution thread.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Threadcreate** ( //proc// )
@@ -80,4 +79,4 @@ sleep
 	- ##[[KeyPgMutexUnlock Mutexunlock]]##
 	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

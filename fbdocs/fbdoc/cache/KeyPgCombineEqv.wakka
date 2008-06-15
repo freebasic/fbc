@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="EQV= (Combined EQV)"}}
-----
+{{fbdoc item="title" value="EQV= (Combined EQV)"}}----
 Operator that finds the bitwise ##**Eqv**## (equivalence) of two integers and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -26,4 +25,4 @@ print bin(a)
 {{fbdoc item="see"}}
 	- ##[[KeyPgEqv Eqv]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

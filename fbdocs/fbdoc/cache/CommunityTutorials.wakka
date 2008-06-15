@@ -5,6 +5,7 @@
 		-[[TutUsingLibs Using libraries in FreeBASIC]] //by [[JasonFirth SJ Zero]]//
 		-[[TutUsingMouse Using the Mouse in FreeBASIC]] //by MystikShadows//
 		-[[TutBasicInput Get Information into your program]] //by [[TekRat TekRat]]//
+		-[[TutDynamicArrays Using Dynamic Arrays in FreeBASIC]] //by [[SephKnows]]//
 	-**Pre Processor**
 		-[[TutConditionalCompilation Conditional Compilation And You]] //by AetherFox//
 	-**Memory Management**
@@ -16,13 +17,13 @@
 	-**Mathematics**
 		-[[TutMathAngles Angles]] //by RandyKeeling//
 		-[[TutMathIntroTrig A Brief Introduction To Trigonometry]] //by RandyKeeling//
-	-**Libraries**
-	~-[[TutLibrariesFromC Converting C header files]] //by [[DrV]]//
 	-**Windows API**
 		-[[TutMessageIntro Introduction to Message-Based Programming]] //by [[WikiRick rdc]]//
 	-**GTK Reference**
-		-[[TutIndexGTK GTK Reference]] //by [[JosephCohen Joseph Cohen]]//
-	
+		-[[TutIndexGTK GTK Reference]] //by Joseph Cohen//
+	-**Net Works**
+		-[[TutIndexSDLNET SDL_NET]] //by Paragon//
+
 
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

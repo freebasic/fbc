@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="SHELL"}}
-----
+{{fbdoc item="title" value="SHELL"}}----
 Sends a command to the system command interpreter.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Shell**( //command// [[KeyPgAs as]] [[KeyPgString string]] )
 ##
 {{fbdoc item="usage"}}##
-		Shell( //command// )
+	Shell( //command// )
 ##
 {{fbdoc item="param"}}
 	##//command//##
@@ -31,4 +30,4 @@ shell "ls"
 	- ##[[KeyPgExec Exec]]##
 	- ##[[KeyPgRun Run]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

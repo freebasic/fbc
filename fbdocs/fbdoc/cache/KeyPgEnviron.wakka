@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ENVIRON"}}
-----
+{{fbdoc item="title" value="ENVIRON"}}----
 Returns the value of a system environment variable.
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,4 @@ print environ$("path")
 	- ##[[KeyPgSetenviron Setenviron]]##
 	- ##[[KeyPgShell Shell]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -1,14 +1,13 @@
-{{fbdoc item="title" value="IMAGECREATE"}}
-----
+{{fbdoc item="title" value="IMAGECREATE"}}----
 Creates and initializes storage for an image.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]][, //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, //color// [[KeyPgAs as]] [[KeyPgInteger integer]]] )
 ##
 {{fbdoc item="usage"}}##
-		//buffer// = ""ImageCreate""( //width//, //height// )
-			##//or//##
-		//buffer// = ""ImageCreate""( //width//, //height//, //color// )
+	//buffer// = ""ImageCreate""( //width//, //height// )
+		##//or//##
+	//buffer// = ""ImageCreate""( //width//, //height//, //color// )
 ##
 {{fbdoc item="param"}}
 	##//width//##
@@ -26,7 +25,7 @@ Creates and initializes storage for an image.
 	
 	##**""ImageCreate""**## can only be used after setting a gfx mode with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  The created image buffer remains valid between mode changes as long as the different modes use the same pixel format.  Images can be deleted with ##[[KeyPgImageDestroy ImageDestroy]]##.
 
-	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions.
+	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FB releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
 
 {{fbdoc item="ex"}}
 ##%%(qbasic)option explicit
@@ -56,4 +55,4 @@ Creates and initializes storage for an image.
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

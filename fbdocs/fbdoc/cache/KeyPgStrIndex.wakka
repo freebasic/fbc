@@ -1,14 +1,13 @@
-{{fbdoc item="title" value="[] String Indexing"}}
+{{fbdoc item="title" value="[] String Indexing"}}----
+Operator to use a string as if it were a zero based array
 
-----
-{{fbdoc item="syntax"}}
-	//string_variable//[//expression//]  
-	
+{{fbdoc item="syntax"}}##
+	//string_variable//**[**//expression//**]**
+##
 {{fbdoc item="desc"}}
 	String indexing operator [] allows the programmer to address individual characters of strings by value, using indexes.  The ASCII value of the character in the indexed position is returned.
 
 	The programmer must ensure that the indexes do not exceed the range 0 ... [[KeyPgLen LEN]](string_variable)-1.  Outside this range, results are not predictable.
-
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -22,12 +21,12 @@ Will print
 %%
 Hello, World!
 %%
-::c::
 
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 
 {{fbdoc item="see"}}
 	- [[KeyPgPtrIndex Pointer Indexing]]
+	- [[CatPgOpString String Operators]]
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

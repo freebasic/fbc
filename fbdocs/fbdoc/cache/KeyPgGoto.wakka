@@ -1,13 +1,13 @@
-{{fbdoc item="title" value="GOTO"}}
-----
-{{fbdoc item="syntax"}}
-	GOTO label
+{{fbdoc item="title" value="GOTO"}}----
+Control flow statement to jump to another part of the program
 
+{{fbdoc item="syntax"}}##
+	**Goto** //label//
+##
 {{fbdoc item="desc"}}
 	Jumps code execution to a line label.
 
-	Goto's should be avoided for more modern structures such as [[KeyPgDoloop DO...LOOP]], [[KeyPgFornext FOR...NEXT]], [[KeyPgSub SUB]], and [[KeyPgFunction FUNCTION]].
-
+	For better source code readability, overuse of ##**Goto**## should be avoided in favor of more modern structures such as ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgSub Sub]]##, and ##[[KeyPgFunction Function]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -21,8 +21,8 @@
 	- 
 
 {{fbdoc item="see"}}
-	- [[KeyPgGosub GOSUB]]
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
+	- ##[[KeyPgGosub Gosub]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

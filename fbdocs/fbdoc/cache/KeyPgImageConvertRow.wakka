@@ -1,19 +1,17 @@
-{{fbdoc item="title" value="IMAGECONVERTROW"}}
-----
+{{fbdoc item="title" value="IMAGECONVERTROW"}}----
 Converts a row of image data into a different bit depth.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 )
 ##
 {{fbdoc item="usage"}}##
-		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// )
-			##//or//##
-		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width//, //isrgb// )
-			##//or//##
-		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels// )	
-			##//or//##
-		""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels//, //isrgb// )	
-		
+	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// )
+		##//or//##
+	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //width//, //isrgb// )
+		##//or//##
+	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels// )	
+		##//or//##
+	""ImageConvertRow""( //src//, //src_bpp//, //dst//, //dst_bpp//, //numofpixels//, //isrgb// )	
 ##
 {{fbdoc item="param"}}
 	##//src//##
@@ -87,4 +85,4 @@ imagedestroy img32%%##
 	- ##[[KeyPgImageCreate ImageCreate]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

@@ -1,0 +1,193 @@
+{{fbdoc item="title" value="Variable Scope"}}
+----
+
+{{fbdoc item="desc"}}
+	A variable's scope refers to its visibility in a program. A variable is not visible (cannot be accessed) outside the scope in which it was declared. Where and how a variable is declared determines its scope.
+
+	In FreeBASIC, there are 4 categories of scope: **//local//**, **//shared//**, **//common//** and **//common shared//**. Each of these scopes has different visibility rules, which are detailed below.
+
+
+**Local Scope** : //Variables declared in the local scope are visible only in the most local instance of the IF, FOR, SCOPE, function, or module block in which they are declared.//
+
+	- ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, the main body, and each compound statement implicitly define a new local scope block. 
+	- Explicitly declared variables using ##[[KeyPgDim Dim]]## or ##[[KeyPgRedim Redim]]## take the scope of the local most block in which they are declared. 
+	- Implicit variables take the scope of the the local most ##[[KeyPgScope Scope...End Scope]]## block in which they are first used, otherwise take the scope of the ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, or main body in which they are used. 
+
+	In the local scope, there is no visibility between module-level code and function level code. Furthermore, variables dimensioned within a block decision or loop statement will only be visible within the block in which they are dimensioned. Variables declared in the local scope of a module are not visible in any of the functions within that module. Similarly, local variables declared inside functions are not visible in the module-level code, nor any other function within the module.
+
+	Variables declared inside ##[[KeyPgScope Scope]]## blocks may only be declared of local scope, and are not visible outside the block. ##[[KeyPgScope Scope]]## blocks, however, inherit the surrounding scope, so local variables declared outside the ##[[KeyPgScope Scope]]## block will be visible inside (//see example program//).
+
+	You can declare a variable to be of local scope explicitly by using the ##[[KeyPgDim Dim]]## statement, or implicitly by simply introducing the variable (//see [[ProPgImplicitdeclarations Implicit Declarations]]//). The example program //**##local_scope.bas##**// demonstrates visibility rules for the local scope.
+
+		//**##local_scope.bas##**//
+		##%%(qbasic)option explicit
+
+   dim as integer local_moduleLevel1            '' visible only in this module
+   print local_moduleLevel1                     '' OK.
+
+   scope
+	  print local_moduleLevel1                  '' OK; SCOPE Blocks inherit outer scope
+	  dim as integer local_moduleLevel2         '' visible only in this SCOPE Block
+	  print local_moduleLevel2                  '' OK.
+   end scope
+
+'' print local_moduleLevel2                     '' Error; can't see inner-SCOPE vars
+
+function some_function( )
+   dim as integer local_functionLevel           '' visible only in this function
+   print local_functionLevel                    '' OK.
+'' print local_moduleLevel1                     '' Error; can't see local module-level vars
+'' print local_moduleLevel2                     '' Error; can't see local module-level vars
+end function
+
+'' print local_functionLevel                    '' Error; can't see function_level vars
+   end 0
+%%##
+
+
+**Shared Scope** : //Variables declared in the shared scope of a module are visible to both the module and all functions of that module.//
+
+	Unlike the local scope, the shared scope makes module-level variables visible to functions of that module. In other words, the module //shares// its declarations with its functions.
+
+	Variables can only be declared to be of shared scope at the module-level. Ie., only modules can share variables. Neither functions nor ##[[KeyPgScope Scope]]## blocks can declare variables in the shared scope, thus variables declared there can only be local to that function or block.
+
+	You can declare a variable to be of shared scope by using the DIM statement with the ##[[KeyPgShared Shared]]## keyword. The example program //**##shared_scope.bas##**// demonstrates visibility rules for the shared scope.
+
+		//**##shared_scope.bas##**//
+		##%%(qbasic)option explicit
+
+   dim shared as integer shared_moduleLevel1    '' visible throughout this module
+   print shared_moduleLevel1                    '' OK.
+
+   scope
+	  print shared_moduleLevel1                 '' OK; can see outer-scope vars
+''    dim shared as integer shared_ModuleLevel2 '' Error; SCOPE-level vars cannot be shared
+   end scope
+
+   end 0
+
+function some_function( )
+   print shared_moduleLevel1                    '' OK; can see shared module-level vars
+'' dim shared as integer sharedFunctionLevel    '' Error; function-level vars cannot be shared
+end function
+%%##
+
+
+**Common Scope** : //Variables declared in the common scope are visible to all modules.//
+
+	Variables declared with ##[[KeyPgCommon Common]]## are visible to other modules with a matching ##[[KeyPgCommon Common]]## variable declaration.  The variable name declared must match from between modules.
+
+	To compile, save files as specified, and invoke  the compiler as:
+	**"fbc module1.bas module2.bas"**
+
+		//**##module2.bas##**//
+		%%(qbasic)option explicit
+Declare Sub Print_Values()
+Common m1 As Integer
+Common m2 As Integer
+	                  ' This is executed after all other modules
+m1 = 1
+
+print "Module1"       
+print "m1 = "; m1     ' m1 = 1 as set in this module
+print "m2 = "; m2     ' m2 = 2 as set in module2
+
+Print_Values
+%%
+
+		//**##module1.bas##**//
+		%%(qbasic)
+Common m1 As Integer
+Common m2 As Integer
+
+m2 = 2
+
+print "Module2"       ' This is executed first
+print "m1 = "; m1     ' m1 = 0 (by default)
+print "m2 = "; m2     ' m2 = 2
+
+Sub Print_Values()
+  print "Module2.Print_Values"
+  print "m1 = "; m1   ' Implicit variable = 0    
+  print "m2 = "; m2   ' Implicit variable = 0  
+End Sub
+%%
+
+		//**##Output:##**//
+		%%(qbasic)
+  Module2
+  m1 = 0
+  m2 = 2
+  Module1
+  m1 = 1
+  m2 = 2
+  Module2.Print_Values
+  m1 = 0
+  m2 = 0
+%%
+
+
+**Common Shared Scope** : //Variables declared in the common shared scope are visible to all modules and all functions of those modules.//
+
+	Variables declared with ##[[KeyPgCommon Common]]## are visible to other modules with a matching ##[[KeyPgCommon Common]]## variable declaration.  The variable name declared must match from between modules.  Within a module the ##[[KeyPgShared Shared]]## declaration modifier gives the variable module scope and makes the variable visible to all subs and functions.
+
+	To compile, save files as specified, and invoke the compiler as:
+	**"fbc module1.bas module2.bas"**
+
+		//**##module2.bas##**//
+		%%(qbasic)
+Declare Sub Print_Values()
+Common m1 As Integer
+Common m2 As Integer
+	                  ' This is executed after all other modules
+m1 = 1
+
+print "Module1"       
+print "m1 = "; m1     ' m1 = 1 as set in this module
+print "m2 = "; m2     ' m2 = 2 as set in module2
+
+Print_Values
+%%
+
+		//**##module1.bas##**//
+		%%(qbasic)option explicit
+Common Shared m1 As Integer
+Common Shared m2 As Integer
+
+m2 = 2
+
+print "Module2"       ' This is executed first
+print "m1 = "; m1     ' m1 = 0 (by default)
+print "m2 = "; m2     ' m2 = 2
+
+Sub Print_Values()
+  print "Module2.Print_Values"
+  print "m1 = "; m1   ' m1 = 1    
+  print "m2 = "; m2   ' m2 = 2
+End Sub
+%%
+
+		//**##Output:##**//
+		%%(qbasic)
+  Module2
+  m1 = 0
+  m2 = 2
+  Module1
+  m1 = 1
+  m2 = 2
+  Module2.Print_Values
+  m1 = 1
+  m2 = 2
+%%
+
+{{fbdoc item="ex"}}
+	See examples above.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgShared Shared]]##
+	- [[DtVariables Variables]]
+	- [[ProPgImplicitdeclarations Implicit Declarations]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

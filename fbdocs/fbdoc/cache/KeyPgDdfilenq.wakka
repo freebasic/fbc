@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FILE_NQ__"}}
-----
+{{fbdoc item="title" value="__FILE_NQ__"}}----
 Intrinsic define (macro string) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -21,4 +20,4 @@ Intrinsic define (macro string) set by the compiler.
 	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
 	- ##[[KeyPgDdline __LINE__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

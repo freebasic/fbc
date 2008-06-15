@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Standard Identifier Rules"}}
+----
+
+{{fbdoc item="desc"}}
+**Standard Identifier Rules** refer to the idea that a [[DtVariables variable]] name must follow certain rules.
+
+Identifier names must composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces. 
+
+Identifiers may have a symbol at the end referring to one of the standard data types. 
+	- % for Integer
+	- & for Long
+	- ! for Single
+	- # for Double
+	- $ for String
+The use of these symbols is generally discouraged in modern FreeBASIC code. 
+The alternative is to be explicit - 
+	"Dim As Integer foo" instead of "Dim foo%", etc.
+
+{{fbdoc item="see"}}
+	- [[DtVariables Variable]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

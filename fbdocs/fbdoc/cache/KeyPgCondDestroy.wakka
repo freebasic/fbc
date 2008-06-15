@@ -1,16 +1,15 @@
-{{fbdoc item="title" value="CONDDESTROY"}}
-----
+{{fbdoc item="title" value="CONDDESTROY"}}----
 Function that destroys a multi-threading conditional variable when it is no more needed.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Conddestroy** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Conddestroy** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Conddestroy** ( //handle// )
 ##
 {{fbdoc item="param"}}
 	##//handle//##
-		The ##[[KeyPgInteger integer]]## handle returned by a previous call to ##[[KeyPgCondCreate Condcreate]]##.
+		The handle of a conditional variable to destroy.
 
 {{fbdoc item="desc"}}
 
@@ -31,4 +30,4 @@ Function that destroys a multi-threading conditional variable when it is no more
 	- ##[[KeyPgCondWait Condwait]]##
 	- ##[[KeyPgThreadCreate Threadcreate]]##
 
-{{fbdoc item="back" value="CatPgThreading|THREADING"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical  keywords list"}}
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

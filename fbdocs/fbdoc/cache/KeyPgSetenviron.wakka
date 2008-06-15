@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SETENVIRON"}}
-----
+{{fbdoc item="title" value="SETENVIRON"}}----
 Sets a system environemental variable.
 
 {{fbdoc item="syntax"}}##
@@ -31,4 +30,4 @@ shell "set path" 'shows the new value of path
 	- ##[[KeyPgEnviron Environ]]##
 	- ##[[KeyPgShell Shell]]##
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="FLIP"}}
-----
+{{fbdoc item="title" value="FLIP"}}----
 Graphics statement for changing the the current video display page.
 
 {{fbdoc item="syntax"}}##
@@ -22,4 +21,4 @@ Graphics statement for changing the the current video display page.
 {{fbdoc item="diff"}}
 	- New to QB
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

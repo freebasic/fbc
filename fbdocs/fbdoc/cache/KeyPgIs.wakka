@@ -1,9 +1,13 @@
-{{fbdoc item="title" value="IS"}}
-----
-{{fbdoc item="desc"}}
-A clause used in  SELECT CASE compound statements.
+{{fbdoc item="title" value="Is"}}----
+Clause in the ##[[KeyPgSelectcase Select case]]## statement block
 
-See [[KeyPgSelectcase SELECT CASE]].
+{{fbdoc item="syntax"}}##
+	**Case Is** //expression//
+##
+{{fbdoc item="diff"}}
+	- None
 
-{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+{{fbdoc item="see"}}
+	- ##[[KeyPgSelectcase Select Case]]##
 
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

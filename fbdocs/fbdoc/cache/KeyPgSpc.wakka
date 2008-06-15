@@ -31,7 +31,7 @@ PRINT N; SPC(25+LEN(F)-LEN(N)); M
 %%##
 
 The output would look like:
-##%%(qbasic)
+##%%
 FIRST NAME                         LAST NAME
 ----------                         ----------
 Jane                               DOE

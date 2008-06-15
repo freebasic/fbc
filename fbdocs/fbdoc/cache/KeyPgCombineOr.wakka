@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OR= (Combined OR)"}}
-----
+{{fbdoc item="title" value="OR= (Combined OR)"}}----
 Operator that finds the bitwise ##**Or**## (disjunction) of two integers and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -26,4 +25,4 @@ print bin(a)
 {{fbdoc item="see"}}
 	- ##[[KeyPgOr Or]]##
 	
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

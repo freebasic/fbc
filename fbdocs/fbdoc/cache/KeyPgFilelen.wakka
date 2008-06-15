@@ -1,9 +1,8 @@
-{{fbdoc item="title" value="FILELEN"}}
-----
+{{fbdoc item="title" value="FILELEN"}}----
 Finds the length of a file given its filename.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
@@ -34,4 +33,4 @@ length = FILELEN("file.txt")
 {{fbdoc item="see"}}
 	- ##[[KeyPgLof Lof]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

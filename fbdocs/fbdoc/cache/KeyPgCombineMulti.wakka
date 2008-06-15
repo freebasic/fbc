@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="*= (Combined Multiplication)"}}
-----
+{{fbdoc item="title" value="*= (Combined Multiplication)"}}----
 Operator to multiply and assign a number to a variable
 
 {{fbdoc item="syntax"}}##
@@ -29,4 +28,4 @@ The output would look like:
 	- {{fbdoc item="keyword" value="KeyPgMultiplication|* (Multiplication)"}}
 	- [[CatPgMath Mathematical Functions]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

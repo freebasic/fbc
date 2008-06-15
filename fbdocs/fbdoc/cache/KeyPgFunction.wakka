@@ -21,7 +21,12 @@
 		//return_value// = the value returned from the function
 
 {{fbdoc item="desc"}}
-	A function defines a block of code which can be executed with a single statement (a function call), and provide a value back to the caller when finished (a return value). **!!! write me: finish overview?**
+	A function defines a block of code which can be executed with a single statement (a function call), and provide a value back to the caller when finished (a return value). 	There are several reasons to use functions:
+			- 	Reduces redundancy in your program
+			-       Enables reuse of code in many programs
+			-       Improves readability of the program
+			-       Improves maintainability of the program
+			-       Makes it easy to extend your program
 
 	//Access Rights// : The [[KeyPgPublic Public]] and [[KeyPgPrivate Private]] keywords specify public or private intra module-level access rights, respectively. If neither is given, the function defaults to public access ([[KeyPgPublic Public]]).
 	

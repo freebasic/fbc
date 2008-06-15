@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WAIT"}}
-----
+{{fbdoc item="title" value="WAIT"}}----
 Statement for accessing hardware ports.
 
 {{fbdoc item="syntax"}}##
@@ -28,6 +27,8 @@ Statement for accessing hardware ports.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+wait &h3da, &h8 'Old Qbasic way of waiting for the monitor's vsync
+screensync 'FreeBASIC way of accomplishing the same thing
 %%
 
 {{fbdoc item="diff"}}
@@ -37,4 +38,4 @@ Statement for accessing hardware ports.
 	- ##[[KeyPgInp Inp]]##
 	- ##[[KeyPgOut Out]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

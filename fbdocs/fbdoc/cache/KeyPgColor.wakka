@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="COLOR"}}
-----
+{{fbdoc item="title" value="COLOR"}}----
 Sets the display foreground / background color that is used with console output and graphics output of text.
 
 {{fbdoc item="syntax"}}##
@@ -48,4 +47,4 @@ SLEEP
 	- ##[[KeyPgPalette Palette]]##
 	- ##[[KeyPgScreengraphics Screen]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

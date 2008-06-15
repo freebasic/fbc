@@ -1,14 +1,23 @@
-{{fbdoc item="title" value="Misc Functions"}}----
+{{fbdoc item="title" value="Miscellaneous"}}----
 
->>
-[[KeyPgBeep BEEP]]
+<<
+	- [[KeyPgAny ANY]]
+	- [[KeyPgAlias ALIAS]]
+	- [[KeyPgBeep BEEP]]
+	- [[KeyPgLib LIB]]
+	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
+
 
 <<>>
-[[KeyPgAppend APPEND]]
-[[KeyPgAny ANY]]
-[[KeyPgAlias ALIAS]]
-<<
+	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
+	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
+	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
+	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
+	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
+	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
 
+>>
 
 ::c::
 

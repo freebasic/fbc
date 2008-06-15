@@ -1,19 +1,22 @@
-{{fbdoc item="title" value="IF...THEN"}}
-----
-{{fbdoc item="syntax"}}
-	IF //expression// THEN //statement(s)// [ELSE //statement(s)//]
-	IF //expression// THEN : //statement(s)// [ELSE //statement(s)//] : END IF
-			
-	IF //expression// THEN
-		//statement(s)//
-	[ELSEIF //expression// THEN]
-		//statement(s)//
-	[ELSE]
-		//statement(s)//
-	END IF
+{{fbdoc item="title" value="IF...THEN"}}----
+Control flow statement for conditional branching
 
+{{fbdoc item="syntax"}}##
+	**If** //expression// **Then** //statement(s)// [**Else** //statement(s)//]
+//or//
+	**If** //expression// **Then** : //statement(s)// [**Else** //statement(s)//] : **End If**
+//or//			
+	**If** //expression// **Then**
+		//statement(s)//
+	[ **Elseif** //expression// **Then** ]
+		//statement(s)//
+	[ **Else** ]
+		//statement(s)//
+	**End If**
+##
 {{fbdoc item="desc"}}
-	IF...THEN is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
+	##**If...Then**## is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
+
 	The expresion is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of if's.
 
 {{fbdoc item="ex"}}
@@ -41,11 +44,11 @@ LOOP 'Go back to the start of the loop
 %%
 
 {{fbdoc item="diff"}}
-	- END IF must be used in single line IF's if a semi-colon comes right after the THEN
+	- END IF must be used in single line IF's if a colon comes right after the THEN
 
 {{fbdoc item="see"}}
-	- [[KeyPgDoloop DO...LOOP]]
-	- [[KeyPgPpif #IF]]
-	- [[KeyPgSelectcase SELECT CASE]]
+	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgSelectcase Select Case]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="$STATIC"}}
-----
+{{fbdoc item="title" value="$STATIC"}}----
 {{fbdoc item="syntax"}}
 	'$STATIC
 
@@ -30,4 +29,4 @@ dim b(100)   '<<this array will be static
 	- [[KeyPgRedim REDIM]]
 	- [[KeyPgErase ERASE]]
 
-{{fbdoc item="back" value="CatPgPreProcess|Pre-Processor"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

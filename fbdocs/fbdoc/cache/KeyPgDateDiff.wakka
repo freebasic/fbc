@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DateDiff"}}
-----
+{{fbdoc item="title" value="DateDiff"}}----
 Date function to return the difference of two dates measured by a specified interval
 
 {{fbdoc item="syntax"}}##
@@ -71,4 +70,5 @@ end if
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

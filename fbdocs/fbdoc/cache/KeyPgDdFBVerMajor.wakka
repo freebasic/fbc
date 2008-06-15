@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_VER_MAJOR__"}}
-----
+{{fbdoc item="title" value="__FB_VER_MAJOR__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -21,7 +20,6 @@ fbMinorVersion = __FB_VER_MINOR__
 Print "Welcome to freebasic ";fbMajorVersion;".";fbMinorVersion
 %%
 
-
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
@@ -29,5 +27,5 @@ Print "Welcome to freebasic ";fbMajorVersion;".";fbMinorVersion
 	- ##[[KeyPgDdfbverminor __FB_VER_MINOR__]]##
 	- ##[[KeyPgDdfbverpatch __FB_VER_PATCH__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
 

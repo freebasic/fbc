@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ISDATE"}}
-----
+{{fbdoc item="title" value="ISDATE"}}----
 Date function to test if a string can be converted to a [[DtDateSer Date Serial]].
 
 {{fbdoc item="syntax"}}##
@@ -57,4 +56,5 @@ loop
 	- ##[[KeyPgDateserial DateSerial]]##
 	- ##[[KeyPgTimevalue TimeValue]]##
 	- ##[[KeyPgDatevalue DateValue]]##
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

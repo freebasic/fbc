@@ -1,10 +1,11 @@
-{{fbdoc item="title" value="EXIT"}}
-----
-{{fbdoc item="syntax"}}
-	EXIT {SUB | FUNCTION | DO | FOR | WHILE |SELECT}
+{{fbdoc item="title" value="EXIT"}}----
+Control flow statement to exit a compound statement block
 
+{{fbdoc item="syntax"}}##
+	**Exit** {[[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgDoloop Do]] | [[KeyPgFornext For]] | [[KeyPgWhilewend While]] | [[KeyPgSelectcase Select]] }
+##
 {{fbdoc item="desc"}}
-	Leaves a code block such as a [[KeyPgSub SUB]], [[KeyPgFunction FUNCTION]], [[KeyPgDoloop DO...LOOP]], [[KeyPgFornext FOR...NEXT]],[[KeyPgWhilewend WHILE...WEND]], or a  [[KeyPgSelectCase SELECT CASE]]block. The execution skips the rest of the block and goes to the line after its end.
+	Leaves a code block such as a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgWhilewend While...Wend]]##, or a  ##[[KeyPgSelectCase Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -17,13 +18,13 @@ LOOP
 %%
 
 {{fbdoc item="diff"}}
-	- EXIT WHILE and EXIT SELECT didn't exist in QB
+	- EXIT WHILE and EXIT SELECT are New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
-	- [[KeyPgDoloop DO]]
-	- [[KeyPgFornext FOR]]
-	- [[KeyPgWhilewend WHILE]]
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgWhilewend While...Wend]]##
 
-{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

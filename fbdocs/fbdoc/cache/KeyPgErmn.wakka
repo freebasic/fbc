@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ERMN"}}
-----
+{{fbdoc item="title" value="ERMN"}}----
 Error reporting function.
 
 {{fbdoc item="syntax"}}	##
@@ -47,4 +46,4 @@ Error Module  : test.bas
 	- ##[[KeyPgErl Erl]]##
 	- ##[[KeyPgOnerror On...Error]]##
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

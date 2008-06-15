@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CHAIN"}}
-----
+{{fbdoc item="title" value="CHAIN"}}----
 Runs another program, and waits until that program ends before resumeing execution.
 
 {{fbdoc item="syntax"}}##
@@ -38,4 +37,4 @@ Runs another program, and waits until that program ends before resumeing executi
 {{fbdoc item="see"}}
 	- ##[[KeyPgRun Run]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

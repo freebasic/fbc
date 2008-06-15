@@ -6,6 +6,7 @@
 	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}	- Bit-wise complement
 	- {{fbdoc item="keyword" value="KeyPgOr|OR "}}	- Disjunction (inclusive "or")
 	- {{fbdoc item="keyword" value="KeyPgXor|XOR"}}	- Exclusive "or"
+
 >>
 
 ::c::

@@ -91,6 +91,5 @@ print FirstNumber; *SecondNumber ' will display 1 1
 	- [[KeyPgProcptr PROCPTR]]
 	- [[KeyPgDim DIM]]
 
-**Data Types**: [[CatPgStdDataTypes Standard Data Types]] &middot; [[DtConstants Constants]] &middot; [[DtVariables Variables]] &middot; [[DtArrays Arrays]] &middot; **Pointers** &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

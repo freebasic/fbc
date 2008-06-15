@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="AND= (Combined And)"}}
-----
+{{fbdoc item="title" value="AND= (Combined And)"}}----
 Operator that finds the bitwise ##**And**## (conjunction) of two integers and assign the result to a variable.
 
 {{fbdoc item="syntax"}}##
@@ -33,4 +32,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgAnd And]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

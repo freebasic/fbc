@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="INPUT #"}}
-----
+{{fbdoc item="title" value="INPUT #"}}----
 {{fbdoc item="syntax"}}
 INPUT # filenum, list of variables   
 
@@ -26,6 +25,4 @@ print a,b$,c!
 ~- [[KeyPgInput INPUT]]
 ~- [[KeyPgWrite WRITE #]]
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}{{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
-
-
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

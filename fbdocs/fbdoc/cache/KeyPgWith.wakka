@@ -1,12 +1,13 @@
-{{fbdoc item="title" value="WITH"}}
-----
-{{fbdoc item="syntax"}}
-	WITH //user_defined_var//
-		//statements//
-	END WITH     
+{{fbdoc item="title" value="WITH"}}----
+Statement block to allow implicit access to fields in a user defined type variable
 
+{{fbdoc item="syntax"}}##
+	**With** //user_defined_var//
+		//statements//
+	**End With**
+##
 {{fbdoc item="desc"}}
-	The block WITH...END WITH allows to omit the name of an user defined variable when referring to its fields. It's a shorthand to save typing and avoid cluttering the source. WITH can also be used with derefernced pointers, as the second example shows.
+	The ##**With...End With**## block allows the ommision of the name of a user defined variable when referring to its fields. It's a shorthand to save typing and avoid cluttering the source. ##**With**## can also be used with dereferenced pointers, as the second example shows.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -55,6 +56,6 @@ next
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- [[KeyPgType TYPE]]
+	- ##[[KeyPgType Type]]##
 	
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

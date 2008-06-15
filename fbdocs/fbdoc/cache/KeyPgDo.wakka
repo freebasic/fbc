@@ -1,61 +1,19 @@
-{{fbdoc item="title" value="DO"}}
-----
-{{fbdoc item="syntax"}}
-	DO [ { UNTIL | WHILE } //condition// ]
+{{fbdoc item="title" value="DO"}}----
+Control flow statement for looping
+
+{{fbdoc item="syntax"}}##
+	**Do** [ { Until | While } //condition// ]
 		[ //statement block// ]
-	LOOP
+	Loop
 
-	DO
+	**Do**
 		[ //statement block// ]
-	LOOP [ { UNTIL | WHILE } //condition// ]
-
-{{fbdoc item="desc"}}
-	The DO statement executes the statements in the following //statement block// until/while the //condition//, if any,  evaluates to true.
-
-	If UNTIL is used, the DO statement stops repetition of the //statement block// when //condition// evaluates to true. The WHILE keyword has opposite effect, stopping the loop if //condition// evaluates to false. If both //condition// and either UNTIL or WHILE are ommitted, the DO statement loops indefinitely.
-
-	If an [[KeyPgExit EXIT]] DO statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing [[KeyPgLoop LOOP]] statement. If a [[KeyPgContinue CONTINUE]] DO statement is encountered, the rest of the //statement block// is skipped and execution resumes at the DO statement.
-
-	In the first syntax, the //condition// is checked when the DO statement is first encountered, and if the //condition// is met, the //statement block// will be skipped. In the second syntax, //condition// is initially checked //after// the //statement block// is executed. This means that the //statement block// is always guaranteed to execute //at least// once.
-
-{{fbdoc item="ex"}}
-	In this example, a DO loop is used to count the total number of odd numbers from 1 to 10. It will repeat //until// it's //n > 10// condition is met:
-%%(qbasic)option explicit                              '' force explicit variable declarations
-
-   dim as integer n = 1                            '' number to check
-   dim as integer total_odd = 0                    '' running total of odd numbers
-   do until( n > 10 )
-	  if( ( n MOD 2 ) > 0 ) then total_odd += 1    '' add to total if n is odd (has remainder from division by 2)
-	  n += 1
-   loop
-   print "total odd numbers: " ; total_odd         '' prints '5'
-
-   end 0
-%%
-
-	Here, an infinite DO loop is used to count the total number of evens. We place the conditional check inside the loop via an [[KeyPgIf IF]] statement, which exits the loop if and when //n > 10// becomes true:
-%%(qbasic)option explicit                              '' force explicit variable declarations
-
-   dim as integer n = 1                            '' number to check
-   dim as integer total_even = 0                   '' running total of even numbers
-   do
-	  if( n > 10 ) then exit do                    '' exit if we've scanned our 10 numbers
-   
-	  if( ( n MOD 2 ) = 0 ) then total_even += 1   '' add to total if n is even (no remainder from division by 2)
-	  n += 1
-   loop
-   print "total even numbers: " ; total_even       '' prints '5'
-
-   end 0
-%%
-
+	Loop [ { Until | While } //condition// ]
+##
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgContinue CONTINUE]]
-	- [[KeyPgExit EXIT]]
-	- [[KeyPgFornext FOR...NEXT]]
-	- [[KeyPgWhilewend WHILE...WEND]]
+	- ##[[KeyPgDoloop Do...Loop]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

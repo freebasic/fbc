@@ -1,11 +1,11 @@
-{{fbdoc item="title" value="Temporary Types"}}
+{{fbdoc item="title" value="Anonymous Types"}}
 ----
 {{fbdoc item="syntax"}}
 	TYPE( a, b, c, ... )
 	TYPE<//typename//>( a, b, c, ... )
 
 {{fbdoc item="desc"}}
-	Used to create a temporary type. It can also be used as an even shorter shortcut than WITH (see below) if you are changing all the records.
+	Used to create an anonymous type. It can also be used as an even shorter shortcut than WITH (see below) if you are changing all the records.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -26,10 +26,10 @@ with ex
 	.field2 = 2
 end with
 
-'' Third method, using temporary types
+'' Third method, using anonymous types
 ex = type( 1, 2 )
 '' This can also be expressed in the following way, if you want your code to be more readable
-ex = type<Example>( 1, 2 )
+ex = type <Example>( 1, 2 )
 %%
 
 {{fbdoc item="diff"}}
@@ -38,3 +38,5 @@ ex = type<Example>( 1, 2 )
 {{fbdoc item="see"}}
 	- [[KeyPgType TYPE...END TYPE]]
 	- [[KeyPgTypeDef TYPE AS]]
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

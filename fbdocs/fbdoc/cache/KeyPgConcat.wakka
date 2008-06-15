@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="+ String Concatenation"}}
-----
+{{fbdoc item="title" value="+ String Concatenation"}}----
 Operator to concatenate two string expressions.
 
 {{fbdoc item="syntax"}}##
@@ -31,6 +30,7 @@ Hello, World!
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgConcatConv|& String Concatenation with Conversion"}}
-	- [[OpString String Operators]]
+	- [[CatPgOpString String Operators]]
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}
+

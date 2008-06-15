@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="WEEKDAYNAME"}}
-----
+{{fbdoc item="title" value="WEEKDAYNAME"}}----
 Date function to return the name of a week day for a specified number
 
 {{fbdoc item="syntax"}}##
@@ -44,4 +43,5 @@ Print Format(a,"yyyy/mm/dd hh:mm:ss "); WeekDayName(WeekDay(a))
 
 {{fbdoc item="see"}}
 	- [[DtDateSer Date Serials]]
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

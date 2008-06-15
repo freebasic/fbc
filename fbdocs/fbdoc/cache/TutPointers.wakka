@@ -61,6 +61,8 @@ A major reason for adding pointers to FreeBasic is that many external libraries 
 
 Another use of a pointer is in a [[KeyPgType Type]] definition. [[KeyPgType Type]] defs in FreeBasic can only contain fixed length strings, but what if you don't know the length of a string until the program is running? A pointer can serve this purpose.
 
+(It should be stated that the Type definitions can now support variable length strings.)
+
 ##%%(qbasic)
 option explicit
 

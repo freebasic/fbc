@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="TIMER"}}
-----
+{{fbdoc item="title" value="TIMER"}}----
 Returns the number of seconds passed since starting the computer.
 
 {{fbdoc item="syntax"}}##
@@ -34,5 +33,4 @@ print "done."
 	- ##[[KeyPgTime Time]]##
 	- ##[[KeyPgSleep Sleep]]##
 
-
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

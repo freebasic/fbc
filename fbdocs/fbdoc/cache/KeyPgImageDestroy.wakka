@@ -1,12 +1,11 @@
-{{fbdoc item="title" value="IMAGEDESTROY"}}
-----
+{{fbdoc item="title" value="IMAGEDESTROY"}}----
 Frees memory associated with an image buffer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-		""ImageDestroy""( //pointer// )
+	""ImageDestroy""( //pointer// )
 ##
 {{fbdoc item="param"}}
 	##//pointer//##
@@ -25,4 +24,4 @@ Frees memory associated with an image buffer.
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

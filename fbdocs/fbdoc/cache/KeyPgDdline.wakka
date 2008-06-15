@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__LINE__"}}
-----
+{{fbdoc item="title" value="__LINE__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -27,4 +26,4 @@ Error: a = -32767 in test.bas (MAIN) line 47
 	- ##[[KeyPgDdfile __FILE__]]##
 	- ##[[KeyPgDdfunction __FUNCTION__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

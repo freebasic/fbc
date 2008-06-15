@@ -11,15 +11,16 @@
 	[[CompileCmdLine Using the Command Line]]
 	[[CompileErrMsg Compiler Error Messages]]
 
-	[[CompilerDialects FreeBasic Dialects]]
 	[[CompilerQB FreeBasic and Qbasic]]
+	[[CompilerDialects FreeBasic Dialects]]
 	[[LangQB Differences from QB]]
 
 {{fbdoc item="section" value="The Language"}}
+
+	[[CatPgProgrammer Programmer's Guide]] (W.I.P.)
+
 	[[CatPgFullIndex Alphabetical Keywords List]]
 	[[CatPgFunctIndex Functional Keywords List]]
-
-	[[CatConcepts FreeBASIC Essential Concepts]]
 
 	{{fbdoc item="subsect" value="Data Types"}}
 		[[CatPgStdDataTypes Standard Data Types]]
@@ -51,9 +52,9 @@
 		[[KeyPgSub Subroutine]]
 		[[CatPgVarArg Variable Arguments]]
 
-	{{fbdoc item="subsect" value="Other""}}
+	{{fbdoc item="subsect" value="Other"}}
 		[[KeyPgAsm Inline ASM]]
-		[[LangErrorHandling Error Handling]]
+		[[ProPgErrorHandling Error Handling]]
 		[[CatPgPreProcess Preprocessor]]
 		[[CatPgDddefines Intrinsic Defines]]
 
@@ -65,6 +66,7 @@
 	[[CatPgError Error Handling Functions]]
 	[[CatPgFile File IO Functions]]
 	[[CatPgMath Mathematical Functions]]
+	[[CatPgMemory Memory Functions]]
 	[[CatPgOpsys Operating System Functions]]
 	[[CatPgString String Functions]]
 	[[CatPgThreading Threading Support Functions]]

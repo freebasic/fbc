@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Variable Arguments"}}----
 <<
-	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
+	- {{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 
 <<>>

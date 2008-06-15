@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LOCATE"}}
-----
+{{fbdoc item="title" value="LOCATE"}}----
 Console/Graphics statement to set the current cursor position.
 
 {{fbdoc item="syntax"}}##

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="DRAW STRING"}}
-----
+{{fbdoc item="title" value="DRAW STRING"}}----
 Graphics statement to render text to an image or screen
 
 {{fbdoc item="syntax"}}##
@@ -9,7 +8,7 @@ Graphics statement to render text to an image or screen
 	##//buffer//##
 		The sprite to draw the string on. If this is not supplied, it will be drawn to the screen.
 	##STEP##
-		Use relative or absolute coordinates. If ##STEP## is added, the x and y coordinates are translated relative to the last drawn point. 
+		Use relative or absolute coordinates. If ##STEP## is added, the x and y coordinates are translated relative to the last drawn point.
 	##//x//##
 		the x position to draw to
 	##//y//##
@@ -72,7 +71,7 @@ ws=6.28/255
 SCREENRES 320, 200, 32, 2
 ' Create custom font into GET/PUT buffer
 myFont = IMAGECREATE((LAST - FIRST + 1) * 8, 9)
-p = myFont + 4
+p = myFont + 32
 p[0] = 0
 p[1] = FIRST
 p[2] = LAST
@@ -101,4 +100,4 @@ END
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

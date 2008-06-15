@@ -2,12 +2,12 @@
 Temporarily transfers execution to an external program.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec**( //program// [[KeyPgAs as]] [[KeyPgString string]][, //arguments// [[KeyPgAs as]] [[KeyPgString string]]] ) [[KeyPgAs as]] [[KeyPgString integer]]
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec**( //program// [[KeyPgAs as]] [[KeyPgString string]], //arguments// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString integer]]
 ##
 {{fbdoc item="usage"}}##
-		Exec( //program//[, //arguments//] )
+		Exec( //program//, //arguments// )
 			##//or//##
-		//result// = Exec( //program//[, //arguments//] )
+		//result// = Exec( //program//, //arguments// )
 ##
 {{fbdoc item="param"}}
 	##//program//##
@@ -41,4 +41,4 @@ END IF
 {{fbdoc item="see"}}
 	- [[KeyPgCommand COMMAND$]]
 
-{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

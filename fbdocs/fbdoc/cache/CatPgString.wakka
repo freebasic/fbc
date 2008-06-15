@@ -3,6 +3,12 @@
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}
 	- {{fbdoc item="keyword" value="KeyPgBin|BIN"}}
 	- {{fbdoc item="keyword" value="KeyPgChr|CHR"}}
+	- {{fbdoc item="keyword" value="KeyPgCvd|CVD"}}
+	- {{fbdoc item="keyword" value="KeyPgCvi|CVI"}}
+	- {{fbdoc item="keyword" value="KeyPgCvl|CVL"}}
+	- {{fbdoc item="keyword" value="KeyPgCvlongint|CVLONGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCvs|CVS"}}
+	- {{fbdoc item="keyword" value="KeyPgCvshort|CVSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgHex|HEX"}}
 	- {{fbdoc item="keyword" value="KeyPgInstr|INSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
@@ -14,9 +20,12 @@
 	- {{fbdoc item="keyword" value="KeyPgMkd|MKD"}}
 	- {{fbdoc item="keyword" value="KeyPgMki|MKI"}}
 	- {{fbdoc item="keyword" value="KeyPgMkl|MKL"}}
+	- {{fbdoc item="keyword" value="KeyPgMklongint|MKLONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgMks|MKS"}}
-	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
+	- {{fbdoc item="keyword" value="KeyPgMkshort|MKSHORT"}}
+
 <<>>
+	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
 	- {{fbdoc item="keyword" value="KeyPgRight|RIGHT"}}
 	- {{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgSpace|SPACE"}}
@@ -37,6 +46,9 @@
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
+
+
+
 >>
 
 ::c::

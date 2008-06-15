@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="= Asignment Operator"}}
-----
+{{fbdoc item="title" value="= Asignment Operator"}}----
 Operator to assign a value to a variable.
 
 {{fbdoc item="syntax"}}##
@@ -33,4 +32,4 @@ Operator to assign a value to a variable.
 	- [[CatPgOperators Operators]]
 	- [[KeyPgEqual = (Equality) Operator]]
 
-**Back To**:  [[OpArithmatic Arithmetic Operators]] &middot; [[CatPgFullIndex Alphabetical Keywords List]] &middot;  [[CatPgFunctIndex Functional Keywords List]] &middot; [[CatPgMath Math]] &middot; [[CatPgOperators Operators]] &middot; [[DocToc Table of Contents]]
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

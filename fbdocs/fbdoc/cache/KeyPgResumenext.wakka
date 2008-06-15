@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="RESUME NEXT"}}
-----
+{{fbdoc item="title" value="RESUME NEXT"}}----
 Error handling statement to resume execution after a jump to an error handler.
 
 {{fbdoc item="syntax"}}##
@@ -29,13 +28,14 @@ ErrHandler:
 Resume Next ' execution jumps to 'Print "ending..."' line, but j is now in an undefined state
 %%
 
+As of FreeBASIC version .17, 'On Error' is disabled by default, and must be enabled by the compiler option [[ProPgCompOptlang -lang qb or -lang deprecated]].
+
 {{fbdoc item="diff"}}
 	- Must compile with -ex option
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr Err]]##
 	- ##[[KeyPgResume Resume]]##
-	- [[LangErrorHandling Error Handling]]
+	- [[ProPgErrorHandling Error Handling]]
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}
-
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

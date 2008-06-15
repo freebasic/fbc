@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENLOCK"}}
-----
+{{fbdoc item="title" value="SCREENLOCK"}}----
 Graphics statement to lock the working page framebuffer.
 
 {{fbdoc item="syntax"}}##
@@ -32,4 +31,4 @@ Graphics statement to lock the working page framebuffer.
 	- ##[[KeyPgScreenunlock Screenunlock]]##
 	- ##[[KeyPgScreenptr Screenptr]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

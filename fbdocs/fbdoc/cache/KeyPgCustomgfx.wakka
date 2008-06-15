@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CUSTOM"}}
-----
+{{fbdoc item="title" value="CUSTOM"}}----
 {{fbdoc item="syntax"}}
 PUT (X,Y),array,CUSTOM,custom_function_ptr
 
@@ -17,5 +16,4 @@ CUSTOM selects an user custom function as the method for PUT'ting images
 {{fbdoc item="see"}}
 	- [[KeyPgPutgraphics PUT]]
 	
-
-{{fbdoc item="back" value="CatPgFile|FILE"}} {{fbdoc item="back" value="Alphakeywords|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

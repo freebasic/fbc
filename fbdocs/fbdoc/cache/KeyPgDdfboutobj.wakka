@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="__FB_OUT_OBJ__"}}
-----
+{{fbdoc item="title" value="__FB_OUT_OBJ__"}}----
 Intrinsic define (macro value) set by the compiler.
 
 {{fbdoc item="syntax"}}##
@@ -29,5 +28,4 @@ Intrinsic define (macro value) set by the compiler.
 	- ##[[KeyPgDdfboutdll __FB_OUT_DLL__]]##
 	- ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##
 
-{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
-
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

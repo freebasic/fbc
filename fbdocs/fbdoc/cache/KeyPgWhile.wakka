@@ -1,49 +1,24 @@
-{{fbdoc item="title" value="WHILE"}}
-----
-{{fbdoc item="syntax"}}
-	WHILE //condition//
-		[ //[[CatPgStatementblock statement block]]// ]
-	WEND
+{{fbdoc item="title" value="WHILE"}}----
+Control flow statement
 
-{{fbdoc item="desc"}}
-	The WHILE statement will cause the following set of [[CatPgStatement statements]] in the //[[CatPgStatementblock statement block]]// to execute repeatedly if and while the [[CatPgExpression expression]] //condition// evaluates to true.
-
-	If //condition// evaluates to false when the WHILE statement is first executed, then the //statement block// is skipped and execution resumes immediately following the enclosing [[KeyPgWend WEND]] statement.
-
-	If an [[KeyPgExit EXIT]] WHILE statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing WEND statement. If a [[KeyPgContinue CONTINUE]] WHILE statement is encountered, the rest of the //statement block// is skipped and execution resumes at the WHILE statement.
-
-	Like all control flow statements, the WHILE statement can be [[CatPgNesting nested]], ie., it can be used in a statement block of another WHILE statement.
-
-//	**note**: the WHILE //keyword// is also used in the [[KeyPgDo DO]] statement to indicate the type of comparison. Used in this way, the DO statement becomes functionally equivalent to the WHILE statement, so do not confuse their enclosing keywords [[KeyPgLoop LOOP]] and WEND, respectively.
-//
-{{fbdoc item="ex"}}
-	In this example, a WHILE loop is used to reverse a string by iterating through it backwards. The loop stops if index is less than 0 //(0 being the first index in the string)//.
-%%(qbasic)option explicit                              '' force explicit variable declarations
-
-   dim as string sentence                          '' string to reverse
-   sentence = "The quick brown fox jumps over the lazy dog."
-   
-   dim as string ecnetnes
-   dim as integer index
-   index = len( sentence ) - 1                     '' point to last character
-   while( index >= 0 )                             '' stop after first character
-	  ecnetnes += chr( sentence[index] )           '' append character to new string
-	  index -= 1
-   wend
-   
-   print "original: """ ; sentence ; """"
-   print "reversed: """ ; ecnetnes ; """"
-   
-   end 0
-%%
-
+{{fbdoc item="syntax"}}##
+	Do **While** //condition//
+		[//statement block//]
+	Loop
+//or//
+	Do
+		[//statement block//]
+	Loop **While** //condition//
+//or//
+	**While** [//condition//]
+		[//statement block//]
+	**Wend**
+##
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- the [[KeyPgWend WEND]] statement
-	- the [[KeyPgExit EXIT]] statement
-	- the [[KeyPgContinue CONTINUE]] statement
-	- the [[KeyPgDo DO]] statement
+	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgWhilewend While...Wend]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

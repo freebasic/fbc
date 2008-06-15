@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="BLOAD"}}
-----
+{{fbdoc item="title" value="BLOAD"}}----
 Graphics statement to load a block of binary data or a BMP from a file.
 
 {{fbdoc item="syntax"}}##
@@ -67,4 +66,4 @@ put (10,10),garray(0)
 	- ##[[KeyPgBsave Bsave]]##
 	- ##[[KeyPgVarptr Varptr]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

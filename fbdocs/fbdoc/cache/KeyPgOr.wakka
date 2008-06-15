@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="OR"}}
-----
+{{fbdoc item="title" value="OR"}}----
 Operator that finds the bitwise ##**Or**## (disjunction) of two integers.
 
 {{fbdoc item="syntax"}}##
@@ -32,7 +31,7 @@ Bit1     Bit2    Result
 --------  equals
 00011111
 %%##
-	Notice how in the resulting number of the operation, reflects an ##**Or**## operation performed on each bit of the top operand, with each corresponding bit of the bottom operand.  The same logic is also used when working with conditions. ##**Or**##, when used bitwise, is mostly performed with positive integers, such as UInteger, UByte, or ULongInt. It can, however, be used with any numerical type.
+	Notice how in the resulting number of the operation, reflects an ##**Or**## operation performed on each bit of the top operand, with each corresponding bit of the bottom operand.  The same logic is also used when working with conditions. ##**Or**##, when used bitwise, is mostly performed with positive integers, such as ##[[KeyPgUinteger UInteger]]##, ##[[KeyPgUbyte UByte]]##, or ##[[KeyPgUlongint ULongInt]]##. It can, however, be used with any numerical type.
 
 {{fbdoc item="ex"}}
 ##%%(qbasic)

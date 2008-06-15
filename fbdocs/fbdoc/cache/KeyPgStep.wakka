@@ -1,18 +1,19 @@
-{{fbdoc item="title" value="STEP"}}
-----
-{{fbdoc item="syntax"}}
-	FOR //iterator// = //initial_value// TO //end_value// STEP //increment//
+{{fbdoc item="title" value="STEP"}}----
+Statement modifier
 
-	LINE [ //buffer//, ] STEP ( //x1//, //y1// ) - STEP ( //x2//, //y2// ) [, [ //color// ][, [ B|BF ][, //style// ] ] ]
+{{fbdoc item="syntax"}}##
+	[[KeyPgFornext For]] //iterator// = //initial_value// To //end_value// **Step** //increment//
 
-	CIRCLE [ //target,// ] STEP ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
+	[[KeyPgLinegraphics Line]] [ //buffer//, ] **Step** ( //x1//, //y1// ) - **Step** ( //x2//, //y2// ) [, [ //color// ][, [ B|BF ][, //style// ] ] ]
 
-	PAINT [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
+	[[KeyPgCircle Circle]] [ //target,// ] **Step** ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
 
+	[[keyPgPaint Paint]] [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
+##
 {{fbdoc item="desc"}}
-	In a [[KeyPgFor FOR]] statement, STEP specifies the increment of the loop iterator with each loop.
+	In a ##[[KeyPgForNext For]]## statement, ##**Step**## specifies the increment of the loop iterator with each loop.
 
-	In a [[KeyPgLinegraphics LINE]], [[KeyPgCircle CIRCLE]] or [[KeyPgPaint PAINT]] statement, STEP indicates that the following coordinate has values relative to the graphics cursor.
+	In a ##[[KeyPgLinegraphics Line]]##, ##[[KeyPgCircle Circle]]## or ##[[KeyPgPaint Paint]]## statement, ##**Step**## indicates that the following coordinate has values relative to the graphics cursor.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -24,9 +25,9 @@ LINE -STEP(10,10),13
 %%
 
 {{fbdoc item="see"}}
-	- [[KeyPgFor FOR]]
-	- [[KeyPgLinegraphics LINE]]
-	- [[KeyPgCircle CIRCLE]]
-	- [[KeyPgPaint PAINT]]
+	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgLinegraphics Line]]##
+	- ##[[KeyPgCircle Circle]]##
+	- ##[[KeyPgPaint Paint]]##
 
-{{fbdoc item="back" value="CatPgControlflow|CONTROL FLOW"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,0 +1,87 @@
+{{fbdoc item="title" value="Programmer's Guide"}}----
+Work in Progress: **New pages created for this guide should use the ""ProPg""* prefix.**
+<<
+{{fbdoc item="section" value="Getting Started"}}
+	- Hello World
+
+{{fbdoc item="section" value="Source Files"}}
+	- Module Files (.bas)
+	- Header Files (.bi)
+	- Using Prebuilt Libraries
+
+{{fbdoc item="section" value="Variables and Datatypes"}}
+	- [[ProPgLiterals Literals]]
+	- [[ProPgIdentifierRules Standard Identifier Rules]]
+	- Constants and Enumerations
+	- Numeric Types
+	- Strings (string, zstring, and wstring)
+	- Assignments
+	- [[ProPgDataConversion Coercion and Conversion]]
+	- [[ProPgImplicitdeclarations Implicit Declarations]]
+	- [[ProPgInitialization Variable Initialization]]
+	- [[ProPgVariableScope Variable Scope]]
+	- [[ProPgArrayIndex Array Index]]
+
+	{{fbdoc item="subsect" value="Datatypes"}}
+	- [[CatPgStdDataTypes Standard Data Types]]
+	- [[DtConstants Constants]]
+	- [[DtVariables Variables]]
+	- [[DtArrays Arrays]]
+	- [[DtPointers Pointers]]
+	- [[CatPgUserDefTypes User Defined Types]]
+	- [[CatPgCasting Converting Data Types]]
+
+{{fbdoc item="section" value="User Defined Types"}}
+	- Overview
+	- Simple User Defined Types
+	- Nested Types
+	- {{fbdoc item="keyword" value="KeyPgTypeDef|Type Aliasing"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
+	- [[ProPgTypeObjects Types as Objects]]
+	- Methods
+	- Properties
+	- Constructors and Destructors
+	- Using New and Delete
+	- Operator Overloading
+
+<<>>
+{{fbdoc item="section" value="Statements and Expressions"}}
+	- [[CatPgOperators Operators List]]
+	- [[OpPrecedence Operator Precedence]]
+	- [[CatPgCompound Compound Statements]]
+	- [[CatPgControlFlow Control Flow]]
+
+{{fbdoc item="section" value="Procedures"}}
+	- Overview
+	- [[ProPgPassByRef Passing Variables by Reference]]
+	- [[ProPgPassByVal Passing Variables by Value]]
+	- [[ProPgReturnValue Returning a Value]]
+	- Procedure Scopes
+	- Namespaces
+	- Function Pointers
+	- Visibility and External Linkage
+	- [[CatPgVarArg Variable Arguments]]
+	- Macros as Functions
+
+{{fbdoc item="section" value="Making Binaries"}}
+	- Executables
+	- Static Libraries
+	- Shared Libraries (DLLs)
+
+{{fbdoc item="section" value="Other Topics"}}
+	- [[CptAscii ASCII]]
+	- [[ProPgRadians Radians]]
+	- [[ProPgErrorHandling Error Handling]]
+	- External Graphics File Formats
+	- Internal Graphics Formats
+	- [[ProPgCompOpt Compiler Options]]
+	- [[KeyPgAsm Inline ASM]]
+	- [[ProPgErrorHandling Error Handling]]
+	- [[CatPgPreProcess Preprocessor]]
+	- [[CatPgDddefines Intrinsic Defines]]
+
+	
+>>
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

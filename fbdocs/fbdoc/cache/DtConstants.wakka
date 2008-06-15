@@ -32,6 +32,5 @@ END SUB
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}} 
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 
-**Data Types**: [[CatPgStdDataTypes Standard Data Types]] &middot; **Constants** &middot; [[DtVariables Variables]] &middot; [[DtArrays Arrays]] &middot; [[DtPointers Pointers]] &middot; [[CatPgUserDefTypes User Defined Types]] &middot; [[CatPgCasting Converting Data Types]] 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

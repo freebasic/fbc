@@ -23,6 +23,7 @@ Returns the natural logarithm of a given number.
 'Find the logarithm of any base
 FUNCTION LogBaseX (BYVAL Number AS DOUBLE, BYVAL BaseX AS DOUBLE) AS DOUBLE
 	LogBaseX = LOG( Number ) / LOG( BaseX )
+	'For reference:   1/log(10)=0.43429448
 END FUNCTION
 
 PRINT "The log base 10 of 20 is:"; LogBaseX ( 20 , 10 )

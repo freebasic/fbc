@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="AND"}}
-----
+{{fbdoc item="title" value="AND"}}----
 Operator that finds the bitwise ##**And**## (conjunction) of two integers.
 
 {{fbdoc item="syntax"}}##
@@ -21,7 +20,7 @@ Bit1     Bit2    Result
  0         1        0
  1         1        1
 %%##
-	This holds true for conditional expressions in FreeBasic.  When using ##**And**## encased in an ##[[KeyPgIf If]]## block, ##[[KeyPgWhile While]]## loop, or ##[[KeyPgDo Do]]## loop, the output will behave quite literally:
+	This holds true for conditional expressions in FreeBasic.  When using ##**And**## encased in an ##[[KeyPgIfthen If...Then]]## block, ##[[KeyPgWhilewend While...Wend]]## loop, or ##[[KeyPgDoloop Do...Loop]]## loop, the output will behave quite literally:
 ##%%(qbasic)If condition1 And condition2 Then expression1%%##
 	Is translated as:
 ##%%(qbasic)If condition1 is true, and condition2 is true, then perform expression1%%##
@@ -74,4 +73,4 @@ SLEEP
 	- ##[[KeyPgEqv Eqv]]##
 	- ##[[KeyPgImp Imp]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

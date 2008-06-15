@@ -22,7 +22,7 @@
 	The created wstring. An empty wstring will be returned if either ##//ch//## is an empty string, or ##//count//## <= 0.
 
 {{fbdoc item="desc"}}
-	WSTRING generates a temporal wstring filled with //count// copies of an Unicode character. This string can be printed or assigned to a previously DIMed wstring.
+	WSTRING generates a temporal wstring filled with //count// copies of an [[Unicode Unicode]] character. This string can be printed or assigned to a previously DIMed wstring.
 {{fbdoc item="ex"}}
 ##%%(qbasic)
    PRINT WSTRING( 4, 934 )         
@@ -34,7 +34,7 @@
 
 
 {{fbdoc item="diff"}}
-	- QBasic does not support Unicode
+	- QBasic does not support [[Unicode Unicode]]
 
 {{fbdoc item="see"}}
 	- [[KeyPgStringtype STRING]] (data type)

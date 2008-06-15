@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SHL= (Combined SHL)"}}
-----
+{{fbdoc item="title" value="SHL= (Combined SHL)"}}----
 Operator that shifts the bits of an integer left and assign the result to the a first operand.
 
 {{fbdoc item="syntax"}}##
@@ -27,4 +26,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgShl Shl]]##
 
-{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

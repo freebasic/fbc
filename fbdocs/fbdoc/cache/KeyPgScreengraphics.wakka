@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREEN (GRAPHICS)"}}
-----
+{{fbdoc item="title" value="SCREEN (GRAPHICS)"}}----
 Statement to initialize a graphics mode using QB-like mode numbers.
 
 {{fbdoc item="syntax"}}##
@@ -28,7 +27,7 @@ Statement to initialize a graphics mode using QB-like mode numbers.
 
 __mode details__
 	Available modes list:
-	QB compatibilty modes: they are real VGA modes in the dos Version and emulated using 24 color vesa modes in Windows-Linux
+	QB compatibilty modes: they are real VGA modes in the dos Version and emulated using standard 8bit modes in Windows-Linux
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;1;320x200;CGA ;40X25;8x8;16 background, 1 of four sets foreground;2;640x200;CGA;80x25;8x8;16 colors to 2 attributes;7;320x200;EGA;40x25;8x8;16 colors to 16 attributes;8;640x200;EGA;40x25;8x8;16 colors to 16 attributes;9;640x350;EGA;80x25 0r 80x43;8x14 or 8x8;16 colors to 16 attributes;11;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 2 attributes;12;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 16 attributes;13;320x200;MCGA;40X25;8X8;256K colors to 256 attributes"}}
 	New FB SVGA modes:
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;14;320x240;###;40x30;8x8;256K colors to 256 attributes or direct color; 15;400x300;###;50x37;8x8;256K colors to 256 attributes or direct color; 16;512x384;###;64x24 or 64x48;8x16 or 8x8;256K colors to 256 attributes or direct color;17;640x400;###;80x25 or 80x50;8x16 or 8x8;256K colors to 256 attributes or direct color;18;640x480;###;80x30 or 80x60;8x16 or 8x8;256K colors to 256 attributes or direct color; 19;800x600;###;100x37 or 100x75;8x16 or 8x8;256K colors to 256 attributes or direct color;20;1024x768;###;128x48 or 128x96;8x16 or 8x8;256K colors to 256 attributes or direct color; 21;1280x1024;###;160x64 or 160x128;8x16 or 8x8;256K colors to 256 attributes or direct color"}} 
@@ -57,8 +56,12 @@ __flags details:__
 ~~-If GFX_FULLSCREEN is not specified, FB opens a window of the requested size in the present desktop.
 ~~-GFX_NO_SWITCH (&h04) prevents the user from changing to fullscreen or to windowed mode by pressing Alt-Enter.
 ~~-GFX_NO_FRAME (&h08) creates a window without a border.
-~~-GFX_SHAPED_WINDOW (&h10) creates transparent regions wherever RGB(255, 0, 255) is drawn on the screen.
+~~-GFX_SHAPED_WINDOW (&h10) creates transparent regions wherever RGBA(255, 0, 255, 0) is drawn on the screen.
 	
+~__option flags__
+~~Flags working in any mode, they activate special behaviours
+~~-GFX_ALPHA_PRIMITIVES (&h20) Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the [[KeyPgRgba RGBA]] macro or direct color in the form &hAARRGGBB) will always be used by all primitives.
+
 ~__OpenGl Buffer flags__
 ~~These flags work only in OpenGL graphics mode, must be combined with GFX_OPENGL
 ~~-GFX_STENCIL_BUFFER  (&h10000) Forces OpenGl to use Stencil buffer 
@@ -98,4 +101,4 @@ END IF%%
 	- ##[[KeyPgScreencopy Screencopy]]##
 	- ##[[KeyPgScreeninfo Screeninfo]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

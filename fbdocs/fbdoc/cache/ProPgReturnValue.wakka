@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="Returning Values"}}
+----
+
+{{fbdoc item="desc"}}
+**Returning Values** refers to the ability of a [[KeyPgFunction function]] to send a value back to the spot from which they were first executed.
+
+
+%%(qbasic)
+'This program demonstrates a function returning a value.
+Option Explicit 'This will ensure that all variables must be declared.
+
+Declare Function myFunction () As Integer
+
+Dim a As Integer
+
+a = myFunction() + 10 'Here we take what myFunction returns and add 10.
+
+Print a 'knowing that myFunction returns 10, we get 10+10=20 and will print 20.
+
+Function myFunction () As Integer
+	Return 10 'Here we tell myFunction to return 10.
+End Function
+%%
+
+
+{{fbdoc item="see"}}
+	- [[KeyPgFunction FUNCTION]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

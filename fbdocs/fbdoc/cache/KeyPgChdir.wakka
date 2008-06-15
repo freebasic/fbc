@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CHDIR"}}
-----
+{{fbdoc item="title" value="CHDIR"}}----
 Changes drive and directory to that specified.
 
 {{fbdoc item="syntax"}}##
@@ -29,4 +28,4 @@ CHDIR //path//
 	- ##[[KeyPgMkdir Mkdir]]##
 	- ##[[KeyPgRmdir Rmdir]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

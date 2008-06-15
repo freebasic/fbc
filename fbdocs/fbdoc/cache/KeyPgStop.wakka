@@ -1,22 +1,18 @@
-{{fbdoc item="title" value="STOP"}}
-----
+{{fbdoc item="title" value="STOP"}}----
 Halts program execution, and waits for a keypress before ending the program.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Stop** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
 ##
-
 {{fbdoc item="usage"}}##
-	STOP
+	**Stop**
 ##
-
 {{fbdoc item="param"}}
 	##//retval//##
 		Error code returned to system
 
 {{fbdoc item="desc"}}
-	Halts the execution of the program and stands by. It's  provided as a help to debugging, as it preserves the memory and doesn't close files. For normal program termination the END keyword should be used. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
-
+	Halts the execution of the program and stands by. It's  provided as a help to debugging, as it preserves the memory and doesn't close files. For normal program termination the ##[[KeyPgEnd End]]## keyword should be used. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -32,4 +28,4 @@ print "this text will never be shown"
 {{fbdoc item="see"}}
 	- ##[[KeyPgEnd End]]##
 
-{{fbdoc item="back" value="CatPgMisc|MISC"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

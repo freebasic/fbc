@@ -1,7 +1,7 @@
-{{fbdoc item="title" value="BINARY"}}
-----
+{{fbdoc item="title" value="BINARY"}}----
 {{fbdoc item="syntax"}}
 	OPEN  //file_name_string// FOR BINARY [ACCESS //access_type//] [//lock_type//] AS [#]//slot// 
+
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing binary data in the file //slot//, with free format.  
 	If the file does not exist, a new file will be created.	The file pointer is initialized by OPEN at byte no. 1. 
@@ -71,4 +71,4 @@ Print x
 	- [[KeyPgOutput OUTPUT]]
 	- [[KeyPgInputfilemode INPUT]]
 
-{{fbdoc item="back" value="CatPgFilemode|FILE MODE"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

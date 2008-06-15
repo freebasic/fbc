@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SETDATE"}}
-----
+{{fbdoc item="title" value="SETDATE"}}----
 Statement to set the current system date
 
 {{fbdoc item="syntax"}}##
@@ -33,4 +32,4 @@ SETDATE month$ + "/" + day$ + "/" + year$
 	- ##[[KeyPgDate Date]]##
 	- ##[[KeyPgSettime Settime]]##
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

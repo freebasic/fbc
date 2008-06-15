@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SCREENPTR"}}
-----
+{{fbdoc item="title" value="SCREENPTR"}}----
 Graphics function to return a pointer to the current work page framebuffer memory.
 
 {{fbdoc item="syntax"}}##
@@ -41,4 +40,4 @@ SLEEP
 	- ##[[KeyPgPtr Ptr]]##
 	- ##[[KeyPgPointer Pointer]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

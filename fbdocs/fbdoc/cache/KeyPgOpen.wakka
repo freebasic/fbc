@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="OPEN"}}
-----
+{{fbdoc item="title" value="OPEN"}}----
+File Input/Output function for getting a handle to a disk file or device.
+
 {{fbdoc item="syntax"}}##
 	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [encoding //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//slot// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]##
 
@@ -103,5 +104,4 @@ END IF
 	- [[KeyPgGetfileio GET (FILE I/O)]]
 	- [[KeyPgPutfileio PUT (FILE I/O)]]
 
-
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

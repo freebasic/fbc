@@ -38,4 +38,4 @@ end select
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

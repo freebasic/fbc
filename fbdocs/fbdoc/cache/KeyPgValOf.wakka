@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="(*) Value of (dereference)"}}
-----
+{{fbdoc item="title" value="(*) Value of (dereference)"}}----
+Operator to dereference a pointer
+
 {{fbdoc item="syntax"}}
 	*{//variable// | //function//} = //expression//
 	//variable// = *//variable//

@@ -38,5 +38,4 @@ write a, b$, c!
 	- ##[[KeyPgInputPp Input #]]##
 	- ##[[KeyPgPrint Print]]##
 
-
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

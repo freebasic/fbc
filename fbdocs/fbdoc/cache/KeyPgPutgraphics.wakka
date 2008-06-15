@@ -1,9 +1,8 @@
-{{fbdoc item="title" value="PUT (GRAPHICS)"}}
-----
+{{fbdoc item="title" value="PUT (GRAPHICS)"}}----
 Graphics statement to copy an image on to another image or screen
 
 {{fbdoc item="syntax"}}##
-	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alpha//|//blender// [ ,//param//]) ] ]
+	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ] [ ,//method// [ ,( //alpha//|//value//|//blender// [ ,//param//]) ] ]
 ##
 {{fbdoc item="param"}}
 	##//target//##
@@ -28,10 +27,13 @@ Graphics statement to copy an image on to another image or screen
 			##OR## : Destination pixels are bitwise ORed with source pixels. See below.
 			##XOR## : Destination pixels are bitwise XORed with source pixels. See below.
 			##ALPHA## : Source is blended with a translucency factor specified in the alpha parameter. Does not draw source pixels of mask color. See below.
+			##ADD##: Source is multiplied by a value and added with saturation to the destination. See below.
 			##CUSTOM## : Uses a user-defined function to perform blending the source with the destination. See below.
 
 	##//alpha//## 
 		is a 0-255 value specifying the opacity of an ALPHA method blit.
+	##//value//##
+		is a 0-255 value specifying the multiplier factor for the ADD method blit.
 	##//blender//## 
 		specifies the address of a user-defined function to be called in a CUSTOM method blit. See below.
 	##//param//## 
@@ -44,7 +46,7 @@ Graphics statement to copy an image on to another image or screen
 		The ##//source//## and ##//target//## image buffers must be valid image buffers. Valid image buffers are created using the ##[[KeyPgGetgraphics Get]]## or ##[[KeyPgImagecreate ImageCreate]]## statements. Valid image buffers can be specified in a ##**Put**## statement using an array name with optional index, or a pointer with optional index.
 
 	**Drawing methods**
-		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR## and ##ALPHA## methods do. Images that are drawn with these latter methods will look differetly depending on the content of the destination buffer.
+		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR##, ##ALPHA## and ##ADD## methods do. Images that are drawn with these latter methods will look differetly depending on the content of the destination buffer.
 
 	**Different pixel formats**
 		The pixel format of an image buffer must be compatible with the current gfx mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics Screen]]## statement, the image data may not be valid in the new gfx mode, and may produce undesired results.
@@ -52,7 +54,7 @@ Graphics statement to copy an image on to another image or screen
 		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see Internal pixel formats for details. 
 
 	**Mask Color**
-		The ##TRANS## and ##ALPHA## methods do not draw pixels in the source image that use the mask color. The mask color depends on the current color depth: in paletted modes (up to 8 bpp) it is equal to color index 0, while in hi/truecolor modes (15, 16, 24 and 32 bpp) it is equal to color &HFF00FF (bright pink). 
+		The ##TRANS##, ##ALPHA## and ##ADD## methods do not draw pixels in the source image that use the mask color. The mask color depends on the current color depth: in paletted modes (up to 8 bpp) it is equal to color index 0, while in hi/truecolor modes (15, 16, 24 and 32 bpp) it is equal to color &HFF00FF (bright pink). 
 
 	**Alpha drawing**
 		The ##ALPHA## method can be used in two modes. If the ##//alpha//## parameter is specified, this is used to specify the level of translucency for the whole image to be drawn; a value of 0 will draw a completely transparent image, whereas a value of 255 will draw a completely solid one. This mode works only in hi/truecolor modes (15, 16, 24 and 32 bpp). If the ##//alpha//## parameter is omitted, the ##ALPHA## method will take the alpha level value on a per-pixel basis, allowing to draw images with an alpha channel (certain parts of the image can be made more or less translucent than others). This mode works only in 32 bpp mode, as this is the only color depth that allows for an embedded alpha value in each pixel.
@@ -89,14 +91,15 @@ declare function checkered_blend( byval src as uinteger, byval dest as uinteger,
    next i
    
    '' demonstrate all drawing methods ...
-   put( 8,16 ), sprite, pset : locate 4,12 : print "<- pset"
-   put step( 16,24 ), sprite, preset : locate 7,12 : print "<- preset"
-   put step( -16,24 ), sprite, and : locate 10,12 : print "<- and"
-   put step( 16,24 ), sprite, OR : locate 13,12 : print "<- or"
-   put step( -16,24 ), sprite, XOR : locate 16,12 : print "<- xor"
-   put step( 16,24 ), sprite, TRANS : locate 19,12 : print "<- trans"
-   put step( -16,24 ), sprite, ALPHA, 96 : locate 22,12 : print "<- alpha"
-   put step( 16,24 ), sprite, CUSTOM, @checkered_blend : locate 25,12 : print "<- custom"
+   Put( 8,8 ), sprite, Pset : Locate 3,12 : Print "<- pset"
+   Put Step( 16,24 ), sprite, Preset : Locate 6,12 : Print "<- preset"
+   Put Step( -16,24 ), sprite, And : Locate 9,12 : Print "<- and"
+   Put Step( 16,24 ), sprite, Or : Locate 12,12 : Print "<- or"
+   Put Step( -16,24 ), sprite, Xor : Locate 15,12 : Print "<- xor"
+   Put Step( 16,24 ), sprite, TRANS : Locate 18,12 : Print "<- trans"
+   Put Step( -16,24 ), sprite, ALPHA, 96 : Locate 21,12 : Print "<- alpha"
+   Put Step( 16,24 ), sprite, ADD, 192 : Locate 24,12 : Print "<- add"
+   Put Step( -16,24 ), sprite, CUSTOM, @checkered_blend : Locate 27,12 : Print "<- custom"
    
    ImageDestroy( sprite )                          '' free allocated memory for sprite
    sleep : end 0
@@ -110,7 +113,7 @@ function checkered_blend( byval src as uinteger, byval dest as uinteger, byval p
 end function%%##
 
 {{fbdoc item="diff"}}
-	- The ##TRANS##, ##ALPHA## and ##CUSTOM## methods are new to FreeBASIC.
+	- The ##TRANS##, ##ALPHA##, ##ADD## and ##CUSTOM## methods are new to FreeBASIC.
 	- In QB, the destination was always the screen.
 	- QB throws a run-time error instead of clipping out of bounds images
 	- In QB, only arrays you be specified as source images
@@ -121,4 +124,4 @@ end function%%##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgAlphaGfx Alpha]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}

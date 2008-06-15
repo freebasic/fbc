@@ -1,10 +1,21 @@
-{{fbdoc item="title" value="NAME"}}
-----
-{{fbdoc item="syntax"}}
-NAME //oldname// as string, //newname// as string
+{{fbdoc item="title" value="NAME"}}----
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Name**( [[KeyPgByref Byref]] //oldname// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByref Byref]] //newname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Name** //oldname//, //newname//
+##
+{{fbdoc item="param"}}
+	//oldname//
+		Name of an existing file
+	//newname//
+		New name of the file
+
+{{fbdoc item="ret"}}
+	Returns a zero (0) on success and a non-zero error code on failure.
 
 {{fbdoc item="desc"}}
-Renames a file originally called //oldname// to //newname//.
+	Renames a file originally called //oldname// to //newname//.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -16,6 +27,6 @@ renames the file "dsc001.jpg" to "landscape.jpg".
 	- In QB, NAME required AS rather than a comma between the old and new names.
 
 {{fbdoc item="see"}}
-	- [[KeyPgKill KILL]]
+	- ##[[KeyPgKill Kill]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

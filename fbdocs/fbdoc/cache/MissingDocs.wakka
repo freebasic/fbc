@@ -13,22 +13,33 @@ Please edit this page to remove items when they are written.
 	- Statements and Statement blocks
 	- Expressions
 
-	- An introduction to unicode and the different encodings 
 	- Unnamed udt (TYPE)
 
+	- restructure of table of contents to provide more organization for top-level concepts and keyword categories.
+	- Finish formatting the style change that was started beginning of 2006.
+
+
 ==Undocumented keywords== 
+
+	Work in progress for fbc 0.17b
+	[[KeyPgProperty Property]]
+	[[KeyPgNew New]]
+	[[KeyPgDelete Delete]]
+	[[KeyPgClass Class]]
 
 ==Incomplete Documentation==
 
 	[[KeyPgExternCpp Extern...End Extern]]
-
+	[[KeyPgOperator Operator]]
+	[[KeyPgConstructor Constructor]]
+	[[KeyPgDestructor Destructor]]
+	
 	Pages that have '!!!'
 	
 	1. MissingDocs
 	2. KeyPgFileattr
 	3. KeyPgOpenLpt
-	4. KeyPgFunction
-	5. KeyPgDeclare
+	4. KeyPgDeclare
 ----
 
 The documents listed and linked below need to be updated or enhanced in some way.
@@ -39,13 +50,15 @@ The documents listed and linked below need to be updated or enhanced in some way
 Needs Code Examples:
 
 	[[KeyPgOpenLpt]] needs more examples, or non-specific platform example.
-	[[KeyPgDdfberr __FB_ERR__]]
 	[[KeyPgFlip Flip]]
-	[[KeyPgInputfilemode Input(file i/o)]]
-	[[KeyPgOutput Output]]
 	[[KeyPgPcopy Pcopy]]
 	[[KeyPgPmap Pmap]]
-	[[KeyPgRandom Random]]
 	[[KeyPgWait Wait]]
+
+
+----
+
+==To be deleted==
+None
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

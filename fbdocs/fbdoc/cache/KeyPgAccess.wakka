@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ACCESS"}}
-----
+{{fbdoc item="title" value="ACCESS"}}----
 Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges.
 
 {{fbdoc item="syntax"}}##
@@ -72,4 +71,4 @@ This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]
 	- [[KeyPgReadFile READ]]
 	- [[KeyPgWriteFile WRITE]]
 
-{{fbdoc item="back" value="CatPgFiles|FILES"}} {{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

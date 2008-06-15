@@ -1,0 +1,6 @@
+{{fbdoc item="title" value="Compiler Option: -e"}}----
+
+The -e compiler option adds error checking. More information on handling errors may be found in [[ProPgErrorHandling Error Handling]]
+
+
+{{fbdoc item="back" value="ProPgCompOpt|Compiler Options"}} 

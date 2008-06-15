@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="TIMESERIAL"}}
-----
+{{fbdoc item="title" value="TIMESERIAL"}}----
 Date function to return a [[DtDateSer Date Serial]] for the specified hours, minutes, and seconds
 
 {{fbdoc item="syntax"}}##
@@ -42,4 +41,4 @@ print format(a!,"yyyy/mm/dd hh:mm:ss")
 	- ##[[KeyPgTimevalue TimeValue]]##
 	- ##[[KeyPgDatevalue DateValue]]##
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

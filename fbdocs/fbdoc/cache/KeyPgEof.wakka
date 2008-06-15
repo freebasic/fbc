@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="EOF"}}
-----
+{{fbdoc item="title" value="EOF"}}----
 Checks to see if the end of an open file has been reached.
 
 {{fbdoc item="syntax"}}##
@@ -60,4 +59,4 @@ end 0%%
 	- ##[[KeyPgLoc Loc]]##
 	- ##[[KeyPgFreefile Freefile]]##
 
-{{fbdoc item="back" value="CatPgFunction|FUNCTION"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetic list of keywords"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

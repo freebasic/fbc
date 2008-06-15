@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LOCAL"}}
-----
+{{fbdoc item="title" value="LOCAL"}}----
 Error handling statement to set the current error handler.
 
 {{fbdoc item="syntax"}}##
@@ -38,7 +37,6 @@ end sub
 	- The LOCAL clause comes from PDS 7.1. QB 4.5 does not allow local error handling.
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="LangErrorHandling|Error Handling"}}
+	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 
-{{fbdoc item="back" value="CatPgError|ERROR"}}
-
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

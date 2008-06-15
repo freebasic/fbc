@@ -1,6 +1,6 @@
 =====Get Information into your Program=====
 
-Input is the life of any program.  If you can't get something into your program, how are you going to get anything out of it?  What you will find here is the basics of how to get information ito your FreeBasic program.
+Input is the life of any program.  If you can't get something into your program, how are you going to get anything out of it?  What you will find here is the basics of how to get information ito your FreeBASIC program.
 
 Here's a very basic program that will ask for your name:
 
@@ -26,7 +26,7 @@ sleep
 
 INPUT is the easiest way to get information from someone.  They just type in some text and press Enter where they are done.  
 
-What if you you only want one key stroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="TermASCII|ASCII"}} value of a key that was pressed.
+What if you you only want one key stroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="CptAscii|ASCII"}} value of a key that was pressed.
 
 %%(qbasic)
 ' Ask the user for input
@@ -50,5 +50,5 @@ Print "Press any button to exit"
 Sleep
 %%
 
-For more information check out the {{fbdoc item="keyword" value="CatPgUser|User Input"}} Section.
+For more information check out the {{fbdoc item="keyword" value="CatPgInput|User Input"}} Section.
 

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="(@) Address of"}}
-----
+{{fbdoc item="title" value="(@) Address of"}}----
 Operator that returns the address of its operand.
 
 {{fbdoc item="syntax"}}##

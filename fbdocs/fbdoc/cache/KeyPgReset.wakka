@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="RESET"}}
-----
+{{fbdoc item="title" value="RESET"}}----
 Closes all open files.
 
 {{fbdoc item="syntax"}}##
@@ -26,4 +25,4 @@ reset
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgClose Close]]##
 
-{{fbdoc item="back" value="CatPgFile|FILE"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

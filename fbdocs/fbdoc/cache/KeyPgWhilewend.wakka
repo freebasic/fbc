@@ -1,32 +1,49 @@
-{{fbdoc item="title" value="WHILE...WEND"}}
-----
-{{fbdoc item="syntax"}}
-	While [//condition//]
-		[//statements//]
-	Wend
+{{fbdoc item="title" value="WHILE"}}----
+Control flow statement for looping
 
+{{fbdoc item="syntax"}}##
+	**While** [//condition//]
+		[//statement block//]
+	**Wend**
+##
 {{fbdoc item="desc"}}
-	While[...] Wend will repeat the //statements// between while and wend, while //condition// is true.
+	The ##**While**## statement will cause the following set of statements in the //statement block// to execute repeatedly if and while the expression //condition// evaluates to true.
 
-	//condition// may be any valid expression that evaluates to False (zero) or True (non-zero).
+	If //condition// evaluates to false when the WHILE statement is first executed, then the //statement block// is skipped and execution resumes immediately following the enclosing ##**Wend**## statement.
 
-	If //condition// is false when the WHILE statement begins, none of the //statements// will be executed.
+	If an ##[[KeyPgExit Exit]]## ##**While**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Wend**## statement. If a ##[[KeyPgContinue Continue]]## ##**While**## statement is encountered, the rest of the //statement block// is skipped and execution resumes at the ##**While**## statement.
 
+	Like all control flow statements, the ##**While**## statement can be nested, ie., it can be used in a statement block of another WHILE statement.
+
+	//**note**: the ##**While**## //keyword// is also used in the ##[[KeyPgDoloop Do...Loop]]## statement to indicate the type of comparison. Used in this way, the DO statement becomes functionally equivalent to the WHILE statement, so do not confuse their enclosing keywords ##Loop## and ##**Wend**##, respectively.//
 
 {{fbdoc item="ex"}}
-%%(qbasic)
-DIM x as integer
-While x = 0
-	x = 1
-WEND
+	In this example, a ##**While**## loop is used to reverse a string by iterating through it backwards. The loop stops if index is less than 0 //(0 being the first index in the string)//.
+%%(qbasic)option explicit                              '' force explicit variable declarations
+
+   dim as string sentence                          '' string to reverse
+   sentence = "The quick brown fox jumps over the lazy dog."
+   
+   dim as string ecnetnes
+   dim as integer index
+   index = len( sentence ) - 1                     '' point to last character
+   while( index >= 0 )                             '' stop after first character
+	  ecnetnes += chr( sentence[index] )           '' append character to new string
+	  index -= 1
+   wend
+   
+   print "original: """ ; sentence ; """"
+   print "reversed: """ ; ecnetnes ; """"
+   
+   end 0
 %%
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgDoloop DO...LOOP]]
-	- [[KeyPgContinue CONTINUE]]
-	- [[KeyPgExit EXIT]]
+	- ##[[KeyPgExit Exit]]##
+	- ##[[KeyPgContinue Continue]]##
+	- ##[[KeyPgDoloop Do...Loop]]##
 
-{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}
+{{fbdoc item="back" value="CatPgCompound|Compound Statements"}}{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

@@ -25,4 +25,4 @@ print x
 {{fbdoc item="see"}}
 	- [[KeyPgPeek PEEK]]
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}
