@@ -17,9 +17,10 @@ Please edit this page to remove items when they are written.
 
 ==Incomplete Documentation==
 
+	[[KeyPgPrintPp Print #]]
+	[[KeyPgOpenCom Open Com]]
 	[[KeyPgExternCpp Extern...End Extern]]
-	[[KeyPgVar Var]]
-
+	[[KeyPgType Type...End Type]]
 	- static members
 	- for/next/step overloads
 	- more overloaded ops? (need to check this)
@@ -42,31 +43,9 @@ The documents listed and linked below need to be updated or enhanced in some way
 	None
 
 ==Pages that are no longer needed and can be deleted==
-	""gtksignalconnect""
-	""gtkmainquit""
-	""gtkmain""
-	""gtkinit""
-	""TutIndexGTK""
-	""CatPgGfx""
+	None
 
 ==Pages requiring new style update==
-Generated from any ""KeyPg*"" pages not having the following **exact** text:
-	""{{fbdoc item="syntax"}}##""
-It's not a 100% accurate test, but fairly close.
-
-KeyPgDeclare
-KeyPgDim
-KeyPgExtern
-KeyPgLset
-KeyPgOpenCom
-KeyPgPrintPp
-KeyPgPrivate
-KeyPgPublic
-KeyPgScreenCons
-KeyPgSwap
-KeyPgType
-KeyPgTypeDef
-KeyPgUsing
-KeyPgVar
+	KeyPgDim
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -6,7 +6,7 @@ Returns the rightmost substring of a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Right** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Right**[$]( //str//, //n// )
+	//result// = **Right**( //str//, //n// )
 ##
 {{fbdoc item="param"}}
 	##//str//##

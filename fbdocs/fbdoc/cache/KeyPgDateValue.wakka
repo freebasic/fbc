@@ -1,25 +1,26 @@
 {{fbdoc item="title" value="DATEVALUE"}}----
-Date function to return a [[DtDateSer Date Serial]] from a string.
+Date function to return a [[ProPgDates Date Serial]] from a string.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( //stringdate// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDoubledouble]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( [[KeyPgByref byref]] //date_string// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **""DateValue""**( //stringdate// )
+	//result// = **""DateValue""**( //date_string// )
 ##
 {{fbdoc item="param"}}
-	##//stringdate//##
+	##//date_string//##
 		the string to convert to a date serial
 
 {{fbdoc item="ret"}}
-	Returns a [[DtDateSer Date Serial]] from a date string.
+	Returns a [[ProPgDates Date Serial]] from a date string.
 
 {{fbdoc item="desc"}}
+	The date string must be in the format set in the regional settings of the Operating System. 
 
-	The date string must be in the format set in the regional settings of the OS. So DATEVALUE(DATE) will work only if the regional settings specify the same date format QB used. If the date is in a different format than the OS's regional settings DATESTRING and MID should be used, or the OS settings could be changed temporally.
+	##**""DateValue""**( Date() )## will work correctly only if the regional settings specify the same short date format QB used (mm-dd-yyyy).  Consider using the ##[[KeyPgNow Now]]## function in the expression ##Fix(Now())## to obtain the current date as a date serial.
 
-	The compiler will not recognise this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -55,9 +56,8 @@ print "Number of days between dates is " & abs( v2 - v1 )
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[DtDateSer Date Serials]]
+	- [[ProPgDates Date Serials]]
 	- ##[[KeyPgDateSerial DateSerial]]##
 	- ##[[KeyPgTimeValue TimeValue]]##
-	- ##[[KeyPgDateValue DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

@@ -22,6 +22,8 @@ Procedures that work with static and dynamic memory
 		Writes some type of value to an address.
 	=={{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}==
 		Clears data in an array with a specified value.
+	=={{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}==
+		Exchange the contents of two variables.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

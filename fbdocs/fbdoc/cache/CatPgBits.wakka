@@ -24,6 +24,6 @@ Procedures that work with the bits and bytes of numbers.
 	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
 		Returns an integer with the specified bit set to 1.
 
-<<::c::
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

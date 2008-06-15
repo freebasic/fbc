@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CALLOCATE"}}
-----
+{{fbdoc item="title" value="CALLOCATE"}}----
 Allocates a certain number of bytes from the free store and clears the contents.
 
 {{fbdoc item="syntax"}}##

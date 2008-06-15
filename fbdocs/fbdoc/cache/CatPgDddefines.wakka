@@ -22,7 +22,6 @@
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}
-
 <<>>
 	- {{fbdoc item="keyword" value="KeyPgDdfboutdll|__FB_OUT_DLL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
@@ -41,7 +40,6 @@
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
-
 >>
 
 ::c::

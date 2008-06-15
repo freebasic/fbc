@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Array Index"}}----
-An array index is the number used to access an [[DtArrays Array]] of [[DtVariables Variables]] created using the ##[[KeyPgDim Dim]]## command.
+An array index is the number used to access an [[ProPgArrays Array]] of [[ProPgVariables Variables]] created using the ##[[KeyPgDim Dim]]## command.
 
 {{fbdoc item="desc"}}
 	The best way to illustrate the use of array elements is by example. If we have an array myArray with elements of 1 to 10, filled with random data
@@ -26,7 +26,7 @@ Index        Data
 	%%
 	9
 	%%
-	If you wanted to change the contents of an array, you'd use it like any other [[DtVariables Variable]], by typing, for example
+	If you wanted to change the contents of an array, you'd use it like any other [[ProPgVariables Variable]], by typing, for example
 	%%
 	myArray(3) = 0
 	%%
@@ -39,7 +39,7 @@ Index        Data
 	0
 	%%
 	
-	In reality, array elements are usually indexed using another [[DtVariables Variable]]. For example, if you wanted to set all the elements in our above array to zero, you could go
+	In reality, array elements are usually indexed using another [[ProPgVariables Variable]]. For example, if you wanted to set all the elements in our above array to zero, you could go
 	%%
 	Dim a As Integer
 	for a = 1 to 10
@@ -95,11 +95,11 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[DtArrays Arrays]]
+	- [[ProPgArrays Arrays]]
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgFunction Function]]##
 	- ##[[KeyPgSub Sub]]##
-	- [[DtVariables Variables]] 
+	- [[ProPgVariables Variables]] 
 	- [[ProPgVariableScope Variable Scope]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

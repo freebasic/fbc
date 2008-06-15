@@ -13,9 +13,10 @@ FreeBASIC programmer's guide
 	Using Prebuilt Libraries
 
 {{fbdoc item="section" value="Lexical Conventions"}}
-	{{fbdoc item="keyword" value="KeyPgRem|Comments"}}
+	{{fbdoc item="keyword" value="ProPgComments|Comments"}}
 	{{fbdoc item="keyword" value="ProPgIdentifierRules|Identifier Rules"}}
 	{{fbdoc item="keyword" value="ProPgLiterals|Literals"}}
+	{{fbdoc item="keyword" value="ProPgLabels|Labels"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	Constants and Enumerations
@@ -23,15 +24,10 @@ FreeBASIC programmer's guide
 	Strings (string, zstring, and wstring)
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
 	{{fbdoc item="keyword" value="ProPgArrayIndex|Array Index"}}
-
-	{{fbdoc item="subsect" value="Datatypes"}}
-		{{fbdoc item="keyword" value="CatPgStdDataTypes|Standard Data Types"}}
-		{{fbdoc item="keyword" value="DtConstants|Constants"}}
-		{{fbdoc item="keyword" value="DtVariables|Variables"}}
-		{{fbdoc item="keyword" value="DtArrays|Arrays"}}
-		{{fbdoc item="keyword" value="DtPointers|Pointers"}}
-		{{fbdoc item="keyword" value="CatPgUserDefTypes|User Defined Types"}}
-		{{fbdoc item="keyword" value="CatPgCasting|Converting Data Types"}}
+	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
+	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
+	{{fbdoc item="keyword" value="ProPgArrays|Arrays"}}
+	{{fbdoc item="keyword" value="ProPgPointers|Pointers"}}
 
 {{fbdoc item="section" value="Declarations"}}
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
@@ -40,12 +36,11 @@ FreeBASIC programmer's guide
 	{{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}
 	Namespaces
 	Visibility and External Linkage
-	{{fbdoc item="keyword" value="CatPgModularizing|Modularizing"}}
 
 {{fbdoc item="section" value="User Defined Types"}}
 	Overview
 	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
-	{{fbdoc item="keyword" value="KeyPgTypeTemp|Anonymous Types"}}
+	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
 	Constructors and Destructors
 	Properties
 	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
@@ -57,23 +52,29 @@ FreeBASIC programmer's guide
 	Assignments
 	{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
-	{{fbdoc item="keyword" value="CatPgControlFlow|Control Flow Statements"}}
+	{{fbdoc item="keyword" value="ProPgControlFlow|Control Flow Statements"}}
 
 {{fbdoc item="section" value="Procedures"}}
-	Overview
-	{{fbdoc item="keyword" value="ProPgPassByRef|Passing Variables by Reference"}}
-	{{fbdoc item="keyword" value="ProPgPassByVal|Passing Variables by Value"}}
+	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
+	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
 	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
 	Procedure Scopes
-	Function Pointers
+	Calling Conventions
+	Recursion
+	Constructors and Destructors
+	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
 	{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
-	Macros as Functions
 
 {{fbdoc item="section" value="Making Binaries"}}
 	Executables
 	{{fbdoc item="keyword" value="ProPgStaticLibraries|Static Libraries"}}
 	{{fbdoc item="keyword" value="ProPgSharedLibraries|Shared Libraries (DLLs)"}}
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
+
+{{fbdoc item="section" value="Preprocessor"}}
+	Overview
+	Conditional Compilation
+	Macros
 
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
@@ -83,9 +84,14 @@ FreeBASIC programmer's guide
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
 	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
-	{{fbdoc item="keyword" value="CatPgPreProcess|Preprocessor"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
-	{{fbdoc item="keyword" value="CatPgProcedures|Procedures"}}
+
+
+
+
+NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
+
+
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

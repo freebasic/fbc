@@ -58,7 +58,7 @@ Statements and procedures for working with files and devices
 <<>>{{anchor name="FILEIO"}}{{fbdoc item="section" value="Reading from and Writing to Files or Devices"}}
 	=={{fbdoc item="keyword" value="KeyPgInputPp|INPUT #"}}==
 		Reads a list of values from a file or device.
-	=={{fbdoc item="keyword" value="KeyPgWrite|WRITE #(File I/O)"}}==
+	=={{fbdoc item="keyword" value="KeyPgWritePp|WRITE #"}}==
 		Writes a list of values to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgInputnum|INPUT()"}}==
 		Reads a number of characters from a file or device.
@@ -68,6 +68,8 @@ Statements and procedures for working with files and devices
 		Reads a line of text from a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}==
 		Writes text data to a file or device.
+	=={{fbdoc item="keyword" value="KeyPgPrintusingPp|PRINT # USING"}}==
+		Writes formatted text data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPutfileio|PUT #"}}==
 		Writes arbitrary data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgGetfileio|GET #"}}==

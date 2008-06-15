@@ -6,7 +6,7 @@ Returns the leftmost substring of a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Left**[$]( //str//, //n// )
+	//result// = **Left**( //str//, //n// )
 ##
 {{fbdoc item="param"}}
 	##//str//##

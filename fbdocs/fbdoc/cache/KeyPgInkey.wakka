@@ -5,7 +5,7 @@ Returns a string representing the first key waiting in the keyboard buffer.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inkey** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Inkey**[$]
+	//result// = **Inkey**
 ##
 {{fbdoc item="ret"}}
 	The first character found in the keyboard buffer, or the null string (##"####"##) if none found.
@@ -23,11 +23,11 @@ Returns a string representing the first key waiting in the keyboard buffer.
 %%(qbasic)
 print "press q to quit"
 do
-loop until inkey$ = "q"
+loop until inkey = "q"
 %%
 
 {{fbdoc item="diff"}}
-	- QBasic returned a CHR$(0) as the first character for an extended key, but FreeBASIC returns CHR$(255) as the first character.
+	- QBasic returned a ##Chr(0)## as the first character for an extended key, but FreeBASIC returns ##Chr(255)## as the first character.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetkey Getkey]]##

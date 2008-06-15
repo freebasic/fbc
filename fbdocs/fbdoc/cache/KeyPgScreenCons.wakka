@@ -1,18 +1,30 @@
-{{fbdoc item="title" value="SCREEN (Console)"}}
-----
-{{fbdoc item="syntax"}}
-	//integer_variable//= SCREEN (//row//,//column//[,//color flag//] )
+{{fbdoc item="title" value="SCREEN (Console)"}}----
+Gets the character or color attribute at a given location
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screen** ( [[KeyPgByval byval]] row [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] column [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] colorflag [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Screen**( //row//, //column// [, //colorflag// ] )
+##
+{{fbdoc item="param"}}
+	##//row//##
+		1-based offset from the top left corner of the console.
+	##//column//##
+		1-based offset from the top left corner of the console.
+	##//colorflag//##
+		If zero (0), the [[CptAscii ASCII]] code is returned, otherwise the color attribute is returned.
+
+{{fbdoc item="ret"}}
+	The [[CptAscii ASCII]] or color attribute of the character.
 
 {{fbdoc item="desc"}}
-	SCREEN returns the character or the atribute found at a given position of a console output. It works in console mode and in graphics mode.
+	##**Screen**## returns the character or the color attribute found at a given position of a console output. It works in console mode and in graphics mode.
 	
-	//row//,//column// indicate the position to be searched.The top left corner of the console is  (1,1)
-	If //color flag//  is zero, SCREEN returns the ascii code of the character found.
-	If //color flag// is not zero, SCREEN returns the color attribute of the character.
-	
-	The color attribute is a a byte where the high nibble (group of 4 bits) represents the cell background color and the lower nibble represents the character color.
+	The color attribute is a byte where the high nibble (group of 4 bits) represents the cell background color and the lower nibble represents the character color.
 	The color values are:
-	{{table columns="2" cellpadding="1" cells="value;color;0;BLACK;1;BLUE;2;GREEN;3;CYAN ;4;RED;5;MAGENTA;6;BROWN;7;WHITE;8;GRAY;9;BRIGHT BLUE;10;BRIGHT GREEN ;11; BrIGHT RCYAN;12;BRIGHT RED;13;PINK;14;YELLOW;15;BRIGHT WHITE"}}
+
+		{{table columns="2" cellpadding="1" cells="value;color;0;BLACK;1;BLUE;2;GREEN;3;CYAN ;4;RED;5;MAGENTA;6;BROWN;7;WHITE;8;GRAY;9;BRIGHT BLUE;10;BRIGHT GREEN ;11; BrIGHT RCYAN;12;BRIGHT RED;13;PINK;14;YELLOW;15;BRIGHT WHITE"}}
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim character_ascii_value as integer
@@ -21,15 +33,16 @@ dim background as integer
 dim cell_color as integer
 dim row as integer, col as integer
 
-character_ascii_value = SCREEN( row, col )
-attribute = SCREEN( row, col, 1 )
+character_ascii_value = Screen( row, col )
+attribute = Screen( row, col, 1 )
 background = attribute shr 4
 cell_color = attribute and &hf
 %%
 
 {{fbdoc item="diff"}}
 	- In QB the SCREEN function worked in graphics modes too.
+
 {{fbdoc item="see"}}
-	- [[KeyPgScreengraphics SCREEN (Graphics)]]
-	
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

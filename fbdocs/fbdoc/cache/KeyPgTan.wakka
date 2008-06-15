@@ -1,6 +1,5 @@
-{{fbdoc item="title" value="TAN"}}
-----
-Function that returns the tangent of a number.
+{{fbdoc item="title" value="TAN"}}----
+Gets the tangent of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Tan** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]

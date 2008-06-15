@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="GET (GRAPHICS)"}}----
+Copies pixel data to an array
+
 {{fbdoc item="syntax"}}##
 	**Get** [//target//,] [STEP] (//x1//, //y1//)-[STEP](//x2//, //y2//), //arrayname//[(//idx//)]
 ##

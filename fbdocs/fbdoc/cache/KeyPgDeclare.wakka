@@ -1,22 +1,24 @@
-{{fbdoc item="title" value="DECLARE"}}
-----
-{{fbdoc item="syntax"}}
-	DECLARE { //SUB statement// | //FUNCTION statement// }
+{{fbdoc item="title" value="DECLARE"}}----
+Declares a procedure.
 
-		//SUB statement//
-			Specifies the [[KeyPgSub SUB]] to be declared.
+{{fbdoc item="syntax"}}##
+	**Declare** { //sub_statement// | //function_statement// }
+##
+{{fbdoc item="param"}}
+	##//sub_statement//##
+		Specifies the ##[[KeyPgSub Sub]]## to be declared.
 
-		//FUNCTION statement//
-			Specifies the [[KeyPgFunction FUNCTION]] to be declared.
+	##//function_statement//##
+		Specifies the ##[[KeyPgFunction Function]]## to be declared.
 
 {{fbdoc item="desc"}}
-	The DECLARE statement declares a [[KeyPgSub SUB]] or [[KeyPgFunction FUNCTION]]. This means that the sub or function can be referred to in code without seeing its definition, although it must be defined somewhere. Essentially, the DECLARE statement introduces a sub or function, and states that its definition is elsewhere. For example, a function can be declared at the top of a source module, called, then defined at the bottom of the source file, as shown below the example.
+	The ##**Declare**## statement declares a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##. This means that the sub or function can be referred to in code without seeing its definition, although it must be defined somewhere. Essentially, the ##**Declare**## statement introduces a sub or function, and states that its definition is elsewhere. For example, a function can be declared at the top of a source module, called, then defined at the bottom of the source file, as shown below the example.
 
-	A sub or function declaration is identical to the first line of its definition, except the declaration is preceded by the DECLARE keyword and has no body.
+	A sub or function declaration is identical to the first line of its definition, except the declaration is preceded by the ##**Declare**## keyword and has no body.
 
-	FB, as QB, does not require the declaration of the functions unless they are defined in a different source file or in the same file past the point where they are called.
-	
-	 As every file using a function must have its declaration, declarations are usually kept in one or more //include files// that are [[KeyPgInclude INCLUDE]]d in every module having access to the function. 
+	FreeBASIC, as QB, does not require the declaration of the functions unless they are defined in a different source file or in the same file past the point where they are called.
+
+	 As every file using a function must have its declaration, declarations are usually kept in one or more //include files// to allow usage of the function by any module that needs it using the ##[[KeyPgInclude #include]]## statement. 
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' declare the function sum which takes two integers and returns an integer
@@ -37,9 +39,9 @@ end function
 	- In FreeBASIC, the parameter names are optional.
 
 {{fbdoc item="see"}}
-	- [[KeyPgSub SUB]]
-	- [[KeyPgFunction FUNCTION]]
-	- [[KeyPgDim DIM]]
-	- [[KeyPgAlias ALIAS]]
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgAlias Alias]]##
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

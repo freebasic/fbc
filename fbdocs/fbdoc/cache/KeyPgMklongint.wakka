@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="MKLONGINT$"}}----
+{{fbdoc item="title" value="MKLONGINT"}}----
 Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes.
 
 {{fbdoc item="syntax"}}##
@@ -22,13 +22,13 @@ Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgSt
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as longint, b as string
 a = 4534
-b = mklongint$(a)
+b = mklongint(a)
 print a, cvlongint(b)
 sleep
 %%
 
 {{fbdoc item="diff"}}
-	- New to Freebasic.
+	- New to FreeBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvlongint Cvlongint]]##

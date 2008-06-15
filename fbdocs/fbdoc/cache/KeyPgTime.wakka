@@ -5,7 +5,7 @@ Returns the current system time as a string.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Time** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Time**[$]
+	//result// = **Time**
 ##
 {{fbdoc item="ret"}}
 	Returns the current system time in the format hh:mm:ss.
@@ -19,7 +19,7 @@ print "the current time is: "; time
 %%
 
 {{fbdoc item="diff"}}
-	- The TIME statement (to set the system time) is now called ##[[KeyPgSettime Settime]]##.
+	- The QB TIME statement (to set the system time) is now called ##[[KeyPgSettime Settime]]##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDate Date]]##

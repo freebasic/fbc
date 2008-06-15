@@ -1,14 +1,13 @@
-{{fbdoc item="title" value="Constants"}}
-----
+{{fbdoc item="title" value="Constants"}}----
 
 {{fbdoc item="desc"}}
 	Constants are numbers which cannot be changed after they are defined. For example, 5 will always mean the same number.
 	
-	In FreeBASIC, variable names can be told to be constants by defining them with the {{fbdoc item="keyword" value="KeyPgConst|CONST"}} command. 
+	In FreeBASIC, variable names can be told to be constants by defining them with the ##[[KeyPgConst Const]]## command. 
 
 	Such constants are then available globally, meaning that once defined, you can use the word to refer to a constant anywhere in your program. 
 
-	After being defined with the {{fbdoc item="keyword" value="KeyPgConst|CONST"}} command, constants cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
+	After being defined with the ##[[KeyPgConst Const]]## command, constants cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -16,7 +15,6 @@ DECLARE SUB PrintConstants ()
 
 const FirstNumber = 1
 const SecondNumber = 2
-
 
 print FirstNumber, SecondNumber 'This will print 1      2
 
@@ -29,8 +27,7 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}} 
-	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
+	- ##[[KeyPgConst Const]]##
+	- ##[[KeyPgEnum Enum]]##
 
-
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

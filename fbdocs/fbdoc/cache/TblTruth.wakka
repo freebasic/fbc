@@ -1,5 +1,5 @@
-{{fbdoc item="title" value="Bitwise Operators Truth Tables"}}
-----
+{{fbdoc item="title" value="Bitwise Operators Truth Tables"}}----
+Computed values for bitwise operators ##[[KeyPgAnd And]]##, ##[[KeyPgOr Or]]##, ##[[KeyPgXor Xor]]##, ##[[KeyPgNot Not]]##, ##[[KeyPgEqv Eqv]]##, and ##[[KeyPgImp Imp]]##.
 
 <<
 ===[[KeyPgAnd AND]]===

@@ -2,10 +2,10 @@
 Converts an expression to a specified data type.
 
 {{fbdoc item="syntax"}}##
-	Cast( [[DataType DataType]], //expression// )
+	Cast( [[DataType datatype]], //expression// )
 ##
 {{fbdoc item="desc"}}
-	Converts ##//expression//## to a DataType. Usefull to be used in macros when [[DataType DataType]] is unknown and also when converting to [[KeyPgTypeDef Type Aliasing]].
+	Converts ##//expression//## to a ##[[DataType datatype]]##. Useful to be used in macros when ##[[DataType datatype]]## is unknown and also when converting to [[KeyPgTypeAlias Type Alias]].
   
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -14,11 +14,10 @@ print cast( byte, &h0080 )
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCptr Cptr]]##
 	- ##[[KeyPgCint Cint]]##
 	 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
-   

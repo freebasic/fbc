@@ -5,7 +5,7 @@ Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStri
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mks** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = MKS[$]( //number// )
+	//result// = **Mks**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -15,9 +15,9 @@ Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStri
 	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgSingle single]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a SINGLE variable to a string, setting its length to 4 bytes. The resulting string can be read back to a single by CVS.
+	Does a binary copy  from a ##[[KeyPgSingle Single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes. The resulting string can be read back to a single by ##[[KeyPgCvs Cvs]]##.
 
-	This function is useful to write numeric values to buffers without using a TYPE definition.
+	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

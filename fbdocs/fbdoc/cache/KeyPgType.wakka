@@ -1,34 +1,48 @@
-{{fbdoc item="title" value="TYPE"}}
-----
-{{fbdoc item="syntax"}}
-	TYPE //typename// [FIELD=//number//]
-		[PRIVATE:]
-		[PUBLIC:]
-		DECLARE CONSTRUCTOR identifier [([parameter_list])]
-		DECLARE DESTRUCTOR identifier [()]
-		DECLARE SUB identifier [Alias external_identifier] [([parameter_list])]
-		DECLARE FUNCTION identifier [Alias external_identifier] [([parameter_list])] [As return_type]
-		//fieldname// [( //static array dimensions// ) | : //bits//] AS //[[DataType DataType]]//
+{{fbdoc item="title" value="TYPE"}}----
+Declares a user-defined type
+
+{{fbdoc item="syntax"}}##
+	**Type** //typename// [ [[KeyPgField Field]] = //alignment// ]
+		[ [[KeyPgVisPrivate Private]]: ]
+		[ [[KeyPgVisPublic Public]]: ]
+		[ [[KeyPgVisProtected Protected]]: ]
+		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] fieldname [ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]] fieldname [ () ]
+		[[KeyPgDeclare declare]] [[KeyPgMemberSub sub]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [[KeyPgMemberFunction function]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
+		//fieldname// [ ( //static array dimensions// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
+		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //static array dimensions// ) | : //bits// ], ...
 		...
-	END TYPE
-
-	Or
-
-	TYPE //typename// [FIELD=//number//]
-		AS [[DataType DataType]] //fieldname// [( //static array dimensions// ) | : //bits//], ...
-	END TYPE
-	
-	Or 
-	TYPE //newtypename//  as //oldtypename//
+	**End Type**
+##
+{{fbdoc item="param"}}
+	##//alignment//##
+		specifies the byte alignment for data fields
+	##//fieldname//##
+		name of the data field or member procedure
+	##//external_name//##
+		name of field as seen when externally linked
+	##//parameters//##
+		the parameters to be passed to a member procedure
+	##//static array dimensions//##
+		dimensions of an array
+	##//bits//##
+		number of bits a data field occupies
 
 {{fbdoc item="desc"}}
-	TYPE is used to define custom data types containing one or more bit, scalar, array or other TYPE fields.
+	##**Type**## is used to declare custom data types containing one or more bit, scalar, array or other ##**Type**## fields.
 
-	TYPE's may contain constructors, a destructor, and member FUNCTIONs and SUBs. For more information on how to use these features, see [[TutBeginnersGuideToTypesAsObjects The Beginners Guide To Types As Objects]]
+	Types support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##.
 
-	Anonymous [[KeyPgUnion UNION]]s can be also nested in TYPEs.
+	Fields default to ##[[KeyPgVisPublic Public:]]## member access unless, ##[[KeyPgVisPrivate Private:]]## or ##[[KeyPgVisProtected Protected:]]## is specified.
 
-	The optional FIELD=//number// when given will change the default field alignment. FIELD=1 will disable any alignment, making the TYPE contiguous in memory. 
+	An anonymous ##[[KeyPgUnion Union]]## can be nested in a ##**Type**## declaration.
+
+	The optional ##[[KeyPgField Field]]=//number//## when given will change the default field alignment. ##[[KeyPgField Field]]=1## will disable any alignment, making the ##**Type**## contiguous in memory. 
+
+	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
+
+	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already delcared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
 
 
 {{fbdoc item="ex"}}
@@ -45,28 +59,20 @@ c.green = 128
 c.blue = 64
 %%
 
-	The third syntax allows to create a new type name with the properties of a previously existant type. 
-%%(qbasic)
-TYPE BOOLEAN AS INTEGER
-%%
-
-{{fbdoc item="version"]
-	- Object-related features as functions defined inside the TYPE blocks are supported since version 0.17b
-	
 {{fbdoc item="lang"}}
-	- Object-related features as functions defined inside the TYPE block are supported only in the //-lang fb// option
-	- The fields are aligned to 32bit doubleword boundaries if -lang fb or -lang deprecated is used. To force byte alignment use //FIELD=1//
-	- With the -lang qb option the fields are aligned to byte boundaries. 
+	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //-lang fb// option since version 0.17b
+	- The fields are aligned to 32bit doubleword boundaries if //-lang fb// or //-lang deprecated// is used. To force byte alignment use ##FIELD=1##
+	- With the //-lang qb// option the fields are aligned to byte boundaries. 
 
 {{fbdoc item="diff"}}
-	- None, if the compiler switch "-lang qb" is used.
+	- None, if the compiler switch //-lang qb// is used.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUnion Union...End Union]]##
-	- ##[[KeyPgEnum Enum...End Enum]]##
+	- ##[[KeyPgUnion Union]]##
+	- ##[[KeyPgEnum Enum]]##
 	- ##[[KeyPgOffsetof OffsetOf]]##
-	- ##[[KeyPgTypeTemp Type()]]##
-	- ##[[KeyPgTypeDef Type As]]##
-	- ##[[KeyPgField Field]]
+	- ##[[KeyPgTypeTemp Type (Temporary)]]##
+	- ##[[KeyPgTypeAlias Type (Alias)]]##
+	- ##[[KeyPgField Field]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

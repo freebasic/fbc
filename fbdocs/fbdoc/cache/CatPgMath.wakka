@@ -5,6 +5,8 @@ Procedures that work with numbers mathematically.
 	Absolute values, logarithms, square roots and more.
 **{{anchor name="TRIG|Trigonometry Procedures"}}**
 	Sine, Cosine and other trigonometry-related procedures.
+**{{anchor name="MISC|Miscellaneous Procedures"}}**
+	Miscellaneous procedures.
 
 <<{{anchor name="ALGEBRA"}}{{fbdoc item="section" value="Algebraic Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgAbs|ABS"}}==
@@ -44,6 +46,9 @@ Procedures that work with numbers mathematically.
 	=={{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}==
 		Returns the arctangent of the ratio between two numbers.
 
+{{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous Procedures"}}
+	=={{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}==
+		Seeds the random number generator used by ##[[KeyPgRnd Rnd]]##.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

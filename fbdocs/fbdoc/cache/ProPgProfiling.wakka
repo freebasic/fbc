@@ -14,36 +14,30 @@ Full documentation on GPROF is available here: [[http://www.gnu.org/software/bin
 
 FreeBASIC supports function profiling; not basic-block or line-by-line profiling.
 
-
-==Preparing a Program for Profiling==
-
-Only code that is compiled with the '-profile' command line option can be profiled.  Pass the '-profile' option to the fbc compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
-%%
+{{fbdoc item="section" value="Preparing a Program for Profiling"}}
+	Only code that is compiled with the '-profile' command line option can be profiled.  Pass the '-profile' option to the fbc compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
+	%%
 fbc program.bas -profile
 %%
 
-==Profiling the Program==
+{{fbdoc item="section" value="Profiling the Program"}}
+	The information needed to analyze execution of the program is gathered while the program is running.  Run the program to begin collecting the function call information.  This information is automatically stored in a file named 'gmon.out' in the same directory as the program.
 
-The information needed to analyze execution of the program is gathered while the program is running.  Run the program to begin collecting the function call information.  This information is automatically stored in a file named 'gmon.out' in the same directory as the program.
+{{fbdoc item="section" value="Analyzing the Program's Output"}}
+	Use GPROF to analyze the output.  The default report for GPROF includes descriptions on what each of the columns of values mean.  If you are new to using GPROF, you may want to first run the default report and read through the descriptions.  The output from GPROF can be saved to a file by redirection.
 
-
-==Analyzing the Program's Output==
-
-Use GPROF to analyze the output.  The default report for GPROF includes descriptions on what each of the columns of values mean.  If you are new to using GPROF, you may want to first run the default report and read through the descriptions.  The output from GPROF can be saved to a file by redirection.
-
-Save output from GPROF to 'profile.txt':
-%%
+	Save output from GPROF to 'profile.txt':
+	%%
 gprof program[.exe] > profile.txt
 %%
 
-Show just the flat report with no descriptions:
-%%
+	Show just the flat report with no descriptions:
+	%%
 gprof program[.exe] --brief --flat-profile > profile.txt
 %%
 
-==Combining the Results of More than One Session==
-
-GPROF also has a '--sum' option for conviently combining results from multiple execution sessions.  Here is an example of usable:
+{{fbdoc item="section" value="Combining the Results of More than One Session"}}
+	GPROF also has a '--sum' option for conviently combining results from multiple execution sessions.  Here is an example of usable:
 	- Run your program once. This will create 'gmon.out'.
 	- Use the command :
 		##'mv gmon.out gmon.sum'## 
@@ -57,20 +51,18 @@ GPROF also has a '--sum' option for conviently combining results from multiple e
 		##'gprof program[.exe] gmon.sum > profile.txt'##
 
 
-==FreeBASIC Profiling Internals==
-
-When the '-profile' option is enabled, one or more bits of code are added to the program.
+{{fbdoc item="section" value="FreeBASIC Profiling Internals"}}
+	When the '-profile' option is enabled, one or more bits of code are added to the program.
 	- Call to "_monstartup()" at the beginning of the implicit main to initialize the profiling library.
 	- Call to "mcount()" at the beginning of each procedure.  This is how the profiling library keeps track of what function is being and by which other function.
 	- Linking of additional program startup object code.  (e.g. 'gcrt?.o' )
 
-The profiling library itself may be in a seperate library or part of the C run-time library.
+	The profiling library itself may be in a seperate library or part of the C run-time library.
 	- mingw will require gcrt2.o and libgmon.a 
 	- cygwin will require gcrt0.o and libgmon.a 
 	- dos will require gcrt0.o (profiler code is in libc.a) 
 	- linux will require gcrt1.o (profiler code is in libc.a) 
 
-The details may vary from one port of FreeBASIC to the next, but source code built for profiling with FreeBASIC should be compatible with other languages also supporting GPROF.
-
+	The details may vary from one port of FreeBASIC to the next, but source code built for profiling with FreeBASIC should be compatible with other languages also supporting GPROF.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

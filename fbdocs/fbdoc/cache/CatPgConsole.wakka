@@ -21,8 +21,12 @@ Procedures that work with the console
 		Changes the foreground and background color of text to be written.
 	=={{fbdoc item="keyword" value="KeyPgCsrlin|CSRLIN"}}==
 		Returns the row position of the cursor.
+	=={{fbdoc item="keyword" value="KeyPgPos|POS"}}==
+		Returns the column position of the cursor.
 	=={{fbdoc item="keyword" value="KeyPgLocate|LOCATE"}}==
 		Sets the row and column position of the cursor and its visibility.
+	=={{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}==
+		Gets the character or color attribute at a given location.
 <<>>{{anchor name="WRITING"}}{{fbdoc item="section" value="Writing Text to the Console"}}
 	=={{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}==
 		Writes text to the console.

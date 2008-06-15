@@ -2,7 +2,7 @@
 Datatypes whose values are addresses in memory
 
 {{fbdoc item="desc"}}
-	Pointers are [[DtVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are declared and defined with [[KeyPgExtern EXTERN]] and [[KeyPgDim DIM]] respectively, like all other variables, with the suffix "pointer" or "ptr" following the type name. The following,
+	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are declared and defined with ##[[KeyPgExtern Extern]]## and ##[[KeyPgDim Dim]]## respectively, like all other variables, with the suffix "pointer" or "ptr" following the type name. The following,
 
 %%(qbasic)
 Dim myInteger As Integer = 10
@@ -40,13 +40,14 @@ Print p->a
 Print p->b
 %%
 	The first method uses the 'dot' form of the [[KeyPgDot member access operator]]. This operator accesses members from references, so the pointer is dereferenced first. The member access operator has higher priority over the dereference operator, so parenthesis are needed to dereference the pointer before using it with the member access operator.
+
 	The second method uses the 'arrow' form of the [[KeyPgPtrField member access operator]]. This operator accesses members from pointers, which are automatically dereferenced. This can make code a little clearer, although both forms produce identical results.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAt (@) Address of]]##
 	- ##[[KeyPgValOf (*) Value of]]##
-	- ##[[KeyPgVarptr VARPTR]]##
-	- ##[[KeyPgStrptr STRPTR]]##
-	- ##[[KeyPgProcptr PROCPTR]]##
+	- ##[[KeyPgVarptr Varptr]]##
+	- ##[[KeyPgStrptr Strptr]]##
+	- ##[[KeyPgProcptr Procptr]]##
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -5,7 +5,7 @@ Function to return the current system date as a string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Date** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Date**[$]
+	//result// = **Date**
 ##
 {{fbdoc item="ret"}}
 	Returns the current system date, in the format mm-dd-yyyy
@@ -19,7 +19,7 @@ print date ' prints the current date
 %%
 
 {{fbdoc item="diff"}}
-	- The DATE statement (to set the system date) is now called ##[[KeyPgSetdate Setdate]]##.
+	- The QB DATE statement (to set the system date) is now called ##[[KeyPgSetdate Setdate]]##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSetdate Setdate]]##

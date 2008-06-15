@@ -2,10 +2,10 @@
 Macro to return the low byte of an expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **LOBYTE**( //x// ) ( [[KeyPgCuint CUint]]( x ) [[KeyPgAnd and]] &h000000FF )
+	[[KeyPgPpdefine #define]] **Lobyte**( //x// ) ( [[KeyPgCuint CUint]]( x ) [[KeyPgAnd and]] &h000000FF )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **LOBYTE**(//x//)
+	//result// = **Lobyte**(//x//)
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -24,11 +24,11 @@ DIM N AS UINTEGER
 'Note there are 16 bits
 N = &b1010101110000001
 PRINT "N is                                       "; N
-PRINT "The binary representation of N is          "; BIN$(N)
+PRINT "The binary representation of N is          "; BIN(N)
 PRINT "The most significant byte (MSB) of N is    "; HIBYTE(N)
 PRINT "The least significant byte (LSB) of N is   "; LOBYTE(N)
-PRINT "The binary representation of the MSB is    "; BIN$(HIBYTE(N))
-PRINT "The binary representation of the LSB is    "; BIN$(LOBYTE(N))
+PRINT "The binary representation of the MSB is    "; BIN(HIBYTE(N))
+PRINT "The binary representation of the LSB is    "; BIN(LOBYTE(N))
 SLEEP
 %%
 
@@ -48,6 +48,6 @@ The Binary representation of the LSB Is    10000001
 {{fbdoc item="see"}}
 	- ##[[KeyPgShr Shr]]##
 	- ##[[KeyPgShl Shl]]##
-	- ##[[KeyPgHibyte HIBYTE]]##
+	- ##[[KeyPgHibyte Hibyte]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

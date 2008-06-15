@@ -184,7 +184,7 @@ End Sub
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgCommon Common]]##
 	- ##[[KeyPgShared Shared]]##
-	- [[DtVariables Variables]]
+	- [[ProPgVariables Variables]]
 	- [[ProPgImplicitdeclarations Implicit Declarations]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

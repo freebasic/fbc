@@ -51,10 +51,10 @@ do
 	
 	do
 	    input "Would you like to enter some more numbers"; yn
-	    yn = lcase$(yn)
+	    yn = lcase(yn)
 	loop until yn = "y" or yn = "n"
 	
-loop while lcase$(yn) = "y"
+loop while lcase(yn) = "y"
 %%
 
 {{fbdoc item="diff"}}

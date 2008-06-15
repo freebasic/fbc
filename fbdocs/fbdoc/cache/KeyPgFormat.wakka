@@ -6,7 +6,7 @@ String function to format a number in a specified format
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
-	//result// = **Format**[$]( //numerical_expression//, //formatting_expression// )
+	//result// = **Format**( //numerical_expression//, //formatting_expression// )
 ##
 {{fbdoc item="param"}}
 	##//numerical_expression//##
@@ -15,7 +15,7 @@ String function to format a number in a specified format
 		formatting pattern pattern 
 
 {{fbdoc item="ret"}}
-	Format$ returns a string with the result of the numerical expression formatted as indicated in the formatting expression.
+	##**Format**## returns a string with the result of the numerical expression formatted as indicated in the formatting expression.
 	The formatting expression is a string that can yeld to numeric or date-time values.
 
 {{fbdoc item="desc"}}
@@ -31,7 +31,7 @@ String function to format a number in a specified format
 {{fbdoc item="ex"}}
 %%
 Sample numeric formats
-Format (fmt$)                 5             -5            .5
+Format (fmt)                  5             -5            .5
 	    
 	    Null String                   5             -5            0.5
 	    0                             5             -5            1
@@ -46,7 +46,7 @@ Format (fmt$)                 5             -5            .5
 	    0.00E-00                      5.00E00       -5.00E00      5.00E-01
  Sample Date And Time Formats
 The following are examples of Date And Time formats:
-	     Format$ Expression     Display
+	     Format  Expression     Display
 	     m/d/yy                 12/7/58
 	     d-mmmm-yy              7-December-58
 	     d-mmmm                 7-December

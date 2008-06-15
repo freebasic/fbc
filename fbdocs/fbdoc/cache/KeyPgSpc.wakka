@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="SPC"}}
-----
+{{fbdoc item="title" value="SPC"}}----
 Output function to skip spaces when writing to screen or file
 
 {{fbdoc item="syntax"}}##

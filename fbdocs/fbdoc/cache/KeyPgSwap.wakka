@@ -1,7 +1,14 @@
-{{fbdoc item="title" value="SWAP"}}
-----
-{{fbdoc item="syntax"}}
-	swap a, b
+{{fbdoc item="title" value="SWAP"}}----
+Exchanges the values of two variables
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Swap** ( [[KeyPgByref byref]] //a// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByref byref]] //b// [[KeyPgAs as]] [[KeyPgAny any]] )
+##
+{{fbdoc item="param"}}
+	##//a//##
+		A value to swap.
+	##//b//##
+		A value to swap.
 
 {{fbdoc item="desc"}}
 	Swaps the value of two variables.
@@ -18,9 +25,9 @@ print a, b
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- 
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

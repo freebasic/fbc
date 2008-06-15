@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="Variables"}}
-----
+{{fbdoc item="title" value="Variables"}}----
 
 {{fbdoc item="desc"}}
 	Variables are values which can be manipulated. They are referenced using names composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces. 
@@ -33,6 +32,6 @@ END SUB
 {{fbdoc item="see"}}
 	- [[ProPgVariableScope Variable Scope]]
 	- [[ProPgIdentifierRules Standard Identifier Rules]]
-	- [[KeyPgDim DIM]]
+	- ##[[KeyPgDim Dim]]##
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

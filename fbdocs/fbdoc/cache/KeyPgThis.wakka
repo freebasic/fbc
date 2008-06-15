@@ -9,7 +9,7 @@ Hidden instance parameter passed to nonstatic member functions in a ##[[KeyPgTyp
 	End With
 ##
 {{fbdoc item="desc"}}
-	##**This**## is a hidden parameter passed to all nonstatic member functions of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Nonstatic member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and include ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
+	##**This**## is a hidden parameter passed to all nonstatic member functions of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Nonstatic member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and include ##[[KeyPgMemberSub Sub]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
 
 	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in which the procedure is declared.
 

@@ -1,4 +1,7 @@
-This is an example of use of GfxLib's  GFX_NULL driver in Windows. The client area of the window is updated using GfxLib, menus, toolbars or dialogs can be added to the window using normal Win API calls.
+{{fbdoc item="title" value="GFX_NULL"}}----
+Using the ##GFX_NULL## driver in Windows
+
+	The client area of the window is updated using GfxLib, menus, toolbars or dialogs can be added to the window using normal Win API calls.
 
 %%(qbasic)
 'Example of use of the GFX_NULL driver in windows

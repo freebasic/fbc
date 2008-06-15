@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CBYTE"}}
-----
+{{fbdoc item="title" value="CBYTE"}}----
 Converts numeric or string expression to ##[[KeyPgByte Byte]]##
 
 {{fbdoc item="syntax"}}##

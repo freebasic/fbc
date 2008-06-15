@@ -2,11 +2,9 @@
 Output statement to write text to screen or file. 
 
 {{fbdoc item="syntax"}}##
-	**Print** [#//filenum//,] [ using //formatstring//,] [//expressionlist//] [(, | ;)] ...
+	**Print** [ using //formatstring//,] [//expressionlist//] [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
-	##//filenum//##
-		file number of a file, console, or pipe to write the text.
 	##//using//##
 		clause to indicate formatting is to be used
 	##//formatstring//##
@@ -15,7 +13,7 @@ Output statement to write text to screen or file.
 		list of items to print
 
 {{fbdoc item="desc"}}
-	Prints ##//expressionlist//## to screen or to a file (if #//filenum// is used).
+	Prints ##//expressionlist//## to screen.
 
 	The ##[[KeyPgPrintusing Print Using]]## clause formats //expresionlist// according to //formatstring//.
 
@@ -24,8 +22,6 @@ Output statement to write text to screen or file.
 	Using a comma (,) as separator or in the end of the ##//expressionlist//## will place the cursor in the next column (every 14 characters), using a semi-colon (;) won't move the cursor. If neither of them are used in the end of the ##//expressionlist//##, then a new-line will be printed.
 
 	Printing to graphics screen may not work in all modes. All QB standard modes available in the port are supported. With extended ##[[KeyPgScreengraphics Screen (Graphics)]]## 14 to 21, printing to screen is allowed only in 8 bits resolution (the default one).
-
-	When writing to a file, the end of line character is LF (##[[KeyPgChr Chr]]##(10)) on Linux and CRLF (##[[KeyPgChr Chr]]##(13, 10)) on Dos/Windows.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -39,13 +35,6 @@ PRINT
 '' column separator
 PRINT "Hello!", "World!"
 %%
-%%(qbasic)
-'' to a file
-OPEN "test.txt" FOR OUTPUT AS #1
-PRINT #1, "abc def"
-PRINT #1, 1234, 5678.901, "xyz zzz"
-CLOSE #1
-%%
 
 {{fbdoc item="diff"}}
 	- None
@@ -55,4 +44,4 @@ CLOSE #1
 	- ##[[KeyPgPrintusing Print Using]]##
 	- ##[[KeyPgWrite Write]]##
 
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

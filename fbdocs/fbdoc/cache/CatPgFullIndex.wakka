@@ -1,11 +1,13 @@
 {{fbdoc item="title" value="Alphabetical Keywords List"}}----
+Alphabetical listing of keywords, macros and procedures
+
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
 <<
-===OPERATORS===
+{{fbdoc item="section" value="Operators"}}
 	- [[CatPgOperators See Operator List]]
-====.====
+{{fbdoc item="section" value="."}}
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
-====_====
+{{fbdoc item="section" value="_"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
@@ -41,7 +43,7 @@
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
-====#====
+{{fbdoc item="section" value="#"}}
 	- {{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}
@@ -59,10 +61,10 @@
 	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
-====$====
+{{fbdoc item="section" value="$"}}
 	- {{fbdoc item="keyword" value="KeyPgDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
-====A====
+{{fbdoc item="section" value="A"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
 	- {{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}
 	- {{fbdoc item="keyword" value="KeyPgAcos|ACOS"}}
@@ -80,7 +82,7 @@
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}
 	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}}
-====B====
+{{fbdoc item="section" value="B"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 	- {{fbdoc item="keyword" value="KeyPgBin|BIN"}}
 	- {{fbdoc item="keyword" value="KeyPgBinary|BINARY"}}
@@ -92,11 +94,11 @@
 	- {{fbdoc item="keyword" value="KeyPgByref|BYREF"}}
 	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
-====C====
+{{fbdoc item="section" value="C"}}
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
 	- {{fbdoc item="keyword" value="KeyPgCallocate|CALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgCase|CASE"}}
-	-  {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
 	- {{fbdoc item="keyword" value="KeyPgCbyte|CBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgCdbl|CDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
@@ -142,7 +144,7 @@
 	- {{fbdoc item="keyword" value="KeyPgCvlongint|CVLONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCvs|CVS"}}
 	- {{fbdoc item="keyword" value="KeyPgCvshort|CVSHORT"}}
-====D====
+{{fbdoc item="section" value="D"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
 	- {{fbdoc item="keyword" value="KeyPgDate|DATE"}}
 	- {{fbdoc item="keyword" value="KeyPgDateAdd|DATEADD"}}
@@ -179,11 +181,12 @@
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
-====E====
+{{fbdoc item="section" value="E"}}
 	- {{fbdoc item="keyword" value="KeyPgElse|ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgElseif|ELSEIF"}}
 	- {{fbdoc item="keyword" value="KeyPgEncoding|ENCODING"}}
 	- {{fbdoc item="keyword" value="KeyPgEnd|END"}}
+	- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgSetenviron|ENVIRON statement"}}
 	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
@@ -202,7 +205,7 @@
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgExternCpp|EXTERN...END EXTERN""}}
-====F====
+{{fbdoc item="section" value="F"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
@@ -218,7 +221,8 @@
 	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
 	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
-====G====
+	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION (Member)"}}
+{{fbdoc item="section" value="G"}}
 	- {{fbdoc item="keyword" value="KeyPgGetgraphics|GET (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgGetfileio|GET # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}
@@ -226,12 +230,12 @@
 	- {{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}
 	- {{fbdoc item="keyword" value="KeyPgGosub|GOSUB"}}
 	- {{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}
-====H====
+{{fbdoc item="section" value="H"}}
 	- {{fbdoc item="keyword" value="KeyPgHex|HEX"}}
 	- {{fbdoc item="keyword" value="KeyPgHibyte|HIBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgHour|HOUR"}}
-====I====
+{{fbdoc item="section" value="I"}}
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
 	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
@@ -250,10 +254,10 @@
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
-<<>>
-====K====
+{{fbdoc item="section" value="K"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
-====L====
+<<>>
+{{fbdoc item="section" value="L"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgLeft|LEFT"}}
@@ -278,7 +282,7 @@
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgLset|LSET"}}
 	- {{fbdoc item="keyword" value="KeyPgLtrim|LTRIM"}}
-====M====
+{{fbdoc item="section" value="M"}}
 	- {{fbdoc item="keyword" value="KeyPgMidstatement|MID (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgMidfunction|MID (Function)"}}
 	- {{fbdoc item="keyword" value="KeyPgMinute|MINUTE"}}
@@ -297,15 +301,15 @@
 	- {{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
-====N====
+{{fbdoc item="section" value="N"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgNew|NEW"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}
 	- {{fbdoc item="keyword" value="KeyPgNot|NOT"}}
-	-  {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
-====O====
+	- {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
+{{fbdoc item="section" value="O"}}
 	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}
@@ -332,7 +336,7 @@
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
-====P====
+{{fbdoc item="section" value="P"}}
 	- {{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
@@ -348,6 +352,7 @@
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusingPp|PRINT USING #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
@@ -359,11 +364,12 @@
 	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
-====R====
+{{fbdoc item="section" value="R"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
-	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
+	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}
+	- {{fbdoc item="keyword" value="KeyPgReadWriteFile|READ WRITE (File Access)"}}
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
@@ -380,7 +386,7 @@
 	- {{fbdoc item="keyword" value="KeyPgRset|RSET"}}
 	- {{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgRun|RUN"}}
-====S====
+{{fbdoc item="section" value="S"}}
 	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}}
@@ -419,6 +425,7 @@
 	- {{fbdoc item="keyword" value="KeyPgSpc|SPC"}}
 	- {{fbdoc item="keyword" value="KeyPgSqr|SQR"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgStaticMember|STATIC (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
 	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
@@ -427,9 +434,10 @@
 	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgStrptr|STRPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
+	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgSystem|SYSTEM"}}
-====T====
+{{fbdoc item="section" value="T"}}
 	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
 	- {{fbdoc item="keyword" value="KeyPgTan|TAN"}}
 	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
@@ -443,8 +451,10 @@
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgTransGfx|TRANS (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
-	- {{fbdoc item="keyword" value="KeyPgType|TYPE"}}
-====U====
+	- {{fbdoc item="keyword" value="KeyPgTypeAlias|TYPE (Alias)"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeTemp|TYPE (Temporary)"}}
+	- {{fbdoc item="keyword" value="KeyPgType|TYPE (UDT)"}}
+{{fbdoc item="section" value="U"}}
 	- {{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
@@ -458,7 +468,7 @@
 	- {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|USING (PRINT)"}}
 	- {{fbdoc item="keyword" value="KeyPgUsing|USING (Namespaces)"}}
-====V====
+{{fbdoc item="section" value="V"}}
 	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
@@ -471,7 +481,7 @@
 	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgViewtext|VIEW PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (Graphics)"}}
-====W====
+{{fbdoc item="section" value="W"}}
 	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgWbin|WBIN"}}
 	- {{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}
@@ -488,16 +498,17 @@
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
 	- {{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
+	- {{fbdoc item="keyword" value="KeyPgWritePp|WRITE #"}}
 	- {{fbdoc item="keyword" value="KeyPgWriteFile|WRITE (File Access)"}}	
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING(Data Type)"}}
 	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
-====X====
+{{fbdoc item="section" value="X"}}
 	- {{fbdoc item="keyword" value="KeyPgXor|XOR"}}
-====Y====
+{{fbdoc item="section" value="Y"}}
 	- {{fbdoc item="keyword" value="KeyPgYear|YEAR"}}
-====Z====
+{{fbdoc item="section" value="Z"}}
 	- {{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}
 >>
 ::c::

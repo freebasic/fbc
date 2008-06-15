@@ -2,13 +2,13 @@
 Returns a substring of a string.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **MID** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-		//result// = **Mid**[$]( //str//, //start// [, //n// ] )
+	//result// = **Mid**( //str//, //start// [, //n// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##

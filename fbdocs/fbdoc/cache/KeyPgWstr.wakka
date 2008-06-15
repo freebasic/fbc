@@ -16,9 +16,9 @@ Returns a wide-character string representation of a number or ASCII character st
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Wstr**[$]( //number// )
-		//##or##//
-	//result// = **Wstr**[$]( //string// )
+	//result// = **Wstr**( //number// )
+		//or//
+	//result// = **Wstr**( //string// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

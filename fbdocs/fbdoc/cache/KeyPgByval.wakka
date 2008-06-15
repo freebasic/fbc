@@ -12,9 +12,7 @@ Declaration specifier to explicitly pass a parameter by value
 
 	This means that if you pass say the value of the variable 'x' then x cannot be modified in anyway, where as if you send the address the procedure could modify the value of 'x' to anything.
 
-	For string arguments, ##**Byval**## has a special meaning: it passes a pointer to the string, while BYREF passes the Basic string descriptor. This behavior allows passing a ##[[KeyPgStringtype String]]## to C procedures. The string passed this way should not be changed by the calling ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing ##[[KeyPgStringtype String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
-
-	
+	For string arguments, ##**Byval**## has a special meaning: it passes a pointer to the string, while ##[[KeyPgByref Byref]]## passes the Basic string descriptor. This behavior allows passing a ##[[KeyPgStringtype String]]## to C procedures. The string passed this way should not be changed by the calling ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing ##[[KeyPgStringtype String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
 
 	Opposite of ##[[KeyPgByref ByRef]]##.
 
@@ -36,12 +34,12 @@ End
 {{fbdoc item="lang"}}
 	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention.
 	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
-	- 
+
 {{fbdoc item="diff"}}
-	- QB only used BYVAL in declarations to non-Basic subroutines
+	- QB only used ##**Byval**## in declarations to non-Basic subroutines
 
 {{fbdoc item="see"}}
-	- ##[[ProPgPassByVal Passing Variables by Value]]##
+	- [[ProPgPassingArguments Passing Arguments to Procedures]]
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgByref ByRef]]##
 

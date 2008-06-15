@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="OPTION PRIVATE"}}----
+Specifies all procedures to be private
+
 {{fbdoc item="syntax"}}##
 	**Option Private**
 ##

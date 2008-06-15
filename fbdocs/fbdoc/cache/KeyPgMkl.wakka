@@ -5,7 +5,7 @@ Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStrin
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = MKL[$]( //number// )
+	//result// = **Mkl**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -15,9 +15,9 @@ Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStrin
 	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgInteger long]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a long variable to a string, setting its length to 4 bytes. The resulting string can be read back to a LONG by CVL.
+	Does a binary copy  from a long variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes. The resulting string can be read back to a ##[[KeyPgLong Long]]## by ##[[KeyPgCvl Cvl]]##.
 
-	This function is useful to write numeric values to buffers without using a TYPE definition.
+	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as long, b as string

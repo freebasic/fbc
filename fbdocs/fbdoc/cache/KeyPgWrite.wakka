@@ -1,41 +1,43 @@
 {{fbdoc item="title" value="WRITE"}}----
-Output statement to write text to screen or file. 
+Outputs a comma-seperated list of values to the screen
 
 {{fbdoc item="syntax"}}##
-	**Write** [#//filenum//,] [//expressionlist//] [(, | ;)] ...
+	**Write** [ //expressionlist// ]
 ##
 {{fbdoc item="param"}}
-	##//filenum//##
-		file number to a file, console, or pipe to write the text.
-	##//expression//##
-		list of items to print
+	##//expressionlist//##
+		Comma-seperated list of items to print
 
 {{fbdoc item="desc"}}
-	Writes ##//expressionlist//## to screen or to a text file (if **#**##//filenum//## is used). The values are separed with commas, and the text strings are enclosed in double quotes. The resulting format can be read by ##[[KeyPgInputPp Input #]]##. ##**Write** # ## provides an easy way to save data to file in a both human and machine readable way, with comma delimiting for multiple data.
+	Outputs the values in ##//expressionlist//## to the screen. The values are seperated with commas, and strings are enclosed in double quotes. Numeric values greater than zero (0) and less than one (1) are prefixed with a zero (0) if none is given (e.g., a value of ##-.123## will be output as ##-0.123##). Extra zeroes are truncated.
 
-	The ##//expressionlist//## can be separed by commas  or by semicolons, the output will not be altered.
+	If no expression list is given, **Write** outputs a carriage return.
 
 {{fbdoc item="ex"}}
-%%(qbasic)dim a as integer, b as string, c as single
 
-open "myfile.txt" for output as #1
-write #1, 1, "Hello, World", 34.5
-close #1
+%%(qbasic)
+dim i as integer = 10
+dim d as double = 123.456
+dim s as string = "text"
 
-open "myfile.txt" for input as #1
-input #1, a, b, c
-close #1
-write a, b, c
-%%
+write 123, "text", -.45600
+write
+write i, d, s
 
 %%
-1,"Hello, World",34.5
+	will produce the output:
+
 %%
+123,"text",-0.456
+
+10,123.456,"text"
+%%
+
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInputPp Input #]]##
+	- ##[[KeyPgWritePp Write #]]##
 	- ##[[KeyPgPrint Print]]##
 
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

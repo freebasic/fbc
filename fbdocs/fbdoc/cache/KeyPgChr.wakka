@@ -2,10 +2,10 @@
 Returns a string of characters from one or more ASCII integer values
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Chr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chr** ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Chr**[$]( //ch0// [, //ch1// ... //chN// ] )
+	//result// = **Chr**( //ch0// [, //ch1// ... //chN// ] )
 ##
 {{fbdoc item="param"}}
 	##//ch//##

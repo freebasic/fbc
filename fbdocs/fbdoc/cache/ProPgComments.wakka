@@ -1,0 +1,95 @@
+{{fbdoc item="title" value="Comments"}}----
+Comments are regions of text that the compiler will ignore but may contain information that is useful to the programmer.  One exception are metacommands which may appear in certain types of comments.
+
+{{fbdoc item="section" value="Single Line comments"}}
+	The single quote character (##**'**##) may be used to indicate a comment and may appear after other keywords on a source line.  The rest of the statement will be treated as a comment.
+	%%(qbasic)
+' comment text
+%%
+
+{{fbdoc item="section" value="The comment statement: Rem"}}
+	A source code statement beginning with ##[[KeyPgRem Rem]]## indicates that the rest of the line is comment and will not be compiled.  ##[[KeyPgRem Rem]]## behaviour is the same as above, except it must be the first keyword in the statement.
+	%%(qbasic)
+Rem comment
+%%
+
+{{fbdoc item="section" value="Multi-line comments"}}
+	Multi-line comments are marked with the tokens ##**/'**## and ##**'/**##.  All text between the two markers is considered comment text and is not compiled.
+
+	Multi-line comments can span several lines, and can also be used in the middle of statements.  After the end of the comment, the statement will continue to be parsed as normal (even if the comment crosses line breaks).
+	%%(qbasic)
+/' Multi-line
+   comment '/
+
+Print "Hello" /' embedded comment'/ " world"
+%%
+	Note: If FBC encounters a close-comment marker while it's not in a multi-line comment, it will treat it as a normal single-line comment due to the single quote.
+
+{{fbdoc item="section" value="Nested Comments"}}
+	A multi-line comment can contain other multi-line comments inside it.  Each inner comment has its own open- and close-comment markers.
+
+	%%(qbasic)
+/'
+	This is a comment.
+	/'
+	 This is a comment inside a comment
+	'/
+	This Is a comment.
+'/
+%%
+	A multi-line comment can contain unlimited levels of nested comments.  FBC will continue to parse the multi-line comment for more markers until the number of close-comment markers reaches the number of open-comment markers, i.e. when it has closed all the comments it has opened.
+
+{{fbdoc item="section" value="Comments after line continuation"}}
+	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.
+
+	%%(qbasic)
+print _ ' line
+	"This is part of the previous line's statement"
+%%
+
+{{fbdoc item="section" value="Metacommands"}}
+	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
+
+	%%(qbasic)
+rem $static
+' $include: 'vbcompat.bi'
+%%
+
+{{fbdoc item="section" value="Single-line comment parsing"}}
+	When you make a single-line comment, FBC will parse the comment, to check for a metacommand.  If it finds a multi-line comment, it will treat it as usual, and continue parsing the single-line comment after the close-comment marker.
+
+	If you want to prevent FBC parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  FBC will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.
+
+	%%(qbasic)
+'' $static <-- will not get parsed
+'' this multiline comment marker ("/'") will be ignored
+print "This line is not a comment."
+%%
+
+{{fbdoc item="ex"}}
+	%%(qbasic)
+/' this is a multi line 
+comment as a header of
+this example '/
+
+rem this is a single line comment
+
+'this is a single line comment
+
+dim a as integer   'comment following a statement
+
+dim b as /' can comment in here also '/    integer
+
+
+#if 0
+	before version 0.16, this was the
+	only way of commenting out sections
+	with multiple lines of code.
+#endif
+
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRem Rem]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

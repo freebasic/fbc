@@ -14,7 +14,7 @@ Statement to set current work and visible pages.
 		index to visible page
 
 {{fbdoc item="desc"}}
-	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from  0 to the num_pages specified when setting the graphics mode minus 1 . You can use this function to achieve page-flipping or double-buffering. 	If you omit ##//work_page//## but not ##//visible_page//##, only visible page is changed. If you omit ##//visible_page//## but not ##//work_page//##, only work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
+	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from  0 to the num_pages specified when setting the graphics mode minus 1 . You can use this function to achieve page-flipping or double-buffering.  If you omit ##//work_page//## but not ##//visible_page//##, only visible page is changed. If you omit ##//visible_page//## but not ##//work_page//##, only work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -34,7 +34,7 @@ DO
 	WAIT &h3DA, 8
 	' Copy work page to visible page
 	SCREENCOPY
-LOOP WHILE INKEY$ = ""
+LOOP WHILE INKEY = ""
 
 %%
 

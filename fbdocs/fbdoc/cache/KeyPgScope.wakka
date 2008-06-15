@@ -37,4 +37,4 @@ Print "x ="; x; ", "; "y ="; y
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

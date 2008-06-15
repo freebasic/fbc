@@ -21,7 +21,7 @@ Gets the difference of two dates measured by a specified interval
 		first day of the year
 
 {{fbdoc item="ret"}}
-	Returns an integer corresponding to the number of ##//interval//##s found between two [[DtDateSer Date Serials]].
+	Returns an integer corresponding to the number of ##//interval//##s found between two [[ProPgDates Date Serials]].
 
 	If //date_serial1// > //date_serial2//, the result is negative.
 
@@ -69,6 +69,6 @@ end if
 	- Did not exist in QB. This function appeared in Visual Basic.
 
 {{fbdoc item="see"}}
-	- [[DtDateSer Date Serials]]
+	- [[ProPgDates Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

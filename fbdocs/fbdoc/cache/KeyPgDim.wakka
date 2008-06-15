@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="DIM"}}
-----
+{{fbdoc item="title" value="DIM"}}----
+Declares a variable
+
 {{fbdoc item="syntax"}}
 	Declaring a Single Variable:
 		DIM [[[KeyPgShared SHARED]]] //symbolname// [AS [[DataType DataType]]] [, ...]
@@ -36,7 +37,7 @@
 		Multidimensional arrays are stored in row-major order: values with the same last index are contiguous. This is different from Qb's default.
 
 			%%(qbasic)DIM array(1 TO 2, 6, 3 TO 5) AS SINGLE%%			
-		The first dimension of the declared array has indexes from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[DtArrays page]].  
+		The first dimension of the declared array has indexes from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[ProPgArrays page]].  
 		If the values used  with DIM to declare the dimensions of an array are all constants, the array will be created STATIC (unless $DYNAMIC is specified), while using one or more variables to declare the dimensions of an array makes it DYNAMIC, no matter if $STATIC has been issued.
 	
 		Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using SHARED to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB. Using the //-t  stack_size_in_kbytes// in the command line can help too. 
@@ -135,4 +136,4 @@ sleep
 	- ##[[KeyPgUbound UBound]]##
 	- ##[[KeyPgVar Var]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

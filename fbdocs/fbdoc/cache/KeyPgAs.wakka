@@ -8,7 +8,7 @@ Optional part of a declaration which specifies a data type, or part of the [[Key
 	[[KeyPgType type]] ... **As** [[DataType datatype]]
 ##
 {{fbdoc item="desc"}}
-	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen Open]]## statement to determine the file handle. ##**As**## is also used in the ##[[KeyPgType Type]]## ... ##**As**## clause, similar to C's typedef statement.
+	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen Open]]## statement to determine the file handle. ##**As**## is also used with the ##[[KeyPgTypeAlias Type (Alias)]]## syntax, similar to C's typedef statement.
 
 {{fbdoc item="ex"}}
 %%(qbasic)'' don't try to compile this code, the examples are unrelated
@@ -33,7 +33,7 @@ OPEN "test" FOR INPUT AS #1
 %%
 
 {{fbdoc item="diff"}}
-	- Type aliasing wasn't supported in QB.
+	- The [[KeyPgTypeAlias Type (Alias)]] syntax was not supported in QB.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare Declare]]##

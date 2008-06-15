@@ -1,92 +1,42 @@
-{{fbdoc item="title" value="Default Palettes"}}
-----
+{{fbdoc item="title" value="Default Palettes"}}----
+Default color values for FreeBASIC graphics and text screen modes
 
-FreeBASIC initializes palete indexes with the colors in the table. The colors are the same as in QB. Colors in graphics mode can be changed using [[KeyPgPalette PALETTE]]. Colors in console can't be changed in a portable mode. 
-<<
+	FreeBASIC initializes palette indexes with the colors in the table. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. Colors in console can't be changed in a portable mode. 
 
-===SCREEN Mode 1:===
+**{{anchor name="SCRN1|Screen mode 1"}}**
+	Four (4) colors.
+**{{anchor name="SCRN2_10_11|Screen modes 2, 10 and 11"}}**
+	Monochromatic, black and white.
+**{{anchor name="SCRN7_8_9_12_CON|Screen modes 7, 8, 9, 12, and Console"}}**
+	Two sets of eight (8) colors, normal and intense (bright)
+**{{anchor name="SCRN13_8BIT|Screen 13 and 8-bit modes"}}**
+	Multiple color and greyscale bands
 
-	- 0	Black
-	- 1	Cyan
-	- 2	Magenta
-	- 3	White
+<<{{anchor name="SCRN1"}}{{fbdoc item="section" value="Screen mode 1"}}
 
-===SCREEN Modes 2, 10, and 11:===
+	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;cyan;2;magenta;3;white"}}
 
-	- 0	Black
-	- 1	White
+{{anchor name="SCRN2_10_11"}}{{fbdoc item="section" value="Screen modes 2, 10 and 11"}}
 
-===SCREEN Modes 7, 8, 9, 12 and Console ===
+	{{table columns="2" cellpadding="2" cells="Value;Name;0;black;1;white"}}
 
-	- 0	Black	
-	- 1	Blue
-	- 2     Green
-	- 3	Cyan
-	- 4	Red
-	- 5	Pink
-	- 6	Yellow
-	- 7	Grey
+{{anchor name="SCRN7_8_9_12_CON"}}{{fbdoc item="section" value="Screen modes 7, 8, 9, 12, and Console"}}
 
-	- 8	Dark grey
-	- 9	Bright blue
-	- 10	Bright green
-	- 11	Bright cyan
-	- 12	Bright red
-	- 13	Bright pink
-	- 14	Bright yellow
-	- 15	White
+	{{table columns="4" cellpadding="2" cells="Normal Value;Normal Name;Intense Value;Intense Name;0;black;8;dark grey;1;blue;9;bright blue;2;green;10;bright green;3;cyan;11;bright cyan;4;red;12;bright red;5;pink;13;bright pink;6;yellow;14;bright yellow;7;grey;15;white"}}
+<<>>{{anchor name="SCRN13_8BIT"}}{{fbdoc item="section" value="Screen 13 and 8-bit modes"}}
+	{{fbdoc item="subsect" value="Screen 12 color band"}}
+		Colors one (1) through fifteen (15) are the same as screen 12 mode.
 
+	{{fbdoc item="subsect" value="Greyscale band"}}
+		Colors sixteen (16) through thirty-one (31) are greyscale from black to white.
 
-<<>>
-===SCREEN Mode 13 and all 8 bits modes===
+	{{fbdoc item="subsect" value="Brightness/saturation bands"}}
+		3 bands of decreasing brightness, each containing 3 bands of decreasing saturation, each containing 24 hues of color starting and ending at blue.
 
-**screen 12 band**
-	- 01 to 15     same  colors as SCREEN 12
+		{{table columns="10" cellpadding="2" cells="Name;HB/HS;HB/MS;HB/LS;MB/HS;MB/MS;MB/LS;LB/HS;LB/MS;LB/LS;blue;32;56;80;104;128;152;176;200;224;magenta;36;60;84;108;132;156;180;204;228;red;40;64;88;112;136;160;184;208;232;yellow;44;58;92;116;140;164;188;212;236;green;48;72;96;120;144;168;192;216;240;cyan;52;76;100;124;148;172;194;220;244"}}
 
-**greyscale  band**
-	- 16 to 31     greyscale black to white
+	{{fbdoc item="subsect" value="Black band"}}
+		Colors two-forty-eight (248) through two-fifty-five (255) are black.
+>>::c::
 
-3 bands of decreasing brightness containing each 3 bands of decreasing saturation, containing each 24 hues of color starting and ending at blue.
-
-**high brightness  band** 
-__high saturation band__
-	- 32  blue
-	- 36  magenta
-	- 40  red
-	- 44  yellow
-	- 48 green
-	- 52 cyan
-__medium saturation band__  
-	- 56 blue
-	- .....
-__low saturation band__  
-	- 80 blue
-	- ....
-
-**medium brighness band**
-__high saturation band__
-	- 104 blue
-	- .....
-__medium saturation band__  
-	- 128 blue
-	- .....
-__low saturation band__  
-	- 152 blue
-	- ....
-
-**low brightness band**
-__high saturation band__
-	- 176 blue
-	- .....
-__medium saturation band__  
-	- 200 blue
-	- .....
-__low saturation band__  
-	- 224 blue
-	- ....
-
-**black  band**
-	- 248 to 255  black
->>
-::c::
-{{fbdoc item="back" value="CatPgGfx|GFX"}}{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

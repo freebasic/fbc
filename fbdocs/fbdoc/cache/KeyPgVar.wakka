@@ -1,21 +1,20 @@
-{{fbdoc item="title" value="VAR"}}
-----
-{{fbdoc item="syntax"}}
-	VAR [[[KeyPgShared SHARED]]] //symbolname// = //expression//[, //symbolname// = //expression//]
+{{fbdoc item="title" value="VAR"}}----
+Declares a variable whose type is implied from the initializer expression.
 
+{{fbdoc item="syntax"}}##
+	**Var** [[[KeyPgShared shared]]] //symbolname// = //expression//[, //symbolname// = //expression//]
+##
 {{fbdoc item="desc"}}
-	VAR declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a VAR declaration. The initializer expression does not have to be a constant, it can be, or, it can be any variable of any type. NOTE: WSTRING is not supported with VAR, due to the fact that there is no var-len WSTRING type. This isn't likely to change, due to the complexities involved with handling unicode
+	##**Var**## declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a ##**Var**## declaration. The initializer expression does not have to be a constant, it can be, or, it can be any variable of any type. Note: ##[[KeyPgWstring Wstring]]## is not supported with ##**Var**##, due to the fact that there is no var-len ##[[KeyPgWstring Wstring]]## type. This isn't likely to change, due to the complexities involved with handling unicode
 
-	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to [[KeyPgInteger INTEGER]]. A literal number //with// a decimal point defaults to [[KeyPgDouble DOUBLE]].
+	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble Double]]##.
 
-	All literal strings default to the type 'zstring', however, if you initialize a variable using VAR, and a literal string, the variable will be "promoted" to a variable length string.
+	All literal strings default to the type 'zstring', however, if you initialize a variable using ##[[KeyPgWstring Wstring]]##, and a literal string, the variable will be "promoted" to a variable length string.
 
-	Explicit suffixes may be used on literal variables, to change/clarify their type. See [[ProPgLiterals here]] and [[TblVarTypes here]] for some more information about suffixes that can be used on literals.
+	Explicit suffixes may be used on literal variables, to change/clarify their type. See [[ProPgLiterals Literals]] and [[TblVarTypes Variable Types]] for some more information about suffixes that can be used on literals.
 
-	NOTE: Suffixes MUST appear on the INITIALIZER, not on the variable. Trying to VAR a variable with a suffix will throw an error.
+	Note: Suffixes must appear on the initializer, not on the variable. Trying to use ##**Var**## with a variable that has a suffix will throw a compile error.
 
-	
-		
 {{fbdoc item="ex"}}
 %%(qbasic)
 var a  = cast(byte, 0)
@@ -70,4 +69,4 @@ sleep
 	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgUbound UBound]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

@@ -6,7 +6,7 @@ Right justifies a string in a string buffer.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	RSET //dst//, //src//
+	**Rset** //dst//, //src//
 ##
 {{fbdoc item="param"}}
 	##//dst//##
@@ -15,17 +15,17 @@ Right justifies a string in a string buffer.
 		The source ##[[KeyPgStringtype string]]## or ##[[KeyPgWstring wstring]]## to be right justified.
 
 {{fbdoc item="desc"}}
-	RSET right justifies text into the string buffer //dst//, filling the right part of the string with //src// and the left part with spaces.
+	##**Rset**## right justifies text into the string buffer ##//dst//##, filling the right part of the string with ##//src//## and the left part with spaces.
 
 {{fbdoc item="ex"}}
 %%(qbasic)dim buffer as string
 buffer = space(10)
 rset buffer, "91.5"
-print "-["; buffer; "]-"
+print "-[" & buffer & "]-"
 %%
 
 {{fbdoc item="diff"}}
-	- In QBasic the syntax was RSET A$ = B$
+	- In QBasic the syntax was ##**Rset** //dst// = //src//##
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLset Lset]]##
@@ -36,4 +36,4 @@ print "-["; buffer; "]-"
 	- ##[[KeyPgMkl Mkl]]##
 	- ##[[KeyPgMks Mks]]##
 
-{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgString|String Functions"}}

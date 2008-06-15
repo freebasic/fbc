@@ -9,7 +9,7 @@ Deletes a file from disk
 ##
 {{fbdoc item="param"}}
 	##//filename//##
-		The //filename// is the name of the disk file to delete. If the file is not in the current directory, a the path must also be given //[path]file$//.
+		The //filename// is the name of the disk file to delete. If the file is not in the current directory, a the path must also be given //[path]file//.
 
 {{fbdoc item="ret"}}
 	Returns zero (0) on success, or non-zero on error.

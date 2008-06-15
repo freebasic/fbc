@@ -5,7 +5,7 @@ Returns command line parameters used to call the program.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Command** ( [[KeyPgByval byval]] //index// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Command**[$]( [ //index// ] )
+	//result// = **Command**( [ //index// ] )
 ##
 {{fbdoc item="param"}}
 	##//index//##

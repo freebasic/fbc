@@ -2,51 +2,51 @@
 Procedures that work with dates and time
 
 **{{anchor name="VBCOMPAT|VisualBasic compatible procedures"}}**
-	Procedures for working with so-called [[DtDateSer date serials]], similar to those used in Visual Basic(r).
+	Procedures for working with so-called [[ProPgDates date serials]], similar to those used in Visual Basic(r).
 **{{anchor name="DATETIME|Date and time procedures"}}**
 	Procedures for working with the system date and time.
 
 <<{{anchor name="VBCOMPAT"}}{{fbdoc item="section" value="VisualBasic compatible procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgNow|NOW"}}==
-		Gets a [[DtDateSer date serial]] of the current date and time.
+		Gets a [[ProPgDates date serial]] of the current date and time.
 
 	{{fbdoc item="subsect" value="Creating Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgDateSerial|DATESERIAL"}}==
-			Gets the [[DtDateSer date serial]] representation of a date.
+			Gets the [[ProPgDates date serial]] representation of a date.
 		=={{fbdoc item="keyword" value="KeyPgTimeserial|TIMESERIAL"}}==
-			Gets the [[DtDateSer date serial]] representation of a time.
+			Gets the [[ProPgDates date serial]] representation of a time.
 		=={{fbdoc item="keyword" value="KeyPgDateValue|DATEVALUE"}}==
-			Gets the [[DtDateSer date serial]] representation of a date expressed as a ##[[KeyPgStringtype string]]##.
+			Gets the [[ProPgDates date serial]] representation of a date expressed as a ##[[KeyPgStringtype string]]##.
 		=={{fbdoc item="keyword" value="KeyPgTimeValue|TIMEVALUE"}}==
-			Gets the [[DtDateSer date serial]] representation of a time expressed as a ##[[KeyPgStringtype string]]##.
+			Gets the [[ProPgDates date serial]] representation of a time expressed as a ##[[KeyPgStringtype string]]##.
 
 	{{fbdoc item="subsect" value="Extracting information from Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgSecond|SECOND"}}==
-			Gets the seconds of the hour from a [[DtDateSer date serial]].
+			Gets the seconds of the hour from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgMinute|MINUTE"}}==
-			Gets the minutes of the hour from a [[DtDateSer date serial]].
+			Gets the minutes of the hour from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgHour|HOUR"}}==
-			Gets the hour of the day from a [[DtDateSer date serial]].
+			Gets the hour of the day from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgDay|DAY"}}==
-			Gets the day of the month from a [[DtDateSer date serial]].
+			Gets the day of the month from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgWeekday|WEEKDAY"}}==
-			Gets the day of the week from a [[DtDateSer date serial]].
+			Gets the day of the week from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgMonth|MONTH"}}==
-			Gets the month of the year from a [[DtDateSer date serial]].
+			Gets the month of the year from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgYear|YEAR"}}==
-			Gets the year from a [[DtDateSer date serial]].
+			Gets the year from a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgDatePart|DATEPART"}}==
-			Gets a time interval from a [[DtDateSer date serial]].
+			Gets a time interval from a [[ProPgDates date serial]].
 
 	{{fbdoc item="subsect" value="Extracting information from Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgDateAdd|DATEADD"}}==
-			Gets the result of a time interval added to a [[DtDateSer date serial]].
+			Gets the result of a time interval added to a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgDateDiff|DATEDIFF"}}==
-			Gets a time interval between two [[DtDateSer date serial]]s.
+			Gets a time interval between two [[ProPgDates date serial]]s.
 
 	{{fbdoc item="subsect" value="Miscellaneous"}}
 		=={{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}==
-			Tests if a ##[[KeyPgStringtype String]]## can be converted to a [[DtDateSer date serial]].
+			Tests if a ##[[KeyPgStringtype String]]## can be converted to a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgMonthname|MONTHNAME"}}==
 			Gets the month name of its integer representation.
 		=={{fbdoc item="keyword" value="KeyPgWeekdayname|WEEKDAYNAME"}}==

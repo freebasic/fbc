@@ -5,7 +5,7 @@ Graphics statement to load a block of binary data or a BMP from a file.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //addr// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bload**( //filename// [, //addr//] )
+	//result// = **Bload**( //filename// [, [ //addr// ] [, //pal// ] ] )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -28,7 +28,7 @@ Graphics statement to load a block of binary data or a BMP from a file.
 		-If ##//addr//## is not specified or 0 and the file is a bmp, the image is loaded to the current work page.
 
 	A raw pixel image must only be ##**Bload**##'d to the same ##[[KeyPgScreengraphics Screen]]## mode as it was set when the ##[[KeyPgBsave Bsave]]## was used.
-	##**Bload**## supports loading BMPs as long as they are not RLE compressed; the BMP pixels data will be automatically converted to the proper pixel format for the current color depth. The bmp is displayed with its top left corner in the top left corner of the screen or buffer. If the BMP has an attached palette and ##//pal//## is not specified, the palette is loaded and it'll become the current palette immediately. If ##//pal//## is specified, the palette will be loaded there, in the same format as supported by [[KeyPgPalette Palette Using]], and not applied automatically.
+	##**Bload**## supports loading BMPs as long as they are not RLE compressed; the BMP pixels data will be automatically converted to the proper pixel format for the current color depth. The BMP is displayed with its top left corner in the top left corner of the screen or buffer. If the BMP has an attached palette and ##//pal//## is not specified, the palette is loaded and it'll become the current palette immediately. If ##//pal//## is specified, the palette will be loaded there, in the same format as supported by [[KeyPgPalette Palette Using]], and not applied automatically.
 
 	If you're loading raw ##[[KeyPgBsave Bsave]]##'d pixel data, pay attention that the pixel data stored in the file is in the same pixel format as the one used by the current video mode; see Internal pixel formats for details. If loading directly to the screen (##//addr//## equal to 0 or not specified) and the file has an additional attached palette at the end of the raw pixel data section, this will be loaded as well, and the same rules for the ##//pal//## parameter as discussed above apply here.
 
@@ -42,13 +42,16 @@ Graphics statement to load a block of binary data or a BMP from a file.
 SCREEN 18, 32
 cls
 bload "picture.bmp"
+sleep%%
 
+%%(qbasic)
 'Load a 48x48 bitmap into an array
 SCREEN 18, 32
 dim myImage as any ptr = imagecreate( 48, 48 )
 bload "picture.bmp", myImage
 put (10,10), myImage
 imagedestroy( myImage )
+sleep
 %%
 
 {{fbdoc item="diff"}}

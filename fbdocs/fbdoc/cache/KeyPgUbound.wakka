@@ -2,10 +2,10 @@
 Returns the upper bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Ubound** ( array [[KeyPgAs as]] [[KeyPgAny any]] )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ubound** ( array [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Ubound**( //array// [, //dimension// ] )
+	//result// = **Ubound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##

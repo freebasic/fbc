@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CLNG"}}
-----
+{{fbdoc item="title" value="CLNG"}}----
 Converts numeric or string expression to ##[[KeyPgLong Long]]##/##[[KeyPgInteger Integer]]##
 
 {{fbdoc item="syntax"}}##

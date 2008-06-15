@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="NAME"}}----
+Renames a file on disk
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Name**( [[KeyPgByref Byref]] //oldname// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByref Byref]] //newname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##

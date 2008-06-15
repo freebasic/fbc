@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="SHARED"}}
-----
+{{fbdoc item="title" value="SHARED"}}----
+Variable declaration modifier specifying visibility throughout a module.
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim Dim]] **Shared** ...
 	[[KeyPgRedim Redim]] **Shared** ...
@@ -41,4 +42,4 @@ end sub
 	- ##[[KeyPgUbound Ubound]]##
 	- ##[[KeyPgVar Var]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

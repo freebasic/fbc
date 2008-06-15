@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CULNGINT"}}
-----
+{{fbdoc item="title" value="CULNGINT"}}----
 Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlongint Ulongint]]##)
 
 {{fbdoc item="syntax"}}##

@@ -3,26 +3,14 @@ Declares variables and object having static storage
 
 {{fbdoc item="syntax"}}##
 	**Static** //symbol//[( //subscripts// )] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
-//or//
+		//or//
 	[[KeyPgSub sub]] //proc_header// **Static**
-//or//
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] **Static** //membertype// //membername// ...
-	End Type
-
-	**Static** //membertype// //typename//.//membername// ...
 ##
 {{fbdoc item="param"}}
 	##//symbol//##
 		variable or array symbol name
 	##//proc_header//##
 		procedure header for a procedure body.
-	##//typename//##
-		name of a user defined data type			
-	##//membertype//##
-		##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]##.
-	##//membername// ...##
-		Name of the member to declare or define with parameter list or return value following.
 
 {{fbdoc item="desc"}}
 	Specifies static storage for variables and objects; they are allocated at program startup and deallocated upon exit. Objects are only constructed when execution reaches their defintion however, and destructed upon program exit.
@@ -31,9 +19,9 @@ Declares variables and object having static storage
 
 	In recursive blocks, where multiple instantiations of the block occur, static variables and objects are guaranteed to occupy the same storage across all of the blocks. For example, procedures that call themselves - either directly or indirectly - share the same instances of their static variables or objects. 
 
-	When modifying a module-level procedure declaration, ##**STATIC**## specifies all variables and objects declared in the procedure to have static storage.
+	When modifying a module-level procedure declaration, ##**Static**## specifies all variables and objects declared in the procedure to have static storage.
 
-	When modifying a member procedure declaration, ##**STATIC**## specifies that the member procedure not have an implicit instance argument passed to it, and thus can only access other static members.
+	##**Static**## is also used to specify static member procedures.  See ##[[KeyPgStatic Static (Member)]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)sub f
@@ -56,7 +44,7 @@ Number of times called: 2
 %%
 
 {{fbdoc item="diff"}}
-	- ##STATIC## can declare arrays, too.
+	- ##**Static**## can declare arrays, too.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgMetaStatic Option Static]]##
@@ -66,4 +54,4 @@ Number of times called: 2
 	- ##[[KeyPgType Type]]##
 	- ##[[KeyPgVar Var]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keyword List"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

@@ -15,7 +15,7 @@ Converts a number to octal representation.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""Oct""**( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
 ##
 {{fbdoc item="usage"}}##
-		//result// = **Oct**[$]( //number// [, //digits// ] )
+	//result// = **Oct**( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -28,7 +28,9 @@ Converts a number to octal representation.
 
 {{fbdoc item="desc"}}
 	Returns the octal string representation of //number//. Octal digits range from 0 to 7.
+
 	If you specify //digits// > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+
 	The length of the returned string will not be longer than the maximum number of digits required for the type of //number// (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgInteger Integer]]##, and 22 for ##[[KeyPgLongint Longint]]##)
 
 {{fbdoc item="ex"}}
@@ -43,6 +45,7 @@ print Oct(54321, 8)
 2061
 00152061
 %%
+
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
 

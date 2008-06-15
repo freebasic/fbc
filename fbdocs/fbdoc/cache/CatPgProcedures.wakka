@@ -1,38 +1,69 @@
 {{fbdoc item="title" value="Procedures"}}----
+Keywords that work with procedures
 
-<<
-	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
-	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
-	- {{fbdoc item="keyword" value="KeyPgByref|BYREF"}}
-	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
-	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
-	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
-	- {{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}
-	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
-	- {{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}
-	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
-	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
-	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
+**{{anchor name="DECLARATION|Declaration"}}**
+	Keywords that declare and define procedures.
+**{{anchor name="CALLCONV|Calling conventions"}}**
+	Keywords that specify how arguments are used when calling procedures.
+**{{anchor name="PARAMCONV|Parameter passing conventions"}}**
+	Keywords that specify how arguments are passed to procedures.
+**{{anchor name="VARIADIC|Variable Arguments"}}**
+	Macros that allow for an arbitrary number of arguments to be passed to a procedure.
+**{{anchor name="AUTOEXEC|Automatic execution"}}**
+	Keywords that specify automatic execution of procedures.
+**{{anchor name="MISC|Miscellaneous"}}**
+	Miscellaneous keywords.
 
-<<>>
-	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}
-	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
-	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
-	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
+<<{{anchor name="DECLARATION"}}{{fbdoc item="section" value="Declaration"}}
+	=={{fbdoc item="keyword" value="KeyPgDeclare|DECLARE"}}==
+		Declares a procedure.
+	=={{fbdoc item="keyword" value="KeyPgSub|SUB"}}==
+		Specifies a procedure that does not return an argument.
+	=={{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}==
+		Specifies a procedure that returns an argument.
+	=={{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}==
+		Specifies that the procedure name can be used again.
+	=={{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}==
+		Specifies static storage for all variables and objects in the procedure body.
+	=={{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}==
+		Specifies an alternate external name for a procedure.
+	=={{fbdoc item="keyword" value="KeyPgLib|LIB"}}==
+		Specifies a library to be linked to.
 
-{{fbdoc item="section" value="Variable Arguments"}}
-	- {{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}
-	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
-	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
-	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
+{{anchor name="CALLCONV"}}{{fbdoc item="section" value="Calling conventions"}}
+	=={{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}==
+		Specifies the standard calling convention for BASIC languages.
+	=={{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}==
+		Specifies the standard calling convention in the C language.
+	=={{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}==
+		Specifies the standard calling convention in the Pascal language.
 
+{{anchor name="PARAMCONV"}}{{fbdoc item="section" value="Parameter passing conventions"}}
+	=={{fbdoc item="keyword" value="KeyPgByref|BYREF"}}==
+		Specifies passing an argument by reference.
+	=={{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}==
+		Specifies passing an argument by value.
+	=={{fbdoc item="keyword" value="KeyPgAny|ANY"}}==
+		Disables type-checking on arguments.
+<<>>{{anchor name="VARIADIC"}}{{fbdoc item="section" value="Variable Arguments"}}
+	=={{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}==
+		Indicates a variadic procedure in a declaration.
+	=={{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}==
+		Macro to obtain the argument list in a variadic procedure.
+	=={{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}==
+		Macro to obtain the current argument in a variadic procedure.
+	=={{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}==
+		Macro to move to the next argument in a variadic procedure.
 
->>
+{{anchor name="AUTOEXEC"}}{{fbdoc item="section" value="Automatic execution"}}
+	=={{fbdoc item="keyword" value="KeyPgModuleConstructor|CONSTRUCTOR (Module)"}}==
+		Indicates a procedure is to be executed before module-level code.
+	=={{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}==
+		Indicates a procedure is to be executed after module-level code.
 
+{{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
+	=={{fbdoc item="keyword" value="KeyPgCall|CALL"}}==
+		Invokes a procedure.
+>>::c::
 
-
-
-
-::c::
-
-{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

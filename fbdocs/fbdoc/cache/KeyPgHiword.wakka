@@ -25,11 +25,11 @@ DIM N AS UINTEGER
 N = &b10000000000000011111111111111111
 
 PRINT "N is                                       "; N
-PRINT "The binary representation of N is          "; BIN$(N)
+PRINT "The binary representation of N is          "; BIN(N)
 PRINT "The most significant word (MSW) of N is    "; HIWORD(N)
 PRINT "The least significant word (LSW) of N is   "; LOWORD(N)
-PRINT "The binary representation of the MSW is    "; BIN$(HIWORD(N))
-PRINT "The binary representation of the LSW is    "; BIN$(LOWORD(N))
+PRINT "The binary representation of the MSW is    "; BIN(HIWORD(N))
+PRINT "The binary representation of the LSW is    "; BIN(LOWORD(N))
 
 SLEEP
 %%

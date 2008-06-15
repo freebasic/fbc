@@ -27,6 +27,8 @@ Statements and procedures that work with the graphics display
 		Sets the running program's window caption.
 
 {{anchor name="PAGES"}}{{fbdoc item="section" value="Working with pages"}}
+	=={{fbdoc item="keyword" value="KeyPgCls|CLS"}}==
+		Clears the entire screen or viewport.
 	=={{fbdoc item="keyword" value="KeyPgScreenset|SCREENSET"}}==
 		Sets the current work and visible pages.
 	=={{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}} and {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}} and {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}==

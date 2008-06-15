@@ -21,7 +21,7 @@ Declares a union user defined type
 
 	Unions can be nested inside a type structure. See Example.
 
-	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgSub Sub]]##.  All members of a union are public and access control is not supported.
+	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##.  All members of a union are public and access control is not supported.
 
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 

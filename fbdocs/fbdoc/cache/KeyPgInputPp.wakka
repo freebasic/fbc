@@ -40,4 +40,4 @@ print a, b, c
 	- ##[[KeyPgLineinputPp Line Input #]]##
 	- ##[[KeyPgWrite Write #]]##
 
-{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

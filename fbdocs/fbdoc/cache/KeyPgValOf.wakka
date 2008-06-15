@@ -40,6 +40,6 @@ The new value of 'a' is 1
 {{fbdoc item="see"}}
 	- [[KeyPgAt (@) Address of]]
 	- [[CatPgOpPoint Pointer Operators]]
-	- [[DtPointers Pointers]]
+	- [[ProPgPointers Pointers]]
 	
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

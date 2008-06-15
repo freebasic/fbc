@@ -2,7 +2,7 @@
 Multi-dimensional container types
 
 {{fbdoc item="desc"}}
-	Arrays are [[DtVariables Variables]] which hold one or more values, or elements. You can think of them as a heterogenous container, that is, a container that can hold a number of elements of a single type.
+	Arrays are [[ProPgVariables Variables]] which hold one or more values, or elements. You can think of them as a heterogenous container, that is, a container that can hold a number of elements of a single type.
 
 	FreeBASIC arrays can be multi-dimensional; they can be used to represent, for example, a line of elements (1 dimension), a grid of elements (2 dimensions), a cube of elements (3 dimensions) and more (a 4-dimensional array could perhaps be modelled by a line of cubes). The number of dimensions an array has is determined where it is declared or defined, and like all FreeBASIC variables, arrays must be declared or defined before they're used.
 
@@ -80,4 +80,4 @@ print arrayptr[i + 1]
 {{fbdoc item="see"}}
 	- [[ProPgVariableScope Variable Scope]]
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

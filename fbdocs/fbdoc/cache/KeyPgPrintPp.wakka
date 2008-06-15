@@ -1,9 +1,18 @@
 {{fbdoc item="title" value="PRINT #"}}----
-{{fbdoc item="syntax"}}
-	PRINT #//filenumber//, arg1 [,arg2...]
+Writes a list of values to a file or device
+
+{{fbdoc item="syntax"}}##
+	**Print #** //filenum//, //values//
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		The file number of a file or device.
+	##//values//##
+		Comma-seperated list of values to write.
 
 {{fbdoc item="desc"}}
 	Prints argument list to opened file that corresponds to #. Args can be any combination of constants and variables.
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 open "bleh.dat"  for output as #1
@@ -21,4 +30,3 @@ open "bleh.dat"  for output as #1
 	- ##[[KeyPgPrint Print]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

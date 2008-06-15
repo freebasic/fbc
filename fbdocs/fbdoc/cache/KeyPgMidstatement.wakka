@@ -2,12 +2,13 @@
 Overwrites a substring of a string with another.
 
 {{fbdoc item="syntax"}}##
-	**Mid**[$]( //text//, //start// [, //length//]) = //expression//
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mid** ( [[KeyPgByref byref]] //text// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //length// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgStringtype string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mid** ( [[KeyPgByval byval]] //text// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //length// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-		**Mid**( //text//, //start// ) = //expression//
-			**//or//**
-		**Mid**( //text//, //start//, //length// ) = //expression//
+	**Mid**( //text//, //start// ) = //expression//
+		**//or//**
+	**Mid**( //text//, //start//, //length// ) = //expression//
 ##
 {{fbdoc item="param"}}
 	##//text//##
@@ -36,6 +37,6 @@ print text 'displays "abc 456"
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgMidfunction MID (Function)]]
+	- [[KeyPgMidfunction Mid (Function)]]
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

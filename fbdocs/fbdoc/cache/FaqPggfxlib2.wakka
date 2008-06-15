@@ -90,3 +90,5 @@ Loop Until Inkey = Chr( 255 ) + "k"
 	- Chr( 255 ) + "X"
 
 	{{anchor name="item0|Back to top"}}
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

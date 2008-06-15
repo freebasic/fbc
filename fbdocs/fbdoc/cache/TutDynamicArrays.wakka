@@ -1,3 +1,5 @@
+{{fbdoc item="title" value="Dynamic Arrays"}}----
+
 Hello, this page explains the proper use of dynamic arrays in FreeBASIC. While it isn't a very long tutorial, many people have had some troubles with this and I felt it was worth putting into the "Getting Started" tutorial page.
 
 Arrays are neat; they can be used and resized throughout a program, with little difficulties. Firstly, we should discuss both ways a dynamic array can be created. In the same code, I will explain how to redimension a Dynamic Shared Array within a sub or function. Read the comments within the code to understand it better.
@@ -70,4 +72,3 @@ end
 Try it out! You can see that it does not work properly. This is because only the first dimension in an array may change sizes, while the rest remain the same size, in order for PRESERVE to work properly.
 
 There is a workaround, which I will post later, after I edit it in order to make sense to any program, not just mine, and make some revisions so it does not go out of bounds. For the moment, get creative ;)
-   

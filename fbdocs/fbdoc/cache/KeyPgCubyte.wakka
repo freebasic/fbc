@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CUBYTE"}}
-----
+{{fbdoc item="title" value="CUBYTE"}}----
 Converts numeric or string expression to an unsigned byte (##[[KeyPgUbyte Ubyte]]##)
 
 {{fbdoc item="syntax"}}##

@@ -1,11 +1,9 @@
-{{fbdoc item="title" value="Label"}}----
+{{fbdoc item="title" value="Labels"}}----
 Defines a location in a program.
 
 {{fbdoc item="syntax"}}##
-	//symbolname// :
-
-	Or
-
+	//symbolname// **:**
+		//or//
 	//literalnumber//
 ##
 {{fbdoc item="desc"}}
@@ -38,11 +36,14 @@ Output:
 1,2,3,6,7
 %%
 
+{{fbdoc item="lang"}}
+	- Line numbers with decimals is available only in //-lang qb//.
+
 {{fbdoc item="diff"}}
-	- None
+	- None if compiled with //-lang qb//
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGosub Gosub]]##
 	- ##[[KeyPgGoto Goto]]##
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

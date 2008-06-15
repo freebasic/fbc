@@ -1,5 +1,4 @@
-===== Pointers, Data Types and Memory =====
-
+{{fbdoc item="title" value="Pointers, Data Types and Memory"}}----
 //Written by [[WikiRick rdc]]//
 
 If you read the article [[TutPointers Introduction to Pointers]] you know that pointers contain memory location addresses. You can manipulate the data in these memory locations using the reference operator *. Using pointers with single data item isn?t a problem, but what if you need to store multiple data items together and manipulate them using a pointer? It can get a bit tricky unless you understand how data is stored in memory.

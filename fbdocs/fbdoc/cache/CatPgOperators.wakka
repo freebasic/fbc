@@ -83,8 +83,7 @@ Procedures that operate on one or more operands
 		Concatenates two values converted to [[KeyPgStringtype String]].
 	=={{fbdoc item="keyword" value="KeyPgStrIndex|[] (String indexing)"}}==
 		Returns a reference to a character in a [[KeyPgStringtype String]].
-<<>>
-{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
+<<>>{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgInequality|<> (Inequality)"}}==
 		Compares the inequality relation of two operands.
 	=={{fbdoc item="keyword" value="KeyPgLessThan|< (Less than)"}}==
@@ -98,7 +97,7 @@ Procedures that operate on one or more operands
 	=={{fbdoc item="keyword" value="KeyPgGreaterThan|> (Greater than)"}}==
 		Compares the greater than relation of two operands.
 
-{{anchor name="LOGICAL"}}{{fbdoc item="section" value="Logical Operators"}}
+{{anchor name="LOGICAL"}}{{fbdoc item="section" value="Bitwise Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgAnd|AND (Conjunction)"}}==
 		Returns the result of a bitwise conjunction of two operands.
 	=={{fbdoc item="keyword" value="KeyPgEqv|EQV (Equivalence)"}}==

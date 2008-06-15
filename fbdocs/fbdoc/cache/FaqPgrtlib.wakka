@@ -79,3 +79,5 @@
 	To be safe, pass [[KeyPgString Strings]] by reference. If you need to simulate the correct behavior of passing a [[KeyPgString String]] by value, either 1) create a temporary [[KeyPgString String]], initialize it with the [[KeyPgString String]] you want to pass and pass the temporary by reference, or 2) pass the [[KeyPgString String]] by reference and have the procedure create and initialize a temporary [[KeyPgString String]] and work with the temporary.
 
 {{anchor name="item0|Back to top"}}
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="PCOPY"}}----
+Copies one graphical page onto another
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgInteger integer]] )
 ##

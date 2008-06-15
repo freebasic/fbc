@@ -1,4 +1,4 @@
-=====Using the Mouse in FreeBASIC=====
+{{fbdoc item="title" value="Using the Mouse in FreeBASIC"}}----
 
 After doing some searches, I quickly noticed that there simply wasn't an official tutorial or technique for manipulating the mouse in a windows console application in FreeBasic. Therefore, I decided to write this technique in order to give such an example to the FreeBasic Community. As you know A Windows Console is already mouse aware by ways of the fact that it is a windows console, which means it's created with the use of the Windows API, which means that the mouse can be accessed from the Console Window. So There's no need to turn the mouse on or off in your code. All you need to do is Get or Set the X and Y coordinates and get the states of the mouse buttons. We will be covering the following subjects in this tutorial.
 

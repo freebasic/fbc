@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Identifier Rules"}}----
-All identifiers must follow certain rules.  An identifier is a name which uniquely identifies a [[DtVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##.
+All identifiers must follow certain rules.  An identifier is a name which uniquely identifies a [[ProPgVariables variable]], ##[[KeyPgType Type]]##, ##[[KeyPgUnion Union]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgSub Sub]]##, or ##[[KeyPgProperty Property]]##.
 
 Identifiers may contain only letters (specifically, the upper- and lower-case Latin characters ##a##-##z## and ##A##-##Z##), digits (##0##-##9##), and the underscore character (##_##). The first character of an identifier may only be a letter or underscore, not a digit.
 
@@ -12,11 +12,12 @@ In ##-lang qb## and ##-lang deprecated## modes, identifiers may have a symbol at
 	- ##### for ##[[KeyPgDouble Double]]##
 	- ##$## for ##[[KeyPgStringtype String]]##
 The use of these symbols is generally discouraged in modern FreeBASIC code and is not allowed in ##-lang fb## mode (the default).
+
 The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##
 
 In ##-lang qb## and ##-lang deprecated## modes, identifiers may contain one or more periods (##.##).
 
 {{fbdoc item="see"}}
-	- [[DtVariables Variables]]
+	- [[ProPgVariables Variables]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

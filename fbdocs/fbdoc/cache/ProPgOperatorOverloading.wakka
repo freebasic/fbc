@@ -43,7 +43,7 @@ if x <= y then
 end if
 %%
 
-Note that global operators are like module-level procedures in that the [[KeyPgProtected Protected]] and [[KeyPgPrivate Private]] members of a [[KeyPgType Type]] or [[KeyPgClass Class]] are inaccessible. This is discussed {{anchor name="item4|in this item"}}.
+Note that global operators are like module-level procedures in that the [[KeyPgVisProtected Protected]] and [[KeyPgVisPrivate Private]] members of a [[KeyPgType Type]] or [[KeyPgClass Class]] are inaccessible. This is discussed {{anchor name="item4|in this item"}}.
 
 [ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
 ----

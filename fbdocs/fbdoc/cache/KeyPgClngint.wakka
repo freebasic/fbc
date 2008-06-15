@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CLNGINT"}}
-----
+{{fbdoc item="title" value="CLNGINT"}}----
 Converts numeric or string expression to 64-bit integer (##[[KeyPgLongint Longint]]##)
 
 {{fbdoc item="syntax"}}##

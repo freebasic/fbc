@@ -1,9 +1,9 @@
-{{fbdoc item="title" value="Anonymous Types"}}----
+{{fbdoc item="title" value="Temporary Types"}}----
 Creates a temporary copy of a user defined type
 
 {{fbdoc item="syntax"}}##
 	//result// = **Type**( //initializers//, ... )
-//or//
+		//or//
 	//result// = **Type**<//typename//>( //initializers//, ... )
 ##
 {{fbdoc item="param"}}
@@ -41,7 +41,7 @@ with ex
 	.field2 = 2
 end with
 
-'' Third method, using anonymous types
+'' Third method, using temporary types
 ex = type( 1, 2 )
 %%
 
@@ -49,7 +49,8 @@ ex = type( 1, 2 )
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgTypeDef Type ... As]]##
+	- ##[[KeyPgType Type...End Type]]##
+	- ##[[KeyPgTypeAlias Type (Alias)]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
+   

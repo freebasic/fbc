@@ -15,7 +15,7 @@ Returns the hexadecimal of the given number.
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Hex**[$]( //number// [, //digits// ] )
+	//result// = **Hex**( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
@@ -27,9 +27,11 @@ Returns the hexadecimal of the given number.
 	Hexadecimal [[KeyPgStringtype string]] representation of number.
 
 {{fbdoc item="desc"}}
-	Returns the hexadecimal string representation of the integer //expression//. Hexadecimal digits range from 0-9, or A-F.
-	If you specify //digits// > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-	The length of the string will not go longer than the maximum number of digits required for the type of //expression// (8 for an integer, 16 for floating point or longinteger)
+	Returns the hexadecimal string representation of the integer ##//expression//##. Hexadecimal digits range from 0-9, or A-F.
+
+	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//expression//## (8 for an integer, 16 for floating point or longinteger)
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -43,6 +45,7 @@ print Hex(54321, 5)
 31
 0D431
 %%
+
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
 

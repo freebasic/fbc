@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="BINARY"}}----
+Specifies file or device to be opened for binary mode.
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen Open]] //filename// for **Binary** [[[KeyPgAccess Access]] //access_type//] [[[KeyPgLock Lock]] //lock_type//] as [#]//filenum// 
 ##
@@ -14,8 +16,7 @@
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing binary data in the file //filenum//, with free format.
-	If the file does not exist, a new file will be created.	The file pointer is initialized by ##[[KeyPgOpen Open]]##
- at byte no. 1. 
+	If the file does not exist, a new file will be created. The file pointer is initialized by ##[[KeyPgOpen Open]]## at byte no. 1. 
 	##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]## file operations move the file pointer according to the size of the data, the pointer can be set to any byte in the file.
 	The data existing in the file is preserved by ##[[KeyPgOpen Open]]##. 
 	This file mode can use any buffer variable to read/write data in the file.   
@@ -36,8 +37,8 @@
 		If no lock type is stated, the file will be ##**Shared**## for other threads of the program and ##**Lock Read Write**## for other programs.
 		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to restrict temporally access to parts of a file.
 
-	##//filenum//## is a valid FB file slot number (in the range 1-255) not being used for any other file presently open. The slot identifies the file for the rest of file operations. A free slot can be found using the ##[[KeyPgFreefile FreeFile]]## function.
-	
+	##//filenum//## is a valid file number (in the range 1-255) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 '' Create a binary data file with one number in it

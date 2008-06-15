@@ -31,4 +31,4 @@ print "position: "; pos
 {{fbdoc item="see"}}
 	- ##[[KeyPgLocate Locate]]##
 
-{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

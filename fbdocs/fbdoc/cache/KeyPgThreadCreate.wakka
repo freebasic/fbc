@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="THREADCREATE"}}----
-**Threadcreate** starts a user function in a separate execution thread.
+Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Threadcreate** ( [[KeyPgByval byval]] //proc// [[KeyPgAs as]] [[KeyPgSub sub]] ( [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]] ), [[KeyPgByval byval]] //param// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]

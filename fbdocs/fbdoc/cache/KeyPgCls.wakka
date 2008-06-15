@@ -5,7 +5,7 @@ Clears the screen in both text modes and graphics modes.
 	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Cls** ( [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgInteger integer]] = -65536 )
 ##
 {{fbdoc item="usage"}}##
-	CLS //mode//
+	**Cls** //mode//
 ##
 {{fbdoc item="param"}}
 	##//mode//##
@@ -58,7 +58,7 @@ do
 	    i = i - 1
 	    if i <= 0 then j = 1
 	end if
-loop while inkey$=""
+loop while inkey=""
 %%
 
 {{fbdoc item="diff"}}
@@ -70,4 +70,4 @@ loop while inkey$=""
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
-{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions Index"}}

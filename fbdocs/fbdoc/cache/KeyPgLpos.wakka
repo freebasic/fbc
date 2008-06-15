@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="LPOS"}}
-----
+{{fbdoc item="title" value="LPOS"}}----
 Returns the number of characters sent to the printer port in the last ##[[KeyPgLprint Lprint]]## statement.
 
 {{fbdoc item="syntax"}}##
@@ -36,4 +35,4 @@ SLEEP
 {{fbdoc item="see"}}
 	- ##[[KeyPgLprint Lprint]]##
 
-{{fbdoc item="back" value="CatPgFullIndex|Alphabetical Keywords List"}}
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -5,7 +5,7 @@ Creates a string of a certain length filled with spaces spaces (" ").
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Space**[$]( //count// )
+	//result// = **Space**( //count// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -22,6 +22,7 @@ Creates a string of a certain length filled with spaces spaces (" ").
 DIM A AS WSTRING *14
 A="x"+space(10)+"x"  'prints x             x
 %%
+
 {{fbdoc item="diff"}}
 	- None
 

@@ -2,10 +2,10 @@
 Returns the lower bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lbound** ( array [[KeyPgAs as]] [[KeyPgAny any]] )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lbound** ( array [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	**Lbound**( //array// [, //dimension// ] )
+	//result// = **Lbound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##

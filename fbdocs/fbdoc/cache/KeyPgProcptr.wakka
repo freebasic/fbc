@@ -5,7 +5,7 @@ Returns a pointer to function or subroutine
 	//result// = **Procptr**( //proc_name// )
 ##
 {{fbdoc item="desc"}}
-	Returns the memory [[DtPointers pointer]] to a function or subroutine, specified by function_name.  Function pointers allow functions to be called from variables, structures, and allow for the creation of pseudo-objects.
+	Returns the memory [[ProPgPointers pointer]] to a function or subroutine, specified by function_name.  Function pointers allow functions to be called from variables, structures, and allow for the creation of pseudo-objects.
 
 When declaring function pointers, they must contain the same parameters as any function they are assigned to, and they must return an explicit type.  For instance:
 %%(qbasic)
@@ -50,7 +50,7 @@ end function
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgFunction Function]]##
-	- [[DtPointers Pointers]]
+	- [[ProPgPointers Pointers]]
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgVarptr Varptr]]##
 

@@ -22,7 +22,7 @@ Converts an four byte string to an single-precision variable.
 {{fbdoc item="ex"}}
 %%(qbasic)dim a as single, b as string
 a=4534.4243
-b=mks$(a)
+b=mks(a)
 print a, cvs(b)
 sleep
 %%

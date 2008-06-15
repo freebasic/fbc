@@ -5,7 +5,7 @@ Returns the first argument in a variable argument list
 	//pointer_variable// = **va_first**()
 ##
 {{fbdoc item="desc"}}
-	The ##**va_first**## function initializes a [[DtPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
+	The ##**va_first**## function initializes a [[ProPgPointers pointer]], //pointer_variable//, to point to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

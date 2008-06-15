@@ -5,7 +5,7 @@ Returns a wide-character string containing one or more Unicode characters
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Wchr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Wchr**[$]( //ch0// [, //ch1// ... //chN// ] )
+	//result// = **Wchr**( //ch0// [, //ch1// ... //chN// ] )
 ##
 {{fbdoc item="param"}}
 	##//ch//##
@@ -15,9 +15,9 @@ Returns a wide-character string containing one or more Unicode characters
 	Returns a wide-character string.
 
 {{fbdoc item="desc"}}
-	##**WCHR**## returns a wide-character string containing the character(s) represented by the Unicode values passed to it.
+	##**Wchr**## returns a wide-character string containing the character(s) represented by the Unicode values passed to it.
 
-	When ##**WCHR**## is used with numerical constants or literals, the result is evalutated at compile-time, so it can be used in variable initializers.
+	When ##**Wchr**## is used with numerical constants or literals, the result is evalutated at compile-time, so it can be used in variable initializers.
 
 	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode characterss, as the GfxLib built-in font is not Unicode.
  

@@ -5,7 +5,7 @@ Fills a certain length of a  wstring with spaces (" ").
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wspace**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-		//result// = **Wspace**[$]( //count// )
+	//result// = **Wspace**( //count// )
 ##
 {{fbdoc item="param"}}
 	##//count//##
@@ -28,7 +28,7 @@ A="x"+wspace(10)+"x"  'prints x             x
 	- Unicode (w)strings are not suported in the DOS port of FB
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSpace Space]]##

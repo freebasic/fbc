@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="Header Files (.bi)"}}----
 A header file is a special kind of source file that typically only contains preprocessor statements, defines, declarations, prototypes, constants, enumerations, or similar types of statements, however, a header file can contain any valid source code if the purpose suits.  What makes them different from other module (.bas) source files, is instead of being compiled directly, they are included by another source file (module or header) using the ##[[KeyPgInclude #include]]## preprocessor directive.  All precompiled libraries typically have one or more header files that can be included in another source file and will introduce to the compiler all the names of the procedures usable in a particular library.
 
-==FreeBASIC Header Files==
+{{fbdoc item="section" value="FreeBASIC Header Files"}}
 	Some of the keywords, constants, and procedures documented in this manual are not normally available when compiling a source code unless a specific header file is included in the source first.
-		- datetime.bi
-		- dir.bi
-		- fbgfx.bi
-		- file.bi
-		- vbcompat.bi
+	- datetime.bi
+	- dir.bi
+	- fbgfx.bi
+	- file.bi
+	- vbcompat.bi
 
-==Including a header only once==
+{{fbdoc item="section" value="Including a header only once"}}
 	It is common that header files need to ##[[KeyPgInclude #include]]## other header files to compile correctly.  FreeBASIC offers three methods for guarding against including a header file more than once.
 	- ##[[KeyPgPpifndef #ifndef]]## guards in the header file
 	- ##[[KeyPgInclude #include]] **once**## where the file is included
 	- ##[[KeyPgPragma #pragma]] **once**## in the header file itself
 
-==#ifndef guards in the header file==
+{{fbdoc item="section" value="#ifndef guards in the header file"}}
 	The use of ##[[KeyPgPpifndef #ifndef]]## and ##[[KeyPgPpdefine #define]]## is a common practice in nearly any language that supports preprocessing.  The first time a file is included, a unique symbol is defined.  The next time the same header file is included, the definition of the symbol is checked, and if it is already defined, the contents of the header file are skipped.
 %%(qbasic)
 '' header.bi
@@ -29,19 +29,19 @@ A header file is a special kind of source file that typically only contains prep
 #endif
 %%
 
-==#include **once**==
+{{fbdoc item="section" value="#include once"}}
 	At the point in the source code where the header file is included, the optional ##"once"## specifier of the ##[[KeyPgInclude #include]]## directive can tell the compiler to only include the source file one time.
-%%(qbasic)
+	%%(qbasic)
 '' header.bi
 #include once "fbgfx.bi"
 %%
-%%(qbasic)
+	%%(qbasic)
 '' module.bas
 #include once "fbgfx.bi"
 #include once "header.bi"
 %%
 
-==#pragma once==
+{{fbdoc item="section" value="#pragma once"}}
 	##[[KeyPgPragma #pragma]] **once**## can be used in a header file to indicate that the header file should only be included once.  
 %%(qbasic)
 '' header.bi

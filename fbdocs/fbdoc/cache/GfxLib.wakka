@@ -1,9 +1,5 @@
-{{fbdoc item="title" value="GfxLib"}}
-----
-{{fbdoc item="desc"}}
-GfxLib is the built-in graphics library included in FreeBASIC. As well as re-creating every QuickBASIC graphics command, GfxLib has built-in commands to handle input from the keyboard and mouse as well.
+{{fbdoc item="title" value="GfxLib"}}----
+GfxLib is the built-in graphics library included in FreeBASIC. As well as re-creating every QuickBASIC graphics command, GfxLib has built-in commands to handle input from the keyboard and mouse.
 
 {{fbdoc item="see"}}
-	- [[CatPgGfx Gfxlib Command Index]]
-
-
+	- [[CatPgGfx GFX Functions Index]]

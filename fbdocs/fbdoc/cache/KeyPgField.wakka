@@ -1,5 +1,6 @@
-{{fbdoc item="title" value="FIELD"}}
-----
+{{fbdoc item="title" value="FIELD"}}----
+Specifies alignment
+
 {{fbdoc item="syntax"}}##
 [[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
 	...

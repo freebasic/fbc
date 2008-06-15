@@ -1,4 +1,5 @@
-=====SDL_Net: Getting started=====
+{{fbdoc item="title" value="SDL_Net: Getting Started"}}----
+
 	 A compleate Step by step guide of getting your program from hello world to hello world over a TCP/IP connection, using the SDL_Net SDL library. This tutorial will list all componets required and where to download them at the time of writing followed by how to get each componet in the proper place to perform the proper functions and finally how to write the actuall code. I will assume you have zero previous knowledge and because of that some readers may want to skip the first few bits of the tutorial.
 //Written by ""GregF"" (Paragon)//
 ----

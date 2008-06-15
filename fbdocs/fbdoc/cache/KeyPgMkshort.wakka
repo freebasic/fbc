@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="MKSHORT$"}}----
+{{fbdoc item="title" value="MKSHORT"}}----
 Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 2 bytes.
 
 {{fbdoc item="syntax"}}##
@@ -28,7 +28,7 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- In QBasic this function is called MKI$.
+	- In QBasic this function is called ##**Mki**##.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvshort Cvshort]]##

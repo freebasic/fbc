@@ -3,13 +3,17 @@ FreeBASIC Manual Table of Contents
 
 <<{{anchor name="COMPILER|The Compiler"}}
 	FreeBASIC history, system requirements and comparisons to other languages.
+{{anchor name="PROGRAM|Programming Reference"}}
+	Programming references on how to write programs with FreeBASIC.
 {{anchor name="LANGUAGE|Language Reference"}}
 	Quick reference to the supported datatypes, control flow statements and more.
+{{anchor name="INDEX|Keyword Indexes"}}
+	Keyword Indexes.
 {{anchor name="RTLIB|Runtime Library Reference"}}
 	Procedures and macros that are a part of the FreeBASIC run-time library.
-{{anchor name="GFXLIB|Graphics Library Reference"}}
+<<>>{{anchor name="GFXLIB|Graphics Library Reference"}}
 	Procedures and macros that are a part of the FreeBASIC graphics library.
-<<>>{{anchor name="FAQS|FAQs"}}
+{{anchor name="FAQS|FAQs"}}
 	Frequently asked questions about FreeBASIC, its compiler and libraries.
 {{anchor name="MISC|Miscellaneous"}}
 	Miscellaneous topics.
@@ -35,46 +39,37 @@ FreeBASIC Manual Table of Contents
 
 	{{fbdoc item="keyword" value="CompilerHelp|Getting Help with FreeBASIC"}}
 
-{{anchor name="LANGUAGE"}}{{fbdoc item="section" value="Language Reference"}}
+{{anchor name="PROGRAM"}}{{fbdoc item="section" value="Programming Reference"}}
 	{{fbdoc item="keyword" value="CatPgProgrammer|Programmer's Guide"}} (W.I.P.)
 
-	{{fbdoc item="keyword" value="CatPgFullIndex|Alphabetical Keywords List"}}
-	{{fbdoc item="keyword" value="CatPgFunctIndex|Functional Keywords List"}}
+{{anchor name="LANGUAGE"}}{{fbdoc item="section" value="Language Reference"}}
 
-	{{fbdoc item="subsect" value="Data Types"}}
+	{{fbdoc item="subsect" value="Variables and Datatypes"}}
+		{{fbdoc item="keyword" value="CatPgVariables|Variable Declarations"}}
 		{{fbdoc item="keyword" value="CatPgStdDataTypes|Standard Data Types"}}
-		{{fbdoc item="keyword" value="DtConstants|Constants"}}
-		{{fbdoc item="keyword" value="DtVariables|Variables"}}
-		{{fbdoc item="keyword" value="DtArrays|Arrays"}}
-		{{fbdoc item="keyword" value="DtPointers|Pointers"}}
-		{{fbdoc item="keyword" value="CatPgUserDefTypes|User Defined Types"}}
 		{{fbdoc item="keyword" value="CatPgCasting|Converting Between Data Types"}}
-	
+		{{fbdoc item="keyword" value="CatPgUserDefTypes|User Defined Types"}}
+
 	{{fbdoc item="subsect" value="Operators"}}
 		{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}
 		{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
 		
 	{{fbdoc item="subsect" value="Statements"}}
-		{{fbdoc item="keyword" value="KeyPgDoloop|Do...Loop"}}
-		{{fbdoc item="keyword" value="KeyPgFornext|For...Next"}}
-		{{fbdoc item="keyword" value="KeyPgIfthen|If...Then"}}
-		{{fbdoc item="keyword" value="KeyPgSelectcase|Select Case"}}
-		{{fbdoc item="keyword" value="KeyPgWhilewend|While...Wend"}}
-		{{fbdoc item="keyword" value="KeyPgScope|Scope...End Scope"}}
-		{{fbdoc item="keyword" value="KeyPgNamespace|Namespace...End Namespace"}}	
-
-	{{fbdoc item="subsect" value="Procedures""}}
-		{{fbdoc item="keyword" value="KeyPgDeclare|Declare"}}
-		{{fbdoc item="keyword" value="KeyPgFunction|Function"}}
-		{{fbdoc item="keyword" value="KeyPgSub|Subroutine"}}
-		{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
-		{{fbdoc item="keyword" value="KeyPgCall|Call"}}
+		{{fbdoc item="keyword" value="CatPgControlFlow|Control Flow"}}
+		{{fbdoc item="keyword" value="CatPgProcedures|Procedures"}}
+		{{fbdoc item="keyword" value="CatPgModularizing|Modularizing"}}
 
 	{{fbdoc item="subsect" value="Other"}}
-		{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
-		{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 		{{fbdoc item="keyword" value="CatPgPreProcess|Preprocessor"}}
 		{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+		{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
+		{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
+
+{{anchor name="INDEX"}}{{fbdoc item="section" value="Keyword Indexes"}}
+	{{fbdoc item="keyword" value="CatPgFullIndex|Alphabetical Keywords List"}}
+	{{fbdoc item="keyword" value="CatPgFunctIndex|Functional Keywords List"}}
+	{{fbdoc item="keyword" value="CatPgGfx|Graphics Keywords List"}}
+	
 <<>>{{anchor name="RTLIB"}}{{fbdoc item="section" value="Runtime Library Reference"}}
 	{{fbdoc item="keyword" value="CatPgArray|Array Functions"}}
 	{{fbdoc item="keyword" value="CatPgBits|Bit Manipulation"}}
@@ -103,7 +98,7 @@ FreeBASIC Manual Table of Contents
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
 	{{fbdoc item="keyword" value="CVSCompile|Compiling from CVS"}}
-	{{fbdoc item="keyword" value="DtDateSer|Date Serials"}}
+	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="DebuggerRunning|Debugging"}}
 	{{fbdoc item="keyword" value="GnuLicenses|Licenses"}}
 	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted keywords"}}

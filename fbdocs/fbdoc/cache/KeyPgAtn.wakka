@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="ATN"}}
-----
+{{fbdoc item="title" value="ATN"}}----
 Function that returns the arctangent of a number.
 
 {{fbdoc item="syntax"}}##

@@ -117,6 +117,10 @@ Statements and Procedures that work with strings
 		Returns the first occurance of a substring or character within a string.
 	=={{fbdoc item="keyword" value="KeyPgMidstatement|MID (Statement)"}}==
 		Copies a substring to a substring of a string.
+	=={{fbdoc item="keyword" value="KeyPgLset|LSET"}}==
+		Left-justifies a string.
+	=={{fbdoc item="keyword" value="KeyPgRset|RSET"}}==
+		Right-justifies a string.
 
 >>::c::
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

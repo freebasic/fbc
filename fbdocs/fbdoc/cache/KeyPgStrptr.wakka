@@ -5,7 +5,7 @@ Returns a pointer to a string variable's data
 	//result// = **Strptr** ( //string_variable// )
 ##
 {{fbdoc item="desc"}}
-	Returns a C-compatible ##[[KeyPgZstring Zstring]]##.  Strptr is the proper method for aquiring the [[DtPointers pointer]] to the data portion of a string variable.
+	Returns a C-compatible ##[[KeyPgZstring Zstring]]##.  Strptr is the proper method for aquiring the [[ProPgPointers pointer]] to the data portion of a string variable.
 
 	The related ##[[KeyPgVarptr Varptr]]## function (and the abbreviated form, @), when used with a string, returns a pointer to the internal string descriptor.
 
@@ -40,6 +40,6 @@ print
 	- ##[[KeyPgStringtype String]]##
 	- ##[[KeyPgSadd Sadd]]##
 	- ##[[KeyPgVarptr Varptr]]##
-	- [[DtPointers Pointers]]
+	- [[ProPgPointers Pointers]]
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

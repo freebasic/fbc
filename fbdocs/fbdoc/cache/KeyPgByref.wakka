@@ -35,10 +35,10 @@ end
 	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
 	- 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[ProPgPassByRef Passing Variables by Reference]]##
+	- [[ProPgPassingArguments Passing Arguments to Procedures]]
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgByval ByVal]]##
 

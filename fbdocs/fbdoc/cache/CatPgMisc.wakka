@@ -9,7 +9,6 @@
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
-	- {{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
 	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
@@ -21,17 +20,26 @@
 	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
 	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
-	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
-	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
-	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
-	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREENCONS"}}
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
-	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
-	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
-	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
+	- {{fbdoc item="keyword" value="KeyPgDo|DO"}}
+	- {{fbdoc item="keyword" value="KeyPgEnd|END"}}
+	- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
+	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
+	- {{fbdoc item="keyword" value="KeyPgLoop|LOOP"}}
+	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
+	- {{fbdoc item="keyword" value="KeyPgProcptr|PROCPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}
+	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
+	- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
+	- {{fbdoc item="keyword" value="KeyPgStrptr|STRPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
+	- {{fbdoc item="keyword" value="KeyPgUntil|UNTIL"}}
+	- {{fbdoc item="keyword" value="KeyPgVarptr|VARPTR"}}
+	- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
+	- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
 
 <<>>
 {{fbdoc item="section" value="Compiler Switches"}}

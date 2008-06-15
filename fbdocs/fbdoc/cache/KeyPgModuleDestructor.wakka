@@ -1,4 +1,6 @@
 {{fbdoc item="title" value="DESTRUCTOR (Module)"}}----
+Specifies execution of a procedure at program termination
+
 {{fbdoc item="syntax"}}##
 	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //identifier// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Destructor** [//priority//] [[[KeyPgStatic Static]]]
 		{ //procedure body// }

@@ -1,5 +1,4 @@
-{{fbdoc item="title" value="CONST"}}
-----
+{{fbdoc item="title" value="CONST"}}----
 Non-modifiable variable declaration
 
 {{fbdoc item="syntax"}}##
@@ -30,4 +29,4 @@ end
 	- ##[[KeyPgVar Var]]##
 
 
-{{fbdoc item="back" value="CatPgStatement|STATEMENT"}}
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}
