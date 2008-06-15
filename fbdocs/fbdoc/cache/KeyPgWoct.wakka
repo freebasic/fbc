@@ -47,6 +47,9 @@ print Woct(54321, 8)
 00152061
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FB
 

@@ -67,8 +67,11 @@ sleep
 imagedestroy img
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgColor Color]]##

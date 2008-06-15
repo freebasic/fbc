@@ -49,6 +49,9 @@ print Hex(54321, 5)
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FB
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC.
 

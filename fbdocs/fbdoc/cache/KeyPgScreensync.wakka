@@ -29,8 +29,13 @@ DO
   
 LOOP UNTIL INKEY <> ""
 %%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New in FB. QBasic used WAIT &H3DA,8 for this purpose.
+	- New to FreeBASIC. 
+	- QBasic used WAIT &H3DA,8 for this purpose.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWait Wait]]##

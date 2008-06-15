@@ -45,8 +45,11 @@ Print Bin(54321, 20)
 10001
 00001101010000110001
 %%
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgHex Hex]]##

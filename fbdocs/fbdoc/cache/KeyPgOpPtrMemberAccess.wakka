@@ -45,6 +45,9 @@ Print "x = " & rp->x & ", y = " & rp->y
 Sleep
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
@@ -54,4 +57,3 @@ Sleep
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
 
 {{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

@@ -22,6 +22,9 @@ Print "Byte Range = "; x; " to "; y
 	**Output:**
 	%%Byte Range = -128 to  127%%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 

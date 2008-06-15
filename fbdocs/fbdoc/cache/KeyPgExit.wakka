@@ -51,5 +51,6 @@ Next i
 	- ##[[KeyPgDoloop Do...Loop]]##
 	- ##[[KeyPgFornext For...Next]]##
 	- ##[[KeyPgWhilewend While...Wend]]##
+	- ##[[KeyPgContinue Continue]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

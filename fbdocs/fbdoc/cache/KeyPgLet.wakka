@@ -4,14 +4,18 @@ Indicates the assignment operator
 {{fbdoc item="syntax"}}##
 	**Let** //variable// = //value//
 //or//
-	[[KeyPgOperator operator]] //typename//.**Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byva]]l ] rhs [[KeyPgAs as]] [[DataType datatype]] )
+	**Let**( //variable1// [, //variable2// [, ... ]] ) = //udt//
+//or//
+	[[KeyPgOperator operator]] //typename//.**Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byva]] ] rhs [[KeyPgAs as]] [[DataType datatype]] )
 		//statements//
 	end operator
 ##
 {{fbdoc item="desc"}}
 	Command intended to help the programmer to distinguish an assignment statement ( ##**Let** a=1## ) from an equality test ( ##If a=1 then ... ## ).  As the compiler does not require it, it is usually omitted.
 
-	**Let** is used with operator overloading to refer the assignment operator.
+	**Let** can be used as a left-hand side operator to assign the members of a user defined type to multiple variables. //See [[KeyPgOpAssignment Operator = (Assignment)]]//
+
+	**Let** is used with operator overloading to refer the assignment operator. //See [[KeyPgOpAssignment Operator = (Assignment)]]//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/let.bas"}}%%(freebasic)
@@ -23,11 +27,14 @@ x = 100
 %%
 
 {{fbdoc item="lang"}}
-	- The use of LET to indicate an assignment statement is not allowed in //-lang fb//.
-	- Overloading of operators is not allowed with //-lang qb// and //-lang deprecated//.
+	- The use of LET to indicate an assignment statement (//LET variable = expr//) is not allowed in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- The UDT to multi-variable Let assignment is only available in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- Overloading of operators is not available in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
-	- None with //-lang qb//
+	- None in the //[[ProPgCompOptlang -lang fb]]// dialect.
+	- The Let operator is new to FreeBASIC.
+	- The UDT to multi-variable Let assignment is new to FreeBASIC.
 
 {{fbdoc item="see"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}

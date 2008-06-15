@@ -16,6 +16,9 @@ Standard data type: 64 bit signed
 	**Output:**
 	%%LongInt Range = -9223372036854775808 to  9223372036854775807%%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

@@ -1,12 +1,12 @@
-chklinks: 2007/10/01 19:35:53
+chklinks: 2007/11/04 16:23:00
 
-Loaded 902 page names from 'PageIndex.txt'
+Loaded 897 page names from 'PageIndex.txt'
 scanning pages:
 
-Found 13522 links
-Saved 13522 links to 'linklist.csv'
-Saved 769 page names to 'DocPages.txt'
-Saved 703 file names to 'samplist.csv'
+Found 13772 links
+Saved 13772 links to 'linklist.csv'
+Saved 771 page names to 'DocPages.txt'
+Saved 705 file names to 'samplist.csv'
 
 Checking missing pages:
 No missing pages
@@ -25,7 +25,8 @@ Checking missing backlinks:
 	Ignoring missing backlinks to 'catpggfx'
 	Ignoring missing backlinks to 'catpgprogrammer'
 	Ignoring missing backlinks to 'catpgopindex'
-No missing backlinks
+'ProPgLiterals' does not have backlink to 'DocToc'
+Found 1 missing backlinks
 
 Checking invalid backlinks:
 'CatPgUserDefTypes' should be removed from 'KeyPgClass'
@@ -34,7 +35,8 @@ Checking invalid backlinks:
 'CatPgProgrammer' should be removed from 'ProPgTypeObjects'
 'DocToc' should be removed from 'CVSCompile'
 'CommunityTutorials' should be removed from 'FBWikiTutorialTemplate'
-Found 6 invalid backlinks
+'CommunityTutorials' should be removed from 'TutHackResetConsoleHandles'
+Found 7 invalid backlinks
 
 Checking headers:
 Found 0 invalid headers

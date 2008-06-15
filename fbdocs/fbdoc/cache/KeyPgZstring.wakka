@@ -33,6 +33,9 @@ print len(*str2)      'returns 12, the size of the string it contains
 print sizeof(*str2)  'returns len(zstring), the size of the variable
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

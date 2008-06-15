@@ -31,8 +31,12 @@ dim as integer a, b, x, y, z, temp
 if b > 0 then temp = 4 else temp = 7
 a = (x + y + temp) \ z
 %%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgIfthen If...Then]]##

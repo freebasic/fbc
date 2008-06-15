@@ -34,7 +34,12 @@ print "waiting half second"
 sleep 500
 %%
 
+{{fbdoc item="lang"}}
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the ##//msecs//## value is in **milliseconds**.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, the ##//msecs//## value is in milliseconds only when the second parameter ##//kind//## is given, otherwise it is in **seconds**.
+
 {{fbdoc item="diff"}}
+	- None in the //[[ProPgCompOptlang -lang qb]]// dialect.
 	- In QB, the delay is given in whole seconds only and does not support the ##//kind//## parameter.
 
 {{fbdoc item="see"}}

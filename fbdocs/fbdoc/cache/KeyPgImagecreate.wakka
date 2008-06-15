@@ -50,8 +50,11 @@ imagedestroy( image_buffer )
 %%
 {{image class="center" title="Imagecreate example output" url="http://img246.imageshack.us/img246/6854/keypgimagecreateexampleec3.png" link="http://img246.imageshack.us/my.php?image=keypgimagecreateexampleec3.png"}}
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##

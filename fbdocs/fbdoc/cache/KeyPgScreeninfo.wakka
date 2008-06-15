@@ -50,6 +50,9 @@ SCREENINFO w, h, depth
 PRINT "Desktop running at " + STR(w) + "x" + STR(h) + "x" + STR(depth); 
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

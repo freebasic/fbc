@@ -107,7 +107,7 @@ print $"C:\temp"
 
 	The accepted escape sequences are:
 
-		{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\n;newline;\r;carriage return;\t;tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\a_double_quote;double quote;\';single quote"}} 
+		{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\f;formfeed;\l or \n;newline;\r;carriage return;\t;tab;\v;vertical tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\a_double_quote;double quote;\';single quote"}} 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##

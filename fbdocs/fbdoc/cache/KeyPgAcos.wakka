@@ -34,6 +34,10 @@ Please enter the length of the adjacent side of the triangle: 4
 
 The angle between the sides is 0.6435011087932843
 %%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

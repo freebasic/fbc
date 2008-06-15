@@ -19,8 +19,11 @@ Dim pathname As String = ExePath
 Print "This program's initial directory is: " & pathname
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCurdir Curdir]]##

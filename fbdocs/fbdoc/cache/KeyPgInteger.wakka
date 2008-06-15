@@ -16,10 +16,16 @@ Standard data type: 32 bit signed
 	**Output:**
 	%%Integer Range = -2147483648 to  2147483647%%
 
+{{fbdoc item="lang"}}
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the ##**Integer**## data type is 32-bit.
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, the ##**Long**## data type is 16-bit.
+
 {{fbdoc item="diff"}}
-	- The INTEGER type was 16-bit wide in QB.
+	- The INTEGER type is 16-bit wide in QB.
+	- None, if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgLong Long]]##
 	- ##[[KeyPgUinteger Uinteger]]##
 	- ##[[KeyPgCint Cint]]##
 

@@ -41,7 +41,7 @@ Hello, world!
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[CatPgOpString String Operators]]

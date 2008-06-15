@@ -52,8 +52,11 @@ Deallocate b   ' Clean up
 ~<< 2 4 6 8 10 12 14 16 18 20>>
 ::c::
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAllocate Allocate]]##

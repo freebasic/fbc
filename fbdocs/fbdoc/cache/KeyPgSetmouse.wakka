@@ -25,26 +25,30 @@ Sets the position and visibility of the mouse cursor
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
-dim x as integer, y as integer, buttons as integer
+#include "fbgfx.bi"
+Dim x As Integer, y As Integer, buttons As Integer
 
 ' create a screen 800x600, 32-bit color, 1 video page
-screen 19, 32, 1                         
+Screen 19, 32, 1                         
 
-do
+Do
 	' get mouse x, y and button state
-	getmouse x, y , , buttons                     
+	GetMouse x, y , , buttons                     
 
-	if buttons = 1 then 
-		' on left mouse click, center mouse
-		setmouse 400, 300
-	end if
+	If buttons = 1 Then
+	    ' on left mouse click, center mouse
+	    SetMouse 400, 300
+	End If
 
 	' do loop until esc is pressed
-loop until multikey(1)                                  
+Loop Until MultiKey(fb.SC_ESCAPE)                             
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetmouse Getmouse]]##

@@ -1,33 +1,33 @@
 {{fbdoc item="title" value="Welcome to FreeBASIC"}}----
-Overview of where and how to get started with FreeBASIC
+Welcome to our world!  This page is an overview to our online warehouse of knowledge.  Enjoy your surfing and we hope this will be the first of many visits.
 
 {{fbdoc item="section" value="Introduction"}}
-	FreeBASIC is a 32-bit compiler, open source and //[[GnuLicenses licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It compiles for DOS, Microsoft Windows and Linux, and is being ported to other platforms. See //[[CompilerAbout About FreeBASIC]]// and //[[CompilerFeatures Main Features]]//.
+	FreeBASIC is a free 32-bit compiler for the BASIC language.  It is open source and //[[GnuLicenses licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It can create programs for MS-Windows, DOS and Linux, and is being ported to other platforms. See //[[CompilerAbout About FreeBASIC]]// and //[[CompilerFeatures Main Features]]//.
 
 {{fbdoc item="section" value="Latest Version"}}
-	FreeBASIC is a beta release compiler and development is ongoing.  With each full release, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] on [[http://sourceforge.net SourceForge]], or [[http://www.freebasic.net/index.php/download http://www.freebasic.net/index.php/download]] on [[http://www.freebasic.net FreeBASIC's official website]].
+	FreeBASIC is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] on [[http://sourceforge.net SourceForge]], or [[http://www.freebasic.net/index.php/download http://www.freebasic.net/index.php/download]] on [[http://www.freebasic.net FreeBASIC's official website]].
 
 {{fbdoc item="section" value="Requirements and Installation"}}
-	See //[[CompilerRequirements Requirements]]// and //[[CompilerRequirements Installation]]//.
+	Minimum hardware is listed on the //[[CompilerRequirements Requirements]]// page.  Visit our //[[CompilerRequirements Installation]]// page for setting up FreeBASIC on your computer.
 
 {{fbdoc item="section" value="Running"}}
-	FreeBASIC is a compiler and as such is not packaged with an IDE, although there are a few IDE's available. For information on using FreeBASIC without an IDE, see //[[CompilerRunning Running]]//.
+	FreeBASIC is a compiler and as such is not packaged with an IDE (Integrated Development Editor), although there are a few IDE's available. For information on using FreeBASIC without an IDE, see //[[CompilerRunning Running]]//.
 
 {{fbdoc item="section" value="Compatibility with QuickBasic"}}
-	FreeBASIC is designed syntax compatible with QuickBASIC.  For best code-compatibility with QuickBASIC, the //[[CompilerDialects QB dialect]]// can be used when compiling source code. See //[[CompilerDialects FreeBASIC Dialects]]// and //[[LangQB Differences from QB]]//.
+	FreeBASIC is designed to be syntax compatible with QuickBASIC.  For best code-compatibility with QuickBASIC, the //[[CompilerDialects QB dialect]]// can be used when compiling source code. See //[[CompilerDialects FreeBASIC Dialects]]// and //[[LangQB Differences from QB]]//.
 
 {{fbdoc item="section" value="Documentation"}}
-	All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  The online documentation is the primary source used for converting the FreeBASIC manual to other downloadable formats.  Whenever there is a discrepancy between a downloadable version of the manual and the online version, the online version can be regarded as the correct version.
+	All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  The online documentation is always the most up-to-date resource available.  In all cases it can be regarded as the correct version.
 
-{{fbdoc item="section" value="Starting points in this Manual"}}
+{{fbdoc item="section" value="Starting points in the Manual"}}
 	- [[DocToc Table of Contents]]
 	- [[CompilerHelp Getting Help with FreeBASIC]]
 	- [[CatPgProgrammer Programmer's Guide]]
 
 {{fbdoc item="section" value="Starting points on the Web"}}
-	- FreeBASIC Official Website at [[http://www.freebasic.net http://www.freebasic.net]]
-	- FreeBASIC Official Forums at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]]
-	- FreeBASIC Official Archive at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]]
+	- Official Website at [[http://www.freebasic.net http://www.freebasic.net]]
+	- Official Forums at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]]
+	- Official Archive at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]]
 
 Thank you for using FreeBASIC.  Happy coding!
 

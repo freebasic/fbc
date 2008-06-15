@@ -145,6 +145,9 @@ loop
 {{fbdoc item="target"}}
 	- ##**Screenevent**## does not return window related events in the DOS version, but does return input events.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

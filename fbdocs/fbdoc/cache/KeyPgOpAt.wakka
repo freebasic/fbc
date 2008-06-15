@@ -76,7 +76,7 @@ End Sub
 	- In the //QB// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##

@@ -36,6 +36,9 @@ end 0
 {{fbdoc item="target"}}
 	- Unicode (w)strings are not suported in the DOS port of FreeBASIC
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- QBasic does not support [[Unicode Unicode]]
 

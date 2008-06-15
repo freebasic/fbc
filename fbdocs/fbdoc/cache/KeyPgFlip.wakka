@@ -39,6 +39,10 @@ print "Now wasn't that neat!"
 print "Push any key."
 Sleep
 %%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

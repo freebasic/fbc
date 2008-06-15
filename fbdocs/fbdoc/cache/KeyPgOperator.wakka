@@ -9,6 +9,7 @@ Declares or defines an overloaded operator
 		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+			
 	End Type
 
 	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]

@@ -32,6 +32,9 @@ The output would be:
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgTan Tan]]##
 	- ##[[KeyPgAtn Atn]]##

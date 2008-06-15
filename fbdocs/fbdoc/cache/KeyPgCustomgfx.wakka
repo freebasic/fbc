@@ -79,6 +79,9 @@ imagedestroy img
 %%
 {{image class="center" title="Put Custom example output" url="http://img127.imageshack.us/img127/2554/keypgcustomgfxexampleze6.png" link="http://img127.imageshack.us/my.php?image=keypgcustomgfxexampleze6.png"}}
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

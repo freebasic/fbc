@@ -13,7 +13,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 {{fbdoc item="desc"}}
 	Peeks into the keyboard buffer and returns a ##[[KeyPgString String]]## representation of the first character, if any, found. The key is then removed from the buffer, and is not echoed to the screen. If the keyboard buffer is empty, the NULL string (##"####"##) is immediately returned without waiting for keys.
 
-	If the key is in the ASCII character set, a one-character ##[[KeyPgString String]]## consisting of that character is returned. If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString String]]## is returned, the first of which is ##[[KeyPgChr Chr]](255)##.
+	If the key is in the ASCII character set, a one-character ##[[KeyPgString String]]## consisting of that character is returned. If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString String]]## is returned, the first of which is ##[[KeyPgChr Chr]](255)##.  (//See dialect differences below//)
 
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will be reported by ##**Inkey**## differently than Control-A et cetera; Alt-A is an extended key a la the above).
 	
@@ -26,9 +26,14 @@ do
 loop until inkey = "q"
 %%
 
+{{fbdoc item="lang"}}
+	- The extended character is ##Chr(255)## in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+	- The extended character is ##Chr(0)## in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- The dollar sign "$" suffix was obligatory in QB, but is optional in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
+
 {{fbdoc item="diff"}}
-	- QBasic returned a ##Chr(0)## as the first character for an extended key, but FreeBASIC returns ##Chr(255)## as the first character.
-	- The Dollar "$" sign suffix was obligatory in QB, but is optional and deprecated in FB.
+	- None in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- QBasic returned a ##Chr(0)## as the first character for an extended key, but FreeBASIC returns ##Chr(255)## as the first character in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetkey Getkey]]##

@@ -43,8 +43,9 @@ myVariable.number = 69
 '' - nome is private and we're trying to access it outside any of this TYPE's member functions 
 '' myVariable.nome = "FreeBASIC"
 %%
+
 {{fbdoc item="lang"}}
-	- Suported only in the -lang fb option
+	- Available only in the //[[ProPgCompOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

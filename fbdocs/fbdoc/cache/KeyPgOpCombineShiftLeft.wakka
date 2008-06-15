@@ -34,7 +34,7 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //QB// dialect, this operator cannot be overloaded.
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -44,6 +44,9 @@ LOCATE 13, 15: PRINT "Hello world!"
 BSAVE "hello.bmp", 0
 %%
 
+{{fbdoc item="lang"}}
+	- ##//addr//## must be an array in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- can save BMP files
 	- supports saving raw binary data larger than 64K

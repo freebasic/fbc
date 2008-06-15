@@ -20,12 +20,13 @@ Specifies a default data type for a range of variable names
 defshort s
 dim sNumber
 %%
+
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
-	- In QBasic, to make variables default to a 2 byte integer, DEFINT was used.
+	- In QBasic, to make variables default to a 2 byte integer, DEFINT is used.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##

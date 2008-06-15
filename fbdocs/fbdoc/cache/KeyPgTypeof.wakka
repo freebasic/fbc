@@ -34,8 +34,11 @@ Dim As String foo
 #endIf
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic.
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type...End Type]]##

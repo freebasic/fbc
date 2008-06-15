@@ -30,8 +30,11 @@ foo
 '' If -g is used this code prints: test.bas(3): assertion failed at FOO: a=1 
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAssert ASSERT]]##

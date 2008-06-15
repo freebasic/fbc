@@ -536,6 +536,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgLineinput|LINE INPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}
 	- {{fbdoc item="keyword" value="KeyPgSetmouse|SETMOUSE"}}
+	- {{fbdoc item="keyword" value="KeyPgStick|STICK"}}
+	- {{fbdoc item="keyword" value="KeyPgStrig|STRIG"}}
 	- {{fbdoc item="keyword" value="KeyPgWinput|WINPUT"}}
 >>::c::
 

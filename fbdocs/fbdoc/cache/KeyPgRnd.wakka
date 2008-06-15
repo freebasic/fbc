@@ -44,6 +44,7 @@ function rnd_range (first as double, last as double) as double
 	function = rnd * (last - first) + first
 end function
 %%
+
 {{fbdoc item="lang"}}
 	- The algorithm used by default depends on the current lang mode. 
 	- With //-lang fb//, a 32 bit Mersenne Twister function with 32 bits granularity is used.
@@ -53,6 +54,7 @@ end function
 
 {{fbdoc item="diff"}}
 	- If the optional argument is less than 0, it has the same meaning as passing an argument of 1.
+	- None, if compiled in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRandomize Randomize]]##

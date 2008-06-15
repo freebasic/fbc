@@ -51,6 +51,9 @@ For n = 2 To 20
 Next n
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBasic
 

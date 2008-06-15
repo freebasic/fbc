@@ -1,19 +1,21 @@
 {{fbdoc item="title" value="FreeBASIC Dialects"}}----
 
-	FreeBASIC version 0.17b introduces a ##-lang## command-line option, used to change the language compatibility mode for different dialects of the basic language.
+	FreeBASIC version 0.17b introduces a //[[ProPgCompOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
+
+	And starting with version 0.18.3b the //[[ProPgCompOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in QuickBASIC.
 
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;deprecated;previous fbc version compatibility"}}
 
-	The ##-lang## option was needed to allow FB to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FB.
+	The //[[ProPgCompOptlang -lang]]// option was needed to allow FB to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FB.
 
 	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the ##-lang qb## option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 
-	To compile ""FreeBASIC"" 0.16b or below sources, use the ##-lang deprecated## option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
+	To compile ""FreeBASIC"" 0.16b or below sources, use the //[[ProPgCompOptlang -lang deprecated]]// option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
 
-	It is recommended to use ##-lang fb## for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
+	It is recommended to use //[[ProPgCompOptlang -lang fb]]// for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
 	
 	
-===-lang fb (the default mode)===
+{{fbdoc item="section" value="-lang fb (the default mode)"}}
 	
 	**Not supported:**
 
@@ -60,7 +62,11 @@
 	""12"") numeric labels
 		- No comment.
 
-===-lang deprecated===
+	""13"") global symbols with the same name as keywords 
+		- Declare them inside a namespace. 
+
+
+{{fbdoc item="section" value="-lang deprecated"}}
 	 
 	**Supported:** //Anything allowed in version 0.16b, but://
 
@@ -79,11 +85,11 @@
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
 
 
-===-lang qb===
+{{fbdoc item="section" value="-lang qb"}}
 	
 	**Supported:** //Everything not supported/allowed in the fb mode, plus..//
 
-	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions. (W.I.P.)
+	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions.
 
 	""2"") ##[[KeyPgShared Shared]]## can be used inside functions. (W.I.P.)
 
@@ -105,9 +111,13 @@
 
 	""5"") ##[[KeyPgScope Scope]]## blocks
 
-	""6"") ##[[KeyPgExternBlock Extern]]## blocks.
+	""6"") ##[[KeyPgExternBlock Extern]]## blocks
 
 	""7"") Variable initialization
 		- All variables are moved to the procedure scope (like in ""QuickBASIC""), making initializing local variables too difficult to support.
+
+	""8"") Any data type or function not present in QuickBASIC 
+		* No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, no IMAGECREATE/SCREENRES etc etc etc. 
+
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

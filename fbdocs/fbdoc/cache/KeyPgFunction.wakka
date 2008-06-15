@@ -116,7 +116,12 @@ Print x(a())
 Dim c(10 To 20) As Double 
 Print x(c())
 %%
+
 {{fbdoc item="lang"}}
+	- In //-lang fb// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
+	- In //-lang qb// and //-lang deprecated// dialect, ##**Byref**## is the default parameter passing convention.
+	- In //-lang qb//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
+
 	- In the //-lang fb// option the parameters are passed ##[[KeyPgByval ByVal]]## by default. //-lang qb// and //-lang deprecated// keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
 
 {{fbdoc item="diff"}}

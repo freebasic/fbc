@@ -28,8 +28,11 @@ print a, cvlongint(b)
 sleep
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBASIC.
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCvlongint Cvlongint]]##

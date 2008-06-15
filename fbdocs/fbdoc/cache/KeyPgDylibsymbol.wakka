@@ -70,6 +70,9 @@ Sleep
 	- Dynamic link libraries are not available in DOS ,as the OS doesn't support them.
 	- Ordinals are not supported on Linux, 0 is always returned.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

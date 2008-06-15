@@ -27,8 +27,11 @@ DyLibFree(hndl)
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS ,as the OS does'nt support them.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDylibsymbol Dylibsymbol]]##

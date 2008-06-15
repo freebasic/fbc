@@ -80,13 +80,13 @@ make CFLAGS=-O2%%
 			Before building fbc, you may need to update your FBbin/inc folder, to make sure you are compiling fbc with the latest versions of the header files:
 			%%cp -rfv ~/fbcsvn/FreeBASIC/inc/* /FBbin/inc%%
 			
-			You may also be be missing some libraries - libbfd.a, libiberty.a and libintl.a - from your original build, which you will need to compile the new version of fbc.
-			You can find them here: [[http://www.freebasic.net/temp/bfd-v2.17-win32.rar]].
+			You may also be be missing some libraries - libbfd.a, libiberty.a and libintl.a - from your original build, which you will need to compile the new version of fbc. You can find them at: [[http://www.freebasic.net/temp/bfd-v2.17-win32.rar]].
 			These files should go into your ##FBbin/lib/win32## folder.
+			The binary distribution is typically built with cygwin and dos cross compile targets enabled.  To add additional targets, specify them on configure command line.  For information about compiler configuration options, see the INSTALL file in fbc source directory.
 			
 			Now enter this to build fbc:
 			%%cd ~/fbcsvn/FreeBASIC/src/compiler/obj/win32
-../../configure
+../../configure --enable-crosscomp-cygwin --enable-crosscomp-dos
 make%%
 	
 	{{anchor name="updating"}}===Updating the ""FreeBASIC"" software installed in MSYS===

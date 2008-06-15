@@ -28,51 +28,66 @@ Converts a row of image data into another color depth
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/imageconvertrow.bas"}}%%(freebasic)
-const as integer w = 64, h = 64
-dim as any ptr img8, img32
-dim as integer i, y
+#include "fbgfx.bi"
+Using FB
+
+Const As Integer w = 64, h = 64
+Dim As IMAGE Ptr img8, img32
+Dim As Integer i, y
 
 '' create a 32-bit image, size w*h:
-screenres 320, 200, 32, , -1
-img32 = imagecreate(w, h)
+Screenres 320, 200, 32, , GFX_NULL
+img32 = ImageCreate(w, h)
+
+If img32 = 0 Then Print "Imagecreate failed on img32!": Sleep: End
+If img32->Type <> PUT_HEADER_NEW Then Print "img32 wrong format!": imagedestroy img32: Sleep: End
 
 '' create an 8-bit image, size w*h:
-screenres 320, 200, 8, , -1
-img8 = imagecreate(w, h)
+Screenres 320, 200, 8, , GFX_NULL
+img8 = ImageCreate(w, h)
+
+If img8 = 0 Then Print "Imagecreate failed on img8!": Sleep: End
+If img8->Type <> PUT_HEADER_NEW Then Print "img8 wrong format!": imagedestroy img8: Sleep: End
 
 '' spatter some random dots into the image:
-for i = 1 to 1000
-	pset img8, ( int(rnd * w), int(rnd * h) ), int(rnd * 256)
-next i
+For i = 1 To 1000
+	Pset img8, ( Int(Rnd * w), Int(Rnd * h) ), Int(Rnd * 256)
+Next i
 
 '' open a graphics window in 8-bit mode, and PUT the image into it:
-screenres 320, 200, 8
-windowtitle "8-bit color mode"
-put (10, 10), img8
+Screenres 320, 200, 8
+Windowtitle "8-bit color mode"
+Put (10, 10), img8
 
-sleep
+Sleep
 
 '' copy the image data into a 32-bit image
-for y = 0 to h - 1
-	imageconvertrow(img8  + (4 + y * w    ),  8, _
-	                img32 + (4 + y * w * 4), 32, _
+Dim As Ubyte Ptr p8 = Cptr(Ubyte Ptr, img8) + Sizeof(IMAGE)
+Dim As Ubyte Ptr p32 = Cptr(Ubyte Ptr, img32) + Sizeof(IMAGE)
+Dim As Uinteger pitch8 = img8->pitch, pitch32 = img32->pitch
+For y = 0 To h - 1
+	ImageConvertRow(p8  + y * pitch8 ,  8, _
+	                p32 + y * pitch32, 32, _
 	                w)
-next y
+Next y
 
 '' open a graphics window in 32-bit mode and PUT the image into it:
-screenres 320, 200, 32
-windowtitle "32-bit color mode"
-put (10, 10), img32
+Screenres 320, 200, 32
+Windowtitle "32-bit color mode"
+Put (10, 10), img32
 
-sleep
+Sleep
 
 '' remove the images from memory:
-imagedestroy img8
-imagedestroy img32
+ImageDestroy img8
+ImageDestroy img32
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FB
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenres ScreenRes]]##

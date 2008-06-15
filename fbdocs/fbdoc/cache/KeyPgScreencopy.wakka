@@ -14,9 +14,9 @@ Copies the contents of a graphical page into another graphical page
 		page to copy to
 
 {{fbdoc item="desc"}}
-	##//from_page//## is the page to copy from. If you omit this argument, the current work page is assumed.
+	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.
 
-	##//to_page//## is the page to copy to. If you omit this argument, the currently visible page is assumed.
+	##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.
 
 	Page numbers range from 0 to the num_pages specified when setting the graphics mode minus 1 
 
@@ -70,6 +70,9 @@ do
   sleep 25
 loop
 %%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC. QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.

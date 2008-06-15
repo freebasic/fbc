@@ -79,8 +79,12 @@ Chronology of the FreeBASIC project.
 		- No ground breaking additions, only minor fixes compared to previous version 0.17.
 		- Strings and UDT's are passed BYREF with other data types being passed BYVAL.
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
-   
-   
+	**2007 Oct 12**
+		- FreeBASIC 0.18.2 full release uploaded. 
+		- many, many bug fixes
+		- MILESTONE: PCOPY in text mode added ( dos/window only )
+		- QB Compatibility improvements for RND, SCREEN, ERASE
+		- Changed default field alignment to 4 bytes on DOS and Linux such that the BFD in binutils-2.17 compatibility problems should **finally** be resolved for DOS and Linux users.
 
-   
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -44,6 +44,9 @@ The Binary representation of the MSW Is    1000000000000001
 The Binary representation of the LSW Is    1111111111111111
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

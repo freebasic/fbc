@@ -48,6 +48,9 @@ MessageBox(null, ws, wstr("Unicode 'Hello World'"), MB_OK or MB_ICONINFORMATION)
 {{fbdoc item="target"}}
 	- DOS does not support ##**Wstr**##.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

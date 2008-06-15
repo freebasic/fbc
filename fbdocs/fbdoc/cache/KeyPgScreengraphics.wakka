@@ -97,8 +97,16 @@ END IF
 {{fbdoc item="target"}}
 	- In DOS, linear framebuffer or banked VESA VBE modes are used whenever possible; if not available, drivers for the standard VGA modes or a 320x240x8 ""ModeX"" driver are used if possible. Windowing and OpenGL related switches are not available. 
 
+{{fbdoc item="lang"}}
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the usage is:
+		##**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]##
+	- In the //[[ProPgCompOptlang -lang qb]]// dialect, the usage is:
+		##**Screen** [//mode//] [,[//colormode//][,[//active_page//][,[//visible_page//]]]]##
+
 {{fbdoc item="diff"}}
-	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters FreeBASIC supports only //mode// and redefines the rest. The use of ##**Screen** ,,apage,vpage## to swap screen pages is not allowed in FB. ##[[KeyPgScreenset Screenset]]## should be used instead.
+	- None in the //[[ProPgCompOptlang -lang qb]]// dialect.
+	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters FreeBASIC supports only //mode// and redefines the rest. The use of ##**Screen** ,,apage,vpage## to swap screen pages is only available in the //[[ProPgCompOptlang -lang qb]]// dialect. 
+	- ##[[KeyPgScreenset Screenset]]## should be used in the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenCons Screen (Console)]]##

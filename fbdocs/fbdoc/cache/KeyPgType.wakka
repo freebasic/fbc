@@ -33,7 +33,8 @@ Declares a user-defined type
 	##//operatorname//##
 		the name of the operator to be overloaded
 	##//calling convention specifier//##
-		can be [[KeyPgCdecl CDECL]], [[KeyPgStdcall STDCALL]] or [[KeyPgPascal PASCAL]].
+		can be ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##.
+
 {{fbdoc item="desc"}}
 	##**Type**## is used to declare custom data types containing one or more bit, scalar, array or other ##**Type**## fields.
 
@@ -48,7 +49,6 @@ Declares a user-defined type
 	##**Type**## can be used to return a temporary type variable.  See ##[[KeyPgTypeTemp Type()]]##.
 
 	##**Type**## can be used to declare a type definition ( i.e. an alias or alternative name ) for an already declared or yet to be declared type.  See ##[[KeyPgTypeAlias Type (Alias)]]##
-
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
@@ -78,13 +78,20 @@ Private:
   p_x As Integer Ptr
 End Type
 %%
+
+{{fbdoc item="target"}}
+	- The default field alignment is 4 bytes for DOS and Linux targets.
+	- The default field alignment is 8 bytes for Windows targets.
+	- Special care must be taken when using a user defined type for file I/O.  It is recommended to use ##Field = 1## for such cases, as it saves space and is more cross platform compatible.
+
 {{fbdoc item="lang"}}
-	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //-lang fb// option since version 0.17b
-	- The fields are aligned to 32bit doubleword boundaries if //-lang fb// or //-lang deprecated// is used. To force byte alignment use ##FIELD=1##
-	- With the //-lang qb// option the fields are aligned to byte boundaries. 
+	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[ProPgCompOptlang -lang fb]]// dialect since version 0.17b
+	- In the //[[ProPgCompOptlang -lang fb]]// and //[[ProPgCompOptlang -lang deprecated]]// dialects, the default field alignment depends on the target platform.
+	- With the //[[ProPgCompOptlang -lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
+	- To force byte alignment use ##FIELD=1##.
 
 {{fbdoc item="diff"}}
-	- None, if the compiler switch //-lang qb// is used.
+	- None, in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgUnion Union]]##

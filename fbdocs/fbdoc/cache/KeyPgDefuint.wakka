@@ -20,8 +20,9 @@ Specifies a default data type for a range of variable names
 defint u
 dim uNumber
 %%
+
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
+	- Only available in the //[[CompilerDialects deprecated dialect]]//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

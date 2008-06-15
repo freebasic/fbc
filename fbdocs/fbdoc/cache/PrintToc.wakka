@@ -684,7 +684,9 @@
 		[[KeyPgStdcall STDCALL]]
 		[[KeyPgStep STEP]]
 		[[KeyPgStop STOP]]
+		[[KeyPgStick STICK]]
 		[[KeyPgStr STR]]
+		[[KeyPgStrig STRIG]]
 		[[KeyPgStringFunction STRING (Function)]]
 		[[KeyPgString STRING]]
 		[[KeyPgOpStrptr STRPTR]]
@@ -913,6 +915,7 @@
 	[[OpPrecedence Operator Precedence]]
 	[[TblVarTypes Variable Types]]
 	[[GfxDefPalettes Default Palettes]]
+	[[ProPgLiterals Escape codes for strings]]
 
 {{fbdoc item="section" value="Contributing"}}
 	[[CompilerContacting How to contact the developers]]

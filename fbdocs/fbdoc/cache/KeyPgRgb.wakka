@@ -35,8 +35,11 @@ Line(639,0)-(320,479), Rgb(0,0,255) 'draws a bright blue box on the right side o
 Sleep 'wait before exiting
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRgba RGBA]]##

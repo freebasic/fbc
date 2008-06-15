@@ -34,6 +34,9 @@ print *str2
 print len(*str2)      'returns 12, the length of the string it points to
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

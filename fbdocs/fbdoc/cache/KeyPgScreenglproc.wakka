@@ -33,6 +33,9 @@ if (instr(extensions, "WGL_EXT_swap_control") <> 0) then
 end if
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

@@ -42,6 +42,7 @@ Tutorials submitted by the FreeBASIC community:
 {{fbdoc item="section" value="Libraries"}}
 	-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
 	-[[TutIndexSDLNet SDL_NET]] //by Paragon//
+	-[[TutUsingLibrariesWithGCC Using FreeBASIC Built Libraries with GCC]] //by Jeff Marshall//
 
 {{fbdoc item="section" value="Object Oriented Programming"}}
 	-[[TutIntroExtType Introduction to the Extended Type]] //by [[WikiRick rdc]]//

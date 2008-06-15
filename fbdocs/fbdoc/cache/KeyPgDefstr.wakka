@@ -20,6 +20,7 @@ Specifies a default data type for a range of variable names
 defstr s
 dim sMessage
 %%
+
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerDialects QB and deprecated dialects]]//.
 

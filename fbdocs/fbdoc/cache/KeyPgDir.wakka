@@ -64,6 +64,9 @@ list_files "*", fbArchive
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- The //attrib_mask// and //out_attrib// parameters are new to FreeBASIC
 

@@ -13,6 +13,9 @@ Converts an expression to a specified data type
 print cast( byte, &h0080 )
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

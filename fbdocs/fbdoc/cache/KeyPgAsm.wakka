@@ -96,6 +96,8 @@ Print "4 + 5 ="; AddFive(i)
 		The error lines  returned by FBC for asm / end asm blocks are not related the source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make FB preserve it, the compiler must be invoked with the -r option.
 		The label names are case sensitive inside asm /end asm blocks.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

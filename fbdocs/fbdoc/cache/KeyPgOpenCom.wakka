@@ -25,7 +25,7 @@ Opens a serial port for input and output
 
 	where,
 	##//n//##
-		Com port to open. "1", "2", "3", "4".
+		Com port to open. "1", "2", "3", "4", etc.  Some platforms wil support more serial ports depending on how the operating system is configured.  Where ##//n//## is not given, "COM:" will map to "COM1:", except on Linux where "COM:" maps to "/dev/modem"
 	##//baudrate//##
 		"300" (default), "1200", ..., etc.
 	##//parity//##
@@ -56,12 +56,19 @@ OPEN COM "COM1:115200" as 1
 
 {{fbdoc item="target"}}
 	- As of version 0.17 it is implemented only in the Win32  and  Linux versions
-
-{{fbdoc item="diff"}}
-	- In QB the syntax was  OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n
+	- On the Linux platform
+		"COM:" maps to "/dev/modem" 
+		"COM1:" maps to "/dev/ttyS0" 
+		"COM2:" maps to "/dev/ttyS1", etc 
+		"/dev/xyz:" maps to "/dev/xyz", etc
+	- On the DOS/Windows platforms, "COM:" maps to "COM1:"
 
 {{fbdoc item="lang"}}
 	- In -lang qb the old syntax OPEN "COMx:....   is supported. 
+
+{{fbdoc item="diff"}}
+	- In QB the syntax was  OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n
+	- In QB, only COM1 and COM2 are supported.  In FreeBASIC, any correctly configured serial port may be used.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

@@ -1,0 +1,200 @@
+{{fbdoc item="title" value="How to Reset Console Handles After Redirected Input"}}----
+//by Jeff Marshall//
+
+This article shows how to reset stdin and stdout after redirected input/output with the test case being on redirected input.
+
+{{fbdoc item="section" value="The Problem"}}
+	The problem is FreeBASIC has no way of knowing when to stop reading stdin from the redirected input and to start reading the keyboard.
+
+	Here's an example:
+	%%(freebasic)
+'' test.bas
+dim x as string
+open cons for input as #1
+	while eof(1) = 0
+	input #1, x
+	print """"; x; """"
+wend
+close #1
+
+print "Input something from the keyboard"
+input x
+%%
+
+	Compile the program with ##fbc test.bas## and then run it with ##test < test.bas##
+	
+	Running ##test < test.bas## at the command prompt will give our program the contents of ##test.bas## as input.  What we want to have happen is after ##test.bas## is all read in, wait for the user to then enter something from the keyboard.  The problem is FreeBASIC has no way of knowing when to stop reading stdin from the redirected input, so the program just carries on right past ##input x## without stopping to ask the user for any input.
+
+
+{{fbdoc item="section" value="The Work-Around"}}
+	So what we need is something to tell FreeBASIC to reset our redirected stdin and look at the keyboard, and because there is no function in FreeBASIC to do this, we are going to get a little dirty and hack FreeBASIC's runtime library.
+
+	We need to use some different code on each of DOS, Windows, and Linux, but in all cases we will be creating two new functions shown in the following header.
+	
+	%%(freebasic)
+'' resetio.bi
+declare sub RESET_STDIN()
+declare sub RESET_STDOUT()
+%%
+
+	See the sections following for that hack on each DOS, Windows, and Linux.
+
+
+{{fbdoc item="section" value="Hacking the Windows Version"}}
+	This uses some data structures directly from FreeBASIC's run time library.  Usually would should never have to see these, and if they ever change, this hack probably won't work anymore, just so you are warned.  Also, no idea how this interacts with PCOPY in text mode.  I didn't test that and I leave to others to find out.
+
+	%%(freebasic)
+'' resetio.bas
+
+#include once "resetio.bi"
+#include once "windows.bi"
+#include once "crt/stdio.bi"
+
+'' From ./src/rtlib/win32/fb_win32.h
+'' Note: this must match the RTLIB decl's exactly
+
+#define FB_CONSOLE_MAXPAGES 4
+
+type FB_CONSOLE_CTX
+
+	as HANDLE     inHandle
+	as HANDLE     outHandle
+	as HANDLE     pgHandleTb(0 to FB_CONSOLE_MAXPAGES - 1)
+	as integer    active
+	as integer    visible
+	as SMALL_RECT window
+	as integer    setByUser
+	as integer    scrollWasOff
+	as any ptr    MouseEventHook
+
+end type
+
+'' Global console context
+extern __fb_con alias "__fb_con" as FB_CONSOLE_CTX
+
+'':::::
+private sub ConsoleResetHandle( byval isinput as integer )
+
+	'' This part of the code comes directly from ./src/rtlib/win32/libfb_io_gethnd.c
+	'' So if that source file ever changes, this hack may not work.
+
+	if( isinput ) then
+
+		freopen( "CONIN$", "r", stdin )
+
+		__fb_con.inHandle = GetStdHandle( STD_INPUT_HANDLE )
+
+		if( __fb_con.inHandle <> NULL ) then
+
+			'' Initialize console mode to enable processed input
+			dim as DWORD dwMode
+			if( GetConsoleMode( __fb_con.inHandle, @dwMode ) ) then
+
+				dwMode or= ENABLE_PROCESSED_INPUT
+				SetConsoleMode( __fb_con.inHandle, dwMode )
+
+			end if
+
+		end if
+
+	else
+
+		freopen( "CONOUT$", "w", stdout )
+
+		__fb_con.outHandle = GetStdHandle( STD_OUTPUT_HANDLE )
+
+		__fb_con.active = 0
+		__fb_con.visible = 0
+		__fb_con.pgHandleTb(0) = __fb_con.outHandle
+
+	end if
+
+end sub
+
+'':::::
+sub RESET_STDIN()
+	ConsoleResetHandle(TRUE)
+end sub
+
+'':::::
+sub RESET_STDOUT()
+	ConsoleResetHandle(FALSE)
+end sub
+%%
+
+
+{{fbdoc item="section" value="Hacking the DOS Version"}}
+	The DOS version doesn't use any structures from FreeBASIC's runtime library, and therefore is quite simple.
+
+	%%(freebasic)
+'' resetio.bas
+
+#include once "resetio.bi"
+#include once "crt/stdio.bi"
+
+'':::::
+sub RESET_STDIN()
+	freopen( @"CON", "r", stdin )
+end sub
+
+'':::::
+sub RESET_STDOUT()
+	freopen( @"CON", "w", stdout )
+end sub
+%%
+
+
+{{fbdoc item="section" value="Hacking the Linux Version"}}
+	The Linux version doesn't use any structures from FreeBASIC's runtime library, and therefore is quite simple.
+
+	%%(freebasic)
+'' resetio.bas
+
+#include once "resetio.bi"
+#include once "crt/stdio.bi"
+
+'':::::
+sub RESET_STDIN()
+	freopen( @"/dev/tty", "r", stdin )
+end sub
+
+'':::::
+sub RESET_STDOUT()
+	freopen( @"/dev/tty", "w", stdout )
+end sub
+%%
+
+
+{{fbdoc item="section" value="Testing The Hack"}}
+	We could make a library out of ##resetio.bas## or just add it to the list of sources in our main program.  For this example, let's just add it to our list of sources.  All we need besides the test program is ##resetio.bi## which is the same for all platforms and ##resetio.bas## for whatever version of FreeBASIC we are using.
+
+	So, here's the example program again, except we are going to call ##RESET_STDIN()## to tell FreeBASIC to stop reading stdin from the redirected input, reset it, then read the keyboard instead.
+
+%%(freebasic)
+'' test.bas
+'' compile with fbc test.bas resetio.bas
+
+#include once "resetio.bi"
+
+dim x as string
+open cons for input as #1
+while eof(1) = 0
+	input #1, x
+	print """"; x; """"
+wend
+close #1
+
+RESET_STDIN()
+
+print "Input something from the keyboard"
+input x
+%%
+
+	Now when we run our program with "test < test.bas", after all the contents of ##test.bas## are read in from the redirected input, ##RESET_STDIN()## will recover our input and FreeBASIC will wait for input from the user's keyboard.
+
+
+{{fbdoc item="see"}}
+	- ##[[http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpenCons Open Cons]]##
+
+
+{{fbdoc item="back" value="CommunityTutorials|Community Tutorials"}}

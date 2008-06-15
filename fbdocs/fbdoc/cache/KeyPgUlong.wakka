@@ -18,6 +18,9 @@ Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]
 	**Output:**
 	%%ULong Range = 0 to 4294967295%%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

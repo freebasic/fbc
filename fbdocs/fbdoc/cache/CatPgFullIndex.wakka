@@ -434,7 +434,9 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
 	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
+	- {{fbdoc item="keyword" value="KeyPgStick|STICK"}}
 	- {{fbdoc item="keyword" value="KeyPgStr|STR"}}
+	- {{fbdoc item="keyword" value="KeyPgStrig|STRIG"}}
 	- {{fbdoc item="keyword" value="KeyPgStringFunction|STRING (Function)"}}
 	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR"}}

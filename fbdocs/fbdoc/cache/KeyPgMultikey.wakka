@@ -56,8 +56,11 @@ IF MULTIKEY(FB.SC_CONTROL) AND MULTIKEY(FB.SC_H) THEN EXIT DO
 LOOP
 %%
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[ProPgCompOptlang -lang qb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- [[GfxScancodes Keyboard scancodes]]

@@ -51,11 +51,10 @@ The new value of 'a' is 1
 	- In the //QB// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- [[ProPgPointers Pointers]]
 	
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

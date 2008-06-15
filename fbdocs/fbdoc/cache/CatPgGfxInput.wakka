@@ -16,6 +16,10 @@ Procedures for working with mice, gaming devices and keyboards
 		Sets position and visibility of the mouse cursor.
 	=={{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}==
 		Gets button and axis information for gaming devices.
+	=={{fbdoc item="keyword" value="KeyPgStick|STICK"}}==
+		Gets axis position for gaming devices.
+	=={{fbdoc item="keyword" value="KeyPgStrig|STRIG"}}==
+		Gets button state for gaming devices.
 <<>>{{anchor name="KEYBOARD"}}{{fbdoc item="section" value="Keyboard Input"}}
 	=={{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}==
 		Gets key information for the keyboard.
