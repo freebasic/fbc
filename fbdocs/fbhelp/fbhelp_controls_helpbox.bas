@@ -289,7 +289,7 @@ private function HelpBox_FormatRaw _
 
 	dim as integer i, j, n, ww
 
-	static ch(0 to 80) as ubyte
+	static ch(0 to MAX_LINE_WIDTH) as ubyte
 
 	ww = size - x
 
@@ -327,7 +327,7 @@ private function HelpBox_FormatText _
 
 	dim as integer i, j, n, ww
 
-	static ch(0 to 80) as ubyte
+	static ch(0 to MAX_LINE_WIDTH) as ubyte
 
 	'' TODO: expand tabs
 
@@ -369,7 +369,7 @@ private function _LookUpAttrib( byval attrib as integer ) as integer
 			 5, _ '' ATTRIB_6
 			 5, _ '' ATTRIB_7
 			 7, _ '' ATTRIB_WHITE_SPACE
-			 8, _ '' ATTRIB_COMMENT
+			 7, _ '' ATTRIB_COMMENT
 			10, _ '' ATTRIB_QUOTED
 			12, _ '' ATTRIB_NUMBER
 			14, _ '' ATTRIB_KEYWORD
@@ -379,10 +379,10 @@ private function _LookUpAttrib( byval attrib as integer ) as integer
 		} 
 
 	if( screen_colormode ) then	
-		return( attribs( attrib and &hf ) )
+		return( attribs( attrib and &hf ) or (screen_bc shl 4 ))
 	end if
 
-	return 7
+	return screen_fc
 
 end function
 
@@ -398,7 +398,7 @@ private function HelpBox_FormatHelp _
 
 	dim as integer i, j, attrib, prevattrib, hide, tabbed
 
-	static ch(0 to 80) as char_attrib_t
+	static ch(0 to MAX_LINE_WIDTH) as char_attrib_t
 
 	j = 0
 	i = 0
@@ -476,7 +476,7 @@ private function HelpBox_FormatHelp _
 
 	for i = j - x to w - 1
 		ch(i).char = 32
-		ch(i).attrib = 7
+		ch(i).attrib = _LookUpAttrib( ATTRIB_DEFAULT )
 	next i
 
 	ch(w).char = 0

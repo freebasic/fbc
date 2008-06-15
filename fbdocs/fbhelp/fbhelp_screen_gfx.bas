@@ -21,36 +21,43 @@
 #include once "fbhelp_screen.bi"
 #include once "crt/stdio.bi"
 
+dim shared as integer mouse_installed = FALSE
+
+dim shared as integer screen_saved = FALSE
+dim shared as any ptr screen_data = NULL
+
 dim shared as integer cursor_x = 0, cursor_y = 0
 
+dim shared as any ptr cursor_gfx = NULL
+dim shared as integer cursor_drawn = FALSE
 dim shared as integer cursor_visible = FALSE
-
-''#define SIG_IGN 1
-#define SIGWINCH 28
-type sighandler_t as sub cdecl ( byval sig as integer )
-declare function signal cdecl alias "signal" ( byval sig as integer, byval handler as sighandler_t ) as sighandler_t
-declare function raise cdecl alias "raise" ( byval sig as integer ) as integer
 
 '' ==========================================================================
 
 '':::::
-private sub screen_resize cdecl ( byval sig as integer )
-	
-	static prev_handler as sighandler_t = NULL
-
-	if( prev_handler ) then
-		prev_handler( sig )
-	end if
-
-	'' set a global var that can be checked later
-	'' to know that we were resized
-
-	prev_handler = signal( SIGWINCH, procptr(screen_resize) )
-
+private sub blitCursor(byval x as integer, byval y as integer)
+	dim as integer xx, yy
+	xx = x * 8
+	yy = y * 8
+	put (xx,yy),cursor_gfx, xor
 end sub
 
 '':::::
 public sub Screen_BlinkCursor()
+	static dLast as double, dNow as double
+	if( cursor_visible ) then
+		dNow = Timer
+		if( dNow - dLast > 0.25 ) then
+			dLast = dNow
+			if( cursor_drawn ) then
+				blitCursor( cursor_x, cursor_y )
+				cursor_drawn = FALSE
+			else
+				blitCursor( cursor_x, cursor_y )
+				cursor_drawn = TRUE
+			end if
+		end if
+	end if
 end sub
 
 '':::::
@@ -83,6 +90,9 @@ public sub Screen_GetMouse _
 	last_mw = mw
 	last_mb = mb
 
+	mx shr= 3
+	my shr= 3
+
 end sub
 
 '':::::
@@ -95,15 +105,14 @@ end sub
 
 '':::::
 public sub Screen_Init ( )
-	screen 0
-	''screen_resize SIGWINCH
+	screen 12
+	width 80, 60
+	cursor_gfx = imagecreate( 8,8,15 ) 
 	Screen_ShowCursor()
 end sub
 
 '':::::
 public sub Screen_Shut ( )
-	color 7,0
-	cls
 end sub
 
 '':::::
@@ -115,20 +124,27 @@ public sub Screen_DrawText _
 			byval size as integer _
 	)
 	dim as integer i,xx,yy,ww
-
 	if( size = -1) then
 		size = len( *text )
 	end if
-
 	if( size <= 0 ) then
 		exit sub
 	end if
-	
-	color screen_fc, screen_bc
-	locate y + 1, x + 1, 0
-	print *text;
+	yy = y * 8
+	xx = x * 8
+	ww = size * 8
+	line(xx,yy)-(xx+ww-1,yy+7), screen_bc, bf
+	Draw String (xx,yy), *text, cast(ubyte, screen_fc)
 
-	locate y + 1, x + 1, 0
+	if( cursor_drawn ) then
+		if( cursor_x >= x ) then
+			if( cursor_y = y ) then
+				if( cursor_x < x + size ) then
+					blitCursor( cursor_x, cursor_y )
+				end if
+			end if
+		end if
+	end if
 
 end sub
 
@@ -139,19 +155,28 @@ public sub Screen_DrawTextAttrib _
 			byval text as char_attrib_t ptr, _
 			byval size as integer _
 	)
-	dim as integer i
-
+	dim as integer i,xx,yy
 	if( size <= 0 ) then
 		exit sub
 	end if
-
+	yy = y * 8
+	xx = x * 8
 	for i = 0 to size - 1
-		locate y + 1, x + i + 1
-		color 4,4
-		color text[i].attrib and 15, text[i].attrib shr 4
-		print chr(text[i].char);
-	next
+		line (xx,yy)-(xx+7,yy+7),text[i].attrib shr 4, bf
+		Draw String (xx,yy), chr(text[i].char), text[i].attrib and 15
+		xx += 8
+	next xx
 	
+	if( cursor_drawn ) then
+		if( cursor_x >= x ) then
+			if( cursor_y = y ) then
+				if( cursor_x < x + size ) then
+					blitCursor( cursor_x, cursor_y )
+				end if
+			end if
+		end if
+	end if
+
 end sub
 
 '':::::
@@ -162,11 +187,19 @@ public sub Screen_SetCursorPos _
 	)
 
 	if(( cursor_x <> x ) or ( cursor_y <> y )) then
-		locate y + 1, x + 1, cursor_visible
+
+		if( cursor_drawn ) then
+			blitCursor( cursor_x, cursor_y )
+		end if
 
 		cursor_x = x
 		cursor_y = y
 
+		if( cursor_visible ) then
+			blitCursor( cursor_x, cursor_y )
+			cursor_drawn = TRUE
+		end if		
+	
 	end if
 
 end sub
@@ -177,14 +210,13 @@ public sub Screen_GetCursorPos _
 		byref x as integer, _
 		byref y as integer _
 	)
-	x = csrlin()
-	y = pos()
+	x = cursor_x
+	y = cursor_y
 end sub
 
 '':::::
 public sub Screen_ShowCursor ( )
 	if( cursor_visible = FALSE ) then
-		locate , , 1
 		cursor_visible = TRUE
 	end if
 end sub
@@ -192,7 +224,6 @@ end sub
 '':::::
 public sub Screen_HideCursor ( )
 	if( cursor_visible = TRUE ) then
-		locate , , 0
 		cursor_visible = FALSE
 	end if
 end sub
@@ -204,12 +235,12 @@ end function
 
 '':::::
 public function Screen_GetCols ( ) as integer
-	return loword(width())
+	return 80
 end function
 
 '':::::
 public function Screen_GetRows ( ) as integer
-	return hiword(width())
+	return 60
 end function
 
 '':::::

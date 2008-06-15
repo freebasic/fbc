@@ -1,3 +1,18 @@
+Version 0.6b:
+
+[added]:
+- -blue option for blue background
+- default colour for comments is now 7
+- -version command line option
+- now displaying program version number on startup
+
+[changed]:
+- file name globbing disabled on DOS/WIN
+- command line options may be prefixed with "-" or "/"
+- linux version now builds as a console application
+- use makefile GFX=1 to build the fbgfx version on any port
+
+
 Version 0.5b:
 
 - Refresh only

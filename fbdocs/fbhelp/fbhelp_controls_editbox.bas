@@ -30,7 +30,7 @@ public sub EditBox_Draw _
 	static sp_fill as string
 
 	if( len( sp_fill ) = 0 ) then
-		sp_fill = string(80, 32)
+		sp_fill = string(MAX_LINE_WIDTH, 32)
 	end if
 	
 	with ctl->ctl.rect

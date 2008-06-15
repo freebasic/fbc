@@ -98,12 +98,14 @@
 	declare sub Screen_SetColorMode( byval flag as integer )
 	declare sub Screen_BlinkCursor()
 	
-	const DEFAULT_FORECOLOR = 7
-	const DEFAULT_BACKCOLOR = 0
+	extern as integer DEFAULT_FORECOLOR
+	extern as integer DEFAULT_BACKCOLOR
 
 	extern as integer screen_fc
 	extern as integer screen_bc
 	extern as integer screen_attrib
 	extern as integer screen_colormode
+
+	#define MAX_LINE_WIDTH 160
 
 #endif

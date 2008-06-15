@@ -3,7 +3,24 @@
 
 #define APP_TITLE     "FreeBASIC Manual"
 #define APP_NAME      "fbhelp"
-#define APP_VERSION   "v0.5b"
-#define APP_COPYRIGHT "Copyright (C) 2006 Jeffery R. Marshall - coder@execulink.com"
+#define APP_VERSION   "v0.6b"
+#define APP_COPYRIGHT "Copyright (C) 2006-2007 Jeffery R. Marshall"
+#define APP_CONTACT   "coder@execulink.com"
+
+#if defined(__FB_DOS__)
+#define APP_TARGET "dos"
+#endif
+
+#if defined(__FB_LINUX__)
+#define APP_TARGET "linux"
+#endif
+
+#if defined(__FB_WIN32__)
+#define APP_TARGET "win32"
+#endif
+
+#if not defined(APP_TARGET)
+#error Unsupported target
+#endif
 
 #endif

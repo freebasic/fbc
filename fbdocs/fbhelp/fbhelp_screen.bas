@@ -19,9 +19,11 @@
 
 #include "fbhelp_screen.bi"
 
-dim shared as integer screen_fc = DEFAULT_FORECOLOR
-dim shared as integer screen_bc = DEFAULT_BACKCOLOR
-dim shared as integer screen_attrib = DEFAULT_FORECOLOR
+dim shared as integer DEFAULT_FORECOLOR = 7
+dim shared as integer DEFAULT_BACKCOLOR = 0
+dim shared as integer screen_fc = 7
+dim shared as integer screen_bc = 0
+dim shared as integer screen_attrib = 7
 
 dim shared as integer screen_colormode = TRUE
 

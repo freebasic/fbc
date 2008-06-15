@@ -23,18 +23,29 @@ SRCS += fbhelp_controls_button.bas
 SRCS += fbhelp_controls_editbox.bas
 SRCS += common.bas
 
+HDRS := $(wildcard *.bi)
+
 ifeq ($(TARGET),win32)
-SRCS += fbhelp_screen_win32.bas
+  ifndef GFX
+    SRCS += fbhelp_screen_win32.bas
+  else
+    SRCS += fbhelp_screen_gfx.bas
+  endif
 else
-ifeq ($(TARGET),dos)
-SRCS += fbhelp_screen_dos.bas
-else
-SRCS += fbhelp_screen_linux.bas
+  ifeq ($(TARGET),dos)
+    ifndef GFX
+      SRCS += fbhelp_screen_dos.bas
+    else
+      SRCS += fbhelp_screen_gfx.bas
+    endif
+  else
+    ifndef GFX
+      SRCS += fbhelp_screen_linux.bas
+    else
+      SRCS += fbhelp_screen_gfx.bas
+    endif
+  endif
 endif
-endif
-
-
-HDRS := $(wilcard *.bi)
 
 ifndef objpath
 objpath=obj/$(TARGET)
@@ -50,16 +61,22 @@ endif
 
 LIBS += -l z
 
+FBCFLAGS :=
+
 ifeq ($(TARGET),win32)
-LIBS += -l fbgfx -l user32 -l gdi32
+  ifdef GFX
+    FBCFLAGS := -s gui
+  endif
+  #LIBS += -l fbgfx -l user32 -l gdi32
 else
-ifeq ($(TARGET),linux)
-LIBS += -l fbgfx -p /usr/X11R6/lib -l X11 -l Xpm -l Xext -l Xrandr -l Xrender
-else
-ifeq ($(TARGET),dos)
-LIBS += -l fbgfx -l c
-endif
-endif
+  ifeq ($(TARGET),linux)
+    #LIBS += -l fbgfx -p /usr/X11R6/lib -l X11 -l Xpm -l Xext -l Xrandr -l Xrender
+  else
+    ifeq ($(TARGET),dos)
+	  FBCFLAGS := -arch 386
+      #LIBS += -l fbgfx -l c
+    endif
+  endif
 endif
 
 RCS  := 
@@ -76,12 +93,6 @@ ifndef FBC
 			FBC = fbc
 		endif
 	endif
-endif
-
-ifeq ($(TARGET),dos)
-	FBCFLAGS := -arch 386
-else
-	FBCFLAGS :=
 endif
 
 FBCFLAGS += -w pedantic
@@ -105,14 +116,14 @@ endif
 
 VPATH = .
 
-$(objpath)/%.o : %.bas  $(HDRS)
+$(objpath)/%.o : %.bas $(HDRS)
 	$(FBC) $(FBCFLAGS) -m $(MAIN) -c $< -o $@
 
 ##########################
 
 all: $(APP)
 
-$(APP): $(OBJS)
+$(APP): $(OBJS) $(HDRS)
 	$(FBC) $(FBCFLAGS) $(OBJS) $(LIBS) $(RCS) -x $(APP)
 
 .PHONY : clean

@@ -25,6 +25,26 @@
 
 declare sub HelpScreen_Show ( byval pexepath as zstring ptr )
 
+
+#ifdef __FB_WIN32__
+extern _CRT_glob alias "_CRT_glob" As integer
+dim shared _CRT_glob As integer = 0
+const opt_char = "/"
+#else
+
+#ifdef __FB_DOS__
+public function __crt0_glob_function alias "__crt0_glob_function" ( byval arg as ubyte ptr ) as ubyte ptr ptr
+  return 0
+end function
+const opt_char = "/"
+
+#else
+const opt_char = "-"
+
+
+#endif
+#endif
+
 '' ============================
 '' MAIN
 '' ============================
@@ -35,20 +55,27 @@ declare sub HelpScreen_Show ( byval pexepath as zstring ptr )
 	i = 1
 	while( len( command(i) ) > 0 )
 		select case lcase(command(i))
-		case "/?", "/help", "/h", "-help", "-h"
+		case "-help", "-h", "/help", "/h", "/?"
 			? "Usage: " + APP_NAME + " [options]
 			?
 			? "options:
-			? "   /? /h /help   this help page"
-			? "   /bw           black and white only"
-			? "   /version      display version"
+			? "   " + opt_char + "h " + opt_char + "help      this help page"
+			? "   " + opt_char + "bw           black and white only"
+			? "   " + opt_char + "version      display version"
 			end 0
-		case "/bw", "-bw"
+		case "-bw", "/bw"
 			Screen_SetColorMode( FALSE )
-		case "/version", "-version"
-			? APP_NAME + " " + APP_VERSION + " - " + APP_COPYRIGHT
+		case "-blue", "/blue"
+			DEFAULT_BACKCOLOR = 1 '' Blue background
+		case "-version", "/version"
+			? APP_NAME + " - Version " + APP_VERSION + " for " + APP_TARGET
+			? APP_COPYRIGHT
 			? "Last built on " + __DATE__ + " " + __TIME__
+			? "Please report bugs to " + APP_CONTACT
 			end 0
+		case else
+			? "Invalid option '" + command(i) + "'"
+			end 1
 		end select
 		i += 1
 	wend

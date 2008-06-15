@@ -1,5 +1,5 @@
-  fbhelp - FreeBASIC help viewer v0.5b
-  Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com)
+  fbhelp - FreeBASIC help viewer v0.6b
+  Copyright (C) 2006-2007 Jeffery R. Marshall (coder[at]execulink.com)
 
 
 License:
@@ -58,11 +58,15 @@ Running:
 
   Command line options:
 
-      /bw                     black and white display only
-      /? /h /help             this help page
-      /version                display version
+      -bw                     black and white display only
+      -h -help                this help page
+      -version                display version
 
-  The command lines options allow "/" or "-" as the prefix.
+  The command line options allow "/" or "-" as the prefix in the dos
+  or windows version.
+
+  The command line options must use "-" as the prefix in the linux 
+  version.
 
   Both the dos version and the windows version will run in a dos window.
 
@@ -135,9 +139,19 @@ Usage:
 
 Compiling:
 
-    Requires:
+  o Requirements:
 	  - fbhelp sources ( http://www.coderjeff.ca/ )
-      - FreeBASIC version 0.17b or later ( http://www.freebasic.net/ )
+	  - if fbhelp sources are not available from the website, please contact
+	    Jeff Marshall ( coder[at]execulink[dot]com )
+      - FreeBASIC version 0.17b from CVS or later ( http://www.freebasic.net/ )
 	  - zlib libraries ( http://www.zlib.net/ )
+
+  o Making:
+
+      make TARGET={target} [GFX=1]
+
+	  - where {target} is dos, linux, or win32
+	  - use GFX=1 to make the graphical version (640x480x8 only)
+	  - omit GFX=1 to make the console version
 
 EOF
