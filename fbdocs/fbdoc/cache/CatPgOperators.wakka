@@ -21,6 +21,8 @@ Procedures that operate on one or more operands
 	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
 **{{anchor name="MEMORY|Memory Operators"}}**
 	Operators that allocate and construct objects.
+**{{anchor name="ITERATION|Iteration Operators"}}**
+	Operators that allow user defined types to be used with [[KeyPgFornext For...Next]] loops.
 
 <<{{anchor name="ASSIGN"}}{{fbdoc item="section" value="Assignment Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}==
@@ -85,13 +87,14 @@ Procedures that operate on one or more operands
 		Returns a reference to a character in a string.
 	=={{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}==
 		Returns a reference to memory offset from a base address.
-<<>>{{anchor name="STRING"}}{{fbdoc item="section" value="String Operators"}}
+
+{{anchor name="STRING"}}{{fbdoc item="section" value="String Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgOpConcatConvert|& (String concatenation with conversion)"}}==
 		Concatenates two values converted to strings.
 	=={{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR (String pointer)"}}==
 		Returns the address of a string's character data.
 
-{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
+<<>>{{anchor name="RELATIONAL"}}{{fbdoc item="section" value="Relational Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgOpEqual|= (Equal)"}}==
 		Compares the equal relation of two operands.
 	=={{fbdoc item="keyword" value="KeyPgOpNotEqual|<> (Not equal)"}}==
@@ -121,7 +124,7 @@ Procedures that operate on one or more operands
 
 {{anchor name="PREPROC"}}{{fbdoc item="section" value="Preprocessor Operators"}}
 	=={{fbdoc item="keyword" value="KeyPgOpPpStringize|# (Argument stringize)"}}==
-		Returns a text operand converted to a [[KeyPgStringtype String]] literal.
+		Returns a text operand converted to a [[KeyPgString String]] literal.
 	=={{fbdoc item="keyword" value="KeyPgOpPpConcat|## (Argument concatenation)"}}==
 		Concatenates two text operands.
 
@@ -147,6 +150,9 @@ Procedures that operate on one or more operands
 	=={{fbdoc item="keyword" value="KeyPgOpDelete|Delete"}}==
 		Destroys and deallocates memory for objects.
 
+{{anchor name="ITERATION"}}{{fbdoc item="section" value="Iteration Operators"}}
+	=={{fbdoc item="keyword" value="KeyPgOpFor|For"}}, [[KeyPgOpFor Next]], and [[KeyPgOpFor Step]]==
+		Allows user defined types to be used as iterators in a ##[[KeyPgFornext For...Next]]## loop.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

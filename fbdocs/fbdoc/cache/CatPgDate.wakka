@@ -19,9 +19,9 @@ Procedures that work with dates and time
 		=={{fbdoc item="keyword" value="KeyPgTimeserial|TIMESERIAL"}}==
 			Gets the [[ProPgDates date serial]] representation of a time.
 		=={{fbdoc item="keyword" value="KeyPgDateValue|DATEVALUE"}}==
-			Gets the [[ProPgDates date serial]] representation of a date expressed as a ##[[KeyPgStringtype string]]##.
+			Gets the [[ProPgDates date serial]] representation of a date expressed as a ##[[KeyPgString string]]##.
 		=={{fbdoc item="keyword" value="KeyPgTimeValue|TIMEVALUE"}}==
-			Gets the [[ProPgDates date serial]] representation of a time expressed as a ##[[KeyPgStringtype string]]##.
+			Gets the [[ProPgDates date serial]] representation of a time expressed as a ##[[KeyPgString string]]##.
 
 	{{fbdoc item="subsect" value="Extracting information from Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgSecond|SECOND"}}==
@@ -49,16 +49,16 @@ Procedures that work with dates and time
 
 	{{fbdoc item="subsect" value="Miscellaneous"}}
 		=={{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}==
-			Tests if a ##[[KeyPgStringtype String]]## can be converted to a [[ProPgDates date serial]].
+			Tests if a ##[[KeyPgString String]]## can be converted to a [[ProPgDates date serial]].
 		=={{fbdoc item="keyword" value="KeyPgMonthname|MONTHNAME"}}==
 			Gets the month name of its integer representation.
 		=={{fbdoc item="keyword" value="KeyPgWeekdayname|WEEKDAYNAME"}}==
 			Gets the weekday name of its integer representation.
 <<>>{{anchor name="DATETIME"}}{{fbdoc item="section" value="Date and time procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgDate|DATE"}}==
-		Gets the ##[[KeyPgStringtype string]]## representation of the current system date.
+		Gets the ##[[KeyPgString string]]## representation of the current system date.
 	=={{fbdoc item="keyword" value="KeyPgTime|TIME"}}==
-		Gets the ##[[KeyPgStringtype string]]## representation of the current system time.
+		Gets the ##[[KeyPgString string]]## representation of the current system time.
 	=={{fbdoc item="keyword" value="KeyPgSetdate|SETDATE"}}==
 		Sets the current system date.
 	=={{fbdoc item="keyword" value="KeyPgSettime|SETTIME"}}==
@@ -68,3 +68,4 @@ Procedures that work with dates and time
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

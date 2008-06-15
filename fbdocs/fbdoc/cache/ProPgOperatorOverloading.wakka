@@ -1,27 +1,24 @@
-{{fbdoc item="title" value="Operator Overloading"}}{{anchor name="top"}}----
-Items discussed in this wiki:
+{{fbdoc item="title" value="Operator Overloading"}}----
+Changing the way user defined types work with built-in operators
 
-==={{anchor name="item1|[item 1] What is an operator?"}}===
-==={{anchor name="item2|[item 2] What is operator overloading?"}}===
-==={{anchor name="item3|[item 3] What operators can I overload inside a Type definition?"}}===
-==={{anchor name="item4|[item 4] How can I access Protected or Private members in global operator overloads?"}}===
-==={{anchor name="item5|[item 5] What's a better way of doing that?"}}===
-==={{anchor name="item6|[item 6] What about mathematical and logical operators?"}}===
-==={{anchor name="item7|[item 7] What's special about the assignment operator?"}}===
-==={{anchor name="item8|[item 8] !!!WRITEME OVERLOADING NEW AND DELETE WRITEME!!!"}}===
+**{{anchor name="item1|What is an operator?"}}**
+**{{anchor name="item2|What is operator overloading?"}}**
+**{{anchor name="item3|What operators can I overload inside a Type definition?"}}**
+**{{anchor name="item4|How can I access Protected or Private members in global operator overloads?"}}**
+**{{anchor name="item5|What's a better way of doing that?"}}**
+**{{anchor name="item6|What about mathematical and logical operators?"}}**
+**{{anchor name="item7|What's special about the assignment operator?"}}**
+**{{anchor name="item8|!!!WRITEME OVERLOADING NEW AND DELETE WRITEME!!!"}}**
 
-----
-~&{{anchor name="item1"}}==={{color c="blue" text="[item 1] What is an operator?"}}===
-An operator is just a procedure, like most others. Some operators, like [[KeyPgCast operator cast]], even look like procedures. Others, like ##[[KeyPgOpLessThanOrEqual Operator <=]]##, have a different syntax //(as of the time of this writing, calling these operators by name is not supported, but may be in the future)//. However they are called, the result is the same: some procedure is invoked based on the types of operands - the arguments of an operator call - that are passed to it.
+{{anchor name="item1"}}{{fbdoc item="section" value="What is an operator?"}}
+	An operator is just a procedure, like most others. Some operators, like [[KeyPgCast operator cast]], even look like procedures. Others, like ##[[KeyPgOpLessThanOrEqual Operator <=]]##, have a different syntax //(as of the time of this writing, calling these operators by name is not supported, but may be in the future)//. However they are called, the result is the same: some procedure is invoked based on the types of operands - the arguments of an operator call - that are passed to it.
 
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item2"}}==={{color c="blue" text="[item 2] What is operator overloading?"}}===
-Operator overloading is just like normal procedure overloading, that is, an operator with the same name as an existing operator is defined to take different types of operands (parameters). Operators that take built-in types like [[KeyPgInteger integers]] or [[KeyPgString strings]] are already defined by the compiler, and so cannot be redefined. You can define operators with operands of user-defined types, however, and this is what operator overloading is.
+{{anchor name="item2"}}{{fbdoc item="section" value="What is operator overloading?"}}
+	Operator overloading is just like normal procedure overloading, that is, an operator with the same name as an existing operator is defined to take different types of operands (parameters). Operators that take built-in types like [[KeyPgInteger integers]] or [[KeyPgString strings]] are already defined by the compiler, and so cannot be redefined. You can define operators with operands of user-defined types, however, and this is what operator overloading is.
 
-There are two types of operators you can overload: global operators and member operators. Global operators are declared and defined in module-level code - globally. These are !!!WRITEME!!!. Member operators are declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition, and are discussed {{anchor name="item3|in the next item"}}.
+	There are two types of operators you can overload: global operators and member operators. Global operators are declared and defined in module-level code - globally. These are !!!WRITEME!!!. Member operators are declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition, and are discussed {{anchor name="item3|in the next item"}}.
 
-Overloading a global operator is much like overloading a normal procedure, you declare and define an existing operator with new operand types:
+	Overloading a global operator is much like overloading a normal procedure, you declare and define an existing operator with new operand types:
 
 %%(qbasic)
 type Rational
@@ -42,15 +39,12 @@ if x <= y then
 	print "Yay, it works!"
 end if
 %%
+	Note that global operators are like module-level procedures in that the [[KeyPgVisProtected Protected]] and [[KeyPgVisPrivate Private]] members of a [[KeyPgType Type]] or [[KeyPgClass Class]] are inaccessible. This is discussed {{anchor name="item4|in this item"}}.
 
-Note that global operators are like module-level procedures in that the [[KeyPgVisProtected Protected]] and [[KeyPgVisPrivate Private]] members of a [[KeyPgType Type]] or [[KeyPgClass Class]] are inaccessible. This is discussed {{anchor name="item4|in this item"}}.
+{{anchor name="item3"}}{{fbdoc item="section" value="What operators can I overload inside a Type definition?"}}
+	Member operators are operators declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition. The member operators are the assignment operators - like [[KeyPgOpAssignment operator let]] and [[KeyPgOpCombineOr operator or=]] - [[KeyPgCast operator cast]], [[KeyPgOpNew operator new]] and [[KeyPgOpDelete operator delete]], !!!WRITEME!!!.
 
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item3"}}==={{color c="blue" text="[item 3] What operators can I overload inside a Type definition?"}}===
-Member operators are operators declared within a [[KeyPgType Type]] or [[KeyPgClass Class]] definition. The member operators are the assignment operators - like [[KeyPgOpAssignment operator let]] and [[KeyPgOpCombineOr operator or=]] - [[KeyPgCast operator cast]], [[KeyPgOpNew operator new]] and [[KeyPgOpDelete operator delete]], !!!WRITEME!!!.
-
-Member operators are declared and defined like member procedures, with the keyword [[KeyPgOperator Operator]] instead of [[KeyPgSub Sub]] or [[KeyPgFunction Function]] and the operator name:
+	Member operators are declared and defined like member procedures, with the keyword [[KeyPgOperator Operator]] instead of [[KeyPgSub Sub]] or [[KeyPgFunction Function]] and the operator name:
 
 %%(qbasic)
 type Rational
@@ -92,19 +86,15 @@ float = x
 float = cast(double, y)
 %%
 
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item4"}}==={{color c="blue" text="[item 4] How can I access Protected or Private members in global operator overloads?"}}===
-Since global operators are {{anchor name="item2|declared and defined outside of any Type or Class definition"}}, they have only [[KeyPgPublic Public]] access rights to the object operands passed to them. Continuing in our Rational example, if both [[KeyPgInteger Integer]] data members are [[KeyPgPrivate Private]], how can a global operator - like the relational ##[[KeyPgOpLessThanOrEqual Operator <=]]## access them ?
+{{anchor name="item4"}}{{fbdoc item="section" value="How can I access Protected or Private members in global operator overloads?"}}
+	Since global operators are {{anchor name="item2|declared and defined outside of any Type or Class definition"}}, they have only [[KeyPgPublic Public]] access rights to the object operands passed to them. Continuing in our Rational example, if both [[KeyPgInteger Integer]] data members are [[KeyPgPrivate Private]], how can a global operator - like the relational ##[[KeyPgOpLessThanOrEqual Operator <=]]## access them ?
 
-One way is to simply make them [[KeyPgPublic Public]], for all the world to see. Object-orientated programming practices see this as a severe no-no though, so the more studious of you should be looking for a different approach.
+	One way is to simply make them [[KeyPgPublic Public]], for all the world to see. Object-orientated programming practices see this as a severe no-no though, so the more studious of you should be looking for a different approach.
 
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item5"}}==={{color c="blue" text="[item 5] What's a better way of doing that?"}}===
-Short of {{anchor name="item4|making certain members Public so overloaded global operators can access them"}}, there is a much less disastrous method of solving that problem.
+{{anchor name="item5"}}{{fbdoc item="section" value="What's a better way of doing that?"}}
+	Short of {{anchor name="item4|making certain members Public so overloaded global operators can access them"}}, there is a much less disastrous method of solving that problem.
 
-Static member procedures. After perusing through the [[ProPgMemberProcedures Member Procedures wiki]], you will find out that static member procedures have full access rights to the [[KeyPgType Type]]s or [[KeyPgClass Class]]es they are declared in. This makes them good candidates for handling the job of comparing Rational's [[KeyPgPrivate Private]] members. (in this situation, a non-static member procedure would work fine as well)
+	Static member procedures. After perusing through the [[ProPgMemberProcedures Member Procedures wiki]], you will find out that static member procedures have full access rights to the [[KeyPgType Type]]s or [[KeyPgClass Class]]es they are declared in. This makes them good candidates for handling the job of comparing Rational's [[KeyPgPrivate Private]] members. (in this situation, a non-static member procedure would work fine as well)
 
 %%(qbasic)
 type Rational
@@ -126,15 +116,12 @@ operator <= (byref lhs as Rational, byref rhs as Rational) as integer
 	return Rational.lessThanOrEqual(lhs, rhs)
 end operator
 %%
+	Here, the global [[KeyPgOpLessThanOrEqual operator <=]] passes along it's operands to a the static member procedure that does all of the work. Note that in this case, since we already have the member [[KeyPgCast operator cast]] defined, we could have had global ##[[KeyPgOpLessThanOrEqual Operator <=]]## simply use that instead of creating a static member procedure (##return cast(double, lhs) <= cast(double, rhs)##) - but what's the education in that? :)
 
-Here, the global [[KeyPgLessThanOrEqual operator <=]] passes along it's operands to a the static member procedure that does all of the work. Note that in this case, since we already have the member [[KeyPgCast operator cast]] defined, we could have had global ##[[KeyPgOpLessThanOrEqual Operator <=]]## simply use that instead of creating a static member procedure (##return cast(double, lhs) <= cast(double, rhs)##) - but what's the education in that? :)
+	You might be thinking that this method might be good when implementing the mathematical and logical operators, too - as they are also global operators. Typically though it's not, and that's discussed in {{anchor name="item6|the next item"}}.
 
-You might be thinking that this method might be good when implementing the mathematical and logical operators, too - as they are also global operators. Typically though it's not, and that's discussed in {{anchor name="item6|the next item"}}.
-
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item6"}}==={{color c="blue" text="[item 6] What about mathematical and logical operators?"}}===
-In the last item we talked about {{anchor name="item5|using member procedures as the workhorse of global operators"}} to get around the "I-can't-see-these-members-so-what-do-I-do" problem. It would seem that this would be a good way to implement all global operator overloads, but usually this is not the case. Here is a naive approach to implementing ##[[KeyPgOpMultiply Operator *]]## and ##[[KeyPgOpCombineMultiply Operator *=]]##:
+{{anchor name="item6"}}{{fbdoc item="section" value="What about mathematical and logical operators?"}}
+	In the last item we talked about {{anchor name="item5|using member procedures as the workhorse of global operators"}} to get around the "I-can't-see-these-members-so-what-do-I-do" problem. It would seem that this would be a good way to implement all global operator overloads, but usually this is not the case. Here is a naive approach to implementing ##[[KeyPgOpMultiply Operator *]]## and ##[[KeyPgOpCombineMultiply Operator *=]]##:
 
 %%(qbasic)
 type Rational
@@ -160,10 +147,9 @@ operator * (byref lhs as Rational, byref rhs as Rational) as Rational
 	return Rational.multiply(lhs, rhs)
 end operator
 %%
+	While this may look fine, it suffers from some problems, notably the assignment in ##Rational.operator *=## - why assign, why not directly alter Rational's data members, shouldn't we be trying to minimize the temporary Rationals if at all possible? The problem is, if ##Rational.operator *=## directly modified Rational's data members it's essentially doing the same thing as Rational.multiply (for a trivial procedure like this, the code duplication seems negligible, but keep in mind that any changes to Rational.multiply would need to be made in ##Rational.operator *=## as well, which could get hairy with more complicated procedures).
 
-While this may look fine, it suffers from some problems, notably the assignment in ##Rational.operator *=## - why assign, why not directly alter Rational's data members, shouldn't we be trying to minimize the temporary Rationals if at all possible? The problem is, if ##Rational.operator *=## directly modified Rational's data members it's essentially doing the same thing as Rational.multiply (for a trivial procedure like this, the code duplication seems negligible, but keep in mind that any changes to Rational.multiply would need to be made in ##Rational.operator *=## as well, which could get hairy with more complicated procedures).
-
-There is a quite elegant solution to this mishappen situation, and that is to implement ##[[KeyPgOpMultiply Operator *]]## //in terms of// ##[[KeyPgOpCombineMultiply Operator *=]]##. This eliminates the temporary Rational and costly assignment in ##Rational.operator *=##, and it also solves our code duplication problem: any changes made to the implementation of the multiplication algorithm only need to be made to one part of the code, ##Rational.operator *=##. Observe:
+	There is a quite elegant solution to this mishappen situation, and that is to implement ##[[KeyPgOpMultiply Operator *]]## //in terms of// ##[[KeyPgOpCombineMultiply Operator *=]]##. This eliminates the temporary Rational and costly assignment in ##Rational.operator *=##, and it also solves our code duplication problem: any changes made to the implementation of the multiplication algorithm only need to be made to one part of the code, ##Rational.operator *=##. Observe:
 
 %%(qbasic)
 type Rational
@@ -189,20 +175,9 @@ operator * (byref lhs as Rational, byref rhs as Rational) as Rational
 	return result
 end operator
 %%
+	Implementing a mathematical or logical operator in terms of it's combination assignment member operator is a common and healthy technique to utilise. When appropriate, please do.
 
-Implementing a mathematical or logical operator in terms of it's combination assignment member operator is a common and healthy technique to utilise. When appropriate, please do.
+{{anchor name="item7"}}{{fbdoc item="section" value="What's special about the assignment operator?"}}
+	!!!WRITEME!!!
 
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item7"}}==={{color c="blue" text="[item 7] What's special about the assignment operator?"}}===
-!!!WRITEME!!!
-
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-~&{{anchor name="item8"}}==={{color c="blue" text="[item 8] item"}}===
-!!!WRITEME!!!
-
-[ {{anchor name="top|Top"}} | {{anchor name="bottom|Bottom"}} | [[KeyPgPreviousSection Previous]] | [[KeyPgNextSection Next]] ]
-----
-
-{{anchor name="bottom"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

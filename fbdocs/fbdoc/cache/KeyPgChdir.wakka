@@ -2,14 +2,14 @@
 Changes the current drive and directory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chdir** ( [[KeyPgByref byref]] //path// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chdir** ( [[KeyPgByref byref]] //path// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Chdir**( //path// )
 ##
 {{fbdoc item="param"}}
 	##//path//##
-		A ##[[KeyPgStringtype string]]## argument specifying the path to change to.
+		A ##[[KeyPgString string]]## argument specifying the path to change to.
 
 {{fbdoc item="ret"}}
 	Returns zero (0) on success and negative one (-1) on failure.

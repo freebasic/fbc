@@ -2,14 +2,14 @@
 Converts an eight byte string to a double-precision variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvd**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A [[KeyPgStringtype string]] exactly eight bytes in length with a binary copy of a double-precision variable stored in it.
+		A [[KeyPgString string]] exactly eight bytes in length with a binary copy of a double-precision variable stored in it.
 
 {{fbdoc item="ret"}}
 	Returns a [[KeyPgDouble double-precision]] variable to copy the binary copy of a double to.

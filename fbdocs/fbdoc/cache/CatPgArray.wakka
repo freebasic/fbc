@@ -11,10 +11,10 @@ Statements and procedures for working with arrays
 	Deprecated statements kept for backward compatibility reasons, and may be removed at a future time.
 
 <<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
-	=={{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}==
+	=={{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}==
 		Forces arrays to be defined as dynamic arrays.
-	=={{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}==
-		Reverts a previous [[KeyPgDynamic OPTION DYNAMIC]] command.
+	=={{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}==
+		Reverts a previous [[KeyPgOptiondynamic OPTION DYNAMIC]] command.
 	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
 		Defines and resizes dynamic arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
@@ -32,10 +32,10 @@ Statements and procedures for working with arrays
 		Returns the upper bound of an array's dimension.
 
 {{anchor name="DEPRECATED"}}{{fbdoc item="section" value="Deprecated Statements"}}
-	=={{fbdoc item="keyword" value="KeyPgDynamic|'$DYNAMIC"}}==
-		Deprecated form of the [[KeyPgDynamic OPTION DYNAMIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
+		Deprecated form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
-		Deprecated form of the [[KeyPgMetaStatic OPTION STATIC]] statement.
+		Deprecated form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
  >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

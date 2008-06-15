@@ -24,4 +24,4 @@ a = 1 '' this will fail with variable not declared
 	- ##[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]##
 	- ##[[KeyPgDim Dim]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

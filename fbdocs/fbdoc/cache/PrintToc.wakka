@@ -21,6 +21,7 @@
 		[[ProPgPrimer1 FreeBASIC Primer #1]]
 
 	{{fbdoc item="subsect" value="Source Files"}}
+		[[ProPgSourceFiles Source Files (.bas)]]
 		[[ProPgHeaderFiles Header Files (.bi)]]
 
 	{{fbdoc item="subsect" value="Lexical Conventions"}}
@@ -75,6 +76,7 @@
 
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii ASCII]]
+		[[ProPgDates Date Serials]]
 		[[ProPgRadians Radians]]
 		[[GfxInternalFormats Internal Graphics Formats]]
 		[[KeyPgAsm Inline ASM]]
@@ -161,6 +163,9 @@
 	{{fbdoc item="subsect" value="Memory Operators"}}
 		[[KeyPgOpNew New]]
 		[[KeyPgOpDelete Delete]]
+
+	{{fbdoc item="subsect" value="Iteration Operators"}}
+		[[KeyPgOpFor For]]
 		[[OpPrecedence Operator Precedence]]
 
 	{{fbdoc item="subsect" value="Statements"}}
@@ -170,6 +175,7 @@
 
 	{{fbdoc item="subsect" value="Other"}}
 		[[CatPgPreProcess Preprocessor]]
+		[[CatPgCompilerSwitches Compiler Switches]]
 		[[CatPgDddefines Intrinsic Defines]]
 		[[ProPgErrorHandling Error Handling]]
 		[[KeyPgAsm Inline ASM]]
@@ -227,7 +233,7 @@
 		[[KeyPgPpifdef #IFDEF]]
 		[[KeyPgPpifndef #IFNDEF]]
 		[[KeyPgInclib #INCLIB]]
-		[[KeyPgInclude #INCLUDE or $INCLUDE]]
+		[[KeyPgInclude #INCLUDE]]
 		[[KeyPgPplibpath #LIBPATH]]
 		[[KeyPgPpline #LINE]]
 		[[KeyPgPpmacro #MACRO]]
@@ -236,7 +242,8 @@
 		[[KeyPgPpundef #UNDEF]]
 
 	{{fbdoc item="subsect" value="$"}}
-		[[KeyPgDynamic $DYNAMIC]]
+		[[KeyPgMetaDynamic $DYNAMIC]]
+		[[KeyPgMetaInclude $INCLUDE]]
 		[[KeyPgMetaStatic $STATIC]]
 
 	{{fbdoc item="subsect" value="A"}}
@@ -310,6 +317,7 @@
 		[[KeyPgCsrlin CSRLIN]]
 		[[KeyPgCubyte CUBYTE]]
 		[[KeyPgCuint CUINT]]
+		[[KeyPgCulng CULNG]]
 		[[KeyPgCulngint CULNGINT]]
 		[[KeyPgCunsg CUNSG]]
 		[[KeyPgCurdir CURDIR]]
@@ -512,12 +520,12 @@
 		[[KeyPgOpenScrn OPEN SCRN]]
 		[[KeyPgOptionbase OPTION BASE]]
 		[[KeyPgOptionbyval OPTION BYVAL]]
-		[[KeyPgDynamic OPTION DYNAMIC]]
+		[[KeyPgOptiondynamic OPTION DYNAMIC]]
 		[[KeyPgOptionescape OPTION ESCAPE]]
 		[[KeyPgOptionexplicit OPTION EXPLICIT]]
 		[[KeyPgOptionnokeyword OPTION NOKEYWORD]]
 		[[KeyPgOptionprivate OPTION PRIVATE]]
-		[[KeyPgMetaStatic OPTION STATIC]]
+		[[KeyPgOptionstatic OPTION STATIC]]
 		[[KeyPgOperator OPERATOR]]
 		[[KeyPgOpOr OR]]
 		[[KeyPgOut OUT]]
@@ -618,8 +626,8 @@
 		[[KeyPgStep STEP]]
 		[[KeyPgStop STOP]]
 		[[KeyPgStr STR]]
-		[[KeyPgString STRING (Function)]]
-		[[KeyPgStringtype STRING]]
+		[[KeyPgStringFunction STRING (Function)]]
+		[[KeyPgString STRING]]
 		[[KeyPgOpStrptr STRPTR]]
 		[[KeyPgSub SUB]]
 		[[KeyPgMemberSub SUB (Member)]]
@@ -643,6 +651,7 @@
 		[[KeyPgTypeAlias TYPE (Alias)]]
 		[[KeyPgTypeTemp TYPE (Temporary)]]
 		[[KeyPgType TYPE (UDT)]]
+		[[KeyPgTypeof TYPEOF]]
 
 	{{fbdoc item="subsect" value="U"}}
 		[[KeyPgUbound UBOUND]]
@@ -695,7 +704,7 @@
 		[[KeyPgWspace WSPACE]]
 		[[KeyPgWstr WSTR]]
 		[[KeyPgWstring WSTRING(Data Type)]]
-		[[KeyPgFunWstring WSTRING(Function)]]
+		[[KeyPgWstringFunction WSTRING(Function)]]
 
 	{{fbdoc item="subsect" value="X"}}
 		[[KeyPgOpXor XOR]]
@@ -738,14 +747,14 @@
 		[[CVSWin32MSYS Compiling from CVS for Win32, using MSYS]]
 		[[CVSLinux Compiling from CVS for Linux]]
 		[[CVSDOSWin32 Compiling from CVS for DOS on Win32]]
-	[[ProPgDates Date Serials]]
 	[[DebuggerRunning Debugging]]
 	[[GnuLicenses Licenses]]
 		[[LicenseGPL GPL]]
 		[[LicenseLGPL LGPL]]
 		[[LicenseGFDL GFDL]]
-	[[ObsoletedKwds Obsoleted keywords]]
+	[[ObsoletedKwds Obsoleted Keywords]]
 	[[GlossaryIndex Glossary]]
+	[[CatPgMisc Miscellaneous Keywords]]
 
 {{fbdoc item="section" value="Tables"}}
 	[[CptAscii ASCII Character Codes]]

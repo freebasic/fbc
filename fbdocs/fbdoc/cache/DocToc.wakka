@@ -61,6 +61,7 @@ FreeBASIC Manual Table of Contents
 
 	{{fbdoc item="subsect" value="Other"}}
 		{{fbdoc item="keyword" value="CatPgPreProcess|Preprocessor"}}
+		{{fbdoc item="keyword" value="CatPgCompilerSwitches|Compiler Switches"}}
 		{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
 		{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 		{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
@@ -98,11 +99,11 @@ FreeBASIC Manual Table of Contents
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
 	{{fbdoc item="keyword" value="CVSCompile|Compiling from CVS"}}
-	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="DebuggerRunning|Debugging"}}
 	{{fbdoc item="keyword" value="GnuLicenses|Licenses"}}
-	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted keywords"}}
+	{{fbdoc item="keyword" value="ObsoletedKwds|Obsoleted Keywords"}}
 	{{fbdoc item="keyword" value="GlossaryIndex|Glossary"}}
+	{{fbdoc item="keyword" value="CatPgMisc|Miscellaneous Keywords"}}
 
 {{anchor name="TABLES"}}{{fbdoc item="section" value="Tables"}}
 	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}

@@ -2,12 +2,28 @@
 Converts numeric or string expression to an unsigned integer (##[[KeyPgUshort Ushort]]##)
 
 {{fbdoc item="syntax"}}##
-	**Cushort**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cushort** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUshort ushort]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgUshort ushort]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Cushort**(//numeric expression//)
-	//variable// = **Cushort**(//string expression//)
+	//result// = **Cushort**( //numeric expression// )
+	//result// = **Cushort**( //string expression// )
+	//result// = **Cushort**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgUshort Ushort]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgUshort Ushort]]## value.
+
 {{fbdoc item="desc"}}
 	The ##**Cushort**## function rounds off the decimal part and returns a 16 bit ##[[KeyPgUshort Ushort]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then 0 to 65535. The name can be explained as 'Convert to Unsigned Short'.
 
@@ -29,18 +45,19 @@ SLEEP
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCbyte Cbyte]]##
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]## 
+	- ##[[KeyPgCdbl Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

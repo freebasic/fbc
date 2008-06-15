@@ -21,10 +21,10 @@ end sub
 	- The use of OPTION PRIVATE is not allowed with the -lang fb option.  With -lang fb, each function must be defined as PRIVATE if needed.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrivate Private]]##
 	- ##[[KeyPgPublic Public]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

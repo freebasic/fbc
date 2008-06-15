@@ -63,20 +63,43 @@ Copies an image on to another image or screen
 		Normally ##**Put**## only allows to draw image buffers onto targets with the same depth, but there is an exception. When drawing an 8 bpp image buffer onto a 32 bpp target and the ##ALPHA## method is used, the 8 bpp source image is drawn into the alpha channel of the 32 bpp target. This allows to easily set the whole alpha channel of an image without having to deal with low level access of its pixels data.
 
 	**Custom Blend Function**
-		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the PUT function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
+		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will recieve the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
 
 		##[[KeyPgDeclare declare]] [[KeyPgFunction function]] //identifier// ( [[KeyPgByval byval]] //source_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //destination_pixel// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //parameter// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]##
 
 			##//identifier//## is the name of the function. Can be anything.
 			##//source_pixel//## is the current pixel value of the source image.
 			##//destination_pixel//## is the current pixel value of the destination image.
-			##//parameter//## is the parameter that is passed by the PUT command.  If it was omitted, its value will be zero.
+			##//parameter//## is the parameter that is passed by the ##**Put**## command.  If omitted, its value will be zero.
 
 {{fbdoc item="ex"}}
-	The following example shows how to allocate memory for an image, draw that image using various methods including a custom blender, and free the memory for the image:
+	The following program gives a simple example of how to ##**Put**## an image to the screen, including setting up an image buffer, and freeing its memory afterwards.
+	%%(qbasic)'' set up the screen and fill the background with a color
+screenres 320, 200, 32
+paint (0, 0), rgb(64, 128, 255)
+
+'' set up an image and draw something in it
+dim img as any ptr = imagecreate( 32, 32, rgb(255, 0, 255) )
+circle img, (16, 16), 15, rgb(255, 255, 0),     ,     , 1, f
+circle img, (10, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+circle img, (23, 10), 3,  rgb(  0,   0, 0),     ,     , 2, f
+circle img, (16, 18), 10, rgb(  0,   0, 0), 3.14, 6.28
+
+'' PUT the image in the center of the screen
+put (160 - 16, 100 - 16), img, trans
+
+'' free the image memory
+imagedestroy img
+
+'' wait for a keypress
+sleep%%
+{{image class="center" title="Simple Put example output" url="http://img112.imageshack.us/img112/8348/simpleputexample2jg3.png" link="http://img112.imageshack.us/my.php?image=simpleputexample2jg3.png"}}
+
+
+	The following example shows how to allocate memory for an image, draw that image using various methods, including a custom blender, and free the memory for the image:
 %%(qbasic)declare function checkered_blend( byval src as uinteger, byval dest as uinteger, byval param as any ptr ) as uinteger
 
-   screen 14, 32                                   '' set 320x240x32 gfx mode
+   screen 14, 32                                   '' set 320*240*32 gfx mode
    
    dim as any ptr sprite
    dim as integer counter = 0

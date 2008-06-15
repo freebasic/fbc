@@ -2,12 +2,28 @@
 Converts numeric or string expression to an ##[[KeyPgInteger Integer]]##
 
 {{fbdoc item="syntax"}}##
-	**Cint**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Cint**(//numeric expression//)
-	//variable// = **Cint**(//string expression//)
+	//result// = **Cint**( //numeric expression// )
+	//result// = **Cint**( //string expression// )
+	//result// = **Cint**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgInteger Integer]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	An ##[[KeyPgInteger Integer]]## value.
+
 {{fbdoc item="desc"}}
 	The ##**Cint**## function rounds off the decimal part of ##//numeric expression//## and returns a 32-bit ##[[KeyPgInteger Integer]]##. The function does not check for an overflow, so be sure not to pass a value which is less than -2 147 483 648 or larger than 2 147 483 647. The name is derived from 'Convert to INTeger'.
 
@@ -36,8 +52,9 @@ SLEEP
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCshort Cshort]]##
 	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##

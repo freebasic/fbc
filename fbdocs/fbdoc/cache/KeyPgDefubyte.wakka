@@ -9,21 +9,22 @@ Sets a default data type for variables
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'uNumber' a ##[[KeyPgUbyte Ubyte]]## number since it's first letter starts with u.
-
-
 {{fbdoc item="ex"}}
+	This will make 'uNumber' a ##[[KeyPgUbyte Ubyte]]## number since it's first letter starts with u.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defubyte u
 dim uNumber
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDefbyte Defbyte]]##
 	- ##[[KeyPgDefint Defint]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgUbyte Ubyte]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

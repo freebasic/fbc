@@ -2,8 +2,8 @@
 Converts a string to a long integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Vallng**( //strnum// )
@@ -18,14 +18,13 @@ Converts a string to a long integer
 	If the first character of the string is invalid, ##**Vallng**## will return a 0.
 
 {{fbdoc item="desc"}}
-	For example, ##**ValLng**("10")## will return 10, and ##**ValLng**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
+	For example, ##**Vallng**("10")## will return 10, and ##**Vallng**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
 
-	##**ValLng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**ValLng**("&HFF")## returns 255.
-
+	##**Vallng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**Vallng**("&HFF")## returns 255.
 
 	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
-	(**Note**: In early versions of FB, this function was called ##**Val64**##)
+	(**Note**: In early versions of FB, this function was called ##**""Val64""**##)
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -34,7 +33,7 @@ a = "20xa211"
 b = vallng(a)
 print a, b
 %%
-
+Output:
 %%
 20xa211   20
 %%

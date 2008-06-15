@@ -2,14 +2,14 @@
 Loads to a Dynamic Link Library (DLL) into memory at runtime
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer Pointer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer Pointer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Dylibload** ( //filename// )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
-		A ##[[KeyPgStringtype string]]## containing the filename of the library to load.
+		A ##[[KeyPgString string]]## containing the filename of the library to load.
 
 {{fbdoc item="ret"}}
 	The ##[[KeyPgPointer pointer]]## handle of the library loaded.

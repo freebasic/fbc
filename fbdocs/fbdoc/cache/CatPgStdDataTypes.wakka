@@ -32,7 +32,7 @@ Built-in numerical and string types
 	=={{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}==
 		64-bit wide datatypes that store real number values.
 <<>>{{anchor name="STRING"}}{{fbdoc item="section" value="String types"}}
-	=={{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}==
+	=={{fbdoc item="keyword" value="KeyPgString|STRING"}}==
 		Fixed-length and variable-length strings with built-in memory management.
 	=={{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}==
 		Fixed-length and variable-length null-terminated strings.

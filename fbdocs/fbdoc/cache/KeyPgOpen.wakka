@@ -2,7 +2,7 @@
 Opens a file or device for read or write access
 
 {{fbdoc item="syntax"}}##
-	**Open** //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] for //mode// [[[KeyPgEncoding encoding]] //encoding_type// [[KeyPgAs as]] [[KeyPgStringtype string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]
+	**Open** //filename// [[KeyPgAs as]] [[KeyPgString string]] for //mode// [[[KeyPgEncoding encoding]] //encoding_type// [[KeyPgAs as]] [[KeyPgString string]]] [[[KeyPgAccess access]] //access_type//] [//lock_type//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] [len = //record_length// [[KeyPgAs as]] [[KeyPgInteger integer]]]
 ##
 {{fbdoc item="param"}}
 	##//filename//##

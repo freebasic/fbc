@@ -37,7 +37,7 @@ print sizeof(*str2)  'returns len(zstring), the size of the variable
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStringtype String]]##
+	- ##[[KeyPgString String]]##
 	- ##[[KeyPgWstring Wstring]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

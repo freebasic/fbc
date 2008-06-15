@@ -52,6 +52,6 @@ A header file is a special kind of source file that typically only contains prep
 %%
 
 {{fbdoc item="see"}}
-	- [[ProPgModuleFiles Modules Files (.bas)]]
+	- [[ProPgSourceFiles Source Files (.bas)]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

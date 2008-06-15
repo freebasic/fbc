@@ -2,14 +2,14 @@
 Returns the value of a system environment variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Environ**( //varname// )
 ##
 {{fbdoc item="param"}}
 	##//varname//##
-		A ##[[KeyPgStringtype string]]## containing the environemental variable to return.
+		A ##[[KeyPgString string]]## containing the environemental variable to return.
 
 {{fbdoc item="ret"}}
 	Returns the value of the environmental variable requested.

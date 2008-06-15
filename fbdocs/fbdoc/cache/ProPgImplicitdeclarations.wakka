@@ -2,7 +2,7 @@
 Implicit declarations are supported for backward compatibility with QBASIC.
 
 {{fbdoc item="desc"}}
-	FreeBASIC allows the use of undeclared variables and variables with suffixes like % & ! # $. If suffixes are used, the variable type is determined from the suffix, (##% for [[KeyPgInteger integer]], & for [[KeyPgLong long]], ! for [[KeyPgSingle single]], # for [[KeyPgDouble double]] and $ for [[KeyPgStringtype string]]##). If no suffix is used the variable type is determined from any applicable DEF""###"" declarations (see list below), or defaults to integer if there is no applicable DEF""###"" statement.
+	FreeBASIC allows the use of undeclared variables and variables with suffixes like % & ! # $. If suffixes are used, the variable type is determined from the suffix, (##% for [[KeyPgInteger integer]], & for [[KeyPgLong long]], ! for [[KeyPgSingle single]], # for [[KeyPgDouble double]] and $ for [[KeyPgString string]]##). If no suffix is used the variable type is determined from any applicable DEF""###"" declarations (see list below), or defaults to integer if there is no applicable DEF""###"" statement.
 
 	For full debugging support, all variables must be explicitly declared and suffixes should not be used. The use of ##[[KeyPgOptionexplicit OPTION EXPLICIT]]## is recommended to turn of support for implicit declarations, so that mistyped variable names are caught at compile time by the compiler.
 

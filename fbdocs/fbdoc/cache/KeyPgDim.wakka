@@ -22,7 +22,7 @@ Declares a variable
 		##**Dim**## is a special keyword and supports a number of different syntaxes.  When declaring multiple variables, the first syntax specified above allows multiple variables of multiple types to be declared in one statement.  However, for compactness, the second syntax shown is the preferred method for declaring multiple variables of the same type.  Using the first syntax, the ##As //type//## portion refers only to the variable of that clause.  For instance:
 		
 			%%(qbasic)Dim var1, var2, var3 As Double    '' RISKY%%	
-		This code will declare **only** var3 as a double-precision floating point.  Var1 and var2 will be set to the latest ##**Def""###""**## used, ##[[KeyPgDefint DefInt]]## by default, because no type was specified in their respective clauses.  The same example using the alternative syntax:
+		This code will declare **only** var3 as a double-precision floating point: //var1// and //var2// will be set to the latest ##**Def""###""**## used, ##[[KeyPgDefint DefInt]]## by default, because no type was specified in their respective clauses.  The same example using the alternative syntax:
 	
 			%%(qbasic)Dim As Double var1, var2, var3%%	
 		Will declare and allocate var1, var2, var3 all as ##[[KeyPgDouble Double]]##s.
@@ -38,12 +38,12 @@ Declares a variable
 
 			%%(qbasic)Dim array(1 TO 2, 6, 3 TO 5) As Single%%			
 		The first dimension of the declared array has indices from 1 to 2, the second, 0 to 6, and the third, 3 to 5.  For more information on arrays, please visit the dedicated [[ProPgArrays page]].
-		If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgMetaStatic Static]]## (unless ##[[KeyPgDynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it ##[[KeyPgDynamic Dynamic]]##, even if ##[[KeyPgMetaStatic Option Static]]## has been issued.
+		If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic Static]]## (unless ##[[KeyPgOptiondynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it dynamic, even if ##[[KeyPgOptionstatic Option Static]]## has been issued.
 	
 		Variables and arrays are stored on the stack by default. The stack space is limited, by default to 1 MB, and exceeding this space results in a crash, with various error messages possible. Defining arrays in the main module and using ##[[KeyPgShared Shared]]## to make them accessible to subs/functions makes FB to place the arrays in main memory, allowing them to be up to 2GB. Using the //-t  stack_size_in_kbytes// in the command line can help too. 
 		
-		Arrays can be declared as resizable (dynamic) in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim Redim]]##, or declaring it past the metacommand ##[[KeyPgDynamic $Dynamic]]##. Dynamic arrays can't use initializers.
-		Arrays declared with ##**Dim**## and constant indexes and not preceeded by ##[[KeyPgDynamic Option Dynamic]]## are static (not resizable at runtime) and can use initializers.
+		Arrays can be declared as resizable (dynamic) in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim Redim]]##, or declaring it past the metacommand ##[[KeyPgMetaDynamic $Dynamic]]##. Dynamic arrays can't use initializers.
+		Arrays declared with ##**Dim**## and constant indexes and not preceeded by ##[[KeyPgOptiondynamic Option Dynamic]]## are static (not resizable at runtime) and can use initializers.
 	            
 	**Variable Initializers**
 		Arrays, variables, strings, and UDTs are initialized to zero or null srtrings by default when they are created.
@@ -115,13 +115,13 @@ Sleep
 {{fbdoc item="lang"}}
 	- In //-lang qb// the [[ProPgVariableScope scope]] of the variables is a function or a module if defined with ##**Dim Shared**##.
 	- In //-lang fb// and //-lang deprecated// the block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) define local [[ProPgVariableScope scopes]], variables ##**Dim**##med  within these blocks are not visible outside them.
-	- In //-lang fb//, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgDynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
+	- In //-lang fb//, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
 
 {{fbdoc item="diff"}}
 	- Variable Initializers are new to FreeBASIC
 	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to FreeBASIC
 	- Multidimensional arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
-	- Dynamic arrays up to 2GB in size are possible in FB. QB static arrays were limited to 64KB and to the DOS memory available if made ##[[KeyPgDynamic dynamic]]## and ///AH// was used.
+	- Dynamic arrays up to 2GB in size are possible in FB. QB static arrays were limited to 64KB and to the DOS memory available if made dynamic and ///AH// was used.
 
 	      
 {{fbdoc item="see"}}

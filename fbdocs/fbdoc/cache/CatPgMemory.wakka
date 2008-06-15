@@ -27,6 +27,8 @@ Procedures that work with static and dynamic memory
 		Clears data in an array with a specified value.
 	=={{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}==
 		Exchange the contents of two variables.
+	=={{fbdoc item="keyword" value="KeyPgSadd|SADD"}}==
+		Returns the address for the data in a string variable.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

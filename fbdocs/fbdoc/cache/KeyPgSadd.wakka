@@ -2,8 +2,20 @@
 Returns a pointer to a string variable's data
 
 {{fbdoc item="syntax"}}##
-	//result// = **Sadd** (//string_variable//)
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] [[KeyPgOverload overload]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring Wstring]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgZstring Zstring]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
+{{fbdoc item="usage"}}##
+	//result// = **Sadd** ( //str// )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		the string expression or variable to get the address of
+
+{{fbdoc item="ret"}}
+	A pointer to the data associated with ##//str//##.
+
 {{fbdoc item="desc"}}
 	Returns the memory offset of the string data in the string variable.
 
@@ -18,9 +30,9 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpVarptr Varptr]]##
 
-{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

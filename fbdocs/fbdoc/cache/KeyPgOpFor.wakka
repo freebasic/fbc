@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Operator For (iteration)"}}----
-Declares or defines operators for a user defined type for use in a ##[[KeyPgFor...Next]]## loop.
+Declares or defines operators used by a ##[[KeyPgFornext For...Next]]## loop with user defined type variables
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
@@ -24,7 +24,7 @@ Declares or defines operators for a user defined type for use in a ##[[KeyPgFor.
 	##//typename//## 
 		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
 	##//cond//## 
-		end value for the ##**For...Next**## loop
+		end value for the ##[[KeyPgFornext For...Next]]## loop
 	##//stp//##
 		step value for each iteration of the loop
 	##//variable//##
@@ -47,11 +47,11 @@ Declares or defines operators for a user defined type for use in a ##[[KeyPgFor.
 		- Initialize ##//variable//## to ##//start_value//##.
 		- Invoke ##**For**()## operator to allow additional initialization.
 		- Invoke ##**Next**()## operator to allow testing for a zero iteration loop.  This operator should return zero (0) to exit the loop, or non-zero (-1) to continue.
-		- Execute ##//statement//##.
+		- Execute ##//statements//##.
 		- Invoke ##**Step**()## operator.
 		- Invoke ##**Next**()## operator.  This operator should return zero (0) to exit the loop, or non-zero (-1) to continue.
 
-	If ##//step_value//## is not given in the ##[[KeyPgFornext For...Next]]## statement, then the ##**For**()##, ##**Step**()##, and ##**Next**(//cond//)## operators are performed.  If ##//step_value//## is given, then the ##**For**(//stp//)##, ##**Step**(//stp//)##, and ##**Next**(//cond//,//stp//)## operators are performed.
+	If ##//step_value//## is not given in the ##[[KeyPgFornext For...Next]]## statement, then the ##**For**()##, ##**Step**()##, and ##**Next**(//cond//)## operators are invoked.  If ##//step_value//## is given, then the ##**For**(//stp//)##, ##**Step**(//stp//)##, and ##**Next**(//cond//,//stp//)## operators are invoked.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -113,4 +113,4 @@ next i
 	- ##[[KeyPgFornext For...Next]]##
 	- ##[[KeyPgOperator Operator]]##
 
-{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

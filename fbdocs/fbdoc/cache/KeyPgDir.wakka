@@ -2,8 +2,8 @@
 Returns a file or directory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgStringtype string]] = "", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgString string]] = "", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Dir**( //file_spec//, //attrib_mask//, //out_attrib// )
@@ -12,14 +12,14 @@ Returns a file or directory
 ##
 {{fbdoc item="param"}}
 	##//file_spec//##
-		Optional ##[[KeyPgStringtype string]]## argument specifying the name of the files or directories to be matched.
+		Optional ##[[KeyPgString string]]## argument specifying the name of the files or directories to be matched.
 	##//attrib_mask//##
 		Optional ##[[KeyPgInteger integer]]## mask specifying the file attributes of the files or directories to be matched.  
 	##//out_attrib//##
 		Optional ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## which is set to the attributes of the file or directory returned.
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgStringtype string]]## containing the name of the file or directory returned.
+	A ##[[KeyPgString string]]## containing the name of the file or directory returned.
 
 {{fbdoc item="desc"}}
 	Returns files and/or directories that match //file_spec// and //attrib_mask//. The //file_spec// parameter can include wildcards ("*" and/or "?") and paths.

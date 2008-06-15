@@ -6,21 +6,26 @@ Sets a default data type for variables
 ##
 {{fbdoc item="desc"}}
 	##**Defulngint**## is used to make variables whose name starts with a letter in the range given to defaut to a ##[[KeyPgUlongint Ulongint]]## number .
+
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
-
 {{fbdoc item="ex"}}
+	This will make 'lNumber' a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defulongint l
 dim lNumber
 %%
 
+{{fbdoc item="lang"}}
+	- Allowed only with //-lang deprecated//.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
 	- ##[[KeyPgDeflngint Deflngint]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgUlongint Ulongint]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

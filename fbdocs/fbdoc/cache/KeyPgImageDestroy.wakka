@@ -25,3 +25,4 @@ Frees memory associated with an image buffer
 	- ##[[KeyPgImagecreate ImageCreate]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
+   

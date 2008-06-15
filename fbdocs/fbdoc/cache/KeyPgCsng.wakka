@@ -2,12 +2,28 @@
 Converts numeric or string expression to ##[[KeyPgSingle Single]]## precision floating point
 
 {{fbdoc item="syntax"}}##
-	**Csng**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Csng** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Csng**(//numeric value//)
-	//variable// = **Csng**(//string expression//)
+	//result// = **Csng**( //numeric expression// )
+	//result// = **Csng**( //string expression// )
+	//result// = **Csng**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgSingle Single]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgSingle Single]]## precision value.
+
 {{fbdoc item="desc"}}
 	The ##**Csng**## function returns a 32-bit ##[[KeyPgSingle Single]]## value. The function does not check for an overflow, so be sure not to pass a value outside the representable range of the ##[[KeyPgSingle Single]]## data type. The name can be explained as 'Convert to ""SiNGle""'.
 
@@ -36,9 +52,10 @@ SLEEP
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCshort Cshort]]##
 	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCdbl Cdbl]]##

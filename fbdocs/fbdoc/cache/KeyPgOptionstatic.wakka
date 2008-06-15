@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="OPTION STATIC"}}----
+Compiler switch to change the way arrays are allocated
+
+{{fbdoc item="syntax"}}##
+	**Option Static**
+##
+{{fbdoc item="desc"}}
+	##**$Static**## ends the action of a previous ##[[KeyPgMetaDynamic $Dynamic]]##, so from this point all arrays declared with ##[[KeyPgDim Dim]]## are static.
+
+	By default, arrays declared with ##[[KeyPgDim Dim]]## are static. An array declared with ##[[KeyPgRedim Redim]]## is always dynamic.  Arrays declared in a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## are always dynamic.
+
+{{fbdoc item="ex"}}
+%%(qbasic)' compile with -lang deprecated
+option dynamic
+dim a(100)   '<<this array will be dynamic
+option STATIC
+dim b(100)   '<<this array will be static
+%%
+
+{{fbdoc item="lang"}} 
+	- Allowed only in //-lang deprecated//
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMetaDynamic $Dynamic]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgOptiondynamic Option Dynamic]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

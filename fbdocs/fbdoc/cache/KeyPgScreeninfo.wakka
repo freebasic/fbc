@@ -2,7 +2,7 @@
 Retrieves information about current video mode or the desktop
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screeninfo** ( [[KeyPgByref byref]] //w// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //h// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bpp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //driver// [[KeyPgAs as]] [[KeyPgStringtype string]] = "" )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screeninfo** ( [[KeyPgByref byref]] //w// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //h// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bpp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //rate// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //driver// [[KeyPgAs as]] [[KeyPgString string]] = "" )
 ##
 {{fbdoc item="usage"}}##
 	**Screeninfo** [ //w// ] [, [ //h// ] [, [ //depth// ] [ , [ //bpp// ] [ , [ //pitch// ] [ , [ //rate// ] [, //driver// ]]]]]

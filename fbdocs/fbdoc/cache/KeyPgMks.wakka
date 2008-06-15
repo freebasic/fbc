@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="MKS"}}----
-Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes
+Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mks** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mks** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mks**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgSingle single]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+		A ##[[KeyPgSingle single]]## variable to binary copy to a ##[[KeyPgString string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgSingle single]]##.
+	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgSingle single]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a ##[[KeyPgSingle Single]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 4 bytes. The resulting string can be read back to a single by ##[[KeyPgCvs Cvs]]##.
+	Does a binary copy  from a ##[[KeyPgSingle Single]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to a single by ##[[KeyPgCvs Cvs]]##.
 
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 

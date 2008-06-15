@@ -2,7 +2,7 @@
 Gets a [[ProPgDates Date Serial]] from a time string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"

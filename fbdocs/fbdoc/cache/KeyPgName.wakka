@@ -2,7 +2,7 @@
 Renames a file on disk
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Name**( [[KeyPgByref Byref]] //oldname// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByref Byref]] //newname// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Name**( [[KeyPgByref Byref]] //oldname// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref Byref]] //newname// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Name**( //oldname//, //newname// )

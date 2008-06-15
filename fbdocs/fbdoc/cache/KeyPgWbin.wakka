@@ -24,7 +24,7 @@ Returns the binary wstring (unicode) representation of a number
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Returns a binary [[KeyPgStringtype string]] representation of //number//.
+	Returns a binary [[KeyPgString string]] representation of //number//.
 
 {{fbdoc item="desc"}}
 	Returns a ##[[KeyPgWstring wstring]}## (Unicode) representing the binary value of the integer ##//expression//##. Binary digits range from 0 to 1.

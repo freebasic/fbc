@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="$DYNAMIC"}}----
+Metacommand to change the way arrays are allocated
+
+{{fbdoc item="syntax"}}##
+	**'$Dynamic**
+		//or//
+	[[KeyPgRem rem]] **$Dynamic**
+##
+{{fbdoc item="desc"}}
+	##**$Dynamic**## allocates any arrays into dynamic memory by default.  When this option is turned off, the ##[[KeyPgRedim Redim]]## keyword must be used to allocate a dynamic array.
+
+	Dynamic memory is memory that is allocated during the course of program execution, as the program needs it.  Static memory, or the memory ##[[KeyPgDim Dim]]## uses by default, is set aside at the start of program execution.  This type of memory is faster, but it is less flexible and cannot be reallocated or freed.  With the ##**$Dynamic**## switch on, ##[[KeyPgDim Dim]]## effectively acts like ##[[KeyPgRedim Redim]]##, using dynamic memory.
+
+	If an array is defined using ##[[KeyPgDim Dim]]## using variables to specify dimensions, the array is implicitly declared as dynamic, even if the keyword ##**$Dynamic**## is not used.
+
+	The deprecated  ##**$Dynamic**## form exists for compatibility with QB and can be used too. ##[[KeyPgOptiondynamic Option Dynamic]]## is the VB-like version of the same command.
+
+{{fbdoc item="ex"}}
+%%(qbasic)' compile with -lang deprecated or qb
+'$DYNAMIC
+Dim a(100)
+'......
+ReDim a(200)
+%%
+{{fbdoc item="lang"}}
+	- Allowed only in //-lang qb// and //-lang deprecated//.
+
+{{fbdoc item="diff"}}
+	- When used inside comments it must be the first token
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMetaStatic $Static]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgOptiondynamic Option Dynamic]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

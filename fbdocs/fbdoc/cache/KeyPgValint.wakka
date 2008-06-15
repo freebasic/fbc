@@ -2,7 +2,7 @@
 Converts a string to an integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
@@ -20,7 +20,7 @@ Converts a string to an integer number
 {{fbdoc item="desc"}}
 	For example, ##**Valint**("10")## will return 10, and ##**Valint**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
 
-	##**ValInt**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**ValInt**("&HFF")## returns 255.
+	##**Valint**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prepended, for example: ##**Valint**("&HFF")## returns 255.
 
 
 	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.

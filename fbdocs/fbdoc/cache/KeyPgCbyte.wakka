@@ -2,12 +2,28 @@
 Converts numeric or string expression to ##[[KeyPgByte Byte]]##
 
 {{fbdoc item="syntax"}}##
-	**Cbyte**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cbyte** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgByte byte]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgByte byte]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Cbyte**(//numeric value//)
-	//variable// = **Cbyte**(//string expression//)
+	//result// = **Cbyte**( //numeric expression// )
+	//result// = **Cbyte**( //string expression// )
+	//result// = **Cbyte**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgByte Byte]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgByte Byte]]## value.
+
 {{fbdoc item="desc"}}
 	The ##**Cbyte**## function rounds off the decimal part and returns a 8 bit ##[[KeyPgByte Byte]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -128 to 127. The name can be explained as 'Convert to Byte'.
 
@@ -29,15 +45,16 @@ SLEEP
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCshort Cshort]]##
 	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##

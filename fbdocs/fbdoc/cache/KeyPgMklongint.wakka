@@ -1,18 +1,18 @@
 {{fbdoc item="title" value="MKLONGINT"}}----
-Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgStringtype string]]##, setting its length to 8 bytes
+Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgString string]]##, setting its length to 8 bytes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mklongint** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mklongint** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mklongint**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgLongint longint]]## variable to binary copy to a ##[[KeyPgStringtype string]]##.
+		A ##[[KeyPgLongint longint]]## variable to binary copy to a ##[[KeyPgString string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgStringtype string]]## with a binary copy of the ##[[KeyPgLongint longint]]##.
+	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgLongint longint]]##.
 
 {{fbdoc item="desc"}}
 	Does a binary copy  from a ##[[KeyPgLongint Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint Cvlonging]]##

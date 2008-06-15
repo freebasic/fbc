@@ -2,7 +2,7 @@
 Returns the address of a procedure
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T// [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Procptr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T// [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Procptr** ( //lhs// )

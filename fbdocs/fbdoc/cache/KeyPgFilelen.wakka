@@ -2,7 +2,7 @@
 Finds the length of a file given its filename
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileLen""** ( //filename// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
@@ -15,7 +15,7 @@ Finds the length of a file given its filename
 ##
 {{fbdoc item="param"}}
 	##//filename//##
-		A ##[[KeyPgStringtype string]]## argument specifying the filename of the file whose length to return.
+		A ##[[KeyPgString string]]## argument specifying the filename of the file whose length to return.
 
 {{fbdoc item="desc"}}
 	Returns the size in bytes of the file specified by //filename//.

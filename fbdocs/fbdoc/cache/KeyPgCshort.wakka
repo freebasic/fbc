@@ -2,12 +2,28 @@
 Converts numeric or string expression to an integer (##[[KeyPgShort Short]]##)
 
 {{fbdoc item="syntax"}}##
-	**Cshort**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cshort** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgShort short]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgShort short]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Cshort**(//numeric expression//)
-	//variable// = **Cshort**(//string expression//)
+	//result// = **Cshort**( //numeric expression// )
+	//result// = **Cshort**( //string expression// )
+	//result// = **Cshort**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgShort Short]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgShort Short]]## value.
+
 {{fbdoc item="desc"}}
 	The ##**Cshort**## function rounds off the decimal part and returns a 16 bit ##[[KeyPgShort Short]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -32768 to 32767. The name can be explained as 'Convert to Short'.
 
@@ -29,18 +45,19 @@ SLEEP
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCbyte Cbyte]]##
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]## 
+	- ##[[KeyPgCdbl Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

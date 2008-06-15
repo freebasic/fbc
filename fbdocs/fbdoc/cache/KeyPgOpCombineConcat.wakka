@@ -2,7 +2,7 @@
 Appends and assigns a string onto another string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgStringtype string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
 ##
 {{fbdoc item="usage"}}##

@@ -48,7 +48,7 @@ print _ ' line
 %%
 
 {{fbdoc item="section" value="Metacommands"}}
-	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
+	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgMetaInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
 
 	%%(qbasic)
 rem $static

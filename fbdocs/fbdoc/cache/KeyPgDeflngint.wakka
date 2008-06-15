@@ -9,27 +9,23 @@ Sets a default data type for variables
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'lNumber' a ##[[KeyPgLongint Longint]]## number since it's first letter starts with l.
-
 {{fbdoc item="ex"}}
+	This will make 'lNumber' a ##[[KeyPgLongint Longint]]## number since it's first letter starts with l.
 %%(qbasic)'' Compile with -lang deprecated or qb
 deflongint l
 dim lNumber
 %%
 
+{{fbdoc item="lang"}}
+	- Allowed only with //-lang deprecated//.
+
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefbyte Defbyte]]##
-	- ##[[KeyPgDefdbl Defdbl]]##
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDefshort Defshort]]##
-	- ##[[KeyPgDefsng Defsng]]##
-	- ##[[KeyPgDefstr Defstr]]##
-	- ##[[KeyPgDefubyte Defubyte]]##
-	- ##[[KeyPgDefuint Defuint]]##
-	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgDefulngint Defulngint]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgLongint Longint]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

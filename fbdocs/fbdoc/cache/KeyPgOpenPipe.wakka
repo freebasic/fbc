@@ -2,8 +2,8 @@
 Opens a sub process and allows input to be read from or output to be written to the sub process
 
 {{fbdoc item="syntax"}}##
-	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
-	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgStringtype string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
+	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgString string]] for {[[KeyPgInputfilemode input]] | [[KeyPgOutput output]]} [[KeyPgAs as]] [#]//filenum//
+	**Open Pipe** //command// [[KeyPgAs as]] [[KeyPgString string]] for [[KeyPgBinary binary]] [[KeyPgAccess access]] {[[KeyPgReadFile read]] | [[KeyPgWriteFile write]]} [#]//filenum//
 ##
 {{fbdoc item="usage"}}##
 	**Open Pipe** //command// for input as #//filenum//

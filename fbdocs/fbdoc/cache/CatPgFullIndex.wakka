@@ -54,7 +54,7 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
-	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE or $INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
@@ -62,7 +62,8 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
 {{fbdoc item="section" value="$"}}
-	- {{fbdoc item="keyword" value="KeyPgDynamic|$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 {{fbdoc item="section" value="A"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
@@ -133,6 +134,7 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgCsrlin|CSRLIN"}}
 	- {{fbdoc item="keyword" value="KeyPgCubyte|CUBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCulng|CULNG"}}
 	- {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCunsg|CUNSG"}}
 	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}
@@ -325,12 +327,12 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
-	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOpOr|OR"}}
 	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
@@ -428,8 +430,8 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
 	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
 	- {{fbdoc item="keyword" value="KeyPgStr|STR"}}
-	- {{fbdoc item="keyword" value="KeyPgString|STRING (Function)"}}
-	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}
+	- {{fbdoc item="keyword" value="KeyPgStringFunction|STRING (Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB (Member)"}}
@@ -452,6 +454,7 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|TYPE (Alias)"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|TYPE (Temporary)"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE (UDT)"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
 {{fbdoc item="section" value="U"}}
 	- {{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}
@@ -501,7 +504,7 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}
 	- {{fbdoc item="keyword" value="KeyPgWstring|WSTRING(Data Type)"}}
-	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING(Function)"}}
 {{fbdoc item="section" value="X"}}
 	- {{fbdoc item="keyword" value="KeyPgOpXor|XOR"}}
 {{fbdoc item="section" value="Y"}}

@@ -9,26 +9,21 @@ Sets a default data type for variables
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'sNumber' and 'yNumber' a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
-
-
 {{fbdoc item="ex"}}
+	This will make 'sNumber' and 'yNumber' a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defsng s-z
 dim sNumber, yNumber
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
-
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
 	- ##[[KeyPgDefdbl Defdbl]]##
-	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDefstr Defstr]]##
 	- ##[[KeyPgSingle Single]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

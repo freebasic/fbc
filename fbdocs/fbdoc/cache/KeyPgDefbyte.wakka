@@ -7,30 +7,24 @@ Sets a default data type for variables
 {{fbdoc item="desc"}}
 	##**Defbyte**## is used to default variables to a ##[[KeyPgByte Byte]]## number that start with a letter in the range given.
 
-	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
-
-	This will make 'bNumber' a ##[[KeyPgByte Byte]]## number since it's first letter starts with b:
+	For the syntax, ##//letterrange//## is in the form of ##letter-letter##, or just ##letter##.
 
 {{fbdoc item="ex"}}
+	This will make 'bNumber' a ##[[KeyPgByte Byte]]## number since it's first letter starts with b:
 %%(qbasic)'' Compile with -lang deprecated or qb
 defbyte b
 dim bNumber
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefdbl Defdbl]]##
+	- ##[[KeyPgByte Byte]]##
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDefshort Defshort]]##
-	- ##[[KeyPgDefsng Defsng]]##
-	- ##[[KeyPgDefstr Defstr]]##
 	- ##[[KeyPgDefubyte Defubyte]]##
-	- ##[[KeyPgDefuint Defuint]]##
-	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgDim Dim]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

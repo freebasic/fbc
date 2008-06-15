@@ -1,16 +1,20 @@
 {{fbdoc item="title" value="STATIC"}}----
-Declares variables and object having static storage
+Declares variables and objects having static storage
 
 {{fbdoc item="syntax"}}##
-	**Static** //symbol//[( //subscripts// )] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
+	**Static** //symbol// [ ( //subscripts// ) ] [ [[KeyPgAs as]] [[DataType DataType]] ] [ , ... ]
 		//or//
-	[[KeyPgSub sub]] //proc_header// **Static**
+	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
+		[ ... ]
+	[[KeyPgEnd end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
 ##
 {{fbdoc item="param"}}
 	##//symbol//##
-		variable or array symbol name
+		variable or array symbol name.
+	##//subscripts//##
+		subscript dimension(s) when defining arrays.
 	##//proc_header//##
-		procedure header for a procedure body.
+		procedure header for a procedure definition.
 
 {{fbdoc item="desc"}}
 	Specifies static storage for variables and objects; they are allocated at program startup and deallocated upon exit. Objects are only constructed when execution reaches their defintion however, and destructed upon program exit.
@@ -21,7 +25,7 @@ Declares variables and object having static storage
 
 	When modifying a module-level procedure declaration, ##**Static**## specifies all variables and objects declared in the procedure to have static storage.
 
-	##**Static**## is also used to specify static member procedures.  See ##[[KeyPgStatic Static (Member)]]##.
+	##**Static**## is also used to specify static member procedures.  See ##[[KeyPgStaticMember Static (Member)]]##.
 
 {{fbdoc item="ex"}}
 %%(qbasic)sub f
@@ -47,11 +51,10 @@ Number of times called: 2
 	- ##**Static**## can declare arrays, too.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMetaStatic Option Static]]##
+	- ##[[KeyPgSub Sub (Module)]]## and ##[[KeyPgFunction Function (Module)]]##
+	- ##[[KeyPgMemberSub Sub (Member)]]## and ##[[KeyPgMemberFunction Function (Member)]]##
+	- ##[[KeyPgOptionstatic Option Static]]##
 	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

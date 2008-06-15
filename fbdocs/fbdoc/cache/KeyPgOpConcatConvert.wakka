@@ -20,9 +20,9 @@ Concatenates two strings, converting non-strings to strings as needed
 		The resultant string type (varies with operands).
 
 {{fbdoc item="desc"}}
-	This operator concatenates two expressions. If either of the expressions is not a string type, it is converted to ##[[KeyPgStringtype String]]## with ##[[KeyPgStr Str]]##.
+	This operator concatenates two expressions. If either of the expressions is not a string type, it is converted to ##[[KeyPgString String]]## with ##[[KeyPgStr Str]]##.
 
-	If either of the expressions is a ##[[KeyPgWstring Wstring]]##, a ##[[KeyPgWstring Wstring]]## is returned, otherwise a ##[[KeyPgStringtype String]]## is returned.
+	If either of the expressions is a ##[[KeyPgWstring Wstring]]##, a ##[[KeyPgWstring Wstring]]## is returned, otherwise a ##[[KeyPgString String]]## is returned.
 
 {{fbdoc item="ex"}}
 %%(qbasic)

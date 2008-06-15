@@ -5,28 +5,28 @@ Sets a default data type for variables
 	**Defstr** //letterrange//[, //letterrange//]...
 ##
 {{fbdoc item="desc"}}
-	##**Defstr**## is used to default variables to a ##[[KeyPgStringtype String]]## that start with a letter in the range given.
+	##**Defstr**## is used to default variables to a ##[[KeyPgString String]]## that start with a letter in the range given.
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'sMessage' a ##[[KeyPgStringtype String]]## since it starts with s.
-
 {{fbdoc item="ex"}}
+	This will make 'sMessage' a ##[[KeyPgString String]]## since it starts with s.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defstr s
 dim sMessage
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- None known
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefint Defint]]##
 	- ##[[KeyPgDefsng Defsng]]##
 	- ##[[KeyPgDeflng Deflng]]##
 	- ##[[KeyPgDefdbl Defdbl]]##
-	- ##[[KeyPgDouble Double]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgString String]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

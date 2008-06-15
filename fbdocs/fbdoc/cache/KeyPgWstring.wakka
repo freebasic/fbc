@@ -17,7 +17,7 @@ Standard data type: wide character string
 	 The size of a ##**Wstring**## character depends on the platform the program is compiled for.  On DOS a ##**Wstring**## character takes up 1 byte; on Win32 it takes up 2 bytes; on Linux it takes up 4 bytes.
 	
 	##[[KeyPgSizeof sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
-	
+
 {{fbdoc item="ex"}}
 %%(qbasic)
 dim as wstring * 14 str1 => "hello, world"
@@ -38,9 +38,9 @@ print len(*str2)      'returns 12, the length of the string it points to
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStringtype String]]##
+	- ##[[KeyPgString String]]##
 	- ##[[KeyPgZstring Zstring]]##
-	- ##[[KeyPgFunWstring Wstring]]## (function)
+	- ##[[KeyPgWstringFunction Wstring]]## (function)
 	- ##[[KeyPgWspace Wspace]]##
 	- ##[[KeyPgWstr Wstr]]##
 	- ##[[KeyPgWchr Wchr]]##
@@ -49,4 +49,4 @@ print len(*str2)      'returns 12, the length of the string it points to
 	- ##[[KeyPgWoct Woct]]##
 	- ##[[KeyPgWinput Winput()]]##
 
-{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -2,14 +2,14 @@
 Converts an four byte string to an single-precision variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvs** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvs** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvs**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A [[KeyPgStringtype string]] exactly four bytes in length with a binary copy of an single-precision variable stored in it.
+		A [[KeyPgString string]] exactly four bytes in length with a binary copy of an single-precision variable stored in it.
 
 {{fbdoc item="ret"}}
 	Returns a [[KeyPgSingle single]] variable to copy the binary copy of a single to.

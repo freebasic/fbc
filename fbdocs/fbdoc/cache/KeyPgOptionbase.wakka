@@ -32,4 +32,4 @@ print "foo contains elements between " & lbound(foo) & " and " & ubound(foo)
 	- ##[[KeyPgRedim Redim]]##
 	- ##[[KeyPgLbound LBound]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

@@ -22,4 +22,4 @@ All drawing operations work on this RAM framebuffer; when the actual display nee
 	- ##[[KeyPgTransGfx Trans]]##
 	- ##[[KeyPgAlphaGfx Alpha]]##
 
-{{fbdoc item="back" value="CatPgGfx|GFX Functions Index"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

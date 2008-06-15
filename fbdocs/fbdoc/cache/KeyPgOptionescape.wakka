@@ -40,10 +40,10 @@ printf("%d * %d = %d\r\n", a, b, a * b)
 %%
 	
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionescape __FB_OPTION_ESCAPE__]]##
 	- ##[[KeyPgChr Chr]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

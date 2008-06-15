@@ -2,13 +2,13 @@
 Returns the path of the running program
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exepath** ( ) [[KeyPgAs as]] [[KeyPgStringtype string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exepath** ( ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Exepath**
 ##
 {{fbdoc item="ret"}}
-	A ##[[KeyPgStringtype string]]## variable set to the path of the running program.
+	A ##[[KeyPgString string]]## variable set to the path of the running program.
 
 {{fbdoc item="desc"}}
 	Returns the path (the location) of the calling program. This is not necessarily the same as ##[[KeyPgCurdir Curdir]]##.

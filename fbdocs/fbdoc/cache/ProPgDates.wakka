@@ -30,4 +30,4 @@ print
 b = dateserial(2000,1,1)
 print int(a-b) & " days have passed since 2000/01/01"%%
 
-{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

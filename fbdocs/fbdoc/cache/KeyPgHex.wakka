@@ -24,7 +24,7 @@ Returns the hexadecimal of the given number
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Hexadecimal [[KeyPgStringtype string]] representation of number.
+	Hexadecimal [[KeyPgString string]] representation of number.
 
 {{fbdoc item="desc"}}
 	Returns the hexadecimal string representation of the integer ##//expression//##. Hexadecimal digits range from 0-9, or A-F.

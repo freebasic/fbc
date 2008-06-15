@@ -24,7 +24,7 @@ Returns the hexadecimal wstring (unicode) representation of a number
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Returns a hexadecimal [[KeyPgStringtype string]] representation of //number//.
+	Returns a hexadecimal [[KeyPgString string]] representation of //number//.
 
 {{fbdoc item="desc"}}
 	Hexadecimal digits range from 0-9, or A-F.

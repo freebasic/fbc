@@ -2,14 +2,14 @@
 Converts an two byte string to a short variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgShort short]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort short]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvshort**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A ##[[KeyPgStringtype String]]## exactly two bytes in length with a binary copy of a short variable stored in it.
+		A ##[[KeyPgString String]]## exactly two bytes in length with a binary copy of a short variable stored in it.
 
 {{fbdoc item="ret"}}
 	Returns a ##[[KeyPgShort Short]]## variable to copy the binary copy of a short to.

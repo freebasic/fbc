@@ -12,7 +12,7 @@ In ##-lang qb## and ##-lang deprecated## modes, identifiers may have a symbol at
 	- ##&## for ##[[KeyPgLong Long]]##
 	- ##!## for ##[[KeyPgSingle Single]]##
 	- ##### for ##[[KeyPgDouble Double]]##
-	- ##$## for ##[[KeyPgStringtype String]]##
+	- ##$## for ##[[KeyPgString String]]##
 The use of these symbols is generally discouraged in modern FreeBASIC code and is not allowed in ##-lang fb## mode (the default).
 
 The alternative is to be explicit - for example, ##Dim As Integer foo## or ##Dim foo As Integer## instead of ##Dim foo%##

@@ -49,12 +49,13 @@ end with
 	- In the //QB// dialect, symbol names are allowed to contain periods (.).
 
 {{fbdoc item="diff"}}
-	- none
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##
 	- ##[[KeyPgOpAt Operator @ (Address of)]]##
 	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
+	- [[CatPgOpStructure Structure Operators]]
 	- ##[[KeyPgWith With..End With]]##
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -12,7 +12,7 @@ Declaration specifier to explicitly pass a parameter by value
 
 	This means that if you pass say the value of the variable //##x##// then the original variable //##x##// will be modified in any way, where as if you send the address the procedure could modify the value of //##x##// to anything.
 
-	For string arguments, ##**Byval**## currently has a different meaning: it passes a pointer to the string, while ##[[KeyPgByref Byref]]## passes a pointer to the FB string descriptor. This behavior allows passing a ##[[KeyPgStringtype String]]## to C procedures. The string passed this way should not be changed by the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing a ##[[KeyPgStringtype String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
+	For string arguments, ##**Byval**## currently has a different meaning: it passes a pointer to the string, while ##[[KeyPgByref Byref]]## passes a pointer to the FB string descriptor. This behavior allows passing a ##[[KeyPgString String]]## to C procedures. The string passed this way should not be changed by the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##, as the string descriptor would not be updated. Passing a ##[[KeyPgString String]]## ##**Byval**## should be avoided,  ##[[KeyPgZstring Zstring]]## is more suited for this purpose.
 
 	Opposite of ##[[KeyPgByref ByRef]]##.
 

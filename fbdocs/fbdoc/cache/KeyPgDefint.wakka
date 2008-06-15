@@ -9,30 +9,26 @@ Sets a default data type for variables
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'iNumber' an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
-
 {{fbdoc item="ex"}}
+	This will make 'iNumber' an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defint i
 dim iNumber
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
-
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- 
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDefbyte Defbyte]]##
 	- ##[[KeyPgDefdbl Defdbl]]##
 	- ##[[KeyPgDeflng Deflng]]##
+	- ##[[KeyPgDeflngint Deflngint]]##
 	- ##[[KeyPgDefshort Defshort]]##
 	- ##[[KeyPgDefsng Defsng]]##
 	- ##[[KeyPgDefstr Defstr]]##
-	- ##[[KeyPgDefubyte Defubyte]]##
-	- ##[[KeyPgDefuint Defuint]]##
-	- ##[[KeyPgDefushort Defushort]]##
 	- ##[[KeyPgInteger Integer]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

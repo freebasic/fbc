@@ -2,14 +2,14 @@
 Opens a serial port for input and output
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Open Com** ( byref //options// [[KeyPgAs as]] [[KeyPgStringtype string]], **AS** //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Open Com** ( byref //options// [[KeyPgAs as]] [[KeyPgString string]], **AS** //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Open Com**( //options//, **AS**[#] //filenum// )
 ##
 {{fbdoc item="param"}}
 	##//options//##
-		A [[KeyPgStringtype string]] containing options used in controlling the port.
+		A [[KeyPgString string]] containing options used in controlling the port.
 	##//filenum//##
 		The file number to bind to the port.
 
@@ -19,7 +19,7 @@ Opens a serial port for input and output
 {{fbdoc item="desc"}}
 	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as PRINT #, INPUT#, GET #,...
 
-	The main parameter is a [[KeyPgStringtype string]] that describes, at the very least, which communications port to open. It has the format:
+	The main parameter is a [[KeyPgString string]] that describes, at the very least, which communications port to open. It has the format:
 
 		##"**COM**//n//**:** [ //baudrate// ][ , [ //parity// ][ , [ //data_bits// ][ , [ //stop_bits// ][ , [ //extended_options// ]]]]]"##
 

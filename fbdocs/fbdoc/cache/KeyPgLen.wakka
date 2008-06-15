@@ -22,7 +22,7 @@ Returns the length of a variable or data type
 {{fbdoc item="desc"}}
 	##**Len**## returns the length of a variable or [[DataType DataType]], in bytes.
 
-	In the first form, if ##//variable//## is of type ##[[KeyPgStringtype String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. Otherwise, the size of ##//variable//##'s type in bytes is returned.
+	In the first form, if ##//variable//## is of type ##[[KeyPgString String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. Otherwise, the size of ##//variable//##'s type in bytes is returned.
 
 	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
 

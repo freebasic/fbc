@@ -2,14 +2,14 @@
 Converts an four byte string to an integer (long) variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvl** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgStringtype string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvl** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvl**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A [[KeyPgStringtype string]] exactly four bytes in length with a binary copy of an integer variable stored in it.
+		A [[KeyPgString string]] exactly four bytes in length with a binary copy of an integer variable stored in it.
 
 {{fbdoc item="ret"}}
 		A [[KeyPgInteger integer]] variable to copy the binary copy of a integer to.

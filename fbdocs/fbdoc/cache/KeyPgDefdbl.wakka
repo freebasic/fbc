@@ -8,9 +8,8 @@ Sets a default data type for variables
 	##**Defdbl**## is used to default variables to a ##[[KeyPgDouble Double]]##-precision decimal number that start with a letter in the range given.
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
-
 {{fbdoc item="ex"}}
+	This will make 'aNum' a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
 %%(qbasic)'' Compile with -lang deprecated or qb
 defdbl a-d
 dim aNum 'implicit: As Double
@@ -18,21 +17,15 @@ dim aNum 'implicit: As Double
 print len(aNum) ' Prints 8, the number of bytes in a double.
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
-
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- None known
+	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefbyte Defbyte]]##
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDefshort Defshort]]##
 	- ##[[KeyPgDefsng Defsng]]##
-	- ##[[KeyPgDefstr Defstr]]##
-	- ##[[KeyPgDefubyte Defubyte]]##
-	- ##[[KeyPgDefuint Defuint]]##
-	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgDouble Double]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

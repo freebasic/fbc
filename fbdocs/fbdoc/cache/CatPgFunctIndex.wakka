@@ -19,8 +19,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgLoWord|LOWORD"}}
 
 {{fbdoc item="section" value="Compiler switches"}}
-	- {{fbdoc item="keyword" value="KeyPgDynamic|$DYNAMIC"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgDefbyte|DEFBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgDefdbl|DEFDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgDefint|DEFINT"}}
@@ -35,13 +33,12 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
-	- {{fbdoc item="keyword" value="KeyPgDynamic|OPTION DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|OPTION STATIC"}}
-	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
 
 {{fbdoc item="section" value="Console"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
@@ -76,7 +73,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
-	- {{fbdoc item="keyword" value="KeyPgStringtype|STRING"}}
+	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE"}}
@@ -263,18 +260,23 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
 
+{{fbdoc item="section" value="Meta Commands"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 <<>>
 {{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
+	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
 	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
 	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
 	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
-	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
 
 {{fbdoc item="section" value="Modularizing"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
@@ -378,10 +380,11 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
-	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE or $INCLUDE:"}}
+	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
+	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}
 	- {{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}
@@ -463,11 +466,11 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgRset|RSET"}}
 	- {{fbdoc item="keyword" value="KeyPgRtrim|RTRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgSpace|SPACE"}}
-	- {{fbdoc item="keyword" value="KeyPgString|STRING (Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgStringFunction|STRING (Function)"}}
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
 	- {{fbdoc item="keyword" value="KeyPgUcase|UCASE"}}
 	- {{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}
-	- {{fbdoc item="keyword" value="KeyPgFunWstring|WSTRING(Function)"}}
+	- {{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING(Function)"}}
 
 {{fbdoc item="section" value="String and number conversion"}}
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}
@@ -513,6 +516,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgCsng|CSNG"}}
 	- {{fbdoc item="keyword" value="KeyPgCubyte|CUBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgCuint|CUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgCulng|CULNG"}}
 	- {{fbdoc item="keyword" value="KeyPgCulngint|CULNGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgCunsg|CUNSG"}}
 	- {{fbdoc item="keyword" value="KeyPgCushort|CUSHORT"}}

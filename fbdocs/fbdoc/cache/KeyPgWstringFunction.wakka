@@ -3,7 +3,7 @@ Fills a wstring with a certain length of a certain wide character
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgString wstring]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wstring**( //count//, //ch_code// )
@@ -39,7 +39,8 @@ end 0
 	- QBasic does not support [[Unicode Unicode]]
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStringtype String]] (data type)##
+	- ##[[KeyPgString String]] (data type)##
 	- ##[[KeyPgWspace Wspace]]##
+	- ##[[KeyPgWstring Wstring]] (data type)##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

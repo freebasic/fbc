@@ -2,19 +2,17 @@
 Removes surrounding substrings or characters on the right side of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [ ANY ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [ ANY ] [[KeyPgByval byval]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] = @[[KeyPgWstr WSTR]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Rtrim**( //str// [, [ ANY ] //trimset// ] )
+	//result// = **Rtrim**( //str// [, [ **Any** ] //trimset// ] )
 ##
 {{fbdoc item="param"}}
 	##//str//##
 		The source string.
 	##//trimset//##
 		The substring to trim.
-	##ANY##
-		If specified, will trim any characters matched in ##//trimset//##.
 
 {{fbdoc item="ret"}}
 	Returns the trimmed string.
@@ -22,7 +20,7 @@ Removes surrounding substrings or characters on the right side of a string
 {{fbdoc item="desc"}}
 	This procedure trims surrounding characters from the right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii ASCII]] code 32) are trimmed.
 
-	If the ##ANY## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
+	If the ##**Any**## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
 	
 	All comparisons are case-sensitive.
 

@@ -8,7 +8,7 @@ FreeBASIC programmer's guide
 	{{fbdoc item="keyword" value="ProPgPrimer1|FreeBASIC Primer #1"}}
 
 {{fbdoc item="section" value="Source Files"}}
-	Module Files (.bas)
+	{{fbdoc item="keyword" value="ProPgSourceFiles|Source Files (.bas)"}}
 	{{fbdoc item="keyword" value="ProPgHeaderFiles|Header Files (.bi)"}}
 	Using Prebuilt Libraries
 
@@ -86,6 +86,7 @@ FreeBASIC programmer's guide
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
 	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
+	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="ProPgRadians|Radians"}}
 	External Graphics File Formats
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}

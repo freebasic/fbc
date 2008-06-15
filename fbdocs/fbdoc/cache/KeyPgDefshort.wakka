@@ -9,31 +9,24 @@ Sets a default data type for variables
 
 	For the syntax, ##//letterrange//## is in the form of letter-letter, or just letter.
 
-	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
-
 {{fbdoc item="ex"}}
+	This will make 'sNumber' a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
 %%(qbasic)'' Compile with -lang deprecated or qb
 defshort s
 dim sNumber
 %%
 {{fbdoc item="lang"}}
-	- With //-lang fb// every variable must be [[KeyPgDim DIM]]med with its type, the use of //DEFxxx// is signaled as an error by the compiler.
-
+	- Allowed only with //-lang deprecated// or //-lang qb//.
 
 {{fbdoc item="diff"}}
-	- New to FreeBasic
+	- New to FreeBASIC
 	- In QBasic, to make variables default to a 2 byte integer, DEFINT was used.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefbyte Defbyte]]##
-	- ##[[KeyPgDefdbl Defdbl]]##
 	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDeflng Deflng]]##
-	- ##[[KeyPgDefsng Defsng]]##
-	- ##[[KeyPgDefstr Defstr]]##
-	- ##[[KeyPgDefubyte Defubyte]]##
-	- ##[[KeyPgDefuint Defuint]]##
 	- ##[[KeyPgDefushort Defushort]]##
+	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgInteger Integer]]##
+	- ##[[KeyPgShort Short]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

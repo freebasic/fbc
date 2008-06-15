@@ -21,4 +21,4 @@ dim int as integer
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpundef #undef]]##
 
-{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

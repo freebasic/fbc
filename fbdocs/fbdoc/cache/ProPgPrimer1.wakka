@@ -28,7 +28,7 @@ dim text as string
 text = "Hello World!"
 print text
 %%
-	We are using ##[[KeyPgDim Dim]]## to let the compiler know that we want to use a variable named ##//text//## in our program and that we will be putting ##[[KeyPgStringtype String]]## data in it.  We then assign (copy) ##"Hello World!"## in to the variable.  Finally, we use ##[[KeyPgPrint Print]]## to output it to the display.
+	We are using ##[[KeyPgDim Dim]]## to let the compiler know that we want to use a variable named ##//text//## in our program and that we will be putting ##[[KeyPgString String]]## data in it.  We then assign (copy) ##"Hello World!"## in to the variable.  Finally, we use ##[[KeyPgPrint Print]]## to output it to the display.
 
 {{fbdoc item="section" value="Using a Variable in an Expression"}}
 	An //expression// is a generic term for describing a part of the source code that can be evaluated.  After an expression is evaluated, we can then do something with it, like assign (copy) it to a variable.
@@ -164,3 +164,4 @@ end if
 	- ##[[KeyPgDoloop Do...Loop]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

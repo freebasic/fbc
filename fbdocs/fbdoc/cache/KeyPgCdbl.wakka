@@ -2,12 +2,28 @@
 Converts numeric or string expression to ##[[KeyPgDouble Double]]## precision floating point
 
 {{fbdoc item="syntax"}}##
-	**Cdbl**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cdbl** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Cdbl**(//numeric value//)
-	//variable// = **Cdbl**(//string expression//)
+	//result// = **Cdbl**( //numeric expression// )
+	//result// = **Cdbl**( //string expression// )
+	//result// = **Cdbl**( //user defined type// )
 ##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgDouble Double]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgDouble Double]]## precision value.
+
 {{fbdoc item="desc"}}
 	The ##**CDbl**## function returns a 64-bit ##[[KeyPgDouble Double]]## value. The function does not check for an overflow, so be sure not to pass a value outside the representable range of the ##[[KeyPgDouble Double]]## data type. The name can be explained as 'Convert to ""DouBLe""'.
 
@@ -36,9 +52,10 @@ SLEEP
 	- ##[[KeyPgCubyte Cubyte]]##
 	- ##[[KeyPgCshort Cshort]]##
 	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgClng Clng]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##

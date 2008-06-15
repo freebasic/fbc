@@ -1,17 +1,35 @@
 {{fbdoc item="title" value="CLNG"}}----
-Converts numeric or string expression to ##[[KeyPgLong Long]]##/##[[KeyPgInteger Integer]]##
+Converts numeric or string expression to ##[[KeyPgLong Long]]## having the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
 
 {{fbdoc item="syntax"}}##
-	**Clng**( //expression// )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Clng** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	End Type
 ##
 {{fbdoc item="usage"}}##
-	//variable// = **Clng**(//numeric expression//)
-	//variable// = **Clng**(//string  expression//)
+	//result// = **Clng**( //numeric expression// )
+	//result// = **Clng**( //string expression// )
+	//result// = **Clng**( //user defined type// )
 ##
-{{fbdoc item="desc"}}
-	The ##**Clng**## function rounds off the decimal part and returns a 32 bit ##[[KeyPgInteger Integer]]##/##[[KeyPgLong Long]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -2 147 483 648 to 2 147 483 647. The name can be explained as 'Convert to ""LoNG""'.
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgLong Long]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
 
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+{{fbdoc item="ret"}}
+	A ##[[KeyPgLong Long]]## value.
+
+{{fbdoc item="desc"}}
+	The ##**Clng**## function rounds off the decimal part and returns a 32 bit ##[[KeyPgInteger Integer]]## or 64 bit ##[[KeyPgLongint Longint]]## value. The function does not check for an overflow. The name can be explained as 'Convert to ""LoNG""'.
+
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##.
+
+	##**Long**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
 
 {{fbdoc item="ex"}}
 
@@ -31,6 +49,7 @@ SLEEP
 
 {{fbdoc item="diff"}}
 	- The string argument was not allowed in QB
+	- LONG is always 32 bit in QB
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCbyte Cbyte]]##
@@ -39,6 +58,7 @@ SLEEP
 	- ##[[KeyPgCushort Cushort]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgCulng Culng]]##
 	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgCulngint Culngint]]##
 	- ##[[KeyPgCsng Csng]]##
