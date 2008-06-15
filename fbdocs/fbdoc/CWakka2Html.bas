@@ -421,7 +421,7 @@ namespace fb.fbdoc
 			'' only qbasic/freebasic should be formatted here
 			'' all other formatters should be <PRE> only
 
-			res += "<tt><div class=""freebasic"">
+			res += "<tt><div class=""freebasic"">"
 			res += Text2Html( *text, TRUE, TRUE )
 			res += "</div></tt><br />" + nl
 			return res

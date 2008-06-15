@@ -96,7 +96,7 @@ end enum
 	end if
 
 	if( bShowHelp ) then
-		print "fbdoc options
+		print "fbdoc options"
 		print ""
 		print "options:"
 		print "   -makeini       create the default ini file if it does not exist and exit"
@@ -113,11 +113,11 @@ end enum
 		print "   -getpage page1 [page2 [ ... pageN ]]]"
 		print "                  get specified pages from web and store in the cache"
 		print "   -getpage @listfile"
-		print "                  get specified pages using a list file from web and 
+		print "                  get specified pages using a list file from web and"
 		print "                  store in the cache"
 		print "   -makepage pagename"
 		print "                  process a single page (and links on page) only"
-		print "   -maketitles    generate titles.txt
+		print "   -maketitles    generate titles.txt"
 		print ""
 		end 1
 	end if
