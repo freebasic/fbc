@@ -8,6 +8,8 @@
 	==- {{anchor name="item03|Can I get rid of the console / 'DOS' screen in a graphics application?"}}==
 	==- {{anchor name="item04|How to debug ?"}}==
 	==- {{anchor name="item05|Can I use Serial or Parallel Ports in FB?"}}==
+	==- {{anchor name="item06|I get the error 'Cannot start blah.exe because xxxx.dll was not found.' or similar. What is missing?"}}==
+	==- {{anchor name="item07|Does FreeBASIC work with Windows Vista ?"}}==
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
 
@@ -54,6 +56,18 @@
 	 Yes, FB has built in functions to access the serial and parallel ports with no need to use a .dll to do so.
 	 See: [[KeyPgOpenCom Open Com]], [[KeyPgInp INP]], [[KeyPgOut OUT]]
 
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item06"}}==I get the error 'Cannot start blah.exe because xxxx.dll was not found.' or similar. What is missing?==
+	You are trying to run a program using a third party library that resides in a dll not installed in your system.
+	FreeBASIC comes with the headers and wrappers required to code for a lot of third party libraries but does not provide the actual runtime dll files.
+	You have to download and install these from their home page. Find in [[http://www.freebasic.net/forum/viewtopic.php?t=788 the Links thread in the Libraries subforum]] the URL's of the home pages of the libraries provided. You need the binaries for Win32 of the libraries. If you want to develop programs with the libs you will need the documentation too.
+	When releasing compiled code it's good etiquette to provide the third party dll's required to run it.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item07"}}==Does FreeBASIC work with Windows Vista ?==
+	Yes. (Write me!!!)
 
 {{anchor name="item0|Back to top"}}
 

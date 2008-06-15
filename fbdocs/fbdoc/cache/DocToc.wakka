@@ -125,6 +125,8 @@ FreeBASIC Manual Table of Contents
 	{{fbdoc item="keyword" value="TblVarTypes|Variable Types"}}
 	{{fbdoc item="keyword" value="GfxDefPalettes|Default Palettes"}}
 	{{fbdoc item="keyword" value="ProPgLiterals|Escape codes for strings"}}
+	{{fbdoc item="keyword" value="KeyPgErr|Runtime error numbers"}}
+	
 
 {{anchor name="CONTRIB"}}{{fbdoc item="section" value="Contributing"}}
 	{{fbdoc item="keyword" value="CompilerContacting|How to contact the developers"}}

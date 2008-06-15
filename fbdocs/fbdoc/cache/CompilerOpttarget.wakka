@@ -2,7 +2,7 @@
 Set the target platform for cross compilation
 
 {{fbdoc item="syntax"}}##
-	-target < //platform// >
+	**-target** < //platform// >
 ##
 {{fbdoc item="param"}}
 	##//platform//##

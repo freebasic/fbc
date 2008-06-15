@@ -14,7 +14,7 @@ Locks the working page's framebuffer
 
 	The screen remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement.  ##**Screenlock**## must only be used on a screen that is unlocked - or in other words, a screen that is not already locked with ##**Screenlock**##. 
 
-	It is strongly recommended that the lock on a page be held for as short a time as possible.
+	It is strongly recommended that the lock on a page be held for as short a time as possible. Only screen drawing should occur while the screen is locked, input/output and waiting must be avoided.
 
 	Once the page is locked, the screen contents will not be automatically updated until the page is unlocked with the ##[[KeyPgScreenunlock Screenunlock]]## statement.  If the work page is the same as the visible page, any modifications to the page memory while locked will not become visible until ##[[KeyPgScreenunlock Screenunlock]]## is called.
 

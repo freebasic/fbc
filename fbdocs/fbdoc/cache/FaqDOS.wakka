@@ -35,6 +35,7 @@ The current maintainer of this port is [[DrV DrV]].
 	==- {{anchor name="item21|21. What about the 64KiB and 640KiB problems / how much memory is supported by FB in DOS ?"}}==
 	==- {{anchor name="item22|22. My program crashes when I try to use more than cca 1 MiB RAM ! BUG / still limits ?"}}==
 	==- {{anchor name="item23|23. Threading functions are disallowed in DOS ? Help !"}}==
+	==- {{anchor name="item24|24. Which other features are missing in the DOS version and target of FB ?"}}==
 
 ----
 
@@ -65,7 +66,7 @@ The current maintainer of this port is [[DrV DrV]].
 	There are not many **good** editors for DOS, some possibilities are FreeDOS EDIT (use version 0.7d (!!), 64 KiB limit, suboptimal stability (save your work regularly) ), SETEDIT, INFOPAD (comes with CC386 compiler, can edit big texts also, has syntax highlighting for C and ASM, but not for BASIC).
 
 {{anchor name="item9"}}==9. How can I play sound in DOS ?==
-	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard. The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), you can re-use most of existing QB code easily (example: [[http://www.o-bizz.de/qbdown/qbsound/speaker.zip]]) or ASM code via inline ASM,  but provides one channel and 6 bits only, and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. For old ISA soundcards, there is much example code around, a newer PCI soundcard can be accessed (supposing bare DOS in this category) either using a ( "emulation" SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). There are a few sources of inspiration like the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods (native + "emu" drivers), see an up-to-date list here: [[http://www.unet.univie.ac.at/~a0503736/php/drdoswiki/index.php?n=Main.Hardware drdos.org/...wiki...Hardware]]. Support of sound in DOS is **not** business FB DOS port, actually FB doesn't "support" sound on Win32 and Linux either - the games "connect to the API" rather than use FreeBASIC commands or libraries. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code, existing DJGPP ports of those libraries should be usable for this.  
+	There are 2 ways how to play sound in DOS: either the ("archaic") PC speaker, famous for beeping if something goes wrong, or a soundcard. The speaker is easy to control, allows more than one might think, even to play audio files (WAV, with decompression code also OGG Vorbis, MP3 etc.), you can re-use most of existing QB code easily (example: [[http://www.o-bizz.de/qbdown/qbsound/speaker.zip]]) or ASM code via inline ASM,  but provides one channel and 6 bits only, and of course significantly worse quality than a soundcard, and, on some newest (P4) PC's the speaker quality is **very** bad or there is no speaker at all. For old ISA soundcards, there is much example code around, a newer PCI soundcard can be accessed (supposing bare DOS in this category) either using a ( "emulation" SB16 compatible) driver, if it is available for your card (unfortunately, this is becoming more and more a problem, the DOS drivers are poor or even inexistent), or access the card directly (this is low-level programming, hardware-related, assembler is also needed, and you need technical docs about the card). There are a few sources of inspiration like the DOS audio player MPXPLAY (written in C with some ASM), supporting both methods (native + "emu" drivers), see an up-to-date list here: [[http://www.unet.univie.ac.at/~a0503736/php/drdoswiki/index.php?n=Main.SoundCardChip drdos.org/...wiki...SoundCardChip]]. Support of sound in DOS is **not** business FB DOS port, actually FB doesn't "support" sound on Win32 and Linux either - the games "connect to the API" rather than use FreeBASIC commands or libraries. To play compressed files (MP3, OGG Vorbis, FLAC, ...) , you additionally need the decompressing code, existing DJGPP ports of those libraries should be usable for this.  
 
 {{anchor name="item10"}}==10. How can I use USB in DOS ?==
 
@@ -73,7 +74,7 @@ The current maintainer of this port is [[DrV DrV]].
 
 {{anchor name="item11"}}==11. How can I do graphics in DOS ?==
 	GUI or graphics in DOS is definitely possible, there are several approaches: 
-		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.3** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
+		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.4** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "ModeX" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
@@ -200,6 +201,14 @@ type RegTypeX as __dpmi_regs
 		- Set up an ISR, see "ISR_TIMER.BAS" example. This is not a "full" replacement, but sufficient in some cases.
 		- There is a **pthreads** library for DJGPP allowing to "emulate" Linux-like threading to some degree. It works acceptably for [P]7-ZIP DJGPP port (written in C+ + ), no tests with FB yet.
 		- !writeme!
+
+{{anchor name="item24"}}==24. Which other features are missing in the DOS version and target of FB ?==
+	The features missing are mostly those not supported by the operating system + DOS extender + C runtime:
+		- Cross-compiling to an other target
+		- Multithreading 
+		- Graphics in windowed mode or using OpenGL
+		- Unicode strings
+		- DLL's can't be used (at least not "easily"), amount of static external libraries usable with DOS is limited
 
 See also:
 	- [[CompilerFAQ Compiler FAQ]].

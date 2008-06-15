@@ -3,7 +3,7 @@ Please edit this page to remove items when they are written.
 
 {{fbdoc item="section" value="Language and non-keyword related texts needed"}}
 	Variable Declaration/Initialisation (including implicit declaration)
-	Differences between versions (windows, linux, DOS)
+	Differences between versions (windows, linux, DOS - most notably availability, usage and download locations of external libraries)
 	Cross compiling
 	Function calling overview
 	Statements and Statement blocks
@@ -11,7 +11,7 @@ Please edit this page to remove items when they are written.
 	See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
 
 {{fbdoc item="section" value="Pages with !!! Write me, or similar"}}
-	ProPgControlFlow
+	ProPgControlFlow - Done ???
 
 {{fbdoc item="section" value="Pages/topics with incomplete documentation"}}
 

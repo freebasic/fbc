@@ -13,9 +13,9 @@ Reads a list of values from a file
 {{fbdoc item="desc"}}
 	Reads a list of values from a file or device through a bound file number. Numerical values are converted from their string representation into the corresponding types in the variable list.
 
-	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]##, ##[[KeyPgValint ValInt]]##, ##[[KeyPgVallng ValLng]]##, ##[[KeyPgValuint ValUint]]##, and ##[[KeyPgValulng ValUlng]]##, converting as many numeric characters as possible.
+	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]## and ##[[KeyPgVallng ValLng]]##, using the most appropriate function for the number format.
 
-	Values are separated by spaces, commas and line breaks.  To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead.
+	Values are separated by commas and line breaks.  (Whitespace is also treated as a separator after numbers.)  To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/input.bas"}}%%(freebasic)
