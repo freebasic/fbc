@@ -7,7 +7,7 @@ Statements that direct the flow of execution.
 	Control flow statements come in three flavors: transferring, branching and looping. Transferring control flow statements transfer execution to different parts of code. Branching control flow statements execute certain statements blocks based on a condition, while looping control flow statements execute code repeatedly while or until a condition is met.
 
 {{fbdoc item="section" value="Transferring Statements"}}
-	These statements are used for either unconditional or conditional, temporary or permanent transfer of execution. The "ON" variants provide the condition that is to be met. !!!what about transferring across scope blocks?!!!
+	These statements are used for either unconditional or conditional, temporary or permanent transfer of execution. The "ON" variants conditionally select a point of transfer from a list of text labels.  Execution may be transferred between different scopes provided that the branching does not cross any local array, variable length string or object definition.
 
 	=={{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}==
 		Unconditionally transfers execution to another point in code defined by a text label. Execution resumes with the first statement after the label.
@@ -16,10 +16,10 @@ Statements that direct the flow of execution.
 		Unconditionally and temporarily transfers execution to another point in code, defined by a text label. Execution resumes with the first statement after the label. Execution is then brought back to its original location with the ##[[KeyPgReturn RETURN]]## keyword. Yes, ##[[KeyPgGosub GOSUB]]## statements can be nested, that is, multiple ##[[KeyPgGosub GOSUB]]## statements can be executed before the first corresponding ##[[KeyPgReturn RETURN]]##, but there must always be a corresponding ##[[KeyPgReturn RETURN]]## throughout the course of an application.
 
 	=={{fbdoc item="keyword" value="KeyPgOngoto|ON GOTO"}}==
-		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression. !!!WRITEME!!!
+		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
 
 	=={{fbdoc item="keyword" value="KeyPgOngosub|ON GOSUB"}}==
-		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression. !!!WRITEME!!!
+		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
 
 {{fbdoc item="section" value="Branching Statements"}}
 	These statements are used for executing one of a number of statement blocks.

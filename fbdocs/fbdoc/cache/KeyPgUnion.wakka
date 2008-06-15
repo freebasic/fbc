@@ -70,8 +70,10 @@ end if
 
 sleep
 %%
+
 {{fbdoc item="lang"}}
 	- Object-related features as functions defined inside the ##**Union**## block are supported only in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Union""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

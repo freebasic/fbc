@@ -19,7 +19,10 @@ print csign(value)  '' will print -1
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Csign""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

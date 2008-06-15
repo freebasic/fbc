@@ -13,8 +13,8 @@ Standard data type: wide character string
 	This type is provided for support non-Latin based alphabets. Any intrinsic string function like ##[[KeyPgLeft Left]]## will work with ##**Wstring**##s too, as will any string operator.
 
 	Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files.
-	
-	 The size of a ##**Wstring**## character depends on the platform the program is compiled for.  On DOS a ##**Wstring**## character takes up 1 byte; on Win32 it takes up 2 bytes; on Linux it takes up 4 bytes.
+
+	The FreeBASIC text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write. 
 	
 	##[[KeyPgSizeof sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
 
@@ -34,8 +34,14 @@ print *str2
 print len(*str2)      'returns 12, the length of the string it points to
 %%
 
+{{fbdoc item="target"}}
+	Support for wstrings relies in the C runtime library available in the platform and the internal format may vary.
+	- Unicode is not supported in the DOS port of FreeBASIC. In this port a character takes up 1 byte and wstrings will behave as standard ascii ##[[KeyPgZstring Zstrings]]##
+	- On Win32 wstrings are encoded in UCS-2 (UTF-16 LE) and a character takes up 2 bytes.
+	- On Linux wstrings are encoded in UCS-4 and a charcter takes up 4 bytes.
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstring""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

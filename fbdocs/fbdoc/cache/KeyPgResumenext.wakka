@@ -38,7 +38,7 @@ End If
 %% 
 
 {{fbdoc item="diff"}}
-	- Must compile with -ex option
+	- Must compile with //[[CompilerOptex -ex]]// option
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr Err]]##

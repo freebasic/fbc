@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="## Preprocessor Concatenate"}}----
+{{fbdoc item="title" value="Operator ## (Preprocessor Concatenate)"}}----
 Preprocessor operator to concatenate strings
 
 {{fbdoc item="syntax"}}##
@@ -8,8 +8,7 @@ Preprocessor operator to concatenate strings
 	This operator creates a new token by concatenating the texts at both sides of it.  This text can be recognized by other macros and further expanded.  One use, is to create a macro that expands to different macro names, variable names, and function names depending on the arguments received.
 
 {{fbdoc item="ex"}}
-	Example :
-		{{fbdoc item="filename" value="examples/manual/prepro/concat.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/prepro/concat.bas"}}%%(freebasic)
 #define Concat(t,n) t##n
 
 Print concat (12,34)
@@ -18,8 +17,8 @@ Dim Concat (hello,world) as integer
 Concat (hello,world)=99
 print helloworld
 %%
-	Will output:
-		%%
+	Output:
+	%%
 1234
 99
 %%

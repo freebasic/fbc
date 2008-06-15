@@ -15,10 +15,12 @@ Error handling statement to set the current error handler
 	##[[KeyPgOnerror On Error]]## triggers a jump to an error handler when an error occurs. 
 
 	If ##[[KeyPgLocal Local]]## is not used the handler must be in the main part of the module. Using ##[[KeyPgLocal Local]]## allows to have the error handler inside the ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]## where the ##**On Error**## is located.
-	
+
 	##**On Error GOTO 0**## deactivates the current error handler.
 
 	The use of QB-like error handling requires compilation with switch //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]// or //[[CompilerOptexx -exx]]// activated.
+
+	See [[TblRuntimeErrors Runtime Error Codes]] for a listing of runtime error numbers and their associated meaning.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/onerror.bas"}}%%(freebasic)
@@ -49,5 +51,6 @@ End If
 	- ##[[KeyPgError Error]]##
 	- ##[[KeyPgLocal Local]]##
 	- ##[[KeyPgErr Err]]##
+	- [[TblRuntimeErrors Runtime Error Codes]]
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

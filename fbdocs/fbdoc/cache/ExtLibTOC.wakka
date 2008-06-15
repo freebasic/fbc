@@ -35,7 +35,6 @@ An index of header files distributed with FreeBASIC for use with external librar
 {{fbdoc item="section" value="Music / Sound"}}
 	{{fbdoc item="keyword" value="ExtLibbass|BASS"}} - Audio library for use in Windows.
 	{{fbdoc item="keyword" value="ExtLibbassmod|BASSMOD"}} - BASSMOD is a MOD only (XM, IT, S3M, MOD, MTM, UMX) version of BASS
-	{{fbdoc item="keyword" value="ExtLibfbsound|FBSOUND"}} - Audio and DSP library for Windows and Linux (free for commercial apps too).
 	{{fbdoc item="keyword" value="ExtLibfmod|FMOD"}} - Audio library supporting just about any format.
 	{{fbdoc item="keyword" value="ExtLibal|OpenAL"}} - Cross-platform 3D audio API.
 

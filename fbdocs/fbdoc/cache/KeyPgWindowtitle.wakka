@@ -28,8 +28,9 @@ SLEEP
 {{fbdoc item="target"}}
 	- Not present in DOS version / target of FreeBASIC
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Windowtitle""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

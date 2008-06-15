@@ -13,7 +13,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 {{fbdoc item="desc"}}
 	Peeks into the keyboard buffer and returns a ##[[KeyPgString String]]## representation of the first character, if any, found. The key is then removed from the buffer, and is not echoed to the screen. If the keyboard buffer is empty, the NULL string (##"####"##) is immediately returned without waiting for keys.
 
-	If the key is in the ASCII character set, a one-character ##[[KeyPgString String]]## consisting of that character is returned. If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString String]]## is returned, the first of which is ##[[KeyPgChr Chr]](255)##.  (//See dialect differences below//)
+	If the key is in the ASCII character set, a one-character ##[[KeyPgString String]]## consisting of that character is returned. If the key is an "extended" one (numeric pad, cursors, functions) a two-character ##[[KeyPgString String]]## is returned, the first of which is the extended character  (//See dialect differences below//)
 
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will be reported by ##**Inkey**## differently than Control-A et cetera; Alt-A is an extended key a la the above).
 	
@@ -28,8 +28,7 @@ loop until inkey = "q"
 
 {{fbdoc item="lang"}}
 	- The extended character is ##Chr(255)## in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
-	- The extended character is ##Chr(0)## in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the extended character depends on how the keyword is written. If the QB form ##**Inkey$**## is used the extended character is  ##Chr(0)##, while if written as ##**""__Inkey""**## the extended char is  ##Chr(255)## as in the other dialects.
 	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}

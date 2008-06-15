@@ -33,8 +33,9 @@ if (instr(extensions, "WGL_EXT_swap_control") <> 0) then
 end if
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenglproc""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

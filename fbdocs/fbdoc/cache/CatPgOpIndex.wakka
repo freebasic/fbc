@@ -64,6 +64,8 @@ List of operators used in FreeBASIC.
 {{fbdoc item="section" value="Preprocessor Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPpStringize|# (Argument stringize)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPpConcat|## (Argument concatenation)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPpEscape|! (Escaped String Literal)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpPpNoescape|$ (Non-Escaped String Literal)"}}
 
 {{fbdoc item="section" value="Pointer Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAt|@ (Address of)"}}

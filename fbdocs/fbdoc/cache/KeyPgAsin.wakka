@@ -37,7 +37,7 @@ The angle between the sides is 0.6435011087932844
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Asin""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

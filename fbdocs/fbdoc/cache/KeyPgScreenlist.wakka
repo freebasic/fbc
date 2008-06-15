@@ -35,8 +35,9 @@ While (mode)
 Wend
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenlist""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

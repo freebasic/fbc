@@ -22,7 +22,8 @@ dim lNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- Available in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Defulongint""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

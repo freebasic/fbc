@@ -15,7 +15,7 @@ Writes text to the screen
 
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
 
-	Printing to graphics screen may not work in all modes. All QB standard modes available in the port are supported. With extended ##[[KeyPgScreengraphics Screen (Graphics)]]## 14 to 21, printing to screen is allowed only in 8 bits resolution (the default one).
+	For more control over character style and text position in graphics modes, consider using ##[[KeyPgDrawString Draw String]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/print.bas"}}%%(freebasic)
@@ -30,12 +30,19 @@ PRINT
 PRINT "Hello!", "World!"
 %%
 
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, an extra space is printed after numbers.
+
 {{fbdoc item="diff"}}
-	- None
+	- None, when using QBASIC's variable types in //[[CompilerOptlang -lang qb]]//.
+	- Unsigned numbers are printed without a space before them.
+	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInput Input]]##
+	- ##[[KeyPgPrintPp Print #]]##
 	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgInput Input]]##
 	- ##[[KeyPgWrite Write]]##
+	- ##[[KeyPgDrawString Draw String]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

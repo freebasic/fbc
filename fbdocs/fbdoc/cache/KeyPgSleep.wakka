@@ -36,11 +36,11 @@ sleep 500
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##//amount//## value is in **milliseconds**.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##//amount//## value is in **milliseconds** only when the second parameter ##//keyflag//## is given, otherwise it is in **seconds**.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##//amount//## value is in **seconds** as in QB. If the second parameter ##//keyflag//## is given, or the keyword is written as ##**""__Sleep""**##  the value is expected to be in **milliseconds**.
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang qb]]// dialect.
-	- In QB, the delay is given in whole seconds only and does not support the ##//keyflag//## parameter.
+	- In QB, the delay was given in whole seconds only and did not support the ##//keyflag//## parameter.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTimer Timer]]##

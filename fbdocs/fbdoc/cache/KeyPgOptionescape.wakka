@@ -5,7 +5,7 @@ Specifies that string literals should be processed for C-like escape sequences b
 	**Option Escape**
 ##
 {{fbdoc item="desc"}}
-	##**Option Escape**## is a statement that causes string literals to be processed for C-like escape sequences by default. Normally, escape sequences have no effect in string literals unless the string is prefixed with a //bang// (!). This default remains in effect for the rest of the module in which ##**Option Escape**## is used, and can be overridden by prefixing string literals with a //dollar// ($).
+	##**Option Escape**## is a statement that causes string literals to be processed for C-like escape sequences by default. Normally, escape sequences have no effect in string literals unless the string is prefixed with the  [[KeyPgOpPpEscape ! operator (Escaped String Literal)]]. This default remains in effect for the rest of the module in which ##**Option Escape**## is used, and can be overridden by prefixing string literals with the [[KeyPgOpPpNoescape $ operator (Non-Escaped String Literal)]].
 
 	See [[ProPgLiterals Literals]] in the Programmer's Guide to learn more about escape sequences.
 
@@ -32,6 +32,8 @@ printf("%d * %d = %d\r\n", a, b, a * b)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionescape __FB_OPTION_ESCAPE__]]##
+	- [[KeyPgOpPpEscape Operator ! (Escaped String Literal)]]
+	- [[KeyPgOpPpNoescape Operator $ (Non-Escaped String Literal)]]
 	- [[ProPgLiterals Literals]]
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

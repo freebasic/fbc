@@ -29,8 +29,9 @@ Print "Pointer 'p' points to memory location:"
 Print p
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ptr""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

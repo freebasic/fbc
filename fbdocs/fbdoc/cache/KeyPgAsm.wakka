@@ -99,7 +99,7 @@ Print "4 + 5 ="; AddFive(i)
 		The label names are case sensitive inside asm /end asm blocks.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Asm""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

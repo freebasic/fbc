@@ -2,7 +2,7 @@
 Returns a file or directory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgString string]] = "", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgString string]] = "####", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
@@ -109,7 +109,7 @@ print "Found " & filecount & " files and " & dircount & " subdirs"
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dir""**##.
 
 {{fbdoc item="diff"}}
 	- The //attrib_mask// and //out_attrib// parameters are new to FreeBASIC

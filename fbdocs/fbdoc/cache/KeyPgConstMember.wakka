@@ -85,4 +85,4 @@ end sub
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgType Type]]##
 
-{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

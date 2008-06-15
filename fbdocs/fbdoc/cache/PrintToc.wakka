@@ -163,6 +163,8 @@
 	{{fbdoc item="subsect" value="Preprocessor operators"}}
 		[[KeyPgOpPpStringize Operator # (Stringize)]]
 		[[KeyPgOpPpConcat Operator ## (Concatenation)]]
+		[[KeyPgOpPpEscape Operator ! (Escaped String Literal)]]
+		[[KeyPgOpPpNoescape Operator $ (Non-Escaped String Literal)]]
 
 	{{fbdoc item="subsect" value="Pointer operators"}}
 		[[KeyPgOpVarptr Operator Varptr (Variable pointer)]]
@@ -870,7 +872,6 @@
 	{{fbdoc item="subsect" value="Music / Sound"}}
 		[[ExtLibbass BASS]]
 		[[ExtLibbassmod BASSMOD]]
-		[[ExtLibfbsound FBSOUND]]
 		[[ExtLibfmod FMOD]]
 		[[ExtLibal OpenAL]]
 
@@ -930,8 +931,8 @@
 	[[OpPrecedence Operator Precedence]]
 	[[TblVarTypes Variable Types]]
 	[[GfxDefPalettes Default Palettes]]
-	[[ProPgLiterals Escape codes for strings]]
-	[[KeyPgErr Runtime error numbers]]
+	[[TblEscapeSequences Escape Sequences]]
+	[[TblRuntimeErrors Runtime Error Codes]]
 
 {{fbdoc item="section" value="Contributing"}}
 	[[CompilerContacting How to contact the developers]]

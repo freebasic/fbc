@@ -18,7 +18,7 @@ Standard data type: 32 bit signed
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##**Integer**## data type is 32-bit.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Long**## data type is 16-bit.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Integer**## data type is 16-bit.
 
 {{fbdoc item="diff"}}
 	- The INTEGER type is 16-bit wide in QB.

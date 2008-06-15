@@ -21,11 +21,9 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 	the combined color
 
 {{fbdoc item="desc"}}
-	##//Red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.
+	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.
 
-	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer  in the format &hAARRGGBB, where RR, GG, BB, AA  equals the values passed to this function, in hexadecimal format.
-
-	Example:	See ##[[KeyPgPutgraphics Put (Graphics)]]## example.
+	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&hAARRGGBB##, where ##RR##, ##GG##, ##BB##, ##AA##  equal the values passed to this function, in hexadecimal format.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/rgba.bas"}}%%(freebasic)

@@ -61,8 +61,9 @@ print WStr("Unicode 'Hello World'")
 {{fbdoc item="target"}}
 	- DOS does not support ##**Wstr**##.
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstr""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

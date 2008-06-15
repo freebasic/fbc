@@ -17,8 +17,9 @@ Frees memory associated with an image buffer
 {{fbdoc item="ex"}}
 	See the ##[[KeyPgImagecreate ImageCreate]]## function for an example on using ##**""ImageDestroy""**##.
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imagedestroy""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

@@ -54,6 +54,9 @@ print instrrev(text,"&#1077;&#1090;") ' displays 5
 {{fbdoc item="target"}}
 	- DOS does not support the wide-character string versions of ##**Instrrev**##.
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Instrrev""**##.
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 

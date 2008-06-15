@@ -19,11 +19,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7111 AntiAliased Bezier Curves by Acetoline]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7067 Antialiased Circles by Acetoline]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9572 Ellipse Renderer by Pritchard]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=2441 MultiPut with rotation and scaling by D.J.Peters]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=4006 Fast filled Triangles and Polygones D.J.Peters]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=7546 Catmull-rom Splines by relsoft]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=7545 Bezier vs Catmull-rom by relsoft]]
-	[[http://fsr.sourceforge.net/forum/viewtopic.php?t=19 FBgfx Multiple Windows Win32 and Linux by D.J.Peters]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7546 Catmull-rom Splines by relsoft]]	[[http://www.freebasic.net/forum/viewtopic.php?t=7545 Bezier vs Catmull-rom by relsoft]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9588 Accurate Image Scaler by KristopherWindsor]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6676 Spline Curve by Zamaster]]
 
@@ -37,7 +33,6 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 
 	==3D==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8724 Tree Generation by Zamaster]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=6993 Fast 3D Raytracer free source code by D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7931 Quadtree-Based Renderer by relsoft]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7332 Irrlicht 3D + ODE Physics by BMarley]]		
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8400 OpenGL Shader Demo by Dr_D]]
@@ -47,13 +42,11 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://lachie.phatcode.net/articles.php Chain-Like Animation Tutorial by Lachie Dazdarian]]
 
 {{anchor name="SND"}}{{fbdoc item="section" value="Sound Code"}}
-	[[http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfbsound FBSound (free for comercial apps too) D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=2294 Mic Input using FMod by mambazo]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=11 Using FMod In-Game by shiftlynx]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=20477 Using the PC Speaker by several]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9226 Wave synthesizer by Zamaster]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=82140 PC keyboard as MIDI controller by D.J.Peters]]
-
+	
 {{anchor name="MATH"}}{{fbdoc item="section" value="Math Code"}}
 	[[http://sourceforge.net/projects/fbmath/ FBMath by jdebord]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4135 Pixel-Perfect Collision Detection by 1000101]]
@@ -115,7 +108,6 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 {{anchor name="IO"}}{{fbdoc item="section" value="I/O Code"}}
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6574 Text Input by Pritchard & sir_mud]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6847 ConLib Console library with PCopy by cha0s]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=2289 Get InKey Code by D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7744 Lock Mouse to Grid Positions by Pritchard]]
 
 {{anchor name="OSSPEC"}}{{fbdoc item="section" value="OS Specific Code"}}
@@ -129,7 +121,6 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6569 Jpeg and Gif  resources using the API by Zippy]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=76442 Using GfxLib in Windows API by MichaelW]] 
 	[[http://www.freebasic.net/forum/viewtopic.php?p=69681 Print a bitmap file by MichaelW]]
-	[[http://www.freebasic.net/forum/viewtopic.php? Video capture Win by  D.J.Peters]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70771 ShellExecute wrapper by RayBritton]]
 	[[http://www.execulink.com/~coder/freebasic/fbwiki.html FBWiki to chm format converter by coderjeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=75625 FB ODBC library by KaraK]]
@@ -137,7 +128,6 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	==Linux==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8040 Printing on Linux by coderJeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7611 Using GfxLib on Gtk by caseih]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=8066 Video capture Linux D.J.Peters]]
 
 	==DOS==
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70185 Detect system codepage by DrV]]

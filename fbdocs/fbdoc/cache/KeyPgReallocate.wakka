@@ -52,8 +52,9 @@ Deallocate b   ' Clean up
 ~<< 2 4 6 8 10 12 14 16 18 20>>
 ::c::
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Reallocate""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

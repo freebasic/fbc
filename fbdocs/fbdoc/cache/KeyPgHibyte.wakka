@@ -43,7 +43,7 @@ The Binary representation of the LSB Is    10000001
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__HIBYTE""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

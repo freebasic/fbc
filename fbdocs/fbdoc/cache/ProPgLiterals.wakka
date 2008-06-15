@@ -85,34 +85,32 @@ Dim c as double = 3.14159265e3#
 %%
 
 {{fbdoc item="section" value="String Literals"}}
-	String literals are a sequence of characters.
+	String literals are a sequence of characters contained between two double quotes.  The sequence of characters escaped or non-escaped.
 
-	All printable characters may be contained between two double quotes.  Double quotes can be specified in the string literal by using two double quotes together.
+	Double quotes can be specified in the string literal by using two double quotes together.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/string.bas"}}%%(freebasic)
 print "Hello World!"
 print "That's right!"
 print "See the ""word"" contained in double quotes."
 %%
 
-	Strings of characters can contain escape sequences if the string literal is prefixed by a bang character (!).
+	String leterals can contain escape sequences if the string literal is prefixed by the [[KeyPgOpPpEscape ! operator]] (Escaped String Literal).  See [[TblEscapeSequences Escape Sequences]] for a list of accepted escape sequences.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/escape.bas"}}%%(freebasic)
 print !"Hello\nWorld!"
 %%
 
-	If the compilation mode of the compiler is to consider all string literals as escaped, a string may be explicitly specified as non-escaped when prefixed by the dollar sign character ($)
+	By default, string literals are non-escaped unless ##[[KeyPgOptionescape Option Escape]]## was used in the source in which case all string literals following are by default escaped.
 
+	A string may be explicitly specified as non-escaped when prefixed by the [[KeyPgOpPpEscape $ operator]] (Non-Escaped String Literal).
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"
 %%
 
-	The accepted escape sequences are:
-
-		{{table columns="2" cellpadding="1" cells="\a;beep;\b;backspace;\f;formfeed;\l or \n;newline;\r;carriage return;\t;tab;\v;vertical tab;\nnn; ascii char in decimal;\&hnn;ascii char in hex;\&onnn;ascii char in octal;\&bnnnnnnnn;ascii char in binary;\\;backslash;\(double quote);double quote;\';single quote"}} 
+	Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##
 	- ##[[KeyPgConst Const]]##
 	- [[CatPgStdDataTypes Standard Data Types]]
 
-{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

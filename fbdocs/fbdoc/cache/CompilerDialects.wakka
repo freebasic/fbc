@@ -126,8 +126,4 @@
 	""7"") Variable initialization
 		- All variables are moved to the procedure scope (like in ""QuickBASIC""), making initializing local variables too difficult to support.
 
-	""8"") Any data type or function not present in QuickBASIC 
-		* No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, no IMAGECREATE/SCREENRES etc etc etc. 
-
-
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

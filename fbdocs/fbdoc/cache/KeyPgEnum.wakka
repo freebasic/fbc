@@ -49,6 +49,9 @@ end select
 %%
 
 {{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Enum""**##.
+
+{{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}

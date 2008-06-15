@@ -1,18 +1,9 @@
 {{fbdoc item="title" value="ODE"}}----
-OpenDE [O]pen source [D]ynamic [E]ngine, a high performance library for simulating rigid body dynamics and collision detection.
+Open source, high performance library for simulating rigid body dynamics.
+
 Website: http://www.ode.org/
 Platforms supported: Win32, Linux
+Headers to include: ode/ode.bi
 
-I'm made a special working package with all needed libs and examples for FreeBASIC.
-
-**new ODE 0.9 FreeBASIC version is out**  
-[[http://alice-dsl.net/d.j.peters/libs/fbode_0.9.zip fbode_0.9.zip Win32]]
-[[http://alice-dsl.net/d.j.peters/libs/fbode_0.9.tar.gz fbode_0.9.tar.gz Linux x86]]
-
-Please report any problems with this packages.
-Forum: http://fsr.sourceforge.net/forum
-
-Thanx JoshyPeters
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

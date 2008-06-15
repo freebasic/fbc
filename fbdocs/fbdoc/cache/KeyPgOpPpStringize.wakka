@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="# Preprocessor stringize"}}----
+{{fbdoc item="title" value="Operator # (Preprocessor Stringize)"}}----
 Preprocessor operator to convert macro arguments to strings
 
 {{fbdoc item="syntax"}}##
@@ -17,7 +17,7 @@ SEE(variable)
 SEE(another_one)
 %%
 
-Will print
+Output:
 %%
 variable = 1
 another_one = 2
@@ -30,4 +30,3 @@ another_one = 2
 	- [[CatPgPreProcess Preprocessor]]
 
 {{fbdoc item="back" value="CatPgOpPrepro|Preprocessor Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

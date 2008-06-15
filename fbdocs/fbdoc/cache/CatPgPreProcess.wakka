@@ -42,6 +42,11 @@ Commands that control the preprocessor.
 		Converts text into a string literal.
 	==[[KeyPgOpPpConcat ## Preprocessor concatenate]]==
 		Concatenates two pieces of text.
+	=={{fbdoc item="keyword" value="KeyPgOpPpEscape|! Escaped String Literal"}}==
+		Indicates string literal immediately following must be processed for escape sequences.
+	=={{fbdoc item="keyword" value="KeyPgOpPpNoescape|$ Non-Escaped String Literal"}}==
+		Indicates string literal immediately following must not be processed for escape sequences.
+
 <<>>{{anchor name="FILE"}}{{fbdoc item="section" value="File Directives"}}
 	=={{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}==
 		Inserts text from a file.

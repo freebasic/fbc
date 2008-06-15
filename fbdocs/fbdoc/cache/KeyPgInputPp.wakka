@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="INPUT #"}}----
-Reads a list of values from a file
+Reads a list of values from a text file
 
 {{fbdoc item="syntax"}}##
 	**Input** # //filenum//, //variable_list//
@@ -11,11 +11,14 @@ Reads a list of values from a file
 		a list of variables used to hold the values read
 
 {{fbdoc item="desc"}}
-	Reads a list of values from a file or device through a bound file number. Numerical values are converted from their string representation into the corresponding types in the variable list.
+	Reads from a text file through a bound file number a delimiter-separed set of values and writes them in reading order into the variables in //variable_list//. 	If a variable is numeric the read value is converted from its string representation into the corresponding type.
 
 	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]## and ##[[KeyPgVallng ValLng]]##, using the most appropriate function for the number format.
 
-	Values are separated by commas and line breaks.  (Whitespace is also treated as a separator after numbers.)  To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead.
+	Delimiters may be commas or line breaks. (Whitespace is also treated as a separator after numbers.) . A string including a comma or a whitespace must be surronded by double quotes. 
+
+	To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead .
+	[[KeyPgWritePp Write #]]  can be used to create a file readable with ##**""Input #""**##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/input.bas"}}%%(freebasic)
@@ -39,6 +42,6 @@ print a, b, c
 {{fbdoc item="see"}}
 	- ##[[KeyPgInput Input]]##
 	- ##[[KeyPgLineinputPp Line Input #]]##
-	- ##[[KeyPgWrite Write #]]##
+	- ##[[KeyPgWritePp Write #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

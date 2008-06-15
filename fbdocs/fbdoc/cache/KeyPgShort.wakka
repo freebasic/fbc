@@ -16,8 +16,9 @@ Standard data type: 16 bit signed
 	**Output:**
 	%%Short Range = -32768 to  32767%%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Short""**##.
 
 {{fbdoc item="diff"}}
 	- The name "short" is new to FreeBASIC, however they are the same as integers in QB

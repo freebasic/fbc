@@ -20,9 +20,7 @@ Shifts the bits of a numeric expression to the left
 	Returns the result of ##//lhs//## being shifted left ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, ##"&b0101 **Shl** 1"## returns the binary number ##&b01010##, and ##"5 **Shl** 1"## returns ##10##.
-
-	If the left-hand side expression is signed, the sign bit is recopied into its place after the shift.
+	**##Operator Shl## (Shift left)** shifts all of the bits in the left-hand side expression (##//lhs//##) left a number of times specified by the right-hand side expression (##//rhs//##). This has the effect of multiplying ##//lhs//## by two for each shift. For example, ##&b0101 **Shl** 1## returns the binary number ##&b01010##, and ##5 **Shl** 1## returns ##10##.
 
 	Neither of the operands are modified in any way.
 
@@ -52,13 +50,16 @@ Output:
 1024
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Shl""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpCombineShiftLeft Operator Shl= (Shift Left and Assign)]]##
+	- ##[[KeyPgOpShiftRight Operator Shr (Shift right)]]##
 	- [[CatPgOpArithmetic Arithmetic Operators]]
 	- [[CatPgMath Mathematical Functions]]
 

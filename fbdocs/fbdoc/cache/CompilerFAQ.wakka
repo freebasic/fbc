@@ -14,6 +14,7 @@
 	==- {{anchor name="item9|What are the future plans with FB / ToDo list ?"}}==
 	==- {{anchor name="item10|Can I program GUI applications in FB ?"}}==
 	==- {{anchor name="item11|Is FB suitable for complex / big applications?"}}==
+	==- {{anchor name="item12|Can I use a non-latin charset in my FreeBASIC apps?"}}==
 
 **Getting Started with FreeBASIC questions**
 	
@@ -124,6 +125,13 @@
 
 {{anchor name="item0|Back to top"}}
 
+{{anchor name="item12"}}==Can I use a non-latin charset in my FreeBASIC apps?==
+
+	The answer is FreeBASIC has the Unicode support the C runtime library of the platform provides. This means in DOS you don't have Unicode support.
+	In other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As FreeBASIC is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
+	For the output to screen the suport is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font suports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
+
+{{anchor name="item0|Back to top"}}
 ----
 
 @@**Getting Started with FreeBASIC questions**@@

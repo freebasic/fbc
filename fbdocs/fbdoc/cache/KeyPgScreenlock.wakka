@@ -21,8 +21,9 @@ Locks the working page's framebuffer
 {{fbdoc item="ex"}}
 	         See ##[[KeyPgScreenptr Screenptr]]## example.
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenlock""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

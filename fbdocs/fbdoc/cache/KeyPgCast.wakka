@@ -14,7 +14,7 @@ print cast( byte, &h0080 )
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cast""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

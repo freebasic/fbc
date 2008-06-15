@@ -57,6 +57,9 @@ sleep
 {{fbdoc item="diff"}}
 	- New to FreeBASIC 0.17
 
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Var""**##.
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgCommon Common]]##
 	- ##[[KeyPgDim Dim]]##

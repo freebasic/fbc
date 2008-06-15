@@ -35,8 +35,9 @@ The output would look like:
 259.927405
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Va_first""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

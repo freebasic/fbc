@@ -51,8 +51,9 @@ for loopvar = 0 to 4
 next
 %%
 
+
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__With""**##.
 
 {{fbdoc item="diff"}}
 	- New to FreeBASIC

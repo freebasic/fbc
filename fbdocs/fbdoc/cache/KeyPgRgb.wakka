@@ -19,15 +19,15 @@ Computes a valid color value for hi/truecolor modes
 	The combined color.
 
 {{fbdoc item="desc"}}
-	##//Red//##, ##//green//## and ##//blue//## are components ranging 0-255.
+	##//red//##, ##//green//## and ##//blue//## are components ranging 0-255.
 
-	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format &hAARRGGBB, where RR, GG and BB equals the values passed to this function, in hexadecimal format. AA is the implicit alpha value and is automatically set to &hFF (opaque).
+	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&hAARRGGBB##, where ##RR##, ##GG## and ##BB## equal the values passed to this function, in hexadecimal format. ##AA## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
 
 	**Note for Windows API programmers**: The macro named RGB in the Windows references has been renamed BGR in the FB headers for Windows to avoid collisions. 
-Example:
-	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
 
 {{fbdoc item="ex"}}
+	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
+	
 {{fbdoc item="filename" value="examples/manual/gfx/rgb.bas"}}%%(freebasic)
 ScreenRes 640,480,32  '32 bit color
 Line(0,0)-(319,479), Rgb(255,0,0) 'draws a bright red box on the left side of the window
