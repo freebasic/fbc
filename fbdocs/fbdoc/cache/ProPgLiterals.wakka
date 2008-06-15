@@ -23,7 +23,7 @@ Dim b as byte = &H80
 	"&o" or "&O" ( O as in Octal ), followed by octal digits ( 0 1 2 3 4 5 6 7 )
 
 	%%(qbasic)Dim x as integer = &O361100
-Dim b as byte = &O
+Dim b as byte = &O400
 %%
 	__Binary__
 	"&b" or "&B", followed by binary digits ( 0 1 )

@@ -1,15 +1,20 @@
-{{fbdoc item="title" value="END"}}----
-Control flow statement to end the program or end a statement block
+{{fbdoc item="title" value="END (Statement)"}}----
+Control flow statement to end the program.
 
 {{fbdoc item="syntax"}}##
-	**End** { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgIfthen If]]  | [[KeyPgSelectcase Select]]  | [[KeyPgType Type]]  | [[KeyPgEnum Enum]]  | [[KeyPgScope Scope]]  | [[KeyPgWith With]]  | [[KeyPgNamespace Namespace]]  | [[KeyPgExtern Extern]]  | [[KeyPgConstructor Constructor]]  | [[KeyPgDestructor Destructor]]  | [[KeyPgOperator Operator]] | [[KeyPgProperty Property]] }
-//or//
-	**End** [ //return_value// ]
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **End** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
 ##
-{{fbdoc item="desc"}}
-	The first syntax is used to signify the end of the most recent code block. The type of the block must be included in the command, one of ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgType Type]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgWith With]]##, ##[[KeyPgNamespace Namespace]]##, ##[[KeyPgExternCpp Extern]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]##.
+{{fbdoc item="usage"}}##
+	**End** [ //retval// ]
+##
+{{fbdoc item="param"}}
+	##//retval//##
+		Error code returned to system
 
-	The second syntax is used to terminate the program, and return to the OS. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
+{{fbdoc item="desc"}}
+	Used to terminate the program, and return to the operating system.  An optional integer return value can be specified to indicate an error code to the system.  If no return value is given, a value of 0 is automatically returned.
+
+	Usage of this statement does not cleanly close scope.   Variables and memory are not destroyed automatically and object destructors are not called.  Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -38,22 +43,9 @@ sleep : end 0
 %%
 
 {{fbdoc item="diff"}}
-	- The END statement supports specifying a custom return value to be sent to the OS.
+	- The END statement supports specifying a custom return value to be returned to the operating system.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgIfthen If...Then]]##
-	- ##[[KeyPgSelectcase Select Case]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgEnum Enum]]##
-	- ##[[KeyPgScope Scope]]##
-	- ##[[KeyPgWith With]]##
-	- ##[[KeyPgNamespace Namespace]]##
-	- ##[[KeyPgExternCpp Extern]]##
-	- ##[[KeyPgConstructor Constructor]]##
-	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgOperator Operator]]##
-	- ##[[KeyPgProperty Property]]##
+	- ##[[KeyPgEndblock End (Block)]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

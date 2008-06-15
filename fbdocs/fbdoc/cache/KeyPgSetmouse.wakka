@@ -2,18 +2,20 @@
 Sets the position and visibility of the mouse cursor
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, //visibility// ]])
+	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])
 ##
 {{fbdoc item="param"}}
 	##//x//##
-		optional set x coordinate
+		optional - set x coordinate
 	##//y//##
-		optional set y coordinate
+		optional - set y coordinate
 	##//visibility//##
-		optional set visibility - 1 indicates visible, 0 indicates hidden
+		optional - set visibility: 1 indicates visible, 0 indicates hidden
+	##//clip//##
+		optional - set clipping: 1 indicates mouse is clipped to graphics window, 0 indicates no clipping
 
 {{fbdoc item="ret"}}
 	0 on success, non-zero to indicate failure.

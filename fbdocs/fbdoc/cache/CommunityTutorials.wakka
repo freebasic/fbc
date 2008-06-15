@@ -9,12 +9,18 @@ Tutorials submitted by the FreeBASIC community:
 		-[[TutDynamicArrays Using Dynamic Arrays in FreeBASIC]] //by [[SephKnows]]//
 		-[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects (Part 1)]] //by ""YetiFoot""//
 		-[[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects (Part 2)]] //by ""YetiFoot""//
+		-[[TutIntroScope Introduction to Variable Scope]] //by [[WikiRick rdc]]//
+		-[[TutIntroArrays Introduction to Arrays]] //by [[WikiRick rdc]]//
+		-[[TutIntroTypeDef Introduction to the Type Def]] //by [[WikiRick rdc]]//
+	-**Flow Control Statements**
+		-[[TutIfStatement The IF Statement]] //by [[WikiRick rdc]]//
 	-**Pre Processor**
 		-[[TutConditionalCompilation Conditional Compilation And You]] //by AetherFox//
 	-**Memory Management**
 		-[[TutPointers Introduction to Pointers]] //by [[WikiRick rdc]]//
 		-[[TutPointersData Pointers, Data Types and Memory]] //by [[WikiRick rdc]]//
 		-[[TutLinkedLists Using Linked Lists]] //by [[VirusScanner Parker]]//
+		-[[TutDynaArrayType Dynamic Arrays in Types]] //by [[WikiRick rdc]]//
 	-**Intermediate Techniques**
 		-[[TutFunctionOverloading Introduction to Function Overloading in FreeBASIC]] //by [[LaananFisher :stylin:]]//
 	-**Mathematics**
@@ -25,6 +31,9 @@ Tutorials submitted by the FreeBASIC community:
 	-**Libraries**
 		-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
 		-[[TutIndexSDLNet SDL_NET]] //by Paragon//
+	-**Object Oriented Programming**
+		-[[TutIntroExtType Introduction to the Extended Type]] //by [[WikiRick rdc]]//
+		-[[TutSimPolymorphism Simulating Polymorphism]] //by [[WikiRick rdc]]//
 	-**Miscellaneous**
 		-[[TutOOPInNonOOPLanguages OOP in non-OOP languages]] //by KevinWhitefoot//
 

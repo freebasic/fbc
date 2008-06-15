@@ -1,25 +1,25 @@
 {{fbdoc item="title" value="Pointers"}}----
 Datatypes whose values are addresses in memory
 
-{{fbdoc item="desc"}}
-	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an [[KeyPgInteger Integer]] [[KeyPgPointer Pointer]] points to [[KeyPgInteger Integer]] data). Pointers are declared and defined with ##[[KeyPgExtern Extern]]## and ##[[KeyPgDim Dim]]## respectively, like all other variables, with the suffix "pointer" or "ptr" following the type name. The following,
+{{fbdoc item="section" value="Declaration"}}
+	Pointers are [[ProPgVariables Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an ##[[KeyPgInteger Integer]] [[KeyPgPointer Pointer]]## points to ##[[KeyPgInteger Integer]]## data). Pointers are declared like any other variable, with the suffix "##pointer##" or "##ptr##" following the type name. The following,
 
 %%(qbasic)
 Dim myInteger As Integer = 10
 Dim myPointer As Integer Pointer = @myInteger
 %%
-	defines an integer and an integer pointer that points to the location in memory where the integer is stored. ##[[KeyPgOpAt Operator @]]## (Address of) is used to retrieve the address of the integer.
+	defines an ##[[KeyPgInteger Integer]]## variable called ##myInteger## and an ##[[KeyPgInteger Integer]]## pointer called ##myPointer## that points to the location in memory where ##myInteger## is stored. ##[[KeyPgOpAt Operator @]]## (Address of) is used to retrieve the address of ##myInteger##.
 
-==Accessing the pointed to data==
-	The data pointed to by a pointer can be accessed with ##[[KeyPgOpValueOf Operator *]]## (Value of). This operator returns a reference to the data that is pointed to, that matches the type of pointer. The following,
+{{fbdoc item="section" value="Accessing pointed to data"}}
+	The data pointed to by a pointer can be accessed with ##[[KeyPgOpValueOf Operator *]]## (Value of). This operator returns a reference to the data that its operand points to. The following,
 
 %%(qbasic)
 *myPointer = 20
 Print myInteger
 %%
-	assigns the value of 20 to the location	at which myPointer points (which is the address of myInteger, or @myInteger). Changes to *myPointer directly affect the value of myInteger (the expression *myPointer is the same thing as myInteger).
+	assigns the value of ##20## to the location at which ##myPointer## points - the address of ##myInteger##, or ##@myInteger##. Changes to ##*myPointer## directly affect the value of ##myInteger## (the expression "##*myPointer##" is the same thing as "##myInteger##").
 
-==Working with pointers to user-defined types==
+{{fbdoc item="section" value="Pointers to user-defined types"}}
 	Pointers to user-defined types are defined and used like all other pointers. Accessing a member of a [[KeyPgType Type]] or [[KeyPgClass Class]] requires one of the following two methods:
 
 %%(qbasic)

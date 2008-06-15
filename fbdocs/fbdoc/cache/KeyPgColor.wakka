@@ -15,10 +15,10 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].
+	Returns a 32 bit ##[[KeyPgInteger Integer]]## containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].  The old color values can be retrieved at the same time as setting new ones.
 
 {{fbdoc item="desc"}}
-	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle Circle]]##, ##[[KeyPgDraw Draw]]##, ##[[KeyPgLinegraphics Line (Graphics)]]##, ##[[KeyPgCls Cls]]##, ##[[KeyPgPaint Paint]]##, ##[[KeyPgPrint Print]]##, ##[[KeyPgPreset PReset]]## and ##[[KeyPgPset PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values COLOR accepts depend on the current gfx mode.
+	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle Circle]]##, ##[[KeyPgDraw Draw]]##, ##[[KeyPgLinegraphics Line (Graphics)]]##, ##[[KeyPgCls Cls]]##, ##[[KeyPgPaint Paint]]##, ##[[KeyPgPrint Print]]##, ##[[KeyPgPreset PReset]]## and ##[[KeyPgPset PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values that ##**Color**## accepts depend on the current gfx mode.
 
 	{{table columns="2" cellpadding="1" cells="Mode;Meaning;1;foreground is screen color (ranging 0-15). background modulo 4 is the emulated CGA palette to be used: 0 (green, red, and brown), 1 (cyan, magenta and white), 2 (same as 0, but with bright colors) or 3 (same as 1, but with bright colors);2, 11;foreground is a color index in current palette (ranging 0-1). background is a color index in current palette (ranging 0-1).;7, 8;foreground is a color index in current palette (ranging 0-15). background is screen color index in current palette (ranging 0-15).;9;foreground is a color index in current palette (ranging 0-63). background is screen color index in current palette (ranging 0-63).;12;foreground is a color index in current palette (ranging 0-15). background is a color index in current palette (ranging 0-15).;13 and up;foreground is a color index in current palette (ranging 0-255). background is a color index in current palette (ranging 0-255)."}}
 
@@ -43,12 +43,27 @@ print "Hello World!"
 sleep
 %%
 {{image class="center" title="Color example" url="http://img133.imageshack.us/img133/3086/keypgcolorexamplett0.png" link="http://img133.imageshack.us/my.php?image=keypgcolorexamplett0.png"}}
+%%(qbasic)
+Dim c As Uinteger
+
+'retrieve current color values
+c = Color()
+
+'extract color values from c using LOWORD and HIWORD
+Print "Console colors:"
+Print "Foreground: " & LOWORD(c)
+Print "Background: " & HIWORD(c)
+%%
 
 {{fbdoc item="diff"}}
 	- Direct color modes were not supported in QB.
 	- There is no border argument.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgRgb RGB]]##
+	- ##[[KeyPgRgba RGBA]]##
+	- ##[[KeyPgLoWord LOWORD]]##
+	- ##[[KeyPgHiword HIWORD]]##
 	- ##[[KeyPgLocate Locate]]##
 	- ##[[KeyPgPalette Palette]]##
 	- ##[[KeyPgScreengraphics Screen]]##

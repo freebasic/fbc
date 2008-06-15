@@ -164,8 +164,8 @@ end function
 	- In QB, only arrays can be specified as source images.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgAlphaGfx Alpha]]##
 	- [[GfxInternalFormats Internal pixel formats]]

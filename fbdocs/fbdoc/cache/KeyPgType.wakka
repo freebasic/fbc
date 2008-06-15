@@ -6,12 +6,14 @@ Declares a user-defined type
 		[ [[KeyPgVisPrivate Private]]: ]
 		[ [[KeyPgVisPublic Public]]: ]
 		[ [[KeyPgVisProtected Protected]]: ]
-		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] fieldname [ ( [ //parameters// ] ) ]
-		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]] fieldname [ () ]
+		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] [ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [[KeyPgDestructor destructor]]  [ () ]
 		[[KeyPgDeclare declare]] [[KeyPgMemberSub sub]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ]
 		[[KeyPgDeclare declare]] [[KeyPgMemberFunction function]] //fieldname// [ [[KeyPgAlias alias]] //external_name// ] [ ( [ //parameters// ] ) ] [ [[KeyPgAs as]] [[DataType datatype]] ]
 		//fieldname// [ ( //static array dimensions// ) | : //bits// ] [[KeyPgAs as]] //[[DataType DataType]]//
 		[[KeyPgAs as]] [[DataType DataType]] //fieldname// [ ( //static array dimensions// ) | : //bits// ], ...
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] //operatorname//[ ( [ //parameters// ] ) ]
+		[[KeyPgDeclare declare]] [[KeyPgProperty property]] //fieldname//[ ( [ //parameters// ] ) ]
 		...
 	**End Type**
 ##
@@ -28,7 +30,8 @@ Declares a user-defined type
 		dimensions of an array
 	##//bits//##
 		number of bits a data field occupies
-
+	##//operatorname//##
+		the name of the operator to be overloaded
 {{fbdoc item="desc"}}
 	##**Type**## is used to declare custom data types containing one or more bit, scalar, array or other ##**Type**## fields.
 
@@ -46,6 +49,7 @@ Declares a user-defined type
 
 
 {{fbdoc item="ex"}}
+This is an example of a QB-style type, not including procedure definitions
 %%(qbasic)
 TYPE clr
 	red AS UBYTE
@@ -59,6 +63,19 @@ c.green = 128
 c.blue = 64
 %%
 
+And this is an example of a type working as an object
+%%(qbasic)
+Type bar
+  Declare Constructor()
+  Declare Destructor()
+  Declare Property x() As Integer
+  Declare Property x(Byval n As Integer)
+  Declare Sub Mul5()
+  Declare Function Addr() As Integer Ptr
+Private:
+  p_x As Integer Ptr
+End Type
+%%
 {{fbdoc item="lang"}}
 	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //-lang fb// option since version 0.17b
 	- The fields are aligned to 32bit doubleword boundaries if //-lang fb// or //-lang deprecated// is used. To force byte alignment use ##FIELD=1##

@@ -21,7 +21,7 @@
 		- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 		- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
 		- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
-		- {{fbdoc item="keyword" value="KeyPgEnd|END"}}
+		- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
 
 	{{fbdoc item="section" value="Stub Pages"}}
 		- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
@@ -43,6 +43,7 @@
 		- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
 
 	{{fbdoc item="section" value="Uncategorized"}}
+		- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
 		- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 		- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
 		- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}

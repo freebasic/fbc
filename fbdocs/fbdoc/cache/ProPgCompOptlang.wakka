@@ -8,18 +8,22 @@ Provides ""QuickBASIC"" or backward compatibility
 	##//dialect//##
 		The dialect to use in compilation, one of ##**fb**## (default), ##**qb**## or ##**deprecated**##.
 
-The ##-lang## compiler option changes the way source code is interpretted, and is meant as a tool to users wanting traditional QuickBASIC-like behavior, or behavior deprecated from pervious versions of ""FreeBASIC"".
+{{fbdoc item="desc"}}
+	The ##-lang## compiler option changes the way source code is interpretted, and is meant as a tool to users wanting traditional QuickBASIC-like behavior, or behavior deprecated from pervious versions of ""FreeBASIC"".
 
-To learn more about the differences between each of these language dialects, see [[CompilerDialects Compiler Dialects]].
+	To learn more about the differences between each of these language dialects, see [[CompilerDialects Compiler Dialects]].
 
-{{fbdoc item="section" value="fb"}}
-	This is the default dialect, and allows compilation of source code adhering to the most recent version of the ""FreeBASIC"" language.
+	{{fbdoc item="subsect" value="fb"}}
+	
+		This is the default dialect, and allows compilation of source code adhering to the most recent version of the ""FreeBASIC"" language.
 
-{{fbdoc item="section" value="qb"}}
-	This dialect provides support for traditional ""QuickBASIC"" programming and commands.
+	{{fbdoc item="subsect" value="qb"}}
+	
+		This dialect provides support for traditional ""QuickBASIC"" programming and commands.
 
-{{fbdoc item="section" value="deprecated"}}
-	This dialect is for backward compatibility with previous versions of ""FreeBASIC"", however, this dialect may not exist in future versions.
+	{{fbdoc item="subsect" value="deprecated"}}
+	
+		This dialect is for backward compatibility with previous versions of ""FreeBASIC"", however, this dialect may not exist in future versions.
 
 {{fbdoc item="see"}}
 	- [[CompilerDialects Compiler Dialects]]

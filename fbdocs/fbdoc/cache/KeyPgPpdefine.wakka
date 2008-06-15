@@ -10,7 +10,7 @@ Preprocessor directive to define a macro
 	Pre-processor keyword that defines an identifier with a custom meaning:
 		- Empty defines (without //text//) can be checked for existence with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## to hide parts of code to the compiler (conditional compiling).
 		- Non-empty defines (with //text//) are substituted by its //text// when the source is parsed, allowing a sort of "shorthand".
-		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced. **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
+		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced.  **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
 
 {{fbdoc item="ex"}}
 %%(qbasic)
@@ -30,7 +30,7 @@ print hex( MyRGB(&hff, &h00, &hff) )
 %%
 
 {{fbdoc item="diff"}}
-	- New to Freebasic
+	- New to FreeBASIC
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpmacro #Macro]]##

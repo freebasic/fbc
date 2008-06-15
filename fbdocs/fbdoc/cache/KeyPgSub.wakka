@@ -7,14 +7,14 @@ Defines a procedure
 		...
 		[[[KeyPgReturn Return]]]
 		...
-	[[KeyPgEnd End]] Sub
+	[[KeyPgEndblock End]] Sub
 
 	[[[KeyPgPublic Public]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [()] [[[KeyPgModuleConstructor Constructor]]|[[KeyPgModuleDestructor Destructor]]] [[[KeyPgStatic Static]]]
 		//statements//
 		...
 		[[[KeyPgReturn Return]]]
 		...
-	[[KeyPgEnd End]] Sub
+	[[KeyPgEndblock End]] Sub
 ##
 {{fbdoc item="param"}}
 		##//identifier//##: the name of the subroutine

@@ -13,7 +13,7 @@ Stream I/O function to terminate access to a device
 
 	##**Close**## without arguments closes all the files presently opened.
 	
-	Exiting a program using an ##[[KeyPgEnd End]]## statement does implicitly close all files.
+	Terminating the program using an ##[[KeyPgEnd End]]## statement will automatically close all files.
 
 {{fbdoc item="ex"}}
 %%(qbasic)' Create a string and fill it.

@@ -2,41 +2,39 @@
 Returns the upper bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ubound** ( array [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ubound** ( array() [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Ubound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##
-		the array to get upper bound of
+		an array of any type
 	##//dimension//##
 		the dimension to get upper bound of
 
 {{fbdoc item="ret"}}
-	Returns the highest index that can be used in an array.
-
+	Returns the upper bound of an array's dimension.
+ 
 {{fbdoc item="desc"}}
-	If the second parameter is included, it will determine the dimension of the array to check for the highest bound.
+	##**Ubound**## returns the largest value that can be used as an index into a particular dimension of an array.
 
-	Optionally Dimension says what dimension to check the highest bound. 1 for first dimension, and 2 for second dimension etc.
+	Array dimensions are numbered from one (1) to //n//, where //n// is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension. If ##//dimension//## is less than one (1) or greater than the total number of dimensions (//n//) in the array, the result is undefined.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
 
+%%(qbasic)
 dim array(-10 to 10, 5 to 15, 1 to 2) as integer
-print ubound(array, 1) 'returns 10
+
+print ubound(array) 'returns 10
 print ubound(array, 2) 'returns 15
 print ubound(array, 3) 'returns 2
 %%
 
-{{fbdoc item="diff"}}
-	- None
-
 {{fbdoc item="see"}}
-	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgLbound Lbound]]##
-	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgRedim Redim]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

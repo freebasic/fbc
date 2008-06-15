@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="Static Arrays"}}----
+Fixed-size homogenous data structures
+
+{{fbdoc item="section" value="Overview"}}
+	Static arrays are [[ProPgArrays arrays]] that have a fixed constant size throughout the execution of a program. The memory used by a static array to store its elements is allocated at compile-time, on the stack. This allows for quicker program execution since the memory for the array is already allocated by runtime, unlike [[ProPgDynamicArrays dynamic arrays]], whose element memory isn't allocated until runtime.
+
+	Compile-time allocation guarantees that pointers to static array elements remain valid for the lifetime of the program. This also means that the size of a static array - and the total number of static arrays - is limited to the amount of available stack space. By default, this is 1,024 KB (1,048,576 bytes), although this can be changed via the ##//-t//## [[CompilerCmdLine command-line option]].
+
+{{fbdoc item="section" value="Declaration and definition"}}
+	A static array is declared with the ##[[KeyPgExtern EXTERN]]## keyword, followed by a variable identifier, a parenthesized list of one (1) or more subscript ranges and an element [[CatPgStdDataTypes datatype]]. For an array to be declared static, either numerical literals or ##[[KeyPgConst CONST]]## variables can be used as subscript range values.
+
+%%(qbasic)
+	const maxLowerBound as integer = -5
+	const maxUpperBound as integer = 10
+	
+	'' Declares a two dimensional static array of elements of type STRING..
+	extern arrayOfStrings(maxLowerBound to maxUpperBound, 20) as string
+
+	'' Declares a one-dimensional static array of elements of type BYTE,
+	'' big enough to hold an INTEGER..
+	extern arrayOfBytes(sizeof(integer)) as byte
+%%
+	A static array is defined with either the ##[[KeyPgStatic STATIC]]## or ##[[KeyPgDim DIM]]## keywords, following the same form as declaration.
+
+%%(qbasic)
+	'' Defines one-dimensional static arrays of type SHORT and INTEGER..
+	static arrayOfShorts(420) as short
+	dim arrayOfIntegers(69) as integer
+%%
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

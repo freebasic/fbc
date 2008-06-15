@@ -61,12 +61,12 @@ Declares a variable
 			%%(qbasic)Type mytype
 	var1 As Double
 	var2 As Integer
-	var3 As String
 End Type
 		
-Dim myvar(0 To 2) As mytype => {(1.0, 1, "Hello"), (2.0, 2, "GoodBye")}%%		
+Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}%%		
 		For module-level, static, or global variables, initialized values must be constant expressions.  FreeBASIC will report a compile-time error if otherwise.
 		
+		Note: Initializing UDT's with strings is not supported at this time.
 		
 {{fbdoc item="ex"}}
 %%(qbasic)

@@ -7,7 +7,7 @@ Defines a procedure returning a value
 		...
 		{ {[[KeyPgReturn Return]] [//return_value//]}|{Function = //return_value//}|{//identifier// = //return_value//} }
 		...
-	[[KeyPgEnd End]] Function
+	[[KeyPgEndblock End]] Function
 ##
 {{fbdoc item="param"}}
 	##//identifier//##: the name of the function

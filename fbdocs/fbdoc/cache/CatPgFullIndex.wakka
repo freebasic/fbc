@@ -188,7 +188,8 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgElse|ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgElseif|ELSEIF"}}
 	- {{fbdoc item="keyword" value="KeyPgEncoding|ENCODING"}}
-	- {{fbdoc item="keyword" value="KeyPgEnd|END"}}
+	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
+	- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgSetenviron|ENVIRON statement"}}
@@ -257,9 +258,9 @@ Alphabetical listing of keywords, macros and procedures
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
+<<>>
 {{fbdoc item="section" value="K"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
-<<>>
 {{fbdoc item="section" value="L"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgLcase|LCASE"}}

@@ -2,39 +2,39 @@
 Returns the lower bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lbound** ( array [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lbound** ( array() [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Lbound**( //array// [, //dimension// ] )
 ##
 {{fbdoc item="param"}}
 	##//array//##
-		the array to get lower bound of
+		an array of any type
 	##//dimension//##
 		the dimension to get lower bound of
 
 {{fbdoc item="ret"}}
-	Returns the lowest index that can be used in an array.
+	Returns the lower bound of an array's dimension.
  
 {{fbdoc item="desc"}}
-	The optional second parameter, Dimension, says what dimension to check for the lowest bound. 1 for first dimension, and 2 for second dimension etc.
+	##**Lbound**## returns the lowest value that can be used as an index into a particular dimension of an array.
+
+	Array dimensions are numbered from one (1) to //n//, where //n// is the total number of dimensions. If ##//dimension//## is not specified, ##**Lbound**## will return the lower bound of the first dimension. If ##//dimension//## is less than one (1) or greater than the total number of dimensions (//n//) in the array, the result is undefined.
 
 {{fbdoc item="ex"}}
-%%(qbasic)
 
+%%(qbasic)
 dim array(-10 to 10, 5 to 15, 1 to 2) as integer
-print Lbound(array, 1) 'returns -10
-print Lbound(array, 2) 'returns 5
-print Lbound(array, 3) 'returns 1
+
+print lbound(array) 'returns -10
+print lbound(array, 2) 'returns 5
+print lbound(array, 3) 'returns 1
 %%
 
-{{fbdoc item="diff"}}
-	- None
-
 {{fbdoc item="see"}}
+	- ##[[KeyPgUbound Ubound]]##
+	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgPreserve Preserve]]##
-	- ##[[KeyPgUbound Ubound]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

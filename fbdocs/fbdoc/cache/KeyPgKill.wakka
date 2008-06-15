@@ -22,7 +22,7 @@ Deletes a file from disk / storage media.
 %%(qbasic)dim filename as string = "file.ext"
 dim result as integer = kill( filename )
 
-if result <> 0 then print "error trying to kill " ; filename ; " !!!"
+if result <> 0 then print "error trying to kill " ; filename ; " !"
 %%
 {{fbdoc item="diff"}}
 	- KILL can optionally be used as function in FB.

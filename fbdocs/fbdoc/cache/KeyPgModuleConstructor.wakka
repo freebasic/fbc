@@ -4,7 +4,7 @@ Specifies execution of a procedure before module-level code
 {{fbdoc item="syntax"}}##
 	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Constructor** [//priority//] [[[KeyPgStatic Static]]]
 		{ //procedure body// }
-	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	[[KeyPgEndblock End]] [[KeyPgSub Sub]]
 ##
 {{fbdoc item="desc"}}
 	The ##**Constructor**## keyword is used in ##[[KeyPgSub Sub]]## definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, ie., they may be called from within module-level code, as well as other procedures.

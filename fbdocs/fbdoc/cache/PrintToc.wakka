@@ -39,15 +39,18 @@
 		{{fbdoc item="subsect" value="Arrays"}}
 			[[ProPgArrays Overview]]
 			[[ProPgArrayIndex Array Indexing]]
+			[[ProPgStaticArrays Static Arrays]]
+			[[ProPgDynamicArrays Dynamic Arrays]]
 
 		{{fbdoc item="subsect" value="Pointers"}}
 			[[ProPgPointers Overview]]
-			[[ProPgPtrArithmetic Pointer arithmetic]]
+			[[ProPgPtrArithmetic Pointer Arithmetic]]
 
 	{{fbdoc item="subsect" value="Declarations"}}
 		[[ProPgImplicitdeclarations Implicit Declarations]]
 		[[ProPgInitialization Initialization]]
 		[[ProPgVariableScope Variable Scope]]
+		[[ProPgVarProcLinkage Variable and Procedure Linkage]]
 
 	{{fbdoc item="subsect" value="User Defined Types"}}
 		[[ProPgTypeAliases Type Aliases]]
@@ -83,6 +86,7 @@
 		[[KeyPgAsm Inline ASM]]
 		[[ProPgErrorHandling Error Handling]]
 		[[CatPgDddefines Intrinsic Defines]]
+		[[ProPgCruntime C Standard Library Functions]]
 
 {{fbdoc item="section" value="Language Reference"}}
 
@@ -374,7 +378,8 @@
 		[[KeyPgElse ELSE]]
 		[[KeyPgElseif ELSEIF]]
 		[[KeyPgEncoding ENCODING]]
-		[[KeyPgEnd END]]
+		[[KeyPgEndblock END (Block)]]
+		[[KeyPgEnd END (Statement)]]
 		[[KeyPgEndif END IF]]
 		[[KeyPgEnum ENUM]]
 		[[KeyPgSetenviron ENVIRON statement]]
@@ -771,3 +776,4 @@
 	[[CompilerReportingBugs How to report a bug]]
 	[[MissingDocs Docs pages that need to be written]]
 	[[ContributorList Documentation Contributors]]
+

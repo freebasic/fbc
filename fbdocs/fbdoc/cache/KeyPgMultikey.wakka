@@ -24,6 +24,7 @@ WHILE INKEY <> "": WEND
 
 {{fbdoc item="ex"}}
 %%(qbasic)
+#include "fbgfx.bi"
 DIM work_page AS INTEGER, x AS INTEGER, y AS INTEGER
 ' Request 640x480 with 2 pages
 SCREEN 18, ,2
@@ -35,21 +36,24 @@ DO
 	' Let's work on a page while we display the other one
 	SCREENSET work_page, work_page XOR 1
 	' Check arrow keys and update position accordingly
-	IF MULTIKEY(&h4B) AND x > 0 THEN x = x - 1
-	IF MULTIKEY(&h4D) AND x < 639 THEN x = x + 1
-	IF MULTIKEY(&h48) AND y > 0 THEN y = y - 1
-	IF MULTIKEY(&h50) AND y < 479 THEN y = y + 1
+	IF MULTIKEY(FB.SC_LEFT) AND x > 0 THEN x = x - 1
+	IF MULTIKEY(FB.SC_RIGHT) AND x < 639 THEN x = x + 1
+	IF MULTIKEY(FB.SC_UP) AND y > 0 THEN y = y - 1
+	IF MULTIKEY(FB.SC_DOWN) AND y < 479 THEN y = y + 1
 	CLS
 	CIRCLE(x, y), 30, , , , ,F
 	' Page flip
 	work_page = work_page XOR 1
-LOOP WHILE NOT MULTIKEY(&h1)
+LOOP WHILE NOT MULTIKEY(FB.SC_ESCAPE)
 ' Clear input buffer
 WHILE INKEY = "": WEND
 ' Restore both work and visible pages to page 0
 SCREENSET
-PRINT "Press any key to exit..."
-SLEEP
+PRINT "Press CTRL and H to exit..."
+DO
+SLEEP 25
+IF MULTIKEY(FB.SC_CONTROL) AND MULTIKEY(FB.SC_H) THEN EXIT DO
+LOOP
 %%
 
 {{fbdoc item="diff"}}

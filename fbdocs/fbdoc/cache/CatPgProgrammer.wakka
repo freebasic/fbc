@@ -29,12 +29,13 @@ FreeBASIC programmer's guide
 	{{fbdoc item="subsect" value="Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrays|Overview"}}
 		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
+		{{fbdoc item="keyword" value="ProPgStaticArrays|Static Arrays"}}
+		{{fbdoc item="keyword" value="ProPgDynamicArrays|Dynamic Arrays"}}
 		Passing Arrays to Procedures
-		Resizing Dynamic Arrays
 
 	{{fbdoc item="subsect" value="Pointers"}}
 		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
-		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer arithmetic"}}
+		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer Arithmetic"}}
 
 {{fbdoc item="section" value="Declarations"}}
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
@@ -42,7 +43,7 @@ FreeBASIC programmer's guide
 	Variable Lifetime
 	{{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}
 	Namespaces
-	Visibility and External Linkage
+	{{fbdoc item="keyword" value="ProPgVarProcLinkage|Variable and Procedure Linkage"}}
 
 {{fbdoc item="section" value="User Defined Types"}}
 	Overview
@@ -93,6 +94,7 @@ FreeBASIC programmer's guide
 	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
 
 
 

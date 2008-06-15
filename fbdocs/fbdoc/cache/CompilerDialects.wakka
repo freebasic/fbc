@@ -2,7 +2,7 @@
 
 	FreeBASIC version 0.17 introduces a ##-lang## command-line option, used to change the language compatibility mode for different dialects of the basic language.
 
-	{{table columns="2" cellpadding="1" cells="-lang option;description;''fb'';FreeBASIC compatibility (default);''qb'';qbasic compatibility;''deprecated'';previous fbc version compatibility"}}
+	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;deprecated;previous fbc version compatibility"}}
 
 	The ##-lang## option was needed to allow FB to support object-orientation and other features in the future, without crippling the QuickBASIC support or breaking compatibility with old FB sources, and without making FB difficult to maintain with many different versions of very similiar packages. The QB support can continue to be improved, if needed, without breaking the sources written specifically for FB.
 

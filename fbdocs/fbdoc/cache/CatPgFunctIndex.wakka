@@ -269,6 +269,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 {{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
+	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
@@ -312,6 +313,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND"}}
 	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgDir|DIR"}}
+	- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgEnviron|ENVIRON"}}
 	- {{fbdoc item="keyword" value="KeyPgExec|EXEC"}}
 	- {{fbdoc item="keyword" value="KeyPgExepath|EXEPATH"}}
@@ -430,7 +432,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform
 	- {{fbdoc item="keyword" value="KeyPgDoloop|DO...LOOP"}}
 	- {{fbdoc item="keyword" value="KeyPgElse|ELSE"}}
 	- {{fbdoc item="keyword" value="KeyPgElseif|ELSEIF"}}
-	- {{fbdoc item="keyword" value="KeyPgEnd|END"}}
 	- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
 	- {{fbdoc item="keyword" value="KeyPgExit|EXIT"}}
 	- {{fbdoc item="keyword" value="KeyPgGosub|GOSUB"}}

@@ -6,7 +6,7 @@ Declares variables and objects having static storage
 		//or//
 	{ [[KeyPgSub sub]]|[[KeyPgFunction function]] } //proc_header// **Static**
 		[ ... ]
-	[[KeyPgEnd end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
+	[[KeyPgEndblock end]] { [[KeyPgSub sub]]|[[KeyPgFunction function]] }
 ##
 {{fbdoc item="param"}}
 	##//symbol//##

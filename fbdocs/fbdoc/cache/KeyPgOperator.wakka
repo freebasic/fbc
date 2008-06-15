@@ -32,7 +32,7 @@ Declares or defines an overloaded operator
 		""-"" not @ * ->
 	##//binary_op//##
 		+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=
-
+	**Note:** Let refers to the assignment operator, as in LET a=b (the LET keyword is omitted in common practice) 
 {{fbdoc item="desc"}}
 	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviours when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##, or ##[[KeyPgUnion Union]]## data type.
 
@@ -45,6 +45,7 @@ Declares or defines an overloaded operator
 	Unary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Unary operators can be overloaded to return any valid data type, except for ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## which must return a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## data type.
 
 	Binary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicity declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger Integer]]##.
+	
 
 {{fbdoc item="ex"}}
 %%(qbasic)
