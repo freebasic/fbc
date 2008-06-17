@@ -93,8 +93,8 @@ typedef HRESULT (WINAPI *DIRECTDRAWENUMERATEEX)(LPDDENUMCALLBACKEX lpCallback,LP
  * defined in import library LIBDINPUT.A, and as we're not
  * linking with it, we need to define it here...
  */
-DIOBJECTDATAFORMAT c_rgodfDIKeyboard[256];
-const DIDATAFORMAT c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, c_rgodfDIKeyboard };
+static DIOBJECTDATAFORMAT __c_rgodfDIKeyboard[256];
+static const DIDATAFORMAT __c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, __c_rgodfDIKeyboard };
 static HMODULE dd_library;
 static HMODULE di_library;
 static LPDIRECTDRAW2 lpDD = NULL;
@@ -364,14 +364,14 @@ static int directx_init(void)
 	vsync_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	for (i = 0; i < 256; i++) {
-		c_rgodfDIKeyboard[i].pguid = &GUID_Key;
-		c_rgodfDIKeyboard[i].dwOfs = i;
-		c_rgodfDIKeyboard[i].dwType = 0x8000000C | (i << 8);
-		c_rgodfDIKeyboard[i].dwFlags = 0;
+		__c_rgodfDIKeyboard[i].pguid = &GUID_Key;
+		__c_rgodfDIKeyboard[i].dwOfs = i;
+		__c_rgodfDIKeyboard[i].dwType = 0x8000000C | (i << 8);
+		__c_rgodfDIKeyboard[i].dwFlags = 0;
 	}
 	if (IDirectInput_CreateDevice(lpDI, &GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
 		return -1;
-	if (IDirectInputDevice_SetDataFormat(lpDID, &c_dfDIKeyboard) != DI_OK)
+	if (IDirectInputDevice_SetDataFormat(lpDID, &__c_dfDIKeyboard) != DI_OK)
 		return -1;
 	if (IDirectInputDevice_Acquire(lpDID) != DI_OK)
 		return -1;
