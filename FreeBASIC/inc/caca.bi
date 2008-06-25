@@ -302,9 +302,9 @@ declare sub caca_draw_box cdecl alias "caca_draw_box" ( byval as integer, byval 
 declare sub caca_draw_thin_box cdecl alias "caca_draw_thin_box" ( byval as integer, byval as integer, byval as integer, byval as integer)
 declare sub caca_fill_box cdecl alias "caca_fill_box" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as byte )
 
-declare sub caca_draw_triangle cdecl alias "caca_draw_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as byte )
-declare sub caca_draw_thin_triangle cdecl alias "caca_draw_thin_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer )
-declare sub caca_fill_triangle cdecl alias "caca_fill_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as byte )
+declare sub caca_draw_triangle cdecl alias "caca_draw_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as byte )
+declare sub caca_draw_thin_triangle cdecl alias "caca_draw_thin_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer )
+declare sub caca_fill_triangle cdecl alias "caca_fill_triangle" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as byte )
 '/*  @} */
 
 '/** \defgroup math Mathematical functions
@@ -332,7 +332,7 @@ declare function caca_get_sprite_width cdecl alias "caca_get_sprite_width" ( byv
 declare function caca_get_sprite_height cdecl alias "caca_get_sprite_height" ( byval as caca_sprite ptr, byval as integer ) as integer
 declare function caca_get_sprite_dx cdecl alias "caca_get_sprite_dx" ( byval as caca_sprite ptr, byval as integer ) as integer
 declare function caca_get_sprite_dy cdecl alias "caca_get_sprite_dy" ( byval as caca_sprite ptr, byval as integer ) as integer
-declare function caca_draw_sprite cdecl alias "caca_draw_sprite" ( byval as integer, byval as integer, byval as caca_sprite ptr, byval as integer )
+declare sub caca_draw_sprite cdecl alias "caca_draw_sprite" ( byval as integer, byval as integer, byval as caca_sprite ptr, byval as integer )
 declare sub caca_free_sprite cdecl alias "caca_free_sprite" ( byval as caca_sprite ptr )
 '/*  @} */
 
@@ -347,8 +347,13 @@ declare sub caca_free_sprite cdecl alias "caca_free_sprite" ( byval as caca_spri
 'type caca_bitmap as any
 #define caca_bitmap any
 
-declare function caca_create_bitmap cdecl alias "caca_create_bitmap" ( byval as uinteger, byval as uinteger, byval as uinteger, byval as uinteger, byval as uinteger, byval as uinteger, byval as uinteger, byval as uinteger ) as caca_bitmap ptr
-declare sub caca_set_bitmap_palette cdecl alias "caca_set_bitmap_palette" ( byval as caca_bitmap ptr, byval r as uinteger ptr, byval g as uinteger ptr, byval b as uinteger ptr, byval a as uinteger ptr)
+declare function caca_create_bitmap cdecl alias "caca_create_bitmap" ( byval as uinteger, byval as uinteger, _
+                                                                       byval as uinteger, byval as uinteger, _
+                                                                       byval as uinteger, byval as uinteger, _
+                                                                       byval as uinteger, byval as uinteger ) as caca_bitmap ptr
+declare sub caca_set_bitmap_palette cdecl alias "caca_set_bitmap_palette" ( byval as caca_bitmap ptr, _
+                                                                            byval r as uinteger ptr, byval g as uinteger ptr, _
+                                                                            byval b as uinteger ptr, byval a as uinteger ptr)
 declare sub caca_draw_bitmap cdecl alias "caca_draw_bitmap" ( byval as integer, byval as integer, byval as integer, byval as integer, byval as caca_bitmap ptr, byval as any ptr )
 declare sub caca_free_bitmap cdecl alias "caca_free_bitmap" ( byval as caca_bitmap ptr )
 '/*  @} */
