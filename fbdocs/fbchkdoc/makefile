@@ -23,7 +23,9 @@ getindex$(EXEEXT) \
 getpage$(EXEEXT) \
 putpage$(EXEEXT) \
 chkdocs$(EXEEXT) \
-replace$(EXEEXT)
+replace$(EXEEXT) \
+rebuild$(EXEEXT) \
+mkprntoc$(EXEEXT)
 
 TEMP_FILES := \
 results.txt \
@@ -72,6 +74,12 @@ chkdocs$(EXEEXT): chkdocs.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 replace$(EXEEXT): replace.bas $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+rebuild$(EXEEXT): rebuild.bas $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+mkprntoc$(EXEEXT): mkprntoc.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 $(LIB_NAME): $(LIB_LIST) $(HEADERS)

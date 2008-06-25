@@ -29,8 +29,7 @@
 using fb
 using fbdoc
 
-'' configuration file
-const def_optFile = "fbchkdoc.ini"
+#include once "fbchkdoc.bi"
 
 '' temporary files
 const def_html_file = "PageIndex.html"
@@ -49,22 +48,22 @@ if( command(i) = "" ) then
 	print "getindex {server}"
 	print
 	print "server:"
-	print "   -web       get index from the web server (in fbchkdoc.ini)"
-	print "   -dev       get index from the development server (in fbchkdoc.ini)"
+	print "   -web       get index from the web server (in " + default_optFile + ")"
+	print "   -dev       get index from the development server (in " + default_optFile + ")"
 	print "   -url URL   get index from URL"
 	print
-	end 1
+	end 0
 end if
 
 '' read defaults from the configuration file (if it exists)
 scope
-	dim as COptions ptr opts = new COptions( def_optFile )
+	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
 		web_wiki_url = opts->Get( "web_wiki_url" )
 		dev_wiki_url = opts->Get( "dev_wiki_url" )
 		delete opts
 	else
-		'' print "Warning: unable to load options file '" + def_optFile + "'"
+		'' print "Warning: unable to load options file '" + default_optFile + "'"
 		'' end 1
 	end if
 end scope

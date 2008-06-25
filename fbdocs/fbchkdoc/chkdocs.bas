@@ -93,13 +93,10 @@ Type ImageInfo_t
 	flags as integer
 end Type
 
-const default_CacheDir = "../fbdoc/cache/"
-const default_web_CacheDir = "../fbdoc/cache.web/"
-const default_dev_CacheDir = "../fbdoc/cache.dev/"
+#include once "fbchkdoc.bi"
 
 dim shared cache_dir as string
 
-const def_optFile = "fbchkdoc.ini"
 const PageIndex_File = "PageIndex.txt"
 const DocPages_File = "DocPages.txt"
 const LinkList_File = "linklist.csv"
@@ -1517,14 +1514,14 @@ end if
 
 '' read defaults from the configuration file (if it exists)
 scope
-	dim as COptions ptr opts = new COptions( def_optFile )
+	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
 		delete opts
 	else
-		'' print "Warning: unable to load options file '" + def_optFile + "'"
+		'' print "Warning: unable to load options file '" + default_optFile + "'"
 		'' end 1
 		def_cache_dir = default_CacheDir
 		web_cache_dir = default_web_CacheDir

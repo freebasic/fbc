@@ -33,11 +33,14 @@ Table of Contents:
        4.3 putpage
        4.4 chkdocs
        4.5 replace
+	   4.6 rebuild
+	   4.7 mkprntoc
     5. Common Tasks
        5.1 Downloading the entire wiki
        5.2 Downloading changed pages since last download
        5.3 Transferring pages between on-line and off-line wiki
        5.4 Name case fixups
+       5.5 Update PrintToc
     6. Authors
     7. Notes
 
@@ -74,8 +77,10 @@ issue.
     Because these tools are so specific to FreeBASIC and its wiki, there is
 no binary package.  Checkout /fbc/trunk/fbdocs from sourceforge.net to get 
 all the sources needed. Required to build and run are: FreeBASIC, curl, pcre, 
-fbdoc (found in ../fbdoc), ASpell, make, a probably a few other libs or
-commands.
+fbdoc (found in ../fbdoc), make, and probably a few other libs or commands.
+
+    The utilities use relative paths by default.  Always run the utilities
+so that ./fbchkdoc is the current working directory.
 
 
 2. Compiling
@@ -140,7 +145,7 @@ before they are committed or saved back to the wiki.
 
 
 4. Tools
-   ============
+   =====
 
     There are several command line utilities that make up this tool set.  Each
 utility is described in the following sub-sections.
@@ -298,6 +303,40 @@ that can be used with putpage.  For example
 
     $ putpage -web @changed.txt
 
+
+4.6 rebuild
+    -------
+
+    Typical usage:
+        $ rebuild -web @PageIndex.txt
+
+    This utility reads in wakka source script, parses it, and rebuilds the
+page using the parsed data, then finally writes the file back to the source
+in the selected cache directory.  Type 'rebuild' without and command line 
+arguments to see a full list of options.
+
+    The main purpose of this utility is to test the internal wakka parsing
+routines.  A side effect is that it can clean-up and/or detect some
+abnormalities in the wakka source.
+
+
+4.7 mkprntoc
+    --------
+
+    Typical usage:
+        $ mkprntoc -web
+        $ putpage -web PrintToc
+
+    This disgusting utility is meant to generate a linear table of contents
+from the wakka source files.  Type 'mkprntoc' without and command line 
+arguments to see a full list of options.  It reads in key files from the
+cache directory starting with DocToc.wakka and writes the results to
+PrintToc.wakka in the same cache directory.
+
+    The current layout of the wiki does not lend itself well to a linear 
+format (as needed by the single TXT format emitter), and this utility is
+an experimental attempt to generate that order.
+
  
 5. Common Tasks
    ============
@@ -369,6 +408,19 @@ of the wiki in the cache directory, this problem can be fixed as follows:
     $ chkdocs e
     $ replace -f fixlist.txt -c "name case fixup"
     $ putpage -web @changed.txt
+
+
+5.5 Update PrintToc
+    ---------------
+
+    The TXT format emitter needs a valid PrintToc wakka page to correctly
+generate the content and order of this single file output format.  Assuming
+that the wakka cache directory is up to date:
+
+    $ mkprntoc -web
+    $ putpage -web PrintToc
+
+    Then proceed to the ../fbdoc directory to make the TXT format.
 
 
 6. Authors

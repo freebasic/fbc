@@ -32,13 +32,7 @@
 using fb
 using fbdoc
 
-'' configuration file
-const def_optFile = "fbchkdoc.ini"
-
-'' cache dirs
-const default_CacheDir = "../fbdoc/cache/"
-const default_web_CacheDir = "../fbdoc/cache.web/"
-const default_dev_CacheDir = "../fbdoc/cache.dev/"
+#include once "fbchkdoc.bi"
 
 dim as string web_wiki_url, dev_wiki_url
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir
@@ -82,7 +76,7 @@ end if
 
 '' read defaults from the configuration file (if it exists)
 scope
-	dim as COptions ptr opts = new COptions( def_optFile )
+	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
 		web_wiki_url = opts->Get( "web_wiki_url" )
 		dev_wiki_url = opts->Get( "dev_wiki_url" )
@@ -95,7 +89,7 @@ scope
 		dev_pass = opts->Get( "dev_password" )
 		delete opts
 	else
-		'' print "Warning: unable to load options file '" + def_optFile + "'"
+		'' print "Warning: unable to load options file '" + default_optFile + "'"
 		'' end 1
 		def_cache_dir = default_CacheDir
 		web_cache_dir = default_web_CacheDir
