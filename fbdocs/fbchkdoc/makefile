@@ -25,7 +25,11 @@ putpage$(EXEEXT) \
 chkdocs$(EXEEXT) \
 replace$(EXEEXT) \
 rebuild$(EXEEXT) \
-mkprntoc$(EXEEXT)
+mkprntoc$(EXEEXT) \
+mkerrlst$(EXEEXT) \
+delextra$(EXEEXT) \
+mkimglst$(EXEEXT) \
+getimage$(EXEEXT)
 
 TEMP_FILES := \
 results.txt \
@@ -34,7 +38,11 @@ linklist.csv \
 samplist.log \
 fixlist.txt \
 timer.log \
-DocPages.txt
+DocPages.txt \
+mkerrtxt$(EXEEXT) \
+mkerrtxt.bas \
+imagelist.txt \
+imagepages.txt
 
 HEADERS := $(wildcard *.bi)
 DEP_LIST = $(FBDOCDIR)/libfbdoc.a $(HEADERS)
@@ -80,6 +88,18 @@ rebuild$(EXEEXT): rebuild.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 mkprntoc$(EXEEXT): mkprntoc.bas $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+mkerrlst$(EXEEXT): mkerrlst.bas
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+delextra$(EXEEXT): delextra.bas $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+mkimglst$(EXEEXT): mkimglst.bas $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+getimage$(EXEEXT): getimage.bas
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 $(LIB_NAME): $(LIB_LIST) $(HEADERS)

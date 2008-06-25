@@ -33,8 +33,12 @@ Table of Contents:
        4.3 putpage
        4.4 chkdocs
        4.5 replace
-	   4.6 rebuild
-	   4.7 mkprntoc
+       4.6 rebuild
+       4.7 mkprntoc
+       4.8 mkerrlst
+       4.9 delextra
+       4.10 mkimglst
+       4.11 getimage
     5. Common Tasks
        5.1 Downloading the entire wiki
        5.2 Downloading changed pages since last download
@@ -155,7 +159,7 @@ utility is described in the following sub-sections.
     --------
 
     Typical usage:
-        $ getindex -web
+        $ ./getindex -web
 
     getindex reads a list of all pages from the wiki and saves the list to
 PageIndex.txt.  Type 'getindex' without any command line arguments to see
@@ -172,8 +176,8 @@ allowing a plain list that returns all pages changed since a certain date.
     -------
 
     Typical usage:
-        $ getpage -web DocToc CatPgFullIndex
-        $ getpage -web @list.txt 
+        $ ./getpage -web DocToc CatPgFullIndex
+        $ ./getpage -web @list.txt 
 
     getpage retrieves pages from the wiki and saves each page to a .wakka file
 in the cache.  Type 'getpage' without any command line arguments to see a full
@@ -195,7 +199,7 @@ generated from some other utility and simply has one page name per line.  The
 second form is what I [Jeff] happen to get when I copy a portion of the
 RecentChanges page to an ascii text file.  I often use this to copy, for 
 example, pages changed in the last several days (as shown in RecentChanges)
-and past it to an ascii text file.  I then use 'getpage -web @list.txt' to
+and paste it to an ascii text file.  I then use 'getpage -web @list.txt' to
 get just those pages.  It often saves having to retrieve the entire wiki.
 
 
@@ -203,8 +207,8 @@ get just those pages.  It often saves having to retrieve the entire wiki.
     -------
 
     Typical usage:
-        $ putpage -web DocToc CatPgFullIndex
-        $ putpage -web @list.txt 
+        $ ./putpage -web DocToc CatPgFullIndex
+        $ ./putpage -web @list.txt 
 
     putpage loads pages from the cache and saves them to the wiki and is the
 counterpart to getpage.  Type 'putpage' without any command line arguments to
@@ -239,7 +243,7 @@ new page and the existing page are identical, and no operation is performed.
     -------
 
     Typical usage:
-        $ chkdocs e
+        $ ./chkdocs e
 
     chkdocs will scan all pages in the wakka file cache and report possible
 problems with names, links, formatting, examples, images, etc.  Type 'chkdocs'
@@ -271,8 +275,8 @@ files are generated as a result of running chkdocs.
 
         PageName,LinkName,CorrectedLinkName
 
-        This file can be used with 'replace' tool to automatically apply the
-        name corrections.  See section 5.3, Name case fix-ups.
+        This file can be used with the 'replace' tool to automatically apply 
+        the name corrections.  See section 5.4, Name case fix-ups.
 
     samplist.log
         A list of all sample files listed in the wiki using the 
@@ -286,7 +290,7 @@ files are generated as a result of running chkdocs.
     -------
 
     Typical usage:
-        $ replace -f list.txt -c "comment"
+        $ ./replace -f list.txt -c "comment"
 
     The replace utility will read a list of text replacements from a file and
 apply the changes to the cache dir.  Type 'replace' without and command line 
@@ -301,14 +305,14 @@ recognized.
     After replace completes it's execution, it will write a file "changed.txt"
 that can be used with putpage.  For example
 
-    $ putpage -web @changed.txt
+    $ ./putpage -web @changed.txt
 
 
 4.6 rebuild
     -------
 
     Typical usage:
-        $ rebuild -web @PageIndex.txt
+        $ ./rebuild -web @PageIndex.txt
 
     This utility reads in wakka source script, parses it, and rebuilds the
 page using the parsed data, then finally writes the file back to the source
@@ -324,11 +328,11 @@ abnormalities in the wakka source.
     --------
 
     Typical usage:
-        $ mkprntoc -web
-        $ putpage -web PrintToc
+        $ ./mkprntoc -web
+        $ ./putpage -web PrintToc
 
     This disgusting utility is meant to generate a linear table of contents
-from the wakka source files.  Type 'mkprntoc' without and command line 
+from the wakka source files.  Type 'mkprntoc' without any command line 
 arguments to see a full list of options.  It reads in key files from the
 cache directory starting with DocToc.wakka and writes the results to
 PrintToc.wakka in the same cache directory.
@@ -337,7 +341,88 @@ PrintToc.wakka in the same cache directory.
 format (as needed by the single TXT format emitter), and this utility is
 an experimental attempt to generate that order.
 
- 
+
+4.8 mkerrlst
+    --------
+
+    Typical usage:
+        $ ./mkerrlst -p /FreeBASIC/src/compiler/
+        $ fbc mkerrtxt.bas
+        $ ./mkerrtxt > errlist.txt
+
+    This program scans inc/error.bi and error.bas from the FreeBASIC sources
+to generate a program (mkerrlst.bas) that will in turn generate a list of
+FreeBASIC compiler warnings and error messages.  The final output can be used
+to update the CompilerErrMsg wiki page.
+
+    Currently, there is no automatic update for the CompilerErrMsg wakka file.
+To update CompilerErrMsg, the output of 'mkerrtxt' must be copied and pasted
+to the wiki page manually.  It is possible that this task could be automated
+if  {{fbdoc item="tag"}} were used in the wakka source as start/end markers.  
+(The "tag" item does not display any text on-line, or in the converted manual 
+formats).
+
+
+4.9 delextra
+    --------
+
+    Typical usage:
+        $ ./getindex -web
+        $ ./delextra -web -svn
+
+    This utility will delete (or remove) the extra *.wakka files in the cache 
+directory not present in the PageIndex for the wiki.  Type 'delextra' without 
+any command line arguments to see a full list of options.
+
+    When pages are deleted from the wiki, old file names will persist in the
+cache directories.  Use this utility to purge deleted wiki pages.  Pass "-svn"
+on the command line to use "svn rm" instead of FreeBASIC's built-in KILL
+statement.
+
+
+4.10 mkimglst
+     --------
+
+    Typical usage:
+        $ ./getindex -web
+        $ ./mkimglst -web @PageIndex.txt
+
+    This utility will scan the wakka pages in the cache dir for images links
+on each page.  Type 'mkimglst' without any command line arguments for a full
+list of options.
+
+    When the program completes, two files will have been written:
+
+    imagelist.txt with the following format, one image per line:
+    PageName,url-to-image
+
+    imagepages.txt with the following format, one page per line:
+    PageName
+
+    imagelist.txt can be used to download all linked images:
+    $ ./getimage imagelist.txt
+
+
+4.11 getimage
+     --------
+
+    Typical usage:
+        $ ./getimage imagelist.txt
+
+    This utility will download all images listed in the specified file and
+store them by default at ../fbdoc/html/images.  Type 'getimage' without any
+command line arguments for a full list of options.
+
+    getimage takes one argument only and it must be a text file with the
+following format, one image per line:
+
+    PageName,URL
+or
+    URL
+
+    The output from mkimglst can be used with getimage.
+
+
 5. Common Tasks
    ============
 
@@ -347,8 +432,8 @@ this tools set.
 5.1 Downloading the entire wiki
     ---------------------------
 
-    $ getindex -web
-    $ getpage -web @PageIndex.txt
+    $ ./getindex -web
+    $ ./getpage -web @PageIndex.txt
 
     Use this sparingly as it takes a *long* time and needlessly taxes the
 server.  If you don't need the most up to date wiki pages, use the snapshot
@@ -365,7 +450,7 @@ in SVN instead
     copy the text to the clipboard.  Paste this in to an editor and save it
     as an ascii text file.  For example 'list.txt'.  Then:
 
-    $ getpage -web @list.txt
+    $ ./getpage -web @list.txt
 
 
 5.3 Transferring pages between on-line and off-line wiki
@@ -373,22 +458,22 @@ in SVN instead
 
     To get pages from the on-line wiki and put them on your off-line wiki
     
-    $ getpage -web @list.txt
-    $ putpage -dev @list.txt
+    $ ./getpage -web @list.txt
+    $ ./putpage -dev @list.txt
 
     To get pages from your off-line wiki and put them on-line
 
-    $ getpage -dev @list.txt
-    $ putpage -web @list.txt
+    $ ./getpage -dev @list.txt
+    $ ./putpage -web @list.txt
 
     Always BE CAREFUL when uploading your own pages.  There is no version
 control and you always have the risk of overwriting new pages on-line with
 your older pages.  If in doubt, compare the on-line wiki with your own
 working set.
 
-    $ getindex -web
-    $ getpage -web+ @PageIndex.txt
-    $ getpage -dev @list.txt
+    $ ./getindex -web
+    $ ./getpage -web+ @PageIndex.txt
+    $ ./getpage -dev @list.txt
 
     Then use a diff tool to compare the two sets of files in the cache dir 
 and the web_cache dir.  Of course, if the snap-shot of the wiki in SVN is
@@ -400,14 +485,14 @@ up to date, you can also use SVN diff to query changes.
 
     From time to time, the names of links in the document sources can become
 mismatched with the actual page names differing in upper/lower case only.
-Having mismatched names in this way works OK for the on-line wiki but causes
-problems were case sensitive file-systems are used.  Assuming a current copy
-of the wiki in the cache directory, this problem can be fixed as follows:
+Having mismatched names in this way works OK for the on-line wiki but can 
+cause problems where case sensitive file-systems are used.  Assuming a current
+copy of the wiki in the cache directory, this problem can be fixed as follows:
 
-    $ getindex -web
-    $ chkdocs e
-    $ replace -f fixlist.txt -c "name case fixup"
-    $ putpage -web @changed.txt
+    $ ./getindex -web
+    $ ./chkdocs e
+    $ ./replace -f fixlist.txt -c "name case fixup"
+    $ ./putpage -web @changed.txt
 
 
 5.5 Update PrintToc
@@ -417,8 +502,8 @@ of the wiki in the cache directory, this problem can be fixed as follows:
 generate the content and order of this single file output format.  Assuming
 that the wakka cache directory is up to date:
 
-    $ mkprntoc -web
-    $ putpage -web PrintToc
+    $ ./mkprntoc -web
+    $ ./putpage -web PrintToc
 
     Then proceed to the ../fbdoc directory to make the TXT format.
 
