@@ -19,6 +19,9 @@
 
 '' chng: written [jeffm]
 
+'' fbchkdoc headers
+#include once "funcs.bi"
+
 ''
 function ParsePageName( byref x as string, byref comment as string ) as string
 

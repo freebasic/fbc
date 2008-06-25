@@ -19,24 +19,28 @@
 
 '' chng: written [jeffm]
 
-''
+'' fbdoc headers
 #include once "CWikiCon.bi"
 #include once "COptions.bi"
 
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
+
+'' libs
 #inclib "pcre"
 #inclib "curl"
 
 using fb
 using fbdoc
 
-#include once "fbchkdoc.bi"
-
 '' temporary files
 const def_html_file = "PageIndex.html"
 const def_text_file = "PageIndex0.txt"
 
-'' the output file
-const def_index_file = "PageIndex.txt"
+
+'' --------------------------------------------------------
+'' MAIN
+'' --------------------------------------------------------
 
 dim as string wiki_url, web_wiki_url, dev_wiki_url
 dim as string sPage, sBody

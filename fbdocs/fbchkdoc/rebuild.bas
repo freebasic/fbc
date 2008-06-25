@@ -19,18 +19,20 @@
 
 '' chng: written [coderJeff]
 
-''
+'' fbdoc headers
 #include once "CWiki.bi"
-#include once "funcs.bi"
 #include once "COptions.bi"
 
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
+#include once "funcs.bi"
+
+'' libs
 #inclib "fbdoc"
 #inclib "pcre"
 
 using fb
 using fbdoc
-
-#include once "fbchkdoc.bi"
 
 '':::::
 function ReadTextFile( byref sFile as string ) as string
@@ -58,7 +60,10 @@ sub WriteTextFile( byref sFile as string, byref text as string )
 	end if
 end sub
 
+
+'' --------------------------------------------------------
 '' MAIN
+'' --------------------------------------------------------
 
 dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
 

@@ -19,15 +19,18 @@
 
 '' chng: written [coderJeff]
 
-''
+'' fb headers
 #include "file.bi"
+
+'' fbdoc headers
 #include "fbdoc_string.bi"
 #include "COptions.bi"
 
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
+
 using fb
 using fbdoc
-
-#include once "fbchkdoc.bi"
 
 '':::::
 function xxReplaceSubStr _
@@ -87,7 +90,9 @@ sub loghtml( byref x as string, byval bNew as integer = FALSE )
 end sub
 
 
+'' --------------------------------------------------------
 '' MAIN
+'' --------------------------------------------------------
 
 dim as string wiki_url, cache_dir
 dim as string web_wiki_url, dev_wiki_url
@@ -239,8 +244,8 @@ if( bProcess ) then
 	end if
 	print "cache: "; cache_dir
 
-	if( open( "PageIndex.txt" for input as #1 ) <> 0 ) then
-		print "Unable to open PageIndex.txt"
+	if( open( def_index_file for input as #1 ) <> 0 ) then
+		print "Unable to open '" + def_index_file + "'"
 		end 1
 	end if
 

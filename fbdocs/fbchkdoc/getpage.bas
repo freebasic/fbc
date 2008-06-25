@@ -19,20 +19,27 @@
 
 '' chng: written [jeffm]
 
-''
+'' fbdoc headers
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
-#include once "funcs.bi"
 #include once "COptions.bi"
 
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
+#include once "funcs.bi"
+
+'' libs
 #inclib "pcre"
 #inclib "curl"
 
 using fb
 using fbdoc
 
-#include once "fbchkdoc.bi"
+
+'' --------------------------------------------------------
+'' MAIN
+'' --------------------------------------------------------
 
 dim as string web_wiki_url, dev_wiki_url
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir

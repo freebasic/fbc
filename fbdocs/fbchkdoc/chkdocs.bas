@@ -19,10 +19,12 @@
 
 '' chng: written [jeffm]
 
-''
+'' fb headers
 #include once "string.bi"
 #include once "file.bi"
 #include once "datetime.bi"
+
+'' fbdoc headers
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
 #include once "CRegex.bi"
@@ -31,8 +33,11 @@
 #include once "hash.bi"
 #include once "COptions.bi"
 
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
 #include once "funcs.bi"
 
+'' libs
 #inclib "pcre"
 #inclib "funcs"
 
@@ -93,11 +98,9 @@ Type ImageInfo_t
 	flags as integer
 end Type
 
-#include once "fbchkdoc.bi"
-
 dim shared cache_dir as string
 
-const PageIndex_File = "PageIndex.txt"
+const PageIndex_File = def_index_file
 const DocPages_File = "DocPages.txt"
 const LinkList_File = "linklist.csv"
 const FixList_File = "fixlist.txt"
@@ -1303,7 +1306,6 @@ sub Check_InvalidBacklinks()
 
 end sub
 
-
 '':::::
 sub Check_PrintToc()
 	'' Find any links missing from PrintToc.wakka
@@ -1426,8 +1428,9 @@ sub Check_DocPagesMissingTitles()
 end sub
 
 
-
-'' ----------------------------------------------------
+'' --------------------------------------------------------
+'' MAIN
+'' --------------------------------------------------------
 
 dim i as integer = 1
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir
@@ -1595,119 +1598,119 @@ if( (opt and OPT_ALL) = 0 ) then
 	end 1
 end if
 
-	Timer_Begin()
+Timer_Begin()
 
-	logopen()
+logopen()
 
-	logprint "chkdocs: " + format( now(), "yyyy/mm/dd hh:mm:ss" )
-	logprint "cache: " & cache_dir
-	logprint
+logprint "chkdocs: " + format( now(), "yyyy/mm/dd hh:mm:ss" )
+logprint "cache: " & cache_dir
+logprint
 
-	Timer_Mark("Startup")
+Timer_Mark("Startup")
 
-	''
-	Pages_Clear
-	Samps_Clear
+''
+Pages_Clear
+Samps_Clear
 
-	Pages_LoadFromFile( PageIndex_File )
+Pages_LoadFromFile( PageIndex_File )
 
-	Links_Clear
+Links_Clear
 
-	''
-	if( (opt and OPT_LOAD_FROM_FILE) <> 0 ) then
-		Pages_LoadFromFile( DocPages_File, FLAG_PAGE_DOCPAGE )
-		Links_LoadFromFile( LinkList_File )
-''		Samps_LoadFromFile( SampList_File )
-	else
-		Links_LoadFromPages()
-		Links_SaveToFile( LinkList_File )
-		Pages_SaveToFile( DocPages_File, FLAG_PAGE_DOCPAGE )
-		Samps_SaveToFile( SampList_File )
-	end if
+''
+if( (opt and OPT_LOAD_FROM_FILE) <> 0 ) then
+	Pages_LoadFromFile( DocPages_File, FLAG_PAGE_DOCPAGE )
+	Links_LoadFromFile( LinkList_File )
+''	Samps_LoadFromFile( SampList_File )
+else
+	Links_LoadFromPages()
+	Links_SaveToFile( LinkList_File )
+	Pages_SaveToFile( DocPages_File, FLAG_PAGE_DOCPAGE )
+	Samps_SaveToFile( SampList_File )
+end if
 
-	logprint
+logprint
 
-	Timer_Mark("Page Loading/Scanning")
+Timer_Mark("Page Loading/Scanning")
 
-	if( (opt and OPT_MISSING_PAGES) <> 0 ) then
-		Check_MissingPages()
-		Timer_Mark("Check_MissingPages()")
-	end if
+if( (opt and OPT_MISSING_PAGES) <> 0 ) then
+	Check_MissingPages()
+	Timer_Mark("Check_MissingPages()")
+end if
 
-	if( (opt and OPT_FULL_INDEX) <> 0 ) then
-		Check_IndexLinks("full")
-		Timer_Mark("Check_IndexLinks(""full"")")
-	end if
+if( (opt and OPT_FULL_INDEX) <> 0 ) then
+	Check_IndexLinks("full")
+	Timer_Mark("Check_IndexLinks(""full"")")
+end if
 
-	if( (opt and OPT_FUNCT_INDEX) <> 0 ) then
-		Check_IndexLinks("func")
-		Timer_Mark("Check_IndexLinks(""func"")")
-	end if
+if( (opt and OPT_FUNCT_INDEX) <> 0 ) then
+	Check_IndexLinks("func")
+	Timer_Mark("Check_IndexLinks(""func"")")
+end if
 
-	if( (opt and OPT_MISSING_BACKLINK) <> 0 ) then
-		Check_MissingBacklinks()
-		Timer_Mark("Check_MissingBacklinks()")
-	end if
+if( (opt and OPT_MISSING_BACKLINK) <> 0 ) then
+	Check_MissingBacklinks()
+	Timer_Mark("Check_MissingBacklinks()")
+end if
 
-	if( (opt and OPT_INVALID_BACKLINK) <> 0 ) then
-		Check_InvalidBacklinks()
-		Timer_Mark("Check_InvalidBacklinks()")
-	end if
+if( (opt and OPT_INVALID_BACKLINK) <> 0 ) then
+	Check_InvalidBacklinks()
+	Timer_Mark("Check_InvalidBacklinks()")
+end if
 
-	if( (opt and OPT_HEADERS) <> 0 ) then
-		Check_Headers()
-		Timer_Mark("Check_Headers()")
-	end if
-		
-	if( (opt and OPT_LINK_NAME_CASE) <> 0 ) then
-		Check_NameCase( FixList_File )
-		'' Check_NameCase( "" )
-		Timer_Mark("Check_NameCase()")
-	end if
+if( (opt and OPT_HEADERS) <> 0 ) then
+	Check_Headers()
+	Timer_Mark("Check_Headers()")
+end if
+	
+if( (opt and OPT_LINK_NAME_CASE) <> 0 ) then
+	Check_NameCase( FixList_File )
+	'' Check_NameCase( "" )
+	Timer_Mark("Check_NameCase()")
+end if
 
-	if( (opt and OPT_NOT_LINKED) <> 0 ) then
-		Check_PagesNotLinked()
-		Timer_Mark("Check_PagesNotLinked()")
-	end if
+if( (opt and OPT_NOT_LINKED) <> 0 ) then
+	Check_PagesNotLinked()
+	Timer_Mark("Check_PagesNotLinked()")
+end if
 
-	if( (opt and OPT_NO_BACKLINK) <> 0 ) then
-		Check_PagesNoBackLink()
-		Timer_Mark("Check_PagesNoBackLink()")
-	end if
+if( (opt and OPT_NO_BACKLINK) <> 0 ) then
+	Check_PagesNoBackLink()
+	Timer_Mark("Check_PagesNoBackLink()")
+end if
 
-	if( (opt and OPT_PRINT_TOC) <> 0 ) then
-		Check_PrintToc()
-		Timer_Mark("Check_PrintToc()")
-	end if
+if( (opt and OPT_PRINT_TOC) <> 0 ) then
+	Check_PrintToc()
+	Timer_Mark("Check_PrintToc()")
+end if
 
-	if( (opt and OPT_NO_TITLE) <> 0 ) then
-		'' Pages included in the downloadable docs that have no title
-		Check_DocPagesMissingTitles()
-		Timer_Mark("Check_DocPagesMissingTitles()")
-	end if
+if( (opt and OPT_NO_TITLE) <> 0 ) then
+	'' Pages included in the downloadable docs that have no title
+	Check_DocPagesMissingTitles()
+	Timer_Mark("Check_DocPagesMissingTitles()")
+end if
 
-	if( (opt and OPT_DUP_FILE_NAME) <> 0 ) then
-		'' duplicated file names
-		Check_DuplicateFilenames()
-		Timer_Mark("Check_DuplicateFilenames()")
-	end if
+if( (opt and OPT_DUP_FILE_NAME) <> 0 ) then
+	'' duplicated file names
+	Check_DuplicateFilenames()
+	Timer_Mark("Check_DuplicateFilenames()")
+end if
 
-	if( (opt and OPT_IMAGES) <> 0 ) then
-		'' Image file names
-		Check_ImageFilenames()
-		Timer_Mark("Check_ImageFilenames()")
-	end if
+if( (opt and OPT_IMAGES) <> 0 ) then
+	'' Image file names
+	Check_ImageFilenames()
+	Timer_Mark("Check_ImageFilenames()")
+end if
 
-	logprint
-	logprint "Execution time: " + str(cint(timer - timers(1).value)) + " seconds."
+logprint
+logprint "Execution time: " + str(cint(timer - timers(1).value)) + " seconds."
 
-	logclose()
+logclose()
 
-	Timer_Mark("Cleanup")
+Timer_Mark("Cleanup")
 
-	Timer_End()
+Timer_End()
 
-	if( (opt and OPT_TIMER_LOG) <> 0 ) then
-		Timer_Dump()
-	end if
+if( (opt and OPT_TIMER_LOG) <> 0 ) then
+	Timer_Dump()
+end if
 

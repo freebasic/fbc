@@ -19,7 +19,7 @@
 
 '' chng: written [coderJeff]
 
-''
+'' fbdoc headers
 #include once "CWiki.bi"
 #include once "CWikiCache.bi"
 #include once "CRegex.bi"
@@ -27,16 +27,21 @@
 #include once "CWakka2fbhelp.bi"
 #include once "COptions.bi"
 
-#include once "fbdoc_defs.bi"
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
 #include once "funcs.bi"
 
+'' libs
 #inclib "pcre"
 #inclib "curl"
 
 using fb
 using fbdoc
 
-#include once "fbchkdoc.bi"
+
+'' --------------------------------------------------------
+'' MAIN
+'' --------------------------------------------------------
 
 dim shared as CWikiCache ptr wikicache
 
