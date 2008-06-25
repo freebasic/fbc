@@ -3,11 +3,6 @@ fbdoc TODO list
 
 [ ]	add proxy support to CHttp.
 
-[ ]	add new methods to CWiki to allow programmatic editing of wakka script.
-	[X] Insert( text )
-	[ ] Remove() - take special care to remove parameters and page links
-		when the token is removed
-
 [ ] add an image getter using libCURL so the on-line images
 	can be included in the CHM version of the docs.
 	[ ] built-in support for image getting ( uses external tool currently )
@@ -21,20 +16,6 @@ fbdoc TODO list
 
 [ ] improve format of keywords.lst so that it could be used as an input file
 	to generate other files for editors that support syntax highlighting.
-
-[ ] make the program more friendly to restricted user environments.  As-is,
-	the data cache is located under the application directory.
-
-[ ] Add the fbdoc 'tools'.  maybe need a seperate directory in /src/contrib?
-	[ ] 'renpage [oldname newname] [@list]'
-		renames pages by updating referring links on all other pages.
-		newpage/clone, and oldpage/delete still must be performed by a user.
-	[ ] 'mkerrlst [options]'
-		makes CompilerErrMsg from fbc sources
-	[ ] 'getimagelist'
-		scans wakka sources for the urls of images
-	[ ] 'getimage filelist.txt'
-		downloads images from urls to the html/images directory
 
 [ ] Code clean-up
 	[ ] refactor common code in CWakka2Html and CWakka2fbhelp
@@ -58,4 +39,3 @@ fbdoc TODO list
 	[ ] write the Texinfo emitter
 	[ ] write the PDF emitter ( may require an intermediate format, or based
 		on Texinfo output files )
-
