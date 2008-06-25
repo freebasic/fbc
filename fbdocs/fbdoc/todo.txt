@@ -26,17 +26,6 @@ fbdoc TODO list
 	the data cache is located under the application directory.
 
 [ ] Add the fbdoc 'tools'.  maybe need a seperate directory in /src/contrib?
-	[ ] 'getindex [source]'
-		retrieves PageIndex as a text file.  One page name per file
-	[ ] 'getpage [source] [page] [@pagelist]'
-		retrieves a single or multiple pages from on-line to ./fbdoc/cache.
-	[ ] 'putpage [dest] [page] [@pagelist]'
-		store a single or multiple pages from ./fbdoc/cache to on-line.
-	[ ] 'chkdocs [options]'
-		checks document links, missing pages, some formatting etc, and generates
-		a report of possible problems needing attention in the documentation
-	[ ] 'mkprntoc [options]'
-		makes PrintToc page from wakka script sources
 	[ ] 'renpage [oldname newname] [@list]'
 		renames pages by updating referring links on all other pages.
 		newpage/clone, and oldpage/delete still must be performed by a user.
