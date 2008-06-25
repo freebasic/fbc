@@ -24,7 +24,7 @@
 
 
 #ifndef M_PI
-#   define M_PI 3.14159265358979323846
+#	define M_PI 3.14159265358979323846
 #endif
 
 #include "caca.bi"
@@ -42,13 +42,13 @@
 declare sub create_ball ()
 declare sub draw_ball ( byval as uinteger, byval as uinteger )
 
-dim shared pixels(XSIZ * YSIZ - 1) as ubyte
-dim shared metaball(METASIZE * METASIZE - 1) as ubyte
+dim shared pixels(0 to XSIZ * YSIZ - 1) as ubyte
+dim shared metaball(0 to METASIZE * METASIZE - 1) as ubyte
 
 
-dim as integer r(255), g(255), b(255), a(255)
-dim as single d(METABALLS - 1), di(METABALLS - 1), dj(METABALLS - 1), dk(METABALLS - 1)
-dim as uinteger x(METABALLS - 1), y(METABALLS - 1)
+dim as integer r(0 to 255), g(0 to 255), b(0 to 255), a(0 to 255)
+dim as single d(0 to METABALLS - 1), di(0 to METABALLS - 1), dj(0 to METABALLS - 1), dk(0 to METABALLS - 1)
+dim as uinteger x(0 to METABALLS - 1), y(0 to METABALLS - 1)
 dim bitmap as caca_bitmap ptr
 dim as single i, j, k
 	i = 10.0
@@ -57,95 +57,95 @@ dim as single i, j, k
 dim p as integer, frame as integer
 	frame = 0
 
-    if(caca_init()) then
-        end 1
-    end if
+	if(caca_init()) then
+		end 1
+	end if
 
-    caca_set_delay 20000
+	caca_set_delay 20000
 
-    '/* Make the palette eatable by libcaca */
-    for p = 0 to 255
-    	r(p) = 0
-    	g(p) = 0
-    	b(p) = 0
-    	a(p) = 0
-    next p
-   	
-   	r(255) = &HFFF
-   	g(255) = &HFFF
-   	b(255) = &HFFF
+	'/* Make the palette eatable by libcaca */
+	for p = 0 to 255
+		r(p) = 0
+		g(p) = 0
+		b(p) = 0
+		a(p) = 0
+	next p
 
-    '/* Create a libcaca bitmap smaller than our pixel buffer, so that we
-    ' * display only the interesting part of it */
-    bitmap = caca_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE, _
-                                     XSIZ, 0, 0, 0, 0)
+	r(255) = &HFFF
+	g(255) = &HFFF
+	b(255) = &HFFF
 
-    '/* Generate ball sprite */
-    create_ball
+	'/* Create a libcaca bitmap smaller than our pixel buffer, so that we
+	' * display only the interesting part of it */
+	bitmap = caca_create_bitmap(8, XSIZ - METASIZE, YSIZ - METASIZE, _
+	                            XSIZ, 0, 0, 0, 0)
+
+	'/* Generate ball sprite */
+	create_ball()
 
 	for p = 0 to METABALLS - 1
 		d(p) = caca_rand(0, 100)
-        di(p) = csng(caca_rand(500, 4000)) / 6000.0
-        dj(p) = csng(caca_rand(500, 4000)) / 6000.0
-        dk(p) = csng(caca_rand(500, 4000)) / 6000.0
-    next p
+		di(p) = csng(caca_rand(500, 4000)) / 6000.0
+		dj(p) = csng(caca_rand(500, 4000)) / 6000.0
+		dk(p) = csng(caca_rand(500, 4000)) / 6000.0
+	next p
 
-    ' Go !
-    do while not caca_get_event(CACA_EVENT_KEY_PRESS)
-        frame += 1
+	' Go !
+	do until caca_get_event(CACA_EVENT_KEY_PRESS)
+		frame += 1
 
-        '/* Crop the palette */
-        for p = CROPBALL to 254
-        	dim as integer t1, t2, t3
-            t1 = iif(p < &H40 , 0 , iif(p < &Hc0 , (p - &H40) * &H20 , &Hfff))
-            t2 = iif(p < &He0 , 0 , (p - &He0) * &H80)
-            t3 = iif(p < &H40 , p * &H40 , &Hfff)
+		'/* Crop the palette */
+		for p = CROPBALL to 254
+			dim as integer t1, t2, t3
+			t1 = iif(p < &H40 , 0 , iif(p < &Hc0 , (p - &H40) * &H20 , &Hfff))
+			t2 = iif(p < &He0 , 0 , (p - &He0) * &H80)
+			t3 = iif(p < &H40 , p * &H40 , &Hfff)
 
-            r(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t1 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t2 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t3 \ 4
-            g(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t2 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t3 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t1 \ 4
-            b(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t3 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t1 \ 4 _
-                 + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t2 \ 4
-        next p
+			r(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t1 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t2 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t3 \ 4
+			g(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t2 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t3 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t1 \ 4
+			b(p) = (1.0 + sin(cdbl(frame) * M_PI / 60)) * t3 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 40) * M_PI / 60)) * t1 \ 4 _
+			     + (1.0 + sin(cdbl(frame + 80) * M_PI / 60)) * t2 \ 4
+		next p
 
-        '/* Set the palette */
-        caca_set_bitmap_palette bitmap, @r(0), @g(0), @b(0), @a(0)
+		'/* Set the palette */
+		caca_set_bitmap_palette bitmap, @r(0), @g(0), @b(0), @a(0)
 
-        '/* Silly paths for our balls */
-        for p = 0 to METABALLS - 1
-        	dim as single u, v
-            u = di(p) * i + dj(p) * j + dk(p) * sin(di(p) * k)
-            v = d(p) + di(p) * j + dj(p) * k + dk(p) * sin(dk(p) * i)
-            u = sin(i + u * 2.1) * (1.0 + sin(u))
-            v = sin(j + v * 1.9) * (1.0 + sin(v))
-            x(p) = (XSIZ - METASIZE) \ 2 + u * (XSIZ - METASIZE) \ 4
-            y(p) = (YSIZ - METASIZE) \ 2 + v * (YSIZ - METASIZE) \ 4
-        next p
+		'/* Silly paths for our balls */
+		for p = 0 to METABALLS - 1
+			dim as single u, v
+			u = di(p) * i + dj(p) * j + dk(p) * sin(di(p) * k)
+			v = d(p) + di(p) * j + dj(p) * k + dk(p) * sin(dk(p) * i)
+			u = sin(i + u * 2.1) * (1.0 + sin(u))
+			v = sin(j + v * 1.9) * (1.0 + sin(v))
+			x(p) = (XSIZ - METASIZE) \ 2 + u * (XSIZ - METASIZE) \ 4
+			y(p) = (YSIZ - METASIZE) \ 2 + v * (YSIZ - METASIZE) \ 4
+		next p
 
-        i += 0.011
-        j += 0.017
-        k += 0.019
+		i += 0.011
+		j += 0.017
+		k += 0.019
 
 		clear pixels(0), 0, XSIZ * YSIZ
 
-        '/* Here is all the trick. Maybe if you're that
-        ' * clever you'll understand. */
-        for p = 0 to METABALLS - 1
-            draw_ball x(p), y(p)
-        next p
+		'/* Here is all the trick. Maybe if you're that
+		' * clever you'll understand. */
+		for p = 0 to METABALLS - 1
+			draw_ball( x(p), y(p) )
+		next p
 
-        ' Draw our virtual buffer to screen, letting libcaca resize it */
-        caca_draw_bitmap 0, 0, caca_get_width() - 1, caca_get_height() - 1, _
-                         bitmap, @pixels(0) + (METASIZE \ 2) * (1 + XSIZ)
-        caca_refresh
-    loop
+		' Draw our virtual buffer to screen, letting libcaca resize it */
+		caca_draw_bitmap( 0, 0, caca_get_width() - 1, caca_get_height() - 1, _
+		                  bitmap, @pixels(0) + (METASIZE \ 2) * (1 + XSIZ) )
+			caca_refresh()
+	loop
 
-    ' End, bye folks
-    caca_end
+	' End, bye folks
+	caca_end()
 
 	end 0
 
@@ -153,13 +153,13 @@ dim p as integer, frame as integer
 '/* Generate ball sprite
 ' * You should read the comments, I already wrote that before ... */
 sub create_ball ()
-dim as integer x, y
-dim distance as single
+	dim as integer x, y
+	dim distance as single
 
 	for y = 0 to METASIZE - 1
 		for x = 0 to METASIZE - 1
 			distance = ((METASIZE\2) - x) * ((METASIZE\2) - x) _
-				+ ((METASIZE\2) - y) * ((METASIZE\2) - y)
+			         + ((METASIZE\2) - y) * ((METASIZE\2) - y)
 			distance = sqr(distance) * 64 / METASIZE
 			metaball(x + y * METASIZE) = iif(distance > 15 , 0 , cint(((255.0 - distance) * 15)))
 		next x
@@ -168,25 +168,26 @@ end sub
 
 ' You missed the trick ?
 sub draw_ball ( byval bx as uinteger, byval by as uinteger )
-dim colr as uinteger
-dim i as uinteger, e as uinteger
-dim b as uinteger
+	dim colr as uinteger
+	dim i as uinteger, e as uinteger
+	dim b as uinteger
+
 	b = (by * XSIZ) + bx
 
-    for i = 0 to METASIZE * METASIZE - 1
-        colr = pixels(b) + metaball(i)
+	for i = 0 to METASIZE * METASIZE - 1
+		colr = pixels(b) + metaball(i)
 
-        if (colr > 255) then
-            colr = 255
-        end if
+		if (colr > 255) then
+			colr = 255
+		end if
 
-        pixels(b) = colr
-        if(e = METASIZE) then
-            e = 0
-            b += XSIZ - METASIZE
-        end if
-        b+= 1
-        e+= 1
-    next i
+		pixels(b) = colr
+		if(e = METASIZE) then
+			e = 0
+			b += XSIZ - METASIZE
+		end if
+		b+= 1
+		e+= 1
+	next i
 end sub
 
