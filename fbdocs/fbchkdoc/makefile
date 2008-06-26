@@ -29,7 +29,9 @@ mkprntoc$(EXEEXT) \
 mkerrlst$(EXEEXT) \
 delextra$(EXEEXT) \
 mkimglst$(EXEEXT) \
-getimage$(EXEEXT)
+getimage$(EXEEXT) \
+spellit$(EXEEXT) \
+spell$(EXEEXT)
 
 TEMP_FILES := \
 results.txt \
@@ -101,6 +103,12 @@ mkimglst$(EXEEXT): mkimglst.bas $(LIB_NAME) $(DEP_LIST)
 
 getimage$(EXEEXT): getimage.bas
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
+
+spellit$(EXEEXT): spellit.bas spell_check.bas spell_check.bi
+	$(FBC) $(FBCFLAGS) spellit.bas spell_check.bas $(FBLFLAGS) -x $@
+
+spell$(EXEEXT): spell.bas spell_check.bas spell_check.bi
+	$(FBC) $(FBCFLAGS) spell.bas spell_check.bas $(FBLFLAGS) -x $@
 
 $(LIB_NAME): $(LIB_LIST) $(HEADERS)
 	$(FBC) -lib -x funcs $(LIB_LIST) $(FBCFLAGS)

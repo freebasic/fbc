@@ -39,7 +39,7 @@
 using fb
 using fbdoc
 
-function _Dump _
+function ScanForImages _
 	( _
 		byval _this as CWiki ptr, _
 		byref sPageName as string, _
@@ -180,17 +180,17 @@ end if
 dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
 
+if( cache_dir = "" ) then
+	cache_dir = default_CacheDir
+end if
+print "cache: "; cache_dir
+
 '' Initialize the cache
 wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
 	print "Unable to use local cache dir " + cache_dir
 	end 1
 end if
-
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
-end if
-print "cache: "; cache_dir
 
 if( webPageCount > 0 ) then
 	dim as integer i, h, h2
@@ -217,7 +217,7 @@ if( webPageCount > 0 ) then
 
 		wiki->Parse( sPage, sBody )
 
-		if( _Dump( wiki, sPage, h ) ) then
+		if( ScanForImages( wiki, sPage, h ) ) then
 			print #h2, sPage
 		end if
 

@@ -28,17 +28,19 @@ Table of Contents:
     2. Compiling
     3. Configuration
     4. Tools
-       4.1 getindex
-       4.2 getpage
-       4.3 putpage
-       4.4 chkdocs
-       4.5 replace
-       4.6 rebuild
-       4.7 mkprntoc
-       4.8 mkerrlst
-       4.9 delextra
-       4.10 mkimglst
-       4.11 getimage
+       4.1 getindex - get an index of all wiki pages
+       4.2 getpage - get pages from the wiki
+       4.3 putpage - save pages to the wiki
+       4.4 chkdocs - do some checks on the wiki
+       4.5 replace - replace text in wiki pages
+       4.6 rebuild - parse and rebuild wiki pages
+       4.7 mkprntoc - generate a linear table of contents
+       4.8 mkerrlst - make warnings/errors from FB sources
+       4.9 delextra - delete extra pages not in the wiki
+       4.10 mkimglst - generate a list of linked images
+       4.11 getimage - download images from a list
+	   4.12 spellit - spell check individual words
+	   4.13 spell - spell check wiki pages
     5. Common Tasks
        5.1 Downloading the entire wiki
        5.2 Downloading changed pages since last download
@@ -81,7 +83,8 @@ issue.
     Because these tools are so specific to FreeBASIC and its wiki, there is
 no binary package.  Checkout /fbc/trunk/fbdocs from sourceforge.net to get 
 all the sources needed. Required to build and run are: FreeBASIC, curl, pcre, 
-fbdoc (found in ../fbdoc), make, and probably a few other libs or commands.
+fbdoc (found in ../fbdoc), ASpell, make, and probably a few other libs or 
+commands.
 
     The utilities use relative paths by default.  Always run the utilities
 so that ./fbchkdoc is the current working directory.
@@ -162,7 +165,7 @@ utility is described in the following sub-sections.
         $ ./getindex -web
 
     getindex reads a list of all pages from the wiki and saves the list to
-PageIndex.txt.  Type 'getindex' without any command line arguments to see
+PageIndex.txt.  Type './getindex' without any command line arguments to see
 a full list of options.  The PageIndex.txt file that is generated is used by 
 other utilities.
 
@@ -180,8 +183,8 @@ allowing a plain list that returns all pages changed since a certain date.
         $ ./getpage -web @list.txt 
 
     getpage retrieves pages from the wiki and saves each page to a .wakka file
-in the cache.  Type 'getpage' without any command line arguments to see a full
-list of options.
+in the cache.  Type './getpage' without any command line arguments to see a 
+full list of options.
 
     Main usage for this subprogram is to get pages from the wiki to files.
 Some of the other utilites work on the local cache instead of the wiki server.
@@ -211,8 +214,8 @@ get just those pages.  It often saves having to retrieve the entire wiki.
         $ ./putpage -web @list.txt 
 
     putpage loads pages from the cache and saves them to the wiki and is the
-counterpart to getpage.  Type 'putpage' without any command line arguments to
-see a full list of options.
+counterpart to getpage.  Type './putpage' without any command line arguments
+to see a full list of options.
 
     You will need a username and password on the wiki to use this command. In
 all cases, please BE CAREFUL with this command.  Always inspect your changes 
@@ -246,9 +249,9 @@ new page and the existing page are identical, and no operation is performed.
         $ ./chkdocs e
 
     chkdocs will scan all pages in the wakka file cache and report possible
-problems with names, links, formatting, examples, images, etc.  Type 'chkdocs'
-without any command line options to get a full list of options.  The following
-files are generated as a result of running chkdocs.
+problems with names, links, formatting, examples, images, etc.  Type 
+'./chkdocs' without any command line options to get a full list of options.  
+The following files are generated as a result of running chkdocs.
 
     linklist.csv
         A list of all links with each line as one of the following formats:
@@ -293,7 +296,7 @@ files are generated as a result of running chkdocs.
         $ ./replace -f list.txt -c "comment"
 
     The replace utility will read a list of text replacements from a file and
-apply the changes to the cache dir.  Type 'replace' without and command line 
+apply the changes to the cache dir.  Type './replace' without and command line 
 arguments to see a full list of options.  The file must have the following 
 format:
 
@@ -316,7 +319,7 @@ that can be used with putpage.  For example
 
     This utility reads in wakka source script, parses it, and rebuilds the
 page using the parsed data, then finally writes the file back to the source
-in the selected cache directory.  Type 'rebuild' without and command line 
+in the selected cache directory.  Type './rebuild' without and command line 
 arguments to see a full list of options.
 
     The main purpose of this utility is to test the internal wakka parsing
@@ -332,7 +335,7 @@ abnormalities in the wakka source.
         $ ./putpage -web PrintToc
 
     This disgusting utility is meant to generate a linear table of contents
-from the wakka source files.  Type 'mkprntoc' without any command line 
+from the wakka source files.  Type './mkprntoc' without any command line 
 arguments to see a full list of options.  It reads in key files from the
 cache directory starting with DocToc.wakka and writes the results to
 PrintToc.wakka in the same cache directory.
@@ -371,8 +374,8 @@ formats).
         $ ./delextra -web -svn
 
     This utility will delete (or remove) the extra *.wakka files in the cache 
-directory not present in the PageIndex for the wiki.  Type 'delextra' without 
-any command line arguments to see a full list of options.
+directory not present in the PageIndex for the wiki.  Type './delextra' 
+without any command line arguments to see a full list of options.
 
     When pages are deleted from the wiki, old file names will persist in the
 cache directories.  Use this utility to purge deleted wiki pages.  Pass "-svn"
@@ -388,7 +391,7 @@ statement.
         $ ./mkimglst -web @PageIndex.txt
 
     This utility will scan the wakka pages in the cache dir for images links
-on each page.  Type 'mkimglst' without any command line arguments for a full
+on each page.  Type './mkimglst' without any command line arguments for a full
 list of options.
 
     When the program completes, two files will have been written:
@@ -410,7 +413,7 @@ list of options.
         $ ./getimage imagelist.txt
 
     This utility will download all images listed in the specified file and
-store them by default at ../fbdoc/html/images.  Type 'getimage' without any
+store them by default at ../fbdoc/html/images.  Type './getimage' without any
 command line arguments for a full list of options.
 
     getimage takes one argument only and it must be a text file with the
@@ -421,6 +424,40 @@ or
     URL
 
     The output from mkimglst can be used with getimage.
+
+
+4.12 spellit
+     -------
+
+    Typical usage:
+        $ ./spellit
+		$ ./spellit their
+
+    This utility will check spelling of individual words.  Type './spellit' to
+start an interactive version of the program.  For each word enter, the 
+program will report if the word is correct, otherwise it will give a list of
+suggestions.  Or, enter words as command line arguments to checks the words
+and then exit.  If words are specified on the command line, the return code
+will be the number of incorrect words.
+
+
+4.13 spell
+     -----
+
+    Typical usage:
+        $ ./getindex -web
+        $ ./spell -web @PageIndex.txt > badwords.txt
+
+    This utility will check spelling of all specified wakka source files.
+Type './spell' without any command line options for a full list of options.
+
+    Two files that should be present to make this utility work correctly are:
+PageIndex.txt and dict.txt.  PageIndex.txt is needed so page names are not
+considered as mispelled words and dict.txt can hold any words that may be
+erroneously considered incorrect (i.e. a custom word dictionary).
+
+    Output is to the console with page names followed by incorrect words found
+on each page.
 
 
 5. Common Tasks
