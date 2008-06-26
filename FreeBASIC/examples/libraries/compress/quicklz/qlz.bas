@@ -1,13 +1,14 @@
-'Real World Demonstration Program for the QuickLZ compression library
+'Real World Demonstration Program for the QuickLZ 1.20 compression library
 
 #include "quicklz.bi"
 
 declare sub PrintUsage()
-declare sub CompressFile( infile as string, outfile as string )
-declare sub DeCompressFile( infile as string, outfile as string )
+declare sub CompressFile( byref infile as string, byref outfile as string )
+declare sub DecompressFile( byref infile as string, byref outfile as string )
 
-if len(trim(command())) < 5 then PrintUsage()
-if len(trim(command(1))) > 1 then PrintUsage()
+if len(command(1)) <> 1 then PrintUsage()
+if len(command(2)) = 0 then PrintUsage()
+if len(command(3)) = 0 then PrintUsage()
 
 select case lcase(command(1))
 	case "c"
@@ -18,7 +19,7 @@ select case lcase(command(1))
 		PrintUsage()
 end select
 
-sub CompressFile ( infile as string, outfile as string )
+sub CompressFile ( byref infile as string, byref outfile as string )
 	
 	dim as ubyte ptr inBuffer, outBuffer
 	dim as uinteger CSize, FSize
@@ -26,9 +27,8 @@ sub CompressFile ( infile as string, outfile as string )
 	
 	FF = freefile()
 	
-	open infile for binary access read as #FF
-	if err > 0 then
-		? "Unable to open file for input"
+	if open(infile for binary access read as #FF) <> 0 then
+		print "Unable to open file for input"
 		end 2
 	end if
 	
@@ -41,12 +41,16 @@ sub CompressFile ( infile as string, outfile as string )
 	
 	CSize = qlz_compress(inBuffer, outBuffer, FSize)
 	
+	if CSize = 0 then
+		print "Compression failed!"
+		end 3
+	end if
+	
 	FF = freefile()
 	
-	open outfile for binary access write as #FF
-	if err > 0 then
-		? "Unable to write compressed data!"
-		end 3
+	if open(outfile for binary access write as #FF) <> 0 then
+		print "Unable to write compressed data!"
+		end 4
 	end if
 	
 	put #FF, ,*outBuffer, CSize
@@ -55,13 +59,13 @@ sub CompressFile ( infile as string, outfile as string )
 	deallocate(inBuffer)
 	deallocate(outBuffer)
 	
-	? "Uncompressed file: " & FSize & " bytes"
-	? "Compressed file: " & CSize & " bytes"
-	? "Difference: " & (FSize - CSize) & " bytes"
+	print "Uncompressed file: " & FSize & " bytes"
+	print "Compressed file: " & CSize & " bytes"
+	print "Difference: " & cint(CSize - FSize) & " bytes"
 	
 End Sub
 
-sub DeCompressFile ( infile as string, outfile as string )
+sub DecompressFile ( byref infile as string, byref outfile as string )
 		
 	dim as ubyte ptr inBuffer, outBuffer
 	dim as uinteger CSize, FSize
@@ -69,15 +73,14 @@ sub DeCompressFile ( infile as string, outfile as string )
 	
 	FF = freefile()
 	
-	open infile for binary access read as #FF
-	if err > 0 then
-		? "Unable to open compressed file for input"
-		end 4
+	if open(infile for binary access read as #FF) <> 0 then
+		print "Unable to open compressed file for input"
+		end 5
 	end if
 	
 	FSize = lof(FF)
 	inBuffer = allocate(FSize)
-
+	
 	
 	get #FF, , *inBuffer, FSize
 	close #FF
@@ -86,12 +89,16 @@ sub DeCompressFile ( infile as string, outfile as string )
 	
 	CSize = qlz_decompress(inBuffer, outBuffer)
 	
+	if CSize = 0 then
+		print "Decompression failed, or uncompressed file is empty!"
+		end 6
+	end if
+	
 	FF = freefile()
 	
-	open outfile for binary access write as #FF
-	if err > 0 then
-		? "Unable to write uncompressed data!"
-		end 5
+	if open(outfile for binary access write as #FF) <> 0 then
+		print "Unable to write uncompressed data!"
+		end 7
 	end if
 	
 	put #FF, ,*outBuffer, CSize
@@ -100,17 +107,17 @@ sub DeCompressFile ( infile as string, outfile as string )
 	deallocate(inBuffer)
 	deallocate(outBuffer)
 	
-	? "Uncompressed file: " & CSize & " bytes"
-	? "Compressed file: " & FSize & " bytes"
-	? "Difference: " & (CSize - FSize) & " bytes"
+	print "Compressed file: " & FSize & " bytes"
+	print "Uncompressed file: " & CSize & " bytes"
+	print "Difference: " & cint(CSize - FSize) & " bytes"
 	
 End Sub
 
 sub PrintUsage()
-	? "QuickLZ Demonstration Program"
-	? "Usage: qlz [c|d] infile outfile"
-	? "c flag is for compression"
-	? "d flag is for decompression"
-	?
+	print "QuickLZ 1.20 Demonstration Program"
+	print "Usage: qlz {c|d} infile outfile"
+	print "c flag is for compression"
+	print "d flag is for decompression"
+	
 	end 1
 End Sub
