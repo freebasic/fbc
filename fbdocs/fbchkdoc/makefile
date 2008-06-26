@@ -104,11 +104,11 @@ mkimglst$(EXEEXT): mkimglst.bas $(LIB_NAME) $(DEP_LIST)
 getimage$(EXEEXT): getimage.bas
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-spellit$(EXEEXT): spellit.bas spell_check.bas spell_check.bi
-	$(FBC) $(FBCFLAGS) spellit.bas spell_check.bas $(FBLFLAGS) -x $@
+spellit$(EXEEXT): spellit.bas spellcheck.bas spellcheck.bi
+	$(FBC) $(FBCFLAGS) spellit.bas spellcheck.bas $(FBLFLAGS) -x $@
 
-spell$(EXEEXT): spell.bas spell_check.bas spell_check.bi
-	$(FBC) $(FBCFLAGS) spell.bas spell_check.bas $(FBLFLAGS) -x $@
+spell$(EXEEXT): spell.bas spellcheck.bas spellcheck.bi
+	$(FBC) $(FBCFLAGS) spell.bas spellcheck.bas $(FBLFLAGS) -x $@
 
 $(LIB_NAME): $(LIB_LIST) $(HEADERS)
 	$(FBC) -lib -x funcs $(LIB_LIST) $(FBCFLAGS)
