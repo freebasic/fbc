@@ -20,6 +20,7 @@
 '' chng: written [jeffm]
 
 #include once "spellcheck.bi"
+#inclib "funcs"
 
 ''
 function DoCheck( byref x as string ) as integer

@@ -17,7 +17,7 @@
 
 '' rebuild.bas - read wakka files, parse, and write back
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 '' fbdoc headers
 #include once "CWiki.bi"

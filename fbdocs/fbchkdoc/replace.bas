@@ -17,7 +17,7 @@
 
 '' replace.bas - replace text in wakka files
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 '' fb headers
 #include "file.bi"

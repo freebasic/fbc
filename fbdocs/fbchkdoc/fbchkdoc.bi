@@ -11,5 +11,7 @@ const default_dev_CacheDir = "../fbdoc/cache.dev/"
 
 '' other common defaults
 const def_index_file = "PageIndex.txt"
+const default_image_dir = "../fbdoc/html/images/"
+const default_fb_dir = "../../FreeBASIC/"
 
 #endif

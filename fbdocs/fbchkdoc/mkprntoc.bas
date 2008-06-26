@@ -17,7 +17,7 @@
 
 '' mkprntoc.bas - generate a linear TOC for single file output formats
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 '' fbdoc headers
 #include once "CWiki.bi"

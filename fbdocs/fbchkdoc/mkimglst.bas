@@ -17,7 +17,7 @@
 
 '' mkimglst.bas - scan wakka files and generate an image list
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 '' fbdoc headers
 #include once "CWiki.bi"

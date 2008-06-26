@@ -41,6 +41,7 @@ Table of Contents:
        4.11 getimage - download images from a list
 	   4.12 spellit - spell check individual words
 	   4.13 spell - spell check wiki pages
+	   4.14 samps - manage wiki samples
     5. Common Tasks
        5.1 Downloading the entire wiki
        5.2 Downloading changed pages since last download
@@ -123,6 +124,12 @@ different name. A description of the options in this file are below:
 
     dev_cache_dir    
         like web_cache_dir, excect a duplicate of the off-line server's wiki.
+
+    image_dir
+        location of the images (used in the wiki)
+
+    fb_dir
+        top-level FreeBASIC directory
 
     web_wiki_url
         the location of the on-line wiki.
@@ -458,6 +465,27 @@ erroneously considered incorrect (i.e. a custom word dictionary).
 
     Output is to the console with page names followed by incorrect words found
 on each page.
+
+
+4.14 samps
+     -----
+
+    Typical usage:
+        $ ./samps check @PageIndex.txt
+        $ ./samps extract @PageIndex.txt
+
+    This utility is used for managing the wiki samples and synchronizing them
+with FreeBASIC/examples/manual.  Type './samps' without any command line 
+options for a full list commands.
+
+    Directories used must be configured in fbchkdoc.ini
+
+    To check if there have been any changes to the sample files use:
+	$ ./samps check @PageIndex.txt
+
+    To extract new or changed samples from the wiki and store them the examples
+	directory:
+	$ ./samps extract @PageIndex.txt
 
 
 5. Common Tasks

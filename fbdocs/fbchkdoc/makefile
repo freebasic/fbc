@@ -13,8 +13,11 @@ FBC := fbc$(EXEEXT)
 
 ##########################
 
-LIB_LIST := \
-funcs.bas
+LIB_SRCS := \
+funcs.bas \
+funcsdir.bas \
+fmtcode.bas \
+buffer.bas
 
 LIB_NAME := libfuncs.a
 
@@ -31,7 +34,15 @@ delextra$(EXEEXT) \
 mkimglst$(EXEEXT) \
 getimage$(EXEEXT) \
 spellit$(EXEEXT) \
-spell$(EXEEXT)
+spell$(EXEEXT) \
+samps$(EXEEXT)
+
+SAMPS_SRCS := \
+samps.bas \
+samps_wiki.bas \
+samps_file.bas \
+samps_logfile.bas
+
 
 TEMP_FILES := \
 results.txt \
@@ -101,17 +112,20 @@ delextra$(EXEEXT): delextra.bas $(LIB_NAME) $(DEP_LIST)
 mkimglst$(EXEEXT): mkimglst.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-getimage$(EXEEXT): getimage.bas
+getimage$(EXEEXT): getimage.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-spellit$(EXEEXT): spellit.bas spellcheck.bas spellcheck.bi
+spellit$(EXEEXT): spellit.bas spellcheck.bas
 	$(FBC) $(FBCFLAGS) spellit.bas spellcheck.bas $(FBLFLAGS) -x $@
 
-spell$(EXEEXT): spell.bas spellcheck.bas spellcheck.bi
+spell$(EXEEXT): spell.bas spellcheck.bas $(LIB_NAME) $(DEP_LIST)
 	$(FBC) $(FBCFLAGS) spell.bas spellcheck.bas $(FBLFLAGS) -x $@
 
-$(LIB_NAME): $(LIB_LIST) $(HEADERS)
-	$(FBC) -lib -x funcs $(LIB_LIST) $(FBCFLAGS)
+samps$(EXEEXT): $(SAMPS_SRCS) $(LIB_NAME) $(DEP_LIST)
+	$(FBC) $(FBCFLAGS) $(SAMPS_SRCS) $(FBLFLAGS) -x $@
+
+$(LIB_NAME): $(LIB_SRCS) $(HEADERS)
+	$(FBC) -lib -x funcs $(LIB_SRCS) $(FBCFLAGS)
 
 ##########################
 

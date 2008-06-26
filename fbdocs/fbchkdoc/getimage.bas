@@ -17,16 +17,21 @@
 
 '' getimage.bas - download images from the internet
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 #include once "curl.bi"
 #include once "crt/stdio.bi"
 
+'' fbdoc headers
+#include once "COptions.bi"
+
+'' fbchkdoc headers
+#include once "fbchkdoc.bi"
+
+''
 const MAX_IMAGEFILES = 100
 #define FALSE 0
 #define TRUE 1
-
-const out_path = "../fbdoc/html/images/"
 
 type ImageFile
 	url as string
@@ -127,7 +132,7 @@ end function
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string f, filename, url
+dim as string f, filename, url, image_dir
 dim as integer h, i = 1
 
 if( command(1) = "" ) then
@@ -139,6 +144,19 @@ if( command(1) = "" ) then
 	print "                    PageName,URL"
 	end 0
 end if
+
+'' read defaults from the configuration file (if it exists)
+scope
+	dim as fb.fbdoc.COptions ptr opts = new fb.fbdoc.COptions( default_optFile )
+	if( opts <> NULL ) then
+		image_dir = opts->Get( "image_dir", default_image_dir )
+		delete opts
+	else
+		'' print "Warning: unable to load options file '" + default_optFile + "'"
+		'' end 1
+		image_dir = default_image_dir
+	end if
+end scope
 
 f = command(1)
 
@@ -158,7 +176,7 @@ while eof(h) = 0
 	if( lcase(left( url, 7 )) = "http://" ) then
 		filename = GetFileName( url )
 		if( filename > "" ) then
-			AddImageFile( url, out_path + filename )
+			AddImageFile( url, image_dir + filename )
 		end if
 	end if
 	

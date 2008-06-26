@@ -105,7 +105,6 @@ const DocPages_File = "DocPages.txt"
 const LinkList_File = "linklist.csv"
 const FixList_File = "fixlist.txt"
 const SampList_File = "samplist.log"
-const Image_Path = "../fbdoc/html/images/"
 
 ''
 redim shared sPages() as PageInfo_t
@@ -1114,7 +1113,7 @@ sub Check_DuplicateFilenames()
 end sub
 
 '':::::
-sub Check_ImageFilenames()
+sub Check_ImageFilenames( byref image_path as string )
 
 	dim as integer i, j, msg, c
 	dim as string url, filename
@@ -1129,7 +1128,7 @@ sub Check_ImageFilenames()
 
 		filename = GetUrlFileName( url )
 		if( filename > "" ) then
-			if( fileexists( Image_Path & filename ) = 0 ) then
+			if( fileexists( image_path & filename ) = 0 ) then
 				i = cint( pagehash_lcase.getinfo( lcase(sImages(j).sPage) ))
 				if( i ) then
 					if( ( sPages(i).flags and FLAG_PAGE_DOCPAGE ) <> 0 ) then
@@ -1433,7 +1432,7 @@ end sub
 '' --------------------------------------------------------
 
 dim i as integer = 1
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
+dim as string def_cache_dir, web_cache_dir, dev_cache_dir, image_dir
 
 enum OPTIONS
 	OPT_MISSING_PAGES = 1
@@ -1522,6 +1521,7 @@ scope
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
+		image_dir = opts->Get( "image_dir", default_image_dir )
 		delete opts
 	else
 		'' print "Warning: unable to load options file '" + default_optFile + "'"
@@ -1529,6 +1529,7 @@ scope
 		def_cache_dir = default_CacheDir
 		web_cache_dir = default_web_CacheDir
 		dev_cache_dir = default_dev_CacheDir
+		image_dir = default_image_dir
 	end if
 end scope
 
@@ -1697,7 +1698,7 @@ end if
 
 if( (opt and OPT_IMAGES) <> 0 ) then
 	'' Image file names
-	Check_ImageFilenames()
+	Check_ImageFilenames( image_dir )
 	Timer_Mark("Check_ImageFilenames()")
 end if
 

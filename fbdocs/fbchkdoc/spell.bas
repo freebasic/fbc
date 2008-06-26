@@ -17,7 +17,7 @@
 
 '' spell.bas - spell check the entire wiki
 
-'' chng: written [coderJeff]
+'' chng: written [jeffm]
 
 '' fbdoc headers
 #include once "CWiki.bi"
