@@ -224,7 +224,7 @@ function astLoadDBG _
 	) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitDBG( n->dbg.op, ast.proc.curr->sym, n->dbg.ex )
+		irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex )
 	end if
 
 	function = NULL
@@ -534,6 +534,21 @@ private function hAstNodeClassToStr _
 end function
 
 '':::::
+private function hSymbToStr _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string
+	
+	if( s = NULL ) then return ""
+	
+	if( s->id.name ) then
+		return *(s->id.name)
+	elseif( s->id.alias ) then
+		return *(s->id.alias)
+	end if
+end function
+
+'':::::
 private function hAstNodeToStr _
 	( _
 		byval n as ASTNODE ptr _
@@ -541,7 +556,7 @@ private function hAstNodeToStr _
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return hAstNodeOpToStr( n->op.op )
+		return hAstNodeOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_UOP
 		return hAstNodeOpToStr( n->op.op )
@@ -567,6 +582,15 @@ private function hAstNodeToStr _
 
 	case AST_NODECLASS_VAR
 		return """" & *symbGetName( n->sym ) & """"
+	
+	case AST_NODECLASS_LABEL
+		return "LABEL: " & hSymbToStr( n->sym )
+	
+	case AST_NODECLASS_BRANCH
+		return "BRANCH: " & hAstNodeOpToStr( n->op.op ) & " " & hSymbToStr( n->op.ex )
+	
+	case AST_NODECLASS_SCOPEBEGIN
+		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
 	case else
 		return hAstNodeClassToStr( n->class )
@@ -622,4 +646,18 @@ sub astDumpTree _
 
 	astDumpTreeEx( n, col, -1, 0 )
 
+end sub
+
+''::::
+sub astDumpList _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer _
+	)
+	
+	do while( n <> NULL )
+		astDumpTree( n, col )
+		n = n->next
+	loop
+	
 end sub
