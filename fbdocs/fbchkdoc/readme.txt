@@ -39,15 +39,17 @@ Table of Contents:
        4.9 delextra - delete extra pages not in the wiki
        4.10 mkimglst - generate a list of linked images
        4.11 getimage - download images from a list
-	   4.12 spellit - spell check individual words
-	   4.13 spell - spell check wiki pages
-	   4.14 samps - manage wiki samples
+       4.12 spellit - spell check individual words
+       4.13 spell - spell check wiki pages
+       4.14 samps - manage wiki samples
     5. Common Tasks
        5.1 Downloading the entire wiki
        5.2 Downloading changed pages since last download
        5.3 Transferring pages between on-line and off-line wiki
        5.4 Name case fixups
        5.5 Update PrintToc
+       5.6 Sychronizing Wiki Samples
+       5.7 Synchronizing Wiki with SVN
     6. Authors
     7. Notes
 
@@ -438,7 +440,7 @@ or
 
     Typical usage:
         $ ./spellit
-		$ ./spellit their
+        $ ./spellit their
 
     This utility will check spelling of individual words.  Type './spellit' to
 start an interactive version of the program.  For each word enter, the 
@@ -481,11 +483,11 @@ options for a full list commands.
     Directories used must be configured in fbchkdoc.ini
 
     To check if there have been any changes to the sample files use:
-	$ ./samps check @PageIndex.txt
+    $ ./samps check @PageIndex.txt
 
     To extract new or changed samples from the wiki and store them the examples
-	directory:
-	$ ./samps extract @PageIndex.txt
+    directory:
+    $ ./samps extract @PageIndex.txt
 
 
 5. Common Tasks
@@ -571,6 +573,97 @@ that the wakka cache directory is up to date:
     $ ./putpage -web PrintToc
 
     Then proceed to the ../fbdoc directory to make the TXT format.
+
+
+5.6 Sychronizing Wiki Samples
+    -------------------------
+
+    Most of the samples code in the wiki (any code marked with %%(freebasic)
+tags) should also exist in FreeBASIC/examples/manual.  The main reason for
+this is to automate testing of the wiki's sample code for compile errors. The
+FreeBASIC/examples/manual/samples.bas program can be used to compile all, or
+a specified directory of sample sources and optionally report an error.
+
+    Assuming that PageIndex.txt and the cache directory is up to date, these
+commands will help synchronize the samples with SVN
+
+    Find out if new samples were added or changed:
+    $ ./samps check @PageIndex.txt
+
+    Extract them from the cache directory to the sample directory:
+    $ ./samps extract @PageIndex.txt
+
+    Note: SVN commands to add files or set properties are not automatically
+    issued, so remember to 'svn add' any new samples.
+
+    Check for deleted samples, and use 'svn rm' to get rid of them:
+    $ ./samps checkex
+
+    Most of the time you should assume that the wiki has the most up to date
+    versions of the sample files.  But, if you do happen to change a file in
+    examples/manual, use the following to update the wiki with the changes:
+    $ ./samps update PageName @list.txt
+
+    If any pages are changed, the file 'changed.txt' will be generated.
+    $ ./putpage -web @changed.txt
+
+
+
+5.7 Synchronizing Wiki with SVN
+    ---------------------------
+
+    The following is a list of "things to do" if you are going to maintain the
+wiki, SVN, examples, etc, on a regular basis:
+
+    1) Get the most up to date PageIndex.txt
+    $ ./getindex -web
+
+    2) Make sure that the cache directory is up to date by getting all of the
+    pages since the last up date (or in some cases a refresh of the entire
+    wiki)
+    $ ./getpage -web @list.txt
+    or
+    $ ./getpage -web @PageIndex.txt
+
+    3) Generate PrintToc.  This file is used by chkdocs, and by some of the 
+    output formats in fbdoc.
+    $ ./mkprntoc -web
+
+    4) Check for common wiki problems:
+    $ ./chkdocs e
+
+    Inspect results.txt and make any corrections deemed necessary.  At the 
+    very least, apply a fix for any incorrectly cased names:
+    $ ./replace -f fixlist.txt -c "name case fixup"
+    $ ./putpage -web @changed.txt
+
+    5) If any changes were made in step 4, go back and repeat step 3.  If you
+    used the online web interface to change pages on-line, go back and repeat
+    step 2.  If no more changes were made at this point, proceed to step 6
+    after storing PrintToc to the wiki.
+    $ ./putpage -web PrintToc
+
+    6) Get new/updated samples from the wiki and save them to examples/manual,
+    and delete removed wiki examples:
+    $ ./samps extract @PageIndex.txt
+    $ ./samps checkex @PageIndex.txt
+
+    The samps utility will not automatically 'svn add' or 'svn delete' files
+    so be sure to make the appropriate changes to svn.  If no samples were
+    added or changed, proceed to step 8.
+
+    7) Build and run examples/manual/samples.bas. This should test all of the
+    extracted samples.  If you make any changes to the files in
+    examples/manual, be sure to update the wiki with the changes:
+    $ ./samps update @PageIndex.txt
+    $ ./putpage -web @changed.txt
+
+    8) By this point, the wiki, cache directory, and examples should be in
+    good working condition.  Proceed to the fbdoc directory to generate the
+    output formats needed.  Once you are satisfied with the results, be sure
+    to commit the cache directory to SVN.
+
+    9) You are done.  The wiki and examples have been synchronized with SVN.
 
 
 6. Authors

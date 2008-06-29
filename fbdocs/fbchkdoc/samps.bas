@@ -109,7 +109,7 @@ dim shared commands( 0 to cmd_count - 1 ) as COMMAND_TYPE = { _
 	( @"list",     opt_do_scan or opt_do_pageids, @cmd_list_proc,      @"[dirs...]"             , @"lists files in source directory"  ), _
 	( @"pagelist", opt_do_scan or opt_do_pageids, @cmd_pagelist_proc,  @"[dirs...]"             , @"lists pages referenced by sources"  ), _
 	( @"check",    opt_get_pages                , @cmd_check_proc,     @"[pages...] [@pagelist]", @"checks for differences between pages and files" ), _
-	( @"checkex",  opt_do_scan or opt_do_pageids, @cmd_checkex_proc,   @"[pages...] [@pagelist]", @"checks for dropped example files" ), _
+	( @"checkex",  opt_do_scan or opt_do_pageids, @cmd_checkex_proc,   @"[dirs...]"             , @"checks for dropped example files" ), _
 	( @"lf",       opt_do_scan                  , @cmd_lf_proc,        @"[dirs...]"             , @"rewrites files with LF line endings" ), _
 	( @"crlf",     opt_do_scan                  , @cmd_crlf_proc,      @"[dirs...]"             , @"rewrites files with CRLF line endings" ), _
 	( @"insert",   opt_do_scan or opt_do_refids , @cmd_insert_proc,    @"[dirs...]"             , @"inserts *old* sources to pages" ), _
@@ -119,7 +119,7 @@ dim shared commands( 0 to cmd_count - 1 ) as COMMAND_TYPE = { _
 	( @"getex",    opt_get_pages                , @cmd_getex_proc,     @"[pages...] [@pagelist]", @"extract unnamed examples" ), _
 	( @"namefix",  opt_do_scan                  , @cmd_namefix_proc,   @"[dirs...]"             , @"fix embedded filenames" ), _
 	( @"killref",  opt_do_scan                  , @cmd_killref_proc,   @"[dirs...]"             , @"delete embedded $$REF: magic" ), _
-	( @"move",     opt_do_scan_incoming         , @cmd_move_proc,      @""                      , @"move files from incoming to other path/nam" ) _
+	( @"move",     opt_do_scan_incoming         , @cmd_move_proc,      @""                      , @"move files from incoming to other path/name" ) _
 }
 
 '' !!! FIXME !!! - these should not be fixed size
@@ -722,6 +722,10 @@ end if
 '' ==========
 
 logopen()
+
+	logprint "base_dir: " & base_dir
+	logprint "cache: " & wiki_cache_dir
+
 
 if( (opt and opt_do_scan) <> 0 or (opt and opt_do_scan_incoming) <> 0 ) then
 
