@@ -70,6 +70,9 @@ FBCALL void fb_StrLset ( FBSTRING *dst, FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+	/* del if temp */
+	fb_hStrDelTemp( dst );
 }
 
 /*:::::*/
@@ -98,5 +101,8 @@ FBCALL void fb_StrRset ( FBSTRING *dst, FBSTRING *src )
 
 	/* del if temp */
 	fb_hStrDelTemp( src );
+
+	/* del if temp */
+	fb_hStrDelTemp( dst );
 }
 
