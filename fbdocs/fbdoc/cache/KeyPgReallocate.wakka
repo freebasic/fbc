@@ -2,7 +2,7 @@
 Reallocates storage for an existing reserved block of memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate**( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 		//result// = **Reallocate**( //pointer//, //count// )
@@ -14,12 +14,12 @@ Reallocates storage for an existing reserved block of memory
 		The number of bytes, in total, to be reallocated.
 
 {{fbdoc item="ret"}}
-	The address of the reallocated memory. A null (0) pointer is returned if reallocation was unsuccessful, and the original memory pointed to by ##//pointer//## remains unchanged.
+	The address of the reallocated memory. A null (##0##) pointer is returned if reallocation was unsuccessful, and the original memory pointed to by ##//pointer//## remains unchanged.
 
 {{fbdoc item="desc"}}
 	Attempts to reallocate, or resize, memory previously allocated with ##[[KeyPgAllocate Allocate]]##. The contents of the buffer are preserved, although if ##//count//## is less than the original size of the memory block, the buffer will be truncated.
 
-	If ##//pointer//## is null (0), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##.
+	If ##//pointer//## is null (##0##), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##.
 
 	Reallocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
 
@@ -31,27 +31,42 @@ Reallocates storage for an existing reserved block of memory
 {{fbdoc item="filename" value="examples/manual/memory/reallocate.bas"}}%%(freebasic)
 Dim a as Integer Ptr, b as Integer Ptr, i As Integer
 
-a = Allocate( 5 * len(Integer) )   ' Allocate memory for 5 integers
+a = Allocate( 5 * SizeOf(Integer) )   ' Allocate memory for 5 integers
+
+If a = 0 Then Print "Error Allocating a": End
+
 For i = 0 to 4
   a[i] = (i + 1) * 2   ' Assign integers to the buffer
 Next i
 
-b = ReAllocate( a, 10 * len(Integer) )   ' Reallocate memory for 5 additional integers
-For i = 5 to 9
-  b[i] = (i + 1) * 2   ' Assign more integers to the buffer
-Next i
+b = ReAllocate( a, 10 * SizeOf(Integer) )   ' Reallocate memory for 5 additional integers
 
-For i = 0 to 9   ' Print the integers
-  Print b[i];
-Next i
-Print
+If b <> 0 Then
 
-Deallocate b   ' Clean up
+	a = b
+
+	For i = 5 to 9
+	  a[i] = (i + 1) * 2   ' Assign more integers to the buffer
+	Next i
+
+	For i = 0 to 9   ' Print the integers
+	  Print i, a[i]
+	Next i
+	Print
+
+else '' Reallocate failed, memory unchanged
+
+	Print "Error Reallocating a"
+
+	For i = 0 to 4   ' Print the integers
+	  Print i, a[i]
+	Next i
+	Print
+
+end if
+
+Deallocate a   ' Clean up
 %%
-~Output is:
-~<< 2 4 6 8 10 12 14 16 18 20>>
-::c::
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Reallocate""**##.

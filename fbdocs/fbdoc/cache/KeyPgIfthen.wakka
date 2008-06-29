@@ -17,35 +17,47 @@ Control flow statement for conditional branching
 {{fbdoc item="desc"}}
 	##**If...Then**## is a way to make decisions. It is a mechanism to execute code only if a condition is true, and can provide alternative code to execute based on more conditions.
 	
-	The expression is always evaluated completely (no short-circuit evaluation), so it is necessary to separate potentially unsafe expressions with extra levels of ##**If**## blocks.
-	
+	##//expression//## can be one of several forms:
+		- a conditional expression, for example:
+			##x = 5##
+		- multiple conditions separated by logical bit-wise operators, for example:
+			##x >= 5 [[KeyPgOpAnd And]] x <= 10##
+		- multiple conditions separated by logical short-circuit operators, for example:
+			##y <> 0 [[KeyPgOpAndAlso AndAlso]] x \ y = 1##
+			(in this case, "##x \ y = 1##" will only be evaluated if "##y <> 0##" is True)
+		- any numerical expression, in which case a value of zero (##0##) represents False, and a non-zero value represents True
+
 	Both multi-line and single-line ##**If**##s can be nested.  In the latter case, the optional ##**End If**##s can be useful to control where nested ##**If**##s begin and end.
 
 	In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, colons (##:##) can be used instead of newlines to construct multi-line ##**If**## blocks on a single line.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
-'e.g. here is a simple "guess the number" game using if...then for a decision.
-dim x as integer, y as integer
+'' Here is a simple "guess the number" game using if...then for a decision.
 
-RANDOMIZE TIMER 
-x = RND * 11    'Create a random number between 0 and 10.999...
+Dim As Integer num, guess
+
+Randomize
+num = Int(Rnd * 10) + 1 'Create a random number between 1 and 10...
 	            
-PRINT "guess the number between 0 and 10"
+Print "guess the number between 1 and 10"
 
-DO 'Start a loop
-	INPUT "guess"; y 'Input a number from the user
-	IF x = y THEN
-		PRINT "right!" 'He/she guessed the right number!
-		EXIT DO
-	ELSEIF y > 10 THEN 'The number is higher then 10
-		PRINT "The number cant be greater then 10! Use the force!"
-	ELSEIF x > y THEN 
-		PRINT "too low" 'The users guess is to low
-	ELSEIF x < y THEN
-		PRINT "too high" 'The users guess is to high
-	END IF
-LOOP 'Go back to the start of the loop
+Do 'Start a loop
+
+	Input "Guess"; guess 'Input a number from the user
+
+	If guess > 10 OrElse guess < 1 Then  'The user's guess is out of range
+		Print "The number can't be greater then 10 or less than 1!"
+	ElseIf guess > num Then  'The user's guess is too low
+		Print "Too low"
+	ElseIf guess < num Then  'The user's guess is too high
+		Print "Too high"
+	ElseIf guess = num Then  'The user guessed the right number!
+		Print "Correct!"
+		Exit Do   'Exit the loop
+	End If
+
+loop 'Go back to the start of the loop
 %%
 
 {{fbdoc item="lang"}}
