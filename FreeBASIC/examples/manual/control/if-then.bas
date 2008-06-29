@@ -6,24 +6,28 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIfthen
 '' --------
 
-'e.g. here is a simple "guess the number" game using if...then for a decision.
-Dim x As Integer, y As Integer
+'' Here is a simple "guess the number" game using if...then for a decision.
 
-Randomize Timer 
-x = Rnd * 11    'Create a random number between 0 and 10.999...
+Dim As Integer num, guess
+
+Randomize
+num = Int(Rnd * 10) + 1 'Create a random number between 1 and 10...
 	            
-Print "guess the number between 0 and 10"
+Print "guess the number between 1 and 10"
 
 Do 'Start a loop
-	Input "guess"; y 'Input a number from the user
-	If x = y Then
-		Print "right!" 'He/she guessed the right number!
-		Exit Do
-	ElseIf y > 10 Then 'The number is higher then 10
-		Print "The number cant be greater then 10! Use the force!"
-	ElseIf x > y Then 
-		Print "too low" 'The users guess is to low
-	ElseIf x < y Then
-		Print "too high" 'The users guess is to high
+
+	Input "Guess"; guess 'Input a number from the user
+
+	If guess > 10 OrElse guess < 1 Then  'The user's guess is out of range
+		Print "The number can't be greater then 10 or less than 1!"
+	ElseIf guess > num Then  'The user's guess is too low
+		Print "Too low"
+	ElseIf guess < num Then  'The user's guess is too high
+		Print "Too high"
+	ElseIf guess = num Then  'The user guessed the right number!
+		Print "Correct!"
+		Exit Do   'Exit the loop
 	End If
+
 Loop 'Go back to the start of the loop
