@@ -83,7 +83,7 @@ int fb_DevFileReadLineDumb
         if( pfnReadString( buffer, sizeof( buffer ), fp ) == NULL )
         {
             /* EOF reached ... this is not an error !!! */
-            res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
+            res = FB_RTERROR_ENDOFFILE; /* but we have to notify the caller */
 
             if( first_run )
             	fb_StrDelete( dst );

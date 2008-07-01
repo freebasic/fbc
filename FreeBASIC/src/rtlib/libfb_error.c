@@ -59,7 +59,8 @@ static const char *error_msg[] = {
 	"\"termination request\" signal",       /* FB_RTERROR_SIGTERM */
 	"\"abnormal termination\" signal",      /* FB_RTERROR_SIGTERM */
 	"\"quit request\" signal",              /* FB_RTERROR_SIGABRT */
-	"return without gosub"                  /* FB_RTERROR_RETURNWITHOUTGOSUB */
+	"return without gosub",                 /* FB_RTERROR_RETURNWITHOUTGOSUB */
+	"end of file"                           /* FB_RTERROR_ENDOFFILE */
 };
 
 /*:::::*/

@@ -61,7 +61,7 @@ int fb_DevFileReadLineWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_char
 
 	/* convert to wchar, file should be opened with the ENCODING option
 	   to allow UTF characters to be read */
-	if( res == FB_RTERROR_OK )
+	if( (res == FB_RTERROR_OK) || (res == FB_RTERROR_ENDOFFILE) )
     	fb_WstrAssignFromA( dst, dst_chars, (void *)&temp, -1 );
 
     fb_StrDelete( &temp );
