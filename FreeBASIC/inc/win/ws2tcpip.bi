@@ -164,13 +164,22 @@ declare sub freeaddrinfo alias "freeaddrinfo" (byval as addrinfo ptr)
 declare function getaddrinfo alias "getaddrinfo" (byval as zstring ptr, byval as zstring ptr, byval as addrinfo ptr, byval as addrinfo ptr ptr) as integer
 declare function getnameinfo alias "getnameinfo" (byval as sockaddr ptr, byval as socklen_t, byval as zstring ptr, byval as socklen_t, byval as zstring ptr, byval as socklen_t, byval as integer) as integer
 
-declare function gai_strerrorA alias "gai_strerrorA" (byval as integer) as zstring ptr
-declare function gai_strerrorW alias "gai_strerrorW" (byval as integer) as wstring ptr
-
 #ifdef UNICODE
-#define gai_strerror   gai_strerrorW
+private function gai_strerror (byval ecode as integer) as wstring ptr
+	static message as wstring * (1024 + 1)
+	dim dwFlags as DWORD = FORMAT_MESSAGE_FROM_SYSTEM or FORMAT_MESSAGE_IGNORE_INSERTS or FORMAT_MESSAGE_MAX_WIDTH_MASK
+	dim dwLanguageId as DWORD = MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+	FormatMessage(dwFlags, NULL, ecode, dwLanguageId, @message, 1024, NULL)
+	return @message
+end function
 #else
-#define gai_strerror   gai_strerrorA
+private function gai_strerror (byval ecode as integer) as zstring ptr
+	static message as zstring * (1024 + 1)
+	dim dwFlags as DWORD = FORMAT_MESSAGE_FROM_SYSTEM or FORMAT_MESSAGE_IGNORE_INSERTS or FORMAT_MESSAGE_MAX_WIDTH_MASK
+	dim dwLanguageId as DWORD = MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT)
+	FormatMessage(dwFlags, NULL, ecode, dwLanguageId, @message, 1024, NULL)
+	return @message
+end function
 #endif
 
 type sockaddr_in6_old
