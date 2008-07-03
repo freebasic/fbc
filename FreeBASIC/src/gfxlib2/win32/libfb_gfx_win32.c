@@ -51,7 +51,8 @@ static const struct { const char *name; FARPROC *proc; } user32_procs[] = {
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;
 static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
-static int mouse_buttons, mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
+static int last_mouse_buttons, mouse_buttons;
+static int mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
 static POINT last_mouse_pos;
 static UINT WM_MOUSEENTER;
 
@@ -272,19 +273,23 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			if (fb_win32.version < 0x500)
 				break;
 			SetCapture( hWnd );
-			mouse_buttons |= (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
+			last_mouse_buttons = mouse_buttons;
+			mouse_buttons |= ((LOWORD(wParam) & MK_XBUTTON1) ? BUTTON_X1 : 0 )
+						  | ((LOWORD(wParam) & MK_XBUTTON2) ? BUTTON_X2 : 0 );
 			e.type = (message == WM_XBUTTONDOWN ? EVENT_MOUSE_BUTTON_PRESS : EVENT_MOUSE_DOUBLE_CLICK);
-			e.button = (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
+			e.button = (~last_mouse_buttons & mouse_buttons) & (BUTTON_X1 | BUTTON_X2);
 			break;
 
 		case WM_XBUTTONUP:
 			if (fb_win32.version < 0x500)
 				break;
-			mouse_buttons &= (LOWORD(wParam) == MK_XBUTTON1 ? ~BUTTON_X1 : ~BUTTON_X2 );
+			last_mouse_buttons = mouse_buttons;
+			mouse_buttons &= ~((LOWORD(wParam) & MK_XBUTTON1) ? 0 : BUTTON_X1 )
+						  & ~((LOWORD(wParam) & MK_XBUTTON2) ? 0 : BUTTON_X2 );
 			if(!mouse_buttons && GetCapture() == hWnd)
 				ReleaseCapture();
 			e.type = EVENT_MOUSE_BUTTON_RELEASE;
-			e.button = (LOWORD(wParam) == MK_XBUTTON1 ? BUTTON_X1 : BUTTON_X2 );
+			e.button = (last_mouse_buttons & ~mouse_buttons) & (BUTTON_X1 | BUTTON_X2);
 			break;
 
 		case WM_MOUSEWHEEL:

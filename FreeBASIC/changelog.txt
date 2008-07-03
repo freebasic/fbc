@@ -53,6 +53,7 @@ Version 0.20.0 Beta:
 - CPTR() will generate a warning if casting to anything but pointer, integer, or enum and will generate a pedantic warning when casting to anything but pointer (jeffm)
 - #2004439 - LSET/RSET was not deleting temporary string descriptors for the destination (jeffm)
 - #1914763 - LINE INPUT to a WSTRING variable on an ascii text file was failing if last line of file had no end of line character (jeffm)
+- #1979795 - GETMOUSE in Win32 GFX driver was not clearing the status of the XBUTTON's correctly (jeffm)
 
 
 Version 0.18.5 Beta:
