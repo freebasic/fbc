@@ -194,12 +194,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	uint16_t bcHeight;
 	uint16_t biPlanes;
 	uint16_t biBitCount;
-	uint32_t biCompression;
-	uint32_t biSizeImage;
-	uint32_t biXPelsPerMeter;
-	uint32_t biYPelsPerMeter;
-	uint32_t biClrUsed;
-	uint32_t biClrImportant;
+	uint32_t biCompression = BI_RGB;
+	uint32_t biSizeImage = 0;
 	int flipped = FALSE;
 
 	PUT_HEADER *put_header = NULL;
@@ -233,31 +229,35 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			return FB_RTERROR_FILEIO;
 		biWidth = bcWidth;
 		biHeight = bcHeight;
-		biCompression = BI_RGB;
-		biClrImportant = 0;
-		biClrUsed = (1 << biBitCount) - 1;
-	} else if (biSize == 40) {
-		/* Windows V3 (BITMAPINFOHEADER) */
+	} else if (biSize >= 16) {
+		/* Windows V3 (BITMAPINFOHEADER) or OS/2 V2 (BITMAPINFOHEADER2) */
 	    if ((!fread_32_le((uint32_t *)&biWidth, f)) ||
 		    (!fread_32_le((uint32_t *)&biHeight, f)) ||
 		    (!fread_16_le(&biPlanes, f)) ||
-		    (!fread_16_le(&biBitCount, f)) ||
-		    (!fread_32_le(&biCompression, f)) ||
-		    (!fread_32_le(&biSizeImage, f)) ||
-		    (!fread_32_le(&biXPelsPerMeter, f)) ||
-		    (!fread_32_le(&biYPelsPerMeter, f)) ||
-		    (!fread_32_le(&biClrUsed, f)) ||
-		    (!fread_32_le(&biClrImportant, f)))
+		    (!fread_16_le(&biBitCount, f)))
 			return FB_RTERROR_FILEIO;
+		
+		if (biSize >= 20) {
+			if (!fread_32_le(&biCompression, f)) {
+				return FB_RTERROR_FILEIO;
+			}
+			if (biSize >= 24) {
+				if (!fread_32_le(&biSizeImage, f)) {
+					return FB_RTERROR_FILEIO;
+				}
+			}
+		}
 	} else {
 		/* unsupported header type */
 		return FB_RTERROR_FILEIO;
 	}
 
-	if ((bfType != 19778) || (biPlanes > 1) || (biWidth <= 0) || (biCompression > BI_BITFIELDS))
+	if ((bfType != 19778) || (biPlanes > 1) || (biWidth <= 0) || (biHeight == 0) || (biCompression > BI_BITFIELDS))
 		return FB_RTERROR_FILEIO;
 
 	if (biHeight < 0) {
+		if ((biCompression != BI_RGB) && (biCompression != BI_BITFIELDS))
+			return FB_RTERROR_FILEIO;
 		flipped = TRUE;
 		biHeight = -biHeight;
 	}
@@ -268,6 +268,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			bfOffBits += (1 << biBitCount);
 		}
 	}
+
+	fseek(f, biSize + 14, SEEK_SET);
 
 	if (biBitCount <= 8) {
 		/* OS/2 palette entries are 3 bytes; others are 4 bytes */
