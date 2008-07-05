@@ -27,59 +27,230 @@
 
 #include "fb_gfx.h"
 
-#define BI_RGB		0
-#define BI_BITFIELDS	3
+#define BI_RGB          0
+#define BI_RLE8         1
+#define BI_RLE4         2
+#define BI_BITFIELDS    3
 
-typedef struct BMP_HEADER
+static inline int fread_16_le(uint16_t *buf, FILE *f)
 {
-	unsigned short bfType			__attribute__((packed));
-	unsigned int   bfSize			__attribute__((packed));
-	unsigned short bfReserved1		__attribute__((packed));
-	unsigned short bfReserved2		__attribute__((packed));
-	unsigned int   bfOffBits		__attribute__((packed));
-	unsigned int   biSize			__attribute__((packed));
-	unsigned int   biWidth			__attribute__((packed));
-	unsigned int   biHeight			__attribute__((packed));
-	unsigned short biPlanes			__attribute__((packed));
-	unsigned short biBitCount		__attribute__((packed));
-	unsigned int   biCompression		__attribute__((packed));
-	unsigned int   biSizeImage		__attribute__((packed));
-	unsigned int   biXPelsPerMeter		__attribute__((packed));
-	unsigned int   biYPelsPerMeter		__attribute__((packed));
-	unsigned int   biClrUsed		__attribute__((packed));
-	unsigned int   biClrImportant		__attribute__((packed));
-} BMP_HEADER;
+	int rc;
+	rc = fread(buf, sizeof(*buf), 1, f);
+	/* TODO: byteswap on BE */
+	return rc;
+}
 
+static inline int fread_32_le(uint32_t *buf, FILE *f)
+{
+	int rc;
+	rc = fread(buf, sizeof(*buf), 1, f);
+	/* TODO: byteswap on BE */
+	return rc;
+}
 
+typedef void (*FBGFX_BLOAD_IMAGE_CONVERT)(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits);
+
+static void convert_8to8(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	fb_image_convert_8to8(src, dest, w);
+}
+
+static void convert_8to16(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	fb_image_convert_8to16(src, dest, w);
+}
+
+static void convert_8to32(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	fb_image_convert_8to32(src, dest, w);
+}
+
+#define CONVERT_DEPTH(c, from, to) \
+	((from) <= (to) ? \
+		((c) << (to - from)) | (c >> (from - (to - from))) \
+		: (c) >> (from - to))
+
+static void convert_bf_16to16(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+	uint16_t *s = (uint16_t *)src;
+	uint16_t *d = (uint16_t *)dest;
+	for (; w; w--) {
+		r = (*s >> shifts[0]) & masks[0];
+		g = (*s >> shifts[1]) & masks[1];
+		b = (*s >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 5);
+		g = CONVERT_DEPTH(g, bits[1], 6);
+		b = CONVERT_DEPTH(b, bits[2], 5);
+		*d = (r << 11) | (g << 5) | b;
+		s++;
+		d++;
+	}
+}
+
+static void convert_bf_16to32(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+	uint16_t *s = (uint16_t *)src;
+	uint32_t *d = (uint32_t *)dest;
+	for (; w; w--) {
+		r = (*s >> shifts[0]) & masks[0];
+		g = (*s >> shifts[1]) & masks[1];
+		b = (*s >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 8);
+		g = CONVERT_DEPTH(g, bits[1], 8);
+		b = CONVERT_DEPTH(b, bits[2], 8);
+		*d = (r << 16) | (g << 8) | b;
+		s++;
+		d++;
+	}
+}
+
+static void convert_bf_24to16(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+
+	uint32_t c;
+	uint16_t *d = (uint16_t *)dest;
+	for (; w; w--) {
+		c = src[0] | (src[1] << 8) | (src[2] << 16);
+		r = (c >> shifts[0]) & masks[0];
+		g = (c >> shifts[1]) & masks[1];
+		b = (c >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 5);
+		g = CONVERT_DEPTH(g, bits[1], 6);
+		b = CONVERT_DEPTH(b, bits[2], 5);
+		*d++ = (r << 11) | (g << 5) | b;
+		src += 3;
+	}
+}
+
+static void convert_bf_24to32(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+
+	uint32_t c;
+	uint32_t *d = (uint32_t *)dest;
+	for (; w; w--) {
+		c = src[0] | (src[1] << 8) | (src[2] << 16);
+		r = (c >> shifts[0]) & masks[0];
+		g = (c >> shifts[1]) & masks[1];
+		b = (c >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 8);
+		g = CONVERT_DEPTH(g, bits[1], 8);
+		b = CONVERT_DEPTH(b, bits[2], 8);
+		*d++ = (r << 16) | (g << 8) | b;
+		src += 3;
+	}
+}
+
+static void convert_bf_32to16(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+	uint32_t *s = (uint32_t *)src;
+	uint16_t *d = (uint16_t *)dest;
+	for (; w; w--) {
+		r = (*s >> shifts[0]) & masks[0];
+		g = (*s >> shifts[1]) & masks[1];
+		b = (*s >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 5);
+		g = CONVERT_DEPTH(g, bits[1], 6);
+		b = CONVERT_DEPTH(b, bits[2], 5);
+		*d++ = (r << 11) | (g << 5) | b;
+		s++;
+	}
+}
+
+static void convert_bf_32to32(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
+{
+	uint32_t r, g, b;
+	uint32_t *s = (uint32_t *)src;
+	uint32_t *d = (uint32_t *)dest;
+	for (; w; w--) {
+		r = (*s >> shifts[0]) & masks[0];
+		g = (*s >> shifts[1]) & masks[1];
+		b = (*s >> shifts[2]) & masks[2];
+		r = CONVERT_DEPTH(r, bits[0], 8);
+		g = CONVERT_DEPTH(g, bits[1], 8);
+		b = CONVERT_DEPTH(b, bits[2], 8);
+		*d++ = (r << 16) | (g << 8) | b;
+		s++;
+	}
+}
 
 
 /*:::::*/
 static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewheader)
 {
-	BMP_HEADER header;
+	uint16_t bfType;
+	uint32_t bfSize;
+	uint16_t bfReserved1;
+	uint16_t bfReserved2;
+	uint32_t bfOffBits;
+	uint32_t biSize;
+	uint32_t biWidth;
+	uint32_t biHeight;
+	uint16_t biPlanes;
+	uint16_t biBitCount;
+	uint32_t biCompression;
+	uint32_t biSizeImage;
+	uint32_t biXPelsPerMeter;
+	uint32_t biYPelsPerMeter;
+	uint32_t biClrUsed;
+	uint32_t biClrImportant;
+
 	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer;
 	int result = fb_ErrorSetNum( FB_RTERROR_OK );
-	int i, j, width, height, bpp, color, rgb[3], expand, size, padding, palette[256], palette_entries;
+	int i, j, width, height, bpp, color, expand, size, padding, palette[256], palette_entries;
+	int shifts[3] = {0, 0, 0};
+	uint32_t masks[3];
+	int bits[3] = {0, 0, 0};
 	void *target_pal = pal;
-	FBGFX_IMAGE_CONVERT convert = NULL;
+	uint32_t rgb[3];
+	FBGFX_BLOAD_IMAGE_CONVERT convert = NULL;
 
 	if (!__fb_gfx)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 
-	/* This will need adjustment if/when we port to big-endian (like PPC) machines */
-	if ((!fread(&header, 54, 1, f)) || (header.bfType != 19778) || (header.biSize != 40))
+	if ((!fread_16_le(&bfType, f)) ||
+	    (!fread_32_le(&bfSize, f)) ||
+	    (!fread_16_le(&bfReserved1, f)) ||
+	    (!fread_16_le(&bfReserved2, f)) ||
+	    (!fread_32_le(&bfOffBits, f)) ||
+	    (!fread_32_le(&biSize, f)) ||
+	    (!fread_32_le(&biWidth, f)) ||
+	    (!fread_32_le(&biHeight, f)) ||
+	    (!fread_16_le(&biPlanes, f)) ||
+	    (!fread_16_le(&biBitCount, f)) ||
+	    (!fread_32_le(&biCompression, f)) ||
+	    (!fread_32_le(&biSizeImage, f)) ||
+	    (!fread_32_le(&biXPelsPerMeter, f)) ||
+	    (!fread_32_le(&biYPelsPerMeter, f)) ||
+	    (!fread_32_le(&biClrUsed, f)) ||
+	    (!fread_32_le(&biClrImportant, f)))
 		return FB_RTERROR_FILEIO;
 
-	if ((header.biBitCount == 15) || (header.biBitCount == 16))
-		return FB_RTERROR_ILLEGALFUNCTIONCALL;
-	palette_entries = (header.bfOffBits - 54) >> 2;
-	for (i = 0; i < palette_entries; i++) {
-		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
-		if (pal)
-			palette[i] = (palette[i] >> 2) & 0x3F3F3F;
-		fgetc(f);
+	if ((bfType != 19778) || (biSize != 40) || (biCompression > BI_BITFIELDS))
+		return FB_RTERROR_FILEIO;
+
+	if (bfOffBits == 0)
+		if (biBitCount <= 8)
+			bfOffBits = 54 + (1 << biBitCount);
+		else
+			bfOffBits = 54;
+
+	if (biBitCount <= 8) {
+		palette_entries = MIN((bfOffBits - 54) >> 2, (1 << biBitCount));
+		for (i = 0; i < palette_entries; i++) {
+			palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
+			if (pal)
+				palette[i] = (palette[i] >> 2) & 0x3F3F3F;
+			fgetc(f);
+		}
 	}
+	else
+		palette_entries = 0;
 	if (!pal)
 		target_pal = (void *)__fb_gfx->device_palette;
 
@@ -87,95 +258,126 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		put_header = (PUT_HEADER *)dest;
 		/* do not overwrite pre-allocated image buffer header */
 		if (put_header->type == PUT_HEADER_NEW) {
-			width = MIN(put_header->width, header.biWidth);
-			height = MIN(put_header->height, header.biHeight);
+			width = MIN(put_header->width, biWidth);
+			height = MIN(put_header->height, biHeight);
 			bpp = put_header->bpp;
 		} else {
 			bpp = put_header->old.bpp;
 			if (bpp == 1 || bpp == 2 || bpp == 4) {
-				width = MIN(put_header->old.width, header.biWidth);
-				height = MIN(put_header->old.height, header.biHeight);
+				width = MIN(put_header->old.width, biWidth);
+				height = MIN(put_header->old.height, biHeight);
 			}
 			else {
 				if (usenewheader) {
 					put_header->type = PUT_HEADER_NEW;
 					put_header->bpp = ctx->target_bpp;
-					put_header->width = header.biWidth;
-					put_header->height = header.biHeight;
+					put_header->width = biWidth;
+					put_header->height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 
-					width = MIN(put_header->width, header.biWidth);
-					height = MIN(put_header->height, header.biHeight);
+					width = MIN(put_header->width, biWidth);
+					height = MIN(put_header->height, biHeight);
 					bpp = put_header->bpp;
 				}
 				else {
 					put_header->old.bpp = ctx->target_bpp;
-					put_header->old.width = header.biWidth;
-					put_header->old.height = header.biHeight;
+					put_header->old.width = biWidth;
+					put_header->old.height = biHeight;
 					put_header->pitch = ((put_header->width * put_header->bpp) + 0xF) & ~0xF;
 					
-					width = MIN(put_header->old.width, header.biWidth);
-					height = MIN(put_header->old.height, header.biHeight);
+					width = MIN(put_header->old.width, biWidth);
+					height = MIN(put_header->old.height, biHeight);
 					bpp = put_header->old.bpp;
 					}
 			}
 		}
 	}
 	else {
-		width = MIN(__fb_gfx->w, header.biWidth);
-		height = MIN(__fb_gfx->h, header.biHeight);
+		width = MIN(__fb_gfx->w, biWidth);
+		height = MIN(__fb_gfx->h, biHeight);
 		bpp = __fb_gfx->bpp;
 	}
 	fb_hPrepareTarget(ctx, dest);
 	fb_hSetPixelTransfer(ctx, MASK_A_32);
 
-	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
-	if (header.biCompression == BI_BITFIELDS) {
-		if ((!fread(rgb, 12, 1, f)) || (rgb[0] != 0x00FF0000))
+	expand = (biBitCount < 8) ? biBitCount : 0;
+	if (biCompression == BI_BITFIELDS) {
+		if (!fread(rgb, 12, 1, f))
 			return FB_RTERROR_FILEIO;
-		header.biBitCount = 24;
+	} else if (biBitCount <= 16) {
+		rgb[0] = 0x7C00;
+		rgb[1] = 0x3E0;
+		rgb[2] = 0x1F;
+	} else if (biBitCount >= 24) {
+		rgb[0] = 0xFF0000;
+		rgb[1] = 0xFF00;
+		rgb[2] = 0xFF;
 	}
-	if (header.biBitCount <= 8) {
+	if (biBitCount <= 8) {
 		switch (bpp) {
-			case 1: convert = fb_image_convert_8to8;  break;
-			case 2: convert = fb_image_convert_8to16; break;
+			case 1: convert = convert_8to8;  break;
+			case 2: convert = convert_8to16; break;
 			case 3:
-			case 4: convert = fb_image_convert_8to32; break;
+			case 4: convert = convert_8to32; break;
 		}
 	}
-	else if (header.biBitCount == 24) {
+	else if (biBitCount == 24) {
 		switch (bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = fb_image_convert_24bgrto16; break;
+			case 2: convert = convert_bf_24to16; break;
 			case 3:
-			case 4: convert = fb_image_convert_24bgrto32; break;
+			case 4: convert = convert_bf_24to32; break;
+		}
+	}
+	else if (biBitCount == 32) {
+		switch (bpp) {
+			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			case 2: convert = convert_bf_32to16; break;
+			case 3:
+			case 4: convert = convert_bf_32to32; break;
 		}
 	}
 	else {
 		switch (bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = fb_image_convert_32bgrto16; break;
+			case 2: convert = convert_bf_16to16; break;
 			case 3:
-			case 4: convert = fb_image_convert_32bgrto32; break;
+			case 4: convert = convert_bf_16to32; break;
 		}
+	}
+
+	/* calculate shifts and masks from bitfields to convert
+	 * source pixels into fbgfx format */
+	for (i = 0; i < 3; i++) {
+		masks[i] = rgb[i];
+		while ((~masks[i]) & 1) {
+			shifts[i]++;
+			masks[i] >>= 1;
+		}
+		while (masks[i]) {
+			bits[i]++;
+			masks[i] >>= 1;
+		}
+		masks[i] = rgb[i] >> shifts[i];
 	}
 
 	DRIVER_LOCK();
 	fb_hMemCpy(target_pal, palette, palette_entries * sizeof(int));
 	if (!pal)
 		fb_hRestorePalette();
-	size = ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) + 3) & ~0x3;
+	size = ((biWidth * BYTES_PER_PIXEL(biBitCount)) + 3) & ~0x3;
 	buffer = (unsigned char *)malloc(size + 1);
 	switch (expand) {
-		case 1: padding = 4 - (((header.biWidth + 7) >> 3) & 0x3); break;
-		case 4: padding = 4 - (((header.biWidth + 1) >> 1) & 0x3); break;
-		default: padding = 4 - ((header.biWidth * BYTES_PER_PIXEL(header.biBitCount)) & 0x3); break;
+		case 1: padding = 4 - (((biWidth + 7) >> 3) & 0x3); break;
+		case 4: padding = 4 - (((biWidth + 1) >> 1) & 0x3); break;
+		default: padding = 4 - ((biWidth * BYTES_PER_PIXEL(biBitCount)) & 0x3); break;
 	}
 	padding &= 0x3;
-	for (i = header.biHeight - 1; i >= 0; i--) {
+	fseek(f, bfOffBits, SEEK_SET);
+	for (i = biHeight - 1; i >= 0; i--) {
 		if (expand) {
 			color = 0;
-			for (j = 0; j < header.biWidth; j++) {
+			for (j = 0; j < biWidth; j++) {
 				if (j % (8 / expand) == 0) {
 					if ((color = fgetc(f)) < 0) {
 						result = FB_RTERROR_FILEIO;
@@ -193,7 +395,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			break;
 		}
 		if (i < height)
-			convert(buffer, ctx->line[i], width);
+			convert(buffer, ctx->line[i], width, masks, shifts, bits);
 	}
 
 exit_error:
