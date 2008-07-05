@@ -189,7 +189,9 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	uint32_t bfOffBits;
 	uint32_t biSize;
 	uint32_t biWidth;
+	uint16_t bcWidth;
 	uint32_t biHeight;
+	uint16_t bcHeight;
 	uint16_t biPlanes;
 	uint16_t biBitCount;
 	uint32_t biCompression;
@@ -218,35 +220,60 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	    (!fread_16_le(&bfReserved1, f)) ||
 	    (!fread_16_le(&bfReserved2, f)) ||
 	    (!fread_32_le(&bfOffBits, f)) ||
-	    (!fread_32_le(&biSize, f)) ||
-	    (!fread_32_le(&biWidth, f)) ||
-	    (!fread_32_le(&biHeight, f)) ||
-	    (!fread_16_le(&biPlanes, f)) ||
-	    (!fread_16_le(&biBitCount, f)) ||
-	    (!fread_32_le(&biCompression, f)) ||
-	    (!fread_32_le(&biSizeImage, f)) ||
-	    (!fread_32_le(&biXPelsPerMeter, f)) ||
-	    (!fread_32_le(&biYPelsPerMeter, f)) ||
-	    (!fread_32_le(&biClrUsed, f)) ||
-	    (!fread_32_le(&biClrImportant, f)))
+	    (!fread_32_le(&biSize, f)))
 		return FB_RTERROR_FILEIO;
 
-	if ((bfType != 19778) || (biSize != 40) || (biCompression > BI_BITFIELDS))
+	if (biSize == 12) {
+		/* OS/2 V1 (BITMAPCOREHEADER) */
+		if ((!fread_16_le(&bcWidth, f)) ||
+		    (!fread_16_le(&bcHeight, f)) ||
+		    (!fread_16_le(&biPlanes, f)) ||
+		    (!fread_16_le(&biBitCount, f)))
+			return FB_RTERROR_FILEIO;
+		biWidth = bcWidth;
+		biHeight = bcHeight;
+		biCompression = BI_RGB;
+		biClrImportant = 0;
+		biClrUsed = (1 << biBitCount) - 1;
+	} else if (biSize == 40) {
+		/* Windows V3 (BITMAPINFOHEADER) */
+	    if ((!fread_32_le(&biWidth, f)) ||
+		    (!fread_32_le(&biHeight, f)) ||
+		    (!fread_16_le(&biPlanes, f)) ||
+		    (!fread_16_le(&biBitCount, f)) ||
+		    (!fread_32_le(&biCompression, f)) ||
+		    (!fread_32_le(&biSizeImage, f)) ||
+		    (!fread_32_le(&biXPelsPerMeter, f)) ||
+		    (!fread_32_le(&biYPelsPerMeter, f)) ||
+		    (!fread_32_le(&biClrUsed, f)) ||
+		    (!fread_32_le(&biClrImportant, f)))
+			return FB_RTERROR_FILEIO;
+	} else {
+		/* unsupported header type */
+		return FB_RTERROR_FILEIO;
+	}
+
+	if ((bfType != 19778) || (biPlanes > 1) || (biCompression > BI_BITFIELDS))
 		return FB_RTERROR_FILEIO;
 
-	if (bfOffBits == 0)
-		if (biBitCount <= 8)
-			bfOffBits = 54 + (1 << biBitCount);
-		else
-			bfOffBits = 54;
+	if (bfOffBits == 0) {
+		bfOffBits = biSize + 14;
+		if (biBitCount <= 8) {
+			bfOffBits += (1 << biBitCount);
+		}
+	}
 
 	if (biBitCount <= 8) {
-		palette_entries = MIN((bfOffBits - 54) >> 2, (1 << biBitCount));
+		/* OS/2 palette entries are 3 bytes; others are 4 bytes */
+		int pal_entry_size = (biSize == 12 ? 3 : 4);
+		palette_entries = MIN((bfOffBits - (biSize + 14)) / pal_entry_size, 1 << biBitCount);
 		for (i = 0; i < palette_entries; i++) {
 			palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
 			if (pal)
 				palette[i] = (palette[i] >> 2) & 0x3F3F3F;
-			fgetc(f);
+			if (pal_entry_size == 4) {
+				fgetc(f);
+			}
 		}
 	}
 	else
@@ -308,7 +335,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		rgb[0] = 0x7C00;
 		rgb[1] = 0x3E0;
 		rgb[2] = 0x1F;
-	} else if (biBitCount >= 24) {
+	} else {
 		rgb[0] = 0xFF0000;
 		rgb[1] = 0xFF00;
 		rgb[2] = 0xFF;
@@ -321,23 +348,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			case 4: convert = convert_8to32; break;
 		}
 	}
-	else if (biBitCount == 24) {
-		switch (bpp) {
-			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = convert_bf_24to16; break;
-			case 3:
-			case 4: convert = convert_bf_24to32; break;
-		}
-	}
-	else if (biBitCount == 32) {
-		switch (bpp) {
-			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = convert_bf_32to16; break;
-			case 3:
-			case 4: convert = convert_bf_32to32; break;
-		}
-	}
-	else {
+	else if (biBitCount <= 16) {
 		switch (bpp) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
 			case 2: convert = convert_bf_16to16; break;
@@ -345,6 +356,24 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			case 4: convert = convert_bf_16to32; break;
 		}
 	}
+	else if (biBitCount <= 24) {
+		switch (bpp) {
+			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			case 2: convert = convert_bf_24to16; break;
+			case 3:
+			case 4: convert = convert_bf_24to32; break;
+		}
+	}
+	else if (biBitCount <= 32) {
+		switch (bpp) {
+			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
+			case 2: convert = convert_bf_32to16; break;
+			case 3:
+			case 4: convert = convert_bf_32to32; break;
+		}
+	}
+	else
+		return FB_RTERROR_FILEIO;
 
 	/* calculate shifts and masks from bitfields to convert
 	 * source pixels into fbgfx format */
