@@ -206,7 +206,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	uint32_t masks[3];
 	int bits[3] = {0, 0, 0};
 	void *target_pal = pal;
-	uint32_t rgb[3];
+	uint32_t rgb[4];
 	FBGFX_BLOAD_IMAGE_CONVERT convert = NULL;
 
 	if (!__fb_gfx)
@@ -244,6 +244,17 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 			if (biSize >= 24) {
 				if (!fread_32_le(&biSizeImage, f)) {
 					return FB_RTERROR_FILEIO;
+				}
+
+				if (biSize >= 108) {
+					/* Windows V4 (BITMAPV4HEADER) or later */
+					if ((fseek(f, 4*4, SEEK_CUR)) ||
+					    (!fread_32_le(&rgb[0], f)) ||
+					    (!fread_32_le(&rgb[1], f)) ||
+					    (!fread_32_le(&rgb[2], f)) ||
+					    (!fread_32_le(&rgb[3], f))) {
+						return FB_RTERROR_FILEIO;
+					}
 				}
 			}
 		}
@@ -337,8 +348,11 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 
 	expand = (biBitCount < 8) ? biBitCount : 0;
 	if (biCompression == BI_BITFIELDS) {
-		if (!fread(rgb, 12, 1, f))
-			return FB_RTERROR_FILEIO;
+		if (biSize < 108) {
+			printf("BI_BITFIELDS\n");
+			if (!fread(rgb, 12, 1, f))
+				return FB_RTERROR_FILEIO;
+		}
 	} else if (biBitCount <= 16) {
 		rgb[0] = 0x7C00;
 		rgb[1] = 0x3E0;
