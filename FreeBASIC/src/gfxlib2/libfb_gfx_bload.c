@@ -349,7 +349,6 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	expand = (biBitCount < 8) ? biBitCount : 0;
 	if (biCompression == BI_BITFIELDS) {
 		if (biSize < 108) {
-			printf("BI_BITFIELDS\n");
 			if (!fread(rgb, 12, 1, f))
 				return FB_RTERROR_FILEIO;
 		}
