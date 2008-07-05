@@ -100,7 +100,7 @@ static void convert_bf_16to32(const unsigned char *src, unsigned char *dest, int
 		r = CONVERT_DEPTH(r, bits[0], 8);
 		g = CONVERT_DEPTH(g, bits[1], 8);
 		b = CONVERT_DEPTH(b, bits[2], 8);
-		*d = (r << 16) | (g << 8) | b;
+		*d = (255 << 24) | (r << 16) | (g << 8) | b;
 		s++;
 		d++;
 	}
@@ -139,7 +139,7 @@ static void convert_bf_24to32(const unsigned char *src, unsigned char *dest, int
 		r = CONVERT_DEPTH(r, bits[0], 8);
 		g = CONVERT_DEPTH(g, bits[1], 8);
 		b = CONVERT_DEPTH(b, bits[2], 8);
-		*d++ = (r << 16) | (g << 8) | b;
+		*d++ = (255 << 24) | (r << 16) | (g << 8) | b;
 		src += 3;
 	}
 }
@@ -163,17 +163,19 @@ static void convert_bf_32to16(const unsigned char *src, unsigned char *dest, int
 
 static void convert_bf_32to32(const unsigned char *src, unsigned char *dest, int w, const uint32_t *masks, const int *shifts, const int *bits)
 {
-	uint32_t r, g, b;
+	uint32_t r, g, b, a;
 	uint32_t *s = (uint32_t *)src;
 	uint32_t *d = (uint32_t *)dest;
 	for (; w; w--) {
 		r = (*s >> shifts[0]) & masks[0];
 		g = (*s >> shifts[1]) & masks[1];
 		b = (*s >> shifts[2]) & masks[2];
+		a = masks[3] ? (*s >> shifts[3]) & masks[3] : 255;
 		r = CONVERT_DEPTH(r, bits[0], 8);
 		g = CONVERT_DEPTH(g, bits[1], 8);
 		b = CONVERT_DEPTH(b, bits[2], 8);
-		*d++ = (r << 16) | (g << 8) | b;
+		if (masks[3]) a = CONVERT_DEPTH(a, bits[3], 8);
+		*d++ = (a << 24) | (r << 16) | (g << 8) | b;
 		s++;
 	}
 }
@@ -202,12 +204,13 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	unsigned char *buffer;
 	int result = fb_ErrorSetNum( FB_RTERROR_OK );
 	int i, j, width, height, bpp, color, expand, size, padding, palette[256], palette_entries;
-	int shifts[3] = {0, 0, 0};
-	uint32_t masks[3];
-	int bits[3] = {0, 0, 0};
+	int shifts[4] = {0, 0, 0, 0};
+	uint32_t masks[4];
+	int bits[4] = {0, 0, 0, 0};
 	void *target_pal = pal;
-	uint32_t rgb[4];
+	uint32_t rgba[4];
 	FBGFX_BLOAD_IMAGE_CONVERT convert = NULL;
+	rgba[3] = 0;
 
 	if (!__fb_gfx)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -249,10 +252,10 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 				if (biSize >= 108) {
 					/* Windows V4 (BITMAPV4HEADER) or later */
 					if ((fseek(f, 4*4, SEEK_CUR)) ||
-					    (!fread_32_le(&rgb[0], f)) ||
-					    (!fread_32_le(&rgb[1], f)) ||
-					    (!fread_32_le(&rgb[2], f)) ||
-					    (!fread_32_le(&rgb[3], f))) {
+					    (!fread_32_le(&rgba[0], f)) ||
+					    (!fread_32_le(&rgba[1], f)) ||
+					    (!fread_32_le(&rgba[2], f)) ||
+					    (!fread_32_le(&rgba[3], f))) {
 						return FB_RTERROR_FILEIO;
 					}
 				}
@@ -334,7 +337,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 					width = MIN(put_header->old.width, biWidth);
 					height = MIN(put_header->old.height, biHeight);
 					bpp = put_header->old.bpp;
-					}
+				}
 			}
 		}
 	}
@@ -349,17 +352,17 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	expand = (biBitCount < 8) ? biBitCount : 0;
 	if (biCompression == BI_BITFIELDS) {
 		if (biSize < 108) {
-			if (!fread(rgb, 12, 1, f))
+			if (!fread(rgba, 12, 1, f))
 				return FB_RTERROR_FILEIO;
 		}
 	} else if (biBitCount <= 16) {
-		rgb[0] = 0x7C00;
-		rgb[1] = 0x3E0;
-		rgb[2] = 0x1F;
+		rgba[0] = 0x7C00;
+		rgba[1] = 0x3E0;
+		rgba[2] = 0x1F;
 	} else {
-		rgb[0] = 0xFF0000;
-		rgb[1] = 0xFF00;
-		rgb[2] = 0xFF;
+		rgba[0] = 0xFF0000;
+		rgba[1] = 0xFF00;
+		rgba[2] = 0xFF;
 	}
 	if (biBitCount <= 8) {
 		switch (bpp) {
@@ -398,17 +401,19 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 
 	/* calculate shifts and masks from bitfields to convert
 	 * source pixels into fbgfx format */
-	for (i = 0; i < 3; i++) {
-		masks[i] = rgb[i];
-		while ((~masks[i]) & 1) {
-			shifts[i]++;
-			masks[i] >>= 1;
+	for (i = 0; i < 4; i++) {
+		masks[i] = rgba[i];
+		if (masks[i]) {
+			while ((~masks[i]) & 1) {
+				shifts[i]++;
+				masks[i] >>= 1;
+			}
+			while (masks[i]) {
+				bits[i]++;
+				masks[i] >>= 1;
+			}
+			masks[i] = rgba[i] >> shifts[i];
 		}
-		while (masks[i]) {
-			bits[i]++;
-			masks[i] >>= 1;
-		}
-		masks[i] = rgb[i] >> shifts[i];
 	}
 
 	DRIVER_LOCK();
