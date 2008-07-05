@@ -188,9 +188,9 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	uint16_t bfReserved2;
 	uint32_t bfOffBits;
 	uint32_t biSize;
-	uint32_t biWidth;
+	int32_t biWidth;
 	uint16_t bcWidth;
-	uint32_t biHeight;
+	int32_t biHeight;
 	uint16_t bcHeight;
 	uint16_t biPlanes;
 	uint16_t biBitCount;
@@ -200,6 +200,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	uint32_t biYPelsPerMeter;
 	uint32_t biClrUsed;
 	uint32_t biClrImportant;
+	int flipped = FALSE;
 
 	PUT_HEADER *put_header = NULL;
 	unsigned char *buffer;
@@ -237,8 +238,8 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		biClrUsed = (1 << biBitCount) - 1;
 	} else if (biSize == 40) {
 		/* Windows V3 (BITMAPINFOHEADER) */
-	    if ((!fread_32_le(&biWidth, f)) ||
-		    (!fread_32_le(&biHeight, f)) ||
+	    if ((!fread_32_le((uint32_t *)&biWidth, f)) ||
+		    (!fread_32_le((uint32_t *)&biHeight, f)) ||
 		    (!fread_16_le(&biPlanes, f)) ||
 		    (!fread_16_le(&biBitCount, f)) ||
 		    (!fread_32_le(&biCompression, f)) ||
@@ -253,8 +254,13 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		return FB_RTERROR_FILEIO;
 	}
 
-	if ((bfType != 19778) || (biPlanes > 1) || (biCompression > BI_BITFIELDS))
+	if ((bfType != 19778) || (biPlanes > 1) || (biWidth <= 0) || (biCompression > BI_BITFIELDS))
 		return FB_RTERROR_FILEIO;
+
+	if (biHeight < 0) {
+		flipped = TRUE;
+		biHeight = -biHeight;
+	}
 
 	if (bfOffBits == 0) {
 		bfOffBits = biSize + 14;
@@ -403,7 +409,10 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	}
 	padding &= 0x3;
 	fseek(f, bfOffBits, SEEK_SET);
-	for (i = biHeight - 1; i >= 0; i--) {
+	for (i = flipped ? 0 : (biHeight - 1);
+	     flipped ? (i < biHeight) : (i >= 0);
+	     flipped ? i++ : i--) {
+
 		if (expand) {
 			color = 0;
 			for (j = 0; j < biWidth; j++) {
