@@ -76,10 +76,10 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_siz
 
 	/* Solaris pthread.h does not define PTHREAD_STACK_MIN */
 #ifdef PTHREAD_STACK_MIN
-	if( stack_size >= PTHREAD_STACK_MIN ) {
-		pthread_attr_setstacksize( &tattr, stack_size );
-	}
+	stack_size = stack_size >= PTHREAD_STACK_MIN ? stack_size : PTHREAD_STACK_MIN;
 #endif
+	
+	pthread_attr_setstacksize( &tattr, stack_size );
 
 	if( pthread_create( &thread->id, &tattr, threadproc, (void *)thread ) ) {
 		free( (void *)thread );
