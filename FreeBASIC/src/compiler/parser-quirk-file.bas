@@ -624,7 +624,12 @@ private function hFilePut _
 
     				lexSkipToken( )
     				lexSkipToken( )
-    			end if
+
+				'' warn if data is pointer
+    			elseif( typeIsPtr( symbGetType( s ) ) ) then
+					errReportWarn( FB_WARNINGMSG_PASSINGPTR )
+
+				end if
     		end if
     	end if
 	end if
@@ -632,24 +637,38 @@ private function hFilePut _
 	'' (',' elements)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( isarray ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
+			if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip elements
+				elmexpr = cExpression( )
+				if( elmexpr <> NULL ) then
+					astDelTree( elmexpr )
 				end if
-
-			elmexpr = cExpression( )
-			if( elmexpr <> NULL ) then
-				astDelTree( elmexpr )
 			end if
-
 		else
-			elmexpr = cExpression( )
-			if( elmexpr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			'' don't allow elements if source is string type
+			select case astGetDataType( srcexpr )
+			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+				if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
 					exit function
 				else
-					elmexpr = NULL
-		end if
-			end if
+					'' error recovery: skip elements
+					elmexpr = cExpression( )
+					if( elmexpr <> NULL ) then
+						astDelTree( elmexpr )
+					end if
+				end if
+			case else
+				elmexpr = cExpression( )
+				if( elmexpr = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					else
+						elmexpr = NULL
+					end if
+				end if
+			end select
 		end if
 
 		'' elems has to be an integer or able to be converted
@@ -725,6 +744,11 @@ private function hFileGet _
 			end if
 			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
+	else
+		'' warn if passing a pointer
+		if( typeIsPtr( astGetDataType( dstexpr ) ) ) then
+			errReportWarn( FB_WARNINGMSG_PASSINGPTR )
+		end if
 	end if
 
 	isarray = FALSE
@@ -761,28 +785,45 @@ private function hFileGet _
 		if( isarray ) then
 			'' elems must be NULL
 			if( elmexpr <> NULL ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
 					exit function
 				end if
 				astDelTree( elmexpr )
+				elmexpr = NULL
 			end if
 
 		else
-			'' elems has to be an integer or able to be converted
 			if( elmexpr ) then
-				if( typeIsPtr( astGetDatatype( elmexpr ) ) ) then
-					errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
-				end if
-				if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
-					elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
-					if( elmexpr = NULL ) then
-						if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-							exit function
-						else
-							elmexpr = NULL
+
+				'' don't allow elements if destine is string type
+				select case astGetDataType( dstexpr )
+				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+					if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip elements
+						astDelTree( elmexpr )
+						elmexpr = NULL
+					end if
+			
+				case else
+
+					'' elems has to be an integer or able to be converted
+					if( typeIsPtr( astGetDatatype( elmexpr ) ) ) then
+						errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+					end if
+					if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
+						elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
+						if( elmexpr = NULL ) then
+							if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+								exit function
+							else
+								elmexpr = NULL
+							end if
 						end if
 					end if
-				end if
+				end select
+
 			end if
 		end if
 	else
@@ -806,10 +847,14 @@ private function hFileGet _
 				end select
 
 				if( isint = FALSE ) then
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 						exit function
 					end if
 				end if
+			end if			
+		else
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
 			end if			
 		end if
 	else
@@ -823,7 +868,7 @@ private function hFileGet _
 		end if
 	end if
 
-	'' dest can't be a top-level const
+	'' iobytes can't be a top-level const
 	if( iobexpr ) then
 		if( typeIsConst( astGetFullType( iobexpr ) ) ) then
 			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then

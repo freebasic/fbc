@@ -64,7 +64,8 @@ end type
 		( 0, @"Overflow in constant conversion" ), _
 		( 0, @"Variable following NEXT is meaningless" ), _
 		( 0, @"Cast to non-pointer" ), _
-		( 0, @"Return method mismatch" ) _
+		( 0, @"Return method mismatch" ), _
+		( 0, @"Passing Pointer" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -292,7 +293,8 @@ end type
 		@"Expected 'PTR' or 'POINTER'", _
 		@"Too many levels of pointer indirection", _
 		@"Dynamic arrays can't be const", _
-		@"Non-const UDT cannot invoke const method" _
+		@"Non-const UDT cannot invoke const method", _
+		@"Elements must be empty for strings and arrays" _
 	}
 
 
