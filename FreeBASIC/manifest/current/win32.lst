@@ -588,6 +588,7 @@ examples/manual/defines/fboutexe.bas
 examples/manual/defines/fboutlib.bas
 examples/manual/defines/fboutobj.bas
 examples/manual/defines/fbsignature.bas
+examples/manual/defines/fbsse.bas
 examples/manual/defines/fbvermajor.bas
 examples/manual/defines/fbverminor.bas
 examples/manual/defines/fbverpatch.bas
@@ -620,6 +621,7 @@ examples/manual/faq/gfxlib2/bload-workaround.bas
 examples/manual/faq/gfxlib2/check-for-close.bas
 examples/manual/faq/gfxlib2/image-header.bas
 examples/manual/fileio/access.bas
+examples/manual/fileio/basicvsc.bas
 examples/manual/fileio/binary-read.bas
 examples/manual/fileio/binary-text.bas
 examples/manual/fileio/binary-write.bas
@@ -677,6 +679,7 @@ examples/manual/gfx/imageconvertrow.bas
 examples/manual/gfx/imagecreate.bas
 examples/manual/gfx/imageinfo.bas
 examples/manual/gfx/line.bas
+examples/manual/gfx/line_style.bas
 examples/manual/gfx/paint.bas
 examples/manual/gfx/paint2.bas
 examples/manual/gfx/palette.bas
@@ -911,6 +914,7 @@ examples/manual/procs/va_next.bas
 examples/manual/proguide/arrays/array1.bas
 examples/manual/proguide/arrays/array2.bas
 examples/manual/proguide/arrays/array3.bas
+examples/manual/proguide/arrays/array4.bas
 examples/manual/proguide/arrays/fixedlen_1.bas
 examples/manual/proguide/arrays/fixedlen_2.bas
 examples/manual/proguide/arrays/indexing.bas
