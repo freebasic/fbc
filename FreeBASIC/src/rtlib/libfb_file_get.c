@@ -43,12 +43,15 @@
 
 
 /*:::::*/
-int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
-					  int adjust_rec_pos, int is_unicode )
+int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t length,
+					  size_t *bytesread, int adjust_rec_pos, int is_unicode )
 {
     int res;
     size_t chars, read_chars;
     char *pachData = (char *)dst;
+
+	if( bytesread )
+		*bytesread = 0;
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -60,7 +63,7 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
 
     res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    chars = *pchars;
+    chars = length;
 
     /* seek to newpos */
     if( pos > 0 )
@@ -163,7 +166,7 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
          * The device must also support the SEEK method and the length
          * must be non-null */
 
-		if( *pchars != handle->len )
+		if( length != handle->len )
 			res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
 
@@ -193,7 +196,8 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
         }
     }
 
-    *pchars = read_chars;
+	if( bytesread )
+		*bytesread = read_chars;
 
 	FB_UNLOCK();
 
@@ -201,13 +205,19 @@ int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t *pchars,
 	return fb_ErrorSetNum( res );
 }
 
+
+
 /*:::::*/
+/* Can fb_FileGetData() be removed? it's not used by the rtlib
+ * nor is it referenced by fbc?  Compatibility with old libs? [jeffm]
+ */
 int fb_FileGetData( int fnum, fb_off_t pos, void *dst, size_t chars, int adjust_rec_pos )
 {
     return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
     						 pos,
     						 dst,
-    						 &chars,
+    						 chars,
+							 NULL,
     						 adjust_rec_pos,
     						 FALSE );
 }
@@ -215,12 +225,47 @@ int fb_FileGetData( int fnum, fb_off_t pos, void *dst, size_t chars, int adjust_
 /*:::::*/
 FBCALL int fb_FileGet( int fnum, long pos, void *dst, unsigned int chars )
 {
-	return fb_FileGetData( fnum, pos, dst, chars, TRUE );
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
+							 pos, 
+							 dst, 
+							 chars, 
+							 NULL, 
+							 TRUE, 
+							 FALSE );
 }
 
 /*:::::*/
 FBCALL int fb_FileGetLarge( int fnum, long long pos, void *dst, unsigned int chars )
 {
-	return fb_FileGetData( fnum, pos, dst, chars, TRUE );
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
+							 pos, 
+							 dst, 
+							 chars, 
+							 NULL, 
+							 TRUE, 
+							 FALSE );
 }
 
+/*:::::*/
+FBCALL int fb_FileGetIOB( int fnum, long pos, void *dst, unsigned int chars, unsigned int *bytesread )
+{
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
+							 pos, 
+							 dst, 
+							 chars, 
+							 bytesread, 
+							 TRUE, 
+							 FALSE );
+}
+
+/*:::::*/
+FBCALL int fb_FileGetLargeIOB( int fnum, long long pos, void *dst, unsigned int chars, unsigned int *bytesread )
+{
+	return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum), 
+							 pos, 
+							 dst, 
+							 chars, 
+							 bytesread, 
+							 TRUE, 
+							 FALSE );
+}

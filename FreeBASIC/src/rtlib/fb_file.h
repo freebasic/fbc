@@ -203,8 +203,8 @@ static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
        int          fb_FileGetData      ( int fnum, fb_off_t pos, void *data,
                                           size_t length, int adjust_rec_pos );
        int          fb_FileGetDataEx    ( FB_FILE *handle, fb_off_t pos, void *data,
-                                          size_t *pLength, int adjust_rec_pos,
-                                          int isunicode );
+                                          size_t length, size_t *bytesread,
+                                          int adjust_rec_pos, int isunicode );
 
        int          fb_FileOpenVfsRawEx ( FB_FILE *handle, const char *filename,
                                           size_t filename_length,
@@ -247,6 +247,7 @@ FBCALL int          fb_FileOpenShort    ( FBSTRING *str_file_mode, int fnum,
                                           FBSTRING *str_lock_mode);
 FBCALL int          fb_FileClose        ( int fnum );
        int          fb_FileCloseEx      ( FB_FILE *handle );
+
 FBCALL int          fb_FilePut          ( int fnum, long pos, void* value,
                                           unsigned int valuelen );
        int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value,
@@ -254,13 +255,15 @@ FBCALL int          fb_FilePut          ( int fnum, long pos, void* value,
 FBCALL int          fb_FilePutStr       ( int fnum, long pos, void *str, int str_len );
        int          fb_FilePutStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
 FBCALL int          fb_FilePutArray     ( int fnum, long pos, FBARRAY *src );
+
 FBCALL int          fb_FileGet          ( int fnum, long pos, void* value,
                                           unsigned int valuelen );
        int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value,
                                           unsigned int valuelen );
 FBCALL int          fb_FileGetStr       ( int fnum, long pos, void *str, int str_len );
-       int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
+       int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size_t *bytesread );
 FBCALL int          fb_FileGetArray     ( int fnum, long pos, FBARRAY *dst );
+
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
 FBCALL long long    fb_FileTell         ( int fnum );

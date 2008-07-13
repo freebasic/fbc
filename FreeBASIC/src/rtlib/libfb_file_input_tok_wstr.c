@@ -52,8 +52,8 @@ static FB_WCHAR hReadChar
         int res;
         FB_WCHAR c;
 
-        size_t len = 1;
-        res = fb_FileGetDataEx( ctx->handle, 0, &c, &len, FALSE, TRUE );
+        size_t len;
+        res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, TRUE );
         if( (res != FB_RTERROR_OK) || (len == 0) )
             return WEOF;
 

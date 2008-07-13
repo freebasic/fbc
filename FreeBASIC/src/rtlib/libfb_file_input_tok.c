@@ -52,8 +52,8 @@ static int hReadChar
         int res;
         int c;
 
-        size_t len = 1;
-        res = fb_FileGetDataEx( ctx->handle, 0, &c, &len, FALSE, FALSE );
+        size_t len;
+        res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, FALSE );
         if( (res != FB_RTERROR_OK) || (len == 0) )
             return EOF;
 

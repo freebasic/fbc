@@ -68,11 +68,11 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
         {
             dst->data[0] = 0;
             while( read_count!=bytes ) {
-                len = bytes - read_count;
                 res = fb_FileGetDataEx( handle,
                                         0,
                                         dst->data + read_count,
-                                        &len,
+                                        bytes - read_count,
+										&len,
                                         TRUE,
                                         FALSE );
                 if( res!=FB_RTERROR_OK ) {
@@ -86,10 +86,10 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
         }
         else
         {
-            len = bytes;
             res = fb_FileGetDataEx( handle,
                                     0,
                                     dst->data,
+									bytes,
                                     &len,
                                     TRUE,
                                     FALSE );

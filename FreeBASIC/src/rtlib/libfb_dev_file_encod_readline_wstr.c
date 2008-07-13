@@ -61,15 +61,14 @@ int fb_DevFileReadLineEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int max
 
     while( TRUE )
     {
-    	size_t len = 1;
-    	res = fb_FileGetDataEx( handle, 0, c, &len, FALSE, TRUE );
+    	size_t len;
+    	res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
     	if( (res != FB_RTERROR_OK) || (len == 0) )
     		break;
 
     	if( c[0] == _LC('\r') )
     	{
-    		len = 1;
-    		res = fb_FileGetDataEx( handle, 0, c, &len, FALSE, TRUE );
+    		res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
     		if( (res != FB_RTERROR_OK) || (len == 0) )
     			break;
 

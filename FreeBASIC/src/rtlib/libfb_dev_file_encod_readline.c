@@ -61,8 +61,8 @@ int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst )
 
     while( TRUE )
     {
-    	size_t len = 1;
-    	res = fb_FileGetDataEx( handle, 0, c, &len, FALSE, FALSE );
+    	size_t len;
+    	res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, FALSE );
     	if( res != FB_RTERROR_OK )
     		break;
 
@@ -75,8 +75,7 @@ int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst )
     	}
     	else
     	{
-    		len = 1;
-    		res = fb_FileGetDataEx( handle, 0, c, &len, FALSE, FALSE );
+    		res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, FALSE );
     		if( res != FB_RTERROR_OK )
     			break;
     		if( c[0] != _LC('\n') )

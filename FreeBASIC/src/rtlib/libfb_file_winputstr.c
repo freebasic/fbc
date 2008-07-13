@@ -66,10 +66,10 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
             dst[0] = _LC('\0');
             while( read_chars != chars )
             {
-                len = chars - read_chars;
                 res = fb_FileGetDataEx( handle,
                                         0,
                                         (void *)&dst[read_chars],
+										chars - read_chars,
                                         &len,
                                         TRUE,
                                         TRUE );
@@ -82,10 +82,10 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
         }
         else
         {
-            len = chars;
             res = fb_FileGetDataEx( handle,
                                     0,
                                     (void *)dst,
+									chars,
                                     &len,
                                     TRUE,
                                     TRUE );
