@@ -224,6 +224,38 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 
+{{fbdoc item="section" value="Assignment Operators"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineConcat|&= (Concatenate and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|+= (Add and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineSub|-= (Subtract and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineMultiply|*= (Multiply and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineDivide|/= (Divide and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineIntegerDivide|\= (Integer Divide and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineExponentiate|^= (Exponentiate and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineModulus|MOD= (Modulus and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineAnd|AND= (Conjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineEqv|EQV= (Equivalence and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineImp|IMP= (Implication and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineOr|OR= (Inclusive Disjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineXor|XOR= (Exclusive Disjunction and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|SHL= (Shift Left and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|SHR= (Shift Right and Assign)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpLet|LET (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpLetlist|LET() (Assignment)"}}
+
+{{fbdoc item="section" value="Arithmetic Operators"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAdd|+ (Add)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpSubtract|- (Subtract)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpMultiply|* (Multiply)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpDivide|/ (Divide)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpIntegerDivide|\ (Integer divide)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpExponentiate|^ (Exponentiate)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpModulus|MOD (Modulus)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpNegate|- (Negate)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftLeft|SHL (Shift left)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR (Shift right)"}}
+
 {{fbdoc item="section" value="Bitwise operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAnd|AND"}}
 	- {{fbdoc item="keyword" value="KeyPgOpEqv|EQV"}}

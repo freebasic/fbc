@@ -436,6 +436,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgSgn|SGN"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShell|SHELL"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftLeft|SHL"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgSin|SIN"}}
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}

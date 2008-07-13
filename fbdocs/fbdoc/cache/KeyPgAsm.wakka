@@ -23,7 +23,15 @@ Code block that allows the use of architecture-specific instructions.
 
 		==Syntax==
 			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by FreeBASIC is GAS, using the ##.intel_syntax noprefix## directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal - use FreeBASIC-like " ' " comments, not " ; " as usual in ASM. 
-		
+
+			Instruction syntax is mostly the same as FASM uses, one important difference is that GAS requires size settings to be followed by the word "ptr".
+
+			## ' Assuming "blah" is a FB global or local UINTEGER variable ##
+			## mov  eax,[blah] ' Fine ##
+			## inc  [blah] ' Bad, size not specified ##
+			## inc  dword [blah] ' GAS still won't accept this ##
+			## inc  dword ptr [blah] ' GAS needs "ptr" here ##
+
 		==Register Preservation==
 			When an ASM block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
 
@@ -39,7 +47,8 @@ Code block that allows the use of architecture-specific instructions.
 		==Instruction Set==
 		
 		See these external references:
-		~- [[http://developer.intel.com/design/Pentium4/documentation.htm Intel Pentium 4 manuals]]
+		~- [[http://board.flatassembler.net/download.php?id=3093 Original Intel 80386 manual from 1986]]
+		~- [[http://developer.intel.com/design/Pentium4/documentation.htm Latest Intel Pentium 4 manuals]]
 		~- [[http://home.comcast.net/~fbkotler/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by FreeBASIC, but this page provides a good overview of x86 instructions)
 		
 		==Unsafe instructions==

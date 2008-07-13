@@ -57,7 +57,7 @@ text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
 print instr(text,"&#1077;&#1090;") ' displays 5
 <<::c::
 {{fbdoc item="target"}}
-	- DOS does not support the wide-character string versions of ##**Instr**##.
+	- The wide-character string version of ##**Instr**## is not supported for DOS target.
 
 {{fbdoc item="diff"}}
 	- QB returns ##//start//## if ##//search//## is a zero length string.

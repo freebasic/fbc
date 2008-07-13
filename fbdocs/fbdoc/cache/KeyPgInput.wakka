@@ -14,20 +14,19 @@ Reads a list of values from the keyboard
 
 {{fbdoc item="desc"}}
 	Reads a list values from the keyboard up until the first carriage return. Numerical values are converted from their string representation into the corresponding types in the variable list. Characters are echoed to the screen as they are typed.
-	Each value should be delimited by a comma (##,##).  When Inputting a number, whitespace may also be used to delimit it.  Surrounding whitespace will be trimmed from string values.
-	If the input string has a comma in it, it can be wrapped in quotes (##"..."##) to prevent it being split up.  Alternatively, ##[[KeyPgLineinput Line Input]]## maybe used to input an entire line to a single string without delimiting.
-	
+	If there are more than one value in the Input  list, the user must be instructed to commas or whitespaces to separe them.  Surrounding whitespace will be trimmed from string values. If an input string has a comma in it, it must be wrapped in quotes (##"..."##) to prevent it being split up.  
+	Alternatively, ##[[KeyPgLineinput Line Input]]## maybe used to input an entire line to a single string without delimiting.
 	
 	The prompt - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately following the prompt. If no prompt is specified, characters are echoed at the current cursor location.
 
 	The optional leading semicolon after ##**Input**## is similar to the optional trailing semicolon in a ##[[KeyPgPrint Print]]## statement: the cursor will remain on the same line after all of the characters have been echoed, otherwise, the cursor will move to the beginning of the next line.
 
-	If more values are read than are listed in the variable list, extra values will be ignored; if fewer values are read, the remaining variables will be initialized - numeric variables to zero (##0##), and string variables to the null string (##"####"##).
+	If more values are read than are listed in the variable list, extra values will be ignored; if fewer values are read (i.e. the user presses enter before inputting all values), the remaining variables will be initialized - numeric variables to zero (##0##), and string variables to the null string (##"####"##).
 
 	Numeric values are converted similar to the procedures ##[[KeyPgVal Val]]## and ##[[KeyPgVallng ValLng]]##, using the most appropriate function for the number format, converting as many numeric characters as possible.
 
 	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
-
+	
 {{fbdoc item="ex"}}
 
 	**Example #1**

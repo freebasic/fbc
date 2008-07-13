@@ -58,6 +58,7 @@
 		[[ProPgVarProcLinkage Variable and Procedure Linkage]]
 
 	{{fbdoc item="subsect" value="User Defined Types"}}
+		[[ProPgUDTs Overview]]
 		[[ProPgTypeAliases Type Aliases]]
 		[[KeyPgTypeTemp Temporary Types]]
 		[[ProPgCtorsDtors Constructors and Destructors]]
@@ -93,6 +94,7 @@
 		[[ProPgErrorHandling Error Handling]]
 		[[CatPgDddefines Intrinsic Defines]]
 		[[ProPgCruntime C Standard Library Functions]]
+		[[ProPgFileIO File I/O in FreeBASIC]]
 
 {{fbdoc item="section" value="Language Reference"}}
 
@@ -656,6 +658,8 @@
 		[[KeyPgSgn SGN]]
 		[[KeyPgShared SHARED]]
 		[[KeyPgShell SHELL]]
+		[[KeyPgOpShiftLeft SHL]]
+		[[KeyPgOpShiftRight SHR]]
 		[[KeyPgShort SHORT]]
 		[[KeyPgSin SIN]]
 		[[KeyPgSingle SINGLE]]

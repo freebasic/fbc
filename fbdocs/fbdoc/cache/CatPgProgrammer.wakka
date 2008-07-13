@@ -47,7 +47,7 @@ FreeBASIC programmer's guide.
 	{{fbdoc item="keyword" value="ProPgVarProcLinkage|Variable and Procedure Linkage"}}
 
 {{fbdoc item="section" value="User Defined Types"}}
-	Overview
+	{{fbdoc item="keyword" value="ProPgUDTs|Overview"}}
 	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
 	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
 	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors"}}
@@ -96,8 +96,7 @@ FreeBASIC programmer's guide.
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
-
-
+	{{fbdoc item="keyword" value="ProPgFileIO|File I/O in FreeBASIC"}}
 
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.

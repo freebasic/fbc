@@ -4,7 +4,7 @@ Returns a reference to a member from a pointer to an object
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **->** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgAs as]] //U//
 ##
-~&//Note that **##Operator ->## (Pointer to member access)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references. When it does, this syntax will need to be changed.//
+~&//Note that **##Operator ->## (Pointer to member access)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **->** //rhs//

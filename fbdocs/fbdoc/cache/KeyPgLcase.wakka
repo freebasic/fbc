@@ -29,8 +29,8 @@ Output:
 abcdefg
 %%
 
-{{fbdoc item="see"}}
-	- DOS does not support the wide-character string version of ##**Lcase**##.
+{{fbdoc item="target"}}
+	- The wide-character string version of ##**Lcase**## is not supported for DOS target.
 
 {{fbdoc item="lang"}}
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.

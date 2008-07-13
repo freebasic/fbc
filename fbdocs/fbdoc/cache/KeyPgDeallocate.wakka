@@ -40,21 +40,23 @@ Although in this case it is unnecessary - since 1. the pointer is not a referenc
 In the following example, a different pointer is used to free previously allocated memory.
 
 {{fbdoc item="filename" value="examples/manual/memory/deallocate2.bas"}}%%(freebasic)
+'' WARNING: "evil" example showing how things should NOT be done
+
 sub DeallocateExample2()
-   dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
-	                                                           '' new memory
+   dim as integer ptr integerPtr = allocate( len( integer ) )  
+   '' initialize ^^^ pointer to new memory
 
-   dim as integer ptr anotherIntegerPtr = integerPtr     '' initialize another pointer to
-	                                                     '' the same memory
+   dim as integer ptr anotherIntegerPtr = integerPtr
+   '' initialize ^^^ another pointer to the same memory
 
-   *anotherIntegerPtr = 69                               '' use other pointer
+   *anotherIntegerPtr = 69                     '' use other pointer
    print *anotherIntegerPtr
 
-   deallocate( anotherIntegerPtr )                       '' free memory back to system
-   anotherIntegerPtr = 0                                 '' and zero other pointer
+   deallocate( anotherIntegerPtr )             '' free memory back to system
+   anotherIntegerPtr = 0                       '' and zero other pointer
 
-'' *integerPtr = 420                                     '' undefined bahavior; original
-	                                                     '' pointer is invalid
+'' *integerPtr = 420                           '' undefined behavior; original
+	                                           '' pointer is invalid
 end sub
 
    DeallocateExample2()

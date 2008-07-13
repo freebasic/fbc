@@ -21,7 +21,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 
 	**Note:** The following prototypes are not the official FreeBASIC prototypes (see the include files), however, they will give you enough information to properly use the functions. 
 
-	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude #include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ###include "crt/math.bi"##.
+	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude #include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ##include "crt/math.bi"## or ##include "crt\math.bi"##, our just ##include "crt.bi"## including all the others.
 
 	The Prototype column contains the following information: 
 		- The name of the function; 
@@ -74,6 +74,8 @@ This is a list of function prototypes in the standard C library in alphabetical 
 {{anchor name="LOLEVIO"}}{{fbdoc item="section" value="Low level I/O"}}
 
 	##**#include "crt/io.bi"**##
+
+	Win32 only, connects to MSVCRT.DLL
 
 	{{table columns="2" cellpadding="1" cells="Prototype (with parameters);Comments;_close(handle as integer) as integer;Close a file opened for unbuffered I/O.;_creat(filename as zstring ptr, pmode as integer) as integer;Create a new file with specified permission setting.;_eof(handle as integer) as integer;Check for end of file.;_lseek(handle as integer, offset as long, origin as integer) as long;Go to a specific position in a file.;_open(filename as zstring ptr, oflag as integer, pmode as uinteger) as integer;Open a file for low-level I/O.;_read(handle as integer, buffer as zstring ptr, length as uinteger) as integer;Read binary data from a file into a buffer.;_write(handle as integer, buffer as zstring ptr, count as uinteger) as integer;Write binary data from a buffer to a file."}}
 
