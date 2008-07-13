@@ -26,6 +26,7 @@ Version 0.20.0 Beta:
 - "-fpu FPU|SSE" command line switch (Bryan Stoeberl)
 - OPTION("FPU|SSE") to specify proc return method (Bryan Stoeberl)
 - CPU check for SSE applications (Bryan Stoeberl)
+- #1515157 (feature request) - GET# returns number of bytes read in 5th byref parameter (jeffm)
 
 [fixed]
 - wstring VAL*s were accepting invalid characters in hex/oct/bin numbers (counting_pine)

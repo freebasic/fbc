@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 64 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 65 ) = _
 	{ _
 		/' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 				        byval lock as integer, byval filenum as integer, _
@@ -603,6 +603,156 @@
 	 			), _
 	 			( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetIOB ( byval filenum as integer, byval offset as uinteger,
+						byref value as any, byval valuelen as integer,
+						byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetLargeIOB ( byval filenum as integer, byval offset as longint,
+						byref value as any, byval valuelen as integer,
+						byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETLARGEIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetStrIOB ( byval filenum as integer, byval offset as uinteger,
+						   byref str as any, byval strlen as integer,
+						   byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETSTRIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetStrLargeIOB ( byval filenum as integer, byval offset as longint,
+						   byref str as any, byval strlen as integer,
+						   byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETSTRLARGEIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetArrayIOB ( byval filenum as integer, byval offset as uinteger,
+							 array() as any,
+							 byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETARRAYIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FileGetArrayLargeIOB ( byval filenum as integer, byval offset as longint,
+							 array() as any,
+							 byref bytesread as uinteger ) as integer '/ _
+		( _
+			@FB_RTL_FILEGETARRAYLARGEIOB, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -1498,6 +1648,7 @@ function rtlFilePut _
 		islarge = FALSE
 	end select
 
+	''
 	if( isstring ) then
 		if( islarge ) then
 			f = PROCLOOKUP( FILEPUTSTRLARGE )
@@ -1582,7 +1733,7 @@ function rtlFilePutArray _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr reslabel = any, f = any
-    dim as integer o_dtype = any
+    dim as integer o_dtype = any, islarge = any
 
     function = NULL
 
@@ -1591,21 +1742,22 @@ function rtlFilePutArray _
     end if
     o_dtype  = astGetDataType( offset )
 
-	''
 	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		f = PROCLOOKUP( FILEPUTARRAYLARGE )
+		islarge = TRUE
 
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( FILEPUTARRAY )
-		else
-			f = PROCLOOKUP( FILEPUTARRAYLARGE )
-		end if
+		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
 
 	case else
-	    f = PROCLOOKUP( FILEPUTARRAY )
+		islarge = FALSE
 	end select
+
+	if( islarge ) then
+		f = PROCLOOKUP( FILEPUTARRAYLARGE )
+	else
+		f = PROCLOOKUP( FILEPUTARRAY )
+	end if
 
 	proc = astNewCALL( f )
 
@@ -1655,6 +1807,7 @@ function rtlFileGet _
 		byval offset as ASTNODE ptr, _
 		byval dst as ASTNODE ptr, _
 		byval elements as ASTNODE ptr, _
+		byval iobytes as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
@@ -1684,17 +1837,33 @@ function rtlFileGet _
 		islarge = FALSE
 	end select
 
-	if( isstring ) then
-		if( islarge ) then
-			f = PROCLOOKUP( FILEGETSTRLARGE )
+	if( iobytes ) then
+		if( isstring ) then
+			if( islarge ) then
+				f = PROCLOOKUP( FILEGETSTRLARGEIOB )
+			else
+				f = PROCLOOKUP( FILEGETSTRIOB )
+			end if
 		else
-			f = PROCLOOKUP( FILEGETSTR )
+			if( islarge ) then
+				f = PROCLOOKUP( FILEGETLARGEIOB )
+			else
+				f = PROCLOOKUP( FILEGETIOB )
+			end if
 		end if
 	else
-		if( islarge ) then
-			f = PROCLOOKUP( FILEGETLARGE )
+		if( isstring ) then
+			if( islarge ) then
+				f = PROCLOOKUP( FILEGETSTRLARGE )
+			else
+				f = PROCLOOKUP( FILEGETSTR )
+			end if
 		else
-			f = PROCLOOKUP( FILEGET )
+			if( islarge ) then
+				f = PROCLOOKUP( FILEGETLARGE )
+			else
+				f = PROCLOOKUP( FILEGET )
+			end if
 		end if
 	end if
 
@@ -1740,6 +1909,13 @@ function rtlFileGet _
  		exit function
  	end if
 
+	'' byref iobytes as uinteger/ulongint
+	if( iobytes ) then
+		if( astNewARG( proc, iobytes ) = NULL ) then
+ 			exit function
+ 		end if
+	end if
+
     ''
     if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
@@ -1763,12 +1939,13 @@ function rtlFileGetArray _
 		byval filenum as ASTNODE ptr, _
 		byval offset as ASTNODE ptr, _
 		byval dst as ASTNODE ptr, _
+		byval iobytes as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr reslabel = any, f = any
-    dim as integer o_dtype = any
+    dim as integer o_dtype = any, islarge = any
 
 	function = NULL
 
@@ -1777,21 +1954,30 @@ function rtlFileGetArray _
     end if
 	o_dtype  = astGetDataType( offset )
 
-	''
 	select case as const o_dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		f = PROCLOOKUP( FILEGETARRAYLARGE )
+		islarge = TRUE
 
 	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = FB_INTEGERSIZE ) then
-			f = PROCLOOKUP( FILEGETARRAY )
-		else
-			f = PROCLOOKUP( FILEGETARRAYLARGE )
-		end if
+		islarge = (FB_LONGSIZE <> FB_INTEGERSIZE)
 
 	case else
-	    f = PROCLOOKUP( FILEGETARRAY )
+		islarge = FALSE
 	end select
+
+	if( iobytes ) then
+		if( islarge ) then
+			f = PROCLOOKUP( FILEGETARRAYLARGEIOB )
+		else
+			f = PROCLOOKUP( FILEGETARRAYIOB )
+		end if
+	else
+		if( islarge ) then
+			f = PROCLOOKUP( FILEGETARRAYLARGE )
+		else
+			f = PROCLOOKUP( FILEGETARRAY )
+		end if
+	end if
 
 	proc = astNewCALL( f )
 

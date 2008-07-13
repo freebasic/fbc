@@ -275,6 +275,15 @@
 #define FB_RTL_FILEGETARRAY 			"fb_FileGetArray"
 #define FB_RTL_FILEGETARRAYLARGE 		"fb_FileGetArrayLarge"
 
+#define FB_RTL_FILEGETIOB				"fb_FileGetIOB"
+#define FB_RTL_FILEGETLARGEIOB 			"fb_FileGetLargeIOB"
+#define FB_RTL_FILEGETSTRIOB			"fb_FileGetStrIOB"
+#define FB_RTL_FILEGETSTRLARGEIOB		"fb_FileGetStrLargeIOB"
+#define FB_RTL_FILEGETWSTRIOB			"fb_FileGetWstrIOB"
+#define FB_RTL_FILEGETWSTRLARGEIOB		"fb_FileGetWstrLargeIOB"
+#define FB_RTL_FILEGETARRAYIOB 			"fb_FileGetArrayIOB"
+#define FB_RTL_FILEGETARRAYLARGEIOB		"fb_FileGetArrayLargeIOB"
+
 #define FB_RTL_FILETELL 				"fb_FileTell"
 #define FB_RTL_FILESEEK 				"fb_FileSeek"
 #define FB_RTL_FILESEEKLARGE 			"fb_FileSeekLarge"
@@ -620,6 +629,15 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILEGETWSTRLARGE
 	FB_RTL_IDX_FILEGETARRAY
 	FB_RTL_IDX_FILEGETARRAYLARGE
+
+	FB_RTL_IDX_FILEGETIOB
+	FB_RTL_IDX_FILEGETLARGEIOB
+	FB_RTL_IDX_FILEGETSTRIOB
+	FB_RTL_IDX_FILEGETSTRLARGEIOB
+	FB_RTL_IDX_FILEGETWSTRIOB
+	FB_RTL_IDX_FILEGETWSTRLARGEIOB
+	FB_RTL_IDX_FILEGETARRAYIOB
+	FB_RTL_IDX_FILEGETARRAYLARGEIOB
 
 	FB_RTL_IDX_FILETELL
 	FB_RTL_IDX_FILESEEK
@@ -1292,7 +1310,7 @@ declare function rtlFilePut _
 		byval filenum as ASTNODE ptr, _
 		byval offset as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval bytes as ASTNODE ptr, _
+		byval elements as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
@@ -1309,7 +1327,8 @@ declare function rtlFileGet _
 		byval filenum as ASTNODE ptr, _
 		byval offset as ASTNODE ptr, _
 		byval dst as ASTNODE ptr, _
-		byval bytes as ASTNODE ptr, _
+		byval elements as ASTNODE ptr, _
+		byval iobytes as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
@@ -1318,6 +1337,7 @@ declare function rtlFileGetArray _
 		byval filenum as ASTNODE ptr, _
 		byval offset as ASTNODE ptr, _
 		byval dst as ASTNODE ptr, _
+		byval iobytes as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
