@@ -294,7 +294,8 @@ end type
 		@"Too many levels of pointer indirection", _
 		@"Dynamic arrays can't be const", _
 		@"Non-const UDT cannot invoke const method", _
-		@"Elements must be empty for strings and arrays" _
+		@"Elements must be empty for strings and arrays", _
+		@"GOSUB disabled, use 'OPTION GOSUB' to enable" _
 	}
 
 

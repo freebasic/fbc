@@ -216,7 +216,7 @@ function cGotoStmt _
 
 		else
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_NOGOSUB ) = FALSE ) then
 				exit function
 			else
 				hSkipStmt( )
