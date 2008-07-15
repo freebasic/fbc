@@ -30,9 +30,6 @@
 '' GOSUB/RETURN support
 ''
 
-'' This must match with fb_error.h in the run-time library
-#define FB_RTERROR_RETURNWITHOUTGOSUB 16
-
 '' -gen option is used to select the GOSUB implementation:
 ''     - GAS backend will use CALL/RET
 ''     - C backend will use setjmp/longjmp
@@ -248,7 +245,7 @@ function astGosubAddReturn _
 		'' else
 		astAdd( astNewLABEL( label ) )
 
-		'' set/throw error (note: compiler dependency on rtlib's FB_RTERROR_RETURNWITHOUTGOSUB)
+		'' set/throw error
 		rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
 		if( env.clopt.errorcheck ) then
 			rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
@@ -289,7 +286,7 @@ function astGosubAddReturn _
 			'' else
 			astAdd( astNewLABEL( label ) )
 
-			'' set/throw error (note: compiler dependency on rtlib's FB_RTERROR_RETURNWITHOUTGOSUB)
+			'' set/throw error
 			rtlErrorSetNum( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ) )
 			if( env.clopt.errorcheck ) then
 				rtlErrorThrow( astNewCONSTi( FB_RTERROR_RETURNWITHOUTGOSUB, FB_DATATYPE_INTEGER ), _
