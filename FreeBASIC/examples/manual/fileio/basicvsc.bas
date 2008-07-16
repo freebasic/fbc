@@ -9,6 +9,7 @@
 Data " File I/O test | 2008-07-04 "
 Rem
 Rem  Compile With FB 0.18.5
+Rem  NOTE: FB 0.20 will support returning the amount of Data Read when Using Get
 
 #include "crt\stdio.bi" '' Otherwise the "C"-stuff won't work
 
@@ -31,11 +32,11 @@ BUF = Allocate(32768) '' 32 KiB
 
 ? : ? "FB - OPEN - GET """;VGSFILE1;"""": Sleep 1000
 FF = FreeFile : HH=0 : II64=0
-GG=Open (VGSFILE1 For Binary As #FF) '' Result 0 is OK here
-'' BUG: File ^^^ will be created if it doesn't exist
+GG=Open (VGSFILE1 For Binary Access Read As #FF) '' Result 0 is OK here
+'' "ACCESS READ" prevents from creating an empty file if it doesn't exist yet
 ? "OPEN: ";GG
 If (GG=0) Then
-  EE=Cast(UInteger,(Timer*100)) '' FPU and FLOAT TIMER suck :-(
+  EE=Cast(UInteger,(Timer*100)) '' No integer timer in FB
   GG=Get (#FF,,*BUF,32768)
   '' But no way ^^^ to find out how much stuff got read 
   '' Even worse, EOF is __NOT__ considered as error, must vvv use EOF to test
@@ -58,7 +59,7 @@ Endif
 HH=0 : II64=0
 QQ=FOPEN(VGSFILE2,"rb")
 '' Here 0 is evil and <>0 good, opposite from above !!!
-'' Here file will __NOT__ be created if it doesn't exist (good)
+'' Open existing file, will not be created if it doesn't exist 
 '' "rb" is case sensitive and must be lowercase, STRPTR seems not necessary
 ? "FOPEN: ";QQ 
 If (QQ<>0) Then
