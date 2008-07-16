@@ -9,6 +9,7 @@
 #ifndef
 #inclib
 #include
+#lang
 #libpath
 #line
 #macro
@@ -16,6 +17,8 @@
 #print
 #undef
 $Dynamic
+$Include
+$Lang
 $Static
 Assert
 AssertWarn
