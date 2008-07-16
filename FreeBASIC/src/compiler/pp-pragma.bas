@@ -37,7 +37,7 @@ end enum
 
 type LEXPP_PRAGMAOPT
 	tk		as zstring * 16
-	opt		as integer
+	opt 	as integer
 	flags	as integer
 end type
 
@@ -49,7 +49,7 @@ enum LEXPP_PRAGMAOPT_ENUM
 end enum
 
 type LEXPP_PRAGMASTK
-	tos		as integer
+	tos 	as integer
 	stk(0 to FB_MAXPRAGMARECLEVEL-1) as integer
 end type
 
@@ -66,7 +66,7 @@ end type
 
 ''::::
 sub ppPragmaInit( )
-    dim as integer i
+	dim as integer i
 
 	'' reset stacks
 	for i = 0 to FB_COMPOPTIONS-1
@@ -91,12 +91,12 @@ private function pragmaPush _
 
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
-             if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
-             	exit function
-             else
-             	'' error recovery: skip
-             	return TRUE
-             end if
+			 if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+				exit function
+			 else
+				'' error recovery: skip
+				return TRUE
+			 end if
 		end if
 
 		.stk(.tos) = value
@@ -118,13 +118,13 @@ private function pragmaPop _
 
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
-             if( errReport( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
-             	exit function
-             else
-             	'' error recovery: skip
-             	value = FALSE
-             	return TRUE
-             end if
+			 if( errReport( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
+				exit function
+			 else
+				'' error recovery: skip
+				value = FALSE
+				return TRUE
+			 end if
 		end if
 
 		.tos -= 1
@@ -137,13 +137,13 @@ end function
 
 '':::::
 '' Pragma			=	PRAGMA
-''						 	  PUSH '(' symbol (',' expression{int})? ')'
+''							  PUSH '(' symbol (',' expression{int})? ')'
 ''							| POP '(' symbol ')'
 ''							| symbol ('=' expression{int})?
 ''
 function ppPragma( ) as integer
-    dim as string tk
-    dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
+	dim as string tk
+	dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
 
 	function = FALSE
 
@@ -191,7 +191,7 @@ function ppPragma( ) as integer
 		end if
 	end if
 
-    if( ispush or ispop ) then
+	if( ispush or ispop ) then
 		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_PUSHPOP) = 0 ) then
 			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
@@ -209,19 +209,20 @@ function ppPragma( ) as integer
 
 	lexSkipToken( )
 
-    if( ispop ) then
-    	if( pragmaPop( pragmaOpt(p).opt, value ) = FALSE ) then
-    		exit function
-    	end if
+	if( ispop ) then
+		if( pragmaPop( pragmaOpt(p).opt, value ) = FALSE ) then
+			exit function
+		end if
 
-    else
+	else
+		'' assume value is FALSE/TRUE unless the #pragma explicitly uses other values
 		value = FALSE
 
 		if( ispush ) then
-        	if( pragmaPush( pragmaOpt(p).opt, _
-        					fbGetOption( pragmaOpt(p).opt ) ) = FALSE ) then
-        		exit function
-        	end if
+			if( pragmaPush( pragmaOpt(p).opt, _
+							fbGetOption( pragmaOpt(p).opt ) ) = FALSE ) then
+				exit function
+			end if
 
 			'' ','?
 			if( lexGetToken() = CHAR_COMMA ) then
@@ -252,26 +253,29 @@ function ppPragma( ) as integer
 
 		end if
 
-        if( value = FALSE ) then
-        	'' expr
-        	if( cConstExprValue( value ) = FALSE ) then
-        		exit function
-        	end if
-        end if
-    end if
+		if( value = FALSE ) then
+			'' expr
+			if( cConstExprValue( value ) = FALSE ) then
+				exit function
+			end if
+		end if
+	end if
 
 	''
-	select case p
-	case LEXPP_PRAGMAOPT_ONCE
-		fbPragmaOnce()
-
-	case else
+	if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_HAS_CALLBACK) <> 0 ) then
+		select case p
+		case LEXPP_PRAGMAOPT_ONCE
+			fbPragmaOnce()
+		end select
+	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then
-			fbSetOption( pragmaOpt(p).opt, value )
+			if( fbChangeOption( pragmaOpt(p).opt, value ) = FALSE ) then
+				exit function
+			end if
 		end if
+	end if
 
-	end select
-
+	''
 	if( ispop or ispush ) then
 		'' ')'
 		if( lexGetToken() <> CHAR_RPRNT ) then

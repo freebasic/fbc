@@ -56,8 +56,9 @@ end function
 
 '':::::
 ''Directive       =   INCLUDE ONCE? ':' '\'' STR_LIT '\''
-''				  |   DYNAMIC
-''				  |   STATIC .
+''                |   DYNAMIC
+''                |   STATIC .
+''                |   LANG ':' '\"' STR_LIT '\"'
 ''
 function cDirective as integer static
     static as zstring * FB_MAXPATHLEN+1 incfile
@@ -134,6 +135,43 @@ function cDirective as integer static
 		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 			if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) ) then
 				function = errReport( FB_ERRMSG_SYNTAXERROR )
+			end if
+		
+		case else
+			'' Special case, allow $LANG metacommand in all dialects
+			if( ucase( *lexGetText( ) ) = "LANG" ) then
+
+				lexSkipToken( )
+
+				'' ':'
+				if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
+					function = errReport( FB_ERRMSG_EXPECTEDSTMTSEP, TRUE )
+					exit select
+				end if
+
+				'' "STR_LIT"
+				if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+					dim as FB_LANG id = any
+
+					lexEatToken( incfile )
+
+					id = fbGetLangId( @incfile )
+
+					if( id = FB_LANG_INVALID ) then
+						function = errReport( FB_ERRMSG_INVALIDLANG )
+
+					else
+						'' fbChangeOption will return FALSE if we should stop 
+						'' parsing and TRUE if we should continue.
+
+						function = fbChangeOption( FB_COMPOPT_LANG, id )
+
+					end if
+
+				else
+					function = errReport( FB_ERRMSG_SYNTAXERROR )
+
+				end if
 			end if
 		end select
 	end select

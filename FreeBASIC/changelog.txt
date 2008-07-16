@@ -14,6 +14,7 @@ Version 0.20.0 Beta:
 - DIR now supports unsigned integer ptrs for out_attrib (counting_pine)
 
 [added]
+- #lang directive and $lang metacommand to set compiler dialect from source code (jeffm)
 - IMAGEINFO function, for retrieving useful information about FB gfx buffers (counting_pine)
 - warning message when string literals aren't closed with a quote (counting_pine)
 - C emitter: GOSUB and ON GOSUB using setjmp/longjmp (jeffm)

@@ -47,6 +47,8 @@ declare function ppLibPath					( ) as integer
 
 declare function ppLine						( ) as integer
 
+declare function ppLang						( ) as integer
+
 '' globals
 	dim shared as PP_CTX pp
 
@@ -71,6 +73,7 @@ const SYMB_MAXKEYWORDS = 24
         (@"PRINT"	, FB_TK_PP_PRINT	), _
         (@"ERROR"	, FB_TK_PP_ERROR	), _
         (@"LINE"	, FB_TK_PP_LINE		), _
+        (@"LANG"	, FB_TK_PP_LANG		), _
         (NULL) _
 	}
 
@@ -289,6 +292,10 @@ function ppParse( ) as integer
 		lexSkipToken( )
 		function = ppLine( )
 
+	case FB_TK_PP_LANG
+		lexSkipToken( )
+		function = ppLang( )
+
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
@@ -427,6 +434,45 @@ private function ppLine( ) as integer
 	end if
 
 	function = TRUE
+
+end function
+
+'':::::
+'' ppLang		=   '#'LANG LIT_STR
+''
+private function ppLang( ) as integer
+    static as zstring * FB_MAXPATHLEN+1 opt
+	dim as FB_LANG id = any
+
+	function = FALSE
+
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip
+			lexSkipToken( )
+			return TRUE
+		end if
+	end if
+
+	lexEatToken( opt )
+	
+	id = fbGetLangId( @opt )
+
+	if( id = FB_LANG_INVALID ) then
+		if( errReport( FB_ERRMSG_INVALIDLANG ) = FALSE ) then
+			return FALSE
+		end if
+
+	else
+		'' fbChangeOption will return FALSE if we should stop 
+		'' parsing and TRUE if we should continue.
+
+		function = fbChangeOption( FB_COMPOPT_LANG, id )
+
+	end if
+
 
 end function
 

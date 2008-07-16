@@ -38,6 +38,7 @@ enum FB_TOKEN_PP
 	FB_TK_PP_PRINT
 	FB_TK_PP_ERROR
 	FB_TK_PP_LINE
+	FB_TK_PP_LANG
 end enum
 
 type PP_CTX

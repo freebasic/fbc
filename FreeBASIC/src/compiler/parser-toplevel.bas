@@ -148,8 +148,18 @@ function cLine as integer
     '' Statement?
     cStatement( )
 
+	'' Restart?
+	if( fbCheckRestartCompile( ) ) then
+		exit function
+	end if
+
     '' Comment?
     cComment( )
+
+	'' Restart?
+	if( fbCheckRestartCompile( ) ) then
+		exit function
+	end if
 
 	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function

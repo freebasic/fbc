@@ -445,73 +445,107 @@ private function compileFiles _
 	( _
 	) as integer
 
-	dim as integer i, checkmain, ismain
+	dim as integer i, checkmain, ismain, res, restarts
 	dim as FBC_IOFILE ptr iof = any
-
+	dim as FB_LANG prevlangid = any
 	function = FALSE
 
 	''
 	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
-    	checkmain = TRUE
-    case else
-    	checkmain = fbc.mainset
-    end select
+		checkmain = TRUE
+	case else
+		checkmain = fbc.mainset
+	end select
 
-    ismain = FALSE
+	ismain = FALSE
 
-    '' for each input file..
-    iof = listGetHead( @fbc.inoutlist )
-    do while( iof <> NULL )
+	'' for each input file..
+	iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
 
-    	if( checkmain ) then
-    		ismain = fbc.mainfile = hStripPath( hStripExt( iof->inf ) )
-    	end if
+		if( checkmain ) then
+			ismain = fbc.mainfile = hStripPath( hStripExt( iof->inf ) )
+		end if
 
-    	'' init the parser
-    	if( fbInit( ismain ) = FALSE ) then
-    		exit function
-    	end if
+		'' preserve orginal lang id, we may have to restore it.
+		prevlangid = fbGetOption( FB_COMPOPT_LANG )
 
-    	'' add include paths and defines
-    	processCompLists( )
+		restarts = 0
 
-    	'' if no output file given, assume it's the
-    	'' same name as input, with the .o extension
-    	if( len( iof->outf ) = 0 ) then
-    		iof->outf = hStripExt( iof->inf ) + ".o"
-    	end if
+		do
 
-    	'' create output asm name
-    	iof->asmf = hStripExt( iof->outf ) + hGetOutFileExt( )
+			'' init the parser
+			if( fbInit( ismain, restarts ) = FALSE ) then
+				exit function
+			end if
 
-		'' add the libs and paths passed in the cmd-line
-    	setLibList( )
+			'' add include paths and defines
+			processCompLists( )
 
-    	if( fbc.verbose ) then
-    		print "compiling: ", iof->inf; " -o "; iof->asmf
-    	end if
+			'' if no output file given, assume it's the
+			'' same name as input, with the .o extension
+			if( len( iof->outf ) = 0 ) then
+				iof->outf = hStripExt( iof->inf ) + ".o"
+			end if
 
-    	if( fbCompile( iof->inf, _
-    				   iof->asmf, _
-    				   ismain, _
-    				   @fbc.preinclist ) = FALSE ) then
-    		exit function
-    	end if
+			'' create output asm name
+			iof->asmf = hStripExt( iof->outf ) + hGetOutFileExt( )
 
-		'' update the list of libs and paths, with the ones found when parsing
-		getLibList( )
+			'' add the libs and paths passed in the cmd-line
+			setLibList( )
 
-		'' shutdown the parser
-		fbEnd( )
+			if( fbc.verbose ) then
+				print "compiling: ", iof->inf; " -o "; iof->asmf
+			end if
+
+			if( fbCompile( iof->inf, _
+						   iof->asmf, _
+						   ismain, _
+						   @fbc.preinclist ) = FALSE ) then
+
+				'' Restore original lang
+				fbSetOption( FB_COMPOPT_LANG, prevlangid )
+
+				exit function
+			end if
+
+			if( fbCheckRestartCompile( ) ) then
+				
+				'' Errors? Don't bother restarting ...
+				if( errGetCount( ) <> 0 ) then
+					exit function
+				else
+					restarts += 1
+
+					'' shutdown the parser (it will be restarted)
+					fbEnd( )
+				end if
+			
+			else
+
+				'' update the list of libs and paths, with the ones found when parsing
+				getLibList( )
+
+				'' shutdown the parser
+				fbEnd( )
+
+				'' Restore original lang
+				fbSetOption( FB_COMPOPT_LANG, prevlangid )
+
+				exit do
+
+			end if
+
+		loop
 
 		iof = listGetNext( iof )
 	loop
 
-    '' no default libs would be added if no inp files were given
-    if( listGetHead( @fbc.inoutlist ) = NULL ) then
-   		setLibListFromCmd( )
-    end if
+	'' no default libs would be added if no inp files were given
+	if( listGetHead( @fbc.inoutlist ) = NULL ) then
+		setLibListFromCmd( )
+	end if
 
 	function = TRUE
 
@@ -842,16 +876,12 @@ private sub objinf_addOption _
 	case FB_COMPOPT_LANG
 		dim as FB_LANG id = any
 
-		select case *value
-		case "fb"
+		id = fbGetLangId( value )
+
+		'' bad objinfo value?
+		if( id = FB_LANG_INVALID ) then
 			id = FB_LANG_FB
-		case "deprecated"
-			id = FB_LANG_FB_DEPRECATED
-		case "fblite"
-			id = FB_LANG_FB_FBLITE
-		case "qb"
-			id = FB_LANG_QB
-		end select
+		end if
 
 		if( id <> fbc.objinf.lang ) then
 			hReportErr( FB_WARNINGMSG_MIXINGLANGMODES )
@@ -1547,21 +1577,15 @@ private function processOptions _
 					exit function
 				end if
 
-				select case lcase( *nxt )
-				case "fb"
-					value = FB_LANG_FB
-				case "deprecated"
-					value = FB_LANG_FB_DEPRECATED
-				case "fblite"
-					value = FB_LANG_FB_FBLITE
-				case "qb"
-					value = FB_LANG_QB
-				case else
+				value = fbGetLangId( strptr(*nxt) )
+
+				if( value = FB_LANG_INVALID ) then
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
-				end select
+				end if
 
 				fbSetOption( FB_COMPOPT_LANG, value )
+				fbSetOptionIsExplicit( FB_COMPOPT_LANG )
 				fbc.objinf.lang = value
 
 				del_cnt += 1

@@ -215,7 +215,9 @@ const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
 
 '' languages (update the fb.bas::langTb() array when changing this list)
 enum FB_LANG
-	FB_LANG_FB
+	FB_LANG_INVALID = -1
+
+	FB_LANG_FB = 0
 	FB_LANG_FB_DEPRECATED
 	FB_LANG_FB_FBLITE
 	FB_LANG_QB
@@ -253,6 +255,12 @@ enum FB_EXTRAOPT
 
 	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
 end enum
+
+''
+'' Track options explicitly set on the command line
+type FBCMMLINEOPTEXPL
+	lang			as integer					'' TRUE if -lang was specified
+end type
 
 ''
 type FBCMMLINEOPT
@@ -367,7 +375,8 @@ extern gccLibFileNameTb( 0 to GCC_LIBS - 1 ) as zstring ptr
 ''
 declare function fbInit _
 	( _
-		byval ismain as integer _
+		byval ismain as integer, _
+		byval restarts as integer _
 	) as integer
 
 declare sub fbEnd _
@@ -380,6 +389,10 @@ declare function fbCompile _
 		byval outfname as zstring ptr, _
 		byval ismain as integer, _
 	  	byval preinclist as TLIST ptr _
+	) as integer
+
+declare function fbCheckRestartCompile _
+	( _
 	) as integer
 
 declare sub fbSetPaths _
@@ -402,9 +415,20 @@ declare sub fbSetOption _
 		byval value as integer _
 	)
 
+declare sub fbSetOptionIsExplicit _
+	( _
+		byval opt as integer _
+	)
+
 declare function fbGetOption _
 	( _
 		byval opt as integer _
+	) as integer
+
+declare function fbChangeOption _
+	( _
+		byval opt as integer, _
+		byval value as integer _
 	) as integer
 
 declare sub fbListLibs _
@@ -555,6 +579,12 @@ declare function fbFindBinFile _
 		byval filename as zstring ptr, _
 		byval findopts as FB_FINDBIN = FB_FINDBIN_USE_DEFAULT _
 	) as string
+
+declare function fbGetLangId _
+	( _
+		byval txt as zstring ptr _
+	) as FB_LANG
+
 
 ''
 '' macros

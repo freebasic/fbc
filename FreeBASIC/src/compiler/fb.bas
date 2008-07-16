@@ -430,10 +430,15 @@ end sub
 '':::::
 function fbInit _
 	( _
-		byval ismain as integer _
+		byval ismain as integer, _
+		byval restarts as integer _
 	) as integer static
 
 	function = FALSE
+
+	''
+	env.restarts = restarts
+	env.dorestart = FALSE
 
 	''
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
@@ -504,6 +509,8 @@ end sub
 
 '':::::
 sub fbSetDefaultOptions( )
+
+	env.cloptexpl.lang		= FALSE
 
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
@@ -631,6 +638,19 @@ sub fbSetOption _
 end sub
 
 '':::::
+sub fbSetOptionIsExplicit _
+	( _
+		byval opt as integer _
+	)
+
+	select case as const opt
+	case FB_COMPOPT_LANG
+		env.cloptexpl.lang = TRUE
+	end select
+
+end sub
+
+'':::::
 function fbGetOption _
 	( _
 		byval opt as integer _
@@ -711,6 +731,67 @@ function fbGetOption _
 
 	case else
 		function = FALSE
+	end select
+
+end function
+
+'':::::
+function fbChangeOption _
+	( _
+		byval opt as integer, _
+		byval value as integer _
+	) as integer
+
+	function = FALSE
+
+	select case as const opt
+	case FB_COMPOPT_MSBITFIELDS
+		fbSetOption( opt, value )
+		function = TRUE
+
+	case FB_COMPOPT_LANG
+		'' do nothing if we are already in the desired mode
+		if( value = fbGetOption( opt ) ) then
+			function = TRUE
+		else
+
+			'' Not module level? then error
+			if( parser.scope <> FB_MAINSCOPE ) then
+
+				if( fbIsModLevel( ) = FALSE ) then
+					errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
+				else
+					errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+				end if
+			
+			'' module level
+			else
+				'' Explicit -lang on cmdline overrides directive
+				if( env.cloptexpl.lang ) then
+					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
+				else
+
+					'' First pass? Set the option and return FALSE to stop the parser
+					if( env.restarts = 0 ) then
+						fbSetOption( opt, value )
+						env.dorestart = TRUE
+
+					'' Second pass? Show a warning and ignore
+					else
+						errReportWarn( FB_WARNINGMSG_DIRECTIVEIGNORED )
+						function = TRUE
+
+					end if
+
+				end if
+
+			end if
+						
+		end if
+
+	case else
+		errReport( FB_ERRMSG_INTERNAL )
+
 	end select
 
 end function
@@ -928,6 +1009,15 @@ function fbCompile _
 	else
 		function = FALSE
 	end if
+
+end function
+
+'':::::
+function fbCheckRestartCompile _
+	( _
+	) as integer
+
+	function = env.dorestart
 
 end function
 
@@ -1536,5 +1626,26 @@ function fbFindBinFile _
 	end if
 
 	errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
+
+end function
+
+'':::::
+function fbGetLangId _
+	( _
+		byval txt as zstring ptr _
+	) as FB_LANG
+
+	select case *txt
+	case "fb"
+		function = FB_LANG_FB
+	case "deprecated"
+		function = FB_LANG_FB_DEPRECATED
+	case "fblite"
+		function = FB_LANG_FB_FBLITE
+	case "qb"
+		function = FB_LANG_QB
+	case else
+		function = FB_LANG_INVALID
+	end select
 
 end function
