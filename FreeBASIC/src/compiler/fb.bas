@@ -1635,7 +1635,7 @@ function fbGetLangId _
 		byval txt as zstring ptr _
 	) as FB_LANG
 
-	select case *txt
+	select case lcase(*txt)
 	case "fb"
 		function = FB_LANG_FB
 	case "deprecated"
