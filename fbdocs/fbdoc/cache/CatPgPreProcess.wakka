@@ -58,6 +58,8 @@ Commands that control the preprocessor.
 {{anchor name="CONTROL"}}{{fbdoc item="section" value="Control Directives"}}
 	=={{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}==
 		Sets compiling options.
+	=={{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}==
+		Sets dialect from source.
 	=={{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}==
 		Outputs a messages to standard output while compiling.
 	=={{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}==
@@ -72,6 +74,8 @@ Commands that control the preprocessor.
 		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
 		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}==
+		Alternate form of the [[KeyPgPplang #lang]] directive.
 
 
 >>::c::

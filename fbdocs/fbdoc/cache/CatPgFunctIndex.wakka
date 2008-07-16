@@ -302,6 +302,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
 
 {{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
@@ -433,6 +434,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
 	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
+	- {{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
 	- {{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}

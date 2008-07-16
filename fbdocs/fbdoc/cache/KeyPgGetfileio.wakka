@@ -2,12 +2,12 @@
 Reads data from a file to a buffer
 
 {{fbdoc item="syntax"}}##
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], [[KeyPgByref ByRef]] //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]]
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], [[KeyPgByref ByRef]] //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, [//amount// [[KeyPgAs As]] [[KeyPgInteger Integer]]] [ [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] ]
+	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgInteger Integer]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
 ##
 {{fbdoc item="usage"}}##
-	**Get** #//filenum//, //position//, //data// [, //amount//]
-	varres = **Get** (#//filenum//, //position//, //data// [, //amount//])
+	**Get** #//filenum//, //position//, //data// [, [//amount//] [, //bytesread// ] ]
+	varres = **Get** (#//filenum//, //position//, //data// [, [//amount//] [, //bytesread// ] ] )
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
@@ -19,9 +19,11 @@ Reads data from a file to a buffer
 		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer directly, then ##**Get**## will overwrite the pointer, not the memory it points to.
 	##//amount//##
 		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to 1, and ##**Get**## reads one variable of the buffer's data type.
+	##//bytesread//##
+		An unsigned integer variable to accept the result of the number of bytes read successfully from the file.
 
 {{fbdoc item="ret"}}
-	Zero (##0##) on success; non-zero on error. Note: if file size is unknown and EOF is reached while reading, there is no way to find out how much data was read. EOF is not considered as error, ##**Get**## just returns with "success" while no data was read.
+	Zero (##0##) on success; non-zero on error. Note: if EOF is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
 
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
@@ -130,8 +132,9 @@ Print ExampleStr
 %%
 
 {{fbdoc item="diff"}}
-	- GET can read full arrays as in VB or, alternatively, read a multiple of the data size into the memory.
-	- GET can now be used as a function.
+	- ##**Get**## in FB can read full arrays as in VB or, alternatively, read a multiple of the data size into the memory.
+	- ##**Get**## can be used as a function in FB.
+	- FB allows the ##//bytesread//## parameter, to check how many bytes have been successfully read in.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

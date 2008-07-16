@@ -9,6 +9,7 @@ Statements that affect how code is compiled.
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|'$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}
 
 {{fbdoc item="section" value="Compiler Options"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}

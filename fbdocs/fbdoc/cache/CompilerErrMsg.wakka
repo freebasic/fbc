@@ -33,6 +33,9 @@ During the program compilation three types of errors can arise:
 	- //26 Variable following NEXT is meaningless//
 	- //27 Cast to non-pointer//
 	- //28 Return method mismatch//
+	- //29 Passing Pointer//
+	- //30 Command line option overrides directive//
+	- //31 Directive ignored after first pass//
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
@@ -261,6 +264,9 @@ During the program compilation three types of errors can arise:
 	- //222 Too many levels of pointer indirection//
 	- //223 Dynamic arrays can't be const//
 	- //224 Non-const UDT cannot invoke const method//
+	- //225 Elements must be empty for strings and arrays//
+	- //226 GOSUB disabled, use 'OPTION GOSUB' to enable//
+	- //227 Invalid -lang//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

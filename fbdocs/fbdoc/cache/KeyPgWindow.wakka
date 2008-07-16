@@ -54,6 +54,8 @@ draw string ( 120, 160 ), "Y = X ^ 3"
 sleep
 %%
 
+{{image class="center" title="Window example output" url="/images/window.png"}}
+
 {{fbdoc item="diff"}}
 	- None
 

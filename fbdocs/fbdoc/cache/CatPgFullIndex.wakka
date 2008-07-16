@@ -60,6 +60,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}
 	- {{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}
 	- {{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}
 	- {{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}
 	- {{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}
 	- {{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}}
@@ -70,6 +71,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
 {{fbdoc item="section" value="A"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
 	- {{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}

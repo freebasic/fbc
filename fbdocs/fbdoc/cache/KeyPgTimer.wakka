@@ -32,7 +32,7 @@ Print "Done."
 {{fbdoc item="target"}}
 	- On Win32 and Linux, if the program must wait for periods of 0.1 seconds or more, ##[[KeyPgSleep Sleep]]## should be used, this allows other programs to run during the waiting period. For shorter delays, a loop using TIMER can be more precise.
 	- The reference point chosen varies, depending on the platform.  On Windows, the time is measured relative to the point the computer was turned on.  On DOS, the time is measured relative to midnight, and resets to 0 every time midnight is reached.
-	- The precision of TIMER varies, depending on the computer used.  If the processor has a precision timer (as the Performance Counter Pentium processors from Intel have) the precision is linked to the processor clock and microseconds can be expected. With older processors (386, 486) the resolution is 1/18 second.
+	- The precision of TIMER varies, depending on the computer used.  If the processor has a precision timer (as the Performance Counter Pentium processors from Intel have) and the OS uses it, the precision is linked to the processor clock and microseconds can be expected. With older processors (386, 486), and always in DOS, the resolution is 1/18 second.
 
 {{fbdoc item="diff"}}
 	- In QB TIMER returned the number of seconds from last midnight, and its accuracy was 1/18 secs

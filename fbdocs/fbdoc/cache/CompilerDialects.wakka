@@ -6,6 +6,8 @@
 
 	In version 0.18.4b the //[[CompilerOptlang -lang fblite]]// dialect was added, intended to replace ##-lang deprecated## in future.
 
+	In version 0.20.0b the ##[[KeyPgPplang #lang]]## directive and ##[[KeyPgMetaLang $lang]]## metacommand were added to specify a dialect from source.
+
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;fblite;FreeBASIC language compatibility, with a more QBASIC-compatible coding style;deprecated;compatibility with FB 0.16"}}
 
 	The //[[CompilerOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.

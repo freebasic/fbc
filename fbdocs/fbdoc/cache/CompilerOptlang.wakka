@@ -35,5 +35,6 @@ Provides ""QuickBASIC"" or backward compatibility
 	- ##[[KeyPgDdfblang __FB_LANG__]]##
 	- [[CompilerDialects Compiler Dialects]]
 	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgPplang #lang]]##
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

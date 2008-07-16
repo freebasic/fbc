@@ -265,6 +265,7 @@
 		[[KeyPgPpifndef #IFNDEF]]
 		[[KeyPgInclib #INCLIB]]
 		[[KeyPgInclude #INCLUDE]]
+		[[KeyPgPplang #LANG]]
 		[[KeyPgPplibpath #LIBPATH]]
 		[[KeyPgPpline #LINE]]
 		[[KeyPgPpmacro #MACRO]]
@@ -276,6 +277,7 @@
 		[[KeyPgMetaDynamic $DYNAMIC]]
 		[[KeyPgMetaInclude $INCLUDE]]
 		[[KeyPgMetaStatic $STATIC]]
+		[[KeyPgMetaLang $LANG]]
 
 	{{fbdoc item="subsect" value="A"}}
 		[[KeyPgAbs ABS]]
