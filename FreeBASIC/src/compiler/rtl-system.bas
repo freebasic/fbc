@@ -28,7 +28,7 @@
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 48 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 46 ) = _
 	{ _
 		/' fb_CpuDetect ( ) as uinteger '/ _
 		( _
@@ -293,19 +293,6 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' dir overload ( byval out_attrib as uinteger ptr = NULL ) as string '/ _
-		/' (provide support for both signed and unsigned integer ptrs for out_attrib) '/ _
-		( _
-			@"dir", @"fb_DirNext", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		1, _
-	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, TRUE, NULL _
-	 			) _
-	 		} _
-	 	), _
 		/' dir overload ( byref mask as string, _
 						  byval attrib_mask as integer = &h21, _
 						  byval out_attrib as integer ptr = NULL ) as string '/ _
@@ -323,27 +310,6 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			), _
 	 			( _
 	 				typeAddrOf( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, TRUE, NULL _
-	 			) _
-	 		} _
-	 	), _
-		/' dir overload ( byref mask as string, _
-						  byval attrib_mask as integer = &h21, _
-						  byval out_attrib as uinteger ptr = NULL ) as string '/ _
-		/' (provide support for both signed and unsigned integer ptrs for out_attrib) '/ _
-		( _
-			@"dir", @"fb_Dir", _
-	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-	 		3, _
-	 		{ _
-	 			( _
-	 				FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
-	 			), _
-	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &h21 _
-	 			), _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, TRUE, NULL _
 	 			) _
 	 		} _
 	 	), _
