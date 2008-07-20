@@ -12,6 +12,8 @@ Version 0.20.0 Beta:
 - the default aspect ratio for CIRCLE is now 1.0 in SCREENRES modes (counting_pine)
 - CIRCLE should get its size from just the horizontal scale of the WINDOW/VIEW viewport - its ratio should be unaffected (counting_pine)
 - DIR may now except a byref [u]integer for out_attrib (byval integer ptrs are still allowed) (counting_pine)
+- SCREENLOCK/SCREENUNLOCK now keep a reference count internally to allow them to be used inside functions without unlocking a global lock (DrV)
+- linux: only specify linker script path for standalone builds (fixes lib path problems on x86-64) (DrV)
 
 [added]
 - #lang directive and $lang metacommand to set compiler dialect from source code (jeffm)
@@ -58,6 +60,7 @@ Version 0.20.0 Beta:
 - #2004439 - LSET/RSET was not deleting temporary string descriptors for the destination (jeffm)
 - #1914763 - LINE INPUT to a WSTRING variable on an ascii text file was failing if last line of file had no end of line character (jeffm)
 - #1979795 - GETMOUSE in Win32 GFX driver was not clearing the status of the XBUTTON's correctly (jeffm)
+- Linux 
 
 
 Version 0.18.5 Beta:
