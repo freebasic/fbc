@@ -37,6 +37,8 @@ FBCALL void fb_GfxLock(void)
 		__fb_gfx->driver->lock();
 		__fb_gfx->flags |= SCREEN_LOCKED;
 	}
+
+	++__fb_gfx->lock_count;
 }
 
 
@@ -56,7 +58,13 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 
 	if (__fb_gfx->flags & SCREEN_LOCKED) {
 		__fb_gfx->driver->unlock();
-		__fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
+
+		if (__fb_gfx->lock_count > 0) {
+			--__fb_gfx->lock_count;
+			if (__fb_gfx->lock_count == 0) {
+				__fb_gfx->flags &= ~SCREEN_LOCKED;
+			}
+		}
 	}
 }
 

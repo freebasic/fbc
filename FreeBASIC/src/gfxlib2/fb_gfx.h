@@ -81,8 +81,8 @@ extern "C" {
 #define BYTES_PER_PIXEL(d)		(((d) + 7) / 8)
 #define BPP_MASK(b)				((int)((1LL << ((b) << 3)) - 1))
 
-#define DRIVER_LOCK()		{ if (!(__fb_gfx->flags & (SCREEN_LOCKED | SCREEN_AUTOLOCKED))) { __fb_gfx->driver->lock(); __fb_gfx->flags |= SCREEN_LOCKED | SCREEN_AUTOLOCKED; } }
-#define DRIVER_UNLOCK()		{ if (__fb_gfx->flags & SCREEN_AUTOLOCKED) { __fb_gfx->driver->unlock(); __fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED); } }
+#define DRIVER_LOCK()		do { fb_GfxLock(); } while (0)
+#define DRIVER_UNLOCK()		do { fb_GfxUnlock(1, 0); } while (0) /* start_line > end_line so dirty is not modified */
 #define SET_DIRTY(c,y,h)	{ if (__fb_gfx->framebuffer == (c)->line[0]) fb_hMemSet(__fb_gfx->dirty + (y), TRUE, (h)); }
 
 #define EVENT_LOCK()		{ fb_MutexLock(__fb_gfx->event_mutex); }
@@ -105,7 +105,6 @@ extern "C" {
 #define HAS_MMX					0x01000000
 #define SCREEN_EXIT				0x80000000
 #define SCREEN_LOCKED			0x00000001
-#define SCREEN_AUTOLOCKED		0x00000002
 #define PRINT_SCROLL_WAS_OFF	0x00000004
 #define ALPHA_PRIMITIVES		0x00000008
 #define OPENGL_PRIMITIVES		0x00000010
@@ -339,6 +338,7 @@ typedef struct FBGFX
     int event_head, event_tail;				/**< Indices for the head and tail event in the array */
     struct _FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
 	volatile int flags;						/**< Status flags */
+	int lock_count;							/**<Reference count for SCREENLOCK/UNLOCK */
 } FBGFX;
 
 
