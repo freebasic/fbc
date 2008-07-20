@@ -1,13 +1,12 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
-#define ASSERT_SHORT(c) ASSERT( len(c) = len(integer) )
-#define ASSERT_LONG(c) ASSERT( len(c) = len(long) )
+#define ASSERT_SHORT(c) __ASSERT( __sizeof(c) = __sizeof(integer) )
+#define ASSERT_LONG(c) __ASSERT( __sizeof(c) = __sizeof(long) )
 
 dim i as integer, l as long
 
-ASSERT( len(integer) = 2 )
-ASSERT( len(long) = 4 )
+__ASSERT( __sizeof(integer) = 2 )
+__ASSERT( __sizeof(long) = 4 )
 
 ASSERT_SHORT( 32767 )
 
@@ -35,7 +34,7 @@ ASSERT_LONG(  &b10000000000000000 )
 
 
 l = 100000
-ASSERT( l = 100000& )
+__ASSERT( l = 100000& )
 
 i = 100
-ASSERT( 100000 \ i = 1000 )
+__ASSERT( 100000 \ i = 1000 )

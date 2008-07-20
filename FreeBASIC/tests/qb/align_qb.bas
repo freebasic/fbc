@@ -1,7 +1,5 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
-#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
-
 type foo
 
 	as integer i
@@ -23,15 +21,15 @@ type baz
 end type
 
 sub test_1 cdecl ( )
-	assert( len( foo ) = 2 )
+	__ASSERT( __sizeof( foo ) = 2 )
 end sub
 
 sub test_2 cdecl ( )
-	assert( len( bar ) = 2+2 )
+	__ASSERT( __sizeof( bar ) = 2+2 )
 end sub
 
 sub test_3 cdecl ( )
-	assert( len( baz ) = 2+2+2 )
+	__ASSERT( __sizeof( baz ) = 2+2+2 )
 end sub
 
 test_1( )
