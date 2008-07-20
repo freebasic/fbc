@@ -11,6 +11,7 @@ Version 0.20.0 Beta:
 - binary operator overload resolution logic: Now an operator is only eligible if at least one side of the expression matches the candidate's parameter list exactly, without implicit coercion/casting. (cha0s)
 - the default aspect ratio for CIRCLE is now 1.0 in SCREENRES modes (counting_pine)
 - CIRCLE should get its size from just the horizontal scale of the WINDOW/VIEW viewport - its ratio should be unaffected (counting_pine)
+- DIR may now except a byref [u]integer for out_attrib (byval integer ptrs are still allowed) (counting_pine)
 
 [added]
 - #lang directive and $lang metacommand to set compiler dialect from source code (jeffm)
