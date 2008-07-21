@@ -60,7 +60,7 @@ Version 0.20.0 Beta:
 - #2004439 - LSET/RSET was not deleting temporary string descriptors for the destination (jeffm)
 - #1914763 - LINE INPUT to a WSTRING variable on an ascii text file was failing if last line of file had no end of line character (jeffm)
 - #1979795 - GETMOUSE in Win32 GFX driver was not clearing the status of the XBUTTON's correctly (jeffm)
-- Linux 
+- #2016487 - inc/win/vfw.bi - Changed "Delete" to "Delete__" and ported the remaining IC* AVI* and MCI* defines (jeffm)
 
 
 Version 0.18.5 Beta:
