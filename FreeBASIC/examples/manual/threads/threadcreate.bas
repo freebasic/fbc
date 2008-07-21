@@ -6,41 +6,49 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgThreadCreate
 '' --------
 
-Dim Shared terminate As Integer =0
+Dim Shared terminate As Integer = 0
 
-Sub mythread (param As Any Ptr)
-  Dim a As Integer, b As Integer
-  While 1
-	b=0
-	While b<80
-	  Print "*";
-	  a=0
-	   While a<&h7ffffff
-	     a+=1
-	  Wend
-	  b+=1
+Sub mythread (param As Any Ptr)	
+	
+	Dim As Double t = Timer
+	While( 1 )
+		
+		Print "*";
+		
+		'' pause for .1 second
+		While( Abs( Timer - t ) < .1 )
+			Sleep 1, 1
+		Wend
+		t = Timer
+		
+		If terminate=1 Then Exit Sub
 	Wend
-	If terminate=1 Then Exit Sub
-  Wend
+	
 End Sub
 
 Dim thread As Any Ptr
-Dim a As Integer, b As Integer
+Dim b As Integer
+Dim As Double t
 
 Print "Main program prints dots"
 Print "Thread prints asterisks"
-thread=ThreadCreate(@mythread,0)
+thread = ThreadCreate( @mythread, 0 )
 Print "Thread launched";
-b=0
-  While b<80
 
-	a=0
-	 While a<&h3
-	    Print ".";
-	   a+=1
+While b < 30
+	
+	Print ".";
+	
+	'' pause for .1 second
+	While( Abs( Timer - t ) < .1 )
+		Sleep 1, 1
 	Wend
-	b+=1
-  Wend
+	t = Timer
+	
+	b += 1
+	
+Wend
+
 terminate=1
 Print "Terminate launched";
 ThreadWait (thread)
