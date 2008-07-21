@@ -609,7 +609,7 @@ void fb_hWin32Exit(void)
 	
 	if (__fb_gfx->flags & SCREEN_LOCKED) {
 		__fb_gfx->driver->unlock();
-		__fb_gfx->flags &= ~(SCREEN_LOCKED | SCREEN_AUTOLOCKED);
+		__fb_gfx->flags &= ~(SCREEN_LOCKED);
 	}
 	
 	if (handle) {
