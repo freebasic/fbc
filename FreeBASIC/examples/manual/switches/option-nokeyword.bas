@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang fblite" compiler switch
 
+#lang "fblite"
+
 Option NoKeyword Int        ' remove the keyword 'int' from the internal
 	                        ' symbol table
 

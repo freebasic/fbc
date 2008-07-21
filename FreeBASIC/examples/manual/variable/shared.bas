@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang qb or fblite
+
+'$lang: "qb"
+
 Declare Sub MySub
 Dim Shared x As Integer
 Dim y As Integer

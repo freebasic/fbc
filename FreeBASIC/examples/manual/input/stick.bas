@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 Screen 12
 
 Do

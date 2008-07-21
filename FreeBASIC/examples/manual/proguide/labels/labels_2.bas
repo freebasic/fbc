@@ -8,6 +8,8 @@
 
 '' compile with -lang qb
 
+'$lang: "qb"
+
 '' Labels can be used to "bookmark" DATA blocks, allowing RESTORE to alter the READ sequence.
 Read a,b,c
 Restore here

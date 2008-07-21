@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb or -lang fblite
 
+#lang "fblite"
+
 Declare Sub foobar(ByVal x As Integer, ByVal y As Integer)
 Call foobar(35, 42)
 

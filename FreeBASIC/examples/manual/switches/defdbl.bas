@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 DefDbl a-d
 Dim aNum 'implicit: As Double
 

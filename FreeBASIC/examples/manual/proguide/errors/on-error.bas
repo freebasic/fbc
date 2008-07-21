@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with QB (-lang qb) dialect
+
+'$lang: "qb"
+
 On Error Goto FAILED
 Open "xzxwz.zwz" For Input As #1
 On Error Goto 0

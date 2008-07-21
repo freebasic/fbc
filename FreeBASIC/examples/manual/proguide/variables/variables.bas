@@ -7,6 +7,9 @@
 '' --------
 
 ' compile with -lang qb or fblite
+
+'$lang: "qb"
+
 Declare Sub PrintConstants()
 
 Dim FirstNumber As Integer

@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang qb or fblite
+
+'$lang: "qb"
+
 Print SAdd(s$)
 s$ = "hello"
 Print SAdd(s$)

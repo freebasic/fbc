@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang qb
+
+'$lang: "qb"
+
 Print "Let's Gosub!"
 GoSub MyGosub
 Print "Back from Gosub!"

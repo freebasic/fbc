@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
+#lang "fblite"
+
 Option Explicit
 
 Dim a As Integer            ' 'a' must be declared..

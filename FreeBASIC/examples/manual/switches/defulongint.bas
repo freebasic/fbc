@@ -7,5 +7,8 @@
 '' --------
 
 '' Compile with -lang fblite
+
+#lang "fblite"
+
 defulongint l
 Dim lNumber

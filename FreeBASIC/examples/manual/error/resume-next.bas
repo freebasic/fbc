@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 Dim As Single i, j
 
 On Error Goto ErrHandler

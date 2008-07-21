@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 Call mysub(15, 16) '' call "mysub" before it has been declared, or even mentioned.
 
 Sub mysub(ByRef a As Integer, ByRef b As Integer)

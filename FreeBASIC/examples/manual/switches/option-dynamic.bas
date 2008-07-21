@@ -8,6 +8,8 @@
 
 '' Compile with "-lang fblite" compiler switch
 
+#lang "fblite"
+
 Dim foo(99) As Integer      ' declares a fixed-length array
 
 Option Dynamic

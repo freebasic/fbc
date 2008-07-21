@@ -7,6 +7,9 @@
 '' --------
 
 '' compile with -lang fblite or qb
+
+#lang "fblite"
+
 Declare Sub foo
 
 foo

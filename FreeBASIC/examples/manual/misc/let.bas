@@ -8,6 +8,8 @@
 
 '' Compile with -lang fblite or qb
 
+#lang "fblite"
+
 ' these two lines have the same effect:
 Let x = 100
 x = 100

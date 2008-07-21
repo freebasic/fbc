@@ -7,6 +7,9 @@
 '' --------
 
 ' compile with -lang fblite or qb
+
+#lang "fblite"
+
 Dim test As String = "LPrint Example test"
 
 Print "Sending '" + test + "' to LPT1 (default)"

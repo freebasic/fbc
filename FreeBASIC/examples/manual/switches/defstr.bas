@@ -7,5 +7,8 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 DefStr s
 Dim sMessage

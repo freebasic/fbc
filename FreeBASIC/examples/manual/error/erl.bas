@@ -7,6 +7,9 @@
 '' --------
 
 ' compile with -lang fblite or qb
+
+#lang "fblite"
+
 ' note: compilation with '-ex' option is required
 
 On Error Goto ErrorHandler

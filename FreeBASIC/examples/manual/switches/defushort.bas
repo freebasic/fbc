@@ -7,5 +7,8 @@
 '' --------
 
 '' Compile with -lang fblite
+
+#lang "fblite"
+
 DefUShort u
 Dim uNumber

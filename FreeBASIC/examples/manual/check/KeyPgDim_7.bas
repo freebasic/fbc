@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb or fblite
 
+'$lang: "qb"
+
 '' A string variable using the $ type suffix
 Dim strVariable$
 

@@ -9,6 +9,8 @@
 '' compile with:
 ''    fbc -lang qb module1.bas module2.bas
 
+'$lang: "qb"
+
 Declare Sub Print_Values()
 Common m1 As Integer
 Common m2 As Integer

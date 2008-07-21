@@ -7,5 +7,8 @@
 '' --------
 
 ' compile with -lang fblite or qb
+
+#lang "fblite"
+
 Dim i As Integer
 Let i = 300 ' <-alternate syntax

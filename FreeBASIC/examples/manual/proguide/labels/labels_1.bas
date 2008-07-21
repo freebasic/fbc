@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 beginning:
 3 Print "Hello World!"
 Goto beginning

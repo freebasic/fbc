@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 '' All variables beginning with A through N default to the INTEGER data type
 '' All other variables will default to the SINGLE data type
 DefInt I-N

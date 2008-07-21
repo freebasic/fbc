@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 '' Variable-length
 Dim a As String
 a = "Hello"

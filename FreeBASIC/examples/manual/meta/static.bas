@@ -7,6 +7,9 @@
 '' --------
 
 ' compile with -lang fblite or qb
+
+#lang "fblite"
+
 '$dynamic
 Dim a(100)   '<<this array will be variable-length
 '$static

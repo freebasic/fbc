@@ -7,6 +7,9 @@
 '' --------
 
 ' compile with -lang qb
+
+'$lang: "qb"
+
 Dim Filehandle As Integer
 Dim txt As String
 	

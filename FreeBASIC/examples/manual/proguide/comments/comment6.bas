@@ -7,5 +7,8 @@
 '' --------
 
 Rem compile With -lang fblite Or qb
+
+#lang "fblite"
+
 Rem $Static
 ' $include: 'vbcompat.bi'

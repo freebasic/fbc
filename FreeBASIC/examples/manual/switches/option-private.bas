@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang fblite" compiler switch
 
+#lang "fblite"
+
 Sub ProcWithExternalLinkage()
    ' ...
 End Sub

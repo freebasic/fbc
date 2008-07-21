@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 choice = 3
 On choice GoSub labela, labelb, labelc
 Print "Good bye."

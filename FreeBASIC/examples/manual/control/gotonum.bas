@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang qb or fblite
+
+'$lang: "qb"
+
 1 Goto 3
 2 End
 3 Print "Welcome!"

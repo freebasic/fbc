@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang qb
+
+'$lang: "qb"
+
 GoSub message
 End
 

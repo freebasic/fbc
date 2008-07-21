@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang fblite" compiler switch
 
+#lang "fblite"
+
 Option Escape
 
 Print "Warning \a\t The path is:\r\n c:\\Freebasic\\Examples"

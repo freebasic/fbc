@@ -7,6 +7,9 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 DefLng l
 Dim lNumber ' implicit: As Long
 

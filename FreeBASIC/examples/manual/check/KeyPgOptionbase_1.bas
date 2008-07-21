@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
+#lang "fblite"
+
 Dim foo(10) As Integer      ' declares an array with indices 0-10
 
 Option Base 5

@@ -8,6 +8,8 @@
 
 '' Compile with -lang qb or -lang fblite
 
+#lang "fblite"
+
 Function f ( ) As Integer
 f = 42
 End Function

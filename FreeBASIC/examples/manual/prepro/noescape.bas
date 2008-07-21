@@ -8,6 +8,8 @@
 
 '' Compile with -lang fblite or qb
 
+#lang "fblite"
+
 Print "Default"
 Print "Backslash  : \\"
 Print !"Backslash !: \\"

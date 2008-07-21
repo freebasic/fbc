@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang qb" compiler switch
 
+'$lang: "qb"
+
 '' turn off gosub support
 Option nogosub
 

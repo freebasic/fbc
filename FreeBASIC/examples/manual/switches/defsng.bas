@@ -7,5 +7,8 @@
 '' --------
 
 '' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 DefSng s-z
 Dim sNumber, yNumber

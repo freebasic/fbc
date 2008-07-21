@@ -8,6 +8,8 @@
 
 '' compile with the "-lang fblite" compiler switch
 
+#lang "fblite"
+
 Sub TestDefaultByref( a As Integer )
   '' change the value
   a = a * 2

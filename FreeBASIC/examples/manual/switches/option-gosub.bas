@@ -8,6 +8,8 @@
 
 '' Compile with the "-lang fblite" compiler switch
 
+#lang "fblite"
+
 '' turn on gosub support
 Option GoSub
 
