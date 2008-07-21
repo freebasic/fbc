@@ -13,14 +13,16 @@ Disables support for ##[[KeyPgGosub Gosub]]## and ##[[KeyPgOngosub On Gosub]]##.
 	{{fbdoc item="filename" value="examples/manual/switches/option-nogosub.bas"}}%%(freebasic)
 '' Compile with the "-lang qb" compiler switch
 
+'$lang: "qb"
+
 '' turn off gosub support
-option nogosub
+Option nogosub
 
-function foo() as integer
-	return 1234
-end function
+Function foo() As Integer
+	Return 1234
+End Function
 
-print foo
+Print foo
 %%
 
 {{fbdoc item="lang"}}

@@ -17,8 +17,11 @@ Specifies a default data type for a range of variable names
 	This will make ##sMessage## a ##[[KeyPgString String]]## since it starts with s.
 {{fbdoc item="filename" value="examples/manual/switches/defstr.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-defstr s
-dim sMessage
+
+#lang "fblite"
+
+DefStr s
+Dim sMessage
 %%
 
 {{fbdoc item="lang"}}

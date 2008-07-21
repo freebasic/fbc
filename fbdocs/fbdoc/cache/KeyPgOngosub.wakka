@@ -15,22 +15,24 @@ Calls a label based on an expression
 {{fbdoc item="filename" value="examples/manual/control/ongosub.bas"}}%%(freebasic)
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 choice = 3
-on choice gosub labela, labelb, labelc
-print "Good bye."
-end
+On choice GoSub labela, labelb, labelc
+Print "Good bye."
+End
 
 labela:
-print "choice a"
-return
+Print "choice a"
+Return
 
 labelb:
-print "choice b"
-return
+Print "choice b"
+Return
 
 labelc:
-print "choice c"
-return
+Print "choice c"
+Return
 %%
 
 {{fbdoc item="lang"}}

@@ -13,14 +13,16 @@ Specifies that string literals should be processed for C-like escape sequences b
 	{{fbdoc item="filename" value="examples/manual/switches/option-escape.bas"}}%%(freebasic)
 '' Compile with the "-lang fblite" compiler switch
 
-option escape
+#lang "fblite"
 
-print "Warning \a\t The path is:\r\n c:\\Freebasic\\Examples"
-print $"This string doesn't have expanded escape sequences: \r\n\t"
+Option Escape
+
+Print "Warning \a\t The path is:\r\n c:\\Freebasic\\Examples"
+Print $"This string doesn't have expanded escape sequences: \r\n\t"
 
 #include "crt.bi"
 
-dim as integer a = 2, b = 3
+Dim As Integer a = 2, b = 3
 printf("%d * %d = %d\r\n", a, b, a * b)
 %%
 

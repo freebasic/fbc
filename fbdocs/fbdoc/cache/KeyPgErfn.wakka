@@ -20,15 +20,17 @@ Error reporting function
 '' test.bas
 '' compile with fbc -exx -lang fblite test.bas
 
-sub Generate_Error
-  on error goto Handler
-  error 1000
-  exit sub
+#lang "fblite"
+
+Sub Generate_Error
+  On Error Goto Handler
+  Error 1000
+  Exit Sub
 Handler:
-  print "Error Function: "; *ERFN()
-  print "Error Module  : "; *ERMN()
-  resume Next
-end sub
+  Print "Error Function: "; *Erfn()
+  Print "Error Module  : "; *Ermn()
+  Resume Next
+End Sub
 
 Generate_Error
 %%

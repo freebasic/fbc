@@ -15,34 +15,40 @@ Statement to invoke a subroutine
 {{fbdoc item="filename" value="examples/manual/procs/callsub.bas"}}%%(freebasic)
 '' Compile with -lang qb or -lang fblite
 
-declare sub foobar(byval x as integer, byval y as integer)
-call foobar(35, 42)
+#lang "fblite"
 
-sub foobar(byval x as integer, byval y as integer)
-print x; y
-end sub
+Declare Sub foobar(ByVal x As Integer, ByVal y As Integer)
+Call foobar(35, 42)
+
+Sub foobar(ByVal x As Integer, ByVal y As Integer)
+Print x; y
+End Sub
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/callfunc.bas"}}%%(freebasic)
 '' Compile with -lang qb or -lang fblite
 
-function f ( ) as integer
-f = 42
-end function
+#lang "fblite"
 
-call f ' execute function f, but ignore the answer
+Function f ( ) As Integer
+f = 42
+End Function
+
+Call f ' execute function f, but ignore the answer
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/call-fwd.bas"}}%%(freebasic)
 '' Compile with -lang qb
 
-call mysub(15, 16) '' call "mysub" before it has been declared, or even mentioned.
+'$lang: "qb"
 
-sub mysub(byref a as integer, byref b as integer)
+Call mysub(15, 16) '' call "mysub" before it has been declared, or even mentioned.
+
+Sub mysub(ByRef a As Integer, ByRef b As Integer)
 	
-	print a, b
+	Print a, b
 	
-end sub
+End Sub
 %%
 
 {{fbdoc item="lang"}}

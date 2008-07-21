@@ -15,22 +15,25 @@ Symbols representing data in memory.
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/variables/variables.bas"}}%%(freebasic)
 ' compile with -lang qb or fblite
-DECLARE SUB PrintConstants()
 
-DIM FirstNumber AS INTEGER
-DIM SHARED SecondNumber as INTEGER
+'$lang: "qb"
+
+Declare Sub PrintConstants()
+
+Dim FirstNumber As Integer
+Dim Shared SecondNumber As Integer
 
 FirstNumber = 1
 SecondNumber = 2
 
 PrintConstants ()
-print FirstNumber, SecondNumber, ThirdNumber 'This will print 1 2 0
+Print FirstNumber, SecondNumber, ThirdNumber 'This will print 1 2 0
 
-SUB PrintConstants ()
-	dim ThirdNumber AS INTEGER
+Sub PrintConstants ()
+	Dim ThirdNumber As Integer
 	ThirdNumber = 3
-	print FirstNumber, SecondNumber, ThirdNumber 'This will print 0 2 3
-END SUB
+	Print FirstNumber, SecondNumber, ThirdNumber 'This will print 0 2 3
+End Sub
 %%
 
 {{fbdoc item="see"}}

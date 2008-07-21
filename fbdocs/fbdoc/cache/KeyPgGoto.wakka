@@ -23,10 +23,13 @@ there:
 
 {{fbdoc item="filename" value="examples/manual/control/gotonum.bas"}}%%(freebasic)
 '' Compile with -lang qb or fblite
-1 goto 3
-2 end
-3 print "Welcome!"
-4 goto 2
+
+'$lang: "qb"
+
+1 Goto 3
+2 End
+3 Print "Welcome!"
+4 Goto 2
 %%
 
 {{fbdoc item="lang"}}

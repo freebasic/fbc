@@ -12,19 +12,22 @@ Variable declaration modifier specifying visibility throughout a module
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/shared.bas"}}%%(freebasic)
 '' Compile with -lang qb or fblite
-declare sub MySub
-dim shared x as integer
-dim y as integer
+
+'$lang: "qb"
+
+Declare Sub MySub
+Dim Shared x As Integer
+Dim y As Integer
 
 x = 10
 y = 5
 
 MySub
 
-sub MySub
-	print "x is "; x 'this will report 10 as it is shared
-	print "y is "; y 'this will not report 5 because it is not shared
-end sub
+Sub MySub
+	Print "x is "; x 'this will report 10 as it is shared
+	Print "y is "; y 'this will not report 5 because it is not shared
+End Sub
 %%
 
 {{fbdoc item="diff"}}

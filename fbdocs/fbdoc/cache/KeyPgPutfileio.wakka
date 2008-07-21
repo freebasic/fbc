@@ -20,7 +20,7 @@ Writes data from a buffer to a file
 		Makes ##Put## write to file ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//amount//## is omitted, ##Put## just writes a single variable.
 
 {{fbdoc item="ret"}}
-	0 on success; nonzero on error.
+	0 on success; nonzero on error. "disk full" is considered as error, results in return code 3. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
 
 {{fbdoc item="desc"}}
 	Writes binary data from a buffer variable to a file.

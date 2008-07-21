@@ -11,9 +11,11 @@ Forces variables, objects and arrays to be declared before they are used
 {{fbdoc item="filename" value="examples/manual/switches/option-explicit.bas"}}%%(freebasic)
 '' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
-option explicit
+#lang "fblite"
 
-dim a as integer            ' 'a' must be declared..
+Option Explicit
+
+Dim a As Integer            ' 'a' must be declared..
 a = 1                       ' ..or this statement will fail to compile.
 %%
 	

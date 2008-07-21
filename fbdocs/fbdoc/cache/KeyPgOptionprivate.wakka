@@ -11,19 +11,21 @@ Specifies internal linkage by default for procedure declarations
 {{fbdoc item="filename" value="examples/manual/switches/option-private.bas"}}%%(freebasic)
 '' Compile with the "-lang fblite" compiler switch
 
-sub ProcWithExternalLinkage()
-   ' ...
-end sub
+#lang "fblite"
 
-option private
-
-sub ProcWithInternalLinkage()
+Sub ProcWithExternalLinkage()
    ' ...
-end sub
+End Sub
 
-public sub AnotherProcWithExternalLinkage()
+Option Private
+
+Sub ProcWithInternalLinkage()
    ' ...
-end sub
+End Sub
+
+Public Sub AnotherProcWithExternalLinkage()
+   ' ...
+End Sub
 %%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.

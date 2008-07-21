@@ -25,16 +25,18 @@ Writes text to the default printer.
 {{fbdoc item="filename" value="examples/manual/hardware/lprint.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 
+#lang "fblite"
+
 '' new-line
-LPRINT "Hello World!"
+LPrint "Hello World!"
 
 '' no new-line
-LPRINT "Hello"; "World"; "!";
-LPRINT
+LPrint "Hello"; "World"; "!";
+LPrint
 
 '' column separator
-LPRINT "Hello!", "World!"
-LPRINT CHR(12)
+LPrint "Hello!", "World!"
+LPrint Chr(12)
 %%
 
 {{fbdoc item="diff"}}

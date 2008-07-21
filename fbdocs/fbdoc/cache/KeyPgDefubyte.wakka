@@ -17,8 +17,11 @@ Specifies a default data type for a range of variable names
 	This will make ##uNumber## a ##[[KeyPgUbyte Ubyte]]## number since it's first letter starts with u.
 {{fbdoc item="filename" value="examples/manual/switches/defubyte.bas"}}%%(freebasic)
 '' Compile with -lang fblite
-defubyte u
-dim uNumber
+
+#lang "fblite"
+
+DefUByte u
+Dim uNumber
 %%
 
 {{fbdoc item="lang"}}

@@ -17,8 +17,11 @@ Specifies a default data type for a range of variable names
 	This will make ##iNumber## an ##[[KeyPgInteger Integer]]## number since it's first letter starts with i.
 {{fbdoc item="filename" value="examples/manual/switches/defint.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-defint i
-dim iNumber
+
+#lang "fblite"
+
+DefInt i
+Dim iNumber
 %%
 
 {{fbdoc item="lang"}}

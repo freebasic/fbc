@@ -19,23 +19,26 @@ Error handling statement to set the current error handler
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/local.bas"}}%%(freebasic)
 '' compile with -lang fblite or qb
-declare sub foo
+
+#lang "fblite"
+
+Declare Sub foo
 
 foo
-print "ok"
-sleep
+Print "ok"
+Sleep
 
-sub foo
-  dim errno as integer
-  on local error goto fail
-  open "xzxwz.zwz" for input as #1
-  on local error goto 0
-  exit sub
+Sub foo
+  Dim errno As Integer
+  On Local Error Goto fail
+  Open "xzxwz.zwz" For Input As #1
+  On Local Error Goto 0
+  Exit Sub
 fail:                  ' here starts the error handler
-  errno = err
-  print "Error "; errno      ' just print the error number
-  sleep
-end sub
+  errno = Err
+  Print "Error "; errno      ' just print the error number
+  Sleep
+End Sub
 %%
 {{fbdoc item="diff"}}
 	- The LOCAL clause comes from PDS 7.1. QB 4.5 does not allow local error handling.

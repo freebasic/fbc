@@ -17,10 +17,13 @@ Specifies a default data type for a range of variable names
 	This will make ##lNumber## a ##[[KeyPgLong Long]]## integer number since it starts with l.
 {{fbdoc item="filename" value="examples/manual/switches/deflng.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-deflng l
-dim lNumber ' implicit: As Long
 
-print len(lNumber) ' Displays 4, the number of bytes in a long.
+#lang "fblite"
+
+DefLng l
+Dim lNumber ' implicit: As Long
+
+Print Len(lNumber) ' Displays 4, the number of bytes in a long.
 %%
 
 {{fbdoc item="lang"}}

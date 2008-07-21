@@ -29,46 +29,54 @@ Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/threads/threadcreate.bas"}}%%(freebasic)
-dim shared terminate as integer =0
+Dim Shared terminate As Integer = 0
 
-sub mythread (param as any ptr)
-  dim a as integer, b as integer
-  while 1
-	b=0
-	while b<80
-	  print "*";
-	  a=0
-	   while a<&h7ffffff
-	     a+=1
-	  wend
-	  b+=1
+Sub mythread (param As Any Ptr)	
+	
+	dim as double t = timer
+	While( 1 )
+		
+		Print "*";
+		
+		'' pause for .1 second
+		while( abs( timer - t ) < .1 )
+			sleep 1, 1
+		wend
+		t = timer
+		
+		If terminate=1 Then Exit Sub
+	Wend
+	
+End Sub
+
+Dim thread As Any Ptr
+Dim b As Integer
+dim as double t
+
+Print "Main program prints dots"
+Print "Thread prints asterisks"
+thread = ThreadCreate( @mythread, 0 )
+Print "Thread launched";
+
+While b < 30
+	
+	Print ".";
+	
+	'' pause for .1 second
+	while( abs( timer - t ) < .1 )
+		sleep 1, 1
 	wend
-	if terminate=1 then exit sub
-  wend
-end sub
+	t = timer
+	
+	b += 1
+	
+Wend
 
-dim thread as any ptr
-dim a as integer, b as integer
-
-print "Main program prints dots"
-print "Thread prints asterisks"
-thread=threadcreate(@mythread,0)
-print "Thread launched";
-b=0
-  while b<80
-
-	a=0
-	 while a<&h3
-	    print ".";
-	   a+=1
-	wend
-	b+=1
-  wend
 terminate=1
-print "Terminate launched";
-threadwait (thread)
-print "Thread terminated"
-sleep
+Print "Terminate launched";
+ThreadWait (thread)
+Print "Thread terminated"
+Sleep
 %%
 
 {{fbdoc item="lang"}}

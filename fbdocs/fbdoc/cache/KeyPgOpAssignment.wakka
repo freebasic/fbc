@@ -44,8 +44,11 @@ end 0
 
 {{fbdoc item="filename" value="examples/manual/operator/assign-let.bas"}}%%(freebasic)
 ' compile with -lang fblite or qb
-dim i as integer
-LET i = 300 ' <-alternate syntax
+
+#lang "fblite"
+
+Dim i As Integer
+Let i = 300 ' <-alternate syntax
 %%
 
 {{fbdoc item="lang"}}

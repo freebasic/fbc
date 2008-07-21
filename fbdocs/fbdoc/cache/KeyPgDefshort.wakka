@@ -17,8 +17,11 @@ Specifies a default data type for a range of variable names
 	This will make ##sNumber## a ##[[KeyPgShort Short]]## number since it's first letter starts with s.
 {{fbdoc item="filename" value="examples/manual/switches/defshort.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-defshort s
-dim sNumber
+
+#lang "fblite"
+
+DefShort s
+Dim sNumber
 %%
 
 {{fbdoc item="lang"}}

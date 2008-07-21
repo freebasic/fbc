@@ -21,15 +21,18 @@ Control flow statement to return from a procedure or ##[[KeyPgGosub Gosub]]##.
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/return.bas"}}%%(freebasic)
 '' Compile with -lang qb
-print "Let's Gosub!"
-gosub MyGosub
-print "Back from Gosub!"
-sleep
-end
+
+'$lang: "qb"
+
+Print "Let's Gosub!"
+GoSub MyGosub
+Print "Back from Gosub!"
+Sleep
+End
 
 MyGosub:
-print "In Gosub!"
-return
+Print "In Gosub!"
+Return
 %%
 
 {{fbdoc item="filename" value="examples/manual/control/return2.bas"}}%%(freebasic)

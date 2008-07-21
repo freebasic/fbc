@@ -9,7 +9,7 @@ Set the target platform for cross compilation
 		The target platform. (See below)
 
 {{fbdoc item="desc"}}
-	The ##-target## compiler option is used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries cross compilation tools must be installed in the /lib/ and /bin/ directories for cross compilation to work.
+	The ##-target## compiler option is used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed in the /lib/ and /bin/ directories for cross compilation to work.
 
 	This option is only available if the compiler was built with cross compilation support.
 

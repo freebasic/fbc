@@ -12,6 +12,9 @@ Metacommand to change the way arrays are allocated
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/static.bas"}}%%(freebasic)
 ' compile with -lang fblite or qb
+
+#lang "fblite"
+
 '$dynamic
 Dim a(100)   '<<this array will be variable-length
 '$static

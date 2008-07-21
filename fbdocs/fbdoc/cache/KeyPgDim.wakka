@@ -52,16 +52,18 @@ dim px as double ptr = @x
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_2.bas"}}%%(freebasic)
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 '' All variables beginning with A through N default to the INTEGER data type
 '' All other variables will default to the SINGLE data type
-DEFINT I-N
+DefInt I-N
 
 '' I and J are INTEGERs
 '' X and Y are SINGLEs
 '' T$ is STRING
 '' D is DOUBLE
 
-DIM I, J, X, Y, T$, D AS DOUBLE
+Dim I, J, X, Y, T$, D As Double
 %%
 
 {{fbdoc item="section" value="Arrays"}}
@@ -130,6 +132,8 @@ Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}
 
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_7.bas"}}%%(freebasic)
 '' Compile with -lang qb or fblite
+
+'$lang: "qb"
 
 '' A string variable using the $ type suffix
 Dim strVariable$

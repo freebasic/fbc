@@ -13,17 +13,19 @@ Enables support for ##[[KeyPgGosub Gosub]]## and ##[[KeyPgOngosub On Gosub]]##.
 	{{fbdoc item="filename" value="examples/manual/switches/option-gosub.bas"}}%%(freebasic)
 '' Compile with the "-lang fblite" compiler switch
 
-'' turn on gosub support
-option gosub
+#lang "fblite"
 
-gosub there
+'' turn on gosub support
+Option GoSub
+
+GoSub there
 backagain:
-	print "backagain"
-	end
+	Print "backagain"
+	End
 
 there:
-	print "there"
-	return
+	Print "there"
+	Return
 %%
 
 {{fbdoc item="lang"}}

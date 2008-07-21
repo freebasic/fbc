@@ -12,12 +12,15 @@ Control flow statement to use a section of code and return.
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/gosub.bas"}}%%(freebasic)
 '' Compile with -lang qb
-gosub message
-end
+
+'$lang: "qb"
+
+GoSub message
+End
 
 message:
-print "Welcome!"
-return
+Print "Welcome!"
+Return
 %%
 
 {{fbdoc item="lang"}}

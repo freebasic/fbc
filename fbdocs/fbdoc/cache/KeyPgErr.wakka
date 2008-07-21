@@ -23,14 +23,17 @@ Error handling function to return the error number of the last error
 An example using QBasic style error handling (compile with -ex option)
 {{fbdoc item="filename" value="examples/manual/error/err1.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-on error goto Error_Handler
-error 150
-end
+
+#lang "fblite"
+
+On Error Goto Error_Handler
+Error 150
+End
 
 Error_Handler:
   n = Err
-  print "Error #"; n
-  resume next
+  Print "Error #"; n
+  Resume Next
 %%
 An example using inline error handling 
 {{fbdoc item="filename" value="examples/manual/error/err2.bas"}}%%(freebasic)

@@ -11,28 +11,30 @@ Specifies parameters are to be passed by value by default in procedure declarati
 {{fbdoc item="filename" value="examples/manual/switches/option-byval.bas"}}%%(freebasic)
 '' compile with the "-lang fblite" compiler switch
 
-sub TestDefaultByref( a as integer )
+#lang "fblite"
+
+Sub TestDefaultByref( a As Integer )
   '' change the value
   a = a * 2
-end sub
+End Sub
 
-option byval
+Option ByVal
 
-sub TestDefaultByval( a as integer )
+Sub TestDefaultByval( a As Integer )
   a = a * 2
-end sub
+End Sub
 
-dim a as integer = 1
+Dim a As Integer = 1
 
-print "a = "; a
+Print "a = "; a
 TestDefaultByref( a )
-print "After TestDefaultByref : a = "; a
-print
+Print "After TestDefaultByref : a = "; a
+Print
 
-print "a = "; a
+Print "a = "; a
 TestDefaultByval( a )
-print "After TestDefaultByval : a = "; a
-print
+Print "After TestDefaultByval : a = "; a
+Print
 %%
 
 {{fbdoc item="lang"}}

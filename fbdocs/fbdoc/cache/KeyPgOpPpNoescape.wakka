@@ -21,19 +21,21 @@ Explicity indicates that a string literal should not be processed for escape seq
 	{{fbdoc item="filename" value="examples/manual/prepro/noescape.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 
-print "Default"
-print "Backslash  : \\"
-print !"Backslash !: \\"
-print $"Backslash $: \\"
-print
+#lang "fblite"
 
-option escape
+Print "Default"
+Print "Backslash  : \\"
+Print !"Backslash !: \\"
+Print $"Backslash $: \\"
+Print
 
-print "Option Escape"
-print "Backslash  : \\"
-print !"Backslash !: \\"
-print $"Backslash $: \\"
-print
+Option Escape
+
+Print "Option Escape"
+Print "Backslash  : \\"
+Print !"Backslash !: \\"
+Print $"Backslash $: \\"
+Print
 
 '' OUTPUT:
 

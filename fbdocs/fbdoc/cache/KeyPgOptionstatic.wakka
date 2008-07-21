@@ -11,13 +11,15 @@ Reverts to default array declaration behavior
 {{fbdoc item="filename" value="examples/manual/switches/option-static.bas"}}%%(freebasic)
 '' Compile with the "-lang fblite" compiler switch
 
-option dynamic
+#lang "fblite"
 
-dim foo(100) as integer			' declares a variable-length array
+Option Dynamic
 
-option static
+Dim foo(100) As Integer			' declares a variable-length array
 
-dim bar(100) as integer			' declares a fixed-length array
+Option Static
+
+Dim bar(100) As Integer			' declares a fixed-length array
 %%
 
 {{fbdoc item="lang"}} 

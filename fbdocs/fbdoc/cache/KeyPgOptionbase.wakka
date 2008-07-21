@@ -17,12 +17,14 @@ Specifies a default lower bound for array declarations
 {{fbdoc item="filename" value="examples/manual/check/KeyPgOptionbase_1.bas"}}%%(freebasic)
 '' Compile with the "-lang qb" or "-lang fblite" compiler switches
 
-dim foo(10) as integer      ' declares an array with indices 0-10
+#lang "fblite"
 
-option base 5
+Dim foo(10) As Integer      ' declares an array with indices 0-10
 
-dim bar(15) as integer      ' declares an array with indices 5-15
-dim baz(0 to 4) as integer  ' declares an array with indices 0-4
+Option Base 5
+
+Dim bar(15) As Integer      ' declares an array with indices 5-15
+Dim baz(0 To 4) As Integer  ' declares an array with indices 0-4
 %%
 
 {{fbdoc item="lang"}}

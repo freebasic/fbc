@@ -18,26 +18,29 @@ Reads one line of text from a file
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/lineinput.bas"}}%%(freebasic)
 ' compile with -lang qb
+
+'$lang: "qb"
+
 Dim Filehandle As Integer
 Dim txt As String
 	
 On Error Goto HandleErrors
 	
-Filehandle = Freefile
+Filehandle = FreeFile
 Open "test_text_file.txt" For Input As #filehandle
 
-If Lof(filehandle) > 0 Then
+If LOF(filehandle) > 0 Then
 	    Line Input #filehandle, txt
 Else
 	    Goto HandleErrors
 End If
 
 Close #filehandle
-print "The first line of test_text_file.txt is:"
-print txt
+Print "The first line of test_text_file.txt is:"
+Print txt
 	
 HandleErrors:
-print "Error."
+Print "Error."
 Resume Next
 
 %%

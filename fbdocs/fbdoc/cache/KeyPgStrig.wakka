@@ -25,6 +25,8 @@ Reads button state from attached gaming devices
 {{fbdoc item="filename" value="examples/manual/input/strig.bas"}}%%(freebasic)
 '' Compile with -lang qb
 
+'$lang: "qb"
+
 Screen 12
 
 Do

@@ -17,10 +17,13 @@ Specifies a default data type for a range of variable names
 	This will make ##aNum## a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
 {{fbdoc item="filename" value="examples/manual/switches/defdbl.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
-defdbl a-d
-dim aNum 'implicit: As Double
 
-print len(aNum) ' Prints 8, the number of bytes in a double.
+#lang "fblite"
+
+DefDbl a-d
+Dim aNum 'implicit: As Double
+
+Print Len(aNum) ' Prints 8, the number of bytes in a double.
 %%
 
 {{fbdoc item="lang"}}

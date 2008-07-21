@@ -25,6 +25,9 @@ Dim Foo As FooType
 
 {{fbdoc item="filename" value="examples/manual/meta/include.bas"}}%%(freebasic)
 '' compile with -lang fblite or qb
+
+#lang "fblite"
+
 '' main.bas file
 
 '$INCLUDE: "header.bi"

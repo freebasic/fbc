@@ -17,8 +17,11 @@ Specifies a default data type for a range of variable names
 	This will make ##lNumber## a ##[[KeyPgLongint Longint]]## number since it's first letter starts with l.
 {{fbdoc item="filename" value="examples/manual/switches/deflongint.bas"}}%%(freebasic)
 '' Compile with -lang fblite
+
+#lang "fblite"
+
 deflongint l
-dim lNumber
+Dim lNumber
 %%
 
 {{fbdoc item="lang"}}

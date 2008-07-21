@@ -25,7 +25,7 @@ Currently, it is assumed that users are testing with at least the latest stable 
 	If the bug hasn't been reported, fixed or otherwise addressed, then please submit a bug report to the FreeBASIC [[http://sourceforge.net/tracker/?group_id=122342&atid=693196 bug-tracker]] on sourceforge.net - you will need to register for a free account there. Click on the "Login and Submit New" link and be sure to provide the following information:
 	
 		- //the appropriate category.// A drop-down box is provided to select what part of the project you're reporting on, e.g., the compiler or gfxlib2 (graphics runtime library).
-		- //an appropriate summary.// This should be a short, but concise sentences that summarizes what the bug is doing. Please be as specific as you can within the space allowed. A good summary might be, "Operator Let taking a byval arg of it's own type crashes."
+		- //an appropriate summary.// This should be a short, but concise sentenc that summarizes what the bug is doing. Please be as specific as you can within the space allowed. A good summary might be, "Operator Let taking a byval arg of its own type crashes."
 		- //an appropriate description.// This should include a small testcase with enough (but no more) source code to reproduce the bug, including comments that detail your expected results or behavior and your actual results or behavior. Also include your operating system and the command-line options and switches used when compiling the testcase, and any other relavent info - e.g., if you're submitting a bug in the graphics library (##//gfxlib2//##), it might be helpful to include the make and model of your graphics card(s).
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
