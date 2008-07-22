@@ -8,8 +8,7 @@
 
 #include once "regex.bi"
 #include once "crt.bi"
-#include once "../fbdoc/hash.bi"
-#include once "../fbdoc/list.bi"
+#include once "hash.bi"
 #include once "file.bi"
 
 #define FALSE 0

@@ -45,7 +45,7 @@ FreeBASIC_src.nsi: template.nsi replace.conf repl_src.conf $(BUILD_APPS) $(INST_
 start_shell.exe: start_shell.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
-makescript.exe: makescript.bas ../fbdoc/hash.bas
+makescript.exe: makescript.bas hash.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 Setup.exe: FreeBASIC.nsi
