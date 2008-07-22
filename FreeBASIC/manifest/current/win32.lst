@@ -766,6 +766,7 @@ examples/manual/memory/swap.bas
 examples/manual/meta/dynamic.bas
 examples/manual/meta/header.bi
 examples/manual/meta/include.bas
+examples/manual/meta/lang.bas
 examples/manual/meta/static.bas
 examples/manual/misc/any-param.bas
 examples/manual/misc/any.bas
@@ -874,6 +875,7 @@ examples/manual/prepro/ifdef.bas
 examples/manual/prepro/ifndef.bas
 examples/manual/prepro/inclib.bas
 examples/manual/prepro/include.bas
+examples/manual/prepro/lang.bas
 examples/manual/prepro/libpath.bas
 examples/manual/prepro/line.bas
 examples/manual/prepro/macro.bas
