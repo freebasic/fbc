@@ -1,4 +1,4 @@
-.TH FBC 1 "Apr 16, 2008" "Compiler Version 0.20.0b" "FreeBASIC Compiler"
+.TH FBC 1 "Jul 23, 2008" "Compiler Version 0.20.0b" "FreeBASIC Compiler"
 .SH NAME
 fbc \- the FreeBASIC compiler
 .SH DESCRIPTION
@@ -23,6 +23,9 @@ Add a source file to compilation
 .TP
 \fB\-c\fR
 Compile only, do not link
+.TP
+\fB\-C\fR
+Do not delete the object files(s)
 .TP
 \fB\-d \fIname\fR[\fB=\fIval\fR]
 Add a preprocessor define
@@ -94,6 +97,9 @@ Set the compiler prefix path
 Enable function profiling
 .TP
 \fB\-r\fR
+Write asm files(s) only, do not compile or link
+.TP
+\fB\-R\fR
 Do not delete the asm file(s)
 .TP
 \fB\-v\fR
