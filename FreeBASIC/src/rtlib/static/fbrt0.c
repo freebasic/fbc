@@ -61,25 +61,15 @@ static void fb_hDoExit( void )
 	fb_hRtExit( );
 }
 
-#ifdef TARGET_DARWIN
-
-/* FIXME: this does not actually guarantee execution order between object modules,
-   but darwin doesn't support .?tors.(number) sections */
-
-__attribute__((constructor)) static void priorityhDoInit( void )
-{
-	fb_hDoInit( );
-}
-
-__attribute__((destructor)) static void priorityhDoExit( void )
-{
-	fb_hDoExit( );
-}
-
-#else
-
 /* This puts the init/exit global ctor/dtor for the rtlib in the sorted ctors/dtors
    section.  A named section of .?tors.65435 = Priority(100) */
+
+#ifdef TARGET_DARWIN
+
+static void * priorityhDoInit __attribute__((section(".ctors.65435,"), used)) = fb_hDoInit;
+static void * priorityhDoExit __attribute__((section(".dtors.65435,"), used)) = fb_hDoExit;
+
+#else
 
 static void * priorityhDoInit __attribute__((section(".ctors.65435"), used)) = fb_hDoInit;
 static void * priorityhDoExit __attribute__((section(".dtors.65435"), used)) = fb_hDoExit;
