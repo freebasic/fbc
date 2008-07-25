@@ -818,9 +818,8 @@ Credits (in alphabetic order):
     - Main compiler developer.
 
   o Angelo Mottola (a.mottola[at]libero.it):
-    - Ported FreeBASIC to Linux; port maintainer.
+    - Ported FreeBASIC to Linux.
     - Developer of GFXLib2.
-    - Added profiling support.
     - Added built-in threads, dynlib support and I/O ports access support.
     - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
@@ -836,20 +835,31 @@ Credits (in alphabetic order):
   o Jeff Marshall (coder[at]execulink.com):
     - Improved and fixed the printer support in all platforms.
     - Added compiler tests and improved the document translator.
+    - Helped in adding the fblite dialect.
+    - Miscellaneous fixes and improvements.
 
   o Mark Junker (mjscod[at]gmx.de):
     - Added support for file systems like SCR, LPTx, COM, etc.
     - Added printer support.
     - Developer of the FB runtime-lib extended (libfbx).
-    - Added the automated runtime-lib and compiler tests.
+    - Added the automated runtime-lib and compiler tests (later replaced by CUnit unit testing).
     - Wrote the Windows installer scripts.
     - Many runtime library fixes and improvements.
 
+  o Matthew Fearnley
+    - Helped in adding the fblite dialect.
+    - Miscellaneous fixes and improvements.
+
   o Ruben Rodriguez (rubentbstk[at]gmail.com):
+    - Many compiler improvements and bug fixes.
     - Corrected the errors in English in readme.txt and migrating.txt, plus
       the messages in compiler/error.bas.
     - Added the __PATH__ intrinsic define, and made OFFSETOF() work inside inline
       asm blocks.
+
+  o Simon Nash
+    - Implemented the AndAlso/OrElse short-circuit operators. 
+    - Many compiler improvements and bug fixes. 
 
 
   Contributors:
@@ -864,6 +874,7 @@ Credits (in alphabetic order):
     - Translated the OpenGL Extensions header (later replaced by the SWIG 
       FB wrapper version).
     - Wrote the glext example at the examples/GL dir.
+    - Added SSE/SSE2 code generation for floating point math.
 
   o Claudio Tinivella (tinycla[at]yahoo.it):
     - Translated from C all the Gtk tutorials at the examples/Gtk/Tutorials dir.
