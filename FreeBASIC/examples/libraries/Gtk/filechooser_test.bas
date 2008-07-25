@@ -22,7 +22,7 @@
     	dim as zstring ptr filename
 
     	filename = gtk_file_chooser_get_filename( GTK_FILE_CHOOSER( dialog ) )
-    	print "File name: """; *filename; """
+    	print "File name: """; *filename; """"
     	g_free( filename )
   	end if
 

@@ -3,17 +3,13 @@
 	print "Application start"
 
 sub do_init constructor
-    print "Before main"
+	print "Before main"
 	v = "from_ctor"
 end sub
 
 sub do_exit destructor
-    print "Bye !"
-    sleep
+	print "Bye !"
+	sleep
 end sub
 
-	if( v <> "from_ctor" ) then
-    	ASSERT( false )
-	end if
-	
-	
+	ASSERT( v = "from_ctor" )
