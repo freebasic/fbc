@@ -250,7 +250,6 @@ examples/libraries/freetype/ft2_print.bas
 examples/libraries/freetype/ft2_test.bas
 examples/libraries/libxml/read1.bas
 examples/libraries/libxml/test.xml
-examples/libraries/mini/example.bas
 examples/libraries/networking/http-get.bas
 examples/libraries/pdflib/logo.gif
 examples/libraries/pdflib/pdflib_test.bas
@@ -2053,7 +2052,6 @@ inc/lzo/lzo1y.bi
 inc/lzo/lzo1z.bi
 inc/lzo/lzoconf.bi
 inc/lzo/lzodefs.bi
-inc/mini.bi
 inc/mxml.bi
 inc/mysql/my_alloc.bi
 inc/mysql/mysql.bi

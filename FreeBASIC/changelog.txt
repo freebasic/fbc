@@ -14,6 +14,7 @@ Version 0.20.0 Beta:
 - DIR may now except a byref [u]integer for out_attrib (byval integer ptrs are still allowed) (counting_pine)
 - SCREENLOCK/SCREENUNLOCK now keep a reference count internally to allow them to be used inside functions without unlocking a global lock (DrV)
 - linux: only specify linker script path for standalone builds (fixes lib path problems on x86-64) (DrV)
+- removed mini.bi, example, and wrapper (jeffm)
 
 [added]
 - #lang directive and $lang metacommand to set compiler dialect from source code (jeffm)
