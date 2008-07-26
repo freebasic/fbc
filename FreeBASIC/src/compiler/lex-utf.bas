@@ -253,14 +253,14 @@ end function
 sub lexReadUTF8( )
 	dim as integer chars
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	chars = hUTF8ToChar( )
 
-#elseif defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
+#elseif defined(HOST_WIN32) or defined(HOST_CYGWIN)
 	chars = hUTF8ToUTF16LE( )
 
 #else
-# ifdef TARGET_X86
+# ifdef HOST_LITTLE_ENDIAN
 	chars = hUTF8ToUTF32LE( )
 # else
 	chars = hUTF8ToUTF32BE( )
@@ -391,14 +391,14 @@ end function
 sub lexReadUTF16LE( ) static
 	dim as integer chars
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	chars = hUTF16LEToChar( )
 
-#elseif defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
+#elseif defined(HOST_WIN32) or defined(HOST_CYGWIN)
 	chars = hUTF16LEToUTF16LE( )
 
 #else
-# ifdef TARGET_X86
+# ifdef HOST_LITTLE_ENDIAN
 	chars = hUTF16LEToUTF32LE( )
 # else
 	chars = hUTF16LEToUTF32BE( )
@@ -528,14 +528,14 @@ end function
 sub lexReadUTF16BE( ) static
 	dim as integer chars
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	chars = hUTF16BEToChar( )
 
-#elseif defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
+#elseif defined(HOST_WIN32) or defined(HOST_CYGWIN)
 	chars = hUTF16BEToUTF16LE( )
 
 #else
-# ifdef TARGET_X86
+# ifdef HOST_LITTLE_ENDIAN
 	chars = hUTF16BEToUTF32LE( )
 # else
 	chars = hUTF16BEToUTF32BE( )
@@ -654,14 +654,14 @@ end function
 sub lexReadUTF32LE( )
 	dim as integer chars
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	chars = hUTF32LEToChar( )
 
-#elseif defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
+#elseif defined(HOST_WIN32) or defined(HOST_CYGWIN)
 	chars = hUTF32LEToUTF16LE( )
 
 #else
-# ifdef TARGET_X86
+# ifdef HOST_LITTLE_ENDIAN
 	chars = hUTF32LEToUTF32LE( )
 # else
 	chars = hUTF32LEToUTF32BE( )
@@ -780,14 +780,14 @@ end function
 sub lexReadUTF32BE( )
 	dim as integer chars
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	chars = hUTF32BEToChar( )
 
-#elseif defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
+#elseif defined(HOST_WIN32) or defined(HOST_CYGWIN)
 	chars = hUTF32BEToUTF16LE( )
 
 #else
-# ifdef TARGET_X86
+# ifdef HOST_LITTLE_ENDIAN
 	chars = hUTF32BEToUTF32LE( )
 # else
 	chars = hUTF32BEToUTF32BE( )
