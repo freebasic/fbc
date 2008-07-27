@@ -7,12 +7,18 @@ FreeBASIC Dialects
    Starting with version 0.18.3b the -lang qb dialect has been further 
    restricted to only allow what would have been allowed in QuickBASIC.
 
+   In version 0.18.4b the -lang fblite dialect was added, intended to 
+   replace -lang deprecated in future.
+
+   In version 0.20.0b the #lang directive and $Lang metacommand were added 
+   to specify a dialect from source.
+
       +------------+----------------------------------------------------------------------------+
       |-lang option|description                                                                 |
       |fb          |FreeBASIC compatibility (default)                                           |
       |qb          |qbasic compatibility                                                        |
       |fblite      |FreeBASIC language compatibility, with a more QBASIC-compatible coding style|
-      |deprecated  |previous fbc version compatibility                                          |
+      |deprecated  |compatibility with FB 0.16                                                  |
       +------------+----------------------------------------------------------------------------+
 
    The -lang option was needed to allow FreeBASIC to support 
@@ -33,10 +39,10 @@ FreeBASIC Dialects
    in the future, and it's likely to disappear when FreeBASIC reaches a 
    non-beta release.
 
-   For programmers who want to access some of FB's newer features, but want 
-   to retain a more QBASIC-friendly programming style, use the -lang fblite 
-   option.  This dialect will not undergo significant changes in future, 
-   but will continue to be maintained and supported.
+   For programmers who want to access some of FreeBASIC's newer features, 
+   but want to retain a more QBASIC-friendly programming style, use the 
+   -lang fblite option.  This dialect will not undergo significant changes 
+   in the future, but will continue to be maintained and supported.
    This option is also the most compatible with sources that were made 
    using older versions of FreeBASIC.
 
@@ -85,6 +91,8 @@ FreeBASIC Dialects
         arrays declarations.
       * Instead of Option Private, use Private to declare procedures with 
         internal linkage.
+      * Instead of Option Gosub and Option Nogosub, use procedures with Sub
+        or Function.
 
    6) periods in symbol names 
       * Use namespaces instead.
@@ -137,7 +145,13 @@ FreeBASIC Dialects
 
 -lang fblite
     
-   Supported: Anything allowed in the -lang deprecated dialect, but:
+   Supported: Anything allowed in the -lang deprecated dialect, plus..
+
+   1) GOSUB/RETURN
+       - Use Option Gosub to enable.  This will disable RETURN from exiting 
+   a procedure, due to ambiguity.
+
+   Not supported:
 
    1) Scope blocks
       * All variables are given procedure scope.  Explicit Scope blocks 
@@ -178,9 +192,6 @@ FreeBASIC Dialects
       * All variables are moved to the procedure scope (like in QuickBASIC
         ), making initializing local variables too difficult to support.
 
-   8) Any data type or function not present in QuickBASIC 
-      * No BYTE/SHORT/LONGINT/WSTRING, no pointers, no SHL/SHR, no 
-      IMAGECREATE/SCREENRES etc etc etc. 
 
 This file converted from:
    http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects
