@@ -82,6 +82,7 @@ enum COMMAND_ID
 	cmd_namefix
 	cmd_killref
 	cmd_move
+	cmd_addlang
 
 	cmd_count
 end enum
@@ -102,6 +103,7 @@ declare function cmd_getex_proc() as integer
 declare function cmd_namefix_proc() as integer
 declare function cmd_killref_proc() as integer
 declare function cmd_move_proc() as integer
+declare function cmd_addlang_proc() as integer
 
 dim shared commands( 0 to cmd_count - 1 ) as COMMAND_TYPE = { _
 	( @"",         0                            , @cmd_none_proc,      @""                      , @"" ), _
@@ -119,7 +121,8 @@ dim shared commands( 0 to cmd_count - 1 ) as COMMAND_TYPE = { _
 	( @"getex",    opt_get_pages                , @cmd_getex_proc,     @"[pages...] [@pagelist]", @"extract unnamed examples" ), _
 	( @"namefix",  opt_do_scan                  , @cmd_namefix_proc,   @"[dirs...]"             , @"fix embedded filenames" ), _
 	( @"killref",  opt_do_scan                  , @cmd_killref_proc,   @"[dirs...]"             , @"delete embedded $$REF: magic" ), _
-	( @"move",     opt_do_scan_incoming         , @cmd_move_proc,      @""                      , @"move files from incoming to other path/name" ) _
+	( @"move",     opt_do_scan_incoming         , @cmd_move_proc,      @""                      , @"move files from incoming to other path/name" ), _
+	( @"addlang",  opt_do_scan or opt_do_pageids, @cmd_addlang_proc,   @"[dirs...]"             , @"add #lang" ) _
 }
 
 '' !!! FIXME !!! - these should not be fixed size
@@ -671,6 +674,91 @@ function cmd_move_proc() as integer
 
 	for i = 1 to nfiles
 		DoMove( base_dir & sample_dir, files(i), base_dir & sample_dir )
+	next
+
+	function = TRUE
+
+end function
+
+function cmd_addlang_proc() as integer
+
+	dim i as integer = any, j as integer = any
+	dim as string text, x
+	dim as buffer b1
+
+
+	for i = 1 to nfiles
+		
+		dim docheck as integer = TRUE
+		dim changed as integer = FALSE
+
+		x = ReadExampleFile( base_dir & sample_dir, refs(i).filename, TRUE )
+
+		b1.text = x
+
+		if( x > "" ) then
+			'' have #lang/$lang already?
+
+			for j = 1 to b1.count
+				x = b1.item(j)
+
+				if( instr( x, "$lang" ) > 0 ) then
+					docheck = FALSE
+					if( trim( b1.item(j+1) ) <> "" ) then
+						b1.insert( j + 1, "" )
+						changed = TRUE
+					end if
+					exit for
+				end if
+
+				if( instr( x, "#lang" ) > 0 ) then
+					docheck = FALSE
+					if( trim( b1.item(j+1) ) <> "" ) then
+						b1.insert( j + 1, "" )
+						changed = TRUE
+					end if
+					exit for
+				end if
+
+			next
+		end if
+
+		if( docheck ) then
+
+			for j = 1 to b1.count
+				x = b1.item(j)
+
+				if instr( lcase(x), "-lang deprecated" ) > 0 then
+					changed = TRUE
+					b1.insert( j + 1, "#lang ""deprecated""" )
+					b1.insert( j + 1, "" )
+					exit for
+
+				elseif instr( lcase(x), "-lang fblite" ) > 0 then
+					changed = TRUE
+					b1.insert( j + 1, "#lang ""fblite""" )
+					b1.insert( j + 1, "" )
+					exit for
+
+				elseif instr( lcase(x), "-lang qb" ) > 0 then
+					changed = TRUE
+					b1.insert( j + 1, "'$lang: ""qb""" )
+					b1.insert( j + 1, "" )
+					exit for
+
+				end if
+
+			next
+
+		end if
+
+		if( changed ) then
+			text = b1.text()
+			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "" ) = TRUE ) then
+				''
+			end if
+		end if
+
 	next
 
 	function = TRUE
