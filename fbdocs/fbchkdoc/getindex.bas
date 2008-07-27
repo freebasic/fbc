@@ -33,104 +33,23 @@
 using fb
 using fbdoc
 
+#include "crt/stdlib.bi"
+#include "crt/string.bi"
+
 '' temporary files
 const def_html_file = "PageIndex.html"
 const def_text_file = "PageIndex0.txt"
 
+''
+sub RemoveHTMLtags _
+	( _
+		byref sBody as string _
+	)
 
-'' --------------------------------------------------------
-'' MAIN
-'' --------------------------------------------------------
+	'' remove HTML tags	
 
-dim as string wiki_url, web_wiki_url, dev_wiki_url
-dim as string sPage, sBody
-dim as integer i = 1
-
-sPage = "PageIndex"
-
-if( command(i) = "" ) then
-	print "getindex {server}"
-	print
-	print "server:"
-	print "   -web       get index from the web server (in " + default_optFile + ")"
-	print "   -dev       get index from the development server (in " + default_optFile + ")"
-	print "   -url URL   get index from URL"
-	print
-	end 0
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-	end if
-end scope
-
-while( command(i) > "" )
-	if( left( command(i), 1 ) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-web+"
-			wiki_url = web_wiki_url
-		case "-dev", "-dev+"
-			wiki_url = dev_wiki_url
-		case "-url"
-			i += 1
-			wiki_url = command(i)
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
-	end if
-	i += 1
-wend
-
-if( len( wiki_url ) = 0 ) then
-	print "wiki_url not set."
-	end 1
-end if
-
-'' connect to the wiki and get PageIndex as HTML
-scope
-	dim as CWikiCon ptr wikicon = NULL
-
-	wikicon = new CWikiCon( wiki_url )
-	if wikicon = NULL then
-		print "Unable to create connection " + wiki_url
-		end 1
-	end if
-
-	print "URL: "; wiki_url
-
-	print "Loading '" + sPage + "': ";
-	if( wikicon->LoadPage( sPage, FALSE, FALSE, sBody ) = FALSE ) then
-		print "Error"
-	else
-		print "OK"
-/'
-		'' DEBUG
-		dim as integer h = freefile
-		open def_html_file for output as #h
-		print #h, sBody
-		close #h
-'/
-	end if
-
-	delete wikicon
-end scope
-
-'' remove HTML tags	
-scope
 	dim as string txt, html
-	dim as integer n, b = 0, j = 1, atag = 0
+	dim as integer n, b = 0, j = 1, atag = 0, i
 	n = len(sBody)
 	txt = ""
 
@@ -214,10 +133,15 @@ scope
 	print #h, txt
 	close #h
 
-end scope
+end sub
 
-'' Extract page names and write final output
-scope
+''
+sub ExtractPageNames _
+	( _
+	)
+
+	'' Extract page names and write final output
+
 	dim as integer b = 0, i, h1, h2
 	dim as string x
 
@@ -256,6 +180,169 @@ scope
 
 	kill def_text_file
 
+end sub
+
+''
+function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as integer
+	function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )
+end function
+
+''
+sub ScanCacheDir _
+	( _
+		byref p as string _
+	)
+
+	dim as string d, pages(1 to 2000)
+	dim as integer i, h, n = 0
+	dim as zstring ptr zpage(1 to 2000)
+	
+	d = dir( p & "*.wakka" )
+	while( d > "" )
+		i = instrrev( d, "." )
+		if( i > 0 ) then
+			d = left( d, i-1 )
+			if( len(d) > 0 ) then
+				n += 1
+				pages(n) = d
+				zpage(n) = strptr(pages(n))
+			end if
+		end if
+		d = dir( )
+	wend
+
+	'' Sort
+	qsort( @zpage(1), n, sizeof(zstring ptr), procptr(cmpPageName) )
+
+	h = freefile
+	open def_index_file for output as #h
+	for i = 1 to n
+		print #h, *zpage(i)
+	next
+	close #h
+
+end sub
+
+'' --------------------------------------------------------
+'' MAIN
+'' --------------------------------------------------------
+
+dim as string wiki_url, web_wiki_url, dev_wiki_url
+dim as string def_cache_dir, web_cache_dir, dev_cache_dir
+dim as string sPage, sBody, cache_dir
+dim as integer i = 1
+dim as integer blocal = FALSE
+
+sPage = "PageIndex"
+
+if( command(i) = "" ) then
+	print "getindex [-local] {server}"
+	print
+	print "server:"
+	print "   -web       get index from the web server (in " + default_optFile + ")"
+	print "   -dev       get index from the development server (in " + default_optFile + ")"
+	print "   -url URL   get index from URL"
+	print
+	print "if -local is specified, then just read the file names from the cache:"
+	print "   -web       get page names from cache_dir"
+	print "   -web+      get page names from web_cache_dir"
+	print "   -dev       get page names from cache_dir"
+	print "   -dev+      get page names from dev_cache_dir"
+	end 0
+end if
+
+'' read defaults from the configuration file (if it exists)
+scope
+	dim as COptions ptr opts = new COptions( default_optFile )
+	if( opts <> NULL ) then
+		web_wiki_url = opts->Get( "web_wiki_url" )
+		dev_wiki_url = opts->Get( "dev_wiki_url" )
+		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
+		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
+		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
+		delete opts
+	else
+		'' print "Warning: unable to load options file '" + default_optFile + "'"
+		'' end 1
+	end if
 end scope
+
+while( command(i) > "" )
+	if( left( command(i), 1 ) = "-" ) then
+		select case lcase(command(i))
+		case "-web"
+			wiki_url = web_wiki_url 
+			cache_dir = def_cache_dir
+		case "-dev"
+			wiki_url = dev_wiki_url 
+			cache_dir = def_cache_dir
+		case "-web+"
+			wiki_url = web_wiki_url 
+			cache_dir = web_cache_dir 
+		case "-dev+"
+			wiki_url = dev_wiki_url 
+			cache_dir = dev_cache_dir
+		case "-url"
+			i += 1
+			wiki_url = command(i)
+			cache_dir = def_cache_dir
+		case "-local"
+			blocal = TRUE
+		case else
+			print "Unrecognized option '" + command(i) + "'"
+			end 1
+		end select
+	else
+		print "Unexpected option '" + command(i) + "'"
+		end 1
+	end if
+	i += 1
+wend
+
+if( blocal ) then
+
+	ScanCacheDir( cache_dir )
+
+else
+
+	if( len( wiki_url ) = 0 ) then
+		print "wiki_url not set."
+		end 1
+	end if
+
+	'' connect to the wiki and get PageIndex as HTML
+	scope
+		dim as CWikiCon ptr wikicon = NULL
+
+		wikicon = new CWikiCon( wiki_url )
+		if wikicon = NULL then
+			print "Unable to create connection " + wiki_url
+			end 1
+		end if
+
+		print "URL: "; wiki_url
+
+		print "Loading '" + sPage + "': ";
+		if( wikicon->LoadPage( sPage, FALSE, FALSE, sBody ) = FALSE ) then
+			print "Error"
+		else
+			print "OK"
+	/'
+			'' DEBUG
+			dim as integer h = freefile
+			open def_html_file for output as #h
+			print #h, sBody
+			close #h
+	'/
+		end if
+
+		delete wikicon
+	end scope
+
+	RemoveHTMLtags( sBody )
+
+	ExtractPageNames( )
+
+end if
 
 print "Done."
