@@ -13,3 +13,4 @@ Do While Not EOF(1)
    Line Input #1, text
    Print text
 Loop
+Close #1
