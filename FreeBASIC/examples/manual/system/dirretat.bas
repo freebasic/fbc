@@ -10,21 +10,24 @@
 
 #include "dir.bi" '' provides constants to match the attributes against
 
-Dim As Integer out_attr '' integer to hold retrieved attributes (must currently be a signed int)
+'' set input attribute mask to allow files that are normal, hidden, system or directory
+Const attrib_mask = fbNormal Or fbHidden Or fbSystem Or fbDirectory ' = &h37
 
-Dim As String fname '' file/directory name returned with 
+Dim As UInteger out_attr '' unsigned integer to hold retrieved attributes
+
+Dim As String fname '' file/directory name returned with
 Dim As Integer filecount, dircount
 
-fname = Dir("*.*", 55, @out_attr) '' 55 - Input ATTR mask - all files and subdirs
+fname = Dir("*.*", attrib_mask, out_attr) '' Get first file name/attributes, according to supplied file spec and attribute mask
 
 Print "File listing in " & CurDir & ":"
 
 Do Until Len(fname) = 0 '' loop until Dir returns empty string
-	
+
 	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
-	    
+
 	    Print fname,
-	    
+
 	    If out_attr And fbDirectory Then
 	        Print "- directory";
 	        dircount += 1
@@ -37,11 +40,11 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 	    If out_attr And fbSystem Then Print ", system";
 	    If out_attr And fbArchive Then Print ", archived";
 	    Print
-	    
+
 	End If
-	
-	fname = Dir(@out_attr) '' find next name
-	
+
+	fname = Dir(out_attr) '' find next name/attributes
+
 Loop
 
 Print
