@@ -1312,7 +1312,6 @@ inc/gsl/gsl_vector_ushort.bi
 inc/gsl/gsl_version.bi
 inc/gsl/gsl_wavelet.bi
 inc/gsl/gsl_wavelet2d.bi
-inc/image_compat.bi
 inc/japi.bi
 inc/jni.bi
 inc/jpeglib.bi
