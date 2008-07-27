@@ -7,7 +7,7 @@ Used with ##[[KeyPgRedim Redim]]## to preserve contents will resizing an array
 {{fbdoc item="desc"}}
 	Used with ##[[KeyPgRedim Redim]]## so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same.
 
-	In arrays with more than one dimension, only the first subscription can be redimensioned (arrays are stored in row-major order, so it's the first, not the last subscription).
+	In arrays with more than one dimension the data is preserved if only the first index is redimensioned (arrays are stored in row-major order, so it's the first, not the last subscription). If indexes other than the first one are redimensioned, the data will not be preserved.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/preserve.bas"}}%%(freebasic)

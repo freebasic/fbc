@@ -26,7 +26,7 @@ Returns the length of a variable or data type
 
 	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
 
-	If there is both a user defined type and a variable both having the same name in the same scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parantheses to force it to be seen as an expression.  For example ##Len((variable))##.
+	If there is both a user defined type and a variable both having the same name in the same scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)

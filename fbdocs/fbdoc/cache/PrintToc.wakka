@@ -14,6 +14,7 @@
 	[[CompilerRunning Running]]
 	[[CompilerCmdLine Using the Command Line]]
 	[[CompilerErrMsg Compiler Error Messages]]
+	[[CompilerTools Tools used by fbc]]
 	[[CompilerQB FreeBASIC and Qbasic]]
 	[[CompilerDialects FreeBASIC Dialects]]
 	[[LangQB Differences from QB]]
@@ -785,6 +786,7 @@
 		[[CompilerOptexport -export]]
 		[[CompilerOptfpu -fpu < type >]]
 		[[CompilerOptg -g]]
+		[[CompilerOptgen -gen < backend >]]
 		[[CompilerOpti -i < name >]]
 		[[CompilerOptinclude -include < name >]]
 		[[CompilerOptl -l < name >]]
@@ -811,6 +813,7 @@
 		[[CompilerOptWa -Wa < opt >]]
 		[[CompilerOptWl -Wl < opt >]]
 		[[CompilerOptx -x < name >]]
+		[[CompilerOptz -z < value >]]
 
 {{fbdoc item="section" value="Runtime Library Reference"}}
 	[[CatPgArray Array Functions]]
@@ -877,7 +880,6 @@
 		[[ExtLibjpeglib jpeglib]]
 		[[ExtLibjpgalleg jpgalleg]]
 		[[ExtLiblibpng libpng]]
-		[[ExtLibmini mini]]
 		[[ExtLibOpenGL OpenGL]]
 		[[ExtLibpdflib pdflib]]
 		[[ExtLibSDL SDL]]

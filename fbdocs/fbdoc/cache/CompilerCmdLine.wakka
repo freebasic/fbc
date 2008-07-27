@@ -90,6 +90,10 @@ Using the **fbc** command-line.
 			Pass options to GAS (separated by commas)
 		=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
 			Set the compiler prefix path
+		=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
+			Sets the compiler backend (default is 'gas').
+		=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
+			Sets miscellaneous or experimental options.
 <<>>{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
 		=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==

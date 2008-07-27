@@ -20,7 +20,6 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibjpeglib|jpeglib"}} - Cross-platform library for reading/writing jpeg images.
 	{{fbdoc item="keyword" value="ExtLibjpgalleg|jpgalleg"}} - JPGalleg is a small add-on for Allegro that adds JPG images handling capabilities to the library.
 	{{fbdoc item="keyword" value="ExtLiblibpng|libpng"}} - Allows reading and writing PNG images.
-	{{fbdoc item="keyword" value="ExtLibmini|mini"}} - The Mini Library is a real-time terrain rendering system.
 	{{fbdoc item="keyword" value="ExtLibOpenGL|OpenGL"}} - Cross-platform 3D Graphics library.
 	{{fbdoc item="keyword" value="ExtLibpdflib|pdflib"}} - PDFlib is a development tool for PDF-enabling your software.
 	{{fbdoc item="keyword" value="ExtLibSDL|SDL"}} - Cross-platform multimedia library.

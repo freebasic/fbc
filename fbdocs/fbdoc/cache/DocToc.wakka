@@ -39,6 +39,7 @@ FreeBASIC Manual Table of Contents
 	{{fbdoc item="keyword" value="CompilerRunning|Running"}}
 	{{fbdoc item="keyword" value="CompilerCmdLine|Using the Command Line"}}
 	{{fbdoc item="keyword" value="CompilerErrMsg|Compiler Error Messages"}}
+	{{fbdoc item="keyword" value="CompilerTools|Tools used by fbc"}}
 
 	{{fbdoc item="keyword" value="CompilerQB|FreeBASIC and Qbasic"}}
 	{{fbdoc item="keyword" value="CompilerDialects|FreeBASIC Dialects"}}

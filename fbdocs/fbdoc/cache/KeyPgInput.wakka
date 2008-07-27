@@ -14,7 +14,7 @@ Reads a list of values from the keyboard
 
 {{fbdoc item="desc"}}
 	Reads a list values from the keyboard up until the first carriage return. Numerical values are converted from their string representation into the corresponding types in the variable list. Characters are echoed to the screen as they are typed.
-	If there are more than one value in the Input  list, the user must be instructed to commas or whitespaces to separe them.  Surrounding whitespace will be trimmed from string values. If an input string has a comma in it, it must be wrapped in quotes (##"..."##) to prevent it being split up.  
+	If there is more than one value in the input list, the user must be instructed to type commas or whitespace to separate each value.  Surrounding whitespace will be trimmed from string values. If an input string has a comma in it, it must be wrapped in quotes (##"..."##) to prevent it being split up.  
 	Alternatively, ##[[KeyPgLineinput Line Input]]## maybe used to input an entire line to a single string without delimiting.
 	
 	The prompt - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately following the prompt. If no prompt is specified, characters are echoed at the current cursor location.

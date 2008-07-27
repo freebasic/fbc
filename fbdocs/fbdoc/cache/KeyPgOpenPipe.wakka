@@ -55,6 +55,7 @@ do while not eof(1)
    line input #1, text
    print text
 loop
+close #1
 %%
 
 {{fbdoc item="diff"}}

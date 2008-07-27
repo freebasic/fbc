@@ -31,6 +31,8 @@ Command line compiler options for the fbc compiler:
 		- Set the floating point arithmetics unit (default: FPU)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
 		- Add debug info
+	{{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}
+		- Sets the compiler backend (default is 'gas')
 	{{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}
 		- Add a path to search for include files
 	{{fbdoc item="keyword" value="CompilerOptinclude|-include < name >"}}
@@ -83,6 +85,8 @@ Command line compiler options for the fbc compiler:
 		- Pass options to LD (separated by commas)
 	{{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}
 		- Set executable/library path/name
+	{{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}
+		- Sets miscellaneous or experimental options
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

@@ -4,7 +4,7 @@ There are several options available for getting help with FreeBASIC.
 {{fbdoc item="section" value="The Manual"}}
 	This huge user's manual is full of information that can help you learn to write programs using FreeBASIC.  
 
-	The manual is available on-line at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
+	The manual is available online at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
 
 	If you are unfamiliar with FreeBASIC or the documentation, you may find these pages a good place to start:
 		- [[DocToc Table of Contents]]
@@ -15,9 +15,9 @@ There are several options available for getting help with FreeBASIC.
 		- [[FaqPggfxlib2 Graphics Library FAQ]]
 		- [[FaqPgrtlib Run-Time Library FAQ]]
 
-	A downloadable manual (in CHM format) is available from the sourceforge project page at [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] which features a full table of contents, searching capabilities, an index, plus all the same content as the on-line version.
+	A downloadable manual (in CHM format) is available from the sourceforge project page at [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] which features a full table of contents, searching capabilities, an index, plus all the same content as the online version.
 
-	Searching the manual on or off line is an excellent place to start finding help about how to write and use FreeBASIC programs.
+	Searching the manual on or offline is an excellent place to start finding help about how to write and use FreeBASIC programs.
 
 {{fbdoc item="section" value="Examples and Source Code"}}
 	In the ./examples directory located where FreeBASIC was installed on your system are hundreds of examples to be compiled and run.  Most of the external library examples will need additional libraries to be downloaded to allow them to work.  See [[ExtLibTOC Library Headers Index]] for a full list.

@@ -6,7 +6,7 @@ Input is the life of any program.  If you can't get something into your program,
 Here's a very basic program that will ask for your name:
 
 %%(freebasic)
-'Create a place to to put the user's name
+'Create a place to put the user's name
 dim as string strMyName
 
 ' Ask for the user's name and store it in the string 'strMyName'
@@ -15,7 +15,7 @@ input "What is your name? ", strMyName
 ' Wait half a second
 sleep 500
 
-' Show them thier name
+' Show them their name
 print
 print "I now know your name is "; strMyName
 print
@@ -25,15 +25,15 @@ print "Press any button to exit"
 sleep
 %%
 
-INPUT is the easiest way to get information from someone.  They just type in some text and press Enter where they are done.  
+INPUT is the easiest way to get information from someone.  They just type in some text and press Enter when they are done.  
 
-What if you you only want one key stroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="CptAscii|ASCII"}} value of a key that was pressed.
+What if you you only want one keystroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="CptAscii|ASCII"}} value of a key that was pressed.
 
 %%(freebasic)
 ' Ask the user for input
 Print "Press your favorite key:"
 
-' Set a place keep the ASCII value of the key
+' Set a place to keep the ASCII value of the key
 Dim As Integer strKeyPress
 
 ' Keep going until a key is pressed
