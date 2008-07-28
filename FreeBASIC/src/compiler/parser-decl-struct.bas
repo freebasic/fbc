@@ -457,15 +457,15 @@ private function hTypeMultElementDecl _
 					lexSkipToken( )
 					bits = valint( *lexGetText( ) )
 					lexSkipToken( )
-				end if
 
-				if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
-    				if( errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
-    					exit function
-    				else
-    					'' error recovery: no bits
-    					bits = 0
-    				end if
+					if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
+						if( errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: no bits
+							bits = 0
+						end if
+					end if
 				end if
 
 			end if
