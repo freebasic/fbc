@@ -232,8 +232,10 @@ static void gdi_thread(HANDLE running_event)
 	HDC hdc;
 	RECT rect;
 
-	if (gdi_init())
-		goto error;
+	if (gdi_init()) {
+		gdi_exit();
+		return;
+	}
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
@@ -307,8 +309,6 @@ static void gdi_thread(HANDLE running_event)
 		Sleep(10);
 	}
 
-error:
-	gdi_exit();
 }
 
 
