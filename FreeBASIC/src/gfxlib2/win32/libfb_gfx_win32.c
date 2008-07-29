@@ -619,6 +619,8 @@ void fb_hWin32Exit(void)
 		WaitForSingleObject(handle, INFINITE);
 		DeleteCriticalSection(&update_lock);
 	}
+
+	fb_win32.exit();
 	
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, screensaver_active, NULL, 0);
 	UnregisterClass(fb_win32.window_class, fb_win32.hinstance);
