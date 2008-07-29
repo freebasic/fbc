@@ -20,7 +20,7 @@
 
 const FB_VER_MAJOR          = 0
 const FB_VER_MINOR          = 18
-const FB_VER_PATCH          = 5
+const FB_VER_PATCH          = 6
 
 #define QUOTE !"\""
 #define NEWLINE !"\r\n"
