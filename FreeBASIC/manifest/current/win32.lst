@@ -2101,7 +2101,6 @@ inc/gtk/pango/pango-renderer.bi
 inc/gtk/pango/pango-script.bi
 inc/gtk/pango/pango-tabs.bi
 inc/gtk/pango/pango-types.bi
-inc/image_compat.bi
 inc/japi.bi
 inc/jni.bi
 inc/jpeglib.bi
