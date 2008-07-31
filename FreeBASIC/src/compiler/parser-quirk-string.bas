@@ -487,7 +487,7 @@ function cCVXFunct _
 		case FB_TK_CVI
 			functype = fbLangGetType( INTEGER )
 		case FB_TK_CVL
-			functype = FB_DATATYPE_INTEGER
+			functype = fbLangGetType( LONG )
 		case FB_TK_CVSHORT
 			functype = FB_DATATYPE_SHORT
 		case FB_TK_CVLONGINT
@@ -542,6 +542,10 @@ function cCVXFunct _
 		    if( astNewARG( funcexpr, expr1 ) = NULL ) then
 		    	funcexpr = NULL
 		    end if
+		end if
+
+		if( funcexpr <> NULL ) then
+			funcexpr = astNewCONV( functype, NULL, funcexpr )
 		end if
 
 		function = (funcexpr <> NULL)

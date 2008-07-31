@@ -3638,7 +3638,7 @@ function rtlStrToVal _
     	exit function
     end if
 
-    function = proc
+    function = astNewCONV( to_dtype, NULL, proc )
 
 end function
 

@@ -63,6 +63,7 @@ Version 0.20.0 Beta:
 - #1979795 - GETMOUSE in Win32 GFX driver was not clearing the status of the XBUTTON's correctly (jeffm)
 - #2016487 - inc/win/vfw.bi - Changed "Delete" to "Delete__" and ported the remaining IC* AVI* and MCI* defines (jeffm)
 - "TYPE FOO : AS INTEGER BAR : END TYPE" wasn't allowed because a bitfield value was expected to follow "BAR : " (counting_pine)
+- Casting ops that called a function (e.g. CSNG("..."), CLNG/CVL ) weren't necessarily returning the exact desired type (counting_pine)
 
 
 Version 0.18.6 Beta:
