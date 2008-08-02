@@ -15,6 +15,7 @@ Version 0.20.0 Beta:
 - SCREENLOCK/SCREENUNLOCK now keep a reference count internally to allow them to be used inside functions without unlocking a global lock (DrV)
 - linux: only specify linker script path for standalone builds (fixes lib path problems on x86-64) (DrV)
 - removed mini.bi, example, and wrapper (jeffm)
+- BLOAD now supports 15, 16, and 32-bpp BMP files, alpha in 32-bpp BMP files (BITMAPV4/V5HEADER only), arbitrary BI_BITFIELDS bitfields, and OS/2 BMP files (DrV)
 
 [added]
 - #lang directive and $lang metacommand to set compiler dialect from source code (jeffm)
