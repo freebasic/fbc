@@ -95,7 +95,7 @@
 	**Jose Manuel Postigo** (postigo[at]uma.es):
 		- Added support for serial devices in Linux.
 
-	**Laanan Fisher** (sumofallparts[at]excite.com):
+	**Laanan Fisher** (laananfisher[at]gmail.com):
 		- Re-implemented the compiler test suite (at the /tests directory), using unit testing (CUnit).
 
 	**Jofers** (spam[at]betterwebber.com):
