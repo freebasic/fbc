@@ -846,7 +846,7 @@ Credits (in alphabetic order):
     - Wrote the Windows installer scripts.
     - Many runtime library fixes and improvements.
 
-  o Matthew Fearnley
+  o Matthew Fearnley (counting.pine[at]virgin.net)
     - Helped in adding the fblite dialect.
     - Miscellaneous fixes and improvements.
 
@@ -927,7 +927,7 @@ Credits (in alphabetic order):
   o Jose Manuel Postigo (postigo[at]uma.es):
     - Added support for serial devices in Linux.
 
-  o Laanan Fisher (sumofallparts[at]excite.com):
+  o Laanan Fisher (laananfisher[at]gmail.com):
     - Re-implemented the compiler test suite (at the /tests directory), using 
       unit testing (CUnit).
 
