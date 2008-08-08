@@ -57,6 +57,24 @@ static POINT last_mouse_pos;
 static UINT WM_MOUSEENTER;
 
 /*:::::*/
+struct keyconvinfo {
+	union {
+		void *v;
+		WCHAR *w;
+		char *a;
+	};
+	int size;
+};
+typedef struct keyconvinfo KEYCONVINFO;
+static KEYCONVINFO keyconv1 = {{NULL}, 0};
+static KEYCONVINFO keyconv2 = {{NULL}, 0};
+
+static void keyconv_clear( KEYCONVINFO *k );
+static void keyconv_grow( KEYCONVINFO *k, int nchars, int charsize );
+
+static unsigned int hIntlConvertChar( int key, int source_cp, int dest_cp );
+
+/*:::::*/
 static void fb_hSetMouseClip( void )
 {
 	RECT rc;
@@ -407,18 +425,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				int key = (int) wParam;
 				if( key < 256 ) {
 					int target_cp = FB_GFX_GET_CODEPAGE();
-					if( target_cp!=-1 ) {
-						char ch[2] = {
-							(char) key,
-							0
-						};
-						FBSTRING *result = fb_StrAllocTempDescF( ch, 2 );
-						result = fb_hIntlConvertString( result,
-						                                CP_ACP,
-						                                target_cp );
-						key = (unsigned) (unsigned char) result->data[0];
-						fb_hStrDelTemp( result );
-					}
+					if( target_cp!=-1 )
+						key = hIntlConvertChar( key, CP_ACP, target_cp );
 
 					while( repeat_count-- ) {
 						fb_hPostKey(key);
@@ -566,6 +574,9 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	mouse_buttons = mouse_wheel = 0;
 	fb_win32.is_running = TRUE;
 
+	keyconv_clear( &keyconv1 );
+	keyconv_clear( &keyconv2 );
+
 	if (!(flags & DRIVER_OPENGL)) {
 		InitializeCriticalSection(&update_lock);
         events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -617,6 +628,9 @@ void fb_hWin32Exit(void)
 		WaitForSingleObject(handle, INFINITE);
 		DeleteCriticalSection(&update_lock);
 	}
+
+	keyconv_clear( &keyconv1 );
+	keyconv_clear( &keyconv2 );
 	
 	fb_win32.exit();
 
@@ -766,3 +780,91 @@ int fb_hGetWindowHandle(void)
 }
 
 
+/*:::::*/
+static void keyconv_clear( KEYCONVINFO *k )
+{
+	if( k->v ) {
+		free(k->v);
+		k->v = NULL;
+	}
+	k->size = 0;
+}
+
+static void keyconv_grow( KEYCONVINFO *k, int nchars, int charsize )
+{
+	void * p = realloc( k->v, (nchars+1) * charsize );
+	if( p ) {
+		k->v = p;
+		k->size = nchars;
+	}
+	if( k->v )
+	{
+		if( charsize == 2 )
+			k->a[0] = 0;
+		else
+			k->w[0] = 0;
+	}
+}
+
+static unsigned int hIntlConvertChar( int key, int source_cp, int dest_cp )
+{
+	/*
+		Do key translation between code pages (from WM_CHAR message).
+
+		keyconv1 and keyconv2 are allocated as needed, and cleaned
+		up in the exit routine.  Ideally we would know the max buffer sizes
+		needed but docs for WideCharToMultiByte/MultiByteToWideChar 
+		indicate that the safe (only?) thing to do is call them twice 
+		getting the size needed from the first call.  Seems excessive 
+		when we know we are always converting only one character. (jeffm)
+	*/
+
+	char ch[2] = {
+		(char) key,
+		0
+	};
+	int length1, length2;
+
+	if( !key )
+		return 0;
+
+	/* convert source (key) to wide character */
+
+	length1 = MultiByteToWideChar( source_cp, 0,
+									(LPCSTR)ch, 1,
+									NULL, 0 );
+
+	if( length1 > keyconv1.size )
+		keyconv_grow( &keyconv1, length1, sizeof(WCHAR) );
+
+	if(!keyconv1.w)
+		return 0;
+
+	length1 = MultiByteToWideChar( source_cp, 0,
+							(LPCSTR)ch, 1,
+							keyconv1.w, keyconv1.size );
+
+	keyconv1.w[length1] = 0;
+
+	/* convert wide character to code page character */
+
+	length2 = WideCharToMultiByte( dest_cp, 0,
+									(LPCWSTR)keyconv1.w, length1,
+									(LPSTR)NULL, 0,
+									NULL, NULL );
+
+	if( length2 > keyconv2.size )
+		keyconv_grow( &keyconv2, length2, sizeof(char) );
+
+	if(!keyconv2.a)
+		return 0;
+
+	length2 = WideCharToMultiByte( dest_cp, 0,
+		(LPCWSTR)keyconv1.w, length1,
+		(LPSTR)keyconv2.a, keyconv2.size,
+		NULL,NULL );
+
+	keyconv2.a[length2] = 0;
+
+	return keyconv2.a[0];
+}

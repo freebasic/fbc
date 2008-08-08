@@ -65,6 +65,7 @@ Version 0.20.0 Beta:
 - #2016487 - inc/win/vfw.bi - Changed "Delete" to "Delete__" and ported the remaining IC* AVI* and MCI* defines (jeffm)
 - "TYPE FOO : AS INTEGER BAR : END TYPE" wasn't allowed because a bitfield value was expected to follow "BAR : " (counting_pine)
 - Casting ops that called a function (e.g. CSNG("..."), CLNG/CVL ) weren't necessarily returning the exact desired type (counting_pine)
+- #1872418 - Win32 GFX updater thread was calling rtlib string conversion unsafely in the non-threaded version of the rtlib (jeffm)
 
 
 Version 0.18.6 Beta:
