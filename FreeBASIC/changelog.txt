@@ -74,6 +74,9 @@ Version 0.18.6 Beta:
 
 [fixed]
 - re-fixed gfxlib win32 driver calling driver exit routines twice - previous fix was incorrect (jeffm)
+- #1999505 - refresh rate after two screenres is always 60 Hz - should be fixed by above, see r5029 (jeffm)
+- #1996802 - 2 x screen + screelist = crash - should be fixed by above, see r5029 (jeffm)
+- #1968601 - Screenres Fullscreen/Windowed Bug - should be fixed by above, see r5029 (jeffm)
 
 
 Version 0.18.5 Beta:
