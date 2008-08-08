@@ -1551,6 +1551,15 @@ function cVariableEx _
 	id = lexGetText( )
 	suffix = lexGetType( )
 
+	if( env.clopt.lang = FB_LANG_QB ) then
+		'' keyword with no suffix?  Then it can't be a variable
+		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+			if( suffix = FB_DATATYPE_INVALID ) then
+				return NULL
+			end if
+		end if
+	end if
+
 	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
     	'' no suffix? lookup the default type (last DEF###) in the
     	'' case symbol could not be found..
