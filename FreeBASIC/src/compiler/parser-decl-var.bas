@@ -631,84 +631,95 @@ private function hGetId _
 	'' no parent? read as-is
 	if( parent = NULL ) then
 		chain_ = lexGetSymChain( )
-    else
+	else
 		chain_ = symbLookupAt( parent, _
 							   lexGetText( ), _
 							   FALSE, _
 							   (options and FB_IDOPT_ISDECL) = 0 )
 	end if
 
-    '' ID
-    select case as const lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER
+	'' ID
+	select case as const lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
-  				if( lexGetPeriodPos( ) > 0 ) then
-  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-	 					return NULL
+				if( lexGetPeriodPos( ) > 0 ) then
+					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+						return NULL
 					end if
 				end if
 			end if
 		end if
 
-    	*id = *lexGetText( )
-    	suffix = lexGetType( )
+		*id = *lexGetText( )
+		suffix = lexGetType( )
 
 	case FB_TKCLASS_QUIRKWD
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			'' only if inside a ns and if not local
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
-    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    				return NULL
-    			else
-    				'' error recovery: fake an id
-    				*id = *hMakeTmpStr( )
-    				suffix = FB_DATATYPE_INVALID
-    			end if
+				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					return NULL
+				else
+					'' error recovery: fake an id
+					*id = *hMakeTmpStr( )
+					suffix = FB_DATATYPE_INVALID
+				end if
 
-    		else
-    			*id = *lexGetText( )
-    			suffix = lexGetType( )
-    		end if
+			else
+				*id = *lexGetText( )
+				suffix = lexGetType( )
+			end if
 
-    	'' QB mode..
-    	else
-    		*id = *lexGetText( )
-    		suffix = lexGetType( )
-    	end if
+		'' QB mode..
+		else
+			*id = *lexGetText( )
+			suffix = lexGetType( )
+		end if
 
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
 		if( env.clopt.lang <> FB_LANG_QB ) then
-    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    			return NULL
-    		else
-    			'' error recovery: fake an id
-    			*id = *hMakeTmpStr( )
-    			suffix = FB_DATATYPE_INVALID
-    		end if
+			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+				return NULL
+			else
+				'' error recovery: fake an id
+				*id = *hMakeTmpStr( )
+				suffix = FB_DATATYPE_INVALID
+			end if
 
-    	'' QB mode..
-    	else
-    		*id = *lexGetText( )
-    		suffix = lexGetType( )
+		'' QB mode..
+		else
+			*id = *lexGetText( )
+			suffix = lexGetType( )
+
+			'' must have a suffix if it is a keyword
+			if( suffix = FB_DATATYPE_INVALID ) then
+				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					return NULL
+				else
+					'' error recovery: fake an id
+					*id = *hMakeTmpStr( )
+					suffix = FB_DATATYPE_INVALID
+				end if
+			end if
 		end if
 
-    case else
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		return NULL
-    	else
-    		'' error recovery: fake an id
-    		*id = *hMakeTmpStr( )
-    		suffix = FB_DATATYPE_INVALID
-    	end if
-    end select
+	case else
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			return NULL
+		else
+			'' error recovery: fake an id
+			*id = *hMakeTmpStr( )
+			suffix = FB_DATATYPE_INVALID
+		end if
+	end select
 
-    hCheckSuffix( suffix )
+	hCheckSuffix( suffix )
 
-    lexSkipToken( )
+	lexSkipToken( )
 
-    function = chain_
+	function = chain_
 
 end function
 
