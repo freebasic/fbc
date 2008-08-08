@@ -16,7 +16,6 @@ SRCS += fbdoc_lang.bas
 SRCS += fbdoc_cache.bas
 SRCS += fbdoc_loader.bas
 SRCS += fbdoc_loader_web.bas
-SRCS += fbdoc_loader_sql.bas
 SRCS += fbdoc_buildtoc.bas
 SRCS += fbdoc_templates.bas
 SRCS += fbdoc_keywords.bas
@@ -37,6 +36,10 @@ SRCS += CPage.bas
 SRCS += CPageList.bas
 SRCS += hash.bas
 SRCS += printlog.bas
+
+ifdef HAVE_MYSQL
+SRCS += fbdoc_loader_sql.bas
+endif
 
 HDRS := $(wildcard *.bi)
 
@@ -63,7 +66,7 @@ ifndef FBC
 	endif
 endif
 
-FBCFLAGS := -w pedantic -w next
+FBCFLAGS += -w pedantic -w next
 
 ifdef DEBUG
 FBCFLAGS += -exx -g
@@ -71,6 +74,10 @@ endif
 
 ifdef PROFILE
 FBCFLAGS += -profile
+endif
+
+ifdef HAVE_MYSQL
+FBCFLAGS += -d HAVE_MYSQL
 endif
 
 ifeq ($(TARGET),win32)

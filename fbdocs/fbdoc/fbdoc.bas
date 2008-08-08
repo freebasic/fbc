@@ -33,7 +33,9 @@
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
+#if defined(HAVE_MYSQL)
 #include once "fbdoc_loader_sql.bi"
+#endif
 #include once "fbdoc_buildtoc.bi"
 #include once "fbdoc_templates.bi"
 #include once "fbdoc_keywords.bi"
@@ -101,7 +103,9 @@ end enum
 		print "options:"
 		print "   -makeini       create the default ini file if it does not exist and exit"
 		print "   -useweb        load pages from wiki web"
+#if defined(HAVE_MYSQL)
 		print "   -usesql        load pages from sql database"
+#endif
 		print "   -usecache      use cache as only source"
 		print "   -cachedir      set the location of the cache directory"
 		print "   -refresh       refresh all pages"
@@ -185,8 +189,10 @@ end enum
 				CacheRefreshMode = CWikiCache.CACHE_REFRESH_NONE
 			case "-useweb"
 				bUseWeb = TRUE
+#if defined(HAVE_MYSQL)
 			case "-usesql"
 				bUseSql = TRUE
+#endif
 			case "-maketitles"
 				bMakeTitles = TRUE
 			case "-chm"
@@ -295,6 +301,7 @@ end enum
 	'' Initialize the wiki connection - in case its needed
 	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url) )
 
+#if defined(HAVE_MYSQL)
 	'' If using SQL, get all the pages in to the cache now.
 	if( bUseSql ) then
 		
@@ -312,7 +319,7 @@ end enum
 			end 1
 		end if
 	end if
-
+#endif
 	
 	dim as CPageList ptr paglist, toclist, lnklist
 

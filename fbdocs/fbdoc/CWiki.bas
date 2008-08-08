@@ -208,7 +208,7 @@ namespace fb.fbdoc
 				p += 1
 			loop
 
-			t += "}}
+			t += "}}"
 			
 		case WIKI_TOKEN_INDENT
 			'' t = string( token->indent->level, 9 ) + token->indent->bullet

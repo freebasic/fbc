@@ -108,6 +108,8 @@ Running:
 
   o Building the CHM using an MySQL Database source:
 
+    - fbdoc must be compiled with HAVE_MYSQL=1 option passed to make.
+
     - Edit "fbdoc.ini" to set the host name or ip address, user name, 
       password, database name, and port number to use for the MySQL 
       database connection. 
