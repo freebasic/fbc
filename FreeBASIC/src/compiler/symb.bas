@@ -1802,6 +1802,7 @@ function symbGetDefType _
 	) as integer
 
     dim as integer c = any
+	dim as integer i = any
 
 	c = symbol[0][0]
 
@@ -1810,7 +1811,19 @@ function symbGetDefType _
 		c -= (asc("a") - asc("A"))
 	end if
 
-	function = deftypeTB(c - asc("A"))
+	i = c - asc("A")
+
+	'' if lead character is not on the table, use the dialect default
+	'' (error recovery may create a temporary symbol name)
+	if( (i < lbound(deftypeTB)) or (i > ubound(deftypeTB)) ) then
+		if( fbLangIsSet( FB_LANG_QB ) ) then
+			function = FB_DATATYPE_SINGLE
+		else
+			function = FB_DATATYPE_INTEGER
+		end if
+	else
+		function = deftypeTB(i)
+	end if
 
 end function
 
