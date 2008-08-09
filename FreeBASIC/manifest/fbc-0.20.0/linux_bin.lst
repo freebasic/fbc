@@ -1,0 +1,15 @@
+bin/linux/ar
+bin/linux/as
+bin/linux/gprof
+bin/linux/ld
+lib/linux/crt1.o
+lib/linux/crtbegin.o
+lib/linux/crtend.o
+lib/linux/crti.o
+lib/linux/crtn.o
+lib/linux/gcrt1.o
+lib/linux/libbfd.a
+lib/linux/libgcc.a
+lib/linux/libgcc_eh.a
+lib/linux/libiberty.a
+lib/linux/libsupc++.a
