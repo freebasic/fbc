@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="LZO"}}----
-LZO is a compression library offering fast compression and very fast decompression.
-
-Website: http://freshmeat.net/redir/lzo/6066/url_homepage/lzo
-Platforms supported: Win32, Linux, DOS
-Headers to include: LZO/lzo.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

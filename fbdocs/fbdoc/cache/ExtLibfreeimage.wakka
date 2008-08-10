@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="FreeImage"}}----
-Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF.
-
-Website: http://freeimage.sf.net
-Platforms supported: Win32, Linux
-Headers to include: FreeImage.bi
-Example included: yes, in examples/gfx/freeimage.bas
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="libPNG"}}----
-Allows reading and writing PNG images.
-
-Website: http://www.libpng.org/pub/png/libpng.html
-Platforms supported: Win32, Linux
-Headers to include: png.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

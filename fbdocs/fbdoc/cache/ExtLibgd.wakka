@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="GD"}}----
-Open source code library for the dynamic creation of images by programmers.
-
-Website: http://www.libgd.org
-Platforms supported: Win32, Linux
-Headers to include: gd/gd.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

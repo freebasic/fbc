@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="pcre, Perl Compatible Regular Expressions"}}----
-Consists of a set of functions that implement regular expression pattern matching using the same syntax and semantics as Perl 5.
-
-Website: http://www.pcre.org
-Platforms supported: Win32, Linux
-Headers to include: pcre/pcre.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

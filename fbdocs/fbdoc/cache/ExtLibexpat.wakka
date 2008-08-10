@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="expat"}}----
-Stream oriented XML parser library with several useful features.
-
-Website: http://expat.sourceforge.net/
-Platforms supported: Win32, Linux
-Headers to include: expat.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

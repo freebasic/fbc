@@ -1,9 +1,0 @@
-{{fbdoc item="title" value="DisLin"}}----
-Library of subroutines and functions that display data graphically.
-
-Website: http://www.mps.mpg.de/dislin/
-Platforms supported: Win32, Linux
-Headers to include: dislin.bi
-
-
-{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
