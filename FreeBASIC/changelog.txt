@@ -1,3 +1,8 @@
+Version 0.21.0 Beta:
+
+[fixed]
+- WIDTH was crashing when optional parameter was not specified (DrV)
+
 Version 0.20.0 Beta:
 
 [changed]
