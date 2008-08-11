@@ -1,7 +1,11 @@
 Version 0.21.0 Beta:
 
+[added]
+- FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
+
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
+
 
 Version 0.20.0 Beta:
 

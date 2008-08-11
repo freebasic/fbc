@@ -137,6 +137,8 @@ tests_dt:
     data "Jun 1, 2005",       "yy-M-d",           "05-6-1"
     data "Dec 1, 2005",       "yy-M-d",           "05-12-1"
     data "Dec 10, 2005",      "yy-M-d",           "05-12-10"
+    data "13:14:15",          "hh:nn:ss",         "13:14:15"
+    data "13:14:15",          "nn:ss",            "14:15"
     data "13:14:15",          "hh:mm:ss",         "13:14:15"
     data "13:14:15",          "hh:mm:ss AM/PM",   "01:14:15 PM"
     data "13:14:15",          "hh:mm:ss AM/pM",   "01:14:15 pM"

@@ -546,6 +546,7 @@ int fb_hProcessMask
                     }
                     break;
                 case 'd':
+                case 'n':
                 case 'm':
                 case 'M':
                 case 'y':
@@ -778,6 +779,8 @@ int fb_hProcessMask
                     /* day */
                 case 'm':
                     /* minute or month */
+                case 'n':
+                    /* minute */
                 case 'M':
                     /* month */
                 case 'y':
@@ -878,7 +881,7 @@ int fb_hProcessMask
                                 do_add = TRUE;
                             }
                             fb_hStrDelTemp( tmp );
-                        } else if( chCurrent=='m' && count==1 ) {
+                        } else if( (chCurrent=='m' || chCurrent == 'n') && count==1 ) {
                             i += count-1;
                             if( !do_output ) {
                                 ++pInfo->length_min;
@@ -889,7 +892,7 @@ int fb_hProcessMask
                                                   fb_Minute( value ) );
                                 do_add = TRUE;
                             }
-                        } else if( chCurrent=='m' && count==2 ) {
+                        } else if( (chCurrent=='m' || chCurrent == 'n') && count==2 ) {
                             i += count-1;
                             if( !do_output ) {
                                 pInfo->length_min += 2;
