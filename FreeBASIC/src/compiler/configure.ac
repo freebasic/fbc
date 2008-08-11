@@ -65,8 +65,12 @@ AC_SUBST([FBC_HOST])
 
 case "$target_cpu" in
 	i?86 | x86 )
-		AC_DEFINE([TARGET_X86],1,[x86 build])
+		AC_DEFINE([TARGET_X86],1,[x86 target])
 		FBC_TARGET_CPU=x86
+		;;
+	x86_64 | amd64 )
+		AC_DEFINE([TARGET_X86_64],1,[x86-64 target])
+		FBC_TARGET_CPU=x86_64
 		;;
 esac
 
@@ -76,6 +80,10 @@ case "$host_cpu" in
 	i?86 | x86 )
 		AC_DEFINE([HOST_X86],1,[x86 host])
 		FBC_HOST_CPU=x86
+		;;
+	x86_64 | amd64 )
+		AC_DEFINE([HOST_X86_64],1,[x86-64 host])
+		FBC_HOST_CPU=x86_64
 		;;
 esac
 
@@ -95,6 +103,12 @@ AC_CHECK_PROGS([AUTOCONF], [autoconf], [$MISSING autoconf])
 # Checks for header files.
 
 # Checks for typedefs, structures, and compiler characteristics.
+
+AC_C_BIGENDIAN(
+ [FBC_HOST_ENDIAN=big],
+ [FBC_HOST_ENDIAN=little]
+)
+AC_SUBST([FBC_HOST_ENDIAN])
 
 # Checks for library functions.
 
