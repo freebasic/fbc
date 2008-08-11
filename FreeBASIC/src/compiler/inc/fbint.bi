@@ -42,9 +42,17 @@ const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
 ''
+#if defined(TARGET_X86)
 const FB_INTEGERSIZE		= 4
 const FB_POINTERSIZE		= 4
 const FB_LONGSIZE			= FB_POINTERSIZE
+#elseif defined(TARGET_X86_64)
+const FB_INTEGERSIZE		= 4
+const FB_POINTERSIZE		= 8
+const FB_LONGSIZE			= 8 '' FIXME - windows x64 long is 4 bytes
+#else
+#error unsupported target cpu
+#endif
 
 '' array descriptor
 type FB_ARRAYDESC
