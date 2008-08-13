@@ -1609,7 +1609,9 @@ function cVariableEx _
 		'' show warning if inside an expression (ie: var was never set)
 		if( fbGetIsExpression( ) ) then
 			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
-				errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+				if( env.opt.explicit = FALSE ) then
+					errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+				end if
 			end if
 		end if
 
