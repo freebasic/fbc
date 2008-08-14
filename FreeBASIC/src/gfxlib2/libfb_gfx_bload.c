@@ -170,7 +170,7 @@ static void convert_bf_32to32(const unsigned char *src, unsigned char *dest, int
 		r = (*s >> shifts[0]) & masks[0];
 		g = (*s >> shifts[1]) & masks[1];
 		b = (*s >> shifts[2]) & masks[2];
-		a = masks[3] ? (*s >> shifts[3]) & masks[3] : 255;
+		a = (*s >> shifts[3]) & masks[3];
 		r = CONVERT_DEPTH(r, bits[0], 8);
 		g = CONVERT_DEPTH(g, bits[1], 8);
 		b = CONVERT_DEPTH(b, bits[2], 8);
@@ -363,6 +363,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 		rgba[0] = 0xFF0000;
 		rgba[1] = 0xFF00;
 		rgba[2] = 0xFF;
+		rgba[3] = 0xFF000000;
 	}
 	if (biBitCount <= 8) {
 		switch (bpp) {
