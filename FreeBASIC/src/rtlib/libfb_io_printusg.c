@@ -33,6 +33,7 @@
  * io_printusg - print using function
  *
  * chng: nov/2004 written [v1ctor]
+ * chng: aug/2008 overhauled number formatting [counting_pine]
  *
  */
 
@@ -42,6 +43,24 @@
 #include "fb.h"
 
 #define BUFFERLEN 2048
+#define MIN_EXPDIGS 3
+#define MAX_EXPDIGS 5
+#define MAX_DIGS (BUFFERLEN                                 \
+                   - 2                 /* '%' char(s)   */  \
+                   - 1                 /* +/- sign      */  \
+                   - 1                 /* dollar sign   */  \
+                   - 1                 /* decimal point */  \
+                   - MAX_EXPDIGS       /* exp digits    */  \
+                   - (MIN_EXPDIGS - 1) /* stray carets  */  \
+                 )
+
+#define ADD_CHAR( c )           \
+    do {                        \
+        if( p > buffer )        \
+            *(--p) = (char)(c); \
+        else                    \
+            *p = '@';           \
+    } while (0)
 
 static int fb_PrintUsingFmtStr( int fnum );
 
@@ -91,6 +110,51 @@ FBCALL int fb_PrintUsingEnd
 }
 
 /*:::::*/
+static unsigned long long hPow10_ULL( int n )
+{
+	if( n < 0 ) return 0;
+	if( n > 19 ) return 0xffffffffffffffffull;
+
+	unsigned long long ret = 1, a = 10;
+	for( ;  n > 0;  n >>= 1, a *= a )
+		if( n & 1 ) ret *= a;
+
+	return ret;
+}
+
+/*:::::*/
+static int hLog10_ULL( unsigned long long a )
+{
+	int ret = 0;
+	long b;
+
+	for( ret = 0;  a >= (long)1.E+8;  a /= (long)1.E+8, ret += 8 );
+	b = a;
+	if( a >= (long)1.E+4 ) ret += 4; else a *= (long)1.E+4;
+	if( a >= (long)1.E+6 ) ret += 2; else a *= (long)1.E+2;
+	if( a >= (long)1.E+7 ) ret += 1;
+
+	return ret;
+}
+
+/*:::::*/
+static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
+{
+	unsigned long long b, ret;
+
+	if( n > 19 ) return 0;
+	if( n < 0 ) return 0xffffffffffffffffull;
+
+	b = hPow10_ULL( n );
+	ret = a / b;
+
+	if( (a % b) >= (b + 1) / 2 )
+		ret += 1;
+
+	return ret;
+}
+
+/*:::::*/
 static int fb_PrintUsingFmtStr
 	(
 		int fnum
@@ -98,7 +162,7 @@ static int fb_PrintUsingFmtStr
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
-	int c, lc, nc, len, doexit;
+	int c, nc, nnc, len, doexit;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -106,37 +170,45 @@ static int fb_PrintUsingFmtStr
 	if( ctx->ptr == NULL )
 		ctx->chars = 0;
 
-	lc = -1;
 	while( (ctx->chars > 0) && (len < BUFFERLEN) )
 	{
 		c = *ctx->ptr;
 		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
+		nnc = ( ctx->chars > 2? ctx->ptr[2] : -1 );
 
 		doexit = 0;
 		switch( c )
 		{
 		case '*':
-			if( nc == '*' || lc == '*' )
+			if( nc == '*' )
 				doexit = 1;
 
 			break;
 
 		case '$':
-			if( nc == '$' || lc == '$' || lc == '*' )
+			if( nc == '$' )
 				doexit = 1;
 
+			break;
+
+		case '+':
+			if( nc == '#' ||
+			    nc == '$' && nnc == '$' ||
+			    nc == '*' && nnc == '*' ||
+			    nc == '.' && nnc == '#' )
+
+				doexit = 1;
 			break;
 
 		case '!':
 		case '\\':
 		case '&':
-		case '+':
 		case '#':
 			doexit = 1;
 			break;
 
 		case '.':
-			if( nc == '#' || lc == '#' )
+			if( nc == '#' )
 				doexit = 1;
 
 			break;
@@ -157,8 +229,6 @@ static int fb_PrintUsingFmtStr
 
 		++ctx->ptr;
 		--ctx->chars;
-
-		lc = c;
 	}
 
     /* flush */
@@ -303,107 +373,23 @@ FBCALL int fb_PrintUsingStr
 }
 
 /*::::*/
-static double hRound
-	(
-		double value,
-		int intdigs,
-		int decdigs
-	)
-{
-	double fix, frac = modf( value, &fix );
-
-    if( decdigs == 0 )
-    {
-    	/* convert to fixed-point because the imprecision and the optimizations
-       	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
-    	long long int intfrac = (long long int)(frac * 1.E+15);
-    	if( intfrac > (long long int)(5.E+14) )
-       		fix = ceil( value );
-		else if( intfrac < -(long long int)(5.E+14) )
-       		fix = floor( value );
-
-       	value = fix;
-	}
-	else
-	{
-		/* remove the fraction of the fraction to be compatible with
-		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
-		if( frac != 0.0 )
-		{
-	    	double p10 = pow( 10.0, decdigs );
-
-	        double fracfrac = modf( frac * p10, &frac );
-
-	        /* convert to fixed-point, see above */
-	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );
-
-	        if( intfrac > (long long int)(5.E+14 / p10) )
-	        	frac += 1.0;
-	        else if( intfrac < -(long long int)(5.E+14 / p10) )
-	        	frac += -1.0;
-
-	        frac /= p10;
-
-	        value = fix + frac;
-		}
-	}
-
-	return value;
-}
-
-/*::::*/
-static void hToString
-	(
-		double value,
-		char *fix_buf,
-		int *fix_len,
-		char *frac_buf,
-		int *frac_len,
-		int intdigs,
-		int decdigs
-	)
-{
-	double fix, frac = modf( value, &fix );
-
-	if( decdigs > 0 )
-	{
-		*frac_len = sprintf( frac_buf, "%.*f", decdigs, fabs( frac ) ) - 1;
-		/* remove the "0" in the fix-part */
-		memmove( frac_buf, &frac_buf[1], *frac_len + 1 );
-	}
-	else
-	{
-        *frac_len = 0;
-        frac_buf[0] = '\0';
-	}
-
-	if( intdigs > 0 )
-	{
-		*fix_len = sprintf( fix_buf, "%" FB_LL_FMTMOD "d", (long long int)fix );
-	}
-	else
-	{
-        *fix_len = 0;
-        fix_buf[0] = '\0';
-	}
-}
-
-/*:::::*/
-static int hPrintDouble
+static int hPrintNumber
 	(
 		int fnum,
-		double value,
-		int mask,
-		int maxdigits
+		unsigned long long val, int val_exp, int val_isneg,
+		int mask
 	)
 {
 	FB_PRINTUSGCTX *ctx;
-	char fix_buf[BUFFERLEN+1], frac_buf[16+1+1], expbuff[16+1+1+1];
-	int fix_len, frac_len;
+	char buffer[BUFFERLEN+1], *p;
+	int val_digs, val_zdigs;
+	unsigned long long val0;
+	int val_digs0, val_exp0;
 	int c, nc, lc;
-	int doexit, padchar, intdigs, decdigs, totdigs, expdigs, doscale;
-	int	adddolar, addcomma, endcomma, signatend, signatini;
-	int isexp, isneg, value_exp;
+	int doexit, padchar, intdigs, decdigs, expdigs;
+	int adddollar, addcommas, signatend, signatini, plussign, invalid;
+	int intdigs2, expsignchar, totdigs, decpoint;
+	int i;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -418,16 +404,16 @@ static int hPrintDouble
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
-	padchar 	= ' ';
-	intdigs 	= 0;
-	decdigs 	= -1;
-	expdigs		= 0;
-	adddolar 	= 0;
-	addcomma	= 0;
-	endcomma 	= 0;
-	signatend 	= 0;
-	signatini	= 0;
-	isexp 		= 0;
+	padchar    = ' ';
+	intdigs    = 0;
+	decdigs    = -1;
+	expdigs    = 0;
+	adddollar  = 0;
+	addcommas  = 0;
+	signatend  = 0;
+	signatini  = 0;
+	plussign   = 0;
+	invalid    = 0;
 
 	lc = -1;
 
@@ -436,72 +422,93 @@ static int hPrintDouble
 
 	while( ctx->chars > 0 )
 	{
+		if( signatend ) break;
+
 		c = *ctx->ptr;
-        nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
+		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = 0;
 		switch( c )
 		{
 		case '#':
-			if( decdigs != -1 )
+			if( expdigs != 0 )
+				doexit = 1;
+			else if( decdigs != -1 )
 				++decdigs;
 			else
 				++intdigs;
 			break;
 
 		case '.':
-			decdigs = 0;
+			if( decdigs != -1 || expdigs != 0 )
+				doexit = 1;
+			else
+				decdigs = 0;
 			break;
 
 		case '*':
-			if( nc == '*' || lc == '*' ) {
-				if( padchar != '*' ) {
-					intdigs += 2; // add extra space for the 2 stars
-				}
+			if( (intdigs == 0 && decdigs == -1) && nc == '*' )
+			{
 				padchar = '*';
+				++intdigs;
+			}
+			else if( intdigs == 1 && lc == '*' )
+			{
+				++intdigs;
 			}
 			else
 				doexit = 1;
 			break;
 
 		case '$':
-			if( nc == '$' || lc == '$' || lc == '*' ) {
-				if( !adddolar ) {
-					intdigs++; // add extra space for the dollar sign
-				}
-				adddolar = 1;
+			if( lc == '*' )
+			{
+				adddollar = 1;
+				++intdigs;
 			}
+			else if( (intdigs == 0 && decdigs == -1) && nc == '$' )
+				adddollar = 1;
+			else if( intdigs == 0 && lc == '$' )
+				++intdigs;
 			else
 				doexit = 1;
 			break;
 
 		case ',':
-			if( decdigs != -1 )
+			if( decdigs != -1 || expdigs != 0 )
 				doexit = 1;
 			else
 			{
-				if( nc == '#' )
-				{
-					/* if( addcomma == 0 ) */
-						++intdigs;
-					addcomma = 1;
-				}
-				else
-					endcomma = 1;
+				addcommas = 1;
+				++intdigs;
 			}
-
 			break;
 
 		case '+':
-			if( intdigs > 0 )
-				signatend = 1;
-			else
+		case '-':
+			if( signatini )
+				doexit = 1;
+			else if( intdigs == 0 && decdigs == -1 )
+			{
+				if( c == '+' )
+					plussign = 1;
 				signatini = 1;
+			}
+			else if( expdigs == 0 || expdigs >= MIN_EXPDIGS )
+			{
+				if( c == '+' )
+					plussign = 1;
+				signatend = 1;
+			}
+			else
+				doexit = 1;
 			break;
 
 		case '^':
-			++expdigs;
-			isexp = 1;
+			if( expdigs < MAX_EXPDIGS )
+				++expdigs;
+			else
+				doexit = 1;
 			break;
 
 		default:
@@ -519,200 +526,271 @@ static int hPrintDouble
 
 	/* ------------------------------------------------------ */
 
-	/**/
-	isneg = value < 0.0;
-	value = fabs( value );
-
-	/* forced sign? */
-	if( isneg && !signatini && !signatend )
+	/* crop number of digits */
+	if( intdigs + 1 + decdigs > MAX_DIGS )
 	{
-		/* one digit less.. */
-		if( intdigs > 0 )
-			--intdigs;
-	}
-
-	/* check digits */
-	if( decdigs <= 0 )
-		totdigs = intdigs;
-	else
-	{
-		if( decdigs > maxdigits )
-			decdigs = maxdigits;
-
-		totdigs = intdigs + decdigs;
-	}
-
-	if( totdigs <= 0 )
-		totdigs = 1;
-	else if( totdigs > maxdigits )
-		totdigs = maxdigits;
-
-	/* calc exponent */
-	if( value != 0.0 )
-		value_exp = (int)floor( log10( value ) ) + 1;
-	else
-		value_exp = 0;
-
-	/* scale up if too small, hRound() will chop the fractional part */
-	doscale = TRUE;
-	if( value_exp < 0 )
-	{
-		if( abs( value_exp ) > decdigs-1 )
+		decdigs -= ((intdigs + 1 + decdigs) - MAX_DIGS);
+		if( decdigs < -1 )
 		{
-			doscale = FALSE;
-			if( isexp )
-			{
-				value_exp -= intdigs;
-				value *= pow( 10.0, -value_exp );
+			intdigs -= (-1 - decdigs);
+			decdigs = -1;
+		}
+	}
+
+	/* decimal point if decdigs >= 0 */
+	if( decdigs <= -1 )
+	{
+		decpoint = 0;
+		decdigs = 0;
+	}
+	else
+		decpoint = 1;
+
+	/* ------------------------------------------------------ */
+
+	p = &buffer[BUFFERLEN + 1];
+	ADD_CHAR( '\0' );
+
+	if( signatend )
+	{	/* put sign at end */
+		if( val_isneg )
+			ADD_CHAR( '-' );
+		else
+			ADD_CHAR( plussign? '+' : ' ' );
+	}
+	else if( val_isneg && !signatini )
+	{	/* implicit negative sign at start */
+		signatini = 1;
+		--intdigs;
+	}
+
+	val_digs = hLog10_ULL( val ) + 1;
+	val_zdigs = 0;
+
+	/* fixed-point format? */
+	if( expdigs < MIN_EXPDIGS )
+	{
+		/* append any trailing carets */
+		for( ; expdigs > 0; --expdigs )
+			ADD_CHAR( '^' );
+
+		/* backup unscaled value */
+		val0 = val;
+		val_digs0 = val_digs;
+		val_exp0 = val_exp;
+
+		/* check range */
+		if( val_exp < -decdigs )
+		{	/* scale and round integer value to get val_exp equal to -decdigs */
+			val_exp += (-decdigs - val_exp0);
+			val_digs -= (-decdigs - val_exp0);
+			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+
+			if( val == 0 )
+			{	/* val is/has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
 			}
-			else
-			{
-				value_exp = 0;
-				value = 0.0;
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_digs = 1;
+				val_exp += val_digs;
+			}
+		}
+
+		intdigs2 = val_digs + val_exp;
+		if( addcommas )
+			intdigs2 += (intdigs2 - 1) / 3;
+
+		if( intdigs2 > intdigs + 4 )
+		{	/* too many digits in number for fixed point:
+			   switch to floating-point */
+
+			expdigs = 4; /* add four digits for exp notation */
+			invalid = 1; /* add '%' sign */
+
+			/* restore unscaled value */
+			val = val0;
+			val_digs = val_digs0;
+			val_exp = val_exp0;
+
+			val_zdigs = 0;
+		}
+		else
+		{	/* keep fixed point */
+
+			if( intdigs2 > intdigs )
+			{	/* slightly too many digits in number */
+				intdigs = intdigs2; /* extend intdigs */
+				invalid = 1;        /* add '%' sign */
+			}
+
+			if( val_exp > -decdigs)
+			{	/* put excess trailing zeroes from val_exp into val_zdigs */
+				val_zdigs = val_exp - -decdigs;
+				val_exp = -decdigs;
+			}
+		}
+	}
+
+
+	/* floating-point format */
+	if( expdigs > 0 )
+	{
+		addcommas = 0; /* commas unused in f-p format */
+
+		if( intdigs == -1 || (intdigs == 0 && decdigs == 0) )
+		{	/* add [another] '%' sign */
+			++intdigs;
+			++invalid;
+		}
+
+		totdigs = intdigs + decdigs; /* treat intdigs and decdigs the same */
+		val_exp += decdigs; /* move decimal position to end */
+
+		/* blank first digit if positive and no explicit sign (pos/neg
+		   numbers should be formatted the same where possible, as in QB) */
+		if( val_isneg == 0 && signatini == 0 && signatend == 0 )
+			if( intdigs > 1)
+				--totdigs;
+
+		if( val == 0 )
+		{
+			val_exp = 0;         /* ensure exponent is printed as 0 */
+			val_zdigs = decdigs; /* enough trailing zeroes to fill dec part */
+		}
+		else if( val_digs < totdigs )
+		{	/* add "zeroes" to the end of val:
+			   subtract from val_exp and put into val_zdigs */
+			val_zdigs = totdigs - val_digs ;
+			val_exp -= val_zdigs;
+		}
+		else if( val_digs > totdigs )
+		{ /* scale down value */
+			val = hDivPow10_ULL( val, val_digs - totdigs );
+			val_exp += (val_digs - totdigs);
+			val_digs = totdigs;
+			val_zdigs = 0;
+
+			if( val >= hPow10_ULL( val_digs ) )
+			{	/* rounding up brought val to the next power of 10:
+				   add the extra digit onto val_exp */
+				val /= 10;
+				++val_exp;
 			}
 		}
 		else
-			value_exp = 0;
+			val_zdigs = 0;
+
+
+		/* output exp part */
+
+		if( val_exp < 0 )
+		{
+			expsignchar = '-';
+			val_exp = -val_exp;
+		}
+		else
+			expsignchar = '+';
+
+		/* expdigs > 3 */
+		for( ; expdigs > 3; --expdigs )
+		{
+			ADD_CHAR( (val_exp % 10) + '0' );
+			val_exp /= 10;
+		}
+		
+		/* expdigs == 3 */
+		if( val_exp > 9 ) /* too many exp digits? crop and use a '%' sign */
+			ADD_CHAR( '%' );
+		else
+			ADD_CHAR( val_exp + '0' );
+
+		/* expdigs == 2 */
+		ADD_CHAR( expsignchar );
+		ADD_CHAR( 'E' );
 	}
 
-	/* round & chop */
-	value = hRound( value, intdigs, (decdigs >= 0? decdigs : 0) );
 
-	if( doscale )
+	/* output dec part */
+	if( decpoint )
 	{
-		/* scall down if it's big - must be done after hRound() */
-		if( value_exp > 0 )
+		for( ; decdigs > 0; --decdigs )
 		{
-			if( value_exp > intdigs )
+			if( val_zdigs > 0 )
 			{
-				value_exp -= intdigs;
-				value *= pow( 10.0, -value_exp );
+				ADD_CHAR( '0' );
+				--val_zdigs;
+			}
+			else if( val_digs > 0 )
+			{
+				ADD_CHAR( (val % 10) + '0' );
+				val /= 10;
+				--val_digs;
 			}
 			else
-				value_exp = 0;
+				ADD_CHAR( '0' );
 		}
+		ADD_CHAR( '.' );
 	}
 
-	/* convert to string */
-	hToString( value, fix_buf, &fix_len, frac_buf, &frac_len, intdigs,
-			   (decdigs >= 0? decdigs : 0) );
 
-	/* separate with commas? */
-	if( addcomma )
+	/* output int part */
+	for( i = 0; i < intdigs; ++i )
 	{
-		int i, j;
-		char *p = &fix_buf[fix_len-1];
-		for( i = fix_len, j = 0; i > 0; i--, p-- )
+		if( addcommas && (i & 3) == 3 && val_digs > 0 )
+		{	/* insert comma */
+			ADD_CHAR( ',' );
+		}
+		else
 		{
-			++j;
-			if( j == 3 )
+			if( val_zdigs > 0 )
 			{
-				if( i > 1 )
-				{
-					memmove( p+1, p, fix_len-i+1+1 );
-					*p = ',';
-					++fix_len;
-				}
-				j = 0;
+				ADD_CHAR( '0' );
+				--val_zdigs;
 			}
-		}
-	}
-
-	/* prefix with a dollar sign? */
-	if( adddolar )
-	{
-		memmove( &fix_buf[1], fix_buf, fix_len+1 );
-		fix_buf[0] = '$';
-		++fix_len;
-	}
-
-	/* sign */
-	if( signatini || (isneg && !signatend) )
-	{
-		memmove( &fix_buf[1], fix_buf, fix_len+1 );
-		fix_buf[0] = (isneg? '-' : '+');
-		++fix_len;
-		if( !signatini )
-			++intdigs;
-		isneg = 0;						/* QB quirk */
-	}
-
-	/* padding */
-	if( intdigs > 0 )
-	{
-		intdigs -= fix_len;
-
-		if( intdigs > 0 )
-		{
-			memmove( &fix_buf[intdigs], fix_buf, fix_len+1 );
-			memset( fix_buf, padchar, intdigs );
-			fix_len += intdigs;
-		}
-	}
-
-	/* any fractional part? */
-	if( decdigs > 0 )
-	{
-		strcat( fix_buf, frac_buf );
-		fix_len += frac_len;
-
-		decdigs -= frac_len;
-		if( decdigs > 0 )
-		{
-			memset( &fix_buf[fix_len], '0', decdigs );
-			frac_buf[fix_len+decdigs] = '\0';
-		}
-	}
-	/* but period must be added? */
-	else if( decdigs == 0 )
-		strcat( fix_buf, "." );
-
-	/* add exponent? */
-	if( isexp )
-	{
-		sprintf( expbuff, "e%+d", value_exp );
-		value_exp = 0;
-
-		if( expdigs > 0 )
-		{
-			int len = strlen( expbuff );
-			if( len > expdigs )
+			else if( val_digs > 0 )
 			{
-				if( expdigs > 2 )
-					memmove( &expbuff[2], &expbuff[len-(expdigs-2)], expdigs-2+1 );
+				ADD_CHAR( (val % 10) + '0' );
+				val /= 10;
+				--val_digs;
+			}
+			else
+			{
+				if( i == 0 )
+					ADD_CHAR( '0' );
 				else
-					expbuff[expdigs] = '\0';
-			}
-			else if( len < expdigs )
-			{
-				int diff = expdigs - len;
-				memmove( &expbuff[2+diff], &expbuff[2], len-2+1 );
-				memset( &expbuff[2], '0', diff );
+					break;
 			}
 		}
-
-		strcat( fix_buf, expbuff );
 	}
 
-	/* sign */
-	if( signatend )
+	/* output dollar sign? */
+	if( adddollar )
+		ADD_CHAR( '$' );
+
+	/* output sign? */
+	if( signatini )
 	{
-		strcat( fix_buf, (isneg? "-" : "+") );
+		if( val_isneg )
+			ADD_CHAR( '-' );
+		else
+			ADD_CHAR( plussign? '+' : padchar );
 	}
 
-	if( endcomma )
-		strcat( fix_buf, "," );
+	/* output padding for any remaining intdigs */
+	for( ; i < intdigs; ++i )
+		ADD_CHAR( padchar );
 
-	/* too big? */
-	if( value_exp != 0 )
-	{
-		sprintf( expbuff, "%%e%+d", value_exp );
-		strcat( fix_buf, expbuff );
-	}
+	/* output '%' sign(s)? */
+	for( ; invalid > 0; --invalid )
+		ADD_CHAR( '%' );
 
 
 	/**/
-	fb_PrintFixString( fnum, fix_buf, 0 );
+	fb_PrintFixString( fnum, p, 0 );
 
 	/* ------------------------------------------------------ */
 
@@ -731,7 +809,6 @@ static int hPrintDouble
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
 /*:::::*/
 FBCALL int fb_PrintUsingDouble
 	(
@@ -740,7 +817,50 @@ FBCALL int fb_PrintUsingDouble
 		int mask
 	)
 {
-	return hPrintDouble( fnum, value, mask, 16 );
+
+	int val_isneg, val_exp;
+	unsigned long long val_ull;
+
+	if( value == 0.0 )
+	{
+		val_ull = 0;
+		val_exp = 0;
+		val_isneg = 0;
+	}
+	else
+	{
+		val_isneg = (value < 0.0);
+		value = fabs(value);
+
+		val_ull = (unsigned long long)value;
+		val_exp = 0;
+
+		if( ((double)val_ull) != value )
+		{
+			val_exp = (int)floor( log10( value ) - 16 + 0.5 );
+
+			value *= pow( 10.0, -val_exp );
+
+			if( value >= 1.E+17 )
+			{
+				value /= 10.0;
+				--val_exp;
+			}
+			else if( value < 1.E+15 )
+			{
+				value *= 10.0;
+				++val_exp;
+			}
+
+			value = floor( value );
+
+			val_ull = (unsigned long long) value;
+		}
+
+	}
+
+	return hPrintNumber( fnum, val_ull, val_exp, val_isneg, mask );
+
 }
 
 /*:::::*/
@@ -751,32 +871,6 @@ FBCALL int fb_PrintUsingSingle
 		int mask
 	)
 {
-	double value = value_f;
-	int value_exp;
-
-	if( value != 0.0 )
-	{
-		value_exp = (int)floor( log10( fabs( value ) ) ) + 1;
-
-		/* fix dizima */
-		if( value_exp <= 0 )
-			value += pow( 10.0, value_exp - 7 );
-		else
-			value += pow( 10.0, -(value_exp + 7) );
-	}
-
-	return hPrintDouble( fnum, value, mask, 7 );
-}
-
-/* !!!FIXME!! remove this function when the chicken-egg is over */
-
-FBCALL int fb_PrintUsingVal
-	(
-		int fnum,
-		double value,
-		int mask
-	)
-{
-	return fb_PrintUsingDouble( fnum, value, mask );
+	return fb_PrintUsingDouble( fnum, (double)value_f, mask );
 }
 
