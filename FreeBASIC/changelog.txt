@@ -9,6 +9,7 @@ Version 0.21.0 Beta:
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
 - ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
+- comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
 
 
 Version 0.20.0 Beta:

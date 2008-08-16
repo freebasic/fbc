@@ -1263,6 +1263,8 @@ function astNewBOP _
 			if( typeGetDtAndPtrOnly( dtype ) <> typeGetDtAndPtrOnly( ldtype ) ) then
 				subtype = r->subtype
 				l = astNewCONV( dtype, subtype, l )
+				if( l = NULL ) then exit function
+				
 				ldtype = dtype
 				ldclass = rdclass
 
@@ -1277,6 +1279,8 @@ function astNewBOP _
 
 				case else
 					r = astNewCONV( dtype, subtype, r )
+					if( r = NULL ) then exit function
+					
 					rdtype = dtype
 					rdclass = ldclass
 				end select
