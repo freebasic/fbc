@@ -1,13 +1,14 @@
 Version 0.21.0 Beta:
 
+[changed]
+- BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
+
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
-
-[changed]
-- BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
+- ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
 
 
 Version 0.20.0 Beta:

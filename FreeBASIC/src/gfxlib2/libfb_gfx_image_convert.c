@@ -184,7 +184,7 @@ FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp,
 			case 4: convert = (isrgb != 0? fb_image_convert_24to32: fb_image_convert_24bgrto32); break;
 		}
 	}
-	else
+	else if (src_bpp == 32)
 	{
 		switch (BYTES_PER_PIXEL( dst_bpp ))
 		{
@@ -194,6 +194,8 @@ FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp,
 			case 4: convert = (isrgb != 0? fb_image_convert_32to32: fb_image_convert_32bgrto32); break;
 		}
 	}
+	else
+		return;
 
 	convert( src, dest, width );
 }
