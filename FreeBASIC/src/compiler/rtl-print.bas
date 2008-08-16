@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 49 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 51 ) = _
 	{ _
 		/' fb_PrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void '/ _
 		( _
@@ -838,6 +838,44 @@
 	 			) _
 	 		} _
 		), _
+		/' fb_PrintUsingLongint ( byval filenum as integer, byval v as longint, _
+		  							byval mask as integer ) as integer '/ _
+		( _
+			@FB_RTL_PRINTUSG_LL, NULL, _
+			FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
+		/' fb_PrintUsingULongint ( byval filenum as integer, byval v as ulongint, _
+		  							byval mask as integer ) as integer '/ _
+		( _
+			@FB_RTL_PRINTUSG_ULL, NULL, _
+			FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				) _
+			} _
+		), _
 		/' fb_PrintUsingEnd ( byval filenum as integer ) as integer '/ _
 		( _
 			@FB_RTL_PRINTUSGEND, NULL, _
@@ -1395,6 +1433,22 @@ function rtlPrintUsing _
 
 	case FB_DATATYPE_SINGLE
 		f = PROCLOOKUP( PRINTUSG_SNG )
+
+	case FB_DATATYPE_LONGINT, _
+	    FB_DATATYPE_INTEGER, _
+	    FB_DATATYPE_LONG, _
+	    FB_DATATYPE_SHORT, _
+	    FB_DATATYPE_BYTE
+
+		f = PROCLOOKUP( PRINTUSG_LL )
+
+	case FB_DATATYPE_ULONGINT, _
+	    FB_DATATYPE_UINT, _
+	    FB_DATATYPE_ULONG, _
+	    FB_DATATYPE_USHORT, _
+	    FB_DATATYPE_UBYTE
+
+		f = PROCLOOKUP( PRINTUSG_ULL )
 
 	case else
 		f = PROCLOOKUP( PRINTUSG_DBL )

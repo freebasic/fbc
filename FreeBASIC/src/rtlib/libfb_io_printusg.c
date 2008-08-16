@@ -874,3 +874,43 @@ FBCALL int fb_PrintUsingSingle
 	return fb_PrintUsingDouble( fnum, (double)value_f, mask );
 }
 
+/*:::::*/
+FBCALL int fb_PrintUsingULongint
+	(
+		int fnum,
+		unsigned long long value_ull,
+		int mask
+	)
+{
+
+	return hPrintNumber( fnum, value_ull, 0, 0, mask );
+
+}
+
+/*:::::*/
+FBCALL int fb_PrintUsingLongint
+	(
+		int fnum,
+		long long val_ll,
+		int mask
+	)
+{
+
+	int val_isneg;
+	unsigned long long val_ull;
+
+	if( val_ll < 0 )
+	{
+		val_isneg = 1;
+		val_ull = -val_ll;
+	}
+	else
+	{
+		val_isneg = 0;
+		val_ull = val_ll;
+	}
+	
+	return hPrintNumber( fnum, val_ull, 0, val_isneg, mask );
+
+}
+
