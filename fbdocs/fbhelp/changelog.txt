@@ -1,0 +1,63 @@
+Version 0.8b:
+
+[changed]
+- minor changes for fbc 0.20 compatibility
+
+
+Version 0.7b:
+
+[changed]
+- minor changes for fbc 0.18 compatibility
+
+
+Version 0.6b:
+
+[added]:
+- -blue option for blue background
+- default colour for comments is now 7
+- -version command line option
+- now displaying program version number on startup
+
+[changed]:
+- file name globbing disabled on DOS/WIN
+- command line options may be prefixed with "-" or "/"
+- linux version now builds as a console application
+- use makefile GFX=1 to build the fbgfx version on any port
+
+
+Version 0.5b:
+
+- Refresh only
+
+
+Version 0.4b:
+
+[changed]
+- minor changes for fbc 0.17b CVS compatibility
+
+
+Version 0.3b:
+
+[changed]
+- minor changes for fbc 0.17b CVS compatibility
+
+
+Version 0.2b:
+
+[added]
+- support for help file compression using gzip as the initial compressor and zlib as decompressor
+- CTRL+W for write topic on 
+- Input box to enter user supplied filename for witing topics to text file
+
+[fixed]
+- fixed problems with scroll bar not scrolling on certain sized topics
+- END key not going to end of line
+- dos version assumes 8.3 filenames unless environment variable LFN=Y
+
+[changed]
+- All io handled by CRT / GZIO compatible routines instead of FBRT I/O routines
+
+
+Version 0.1b:
+
+- initial release

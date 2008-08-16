@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="Control Flow Statements"}}----
+Statements that direct the flow of execution.
+
+{{fbdoc item="desc"}}
+	Control flow statements control program execution from one statement to the next; they determine what statements get executed and when, based on some kind of condition. The condition is always some expression that evaluates to true or false. Most control flow statements check for some kind of condition, and direct code flow accordingly, that is, they do or do not execute a block of code (except for the transferring control flow statements and ##[[KeyPgDoloop DO..LOOP]]##, which has an optional condition). Additionally, all control flow statements can be nested, that is, they can have other control flow statements within the statement block.
+
+	Control flow statements come in three flavors: transferring, branching and looping. Transferring control flow statements transfer execution to different parts of code. Branching control flow statements execute certain statements blocks based on a condition, while looping control flow statements execute code repeatedly while or until a condition is met.
+
+{{fbdoc item="section" value="Transferring Statements"}}
+	These statements are used for either unconditional or conditional, temporary or permanent transfer of execution. The "ON" variants conditionally select a point of transfer from a list of text labels.  Execution may be transferred between different scopes provided that the branching does not cross any local array, variable length string or object definition.
+
+	=={{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}==
+		Unconditionally transfers execution to another point in code defined by a text label. Execution resumes with the first statement after the label.
+
+	=={{fbdoc item="keyword" value="KeyPgGosub|GOSUB"}}==
+		Unconditionally and temporarily transfers execution to another point in code, defined by a text label. Execution resumes with the first statement after the label. Execution is then brought back to its original location with the ##[[KeyPgReturn RETURN]]## keyword. Yes, ##[[KeyPgGosub GOSUB]]## statements can be nested, that is, multiple ##[[KeyPgGosub GOSUB]]## statements can be executed before the first corresponding ##[[KeyPgReturn RETURN]]##, but there must always be a corresponding ##[[KeyPgReturn RETURN]]## throughout the course of an application.
+
+	=={{fbdoc item="keyword" value="KeyPgOngoto|ON GOTO"}}==
+		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
+
+	=={{fbdoc item="keyword" value="KeyPgOngosub|ON GOSUB"}}==
+		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
+
+{{fbdoc item="section" value="Branching Statements"}}
+	These statements are used for executing one of a number of statement blocks.
+
+	=={{fbdoc item="keyword" value="KeyPgIfthen|IF..END IF"}}==
+		Executes a block of statements if an expression evaluates to true (the condition). If and only if the expression evaluates to false, another statement block can be executed if yet another expression evaluates to true using the ##[[KeyPgElseif ELSEIF]]## keyword. If and only if all of those expressions evaluate to false, a statement block can be execute using the ##[[KeyPgElse ELSE]]## keyword.
+
+	=={{fbdoc item="keyword" value="KeyPgSelectcase|SELECT..END SELECT"}}==
+		Executes one of a number of statement blocks. This branching statement tries to meet a condition of an expression and one of a number of case expressions. The case expressions are checked in the order in which they are given, and the first case expression that is met has its associated statement block executed. Like ##[[KeyPgIfthen IF..END IF]]##, a default case can be defined when no other case expression meets the condition, and, as with the looping control flow statements, a case's statement block can be prematurely broken out of with the ##[[KeyPgExit EXIT]]## keyword.
+
+{{fbdoc item="section" value="Looping Statements"}}
+	These statements are used for executing a block of statements repeatedly. Within a statement block, the loop can be prematurely re-executed using the ##[[KeyPgContinue CONTINUE]]## keyword, or broken out of using the ##[[KeyPgExit EXIT]]## keyword. Whether the loop is terminated by the condition or with the ##[[KeyPgExit EXIT]]## keyword, execution always begins at the first statement after the block.
+
+	=={{fbdoc item="keyword" value="KeyPgWhilewend|WHILE..WEND"}}==
+		Executes a block of statements while some expression evaluates to true (the condition). The expression is evaluated and checked before the block of statements is executed.
+
+	=={{fbdoc item="keyword" value="KeyPgFornext|FOR..NEXT"}}==
+		Like ##[[KeyPgWhilewend WHILE..WEND]]##, but more suited to loop a certain number of times. This loop initializes a so-called iterator with an initial value that is checked against a test expression. If the iterator compares less than or equal to the test expression (the condition), the block of statements is executed and the iterator gets incremented. The loop can also be setup so that the iterator gets decremented after every loop, in which case it is compared greater than or equal to the test expression. Iterators can be numeric data types like ##[[KeyPgInteger INTEGER]]## or ##[[KeyPgSingle DOUBLE]]##, or user-defined types. User-defined types must implement ##[[KeyPgOpFor operator for]]##.
+	
+	=={{fbdoc item="keyword" value="KeyPgDoloop|DO..LOOP"}}==
+		The most versatile of the looping control flow statements, this loop can execute a block of statements while or until an expression evaluates to true (the condition). It can also delay the checking of the expression until after the block has executed the first time, useful when a block of statements needs to be executed //at least once//. Finally, this loop can have no condition at all, and merely loop indefinitely.
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

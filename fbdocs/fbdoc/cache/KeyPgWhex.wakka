@@ -1,0 +1,64 @@
+{{fbdoc item="title" value="WHEX"}}----
+Returns the hexadecimal wstring (Unicode) representation of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Whex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Whex**( //number// [, //digits// ] )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A whole number or expression evaluating to a whole number.
+	##//digits//##
+		Optional number of digits to return.
+
+{{fbdoc item="ret"}}
+	Returns a hexadecimal [[KeyPgString string]] representation of //number//.
+
+{{fbdoc item="desc"}}
+	Hexadecimal digits range from 0-9, or A-F.
+
+	If you specify ##//digits//## > 0, the resulting ##[[KeyPgWstring wstring]]## will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+
+	The length of the wstring will not go longer than the maximum number of digits required for the type of ##//expression//## (8 for an integer, 16 for floating point or longint)
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/whex.bas"}}%%(freebasic)
+print Hex(54321)
+print Hex(54321, 2)
+print Hex(54321, 5)
+%%
+	will produce the output:
+
+%%D431
+31
+0D431
+%%
+
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not supported in the DOS port of FreeBASIC.
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Whex""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgHex Hex]]##
+	- ##[[KeyPgWbin Wbin]]##
+	- ##[[KeyPgWoct Woct]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

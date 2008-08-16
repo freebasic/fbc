@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiler Option: -Wa"}}----
+Pass options to the assembler.
+
+{{fbdoc item="syntax"}}##
+	**-Wa** < //options// >
+##
+{{fbdoc item="param"}}
+	##//options//##
+		Additional options to pass to the assembler.
+
+{{fbdoc item="desc"}}
+	The ##-Wa## compiler option passes additional options to GAS, the assembler.  Options must be separated by commas only.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptWl Compiler Option: -Wl]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

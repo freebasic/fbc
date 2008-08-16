@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="END (Statement)"}}----
+Control flow statement to end the program.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **End** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+##
+{{fbdoc item="usage"}}##
+	**End** [ //retval// ]
+##
+{{fbdoc item="param"}}
+	##//retval//##
+		Error code returned to system.
+
+{{fbdoc item="desc"}}
+	Used to terminate the program, and return to the operating system.  An optional integer return value can be specified to indicate an error code to the system.  If no return value is given, a value of 0 is automatically returned.
+
+	Usage of this statement does not cleanly close scope.   Variables and memory are not destroyed automatically and object destructors are not called.  Calling the required destructors and other clean-up should be explicitly performed before an ##**End**## statement.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/end.bas"}}%%(freebasic)
+'' This program stores input from the user in a string, checks the strings length,
+'' by calling valid_string, and either displays the string, or an error message
+
+function valid_string( s as string ) as integer
+   return len( s )
+end function
+
+'' assign input to text string (a string of spaces will input as an empty string)
+dim as string text
+print "Type in some text ( try ""abc"" ): " ;
+input text
+
+'' check if string is valid (not empty). If so, print an error message and return
+'' to the OS with error code -1
+if( not valid_string( text ) ) then
+   print "ERROR: you must enter a valid string"
+   sleep : end -1
+end if
+
+'' string is valid, so print the string and return to the OS with error code 0
+print "You entered: " ; text
+sleep : end 0
+%%
+
+{{fbdoc item="diff"}}
+	- The END statement supports specifying a custom return value to be returned to the operating system.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEndblock End (Block)]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

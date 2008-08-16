@@ -1,0 +1,205 @@
+======Wikka Formatting Guide======
+
+
+Once you have read through this, test your formatting skills in the SandBox.
+----
+===1. Text Formatting===
+
+''Note: Anything between 2 sets of double-quotes is not formatted.'' 
+
+	""**bold**""
+	**bold **
+
+	""//I'm italic text!//""
+	//I'm italic text!//
+
+	""And I'm __underlined__!""
+	And I'm __underlined__!
+
+	""##monospace text##""
+	##monospace text##
+
+	""''highlight text''"" (using 2 single-quotes)
+	''highlight text''
+
+	""++Strike through text++""
+	++Strike through text++
+
+	""Press #%ANY KEY#%""
+	Press #%ANY KEY#%
+
+	""@@Center text@@""
+	@@Center text@@
+
+===2. Headers===
+
+Use between five = (for the biggest header) and two = (for the smallest header) on both sides of a text.  
+
+	""====== Really big header ======""
+	====== Really big header ======
+	
+	""===== Rather big header =====""
+	===== Rather big header =====
+	
+	""==== Medium header ===="" 
+	==== Medium header ====
+	
+	""=== Not-so-big header ==="" 
+	=== Not-so-big header ===
+	
+	""== Smallish header =="" 
+	== Smallish header ==
+
+===3. Horizontal separator===
+	""----""
+----
+
+===4. Forced line break===
+	""---""
+---
+----
+===5. Lists / Indents===
+Indent text using **4** spaces (which will auto-convert into tabs) or using "~". To make bulleted / ordered lists, use the following codes (you can use 4 spaces instead of "~"):
+
+""~- bulleted list:""
+	- bulleted list
+	- Line two
+
+""~1) numbered list:""
+	1) numbered list
+	1) Line two
+
+""~A) Using uppercase characters:""
+	A) Using uppercase characters
+	A) Line two
+
+""~a) Using lowercase characters:""
+	a) Using lowercase characters
+	a) Line two
+
+""~I) using uppercase roman numerals:""
+	I) using Latin numbers
+	I) Line two
+
+""~i) using lowercase roman numerals:""
+	i) using Latin numbers
+	i) Line two
+
+----
+
+===6. Inline comments===
+
+""~& Comment""
+""~~& Subcomment""
+""~~~& Subsubcomment""
+
+~& Comment
+~~& Subcomment
+~~~& Subsubcomment
+
+----
+===7. Images===
+
+To place images on a Wiki page, use:
+""{{image class="center" alt="DVD logo" title="An Image Link" url="images/dvdvideo.gif" link="RecentChanges"}}""
+{{image class="center" alt="dvd logo" title="An Image Link" url="images/dvdvideo.gif" link="RecentChanges"}}
+Links can be external, or internal Wiki links. You don't have to enter a link at all, and in that case just an image will be inserted. You can also use the classes 'left' and 'right' to float images left and right. You don't need to use all those attributes, only url is essential.
+
+----
+===8. Links===
+
+To link to other wiki pages, write
+	- a WikiName
+	- or a forced link with ""[["" and ""]]"" around it (everything after the first space will be shown as description)
+		- Example: ""[[JennaPage Jenna's Home Page]]""
+	- or an image with a link 
+
+To link to external pages, write
+	- a http address inside the page
+	- or a forced link with ""[["" and ""]]"" around it (everything after the first space will be shown as description)
+		- Example: ""[[http://example.com/jenna/ Jenna's Home Page]]""
+	- or an image with a link
+	- or an InterWiki link (see InterWiki page for wiki list)
+		- Examples:
+			- WikiPedia:WikkaWiki
+			- Google:CSS
+			- Thesaurus:Happy
+
+----
+===9. Tables===
+
+To create a table use this code:
+""{{table columns="3" cellpadding="1" cells="BIG;GREEN;FROGS;yes;yes;no;no;no;###"}}"" to give:
+
+{{table columns="3" cellpadding="1" cells="BIG;GREEN;FROGS;yes;yes;no;no;no;###"}}
+
+""###"" means the cell is empty.
+
+----
+===10. Colored Text===
+
+""{{color c="blue" text="This is a test."}}"" gives:
+
+{{color c="blue" text="This is a test."}}
+
+If you want to use hex values:
+
+""{{color hex="#DD0000" text="This is another test."}}"" to give:
+
+{{color hex="#DD0000" text="This is another test."}}
+	
+----
+===11. Floats===
+
+ **Left floated box - use two < signs before and after the block**
+	<<Some text in a floated box hanging around<<Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.
+
+	**Right floated box, use two > characters before and after the block**
+	>>Some text in a floated box hanging around>>Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.
+
+	""Use ::c::  to clear floated blocks...""
+
+----
+===12. Code formatters===
+
+Simply use ""%%(formatter) code %%"" - see below for a list of available formatters.
+
+Example:
+""%%(php) PHP code%%:""
+%%(php) 
+<?php
+phpinfo();
+echo "Hello, World!";
+?>
+%%
+
+{{table columns="2" cellpadding="1" cells="LANGUAGE;FORMATTER;Actionscript;actionscript;ADA;ada;Apache Log;apache;ASM;asm;ASP;asp;Bash;bash;C;c;C for Macs;c_mac;c#;csharp;C++;cpp;CAD DCL;caddcl;CadLisp;cadlisp;CSS;css;Delphi;delphi;HTML;html4strict;Java;java;Javascript;javascript;Lisp;lisp;Lua;lua;NSIS;nsis;Objective C;objc;OpenOffice BASIC;oobas;Pascal;pascal;Perl;perl;PHP;php;Python;phyton;Q(uick)BASIC;qbasic;Smarty;smarty;SQL;sql;VB.NET;vbnet;Visual BASIC;vb;Visual Fox Pro;visualfoxpro;XML;xml"}}
+
+----
+===13. [[freemind.sourceforge.net/ FreeMind]] maps===
+
+There are two options for including maps:
+
+Option 1: Upload a ""FreeMind"" file to a webserver, and then place a link to it on a wikka page:
+	""http://yourdomain.com/freemind/freemind.mm""
+	No special formatting is necessary.
+
+Option 2: Paste the ""FreeMind"" data directly into a wikka page:
+	- Open a ""FreeMind"" file with a text editor.
+	- Select all, and copy the data.
+	- Browse to your Wikka site and paste the Freemind data into a page. 
+
+----
+===14. Embedded HTML===
+Use two doublequotes around the html tags. 
+
+&quot&quot
+[html code]
+&quot&quot
+
+By default, some HTML tags are removed by the ""SafeHTML"" parser to protect against potentially dangerous code.  The list of tags that are removed can be found on the Wikka:SafeHTML page.
+
+It is possible to allow //all// HTML tags to be used, see Wikka:UsingHTML for more information.
+
+----
+CategoryWiki

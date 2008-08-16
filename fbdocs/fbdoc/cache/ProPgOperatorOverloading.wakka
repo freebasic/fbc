@@ -1,0 +1,86 @@
+{{fbdoc item="title" value="Operator Overloading"}}----
+Changing the way user defined types work with built-in operators.
+
+{{anchor name="OVERVIEW|Overview"}}
+{{anchor name="GLOBAL|Global Operators"}}
+{{anchor name="MEMBER|Member Operators"}}
+
+{{anchor name="OVERVIEW"}}{{fbdoc item="section" value="Overview"}}
+	Simply, operators are procedures, and their arguments are called //operands//. Operators that take one operand (##[[KeyPgOpNot Operator Not]]##) are called //unary operators//, operators that take two operands (##[[KeyPgOpAdd Operator +]]##) are called //binary operators// and operators taking three operands (##[[KeyPgIif Operator Iif]]##) are called //ternary operators//.
+
+	Most operators are not called like procedures. Instead, their operator symbol is placed next to their operands. For unary operators, their sole operand is placed to the right of the symbol. For binary operators, their operands - referred to as the left and right-hand side operands - are placed to the left and right of the operator symbol. FreeBASIC has one ternary operator, ##[[KeyPgIif Operator Iif]]##, and it is called like a procedure, with its operands comma-separated surrounded by parenthesis. For example, the following code calls ##[[KeyPgIif Operator Iif]]## to determine if a pointer is valid. If it is, ##[[KeyPgOpValueOf Operator * (Value of)]]## is called to dereference the pointer, and if not, ##[[KeyPgOpDivide Operator / (Divide)]]## is called to find the value of twenty divided by four.
+
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/iif.bas"}}%%(freebasic)
+Dim i As Integer = 420
+Dim p As Integer Ptr = @i
+
+Dim result As Integer = IIf( p, *p, cint( 20 / 4 ) )
+%%
+	Notice the call to ##[[KeyPgIif Operator Iif]]## is similar to a procedure call, while the calls to ##[[KeyPgOpValueOf Operator * (Value of)]]## and ##[[KeyPgOpDivide Operator / (Divide)]]## are not. In the example, ##//p//## is the operand to ##[[KeyPgOpValueOf Operator * (Value of)]]##, and ##//20//## and ##//4//## are the left and right-hand side operands of ##[[KeyPgOpDivide Operator / (Divide)]]##, respectively.
+
+	All operators in FreeBASIC are predefined to take operands of standard data types, like ##[[KeyPgInteger Integer]]## and ##[[KeyPgSingle Single]]##, but they may also be overloaded for user-defined types; that is, they can be defined to accept operands that are objects as well. There are two types of operators that can be overloaded, //global operators// and //member operators//.
+
+{{anchor name="GLOBAL"}}{{fbdoc item="section" value="Global Operators"}}
+	Global operators are those that are declared in module-level scope (globally). These are the operators ##[[KeyPgOpNegate - (Negate)]]##, ##[[KeyPgOpNot Not (Bitwise not)]]##, ##[[KeyPgOpPtrMemberAccess -> (Pointer to member access)]]##, ##[[KeyPgOpValueOf * (Value of)]]##, ##[[KeyPgOpAdd + (Add)]]##, ##[[KeyPgOpSubtract - (Subtract)]]##, ##[[KeyPgOpMultiply * (Multiply)]]##, ##[[KeyPgOpDivide / (Divide)]]##, ##[[KeyPgOpIntegerDivide \ (Integer divide)]]##, ##[[KeyPgOpConcatConvert & (Concatenate)]]##, ##[[KeyPgOpModulus Mod (Modulus)]]##, ##[[KeyPgOpShiftLeft Shl (Shift left)]]##, ##[[KeyPgOpShiftRight Shr (Shift right)]]##, ##[[KeyPgOpAnd And (Bitwise and)]]##, ##[[KeyPgOpOr Or (Bitwise or)]]##, ##[[KeyPgOpXor Xor (Bitwise xor)]]##, ##[[KeyPgOpImp Imp (Bitwise imp)]]##, ##[[KeyPgOpEqv Eqv (Bitwise eqv)]]##, ##[[KeyPgOpExponentiate ^ (Exponentiate)]]##, ##[[KeyPgOpEqual = (Equal)]]##, ##[[KeyPgOpNotEqual <> (Not equal)]]##, ##[[KeyPgOpLessThan < (Less than)]]##, ##[[KeyPgOpGreaterThan > (Greater than)]]##, ##[[KeyPgOpLessThanOrEqual <= (Less than or equal)]]## and ##[[KeyPgOpGreaterThanOrEqual >= (Greater than or equal)]]##.
+
+	Declaring a custom global operator is similar to declaring a procedure. The ##[[KeyPgDeclare Declare]]## keyword is used with the ##[[KeyPgOperator Operator]]## keyword. The operator symbol is placed next followed by the comma-separated list of parameters surrounded in parenthesis that will represent the operands passed to the operator. Unlike procedures, operators can be overloaded by default, so the ##[[KeyPgOverload Overload]]## keyword is not necessary when declaring custom operators. At least one of the operator's parameters must be of user-defined type (after all, operators with built-in type parameters are already defined).
+
+	The following example declares the global operators ##[[KeyPgOpNegate - (Negate)]]## and ##[[KeyPgOpMultiply + (Multiply)]]## to accept operands of a user-defined type.
+
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/global-ops.bas"}}%%(freebasic)
+type Rational
+	as integer numerator, denominator
+end type
+
+operator - (byref rhs as Rational) as Rational
+	return type(-rhs.numerator, rhs.denominator)
+end operator
+
+operator * (byref lhs as Rational, byref rhs as Rational) as Rational
+	return type(lhs.numerator * rhs.numerator, _
+		lhs.denominator * rhs.denominator)
+end operator
+
+dim as Rational r1 = (2, 3), r2 = (3, 4)
+dim as Rational r3 = -(r1 * r2)
+print r3.numerator & "/" & r3.denominator
+%%
+	Here the global operators are defined for type ##//Rational//##, and are used in the initialization expression for ##//r3//##. The output is ##//-6/12//##.
+
+{{anchor name="MEMBER"}}{{fbdoc item="section" value="Member Operators"}}
+	Member operators are declared inside a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition, like member procedures, and they are the cast and assignment operators ##[[KeyPgOpAssignment Let (Assign)]]##, ##[[KeyPgCast Cast (Cast)]]##, ##[[KeyPgOpCombineAdd += (Add and assign)]]##, ##[[KeyPgOpCombineSub -= (Subtract and assign)]]##, ##[[KeyPgOpCombineMultiply *= (Multiply and assign)]]##, ##[[KeyPgOpCombineDivide /= (Divide and assign)]]##, ##[[KeyPgOpCombineIntegerDivide \= (Integer divide and assign)]]##, ##[[KeyPgOpCombineExponentiate ^= (Exponentiate and assign)]]##, ##[[KeyPgOpCombineConcat &= (Concat and assign)]]##, ##[[KeyPgOpCombineModulus Mod= (Modulus and assign)]]##, ##[[KeyPgOpCombineShiftLeft Shl= (Shift left and assign)]]##, ##[[KeyPgOpCombineShiftRight Shr= (Shift right and assign)]]##, ##[[KeyPgOpCombineAnd And= (Conjunction and assign)]]##, ##[[KeyPgOpCombineOr Or= (Inclusive disjunction and assign)]]##, ##[[KeyPgOpCombineXor Xor= (Exclusive disjunction and assign)]]##, ##[[KeyPgOpCombineImp Imp= (Implication and assign)]]## and ##[[KeyPgOpCombineEqv Eqv= (Equivalence and assign)]]##.
+
+	When declaring member operators, the ##[[KeyPgDeclare Declare]]## and ##[[KeyPgOperator Operator]]## keywords are used followed by the operator symbol and its parameter list. Like member procedures, member operators are defined outside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## definition, and the symbol name is prefixed with the name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## name.
+
+	The following example overloads the member operators ##[[KeyPgCast Cast (Cast)]]## and ##[[KeyPgOpCombineMultiply *= (Multiply and assign)]]## for objects of a user-defined type.
+
+{{fbdoc item="filename" value="examples/manual/proguide/opovld/member-ops.bas"}}%%(freebasic)
+type Rational
+	as integer numerator, denominator
+	
+	declare operator cast () as double
+	declare operator cast () as string
+	declare operator *= (byref rhs as Rational)
+end type
+
+operator Rational.cast () as double
+	return numerator / denominator
+end operator
+
+operator Rational.cast () as string
+	return numerator & "/" & denominator
+end operator
+
+operator Rational.*= (byref rhs as Rational)
+	numerator *= rhs.numerator
+	denominator *= rhs.denominator
+end operator
+
+dim as Rational r1 = (2, 3), r2 = (3, 4)
+r1 *= r2
+dim as double d = r1
+print r1, d
+%%
+	Notice that the member operator ##[[KeyPgCast Cast (Cast)]]## is declared twice, once for the conversion to ##[[KeyPgDouble Double]]## and once for the conversion to ##[[KeyPgString String]]##. This is the only operator (or procedure) that can be declared multiple times when only the return type differs. The compiler decides which cast overload to call based on how the object is used (in the initialization of the ##[[KeyPgDouble Double]]## ##//d//##, ##//Rational.Cast as double//## is called, and in the ##[[KeyPgPrint Print]]## statement, ##//Rational.Cast as string//## is used instead).
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

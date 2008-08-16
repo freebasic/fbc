@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="SCREENUNLOCK"}}----
+Unlocks work page's framebuffer
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenunlock** ( [[KeyPgByval byval]] //startline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //endline// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+##
+{{fbdoc item="usage"}}##
+	**Screenunlock** [ //start_line// ] [, //end_line// ]
+##
+{{fbdoc item="param"}}
+	##//startline//##
+		optional argument specifying first screen line to be updated. If omitted, top screen line is assumed.
+	##//endline//##
+		optional argument specifying last screen line to be updated. If omitted, bottom screen line is assumed.
+
+{{fbdoc item="desc"}}
+	##**Screenunlock**## unlocks the current work page assuming it was previously locked by calling ##[[KeyPgScreenlock Screenlock]]## and lets the system restart updating the screen regularly. When called with ##start_line## and ##end_line## , only the screen area between those lines is assumed to have changed, and will be updated. 
+
+	An internal flag exists remembering the screen lock state, thus ##**Screenunlock**## has an effect only on a screen that is locked - or in other words, a screen that is not locked with ##**Screenlock**## cannot get unlocked, however ##**Screenunlock**## still will force an update of given area or full screen.   
+
+	After ##**Screenunlock**## is called, all graphics statements still may be safely used, OTOH accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only be used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
+
+	Warning (Win32, Linux) : The screen is locked by stopping the thread that processes also the OS' events. This means the screen should be locked only for the short time required to redraw it, and no user input will be received while the screen is locked.
+
+{{fbdoc item="ex"}}
+	See ##[[KeyPgScreenptr Screenptr]]## example.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenunlock""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenlock Screenlock]]##
+	- ##[[KeyPgScreenptr Screenptr]]##
+
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

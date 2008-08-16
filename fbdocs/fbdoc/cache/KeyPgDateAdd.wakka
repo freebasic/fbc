@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="DateAdd"}}----
+Offset a date with a specified interval
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateAdd""** ( //interval// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""DateAdd""**( //interval//, //number//, //date_serial// )
+##
+{{fbdoc item="param"}}
+	##//interval//##
+		string indicating which period of time corresponds to one unit of ##//number//##
+	##//number//##
+		the number of intervals to add to the base date.  The number will be rounded to the nearest integer.
+	##//date_serial//##
+		the base date
+
+{{fbdoc item="ret"}}
+	Returns a [[ProPgDates Date Serial]] corresponding to the received ##//date_serial//## plus the ##//number//## of ##//intervals//##.
+
+{{fbdoc item="desc"}}
+	Interval is specified as follows:
+	
+	{{table columns="2" cellpadding="1" cells="value;interval;yyyy;years;q;quarter(three months);m;months;ww;weeks;d,w,y;days;h;hours;n;minutes;s;seconds"}}  
+
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/dateadd.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+const fmt = "ddddd ttttt"
+dim d as double
+d = now()
+
+print "1 hour from now is ";
+print Format( DateAdd( "h", 1, d ), fmt )
+
+print "1 day from now is ";
+print Format( DateAdd( "d", 1, d ), fmt )
+
+print "1 week from now is ";
+print Format( DateAdd( "ww", 1, d ), fmt )
+
+print "1 month from now is ";
+print Format( DateAdd( "m", 1, d ), fmt )
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in Visual Basic.
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

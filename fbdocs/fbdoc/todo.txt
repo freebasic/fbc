@@ -1,0 +1,41 @@
+fbdoc TODO list
+---------------
+
+[ ]	add proxy support to CHttp.
+
+[ ] add an image getter using libCURL so the on-line images
+	can be included in the CHM version of the docs.
+	[ ] built-in support for image getting ( uses external tool currently )
+	[ ] only include images in the HTML tarball that are actually referenced
+	    by the doc pages
+	[X] add support to CWakka2Html for images
+
+[ ]	remove preservation of the TAB + "~" indentation.  only TAB is needed.
+	- The "~" characters are preserved for now to allow easy testing of
+	  recently added CWiki->Build() method.
+
+[ ] improve format of keywords.lst so that it could be used as an input file
+	to generate other files for editors that support syntax highlighting.
+
+[ ] Code clean-up
+	[ ] refactor common code in CWakka2Html and CWakka2fbhelp
+	[ ] refactor common code in CWiki2Chm, CWiki2Txt, and CWiki2fbhelp
+	[ ] combine mkfbhelpfile.bas with CWiki2Txt and don't write out 100's of
+		files during the build
+
+[ ] Distribution
+	[ ] add makefiles, scripts, a batchfile, ( anything ) to build all docs
+	    from scratch and zip/gzip all files needed for distribution.
+
+[ ] Documentation
+	[ ] create documentation for fbdoc command line options
+	[ ] create an overview of how fbdoc works
+	[ ] create documentation for fbdoc library ( the library might change so
+		this can't be overly complicated to maintain )
+	[ ] create a CHM possibly using just the FBWiki* pages from the on-line
+		docuentation
+
+[ ] New emitters
+	[ ] write the Texinfo emitter
+	[ ] write the PDF emitter ( may require an intermediate format, or based
+		on Texinfo output files )

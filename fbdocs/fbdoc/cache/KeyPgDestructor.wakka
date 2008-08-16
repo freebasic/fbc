@@ -1,0 +1,80 @@
+{{fbdoc item="title" value="DESTRUCTOR"}}----
+Called automatically when a class or user defined type goes out of scope or is destroyed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		//field declarations//
+		[[KeyPgDeclare Declare]] **Destructor** ( )
+	End Type
+	
+	**Destructor** //typename// ( )
+		//statements//
+	**End Destructor**
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+
+{{fbdoc item="desc"}}
+	The destructor method is called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete Delete]]## operator.
+
+	The ##**Destructor**## method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.
+
+	The destructor in a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden ##[[KeyPgThis this]]## parameter in the destructor body.
+
+	Only one destructor may be declared and defined per type.
+
+	Since the ##[[KeyPgEnd End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd End]]## statement is used to terminate the program.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/destructor.bas"}}%%(freebasic)
+type T
+  value as zstring * 32
+  declare constructor ( init_value as string )
+  declare destructor ()
+end type
+
+constructor T ( init_value as string )
+  value = init_value
+  print "Creating: "; value
+end constructor
+
+destructor T ()
+  print "Destroying: "; value
+end destructor
+
+sub MySub
+  dim x as T = ("A.x")
+end sub
+
+dim x as T = ("main.x")
+
+scope
+  dim x as T = ("main.scope.x")
+end scope
+
+MySub
+%%
+Output:
+%%
+Creating: main.x
+Creating: main.scope.x
+Destroying: main.scope.x
+Creating: A.x
+Destroying: A.x
+Destroying: main.x
+%%
+{{fbdoc item="lang"}}
+	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgClass Class]]##
+	- ##[[KeyPgConstructor Constructor]]##
+	- ##[[KeyPgOpDelete Delete]]##
+	- ##[[KeyPgModuleDestructor Destructor (Module)]]##
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="SCREENSYNC"}}----
+Synchronizes display updates with hardware
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screensync** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Screensync**
+##
+{{fbdoc item="ret"}}
+	Zero if successful, or non-zero if a graphics mode was not previously set.
+
+{{fbdoc item="desc"}}
+	This GfxLib statement stops the execution of the program until the graphics card signals it has ended tracing a frame and is going to start the new one. If the program uses the small interval of time between frames to redraw the image, the flickering is greatly reduced.
+
+	The use of the QB-compatible form WAIT &H3DA,8 is deprecated.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/screensync.bas"}}%%(freebasic)
+'main loop
+DO
+  
+  ' do user input
+  ' calculate_a_frame
+   
+  SCREENSYNC
+  
+  ' draw_ a_ frame  
+  
+LOOP UNTIL INKEY <> ""
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screensync""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC. 
+	- QBasic used WAIT &H3DA,8 for this purpose.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWait Wait]]##
+
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

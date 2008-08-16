@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="ULONG"}}----
+Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulong**
+##
+{{fbdoc item="desc"}}
+	Depending on the platform, same as ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUlongint Ulongint]]##. A 32-bit or 64-bit unsigned whole-number data type.
+
+	##**Ulong**## has the same size as ##[[KeyPgSizeof Sizeof]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/ulong.bas"}}%%(freebasic)
+  Dim x As ULong = 0
+  Dim y As ULong = &HFFFFFFFF
+  Print "ULong Range = "; x; " to "; y
+%%
+	**Output:**
+	%%ULong Range = 0 to 4294967295%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ulong""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLong Long]]##
+	- ##[[KeyPgUinteger Uinteger]]##
+	- ##[[KeyPgUlongint Ulongint]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

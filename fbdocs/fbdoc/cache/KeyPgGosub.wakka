@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="GOSUB"}}----
+Control flow statement to use a section of code and return.
+
+{{fbdoc item="syntax"}}##
+	**Gosub** //label//
+##
+{{fbdoc item="desc"}}
+	Execution jumps to a subroutine marked by a line label. Always use ##[[KeyPgReturn Return]]## to exit a ##**Gosub**##,  execution will continue  on next statement after ##**Gosub**##. 
+	
+	The line label where ##**Gosub**## jumps must be in the same main/function/sub block as ##**Gosub**##. All the variables in the subroutine are shared with the block, no arguments can be used. For this reason Gosub is considered bad programming practice as it can generate unreadable and untraceable code. It is better to use ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## instead.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/gosub.bas"}}%%(freebasic)
+'' Compile with -lang qb
+
+'$lang: "qb"
+
+GoSub message
+End
+
+message:
+Print "Welcome!"
+Return
+%%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- ##**Gosub**## support is disabled by default in the //[[CompilerOptlang -lang fblite]]// unless the ##[[KeyPgOptiongosub Option Gosub]]## statement is used.
+
+{{fbdoc item="diff"}}
+	- None when using the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGoto Goto]]##
+	- ##[[KeyPgReturn Return]]##
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgOptiongosub Option Gosub]]##
+
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

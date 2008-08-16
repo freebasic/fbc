@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="SWAP"}}----
+Exchanges the values of two variables
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Swap** ( [[KeyPgByref byref]] //a// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByref byref]] //b// [[KeyPgAs as]] [[KeyPgAny any]] )
+##
+{{fbdoc item="param"}}
+	##//a//##
+		A value to swap.
+	##//b//##
+		A value to swap.
+
+{{fbdoc item="desc"}}
+	Swaps the value of two variables.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/memory/swap.bas"}}%%(freebasic)
+' using swap to order 2 numbers:
+dim a as integer, b as integer
+
+input "input a number: "; a
+input "input another number: "; b
+if a > b then swap a, b
+print "the numbers, in ascending order are:"
+print a, b
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- 
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

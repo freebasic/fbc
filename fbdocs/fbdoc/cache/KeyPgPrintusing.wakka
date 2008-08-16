@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="PRINT USING"}}----
+Outputs formatted text to the screen
+
+{{fbdoc item="syntax"}}##
+	**Print Using** //formatstring// **;** [ //expressionlist// ]
+##
+{{fbdoc item="param"}}
+	##//formatstring//##
+		Format string to use.
+	##//expressionlist//##
+		List of items to print.
+
+{{fbdoc item="desc"}}
+	Print to screen various expressions using a format determined by the ##//formatstring//## parameter. Internally, ##**Print Using**## uses a buffer size of 2048 bytes, while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
+
+	If no expression list is given, nothing will be output (note that the semi-colon after the format string is still necessary, even if no expression list is given).
+
+	The format string dictates how the expressions are to be formatted when output to the screen, indicated by the use of special marker characters. There are markers for formatting both string and numeric output:
+
+	{{fbdoc item="section" value="String formatting"}}
+
+		{{table columns="2" cellpadding="2" cells="Marker;Formatting;!;prints the first character of a string;\   \;prints as many characters of a string as occuppied between the pair \ \;&;prints the entire string"}}
+
+	{{fbdoc item="section" value="Numeric formatting"}}
+
+		{{table columns="2" cellpadding="2" cells="Marker;Formatting;#;placeholder for a digit;.; placed near # indicates place for the decimal point;+;prints the sign of the number when placed to the left of numeric formatting;^^^^;prints exponential notation when placed to the right of numeric formatting"}}
+
+	All of the special marker characters can be escaped, or preceded, with the underscore character ##"_"##, allowing them to be printed directly (##"_!"## prints ##"!"##).
+
+	If a numerical value can't be formatted in the form indicated by the format string, the formatting is ignored and the number is printed preceded by the percent ##"%"## character. E.g., the number ##2E+200## with a ##//formatstring//## of " ""##"".""##"" " would be printed as ##"%2E+200"##.
+
+	All other characters within the format string are printed as they appear.
+
+	The ##**Using**## keyword is used with a different meaning with the ##[[KeyPgPalette Palette]]## graphics command
+	    
+
+{{fbdoc item="ex"}}
+
+{{fbdoc item="filename" value="examples/manual/console/print-using.bas"}}%%(freebasic)
+Print Using "The value is #.## seconds"; 1.019
+Print Using "The ASCII code for the pound sign (_#) is ###"; asc("#")
+Print Using "The last day in the year is ## \ \"; 31, "December"
+%%
+	will produce the output:
+
+%%The value is 1.02 seconds
+Number sign is # and its ASCII code is  35
+The last day in the year is 31 Dec%%
+
+{{fbdoc item="diff"}}
+	- In QB a not-to-be-formatted ##//expressionlist//## could be entered before the USING clause;
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrintusingPp Print # Using]]##
+	- ##[[KeyPgPalette Palette]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

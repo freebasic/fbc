@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="Assignment Operators"}}----
+Operators that assign values to operands
+
+The assignment operators perform an assignment to the first, or //left-hand side//, operand based on the value of the second, or //right-hand side//, operand. Most of the assignment operators are combination operators, in that they first perform a mathematical or bitwise operation on the two operands, then assign the result to the //left-hand side// operand.
+
+<<=={{fbdoc item="keyword" value="KeyPgOpAssignment|Operator = (Assignment)"}}==
+	Assigns the value of one operand to the other.
+=={{fbdoc item="keyword" value="KeyPgOpCombineConcat|Operator &= (Concatenate and Assign)"}}==
+	Assigns the value of a concatenation between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineAdd|Operator += (Add and Assign)"}}==
+	Assigns the value of an addition between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineSub|Operator -= (Subtract and Assign)"}}==
+	Assigns the value of a subtraction between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineMultiply|Operator *= (Multiply and Assign)"}}==
+	Assigns the value of a multiplication between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineDivide|Operator /= (Divide and Assign)"}}==
+	Assigns the value of a division between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineIntegerDivide|Operator \= (Integer Divide and Assign)"}}==
+	Assigns the value of an integer divide between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineExponentiate|Operator ^= (Exponentiate and Assign)"}}==
+	Assigns the value of a exponentiation between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpLet|Operator Let (Assignment)"}}==
+	Assigns the value of one user defined type to another.
+=={{fbdoc item="keyword" value="KeyPgOpLetlist|Operator Let() (Assignment)"}}==
+	Assigns the fields of a user defined type to a list of variables.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpCombineModulus|Operator Mod= (Modulus and Assign)"}}==
+	Assigns the value of a modulus between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineAnd|Operator And= (Conjunction and Assign)"}}==
+	Assigns the value of a bitwise conjunction between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineEqv|Operator Eqv= (Equivalence and Assign)"}}==
+	Assigns the value of a bitwise equivalence between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineImp|Operator Imp= (Implication and Assign)"}}==
+	Assigns the value of a bitwise implication between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineOr|Operator Or= (Inclusive Disjunction and Assign)"}}==
+	Assigns the value of a bitwise inclusive or between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineXor|Operator Xor= (Exclusive Disjunction and Assign)"}}==
+	Assigns the value of a bitwise exclusive or between two operands.
+=={{fbdoc item="keyword" value="KeyPgOpCombineShiftLeft|Operator Shl= (Shift Left and Assign)"}}==
+	Assigns the value of a bitwise shift left of an operand.
+=={{fbdoc item="keyword" value="KeyPgOpCombineShiftRight|Operator Shr= (Shift Right and Assign)"}}==
+	Assigns the value of a bitwise shift right of an operand.
+>>::c::
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

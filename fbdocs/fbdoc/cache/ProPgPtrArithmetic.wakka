@@ -1,0 +1,73 @@
+{{fbdoc item="title" value="Pointer Arithmetic"}}----
+Manipulating address values mathematically.
+
+**{{anchor name="OVERVIEW|Overview"}}**
+**{{anchor name="ADDSUB|Adding and subtracting from pointers"}}**
+**{{anchor name="INCDEC|Incrementing and decrementing pointers"}}**
+**{{anchor name="DISTANCE|Distance between two pointers"}}**
+
+{{anchor name="OVERVIEW"}}{{fbdoc item="section" value="Overview"}}
+
+	It is often useful to iterate through memory, from one address to another. Pointers are used to accomplish this. While the type of a pointer determines the type of variable or object retrieved when the pointer is dereferenced (using ##[[KeyPgOpValueOf Operator * (Value of)]]##), it also determines the //distance//, in bytes, its particular type takes up in memory. For example, a ##[[KeyPgShort Short]]## takes up two (2) bytes in memory, while a ##[[KeyPgSingle Single]]## needs four (4) bytes.
+
+{{anchor name="ADDSUB"}}{{fbdoc item="section" value="Adding and subtracting from pointers"}}
+
+	Pointers can be added to and subtracted from just like a numeric type. The result of this addition or subtraction is an address, and the type of pointer determines the distance from the original pointer.
+
+	For example, the following,
+
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/addsub.bas"}}%%(freebasic)
+dim p as integer ptr = new integer[2]
+
+*p = 1
+*(p + 1) = 2
+%%
+	will assign the values "##1##" and "##2##" to each integer in the array pointer to by ##//p//##. Since ##//p//## is an ##[[KeyPgInteger Integer]] [[KeyPgPointer Pointer]]##, the expression "##*(p + 1)##" is saying to dereference an ##[[KeyPgInteger Integer]]## four (4) bytes from ##//p//##; the "##1##" indicates a distance of "##1 * the size of an [[KeyPgInteger Integer]]##", or four (4) bytes.
+
+	Subtraction follows the exact same principle. Remember, //a// - //b// = //a// + -//b//.
+
+{{anchor name="INCDEC"}}{{fbdoc item="section" value="Incrementing and decrementing pointers"}}
+
+	Sometimes it is more convenient to modify the pointer itself, in which case the combination addition and subtraction operators will work just like above. For example, the following,
+
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/incdec.bas"}}%%(freebasic)
+dim array(5) as short = { 32, 43, 66, 348, 112, 0 }
+dim p as short ptr = @array(0)
+
+while (*p <> 0)
+	if (*p = 66) then print "found 66"
+	p += 1
+wend
+%%
+	iterates through an array until it finds an element with the value of "##0##". If it finds an element with the value "##66##" it displays a nice message.
+
+{{anchor name="DISTANCE"}}{{fbdoc item="section" value="Distance between two pointers"}}
+
+	The distance between two pointers is retrieved with ##[[KeyPgOpSubtract Operator - (Subtract)]]##, and is measured in values, not bytes. For example, the following,
+
+{{fbdoc item="filename" value="examples/manual/proguide/pointers/distance.bas"}}%%(freebasic)
+type T as single
+
+dim array(5) as T = { 32, 43, 66, 348, 112, 0 }
+dim p as T ptr = @array(0)
+
+while (*p <> 0)
+	p += 1
+wend
+print p - @array(0)
+%%
+	will output "##5##" regardless of what type ##//T//## is. This is because there is a five (5) element difference between the first element of //array// (##32##) and the element pointed to by ##//p//## (##0##).
+
+	Specifically, if //a// and //b// are both pointers of type //T//, the distance between them is the number of bytes between them, divided by the size, in bytes, of //T//, or
+##
+		[[KeyPgAbs Abs]](cast(byte ptr, a) - cast(byte ptr, b)) / [[KeyPgSizeof Sizeof]](T)
+##
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpAdd Operator + (Add)]]##
+	- ##[[KeyPgOpSubtract Operator - (Subtract)]]##
+	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
+	- [[CatPgOpPoint Pointer Operators]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

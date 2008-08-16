@@ -1,0 +1,88 @@
+{{fbdoc item="title" value="WINPUT()"}}----
+Reads a number of wide-characters from console or file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgString wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Winput**( //num// [, [#]//filenum// } )
+##
+{{fbdoc item="param"}}
+	##//num//##
+		Number of characters to read.
+	##//filenum//##
+		File number of bound file or device.
+
+{{fbdoc item="ret"}}
+	Returns a [[KeyPgWstring Wstring]] of the characters read.
+
+{{fbdoc item="desc"}}
+	Reads a number of wide-characters from the console, or a bound file/device specified by ##//filenum//##.
+
+	The first version waits for and reads ##//n//## wide characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
+
+	The second version waits for and reads ##//n//## wide characters from a file or device. The file position is updated.
+
+~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/winput.bas"}}%%(freebasic)
+dim char as wstring * 2
+
+dim filename as string, enc as string
+dim f as integer
+
+line input "Please enter a file name: ", filename
+line input "Please enter an encoding type (optional): ", enc
+if enc = "" then enc = "ascii"
+
+f = freefile
+if open(filename for input encoding enc as #f) = 0 then
+	
+	print "Press space to read a character from the file, or escape to exit."
+	
+	do
+	    
+	    select case input(1)
+	    
+	    case " " 'Space
+	        
+	        if eof(f) then
+	            
+	            print "You have reached the end of the file."
+	            exit do
+	            
+	        end if
+	        
+	        char = winput(1, f)
+	        print char & " (char no " & asc(char) & ")"
+	        
+	    case chr(27) 'Escape
+	        
+	        exit do
+	        
+	    end select
+	    
+	loop
+	
+	close #f
+	
+else
+	
+	print "There was an error opening the file."
+	
+end if
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInputnum Input()]]##
+	- ##[[KeyPgOpen Open]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

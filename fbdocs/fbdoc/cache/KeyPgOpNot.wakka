@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="Operator Not (Complement)"}}----
+Returns the bitwise-not (complement) of a numeric value
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T//
+##
+{{fbdoc item="usage"}}##
+	//result// = **Not** //rhs//
+##
+{{fbdoc item="param"}}
+	##//rhs//##
+		The right-hand side expression.
+	##//T//##
+		Any numeric type.
+
+{{fbdoc item="ret"}}
+	Returns the bitwise-complement of its operand.
+
+{{fbdoc item="desc"}}
+	This operator returns the bitwise-complement of its operand, a logical operation that results in a value with bits set depending on the bits of the operand.
+
+	The truth table below demonstrates all combinations of a boolean-complement operation:
+
+	{{table columns="2" cellpadding="2" cells="Rhs Bit;Result;0;1;1;0"}}
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/not-bitwise.bas"}}%%(freebasic)
+' Using the NOT operator on a numeric value
+
+DIM numeric_value AS BYTE
+numeric_value = 15 '00001111
+
+'Result = -16 =     11110000
+PRINT NOT numeric_value
+%%
+
+{{fbdoc item="filename" value="examples/manual/operator/not-logical.bas"}}%%(freebasic)
+' Using the NOT operator on conditional expressions
+DIM AS UBYTE numeric_value1, numeric_value2
+numeric_value1 = 15
+numeric_value2 = 25
+
+IF NOT numeric_value1 = 10 THEN PRINT "Numeric_Value1 is not equal to 10"
+IF NOT numeric_value2 = 25 THEN PRINT "Numeric_Value2 is not equal to 25"
+
+' This will output "Numeric_Value1 is not equal to 10" because
+' the first IF statement is false.
+' It will not output the result of the second IF statement because the
+' condition is true. 
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[TblTruth Operator Truth Tables]]
+
+{{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

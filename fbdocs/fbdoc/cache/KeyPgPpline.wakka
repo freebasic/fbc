@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="#LINE"}}----
+Preprocessor directive to set the current line number and file name
+
+{{fbdoc item="syntax"}}##
+	**#line** //number// [ "//name//" ]
+##
+{{fbdoc item="param"}}
+	##//number// ##
+		new line number
+	##"//name//"##
+		new file name (optional)
+
+{{fbdoc item="desc"}}
+	Informs the compiler of a change in line number and file name and updates the ##[[KeyPgDdfile __FILE__]]## and ##[[KeyPgDdline __LINE__]]## macro values accordingly.
+
+	Both compile time messages and run-time messages are affected by this directive.
+
+	This directive allows other programs to generate source code for the FreeBASIC compiler and have it return warning and/or error messages that refer to the original source used by the other program.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/prepro/line.bas"}}%%(freebasic)
+#line 155 "outside.src"
+
+error 1000
+
+'' Output is:
+'' Aborting due to runtime error 1000 at line 157 of outside.src()
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfile __FILE__]]##
+	- ##[[KeyPgDdline __LINE__]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

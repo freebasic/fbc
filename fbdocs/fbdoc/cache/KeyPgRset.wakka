@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="RSET"}}----
+Right justifies a string in a string buffer
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgString string]] , [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Rset** //dst//, //src//
+##
+{{fbdoc item="param"}}
+	##//dst//##
+		A ##[[KeyPgString string]]## or ##[[KeyPgWstring wstring]]## buffer to copy the text into.
+	##//src//##
+		The source ##[[KeyPgString string]]## or ##[[KeyPgWstring wstring]]## to be right justified.
+
+{{fbdoc item="desc"}}
+	##**Rset**## right justifies text into the string buffer ##//dst//##, filling the right part of the string with ##//src//## and the left part with spaces.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/rset.bas"}}%%(freebasic)
+dim buffer as string
+buffer = space(10)
+rset buffer, "91.5"
+print "-[" & buffer & "]-"
+%%
+
+{{fbdoc item="diff"}}
+	- In QBasic the syntax was ##**Rset** //dst// = //src//##
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLset Lset]]##
+	- ##[[KeyPgSpace Space]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgMkd Mkd]]##
+	- ##[[KeyPgMki Mki]]##
+	- ##[[KeyPgMkl Mkl]]##
+	- ##[[KeyPgMks Mks]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

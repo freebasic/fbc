@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="Basic Input"}}----
+Get Information into your Program.
+
+Input is the life of any program.  If you can't get something into your program, how are you going to get anything out of it?  What you will find here is the basics of how to get information into your FreeBASIC program.
+
+Here's a very basic program that will ask for your name:
+
+%%(freebasic)
+'Create a place to put the user's name
+dim as string strMyName
+
+' Ask for the user's name and store it in the string 'strMyName'
+input "What is your name? ", strMyName
+
+' Wait half a second
+sleep 500
+
+' Show them their name
+print
+print "I now know your name is "; strMyName
+print
+
+' Wait until someone presses a button before you exit
+print "Press any button to exit"
+sleep
+%%
+
+INPUT is the easiest way to get information from someone.  They just type in some text and press Enter when they are done.  
+
+What if you you only want one keystroke?  The easiest way is to use the {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} method.  {{fbdoc item="keyword" value="KeyPgGetkey|GETKEY"}} gives you the {{fbdoc item="keyword" value="CptAscii|ASCII"}} value of a key that was pressed.
+
+%%(freebasic)
+' Ask the user for input
+Print "Press your favorite key:"
+
+' Set a place to keep the ASCII value of the key
+Dim As Integer strKeyPress
+
+' Keep going until a key is pressed
+Do
+	strKeyPress = GetKey    
+Loop Until strKeyPress <> 0    
+
+' Show the key the user pressed
+Print
+Print "Your favorite key is: "; Chr(strKeyPress)                        
+	                    
+' Wait until someone presses a button before you exit
+Print
+Print "Press any button to exit"
+Sleep
+%%
+
+For more information check out the {{fbdoc item="keyword" value="CatPgInput|User Input"}} Section.

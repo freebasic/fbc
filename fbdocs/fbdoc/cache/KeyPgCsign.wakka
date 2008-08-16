@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="CSIGN"}}----
+Converts an expression to signed
+
+{{fbdoc item="syntax"}}##
+	**Csign** ( //expression// )
+##
+{{fbdoc item="usage"}}##
+	//variable// = **Csign** ( //expression// )
+##
+{{fbdoc item="desc"}}
+	Converts an unsigned ##//expression//## to a signed one, useful to force signed behavior of division or multiplication (including with ##[[KeyPgOpShiftLeft Shl]]## and ##[[KeyPgOpShiftRight Shr]]##).
+
+	This is the opposite of ##[[KeyPgCunsg Cunsg]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/casting/csign.bas"}}%%(freebasic)
+dim value as ushort = 65535
+print csign(value)  '' will print -1
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Csign""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCunsg Cunsg]]##
+
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

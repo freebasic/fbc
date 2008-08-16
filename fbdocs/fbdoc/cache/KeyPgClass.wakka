@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="CLASS"}}----
+Declares a class object
+
+{{fbdoc item="syntax"}}##
+	**Class** //typename// ...
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		name of the ##**Class**##
+
+{{fbdoc item="desc"}}
+	We would have put something useful here (honest) except this feature isn't implemented in the compiler yet.  But since it will get added in future, and there are several other document pages that need to link here, we thought it safe to include in anyway.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/check/KeyPgClass_1.bas"}}%%(freebasic)
+'' sample code
+%%
+
+Output:
+%%
+sample output
+%%
+
+{{fbdoc item="lang"}}
+	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEnum Enum]]##
+	- ##[[KeyPgType Type]]##

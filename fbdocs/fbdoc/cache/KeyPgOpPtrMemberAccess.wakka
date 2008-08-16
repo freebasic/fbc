@@ -1,0 +1,59 @@
+{{fbdoc item="title" value="Operator -> (Pointer to member access)"}}----
+Returns a reference to a member from a pointer to an object
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **->** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgAs as]] //U//
+##
+~&//Note that **##Operator ->## (Pointer to member access)** returns a reference. As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
+
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **->** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The address of an object.
+	##//T//##
+		A pointer to a user-defined type.
+	##//rhs//##
+		The name of a member to access.
+	##//U//##
+		The type that ##//rhs//## refers to.
+
+{{fbdoc item="ret"}}
+	Returns a reference to the member specified by ##//rhs//##.
+
+{{fbdoc item="desc"}}
+	**##Operator ->## (Pointer to member access)** returns a reference to a member of an object through a pointer to that object. It has the effect of dereferencing a pointer to an object, then using ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. For example, ##"//p//**->**//member//"## is equivalent to ##"//x//.//member//"##, if //x// is an object of user-defined type and //p// is a pointer to an object of the same type.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+
+{{fbdoc item="filename" value="examples/manual/udt/ptr-access.bas"}}%%(freebasic)
+Type rect
+	x As Integer
+	y As Integer
+End Type
+
+Dim r As rect
+Dim rp As rect Pointer = @r
+
+rp->x = 4
+rp->y = 2
+
+Print "x = " & rp->x & ", y = " & rp->y
+Sleep
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpMemberAccess Operator . (Member access)]]##
+	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
+
+{{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

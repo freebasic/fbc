@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="VIEW (GRAPHICS)"}}----
+Sets new physical coordinate mapping and clipping region
+
+{{fbdoc item="syntax"}}##
+	**View** [SCREEN] ( //x1//, //y1// )-( //x2//, //y2// )[, [ //color// ] [, //border// ]]]
+##
+{{fbdoc item="param"}}
+	##SCREEN##
+		When specified, any x,y coordinate will be relative to the top-left corner of the screen, and not to the left-top corner of the viewport.
+	##( //x1//, //y1// )-( //x2//, //y2// )##
+		Coordinates of the top-left and bottom-right corners of the new viewport in screen pixels.
+	##//color//##
+		Color with which to clear the new viewport; if omitted, the viewport will not be cleared.
+	##//border//##
+		Color of the border box surrounding the new viewport. If omitted, no border box will be drawn.
+
+{{fbdoc item="desc"}}
+	Use this statement to set a new clipping region, also known as viewport. The new viewport will override the previous one, if any; if the ##SCREEN## argument is omitted, all future coordinates specifications will be relative to the top-left corner of the new viewport, instead of relative to the top-left corner of the screen. Any graphical primitive will be affected by the new viewport, and drawing outside specified region will produce no effect. If ##//color//## is specified, in the same format as the one supported by ##[[KeyPgColor Color]]##, the new viewport is cleared with it; if ##//border//## is specified, also in ##[[KeyPgColor Color]]## format, a box using ##//border//## as color will be drawn surrounding given region. If all arguments are omitted, the viewport is reset to the screen mode size.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/view.bas"}}%%(freebasic)
+screen 12
+dim ip as integer ptr
+dim as integer i, j, k
+'simple sprite
+for i=0 to 63: for j=0 to 63:pset (i,j), (i\4) xor (j\4):next j,i
+ip=imagecreate(64,64)
+get (0,0)-(63,63),ip
+cls
+'viewport
+line (215,135)-(425,345),1,bf
+view  (220,140)-(420,340)
+k=0
+'move sprite
+do
+  i=100*sin(k*.02)+50:  j=100* sin(k*.027)+50
+  screensync
+  screenlock
+  cls 1: put (i,j),ip ,pset
+  screenunlock
+  k=k+1
+loop until len(inkey)
+imagedestroy(ip)
+
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgWindow Window]]##
+	- ##[[KeyPgPmap Pmap]]##
+	- ##[[KeyPgViewtext View Print]]##
+
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="Operator ORELSE (Short Circuit Inclusive Disjunction)"}}----
+Returns the short circuit-or (Inclusive Disjunction) of two numeric values
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **""OrElse""** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// ) [[KeyPgAs as]] //Ret//
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **""OrElse""** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The left-hand side expression.
+	##//T1//##
+		Any numeric type.
+	##//rhs//##
+		The right-hand side expression.
+	##//T2//##
+		Any numeric type.
+	##//Ret//##
+		An Integer.
+
+{{fbdoc item="ret"}}
+	Returns the short circuit-or (inclusive disjunction) of the two operands.
+
+{{fbdoc item="desc"}}
+	This operator evaluates the left hand side expression.  If the result is non-zero, then -1 (true) is immediately returned.  If the result is zero then the right hand side is evaluated, and the logical result from that is returned. 
+
+	The truth table below demonstrates all combinations of a short circuit-or operation, the '-' denotes that the operand is not evaluated.
+
+	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;0;0;0;1;1;1;-;1"}}
+
+	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.
+	
+	The return type is always an Integer, of the value 0 or -1, denoting false and true respectively.
+
+	This operator cannot be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/orelse.bas"}}%%(freebasic)
+' Using the ORELSE operator on two numeric values
+DIM AS INTEGER numeric_value1, numeric_value2
+numeric_value1 = 15
+numeric_value2 = 30
+
+'Result =  -1
+PRINT numeric_value1 ORELSE numeric_value2
+SLEEP
+%%
+
+{{fbdoc item="diff"}}
+	- This operator was not available in QB.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpAndAlso AndAlso]]##
+	- [[TblTruth Operator Truth Tables]]
+
+{{fbdoc item="back" value="CatPgOpShortCircuit|Short Circuit Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

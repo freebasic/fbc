@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="MID (STATEMENT)"}}----
+Overwrites a substring of a string with another
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mid** ( [[KeyPgByref byref]] //text// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //length// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //expression// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mid** ( [[KeyPgByval byval]] //text// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //length// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Mid**( //text//, //start// ) = //expression//
+		**//or//**
+	**Mid**( //text//, //start//, //length// ) = //expression//
+##
+{{fbdoc item="param"}}
+	##//text//##
+		The string to work with.
+	##//start//##
+		The start position in ##//text//## of the substring to overwrite.
+	##//length//##
+		The number of characters to overwrite.
+
+{{fbdoc item="desc"}}
+	Copies a maximum of ##//length//## characters of ##//expression//## into ##//text//##, starting at ##//start//##.
+
+	If ##//length//## is not specified, all of ##//expression//## is copied. The size of the string ##//text//## is unchanged; if ##//expression//## is too big, as much of it is copied up to the end of ##//text//##.
+
+	##**Mid**## can also be used as a function to return part of another string.  See [[KeyPgMidfunction Mid (Function)]].
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/mid-stmt.bas"}}%%(freebasic)
+dim text as string
+
+text = "abc 123"
+print text 'displays "abc 123"
+
+' replace part of text with another string
+mid(text, 5, 3) = "456" 
+print text 'displays "abc 456"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[KeyPgMidfunction Mid (Function)]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

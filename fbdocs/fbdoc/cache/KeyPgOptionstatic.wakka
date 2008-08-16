@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="OPTION STATIC"}}----
+Reverts to default array declaration behavior
+
+{{fbdoc item="syntax"}}##
+	**Option Static**
+##
+{{fbdoc item="desc"}}
+	##**Option Static**## is a statement that overrides the behavior of ##[[KeyPgOptiondynamic Option Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**Option Static**## is used, and can be overridden with ##[[KeyPgOptiondynamic Option Dynamic]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/switches/option-static.bas"}}%%(freebasic)
+'' Compile with the "-lang fblite" compiler switch
+
+#lang "fblite"
+
+Option Dynamic
+
+Dim foo(100) As Integer			' declares a variable-length array
+
+Option Static
+
+Dim bar(100) As Integer			' declares a fixed-length array
+%%
+
+{{fbdoc item="lang"}} 
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMetaDynamic $Dynamic]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgOptiondynamic Option Dynamic]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

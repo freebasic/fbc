@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="BASS"}}----
+Audio library for use in Windows
+
+Website: http://www.un4seen.com/bass.html
+Platforms supported: Win32
+Headers to include: bass.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

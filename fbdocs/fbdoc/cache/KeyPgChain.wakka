@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="CHAIN"}}----
+Temporarily transfers control to an external program
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chain** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Chain**( //program// )
+##
+{{fbdoc item="param"}}
+	##//program//##
+		The file name (including file path) of the program (executable) to transfer control to.
+
+{{fbdoc item="ret"}}
+	    Returns the external program's exit code if executed successfully, or negative one (-1) otherwise.
+
+{{fbdoc item="desc"}}
+	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Chain**##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/chain.bas"}}%%(freebasic)
+#ifdef FB__LINUX
+#define CHAIN2	"chain2"
+#else
+#define CHAIN2	"chain2.exe"
+#endif
+
+	print "chain1 begins"
+
+	chain CHAIN2
+
+	print "chain1 ends"
+
+	sleep
+%%
+{{fbdoc item="target"}}
+	- Linux requires the ##//program//## name case matches the real name of the file. Windows and DOS  are case insensitive. The program  chained may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgExec Exec]]##
+	- ##[[KeyPgRun Run]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

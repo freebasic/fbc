@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="CDECL"}}----
+Specifies a //cdecl//-style calling convention in a procedure declaration
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgOverload Overload]]] **Cdecl** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+		//..procedure body..//
+	[[KeyPgEnd End]] [[KeyPgFunction Function]]
+##
+{{fbdoc item="desc"}}
+	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the ##**cdecl**## calling convention. In the ##**cdecl**## calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
+
+	##**cdecl**## is the default calling convention for procedures declared within ##[[KeyPgExternBlock Extern "C"]]## and ##[[KeyPgExternBlock Extern "C++"]]## blocks. ##**cdecl**## is also typically the default calling convention for many C compilers.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/cdecl.bas"}}%%(freebasic)
+' declaring 'strcpy' from the standard C library
+Declare Function strcpy cdecl Alias "strcpy" (ByVal dest As ZString Ptr, ByVal src As ZString Ptr) As ZString Ptr
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgPascal Pascal]], [[KeyPgStdcall Stdcall]]
+	- [[KeyPgDeclare Declare]]
+	- [[KeyPgSub Sub]], [[KeyPgFunction Function]]
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

@@ -1,0 +1,235 @@
+{{fbdoc item="title" value="Introduction To Arrays"}}----
+//Written by [[WikiRick rdc]]//
+
+Arrays are probably the single most useful programming construct  that is available to you in FreeBasic. Many problems that you will try to solve with a programming solution involve data arranged in tabular format, and arrays are perfect for managing this type of data. Understanding arrays is a crucial skill in becoming a competent programmer.
+
+Arrays are contiguous memory segments of a single or composite data type. You can think of an array as a table, with rows and columns of data. An array can have one or more rows, and each row can have one or more columns. The number of rows and columns define the dimensions of the array. FreeBasic uses the row-major scheme for arrays, which means that the first dimension references the row in an array that has more than one dimension. FreeBasic supports up to eight dimensions in an array.
+
+=== One-Dimensional Arrays ===
+
+An array with a single row is called a one-dimensional array. If an array is a single-dimensional array, then the row is not defined in the declaration, only the number of columns in the row. Since an array requires a minimum of one row, the row is understood to exist in this case. The following code snippets create a single-dimension integer array using the different array definition schemes available in FreeBasic.
+
+%%(freebasic)
+Dim myArray(10) as Integer
+
+Dim myArray(1 To 10) as Integer
+%%
+
+The first method will define an array with a single row and 11 columns, with column indexes (numbers) ranging from 0 to 10. The second method defines the lower and upper bounds using the ##To## keyword. Here the indexes will range from 1 to 10.
+
+=== One-Dimensional Array Indexes ===
+
+You access each element of an array using an index value. In the case of a single-dimension array, the index would refer to a column number in the default row. The format is to use the array variable, with the index surrounded by parenthesis.
+
+%%(freebasic)
+myArray(5) = 7
+%%
+
+This would set column 5 in the array to 7.
+
+%%(freebasic)
+myInt = myArray(5)
+%%
+
+This will set the value of ##myInt## to the current value of column 5 in ##myArray##.
+
+=== Two-Dimensional Arrays ===
+
+A two-dimensional array is an array that has more than one row, along with the defined columns. A two-dimensional array is like a table, with a defined number of rows, where each row has a defined number of columns. The following code snippet defines an array using the default method.
+
+%%(freebasic)
+Dim myArray(2, 10) as Integer
+%%
+
+The first dimension defines the number of rows in the array, while the second dimension defines the number of columns in each row. In this example, the array has 3 rows, numbered 0 to 2, and each row has 11 columns, numbered 0 to 10.
+
+You can also define the lower and upper bounds of the array.
+
+%%(freebasic)
+Dim myArray(1 to 2, 1 to 10) as Integer
+%%
+
+This definition would set the number of rows to 2, numbered 1 to 2 and the number of columns to 10, numbered 1 to 10.
+
+=== Two-Dimensional Array Indexes ===
+
+To access the array elements of a two-dimensional array, you would use two indexes. The first index selects the row, and the second index selects a column within that row.
+
+%%(freebasic)
+myArray(1, 5) = 7
+%%
+
+This code would set column 5 in row 1 to 7.
+
+%%(freebasic)
+myInt = myArray(1, 5)
+%%
+
+This code would set myInt to the current value contained within column 5 of row 1 of the array.
+
+=== Multi-Dimensional Arrays ===
+
+For arrays of three or more dimensions, you would use the same format as listed above, taking into account the progression of the array dimensions. For a three-dimensional array, the first dimension would be the row, the second the column, the third would be the z-order, or depth, of each column. 
+
+For example, to define a cube in space, you would use the y,x,z format, where y defines the vertical axis, x defines the horizontal axis and z defines the depth axis. To create an array in this format you could define the array as: 
+
+%%(freebasic)
+Dim myCube(y, x, z) as Integer. 
+%%
+
+##MyCube(10, 10, 10)## would create a cube with 11 vertical units, 0 to 10, 11 horizontal units, 0 to 10 and 10 depth units, 0 to 10. To access the center of the cube, you would use ##iCenter = myCube(5, 5, 5)##. 
+
+You will probably never need to use arrays of more than three dimensions, unless you are doing some advanced mathematical calculations. However, if you need to use higher-dimensional arrays, the same principles apply.
+
+=== Dynamic Arrays ===
+
+The arrays described above are static arrays; the array size cannot change during program execution. You can also create dynamic arrays that can change size during execution. Dynamic arrays are useful for creating data structures such as stacks or queues.
+
+Static arrays, the arrays described above, are kept on the heap, but dynamic arrays are allocated from the computer's pool of memory. The compiler dynamically allocates memory for the array based on the requested dimensions of the array.
+
+You specify a dynamic array by using the ##ReDim## keyword.
+
+%%(freebasic)
+Redim myArray(1 to 5, 1 to 5) as Integer
+%%
+
+If you don't know the needed array bounds at the start of the program execution, you can define an array with empty indexes.
+
+%%(freebasic)
+Dim myArray() as Integer
+%%
+
+In this case the compiler sets a default value of 0 for the array size. You can then use the ##ReDim## at some point in the program to set the array bounds.
+
+=== ReDim and ReDim Preserve ===
+
+Dynamic arrays can change sizes during execution. ##ReDim## will clear the contents of the array to the default data type values, while ##ReDim Preserve## will keep intact the existing contents, unless the array size is smaller than the previous size.
+
+=== Array Functions ===
+
+There are a number of [[CatPgArray functions]] that you can use with arrays.
+
+=== Arrays of Composite Types ===
+
+Type definitions allow you to group related data into a single entity, and often you will need more than one instance of a type to fully express the data. Arrays of types allow you create multiple instances of a type definition that can be easily managed using the arrays functions. An example of this usage may be an inventory system for your RPG, a series of document descriptions within an editor, and a set of employee records from a random access database.
+
+You create arrays of types just as you would with any of the intrinsic data types. The following code snippet  illustrates the syntax.
+
+%%(freebasic)
+Type myPoint
+	row As Integer
+	col As Integer
+End Type
+
+Type myLine
+	p1 As myPoint
+	p2 As myPoint
+	char As String * 1
+End Type
+
+Dim myLineSet (1 to 3) as myLine
+%%
+
+The code defines a set of 3 lines, with endpoints ##p1## and ##p2##, where each endpoint is located at row and col. You access the array elements by using a combination of array index and dot operator.
+
+%%(freebasic)
+myLineSet(1).p1.row = 1
+myLineSet(1).p1.col = 1
+myLineSet(1).p2.row = 10
+myLineSet(1).p2.col = 10
+myLineSet(1).char = chr(219)
+%%
+
+=== Arrays in Types ===
+
+Not only can you create an array of a composite type, you can have an array as a field in a composite type. The above example can be written more efficiently by replacing ##p1## and ##p2## with an array.
+
+%%(freebasic)
+Type myPoint
+	row As Integer
+	col As Integer
+End Type
+
+Type myLine
+	pts(1 to 2) As myPoint
+	char As String * 1
+End Type
+
+Dim myLineSet (1 to 3) as myLine
+%%
+
+Here ##pts## is an array of ##myPoint##. To access this structure you would use a combination of indexes and dot operators.
+
+%%(freebasic)
+myLineSet(1).pts(1).row = 1
+myLineSet(1).pts(1).col = 1
+myLineSet(1).pts(2).row = 10
+myLineSet(1).pts(2).col = 10
+myLineSet(1).char = chr(219)
+%%
+
+##myLineSet## is an array, so you use an index value. ##pts## is an element of the type, so you need to qualify it with the dot operator. However, ##pts## is also an array, so you use an index to select each ##pts## array element. ##Row## and ##col## are elements of the ##myPoint## type and are accessed with the dot operator.
+
+Using an array for the endpoints enables you to easily extend the line definition to support not only lines, but triangles and squares. The following code snippet shows one possible definition.
+
+%%(freebasic)
+Type myObj
+	objid As Integer
+	Union
+			myLine(1 To 2) As myPoint
+		myTriangle(1 To 3) As myPoint
+		mySquare(1 To 4) As myPoint
+	End Union
+	char As String * 1
+End Type
+%%
+
+The ##objid## field would indicate which type of object is contained within the union definition. That is, a 1 may indicate a line, a 2 may indicate a triangle and a 3 may indicate a square. Since the definition defines a single object, a ##Union## is used to enclose the endpoint arrays to maximize memory usage. 
+
+To print the object to the screen, you would examine the objid and then use the Lbound and Ubound on the appropriate endpoint array definition, printing the number of lines that correspond to the type of object. 
+
+One further enhancement you can make to this program is to add a function pointer to the type definition, and then write print routines that correspond to the type of object being printed. Using this technique will enable you to further extend the usefulness of the code by simplifying the process of adding new objects to the type definition. 
+
+For example, if you needed to be able to describe a cube, you would simply add an new array to the union, add a cube print function, and the type definition would be able to print a cube by simply adding a few lines of code, while keeping the original functionality intact.
+
+=== Array Initialization ===
+
+You can initialize an array with values when using the ##Dim## statement in a manner similar to initializing any of the other intrinsic data types, and type definitions. The following code snippet illustrates the syntax using a one dimensional array.
+
+%%(freebasic)
+Dim aArray(1 to 5) As Integer => {1, 2, 3, 4, 5}
+%%
+
+This code snippet dimensions an integer array with 5 elements, then sets the elements to the list contained within the curly brackets. The arrow operator, => tells the compiler that the list following the ##Dim## statement should be used to initialize the array. 
+
+You can also dimension multidimensional arrays in the same manner, by specifying blocks of data enclosed within curly braces as the following code snippet illustrates.
+
+%%(freebasic)
+Dim bArray(1 to 2, 1 to 5) As Integer => {{1, 2, 3, 4, 5},{6, 7, 8, 9, 10}}
+%%
+
+In this example, the first block, ##{1, 2, 3, 4, 5}##, corresponds to row 1, and the second block, ##{6, 7, 8, 9, 10}##, corresponds to row 2. Remember that FreeBasic arrays are row-major, so the row is specified before the column. When you initialize an array in this manner, you must be sure that the number of elements defined will fit into the array.
+
+=== Type Array Initialization ===
+
+Not only can you initialize an array of simple data types, you can also initialize an array with composite types. The following code snippet illustrates a type array that contains an array as an element of the type.
+
+%%(freebasic)
+Type aType
+	a As Integer
+	b As Byte
+	c(1 To 2) As String * 10
+End Type
+
+Dim As aType myType(1 To 2) => { (1234, 12, {"Hello", "World"}), (5678, 24, {"From", "Freebasic"})} 
+%%
+
+The curly brackets signify that this is an array initialization, while the parenthesis indicate the type initialization. Since the type has an embedded array, you use the curly brackets to load the data into the embedded array, just as you would a stand-alone array. If the embedded array was a multidimensional array, then you would need to wrap each row in { and } just as you would a stand-alone array. 
+
+=== Using the -exx Compiler Switch ===
+
+The -exx compiler switch will enable error and bounds checking within your program. If you go outside the bounds of an array within your program, the compiler will generate an “out of bounds” error while the program is running. 
+
+This is a great help in debugging your program, and finding problems associated with arrays. -exx will also  inform of you of Null pointer assignments, so it is quite useful when working with pointers as well. 
+
+Using -exx does add quite of bit of additional code to your program, so once your program is functioning correctly, you will want to compile the program without the -exx switch.

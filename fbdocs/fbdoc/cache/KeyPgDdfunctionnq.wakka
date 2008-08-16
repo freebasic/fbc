@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="__FUNCTION_NQ__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FUNCTION_NQ__""
+##
+{{fbdoc item="desc"}}
+	Substituted with the non-quoted name of the current function block where used.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/functionnq.bas"}}%%(freebasic)
+
+sub MySub
+  print "Address of " + __FUNCTION__ + " is ";
+  print hex( @__FUNCTION_NQ__ )
+end sub
+
+MySub
+%%
+
+%%
+Address of MYSUB is 4012D0
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfilenq __FILE_NQ__]]##
+	- ##[[KeyPgDdfunction __FUNCTION__]]##
+	- ##[[KeyPgDdline __LINE__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -1,0 +1,77 @@
+{{fbdoc item="title" value="IMAGECREATE"}}----
+Creates and initializes storage for an image
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, [ //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ] [, //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] ]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//buffer// = **""ImageCreate""**( //width//, //height// [, [ //color// ][, //depth// ]] )
+##
+{{fbdoc item="param"}}
+	##//width//##
+		Desired width of the image buffer to create.
+	##//height//##
+		Desired height of the image buffer to create.
+	##//color//##
+		The pixel value to fill the image buffer with upon creation.
+	##//depth//##
+		Desired color depth of the image buffer, in bits per pixel.
+
+{{fbdoc item="ret"}}
+	The address of the image buffer, or NULL (0) if the buffer could not be created.
+
+{{fbdoc item="desc"}}
+	Allocates and initializes a memory buffer for an image. If ##//color//## is omitted, a value of 0 will be used for paletted (8-bit or less) modes, or [[KeyPgRgb RGB]](255, 0, 255) for higher color depth modes (this translates to &hF81F and &hFFFF00FF for 15/16-bit and 24/32-bit modes, respectively - see the [[GfxInternalFormats internal gfx formats]] reference for more info). These are special mask colors, which will be transparent when using ##[[KeyPgPutgraphics Put]]## with the ##[[KeyPgTransGfx Trans]]## method.
+	
+	##**""ImageCreate""**## only works when a graphics mode has been set up with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  Images can be set up with different color depths from the screen color depth, using the ##//depth//## parameter.  An image buffer can be passed to graphics functions across mode changes as long as the different modes use the same color depth.
+	
+	Images should be deleted with ##[[KeyPgImageDestroy ImageDestroy]]## when they are no longer needed, in order to prevent memory leaks.
+
+	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FreeBASIC releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/imagecreate.bas"}}%%(freebasic)
+Dim image_buffer As Any Ptr
+Const NULL as Any Ptr = 0
+
+'' set screen mode (this must be done before trying to create an image)
+Screenres 320, 200, 32
+
+'' allocate an image buffer with a darkish green background
+image_buffer = ImageCreate(64, 64, RGB(0, 128, 0))
+
+'' check that image creation succeeded
+If image_buffer = NULL Then
+	Print "Image creation failed!"
+	Sleep
+	End
+End If
+
+'' draw a semi-transparent, red circle to the image buffer
+Circle image_buffer, (32, 32), 28, RGBA(255, 0, 0, 128),,, 1.0, F
+
+'' blit image buffer to screen
+Put (120, 60), image_buffer, PSet
+Put (140, 80), image_buffer, Alpha
+
+Sleep
+
+'' free image buffer memory
+ImageDestroy image_buffer
+%%
+{{image class="center" title="Imagecreate example output" url="/images/imagecreate.png"}}
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imagecreate""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetgraphics Get (Graphics)]]##
+	- ##[[KeyPgImageInfo ImageInfo]]##
+	- ##[[KeyPgImageDestroy ImageDestroy]]##
+	- [[GfxInternalFormats Internal pixel formats]]
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

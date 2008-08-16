@@ -1,0 +1,52 @@
+{{fbdoc item="title" value="Operator *= (Multiply and Assign)"}}----
+Multiplies and assigns a value to a variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ***=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+##
+{{fbdoc item="usage"}}##
+	//lhs// ***=** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The variable to assign to.
+	##//T1//##
+		Any numeric type.
+	##//rhs//##
+		The value to multiply ##//lhs//## by.
+	##//T2//##
+		Any numeric type.
+
+{{fbdoc item="desc"}}
+	This operator multiplies and assigns a value to a variable. It is functionally equivalent to:
+##
+		//lhs// = //lhs// [[KeyPgOpMultiply *]] //rhs//
+##
+	The right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/multiply-assign.bas"}}%%(freebasic)
+DIM n AS DOUBLE
+n = 6
+n *= 2
+PRINT n
+SLEEP
+%%
+Output:
+%%
+12
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpMultiply Operator * (Multiply)]]##
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

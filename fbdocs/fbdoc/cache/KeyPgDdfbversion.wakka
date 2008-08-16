@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="__FB_VERSION__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	 ""__FB_VERSION__""
+##
+{{fbdoc item="desc"}}
+	 Substituted by the version number of the compiler where used.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbversion.bas"}}%%(freebasic)
+#if __FB_VERSION__ < "0.18" 
+#error  Please compile with FB version 0.18 or above 
+#endif
+%%
+	This will stop the compilation if the compiler version is below 0.18
+
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbsignature __FB_SIGNATURE__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbdos __FB_DOS__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

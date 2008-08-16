@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="Installing"}}----
+FreeBASIC installation.
+
+{{fbdoc item="section" value="Windows"}}
+	Open and run the installer executable, and follow its instructions. Don't forget to check which external libraries are being installed, as some are not selected by default. FreeBASIC uses the NSIS installer having a strong compression. The download size is cca 6 MiB, after extraction the full total size is cca 50 MiB, but can be much less if you don't install the optional libraries.
+
+	If successful, FreeBASIC will be installed in ##C:\Program Files\FreeBASIC##, or if you chose a different installation directory, in your chosen directory. Desktop and Start Menu shortcuts will be installed by default as well.
+
+{{fbdoc item="section" value="Linux"}}
+	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux.tar.gz""## and was in your home directory, type,
+
+		##cd##
+			//(change to your home directory)//
+		##mkdir -p tmp && cd tmp##
+			//(attempt to create a temporary directory and change to it)//
+		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux.tar.gz""##
+			//(unpack the archive)//
+		##cd FreeBASIC##
+			//(change to the root installation directory)//
+
+	Run the installation script ##install.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
+
+		##sudo ./install.sh -i##
+			//(the default installation)//
+
+	Run the installation script with no arguments for more info on command-line options.  ##install.sh## will install FreeBASIC ##/usr/local## by default.
+
+	To uninstall FreeBASIC, you can run "install.sh -u"
+
+{{fbdoc item="section" value="Linux (standalone)"}}
+	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""## and was in your home directory, type,
+
+		##cd##
+			//(change to your home directory)//
+		##mkdir -p tmp && cd tmp##
+			//(attempt to create a temporary directory and change to it)//
+		##tar -xzf ""../FreeBASIC-vX.XX.Xb-linux-standalone.tar.gz""##
+			//(unpack the archive)//
+		##cd FreeBASIC##
+			//(change to the root installation directory)//
+
+	Run the installation script ##install-standalone.sh## with the "-i" switch, optionally specifying the installation directory.  For example, to install FreeBASIC into the default directory type,
+
+		##sudo ./install-standalone.sh -i##
+			//(the default installation)//
+
+	Run the installation script with no arguments for more info on command-line options.  ##install-standalone.sh## will install FreeBASIC to ##/usr/share/freebasic## by default and a symlink to the compiler binary will be created at ##/usr/bin/fbc## if run with root permission. 
+
+	To uninstall FreeBASIC, you can run "install-standalone.sh -u"
+
+{{fbdoc item="section" value="DOS"}}
+	- Find a place for FreeBASIC with at least 13 MiB free space.
+	- Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
+	- The top-level directory is named FreeBASIC (will be truncated to "FREEBASI" in DOS without full  LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
+	- All the important files used by the compiler (includes, libs) inside the archive do have DOS-compliant names, therefore DOSLFN is not required to use FreeBASIC, however, some examples and texts do have longer names and will be truncated when extracted without full LFN support.  
+
+	(Note: you can install the DOS version "over" the Windows one or vice-versa, or "merge" those installations later, but rename the FBC.EXE file of the previous installation to FBCW.EXE , FBCD.EXE or such, or it will be overwritten by the new one. Other platform specific files are placed in subdirectories making sure that they won't conflict.)
+
+{{fbdoc item="see"}}
+	- [[CompilerRunning Invoking the Compiler]]
+	- [[CompilerCmdLine Compiler Command Line Options]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

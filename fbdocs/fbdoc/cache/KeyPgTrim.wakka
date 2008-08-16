@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="TRIM"}}----
+Removes surrounding substrings or characters on the left and right side of a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Trim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Trim**[$]( //str// [, [ **Any** ] //trimset// ] )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		The source string.
+	##//trimset//##
+		The substring to trim.
+
+{{fbdoc item="ret"}}
+	Returns the trimmed string.
+
+{{fbdoc item="desc"}}
+	This procedure trims surrounding characters from the left (beginning) and right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii ASCII]] code 32) are trimmed.
+
+	If the ##**Any**## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
+	
+	All comparisons are case-sensitive.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/trim.bas"}}%%(freebasic)
+dim s1 as string = " ... Stuck in the middle ... "
+print "'" + trim(s1) + "'"
+print "'" + trim(s1, any " .") + "'"
+
+dim s2 as string = "BaaBaaaaB With You aaBBaaBaa"
+Print "'" + trim(s2, "Baa") + "'"
+Print "'" + trim(s2, any "Ba") + "'"
+%%
+	will produce the output:
+
+%%
+'... Stuck in the middle ...'
+'Stuck in the middle'
+'aaB With You aaB'
+' With You '		
+%%
+
+{{fbdoc item="target"}}
+	- DOS version/target of FreeBASIC does not support the wide-character version of ##**Trim**##.
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Trim""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgLtrim Ltrim]] 
+	- [[KeyPgRtrim Rtrim]]
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,0 +1,70 @@
+{{fbdoc item="title" value="CINT"}}----
+Converts numeric or string expression to an ##[[KeyPgInteger Integer]]##
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	End Type
+##
+{{fbdoc item="usage"}}##
+	//result// = **Cint**( //numeric expression// )
+	//result// = **Cint**( //string expression// )
+	//result// = **Cint**( //user defined type// )
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgInteger Integer]]## value
+	##//datatype//##
+		any numeric, string, or pointer data type
+	##//typename//##
+		a user defined type
+
+{{fbdoc item="ret"}}
+	An ##[[KeyPgInteger Integer]]## value.
+
+{{fbdoc item="desc"}}
+	The ##**Cint**## function rounds the decimal part of ##//numeric expression//## using the round-to-even method ( http://en.wikipedia.org/wiki/Rounding#Round-to-even_method ) and returns a 32-bit ##[[KeyPgInteger Integer]]##. The function does not check for an overflow, so be sure not to pass a value which is less than -2 147 483 648 or larger than 2 147 483 647. The name is derived from 'Convert to INTeger'.
+
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/casting/cint.bas"}}%%(freebasic)
+' Using the CINT function to convert a numeric value
+
+'Create an INTEGER variable
+DIM numeric_value AS INTEGER
+
+'Convert a numeric value
+numeric_value = CINT(300.5)
+
+'Print the result, should return 300, because 300 is even
+
+numeric_value = CINT(301.5)
+
+'Print the result, should return 302, because 301 is odd
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cint**## will return a 16-bit integer, like in QB.
+
+{{fbdoc item="diff"}}
+	- The string argument was not allowed in QB
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

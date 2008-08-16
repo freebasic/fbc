@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Is"}}----
+Clause in the ##[[KeyPgSelectcase Select Case]]## statement block.
+
+{{fbdoc item="syntax"}}##
+	**Case Is** //expression//
+##
+{{fbdoc item="desc"}}
+
+	Is specifies that a particular case inside a Select Case block will be evaluated based on an expression including the greater than (>) or less than (<) operator and a value. 
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSelectcase Select Case]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="__FB_SIGNATURE__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_SIGNATURE__""
+##
+{{fbdoc item="desc"}}
+	Substituted by a signature of the compiler where used.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbsignature.bas"}}%%(freebasic)
+PRINT __FB_SIGNATURE__
+%%
+
+%%
+FreeBASIC v0.18.2b
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbversion __FB_VERSION__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbdos __FB_DOS__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

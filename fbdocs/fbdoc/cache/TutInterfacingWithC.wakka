@@ -1,0 +1,185 @@
+{{fbdoc item="title" value="Interfacing with C"}}----
+NOTE! Have to do some spell checking, verify text, code and filenames.
+
+===Foreword===
+This is a tiny basic tutorial on how to write a simple library in C and then use it in FreeBASIC. The tutorial should be possible to follow without to much knowledge of C or FreeBASIC. After doing this tutorial you should be able to compile a static and a dynamically linked C library. Translate the necessary header files to FreeBASIC header files and understand how to use the libraries in a FreeBASIC project.
+
+
+===What is a library===
+
+===Prerequisite===
+This tutorial was written and tested with FreeBASIC 0.16b and the latest Current release of MinGW32 at the time. As a note Dev-cpp uses MinGW32 as it's compiler tool chain. You also  get code::blocks with a mingw32 bundle.
+
+
+===Formal description of the task at hand===
+To demonstrate usage of a C library in FreeBASIC we need to create the simplest possible library with a few functions. A test file in C to demonstrate that our library works as intended. Then we have to translate the library header file to a FreeBASIC header file (*.bi) and finally create a test project in FreeBASIC using the library.
+
+===Creating the files===
+So our file list will look like this:
+myClib.c:           C file implementing our library.
+myClib.h:           C header file describing the libraries interface.
+myClibCTest.c:     C file implementing our test program in C.
+myClib.bi:          FreeBASIC header file. A translation of myClib.h.
+myClibFBTest.bas:  FreeBASIC
+make.cmd:         A sample shell script compiling the library and test files.
+
+
+==The C file to become a static library. myClib.c ==
+%%(C)
+/* A function adding two integers and returning the result */
+#include "myClib.h"
+int SampleAddInt(int i1, int i2)
+{
+	return i1 + i2;
+}
+
+/* A function doing nothing ;) */
+void SampleFunction1()
+{
+	/* insert code here */
+
+}
+
+/* A function always returning zero */
+int SampleFunction2()
+{
+	/* insert code here */
+
+	return 10;
+}
+%%
+==The header file myClib.h==
+%%(C)
+int  SampleAddInt(int i1, int i2);
+void SampleFunction1();
+int  SampleFunction2();
+%%
+
+==A C test project to verify that the static lib is C compatible. myClibCTest.c:==
+%%(C)
+#include <stdio.h>
+#include <stdlib.h>
+#include "myClib.h"
+int main(int argc, char *argv[])
+{
+  printf("SampleAddInt(5, 5):=%d\n", SampleAddInt(5, 5));
+  system("PAUSE");	
+  return 0;
+}
+%%
+
+
+==Translating the C header file to a FreeBASIC header file==
+myClib.bi: To interface the static library and automatically include it (#inclib "myClib" ) i have this file.
+%%(freebasic)
+''include file for libmyClib.a
+#IfNDef __myClib_bi__
+#Define __myClib_bi__
+#inclib "myClib"
+
+Declare Function SampleAddInt Cdecl Alias "SampleAddInt" (Byval i1 As Integer, Byval i2 As Integer) As Integer
+Declare Sub SampleFunction1 Cdecl Alias "SampleFunction1" ()
+Declare Function SampleFunction2 Cdecl Alias "SampleFunction2" () As Integer
+#endif
+%%
+
+
+==And finally the FreeBASIC file using the library==
+myClibFBTest.bas:
+%%(freebasic)
+''Testing functions in myClib.bi
+#include "myClib.bi"
+''
+print "SampleAddInt(10, 10):=", SampleAddInt(10, 10)
+'' Just a dumy call
+SampleFunction1()
+''
+print "SampleFunction2():=", SampleFunction2()
+%%
+
+
+==The make file: make.cmd==
+I have created a batch file to compile all the files. Including a sample in C using the static library. Note the config lines at the top which has to be modified to suite your setup.
+%%(cmd)
+@REM TODO: Set PATH's for this session.
+SET PATH=C:\mingw32\bin;c:\mingw32\mingw32\bin
+SET MINGW_INCLUDE="C:/MinGW32/include"
+SET MINGW_LIB="C:/MinGW32/lib"
+
+@REM
+@REM fbc testing SET fbc="C:\portableapps\FreeBASIC\fbc.exe"
+SET fbc="C:\FreeBasic16b\fbc.exe"
+@echo *** Verify pat's to compilers
+@pause
+@echo off
+
+@REM
+@REM Remove old files
+DEL /F *.o  *.a myClibFBTest.exe
+
+@REM
+@REM Create static lib from c source
+gcc.exe -c myClib.c -o myClib.o -I%MINGW_INCLUDE%
+
+@REM
+@REM ar: creating libstatictest.a
+ar r libmyClib.a myClib.o 
+
+@REM
+@REM No nead for ranlib anymore? ar is supposed to take care of it 
+ranlib libmyClib.a
+
+
+@REM
+@REM Create a test with a C file
+
+gcc.exe -c myClibCTest.c -o myClibCTest.o -I%MINGW_INCLUDE%
+gcc.exe myClibCTest.o -o "myClibCTest.exe" -L%MINGW_LIB% libmyClib.a
+
+echo =====================================
+echo RUnning C sample
+echo =====================================
+myClibCTest.exe
+
+echo =====================================
+echo Creating FreeBASIC sample
+echo =====================================
+REM I thought this explicit reference is unnecessary as I use #inclib
+SET fbcop= -I myClib
+SET fbcfl="myClibFBTest.bas" 
+%fbc% %fbcop% %fbcfl%
+echo =====================================
+echo RUnning FreeBASIC sample
+echo =====================================
+myClibFBTest.exe
+@pause
+%%
+
+
+===Encountered error messages and their solutions===
+==undefined reference to==
+Trying to link against the static C library without using the cdecl alias "functionname" in the FreeBASIC header file results in errors like this.
+%%(cmd)
+C:\code>"C:\FreeBasic16b\fbc.exe"     "myClibFBTest.bas"
+myClibFBTest.o:fake:(.text+0x3d): undefined reference to `SAMPLEADDINT@8'
+myClibFBTest.o:fake:(.text+0x4a): undefined reference to `SAMPLEFUNCTION1@0'
+myClibFBTest.o:fake:(.text+0x67): undefined reference to `SAMPLEFUNCTION2@0'
+Press any key to continue . . .
+%%
+
+To resolve this you will have to locate function declarations in a *.bi file that look like this:
+%%(freebasic)
+Declare Function SampleAddInt(Byval i1 As Integer, Byval i2 As Integer) As Integer
+%%
+And change it to something like this:
+%%(freebasic)
+Declare Function SampleAddInt Cdecl Alias "SampleAddInt" (Byval i1 As Integer, Byval i2 As Integer) As Integer
+%%
+
+
+===Appendix A: links===
+The basis for this tutorial is several threads in the forum.
+When it evolves and can stand alone the links to the threads might be removed.
+Some interesting links containing information on interfacing libraries created in FreeBASIC and used by other languages or visa versa.
+
+[[http://www.freebasic.net/forum/viewtopic.php?t=6515 How do I compile a C project as a static lib for inclusion..]]

@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="PRIVATE: (Access Control)"}}----
+Specifies private member access control in a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType Type]] //typename//
+		**Private:**
+			//member declarations//
+	End Type
+##
+{{fbdoc item="param"}}
+	##//typename//##
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+	##//member declarations//##
+		declarations for fields, functions, or enumerations
+
+{{fbdoc item="desc"}}
+	##**Private:**## indicates that ##//member declarations//## following it have private access.  Private members are accessible only from inside a member function for the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	
+	##//member declarations//## following ##**Private:**## are private until a different access control specifier is given, like ##[[KeyPgVisPublic Public:]]## or ##[[KeyPgVisProtected Protected:]]##.
+
+	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/private.bas"}}%%(freebasic)
+Type testing
+  number As Integer
+  Private:
+	nome As String
+  Declare Sub setNome( ByRef newnome As String )
+End Type
+
+Sub testing.setnome( ByRef newnome As String )
+  '' This is OK. We're inside a member function for the type
+  this.nome = newnome
+End Sub
+
+Dim As testing myVariable
+
+'' This is OK, number is public
+myVariable.number = 69
+
+'' this would generate a compile error 
+'' - nome is private and we're trying to access it outside any of this TYPE's member functions 
+'' myVariable.nome = "FreeBASIC"
+%%
+
+{{fbdoc item="lang"}}
+	- Available only in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVisPublic Public:]]## (Access Control)
+	- ##[[KeyPgVisProtected Protected:]]## (Access Control)
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Logical Operators"}}----
+Operators that perform bitwise logic
+
+The logical operators perform logical operations on the values of their operands, and return the results. These operators are //bitwise// operators, in that the results are found by performing logical operations on each bit of their operands.
+
+<<=={{fbdoc item="keyword" value="KeyPgOpAnd|Operator And (Conjunction)"}}==
+	Returns the result of a bitwise conjunction of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpEqv|Operator Eqv (Equivalence)"}}==
+	Returns the result of a bitwise equivalence of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpImp|Operator Imp (Implication)"}}==
+	Returns the result of a bitwise implication of two operands.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpNot|Operator Not (Complement)"}}==
+	Returns the result of a bitwise complement of an operand.
+=={{fbdoc item="keyword" value="KeyPgOpOr|Operator Or (Inclusive Disjunction)"}}==
+	Returns the result of a bitwise inclusive or of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpXor|Operator Xor (Exclusive Disjunction)"}}==
+	Returns the result of a bitwise exclusive or of two operands.
+>>::c::
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

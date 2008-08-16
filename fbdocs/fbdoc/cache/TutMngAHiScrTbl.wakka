@@ -1,0 +1,301 @@
+{{fbdoc item="title" value="So Biff wants to have a high score table in his game "}}----
+Written by Lachie Dazdarian (September, 2007)
+
+==Introduction==
+
+On more than one occasion I was inquired by a programming newbie about a set of routines that load a high score table from an external file, input a new high score properly, and then save the modified high scores table.
+Using the same set of routines for high scores since the days of Ball Blazing Fantasy, I decided to write a tutorial on them and implement some lacking flexibility (plus few fixes) there, something that was long needed to be done but wasn't due the fact the routines did their job perfectly.
+The tutorial will also point you out to some useful (for high scores table managing) additional routines, like the name inputting and file encryption ones, not written by me.
+
+
+==Let's do it!==
+
+It's fairly obvious we'll need two separate subroutines, one for loading/reading our high score table, and one for writing/modifying it.
+We'll start with loading/reading of a high score table, as that part is easier and a logical start.
+The subroutine for reading a high score table should work relatively simple. It will open a file which contains name and score entries, storing them in appropriate variables and then printing them on the screen, this part being most dependent on the developer's wishes and needs (the method of printing, position of the high score table, its formatting, etc.).
+First, we should create a text file containing our name and score entries. Create a file named 'high_scores.dat', open it with Notepad and input this:
+
+%%(freebasic)
+FRED
+10000
+BILL
+9000
+SARAH
+8000
+BOB
+7000
+RED
+6000
+SUE
+5000
+DAVID
+4000
+GREG
+3000
+TIM
+2000
+GEORGE
+1000
+%%
+
+It contains 10 high score entries, formatted with name followed by the accompanying score. I find this formatting the most suitable for editing, although you can pick one where all the names all listed first, and then followed by all the scores. Still, no important benefits from any type of these two formattings, so we'll work with the one I stared with.
+
+This file will be used with the following ""'ReadHighScore'"" subroutine.
+
+Let's start our main program with some needed initiation statements:
+
+%%(freebasic)
+#include "fbgfx.bi"
+Using FB
+
+const num_of_entries = 10
+%%
+
+'num_of_entries' will flag the number of score entries (names or scores in the high score table), and should correspond with the number of entries in the 'high_score.dat' file (not lines, but high score ENTRIES!).
+
+We should now declare our subroutine with:
+
+%%(freebasic)
+DECLARE SUB ReadHighScore (highscore_file AS STRING)
+%%
+
+The 'highscore_file' variable will flag the file you want for the ""'ReadHighScore'"" subroutine to open. Not necessary to declare the subroutine like this, but this adds some flexibility to it.
+
+After this, we should declare the following variables:
+
+%%(freebasic)DIM SHARED workpage AS INTEGER
+DIM SHARED hname(num_of_entries) AS STRING
+DIM SHARED hscore(num_of_entries) AS STRING
+%%
+
+'workpage' variable is not related to this tutorial and will be used to swap screen work pages inside the loop where the high score table will be drawn. 'hname' array will hold the name entries, while 'hscore' array will hold the score entries from the high score table.
+
+Finally, let's initialize our screen and work/visible pages with:
+
+%%(freebasic) 
+SCREENRES 640, 480, 32, 2, GFX_ALPHA_PRIMITIVES+GFX_WINDOWED
+SCREENSET 1, 0
+%%
+
+Following this code we should place this:
+
+%%(freebasic)
+ReadHighScore "high_scores.dat"
+END
+
+SUB ReadHighScore (highscore_file AS STRING)
+
+END SUB
+%%
+
+You can compile this code, but nothing will happen as the ""'ReadHighScore'"" subroutine is empty. Let's fill it up!
+We need to start it by opening the 'high_scores.dat' file and reading the needed data from it. Please refer to FreeBASIC's OPEN statement for info on file opening in FreeBASIC if not familiar with it.
+
+As we want to open the file using a FREE file handle, we need to dimension a variable that will hold this information and pass it into it. Use this code:
+
+%%(freebasic)
+DIM free_filehandle AS INTEGER
+
+free_filehandle = FreeFile
+%%
+
+We should now open the high score file with:
+
+%%(freebasic)
+OPEN highscore_file FOR INPUT AS #free_filehandle
+%%
+
+After the file is opened for reading (FOR INPUT), let's use a for loop to retrieve all the data from it and store it in our 'hname' and 'hscore' variables:
+
+%%(freebasic)
+FOR count_entry AS INTEGER = 1 TO num_of_entries
+INPUT #free_filehandle, hname(count_entry)
+INPUT #free_filehandle, hscore(count_entry)
+' If the end of file is reached, exit the FOR loop.
+IF EOF(free_filehandle) THEN EXIT FOR
+NEXT count_entry
+%%
+
+Note how the 'count_entry' variable is used and how for each entry the name is stored FOLLOWED by the accompanying score. 'hname(1)' will flag the name with the top score, while 'hscore(1)' the top score. 'hname(num_of_entries)' will flag the name with the lowest score, while 'hscore(num_of_entries)' the lowest score in the high score table.
+
+Don't forget now to close the file with:
+
+%%(freebasic)
+CLOSE #free_filehandle 
+%%
+
+All we need now is a loop that will display all these names and scores, nicely arranged in a table.
+
+%%(freebasic)
+DO
+
+screenlock
+screenset workpage, workpage xor 1
+
+LINE (0,0)-(639,479), RGBA(0, 0, 0, 255), BF
+
+Draw String (285, 120), "TOP SCORES", RGBA(255,255, 255, 255)
+
+FOR count_entry AS INTEGER = 1 TO num_of_entries
+Draw String (270, 140 + count_entry * 12), hname(count_entry), RGBA(255,255, 255, 250-count_entry*10)
+Draw String (340, 140 + (count_entry) * 12), hscore(count_entry), RGBA(255,255, 255, 250-count_entry*10)
+NEXT count_entry
+
+Draw String (245, 400), "Press ESCAPE to exit", RGBA(255,255, 255, 220)
+
+workpage xor = 1
+screenunlock
+
+SLEEP 10
+
+LOOP UNTIL MULTIKEY(SC_ESCAPE)
+%%
+
+A simple DO...LOOP that ends when the user pushes ESCAPE.
+I used Draw String to print the names and the scores. Another FOR loop is used to loop through the name and score entries, and to display them lower score under the next higher one (note how the Y position of the text to display is connected with the 'count_entry' variable - increase 12 to get more space between scores vertically). I also used a small trick to display each next score with lower translucency (last parameter in the RGBA function).
+
+After placing all this code in the ""'ReadHighScore'"" subroutine, you can compile it and the desired result will appear on the screen.
+
+Now when we are done with the easy part of the problem, let's move onto writing new entries into our high score table.
+
+I constructed the ""'WriteHighScore'"" subroutine like this:
+
+%%(freebasic)
+
+SUB WriteHighScore (highscore_file AS STRING, users_score AS INTEGER)
+
+%%
+
+Which means it will be called with a high scores table file and a score we want to input. If this score evaluates to be lower that the lowest in the high score table, no code will be executed.
+
+This subroutine should start with the following code:
+
+%%(freebasic)
+DIM free_filehandle AS INTEGER
+
+DIM startwrite AS INTEGER
+
+free_filehandle = FreeFile
+
+OPEN highscore_file FOR INPUT AS #free_filehandle
+
+FOR count_entry AS INTEGER = 1 TO num_of_entries
+INPUT #free_filehandle, hname(count_entry)
+INPUT #free_filehandle, hscore(count_entry)
+' If the end of file is reached, exit the FOR loop.
+IF EOF(free_filehandle) THEN EXIT FOR
+NEXT count_entry
+
+CLOSE #free_filehandle
+%%
+
+As you see it starts as the ""'ReadHighScore'"" subroutine. In order to evaluate the user's score and alter the very high score table we need to open the file containing our high score entries and store them in appropriated variables. 'startwrite' variable will flag where the new entry is to be placed inside the high score table (on which position).
+The code that follows should be opened with an IF clause that will execute the code inside it only if the user's score is higher than the lowest score in the high score table (naturally):
+
+%%(freebasic)
+IF users_score > hscore(num_of_entries) THEN
+
+FOR check_score AS INTEGER = 1 TO num_of_entries
+
+IF users_score > hscore(check_score) THEN
+InputName
+' Record the position where the new score is
+' to placed and exit FOR loop.
+startwrite = check_score
+EXIT FOR
+END IF
+
+NEXT check_score
+%%
+
+The FOR loop 'goes' through the high score entries from the highest to the lowest, and when an entry with a lower score is found this is the place (flagged with 'startwrite' and 'check_score') where our new entry will be recorded. For example, in the first loop the program checks for 'hscore(1)' - the top score in the high score table. If the user's score ends up being higher than it, it's obvious the user's score is the new top score and 'startwrite' needs to be 1. ""'InputName'"" is a subroutine we'll create later, and inside it the user will be...inputting his name. :P
+
+What follows is the 'nexus' of our routine, the code that places the new high score entry on the proper position, and bumps all the lower ones one position down.
+
+Check the following code:
+
+%%(freebasic)
+IF startwrite = num_of_entries THEN
+hscore(startwrite) = users_score
+hname(startwrite) = playername
+ELSE
+ 
+FOR write_pos AS INTEGER = (num_of_entries - 1) TO startwrite STEP -1
+hscore(write_pos + 1) = hscore(write_pos)
+hname(write_pos + 1) = hname(write_pos)
+NEXT write_pos
+hscore(startwrite) = users_score
+hname(startwrite) = playername
+END IF
+%%
+
+First condition checks if the new entry is the lowest (last) in the high score table. If this is the case, we don't need to bump down any entries with a lower score as there are none, but only replace the lowest score entry with the new one.
+If this is NOT the case, a FOR loop is executed which loops from the lowest high score entry to the new high score entry (flagged with 'startwrite'), meaning, from bottom to top.
+
+For example, if our high score table has 10 entries and the new entry needs to be placed on position 5, the loop goes from 9 to 5. When "write_pos" is 9, values from 'hscore(9)' and 'hname(9)' are passed to 'hscore(9+1)' and 'hname(9+1)'. When 'write_pos' is 8, values from 'hscore(8)' and 'hname(8)' are passed to 'hscore(8+1)' and 'hname(8+1)'. And so on.
+
+After the FOR loop we need to input the new entry on its appropriate position (flagged with 'startwrite'), new entry being set with 'users_score' and 'playername', where 'playername' will be inputted inside the 'InputName' sub.
+
+The last thing in the ""'WriteHighScore'"" sub we need to do is to store the new high score entries back to file:
+
+%%(freebasic)
+free_filehandle = FreeFile
+
+OPEN highscore_file FOR OUTPUT AS free_filehandle
+FOR count_entry AS INTEGER = 1 TO num_of_entries
+PRINT #free_filehandle, hname(count_entry)
+PRINT #free_filehandle, hscore(count_entry)
+NEXT count_entry
+CLOSE free_filehandle
+%%
+
+Note how FOR OUTPUT is used and PRINT for writing data into external files.
+After this I placed a ""'ReadHighScore'"" call and closed with END IF as I find it good that a new high score table should display after a new entry has been inputted in it.
+All we need now is to create the ""'InputName'"" sub like this:
+
+%%(freebasic)
+SUB InputName
+
+screenset workpage, workpage xor 1
+SCREENSET 0,0
+LINE (0,0)-(639,479), RGBA(0, 0, 0, 255), BF
+LOCATE 12, 17
+INPUT ; "Please input your name: ", playername
+
+END SUB
+%%
+
+Of course, this will look totally different in your game. Perhaps you'll ask the player to input his/her name on a different place in the game (like when he/she starts a new game). Just have in mind you need one.
+
+To test the routines just place...
+
+%%(freebasic)
+ReadHighScore "high_scores.dat"
+WriteHighScore "high_scores.dat", 4500
+END
+%%
+
+...after first SCREENSET (outside subroutines). Change the second parameter with ""'WriteHighScore'"" call to input different scores on different locations in the high score table. I'm sure you are aware that when calling ""'WriteHighScore'"" the second parameter mustn't be hard-coded with a static number, but with a variable in which you'll store player's score, whatever that may be in your case (ie. 'Player.Score').
+
+==What's next?==
+
+The only other things I wish to share regarding this issue is related to high score encryption and better name inputting routine. As both routines I'm using are not by me, I will only brush off them and provide them in an example program you can easily use for your own needs.
+Encryption is done using two functions, ""'neoENCpass'"" and ""'neodeENCpass'"". One for encryption and one for decryption. They are called with a string (high score entry string in our case) and password, password being any string you choose and the same must be used for encrypting and decrypting (of course).
+Just after you retrieve an string entry from a file you decrypt it like this:
+
+%%(freebasic)
+INPUT #free_filehandle, hname(count_entry)
+neoENCdepass SADD(hname(count_entry)), LEN(hname(count_entry)), "yourpass"
+%%
+
+With 'hscore' variables, being INTEGER, we need to use a temporary STRING variable which has to be decrypted and then pass its value to 'hscore'.
+The only annoying feature of this method is the fact you need a separate source code to encrypt/decrypt your high score files, as the routines inside a project will work only if the high score file is previously encrypted. I provided a small program which does this encrypting for you. It is recommended you keep a backup of your high score file in a separate folder (I also provided this in the zip downloads), even if not encrypting it.
+Instead of encryption you can use BINARY files, which I don't know how to use at this moment (don’t have time to learn; I’m submitting the tutorial in the nick of time), and which also AREN'T the same as ENCRYPTION. Encrypted files using these routines  people can only decrypt if they know the password (well, most people), while BINARIES can be read by anyone having your source. Ah yes, when providing your source code to public be sure to change the encryption passwords inside it.
+Anyway, you might not need or prefer encryption at all. But I personally like having my high score/script files encrypted so than not every Dick and Tom can change/read them with Notepad. Unencrypted high scores might kill the challenge to beat them with some players.
+Name inputting routine I won't go describing as that's irrelevant. You have to code, read it. It's much better than plain INPUT (you can use it with custom font printing libraries) and allows you to limit the number of characters in the name. The routine was done by 'Ryan Szrama', and all thanks go to him.
+Download the extended example (with encryption and better name inputting): [[http://lachie.phatcode.net/Lachie_HiScoreTut/highscore_example_2.zip]]
+
+And that's it for this tutorial.
+Until next time, have fun!
+
+A tutorial written by Lachie D. (mailto CHR$(58) lachie13 CHR$(64) yahoo CHR$(46) com ; [[http://lachie.phatcode.net]] - The Maker Of Stuff)

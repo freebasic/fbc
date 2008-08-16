@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="CLEAR"}}----
+Clears or initializes some memory
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+{{fbdoc item="usage"}}##
+	**Clear**( //dst//, //value//, //bytes// )
+##
+{{fbdoc item="param"}}
+	##//dst//##
+		starting address of some memory
+	##//value//##
+		the value to set all bytes equal to
+	##//bytes//##
+		number of bytes to clear
+
+{{fbdoc item="desc"}}
+	##**Clear**## sets one or more bytes in memory to a certain value (the default value is zero (0) if not specified). The starting address is taken from a reference to a variable or array element.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/array/clear.bas"}}%%(freebasic)
+dim array(1 to 100) as integer
+clear array(1), 0, len(array(1)) * ubound(array)
+%%
+
+{{fbdoc item="diff"}}
+	-New to FreeBASIC
+	-The keyword ##CLEAR## was used in QB to erase all variables, close all files, and optionally change the stack size. This use is not supported in FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgReset Reset]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

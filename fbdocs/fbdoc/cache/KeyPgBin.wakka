@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="BIN"}}----
+Returns a binary (base 2) string representation of an integer
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]	
+##
+{{fbdoc item="usage"}}##
+	//result// = **Bin**[$]( //number// [, //digits// ] )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint longint]]##.
+	##//digits//##
+		Desired number of digits in the returned string.
+
+{{fbdoc item="ret"}}
+	A string containing the unsigned binary representation of ##//number//##.
+
+{{fbdoc item="desc"}}
+	Returns a string representing the unsigned binary value of the integer ##//number//##. Binary digits range from 0 to 1.
+
+	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for an ##[[KeyPgInteger integer]]##, 64 for a ##[[KeyPgLongint Longint]])##.
+
+	If you want to do the opposite, i.e. convert an binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgValint Valint]]("&B101")##
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/bin.bas"}}%%(freebasic)
+Print Bin(54321)
+Print Bin(54321, 5)
+Print Bin(54321, 20)
+%%
+	will produce the output:
+
+%%1101010000110001
+10001
+00001101010000110001
+%%
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Bin""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOct Oct]]##
+	- ##[[KeyPgHex Hex]]##
+	- ##[[KeyPgValint Valint]]##
+	- ##[[KeyPgVallng Vallng]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

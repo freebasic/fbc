@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="ELSEIF"}}----
+Control flow statement for conditional branching
+
+{{fbdoc item="syntax"}}##
+	**If** //expression// **Then**
+		//statement(s)//
+	[ **Elseif** //expression// **Then** ]
+		//statement(s)//
+	[ **Else** ]
+		//statement(s)//
+	**End If**
+##
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgIfthen If...Then]]##
+
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

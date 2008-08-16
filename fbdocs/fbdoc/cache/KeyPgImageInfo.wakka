@@ -1,0 +1,82 @@
+{{fbdoc item="title" value="IMAGEINFO"}}----
+Retrieves information about a ""FreeBASIC"" image buffer
+
+	& This feature is only available in fbc version 0.20.0 and later.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Imageinfo** ( [[KeyPgByval byval]] //img// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bypp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pixdata// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByref byref]] //imgsize// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Imageinfo** ( [//width//] [, [//height//] [, [//bypp//] [, [//pitch//] [, [//pixdata//] [, [//imgsize//]]]]]] )
+##
+{{fbdoc item="param"}}
+	##//width//##
+		width of image
+	##//height//##
+		height of image
+	##//bypp//##
+		bytes per pixel
+	##//pitch//##
+		bytes needed per scanline
+	##//pixdata//##
+		pointer to start of pixel data
+	##//imgsize//##
+		total memory used by image
+
+{{fbdoc item="ret"}}
+	##0## on success, or ##1## if an invalid header is detected.
+
+{{fbdoc item="desc"}}
+	##**Imageinfo**## provides you with useful information about an image, such as its dimensions and color depth, but also provides you with the information you need to directly access all the pixel data in the pixel buffer.
+	
+	It also provides the size of image buffer in memory, which is useful for when you want to copy the buffer or store it in a file.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/imageinfo.bas"}}%%(freebasic)
+Dim img As Any Ptr, pixdata As Any Ptr, pitch As Integer
+
+'' Create 32-bit screen and image buffer
+ScreenRes 320, 200, 32
+img = ImageCreate(64, 64)
+
+
+'' get pitch and pixel data pointer of image
+imageinfo img, ,,, pitch, pixdata
+
+'' draw pattern directly into the image memory
+For y As Integer = 0 To 63
+	Dim As UInteger Ptr p = pixdata + y * pitch
+   
+	For x As Integer = 0 To 63
+	    p[x] = RGB(x * 4, y * 4, (x Xor y) * 4)
+	Next x
+Next y
+
+
+'' Put the image to screen
+Put (10, 10), img
+
+'' Free the image memory
+ImageDestroy img
+
+'' Wait for a keypress before closing
+Sleep
+%%
+{{image class="center" title="Output image for ImageInfo example" url="/images/imageinfo.png"}}
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imageinfo""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetgraphics Get (Graphics)]]##
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgImagecreate ImageCreate]]##
+	- ##[[KeyPgImageConvertRow ImageConvertRow]]##
+	- ##[[KeyPgImageDestroy ImageDestroy]]##
+	- [[GfxInternalFormats Internal pixel formats]]
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

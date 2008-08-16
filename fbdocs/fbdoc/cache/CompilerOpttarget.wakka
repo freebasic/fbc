@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="Compiler Option: -target"}}----
+Set the target platform for cross compilation
+
+{{fbdoc item="syntax"}}##
+	**-target** < //platform// >
+##
+{{fbdoc item="param"}}
+	##//platform//##
+		The target platform. (See below)
+
+{{fbdoc item="desc"}}
+	The ##-target## compiler option is used to create an executable for a platform which is different from the host on which the source code is being compiled and linked.  Appropriate libraries and cross compilation tools (assembler, linker) must be installed in the /lib/ and /bin/ directories for cross compilation to work.
+
+	This option is only available if the compiler was built with cross compilation support.
+
+	Possible targets:
+		##dos##
+		##linux##
+		##win32##
+		##xbox##
+		##cygwin##
+		##freebsd##
+
+{{fbdoc item="target"}}
+	- Only available in versions fbc that have had cross compilation support enabled at configure time before building the compiler.  Not all binary distributions will have the same cross compilation targets supported.
+	- The FreeBASIC package for DOS can be used as a cross compilation tool set when compiling from Windows to a DOS target.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -1,0 +1,95 @@
+{{fbdoc item="title" value="THREADWAIT"}}----
+Waits until the designated thread has been completed before returning
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Threadwait** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Threadwait**( //id// )
+##
+{{fbdoc item="param"}}
+	##//id//##
+		##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of a thread created by ##[[KeyPgThreadCreate Threadcreate]]##
+
+{{fbdoc item="desc"}}
+	##Threadwait## doesn't return until the thread designated by ##//id//## ends. ##Threadwait## does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables must be used.
+
+	Threads are launched by the ##[[KeyPgThreadCreate Threadcreate]]## function.
+
+	To avoid simultaneous access to shared resources from different threads, FreeBASIC implements mutexes, mutual exclusion locks that can be "owned" by a single thread when doing critical work. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/threads/threadwait.bas"}}%%(freebasic)
+dim shared printsync as any ptr
+
+sub mythread(byval idp as any ptr)
+  var id = cint(idp)
+  dim as double t, w
+  dim as integer i, n
+
+  if( id = 1 ) then
+	w = 1
+	n = 10
+  else
+	w = 0.3
+	n = 5
+  end if
+
+  for i = 1 to n
+
+	mutexlock printsync
+	print "Thread #"; id; ": on step #"; i
+	mutexunlock printsync
+
+	'' simulate some work
+	t = timer
+	while( timer - t ) < w
+	wend
+
+  next i
+
+  mutexlock printsync
+  print "Thread #"; id; " is done "
+  mutexunlock printsync
+
+end sub
+
+dim as any ptr t1, t2
+
+print "Starting threads ... "
+
+'' create a mutex to sync printing
+printsync = MutexCreate()
+
+'' create 2 threads, each taking a different
+'' amount of time to complete
+t1 = threadcreate( @mythread, cast(any ptr, 1) )
+t2 = threadcreate( @mythread, cast(any ptr, 2) )
+
+'' wait for threads to complete
+threadwait( t1 )
+threadwait( t2 )
+
+mutexdestroy printsync
+
+print "All done."
+%%
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in ##-lang qb##
+
+{{fbdoc item="target"}}
+	- **Threadwait** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

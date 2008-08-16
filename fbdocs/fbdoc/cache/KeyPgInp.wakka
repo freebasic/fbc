@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="INP"}}----
+Returns a value at a hardware port.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Inp** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//value// = **Inp**(//port//)
+##
+{{fbdoc item="param"}}
+	##//port//##
+		Port number to read.
+
+{{fbdoc item="ret"}}
+	The value at the specified port.
+
+{{fbdoc item="desc"}}
+	This function retrieves the value at 'port' and returns immediately.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/hardware/inp.bas"}}%%(freebasic)
+'' Turn off PC speaker
+out &h61,inp(&h61) and &hfc
+%%	
+
+{{fbdoc item="target"}}
+	- In the Windows and Linux versions three port numbers (&H3C7, &H3C8, &H3C9) are hooked by the graphics library when a graphics mode is in use to emulate QB's VGA palette handling. This use is deprecated; use ##[[KeyPgPalette Palette]]## to retrieve and set palette colors.
+	
+	- Using true port access in the Windows version requires the program to install a device driver for the present session. For that reason, Windows executables using hardware port access should be run with administrator permits each time the computer is restarted. Further runs don't require admin rights as they just use the already installed driver. The driver is only 3K in size and is embedded in the executable.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOut Out]]##
+	- ##[[KeyPgWait Wait]]##
+	- ##[[KeyPgPalette Palette]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiler Option: -Wl"}}----
+Pass options to linker
+
+{{fbdoc item="syntax"}}##
+	**-Wl** < //options// >
+##
+{{fbdoc item="param"}}
+	##//options//##
+		Additional options to pass to the linker.
+
+{{fbdoc item="desc"}}
+	The ##-Wl## compiler option passes additional options to LD, the linker.  Options must be separated by commas only.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptWa Compiler Option: -Wa]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

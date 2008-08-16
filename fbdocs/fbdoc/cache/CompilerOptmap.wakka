@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -map"}}----
+Save the linking map to file name
+
+{{fbdoc item="syntax"}}##
+	**-map** < //map file// >
+##
+{{fbdoc item="param"}}
+	##//map file//##
+		Name of the map file to save generated during linking.
+
+{{fbdoc item="desc"}}
+	The ##-map## compiler option saves the a map file of the executable made.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

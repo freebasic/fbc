@@ -1,0 +1,64 @@
+{{fbdoc item="title" value="LSET"}}----
+Left-justifies a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Lset** //dst//, //src//
+	**Lset** //dst_udt//, //src_udt//
+##
+{{fbdoc item="param"}}
+	##//src//##
+		String variable to receive the data.
+	##//dst//##
+		Source string to get the data.
+	##//dst_udt//##
+		User defined ##[[KeyPgType Type]]## to receive the data.	
+	##//src_udt//##
+		User defined ##[[KeyPgType Type]]## to copy the data from.
+
+{{fbdoc item="desc"}}
+	##**Lset**## left justifies text into the string buffer ##//dst//##, filling the left part of the string with ##//src//## and the right part with spaces. The string buffer size is not modified.
+
+	For compatibility with QBasic, ##**Lset**## can also copy a user defined type variable into another one. The copy is made byte for byte, without any care for fields or alignment. It's up to the programmer to take care for the  validity of the result.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/lset.bas"}}%%(freebasic)
+dim buffer as string
+buffer = space(10)
+lset buffer, "91.5"
+print "-[" & buffer & "]-"
+%%
+
+{{fbdoc item="filename" value="examples/manual/strings/lset-udt.bas"}}%%(freebasic)
+type mytype1
+	x as integer
+	y as integer
+end type
+
+type mytype2
+	z as integer
+end type
+
+dim a as mytype1 , b as mytype2
+b.z = 1234
+
+lset a, b
+print a.x
+%%
+
+{{fbdoc item="diff"}}
+	-In QB, the syntax was ##**Lset** //dst// = //src//##
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgRset Rset]]##
+	- ##[[KeyPgSpace Space]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgMkd Mkd]]##
+	- ##[[KeyPgMki Mki]]##
+	- ##[[KeyPgMkl Mkl]]##
+	- ##[[KeyPgMks Mks]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

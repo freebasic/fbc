@@ -1,0 +1,88 @@
+{{fbdoc item="title" value="Frequently Asked Questions"}}
+
+----
+
+**FB Wiki questions:**
+
+	==- {{anchor name="item1|What is the FBWiki?"}}==
+	==- {{anchor name="item2|Who is responsible for the documentation?"}}==
+	==- {{anchor name="item3|Who should I contact when I find a mistake in the documentation?"}}==
+	==- {{anchor name="item4|How do I add my tutorial to the community tutorials?"}}==
+	==- {{anchor name="item5|What formatting style should I use on my tutorial?"}}==
+	==- {{anchor name="item6|Why haven't I been recognized for my contributions to the wiki?"}}==
+	==- {{anchor name="item7|How can I help with the documentation?"}}==
+	==- {{anchor name="item8|When should new content get added or updated?"}}==
+	==- {{anchor name="item9|How do I rename an existing page?"}}==
+	==- {{anchor name="item10|What should go in the keyword reference pages?"}}==
+	==- {{anchor name="item11|What should go in the Programmer's Guide?"}}==
+	==- {{anchor name="item12|What should go in the Community Tutorials?"}}==
+	==- {{anchor name="item13|Which English dialect is the manual written with?"}}==
+
+----
+
+@@**FB Wiki questions**@@
+
+{{anchor name="item1"}}==What is the FBWiki?==
+	The FB Wiki is the official source for the FreeBASIC manual and related information.  It currently has three major areas:
+		- [[DocToc FreeBASIC Manual - Table of Contents]] - All of the content here is used to make downloadable versions of the FreeBASIC manual.
+		- [[CommunityTutorials Community Tutorials]] - Programming tips, information, and tutorials provided by the community.
+		- [[FBWikiHelp FB Wiki - Help]] - Help about the wiki itself, styles, formatting, and this FAQ.
+
+{{anchor name="item2"}}==Who is responsible for the documentation?==
+	The wiki and the FreeBASIC documentation is a community effort.  Many people have contributed in various ways since it was first created in 2005.  The community at large is responsible for improving the wiki and creating new content.
+
+{{anchor name="item3"}}==Who should I contact when I find a mistake in the documentation?==
+	We would prefer that if an error or omission is found in the wiki that you either leave a comment on the page where it was found, or help improve the wiki by updating the page yourself.  The FreeBASIC documentation is a community effort and is only improved by its members.  If it is something you think should be discussed first, you can make a post about it on the [[http://www.freebasic.net FreeBASIC forums]], or as a last resort, contact one of the [[http://sourceforge.net/project/memberlist.php?group_id=122342 FreeBASIC developers]].
+
+{{anchor name="item4"}}==How do I add my tutorial to the community tutorials?==
+	A tutorial might be a work that is already written or it might be a work in progress.  In both cases you can add the tutorial as follows:
+		- Login into your Wiki account. Note: use same name and password as in the forum, you can't register into the Wiki, the Login/Register form is disabled for registering.
+		- Go to the [[CommunityTutorials Community Tutorials]] page
+		- Edit the tutorials page and add a link to your tutorial in the appropriate section.  If your tutorial does not fit in to any of the existing sections, add a new section.
+		- Look at the links already on the tutorials page for examples of how your link should be added.
+		- When naming your tutorial page, make sure that the name begins with **"Tut"**.  Look at the the other links on the page as an example.  Preview the page to make sure everything looks good then store it.
+		- Back on the tutorials page, it should now contain a link to your tutorial, but it does not yet exist.  Click on the link you just made, and you will be asked if you wish to create the page.  //Verify that the name of the new wiki page you are about to create is what you want.//  Click on the link to create the page.
+		- Add your content and format as needed.
+		- Preview and edit the content until satisfied and then store the page. 
+		- If the tutorial is a work in progress, please return to finish it.
+
+{{anchor name="item5"}}==What formatting style should I use on my tutorial?==
+	The overall style for your tutorial is up to you.  There are no specific rules for how you //must// format it, but you may want to look at other tutorials of pages in the FreeBASIC manual for some ideas.  The [[FormattingRules formatting codes]] used are the same as any other page in the wiki.  We only ask that all sample code be enclosed between tags where ##**""%""""%""( freebasic )**## is the starting tag and ##**""%""""%""**## is the ending tag so it is recognized by our document converters.
+
+{{anchor name="item6"}}==Why haven't I been recognized for my contributions to the wiki?==
+	There is no specific person keeping track of the contributions made to the documentation.  
+
+	Recognition for the community tutorials is on the [[CommunityTutorials Community Tutorials]] page.  Please remember to credit yourself by putting your name or handle next to your link on the community tutorials page.
+
+	If you know that you have contributed significantly to the overall improvement of the wiki and wish to be recognized, please add yourself to the [[ContributorList Major Contributors List]].
+
+{{anchor name="item7"}}==How can I help with the documentation?==
+	A few ideas:
+		- A good place to start is by reading the topics and fixing any errors or omissions as you go.
+		- Check the MissingDocs page.  This page lists a wide range items that need work.  It's the wiki's TODO list.
+		- Check the WantedPages page.  These are pages that have been linked but not yet written.
+		- Before making major changes, or if you are unsure what to do, post your idea on the FreeBASIC forums to discuss it or to get more information from the community.
+
+{{anchor name="item8"}}==When should new content get added or updated?==
+	Content should be added whenever possible.  Until such a time that FreeBASIC has a major version release, like 1.0, the documentation will always be lagging behind the compiler development.  We would like to minimize that lag whenever possible.  Ideally we would like to be able to offer documentation that is as up to date with the compiler.
+
+{{anchor name="item9"}}==How do I rename an existing page?==
+	First thing you should ask yourself is if the page really needs to be renamed.  Renaming a page might effect more than just the online documentation.  The wiki is used to generate offline formats of the documentation which might be used in another project like an IDE.  We do try to name the pages correctly when they are first created, but sometimes mistakes are made, or the design changes and a page must be renamed.
+		- Copy the content from the old page ( e.g. ""KeyPgOldName"" ) 
+		- Create the new page ( e.g. ""ProPgNewName"" ) and paste in the content. Update the backlink if needed: for example ""{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}"" then store the page 
+		- Do a search for the old page name ( e.g. ""KeyPgOldName"" ) and fix up any pages that link to the old page to point them to the new page. 
+		- Edit the old page ( e.g. ""KeyPgOldName"" ) to contain only "!""!""! DELET""E M""E !""!""!" - so it can be easily searched for, and cleaned up later.  Also leave a user comment on the old page to say "Moved to ... " so it's also easily noticed on the recently commented page.
+
+{{anchor name="item10"}}==What should go in the keyword reference pages?==
+	The keyword reference pages which should begin with ""KeyPg"", are for compiler keywords and run-time library functions.  Anything and everything about how the keyword or function is used should be documented.  The only thing that shouldn't go in here is any personal comment on if the keyword is "good" or "bad".  It's OK to describe the alternatives, but not OK to pass any judgment on the choices.  If it's a valid keyword or construct in the language, it should be up to the programmer to choose to use it or not.  For example, [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]]. are all valid ways for introducing constants in to a source program, and each have their strengths and weaknesses.
+
+{{anchor name="item11"}}==What should go in the Programmer's Guide?==
+	The programmer's guide pages which should begin with ""ProPg"", are for concepts, ideas, and general information on how to use different aspects of the language.  For example, a single page could describe how to use [[KeyPgEnum Enum]], [[KeyPgConst Const]], [[KeyPgPpdefine #define]].  This would be the perfect place to describe the pros and cons, tips and traps, for using one over the other with links to each of the keyword pages for more information.  The programmer's guide should not only provide information on how to make use of the language to write programs but also offer advice on best practices.
+
+{{anchor name="item12"}}==What should go in the Community Tutorials?==
+	The community tutorials are a good place to put anything that doesn't fit in the language reference or the programmer's guide.  These are "How to" guides that may include several aspects of the language, external libraries, or specific algorithms.
+
+{{anchor name="item13"}}==Which English dialect is the manual written with?==
+	From time to time the wiki is checked for spelling using a the GNU Aspell "en_US" dictionary.  This dialect was chosen only because something needed to be chosen, and at the time of writing, most users reportedly were from the U.S.A.  However, contributions to the wiki have been made by users from all over the world.
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

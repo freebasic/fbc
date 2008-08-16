@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="Screen Functions"}}----
+Statements and procedures that work with the graphics display.
+
+{{fbdoc item="desc"}}
+	These statements and procedures control the graphics capabilities of the ""FreeBASIC"" graphics library. Screen modes can be set with varying resolutions and color depths, window events can be handled, and specific OpenGL procedures can be retrieved.
+
+**{{anchor name="MODES|Working with screen modes"}}**
+	Procedures for setting and retrieving information about screen modes.
+**{{anchor name="PAGES|Working with pages"}}**
+	Procedures that manipulate screen pages.
+**{{anchor name="MEMORY|Working video memory"}}**
+	Procedures that provide direct access to framebuffer memory.
+**{{anchor name="METRICS|Screen Metrics"}}**
+	Procedures that control the way coordinates are interpreted.
+
+<<{{anchor name="MODES"}}{{fbdoc item="section" value="Working with screen modes"}}
+	=={{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}==
+		Gets the available fullscreen resolutions.
+	=={{fbdoc item="keyword" value="KeyPgScreengraphics|SCREEN"}} and {{fbdoc item="keyword" value="KeyPgScreenres|SCREENRES"}}==
+		Sets a new graphics display mode.
+	=={{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}==
+		Gets information about the system desktop or current display mode.
+	=={{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}==
+		Gets or sets internal graphics library settings.
+	=={{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}==
+		Gets system events.
+	=={{fbdoc item="keyword" value="KeyPgScreenglproc|SCREENGLPROC"}}==
+		Returns the address of an OpenGL procedure.
+	=={{fbdoc item="keyword" value="KeyPgWindowtitle|WINDOWTITLE"}}==
+		Sets the running program's window caption.
+
+{{anchor name="PAGES"}}{{fbdoc item="section" value="Working with pages"}}
+	=={{fbdoc item="keyword" value="KeyPgCls|CLS"}}==
+		Clears the entire screen or viewport.
+	=={{fbdoc item="keyword" value="KeyPgScreenset|SCREENSET"}}==
+		Sets the current work and visible pages.
+	=={{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}} and {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}} and {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}==
+		Copies pixel data from one page to another.
+	=={{fbdoc item="keyword" value="KeyPgScreensync|SCREENSYNC"}}==
+		Waits for the vertical refresh of the monitor.
+<<>>{{anchor name="MEMORY"}}{{fbdoc item="section" value="Working video memory"}}
+	=={{fbdoc item="keyword" value="KeyPgScreenptr|SCREENPTR"}}==
+		Gets the address of the working page's framebuffer.
+	=={{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}==
+		Locks the current working page's framebuffer for direct access.
+	=={{fbdoc item="keyword" value="KeyPgScreenunlock|SCREENUNLOCK"}}==
+		Reverts a previous [[KeyPgScreenlock ScreenLock]] command.
+
+{{anchor name="METRICS"}}{{fbdoc item="section" value="Screen Metrics"}}
+	=={{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (GRAPHICS)"}}==
+		Sets a clipping region for all drawing and blitting procedures.
+	=={{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}==
+		Sets a new coordinate mapping for the current viewport.
+	=={{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}==
+		Converts coordinates between physical and view mappings.
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

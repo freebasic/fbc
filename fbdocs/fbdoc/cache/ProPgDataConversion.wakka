@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="Coercion and Conversion"}}----
+Coercion of Numeric Data Types in Expressions.
+
+When two different data types are used in a binary operation, like ##//+//## (Addition) or ##//=//## (Assignment), the smaller data type is automatically promoted to the larger data type regardless of the order in which the arguments are given.  
+
+Promotions are as follows:
+	- where both arguments are each one of byte, ubyte, short, ushort, or integer: the smaller sized argument is promoted to have the same size as the larger sized argument.
+	- where one of the arguments is longint or ulongint, and the other argument is of any integer type, the smaller sized argument is promoted to have the same size as the larger sized argument.
+	- where one of the arguments is a single or a double, both arguments are converted and/or promoted to double
+
+All unsigned integer types are handling like signed integer types for the purpose of promotion, and the most significant bit is extended (sign extension).
+
+==Conversion of Numeric Data Types==
+
+A type conversion will occur implicitly when an expression or variable is assigned, passed as a parameter to a procedure, or returned as a result from a procedure. Conversions may also be explicit when using CAST or one of the built-in conversion functions.
+
+__Integer To Integer, any combination of Signed and Unsigned__
+	- Any integer type to a smaller integer type: least significant bits are retained
+	- Any integer type to a larger integer type: sign extended to fill most significant bits
+
+__Integer to Single or Double__
+	- Possible loss of precision
+
+__Double to Single__
+	- Possible loss of precision
+	- If the value of the Double exceeds the range of a Single result is +/- INF
+
+__Double or Single to Integer__
+	- Possible loss of precision
+	- If the value of the floating point number exceeds the range of the target type are results are undefined.  A run-time error is not raised.
+
+{{fbdoc item="see"}}
+	- [[CatPgStdDataTypes Standard Data Types]]
+	- [[TblVarTypes Variable Types]]
+	- [[CatPgCasting Casting and Conversion Functions]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

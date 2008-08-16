@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="OPTION NOGOSUB"}}----
+Disables support for ##[[KeyPgGosub Gosub]]## and ##[[KeyPgOngosub On Gosub]]##.
+
+{{fbdoc item="syntax"}}##
+	**Option Nogosub**
+##
+{{fbdoc item="desc"}}
+	##**Option Nogosub**## disables support for ##[[KeyPgGosub Gosub]]## and ##[[KeyPgReturn Return]]## (from gosub).
+
+	Because ##[[KeyPgReturn Return]]## could mean return-from-gosub or return-from-procedure, ##[[KeyPgOptiongosub Option Gosub]]## and ##**Option Nogosub**## can be used to enable and disable ##[[KeyPgGosub Gosub]]## support.  When ##[[KeyPgGosub Gosub]]## support is disabled, ##[[KeyPgReturn Return]]## is then recognized as return-from-procedure.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/switches/option-nogosub.bas"}}%%(freebasic)
+'' Compile with the "-lang qb" compiler switch
+
+'$lang: "qb"
+
+'' turn off gosub support
+Option nogosub
+
+Function foo() As Integer
+	Return 1234
+End Function
+
+Print foo
+%%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfboptiongosub __FB_OPTION_GOSUB__]]##
+	- ##[[KeyPgOptiongosub Option Gosub]]##
+	- ##[[KeyPgGosub Gosub]]##
+	- ##[[KeyPgReturn Return]]##
+
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

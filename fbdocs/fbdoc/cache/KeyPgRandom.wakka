@@ -1,0 +1,94 @@
+{{fbdoc item="title" value="RANDOM"}}----
+Specifies file or device to be opened for binary mode
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgOpen Open]] //filename// for **Random** [[[KeyPgAccess Access]] //access_type//] [[[KeyPgLock Lock]] //lock_type//] as [#]//filenum// [Len = //record_length//]
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		file name to open
+	##//access_type//##
+		indicates whether the file may be read from, written to or both
+	##//lock_type//##
+		locking to be used while the file is open
+	##//filenum//##
+		unused file number to associate with the open file
+	##//record_length//##
+		the size of the record used for the file
+
+{{fbdoc item="desc"}}
+	Opens a file or device for reading and/or writing binary data in the given file ##//filenum//##, with records of size ##//record_length//##.
+	If the file does not exist, a new file will be created, otherwise any data existing in the file is preserved by ##[[KeyPgOpen Open]]##.  The file pointer is initialized by ##[[KeyPgOpen Open]]## at the start of the file, at record number ##1##. File operations move the file position in steps of ##//record_length//## bytes.
+	This file mode uses an user-defined ##[[KeyPgType Type]]## buffer variable to read/write full records in a file. The buffer variable uses to include several fields.
+	The data is saved in binary mode, in the same internal format ""FreeBASIC"" uses, by means of ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
+	
+	##//filename//## must be string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
+			
+	##//Access_type//## - By default ##**Random**## mode allows to both read and write the file, unless an ##[[KeyPgAccess Access]]## type is specified, it must be one of:
+		- ##**Read**## - the file is opened for input only
+		- ##**Write**## - the file is opened for output only
+		- ##**Read Write**## - the file is opened for input and output (the default)
+
+	##//Lock_type//## indicates the way the file is locked for other processes (users or threads), it is one of:
+		- ##**Shared**## - The file can be freely accessed by other processes     
+		- ##**Lock Read**## - The file can't be opened simultaneously for reading
+		- ##**Lock Write**## - The file can't be opened simultaneously for writing
+		- ##**Lock Read Write**## - The file cannot be opened simultaneously by other processes.
+		If no lock type is stated, the file will be ##**Shared**## for other threads of the program and ##**Lock Read Write**## for other programs.
+		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to restrict temporally access to parts of a file.
+
+	##//filenum//## is a valid ""FreeBASIC"" file number (in the range ##1##-##255##) not being used for any other file presently open. This number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	
+	##//record_length//## is the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##, it must match the size of the buffer variable used when ##[[KeyPgGetfileio Get]]##ting and ##[[KeyPgPutfileio Put]]##ting data. If omitted, it defaults to ##128##.
+
+	{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/random.bas"}}%%(freebasic)
+type UDT
+	slen as byte
+	sdata as string * 10
+end type
+
+dim i as integer
+dim s as string
+dim u as UDT
+
+dim ff as ubyte
+dim fpos as integer
+
+ff = freefile
+fpos = 10
+
+open "testfile" for random as #ff len=sizeof(UDT)
+for i = 1 to 9
+	read s
+	u = type( len(s), s )
+	put #ff, i, u
+next
+
+do
+	input "Record number: ", i
+	if i < 1 or i > 9 then exit do
+	get #1, i, u
+	print i & ": " & left( u.sdata, u.slen )
+	print
+loop
+
+close #ff
+end 0
+
+data ".,-?!'@:", "abc",      "def"
+data "ghi",      "jkl",      "mno"
+data "pqrs",     "tuv",      "wxyz"
+%%
+
+{{fbdoc item="diff"}}
+	- In QB, String-contained runtime user defined types (UDT) are not implemented in ""FreeBASIC"".
+	- The keyword ##[[KeyPgField Field]]## is used with ##[[KeyPgType Type]]## to specify the packing of the UDT. 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgBinary Binary]]##
+	- ##[[KeyPgPutfileio Put #]]##
+	- ##[[KeyPgGetfileio Get #]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

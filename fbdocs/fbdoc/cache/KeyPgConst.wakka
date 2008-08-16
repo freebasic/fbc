@@ -1,0 +1,33 @@
+{{fbdoc item="title" value="CONST"}}----
+Non-modifiable variable declaration.
+
+{{fbdoc item="syntax"}}##
+	**Const** //symbolname// [AS [[DataType DataType]]] = //value// [, ...]
+##
+{{fbdoc item="desc"}}
+	Declares non-modifiable constant data that can be integer or decimal (floating-point) numbers or strings. The constant type will be inferred if //DataType// isn't explicitly given.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/variable/const.bas"}}%%(freebasic)
+const Red = RGB(252, 2, 4)
+const Black as uinteger = RGB(0, 0, 0)
+const Text = "This is red text on a black bkgnd."
+
+locate 1, 1
+color Red, Black
+print Text
+sleep
+end
+%%
+
+{{fbdoc item="diff"}}
+	- QB does not support the ##[[KeyPgAs as]]## ##[[DataType datatype]]## syntax.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgConstQualifier Const (Qualifier)]]##
+	- ##[[KeyPgConstMember Const (Member)]]##
+	- ##[[KeyPgEnum Enum]]##
+	- ##[[KeyPgVar Var]]##
+
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

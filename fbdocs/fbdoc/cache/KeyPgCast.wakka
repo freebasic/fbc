@@ -1,0 +1,26 @@
+{{fbdoc item="title" value="CAST"}}----
+Converts an expression to a specified data type
+
+{{fbdoc item="syntax"}}##
+	Cast( [[DataType datatype]], //expression// )
+##
+{{fbdoc item="desc"}}
+	Converts ##//expression//## to a ##[[DataType datatype]]##. Useful to be used in macros when ##[[DataType datatype]]## is unknown and also when converting to [[KeyPgTypeAlias Type Alias]].
+  
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/casting/cast.bas"}}%%(freebasic)
+'' will print -128 because the integer literal will be converted to a signed byte
+print cast( byte, &h0080 )
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cast""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCptr Cptr]]##
+	- ##[[KeyPgCint Cint]]##
+	 
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

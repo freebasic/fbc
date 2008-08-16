@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="POKE"}}----
+Assigns a value to a location in memory.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] //datatype// )
+##
+{{fbdoc item="usage"}}##
+	**Poke**( [ //datatype//, ] //address//, //value// )
+##
+{{fbdoc item="param"}}
+	##//datatype//##
+		The type of data at the specified address.
+	##//address//##
+		The location in memory to assign to.
+	##//value//##
+		The value to assign.
+
+{{fbdoc item="desc"}}
+	##**Poke**## assigns a value to a location in memory. It is equivalent to
+
+		##*cast(ubyte ptr, //address//) = //value//##
+			or
+		##*cast(//datatype// ptr, //address//) = //value//##
+
+	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet Operator Let]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/memory/poke.bas"}}%%(freebasic)
+Dim i As Integer, p As Integer Ptr
+p = @i
+
+Poke Integer, p, 420
+Print Peek(Integer, p)
+%%
+	Will produce the output:
+
+%%420
+%%
+
+{{fbdoc item="diff"}}
+	- Only the byte form were supported in QB.
+	- ##DEF SEG## isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPeek Peek]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

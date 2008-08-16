@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="WRITE #"}}----
+Outputs a comma-separated list of values to a text file or device
+
+{{fbdoc item="syntax"}}##
+	**Write #** //filenum// **,** [ //expressionlist// ]
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		File number of an open file or device.
+	##//expressionlist//##
+		Comma-separated list of items to print
+
+{{fbdoc item="desc"}}
+	Outputs the values in ##//expressionlist//## to the text file or device bound to ##//filenum//##. The values are separated with commas, and strings are enclosed in double quotes. Numeric values greater than zero (0) and less than one (1) are prefixed with a zero (0) if none is given (e.g., a value of ##-.123## will be output as ##-0.123##). Extra zeroes are truncated.
+
+	If no expression list is given, ##**Write #**## outputs a carriage return (note that the comma after ##//filenum//## is still necessary, even if no expression list is given).
+	The purpose of ##**Write #**## is to create a file that can be read back by using [[KeyPgInputPp Input #]].
+
+{{fbdoc item="ex"}}
+
+{{fbdoc item="filename" value="examples/manual/fileio/write.bas"}}%%(freebasic)
+const filename as string = "file.txt"
+
+dim filenum as integer = freefile()
+if 0 <> open(filename, for output, as filenum) then
+	print "error opening " & filename & " for output."
+	end -1
+end if
+
+dim i as integer = 10
+dim d as double = 123.456
+dim s as string = "text"
+
+write #filenum, 123, "text", -.45600
+write #filenum,
+write #filenum, i, d, s
+%%
+	will produce the file:
+
+%%
+123,"text",-0.456
+
+10,123.456,"text"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWrite Write]]##
+	- ##[[KeyPgPrintPp Print #]]##
+	- ##[[KeyPgInputPp Input #]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="FIX"}}----
+Returns the integer part of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Fix** ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the decimal number to truncate
+
+{{fbdoc item="ret"}}
+	Returns the integer part of a number.
+
+{{fbdoc item="desc"}}
+	Equivalent to: ##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.
+
+	The ##**Fix**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/fix.bas"}}%%(freebasic)
+Print fix(1.9)  '' will print  1
+Print fix(-1.9) '' will print -1 
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInt Int]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgOperator Operator]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

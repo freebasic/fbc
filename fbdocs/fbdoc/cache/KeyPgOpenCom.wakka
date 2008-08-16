@@ -1,0 +1,83 @@
+{{fbdoc item="title" value="OPEN COM"}}----
+Opens a serial port for input and output
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Open Com** ( byref //options// [[KeyPgAs as]] [[KeyPgString string]], **AS** //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Open Com**( //options//, **AS**[#] //filenum// )
+##
+{{fbdoc item="param"}}
+	##//options//##
+		A [[KeyPgString string]] containing options used in controlling the port.
+	##//filenum//##
+		The file number to bind to the port.
+
+{{fbdoc item="ret"}}
+	Returns zero (0) on success and a non-zero error code otherwise.
+
+{{fbdoc item="desc"}}
+	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as PRINT #, INPUT#, GET #,...
+
+	The main parameter is a [[KeyPgString string]] that describes, at the very least, which communications port to open. It has the format:
+
+		##"**COM**//n//**:** [ //baudrate// ][ , [ //parity// ][ , [ //data_bits// ][ , [ //stop_bits// ][ , [ //extended_options// ]]]]]"##
+
+	where,
+	##//n//##
+		Com port to open. "1", "2", "3", "4", etc.  Some platforms will support more serial ports depending on how the operating system is configured.  Where ##//n//## is not given, "COM:" will map to "COM1:", except on Linux where "COM:" maps to "/dev/modem"
+	##//baudrate//##
+		"300" (default), "1200", ..., etc.
+	##//parity//##
+		"N" (none), "E" (even, default), "O" (odd), "S" (space), "M" (mark), "PE" (QB-quirk: checked, even parity)
+	##//data_bits//##
+		"5", "6", "7" (default) or "8".
+	##//stop_bits//##
+		"1", "1.5" or "2". //(default value depends on baud rate and data bits, see table below)//
+
+			{{table columns="2" cellpadding="2" cells="Condition;Default number of stop bits;baud rate <= 110 and data bits = 5;1.5;baud rate <= 110 and data bits >= 6;2;baud rate > 110;1"}}
+	##//extended_options//##
+		Miscellaneous options. //(See table below)//
+
+			{{table columns="2" cellpadding="2" cells="Option;Action;'CSn';Set the CTS duration (in ms) (n>=0), 0 = turn off, default = 1000;'DSn';Set the DSR duration (in ms) (n>=0), 0 = turn off, default = 1000;'CDn';Set the Carrier Detect duration (in ms) (n>=0), 0 = turn off;'OPn';Set the 'Open Timeout' (in ms) (n>=0), 0 = turn off;'TBn';Set the 'Transmit Buffer' size (n>=0), 0 = default, depends on platform;'RBn';Set the 'Receive Buffer' size (n>=0), 0 = default, depends on platform;'RS';Suppress RTS detection;'LF';Communicate in ASCII mode (add LF to every CR) - Win32 doesn't support this one;'ASC';same as 'LF';'BIN';The opposite of LF and it'll always work;'PE';Enable 'Parity' check;'DT';Keep DTR enabled after CLOSE;'FE';Discard invalid character on error;'ME';Ignore all errors;'IRn';IRQ number for COM (only supported (?) on DOS)"}}
+
+	All items except for the COM port are optional. The order of ##//baudrate//##, ##//parity//##, ##//data_bits//##, ##//stop_bits//## is fixed. Any skipped fixed item ( ##//baudrate//##, etc...) must be empty.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/fileio/opencom1.bas"}}%%(freebasic)
+OPEN COM "COM1:9600,N,,2" as 1
+%%
+	Opens COM1 with 9600 baud, no parity, 7 data bits and 2 stop bits.
+
+{{fbdoc item="filename" value="examples/manual/fileio/opencom2.bas"}}%%(freebasic)
+OPEN COM "COM1:115200" as 1
+%%
+	Opens COM1 with 115200 baud, "even" parity, 7 data bits and 1 stop bits. 
+
+{{fbdoc item="target"}}
+	- On the Windows platform ##"COM:"## maps to ##"COM1:"##
+	- On the Linux platform
+		##"COM:"## maps to ##"/dev/modem"##
+		##"COM1:"## maps to ##"/dev/ttyS0"##
+		##"COM2:"## maps to ##"/dev/ttyS1"##, etc 
+		##"/dev/xyz:"## maps to ##"/dev/xyz"##, etc
+	- The DOS serial driver is experimental and can access COM ports 1 to 4 
+		It uses the following base io and IRQ's as default: 
+		COM1 - &h3f8 - IRQ4 
+		COM2 - &h2f8 - IRQ3 
+		COM3 - &h3e8 - IRQ4 
+		COM4 - &h2e8 - IRQ3 
+		Since fbc-0.18.4, an alternate IRQ can be specified using the the "IRn" protocol option where "n" is 3 through 7.
+		Currently not supported: IRQ's on the slave PIC, alternate base I/O addresses, Timeouts and most errors as detected in QB, hardware flow control, FIFO's.
+		##"COM:"## maps to ##"COM1:"##
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax ##OPEN "COMx:...## is supported. 
+
+{{fbdoc item="diff"}}
+	- In QB the syntax was ##OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n##
+	- In QB, only ##"COM1:"## and ##"COM2:"## are supported.  In FreeBASIC, any correctly configured serial port may be used.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="TIMEVALUE"}}----
+Gets a [[ProPgDates Date Serial]] from a time string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""TimeValue""**( //timestring// )
+##
+{{fbdoc item="param"}}
+	##//timestring//##
+		the string to convert
+
+{{fbdoc item="ret"}}
+	Returns a [[ProPgDates Date Serial]] from a time string.
+
+{{fbdoc item="desc"}}
+	
+	The time string must be in the format ##"23:59:59"## or  ##"11:59:59PM"##
+
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/timevalue.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Dim ds As Double = TimeValue("07:12:28AM")
+
+Print Format(ds, "hh:mm:ss")
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

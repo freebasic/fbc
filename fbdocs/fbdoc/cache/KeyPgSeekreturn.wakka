@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="SEEK (Function)"}}----
+Gets the position of the next read/write operation for a file or device
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Seek** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		file number of an open file
+
+{{fbdoc item="ret"}}
+	The file position where the next read or write operation will take place.
+
+{{fbdoc item="desc"}}
+	The position is given in records if the file was opened in ##[[KeyPgRandom Random]]## access mode, in bytes in any other case. The file position returned is 1-based, so the first record of a file is 1.
+
+	The ##[[KeyPgSeekset Seek]]## statement is used to set the position of the next read or write operation.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/fileio/seek-func.bas"}}%%(freebasic)
+dim f as integer, position as integer
+
+f = freefile
+open "file.ext" for binary as #f
+
+position = seek(f)
+
+close #f
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSeekset Seek (Statement)]]##
+	- ##[[KeyPgLoc Loc]]##
+	- ##[[KeyPgOpen Open]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

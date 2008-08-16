@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="__FB_MAIN__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_MAIN__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_MAIN__""## is defined in the main module and not defined in other modules.
+
+	The main module is determined by the compiler as either the first source file listed on the command line or explicitly named using the -m option on the command line.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbmain.bas"}}%%(freebasic)
+#ifdef __FB_MAIN__
+  #print Compiling the main module
+#else
+  #print Compiling an additional module
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[CompilerOptm Compiler Option: -m]]
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

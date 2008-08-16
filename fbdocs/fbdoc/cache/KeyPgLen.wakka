@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="LEN"}}----
+Returns the length of a variable or data type
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( [[KeyPgByref byref]] //variable// [[KeyPgAs as]] [[KeyPgAny any]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Len** ( //datatype// ) [[KeyPgAs as]] [[KeyPgInteger integer]]	
+##
+{{fbdoc item="usage"}}##
+	//result// = **Len**( //variable// )
+		##//or//##
+	//result// = **Len**( [[DataType DataType]] )
+##
+{{fbdoc item="param"}}
+	##//variable//##
+		A variable of any type.
+	##//datatype//##
+		A [[DataType DataType]].
+
+{{fbdoc item="ret"}}
+	Returns the size of a variable or [[DataType DataType]] in bytes.
+
+{{fbdoc item="desc"}}
+	##**Len**## returns the length of a variable or [[DataType DataType]], in bytes.
+
+	In the first form, if ##//variable//## is of type ##[[KeyPgString String]]##, ##[[KeyPgWstring Wstring]]## or ##[[KeyPgZstring Zstring]]##, the length of the string in characters will be returned. Otherwise, the size of ##//variable//##'s type in bytes is returned.
+
+	In the second form, if ##//datatype//## is ##[[KeyPgZstring Zstring]]## or ##[[KeyPgWstring Wstring]]##, the size of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString String]]##, the size of the string descriptor type is returned.
+
+	If there is both a user defined type and a variable both having the same name in the same scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/len.bas"}}%%(freebasic)
+print len("hello world") 'returns "11"
+print len(Integer) ' returns 4
+
+type xyz
+	a as integer
+	b as integer
+end type
+
+print len(xyz) ' returns 8
+%%
+
+{{fbdoc item="lang"}}
+	- ##**Len**## only allows expressions in the //[[CompilerOptlang -lang qb]]// dialect. 
+	- Can be used with built-in types and user-defined types in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+
+{{fbdoc item="diff"}}
+	- Can be used with built-in types and user-defined types in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- None in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSizeof Sizeof]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

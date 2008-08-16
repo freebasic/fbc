@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="SECOND"}}----
+Gets the seconds from a [[ProPgDates Date Serial]] 
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Second** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **Second**( //date_serial// )
+##
+{{fbdoc item="param"}}
+	##//date_serial//##
+		the date serial
+
+{{fbdoc item="ret"}}
+	Returns the seconds from a  variable containing a date in  [[ProPgDates Date Serial]]  format.
+
+{{fbdoc item="desc"}}
+	 
+	The compiler will not recognize this function unless ##vbcompat.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/second.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+Print Format(ds, "yyyy/mm/dd hh:mm:ss "); Second(ds)
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

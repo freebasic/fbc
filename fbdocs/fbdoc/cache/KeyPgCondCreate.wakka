@@ -1,0 +1,123 @@
+{{fbdoc item="title" value="CONDCREATE"}}----
+Creates a conditional variable to be used in synchronizing threads
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Condcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Condcreate**
+##
+{{fbdoc item="ret"}}
+	A handle to a newly created conditional variable, or the null pointer (0) on failure.
+
+{{fbdoc item="desc"}}
+	Once the conditional is ##**KeyPgCondCreate Condcreate**##d and the threads are started, one or more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/threads/condcreate.bas"}}%%(freebasic)
+''
+'' make newly-created threads wait until all threads are ready, then start them all at once
+''
+
+dim shared hcondstart as any ptr
+dim shared hmutexstart as any ptr
+dim shared start as integer = 0
+
+dim shared threadcount as integer
+dim shared hmutexready as any ptr
+dim shared hcondready as any ptr
+
+sub mythread(byval id_ptr as any ptr)
+	dim id as integer = cast(integer, id_ptr)
+
+	print "Thread #" & id & " is waiting..."
+
+	'' signal that this thread is ready
+	mutexlock hmutexready
+	threadcount += 1
+	condsignal hcondready
+	mutexunlock hmutexready
+	
+	'' wait for the start signal
+	Mutexlock hmutexstart
+	do while start = 0	
+		Condwait hcondstart, hmutexstart
+	loop
+
+	'' now this thread holds the lock on hmutexstart
+	
+	Mutexunlock hmutexstart
+
+	'' print out the number of this thread
+	for i as integer = 1 to 40
+		print id;
+	next i
+end sub
+
+dim threads(1 to 9) as any ptr
+
+hcondstart = condcreate()
+hmutexstart = mutexcreate()
+
+hcondready = condcreate()
+hmutexready = mutexcreate()
+
+threadcount = 0
+
+
+for i as integer = 1 to 9
+	threads(i) = ThreadCreate(@mythread, cast(any ptr, i))
+	if threads(i) = 0 then
+		print "unable to create thread"
+	end if
+next i
+
+print "Waiting until all threads are ready..."
+
+mutexlock(hmutexready)
+do until threadcount = 9
+	condwait(hcondready, hmutexready)
+loop
+mutexunlock(hmutexready)
+
+print "Go!"
+
+mutexlock hmutexstart
+start = 1
+condbroadcast hcondstart
+mutexunlock hmutexstart
+
+'' wait for all threads to complete
+for i as integer = 1 to 9
+	if threads(i) <> 0 then
+		threadwait threads(i)
+	end if
+next i
+
+mutexdestroy hmutexready
+conddestroy hcondready
+
+mutexdestroy hmutexstart
+conddestroy hcondstart
+%%
+
+{{fbdoc item="target"}}
+	- **Condcreate** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCondBroadcast Condbroadcast]]##
+	- ##[[KeyPgCondDestroy Conddestroy]]##
+	- ##[[KeyPgCondSignal Condsignal]]##
+	- ##[[KeyPgCondWait Condwait]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

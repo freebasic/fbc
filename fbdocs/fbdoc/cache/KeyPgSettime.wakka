@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="SETTIME"}}----
+Sets the current system time
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Settime** ( [[KeyPgByref byref]] //newtime// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Settime**( //newtime// )
+##
+{{fbdoc item="param"}}
+	##//newtime//##
+		the new time to set
+
+{{fbdoc item="ret"}}
+	Returns zero on success or non-zero on failure on all ports except DOS.
+
+{{fbdoc item="desc"}}
+	To set the time, format the date and send to ##Settime## in one of the following formats: ##"hh:mm:ss"##, ##"hh:mm"##, or ##"hh"## (##hh## is the hour, ##mm## is the minute, and ##ss## is the second).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/settime.bas"}}%%(freebasic)
+SETTIME "1:20:30"
+%%
+
+{{fbdoc item="diff"}}
+	- The ##[[KeyPgTime Time]]## statement was used QB and the syntax was ##TIME = //newtime//##.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgTime Time]]##
+	- ##[[KeyPgSetdate Setdate]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

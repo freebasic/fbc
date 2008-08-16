@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="SLEEP"}}----
+Waits until a specified time has elapsed, or a key is pressed.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //keyflag// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Sleep** [ //amount// [, //keyflag// ]]
+##
+{{fbdoc item="param"}}
+	##//amount//##
+		Optional number of milliseconds to wait (default is to wait for a key press).
+	##//keyflag//##
+		Optional flag; give it a value of 1 to specify that the wait cannot be interrupted by a key press.
+
+{{fbdoc item="desc"}}
+	##**Sleep**## will wait until ##//amount//## milliseconds (can be seconds in //[[CompilerOptlang -lang qb]]//, see below) given elapsed (if any value was passed) or until the user presses a key. If ##//amount//## is below 100 ms then ##**Sleep**## will always wait the full requested amount (key presses are ignored).
+
+	Include the second parameter, ##1##, for a "deep" sleep, which cannot be interrupted by pressing a key.
+
+	The accuracy of ##**Sleep**## is variable depending on the OS cycle time (Windows NT/2K/XP: 15 ms, 9x/Me: 50 ms, Linux 10ms, DOS 55 ms).
+
+	Call ##**Sleep**## with 25ms or less to release time-slice when waiting for user input or looping inside a thread.  This will prevent the program from unnecessarily hogging the CPU.
+
+	##**Sleep**## does not clear the keyboard buffer and any keys pressed during a call to ##**Sleep**## are retained and can be read using ##[[KeyPgInkey Inkey]]##.  In order to wait for a key press, and remove the key from the buffer, ##[[KeyPgGetkey Getkey]]## can be used instead.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/sleep.bas"}}%%(freebasic)
+print "press a key"
+sleep
+getkey 'clear the keyboard buffer
+print "waiting half second"
+sleep 500
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##//amount//## value is in **milliseconds**.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##//amount//## value is in **seconds** as in QB. If the second parameter ##//keyflag//## is given, or the keyword is written as ##**""__Sleep""**##  the value is expected to be in **milliseconds**.
+
+{{fbdoc item="diff"}}
+	- None in the //[[CompilerOptlang -lang qb]]// dialect.
+	- In QB, the delay was given in whole seconds only and did not support the ##//keyflag//## parameter.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgTimer Timer]]##
+	- ##[[KeyPgInkey Inkey]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="LINE INPUT #"}}----
+Reads one line of text from a file
+
+{{fbdoc item="syntax"}}##
+	**Line Input** #//file number, string_variable//
+##
+{{fbdoc item="param"}}
+	##//file number//##
+		file number of an open file
+	##//string_variable//##
+		variable to receive the line of text
+
+{{fbdoc item="desc"}}
+	Reads a line from an open text file and stores it in a string variable.  
+
+	A line of text ends at, but does not include the end of line characters.  An end of line character may be the ##LF## character (##[[KeyPgChr Chr]]##(10)) or the ##CRLF## character pair (##[[KeyPgChr Chr]]##(13,10)).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/fileio/lineinput.bas"}}%%(freebasic)
+' compile with -lang qb
+
+'$lang: "qb"
+
+Dim Filehandle As Integer
+Dim txt As String
+	
+On Error Goto HandleErrors
+	
+Filehandle = FreeFile
+Open "test_text_file.txt" For Input As #filehandle
+
+If LOF(filehandle) > 0 Then
+	    Line Input #filehandle, txt
+Else
+	    Goto HandleErrors
+End If
+
+Close #filehandle
+Print "The first line of test_text_file.txt is:"
+Print txt
+	
+HandleErrors:
+Print "Error."
+Resume Next
+
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInputPp Input #]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

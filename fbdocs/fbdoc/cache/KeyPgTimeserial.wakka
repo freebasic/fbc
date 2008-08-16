@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="TIMESERIAL"}}----
+Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""TimeSerial""**( //hours//, //minutes//, //seconds// )
+##
+{{fbdoc item="param"}}
+	##//hour//##
+		number of hours, in the range 0-23
+	##//minute//##
+		number of minutes
+	##//second//##
+		number of seconds
+
+{{fbdoc item="ret"}}
+	Returns a [[ProPgDates date serial]] containing the time formed by the values in the ##//hours//##, ##//minutes//## and ##//seconds//## parameters.The date serial returned has no integer part.
+
+{{fbdoc item="desc"}}
+
+	##//hours//## must be specified in the range 0-23
+
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/timeserial.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+Dim ds As Double = DateSerial(2005, 11, 28) + TimeSerial(7, 30, 50)
+
+Print Format(ds, "yyyy/mm/dd hh:mm:ss")
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

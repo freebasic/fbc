@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="Bitwise Operators Truth Tables"}}----
+Computed values for the bitwise logical operators.
+
+**{{anchor name="BINARY|Binary operators"}}**
+	Operators that take two operands.
+**{{anchor name="UNARY|Unary operator"}}**
+	Operator that take a single operand.
+
+	These logical operators return a value based on the value of their operand(s). For the binary operators, each bit in the left-hand side value is applied logically to the corresponding bit in the right-hand side value. The result of this operation is returned. For the unary operator, (##[[KeyPgOpNot Operator Not]]##), the logic is applied to its right-hand side operand only.
+
+<<{{anchor name="BINARY"}}{{fbdoc item="section" value="Binary operators"}}
+
+	=={{fbdoc item="keyword" value="KeyPgOpAnd|Operator And (Conjunction)"}}==
+		Bits in the result are set if and only if both of the corresponding bits in the left and right-hand side operands are set.
+
+		{{table columns="5" cellpadding="2" cells="Lhs;0;0;1;1;Rhs;0;1;0;1;Result;0;0;0;1"}}
+
+	=={{fbdoc item="keyword" value="KeyPgOpEqv|Operator Eqv (Equivalence)"}}==
+		Bits in the result are set if and only if both of the corresponding bits in the left and right-hand side operands are both either set or unset.
+
+		{{table columns="5" cellpadding="2" cells="Lhs;0;0;1;1;Rhs;0;1;0;1;Result;1;0;0;1"}}
+
+	=={{fbdoc item="keyword" value="KeyPgOpImp|Operator Imp (Implication)"}}==
+		Bits in the result are set if and only if the corresponding bit in the left-hand side operand implies the bit in the right-hand side operand.
+
+		{{table columns="5" cellpadding="2" cells="Lhs;0;0;1;1;Rhs;0;1;0;1;Result;1;1;0;1"}}
+
+	=={{fbdoc item="keyword" value="KeyPgOpOr|Operator Or (Inclusive Disjunction)"}}==
+		Bits in the result are set if either of the corresponding bits in the left and right-hand side operands are set.
+
+		{{table columns="5" cellpadding="2" cells="Lhs;0;0;1;1;Rhs;0;1;0;1;Result;0;1;1;1"}}
+
+<<>>
+	=={{fbdoc item="keyword" value="KeyPgOpXor|Operator Xor (Exclusive Disjunction)"}}==
+		Bits in the result are set if and only if one of the corresponding bits in the left and right-hand side operands is set.
+
+		{{table columns="5" cellpadding="2" cells="Lhs;0;0;1;1;Rhs;0;1;0;1;Result;0;1;1;0"}}
+
+{{anchor name="UNARY"}}{{fbdoc item="section" value="Unary operators"}}
+
+	=={{fbdoc item="keyword" value="KeyPgOpNot|Operator Not (Complement)"}}==
+		Bits in the result are set if the corresponding bits in the right-hand side operand are unset, and unset if they are set.
+
+		{{table columns="3" cellpadding="2" cells="Rhs;0;1;Result;1;0"}}
+
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

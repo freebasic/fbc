@@ -1,0 +1,54 @@
+{{fbdoc item="title" value="Operator \ (Integer divide)"}}----
+Divides two ##[[KeyPgInteger Integer]]## expressions
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **\** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **##\##** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The left-hand side dividend expression.
+	##//rhs//##
+		The right-hand side divisor expression.
+
+{{fbdoc item="ret"}}
+	Returns the quotient of an ##[[KeyPgInteger Integer]]## dividend and divisor.
+
+{{fbdoc item="desc"}}
+	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the result. Numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
+	
+	If the divisor (##//rhs//##) is zero (0), a division by zero error will be raised.
+
+	Neither of the operands are modified in any way.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/integer-divide.bas"}}%%(freebasic)
+DIM n AS DOUBLE
+PRINT n \ 5
+n = 7 \ 2.6  '' => 7 \ 3  => 2.33333  => 2
+PRINT n
+n = 7 \ 2.4  '' => 7 \ 2 => 3.5 => 3
+PRINT n
+SLEEP
+%%
+Output:
+%%
+0
+2
+3
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

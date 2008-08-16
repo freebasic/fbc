@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="MKDIR"}}----
+Makes a folder/directory on the local file system
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Mkdir**( //folder// )
+##
+{{fbdoc item="param"}}
+	##//folder//##
+		The folder/directory to be created.
+
+{{fbdoc item="ret"}}
+	Returns zero (0) on success, and negative one (-1) on failure.
+
+{{fbdoc item="desc"}}
+	Creates a folder on the local file system.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/mkdir.bas"}}%%(freebasic)
+Dim pathname As String = "foo\bar\baz"
+Dim result As Integer = MkDir( pathname )
+
+If 0 <> result Then Print "error: unable to create folder " & pathname & " in the current path."
+%%
+{{fbdoc item="target"}}
+	- Linux requires the //filename// case matches the real name of the file. Windows and DOS  are case insensitive. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgChdir Chdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

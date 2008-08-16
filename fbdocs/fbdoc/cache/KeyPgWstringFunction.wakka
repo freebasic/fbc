@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="WSTRING (Function)"}}----
+Fills a wstring with a certain length of a certain wide character
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Wstring**( //count//, //ch_code// )
+		//or//
+	//result// = **Wstring**( //count//, //ch// )
+##
+{{fbdoc item="param"}}
+	##//count//##
+		An integer specifying the length of the wstring to be created.
+	##//ch_code//##
+		An integer specifying the Unicode char to be used to fill the wstring.
+	##//ch//##
+		A wstring whose first character is to be used to fill the wstring.
+
+{{fbdoc item="ret"}}
+	The created wstring. An empty wstring will be returned if either ##//ch//## is an empty string, or ##//count//## <= 0.
+
+{{fbdoc item="desc"}}
+	##**Wstring**## generates a temporal wstring filled with ##//count//## copies of an [[Unicode Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim Dim]]##ed ##**Wstring**##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/wstring.bas"}}%%(freebasic)
+PRINT WSTRING( 4, 934 )         
+PRINT WSTRING( 5, Wstr("Indeed") )   
+end 0
+%%
+   <<&#934;&#934;&#934;&#934;
+   IIIII<<
+   ::c::
+{{fbdoc item="target"}}
+	- Unicode (w)strings are not supported in the DOS port of FreeBASIC
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstring""**##.
+
+{{fbdoc item="diff"}}
+	- QBasic does not support [[Unicode Unicode]]
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgString String]] (data type)##
+	- ##[[KeyPgWspace Wspace]]##
+	- ##[[KeyPgWstring Wstring]] (data type)##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

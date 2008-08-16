@@ -1,0 +1,109 @@
+{{fbdoc item="title" value="DOS Keyboard Scancodes"}}----
+Listing of keyboard scancodes.
+
+{{fbdoc item="desc"}}
+Here follows a list of hardware keyboard scancodes accepted by the ##[[KeyPgMultikey Multikey]]##
+function. These are equal to DOS scancodes, and are guaranteed to be always
+recognized on all platforms.
+
+These constants are also defined in the fbgfx.bi include file you can use in
+your programs. If you are using at least .17 then everything inside fbgfx.bi is
+enclosed in the namespace FreeBASIC. To use these constants with v0.17b and up prefix
+##"FB."## to the following codes. The hexadecimal code is not required and provided
+only for reference.
+
+%%(freebasic)
+SC_ESCAPE       &h01
+SC_1            &h02
+SC_2            &h03
+SC_3            &h04
+SC_4            &h05
+SC_5            &h06
+SC_6            &h07
+SC_7            &h08
+SC_8            &h09
+SC_9            &h0A
+SC_0            &h0B
+SC_MINUS        &h0C
+SC_EQUALS       &h0D
+SC_BACKSPACE    &h0E
+SC_TAB          &h0F
+SC_Q            &h10
+SC_W            &h11
+SC_E            &h12
+SC_R            &h13
+SC_T            &h14
+SC_Y            &h15
+SC_U            &h16
+SC_I            &h17
+SC_O            &h18
+SC_P            &h19
+SC_LEFTBRACKET  &h1A
+SC_RIGHTBRACKET &h1B
+SC_ENTER        &h1C
+SC_CONTROL      &h1D
+SC_A            &h1E
+SC_S            &h1F
+SC_D            &h20
+SC_F            &h21
+SC_G            &h22
+SC_H            &h23
+SC_J            &h24
+SC_K            &h25
+SC_L            &h26
+SC_SEMICOLON    &h27
+SC_QUOTE        &h28
+SC_TILDE        &h29
+SC_LSHIFT       &h2A
+SC_BACKSLASH    &h2B
+SC_Z            &h2C
+SC_X            &h2D
+SC_C            &h2E
+SC_V            &h2F
+SC_B            &h30
+SC_N            &h31
+SC_M            &h32
+SC_COMMA        &h33
+SC_PERIOD       &h34
+SC_SLASH        &h35
+SC_RSHIFT       &h36
+SC_MULTIPLY     &h37
+SC_ALT          &h38
+SC_SPACE        &h39
+SC_CAPSLOCK     &h3A
+SC_F1           &h3B
+SC_F2           &h3C
+SC_F3           &h3D
+SC_F4           &h3E
+SC_F5           &h3F
+SC_F6           &h40
+SC_F7           &h41
+SC_F8           &h42
+SC_F9           &h43
+SC_F10          &h44
+SC_NUMLOCK      &h45
+SC_SCROLLLOCK   &h46
+SC_HOME         &h47
+SC_UP           &h48
+SC_PAGEUP       &h49
+SC_LEFT         &h4B
+SC_RIGHT        &h4D
+SC_PLUS         &h4E
+SC_END          &h4F
+SC_DOWN         &h50
+SC_PAGEDOWN     &h51
+SC_INSERT       &h52
+SC_DELETE       &h53
+SC_F11          &h57
+SC_F12          &h58
+
+'' Extra scancodes not compatible with DOS scancodes
+SC_LWIN         &h7D
+SC_RWIN         &h7E
+SC_MENU         &h7F
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMultikey Multikey]]##
+
+{{fbdoc item="back" value="KeyPgMultikey|Multikey"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}

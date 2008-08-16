@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="ERASE"}}----
+Statement to erase arrays
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Erase** ( array [[KeyPgAs as]] [[KeyPgAny any]] [, ... ] )
+##
+{{fbdoc item="usage"}}##
+	**Erase**( //array0// [, //array1// ... //arrayN// ] )
+##
+{{fbdoc item="param"}}
+	##//array//##
+		An array to be erase.
+
+{{fbdoc item="desc"}}
+	Erases the element data of one or more variable-length arrays from memory, or clears (initializes) all elements in a fixed-length array.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/array/erase.bas"}}%%(freebasic)
+dim MyArray1(1 to 10) as integer
+redim MyArray2(1 to 10) as integer 
+
+erase MyArray1, MyArray2
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgLbound Lbound]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgUbound UBound]]##
+	- ##[[KeyPgVar Var]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

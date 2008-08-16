@@ -1,0 +1,7 @@
+{#fb_chm_title}
+------------------------------------------------------------
+
+This document last compiled : {#fb_docinfo_date} {#fb_docinfo_time}
+from {#fb_docinfo_wiki}
+
+

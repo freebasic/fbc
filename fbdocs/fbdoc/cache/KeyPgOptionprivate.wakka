@@ -1,0 +1,41 @@
+{{fbdoc item="title" value="OPTION PRIVATE"}}----
+Specifies internal linkage by default for procedure declarations
+
+{{fbdoc item="syntax"}}##
+	**Option Private**
+##
+{{fbdoc item="desc"}}
+	##**Option Private**## is a statement that gives any following procedure declarations internal linkage by default, as if declared with ##[[KeyPgPrivate Private]]##. This default remains in effect for the rest of the module in which ##**Option Private**## is used, and can be overridden by declaring procedures with ##[[KeyPgPublic Public]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/switches/option-private.bas"}}%%(freebasic)
+'' Compile with the "-lang fblite" compiler switch
+
+#lang "fblite"
+
+Sub ProcWithExternalLinkage()
+   ' ...
+End Sub
+
+Option Private
+
+Sub ProcWithInternalLinkage()
+   ' ...
+End Sub
+
+Public Sub AnotherProcWithExternalLinkage()
+   ' ...
+End Sub
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfboptionprivate __FB_OPTION_PRIVATE__]]##
+	- ##[[KeyPgPrivate Private]]##
+	- ##[[KeyPgPublic Public]]##
+
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

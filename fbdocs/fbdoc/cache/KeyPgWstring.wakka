@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="WSTRING"}}----
+Standard data type: wide character string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Wstring** * //size//
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Wstring** [[KeyPgPtr ptr]]
+##
+{{fbdoc item="desc"}}
+	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## are used directly.
+
+	The end of the string is marked by the character 0, so that character must never be part of a ##**Wstring**## or the content will be truncated.
+
+	This type is provided for support non-Latin based alphabets. Any intrinsic string function like ##[[KeyPgLeft Left]]## will work with ##**Wstring**##s too, as will any string operator.
+
+	Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files.
+
+	The FreeBASIC text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write. 
+	
+	##[[KeyPgSizeof sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/wstring.bas"}}%%(freebasic)
+dim as wstring * 14 str1 => "hello, world"
+print str1
+print len(str1)    'returns 12, the length of the string it contains 
+print sizeof(str1) 'returns 14 * sizeof(wstring), the number of bytes used by the variable
+%%
+
+{{fbdoc item="filename" value="examples/manual/datatype/wstring2.bas"}}%%(freebasic)
+dim as wstring ptr str2
+str2 = allocate( 14 * len(wstring) )
+*str2 = "hello, world"
+print *str2
+print len(*str2)      'returns 12, the length of the string it points to
+%%
+
+{{fbdoc item="target"}}
+	Support for wstrings relies in the C runtime library available in the platform and the internal format may vary.
+		- Unicode is not supported in the DOS port of FreeBASIC. In this port a character takes up always 1 byte and ##[[KeyPgWstring Wstrings]]## will behave as standard ASCII ##[[KeyPgZstring Zstrings]]##
+		- On Win32 wstrings are encoded in UCS-2 (UTF-16 LE) and a character takes up 2 bytes.
+		- On Linux wstrings are encoded in UCS-4 and a character takes up 4 bytes.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstring""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgString String]]## (data type)
+	- ##[[KeyPgZstring Zstring]]## (data type)
+	- ##[[KeyPgWstring Wstring]]## (data type)
+	- ##[[KeyPgStringFunction String]]## (function)
+	- ##[[KeyPgWstringFunction Wstring]]## (function)
+	- ##[[KeyPgWspace Wspace]]##
+	- ##[[KeyPgWstr Wstr]]##
+	- ##[[KeyPgWchr Wchr]]##
+	- ##[[KeyPgWbin Wbin]]##
+	- ##[[KeyPgWhex Whex]]##
+	- ##[[KeyPgWoct Woct]]##
+	- ##[[KeyPgWinput Winput()]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

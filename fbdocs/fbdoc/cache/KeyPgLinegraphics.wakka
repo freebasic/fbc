@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="LINE (GRAPHICS)"}}----
+Draws a line
+
+{{fbdoc item="syntax"}}##
+	**Line** [//target//,] [[STEP] (//x1//, //y1//)]-[STEP] (//x2, y2//) [, [//color//][, [B|BF][, //style//]]]
+	or
+	**Line** - (//x1//, //y1//) [, [//color//][, [B|BF][, //style//]]]
+##
+{{fbdoc item="param"}}
+	##//target//##
+		specifies buffer to draw on
+	##STEP##
+		indicates that the starting coordinates are relative
+	##//(x1, y1)//##
+		starting coordinates of the line
+	##STEP##
+		indicates that ending coordinates are relative
+	##//(x2, y2)//##
+		ending coordinates of the line
+	##//color//##
+		the color attribute.
+	##B|BF##
+		specifies box or box filled mode
+	##//style//##
+		line style
+
+{{fbdoc item="desc"}}
+	Graphics statement that draws a straight line or a box between two points. The action will take place on the current work page set via [[KeyPgScreenset ScreenSet]], or onto the buffer [[KeyPgGetgraphics Get]]/[[KeyPgPutgraphics Put]] buffer if specified.
+	
+	**Line** coordinates are affected by custom coordinates system set via [[KeyPgWindow Window]] and [[KeyPgViewgraphics View (Graphics)]] statements, and respect clipping rectangle set by [[KeyPgViewgraphics View (Graphics)]]. If a pair of coordinates is preceded by the ##STEP## keyword, the coordinates are assumed to be relative to the last graphics cursor position. If the ##B## flag is specified, a rectangle will be drawn instead of a line, with ##(//x1//,//y1//)-(//x2//,//y2//)## as the coordinates of the opposite rectangle corners. If ##BF## is specified, a filled rectangle will be drawn.
+	
+	##//Color//## denotes the color attribute, which is mode specific (see [[KeyPgColor Color]] and [[KeyPgScreengraphics Screen (Graphics)]] for details). If omitted, the current foreground color as set by the [[KeyPgColor Color]] statement is used.
+	
+	##//Style//##, if specified, allows styled line drawing; its value is interpreted as a 16bit bitmask, and **Line** will use it to skip pixel drawing. Starting at ##(//x1//,//y1//)##, the most significant bit of the style mask is checked: if 1, the pixel is drawn, if 0, it's skipped. This repeats for all the line pixels with the other bits, with the mask being reused when the 16 bits are all checked.
+
+	When **Line** is used as //Line - (x, y)//, a Line is Drawn from the previous coordinate to the one specified, and no ##//x2//## or ##//y2//## parameters are needed.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/line.bas"}}%%(freebasic)
+'' draws a diagonal red line with a white box, and waits for 3 seconds
+screen 13
+line (20, 20)-(300, 180), 4
+line (140, 80)-(180, 120), 15, b
+line - ( 200, 200 ), 15
+sleep 3000
+%%
+
+{{fbdoc item="filename" value="examples/manual/gfx/line_style.bas"}}%%(freebasic)
+' Draws 2 lines with 2 different line styles in 2 different colors
+screenres 320, 240
+
+Line (10, 100)-(309, 140),  4, B, &b1010101010101010 ' red box with dashed border
+
+Line (20, 115)-(299, 115),  9,  , &b1111000011111111 ' blue dashed line
+Line (20, 125)-(299, 125), 10,  , &b0000000011110000 ' green dashed line
+
+Sleep
+%%
+
+{{fbdoc item="diff"}}
+	- QB LINE could not draw onto GET/PUT buffers.
+
+{{fbdoc item="see"}}
+	- [[KeyPgCircle Circle]]
+	- [[KeyPgWindow Window]]
+	- [[KeyPgViewgraphics View (Graphics)]]
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

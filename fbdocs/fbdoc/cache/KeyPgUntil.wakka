@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="UNTIL"}}----
+Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements.
+
+{{fbdoc item="syntax"}}##
+	Do **Until** //condition//
+		or
+	Loop **Until** //condition//
+##
+{{fbdoc item="desc"}}
+	##**Until**## is used with the ##[[KeyPgDoloop Do...Loop]]## structure.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/until.bas"}}%%(freebasic)
+DIM a AS INTEGER
+
+a = 1
+DO
+	PRINT "hello"
+a = a + 1
+LOOP UNTIL a > 10
+
+'This will continue to print "hello" on the screen until the condition (a > 10) is met. 
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDoloop Do...Loop]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

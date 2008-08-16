@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="RUN"}}----
+Transfers execution to an external program
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgString string]] = ##"####"## ) [[KeyPgAs as]] [[KeyPgString integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Run**( //program// [, //arguments// ] )
+##
+{{fbdoc item="param"}}
+	##//program//##
+		The file name (including file path) of the program (executable) to transfer control to.
+	##//arguments//##
+		The command-line arguments to be passed to the program.
+
+{{fbdoc item="ret"}}
+	Returns negative one (-1) if the program could not be executed.
+
+{{fbdoc item="desc"}}
+	Transfers control over to an external program. When the program exits, execution will return to the system.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/run.bas"}}%%(freebasic)
+'' Attempt to transfer control to "program.exe" in the current directory.
+Dim result As Integer = Run("program.exe")
+
+'' at this point, "program.exe" has failed to execute, and
+'' result will be set to -1.
+%%
+
+{{fbdoc item="target"}}
+	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being run may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+{{fbdoc item="diff"}}
+	- ##**Run**## needs the full executable name, including extension (##.exe##) on platforms that have one (Win32, DOS).
+	- Returning an error code is new to FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgChain Chain]]##
+	- ##[[KeyPgExec Exec]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

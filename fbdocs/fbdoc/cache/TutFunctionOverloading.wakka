@@ -1,0 +1,96 @@
+{{fbdoc item="title" value="Function Overloading"}}----
+//written by [[LaananFisher :stylin:]]//
+
+----
+
+====What is It?====
+
+
+Function overloading is as close as you can come to generic programming without having templates. In functional (or modular) programming, the emphasis is on value, while in generic programming, the emphasis is on //type//. Similar functions are called based on the type of the argument passed. Function overloading is a side-step into generic programming, allowing a function identifier to be associated with a variety of functions that work with a variety of different types - and making it all transparent to the client (you).
+
+Simply put, function overloading involves defining functions that have the same name, but different //signatures//. A function's signature is a combination of all the information needed to correctly reference the function, and includes the function's parameter list and return type. These are what we redefine, or overload. Let's start off with a small example. Say we need functions that output the string respresentation of a number. We simply write:
+
+
+##%%(freebasic)
+option explicit      '' force explicit declaration of variables
+option byval         '' default passing convention as by value
+
+'' to declare functions with similar functionality but that accept different argument types,
+'' we 'simply' create new function names :(
+declare function print_byte( as byte )      '' outputs a stringified byte
+declare function print_short( as short )    '' outputs a stringified short
+
+dim as byte b = 102
+dim as short s = 10240
+
+print_byte( b )
+print_short( s )
+
+sleep : end 0
+
+'' function definitions squished for brevity - don't do this outside a space-constrained  tutorial ;}
+function print_byte( n as byte ) : print str( n ) : return : end function
+function print_short( n as short ) : print str( n ) : return : end function
+%%##
+
+----
+
+====What Does It Do For Me?====
+
+
+The problem here is that not only do we have two different function signatures, but we have two different function //identifiers// as well; we - not the compiler - have to remember both in order to call the right function. As you may be able to imagine, this can be pretty confusing if you decide you want to support INTEGERs, SINGLEs and DOUBLEs as well. Plus, for completeness, you may want to have functions that accept both the signed and unsigned versions of each of these. Clearly, you're going to have some kind of naming-scheme setup to make this easier on yourself. And, of course you'll want to support your own TYPEs as well, and - oh wait, we forgot about pointers. OK, now you'll need to double the list of function names you not only need to come up with, but also try and remember when you're actually writing code that uses these functions. Since, after all, you do have implicit conversions available to/forced upon you, and the compiler will happily let you slip a DOUBLE in to your print_integer function - woops! Bug-city, here we come! Surely there must be a better way?
+
+There is, and don't call me Shirley. I mentioned before that the compiler uses two primary components to establish a function signature: the parameter list and the return type. I also mentioned that through overloading, we can define multiple functions with different signatures, and still keep the same function name for all of them. You may be thinking this is our way out of our dilema, convoluted name space and all. Well, you're right - check this out:
+
+
+##%%(freebasic)
+option explicit      '' force explicit declaration of variables
+option byval         '' default passing convention as by value
+
+'' to overload function print_numeric that we can redefine to accept different argument
+'' types while keeping the name intact, we use the OVERLOAD keyword on our intial function:
+declare function print_numeric overload( as byte )      '' outputs a stringified byte
+declare function print_numeric( as short )              '' outputs a stringified short
+declare function print_numeric( as integer )            '' outputs a stringified integer
+declare function print_numeric( as longint )            '' outputs a stringified longint
+
+'' define some variables
+dim as byte b = 102
+dim as short s = 10240
+dim as integer i = 1024000000
+dim as longint li = 1024000000000000000
+
+'' enter the wonderful world of function overloading :)
+print_numeric( b )
+print_numeric( s )
+print_numeric( i )
+print_numeric( li )
+
+sleep : end 0
+
+'' define our function overloads
+function print_numeric( n as byte ) : print str( n ) : return : end function
+function print_numeric( n as short ) : print str( n ) : return : end function
+function print_numeric( n as integer ) : print str( n ) : return : end function
+function print_numeric( n as longint ) : print str( n ) : return : end function
+%%##
+
+----
+
+====What does It Mean?====
+
+
+One thing that should stand out right away is how incredibly easy it is to do this. That might seem strange considering the freedom, flexibility and //type-safety// if offers you, but then again most higher-level constructs are like that. In a nutshell, using methods like this will not only make your life a whole lot easier, but you'll be spending less time debugging, and that's a good thing no matter what kind of code you write.
+
+It means //flexibility//. Function overloading offers the ability to add more features ( print_numeric( f as fraction) ) while still keeping your current code intact. Your code doesn't break because you want to support printing the numeric representation of a handkerchief, or armor, or whatever else. You may now be thinking that the above code is not so trivial anymore, and that what seems really simple - because it is - is really the foundation of writing better code. You'd be right.
+
+It means //maintainability//: So you've got your 80 functions of print_some_long_name_you_need_to_look_up_everytime_you_want_to_use_it written and debugged. Everything's great in your little torturous, self-loathing world. What happens when something needs to change? Even if only 1 of those functions needs to change, BAM! A maintenence nightmare. You're going to have to search the entire code-base to be //completely// sure you haven't missed a function here or there; sad way to spend a Saturday night, my friend.
+
+It means //safety//: You may notice that I utilize two OPTIONs in these examples: [[KeyPgOptionexplicit OPTION EXPLICIT]] and [[KeyPgOptionbyval OPTION BYVAL]]. I'm big on safety, and I'm even bigger on having the compiler watch my back for me. I use these because it is safer to, and I'll take all the safety I can get. Function overloading also affords you safety - safety against evil (read: accidental) implicit conversions. Consider if we were actually returning a value from these functions that was dependent on the argument we passed to it. As above, if a double were allowed to get truncated without our knowledge, that spells many pills of excedrin trying to make that debugging headache go away. It's all about the type-safety, something which cause many to scoff at C//pp//.
+
+----
+
+====Wrapping Up====
+
+
+I hope you have learned at least the basics of function overloading (since that's all I covered). And I hope you start thinking about the themes I've brought up, if you haven't before. Next time I'll discuss overloading functions with different numbers of parameters, different return types, as well as the joys and pitfalls of both. Stay tuned.

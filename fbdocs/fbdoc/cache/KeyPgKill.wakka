@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="KILL"}}----
+Deletes a file from disk / storage media.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Kill**( //filename// )
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		The //filename// is the name of the disk file to delete. If the file is not in the current directory, a the path must also be given //[path]file//.
+
+{{fbdoc item="ret"}}
+	Returns zero (0) on success, or non-zero on error.
+
+{{fbdoc item="desc"}}
+	Deletes a file from disk / storage media.
+	
+	 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/kill.bas"}}%%(freebasic)
+Dim filename As String = "file.ext"
+Dim result As Integer = Kill( filename )
+
+If result <> 0 Then Print "error trying to kill " ; filename ; " !"
+%%
+{{fbdoc item="diff"}}
+	- KILL can optionally be used as function in FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
+

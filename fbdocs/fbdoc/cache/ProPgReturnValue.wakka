@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="Returning Values"}}----
+**Returning Values** refers to the ability of a ##[[KeyPgFunction Function]]## procedure to have a value when the function finishes such that the value can be used in an expression or assigned to a variable.
+
+The value of a function can be returned in three ways:
+
+{{fbdoc item="filename" value="examples/manual/proguide/procs/return-methods.bas"}}%%(freebasic)
+'' Using the name of the function to set the return value and continue executing the function:
+Function myfunc1() As Integer
+   myfunc1 = 1
+End Function
+
+'' Using the keyword 'Function' to set the return value and continue executing the function:
+Function myfunc2() As Integer
+   Function = 2
+End Function
+
+'' Using the keyword 'Return' to set the return value and immediately exit the function:
+Function myfunc3() As Integer
+   Return 3
+End Function
+%%
+
+{{fbdoc item="filename" value="examples/manual/proguide/procs/returnval.bas"}}%%(freebasic)
+'' This program demonstrates a function returning a value.
+
+Declare Function myFunction () As Integer
+
+Dim a As Integer
+
+'Here we take what myFunction returns and add 10.
+a = myFunction() + 10
+
+'knowing that myFunction returns 10, we get 10+10=20 and will print 20.
+Print a 
+
+Function myFunction () As Integer
+  'Here we tell myFunction to return 10.
+  function = 10 
+End Function
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFunction Function]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   
+
+   

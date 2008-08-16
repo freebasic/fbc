@@ -1,0 +1,83 @@
+{{fbdoc item="title" value="DYLIBSYMBOL"}}----
+Returns the address of a function or variable in a dll
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //symbol// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibsymbol** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //symbol// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Dylibsymbol** ( //library//, //symbol// )
+##
+{{fbdoc item="param"}}
+	##//library//##
+		The [[KeyPgAny any]] [[KeyPgPtr ptr]] handle of a DLL returned by ##[[KeyPgDylibload Dylibload]]##
+	##//symbol//##
+		A [[KeyPgString string]] containing name of the function, or variable in the library to return the address of.  In Windows only, can also be a ##[[KeyPgShort short]]## containing the ordinal of the function/variable.
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgPtr pointer]]## to the function or variable in the library.
+
+	If the function fails, the return value is 0.
+
+{{fbdoc item="desc"}}
+	##**Dylibsymbol**## returns a pointer to the variable or function named ##//symbol//## , in the dll pointed by ##//libhandle//##. ##//libhandle//## is obtained by loading the dll with ##[[KeyPgDylibload Dylibload]]##. The symbol must have been ##[[KeyPgExport Export]]##ed in the dll.
+	If ##//libhandle//## is 0, the symbol is searched in the current executable or dll.
+
+	If using ##[[KeyPgCdecl Cdecl]]## functions, only the name of the procedure needs to be specified. If dynamically linking to a function created using STDCALL (default in windows), then the function must be decorated. To decorate a function, use its name, '@', then the number of bytes passed as arguments. For instance if the function ##FOO## takes 3 integer arguments, the decorated function would be 'FOO@12'. Remember, without an explicit ##[[KeyPgAlias alias]]##, the procedure name will be uppercase.
+
+	If linking to a dll created in Visual C""++""(tm), decoration need not be used. For GCC, decoration is needed.
+
+	**Note:** The dylibsymbol, if failing, will attempt to automatically decorate the procedure, from @0 to @256, in 4 byte increments.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/module/mydll2.bas"}}%%(freebasic)
+'' mydll.dll
+
+'' in the DLL the function must be declared as CDECL and export
+
+Function AddNumbers cdecl Alias "AddNumbers" _
+  ( _
+	ByVal operand1 As Integer, ByVal operand2 As Integer _
+  ) As Integer Export
+
+   AddNumbers = operand1 + operand2
+
+End Function
+%%
+
+{{fbdoc item="filename" value="examples/manual/module/dylibsymbol.bas"}}%%(freebasic)
+'' create a function pointer, arguments must be the same
+'' as in the original function
+
+Dim AddNumbers As Function ( ByVal operand1 As Integer, ByVal operand2 As Integer ) As Integer
+
+Dim hndl As Any Ptr
+
+hndl=DyLibLoad("mydll.dll")
+
+'' find the procedure address (case matters!)
+AddNumbers = DyLibSymbol( hndl, "AddNumbers" )
+
+'' then call it..
+Print "1 + 2 ="; AddNumbers( 1, 2 )
+
+DyLibFree hndl
+
+Sleep
+%%
+
+{{fbdoc item="target"}}
+	- Dynamic link libraries are not available in DOS ,as the OS doesn't support them.
+	- Ordinals are not supported on Linux, 0 is always returned.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dylibsymbol""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDylibload Dylibload]]##
+	- ##[[KeyPgExport Export]]##
+
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

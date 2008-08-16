@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="Compiler Option: -o"}}----
+Set object file path/name
+
+{{fbdoc item="syntax"}}##
+	**-o** < //output file// >
+##
+{{fbdoc item="param"}}
+	##//output file//##
+		The name, with optional path, of the object file to create.
+
+{{fbdoc item="desc"}}
+	When used with the ##**[[CompilerOptc -c]]**## option, the ##**-o**## option specifies a name to give to the object file resulting in compiling the source file immediately preceding it. By default, the object file has the same name as the source file, but with a //.o// extension. This option is useful for saving object files in other directories.
+
+	To compile the source files //file1.bas// and //file2.bas// into the object files //file1.o// and //apple.o//, type,
+
+		##fbc -c file1.bas file2.bas **-o** apple.o##
+
+	Note that the ##**-o**## option only has an effect when used with the ##**[[CompilerOptc -c]]**## option (compile only), as object files are not saved otherwise.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptb Compiler Option: -b]]
+	- [[CompilerOptc Compiler Option: -c]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

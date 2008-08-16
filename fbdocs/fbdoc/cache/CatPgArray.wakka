@@ -1,0 +1,37 @@
+{{fbdoc item="title" value="Array Functions"}}----
+Statements and procedures for working with arrays.
+
+**{{anchor name="DEFINE|Defining Arrays"}}**
+	Statements that create arrays.
+**{{anchor name="CLEAR|Clearing Array Data"}}**
+	Procedures that work with array memory.
+**{{anchor name="SIZE|Retrieving Array Size"}}**
+	Procedures that return bounds of an array's dimension.
+
+<<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
+	=={{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}==
+		Forces arrays to be defined as variable-length arrays.
+	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
+		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}==
+		Reverts a previous [[KeyPgOptiondynamic OPTION DYNAMIC]] command.
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
+		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
+		Defines and resizes variable-length arrays.
+	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
+		Preserves array contents when used with [[KeyPgRedim REDIM]].
+
+<<>>{{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
+	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==
+		Destroys variable-length array elements and initializes fixed-length array elements.
+
+{{anchor name="SIZE"}}{{fbdoc item="section" value="Retrieving Array Size"}}
+	=={{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}==
+		Returns the lower bound of an array's dimension.
+	=={{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}==
+		Returns the upper bound of an array's dimension.
+
+ >>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

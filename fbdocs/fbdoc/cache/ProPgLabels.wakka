@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="Labels"}}----
+Defines a location in a program.
+
+{{fbdoc item="syntax"}}##
+	//symbolname// **:**
+		//or//
+	//literalnumber//
+##
+{{fbdoc item="desc"}}
+	Defines a place in a program where ##[[KeyPgGoto Goto]]## or ##[[KeyPgGosub Gosub]]## can jump to.
+
+	A label can be a positive integer line number or a ##//symbolname//##. In both cases, the label must start at the first column of line. A ##//symbolname//## label must end with a colon (:) character.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/proguide/labels/labels_1.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
+beginning:
+3 Print "Hello World!"
+Goto beginning
+%%
+
+{{fbdoc item="filename" value="examples/manual/proguide/labels/labels_2.bas"}}%%(freebasic)
+'' compile with -lang qb
+
+'$lang: "qb"
+
+'' Labels can be used to "bookmark" DATA blocks, allowing RESTORE to alter the READ sequence.
+Read a,b,c
+Restore here
+Read d,e
+Print a,b,c,d,e 
+
+Data 1,2,3,4,5
+here:
+Data 6,7,8
+%%
+Output:
+%%
+1,2,3,6,7
+%%
+
+{{fbdoc item="lang"}}
+	- Line numbers with decimals is available only in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- None if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGosub Gosub]]##
+	- ##[[KeyPgGoto Goto]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

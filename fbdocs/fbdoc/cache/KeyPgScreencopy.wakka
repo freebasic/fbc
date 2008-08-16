@@ -1,0 +1,86 @@
+{{fbdoc item="title" value="SCREENCOPY"}}----
+Copies the contents of a graphical page into another graphical page
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screencopy** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
+##
+{{fbdoc item="usage"}}##
+	**Screencopy** [ //from_page// ] [, //to_page// ]
+##
+{{fbdoc item="param"}}
+	##//frompage//##
+		page to copy from
+	##//topage//##
+		page to copy to
+
+{{fbdoc item="desc"}}
+	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.
+
+	##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.
+
+	Page numbers range from 0 to the num_pages specified when setting the graphics mode minus 1 
+
+	You can use this function to add a double buffer to your graphics. Any SCREEN mode supports this function; you must supply valid page numbers otherwise ##**Screencopy**## will have no effect. This function has two aliases: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.
+
+Example:
+	See ##[[KeyPgScreenset Screenset]]## example.
+
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/screencopy.bas"}}%%(freebasic)
+'' 320x200x8, with 3 pages
+screen 13,,3
+
+'' image for page #1
+screenset 1, 0
+cls
+circle( 160, 100 ), 90, 1 ,,,, f
+circle( 160, 100 ), 90, 15
+print "Press 2 to copy page #2 to visible page"
+print "Press escape to exit"
+
+'' image for page #2
+screenset 2, 0
+cls
+line( 50, 50 )-( 270, 150 ), 2, bf
+line( 50, 50 )-( 270, 150 ), 15, b
+print "Press 1 to copy page #1 to visible page"
+print "Press escape to exit"
+
+'' page #0 is the visible page
+screenset 0, 0
+cls
+print "Press 1 to copy page #1 to visible page"
+print "Press 2 to copy page #2 to visible page"
+print "Press escape to exit"
+
+dim k as string
+
+do
+  k = inkey
+  select case k
+  case chr(27)
+	exit do
+  case "1"
+	screencopy 1, 0
+  case "2"
+	screencopy 2, 0
+  end select
+
+  sleep 25
+loop
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencopy""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC. QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenres Screenres]]##
+	- ##[[KeyPgScreenset Screenset]]##
+
+{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

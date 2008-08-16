@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="Operator - (Negate)"}}----
+Changes the sign of a numeric expression
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **-** //rhs//
+##
+{{fbdoc item="param"}}
+	##//rhs//##
+		The right-hand side numeric expression to negate.
+
+{{fbdoc item="ret"}}
+	Returns the negative of the expression.
+
+{{fbdoc item="desc"}}
+	**##Operator -## (Negate)** is a unary operator that negates the value of its operand.
+
+	The operand is not modified in any way.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/negate.bas"}}%%(freebasic)
+DIM n AS LONGINT
+PRINT -5
+n = 65432568459
+n = - n
+PRINT n
+SLEEP
+%%
+Output:
+%%
+-5
+-65432568459
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

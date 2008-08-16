@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="DEFINED"}}----
+Preprocessor function to test if a symbol has been defined
+
+{{fbdoc item="syntax"}}##
+	**defined** (//symbol_name//)
+##
+{{fbdoc item="param"}}
+	##//symbol_name//##
+		Name of the symbol to test
+
+{{fbdoc item="ret"}}
+	Returns non-zero (-1) if the symbol has been defined, otherwise returns zero (0).
+
+{{fbdoc item="desc"}}
+	Given the symbol name, the **defined()** preprocessor function returns true if the symbol has been defined - or false if the symbol is unknown of.
+
+	This is used mainly with ##[[KeyPgPpif #if]]##.
+
+	Similar to ##[[KeyPgPpifdef #ifdef]]## except it allows more than one check to occur because of its flexibility.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/prepro/defined.bas"}}%%(freebasic)
+'e.g. - which symbols are defined out of a, b, c, and d ?
+
+const a = 300
+#define b 12
+dim c as single
+
+#if defined(a)
+ print "a is defined"
+#endif
+#if defined(b)
+ print "b is defined"
+#endif
+#if defined(c)
+ print "c is defined"
+#endif
+#if defined(d)
+ print "d is defined"
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelse #else]]## 
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgPpundef #undef]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

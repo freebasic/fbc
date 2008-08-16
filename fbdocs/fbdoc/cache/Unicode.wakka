@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="Unicode"}}----
+A worldwide standard for storing, categorizing and interpreting characters
+
+Unicode is an industry standard designed to allow text and symbols from all of the writing systems of the world to be consistently represented and manipulated by computers. Developed in tandem with the Universal Character Set standard and published in book form as The Unicode Standard, Unicode consists of a character repertoire, an encoding methodology and set of standard character encodings, a set of code charts for visual reference, an enumeration of character properties such as upper and lower case, a set of reference data computer files, and rules for normalization, decomposition, collation and rendering.
+
+The Unicode Consortium, the non-profit organization that coordinates Unicode's development, has the ambitious goal of eventually replacing existing character encoding schemes with Unicode and its standard Unicode Transformation Format (UTF) schemes, as many of the existing schemes are limited in size and scope, and are incompatible with multilingual environments. Unicode's success at unifying character sets has led to its widespread and predominant use in the internationalization and localization of computer software. The standard has been implemented in many recent technologies, including XML, the Java programming language, and modern operating systems.
+
+Common Unicode formats include:
+- [[http://en.wikipedia.org/wiki/UTF-8 UTF-8]]
+- [[http://en.wikipedia.org/wiki/UTF-16 UTF-16]]
+- [[http://en.wikipedia.org/wiki/UTF-32 UTF-32]]

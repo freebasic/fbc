@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="CONSTRUCTOR (Module)"}}----
+Specifies execution of a procedure before module-level code
+
+{{fbdoc item="syntax"}}##
+	[[[KeyPgPublic Public]] | [[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgAlias Alias]] "//external_identifier//"] [()] **Constructor** [//priority//] [[[KeyPgStatic Static]]]
+		{ //procedure body// }
+	[[KeyPgEndblock End]] [[KeyPgSub Sub]]
+##
+{{fbdoc item="desc"}}
+	The ##**Constructor**## keyword is used in ##[[KeyPgSub Sub]]## definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, that is, they may be called from within module-level code, as well as other procedures.
+
+	The procedure must have an empty parameter list.  A compile-time error will be generated if the ##**Constructor**## keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
+
+	In a single module, constructors normally execute in the order in which they are defined.
+
+	The ##//priority//## attribute, an integer between 101 and 65535, can be used to force constructors to be executed in a certain order.  The value of ##//priority//## has no specific meaning, only the relationship of the number with other constructor priorities.  101 is the highest priority and is executed first.  All constructors having a ##//priority//## attribute are executed before constructors with no attribute.  The priority value of 65535 is the same as not assigning a priority value.
+
+	A module may define multiple constructor procedures, and multiple modules may define additional constructors provided no two ##[[KeyPgPublic Public]]## constructors share the same //procedure_name//.
+	
+	When linking with modules that also define constructors, the order of execution is not guaranteed at link-time unless the ##//priority//## attribute is used. Therefore, special care should be taken when using constructors that may call on a secondary module also defining a constructor.  In such a case it is advisable to use a single constructor that explicitly calls initialization procedures in those modules.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/mod-ctor.bas"}}%%(freebasic)
+'' ConDesExample.bas : An example program that defines two sets of
+'' constructors and destructors. Demonstrates when and in what order
+'' they are called when linking a single module.
+
+sub Constructor1() constructor
+	print "Constructor1() called"
+end sub
+
+sub Destructor1() destructor
+	print "Destructor1() called"
+end sub
+
+sub Constructor2() constructor
+	print "Constructor2() called"
+end sub
+
+sub Destructor2() destructor
+	print "Destructor2() called"
+end sub
+
+	'' ----------------------
+	print "module-level code"
+
+	end 0
+	'' ----------------------
+%%
+	**Output:**
+%%
+Constructor1() called
+Constructor2() called
+module-level code
+Destructor1() called
+Destructor2() called
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgModuleDestructor Destructor (Module)]]
+	- [[KeyPgSub Sub]]
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

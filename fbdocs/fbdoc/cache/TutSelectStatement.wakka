@@ -1,0 +1,109 @@
+{{fbdoc item="title" value="The Select Case Statement"}}----
+//Written by [[WikiRick rdc]]//
+
+The Select Case block can be viewed as an optimized If-ElseIf ladder, and works in much the same way. The standard Select Case can use any of the standard data types for <expression> and the specialized Select Case As Const format is optimized for integer values.
+
+This code snippet shows the syntax of the standard select case. Expression is usually a variable which can be of any of the standard data types, or individual elements of a Type or array. 
+
+%%(freebasic)
+Select Case <expression>
+	Case <list>
+		<statement> 
+		<statement>
+		...
+	Case Else
+		<statement>
+		<statement>
+		...
+End Select
+%%
+
+The <list> clause of the Case statement can be any of the following formats.
+
+~- Case <value>: Value is one of the supported data types or an enumeration. 
+~- Case <value> To <value>: Specifies a range of values.
+~- Case Is <operator> <value>: Operator is any of the logical operators.
+~- Case <value>, <value>, ...: List of values separated with commas.
+~- Case <variable>: A variable that contains a value.
+
+The following snippet illustrates how these different formats may be used in a program.
+
+%%(freebasic)
+Case 47
+
+Case 47 To 59
+
+Case Is > 60
+
+Case 47, 48, 53
+
+Case keycode
+%%
+
+The Select Case As Const is a faster version of the Select statement designed to work with integer expressions in the range of 0 to 4097.
+
+%%(freebasic)
+Select Case As Const <integer_expression>
+	Case <list>
+		<statement> 
+		<statement>
+		...
+	Case Else
+		<statement>
+		<statement>
+		...
+End Select
+%%
+
+The <list> statement formats for the Select Case As Const are limited to values or enumerations of values. That is, the operator expressions are not allowed within a Case As Const.
+
+When a Case block is executed, the statements following the Case keyword up to the next Case keyword (or End Select) will be executed. Only one block of statements within a Case will execute at any one time. If a Case Else is present, then the statements within the Else block will execute if no Case matches the <expression> portion of the Select statement. The following program illustrates using the Select Case statement block.
+
+%%(freebasic)
+'Ascii code of key press
+Dim As Integer keycode
+
+'Loop until esc key is pressed
+Do
+	keycode = Asc(Inkey)
+	Select Case As Const keycode
+	    Case 48 To 57
+	        Print "You pressed a number key."
+	    Case 65 To 90
+	        Print "You pressed an upper case letter key."
+	    Case 97 To 122
+	        Print "You pressed a lower case key."
+	    End Select
+	    Sleep 1
+Loop Until keycode = 27 '27 is the ascii code for Escape
+
+End
+%%
+
+In the program, when you press a key, the value is translated to a number using the Asc function. Since this will always be an integer value that is less than 4097 (since ascii character codes range from 0 to 255), the Select Case as Const format is used.
+
+The compiler will check the value of keycode against the Case ranges to see if the block should execute. If keycode falls within a particular range, the Print statement will execute, and then the flow of the program will continue with the next line following the End Select. If keycode doesn't match any Case range, then the program will continue with the next line following the End Select.
+
+A Select Case can usually be translated from an If-Elseif ladder. To illustrate this, the previous program is shown below as an If-ElseIf ladder.
+
+%%(freebasic)
+'Ascii code of key press
+Dim As Integer keycode
+
+'Loop until esc key is pressed
+Do
+	keycode = Asc(Inkey)
+	If (keycode >= 48) And (keycode <= 57) Then
+	    Print "You pressed a number key."
+	Elseif (keycode >= 65) And (keycode <= 90) Then
+	    Print "You pressed an upper case letter key."
+	Elseif (keycode >= 97) And (keycode <= 122) Then
+	    Print "You pressed a lower case key."
+	End If
+	Sleep 1
+Loop Until keycode = 27 '27 is the ascii code for Escape
+
+End
+%%
+
+If you compare the two programs, you can see that the logic is quite similar, however the Select Case is much more readable and understandable than the If-ElseIf ladder.

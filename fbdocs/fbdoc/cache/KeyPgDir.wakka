@@ -1,0 +1,135 @@
+{{fbdoc item="title" value="DIR"}}----
+Returns a file or directory
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** [[KeyPgOverload Overload]] ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgString string]] = "####", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByref byref]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //file_spec// [[KeyPgAs as]] [[KeyPgString string]] = "####", [[KeyPgByval byval]] //attrib_mask// [[KeyPgAs as]] [[KeyPgInteger integer]] = &h21,  [[KeyPgByval byval]] //p_out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByref byref]] //out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dir** ( [[KeyPgByval byval]] //p_out_attrib// [[KeyPgAs as]] [[KeyPgInteger integer]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Dir**( //file_spec//, [[//attrib_mask//], //out_attrib//] )
+	//result// = **Dir**( //file_spec//, [[//attrib_mask//], //p_out_attrib//] )
+		##//or//##
+	//result// = **Dir**( [//out_attrib//] )
+	//result// = **Dir**( [//p_out_attrib//] )
+##
+{{fbdoc item="param"}}
+	##//file_spec//##
+		Optional ##[[KeyPgString string]]## argument specifying the name of the files or directories to be matched.
+	##//attrib_mask//##
+		Optional ##[[KeyPgInteger integer]]## mask specifying the file attributes of the files or directories to be matched.  
+	##//out_attrib//##
+		Optional ##[[KeyPgInteger integer]]## or ##[[KeyPgUinteger uinteger]]## which is set to the attributes of the file or directory returned.
+	##//p_out_attrib//##
+		An ##[[KeyPgInteger integer]] [[KeyPgPtr ptr]]## that can be used instead of ##//out_attrib//##, pointing to an ##[[KeyPgInteger integer]]## address where the attributes can be written.
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgString string]]## containing the name of the file or directory returned.
+
+{{fbdoc item="desc"}}
+	Returns files and/or directories that match ##//file_spec//## and ##//attrib_mask//##. The ##//file_spec//## parameter can include wildcards (##"*"## and/or ##"?"##) and paths.
+
+	The //##attrib_mask##// optional parameter is a combination of the following flags (any file with attributes not included in this parameter will be skipped over):
+		{{table columns="3" cellpadding="1" cells="Value;Description;Constant;&h01;Read Only;fbReadOnly;&h02;Hidden;fbHidden;&h04;System;fbSystem;&h10;Directory;fbDirectory;&h20;Archive;fbArchive;&h21;Normal;fbNormal"}}
+	The named constants can be used by including ##"dir.bi"##.  Multiple flags can be specified by adding them together, or by combining them using the bit-wise ##[[KeyPgOpOr or]]## operator.
+
+	By default //##attrib_mask##// is set to ##&h21## (ie.: search for files with possibly the archive or read-only flags set).
+
+	The value of ##&h37## (##&h3F## usually works also, but ##&h37## is safer) returns all files and directories, including ##"."## and ##".."##, but no Volume: the value ##8## returns the Volume, even if current directory is not the main directory. 
+
+	The ##//out_attrib//## optional parameter if passed will be loaded with the attributes of the file been returned.
+
+	When ##//file_spec//## is set to an empty string or no arguments are passed (or just ##//file_attrib//##), then ##**Dir**## will return the next file found.
+
+	The result will be an empty string when no files were found.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
+#include "dir.bi" 'provides constants to use for the attrib_mask parameter
+
+Sub list_files (byref filespec as string, byval attrib as integer)
+	Dim filename As String
+
+	filename = dir( filespec, attrib )
+	Do
+	    Print filename
+	    filename = dir( )
+	Loop While len( filename ) > 0
+End Sub
+
+Print "directories:"
+list_files "*", fbDirectory
+
+Print
+Print "archive files:"
+list_files "*", fbArchive
+%%
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/dirretat.bas"}}%%(freebasic)
+'' Example of using DIR function and retrieving attributes
+
+#include "dir.bi" '' provides constants to match the attributes against
+
+'' set input attribute mask to allow files that are normal, hidden, system or directory
+Const attrib_mask = fbNormal Or fbHidden Or fbSystem Or fbDirectory ' = &h37
+
+Dim As UInteger out_attr '' unsigned integer to hold retrieved attributes
+
+Dim As String fname '' file/directory name returned with
+Dim As Integer filecount, dircount
+
+fname = Dir("*.*", attrib_mask, out_attr) '' Get first file name/attributes, according to supplied file spec and attribute mask
+
+Print "File listing in " & CurDir & ":"
+
+Do Until Len(fname) = 0 '' loop until Dir returns empty string
+
+	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
+
+	    Print fname,
+
+	    If out_attr And fbDirectory Then
+	        Print "- directory";
+	        dircount += 1
+	    Else
+	        Print "- file";
+	        filecount += 1
+	    End If
+	    If out_attr And fbReadOnly Then Print ", read-only";
+	    If out_attr And fbHidden Then Print ", hidden";
+	    If out_attr And fbSystem Then Print ", system";
+	    If out_attr And fbArchive Then Print ", archived";
+	    Print
+
+	End If
+
+	fname = Dir(out_attr) '' find next name/attributes
+
+Loop
+
+Print
+Print "Found " & filecount & " files and " & dircount & " subdirs"
+%%
+
+{{fbdoc item="target"}}
+	- Linux requires the ##//filename//## case to match the real name of the file. Windows and DOS are case insensitive.
+	- Path separators in Linux are forward slashes (##"/"##). Windows uses backslashes (##"\"##) but it allows for forward slashes.  DOS uses backslashes.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dir""**##.
+
+{{fbdoc item="diff"}}
+	- The ##//attrib_mask//## and ##//out_attrib//## parameters are new to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgCurdir Curdir]]##
+	- ##[[KeyPgMkdir Mkdir]]##
+	- ##[[KeyPgRmdir Rmdir]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="EXTERN"}}----
+Declares a variable, array or object having external linkage
+
+{{fbdoc item="syntax"}}##
+	**Extern** [ [[KeyPgImport Import]] ] //symbolname//[ (//subscripts//) ] [ [[KeyPgAlias Alias]] "//aliasname//" ] [[KeyPgAs as]] //[[DataType DataType]]// [, ...]
+##
+{{fbdoc item="param"}}
+	##//symbolname//##
+		The name of the variable, array or object.
+	##//aliasname//##
+		An alternate external name for the variable, array or object.
+
+{{fbdoc item="desc"}}
+	Declares ##//symbolname//## as an external name, meaning it is global to external modules. ##**Extern**## only declares variables, arrays and objects, and does not define them (different from ##[[KeyPgCommon Common]]## or ##[[KeyPgDim Dim]]##). It also has the effect of making ##//symbolname//## a //shared// name, meaning it is visible within procedures (see ##[[KeyPgShared Shared]]##).
+
+	If ##[[KeyPgAlias Alias]]## is used, ##//aliasname//## will be used as the external name rather than ##//symbolname//##, and its case will be preserved.
+	
+	If ##[[KeyPgImport Import]]## is used, the name will be added to the dynamic library import list so its address can be fixed at run-time.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/module/extern1.bas"}}%%(freebasic)
+'' extern1.bas
+
+Extern Foo Alias "foo" As Integer
+
+Sub SetFoo
+	foo = 1234
+End Sub
+%%
+
+{{fbdoc item="filename" value="examples/manual/module/extern2.bas"}}%%(freebasic)
+'' extern2.bas
+
+Declare Sub SetFoo
+
+Extern Foo Alias "foo" As Integer
+
+Dim foo As Integer = 0
+
+SetFoo
+
+Print Foo
+%%
+Output:
+%%
+ 1234
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgExternBlock Extern...End Extern]]##
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgShared Shared]]##
+
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="Operator Mod= (Modulus and Assign)"}}----
+Divides a value and assigns the remainder to a variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Mod=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+##
+{{fbdoc item="usage"}}##
+	//lhs// **Mod=** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The variable to assign to.
+	##//rhs//##
+		The value to divide ##//lhs//## by.
+
+{{fbdoc item="desc"}}
+	This operator divides two values of ##[[KeyPgInteger Integer]]## type and assigns the remainder to its left-hand side (##//lhs//##) variable. It is functionally equivalent to:
+##
+		//lhs// = //lhs// [[KeyPgOpModulus Mod]] //rhs//
+##
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/mod-assign.bas"}}%%(freebasic)
+DIM n AS INTEGER
+n = 11
+n mod= 3
+'' The result is 2
+PRINT n
+SLEEP
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpModulus Operator + (Modulus)]]##
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

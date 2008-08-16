@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="$DYNAMIC"}}----
+Metacommand to change the way arrays are allocated
+
+{{fbdoc item="syntax"}}##
+	**'$Dynamic**
+		//or//
+	[[KeyPgRem rem]] **$Dynamic**
+##
+{{fbdoc item="desc"}}
+	**'$Dynamic** is metacommand that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which **'$Dynamic** is used, and can be overridden with ##[[KeyPgMetaStatic $Static]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/meta/dynamic.bas"}}%%(freebasic)
+' compile with -lang fblite or qb
+
+#lang "fblite"
+
+'$DYNAMIC
+Dim a(100)
+'......
+ReDim a(200)
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- When used inside comments it must be the first token
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMetaStatic $Static]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgOptiondynamic Option Dynamic]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

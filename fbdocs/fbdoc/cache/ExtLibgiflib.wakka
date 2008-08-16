@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="GIFLIB"}}
+----
+
+GIFLIB is a package of portable tools and library routines for working with GIF images
+
+Website: [[http://giflib.sourceforge.net/doc/]]
+Platforms supported: Win32 (needs GIFLIB4.DLL), Linux, DOS(?)
+Headers to include: gif_lib.bi
+Example included: YES
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

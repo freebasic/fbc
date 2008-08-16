@@ -1,0 +1,83 @@
+{{fbdoc item="title" value="Preprocessor"}}----
+Commands that control the preprocessor.
+
+{{fbdoc item="desc"}}
+	Preprocessor commands are sent to the compiler to control what gets compiled and how. They can be used to choose to compile one block of code rather than another for cross-platform compatibility, include headers or other source files, define small inline functions called macros, or alter how the compiler handles variables.
+
+**{{anchor name="CONDCOMP|Conditional Compilation"}}**
+	Commands that allow for branches in compilation based on conditions.
+**{{anchor name="TEXTREPLACE|Text Replacement"}}**
+	Commands that create text-replacement macros.
+**{{anchor name="FILE|File Directives"}}**
+	Commands that indicate to the compiler how other files relate to the source file.
+**{{anchor name="CONTROL|Control Directives"}}**
+	Commands that set compile options, control compilation, and report compile time information.
+**{{anchor name="METACOMMAND|Metacommands"}}**
+	Commands that are kept for backward compatibility.
+
+<<{{anchor name="CONDCOMP"}}{{fbdoc item="section" value="Conditional Compilation"}}
+	=={{fbdoc item="keyword" value="KeyPgPpif|#IF"}}==
+		Compiles the following code block based on a condition.
+	=={{fbdoc item="keyword" value="KeyPgPpifdef|#IFDEF"}}==
+		Compiles the following code block if a symbol is defined.
+	=={{fbdoc item="keyword" value="KeyPgPpifndef|#IFNDEF"}}==
+		Compiles the following code block if a symbol is not defined.
+	=={{fbdoc item="keyword" value="KeyPgPpelseif|#ELSEIF"}}==
+		Compiles the following code block if a condition is true and the previous conditions was false.
+	=={{fbdoc item="keyword" value="KeyPgPpelse|#ELSE"}}==
+		Compiles the following code block if previous conditions were false.
+	=={{fbdoc item="keyword" value="KeyPgPpendif|#ENDIF"}}==
+		Signifies the end of a code block.
+	=={{fbdoc item="keyword" value="KeyPgDefined|DEFINED"}}==
+		Returns "-1" if a symbol is defined, otherwise "0".
+
+{{anchor name="TEXTREPLACE"}}{{fbdoc item="section" value="Text Replacement"}}
+	=={{fbdoc item="keyword" value="KeyPgPpdefine|#DEFINE"}}==
+		Creates a single-line text-replacement macro.
+	=={{fbdoc item="keyword" value="KeyPgPpmacro|#MACRO"}} and {{fbdoc item="keyword" value="KeyPgPpmacro|#ENDMACRO"}}==
+		Creates a multi-line text-replacement macro.
+	=={{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}==
+		Undefines a symbol.
+	==[[KeyPgOpPpStringize # Preprocessor stringize]]==
+		Converts text into a string literal.
+	==[[KeyPgOpPpConcat ## Preprocessor concatenate]]==
+		Concatenates two pieces of text.
+	=={{fbdoc item="keyword" value="KeyPgOpPpEscape|! Escaped String Literal"}}==
+		Indicates string literal immediately following must be processed for escape sequences.
+	=={{fbdoc item="keyword" value="KeyPgOpPpNoescape|$ Non-Escaped String Literal"}}==
+		Indicates string literal immediately following must not be processed for escape sequences.
+
+<<>>{{anchor name="FILE"}}{{fbdoc item="section" value="File Directives"}}
+	=={{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}==
+		Inserts text from a file.
+	=={{fbdoc item="keyword" value="KeyPgInclib|#INCLIB"}}==
+		Includes a library in the linking processes.
+	=={{fbdoc item="keyword" value="KeyPgPplibpath|#LIBPATH"}}==
+		Includes a path to search for libraries in the linking process.
+
+{{anchor name="CONTROL"}}{{fbdoc item="section" value="Control Directives"}}
+	=={{fbdoc item="keyword" value="KeyPgPragma|#PRAGMA"}}==
+		Sets compiling options.
+	=={{fbdoc item="keyword" value="KeyPgPplang|#LANG"}}==
+		Sets dialect from source.
+	=={{fbdoc item="keyword" value="KeyPgPpprint|#PRINT"}}==
+		Outputs a messages to standard output while compiling.
+	=={{fbdoc item="keyword" value="KeyPgPperror|#ERROR"}}==
+		Outputs a messages to standard output and stops compilation.
+	=={{fbdoc item="keyword" value="KeyPgPpline|#LINE"}}==
+		Sets the current line number and file name.
+
+{{anchor name="METACOMMAND"}}{{fbdoc item="section" value="Metacommands"}}
+	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
+		Alternate form of the [[KeyPgInclude #INCLUDE]] directive.
+	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
+		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
+		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+	=={{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}==
+		Alternate form of the [[KeyPgPplang #lang]] directive.
+
+
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

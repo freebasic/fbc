@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -e"}}----
+Add error checking
+
+{{fbdoc item="syntax"}}##
+	**-e**
+##
+{{fbdoc item="desc"}}
+	Adds QuickBASIC-like error checking.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr __FB_ERR__]]##
+	- [[CompilerOptex Compiler Option: -ex]]
+	- [[CompilerOptexx Compiler Option: -exx]]
+	- [[ProPgErrorHandling Error Handling]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

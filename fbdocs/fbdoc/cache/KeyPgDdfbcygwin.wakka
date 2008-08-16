@@ -1,0 +1,27 @@
+{{fbdoc item="title" value="__FB_CYGWIN__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_CYGWIN__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time in the Cygwin version of the compiler, or when the //[[CompilerOpttarget -target cygwin]]// command line option is used. It can be used to compile parts of the program only if the target is Cygwin.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbcygwin.bas"}}%%(freebasic)
+#IFDEF __FB_CYGWIN__
+  '...instructions only for Cygwin...
+#ELSE
+  '...instructions not for Cygwin...
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32_]]##
+	- [[CompilerOpttarget Compiler Option: -target]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

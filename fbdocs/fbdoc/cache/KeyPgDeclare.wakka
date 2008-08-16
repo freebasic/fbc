@@ -1,0 +1,95 @@
+{{fbdoc item="title" value="DECLARE"}}----
+Declares a module-level or member procedure
+
+{{fbdoc item="syntax"}}##
+	**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ] [ [[KeyPgModuleConstructor Constructor]] | [[KeyPgModuleDestructor Destructor]] ]
+	**Declare** [[KeyPgFunction Function]] //name// [ //param_list// ] [[KeyPgAs As]] //return_type//
+	**Declare** [[KeyPgOperator Operator]] //op_symbol// //param_list// [ [[KeyPgAs As]] //return_type// ]
+	
+	Type //T//
+		**Declare** [[KeyPgConstructor Constructor]] [ //param_list// ]
+		**Declare** [[KeyPgDestructor Destructor]]
+		**Declare** [[KeyPgSub Sub]] //name// [ //param_list// ]
+		**Declare** [[KeyPgFunction Function]] //name// [ //param_list// ] [[KeyPgAs As]] //return_type//
+		**Declare** [[KeyPgOperator Operator]] //name// [ //param_list// ] [ [[KeyPgAs As]] //return_type// ]
+		**Declare** [[KeyPgProperty Property]] //name// [ ( [ //param_list// ] ) ] [ [[KeyPgAs As]] //return_type// ]
+	End Type
+##
+{{fbdoc item="param"}}
+	##//param_list//##
+		Parenthesized comma-separated list of parameters.
+	##//return_type//##
+		The return type of a ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]## procedure.
+	##//name//##
+		The name or symbol of the routine.
+	##//op_symbol//##
+		The name or symbol of an operator.
+	##//T//##
+		The name of a new user-defined type.
+
+{{fbdoc item="desc"}}
+	The ##**Declare**## statement declares a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgConstructor Constructor]]##, or ##[[KeyPgDestructor Destructor]]##. We will refer to one of these as a routine. 
+	The routine can be referred to in code without seeing its definition, although it must be defined somewhere. Essentially, the ##**Declare**## statement introduces a routine, and states that its definition is elsewhere. For example, a function can be declared at the top of a source module, called, then defined at the bottom of the source file, as shown below the example.
+
+	A routine's declaration is almost identical to the first line of its definition, except the declaration is preceded by the ##**Declare**## keyword and has no body. Also, attributes such as [[KeyPgExport Export]] are left off the declaration.
+
+	FreeBASIC, as QB, does not require the declaration of the functions unless they are defined in a different source file or in the same file past the point where they are called. This is no longer true for routines declared inside a [[KeyPgType Type]] body, which must **always** be declared first in the [[KeyPgType Type]]'s body before use. If you do not declare [[KeyPgType Type]] routines you will receive an error.
+
+	 As every file using a function must have its declaration, declarations are usually kept in one or more //include files// to allow usage of the function by any module that needs it using the ##[[KeyPgInclude #include]]## statement. 
+
+{{fbdoc item="ex"}}
+Module-level Function:
+{{fbdoc item="filename" value="examples/manual/procs/declare.bas"}}%%(freebasic)
+'' declare the function sum which takes two integers and returns an integer
+declare function sum( as integer, as integer ) as integer
+
+   print "the sum of 420 and 69 is: " & sum( 420, 69 )    '' call the function sum
+
+'' define the function sum which takes two integers and returns an integer
+function sum( a as integer, b as integer ) as integer
+   return a + b
+end function
+%%
+
+Type-level Sub:
+{{fbdoc item="filename" value="examples/manual/procs/declare2.bas"}}%%(freebasic)
+type my_type
+	my_data as integer
+	declare sub increment_data( )
+end type
+
+sub my_type.increment_data( )
+	my_data += 1
+end sub
+
+dim as my_type an_instance
+
+an_instance.my_data = 68
+
+an_instance.increment_data( )
+
+Print an_instance.my_data
+%%
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- Type-level ##[[KeyPgSub Sub]]##/##[[KeyPgFunction Function]]##/##[[KeyPgOperator Operator]]##/##[[KeyPgConstructor Constructor]]##/##[[KeyPgDestructor Destructor]]##'s are only allowed in //[[CompilerOptlang -lang fb]]//
+
+{{fbdoc item="diff"}}
+	- In FreeBASIC, the parameter names are optional.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgOperator Operator]]##
+	- ##[[KeyPgProperty Property]]##
+	- ##[[KeyPgConstructor Constructor]]##
+	- ##[[KeyPgDestructor Destructor]]##
+	- ##[[KeyPgModuleConstructor Constructor (module)]]##
+	- ##[[KeyPgModuleDestructor Destructor (module)]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgAlias Alias]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}
+   

@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="__FB_MIN_VERSION__"}}----
+Macro function to test minimum compiler version
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//) _
+		(([[KeyPgDdFBVerMajor __FB_VER_MAJOR__]] > major) or _
+		(([[KeyPgDdFBVerMajor __FB_VER_MAJOR__]] = major) and (([[KeyPgDdFBVerMinor __FB_VER_MINOR__]] > minor) or _
+		([[KeyPgDdFBVerMinor __FB_VER_MINOR__]] = minor and [[KeyPgDdFBVerPatch __FB_VER_PATCH__]] >= patch_level))))
+##
+{{fbdoc item="usage"}}##
+	**""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//)
+##
+{{fbdoc item="param"}}
+	##//major//##
+		minimum major version to test
+	##//minor//##
+		minimum minor version to test
+	##//patch//##
+		minimum patch version to test
+
+{{fbdoc item="ret"}}
+	Returns zero (0) if the compiler version is less than the specified version, or non-zero (-1) if the compiler version is greater than or equal to specified version
+
+{{fbdoc item="desc"}}
+	##""__FB_MIN_VERSION__""## tests for a minimum version of the compiler.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbminversion.bas"}}%%(freebasic)
+#if Not __FB_MIN_VERSION__(0, 18, 2)
+ 	#error fbc must be at least version 0.18.2 to compile this module
+#endif
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgPpif #IF]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

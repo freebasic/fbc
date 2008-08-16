@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="Mathematical Functions"}}----
+Procedures that work with numbers mathematically.
+
+{{fbdoc item="desc"}}
+	This set of procedures provide basic algebraic and trigonometric function. Random numbers can also be retrieved, using a variety of random number generators.
+
+**{{anchor name="ALGEBRA|Algebraic Procedures"}}**
+	Absolute values, logarithms, square roots and more.
+**{{anchor name="TRIG|Trigonometry Procedures"}}**
+	Sine, Cosine and other trigonometry-related procedures.
+**{{anchor name="MISC|Miscellaneous Procedures"}}**
+	Miscellaneous procedures.
+
+<<{{anchor name="ALGEBRA"}}{{fbdoc item="section" value="Algebraic Procedures"}}
+	=={{fbdoc item="keyword" value="KeyPgAbs|ABS"}}==
+		Returns the absolute value of a number.
+	=={{fbdoc item="keyword" value="KeyPgExp|EXP"}}==
+		Returns //e// raised to some power.
+	=={{fbdoc item="keyword" value="KeyPgLog|LOG"}}==
+		Returns the natural logarithm of a number.
+	=={{fbdoc item="keyword" value="KeyPgSqr|SQR"}}==
+		Returns the square root of a number.
+	=={{fbdoc item="keyword" value="KeyPgFix|FIX"}}==
+		Returns the integer part of a number.
+	=={{fbdoc item="keyword" value="KeyPgFrac|FRAC"}}==
+		Returns the fractional part of a number.
+	=={{fbdoc item="keyword" value="KeyPgInt|INT"}}==
+		Returns the largest integer less than or equal to a number.
+	=={{fbdoc item="keyword" value="KeyPgSgn|SGN"}}==
+		Returns the sign of a number.
+	=={{fbdoc item="keyword" value="KeyPgRnd|RND"}}==
+		Returns a random [[KeyPgDouble Double]] in the range [0, 1).
+
+<<>>{{anchor name="TRIG"}}{{fbdoc item="section" value="Trigonometry Procedures"}}
+	=={{fbdoc item="keyword" value="KeyPgSin|SIN"}}==
+		Returns the sine of an angle.
+	=={{fbdoc item="keyword" value="KeyPgAsin|ASIN"}}==
+		Returns the arcsine of a number.
+	=={{fbdoc item="keyword" value="KeyPgCos|COS"}}==
+		Returns the cosine of an angle.
+	=={{fbdoc item="keyword" value="KeyPgAcos|ACOS"}}==
+		Returns the arccosine of a number.
+	=={{fbdoc item="keyword" value="KeyPgTan|TAN"}}==
+		Returns the tangent of an angle.
+	=={{fbdoc item="keyword" value="KeyPgAtn|ATN"}}==
+		Returns the arctangent of a number.
+	=={{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}==
+		Returns the arctangent of the ratio between two numbers.
+
+{{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous Procedures"}}
+	=={{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}==
+		Seeds the random number generator used by ##[[KeyPgRnd Rnd]]##.
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

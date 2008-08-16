@@ -1,0 +1,163 @@
+{{fbdoc item="title" value="PROPERTY"}}----
+Declares or defines a property in a type or class
+
+{{fbdoc item="syntax"}}##
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
+		[[KeyPgDeclare declare]] **Property** //fieldname// () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
+
+	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+		//statements//
+	**End Property**
+
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	**End Property**
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+	##//fieldname//## 
+		name of the property
+	##//new_value//## 
+		the value passed to property to be assigned
+	##//index//## 
+		the property index value
+
+{{fbdoc item="desc"}}
+	##**Property**## fields are used to get and set values of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
+
+	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
+
+	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as Property(Index) = Value.
+
+	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/property.bas"}}%%(freebasic)
+type Vector2D
+  as single x, y
+  declare operator cast() as string
+  declare property Length() as single
+  declare property Length( byval new_length as single )
+end type
+
+operator Vector2D.cast () as string
+  return "(" + str(x) + ", " + str(y) + ")"
+end operator
+
+property Vector2D.Length() as single
+  Length = sqr( x * x + y * y )
+end property
+
+property Vector2D.Length( byval new_length as single )
+  dim m as single = Length
+  if m <> 0 then
+	'' new vector = old / length * new_length
+	x *= new_length / m
+	y *= new_length / m
+  end if
+end property
+
+Dim a as Vector2D = ( 3, 4 )
+
+print "a = "; a
+print "a.length = "; a.length
+print
+
+a.length = 10
+
+print "a = "; a
+print "a.length = "; a.length
+%%
+Output:
+%%
+a = (3, 4)
+a.length =  5
+
+a = (6, 8)
+a.length =  10
+%%
+Property Indexing:
+{{fbdoc item="filename" value="examples/manual/udt/property2.bas"}}%%(freebasic)
+  '' True/False
+Namespace BOOL
+  Const FALSE = 0
+  Const TRUE = NOT FALSE
+End Namespace
+
+Type BitNum
+  Num as uInteger
+  
+	'' Get/Set Properties each with an Index.
+  Declare Property NumBit( ByVal Index as Integer ) as Integer
+  Declare Property NumBit( ByVal Index as Integer, ByVal Value as Byte )
+End Type
+
+  '' Get a bit by it's index.
+Property BitNum.NumBit( ByVal Index as Integer ) as Integer
+  Return Bit( This.Num, Index )
+End Property
+
+  '' Set a bit by it's index.
+Property BitNum.NumBit( ByVal Index as Integer, ByVal Value as Byte )
+
+	'' Make sure index is in Integer range.
+  If Index >= ( Sizeof(This.Num) * 8 ) then
+	Print "Out of uInteger Range!"
+	exit property
+  else
+	If Index < 0 then exit property
+  End if
+  
+  If Value = BOOL.FALSE then
+	This.Num = BitReSet( This.Num, Index )
+  End if
+  
+  If Value = BOOL.TRUE then
+	This.Num = BitSet( This.Num, Index )
+  End if
+  
+End Property
+
+
+Dim as BitNum Foo
+
+
+Print "Testing property indexing with data types:"
+Print "FOO Number's Value: " & Foo.Num
+
+  '' Set the bit in the number as true.
+Foo.NumBit(31) = BOOL.TRUE
+Print "Set the 31st bit of FOO"
+
+  '' Print to see if our bit has been changed.
+Print "FOO Number's Value: " & Foo.Num
+Print "FOO 31st Bit Set? " & Foo.NumBit(31)
+sleep
+Print ""
+%%
+Output:
+%%
+Testing property indexing with data types:
+FOO Number's Value: 0
+Set the 31st bit of FOO
+FOO Number's Value: 2147483648
+FOO 31st Bit Set? -1
+%%
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Class]]##
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

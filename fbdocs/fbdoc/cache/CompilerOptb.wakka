@@ -1,0 +1,24 @@
+{{fbdoc item="title" value="Compiler Option: -b"}}----
+Add a source file to compilation
+
+{{fbdoc item="syntax"}}##
+		[ **-b** ] < //source file// >
+##
+{{fbdoc item="param"}}
+	##//source file//##
+		The name with extension, and optionally a path, of the basic source file.
+
+{{fbdoc item="desc"}}
+	The ##**-b**## option adds a source file to the compilation list. In general, this option is redundant since source files with a //.bas// extension can be specified without it, but is useful if a source file does not have a //.bas// extension, or if exists in an other directory.
+
+	To compile and link the source files //file1.bas//, //file2.bas// and //file3.fb// into an executable (//file1.exe// in DOS/Windows, //file1// in Linux), type,
+
+		##fbc **-b** file1.bas file2.bas **-b** file3.fb##
+
+	Note that the ##**-b**## option was not needed for //file1.bas// or //file2.bas//.
+
+{{fbdoc item="see"}}
+	- [[CompilerOpta Compiler Option: -a]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

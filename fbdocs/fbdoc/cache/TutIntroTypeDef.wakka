@@ -1,0 +1,343 @@
+{{fbdoc item="title" value="Introduction to the Type Def"}}----
+//Written by [[WikiRick rdc]]//
+
+There are times when creating a program that you may want to define an aggregate structure such as a personnel record, or an enemy in a game. While you can do this using individual data types, it is hard to manage within  a program. Composite data types allow you to group together related data items into a single structure that can be manipulated as a single entity. FreeBasic offers two composite data types, the Type and Union. 
+
+==== Types ====
+
+FreeBasic allows you to group several data types into a unified structure called a Type definition which you can use to describe these aggregate data structures.
+
+The basic structure of a type definition is:
+
+%%(freebasic)
+Type typename
+	var definition
+	var definition
+	...
+End Type
+%%
+
+The Type-End Type block defines the scope of the definition. You define the elements of the type structure in the same manner as using the Dim keyword, without using Dim. The following code snippet shows how to build an employee type.
+
+%%(freebasic)
+Type EmployeeType
+	fname As String * 10
+	lname As String * 10
+	empid As Integer
+	dept As Integer
+End Type	
+%%
+
+You can use any of the supported data types as data elements, including pointers and other type definitions. When you create the type definition, such as in the example above, you are just creating a template for the compiler. In order to use the type definition, you need to create a variable of the type, as the following code snippet illustrates.
+
+%%(freebasic)
+Dim Employee As EmployeeType
+%%
+
+Once you have created a variable of the type, you can access each element within the type using the dot notation //var_name.field_name//.  
+
+Using the above example, to access the fname field you would use: 
+
+%%(freebasic)
+Employee.fname = “Susan”
+%%
+
+=== Using With ===
+
+To access multiple fields at a time, you can use the With-End With block. The following code snippet shows how to use the With block with the above example.
+
+%%(freebasic)
+With Employee
+	.fname = "Susan"
+	.lname = "Jones"
+	.empid = 1001
+		.dept = 24
+End With	
+%%
+
+The compiler will automatically bind the variable Employee to the individual data elements within the With block. Not only does mean that you don't have as much typing, but the structure is optimized and is a bit faster than using the full dot notation.
+
+=== Passing Types to Subroutines and Functions ===
+
+One advantage to using types in your program is that you can pass the structure to a subroutine or function and operate on the structure as a whole. The following code fragment shows a partial subroutine definition.
+
+%%(freebasic)
+Sub UpdateEmployeeDept(Byref Emp as EmployeeType)
+	.
+	.
+	.
+End Sub
+%%
+
+Notice that the parameter is qualified with Byref. This is important since you want to update the type within the subroutine. There are two parameter passing modes in FreeBasic: ByRef and Byval. 
+
+== Byref and Byval: A Quick Introduction ==
+
+Byref and Byval tell the compiler how to pass a reference to the subroutine or function. When you use Byref, or //By Reference//, you are passing a pointer reference to the parameter, and any changes you make to the parameter inside the sub or func will be reflected in the actual variable that was passed. In other words, the Byref parameter points to the actual variable in memory.
+
+Byval, or //By Value//, on the other hand makes a copy of the parameter, and any changes you make inside the sub or func are local and will not be reflected in the actual variable that was passed. The Byval parameter points to a copy of the variable not the actual variable itself.
+
+The default for FreeBasic .17 is to pass parameters using Byval. In order to change a passed parameter, you need to specify the Byref qualifier. In this example, the subroutine updates the the department id of the employee type, so the parameter is qualified as Byref so that the subroutine can update the dept field of the type variable.
+
+On the other hand you may not need to update the type as in the following code fragment.
+
+%%(freebasic)
+Sub PrintEmployeeRecord(Emp as EmployeeType)
+	.
+	.
+	.
+End Sub
+%%
+
+In this sub you are just printing the employee record to the screen or a printer and do not need to change anything in the type variable. Here the default Byval is used which passes a copy  of the employee record to the sub rather than a reference to the variable. By using Byval in this case, you won't accidentally change something in the type variable that you didn't intend to change.
+
+You should only use Byref if you intend to change the parameter data. It is much safer to use Byval in cases where you need to have the parameter data, but want to prevent accidental changes to the data. These accidental changes generate hard-to-find bugs in your program.
+
+=== Types Within Types ===
+
+In addition to the intrinsic data types, type fields can also be based on a type definition. Why would you want to do this? One reason is data abstraction. The more general your data structures, the more you can reuse the code in other parts of your program. The less code you have to write, the less chance of errors finding their way into your program. 
+
+Using the Employee example, suppose for a moment that you needed to track more dept information than just the department id. You might need to keep track of the department manager, the location of the department, such as the floor or the building, or the main telephone number of the department. By putting this information into a separate type definition, you could use this information by itself, or as part of another type definition such as the Employee type. By generalizing your data structures, your program will be smaller, and much more robust.
+
+Using a type within a type is the same as using one of the intrinsic data types. The following code snippets illustrates an expanded department type and an updated employee type.
+
+%%(freebasic)
+Type DepartmentType
+	id As integer
+	managerid as integer
+	floor as integer
+End Type		
+
+Type EmployeeType
+	fname As String * 10
+   	lname As String * 10
+		empid As Integer
+		dept As DepartmentType
+End Type
+
+Dim Employee As EmployeeType
+%%
+
+Notice that in the Employee definition the dept field is defined as DepartmentType rather than as one of the intrinsic data types. To access the department information within the Employee type, you use the compound dot notation to access the dept fields.
+
+%%(freebasic)
+Employee.dept.id = 24
+Employee.dept.managerid = 1012
+Employee.dept.floor = 13
+%%
+
+The top level of the type definition is Employee, so that reference comes first. Since dept is now a type definition as well, you need to use the dept  identifier to access the individual fields within the DepartmentType. Employee refers to the employee type, dept refers to the department type and id, managerid and floor are fields within the department type.
+
+You can even carry this further, by including a type within a type within a type. You would simply use the dot notation of the additional type level as needed. While there is no limit on the levels of nested type definitions, it gets to be a bit unwieldy when used with several levels.
+
+=== With and Nested Types ===
+
+You can also use the With-End With block with nested types, by nesting the With block, as illustrated in the following code snippet.
+
+%%(freebasic)
+With Employee
+   	.fname = "Susan"
+		.lname = "Jones"
+		.empid = 1001
+		With .dept
+	    	.id = 24
+	    	.managerid = 1012
+	    	.floor = 13
+		End With
+End With
+%%
+
+Notice that the second With uses the dot notation, .dept, to specify the next level of type definitions. When using nested With blocks, be sure that you match all the End With statements with their correct With statements to avoid a compile error.
+
+=== Type Assignments ===
+
+Extending the idea of data abstraction further, it would be nice to be able to separate the initialization of the department type from the initialization of the employee type. By separating the two functions, you can easily add additional department information as needed. This is where you can use type assignments. 
+
+Just as you can assign one intrinsic data type to another, you can assign one type variable to another type variable, providing they share the same type definition.
+
+The following code snippet abstracts the department initialization function and assigns the result to the department type within the Employee type.
+
+%%(freebasic)
+'This function will init the dept type and return it to caller
+Function InitDept(deptid As Integer) As DepartmentType
+	Dim tmpDpt As DepartmentType
+
+	Select Case deptid
+	    Case 24 'dept 24
+		With tmpDpt
+	        		.id = deptid
+	        		.managerid = 1012
+	        		.floor = 13
+	    	End With
+	    Case 48 'dept 48
+	     	With tmpDpt
+	        		.id = deptid
+	        		.managerid = 1024
+	        		.floor  = 12
+	        	End With
+	    Case Else 'In case a bad department id was passed
+	        	With tmpDpt
+	        		.id = 0
+	        		.managerid  = 0
+	        		.floor  = 0
+	        	End With
+	End Select
+
+	'Return the dept info
+	Return tmpDpt
+End Function
+
+'Create an instance of the type
+Dim Employee As EmployeeType
+
+'Initialize the Employee type
+With Employee
+	.fname = "Susan"
+	.lname = "Jones"
+	.empid = 1001
+	.dept = InitDept(24) 'get dept info
+End With
+%%
+
+As you can see in the snippet, the dept field of the employee type is initialized with a function call. The InitDept function returns a DepartmentType and the compiler will assign that type to the dept field of the Employee record. 
+
+By just adding a simple function to the program, you have made the program easier to maintain. If a new department is created, you can simply update the InitDept function with the new department information, recompile and the program is ready to go.
+
+=== Bit Fields ===
+
+There is yet another data type that can be used in type definitions, the bit field. Bit fields are defined as //variable_name: bits As DataType//. The variable name must be followed with a colon, the number of bits, followed by the data type. Only integer data types are allowed within a bit field. Bit fields are useful when you need to keep track of boolean type information. A bit can be either 0 or 1, which may represent Yes or No, On or Off or even Black and White. 
+
+The following code snippet illustrates a bit field definition.
+
+%%(freebasic)
+Type BitType
+	b1: 1 As Integer
+	b2: 4 As Integer
+End Type
+%%
+
+b1 is defined as a single bit, and b2 is defined as four bits. You initialize the bitfields by passing the individual bits to the type fields.
+
+%%(freebasic)
+myBitType.b1 = 1
+myBitType.b2 = 1101
+%%
+
+The data type of the bit field determines how many bits you can declare in a bit field. Since an integer is 32 bits long, you could declare up to 32 bits in the field. However, in most cases you would declare a single bit for each field, and use a number of fields to define the bit masking that you wish to use. Using a single bit simplifies the coding you need to do to determine if a bit is set or cleared and allows you to easily identify what a bit means within the type definition.
+
+=== The Field Property ===
+
+When you create a variable of a type definition, the type is padded in memory. The padding allows for faster access of the type members since the type fields are aligned on a 4 byte or Word boundary. However, this can cause problems when trying to read a type record from a file that is not padded. You can use the use field property to change the padding of a type definition. 
+
+The field keyword is used right after the type name and can have the values 1, for 1 byte alignment (no padding), 2 for 2 byte alignment and 4 for 4 byte alignment. To define a type with no padding you would use the following syntax.
+
+%%(freebasic)
+Type myType field = 1
+ 	v1 As Integer
+	v2 As Byte
+End Type
+%%
+
+For 2 byte alignment you would use field = 2. If no field = property is assigned, then the padding will be 4 bytes. If you are reading a type definition created by FreeBasic using the default alignment, then you do not need to use the field property.
+
+{{table columns="1" cellpadding="2" cells=" If you are reading a Quick Basic type record, then you will need to use field = 1, as QB used byte alignment by default."}}
+
+=== Type Initialization ===
+
+You can initialize a type definition when you dimension the type just as you can any of the intrinsic variables. The following code snippet illustrates the syntax.
+
+%%(freebasic)
+Type aType
+		a As Integer
+		b As Byte
+		c As String * 10
+End Type
+
+Dim myType As aType => (12345, 12, "Hello")
+%%
+
+In the Dim statement, the arrow operator //+>// is used to tell the compiler that you are initializing the type variable. The type element values must be enclosed in parenthesis, and separated by commas. The order of the value list corresponds to the order of the type elements, where a will be set to 12345, b to 12 and c to “Hello”. 
+
+{{table columns="1" cellpadding="2" cells=" You cannot initialize a dynamic string within a type definition using this method. The string must be fixed length."}}
+
+Initializing a type definition in a Dim statement is useful when you need to have a set of initial values for a type, or values that will not change during program execution. Since the values are known at compile time, the compiler can doesn't have to spend cycles loading the values during runtime.
+
+==== Unions ====
+
+Unions look similar to Types in their definition.
+
+%%(freebasic)
+Union aUnion
+	b As Byte
+	s As Short
+	i As Integer
+End Union
+%%
+
+If this were a Type, you could access each field within the definition. For a Union however, you can only access one field at any given time; all the fields within a Union occupy the same memory segment, and the size of the Union is the size of the largest member. 
+
+In this case, the Union would occupy four bytes, the size of an Integer, with the //b// field occupying 1 byte, the //s// field occupying 2 bytes, and the //i// occupying the full 4 bytes. Each field starts at the first byte, so the //s// field would include the //b// field, and the //i// field would include both the //b// and //s// fields.
+
+=== Types in Unions ===
+
+A good example of using a type definition in a union is the Large_Integer definition found in winnt.bi. The Large_Integer data type is used in a number of Windows functions within the C Runtime Library. The following code snippet shows the Large_Integer definition.
+
+%%(freebasic)
+union LARGE_INTEGER
+	type
+		LowPart as DWORD
+		HighPart as LONG
+	end type
+	QuadPart as LONGLONG
+end union
+%%
+
+The Dword data type is defined in windef.bi as a FreeBasic Uinteger, and the Longlong type is defined as a Longint. A Long is just an alias for the integer data type. Remember that a type occupies contiguous memory locations, so the HighPart field follows the LowPart part field in memory. Since this is a union, the type occupies the same memory segment as the QuadPart field. 
+
+When you set QuardPart to a large integer value, you are also setting the values of the type fields, which you can then extract as the LowPart and HighPart. You can also do the reverse; that is by setting the LowPart and HighPart of the type, you are setting the value of the QuadPart field.
+
+As you can see, using a type within a union is an easy way to set or retrieve individual values of a component data type without resorting to a lot of conversion code. The layout of the memory segments does the conversion for you, providing that the memory segments make sense within the context of the component type. 
+
+In the Large_Integer case, the LowPart and HighPart have been defined to return the appropriate component values. Using values other than Dword and Long would not return correct values for LowPart and HighPart. You need to make sure when defining a type within a union, you are segmenting the union memory segment correctly within the type definition.
+
+=== Unions in Types ===
+
+A union within a type definition is an efficient way to manage data when one field within a type can only one of several values. The most common example of this is the Variant data type found in other programing languages.
+
+{{table columns="1" cellpadding="2" cells=" FreeBasic does not have a native Variant data type at this time. However, by using the extended Type syntax, you could create a Variant data type for use in your program."}}
+
+When using a Union within a type it is common practice to create an id field within the type that indicates what the union contains at any given moment. The following code snippet illustrates this concept.
+
+%%(freebasic)
+'Union field ids
+#define vInteger 0
+#define vDouble 1
+
+'Define type def with variable data fields
+Type vType
+	vt_id As Integer
+	Union
+	    d As Double
+	    i As Integer
+	End Union
+End Type
+%%
+
+The union definition here is called an anonymous union since it isn't defined with a name. The //vt_id// field of the type definition indicates the value of the union. To initialize the type you would use code like the following.
+
+%%(freebasic)
+Dim myVarianti As vType
+Dim myVariantd As vType
+
+myVarianti.vt_id = vInteger
+myVarianti.i = 300
+
+myVariantd.vt_id = vDouble
+myVariantd.d = 356.56
+%%
+
+//myVarianti// contains an integer value so the id is set to vInteger. //myVariantd// contains a double so the id is set to vDouble. If you were to create a subroutine that had a vType parameter, you could examine the //vt_type// field to determine whether an integer or double had been passed to the subroutine.
+
+{{table columns="1" cellpadding="2" cells=" You cannot use dynamic strings within a union."}}
+
+Using a combination of unions and types within a program allows you to design custom data types that have a lot of flexibility, but care must be taken to ensure that you are using the data constructs correctly. Improper use of these data types can lead to hard-to-find bugs. The benefits however, out-weigh the risks and once mastered, are a powerful programming tool.

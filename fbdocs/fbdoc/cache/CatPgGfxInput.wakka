@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="User Input Functions"}}----
+Procedures for working with mice, gaming devices and keyboards.
+
+{{fbdoc item="desc"}}
+	These procedures provide access to external devices such as keyboards, mice and gamepads.
+
+**{{anchor name="MOUSEJOY|Mouse and Joystick Input"}}**
+	Procedures that provide state information of the mouse or joystick.
+**{{anchor name="KEYBOARD|Keyboard Input"}}**
+	Procedures that provide keyboard state information.
+
+<<{{anchor name="MOUSEJOY"}}{{fbdoc item="section" value="Mouse and Joystick Input"}}
+	=={{fbdoc item="keyword" value="KeyPgGetmouse|GETMOUSE"}}==
+		Gets button and axis information for the mouse.
+	=={{fbdoc item="keyword" value="KeyPgSetmouse|SETMOUSE"}}==
+		Sets position and visibility of the mouse cursor.
+	=={{fbdoc item="keyword" value="KeyPgGetjoystick|GETJOYSTICK"}}==
+		Gets button and axis information for gaming devices.
+	=={{fbdoc item="keyword" value="KeyPgStick|STICK"}}==
+		Gets axis position for gaming devices.
+	=={{fbdoc item="keyword" value="KeyPgStrig|STRIG"}}==
+		Gets button state for gaming devices.
+<<>>{{anchor name="KEYBOARD"}}{{fbdoc item="section" value="Keyboard Input"}}
+	=={{fbdoc item="keyword" value="KeyPgMultikey|MULTIKEY"}}==
+		Gets key information for the keyboard.
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

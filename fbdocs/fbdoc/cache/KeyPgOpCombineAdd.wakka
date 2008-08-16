@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="Operator += (Add and Assign)"}}----
+Adds and assigns a value to a variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer ptr]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **+=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgWstring wstring]] )
+##
+{{fbdoc item="usage"}}##
+	//lhs// **+=** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The variable to assign to.
+	##//T1//##
+		Any numeric type.
+	##//rhs//##
+		The value to add to ##//lhs//##.
+	##//T2//##
+		Any numeric type.
+	##//T//##
+		Any data type.
+
+{{fbdoc item="desc"}}
+	This operator adds and assigns a value to a variable. It is functionally equivalent to:
+##
+		//lhs// = //lhs// [[KeyPgOpAdd +]] //rhs//
+##
+	For numeric types, the right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
+
+	For string types, this operator is functionally equivalent to ##[[KeyPgOpCombineConcat Operator &= (Concatenate and assign)]]##.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/add-assign.bas"}}%%(freebasic)
+DIM n AS DOUBLE
+n = 6
+n += 1
+PRINT n
+SLEEP
+%%
+Output:
+%%
+7
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpAdd Operator + (Add)]]##
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

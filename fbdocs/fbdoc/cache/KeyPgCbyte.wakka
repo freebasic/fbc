@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="CBYTE"}}----
+Converts numeric or string expression to ##[[KeyPgByte Byte]]##.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cbyte** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgByte byte]]
+
+	[[KeyPgType Type]] //typename//
+		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgByte byte]]
+	End Type
+##
+{{fbdoc item="usage"}}##
+	//result// = **Cbyte**( //numeric expression// )
+	//result// = **Cbyte**( //string expression// )
+	//result// = **Cbyte**( //user defined type// )
+##
+{{fbdoc item="param"}}
+	##//expression//##
+		A numeric, string, or pointer expression to cast to a ##[[KeyPgByte Byte]]## value.
+	##//datatype//##
+		Any numeric, string, or pointer data type.
+	##//typename//##
+		A user defined type.
+
+{{fbdoc item="ret"}}
+	A ##[[KeyPgByte Byte]]## value.
+
+{{fbdoc item="desc"}}
+	The ##**Cbyte**## function rounds off the decimal part and returns a 8 bit ##[[KeyPgByte Byte]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -128 to 127. The name can be explained as 'Convert to Byte'.
+
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/casting/cbyte.bas"}}%%(freebasic)
+' Using the CBYTE function to convert a numeric value
+
+'Create an BYTE variable
+DIM numeric_value AS BYTE
+
+'Convert a numeric value
+numeric_value = CBYTE(-66.30)
+
+'Print the result, should return -66
+PRINT numeric_value
+SLEEP
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cbyte""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgCshort Cshort]]##
+	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgClng Clng]]##
+	- ##[[KeyPgCulng Culng]]##
+	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgCsng Csng]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

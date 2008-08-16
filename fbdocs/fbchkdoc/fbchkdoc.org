@@ -1,0 +1,16 @@
+[dirs]
+cache_dir      = ../fbdoc/cache/
+web_cache_dir  = ../fbdoc/cache.web/
+dev_cache_dir  = ../fbdoc/cache.dev/
+image_dir      = ../fbdoc/html/images/
+fb_dir         = ../../FreeBASIC/
+
+[web]
+web_wiki_url = http://www.freebasic.net/wiki/wikka.php
+web_username = 
+web_password = 
+
+[dev]
+dev_wiki_url = 
+dev_username = 
+dev_password = 

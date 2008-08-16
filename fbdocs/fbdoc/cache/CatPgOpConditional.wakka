@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Relational Operators"}}----
+Operators that compare relationships
+
+The relational operators perform comparisons between the values of two operands. Each operator returns a //boolean// result that is //true// (-1) if the relationship holds true, or //false// (0) if not.
+
+<<=={{fbdoc item="keyword" value="KeyPgOpEqual|Operator = (Equal)"}}==
+	Compares the equal relation of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpNotEqual|Operator <> (Not equal)"}}==
+	Compares the inequality relation of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpLessThan|Operator < (Less than)"}}==
+	Compares the less than relation of two operands.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpLessThanOrEqual|Operator <= (Less than or equal)"}}==
+	Compares the less than or equal relation of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpGreaterThanOrEqual|Operator >= (Greater than or equal)"}}==
+	Compares the greater than or equal relation of two operands.
+=={{fbdoc item="keyword" value="KeyPgOpGreaterThan|Operator > (Greater than)"}}==
+	Compares the greater than relation of two operands.
+>>::c::
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

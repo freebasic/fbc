@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="Indexing Operators"}}----
+Operators that return references based on an index
+
+The indexing operators return references to some memory based on the value of their second, or //right-hand side//, operand. This operand is used as an index, or offset, from the beginning of some memory represented by the first, or //left-hand side//, operand.
+
+<<=={{fbdoc item="keyword" value="KeyPgOpArrayIndex|Operator () (Array index)"}}==
+	Returns a reference to an element in an array.
+=={{fbdoc item="keyword" value="KeyPgOpStringIndex|Operator [] (String index)"}}==
+	Returns a reference to a character in a string.
+<<>>=={{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}==
+	Returns a reference to memory offset from a base address.
+>>::c::
+{{fbdoc item="back" value="CatPgOperators|Operators"}}

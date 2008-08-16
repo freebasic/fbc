@@ -1,0 +1,64 @@
+{{fbdoc item="title" value="Conditional Compilation And You"}}----
+
+//Written by aetherFox for [[http://petesqbsite.com/sections/express/issue9/index.html#compilation QB Express Issue #9]]//
+
+Conditional Compilation is one of those parts of programming that sit in the dusty corners of the knowledge banks of programmers world-over, yet is one of the most ingenious additions to any language. Usually something that was reserved for C programmers, with the power of freeBASIC's new preprocessor, you can now use conditional compilation to help your program. 
+
+The preprocessor allows you flexibility in changing the way code is generated through the use of conditional compilation. Take this scenario: you are debugging the code in your program, and you want to add some extra code to output a few variables, but remove them in the final version. The code would be something like this: 
+
+##%%(freebasic)
+	#define DEBUG
+	
+	#ifdef DEBUG
+		Print "Debug Value"
+	#endif 'DEBUG
+%%##
+
+**Note** you do not need the comment after the ##[[KeyPgEndif #endif]]##, but is it good practice.
+
+Basically, the above code checks to see whether ##DEBUG## has been defined, and if it has, then the code between the ##[[KeyPgPpifdef #ifdef]]...[[KeyPgPpendif #endif]]## will be executed. While this may seem silly, the uses this has are amazing. If you simply remove one line at the top of your program (##[[KeyPgPpdefine #define]] DEBUG##), then all the 'debug code' that you've added won't be sent to the compiler -- the preprocessor removes it, reducing the bloat of the final executable.
+
+##%%(freebasic)
+	'Turn on debugging
+	#define DEBUG
+	
+	'Turn off debugging 
+	#undef DEBUG
+%%##
+
+The ##[[KeyPgPpundef #undef]]## directive is a way of 'undefining' something, in this case ##DEBUG##. While it is strictly not needed (just commenting out the line '##[[KeyPgPpdefine #define]] DEBUG##' is enough), it makes the code much clearer, and has other uses:
+
+##%%(freebasic)
+	#ifndef DEBUG
+		Print "Production Version"
+	#endif 'DEBUG
+%%##
+
+While not the most useful example, this demonstrates the use of another directive: ##[[KeyPgPpifndef #ifndef]]##. This directive will cause the code to be compiled if the symbol is not defined. 
+
+Much like a normal programming language, the sense of the conditional can be reversed using a variant of else, ##[[KeyPgElse #else]]##:
+
+##%%(freebasic)
+	#ifdef DEBUG
+		Print "Test Version"
+	#else
+		Print "Production Version"
+	#endif 'DEBUG 
+%%##
+
+Of course, there are many applications to this. Who says you need to do this on debug code only? You could actually check the effect of a new piece of code, or some test routines by simply defining a name like ##TESTCODE## and using the preprocessor directives to encompass your code for conditional compilation:
+
+##%%(freebasic)
+	#define TESTCODE
+	
+	#ifdef TESTCODE
+		BulletRoutine()
+		TestFireRoutine()
+	#endif 
+%%##
+
+The scope of this tutorial is a limited one, but this method is used by professionals. It makes life easy when programming. I have used this method in my own code. To see this code in action, view the source [[http://avinash.apeshell.net/stuff/ship/flyaround.bas here]].
+
+Avinash 'aetherFox' Vora 
+**avinashvora** [at] **gmail** [dot] **com**.
+http://avinash.apeshell.net

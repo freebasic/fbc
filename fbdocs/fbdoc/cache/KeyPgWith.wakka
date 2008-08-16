@@ -1,0 +1,64 @@
+{{fbdoc item="title" value="WITH"}}----
+Statement block to allow implicit access to fields in a user defined type variable
+
+{{fbdoc item="syntax"}}##
+	**With** //user_defined_var//
+		//statements//
+	**End With**
+##
+{{fbdoc item="desc"}}
+	The ##**With...End With**## block allows the omission of the name of a user defined variable when referring to its fields. It's a shorthand to save typing and avoid cluttering the source. ##**With**## can also be used with dereferenced pointers, as the second example shows.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/with-1.bas"}}%%(freebasic)
+type rect_type
+	x as single
+	y as single
+end type
+
+dim the_rectangle as rect_type
+dim as integer temp, t
+
+with the_rectangle
+	temp = .x
+	.x = 234 * t + 48 + .y
+	.y = 321 * t + 2
+end with
+%%
+
+{{fbdoc item="filename" value="examples/manual/udt/with-2.bas"}}%%(freebasic)
+type rect_type
+	x as single
+	y as single
+end type
+
+dim the_rectangle as rect_type ptr
+
+the_rectangle = callocate( 5 * len( rect_type ) )
+
+dim as integer loopvar, temp, t
+
+for loopvar = 0 to 4
+
+  with the_rectangle[loopvar]
+
+	temp = .x
+	.x = 234 * t + 48 + .y
+	.y = 321 * t + 2
+
+  end with
+
+next
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__With""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType Type]]##
+	
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

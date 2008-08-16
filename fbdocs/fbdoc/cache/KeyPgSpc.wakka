@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="SPC"}}----
+Output function to skip spaces when writing to screen or file
+
+{{fbdoc item="syntax"}}##
+	**Spc**( //columns// )
+##
+{{fbdoc item="usage"}}##
+	[[KeyPgPrint Print]] **Spc**( //columns// ) [(, | ;)] ...
+##
+{{fbdoc item="param"}}
+	##//columns//##
+		number of columns to skip
+
+{{fbdoc item="desc"}}
+	##**Spc**## skips n-//columns// when ##[[KeyPgPrint Print]]##ing to screen or to a file.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/spc.bas"}}%%(freebasic)
+DIM AS STRING A, B, N, M
+
+A = "Jane"
+B = "DOE"
+N = "Bob"
+M = "Smith"
+
+PRINT "FIRST NAME"; SPC(25); "LAST NAME"
+PRINT "----------"; SPC(25); "----------"
+PRINT A; SPC(35-LEN(A)); B
+PRINT N; SPC(35-LEN(N)); M
+%%
+
+The output would look like:
+##%%
+FIRST NAME                         LAST NAME
+----------                         ----------
+Jane                               DOE
+Bob                                Smith
+%%##
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgTab Tab]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

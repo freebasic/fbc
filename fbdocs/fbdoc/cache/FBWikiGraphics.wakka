@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="Displaying graphics in the Wiki"}}----
+
+The FreeBASIC wiki has the capability of displaying graphics on its pages.  It can be useful for some pages to display images.  For example, on graphics command pages with example code, it can be helpful to include an image to show what the code produces.
+
+Images are uploaded to each wiki page where they are needed.  On the server "ex1.png" for one page resides in a different directory than "ex1.png" on another page.
+
+There are some rules / guidelines you should follow when adding images:
+
+	-The image should be useful and relevant to the page content.  Examples of use are showing a screenshot of one of FreeBASIC's graphics commands, or illustrating something in a tutorial.
+
+	-If the image is showing the output of a program, it should only display the contents of the graphics window, without the window border or background, unless there's a good reason to.  There should be source code on the page that can produce it.
+
+	-Ideally, images should be no bigger than 10kb.  In order to minimize their file size, and to retain the image quality, images should be posted in PNG format.  It's highly recommended to use tools such as [[http://advsys.net/ken/utils.htm#pngout PNGOUT]] or [[http://optipng.sourceforge.net OptiPNG]] to optimize the image and reduce the file size.
+
+	-The information in the Wiki is used to periodically generate downloadable documentation files.  However, not all of the the downloadable formats can display the images from the Wiki.  Consequently, it's a good idea to try and avoid writing text that depends on the image.  In cases where the image is showing the result of some example code, it is probably sufficient to just post the image straight after the code, and let it "speak for itself".
+
+	-A suggested convention for naming images is to give a short name relevant to the content of the image.  For example: ##pset.png## for an image showing how ##[[KeyPgPset Pset]]## might be used.
+
+Images may be inserted into the Wiki with a tag, such as this one:
+%%{{image class="center" title="Put example output" url="/images/sample.png"}}%%
+Which produces the following image:
+{{image class="center" title="Put example output" url="/images/sample.png"}}
+
+The "class" property tells the wiki where to position the image on the page - in this case, the center.
+The "title" property gives the image a title (which will appear in a tooltip if you move the mouse over it).
+The "url" property points to the location of the image.  The full URL of the image is "http://www.freebasic.net/wiki/images/uploaded/*pagename*/*filename*", however when referencing the image uploaded to the page only "/images/*filename*" is needed.  An option "link" property can be used to associate a click-able link with the image, but is typically not used in this wiki.
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

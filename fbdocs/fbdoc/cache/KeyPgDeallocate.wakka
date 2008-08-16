@@ -1,0 +1,105 @@
+{{fbdoc item="title" value="DEALLOCATE"}}----
+Frees previously allocated memory
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Deallocate**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Deallocate**( //pointer// )
+##
+{{fbdoc item="param"}}
+	##//pointer//##
+		the address of the previously allocated buffer.
+
+{{fbdoc item="desc"}}
+	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use will result in undefined behavior.
+
+~&**##Deallocate##** is an alias for the C runtime library's **##free##**, so it's not guaranteed to be thread safe in all platforms.
+
+{{fbdoc item="ex"}}
+The following example shows how to free previously allocated memory. Note that the pointer is set to null following the deallocation:
+
+{{fbdoc item="filename" value="examples/manual/memory/deallocate.bas"}}%%(freebasic)
+sub DeallocateExample1()
+   dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
+	                                                           '' new memory address
+
+   *integerPtr = 420                                     '' use pointer
+   print *integerPtr
+
+   deallocate( integerPtr )                              '' free memory back to system
+   integerPtr = 0                                        '' and zero the pointer
+end sub
+
+   DeallocateExample1()
+   end 0
+%%
+
+Although in this case it is unnecessary - since 1. the pointer is not a reference to another pointer, 2. no other pointers point to the deallocated memory and 3. the function immediately exits afterward - setting the pointer to null is a good habit to get into. If the function deallocated memory from a pointer that was passed in by reference, for instance, the pointer that was used in the function call will be rendered invalid, and it is up to the caller to either reassign the pointer or set it to null. Example 3 shows how to correctly handle this kind of situation, and the next example shows the effects of deallocating memory with multiple references.
+
+In the following example, a different pointer is used to free previously allocated memory.
+
+{{fbdoc item="filename" value="examples/manual/memory/deallocate2.bas"}}%%(freebasic)
+'' WARNING: "evil" example showing how things should NOT be done
+
+sub DeallocateExample2()
+   dim as integer ptr integerPtr = allocate( len( integer ) )  
+   '' initialize ^^^ pointer to new memory
+
+   dim as integer ptr anotherIntegerPtr = integerPtr
+   '' initialize ^^^ another pointer to the same memory
+
+   *anotherIntegerPtr = 69                     '' use other pointer
+   print *anotherIntegerPtr
+
+   deallocate( anotherIntegerPtr )             '' free memory back to system
+   anotherIntegerPtr = 0                       '' and zero other pointer
+
+'' *integerPtr = 420                           '' undefined behavior; original
+	                                           '' pointer is invalid
+end sub
+
+   DeallocateExample2()
+   end 0
+%%
+
+Note that after the deallocation, //both// pointers are rendered invalid. This illustrates another one of the ways that bugs can arise when working with pointers. As a general rule, only deallocate memory previously allocated when you know that there is only one (1) pointer currently pointing at it.
+
+{{fbdoc item="filename" value="examples/manual/memory/deallocate3.bas"}}%%(freebasic)
+function createInteger() as integer ptr
+   return allocate( len( integer ) )                     '' return pointer to newly
+end function                                             '' allocated memory
+
+sub destroyInteger( byref someIntegerPtr as integer ptr )
+   deallocate( someIntegerPtr )                          '' free memory back to system
+   someIntegerPtr = 0                                    '' null original pointer
+end sub
+
+sub DeallocateExample3()
+   dim as integer ptr integerPtr = createInteger()       '' initialize pointer to
+	                                                     '' new memory address
+
+   *integerPtr = 420                                     '' use pointer
+   print *integerPtr
+
+   destroyInteger( integerPtr )                          '' pass pointer by reference
+   assert( integerPtr = 0 )                              '' pointer should now be null
+end sub
+
+   DeallocateExample3()
+   end 0
+%%
+
+In the program above, a reference pointer in a function is set to null after deallocating the memory it points to. An [[KeyPgAssert ASSERT]] macro is used to test if the original pointer is in fact null after the function call. This example implies the correct way to pass pointers to functions that deallocate the memory they point to is by reference.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Deallocate""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgAllocate Allocate]]##
+	- ##[[KeyPgReallocate Reallocate]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

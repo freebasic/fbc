@@ -1,0 +1,135 @@
+{{fbdoc item="title" value="PAINT"}}----
+Fills an area delimited by a border of a specified color
+
+{{fbdoc item="syntax"}}##
+	**Paint** [//target//,] [STEP] (//x//, //y//)[, [//paint//][, [//border_color//]]]
+##
+{{fbdoc item="param"}}
+	##//target//##
+		specifies buffer to draw on.  
+	##STEP##
+		indicates that coordinates are relative
+	##(//x//, //y//)##
+		coordinates of the pixel on which to start the flood fill (paint)
+	##//paint//##
+		the color attribute or fill pattern
+		a numeric value indicates a color, while a string indicates a fill pattern
+	##//border_color//##
+		boundary color for the fill
+
+{{fbdoc item="desc"}}
+	Graphics command to fill an area delimited by a border of specified color. Also known as 'flood-fill' or 'paint bucket'.
+
+	##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset Screenset]]## statement or on the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer, if specified.
+
+	Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics View]]## also applies.
+	
+	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString String]]##, the region will be filled using a pattern; the pattern is always 8*8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
+
+	For color depths 1, 2, 4 and 8:
+	##size = 8 * 8 = 64##
+	For color depths 15 and 16:
+	##size = (8 * 8) * 2 = 128##
+	For color depths 24 and 32:
+	##size = (8 * 8) * 4 = 256##
+
+	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/paint.bas"}}%%(freebasic)
+' draws a white circle painted blue inside
+screen 13
+circle (160, 100), 30, 15
+paint (160, 100), 1, 15
+sleep
+%%
+
+{{fbdoc item="filename" value="examples/manual/gfx/paint2.bas"}}%%(freebasic)
+' draws a circle and fills it with a checkered pattern
+
+'' choose the bit depth for the Screen
+'' try setting this to other values: 8, 16 or 32
+
+const bit_depth = 8
+
+'' function for returning a pixel color, represented as a string
+'' returns a the string in the appropriate format for the current bit depth
+function paint_pixel( byval c as uinteger, byval bit_depth_ as integer ) as string
+	
+	if bit_depth_ <= 8 then '' 8-bit:
+	    function =  chr( cubyte(c) )
+	    
+	elseif bit_depth_ <= 16 then '' 16-bit:
+	    function = mkshort( c shr 3 and &h1f or _
+	                        c shr 5 and &h7e0 or _
+	                        c shr 8 and &hf800 )
+	    
+	elseif bit_depth_ <= 32 then '' 32-bit:
+	    function = mkl(c)
+	    
+	end if
+	
+end function
+
+
+'' open a graphics window at the chosen bit depth
+screenres 320, 200, bit_depth
+
+'' declare variables for holding colors
+dim as uinteger c, c1, c2, cb
+
+'' declare string variable for holding the pattern used in Paint
+dim as string paint_pattern = ""
+
+'' set colors
+if bit_depth <= 8 then
+	c1 = 7  ''pattern color 1
+	c2 = 8  ''pattern color 2
+	cb = 15 ''border color
+else
+	c1 = rgb(192, 192, 192) '' pattern color 1
+	c2 = rgb(128, 128, 128) '' pattern color 2
+	cb = rgb(255, 255, 255) '' border color
+end if
+
+'' make the pattern to be used in Paint
+for y as uinteger = 0 to 7
+	for x as uinteger = 0 to 7
+	    
+	    '' choose the color of the pixel (c)
+	    if (x \ 4 + y \ 4) mod 2 > 0 then
+	        c = c1
+	    else
+	        c = c2
+	    end if
+	    
+	    '' add the pixel to the pattern
+	    paint_pattern = paint_pattern + paint_pixel(c, bit_depth)
+	    
+	    '' the following line can be used if you want to draw the 
+	    '' pattern tile in the top left hand corner of the screen:
+	    
+	    ' pset (x, y), c
+	    
+	next x
+next y
+
+'' draw a circle with the border color
+circle (160, 100), 50, cb, , , 1.0
+
+'' paint the circle region with paint_pattern, stopping at the border color
+paint (160, 100), paint_pattern, cb
+
+'' pause before ending the program
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- The QB version could not draw onto a ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer.
+	- In QB, the fill pattern was always 8-bits wide, and the height was the length of the string (up to 64). In FreeBASIC, the fill pattern is 8 pixels wide, independent of the color depth, and the height is always 8.
+	- The background color parameter supported by QB is not supported by the FreeBASIC version.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreengraphics Screen]]##
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

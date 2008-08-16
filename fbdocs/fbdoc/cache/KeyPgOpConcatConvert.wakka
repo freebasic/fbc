@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="Operator & (String concatenation with conversion)"}}----
+Concatenates two strings, converting non-strings to strings as needed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //U// ) [[KeyPgAs as]] //V//
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **&** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The left-hand side expression to concatenate.
+	##//T//##
+		Any standard data type or user-defined type that can be converted to a standard data type.
+	##//rhs//##
+		The right-hand side expression to concatenate.
+	##//U//##
+		Any standard data type or user-defined type that can be converted to a standard data type.
+	##//V//##
+		The resultant string type (varies with operands).
+
+{{fbdoc item="desc"}}
+	This operator concatenates two expressions. If either of the expressions is not a string type, it is converted to ##[[KeyPgString String]]## with ##[[KeyPgStr Str]]##.
+
+	If either of the expressions is a ##[[KeyPgWstring Wstring]]##, a ##[[KeyPgWstring Wstring]]## is returned, otherwise a ##[[KeyPgString String]]## is returned.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/concat.bas"}}%%(freebasic)
+DIM AS STRING A,C
+DIM AS SINGLE B
+A="The result is: "
+B=124.3
+C=A & B
+PRINT C
+SLEEP
+%%
+Output:
+%%
+The result is: 124.3
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpConcat Operator + (String concatenation)]]
+	- ##[[KeyPgStr Str]]##
+
+{{fbdoc item="back" value="CatPgOpString|String Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="Control Flow Statements"}}----
+Statements that direct the flow of program execution.
+
+**{{anchor name="TRANSFERRING|Transferring Statements"}}**
+	Statements that transfer control to another part of a program.
+**{{anchor name="BRANCHING|Branching Statements"}}**
+	Statements that execute one of a number of code branches.
+**{{anchor name="LOOPING|Looping Statements"}}**
+	Statements that execute code repeatedly.
+
+<<{{anchor name="TRANSFERRING"}}{{fbdoc item="section" value="Transferring Statements"}}
+	=={{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}==
+		Transfers execution to another point in code defined by a text label.
+	=={{fbdoc item="keyword" value="KeyPgGosub|GOSUB"}}==
+		Temporarily transfers execution to another point in code, defined by a text label.
+	=={{fbdoc item="keyword" value="KeyPgOngoto|ON GOTO"}}==
+		Transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
+	=={{fbdoc item="keyword" value="KeyPgOngosub|ON GOSUB"}}==
+		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
+	=={{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}==
+		Returns from a call using [[KeyPgGosub Gosub]] or from a procedure returning a value.
+
+{{anchor name="BRANCHING"}}{{fbdoc item="section" value="Branching Statements"}}
+	=={{fbdoc item="keyword" value="KeyPgIfthen|IF..END IF"}}==
+		Executes a block of statements if a condition is met.
+	=={{fbdoc item="keyword" value="KeyPgElseif|..ELSE IF.."}}==
+		Executes a block of code if a condition is met and all previous conditions weren't met.
+	=={{fbdoc item="keyword" value="KeyPgElse|..ELSE.."}}==
+		Executes a block of code if all previous conditions weren't met.
+	=={{fbdoc item="keyword" value="KeyPgSelectcase|SELECT..END SELECT"}}==
+		Executes one of a number of statement blocks using a set of conditions.
+	=={{fbdoc item="keyword" value="KeyPgCase|..CASE.."}}==
+		Executes a block of code if a condition is met.
+	=={{fbdoc item="keyword" value="KeyPgCase|..CASE ELSE.."}}==
+		Executes a block of code if all previous conditions weren't met.
+
+	{{fbdoc item="subsect" value="Intra-branch control"}}
+		=={{fbdoc item="keyword" value="KeyPgExit|EXIT SELECT"}}==
+			Prematurely breaks out of a ##[[KeyPgSelectcase SELECT..END SELECT]]## statement.
+<<>>{{anchor name="LOOPING"}}{{fbdoc item="section" value="Looping Statements"}}
+	=={{fbdoc item="keyword" value="KeyPgWhilewend|WHILE..WEND"}}==
+		Executes a block of statements while a condition is met.
+	=={{fbdoc item="keyword" value="KeyPgFornext|FOR..NEXT"}}==
+		Executes a block of statements while an iterator is less than or greater than an expression.
+	=={{fbdoc item="keyword" value="KeyPgDoloop|DO..LOOP"}}==
+		Executes a block of statements while or until a condition is met.
+
+	{{fbdoc item="subsect" value="Intra-loop control"}}
+		=={{fbdoc item="keyword" value="KeyPgContinue|CONTINUE WHILE"}}, {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE FOR"}} and {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE DO"}}==
+			Prematurely re-enters a loop.
+		=={{fbdoc item="keyword" value="KeyPgExit|EXIT WHILE"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT FOR"}} and {{fbdoc item="keyword" value="KeyPgExit|EXIT DO"}}==
+			Prematurely breaks out of a loop.
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="__FB_ERR__"}}----
+Intrinsic define (macro value) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_ERR__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_ERR__""## indicates if //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]//, or //[[CompilerOptexx -exx]]// was specified on the compiler command line at the time of compilation of a module.
+
+	Returns one of the following values:
+		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' not specified;1;'-e' was specified;3;'-ex' was specified;7;'-exx' was specified"}}
+
+	##""__FB_ERR__""## is always defined.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fberr.bas"}}%%(freebasic)
+'Example code to demonstrate a use of __FB_ERR__
+dim err_command_line as ubyte
+err_command_line = __FB_ERR__
+select case err_command_line
+case 0
+print "No Error Checking enabled on the Command Line!"
+case 1
+print "Some Error Checking enabled on the Command Line!"
+case 3
+print "QBasic style Error Checking enabled on the Command Line!"
+case 7
+print "Extreme Error Checking enabled on the Command Line!"
+case else
+print "Some Unknown Error level has been set!"
+end select
+
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgDdfbmt __FB_MT__]]##
+	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##
+	- [[CompilerOpte Compiler Option: -e]]
+	- [[CompilerOptex Compiler Option: -ex]]
+	- [[CompilerOptexx Compiler Option: -exx]]
+	- [[ProPgErrorHandling Error Handling]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

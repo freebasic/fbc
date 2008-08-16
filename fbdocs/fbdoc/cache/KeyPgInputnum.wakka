@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="INPUT()"}}----
+Reads a number of characters from console or file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** [[KeyPgOverload overload]] ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]], //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Input**[$]( //n// [, [#]//filenum// ] )
+##
+{{fbdoc item="param"}}
+	##//n//##
+		Number of bytes to read.
+	##//filenum//##
+		File number of a bound file or device.
+
+{{fbdoc item="ret"}}
+	Returns a ##[[KeyPgString String]]## of the characters read.
+
+{{fbdoc item="desc"}}
+	Reads a number of characters from the console, or a bound file/device specified by ##//filenum//##.
+
+	The first version waits for and reads ##//n//## characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
+
+	The second version waits for and reads ##//n//## characters from a file or device. The file position is updated.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/input-n.bas"}}%%(freebasic)
+print "Select a color by number" 
+print "1. blue"
+print "2. red"
+print "3. green"
+dim choice as string
+do
+   choice = input(1)
+loop until choice >= "1" and choice <= "3"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWinput Winput()]]##
+	- ##[[KeyPgGetkey Getkey]]##
+	- ##[[KeyPgInkey Inkey]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

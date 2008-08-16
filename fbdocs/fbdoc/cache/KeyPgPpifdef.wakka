@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="#IFDEF"}}----
+Preprocessor conditional directive
+
+{{fbdoc item="syntax"}}##
+	**#ifdef** //symbol//
+		' Conditionally included statements
+	[[KeyPgPpendif #endif]]
+##
+{{fbdoc item="desc"}}
+	Conditionally includes statements at compile time.
+	
+	Statements within the ##**#ifdef**...[[KeyPgPpendif #endif]]## block are included if ##//symbol//## is defined and excluded (ignored) if ##//symbol//## is not defined.
+	
+	##**#ifdef** //symbol//## is equivalent to ##[[KeyPgPpif #if]] [[KeyPgDefined defined]] (//symbol//)##
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/prepro/ifdef.bas"}}%%(freebasic)
+#DEFINE _DEBUG
+#IFDEF _DEBUG
+	' Special statements for debugging
+#ENDIF
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelse #else]]## 
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgDefined defined]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

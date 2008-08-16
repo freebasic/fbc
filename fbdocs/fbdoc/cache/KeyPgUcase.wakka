@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="UCASE"}}----
+Returns an upper case copy of a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ucase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Ucase**[$]( //str// )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		String to convert to uppercase.
+
+{{fbdoc item="ret"}}
+	Uppercase copy of ##//str//##.
+
+{{fbdoc item="desc"}}
+	Returns a copy of ##//str//## with all of the letters converted to upper case.
+
+	If ##//str//## is empty, the null string (##"####"##) is returned.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/ucase.bas"}}%%(freebasic)
+print ucase("AbCdEfG")
+%%
+	will produce the output:
+
+%%ABCDEFG
+%%
+
+{{fbdoc item="target"}}
+	- The wide-character string version of ##**Ucase**## is not supported for DOS target.
+
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLcase Lcase]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

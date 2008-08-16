@@ -1,0 +1,58 @@
+{{fbdoc item="title" value="OUT"}}----
+Outputs a value to a hardware port.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Out** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]] , [[KeyPgByval byval]] //data// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	**Out** //port//,//value//
+##
+{{fbdoc item="param"}}
+	##//port//##
+		Hardware port to write to.
+	##//data//##
+		Data value to write.
+
+{{fbdoc item="desc"}}
+	This function sends ##//value//## to ##//port//## and returns immediately.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/hardware/out.bas"}}%%(freebasic)
+'speakersound.bas 
+Sub Sound(ByVal freq As uInteger, dur As uInteger)
+  Dim t As Double,f1 as unsigned short
+	f1 = 1193181 \ freq
+	out &h61,inp(&h61) or 3
+	out &h43,&hb6
+	out &h42,lobyte(f1)
+	out &h42,hibyte(f1)
+	t=timer 
+	While ((Timer - t) * 1000) < dur
+	  sleep 0,1
+	Wend
+	out &h61,inp(&h61) and &hfc
+end sub
+
+Sound(523, 60)  'C5
+Sound(587, 60)  'D5
+Sound(659, 60)  'E5
+Sound(698, 60)  'F5
+Sound(784, 60)  'G5
+Sound(880, 60)  'A5
+Sound(988, 60)  'B5
+Sound(1046, 60) 'C6 
+%%	
+	
+{{fbdoc item="target"}}
+	- In the Windows and Linux versions three port numbers (&H3C7, &H3C8, &H3C9) are hooked by the graphics library when a graphics mode is in use to emulate QB's VGA palette handling. This use  is deprecated; use ##[[KeyPgPalette Palette]]## to retrieve and set palette colors.
+	
+	- Using true port access in the Windows version requires the program to install a device driver for the present session. For that reason, Windows executables using hardware port access should be run with administrator permits each time the computer is restarted. Further runs don't require admin rights as they just use the already installed driver. The driver is only 3K in size and is embedded in the executable.
+
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInp Inp]]##
+	- ##[[KeyPgWait Wait]]##
+	- ##[[KeyPgPalette Palette]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

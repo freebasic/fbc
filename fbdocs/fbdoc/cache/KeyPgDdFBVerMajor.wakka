@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="__FB_VER_MAJOR__"}}----
+Intrinsic define (macro value) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_VER_MAJOR__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_VER_MAJOR__""## will return the major version of FreeBASIC currently being used. For  example, the major version is 0 for Freebasic 0.18, and will remain 0 until FreeBASIC 1.0 is released.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbvermajor.bas"}}%%(freebasic)
+Dim fbMajorVersion As Integer
+Dim fbMinorVersion As Integer
+
+fbMajorVersion = __FB_VER_MAJOR__
+fbMinorVersion = __FB_VER_MINOR__
+
+Print "Welcome to freebasic ";fbMajorVersion;".";fbMinorVersion
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdFBVerMinor __FB_VER_MINOR__]]##
+	- ##[[KeyPgDdFBVerPatch __FB_VER_PATCH__]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
+

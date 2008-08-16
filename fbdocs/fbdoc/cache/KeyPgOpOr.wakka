@@ -1,0 +1,71 @@
+{{fbdoc item="title" value="Operator OR (Inclusive Disjunction)"}}----
+Returns the bitwise-or (inclusive disjunction) of two numeric values
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Or** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// ) [[KeyPgAs as]] //Ret//
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **Or** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The left-hand side expression.
+	##//T1//##
+		Any numeric type.
+	##//rhs//##
+		The right-hand side expression.
+	##//T2//##
+		Any numeric type.
+	##//Ret//##
+		A numeric type (varies with ##//T1//## and ##//T2//##).
+
+{{fbdoc item="ret"}}
+	Returns the bitwise-disjunction of the two operands.
+
+{{fbdoc item="desc"}}
+	This operator returns the bitwise-disjunction of its operands, a logical operation that results in a value with bits set depending on the bits of the operands.
+
+	The truth table below demonstrates all combinations of a boolean-disjunction operation:
+
+	{{table columns="3" cellpadding="2" cells="Lhs Bit;Rhs Bit;Result;0;0;0;1;0;1;0;1;1;1;1;1"}}
+
+	No short-circuiting is performed - both expressions are always evaluated.
+	
+	The return type depends on the types of values passed. ##[[KeyPgByte Byte]]##, ##[[KeyPgUbyte Ubyte]]## and floating-point type values are first converted to ##[[KeyPgInteger Integer]]##. If the left and right-hand side types differ only in signedness, then the return type is the same as the left-hand side type (##//T1//##), otherwise, the larger of the two types is returned.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/or-bitwise.bas"}}%%(freebasic)
+' Using the OR operator on two numeric values
+DIM AS UBYTE numeric_value1, numeric_value2
+numeric_value1 = 15 '00001111
+numeric_value2 = 30 '00011110
+
+'Result =  31  =     00011111       
+PRINT numeric_value1 OR numeric_value2
+SLEEP
+%%
+
+{{fbdoc item="filename" value="examples/manual/operator/or-logical.bas"}}%%(freebasic)
+' Using the OR operator on two conditional expressions
+Dim As UByte numeric_value
+numeric_value = 10
+
+IF numeric_value = 5 OR numeric_value = 10 Then Print "Numeric_Value equals 5 or 10"
+SLEEP
+
+' This will output "Numeric_Value equals 5 or 10" because
+' while the first condition of the first IF statement is false, the second is true
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[TblTruth Operator Truth Tables]]
+
+{{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,0 +1,77 @@
+{{fbdoc item="title" value="SETENVIRON"}}----
+Sets a system environment variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Setenviron**( //varname// )
+##
+{{fbdoc item="param"}}
+	##//varname//##
+		The name of the environment variable to set.
+
+{{fbdoc item="ret"}}
+	Return zero (0) if successful, non-zero otherwise.
+
+{{fbdoc item="desc"}}
+	Modifies system environment variables.  There are several variables available for editing other than the default ones on your system.  An example of this would be fbgfx, where you can choose the form of graphics driver the FreeBASIC graphics library will use.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/setenviron.bas"}}%%(freebasic)
+'e.g. to set the system variable "path" to "c:":
+
+shell "set path" 'shows the value of path
+setenviron "path=c:"
+shell "set path" 'shows the new value of path
+%%
+
+{{fbdoc item="filename" value="examples/manual/system/setenviron2.bas"}}%%(freebasic)
+  '' WINDOWS ONLY EXAMPLE! - We just set the graphics method to use
+  '' GDI rather than OpenGL, DirectX, or X Driver.
+  '' Try changing this to OpenGL or DirectX On Windows
+  '' Or xlib on Linux
+  '' You may note a difference in FPS.
+SetEnviron("fbgfx=GDI")
+
+  '' Desktop width/height
+Dim As Integer ScrW, ScrH, BPP
+ScreenInfo ScrW, ScrH, BPP
+
+  '' Create a screen at the width/height of your monitor.
+  '' Normally this would be slow, but GDI is fairly fast for this kind
+  '' of thing.
+ScreenRes ScrW, ScrH, BPP
+
+  '' Start our timer/
+Dim As Double T = Timer
+
+  '' Lock our page
+ScreenLock
+Do
+  
+	'' Print time since last frame
+  Locate 1, 1
+  Print "FPS: " & 1 / ( Timer - T )
+  T = Timer
+  
+	'' Flip our screen
+  ScreenUnlock
+  ScreenLock
+	'' Commit a graphical change to our screen.
+  Cls
+  
+Loop Until Len(Inkey)
+
+  '' unlock our page.
+ScreenUnlock
+%%
+
+{{fbdoc item="diff"}}
+	- In QB, ##**Setenviron**## was called ##**Environ**##.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEnviron Environ]]##
+	- ##[[KeyPgShell Shell]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

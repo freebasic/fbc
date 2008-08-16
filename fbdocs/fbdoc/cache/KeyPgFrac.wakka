@@ -1,0 +1,38 @@
+{{fbdoc item="title" value="FRAC"}}----
+Returns the decimal part of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Frac** ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the number or expression to get the fraction part of.
+
+{{fbdoc item="ret"}}
+	Returns the fractional part of a number or expression.
+
+{{fbdoc item="desc"}}
+	Equivalent to: ##(//number// - [[KeyPgFix Fix]](//number//))##.
+
+	The ##**Frac**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/frac.bas"}}%%(freebasic)
+Print frac(10.625)  '' will print  0.625
+Print frac(-10.625) '' will print -0.625 
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFix Fix]]##
+	- ##[[KeyPgOperator Operator]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

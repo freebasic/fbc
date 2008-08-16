@@ -1,0 +1,52 @@
+{{fbdoc item="title" value="EXEC"}}----
+Temporarily transfers execution to an external program
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Exec** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Exec**( //program//, //arguments// )
+##
+{{fbdoc item="param"}}
+	##//program//##
+		The file name (including file path) of the program (executable) to transfer control to.
+	##//arguments//##
+		The command-line arguments to be passed to the program.
+
+{{fbdoc item="ret"}}
+	The exit status of the program, or negative one (-1) if the program could not be executed.
+
+{{fbdoc item="desc"}}
+	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Exec**##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/exec.bas"}}%%(freebasic)
+'A Windows based example but the same idea applies to Linux
+CONST exename = "NoSuchProgram.exe"
+CONST cmdline = "arg1 arg2 arg3"
+DIM result AS INTEGER
+result = EXEC( exename, cmdline )
+IF result = -1 THEN
+	PRINT "Error running "; exename
+ELSE
+	PRINT "Exit code:"; result
+END IF
+%%
+{{fbdoc item="target"}}
+	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being executed may be case sensitive for its command line parameters.
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Exec""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgChain Chain]]##
+	- ##[[KeyPgRun Run]]##
+	- ##[[KeyPgCommand Command]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

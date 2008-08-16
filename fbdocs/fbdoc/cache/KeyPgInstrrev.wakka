@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="INSTRREV"}}----
+Locates the last occurrence of a substring or character within a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instrrev** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instrrev** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//last// = **Instrrev**( //str//, [ **Any** ] //substring// [, //start// ]  )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		The string to be searched.
+	##//substring//##
+		The substring to find.
+	##//start//##
+		The position in ##//str//## at which the search will begin.
+
+{{fbdoc item="ret"}}
+	The position of the last occurrence of ##//substring//## in ##//str//##.
+
+{{fbdoc item="desc"}}
+	Locates the position of the last occurrence of a substring or character within a string.  If ##//start//## parameter is not given or is -1, the search begins at the last character.
+
+	Zero (0) is returned if ##//substring//## is not found, or either ##//str//## or ##//substring//## are empty strings, or ##//start//## is less than 1 (except for -1), or start is greater than the length of ##//str//##.
+
+	If the ##**Any**## keyword is specified, ##**Instrrev**## returns the last occurrence of any character in ##//substring//##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/instrrev.bas"}}%%(freebasic)
+' It will return 4
+PRINT INSTRREV("abcdefg", "de")
+
+' It will return 0
+PRINT INSTRREV("abcdefg", "h")
+%%
+{{fbdoc item="filename" value="examples/manual/strings/instrrev2.bas"}}%%(freebasic)
+dim test as string
+dim idx as integer
+
+test = "abababab"
+idx = instrrev(test, "b")
+
+do while idx > 0 'if not found loop will be skipped
+	print """b"" at " & idx
+	idx = instrrev(Test, "b", idx - 1)
+loop
+%%
+
+<<'A Unicode example:
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print instrrev(text,"&#1077;&#1090;") ' displays 5
+<<::c::
+{{fbdoc item="target"}}
+	- The wide-character string version of ##**Instrrev**## is not supported for DOS target.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Instrrev""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInstr Instr]]##
+	- ##[[KeyPgMidfunction Mid (Function)]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

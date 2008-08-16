@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="LINE INPUT"}}----
+Reads one line of input from the keyboard
+
+{{fbdoc item="syntax"}}##
+	**Line Input** [;] [//promptstring// {;|,} ] //stringvariable//
+##
+{{fbdoc item="param"}}
+	##//promptstring//##
+		prompt to display before waiting for input
+	##//stringvariable//##
+		variable to receive the line of text
+
+{{fbdoc item="desc"}}
+	Reads a line of text from the keyboard and stores it in a string variable.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/lineinput.bas"}}%%(freebasic)
+dim x as string
+
+line input "Enter a line:", x
+
+print "You entered '"; x; "'"
+%%
+
+{{fbdoc item="diff"}}
+	- QBASIC only allowed literal strings for the prompt text.  FreeBASIC allows any variable or constant string expression.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLineinputPp Line Input #]]##
+	- ##[[KeyPgInput Input]]##
+
+{{fbdoc item="back" value="CatPgInput|User Input"}}

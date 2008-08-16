@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="WRITE"}}----
+Outputs a comma-separated list of values to the screen
+
+{{fbdoc item="syntax"}}##
+	**Write** [ //expressionlist// ]
+##
+{{fbdoc item="param"}}
+	##//expressionlist//##
+		Comma-separated list of items to print
+
+{{fbdoc item="desc"}}
+	Outputs the values in ##//expressionlist//## to the screen. The values are separated with commas, and strings are enclosed in double quotes. Numeric values greater than zero (0) and less than one (1) are prefixed with a zero (0) if none is given (e.g., a value of ##-.123## will be output as ##-0.123##). Extra zeroes are truncated.
+
+	If no expression list is given, **Write** outputs a carriage return.
+
+{{fbdoc item="ex"}}
+
+{{fbdoc item="filename" value="examples/manual/console/write.bas"}}%%(freebasic)
+dim i as integer = 10
+dim d as double = 123.456
+dim s as string = "text"
+
+write 123, "text", -.45600
+write
+write i, d, s
+
+%%
+	will produce the output:
+
+%%
+123,"text",-0.456
+
+10,123.456,"text"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgWritePp Write #]]##
+	- ##[[KeyPgPrint Print]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

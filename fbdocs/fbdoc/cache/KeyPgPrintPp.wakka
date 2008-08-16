@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="PRINT #"}}----
+Writes a list of values to a file or device
+
+{{fbdoc item="syntax"}}##
+	**Print #** //filenum//**,** [ //expressionlist// ] [ , | ; ]
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		The file number of a file or device.
+	##//expressionlist//##
+		List of values to write.
+
+{{fbdoc item="desc"}}
+	##**Print #**## outputs a list of values to a text file or device. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
+
+	Consecutive values in the expression list are separated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
+
+	Note that the comma (,) following the file number is still necessary, even if no expression list is given.
+
+	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/fileio/print.bas"}}%%(freebasic)
+open "bleh.dat"  for output as #1
+	
+	print #1, "abc def"
+	print #1, 1234, 5678.901, "xyz zzz"
+	
+	close #1
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, an extra space is printed after numbers.
+
+{{fbdoc item="diff"}}
+	- None, when using QBASIC's variable types in //[[CompilerOptlang -lang qb]]//.
+	- Unsigned numbers are printed without a space before them.
+	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPrintusingPp Print # Using]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgWrite Write #]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="LOCATE"}}----
+Sets the current cursor position
+
+{{fbdoc item="syntax"}}##
+	**Locate** [//row// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//column// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//cursorstate// [[KeyPgAs as]] [[KeyPgInteger integer]] ]][, [//start// [[KeyPgAs as]] [[KeyPgInteger integer]] ][, [//stop// [[KeyPgAs as]] [[KeyPgInteger integer]] ]
+##
+{{fbdoc item="usage"}}##
+	**Locate** [//row//][, [//column//][, [//cursorstate//]]
+##
+{{fbdoc item="param"}}
+	##//row//##
+		the 1-based vertical character position in the console.
+	##//column//##
+		the 1-based horizontal character position in the console.
+	##//cursorstate//##
+		the state of the cursor. 0 is off, 1 is on (console-mode only).
+	##//start//##
+		Ignored. Allowed for //[[CompilerOptlang -lang qb]]// dialect compatibility only.
+	##//stop//##
+		Ignored. Allowed for //[[CompilerOptlang -lang qb]]// dialect compatibility only.
+
+{{fbdoc item="desc"}}
+	Sets the text cursor in both graphics and console modes.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/locate.bas"}}%%(freebasic)
+locate 10
+print "Current line:"; CSRLIN
+%%
+
+{{fbdoc item="diff"}}
+	- The ##//start//## and ##//stop//## arguments have no effect in FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCsrlin Csrlin]]##
+	- ##[[KeyPgPos Pos]]##
+	- ##[[KeyPgPrint Print]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Compiler Option: -s"}}----
+Sets the executable subsystem
+
+{{fbdoc item="syntax"}}##
+	**-s** < //subsystem// >
+##
+{{fbdoc item="param"}}
+	##//subsystem//##
+		The executable subsystem: ##gui## or ##console##.
+
+{{fbdoc item="desc"}}
+	The ##-s## compiler option specifies the executable subsystem. Allowed subsystems are ##gui## and ##console## (by default, ##console## is used). Specifying a ##gui## subsystem prevents the console window from appearing behind the program window.
+
+{{fbdoc item="target"}}
+	- Supported in the Windows platform only.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

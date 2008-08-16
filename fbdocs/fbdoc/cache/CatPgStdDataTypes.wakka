@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="Standard Data Types"}}----
+Built-in numerical and string types.
+
+**{{anchor name="INTEGRAL|Integral types"}}**
+	Types that store integer values, whose range is determined by the size of the data type and its signedness.
+**{{anchor name="FLOATING|Floating-point types"}}**
+	Types that store real number values, whose range and precision is determined by the size of the data type.
+**{{anchor name="MODIFIERS|Data Type Modifiers"}}**
+	Specifies additional characteristics of a standard or user-defined data type.
+**{{anchor name="STRING|String types"}}**
+	Types that store or point to an array of characters.
+
+<<{{anchor name="INTEGRAL"}}{{fbdoc item="section" value="Integral types"}}
+	=={{fbdoc item="keyword" value="KeyPgByte|BYTE"}} and {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}==
+		8-bit wide data types that store integer values.
+	=={{fbdoc item="keyword" value="KeyPgShort|SHORT"}} and {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}==
+		16-bit wide data types that store integer values.
+	=={{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}} and {{fbdoc item="keyword" value="KeyPgUinteger|UINTEGER"}}==
+		32-bit wide data types that store integer values.
+	=={{fbdoc item="keyword" value="KeyPgLong|LONG"}} and {{fbdoc item="keyword" value="KeyPgUlong|ULONG"}}==
+		32-bit or 64-bit wide data types that store integer values.
+	=={{fbdoc item="keyword" value="KeyPgLongint|LONGINT"}} and {{fbdoc item="keyword" value="KeyPgUlongint|ULONGINT"}}==
+		64-bit wide data types that store integer values.
+
+{{anchor name="FLOATING"}}{{fbdoc item="section" value="Floating-point types"}}
+	=={{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}==
+		32-bit wide data types that store real number values.
+	=={{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}==
+		64-bit wide data types that store real number values.
+<<>>{{anchor name="MODIFIERS"}}{{fbdoc item="section" value="Data Type Modifiers"}}
+	=={{fbdoc item="keyword" value="KeyPgConstQualifier|CONST"}}==
+		Specifies a read only type.
+	=={{fbdoc item="keyword" value="KeyPgPointer|POINTER"}} and {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}==
+		Modifies types to be pointer types.
+	=={{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED"}}==
+		Specifies an unsigned integer type.
+
+{{anchor name="STRING"}}{{fbdoc item="section" value="String types"}}
+	=={{fbdoc item="keyword" value="KeyPgString|STRING"}}==
+		Fixed-length and variable-length strings with built-in memory management.
+	=={{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}==
+		Fixed-length and variable-length null-terminated strings.
+	=={{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}==
+		Fixed-length and variable-length null-terminated strings of wide characters.
+>>::c::
+
+{{fbdoc item="see"}}
+	- [[TblVarTypes Variable types and limits]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

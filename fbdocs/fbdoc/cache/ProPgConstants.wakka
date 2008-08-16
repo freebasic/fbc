@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="Constants"}}----
+
+{{fbdoc item="desc"}}
+	Constants are numbers which cannot be changed after they are defined. For example, 5 will always mean the same number.
+	
+	In FreeBASIC, a constant definition differs from a variable definition by usage of the ##[[KeyPgConst Const]]## command.
+
+	Such constants are then available globally, meaning that once defined, you can use the word to refer to a constant anywhere in your program. 
+
+	After being defined with the ##[[KeyPgConst Const]]## command, constants cannot be altered. If code tries to alter a constant, an error message will result upon code compilation.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/proguide/constants/constants.bas"}}%%(freebasic)
+DECLARE SUB PrintConstants ()
+
+const FirstNumber = 1
+const SecondNumber = 2
+const FirstString = "First string."
+
+print FirstNumber, SecondNumber 'This will print 1      2
+print FirstString 'This will print First string.
+
+PrintConstants ()
+
+SUB PrintConstants ()
+	print FirstNumber, SecondNumber 'This will also print 1        2
+	print FirstString 'This will also print First string.
+END SUB
+
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgConst Const]]##
+	- ##[[KeyPgEnum Enum]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

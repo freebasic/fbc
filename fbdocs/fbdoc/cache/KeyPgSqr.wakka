@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="SQR"}}----
+Returns a square root of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sqr** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	result = **Sqr** ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the number (greater than or equal to zero)
+
+{{fbdoc item="ret"}}
+	Returns the square root of the argument ##//number//##.
+
+	If ##//number//## equals zero, **Sqr** returns zero. 
+
+	If ##//number//## is less than zero, **Sqr** returns a domain error (-1.#IND).
+
+{{fbdoc item="desc"}}
+	This is the same as raising the argument //number// to the one-half power ( ^ 1/2). The required ##//number//## argument can be any valid numeric expression greater than zero.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
+DIM a AS SINGLE
+DIM b AS SINGLE
+
+INPUT "Please enter one side of a right triangle: ",a
+INPUT "Please enter another side of a right triangle: ",b
+PRINT ""
+PRINT "The hypotenuse of the triangle has a length of"; SQR ( a * a + b * b )
+
+SLEEP
+%%
+
+The output would look like:
+%%
+Please enter one side of a Right triangle: 3
+Please enter another side of a Right triangle: 4
+The hypotenuse of the triangle has a length of 5
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Arithmetic Operators]]
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

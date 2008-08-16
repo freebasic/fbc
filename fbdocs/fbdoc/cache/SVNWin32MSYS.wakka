@@ -1,0 +1,115 @@
+{{fbdoc item="title" value="Compiling from SVN for Win32, using MSYS"}}----
+If you want the very latest version of ""FreeBASIC"" on ""Win32"", it can be compiled using ""MSYS"", the Minimal SYStem put out by the ""MinGW"" people.  Most users should stay with the stable ""Win32"" build!  But the latest additions and corrections are available in this way.
+
+=={{anchor name="setup|Setting up the MSYS/MinGW environment"}}==
+	- {{anchor name="setup1|Install the packages for MinGW and MSYS"}}
+	- {{anchor name="setup2|Add other necessary files and packages"}}
+	- {{anchor name="setup3|Add the FreeBASIC program"}}
+
+=={{anchor name="making|Making the FreeBASIC executable and libraries"}}==
+	- {{anchor name="making1|Download the FreeBASIC sources"}}
+	- {{anchor name="making2|Make rtlib"}}
+	- {{anchor name="making3|Make gfxlib"}}
+	- {{anchor name="making4|Make fbc"}}
+
+=={{anchor name="updating|Updating the FreeBASIC software installed in MSYS"}}==
+	- {{anchor name="updating1|Replace old files with new ones from the source folder"}}
+	- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
+
+{{anchor name="setup"}}{{fbdoc item="section" value="Setting up the MSYS/MinGW environment"}}
+	
+	{{anchor name="setup1"}}{{fbdoc item="subsect" value="Install the packages for MinGW and MSYS"}}	
+
+		The packages you will need can be found on the Downloads page of [[http://www.mingw.org]].  You will need the binary versions from the "Current" or "Candidate" section (the latest versions on the page at time of writing are provided in brackets below.) These should be installed or extracted to ##C:\""MinGW""##:
+			-make ([[http://prdownloads.sf.net/mingw/mingw32-make-3.80.0-3.exe?download mingw32-make-3.80.0-3]])
+			-binutils ([[http://prdownloads.sf.net/mingw/binutils-2.16.91-20060119-1.tar.gz?download binutils-2.16.91]])
+			-GCC-3.4 ([[http://prdownloads.sf.net/mingw/gcc-core-3.4.5-20060117-1.tar.gz?download gcc-core-3.4.5]])
+			-""MinGW"" Runtime ([[http://prdownloads.sf.net/mingw/mingw-runtime-3.9.tar.gz?download mingw-runtime-3.9]])
+			-Windows API ([[http://prdownloads.sf.net/mingw/w32api-3.6.tar.gz?download w32api-3.6]])
+		On this page you will also find an installer for MSYS ([[http://prdownloads.sf.net/mingw/MSYS-1.0.10.exe?download MSYS-1.0.10.exe]]).  Download and install this into ##C:\msys\1.0## and run the post-install.  When prompted for your ""MinGW"" installation, type: ##c:/""MinGW""##
+
+	{{anchor name="setup2"}}{{fbdoc item="subsect" value="Add other necessary files and packages""}}
+
+		In order to download the FreeBASIC source code from SVN, you will need the SVN package.  This can be found at [[http://subversion.tigris.org/servlets/ProjectDocumentList?folderID=91]].  Download [[http://subversion.tigris.org/files/documents/15/38203/svn-win32-1.4.4.zip svn-win32-1.4.4.zip]] and extract the contents of the bin folder to ##C:\""MinGW""\bin##.
+
+		In order to make gfxlib2, you will need ""DirectX"" header files to be installed. At the moment, the only known way to do it is to use a package like the one available here: [[http://www.streetcds.co.uk/dx/dx80_mgw.zip]].  Download and extract it to ##C:\""MinGW""##.
+
+	{{anchor name="setup3"}}{{fbdoc item="subsect" value="Add the FreeBASIC program""}}
+
+		(For the following steps, you will need to type these commands into an MSYS terminal.)
+		You will need the latest version of ""FreeBASIC"" in order to compile fbc.exe.  It should be the last available stable version, and patched with the latest testing version, if there is one.
+		This next step will assume that you have it installed in ##C:\Program Files\""FreeBASIC""##.
+
+		Open up an MSYS terminal and in it, type the following commands:
+		%%mkdir /FBbin
+cp -rvp "/c/Program Files/FreeBASIC"/* /FBbin%%
+
+		This will copy ""FreeBASIC"" into your MSYS installation.  Take care when copying from another file system (e.g. shared drive) in to /FBbin.  CRLF pairs may get converted to LF characters even in executables.  If in doubt, copy the files from outside of MSYS.  Note: If you need to find this folder on your hard disk, it should be located at ##C:\msys\1.0\FBbin\##.
+
+		In order for MSYS to be able to find ""FreeBASIC"", you will need to add it to the path.  Type the following command:
+		%%echo 'export PATH="$PATH:/FBbin"' >> /etc/profile%%
+		This adds a command to the bottom of the startup script so that next time MSYS starts it will add ##/FBbin## to your path.  You will need to restart MSYS for this to take effect.
+
+{{anchor name="making"}}{{fbdoc item="section" value="Making the FreeBASIC executable and libraries""}}
+
+	(For the following steps, you will need to type these commands into an MSYS terminal.)
+
+	{{anchor name="making1"}}{{fbdoc item="subsect" value="Download the FreeBASIC sources""}}
+
+		For the latest source code, you will need to download it from ""SourceForge"" using SVN.  MSYS rxvt I/O is often buggy, so if the system halts after you press Enter, you may then have to hold down Ctrl and press C. There is a certificate problem when executing svn and Msys will hang after you select (t) or (p). To correct this; navigate to the fbcsvn directory using a windows command prompt window and enter the svn line from below. You should be asked to select (t) or (p)when the certificate fails. If you select (p) svn will not ask again and the Msys call should work the next time. 			
+		%%mkdir ~/fbcsvn
+cd ~/fbcsvn
+svn co https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC FreeBASIC%%
+
+	{{anchor name="making2"}}{{fbdoc item="subsect" value="Make rtlib"}}
+
+		%%cd ~/fbcsvn/FreeBASIC/src/rtlib/obj/win32
+../../configure
+make CFLAGS=-O2 && make CFLAGS=-O2 MULTITHREADED=1%%
+
+	{{anchor name="making3"}}{{fbdoc item="subsect" value="Make gfxlib"}}
+
+		%%cd ~/fbcsvn/FreeBASIC/src/gfxlib2/obj/win32
+../../configure
+make CFLAGS=-O2%%
+
+	{{anchor name="making4"}}{{fbdoc item="subsect" value="Make fbc"}}
+
+		Before building fbc, you may need to update your FBbin/inc folder, to make sure you are compiling fbc with the latest versions of the header files:
+		%%cp -prfv ~/fbcsvn/FreeBASIC/inc/* /FBbin/inc%%
+		(Note this will copy '.svn' directories as well)
+
+		You may also be be missing some libraries - libbfd.a, libiberty.a and libintl.a - from your original build, which you will need to compile the new version of fbc. You can find them at: [[http://www.freebasic.net/temp/bfd-v2.17-win32.rar]].  These files should go into your ##FBbin/lib/win32## folder.
+
+		The binary distribution is typically built as a standalone compiler with cygwin and dos cross compile targets enabled.  To add additional targets, specify them on the configure command line.  For information about compiler configuration options, see the INSTALL file in the fbc source directory.
+
+		Now enter this to build fbc:
+		%%cd ~/fbcsvn/FreeBASIC/src/compiler/obj/win32
+../../configure --enable-standalone --enable-crosscomp-cygwin --enable-crosscomp-dos
+make FB_BFD=1 BFD_VER=217%%
+
+{{anchor name="updating"}}{{fbdoc item="section" value="Updating the FreeBASIC software installed in MSYS"}}
+
+	The following steps will update the copy of ""FreeBASIC"" you installed in ##/FBbin##.  (Again, the commands should be typed into an MSYS terminal)
+
+	{{anchor name="updating1"}}{{fbdoc item="subsect" value="Replace old files with new ones from the source folder"}}
+
+		Update the FBbin/bin/win32 and FBbin/lib/win32 folder with any files from SVN:
+		%%cp -pfv ~/fbcsvn/FreeBASIC/bin/win32/* /FBbin/bin/win32
+cp -pfv ~/fbcsvn/FreeBASIC/lib/win32/* /FBbin/lib/win32%%
+		If you didn't do it earlier, you should update your FBbin/inc folder now:
+		%%cp -prfv ~/fbcsvn/FreeBASIC/inc/* /FBbin/inc%%
+		(Note this will copy '.svn' directories as well)
+
+	{{anchor name="updating2"}}{{fbdoc item="subsect" value="Replace the old compiler and library files with the new ones you've just made"}}
+
+		%%cp -pfv ~/fbcsvn/FreeBASIC/src/compiler/obj/win32/fbc_new.exe /FBbin/fbc.exe
+cp -pfv ~/fbcsvn/FreeBASIC/src/rtlib/obj/win32/*.a /FBbin/lib/win32
+cp -pfv ~/fbcsvn/FreeBASIC/src/rtlib/obj/win32/fbrt0.o /FBbin/lib/win32
+cp -pfv ~/fbcsvn/FreeBASIC/src/gfxlib2/obj/win32/*.a /FBbin/lib/win32%%
+
+	And you're ready to roll! The newest FB is now in ##/FBbin## in your MSYS folder.
+
+	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info: [[http://www.freebasic.net/forum/viewtopic.php?p=32260]]
+
+{{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

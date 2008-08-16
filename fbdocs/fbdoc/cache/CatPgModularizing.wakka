@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="Modularizing"}}----
+Keywords helpful when writing modular programs.
+
+<<
+	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibload|DYLIBLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgDylibsymbol|DYLIBSYMBOL"}}
+	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
+
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
+	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
+	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
+	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
+	- {{fbdoc item="keyword" value="KeyPgUsing|USING (Namespaces)"}}
+
+>>
+::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

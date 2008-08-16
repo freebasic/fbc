@@ -1,0 +1,106 @@
+{{fbdoc item="title" value="Frequently Asked FreeBASIC Graphics Library Questions"}}----
+
+{{anchor name="item0"}}
+
+**FreeBASIC Graphics Library questions:**
+	==- {{anchor name="item1|How can I link/use Gfxlib?"}}==
+	==- {{anchor name="item2|What about the fbgfx.bi header file?"}}==
+	==- {{anchor name="item3|How are GET/PUT arrays managed?"}}==
+	==- {{anchor name="item4|Why is BSAVE/BLOAD crashing?"}}==
+	==- {{anchor name="item5|How can I get the red, green, blue, or alpha component of a colour?"}}==
+	==- {{anchor name="item6|How can I make the 'x' button in the window header close my application?"}}==
+	==- {{anchor name="item7|Can't run programs using SCREEN 13 or 14 in fullscreen !"}}==
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+----
+
+@@**FreeBASIC Graphics Library questions**@@
+
+{{anchor name="item1"}}==How can I link/use Gfxlib?==
+	Gfxlib is "built in" into the language, it is not necessary to include any .bi file or to link any library explicitly. FreeBASIC detects you want to use Gfxlib when it finds a [[KeyPgScreengraphics SCREEN]] or [[KeyPgScreenres SCREENRES]] instruction. So to use Gfxlib, just start a graphics screen mode and use the graphics commands.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item2"}}==What about the ##fbgfx.bi## header file?==
+	The ##fbgfx.bi## header file is available for inclusion by your program, and contains constant and type definitions that may be helpful to the programmer when using Gfxlib. You do not have to explicitly include this file to use Gfxlib however; the header is only available as an aid. Contents include [[KeyPgScreengraphics SCREEN]]/[[KeyPgScreenres SCREENRES]] mode flag constants, definitions of [[GfxScancodes Keyboard scancodes]] and more.
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item3"}}==How are GET/PUT arrays managed?==
+	In FreeBASIC, images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data.
+
+		**Old-style** chunk header consists of 4 bytes (32 bits). The first 3 bits contain the image color depth in bytes per pixel (8-bit color, depth = 1; 16-bit color, depth = 2; 32-bit color, depth = 4). The next 13 bits contain the image width. The last 16 bits contain the image's height. Please note the intrinsic nature of the header allows only for images of sizes up to 8191x65535. The actual pixel data follows the header, and is compacted one row of pixels after another; no data alignment is assumed. The final size of the chunk can then be computed using the formula:
+
+			##size = 4 + ( width * height * bytes_per_pixel )##
+
+		**New-style** chunk header consists of 32 bytes. The first word (32 bits) must be equal to the value &h7, allowing Gfxlib to identify the new type of chunk. The second word contains the image color depth in bytes per pixel. The third and fourth words contain the image width and height respectively, effectively removing the image size limit enforced by the old-style image chunks. The fifth word contains the pixel row pitch in bytes; this tells how many bytes a row of pixels of the image is long. The pitch in new-style chunks is always a multiple of 16, to allow pixels row data to be aligned on the paragraph boundary. The other 3 remaining words (12 bytes) of the header are currently unused and reserved for future use. The final size of the image is:
+
+			##size = 32 + ( ( ( ( width * bytes_per_pixel ) + &hF ) and not &hF ) * height )##
+
+	The [[KeyPgGetgraphics GET]] and [[KeyPgImagecreate IMAGECREATE]] functions both create a new-style image chunk, with an exception: [[KeyPgGetgraphics GET]] creates an old-style chunk when working in a graphics mode with a color depth equal or less than 8 bits per pixel; this was made to preserve compatibility with old QuickBasic sources, as the old-style chunks use the same internal format as used in QB.
+
+	All graphics primitives can work with both old-style and new-style image chunks. For more informations on the GET/PUT structure, please refer to [[FaqPggetputstructure this example]].
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item4"}}==Why is BSAVE/BLOAD crashing?==
+	BSAVE/BLOAD can only be used to load and save graphics screens in FreeBASIC. It can't be used to save a text mode screen. To load and save an array check this [[FaqPgbloadworkaround snippet using file GET/PUT]] .
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item5"}}==How can I get the red, green, blue, or alpha component of a color?==
+
+	Each byte in a color attribute corresponds with the red, green, blue, and alpha components.  The following example shows how to extract the component values from a 16, 24, or 32 bit color attribute.
+
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/RGB-component.bas"}}%%(freebasic)
+#define rgb_a(x) ((x) Shr 24)
+#define rgb_r(x) ((x) Shr 16 And 255)
+#define rgb_g(x) ((x) Shr 8 And 255)
+#define rgb_b(x) ((x) And 255)
+
+dim as uinteger c
+dim as integer x, y
+dim as ubyte red, green, blue, alpha
+
+'' Assume a 16, 24, or 32 bit screen mode has been set
+c = Point(x, y)
+red = rgb_r(c)
+green = rgb_g(c)
+blue = rgb_b(c)
+Alpha = rgb_a(c)
+%%
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item6"}}==How can I make the 'x' button in the window header close my application?==
+	In windowed graphics mode you can test for the press of the window's X (close) button with ##[[KeyPgInkey Inkey]]##. This applies to Win32 and Linux, in DOS there is no "X" button.
+	
+	Here is a small example:
+
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/check-for-close.bas"}}%%(freebasic)
+'' "X" close button example , Win32 and Linux only
+Dim as String key
+Screen 13
+Do
+  Print "Click the 'x' to close this app."
+  Sleep
+  key = Inkey
+Loop Until key = Chr(27) Or key = Chr(255, 107) 'escape or x-button
+%%
+
+	NOTE: If you use an old version of FreeBASIC, you may have to use Chr( 255 ) + "X"
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item7"}}==Can't run programs using SCREEN 13 or 14 in fullscreen !==
+	It's a hardware/driver limitation (Win32 and Linux only ?). Video cards don't implement those low resolution graphic modes nowadays. If fullscreen is required you should rewrite it using at least SCREEN 17 or 18, or a resolution of 640x480 or higher to be sure modern hardware can handle it.
+
+{{anchor name="item0|Back to top"}}
+
+See also:
+	- [[CompilerFAQ Compiler FAQ]].
+	- [[FaqPgrtlib FB Run-Time Library FAQ]].
+	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

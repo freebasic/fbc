@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="TIME"}}----
+Returns the current system time as a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Time** ( ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Time**
+##
+{{fbdoc item="ret"}}
+	Returns the current system.
+
+{{fbdoc item="desc"}}
+	Returns the current system time in the format ##hh:mm:ss##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/time.bas"}}%%(freebasic)
+print "the current time is: "; time
+%%
+
+{{fbdoc item="diff"}}
+	- The QB TIME statement (to set the system time) is now called ##[[KeyPgSettime Settime]]##.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDate Date]]##
+	- ##[[KeyPgTimer Timer]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

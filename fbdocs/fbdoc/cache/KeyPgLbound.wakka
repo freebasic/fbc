@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="LBOUND"}}----
+Returns the lower bound of an array's dimension
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lbound** ( array() [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Lbound**( //array// [, //dimension// ] )
+##
+{{fbdoc item="param"}}
+	##//array//##
+		an array of any type
+	##//dimension//##
+		the dimension to get lower bound of
+
+{{fbdoc item="ret"}}
+	Returns the lower bound of an array's dimension.
+ 
+{{fbdoc item="desc"}}
+	##**Lbound**## returns the lowest value that can be used as an index into a particular dimension of an array.
+
+	Array dimensions are numbered from one (1) to //n//, where //n// is the total number of dimensions. If ##//dimension//## is not specified, ##**Lbound**## will return the lower bound of the first dimension. If ##//dimension//## is less than one (1) or greater than the total number of dimensions (//n//) in the array, the result is undefined.
+
+{{fbdoc item="ex"}}
+
+{{fbdoc item="filename" value="examples/manual/array/lbound.bas"}}%%(freebasic)
+dim array(-10 to 10, 5 to 15, 1 to 2) as integer
+
+print lbound(array) 'returns -10
+print lbound(array, 2) 'returns 5
+print lbound(array, 3) 'returns 1
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgUbound Ubound]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

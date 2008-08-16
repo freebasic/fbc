@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="__FB_XBOX__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_XBOX__""
+##
+{{fbdoc item="desc"}}
+	Define without a value created at compile time when the //[[CompilerOpttarget -target xbox]]// command line option is used. It can be used to compile parts of the program only if the target is Xbox.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbxbox.bas"}}%%(freebasic)
+#IFDEF __FB_XBOX__
+  '...instructions only for Xbox...
+#ELSE
+  '...instructions not for Xbox...
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	- [[CompilerOpttarget Compiler Option: -target]]
+
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

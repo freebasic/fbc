@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="FILECOPY"}}----
+Copies a file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileCopy""** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	**""FileCopy""** //source//, //destination//
+##
+//or//
+##
+	#include "file.bi"
+	//result// = **""FileCopy""**( //source//, //destination// )
+##
+{{fbdoc item="param"}}
+	##//source//##
+		A ##[[KeyPgString string]]## argument specifying the filename of the file to copy from.  This file must exist.
+	##//destination//##
+		A ##[[KeyPgString string]]## argument specifying the filename of the file to copy to.  This file will be overwritten if it exists.  This file should not be currently referenced by any open file handles.
+
+{{fbdoc item="ret"}}
+	Returns ##0## on success, or ##1## if an error occurred.
+
+{{fbdoc item="desc"}}
+	Copies the contents of the source file into the destination file, overwriting the destination file if it already exists.
+	It is necessary to ##[[KeyPgInclude #Include]]## either ##"file.bi"## or ##"vbcompat.bi"## in order to gain access to this function.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/filecopy.bas"}}%%(freebasic)
+#include "file.bi"
+FILECOPY "source.txt", "destination.txt"
+%%
+
+{{fbdoc item="target"}}
+	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes ##/##. Windows uses backward slashes ##\## but it allows forward slashes.  DOS uses backward  slashes ##\##. 
+
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC.  Existed in Visual Basic.
+
+{{fbdoc item="see"}}
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

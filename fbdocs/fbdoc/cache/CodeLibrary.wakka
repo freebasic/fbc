@@ -1,0 +1,174 @@
+FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASIC, by FreeBASIC Community Members.
+
+<<{{anchor name="EDITOR"}}{{fbdoc item="section" value="Code Editors & IDEs "}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit, an IDE for FB by KetilO (Win32)]]
+	[[http://www.planetsquires.com/jellyfishpro_freebasic.htm JellyFish Pro, an IDE for FB by Paul Squires (Win32)]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9035 VISG GUI Builder (WIN) by mrhx]]
+	[[http://www.freewebs.com/fielden/ EzeeGui GUI builder (WIN) by Jerry Fielden]]
+
+{{anchor name="GRAPHIC"}}{{fbdoc item="section" value="Graphics Code"}}
+	==Demos==
+	[[http://aapproj.phatcode.net/fbgfx/index.html The FreeBASIC GFX Demo Central by Adigun A.Polack]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6938 Animated Clouds by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8817 Flame Demo by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7936 Island Generation by rdc]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8287 Ascii Fire by rdc]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8758 Plasma Generation by Zamaster]]
+	
+	==Graphics Functions and Primitives==	
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7111 AntiAliased Bezier Curves by Acetoline]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7067 Antialiased Circles by Acetoline]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9572 Ellipse Renderer by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7546 Catmull-rom Splines by relsoft]]	[[http://www.freebasic.net/forum/viewtopic.php?t=7545 Bezier vs Catmull-rom by relsoft]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9588 Accurate Image Scaler by KristopherWindsor]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6676 Spline Curve by Zamaster]]
+
+	==Colors and Palettes==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9441 24bit to 16bit color width by Eternal_Pain]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8764 HSV Color Space by Antoni]]
+
+	==Formats==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8024 PNG_LOAD by yetifoot]]
+	[[http://www.freebasic.net/arch/category.php?id=6 JPEG image loader by Antoni]]
+
+	==3D==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8724 Tree Generation by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7931 Quadtree-Based Renderer by relsoft]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7332 Irrlicht 3D + ODE Physics by BMarley]]		
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8400 OpenGL Shader Demo by Dr_D]]
+
+	==Animation==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7340 ASCII Animation Example by Pritchard]]
+	[[http://lachie.phatcode.net/articles.php Chain-Like Animation Tutorial by Lachie Dazdarian]]
+
+{{anchor name="SND"}}{{fbdoc item="section" value="Sound Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=2294 Mic Input using FMod by mambazo]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=11 Using FMod In-Game by shiftlynx]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=20477 Using the PC Speaker by several]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9226 Wave synthesizer by Zamaster]]
+	
+{{anchor name="MATH"}}{{fbdoc item="section" value="Math Code"}}
+	[[http://sourceforge.net/projects/fbmath/ FBMath by jdebord]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4135 Pixel-Perfect Collision Detection by 1000101]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8963 2D vector class by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=386 A* Pathfinding by dumbledore]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7525 Fraction Library by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7173 Big Number Wrapper by Yetifoot]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9501 Minicalc textmode calculator by KristopherWindsor]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=75713 BCD arithmetics by srvaldez]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=49695 10Byte extended float by srvaldez, included in FB examples]]
+
+	==Physics simulation==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=3167 Atom snash simulation by coderjeff]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=3428 2d rigid body library by coderjeff]]
+
+{{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
+	[[http://hmcsoft.org/p/libini.php Cross Platform INI library by SirMud]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7437 XML Parser by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8680 Turing Machine by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7321 Roman Numeral to Integer Conversion by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=35589 Unicode console calender, by zippy and voodooattack]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8636 FB source to  highlighted HTML by Kristopher Windsor]]
+	[[http://www.execulink.com/~coder/freebasic/docs.html Portable help (not .chm) viewer by coderjeff]]
+	[[http://www.execulink.com/~coder/freebasic/lisp.html Lisp interpreter by coderjeff]]
+	
+	==Cryptography==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7379 MARS encryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7667 AES Encryption/Decryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7273 DES/LUCIFER Encryption/Decryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5288 MD5 Calculator by DOS386]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9496 Tiger Hash by Mindless]]
+
+<<>>{{anchor name="GAME"}}{{fbdoc item="section" value="FreeBASIC Games"}}
+	[[http://games.freebasic.net/ FreeBASIC Games Directory by Lachie Dazdarian]]
+		==Featured Games:==
+		[[http://csgp.suret.net/ Cute Short Game Project by redcrab]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=3931 Kingdoms by Piptol]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=5068 Lynn's Legacy by cha0s and Josiah Tobin]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=7796 Nanohost by Several]]
+		[[http://lithium.zext.net/ Several Games by Lithium]]
+		[[http://lachie.phatcode.net/starcage.php Star Cage by Lachie Dazdarian]]
+		[[http://syn9.thingie.net/?table=griffonlegend The Griffon Legend by syn9]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=9065 100 Line Tetris by Deleter]]
+		[[http://www.freebasic.net/forum/viewtopic.php?t=9738 Any PNG or JPEG as a Jigsaw Puzzle by Mysoft]]
+
+{{anchor name="GUI"}}{{fbdoc item="section" value="GUI Code"}}
+	[[http://www.execulink.com/~coder/freebasic/jmgui.html In Game GUI by coderJeff]]
+	[[http://sourceforge.net/projects/zine/ Zine GUI by VonGodric]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=76965#76965 WX GUI example by ciw1973]]
+
+{{anchor name="WEB"}}{{fbdoc item="section" value="Web Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4199 FB Web Server (Win) by parakeet]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7913 FB Server side scripting (uses the server above) by fishhf]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8454 ChiSock portable sockets library by cha0s]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=1608 CenoChat 	Serverless chat program by cenozoite]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4036 LibIRCClient to create custom IRC clients by voodooattack]]  
+
+{{anchor name="IO"}}{{fbdoc item="section" value="I/O Code"}}
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6574 Text Input by Pritchard & sir_mud]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6847 ConLib Console library with PCopy by cha0s]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7744 Lock Mouse to Grid Positions by Pritchard]]
+
+{{anchor name="OSSPEC"}}{{fbdoc item="section" value="OS Specific Code"}}
+	==Windows==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=1173 Screen Saver Kit (WIN) by jofers]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5942 ServiceFB (Win) by zerospeed]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9455 Printer Usage Via WinAPI (WIN) by vdecampo]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=47539 In memory dialogs by MichaelW]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4767 Printing to UTF8 to Windows by Jonathan Brickman]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9495 Talking program usin Win Voice API, by coder guy]] 
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6569 Jpeg and Gif  resources using the API by Zippy]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=76442 Using GfxLib in Windows API by MichaelW]] 
+	[[http://www.freebasic.net/forum/viewtopic.php?p=69681 Print a bitmap file by MichaelW]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=70771 ShellExecute wrapper by RayBritton]]
+	[[http://www.execulink.com/~coder/freebasic/fbwiki.html FBWiki to chm format converter by coderjeff]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=75625 FB ODBC library by KaraK]]
+
+	==Linux==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8040 Printing on Linux by coderJeff]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7611 Using GfxLib on Gtk by caseih]]
+
+	==DOS==
+	[[http://www.freebasic.net/forum/viewtopic.php?p=70185 Detect system codepage by DrV]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=5993 Calling an Interrupt requiring a pointer by DrV]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=2766 Access BTRIEVE files by mjs]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8981 "GetDiskFreeSpaceEx" Check for disk total/free space on FAT32 by DOS386]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4899 DPMI host detection version/capabilities by DrV]]
+
+{{anchor name="OTHER"}}{{fbdoc item="section" value="Miscellaneous Code"}}
+	[[http://code.google.com/p/fb-extended-lib/ FreeBASIC Extended Library]]
+	
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7441 FB  CAD by owen]]
+	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8935 Boolean Type by Imortis]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8226 Associative Arrays by jofers]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8823 Safe FBstring Type by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8778 Aligned Memory Allocation by 1000101]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=3545 FreeBASIC Memory Leak Detector by DrV & Others]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=6576 Auto-deallocating 'Smart' Pointers by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9463 UDTs for Properties by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8504 Portable way to add a resource to a program  by voodooattack]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 CPU Identification by MichaelW]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4221 Cpu Cycle counter for benchmarking of code by MichaelW]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=84902&highlight=#84902 Use of the FBGfx built-in LZW routines by Lillo and DJ Peters]]
+	[[http://rapidq.phatcode.net/tutorial/Freebasic_DLL_tutorial.html Using FB dll's in RapidQ programs by JohnK]]
+
+ 	==serial port==
+	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 Drive a Parallax servo controller by phishguy]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=34643 Modbus device finder by Antoni]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=3132 Serial port terminal program by Antoni]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=26794 CRC Calculation by Fragmeister]]
+
+
+
+{{anchor name="SITES"}}{{fbdoc item="section" value="Community Websites/Links"}}
+	[[http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibTOC External Library Documentation]]
+	[[http://www.sourceforge.net/ Sourceforge]]
+	[[http://report.freebasic.info/ The FreeBASIC Report]]
+	[[http://games.freebasic.net/ FreeBASIC Games Directory]]
+
+<<::c::
+This is a place to post worthy projects/code snippets for FreeBASIC, in their relative categories.  To add a page, link to either it's wiki page, website, or thread on the FreeBASIC Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of FreeBASIC.
+{{fbdoc item="back" value="FBWiki|Main Page"}}

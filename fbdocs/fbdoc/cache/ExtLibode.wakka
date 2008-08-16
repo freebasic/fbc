@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="ODE"}}----
+Open source, high performance library for simulating rigid body dynamics.
+
+Website: http://www.ode.org/
+Platforms supported: Win32, Linux
+Headers to include: ode/ode.bi
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

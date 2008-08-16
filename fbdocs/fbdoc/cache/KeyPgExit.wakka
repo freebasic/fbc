@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="EXIT"}}----
+Control flow statement to exit a compound statement block
+
+{{fbdoc item="syntax"}}##
+	**Exit** {[[KeyPgDoloop Do]] | [[KeyPgFornext For]] | [[KeyPgWhilewend While]] | [[KeyPgSelectcase Select]] }
+	**Exit** {[[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgOperator Operator]] | [[KeyPgProperty Property]] }
+	
+	**Exit** {[[KeyPgDoloop Do]] [, [[KeyPgDoloop Do]] [ , ...] ] |
+			[[KeyPgFornext For]] [, [[KeyPgFornext For]] [ , ...] ] | 
+			[[KeyPgWhilewend While]] [, [[KeyPgWhilewend While]], [...] ] | 
+			[[KeyPgSelectcase Select]] [, [[KeyPgSelectcase Select]] [ , ...] ] }
+
+##
+{{fbdoc item="desc"}}
+	Leaves a code block such as a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgWhilewend While...Wend]]##, or a  ##[[KeyPgSelectcase Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
+	
+	Where there are multiple ##[[KeyPgDoloop Do]]## / ##[[KeyPgFornext For]]## / ##[[KeyPgWhilewend While]]## / ##[[KeyPgSelectcase Select]]## blocks nested, it will skip to the end of the innermost block of that type.  You can skip to the end of multiple blocks of that type by giving the word multiple times, separated by commas.
+	For example: ##**Exit While, While**##
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/exit.bas"}}%%(freebasic)
+'e.g. the print command will not be seen
+
+Do
+	Exit Do ' Exit the Do...Loop and continues to run the code after Loop
+	Print "I will never be shown"
+Loop
+%%
+
+{{fbdoc item="filename" value="examples/manual/control/exit2.bas"}}%%(freebasic)
+Dim As Integer i, j
+For i = 1 to 10
+	
+	For j = 1 to 10
+	    
+	    Exit For, For
+	    
+	Next j
+	
+	Print "I will never be shown"
+	
+Next i
+%%
+
+{{fbdoc item="diff"}}
+	- EXIT WHILE and EXIT SELECT are New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgWhilewend While...Wend]]##
+	- ##[[KeyPgContinue Continue]]##
+
+{{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

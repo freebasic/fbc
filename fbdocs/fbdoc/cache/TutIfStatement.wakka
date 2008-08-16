@@ -1,0 +1,186 @@
+{{fbdoc item="title" value="The IF Statement"}}----
+//Written by [[WikiRick rdc]]//
+
+You can think of the If statement block as a question that requires a True or False answer. The answer determines which section of code your program will execute. Since computers only work with numbers, you frame the question as a conditional equation that will result in either 0 for False or non-zero for True. 
+
+The If statement has the following formats.
+
+%%(freebasic)
+If <expression> Then do something[:do something]
+%%
+
+The <expression> is the question that requires a True or False answer. If the answer is True, i.e. not False, then the code following the Then is executed. If the answer is False then the next line of code is executed.
+
+You can execute more than one statement after the Then if you separate the statements with a colon. All of the statements must be on the same line. An easier format is to use the IF code block, as shown below.
+
+%%(freebasic)
+If <expression> Then
+	do something 1
+	do something 2
+	...
+End If
+%%
+
+In this format if the answer is True then the code block following the Then is executed, starting with statement 1 and executing all statements until the End If is reached. The program will then start executing code after the End If. If the answer is False, the code in the code block is skipped and the code following the End If is executed.
+
+%%(freebasic)
+If <expression> Then
+	do something
+	...
+Else
+	do something else
+	...
+End If
+%%
+
+In this format if <expression> is True then the code following the Then is executed. If the answer is False then the code following the Else is executed. In this format you can address both the True and False answers of the <expression>. 
+
+%%(freebasic)
+If <expression> Then
+	do something
+ElseIf <expression> Then
+	do something
+End If
+%%
+
+In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the End If is executed. You can have as many ElseIf statements as you need to fully cover the range of questions you need to ask.
+
+%%(freebasic)
+If <expression> Then
+	do something
+ElseIf <expression> Then
+	do something
+Else
+	do something else
+End If
+%%
+
+This format is a combination of all the other formats. If <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the Else is executed.
+
+This format enables you to ask a series of questions and if the answer is False to all the questions, you can take a default course of action based on the Else block.
+
+As you can see you can frame the question in a number of ways and then execute the code based on a number of answer combinations. This gives you a lot of flexibility in how to both frame a question and what to do based on the answers.
+
+The <expression> is the question that needs an answer and you frame the question using [[CatPgOperators logical operators]]. 
+
+You can mix arithmetic and logical operators, as well as parenthesis, within an If statement. The compiler evaluates the conditional statements from left to right, taking into account the precedence of the operators.  For example, all of the following code snippets are legal If statement constructs.
+
+%%(freebasic)
+If var1 = 5 Then
+If (var1 = 5) And (var2 < 3) Then
+If (var1 + 6) > 10 Then
+%%
+
+You will notice that parenthesis are used to group the different parts of the expressions. You should use parenthesis to make sure that you are executing logical portions of the expressions. The expression must ultimately resolve to either True or False, even if you are using arithmetic operators within the expression.
+
+=== Using Bitwise Operators in an If Statement ===
+
+Remember that the operators And, Or and Not are bitwise operators. That is, they return a value based on the bitwise operation that they perform. You should take care when using bitwise operators within an If statement to make sure that the result will evaluate correctly. 
+
+Take the second code snippet listed above. 
+
+%%(freebasic)
+If (var1 = 5) And (var2 < 3) Then
+%%
+
+If var1 equals 5, the compiler will return True, or -1 for the expression. If var2 is less than 3 then the compiler will return True or -1 for this expression. The compiler will then evaluate the And operator with -1 And -1 returning -1. Since -1 is non-zero, or True, the code following the Then will be executed. 
+
+If either of the statements within the parenthesis evaluate to 0, then And will return 0, which is False, and the code following the Then clause will be skipped. When using bitwise operators you should frame the conditional expressions on either side of the bitwise operator so that they return either True or False. This will give you consistent results in your evaluations.
+
+=== The Not Problem ===
+
+The Not bitwise operator can be a problem in an If statement. You may be used to writing //If Not var Then//, with Not performing a logical, rather than a bitwise operation. In FreeBasic Not performs a bitwise operation, not a logical operation. 
+
+If var were to contain the value of 3, then Not 3 is -4, which will be regarded as a True result and the code following the Then will be executed, which is probably not what you wanted. Instead of writing //If Not var Then//, you should write //If var <> 0 Then//.
+
+=== Overlapping Conditions ===
+
+When using compound conditions care must be taken to ensure that the conditions do not overlap. In most cases overlapping conditions will produce unpredictable results. Each condition must produce a unique result, and the combination of the individual results, must itself express a unique result. This is very important in If-ElseIf constructs; an overlapping condition within an If-ElseIf block may execute the wrong code at the wrong time.
+
+=== Nested If Statements ===
+
+At times it may become necessary to nest If statements in order to better describe the decision making process of the evaluation. While the If statement can handle multiple arguments within an expression, there are times when  you may want to incrementally check for certain ranges of values which you can do using a nested If block.
+
+%%(freebasic)
+If <expression> Then 
+	<statement>
+	...
+	If <expression> Then
+		<statement>
+		<statement>
+		...
+	End If
+End If
+%%
+
+It is important to close each block properly with an End If when opened by an If to avoid compiler or logical errors. Compiler errors are fairly easy to fix, while logical errors can be tricky to track down and correct. The best way to make sure you are closing the blocks properly is to indent the nested If statements and then indent the matching End If statements at the same level as the If. In the example above, the indentation tells you at a glance which End If goes with which If. 
+
+=== The IIF Function  ===
+
+The Iif, or “immediate If” function returns one of two numeric values based on an expression. You can think if the Iif function as an in-line If statement that acts as a function call.
+
+%%(freebasic)
+Value = Iif(<expression>, numeric_value_if_true, numeric_value_if_false)
+%%
+
+Iif can be used as a standalone function or inside other expressions where you do not want to split the expression to insert an If statement. The numeric values can be literal values, variables or numeric function calls. The limitation of the function is that it will only return a numeric value, not a string value, however you can work around this limitation by using pointers.
+
+{{table columns="1" cellpadding="2" cells=" The Iif statement will evaluate both the True and False conditions so you need to take care that you do not perform an illegal operation such as divide by zero in a condition, even if that condition is not returned from the function."}}
+
+=== Framing the Question ===
+
+The If statement is a powerful tool, but you need to make sure that you are framing the question, that is the expression, correctly. Each expression must resolve to True or False, with True always executing the code following the Then.
+
+When writing an If statement you must ask yourself, does this expression resolve to True or False? This is especially true for compound expressions that have a number of terms within the expression. Each term must resolve to True or False and the sum of the terms must resolve to True or False. If there is any doubt that a compound expression is evaluating correctly, break it into nested If statements.
+
+=== Checking For Range Values ===
+
+Often times you will need to check for a range of values within an If statement, and in order for the compiler to evaluate the range condition correctly, you must frame the expressions correctly. There are basically two type of range expressions: exclusive and inclusive ranges. Exclusive range expressions exclude a range of values. Inclusive range expressions include a range of values. Each has a particular format that must be followed for proper evaluation.
+
+== Excluding a Range of Values ==
+
+Suppose that you have a range of values and you want to do something special if the value is less than or equal to 1 or the value is greater than or equal to 10. To put this another way, you want to exclude the numbers 2 through 9 from the special action. 
+
+You can frame this as a question that can then be translated into code.
+
+%%(freebasic)
+Is the value a number less than or equal to 1 or a number greater than or equal to 10?
+If Yes, then do special action.
+If No, then do standard action.
+%%
+
+The key here is the OR. If the lower bound of the value is equal to or less than 1 OR the upper bound of the value is equal to or greater than 10 then do the special action.
+
+%%(freebasic)
+If (value <= 1) Or (value >= 10) Then
+	do_special
+Else
+	do_standard
+End If
+%%
+
+Remember that OR will return True if either condition is True. If the value is 1 or less, or the value is 10 or more, then the expression will return True and the special action will be performed.
+
+== Including a Range of Values ==
+
+Inclusion is the opposite of exclusion. As you might guess, the format is similar you but you use the And operator which is the opposite of the OR operator.
+
+Suppose you want to do something special if the value is a 5, 6 or 7. That is you want to include these numbers within your range expression. Again, you can start by asking a question.
+
+%%(freebasic)
+Is the value a number between 5 and 7 (inclusive)?
+If Yes, then do special action
+If No, then do standard action
+%%
+
+Here you want to include the numbers 5, 6, 7 for consideration. That is if the value is 5 or greater AND the value is 7 or less then do something special. This translates to the following code snippet.
+
+%%(freebasic)
+If (value >= 5) And (value <= 7) Then
+	do_special
+Else
+	do_standard
+End If
+%%
+
+Remember that the And operator will only return True if both operands return True. If value is 6, 6 is greater than 5 and 6 is also less than 7, so both statements are True and the expression evaluates to True.

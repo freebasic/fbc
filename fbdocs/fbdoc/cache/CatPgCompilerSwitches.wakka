@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="Compiler Switches"}}----
+Statements that affect how code is compiled.
+
+{{fbdoc item="desc"}}
+	These statements affect how the compiler declares variables, arrays and procedures, parses string literals, passes procedure parameters and more.
+
+<<
+{{fbdoc item="section" value="Metacommands"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaInclude|'$INCLUDE"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}
+
+{{fbdoc item="section" value="Compiler Options"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionescape|OPTION ESCAPE"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionexplicit|OPTION EXPLICIT"}}
+	- {{fbdoc item="keyword" value="KeyPgOptiongosub|OPTION GOSUB"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnogosub|OPTION NOGOSUB"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
+	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
+
+<<>>
+{{fbdoc item="section" value="Set Default Datatypes"}}
+	- {{fbdoc item="keyword" value="KeyPgDefbyte|DEFBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgDefdbl|DEFDBL"}}
+	- {{fbdoc item="keyword" value="KeyPgDefint|DEFINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDeflng|DEFLNG"}}
+	- {{fbdoc item="keyword" value="KeyPgDeflongint|DEFLONGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefshort|DEFSHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefsng|DEFSNG"}}
+	- {{fbdoc item="keyword" value="KeyPgDefstr|DEFSTR"}}
+	- {{fbdoc item="keyword" value="KeyPgDefubyte|DEFUBYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefulongint|DEFULONGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
+
+
+>>
+::c::
+{{fbdoc item="lang"}}
+	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## available only in the //[[CompilerOptlang -lang fblite]]// dialect.
+	- ##OPTION## statements are available only in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects only.
+
+{{fbdoc item="see"}}
+	- [[CatPgPreProcess Preprocessor]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

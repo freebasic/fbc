@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="EXEPATH"}}----
+Returns the path of the running program
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exepath** ( ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Exepath**
+##
+{{fbdoc item="ret"}}
+	A ##[[KeyPgString string]]## variable set to the path of the running program.
+
+{{fbdoc item="desc"}}
+	Returns the path (the location) of the calling program. This is not necessarily the same as ##[[KeyPgCurdir Curdir]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/exepath.bas"}}%%(freebasic)
+Dim pathname As String = ExePath
+Print "This program's initial directory is: " & pathname
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Exepath""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCurdir Curdir]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

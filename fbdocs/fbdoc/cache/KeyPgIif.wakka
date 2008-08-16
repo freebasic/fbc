@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="IIF"}}----
+Conditional function that returns one of two values.
+
+{{fbdoc item="syntax"}}##
+	**IIf** ( //condition//, //expr_if_true//, //expr_if_false// )
+##
+{{fbdoc item="param"}}
+	##//condition//##
+		The condition to test.
+		A non-zero value evaluates as true, while a value of zero evaluates as false.
+	##//expr_if_true//##
+		An expression to evaluate and return if ##//condition//## is true.
+		It must return a numeric value, which can be an integer, floating point number or a pointer.
+	##//expr_if_false//##
+		An expression to evaluate and return if ##//condition//## is false.
+		It must be the same type of number as ##//expr_if_true//##.
+
+{{fbdoc item="desc"}}
+	##**IIf**## returns a different numeric value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+
+	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/control/iif.bas"}}%%(freebasic)
+dim as integer a, b, x, y, z
+a = (x + y + iif(b > 0, 4, 7)) \ z
+%%
+is equivalent to:
+{{fbdoc item="filename" value="examples/manual/control/iif2.bas"}}%%(freebasic)
+dim as integer a, b, x, y, z, temp
+if b > 0 then temp = 4 else temp = 7
+a = (x + y + temp) \ z
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Iif""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgIfthen If...Then]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
+   

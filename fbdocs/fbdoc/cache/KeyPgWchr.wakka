@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="WCHR"}}----
+Returns a wide-character string containing one or more Unicode characters
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Wchr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Wchr**( //ch0// [, //ch1// ... //chN// ] )
+##
+{{fbdoc item="param"}}
+	##//ch//##
+		The Unicode integer value of a character.
+
+{{fbdoc item="ret"}}
+	Returns a wide-character string.
+
+{{fbdoc item="desc"}}
+	##**Wchr**## returns a wide-character string containing the character(s) represented by the Unicode values passed to it.
+
+	When ##**Wchr**## is used with numerical constants or literals, the result is evaluated at compile-time, so it can be used in variable initializers.
+
+	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode characters, as the GfxLib built-in font is not Unicode.
+ 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/wchr.bas"}}%%(freebasic)
+print "the character represented by the UNICODE code of 934 is:"; WCHR(934)
+print "multiple UNICODE characters:"; WCHR(933, 934, 935)
+%%
+	will produce the output:
+
+<<&#934;
+&#933;&#934;&#935;<<::c::
+
+{{fbdoc item="target"}}
+	- DOS does not support ##**Wchr**##.
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wchr""**##.
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgChr Chr]]##
+	- ##[[KeyPgWstr Wstr]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

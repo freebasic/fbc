@@ -1,0 +1,47 @@
+{{fbdoc item="title" value="LET"}}----
+Indicates the assignment operator.
+
+{{fbdoc item="syntax"}}##
+	**Let** //variable// = //value//
+//or//
+	**Let**( //variable1// [, //variable2// [, ... ]] ) = //udt//
+//or//
+	[[KeyPgOperator operator]] //typename//.**Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] rhs [[KeyPgAs as]] [[DataType datatype]] )
+		//statements//
+	end operator
+##
+{{fbdoc item="desc"}}
+	Command intended to help the programmer to distinguish an assignment statement ( ##**Let** a=1## ) from an equality test ( ##If a=1 then ... ## ).  As the compiler does not require it, it is usually omitted.
+
+	**Let** can be used as a left-hand side operator to assign the members of a user defined type to multiple variables. //See [[KeyPgOpLetlist Operator Let() (Assignment)]]//
+
+	**Let** is used with operator overloading to refer the assignment operator. //See [[KeyPgOpLet Operator Let (Assignment)]]//
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/misc/let.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
+' these two lines have the same effect:
+Let x = 100
+x = 100
+%%
+
+{{fbdoc item="lang"}}
+	- The use of LET to indicate an assignment statement (##//LET variable = expr//##) is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
+	- The UDT to multi-variable Let assignment is only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Overloading of operators is not available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+
+{{fbdoc item="diff"}}
+	- None in the //[[CompilerOptlang -lang fb]]// dialect.
+	- The Let operator is new to FreeBASIC.
+	- The UDT to multi-variable Let assignment is new to FreeBASIC.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpAssignment Operator = (Assignment)]]##
+	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
+	- ##[[KeyPgOpLetlist Operator Let() (Assignment)]]##
+	- ##[[KeyPgOperator Operator]]##
+
+{{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

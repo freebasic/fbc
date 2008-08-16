@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="BYTE"}}----
+Standard data type: 8 bit signed
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Byte**
+##
+{{fbdoc item="desc"}}
+	8-bit signed whole-number data type. Can hold a value in the range of -128 to 127.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/byte2.bas"}}%%(freebasic)
+  DIM bytevar AS BYTE
+  bytevar = 100
+  PRINT "bytevar= ", bytevar
+%%
+
+{{fbdoc item="filename" value="examples/manual/datatype/byte.bas"}}%%(freebasic)
+Dim x As Byte = Cbyte(&H80)
+Dim y As Byte = CByte(&H7F)
+Print "Byte Range = "; x; " to "; y
+%%
+	**Output:**
+	%%Byte Range = -128 to  127%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Byte""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgUbyte Ubyte]]##
+	- ##[[KeyPgCbyte Cbyte]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

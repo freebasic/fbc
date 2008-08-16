@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="Operator [] (Pointer index)"}}----
+Returns a reference to memory offset from an address
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
+##
+~&//Note that **##Operator []## (Pointer index)** returns a reference.  As of 02.27.07, ""FreeBASIC"" syntax does not support returning references. When it does, this syntax will need to be changed.//
+
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **[** //rhs// **]**
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The base address.
+	##//rhs//##
+		A signed offset from ##//lhs//##.
+	##//T//##
+		Any data type.
+
+{{fbdoc item="desc"}}
+	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf *]](//lhs// [[KeyPgOpAdd +]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer POINTER]]## can be indexed except for an ##[[KeyPgAny ANY]]## ##[[KeyPgPointer POINTER]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/pointer-index.bas"}}%%(freebasic)
+'' initialize a 5-element array
+dim array(4) as integer = { 0, 1, 2, 3, 4 }
+
+'' point to the first element
+dim p as integer ptr = @array(0)
+
+'' use pointer indexing to output array elements
+for index as integer = 0 to 4
+	print p[index]
+next
+%%
+
+	Will give the output,
+
+%%0 1 2 3 4
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpAdd Operator + (Add)]]##
+	- ##[[KeyPgOpSubtract Operator - (Subtract)]]##
+	- [[CatPgOpPoint Pointer Operators]]
+
+{{fbdoc item="back" value="CatPgOpIndexing|Indexing Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

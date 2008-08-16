@@ -1,0 +1,21 @@
+{{fbdoc item="title" value="Obsoleted Keywords"}}----
+
+	Along the way FB has had a few keywords changed. Here is the list of those no longer supported. Old code must be updated if recompiled.
+
+	OPEN "CON:" 
+		Use [[KeyPgOpenCons OPEN CONS]]    
+	OPEN "ERR:" 
+		Use [[KeyPgOpenErr OPEN ERR]] 
+	OPEN "PIPE:" 
+		Use [[KeyPgOpenPipe OPEN PIPE]] 
+	POKEI  
+		Use [[KeyPgPoke POKE (integer,address,n)]]  
+	POKES 
+		Use [[KeyPgPoke POKE (short,address,n)]] 
+	SCREENINFO (Function returning a pointer to a structure)  
+		Use [[KeyPgScreeninfo SCREENINFO, Sub returning values in its arguments]]
+	VAL64  
+		Use [[KeyPgVallng VALLNG()]] 
+	GOSUB
+		Do not use [[KeyPgGosub GOSUB]] in SUBs or FUNCTIONs anymore; allowed in ##-lang qb## mode.
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

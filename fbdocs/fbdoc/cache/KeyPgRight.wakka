@@ -1,0 +1,52 @@
+{{fbdoc item="title" value="RIGHT"}}----
+Returns the rightmost substring of a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Right** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Right** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Right**[$]( //str//, //n// )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		The source string.
+	##//n//##
+		The substring length, in characters.
+
+{{fbdoc item="ret"}}
+	Returns the rightmost substring from ##//str//##.
+
+{{fbdoc item="desc"}}
+	Returns the rightmost ##//n//## characters starting from the right (end) of ##//str//##. If ##//str//## is empty, then the null string (##"####"##) is returned. If ##//n// <= 0## then the null string (##"####"##) is returned. If ##//n// > len(//str//)## then the entire source string is returned.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/right.bas"}}%%(freebasic)
+dim text as string = "hello world"
+print right(text, 5)
+%%
+	will produce the output:
+
+%%world
+%%
+An Unicode example:
+<<
+dim text as wstring*20
+text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+print right(text, 5) 'displays " &#1084;&#1080;&#1088;!"
+<<::c::
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string version of **##Right##**.
+
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLeft Left]]##
+	- ##[[KeyPgMidfunction Mid (Function)]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

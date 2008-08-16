@@ -1,0 +1,50 @@
+{{fbdoc item="title" value="CLOSE"}}----
+Stream I/O function to terminate access to a device
+
+{{fbdoc item="syntax"}}##
+	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
+##
+{{fbdoc item="param"}}
+	##//filenum//##
+		list of file numbers to close
+
+{{fbdoc item="desc"}}
+	Closes the files whose file numbers are passed as arguments. If an unused file number is passed, ##**Close**## returns an error.
+
+	##**Close**## without arguments closes all the files presently opened.
+	
+	Terminating the program using an ##[[KeyPgEnd End]]## statement will automatically close all files.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/fileio/close.bas"}}%%(freebasic)
+' Create a string and fill it.
+Dim buffer As String, f as integer
+
+buffer = "Hello World within a file."
+
+' Find the first free file number.
+f = Freefile
+
+' Open the file "file.ext" for binary usage, using the number "f".
+Open "file.ext" For Binary As #f
+
+  ' Place our string inside the file, using number "f".
+  Put #f, , buffer
+
+' Close the file.  We could also do 'Close #f', but it's only necessary if more than one number is open.
+Close
+
+' End the program. (Check the file "file.ext" upon running to see the output.)
+End
+%%
+
+{{fbdoc item="diff"}}
+	- None 
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgPutfileio Put (File I/O)]]## 
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgFreefile Freefile]]##
+
+{{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

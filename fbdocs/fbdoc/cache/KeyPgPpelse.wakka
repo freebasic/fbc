@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="#ELSE"}}----
+Preprocessor conditional directive
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpif #if]] (expression)
+		' Conditionally included statements if expression is True
+	**#else**
+		' Conditionally included statements if expression is False 
+	[[KeyPgPpendif #endif]]
+##
+{{fbdoc item="desc"}}
+	**#else** can be added to an ##[[KeyPgPpif #if]]##, ##[[KeyPgPpifdef #ifdef]]##, or ##[[KeyPgPpifndef #ifndef]]## block to provide an alternate result to the conditional expression.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/prepro/else.bas"}}%%(freebasic)
+#DEFINE MODULE_VERSION 1
+Dim a as String
+#IF (MODULE_VERSION > 0)
+  a = "Release"
+#ELSE
+  a = "Beta"
+#ENDIF
+Print "Program is "; a
+%%
+
+{{fbdoc item="diff"}}
+	- New to Freebasic
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPpdefine #define]]##
+	- ##[[KeyPgPpmacro #macro]]##
+	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpelseif #elseif]]## 
+	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgPpifdef #ifdef]]##
+	- ##[[KeyPgPpifndef #ifndef]]##
+	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgDefined defined]]##
+
+{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

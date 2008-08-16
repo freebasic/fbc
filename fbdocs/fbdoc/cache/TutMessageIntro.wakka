@@ -1,0 +1,276 @@
+{{fbdoc item="title" value="Introduction to Message-Based Programming"}}----
+//Written by [[WikiRick rdc]]//
+
+Historically, programming languages have been categorized as procedural and message-based. For example, QuickBasic could be categorized as a procedural language and Visual Basic could be categorized as a message-based (or event-driven) language. In a procedural language you generally start at the top, do some things and exit in a somewhat linear manner. In a message-based language, you generally initialize the system and then the program sits in an idle loop and waits for something to happen. When something happens, you handle it and then the program returns to the idle loop, eventually exiting the loop when the user closes the program.
+
+In a procedural language you have full control over what the user sees and does. In a message-based system, you work in cooperation with the operating system and user, handling only those messages that you are interested in, and letting the operating system handle the rest. The real stumbling block for programmers that come to a message-based language from a procedural language is the concept of responding only to messages. However, we are really talking about shades of gray, rather than black and white. In most languages, including procedural, messages play an important role.
+
+If you have ever used a language that supports subroutine and function calls, then you have used message-based programming. For example, say you have written a game in QuickBasic that sits in a loop waiting for one of the arrow keys to be pressed. If the up arrow key is pressed, you call a subroutine that updates the position of a sprite on the screen. If the A key is pressed, you ignore it, since you don’t care about the A key. This is message-based programming. The message is the key press and the sprite update subroutine is the message handler. 
+
+Any structured programming language could be categorized as a message-based programming language. Message-based programming is a concept, a way to handle user input and react to that input. It is more methodology than it is a type of language. It became the dominant feature of some programming languages when operating systems evolved from the command line to graphical user interfaces (GUIs). 
+
+In a GUI based operating system, such as Windows, the OS manages all the graphical elements internally. Since the programmer isn’t building a text edit field from scratch, he/she is just using the edit field built into the graphical shell, there had to be a way to notify the programmer that the user wants to update the edit field. The most natural method is to send a message to the program indicating that the edit field has been updated. Under Windows, this borrowing of GUI elements and receiving of messages has been formalized into what is called the Windows Software Development Kit, or more commonly, the Windows SDK.
+
+The Windows SDK is a collection of application programming interfaces (APIs) in a set of dynamic link libraries (DLLs) that form the majority of the operating system. Any GUI based program running under Windows uses the SDK, even if it isn’t readily apparent. In Rapid Application Development (RAD) languages such as Delphi, Visual Basic or Real Basic, the languages hide the details of the SDK by using properties and events, but under the hood they are using the SDK.
+
+While RAD languages enable the programmer to quickly build GUI-based programs, it also means that the finer details of the SDK are not accessible. For example, it is quite difficult to subclass a control using VB, but is quite straightforward using the SDK. However, the SDK is huge, and the shear size of the API is enough to make many programmers give up on the idea of SDK programming. The common thought is that it is too complicated and hard to use, but the opposite is true. Because the operating system handles all the graphical elements for the program, the programmer can concentrate on the most important aspect of program design, user interaction. After all, a GUI program is all about user interaction.
+
+FreeBasic doesn’t have a RAD system for Windows programming. To create a Windows program in FreeBasic, you will have to use the SDK, as this is the only option. While the SDK is massive, and would probably take a lifetime to fully understand, for 99% of all Windows programs, only a small subset of the SDK needs to be used. The reality is that Windows SDK programming is no harder than any other type of programming, and for GUI-based programs, is actually easier than a language where you would have to create all the GUI elements yourself.
+
+Putting aside all the gritty details of the Windows API for the moment, it is important to understand the mechanism of messages in an SDK program. This is best accomplished by looking at our old friend, the Hello World program. In the examples\Windows\gui folder of the FreeBasic .15b distribution (which is required for the code in this article), there is a nice Hello World program that I am going to steal--I mean borrow, as the base for this example.
+
+##%%(freebasic)
+option explicit
+option private
+
+#include once "windows.bi"
+
+declare function        WinMain     ( byval hInstance as HINSTANCE, _
+	                                  byval hPrevInstance as HINSTANCE, _
+	                                  szCmdLine as string, _
+	                                  byval iCmdShow as integer ) as integer
+	                              
+	                              
+	''
+	'' Entry point    
+	''
+	end WinMain( GetModuleHandle( null ), null, Command$, SW_NORMAL )
+
+'' ::::::::
+'' name: WndProc
+'' desc: Processes windows messages
+''
+'' ::::::::
+function WndProc ( byval hWnd as HWND, _
+	               byval message as UINT, _
+	               byval wParam as WPARAM, _
+	               byval lParam as LPARAM ) as LRESULT
+	
+	function = 0
+	
+	''
+	'' Process messages
+	''
+	select case( message )
+	    ''
+	    '' Window was created
+	    ''        
+	    case WM_CREATE            
+	        exit function
+	    
+	    '' User clicked the form
+	    case WM_LBUTTONUP
+	        MessageBox NULL, "Hello world from FreeBasic", "FB Win", MB_OK
+	    ''
+	    '' Windows is being repainted
+	    ''
+	    case WM_PAINT
+			dim rct as RECT
+			dim pnt as PAINTSTRUCT
+			dim hDC as HDC
+	      
+	        hDC = BeginPaint( hWnd, @pnt )
+	        GetClientRect( hWnd, @rct )
+	        
+	        DrawText( hDC, _
+	        		  "Hello Windows from FreeBasic!", _
+	        		  -1, _
+	                  @rct, _
+	                  DT_SINGLELINE or DT_CENTER or DT_VCENTER )
+	        
+	        EndPaint( hWnd, @pnt )
+	        
+	        exit function            
+	    
+		''
+		'' Key pressed
+		''
+		case WM_KEYDOWN
+		    'Close if esc key pressed
+			if( lobyte( wParam ) = 27 ) then
+				PostMessage( hWnd, WM_CLOSE, 0, 0 )
+			end if
+
+	    ''
+	    '' Window was closed
+	    ''
+		case WM_DESTROY
+	        PostQuitMessage( 0 )
+	        exit function
+	end select
+	
+	''
+	'' Message doesn't concern us, send it to the default handler
+	'' and get result
+	''
+	function = DefWindowProc( hWnd, message, wParam, lParam )    
+	
+end function
+
+'' ::::::::
+'' name: WinMain
+'' desc: A win2 gui program entry point
+''
+'' ::::::::
+function WinMain ( byval hInstance as HINSTANCE, _
+	               byval hPrevInstance as HINSTANCE, _
+	               szCmdLine as string, _
+	               byval iCmdShow as integer ) as integer    
+	 
+	dim wMsg as MSG
+	dim wcls as WNDCLASS     
+	dim szAppName as string
+	dim hWnd as HWND
+	 
+	function = 0
+	 
+	''
+	'' Setup window class
+	''
+	szAppName = "HelloWin"
+	 
+	with wcls
+		.style         = CS_HREDRAW or CS_VREDRAW
+		.lpfnWndProc   = @WndProc
+		.cbClsExtra    = 0
+		.cbWndExtra    = 0
+		.hInstance     = hInstance
+		.hIcon         = LoadIcon( NULL, IDI_APPLICATION )
+		.hCursor       = LoadCursor( NULL, IDC_ARROW )
+		.hbrBackground = GetStockObject( WHITE_BRUSH )
+		.lpszMenuName  = NULL
+		.lpszClassName = strptr( szAppName )
+	end with
+	      
+	''
+	'' Register the window class     
+	''     
+	if( RegisterClass( @wcls ) = FALSE ) then
+	   MessageBox( null, "Failed to register wcls!", szAppName, MB_ICONERROR )
+	   exit function
+	end if
+	
+	''
+	'' Create the window and show it
+	''
+	hWnd = CreateWindowEx( 0, _
+				 		   szAppName, _
+	                       "The Hello Program", _
+	                       WS_OVERLAPPEDWINDOW, _
+	                       CW_USEDEFAULT, _
+	                       CW_USEDEFAULT, _
+	                       CW_USEDEFAULT, _
+	                       CW_USEDEFAULT, _
+	                       NULL, _
+	                       NULL, _
+	                       hInstance, _
+	                       NULL )
+	                      
+
+	ShowWindow( hWnd, iCmdShow )
+	UpdateWindow( hWnd )
+	 
+	''
+	'' Process windows messages
+	''
+	while( GetMessage( @wMsg, NULL, 0, 0 ) <> FALSE )    
+	    TranslateMessage( @wMsg )
+	    DispatchMessage( @wMsg )
+	wend
+	
+	
+	''
+	'' Program has ended
+	''
+	function = wMsg.wParam
+
+end function
+%%##
+
+If you have successfully compiled and run the program, you will see a standard window with a message printed on the form. If you click the form, a message box will be displayed, and if you press the Escape key, the program will close. 
+
+Take a moment to examine the window. You will see that the form has the max, min and restore buttons, a system menu and can be resized. Now look at the code above. There isn’t any code needed to handle the mentioned window properties, the OS handles all that for you. It also only takes a single line of code to display the messagebox, which in itself, is a rather complex object. The ratio of result to amount of code, is quite remarkable. If you were to try and recreate this simple program using FreeBasic’s standard graphical commands, the program would be a hundred times larger. 
+
+The first thing you should notice about the code listed above is the format. This is the basic format of any FreeBasic Windows program. Every Windows program, no matter how simple or complex, will follow this same basic format. The two key ingredients of this program are the **""WinMain""** and **""WinProc""** procedures.
+
+The ""WinMain"" procedure is the procedure Windows calls when a program is started. It is the entry point of a Windows program. In ""WinMain"", you build and register the main program window and then enter into the message loop to process messages. Once the program enters the message loop, it will start processing messages with the ""WinProc"" procedure. Since this article is about the message model in a Windows program, we will only discuss the message loop in ""WinMain"" and the ""WinProc"" procedure.
+
+When the Windows operating system is running, there are messages being generated all the time. When a Windows program is running, the OS will send messages to the program, when something happens that the OS thinks the program should know about. Some of these program specific messages are sent directly to the ""WinProc"" (or similar) procedure, and others, primarily user-generated messages, are placed into a message queue. Since most of a program is concerned with user interaction, it is important to understand the message queue.
+
+A queue is a data structure where data in added to the “back” of the queue and removed from the “front”. This is called a First-In-First-Out, or FIFO stack. If you have ever stood in line to buy movie tickets, you have experienced a queue.
+
+For a program, the message queue will hold one or more messages, lined up like the folks in a movie ticket line. The idle loop of a Windows program sits and waits for messages to arrive and then translates and dispatches the messages to the program. This message loop is contained within the following code excerpt from ""WinMain"".
+
+##%%(freebasic)
+	''
+	'' Process windows messages
+	''
+	while( GetMessage( @wMsg, NULL, 0, 0 ) <> FALSE )    
+	    TranslateMessage( @wMsg )
+	    DispatchMessage( @wMsg )
+	wend
+%%##
+
+The **""GetMessage""** procedure retrieves a message from the queue via the **wMsg** parameter. The wMsg parameter is a MSG type-def that contains the necessary information related to a particular message. Here is the definition of the MSG type-def.
+
+##%%(freebasic)
+type MSG
+hwnd as HWND
+	message as UINT
+	wParam as WPARAM
+	lParam as LPARAM
+	time as DWORD
+	pt as POINT
+end type
+%%##
+
+**hwnd** is the handle of the window that needs to process the message. This message will be processed by that window’s ""WinProc"" procedure.
+
+**Message** is the message identifier. This could be, for example, WM_CREATE, which signals that a window has been created, but not yet shown.
+
+**wParam** and **lParam** both specify additional information based on the message type. For example, when a key is pressed, you can retrieve the key code by using the lobyte of wParam.
+
+**time** specifies the time that the message was posted and **pt** is a structure that contains the position of the cursor when the message was posted.
+
+**""TranslateMessage""** converts virtual key messages to character messages, and then puts them back into the queue so that the key can processed if desired. Any program that uses the keyboard will need this procedure. The **""DispatchMethod""** then sends a message to the windows ""WinProc"" (or similar) procedure associated with the window identified by the **hWnd** parameter.
+
+To summarize the actions here, a user generated message will be placed into the “back” of the message queue. ""GetMessage"" retrieves the first waiting message, passes it to ""TranslateMessage"" which converts the message if necessary, and puts it back into the queue. The message is then passed onto ""DispatchMessage"", which examines the message to see which window should get the message, and then passes the message onto the windows handler procedure, which in our example, is ""WinProc"".
+
+Before we discuss the ""WinProc"" procedure however, we need to ask a question: What happens if there is more than one window in a program? How does ""WinMain"" know what procedure to use? The answer is contained within the **WNDCLASS** structure. In our example, **wcls** is defined as WNDCLASS in the ""WinMain"" procedure.
+
+##%%(freebasic)
+	with wcls
+		.style         = CS_HREDRAW or CS_VREDRAW
+		.lpfnWndProc   = @WndProc
+		.cbClsExtra    = 0
+		.cbWndExtra    = 0
+		.hInstance     = hInstance
+		.hIcon         = LoadIcon( NULL, IDI_APPLICATION )
+		.hCursor       = LoadCursor( NULL, IDC_ARROW )
+		.hbrBackground = GetStockObject( WHITE_BRUSH )
+		.lpszMenuName  = NULL
+		.lpszClassName = strptr( szAppName )
+	end with
+%%##
+
+As you can see, the WNDCLASS structure holds all of the information pertaining to a particular window. In relation to messages, the important item is the **.lpfnWndProc** field. This field holds the address of our message handler for this window. The @ operator in FreeBasic returns the address of an object, in this case the address of our ""WinProc"" procedure. Once this window is registered using the **""RegisterClass""** method, Windows will know what procedure to use to process messages.
+
+As you can see, there is no special significance to the name ""WinProc"". ""WinProc"" could be called ""MyWinProc"", or ""WinHandler"". The actual SDK name is ""WindowProc"", which is just a placeholder for the user defined message handler name. The important piece of information is that whatever you call it, the message handler has to have the same parameters as we have defined in our ""WinProc"", and the address of that procedure has to be stored in .lpfnWndProc.
+
+All messages, whether user generated or system generated pass through the defined message handler, which in our example, is ""WinProc"". Looking at the parameter list of ""WinProc"" we see that we have most of the components of the message structure retrieved by ""GetMessage"". The hwnd is the windows handle, message is the message id and wParam and lParam hold additional message information. Once a message has been passed to ""WinProc"", we then must decide if we are interested in the message.
+
+This is usually done with a select case where we examine the message parameter to see if we want to handle the message. For example, if the message were WM_PAINT, then we would put our drawing code under the WM_PAINT message so that our window would be updated each time all or part of the window is redrawn. If we don’t care about a message, then we simply pass the message on to the **""DefWindowProc""** message to be handled by the default message handler.
+
+The action here is quite straightforward. ""WinMain"" or Windows sends us messages, and we respond to those messages of interest. As messages come into the message queue, they are processed and sent to ""WinProc"", where they may be further processed, and then passed along to ""DefWindowProc"" to be processed by the operating system. This loop continues for the life of program, until the WM_QUIT message is received, at which point the window is destroyed and the program is terminated.
+
+In our example, program we are only concerned with the three messages, WM_LBUTTONUP, WM_PAINT and WM_KEYDOWN. The WM_CREATE and WM_DESTROY are basically boilerplate that you would find any windows program. Since we are only interested in these three messages, we only need to write code for these three messages. The rest of the messages we might receive do not concern us, so we don’t even bother looking for them.
+
+In a message-based language, you are writing code to handle an event that has occurred. We know that an event has taken place because we received a message describing the event. If we are interested in that event, then we write code to respond to it. Instead of writing huge amounts of code to handle every aspect of the program like we must do in a procedural language, we only need to write code for certain events, and we let the operating system handle everything else.
+
+Now of course, you have to write code to create a window and controls, but this is mostly boilerplate type of code. You simply follow the API and pass along the appropriate parameters to the ""CreateWindow"" function. Once you understand the boilerplate, it is simply a matter of plugging that code into your program when needed. The real action occurs in the ""WinProc"" function when you interact with the window or controls.
+
+Message-based programming requires a different mind-set than procedural programming. In a procedural language, the user must respond to the program; the programmer is in charge. In a GUI program, the program must respond to the user and the user is in charge. To write effective GUI programs, the programmer has to relinquish control over the program, and work in cooperation with the operating system and the user.
+
+When you design a GUI program, you have to ask yourself, “How do I want my program to respond to the user?” For example, when the application is minimized, should the program ignore the event, or should it do something like put itself in the system tray? This is the essence of message-based programming. Defining what events are important, and then writing individual routines that handle each event. A message-based program is simply a collection of specific routines written in response to specific messages. 
+
+Despite the reputation of the SDK, the basic concept of message-based programming is quite simple. You are writing a collection of routines to handle messages. This is the core task. All the other stuff like creating a window, or when to repaint the window is done by the operating system. It is the scope of the SDK that gets to most people. There is a lot in there. However, like the cliché says, the best way to eat an elephant is one bite and a time. The best way to master the SDK is to simply understand the concept of message-based programming and learn the boilerplate code. Once that is done, creating sophisticated Windows programs isn’t all that hard.

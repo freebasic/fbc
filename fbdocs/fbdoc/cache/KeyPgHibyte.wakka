@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="HIBYTE"}}----
+Gets the most-significant byte (MSB, or //hi-byte//) of the least-significant word (LSW, or //lo-word//) of an ##[[KeyPgUinteger Uinteger]]## value.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **Hibyte**( //expr// ) ( ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h0000FF00 ) [[KeyPgOpShiftRight shr]] 8 )
+##
+{{fbdoc item="usage"}}##
+	//result// = **Hibyte**(//expr//)
+##
+{{fbdoc item="param"}}
+	##//expr//##
+		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
+
+{{fbdoc item="ret"}}
+	Returns the MSB value of the LSW of `##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##`.
+
+{{fbdoc item="desc"}}
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an [[KeyPgUinteger Uinteger]] representing the value of the MSB of its LSW. It behaves as `##[[KeyPgHibyte Hibyte]]([[KeyPgLoWord Loword]](//expr//))##`.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/bits/hibyte.bas"}}%%(freebasic)
+DIM N AS UINTEGER
+
+'Note there are 16 bits
+N = &b1010101110000001
+PRINT "N is                                       "; N
+PRINT "The binary representation of N is          "; BIN(N)
+PRINT "The most significant byte (MSB) of N is    "; HIBYTE(N)
+PRINT "The least significant byte (LSB) of N is   "; LOBYTE(N)
+PRINT "The binary representation of the MSB is    "; BIN(HIBYTE(N))
+PRINT "The binary representation of the LSB is    "; BIN(LOBYTE(N))
+SLEEP
+%%
+
+The output would look like:
+%%
+N Is                                       43905
+The Binary representation of N Is          1010101110000001
+The most significant Byte (MSB) of N Is    171
+The least significant Byte (LSB) of N Is   129
+The Binary representation of the MSB Is    10101011
+The Binary representation of the LSB Is    10000001
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__HIBYTE""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLoByte Lobyte]]##
+	- ##[[KeyPgLoWord Loword]]##
+	- ##[[KeyPgHiword Hiword]]##
+
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

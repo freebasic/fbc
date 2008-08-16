@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="Community Tutorials"}}----
+Tutorials submitted by the FreeBASIC community:
+
+{{fbdoc item="section" value="Getting Started"}}
+	-[[TutGettingStarted Getting Started with FreeBASIC]] //by [[JasonFirth SJ Zero]]//
+	-[[TutUsingLibs Using libraries in FreeBASIC]] //by [[JasonFirth SJ Zero]]//
+	-[[TutUsingMouse Using the Mouse in FreeBASIC]] //by MystikShadows//
+	-[[TutBasicInput Get Information into your program]] //by [[TekRat TekRat]]//
+	-[[TutDynamicArrays Using Dynamic Arrays in FreeBASIC]] //by [[SephKnows]]//
+	-[[TutBeginnersGuideToTypesAsObjects Beginners Guide to Types as Objects (Part 1)]] //by ""YetiFoot""//
+	-[[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects (Part 2)]] //by ""YetiFoot""//
+	-[[TutIntroScope Introduction to Variable Scope]] //by [[WikiRick rdc]]//
+	-[[TutIntroArrays Introduction to Arrays]] //by [[WikiRick rdc]]//
+	-[[TutIntroTypeDef Introduction to the Type Def]] //by [[WikiRick rdc]]//
+	-[[TutNewToProg New To Programming?]] //by ""The FB Community""//
+	-[[TutPortingFromQB Compiling a BIG QB program]] //by [[AntoniGual Antoni]]//
+
+{{fbdoc item="section" value="Game Programming"}}
+	- [[TutHowToProgGame1 How to Program a Game: Lesson 1]] //by Lachie Dazdarian//
+	- [[TutMngAHiScrTbl Managing A High Score Table]] //by Lachie Dazdarian//
+
+{{fbdoc item="section" value="Flow Control Statements"}}
+	-[[TutIfStatement The IF Statement]] //by [[WikiRick rdc]]//
+	-[[TutSelectStatement The Select Case Statement]] //by [[WikiRick rdc]]//
+
+{{fbdoc item="section" value="Pre Processor"}}
+	-[[TutConditionalCompilation Conditional Compilation And You]] //by AetherFox//
+
+{{fbdoc item="section" value="Memory Management"}}
+	-[[TutPointers Introduction to Pointers]] //by [[WikiRick rdc]]//
+	-[[TutPointersData Pointers, Data Types and Memory]] //by [[WikiRick rdc]]//
+	-[[TutPterDataType The Pointer Data Type]] //by [[WikiRick rdc]]//
+	-[[TutLinkedLists Using Linked Lists]] //by Parker//
+	-[[TutDynaArrayType Dynamic Arrays in Types]] //by [[WikiRick rdc]]//
+
+{{fbdoc item="section" value="Intermediate Techniques"}}
+	-[[TutFunctionOverloading Introduction to Function Overloading in FreeBASIC]] //by [[LaananFisher :stylin:]]//
+
+{{fbdoc item="section" value="Mathematics"}}
+	-[[TutMathAngles Different ways angles are measured]] //by RandyKeeling//
+	-[[TutMathIntroTrig A Brief Introduction To Trigonometry]] //by RandyKeeling//
+
+{{fbdoc item="section" value="Windows API"}}
+	-[[TutMessageIntro Introduction to Message-Based Programming]] //by [[WikiRick rdc]]//
+
+{{fbdoc item="section" value="Libraries"}}
+	-[[TutInterfacingWithC Interfacing with C]] //by ""UtenNavn""//
+	-[[TutIndexSDLNet SDL_NET]] //by Paragon//
+	-[[TutUsingLibrariesWithGCC Using FreeBASIC Built Libraries with GCC]] //by Jeff Marshall//
+
+{{fbdoc item="section" value="Object Oriented Programming"}}
+	-[[TutIntroExtType Introduction to the Extended Type]] //by [[WikiRick rdc]]//
+	-[[TutSimPolymorphism Simulating Polymorphism]] //by [[WikiRick rdc]]//
+	-[[TutOOPInNonOOPLanguages OOP in non-OOP languages]] //by KevinWhitefoot//
+	-[[TutConstQualifiers Const Qualifiers and You]] //by notthecheatr//
+
+{{fbdoc item="section" value="FBgfx"}}
+	-[[TutFBgfxImgAndFontBuf Creating and Understanding Your FBgfx Img and Font Buffer]] //by ""The FB Community""//
+
+
+{{fbdoc item="back" value="FBWiki|Main Page"}}

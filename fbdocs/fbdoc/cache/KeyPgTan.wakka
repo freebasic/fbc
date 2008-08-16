@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="TAN"}}----
+Gets the tangent of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Tan** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Tan** ( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the angle (in radians)
+
+{{fbdoc item="ret"}}
+	Returns the tangent of the argument ##//number//## as a ##[[KeyPgDouble Double]]## within the range of -infinity to infinity.
+
+{{fbdoc item="desc"}}
+	The argument ##//number//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]). The required //number// argument can be any valid numeric expression. If ##//number//## is an uninitialized variable, zero is returned.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/tan.bas"}}%%(freebasic)
+CONST PI AS DOUBLE = 3.1415926535897932
+DIM a AS DOUBLE
+DIM r AS DOUBLE
+INPUT "Please enter an angle in degrees: ", a
+r = a * PI / 180	'Convert the degrees to Radians
+PRINT ""
+PRINT "The tangent of a" ; a; " degree angle is"; TAN ( r ) 
+SLEEP
+%%
+
+The output would look like:
+%%
+Please enter an angle in degrees: 75
+The tangent of a 75 degree angle Is 3.732050807568878
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgAtn Atn]]##
+	- ##[[KeyPgAtan2 Atan2]]##
+	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

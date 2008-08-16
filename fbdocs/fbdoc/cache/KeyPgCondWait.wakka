@@ -1,0 +1,46 @@
+{{fbdoc item="title" value="CONDWAIT"}}----
+Stops execution of current thread until some condition becomes true
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condwait** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //mutex// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Condwait** ( //handle//, //mutex// )
+##
+{{fbdoc item="param"}}
+	##//handle//##
+		The handle of a conditional variable, or the null pointer (0) on failure.
+	##//mutex//##
+		The mutex associated with this conditional variable, which must be locked when testing the condition and calling ##**Condwait**##
+
+{{fbdoc item="desc"}}
+	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal Condsignal]]##s or ##[[KeyPgCondBroadcast Condbroadcast]]##s  the handle.
+
+	Once the conditional variable is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them can be set to ##**Condwait**## for the conditional; they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+
+	When calling ##**Condwait**##, ##//mutex//## should already be locked.  An atomic unlock of the mutex and wait on the conditional variable will occur.  When the condition variable becomes signaled, ##//mutex//## will be locked again and then execution will return to the thread after the ##**Condwait**## call.
+
+{{fbdoc item="ex"}}
+	See ##[[KeyPgCondCreate Condcreate]]##
+
+{{fbdoc item="target"}}
+	- **Condwait** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCondCreate Condcreate]]##
+	- ##[[KeyPgCondDestroy Conddestroy]]##
+	- ##[[KeyPgCondBroadcast Condbroadcast]]##
+	- ##[[KeyPgCondSignal Condsignal]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="ISDATE"}}----
+Tests if a string can be converted to a [[ProPgDates Date Serial]]
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""IsDate""** ( //stringdate// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""IsDate""**( //stringdate// )
+##
+{{fbdoc item="param"}}
+	##//stringdate//##
+		the string to test
+
+{{fbdoc item="ret"}}
+	Returns non-zero (-1) if the date string can be converted to a [[ProPgDates Date Serial]], otherwise returns zero (0).
+
+{{fbdoc item="desc"}}
+	Date strings must be in the format set in the regional settings of the OS to be considered valid dates.
+
+	##**""IsDate""([[KeyPgDate Date]])**## will return non-zero (-1) only if the regional settings specify the same date format that QB used.
+
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/isdate.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+dim s as string, d as integer
+
+do
+  print
+  print "Enter a date: "
+
+  line input s
+
+  if s = "" then exit do
+
+  if IsDate( s ) = 0 then
+	print "'"; s; "' is not a valid date"
+  else
+	d = DateValue( s )
+	print "year  = "; Year( d )
+	print "month = "; Month( d )
+	print "day   = "; Day( d )
+  end if
+
+loop
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

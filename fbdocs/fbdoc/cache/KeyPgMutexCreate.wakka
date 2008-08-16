@@ -1,0 +1,109 @@
+{{fbdoc item="title" value="MUTEXCREATE"}}----
+Creates a mutex used for synchronizing the execution of threads
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mutexcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Mutexcreate**
+##
+{{fbdoc item="ret"}}
+	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created, or the null pointer (0) on failure.
+
+{{fbdoc item="desc"}}
+	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local variable used by a single thread, called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex, until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.
+
+	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	
+	A  mutex is a lock that guarantees three things:
+	1. Atomicity - Locking a mutex is an atomic operation, meaning that the operating system (or threads library) assures you that if you locked a mutex, no other thread succeeded in locking this mutex at the same time.
+	2. Singularity - If a thread managed to lock a mutex, it is assured that no other thread will be able to lock the thread until the original thread releases the lock.
+	3. Non-Busy Wait - If a thread attempts to lock a thread that was locked by a second thread, the first thread will be suspended (and will not consume any CPU resources) until the lock is freed by the second thread. At this time, the first thread will wake up and continue execution, having the mutex locked by it. 
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/threads/mutexcreate.bas"}}%%(freebasic)
+'' Threading syncronyzation using Mutexes
+'' If you comment out the lines containing "MutexLock" and "MutexUnlock",
+'' the threads will not be in sync and some of the data may be printed
+'' out of place.
+
+const MAX_THREADS = 10
+
+DECLARE SUB thread( byval id_ptr as any ptr )
+DECLARE SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
+
+DIM SHARED threadsync AS any ptr
+
+dim i as integer
+
+DIM handleTb(0 to MAX_THREADS-1) AS any ptr
+
+'' Create a mutex to syncronize the threads
+threadsync = MUTEXCREATE
+
+'' Create threads
+for i = 0 to MAX_THREADS-1
+	handleTb(i) = THREADCREATE(@thread, @i)
+	IF handleTb(i) = 0 THEN
+		PRINT "Error creating thread:"; i
+		exit for
+	END IF
+next
+
+'' Wait until all threads are finished
+for i = 0 to MAX_THREADS-1
+	if( handleTb(i) <> 0 ) then
+		THREADWAIT( handleTb(i) )
+	end if
+next
+
+teletype "Testing.................", 1, 1
+teletype "Testing again...........", 10, 1
+
+'' Discard the mutex when we are through using teletype
+MUTEXDESTROY threadsync
+
+SUB thread( byval id_ptr as any ptr )
+	dim id as integer
+	id = *cast( integer ptr, id_ptr )
+	teletype "Thread (" & id & ").........", 1, 1+id
+END SUB
+
+'' Teletype unfurls some text across the screen at a given location
+SUB teletype (BYVAL text AS STRING, BYVAL x AS INTEGER, BYVAL y AS INTEGER)
+	DIM i AS INTEGER
+
+	FOR i = 0 TO LEN(text)-1
+	    '' MutexLock prevents the two simultaneously running
+	    '' threads from sharing "x", "y", and "a"
+	    MUTEXLOCK threadsync
+
+	    LOCATE y, x+i
+	    PRINT CHR(text[i])
+
+	    '' MutexUnlock releases these variables for other use
+	    MUTEXUNLOCK threadsync
+
+	    SLEEP 25
+   NEXT
+END SUB
+%%
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="target"}}
+	- The DOS version of FreeBASIC does not allow for threads, as the OS does not support them.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgThreadWait Threadwait]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

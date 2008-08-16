@@ -1,0 +1,12 @@
+{{fbdoc item="title" value="Curses"}}----
+Standardized console user interface library
+
+Website: http://pdcurses.sourceforge.net/ and http://www.gnu.org/software/ncurses/
+Platforms supported: Win32, Linux
+Headers to include: curses.bi
+Example Usage: yes, in examples/libraries/curses/
+Note: On Win32 systems pdcurses is used, on Linux it uses the standard ncurses library.
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

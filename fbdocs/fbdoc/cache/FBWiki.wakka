@@ -1,0 +1,21 @@
+=====FreeBASIC Wiki - Main Page===== 
+{{image class="right" url="/images/FBLOGOWI.PNG"}} Welcome to the official home of the FreeBASIC Manual. 
+
+ ==Top Links:==
+	- **[[DocToc FreeBASIC Manual - Table of Contents]]**
+	- **[[CommunityTutorials Community Tutorials]]**
+	- **[[CodeLibrary Community Code Library]]**
+	- **[[CatPgProgrammer Programmer's Guide]]**
+
+==Other ""FreeBASIC"" Resources:==
+	Maybe the ""FreeBASIC"" manual wasn't quite what you were looking for?  Check out these other ""FreeBASIC"" resources online:
+
+	- [[http://freebasic.net freebasic.net]] - //The// start page for all things ""FreeBASIC"".  Downloads, links, examples, an active forum, and more.  Join the ""FreeBASIC"" community today - it's free!
+	- [[http://sourceforge.net/projects/fbc FreeBASIC Project Page on sourceforge.net]] - Download the latest software releases, submit bug reports, feature requests, contact the developers, or download documentation for previous releases of the compiler.
+
+==About this wiki:==
+	The FreeBASIC compiler is currently in active development and this wiki is updated whenever possible to document the latest version of the compiler available.  Some features of the compiler documented here might not be available in the binary distributions of the compiler released at SourceForge, and may only be available when building the FreeBASIC compiler and/or runtime libraries from sources, or downloading a compiled SVN version.  From time to time, this wiki is compiled and released in 4 formats as a CHM file, TXT file, DAZ file for FBHELP, and a HTML package.  For a listing of releases for previous versions of FreeBASIC please see the [[FBWikiDownloads downloads]] page.
+
+==How you can help:==
+	Have you found an error or omission on one of our pages?  Please register on our forum at [[http://freebasic.net/forum freebasic.net/forum]] to get edit access to our wiki.  Let us know about the error or omission by adding a comment to the page, or edit the content yourself and help contribute to the wiki.  Have a look at the [[FBWikiHelp FB Wiki - Help]] page to get started.
+

@@ -1,0 +1,49 @@
+{{fbdoc item="title" value="SHARED"}}----
+Variable declaration modifier specifying visibility throughout a module
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim Dim]] **Shared** ...
+	[[KeyPgRedim Redim]] **Shared** ...
+	[[KeyPgCommon Common]] **Shared** ...
+##
+{{fbdoc item="desc"}}
+	##Shared## makes module-level variables visible inside ##[[KeyPgSub Sub]]##s and ##[[KeyPgFunction Function]]##s.  If ##Shared## is not used on a module-level variable's declaration, it is stored on the stack of the implicit main function and therefore only visible to the module-level code in that file.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/variable/shared.bas"}}%%(freebasic)
+'' Compile with -lang qb or fblite
+
+'$lang: "qb"
+
+Declare Sub MySub
+Dim Shared x As Integer
+Dim y As Integer
+
+x = 10
+y = 5
+
+MySub
+
+Sub MySub
+	Print "x is "; x 'this will report 10 as it is shared
+	Print "y is "; y 'this will not report 5 because it is not shared
+End Sub
+%%
+
+{{fbdoc item="diff"}}
+	- The ##Shared## statement inside scope blocks -- functions, subs, if/thens, and loops -- is not supported. Use ##Dim##|##Redim##|##Common Shared## in the main program instead.  Or if you're inside a scope block and ##Redim##ming a variable or array previously set up with ##Shared##, just do a ##Redim## without ##Shared##; it will work fine and won't ruin anything.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgLbound Lbound]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgShared Shared]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgUbound Ubound]]##
+	- ##[[KeyPgVar Var]]##
+
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

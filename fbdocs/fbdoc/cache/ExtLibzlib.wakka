@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="zlib"}}----
+Loseless data compression library unencumbered by patents.
+
+Website: http://www.zlib.net
+Platforms supported: Win32, Linux, DOS
+Headers to include: zlib.bi
+Example Usage: yes, in examples/libraries/compress/
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

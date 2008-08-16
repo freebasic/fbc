@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="GET/PUT image header example"}}----
+Example showing the two different headers used for image buffers.
+
+{{fbdoc item="filename" value="examples/manual/faq/gfxlib2/image-header.bas"}}%%(freebasic)
+'' here we define the image buffer header structure
+type _OLD_HEADER field = 1
+	bpp : 3 as ushort
+	width : 13 as ushort
+	height as ushort
+end type
+
+type PUT_HEADER field = 1
+	union
+		old as _OLD_HEADER
+		type as uinteger
+	end union
+	bpp as integer
+	width as uinteger
+	height as uinteger
+	pitch as uinteger
+	_reserved( 1 to 12 ) as ubyte
+end type
+
+#define PUT_HEADER_NEW		&h7
+
+
+'' function to show info on an image
+sub show_image_info( byval image as any ptr )
+	dim as PUT_HEADER ptr header
+
+	header = image
+	if( header->type = PUT_HEADER_NEW ) then
+		print "New style header"
+		print "Image is " & header->width & "x" & header->height
+		print "Image uses " & header->bpp & " bytes for each pixel"
+		print "A row of image pixels takes " & header->pitch & " bytes"
+	else
+		print "Old style header"
+		print "Image is " & header->old.width & "x" & header->old.height
+		print "Image uses " & header->old.bpp & " bytes for each pixel"
+	end if
+end sub
+
+
+dim as any ptr picture
+
+screen 17, 32
+
+picture = imagecreate( 10, 10, 7 )
+
+put( 40, 40 ), picture
+
+show_image_info( picture )
+ 
+sleep%%
+
+NOTE: To use this code with an array, pass your array to the function, like this:
+
+%%(freebasic)
+show_image_info( varptr( myarray( 0 ) ) )
+%%
+
+   

@@ -1,0 +1,16 @@
+{{fbdoc item="title" value="Compiler Option: -r"}}----
+Write asm file(s) only, do not compile or link
+
+{{fbdoc item="syntax"}}##
+	**-r**
+##
+{{fbdoc item="desc"}}
+	The ##**-r**## option specifies that any source files listed are to be emitted to object files, and not compiled or linked into an executable.  If used at the same time as ##**[[CompilerOptc -c]]**##, it has the same effect as ##**[[CompilerOptc -c]]** **[[CompilerOptrupp -R]]**##.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptc Compiler Option: -c]]
+	- [[CompilerOptrupp Compiler Option: -R]]
+	- [[CompilerOptb Compiler Option: -b]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

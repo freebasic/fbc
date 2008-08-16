@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="Hello World"}}----
+This example is a classic in any programming language.
+
+More as a sanity check than anything else, a good place to start with any programming language is to try a very simple program to test that the compiler is installed correctly and that a valid executable can be made.
+
+Open up any editor capable of saving text files and type in the following source code:
+{{fbdoc item="filename" value="examples/manual/proguide/helloworld.bas"}}%%(freebasic)
+print "Hello World"
+%%
+Save the file with a '##.bas##' extension.  For example '##hello.bas##'
+
+From a command prompt or shell in the directory where '##hello.bas##' was saved, type the following command:
+%%
+fbc hello.bas
+%%
+Depending on the operating system, this should create an executable file in the same directory as '##hello.bas##'.  It might be named '##hello.exe##' or '##./hello##', for example.
+
+Run the executable, and we should have the following output:
+%%
+Hello World
+%%
+
+{{fbdoc item="see"}}
+	- [[CompilerFAQ Freebasic FAQ]]
+	- [[CompilerFeatures Main Features]]
+	- [[CompilerRequirements Requirements]]
+	- [[CompilerInstalling Installing]]
+	- [[CompilerRunning Running]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

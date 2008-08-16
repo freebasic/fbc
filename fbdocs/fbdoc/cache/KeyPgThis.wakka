@@ -1,0 +1,48 @@
+{{fbdoc item="title" value="This"}}----
+Hidden instance parameter passed to non-static member functions in a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+
+{{fbdoc item="syntax"}}##
+	**this**.//fieldname//
+//or//
+	[[KeyPgWith With]] **this**
+		.//fieldname//
+	End With
+##
+{{fbdoc item="desc"}}
+	##**This**## is a hidden parameter passed to all non-static member functions of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Non-static member functions are procedures declared inside the body of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## and include ##[[KeyPgMemberSub Sub]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, assignment or cast ##[[KeyPgOperator Operator]]##, and ##[[KeyPgProperty Property]]## procedures.
+
+	The ##**This**## parameter has the same data type as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in which the procedure is declared.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/this.bas"}}%%(freebasic)
+TYPE sometype
+	DECLARE SUB MyCall()
+	value AS INTEGER
+END TYPE
+
+DIM example AS sometype
+
+'' Set element test to 0
+example.value = 0
+print example.value
+
+example.MyCall()
+
+'' Output should now be 10
+print example.value
+
+END 0
+
+SUB sometype.MyCall()
+	This.value = 10
+END SUB
+%%
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgClass Class]]##
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

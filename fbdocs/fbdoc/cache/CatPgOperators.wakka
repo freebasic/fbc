@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="Operators"}}----
+Procedures that operate on one or more operands.
+
+""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment Operator = (Assignment)]]## or ##[[KeyPgOpAdd Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr Operator Strptr]]##.
+
+<<=={{fbdoc item="keyword" value="CatPgOpAssignment|Assignment operators"}}==
+	Operators that assign the value of one operand to the other operand.
+=={{fbdoc item="keyword" value="CatPgOpArithmetic|Arithmetic operators"}}==
+	Operators that perform mathematical computations on their operands and return the result.
+=={{fbdoc item="keyword" value="CatPgOpConditional|Conditional operators"}}==
+	Operators that compare the relationship between their operands.
+=={{fbdoc item="keyword" value="CatPgOpLogical|Logical operators"}}==
+	Operators that perform bitwise computations with their operands and return the result.
+=={{fbdoc item="keyword" value="CatPgOpShortCircuit|Short circuit operators"}}==
+	Operators that perform short circuit evaluations with their operands and return the result.
+=={{fbdoc item="keyword" value="CatPgOpIndexing|Indexing operators"}}==
+	Operators that return references to variables or objects based on an index value.
+<<>>=={{fbdoc item="keyword" value="CatPgOpString|String operators"}}==
+	Operators overloaded to work with strings.
+=={{fbdoc item="keyword" value="CatPgOpPrepro|Preprocessor operators"}}==
+	Operators that control preprocessor behavior.
+=={{fbdoc item="keyword" value="CatPgOpPoint|Pointer operators"}}==
+	Operators that work with pointers and addresses.
+=={{fbdoc item="keyword" value="CatPgOpTypeclass|Type or Class operators"}}==
+	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
+=={{fbdoc item="keyword" value="CatPgOpMemory|Memory operators"}}==
+	Operators that allocate memory for and construct objects.
+=={{fbdoc item="keyword" value="CatPgOpIterating|Iterating operators"}}==
+	Operators that use iterator objects in ##[[KeyPgFornext For...Next]]## statements.
+>>::c::
+{{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

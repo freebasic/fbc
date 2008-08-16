@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="Freetype2"}}----
+A Free, High-Quality, and Portable Font Engine
+
+Website: http://www.freetype.org
+Platforms supported: Win32, Linux
+Headers to include: freetype2/freetype.bi
+Example Usage: yes, in examples/libraries/freetype/
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

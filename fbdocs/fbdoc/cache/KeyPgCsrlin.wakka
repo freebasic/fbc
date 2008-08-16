@@ -1,0 +1,28 @@
+{{fbdoc item="title" value="CSRLIN"}}----
+Returns the row position of the cursor
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Csrlin** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Csrlin**
+##
+{{fbdoc item="ret"}}
+	An [[KeyPgInteger integer]] specifying the current row of the cursor.
+
+{{fbdoc item="desc"}}
+	Returns the current line position (row) of the cursor (##//csr//## for cursor, ##//lin//## for line).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/console/csrlin.bas"}}%%(freebasic)
+print "The cursor is on row:"; CSRLIN
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgLocate Locate]]##
+	- ##[[KeyPgPos Pos]]##
+
+{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

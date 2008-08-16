@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="LOBYTE"}}----
+Gets the least-significant byte (LSB, or //hi-byte//) of an ##[[KeyPgUinteger Uinteger]]## value.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgPpdefine #define]] **Lobyte**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h000000FF )
+##
+{{fbdoc item="usage"}}##
+	//result// = **Lobyte**(//expr//)
+##
+{{fbdoc item="param"}}
+	##//expr//##
+		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
+
+{{fbdoc item="ret"}}
+	Returns the LSB value of `##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##`.
+
+{{fbdoc item="desc"}}
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an [[KeyPgUinteger Uinteger]] representing the value of its LSB.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/bits/lobyte.bas"}}%%(freebasic)
+DIM N AS UINTEGER
+
+'Note there are 16 bits
+N = &b1010101110000001
+PRINT "N is                                       "; N
+PRINT "The binary representation of N is          "; BIN(N)
+PRINT "The most significant byte (MSB) of N is    "; HIBYTE(N)
+PRINT "The least significant byte (LSB) of N is   "; LOBYTE(N)
+PRINT "The binary representation of the MSB is    "; BIN(HIBYTE(N))
+PRINT "The binary representation of the LSB is    "; BIN(LOBYTE(N))
+SLEEP
+%%
+
+The output would look like:
+%%
+N Is                                       43905
+The Binary representation of N Is          1010101110000001
+The most significant Byte (MSB) of N Is    171
+The least significant Byte (LSB) of N Is   129
+The Binary representation of the MSB Is    10101011
+The Binary representation of the LSB Is    10000001
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__LOBYTE""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgHibyte Hibyte]]##
+	- ##[[KeyPgLoWord Loword]]##
+	- ##[[KeyPgHiword Hiword]]##
+
+{{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

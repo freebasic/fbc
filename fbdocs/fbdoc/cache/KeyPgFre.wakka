@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="FRE"}}----
+Returns the amount of free memory available
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fre** ( [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Fre**( [ //value// ] )
+##
+{{fbdoc item="param"}}
+	##//value//##
+		Unused dummy parameter kept for backward compatibility; can be ignored.
+
+{{fbdoc item="ret"}}
+	Returns the amount of free memory, in bytes.
+
+{{fbdoc item="desc"}}
+	Returns the free memory (ram) available, in bytes.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/fre.bas"}}%%(freebasic)
+Dim mem As Integer = Fre
+
+Print "Free memory:"
+Print
+Print mem; " bytes"
+Print mem  \ 1024; " kilobytes"
+Print mem  \ (1024 * 1024); " megabytes"
+%%
+
+{{fbdoc item="diff"}}
+	- The "value" argument is not checked, ##**Fre**## will always return the free physical memory available
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDim Dim]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgAllocate Allocate]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

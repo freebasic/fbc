@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="SETMOUSE"}}----
+Sets the position and visibility of the mouse cursor
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])
+##
+{{fbdoc item="param"}}
+	##//x//##
+		optional - set x coordinate
+	##//y//##
+		optional - set y coordinate
+	##//visibility//##
+		optional - set visibility: 1 indicates visible, 0 indicates hidden
+	##//clip//##
+		optional - set clipping: 1 indicates mouse is clipped to graphics window, 0 indicates no clipping
+
+{{fbdoc item="ret"}}
+	0 on success, non-zero to indicate failure.
+
+{{fbdoc item="desc"}}
+	##**Setmouse**## will set the ##//X//,//Y//## coordinates of the mouse pointer, as well as setting it's visibility.  Mouse position is set using the X and Y parameters.  The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
+#include "fbgfx.bi"
+Dim x As Integer, y As Integer, buttons As Integer
+
+' create a screen 800x600, 32-bit color, 1 video page
+Screen 19, 32, 1                         
+
+Do
+	' get mouse x, y and button state
+	GetMouse x, y , , buttons                     
+
+	If buttons = 1 Then
+	    ' on left mouse click, center mouse
+	    SetMouse 400, 300
+	End If
+
+	' do loop until esc is pressed
+Loop Until MultiKey(fb.SC_ESCAPE)                             
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Setmouse""**##.
+
+{{fbdoc item="diff"}}
+	- New to FreeBASIC
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetmouse Getmouse]]##
+	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgMultikey Multikey]]##
+	- ##[[KeyPgGetkey Getkey]]##
+
+{{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

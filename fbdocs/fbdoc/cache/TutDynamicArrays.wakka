@@ -1,0 +1,74 @@
+{{fbdoc item="title" value="Dynamic Arrays"}}----
+
+Hello, this page explains the proper use of dynamic arrays in FreeBASIC. While it isn't a very long tutorial, many people have had some troubles with this and I felt it was worth putting into the "Getting Started" tutorial page.
+
+Arrays are neat; they can be used and resized throughout a program, with little difficulties. Firstly, we should discuss both ways a dynamic array can be created. In the same code, I will explain how to redimension a Dynamic Shared Array within a sub or function. Read the comments within the code to understand it better.
+
+%%(freebasic)
+declare sub mySub ()
+
+' as of 0.17, OPTION DYNAMIC and '$DYNAMIC are unecessary. you must define an array to be dynamic each time
+' as you can see, both following ways are successful at creating a dynamic array
+dim shared myArray1() as ubyte
+redim shared myArray2(0) as ubyte
+
+mySub
+
+' because we shared the arrays, they are accessable from anywhere within the module
+print myArray1(5) ' will print 2
+print myArray2(6) ' will print 3
+
+sub mySub ()
+	' do NOT use "redim shared" within a sub or function! even if it is shared, you must omit the word "shared" for it to work
+	redim myArray1(0 to 9) as ubyte
+	redim myArray2(0 to 9) as ubyte
+	myArray1(5) = 2
+	myArray2(6) = 3
+end sub
+%%
+
+Now, you may be wondering how you can redimension an array while using the PRESERVE keyword. Normally, you simply add PRESERVE as the syntax for REDIM will state. Yet in fact, this only works if the first array dimension is the only one changing! For example, the following program would not work properly:
+
+%%(freebasic)
+' declare the dynamic array the cleaner way
+redim shared myArray(0 to 9, 0 to 9) as ubyte
+dim as ubyte x, y, i
+
+' fill the array with values
+for y = 0 to 9
+	for x = 0 to 9
+	    i += 1
+	    myArray(x, y) = i
+	next x
+next y
+
+' proves the values are good originally:
+for y = 0 to 9
+	for x = 0 to 9
+	    print using "##,"; myArray(x, y);
+	next x
+	print
+next y
+print
+print "Press a key..."
+sleep
+cls
+
+' redimension the arrays
+redim preserve myArray(0 to 18, 0 to 12) as ubyte
+
+' the values have not been preserved properly!
+for y = 0 to 9
+	for x = 0 to 9
+	    print using "##,"; myArray(x, y);
+	next x
+	print
+next y
+
+sleep
+end
+%%
+
+Try it out! You can see that it does not work properly. This is because only the first dimension in an array may change sizes, while the rest remain the same size, in order for PRESERVE to work properly.
+
+There is a workaround, which I will post later, after I edit it in order to make sense to any program, not just mine, and make some revisions so it does not go out of bounds. For the moment, get creative ;)

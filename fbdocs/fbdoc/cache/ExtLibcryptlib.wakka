@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="cryptlib"}}----
+A powerful security toolkit which allows even inexperienced crypto programmers to easily add encryption and authentication services to their software.
+
+Website: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
+Platforms supported: Win32, Linux
+Headers to include: cryptlib.bi
+Example Usage: yes, in examples/libraries/cryptlib/
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

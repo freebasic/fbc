@@ -1,0 +1,30 @@
+{{fbdoc item="title" value="DOUBLE"}}----
+Standard data type: 64 bit floating point
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Double**
+##
+{{fbdoc item="desc"}}
+	Double is a 64-bit, floating-point data type used to store precise decimal numbers. They can hold values in a range of  -2.2E-308 to +1.7E+308. Its precision is of 15 decimal digits. They are similar to ##[[KeyPgSingle Single]]## data types but more precise and with an extended range. 
+
+	As precise as doubles are, they still have limited accuracy which can lead to significant inaccuracies if not used properly.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/double.bas"}}%%(freebasic)
+'Example of using a double variable.
+
+dim a as double
+a = 1.985766472453666
+print a
+
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSingle Single]]##
+	- ##[[KeyPgCdbl Cdbl]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

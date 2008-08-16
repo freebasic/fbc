@@ -1,0 +1,43 @@
+{{fbdoc item="title" value="DATESERIAL"}}----
+Creates a [[ProPgDates date serial]]
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateSerial""** ( [[KeyPgByval byval]] //year// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //day// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "vbcompat.bi"
+	//result// = **""DateSerial""**( //year//, //month//, //day// )
+##
+{{fbdoc item="param"}}
+	##//year//##
+		the year
+	##//month//##
+		the month of the year
+	##//day//##
+		the day of the month
+
+{{fbdoc item="ret"}}
+	Returns a [[ProPgDates date serial]] containing the date formed by the values in the ##//year//##, ##//month//## and ##//day//## parameters.The date serial returned has no decimal part.
+
+{{fbdoc item="desc"}}
+	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/dates/dateserial.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+dim a as double = dateserial(2005, 11, 28)
+
+print format(a, "yyyy/mm/dd hh:mm:ss") 
+%%
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB. This function appeared in PDS and VBDOS
+
+{{fbdoc item="see"}}
+	- [[ProPgDates Date Serials]]
+	- ##[[KeyPgDateSerial DateSerial]]##
+	- ##[[KeyPgTimeValue TimeValue]]##
+	- ##[[KeyPgDateValue DateValue]]##
+
+{{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

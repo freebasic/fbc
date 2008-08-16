@@ -1,0 +1,97 @@
+{{fbdoc item="title" value="OPERATOR"}}----
+Declares or defines an overloaded operator.
+
+{{fbdoc item="syntax"}}##
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+		[[KeyPgDeclare declare]] [[KeyPgStaticMember static]] **Operator** [[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] }
+
+	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpFor For]] ()
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpFor For]] ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// )
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpStep Step]] ()
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpStep Step]] ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// )
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNext Next]] ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNext Next]] ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename//, [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
+	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
+
+	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+
+	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
+	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	**Operator** //typename//.[[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgStaticMember static]] **Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		Name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##.
+	##//assignment_op//## 
+		##let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
+	##//unary_op//##
+		##""-"" not @ * -> abs sgn fix frac int##
+	##//binary_op//##
+		##+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >= andalso orelse##
+
+{{fbdoc item="desc"}}
+	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviors when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgEnum Enum]]##, or ##[[KeyPgUnion Union]]## data type.
+
+	Operators are just functions.  The operator '+' has functionality like ##Function Plus( A as DataType, B as DataType ) as DataType##.  See //[[ProPgOperatorOverloading Operator Overloading]]// for more information.  Operators can be overloaded to accept different data types as parameters.  Only the ##[[KeyPgCast Cast]]## Operator can be overloaded to return different types.
+
+	Non-static operator members are declared inside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  Global operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
+
+	##**Let**##, ##**Cast**##, and other assignment operators must be declared inside the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.  They are passed a hidden ##[[KeyPgThis this]]## parameter and have a return data type same as the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## they are declared in.
+
+	Unary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicitly declared.  Unary operators can be overloaded to return any valid data type, except for ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## which must return a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## data type.
+
+	Binary operators must be declared outside the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgEnum Enum]]## and have a return data type explicitly declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger Integer]]##.
+
+	##[[KeyPgLet Let]]## refers to the assignment operator, as in ##LET a=b##. The ##[[KeyPgLet Let]]## keyword is omitted in common practice, and is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.  However, ##[[KeyPgOpLetlist Let()]]## can be used to assign the fields of a UDT to multiple variables.
+
+	See ##[[KeyPgOpFor For]]##, ##[[KeyPgOpStep Step]]##, and ##[[KeyPgOpNext Next]]## for more information on overloading the ##[[KeyPgFornext For..Next]]## statement for use with user defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/operator.bas"}}%%(freebasic)
+Type Vector2D
+  As Single x, y
+
+  '' Return a string containing the vector data.
+  Declare Operator Cast() As String
+End Type
+
+'' Allow two vectors to be able to be added together.
+Declare Operator + ( ByRef lhs As Vector2D, ByRef rhs As Vector2D ) As Vector2D
+
+Operator Vector2D.cast () As String
+  Return "(" + Str(x) + ", " + Str(y) + ")"
+End Operator
+
+Operator + ( ByRef lhs As Vector2D, ByRef rhs As Vector2D ) As Vector2D
+  Return type<Vector2D>( lhs.x + rhs.x, lhs.y + rhs.y )
+End Operator
+
+Dim a As Vector2D = type<Vector2D>( 1.2, 3.4 )
+Dim b As Vector2D = type<Vector2D>( 8.9, 6.7 )
+
+Print "a = "; a
+Print "b = "; b
+Print "a + b = "; a + b
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgClass Class]]##
+	- ##[[KeyPgClass Enum]]##
+	- ##[[KeyPgType Type]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
