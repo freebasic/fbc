@@ -118,13 +118,12 @@ private function _linkFiles _
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + fbGetGccLib( GCRT1_O ) + QUOTE
+			ldcline += " " + QUOTE + fbGetGccLib( GCRT0_O ) + QUOTE
 		else
 			ldcline += " " + QUOTE + fbGetGccLib( CRT0_O ) + QUOTE
 		end if
 	end if
 
-	ldcline += " " + QUOTE + fbGetGccLib( CRTI_O ) + QUOTE
 	ldcline += " " + QUOTE + fbGetGccLib( CRTBEGIN_O ) + QUOTE + " "
 
 	'' add objects from output list
@@ -161,7 +160,6 @@ private function _linkFiles _
 
 	'' crt end stuff
 	ldcline += QUOTE + fbGetGccLib( CRTEND_O ) + QUOTE
-	ldcline += " " + QUOTE + fbGetGccLib( CRTN_O ) + QUOTE
 
    	'' extra options
    	ldcline += fbc.extopt.ld
