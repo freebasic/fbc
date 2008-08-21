@@ -123,7 +123,7 @@ $(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOB
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
 	$(FBRT_OBJDEST)/mk_dat$(EXEEXT) -o $@ -I @srcdir@/data
 
-$(FBRT_OBJDEST)/mk_dat$(EXEEXT): $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OBJDEST)/libfb_gfx_lzw.o $(FBRT_OBJDEST)/libfb_gfx_lzw_enc.o @srcdir@/fb_gfx_lzw.h $(FBRT_OBJDEST)/libfb_gfx_vars.o
+$(FBRT_OBJDEST)/mk_dat$(EXEEXT): $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OBJDEST)/libfb_gfx_lzw.o $(FBRT_OBJDEST)/libfb_gfx_lzw_enc.o $(FBRT_OBJDEST)/libfb_gfx_vars.o
 
 $(FBRT_OBJDEST)/%$(EXEEXT): $(FBRT_OBJDEST)/%.o
 	$(CC) $(CFLAGS) -o $@ $^
@@ -189,7 +189,7 @@ install-info:
 install-man:
 
 install:
-	cp -v libfb*.a ../../../../lib/@FBRT_TARGET@/
+	cp libfb*.a ../../../../lib/@FBRT_TARGET@/
 
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \

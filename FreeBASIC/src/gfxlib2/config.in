@@ -133,6 +133,9 @@
 /* Linux build */
 #undef TARGET_LINUX
 
+/* OpenBSD build */
+#undef TARGET_OPENBSD
+
 /* Powerpc64 build */
 #undef TARGET_POWERPC64
 
