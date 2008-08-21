@@ -135,7 +135,9 @@ declare sub	parserSetCtx ( )
 		@"gcrt1.o"          , _
 		@"libgcc.a"         , _
 		@"libsupc++.a"      , _
-		NULL                  _ '' libc.so
+		NULL                , _ '' libc.so
+		@"crt0.o"           , _
+		@"gcrt0.o"            _
 	}
 
 #if defined(STANDALONE)
@@ -843,6 +845,8 @@ sub fbSetPaths _
 		target_dir = "xbox"
 	case FB_COMPTARGET_FREEBSD
 		target_dir = "freebsd"
+	case FB_COMPTARGET_OPENBSD
+		target_dir = "openbsd"
 	end select
 
 	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
@@ -1112,7 +1116,7 @@ function fbFindGccLib _
 		byval lib_id as GCC_LIB _
 	) as string
 
-    dim as string file_loc
+	dim as string file_loc
 
 	if gccLibFileNameTb( lib_id ) = NULL then return ""
 
@@ -1123,14 +1127,14 @@ function fbFindGccLib _
 		return file_loc
 	end if
 
-    '' let the ones in lib override if necessary
-    if( hFileExists( file_loc ) ) then
-    	return file_loc
-    end if
+	'' let the ones in lib override if necessary
+	if( hFileExists( file_loc ) ) then
+		return file_loc
+	end if
     
 '' only query gcc if the host is linux or freebsd
 #if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
-    
+
 	dim as string path
 	dim as integer ff = any 
 

@@ -98,6 +98,11 @@ ifeq (@FBC_HOST@,linux)
 	DEFS := -d HOST_LINUX
 endif
 
+ifeq (@FBC_HOST@,openbsd)
+	DEFS := -d HOST_OPENBSD
+	FBC_LIBS += -l intl
+endif
+
 ifeq (@FBC_HOST@,win32)
 	DEFS := -d HOST_WIN32
 	FBC_LFLAGS += -t 2048
@@ -128,6 +133,11 @@ endif
 ifeq (@FBC_TARGET@,linux)
 	FBC_OSDEPSRCS := fbc_linux.bas
 	DEFS += -d TARGET_LINUX
+endif
+
+ifeq (@FBC_TARGET@,openbsd)
+	FBC_OSDEPSRCS := fbc_openbsd.bas
+	DEFS += -d TARGET_OPENBSD
 endif
 
 ifeq (@FBC_TARGET@,win32)
@@ -163,6 +173,11 @@ endif
 ifeq (@FBC_CROSSCOMP_LINUX@,yes)
 	FBC_OSDEPSRCS += fbc_linux.bas
 	DEFS += -d CROSSCOMP_LINUX
+endif
+
+ifeq (@FBC_CROSSCOMP_OPENBSD@,yes)
+	FBC_OSDEPSRCS += fbc_openbsd.bas
+	DEFS += -d CROSSCOMP_OPENBSD
 endif
 
 ifeq (@FBC_CROSSCOMP_WIN32@,yes)

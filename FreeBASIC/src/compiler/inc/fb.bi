@@ -102,6 +102,10 @@ const FB_HOST_PATHDIV       = RSLASH
 const FB_HOST               = "freebsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
+#elseif defined(__FB_OPENBSD__)
+const FB_HOST               = "openbsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
 #else
 #error Unsupported host
 #endif
@@ -189,6 +193,7 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_DOS
 	FB_COMPTARGET_XBOX
 	FB_COMPTARGET_FREEBSD
+	FB_COMPTARGET_OPENBSD
 end enum
 
 #if defined(TARGET_WIN32)
@@ -209,6 +214,9 @@ const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
 #elseif defined(TARGET_FREEBSD)
 const FB_TARGET         = "freebsd"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
+#elseif defined(TARGET_OPENBSD)
+const FB_TARGET         = "openbsd"
+const FB_DEFAULT_TARGET = FB_COMPTARGET_OPENBSD
 #else
 #error Unsupported target
 #endif
@@ -351,7 +359,7 @@ type FBS_LIB
 	hashindex		as uinteger
 end type
 
-'' if this is changed, be sure to update fbc.bas::gccLibFileNameTb()
+'' if this is changed, be sure to update fb.bas::gccLibFileNameTb()
 enum GCC_LIB
 	CRT1_O
 	CRTBEGIN_O
@@ -362,6 +370,8 @@ enum GCC_LIB
 	LIBGCC_A
 	LIBSUPC_A
 	LIBC_SO
+	CRT0_O
+	GCRT0_o
 	GCC_LIBS
 end enum
 

@@ -714,6 +714,7 @@ FBC_CROSSCOMP_CYGWIN
 FBC_CROSSCOMP_DOS
 FBC_CROSSCOMP_FREEBSD
 FBC_CROSSCOMP_LINUX
+FBC_CROSSCOMP_OPENBSD
 FBC_CROSSCOMP_WIN32
 FBC_CROSSCOMP_XBOX
 LIBOBJS
@@ -729,6 +730,7 @@ enable_crosscomp_cygwin
 enable_crosscomp_dos
 enable_crosscomp_freebsd
 enable_crosscomp_linux
+enable_crosscomp_openbsd
 enable_crosscomp_win32
 enable_crosscomp_xbox
 '
@@ -1375,6 +1377,7 @@ Optional Features:
   --enable-crosscomp-dos       enable -target dos
   --enable-crosscomp-freebsd   enable -target freebsd
   --enable-crosscomp-linux     enable -target linux
+  --enable-crosscomp-openbsd     enable -target openbsd
   --enable-crosscomp-win32     enable -target win32
   --enable-crosscomp-xbox      enable -target xbox
 
@@ -2044,6 +2047,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_TARGET=freebsd;;
+	*-*-openbsd* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_OPENBSD 1
+_ACEOF
+
+		FBC_TARGET=openbsd;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported target" >&5
 $as_echo "$as_me: error: Unsupported target" >&2;}
@@ -2089,6 +2099,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_HOST=freebsd;;
+	*-*-openbsd* )
+
+cat >>confdefs.h <<\_ACEOF
+#define HOST_OPENBSD 1
+_ACEOF
+
+		FBC_HOST=openbsd;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported host" >&5
 $as_echo "$as_me: error: Unsupported host" >&2;}
@@ -4176,6 +4193,9 @@ if test "${enable_crosscomp_all+set}" = set; then
  if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
   fi
+ if test "$FBC_TARGET" != "openbsd"; then
+    FBC_CROSSCOMP_OPENBSD=yes
+  fi
  if test "$FBC_TARGET" != "win32"; then
     FBC_CROSSCOMP_WIN32=yes
   fi
@@ -4221,6 +4241,16 @@ fi
 if test "${enable_crosscomp_linux+set}" = set; then
   enableval=$enable_crosscomp_linux; if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
+  fi
+
+fi
+
+
+
+# Check whether --enable-crosscomp-openbsd was given.
+if test "${enable_crosscomp_openbsd+set}" = set; then
+  enableval=$enable_crosscomp_openbsd; if test "$FBC_TARGET" != "openbsd"; then
+    FBC_CROSSCOMP_OPENBSD=yes
   fi
 
 fi
