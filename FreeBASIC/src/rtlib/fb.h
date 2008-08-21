@@ -184,6 +184,9 @@ extern "C" {
 #elif defined(TARGET_DARWIN)
 #include "unix/fb_unix.h"
 #include "darwin/fb_darwin.h"
+#elif defined(TARGET_OPENBSD)
+#include "unix/fb_unix.h"
+#include "openbsd/fb_openbsd.h"
 #else
 #error target not supported
 #endif
