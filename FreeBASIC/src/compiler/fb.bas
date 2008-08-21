@@ -520,7 +520,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
-#if defined(TARGET_LINUX)
+#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD) or defined(TARGET_OPENBSD)
 	env.clopt.findbin		= _
 		FB_FINDBIN_ALLOW_ENVVAR _
 		or FB_FINDBIN_ALLOW_BINDIR _
@@ -1133,7 +1133,7 @@ function fbFindGccLib _
 	end if
     
 '' only query gcc if the host is linux or freebsd
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__)
+#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__)
 
 	dim as string path
 	dim as integer ff = any 
@@ -1252,6 +1252,13 @@ sub fbGetDefaultLibs _
 		end if
 
 	case FB_COMPTARGET_FREEBSD
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
+
+	case FB_COMPTARGET_OPENBSD
 		hAddLib( "c" )
 		hAddLib( "m" )
 		hAddLib( "pthread" )
