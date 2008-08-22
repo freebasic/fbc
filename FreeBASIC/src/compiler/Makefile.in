@@ -91,7 +91,9 @@ endif
 
 ifeq (@FBC_HOST@,freebsd)
 	DEFS := -d HOST_FREEBSD
-	FBC_LIBS += -l intl
+	ifeq (@FBC_OBJINFO@,objinfo)
+		FBC_LIBS += -l intl
+	endif
 endif
 
 ifeq (@FBC_HOST@,linux)
@@ -100,6 +102,9 @@ endif
 
 ifeq (@FBC_HOST@,openbsd)
 	DEFS := -d HOST_OPENBSD
+	ifeq (@FBC_OBJINFO@,objinfo)
+		FBC_LIBS += -l intl
+	endif
 endif
 
 ifeq (@FBC_HOST@,win32)
