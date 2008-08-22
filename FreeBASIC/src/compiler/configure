@@ -711,6 +711,7 @@ MAINT
 FBC_OBJINFO
 FBC_STANDALONE
 FBC_CROSSCOMP_CYGWIN
+FBC_CROSSCOMP_DARWIN
 FBC_CROSSCOMP_DOS
 FBC_CROSSCOMP_FREEBSD
 FBC_CROSSCOMP_LINUX
@@ -727,6 +728,7 @@ enable_objinfo
 enable_standalone
 enable_crosscomp_all
 enable_crosscomp_cygwin
+enable_crosscomp_darwin
 enable_crosscomp_dos
 enable_crosscomp_freebsd
 enable_crosscomp_linux
@@ -1374,6 +1376,7 @@ Optional Features:
   --enable-standalone        build a standalone compiler
   --enable-crosscomp-all       enable all -target options
   --enable-crosscomp-cygwin    enable -target cygwin
+  --enable-crosscomp-darwin     enable -target darwin
   --enable-crosscomp-dos       enable -target dos
   --enable-crosscomp-freebsd   enable -target freebsd
   --enable-crosscomp-linux     enable -target linux
@@ -2054,6 +2057,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_TARGET=openbsd;;
+	*-*-darwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_DARWIN 1
+_ACEOF
+
+		FBC_TARGET=darwin;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported target" >&5
 $as_echo "$as_me: error: Unsupported target" >&2;}
@@ -2106,6 +2116,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_HOST=openbsd;;
+	*-*-darwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define HOST_DARWIN 1
+_ACEOF
+
+		FBC_HOST=darwin;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported host" >&5
 $as_echo "$as_me: error: Unsupported host" >&2;}
@@ -4184,6 +4201,9 @@ if test "${enable_crosscomp_all+set}" = set; then
   enableval=$enable_crosscomp_all; if test "$FBC_TARGET" != "cygwin"; then
     FBC_CROSSCOMP_CYGWIN=yes
   fi
+ if test "$FBC_TARGET" != "darwin"; then
+    FBC_CROSSCOMP_DARWIN=yes
+  fi
  if test "$FBC_TARGET" != "dos"; then
     FBC_CROSSCOMP_DOS=yes
   fi
@@ -4211,6 +4231,16 @@ fi
 if test "${enable_crosscomp_cygwin+set}" = set; then
   enableval=$enable_crosscomp_cygwin; if test "$FBC_TARGET" != "cygwin"; then
     FBC_CROSSCOMP_CYGWIN=yes
+  fi
+
+fi
+
+
+
+# Check whether --enable-crosscomp-darwin was given.
+if test "${enable_crosscomp_darwin+set}" = set; then
+  enableval=$enable_crosscomp_darwin; if test "$FBC_TARGET" != "darwin"; then
+    FBC_CROSSCOMP_DARWIN=yes
   fi
 
 fi

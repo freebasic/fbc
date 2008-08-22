@@ -36,6 +36,9 @@ case "$target" in
 	*-*-openbsd* )
 		AC_DEFINE([TARGET_OPENBSD],1,[OpenBSD target])
 		FBC_TARGET=openbsd;;
+	*-*-darwin* )
+		AC_DEFINE([TARGET_DARWIN],1,[Darwin target])
+		FBC_TARGET=darwin;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;
@@ -62,6 +65,9 @@ case "$host" in
 	*-*-openbsd* )
 		AC_DEFINE([HOST_OPENBSD],1,[OpenBSD host])
 		FBC_HOST=openbsd;;
+	*-*-darwin* )
+		AC_DEFINE([HOST_DARWIN],1,[Darwin host])
+		FBC_HOST=darwin;;
 	*)
 		AC_MSG_ERROR([Unsupported host])
 		;;
@@ -172,6 +178,9 @@ AC_ARG_ENABLE(crosscomp-all,
  [if test "$FBC_TARGET" != "cygwin"; then
     FBC_CROSSCOMP_CYGWIN=yes
   fi]
+ [if test "$FBC_TARGET" != "darwin"; then
+    FBC_CROSSCOMP_DARWIN=yes
+  fi]
  [if test "$FBC_TARGET" != "dos"; then
     FBC_CROSSCOMP_DOS=yes
   fi]
@@ -200,6 +209,14 @@ AC_ARG_ENABLE(crosscomp-cygwin,
   fi]
 )
 AC_SUBST([FBC_CROSSCOMP_CYGWIN])
+
+AC_ARG_ENABLE(crosscomp-darwin,
+ [  --enable-crosscomp-darwin     enable -target darwin],
+ [if test "$FBC_TARGET" != "darwin"; then
+    FBC_CROSSCOMP_DARWIN=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_DARWIN])
 
 AC_ARG_ENABLE(crosscomp-dos,
  [  --enable-crosscomp-dos       enable -target dos],

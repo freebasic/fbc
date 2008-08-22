@@ -414,6 +414,11 @@ private sub initTarget( )
 		fbcInit_openbsd( )
 #endif
 
+#if defined(TARGET_DARWIN) or defined(CROSSCOMP_DARWIN)
+	case FB_COMPTARGET_DARWIN
+		fbcInit_darwin( )
+#endif
+
 	case else
 		print "unsupported target in " & __FILE__
 
@@ -1108,6 +1113,11 @@ private function processTargetOptions _
 #if defined(TARGET_OPENBSD) or defined(CROSSCOMP_OPENBSD)
 				case "openbsd"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_OPENBSD )
+#endif
+
+#if defined(TARGET_DARWIN) or defined(CROSSCOMP_DARWIN)
+				case "darwin"
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DARWIN )
 #endif
 
 				case else
@@ -1870,7 +1880,8 @@ private sub printOptions( )
 	defined(CROSSCOMP_LINUX) or _
 	defined(CROSSCOMP_XBOX) or _
 	defined(CROSSCOMP_FREEBSD) or _
-	defined(CROSSCOMP_OPENBSD)
+	defined(CROSSCOMP_OPENBSD) or _
+	defined(CROSSCOMP_DARWIN)
 
 	print
 	print "invoke as 'fbc -target PLATFORM' alone to show options for cross compilation to that platform"
@@ -1887,7 +1898,7 @@ private sub printOptions( )
 	printOption( "-C", "Do not delete the object file(s)" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
 	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN
 		printOption( "-dll", "Same as -dylib" )
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
 			printOption( "-dylib", "Create a DLL, including the import library" )
@@ -1934,13 +1945,17 @@ private sub printOptions( )
 	defined(CROSSCOMP_LINUX) or _
 	defined(CROSSCOMP_XBOX) or _
 	defined(CROSSCOMP_FREEBSD) or _
-	defined(CROSSCOMP_OPENBSD)
+	defined(CROSSCOMP_OPENBSD) or _
+	defined(CROSSCOMP_DARWIN)
 
 	' note: alphabetical order
 
 	desc = " Cross-compile to:"
  #ifdef CROSSCOMP_CYGWIN
 	desc += " cygwin"
+ #endif
+ #ifdef CROSSCOMP_DARWIN
+	desc += " darwin"
  #endif
  #ifdef CROSSCOMP_DOS
 	desc += " dos"

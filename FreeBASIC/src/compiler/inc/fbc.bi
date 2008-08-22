@@ -210,6 +210,10 @@ declare function fbcInit_openbsd _
 	( _
 	) as integer
 
+declare function fbcInit_darwin _
+	( _
+	) as integer
+
 declare function fbcGetLibList _
 	( _
 		byval dllname as zstring ptr _

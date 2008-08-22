@@ -304,6 +304,8 @@ sub symbDefineInit _
 		def = @"__FB_FREEBSD__"
 	case FB_COMPTARGET_OPENBSD
 		def = @"__FB_OPENBSD__"
+	case FB_COMPTARGET_DARWIN
+		def = @"__FB_DARWIN__"
 	end select
 
 	symbAddDefine( def, NULL, 0 )

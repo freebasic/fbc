@@ -507,7 +507,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
-#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD) or defined(TARGET_OPENBSD)
+#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD) or defined(TARGET_OPENBSD) or defined(TARGET_DARWIN)
 	env.clopt.findbin		= _
 		FB_FINDBIN_ALLOW_ENVVAR _
 		or FB_FINDBIN_ALLOW_BINDIR _
@@ -834,6 +834,8 @@ sub fbSetPaths _
 		target_dir = "freebsd"
 	case FB_COMPTARGET_OPENBSD
 		target_dir = "openbsd"
+	case FB_COMPTARGET_DARWIN
+		target_dir = "darwin"
 	end select
 
 	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
@@ -1135,8 +1137,8 @@ function fbFindGccLib _
 		return file_loc
 	end if
     
-'' only query gcc if the host is linux or freebsd
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__)
+'' only query gcc if the host is unix-like
+#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_DARWIN__)
 
 	dim as string path
 	dim as integer ff = any 
@@ -1268,9 +1270,10 @@ sub fbGetDefaultLibs _
 		hAddLib( "ncurses" )
 		hAddLib( "supc++" )
 
+	case FB_COMPTARGET_DARWIN
+		hAddLib( "System" )
+
 	end select
-
-
 
 end sub
 

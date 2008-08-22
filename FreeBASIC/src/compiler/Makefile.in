@@ -84,6 +84,10 @@ ifeq (@FBC_HOST@,cygwin)
 	FBC_LIBS += -l intl
 endif
 
+ifeq (@FBC_HOST@,darwin)
+	DEFS := -d HOST_DARWIN
+endif
+
 ifeq (@FBC_HOST@,dos)
 	DEFS := -d HOST_DOS
 	FBC_LIBS += -l intl
@@ -124,6 +128,11 @@ ifeq (@FBC_TARGET@,cygwin)
 	DEFS += -d TARGET_CYGWIN
 endif
 
+ifeq (@FBC_TARGET@,darwin)
+	FBC_OSDEPSRCS := fbc_darwin.bas
+	DEFS += -d TARGET_DARWIN
+endif
+
 ifeq (@FBC_TARGET@,dos)
 	FBC_OSDEPSRCS := fbc_dos.bas
 	DEFS += -d TARGET_DOS
@@ -162,6 +171,11 @@ endif
 ifeq (@FBC_CROSSCOMP_CYGWIN@,yes)
 	FBC_OSDEPSRCS += fbc_cyg.bas
 	DEFS += -d CROSSCOMP_CYGWIN
+endif
+
+ifeq (@FBC_CROSSCOMP_DARWIN@,yes)
+	FBC_OSDEPSRCS += fbc_darwin.bas
+	DEFS += -d CROSSCOMP_DARWIN
 endif
 
 ifeq (@FBC_CROSSCOMP_DOS@,yes)

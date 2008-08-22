@@ -106,6 +106,10 @@ const FB_HOST_PATHDIV       = "/"
 const FB_HOST               = "openbsd"
 const FB_HOST_EXEEXT        = ""
 const FB_HOST_PATHDIV       = "/"
+#elseif defined(__FB_DARWIN__)
+const FB_HOST               = "darwin"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
 #else
 #error Unsupported host
 #endif
@@ -194,6 +198,7 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_XBOX
 	FB_COMPTARGET_FREEBSD
 	FB_COMPTARGET_OPENBSD
+	FB_COMPTARGET_DARWIN
 end enum
 
 #if defined(TARGET_WIN32)
@@ -217,6 +222,9 @@ const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
 #elseif defined(TARGET_OPENBSD)
 const FB_TARGET         = "openbsd"
 const FB_DEFAULT_TARGET = FB_COMPTARGET_OPENBSD
+#elseif defined(TARGET_DARWIN)
+const FB_TARGET         = "darwin"
+const FB_DEFAULT_TARGET = FB_COMPTARGET_DARWIN
 #else
 #error Unsupported target
 #endif
