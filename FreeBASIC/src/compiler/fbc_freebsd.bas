@@ -112,9 +112,6 @@ private function _linkFiles _
 		end if
 	end if
 
-	'' set script file
-	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("elf_i386.x" + QUOTE)
-
 	if( len( fbc.mapfile ) > 0 ) then
 		ldcline += " -Map " + fbc.mapfile
 	end if
