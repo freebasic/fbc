@@ -45,7 +45,7 @@ declare sub	parserSetCtx ( )
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 	dim shared as string fbPrefix
-	dim shared as string gccLibTb(0 to GCC_LIBS - 1) 
+	dim shared as string gccLibTb() 
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -124,21 +124,8 @@ declare sub	parserSetCtx ( )
 		) _
 	}
 
-	'' filenames of gcc-libs (same order as enum GCC_LIB)
-	dim shared gccLibFileNameTb( 0 to GCC_LIBS - 1 ) as zstring ptr = _
-	{ _
-		@"crt1.o"           , _
-		@"crtbegin.o"       , _
-		@"crtend.o"         , _
-		@"crti.o"           , _
-		@"crtn.o"           , _
-		@"gcrt1.o"          , _
-		@"libgcc.a"         , _
-		@"libsupc++.a"      , _
-		NULL                , _ '' libc.so
-		@"crt0.o"           , _
-		@"gcrt0.o"            _
-	}
+	'' filenames of gcc-libs
+	dim shared gccLibFileNameTb(  ) as zstring ptr
 
 #if defined(STANDALONE)
 
@@ -1086,9 +1073,25 @@ sub fbListLibPathsEx _
 end sub
 
 '':::::
+sub fbAddGccLib _
+	( _
+		byval lib_filename as zstring ptr, _
+		byval lib_id as integer _
+	)
+
+	if lib_id >= ubound(gccLibFileNameTb) then
+		redim preserve gccLibFileNameTb(lib_id)
+		redim preserve gccLibTb(lib_id)
+	end if
+
+	gccLibFileNameTb(lib_id) = lib_filename
+
+end sub
+
+'':::::
 function fbGetGccLib _
 	( _
-		byval lib_id as GCC_LIB _
+		byval lib_id as integer _
 	) as string
 
 	if( len( gccLibTb( lib_id ) ) = 0 ) then
@@ -1102,7 +1105,7 @@ end function
 '':::::
 sub fbSetGccLib _
 	( _
-		byval lib_id as GCC_LIB, _
+		byval lib_id as integer, _
 		byref lib_name as string _
 	)
 
@@ -1113,7 +1116,7 @@ end sub
 '' :::::
 function fbFindGccLib _
 	( _
-		byval lib_id as GCC_LIB _
+		byval lib_id as integer _
 	) as string
 
 	dim as string file_loc

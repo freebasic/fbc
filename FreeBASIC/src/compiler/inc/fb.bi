@@ -359,24 +359,6 @@ type FBS_LIB
 	hashindex		as uinteger
 end type
 
-'' if this is changed, be sure to update fb.bas::gccLibFileNameTb()
-enum GCC_LIB
-	CRT1_O
-	CRTBEGIN_O
-	CRTEND_O
-	CRTI_O
-	CRTN_O
-	GCRT1_O
-	LIBGCC_A
-	LIBSUPC_A
-	LIBC_SO
-	CRT0_O
-	GCRT0_o
-	GCC_LIBS
-end enum
-
-extern gccLibFileNameTb( 0 to GCC_LIBS - 1 ) as zstring ptr
-
 #include once "inc\error.bi"
 #include once "inc\fb-obj.bi"
 
@@ -532,22 +514,28 @@ declare function fbIsCrossComp _
 	( _
 	) as integer
 
+declare sub fbAddGccLib _
+	( _
+		byval lib_filename as zstring ptr, _
+		byval lib_id as integer _
+	)
+
 declare function fbGetGccLib _
 	( _
-		byval lib_id as GCC_LIB _
+		byval lib_id as integer _
 	) as string
 
 declare sub fbSetGccLib _
 	( _
-		byval lib_id as GCC_LIB, _
+		byval lib_id as integer, _
 		byref lib_name as string _
 	)
 
 declare function fbFindGccLib _
 	( _
-		byval lib_id as GCC_LIB _
+		byval lib_id as integer _
 	) as string
-	
+
 declare sub fbGetDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _

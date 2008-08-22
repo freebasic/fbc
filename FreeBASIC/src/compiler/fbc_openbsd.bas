@@ -25,6 +25,16 @@
 #include once "inc/fbc.bi"
 #include once "inc/hlp.bi"
 
+enum GCC_LIB
+	CRT0_O
+	CRTBEGIN_O
+	CRTEND_O
+	GCRT0_O
+	LIBGCC_A
+	LIBSUPC_A
+	GCC_LIBS
+end enum
+
 
 ''
 '' globals
@@ -391,6 +401,13 @@ function fbcInit_openbsd( ) as integer
 
 	''
 	xpmfile = ""
+	
+	fbAddGccLib( @"crt0.o", CRT0_O )
+	fbAddGccLib( @"crtbegin.o", CRTBEGIN_O )
+	fbAddGccLib( @"crtend.o", CRTEND_O )
+	fbAddGccLib( @"gcrt0.o", GCRT0_O )
+	fbAddGccLib( @"libgcc.a", LIBGCC_A )
+	fbAddGccLib( @"libsupc++.a", LIBSUPC_A )
 
 	return TRUE
 

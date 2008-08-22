@@ -25,6 +25,18 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
+enum GCC_LIB
+	CRT1_O
+	CRTBEGIN_O
+	CRTEND_O
+	CRTI_O
+	CRTN_O
+	GCRT1_O
+	LIBGCC_A
+	LIBSUPC_A
+	GCC_LIBS
+end enum
+
 
 ''
 '' globals
@@ -59,6 +71,7 @@ private sub _setDefaultLibPaths _
 			fbSetGccLib( i, fbFindGccLib( i ) )
 		next
 	endif
+
 
 end sub
 
@@ -125,9 +138,6 @@ private function _linkFiles _
 			ldcline += " -s"
 		end if
 	end if
-
-	'' fill in libc
-	gccLibFileNameTb( LIBC_SO ) = @"libc.so"
 
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
@@ -412,6 +422,15 @@ function fbcInit_linux( ) as integer
 
 	''
 	xpmfile = ""
+
+	fbAddGccLib( @"crt1.o", CRT1_O )
+	fbAddGccLib( @"crtbegin.o", CRTBEGIN_O )
+	fbAddGccLib( @"crtend.o", CRTEND_O )
+	fbAddGccLib( @"crti.o", CRTI_O )
+	fbAddGccLib( @"crtn.o", CRTN_O )
+	fbAddGccLib( @"gcrt1.o", GCRT1_O )
+	fbAddGccLib( @"libgcc.a", LIBGCC_A )
+	fbAddGccLib( @"libsupc++.a", LIBSUPC_A )
 
 	return TRUE
 
