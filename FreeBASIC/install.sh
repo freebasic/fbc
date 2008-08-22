@@ -41,7 +41,7 @@ i_success_msg()
 i_copy_if_exists()
 {
 	if [ -e $1 ]; then
-		cp -up $1 $2
+		cp -p $1 $2
 	else
 		true
 	fi
@@ -61,16 +61,16 @@ install()
 	i_copy_if_exists lib/linux/libfbgfx.a "$INSTALLDIR"/lib/freebasic/linux/ && \
 	i_copy_if_exists lib/linux/libtinyptc.a "$INSTALLDIR"/lib/freebasic/linux/ && \
 	i_copy_if_exists lib/linux/elf_i386.x "$INSTALLDIR"/lib/freebasic/linux/ && \
-	cp -rup inc/* "$INSTALLDIR"/include/freebasic/ && \
-	cp -rup examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
-	cp -rup docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
+	cp -rp inc/* "$INSTALLDIR"/include/freebasic/ && \
+	cp -rp examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
+	cp -rp docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
 	i_copy_if_exists readme.txt "$INSTALLDIR"/share/freebasic/ && \
 	i_copy_if_exists migrating.txt "$INSTALLDIR"/share/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/man/man1/fbc.1.gz && \
-	cp fbc -p "$INSTALLDIR"/bin/ && \
-	chmod a+rX -R "$INSTALLDIR"/lib/freebasic/ && \
-	chmod a+rX -R "$INSTALLDIR"/include/freebasic/ && \
-	chmod a+rX -R "$INSTALLDIR"/share/freebasic/ && \
+	cp -p fbc "$INSTALLDIR"/bin/ && \
+	chmod -R a+rX "$INSTALLDIR"/lib/freebasic/ && \
+	chmod -R a+rX "$INSTALLDIR"/include/freebasic/ && \
+	chmod -R a+rX "$INSTALLDIR"/share/freebasic/ && \
 	chmod a+rx "$INSTALLDIR"/bin/fbc && \
 	i_success_msg
 }
@@ -107,7 +107,7 @@ if [ ! -e ./fbc ]; then
 fi
 
 if [ "$ACTION" = "install" ]; then
-	STANDALONE=`./fbc -version | grep standalone | cut -c15- -`
+	STANDALONE=`./fbc -version | grep "Configured as standalone"`
 	if [ "$STANDALONE" != "" ]; then
 		echo
 		echo "ERROR: ./fbc is configured as standalone.  Use install-standalone.sh to install."
@@ -116,7 +116,7 @@ if [ "$ACTION" = "install" ]; then
 	fi
 fi
 
-INSTALLDIR=`./fbc -version | grep prefix | cut -c24- -`
+INSTALLDIR=`./fbc -version | grep prefix | sed "s/Configured with prefix //"`
 if [ "$INSTALLDIR" = "" ]; then
 	if [ "$2" = "" ]; then
 		echo
