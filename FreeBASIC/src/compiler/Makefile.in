@@ -100,7 +100,6 @@ endif
 
 ifeq (@FBC_HOST@,openbsd)
 	DEFS := -d HOST_OPENBSD
-	FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_HOST@,win32)
@@ -386,7 +385,7 @@ info:
 install-info:
 install-man:
 install:
-	cp -v fbc_new$(EXEEXT) ../../../../fbc$(EXEEXT)
+	cp fbc_new$(EXEEXT) ../../../../fbc$(EXEEXT)
 
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \
