@@ -38,14 +38,25 @@ i_success_msg()
 	echo "================================================================================"
 	echo
 }
+
+i_copy_if_outdated()
+{
+    if [ ! -e $3 -o $2 -nt $3 ]; then
+	cp $1 $2 $3
+    else
+	true
+    fi
+}
+
 i_copy_if_exists()
 {
 	if [ -e $1 ]; then
-		cp -p $1 $2
+		i_copy_if_outdated -p $1 $2
 	else
 		true
 	fi
 }
+
 install()
 {
 	mkdir -p -m 0755 "$INSTALLDIR"/lib/freebasic/linux && \
@@ -61,13 +72,13 @@ install()
 	i_copy_if_exists lib/linux/libfbgfx.a "$INSTALLDIR"/lib/freebasic/linux/ && \
 	i_copy_if_exists lib/linux/libtinyptc.a "$INSTALLDIR"/lib/freebasic/linux/ && \
 	i_copy_if_exists lib/linux/elf_i386.x "$INSTALLDIR"/lib/freebasic/linux/ && \
-	cp -rp inc/* "$INSTALLDIR"/include/freebasic/ && \
-	cp -rp examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
-	cp -rp docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
+	i_copy_if_outdated -rp inc/* "$INSTALLDIR"/include/freebasic/ && \
+	i_copy_if_outdated -rp examples/* "$INSTALLDIR"/share/freebasic/examples/ && \
+	i_copy_if_outdated -rp docs/* "$INSTALLDIR"/share/freebasic/docs/ && \
 	i_copy_if_exists readme.txt "$INSTALLDIR"/share/freebasic/ && \
 	i_copy_if_exists migrating.txt "$INSTALLDIR"/share/freebasic/ && \
 	gzip -c docs/fbc.1 > "$INSTALLDIR"/man/man1/fbc.1.gz && \
-	cp -p fbc "$INSTALLDIR"/bin/ && \
+	i_copy_if_outdated -p fbc "$INSTALLDIR"/bin/ && \
 	chmod -R a+rX "$INSTALLDIR"/lib/freebasic/ && \
 	chmod -R a+rX "$INSTALLDIR"/include/freebasic/ && \
 	chmod -R a+rX "$INSTALLDIR"/share/freebasic/ && \
