@@ -26,6 +26,10 @@
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
+#ifdef USE_FB_BFD_HEADER
+#include "bfd.bi"
+#endif
+
 declare sub fbcInit _
 	( _
 	)
@@ -228,7 +232,7 @@ declare sub getDefaultLibs _
 #else
 		print "objinfo enabled ";
 #ifdef USE_FB_BFD_HEADER
-		print "using FB BFD header version "; __BFD_VER__
+		print "using FB BFD header version " & __BFD_VER__
 #else
 		print "using C BFD wrapper"
 #endif
