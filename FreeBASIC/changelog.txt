@@ -10,6 +10,7 @@ Version 0.21.0 Beta:
 - WIDTH was crashing when optional parameter was not specified (DrV)
 - ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
 - comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
+- quickly scrolling the mouse wheel was causing double click events in the x11 (linux) gfx driver (spotted by Sisophon2001) (DrV)
 
 
 Version 0.20.0 Beta:

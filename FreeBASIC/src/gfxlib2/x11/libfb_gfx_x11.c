@@ -220,9 +220,11 @@ static void *window_thread(void *arg)
 						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
 						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
 					}
-					if (event.xbutton.time - last_click_time < DOUBLE_CLICK_TIME)
-						e.type = EVENT_MOUSE_DOUBLE_CLICK;
-					last_click_time = event.xbutton.time;
+					if ((event.xbutton.button != Button4) && (event.xbutton.button != Button5)) {
+						if (event.xbutton.time - last_click_time < DOUBLE_CLICK_TIME)
+							e.type = EVENT_MOUSE_DOUBLE_CLICK;
+						last_click_time = event.xbutton.time;
+					}
 					break;
 					
 				case ButtonRelease:
