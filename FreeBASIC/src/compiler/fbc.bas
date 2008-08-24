@@ -223,6 +223,17 @@ declare sub getDefaultLibs _
 		print "Configured as standalone"
 #endif
 
+#ifdef DISABLE_OBJINFO
+		print "objinfo disabled"
+#else
+		print "objinfo enabled ";
+#ifdef USE_FB_BFD_HEADER
+		print "using FB BFD header version "; __BFD_VER__
+#else
+		print "using C BFD wrapper"
+#endif
+#endif
+
     	print
     	if( fbc.showversion ) then
     		fbcEnd( 0 )
