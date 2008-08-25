@@ -175,7 +175,7 @@ static int x11_init(void)
 				fb_hX11LeaveFullscreen();
 				return -1;
 			}
-			XResizeWindow(fb_x11.display, fb_x11.window, fb_x11.w, h);
+			XMoveResizeWindow(fb_x11.display, fb_x11.window, 0, 0, fb_x11.w, h);
 			fb_x11.display_offset = (h - fb_x11.h) >> 1;
 		}
 		is_shm = TRUE;
