@@ -15,30 +15,33 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 case "$target" in
+	*-*-cygwin* )
+		AC_DEFINE([TARGET_CYGWIN],1,[Cygwin target])
+		FBC_TARGET=win32;;
+	*-*-darwin* )
+		AC_DEFINE([TARGET_DARWIN],1,[Darwin target])
+		FBC_TARGET=darwin;;	
+	*-*-freebsd* )
+		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD target])
+		FBC_TARGET=freebsd;;
 	*-*-linux* )
 		AC_DEFINE([TARGET_LINUX],1,[Linux target])
 		FBC_TARGET=linux;;
 	*-*-mingw* )
 		AC_DEFINE([TARGET_WIN32],1,[Win32 target])
 		FBC_TARGET=win32;;
-	*-*-cygwin* )
-		AC_DEFINE([TARGET_CYGWIN],1,[Cygwin target])
-		FBC_TARGET=win32;;
 	*-*-msdos* )
 		AC_DEFINE([TARGET_DOS],1,[DJGPP target])
 		FBC_TARGET=dos;;
+	*-*-netbsd* )
+		AC_DEFINE([TARGET_NETBSD],1,[NetBSD target])
+		FBC_TARGET=netbsd;;	
+	*-*-openbsd* )
+		AC_DEFINE([TARGET_OPENBSD],1,[OpenBSD target])
+		FBC_TARGET=openbsd;;	
 	*-*-xbox* )
 		AC_DEFINE([TARGET_XBOX],1,[Xbox target])
 		FBC_TARGET=xbox;;
-	*-*-freebsd* )
-		AC_DEFINE([TARGET_FREEBSD],1,[FreeBSD target])
-		FBC_TARGET=freebsd;;
-	*-*-openbsd* )
-		AC_DEFINE([TARGET_OPENBSD],1,[OpenBSD target])
-		FBC_TARGET=openbsd;;
-	*-*-darwin* )
-		AC_DEFINE([TARGET_DARWIN],1,[Darwin target])
-		FBC_TARGET=darwin;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;
@@ -47,27 +50,30 @@ esac
 AC_SUBST([FBC_TARGET])
 
 case "$host" in
+	*-*-cygwin* )
+		AC_DEFINE([HOST_CYGWIN],1,[Cygwin host])
+		FBC_HOST=win32;;
+	*-*-darwin* )
+		AC_DEFINE([HOST_DARWIN],1,[Darwin host])
+		FBC_HOST=darwin;;
+	*-*-freebsd* )
+		AC_DEFINE([HOST_FREEBSD],1,[FreeBSD host])
+		FBC_HOST=freebsd;;
 	*-*-linux* )
 		AC_DEFINE([HOST_LINUX],1,[Linux host])
 		FBC_HOST=linux;;
 	*-*-mingw* )
 		AC_DEFINE([HOST_WIN32],1,[Win32 host])
 		FBC_HOST=win32;;
-	*-*-cygwin* )
-		AC_DEFINE([HOST_CYGWIN],1,[Cygwin host])
-		FBC_HOST=win32;;
 	*-*-msdos* )
 		AC_DEFINE([HOST_DOS],1,[DJGPP host])
 		FBC_HOST=dos;;
-	*-*-freebsd* )
-		AC_DEFINE([HOST_FREEBSD],1,[FreeBSD host])
-		FBC_HOST=freebsd;;
+	*-*-netbsd* )
+		AC_DEFINE([HOST_NETBSD],1,[NetBSD host])
+		FBC_HOST=netbsd;;
 	*-*-openbsd* )
 		AC_DEFINE([HOST_OPENBSD],1,[OpenBSD host])
 		FBC_HOST=openbsd;;
-	*-*-darwin* )
-		AC_DEFINE([HOST_DARWIN],1,[Darwin host])
-		FBC_HOST=darwin;;
 	*)
 		AC_MSG_ERROR([Unsupported host])
 		;;
@@ -190,6 +196,9 @@ AC_ARG_ENABLE(crosscomp-all,
  [if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
   fi]
+ [if test "$FBC_TARGET" != "netbsd"; then
+    FBC_CROSSCOMP_NETBSD=yes
+  fi]  
  [if test "$FBC_TARGET" != "openbsd"; then
     FBC_CROSSCOMP_OPENBSD=yes
   fi]
@@ -241,6 +250,14 @@ AC_ARG_ENABLE(crosscomp-linux,
   fi]
 )
 AC_SUBST([FBC_CROSSCOMP_LINUX])
+
+AC_ARG_ENABLE(crosscomp-netbsd,
+ [  --enable-crosscomp-netbsd     enable -target netbsd],
+ [if test "$FBC_TARGET" != "netbsd"; then
+    FBC_CROSSCOMP_NETBSD=yes
+  fi]
+)
+AC_SUBST([FBC_CROSSCOMP_NETBSD])
 
 AC_ARG_ENABLE(crosscomp-openbsd,
  [  --enable-crosscomp-openbsd     enable -target openbsd],

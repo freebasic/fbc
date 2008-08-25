@@ -715,6 +715,7 @@ FBC_CROSSCOMP_DARWIN
 FBC_CROSSCOMP_DOS
 FBC_CROSSCOMP_FREEBSD
 FBC_CROSSCOMP_LINUX
+FBC_CROSSCOMP_NETBSD
 FBC_CROSSCOMP_OPENBSD
 FBC_CROSSCOMP_WIN32
 FBC_CROSSCOMP_XBOX
@@ -732,6 +733,7 @@ enable_crosscomp_darwin
 enable_crosscomp_dos
 enable_crosscomp_freebsd
 enable_crosscomp_linux
+enable_crosscomp_netbsd
 enable_crosscomp_openbsd
 enable_crosscomp_win32
 enable_crosscomp_xbox
@@ -1380,6 +1382,7 @@ Optional Features:
   --enable-crosscomp-dos       enable -target dos
   --enable-crosscomp-freebsd   enable -target freebsd
   --enable-crosscomp-linux     enable -target linux
+  --enable-crosscomp-netbsd     enable -target netbsd
   --enable-crosscomp-openbsd     enable -target openbsd
   --enable-crosscomp-win32     enable -target win32
   --enable-crosscomp-xbox      enable -target xbox
@@ -2008,6 +2011,27 @@ test -n "$target_alias" &&
   program_prefix=${target_alias}-
 
 case "$target" in
+	*-*-cygwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_CYGWIN 1
+_ACEOF
+
+		FBC_TARGET=win32;;
+	*-*-darwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_DARWIN 1
+_ACEOF
+
+		FBC_TARGET=darwin;;
+	*-*-freebsd* )
+
+cat >>confdefs.h <<\_ACEOF
+#define TARGET_FREEBSD 1
+_ACEOF
+
+		FBC_TARGET=freebsd;;
 	*-*-linux* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2022,13 +2046,6 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_TARGET=win32;;
-	*-*-cygwin* )
-
-cat >>confdefs.h <<\_ACEOF
-#define TARGET_CYGWIN 1
-_ACEOF
-
-		FBC_TARGET=win32;;
 	*-*-msdos* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2036,20 +2053,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_TARGET=dos;;
-	*-*-xbox* )
+	*-*-netbsd* )
 
 cat >>confdefs.h <<\_ACEOF
-#define TARGET_XBOX 1
+#define TARGET_NETBSD 1
 _ACEOF
 
-		FBC_TARGET=xbox;;
-	*-*-freebsd* )
-
-cat >>confdefs.h <<\_ACEOF
-#define TARGET_FREEBSD 1
-_ACEOF
-
-		FBC_TARGET=freebsd;;
+		FBC_TARGET=netbsd;;
 	*-*-openbsd* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2057,13 +2067,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_TARGET=openbsd;;
-	*-*-darwin* )
+	*-*-xbox* )
 
 cat >>confdefs.h <<\_ACEOF
-#define TARGET_DARWIN 1
+#define TARGET_XBOX 1
 _ACEOF
 
-		FBC_TARGET=darwin;;
+		FBC_TARGET=xbox;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported target" >&5
 $as_echo "$as_me: error: Unsupported target" >&2;}
@@ -2074,6 +2084,27 @@ esac
 
 
 case "$host" in
+	*-*-cygwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define HOST_CYGWIN 1
+_ACEOF
+
+		FBC_HOST=win32;;
+	*-*-darwin* )
+
+cat >>confdefs.h <<\_ACEOF
+#define HOST_DARWIN 1
+_ACEOF
+
+		FBC_HOST=darwin;;
+	*-*-freebsd* )
+
+cat >>confdefs.h <<\_ACEOF
+#define HOST_FREEBSD 1
+_ACEOF
+
+		FBC_HOST=freebsd;;
 	*-*-linux* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2088,13 +2119,6 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_HOST=win32;;
-	*-*-cygwin* )
-
-cat >>confdefs.h <<\_ACEOF
-#define HOST_CYGWIN 1
-_ACEOF
-
-		FBC_HOST=win32;;
 	*-*-msdos* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2102,13 +2126,13 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_HOST=dos;;
-	*-*-freebsd* )
+	*-*-netbsd* )
 
 cat >>confdefs.h <<\_ACEOF
-#define HOST_FREEBSD 1
+#define HOST_NETBSD 1
 _ACEOF
 
-		FBC_HOST=freebsd;;
+		FBC_HOST=netbsd;;
 	*-*-openbsd* )
 
 cat >>confdefs.h <<\_ACEOF
@@ -2116,13 +2140,6 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 		FBC_HOST=openbsd;;
-	*-*-darwin* )
-
-cat >>confdefs.h <<\_ACEOF
-#define HOST_DARWIN 1
-_ACEOF
-
-		FBC_HOST=darwin;;
 	*)
 		{ { $as_echo "$as_me:$LINENO: error: Unsupported host" >&5
 $as_echo "$as_me: error: Unsupported host" >&2;}
@@ -4213,6 +4230,9 @@ if test "${enable_crosscomp_all+set}" = set; then
  if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
   fi
+ if test "$FBC_TARGET" != "netbsd"; then
+    FBC_CROSSCOMP_NETBSD=yes
+  fi
  if test "$FBC_TARGET" != "openbsd"; then
     FBC_CROSSCOMP_OPENBSD=yes
   fi
@@ -4271,6 +4291,16 @@ fi
 if test "${enable_crosscomp_linux+set}" = set; then
   enableval=$enable_crosscomp_linux; if test "$FBC_TARGET" != "linux"; then
     FBC_CROSSCOMP_LINUX=yes
+  fi
+
+fi
+
+
+
+# Check whether --enable-crosscomp-netbsd was given.
+if test "${enable_crosscomp_netbsd+set}" = set; then
+  enableval=$enable_crosscomp_netbsd; if test "$FBC_TARGET" != "netbsd"; then
+    FBC_CROSSCOMP_NETBSD=yes
   fi
 
 fi

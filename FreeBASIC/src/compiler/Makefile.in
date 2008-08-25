@@ -104,6 +104,10 @@ ifeq (@FBC_HOST@,linux)
 	DEFS := -d HOST_LINUX
 endif
 
+ifeq (@FBC_HOST@,netbsd)
+	DEFS := -d HOST_NETBSD
+endif
+
 ifeq (@FBC_HOST@,openbsd)
 	DEFS := -d HOST_OPENBSD
 	ifeq (@FBC_OBJINFO@,objinfo)
@@ -146,6 +150,11 @@ endif
 ifeq (@FBC_TARGET@,linux)
 	FBC_OSDEPSRCS := fbc_linux.bas
 	DEFS += -d TARGET_LINUX
+endif
+
+ifeq (@FBC_TARGET@, netbsd)
+	FBC_OSDEPSRCS := fbc_netbsd.bas
+	DEFS += -d TARGET_NBSD
 endif
 
 ifeq (@FBC_TARGET@,openbsd)
@@ -191,6 +200,11 @@ endif
 ifeq (@FBC_CROSSCOMP_LINUX@,yes)
 	FBC_OSDEPSRCS += fbc_linux.bas
 	DEFS += -d CROSSCOMP_LINUX
+endif
+
+ifeq (@FBC_CROSSCOMP_NETBSD@,yes)
+	FBC_OSDEPSRCS += fbc_netbsd.bas
+	DEFS += -d CROSSCOMP_NETBSD
 endif
 
 ifeq (@FBC_CROSSCOMP_OPENBSD@,yes)
