@@ -897,7 +897,7 @@ private sub hReadNumber _
 
 	dim as uinteger c = any
 	dim as integer isfloat = any, issigned = any, isshort = any, islong = any, forcedsign = any
-	dim as ulongint value = any
+	dim as ulongint value = any, value_prev = any
 	dim as integer skipchar = any
 
 	isfloat    = FALSE
@@ -1002,11 +1002,13 @@ read_char:
 						if( value > 9223372036854775807ULL ) then
 							issigned = FALSE
 						end if
+						value_prev = value
 
 					case 20
 						issigned = FALSE
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							if( (value and &h8000000000000000ULL) = 0 ) then
+							if( value_prev > 1844674407370955161ULL or _
+							   (value and &h8000000000000000ULL) = 0 ) then
 								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 								skipchar = TRUE
 							end if

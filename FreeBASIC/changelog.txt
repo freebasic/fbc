@@ -11,6 +11,7 @@ Version 0.21.0 Beta:
 - ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
 - comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
 - quickly scrolling the mouse wheel was causing double click events in the x11 (linux) gfx driver (spotted by Sisophon2001) (DrV)
+- FBC was not warning in some cases where a number was too big to fit in a ulongint (counting_pine)
 
 
 Version 0.20.0 Beta:
