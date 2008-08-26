@@ -595,8 +595,8 @@ static int hPrintNumber
 			{	/* rounding up took val to next power of 10:
 				   set value to 1, put val_digs zeroes onto val_exp */
 				val = 1;
-				val_digs = 1;
 				val_exp += val_digs;
+				val_digs = 1;
 			}
 		}
 
