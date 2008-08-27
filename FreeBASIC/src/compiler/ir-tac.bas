@@ -512,7 +512,7 @@ private sub _emitProcBegin _
 
 	dim as integer class_
 
-    _flush( )
+	_flush( )
 
 	'' clear regs so they aren't different from one proc to another
 	for class_ = 0 to EMIT_REGCLASSES-1
@@ -531,19 +531,19 @@ private sub _emitProcEnd _
 		byval exitlabel as FBSYMBOL ptr _
 	) static
 
-    dim as integer bytestopop
+	dim as integer bytestopop
 
-    _flush( )
+	_flush( )
 
-    select case as const symbGetProcMode( proc )
-    case FB_FUNCMODE_CDECL
-    	bytestopop = 0
+	select case as const symbGetProcMode( proc )
+	case FB_FUNCMODE_CDECL
+		bytestopop = 0
 
-    case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-    	if( env.clopt.nostdcall ) then
-			bytestopop = 0
-		else
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+		if( env.target.allowstdcall ) then
 			bytestopop = symbGetProcParamsLen( proc )
+		else
+			bytestopop = 0
 		end if
 
 	case else
@@ -1604,22 +1604,22 @@ private sub hFlushCALL _
 		byval vr as IRVREG ptr _
 	) static
 
-    dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
-    dim as IRVREG ptr va
+	dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
+	dim as IRVREG ptr va
 
 	'' function?
-    if( proc <> NULL ) then
-    	'' pop up the stack if needed
-    	select case symbGetProcMode( proc )
-    	case FB_FUNCMODE_CDECL
-    		'' if this func is VARARG, astCALL() already set the size
-    		if( bytestopop = 0 ) then
-    			bytestopop = symbGetProcParamsLen( proc )
-    		end if
+	if( proc <> NULL ) then
+		'' pop up the stack if needed
+		select case symbGetProcMode( proc )
+		case FB_FUNCMODE_CDECL
+			'' if this func is VARARG, astCALL() already set the size
+			if( bytestopop = 0 ) then
+				bytestopop = symbGetProcParamsLen( proc )
+			end if
 
-    	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-    		'' nothing to pop, unless -nostdcall was used
-    		if( env.clopt.nostdcall ) then
+		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
+			'' nothing to pop, unless -nostdcall was used
+			if( env.target.allowstdcall = FALSE ) then
 				if( bytestopop = 0 ) then
 					bytestopop = symbGetProcParamsLen( proc )
 				end if
@@ -1630,26 +1630,26 @@ private sub hFlushCALL _
 			bytestopop = 0
 		end select
 
-    	'' save used registers and free the FPU stack
-    	hPreserveRegs( )
+		'' save used registers and free the FPU stack
+		hPreserveRegs( )
 
 		emitCALL( proc, bytestopop )
 
 	'' call or jump to pointer..
 	else
 
-    	'' if it's a CALL, save used registers and free the FPU stack
-    	if( op = AST_OP_CALLPTR ) then
-    		hPreserveRegs( v1 )
-    	end if
+		'' if it's a CALL, save used registers and free the FPU stack
+		if( op = AST_OP_CALLPTR ) then
+			hPreserveRegs( v1 )
+		end if
 
 		'' load pointer
 		hGetVREG( v1, vr_dtype, vr_dclass, vr_typ )
 		hLoadIDX( v1 )
 		if( vr_typ = IR_VREGTYPE_REG ) then
 			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
-									  v1, _
-									  symbGetDataSize( vr_dtype ) )
+			                          v1, _
+			                          symbGetDataSize( vr_dtype ) )
 		end if
 
 		'' CALLPTR
@@ -1680,8 +1680,7 @@ private sub hFlushCALL _
 		vr->reg = regTB(vr_dclass)->allocateReg( regTB(vr_dclass), vr_reg, vr )
 		vr->typ = IR_VREGTYPE_REG
 
-
-    	'' fb allows function calls w/o saving the result
+		'' fb allows function calls w/o saving the result
 		hFreeREG( vr )
 	end if
 

@@ -284,8 +284,6 @@ type FBCMMLINEOPT
 	cputype			as FB_CPUTYPE
 	fputype			as FB_FPUTYPE
 	errorcheck		as integer					'' runtime error check (def= false)
-	nostdcall		as integer
-	nounderprefix	as integer					'' don't add underscore's the function names
 	outtype			as FB_OUTTYPE
 	resumeerr 		as integer					'' add support for RESUME (def= false)
 	warninglevel	as integer					'' (def = 0)
@@ -397,7 +395,6 @@ declare function fbCheckRestartCompile _
 
 declare sub fbSetPaths _
 	( _
-		byval target as integer _
 	)
 
 declare function fbGetPath _

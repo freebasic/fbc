@@ -289,24 +289,7 @@ sub symbDefineInit _
 	next
 
 	'' add "target" define
-	select case as const env.clopt.target
-	case FB_COMPTARGET_WIN32
-		def = @"__FB_WIN32__"
-	case FB_COMPTARGET_CYGWIN
-		def = @"__FB_CYGWIN__"
-	case FB_COMPTARGET_LINUX
-		def = @"__FB_LINUX__"
-	case FB_COMPTARGET_DOS
-		def = @"__FB_DOS__"
-	case FB_COMPTARGET_XBOX
-		def = @"__FB_XBOX__"
-	case FB_COMPTARGET_FREEBSD
-		def = @"__FB_FREEBSD__"
-	case FB_COMPTARGET_OPENBSD
-		def = @"__FB_OPENBSD__"
-	case FB_COMPTARGET_DARWIN
-		def = @"__FB_DARWIN__"
-	end select
+	def = env.target.define
 
 	symbAddDefine( def, NULL, 0 )
 

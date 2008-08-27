@@ -194,7 +194,7 @@ private function hCallProc _
 	if( mode <> FB_FUNCMODE_CDECL ) then
 		select case mode
 		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-			if( env.clopt.nostdcall = FALSE ) then
+			if( env.target.allowstdcall ) then
 				bytestopop = 0
 			end if
 		case else

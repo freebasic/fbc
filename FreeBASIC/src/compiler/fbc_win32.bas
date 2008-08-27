@@ -22,6 +22,7 @@
 
 
 #include once "inc\fb.bi"
+#include once "inc\fbint.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 #include once "inc\list.bi"
@@ -131,7 +132,7 @@ private function _linkFiles _
 
 	function = FALSE
 
-    '' set path
+	'' set path
 	ldpath = fbFindBinFile( "ld" )
 	if( len( ldpath ) = 0 ) then
 		exit function
@@ -159,17 +160,12 @@ private function _linkFiles _
 	'' set script file and subsystem
 	ldcline = ("-T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''
 		dllname = hStripPath( hStripExt( fbc.outname ) )
 
 		'' create a dll
 		ldcline += " --dll --enable-stdcall-fixup"
-
-		'' add aliases for functions without @nn
-		if( fbGetOption( FB_COMPOPT_NOSTDCALL ) ) then
-	   		ldcline += " --add-stdcall-alias"
-    	end if
 
 		'' export all symbols declared as EXPORT
 		ldcline += " --export-dynamic"
@@ -177,17 +173,17 @@ private function _linkFiles _
 		'' set the entry-point
 		ldcline += " -e _DllMainCRTStartup@12"
 
-    else
-    	'' tell LD to add all symbols declared as EXPORT to the symbol table
-    	if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
-    		ldcline += " --export-dynamic"
-    	end if
+	else
+		'' tell LD to add all symbols declared as EXPORT to the symbol table
+		if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
+			ldcline += " --export-dynamic"
+		end if
 
-    end if
+	end if
 
-    if( len( fbc.mapfile ) > 0) then
-        ldcline += " -Map " + fbc.mapfile
-    end if
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
@@ -218,25 +214,25 @@ private function _linkFiles _
 
 	ldcline += "" + QUOTE + libdir + ("crtbegin.o" + QUOTE + " ")
 
-    '' add objects from output list
+	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
-    	ldcline += QUOTE + iof->outf + (QUOTE + " ")
-    	iof = listGetNext( iof )
-    loop
+		ldcline += QUOTE + iof->outf + (QUOTE + " ")
+		iof = listGetNext( iof )
+	loop
 
-    '' add objects from cmm-line
+	'' add objects from cmm-line
 	dim as string ptr objf = listGetHead( @fbc.objlist )
 	do while( objf <> NULL )
-    	ldcline += QUOTE + *objf + (QUOTE + " ")
-    	objf = listGetNext( objf )
-    loop
+		ldcline += QUOTE + *objf + (QUOTE + " ")
+		objf = listGetNext( objf )
+	loop
 
-    '' set executable name
-    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+	'' set executable name
+	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-    '' group
-    ldcline += " -( " + *fbcGetLibList( dllname )
+	'' group
+	ldcline += " -( " + *fbcGetLibList( dllname )
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' note: for some odd reason, this object must be included in the group when
@@ -251,32 +247,32 @@ private function _linkFiles _
 	'' crt end stuff
 	ldcline += QUOTE + libdir + ("crtend.o" + QUOTE)
 
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-        '' create the def list to use when creating the import library
-        ldcline += " --output-def " + _
-        		   QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+		'' create the def list to use when creating the import library
+		ldcline += " --output-def " + _
+		           QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
 
    	'' extra options
    	ldcline += fbc.extopt.ld
 
-    '' invoke ld
-    if( fbc.verbose ) then
-    	print "linking: ", ldcline
-    end if
+	'' invoke ld
+	if( fbc.verbose ) then
+		print "linking: ", ldcline
+	end if
 
-    if( exec( ldpath, ldcline ) <> 0 ) then
+	if( exec( ldpath, ldcline ) <> 0 ) then
 		exit function
-    end if
+	end if
 
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		'' create the import library for the dll built
 		if( makeImpLib( hStripFilename( fbc.outname ), dllname ) = FALSE ) then
 			exit function
 		end if
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -527,18 +523,73 @@ private function makeImpLib _
 
 end function
 
+
+'':::::
+private sub _getDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+#macro hAddLib( libname )
+	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+#endmacro
+
+	hAddLib( "msvcrt" )
+	hAddLib( "kernel32" )
+	hAddLib( "mingw32" )
+	hAddLib( "mingwex" )
+	hAddLib( "moldname" )
+	hAddLib( "supc++" )
+
+	'' profiling?
+	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		hAddLib( "gmon" )
+	end if
+
+end sub
+
+
+'':::::
+private sub _addGfxLibs _
+	( _
+	)
+
+	symbAddLib( "user32" )
+	symbAddLib( "gdi32" )
+	symbAddLib( "winmm" )
+
+end sub
+
+
+'':::::
+private function _getCStdType _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
+	if( ctype = FB_CSTDTYPE_SIZET ) then
+		function = FB_DATATYPE_UINT
+	end if
+
+end function
+
+
 '':::::
 function fbcInit_win32( ) as integer
 
-    static as FBC_VTBL vtbl = _
-    ( _
+	static as FBC_VTBL vtbl = _
+	( _
 		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_delFiles, _
-		@_setDefaultLibPaths _
+		@_setDefaultLibPaths, _
+		@_getDefaultLibs, _
+		@_addGfxLibs, _
+		@_getCStdType _
 	)
 
 	fbc.vtbl = vtbl
@@ -546,8 +597,16 @@ function fbcInit_win32( ) as integer
 	''
 	listNew( @rclist, FBC_INITARGS\4, len( string ) )
 
+	env.target.wchar.type = FB_DATATYPE_USHORT
+	env.target.wchar.size = 2
+
+	env.target.targetdir = @"win32"
+	env.target.define = @"__FB_WIN32__"
+	env.target.entrypoint = @"main"
+	env.target.underprefix = TRUE
+	env.target.constsection = @"rdata"
+	env.target.allowstdcall = TRUE
+
 	return TRUE
 
 end function
-
-

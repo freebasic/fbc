@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\fbc.bi"
 #include once "inc\ir.bi"
 #include once "inc\lex.bi"
 #include once "inc\dstr.bi"
@@ -289,22 +290,12 @@ function hStripUnderscore _
 	( _
 		byval symbol as zstring ptr _
 	) as string static
-
-	select case as const env.clopt.target
-    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-	    if( env.clopt.nostdcall = FALSE ) then
-			function = *(symbol + 1)
-		else
-			function = *symbol
-		end if
-
-    case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-    	function = *(symbol + 1)
-
-    case FB_COMPTARGET_LINUX
-    	function = *symbol
-
-    end select
+	
+	if env.target.underprefix then
+		function = *(symbol + 1)
+	else
+		function = *symbol
+	end if
 
 end function
 
@@ -705,11 +696,7 @@ function hEnvDir( ) as string static
 			path = left( path, len( path ) - 1 )
 
 			'' add leading slash
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-			path = RSLASH + path
-#else
-			path = "/" + path
-#endif
+			path = FB_HOST_PATHDIV + path
 
 		else
 			path = ""

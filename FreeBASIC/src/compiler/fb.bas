@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\fbc.bi"
 #include once "inc\parser.bi"
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
@@ -363,19 +364,6 @@ private sub hSetCtx( )
 
 	fbAddIncPath( fbGetPath( FB_PATH_INC ) )
 
-	''
-	select case env.clopt.target
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		env.target.wchar.type = FB_DATATYPE_USHORT
-		env.target.wchar.size = 2
-	case FB_COMPTARGET_DOS
-		env.target.wchar.type = FB_DATATYPE_UBYTE
-		env.target.wchar.size = 1
-	case else
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-	end select
-
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
 	''
@@ -518,12 +506,6 @@ sub fbSetDefaultOptions( )
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
-#if defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
-	env.clopt.nostdcall 	= FALSE
-#else
-	env.clopt.nostdcall 	= TRUE
-#endif
-	env.clopt.nounderprefix	= FALSE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= FALSE
 	env.clopt.nodeflibs		= FALSE
@@ -560,12 +542,6 @@ sub fbSetOption _
 
 	case FB_COMPOPT_ERRORCHECK
 		env.clopt.errorcheck = value
-
-	case FB_COMPOPT_NOSTDCALL
-		env.clopt.nostdcall = value
-
-	case FB_COMPOPT_NOUNDERPREFIX
-		env.clopt.nounderprefix = value
 
 	case FB_COMPOPT_OUTTYPE
 		env.clopt.outtype = value
@@ -657,12 +633,6 @@ function fbGetOption _
 
 	case FB_COMPOPT_ERRORCHECK
 		function = env.clopt.errorcheck
-
-	case FB_COMPOPT_NOSTDCALL
-		function = env.clopt.nostdcall
-
-	case FB_COMPOPT_NOUNDERPREFIX
-		function = env.clopt.nounderprefix
 
 	case FB_COMPOPT_OUTTYPE
 		function = env.clopt.outtype
@@ -798,7 +768,6 @@ end function
 '':::::
 sub fbSetPaths _
 	( _
-		byval target as integer _
 	) 
 
 	dim as string prefix = fbPrefix
@@ -818,37 +787,17 @@ sub fbSetPaths _
 
 #endif
 
-	dim as string target_dir = ""
-	select case as const env.clopt.target
-	case FB_COMPTARGET_WIN32
-		target_dir = "win32"
-	case FB_COMPTARGET_CYGWIN
-		target_dir = "cygwin"
-	case FB_COMPTARGET_LINUX
-		target_dir = "linux"
-	case FB_COMPTARGET_DOS
-		target_dir = "dos"
-	case FB_COMPTARGET_XBOX
-		target_dir = "xbox"
-	case FB_COMPTARGET_FREEBSD
-		target_dir = "freebsd"
-	case FB_COMPTARGET_OPENBSD
-		target_dir = "openbsd"
-	case FB_COMPTARGET_DARWIN
-		target_dir = "darwin"
-	end select
+	dim as string target_dir = *env.target.targetdir
 
 	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
 	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 
-#if not( defined( __FB_WIN32__ ) or defined( __FB_DOS__ ) )
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
 	hRevertSlash( pathTB(FB_PATH_SCRIPT), FALSE )
-#endif
 
 end sub
 
@@ -886,14 +835,7 @@ end sub
 '':::::
 function fbGetEntryPoint( ) as string static
 
-	select case env.clopt.target
-	case FB_COMPTARGET_XBOX
-		return "XBoxStartup"
-
-	case else
-		return "main"
-
-	end select
+	function = *env.target.entrypoint
 
 end function
 
@@ -1187,12 +1129,12 @@ sub fbGetDefaultLibs _
 
 #macro hAddLib( libname )
 	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro	
+#endmacro
 
 	'' don't add default libs?
 	if( env.clopt.nodeflibs ) then
 		exit sub
-    end if
+	end if
 
 	'' select the right FB rtlib
 	if( env.clopt.multithreaded ) then
@@ -1203,77 +1145,7 @@ sub fbGetDefaultLibs _
 
 	hAddLib( "gcc" )
 
-	select case as const env.clopt.target
-	case FB_COMPTARGET_WIN32
-		hAddLib( "msvcrt" )
-		hAddLib( "kernel32" )
-		hAddLib( "mingw32" )
-		hAddLib( "mingwex" )
-		hAddLib( "moldname" )
-		hAddLib( "supc++" )
-
-		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			hAddLib( "gmon" )
-		end if
-
-	case FB_COMPTARGET_CYGWIN
-		hAddLib( "cygwin" )
-		hAddLib( "kernel32" )
-		hAddLib( "supc++" )
-
-		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			hAddLib( "gmon" )
-		end if
-
-	case FB_COMPTARGET_LINUX
-		hAddLib( "c" )
-		hAddLib( "m" )
-		hAddLib( "pthread" )
-		hAddLib( "dl" )
-		hAddLib( "ncurses" )
-		hAddLib( "supc++" )
-		hAddLib( "gcc_eh" )
-
-	case FB_COMPTARGET_DOS
-		hAddLib( "c" )
-		hAddLib( "m" )
-		hAddLib( "supcx" )
-
-	case FB_COMPTARGET_XBOX
-		hAddLib( "fbgfx" )
-		hAddLib( "openxdk" )
-		hAddLib( "hal" )
-		hAddLib( "c" )
-		hAddLib( "usb" )
-		hAddLib( "xboxkrnl" )
-		hAddLib( "m" )
-		hAddLib( "supc++" )
-
-		'' profiling?
-		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			hAddLib( "gmon" )
-		end if
-
-	case FB_COMPTARGET_FREEBSD
-		hAddLib( "c" )
-		hAddLib( "m" )
-		hAddLib( "pthread" )
-		hAddLib( "ncurses" )
-		hAddLib( "supc++" )
-
-	case FB_COMPTARGET_OPENBSD
-		hAddLib( "c" )
-		hAddLib( "m" )
-		hAddLib( "pthread" )
-		hAddLib( "ncurses" )
-		hAddLib( "supc++" )
-
-	case FB_COMPTARGET_DARWIN
-		hAddLib( "System" )
-
-	end select
+	fbc.vtbl.getDefaultLibs( dstlist, dsthash )
 
 end sub
 

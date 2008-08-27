@@ -22,6 +22,7 @@
 
 
 #include once "inc\fb.bi"
+#include once "inc\fbint.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
@@ -246,6 +247,46 @@ private function _processOptions _
 
 end function
 
+
+'':::::
+private sub _getDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+#macro hAddLib( libname )
+	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+#endmacro
+
+	hAddLib( "c" )
+	hAddLib( "m" )
+	hAddLib( "supcx" )
+
+end sub
+
+
+'':::::
+private sub _addGfxLibs _
+	( _
+	)
+
+end sub
+
+
+'':::::
+private function _getCStdType _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
+	if( ctype = FB_CSTDTYPE_SIZET ) then
+		function = FB_DATATYPE_ULONG
+	end if
+
+end function
+
+
 '':::::
 function fbcInit_dos( ) as integer
 
@@ -257,12 +298,24 @@ function fbcInit_dos( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_delFiles, _
-		@_setDefaultLibPaths _
+		@_setDefaultLibPaths, _
+		@_getDefaultLibs, _
+		@_addGfxLibs, _
+		@_getCStdType _
 	)
 
 	fbc.vtbl = vtbl
 
+	env.target.wchar.type = FB_DATATYPE_UBYTE
+	env.target.wchar.size = 1
+
+	env.target.targetdir = @"dos"
+	env.target.define = @"__FB_DOS__"
+	env.target.entrypoint = @"main"
+	env.target.underprefix = TRUE
+	env.target.constsection = @"rdata"
+	env.target.allowstdcall = FALSE
+
 	return TRUE
 
 end function
-

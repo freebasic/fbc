@@ -20,6 +20,8 @@
 
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
 
 const FBC_INITARGS	  = 64
 const FBC_INITFILES	  = 64
@@ -130,6 +132,22 @@ type FBC_VTBL
 	setDefaultLibPaths as sub _
 	( _
 	)
+
+	getDefaultLibs as sub _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+	addGfxLibs as sub _
+	( _
+	)
+
+	getCStdType as function _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
 end type
 
 '' global context

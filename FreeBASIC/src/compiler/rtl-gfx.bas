@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\fbc.bi"
 #include once "inc\ast.bi"
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
@@ -1618,24 +1619,8 @@ private function hGfxlib_cb _
 
 		symbAddLib( "fbgfx" )
 
-		select case as const env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "user32" )
-			symbAddLib( "gdi32" )
-			symbAddLib( "winmm" )
+		fbc.vtbl.addGfxLibs( )
 
-		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD
-#if defined( TARGET_LINUX ) or defined( TARGET_FREEBSD ) or defined( TARGET_OPENBSD )
-			symbAddLibPath( "/usr/X11R6/lib" )
-#endif
-
-			symbAddLib( "X11" )
-			symbAddLib( "Xext" )
-			symbAddLib( "Xpm" )
-			symbAddLib( "Xrandr" )
-			symbAddLib( "Xrender" )
-
-		end select
 	end if
 
 	return TRUE

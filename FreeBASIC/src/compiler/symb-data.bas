@@ -24,6 +24,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\fbc.bi"
 
 	'' same order as FB_DATATYPE
 	dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
@@ -292,15 +293,7 @@ function symbGetCStdType _
 		byval ctype as FB_CSTDTYPE _
 	) as integer
 
-	if( ctype = FB_CSTDTYPE_SIZET ) then
-		select case as const env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_LINUX
-			function = FB_DATATYPE_UINT
-
-		case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-			function = FB_DATATYPE_ULONG
-		end select
-	end if
+	function = fbc.vtbl.getCStdType( ctype )
 
 end function
 

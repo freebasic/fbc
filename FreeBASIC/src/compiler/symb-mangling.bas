@@ -497,24 +497,10 @@ private function hAddUnderscore _
 		'' high-level IR? don't add anything..
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 			res = FALSE
-
 		else
-			select case as const env.clopt.target
-    		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-        		if( env.clopt.nounderprefix ) then
-	        		res = FALSE
-    	    	else
-        			res = TRUE
-        		end if
-
-			case FB_COMPTARGET_LINUX
-				res = FALSE
-
-			case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-        		res = TRUE
-    		end select
-    	end if
-    end if
+			res = env.target.underprefix
+		end if
+	end if
 
 	function = res
 
@@ -869,13 +855,13 @@ private function hGetProcSuffix _
 
 	static as zstring * 1 + 10 + 1 suffix = "@"
 
-    if( env.clopt.nostdcall ) then
-    	return NULL
-    end if
+	if( env.target.allowstdcall = FALSE ) then
+		return NULL
+	end if
 
-    if( sym->proc.mode <> FB_FUNCMODE_STDCALL ) then
-    	return NULL
-    end if
+	if( sym->proc.mode <> FB_FUNCMODE_STDCALL ) then
+		return NULL
+	end if
 
 	'' high-level IR? don't add anything..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then

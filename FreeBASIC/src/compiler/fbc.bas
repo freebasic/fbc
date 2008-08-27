@@ -138,8 +138,6 @@ declare sub getDefaultLibs _
 		( FBC_OPT_NOERRLINE		, @"noerrline"   ), _
 		( FBC_OPT_NODEFLIBS		, @"nodeflibs"   ), _
 		( FBC_OPT_EXPORT		, @"export"      ), _
-		( FBC_OPT_NOSTDCALL		, @"nostdcall"   ), _
-		( FBC_OPT_STDCALL		, @"stdcall"     ), _
 		( FBC_OPT_NOUNDERSCORE	, @"nounderscore"), _
 		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
 		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
@@ -245,7 +243,7 @@ declare sub getDefaultLibs _
     end if
 
     ''
-    fbSetPaths( fbGetOption( FB_COMPOPT_TARGET ) )
+    fbSetPaths( )
 
     ''
     setMainModule( )
@@ -443,15 +441,6 @@ end sub
 
 '':::::
 private sub setCompOptions( )
-
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_LINUX
-		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
-		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
-
-	case FB_COMPTARGET_DOS
-		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
-	end select
 
 end sub
 
@@ -1276,18 +1265,6 @@ private function processOptions _
 
 			case FBC_OPT_EXPORT
 				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-
-			case FBC_OPT_NOSTDCALL
-				fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
-
-			case FBC_OPT_STDCALL
-				fbSetOption( FB_COMPOPT_NOSTDCALL, FALSE )
-
-			case FBC_OPT_NOUNDERSCORE
-				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
-
-			case FBC_OPT_UNDERSCORE
-				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, FALSE )
 
 			case FBC_OPT_SHOWSUSPERR
 				fbSetOption( FB_COMPOPT_SHOWSUSPERRORS, FALSE )

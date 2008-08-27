@@ -22,6 +22,7 @@
 
 
 #include once "inc\fb.bi"
+#include once "inc\fbint.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
@@ -84,11 +85,6 @@ private function _linkFiles _
 
 		'' create a dll
 		ldcline += " --dll --enable-stdcall-fixup"
-
-		'' add aliases for functions without @nn
-		if( fbGetOption( FB_COMPOPT_NOSTDCALL ) ) then
-			ldcline += " --add-stdcall-alias"
-		end if
 
 		'' export all symbols declared as EXPORT
 		ldcline += " --export-dynamic"
@@ -416,24 +412,86 @@ private function makeImpLib _
 
 end function
 
+
+'':::::
+private sub _getDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+#macro hAddLib( libname )
+	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+#endmacro
+
+	hAddLib( "cygwin" )
+	hAddLib( "kernel32" )
+	hAddLib( "supc++" )
+
+	'' profiling?
+	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		hAddLib( "gmon" )
+	end if
+
+end sub
+
+
+'':::::
+private sub _addGfxLibs _
+	( _
+	)
+
+	symbAddLib( "user32" )
+	symbAddLib( "gdi32" )
+	symbAddLib( "winmm" )
+
+end sub
+
+
+'':::::
+private function _getCStdType _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
+	if( ctype = FB_CSTDTYPE_SIZET ) then
+		function = FB_DATATYPE_UINT
+	end if
+
+end function
+
+
 '':::::
 function fbcInit_cygwin( ) as integer
 
-    static as FBC_VTBL vtbl = _
-    ( _
+	static as FBC_VTBL vtbl = _
+	( _
 		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_delFiles, _
-		@_setDefaultLibPaths _
+		@_setDefaultLibPaths, _
+		@_getDefaultLibs, _
+		@_addGfxLibs, _
+		@_getCStdType _
 	)
 
 	fbc.vtbl = vtbl
 
 	''
 	listNew( @rclist, FBC_INITARGS\4, len( string ) )
+
+	env.target.wchar.type = FB_DATATYPE_USHORT
+	env.target.wchar.size = 2
+
+	env.target.targetdir = @"cygwin"
+	env.target.define = @"__FB_CYGWIN__"
+	env.target.entrypoint = @"main"
+	env.target.underprefix = TRUE
+	env.target.constsection = @"rdata"
+	env.target.allowstdcall = TRUE
 
 	return TRUE
 

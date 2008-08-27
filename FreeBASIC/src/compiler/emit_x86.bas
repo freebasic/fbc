@@ -9298,25 +9298,17 @@ private function _getSectionString _
 		byval priority as integer _
 	) as zstring ptr
 
-    static as string ostr
+	static as string ostr
 
-    if( (section = emit.lastsection) and (priority = emit.lastpriority) ) then
-    	return NULL
-    end if
+	if( (section = emit.lastsection) and (priority = emit.lastpriority) ) then
+		return NULL
+	end if
 
 	ostr = NEWLINE + ".section ."
 
 	select case as const section
 	case IR_SECTION_CONST
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, _
-		     FB_COMPTARGET_CYGWIN, _
-		     FB_COMPTARGET_DOS, _
-		     FB_COMPTARGET_XBOX
-			ostr += "rdata"
-		case else
-			ostr += "rodata"
-		end select
+		ostr += *env.target.constsection
 
 	case IR_SECTION_DATA
 		ostr += "data"

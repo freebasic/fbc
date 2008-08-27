@@ -22,6 +22,7 @@
 
 
 #include once "inc\fb.bi"
+#include once "inc\fbint.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
@@ -314,6 +315,67 @@ private function _processOptions _
 
 end function
 
+
+'':::::
+private function _stripUnderscore _
+	( _
+		byval symbol as zstring ptr _
+	) as string
+
+	function = *(symbol + 1)
+
+end function
+
+
+'':::::
+private sub _getDefaultLibs _
+	( _
+		byval dstlist as TLIST ptr, _
+		byval dsthash as THASH ptr _
+	)
+
+#macro hAddLib( libname )
+	symbAddLibEx( dstlist, dsthash, libname, TRUE )
+#endmacro
+
+	hAddLib( "fbgfx" )
+	hAddLib( "openxdk" )
+	hAddLib( "hal" )
+	hAddLib( "c" )
+	hAddLib( "usb" )
+	hAddLib( "xboxkrnl" )
+	hAddLib( "m" )
+	hAddLib( "supc++" )
+
+	'' profiling?
+	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+		hAddLib( "gmon" )
+	end if
+
+end sub
+
+
+'':::::
+private sub _addGfxLibs _
+	( _
+	)
+
+end sub
+
+
+'':::::
+private function _getCStdType _
+	( _
+		byval ctype as FB_CSTDTYPE _
+	) as integer
+
+	if( ctype = FB_CSTDTYPE_SIZET ) then
+		function = FB_DATATYPE_ULONG
+	end if
+
+end function
+
+
 '':::::
 function fbcInit_xbox( ) as integer
 	
@@ -325,14 +387,27 @@ function fbcInit_xbox( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_delFiles, _
-		@_setDefaultLibPaths _
+		@_setDefaultLibPaths, _
+		@_getDefaultLibs, _
+		@_addGfxLibs, _
+		@_getCStdType _
 	)
 	
 	fbc.vtbl = vtbl
 	
 	''
 	listNew( @rclist, FBC_INITARGS\4, len( string ) )
-	
+
+	env.target.wchar.type = FB_DATATYPE_UINT
+	env.target.wchar.size = FB_INTEGERSIZE
+
+	env.target.targetdir = @"xbox"
+	env.target.define = @"__FB_XBOX__"
+	env.target.entrypoint = @"XBoxStartup"
+	env.target.underprefix = TRUE
+	env.target.constsection = @"rdata"
+	env.target.allowstdcall = FALSE
+
 	return TRUE
 	
 end function
