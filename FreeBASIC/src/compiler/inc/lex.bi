@@ -23,16 +23,36 @@
 #include once "inc\dstr.bi"
 
 enum LEXCHECK
+	
 	LEXCHECK_EVERYTHING		= &h0000
-	LEXCHECK_NOLINECONT		= &h0001
-	LEXCHECK_NODEFINE		= &h0002
-	LEXCHECK_NOWHITESPC		= &h0004
-	LEXCHECK_NOSUFFIX		= &h0008
-	LEXCHECK_NOQUOTES		= &h0010
-	LEXCHECK_NOSYMBOL		= &h0020
-	LEXCHECK_NOPERIOD		= &h0040
-	LEXCHECK_EATPERIOD		= &h0080
-	LEXCHECK_KWDNAMESPC		= &h0100
+	
+	'' ? write this comment
+	LEXCHECK_NOLINECONT		= &h0001 
+	
+	'' don't replace define/macro text
+	LEXCHECK_NODEFINE		= &h0002 
+	
+	'' return CHAR_SPACE, CHAR_TAB... (usually skipped when lexing)
+	LEXCHECK_NOWHITESPC		= &h0004 
+	
+	'' don't interpret $, #, &, etc as a suffix on a token (for #include, $include, &h1, more?)
+	LEXCHECK_NOSUFFIX		= &h0008 
+	
+	'' add quotes to any literal string's token (? not sure where that's needed)
+	LEXCHECK_NOQUOTES		= &h0010 
+	
+	'' don't associate the token with a symbol chain (dim shared as integer foo: #define bar(foo) 
+	LEXCHECK_NOSYMBOL		= &h0020 
+	
+	'' return CHAR_DOT (usually incorporated into whatever symbol when lexing)
+	LEXCHECK_NOPERIOD		= &h0040 
+	
+	'' used to handle the 'periods in symbol name' garbage
+	LEXCHECK_EATPERIOD		= &h0080 
+	
+	'' use the special symbol 'namespace' for pre-processing, to prevent pollutin the global ns
+	LEXCHECK_KWDNAMESPC		= &h0100 
+	
 end enum
 
 type FBTOKEN
