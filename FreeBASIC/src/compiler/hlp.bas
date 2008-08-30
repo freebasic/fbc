@@ -438,8 +438,8 @@ function hRevertSlash _
 
 		for i = 0 to len( *src )-1
 			c = src[i]
-			if( c = CHAR_RSLASH ) then
-				c = CHAR_SLASH
+			if( (c = CHAR_RSLASH) or (c = CHAR_SLASH) ) then
+				c = asc(FB_HOST_PATHDIV)
 			end if
 			res[i] = c
 		next
@@ -450,8 +450,8 @@ function hRevertSlash _
 
 	else
 		for i = 0 to len( *src )-1
-			if( src[i] = CHAR_RSLASH ) then
-				src[i] = CHAR_SLASH
+			if( (src[i] = CHAR_RSLASH) or (src[i] = CHAR_SLASH) ) then
+				src[i] = asc(FB_HOST_PATHDIV)
 			end if
 		next
 
