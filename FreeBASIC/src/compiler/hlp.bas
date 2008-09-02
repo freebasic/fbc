@@ -427,19 +427,38 @@ end function
 function hRevertSlash _
 	( _
 		byval src as zstring ptr, _
-		byval allocnew as integer _
-	) as zstring ptr
+		byval allocnew as integer, _
+		byval repchar as integer _
+	) as zstring ptr static
 
-    dim as ubyte ptr res = iif( allocnew, allocate( len( *src ) + 1 ), src )
+    dim as zstring ptr res
     dim as integer i, c
 
-	for i = 0 to len( *src )-1
-		if( (res[i] = CHAR_RSLASH) or (res[i] = CHAR_SLASH) ) then
-			res[i] = asc(FB_HOST_PATHDIV)
-		end if
-	next
+	if( allocnew ) then
+		res = allocate( len( *src ) + 1 )
 
-	function = res
+		for i = 0 to len( *src )-1
+			c = src[i]
+			if( (c = CHAR_RSLASH) or (c = CHAR_SLASH) ) then
+				c = repchar
+			end if
+			res[i] = c
+		next
+
+		res[i] = 0
+
+		function = res
+
+	else
+		for i = 0 to len( *src )-1
+			if( (src[i] = CHAR_RSLASH) or (src[i] = CHAR_SLASH) ) then
+				src[i] = repchar
+			end if
+		next
+
+		function = src
+
+	end if
 
 end function
 

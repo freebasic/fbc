@@ -103,7 +103,8 @@ declare function hGetFileExt _
 declare function hRevertSlash _
 	( _
 		byval s as zstring ptr, _
-		byval allocnew as integer _
+		byval allocnew as integer, _
+		byval repchar as integer _
 	) as zstring ptr
 
 declare function hToPow2 _

@@ -794,10 +794,10 @@ sub fbSetPaths _
 	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 
-	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
-	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
-	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
-	hRevertSlash( pathTB(FB_PATH_SCRIPT), FALSE )
+	hRevertSlash( pathTB(FB_PATH_BIN), FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( pathTB(FB_PATH_INC), FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( pathTB(FB_PATH_LIB), FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( pathTB(FB_PATH_SCRIPT), FALSE, asc(FB_HOST_PATHDIV) )
 
 end sub
 
@@ -887,7 +887,7 @@ function fbCompile _
 	function = FALSE
 
 	''
-	env.inf.name = *hRevertSlash( infname, FALSE )
+	env.inf.name = *hRevertSlash( infname, FALSE, asc(FB_HOST_PATHDIV) )
 	env.inf.incfile	= NULL
 	env.inf.ismain = ismain
 
@@ -1383,7 +1383,7 @@ function fbIncludeFile _
 		return errFatal( )
 	end if
 	
-	hRevertSlash( incfile, FALSE )
+	hRevertSlash( incfile, FALSE, asc(FB_HOST_PATHDIV) )
 
 	'' #include ONCE
 	if( isonce ) then
