@@ -553,10 +553,10 @@ declare function hPorts_cb _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+ 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
 				), _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
 	 			) _
 	 		} _
 		), _
@@ -2815,7 +2815,7 @@ function rtlGfxScreenSetQB _
 
  	'' byval active as integer
  	if( active = NULL ) then
- 		active = astNewCONSTi( 8, FB_DATATYPE_INTEGER )
+ 		active = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
  	end if
  	if( astNewARG( proc, active ) = NULL ) then
  		exit function
@@ -2823,7 +2823,7 @@ function rtlGfxScreenSetQB _
 
  	'' byval visible as integer
  	if( visible = NULL ) then
- 		visible = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 		visible = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
  	end if
  	if( astNewARG( proc, visible ) = NULL ) then
  		exit function
