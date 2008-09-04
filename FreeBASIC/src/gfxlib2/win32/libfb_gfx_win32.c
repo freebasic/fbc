@@ -41,12 +41,14 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 };
 
 static const struct { const char *name; FARPROC *proc; } user32_procs[] = {
-  {"SetLayeredWindowAttributes", (FARPROC *)&fb_win32.SetLayeredWindowAttributes},
-  {"MonitorFromWindow",          (FARPROC *)&fb_win32.MonitorFromWindow         },
-  {"MonitorFromPoint",           (FARPROC *)&fb_win32.MonitorFromPoint          },
-  {"FlashWindowEx",              (FARPROC *)&fb_win32.FlashWindowEx             },
-  {"TrackMouseEvent",            (FARPROC *)&fb_win32.TrackMouseEvent           }
- };
+	{"SetLayeredWindowAttributes", (FARPROC *)&fb_win32.SetLayeredWindowAttributes},
+	{"MonitorFromWindow",          (FARPROC *)&fb_win32.MonitorFromWindow         },
+	{"MonitorFromPoint",           (FARPROC *)&fb_win32.MonitorFromPoint          },
+	{"FlashWindowEx",              (FARPROC *)&fb_win32.FlashWindowEx             },
+	{"TrackMouseEvent",            (FARPROC *)&fb_win32.TrackMouseEvent           },
+	{"GetMonitorInfoA",            (FARPROC *)&fb_win32.GetMonitorInfo            },
+	{"ChangeDisplaySettingsExA",   (FARPROC *)&fb_win32.ChangeDisplaySettingsEx   }
+};
 
 static CRITICAL_SECTION update_lock;
 static HANDLE handle;

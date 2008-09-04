@@ -111,10 +111,19 @@ static int gdi_init(void)
 	RECT rect;
 	LOGPALETTE *lp;
 	int x, y;
+	MONITORINFOEX monitor_info;
+	const char *devname = NULL;
 
 	bitmap_info = NULL;
 	buffer = NULL;
 	palette = NULL;
+	
+	monitor_info.cbSize = sizeof(MONITORINFOEX);
+	monitor_info.szDevice[0] = '\0';
+	
+	if (fb_win32.GetMonitorInfo && fb_win32.monitor && fb_win32.GetMonitorInfo(fb_win32.monitor, (LPMONITORINFO)&monitor_info)) {
+		devname = monitor_info.szDevice;
+	}
 	
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
@@ -123,9 +132,15 @@ static int gdi_init(void)
 		mode.dmPelsHeight = fb_win32.h;
 		mode.dmBitsPerPel = fb_win32.depth;
 		mode.dmDisplayFrequency = fb_win32.refresh_rate;
-		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+		mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL | DM_DISPLAYFREQUENCY;
+		
+		if (fb_win32.ChangeDisplaySettingsEx) {
+			if (fb_win32.ChangeDisplaySettingsEx(devname, &mode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+				return -1;
+		} else if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			return -1;
+		}
+		
 		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 	}
 	else {
@@ -145,12 +160,23 @@ static int gdi_init(void)
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
+		/* windowed mode: center window on monitor */
 		AdjustWindowRect(&rect, style, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
-		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
+		if (monitor_info.szDevice[0]) {
+			x = monitor_info.rcMonitor.left + ((monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - rect.right) >> 1);
+			y = monitor_info.rcMonitor.top + ((monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top - rect.bottom) >> 1);			
+		} else {
+			x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
+			y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
+		}
+	} else if (monitor_info.szDevice[0]) {
+		/* fullscreen with valid monitor_info: place window on proper monitor */
+		x = monitor_info.rcMonitor.left;
+		y = monitor_info.rcMonitor.top;
 	}
+	
 	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
