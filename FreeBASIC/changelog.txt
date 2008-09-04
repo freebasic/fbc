@@ -12,6 +12,7 @@ Version 0.21.0 Beta:
 - comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
 - quickly scrolling the mouse wheel was causing double click events in the x11 (linux) gfx driver (spotted by Sisophon2001) (DrV)
 - FBC was not warning in some cases where a number was too big to fit in a ulongint (counting_pine)
+- "SCREEN , a, v" in consoles was crashing if a or v were 1 more than the highest console page (counting_pine)
 
 
 Version 0.20.0 Beta:
