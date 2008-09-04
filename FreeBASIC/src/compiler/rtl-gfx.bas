@@ -541,8 +541,8 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxScreenQB ( byval mode as integer, byval active as integer = 0,
-							byval visible as integer = 0 ) as integer '/ _
+		/' fb_GfxScreenQB ( byval mode as integer, byval active as integer = -1,
+							byval visible as integer = -1 ) as integer '/ _
 		( _
 			@FB_RTL_GFXSCREENSETQB, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _

@@ -404,8 +404,8 @@ FBCALL int fb_GfxScreenQB(int mode, int visible, int active)
 	if( res != FB_RTERROR_OK )
 		return res;
 
-	if( visible != 0 || active != 0 )
-		return fb_PageSet( visible, active );
+	if( visible >= 0 || active >= 0 )
+		return fb_ErrorSetNum( fb_PageSet( visible, active ) );
 	else
 		return fb_ErrorSetNum( FB_RTERROR_OK );
 }
