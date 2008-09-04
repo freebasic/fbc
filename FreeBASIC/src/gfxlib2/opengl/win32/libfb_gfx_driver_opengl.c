@@ -203,7 +203,16 @@ static int opengl_init(void)
 	HWND root;
 	UINT flags;
 	int x, y;
-
+	MONITORINFOEX monitor_info;
+	const char *devname = NULL;
+	
+	monitor_info.cbSize = sizeof(MONITORINFOEX);
+	monitor_info.szDevice[0] = '\0';
+	
+	if (fb_win32.GetMonitorInfo && fb_win32.monitor && fb_win32.GetMonitorInfo(fb_win32.monitor, (LPMONITORINFO)&monitor_info)) {
+		devname = monitor_info.szDevice;
+	}
+	
 	style = GetWindowLong(fb_win32.wnd, GWL_STYLE);
 	flags = SWP_FRAMECHANGED;
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
@@ -213,9 +222,13 @@ static int opengl_init(void)
 		mode.dmPelsHeight = fb_win32.h;
 		mode.dmBitsPerPel = fb_win32.depth;
 		mode.dmDisplayFrequency = fb_win32.refresh_rate;
-		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+		mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL | DM_DISPLAYFREQUENCY;
+		if (fb_win32.ChangeDisplaySettingsEx) {
+			if (fb_win32.ChangeDisplaySettingsEx(devname, &mode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+				return -1;
+		} else if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			return -1;
+		}
 		style &= ~WS_OVERLAPPEDWINDOW;
 		style |= WS_POPUP;
 		root = HWND_TOPMOST;
@@ -240,8 +253,17 @@ static int opengl_init(void)
 	rect.bottom = fb_win32.h;
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
 		AdjustWindowRect(&rect, style, FALSE);
-		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
-		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
+		if (monitor_info.szDevice[0]) {
+			x = monitor_info.rcMonitor.left + ((monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - rect.right) >> 1);
+			y = monitor_info.rcMonitor.top + ((monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top - rect.bottom) >> 1);			
+		} else {
+			x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
+			y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
+		}
+	} else if (monitor_info.szDevice[0]) {
+		/* fullscreen with valid monitor_info: place window on proper monitor */
+		x = monitor_info.rcMonitor.left;
+		y = monitor_info.rcMonitor.top;
 	}
 	SetWindowPos(fb_win32.wnd, 0, x, y, rect.right - rect.left, rect.bottom - rect.top, flags);
 	ShowWindow(fb_win32.wnd, SW_SHOW);
