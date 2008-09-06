@@ -748,12 +748,13 @@ private sub hReadFloatNumber _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
 		byref dtype as integer, _
+		byval hasdot as integer, _
 		byval flags as LEXCHECK _
 	)
 
-    dim as uinteger c = any
-    dim as integer llen = any
-    dim as integer skipchar = any
+	dim as uinteger c = any
+	dim as integer llen = any
+	dim as integer skipchar = any
 
 	dtype = fbLangGetDefLiteral( DOUBLE )
 	llen = tlen
@@ -789,16 +790,30 @@ private sub hReadFloatNumber _
 			end if
 		end if
 	loop
-	
+
+	if( tlen > 7 + iif( hasdot, 1, 0 ) ) then
+		dtype = FB_DATATYPE_DOUBLE
+	end if
+
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar( )
 	'' 'e', 'E', 'd', 'D'?
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
+
 		c = lexEatChar( )
 
+		if( c = CHAR_DLOW or c = CHAR_DUPP ) then
+			dtype = FB_DATATYPE_DOUBLE
+		end if
+
 		if( skipchar = FALSE ) then
-			*pnum = CHAR_ELOW
+			if( flags = LEXCHECK_EVERYTHING ) then
+				'' make sure exp char is an 'e'
+				'' (Val should accept 'd's, so may not be necessary now...)
+				c = CHAR_ELOW
+			end if
+			*pnum = c
 			pnum += 1
 			tlen += 1
 		end if
@@ -845,7 +860,8 @@ private sub hReadFloatNumber _
 		loop
 		
 	end select
-	
+
+
 	select case as const lexCurrentChar( )
 	'' '!', 'F', 'f'?
 	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
@@ -865,12 +881,14 @@ private sub hReadFloatNumber _
         
 	end select
 
-	if( tlen - llen = 0 ) then
-		'' '0'
-		*pnum = CHAR_0
-		pnum += 1
-		tlen += 1
-	end if
+	if( flags = LEXCHECK_EVERYTHING ) then
+		if( tlen - llen = 0 ) then
+			'' '0'
+			*pnum = CHAR_0
+			pnum += 1
+			tlen += 1
+		end if
+	endif
 
 end sub
 
@@ -898,7 +916,7 @@ private sub hReadNumber _
 	dim as uinteger c = any
 	dim as integer isfloat = any, issigned = any, isshort = any, islong = any, forcedsign = any
 	dim as ulongint value = any, value_prev = any
-	dim as integer skipchar = any
+	dim as integer skipchar = any, hasdot = any
 
 	isfloat    = FALSE
 	issigned   = TRUE
@@ -965,9 +983,12 @@ read_char:
 						pnum += 1
 						tlen += 1
 					end if
+					hasdot = TRUE
+				else
+					hasdot = FALSE
 				end if
 
-				hReadFloatNumber( pnum, tlen, dtype, flags )
+				hReadFloatNumber( pnum, tlen, dtype, hasdot, flags )
 				exit do
 
 			case else
@@ -1053,7 +1074,7 @@ read_char:
 		*pnum = CHAR_DOT
 		pnum += 1
 		tlen = 1
-        hReadFloatNumber( pnum, tlen, dtype, flags )
+		hReadFloatNumber( pnum, tlen, dtype, TRUE, flags )
 
 	'' hex, oct, bin
 	case CHAR_AMP
