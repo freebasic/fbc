@@ -71,7 +71,7 @@ FBCALL int fb_GfxFlip(int from_page, int to_page)
 
 	if (src == dest)
 		return fb_ErrorSetNum(FB_RTERROR_OK);
-	if ((dest == __fb_gfx->framebuffer) && (!(__fb_gfx->flags & SCREEN_LOCKED)))
+	if ((dest == __fb_gfx->framebuffer) && (__fb_gfx->lock_count==0))
 		lock = TRUE;
 
 	text_size = __fb_gfx->text_w * __fb_gfx->text_h * sizeof(GFX_CHAR_CELL);

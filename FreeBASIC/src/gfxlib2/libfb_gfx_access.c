@@ -33,10 +33,8 @@ FBCALL void fb_GfxLock(void)
 	if (!__fb_gfx)
 		return;
 
-	if (!(__fb_gfx->flags & SCREEN_LOCKED)) {
+	if (__fb_gfx->lock_count == 0)
 		__fb_gfx->driver->lock();
-		__fb_gfx->flags |= SCREEN_LOCKED;
-	}
 
 	++__fb_gfx->lock_count;
 }
@@ -56,12 +54,10 @@ FBCALL void fb_GfxUnlock(int start_line, int end_line)
 	if ((__fb_gfx->visible_page == context->work_page) && (start_line <= end_line) && (end_line < __fb_gfx->h))
 		fb_hMemSet(__fb_gfx->dirty + start_line, TRUE, end_line - start_line + 1);
 
-	if (__fb_gfx->lock_count > 0) {
+	if (__fb_gfx->lock_count != 0) {
 		--__fb_gfx->lock_count;
-		if (__fb_gfx->lock_count == 0) {
-			__fb_gfx->flags &= ~SCREEN_LOCKED;
+		if (__fb_gfx->lock_count == 0)
 			__fb_gfx->driver->unlock();
-		}
 	}
 }
 

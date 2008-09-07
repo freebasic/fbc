@@ -620,8 +620,7 @@ void fb_hWin32Exit(void)
 	
 	fb_win32.is_running = FALSE;
 	
-	if (__fb_gfx->flags & SCREEN_LOCKED) {
-		__fb_gfx->flags &= ~(SCREEN_LOCKED);
+	if (__fb_gfx->lock_count != 0) {
 		__fb_gfx->lock_count = 0;
 		__fb_gfx->driver->unlock();
 	}
@@ -733,10 +732,10 @@ void fb_hWin32SetMouse(int x, int y, int cursor, int clip)
 /*:::::*/
 void fb_hWin32SetWindowTitle(char *title)
 {
-	if (__fb_gfx->flags & SCREEN_LOCKED)
+	if (__fb_gfx->lock_count != 0)
 		LeaveCriticalSection(&update_lock);
 	SetWindowText(fb_win32.wnd, title);
-	if (__fb_gfx->flags & SCREEN_LOCKED)
+	if (__fb_gfx->lock_count != 0)
 		EnterCriticalSection(&update_lock);
 }
 

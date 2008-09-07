@@ -4,6 +4,7 @@ Version 0.21.0 Beta:
 - BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
 - Remove GNU extensions in install.sh (DrV)
 - update FreeImage header to v3.11.0 and .def file for Win32 (jeffm)
+- gfxlib internal: remove SCREEN_LOCKED flag since the check can be done using the "lock_count" counter instead (jeffm)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
