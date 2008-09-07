@@ -604,13 +604,17 @@ function rtlArrayClear _
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
 			end if
 		end if
-
-		if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
-			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
+		
+		if( ctor <> NULL ) then
+			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
+				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
+			end if
 		end if
 
-		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
+		if( dtor <> NULL ) then
+			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
+				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
+			end if
 		end if
 
 		'' byval ctor as sub()

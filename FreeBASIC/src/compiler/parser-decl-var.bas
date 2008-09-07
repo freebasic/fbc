@@ -1139,6 +1139,8 @@ private function hFlushInitializer _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 	
+	'' has_defctor is unused -cha0s
+	
 	'' object?
     if( has_dtor ) then
     	'' check visibility
@@ -1987,7 +1989,7 @@ end function
 
 
 '':::::
-''AutoVarDecl    =   AUTO SHARED? SymbolDef '=' VarInitializer
+''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer
 ''                   (',' SymbolDef)* .
 function cAutoVarDecl _
 	( _
@@ -2011,7 +2013,7 @@ function cAutoVarDecl _
     	end if
     end if
 
-	'' AUTO
+	'' VAR
 	lexSkipToken( )
 
 	'' SHARED?
