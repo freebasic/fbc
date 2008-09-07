@@ -14,6 +14,7 @@ FreeImage_AppendPage@8 = _FreeImage_AppendPage@8
 FreeImage_ApplyColorMapping@24 = _FreeImage_ApplyColorMapping@24
 FreeImage_ApplyPaletteIndexMapping@20 = _FreeImage_ApplyPaletteIndexMapping@20
 FreeImage_Clone@4 = _FreeImage_Clone@4
+FreeImage_CloneMetadata@8 = _FreeImage_CloneMetadata@8
 FreeImage_CloneTag@4 = _FreeImage_CloneTag@4
 FreeImage_CloseMemory@4 = _FreeImage_CloseMemory@4
 FreeImage_CloseMultiBitmap@8 = _FreeImage_CloseMultiBitmap@8

@@ -22,7 +22,7 @@
 #inclib "freeimage"
 
 #define FREEIMAGE_MAJOR_VERSION 3
-#define FREEIMAGE_MINOR_VERSION 10
+#define FREEIMAGE_MINOR_VERSION 11
 #define FREEIMAGE_RELEASE_SERIAL 0
 
 #if defined(__FB_BIGENDIAN__)
@@ -508,6 +508,10 @@ type FI_InitProc as sub cdecl(byval as Plugin ptr, byval as integer)
 #define JPEG_QUALITYAVERAGE &h0400
 #define JPEG_QUALITYBAD &h0800
 #define JPEG_PROGRESSIVE &h2000
+#define JPEG_SUBSAMPLING_411 &h1000
+#define JPEG_SUBSAMPLING_420 &h4000
+#define JPEG_SUBSAMPLING_422 &h8000
+#define JPEG_SUBSAMPLING_444 &h10000
 #define KOALA_DEFAULT 0
 #define LBM_DEFAULT 0
 #define MNG_DEFAULT 0
@@ -518,6 +522,11 @@ type FI_InitProc as sub cdecl(byval as Plugin ptr, byval as integer)
 #define PCX_DEFAULT 0
 #define PNG_DEFAULT 0
 #define PNG_IGNOREGAMMA 1
+#define PNG_Z_BEST_SPEED &h0001
+#define PNG_Z_DEFAULT_COMPRESSION &h0006
+#define PNG_Z_BEST_COMPRESSION &h0009
+#define PNG_Z_NO_COMPRESSION &h0100
+#define PNG_INTERLACED &h0200
 #define PNM_DEFAULT 0
 #define PNM_SAVE_RAW 0
 #define PNM_SAVE_ASCII 1
@@ -729,6 +738,7 @@ declare sub FreeImage_FindCloseMetadata alias "FreeImage_FindCloseMetadata" (byv
 declare function FreeImage_SetMetadata alias "FreeImage_SetMetadata" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval key as zstring ptr, byval tag as FITAG ptr) as BOOL
 declare function FreeImage_GetMetadata alias "FreeImage_GetMetadata" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval key as zstring ptr, byval tag as FITAG ptr ptr) as BOOL
 declare function FreeImage_GetMetadataCount alias "FreeImage_GetMetadataCount" (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr) as uinteger
+declare function FreeImage_CloneMetadata alias "FreeImage_CloneMetadata" (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr) as BOOL
 declare function FreeImage_TagToString alias "FreeImage_TagToString" (byval model as FREE_IMAGE_MDMODEL, byval tag as FITAG ptr, byval Make as zstring ptr = 0) as zstring ptr
 declare function FreeImage_RotateClassic alias "FreeImage_RotateClassic" (byval dib as FIBITMAP ptr, byval angle as double) as FIBITMAP ptr
 declare function FreeImage_RotateEx alias "FreeImage_RotateEx" (byval dib as FIBITMAP ptr, byval angle as double, byval x_shift as double, byval y_shift as double, byval x_origin as double, byval y_origin as double, byval use_mask as BOOL) as FIBITMAP ptr
