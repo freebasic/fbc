@@ -140,6 +140,13 @@ declare function hHexUInt _
 		byval value as uinteger _
 	) as zstring ptr
 
+declare function hIsValidSymbolName( byval sym as zstring ptr ) as integer
+
 #include once "inc\hlp-str.bi"
+
+#define hIsCharLower(_c) ( (_c >= asc("a")) andalso (_c <= asc("z")) )
+#define hIsCharUpper(_c) ( (_c <= asc("Z")) andalso (_c >= asc("A")) )
+#define hIsChar(_c) ( hIsCharLower(_c) orelse hIsCharUpper(_c) )
+#define hIsCharNumeric(_c) ( (_c <= asc("9")) andalso (_c >= asc("0")) )
 
 #endif ''__HELP_BI__

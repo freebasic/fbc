@@ -1001,6 +1001,10 @@ function ppDefine _
     end if
 
     lexEatToken( @defname, flags )
+    
+    if( hIsValidSymbolName( defname ) = FALSE ) then
+    	exit function
+    end if
 
     '' contains a period? (with LEX_FLAGS it won't skip white spaces)
     if( lexGetToken( flags ) = CHAR_DOT ) then

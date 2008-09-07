@@ -708,3 +708,21 @@ function hEnvDir( ) as string static
 	end if
 
 end function
+
+function hIsValidSymbolName( byval sym as zstring ptr ) as integer
+	
+	if( sym = NULL ) then exit function
+	
+	var symlen = len( *sym )
+	
+	if( symlen = 0 ) then exit function
+	
+	if( (hIsChar(sym[0]) orelse (sym[0] = asc("_"))) = FALSE ) then exit function
+	
+	for i as integer = 1 to symlen-1
+		if( ((hIsChar(sym[0])) orelse (sym[0] = asc("_")) orelse (hIsCharNumeric(sym[i]))) = FALSE ) then exit function
+	next
+	
+	function = TRUE
+	
+end function

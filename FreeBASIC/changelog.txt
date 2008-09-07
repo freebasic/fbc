@@ -24,7 +24,8 @@ Version 0.21.0 Beta:
 - PCOPY, "SCREEN , a, v" in consoles weren't throwing an error if the page numbers were 1 more than the highest console page (counting_pine)
 - lang qb: "SCREEN 0" was trying to set the visible page to 8 (counting_pine)
 - #2057952 - lang qb: fixed floating-point type identification issues (counting_pine)
-- objects of arrays with a destructor but no constructor were crashing due to missed NULL ptr checks (cha0s)
+- #2068874 - objects of arrays with a destructor but no constructor were crashing due to missed NULL ptr checks (cha0s)
+- #2085637 - define was not catching illegal symbol names (cha0s)
 
 
 Version 0.20.0 Beta:
