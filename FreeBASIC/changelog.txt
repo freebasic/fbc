@@ -2,13 +2,19 @@ Version 0.21.0 Beta:
 
 [changed]
 - BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
+- Remove GNU extensions in install.sh (DrV)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
+- display objinfo configuration in -version (DrV)
+- OpenBSD support started (DrV)
+- Darwin support started (DrV)
+- NetBSD support started (DrV)
 - Multi-monitor support for Win32 GDI and OpenGL gfx drivers (DrV)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
+- Initialize unix console cursor location to 1,1 if it is unknown (DrV)
 - ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
 - comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
 - quickly scrolling the mouse wheel was causing double click events in the x11 (linux) gfx driver (spotted by Sisophon2001) (DrV)
@@ -16,6 +22,7 @@ Version 0.21.0 Beta:
 - PCOPY, "SCREEN , a, v" in consoles weren't throwing an error if the page numbers were 1 more than the highest console page (counting_pine)
 - lang qb: "SCREEN 0" was trying to set the visible page to 8 (counting_pine)
 - #2057952 - lang qb: fixed floating-point type identification issues (counting_pine)
+
 
 Version 0.20.0 Beta:
 

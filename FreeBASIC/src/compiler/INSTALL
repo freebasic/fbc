@@ -66,9 +66,12 @@ ENABLE CROSS COMPILATION TARGETS
 Specify one or more of the following options to enable cross compile targets:
 
 	--enable-crosscomp-cygwin
+	--enable-crosscomp-darwin
 	--enable-crosscomp-dos
 	--enable-crosscomp-freebsd
 	--enable-crosscomp-linux
+	--enable-crosscomp-netbsd
+	--enable-crosscomp-openbsd
 	--enable-crosscomp-win32
 	--enable-crosscomp-xbox
 
@@ -85,6 +88,9 @@ cross compile targets:
 
 	--enable-crosscomp-all
 
+NOTE: some cross compilation targets are works in progress and may be
+incomplete and/or non-functional.  If you try one of the targets and
+notice problems, please report them to the development team.
 
 
 THE OBJINFO FEATURE
