@@ -250,28 +250,30 @@ private sub hCONVConstEval64 _
 end sub
 
 '':::::
-#macro hCheckPtr _
+private function hCheckPtr _
 	( _
-		to_dtype, _
-		expr_dtype, _
-		expr _
-	)
+		byval to_dtype as integer, _
+		byval expr_dtype as integer, _
+		byval expr as ASTNODE ptr _
+	) as integer
 
-    '' to pointer? only allow integers..
-    if( typeIsPtr( to_dtype ) ) then
+	function = FALSE
+
+	'' to pointer? only allow integers..
+	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
 
-        '' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
+		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
 			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
 			 if( astIsCONST( expr ) ) then
-			 	if( astGetValueAsInt( expr ) <> 0 ) then
-			 		exit function
-			 	end if
+				if( astGetValueAsInt( expr ) <> 0 ) then
+					exit function
+				end if
 			 else
-			 	exit function
+				exit function
 			 end if
 
 		case else
@@ -280,8 +282,8 @@ end sub
 			end if
 		end select
 
-    '' from pointer? only allow integers..
-    elseif( typeIsPtr( expr_dtype ) ) then
+	'' from pointer? only allow integers..
+	elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
 			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
@@ -291,9 +293,11 @@ end sub
 				exit function
 			end if
 		end select
-    end if
+	end if
 
-#endmacro
+	function = TRUE
+
+end function
 
 '':::::
 function astCheckCONV _
@@ -314,26 +318,28 @@ function astCheckCONV _
 
 	ldtype = astGetFullType( l )
 
-    '' string? neither
-    if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
-    	exit function
+	'' string? neither
+	if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
+		exit function
 	end if
 
 	'' check pointers
-	hCheckPtr( to_dtype, ldtype, l )
+	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+		exit function
+	end if
 
 	select case typeGet( ldtype )
 	'' CHAR and WCHAR literals are also from the INTEGER class
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	'' don't allow, unless it's a deref pointer
-    	if( astIsDEREF( l ) = FALSE ) then
-    		exit function
-    	end if
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		'' don't allow, unless it's a deref pointer
+		if( astIsDEREF( l ) = FALSE ) then
+			exit function
+		end if
 
-    '' UDT's? ditto
-    case FB_DATATYPE_STRUCT
-    	exit function
-    end select
+	'' UDT's? ditto
+	case FB_DATATYPE_STRUCT
+		exit function
+	end select
 
 	function = TRUE
 
@@ -367,19 +373,19 @@ function astNewCONV _
 		byval check_str as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as integer ldclass = any, ldtype = any
+	dim as ASTNODE ptr n = any
+	dim as integer ldclass = any, ldtype = any
 
 	function = NULL
 
-    ldtype = astGetFullType( l )
+	ldtype = astGetFullType( l )
 
-    '' same type?
-    if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
-    	if( l->subtype = to_subtype ) then
-    		return l
-    	end if
-    end if
+	'' same type?
+	if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
+		if( l->subtype = to_subtype ) then
+			return l
+		end if
+	end if
 
 	'' try casting op overloading
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
@@ -400,43 +406,45 @@ function astNewCONV _
 
 	end select
 
-    ldclass = symbGetDataClass( ldtype )
+	ldclass = symbGetDataClass( ldtype )
 
-    select case op
+	select case op
 	'' sign conversion?
 	case AST_OP_TOSIGNED, AST_OP_TOUNSIGNED
 		'' float? invalid
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			exit function
 		end if
-    end select
+	end select
 
 	'' check pointers
-	hCheckPtr( to_dtype, ldtype, l )
+	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+		exit function
+	end if
 
-    '' string?
+	'' string?
 	if( check_str ) then
 		select case as const typeGet( ldtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		return rtlStrToVal( l, to_dtype )
-    	end select
+			return rtlStrToVal( l, to_dtype )
+		end select
 
-    else
-    	if( ldclass = FB_DATACLASS_STRING ) then
-    		exit function
+	else
+		if( ldclass = FB_DATACLASS_STRING ) then
+			exit function
 
-    	'' CHAR and WCHAR literals are also from the INTEGER class
-    	else
-    		select case typeGet( ldtype )
-    		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    			'' don't allow, unless it's a deref pointer
-    			if( astIsDEREF( l ) = FALSE ) then
-    				exit function
-    			end if
-    	    end select
-    	end if
-    end if
+		'' CHAR and WCHAR literals are also from the INTEGER class
+		else
+			select case typeGet( ldtype )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' don't allow, unless it's a deref pointer
+				if( astIsDEREF( l ) = FALSE ) then
+					exit function
+				end if
+			end select
+		end if
+	end if
 
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
@@ -537,8 +545,8 @@ function astLoadCONV _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l = any
-    dim as IRVREG ptr vs = any, vr = any
+	dim as ASTNODE ptr l = any
+	dim as IRVREG ptr vs = any, vr = any
 
 	l = n->l
 
