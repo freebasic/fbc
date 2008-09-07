@@ -24,9 +24,18 @@
 #define FREEIMAGE_MAJOR_VERSION 3
 #define FREEIMAGE_MINOR_VERSION 10
 #define FREEIMAGE_RELEASE_SERIAL 0
+
+#if defined(__FB_BIGENDIAN__)
+#define FREEIMAGE_BIGENDIAN
+#endif
+
 #define FREEIMAGE_COLORORDER_BGR 0
 #define FREEIMAGE_COLORORDER_RGB 1
-#define FREEIMAGE_COLORORDER 0
+#if defined(FREEIMAGE_BIGENDIAN)
+#define FREEIMAGE_COLORORDER FREEIMAGE_COLORORDER_RGB
+#else
+#define FREEIMAGE_COLORORDER FREEIMAGE_COLORORDER_BGR
+#endif
 
 type FIBITMAP
 	data as any ptr
@@ -36,35 +45,64 @@ type FIMULTIBITMAP
 	data as any ptr
 end type
 
+#ifndef FALSE
 #define FALSE 0
+#endif
+#ifndef TRUE
 #define TRUE 1
+#endif
+#ifndef NULL
 #define NULL 0
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
+#endif
 
+#ifndef SEEK_SET
+#define SEEK_SET  0
+#define SEEK_CUR  1
+#define SEEK_END  2
+#endif
+
+#ifndef BOOL
 type BOOL as integer
+#endif
+#ifndef WORD
 type WORD as ushort
+#endif
+#ifndef DWORD
 type DWORD as uinteger
+#endif
 
-type tagRGBQUAD
-	rgbBlue as byte
-	rgbGreen as byte
-	rgbRed as byte
-	rgbReserved as byte
+#ifndef __win_wingdi_bi__
+
+type tagRGBQUAD field=1
+#if FREEIMAGE_COLORORDER = FREEIMAGE_COLORORDER_BGR
+		rgbBlue As Byte
+		rgbGreen As Byte
+		rgbRed As Byte
+#else
+		rgbRed As Byte
+		rgbGreen As Byte
+		rgbBlue As Byte
+#endif
+  		rgbReserved as byte
 end type
 
 type RGBQUAD as tagRGBQUAD
 
-type tagRGBTRIPLE
-	rgbtBlue as byte
-	rgbtGreen as byte
-	rgbtRed as byte
+type tagRGBTRIPLE field=1
+#if FREEIMAGE_COLORORDER = FREEIMAGE_COLORORDER_BGR
+		rgbtBlue As Byte
+		rgbtGreen As Byte
+		rgbtRed As Byte
+#else
+		rgbtRed As Byte
+		rgbtGreen As Byte
+		rgbtBlue As Byte
+#endif
 end type
 
 type RGBTRIPLE as tagRGBTRIPLE
 
-type tagBITMAPINFOHEADER
+type tagBITMAPINFOHEADER field=1
 	biSize as DWORD
 	biWidth as LONG
 	biHeight as LONG
@@ -87,6 +125,16 @@ type tagBITMAPINFO
 end type
 
 type BITMAPINFO as tagBITMAPINFO
+
+#else
+
+type tagRGBQUAD As RGBQUAD
+type tagRGBTRIPLE As RGBTRIPLE
+type tagBITMAPINFOHEADER as BITMAPINFOHEADER
+type tagBITMAPINFO as BITMAPINFO
+
+#endif '' __win_wingdi_bi__
+
 type PBITMAPINFO as tagBITMAPINFO ptr
 
 type tagFIRGB16
@@ -130,33 +178,87 @@ end type
 
 type FICOMPLEX as tagFICOMPLEX
 
-#define FI_RGBA_RED 2
-#define FI_RGBA_GREEN 1
-#define FI_RGBA_BLUE 0
-#define FI_RGBA_ALPHA 3
-#define FI_RGBA_RED_MASK &h00FF0000
-#define FI_RGBA_GREEN_MASK &h0000FF00
-#define FI_RGBA_BLUE_MASK &h000000FF
-#define FI_RGBA_ALPHA_MASK &hFF000000
-#define FI_RGBA_RED_SHIFT 16
-#define FI_RGBA_GREEN_SHIFT 8
-#define FI_RGBA_BLUE_SHIFT 0
-#define FI_RGBA_ALPHA_SHIFT 24
-#define FI_RGBA_RGB_MASK (&h00FF0000 or &h0000FF00 or &h000000FF)
-#define FI16_555_RED_MASK &h7C00
-#define FI16_555_GREEN_MASK &h03E0
-#define FI16_555_BLUE_MASK &h001F
-#define FI16_555_RED_SHIFT 10
-#define FI16_555_GREEN_SHIFT 5
-#define FI16_555_BLUE_SHIFT 0
-#define FI16_565_RED_MASK &hF800
-#define FI16_565_GREEN_MASK &h07E0
-#define FI16_565_BLUE_MASK &h001F
-#define FI16_565_RED_SHIFT 11
-#define FI16_565_GREEN_SHIFT 5
-#define FI16_565_BLUE_SHIFT 0
-#define FIICC_DEFAULT &h00
-#define FIICC_COLOR_IS_CMYK &h01
+#ifndef FREEIMAGE_BIGENDIAN
+#if FREEIMAGE_COLORORDER = FREEIMAGE_COLORORDER_BGR
+'' Little Endian (x86 / MS Windows, Linux) : BGR(A) order
+#define FI_RGBA_RED				2
+#define FI_RGBA_GREEN			1
+#define FI_RGBA_BLUE			0
+#define FI_RGBA_ALPHA			3
+#define FI_RGBA_RED_MASK		&H00FF0000
+#define FI_RGBA_GREEN_MASK		&H0000FF00
+#define FI_RGBA_BLUE_MASK		&H000000FF
+#define FI_RGBA_ALPHA_MASK		&HFF000000
+#define FI_RGBA_RED_SHIFT		16
+#define FI_RGBA_GREEN_SHIFT		8
+#define FI_RGBA_BLUE_SHIFT		0
+#define FI_RGBA_ALPHA_SHIFT		24
+#else
+'' Little Endian (x86 / MaxOSX) : RGB(A) order
+#define FI_RGBA_RED				0
+#define FI_RGBA_GREEN			1
+#define FI_RGBA_BLUE			2
+#define FI_RGBA_ALPHA			3
+#define FI_RGBA_RED_MASK		&H000000FF
+#define FI_RGBA_GREEN_MASK		&H0000FF00
+#define FI_RGBA_BLUE_MASK		&H00FF0000
+#define FI_RGBA_ALPHA_MASK		&HFF000000
+#define FI_RGBA_RED_SHIFT		0
+#define FI_RGBA_GREEN_SHIFT		8
+#define FI_RGBA_BLUE_SHIFT		16
+#define FI_RGBA_ALPHA_SHIFT		24
+#endif '' FREEIMAGE_COLORORDER
+#else
+#if FREEIMAGE_COLORORDER = FREEIMAGE_COLORORDER_BGR
+'' Big Endian (PPC / none) : BGR(A) order
+#define FI_RGBA_RED				2
+#define FI_RGBA_GREEN			1
+#define FI_RGBA_BLUE			0
+#define FI_RGBA_ALPHA			3
+#define FI_RGBA_RED_MASK		&H0000FF00
+#define FI_RGBA_GREEN_MASK		&H00FF0000
+#define FI_RGBA_BLUE_MASK		&HFF000000
+#define FI_RGBA_ALPHA_MASK		&H000000FF
+#define FI_RGBA_RED_SHIFT		8
+#define FI_RGBA_GREEN_SHIFT		16
+#define FI_RGBA_BLUE_SHIFT		24
+#define FI_RGBA_ALPHA_SHIFT		0
+#else
+'' Big Endian (PPC / Linux, MaxOSX) : RGB(A) order
+#define FI_RGBA_RED				0
+#define FI_RGBA_GREEN			1
+#define FI_RGBA_BLUE			2
+#define FI_RGBA_ALPHA			3
+#define FI_RGBA_RED_MASK		&HFF000000
+#define FI_RGBA_GREEN_MASK		&H00FF0000
+#define FI_RGBA_BLUE_MASK		&H0000FF00
+#define FI_RGBA_ALPHA_MASK		&H000000FF
+#define FI_RGBA_RED_SHIFT		24
+#define FI_RGBA_GREEN_SHIFT		16
+#define FI_RGBA_BLUE_SHIFT		8
+#define FI_RGBA_ALPHA_SHIFT		0
+#endif '' FREEIMAGE_COLORORDER
+#endif '' FREEIMAGE_BIGENDIAN
+
+#define FI_RGBA_RGB_MASK		(FI_RGBA_RED_MASK|FI_RGBA_GREEN_MASK|FI_RGBA_BLUE_MASK)
+
+'' The 16bit macros only include masks and shifts, since each color element is not byte aligned
+
+#define FI16_555_RED_MASK		&H7C00
+#define FI16_555_GREEN_MASK		&H03E0
+#define FI16_555_BLUE_MASK		&H001F
+#define FI16_555_RED_SHIFT		10
+#define FI16_555_GREEN_SHIFT	5
+#define FI16_555_BLUE_SHIFT		0
+#define FI16_565_RED_MASK		&HF800
+#define FI16_565_GREEN_MASK		&H07E0
+#define FI16_565_BLUE_MASK		&H001F
+#define FI16_565_RED_SHIFT		11
+#define FI16_565_GREEN_SHIFT	5
+#define FI16_565_BLUE_SHIFT		0
+
+#define FIICC_DEFAULT			&H00
+#define FIICC_COLOR_IS_CMYK		&H01
 
 type FIICCPROFILE
 	flags as WORD
@@ -327,7 +429,7 @@ type FI_WriteProc as function cdecl(byval as any ptr, byval as uinteger, byval a
 type FI_SeekProc as function cdecl(byval as fi_handle, byval as integer, byval as integer) as integer
 type FI_TellProc as function cdecl(byval as fi_handle) as integer
 
-type FreeImageIO
+type FreeImageIO field=1
 	read_proc as FI_ReadProc
 	write_proc as FI_WriteProc
 	seek_proc as FI_SeekProc
@@ -488,7 +590,7 @@ declare function FreeImage_FIFSupportsWriting alias "FreeImage_FIFSupportsWritin
 declare function FreeImage_FIFSupportsExportBPP alias "FreeImage_FIFSupportsExportBPP" (byval fif as FREE_IMAGE_FORMAT, byval bpp as integer) as BOOL
 declare function FreeImage_FIFSupportsExportType alias "FreeImage_FIFSupportsExportType" (byval fif as FREE_IMAGE_FORMAT, byval type as FREE_IMAGE_TYPE) as BOOL
 declare function FreeImage_FIFSupportsICCProfiles alias "FreeImage_FIFSupportsICCProfiles" (byval fif as FREE_IMAGE_FORMAT) as BOOL
-declare function FreeImage_OpenMultiBitmap alias "FreeImage_OpenMultiBitmap" (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval create_new as BOOL, byval read_only as BOOL, byval keep_cache_in_memory as BOOL = 0, byval flags as integer = 0) as FIMULTIBITMAP ptr
+declare function FreeImage_OpenMultiBitmap alias "FreeImage_OpenMultiBitmap" (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval create_new_ as BOOL, byval read_only as BOOL, byval keep_cache_in_memory as BOOL = 0, byval flags as integer = 0) as FIMULTIBITMAP ptr
 declare function FreeImage_CloseMultiBitmap alias "FreeImage_CloseMultiBitmap" (byval bitmap as FIMULTIBITMAP ptr, byval flags as integer = 0) as BOOL
 declare function FreeImage_GetPageCount alias "FreeImage_GetPageCount" (byval bitmap as FIMULTIBITMAP ptr) as integer
 declare sub FreeImage_AppendPage alias "FreeImage_AppendPage" (byval bitmap as FIMULTIBITMAP ptr, byval data as FIBITMAP ptr)
