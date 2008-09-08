@@ -116,11 +116,15 @@ src/gfxlib2/obj/dos/deleteme.txt
 src/gfxlib2/obj/dos/stamp-h1
 src/gfxlib2/obj/freebsd/deleteme.txt
 src/gfxlib2/obj/linux/deleteme.txt
+src/gfxlib2/obj/netbsd/deleteme.txt
+src/gfxlib2/obj/openbsd/deleteme.txt
 src/gfxlib2/obj/win32/Makefile
 src/gfxlib2/obj/win32/config.h
 src/gfxlib2/obj/win32/config.status
 src/gfxlib2/obj/win32/deleteme.txt
 src/gfxlib2/obj/win32/stamp-h1
+src/gfxlib2/openbsd/libfb_gfx_joystick.c
+src/gfxlib2/openbsd/libfb_gfx_openbsd.c
 src/gfxlib2/opengl/libfb_gfx_opengl.c
 src/gfxlib2/opengl/win32/libfb_gfx_driver_opengl.c
 src/gfxlib2/opengl/x11/libfb_gfx_driver_opengl.c

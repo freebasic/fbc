@@ -115,7 +115,10 @@ examples/manual/array/erase.bas
 examples/manual/array/lbound.bas
 examples/manual/array/preserve.bas
 examples/manual/array/redim.bas
+examples/manual/array/redim2d.bas
 examples/manual/array/ubound.bas
+examples/manual/array/ubound2.bas
+examples/manual/array/ubound3.bas
 examples/manual/bits/bit.bas
 examples/manual/bits/bitreset.bas
 examples/manual/bits/bitset.bas
@@ -262,6 +265,7 @@ examples/manual/defines/fbargv.bas
 examples/manual/defines/fbbigendian.bas
 examples/manual/defines/fbbuilddate.bas
 examples/manual/defines/fbcygwin.bas
+examples/manual/defines/fbdarwin.bas
 examples/manual/defines/fbdebug.bas
 examples/manual/defines/fbdos.bas
 examples/manual/defines/fberr.bas
@@ -270,6 +274,7 @@ examples/manual/defines/fblang.bas
 examples/manual/defines/fblinux.bas
 examples/manual/defines/fbmain.bas
 examples/manual/defines/fbminversion.bas
+examples/manual/defines/fbopenbsd.bas
 examples/manual/defines/fboptionbyval.bas
 examples/manual/defines/fboptiondynamic.bas
 examples/manual/defines/fboptionescape.bas
@@ -394,11 +399,14 @@ examples/manual/gfx/put-trans.bas
 examples/manual/gfx/put-xor.bas
 examples/manual/gfx/put.bas
 examples/manual/gfx/rgb.bas
+examples/manual/gfx/rgb_get.bas
 examples/manual/gfx/rgba.bas
+examples/manual/gfx/rgba_get.bas
 examples/manual/gfx/screen-func1.bas
 examples/manual/gfx/screen-func2.bas
 examples/manual/gfx/screen-func3.bas
 examples/manual/gfx/screen.bas
+examples/manual/gfx/screen2.bas
 examples/manual/gfx/screencontrol.bas
 examples/manual/gfx/screencopy.bas
 examples/manual/gfx/screenevent.bas
@@ -423,6 +431,7 @@ examples/manual/input/getjoystick.bas
 examples/manual/input/getkey.bas
 examples/manual/input/getmouse.bas
 examples/manual/input/inkey.bas
+examples/manual/input/inkeyext.bas
 examples/manual/input/multikey.bas
 examples/manual/input/setmouse.bas
 examples/manual/input/stick.bas

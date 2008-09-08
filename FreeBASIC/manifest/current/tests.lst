@@ -158,6 +158,7 @@ tests/macros/conditional.bas
 tests/macros/conditional2.bas
 tests/macros/hello.bas
 tests/macros/intrinsic.bas
+tests/macros/invalid_symbolname.bas
 tests/macros/macro_empty.bas
 tests/macros/macro_nested1.bas
 tests/macros/macro_nested2.bas
@@ -313,6 +314,7 @@ tests/qb/file_open_lpt_fail.bas
 tests/qb/file_open_scrn.bas
 tests/qb/file_open_scrn_fail.bas
 tests/qb/literal_sizes.bas
+tests/qb/literal_types.bas
 tests/qb/mkcv.bas
 tests/qb/qbtypes.bas
 tests/qb/scope_block.bas
@@ -368,6 +370,7 @@ tests/string/trim.bas
 tests/string/val.bas
 tests/structs/anon_align.bas
 tests/structs/anon_nested.bas
+tests/structs/array_only_dtor.bas
 tests/structs/assign_anon.bas
 tests/structs/assignment.bas
 tests/structs/bitfield-misc.bas

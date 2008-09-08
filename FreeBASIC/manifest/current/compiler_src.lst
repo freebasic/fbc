@@ -55,9 +55,12 @@ src/compiler/fb-objinfo.bas
 src/compiler/fb.bas
 src/compiler/fbc.bas
 src/compiler/fbc_cyg.bas
+src/compiler/fbc_darwin.bas
 src/compiler/fbc_dos.bas
 src/compiler/fbc_freebsd.bas
 src/compiler/fbc_linux.bas
+src/compiler/fbc_netbsd.bas
+src/compiler/fbc_openbsd.bas
 src/compiler/fbc_win32.bas
 src/compiler/fbc_xbox.bas
 src/compiler/flist.bas
@@ -104,6 +107,7 @@ src/compiler/obj/dos/config.status
 src/compiler/obj/dos/deleteme.txt
 src/compiler/obj/freebsd/deleteme.txt
 src/compiler/obj/linux/deleteme.txt
+src/compiler/obj/openbsd/deleteme.txt
 src/compiler/obj/win32/Makefile
 src/compiler/obj/win32/config.status
 src/compiler/obj/win32/deleteme.txt
