@@ -140,5 +140,14 @@ Chronology of the FreeBASIC project.
 	**2008 Apr 18**
 		- FreeBASIC 0.18.5 full release uploaded.
 		- Bugfix release. Linux: packaging,  Win32: graphics, DOS: GDB
+
+	**2008 Aug 10**
+		- FreeBASIC 0.18.6: unexpected bugfix release, only Win32 gfx related bugs.
    
+	**2008 Aug 11**
+		- FreeBASIC 0.20 full release uploaded.
+		- Many bugfixes
+		- re-allowed GOSUB&RETURN in -lang fblite
+		- some graphics enhancements, SSE, GET, ...
+
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

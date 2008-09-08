@@ -17,7 +17,7 @@ Locks the working page's framebuffer
 
 	The screen refresh remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement, which resumes it.  
 	
-	While calls to ##**Screenlock**## should be paired with calls to ##**[[KeyPgScreenunlock Screenunlock]]**## , the program keeps track of its internal status and there is no danger about locking the screen twice in a row as only the first lock is performed.
+	Calls to ##**Screenlock**## must be paired with a matching call to ##**[[KeyPgScreenunlock Screenunlock]]**##.  The graphics driver keeps track of how many times ##**Screenlock**## has been called using a counter.  Only the first call to ##**Screenlock**## actually performs a locking operation.  Subsequent calls to ##**Screenlock**## only increment the counter.  Conversely, ##**[[KeyPgScreenunlock Screenunlock]]**## only decrements the lock counter until it reaches zero at which time the actual unlock operation will be performed.  Using ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## will release all locks and set the lock counter back to zero before changing screen modes.
 	
 	It is strongly recommended that the lock on a page be held for as short a time as possible. Only screen drawing should occur while the screen is locked, input/output and waiting must be avoided. In Win32 and Linux the screen is locked by stopping the thread that processes also the OS' events. If the screen is kept locked for a long time the event queue could overflow and make the system unstable. 
 

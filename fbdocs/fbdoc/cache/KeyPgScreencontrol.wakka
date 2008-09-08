@@ -21,99 +21,100 @@ Sets or gets internal graphics library settings
 
 {{fbdoc item="desc"}}
 
-	This function can be used to set or get internal GfxLib states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by GfxLib when the function returns.
-	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in fbgfx.bi; below is a list of the supported ##//what//## values, along with the parameters associated with them.
+	This function can be used to set or get internal ""GfxLib"" states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by ""GfxLib"" when the function returns.
+	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in ##fbgfx.bi##.  In //[[CompilerDialects lang fb]]//, they are set to be stored in the ##FB## ##[[KeyPgNamespace Namespace]]##.
+	Below is a list of the supported ##//what//## constants - and their values as defined at time of writing - along with the parameters associated with them.
 
 	__Supported operations__
 		
-		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(0) or the empty string and the operation has no effect if a graphics mode is not available at call time.
+		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(##0##) or the empty string(##"####"##) and the operation has no effect if a graphics mode is not available at call time.
 		
 		**Get operations**
-	- ##GET_WINDOW_POS## (0) Returns the current window position, in desktop coordinates.
+	- ##GET_WINDOW_POS## (##0##) Returns the current window position, in desktop coordinates.
 		[OUT] ##//param1//## x
 		[OUT] ##//param2//## y
-	- * ##GET_WINDOW_TITLE## (1) Returns the title of the program window.
+	- * ##GET_WINDOW_TITLE## (##1##) Returns the title of the program window.
 		[OUT] ##//param//## title
-	- ##GET_WINDOW_HANDLE## (2) Returns a handle to the program window.
+	- ##GET_WINDOW_HANDLE## (##2##) Returns a handle to the program window.
 		[OUT] ##//param1//## handle; this is a ##HWND## in Windows, a "Window" XID in X11
-	- * ##GET_DESKTOP_SIZE## (3) Returns the desktop size, in pixels.
+	- * ##GET_DESKTOP_SIZE## (##3##) Returns the desktop size, in pixels.
 		[OUT] ##//param1//## width
 		[OUT] ##//param2//## height
-	- ##GET_SCREEN_SIZE## (4) Returns the current screen size in pixels.
+	- ##GET_SCREEN_SIZE## (##4##) Returns the current screen size in pixels.
 		[OUT] ##//param1//## width
 		[OUT] ##//param2//## height
-	- ##GET_SCREEN_DEPTH## (5) Returns current graphics mode screen depth.
+	- ##GET_SCREEN_DEPTH## (##5##) Returns current graphics mode screen depth.
 		[OUT] ##//param1//## bits per pixel
-	- ##GET_SCREEN_BPP## (6) Returns current graphics mode BPP.
+	- ##GET_SCREEN_BPP## (##6##) Returns current graphics mode BPP.
 		[OUT] ##//param1//## bytes per pixel
-	- ##GET_SCREEN_PITCH## (7) Returns the current graphics mode framebuffer pitch, in bytes.
+	- ##GET_SCREEN_PITCH## (##7##) Returns the current graphics mode framebuffer pitch, in bytes.
 		[OUT] ##//param1//## pitch
-	- ##GET_SCREEN_REFRESH## (8) Returns the current graphics mode refresh rate, in hertz.
+	- ##GET_SCREEN_REFRESH## (##8##) Returns the current graphics mode refresh rate, in hertz.
 		[OUT] ##//param1//## rate
-	- ##GET_DRIVER_NAME## (9) Returns the current graphics mode driver name.
+	- ##GET_DRIVER_NAME## (##9##) Returns the current graphics mode driver name.
 		[OUT] ##//param//## name
-	- ##GET_TRANSPARENT_COLOR## (10) Returns the transparent color value for the current graphics mode depth.
+	- ##GET_TRANSPARENT_COLOR## (##10##) Returns the transparent color value for the current graphics mode depth.
 		[OUT] ##//param1//## value
-	- ##GET_VIEWPORT## (11) Returns the current viewport as set by the [[KeyPgViewgraphics View (Graphics)]] statement, in screen coordinates.
+	- ##GET_VIEWPORT## (##11##) Returns the current viewport as set by the [[KeyPgViewgraphics View (Graphics)]] statement, in screen coordinates.
 		[OUT] ##//param1//## x1
 		[OUT] ##//param2//## y1
 		[OUT] ##//param3//## x2
 		[OUT] ##//param4//## y2
-	- ##GET_PEN_POS## (12) Returns the last graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+	- ##GET_PEN_POS## (##12##) Returns the last graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep Step]]## keyword.
 		[OUT] ##//param1//## x
 		[OUT] ##//param2//## y
-	- ##GET_COLOR## (13) Returns the current graphics mode color.
+	- ##GET_COLOR## (##13##) Returns the current graphics mode color.
 		[OUT] ##//param1//## foreground
 		[OUT] ##//param2//## background
-	- ##GET_ALPHA_PRIMITIVES## (14) Returns if primitives drawing support for alpha channel is enabled.
-		[OUT] ##//param1//## TRUE (-1) if alpha primitives is enabled, FALSE (0) otherwise
-	- ##GET_GL_EXTENSIONS## (15) Returns a string holding all supported GL extensions, or the empty string if not in OpenGL mode.
+	- ##GET_ALPHA_PRIMITIVES## (##14##) Returns if primitives drawing support for alpha channel is enabled.
+		[OUT] ##//param1//## ##TRUE## (##-1##) if alpha primitives is enabled, ##FALSE## (##0##) otherwise
+	- ##GET_GL_EXTENSIONS## (##15##) Returns a string holding all supported GL extensions, or the empty string if not in ""OpenGL"" mode.
 		[OUT] ##//param//## supported GL extensions
-	- ##GET_HIGH_PRIORITY## (16) Returns if GFX_HIGH_PRIORITY was specified in the flags passed to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##.
+	- ##GET_HIGH_PRIORITY## (##16##) Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
 
 		**Set operations**
-	- ##SET_WINDOW_POS## (100) Sets the current program window position, in desktop coordinates.
+	- ##SET_WINDOW_POS## (##100##) Sets the current program window position, in desktop coordinates.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- * ##SET_WINDOW_TITLE## (101) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle WindowTitle]]( //param// )##.
+	- * ##SET_WINDOW_TITLE## (##101##) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle WindowTitle]]( //param// )##.
 		[IN] ##//param//## title
-	- ##SET_PEN_POS## (102) Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the [[KeyPgStep Step]] keyword.
+	- ##SET_PEN_POS## (##102##) Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep Step]]## keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- * ##SET_DRIVER_NAME## (103) Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
+	- * ##SET_DRIVER_NAME## (##103##) Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
 		[IN] ##//param//## driver name
-	- ##SET_ALPHA_PRIMITIVES## (104) Sets if primitives drawing should honor alpha channel.
+	- ##SET_ALPHA_PRIMITIVES## (##104##) Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled
-	- * ##SET_GL_COLOR_BITS## (105) Sets the number of bits dedicated to the OpenGL color buffer
+	- * ##SET_GL_COLOR_BITS## (##105##) Sets the number of bits dedicated to the ""OpenGL"" color buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_COLOR_RED_BITS## (106) Sets the number of bits dedicated to the red component of the OpenGL color buffer
+	- * ##SET_GL_COLOR_RED_BITS## (##106##) Sets the number of bits dedicated to the red component of the ""OpenGL"" color buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_COLOR_GREEN_BITS## (107) Sets the number of bits dedicated to the green component of the OpenGL color buffer
+	- * ##SET_GL_COLOR_GREEN_BITS## (##107##) Sets the number of bits dedicated to the green component of the ""OpenGL"" color buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_COLOR_BLUE_BITS## (108) Sets the number of bits dedicated to the blue component of the OpenGL color buffer
+	- * ##SET_GL_COLOR_BLUE_BITS## (##108##) Sets the number of bits dedicated to the blue component of the ""OpenGL"" color buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_COLOR_ALPHA_BITS## (109) Sets the number of bits dedicated to the alpha component of the OpenGL color buffer
+	- * ##SET_GL_COLOR_ALPHA_BITS## (##109##) Sets the number of bits dedicated to the alpha component of the ""OpenGL"" color buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_DEPTH_BITS## (110) Sets the number of bits dedicated to the OpenGL depth buffer
+	- * ##SET_GL_DEPTH_BITS## (##110##) Sets the number of bits dedicated to the ""OpenGL"" depth buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_STENCIL_BITS## (111) Sets the number of bits dedicated to the OpenGL stencil buffer
+	- * ##SET_GL_STENCIL_BITS## (##111##) Sets the number of bits dedicated to the ""OpenGL"" stencil buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_ACCUM_BITS## (112) Sets the number of bits dedicated to the OpenGL accumulation buffer
+	- * ##SET_GL_ACCUM_BITS## (##112##) Sets the number of bits dedicated to the ""OpenGL"" accumulation buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_ACCUM_RED_BITS## (113) Sets the number of bits dedicated to the red component of the OpenGL accumulation buffer
+	- * ##SET_GL_ACCUM_RED_BITS## (##113##) Sets the number of bits dedicated to the red component of the ""OpenGL"" accumulation buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_ACCUM_GREEN_BITS## (114) Sets the number of bits dedicated to the green component of the OpenGL accumulation buffer
+	- * ##SET_GL_ACCUM_GREEN_BITS## (##114##) Sets the number of bits dedicated to the green component of the ""OpenGL"" accumulation buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_ACCUM_BLUE_BITS## (115) Sets the number of bits dedicated to the blue component of the OpenGL accumulation buffer
+	- * ##SET_GL_ACCUM_BLUE_BITS## (##115##) Sets the number of bits dedicated to the blue component of the ""OpenGL"" accumulation buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_ACCUM_ALPHA_BITS## (116) Sets the number of bits dedicated to the alpha component of the OpenGL accumulation buffer
+	- * ##SET_GL_ACCUM_ALPHA_BITS## (##116##) Sets the number of bits dedicated to the alpha component of the ""OpenGL"" accumulation buffer
 		[IN] ##//param1//## bits
-	- * ##SET_GL_NUM_SAMPLES## (117) Sets the number of samples to be used for OpenGL multisampling
+	- * ##SET_GL_NUM_SAMPLES## (##117##) Sets the number of samples to be used for ""OpenGL"" multisampling
 		[IN] ##//param1//## samples
 
 		**Other operations**
-	- ##POLL_EVENTS## (200) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for OpenGL code where FLIP is not used, as normally FLIP will cause these events to be polled.
+	- ##POLL_EVENTS## (##200##) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip Flip]]## is not used, as normally ##[[KeyPgFlip Flip]]## will cause these events to be polled.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
@@ -165,7 +166,7 @@ loop while not multikey(1)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
@@ -175,3 +176,4 @@ loop while not multikey(1)
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}
+   

@@ -48,8 +48,10 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 	==- {{anchor name="item22|22. My program crashes when I try to use more than cca 1 MiB RAM ! BUG / still limits ?"}}==
 	==- {{anchor name="item23|23. Threading functions are disallowed in DOS ? Help !"}}==
 	==- {{anchor name="item24|24. Executables from FB DOS are bloated !"}}==
-	==- {{anchor name="item25|25. SLEEP doesn't work ! How to cause a delay ?"}}==
-	==- {{anchor name="item26|26. The performance is very bad in DOS !"}}==
+	==- {{anchor name="item25|25. Compilation is very slow with FB !"}}==
+	==- {{anchor name="item26|26. SLEEP doesn't work ! How to cause a delay ?"}}==
+	==- {{anchor name="item27|27. The performance is very bad in DOS !"}}==
+	==- {{anchor name="item28|28. Can I access disk sectors with FB ?"}}==
 
 {{anchor name="item999|See also"}}
 
@@ -90,7 +92,7 @@ The DOS target is fairly well working and supported by FreeBASIC, and up-to-date
 
 {{anchor name="item11"}}==11. How can I do graphics in DOS ?==
 	GUI or graphics in DOS is definitely possible, there are several approaches: 
-		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.18.5** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
+		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes. Note: use preferably FB version **0.20** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "ModeX" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).
@@ -221,21 +223,34 @@ type RegTypeX as __dpmi_regs
 {{anchor name="item24"}}==24. Executables from FB DOS are bloated !==
 	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme! ( see forum: http://freebasic.net/forum/viewtopic.php?t=11757 )
 
-{{anchor name="item25"}}==25. SLEEP doesn't work ! How to cause a delay ?==
-	SLEEP does work ... but has a resolution of cca 55ms = 1/18s only, thus "SLEEP 500" is fine, while for example using "SLEEP 2" for 2 milliseconds won't work. !writeme! / !fixme! 
-	- PIT / BIOS timer (runs at 18.2 Hz by default), peek the BIOS timer or set your own, see "ISR_TIMER.BAS" example, raise PIT frequency (use with care)
-	- Poll the PIT counter, method from TIMERHLP.ASM from DKRNL32, allows to enhance precision of above  
-	- RDTSC instruction (Pentium and newer)
-	- Delay loops
+{{anchor name="item25"}}==25. Compilation is very slow with FB !==
+	Problem: "FBC takes 10 seconds to compile a "Hello world" program ! TurboBASIC / QBASIC / VBDOS / PowerBASIC do take < 1 second".
 
-{{anchor name="item26"}}==26. The performance is very bad in DOS !==
+	True, but this is "by design" : FB compiles your sources in 3 steps, saving the intermediate files, as described in [[CompilerCmdLine]] , while many older compilers do just 1 pass in memory. This is related mostly to file I/O performance, see FAQ 27 below about possibilities of improvements, additionally a small improvement can be achieved by making the DPMI host resident ( **HDPMI32 -r** or **CWSDPMI -p** , see FAQ 4 above). Note that the delay is mostly "additive" , so it won't hurt too much with bigger projects.
+
+{{anchor name="item26"}}==26. SLEEP doesn't work ! How to cause a delay ?==
+	SLEEP does work ... but has a resolution of cca 55ms = 1/18s only, thus "SLEEP 500" is fine, while for example using "SLEEP 2" for 2 milliseconds won't work. !writeme! / !fixme! 
+		- PIT / BIOS timer (runs at 18.2 Hz by default), peek the BIOS timer or set your own, see "ISR_TIMER.BAS" example, raise PIT frequency (use with care)
+		- Poll the PIT counter, method from TIMERHLP.ASM from DKRNL32, allows to enhance precision of above  
+		- RDTSC instruction (Pentium and newer)
+		- RTC clock
+		- Delay loops
+
+{{anchor name="item27"}}==27. The performance is very bad in DOS !==
 	Problem: "The performance in DOS is poor compared to Win32 / Linux binary compiled from the very same source !" or "Even worse, the very same DOS binary runs much faster in NTVDM than in DOS !"
 
 	Both indeed can happen, nevertheless, DOS is no way predestined to be slow, the inefficiencies can be fixed. First you have to identify the area where you code looses performance. 
 
 		**File I/O** : DOS by default uses very little memory for its buffers, while other systems use much more and are "aggressive" with file caching. When dealing with many small files, this results in serious performance degrade. The solution is to install a filecache, for example **LBACache**, or you can install a RAMDISK (a good one: **SRDISK** ) and copy the "offending" files (for example FreeBASIC installation) there in and work there (make sure to backup your work to a more durable media regularly). Both will need an XMS host (use **HIMEMX** ). Also DOS by default uses BIOS to access the hard drives, while other systems try hard to find and use DMA. Test util: IDECHECK by Japheth (Download: [[http://www.japheth.de/Download/IDECheck.zip japheth.de/Download/IDECheck.zip]]) - run it in "I13" and "DMA" modes and compare results. If "DMA" is much faster (can be 1...10 times, depends from PC model), then installing a DOS DMA driver can bring a big speedup on large files. Also make sure to read and write data in large pieces (16 KiB at least), not just single bytes. Other OS'es are more forgiving here, but on DOS every single file I/O call causes a small "additive" delay, thus an efficient code design with good buffering is crucial.
 
-		**Graphics** : Pentium 2 and newer CPU's have a caching feature called "MTRR" to speed up writes to video RAM. Drivers of other OS'es usually do enable it, DOS doesn't (since it doesn't deal with graphics at all), nor FB GFX does. Use "VESAMTRR" tool by Japheth (contained in "HXGUI.ZIP" package), it will enable the speedup, surviving also mode switches and most "non-fatal" application crashes, up to a reboot. The possible speedup factor varies much depending from the PC model, up to cca 20 times. Also the mouse handling eats some (too much) CPU performance on DOS, this is a known weak point (the design of DOS FB GFX is not "very bad", it's just the common "standard" - which is not very good), fixing is theoretically possible but not easy, you just can try several mouse drivers (see FAQ 20).
+		**Graphics** : Pentium 2 and newer CPU's have a cache related feature called "MTRR" to speed up writes to video RAM. Drivers of other OS'es usually do enable it, DOS doesn't (since it doesn't deal with graphics at all), nor FB GFX does. Use "VESAMTRR" tool by Japheth (contained in "HXGUI.ZIP" package), it will enable the speedup, surviving also mode switches and most "non-fatal" application crashes, up to a reboot. The possible speedup factor varies much depending from the PC model, up to cca 20 times. Also the mouse handling eats some (too much) CPU performance on DOS, this is a known weak point (the design of DOS FB GFX is not "very bad", it's just the common "standard" - which is not very good), fixing is theoretically possible but not easy, you just can try several mouse drivers (see FAQ 20).
+
+{{anchor name="item28"}}==28. Can I access disk sectors with FB ?==
+	You can ... but FreeBASIC won't help you too much here: no "portable" solution, use OS specific low level way. For DOS 3 methods are possible 
+		- Use logical disk access features of DOS, see example in the forum: http://www.freebasic.net/forum/viewtopic.php?t=11830
+		- Use BIOS INT 13 , bypassing DOS
+		- Use CPU ports, bypassing both DOS and BIOS (no FB example yet, see source of IDECHECK from FAQ 27 above, FASM forum or some OS development resources)
+	Note that such experiments are a bit "dangerous" - you can easily loose data or make your PC unbootable if something goes wrong.
 
 {{anchor name="item999"}}{{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]].

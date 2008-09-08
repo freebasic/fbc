@@ -120,8 +120,12 @@ print using "Foreground color: &"; hex(fg, 8)
 print using "Background color: &"; hex(bg, 8)
 sleep
 %%
+{{fbdoc item="target"}}
+	- On the Linux version, the value returned can differ from the character shown on the console.  For example, unprintable control codes - such as the ##LF## character (##10##) that implicitly occurs after the end of ##[[KeyPgPrint Print]]##ed text - may be picked up instead of the untouched character in its place.
+
 {{fbdoc item="diff"}}
 	- In QB ##**Screen**## triggered an error if the coordinates were out of screen.
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgColor Color]]##

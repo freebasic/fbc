@@ -49,6 +49,8 @@ close #file_num                        '' close file via our file number
 end 0
 %%
 
+	Because of underlying differences in the libraries used by the compiler on different platforms, the EOF function can be unreliable when reading text files created in Linux (with LF line endings) in the Windows version of the compiler. The DOS and Linux compilers do not have this problem. One solution is to open the file for Binary access instead of for Input. Line Input# and EOF can still be used as in the above example, and the EOF function will work reliably. This solution will not detect the end of file character, but this is only used to mark the end of text streams that are not disk files.
+
 {{fbdoc item="diff"}}
 	- In QB the comm port signaled an EOF when there were no chars waiting to be read.
 	- In QB, for files opened in RANDOM or BINARY mode, EOF returned non-zero only after a read past the end of file has been attempted.  In FreeBASIC, EOF returns true after the last item is read.

@@ -19,25 +19,25 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a com
 	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling (throws a runtime error)]]//
 
 {{fbdoc item="desc"}}
-	##**Bload**## can be used to load image data or any other data from a file created with ##[[KeyPgBsave Bsave]]##, and store that data in an array or paste it to the screen. If ##//dest//## is not null (##0##), the image data is copied to memory starting at the address specified. Otherwise, it is pasted to the current graphics screen work page.
+	##**Bload**## can be used to load image data or any other data from a file created with ##[[KeyPgBsave Bsave]]##, and store that data in an array or paste it to the screen. If ##//dest//## is absent or null (##0##), the image data is pasted to the current graphics screen work page.  Otherwise it is loaded as image data to the address given by ##//dest//##.
 
 	##**Bload**## can load 3 different types of files:
-		- Old QB-like data files, saved with BSAVE from QB code, containing "raw" data preceded by a 7-byte header, beginning with 0xFD, up to 64 KiB in size  
-		- New FB-like data files, saved with BSAVE from FB code, containing "raw" data preceded by a 7-byte header, beginning with 0xFE, no 64 KiB limit anymore  
-		- BMP image files, supports a subset of valid ("Windows") .BMP files, beginning with "BM", saved from FB code with BSAVE, or created / saved in a compatible format using a graphics editor / converter.  
+		- Old QB-like data files, saved with BSAVE from QB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFD##, up to 64 ""KiB"" in size  
+		- New FB-like data files, saved with ##[[KeyPgBsave Bsave]]## from FB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFE##. There is no 64 ""KiB"" limit with this format
+		- BMP image files, supports a subset of valid ("Windows") .BMP files, beginning with ##"BM"##, saved from FB code with ##[[KeyPgBsave Bsave]]##, or created / saved in a compatible format using a graphics editor / converter.  
 
 	Image files with 8-bit per pixel resolution or lower contain a palette that describes the color values used in the images. If ##//pal//## is not null (##0##), the palette is copied to memory starting at the address specified. Otherwise, if the current graphics screen uses a palette then its palette is changed to match that of the image file.
 
 	When using one of the 2 "non-BMP" file formats to save images, the image files must have been created with ##[[KeyPgBsave Bsave]]## in the same graphics screen mode as it is being loaded into. When using the BMP file format, this restriction doesn't apply. 
 
-	When loading a BMP file using ##**Bload**##,  the images must be true-color (15-, 16-, 24- or 32-bits per pixel) or palettized/indexed (8-bit or lower). The image data will be converted to the proper pixel format for the current color depth, except true-color won't get reduced to a palettized image. ##**Bload**## doesn't support BMP files using RLE compression or other image file types (PNG, JPG, GIF, ...).  ##**Bload**## will load alpha channel information, if available, from 32-bit BMP files with ##BITMAPV4HEADER## or ##BITMAPV5HEADER## file headers.
+	When loading a BMP file using ##**Bload**##,  the images must be true-color (15-, 16-, 24- or 32-bits per pixel) or palettized/indexed (8-bit or lower). The image data will be converted to the proper pixel format for the current color depth, except that true-color can't be reduced to a palettized image. ##**Bload**## doesn't support BMP files using RLE compression or other image file types (PNG, JPG, GIF, ...).  ##**Bload**## will load alpha channel information, if available, from 32-bit BMP files with ##BITMAPV4HEADER## or ##BITMAPV5HEADER## file headers.
 
 **Runtime errors:**
 	##**Bload**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
 	//(##1##) Illegal function call//
 		- ##//dest//## was not specified or was null (##0##), and no graphics screen was set.
-		- The Bitmap uses an unsupported BMP file compression type (BI_RLE4, BI_RLE8)
+		- The Bitmap uses an unsupported BMP file compression type (##BI_RLE4##, ##BI_RLE8##)
 		- The Bitmap is true-color (16, 24, or 32 bits per pixel) and the current graphics screen uses a palette (8 bits per pixel or lower).
 	//(##2##) File not found//
 		- The file ##//filename//## could not be found.
@@ -55,8 +55,8 @@ sleep
 %%
 
 {{fbdoc item="filename" value="examples/manual/gfx/bload2.bas"}}%%(freebasic)
-'Load a 48x48 bitmap into an array
-SCREEN 18, 32
+'Load a 48x48 bitmap into an image
+screenres 320, 200, 32
 dim myImage as any ptr = imagecreate( 48, 48 )
 bload "picture.bmp", myImage
 put (10,10), myImage
@@ -67,12 +67,13 @@ sleep
 {{fbdoc item="diff"}}
 	- Support for loading BMP files is new to ""FreeBASIC"".
 	- Support for retrieving the palette from BMP files is new to ""FreeBASIC"".
-	- For non-BMP files, FB uses a different file format, not having the 64 KiB limit, and unsupported by QB
+	- For non-BMP files, FB uses a different file format, not having the 64 ""KiB"" limit, and unsupported by QB
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBsave Bsave]]##
 	- ##[[KeyPgPalette Palette]]##
+	- ##[[KeyPgImagecreate ImageCreate]]##
+	- ##[[KeyPgImageDestroy ImageDestroy]]##
 	- [[GfxInternalFormats Internal Pixel Formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
-   

@@ -14,13 +14,13 @@ Operator to dynamically allocate memory and construct data of a specified type
 ##
 {{fbdoc item="param"}}
 	##//size//## 
-		number of bytes to allocate.
+		Number of bytes to allocate.
 	##//initializers//##
 		Initial value(s) for the variable.
 	##//datatype//##
-		name of the data type to create.
+		Name of the data type to create.
 	##//count//##
-		Number of elements to allocate.
+		Exact number of elements to allocate.
 
 {{fbdoc item="ret"}}
 	A pointer of type [[DataType datatype]] to the newly allocated data.

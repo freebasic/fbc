@@ -12,12 +12,12 @@ Queries for and retrieves system events.
 		Specifies the buffer where the function should store the event data.
 
 {{fbdoc item="ret"}}
-	Returns -1 if there are pending events to be retrieved, 0 otherwise.
+	Returns ##-1## if there are pending events to be retrieved, ##0## otherwise.
 
 {{fbdoc item="desc"}}
-	This function returns the latest available system event from the internal GfxLib events queue. By "event" we mean any mouse or keyboard activity for example.
+	This function returns the latest available system event from the internal ""GfxLib"" events queue. By "event" we mean any mouse or keyboard activity, for example.
 
-	The event data (if available) will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 integers long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The fbgfx.bi header file contains a definition of the ##EVENT## user data type, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
+	The event data (if available) will be copied into the buffer pointed to by the ##//event//## parameter; this buffer must currently be at least 5 ##[[KeyPgInteger Integer]]##s long (20 bytes). The first integer will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type, whose memory layout is compatible with the event data returned by this function; this can be used to ease the interpretation of the event data. Here we report the ##EVENT## structure for clarity:
 		
 	{{fbdoc item="filename" value="examples/manual/check/KeyPgScreenevent_1.bas"}}%%(freebasic)
 Type EVENT Field = 1
@@ -40,31 +40,34 @@ End Type
 %%
 		
 	__Event types__
-		The event type is identified by an ID number returned into the first integer of the ##//event//## buffer (the ##.type## field in the ##EVENT## structure). Known event type IDs are:
+		The event type is identified by an ID number returned into the first integer of the ##//event//## buffer (the ##.type## field in the ##EVENT## structure). Known event type IDs - and their values at time of writing - are:
 
-	- EVENT_KEY_PRESS (1) A key was pressed on the keyboard. The ##.scancode## field contains the platform independent scancode value for the key; if the key has an ascii representation, it is held into the ##.ascii## field, which otherwise has a value of 0.
-	- EVENT_KEY_RELEASE (2) A key was released on the keyboard. The ##.scancode## and ##.ascii## fields have the same meaning as with the EVENT_KEY_PRESS event.
-	- EVENT_KEY_REPEAT (3) A key is being held down repeatedly. The ##.scancode## and ##.ascii## fields have the same meaning as with the EVENT_KEY_PRESS event.
-	- EVENT_MOUSE_MOVE (4) The mouse was moved while it was on the program window. The ##.x## and ##.y## fields contain the new mouse position relative to the upper-left corner of the screen, while the ##.dx## and ##.dy## fields contain the motion deltas.
-	- EVENT_MOUSE_BUTTON_PRESS (5) One of the mouse buttons was pressed. The ##.button## field has one bit set identifying the button that was pressed; bit 0 identifies the left mouse button, bit 1 the right mouse button and bit 2 the middle mouse button.
-	- EVENT_MOUSE_BUTTON_RELEASE (6) One of the mouse buttons was released. The ##.button## field has the same meaning as with the EVENT_MOUSE_BUTTON_PRESS event.
-	- EVENT_MOUSE_DOUBLE_CLICK (7)  One of the mouse buttons was double clicked. The ##.button## field has the same meaning as with the EVENT_MOUSE_BUTTON_PRESS event.
-	- EVENT_MOUSE_WHEEL (8) The mouse wheel was used; the new wheel position is returned into the ##.z## field.
-	- EVENT_MOUSE_ENTER (9) The mouse was moved into the program window.
-	- EVENT_MOUSE_EXIT (10) The mouse was moved out of the program window.
-	- EVENT_WINDOW_GOT_FOCUS (11) The program window has got focus.
-	- EVENT_WINDOW_LOST_FOCUS (12) The program window has lost focus.
-	- EVENT_WINDOW_CLOSE (13) The user attempted to close the program window.
+	- ##EVENT_KEY_PRESS## (##1##) A key was pressed on the keyboard. The ##.scancode## field contains the platform independent scancode value for the key; if the key has an ascii representation, it is held into the ##.ascii## field, which otherwise has a value of 0.
+	- ##EVENT_KEY_RELEASE## (##2##) A key was released on the keyboard. The ##.scancode## and ##.ascii## fields have the same meaning as with the ##EVENT_KEY_PRESS## event.
+	- ##EVENT_KEY_REPEAT## (##3##) A key is being held down repeatedly. The ##.scancode## and ##.ascii## fields have the same meaning as with the ##EVENT_KEY_PRESS## event.
+	- ##EVENT_MOUSE_MOVE## (##4##) The mouse was moved while it was on the program window. The ##.x## and ##.y## fields contain the new mouse position relative to the upper-left corner of the screen, while the ##.dx## and ##.dy## fields contain the motion deltas.
+	- ##EVENT_MOUSE_BUTTON_PRESS## (##5##) One of the mouse buttons was pressed. The ##.button## field has one bit set identifying the button that was pressed; bit 0 identifies the left mouse button, bit 1 the right mouse button and bit 2 the middle mouse button.
+	- ##EVENT_MOUSE_BUTTON_RELEASE## (##6##) One of the mouse buttons was released. The ##.button## field has the same meaning as with the ##EVENT_MOUSE_BUTTON_PRESS## event.
+	- ##EVENT_MOUSE_DOUBLE_CLICK## (##7##)  One of the mouse buttons was double clicked. The ##.button## field has the same meaning as with the ##EVENT_MOUSE_BUTTON_PRESS## event.
+	- ##EVENT_MOUSE_WHEEL## (##8##) The mouse wheel was used; the new wheel position is returned into the ##.z## field.
+	- ##EVENT_MOUSE_ENTER## (##9##) The mouse was moved into the program window.
+	- ##EVENT_MOUSE_EXIT## (##10##) The mouse was moved out of the program window.
+	- ##EVENT_WINDOW_GOT_FOCUS## (##11##) The program window has got focus.
+	- ##EVENT_WINDOW_LOST_FOCUS## (##12##) The program window has lost focus.
+	- ##EVENT_WINDOW_CLOSE## (##13##) The user attempted to close the program window.
 
+	In //[[CompilerDialects lang fb]]//, the structure and constants are stored in th ##FB## ##[[KeyPgNamespace Namespace]]##.
+	
 	__Querying for events__
-		The function returns -1 if there are pending events to be retrieved, 0 otherwise. If the ##//event//## parameter is set to 0 (the default if omitted) ##[[KeyPgScreenevent ScreenEvent]]## will not be able to copy the event data and it will not dequeue it from the internal events queue. Calling the function this way can be useful to check if there are pending events without actually fetching them.
+		The function returns ##-1## if there are pending events to be retrieved, ##0## otherwise. If the ##//event//## parameter is set to ##0## (the default if omitted) ##[[KeyPgScreenevent ScreenEvent]]## will not be able to copy the event data and it will not dequeue it from the internal events queue. Calling the function this way can be useful to check if there are pending events without actually fetching them.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenevent.bas"}}%%(freebasic)
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
-
-using fb
+#if __FB_LANG__ = "fb"
+using fb '' constants and structures are stored in the FB namespace in lang fb
+#endif
 
 dim e as EVENT
 
@@ -149,10 +152,11 @@ loop
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgInkey Inkey]]##
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetmouse Getmouse]]##
 

@@ -31,14 +31,36 @@ Sleep
 %%
 
 {{fbdoc item="filename" value="examples/manual/gfx/draw2.bas"}}%%(freebasic)
-Screen 13
-Draw "BM160,100"
+dim as string fill, angle, pattern
+dim as integer i, a, c
 
-'' Draw a box
-Dim As String drawbox = "U10R5D10L5"
-Draw "X" & Varptr(drawbox)
-Sleep
+pattern = ("X" & varptr(angle)) _
+	    & "C15" _
+	      "M+100,+10" _
+	      "M +15,-10" _
+	      "M -15,-10" _
+	      "M-100,+10" _
+	    & "BM+100,0" & ("X" & varptr(fill)) & "BM-100,0"
+
+
+screenres 320, 240, 8
+
+draw "BM 160, 120"
+a = 0: c = 32
+for i = 1 to 24
+	
+	angle = "TA" & a
+	fill = "P" & c & ",15"
+	a += 15: c += 1
+	
+	draw pattern
+	sleep 100
+	
+next i
+
+sleep
 %%
+{{image class="center" title="Draw example output" url="/images/draw2.png"}}
 
 {{fbdoc item="diff"}}
 	- QB used the special pointer keyword VARPTR$ with the ##Xp## command.

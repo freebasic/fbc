@@ -1,15 +1,15 @@
 {{fbdoc item="title" value="IMAGEINFO"}}----
 Retrieves information about a ""FreeBASIC"" image buffer
 
-	& This feature is only available in fbc version 0.20.0 and later.
-
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Imageinfo** ( [[KeyPgByval byval]] //img// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bypp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pixdata// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByref byref]] //imgsize// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Imageinfo** ( [//width//] [, [//height//] [, [//bypp//] [, [//pitch//] [, [//pixdata//] [, [//imgsize//]]]]]] )
+	//result// = **Imageinfo** ( //img// [, [//width//] [, [//height//] [, [//bypp//] [, [//pitch//] [, [//pixdata//] [, [//imgsize//]]]]]]] )
 ##
 {{fbdoc item="param"}}
+	##//img//##
+		pointer to start of image data
 	##//width//##
 		width of image
 	##//height//##

@@ -386,6 +386,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbdarwin|__FB_DARWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
@@ -394,6 +395,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMinVersion|__FB_MIN_VERSION__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbopenbsd|__FB_OPENBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionbyval|__FB_OPTION_BYVAL__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboptionescape|__FB_OPTION_ESCAPE__"}}

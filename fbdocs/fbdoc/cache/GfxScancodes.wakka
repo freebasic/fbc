@@ -2,15 +2,10 @@
 Listing of keyboard scancodes.
 
 {{fbdoc item="desc"}}
-Here follows a list of hardware keyboard scancodes accepted by the ##[[KeyPgMultikey Multikey]]##
-function. These are equal to DOS scancodes, and are guaranteed to be always
-recognized on all platforms.
+Here follows a list of hardware keyboard scancodes accepted by the ##[[KeyPgMultikey Multikey]]## function. These are equal to DOS scancodes, and are guaranteed to be always recognized on all platforms.
 
-These constants are also defined in the fbgfx.bi include file you can use in
-your programs. If you are using at least .17 then everything inside fbgfx.bi is
-enclosed in the namespace FreeBASIC. To use these constants with v0.17b and up prefix
-##"FB."## to the following codes. The hexadecimal code is not required and provided
-only for reference.
+These constants are also defined in the ##fbgfx.bi## include file you can use in your programs. If you are using the //[[CompilerDialects lang fb]]// dialect then everything inside ##fbgfx.bi## is enclosed in the ##FB## ##[[KeyPgNamespace Namespace]]##. To use these constants in //[[CompilerDialects lang fb]]//, either prepend "##FB.##" to the constant name, or put "##[[KeyPgUsing Using]] FB##" after the ##[[KeyPgInclude #Include]]## line.
+The hexadecimal code is not required and provided only for reference.
 
 %%(freebasic)
 SC_ESCAPE       &h01
@@ -107,3 +102,4 @@ SC_MENU         &h7F
 	- ##[[KeyPgMultikey Multikey]]##
 
 {{fbdoc item="back" value="KeyPgMultikey|Multikey"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

@@ -13,13 +13,13 @@ Writes text to the default printer.
 {{fbdoc item="desc"}}
 	Prints ##//expressionlist//## to the printer attached to the parallel port LPT1, or if it does not exist, to the default printer.  To print to a printer different from the default one, use ##[[KeyPgOpenLpt OPEN LPT]]##.
 
-	The ##[[KeyPgPrintusing Using]]## clause formats ##//expresionlist//## according to ##//formatstring//##.  Any data type but a UDT can be passed to **##Lprint##** ##//expressionlist##//, expressions do **not** have to be converted to strings first.
+	The ##[[KeyPgPrintusing Using]]## clause formats ##//expressionlist//## according to ##//formatstring//##.  Any data type but a UDT can be passed to **##Lprint##** ##//expressionlist##//, expressions do **not** have to be converted to strings first.
 
-	Using a comma (,) as separator or in the end of the ##//expressionlist//## will place the cursor in the next column (every 14 characters), using a semi-colon (;) won't move the cursor. If neither of them are used in the end of the ##//expressionlist//##, then a new-line will be printed.
+	Using a comma (##,##) as separator or in the end of the ##//expressionlist//## will place the cursor in the next column (every 14 characters), using a semi-colon (##;##) won't move the cursor. If neither of them are used in the end of the ##//expressionlist//##, then a new-line will be printed.
 
-	Some printers will not print at all until a character 12 (End of Page) is printed.
+	Some printers will not print at all until a ##[[KeyPgChr Chr]](12)## (End of Page) character is printed.
 
-	Internally, FreeBASIC uses the special file number -1 for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]]## -1.  Next use of **##Lprint##** will automatically reopen it as needed.
+	Internally, FreeBASIC uses the special file number ##-1## for printing using **##Lprint##**.  This file number may be safely closed using ##[[KeyPgClose Close]] -1##.  The next use of **##Lprint##** will automatically reopen it as needed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/lprint.bas"}}%%(freebasic)
@@ -32,11 +32,14 @@ LPrint "Hello World!"
 
 '' no new-line
 LPrint "Hello"; "World"; "!";
+
 LPrint
 
 '' column separator
 LPrint "Hello!", "World!"
-LPrint Chr(12)
+
+'' end of page
+LPrint Chr$(12)
 %%
 
 {{fbdoc item="diff"}}

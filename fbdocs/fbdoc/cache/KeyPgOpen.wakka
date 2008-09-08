@@ -45,20 +45,20 @@ Opens a disk file for reading or writing using file operations
 		The size, in bytes, of each record read from or written to the disk file. The default is 128.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open**## returns zero (0) on success and a non-zero error code otherwise.
+	In the first usage, ##**Open**## returns zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
-	Opens a disk file for reading and/or writing. A //file number// is bound to the file on disk, which is used in subsequent file operations, such as ##[[KeyPgInputPp Input #]]## and ##[[KeyPgLock Lock]]##. An available //file number// can be retrieved with ##[[KeyPgFreefile Freefile]]##.
+	Opens a disk file for reading and/or writing. The file number ##//file_num//## is bound to the file on disk, for use in subsequent file operations, such as ##[[KeyPgInputPp Input #]]## and ##[[KeyPgLock Lock]]##. The next available file number can be retrieved with ##[[KeyPgFreefile Freefile]]##.
 
-	The ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]## and ##[[KeyPgAppend Append]]## //file modes// open disk files for sequential text I/O, useful for reading or writing plain text files. When the ##[[KeyPgInputfilemode Input]]## mode is specified, only reading file operations can be used, like ##[[KeyPgLineinput Line Input #]]## and ##[[KeyPgGetfileio Get #]]##. If the disk file does not exist a runtime error will be thrown. The ##[[KeyPgOutput Output]]## mode specifies that only writing operations can be used, like ##[[KeyPgPrintPp Print #]]## and ##[[KeyPgPutfileio Put #]]##. If the disk file does not exist it is created empty. The ##[[KeyPgAppend Append]]## mode is like the ##[[KeyPgOutput Output]]## mode, except that writing operations will begin at the end of the disk file, if it exists.
+	The ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]## and ##[[KeyPgAppend Append]]## file modes open disk files for sequential text I/O, useful for reading or writing plain text files. When the ##[[KeyPgInputfilemode Input]]## mode is specified, only reading file operations can be used, like ##[[KeyPgLineinput Line Input #]]## and ##[[KeyPgGetfileio Get #]]##. If the disk file does not exist a runtime error will be thrown. The ##[[KeyPgOutput Output]]## mode specifies that only writing operations can be used, like ##[[KeyPgPrintPp Print #]]## and ##[[KeyPgPutfileio Put #]]##. If the disk file does not exist it is created empty. The ##[[KeyPgAppend Append]]## mode is like the ##[[KeyPgOutput Output]]## mode, except that writing operations will begin at the end of the disk file, if it exists.
 
-	The ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]## and ##[[KeyPgAppend Append]]## //file modes// also allow selection of a character encoding to be used when reading from or writing text to the disk file. ASCII or a Unicode encoding may be specified (see the description of the ##//encoding_type//## parameter above).
+	The ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]## and ##[[KeyPgAppend Append]]## file modes also allow selection of a character encoding to be used when reading from or writing text to the disk file. ASCII or a Unicode encoding may be specified (see the description of the ##//encoding_type//## parameter above).
 
-	The ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## //file modes// open disk files for random-access reading or writing of arbitrary sized binary data. The ##[[KeyPgBinary Binary]]## //file mode// allows reading and writing of simple data type values, like ##[[KeyPgByte Byte]]## or ##[[KeyPgLongint Longint]]##, using binary read or write operations, like ##[[KeyPgGetfileio Get #]]##. ##[[KeyPgLoc Loc]]## and ##[[KeyPgSeekreturn Seek]]## are among the procedures used for reading and writing to arbitrary locations in the disk file. The ##[[KeyPgRandom Random]]## //file mode// is similar to ##[[KeyPgBinary Binary]]##, except that file I/O operations always use a constant data size when reading or writing.
+	The ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## file modes open disk files for random-access reading or writing of arbitrary sized binary data. The ##[[KeyPgBinary Binary]]## file mode allows reading and writing of simple data type values, like ##[[KeyPgByte Byte]]## or ##[[KeyPgLongint Longint]]##, using binary read or write operations, like ##[[KeyPgGetfileio Get #]]##. ##[[KeyPgLoc Loc]]## and ##[[KeyPgSeekreturn Seek]]## are among the procedures used for reading and writing to arbitrary locations in the disk file. The ##[[KeyPgRandom Random]]## file mode is similar to ##[[KeyPgBinary Binary]]##, except that file I/O operations always use a constant data size when reading or writing.
 
-	By default, the ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## //file modes// allow both reading and writing operations on the opened disk file, but this can be changed by specifying an //access type// (see the description for the ##//access_type//## parameter above).
+	By default, the ##[[KeyPgBinary Binary]]## and ##[[KeyPgRandom Random]]## file modes allow both reading and writing operations on the opened disk file, but this can be changed by specifying an access type (see the description for the ##//access_type//## parameter above).
 
-	For any //file mode//, access to the opened disk file can be restricted or granted to other threads or programs by specifying a //lock type// (see the description for the ##//lock_type//## parameter above). If no //lock type// is specified, other threads of the current program can freely open the disk file (##Shared##), while other programs cannot (##Lock Read Write##). ##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to temporarily restrict access to parts of a file.
+	For any file mode, access to the opened disk file can be restricted or granted to other threads or programs by specifying a lock type (see the description for the ##//lock_type//## parameter above). If no lock type is specified, other threads of the current program can freely open the disk file (##Shared##), while other programs cannot (##Lock Read Write##). ##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to temporarily restrict access to parts of a file.
 
 	The error code returned by ##**Open**##  can be checked using ##[[KeyPgErr Err]]## in the next line. The function version of  ##**Open**## returns directly the error code as an integer. 
 
@@ -92,26 +92,34 @@ if Err>0 then print "The port could not be opended"
 
 'COM1, 9600 BAUD, NO PARITY BIT, EIGHT DATA BITS, ONE STOP BIT
 %%
-
 {{fbdoc item="filename" value="examples/manual/fileio/openfunc.bas"}}%%(freebasic)
-
 'function version of OPEN
-if OPEN("file.ext" FOR BINARY ACCESS READ AS #1)>0  then
-	PRINT "Error opening file "
-END IF
+If Open("file.ext" For Binary Access Read As #1) = 0 Then
+
+	Print "Successfully opened file"
+
+	'' ...
+
+	close #1
+
+else
+
+	Print "Error opening file"
+
+End If
 %%
 
 {{fbdoc item="target"}}
 	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
-	- Path separators in Linux are forward slashes /. Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward \ slashes. 
+	- Path separators in Linux are forward slashes ##/##. Windows uses backward slashes ##\## but it allows for forward slashes .  DOS uses backward slashes ##\##. 
 	- On Windows, a file number used in a dynamic link library is not the same as an identical file number used in the main program.  File numbers can not be passed or returned and then used between a DLL and an executable.
 
 {{fbdoc item="diff"}}
-	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes FreeBASIC's new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
+	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes ""FreeBASIC's"" new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
 	- ##**Open**## can be called as a procedure that returns an error code.
 
 {{fbdoc item="lang"}}
-	- The //[[CompilerOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being "I" for input, "O" for output , "A" for append, "R" for random, "B" for binary. 
+	- The //[[CompilerOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being ##"I"## for input, ##"O"## for output, ##"A"## for append, ##"R"## for random, ##"B"## for binary. 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr Err with a list of error codes]]##
@@ -120,3 +128,4 @@ END IF
 	- ##[[KeyPgOpenCons Open Cons]]##, ##[[KeyPgOpenErr Open Err]]##, ##[[KeyPgOpenPipe Open Pipe]]##, ##[[KeyPgOpenLpt Open Lpt]]##, ##[[KeyPgOpenCom Open Com]]##, ##[[KeyPgOpenScrn Open Scrn]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+   

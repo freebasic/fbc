@@ -31,24 +31,28 @@ Retrieves the status of the mouse pointing device
 	
 	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. FreeBASIC may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
-	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button is down.
+	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button / wheel is down.
 
 	##//Clip//## stores the mouse clipping status; if 1, the mouse is currently clipped to the graphics window; if 0, the mouse is not clipped.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
 
+DIM AS INTEGER x, y, buttons, res 
 ' Set video mode and enter loop
-DIM x AS INTEGER, y AS INTEGER, buttons AS INTEGER
-DIM res AS INTEGER
-SCREEN 13
+SCREENRES 640, 480, 8
 DO
 	' Get mouse x, y and buttons. Discard wheel position.
 	res = GETMOUSE (x, y, , buttons)
-	    'buttons
 	LOCATE 1, 1
-	IF res <> 0 THEN
+	IF res <> 0 THEN '' Failure
+
+#IFDEF __FB_DOS__
+		PRINT "Mouse or mouse driver not available"
+#ELSE
 		PRINT "Mouse not available or not on window"
+#ENDIF
+
 	ELSE
 		PRINT USING "Mouse position: ###:###  Buttons: "; x; y;
 		IF buttons AND 1 THEN PRINT "L";
@@ -63,11 +67,15 @@ END
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
+{{fbdoc item="target"}}
+	- On DOS, the "clip" value has no relevance. The wheel and middle button will work if supported and enabled by the mouse driver - see [[FaqDOS]].
+
 {{fbdoc item="diff"}}
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgScreenres Screenres]]## setting graph mode by resolution
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]## setting mode the QB-like way
 	- ##[[KeyPgSetmouse Setmouse]]##
 	- ##[[KeyPgMultikey Multikey]]##
 	- ##[[KeyPgGetjoystick Getjoystick]]##

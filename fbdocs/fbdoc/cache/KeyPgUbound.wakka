@@ -19,7 +19,7 @@ Returns the upper bound of an array's dimension
 {{fbdoc item="desc"}}
 	##**Ubound**## returns the largest value that can be used as an index into a particular dimension of an array.
 
-	Array dimensions are numbered from one (1) to //n//, where //n// is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension. If ##//dimension//## is less than one (1) or greater than the total number of dimensions (//n//) in the array, the result is undefined.
+	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Ubound**## will return the upper bound of the first dimension. If ##//dimension//## is less than one (##1##) or greater than the total number of dimensions (##//n//##) in the array, the result is undefined.
 
 {{fbdoc item="ex"}}
 
@@ -31,10 +31,40 @@ print ubound(array, 2) 'returns 15
 print ubound(array, 3) 'returns 2
 %%
 
+{{fbdoc item="filename" value="examples/manual/array/ubound2.bas"}}%%(freebasic)
+'' determining the size of an array
+Dim As Short array(0 To 9)
+Dim As Integer arraylen, arraysize
+
+arraylen = UBound(array) - LBound(array) + 1
+arraysize = arraylen * SizeOf( Short )
+
+Print "Number of elements in array:", arraylen    '10
+Print "Number of bytes used in array:", arraysize '10 * 2 = 20 
+%%
+
+{{fbdoc item="filename" value="examples/manual/array/ubound3.bas"}}%%(freebasic)
+'' determining the size of a multi-dimensional array
+Dim As Long array4D(1 To 2, 1 To 3, 1 To 4, 1 To 5)
+Dim As Integer arraylen, arraysize
+
+
+arraylen = (UBound(array4D, 4) - LBound(array4D, 4) + 1) _
+	     * (UBound(array4D, 3) - LBound(array4D, 3) + 1) _
+	     * (UBound(array4D, 2) - LBound(array4D, 2) + 1) _
+	     * (UBound(array4D, 1) - LBound(array4D, 1) + 1)
+
+arraysize = arraylen * SizeOf( Long )
+
+Print "Number of elements in array:", arraylen    '2 * 3 * 4 * 5 = 120
+Print "Number of bytes used in array:", arraysize '120 * 4 = 480
+%%
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgLbound Lbound]]##
 	- ##[[KeyPgStatic Static]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgSizeof Sizeof]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

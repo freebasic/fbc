@@ -3,9 +3,18 @@ Downloads of previous versions of the manual in CHM format.
 
 Since this manual is for a beta compiler still in development, we do not maintain multiple versions of the wiki.  Any downloadable documentation made available from time to time is just a snapshot of this wiki.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
 
+{{fbdoc item="section" value="Version 0.20 Snapshots"}}
+
+	""FreeBASIC v0.20.0b (2008.08.11)""
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-chm.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-html.tar.gz?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-txt.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-fbhelp.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-wakka.tar.gz?download 
+
 {{fbdoc item="section" value="Version 0.18 Snapshots"}}
 
-	""FreeBASIC v0.18.5b (2008.04.28)""
+	""FreeBASIC v0.18.5b (2008.04.28)"" and ""FreeBASIC v0.18.6b (2008.08.08)""
 	http://downloads.sourceforge.net/fbc/FB-manual-chm-0.18.5.zip?download
 
 	""FreeBASIC v0.18.4b (2008.04.15)""
@@ -38,7 +47,8 @@ Since this manual is for a beta compiler still in development, we do not maintai
 
 {{fbdoc item="section" value="Conversion to Other Formats"}}
 	
-	Other formats of the documentation (FBHELP, TXT, HTML) can be downloaded from:
+	Other formats of the documentation (FBHELP, TXT, HTML) can also be downloaded from:
 	[[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/~coder/freebasic/docs.html]]
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}
+   

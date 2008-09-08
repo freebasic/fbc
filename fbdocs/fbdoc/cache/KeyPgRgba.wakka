@@ -21,58 +21,92 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 	the combined color
 
 {{fbdoc item="desc"}}
-	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging 0-255.
+	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging ##0##..##255##.
 
-	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&hAARRGGBB##, where ##RR##, ##GG##, ##BB##, ##AA##  equal the values passed to this function, in hexadecimal format.
+	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer in the format ##&hAARRGGBB##, where ##RR##, ##GG##, ##BB##, ##AA## equal the values passed to this function, in hexadecimal format.
+	It is possible to retrieve the red, green, blue  and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd And]]## and ##[[KeyPgOpShiftRight Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine #Define]]## and use macros to do this.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/rgba.bas"}}%%(freebasic)
-screenres 640,480,32
+'open a graphics screen (320 * 240, 32-bit)
+ScreenRes 320, 240, 32
 
-dim as any ptr img
-dim as integer x,y
+Dim As Any Ptr img
+Dim As Integer x, y
 
 'make an image that varies in transparency and color
-img = imagecreate(128,128,0)
-for x = 0 to 127
-  for y = 0 to 127
-	pset img,(x,y),rgba(x*2,0,y*2,x+y)
-  next y
-next x
-circle img,(64,64),50,rgba(0,127,192,192),,,,f
-line img,(50,40)-(78,88),rgba(255,255,255,0),bf
+img = ImageCreate(64, 64)
+For x = 0 To 63
+  For y = 0 To 63
+	PSet img, (x, y), RGBA(x * 4, 0, y * 4, (x + y) * 2)
+  Next y
+Next x
+Circle img, (31, 31), 25,      RGBA(0, 127, 192, 192), ,,, F 'semi-transparent blue circle
+Line   img, (26, 20)-(38, 44), RGBA(255, 255, 255, 0),    BF 'transparent white rectangle
 
-'draw a background
-for x=-480 to 639 step 20
-  line (x,0)-(x+480,480),rgb(255,255,255)
-next
-line (10,10)-(630,86),rgb(127,0,0),bf
-line (10,290)-(630,438),rgb(0,127,0),bf
+'draw a background (diagonal white lines)
+For x = -240 To 319 Step 10
+  Line (x, 0)-Step(240, 240), RGB(255, 255, 255)
+Next
+
+Line (10,  10)-(310,  37), RGB(127, 0, 0), BF 'red box for text
+Line (10, 146)-(310, 229), RGB(0, 127, 0), BF 'green box for Putting onto
 
 'draw the image and some text with PSET
-draw string(96,64),"PUT AN IMAGE WITH PSET"
-put(96,96),img,pset
-put(96,300),img,pset
+Draw String(64, 20), "PSet"
+Put(48,  48), img, PSet
+Put(48, 156), img, PSet
 
 'draw the image and some text with ALPHA
-draw string (416,64),"PUT AN IMAGE WITH ALPHA"
+Draw String (220, 20), "Alpha"
+Put(208,  48), img, Alpha
+Put(208, 156), img, Alpha
 
-put(416,96),img,alpha
-put(416,300),img,alpha
 
-sleep
 
-imagedestroy img
+'Free the image memory
+ImageDestroy img
+
+'Keep the window open until the user presses a key
+Sleep
+%%
+{{image class="center" title="RGBA example output" url="/images/rgba.png" }}
+
+{{fbdoc item="filename" value="examples/manual/gfx/rgba_get.bas"}}%%(freebasic)
+'' setting and retrieving Red, Green, Blue and Alpha values
+
+#define RGBA_R( c ) ( CUInt( c ) Shr 16 And 255 )
+#define RGBA_G( c ) ( CUInt( c ) Shr  8 And 255 )
+#define RGBA_B( c ) ( CUInt( c )        And 255 )
+#define RGBA_A( c ) ( CUInt( c ) Shr 24         )
+
+Dim As UInteger r, g, b, a
+
+Dim As UInteger col = RGBA(255, 192, 64, 128)
+
+Print Using "Color: _&H\      \"; Hex(col, 8)
+
+r = RGBA_R( col )
+g = RGBA_G( col )
+b = RGBA_B( col )
+a = RGBA_A( col )
+
+Print
+Print Using "Red:         _&H\\ = ###"; Hex(r, 2); r
+Print Using "Green:       _&H\\ = ###"; Hex(g, 2); g
+Print Using "Blue:        _&H\\ = ###"; Hex(b, 2); b
+Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
 %%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgColor Color]]##
 	- ##[[KeyPgRgb RGB]]##
+	- ##[[KeyPgColor Color]]##
+	- ##[[KeyPgPpdefine #Define]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

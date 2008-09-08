@@ -120,14 +120,14 @@ Print x(c())
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
 	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention.
-	- In the //[[CompilerOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##function## or ##return## to specify the return value may not be used.
-	- In the //[[CompilerOptlang -lang fb]]// dialect the parameters are passed ##[[KeyPgByval ByVal]]## by default. //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects keep the QB convention: parameters are ##[[KeyPgByref ByRef]]## by default.
+	- In the //[[CompilerOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##**function** = ...##" to specify the return value may not be used.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##[[KeyPgReturn Return]]## may only be used to return a value when ##[[KeyPgOptiongosub Option Gosub]]## is off.  In //[[CompilerOptlang -lang qb]]//, this must be done explicitly using the ##[[KeyPgOptionnogosub Option Nogosub]]## statement.
 
 {{fbdoc item="diff"}}
-	- Parameters can be optional in FreeBASIC.
+	- Parameters can be optional in ""FreeBASIC"".
 	- Return value can now be specified by a ##[[KeyPgReturn Return]]## statement
-	- Function overloading supported.
-	- The return value can be ignored in the calling code.
+	- Function ##[[KeyPgOverload Overload]]##ing is supported in ""FreeBASIC"".
+	- The return value of ##[[KeyPgInteger Integer]]## functions can be ignored in the calling code.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare Declare]]##

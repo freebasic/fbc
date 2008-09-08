@@ -8,40 +8,41 @@ Sets the position and visibility of the mouse cursor
 	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])
 ##
 {{fbdoc item="param"}}
+	(For each parameter, ##-1## is a special value indicating "no changes.")
 	##//x//##
 		optional - set x coordinate
 	##//y//##
 		optional - set y coordinate
 	##//visibility//##
-		optional - set visibility: 1 indicates visible, 0 indicates hidden
+		optional - set visibility: ##1## indicates visible, ##0## indicates hidden
 	##//clip//##
-		optional - set clipping: 1 indicates mouse is clipped to graphics window, 0 indicates no clipping
+		optional - set clipping: ##1## indicates mouse is clipped to graphics window, ##0## indicates no clipping
 
 {{fbdoc item="ret"}}
-	0 on success, non-zero to indicate failure.
+	Zero (##0##) on success, non-zero to indicate failure.
 
 {{fbdoc item="desc"}}
-	##**Setmouse**## will set the ##//X//,//Y//## coordinates of the mouse pointer, as well as setting it's visibility.  Mouse position is set using the X and Y parameters.  The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  THe mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if visibility is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
-#include "fbgfx.bi"
-Dim x As Integer, y As Integer, buttons As Integer
+Dim As Integer x, y, buttons
 
-' create a screen 800x600, 32-bit color, 1 video page
-Screen 19, 32, 1                         
+' create a screen 640*480
+ScreenRes 640, 480
+Print "Click the mouse button to center the mouse"
 
 Do
-	' get mouse x, y and button state
-	GetMouse x, y , , buttons                     
+	' get mouse x, y and button state (wait until mouse is onscreen)
+	Do: Sleep 1: Loop While GetMouse( x, y , , buttons) <> 0
 
-	If buttons = 1 Then
+	If buttons And 1 Then
 	    ' on left mouse click, center mouse
-	    SetMouse 400, 300
+	    SetMouse 320, 240
 	End If
 
-	' do loop until esc is pressed
-Loop Until MultiKey(fb.SC_ESCAPE)                             
+	' run loop until Escape is pressed
+Loop Until Inkey = Chr(27)
 %%
 
 
@@ -49,7 +50,7 @@ Loop Until MultiKey(fb.SC_ESCAPE)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Setmouse""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgGetmouse Getmouse]]##

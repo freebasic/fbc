@@ -19,11 +19,12 @@ Computes a valid color value for hi/truecolor modes
 	The combined color.
 
 {{fbdoc item="desc"}}
-	##//red//##, ##//green//## and ##//blue//## are components ranging 0-255.
+	##//red//##, ##//green//## and ##//blue//## are components ranging ##0##..##255##.
 
 	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&hAARRGGBB##, where ##RR##, ##GG## and ##BB## equal the values passed to this function, in hexadecimal format. ##AA## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
+	It is possible to retrieve the red, green, blue and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd And]]## and ##[[KeyPgOpShiftRight Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine #Define]]## and use macros to do this.
 
-	**Note for Windows API programmers**: The macro named RGB in the Windows references has been renamed BGR in the FB headers for Windows to avoid collisions. 
+	**Note for Windows API programmers**: The macro named ##RGB## in the Windows references has been renamed ##BGR## in the FB headers for Windows to avoid collisions. 
 
 {{fbdoc item="ex"}}
 	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
@@ -36,15 +37,44 @@ Line(639,0)-(320,479), Rgb(0,0,255) 'draws a bright blue box on the right side o
 Sleep 'wait before exiting
 %%
 
+{{fbdoc item="filename" value="examples/manual/gfx/rgb_get.bas"}}%%(freebasic)
+'' setting and retrieving Red, Green, Blue and Alpha values
+
+#define RGBA_R( c ) ( CUInt( c ) Shr 16 And 255 )
+#define RGBA_G( c ) ( CUInt( c ) Shr  8 And 255 )
+#define RGBA_B( c ) ( CUInt( c )        And 255 )
+#define RGBA_A( c ) ( CUInt( c ) Shr 24         )
+
+Dim As UInteger r, g, b, a
+
+Dim As UInteger col = RGB(128, 192, 64)
+
+Print Using "Color: _&H\      \"; Hex(col, 8)
+
+r = RGBA_R( col )
+g = RGBA_G( col )
+b = RGBA_B( col )
+a = RGBA_A( col )
+
+Print
+Print Using "Red:         _&H\\ = ###"; Hex(r, 2); r
+Print Using "Green:       _&H\\ = ###"; Hex(g, 2); g
+Print Using "Blue:        _&H\\ = ###"; Hex(b, 2); b
+Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
+%%
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgRgba RGBA]]##
 	- ##[[KeyPgColor Color]]##
+	- ##[[KeyPgPpdefine #Define]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
+   
+
    

@@ -14,12 +14,14 @@ Set the target platform for cross compilation
 	This option is only available if the compiler was built with cross compilation support.
 
 	Possible targets:
+		##cygwin##
+		##darwin##
 		##dos##
+		##freebsd##
 		##linux##
+		##openbsd##
 		##win32##
 		##xbox##
-		##cygwin##
-		##freebsd##
 
 {{fbdoc item="target"}}
 	- Only available in versions fbc that have had cross compilation support enabled at configure time before building the compiler.  Not all binary distributions will have the same cross compilation targets supported.
