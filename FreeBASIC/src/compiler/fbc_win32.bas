@@ -129,6 +129,7 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldpath, ldcline, dllname
+	dim as integer res = any
 
 	function = FALSE
 
@@ -261,7 +262,11 @@ private function _linkFiles _
 		print "linking: ", ldcline
 	end if
 
-	if( exec( ldpath, ldcline ) <> 0 ) then
+	res = exec( ldpath, ldcline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "linking failed: error code " & res
+		end if
 		exit function
 	end if
 
@@ -299,6 +304,7 @@ private function _compileResFiles _
 	) as integer
 
 	dim as string rescmppath, rescmpcline, oldinclude
+	dim as integer res = any
 
 	function = FALSE
 
@@ -325,7 +331,11 @@ private function _compileResFiles _
 			print "compiling resource: ", rescmpcline
 		end if
 
-		if( exec( rescmppath, rescmpcline ) <> 0 ) then
+		res = exec( rescmppath, rescmpcline )
+		if( res <> 0 ) then
+			if( fbc.verbose ) then
+				print "compiling resource failed: error code " & res
+			end if
 			exit function
 		end if
 
@@ -481,6 +491,7 @@ private function makeImpLib _
 	) as integer
 
 	dim as string dtpath, dtcline, dllfile
+	dim as integer res = any
 
 	function = FALSE
 
@@ -512,7 +523,11 @@ private function makeImpLib _
     	print "dlltool: ", dtcline
     end if
 
-    if( exec( dtpath, dtcline ) <> 0 ) then
+	res = exec( dtpath, dtcline )
+    if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "dlltool failed: error code " & res
+		end if
 		exit function
     end if
 

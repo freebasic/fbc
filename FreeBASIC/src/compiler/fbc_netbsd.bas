@@ -78,6 +78,7 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldpath, ldcline, dllname
+	dim as integer res = any
 
 	function = FALSE
 
@@ -184,7 +185,11 @@ private function _linkFiles _
 		print "linking: ", ldcline
 	end if
 
-	if( exec( ldpath, ldcline ) <> 0 ) then
+	res = exec( ldpath, ldcline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "linking failed: error code " & res
+		end if
 		exit function
 	end if
 
@@ -222,6 +227,7 @@ private function _compileResFiles _
 	dim as ubyte ptr p
 	dim as string * 4096 chunk
 	dim as string aspath, iconsrc, buffer, outstr()
+	dim as integer res = any
 
 	function = FALSE
 
@@ -329,7 +335,11 @@ private function _compileResFiles _
 		exit function
 	end if
 
-	if( exec( aspath, iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	res = exec( aspath, iconsrc + " -o " + hStripExt( iconsrc ) + ".o" )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "compiling XPM icon resource failed: error code " & res
+		end if
 		kill( iconsrc )
 		exit function
 	end if

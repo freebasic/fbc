@@ -47,6 +47,7 @@ private function _linkFiles _
 	dim as string ldcline, ldpath
 	dim as string cxbepath, cxbecline
 	dim as string tmpexename
+	dim as integer res = any
 	
 	function = FALSE
 	
@@ -128,8 +129,12 @@ private function _linkFiles _
 	if( fbc.verbose ) then
 		print "linking: ", ldcline
 	end if
-	
-	if( exec( ldpath, ldcline ) <> 0 ) then
+
+	res = exec( ldpath, ldcline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "linking failed: error code " & res
+		end if
 		exit function
 	end if
 	
@@ -166,7 +171,12 @@ private function _linkFiles _
 	end if
 	
 	'' have to use shell instead of exec in order to use >nul
-	if shell(cxbepath + " " + cxbecline) <> 0 then
+
+	res = shell(cxbepath + " " + cxbecline)
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "cxbe failed: error code " & res
+		end if
 		exit function
 	end if
 	
@@ -204,6 +214,7 @@ private function _compileResFiles _
 	) as integer
 	
 	dim as string rescmppath, rescmpcline, oldinclude
+	dim as integer res = any
 	
 	function = FALSE
 	
@@ -229,8 +240,12 @@ private function _compileResFiles _
 		if( fbc.verbose ) then
 			print "compiling resource: ", rescmpcline
 		end if
-		
-		if( exec( rescmppath, rescmpcline ) <> 0 ) then
+
+		res = exec( rescmppath, rescmpcline ) 
+		if( res <> 0 ) then
+			if( fbc.verbose ) then
+				print "compiling resource failed: error code " & res
+			end if
 			exit function
 		end if
 		

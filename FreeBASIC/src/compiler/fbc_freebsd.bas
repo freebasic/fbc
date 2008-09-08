@@ -77,6 +77,7 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldpath, ldcline, dllname
+	dim as integer res = any
 
 	function = FALSE
 
@@ -183,7 +184,11 @@ private function _linkFiles _
 		print "linking: ", ldcline
 	end if
 
-	if( exec( ldpath, ldcline ) <> 0 ) then
+	res = exec( ldpath, ldcline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "linking failed: error code " & res
+		end if
 		exit function
 	end if
 

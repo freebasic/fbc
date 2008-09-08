@@ -577,6 +577,7 @@ private function assembleFile_GAS _
 
 	static as string path
 	static as integer has_path = FALSE
+	static as integer res
 
     if( has_path = FALSE ) then
     	has_path = TRUE
@@ -592,7 +593,15 @@ private function assembleFile_GAS _
     	print "assembling: ", path + " " + cmdline
     end if
 
-    function = (exec( path, cmdline ) = 0)
+	res = exec( path, cmdline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "assembling failed: returned error code " & res
+		end if
+	end if
+
+	function = (res = 0)
+
 
 end function
 
@@ -641,6 +650,7 @@ private function assembleFile_GCC _
 
 	static as string path
 	static as integer has_path = FALSE
+	static as integer res
 
 	if( has_path = FALSE ) then
 		has_path = TRUE
@@ -656,7 +666,15 @@ private function assembleFile_GCC _
 		print "assembling: ", path + " " + cmdline
 	end if
 
-	function = (exec( path, cmdline ) = 0)
+	res = exec( path, cmdline )
+	if( res <> 0 ) then
+		if( fbc.verbose ) then
+			print "assembling failed: returned error code " & res
+		end if
+	end if
+
+	function = (res = 0)
+
 
 end function
 
