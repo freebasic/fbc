@@ -2,7 +2,7 @@
 '' CBrowser - the browser "class"
 ''
 
-#include once "Common.bi
+#include once "Common.bi"
 #include once "CBrowser.bi"
 
 type CBrowserCtx
