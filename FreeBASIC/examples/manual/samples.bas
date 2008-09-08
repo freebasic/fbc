@@ -716,7 +716,7 @@ while( command(i) > "" )
 		select case lcase(command(i))
 		case "-fbc"
 			i += 1
-			fbc = SetPathChars( command(i), FWD_SLASH )
+			fbc = SetPathChars( command(i), psc )
 			fbc = AdjustPath( fbc )
 
 		case "-srcdir"

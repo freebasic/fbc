@@ -6,10 +6,31 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDraw
 '' --------
 
-Screen 13
-Draw "BM160,100"
+Dim As String fill, angle, pattern
+Dim As Integer i, a, c
 
-'' Draw a box
-Dim As String drawbox = "U10R5D10L5"
-Draw "X" & VarPtr(drawbox)
+pattern = ("X" & VarPtr(angle)) _
+	    & "C15" _
+	      "M+100,+10" _
+	      "M +15,-10" _
+	      "M -15,-10" _
+	      "M-100,+10" _
+	    & "BM+100,0" & ("X" & VarPtr(fill)) & "BM-100,0"
+
+
+ScreenRes 320, 240, 8
+
+Draw "BM 160, 120"
+a = 0: c = 32
+For i = 1 To 24
+	
+	angle = "TA" & a
+	fill = "P" & c & ",15"
+	a += 15: c += 1
+	
+	Draw pattern
+	Sleep 100
+	
+Next i
+
 Sleep

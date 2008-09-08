@@ -8,8 +8,9 @@
 
 '' include fbgfx.bi for some useful definitions
 #include "fbgfx.bi"
-
-Using fb
+#if __FB_LANG__ = "fb"
+Using fb '' constants and structures are stored in the FB namespace in lang fb
+#endif
 
 Dim e As EVENT
 

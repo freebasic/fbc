@@ -7,32 +7,43 @@
 '' --------
 
 #include "fbgfx.bi"
-Dim work_page As Integer, x As Integer, y As Integer
-' Request 640x480 with 2 pages
-Screen 18, ,2
+#if __FB_LANG__ = "fb"
+Using FB '' Scan code constants are stored in the FB namespace in lang FB
+#endif
+
+Dim As Integer x, y
+
+ScreenRes 640, 480
+
 Color 2, 15
-work_page = 0
-x = 320
-y = 240
+
+x = 320: y = 240
 Do
-	' Let's work on a page while we display the other one
-	ScreenSet work_page, work_page Xor 1
-	' Check arrow keys and update position accordingly
-	If MultiKey(FB.SC_LEFT) And x > 0 Then x = x - 1
-	If MultiKey(FB.SC_RIGHT) And x < 639 Then x = x + 1
-	If MultiKey(FB.SC_UP) And y > 0 Then y = y - 1
-	If MultiKey(FB.SC_DOWN) And y < 479 Then y = y + 1
-	Cls
-	Circle(x, y), 30, , , , ,F
-	' Page flip
-	work_page = work_page Xor 1
-Loop While Not MultiKey(FB.SC_ESCAPE)
-' Clear input buffer
-While Inkey = "": Wend
-' Restore both work and visible pages to page 0
-ScreenSet
+	' Check arrow keys and update the (x, y) position accordingly
+	If MultiKey(SC_LEFT ) And x >   0 Then x = x - 1
+	If MultiKey(SC_RIGHT) And x < 639 Then x = x + 1
+	If MultiKey(SC_UP   ) And y >   0 Then y = y - 1
+	If MultiKey(SC_DOWN ) And y < 479 Then y = y + 1
+	
+	' Lock the page while we work on it
+	ScreenLock
+	    ' Clear the screen and draw a circle at the position (x, y)
+	    Cls
+	    Circle(x, y), 30, , , , ,F
+	ScreenUnlock
+	
+	' Run loop until user presses Escape
+Loop Until MultiKey(SC_ESCAPE)
+
+' Clear Inkey buffer
+While Inkey <> "": Wend
+
+
 Print "Press CTRL and H to exit..."
+
 Do
-Sleep 25
-If MultiKey(FB.SC_CONTROL) And MultiKey(FB.SC_H) Then Exit Do
+	Sleep 25
+	
+	'' Stay in loop until user holds down CTRL and H at the same time
+	If MultiKey(SC_CONTROL) And MultiKey(SC_H) Then Exit Do
 Loop

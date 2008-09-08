@@ -6,9 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreengraphics
 '' --------
 
-' Sets fullscreen 640x480 with 32bpp color depth and 4 pages
-Screen 18, 32, 4, 1
-If ScreenPtr = 0 Then
-	Print "Error setting video mode!"
-	End
-End If
+' Sets screen mode 13 (320*200, 8bpp)
+Screen 13
+Print "Screen mode 13 set"
+
+Sleep

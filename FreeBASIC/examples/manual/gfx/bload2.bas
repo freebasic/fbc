@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBload
 '' --------
 
-'Load a 48x48 bitmap into an array
-Screen 18, 32
+'Load a 48x48 bitmap into an image
+ScreenRes 320, 200, 32
 Dim myImage As Any Ptr = ImageCreate( 48, 48 )
 BLoad "picture.bmp", myImage
 Put (10,10), myImage

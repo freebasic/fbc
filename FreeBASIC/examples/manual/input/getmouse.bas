@@ -7,17 +7,21 @@
 '' --------
 
 
+Dim As Integer x, y, buttons, res 
 ' Set video mode and enter loop
-Dim x As Integer, y As Integer, buttons As Integer
-Dim res As Integer
-Screen 13
+ScreenRes 640, 480, 8
 Do
 	' Get mouse x, y and buttons. Discard wheel position.
 	res = GetMouse (x, y, , buttons)
-	    'buttons
 	Locate 1, 1
-	If res <> 0 Then
+	If res <> 0 Then '' Failure
+
+#ifdef __FB_DOS__
+		Print "Mouse or mouse driver not available"
+#else
 		Print "Mouse not available or not on window"
+#endif
+
 	Else
 		Print Using "Mouse position: ###:###  Buttons: "; x; y;
 		If buttons And 1 Then Print "L";

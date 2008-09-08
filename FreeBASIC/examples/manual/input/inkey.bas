@@ -8,4 +8,5 @@
 
 Print "press q to quit"
 Do
+	Sleep 1, 1
 Loop Until Inkey = "q"

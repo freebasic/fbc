@@ -6,4 +6,4 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMultikey
 '' --------
 
-While Inkey <> "": Wend
+While Inkey <> "": Wend '' loop until the Inkey buffer is empty

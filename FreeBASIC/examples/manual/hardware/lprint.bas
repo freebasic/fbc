@@ -15,8 +15,11 @@ LPrint "Hello World!"
 
 '' no new-line
 LPrint "Hello"; "World"; "!";
+
 LPrint
 
 '' column separator
 LPrint "Hello!", "World!"
-LPrint Chr(12)
+
+'' end of page
+LPrint Chr$(12)

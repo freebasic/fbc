@@ -8,15 +8,15 @@
 
 '' Define a variable-length array with 5 elements
 ''
-ReDim array(1 To 5) As Integer
+ReDim array(0 To 4) As Integer
 
 For index As Integer = LBound(array) To UBound(array)
 	array(index) = index
 Next
 
-'' Resize a variable-length array with 10 elements
-''
-ReDim Preserve array(9) As Integer
+'' Resize a variable-length array with 10 elements 
+'' (the lower bound should be kept the same)
+ReDim Preserve array(0 To 9) As Integer
 
 Print "index", "value"
 For index As Integer = LBound(array) To UBound(array)

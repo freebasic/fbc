@@ -6,20 +6,20 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetmouse
 '' --------
 
-#include "fbgfx.bi"
-Dim x As Integer, y As Integer, buttons As Integer
+Dim As Integer x, y, buttons
 
-' create a screen 800x600, 32-bit color, 1 video page
-Screen 19, 32, 1                         
+' create a screen 640*480
+ScreenRes 640, 480
+Print "Click the mouse button to center the mouse"
 
 Do
-	' get mouse x, y and button state
-	GetMouse x, y , , buttons                     
+	' get mouse x, y and button state (wait until mouse is onscreen)
+	Do: Sleep 1: Loop While GetMouse( x, y , , buttons) <> 0
 
-	If buttons = 1 Then
+	If buttons And 1 Then
 	    ' on left mouse click, center mouse
-	    SetMouse 400, 300
+	    SetMouse 320, 240
 	End If
 
-	' do loop until esc is pressed
-Loop Until MultiKey(fb.SC_ESCAPE)                             
+	' run loop until Escape is pressed
+Loop Until Inkey = Chr(27)
