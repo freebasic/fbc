@@ -80,8 +80,8 @@ FBCALL FBSTRING *fb_StrConcat
 	else
 	{
 		/* alloc temp string */
-        if( !fb_hStrAllocTemp( dst, str1_len+str2_len ) )
-            DBG_ASSERT( FALSE );
+		dst = fb_hStrAllocTemp( dst, str1_len+str2_len );
+		DBG_ASSERT( dst );
 
 		/* do the concatenation */
 		fb_hStrConcat( dst->data, str1_ptr, str1_len, str2_ptr, str2_len );
