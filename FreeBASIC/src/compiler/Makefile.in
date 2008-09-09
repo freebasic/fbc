@@ -154,7 +154,7 @@ endif
 
 ifeq (@FBC_TARGET@, netbsd)
 	FBC_OSDEPSRCS := fbc_netbsd.bas
-	DEFS += -d TARGET_NBSD
+	DEFS += -d TARGET_NETBSD
 endif
 
 ifeq (@FBC_TARGET@,openbsd)

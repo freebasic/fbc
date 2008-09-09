@@ -432,6 +432,11 @@ private sub initTarget( )
 		fbcInit_darwin( )
 #endif
 
+#if defined(TARGET_NETBSD) or defined(CROSSCOMP_NETBSD)
+	case FB_COMPTARGET_NETBSD
+		fbcInit_netbsd( )
+#endif
+
 	case else
 		print "unsupported target in " & __FILE__
 
@@ -1140,6 +1145,11 @@ private function processTargetOptions _
 #if defined(TARGET_DARWIN) or defined(CROSSCOMP_DARWIN)
 				case "darwin"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DARWIN )
+#endif
+
+#if defined(TARGET_NETBSD) or defined(CROSSCOMP_NETBSD)
+				case "netbsd"
+					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_NETBSD )
 #endif
 
 				case else
@@ -1891,7 +1901,8 @@ private sub printOptions( )
 	defined(CROSSCOMP_XBOX) or _
 	defined(CROSSCOMP_FREEBSD) or _
 	defined(CROSSCOMP_OPENBSD) or _
-	defined(CROSSCOMP_DARWIN)
+	defined(CROSSCOMP_DARWIN) or _
+	defined(CROSSCOMP_NETBSD)
 
 	print
 	print "invoke as 'fbc -target PLATFORM' alone to show options for cross compilation to that platform"
@@ -1908,7 +1919,7 @@ private sub printOptions( )
 	printOption( "-C", "Do not delete the object file(s)" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
 	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, FB_COMPTARGET_NETBSD
 		printOption( "-dll", "Same as -dylib" )
 		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
 			printOption( "-dylib", "Create a DLL, including the import library" )
@@ -1956,7 +1967,8 @@ private sub printOptions( )
 	defined(CROSSCOMP_XBOX) or _
 	defined(CROSSCOMP_FREEBSD) or _
 	defined(CROSSCOMP_OPENBSD) or _
-	defined(CROSSCOMP_DARWIN)
+	defined(CROSSCOMP_DARWIN) or _
+	defined(CROSSCOMP_NETBSD)
 
 	' note: alphabetical order
 
@@ -1975,6 +1987,9 @@ private sub printOptions( )
  #endif
  #ifdef CROSSCOMP_LINUX
 	desc += " linux"
+ #endif
+ #ifdef CROSSCOMP_NETBSD
+	desc += " netbsd"
  #endif
  #ifdef CROSSCOMP_OPENBSD
 	desc += " openbsd"
