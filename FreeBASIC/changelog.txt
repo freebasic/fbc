@@ -22,12 +22,13 @@ Version 0.21.0 Beta:
 - ImageConvertRow now aborts if given an invalid source bit depth (counting_pine)
 - comparing [u]shorts with pointers was causing the compiler to crash (cha0s)
 - quickly scrolling the mouse wheel was causing double click events in the x11 (linux) gfx driver (spotted by Sisophon2001) (DrV)
-- FBC was not warning in some cases where a number was too big to fit in a ulongint (counting_pine)
+- FBC wasn't warning in some cases where a number literal was too big to fit in a ulongint (counting_pine)
 - PCOPY, "SCREEN , a, v" in consoles weren't throwing an error if the page numbers were 1 more than the highest console page (counting_pine)
 - lang qb: "SCREEN 0" was trying to set the visible page to 8 (counting_pine)
 - #2057952 - lang qb: fixed floating-point type identification issues (counting_pine)
 - #2068874 - objects of arrays with a destructor but no constructor were crashing due to missed NULL ptr checks (cha0s)
 - #2085637 - define was not catching illegal symbol names (cha0s)
+- Backslashes could escape End-of-line characters in string literals (counting_pine)
 
 
 Version 0.20.0 Beta:

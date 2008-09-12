@@ -326,11 +326,12 @@ function hReEscape _
 
 		'' '\'?
 		if( char = CHAR_RSLASH ) then
+
+			if( src >= src_end ) then exit do
+
 			'' change to internal
 			*dst = FB_INTSCAPECHAR
 			dst += 1
-
-			if( src >= src_end ) then exit do
 
 			isnumber = FALSE
 
@@ -562,11 +563,12 @@ function hReEscapeW _
 
 		'' '\'?
 		if( char = CHAR_RSLASH ) then
+
+			if( src >= src_end ) then exit do
+
 			'' change to internal
 			*dst = FB_INTSCAPECHAR
 			dst += 1
-
-			if( src >= src_end ) then exit do
 
 			isnumber = FALSE
 

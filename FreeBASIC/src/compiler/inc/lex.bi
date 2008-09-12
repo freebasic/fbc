@@ -38,7 +38,7 @@ enum LEXCHECK
 	'' don't interpret $, #, &, etc as a suffix on a token (for #include, $include, &h1, more?)
 	LEXCHECK_NOSUFFIX		= &h0008 
 	
-	'' add quotes to any literal string's token (? not sure where that's needed)
+	'' retain quotes in any literal string's token (otherwise, hReadString removes quotes so lexGetText can cleanly return the string's content)
 	LEXCHECK_NOQUOTES		= &h0010 
 	
 	'' don't associate the token with a symbol chain (dim shared as integer foo: #define bar(foo) 

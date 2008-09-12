@@ -1242,20 +1242,13 @@ private sub hReadString _
 	end if
 
 	do
-		select case as const lexCurrentChar( )
-		'' EOF or EOL?
-		case 0, CHAR_CR, CHAR_LF
-			' Only warn if not in comments
-			if (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 then
-				errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
-			end if
-			exit do
+		char = lexCurrentChar( )
 
 		'' '"'?
-		case CHAR_QUOTE
+		if( char = CHAR_QUOTE ) then
 			lexEatChar( )
 
-			'' copy quotes? (whether double or not)
+			'' copy quote? (even if first of a double)
 			if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
 				if( skipchar = FALSE ) then
 					*ps = CHAR_QUOTE
@@ -1265,10 +1258,11 @@ private sub hReadString _
 			end if
 
 			'' not a double-quote? then it's the closing quote
-			if( lexCurrentChar( ) <> CHAR_QUOTE ) then exit do
+			char = lexCurrentChar( )
+			if( char <> CHAR_QUOTE ) then exit do
 
 		'' '\'?
-		case CHAR_RSLASH
+		elseif( char = CHAR_RSLASH ) then
 			hasesc = TRUE
 
 			'' escaping on? needed or "\\" would fail..
@@ -1281,12 +1275,23 @@ private sub hReadString _
 					lgt += 1
 				end if
 
-				lexCurrentChar( )
+				char = lexCurrentChar( )
 			end if
+
+		end if
+
+		select case char
+		'' EOF or EOL?
+		case 0, CHAR_CR, CHAR_LF
+			'' only warn if not in comments
+			if (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 then
+				errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
+			end if
+			exit do
 
 		end select
 
-		char = lexEatChar( )
+		lexEatChar( )
 
 		if( skipchar = FALSE ) then
 			'' no more room?
@@ -1350,17 +1355,13 @@ private sub hReadWStr _
 	end if
 
 	do
-		select case as const lexCurrentChar( )
-		'' EOF or EOL?
-		case 0, CHAR_CR, CHAR_LF
-			errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
-			exit do
+		char = lexCurrentChar( )
 
 		'' '"'?
-		case CHAR_QUOTE
+		if( char = CHAR_QUOTE ) then
 			lexEatChar( )
 
-			'' copy quotes? (whether double or not)
+			'' copy quote? (even if first of a double)
 			if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
 				if( skipchar = FALSE ) then
 					*ps = CHAR_QUOTE
@@ -1370,10 +1371,11 @@ private sub hReadWStr _
 			end if
 
 			'' not a double-quote? then it's the closing quote
-			if( lexCurrentChar( ) <> CHAR_QUOTE ) then exit do
+			char = lexCurrentChar( )
+			if( char <> CHAR_QUOTE ) then exit do
 
 		'' '\'?
-		case CHAR_RSLASH
+		elseif( char = CHAR_RSLASH ) then
 			hasesc = TRUE
 
 			'' escaping on? needed or "\\" would fail..
@@ -1386,12 +1388,23 @@ private sub hReadWStr _
 					lgt += 1
 				end if
 
-				lexCurrentChar( )
+				char = lexCurrentChar( )
 			end if
+
+		end if
+
+		select case char
+		'' EOF or EOL?
+		case 0, CHAR_CR, CHAR_LF
+			'' only warn if not in comments
+			if (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 then
+				errReportWarn( FB_WARNINGMSG_NOCLOSINGQUOTE )
+			end if
+			exit do
 
 		end select
 
-		char = lexEatChar( )
+		lexEatChar( )
 
 		if( skipchar = FALSE ) then
 			'' no more room?
@@ -1411,6 +1424,7 @@ private sub hReadWStr _
 				lgt += 1
 			end if
 		end if
+
 	loop
 
 	'' null-term
