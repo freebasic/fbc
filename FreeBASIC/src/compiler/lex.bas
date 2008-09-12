@@ -1261,6 +1261,18 @@ private sub hReadString _
 			char = lexCurrentChar( )
 			if( char <> CHAR_QUOTE ) then exit do
 
+		'' '\27' (internal escape char)
+		elseif( char = FB_INTSCAPECHAR ) then
+
+			'' escape it?
+			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
+				if( skipchar = FALSE ) then
+					*ps = FB_INTSCAPECHAR
+					ps += 1
+					lgt += 1
+				end if
+			end if
+
 		'' '\'?
 		elseif( char = CHAR_RSLASH ) then
 			hasesc = TRUE
@@ -1373,6 +1385,18 @@ private sub hReadWStr _
 			'' not a double-quote? then it's the closing quote
 			char = lexCurrentChar( )
 			if( char <> CHAR_QUOTE ) then exit do
+
+		'' '\27' (internal escape char)
+		elseif( char = FB_INTSCAPECHAR ) then
+
+			'' escape it?
+			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
+				if( skipchar = FALSE ) then
+					*ps = FB_INTSCAPECHAR
+					ps += 1
+					lgt += 1
+				end if
+			end if
 
 		'' '\'?
 		elseif( char = CHAR_RSLASH ) then
