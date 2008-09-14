@@ -895,11 +895,10 @@ private function hConvertBoolToString _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 	
-	static as ASTNODE ptr true_node = NULL, false_node = NULL
-	if( true_node = NULL ) then
-		true_node = astNewADDROF( astNewCONSTStr( "true" ) )
-		false_node = astNewADDROF( astNewCONSTStr( "false" ) )
-	end if
+	dim as ASTNODE ptr true_node = any, false_node = any
+
+	true_node = astNewADDROF( astNewCONSTStr( "true" ) )
+	false_node = astNewADDROF( astNewCONSTStr( "false" ) )
 	
 	expr = astNewIIF( expr, true_node, false_node )
 	
