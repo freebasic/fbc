@@ -1560,6 +1560,106 @@ private function hOptNullOp _
 
 end function
 
+''::::
+private function hOptLogic _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr m = any
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer op = any
+
+	if( n = NULL ) then
+		return n
+	end if
+
+	'' walk
+	l = n->l
+	if( l <> NULL ) then
+		n->l = hOptLogic( l )
+	end if
+
+	r = n->r
+	if( r <> NULL ) then
+		n->r = hOptLogic( r )
+	end if
+
+	if( n->class = AST_NODECLASS_UOP ) then
+
+		'' convert NOT NOT x to x
+
+		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+			if( n->op.op = AST_OP_NOT ) then
+				if( n->l->class = AST_NODECLASS_UOP ) then
+					if( symbGetDataClass( astGetDataType( n->l ) ) = FB_DATACLASS_INTEGER ) then
+						if( n->op.op = AST_OP_NOT ) then
+							m = n->l->l
+							astDelNode( n->l )
+							astDelNode( n )
+							n = hOptLogic( m )
+						end if
+					end if
+				end if
+			end if
+		end if
+
+	elseif( n->class = AST_NODECLASS_BOP ) then
+
+		'' convert:
+		'' (not x) and (not y)      to        not (x or  y)
+		'' (not x) or  (not y)      to        not (x and y)
+		'' (not x) xor (not y)      to        x xor y
+
+		''  (op)           NOT (for AND/OR)
+		''  /   \     =>    |
+		'' NOT  NOT        (op) (opposite for AND/OR)
+		''  |    |         /  \
+		''  x    y        x    y
+
+		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+			op = n->op.op
+			select case op
+			case AST_OP_OR, AST_OP_AND, AST_OP_XOR
+				if( n->l->class = AST_NODECLASS_UOP ) then
+					if( n->l->op.op = AST_OP_NOT ) then
+						if( n->r->class = AST_NODECLASS_UOP ) then
+							if( n->r->op.op = AST_OP_NOT ) then
+
+								if( op = AST_OP_AND ) then
+									op = AST_OP_OR
+								elseif( op = AST_OP_OR ) then
+									op = AST_OP_AND
+								end if
+
+								l = hOptLogic( n->l->l )
+								r = hOptLogic( n->r->l )
+
+								m = astNewBOP( op, l, r )
+
+								if( op <> AST_OP_XOR ) then
+									m = astNewUOP( AST_OP_NOT, m )
+								end if
+
+								astDelNode( n->l )
+								astDelNode( n->r )
+								astDelNode( n )
+
+								n = m
+
+							end if
+						end if
+					end if
+				end if
+			end select
+		end if
+	end if	
+
+	function = n
+
+end function
+
+
 '':::::
 private function hDoOptRemConv _
 	( _
@@ -2128,6 +2228,8 @@ function astOptimizeTree _
 	n = hOptConstIDX( n )
 
 	hOptToShift( n )
+
+	n = hOptLogic( n )
 
 	n = hOptNullOp( n )
 
