@@ -1569,6 +1569,7 @@ private function hOptLogic _
 	dim as ASTNODE ptr m = any
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer op = any
+	dim as longint v = any
 
 	if( n = NULL ) then
 		return n
@@ -1578,80 +1579,127 @@ private function hOptLogic _
 	l = n->l
 	if( l <> NULL ) then
 		n->l = hOptLogic( l )
+		l = n->l
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
 		n->r = hOptLogic( r )
+		r = n->r
 	end if
 
-	if( n->class = AST_NODECLASS_UOP ) then
+	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
-		'' convert NOT NOT x to x
+		if( (n->op.op = AST_OP_NOT) ) then
+			if( l->op.op = AST_OP_NOT ) then
 
-		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-			if( n->op.op = AST_OP_NOT ) then
-				if( n->l->class = AST_NODECLASS_UOP ) then
-					if( symbGetDataClass( astGetDataType( n->l ) ) = FB_DATACLASS_INTEGER ) then
-						if( n->op.op = AST_OP_NOT ) then
-							m = n->l->l
-							astDelNode( n->l )
-							astDelNode( n )
-							n = hOptLogic( m )
-						end if
-					end if
-				end if
+				'' convert NOT NOT x to x
+
+				m = l->l
+				astDelNode( l )
+				astDelNode( n )
+				n = hOptLogic( m )
 			end if
-		end if
 
-	elseif( n->class = AST_NODECLASS_BOP ) then
+		elseif( n->class = AST_NODECLASS_BOP ) then
 
-		'' convert:
-		'' (not x) and (not y)      to        not (x or  y)
-		'' (not x) or  (not y)      to        not (x and y)
-		'' (not x) xor (not y)      to        x xor y
+			if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+				op = n->op.op
+				select case op
+				case AST_OP_OR, AST_OP_AND, AST_OP_XOR
 
-		''  (op)           NOT (for AND/OR)
-		''  /   \     =>    |
-		'' NOT  NOT        (op) (opposite for AND/OR)
-		''  |    |         /  \
-		''  x    y        x    y
-
-		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-			op = n->op.op
-			select case op
-			case AST_OP_OR, AST_OP_AND, AST_OP_XOR
-				if( n->l->class = AST_NODECLASS_UOP ) then
-					if( n->l->op.op = AST_OP_NOT ) then
-						if( n->r->class = AST_NODECLASS_UOP ) then
-							if( n->r->op.op = AST_OP_NOT ) then
-
-								if( op = AST_OP_AND ) then
-									op = AST_OP_OR
-								elseif( op = AST_OP_OR ) then
-									op = AST_OP_AND
-								end if
-
-								l = hOptLogic( n->l->l )
-								r = hOptLogic( n->r->l )
-
-								m = astNewBOP( op, l, r )
-
-								if( op <> AST_OP_XOR ) then
-									m = astNewUOP( AST_OP_NOT, m )
-								end if
-
-								astDelNode( n->l )
-								astDelNode( n->r )
-								astDelNode( n )
-
-								n = m
-
-							end if
-						end if
+					if( op = AST_OP_AND ) then
+						op = AST_OP_OR
+					elseif( op = AST_OP_OR ) then
+						op = AST_OP_AND
 					end if
-				end if
-			end select
+
+					'' convert:
+					'' (not x) and (not y)      to        not (x or  y)
+					'' (not x) or  (not y)      to        not (x and y)
+					'' (not x) xor (not y)      to        x xor y
+
+					''  (op)           NOT (for AND/OR)
+					''  /   \     =>    |
+					'' NOT  NOT        (op) (opposite for AND/OR)
+					''  |    |         /  \
+					''  x    y        x    y
+
+					if( (l->op.op = AST_OP_NOT) and (r->op.op = AST_OP_NOT) ) then
+
+						l = hOptLogic( l->l )
+						r = hOptLogic( r->l )
+
+						m = astNewBOP( op, l, r )
+
+						if( op <> AST_OP_XOR ) then
+							m = astNewUOP( AST_OP_NOT, m )
+						end if
+
+						astDelNode( n->l )
+						astDelNode( n->r )
+						astDelNode( n )
+
+						n = m
+
+					'' pull out NOTs inside BOPs involving constants to allow further optimization
+					'' (removal of NOT NOT, etc.)
+
+					'' also, XOR involving const and NOT expr can be reduced to NOT on the const
+					'' (instead of the other expr) to allow compile-time evaluation
+					'' since x XOR y is equivalent to (not x) XOR (not y)
+
+					elseif( astIsCONST( l ) and (r->op.op = AST_OP_NOT) ) then
+						'' convert:
+						'' const and (not x)    to    not ((not const) or  x)
+						'' const or  (not x)    to    not ((not const) and x)
+						'' const xor (not x)    to    (not const) xor x
+
+						if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+							v = l->con.val.int
+						else
+							v = l->con.val.long
+						end if
+
+						m = astNewBOP( op, l, r->l )
+						l->con.val.long = not v
+
+						if( op <> AST_OP_XOR ) then
+							m = astNewUOP( AST_OP_NOT, m )
+						end if
+
+						astDelNode( r )
+						astDelNode( n )
+
+						n = m
+
+					elseif( astIsConst( r ) and (l->op.op = AST_OP_NOT) ) then
+						'' convert:
+						'' (not x) and const    to    not (x or  (not const))
+						'' (not x) or  const    to    not (x and (not const))
+						'' (not x) xor const    to    x xor (not const)
+
+						if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+							v = r->con.val.int
+						else
+							v = r->con.val.long
+						end if
+
+						m = astNewBOP( op, l->l, r )
+						r->con.val.long = not v
+
+						if( op <> AST_OP_XOR ) then
+							m = astNewUOP( AST_OP_NOT, m )
+						end if
+
+						astDelNode( l )
+						astDelNode( n )
+
+						n = m
+
+					end if
+				end select
+			end if
 		end if
 	end if	
 
