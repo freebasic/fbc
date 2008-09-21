@@ -1286,7 +1286,7 @@ private sub hDivToShift_Signed _
 
 	l = n->l
 
-	'' !!FIXME!!! while there's no common sub-expr elimination, only allow VAR nodes
+	'' !!!FIXME!!! while there's no common sub-expr elimination, only allow VAR nodes
 	if( l->class <> AST_NODECLASS_VAR ) then
 		exit sub
 	end if
@@ -1454,9 +1454,19 @@ private function hOptNullOp _
 	''         '0 SHR a'  to '0'
 	''         '0 SHL a'  to '0'
 	if( n->class = AST_NODECLASS_BOP ) then
+
 		op = n->op.op
 		l = n->l
 		r = n->r
+
+		'' !!!FIXME!!! exprs with side-effects shouldn't be removed, so only allow VAR nodes
+		if( l->class <> AST_NODECLASS_VAR ) then
+			return n
+		end if
+		if( r->class <> AST_NODECLASS_VAR ) then
+			return n
+		end if
+
 		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
 				if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
