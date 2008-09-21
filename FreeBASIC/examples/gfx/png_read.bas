@@ -1,5 +1,4 @@
-
-
+'' Simple libpng example that loads 24-bit RGB PNGs
 #include once "png.bi"
 
 const SCR_W = 640
@@ -7,27 +6,27 @@ const SCR_H = 480
 const SCR_BPP = 32
 
 declare function imageread_png( byval filename as zstring ptr, _
-					    		byval bpp as integer ) as any ptr
+                                byval bpp as integer ) as any ptr
 
 	screenres SCR_W, SCR_H, SCR_BPP
-	
+
 	dim as any ptr img = imageread_png( "test.png", SCR_BPP )
-	
+
 	if( img = 0 ) then
 		end 1
 	end if
-	
-	put (0,0), img, pset
-	
+
+	put (16, 16), img, pset
+
 	sleep
-	
+
 	imagedestroy( img )
-	
+
 
 '':::::
 function imageread_png( byval filename as zstring ptr, _
-					    byval bpp as integer ) as any ptr
-	
+                        byval bpp as integer ) as any ptr
+
 	dim as byte header(0 to 7)
 
 	dim as FILE ptr fp = fopen( filename, "rb" )
@@ -65,29 +64,30 @@ function imageread_png( byval filename as zstring ptr, _
 	png_read_info( png, info )
 
 	dim as any ptr img = imagecreate( info->width, info->height )
-	
+	dim as byte ptr dst
+	dim as integer dst_pitch
+
+	imageinfo( img, , , , dst_pitch, dst )
+
 	png_set_interlace_handling( png )
 	png_read_update_info( png, info)
 
 	setjmp( png_jmpbuf( png ) )
 
 	dim as byte ptr row = allocate( info->rowbytes )
-	
-	dim as byte ptr dst = cast( byte ptr, img ) + 4
-	dim as integer dst_pitch = info->width * (bpp shr 3)
-	dim as integer h	
-	for h = 0 to info->height-1
+
+	for y as integer = 0 to info->height-1
 		png_read_row( png, row, NULL )
 		imageconvertrow( row, info->pixel_depth, dst, bpp, info->width )
 		dst += dst_pitch
 	next
-	
+
 	deallocate( row )
 
-    png_read_end( png, info )
-    png_read_destroy( png, info, 0 )
-    fclose( fp )
+	png_read_end( png, info )
+	png_read_destroy( png, info, 0 )
+	fclose( fp )
 
 	function = img
-	
+
 end function
