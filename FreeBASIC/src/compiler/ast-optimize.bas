@@ -1590,15 +1590,19 @@ private function hOptLogic _
 
 	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
-		if( (n->op.op = AST_OP_NOT) ) then
-			if( l->op.op = AST_OP_NOT ) then
+		if( n->class = AST_NODECLASS_UOP ) then
+			if( l->class = AST_NODECLASS_UOP ) then
+				if( (n->op.op = AST_OP_NOT) ) then
+					if( l->op.op = AST_OP_NOT ) then
 
-				'' convert NOT NOT x to x
+						'' convert NOT NOT x to x
 
-				m = l->l
-				astDelNode( l )
-				astDelNode( n )
-				n = hOptLogic( m )
+						m = l->l
+						astDelNode( l )
+						astDelNode( n )
+						n = hOptLogic( m )
+					end if
+				end if
 			end if
 
 		elseif( n->class = AST_NODECLASS_BOP ) then
