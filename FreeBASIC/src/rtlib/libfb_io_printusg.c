@@ -644,7 +644,11 @@ static int hPrintNumber
 		if( intdigs == -1 || (intdigs == 0 && decdigs == 0) )
 		{	/* add [another] '%' sign */
 			++intdigs;
-			++invalid;
+#if 0
+			++invalid;   /* QB could prepend two independent '%'s */
+#else
+			invalid = 1; /* We'll just stick with one */
+#endif
 		}
 
 		totdigs = intdigs + decdigs; /* treat intdigs and decdigs the same */
@@ -653,7 +657,7 @@ static int hPrintNumber
 		/* blank first digit if positive and no explicit sign (pos/neg
 		   numbers should be formatted the same where possible, as in QB) */
 		if( val_isneg == 0 && signatini == 0 && signatend == 0 )
-			if( intdigs > 1)
+			if( intdigs >= 1 && totdigs > 1 )
 				--totdigs;
 
 		if( val == 0 )
@@ -703,8 +707,17 @@ static int hPrintNumber
 		}
 		
 		/* expdigs == 3 */
-		if( val_exp > 9 ) /* too many exp digits? crop and use a '%' sign */
-			ADD_CHAR( '%' );
+		if( val_exp > 9 ) /* too many exp digits? */
+		{
+#if 1		/* Add remaining digits (QB would just crop these) */
+			do {
+				ADD_CHAR( (val_exp % 10) + '0' );
+				val_exp /= 10;
+			} while( val_exp > 9 );
+			ADD_CHAR( val_exp + '0' );
+#endif
+			ADD_CHAR( '%' ); /* add a '%' sign */
+		}
 		else
 			ADD_CHAR( val_exp + '0' );
 
