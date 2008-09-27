@@ -810,6 +810,44 @@ static int hPrintNumber
 }
 
 /*:::::*/
+static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
+{
+
+	/* scale down to a 16-digit number, plus base-10 exponent */
+
+	if( value == 0.0 )
+	{
+		*pval_exp = 0;
+		return 0;
+	}
+	long double val_ld = value;
+	unsigned long long val_ull;
+	int val_exp;
+
+	/* find number of digits in double (approximation, may be 1 lower) */
+
+	val_exp = 1 + (int)floor( log10( val_ld ) - 0.5 );
+
+	/* scale down to 16..17 digits (use long doubles to prevent inaccuracy/overflow in pow) */
+	val_exp -= 16;
+	val_ld /= pow( (long double)10.0, val_exp );
+	if( val_ld >= (long double)1.E+16 )
+	{
+		val_ld /= (long double)10.0;
+		++val_exp;
+	}
+
+	/* convert to ULL */
+	val_ull = (unsigned long long)(val_ld + 0.5);
+	DBG_ASSERT( val_ull >= (unsigned long long)1.E+15 || val_ull == 0 );
+	DBG_ASSERT( val_ull <= (unsigned long long)1.E+16 );
+
+	*pval_exp = val_exp;
+	return val_ull;
+
+}
+
+/*:::::*/
 FBCALL int fb_PrintUsingDouble
 	(
 		int fnum,
@@ -832,31 +870,7 @@ FBCALL int fb_PrintUsingDouble
 		val_isneg = (value < 0.0);
 		value = fabs(value);
 
-		val_ull = (unsigned long long)value;
-		val_exp = 0;
-
-		if( ((double)val_ull) != value )
-		{
-			val_exp = (int)floor( log10( value ) - 16 + 0.5 );
-
-			value *= pow( 10.0, -val_exp );
-
-			if( value >= 1.E+17 )
-			{
-				value /= 10.0;
-				--val_exp;
-			}
-			else if( value < 1.E+15 )
-			{
-				value *= 10.0;
-				++val_exp;
-			}
-
-			value = floor( value );
-
-			val_ull = (unsigned long long) value;
-		}
-
+		val_ull = hScaleDoubleToULL( value, &val_exp );
 	}
 
 	return hPrintNumber( fnum, val_ull, val_exp, val_isneg, mask );
