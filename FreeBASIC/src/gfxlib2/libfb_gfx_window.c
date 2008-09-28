@@ -31,7 +31,7 @@
 FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int screen)
 {
 	FB_GFXCTX *context = fb_hGetContext();
-	int temp;
+	float temp;
 	
 	if (!__fb_gfx)
 		return;

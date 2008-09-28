@@ -30,6 +30,7 @@ Version 0.21.0 Beta:
 - #2085637 - define was not catching illegal symbol names (cha0s)
 - Backslashes could escape End-of-line characters in string literals (counting_pine)
 - Expressions with side-effects could be optimized away in some cases, e.g. cint(rnd) * 0 (counting_pine)
+- WINDOW was swapping float coordinates using an int value (counting_pine)
 
 
 Version 0.20.0 Beta:
