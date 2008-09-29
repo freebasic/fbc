@@ -15,6 +15,7 @@ Version 0.21.0 Beta:
 - NetBSD support started (DrV)
 - Multi-monitor support for Win32 GDI and OpenGL gfx drivers (DrV)
 - FBC now reports the error codes in verbose mode if there are failures calling programs like the assembler or linker (counting_pine)
+- Warning if an IF statement immediately follows a multi-line ELSE, due to potential confusion with 'ELSEIF' (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

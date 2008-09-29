@@ -298,6 +298,11 @@ function cIfStmtNext(  ) as integer
 
     	lexSkipToken( )
 
+		'' warn about IF statements immediately following ELSE, due to confusion with 'ELSEIF'
+		if( lexGetToken( ) = FB_TK_IF ) then
+			errReportWarn( FB_WARNINGMSG_IFFOUNDAFTERELSE )
+		end if
+
 		'' exit last if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 

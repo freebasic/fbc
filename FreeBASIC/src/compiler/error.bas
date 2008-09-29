@@ -67,7 +67,8 @@ end type
 		( 0, @"Return method mismatch" ), _
 		( 0, @"Passing Pointer" ), _
 		( 0, @"Command line option overrides directive" ), _
-		( 0, @"Directive ignored after first pass" ) _
+		( 0, @"Directive ignored after first pass" ), _
+		( 0, @"'IF' found directly after multi-line 'ELSE'" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -182,10 +183,10 @@ end type
 		@"CASE without SELECT", _
 		@"Cannot modify a constant", _
 		@"Expected period ('.')", _
-		@"Expected END NAMESPACE", _
+		@"Expected 'END NAMESPACE'", _
 		@"Illegal inside a NAMESPACE block", _
 		@"Symbols defined inside namespaces cannot be removed", _
-		@"Expected END EXTERN", _
+		@"Expected 'END EXTERN'", _
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _
 		@"Expected 'END CONSTRUCTOR'", _
