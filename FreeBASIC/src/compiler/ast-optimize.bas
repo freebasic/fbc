@@ -2238,9 +2238,9 @@ function hOptSelfCompare _
 	dim as integer c
 	
 	select case as const n->op.op
-	case AST_OP_EQ
+	case AST_OP_EQ, AST_OP_LE, AST_OP_GE
 		c = -1
-	case AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+	case AST_OP_NE, AST_OP_GT, AST_OP_LT
 		c = 0
 	end select
 	
