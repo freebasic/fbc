@@ -1428,44 +1428,46 @@ private function hOptNullOp _
 	dim as ASTNODE ptr l = any, r = any
 	dim as integer op = any
 	dim as longint v = any
+	dim as integer keep_l = any, keep_r = any
 
 	if( n = NULL ) then
 		return n
 	end if
 
-	'' convert 'a * 0'    to '0'
-	''         'a MOD 1'  to '0'
-	''         'a MOD -1' to '0'
+	'' convert 'a * 0'    to '0'**
+	''         'a MOD 1'  to '0'*
+	''         'a MOD -1' to '0'*
 	''         'a * 1'    to 'a'
 	''         'a \ 1'    to 'a'
 	''         'a + 0'    to 'a'
 	''         'a - 0'    to 'a'
 	''         'a SHR 0'  to 'a'
 	''         'a SHL 0'  to 'a'
-	''         'a OR -1'  to '-1'
+	''         'a IMP -1' to '-1'*
+	''         'a OR -1'  to '-1'*
 	''         'a OR 0'   to 'a'
 	''         'a XOR 0'  to 'a'
 	''         'a AND -1' to 'a'
-	''         'a AND 0'  to '0'
+	''         'a AND 0'  to '0'*
 	
-	''         '0 * a'    to '0'
-	''         '0 \ a'    to '0'
-	''         '0 MOD a'  to '0'
-	''         '0 SHR a'  to '0'
-	''         '0 SHL a'  to '0'
+	''         '0 * a'    to '0'*
+	''         '0 \ a'    to '0'*
+	''         '0 MOD a'  to '0'*
+	''         '0 SHR a'  to '0'*
+	''         '0 SHL a'  to '0'*
+	
+	''*  'a' can't be deleted if it has side-effects
+	''** convert 'a * 0' to 'a AND 0' to optimize speed without changing side-effects
+
 	if( n->class = AST_NODECLASS_BOP ) then
 
 		op = n->op.op
 		l = n->l
 		r = n->r
 
-		'' !!!FIXME!!! exprs with side-effects shouldn't be removed, so only allow VAR nodes
-		if( l->class <> AST_NODECLASS_VAR ) then
-			return n
-		end if
-		if( r->class <> AST_NODECLASS_VAR ) then
-			return n
-		end if
+		'' don't allow exprs with side-effects to be deleted
+		keep_l = ( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL )
+		keep_r = ( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL )
 
 		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
@@ -1478,9 +1480,14 @@ private function hOptNullOp _
 				select case as const op
 				case AST_OP_MUL
 					if( v = 0 ) then
-						astDelTree( l )
-						astDelNode( n )
-						return r
+						if( keep_l = FALSE ) then
+							astDelTree( l )
+							astDelNode( n )
+							return r
+						else
+							'' optimize '* 0' to 'AND 0'
+							n->op.op = AST_OP_AND
+						end if
 					elseif( v = 1 ) then
 						astDelNode( r )
 						astDelNode( n )
@@ -1489,10 +1496,13 @@ private function hOptNullOp _
 
 				case AST_OP_MOD
 					if( ( v = 1 ) or ( v = -1 ) ) then
-						r->con.val.int = 0
-						astDelTree( l )
-						astDelNode( n )
-						return r
+						if( keep_l = FALSE ) then
+							r->con.val.int = 0
+							astDelTree( l )
+							astDelNode( n )
+							return r
+						end if
+
 					end if
 
 				case AST_OP_INTDIV
@@ -1511,15 +1521,26 @@ private function hOptNullOp _
 						return hOptNullOp( l )
 					end if
 
+				case AST_OP_IMP
+					if( v = -1 ) then
+						if( keep_l = FALSE ) then
+							astDelTree( l )
+							astDelNode( n )
+							return r
+						end if
+					end if
+
 				case AST_OP_OR
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
 						return hOptNullOp( l )
 					elseif( v = -1 ) then
-						astDelTree( l )
-						astDelNode( n )
-						return r
+						if( keep_l = FALSE ) then
+							astDelTree( l )
+							astDelNode( n )
+							return r
+						end if
 					end if
 
 				case AST_OP_AND
@@ -1528,9 +1549,11 @@ private function hOptNullOp _
 						astDelNode( n )
 						return hOptNullOp( l )
 					elseif( v = 0 ) then
-						astDelTree( l )
-						astDelNode( n )
-						return r
+						if( keep_l = FALSE ) then
+							astDelTree( l )
+							astDelNode( n )
+							return r
+						end if
 					end if
 
 				end select
@@ -1546,10 +1569,13 @@ private function hOptNullOp _
 				case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
 				     AST_OP_SHR, AST_OP_SHL
 					if( v = 0 ) then
-						astDelTree( r )
-						astDelNode( n )
-						return l
+						if( keep_r = FALSE ) then
+							astDelTree( r )
+							astDelNode( n )
+							return l
+						end if
 					end if
+
 				end select
 			end if
 		end if

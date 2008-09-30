@@ -20,11 +20,13 @@ namespace fbc_tests.optimizations.side_effects
 		b = -1 or modify_a( a )
 		b = modify_a( a ) or -1
 
+		b = modify_a( a ) imp -1
+
 		b = modify_a( a ) mod 1
 		b = modify_a( a ) mod -1
 
 
-		CU_ASSERT_EQUAL( a, 8 )
+		CU_ASSERT_EQUAL( a, 9 )
 
 	end sub
 	
