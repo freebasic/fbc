@@ -6,6 +6,7 @@ Version 0.21.0 Beta:
 - update FreeImage header to v3.11.0 and .def file for Win32 (jeffm)
 - gfxlib internal: remove SCREEN_LOCKED flag since the check can be done using the "lock_count" counter instead (jeffm)
 - remove unnecessary (and undocumented) command line options -nostdcall and -stdcall (DrV)
+- lang qb: Allow DEF___ statements anywhere in code (counting_pine)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
