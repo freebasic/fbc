@@ -1306,6 +1306,16 @@ function astNewBOP _
 		subtype = NULL
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
 	case AST_OP_SHL, AST_OP_SHR
+
+		if( astIsCONST( r ) ) then
+			'' warn if shift is greater than or equal to the number of bits in ldtype
+			'' !!!FIXME!!! prevent asm error when value is higher than 255
+			select case astGetValueAsULongint( r ) 
+				case is >= symbGetDataSize( ldtype ) * 8
+					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
+			end select  
+		end if
+
 		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
 			if( typeGet( rdtype ) <> FB_DATATYPE_UINT ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
