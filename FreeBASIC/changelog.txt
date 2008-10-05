@@ -35,6 +35,7 @@ Version 0.21.0 Beta:
 - Expressions with side-effects could be optimized away in some cases, e.g. cint(rnd) * 0 (counting_pine)
 - WINDOW was swapping float coordinates using an int value (counting_pine)
 - Faulty optimisation for if(a >= a | a <= a) (counting_pine)
+- #2109564: POW and ATAN2 were not checking operand sizes in the SSE emitter - thanks Bryan S. for fix (jeffm)
 
 
 Version 0.20.0 Beta:

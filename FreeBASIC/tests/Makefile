@@ -26,9 +26,11 @@ endif
 #
 ifneq ($(FB_LANG),)
 ifneq ($(FB_LANG),fb)
+ifneq ($(FB_LANG),fblite)
 ifneq ($(FB_LANG),qb)
 ifneq ($(FB_LANG),deprecated)
 $(error Unsupported language option -lang $(FB_LANG))
+endif
 endif
 endif
 endif
@@ -76,11 +78,12 @@ all :
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Options:"
 	@$(ECHO) -e "   FBC=/path/fbc"
-	@$(ECHO) -e "   FB_LANG=fb | qb | deprecated"
+	@$(ECHO) -e "   FB_LANG=fb | fblite | qb | deprecated"
 	@$(ECHO) -e "   DEBUG=1"
 	@$(ECHO) -e "   EXTRAERR=1"
 	@$(ECHO) -e "   ARCH=arch (default is 486)"
 	@$(ECHO) -e "   OS=DOS"
+	@$(ECHO) -e "   FPU=fpu | sse"
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Targets: Configuration and Checks"
 	@$(ECHO) -e "   check"

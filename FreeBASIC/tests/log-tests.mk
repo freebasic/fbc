@@ -34,9 +34,11 @@ $(error FB_LANG option must be specified)
 endif
 
 ifneq ($(FB_LANG),fb)
+ifneq ($(FB_LANG),fblite)
 ifneq ($(FB_LANG),qb)
 ifneq ($(FB_LANG),deprecated)
 $(error Unsupported language option -lang $(FB_LANG))
+endif
 endif
 endif
 endif

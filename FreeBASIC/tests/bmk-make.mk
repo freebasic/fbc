@@ -57,6 +57,10 @@ ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
 endif
 
+ifneq ($(FPU),)
+FBC_CFLAGS += -fpu $(FPU)
+endif
+
 MAINX :=
 SRCSX :=
 

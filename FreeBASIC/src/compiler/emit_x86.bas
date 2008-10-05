@@ -5322,6 +5322,9 @@ private sub _emitATN2_SSE _
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
 
+	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
+	
 	adjustStack = FALSE
 	if( dvreg->typ = IR_VREGTYPE_REG ) then
 		outp "sub esp, 8"
@@ -5379,6 +5382,9 @@ private sub _emitPOW_SSE _
 
 	hPrepOperand( svreg, src )
 	hPrepOperand( dvreg, dst )
+
+	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	adjustStack = FALSE
 	if( dvreg->typ = IR_VREGTYPE_REG ) then
