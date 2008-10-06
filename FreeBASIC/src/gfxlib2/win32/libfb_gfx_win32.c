@@ -56,7 +56,8 @@ static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static int last_mouse_buttons, mouse_buttons;
 static int mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
 static POINT last_mouse_pos;
-static UINT WM_MOUSEENTER;
+
+#define WM_MOUSEENTER WM_USER
 
 /*:::::*/
 struct keyconvinfo {
@@ -544,8 +545,6 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	cursor_shown = TRUE;
 	last_mouse_pos.x = 0xFFFF;
 	fb_win32.mouse_clip = FALSE;
-	
-	WM_MOUSEENTER = RegisterWindowMessage("FB WM_MOUSEENTER emulation");
 	
 	if (!fb_win32.TrackMouseEvent) {
 		fb_win32.TrackMouseEvent = fb_hTrackMouseEvent;
