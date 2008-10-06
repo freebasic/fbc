@@ -396,8 +396,10 @@ static void directx_exit(void)
 		if (lpDID) {
 			IDirectInputDevice_Unacquire(lpDID);
 			IDirectInputDevice_Release(lpDID);
+			lpDID = NULL;
 		}
 		IDirectInput_Release(lpDI);
+		lpDI = NULL;
 	}
 
 	if (lpDD) {
@@ -407,24 +409,39 @@ static void directx_exit(void)
 			bltfx.dwFillColor = 0;
 			IDirectDrawSurface_Blt(lpDDS, &rect, NULL, NULL, DDBLT_COLORFILL, &bltfx);
 		}
-		if (lpDDS)
+
+		if (lpDDS) {
 			IDirectDrawSurface_Release(lpDDS);
-		if ((!(fb_win32.flags & DRIVER_FULLSCREEN)) && (lpDDS_back))
+			lpDDS = NULL;
+		}
+		if ((!(fb_win32.flags & DRIVER_FULLSCREEN)) && (lpDDS_back)) {
 			IDirectDrawSurface_Release(lpDDS_back);
-		if (fb_win32.flags & DRIVER_FULLSCREEN)
+			lpDDS_back = NULL;
+		}
+
+		if (fb_win32.flags & DRIVER_FULLSCREEN) {
 			IDirectDraw2_RestoreDisplayMode(lpDD);
-		if (fb_win32.flags & DRIVER_FULLSCREEN)
 			IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL);
+		}
 		IDirectDraw2_Release(lpDD);
+		lpDD = NULL;
 	}
-	if (fb_win32.wnd)
+	if (fb_win32.wnd) {
 		DestroyWindow(fb_win32.wnd);
-	if (dd_library)
+		fb_win32.wnd = NULL;
+	}
+	if (dd_library) {
 		FreeLibrary(dd_library);
-	if (di_library)
+		dd_library = NULL;
+	}
+	if (di_library) {
 		FreeLibrary(di_library);
-	if (vsync_event)
+		di_library = NULL;
+	}
+	if (vsync_event) {
 		CloseHandle(vsync_event);
+		vsync_event = NULL;
+	}
 }
 
 
