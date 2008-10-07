@@ -37,6 +37,7 @@ Version 0.21.0 Beta:
 - Faulty optimisation for if(a >= a | a <= a) (counting_pine)
 - #2109564: POW and ATAN2 were not checking operand sizes in the SSE emitter - thanks Bryan S. for fix (jeffm)
 - Fix Win32 DirectX gfx driver crashing when DirectX not working/available (DrV)
+- Slightly improved expression/typename disambiguation in LEN/SIZEOF/TYPEOF (counting_pine)
 
 
 Version 0.20.0 Beta:

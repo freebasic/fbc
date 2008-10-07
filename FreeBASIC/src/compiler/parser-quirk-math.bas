@@ -159,8 +159,14 @@ function cMathFunct _
 
 		hMatchLPRNT( )
 
-		'' QB quirk: LEN() only takes expressions
-		if( fbLangIsSet( FB_LANG_QB ) ) then
+		'' token after next is operator or '['? 
+		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR _
+			or lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
+			'' disambiguation: types can't be followed by an operator
+			'' (note: can't check periods here, because it could be a namespace resolution)
+			is_type = FALSE
+		elseif( fbLangIsSet( FB_LANG_QB ) ) then
+			'' QB quirk: LEN() only takes expressions
 			if( is_len ) then
 				is_type = FALSE
 			else

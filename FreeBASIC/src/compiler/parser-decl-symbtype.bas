@@ -174,9 +174,20 @@ function cTypeOf _
 	function = FALSE
 
 	dim as ASTNODE ptr expr = NULL
+	dim as integer is_type = any
+
+	'' token after next is operator or '['? 
+	if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR _
+		or lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
+		'' disambiguation: types can't be followed by an operator
+		'' (note: can't check periods here, because it could be a namespace resolution)
+		is_type = FALSE
+	else
+		is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+	end if
 
 	'' is it a normal type?
-	if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
+	if( is_type = FALSE ) then
 		fbSetCheckArray( FALSE )
 
 		expr = cExpression( )
