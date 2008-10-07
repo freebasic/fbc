@@ -2,6 +2,7 @@ Version 0.21.0 Beta:
 
 [changed]
 - BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
+- #lang/$lang statements can now override the -lang command-line parameter (-forcelang has been added to allow overriding them) (counting_pine)
 - Remove GNU extensions in install.sh (DrV)
 - update FreeImage header to v3.11.0 and .def file for Win32 (jeffm)
 - gfxlib internal: remove SCREEN_LOCKED flag since the check can be done using the "lock_count" counter instead (jeffm)
@@ -18,6 +19,7 @@ Version 0.21.0 Beta:
 - FBC now reports the error codes in verbose mode if there are failures calling programs like the assembler or linker (counting_pine)
 - Warning if an IF statement immediately follows a multi-line ELSE, due to potential confusion with 'ELSEIF' (counting_pine)
 - Warning when using SHL/SHR if a constant shift value is greater than or equal to the number of bits in the type (counting_pine)
+- -forcelang command-line parameter, to override #lang/$lang statements in code (replicates -lang's original behavior) (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

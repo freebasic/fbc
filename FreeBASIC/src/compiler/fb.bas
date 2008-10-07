@@ -487,7 +487,7 @@ end sub
 '':::::
 sub fbSetDefaultOptions( )
 
-	env.cloptexpl.lang		= FALSE
+	env.cloptexpl.forcelang = FALSE
 
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
@@ -609,8 +609,8 @@ sub fbSetOptionIsExplicit _
 	)
 
 	select case as const opt
-	case FB_COMPOPT_LANG
-		env.cloptexpl.lang = TRUE
+	case FB_COMPOPT_FORCELANG
+		env.cloptexpl.forcelang = TRUE
 	end select
 
 end sub
@@ -725,8 +725,8 @@ function fbChangeOption _
 			
 			'' module level
 			else
-				'' Explicit -lang on cmdline overrides directive
-				if( env.cloptexpl.lang ) then
+				'' Explicit -forcelang on cmdline overrides directive
+				if( env.cloptexpl.forcelang ) then
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 

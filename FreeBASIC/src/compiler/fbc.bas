@@ -167,6 +167,7 @@ declare sub getDefaultLibs _
 		( FBC_OPT_LIBFILE		, @"l"           ), _
 		( FBC_OPT_INCLUDE		, @"include"     ), _
 		( FBC_OPT_LANG			, @"lang"     	 ), _
+		( FBC_OPT_FORCELANG		, @"forcelang"   ), _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
 		( FBC_OPT_WL			, @"Wl"     	 ), _
 		( FBC_OPT_GEN			, @"gen"		 ), _
@@ -1615,7 +1616,7 @@ private function processOptions _
 
 				del_cnt += 1
 
-			case FBC_OPT_LANG
+			case FBC_OPT_LANG, FBC_OPT_FORCELANG
 				if( nxt = NULL ) then
 					printInvalidOpt( arg )
 					exit function
@@ -1629,7 +1630,9 @@ private function processOptions _
 				end if
 
 				fbSetOption( FB_COMPOPT_LANG, value )
-				fbSetOptionIsExplicit( FB_COMPOPT_LANG )
+				if( id = FBC_OPT_FORCELANG ) then
+					fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
+				end if
 				fbc.objinf.lang = value
 
 				del_cnt += 1
@@ -1931,6 +1934,7 @@ private sub printOptions( )
 	printOption( "-ex", "Add error checking with RESUME support" )
 	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
 	printOption( "-export", "Export symbols for dynamic linkage" )
+	print "-forcelang <name>"; " Select language compatibility, overriding #lang/$lang in code"
 	printOption( "-g", "Add debug info" )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"

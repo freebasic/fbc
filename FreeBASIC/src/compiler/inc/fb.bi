@@ -140,6 +140,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_MAXERRORS
 	FB_COMPOPT_SHOWSUSPERRORS
 	FB_COMPOPT_LANG
+	FB_COMPOPT_FORCELANG
 	FB_COMPOPT_PEDANTICCHK
 	FB_COMPOPT_BACKEND
 	FB_COMPOPT_FINDBIN
@@ -283,7 +284,7 @@ end enum
 ''
 '' Track options explicitly set on the command line
 type FBCMMLINEOPTEXPL
-	lang			as integer					'' TRUE if -lang was specified
+	forcelang			as integer					'' TRUE if -forcelang was specified
 end type
 
 ''
