@@ -68,13 +68,13 @@ type addrinfo
 	ai_next as addrinfo ptr
 end type
 
-#define AI_PASSIVE &h0001
-#define AI_CANONNAME &h0002
-#define AI_NUMERICHOST &h0004
-#define AI_V4MAPPED &h0008
-#define AI_ALL &h0010
-#define AI_ADDRCONFIG &h0020
-#define AI_NUMERICSERV &h0400
+const AI_PASSIVE = &h0001
+const AI_CANONNAME = &h0002
+const AI_NUMERICHOST = &h0004
+const AI_V4MAPPED = &h0008
+const AI_ALL = &h0010
+const AI_ADDRCONFIG = &h0020
+const AI_NUMERICSERV = &h0400
 #define EAI_BADFLAGS -1
 #define EAI_NONAME -2
 #define EAI_AGAIN -3
