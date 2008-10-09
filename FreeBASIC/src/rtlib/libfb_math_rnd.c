@@ -204,7 +204,14 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 	}
 	
 	if( seed == -1.0 )
-		seed = fb_Timer( );
+	{
+		/* Take value of Timer to ensure a non-constant seed.  The seeding
+		algorithms (with the exception of the QB one) take the integer value
+		of the seed, so make a value that will change more than once a second */
+
+		dtoi.d = fb_Timer( );
+		seed = (double)(dtoi.i[0] ^ dtoi.i[1]);
+	}
 
 	switch( algorithm ) {
 	case RND_CRT:
