@@ -37,7 +37,7 @@ type lua_State as any
 type lua_CFunction as function cdecl(byval as lua_State ptr) as integer
 type lua_Reader as function cdecl(byval as lua_State ptr, byval as any ptr, byval as size_t ptr) as byte ptr
 type lua_Writer as function cdecl(byval as lua_State ptr, byval as any ptr, byval as size_t, byval as any ptr) as integer
-type lua_Alloc as sub cdecl(byval as any ptr, byval as any ptr, byval as size_t, byval as size_t)
+type lua_Alloc as function cdecl(byval as any ptr, byval as any ptr, byval as size_t, byval as size_t) as any ptr
 
 #define LUA_TNONE (-1)
 #define LUA_TNIL 0
