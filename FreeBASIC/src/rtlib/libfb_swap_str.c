@@ -52,17 +52,20 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 	/* both var-len? */
 	if( (str1_size == -1) && (str2_size == -1) )
 	{
-     	/* just swap the descriptors */
-     	td.data = ((FBSTRING *)str1)->data;
-     	td.len  = ((FBSTRING *)str1)->len;
+		/* just swap the descriptors */
+		td.data = ((FBSTRING *)str1)->data;
+		td.len  = ((FBSTRING *)str1)->len;
+		td.size  = ((FBSTRING *)str1)->size;
 
-     	((FBSTRING *)str1)->data = ((FBSTRING *)str2)->data;
-     	((FBSTRING *)str1)->len = ((FBSTRING *)str2)->len;
+		((FBSTRING *)str1)->data = ((FBSTRING *)str2)->data;
+		((FBSTRING *)str1)->len = ((FBSTRING *)str2)->len;
+		((FBSTRING *)str1)->size = ((FBSTRING *)str2)->size;
 
-     	((FBSTRING *)str2)->data = td.data;
-     	((FBSTRING *)str2)->len = td.len;
+		((FBSTRING *)str2)->data = td.data;
+		((FBSTRING *)str2)->len = td.len;
+		((FBSTRING *)str2)->size = td.size;
 
-        return;
+		return;
 	}
 
 	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
