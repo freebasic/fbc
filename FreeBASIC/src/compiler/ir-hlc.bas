@@ -468,6 +468,30 @@ private function _procAllocArg _
 end function
 
 '':::::
+private function procAllocLocalArray _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer
+
+	dim as string ln
+
+	if symbGetArrayDimensions( sym ) > 1 then
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	end if
+
+	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
+	ln += *symbGetMangledName( sym )
+	ln += "[" & symbGetArrayElements( sym ) & "]"
+
+	hWriteLine( ln )
+
+	function = 0
+
+end function
+
+'':::::
 private function _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -479,35 +503,27 @@ private function _procAllocLocal _
 	dim as integer elements = 0
 	dim as integer weird = 0 ' weird ones are things like array descriptors..
 
+	if symbIsArray( sym ) then
+		return procAllocLocalArray( proc, sym, lgt )
+	end if
+
 	if( symbIsStatic( sym ) ) then
 		ln = "static "
 	end if
 
-	if( symbGetArrayDimensions( sym ) > 0 ) then
-		elements = symbGetArrayElements( sym )
-	end if
-
-	if elements > 0 then
-		'TODO FIXME.. arrays
+	' is it some weird typeless item?
+	if *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) = "" then
+		weird = 1
 		ln += "ubyte "
-	else
-		' is it some weird typeless item?
-		if *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) = "" then
-			weird = 1
-			ln += "ubyte "
-			if sym->typ = FB_DATATYPE_STRUCT then
-				'ln += " /* array descriptor? */ "
-			end if
-		else
-			ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
+		if sym->typ = FB_DATATYPE_STRUCT then
+			'ln += " /* array descriptor? */ "
 		end if
+	else
+		ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
 	end if
 
 	if weird = 0 then
 		ln += *symbGetMangledName( sym )
-		if elements > 0 then
-			ln += "[" & elements * symbGetDataSize( symbGetType( sym ) ) & "]" ' TODO FIXME BAD HACK 
-		end if
 	else
 		ln += *symbGetMangledName( sym )
 		ln += "[" & symbGetUDTLen( sym, FALSE ) & "]" ' TODO FIXME BAD HACK, nameless memory? array descriptors use this??
@@ -824,7 +840,7 @@ private function hVregToStr _
 
 	select case as const vreg->typ
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-	dim as string operand
+		dim as string operand
 
 		dim as integer do_deref = any, add_plus = any
 
