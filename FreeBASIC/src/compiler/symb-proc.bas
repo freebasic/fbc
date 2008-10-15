@@ -1579,8 +1579,16 @@ private function hCalcTypesDiff _
 
 				'' param is an any ptr?
 				if( param_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-					'' as in g++, the arg indirection level shouldn't matter..
-					return FB_OVLPROC_FULLMATCH
+					
+					'' we return a full match only if they're both any
+					if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+						return FB_OVLPROC_FULLMATCH
+						
+					'' other wise, it's a half match
+					'' the arg indirection level shouldn't matter (as in g++)
+					else
+						return FB_OVLPROC_HALFMATCH
+					end if
 				end if
 
 				'' arg is an any ptr?
