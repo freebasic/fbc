@@ -45,18 +45,13 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
 	int len;
 	char *p;
-#ifndef TARGET_WIN32
 	char fmtstr[16], *fstr;
-#endif
 
 	if( mask & FB_F2A_ADDBLANK )
 		p = &buffer[1];
 	else
 		p = buffer;
 
-#ifdef TARGET_WIN32
-	_gcvt( val, digits, p );
-#else
 	switch( digits )
 	{
 	case 7:
@@ -72,7 +67,6 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 
 	if( snprintf( p, digits+1+3+1+1+1, fstr, val ) <= 0 )
 		return NULL;
-#endif
 
 	len = strlen( p );
 

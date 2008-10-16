@@ -44,7 +44,8 @@ Version 0.21.0 Beta:
 - #2150255: SWAP with strings wasn't swapping the "allocated size" element in the descriptor, potentially leading to memory corruption - thanks to Mike Kennedy for discovering this (counting_pine)
 - ANY PTR resolution was broken; if a function taking an ANY PTR had an overload taking another type (e.g. BYTE), 
   the overload resolution would incorrectly report that the function call was ambiguous, if an ANY PTR was passed
-  to the function. Now it chooses the ANY PTR candidate.
+  to the function. Now it chooses the ANY PTR candidate. (cha0s)
+- #2169551: FB in Windows was using scientific notation to print or convert any numbers less than 0.1.  It will now only use it with numbers less than 0.0001 (counting_pine)
 
 
 Version 0.20.0 Beta:
