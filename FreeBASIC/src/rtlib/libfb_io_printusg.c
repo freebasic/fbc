@@ -54,12 +54,13 @@
                    - (MIN_EXPDIGS - 1) /* stray carets  */  \
                  )
 
-#define ADD_CHAR( c )           \
-    do {                        \
-        if( p > buffer )        \
-            *(--p) = (char)(c); \
-        else                    \
-            *p = '@';           \
+#define ADD_CHAR( c )              \
+    do {                           \
+        DBG_ASSERT( p >= buffer ); \
+        if( p >= buffer )          \
+            *(p--) = (char)(c);    \
+        else if( p == buffer )     \
+            *p = '@';              \
     } while (0)
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -112,12 +113,16 @@ FBCALL int fb_PrintUsingEnd
 /*:::::*/
 static unsigned long long hPow10_ULL( int n )
 {
-	if( n < 0 ) return 0;
-	if( n > 19 ) return 0xffffffffffffffffull;
+
+	DBG_ASSERT( n >= 0 && n <= 19 );
 
 	unsigned long long ret = 1, a = 10;
-	for( ;  n > 0;  n >>= 1, a *= a )
+	while( n > 0 )
+	{
 		if( n & 1 ) ret *= a;
+		a *= a;
+		n >>= 1;
+	}
 
 	return ret;
 }
@@ -126,13 +131,24 @@ static unsigned long long hPow10_ULL( int n )
 static int hLog10_ULL( unsigned long long a )
 {
 	int ret = 0;
-	long b;
+	long a32;
+	unsigned long long a64;
 
-	for( ret = 0;  a >= (long)1.E+8;  a /= (long)1.E+8, ret += 8 );
-	b = a;
-	if( a >= (long)1.E+4 ) ret += 4; else a *= (long)1.E+4;
-	if( a >= (long)1.E+6 ) ret += 2; else a *= (long)1.E+2;
-	if( a >= (long)1.E+7 ) ret += 1;
+	a64 = a;
+	while( a64 >= (long)1.E+8 )
+	{
+		a64 /= (long)1.E+8;
+		ret += 8;
+	}
+	a32 = (long)a64;
+	if( a32 >= (long)1.E+4 ) ret += 4; else a32 *= (long)1.E+4;
+	if( a32 >= (long)1.E+6 ) ret += 2; else a32 *= (long)1.E+2;
+	if( a32 >= (long)1.E+7 ) ret += 1;
+
+	if( a == 0 )
+		DBG_ASSERT( ret == 0 );
+	else
+		DBG_ASSERT( hPow10_ULL( ret ) <= a && hPow10_ULL( ret ) > a / 10 );
 
 	return ret;
 }
@@ -142,14 +158,15 @@ static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
 {
 	unsigned long long b, ret;
 
+	DBG_ASSERT( n >= 0 );
+
 	if( n > 19 ) return 0;
-	if( n < 0 ) return 0xffffffffffffffffull;
 
 	b = hPow10_ULL( n );
 	ret = a / b;
 
 	if( (a % b) >= (b + 1) / 2 )
-		ret += 1;
+		ret += 1; /* round up */
 
 	return ret;
 }
@@ -548,7 +565,7 @@ static int hPrintNumber
 
 	/* ------------------------------------------------------ */
 
-	p = &buffer[BUFFERLEN + 1];
+	p = &buffer[BUFFERLEN];
 	ADD_CHAR( '\0' );
 
 	if( signatend )
@@ -723,7 +740,7 @@ static int hPrintNumber
 
 		/* expdigs == 2 */
 		ADD_CHAR( expsignchar );
-		ADD_CHAR( 'E' );
+		ADD_CHAR( 'E' ); /* QB would use 'D' for doubles */
 	}
 
 
@@ -780,6 +797,10 @@ static int hPrintNumber
 		}
 	}
 
+	DBG_ASSERT( val == 0 );
+	DBG_ASSERT( val_digs == 0 );
+	DBG_ASSERT( val_zdigs == 0 );
+
 	/* output dollar sign? */
 	if( adddollar )
 		ADD_CHAR( '$' );
@@ -803,6 +824,7 @@ static int hPrintNumber
 
 
 	/**/
+	++p;
 	fb_PrintFixString( fnum, p, 0 );
 
 	/* ------------------------------------------------------ */
@@ -881,7 +903,7 @@ FBCALL int fb_PrintUsingDouble
 	else
 	{
 		val_isneg = (value < 0.0);
-		value = fabs(value);
+		value = fabs( value );
 
 		val_ull = hScaleDoubleToULL( value, &val_exp );
 	}
