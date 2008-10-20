@@ -65,7 +65,12 @@ static void *gfx_imagecreate(int width, int height, unsigned int color, int dept
 	}
 	size = pitch * height;
 	
-	image = (PUT_HEADER *)malloc(size + header_size);
+	/* 15 for the para alignment, sizeof(void *) for the storage for the original pointer */
+	void *tmp = malloc(size + header_size + 15 + sizeof(void *));
+
+	image = (PUT_HEADER *)(((intptr_t)tmp + 0xF) & ~0xF);
+	((void **)image)[-1] = tmp;
+
 	if (!usenewheader) {
 		/* use old-style header for compatibility */
 		image->old.bpp = bpp;
@@ -102,6 +107,6 @@ FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int 
 /*:::::*/
 FBCALL void fb_GfxImageDestroy(void *image)
 {
-	free(image);
+	free(((void **)image)[-1]);
 }
 
