@@ -86,6 +86,9 @@ case "$target_cpu" in
 	x86_64 )
 		AC_DEFINE([TARGET_X86_64],1,[x86_64 build])
 		FBRT_CPU=x86_64;;
+	sparc )
+		AC_DEFINE([TARGET_SPARC],1,[Sparc build])
+		FBRT_CPU=SPARc;;
 	sparc64 )
 		AC_DEFINE([TARGET_SPARC64],1,[Sparc64 build])
 		FBRT_CPU=sparc64;;
