@@ -83,7 +83,7 @@ static void release_gfx_mem(void)
         if (__fb_gfx->page) {
             int i;
             for (i = 0; i < __fb_gfx->num_pages; i++) {
-                free(__fb_gfx->page[i]);
+                free(((void **)(__fb_gfx->page[i]))[-1]);
             }
             free(__fb_gfx->page);
 		}
@@ -270,8 +270,12 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_gfx->bpp = BYTES_PER_PIXEL(__fb_gfx->depth);
         __fb_gfx->pitch = __fb_gfx->w * __fb_gfx->bpp;
         __fb_gfx->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
-        for (i = 0; i < num_pages; i++)
-            __fb_gfx->page[i] = (unsigned char *)malloc(__fb_gfx->pitch * __fb_gfx->h);
+        for (i = 0; i < num_pages; i++) {
+		/* 15 for the para alignment, sizeof(void *) for the storage for the original pointer */
+		void *tmp = malloc(__fb_gfx->pitch * __fb_gfx->h + 15 + sizeof(void *));
+		__fb_gfx->page[i] = (unsigned char *)(((intptr_t)tmp + 0xF) & ~0xF);
+		((void **)(__fb_gfx->page[i]))[-1] = tmp;
+	}
         __fb_gfx->num_pages = num_pages;
         __fb_gfx->framebuffer = __fb_gfx->page[0];
 
