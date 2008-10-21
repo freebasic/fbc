@@ -271,9 +271,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         __fb_gfx->pitch = __fb_gfx->w * __fb_gfx->bpp;
         __fb_gfx->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
         for (i = 0; i < num_pages; i++) {
-		/* 15 for the para alignment, sizeof(void *) for the storage for the original pointer */
-		void *tmp = malloc(__fb_gfx->pitch * __fb_gfx->h + 15 + sizeof(void *));
-		__fb_gfx->page[i] = (unsigned char *)(((intptr_t)tmp + 0xF) & ~0xF);
+		/* 0xF for the para alignment, p_size is sizeof(void *) rounded up to % 16 for the storage for the original pointer */
+		int p_size = (sizeof(void *) + 0xF) & 0xF;
+		void *tmp = malloc((__fb_gfx->pitch * __fb_gfx->h) + p_size + 0xF);
+		__fb_gfx->page[i] = (unsigned char *)(((intptr_t)tmp + p_size + 0xF) & ~0xF);
 		((void **)(__fb_gfx->page[i]))[-1] = tmp;
 	}
         __fb_gfx->num_pages = num_pages;

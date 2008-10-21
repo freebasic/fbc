@@ -65,10 +65,11 @@ static void *gfx_imagecreate(int width, int height, unsigned int color, int dept
 	}
 	size = pitch * height;
 	
-	/* 15 for the para alignment, sizeof(void *) for the storage for the original pointer */
-	void *tmp = malloc(size + header_size + 15 + sizeof(void *));
+	/* 0xF for the para alignment, p_size is sizeof(void *) rounded up to % 16 for the storage for the original pointer */
+	int p_size = (sizeof(void *) + 0xF) & 0xF;
+	void *tmp = malloc(size + header_size + p_size + 0xF);
 
-	image = (PUT_HEADER *)(((intptr_t)tmp + 0xF) & ~0xF);
+	image = (PUT_HEADER *)(((intptr_t)tmp + p_size + 0xF) & ~0xF);
 	((void **)image)[-1] = tmp;
 
 	if (!usenewheader) {
