@@ -80,7 +80,7 @@ type REGCLASS
 		byval doload as integer = TRUE _
 	) as integer
 
-	allocate		as function _
+	_allocate		as function _
 	( _
 		byval this_ as REGCLASS ptr, _
 		byval vreg as IRVREG ptr, _

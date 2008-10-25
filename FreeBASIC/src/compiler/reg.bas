@@ -445,7 +445,7 @@ private sub regInitClass _
 	next
 
 	this_->ensure = @regEnsure
-	this_->allocate = @regAllocate
+	this_->_allocate = @regAllocate
 	this_->allocateReg = @regAllocateReg
 	this_->free = @regFree
 	this_->isFree = @regIsFree
@@ -807,7 +807,7 @@ private sub sregInitClass _
 	sregClear( this_ )
 
 	this_->ensure = @sregEnsure
-	this_->allocate	= @sregAllocate
+	this_->_allocate	= @sregAllocate
 	this_->allocateReg = @sregAllocateReg
 	this_->free = @sregFree
 	this_->isFree = @sregIsFree

@@ -2083,7 +2083,7 @@ private sub hFlushCOMP _
 	'' result not equal destine? (can happen with DAG optimizations and floats comparations)
 	if( vr <> NULL ) then
 		if( vr <> v1 ) then
-			vr->reg = regTB(vr_dclass)->allocate( regTB(vr_dclass), _
+			vr->reg = regTB(vr_dclass)->_allocate( regTB(vr_dclass), _
 												  vr, _
 												  symbGetDataSize( vr_dtype ) )
 			vr->typ = IR_VREGTYPE_REG
@@ -2379,7 +2379,7 @@ private sub hFlushCONVERT _
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
-			va->reg = regTB(v1_dclass)->allocate( regTB(v1_dclass), _
+			va->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
 												  va, _
 												  symbGetDataSize( FB_DATATYPE_INTEGER ) )
 			va->typ = IR_VREGTYPE_REG
@@ -2387,7 +2387,7 @@ private sub hFlushCONVERT _
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
 
-		v1->reg = regTB(v1_dclass)->allocate( regTB(v1_dclass), _
+		v1->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
 											  v1, _
 											  symbGetDataSize( v1_dtype ) )
 		v1->typ = IR_VREGTYPE_REG
