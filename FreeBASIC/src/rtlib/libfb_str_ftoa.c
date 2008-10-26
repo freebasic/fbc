@@ -43,7 +43,7 @@
 /*:::::*/
 char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
-	int len;
+	int len, maxlen;
 	char *p;
 	char fmtstr[16], *fstr;
 
@@ -65,10 +65,15 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 		fstr = &fmtstr[0];
 	}
 
-	if( snprintf( p, digits+1+3+1+1+1, fstr, val ) <= 0 )
-		return NULL;
+	maxlen = 1+digits+6+1;
 
-	len = strlen( p );
+	len = snprintf( p, maxlen, fstr, val );
+
+	if( len <= 0 || len >= maxlen )
+	{
+		buffer[0] = '\0';
+		return NULL;
+	}
 
 	if( len > 0 )
 	{
