@@ -1495,3 +1495,4 @@ Version 0.02 Beta:
 - optargs.bas wasn't working, it was being used just as a prototype, shouldn't be there (v1c)
 - argument-less function pointers: parser wasn't accepting them when ()'s were used (v1c)
 - right$ was reversing the result (v1c)
+
