@@ -47,7 +47,7 @@ Version 0.21.0 Beta:
   the overload resolution would incorrectly report that the function call was ambiguous, if an ANY PTR was passed
   to the function. Now it chooses the ANY PTR candidate. (cha0s)
 - #2169551: FB in Windows was using scientific notation to print or convert any numbers less than 0.1.  It will now only use it with numbers less than 0.0001 (counting_pine)
-
+- #2210314: IIF within new[] was failing because trees with IIF were not cloned correctly (yetifoot)
 
 Version 0.20.0 Beta:
 
