@@ -1044,6 +1044,13 @@ function astCloneTree _
 		astCloneCALL( n, c )
 	end if
 
+	'' IIF nodes have labels, that can't be just cloned or you get dupes
+	'' at the assembler.
+	if( n->class = AST_NODECLASS_IIF ) then
+		c->iif.falselabel = symbAddLabel( NULL )
+		c->l->op.ex = c->iif.falselabel
+	end if
+
 	function = c
 
 end function
