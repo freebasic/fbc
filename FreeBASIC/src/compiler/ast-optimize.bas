@@ -1495,7 +1495,7 @@ private function hOptNullOp _
 					end if
 
 				case AST_OP_MOD
-					if( ( v = 1 ) or ( v = -1 ) ) then
+					if( ( v = 1 ) or ( ( v = -1 ) and ( symbIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
 						if( keep_l = FALSE ) then
 							r->con.val.int = 0
 							astDelTree( l )

@@ -43,12 +43,12 @@ Version 0.21.0 Beta:
 - Fix Win32 DirectX gfx driver crashing when DirectX not working/available (DrV)
 - Slightly improved expression/typename disambiguation in LEN/SIZEOF/TYPEOF (counting_pine)
 - #2150255: SWAP with strings wasn't swapping the "allocated size" element in the descriptor, potentially leading to memory corruption - thanks to Mike Kennedy for discovering this (counting_pine)
-- ANY PTR resolution was broken; if a function taking an ANY PTR had an overload taking another type (e.g. BYTE), 
-  the overload resolution would incorrectly report that the function call was ambiguous, if an ANY PTR was passed
-  to the function. Now it chooses the ANY PTR candidate. (cha0s)
+- ANY PTR resolution was broken; if a function taking an ANY PTR had an overload taking another type (e.g. BYTE), the overload resolution would incorrectly report that the function call was ambiguous, if an ANY PTR was passed to the function. Now it chooses the ANY PTR candidate. (cha0s)
 - #2169551: FB in Windows was using scientific notation to print or convert any numbers less than 0.1.  It will now only use it with numbers less than 0.0001 (counting_pine)
 - #2210314: IIF within new[] was failing because trees with IIF were not cloned correctly (yetifoot)
 - #2010551: included files names were being emitted in .stabs in upper case, causing problems in gdb under linux (yetifoot)
+- "a mod &hffffffffu" could be mistaken for "a mod -1", and incorrectly optimised to 0 (counting_pine)
+
 
 Version 0.20.0 Beta:
 
