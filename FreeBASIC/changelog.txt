@@ -9,7 +9,7 @@ Version 0.21.0 Beta:
 - remove unnecessary (and undocumented) command line options -nostdcall and -stdcall (DrV)
 - lang qb: Allow DEF___ statements anywhere in code (counting_pine)
 - RANDOMIZE (with no parameters) now uses a default seed that changes more than once a second (counting_pine)
-- ImageCreate and internal screen allocation now aligns buffers to multiples of 16 to make working with SSE easier. (yetifoot)
+- ImageCreate and internal screen allocation now aligns buffers to multiples of 16 to make working with SSE easier - thanks to 1000101. (yetifoot)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
@@ -48,6 +48,7 @@ Version 0.21.0 Beta:
   to the function. Now it chooses the ANY PTR candidate. (cha0s)
 - #2169551: FB in Windows was using scientific notation to print or convert any numbers less than 0.1.  It will now only use it with numbers less than 0.0001 (counting_pine)
 - #2210314: IIF within new[] was failing because trees with IIF were not cloned correctly (yetifoot)
+- #2010551: included files names were being emitted in .stabs in upper case, causing problems in gdb under linux (yetifoot)
 
 Version 0.20.0 Beta:
 
@@ -1495,4 +1496,3 @@ Version 0.02 Beta:
 - optargs.bas wasn't working, it was being used just as a prototype, shouldn't be there (v1c)
 - argument-less function pointers: parser wasn't accepting them when ()'s were used (v1c)
 - right$ was reversing the result (v1c)
-

@@ -236,7 +236,7 @@ private function hFindIncFile _
 
 	dim as string fname
 
-	fname = ucase( *filename )
+	fname = *filename
 
 	function = hashLookup( incfilehash, fname )
 
@@ -253,7 +253,7 @@ private function hAddIncFile _
     dim as uinteger index
 
 	fname = allocate( len( *filename ) + 1 )
-	hUcase( filename, fname )
+	*fname = *filename
 
 	index = hashHash( fname )
 
