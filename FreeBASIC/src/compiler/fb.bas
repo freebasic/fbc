@@ -240,7 +240,7 @@ private function hFindIncFile _
 	fname = ucase( filename )
 #else
 	fname = *filename
-#end if
+#endif
 
 	function = hashLookup( incfilehash, fname )
 
@@ -261,7 +261,7 @@ private function hAddIncFile _
 	hUcase( filename, fname )
 #else
 	*fname = *filename
-#end if
+#endif
 
 	index = hashHash( fname )
 
