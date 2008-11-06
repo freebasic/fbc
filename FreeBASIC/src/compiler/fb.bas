@@ -237,7 +237,7 @@ private function hFindIncFile _
 	dim as string fname
 
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	fname = ucase( filename )
+	fname = ucase( *filename )
 #else
 	fname = *filename
 #endif
