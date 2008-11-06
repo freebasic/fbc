@@ -236,7 +236,11 @@ private function hFindIncFile _
 
 	dim as string fname
 
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	fname = ucase( filename )
+#else
 	fname = *filename
+#end if
 
 	function = hashLookup( incfilehash, fname )
 
@@ -253,7 +257,11 @@ private function hAddIncFile _
     dim as uinteger index
 
 	fname = allocate( len( *filename ) + 1 )
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	hUcase( filename, fname )
+#else
 	*fname = *filename
+#end if
 
 	index = hashHash( fname )
 
