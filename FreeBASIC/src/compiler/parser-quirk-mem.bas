@@ -152,8 +152,15 @@ function cOperatorNew _
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	end if
 
-	'' temp pointer
-	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
+	dim as integer is_addr
+
+	if dtype = FB_DATATYPE_STRUCT then
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
+		is_addr = -1
+	else
+		'' temp pointer
+		tmp = symbAddTempVar( dtype, subtype, , FALSE )
+	end if
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
@@ -226,7 +233,11 @@ function cOperatorNew _
 				end if
 
         	else
-        		ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+			if is_addr then
+        			ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+			else
+				ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI )
+			end if
 
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 
