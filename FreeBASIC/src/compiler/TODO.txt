@@ -236,7 +236,7 @@
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
 
-[ ] AndAlso and OrElse, short-circuit versions of And and Or
+[X] AndAlso and OrElse, short-circuit versions of And and Or
     - pay attention to register spills if functions or complex expressions are
       used in left or right sides
 
