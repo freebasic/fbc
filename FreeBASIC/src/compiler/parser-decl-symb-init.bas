@@ -159,6 +159,7 @@ private function hArrayInit _
     dim as integer isarray = any, dtype = any
     dim as FBVARDIM ptr old_dim = any
     dim as FBSYMBOL ptr subtype = any
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS - 1)
 
 	function = FALSE
 
@@ -213,7 +214,13 @@ private function hArrayInit _
 	end if
 
 	if( ctx.dim_ <> NULL ) then
-		elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
+		dTB(ctx.dimcnt - 1).lower = ctx.dim_->lower
+		dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
+		if ctx.dim_->upper = -1 then
+			elements = -1
+		else
+			elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
+		end if
 	else
 		elements = 1
 	end if
@@ -249,8 +256,19 @@ private function hArrayInit _
 		end if
 
 		elm_cnt += 1
-		if( elm_cnt >= elements ) then
-			exit do
+		if elements = -1 then
+			' ellipsis elements...
+			if lexGetToken( ) <> CHAR_COMMA then
+				elements = elm_cnt
+				ctx.dim_->upper = ctx.dim_->lower + elm_cnt - 1
+				dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
+				symbSetArrayDimTb( ctx.sym, dimensions, dTB() )
+				exit do
+			end if
+		else
+			if( elm_cnt >= elements ) then
+				exit do
+			end if
 		end if
 
 	'' ','

@@ -263,7 +263,8 @@ private function hIsConst _
 	for i as integer = 0 to dimensions-1
 		if( astIsCONST( exprTB(i, 0) ) = FALSE ) then
 			return FALSE
-
+		elseif exprTB(i, 1) = NULL then
+			' do nothing, allow NULL expression here for ellipsis
 		elseif( astIsCONST( exprTB(i, 1) ) = FALSE ) then
 			return FALSE
 		end if
@@ -811,8 +812,16 @@ private sub hMakeArrayDimTB _
 
 		'' upper bound
 		expr = exprTB(i, 1)
-		dTB(i).upper = astGetValueAsInt( expr )
-		astDelNode( expr )
+		if expr = NULL then
+			' if a null expr is found, that means it was an ellipsis for the
+			' upper bound, so we set a special upper value, and CONTINUE in
+			' order to skip the check
+			dTB(i).upper = -1
+			continue for
+		else
+			dTB(i).upper = astGetValueAsInt( expr )
+			astDelNode( expr )
+		end if
 
     	if( dTB(i).upper < dTB(i).lower ) then
 			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
@@ -888,6 +897,21 @@ private function hVarInitDefault _
 
 end function
 
+function hHasEllipsis _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	function = FALSE
+
+	if symbIsArray( sym ) then
+		if sym->var_.array.has_ellipsis then
+			function = TRUE
+		end if
+	end if
+
+end function
+
 '':::::
 private function hVarInit _
 	( _
@@ -941,6 +965,12 @@ private function hVarInit _
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
+		'' don't allow arrays with ellipsis denoting unknown size at this time
+		if hHasEllipsis( sym ) = TRUE then
+			errReport( FB_ERRMSG_CANTUSEANYINITELLIPSIS )
+			exit function
+		end if
+
 		'' don't allow var-len strings
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
@@ -970,6 +1000,7 @@ private function hVarInit _
 
 	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
 	if( initree = NULL ) then
+
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
@@ -1244,6 +1275,7 @@ function hVarDeclEx _
     dim as zstring ptr palias = any
     dim as ASTNODE ptr assign_initree = any
 	dim as integer doassign = any
+	dim as integer has_ellipsis = FALSE
 
     function = NULL
 
@@ -1328,6 +1360,14 @@ function hVarDeclEx _
 	    					exit function
     					end if
 
+						' If there were any ellipsises in the
+						' array decl then we mark the symbol before initializing
+						for i as integer = 0 to dimensions - 1
+							if dTB(i).upper = -1 then
+								has_ellipsis = TRUE
+							end if
+						next i
+
     					is_dynamic = FALSE
 
 					'' can be static or dynamic..
@@ -1337,6 +1377,15 @@ function hVarDeclEx _
     					end if
 
 						check_exprtb = TRUE
+
+						' If there were any ellipsises in the
+						' array decl then we mark the symbol before initializing
+						for i as integer = 0 to dimensions - 1
+							if exprTB(i,1) = NULL then
+								has_ellipsis = TRUE
+							end if
+						next i
+
 					end if
 
     			'' COMMON.. no subscripts
@@ -1539,6 +1588,10 @@ function hVarDeclEx _
 			end select
 		end if
 
+		if has_ellipsis then
+			sym->var_.array.has_ellipsis = TRUE
+		end if
+
 		'' check for an initializer
 		if( is_fordecl = FALSE ) then
 
@@ -1562,6 +1615,12 @@ function hVarDeclEx _
 
 			'' default initialization
 			case else
+
+				if hHasEllipsis( sym ) = TRUE then
+					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
+					exit function
+				end if
+
 				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
 
 			end select
@@ -1745,6 +1804,30 @@ function hVarDeclEx _
 
 end function
 
+'' look for ... followed by ')', ',' or TO
+function hMatchEllipsis _
+	( _
+	) as integer
+
+	function = FALSE
+
+	if lexGetToken( ) = CHAR_DOT then
+		if lexGetLookAhead( 1 ) = CHAR_DOT then
+			if lexGetLookAhead( 2 ) = CHAR_DOT then
+				select case lexGetLookAhead( 3 )
+					case CHAR_COMMA, CHAR_RPRNT, FB_TK_TO
+						function = TRUE
+						' Skip the dots
+						lexSkipToken( )
+						lexSkipToken( )
+						lexSkipToken( )
+				end select
+			end if
+		end if
+	end if
+
+end function
+
 '':::::
 ''ArrayDecl       =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1759,6 +1842,7 @@ function cStaticArrayDecl _
 
     dim as integer i = any
     dim as ASTNODE ptr expr = any
+	dim as integer has_any_ellipsis = FALSE
 
     function = FALSE
 
@@ -1775,46 +1859,24 @@ function cStaticArrayDecl _
 
     i = 0
     do
-    	'' Expression
-		expr = cExpression( )
-		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			end if
+		dim as integer dimension_has_ellipsis = FALSE
+
+		if hMatchEllipsis( ) then
+			has_any_ellipsis = TRUE
+			dimension_has_ellipsis = TRUE
+			dTB(i).lower = -1
 		else
-			if( astIsCONST( expr ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-		end if
-
-		dTB(i).lower = astGetValueAsInt( expr )
-		astDelNode( expr )
-
-        '' TO
-    	if( lexGetToken( ) = FB_TK_TO ) then
-    		lexSkipToken( )
-
-    		'' Expression
+			'' Expression
 			expr = cExpression( )
 			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 					exit function
 				else
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
+					'' error recovery: fake an expr
+					if( lexGetToken( ) <> FB_TK_TO ) then
+						hSkipUntil( CHAR_COMMA )
+					end if
+					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end if
 			else
 				if( astIsCONST( expr ) = FALSE ) then
@@ -1823,24 +1885,68 @@ function cStaticArrayDecl _
 					else
 						'' error recovery: fake an expr
 						astDelTree( expr )
-						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
+						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 					end if
 				end if
 			end if
-
-			dTB(i).upper = astGetValueAsInt( expr )
+	
+			dTB(i).lower = astGetValueAsInt( expr )
 			astDelNode( expr )
+		end if
+
+        '' TO
+    	if( lexGetToken( ) = FB_TK_TO ) then
+    		lexSkipToken( )
+
+			if dimension_has_ellipsis = TRUE then
+				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
+				exit function
+			end if
+
+			if hMatchEllipsis( ) then
+				has_any_ellipsis = TRUE
+				dimension_has_ellipsis = TRUE
+				dTB(i).upper = -1
+			else
+				'' Expression
+				expr = cExpression( )
+				if( expr = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip to next ',' and fake an expr
+						hSkipUntil( CHAR_COMMA )
+						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
+					end if
+				else
+					if( astIsCONST( expr ) = FALSE ) then
+						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake an expr
+							astDelTree( expr )
+							expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
+						end if
+					end if
+				end if
+	
+				dTB(i).upper = astGetValueAsInt( expr )
+				astDelNode( expr )
+			end if
 
     	else
     	    dTB(i).upper = dTB(i).lower
     		dTB(i).lower = env.opt.base
     	end if
 
-    	if( dTB(i).upper < dTB(i).lower ) then
-			if( errReport( FB_ERRMSG_INVALIDSUBSCRIPT ) = FALSE ) then
-				exit function
+		' Don't check if we have ellipsis, as upper will be set to -1
+		if dimension_has_ellipsis = FALSE then
+			if( dTB(i).upper < dTB(i).lower ) then
+				if( errReport( FB_ERRMSG_INVALIDSUBSCRIPT ) = FALSE ) then
+					exit function
+				end if
 			end if
-    	end if
+		end if
 
     	dimensions += 1
     	i += 1
@@ -1889,88 +1995,110 @@ function cArrayDecl _
 		exprTB() as ASTNODE ptr _
 	) as integer
 
-    dim as integer i = any
-    dim as ASTNODE ptr expr = any
+	dim as integer i = any
+	dim as ASTNODE ptr expr = any
+	dim as integer has_any_ellipsis = FALSE
 
-    function = FALSE
+	function = FALSE
 
-    dimensions = 0
+	dimensions = 0
 
-    i = 0
-    do
-    	'' Expression
-		expr = cExpression( )
-		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			end if
+	i = 0
+	do
+		dim as integer dimension_has_ellipsis = FALSE
 
+		if hMatchEllipsis( ) then
+			has_any_ellipsis = TRUE
+			dimension_has_ellipsis = TRUE
+			exprTB(i,0) = NULL
 		else
-    		'' check if non-numeric
-    		select case as const astGetDataType( expr )
-    		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: fake an expr
-    				astDelTree( expr )
-    				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-    			end if
-    		end select
-		end if
-
-		exprTB(i,0) = expr
-
-        '' TO
-    	if( lexGetToken( ) = FB_TK_TO ) then
-    		lexSkipToken( )
-
-    		'' Expression
+			'' Expression
 			expr = cExpression( )
+
 			if( expr = NULL ) then
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astCloneTree( exprTB(i,0) )
+					'' error recovery: fake an expr
+					if( lexGetToken( ) <> FB_TK_TO ) then
+						hSkipUntil( CHAR_COMMA )
+					end if
+					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end if
+	
+			else
+				'' check if non-numeric
+				select case as const astGetDataType( expr )
+				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake an expr
+						astDelTree( expr )
+						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+					end if
+				end select
+			end if
+	
+			exprTB(i,0) = expr
+		end if
 
-    		else
-    			'' check if non-numeric
-    			select case as const astGetDataType( expr )
-    			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-    					exit function
-    				else
-    					'' error recovery: fake an expr
-    					expr = astCloneTree( exprTB(i,0) )
-    				end if
-    			end select
+		'' TO
+		if( lexGetToken( ) = FB_TK_TO ) then
+			lexSkipToken( )
+
+			if dimension_has_ellipsis = TRUE then
+				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
+				exit function
 			end if
 
-			exprTB(i,1) = expr
+			if hMatchEllipsis( ) then
+				has_any_ellipsis = TRUE
+				dimension_has_ellipsis = TRUE
+				exprTB(i,1) = NULL
+			else
+				'' Expression
+				expr = cExpression( )
 
-    	else
-    	    exprTB(i,1) = exprTB(i,0)
-    		exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-    	end if
+				if( expr = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip to next ',' and fake an expr
+						hSkipUntil( CHAR_COMMA )
+						expr = astCloneTree( exprTB(i,0) )
+					end if
+	
+				else
+					'' check if non-numeric
+					select case as const astGetDataType( expr )
+					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake an expr
+							expr = astCloneTree( exprTB(i,0) )
+						end if
+					end select
+				end if
+	
+				exprTB(i,1) = expr
+			end if
 
-    	dimensions += 1
-    	i += 1
+		else
+			exprTB(i,1) = exprTB(i,0)
+			exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+		end if
 
-    	'' separator
-    	if( lexGetToken( ) <> CHAR_COMMA ) then
-    		exit do
-    	end if
+		dimensions += 1
+		i += 1
 
-    	lexSkipToken( )
+		'' separator
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
+
+		lexSkipToken( )
 
 		if( i >= FB_MAXARRAYDIMS ) then
 			if( errReport( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then

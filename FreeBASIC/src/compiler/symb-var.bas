@@ -351,6 +351,7 @@ sub symbSetArrayDimTb _
 
     dim as integer i = any
     dim as FBVARDIM ptr d = any
+	dim as integer do_build = TRUE
 
 	if( dimensions > 0 ) then
 		s->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
@@ -363,6 +364,9 @@ sub symbSetArrayDimTb _
 			for i = 0 to dimensions-1
 				if( symbNewArrayDim( s, dTB(i).lower, dTB(i).upper ) = NULL ) then
 				end if
+				' If any dimension size is unknown yet (ellipsis), hold off on the actual build
+				' until called later when it's known.
+				if dTB(i).upper = -1 then do_build = FALSE
 			next
 
 		else
@@ -370,6 +374,9 @@ sub symbSetArrayDimTb _
 			for i = 0 to dimensions-1
 				d->lower = dTB(i).lower
 				d->upper = dTB(i).upper
+				' If any dimension size is unknown yet (ellipsis), hold off on the actual build
+				' until called later when it's known.
+				if d->upper = -1 then do_build = FALSE
 				d = d->next
 			next
 		end if
@@ -385,12 +392,14 @@ sub symbSetArrayDimTb _
 
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
-		if( s->var_.array.desc = NULL ) then
-			s->var_.array.desc = symbAddArrayDesc( s, dimensions )
-
-			s->var_.array.desc->var_.initree = _
-				astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
-
+		if do_build = TRUE then
+			if( s->var_.array.desc = NULL ) then
+				s->var_.array.desc = symbAddArrayDesc( s, dimensions )
+	
+				s->var_.array.desc->var_.initree = _
+					astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
+	
+			end if
 		end if
 	else
 		s->var_.array.desc = NULL
@@ -429,6 +438,8 @@ private sub hSetupVar _
 		s->var_.array.dif = 0
 		s->var_.array.elms = 1
 	end if
+
+	s->var_.array.has_ellipsis = FALSE
 
 	s->var_.initree = NULL
 

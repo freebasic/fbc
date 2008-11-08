@@ -367,6 +367,7 @@ function symbAddField _
 	sym->var_.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
 	sym->var_.array.dimhead = NULL
 	sym->var_.array.dimtail = NULL
+	sym->var_.array.has_ellipsis = FALSE
 
 	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then

@@ -163,7 +163,7 @@
     - must support RETURN or FUNCTION = to set the result
     - must check the params if passed byval and if they have the right types
 
-[ ] add the ... subscript when initializing array so
+[X] add the ... subscript when initializing array so
     "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
 
 [ ] forward type defs used in byval parms of function ptr type defs shouldn't be an error

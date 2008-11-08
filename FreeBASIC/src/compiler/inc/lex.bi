@@ -77,7 +77,7 @@ type FBTOKEN
 	next			as FBTOKEN ptr
 end type
 
-const FB_LEX_MAXK	= 2
+const FB_LEX_MAXK	= 3
 
 const LEX_MAXBUFFCHARS = 8192
 

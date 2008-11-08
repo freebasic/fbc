@@ -300,7 +300,10 @@ end type
 		@"Non-const UDT cannot invoke const method", _
 		@"Elements must be empty for strings and arrays", _
 		@"GOSUB disabled, use 'OPTION GOSUB' to enable", _
-		@"Invalid -lang" _
+		@"Invalid -lang", _
+		@"Can't use ANY as initializer in array with ellipsis bound", _
+		@"Must have initializer with array with ellipsis bound", _
+		@"Can't use ... as lower bound" _
 	}
 
 

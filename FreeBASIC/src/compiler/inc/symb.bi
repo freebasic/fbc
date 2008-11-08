@@ -581,6 +581,7 @@ type FBS_ARRAY
 	dif				as integer
 	elms			as integer
 	desc			as FBSYMBOL_ ptr
+	has_ellipsis    as integer
 end type
 
 type FBVAR_DESC
