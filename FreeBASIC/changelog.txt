@@ -49,6 +49,7 @@ Version 0.21.0 Beta:
 - #2210314: IIF within new[] was failing because trees with IIF were not cloned correctly (yetifoot)
 - #2010551: included files names were being emitted in .stabs in upper case, causing problems in gdb under linux (yetifoot)
 - "a mod &hffffffffu" could be mistaken for "a mod -1", and incorrectly optimised to 0 (counting_pine)
+- #2210424 - PUT # was warning about pointers and var-len string fields when putting any UDT with a constructor (counting_pine)
 
 
 Version 0.20.0 Beta:

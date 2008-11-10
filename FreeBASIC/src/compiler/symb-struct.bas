@@ -393,6 +393,7 @@ function symbAddField _
 		else
 			symbSetUDTHasCtorField( parent )
 			symbSetUDTHasDtorField( parent )
+			symbSetUDTHasPtrField( parent )
 		end if
 
     '' struct with a ctor or dtor? must add a ctor or dtor too

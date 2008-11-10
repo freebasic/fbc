@@ -1929,15 +1929,12 @@ declare function symbCheckConstAssign _
 #define symbGetGlobalHashTb( ) symbGetGlobalNamespc( ).nspc.ns.hashtb
 
 #define symbGetCurrentNamespc( ) symb.namespc
-
 #define symbSetCurrentNamespc(ns) symb.namespc = ns
 
 #define symbGetCurrentSymTb( ) symb.symtb
-
 #define symbSetCurrentSymTb(tb) symb.symtb = tb
 
 #define symbGetCurrentHashTb( ) symb.hashtb
-
 #define symbSetCurrentHashTb(tb) symb.hashtb = tb
 
 #define symbGetGlobCtorListHead( ) symb.globctorlist.head
@@ -1949,103 +1946,79 @@ declare function symbCheckConstAssign _
 #define symbGetLibPathListHead( ) listGetHead( @symb.libpathlist )
 
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
-
 #define symbSetIsAccessed(s) s->stats or= FB_SYMBSTATS_ACCESSED
 
 #define symbGetVarIsAllocated(s) ((s->stats and FB_SYMBSTATS_VARALLOCATED) <> 0)
-
 #define symbSetVarIsAllocated(s) s->stats or= FB_SYMBSTATS_VARALLOCATED
 
 #define symbGetIsInitialized(s) ((s->stats and FB_SYMBSTATS_INITIALIZED) <> 0)
-
 #define symbSetIsInitialized(s) s->stats or= FB_SYMBSTATS_INITIALIZED
 
 #define symbGetIsDeclared(s) ((s->stats and FB_SYMBSTATS_DECLARED) <> 0)
-
 #define symbSetIsDeclared(s) s->stats or= FB_SYMBSTATS_DECLARED
 
 #define symbGetIsCalled(s) ((s->stats and FB_SYMBSTATS_CALLED) <> 0)
-
 #define symbSetIsCalled(s) s->stats or= FB_SYMBSTATS_CALLED
 
 #define symbGetIsRTL(s) ((s->stats and FB_SYMBSTATS_RTL) <> 0)
 
 #define symbGetIsThrowable(s) ((s->stats and FB_SYMBSTATS_THROWABLE) <> 0)
-
 #define symbSetIsThrowable(s) s->stats or= FB_SYMBSTATS_THROWABLE
 
 #define symbGetIsParsed(s) ((s->stats and FB_SYMBSTATS_PARSED) <> 0)
-
 #define symbSetIsParsed(s) s->stats or= FB_SYMBSTATS_PARSED
 
 #define symbSetIsMock(s) s->stats or= FB_SYMBSTATS_MOCK
 
 #define symbSetDontInit(s) s->stats or= FB_SYMBSTATS_DONTINIT
-
 #define symbGetDontInit(s) ((s->stats and FB_SYMBSTATS_DONTINIT) <> 0)
 
 #define symbGetIsMainProc(s) ((s->stats and FB_SYMBSTATS_MAINPROC) <> 0)
-
 #define symbSetIsMainProc(s) s->stats or= FB_SYMBSTATS_MAINPROC
 
 #define symbGetIsModLevelProc(s) ((s->stats and FB_SYMBSTATS_MODLEVELPROC) <> 0)
-
 #define symbSetIsModLevelProc(s) s->stats or= FB_SYMBSTATS_MODLEVELPROC
 
 #define symbGetIsFuncPtr(s) ((s->stats and FB_SYMBSTATS_FUNCPTR) <> 0)
-
 #define symbSetIsFuncPtr(s) s->stats or= FB_SYMBSTATS_FUNCPTR
 
 #define symbGetIsJumpTb(s) ((s->stats and FB_SYMBSTATS_JUMPTB) <> 0)
-
 #define symbSetIsJumpTb(s) s->stats or= FB_SYMBSTATS_JUMPTB
 
 #define symbGetIsUnique(s) ((s->stats and FB_SYMBSTATS_CANTDUP) <> 0)
-
 #define symbSetIsUnique(s) s->stats or= FB_SYMBSTATS_CANTDUP
 
 #define symbGetHasCtor(s) ((s->stats and FB_SYMBSTATS_HASCTOR) <> 0)
-
 #define symbSetHasCtor(s) s->stats or= FB_SYMBSTATS_HASCTOR
 
 #define symbGetHasCopyCtor(s) ((s->stats and FB_SYMBSTATS_HASCOPYCTOR) <> 0)
-
 #define symbSetHasCopyCtor(s) s->stats or= FB_SYMBSTATS_HASCOPYCTOR
 
 #define symbGetHasDtor(s) ((s->stats and FB_SYMBSTATS_HASDTOR) <> 0)
-
 #define symbSetHasDtor(s) s->stats or= FB_SYMBSTATS_HASDTOR
 
 #define symbGetHasVirtual(s) ((s->stats and FB_SYMBSTATS_HASVIRTUAL) <> 0)
-
 #define symbSetHasVirtual(s) s->stats or= FB_SYMBSTATS_HASVIRTUAL
 
 #define symbGetIsGlobalCtor(s) ((s->stats and FB_SYMBSTATS_GLOBALCTOR) <> 0)
-
 #define symbSetIsGlobalCtor( s ) s->stats or= FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_CALLED
 
 #define symbGetIsGlobalDtor(s) ((s->stats and FB_SYMBSTATS_GLOBALDTOR) <> 0)
-
 #define symbSetIsGlobalDtor( s ) s->stats or= FB_SYMBSTATS_GLOBALDTOR or FB_SYMBSTATS_CALLED
 
 #define symbGetIsCtorInited(s) ((s->stats and FB_SYMBSTATS_CTORINITED) <> 0)
-
 #define symbSetIsCtorInited(s) s->stats or= FB_SYMBSTATS_CTORINITED
 
 #define symbGetCantUndef(s) ((s->stats and FB_SYMBSTATS_CANTUNDEF) <> 0)
-
 #define symbSetCantUndef(s) s->stats or= FB_SYMBSTATS_CANTUNDEF
 
 #define symbGetIsUnionField(s) ((s->stats and FB_SYMBSTATS_UNIONFIELD) <> 0)
-
 #define symbSetIsUnionField(s) s->stats or= FB_SYMBSTATS_UNIONFIELD
 
 #define symbGetIsRTLConst(s) ((s->stats and FB_SYMBSTATS_RTL_CONST) <> 0)
-
 #define symbSetIsRTLConst(s) s->stats or= FB_SYMBSTATS_RTL_CONST
 
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
-
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
 
 #define symbGetStats(s) s->stats
@@ -2080,7 +2053,6 @@ declare function symbCheckConstAssign _
 #define symbGetOfs(s) s->ofs
 
 #define symbGetAttrib(s) s->attrib
-
 #define symbSetAttrib(s,t) s->attrib = t
 
 #define symbGetPrev(s) s->prev
@@ -2138,7 +2110,6 @@ declare function symbCheckConstAssign _
 #define symbGetDefTokNext(t) t->next
 
 #define symbGetDefTokType(t) t->type
-
 #define symbSetDefTokType(t,_typ) t->type = _typ
 
 #define symbGetDefTokText(t) t->text
@@ -2146,7 +2117,6 @@ declare function symbCheckConstAssign _
 #define symbGetDefTokTextW(t) t->textw
 
 #define symbGetDefTokParamNum(t) t->paramnum
-
 #define symbSetDefTokParamNum(t,n) t->paramnum = n
 
 #define symbGetDefineParams(d) d->def.params
@@ -2172,13 +2142,11 @@ declare function symbCheckConstAssign _
 #define symbGetVarStmt(s) s->var_.stmtnum
 
 #define symbSetTypeIniTree(s, t) s->var_.initree = t
-
 #define symbGetTypeIniTree(s) s->var_.initree
 
 #define symbGetArrayDiff(s) s->var_.array.dif
 
 #define symbGetArrayDimensions(s) s->var_.array.dims
-
 #define symbSetArrayDimensions(s,d) s->var_.array.dims = d
 
 #define symbGetArrayDescriptor(s) s->var_.array.desc
@@ -2202,44 +2170,36 @@ declare function symbCheckConstAssign _
 
 #define symbGetUDTIsUnion(s) ((s->udt.options and FB_UDTOPT_ISUNION) <> 0)
 
-#define symbGetUDTHasPtrField(s) ((s->udt.options and (FB_UDTOPT_HASPTRFIELD or FB_UDTOPT_HASCTORFIELD)) <> 0)
+#define symbGetUDTHasPtrField(s) ((s->udt.options and FB_UDTOPT_HASPTRFIELD) <> 0)
+#define symbSetUDTHasPtrField(s) s->udt.options or= FB_UDTOPT_HASPTRFIELD
 
 #define symbSetUDTHasCtorField(s) s->udt.options or= FB_UDTOPT_HASCTORFIELD
-
 #define symbGetUDTHasCtorField(s) ((s->udt.options and FB_UDTOPT_HASCTORFIELD) <> 0)
 
 #define symbSetUDTHasDtorField(s) s->udt.options or= FB_UDTOPT_HASDTORFIELD
-
 #define symbGetUDTHasDtorField(s) ((s->udt.options and FB_UDTOPT_HASDTORFIELD) <> 0)
 
 #define symbGetUDTIsAnon(s) ((s->udt.options and FB_UDTOPT_ISANON) <> 0)
 
 #define symbGetUDTHasRecByvalParam(s) ((s->udt.options and FB_UDTOPT_HASRECBYVALPARAM) <> 0)
-
 #define symbSetUDTHasRecByvalParam(s) s->udt.options or= FB_UDTOPT_HASRECBYVALPARAM
 
 #define symbGetUDTHasRecByvalRes(s) ((s->udt.options and FB_UDTOPT_HASRECBYVALRES) <> 0)
-
 #define symbSetUDTHasRecByvalRes(s) s->udt.options or= FB_UDTOPT_HASRECBYVALRES
 
 #define symbGetUDTHasGetProp(s) ((s->udt.options and FB_UDTOPT_HASGETPROPERTY) <> 0)
-
 #define symbSetUDTHasGetProp(s) s->udt.options or= FB_UDTOPT_HASGETPROPERTY
 
 #define symbGetUDTHasSetProp(s) ((s->udt.options and FB_UDTOPT_HASSETPROPERTY) <> 0)
-
 #define symbSetUDTHasSetProp(s) s->udt.options or= FB_UDTOPT_HASSETPROPERTY
 
 #define symbGetUDTHasIdxGetProp(s) ((s->udt.options and FB_UDTOPT_HASIDXGETPROPERTY) <> 0)
-
 #define symbSetUDTHasIdxGetProp(s) s->udt.options or= FB_UDTOPT_HASIDXGETPROPERTY
 
 #define symbGetUDTHasIdxSetProp(s) ((s->udt.options and FB_UDTOPT_HASIDXSETPROPERTY) <> 0)
-
 #define symbSetUDTHasIdxSetProp(s) s->udt.options or= FB_UDTOPT_HASIDXSETPROPERTY
 
 #define symbGetUDTHasKwdField(s) ((s->udt.options and FB_UDTOPT_HASKWDFIELD) <> 0)
-
 #define symbSetUDTHasKwdField(s) s->udt.options or= FB_UDTOPT_HASKWDFIELD
 
 #define symbGetUDTAlign(s) s->udt.align
@@ -2248,7 +2208,7 @@ declare function symbCheckConstAssign _
 
 #define symbGetUDTUnpadLen(s) s->udt.unpadlgt
 
-#define symbGetUdtSymbTb(s) s->udt.ns.symtb
+#define symbGetUDTSymbTb(s) s->udt.ns.symtb
 
 #define symbGetUDTHashTb(s) s->udt.ns.hashtb
 
@@ -2284,7 +2244,6 @@ declare function symbCheckConstAssign _
 #define symbGetNamespaceLastTail(s) s->nspc.last_tail
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
-
 #define symbSetLabelIsDeclared(l) l->lbl.declared = TRUE
 
 #define symbGetLabelParent(l) l->lbl.parent
@@ -2312,7 +2271,6 @@ declare function symbCheckConstAssign _
 #define symbGetProcTailParam(f) f->proc.paramtb.tail
 
 #define symbGetProcCallback(f) f->proc.rtl.callback
-
 #define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
 #define symbGetProcIsOverloaded(f) ((f->attrib and FB_SYMBATTRIB_OVERLOADED) > 0)
@@ -2336,11 +2294,9 @@ declare function symbCheckConstAssign _
 #define symbFreeProcExt(f) deallocate( f->proc.ext )
 
 #define symbGetProcStatReturnUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_RETURNUSED) <> 0)
-
 #define symbSetProcStatReturnUsed(f) f->proc.ext->stats or= FB_PROCSTATS_RETURNUSED
 
 #define symbGetProcStatAssignUsed(f) ((f->proc.ext->stats and FB_PROCSTATS_ASSIGNUSED) <> 0)
-
 #define symbSetProcStatAssignUsed(f) f->proc.ext->stats or= FB_PROCSTATS_ASSIGNUSED
 
 #define symbGetProcPriority(f) f->proc.ext->priority
@@ -2353,15 +2309,12 @@ declare function symbCheckConstAssign _
 #endmacro
 
 #define symbGetProcStatGosub(f) ((f->proc.ext->stats and FB_PROCSTATS_GOSUBUSED) <> 0)
-
 #define symbSetProcStatGosub(f) f->proc.ext->stats or= FB_PROCSTATS_GOSUBUSED
 
 #define symbGetProcGosubSym(f) f->proc.ext->gosub.ctx
-
 #define symbSetProcGosubSym(f,p) f->proc.ext->gosub.ctx = p
 
 #define symbGetProcLocalOfs(p) p->proc.ext->stk.localofs
-
 #define symbSetProcLocalOfs(p,ofs) p->proc.ext->stk.localofs = ofs
 
 #define symbGetProcOpOvl(f) f->proc.ext->opovl.op
@@ -2464,7 +2417,6 @@ declare function symbCheckConstAssign _
 #define symbGetCurrentProcName( ) symbGetName( parser.currproc )
 
 #define symbGetLastLabel( ) symb.lastlbl
-
 #define symbSetLastLabel( l ) symb.lastlbl = l
 
 #define symbAddLib(libname) symbAddLibEx( @symb.liblist, @symb.libhash, libname )
