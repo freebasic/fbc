@@ -720,7 +720,7 @@ function hIsValidSymbolName( byval sym as zstring ptr ) as integer
 	if( (hIsChar(sym[0]) orelse (sym[0] = asc("_"))) = FALSE ) then exit function
 	
 	for i as integer = 1 to symlen-1
-		if( ((hIsChar(sym[0])) orelse (sym[0] = asc("_")) orelse (hIsCharNumeric(sym[i]))) = FALSE ) then exit function
+		if( ((hIsChar(sym[i])) orelse (sym[i] = asc("_")) orelse (hIsCharNumeric(sym[i]))) = FALSE ) then exit function
 	next
 	
 	function = TRUE
