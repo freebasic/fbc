@@ -39,7 +39,7 @@ Version 0.21.0 Beta:
 - Backslashes could escape End-of-line characters in string literals (counting_pine)
 - Expressions with side-effects could be optimized away in some cases, e.g. cint(rnd) * 0 (counting_pine)
 - WINDOW was swapping float coordinates using an int value (counting_pine)
-- Faulty optimisation for if(a >= a | a <= a) (counting_pine)
+- Faulty optimisation for "IF (a >= a | a <= a) THEN ..." (counting_pine)
 - #2109564: POW and ATAN2 were not checking operand sizes in the SSE emitter - thanks Bryan S. for fix (jeffm)
 - Fix Win32 DirectX gfx driver crashing when DirectX not working/available (DrV)
 - Slightly improved expression/typename disambiguation in LEN/SIZEOF/TYPEOF (counting_pine)
@@ -50,6 +50,7 @@ Version 0.21.0 Beta:
 - #2010551: included files names were being emitted in .stabs in upper case, causing problems in gdb under linux (yetifoot)
 - "a mod &hffffffffu" could be mistaken for "a mod -1", and incorrectly optimised to 0 (counting_pine)
 - #2210424 - PUT # was warning about pointers and var-len string fields when putting any UDT with a constructor (counting_pine)
+- Faulty optimisation for "IF a op a THEN ...", where "op" is a non-comparison operator (counting_pine)
 
 
 Version 0.20.0 Beta:

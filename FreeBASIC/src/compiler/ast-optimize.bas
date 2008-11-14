@@ -2268,6 +2268,8 @@ function hOptSelfCompare _
 		c = -1
 	case AST_OP_NE, AST_OP_GT, AST_OP_LT
 		c = 0
+	case else
+		exit function
 	end select
 	
 	astDelNode( n )
