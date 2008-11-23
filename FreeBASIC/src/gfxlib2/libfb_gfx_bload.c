@@ -288,7 +288,7 @@ static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewhe
 	if (biBitCount <= 8) {
 		/* OS/2 palette entries are 3 bytes; others are 4 bytes */
 		int pal_entry_size = (biSize == 12 ? 3 : 4);
-		palette_entries = MIN((bfOffBits - (biSize + 14)) / pal_entry_size, 1 << biBitCount);
+		palette_entries = 1 << biBitCount;
 		for (i = 0; i < palette_entries; i++) {
 			palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
 			if (pal)
