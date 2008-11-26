@@ -481,6 +481,10 @@ function astProcBegin _
 	''
 	irProcBegin( sym )
 
+' Don't allocate anything for a naked function, because they will be allowed
+' at ebp-N, which won't exist, no result is needed either
+if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+
     '' alloc parameters
     if( hDeclProcParams( sym ) = FALSE ) then
     	exit function
@@ -492,6 +496,8 @@ function astProcBegin _
 			exit function
 		end if
 	end if
+
+end if
 
 	'' local error handler
 	with sym->proc.ext->err
@@ -667,6 +673,8 @@ function astProcEnd _
 			end if
 		end if
 
+		' Don't load the result for naked functions
+		if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 		'' if it's a function, load result
 		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 
@@ -678,6 +686,7 @@ function astProcEnd _
 			end select
 
         	hLoadProcResult( sym )
+		end if
 		end if
 	end if
 

@@ -1337,6 +1337,9 @@ private sub hCreateFrame _
     dim as integer bytestoalloc, bytestoclear
 	dim as zstring ptr lprof
 
+	' No frame for naked functions
+	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+
     bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
     if( (bytestoalloc <> 0) or _
@@ -1381,6 +1384,8 @@ private sub hCreateFrame _
     	hPUSH( "edi" )
     end if
 
+	end if
+
 	''
 #if 0
 	bytestoclear = ((proc->proc.ext->stk.localofs - EMIT_LOCSTART) + 3) and (not 3)
@@ -1396,6 +1401,9 @@ private sub hDestroyFrame _
 		byval proc as FBSYMBOL ptr, _
 		byval bytestopop as integer _
 	) static
+
+	' don't do anything for naked functions, except the .size at the end
+	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
     dim as integer bytestoalloc
 
@@ -1425,6 +1433,8 @@ private sub hDestroyFrame _
     else
     	outp( "ret" )
     end if
+
+	end if
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
     	outEx( ".size " + *symbGetMangledName( proc ) + ", .-" + *symbGetMangledName( proc ) + NEWLINE )

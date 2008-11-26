@@ -569,6 +569,11 @@ function cProcHeader _
 	subtype = NULL
 	stats = 0
 
+	if ucase( *lexGetText( ) ) = "NAKED" then
+		attrib or= FB_SYMBATTRIB_NAKED
+		lexSkipToken( )
+	end if
+
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
 
@@ -1446,6 +1451,11 @@ function cOperatorHeader _
 
 	subtype = NULL
 
+	if ucase( *lexGetText( ) ) = "NAKED" then
+		attrib or= FB_SYMBATTRIB_NAKED
+		lexSkipToken( )
+	end if
+
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
 
@@ -1914,6 +1924,11 @@ function cPropertyHeader _
 	subtype = NULL
 	stats = 0
 
+	if ucase( *lexGetText( ) ) = "NAKED" then
+		attrib or= FB_SYMBATTRIB_NAKED
+		lexSkipToken( )
+	end if
+
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
 
@@ -2240,6 +2255,11 @@ function cCtorHeader _
 		attrib or= FB_SYMBATTRIB_METHOD
 
 		is_extern = TRUE
+	end if
+
+	if ucase( *lexGetText( ) ) = "NAKED" then
+		attrib or= FB_SYMBATTRIB_NAKED
+		lexSkipToken( )
 	end if
 
 	'' CallConvention?
@@ -2690,7 +2710,9 @@ function cProcStmtEnd _
 	proc_res = symbGetProcResult( parser.currproc )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
+			if (parser.currproc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+				errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
+			end if
 		end if
 	end if
 

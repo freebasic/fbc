@@ -78,6 +78,9 @@ function cSymbolTypeFuncPtr _
 
 	function = NULL
 
+	' no need for naked check here, naked only effects the way a function
+	' is emitted, not the way it's called
+
 	'' mode
 	mode = cProcCallingConv( )
 
