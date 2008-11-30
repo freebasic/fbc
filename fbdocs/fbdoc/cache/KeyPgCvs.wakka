@@ -2,7 +2,7 @@
 Converts an four byte string to an single-precision variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvs** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvs** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvs**( //str// )

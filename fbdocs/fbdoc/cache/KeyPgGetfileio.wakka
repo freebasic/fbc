@@ -13,22 +13,22 @@ Reads data from a file to a buffer
 	##//filenum//##
 		The value passed to ##[[KeyPgOpen Open]]## when the file was opened
 	##//position//##
-		The position where the read must start. If the file was opened ##[[KeyPgRandom For Random]]##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.  The position is 1-based: i.e. first record or byte of a file is at position 1.
+		The position where the read must start. If the file was opened ##[[KeyPgRandom For Random]]##, the position is in records; otherwise, it is in bytes. If omitted, read starts at the present file pointer position.  The position is 1-based: i.e. first record or byte of a file is at position ##1##.
 	##//data//##
-		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless //amount// is given or the ##[[KeyPgEof EOF]]## is reached.
-		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer directly, then ##**Get**## will overwrite the pointer, not the memory it points to.
+		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof EOF]]## is reached.  When getting arrays, ##//data//## should be followed by an empty pair of brackets: "##()##".  ##**Get**## will write all of the data in the array.  ##//amount//## is not allowed.
+		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
 	##//amount//##
-		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to 1, and ##**Get**## reads one variable of the buffer's data type.
+		Limits ##**Get**## to read  read ##//amount// * [[KeyPgSizeof Sizeof]](//datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to ##1##, and ##**Get**## just reads a single variable of the buffer's data type.
 	##//bytesread//##
 		An unsigned integer variable to accept the result of the number of bytes read successfully from the file.
 
 {{fbdoc item="ret"}}
-	Zero (##0##) on success; non-zero on error. Note: if EOF is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
+	Zero (##0##) on success; non-zero on error. Note: if ##[[KeyPgEof EOF]]## (end of file) is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
 
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
 
-	##**Get**## can be used as a function, and will return 0 on success or an error code on failure.	
+	##**Get**## can be used as a function, and will return ##0## on success or an error code on failure.	
 
 	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
@@ -133,13 +133,16 @@ Print ExampleStr
 
 {{fbdoc item="diff"}}
 	- ##**Get**## in FB can read full arrays as in VB or, alternatively, read a multiple of the data size into the memory.
-	- ##**Get**## can be used as a function in FB.
+	- ##**Get**## can be used as a function in FB, to find the success/error code returned without having to use error handling procedures.
 	- FB allows the ##//bytesread//## parameter, to check how many bytes have been successfully read in.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgPutfileio Put (File I/O)]]##
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgClose Close]]##
-	- ##[[KeyPgPutfileio Put (File I/O)]]##
+	- ##[[KeyPgBinary Binary]]##
+	- ##[[KeyPgRandom Random]]##
 	- ##[[KeyPgFreefile Freefile]]##
+	- ##[[ProPgFileIO File I/O methods comparison]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

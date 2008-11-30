@@ -2,8 +2,8 @@
 Creates and fills a string of a certain length with a certain character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String**( //count// [[KeyPgAs as]] [[KeyPgInteger integer]], //ch// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **String** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //ch// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **String**[$]( //count//, //ch_code// )
@@ -43,3 +43,4 @@ end 0
 	- ##[[KeyPgSpace Space]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
+   

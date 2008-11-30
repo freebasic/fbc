@@ -7,33 +7,32 @@ Reads values stored with the ##[[KeyPgData Data]]## statement.
 {{fbdoc item="desc"}}
 	Reads data stored in the application with the ##[[KeyPgData Data]]## command. 
 	
-	The elements of the ##//variable_list//## must be of basic types, numeric, strings  or elements of arrays and user defined types.
+	The elements of the ##//variable_list//## must be of basic types, numeric, strings or elements of arrays and user defined types.
 
-	All the ##[[KeyPgData Data]]## statements in the program behave as a single list, after the last element of a ##[[KeyPgData Data]]## statement is read, the first element of the following ##[[KeyPgData Data]]## statement will be read. If a ##**Read**## is attempted after the last element of the last data element, an error will occur.
+	All the ##[[KeyPgData Data]]## statements in the program behave as a single list, after the last element of one ##[[KeyPgData Data]]## statement is read, the first element of the following ##[[KeyPgData Data]]## statement will be read.
+	The program should not attempt to ##[[KeyPgRead Read]]## after the last ##**Data**## element.  The results are (in all dialects) undefined,  and the program may crash (Page Fault).
 
-	Data constants can only be of simple types (numeric or string). Alphanumeric string constants must be enclosed in quotes. 
+	Data constants can only be of simple types (numeric or string).  A string read into a numeric variable will be evaluated by the ##[[KeyPgVal Val]]## function.
 
-	A numeric value can be read as a numeric literal into a string. A string read into a numeric variable will be evaluated by the ##[[KeyPgVal Val]]## function.
-
-	The ##[[KeyPgRestore Restore]]## statement resets the next-element pointer to the start of the ##[[KeyPgData Data]]## following the label. This allows to alter the order in which the data is read. 
+	The "##[[KeyPgRestore Restore]] //label//##" statement makes the first ##[[KeyPgData Data]]## item after ##//label//## the next item to be read, allowing the user to choose specific sections of data to be read.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/data/read.bas"}}%%(freebasic)
 ' Create an array of 5 integers and a string to hold the data.
-DIM h(4) AS INTEGER
-DIM hs AS STRING
-DIM read_data as INTEGER
+DIM AS INTEGER h(4)
+DIM AS STRING hs
+DIM AS INTEGER readindex
 
 ' Set up to loop 5 times (for 5 numbers... check the data)
-FOR read_data = 0 TO 4
+FOR readindex = 0 TO 4
 
   ' Read in an integer.
-  READ h(read_data)
+  READ h(readindex)
 
   ' Display it.
-  PRINT "Number"; read_data;" = "; h(read_data)
+  PRINT "Number" ; readindex ; " = " ; h(readindex)
 
-NEXT
+NEXT readindex
 
 ' Spacer.
 PRINT
@@ -55,12 +54,12 @@ DATA 3, 234, 4354, 23433, 87643, "Bye!"
 %%
 
 {{fbdoc item="lang"}}
-	- The //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects consider data items as constant expressions that are evaluated during compilation and its result stored in the program.
-	- The //[[CompilerOptlang -lang qb]]// dialect considers data items as literals and stores then without change, as in QB.  
+	- None in syntax and usage of ##**Read**##
+	- See the ##[[KeyPgData Data]]## page for more information on differences in storing the data
 
 {{fbdoc item="diff"}}
-	- In FreeBASIC, alphabetic string literals now **must** be enclosed within quotation marks, in QB this was optional.  
-	- In QB, empty constant expressions evaluated to number 0 or to empty strings, in FreeBASIC they give a compile error.
+	- None in syntax and usage of ##**Read**##
+	- See the ##[[KeyPgData Data]]## page for more information on differences in storing the data
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgData Data]]##

@@ -24,7 +24,8 @@ sleep
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSingle Single]]##
+	- ##[[KeyPgSingle Single]]## Less precise float type
 	- ##[[KeyPgCdbl Cdbl]]##
+	- [[TblVarTypes]] Table with variable types overview, limits and suffixes
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

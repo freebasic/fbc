@@ -36,9 +36,10 @@ end function
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbargc __FB_ARGC__]]##
+	- ##[[KeyPgCommand Command]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

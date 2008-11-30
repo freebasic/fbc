@@ -11,13 +11,15 @@ Metacommand statement to set the compiler dialect.
 		The dialect to set, enclosed in double quotes, and must be one of ##"fb"##, ##"fblite"##, ##"qb"##, or ##"deprecated"##.
 
 {{fbdoc item="desc"}}
-	If the //[[CompilerOptlang -lang]]// option was not given on the command line, ##**$lang**## can be used to set the dialect for the source module in which it appears.  At most two passes will be made on the source module.  On the first pass, if the specified dialect is anything other than "fb", the compiler will reset the parser for another pass and restart compilation at the beginning of the source module.  If this metacommand is encountered again on the second pass, and the specified dialect does not match the new current dialect, a warning is issued and compilation continues.  If any errors were encountered on the first pass, the compiler will not attempt a second pass.
+	If the //[[CompilerOptforcelang -forcelang]]// option was not given on the command line, ##**$lang**## can be used to set the dialect for the source module in which it appears.  At most two passes will be made on the source module.  On the first pass, if the specified dialect is anything other than the default dialect (chosen with //[[CompilerOptlang -lang]]//, or ##"fb"## by default), the compiler will reset the parser for another pass and restart compilation at the beginning of the source module.  If this metacommand is encountered again on the second pass, and the specified dialect does not match the new current dialect, a warning is issued and compilation continues.  If any errors were encountered on the first pass, the compiler will not attempt a second pass.
 
 	##**$lang**##  may not be used in any compound statement, scope, or subroutine.  However, it may be nested in module level preprocessor statements or used in an include file.
 
-	There is currently no restriction on where this directive may be placed in a source module.  In future this may change, therefore best practice would be to use this directive before the the first declaration, definition, or executable statement in the source.
+	There is currently no restriction on where this directive may be placed in a source module.  In future this may change, therefore best practice would be to use this directive before the first declaration, definition, or executable statement in the source.
 
-	If the //[[CompilerOptlang -lang]]// option was explicitly given on the command line, this metacommand will have no effect.  A warning is issused, the directive is ignored, and compilation will continue.  This allows the user to explicitly override ##**$lang**## metacommands.
+	This directive overrides the //[[CompilerOptlang -lang]]// option if it was given on the command line.  However, if the //[[CompilerOptforcelang -forcelang]]// option was given on the command line, this directive will have no effect.  A warning is issued, the directive is ignored, and compilation will continue.  This allows the user to explicitly override ##**$lang**## metacommands.
+
+	This metacommand was introduced in ""FreeBASIC"" version 0.20.0.  Older versions of FB, and ""QuickBASIC"", will treat it as a comment and silently ignore it.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/lang.bas"}}%%(freebasic)
@@ -25,12 +27,14 @@ Metacommand statement to set the compiler dialect.
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 	- QB handles ##'$lang:## as a normal comment
 
 {{fbdoc item="see"}}
-	- [[CompilerOptlang Compiler Option: -lang]]
-	- [[CompilerDialects FreeBASIC Dialects]]
 	- ##[[KeyPgPplang #lang]]##
+	- ##[[KeyPgDdfblang __FB_LANG__]]##
+	- [[CompilerOptlang Compiler Option: -lang]]
+	- [[CompilerOptforcelang Compiler Option: -forcelang]]
+	- [[CompilerDialects FreeBASIC Dialects]]
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

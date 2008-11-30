@@ -5,7 +5,11 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_LANG__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_LANG__""## indicates which language compatibility option was set using the //[[CompilerOptlang -lang]]// option as specified on the compiler command line at the time of compilation of a module.
+	##""__FB_LANG__""## indicates which language compatibility option was set at the time of compilation of a module.  By default ##""__FB_LANG__""## will be set to ##"fb"##.  The language compatibility option can be changed using one (or more) of the following methods:
+		- //[[CompilerOptlang -lang]]// command line option
+		- //[[CompilerOptforcelang -forcelang]]// command line option
+		- ##[[KeyPgPplang #lang]]## directive
+		- ##[[KeyPgMetaLang $lang]]## metacommand
 
 	Returns a lower case string with one of the following values:
 		{{table columns="2" cellpadding="1" cells="value;description;''fb'';FreeBASIC compatibility (default);''qb'';qbasic compatibility;''fblite'';FreeBASIC language compatibility, with a more QBASIC-compatible coding style;''deprecated'';previous fbc version compatibility"}}
@@ -27,11 +31,13 @@ Intrinsic define (macro value) set by the compiler
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdfbversion __FB_VERSION__]]##
+	- ##[[KeyPgPplang #lang]]##
 	- [[CompilerOptlang Compiler Option: -lang]]
+	- [[CompilerOptforcelang Compiler Option: -forcelang]]
 	- [[CompilerDialects Compiler Dialects]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

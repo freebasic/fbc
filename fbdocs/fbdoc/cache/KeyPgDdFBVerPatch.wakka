@@ -5,7 +5,7 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_VER_PATCH__""
 ##
 {{fbdoc item="desc"}}
-	""__FB_VER_PATCH__"" will return the patch/subversion/revision number the version of FreeBASIC currently being used. For FreeBASIC 0.18, for example, there were subversions 1, 2, 3, 4 and 5.
+	""__FB_VER_PATCH__"" will return the patch/subversion/revision number the version of FreeBASIC currently being used. For FreeBASIC 0.18, for example, there were subversions 1, 2, 3, 4, 5 and 6.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbverpatch.bas"}}%%(freebasic)

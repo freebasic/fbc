@@ -18,7 +18,7 @@ Declares an enumerated type.
 		Requires that symbols must be explicitly referred to by ##//typename//.//symbolname//##
 
 {{fbdoc item="desc"}}
-	##**Enum**##, short for enumeration, declares a list of symbol names that correspond to discrete values. If no initial value is given, the first item will be set to 0.  Each subsequent symbol has a value one more than the previous unless ##//expression//## is given.
+	##**Enum**##, short for enumeration, declares a list of symbol names that correspond to discrete values. If no initial value is given, the first item will be set to ##0##.  Each subsequent symbol has a value one more than the previous unless ##//expression//## is given.
 
 	Symbols may be each on their own line, or separated on a single line by commas.
 
@@ -49,13 +49,11 @@ end select
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Enum""**##.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the aliases ##**""__Enum""**## and ##**""__Explicit""**##.
 
-{{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgConst Const]]##

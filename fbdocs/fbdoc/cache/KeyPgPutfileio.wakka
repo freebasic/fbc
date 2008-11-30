@@ -13,19 +13,20 @@ Writes data from a buffer to a file
 	##//filenum//##
 		The value passed to ##[[KeyPgOpen Open]]## when the file was opened.
 	##//position//##
-		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.  The position is 1 based: the first record or byte of a file is at position 1.
+		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.  The position is 1-based: the first record or byte of a file is at position ##1##.
 	##//data//##
-		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type. The operation will try to transfer to disk the complete variable, unless ##//amount//## is given.  When putting arrays, ##//data//## should be followed by an empty pair of brackets: "()".  Put will write all of the data in the array.  ##//amount//## is not allowed.
+		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type. The operation will try to transfer to disk the complete variable, unless ##//amount//## is given.  When putting arrays, ##//data//## should be followed by an empty pair of brackets: "##()##".  ##**Put**## will write all of the data in the array.  ##//amount//## is not allowed.
+		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Put will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
 	##//amount//##
-		Makes ##Put## write to file ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//amount//## is omitted, ##Put## just writes a single variable.
+		Makes ##Put## write to file ##//amount// * [[KeyPgSizeof Sizeof]](//buffer_datatype//)## bytes of data.  If ##//amount//## is omitted it defaults to ##1##, and ##**Put**## just writes a single variable of the buffer's data type..
 
 {{fbdoc item="ret"}}
-	0 on success; nonzero on error. "disk full" is considered as error, results in return code 3. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
+	##0## on success; nonzero on error. "disk full" is considered as an error, and results in return code ##3##. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
 
 {{fbdoc item="desc"}}
-	Writes binary data from a buffer variable to a file.
+	Writes binary data from a buffer variable to a file opened in ##[[KeyPgBinary Binary]]## or ##[[KeyPgRandom Random]]## mode.
 
-	##**Put**## can be used as a function, and will return 0 on success or an error code on failure.	
+	##**Put**## can be used as a function, and will return ##0## on success or an error code on failure.	
 
 	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to write must match the specified record size.
 
@@ -103,13 +104,15 @@ Deallocate lpBuffer
 End
 %%
 {{fbdoc item="diff"}}
-	- PUT can write full arrays as in VB or, alternatively, write a multiple of the data size from //buffer//'s memory location.
-	- PUT can now be used as a function.
+	- ##**Put**## can write full arrays as in VB or, alternatively, write a multiple of the data size from ##//buffer//##'s memory location.
+	- ##**Put**## can be used as a function in FB, to find the success/error code returned without having to use error handling procedures.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgClose Close]]##
-	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgRandom Random]]##
+	- ##[[KeyPgBinary Binary]]##
 	- ##[[KeyPgFreefile Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

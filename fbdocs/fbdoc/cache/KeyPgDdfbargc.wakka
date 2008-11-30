@@ -18,9 +18,10 @@ next i
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbargv __FB_ARGV__]]##
+	- ##[[KeyPgCommand Command]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

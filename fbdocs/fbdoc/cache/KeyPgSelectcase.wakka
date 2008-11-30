@@ -9,7 +9,7 @@ Conditional statement block
 		[//statements//]
 	**End Select**
 //or//
-	Select Case As Const //integerexpression//
+	**Select Case** As Const //integer_expression//
 	[ **Case** //constant// | //enumeration// ]
 		[ //statements// ]
 	[ **Case Else** ]
@@ -18,21 +18,23 @@ Conditional statement block
 ##
 {{fbdoc item="desc"}}
 
-	Select Case executes specific code depending on the value of an expression. The expression is compared against each Case, in order, until a matching expression is found. The code inside the matching Case branch is executed, and the program skips down to the end of the Select Case block. Case Else matches any Case not already matched, so if there is a Case Else, at least one Case is guaranteed to be executed. If no Cases match, the whole Select Case block will be skipped.
+	##**Select Case**## executes specific code depending on the value of an expression. The expression is compared against each ##**Case**##, in order, until a matching expression is found. The code inside the matching Case branch is executed, and the program skips down to the end of the ##**Select Case**## block. ##**Case Else**## matches any case not already matched, so if there is a ##**Case Else**##, at least one ##**Case**## is guaranteed to be executed. If no ##**Case**##s match, the whole ##**Select Case**## block will be skipped.
 	
-	For C users: In FreeBASIC, ##**Select Case**## works as a switch where all cases have a "break;" at the end. As there is no fall-through, multiple options must be put in an expression list in a single ##**Case**##.
-	
-	##**End Select**## can be used to exit the ##**Select Case...End Select**## block
-	
-	Besides integer types, floating point and strings //expressions// are also supported with the first syntax.  
+	##**End Select**## is used to close the ##**Select Case...End Select**## block.
+
+	Note for C users: In ""FreeBASIC"", ##**Select Case**## works like a ##switch## block where all cases have a ##break## at the end. As there is no fall-through, multiple options must be put in an expression list in a single ##**Case**##.
+
+	Besides integer types, floating point and string expressions are also supported with the first syntax.  
 
 	Syntax of an expression list:
-	##{ //expression// | //expression// TO //expression// | IS //relational operator// //expression// }[, ...]##
+	##{ //expression// | //expression// **To** //expression// | **Is** //relational operator// //expression// }[, ...]##
 
 	example of expression lists:
 	{{table columns="2" cellpadding="1" cells="Case 1 ;constant;Case 5.4 To 10.1;range;Case Is > 3;bigger than-smaller than;Case 1, 3, 5, 7, 9;enumeration;Case x ;value of a variable"}}
 
-	If AS CONST is used, only integer constants in the range 0..4097 can be evaluated and the expression list supports  single constants and enumerations only. Being limited to integer values allows ##**Select Case As Const**## to be faster than ##**Select Case**##.
+	If ##**As Const**## is used, only ##[[KeyPgInteger Integer]]## constants can be evaluated and the expression list supports single constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
+
+	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.  However, the size of the range of values is limited, and the largest value in the range may be no higher than the smallest value + 4096.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/select.bas"}}%%(freebasic)
@@ -55,7 +57,7 @@ end select
 %%
 
 {{fbdoc item="diff"}}
-	- SELECT CASE AS CONST did not exist in QB
+	- ##**Select Case As Const**## did not exist in QB
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgIfthen If...Then]]##

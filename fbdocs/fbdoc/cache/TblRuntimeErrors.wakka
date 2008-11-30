@@ -3,7 +3,7 @@ Runtime error codes and messages used by the runtime library.
 
 {{fbdoc item="desc"}}
 	Freebasic returns the following runtime error codes:
-	{{table columns="2" cellpadding="1" cells="0;No error; 1;Illegal function call; 2;File not found signal; 3;File I/O error; 4;Out of memory; 5;Illegal resume; 6;Out of bounds array access; 7;Null Pointer Access; 8;No privileges; 9;interrupted signal; 10;illegal instruction signal; 11;floating point error signal; 12;segmentation violation signal; 13;Termination request signal; 14;abnormal termination signal; 15;quit request signal; 16;return without gosub; 17;end of file"}}
+	{{table columns="2" cellpadding="1" cells="  0 ;No error;  1 ;Illegal function call;  2 ;File not found signal;  3 ;File I/O error;  4 ;Out of memory;  5 ;Illegal resume;  6 ;Out of bounds array access;  7 ;Null Pointer Access;  8 ;No privileges;  9 ;interrupted signal; 10 ;illegal instruction signal; 11 ;floating point error signal; 12 ;segmentation violation signal; 13 ;Termination request signal; 14 ;abnormal termination signal; 15 ;quit request signal; 16 ;return without gosub; 17 ;end of file"}}
 
 	No user error code range is defined. If ##[[KeyPgError Error]]## is used to set an error code it is wise to use high values to avoid collisions with the list of built-in error codes. (This built-in list may be expanded later.)
 
@@ -14,3 +14,5 @@ Runtime error codes and messages used by the runtime library.
 	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+   

@@ -2,8 +2,8 @@
 Right justifies a string in a string buffer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgString string]] , [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgString string]] )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] , [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Rset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Rset** //dst//, //src//
@@ -38,3 +38,4 @@ print "-[" & buffer & "]-"
 	- ##[[KeyPgMks Mks]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
+   

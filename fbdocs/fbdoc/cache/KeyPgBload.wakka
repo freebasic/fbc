@@ -2,7 +2,7 @@
 Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a compatible BMP image file.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //dest// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //dest// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bload**( //filename// [, [ //dest// ] [, //pal// ] ] )
@@ -22,9 +22,10 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a com
 	##**Bload**## can be used to load image data or any other data from a file created with ##[[KeyPgBsave Bsave]]##, and store that data in an array or paste it to the screen. If ##//dest//## is absent or null (##0##), the image data is pasted to the current graphics screen work page.  Otherwise it is loaded as image data to the address given by ##//dest//##.
 
 	##**Bload**## can load 3 different types of files:
-		- Old QB-like data files, saved with BSAVE from QB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFD##, up to 64 ""KiB"" in size  
+		- Old QB-like data files, saved with ##BSAVE## from QB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFD##, up to 64 ""KiB"" in size
 		- New FB-like data files, saved with ##[[KeyPgBsave Bsave]]## from FB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFE##. There is no 64 ""KiB"" limit with this format
-		- BMP image files, supports a subset of valid ("Windows") .BMP files, beginning with ##"BM"##, saved from FB code with ##[[KeyPgBsave Bsave]]##, or created / saved in a compatible format using a graphics editor / converter.  
+		- BMP image files, supports a subset of valid ("Windows") .BMP files, beginning with ##"BM"##, saved from FB code with ##[[KeyPgBsave Bsave]]##, or created / saved in a compatible format using a graphics editor / converter.
+	QB-like data files and BMP files are converted to an FB-compatible image format when opened.
 
 	Image files with 8-bit per pixel resolution or lower contain a palette that describes the color values used in the images. If ##//pal//## is not null (##0##), the palette is copied to memory starting at the address specified. Otherwise, if the current graphics screen uses a palette then its palette is changed to match that of the image file.
 
@@ -67,7 +68,7 @@ sleep
 {{fbdoc item="diff"}}
 	- Support for loading BMP files is new to ""FreeBASIC"".
 	- Support for retrieving the palette from BMP files is new to ""FreeBASIC"".
-	- For non-BMP files, FB uses a different file format, not having the 64 ""KiB"" limit, and unsupported by QB
+	- ""FreeBASIC"" uses a different file format from QBASIC internally, which doesn't have the 64 ""KiB"" limit, and is unsupported by QBASIC.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBsave Bsave]]##

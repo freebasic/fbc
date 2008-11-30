@@ -33,10 +33,12 @@ Gets a copy of a portion of the current work page or an image buffer
 		- The upper-left or lower-right co-ordinates of the rectangle are outside the current clipping region. See ##[[KeyPgViewgraphics View (Graphics)]]##.
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang fb]]// dialect, ##//dest//## receives a new-style image buffer, which consists of a 32-byte image header followed by pixel data which is row-padded to the next paragraph boundary (16 bytes). Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode [[GfxInternalFormats pixel format]]:
+	There are 2 types of buffers (details see [[GfxInternalFormats]]) depending from FB dialect used:
+
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##//dest//## receives a new-style image buffer, which consists of a 32-byte image header followed by pixel data which is row-padded to the next paragraph boundary (16 bytes). Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode:
 		##size = 32 + (((w * bpp + &hF) and not &hF) * h)##
 
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##//dest//## receives a QB-style image buffer, which consists of a 4-byte image header followed by pixel data which is not row-padded. Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode [[GfxInternalFormats pixel format]]:
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##//dest//## receives a QB-style image buffer, which consists of a 4-byte image header followed by pixel data which is not row-padded. Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode:
 		##size = 4 + (w * h * bpp)##
 
 {{fbdoc item="ex"}}
@@ -48,6 +50,6 @@ Gets a copy of a portion of the current work page or an image buffer
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
-	- [[GfxInternalFormats Internal pixel formats]]
+	- [[GfxInternalFormats Internal graphics formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

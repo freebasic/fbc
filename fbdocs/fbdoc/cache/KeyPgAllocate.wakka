@@ -17,7 +17,7 @@ Allocates a block of memory from the free store
 {{fbdoc item="desc"}}
 	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). The initial value of newly allocated memory is unspecified. The pointer that is returned is an [[KeyPgAny any]] [[KeyPgPtr ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
 
-	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
+	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed. 
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/allocate.bas"}}%%(freebasic)
@@ -58,21 +58,30 @@ Allocates a block of memory from the free store
 	<<## 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377##>>
 	::c::
 
-	It is important to free allocated memory if it's not going to be used anymore. Unused memory that isn't freed is simply wasting memory, and if the address of that memory is somehow overwritten or forgotten, that memory can never be freed (this condition is known as a memory leak, and should be avoided at all costs). The following example demonstrates a function with a memory leak, where the address of allocated memory is lost, never to be freed (if this function is called frequently, the memory that is wasted can add up quickly).
+	It is important to free allocated memory if it's not going to be used anymore. Unused memory that isn't freed is simply wasting memory, and if the address of that memory is somehow overwritten or forgotten, that memory can never be freed. This condition is known as a memory leak, and should be avoided at all costs. Note that leaked memory is always completely freed when the application terminates, either by an "ordinary" exit or crash, so the leak "persists" only as long as the application runs, nevertheless it's a good habit to free any allocated memory inside your application. The following example demonstrates a function with a memory leak, where the address of allocated memory is lost and isn't and can't be freed anymore. If such a function is called frequently, the total amount of memory wasted can add up quickly.
 
 {{fbdoc item="filename" value="examples/manual/memory/allocate2.bas"}}%%(freebasic)
-sub AllocateExample2()
-   dim p as byte ptr = 0
+'' Bad example of Allocate usage, causing memory leaks
 
-   p = allocate(420)               '' assign pointer to new memory
+sub BadAllocateExample()
 
-   p = allocate(420)               '' reassign pointer to different memory,
-	                               '' old address is lost and that memory is leaked
-   deallocate(p)
+	dim p as byte ptr
+
+	p = allocate(420)   '' assign pointer to new memory
+
+	p = allocate(420)   '' reassign same pointer to different memory,
+	                    '' old address is lost and that memory is leaked
+
+	deallocate(p)
+
 end sub
 
-   AllocateExample2()
-   end 0
+	'' Main
+	BadAllocateExample() '' Creates a memory leak 
+	print "Memory leak!"
+	BadAllocateExample() '' ... and another
+	print "Memory leak!"
+	end
 %%
 
 {{fbdoc item="target"}}
@@ -82,7 +91,7 @@ end sub
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Allocate""**## 
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCallocate Callocate]]##

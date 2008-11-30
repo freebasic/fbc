@@ -12,7 +12,7 @@ Defines or resizes a variable-length array
 		When used with an existing array, the contents of the array will be preserved during the resize. Note that ##[[KeyPgPreserve Preserve]]## will not work properly in all cases.
 	##//symbolname//##
 		A new or existing array id.
-	##//subscript//##: [ ##//lowerbound//## TO ] ##//upperbound//##
+	##//subscript//##: [ ##//lowerbound// To## ] ##//upperbound//##
 		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (##0##), or the default ##[[KeyPgOptionbase Base]]##, if not specified.
 	##[[DataType datatype]]##
 		The type of elements contained in the array.
@@ -22,14 +22,15 @@ Defines or resizes a variable-length array
 
 	When defining a new variable-length array, its elements are default constructed. For simple data types like ##[[KeyPgInteger Integer]]## or ##[[KeyPgDouble Double]]##, the elements are initialized to zero (##0##). For user-defined types with a default constructor, that will be called.
 
-	Note: ##**Redim** [[KeyPgPreserve Preserve]]## may not work as expected in all cases.
-	##**Redim** [[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
-	Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
-	If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
+	**NOTES**: 
+	- ##**Redim** [[KeyPgPreserve Preserve]]## may not work as expected in all cases:
+		##[[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
+		Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
+		If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
 	
-	##**Redim**## cannot be used on arrays contained in UDTs (user-defined ##[[KeyPgType Type]]##s), because currently only fixed-size arrays are supported in UDTs.
-
-	**NOTE**: Using ##**Redim**## within a member procedure with an array that contains an instance of the object class is undefined, and will [hopefully] result in horrible crashes.
+	- ##**Redim**## cannot be used on fixed-size arrays, i.e. arrays with constant bounds.  This includes arrays contained in UDTs (user-defined ##[[KeyPgType Type]]##s), because currently only fixed-size arrays are supported in UDTs.
+	
+	- Using ##**Redim**## within a member procedure with an array that contains an instance of the object class is undefined, and will [hopefully] result in horrible crashes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/redim.bas"}}%%(freebasic)
@@ -155,3 +156,4 @@ Print
 	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}
+   

@@ -9,17 +9,21 @@ Intrinsic define (macro string) set by the compiler
 	
 	Its normal use is to report wrong values in debugging.
 
+	If ##**""__FUNCTION__""**## is used at the module level, the function name given will be ##"""__FB_MAINPROC__"""## for the main module, or ##"""__FB_MODLEVELPROC__"""## for a different module.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/function.bas"}}%%(freebasic)
-dim a as integer
+Dim a As Integer
 
-If a<0 Then 
+'...
+
+If a < 0 Then '' this shouldn't happen
 	Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__
-end if
+End If
 %%
 
 %%
-Error: a = -32767 in test.bas (MAIN) line 47
+Error: a = -32767 in test.bas (__FB_MAINPROC__) line 47
 %%
 
 {{fbdoc item="diff"}}

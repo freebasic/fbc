@@ -2,18 +2,18 @@
 Restricts read/write access to a file or portion of a file
 
 {{fbdoc item="syntax"}}##
-	**Lock** #//filenum// [, //record// ]
-	**Lock** #//filenum//, [ //start// ] To //end//
+	**Lock** #//filenum//, //record//
+	**Lock** #//filenum//, //start// To //end//
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
 		The file number used to ##[[KeyPgOpen Open]]## the file.
 	##//record//##
-		The record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock. If omitted, the entire file is locked.
+		The record (##[[KeyPgRandom Random]]## files) to lock.
 	##//start//##
-		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock from. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(##//filenum//##)) is used.
+		The first byte position (##[[KeyPgBinary Binary]]## files) to lock from.
 	##//end//##
-		The last record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to lock to.
+		The last byte position (##[[KeyPgBinary Binary]]## files) to lock to.
 
 {{fbdoc item="desc"}}
 	##**Lock**## temporarily restricts access by other threads or programs to a file, or portion of a file, usually to allow safe writing to it.
@@ -39,7 +39,8 @@ close #f
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- Currently, FB cannot implicitly lock the entire file
+	- In ##[[KeyPgRandom Random]]## mode, FB cannot lock a range of records
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

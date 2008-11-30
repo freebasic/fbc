@@ -3,21 +3,33 @@ Returns the color attribute of a specified pixel coordinate
 
 {{fbdoc item="syntax"}}##
 	//result// = **Point**( //coord_x//, //coord_y// [,//buffer//] )
+	or 
+	//result// = **Point**( //function_index// )
+
 ##
-{{fbdoc item="usage"}}##
+{{fbdoc item="usage"}}
 	##//coord_x//##
 		x coordinate of the pixel
 	##//coord_y//##
 		y coordinate of the pixel
 	##//buffer//##
 		the image buffer to read from
+	##//function_index//##
+		the type of screen coordinate to return: one of the values ##0##, ##1##, ##2##, ##3##
 
-{{fbdoc item="ret"}}##
-	The color attribute at the specified coordinates
+{{fbdoc item="ret"}}
+	If the ##//x//, //y//## coordinates of a pixel are provided **##Point##** returns the color attribute at the specified coordinates.
+	If the argument is a function index, **##Point##** returns one of the graphics cursor coordinates set by the last graphics command. 
+ 
+	{{table columns="2" cellpadding="1" cells="Argument; Value Returned ; 0;The current physical x coordinate.;1;The current physical y coordinate.; 2;The current view x coordinate. This returns the same value as the POINT(0) function if the WINDOW statement has not been used.;3;The current view y coordinate. This returns the same value as the POINT(1) function if the WINDOW statement has not been used."}}
+
 
 {{fbdoc item="desc"}}
-	GfxLib Function that reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of ##//buffer//##, if supplied.
-The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and a RGB value in true color modes. If the coordinates are off-screen, -1 is returned
+	""GfxLib"" Function with two different uses. 
+	If supplied with two coordinates it reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of the ##//buffer//##, if supplied. 
+	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and an ##[[KeyPgRgb RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
+	
+	If supplied with a single value it returns the one of the coordinates of the graphics cursor as set by the last graphics command executed. If the last command was executed in a buffer, the values returned will be coordinates in the buffer. Arguments out of the range ##0##-##3## will return ##0##.
 
 	The function ##**Point**## does not work in text modes.
 
@@ -32,13 +44,13 @@ print point(20,20)
 12
 %%
 {{fbdoc item="diff"}}
-	- None, in the VGA compatible SCREEN modes. In SVGA modes, it returns a RGB value
+	- None, in the QB-compatible ##[[KeyPgScreengraphics Screen]]## modes. In SVGA modes, it returns an RGB value
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPset Pset]]##
 	- ##[[KeyPgPmap Pmap]]##
 	- ##[[KeyPgColor Color]]##
-	- ##[[KeyPgViewgraphics View (Grpahics)]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

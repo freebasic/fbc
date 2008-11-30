@@ -17,18 +17,18 @@ Returns command line parameters used to call the program
 {{fbdoc item="desc"}}
 	##**Command**## returns command-line arguments passed to the program upon execution.
 
-	If ##//index//## is less than zero (&lt; 0), a space-separated list of all command-line arguments is returned, otherwise, a single argument is returned. A value of zero (0) returns the name of the executable; and values of one (1) and greater return each command-line argument.
+	If ##//index//## is less than zero (##< 0##), a space-separated list of all command-line arguments is returned, otherwise, a single argument is returned. A value of zero (##0##) returns the name of the executable; and values of one (##1##) and greater return each command-line argument.
 	
 	If ##//index//## is greater than the number of arguments passed to the program, the null string (##"####"##) is returned.
 
 	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single parameter, and is returned with the double quotes.
 
-	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of FreeBASIC for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
+	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of ""FreeBASIC"" for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
 
-~&//**WARNING**: By nature of constructor precedence in FreeBASIC and main() initialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only receive the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
+~&//**WARNING**: By nature of constructor precedence in ""FreeBASIC"" and main() initialization, calling ##**Command**## within a global constructor is not safe. At the moment your app will not crash, but you will only receive the null string (##"####"##). This *may* be able to be fixed in the future, but it would be wise not to rely on that.//
 
 	__Disabling filename globbing under Win32__
-		For mingw32 and cygwin builds, link the FreeBASIC program with CRT_noglob.o or define the following somewhere in the source:
+		For mingw32 and cygwin builds, link the ""FreeBASIC"" program with CRT_noglob.o or define the following somewhere in the source:
 		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_1.bas"}}%%(freebasic)
 Extern _CRT_glob Alias "_CRT_glob" As Integer
 Dim Shared _CRT_glob As Integer = 0
@@ -75,15 +75,17 @@ End Function
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix ##$## is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix ##$## is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- The numeric argument was not supported in QB.
-	- QB converted the parameter list to uppercase before returning it, FreeBASIC doesn't.
+	- QB converted the parameter list to uppercase before returning it, ""FreeBASIC"" doesn't.
 	- By default arguments containing wildcard characters are expanded (filename globbing)
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDdfbargc __FB_ARGC__]]##
+	- ##[[KeyPgDdfbargv __FB_ARGV__]]##
 	- ##[[KeyPgExec Exec]]##
 	- ##[[KeyPgRun Run]]##
 

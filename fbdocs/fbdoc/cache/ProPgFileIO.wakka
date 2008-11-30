@@ -14,88 +14,95 @@ This example shows and compares methods 1. and 2. described above, and reports t
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/basicvsc.bas"}}%%(freebasic)
-Data " File I/O test | 2008-07-04 "
-Rem
-Rem  Compile with FB 0.18.5
-Rem  NOTE: FB 0.20 will support returning the amount of data read when using GET
+DATA " File I/O example & test GET vs FREAD | (CL) 2008-10-12 Public Domain "
+DATA " http://www.freebasic.net/wiki/wikka.php?wakka=ProPgFileIO "
+REM
+REM Compile with FB 0.20 or newer
+REM
+REM In the commandline supply preferably 2 different files of same big size
+REM Default is "BLAH" for both (bad)
+REM In both loops (GET and FREAD) the last read can be "empty" ... no problem
 
 #include "crt\stdio.bi" '' Otherwise the "C"-stuff won't work
 
-Dim As FILE  Ptr   QQ
-Dim As Ubyte Ptr   BUF
+DIM AS FILE  PTR   QQ   '' This is the C-like file access pointer
+DIM AS UBYTE PTR   BUF  '' Buffer used for both FB-like and C-like read
+DIM AS UINTEGER    FILN '' FB-like "filenumber"
 
-Dim As Uinteger    DD, EE, FF, GG, HH
-Dim As Ulongint    II64
+DIM AS UINTEGER    AA, BB, CC, DD, EE
+DIM AS ULONGINT    II64 '' We do try to support files >= 4 GiB
 
-Dim As String      VGSTEMP, VGSFILE1, VGSFILE2
+DIM AS STRING      VGSTEMP, VGSFILE1, VGSFILE2
 
-? : Read VGSTEMP : ? VGSTEMP : ?
+? : READ VGSTEMP : ? VGSTEMP : READ VGSTEMP : ? VGSTEMP : ?
 
-VGSTEMP=Command$(1) : VGSFILE1="BLAH"
-If VGSTEMP<>"" Then VGSFILE1=VGSTEMP
-VGSTEMP=Command$(2) : VGSFILE2=VGSFILE1
-If VGSTEMP<>"" Then VGSFILE2=VGSTEMP
+VGSTEMP=COMMAND$(1) : VGSFILE1="BLAH"
+IF (VGSTEMP<>"") THEN VGSFILE1=VGSTEMP
+VGSTEMP=COMMAND$(2) : VGSFILE2=VGSFILE1
+IF (VGSTEMP<>"") THEN VGSFILE2=VGSTEMP
 
-BUF = ALLOCATE(32768) '' 32 KiB
+BUF = ALLOCATE(32768) '' 32 KiB - hoping it won't fail, BUF could be 0 ...
 
-? : ? "FB - OPEN - GET """;VGSFILE1;"""": Sleep 1000
-FF = Freefile : HH=0 : II64=0
-GG=Open (VGSFILE1 For Binary ACCESS READ As #FF) '' Result 0 is OK here
-'' "ACCESS READ" prevents from creating an empty file if it doesn't exist yet
-? "OPEN: ";GG
-If (GG=0) Then
-  EE=CAST(Uinteger,(Timer*100)) '' No integer timer in FB
-  GG=Get (#FF,,*BUF,32768)
-  '' But no way ^^^ to find out how much stuff got read 
-  '' Even worse, EOF is __NOT__ considered as error, must vvv use EOF to test
-  ? "1st  GET: ";GG
-  ? "*** ";BUF[0];" ";BUF[1]
-  Do
-	HH=HH+1
-	If Eof(FF) Or (GG<>0) Then Exit Do
-	II64=II64+32768ull
-	GG=Get (#FF,,*BUF,32768)
-  Loop
-  DD=CAST(Uinteger,(Timer*100))-EE
-  ? (DD+1)*10;" ms"
-  If (HH>1) Then ? "Last GET: ";GG
-  ? "Got cca ";II64;" to ";II64+32768ull;" bytes in ";HH;" calls"
-  Close #FF
-Endif
+? : ? "FB - OPEN - GET , """+VGSFILE1+"""": SLEEP 1000
+FILN = FREEFILE : AA=0 : II64=0 '' AA counts blocks per 32 KiB already read
+BB=OPEN (VGSFILE1 FOR BINARY ACCESS READ AS #FILN)
+'' Result 0 is OK here, <>0 is evil
+'' "ACCESS READ" should prevent file creation if it doesn't exist
+? "OPEN result  : " ; BB
+IF (BB=0) THEN '' BB will be "reused" for timer below
+  BB=CAST(UINTEGER,(TIMER*100)) '' No UINTEGER TIMER in FB, make units 10 ms
+  CC=GET (#FILN,,*BUF,32768,DD)
+  '' CC has the success status, 0 is OK, <>0 is bad
+  '' DD is the amount of data read
+  '' EOF is __NOT__ considered as error here
+  ? "0th GET      : ";CC;" ";DD
+  ? "2 bytes read : ";BUF[0];" ";BUF[1]
+  DO
+	AA=AA+1 : II64=II64+CAST(ULONGINT,DD)
+	IF (DD<32768) OR (CC<>0) THEN EXIT DO '' Give up
+	CC=GET (#FILN,,*BUF,32768,DD)
+  LOOP
+  EE=CAST(UINTEGER,(TIMER*100))-BB
+  ? "Time         : ";(EE+1)*10;" ms"
+  IF (AA>1) THEN ? "Last GET     : ";CC;" ";DD
+  ? "Got __EXACTLY__ ";II64;" bytes in ";AA;" calls"
+  CLOSE #FILN
+ENDIF
 
-? : ? "C - FOPEN - FREAD """;VGSFILE2;"""" : Sleep 1000
-HH=0 : II64=0
+? : ? "C - FOPEN - FREAD , """+VGSFILE2+"""" : SLEEP 1000
+AA=0 : II64=0 '' AA counts blocks per 32 KiB already read
 QQ=FOPEN(VGSFILE2,"rb")
 '' Here 0 is evil and <>0 good, opposite from above !!!
-'' Open existing file, will not be created if it doesn't exist 
+'' File will not be created if it doesn't exist (good)
 '' "rb" is case sensitive and must be lowercase, STRPTR seems not necessary
-? "FOPEN: ";QQ 
-If (QQ<>0) Then
-  EE=CAST(Uinteger,(Timer*100))
-  GG=FREAD(BUF,1,32768,QQ) '' 1 is size of byte - can't live without :-D
-  '' Returns size of data read, <32768 on EOF, 0 after EOF, or "-1" on error 
-  ? "1st FREAD ";GG
-  ? "*** ";BUF[0];" ";BUF[1]
-  Do
-	HH=HH+1
-	If (GG<=32768) Then II64=II64+CAST(Ulongint,GG)
-	If (GG<>32768) Then Exit Do '' ERR or EOF
-	GG=FREAD(BUF,1,32768,QQ)
-  Loop
-  DD=CAST(Uinteger,(Timer*100))-EE
-  ? (DD+1)*10;" ms"
-  If (HH>1) Then ? "Last FREAD: ";GG
-  ? "Got __EXACTLY__ ";II64;" bytes in ";HH;" calls"
+? "FOPEN result : " ; QQ
+IF (QQ<>0) THEN
+  BB=CAST(UINTEGER,(TIMER*100)) '' No UINTEGER TIMER in FB, make units 10 ms
+  DD=FREAD(BUF,1,32768,QQ) '' 1 is size of byte - can't live without :-D
+  '' Returns size of data read, <32768 on EOF, 0 after EOF, or "-1" on error
+  ? "0th FREAD    : ";DD
+  ? "2 bytes read : ";BUF[0];" ";BUF[1]
+  DO
+	AA=AA+1
+	IF (DD<=32768) THEN II64=II64+CAST(ULONGINT,DD)
+	IF (DD<>32768) THEN EXIT DO '' ERR or EOF
+	DD=FREAD(BUF,1,32768,QQ)
+  LOOP
+  EE=CAST(UINTEGER,(TIMER*100))-BB
+  ? "Time         : ";(EE+1)*10;" ms"
+  IF (AA>1) THEN ? "Last FREAD   : ";DD
+  ? "Got __EXACTLY__ ";II64;" bytes in ";AA;" calls"
   FCLOSE(QQ)
-Endif
+ENDIF
 
-DEALLOCATE(BUF): Sleep 1000 '' Crucial
+DEALLOCATE(BUF): SLEEP 1000 '' Crucial
 
-End 
+END
 %% 
 
 {{fbdoc item="see"}}
 	- [[CatPgFile File I/O Functions]]
 	- [[ProPgCruntime C Standard Library Functions]]
+	- [[KeyPgGetfileio Get (File I/O command)]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

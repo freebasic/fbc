@@ -16,29 +16,34 @@ Returns a square root of a number
 
 	If ##//number//## equals zero, **Sqr** returns zero. 
 
-	If ##//number//## is less than zero, **Sqr** returns a domain error (-1.#IND).
+	If ##//number//## is less than zero, **Sqr** returns a special value representing "not defined", printing like """NaN""" or "IND", exact text is platform dependent.
 
 {{fbdoc item="desc"}}
-	This is the same as raising the argument //number// to the one-half power ( ^ 1/2). The required ##//number//## argument can be any valid numeric expression greater than zero.
+	This is the same as raising the argument //number// to the one-half power: y = x ^ (1/2) . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
-DIM a AS SINGLE
-DIM b AS SINGLE
+'' Example of sqr function: Pythagorean theorem 
+DIM AS SINGLE a , b
 
-INPUT "Please enter one side of a right triangle: ",a
-INPUT "Please enter another side of a right triangle: ",b
-PRINT ""
-PRINT "The hypotenuse of the triangle has a length of"; SQR ( a * a + b * b )
+PRINT "Pythagorean theorem , right triangle"
+PRINT
+INPUT "Please enter one leg side length: ", a
+INPUT "Please enter the other leg side length: ", b
+PRINT 
+PRINT "The hypotenuse has a length of: " ; SQR ( a * a + b * b )
 
 SLEEP
 %%
 
 The output would look like:
 %%
-Please enter one side of a Right triangle: 3
-Please enter another side of a Right triangle: 4
-The hypotenuse of the triangle has a length of 5
+Pythagorean theorem , right triangle
+
+Please enter one leg side length: 3
+Please enter the other leg side length: 4
+
+The hypotenuse has a length of: 5
 %%
 
 {{fbdoc item="diff"}}

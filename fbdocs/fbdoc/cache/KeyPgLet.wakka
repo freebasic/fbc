@@ -11,11 +11,11 @@ Indicates the assignment operator.
 	end operator
 ##
 {{fbdoc item="desc"}}
-	Command intended to help the programmer to distinguish an assignment statement ( ##**Let** a=1## ) from an equality test ( ##If a=1 then ... ## ).  As the compiler does not require it, it is usually omitted.
+	Command intended to help the programmer to distinguish an assignment statement (e.g. ##**Let** a = 1##) from an equality test (e.g. ##If a = 1 then ...##).  As the compiler does not require it, it is usually omitted.
 
-	**Let** can be used as a left-hand side operator to assign the members of a user defined type to multiple variables. //See [[KeyPgOpLetlist Operator Let() (Assignment)]]//
+	**Let** can be used as a left-hand side operator to assign the members of a user defined type to multiple variables. //See ##[[KeyPgOpLetlist Operator Let() (Assignment)]]##//
 
-	**Let** is used with operator overloading to refer the assignment operator. //See [[KeyPgOpLet Operator Let (Assignment)]]//
+	**Let** is used with operator overloading to refer the assignment operator. //##See [[KeyPgOpLet Operator Let (Assignment)]]##//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/let.bas"}}%%(freebasic)
@@ -29,14 +29,14 @@ x = 100
 %%
 
 {{fbdoc item="lang"}}
-	- The use of LET to indicate an assignment statement (##//LET variable = expr//##) is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
+	- The use of ##**let**## to indicate an assignment statement (##//**Let** variable = expr//##) is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
 	- The UDT to multi-variable Let assignment is only available in the //[[CompilerOptlang -lang fb]]// dialect.
 	- Overloading of operators is not available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang fb]]// dialect.
-	- The Let operator is new to FreeBASIC.
-	- The UDT to multi-variable Let assignment is new to FreeBASIC.
+	- The Let operator is new to ""FreeBASIC"".
+	- The UDT to multi-variable Let assignment is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpAssignment Operator = (Assignment)]]##

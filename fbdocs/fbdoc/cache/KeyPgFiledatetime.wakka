@@ -38,7 +38,7 @@ if fileexists( filename ) then
 
   d = Filedatetime( filename )
 
-  print Format( d, "yyyy-mm-dd h:MM AM/PM" )
+  print Format( d, "yyyy-mm-dd hh:mm AM/PM" )
 
 else
 
@@ -48,12 +48,12 @@ end if
 %%
 
 {{fbdoc item="target"}}
-	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
-	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes ##/## . Windows uses backward slashes ##\## but it allows forward slashes.  DOS uses backward slashes ##/##.
 
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[ProPgDates Date Serials]]

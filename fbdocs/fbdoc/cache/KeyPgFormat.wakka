@@ -2,10 +2,10 @@
 Formats a number in a specified format
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Format** ( [[KeyPgByval byval]] //numerical_expression// [[KeyPgAs as]] [[KeyPgDouble double]], //formatting_expression// [[KeyPgAs as]] [[KeyPgString string]] = "" ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Format** ( [[KeyPgByval byval]] //numerical_expression// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //formatting_expression// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = "####" ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
 {{fbdoc item="usage"}}##
-	#include "vbcompat.bi"
+	#include "string.bi"
 	//result// = **Format**[$]( //numerical_expression//, //formatting_expression// )
 ##
 {{fbdoc item="param"}}
@@ -20,13 +20,14 @@ Formats a number in a specified format
 
 {{fbdoc item="desc"}}
 	To recover meaningful date-time values the numerical expression must be a date serial obtained from the appropriate functions.
-	This function is part of FreeBASIC, however it is not recognized by the compiler unless ##vbcompat.bi## is included.
+	This function is part of ""FreeBASIC"", however it is not recognized by the compiler unless ##vbcompat.bi## is included.
 
 	"Numeric Formats"
 		{{table columns="2" cellpadding="1" cells="Symbol ; Description; Null string; General format (no formatting);0; Digit placeholder: If the number has fewer digits than there are           zeros (on either side of the decimal) in the format expression, leading or trailing zeros are displayed. If there are more digits to the right of the decimal than zeros in the format, the number is rounded. If there are more digits to the left of the decimal than zeros in the format the digits are all displayed ; #; Digit placeholder: Follows the same rules as for the 0 digit except the leading or trailing zeros are not displayed;.; Placeholder for decimal point.If the format contains only #'s to the left of . then numbers smaller than 1  are begun with a decimal point.; % ; Percentage :The expression is multiplied by 100 and the % character is inserted.;,; Thousands separator. Two adjacent commas, or a comma immediately to the left of the decimal point location (whether there is a decimal specified or not) means 'Omit the three digits that fall between these  commas, or between the comma and the decimal point, rounding as needed.' ; E- E+ e- e+ ;Scientific format: If a format contains one digit placeholder (0 or #) to the right of an E-, E+, e-, or e+, the number is displayed in scientific  format and an E or e is inserted between the number and its exponent.The number of 0's or #'s to the right determines the number of digits in the exponent. Use E- or e- to place a minus sign next to negative exponents. Use a E+ or e+ to place a minus sign next to negative exponents and a plus sign next to positive exponents.; : ? + $ () space;   Display literal character  To display a character other than one of these, precede the character with a backslash (\) or enclose the character(s) in double quotation marks;\; Display next character in format string as it is ;text between double quotes;  Displays the text inside the double quotes.; :; Time separator is used to separate hours, minutes, and seconds when time values are formatted.; /; The date separator is used to separate day,month, and year when date values are formatted."}}
 
 	"Date-Time formats:"
-		{{table columns="2" cellpadding="1" cells="Symbol ; Description;d; Display the day as a number without leading zeros (1-31);dd; Display the day as a number with leading zeros (01-31);ddd; Display the day as an abbreviation (Sun-Sat);dddd; Display the day as a full name (Sunday-Saturday);ddddd;  Display a serial date number as a complete date (including day, month, and year);m; Display the month as a number without leading zeros (1-12)  if used immediately following h or hh, the minute rather than the month is displayed;mm ; Display the month as a number with leading zeros (01-12) if used immediately following h or hh, the minute rather than the month is displayed;mmm; Display the month as an abbreviation (Jan-Dec);mmmm; Display the month as a full name (January-December);y;Display the year as a two-digit number (00-99);yyyy; Display the year as a four-digit number (1900-2040);h; Display the hour as a number without leading zeros (0-23);hh;Display the hour as a number with leading zeros (00-23);m; Display the minute as a number without leading zeros (0-59) if not used immediately following h or hh, the month rather than the minute is displayed;mm; Display the minute as a number with leading zeros (00-59) if not used immediately following h or hh, the month rather  than the minute is displayed.;s; Display the second as a number without leading zeros (0-59);ss;  Display the second as a number with leading zeros (00-59);ttttt; Display a time serial number as a complete time, including hour, minute, and second;AM/PM (Default) am/pm; Use the 12-hour clock displaying AM or am with am/pm  any hour before noon, PM or pm with any hour between noon  and 11:59;A/P a/p;  Use the 12-hour clock displaying A or a with any hour before noon, P or p with any hour between noon and 11:59 "}}
+		{{table columns="2" cellpadding="1" cells="Symbol ; Description;d, dd; Display the day as a one-digit/two-digit number (1-31/01-31);ddd; Display the day as an abbreviation (Sun-Sat);dddd; Display the day as a full name (Sunday-Saturday);ddddd;  Display a serial date number as a complete date (including day, month and year);m, mm; Display the month as a one-digit/two-digit number (1-12/01-12).  If immediately following h or hh, the minute rather than the month is displayed;M, MM; Display the month as a one-digit/two-digit number (1-12/01-12), even if immediately following h or hh;mmm; Display the month as an abbreviation (Jan-Dec);mmmm; Display the month as a full name (January-December);y, yy; Display the year as a two-digit number (00-99);yyyy; Display the year as a four-digit number (1900-2040);h, hh; Display the hour as a one-digit/two-digit number (0-23/00-23);m, mm; Display the minute as a one-digit/two-digit number (0-59/00-59).  If not immediately following h or hh, the month rather than the minute is displayed;n, nn; Display the minute as a one-digit/two-digit number (0-59/00-59), even if not immediately following h or hh;s, ss; Display the second as a one-digit/two-digit number (0-59/00-59);ttttt; Display a time serial number as a complete time, including hour, minute and second;AM/PM (Default), am/pm; Use the 12-hour clock displaying AM or am with any hour before noon, PM or pm with any hour between noon and 11:59;A/P, a/p;  Use the 12-hour clock displaying A or a with any hour before noon, P or p with any hour between noon and 11:59 "}}
+
 
 {{fbdoc item="ex"}}
 %%
@@ -59,8 +60,7 @@ The following are examples of Date And Time formats:
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	None
 
 {{fbdoc item="diff"}}
 	- Does not exist in QB 4.5. This function appeared first in PDS 7.1

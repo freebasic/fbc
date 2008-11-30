@@ -1,4 +1,6 @@
-FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASIC, by FreeBASIC Community Members.
+FB Code Lib, V0.01b.  ""FreeBASIC"" Code, Games, and Libraries.  Written in ""FreeBASIC"", by ""FreeBASIC"" Community Members.
+
+If you're looking for a code snippet demonstrating compiler features or how to use a certain library, check out your local ##**""FreeBASIC Compiler\examples""**## directory, which contains hundreds of source code snippets and examples.
 
 <<{{anchor name="EDITOR"}}{{fbdoc item="section" value="Code Editors & IDEs "}}
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit, an IDE for FB by KetilO (Win32)]]
@@ -15,7 +17,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8287 Ascii Fire by rdc]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8758 Plasma Generation by Zamaster]]
 	
-	==Graphics Functions and Primitives==	
+	==Graphics Functions and Primitives==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7111 AntiAliased Bezier Curves by Acetoline]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7067 Antialiased Circles by Acetoline]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9572 Ellipse Renderer by Pritchard]]
@@ -59,7 +61,7 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://www.freebasic.net/forum/viewtopic.php?p=49695 10Byte extended float by srvaldez, included in FB examples]]
 
 	==Physics simulation==
-	[[http://www.freebasic.net/forum/viewtopic.php?t=3167 Atom snash simulation by coderjeff]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=3167 Atom smash simulation by coderjeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3428 2d rigid body library by coderjeff]]
 
 {{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
@@ -170,5 +172,5 @@ FB Code Lib, V0.01b.  FreeBASIC Code, Games, and Libraries.  Written in FreeBASI
 	[[http://games.freebasic.net/ FreeBASIC Games Directory]]
 
 <<::c::
-This is a place to post worthy projects/code snippets for FreeBASIC, in their relative categories.  To add a page, link to either it's wiki page, website, or thread on the FreeBASIC Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of FreeBASIC.
+This is a place to post worthy projects/code snippets for ""FreeBASIC"", in their relative categories.  To add a page, link to either it's wiki page, website, or thread on the ""FreeBASIC"" Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of ""FreeBASIC"".
 {{fbdoc item="back" value="FBWiki|Main Page"}}

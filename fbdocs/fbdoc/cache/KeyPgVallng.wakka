@@ -1,39 +1,37 @@
 {{fbdoc item="title" value="VALLNG"}}----
-Converts a string to a long integer.
+Converts a string to a long integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Vallng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Vallng**( //strnum// )
+	//result// = **Vallng** ( //strnum// )
 ##
 {{fbdoc item="param"}}
 	##//strnum//##
-		The string containing a number to convert.
+		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns a converted ##[[KeyPgLongint longint]]## number.
+	Returns a ##[[KeyPgLongint longint]]## of the converted string
 
-	If the first character of the string is invalid, ##**Vallng**## will return a 0.
+	If the first character of the string is invalid, ##**Vallng**## will return ##0##.
 
 {{fbdoc item="desc"}}
-	For example, ##**Vallng**("10")## will return 10, and ##**Vallng**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
+	For example, ##**Vallng**("10")## will return ##10##, and ##**Vallng**("10.60")## will return ##10## as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable, for example, ##**Vallng**("23.1E+6")## will just return ##23##.
 
-	##**Vallng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Vallng**("&HFF")## returns 255.
+	##**Vallng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Vallng**("&HFF")## returns ##255##.
 
 	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
-	(**Note**: In early versions of FreeBASIC, this function was called ##**""Val64""**##)
-
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/vallng.bas"}}%%(freebasic)
-dim a as string, b as integer
+dim a as string, b as longint
 a = "20xa211"
 b = vallng(a)
 print a, b
 %%
-Output:
+
 %%
 20xa211   20
 %%
@@ -43,13 +41,14 @@ Output:
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Vallng""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgClngint Clngint]]##
 	- ##[[KeyPgVal Val]]##
 	- ##[[KeyPgValint Valint]]##
 	- ##[[KeyPgValulng Valulng]]##
+	- ##[[KeyPgStr Str]]##
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 

@@ -33,58 +33,8 @@ Declares or defines operators used by a ##[[KeyPgFornext For...Next]]## loop wit
 	The first version of ##**Operator For**## is used if no step value is given in the ##[[KeyPgFornext For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/for.bas"}}%%(freebasic)
-'' Example Type
+	See the [[KeyPgOpStep Operator Step]] examples.
 
-type T
-
-  value as double
-
-  declare constructor( byval x as double = 0 )
-
-  declare operator += ( byval x as double )
-
-  declare operator for()
-  declare operator step()
-  declare operator next( byref cond as T ) as integer
-
-  declare operator cast() as string
-
-end type
-
-constructor T ( byval x as double )
-  value = x
-end constructor
-
-operator <= ( byref lhs as T, byref rhs as T ) as integer
-  operator = ( lhs.value <= rhs.value )
-end operator
-
-operator T.+= ( byval x as double )
-  value +=  x
-end operator
-
-operator T.for()
-end operator
-
-operator T.step()
-  this += 1
-end operator
-
-operator T.next( byref cond as T ) as integer
-  operator = ( this <= cond )
-end operator
-
-operator T.cast() as string
-  operator = str( value )
-end operator
-
-'' Example Usage
-
-for i as T = 1 to 10
-  print i
-next i
-%%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
@@ -94,3 +44,4 @@ next i
 	- ##[[KeyPgFornext For...Next]]##
 
 {{fbdoc item="back" value="CatPgOpIterating|Iterating Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

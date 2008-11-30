@@ -15,7 +15,7 @@ Returns the natural logarithm of a given number
 	Returns the logarithm with the base //e// (also know as the natural logarithm) of ##//number//##.
 
 {{fbdoc item="desc"}}
-	There can be some confusion with this notation given that in mathematics the natural logarithm function is usually denoted **LN**, while the logarithm of base 10 is often denoted as LOG. FreeBASIC, like most computer programming languages, uses LOG to denote the natural logarithm. The required //number// argument can be any valid numeric expression greater than zero. If ##//number//## is zero, FreeBASIC returns -infinity. If ##//number//## is less than zero, FreeBASIC returns a domain error (-1#IND). If ##//number//## is an uninitialized variable, -infinity is returned.
+	There can be some confusion with this notation given that in mathematics the natural logarithm function is usually denoted **LN**, while the logarithm of base 10 is often denoted as LOG. FreeBASIC, like most computer programming languages, uses LOG to denote the natural logarithm. The required //number// argument can be any valid numeric expression greater than zero. If ##//number//## is zero, FreeBASIC returns a special value representing "-infinity", printing like "-Inf". If ##//number//## is less than zero, **Log** returns a special value representing "not defined", printing like """NaN""" or "IND", exact text is platform dependent. If ##//number//## is an uninitialized variable, -infinity is returned.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/log.bas"}}%%(freebasic)

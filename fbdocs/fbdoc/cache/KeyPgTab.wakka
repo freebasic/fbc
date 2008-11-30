@@ -2,30 +2,51 @@
 Sets the column when writing to screen or file
 
 {{fbdoc item="syntax"}}##
-	**Tab**( //column// )
+	**Tab**( //col_num// )
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgPrint Print]] **Tab**( //column// ) [(, | ;)] ...
+	[[KeyPgPrint Print]] **Tab**( //colunm// ) [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
 	##//column//##
-		column to move to
+		##1##-based column number to move to
 
 {{fbdoc item="desc"}}
-	**Tab** will move the cursor to ##//column//## when ##[[KeyPgPrint Print]]##ing to screen or to a file.
+	##**Tab**## will move the cursor to given ##//column//## number when ##[[KeyPgPrint Print]]##ing to screen or to a file.  Character cells skipped over between the old and new cursor positions are left unchanged.
+	If the current column is greater than ##//column//##, then ##**Tab**## will move the cursor to the requested column number on the next line.  If the current column is equal to ##//column//##, then the cursor will not move anywhere.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/tab.bas"}}%%(freebasic)
-print "foo"; tab(5); "bar"
-print "hello"; tab(5); "world"
+'' Using Print with Tab to justify text in a table
+
+Dim As String A1, B1, A2, B2
+
+A1 = "Jane"
+B1 = "DOE"
+A2 = "Bob"
+B2 = "Smith"
+
+Print "FIRST NAME"; Tab(35); "LAST NAME"
+Print "----------"; Tab(35); "----------"
+Print A1; Tab(35); B1
+Print A2; Tab(35); B2
 %%
 
+The output would look like:
+##%%
+FIRST NAME                         LAST NAME
+----------                         ----------
+Jane                               DOE
+Bob                                Smith
+%%##
+
 {{fbdoc item="diff"}}
-	- None.
+	- In QBASIC, spaces were printed in the gap, while in ""FreeBASIC"", the characters are just skipped over and left untouched.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgSpc Spc]]##
+	- ##[[KeyPgLocate Locate]]##
+	- ##[[KeyPgPos Pos]]##
+	- ##[[KeyPgPrint Print]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}
-

@@ -1,17 +1,37 @@
 {{fbdoc item="title" value="Internal graphics formats"}}----
-When a graphics mode is set via the [[KeyPgScreengraphics Screen]] or [[KeyPgScreenres ScreenRes]] functions, GfxLib creates also a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, selected depending on the screen depth, as described in the following table:
 
-{{table columns="4" cellpadding="1" cells="Screen depth;Internal bytes per pixel;Range bitmask;Pixel format;1bpp; 1; &h1;palette color index;2bpp; 1; &h3;palette color index;4bpp; 1; &hF;palette color index;8bpp; 1; &hFF;palette color index;15/16bpp; 2; &hFFFF;RRRRRGGGGGGBBBBB;24/32bpp; 4; &hFFFFFFFF;AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB"}}
+**Pixel formats**
 
-All drawing operations work on this RAM framebuffer; when the actual display needs to be updated, GfxLib copies the contents of the framebuffer to the real display memory, automatically converting in the process from the current internal pixel format to whatever pixel format the real display uses. By limiting the internal pixel formats to 3, the library let you not care about the plethora of real display formats.
+	When a graphics mode is set via the ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]## functions, GfxLib creates also a framebuffer in standard system memory and sets an appropriate internal pixel format for the mode. There are basically three internal pixel formats, selected depending on the screen depth, as described in the following table:
+
+	{{table columns="4" cellpadding="1" cells="Screen depth;Internal bytes per pixel;Range bitmask;Pixel format;1bpp; 1; &h1;palette color index;2bpp; 1; &h3;palette color index;4bpp; 1; &hF;palette color index;8bpp; 1; &hFF;palette color index;15/16bpp; 2; &hFFFF;RRRRRGGGGGGBBBBB;24/32bpp; 4; &hFFFFFFFF;AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB"}}
+
+	All drawing operations work on this RAM framebuffer; when the actual display needs to be updated, ""GfxLib"" copies the contents of the framebuffer to the real display memory, automatically converting in the process from the current internal pixel format to whatever pixel format the real display uses. By limiting the internal pixel formats to 3, the library prevents you having to deal with the plethora of real display formats.
 
 **Color values**
 
-	When calling a graphics primitive that accepts a color, this can be specified in two ways. In 8bpp or less modes, the color value must be a direct 8 bits color index in the current palette, and this matches the internal pixel format for those modes. In higher color depths, the color value should always have the form &hAARRGGBB; this is what the ##[[KeyPgRgb RGB]]## and ##[[KeyPgRgba RGBA]]## macros return, and is equivalent to the 24/32bpp internal pixel format representation. If the current color depth is 24 or 32bpp, this means the color value passes in unaltered. If a 15/16bpp mode is in use, internally each primitive automatically converts the color from the ##&hAARRGGBB## form into the ##RRRRRGGGGGGBBBBB## internal pixel format (note that in this process the alpha channel is lost, as 15/16bpp modes do not support it). Once the color value is in one of the three pixel formats, the primitive limits its range to the range supported by the current color depth, by using a bitwise AND operation with a range bitmask. So if in 8bpp, the color value passed is ANDed by ##&hFF## for example.
+	When calling a graphics primitive that accepts a color, this can be specified in two ways. In 8bpp or less modes, the color value must be a direct 8 bits color index in the current palette, and this matches the internal pixel format for those modes. In higher color depths, the color value should always have the form ##&hAARRGGBB##; this is what the ##[[KeyPgRgb RGB]]## and ##[[KeyPgRgba RGBA]]## macros return, and is equivalent to the 24/32bpp internal pixel format representation. If the current color depth is 24 or 32bpp, this means the color value passes in unaltered. If a 15/16bpp mode is in use, internally each primitive automatically converts the color from the ##&hAARRGGBB## form into the ##RRRRRGGGGGGBBBBB## internal pixel format (note that in this process the alpha channel is lost, as 15/16bpp modes do not support it). Once the color value is in one of the three pixel formats, the primitive limits its range to the range supported by the current color depth, by using a bitwise ##[[KeyPgOpAnd And]]## operation with a range bitmask. So if in 8bpp, the color value passed is ##[[KeyPgOpAnd And]]##ed by ##&hFF## for example.
 
 **Notes on transparency**
 
-	For 8bpp or less modes, color index 0 is always treated as the transparent color for the ##[[KeyPgPutgraphics Put]]## modes that support transparency. For higher depths, ##[[KeyPgRgb RGB]]##(255, 0, 255) always represents the transparent color. In 15/16bpp modes, this translates to the internal value ##&hF81F##, whereas in 24/32bpp modes it becomes ##&hFFFF00FF##. Note that in 24/32bpp modes, ##[[KeyPgPutgraphics Put]]## identifies the transparent color by looking just at the red, green and blue components of the color value, while the alpha value can assume any value. This means that in 24/32bpp modes, ##&h00FF00FF##, ##&h10FF00FF##, ##&hABFF00FF## and ##&hFFFF00FF## for example all represent the transparent color, since the lower 24 bits are always ##&hFF00FF##.
+	For 8bpp or less modes, color index 0 is always treated as the transparent color for the ##[[KeyPgPutgraphics Put]]## modes that support transparency. For higher depths, ##[[KeyPgRgb RGB]](255, 0, 255)## always represents the transparent color. In 15/16bpp modes, this translates to the internal value ##&hF81F##, whereas in 24/32bpp modes it becomes ##&hFFFF00FF##. Note that in 24/32bpp modes, ##[[KeyPgPutgraphics Put]]## identifies the transparent color by looking just at the red, green and blue components of the color value, while the alpha value can assume any value. This means that in 24/32bpp modes, ##&h00FF00FF##, ##&h10FF00FF##, ##&hABFF00FF## and ##&hFFFF00FF## for example all represent the transparent color, since the lower 24 bits are always ##&hFF00FF##.
+
+**Buffer formats**
+
+	In ""FreeBASIC"", images can be used as arrays (as in QB) or as pointers. Either way, the image data is contained in one continuous chunk. The chunk consists of an header followed by the image data. The header can be of two types (old-style and new-style) and determines the format of the following image data.
+
+		**Old-style** chunk header consists of 4 bytes (32 bits, or 4 bytes). The first 3 bits contain the image color depth in bytes per pixel (8-bit color depth -> 1; 16-bit color depth -> 2; 32-bit color depth -> 4). The next 13 bits contain the image width. The last 16 bits contain the image's height. Please note the intrinsic nature of the header allows only for sizes up to ##8191 * 65535## pixels. The actual pixel data follows the header, and is compacted one row of pixels after another; no data alignment is assumed. The final size of the chunk can then be computed using the formula:
+
+			##size = 4 + ( width * height * bytes_per_pixel )##
+
+		**New-style** chunk header consists of 32 bytes. The first dword (32 bits) must be equal to the value 7, allowing ""GfxLib"" to identify the new type of chunk. The second dword contains the image color depth in bytes per pixel. The third and fourth dwords contain the image width and height respectively, effectively removing the image size limit enforced by the old-style image chunks. The fifth dword contains the pixel row pitch in bytes; this tells how many bytes a row of pixels in the image takes up. The pitch in new-style chunks is always padded to a multiple of 16, to allow pixels' row data to be aligned on the paragraph boundary. The remaining 3 dwords (total 12 bytes) of the header are currently unused and reserved for future use. The final size of the image is:
+
+			##size = 32 + ( ( ( ( width * bytes_per_pixel ) + &hF ) and not &hF ) * height )##
+
+	The format of images created by ##[[KeyPgImagecreate ImageCreate]]## and ##[[KeyPgGetgraphics Get]]## depend on the dialect used. In the //[[CompilerOptlang -lang fb]]// dialect, images will be created with the new-style header.  In the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects, the old-style image header is created.
+
+	All graphics primitives can work with both old-style and new-style image chunks.  For easy access to image information, ##[[KeyPgImageInfo ImageInfo]]## can be used to obtain useful properties of an image buffer - such as its dimensions, color depth, pitch, and a pointer to the pixel data - whichever format is used.
+	It is also possible to access the image header directly to access this information.  For more information on acessing the header structure, please refer to [[FaqPggetputstructure this example]].
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
@@ -19,6 +39,7 @@ All drawing operations work on this RAM framebuffer; when the actual display nee
 	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
+	- ##[[KeyPgImageInfo ImageInfo]]##
 	- ##[[KeyPgTransGfx Trans]]##
 	- ##[[KeyPgAlphaGfx Alpha]]##
 

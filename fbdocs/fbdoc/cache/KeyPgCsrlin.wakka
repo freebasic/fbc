@@ -8,10 +8,10 @@ Returns the row position of the cursor
 	//result// = **Csrlin**
 ##
 {{fbdoc item="ret"}}
-	An [[KeyPgInteger integer]] specifying the current row of the cursor.
+	An ##[[KeyPgInteger integer]]## specifying the current row of the cursor.
 
 {{fbdoc item="desc"}}
-	Returns the current line position (row) of the cursor (##//csr//## for cursor, ##//lin//## for line).
+	Returns the current row the cursor is on (i.e. the "**c**ur**s**o**r** **lin**e").  The topmost row is number ##1##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/csrlin.bas"}}%%(freebasic)

@@ -9,28 +9,52 @@ Locks the working page's framebuffer
 ##
 {{fbdoc item="desc"}}
 
-	All FreeBASIC's Graphics Library functions draw to a framebuffer and an automatic routine copies the framebuffer to the actual screen memory at each draw. If the user program does a lot of drawing, the automatic refreshes may take a significant amount of time.
+	All of ""FreeBASIC's"" Graphics Library functions draw to a framebuffer and an automatic routine copies the framebuffer to the actual screen memory at each draw. If the user program does a lot of drawing, the automatic refreshes may take a significant amount of time.
 
 	The ##**Screenlock**## function locks the automatic refresh, so several drawing operations may be done before the screen refresh is performed, thus increasing the speed of execution, and preventing the user from seeing partial results. 
 	
-	Framebuffer memory may be freely accessed by using pointers (see [[KeyPgScreenptr ScreenPtr]]) ONLY while the screen is locked. Primitive graphics statements (LINE, PSET, DRAW STRING,...)  may be used at any time.
+	Framebuffer memory may be freely accessed by using pointers (see [[KeyPgScreenptr ScreenPtr]]) ONLY while the screen is locked. Primitive graphics statements (##[[KeyPgLinegraphics Line]]##, ##[[KeyPgPset PSet]]##, ##[[KeyPgDrawString Draw String]]##, ...)  may be used at any time.
 
 	The screen refresh remains locked until the use of ##[[KeyPgScreenunlock Screenunlock]]## statement, which resumes it.  
 	
 	Calls to ##**Screenlock**## must be paired with a matching call to ##**[[KeyPgScreenunlock Screenunlock]]**##.  The graphics driver keeps track of how many times ##**Screenlock**## has been called using a counter.  Only the first call to ##**Screenlock**## actually performs a locking operation.  Subsequent calls to ##**Screenlock**## only increment the counter.  Conversely, ##**[[KeyPgScreenunlock Screenunlock]]**## only decrements the lock counter until it reaches zero at which time the actual unlock operation will be performed.  Using ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## will release all locks and set the lock counter back to zero before changing screen modes.
 	
-	It is strongly recommended that the lock on a page be held for as short a time as possible. Only screen drawing should occur while the screen is locked, input/output and waiting must be avoided. In Win32 and Linux the screen is locked by stopping the thread that processes also the OS' events. If the screen is kept locked for a long time the event queue could overflow and make the system unstable. 
+	It is strongly recommended that the lock on a page be held for as short a time as possible. Only screen drawing should occur while the screen is locked, input/output and waiting must be avoided. In ""Win32"" and Linux the screen is locked by stopping the thread that processes also the OS' events. If the screen is kept locked for a long time the event queue could overflow and make the system unstable. 
 
 	The automatic refresh takes place only in the visible page of the framebuffer. ##**Screenlock**## has no effect when drawing to pages other than the visible one. 	
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgScreenptr Screenptr]]## example.
+
+{{fbdoc item="filename" value="examples/manual/gfx/screenlock.bas"}}%%(freebasic)
+'' Draws a circle on-screen at the mouse cursor
+Dim As Integer mx, my
+Dim As String key
+
+Screenres 640, 480, 32
+
+Do
+
+  'process
+  Getmouse(mx, my)
+  key = Inkey()
+
+  'draw
+  Screenlock()
+  Cls()
+  Circle (mx, my), 8, Rgb(255, 255, 255)
+  Screenunlock()
+
+  'free up CPU time
+  Sleep(18, 1)
+  
+Loop Until key = Chr(27) Or key = Chr(255, 107)
+%%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenlock""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]## - Setting mode

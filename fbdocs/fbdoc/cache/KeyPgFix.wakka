@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="FIX"}}----
-Returns the integer part of a number
+Returns the integer part of a number, rounding towards zero
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
@@ -9,13 +9,15 @@ Returns the integer part of a number
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		the decimal number to truncate
+		the floating-point number to truncate
 
 {{fbdoc item="ret"}}
-	Returns the integer part of a number.
+	Returns the integer part of ##//number//##, rounding towards zero.
 
 {{fbdoc item="desc"}}
-	Equivalent to: ##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.
+	Equivalent to: ##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.  For example, ##**Fix**(1.3)## will return ##1.0##, and ##**Fix**(-4.9)## will return ##-4.0##.
+
+	Note: this function is also equivalent to ##//number// - [[KeyPgFrac Frac]](//number//)##.
 
 	The ##**Fix**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
 
@@ -33,6 +35,7 @@ Print fix(-1.9) '' will print -1
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInt Int]]##
+	- ##[[KeyPgFrac Frac]]##
 	- ##[[KeyPgCint Cint]]##
 	- ##[[KeyPgOperator Operator]]##
 

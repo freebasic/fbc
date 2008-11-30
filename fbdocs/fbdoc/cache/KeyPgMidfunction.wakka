@@ -2,10 +2,10 @@
 Returns a substring of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mid**[$]( //str//, //start// [, //n// ] )

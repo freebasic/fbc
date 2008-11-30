@@ -2,18 +2,18 @@
 Removes a previous access restriction (lock) on a file
 
 {{fbdoc item="syntax"}}##
-	**Unlock** #//filenum// [, //record// ]
-	**Unlock** #//filenum//, [ //start// ] TO //end//
+	**Unlock** #//filenum//, //record//
+	**Unlock** #//filenum//, //start// To //end//
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
 		The file number used to ##[[KeyPgOpen Open]]## the file.
 	##//record//##
-		The record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) to unlock. If omitted, the entire file is unlocked.
+		The record (##[[KeyPgRandom Random]]## files) to unlock.
 	##//start//##
-		The first record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock. If omitted, the current record/byte position (##[[KeyPgSeekreturn Seek]]##(##//filenum//##) is used.
+		The first byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
 	##//end//##
-		The last record (##[[KeyPgRandom Random]]## files) or byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
+		The last byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
 
 {{fbdoc item="desc"}}
 	##**Unlock**## removes the temporary access restriction set by ##[[KeyPgLock Lock]]##.
@@ -24,7 +24,9 @@ Removes a previous access restriction (lock) on a file
 	     For an example see ##[[KeyPgLock Lock]]##.
 
 {{fbdoc item="diff"}}
-	- None
+	- Currently, FB cannot implicitly unlock the entire file
+	- In ##[[KeyPgRandom Random]]## mode, FB cannot unlock a range of records
+
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLock Lock]]##

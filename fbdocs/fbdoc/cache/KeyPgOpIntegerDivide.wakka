@@ -17,9 +17,9 @@ Divides two ##[[KeyPgInteger Integer]]## expressions
 	Returns the quotient of an ##[[KeyPgInteger Integer]]## dividend and divisor.
 
 {{fbdoc item="desc"}}
-	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the result. Numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
+	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the result. Float numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
 	
-	If the divisor (##//rhs//##) is zero (0), a division by zero error will be raised.
+	If the divisor (##//rhs//##) is zero (##0##), a division by zero error (crash) will be raised.
 
 	Neither of the operands are modified in any way.
 
@@ -49,6 +49,8 @@ Output:
 	- None
 
 {{fbdoc item="see"}}
+	- [[KeyPgOpDivide Operator \ (Floating-point divide)]]
+	- [[KeyPgOpModulus Operator Mod (Modulus)]]
 	- [[CatPgMath Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

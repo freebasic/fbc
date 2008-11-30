@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="fbc command-line"}}----
 Using the **fbc** command-line.
 
-	The official FreeBASIC distribution comes with **fbc**, FreeBASIC's flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
+	The official ""FreeBASIC"" distribution comes with **fbc**, ""FreeBASIC""'s flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
 
 	At it's simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an assembly (.asm) file, then compiling this into an object file (.o) using GAS and finally linking using LD this object file to other object files and libraries it needs to run, producing the final executable file. The assembly and compiled object files are deleted at this point by default. For example, the following command,
 
@@ -40,6 +40,8 @@ Using the **fbc** command-line.
 			Include a header file on each source compiled
 		=={{fbdoc item="keyword" value="CompilerOptd|-d < name=val >"}}==
 			Add a preprocessor's define
+		=={{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang < name >"}}==
+			Select language compatibility: ##fb##, ##fblite##, ##qb##, ##deprecated## (overides statements in code)
 		=={{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}==
 			Select language compatibility: ##fb##, ##fblite##, ##qb##, ##deprecated##
 		=={{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}==
@@ -70,7 +72,7 @@ Using the **fbc** command-line.
 			Set target architecture (default: ##486##)
 		=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
 			Set the target platform for cross compilation
-		{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
+		=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
 			Set the floating point arithmetics unit (default: FPU)
 		=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==
 			Set subsystem (##gui##, ##console##)

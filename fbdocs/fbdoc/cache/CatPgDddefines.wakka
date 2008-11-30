@@ -26,6 +26,8 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for Cygwin.
 	=={{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}==
 		Defined if compiling for FreeBSD.
+	=={{fbdoc item="keyword" value="KeyPgDdfbnetbsd|__FB_NETBSD__"}}==
+		Defined if compiling for NetBSD.
 	=={{fbdoc item="keyword" value="KeyPgDdfbopenbsd|__FB_OPENBSD__"}}==
 		Defined if compiling for OpenBSD.
 	=={{fbdoc item="keyword" value="KeyPgDdfbdarwin|__FB_DARWIN__"}}==

@@ -229,6 +229,7 @@
 		[[KeyPgDdFBMain __FB_MAIN__]]
 		[[KeyPgDdFBMinVersion __FB_MIN_VERSION__]]
 		[[KeyPgDdfbmt __FB_MT__]]
+		[[KeyPgDdfbnetbsd __FB_NETBSD__]]
 		[[KeyPgDdfbopenbsd __FB_OPENBSD__]]
 		[[KeyPgDdfboptionbyval __FB_OPTION_BYVAL__]]
 		[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]
@@ -786,6 +787,7 @@
 		[[CompilerOptex -ex]]
 		[[CompilerOptexx -exx]]
 		[[CompilerOptexport -export]]
+		[[CompilerOptforcelang -forcelang <name>]]
 		[[CompilerOptfpu -fpu < type >]]
 		[[CompilerOptg -g]]
 		[[CompilerOptgen -gen < backend >]]
@@ -865,6 +867,7 @@
 
 	{{fbdoc item="subsect" value="Graphics"}}
 		[[ExtLiballegro allegro]]
+		[[ExtLibDUGL DUGL]]
 		[[ExtLibcaca caca]]
 		[[ExtLibcairo cairo]]
 		[[ExtLibcgui cgui]]

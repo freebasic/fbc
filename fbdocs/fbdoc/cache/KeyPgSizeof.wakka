@@ -5,9 +5,12 @@ Returns the size of a variable or type in bytes.
 	**Sizeof** ( //variable// | [[DataType DataType]] )
 ##
 {{fbdoc item="desc"}}
-	The ##Sizeof## operator returns the length of a //variable// or [[DataType DataType]]. 
+	The ##**Sizeof**## operator returns the number of bytes taken up by a ##//variable//## or ##[[DataType DataType]]##.
 
-	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of bytes allocated, and when used with variable-length strings, it will return the size of the string descriptor.
+	Different from ##[[KeyPgLen Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring Zstring]]##s and ##[[KeyPgWstring Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
+
+	Note: When used with arrays, ##**Sizeof**## returns the size of a single element of the array.  This differs from its behavior in C, where arrays could only be a fixed size, and ##sizeof()## would return the number of it used.
+	For clarity, it is recommended that you avoid this potential confusion, and use ##**Sizeof**## directly on an array element, rather than the whole array.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/sizeof.bas"}}%%(freebasic)
@@ -27,7 +30,7 @@ Print SizeOf(foo)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Sizeof""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLen Len]]##

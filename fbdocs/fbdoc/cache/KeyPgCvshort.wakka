@@ -2,7 +2,7 @@
 Converts an two byte string to a short variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort short]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort short]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvshort**( //str// )

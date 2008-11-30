@@ -37,7 +37,7 @@ Specifies file or device to be opened for binary mode
 		If no lock type is stated, the file will be ##**Shared**## for other threads of the program and ##**Lock Read Write**## for other programs.
 		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to restrict temporally access to parts of a file.
 
-	##//filenum//## is a valid ""FreeBASIC"" file number (in the range ##1##-##255##) not being used for any other file presently open. This number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	##//filenum//## is a valid ""FreeBASIC"" file number (in the range ##1..255##) not being used for any other file presently open. This number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
 	
 	##//record_length//## is the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##, it must match the size of the buffer variable used when ##[[KeyPgGetfileio Get]]##ting and ##[[KeyPgPutfileio Put]]##ting data. If omitted, it defaults to ##128##.
 
@@ -83,12 +83,12 @@ data "pqrs",     "tuv",      "wxyz"
 
 {{fbdoc item="diff"}}
 	- In QB, String-contained runtime user defined types (UDT) are not implemented in ""FreeBASIC"".
-	- The keyword ##[[KeyPgField Field]]## is used with ##[[KeyPgType Type]]## to specify the packing of the UDT. 
+	- The keyword ##[[KeyPgField Field]]## can only be used with ##[[KeyPgType Type]]## to specify the packing of the UDT. 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgBinary Binary]]##
-	- ##[[KeyPgPutfileio Put #]]##
 	- ##[[KeyPgGetfileio Get #]]##
+	- ##[[KeyPgPutfileio Put #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

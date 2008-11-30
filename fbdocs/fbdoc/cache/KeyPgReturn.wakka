@@ -20,7 +20,7 @@ Control flow statement to return from a procedure or ##[[KeyPgGosub Gosub]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/return.bas"}}%%(freebasic)
-'' Compile with -lang qb
+'' GOSUB & RETURN example, compile with "-lang qb" or use "$lang" as below
 
 '$lang: "qb"
 
@@ -36,36 +36,36 @@ Return
 %%
 
 {{fbdoc item="filename" value="examples/manual/control/return2.bas"}}%%(freebasic)
-type rational_number                   '' simple rational number type
-   numerator as integer
-   denominator as integer
+'' Return from function
+
+type rational              '' simple rational number type
+	numerator as integer
+	denominator as integer
 end type
 
-type rational as rational_number       '' type alias for clearer code
-
-'' multiplies two rational types (note: r1 remains unchanged due to the BYVAL option)
+'' multiplies two rational types
 function rational_multiply( r1 as rational, r2 as rational ) as rational
 
-   r1.numerator *= r2.numerator        '' multiply the divisors ...
-   r1.denominator *= r2.denominator
-   return r1                           '' ... and return the rational
+	dim r as rational
+	'' multiply the divisors ...
+	r.numerator   = r1.numerator   * r2.numerator
+	r.denominator = r1.denominator * r2.denominator
+
+	'' ... and return the result
+	return r
 
 end function
 
-dim as rational r1 = ( 6, 105 )        '' define some rationals r1 and r2
+dim as rational r1 = ( 6, 105 )   '' define some rationals r1 and r2
 dim as rational r2 = ( 70, 4 )
 dim as rational r3
 
-r3 = rational_multiply( r1, r2 )       '' multiply and store the result in r3
+r3 = rational_multiply( r1, r2 )  '' multiply and store the result in r3
 
-'' display the expression (using STR to eliminate leading space when printing numeric types)
-print str( r1.numerator ) ; "/" ; str( r1.denominator ) ; " * " ;
-print str( r2.numerator ) ; "/" ; str( r2.denominator ) ; " = " ;
-print str( r3.numerator ) ; "/" ; str( r3.denominator )
-
-sleep 
-end 0
-%%
+'' display the expression
+print r1.numerator & "/" & r1.denominator; " * ";
+print r2.numerator & "/" & r2.denominator; " = ";
+print r3.numerator & "/" & r3.denominator%%
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// dialect ##**Return**## always means return-from-procedure.

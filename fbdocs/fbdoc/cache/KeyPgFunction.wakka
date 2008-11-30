@@ -44,44 +44,44 @@ Defines a procedure returning a value
 {{fbdoc item="ex"}}
 
 {{fbdoc item="filename" value="examples/manual/procs/func-1.bas"}}%%(freebasic)
-'This program demonstrates the declaration of a function and said function returning a value.
+'' This program demonstrates the declaration of a function 
+'' and returning a value using Return command
 
 Declare Function ReturnTen () as integer
 
-Print ReturnTen () 'ReturnTen returns an integer by default.
+Print ReturnTen () '' ReturnTen returns an integer by default.
 
 Function ReturnTen() as integer
 	Return 10
 End Function
-
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/func-2.bas"}}%%(freebasic)
-'This program demonstrates the declaration of a function and said function returning a value.
+'' This program demonstrates the declaration of a function 
+'' and returning a value using assignment to function name
 
 Declare Function ReturnTen () as integer
 
-Print ReturnTen () 'ReturnTen returns an integer by default.
+Print ReturnTen () '' ReturnTen returns an integer by default.
 
 Function ReturnTen() as integer
 	ReturnTen = 10
 End Function
-
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/func-3.bas"}}%%(freebasic)
-'This program demonstrates function overloading.
+'' This program demonstrates function overloading.
 
-'The overloaded functions must be FIRST.
-Declare Function ReturnTen Overload (a As Double) as integer
+'' The overloaded functions must be FIRST.
+Declare Function ReturnTen Overload (a As Single) as integer
 Declare Function ReturnTen Overload (a As String) as integer
 Declare Function ReturnTen (a as integer) as integer
 
-Print ReturnTen (10.000!)   'ReturnTen will take a double and return an int.
-Print ReturnTen (10)        'ReturnTen will take an int and return an int.
-Print ReturnTen ("10")      'ReturnTen will take a string and return an int.
+Print ReturnTen (10.000!) '' ReturnTen will take a single and return an integer
+Print ReturnTen (10)      '' ReturnTen will take an integer and return an integer
+Print ReturnTen ("10")    '' ReturnTen will take a string and return an integer
 
-Function ReturnTen Overload (a As Double) as integer
+Function ReturnTen Overload (a As Single) as integer
 	Return Int(a)
 End Function
 
@@ -95,7 +95,7 @@ End Function
 %%
 
 {{fbdoc item="filename" value="examples/manual/procs/func-4.bas"}}%%(freebasic)
-' The following demonstrates optional parameters.
+'' The following example demonstrates optional parameters.
 
 Function TestFunc(P As String = "Default") As String
 	Return P
@@ -105,8 +105,10 @@ Print TestFunc("Testing:")
 Print TestFunc
 %%
 
-This example shows how to declare and call functions that take array arguments.
 {{fbdoc item="filename" value="examples/manual/procs/func-5.bas"}}%%(freebasic)
+'' This example shows how to declare and call 
+'' functions taking array arguments.
+
 Function x(b() As Double) As Integer
   x = UBound(b)-LBound(b)+1
 End Function
@@ -120,19 +122,21 @@ Print x(c())
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString String]]##; String and user-defined ##[[KeyPgType Type]]##s are passed ##[[KeyPgByref Byref]]## by default.
 	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention.
-	- In the //[[CompilerOptlang -lang qb]]//, the name of the function must be used in an assignment to specify the return value.  Using ##**function** = ...##" to specify the return value may not be used.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, the name of the function must be used in an assignment to specify the return value.  Using ##**function** = ...##" to specify the return value may not be used.
 	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##[[KeyPgReturn Return]]## may only be used to return a value when ##[[KeyPgOptiongosub Option Gosub]]## is off.  In //[[CompilerOptlang -lang qb]]//, this must be done explicitly using the ##[[KeyPgOptionnogosub Option Nogosub]]## statement.
 
 {{fbdoc item="diff"}}
 	- Parameters can be optional in ""FreeBASIC"".
+	- In QBASIC, the return type could only specified with a suffix, not with ##AS TYPE##, and only allowed functions to return a built-in type.
 	- Return value can now be specified by a ##[[KeyPgReturn Return]]## statement
 	- Function ##[[KeyPgOverload Overload]]##ing is supported in ""FreeBASIC"".
 	- The return value of ##[[KeyPgInteger Integer]]## functions can be ignored in the calling code.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgExit Exit]]##
+	- ##[[KeyPgReturn Return]]##
+	- ##[[KeyPgDeclare Declare]]##
 	- ##[[KeyPgPublic Public]]##
 	- ##[[KeyPgPrivate Private]]##
 

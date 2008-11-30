@@ -1,11 +1,12 @@
 {{fbdoc item="title" value="zlib"}}----
-Loseless data compression library unencumbered by patents.
+Lostless data compression library using the Deflate algorithm unencumbered by patents.
 
 Website: http://www.zlib.net
 Platforms supported: Win32, Linux, DOS
 Headers to include: zlib.bi
-Example Usage: yes, in examples/libraries/compress/
-
+Example Usage: 
+	- Included, see in: examples/libraries/compress/
+	- Simple PNG save&load code see: http://www.freebasic.net/forum/viewtopic.php?t=3936
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
    

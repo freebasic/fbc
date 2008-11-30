@@ -7,26 +7,29 @@ Used with ##[[KeyPgRedim Redim]]## to preserve contents will resizing an array
 {{fbdoc item="desc"}}
 	Used with ##[[KeyPgRedim Redim]]## so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same.
 
-	In arrays with more than one dimension the data is preserved if only the first index is redimensioned (arrays are stored in row-major order, so it's the first, not the last subscription). If indexes other than the first one are redimensioned, the data will not be preserved.
+	**NOTE**: ##**Redim** [[KeyPgPreserve Preserve]]## may not work as expected in all cases:
+		##[[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
+		Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
+		If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/preserve.bas"}}%%(freebasic)
 redim array(1 to 3) as integer
-Dim i as integer
+dim i as integer
 
 array(1) = 10
 array(2) = 5
 array(3) = 8
 
-redim preserve array(2 to 10)
+redim preserve array(1 to 10)
 
-for i = 2 to 10
+for i = 1 to 10
 	print "array("; i; ") = "; array(i)
 next
 %%
 
 {{fbdoc item="diff"}}
-	- PRESERVE wasn't supported until PDS 7.1
+	- ##**Preserve**## wasn't supported until PDS 7.1
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

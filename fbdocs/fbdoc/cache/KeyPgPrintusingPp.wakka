@@ -6,7 +6,7 @@ Outputs formatted text to a file or device
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		A file number of an open file or device.
+		The file number of a file or device opened for ##[[KeyPgOutput Output]]## or ##[[KeyPgAppend Append]]##.
 	##//formatstring//##
 		Format string to use.
 	##//expressionlist//##
@@ -62,12 +62,13 @@ Some numerical values are:
 %%
 
 {{fbdoc item="diff"}}
-	- In QB a not-to-be-formatted ##//expressionlist//## could be entered before the ##**Using**## clause;
+	- In QB a normal, not-to-be-formatted ##//expressionlist//## could be entered before the ##**Using**## clause
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrintPp Print #]]##
-	- ##[[KeyPgLprint Lprint]]##
 	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgPalette Palette]]##
+	- ##[[KeyPgLprint Lprint]]##
+	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgUsing Using]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

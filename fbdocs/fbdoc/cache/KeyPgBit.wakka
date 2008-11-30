@@ -14,10 +14,10 @@ Gets the state of an individual bit in an integer value.
 		The index of the bit.
 
 {{fbdoc item="ret"}}
-	Returns an ##[[KeyPgInteger Integer]]## value of `##-1##` if the bit is set, or `##0##` if the bit is cleared.
+	Returns an ##[[KeyPgInteger Integer]]## value of ##-1## if the bit is set, or ##0## if the bit is cleared.
 
 {{fbdoc item="desc"}}
-	This macro expands to an integer value indicating whether or not the bit specified by ##//bit_number//## is set in the integer ##//value//##. Behaves as `##//value// [[KeyPgOpAnd And]] 1 [[KeyPgOpShiftLeft Shl]] //bit_number//##`.
+	This macro expands to an integer value indicating whether or not the bit specified by ##//bit_number//## is set in the integer ##//value//##. Behaves as `##(//value// [[KeyPgOpAnd And]] 1 [[KeyPgOpShiftLeft Shl]] //bit_number//) <> 0##`.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bit.bas"}}%%(freebasic)
@@ -37,7 +37,7 @@ PRINT BIT(&H8000000000000000ULL,63)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC 
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBitset Bitset]]##

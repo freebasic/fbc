@@ -5,28 +5,35 @@ Output function to skip spaces when writing to screen or file
 	**Spc**( //columns// )
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgPrint Print]] **Spc**( //columns// ) [(, | ;)] ...
+	[[KeyPgPrint Print]] **Spc**( //spaces// ) [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
-	##//columns//##
-		number of columns to skip
+	##//spaces//##
+		number of spaces to skip
 
 {{fbdoc item="desc"}}
-	##**Spc**## skips n-//columns// when ##[[KeyPgPrint Print]]##ing to screen or to a file.
+	##**Spc**## skips over the given number of ##//spaces//## when ##[[KeyPgPrint Print]]##ing to screen or to a file.  The character cells skipped over are left unchanged.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/spc.bas"}}%%(freebasic)
-DIM AS STRING A, B, N, M
+Print "foo"; Spc(5); "bar"
+Print "hello"; Spc(4); "world"
+%%
 
-A = "Jane"
-B = "DOE"
-N = "Bob"
-M = "Smith"
+{{fbdoc item="filename" value="examples/manual/console/spc2.bas"}}%%(freebasic)
+'' Uses Spc to justify text instead of Tab
 
-PRINT "FIRST NAME"; SPC(25); "LAST NAME"
-PRINT "----------"; SPC(25); "----------"
-PRINT A; SPC(35-LEN(A)); B
-PRINT N; SPC(35-LEN(N)); M
+Dim As String A1, B1, A2, B2
+
+A1 = "Jane"
+B1 = "DOE"
+A2 = "Bob"
+B2 = "Smith"
+
+Print "FIRST NAME"; Spc(35 - 10); "LAST NAME"
+Print "----------"; Spc(35 - 10); "----------"
+Print A1; Spc(35 - Len(A1)); B1
+Print A2; Spc(35 - Len(A2)); B2
 %%
 
 The output would look like:
@@ -38,10 +45,11 @@ Bob                                Smith
 %%##
 
 {{fbdoc item="diff"}}
-	- None
+	- In QBASIC, spaces were printed in the gap, while in ""FreeBASIC"", the characters are just skipped over and left untouched.  The ##[[KeyPgSpace Space]]## function can still be used to achieve this effect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgTab Tab]]##
+	- ##[[KeyPgSpace Space]]##
+	- ##[[KeyPgPrint Print]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Operator Let (Assign)"}}----
-Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator = (Assignement]]
+Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator = (Assignment)]]
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
@@ -40,7 +40,7 @@ end operator
 dim a as T = ( 5, 7 )
 dim b as T
 
-'' Do the assinment invoking the LET
+'' Do the assignment invoking the LET
 '' operator procedure
 b = a
 
@@ -60,16 +60,16 @@ b.y =  7
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLet Let]]##
-	- ##[[KeyPgOpEqual Operator Let() (Assignment)]]##
-	- ##[[KeyPgOpEqual Operator = (Assignment)]]##
+	- ##[[KeyPgOpLetlist Operator Let() (Assignment)]]##
+	- ##[[KeyPgOpAssignment Operator = (Assignment)]]##
 	- ##[[KeyPgOpEqual Operator = (Equal)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

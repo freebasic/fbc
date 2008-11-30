@@ -2,14 +2,17 @@
 Sends a command to the system command interpreter
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Shell**( //command// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Shell** ( [[KeyPgByref byref]] //command// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	Shell( //command// )
+	//result// = **Shell**( //command// )
 ##
 {{fbdoc item="param"}}
 	##//command//##
 		A string specifying the command to send to the command interpreter.
+
+{{fbdoc item="ret"}}
+	If ##//command// = ""##, or else the command could not be executed, -1 is returned. Otherwise, the command is executed and its exit code is returned.
 
 {{fbdoc item="desc"}}
 	Program execution will be suspended until the command interpreter exits.

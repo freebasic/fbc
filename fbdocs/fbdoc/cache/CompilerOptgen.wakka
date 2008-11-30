@@ -12,10 +12,10 @@ Sets the backend code emitter.
 	The ##-gen## compiler option sets the backend code emitter and assembler.
 
 	{{fbdoc item="subsect" value="-gen gas"}}
-		The compiler will emit GAS assembler code to a ##.asm## file which will then be compiled to an object file using 'as'.
+		The compiler will emit GAS assembler code to a ##.asm## file which will then be compiled to an object file using '##as##'.
 
 	{{fbdoc item="subsect" value="-gen gcc"}}
-		The compiler will emit C code to a ##.c## file which will then be compiled to an object file using 'gcc' as a high level assembler.  **Note:** the C emitter is a work in progress, incomplete, and certainly not bug free.  However, the goal of the C emitter (when complete) will be to make porting FreeBASIC compiled programs (and ##fbc## itself) to other platforms.
+		The compiler will emit C code to a ##.c## file which will then be compiled to an object file using '##gcc##' as a high level assembler.  **Note:** the C emitter is a work in progress, incomplete, and certainly not bug free.  However, the goal of the C emitter (when complete) will be to make it possible to port ""FreeBASIC""-compiled programs (and ##fbc## itself) to other platforms.
 
 {{fbdoc item="see"}}
 	- [[CompilerTools Tools used by fbc]]

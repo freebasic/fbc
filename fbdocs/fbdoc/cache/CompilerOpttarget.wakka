@@ -19,6 +19,7 @@ Set the target platform for cross compilation
 		##dos##
 		##freebsd##
 		##linux##
+		##netbsd##
 		##openbsd##
 		##win32##
 		##xbox##
@@ -31,3 +32,4 @@ Set the target platform for cross compilation
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
+   

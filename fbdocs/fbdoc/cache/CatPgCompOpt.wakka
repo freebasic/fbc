@@ -27,6 +27,8 @@ Command line compiler options for the fbc compiler:
 		- Same as -ex plus array bounds and null-pointer checking
 	{{fbdoc item="keyword" value="CompilerOptexport|-export"}}
 		- Export symbols for dynamic linkage
+	{{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang <name>"}}
+		- Select language compatibility, overriding #lang/$lang in code
 	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
 		- Set the floating point arithmetics unit (default: FPU)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}

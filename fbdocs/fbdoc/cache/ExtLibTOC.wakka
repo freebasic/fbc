@@ -3,6 +3,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 
 {{fbdoc item="section" value="Graphics"}}
 	{{fbdoc item="keyword" value="ExtLiballegro|allegro"}} - Game programming library.
+	{{fbdoc item="keyword" value="ExtLibDUGL|DUGL"}} - Game and graphics library for DOS.
 	{{fbdoc item="keyword" value="ExtLibcaca|caca"}} - A colour ASCII art library. 
 	{{fbdoc item="keyword" value="ExtLibcairo|cairo"}} - 2D graphics library with support for multiple output devices.
 	{{fbdoc item="keyword" value="ExtLibcgui|cgui"}} - Library for making GUIs in a simple way.

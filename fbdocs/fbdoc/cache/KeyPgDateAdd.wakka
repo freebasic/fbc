@@ -2,7 +2,7 @@
 Offset a date with a specified interval
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateAdd""** ( //interval// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateAdd""** ( [[KeyPgByref byref]] //interval// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -54,3 +54,4 @@ print Format( DateAdd( "m", 1, d ), fmt )
 	- [[ProPgDates Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
+   

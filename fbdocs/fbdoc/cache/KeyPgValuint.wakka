@@ -1,26 +1,26 @@
 {{fbdoc item="title" value="VALUINT"}}----
-Converts a string to an unsigned integer number
+Converts a string to an integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Valuint**( //strnum// )
+	//result// = **Valuint** ( //strnum// )
 ##
 {{fbdoc item="param"}}
 	##//strnum//##
-		the string containing the number to convert
+		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns a converted ##[[KeyPgUinteger Uinteger]]## number.
+	Returns a ##[[KeyPgUinteger Uinteger]]## of the converted string
 
-	If the first character of the string is invalid, ##**Valuint**## will return a 0.
+	If the first character of the string is invalid, ##**Valuint**## will return ##0##.
 
 {{fbdoc item="desc"}}
-	For example, ##**Valuint**("10")## will return 10, and ##**Valuint**("10.60")## will return 10 as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable.
+	For example, ##**Valuint**("10")## will return ##10##, and ##**Valuint**("10.60")## will return ##10## as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable, for example, ##**Valuint**("23.1E+6")## will just return ##23##.
 
-	##**Valuint**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Valuint**("&HFF")## returns 255.
+	##**Valuint**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Valuint**("&HFF")## returns ##255##.
 
 	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
 
@@ -36,17 +36,19 @@ print a, b
 20xa211   20
 %%
 
+
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Valuint""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStr Str]]##
 	- ##[[KeyPgVal Val]]##
 	- ##[[KeyPgValint Valint]]##
-	- ##[[KeyPgVallng Vallng]]##
+	- ##[[KeyPgValulng Valulng]]##
+	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgStr Str]]##
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 

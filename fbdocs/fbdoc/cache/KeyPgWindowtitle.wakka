@@ -2,7 +2,7 @@
 Sets the program window title
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Windowtitle** ( [[KeyPgByref byref]] //title// [[KeyPgAs as]] [[KeyPgString string]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Windowtitle** ( [[KeyPgByref byref]] //title// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] )
 ##
 {{fbdoc item="usage"}}##
 	**""WindowTitle""** //title//
@@ -39,3 +39,4 @@ SLEEP
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}
+   

@@ -2,22 +2,22 @@
 Writes a list of values to a file or device
 
 {{fbdoc item="syntax"}}##
-	**Print #** //filenum//**,** [ //expressionlist// ] [ , | ; ]
+	**Print #** //filenum//**,** [ //expressionlist// ] [ **,** | **;** ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number of a file or device.
+		The file number of a file or device opened for ##[[KeyPgOutput Output]]## or ##[[KeyPgAppend Append]]##.
 	##//expressionlist//##
 		List of values to write.
 
 {{fbdoc item="desc"}}
 	##**Print #**## outputs a list of values to a text file or device. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
 
-	Consecutive values in the expression list are separated either by a comma (,) or semicolon (;). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
-
-	Note that the comma (,) following the file number is still necessary, even if no expression list is given.
+	Consecutive values in the expression list are separated either by a comma (##,##) or semicolon (##;##). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.
 
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.
+
+	Note that the comma (##,##) immediately following the file number is still necessary, even the expression list is empty.  In this case a new-line is printed, just as with a normal expression list that doesn't have a comma or semicolon at the end.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/print.bas"}}%%(freebasic)
@@ -41,5 +41,6 @@ open "bleh.dat"  for output as #1
 	- ##[[KeyPgPrintusingPp Print # Using]]##
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgWrite Write #]]##
+	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -187,7 +187,7 @@ type RegTypeX as __dpmi_regs
 {{anchor name="item19"}}==19. Graphics doesn't work  (freezer / black screen / garbage output) !==
 	Place a bug report into the forum. To make it as useful and productive as possible, please beware of the following, proceed given steps and provide all related information:
 		- The graphics might not work well / at all on very old PC's. If your CPU has less than cca 500 MHz, provide exact info about it, if you don't know, use RayeR's CPUID or similar program to test. 
-		-  Exact info about your graphics card is needed. Test on DOS using DrV's VBEDIAG (reports info only) and RayeR's VESATEST (also tries to set mode, allows visual inspection of the result). Find out what "useful" modes (640x480, 800x600) are supported and with what bitdepths (8, 16, 24, 32 bpp), and whether they can be set and look correctly.  
+		-  Exact info about your graphics card is needed. Test on DOS using DrV's VBEDIAG (reports info only) and ""RayeR's"" VESATEST (also tries to set mode, allows visual inspection of the result). Find out what "useful" modes (640x480, 800x600) are supported and with what bitdepths (8, 16, 24, 32 bpp), and whether they can be set and look correctly.  
 		- Find out and describe exactly what's wrong ("mode works with VESATEST but not with FB", "no graphics but no error either", "black screen and freezer", "graphics is messy/incomplete", ...).
 		- If some sophisticated program doesn't work, try also a minimal test like placing a circle in middle of the screen.
 		- Try without a mouse driver (this reduces the CPU "cost").
@@ -224,9 +224,9 @@ type RegTypeX as __dpmi_regs
 	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme! ( see forum: http://freebasic.net/forum/viewtopic.php?t=11757 )
 
 {{anchor name="item25"}}==25. Compilation is very slow with FB !==
-	Problem: "FBC takes 10 seconds to compile a "Hello world" program ! TurboBASIC / QBASIC / VBDOS / PowerBASIC do take < 1 second".
+	Problem: "FBC takes 10 seconds to compile a "Hello world" program ! ""TurboBASIC"" / QBASIC / VBDOS / ""PowerBASIC"" do take < 1 second for the same job ..."
 
-	True, but this is "by design" : FB compiles your sources in 3 steps, saving the intermediate files, as described in [[CompilerCmdLine]] , while many older compilers do just 1 pass in memory. This is related mostly to file I/O performance, see FAQ 27 below about possibilities of improvements, additionally a small improvement can be achieved by making the DPMI host resident ( **HDPMI32 -r** or **CWSDPMI -p** , see FAQ 4 above). Note that the delay is mostly "additive" , so it won't hurt too much with bigger projects.
+	True, but this is "by design" : FB compiles your sources in 3 steps, saving the intermediate files, as described in [[CompilerCmdLine]] , while many older compilers do just 1 pass in memory. This is related mostly to file I/O performance, see FAQ 27 below about possibilities of improvements, additionally a small improvement can be achieved here by making the DPMI host resident ( **HDPMI32 -r** or **CWSDPMI -p** , see FAQ 4 above). Note that the delay is mostly "additive" , so it won't hurt too much with bigger projects.
 
 {{anchor name="item26"}}==26. SLEEP doesn't work ! How to cause a delay ?==
 	SLEEP does work ... but has a resolution of cca 55ms = 1/18s only, thus "SLEEP 500" is fine, while for example using "SLEEP 2" for 2 milliseconds won't work. !writeme! / !fixme! 
@@ -241,15 +241,15 @@ type RegTypeX as __dpmi_regs
 
 	Both indeed can happen, nevertheless, DOS is no way predestined to be slow, the inefficiencies can be fixed. First you have to identify the area where you code looses performance. 
 
-		**File I/O** : DOS by default uses very little memory for its buffers, while other systems use much more and are "aggressive" with file caching. When dealing with many small files, this results in serious performance degrade. The solution is to install a filecache, for example **LBACache**, or you can install a RAMDISK (a good one: **SRDISK** ) and copy the "offending" files (for example FreeBASIC installation) there in and work there (make sure to backup your work to a more durable media regularly). Both will need an XMS host (use **HIMEMX** ). Also DOS by default uses BIOS to access the hard drives, while other systems try hard to find and use DMA. Test util: IDECHECK by Japheth (Download: [[http://www.japheth.de/Download/IDECheck.zip japheth.de/Download/IDECheck.zip]]) - run it in "I13" and "DMA" modes and compare results. If "DMA" is much faster (can be 1...10 times, depends from PC model), then installing a DOS DMA driver can bring a big speedup on large files. Also make sure to read and write data in large pieces (16 KiB at least), not just single bytes. Other OS'es are more forgiving here, but on DOS every single file I/O call causes a small "additive" delay, thus an efficient code design with good buffering is crucial.
+		**File I/O** : DOS by default uses very little memory for its buffers, while other systems use much more and are "aggressive" with file caching. When dealing with many small files, this results in serious performance degrade. The solution is to install a filecache, for example **LBACache**, or you can install a RAMDISK (a good one: **SRDISK** ) and copy the "offending" files (for example FreeBASIC installation) there in and work there (make sure to backup your work to a more durable media regularly). Both will need an XMS host (use **HIMEMX** ). Also DOS by default uses BIOS to access the hard drives, while other systems try hard to find and use DMA. Test util: IDECHECK by Japheth (Download: [[http://www.japheth.de/Download/IDECheck.zip japheth.de/Download/IDECheck.zip]]) - run it in "I13" and "DMA" modes and compare results. If "DMA" is much faster (can be 1...10 times, depends from PC model), then installing a DOS DMA driver (for example **XDMA 3.1** is worth to try) can bring a big speedup on large files. Also make sure to read and write data in large pieces (16 KiB at least), not just single bytes. Other OS'es are more forgiving here, but on DOS every single file I/O call causes a small "additive" delay, thus an efficient code design with good buffering is crucial.
 
 		**Graphics** : Pentium 2 and newer CPU's have a cache related feature called "MTRR" to speed up writes to video RAM. Drivers of other OS'es usually do enable it, DOS doesn't (since it doesn't deal with graphics at all), nor FB GFX does. Use "VESAMTRR" tool by Japheth (contained in "HXGUI.ZIP" package), it will enable the speedup, surviving also mode switches and most "non-fatal" application crashes, up to a reboot. The possible speedup factor varies much depending from the PC model, up to cca 20 times. Also the mouse handling eats some (too much) CPU performance on DOS, this is a known weak point (the design of DOS FB GFX is not "very bad", it's just the common "standard" - which is not very good), fixing is theoretically possible but not easy, you just can try several mouse drivers (see FAQ 20).
 
 {{anchor name="item28"}}==28. Can I access disk sectors with FB ?==
 	You can ... but FreeBASIC won't help you too much here: no "portable" solution, use OS specific low level way. For DOS 3 methods are possible 
-		- Use logical disk access features of DOS, see example in the forum: http://www.freebasic.net/forum/viewtopic.php?t=11830
-		- Use BIOS INT 13 , bypassing DOS
-		- Use CPU ports, bypassing both DOS and BIOS (no FB example yet, see source of IDECHECK from FAQ 27 above, FASM forum or some OS development resources)
+		- Use logical disk access features of DOS for sector access bypassing the filesystem, see example in the forum: http://www.freebasic.net/forum/viewtopic.php?t=11830
+		- Use physical disk BIOS INT 13 , bypassing DOS
+		- Use CPU ports, lowest level, bypassing both DOS and BIOS (no FB example yet, see source of IDECHECK from FAQ 27 above, FASM forum or some OS development resources)
 	Note that such experiments are a bit "dangerous" - you can easily loose data or make your PC unbootable if something goes wrong.
 
 {{anchor name="item999"}}{{fbdoc item="see"}}
@@ -258,5 +258,3 @@ type RegTypeX as __dpmi_regs
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-
-   

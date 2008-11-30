@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ASSERT"}}----
-Debugging macro that halts program execution if an expression is evaluated to 0.
+Debugging macro that halts program execution if an expression is evaluated to ##0## (false).
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **ASSERT**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_Assert( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
@@ -9,14 +9,16 @@ Debugging macro that halts program execution if an expression is evaluated to 0.
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		Any valid expression.  If ##//expression//## evaluates to 0, execution is halted.
+		Any valid conditional/numeric expression.  If ##//expression//## evaluates to ##0## (i.e. "false"), execution is halted.
 
 {{fbdoc item="desc"}}
-	The ##**ASSERT**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it stops the program execution if ##//expression//## evaluates to 0.
+	The ##**ASSERT**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints an error message and stops the program execution if ##//expression//## evaluates to ##0##.
 	
 	Its normal use is to check the correct value of the variables during debugging.
 	
-	If ##-g## is not passed to fbc, the macro does not generate any code.
+	If ##-g## is not passed to fbc, the macro does not generate any code, and has no effect.
+
+	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/debug/assert.bas"}}%%(freebasic)
@@ -35,7 +37,7 @@ foo
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__ASSERT""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgAssertwarn ASSERTWARN]]##

@@ -101,8 +101,8 @@ LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./mytest
 	- [[ProPgStaticLibraries Static Libraries]]
 	- ##[[KeyPgInclib #inclib]]##
 	- ##[[KeyPgInclude #include]]##
-	- [[CompilerOptexport Compiler Option: -dll]]
-	- [[CompilerOptdll Compiler Option: -export]]
+	- [[CompilerOptdll Compiler Option: -dll]]
+	- [[CompilerOptexport Compiler Option: -export]]
 	- [[CompilerOptdylib Compiler Option: -dylib]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
