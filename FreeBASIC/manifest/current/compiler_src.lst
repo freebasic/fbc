@@ -107,6 +107,7 @@ src/compiler/obj/dos/config.status
 src/compiler/obj/dos/deleteme.txt
 src/compiler/obj/freebsd/deleteme.txt
 src/compiler/obj/linux/deleteme.txt
+src/compiler/obj/netbsd/deleteme.txt
 src/compiler/obj/openbsd/deleteme.txt
 src/compiler/obj/win32/Makefile
 src/compiler/obj/win32/config.status

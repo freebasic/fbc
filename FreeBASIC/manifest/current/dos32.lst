@@ -111,6 +111,7 @@ examples/libraries/spidermonkey/factorial.js
 examples/libraries/spidermonkey/function_cb.bas
 examples/makefile
 examples/manual/array/clear.bas
+examples/manual/array/ellipsis.bas
 examples/manual/array/erase.bas
 examples/manual/array/lbound.bas
 examples/manual/array/preserve.bas
@@ -172,8 +173,10 @@ examples/manual/console/locate.bas
 examples/manual/console/pos.bas
 examples/manual/console/print-using.bas
 examples/manual/console/print.bas
+examples/manual/console/print2.bas
 examples/manual/console/screen-func.bas
 examples/manual/console/spc.bas
+examples/manual/console/spc2.bas
 examples/manual/console/tab.bas
 examples/manual/console/view-gfx.bas
 examples/manual/console/view.bas
@@ -274,6 +277,7 @@ examples/manual/defines/fblang.bas
 examples/manual/defines/fblinux.bas
 examples/manual/defines/fbmain.bas
 examples/manual/defines/fbminversion.bas
+examples/manual/defines/fbnetbsd.bas
 examples/manual/defines/fbopenbsd.bas
 examples/manual/defines/fboptionbyval.bas
 examples/manual/defines/fboptiondynamic.bas
@@ -413,6 +417,7 @@ examples/manual/gfx/screenevent.bas
 examples/manual/gfx/screenglproc.bas
 examples/manual/gfx/screeninfo.bas
 examples/manual/gfx/screenlist.bas
+examples/manual/gfx/screenlock.bas
 examples/manual/gfx/screenptr.bas
 examples/manual/gfx/screenptr2.bas
 examples/manual/gfx/screenres.bas
@@ -843,6 +848,7 @@ examples/manual/udt/ptr-access.bas
 examples/manual/udt/public.bas
 examples/manual/udt/static.bas
 examples/manual/udt/step.bas
+examples/manual/udt/stepFileIteration.bas
 examples/manual/udt/sub.bas
 examples/manual/udt/temp-type.bas
 examples/manual/udt/temp-type2.bas

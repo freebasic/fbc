@@ -60,6 +60,7 @@ tests/deprecated/innerdup.bas
 tests/deprecated/shadow_inherit.bas
 tests/deprecated/string_suffix.bas
 tests/dim/anon_no_access.bas
+tests/dim/array_ellipsis_init.bas
 tests/dim/array_init.bas
 tests/dim/array_static_init.bas
 tests/dim/auto_var.bas
@@ -218,6 +219,8 @@ tests/optimizations/literaldup.bas
 tests/optimizations/logic1.bas
 tests/optimizations/logic2.bas
 tests/optimizations/mul_assoc.bas
+tests/optimizations/self_compare.bas
+tests/optimizations/side_effects.bas
 tests/optimizations/toshift.bas
 tests/overload/access_mode.bas
 tests/overload/addressof.bas
@@ -257,6 +260,7 @@ tests/overload/sub_call2.bas
 tests/overload/tostring.bas
 tests/overload/type_vararg.bas
 tests/overload/uop_coersion.bas
+tests/overload/void_resolution.bas
 tests/pointers/addr_deref.bas
 tests/pointers/addrofnull.bas
 tests/pointers/arith.bas
@@ -274,6 +278,7 @@ tests/pointers/funptr_mangling.bas
 tests/pointers/indexing1.bas
 tests/pointers/indexing2.bas
 tests/pointers/multi_deref.bas
+tests/pointers/new_init.bas
 tests/pointers/prop_new_del.bas
 tests/pointers/typedef_fwd.bas
 tests/pp/inc1.bi
