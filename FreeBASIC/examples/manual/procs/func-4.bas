@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFunction
 '' --------
 
-' The following demonstrates optional parameters.
+'' The following example demonstrates optional parameters.
 
 Function TestFunc(P As String = "Default") As String
 	Return P

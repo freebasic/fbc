@@ -6,6 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFunction
 '' --------
 
+'' This example shows how to declare and call 
+'' functions taking array arguments.
+
 Function x(b() As Double) As Integer
   x = UBound(b)-LBound(b)+1
 End Function

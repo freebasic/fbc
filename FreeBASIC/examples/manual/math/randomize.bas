@@ -6,5 +6,10 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRandomize
 '' --------
 
-'' Seed the RNG, which is set to C's rand().
-Randomize Timer, 1
+'' Seed the RNG to the method using C's rand()
+Randomize , 1
+
+'' Print a sequence of random numbers
+For i As Integer = 1 To 10
+	Print Rnd
+Next

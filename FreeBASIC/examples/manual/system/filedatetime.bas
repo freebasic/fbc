@@ -19,7 +19,7 @@ If FileExists( filename ) Then
 
   d = FileDateTime( filename )
 
-  Print Format( d, "yyyy-mm-dd h:MM AM/PM" )
+  Print Format( d, "yyyy-mm-dd hh:mm AM/PM" )
 
 Else
 

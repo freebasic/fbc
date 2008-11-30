@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgReturn
 '' --------
 
-'' Compile with -lang qb
+'' GOSUB & RETURN example, compile with "-lang qb" or use "$lang" as below
 
 '$lang: "qb"
 

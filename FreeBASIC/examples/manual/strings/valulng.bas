@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgValulng
 '' --------
 
-Dim a As String,  b As ULongInt
+Dim a As String, b As ULongInt
 a = "20xa211"
 b = ValULng(a)
 Print a, b

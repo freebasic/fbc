@@ -8,6 +8,8 @@
 
 Dim a As Integer
 
-If a<0 Then 
+'...
+
+If a < 0 Then '' this shouldn't happen
 	Print "Error: a = " & a & " in " & __FILE__ & " (" & __FUNCTION__ & ") line " & __LINE__
 End If

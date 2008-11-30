@@ -6,5 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWspace
 '' --------
 
-Dim A As WString *14
-A="x"+WSpace(10)+"x"  'prints x             x
+Dim a As WString * 10
+a = "x" + WSpace(3) + "x"
+Print a ' prints: x   x

@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgVallng
 '' --------
 
-Dim a As String, b As Integer
+Dim a As String, b As LongInt
 a = "20xa211"
 b = ValLng(a)
 Print a, b

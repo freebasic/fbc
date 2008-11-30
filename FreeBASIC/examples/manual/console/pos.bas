@@ -6,6 +6,20 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPos
 '' --------
 
-Print "position: "; Pos
-Print "hello world";
-Print "position: "; Pos
+Dim As Integer p
+
+'' print starting column position
+p = Pos()
+Print "position: "; p
+
+'' print a string, without a new-line
+Print "ABCDEF";
+
+'' print new column position:
+p = Pos()
+Print: Print "position: "; p
+Print
+
+''position changes after each Print:
+Print "Column numbers: "
+Print Pos(), Pos(), Pos(), Pos(), Pos()

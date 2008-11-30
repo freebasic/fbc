@@ -7,60 +7,41 @@
 '' --------
 
 '' Example Type
-
 Type T
-
+  '' value is set by the constructor
   value As Double
-
   Declare Constructor( ByVal x As Double = 0 )
-
-  Declare Operator += ( ByVal x As Double )
 
   Declare Operator For( ByRef stp As T )
   Declare Operator Step( ByRef stp As T )
   Declare Operator Next( ByRef cond As T, ByRef stp As T ) As Integer
-
-  Declare Operator Cast() As String
-
 End Type
 
 Constructor T ( ByVal x As Double )
+  Print "T iterator constructed with value " & x
   value = x
 End Constructor
-
-Operator <= ( ByRef lhs As T, ByRef rhs As T ) As Integer
-  Operator = ( lhs.value <= rhs.value )
-End Operator
-
-Operator >= ( ByRef lhs As T, ByRef rhs As T ) As Integer
-  Operator = ( lhs.value >= rhs.value )
-End Operator
-
-Operator T.+= ( ByVal x As Double )
-  value +=  x
-End Operator
 
 Operator T.for( ByRef stp As T )
 End Operator
 
 Operator T.step( ByRef stp As T )
-  This += stp.value
+  Print " incremented by " & stp.value & " in step."
+  value += stp.value
 End Operator
 
 Operator T.next( ByRef cond As T, ByRef stp As T ) As Integer
+  '' iterator's moving from a high value to a low value (step >= 0)
   If( stp.value < 0 ) Then
-	Operator = ( This >= cond )
+	Return( value >= cond.value )
   Else
-	Operator = ( This <= cond )
+  '' iterator's moving from a low value to a high value (step < 0)
+	Return( value <= cond.value )
   End If
 End Operator
 
-Operator T.cast() As String
-  Operator = Str( value )
-End Operator
-
-'' Example Usage
-
+'' Example Usage. It looks like we are working with numbers, but the iterators
+'' have overloaded constructors. The 10, 1, and -1 are all of type T.
 For i As T = 10 To 1 Step -1
-  Print i
+  Print i.value;
 Next i

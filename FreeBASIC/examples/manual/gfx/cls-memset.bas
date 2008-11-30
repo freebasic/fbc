@@ -6,28 +6,35 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCls
 '' --------
 
-#include "crt.bi"
-Const x_res = 640, y_res = 480, bpp = 32
-Dim scrbuf As Any Ptr, scrsize As Integer
-Dim i As Integer, j As Integer
+Dim scrbuf As Byte Ptr, scrsize As Integer
+Dim As Integer scrhei, scrpitch
+Dim As Integer r = 0, dr = 1
 
-ScreenRes x_res, y_res, bpp
-scrbuf = ScreenPtr
-scrsize = x_res * y_res * bpp / 8
+ScreenRes 640, 480, 8
+
+scrbuf = ScreenPtr: Assert( scrbuf <> 0 )
+ScreenInfo( , scrhei, , , scrpitch )
+scrsize = scrpitch * scrhei
 
 Do
+	
+	'' lock the screen (must do this while working directly on screenbuffer)
 	ScreenLock
-	    memset scrbuf, 0, scrsize
-	    Circle (320, 240), i
+		
+		'' clear the screen (could use Cls here):
+		Clear *scrbuf, 0, scrsize
+		
+		'' draw circle
+		Circle (320, 240), r
+		
 	ScreenUnlock
-   
-	If j = 0 Then
-	    i = i + 1
-	    If i >= 100 Then j = 1
-	ElseIf j = 1 Then
-	    i = i - 1
-	    If i <= 0 Then j = 0
-	End If
-   
+	
+	'' grow/shrink circle radius
+	r += dr
+	If r <= 0 Then dr = 1 Else If r >= 100 Then dr = -1
+	
+	'' short pause in each frame (prevents hogging the CPU)
 	Sleep 1, 1
-Loop While Inkey=""
+	
+	'' run loop until user presses a key
+Loop Until Len(Inkey) > 0

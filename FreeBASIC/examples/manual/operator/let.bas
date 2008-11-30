@@ -20,7 +20,7 @@ End Operator
 Dim a As T = ( 5, 7 )
 Dim b As T
 
-'' Do the assinment invoking the LET
+'' Do the assignment invoking the LET
 '' operator procedure
 b = a
 

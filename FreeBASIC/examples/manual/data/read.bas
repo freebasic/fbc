@@ -7,20 +7,20 @@
 '' --------
 
 ' Create an array of 5 integers and a string to hold the data.
-Dim h(4) As Integer
-Dim hs As String
-Dim read_data As Integer
+Dim As Integer h(4)
+Dim As String hs
+Dim As Integer readindex
 
 ' Set up to loop 5 times (for 5 numbers... check the data)
-For read_data = 0 To 4
+For readindex = 0 To 4
 
   ' Read in an integer.
-  Read h(read_data)
+  Read h(readindex)
 
   ' Display it.
-  Print "Number"; read_data;" = "; h(read_data)
+  Print "Number" ; readindex ; " = " ; h(readindex)
 
-Next
+Next readindex
 
 ' Spacer.
 Print

@@ -6,13 +6,13 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFunction
 '' --------
 
-'This program demonstrates the declaration of a function and said function returning a value.
+'' This program demonstrates the declaration of a function 
+'' and returning a value using assignment to function name
 
 Declare Function ReturnTen () As Integer
 
-Print ReturnTen () 'ReturnTen returns an integer by default.
+Print ReturnTen () '' ReturnTen returns an integer by default.
 
 Function ReturnTen() As Integer
 	ReturnTen = 10
 End Function
-
