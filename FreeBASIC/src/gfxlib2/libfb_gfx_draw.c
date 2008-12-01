@@ -45,16 +45,12 @@ static intptr_t parse_number(char **str)
 	intptr_t n = NAN;
 	int negative = FALSE;
 
-	while ((*c == ' ') || (*c == '\t'))
-		c++;
-	if (*c == '-') {
-		negative = TRUE;
+	while ((*c == ' ') || (*c == '\t') || (*c == '+') || (*c == '-'))
+	{
+		if (*c == '-')
+			negative = !negative;
 		c++;
 	}
-	if (*c == '+')
-		c++;
-	while ((*c == ' ') || (*c == '\t'))
-		c++;
 	while ((*c >= '0') && (*c <= '9')) {
 		if (n == NAN)
 			n = 0;
@@ -174,16 +170,16 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				rel = FALSE;
 				while ((*c == ' ') || (*c == '\t'))
 					c++;
-				if (*c == '+')
+				if ((*c == '+') || (*c == '-'))
+				{
 					rel = TRUE;
+				}
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
 				if (*c++ != ',')
 					goto error;
 				if ((value2 = parse_number(&c)) == NAN)
 					goto error;
-				if ((value1 < 0) || (value2 < 0))
-					rel = TRUE;
 				x2 = (float)value1;
 				y2 = (float)value2;
 				if (rel) {
