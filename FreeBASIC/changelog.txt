@@ -23,6 +23,7 @@ Version 0.21.0 Beta:
 - Warning when using SHL/SHR if a constant shift value is greater than or equal to the number of bits in the type (counting_pine)
 - -forcelang command-line parameter, to override #lang/$lang statements in code (replicates -lang's original behavior) (counting_pine)
 - Ellipsis form in array declarations with initializers, ie "dim as integer array(0 to ...) = {1, 2, 3, 4}" (yetifoot)
+- More specific error message for FOR...NEXT variable mismatches, such as "FOR a ... NEXT b" (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

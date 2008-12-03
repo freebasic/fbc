@@ -1226,7 +1226,7 @@ function cForStmtEnd _
 			'' Same symbol?
 			if( idexpr->sym <> stk->for.cnt.sym ) then
 
-				if( errReport( FB_ERRMSG_NEXTWITHOUTFOR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_FORNEXTVARIABLEMISMATCH ) = FALSE ) then
 					return FALSE
 				end if
 
