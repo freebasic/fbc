@@ -453,10 +453,7 @@ static void directx_thread(HANDLE running_event)
 	unsigned char keystate[256];
 	int i;
 
-	if (directx_init()) {
-		directx_exit();
-		return;
-	}
+	if (directx_init()) return;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;

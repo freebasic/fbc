@@ -258,10 +258,7 @@ static void gdi_thread(HANDLE running_event)
 	HDC hdc;
 	RECT rect;
 
-	if (gdi_init()) {
-		gdi_exit();
-		return;
-	}
+	if (gdi_init()) return;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;

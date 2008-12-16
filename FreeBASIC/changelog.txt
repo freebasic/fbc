@@ -53,6 +53,7 @@ Version 0.21.0 Beta:
 - #2210424 - PUT # was warning about pointers and var-len string fields when putting any UDT with a constructor (counting_pine)
 - Faulty optimisation for "IF a op a THEN ...", where "op" is a non-comparison operator (counting_pine)
 - DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
+- #2225273 - Driver exit functions are called twice for GDI and DX driver.  Thanks to sisophon2001 for patch (counting_pine)
 
 
 Version 0.20.0 Beta:
