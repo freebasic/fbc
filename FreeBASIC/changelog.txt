@@ -10,6 +10,7 @@ Version 0.21.0 Beta:
 - lang qb: Allow DEF___ statements anywhere in code (counting_pine)
 - RANDOMIZE (with no parameters) now uses a default seed that changes more than once a second (counting_pine)
 - ImageCreate and internal screen allocation now aligns buffers to multiples of 16 to make working with SSE easier - thanks to 1000101. (yetifoot)
+- COLOR now stores colors strictly in the format for the graphics screen's bit depth, so the default color can be relied upon when working on the screen, but not on images of a different bit depth (counting_pine)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)

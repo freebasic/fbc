@@ -64,13 +64,13 @@ int fb_GfxColor(int fg, int bg, int flags)
 		default:
 			if (!(flags & FB_COLOR_FG_DEFAULT)) {
 				if (__fb_gfx->depth > 8)
-					context->fg_color = fb_hMakeColor(context->target_bpp, fg, (fg >> 16) & 0xFF, (fg >> 8) & 0xFF, fg & 0xFF);
+					context->fg_color = fb_hMakeColor(__fb_gfx->bpp, fg, (fg >> 16) & 0xFF, (fg >> 8) & 0xFF, fg & 0xFF);
 				else
 					context->fg_color = (fg & BPP_MASK(context->target_bpp));
 			}
 			if (!(flags & FB_COLOR_BG_DEFAULT)) {
 				if (__fb_gfx->depth > 8)
-					context->bg_color = fb_hMakeColor(context->target_bpp, bg, (bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
+					context->bg_color = fb_hMakeColor(__fb_gfx->bpp, bg, (bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
 				else
 					context->bg_color = (bg & BPP_MASK(context->target_bpp));
 			}
