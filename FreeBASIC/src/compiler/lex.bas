@@ -1261,7 +1261,7 @@ private sub hReadString _
 			char = lexCurrentChar( )
 			if( char <> CHAR_QUOTE ) then exit do
 
-		'' '\27' (internal escape char)
+		'' '[\x1b]' (internal escape char)
 		elseif( char = FB_INTSCAPECHAR ) then
 
 			'' escape it?
@@ -1858,12 +1858,16 @@ read_char:
 		'' '/'?
 		case CHAR_SLASH
 			t->class = FB_TKCLASS_OPERATOR
-
-			'' "/'"?
-			if( lexCurrentChar( ) = CHAR_APOST ) then
-				'' multi-line comment..
-				hMultiLineComment( )
-				goto re_read
+			'' in lang fb, only check for multiline comment if not inside
+			'' a single line comment already (thanks to VonGodric for help)
+			if( (flags and LEXCHECK_NOMULTILINECOMMENT) = 0 or _
+				 fbLangIsSet( FB_LANG_FB ) = FALSE ) then'/
+				'' "/'"?
+				if( lexCurrentChar( ) = CHAR_APOST ) then
+					'' multi-line comment..
+					hMultiLineComment( )
+					goto re_read
+				end if
 			end if
 
 		'' '''

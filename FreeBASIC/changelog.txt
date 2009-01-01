@@ -11,6 +11,7 @@ Version 0.21.0 Beta:
 - RANDOMIZE (with no parameters) now uses a default seed that changes more than once a second (counting_pine)
 - ImageCreate and internal screen allocation now aligns buffers to multiples of 16 to make working with SSE easier - thanks to 1000101. (yetifoot)
 - COLOR now stores colors strictly in the format for the graphics screen's bit depth, so the default color can be relied upon when working on the screen, but not on images of a different bit depth (counting_pine)
+- lang fb: Multi-line comments are now completely disallowed in single-line comments - thanks to VonGodric for help (counting_pine)
 
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
@@ -396,8 +397,7 @@ Version 0.17 Beta:
 - main GFX window on win32 captures mouse input to allow out of window mouse button releases (jeffm)
 - the arguments passed to overloaded functions that contain enum parameters must be enum's too, no auto-coercion will
   be done from integer/floating-point, to support operator overloading (v1c)
-- the STATIC attribute when used in the left-side of function declarations was removed, it will only accepted at the
-  right-side, as in QB, to allow STATIC to be used with class methods later (v1v)
+- the STATIC attribute when used in the left-side of function declarations was removed, it will only accepted at the right-side, as in QB, to allow STATIC to be used with class methods later (v1v)
 - symbols declared inside namespaces using keyword names (like INPUT, PRINT, etc) are now allowed (v1c)
 - even with an explicit alias, symbols will be mangled if declared inside a namespace (v1c)
 - thread*, cond* and mutex* ids are now "any ptr", not integers, to allow easy and safe migration to 64-bit platforms in future (v1c)

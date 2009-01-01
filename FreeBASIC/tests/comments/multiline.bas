@@ -23,8 +23,11 @@ end sub
 
 Sub test_3 Cdecl ()
 ' /'
-#error this shouldn't be parsed
-'/
+#define pass
+''/
+#ifndef pass
+#error #define should have been parsed
+#endif
 End Sub
 
 Sub test_4 Cdecl ()

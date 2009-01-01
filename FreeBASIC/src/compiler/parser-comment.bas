@@ -25,7 +25,7 @@
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 
-#define LEX_FLAGS (LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOSUFFIX)
+#define LEX_FLAGS (LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOSUFFIX or LEXCHECK_NOMULTILINECOMMENT)
 
 '':::::
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)

@@ -53,6 +53,9 @@ enum LEXCHECK
 	'' use the special symbol 'namespace' for pre-processing, to prevent pollutin the global ns
 	LEXCHECK_KWDNAMESPC		= &h0100 
 	
+	'' ignore multi-line comment markers in code (don't allow them in single-line comments)
+	LEXCHECK_NOMULTILINECOMMENT	= &h0200 
+	
 end enum
 
 type FBTOKEN
