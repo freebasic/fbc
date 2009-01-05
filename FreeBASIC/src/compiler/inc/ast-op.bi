@@ -90,6 +90,8 @@ enum AST_OP
 	AST_OP_ATAN
 	AST_OP_ATAN2
 	AST_OP_SQRT
+	AST_OP_RSQRT							'' reciprocal square root
+	AST_OP_RCP							'' reciprocal
 	AST_OP_LOG
 	AST_OP_EXP
 	AST_OP_FLOOR

@@ -292,7 +292,7 @@ FBC_SRCS += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.
 FBC_SRCS += ast-node-typeini.bas ast-optimize.bas ast-node-proc.bas ast-node-namespace.bas
 FBC_SRCS += ast-helper.bas ast-misc.bas
 
-FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas 
+FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas emit_SSE.bas fb.bas fb-main.bas 
 
 ifeq (@FBC_OBJINFO@,objinfo)
 FBC_SRCS += fb-objinfo.bas

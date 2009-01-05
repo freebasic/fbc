@@ -77,6 +77,7 @@ enum EMIT_NODEOP
 	'' uop
 	EMIT_OP_NEGI, EMIT_OP_NEGF, EMIT_OP_NEGL
 	EMIT_OP_NOTI, EMIT_OP_NOTL
+
 	EMIT_OP_ABSI, EMIT_OP_ABSF, EMIT_OP_ABSL
 	EMIT_OP_SGNI, EMIT_OP_SGNF, EMIT_OP_SGNL
 
@@ -87,6 +88,8 @@ enum EMIT_NODEOP
 	EMIT_OP_COS, EMIT_OP_ACOS
 	EMIT_OP_TAN, EMIT_OP_ATAN
 	EMIT_OP_SQRT
+	EMIT_OP_RSQRT
+	EMIT_OP_RCP
 	EMIT_OP_LOG
 	EMIT_OP_EXP
 	EMIT_OP_FLOOR
@@ -733,6 +736,16 @@ declare function emitATAN _
 	) as EMIT_NODE ptr
 
 declare function emitSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitRSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitRCP _
 	( _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr

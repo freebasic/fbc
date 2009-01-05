@@ -1028,7 +1028,7 @@ private function hNewVR _
 	if( env.clopt.fputype = FB_FPUTYPE_FPU ) then
 		v->regFamily = IR_REG_FPU_STACK
 	else
-		v->regFamily = IR_REG_SSE
+		v->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 	v->tacvhead = NULL
@@ -1435,7 +1435,9 @@ private sub _flush static
 		if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
 			'' after vr has been used for the first time, force reg family to be SSE
 			if( astGetOpClass( op ) <> AST_NODECLASS_CALL ) then
-				if( vr ) then vr->regFamily = IR_REG_SSE
+				if( vr ) then
+					if( vr->regFamily = IR_REG_FPU_STACK ) then vr->regFamily = IR_REG_SSE_SCALAR
+				end if
 			end if
 		end if
 
@@ -1828,6 +1830,10 @@ private sub hFlushUOP _
 		emitATAN( v1 )
 	case AST_OP_SQRT
 		emitSQRT( v1 )
+	case AST_OP_RSQRT
+		emitRSQRT( v1 )
+	case AST_OP_RCP
+		emitRCP( v1 )
 	case AST_OP_LOG
 		emitLOG( v1 )
 	case AST_OP_EXP
@@ -2673,7 +2679,7 @@ private sub _loadVR _
 	vreg->reg = reg
 
 	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) and ( doLoad = FALSE ) then
-		vreg->regFamily = IR_REG_SSE
+		vreg->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 
@@ -2731,7 +2737,7 @@ private sub _storeVR _
 	end if
 
 	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
-		vreg->regFamily = IR_REG_SSE
+		vreg->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 end sub

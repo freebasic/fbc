@@ -1388,6 +1388,26 @@ function emitSQRT _
 end function
 
 '':::::
+function emitRSQRT _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_RSQRT, dvreg )
+
+end function
+
+'':::::
+function emitRCP _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_RCP, dvreg )
+
+end function
+
+'':::::
 function emitLOG _
 	( _
 		byval dvreg as IRVREG ptr _

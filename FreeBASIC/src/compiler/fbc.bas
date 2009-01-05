@@ -143,6 +143,7 @@ declare sub getDefaultLibs _
 		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
 		( FBC_OPT_ARCH			, @"arch"        ), _
 		( FBC_OPT_FPU			, @"fpu"         ), _
+		( FBC_OPT_FPMODE		, @"fpmode"      ), _
 		( FBC_OPT_DEBUG			, @"g"           ), _
 		( FBC_OPT_COMPILEONLY	, @"c"           ), _
 		( FBC_OPT_EMITONLY		, @"r"           ), _
@@ -1342,6 +1343,26 @@ private function processOptions _
 
 				del_cnt += 1
 
+			case FBC_OPT_FPMODE
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				select case ucase( *nxt )
+				case "PRECISE"
+					value = FB_FPMODE_PRECISE
+				case "FAST"
+					value = FB_FPMODE_FAST
+				case else
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_FPMODE, value )
+
+				del_cnt += 1
+
 			case FBC_OPT_DEBUG
 				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
 
@@ -1718,6 +1739,13 @@ private function processOptions _
 
 	loop
 
+	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
+		if ( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
+			errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
+			exit function	
+		end if
+	end if
+
 	function = TRUE
 
 end function
@@ -1935,6 +1963,8 @@ private sub printOptions( )
 	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
 	printOption( "-export", "Export symbols for dynamic linkage" )
 	print "-forcelang <name>"; " Select language compatibility, overriding #lang/$lang in code"
+	print "-fpmode <mode>"; " Select accuracy/speed of floating-point math (FAST, PRECISE)"
+	printOption( "-fpu <type>", "Select FPU (FPU, SSE)" )
 	printOption( "-g", "Add debug info" )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"

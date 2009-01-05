@@ -702,6 +702,18 @@ declare sub astDelCALL _
 			AST_OPFLAGS_NONE, _
 			@"sqr" _
 		), _
+		/' AST_OP_RSQRT '/ _
+		( _
+			AST_NODECLASS_UOP, _
+			AST_OPFLAGS_NONE, _
+			@"rsqrt" _
+		), _
+		/' AST_OP_RCP '/ _
+		( _
+			AST_NODECLASS_UOP, _
+			AST_OPFLAGS_NONE, _
+			@"rcp" _
+		), _
 		/' AST_OP_LOG '/ _
 		( _
 			AST_NODECLASS_UOP, _

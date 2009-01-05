@@ -14,6 +14,7 @@ Version 0.21.0 Beta:
 - lang fb: Multi-line comments are now completely disallowed in single-line comments - thanks to VonGodric for help (counting_pine)
 
 [added]
+- -fpu, -fpmode switches added to provide SSE optimizations (enable using -fpu sse -fpmode fast) - contributed by Bryan S. (counting_pine)
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
 - display objinfo configuration in -version (DrV)
 - OpenBSD support started (DrV)

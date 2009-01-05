@@ -458,6 +458,8 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_ATAN"            , '/ @"ATAN"         /' , 0 '/ ), _
 	( /' @"AST_OP_ATAN2"           , '/ @"ATAN2"        /' , 0 '/ ), _
 	( /' @"AST_OP_SQRT"            , '/ @"SQRT"         /' , 0 '/ ), _
+	( /' @"AST_OP_RSQRT"           , '/ @"RSQRT"        /' , 0 '/ ), _
+	( /' @"AST_OP_RCP"             , '/ @"RCP"          /' , 0 '/ ), _
 	( /' @"AST_OP_LOG"             , '/ @"LOG"          /' , 0 '/ ), _
 	( /' @"AST_OP_EXP"             , '/ @"EXP"          /' , 0 '/ ), _
 	( /' @"AST_OP_FLOOR"           , '/ @"FLOOR"        /' , 0 '/ ), _

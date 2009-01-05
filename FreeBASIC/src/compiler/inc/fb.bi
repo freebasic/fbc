@@ -123,6 +123,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_DEBUG
 	FB_COMPOPT_CPUTYPE
 	FB_COMPOPT_FPUTYPE
+	FB_COMPOPT_FPMODE
 	FB_COMPOPT_NOSTDCALL
 	FB_COMPOPT_NOUNDERPREFIX
 	FB_COMPOPT_ERRORCHECK
@@ -181,7 +182,14 @@ enum FB_FPUTYPE
 	FB_FPUTYPE_SSE
 end enum
 
-const FB_DEFAULT_FPUTYPE    = FB_FPUTYPE_FPU
+'' floating-point modes
+enum FB_FPMODE
+	FB_FPMODE_PRECISE
+	FB_FPMODE_FAST
+end enum
+
+const FB_DEFAULT_FPMODE		= FB_FPMODE_PRECISE
+const FB_DEFAULT_FPUTYPE		= FB_FPUTYPE_FPU
 
 
 '' output file type
@@ -292,6 +300,7 @@ type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
 	cputype			as FB_CPUTYPE
 	fputype			as FB_FPUTYPE
+	fpmode			as FB_FPMODE					'' precise or fast fp mode (SSE+ only)
 	errorcheck		as integer					'' runtime error check (def= false)
 	outtype			as FB_OUTTYPE
 	resumeerr 		as integer					'' add support for RESUME (def= false)

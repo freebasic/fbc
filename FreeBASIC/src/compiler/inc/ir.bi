@@ -51,7 +51,7 @@ end enum
 
 enum IR_REGFAMILY
 	IR_REG_FPU_STACK
-	IR_REG_SSE
+	IR_REG_SSE_SCALAR
 end enum
 	
 

@@ -304,7 +304,8 @@ end type
 		@"Can't use ANY as initializer in array with ellipsis bound", _
 		@"Must have initializer with array with ellipsis bound", _
 		@"Can't use ... as lower bound", _
-		@"FOR/NEXT variable name mismatch" _
+		@"FOR/NEXT variable name mismatch", _
+		@"Selected option requires an SSE FPU mode" _
 	}
 
 

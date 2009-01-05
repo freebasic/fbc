@@ -2279,6 +2279,57 @@ function hOptSelfCompare _
 	function = astNewCONSTi( c )
 end function
 
+'':::::
+private function hOptReciprocal _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr l = any, r = any
+	dim as single v = Any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	'' first check if the op is a divide
+	if( n->class = AST_NODECLASS_BOP ) AndAlso ( n->op.op = AST_OP_DIV ) then
+		l = n->l
+		if( astIsCONST( l ) ) then
+			if( ( astGetDataType( l ) = FB_DATATYPE_SINGLE ) AndAlso ( l->con.val.float = 1.0f ) ) then
+				r = n->r
+				if( ( r->class = AST_NODECLASS_UOP ) AndAlso ( r->op.op = AST_OP_SQRT ) ) then
+					'' change this to a rsqrt
+					*n = *r
+					n->class = AST_NODECLASS_UOP
+					n->op.op = AST_OP_RSQRT
+					astDelNode( r )
+					astDelNode( l )
+				elseif( astGetDataType( r ) = FB_DATATYPE_SINGLE ) then
+					'' change this to a rcp
+					astDelNode( n )
+					n = astNewUOP( AST_OP_RCP, r )
+					astDelNode( l )
+				end if
+			end if
+		end if
+	end if
+
+	'' walk
+	l = n->l
+	if( l <> NULL ) then
+		n->l = hOptReciprocal( l )
+	end if
+
+	r = n->r
+	if( r <> NULL ) then
+		n->r = hOptReciprocal( r )
+	end if
+
+	function = n
+
+end function
+
 ''::::
 function astOptimizeTree _
 	( _
@@ -2328,6 +2379,10 @@ function astOptimizeTree _
 	n = hOptSelfCompare( n )
 
  	n = hOptRemConv( n )
+
+	if( env.clopt.fpmode = FB_FPMODE_FAST ) then
+		n = hOptReciprocal( n )
+	end if
 
 	ast.isopt = FALSE
 
