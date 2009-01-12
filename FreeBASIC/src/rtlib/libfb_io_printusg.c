@@ -197,18 +197,21 @@ static int fb_PrintUsingFmtStr
 		switch( c )
 		{
 		case '*':
+			/* "**..." number format (includes "**$...") */
 			if( nc == '*' )
 				doexit = 1;
 
 			break;
 
 		case '$':
+			/* "$$..." number format */
 			if( nc == '$' )
 				doexit = 1;
 
 			break;
 
 		case '+':
+			/* "+#...", "+$$...", "+**...", "+.#..." */
 			if( nc == '#' ||
 			    nc == '$' && nnc == '$' ||
 			    nc == '*' && nnc == '*' ||
@@ -221,16 +224,19 @@ static int fb_PrintUsingFmtStr
 		case '\\':
 		case '&':
 		case '#':
+			/* "!", "\ ... \", "&" string formats, "#..." number format */
 			doexit = 1;
 			break;
 
 		case '.':
+			/* ".#[...]" number format */
 			if( nc == '#' )
 				doexit = 1;
 
 			break;
 
 		case '_':
+			/* escape next char if there is one, otherwise just print '_' */
 			if( ctx->chars > 1 )
 			{
 				c = nc;
@@ -439,6 +445,7 @@ static int hPrintNumber
 
 	while( ctx->chars > 0 )
 	{
+		/* exit if just parsed end '+'/'-' sign */
 		if( signatend ) break;
 
 		c = *ctx->ptr;
@@ -448,6 +455,7 @@ static int hPrintNumber
 		switch( c )
 		{
 		case '#':
+			/* increment intdigs or decdigs if in int/dec part, else exit */
 			if( expdigs != 0 )
 				doexit = 1;
 			else if( decdigs != -1 )
@@ -457,6 +465,7 @@ static int hPrintNumber
 			break;
 
 		case '.':
+			/* add decimal point if still in integer part, else exit */
 			if( decdigs != -1 || expdigs != 0 )
 				doexit = 1;
 			else
@@ -464,6 +473,7 @@ static int hPrintNumber
 			break;
 
 		case '*':
+			/* if first two characters, change padding to asterisks, else exit */
 			if( (intdigs == 0 && decdigs == -1) )
 			{
 				DBG_ASSERT( nc == '*' );
@@ -479,22 +489,33 @@ static int hPrintNumber
 			break;
 
 		case '$':
+			/* at beginning or after two '*'s: prepend a dollar sign to number */
+
+			/* did it follow a '*'? (Will have been the two at the start, else would have exited by now */
 			if( lc == '*' )
 			{
 				adddollar = 1;
 			}
-			else if( intdigs == 0 )
+			/* at start of number, before integer part? */
+			else if( intdigs == 0 && decdigs == -1 )
 			{
 				if( !adddollar )
+				{	/* first one */
+					DBG_ASSERT( nc == '$' ); /* otherwise, shouldn't have been brought here */
 					adddollar = 1;
+				}
 				else
+				{	/* second one */
+					DBG_ASSERT( lc == '$' );
 					++intdigs;
+				}
 			}
 			else
 				doexit = 1;
 			break;
 
 		case ',':
+			/* if parsing integer part, enable commas and increment intdigs */
 			if( decdigs != -1 || expdigs != 0 )
 				doexit = 1;
 			else
@@ -506,14 +527,24 @@ static int hPrintNumber
 
 		case '+':
 		case '-':
+			/* '+' at start/end:  explicit '+'/'-' sign
+			   '-' at end:  explicit '-' sign, if negative */
+
+			/* one already at start? */
 			if( signatini )
+			{
 				doexit = 1;
+			}
+			/* found one before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
 			{
+				DBG_ASSERT( c != '-' ); /* explicit '-' sign isn't checked for at start */
 				if( c == '+' )
 					plussign = 1;
 				signatini = 1;
 			}
+			/* otherwise it's at the end, as long as there are enough expdigs for an
+			   exponent (or none at all), otherwise they are all normal printable characters */
 			else if( expdigs == 0 || expdigs >= MIN_EXPDIGS )
 			{
 				if( c == '+' )
@@ -525,6 +556,10 @@ static int hPrintNumber
 			break;
 
 		case '^':
+			/* exponent digits (there must be at least MIN_EXPDIGS of them,
+			   otherwise they will just be appended as printable chars      */
+
+			/* Too many? Leave the rest as printable chars */
 			if( expdigs < MAX_EXPDIGS )
 				++expdigs;
 			else
@@ -692,7 +727,7 @@ static int hPrintNumber
 			val_exp -= val_zdigs;
 		}
 		else if( val_digs > totdigs )
-		{ /* scale down value */
+		{	/* scale down value */
 			val = hDivPow10_ULL( val, val_digs - totdigs );
 			val_exp += (val_digs - totdigs);
 			val_digs = totdigs;
@@ -965,4 +1000,3 @@ FBCALL int fb_PrintUsingLongint
 	return hPrintNumber( fnum, val_ull, 0, val_isneg, mask );
 
 }
-
