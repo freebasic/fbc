@@ -231,9 +231,9 @@ static int fb_PrintUsingFmtStr
 			break;
 
 		case '_':
-			c = nc;
 			if( ctx->chars > 1 )
 			{
+				c = nc;
 				++ctx->ptr;
 				--ctx->chars;
 			}
@@ -248,12 +248,12 @@ static int fb_PrintUsingFmtStr
 		--ctx->chars;
 	}
 
-    /* flush */
-    if( len > 0 )
-    {
-    	buffer[len] = '\0';
-    	fb_PrintFixString( fnum, buffer, 0 );
-    }
+	/* flush */
+	if( len > 0 )
+	{
+		buffer[len] = '\0';
+		fb_PrintFixString( fnum, buffer, 0 );
+	}
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -410,7 +410,7 @@ static int hPrintNumber
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
-    /* restart if needed */
+	/* restart if needed */
 	if( ctx->chars == 0 )
 	{
 		ctx->ptr = ctx->fmtstr.data;
@@ -464,8 +464,9 @@ static int hPrintNumber
 			break;
 
 		case '*':
-			if( (intdigs == 0 && decdigs == -1) && nc == '*' )
+			if( (intdigs == 0 && decdigs == -1) )
 			{
+				DBG_ASSERT( nc == '*' );
 				padchar = '*';
 				++intdigs;
 			}
@@ -481,12 +482,14 @@ static int hPrintNumber
 			if( lc == '*' )
 			{
 				adddollar = 1;
-				++intdigs;
 			}
-			else if( (intdigs == 0 && decdigs == -1) && nc == '$' )
-				adddollar = 1;
-			else if( intdigs == 0 && lc == '$' )
-				++intdigs;
+			else if( intdigs == 0 )
+			{
+				if( !adddollar )
+					adddollar = 1;
+				else
+					++intdigs;
+			}
 			else
 				doexit = 1;
 			break;
@@ -591,66 +594,66 @@ static int hPrintNumber
 		for( ; expdigs > 0; --expdigs )
 			ADD_CHAR( '^' );
 
-		/* backup unscaled value */
-		val0 = val;
-		val_digs0 = val_digs;
-		val_exp0 = val_exp;
+			/* backup unscaled value */
+			val0 = val;
+			val_digs0 = val_digs;
+			val_exp0 = val_exp;
 
-		/* check range */
+			/* check range */
 		if( val_exp < -decdigs )
-		{	/* scale and round integer value to get val_exp equal to -decdigs */
-			val_exp += (-decdigs - val_exp0);
-			val_digs -= (-decdigs - val_exp0);
-			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+			{	/* scale and round integer value to get val_exp equal to -decdigs */
+				val_exp += (-decdigs - val_exp0);
+				val_digs -= (-decdigs - val_exp0);
+				val = hDivPow10_ULL( val, -decdigs - val_exp0 );
 
-			if( val == 0 )
-			{	/* val is/has been scaled down to zero */
-				val_digs = 0;
-				val_exp = -decdigs;
+				if( val == 0 )
+				{	/* val is/has been scaled down to zero */
+					val_digs = 0;
+					val_exp = -decdigs;
+				}
+				else if( val == hPow10_ULL( val_digs ) )
+				{	/* rounding up took val to next power of 10:
+					   set value to 1, put val_digs zeroes onto val_exp */
+					val = 1;
+					val_exp += val_digs;
+					val_digs = 1;
+				}
 			}
-			else if( val == hPow10_ULL( val_digs ) )
-			{	/* rounding up took val to next power of 10:
-				   set value to 1, put val_digs zeroes onto val_exp */
-				val = 1;
-				val_exp += val_digs;
-				val_digs = 1;
-			}
-		}
 
-		intdigs2 = val_digs + val_exp;
-		if( addcommas )
-			intdigs2 += (intdigs2 - 1) / 3;
+			intdigs2 = val_digs + val_exp;
+			if( addcommas )
+				intdigs2 += (intdigs2 - 1) / 3;
 
-		if( intdigs2 > intdigs + 4 )
-		{	/* too many digits in number for fixed point:
-			   switch to floating-point */
+			if( intdigs2 > intdigs + 4 )
+			{	/* too many digits in number for fixed point:
+				   switch to floating-point */
 
-			expdigs = 4; /* add four digits for exp notation */
+				expdigs = 4; /* add four digits for exp notation */
 			invalid = 1; /* add '%' sign */
 
-			/* restore unscaled value */
-			val = val0;
-			val_digs = val_digs0;
-			val_exp = val_exp0;
+				/* restore unscaled value */
+				val = val0;
+				val_digs = val_digs0;
+				val_exp = val_exp0;
 
-			val_zdigs = 0;
-		}
-		else
-		{	/* keep fixed point */
+				val_zdigs = 0;
+			}
+			else
+			{	/* keep fixed point */
 
-			if( intdigs2 > intdigs )
-			{	/* slightly too many digits in number */
-				intdigs = intdigs2; /* extend intdigs */
+				if( intdigs2 > intdigs )
+				{	/* slightly too many digits in number */
+					intdigs = intdigs2; /* extend intdigs */
 				invalid = 1;        /* add '%' sign */
-			}
+				}
 
-			if( val_exp > -decdigs)
-			{	/* put excess trailing zeroes from val_exp into val_zdigs */
-				val_zdigs = val_exp - -decdigs;
-				val_exp = -decdigs;
+				if( val_exp > -decdigs)
+				{	/* put excess trailing zeroes from val_exp into val_zdigs */
+					val_zdigs = val_exp - -decdigs;
+					val_exp = -decdigs;
+				}
 			}
 		}
-	}
 
 
 	/* floating-point format */
@@ -769,33 +772,33 @@ static int hPrintNumber
 
 	/* output int part */
 	for( i = 0; i < intdigs; ++i )
-	{
-		if( addcommas && (i & 3) == 3 && val_digs > 0 )
-		{	/* insert comma */
-			ADD_CHAR( ',' );
-		}
-		else
 		{
-			if( val_zdigs > 0 )
-			{
-				ADD_CHAR( '0' );
-				--val_zdigs;
-			}
-			else if( val_digs > 0 )
-			{
-				ADD_CHAR( (val % 10) + '0' );
-				val /= 10;
-				--val_digs;
+			if( addcommas && (i & 3) == 3 && val_digs > 0 )
+			{	/* insert comma */
+			ADD_CHAR( ',' );
 			}
 			else
 			{
-				if( i == 0 )
+				if( val_zdigs > 0 )
+				{
 					ADD_CHAR( '0' );
+					--val_zdigs;
+				}
+				else if( val_digs > 0 )
+				{
+					ADD_CHAR( (val % 10) + '0' );
+					val /= 10;
+					--val_digs;
+				}
 				else
-					break;
+				{
+					if( i == 0 )
+						ADD_CHAR( '0' );
+					else
+						break;
+				}
 			}
 		}
-	}
 
 	DBG_ASSERT( val == 0 );
 	DBG_ASSERT( val_digs == 0 );
