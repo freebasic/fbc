@@ -54,13 +54,32 @@
                    - (MIN_EXPDIGS - 1) /* stray carets  */  \
                  )
 
+
+#define CHAR_ZERO        '0'
+#define CHAR_DOT         '.'
+#define CHAR_COMMA       ','
+#define CHAR_TOOBIG      '%'
+#define CHAR_PLUS        '+'
+#define CHAR_MINUS       '-'
+#define CHAR_STAR        '*'
+#define CHAR_DOLLAR      '$'
+#define CHAR_SPACE       ' '
+#define CHAR_WTF         '!'
+#define CHAR_EXP_SINGLE  'E'
+#if 0
+#define CHAR_EXP_DOUBLE  'D'
+#endif
+
+#define STR_NAN "NAN"
+#define STR_INF "INF"
+
 #define ADD_CHAR( c )              \
     do {                           \
         DBG_ASSERT( p >= buffer ); \
         if( p >= buffer )          \
             *(p--) = (char)(c);    \
         else if( p == buffer )     \
-            *p = '@';              \
+            *p = CHAR_WTF;         \
     } while (0)
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -410,7 +429,7 @@ static int hPrintNumber
 	int val_digs0, val_exp0;
 	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
-	int adddollar, addcommas, signatend, signatini, plussign, invalid;
+	int adddollar, addcommas, signatend, signatini, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
 	int i;
 
@@ -427,7 +446,7 @@ static int hPrintNumber
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
-	padchar    = ' ';
+	padchar    = CHAR_SPACE;
 	intdigs    = 0;
 	decdigs    = -1;
 	expdigs    = 0;
@@ -436,7 +455,7 @@ static int hPrintNumber
 	signatend  = 0;
 	signatini  = 0;
 	plussign   = 0;
-	invalid    = 0;
+	toobig     = 0;
 
 	lc = -1;
 
@@ -477,7 +496,7 @@ static int hPrintNumber
 			if( (intdigs == 0 && decdigs == -1) )
 			{
 				DBG_ASSERT( nc == '*' );
-				padchar = '*';
+				padchar = CHAR_STAR;
 				++intdigs;
 			}
 			else if( intdigs == 1 && lc == '*' )
@@ -609,9 +628,9 @@ static int hPrintNumber
 	if( signatend )
 	{	/* put sign at end */
 		if( val_isneg )
-			ADD_CHAR( '-' );
+			ADD_CHAR( CHAR_MINUS );
 		else
-			ADD_CHAR( plussign? '+' : ' ' );
+			ADD_CHAR( plussign? CHAR_PLUS : CHAR_SPACE );
 	}
 	else if( val_isneg && !signatini )
 	{	/* implicit negative sign at start */
@@ -629,66 +648,66 @@ static int hPrintNumber
 		for( ; expdigs > 0; --expdigs )
 			ADD_CHAR( '^' );
 
-			/* backup unscaled value */
-			val0 = val;
-			val_digs0 = val_digs;
-			val_exp0 = val_exp;
+		/* backup unscaled value */
+		val0 = val;
+		val_digs0 = val_digs;
+		val_exp0 = val_exp;
 
-			/* check range */
+		/* check range */
 		if( val_exp < -decdigs )
-			{	/* scale and round integer value to get val_exp equal to -decdigs */
-				val_exp += (-decdigs - val_exp0);
-				val_digs -= (-decdigs - val_exp0);
-				val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+		{	/* scale and round integer value to get val_exp equal to -decdigs */
+			val_exp += (-decdigs - val_exp0);
+			val_digs -= (-decdigs - val_exp0);
+			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
 
-				if( val == 0 )
-				{	/* val is/has been scaled down to zero */
-					val_digs = 0;
-					val_exp = -decdigs;
-				}
-				else if( val == hPow10_ULL( val_digs ) )
-				{	/* rounding up took val to next power of 10:
-					   set value to 1, put val_digs zeroes onto val_exp */
-					val = 1;
-					val_exp += val_digs;
-					val_digs = 1;
-				}
+			if( val == 0 )
+			{	/* val is/has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
 			}
-
-			intdigs2 = val_digs + val_exp;
-			if( addcommas )
-				intdigs2 += (intdigs2 - 1) / 3;
-
-			if( intdigs2 > intdigs + 4 )
-			{	/* too many digits in number for fixed point:
-				   switch to floating-point */
-
-				expdigs = 4; /* add four digits for exp notation */
-			invalid = 1; /* add '%' sign */
-
-				/* restore unscaled value */
-				val = val0;
-				val_digs = val_digs0;
-				val_exp = val_exp0;
-
-				val_zdigs = 0;
-			}
-			else
-			{	/* keep fixed point */
-
-				if( intdigs2 > intdigs )
-				{	/* slightly too many digits in number */
-					intdigs = intdigs2; /* extend intdigs */
-				invalid = 1;        /* add '%' sign */
-				}
-
-				if( val_exp > -decdigs)
-				{	/* put excess trailing zeroes from val_exp into val_zdigs */
-					val_zdigs = val_exp - -decdigs;
-					val_exp = -decdigs;
-				}
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_exp += val_digs;
+				val_digs = 1;
 			}
 		}
+
+		intdigs2 = val_digs + val_exp;
+		if( addcommas )
+			intdigs2 += (intdigs2 - 1) / 3;
+
+		if( intdigs2 > intdigs + MIN_EXPDIGS )
+		{	/* too many digits in number for fixed point:
+			   switch to floating-point */
+
+			expdigs = MIN_EXPDIGS; /* add four digits for exp notation */
+			toobig = 1;  /* add '%' sign */
+
+			/* restore unscaled value */
+			val = val0;
+			val_digs = val_digs0;
+			val_exp = val_exp0;
+
+			val_zdigs = 0;
+		}
+		else
+		{	/* keep fixed point */
+
+			if( intdigs2 > intdigs )
+			{	/* slightly too many digits in number */
+				intdigs = intdigs2; /* extend intdigs */
+				toobig = 1;         /* add '%' sign */
+			}
+
+			if( val_exp > -decdigs)
+			{	/* put excess trailing zeroes from val_exp into val_zdigs */
+				val_zdigs = val_exp - -decdigs;
+				val_exp = -decdigs;
+			}
+		}
+	}
 
 
 	/* floating-point format */
@@ -700,9 +719,9 @@ static int hPrintNumber
 		{	/* add [another] '%' sign */
 			++intdigs;
 #if 0
-			++invalid;   /* QB could prepend two independent '%'s */
+			++toobig;   /* QB could prepend two independent '%'s */
 #else
-			invalid = 1; /* We'll just stick with one */
+			toobig = 1; /* We'll just stick with one */
 #endif
 		}
 
@@ -748,16 +767,16 @@ static int hPrintNumber
 
 		if( val_exp < 0 )
 		{
-			expsignchar = '-';
+			expsignchar = CHAR_MINUS;
 			val_exp = -val_exp;
 		}
 		else
-			expsignchar = '+';
+			expsignchar = CHAR_PLUS;
 
 		/* expdigs > 3 */
 		for( ; expdigs > 3; --expdigs )
 		{
-			ADD_CHAR( (val_exp % 10) + '0' );
+			ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 			val_exp /= 10;
 		}
 		
@@ -766,19 +785,19 @@ static int hPrintNumber
 		{
 #if 1		/* Add remaining digits (QB would just crop these) */
 			do {
-				ADD_CHAR( (val_exp % 10) + '0' );
+				ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 				val_exp /= 10;
 			} while( val_exp > 9 );
-			ADD_CHAR( val_exp + '0' );
+			ADD_CHAR( CHAR_ZERO +val_exp );
 #endif
-			ADD_CHAR( '%' ); /* add a '%' sign */
+			ADD_CHAR( CHAR_TOOBIG ); /* add a '%' sign */
 		}
 		else
-			ADD_CHAR( val_exp + '0' );
+			ADD_CHAR( CHAR_ZERO + val_exp );
 
 		/* expdigs == 2 */
 		ADD_CHAR( expsignchar );
-		ADD_CHAR( 'E' ); /* QB would use 'D' for doubles */
+		ADD_CHAR( CHAR_EXP_SINGLE ); /* QB would use 'D' for doubles */
 	}
 
 
@@ -789,51 +808,51 @@ static int hPrintNumber
 		{
 			if( val_zdigs > 0 )
 			{
-				ADD_CHAR( '0' );
+				ADD_CHAR( CHAR_ZERO );
 				--val_zdigs;
 			}
 			else if( val_digs > 0 )
 			{
-				ADD_CHAR( (val % 10) + '0' );
+				ADD_CHAR( CHAR_ZERO + (val % 10) );
 				val /= 10;
 				--val_digs;
 			}
 			else
-				ADD_CHAR( '0' );
+				ADD_CHAR( CHAR_ZERO );
 		}
-		ADD_CHAR( '.' );
+		ADD_CHAR( CHAR_DOT );
 	}
 
 
 	/* output int part */
 	for( i = 0; i < intdigs; ++i )
+	{
+		if( addcommas && (i & 3) == 3 && val_digs > 0 )
+		{	/* insert comma */
+			ADD_CHAR( CHAR_COMMA );
+		}
+		else
 		{
-			if( addcommas && (i & 3) == 3 && val_digs > 0 )
-			{	/* insert comma */
-			ADD_CHAR( ',' );
+			if( val_zdigs > 0 )
+			{
+				ADD_CHAR( CHAR_ZERO );
+				--val_zdigs;
+			}
+			else if( val_digs > 0 )
+			{
+				ADD_CHAR( CHAR_ZERO + (val % 10) );
+				val /= 10;
+				--val_digs;
 			}
 			else
 			{
-				if( val_zdigs > 0 )
-				{
-					ADD_CHAR( '0' );
-					--val_zdigs;
-				}
-				else if( val_digs > 0 )
-				{
-					ADD_CHAR( (val % 10) + '0' );
-					val /= 10;
-					--val_digs;
-				}
+				if( i == 0 )
+					ADD_CHAR( CHAR_ZERO );
 				else
-				{
-					if( i == 0 )
-						ADD_CHAR( '0' );
-					else
-						break;
-				}
+					break;
 			}
 		}
+	}
 
 	DBG_ASSERT( val == 0 );
 	DBG_ASSERT( val_digs == 0 );
@@ -841,15 +860,15 @@ static int hPrintNumber
 
 	/* output dollar sign? */
 	if( adddollar )
-		ADD_CHAR( '$' );
+		ADD_CHAR( CHAR_DOLLAR );
 
 	/* output sign? */
 	if( signatini )
 	{
 		if( val_isneg )
-			ADD_CHAR( '-' );
+			ADD_CHAR( CHAR_MINUS );
 		else
-			ADD_CHAR( plussign? '+' : padchar );
+			ADD_CHAR( plussign? CHAR_PLUS : padchar );
 	}
 
 	/* output padding for any remaining intdigs */
@@ -857,8 +876,8 @@ static int hPrintNumber
 		ADD_CHAR( padchar );
 
 	/* output '%' sign(s)? */
-	for( ; invalid > 0; --invalid )
-		ADD_CHAR( '%' );
+	for( ; toobig > 0; --toobig )
+		ADD_CHAR( CHAR_TOOBIG );
 
 
 	/**/
