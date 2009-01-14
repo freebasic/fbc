@@ -82,6 +82,58 @@
             *p = CHAR_WTF;         \
     } while (0)
 
+
+/*-------------------------------------------------------------*/
+/* Checks for Infinity/NaN                                     *
+ * (assumes x86 endian, IEEE-754 floating-point format)        *
+ * TODO: use a proper implementation: most/all platforms       *
+ * have specific functions built-in for this                   */
+
+#define LO32( x ) (((uint32_t *)&(x))[0])
+#define HI32( x ) (((uint32_t *)&(x))[1])
+
+#define IS_NEG( x ) (                           \
+    (HI32(x) & 0x80000000) != 0  )
+
+#define IS_ZERO( x ) (                          \
+    ((HI32(x) & 0x7fffffff) | LO32(x)) == 0  )
+
+#define IS_FINITE( x ) (                        \
+    (HI32(x) & 0x7ff00000) != 0x7ff00000  )
+
+#define IS_INFINITE( x ) (                      \
+    LO32(x) == 0 &&                             \
+    (HI32(x) & 0x7fffffff) == 0x7ff00000  )
+
+#define IS_NAN( x ) (                           \
+    (HI32(x) & 0x7ff00000) == 0x7ff00000 &&     \
+    ((HI32(x) & 0x000fffff) | LO32(x)) != 0   )
+
+
+
+#define IS_NEG_F( x ) (                         \
+    (LO32(x) & 0x80000000) != 0  )
+
+#define IS_ZERO_F( x ) (                        \
+    (LO32(x) & 0x7fffffff) == 0  )
+
+#define IS_FINITE_F( x ) (                      \
+    (LO32(x) & 0x7f800000) != 0x7f800000  )
+
+#define IS_INFINITE_F( x ) (                    \
+    (LO32(x) & 0x7fffffff == 0x7f800000   )
+
+#define IS_NAN_F( x ) (                         \
+    (LO32(x) & 0x7f800000 == 0x7f800000 &&      \
+    (LO32(x) & 0x007fffff != 0              )
+
+/*-------------------------------------------------------------*/
+
+#define VAL_ISNEG 0x1
+#define VAL_ISINF 0x2
+#define VAL_ISNAN 0x4
+
+
 static int fb_PrintUsingFmtStr( int fnum );
 
 
@@ -418,7 +470,7 @@ FBCALL int fb_PrintUsingStr
 static int hPrintNumber
 	(
 		int fnum,
-		unsigned long long val, int val_exp, int val_isneg,
+		unsigned long long val, int val_exp, int flags,
 		int mask
 	)
 {
@@ -427,6 +479,7 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
+	int val_isneg, val_isinf, val_isnan;
 	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
@@ -600,6 +653,27 @@ static int hPrintNumber
 
 	/* ------------------------------------------------------ */
 
+	/* check flags */
+	val_isneg = ( (flags & VAL_ISNEG) != 0 );
+	if( flags & (VAL_ISINF | VAL_ISNAN) )
+	{
+		val_isinf = ( (flags & VAL_ISINF) != 0 );
+		val_isnan = ( (flags & VAL_ISNAN) != 0 );
+		
+		intdigs += (decdigs + 1);
+		decdigs = -1;
+		if( expdigs >= MIN_EXPDIGS )
+		{
+			intdigs += expdigs;
+			expdigs = 0;
+		}
+	}
+	else
+	{
+		val_isinf = 0;
+		val_isnan = 0;
+	}
+
 	/* crop number of digits */
 	if( intdigs + 1 + decdigs > MAX_DIGS )
 	{
@@ -638,7 +712,7 @@ static int hPrintNumber
 		--intdigs;
 	}
 
-	if( val != 0 )
+	if( val != 0 && !(val_isinf || val_isnan) )
 		val_digs = hLog10_ULL( val ) + 1;
 	else
 		val_digs = 0;
@@ -651,65 +725,94 @@ static int hPrintNumber
 		for( ; expdigs > 0; --expdigs )
 			ADD_CHAR( '^' );
 
-		/* backup unscaled value */
-		val0 = val;
-		val_digs0 = val_digs;
-		val_exp0 = val_exp;
+		if( !(val_isinf || val_isnan) )
+		{
+			/* backup unscaled value */
+			val0 = val;
+			val_digs0 = val_digs;
+			val_exp0 = val_exp;
 
-		/* check range */
-		if( val_exp < -decdigs )
-		{	/* scale and round integer value to get val_exp equal to -decdigs */
-			val_exp += (-decdigs - val_exp0);
-			val_digs -= (-decdigs - val_exp0);
-			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+			/* check range */
+			if( val_exp < -decdigs )
+			{	/* scale and round integer value to get val_exp equal to -decdigs */
+				val_exp += (-decdigs - val_exp0);
+				val_digs -= (-decdigs - val_exp0);
+				val = hDivPow10_ULL( val, -decdigs - val_exp0 );
 
-			if( val == 0 )
-			{	/* val is/has been scaled down to zero */
-				val_digs = 0;
-				val_exp = -decdigs;
+				if( val == 0 )
+				{	/* val is/has been scaled down to zero */
+					val_digs = 0;
+					val_exp = -decdigs;
+				}
+				else if( val == hPow10_ULL( val_digs ) )
+				{	/* rounding up took val to next power of 10:
+					   set value to 1, put val_digs zeroes onto val_exp */
+					val = 1;
+					val_exp += val_digs;
+					val_digs = 1;
+				}
 			}
-			else if( val == hPow10_ULL( val_digs ) )
-			{	/* rounding up took val to next power of 10:
-				   set value to 1, put val_digs zeroes onto val_exp */
-				val = 1;
-				val_exp += val_digs;
-				val_digs = 1;
+
+			intdigs2 = val_digs + val_exp;
+			if( intdigs2 < 0 ) intdigs2 = 0;
+			if( addcommas )
+				intdigs2 += (intdigs2 - 1) / 3;
+
+			if( intdigs2 > intdigs + MIN_EXPDIGS )
+			{	/* too many digits in number for fixed point:
+				   switch to floating-point */
+
+				expdigs = MIN_EXPDIGS; /* add four digits for exp notation */
+				toobig = 1;  /* add '%' sign */
+
+				/* restore unscaled value */
+				val = val0;
+				val_digs = val_digs0;
+				val_exp = val_exp0;
+
+				val_zdigs = 0;
 			}
-		}
+			else
+			{	/* keep fixed point */
 
-		intdigs2 = val_digs + val_exp;
-		if( intdigs2 < 0 ) intdigs2 = 0;
-		if( addcommas )
-			intdigs2 += (intdigs2 - 1) / 3;
+				if( intdigs2 > intdigs )
+				{	/* slightly too many digits in number */
+					intdigs = intdigs2; /* extend intdigs */
+					toobig = 1;         /* add '%' sign */
+				}
 
-		if( intdigs2 > intdigs + MIN_EXPDIGS )
-		{	/* too many digits in number for fixed point:
-			   switch to floating-point */
-
-			expdigs = MIN_EXPDIGS; /* add four digits for exp notation */
-			toobig = 1;  /* add '%' sign */
-
-			/* restore unscaled value */
-			val = val0;
-			val_digs = val_digs0;
-			val_exp = val_exp0;
-
-			val_zdigs = 0;
+				if( val_exp > -decdigs)
+				{	/* put excess trailing zeroes from val_exp into val_zdigs */
+					val_zdigs = val_exp - -decdigs;
+					val_exp = -decdigs;
+				}
+			}
 		}
 		else
-		{	/* keep fixed point */
-
-			if( intdigs2 > intdigs )
-			{	/* slightly too many digits in number */
-				intdigs = intdigs2; /* extend intdigs */
-				toobig = 1;         /* add '%' sign */
+		{
+			if( val_isinf )
+			{
+				if( intdigs < strlen(STR_INF) )
+				{
+					intdigs = strlen(STR_INF);
+					toobig = 1;
+				}
 			}
-
-			if( val_exp > -decdigs)
-			{	/* put excess trailing zeroes from val_exp into val_zdigs */
-				val_zdigs = val_exp - -decdigs;
-				val_exp = -decdigs;
+			else if( val_isnan )
+			{
+				if( intdigs < strlen(STR_NAN) )
+				{
+					intdigs = strlen(STR_NAN);
+					toobig = 1;
+				}
 			}
+			else
+				DBG_ASSERT( 0 );
+
+			val = 0;
+			val_exp = 0;
+			val_digs = 0;
+			val_zdigs = 0;
 		}
 	}
 
@@ -833,39 +936,64 @@ static int hPrintNumber
 	}
 
 
-	/* output int part */
-	i = 0;
-	for( ;; )
-	{
-		if( addcommas && (i & 3) == 3 && val_digs > 0 )
-		{	/* insert comma */
-			ADD_CHAR( CHAR_COMMA );
-		}
-		else
+	if( !(val_isinf || val_isnan) )
+	{	/* output int part */
+		i = 0;
+		for( ;; )
 		{
-			if( val_zdigs > 0 )
-			{
-				ADD_CHAR( CHAR_ZERO );
-				--val_zdigs;
-			}
-			else if( val_digs > 0 )
-			{
-				DBG_ASSERT( val > 0 );
-				ADD_CHAR( CHAR_ZERO + (val % 10) );
-				val /= 10;
-				--val_digs;
+			if( addcommas && (i & 3) == 3 && val_digs > 0 )
+			{	/* insert comma */
+				ADD_CHAR( CHAR_COMMA );
 			}
 			else
 			{
-				if( i == 0 && intdigs > 0 )
+				if( val_zdigs > 0 )
+				{
 					ADD_CHAR( CHAR_ZERO );
+					--val_zdigs;
+				}
+				else if( val_digs > 0 )
+				{
+					DBG_ASSERT( val > 0 );
+					ADD_CHAR( CHAR_ZERO + (val % 10) );
+					val /= 10;
+					--val_digs;
+				}
 				else
-					break;
+				{
+					if( i == 0 && intdigs > 0 )
+						ADD_CHAR( CHAR_ZERO );
+					else
+						break;
+				}
+			}
+			DBG_ASSERT( intdigs > 0 );
+			++i;
+			--intdigs;
+		}
+	}
+	else
+	{	/* output INF/NAN string */
+		if( val_isinf )
+		{
+			DBG_ASSERT( intdigs >= strlen(STR_INF) );
+			for( i = strlen(STR_INF)-1; i >= 0; --i )
+			{
+				ADD_CHAR( STR_INF[i] );
+				--intdigs;
 			}
 		}
-		DBG_ASSERT( intdigs > 0 );
-		++i;
-		--intdigs;
+		else if( val_isnan )
+		{
+			DBG_ASSERT( intdigs >= strlen(STR_NAN) );
+			for( i = strlen(STR_NAN)-1; i >= 0; --i )
+			{
+				ADD_CHAR( STR_NAN[i] );
+				--intdigs;
+			}
+		}
+		else
+			DBG_ASSERT( 0 );
 	}
 
 	DBG_ASSERT( val == 0 );
@@ -966,24 +1094,36 @@ FBCALL int fb_PrintUsingDouble
 	)
 {
 
-	int val_isneg, val_exp;
-	unsigned long long val_ull;
+	int val_exp;
+	int flags;
+	unsigned long long val_ull = 1;
 
-	if( value == 0.0 )
+	flags = 0;
+
+	if( IS_NEG( value ) )
+		flags |= VAL_ISNEG;
+
+	if( IS_ZERO( value ) )
 	{
 		val_ull = 0;
 		val_exp = 0;
-		val_isneg = 0;
+	}
+	else if( IS_FINITE( value ) )
+	{
+		value = fabs( value );
+		val_ull = hScaleDoubleToULL( value, &val_exp );
 	}
 	else
 	{
-		val_isneg = (value < 0.0);
-		value = fabs( value );
-
-		val_ull = hScaleDoubleToULL( value, &val_exp );
+		if( IS_INFINITE( value ) )
+			flags |= VAL_ISINF;
+		else if( IS_NAN( value ) )
+			flags |= VAL_ISNAN;
+		else
+			DBG_ASSERT( 0 );
 	}
 
-	return hPrintNumber( fnum, val_ull, val_exp, val_isneg, mask );
+	return hPrintNumber( fnum, val_ull, val_exp, flags, mask );
 
 }
 
@@ -1020,20 +1160,20 @@ FBCALL int fb_PrintUsingLongint
 	)
 {
 
-	int val_isneg;
+	int flags;
 	unsigned long long val_ull;
 
 	if( val_ll < 0 )
 	{
-		val_isneg = 1;
+		flags |= VAL_ISNEG;
 		val_ull = -val_ll;
 	}
 	else
 	{
-		val_isneg = 0;
+		flags = 0;
 		val_ull = val_ll;
 	}
 	
-	return hPrintNumber( fnum, val_ull, 0, val_isneg, mask );
+	return hPrintNumber( fnum, val_ull, 0, flags, mask );
 
 }
