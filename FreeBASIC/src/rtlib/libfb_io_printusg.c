@@ -638,7 +638,10 @@ static int hPrintNumber
 		--intdigs;
 	}
 
-	val_digs = hLog10_ULL( val ) + 1;
+	if( val != 0 )
+		val_digs = hLog10_ULL( val ) + 1;
+	else
+		val_digs = 0;
 	val_zdigs = 0;
 
 	/* fixed-point format? */
@@ -675,6 +678,7 @@ static int hPrintNumber
 		}
 
 		intdigs2 = val_digs + val_exp;
+		if( intdigs2 < 0 ) intdigs2 = 0;
 		if( addcommas )
 			intdigs2 += (intdigs2 - 1) / 3;
 
@@ -795,9 +799,13 @@ static int hPrintNumber
 		else
 			ADD_CHAR( CHAR_ZERO + val_exp );
 
+		expdigs -= 1;
+
 		/* expdigs == 2 */
 		ADD_CHAR( expsignchar );
 		ADD_CHAR( CHAR_EXP_SINGLE ); /* QB would use 'D' for doubles */
+
+		expdigs -= 2;
 	}
 
 
@@ -813,6 +821,7 @@ static int hPrintNumber
 			}
 			else if( val_digs > 0 )
 			{
+				DBG_ASSERT( val > 0 );
 				ADD_CHAR( CHAR_ZERO + (val % 10) );
 				val /= 10;
 				--val_digs;
@@ -825,7 +834,8 @@ static int hPrintNumber
 
 
 	/* output int part */
-	for( i = 0; i < intdigs; ++i )
+	i = 0;
+	for( ;; )
 	{
 		if( addcommas && (i & 3) == 3 && val_digs > 0 )
 		{	/* insert comma */
@@ -840,23 +850,31 @@ static int hPrintNumber
 			}
 			else if( val_digs > 0 )
 			{
+				DBG_ASSERT( val > 0 );
 				ADD_CHAR( CHAR_ZERO + (val % 10) );
 				val /= 10;
 				--val_digs;
 			}
 			else
 			{
-				if( i == 0 )
+				if( i == 0 && intdigs > 0 )
 					ADD_CHAR( CHAR_ZERO );
 				else
 					break;
 			}
 		}
+		DBG_ASSERT( intdigs > 0 );
+		++i;
+		--intdigs;
 	}
 
 	DBG_ASSERT( val == 0 );
 	DBG_ASSERT( val_digs == 0 );
 	DBG_ASSERT( val_zdigs == 0 );
+
+	DBG_ASSERT( decdigs == 0 );
+	DBG_ASSERT( expdigs == 0 );
+	DBG_ASSERT( intdigs >= 0 );
 
 	/* output dollar sign? */
 	if( adddollar )
@@ -872,7 +890,7 @@ static int hPrintNumber
 	}
 
 	/* output padding for any remaining intdigs */
-	for( ; i < intdigs; ++i )
+	for( ; intdigs > 0; --intdigs )
 		ADD_CHAR( padchar );
 
 	/* output '%' sign(s)? */
