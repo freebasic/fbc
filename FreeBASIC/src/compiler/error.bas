@@ -419,6 +419,8 @@ private sub hPrintErrMsg _
 					print lexPeekCurrentLine( token_pos, FALSE )
 					print token_pos
 				end if
+			else
+				print
 			end if
 		else
 			print
