@@ -12,6 +12,7 @@ Version 0.21.0 Beta:
 - ImageCreate and internal screen allocation now aligns buffers to multiples of 16 to make working with SSE easier - thanks to 1000101. (yetifoot)
 - COLOR now stores colors strictly in the format for the graphics screen's bit depth, so the default color can be relied upon when working on the screen, but not on images of a different bit depth (counting_pine)
 - lang fb: Multi-line comments are now completely disallowed in single-line comments - thanks to VonGodric for help (counting_pine)
+- DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
 
 [added]
 - -fpu, -fpmode switches added to provide SSE optimizations (enable using -fpu sse -fpmode fast) - contributed by Bryan S. (counting_pine)
@@ -56,8 +57,8 @@ Version 0.21.0 Beta:
 - "a mod &hffffffffu" could be mistaken for "a mod -1", and incorrectly optimised to 0 (counting_pine)
 - #2210424 - PUT # was warning about pointers and var-len string fields when putting any UDT with a constructor (counting_pine)
 - Faulty optimisation for "IF a op a THEN ...", where "op" is a non-comparison operator (counting_pine)
-- DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
 - #2225273 - Driver exit functions are called twice for GDI and DX driver.  Thanks to sisophon2001 for patch (counting_pine)
+- "CASE IS rel_op expr" was allowing (but not properly handling) any token for rel_op.  Now, anything but a relational operator (=, >, <, <>, <=, >=) is rightly disallowed (counting_pine)
 
 
 Version 0.20.0 Beta:

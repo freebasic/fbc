@@ -185,10 +185,12 @@ end function
 '':::::
 function hFBrelop2IRrelop _
 	( _
-		byval op as integer _
+		byval tk as integer _
 	) as integer static
 
-    select case as const op
+	dim as integer op = any
+
+    select case as const tk
     case FB_TK_EQ
     	op = AST_OP_EQ
     case FB_TK_GT
@@ -201,6 +203,10 @@ function hFBrelop2IRrelop _
     	op = AST_OP_LE
     case FB_TK_GE
     	op = AST_OP_GE
+	case else
+		errReport( FB_ERRMSG_EXPECTEDRELOP )
+		'' error recovery: fake an op
+		op = AST_OP_EQ
     end select
 
     function = op

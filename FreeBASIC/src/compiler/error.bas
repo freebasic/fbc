@@ -305,7 +305,8 @@ end type
 		@"Must have initializer with array with ellipsis bound", _
 		@"Can't use ... as lower bound", _
 		@"FOR/NEXT variable name mismatch", _
-		@"Selected option requires an SSE FPU mode" _
+		@"Selected option requires an SSE FPU mode", _
+		@"Expected relational operator ( =, >, <, <>, <=, >= )" _
 	}
 
 
