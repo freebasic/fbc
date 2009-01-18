@@ -1165,7 +1165,7 @@ FBCALL int fb_PrintUsingLongint
 
 	if( val_ll < 0 )
 	{
-		flags |= VAL_ISNEG;
+		flags = VAL_ISNEG;
 		val_ull = -val_ll;
 	}
 	else
