@@ -27,6 +27,12 @@ private sub test_ll( _
 		byval num as longint, _
 		byref cmp as string)
 
+	if abs(num) < 1ll shl 31 then
+		PRINT_USING_( fmt & "%", cint(num), cmp & "%" )
+	end if
+	if num >= 0 and num < 1ll shl 32 then
+		PRINT_USING_( fmt & "u", cuint(num), cmp & "u" )
+	end if
 	if abs(num) <= 1 shl 23 then
 		PRINT_USING_( fmt & "_!", csng(num), cmp & "!" )
 	end if
@@ -46,6 +52,12 @@ private sub test_ull( _
 		byval num as ulongint, _
 		byref cmp as string)
 
+	if num < 1ull shl 31 then
+		PRINT_USING_( fmt & "%", cint(num), cmp & "%" )
+	end if
+	if num < 1ull shl 32 then
+		PRINT_USING_( fmt & "u", cuint(num), cmp & "u" )
+	end if
 	if num <= 1ull shl 23 then
 		PRINT_USING_( fmt & "_!", cdbl(num), cmp & "!" )
 	end if
@@ -198,12 +210,21 @@ sub fmttest cdecl ()
 
 	open TESTFILE for output as #1
 
+	print #1, using "_##_"; 9;
+	print #1, ",",   "#9_"
+
+	print #1, using "#_"; 3; 1; 4;
+	print #1, ",",  "3_1_4_"
+
+
 	test_ll( "$ #" , 1, "$ 1" )
 	test_ll( "* #" , 1, "* 1" )
+	test_ll( "*##" , 1, "* 1" )
 	test_ll( "*$ #", 1, "*$ 1" )
 
 	test_ll( "$$" , 1, "$1" )
 	test_ll( "**" , 1, "*1" )
+	test_ll( "**####" , 123, "***123" )
 	test_ll( "**$", 1, "*$1" )
 
 	test_ll( "$$$" , 1, "$1$" )
@@ -215,14 +236,37 @@ sub fmttest cdecl ()
 	test_ll( "#,####" , 1234, " 1,234" )
 	test_ll( "#####," , 1234, " 1,234" )
 	test_ll( "#####.,", 1234, " 1234.," )
+	test_ll( "#,###.^^^^", 1234, " 1234.E+00" )
+	test_dbl2( "#.#,##", 1.2, 34, "1.2,34" )
 
 	test_sng( ".##$", 0.01, ".01$" )
 	test_sng( ".$$", 1, ".$1" )
 	test_sng( ".#$", 0.1, ".1$" )
 	test_sng( ".##", 0.01, ".01" )
+	test_sng( ".##.", 0.01, ".01." )
+	test_dbl2( ".##.#", 0.01, 0.2, ".01.2" )
 
 	test_dbl2( "##$$", 1, 2, " 1$2" )
 	test_dbl2( ".##$$", 0.01, 2, ".01$2" )
+
+	test_dbl2( ".##$$", 0.01, 2, ".01$2" )
+
+
+	test_dbl( "#", -.4, "-" )
+	test_dbl( "##", -.4, "-0" )
+	test_dbl( "+#", -.4, "-0" )
+	test_dbl( "+#+", -.4, "-0+" )
+	test_dbl( "+#-", -.4, "-0-" )
+
+	test_dbl( "-###", 42, "- 42" )
+	test_dbl( "+###", -42, " -42" )
+	test_dbl( "+**#", +42, "*+42" )
+	test_dbl( "+**$#", -99, "*-$99" )
+
+	test_dbl( "+**$##.##^^^^", -1234.56e+78, "-$1234.56E+78" )
+	test_dbl( "**$##.##^^^^+", -1234.56e+78, "$1234.56E+78-" )
+	test_dbl( "**$##.##^^^^-",  1234.56e+78, "$1234.56E+78 " )
+	test_dbl( "**$##.##+^^^^", -1234.56, "$1234.56-^^^^" )
 
 	close #1
 
