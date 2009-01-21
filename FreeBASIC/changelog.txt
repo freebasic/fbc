@@ -13,6 +13,7 @@ Version 0.21.0 Beta:
 - COLOR now stores colors strictly in the format for the graphics screen's bit depth, so the default color can be relied upon when working on the screen, but not on images of a different bit depth (counting_pine)
 - lang fb: Multi-line comments are now completely disallowed in single-line comments - thanks to VonGodric for help (counting_pine)
 - DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
+- PRINT USING internals overhauled: it is now more reliable and behaves more like QBASIC with respect to parsing and printing (counting_pine)
 
 [added]
 - -fpu, -fpmode switches added to provide SSE optimizations (enable using -fpu sse -fpmode fast) - contributed by Bryan S. (counting_pine)
