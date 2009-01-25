@@ -1079,12 +1079,24 @@ function astBuildStrPtr _
 
 	'' note: only var-len strings expressions should be passed
 
+	dim as ASTNODE ptr expr = any
+
 	'' *cast( zstring ptr ptr, @lhs )
-	function = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), _
-								 	    NULL, _
-								 	  	astNewADDROF( lhs ) ), _
-						  	typeAddrOf( FB_DATATYPE_CHAR ), _
-						  	NULL )
+	expr = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), _
+	                                NULL, _
+	                                astNewADDROF( lhs ) ), _
+	                                typeAddrOf( FB_DATATYPE_CHAR ), _
+	                    NULL )
+
+	'' HACK: make it return an immutable value by returning (expr + 0)
+	'' in order to prevent things like STRPTR(s) = 0
+	'' (TODO: find a better way of doing this?)
+	expr = astNewBOP( AST_OP_ADD, _
+	                  expr, _
+	                  astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
+	                  NULL )
+
+	return expr
 
 end function
 
