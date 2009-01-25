@@ -28,6 +28,7 @@
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
 
+const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
 
 '':::::
 sub parserAsmInit static
@@ -63,7 +64,7 @@ function cAsmCode _
 	tail = NULL
 	do
 		'' !(END|Comment|NEWLINE)
-		thisTok = lexGetToken( LEXCHECK_NOWHITESPC )
+		thisTok = lexGetToken( LEX_FLAGS )
 		select case as const thisTok
 		case FB_TK_END, FB_TK_EOL, FB_TK_COMMENT, FB_TK_REM, FB_TK_EOF
 			exit do
@@ -73,7 +74,7 @@ function cAsmCode _
 		sym = NULL
 		doskip = FALSE
         
-		select case as const lexGetClass( LEXCHECK_NOWHITESPC )
+		select case as const lexGetClass( LEX_FLAGS )
 
 		'' id?
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
@@ -256,7 +257,7 @@ function cAsmCode _
 			node->next = NULL
 		end if
 
-		lexSkipToken( LEXCHECK_NOWHITESPC )
+		lexSkipToken( LEX_FLAGS )
 	loop
 
 	''
@@ -319,7 +320,7 @@ function cAsmBlock as integer
 		cAsmCode( )
 
 		'' Comment?
-		cComment( LEXCHECK_NOWHITESPC )
+		cComment( LEX_FLAGS )
 
 		'' emit the current line in text form
 		hEmitCurrLine( )

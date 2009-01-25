@@ -863,8 +863,16 @@ private sub hReadFloatNumber _
 
 
 	select case as const lexCurrentChar( )
-	'' '!', 'F', 'f'?
-	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+	'' 'F', 'f'?
+	case CHAR_FUPP, CHAR_FLOW
+		dtype = FB_DATATYPE_SINGLE
+
+		if( (flags and (LEXCHECK_NOSUFFIX or LEXCHECK_NOLETTERSUFFIX)) = 0 ) then
+			c = lexEatChar( )
+		end if
+		
+	'' '!'
+	case FB_TK_SGNTYPECHAR
 		dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
@@ -1093,51 +1101,64 @@ read_char:
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 
 			'' 'U' | 'u'
-			select case lexCurrentChar( )
-			case CHAR_UUPP, CHAR_ULOW
-				lexEatChar( )
-				issigned = FALSE
-				forcedsign = TRUE
-			case else
-				forcedsign = FALSE
-			end select
+			forcedsign = FALSE
+			if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
+				select case lexCurrentChar( )
+				case CHAR_UUPP, CHAR_ULOW
+					lexEatChar( )
+					issigned = FALSE
+					forcedsign = TRUE
+				end select
+			end if
 
 			select case as const lexCurrentChar( )
 			'' 'L' | 'l'
 			case CHAR_LUPP, CHAR_LLOW
-				lexEatChar( )
-				'' 'LL'?
-				c = lexCurrentChar( )
-				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
+				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					lexEatChar( )
-					islong = TRUE
-					'' restore sign if needed
-					if( forcedsign = FALSE ) then
-						if( value > 2147483647ULL ) then
-							if( value < 9223372036854775808ULL ) then
-								issigned = TRUE
+					'' 'LL'?
+					c = lexCurrentChar( )
+					if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
+						lexEatChar( )
+						islong = TRUE
+						'' restore sign if needed
+						if( forcedsign = FALSE ) then
+							if( value > 2147483647ULL ) then
+								if( value < 9223372036854775808ULL ) then
+									issigned = TRUE
+								end if
 							end if
 						end if
-					end if
-				else
-					if( islong ) then
-						if( skipchar = FALSE ) then
-							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+					else
+						if( islong ) then
+							if( skipchar = FALSE ) then
+								if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+									errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+								end if
 							end if
 						end if
 					end if
 				end if
 
-			'' 'F' | 'f' | '!'
-			case CHAR_FUPP, CHAR_FLOW, FB_TK_SGNTYPECHAR
+			'' 'F' | 'f'
+			case CHAR_FUPP, CHAR_FLOW
+				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
+					dtype = FB_DATATYPE_SINGLE
+					lexEatChar( )
+				end if
+
+			'' '!'
+			case FB_TK_SGNTYPECHAR
 				dtype = FB_DATATYPE_SINGLE
 				lexEatChar( )
 
 			'' 'D' | 'd'
+			'' (NOTE: should this ever occur? Wouldn't it have been parsed as a float already?)
 			case CHAR_DUPP, CHAR_DLOW
-				dtype = FB_DATATYPE_DOUBLE
-				lexEatChar( )
+				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
+					dtype = FB_DATATYPE_DOUBLE
+					lexEatChar( )
+				end if
 
 			'' '%'
 			case FB_TK_INTTYPECHAR
