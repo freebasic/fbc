@@ -150,13 +150,20 @@ function cOperatorNew _
 	'' not a vector?
 	if( elmts_expr = NULL ) then
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
+	else
+		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes #2533376 (counting_pine)
+		elmts_expr = astNewCONV( FB_DATATYPE_UINT, NULL, elmts_expr )
+		if( elmts_expr = NULL ) Then
+			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+			elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
+		end if
 	end if
 
 	dim as integer is_addr
 
-	if dtype = FB_DATATYPE_STRUCT then
+	if( dtype = FB_DATATYPE_STRUCT ) then
 		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
-		is_addr = -1
+		is_addr = TRUE
 	else
 		'' temp pointer
 		tmp = symbAddTempVar( dtype, subtype, , FALSE )
@@ -233,11 +240,11 @@ function cOperatorNew _
 				end if
 
         	else
-			if is_addr then
-        			ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
-			else
-				ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI )
-			end if
+				if( is_addr ) then
+					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
+				else
+					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI )
+				end if
 
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 
