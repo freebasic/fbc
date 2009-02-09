@@ -904,12 +904,14 @@ function hHasEllipsis _
 
 	function = FALSE
 
-	if symbIsArray( sym ) then
-		if sym->var_.array.has_ellipsis then
-			function = TRUE
+	if( sym <> NULL ) then
+		if symbIsArray( sym ) then
+			if sym->var_.array.has_ellipsis then
+				function = TRUE
+			end if
 		end if
 	end if
-
+	
 end function
 
 '':::::
