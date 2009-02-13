@@ -1590,7 +1590,7 @@ function hVarDeclEx _
 			end select
 		end if
 
-		if has_ellipsis then
+		if( has_ellipsis and (sym <> NULL) ) then
 			sym->var_.array.has_ellipsis = TRUE
 		end if
 
