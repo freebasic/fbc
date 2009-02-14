@@ -111,12 +111,19 @@ function astLoadFIELD _
 	) as IRVREG ptr
 
     dim as ASTNODE ptr l = any
+	dim as IRVREG ptr vr = any
 
 	'' handle bitfields..
 	l = n->l
 	astUpdateBitfieldAccess( l )
 
-	function = astLoad( l )
+	vr = astLoad( l )
+
+	if( vr <> NULL ) then
+		vr->vector = n->vector
+	end if
+
+	function = vr
 
 	astDelNode( l )
 

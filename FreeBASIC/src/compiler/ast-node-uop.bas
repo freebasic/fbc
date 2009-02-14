@@ -141,6 +141,8 @@ function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	dim as ASTNODE ptr n = any
+
 	function = NULL
 
 	if( o = NULL ) then
@@ -165,6 +167,21 @@ function astNewUOP _
     dim as integer dclass = any, dtype = any
 	dtype = astGetFullType( o )
     dclass = symbGetDataClass( dtype )
+
+	if( op = AST_OP_SWZ_REPEAT ) then
+		'' alloc new node
+		n = astNewNode( AST_NODECLASS_UOP, dtype, o->subtype )
+		if( n = NULL ) then
+			exit function
+		end if
+
+		n->l = o
+		n->r = NULL
+		n->op.op = op
+		n->op.ex = NULL
+		n->op.options = AST_OPOPT_ALLOCRES
+		return n
+	end if
 
     '' string? can't operate
     if( dclass = FB_DATACLASS_STRING ) then
@@ -326,7 +343,6 @@ chk_ulong:
 	end if
 
 	'' alloc new node
-    dim as ASTNODE ptr n = any
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
 	if( n = NULL ) then
 		exit function
@@ -364,8 +380,11 @@ function astLoadUOP _
 	if( ast.doemit ) then
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 			vr = irAllocVREG( astGetDataType( o ), o->subtype )
+			v1->vector = n->vector
+			vr->vector = n->vector
 		else
 			vr = NULL
+			v1->vector = n->vector
 		end if
 
 		irEmitUOP( op, v1, vr )
