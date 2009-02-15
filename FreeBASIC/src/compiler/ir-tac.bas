@@ -1024,12 +1024,11 @@ private function hNewVR _
 	v->vidx	= NULL
 	v->vaux	= NULL
 	v->ofs = 0
-	v->vector = 0
 
 	if( env.clopt.fputype = FB_FPUTYPE_FPU ) then
 		v->regFamily = IR_REG_FPU_STACK
 	else
-		v->regFamily = IR_REG_SSE
+		v->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 	v->tacvhead = NULL
@@ -1437,7 +1436,7 @@ private sub _flush static
 			'' after vr has been used for the first time, force reg family to be SSE
 			if( astGetOpClass( op ) <> AST_NODECLASS_CALL ) then
 				if( vr ) then
-					if( vr->regFamily = IR_REG_FPU_STACK ) then vr->regFamily = IR_REG_SSE
+					if( vr->regFamily = IR_REG_FPU_STACK ) then vr->regFamily = IR_REG_SSE_SCALAR
 				end if
 			end if
 		end if
@@ -1756,9 +1755,6 @@ private sub hFlushUOP _
 	dim as integer vr_typ, vr_dtype, vr_dclass
 	dim as IRVREG ptr va
 
-	dim as integer v1vector
-	v1vector = v1->vector
-
 	''
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
@@ -1799,18 +1795,9 @@ private sub hFlushUOP _
 			v1_dtype = FB_DATATYPE_INTEGER
 		end if
 
-		if( op = AST_OP_SWZ_REPEAT ) then
-			'' v1 must be loaded as a scalar
-			v1->vector = 0
-		end if
-
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
 								  symbGetDataSize( v1_dtype ) )
-
-		if( op = AST_OP_SWZ_REPEAT ) then
-			v1->vector = v1vector
-		end if
 	end if
 
 	''
@@ -1819,10 +1806,6 @@ private sub hFlushUOP _
 		emitNEG( v1 )
 	case AST_OP_NOT
 		emitNOT( v1 )
-
-	case AST_OP_HADD
-		emitHADD( v1 )
-		v1->vector = 0
 
 	case AST_OP_ABS
 		emitABS( v1 )
@@ -1857,10 +1840,6 @@ private sub hFlushUOP _
 		emitEXP( v1 )
 	case AST_OP_FLOOR
 		emitFLOOR( v1 )
-
-	case AST_OP_SWZ_REPEAT
-		emitSWZREP( v1 )
-
 	end select
 
     ''
@@ -2700,7 +2679,7 @@ private sub _loadVR _
 	vreg->reg = reg
 
 	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) and ( doLoad = FALSE ) then
-		vreg->regFamily = IR_REG_SSE
+		vreg->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 
@@ -2758,7 +2737,7 @@ private sub _storeVR _
 	end if
 
 	if( env.clopt.fputype >= FB_FPUTYPE_SSE ) then
-		vreg->regFamily = IR_REG_SSE
+		vreg->regFamily = IR_REG_SSE_SCALAR
 	end if
 
 end sub

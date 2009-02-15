@@ -51,7 +51,7 @@ end enum
 
 enum IR_REGFAMILY
 	IR_REG_FPU_STACK
-	IR_REG_SSE
+	IR_REG_SSE_SCALAR
 end enum
 	
 
@@ -92,7 +92,6 @@ type IRVREG
 
 	reg			as integer						'' reg
 	regFamily		as IR_REGFAMILY
-	vector		as integer
 
 	value		as FBVALUE						'' imm value (hi-word of longint's at vaux->value)
 

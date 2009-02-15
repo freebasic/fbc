@@ -80,8 +80,6 @@ enum AST_OP
 	AST_OP_PLUS
 	AST_OP_NEG
 
-	AST_OP_HADD							'' horizontal add
-
 	AST_OP_ABS
 	AST_OP_SGN
 	AST_OP_SIN
@@ -99,8 +97,6 @@ enum AST_OP
 	AST_OP_FLOOR
 	AST_OP_FIX
 	AST_OP_FRAC
-
-	AST_OP_SWZ_REPEAT						'' swizzle; repeat value
 
 	AST_OP_DEREF
 	AST_OP_FLDDEREF

@@ -20,6 +20,7 @@
 ''
 '' chng: june/2008 written [bryan]
 
+
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\reg.bi"
@@ -29,6 +30,7 @@
 #include once "inc\emitdbg.bi"
 #include once "inc\hash.bi"
 #include once "inc\symb.bi"
+
 
 const COMMA   = ", "
 
@@ -217,7 +219,7 @@ private sub _emitSTORF2L_SSE _
 	'' signed?
 	if( symbIsSigned( dvreg->dtype ) = 0) then exit sub
 
-	if( svreg->regFamily = IR_REG_SSE ) then
+	if( svreg->regFamily = IR_REG_SSE_SCALAR ) then
 
 		sdsize = symbGetDataSize( svreg->dtype )
 		outp "sub esp" + COMMA + str( sdsize )
@@ -266,7 +268,7 @@ private sub _emitSTORF2I_SSE _
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
-		elseif( svreg->regFamily = IR_REG_SSE ) then
+		elseif( svreg->regFamily = IR_REG_SSE_SCALAR ) then
 			if( sdsize > 4 ) then
 				outp "movlpd qword ptr [esp], " + src
 				outp "fld qword ptr [esp]"
@@ -286,7 +288,7 @@ private sub _emitSTORF2I_SSE _
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
-		elseif( svreg->regFamily = IR_REG_SSE ) then
+		elseif( svreg->regFamily = IR_REG_SSE_SCALAR ) then
 			if( sdsize > 4 ) then
 				outp "movlpd qword ptr [esp], " + src
 				outp "fld qword ptr [esp]"
@@ -485,40 +487,6 @@ private sub _emitSTORI2F_SSE _
 end sub
 
 
-private sub hEmitStoreFreg2F_SSE _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
-
-	dim as string dst, src
-	dim as integer ddsize, sdsize
-
-	hPrepOperand( dvreg, dst, , , FALSE )
-	hPrepOperand( svreg, src, , , FALSE )
-
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
-
-	if( ( svreg->vector = 2 ) and ( ddsize > 4 ) ) then
-		outp "movupd " + dst + COMMA + src
-		exit sub
-	end if
-
-	if( svreg->vector = 2 ) then
-		outp "movlps " + dst + COMMA + src
-	elseif( svreg->vector = 3 ) then
-		outp "movhlps xmm7" + COMMA + src
-		outp "movlps " + dst + COMMA + src
-		hPrepOperand( dvreg, dst, , 8, FALSE )
-		outp "movss " + dst + COMMA + "xmm7"
-	elseif( svreg->vector = 4 ) then
-		outp "movups " + dst + COMMA + src
-	end if
-
-end sub
-
-
 '':::::
 private sub _emitSTORF2F_SSE _
 	( _
@@ -527,7 +495,7 @@ private sub _emitSTORF2F_SSE _
 	) static
 
 	dim as string dst, src
-	dim as integer ddsize, sdsize, src_vec, dst_vec
+	dim as integer ddsize, sdsize
 	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -536,18 +504,10 @@ private sub _emitSTORF2F_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	sdsize = symbGetDataSize( svreg->dtype )
 
-	dst_vec = ( dvreg->vector > 0 )
-	src_vec = ( svreg->vector > 0 )
-
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		'' if the src was returned from a function, it is in st(0)
 		if( svreg->regFamily = IR_REG_FPU_STACK ) then
 			outp "fstp " + dst
-			exit sub
-		end if
-
-		if( src_vec ) then
-			hEmitStoreFreg2F_SSE dvreg, svreg
 			exit sub
 		end if
 
@@ -569,30 +529,6 @@ private sub _emitSTORF2F_SSE _
 	else
 		'' same size? just copy..
 		if( sdsize = ddsize ) then
-			if( src_vec ) then
-				hPrepOperand( dvreg, dst, , , FALSE )
-				hPrepOperand( svreg, src, , , FALSE )
-				if( ddsize > 4 ) then
-					outp "movupd xmm7" + COMMA + src
-					outp "movupd " + dst + COMMA + "xmm7"
-				else
-					if( svreg->vector = 2 ) then
-						outp "movlps xmm7" + COMMA + src
-						outp "movlps " + dst + COMMA + "xmm7"
-					elseif( svreg->vector = 3 ) then
-						outp "movups xmm7" + COMMA + src
-						outp "movlps " + dst + COMMA + "xmm7"
-						outp "unpckhps xmm7, xmm7"
-						hPrepOperand( dvreg, dst, , 8, FALSE )
-						outp "movss " + dst + COMMA + "xmm7"
-					elseif( svreg->vector = 4 ) then
-						outp "movups xmm7" + COMMA + src
-						outp "movups " + dst + COMMA + "xmm7"
-					end if
-				end if
-				exit sub
-			end if
-
 			if( ddsize > 4 ) then
 				outp "movlpd xmm7" + COMMA + src
 				outp "movlpd " + dst + COMMA + "xmm7"
@@ -604,22 +540,12 @@ private sub _emitSTORF2F_SSE _
 		else
 			if( sdsize > 4 ) then
 				'' load as double, store as single
-				if( src_vec ) then
-					outp "cvtpd2ps xmm7" + COMMA + src
-					outp "movlps " + dst + COMMA + "xmm7"
-				else
-					outp "cvtsd2ss xmm7" + COMMA + src
-					outp "movss " + dst + COMMA + "xmm7"
-				end if
+				outp "cvtsd2ss xmm7" + COMMA + src
+				outp "movss " + dst + COMMA + "xmm7"
 			else
 				'' load as single, store as double
-				if( src_vec ) then
-					outp "cvtps2pd xmm7" + COMMA + src
-					outp "movupd " + dst + COMMA + "xmm7"
-				else
-					outp "cvtss2sd xmm7" + COMMA + src
-					outp "movlpd " + dst + COMMA + "xmm7"
-				end if
+				outp "cvtss2sd xmm7" + COMMA + src
+				outp "movlpd " + dst + COMMA + "xmm7"
 			end if
 		end if
 	end if
@@ -643,7 +569,7 @@ private sub _emitLOADF2L_SSE _
 
 	sdsize = symbGetDataSize( svreg->dtype )
 
-	if( svreg->regFamily = IR_REG_SSE ) then
+	if( svreg->regFamily = IR_REG_SSE_SCALAR ) then
 		'' move float onto FPU stack
 		if( svreg->typ = IR_VREGTYPE_REG ) then
 			outp "sub esp, 8"
@@ -719,7 +645,7 @@ private sub _emitLOADF2I_SSE _
 		outp "sub esp, 8"
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
 			outp "fld " + src
-		elseif( svreg->regFamily = IR_REG_SSE ) then
+		elseif( svreg->regFamily = IR_REG_SSE_SCALAR ) then
 			if( sdsize > 4 ) then
 				outp "movlpd qword ptr [esp]" + COMMA + src
 				outp "fld qword ptr [esp]"
@@ -972,7 +898,7 @@ private sub _emitLOADI2F_SSE _
 		hPOP aux
 	end if
 
-	if( dvreg->regFamily = IR_REG_SSE ) then exit sub
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then exit sub
 
 	outp "sub esp" + COMMA + str( ddsize )
 	if( ddsize > 4 ) then
@@ -1010,20 +936,6 @@ private sub _emitLOADF2F_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 
 	if( sdsize = ddsize ) then
-		if( svreg->vector ) then
-			hPrepOperand( svreg, src, , , , FALSE )
-			if( ddsize > 4 ) then
-				outp "movupd " + dst + COMMA + src
-			else
-				if( svreg->vector = 2 ) then
-					outp "movlps " + dst + COMMA + src
-				else
-					outp "movups " + dst + COMMA + src
-				end if
-			end if
-			exit sub
-		end if
-
 		if( ddsize > 4 ) then
 			outp "movlpd " + dst + COMMA + src
 		else
@@ -1031,18 +943,10 @@ private sub _emitLOADF2F_SSE _
 		end if
 	elseif( sdsize > 4 ) then
 		'' source is a double, dst is single
-		if( svreg->vector ) then
-			outp "cvtpd2ps " + dst + COMMA + src
-		else
-			outp "cvtsd2ss " + dst + COMMA + src
-		end if
+		outp "cvtsd2ss " + dst + COMMA + src
 	else
 		'' source is a single, dst is double
-		if( svreg->vector ) then
-			outp "cvtps2pd " + dst + COMMA + src
-		else
-			outp "cvtss2sd " + dst + COMMA + src
-		end if
+		outp "cvtss2sd " + dst + COMMA + src
 	end if
 end sub
 
@@ -1065,51 +969,16 @@ private sub _emitMOVF_SSE _
 
 	if( sdsize > 4 ) and ( ddsize <= 4 ) then
 		'' source is a double
-		if( svreg->vector ) then
-			outp "cvtpd2ps " + dst + COMMA + src
-		else
-			outp "cvtsd2ss " + dst + COMMA + src
-		end if
+		outp "cvtsd2ss " + dst + COMMA + src
 	elseif( ddsize > 4 ) and ( sdsize <= 4 ) then
 		'' source is a single
-		if( svreg->vector ) then
-			outp "cvtps2pd " + dst + COMMA + src
-		else
-			outp "cvtss2sd " + dst + COMMA + src
-		end if
+		outp "cvtss2sd " + dst + COMMA + src
 	else
 		outp "movaps " + dst + COMMA + src
 	end if
 
 end sub
 
-
-
-'':::::
-'' replicate the scalar operand
-private sub _emitSWZREPF_SSE _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as string dst
-	dim as integer ddsize
-
-	ddsize = symbGetDataSize( dvreg->dtype )
-
-	hPrepOperand( dvreg, dst )
-
-	if( ddsize > 4 ) then
-		outp "unpcklpd " + dst + COMMA + dst
-	else
-		if( dvreg->vector = 2 ) then
-			outp "unpcklps " + dst + COMMA + dst
-		else
-			outp "shufps " + dst + COMMA + dst + COMMA + "0x0"
-		end if
-	end if
-
-end sub
 
 
 '':::::
@@ -1129,29 +998,21 @@ private function hEmitConvertOperands_SSE _
 	sdsize = symbGetDataSize( svreg->dtype )
 	ddsize = symbGetDataSize( dvreg->dtype )
 
-	function = FALSE
-
 	if( ddsize > 4 ) then
 		if( sdsize = 4 ) then
 			'' convert src to double
-			if( svreg->vector ) then
-				outp "cvtps2pd xmm7" + COMMA + src
-			else
-				outp "cvtss2sd xmm7" + COMMA + src
-			end if
-			function = TRUE
+			outp "cvtss2sd xmm7" + COMMA + src
+			return TRUE
 		end if
 	else
 		if( sdsize > 4 ) then
 			'' convert src to single
-			if( svreg->vector ) then
-				outp "cvtpd2ps xmm7" + COMMA + src
-			else
-				outp "cvtsd2ss xmm7" + COMMA + src
-			end if
-			function = TRUE
+			outp "cvtsd2ss xmm7" + COMMA + src
+			return TRUE
 		end if
 	end if
+
+	return FALSE
 
 end function
 	
@@ -1197,26 +1058,6 @@ private sub _emitADDF_SSE _
 		outp "add esp" + COMMA + str( returnSize )
 	end if
 
-	ostr = "adds"
-
-	if( svreg->vector ) then
-		ostr = "addp"
-
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			hPrepOperand( svreg, src, , , , FALSE )
-			if( sdsize > 4 ) then
-				outp "movupd xmm7" + COMMA + src
-			else
-				if( svreg->vector = 2 ) then
-					outp "movlps xmm7" + COMMA + src
-				else
-					outp "movups xmm7" + COMMA + src
-				end if
-			end if
-			src = "xmm7"
-		end if
-	end if
-
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
@@ -1224,10 +1065,10 @@ private sub _emitADDF_SSE _
 	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' add them as double-precision
-			outp ostr + "d " + dst + COMMA + src
+			outp "addsd " + dst + COMMA + src
 		else
 			'' add them as single-precision
-			outp ostr + "s " + dst + COMMA + src
+			outp "addss " + dst + COMMA + src
 		end if
 	else
 		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
@@ -1278,25 +1119,6 @@ private sub _emitSUBF_SSE _
 		outp "add esp" + COMMA + str( returnSize )
 	end if
 
-	ostr = "subs"
-	if( svreg->vector ) then
-		ostr = "subp"
-
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			hPrepOperand( svreg, src, , , , FALSE )
-			if( sdsize > 4 ) then
-				outp "movupd xmm7" + COMMA + src
-			else
-				if( svreg->vector = 2 ) then
-					outp "movlps xmm7" + COMMA + src
-				else
-					outp "movups xmm7" + COMMA + src
-				end if
-			end if
-			src = "xmm7"
-		end if
-	end if
-
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
@@ -1304,10 +1126,10 @@ private sub _emitSUBF_SSE _
 	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' subtract them as double-precision
-			outp ostr + "d " + dst + COMMA + src
+			outp "subsd " + dst + COMMA + src
 		else
 			'' subtract them as single-precision
-			outp ostr + "s " + dst + COMMA + src
+			outp "subss " + dst + COMMA + src
 		end if
 	else
 		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
@@ -1357,25 +1179,6 @@ private sub _emitMULF_SSE _
 		outp "add esp" + COMMA + str( returnSize )
 	end if
 
-	ostr = "muls"
-	if( svreg->vector ) then
-		ostr = "mulp"
-
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			hPrepOperand( svreg, src, , , , FALSE )
-			if( sdsize > 4 ) then
-				outp "movupd xmm7" + COMMA + src
-			else
-				if( svreg->vector = 2 ) then
-					outp "movlps xmm7" + COMMA + src
-				else
-					outp "movups xmm7" + COMMA + src
-				end if
-			end if
-			src = "xmm7"
-		end if
-	end if
-
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
@@ -1383,10 +1186,10 @@ private sub _emitMULF_SSE _
 	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' multiply them as double-precision
-			outp ostr + "d " + dst + COMMA + src
+			outp "mulsd " + dst + COMMA + src
 		else
 			'' multiply them as single-precision
-			outp ostr + "s " + dst + COMMA + src
+			outp "mulss " + dst + COMMA + src
 		end if
 	else
 		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
@@ -1437,25 +1240,6 @@ private sub _emitDIVF_SSE _
 		outp "add esp" + COMMA + str( returnSize )
 	end if
 
-	ostr = "divs"
-	if( svreg->vector ) then
-		ostr = "divp"
-
-		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			hPrepOperand( svreg, src, , , , FALSE )
-			if( sdsize > 4 ) then
-				outp "movupd xmm7" + COMMA + src
-			else
-				if( svreg->vector = 2 ) then
-					outp "movlps xmm7" + COMMA + src
-				else
-					outp "movups xmm7" + COMMA + src
-				end if
-			end if
-			src = "xmm7"
-		end if
-	end if
-
 	if( hEmitConvertOperands_SSE( dvreg, svreg ) ) then
 		src = "xmm7"
 	end if
@@ -1463,10 +1247,10 @@ private sub _emitDIVF_SSE _
 	if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 		if( ddsize > 4 ) then
 			'' divide them as double-precision
-			outp ostr + "d " + dst + COMMA + src
+			outp "divsd " + dst + COMMA + src
 		else
 			'' divide them as single-precision
-			outp ostr + "s " + dst + COMMA + src
+			outp "divss " + dst + COMMA + src
 		end if
 	else
 		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
@@ -1876,39 +1660,6 @@ end sub
 
 
 '':::::
-private sub _emitHADDF_SSE _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim dst as string
-
-	hPrepOperand( dvreg, dst )
-
-	if( symbGetDataSize( dvreg->dtype ) > 4 ) then
-		outp "movhlps xmm7" + COMMA + dst
-		outp "addsd " + dst + COMMA + "xmm7"
-	else
-		if( dvreg->vector = 2 ) then
-			outp "pshufd xmm7" + COMMA + dst + COMMA + "0x01"
-			outp "addss " + dst + COMMA + "xmm7"
-		elseif( dvreg->vector = 3 ) then
-			outp "pshufd xmm7" + COMMA + dst + COMMA + "0x01"
-			outp "addss " + dst + COMMA + "xmm7"
-			outp "movhlps xmm7" + COMMA + dst
-			outp "addss " + dst + COMMA + "xmm7"
-		elseif( dvreg->vector = 4 ) then
-			outp "movhlps xmm7" + COMMA + dst
-			outp "addps " + dst + COMMA + "xmm7"
-			outp "pshufd xmm7" + COMMA + dst + COMMA + "0x01"
-			outp "addss " + dst + COMMA + "xmm7"
-		end if
-	end if
-
-end sub
-
-
-'':::::
 private sub _emitABSF_SSE _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -2037,37 +1788,33 @@ private sub _emitSINCOS_FAST_SSE _
 
 	stackSize = 4		'' 4 bytes always needed
 
-	if( dvreg->regFamily = IR_REG_FPU_STACK ) then
-		stackSize += 4
-	end if
-
 	'' find a register
 	reg(0) = EMIT_REG_ECX
-	isFree(0) = FALSE
+	isFree(0) = 0
 
 	reg(1) = EMIT_REG_EAX
-	isFree(1) = FALSE
+	isFree(1) = 0
 	if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX ) ) then
 		reg(0) = EMIT_REG_ECX
-		isFree(0) = TRUE
+		isFree(0) = 1
 		if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX ) ) then
 			reg(1) = EMIT_REG_EDX
-			isFree(1) = TRUE
+			isFree(1) = 1
 		elseif( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 			reg(1) = EMIT_REG_EAX
-			isFree(1) = TRUE
+			isFree(1) = 1
 		end if
 	elseif( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX ) ) then
 		reg(0) = EMIT_REG_EDX
-		isFree(0) = TRUE
+		isFree(0) = 1
 		if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 			reg(1) = EMIT_REG_EAX
-			isFree(1) = TRUE
+			isFree(1) = 1
 		end if
 	else
 		if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
 			reg(1) = EMIT_REG_EAX
-			isFree(1) = TRUE
+			isFree(1) = 1
 		end if
 	end if
 
@@ -2075,9 +1822,9 @@ private sub _emitSINCOS_FAST_SSE _
 
 	isFree(2) = hIsRegFree( FB_DATACLASS_FPOINT, reg(2) )
 	
-	stackSize += (4 * (isFree(0) And 1))
-	stackSize += (4 * (isFree(1) And 1))
-	stackSize += (4 * (isFree(2) And 1))
+	stackSize += (4 * ((Not isFree(0)) And 1))
+	stackSize += (4 * ((Not isFree(1)) And 1))
+	stackSize += (4 * ((Not isFree(2)) And 1))
 
 	regName(0) = *hGetRegName( FB_DATATYPE_INTEGER, reg(0) )
 	regName(1) = *hGetRegName( FB_DATATYPE_INTEGER, reg(1) )
@@ -2126,7 +1873,7 @@ private sub _emitSINCOS_FAST_SSE _
 
 	stackPointer = 4
 	for i = 0 to 2
-		if( isFree(i) = FALSE ) then
+		if( isFree(i) = 0 ) then
 			if( i < 2 ) then
 				outp "mov [esp+" + str(stackPointer) + "]" + COMMA + regName(i)
 			else
@@ -2137,70 +1884,70 @@ private sub _emitSINCOS_FAST_SSE _
 	next i
 
 if( iscos = FALSE ) then
-	outp "movss	[esp]" + COMMA + dst
+	outp "movss [esp]" + COMMA + dst
 
 	hPrepOperand( vReg_twoOverPI, src )
-	outp "mulss	" + dst + COMMA + src
+	outp "mulss " + dst + COMMA + src
 
-	outp "and		dword ptr [esp], 0x80000000"
+	outp "and dword ptr [esp], 0x80000000"
 end if
 
 	hPrepOperand( vReg_invSignBitMask, src )
-	outp "andps	" + dst + COMMA + src
+	outp "andps " + dst + COMMA + src
 
 if( iscos = TRUE ) then
 	hPrepOperand( vReg_piOverTwo, src )
-	outp "addss	" + dst + COMMA + src
+	outp "addss " + dst + COMMA + src
 
 	hPrepOperand( vReg_twoOverPI, src )
-	outp "mulss	" + dst + COMMA + src
+	outp "mulss " + dst + COMMA + src
 end if
 
-	outp "cvttss2si	" + regName(0) + COMMA + dst
+	outp "cvttss2si " + regName(0) + COMMA + dst
 
 	hPrepOperand( vReg_one, src )
-	outp "movss	xmm7" + COMMA + src
-	outp "mov		" + regName(1) + COMMA + regName(0)
-	outp "cvtsi2ss	" + regName(2) + COMMA + regName(0)
-	outp "shl		" + regName(1) + COMMA + "30"
-	outp "not		" + regName(0)
-	outp "and		" + regName(1) + COMMA + "0x80000000"
-	outp "and		" + regName(0) + COMMA + "0x1"
-	outp "subss	" + dst + COMMA + regName(2)
-	outp "dec		" + regName(0)
-	outp "minss	" + dst + COMMA + "xmm7"
-	outp "movd		" + regName(2) + COMMA + regName(0)
-	outp "subss	xmm7" + COMMA + dst
-	outp "andps	xmm7" + COMMA + regName(2)
-	outp "andnps	" + regName(2) + COMMA + dst
-	outp "orps		xmm7" + COMMA + regName(2)
+	outp "movss xmm7" + COMMA + src
+	outp "mov " + regName(1) + COMMA + regName(0)
+	outp "cvtsi2ss " + regName(2) + COMMA + regName(0)
+	outp "shl " + regName(1) + COMMA + "30"	
+	outp "not " + regName(0)
+	outp "and " + regName(1) + COMMA + "0x80000000"
+	outp "and " + regName(0) + COMMA + "0x1"
+	outp "subss " + dst + COMMA + regName(2)
+	outp "dec " + regName(0)
+	outp "minss " + dst + COMMA + "xmm7"
+	outp "movd " + regName(2) + COMMA + regName(0)
+	outp "subss xmm7" + COMMA + dst
+	outp "andps xmm7" + COMMA + regName(2)
+	outp "andnps " + regName(2) + COMMA + dst
+	outp "orps xmm7" + COMMA + regName(2)
 if( iscos = FALSE ) then
-	outp "xor		" + regName(1) + COMMA + "[esp]"
+	outp "xor " + regName(1) + COMMA + "[esp]"
 end if
-	outp "movd		" + regName(0) + COMMA + "xmm7"
+	outp "movd " + regName(0) + COMMA + "xmm7"
 
-	outp "mulss	xmm7, xmm7"
+	outp "mulss xmm7, xmm7"	
 
-	outp "or		" + regName(1) + COMMA + regName(0)
+	outp "or " + regName(1) + COMMA + regName(0)
 	
-	outp "movss	" + regName(2) + COMMA + "xmm7"
+	outp "movss " + regName(2) + COMMA + "xmm7"
 
 	hPrepOperand( vReg_sin_c3, src )
-	outp "mulss	xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + src
 
 	hPrepOperand( vReg_sin_c2, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	xmm7" + COMMA + regName(2)
+	outp "addss xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + regName(2)
 
-	outp "movd		" + dst + COMMA + regName(1)
+	outp "movd " + dst + COMMA + regName(1)
 
 	hPrepOperand( vReg_sin_c1, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	xmm7" + COMMA + regName(2)
+	outp "addss xmm7" + COMMA + src
+	outp "mulss xmm7" + COMMA + regName(2)	
 
 	hPrepOperand( vReg_sin_c0, src )
-	outp "addss	xmm7" + COMMA + src
-	outp "mulss	" + dst + COMMA + "xmm7"
+	outp "addss xmm7" + COMMA + src
+	outp "mulss " + dst + COMMA + "xmm7"
 
 	stackPointer = 4
 	for i = 0 to 2
@@ -2237,7 +1984,7 @@ private sub _emitSIN_SSE _
 
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2278,7 +2025,7 @@ private sub _emitASIN_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2331,7 +2078,7 @@ private sub _emitCOS_SSE _
 
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2373,7 +2120,7 @@ private sub _emitACOS_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2421,7 +2168,7 @@ private sub _emitTAN_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2463,7 +2210,7 @@ private sub _emitATAN_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2613,7 +2360,7 @@ private sub _emitLOG_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2656,7 +2403,7 @@ private sub _emitEXP_SSE _
 	ddsize = symbGetDataSize( dvreg->dtype )
 	hPrepOperand( dvreg, dst )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		outp "sub esp" + COMMA + str( ddsize )
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
@@ -2726,7 +2473,7 @@ private sub _emitFLOOR_SSE _
 
 	outp "sub esp, 8"
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
 			outp "fld qword ptr [esp]"
@@ -2800,7 +2547,7 @@ private sub _emitFIX_SSE _
 
 	outp "sub esp" + COMMA + str( ddsize + 8 )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
 			outp "fld qword ptr [esp]"
@@ -2881,7 +2628,7 @@ private sub _emitFRAC_SSE _
 
 	outp "sub esp" + COMMA + str( ddsize+8 )
 
-	if( dvreg->regFamily = IR_REG_SSE ) then
+	if( dvreg->regFamily = IR_REG_SSE_SCALAR ) then
 		if( ddsize > 4 ) then
 			outp "movlpd qword ptr [esp]" + COMMA + dst
 			outp "fld qword ptr [esp]"
@@ -3074,7 +2821,6 @@ function _init_opFnTB_SSE _
 
 	'' unary ops
 	_opFnTB_SSE[EMIT_OP_NEGF] = EMIT_CBENTRY(NEGF_SSE)
-	_opFnTB_SSE[EMIT_OP_HADDF] = EMIT_CBENTRY(HADDF_SSE)
 	_opFnTB_SSE[EMIT_OP_ABSF] = EMIT_CBENTRY(ABSF_SSE)
 	_opFnTB_SSE[EMIT_OP_SGNF] = EMIT_CBENTRY(SGNF_SSE)
 
@@ -3096,7 +2842,6 @@ function _init_opFnTB_SSE _
 	_opFnTB_SSE[EMIT_OP_EXP] = EMIT_CBENTRY(EXP_SSE)
 
 	_opFnTB_SSE[EMIT_OP_FLOOR] = EMIT_CBENTRY(FLOOR_SSE)
-	_opFnTB_SSE[EMIT_OP_SWZREP] = EMIT_CBENTRY(SWZREPF_SSE)
 
 	_opFnTB_SSE[EMIT_OP_PUSHF] = EMIT_CBENTRY(PUSHF_SSE)
 	_opFnTB_SSE[EMIT_OP_POPF] = EMIT_CBENTRY(POPF_SSE)

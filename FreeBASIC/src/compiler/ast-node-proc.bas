@@ -723,10 +723,6 @@ function astProcEnd _
 	''
 	symbNestEnd( FALSE )
 
-	if( env.clopt.vectorize >= FB_VECTORIZE_NORMAL ) then
-		astProcVectorize( n->l )
-	end if
-
 	''
 	if( do_flush ) then
 	    if( n->block.proc.ismain = FALSE ) then

@@ -124,7 +124,6 @@ enum FB_COMPOPT
 	FB_COMPOPT_CPUTYPE
 	FB_COMPOPT_FPUTYPE
 	FB_COMPOPT_FPMODE
-	FB_COMPOPT_VECTORIZE
 	FB_COMPOPT_NOSTDCALL
 	FB_COMPOPT_NOUNDERPREFIX
 	FB_COMPOPT_ERRORCHECK
@@ -192,14 +191,6 @@ end enum
 const FB_DEFAULT_FPMODE		= FB_FPMODE_PRECISE
 const FB_DEFAULT_FPUTYPE		= FB_FPUTYPE_FPU
 
-enum FB_VECTORIZELEVEL
-	FB_VECTORIZE_NONE				'' no vectorization
-	FB_VECTORIZE_NORMAL				'' complete expression merging
-	FB_VECTORIZE_INTRATREE			'' intra-expression merging
-	FB_VECTORIZE_SUBEXPRESSION		'' sub-expression merging (not implemented yet)
-end enum
-
-const FB_DEFAULT_VECTORIZELEVEL    = FB_VECTORIZE_NONE
 
 '' output file type
 enum FB_OUTTYPE
@@ -309,8 +300,7 @@ type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
 	cputype			as FB_CPUTYPE
 	fputype			as FB_FPUTYPE
-	fpmode			as FB_FPMODE				'' precise or fast fp mode (SSE+ only)
-	vectorize		as FB_VECTORIZELEVEL		'' enable automatic vectorization
+	fpmode			as FB_FPMODE					'' precise or fast fp mode (SSE+ only)
 	errorcheck		as integer					'' runtime error check (def= false)
 	outtype			as FB_OUTTYPE
 	resumeerr 		as integer					'' add support for RESUME (def= false)

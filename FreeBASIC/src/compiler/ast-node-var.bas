@@ -123,7 +123,6 @@ function astLoadVAR _
 
     dim as FBSYMBOL ptr s = any
     dim as integer ofs = any
-	dim as IRVREG ptr vr
 
 	'' clean up?
 	if( n->l <> NULL ) then
@@ -139,11 +138,8 @@ function astLoadVAR _
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
-		vr->vector = n->vector
+		function = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
 	end if
-
-	function = vr
 
 end function
 

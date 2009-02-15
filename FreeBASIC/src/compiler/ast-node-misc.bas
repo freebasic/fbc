@@ -448,7 +448,6 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_NOT"             , '/ @"NOT"          /' , 0 '/ ), _
 	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
 	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _
-	( /' @"AST_OP_HADD"            , '/ @"HADD"         /' , 0 '/ ), _
 	( /' @"AST_OP_ABS"             , '/ @"ABS"          /' , 0 '/ ), _
 	( /' @"AST_OP_SGN"             , '/ @"SGN"          /' , 0 '/ ), _
 	( /' @"AST_OP_SIN"             , '/ @"SIN"          /' , 0 '/ ), _
@@ -466,7 +465,6 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_FLOOR"           , '/ @"FLOOR"        /' , 0 '/ ), _
 	( /' @"AST_OP_FIX"             , '/ @"FIX"          /' , 0 '/ ), _
 	( /' @"AST_OP_FRAC"            , '/ @"FRAC"         /' , 0 '/ ), _
-	( /' @"AST_OP_SWZREP"          , '/ @"SWZREP"       /' , 0 '/ ), _
 	( /' @"AST_OP_DEREF"           , '/ @"DEREF"        /' , 0 '/ ), _
 	( /' @"AST_OP_FLDDEREF"        , '/ @"FLDDEREF"     /' , 0 '/ ), _
 	( /' @"AST_OP_NEW"             , '/ @"NEW"          /' , 0 '/ ), _

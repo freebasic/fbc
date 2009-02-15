@@ -130,8 +130,6 @@ function astLoadIDX _
 	astDelNode( idx )
 	astDelNode( var_ )
 
-	vr->vector = n->vector
-
 	function = vr
 
 end function

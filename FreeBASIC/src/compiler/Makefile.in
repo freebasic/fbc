@@ -290,7 +290,7 @@ FBC_SRCS += ast-node-arg.bas ast-node-idx.bas ast-node-iif.bas ast-node-link.bas
 FBC_SRCS += ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas ast-node-scope.bas
 FBC_SRCS += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.bas
 FBC_SRCS += ast-node-typeini.bas ast-optimize.bas ast-node-proc.bas ast-node-namespace.bas
-FBC_SRCS += ast-helper.bas ast-misc.bas ast-vectorize.bas
+FBC_SRCS += ast-helper.bas ast-misc.bas
 
 FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas emit_SSE.bas fb.bas fb-main.bas 
 

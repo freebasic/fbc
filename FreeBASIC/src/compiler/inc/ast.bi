@@ -253,8 +253,6 @@ type ASTNODE
 
 	sym				as FBSYMBOL ptr					'' attached symbol
 
-	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
-
 	union
 		con			as AST_NODE_CONST
 		var_		as AST_NODE_VAR
@@ -465,11 +463,6 @@ declare function astProcEnd _
 		byval p as ASTNODE ptr, _
 		byval callrtexit as integer = FALSE _
 	) as integer
-
-declare sub astProcVectorize _
-	( _
-		byval p as ASTNODE ptr _
-	)
 
 declare function astProcAddStaticInstance _
 	( _
@@ -1333,8 +1326,7 @@ declare function astLoadIIF _
 	    n->defined          = FALSE            :_
 	    n->l                = NULL             :_
 	    n->r                = NULL             :_
-	    n->sym              = NULL             :_
-	    n->vector           = 0
+	    n->sym              = NULL
 
 #define astCopy(dst, src) *dst = *src
 

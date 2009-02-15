@@ -143,7 +143,6 @@ declare sub getDefaultLibs _
 		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
 		( FBC_OPT_ARCH			, @"arch"        ), _
 		( FBC_OPT_FPU			, @"fpu"         ), _
-		( FBC_OPT_VECTORIZE		, @"vec"         ), _
 		( FBC_OPT_FPMODE		, @"fpmode"      ), _
 		( FBC_OPT_DEBUG			, @"g"           ), _
 		( FBC_OPT_COMPILEONLY	, @"c"           ), _
@@ -1364,28 +1363,6 @@ private function processOptions _
 
 				del_cnt += 1
 
-			case FBC_OPT_VECTORIZE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "NONE", "0"
-					value = FB_VECTORIZE_NONE
-				case "1"
-					value = FB_VECTORIZE_NORMAL
-				case "2"
-					value = FB_VECTORIZE_INTRATREE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_VECTORIZE, value )
-
-				del_cnt += 1
-
 			case FBC_OPT_DEBUG
 				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
 
@@ -1763,10 +1740,9 @@ private function processOptions _
 	loop
 
 	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
-		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
-			( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
-				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
-				exit function
+		if ( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
+			errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
+			exit function	
 		end if
 	end if
 
@@ -2066,7 +2042,6 @@ private sub printOptions( )
 		printOption( "-title <name>", "Set XBE display title" )
 	end if
 	printOption( "-v", "Be verbose" )
-	printOption( "-vec <val>", "Enable <val> level of automatic vectorization (def: 0)" )
 	printOption( "-version", "Show compiler version" )
 	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
 	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )

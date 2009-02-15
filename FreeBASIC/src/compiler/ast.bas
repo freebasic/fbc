@@ -642,12 +642,6 @@ declare sub astDelCALL _
 			AST_OPFLAGS_NONE, _
 			@"-" _
 		), _
-		/' AST_OP_HADD '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"HADD" _
-		), _
 		/' AST_OP_ABS '/ _
 		( _
 			AST_NODECLASS_UOP, _
@@ -749,12 +743,6 @@ declare sub astDelCALL _
 			AST_NODECLASS_UOP, _
 			AST_OPFLAGS_NONE, _
 			@"frac" _
-		), _
-		/' AST_OP_SWZ_REPEAT '/ _
-		( _
-			AST_NODECLASS_UOP, _
-			AST_OPFLAGS_NONE, _
-			@"swzrep" _
 		), _
 		/' AST_OP_DEREF '/ _
 		( _
