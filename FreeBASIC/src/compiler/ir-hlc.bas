@@ -144,10 +144,11 @@ private function _init _
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
-				IR_OPT_CPU_BOPSELF or _
-				IR_OPT_REUSEOPER or _
-				IR_OPT_IMMOPER or _
-				IR_OPT_FPU_IMMOPER _
+				 IR_OPT_CPU_BOPSELF or _
+				 IR_OPT_REUSEOPER or _
+				 IR_OPT_IMMOPER or _
+				 IR_OPT_FPU_IMMOPER or _
+				 IR_OPT_NOINLINEOPS _
 			)
 
 	' initialize the current section
@@ -344,24 +345,45 @@ private sub hDeclProc _
 		return
 	end if
 
+	'' gcc builtin? gen a wrapper..
+	if( symbGetIsGCCBuiltin( s ) ) then
+		var cnt = 0
+		var param = symbGetProcLastParam( s )
+		var params = ""
+		do while( param <> NULL )
+			params += "temp_ppparam$" & cnt
+
+			param = symbGetProcPrevParam( s, param )
+			if param then
+				params += ", "
+			end if
+
+			cnt += 1
+		loop
+
+		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
+					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE )
+
+		return
+	end if
+
 	var ln = ""
 	if s->proc.params = 0 then
 		ln += "( void )"
 	else
 		ln += "( "
-		var temp_proc_param = symbGetProcLastParam( s )
-		do while temp_proc_param
-			ln += *hDtypeToStr( symbGetType( temp_proc_param ), _
-								symbGetSubType( temp_proc_param ) )
+		var param = symbGetProcLastParam( s )
+		do while param
+			ln += *hDtypeToStr( symbGetType( param ), _
+								symbGetSubType( param ) )
 
-			select case temp_proc_param->param.mode
+			select case param->param.mode
 			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 				ln += "*"
 			end select
 
-			temp_proc_param = symbGetProcPrevParam( s, temp_proc_param )
-
-			if temp_proc_param then
+			param = symbGetProcPrevParam( s, param )
+			if param then
 				ln += ", "
 			end if
 		loop
@@ -1210,8 +1232,6 @@ private sub hWriteBOP _
 		vr = v1
 	end if
 
-	'hWriteLine( "/* BOP vr.dtype = " & *hDtypeToStr( vr->dtype, vr->subtype ) & ", v1.dtype = " & *hDtypeToStr( v1->dtype, v1->subtype ) & ", v2.dtype = " & *hDtypeToStr( v2->dtype, v2->subtype ) & " */" )
-
 	' look for pointer artithmatic, as FB expects it all to be 1 based
 	if typeGetPtrCnt( v1->dtype ) > 0 then
 		lcast += "(ubyte *)"
@@ -1244,7 +1264,7 @@ private sub hWriteBOPEx _
 ''Alternate form of binary operators where the actual operator is a function call.
 
 	if( vr = NULL ) then
-	vr = v1
+		vr = v1
 	end if
 
 	if( irIsREG( vr ) ) then
@@ -1271,8 +1291,8 @@ private sub _emitBopEx _
 
 	select case as const op
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-	AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-	AST_OP_XOR
+		AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
+		AST_OP_XOR
 		hWriteBOP( op, vr, v1, v2 )
 
 	case AST_OP_EQV
@@ -1350,8 +1370,8 @@ private sub hWriteUOP _
 		byval v1 as IRVREG ptr _
 	)
 
-if( vr = NULL ) then
-	vr = v1
+	if( vr = NULL ) then
+		vr = v1
 	end if
 
 	if( irIsREG( vr ) ) then

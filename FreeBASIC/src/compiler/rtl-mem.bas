@@ -50,7 +50,7 @@
 		( _
 			@FB_RTL_MEMCOPY, @"memcpy", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
 				( _
@@ -173,7 +173,7 @@
 		( _
 			@"clear", @"memset", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+	 		NULL, FB_RTL_OPT_GCCBUILTIN, _
 			3, _
 			{ _
 				( _
@@ -385,60 +385,60 @@ function rtlMemSwap _
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
 	dim as integer l_bf = astIsBITFIELD( dst ), r_bf = astIsBITFIELD( src )
 	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst ) or (l_bf or r_bf)) ) then
-		
+
 		dim as ASTNODE ptr d = any, s = any
 		dim as FBSYMBOL ptr l_sym = any, r_sym = any
-		
+
 		'' left-side is bitfield...
 		if( l_bf ) then
-			
+
 			'' allocate temp var
 			l_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( dst ) ) ) )
-			
+
 			'' left-side references temp var
 			d = astNewVAR( l_sym )
-			
+
 			'' assign bitfield to temp var
 			astAdd( astNewASSIGN( d, astCloneTree( dst ) ) )
-			
+
 		else
 			'' left-side references tree
 			d = dst
 		end if
-		
+
 		'' push left-side
 		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
 
 		'' right-side is bitfield...
 		if( r_bf ) then
-			
+
 			'' allocate temp var
 			r_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( src ) ) ) )
-			
+
 			'' right-side references temp var
 			s = astNewVAR( r_sym )
-			
+
 			'' assign bitfield to temp var
 			astAdd( astNewASSIGN( s, astCloneTree( src ) ) )
-			
+
 		else
 			'' right-side references tree
 			s = src
 		end if
-		
+
 		'' left-side = right-side
 		astAdd( astNewASSIGN( dst, astCloneTree( s ) ) )
-		
+
 		'' right-side is bitfield...
 		if( r_bf ) then
-			
+
 			'' pop to temp var
 			s = astNewVAR( r_sym )
 			astAdd( astNewSTACK( AST_OP_POP, s ) )
-			
+
 			'' assign to right-side from temp var
 			astAdd( astNewASSIGN( src, astCloneTree( s ) ) )
-			
+
 		else
 			'' pop to right-side
 			astAdd( astNewSTACK( AST_OP_POP, src ) )
@@ -446,7 +446,7 @@ function rtlMemSwap _
 
 		exit function
 	end if
-	
+
 	''
     proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
@@ -530,7 +530,7 @@ function rtlMemNewOp _
 	'' assumes dtype has const info stripped
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
-    
+
     '' try to find an overloaded new()
     select case as const dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -572,9 +572,9 @@ function rtlMemDeleteOp _
 
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr sym = any
-	
+
 	'' assumes const info is stripped
-	
+
     '' try to find an overloaded delete()
     select case as const dtype
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

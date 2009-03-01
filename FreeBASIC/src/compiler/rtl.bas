@@ -57,12 +57,19 @@ declare sub			rtlSystemModEnd		( )
 declare sub			rtlGosubModEnd		( )
 
 
+type RTLCTX
+	arglist		as TLIST
+end type
+
 ''globals
+	dim shared ctx as RTLCTX
 	dim shared rtlLookupTB(0 to FB_RTL_INDEXES-1) as FBSYMBOL ptr
 
 
 '':::::
 sub rtlInit static
+
+	listNew( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
@@ -98,6 +105,8 @@ sub rtlEnd
 	rtlDataModEnd( )
 	rtlConsoleModEnd( )
 	rtlArrayModEnd( )
+
+	listFree( @ctx.arglist )
 
 	'' reset the table as the pointers will change if
 	'' the compiler is reinitialized
@@ -320,6 +329,10 @@ sub rtlAddIntrinsicProcs _
 				if( (procdef->options and FB_RTL_OPT_DUPDECL) <> 0 ) then
 					symbSetIsDupDecl( proc )
 				end if
+
+				if( (procdef->options and FB_RTL_OPT_GCCBUILTIN) <> 0 ) then
+					symbSetIsGccBuiltin( proc )
+				end if
 			else
 				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
 					errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
@@ -372,6 +385,58 @@ function rtlProcLookup _
 	end if
 
 	function = rtlLookupTB( pidx )
+
+end function
+
+'':::::
+function rtlOvlProcCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval param1 as ASTNODE ptr, _
+		byval param2 as ASTNODE ptr _
+	) as ASTNODE ptr
+
+    dim as FB_ERRMSG err_num = any
+    dim as integer args = 0
+    dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
+
+	var arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
+	arg->expr = param1
+	arg->mode = FB_PARAMMODE_BYVAL
+	args += 1
+
+	if( param2 <> NULL ) then
+		arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
+		arg->expr = param2
+		arg->mode = FB_PARAMMODE_BYVAL
+		args += 1
+	end if
+
+	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBLOOKUPOPT_NONE )
+
+	if( proc = NULL ) then
+		symbFreeOvlCallArgs( @ctx.arglist, @arg_list )
+		return NULL
+	end if
+
+	var procexpr = astNewCALL( proc, NULL )
+
+    '' add to tree
+	arg = arg_list.head
+	do while( arg <> NULL )
+        var nxt = arg->next
+
+		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+			return NULL
+		end if
+
+		symbFreeOvlCallArg( @ctx.arglist, arg )
+
+		'' next
+		arg = nxt
+	loop
+
+	function = procexpr
 
 end function
 

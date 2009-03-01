@@ -376,6 +376,18 @@
 #define FB_RTL_GOSUBEXIT                "fb_GosubExit"
 #define FB_RTL_SETJMP                   "fb_SetJmp"
 
+#define FB_RTL_SGN						"{sgn}"
+#define FB_RTL_SIN                      "{sin}"
+#define FB_RTL_ASIN                     "{asin}"
+#define FB_RTL_COS                      "{cos}"
+#define FB_RTL_ACOS                     "{acos}"
+#define FB_RTL_TAN                      "{tan}"
+#define FB_RTL_ATAN                     "{atan}"
+#define FB_RTL_SQRT                     "{sqrt}"
+#define FB_RTL_LOG                      "{log}"
+#define FB_RTL_EXP                      "{exp}"
+#define FB_RTL_FLOOR                    "{floor}"
+
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
@@ -729,23 +741,36 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GOSUBEXIT
 	FB_RTL_IDX_SETJMP
 
+	FB_RTL_IDX_SGN
+	FB_RTL_IDX_SIN
+	FB_RTL_IDX_ASIN
+	FB_RTL_IDX_COS
+	FB_RTL_IDX_ACOS
+	FB_RTL_IDX_TAN
+	FB_RTL_IDX_ATAN
+	FB_RTL_IDX_SQRT
+	FB_RTL_IDX_LOG
+	FB_RTL_IDX_EXP
+	FB_RTL_IDX_FLOOR
+
 	FB_RTL_INDEXES
 end enum
 
 enum FB_RTL_OPT
 	FB_RTL_OPT_NONE		  = &h00000000
-	FB_RTL_OPT_OVER		  = &h00000001
-	FB_RTL_OPT_ERROR	  = &h00000002
-	FB_RTL_OPT_MT		  = &h00000004
-	FB_RTL_OPT_VBSYMB	  = &h00000008
-	FB_RTL_OPT_DBGONLY	  = &h00000010
+	FB_RTL_OPT_OVER		  = &h00000001					'' overloaded
+	FB_RTL_OPT_ERROR	  = &h00000002					'' returns an error
+	FB_RTL_OPT_MT		  = &h00000004					'' needs the multithreaded rtlib
+	FB_RTL_OPT_VBSYMB	  = &h00000008                  '' vb-only
+	FB_RTL_OPT_DBGONLY	  = &h00000010                  '' -g only
 	FB_RTL_OPT_OPERATOR	  = &h00000020
-	FB_RTL_OPT_STRSUFFIX  = &h00000040
-	FB_RTL_OPT_NOQB		  = &h00000080
-	FB_RTL_OPT_QBONLY	  = &h00000100
-	FB_RTL_OPT_NOFB		  = &h00000200
-	FB_RTL_OPT_FBONLY	  = &h00000400
+	FB_RTL_OPT_STRSUFFIX  = &h00000040                  '' has a $ suffix (-lang qb only)
+	FB_RTL_OPT_NOQB		  = &h00000080                  '' anything but -lang qb
+	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
+	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
+	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
  	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
+ 	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 end enum
 
 type FB_RTL_PARAMDEF
@@ -803,6 +828,13 @@ declare function rtlProcLookup _
 		byval pname as zstring ptr, _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
+
+declare function rtlOvlProcCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval param1 as ASTNODE ptr, _
+		byval param2 as ASTNODE ptr = NULL _
+	) as ASTNODE ptr
 
 declare function rtlCalcExprLen _
 	( _
@@ -1108,6 +1140,12 @@ declare function rtlMathFp2ULongint _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
+	) as ASTNODE ptr
+
+declare function rtlMathUop _
+	( _
+		byval op as integer, _
+		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlInitMain _

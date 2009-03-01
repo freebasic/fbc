@@ -130,6 +130,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED
     FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
     FB_SYMBSTATS_ISDUPDECL 		= FB_SYMBSTATS_CANTDUP
+    FB_SYMBSTATS_GCCBUILTIN		= FB_SYMBSTATS_HASCTOR
 end enum
 
 '' symbol attributes mask
@@ -1863,6 +1864,22 @@ declare function symbCheckConstAssign _
 	) as integer
 
 
+declare function symbAllocOvlCallArg _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval to_head as integer = FALSE _
+	) as FB_CALL_ARG ptr
+
+#define symbFreeOvlCallArg( list, arg ) listDelNode( list, arg )
+
+declare sub symbFreeOvlCallArgs _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	)
+
+
 ''
 '' macros
 ''
@@ -2026,6 +2043,9 @@ declare function symbCheckConstAssign _
 
 #define symbGetIsDupDecl(s) ((s->stats and FB_SYMBSTATS_ISDUPDECL) <> 0)
 #define symbSetIsDupDecl(s) s->stats or= FB_SYMBSTATS_ISDUPDECL
+
+#define symbGetIsGccBuiltin(s) ((s->stats and FB_SYMBSTATS_GCCBUILTIN) <> 0)
+#define symbSetIsGccBuiltin(s) s->stats or= FB_SYMBSTATS_GCCBUILTIN
 
 #define symbGetStats(s) s->stats
 

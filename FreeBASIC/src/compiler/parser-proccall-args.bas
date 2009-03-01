@@ -27,74 +27,16 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-type FBCTX
-	arglist		as TLIST
-end type
-
-'' globals
-	dim shared ctx as FBCTX
-
 '':::::
 sub parserProcCallInit( )
 
-	listNew( @ctx.arglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listNew( @parser.ovlarglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 sub parserProcCallEnd( )
 
-	listFree( @ctx.arglist )
-
-end sub
-
-'':::::
-function hAllocCallArg _
-	( _
-		byval arg_list as FB_CALL_ARG_LIST ptr, _
-		byval to_head as integer _
-	) as FB_CALL_ARG ptr
-
-	dim as FB_CALL_ARG ptr arg = listNewNode( @ctx.arglist )
-
-	if( to_head = FALSE ) then
-		if( arg_list->head = NULL ) then
-			arg_list->head = arg
-		else
-			arg_list->tail->next = arg
-		end if
-
-		arg->next = NULL
-		arg_list->tail = arg
-
-	else
-		if( arg_list->tail = NULL ) then
-			arg_list->tail = arg
-		end if
-
-		arg->next = arg_list->head
-		arg_list->head = arg
-	end if
-
-	arg_list->args += 1
-
-	function = arg
-
-end function
-
-'':::::
-private sub hDelCallArgs _
-	( _
-		byval arg_list as FB_CALL_ARG_LIST ptr _
-	) static
-
-	dim as FB_CALL_ARG ptr arg, nxt
-
-	arg = arg_list->head
-	do while( arg <> NULL )
-		nxt = arg->next
-		listDelNode( @ctx.arglist, arg )
-		arg = nxt
-	loop
+	listFree( @parser.ovlarglist )
 
 end sub
 
@@ -363,12 +305,12 @@ private function hOvlProcArgList _
 			end if
 
 			'' alloc a new arg
-			arg = hAllocCallArg( arg_list, FALSE )
+			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
 			if( hOvlProcArg( args - init_args, arg, options ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					hDelCallArgs( arg_list )
+					symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )
 					exit function
 				end if
 			end if
@@ -397,7 +339,7 @@ private function hOvlProcArgList _
 			lkup_options = FB_SYMBLOOKUPOPT_PROPGET
 		end if
 	end if
-	
+
 	ovlproc = symbFindClosestOvlProc( proc, _
 									  args, _
 									  iif( (options and FB_PARSEROPT_HASINSTPTR) <> 0, _
@@ -407,7 +349,7 @@ private function hOvlProcArgList _
 									  lkup_options )
 
 	if( ovlproc = NULL ) then
-		hDelCallArgs( arg_list )
+		symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )
 
 		if( err_num = FB_ERRMSG_OK ) then
 			err_num = FB_ERRMSG_NOMATCHINGPROC
@@ -454,7 +396,7 @@ private function hOvlProcArgList _
 			end if
 
 			'' pass the instance ptr of the current method
-			arg = hAllocCallArg( arg_list, TRUE )
+			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
 			arg->expr = astBuildInstPtr( _
 							symbGetParamVar( _
 								symbGetProcHeadParam( parser.currproc ) ) )
@@ -470,7 +412,7 @@ private function hOvlProcArgList _
 			arg = arg_list->head
 			arg_list->head = arg->next
 			astDelTree( arg->expr )
-			listDelNode( @ctx.arglist, arg )
+			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
 	end if
 
@@ -481,7 +423,7 @@ private function hOvlProcArgList _
 	arg = arg_list->head
 	for i = 0 to args-1
         nxt = arg->next
-        
+
 		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
 			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 				exit function
@@ -492,7 +434,7 @@ private function hOvlProcArgList _
 			end if
 		end if
 
-		listDelNode( @ctx.arglist, arg )
+		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
 		param = symbGetProcPrevParam( proc, param )
@@ -570,7 +512,7 @@ function cProcArgList _
 			end if
 
 			'' pass the instance ptr of the current method
-			arg = hAllocCallArg( arg_list, TRUE )
+			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, TRUE )
 			arg->expr = astBuildInstPtr( _
 							symbGetParamVar( _
 								symbGetProcHeadParam( parser.currproc ) ) )
@@ -583,7 +525,7 @@ function cProcArgList _
 			arg = arg_list->head
 			arg_list->head = arg->next
 			astDelTree( arg->expr )
-			listDelNode( @ctx.arglist, arg )
+			symbFreeOvlCallArg( @parser.ovlarglist, arg )
 		end if
 	end if
 
@@ -605,7 +547,7 @@ function cProcArgList _
 			exit function
 		end if
 
-		listDelNode( @ctx.arglist, arg )
+		symbFreeOvlCallArg( @parser.ovlarglist, arg )
 
 		'' next
 		param = symbGetProcPrevParam( proc, param )

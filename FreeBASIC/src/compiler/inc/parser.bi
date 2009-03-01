@@ -200,6 +200,8 @@ type PARSERCTX
 
 	asmtoklist		as TLIST					'' inline ASM list
 
+	ovlarglist		as TLIST					'' used to resolve calls to overloaded functions
+
 	'' hacks
 	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
 	options			as FB_PARSEROPT
@@ -1116,12 +1118,6 @@ declare function hDeclCheckParent _
 	( _
 		byval s as FBSYMBOL ptr _
 	) as integer
-
-declare function hAllocCallArg _
-	( _
-		byval arg_list as FB_CALL_ARG_LIST ptr, _
-		byval to_head as integer _
-	) as FB_CALL_ARG ptr
 
 declare function hVarDeclEx _
 	( _

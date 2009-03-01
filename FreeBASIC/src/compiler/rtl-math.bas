@@ -142,6 +142,54 @@
 	 			) _
 	 		} _
 	 	), _
+		/' sinf CDECL overload ( byval x as single ) as single '/ _
+		( _
+			@FB_RTL_SIN, @"sinf", _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' sinl CDECL overload ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_SIN, @"sinl", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' asinf CDECL overload ( byval x as single ) as single '/ _
+		( _
+			@FB_RTL_ASIN, @"asinf", _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' asinl CDECL overload ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_ASIN, @"asinl", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
@@ -310,7 +358,7 @@ function rtlMathLongintDIV _
     dim as FBSYMBOL ptr f = any
 
 	function = NULL
-	
+
 	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTDIV )
 	else
@@ -346,7 +394,7 @@ function rtlMathLongintMOD _
     dim as FBSYMBOL ptr f = any
 
 	function = NULL
-	
+
 	if( typeGet( dtype ) = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTMOD )
 	else
@@ -376,7 +424,7 @@ function rtlMathFp2ULongint _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    
+
 	function = NULL
 
     proc = astNewCALL( PROCLOOKUP( DBL2ULONGINT)  )
@@ -387,6 +435,61 @@ function rtlMathFp2ULongint _
     end if
 
     function = proc
+
+end function
+
+
+'':::::
+function rtlMathUop _
+	( _
+		byval op as integer, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	function = NULL
+
+	select case as const op
+	case AST_OP_SGN
+		sym = PROCLOOKUP( SGN )
+
+	case AST_OP_SIN
+    	sym = PROCLOOKUP( SIN )
+
+	case AST_OP_ASIN
+    	sym = PROCLOOKUP( ASIN )
+
+	case AST_OP_COS
+    	sym = PROCLOOKUP( COS )
+
+	case AST_OP_ACOS
+    	sym = PROCLOOKUP( ACOS )
+
+	case AST_OP_TAN
+    	sym = PROCLOOKUP( TAN )
+
+	case AST_OP_ATAN
+    	sym = PROCLOOKUP( ATAN )
+
+	case AST_OP_SQRT
+    	sym = PROCLOOKUP( SQRT )
+
+	case AST_OP_LOG
+    	sym = PROCLOOKUP( LOG )
+
+	case AST_OP_EXP
+    	sym = PROCLOOKUP( EXP )
+
+	case AST_OP_FLOOR
+    	sym = PROCLOOKUP( FLOOR )
+
+	case else
+		exit function
+
+	end select
+
+	function = rtlOvlProcCall( sym, expr )
 
 end function
 
