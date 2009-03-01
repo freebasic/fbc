@@ -171,8 +171,10 @@ declare sub getDefaultLibs _
 		( FBC_OPT_FORCELANG		, @"forcelang"   ), _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
 		( FBC_OPT_WL			, @"Wl"     	 ), _
+		( FBC_OPT_WC			, @"Wc"     	 ), _
 		( FBC_OPT_GEN			, @"gen"		 ), _
 		( FBC_OPT_PREFIX		, @"prefix"      ), _
+		( FBC_OPT_OPTIMIZE		, @"O"      	 ), _
 		( FBC_OPT_EXTRAOPT		, @"z"			 ) _
 	}
 
@@ -536,7 +538,7 @@ private function compileFiles _
 			end if
 
 			if( fbCheckRestartCompile( ) ) then
-				
+
 				'' Errors? Don't bother restarting ...
 				if( errGetCount( ) <> 0 ) then
 					exit function
@@ -546,7 +548,7 @@ private function compileFiles _
 					'' shutdown the parser (it will be restarted)
 					fbEnd( )
 				end if
-			
+
 			else
 
 				'' update the list of libs and paths, with the ones found when parsing
@@ -698,20 +700,18 @@ private function assembleFiles_GCC _
 	do while( iof <> NULL )
 
     	'' gcc' options
-    	ascline = "-c -nostdlib -nostdinc "
+    	ascline = "-c -nostdlib -nostdinc -finline -O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
 
-    	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-			ascline = "-c "
-    	else
-    		ascline = ""
+    	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
+			ascline += "-g "
     	end if
 
 		ascline += QUOTE + iof->asmf + _
 				   (QUOTE + " -o " + QUOTE) + _
 				   iof->outf + (QUOTE) + _
-                   fbc.extopt.gas
+                   fbc.extopt.gcc
 
-    	'' invoke as
+    	'' invoke gcc
 		if( assembleFile_GCC( ascline ) = FALSE ) then
 			exit function
 		end if
@@ -1678,6 +1678,28 @@ private function processOptions _
 
 				del_cnt += 1
 
+			case FBC_OPT_OPTIMIZE
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				if( *nxt = "max" ) then
+					value = 3
+				else
+					value = valint( *nxt )
+					if( value < 0 ) then
+						value = 0
+						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					elseif( value > 3 ) then
+						value = 3
+					end if
+				end if
+
+				fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
+
+				del_cnt += 1
+
 			case FBC_OPT_WA
 				if( nxt = NULL ) then
 					printInvalidOpt( arg )
@@ -1695,6 +1717,16 @@ private function processOptions _
 				end if
 
 				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
+
+				del_cnt += 1
+
+			case FBC_OPT_WC
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.extopt.gcc = " " + hReplace( *nxt, ",", " " ) + " "
 
 				del_cnt += 1
 
@@ -1742,7 +1774,7 @@ private function processOptions _
 	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
 		if ( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
 			errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
-			exit function	
+			exit function
 		end if
 	end if
 
@@ -1966,6 +1998,7 @@ private sub printOptions( )
 	print "-fpmode <mode>"; " Select accuracy/speed of floating-point math (FAST, PRECISE)"
 	printOption( "-fpu <type>", "Select FPU (FPU, SSE)" )
 	printOption( "-g", "Add debug info" )
+	printOption( "-gen <name>", "Select the code generator (gas, gcc)" )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"
 	printOption( "-l <name>", "Add a library file to linker's list" )
@@ -1980,6 +2013,7 @@ private sub printOptions( )
 	printOption( "-nodeflibs", "Do not include the default libraries" )
 	printOption( "-noerrline", "Do not show source line where error occurred" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
+	printOption( "-O <value>", "Optimization level (default: 0)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	print "-prefix <path>"; " Set the compiler prefix path"
 	printOption( "-profile", "Enable function profiling" )
@@ -2045,6 +2079,7 @@ private sub printOptions( )
 	printOption( "-version", "Show compiler version" )
 	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
 	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
+	printOption( "-Wc <opt>", "Pass options to GCC when using -gen gcc (separated by commas)" )
 	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
 	printOption( "-x <name>", "Set executable/library path/name" )
 

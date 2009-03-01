@@ -211,12 +211,12 @@ private function hToStr _
 		byref l as ASTNODE ptr, _
 		byref r as ASTNODE ptr _
 	) as integer
-	
+
 	dim as integer ldtype = any, rdtype = any
-	
+
 	ldtype = astGetDataType( l )
 	rdtype = astGetDataType( r )
-	
+
     '' convert left operand to string if needed
     select case as const ldtype
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -1178,7 +1178,7 @@ function astNewBOP _
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
 			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
-			
+
 			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
 				r = astNewCONV( rdtype, NULL, r )
 			else
@@ -1244,7 +1244,7 @@ function astNewBOP _
 				else
 					dtype   = typeJoin( dtype, FB_DATATYPE_DOUBLE )
 					subtype = NULL
-				end if					
+				end if
 			else
 
 				'' an ENUM or POINTER always has the precedence
@@ -1264,7 +1264,7 @@ function astNewBOP _
 				subtype = r->subtype
 				l = astNewCONV( dtype, subtype, l )
 				if( l = NULL ) then exit function
-				
+
 				ldtype = dtype
 				ldclass = rdclass
 
@@ -1280,7 +1280,7 @@ function astNewBOP _
 				case else
 					r = astNewCONV( dtype, subtype, r )
 					if( r = NULL ) then exit function
-					
+
 					rdtype = dtype
 					rdclass = ldclass
 				end select
@@ -1310,10 +1310,10 @@ function astNewBOP _
 		if( astIsCONST( r ) ) then
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
-			select case astGetValueAsULongint( r ) 
+			select case astGetValueAsULongint( r )
 				case is >= symbGetDataSize( ldtype ) * 8
 					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
-			end select  
+			end select
 		end if
 
 		if( typeGet( rdtype ) <> FB_DATATYPE_INTEGER ) then
@@ -1457,9 +1457,14 @@ function astNewBOP _
 	''::::::
 	'' handle special cases
 
-	select case op
+	select case as const op
 	case AST_OP_POW
 	    return rtlMathPow( l, r )
+
+	case AST_OP_ATAN2
+	    if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
+	    	return rtlMathBop( op, l, r )
+	    end if
 
 	case AST_OP_INTDIV
 		'' longint?

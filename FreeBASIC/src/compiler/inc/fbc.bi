@@ -73,8 +73,10 @@ enum FBC_OPT
 	FBC_OPT_FORCELANG
 	FBC_OPT_WA
 	FBC_OPT_WL
+	FBC_OPT_WC
 	FBC_OPT_GEN
 	FBC_OPT_PREFIX
+	FBC_OPT_OPTIMIZE
 	FBC_OPT_EXTRAOPT
 
 	FBC_OPTS
@@ -88,6 +90,7 @@ end type
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
+	gcc			as zstring * 128
 end type
 
 type FBC_IOFILE

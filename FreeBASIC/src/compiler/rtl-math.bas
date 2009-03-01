@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 47 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 63 ) = _
 	{ _
 		/' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
@@ -550,6 +550,228 @@
 	 			) _
 	 		} _
 		), _
+		/' atan2f CDECL overload ( byval x as single, byval y as single ) as single '/ _
+		( _
+			@FB_RTL_ATAN2, @"atan2f", _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' atan2l CDECL overload ( byval x as double, byval y as double ) as double '/ _
+		( _
+			@FB_RTL_ATAN2, @"atan2l", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftosl ( byval x as single ) as long '/ _
+		( _
+			@FB_RTL_FTOSL, @"fb_ftosl", _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtosl ( byval x as double ) as long '/ _
+		( _
+			@FB_RTL_DTOSL, @"fb_dtosl", _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftosi ( byval x as single ) as integer '/ _
+		( _
+			@FB_RTL_FTOSI, @"fb_ftosi", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtosi ( byval x as double ) as integer '/ _
+		( _
+			@FB_RTL_DTOSI, @"fb_dtosi", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftoss ( byval x as single ) as short '/ _
+		( _
+			@FB_RTL_FTOSS, @"fb_ftoss", _
+			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtoss ( byval x as double ) as short '/ _
+		( _
+			@FB_RTL_DTOSS, @"fb_dtoss", _
+			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftosb ( byval x as single ) as byte '/ _
+		( _
+			@FB_RTL_FTOSB, @"fb_ftosb", _
+			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtosb ( byval x as double ) as byte '/ _
+		( _
+			@FB_RTL_DTOSB, @"fb_dtosb", _
+			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftoul ( byval x as single ) as long '/ _
+		( _
+			@FB_RTL_FTOUL, @"fb_ftoul", _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtoul ( byval x as double ) as long '/ _
+		( _
+			@FB_RTL_DTOUL, @"fb_dtoul", _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftoui ( byval x as single ) as integer '/ _
+		( _
+			@FB_RTL_FTOUI, @"fb_ftoui", _
+			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtoui ( byval x as double ) as integer '/ _
+		( _
+			@FB_RTL_DTOUI, @"fb_dtoui", _
+			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftous ( byval x as single ) as short '/ _
+		( _
+			@FB_RTL_FTOUS, @"fb_ftous", _
+			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtous ( byval x as double ) as short '/ _
+		( _
+			@FB_RTL_DTOUS, @"fb_dtous", _
+			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' ftoub ( byval x as single ) as byte '/ _
+		( _
+			@FB_RTL_FTOUB, @"fb_ftoub", _
+			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' dtoub ( byval x as double ) as byte '/ _
+		( _
+			@FB_RTL_DTOUB, @"fb_dtoub", _
+			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_DUPDECL, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
@@ -860,6 +1082,116 @@ function rtlMathUop _
 	end select
 
 	function = rtlOvlProcCall( sym, expr )
+
+end function
+
+'':::::
+function rtlMathBop _
+	( _
+		byval op as integer, _
+		byval lexpr as ASTNODE ptr, _
+		byval rexpr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	function = NULL
+
+	select case as const op
+	case AST_OP_ATAN2
+		sym = PROCLOOKUP( ATAN2 )
+
+	case else
+		exit function
+
+	end select
+
+	function = rtlOvlProcCall( sym, lexpr, rexpr )
+
+end function
+
+'':::::
+function rtlMathFTOI _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval to_dtype as integer _
+	) as ASTNODE ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	function = NULL
+
+	var from_dtype = astGetDataType( expr )
+
+	select case as const typeGet( to_dtype )
+	case FB_DATATYPE_BYTE
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSB )
+		else
+			sym = PROCLOOKUP( DTOSB )
+		end if
+
+	case FB_DATATYPE_UBYTE
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUB )
+		else
+			sym = PROCLOOKUP( DTOUB )
+		end if
+
+	case FB_DATATYPE_SHORT
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSS )
+		else
+			sym = PROCLOOKUP( DTOSS )
+		end if
+
+	case FB_DATATYPE_USHORT
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUS )
+		else
+			sym = PROCLOOKUP( DTOUS )
+		end if
+
+	case FB_DATATYPE_INTEGER
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSI )
+		else
+			sym = PROCLOOKUP( DTOSI )
+		end if
+
+	case FB_DATATYPE_UINT
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUI )
+		else
+			sym = PROCLOOKUP( DTOUI )
+		end if
+
+	case FB_DATATYPE_LONGINT
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSL )
+		else
+			sym = PROCLOOKUP( DTOSL )
+		end if
+
+	case FB_DATATYPE_ULONGINT
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUL )
+		else
+			sym = PROCLOOKUP( DTOUL )
+		end if
+
+	case else
+		exit function
+
+	end select
+
+    var proc = astNewCALL( sym )
+
+    if( astNewARG( proc, expr ) = NULL ) then
+    	exit function
+    end if
+
+    function = proc
 
 end function
 

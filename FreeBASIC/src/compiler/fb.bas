@@ -46,7 +46,7 @@ declare sub	parserSetCtx ( )
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 	dim shared as string fbPrefix
-	dim shared as string gccLibTb() 
+	dim shared as string gccLibTb()
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -527,6 +527,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.showsusperrors= FALSE
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
 	env.clopt.extraopt      = FB_EXTRAOPT_NONE
+	env.clopt.optlevel		= 0
 
 	hSetLangOptions( env.clopt.lang )
 
@@ -609,6 +610,9 @@ sub fbSetOption _
 
 	case FB_COMPOPT_EXTRAOPT
 		env.clopt.extraopt = value
+
+	case FB_COMPOPT_OPTIMIZELEVEL
+		env.clopt.optlevel = value
 
 	end select
 
@@ -703,6 +707,9 @@ function fbGetOption _
 	case FB_COMPOPT_EXTRAOPT
 		function = env.clopt.extraopt
 
+	case FB_COMPOPT_OPTIMIZELEVEL
+		function = env.clopt.optlevel
+
 	case else
 		function = FALSE
 	end select
@@ -737,7 +744,7 @@ function fbChangeOption _
 				else
 					errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 				end if
-			
+
 			'' module level
 			else
 				'' Explicit -forcelang on cmdline overrides directive
@@ -760,7 +767,7 @@ function fbChangeOption _
 				end if
 
 			end if
-						
+
 		end if
 
 	case else
@@ -783,7 +790,7 @@ end function
 '':::::
 sub fbSetPaths _
 	( _
-	) 
+	)
 
 	dim as string prefix = fbPrefix
 	dim as integer usetargetdir = FALSE
@@ -821,9 +828,9 @@ function fbGetPath _
 	( _
 		byval path as integer _
 	) as string static
-	
+
 	function = pathTB( path )
-	
+
 end function
 
 '':::::
@@ -831,9 +838,9 @@ sub fbSetPrefix _
 	( _
 		byref prefix as string _
 	)
-	
+
 	fbPrefix = prefix
-	
+
 	'' trim trailing slash
 	if( right( fbPrefix, 1 )  = "/" ) then
 		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
@@ -1093,44 +1100,44 @@ function fbFindGccLib _
 	if( hFileExists( file_loc ) ) then
 		return file_loc
 	end if
-    
+
 '' only query gcc if the host is unix-like
 #if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_DARWIN__)
 
 	dim as string path
-	dim as integer ff = any 
+	dim as integer ff = any
 
 	function = ""
 
 	path = fbFindBinFile( "gcc" )
 	if( len( path ) = 0 ) then
 		exit function
-	end if		
+	end if
 
-	path += " -m32 -print-file-name=" 
+	path += " -m32 -print-file-name="
 	path += *gccLibFileNameTb( lib_id )
-	
+
 	ff = freefile
 	if( open pipe( path, for input, as ff ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
-	
+
 	input #ff, file_loc
-	
+
 	close ff
-	
+
 	dim as string short_loc = hStripPath( file_loc )
-	
+
 	if( file_loc = short_loc ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
 
 #endif
-	
+
 	function = file_loc
-	
+
 end function
 
 '':::::
@@ -1261,7 +1268,7 @@ function solve_path( byval path as zstring ptr ) as integer
 	dim as integer w = any   '' index of char we are writing
 	dim as integer c = any   '' current character
 
-	'' set-up stack and don't touch the root path 
+	'' set-up stack and don't touch the root path
 	'' (root path is not on the stack)
 
 	stk = 0
@@ -1397,7 +1404,7 @@ function fbIncludeFile _
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
 		return errFatal( )
 	end if
-	
+
 	hRevertSlash( incfile, FALSE, asc(FB_HOST_PATHDIV) )
 
 	'' #include ONCE
@@ -1510,8 +1517,8 @@ function fbFindBinFile _
 	'' if not set, get a default value
 	if( len(path) = 0 ) then
 		path = fbGetPath( FB_PATH_BIN )
-		path += *filename 
-		path += FB_HOST_EXEEXT 
+		path += *filename
+		path += FB_HOST_EXEEXT
 	end if
 
 	'' Found it?

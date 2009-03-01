@@ -484,16 +484,167 @@ private function hProcIsUsed _
 
 end function
 
+private sub hWriteFTOI _
+	( _
+		byref fname as string, _
+		byval rtype as integer, _
+		byval ptype as integer _
+	)
+
+	dim as string rtype_str, rtype_suffix, rtype2_str
+	select case rtype
+	case FB_DATATYPE_BYTE
+		rtype_str = "char"
+		rtype_suffix = "s"
+		rtype2_str = "int"
+
+	case FB_DATATYPE_UBYTE
+		rtype_str = "unsigned char"
+		rtype_suffix = "s"
+		rtype2_str = "unsigned int"
+
+	case FB_DATATYPE_SHORT
+		rtype_str = "short"
+		rtype_suffix = "l"
+
+	case FB_DATATYPE_USHORT
+		rtype_str = "unsigned short"
+		rtype_suffix = "l"
+
+	case FB_DATATYPE_INTEGER
+		rtype_str = "int"
+		rtype_suffix = "s"
+
+	case FB_DATATYPE_UINT
+		rtype_str = "unsigned int"
+		rtype_suffix = "s"
+
+	case FB_DATATYPE_LONGINT
+		rtype_str = "long long int"
+		rtype_suffix = "q"
+
+	case FB_DATATYPE_ULONGINT
+		rtype_str = "unsigned long long int"
+		rtype_suffix = "q"
+	end select
+
+	if( len( rtype2_str ) = 0 ) then
+		rtype2_str = rtype_str
+	end if
+
+	dim as string ptype_str, ptype_suffix
+	select case ptype
+	case FB_DATATYPE_SINGLE
+		ptype_str = "float"
+		ptype_suffix = "s"
+
+	case FB_DATATYPE_DOUBLE
+		ptype_str = "double"
+		ptype_suffix = "l"
+	end select
+
+
+#ifdef TARGET_X86
+	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
+				!"\tvolatile " & rtype2_str & !" result;\n" & _
+				!"\t__asm__ (\n" & _
+				!"\t\t\"fld" & ptype_suffix & !" %1;\"\n" & _
+				!"\t\t\"fistp" & rtype_suffix & !" %0;\"\n" & _
+				!"\t\t:\"=m\" (result)\n" & _
+				!"\t\t:\"m\" (value)\n" & _
+				!"\t);\n" & _
+				!"\treturn result;\n" & _
+				!"}", FALSE )
+#else
+	#error !!!WRITEME!!!
+#endif
+
+end sub
+
+private sub hEmitFTOIBuiltins( )
+
+	'' single
+	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) ) then
+		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
+		hWriteLine( "#define fb_ftoul( v ) (unsigned long long int)fb_ftosl( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOUI ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
+		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
+		hWriteLine( "#define fb_ftoui( v ) (unsigned int)fb_ftosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
+		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
+		hWriteLine( "#define fb_ftous( v ) (unsigned short)fb_ftosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
+		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
+		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE )
+	end if
+
+	'' double
+	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) ) then
+		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
+		hWriteLine( "#define fb_dtoul( v ) (unsigned long long int)fb_dtosl( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOUI ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
+		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
+		hWriteLine( "#define fb_dtoui( v ) (unsigned int)fb_dtosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
+		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
+		hWriteLine( "#define fb_dtous( v ) (unsigned short)fb_dtosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
+		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
+		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE )
+	end if
+
+end sub
+
 '':::::
 private sub hEmitBuiltins( )
 
-	/'if( hProcIsUsed( PROCLOOKUP( FTOI ) ) ) then
-		hWriteLine( "#define fb_FTOI(v) __builtin_floorf( (v) + 0.5f )", FALSE )
-	end if
-
-	if( hProcIsUsed( PROCLOOKUP( DTOI ) ) ) then
-		hWriteLine( "#define fb_DTOI(v) __builtin_floord( (v) + 0.5 )", FALSE )
-	end if'/
+	hEmitFTOIBuiltins( )
 
 end sub
 
@@ -1352,14 +1503,6 @@ private sub _emitBopEx _
 						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) )
 		end if
 
-	case AST_OP_ATAN2
-		'' mark C's atan2() as used
-		hWriteBOPEx( "atan2", vr, v1, v2 )
-
-	case AST_OP_POW
-		'' mark C's pow() as used
-		hWriteBOPEx( "pow", vr, v1, v2 )
-
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr <> NULL ) then
 			hWriteBOP( op, vr, v1, v2 )
@@ -1722,10 +1865,10 @@ private sub _emitMem _
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )" )
+		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )" )
 
 	case AST_OP_MEMMOVE
-		hWriteLine("memmove( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )" )
+		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )" )
 
 	end select
 
