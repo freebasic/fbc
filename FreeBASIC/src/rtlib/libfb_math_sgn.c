@@ -1,5 +1,3 @@
-/*!!!REMOVEME!!!*/
-
 /*
  *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2008 The FreeBASIC development team.
@@ -32,7 +30,7 @@
  */
 
 /*
- * math_sgn.c -- sgn function for singles and doubles
+ * math_sgn.c -- SGN function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -40,6 +38,39 @@
 
 #include "fb.h"
 
+
+/*:::::*/
+FBCALL int fb_SGNb ( char x )
+{
+	if( x == 0 )
+		return 0;
+	else if( x > 0 )
+		return 1;
+	else
+		return -1;
+}
+
+/*:::::*/
+FBCALL int fb_SGNi ( int x )
+{
+	if( x == 0 )
+		return 0;
+	else if( x > 0 )
+		return 1;
+	else
+		return -1;
+}
+
+/*:::::*/
+FBCALL int fb_SGNl ( long long int x )
+{
+	if( x == 0 )
+		return 0ll;
+	else if( x > 0ll )
+		return 1;
+	else
+		return -1;
+}
 
 /*:::::*/
 FBCALL int fb_SGNSingle ( float x )
