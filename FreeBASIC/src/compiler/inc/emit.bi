@@ -270,6 +270,11 @@ type EMIT_VTBL
 	( _
 	)
 
+	getOptionValue as function _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
+
 	open as function _
 	( _
 	) as integer
@@ -312,6 +317,7 @@ type EMIT_VTBL
 	procGetFrameRegName as function _
 	( _
 	) as zstring ptr
+
 
 	procBegin as sub _
 	( _
@@ -878,6 +884,21 @@ declare sub emitVARINIPAD _
 		byval bytes as integer _
 	)
 
+declare sub emitVARINISCOPEINI _
+	( _
+		_
+	)
+
+declare sub emitVARINISCOPEEND _
+	( _
+		_
+	)
+
+declare sub emitVARINISEPARATOR _
+	( _
+		_
+	)
+
 declare sub emitWriteStr _
 	( _
 		byval s as zstring ptr, _
@@ -899,6 +920,9 @@ declare sub emitFlush _
 	( _
 		_
 	)
+
+
+#define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
 
 #define emitGetVarName( s ) emit.vtbl.getVarName( s )
 

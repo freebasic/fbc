@@ -277,6 +277,57 @@ function astTypeIniAddCtorList _
 end function
 
 '':::::
+function astTypeIniScopeBegin _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_SCOPEINI, _
+				  FB_DATATYPE_INVALID, _
+				  NULL )
+
+	function = n
+
+end function
+
+'':::::
+function astTypeIniScopeEnd _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_SCOPEEND, _
+				  FB_DATATYPE_INVALID, _
+				  NULL )
+
+	function = n
+
+end function
+
+'':::::
+function astTypeIniSeparator _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	n = hAddNode( tree, _
+				  AST_NODECLASS_TYPEINI_SEPARATOR, _
+				  FB_DATATYPE_INVALID, _
+				  NULL )
+
+	function = n
+
+end function
+
+'':::::
 private function hCallCtor _
 	( _
 		byval flush_tree as ASTNODE ptr, _
@@ -292,7 +343,7 @@ private function hCallCtor _
 		if( symbIsField( fld ) = FALSE ) then
 			fld = NULL
 		else
-			'' Hack'ish, but astBuildVarField() adds 
+			'' Hack'ish, but astBuildVarField() adds
 			'' this back on if fld <> NULL even
 			'' n->typeini.ofs is the offset needed.
 			ofs -= symbGetOfs( fld )
@@ -400,7 +451,7 @@ private function hFlushTree _
 									 n->typeini.ofs )
 
 			else
-				
+
 				'' var?
 				if( do_deref = FALSE ) then
 					lside = astNewVAR( basesym, _
@@ -422,7 +473,7 @@ private function hFlushTree _
 				if( n->sym <> NULL ) then
 					'' field?
 					if( symbIsField( n->sym ) ) then
-						
+
 						lside = astNewFIELD( lside, _
 											 n->sym, _
 											 astGetFullType( n ), _
@@ -430,41 +481,41 @@ private function hFlushTree _
 					end if
 				end if
 			end if
-			
+
 			dim as integer is_bitfield = FALSE
-			
-			'' not a ctor? 
+
+			'' not a ctor?
 			if( symbIsParamInstance( basesym ) = FALSE ) then
 				if( lside->class = AST_NODECLASS_FIELD ) then
 					if( astGetDataType( astGetLeft( lside ) ) = FB_DATATYPE_BITFIELD ) then
 						is_bitfield = TRUE
-						
+
 						'' new bitfield? 0 it before any bits are set
 						if( last_bitfield <> n->sym->parent ) then
-							
+
 							lside = astNewASSIGN( lside, _
 												  astNewCONSTi( 0, astGetDataType( lside ) ), _
 												  AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-							
+
 							last_bitfield = n->sym->parent
-							
+
 						end if
 					end if
 				end if
 			end if
-			
-			
+
+
 			dim as ASTNODE ptr a = astNewASSIGN( lside, _
 												 n->l, _
 												 AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-			
+
 			flush_tree = astNewLINK( flush_tree, a )
-			
+
 			'' bitfields have to be updated (but i dunno if this is the best place)
 			if( is_bitfield ) then
 				astUpdateBitfieldAssignment( a->l, a->r )
 			end if
-			
+
 		case AST_NODECLASS_TYPEINI_PAD
 			if( symbIsParamInstance( basesym ) ) then
 				lside = astBuildInstPtrAtOffset( basesym, _
@@ -641,11 +692,22 @@ private function hFlushTreeStatic _
     do while( n <> NULL )
         nxt = n->r
 
-    	if( n->class = AST_NODECLASS_TYPEINI_PAD ) then
+    	select case as const n->class
+    	case AST_NODECLASS_TYPEINI_PAD
     		irEmitVARINIPAD( n->typeini.bytes )
-    	else
+
+    	case AST_NODECLASS_TYPEINI_SCOPEINI
+    		irEmitVARINISCOPEINI( )
+
+    	case AST_NODECLASS_TYPEINI_SCOPEEND
+    		irEmitVARINISCOPEEND( )
+
+    	case AST_NODECLASS_TYPEINI_SEPARATOR
+    		irEmitVARINISEPARATOR( )
+
+    	case else
 			hFlushExprStatic( n, basesym )
-    	end if
+    	end select
 
         astDelNode( n )
     	n = nxt

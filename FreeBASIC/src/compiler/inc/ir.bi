@@ -24,8 +24,6 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
-const IR_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
-
 ''
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_OPER							'' used by DAG only
@@ -53,7 +51,11 @@ enum IR_REGFAMILY
 	IR_REG_FPU_STACK
 	IR_REG_SSE_SCALAR
 end enum
-	
+
+enum IR_OPTIONVALUE
+	IR_OPTIONVALUE_MAXMEMBLOCKLEN				= 1
+end enum
+
 
 ''
 type IRVREG_ as IRVREG
@@ -130,6 +132,11 @@ type IR_VTBL
 	( _
 		byval tottime as double _
 	)
+
+	getOptionValue as function _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
 
 	procBegin as sub _
 	( _
@@ -420,6 +427,18 @@ type IR_VTBL
 		byval bytes as integer _
 	)
 
+	emitVarIniScopeBegin as sub _
+	( _
+	)
+
+	emitVarIniScopeEnd as sub _
+	( _
+	)
+
+	emitVarIniSeparator as sub _
+	( _
+	)
+
 	allocVreg as function _
 	( _
 		byval dtype as integer, _
@@ -573,6 +592,8 @@ declare function irGetVRDataSize _
 
 #define irSetOption( op ) ir.options or= op
 
+#define irGetOptionValue( opt ) ir.vtbl.getOptionValue( opt )
+
 #define irAllocVreg(dtype, stype) ir.vtbl.allocVreg( dtype, stype )
 
 #define irSetVregDataType(v, dtype, stype) ir.vtbl.setVregDataType( v, dtype, stype )
@@ -634,6 +655,12 @@ declare function irGetVRDataSize _
 #define irEmitVARINIWSTR(totlgt, litstr, litlgt) ir.vtbl.emitVarIniWstr( totlgt, litstr, litlgt )
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
+
+#define irEmitVARINISCOPEINI() ir.vtbl.emitVarIniScopeBegin( )
+
+#define irEmitVARINISCOPEEND() ir.vtbl.emitVarIniScopeEnd( )
+
+#define irEmitVARINISEPARATOR() ir.vtbl.emitVarIniSeparator( )
 
 #define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 
@@ -731,7 +758,6 @@ declare function irGetVRDataSize _
 #define hMakeTmpStr( ) ir.vtbl.makeTmpStr( TRUE )
 
 #define hMakeTmpStrNL( ) ir.vtbl.makeTmpStr( FALSE )
-
 
 
 ''

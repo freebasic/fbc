@@ -75,6 +75,9 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_ASSIGN
 	AST_NODECLASS_TYPEINI_CTORCALL
 	AST_NODECLASS_TYPEINI_CTORLIST
+	AST_NODECLASS_TYPEINI_SCOPEINI
+	AST_NODECLASS_TYPEINI_SCOPEEND
+	AST_NODECLASS_TYPEINI_SEPARATOR
 
 	AST_NODECLASS_PROC
 	AST_NODECLASS_NAMESPC
@@ -843,17 +846,17 @@ declare function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astUpdateBitfieldAccess _ 
-	( _ 
+declare sub astUpdateBitfieldAccess _
+	( _
 		byref n as ASTNODE ptr _
 	)
-	
+
 declare sub astUpdateBitfieldAssignment _
 	( _
 		byref l as ASTNODE ptr, _
 		byref r as ASTNODE ptr _
 	)
-	
+
 declare function astOptAssignment _
 	( _
 		byval n as ASTNODE ptr _
@@ -913,6 +916,21 @@ declare sub astTypeIniEnd _
 		byval tree as ASTNODE ptr, _
 		byval is_initializer as integer _
 	)
+
+declare function astTypeIniScopeBegin _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astTypeIniScopeEnd _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
+declare function astTypeIniSeparator _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
 
 declare function astTypeIniAddPad _
 	( _

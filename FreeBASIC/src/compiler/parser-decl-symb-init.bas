@@ -171,6 +171,8 @@ private function hArrayInit _
 	if( lexGetToken( ) = CHAR_LBRACE ) then
 		lexSkipToken( )
 
+		astTypeIniScopeBegin( ctx.tree )
+
 		ctx.dimcnt += 1
 		'' too many dimensions?
 		if( ctx.dimcnt > dimensions ) then
@@ -271,8 +273,14 @@ private function hArrayInit _
 			end if
 		end if
 
-	'' ','
-	loop while( hMatch( CHAR_COMMA ) )
+
+		'' ','
+		if( hMatch( CHAR_COMMA ) = FALSE ) then
+			exit do
+		end if
+
+        astTypeIniSeparator( ctx.tree )
+	loop
 
 	'' pad
 	elements -= elm_cnt
@@ -316,6 +324,9 @@ private function hArrayInit _
 	end if
 
 	if( isarray ) then
+
+		astTypeIniScopeEnd( ctx.tree )
+
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
@@ -421,7 +432,11 @@ private function hUDTInit _
 			rec_cnt -= 1
 			return hElmInit( ctx )
 		end if
+
+	else
+		astTypeIniScopeBegin( ctx.tree )
 	end if
+
 	if( parenth ) then
 		lexSkipToken( )
 	end if
@@ -448,7 +463,7 @@ private function hUDTInit _
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-	
+
 	'' for each UDT element..
 	elm_cnt = 1
 	do
@@ -568,6 +583,7 @@ private function hUDTInit _
 			exit do
 		end if
 
+        astTypeIniSeparator( ctx.tree )
 	loop
 
 	'' restore parent
@@ -585,6 +601,7 @@ private function hUDTInit _
 			end if
 		else
 			lexSkipToken( )
+			astTypeIniScopeEnd( ctx.tree )
 		end if
 	end if
 

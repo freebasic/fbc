@@ -243,6 +243,17 @@ private sub _emitEnd _
 end sub
 
 '':::::
+private function _getOptionValue _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
+
+    function = emitGetOptionValue( opt )
+
+end function
+
+
+'':::::
 private sub hLoadIDX _
 	( _
 		byval vreg as IRVREG ptr _
@@ -999,6 +1010,36 @@ private sub _emitVarIniPad _
 	) static
 
 	emitVARINIPAD( bytes )
+
+end sub
+
+'':::::
+private sub _emitVarIniScopeBegin _
+	( _
+		_
+	) static
+
+	emitVARINISCOPEINI( )
+
+end sub
+
+'':::::
+private sub _emitVarIniScopeEnd _
+	( _
+		_
+	) static
+
+	emitVARINISCOPEEND( )
+
+end sub
+
+'':::::
+private sub _emitVarIniSeparator _
+	( _
+		_
+	) static
+
+	emitVARINISEPARATOR( )
 
 end sub
 
@@ -2804,6 +2845,7 @@ function irTAC_ctor _
 		@_flush, _
 		@_emitBegin, _
 		@_emitEnd, _
+		@_getOptionValue, _
 		@_procBegin, _
 		@_procEnd, _
 		@_procAllocArg, _
@@ -2852,6 +2894,9 @@ function irTAC_ctor _
 		@_emitVarIniStr, _
 		@_emitVarIniWstr, _
 		@_emitVarIniPad, _
+		@_emitVarIniScopeBegin, _
+		@_emitVarIniScopeEnd, _
+		@_emitVarIniSeparator, _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _

@@ -33,6 +33,8 @@
 #include once "inc\hash.bi"
 #include once "inc\symb.bi"
 
+const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
+
 ''
 type EMITDATATYPE
 	class			as integer
@@ -3676,7 +3678,7 @@ private sub hSHIFTL _
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
 
-	
+
 
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
 	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
@@ -3702,7 +3704,7 @@ private sub hSHIFTL _
 			else
 				outp "mov " + b + ", 0"
 			end if
-			
+
 			if( av->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + a + ", " + a
 			else
@@ -3763,35 +3765,35 @@ private sub hSHIFTL _
 				outp mnemonic64 + a + ", " + tmpregname + ", " + src
 				outp mnemonic32 + tmpregname + ", " + src
 				outp "mov " + b + ", " + tmpregname
-				
+
 				if( preserveeax ) then
 					hPOP( "eax" )
 				end if
 			end if
-			
+
 		end if
 
 	else
 		'' if src is not an imm, use cl and check for the x86 glitches
-		
+
 		dim as integer iseaxfree, isedxfree, isecxfree
 		dim as integer eaxindest, edxindest, ecxindest
 		dim as integer ofs
-		
+
 		label = *hMakeTmpStr( )
-		
+
 		hPUSH( dst2 )
 		hPUSH( dst1 )
 		ofs = 0
-		
+
 		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 		isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 		isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
-		
+
 		eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
  		edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
  		ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
-		
+
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
 			if( symbGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
@@ -3800,7 +3802,7 @@ private sub hSHIFTL _
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
  				end if
  			end if
- 
+
  			if( isecxfree = FALSE ) then
  				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
  					hMOV( "ecx", src )
@@ -3831,7 +3833,7 @@ private sub hSHIFTL _
  				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
  			end if
  		end if
- 
+
  		'' load dst2 to edx
  		if( edxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3846,7 +3848,7 @@ private sub hSHIFTL _
  				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
  			end if
  		end if
- 		
+
 		if( op = AST_OP_SHL ) then
  			outp "shld edx, eax, cl"
  			outp mnemonic32 + " eax, cl"
@@ -3854,10 +3856,10 @@ private sub hSHIFTL _
  			outp "shrd eax, edx, cl"
  			outp mnemonic32 + " edx, cl"
  		end if
- 
+
  		outp "test cl, 32"
  		hBRANCH( "jz", label )
- 		
+
  		if( op = AST_OP_SHL ) then
  			outp "mov edx, eax"
  			outp "xor eax, eax"
@@ -3869,13 +3871,13 @@ private sub hSHIFTL _
  				outp "xor edx, edx"
  			end if
  		end if
- 
+
  		hLABEL( label )
- 
+
  		if( isecxfree = FALSE ) then
  			hPOP "ecx"
  		end if
- 		
+
 		'' save dst2
  		if( edxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3890,7 +3892,7 @@ private sub hSHIFTL _
  				outp "mov [esp+4], edx"
  			end if
  		end if
- 
+
  		'' save dst1
  		if( eaxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3905,7 +3907,7 @@ private sub hSHIFTL _
  				outp "mov [esp+0], eax"
  			end if
  		end if
- 		
+
 		hPOP( dst1 )
 		hPOP( dst2 )
 	end if
@@ -5958,7 +5960,7 @@ private sub _emitMEMMOVE _
 	) static
 
 	'' handle the assumption done at ast-node-mem::newMEM()
-	if( bytes > IR_MEMBLOCK_MAXLEN ) then
+	if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
 	else
 		hMemMoveBlk( dvreg, svreg, bytes )
@@ -6177,7 +6179,7 @@ private sub _emitMEMCLEAR _
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
 		dim as integer bytes = svreg->value.int
-		if( bytes > IR_MEMBLOCK_MAXLEN ) then
+		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else
 			hMemClearBlkIMM( dvreg, bytes )
@@ -6403,6 +6405,36 @@ sub emitVARINIPAD _
 
 end sub
 
+'':::::
+sub emitVARINISCOPEINI _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
+'':::::
+sub emitVARINISCOPEEND _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
+'':::::
+sub emitVARINISEPARATOR _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' functions table
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6461,7 +6493,7 @@ end sub
 		EMIT_CBENTRY(TAN), EMIT_CBENTRY(ATAN), _
 		EMIT_CBENTRY(SQRT), _
 	   _
-		NULL, _	
+		NULL, _
 		NULL, _
 	   _
 		EMIT_CBENTRY(LOG), _
@@ -6562,6 +6594,24 @@ private sub _end
     hEndKeywordsTB( )
 
 end sub
+
+'':::::
+private function _getOptionValue _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
+
+	select case opt
+	case IR_OPTIONVALUE_MAXMEMBLOCKLEN
+		return EMIT_MEMBLOCK_MAXLEN
+
+	case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
+	end select
+
+end function
+
 
 '':::::
 private function _open _
@@ -7076,6 +7126,7 @@ function emitGasX86_ctor _
 	( _
 		@_init, _
 		@_end, _
+		@_getOptionValue, _
 		@_open, _
 		@_close, _
 		@_isKeyword, _
