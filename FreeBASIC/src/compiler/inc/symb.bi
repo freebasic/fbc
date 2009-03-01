@@ -125,9 +125,11 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_UNIONFIELD   = &h01000000
     FB_SYMBSTATS_RTL_CONST    = &h02000000
 
+    '' reuse - take care
     FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
     FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED
     FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
+    FB_SYMBSTATS_ISDUPDECL 		= FB_SYMBSTATS_CANTDUP
 end enum
 
 '' symbol attributes mask
@@ -162,7 +164,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PUBLIC	= &h02000000	'' class members only
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' /
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
-	FB_SYMBATTRIB_NAKED             = &h10000000
+	FB_SYMBATTRIB_NAKED         = &h10000000
 
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 
@@ -211,7 +213,7 @@ end enum
 '' options when looking up symbols
 enum FB_SYMBLOOKUPOPT
 	FB_SYMBLOOKUPOPT_NONE    = &h00000000
-	
+
 	FB_SYMBLOOKUPOPT_PROPGET = &h00000001
 	FB_SYMBLOOKUPOPT_BOP_OVL = &h00000002
 end enum
@@ -1732,13 +1734,13 @@ declare function symbGetCompCloneProc _
 declare sub symbCompAddDefCtor _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) 
-	
+	)
+
 declare sub symbCompAddDefDtor _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) 
-	
+	)
+
 declare sub symbCompAddDefMembers _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -2021,6 +2023,9 @@ declare function symbCheckConstAssign _
 
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
+
+#define symbGetIsDupDecl(s) ((s->stats and FB_SYMBSTATS_ISDUPDECL) <> 0)
+#define symbSetIsDupDecl(s) s->stats or= FB_SYMBSTATS_ISDUPDECL
 
 #define symbGetStats(s) s->stats
 

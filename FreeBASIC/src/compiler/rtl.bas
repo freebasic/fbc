@@ -201,7 +201,7 @@ sub rtlAddIntrinsicProcs _
 							next
 
 							'' next arg is result type
-							
+
 							i += 1
 							with procdef->paramTb(i)
 
@@ -215,14 +215,14 @@ sub rtlAddIntrinsicProcs _
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
 								end if
-                                
-								'' due to the ambiguity (need to say it's optional to 
-								'' even get to this point), the symbol's return type will 
+
+								'' due to the ambiguity (need to say it's optional to
+								'' even get to this point), the symbol's return type will
 								'' be what specifies if the parent symbol is optional
                                 if( .isopt = FALSE ) then
                                 	attrib = 0
                                 end if
-                                
+
 							end with
 
 							param_optval = NULL
@@ -242,13 +242,13 @@ sub rtlAddIntrinsicProcs _
 					else
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
-					
+
 					var parm = symbAddProcParam( proc, _
 					                             NULL, NULL, _
 					                             .dtype, subtype, _
 					                             lgt, .mode, _
 					                             attrib, param_optval )
-					
+
 					if( .check_const ) then
 						symbSetIsRTLConst( parm )
 					end if
@@ -265,7 +265,8 @@ sub rtlAddIntrinsicProcs _
 			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
-			
+
+			''
 			dim as zstring ptr pname = procdef->name
 
 			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
@@ -276,7 +277,7 @@ sub rtlAddIntrinsicProcs _
 						tmp_alias = *pname
 						procdef->alias = strptr( tmp_alias )
         			end if
-        			
+
         			static as string tmp_name
         			tmp_name = "__" + *pname
         			pname = strptr( tmp_name )
@@ -314,6 +315,10 @@ sub rtlAddIntrinsicProcs _
 				symbSetProcCallback( proc, procdef->callback )
 				if( (procdef->options and FB_RTL_OPT_ERROR) <> 0 ) then
 					symbSetIsThrowable( proc )
+				end if
+
+				if( (procdef->options and FB_RTL_OPT_DUPDECL) <> 0 ) then
+					symbSetIsDupDecl( proc )
 				end if
 			else
 				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
@@ -356,7 +361,7 @@ function rtlProcLookup _
 				else
 					rtlLookupTB( pidx ) = chain_->sym
 				end if
-			
+
 			else
 				errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 				rtlLookupTB( pidx ) = NULL
@@ -420,7 +425,7 @@ function rtlCalcStrLen _
 	) as integer
 
 	dim as FBSYMBOL ptr s
-	
+
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 		function = 0

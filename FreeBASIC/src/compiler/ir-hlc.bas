@@ -25,7 +25,6 @@
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
 #include once "inc\flist.bi"
-#include once "inc\hash.bi"
 
 '' flags that are stored in ctx to know what part of the output hWriteFile
 '' should write to
@@ -51,7 +50,6 @@ type IRHLCCTX
 	identcnt		as integer     ' how many levels of indent
 	regcnt			as integer     ' temporary labels counter
 	vregTB			as TFLIST
-	ovlprochash		as THASH
 
 	arg_stack		as ARGLIST ptr ' local stack for args recieved
 	section			as section_e   ' current section to write to
@@ -145,9 +143,6 @@ private function _init _
 
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	'' create a hash for overloaded procs symbols pointing to the same proc
-	hashNew( @ctx.ovlprochash, 256, FALSE )
-
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				IR_OPT_CPU_BOPSELF or _
 				IR_OPT_REUSEOPER or _
@@ -168,8 +163,6 @@ private sub _end
 	if ctx.arg_stack then
 		errReportEx( FB_ERRMSG_INTERNAL, "Argument stack not empty." )
 	end if
-
-	hashFree( @ctx.ovlprochash )
 
 	flistFree( @ctx.vregTB )
 
@@ -338,26 +331,22 @@ private sub hDeclProc _
 	)
 
 
-	if not symbGetIsCalled( s ) then
-		'return
-	end if
-
-	if symbGetMangledName( s ) = NULL then
+	if( not symbGetIsCalled( s ) ) then
 		return
 	end if
 
-	'' if overloaded or if it's rtl, check if not already emitted
-	if( symbGetProcIsOverloaded( s ) or symbGetIsRTL( s ) ) then
-		if( hashLookUp( @ctx.ovlprochash, symbGetMangledName( s ) ) <> 0 ) then
-        	return
-		end if
+	if( symbGetMangledName( s ) = NULL ) then
+		return
+	end if
 
-		hashAdd( @ctx.ovlprochash, symbGetMangledName( s ), cast( any ptr, &hdeadbeef ), INVALID )
+	'' overloaded procs pointing to the same symbol (used by the RTL)?
+	if( symbGetIsDupDecl( s ) ) then
+		return
 	end if
 
 	var ln = ""
 	if s->proc.params = 0 then
-		ln += "( void )" 'This is just to prevent warnings from some C compilers.
+		ln += "( void )"
 	else
 		ln += "( "
 		var temp_proc_param = symbGetProcLastParam( s )

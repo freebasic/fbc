@@ -745,6 +745,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100
 	FB_RTL_OPT_NOFB		  = &h00000200
 	FB_RTL_OPT_FBONLY	  = &h00000400
+ 	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
 end enum
 
 type FB_RTL_PARAMDEF

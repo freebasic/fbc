@@ -1575,7 +1575,7 @@
 		( _
 			@"hex", @"fb_HEX_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -1602,7 +1602,7 @@
 		( _
 			@"hex", @"fb_HEXEx_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -1680,7 +1680,7 @@
 		( _
 			@"whex", @"fb_WstrHex_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -1707,7 +1707,7 @@
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -1815,7 +1815,7 @@
 		( _
 			@"oct", @"fb_OCT_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -1842,7 +1842,7 @@
 		( _
 			@"oct", @"fb_OCTEx_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -1950,7 +1950,7 @@
 		( _
 			@"woct", @"fb_WstrOct_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -1977,7 +1977,7 @@
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -2055,7 +2055,7 @@
 		( _
 			@"bin", @"fb_BIN_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -2082,7 +2082,7 @@
 		( _
 			@"bin", @"fb_BINEx_i", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -2160,7 +2160,7 @@
 		( _
 			@"wbin", @"fb_WstrBin_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			1, _
 			{ _
 				( _
@@ -2187,7 +2187,7 @@
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
 			2, _
 			{ _
 				( _
@@ -2746,7 +2746,7 @@ function rtlWstrConcat _
     dim as ASTNODE ptr proc = any
 
 	function = NULL
-	
+
 	'' both not wstrings?
     if( typeGetDtAndPtrOnly( sdtype1 ) <> typeGetDtAndPtrOnly( sdtype2 ) ) then
     	'' left ?
@@ -3307,9 +3307,9 @@ function rtlToStr _
     dim as integer dtype = any
 
     function = NULL
-	
+
 	dtype = astGetDatatype( expr )
-	
+
 	'' constant? evaluate
 	if( astIsCONST( expr ) ) then
 		dim s As String
@@ -3456,7 +3456,7 @@ function rtlToWstr _
     dim as integer dtype
 
     function = NULL
-    
+
     dtype = astGetDataType( expr )
 
     '' constant? evaluate
@@ -3946,11 +3946,11 @@ function rtlStrInstr _
     dim as ASTNODE ptr proc = any
     dim as FBSYMBOL ptr f = any
 	dim as integer dtype = any
-	
+
     function = NULL
-	
+
 	dtype = astGetDataType( nd_text )
-	
+
 	''
     if( search_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
@@ -3997,11 +3997,11 @@ function rtlStrInstrRev _
 	dim as ASTNODE ptr proc = any
 	dim as FBSYMBOL ptr f = any
 	dim as integer dtype = any
-	
+
 	function = NULL
-	
+
 	dtype = astGetDataType( nd_text )
-	
+
 	''
 	if( search_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
@@ -4049,9 +4049,9 @@ function rtlStrTrim _
     dim as integer dtype = any
 
     function = NULL
-	
+
 	dtype = astGetDataType( nd_text )
-	
+
 	''
     if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
@@ -4102,9 +4102,9 @@ function rtlStrRTrim _
     dim as integer dtype = any
 
     function = NULL
-	
+
 	dtype = astGetDataType( nd_text )
-	
+
 	''
     if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
@@ -4157,7 +4157,7 @@ function rtlStrLTrim _
     function = NULL
 
 	dtype = astGetDataType( nd_text )
-	
+
 	''
     if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
