@@ -24,6 +24,7 @@
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
+#include once "inc\rtl.bi"
 #include once "inc\flist.bi"
 
 '' flags that are stored in ctx to know what part of the output hWriteFile
@@ -408,42 +409,36 @@ private sub hDeclProc _
 end sub
 
 '':::::
-private sub emitDecls _
+private sub hEmitDecls _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
 
-	do while s ' Cycle through the list
+	do while( s <> NULL )
 
 		select case symbGetClass( s )
-			'' name space?
-			case FB_SYMBCLASS_NAMESPACE
-				emitDecls( symbGetNamespaceTbHead( s ) )
+		case FB_SYMBCLASS_NAMESPACE
+			hEmitDecls( symbGetNamespaceTbHead( s ) )
 
-			'' scope block?
-			case FB_SYMBCLASS_SCOPE
-				emitDecls( symbGetScopeSymbTbHead( s ) )
+		case FB_SYMBCLASS_SCOPE
+			hEmitDecls( symbGetScopeSymbTbHead( s ) )
 
-			'' variable?
-			case FB_SYMBCLASS_VAR
-				hDeclVariable s
+		case FB_SYMBCLASS_VAR
+			hDeclVariable s
 
-			'' enum?
-			case FB_SYMBCLASS_ENUM
-				hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+		case FB_SYMBCLASS_ENUM
+			hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
 
-			'' UDT?
-			case FB_SYMBCLASS_STRUCT
-				var udt_len = symbGetUDTLen( s, FALSE )
-				if *symbGetName( s ) <> "" then
-					hWriteLine( "typedef struct _" & *symbGetName( s ) & " { ubyte dummy[" & udt_len & "]; } " & *symbGetName( s ) & ";", FALSE )
-				else
-					'TODO FIXME nameless structs???
-				end if
+		case FB_SYMBCLASS_STRUCT
+			var udt_len = symbGetUDTLen( s, FALSE )
+			if *symbGetName( s ) <> "" then
+				hWriteLine( "typedef struct _" & *symbGetName( s ) & " { ubyte dummy[" & udt_len & "]; } " & *symbGetName( s ) & ";", FALSE )
+			else
+				'TODO FIXME nameless structs???
+			end if
 
-			'' proc?
-			case FB_SYMBCLASS_PROC
-				hDeclProc s
+		case FB_SYMBCLASS_PROC
+			hDeclProc s
 
 		end select
 
@@ -453,7 +448,7 @@ private sub emitDecls _
 end sub
 
 '':::::
-private sub hEmitHeader( )
+private sub hEmitTypedefs( )
 
 	'' typedef's for debugging
 	hWriteLine( "typedef char byte" )
@@ -467,6 +462,38 @@ private sub hEmitHeader( )
 	hWriteLine( "typedef float single" )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string" )
 	hWriteLine( "typedef char fixstr" )
+
+end sub
+
+'':::::
+private function hProcIsUsed _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)  as integer
+
+
+	do while( proc <> NULL )
+		if( symbGetIsCalled( proc ) ) then
+			return TRUE
+		end if
+
+		proc = symbGetProcOvlNext( proc )
+	loop
+
+	return FALSE
+
+end function
+
+'':::::
+private sub hEmitBuiltins( )
+
+	/'if( hProcIsUsed( PROCLOOKUP( FTOI ) ) ) then
+		hWriteLine( "#define fb_FTOI(v) __builtin_floorf( (v) + 0.5f )", FALSE )
+	end if
+
+	if( hProcIsUsed( PROCLOOKUP( DTOI ) ) ) then
+		hWriteLine( "#define fb_DTOI(v) __builtin_floord( (v) + 0.5 )", FALSE )
+	end if'/
 
 end sub
 
@@ -491,8 +518,6 @@ private function _emitBegin _
 
 	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE )
 
-	hEmitHeader( )
-
 	ctx.section = SECTION_BODY
 
 	function = TRUE
@@ -508,7 +533,11 @@ private sub _emitEnd _
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
 
-	emitDecls( symbGetGlobalTbHead( ) )
+	hEmitTypedefs( )
+
+	hEmitBuiltins( )
+
+	hEmitDecls( symbGetGlobalTbHead( ) )
 
 	ctx.section = SECTION_FOOT
 
@@ -1399,69 +1428,6 @@ private sub _emitUop _
 
 	case AST_OP_NOT
 		hWriteUOP( "~", vr, v1 )
-
-	case AST_OP_ABS
-		'' mark C's fabs() as used
-		hWriteUOP( "fabs", vr, v1 )
-
-	''!!FIX ME!!
-	''For SGN and FIX with a non-floating point parameter
-	''should we cast the value into the return var's type and call that function?
-	case AST_OP_SGN
-		'' mark fb_sgn#() as used
-		select case v1->dtype
-		case FB_DATATYPE_SINGLE
-			hWriteUOP( "fb_SGNSingle", vr, v1 )
-		case FB_DATATYPE_DOUBLE
-			hWriteUOP( "fb_SGNDouble", vr, v1 )
-		end select
-
-
-	case AST_OP_FIX
-		'' ...
-		select case v1->dtype
-		case FB_DATATYPE_SINGLE
-			hWriteUOP( "fb_FIXSingle", vr, v1 )
-		case FB_DATATYPE_DOUBLE
-			hWriteUOP( "fb_FIXDouble", vr, v1 )
-		end select
-
-
-	''!! WRITE ME !!
-	''Couldn't think of a good way to do this since it requires more than one parameter to the C function.
-	case AST_OP_FRAC
-		errReportEx( FB_ERRMSG_INTERNAL, "The frac operator is not currently implemented in this mode." )
-
-	case AST_OP_SIN
-		'' mark C's sin() as used
-		hWriteUOP( "sin", vr, v1 )
-
-	case AST_OP_ASIN
-		hWriteUOP( "asin", vr, v1 )
-
-	case AST_OP_COS
-		hWriteUOP( "cos", vr, v1 )
-
-	case AST_OP_ACOS
-		hWriteUOP( "acos", vr, v1 )
-
-	case AST_OP_TAN
-		hWriteUOP( "tan", vr, v1 )
-
-	case AST_OP_ATAN
-		hWriteUOP( "atan", vr, v1 )
-
-	case AST_OP_SQRT
-		hWriteUOP( "sqrt", vr, v1 )
-
-	case AST_OP_LOG
-		hWriteUOP( "log", vr, v1 )
-
-	case AST_OP_EXP
-		hWriteUOP( "exp", vr, v1 )
-
-	case AST_OP_FLOOR
-		hWriteUOP( "floor", vr, v1 )
 
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled uop." )

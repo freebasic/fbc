@@ -387,6 +387,10 @@
 #define FB_RTL_LOG                      "{log}"
 #define FB_RTL_EXP                      "{exp}"
 #define FB_RTL_FLOOR                    "{floor}"
+#define FB_RTL_ABS                    	"{abs}"
+#define FB_RTL_FIX                    	"{fix}"
+#define FB_RTL_FRAC                    	"{frac}"
+#define FB_RTL_FTOI                    	"fb_ftoi"
 
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
@@ -752,6 +756,10 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_LOG
 	FB_RTL_IDX_EXP
 	FB_RTL_IDX_FLOOR
+	FB_RTL_IDX_ABS
+	FB_RTL_IDX_FIX
+	FB_RTL_IDX_FRAC
+	FB_RTL_IDX_FTOI
 
 	FB_RTL_INDEXES
 end enum

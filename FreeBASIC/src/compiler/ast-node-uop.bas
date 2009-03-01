@@ -332,7 +332,7 @@ chk_ulong:
 	if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
 
 		select case as const op
-		case AST_OP_SGN, _
+		case AST_OP_SGN, AST_OP_ABS, AST_OP_FIX, AST_OP_FRAC, _
 			 AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
 			 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
 		 	 AST_OP_EXP, AST_OP_FLOOR
