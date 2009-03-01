@@ -491,46 +491,16 @@ private sub hWriteFTOI _
 		byval ptype as integer _
 	)
 
-	dim as string rtype_str, rtype_suffix, rtype2_str
+	dim as string rtype_str, rtype_suffix
 	select case rtype
-	case FB_DATATYPE_BYTE
-		rtype_str = "char"
-		rtype_suffix = "s"
-		rtype2_str = "int"
-
-	case FB_DATATYPE_UBYTE
-		rtype_str = "unsigned char"
-		rtype_suffix = "s"
-		rtype2_str = "unsigned int"
-
-	case FB_DATATYPE_SHORT
-		rtype_str = "short"
-		rtype_suffix = "l"
-
-	case FB_DATATYPE_USHORT
-		rtype_str = "unsigned short"
-		rtype_suffix = "l"
-
 	case FB_DATATYPE_INTEGER
 		rtype_str = "int"
-		rtype_suffix = "s"
-
-	case FB_DATATYPE_UINT
-		rtype_str = "unsigned int"
-		rtype_suffix = "s"
+		rtype_suffix = "l"
 
 	case FB_DATATYPE_LONGINT
 		rtype_str = "long long int"
 		rtype_suffix = "q"
-
-	case FB_DATATYPE_ULONGINT
-		rtype_str = "unsigned long long int"
-		rtype_suffix = "q"
 	end select
-
-	if( len( rtype2_str ) = 0 ) then
-		rtype2_str = rtype_str
-	end if
 
 	dim as string ptype_str, ptype_suffix
 	select case ptype
@@ -546,7 +516,7 @@ private sub hWriteFTOI _
 
 #ifdef TARGET_X86
 	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
-				!"\tvolatile " & rtype2_str & !" result;\n" & _
+				!"\tvolatile " & rtype_str & !" result;\n" & _
 				!"\t__asm__ (\n" & _
 				!"\t\t\"fld" & ptype_suffix & !" %1;\"\n" & _
 				!"\t\t\"fistp" & rtype_suffix & !" %0;\"\n" & _
