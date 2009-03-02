@@ -688,11 +688,65 @@ private function assembleFile_GCC _
 end function
 
 '':::::
+private function hArchToGccArch _
+	( _
+		byval arch as integer _
+	) as string
+
+	dim as string march
+
+	select case as const arch
+	case FB_CPUTYPE_386
+		march = "i386"
+
+	case FB_CPUTYPE_486
+		march = "i486"
+
+	case FB_CPUTYPE_586
+		march = "i586"
+
+	case FB_CPUTYPE_686
+		march = "i686"
+
+	case FB_CPUTYPE_ATHLON
+		march = "athlon"
+
+	case FB_CPUTYPE_ATHLONXP
+		march = "athlon-xp"
+
+	case FB_CPUTYPE_ATHLONFX
+		march = "athlon-fx"
+
+	case FB_CPUTYPE_ATHLONSSE3
+		march = "k8-sse3"
+
+	case FB_CPUTYPE_PENTIUMMMX
+		march = "pentium-mmx"
+
+	case FB_CPUTYPE_PENTIUM2
+		march = "pentium2"
+
+	case FB_CPUTYPE_PENTIUM3
+		march = "pentium3"
+
+	case FB_CPUTYPE_PENTIUM4
+		march = "pentium4"
+
+	case FB_CPUTYPE_PENTIUMSSE3
+		march = "prescott"
+
+	end select
+
+	function = march
+
+end function
+'':::::
 private function assembleFiles_GCC _
 	( _
 	) as integer
 
 	dim as string ascline
+	dim as string march = "-mtune=" & hArchToGccArch( fbGetOption( FB_COMPOPT_CPUTYPE ) ) & " "
 
 	function = FALSE
 
@@ -700,10 +754,19 @@ private function assembleFiles_GCC _
 	do while( iof <> NULL )
 
     	'' gcc' options
-    	ascline = "-c -nostdlib -nostdinc -finline -O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
+    	ascline = "-c -nostdlib -nostdinc " & _
+    			  "-Wall -Wno-unused-label " & _
+    			  "-finline -fno-math-errno -fno-trapping-math -frounding-math " & _
+    			  "-O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
 
     	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 			ascline += "-g "
+    	end if
+
+    	ascline += march
+
+    	if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
+    		ascline += "-mfpmath=sse -msse2 "
     	end if
 
 		ascline += QUOTE + iof->asmf + _
@@ -1314,6 +1377,24 @@ private function processOptions _
 					value = FB_CPUTYPE_586
 				case "686"
 					value = FB_CPUTYPE_686
+				case "athlon"
+					value = FB_CPUTYPE_ATHLON
+				case "athlon-xp"
+					value = FB_CPUTYPE_ATHLONXP
+				case "athlon-fx"
+					value = FB_CPUTYPE_ATHLONFX
+				case "k8-sse3"
+					value = FB_CPUTYPE_ATHLONSSE3
+				case "pentium-mmx"
+					value = FB_CPUTYPE_PENTIUMMMX
+				case "pentium2"
+					value = FB_CPUTYPE_PENTIUM2
+				case "pentium3"
+					value = FB_CPUTYPE_PENTIUM3
+				case "pentium4"
+					value = FB_CPUTYPE_PENTIUM4
+				case "pentium4-sse3"
+					value = FB_CPUTYPE_PENTIUMSSE3
 				case else
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function

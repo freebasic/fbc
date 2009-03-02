@@ -326,7 +326,7 @@ private sub hDeclVariable _
 
 end sub
 
-
+''::::
 private sub hDeclProc _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -347,7 +347,7 @@ private sub hDeclProc _
 	end if
 
 	'' gcc builtin? gen a wrapper..
-	if( symbGetIsGCCBuiltin( s ) ) then
+	if( symbGetIsGccBuiltin( s ) ) then
 		var cnt = 0
 		var param = symbGetProcLastParam( s )
 		var params = ""
@@ -368,28 +368,31 @@ private sub hDeclProc _
 		return
 	end if
 
-	var ln = ""
-	if s->proc.params = 0 then
-		ln += "( void )"
+	var params = ""
+	if symbGetProcParams( s ) = 0 then
+		params += "( void )"
 	else
-		ln += "( "
+		params += "( "
 		var param = symbGetProcLastParam( s )
 		do while param
-			ln += *hDtypeToStr( symbGetType( param ), _
-								symbGetSubType( param ) )
+			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+				params += "..."
+			else
+				params += *hDtypeToStr( symbGetType( param ), symbGetSubType( param ) )
+			end if
 
 			select case param->param.mode
 			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-				ln += "*"
+				params += "*"
 			end select
 
 			param = symbGetProcPrevParam( s, param )
 			if param then
-				ln += ", "
+				params += ", "
 			end if
 		loop
 
-		ln += " )"
+		params += " )"
 	end if
 
 	var str_static = ""
@@ -404,7 +407,22 @@ private sub hDeclProc _
 							 DT2STR_OPTION_STRINGRETFIX ) & _
 				" " & hCallConvToStr( s ) & *symbGetMangledName( s )
 
-	hWriteLine( sign & ln )
+	hWriteLine( sign & params )
+
+end sub
+
+''::::
+private sub hDeclStruct _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	var udt_len = symbGetUDTLen( s, FALSE )
+	if symbGetName( s ) <> NULL then
+		hWriteLine( "typedef struct _" & *symbGetName( s ) & " { ubyte dummy[" & udt_len & "]; } " & *symbGetName( s ) & ";", FALSE )
+	else
+		'' TODO FIXME nameless structs???
+	end if
 
 end sub
 
@@ -430,12 +448,7 @@ private sub hEmitDecls _
 			hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
 
 		case FB_SYMBCLASS_STRUCT
-			var udt_len = symbGetUDTLen( s, FALSE )
-			if *symbGetName( s ) <> "" then
-				hWriteLine( "typedef struct _" & *symbGetName( s ) & " { ubyte dummy[" & udt_len & "]; } " & *symbGetName( s ) & ";", FALSE )
-			else
-				'TODO FIXME nameless structs???
-			end if
+			hDeclStruct s
 
 		case FB_SYMBCLASS_PROC
 			hDeclProc s
@@ -534,7 +547,8 @@ end sub
 private sub hEmitFTOIBuiltins( )
 
 	'' single
-	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) ) then
+	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) or _
+		symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
 		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
 	end if
 
@@ -572,7 +586,8 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	'' double
-	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) ) then
+	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) or _
+		symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
 		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
 	end if
 
@@ -1230,13 +1245,13 @@ private function hVregToStr _
 	case IR_VREGTYPE_IMM
 		select case as const vreg->dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return str( vreg->value.long )
+			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.long
 
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			return str( vreg->value.float )
+			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.float
 
 		case else
-			return str( vreg->value.int )
+			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.int
 		end select
 
 	case IR_VREGTYPE_REG
