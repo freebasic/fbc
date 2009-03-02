@@ -14,7 +14,7 @@ Version 0.21.0 Beta:
 - lang fb: Multi-line comments are now completely disallowed in single-line comments - thanks to VonGodric for help (counting_pine)
 - DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
 - PRINT USING internals overhauled: it is now more reliable and behaves more like QBASIC with respect to parsing and printing (counting_pine)
-- Disregard letter suffixes on numbers in asm blocks, so things like "je 2f" can work (counting_pine)
+- #2483518: Disregard letter suffixes on numbers in asm blocks, so things like "je 2f" can work (counting_pine)
 
 [added]
 - "-fpmode FAST|PRECISE" command line option (brybry)
