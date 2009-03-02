@@ -500,6 +500,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
 	env.clopt.fpmode		= FB_DEFAULT_FPMODE
+	env.clopt.vectorize		= FB_DEFAULT_VECTORIZELEVEL
 	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
@@ -551,6 +552,9 @@ sub fbSetOption _
 
 	case FB_COMPOPT_FPMODE
 		env.clopt.fpmode = value
+
+	case FB_COMPOPT_VECTORIZE
+		env.clopt.vectorize = value
 
 	case FB_COMPOPT_ERRORCHECK
 		env.clopt.errorcheck = value
@@ -645,6 +649,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_FPMODE
 		function = env.clopt.fpmode
+
+	case FB_COMPOPT_VECTORIZE
+		function = env.clopt.vectorize
 
 	case FB_COMPOPT_ERRORCHECK
 		function = env.clopt.errorcheck

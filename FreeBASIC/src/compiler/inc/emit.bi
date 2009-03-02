@@ -78,11 +78,15 @@ enum EMIT_NODEOP
 	EMIT_OP_NEGI, EMIT_OP_NEGF, EMIT_OP_NEGL
 	EMIT_OP_NOTI, EMIT_OP_NOTL
 
+	EMIT_OP_HADDF
+
 	EMIT_OP_ABSI, EMIT_OP_ABSF, EMIT_OP_ABSL
 	EMIT_OP_SGNI, EMIT_OP_SGNF, EMIT_OP_SGNL
 
 	EMIT_OP_FIX
 	EMIT_OP_FRAC
+
+	EMIT_OP_SWZREP
 
 	EMIT_OP_SIN, EMIT_OP_ASIN
 	EMIT_OP_COS, EMIT_OP_ACOS
@@ -690,6 +694,11 @@ declare function emitABS _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
 
+declare function emitHADD _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
 declare function emitSGN _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -701,6 +710,11 @@ declare function emitFIX _
 	) as EMIT_NODE ptr
 
 declare function emitFRAC _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr
+
+declare function emitSWZREP _
 	( _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr

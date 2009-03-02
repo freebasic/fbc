@@ -124,8 +124,9 @@ function astLoadIDX _
 	end if
 
 	if( ast.doemit ) then
-    	vr = hEmitIDX( n, var_, vidx )
-    end if
+		vr = hEmitIDX( n, var_, vidx )
+		vr->vector = n->vector
+	end if
 
 	astDelNode( idx )
 	astDelNode( var_ )

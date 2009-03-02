@@ -113,6 +113,7 @@ function astLoadDEREF _
 	if( l = NULL ) then
 		if( ast.doemit ) then
 			vr = irAllocVRPTR( astGetDataType( n ), n->subtype, n->ptr.ofs, NULL )
+			vr->vector = n->vector
 		end if
 		return vr
 	end if
@@ -133,6 +134,7 @@ function astLoadDEREF _
 		end if
 
 		vr = irAllocVRPTR( astGetDataType( n ), n->subtype, n->ptr.ofs, vp )
+		vr->vector = n->vector
 	end if
 
 	astDelNode( l )

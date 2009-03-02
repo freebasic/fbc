@@ -1656,8 +1656,10 @@ function astLoadBOP _
 		'' result type can be different, with boolean operations on floats
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 			vr = irAllocVREG( astGetDataType( n ), n->subtype )
+			vr->vector = n->vector
 		else
 			vr = NULL
+			v1->vector = n->vector
 		end if
 
 		'' execute the operation

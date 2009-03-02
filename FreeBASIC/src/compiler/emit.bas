@@ -395,6 +395,7 @@ private function hNewVR _
 	n->value = v->value
 
 	n->regFamily = v->regFamily
+	n->vector = v->vector
 
 	if( v->typ = IR_VREGTYPE_REG ) then
 		dclass = symbGetDataClass( v->dtype )
@@ -1256,6 +1257,23 @@ function emitNOT _
 end function
 
 '':::::
+function emitHADD _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	select case as const dvreg->dtype
+	'' float?
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		function = hNewUOP( EMIT_OP_HADDF, dvreg )
+
+	case else
+		'function = hNewUOP( EMIT_OP_HADDI, dvreg )
+	end select
+
+end function
+
+'':::::
 function emitABS _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -1444,6 +1462,16 @@ function emitXchgTOS _
 	) as EMIT_NODE ptr static
 
 	function = hNewUOP( EMIT_OP_XCHGTOS, svreg )
+
+end function
+
+'':::::
+function emitSWZREP _
+	( _
+		byval dvreg as IRVREG ptr _
+	) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_SWZREP, dvreg )
 
 end function
 

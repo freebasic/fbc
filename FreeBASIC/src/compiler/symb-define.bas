@@ -303,6 +303,10 @@ sub symbDefineInit _
 		symbAddDefine( "__FB_SSE__", NULL, 0 )
 	end if
 
+	'' add vectorization define
+	value = str( env.clopt.vectorize )
+	symbAddDefine( "__FB_VECTORIZE__", value, len( value ) )
+
 	'' macro params
 	symb.def.param = 0
 
