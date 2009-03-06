@@ -1691,8 +1691,11 @@ function rtlFilePut _
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
     	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
-            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
+	'' warn if data is pointer
+	elseif( typeIsPtr( astGetDataType( src ) ) ) then
+		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
     end if
 
     '' value as any | s as string
@@ -1774,8 +1777,11 @@ function rtlFilePutArray _
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
     	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
-            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
+	'' warn if data is pointer
+	elseif( typeIsPtr( astGetDataType( src ) ) ) then
+		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
     end if
 
     '' array() as any
@@ -1895,8 +1901,11 @@ function rtlFileGet _
     '' any pointer fields?
     if( dtype = FB_DATATYPE_STRUCT ) then
     	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
-            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
+	'' warn if data is pointer
+	elseif( typeIsPtr( astGetDataType( dst ) ) ) then
+		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
     end if
 	
     '' value as any
@@ -1994,8 +2003,11 @@ function rtlFileGetArray _
     '' any pointer fields?
     if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
     	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
-            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
+	'' warn if data is pointer
+	elseif( typeIsPtr( astGetDataType( dst ) ) ) then
+		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
     end if
 
     '' array() as any

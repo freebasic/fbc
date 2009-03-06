@@ -625,10 +625,6 @@ private function hFilePut _
     				lexSkipToken( )
     				lexSkipToken( )
 
-				'' warn if data is pointer
-    			elseif( typeIsPtr( symbGetType( s ) ) ) then
-					errReportWarn( FB_WARNINGMSG_PASSINGPTR )
-
 				end if
     		end if
     	end if
@@ -743,11 +739,6 @@ private function hFileGet _
 				hSkipStmt( )
 			end if
 			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-	else
-		'' warn if passing a pointer
-		if( typeIsPtr( astGetDataType( dstexpr ) ) ) then
-			errReportWarn( FB_WARNINGMSG_PASSINGPTR )
 		end if
 	end if
 
