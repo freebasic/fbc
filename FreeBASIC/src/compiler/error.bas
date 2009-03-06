@@ -735,7 +735,7 @@ end function
 '':::::
 function errReportParam _
 	( _
-		byval proc as any ptr, _
+		byval proc as FBSYMBOL ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
@@ -746,7 +746,7 @@ function errReportParam _
 	dim as integer cnt
 
 	'' don't count the instance pointer
-	if( symbIsMethod( cast( FBSYMBOL ptr, proc ) ) ) then
+	if( symbIsMethod( proc ) ) then
 		if( pnum > 1 ) then
 			pnum -= 1
 		end if
@@ -779,14 +779,14 @@ end function
 '':::::
 sub errReportParamWarn _
 	( _
-		byval proc as any ptr, _
+		byval proc as FBSYMBOL ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
 	)
 
 	'' don't count the instance pointer
-	if( symbIsMethod( cast( FBSYMBOL ptr, proc ) ) ) then
+	if( symbIsMethod( proc ) ) then
 		if( pnum > 1 ) then
 			pnum -= 1
 		end if

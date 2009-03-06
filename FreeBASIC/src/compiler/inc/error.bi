@@ -18,6 +18,8 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+type FBSYMBOL_ as FBSYMBOL
+
 '' errors
 enum FB_ERRMSG
 	FB_ERRMSG_OK
@@ -380,7 +382,7 @@ declare sub errReportWarnEx _
 
 declare function errReportParam _
 	( _
-		byval proc as any ptr, _
+		byval proc as FBSYMBOL_ ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
@@ -388,7 +390,7 @@ declare function errReportParam _
 
 declare sub errReportParamWarn _
 	( _
-		byval proc as any ptr, _
+		byval proc as FBSYMBOL_ ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
