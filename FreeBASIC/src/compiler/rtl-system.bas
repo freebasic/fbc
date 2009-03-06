@@ -245,7 +245,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' sleep ( byval msecs as integer ) as void '/ _
 		( _
 			@"sleep", @"fb_Sleep", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
@@ -257,7 +257,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 		/' sleep ( byval secs as integer ) as void '/ _
 		( _
 			@"sleep", @"fb_SleepQB", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
 	 		1, _
 	 		{ _
