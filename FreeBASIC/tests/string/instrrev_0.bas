@@ -81,6 +81,26 @@ private sub CheckEveryInputValueTest cdecl ()
 	DoTest( a, b, 0, 0 )
 	DoTest( a, b, -1, 5 )
 
+	a = " test   test "
+	b = "test"
+
+	DoTest( a, b, 14, 0 )
+	DoTest( a, b, 13, 9 )
+	DoTest( a, b, 12, 9 )
+	DoTest( a, b, 11, 9 )
+	DoTest( a, b, 10, 9 )
+	DoTest( a, b,  9, 9 )
+	DoTest( a, b,  8, 2 )
+	DoTest( a, b,  7, 2 )
+	DoTest( a, b,  6, 2 )
+	DoTest( a, b,  5, 2 )
+	DoTest( a, b,  4, 2 )
+	DoTest( a, b,  3, 2 )
+	DoTest( a, b,  2, 2 )
+	DoTest( a, b,  1, 0 )
+	DoTest( a, b,  0, 0 )
+	DoTest( a, b, -1, 9 )
+
 	a = "xxx"
 	b = "xxx"
 

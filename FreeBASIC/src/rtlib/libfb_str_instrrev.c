@@ -42,6 +42,7 @@
 #include <string.h>
 #include "fb.h"
 
+#if 0 /* FIXME: implementation is bugged somewhere, missing some matches */
 /*:::::*/
 static int fb_hFindBM( size_t start,
                        const char *pachText, size_t len_text,
@@ -108,8 +109,9 @@ static int fb_hFindBM( size_t start,
 	}
 	return 0;
 }
+#endif
 
-#if 0
+#if 1
 /*:::::*/
 static int fb_hFindNaive( size_t start,
                           const char *pachText, size_t len_text,
@@ -154,9 +156,15 @@ FBCALL int fb_StrInstrRev ( FBSTRING *src, FBSTRING *patt, int start )
 			
 			if( start > 0 )
 			{
+#if 1
+				r = fb_hFindNaive( start - 1,
+					src->data, size_src,
+					patt->data, size_patt );
+#else
 				r = fb_hFindBM( start - 1,
 					src->data, size_src,
 					patt->data, size_patt );
+#endif
 			}
 		}
 	}

@@ -70,6 +70,9 @@ Version 0.21.0 Beta:
 - #2533376 - FBC could crash on new[count] if count wasn't an Integer (counting_pine)
 - #2659332 - buggy implementation of warning message when GET/PUT was used for UDTs with pointer fields - thanks to dkls for patch; slightly more helpful warning when just passing a pointer (counting_pine)
 - SLEEP() was registered as a function when it should have been a sub (counting_pine)
+- #2617069 InStrRev was skipping over some matches (counting_pine)
+
+
 
 Version 0.20.0 Beta:
 
