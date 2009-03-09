@@ -148,7 +148,7 @@ private sub hEmitSTABS _
 	dim as string ostr
 
 	ostr = ".stabs " + QUOTE
-	ostr += *_string
+	ostr += *hEscape( _string )
 	ostr += QUOTE + ","
 	ostr += str( _type )
 	ostr += ","
@@ -258,10 +258,10 @@ sub edbgEmitHeader _
 
 	'' emit source file
     lname = *hMakeTmpStr( )
-    emitWriteStr( ".file " + QUOTE + *filename + QUOTE, TRUE )
+	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
     if( instr( *filename, "/" ) = 0 ) then
     	dim as zstring ptr dirpath
-    	dirpath = hRevertSlash( curdir() + "/", TRUE, asc("/") )
+		dirpath = hRevertSlash( curdir() + "/", TRUE, asc(FB_HOST_PATHDIV) )
     	hEmitSTABS( STAB_TYPE_SO, dirpath, 0, 0, lname )
     	deallocate( dirpath )
     end if
