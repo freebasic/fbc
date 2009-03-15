@@ -1,5 +1,7 @@
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
+#if 0 '' incomplete test
+
 type TrueType : __ as integer : end type
 type FalseType : __ as integer : end type
 
@@ -20,3 +22,5 @@ assert(IsUDT(@a) = 0)
 assert(IsUDT(@b) = 0)
 assert(IsUDT(@c) = 0)
 assert(IsUDT(@d) = -1)
+
+#endif
