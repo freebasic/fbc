@@ -739,7 +739,13 @@ function astTypeIniFlush _
 		byval options as AST_INIOPT _
 	) as ASTNODE ptr
 
+	'' quick workaround for #2688314: tree can be null in some cases, so can't do assert
+	'' TODO: find out why, but for now, only cases seem to be when errors exceed -maxerr
+	#if 0
 	assert( tree <> NULL )
+	#else 
+	if( tree = NULL ) then return NULL
+	#endif
 
 	if( (options and AST_INIOPT_ISINI) = 0 ) then
 		ast.typeinicnt -= 1
