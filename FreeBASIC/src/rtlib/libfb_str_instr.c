@@ -115,9 +115,10 @@ static int fb_hFindBM( size_t start,
 	size_t i, j, len_max = len_text - len_pattern;
 	int bm_bc[256];
 	int *bm_gc, *suffixes;
+	int ret;
 
-	bm_gc = (int*) alloca(sizeof(int) * (len_pattern + 1));
-	suffixes = (int*) alloca(sizeof(int) * (len_pattern + 1));
+	bm_gc = (int*) malloc(sizeof(int) * (len_pattern + 1));
+	suffixes = (int*) malloc(sizeof(int) * (len_pattern + 1));
 
 	memset( bm_gc, 0, sizeof(int) * (len_pattern+1) );
 	memset( suffixes, 0, sizeof(int) * (len_pattern+1) );
@@ -155,6 +156,8 @@ static int fb_hFindBM( size_t start,
 			j = suffixes[j];
 	}
 
+	ret = 0;
+
 	/* search */
 	i=start;
 	while( i <= len_max ) 
@@ -166,7 +169,8 @@ static int fb_hFindBM( size_t start,
 
 		if( j==0 ) 
 		{
-			return i + 1;
+			ret = i + 1;
+			break;
 		} 
 		else 
 		{
@@ -176,7 +180,12 @@ static int fb_hFindBM( size_t start,
 			i += ( (shift_gc > shift_bc) ? shift_gc : shift_bc );
 		}
 	}
-	return 0;
+
+	free( bm_gc );
+	free( suffixes );
+
+	return ret;
+
 }
 
 #if 0
