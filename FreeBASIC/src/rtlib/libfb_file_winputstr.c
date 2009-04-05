@@ -63,7 +63,6 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
         size_t read_chars = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
-            dst[0] = _LC('\0');
             while( read_chars != chars )
             {
                 res = fb_FileGetDataEx( handle,
@@ -77,7 +76,6 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
                     break;
 
                 read_chars += len;
-                dst[read_chars] = _LC('\0');
             }
         }
         else
@@ -89,19 +87,24 @@ FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
                                     &len,
                                     TRUE,
                                     TRUE );
-            if( res == FB_RTERROR_OK )
-                read_chars += chars;
-
+			read_chars = chars;
         }
 
-        if( read_chars != chars )
-            dst[read_chars] = _LC('\0');
+		if( res == FB_RTERROR_OK )
+		{
+			dst[read_chars] = _LC('\0');
+		}
+		else
+		{
+			fb_wstr_Del( dst );
+			dst = NULL;
+		}
+
     }
     else
         res = FB_RTERROR_OUTOFMEM;
 
-    if( res != FB_RTERROR_OK )
-        dst = NULL;
+	FB_UNLOCK();
 
     return dst;
 }

@@ -73,6 +73,7 @@ Version 0.21.0 Beta:
 - #2617069 InStrRev was skipping over some matches (counting_pine)
 - In -g mode, .file/.stabs paths could be emitted with unescaped single backslashes - reported by KetilO (counting_pine)
 - INSTR() could crash if the string to search for was too long (counting_pine)
+- Patch #2471271: null-termination/memory management issues in WINPUT() - thanks to dkls for the patch (counting_pine)
 
 
 Version 0.20.0 Beta:
