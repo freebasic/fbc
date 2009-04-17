@@ -664,9 +664,11 @@ private function hReportMakeDesc _
 		end if
 
     	if( pid <> NULL ) then
-			desc += " ("
-			desc += *pid
-			desc += ")"
+			if( len(*pid) > 0 ) then
+				desc += " ("
+				desc += *pid
+				desc += ")"
+			end if
 		end if
 
 	else

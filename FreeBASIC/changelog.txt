@@ -74,6 +74,7 @@ Version 0.21.0 Beta:
 - In -g mode, .file/.stabs paths could be emitted with unescaped single backslashes - reported by KetilO (counting_pine)
 - INSTR() could crash if the string to search for was too long (counting_pine)
 - Patch #2471271: null-termination/memory management issues in WINPUT() - thanks to dkls for the patch (counting_pine)
+- FB was "ghosting" parameter names in error messages, in cases where the parameter was unnamed, but a previous function header had a parameter with a name in the same position (counting_pine)
 
 
 Version 0.20.0 Beta:

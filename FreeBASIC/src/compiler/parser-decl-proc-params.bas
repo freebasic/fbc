@@ -390,6 +390,7 @@ private function hParamDecl _
 	end if
 
 	id = @idTB(reclevel)
+	*id = ""
 
 	''
 	if( readid ) then
