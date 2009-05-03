@@ -272,9 +272,12 @@ private sub hBOPConstFoldInt _
 		byval r as ASTNODE ptr _
 	) static
 
-	dim as integer issigned
+	dim as integer issigned = any
+	dim as integer ldtype = any
 
-	select case as const astGetDataType( l )
+	ldtype = astGetDataType( l )
+
+	select case as const ldtype
 	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, _
 		 FB_DATATYPE_ENUM, FB_DATATYPE_LONG
 		issigned = TRUE
@@ -282,6 +285,9 @@ private sub hBOPConstFoldInt _
 	case else
 		issigned = FALSE
 	end select
+
+	hTruncateInt( ldtype, @l->con.val.int )
+	hTruncateInt( ldtype, @r->con.val.int )
 
 	select case as const op
 	case AST_OP_ADD
@@ -398,6 +404,11 @@ private sub hBOPConstFoldInt _
 			l->con.val.int = cunsg( l->con.val.int ) >= cunsg( r->con.val.int )
 		end if
 	end select
+
+	'' result truncated? (e.g. overflow when multiplying two shorts)
+	if( hTruncateInt( ldtype, @l->con.val.int ) <> FALSE ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
 
 end sub
 

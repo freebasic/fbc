@@ -82,6 +82,11 @@ function astNewCONSTi _
 	end if
 
 	n->con.val.int = value
+
+	if( hTruncateInt( dtype, @n->con.val.int ) <> FALSE ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
+
 	n->defined = TRUE
 
 end function

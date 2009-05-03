@@ -56,7 +56,7 @@ declare function hMakeProfileLabelName _
 
 declare function hFBrelop2IRrelop _
 	( _
-		byval op as integer _
+		byval tk as integer _
 	) as integer
 
 declare function hFileExists _

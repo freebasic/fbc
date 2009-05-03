@@ -1323,6 +1323,12 @@ declare function astLoadIIF _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
+declare function hTruncateInt _
+	( _
+		byval dtype as integer, _
+		byval value as integer ptr _
+	) as integer
+
 ''
 '' macros
 ''

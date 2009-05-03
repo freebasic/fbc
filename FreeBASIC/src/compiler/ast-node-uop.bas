@@ -34,6 +34,10 @@ private sub hUOPConstFoldInt _
 		byval v as ASTNODE ptr _
 	) static
 
+	dim as integer dtype = any
+
+	dtype = astGetDataType( v )
+
 	select case as const op
 	case AST_OP_NOT
 		v->con.val.int = not v->con.val.int
@@ -47,6 +51,11 @@ private sub hUOPConstFoldInt _
 	case AST_OP_SGN
 		v->con.val.int = sgn( v->con.val.int )
 	end select
+
+	'' result truncated? (e.g. NOT CUSHORT( 0 ) )
+	if( hTruncateInt( dtype, @v->con.val.int ) <> FALSE ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
 
 end sub
 
