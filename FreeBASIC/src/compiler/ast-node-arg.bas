@@ -943,15 +943,15 @@ private function hCheckParam _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
         
 		select case param_dtype
-		'' zstring ptr param?
-		case typeAddrOf( FB_DATATYPE_CHAR )
+		'' zstring ptr / zstring param?
+		case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
 			'' if it's a wstring param, convert..
 			if( arg_dtype = FB_DATATYPE_WCHAR ) then
 				n->l = rtlToStr( arg, FALSE )
 			end if
 
-		'' wstring ptr?
-		case typeAddrOf( FB_DATATYPE_WCHAR )
+		'' wstring ptr / wstring?
+		case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
 			'' if it's not a wstring param, convert..
 			if( arg_dtype <> FB_DATATYPE_WCHAR ) then
 				n->l = rtlToWstr( arg )
@@ -963,7 +963,14 @@ private function hCheckParam _
 		end select
 
 		hStrArgToStrPtrParam( parent, n, TRUE )
-		arg = n->l
+
+		if( typeIsPtr( param_dtype ) = FALSE ) then
+			n = astNewDEREF( n )
+			arg = n
+		else
+			arg = n->l
+		end if
+
 		arg_dtype = astGetDatatype( arg )
 
 	'' UDT? implicit casting failed, can't convert..

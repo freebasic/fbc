@@ -1524,17 +1524,17 @@ private function hCalcTypesDiff _
 			select case as const arg_dtype
 			case FB_DATATYPE_CHAR
 				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_CHAR )
+				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_WCHAR )
+				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
 
 			case FB_DATATYPE_WCHAR
 				select case param_dtype
-				case typeAddrOf( FB_DATATYPE_WCHAR )
+				case typeAddrOf( FB_DATATYPE_WCHAR ), FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
-				case typeAddrOf( FB_DATATYPE_CHAR )
+				case typeAddrOf( FB_DATATYPE_CHAR ), FB_DATATYPE_CHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
 

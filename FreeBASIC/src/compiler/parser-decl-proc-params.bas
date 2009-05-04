@@ -450,6 +450,7 @@ private function hParamDecl _
 			if( isproto ) then
 				options or= FB_SYMBTYPEOPT_ALLOWFORWARD
 			end if
+			options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		end if
 
     	if( cSymbolType( dtype, subtype, _
@@ -512,13 +513,15 @@ private function hParamDecl _
     '' check for invalid args
     select case as const typeGet( dtype )
     '' can't be a fixed-len string
-    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	if( hParamError( proc, id ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: fake correct type
-    		dtype = typeAddrOf( dtype )
-    	end if
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		if( mode = FB_PARAMMODE_BYVAL or typeGet( dtype ) = FB_DATATYPE_FIXSTR ) then
+			if( hParamError( proc, id ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake correct type
+				dtype = typeAddrOf( dtype )
+			end if
+		end if
 
 	'' can't be as ANY on non-prototypes
     case FB_DATATYPE_VOID

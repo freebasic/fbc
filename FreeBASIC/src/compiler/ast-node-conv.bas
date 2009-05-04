@@ -477,7 +477,6 @@ function astNewCONV _
 
 	'' constant? evaluate at compile-time
 	if( astIsCONST( l ) ) then
-'print l->con.val.int & " -";
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( to_dtype, l )
@@ -505,7 +504,6 @@ function astNewCONV _
 
 		astGetFullType( l ) = to_dtype
 		l->subtype = to_subtype
-'print "> " & l->con.val.int
 		return l
 	end if
 
