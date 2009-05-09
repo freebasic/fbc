@@ -36,6 +36,7 @@ Version 0.21.0 Beta:
 - Naked functions - functions without prolog/epilog code, useful for writing small functions in asm (thanks yetifoot)
 - More specific error message for FOR...NEXT variable mismatches, such as "FOR a ... NEXT b" (counting_pine)
 - support for BYREF AS ZSTRING/BYREF AS WSTRING parameters (counting_pine)
+- lang qb: __SCREEN keyword for accessing FB's normal SCREEN syntax (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

@@ -31,6 +31,7 @@ enum KWD_OPTION
     KWD_OPTION_DEFAULT 		= &h00000000
 	KWD_OPTION_NO_QB 		= &h00000001
 	KWD_OPTION_STRSUFFIX	= &h00000002
+	KWD_OPTION_QB_ONLY		= &h00000004
 end enum
 
 type SYMBKWD
@@ -268,7 +269,8 @@ end type
         ( @"CIRCLE"     , FB_TK_CIRCLE      , FB_TKCLASS_QUIRKWD ), _
         ( @"WINDOW"     , FB_TK_WINDOW      , FB_TKCLASS_QUIRKWD ), _
         ( @"PALETTE"    , FB_TK_PALETTE     , FB_TKCLASS_QUIRKWD ), _
-        ( @"SCREEN"     , FB_TK_SCREEN      , FB_TKCLASS_QUIRKWD ), _
+        ( @"SCREEN"     , FB_TK_SCREEN      , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
+        ( @"SCREEN"     , FB_TK_SCREENQB    , FB_TKCLASS_QUIRKWD , KWD_OPTION_QB_ONLY ), _
         ( @"SCREENRES"  , FB_TK_SCREENRES   , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
         ( @"PAINT"      , FB_TK_PAINT       , FB_TKCLASS_QUIRKWD ), _
         ( @"DRAW"       , FB_TK_DRAW        , FB_TKCLASS_QUIRKWD ), _
@@ -290,6 +292,14 @@ sub symbKeywordInit( )
 				static as string tmp
 				tmp = "__" + *kname
 				kname = strptr( tmp )
+			end if
+		end if
+
+		if( (kwdTb(i).opt and KWD_OPTION_QB_ONLY) <> 0 ) then
+			if( fbLangIsSet( FB_LANG_QB ) = FALSE ) then
+				'' skip QB-only keywords when not in -lang qb
+				i += 1
+				continue do
 			end if
 		end if
 

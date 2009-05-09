@@ -1124,11 +1124,11 @@ end function
 '':::::
 '' GfxScreen     =   SCREEN (num | ((expr (((',' expr)? ',' expr)? expr)? ',' expr))
 ''
-function cGfxScreen as integer
+function cGfxScreen( byval isqb as integer ) as integer
 
 	function = FALSE
 
-	if( env.clopt.lang <> FB_LANG_QB ) then
+	if( isqb = FALSE ) then
 		'' Expr?
 		dim as ASTNODE ptr mexpr = cExpression( )
 
@@ -1389,7 +1389,12 @@ function cGfxStmt _
 	case FB_TK_SCREEN
 		CHECK_CODEMASK( )
 		lexSkipToken( )
-		function = cGfxScreen( )
+		function = cGfxScreen( FALSE )
+
+	case FB_TK_SCREENQB
+		CHECK_CODEMASK( )
+		lexSkipToken( )
+		function = cGfxScreen( TRUE )
 
 	case FB_TK_SCREENRES
 		CHECK_CODEMASK( )
