@@ -1,5 +1,6 @@
 # include "fbcu.bi"
 
+# define REMOVE_TEMP_FILE
 
 #define QT(s) ("""" & (s) & """")
 
@@ -20,7 +21,32 @@
 #define TEST_EQUAL(a, b) CU_ASSERT_EQUAL( a, b )
 #endif
 
-namespace fbc_tests.string_.printusing_
+
+#macro OPEN_FILE( fn )
+	const TESTFILE = ("./string/" & fn)
+
+	open TESTFILE for output as #1
+#endmacro
+
+#macro CLOSE_TEST_FILE()
+	close #1
+
+	dim as string sResult, sExpected
+	open TESTFILE for input as #1
+		do until eof(1)
+			input #1, sResult, sExpected
+			TEST_EQUAL( sResult, sExpected )
+		loop
+	close #1
+
+#ifdef REMOVE_TEMP_FILE
+	kill TESTFILE
+#endif
+
+#endmacro
+
+
+namespace fbc_tests.string_.printusing
 
 private sub test_ll( _
 		byref fmt as string, _
@@ -100,6 +126,15 @@ private sub test_sng( _
 
 end sub
 
+private sub test_str( _
+		byref fmt as string, _
+		byval s as string, _
+		byref cmp as string)
+
+	PRINT_USING( fmt & "_$", s, cmp & "$" )
+
+end sub
+
 private function pow_ull( byval m as ulongint, byval n as integer ) as ulongint
 
 	dim as ulongint ret = 1ull
@@ -118,9 +153,7 @@ sub numtest cdecl ()
 	dim as string fmt, cmp
 	dim as integer i, e
 
-	const TESTFILE = "./string/print_using_numtest.txt"
-
-	open TESTFILE for output as #1
+	OPEN_FILE( "print_using_numtest.txt" )
 
 	'' test 1, 12, 123, ... 1234567890124567890 (20 digs)
 
@@ -190,25 +223,13 @@ sub numtest cdecl ()
 	test_dbl( fmt, 1e15 -.5, " 9999999999999995.E-1" )
 	test_dbl( fmt, 1e16 - 4, " 9999999999999996.E+0" )
 
-	close #1
-
-	dim as string sResult, sExpected
-	open TESTFILE for input as #1
-		do until eof(1)
-			input #1, sResult, sExpected
-			TEST_EQUAL( sResult, sExpected )
-		loop
-	close #1
-
-	kill TESTFILE
+	CLOSE_TEST_FILE()
 
 end sub
 
 sub fmttest cdecl ()
 
-	const TESTFILE = "./string/print_using_fmttest.txt"
-
-	open TESTFILE for output as #1
+	OPEN_FILE( "print_using_fmttest.txt" )
 
 	print #1, using "_##_"; 9;
 	print #1, ",",   "#9_"
@@ -216,6 +237,10 @@ sub fmttest cdecl ()
 	print #1, using "#_"; 3; 1; 4;
 	print #1, ",",  "3_1_4_"
 
+
+	PRINT_USING( "&#&#.#&#^^^&&", _
+	             1; 2; 3; 4.0; 5; 6E+0; 7; 8, _
+	             "1234.056E+078" )
 
 	test_ll( "$ #" , 1, "$ 1" )
 	test_ll( "* #" , 1, "* 1" )
@@ -268,25 +293,13 @@ sub fmttest cdecl ()
 	test_dbl( "**$##.##^^^^-",  1234.56e+78, "$1234.56E+78 " )
 	test_dbl( "**$##.##+^^^^", -1234.56, "$1234.56-^^^^" )
 
-	close #1
-
-	dim as string sResult, sExpected
-	open TESTFILE for input as #1
-		do until eof(1)
-			input #1, sResult, sExpected
-			TEST_EQUAL( sResult, sExpected )
-		loop
-	close #1
-
-	kill TESTFILE
+	CLOSE_TEST_FILE()
 
 end sub
 
 sub infnantest cdecl ()
 
-	const TESTFILE = "./string/print_using_infnantest.txt"
-
-	open TESTFILE for output as #1
+	OPEN_FILE( "print_using_infnantest.txt" )
 
 	dim as single one = 1.0, zero = 0.0
 
@@ -296,26 +309,45 @@ sub infnantest cdecl ()
 	test_sng( "+###",  one / zero, "+INF" )
 	test_sng( "+###", -one / zero, "-INF" )
 
-	close #1
+	CLOSE_TEST_FILE()
 
-	dim as string sResult, sExpected
-	open TESTFILE for input as #1
-		do until eof(1)
-			input #1, sResult, sExpected
-			TEST_EQUAL( sResult, sExpected )
-		loop
-	close #1
+end sub
 
-	kill TESTFILE
+sub strtest cdecl ()
+
+	OPEN_FILE( "print_using_strtest.txt" )
+
+	dim n as ulongint
+
+	test_str( "&", "Test", "Test" )
+	test_str( "!", "Test", "T" )
+	test_str( "\\", "Test", "Te" )
+	test_str( "\ \", "Test", "Tes" )
+	test_str( "\  \", "Test", "Test" )
+	test_str( "\   \", "Test", "Test " )
+
+	'FIXME: test_str( "!", "", " " )
+
+	test_ll( "&", 0, "0" )
+
+	n = 1
+	do
+		PRINT_USING( "&",  n,  n )
+		PRINT_USING( "&", -csign(n), -csign(n) )
+		if (n * 10) \ 10 = n then n *= 10 else exit do
+	loop
+
+	CLOSE_TEST_FILE()
 
 end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.printusing_")
+	fbcu.add_suite("fbc_tests.string_.printusing")
 	fbcu.add_test("number test", @numtest)
 	fbcu.add_test("format parsing test", @fmttest)
 	fbcu.add_test("inf/nan printing test", @infnantest)
+	fbcu.add_test("string format test", @strtest)
 
 end sub
 

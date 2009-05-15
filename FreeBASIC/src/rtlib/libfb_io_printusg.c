@@ -133,6 +133,9 @@
 #define VAL_ISINF 0x2
 #define VAL_ISNAN 0x4
 
+#define VAL_ISFLOAT 0x8
+#define VAL_ISSNG 0x10
+
 
 static int fb_PrintUsingFmtStr( int fnum );
 
@@ -484,6 +487,7 @@ static int hPrintNumber
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
+	int isamp;
 	int i;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
@@ -509,6 +513,7 @@ static int hPrintNumber
 	signatini  = 0;
 	plussign   = 0;
 	toobig     = 0;
+	isamp      = 0;
 
 	lc = -1;
 
@@ -517,8 +522,8 @@ static int hPrintNumber
 
 	while( ctx->chars > 0 )
 	{
-		/* exit if just parsed end '+'/'-' sign */
-		if( signatend ) break;
+		/* exit if just parsed end '+'/'-' sign, or '&' sign */
+		if( signatend || isamp ) break;
 
 		c = *ctx->ptr;
 		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
@@ -638,6 +643,18 @@ static int hPrintNumber
 				doexit = 1;
 			break;
 
+		case '&':
+			/* string format '&'
+			   print number in most natural form - similar to STR */
+			if( intdigs == 0 && decdigs == -1 && !signatini )
+			{
+				DBG_ASSERT( expdigs == 0 );
+				isamp = 1;
+			}
+			else
+				doexit = 1;
+			break;
+
 		default:
 			doexit = 1;
 		}
@@ -672,6 +689,42 @@ static int hPrintNumber
 	{
 		val_isinf = 0;
 		val_isnan = 0;
+	}
+
+	if( val != 0 && !(val_isinf || val_isnan) )
+		val_digs = hLog10_ULL( val ) + 1;
+	else
+		val_digs = 0;
+	val_zdigs = 0;
+
+	if( isamp )
+	{
+		if( val_isinf )
+		{
+			intdigs = strlen(STR_INF);
+			decdigs = 0;
+			decpoint = 0;
+		}
+		else if( val_isnan )
+		{
+			intdigs = strlen(STR_NAN);
+			decdigs = 0;
+			decpoint = 0;
+		}
+		else
+		{
+			if( val_digs + val_exp > 0 )
+				intdigs = val_digs + val_exp;
+			else
+				intdigs = 1;
+
+			if( val_exp < 0 )
+				decdigs = -val_exp;
+
+		}
+
+		if( val_isneg )
+			signatini = 1;
 	}
 
 	/* crop number of digits */
@@ -711,12 +764,6 @@ static int hPrintNumber
 		signatini = 1;
 		--intdigs;
 	}
-
-	if( val != 0 && !(val_isinf || val_isnan) )
-		val_digs = hLog10_ULL( val ) + 1;
-	else
-		val_digs = 0;
-	val_zdigs = 0;
 
 	/* fixed-point format? */
 	if( expdigs < MIN_EXPDIGS )
