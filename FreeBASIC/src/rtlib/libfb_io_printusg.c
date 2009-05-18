@@ -377,7 +377,11 @@ FBCALL int fb_PrintUsingStr
 		switch( c )
 		{
 		case '!':
-			buffer[0] = s->data[0];
+			if( FB_STRSIZE( s ) >= 1 )
+				buffer[0] = s->data[0];
+			else
+				buffer[0] = ' ';
+
 			buffer[1] = '\0';
 			fb_PrintFixString( fnum, buffer, 0 );
 
@@ -482,7 +486,7 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isnan;
+	int val_isneg, val_isinf, val_isnan, val_isfloat;
 	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
@@ -672,6 +676,8 @@ static int hPrintNumber
 
 	/* check flags */
 	val_isneg = ( (flags & VAL_ISNEG) != 0 );
+	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
+
 	if( flags & (VAL_ISINF | VAL_ISNAN) )
 	{
 		val_isinf = ( (flags & VAL_ISINF) != 0 );
@@ -697,6 +703,7 @@ static int hPrintNumber
 		val_digs = 0;
 	val_zdigs = 0;
 
+	/* Special '&' format? */
 	if( isamp )
 	{
 		if( val_isinf )
@@ -713,6 +720,17 @@ static int hPrintNumber
 		}
 		else
 		{
+			if( val_isfloat )
+			{	/* remove trailing zeroes in float digits */
+				while( val_digs > 1 && (val % 10) == 0 )
+				{
+					val /= 10;
+					--val_digs;
+					++val_exp;
+				}
+			}
+
+			/* set digits for fixed-point */
 			if( val_digs + val_exp > 0 )
 				intdigs = val_digs + val_exp;
 			else
@@ -721,6 +739,19 @@ static int hPrintNumber
 			if( val_exp < 0 )
 				decdigs = -val_exp;
 
+			if( val_isfloat )
+			{	/* scientific notation? e.g. 3.1E+42 */
+				if( intdigs > 16 || 
+				    val_digs + val_exp - 1 < -MIN_EXPDIGS )
+				{
+					intdigs = 1;
+					decdigs = val_digs - 1;
+
+					expdigs = 2 + hLog10_ULL( abs(val_digs + val_exp - 1) ) + 1;
+					if( expdigs < MIN_EXPDIGS + 1 )
+						expdigs = MIN_EXPDIGS;
+				}
+			}
 		}
 
 		if( val_isneg )
@@ -805,11 +836,13 @@ static int hPrintNumber
 			if( addcommas )
 				intdigs2 += (intdigs2 - 1) / 3;
 
+			/* compare fixed/floating point representations, 
+			   and use the one that needs fewest digits */
 			if( intdigs2 > intdigs + MIN_EXPDIGS )
 			{	/* too many digits in number for fixed point:
 				   switch to floating-point */
 
-				expdigs = MIN_EXPDIGS; /* add four digits for exp notation */
+				expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
 				toobig = 1;  /* add '%' sign */
 
 				/* restore unscaled value */
@@ -882,9 +915,10 @@ static int hPrintNumber
 		totdigs = intdigs + decdigs; /* treat intdigs and decdigs the same */
 		val_exp += decdigs; /* move decimal position to end */
 
-		/* blank first digit if positive and no explicit sign (pos/neg
-		   numbers should be formatted the same where possible, as in QB) */
-		if( val_isneg == 0 && signatini == 0 && signatend == 0 )
+		/* blank first digit if positive and no explicit sign
+		   (pos/neg numbers should be formatted the same where
+		   possible, as in QB) */
+		if( !isamp && !val_isneg && !(signatini || signatend) )
 			if( intdigs >= 1 && totdigs > 1 )
 				--totdigs;
 
@@ -942,7 +976,7 @@ static int hPrintNumber
 				ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 				val_exp /= 10;
 			} while( val_exp > 9 );
-			ADD_CHAR( CHAR_ZERO +val_exp );
+			ADD_CHAR( CHAR_ZERO + val_exp );
 #endif
 			ADD_CHAR( CHAR_TOOBIG ); /* add a '%' sign */
 		}
@@ -1145,7 +1179,7 @@ FBCALL int fb_PrintUsingDouble
 	int flags;
 	unsigned long long val_ull = 1;
 
-	flags = 0;
+	flags = VAL_ISFLOAT;
 
 	if( IS_NEG( value ) )
 		flags |= VAL_ISNEG;

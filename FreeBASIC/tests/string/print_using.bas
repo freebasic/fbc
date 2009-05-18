@@ -1,6 +1,7 @@
 # include "fbcu.bi"
 
-# define REMOVE_TEMP_FILE
+#define REMOVE_TEMP_FILE
+'#define PRINT_IF_UNEQUAL
 
 #define QT(s) ("""" & (s) & """")
 
@@ -14,12 +15,6 @@
 #define HASHES(n) string(n, "#")
 #define CARETS(n) string(n, "^")
 #define DOT "."
-
-#if 0
-#define TEST_EQUAL(a, b) if( (a) <> (b) ) then print QT(a) & " <> " & QT(b): CU_ASSERT( 0 ) endif
-#else
-#define TEST_EQUAL(a, b) CU_ASSERT_EQUAL( a, b )
-#endif
 
 
 #macro OPEN_FILE( fn )
@@ -35,7 +30,12 @@
 	open TESTFILE for input as #1
 		do until eof(1)
 			input #1, sResult, sExpected
-			TEST_EQUAL( sResult, sExpected )
+#ifdef PRINT_IF_UNEQUAL
+			if( sResult <> sExpected ) then
+				print QT(sResult) & " <> " & QT(sExpected)
+			end if
+#endif
+			CU_ASSERT_EQUAL( sResult, sExpected )
 		loop
 	close #1
 
@@ -53,19 +53,19 @@ private sub test_ll( _
 		byval num as longint, _
 		byref cmp as string)
 
-	if abs(num) < 1ll shl 31 then
+	if num = cint(num) then
 		PRINT_USING_( fmt & "%", cint(num), cmp & "%" )
 	end if
-	if num >= 0 and num < 1ll shl 32 then
+	if num = cuint(num) then
 		PRINT_USING_( fmt & "u", cuint(num), cmp & "u" )
 	end if
-	if abs(num) <= 1 shl 23 then
+	if cunsg(abs(num)) <= 1 shl 23 then
 		PRINT_USING_( fmt & "_!", csng(num), cmp & "!" )
 	end if
-	if abs(num) <= 1ull shl 52 then
+	if cunsg(abs(num)) <= 1ull shl 52 then
 		PRINT_USING_( fmt & "_#", cdbl(num), cmp & "#" )
 	end if
-	if abs(num) >= 0 then
+	if num >= 0 then
 		PRINT_USING_( fmt & "ull", culngint(num), cmp & "ull" )
 	end if
 
@@ -181,11 +181,14 @@ sub numtest cdecl ()
 			cmp = "0." & right( string(30, "0") & pow_ull(5, -i), -i)
 		end if
 		while instr(cmp, ".") < instr(fmt, "."): cmp = " " & cmp: wend
-		while len(cmp) < len(fmt): cmp = cmp & "0": wend
+		while len(cmp) < len(fmt):               cmp = cmp & "0": wend
 
 		if i >= 0 then
 			num_ull = 1ull shl i
 			test_ull( fmt, num_ull, cmp )
+			if num_ull <= 1ull shl 63 then
+				test_ll( fmt & "-", -csign(num_ull), cmp & "-" )
+			end if
 		else
 			num = 2 ^ i
 			test_dbl( fmt, num, cmp )
@@ -252,6 +255,9 @@ sub fmttest cdecl ()
 	test_ll( "**####" , 123, "***123" )
 	test_ll( "**$", 1, "*$1" )
 
+	test_ll(  "**$####" , 456, "***$456" )
+	test_ll( "+**$####" , 456, "***+$456" )
+
 	test_ll( "$$$" , 1, "$1$" )
 	test_ll( "***" , 1, "*1*" )
 	test_ll( "***$", 1, "*1*$" )
@@ -282,6 +288,7 @@ sub fmttest cdecl ()
 	test_dbl( "+#", -.4, "-0" )
 	test_dbl( "+#+", -.4, "-0+" )
 	test_dbl( "+#-", -.4, "-0-" )
+	test_dbl( "+#-", 0.4, "+0-" )
 
 	test_dbl( "-###", 42, "- 42" )
 	test_dbl( "+###", -42, " -42" )
@@ -293,6 +300,14 @@ sub fmttest cdecl ()
 	test_dbl( "**$##.##^^^^-",  1234.56e+78, "$1234.56E+78 " )
 	test_dbl( "**$##.##+^^^^", -1234.56, "$1234.56-^^^^" )
 
+	test_dbl(       "#-", 1,       "1 " )
+	test_dbl(      "#^-", 1,      "1^-" )
+	test_dbl(     "#^^-", 1,     "1^^-" )
+	test_dbl(    "#^^^-", 1,    "1E+0 " )
+	test_dbl(   "#^^^^-", 1,   "1E+00 " )
+	test_dbl(  "#^^^^^-", 1,  "1E+000 " )
+	test_dbl( "#^^^^^^-", 1, "1E+000^-" )
+
 	CLOSE_TEST_FILE()
 
 end sub
@@ -303,11 +318,14 @@ sub infnantest cdecl ()
 
 	dim as single one = 1.0, zero = 0.0
 
-	test_sng( "+###",  abs(zero / zero), "+NAN" )
-	test_sng( "+###", -abs(zero / zero), "-NAN" )
+	#define MY_INF (one / zero)
+	#define MY_NAN abs(zero / zero)
 
-	test_sng( "+###",  one / zero, "+INF" )
-	test_sng( "+###", -one / zero, "-INF" )
+	test_sng( "+###",  MY_INF, "+INF" )
+	test_sng( "+###", -MY_INF, "-INF" )
+
+	test_sng( "+###",  MY_NAN, "+NAN" )
+	test_sng( "+###", -MY_NAN, "-NAN" )
 
 	CLOSE_TEST_FILE()
 
@@ -317,25 +335,67 @@ sub strtest cdecl ()
 
 	OPEN_FILE( "print_using_strtest.txt" )
 
-	dim n as ulongint
+	dim i as integer, n as ulongint
 
 	test_str( "&", "Test", "Test" )
-	test_str( "!", "Test", "T" )
-	test_str( "\\", "Test", "Te" )
-	test_str( "\ \", "Test", "Tes" )
-	test_str( "\  \", "Test", "Test" )
+	test_str( "!",     "Test", "T" )
+	test_str( "\\",    "Test", "Te" )
+	test_str( "\ \",   "Test", "Tes" )
+	test_str( "\  \",  "Test", "Test" )
 	test_str( "\   \", "Test", "Test " )
 
-	'FIXME: test_str( "!", "", " " )
+	test_str( "!",   "", " " )
+	test_str( "\\",  "", "  " )
+	test_str( "\ \", "", "   " )
 
 	test_ll( "&", 0, "0" )
 
 	n = 1
-	do
-		PRINT_USING( "&",  n,  n )
-		PRINT_USING( "&", -csign(n), -csign(n) )
-		if (n * 10) \ 10 = n then n *= 10 else exit do
-	loop
+	for i = 0 to 19
+
+		if n < 1.e+16 then
+
+			test_ll(  "&",  n, str(n) )
+			test_dbl( "&",  n, str(n) )
+
+			test_ll(  "&",      -n,  "-" & n )
+			test_dbl( "&", -cdbl(n), "-" & n )
+
+		else
+
+			test_ull( "&", n, str(n) )
+			test_dbl( "&", n, "1.E+" & i )
+
+
+			if n < 1ull shl 63 then
+				test_ll( "&", -n, "-" & n )
+			end if
+			test_dbl( "&", -cdbl(n), "-1.E+" & i )
+
+		end if
+		
+		n *= 10
+
+	next i
+
+	test_dbl( "&", 1.0,     "1" )
+	test_dbl( "&", 0.1,     "0.1" )
+	test_dbl( "&", 0.01,    "0.01" )
+	test_dbl( "&", 0.001,   "0.001" )
+	test_dbl( "&", 0.0001,  "1.E-4" )
+	test_dbl( "&", 0.00001, "1.E-5" )
+
+	test_dbl( "&", 0.001234,   "0.001234" )
+	test_dbl( "&", 0.0001234,  "1.234E-4" )
+
+	test_dbl( "&", 1.E+15, "1" & string(15, "0") )
+	test_dbl( "&", 1.E+16, "1.E+16" )
+
+	test_dbl( "&", 1.234E+15, "1234" & string(15-3, "0") )
+	test_dbl( "&", 1.234E+16, "1.234E+16" )
+
+	test_dbl( "&", 1.E+99, "1.E+99" )
+	test_dbl( "&", 1.E+100, "1.E+100" )
 
 	CLOSE_TEST_FILE()
 
