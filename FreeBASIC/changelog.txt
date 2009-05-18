@@ -78,6 +78,7 @@ Version 0.21.0 Beta:
 - Patch #2471271: null-termination/memory management issues in WINPUT() - thanks to dkls for the patch (counting_pine)
 - FB was "ghosting" parameter names in error messages, in cases where the parameter was unnamed, but a previous function header had a parameter with a name in the same position (counting_pine)
 - #2038682: faulty optimisation - 16-bit ops on constants could result in constant values that weren't truncated to fit the result type (counting_pine)
+- PRINT|WRITE #f could print to the wrong file number if it printed an expression that modified f (counting_pine)
 
 
 Version 0.20.0 Beta:

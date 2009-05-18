@@ -73,6 +73,12 @@ function cPrintStmt  _
 		end if
 	end if
 
+	'' side-effect?
+	'' (vars may also cause side-effects if modified by printed expressions)
+	if( astIsConstant( filexpr ) = FALSE ) then
+		astAdd( astRemSideFx( filexpr ) )
+	end if
+
 	'' (USING Expression{str} ';')?
 	usingexpr = NULL
 	if( hMatch( FB_TK_USING ) ) then
@@ -87,11 +93,6 @@ function cPrintStmt  _
 		if( rtlPrintUsingInit( usingexpr, islprint ) = FALSE ) then
 			exit function
 		end if
-	end if
-
-	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
-		astAdd( astRemSideFx( filexpr ) )
 	end if
 
 	'' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
@@ -232,7 +233,8 @@ function cWriteStmt _
 	end if
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
+	'' (vars may also cause side-effects if modified by printed expressions)
+	if( astIsConstant( filexpr ) = FALSE ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 

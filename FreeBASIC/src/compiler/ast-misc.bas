@@ -1348,3 +1348,44 @@ sub astSetType _
 end sub
 
 
+'':::::
+function astIsConstant _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr sym = any
+
+	function = FALSE
+
+	if( n <> NULL ) then 
+
+		'' detects number literals/constants, enums
+		if( astGetClass( n ) = AST_NODECLASS_CONST ) then
+			return TRUE
+		elseif( astGetClass( n ) = AST_NODECLASS_ENUM ) then
+			return TRUE
+		end if
+
+		'' detects string literals/constants
+		sym = astGetSymbol( n )
+		if( sym <> NULL ) then
+			if( symbIsLiteralConst( sym ) ) then
+				return TRUE
+			elseif( symbIsEnum( sym ) ) then
+				return TRUE
+			end if
+		end if
+
+#if 0
+		'' detects const-qualified types (probably best to ignore them here)
+		if( typeIsConst( astGetFullType( n ) ) ) then
+			return TRUE
+		end if
+#endif
+
+	end if
+	
+end function
+
+
