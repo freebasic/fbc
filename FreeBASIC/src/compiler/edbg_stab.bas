@@ -142,7 +142,7 @@ private sub hEmitSTABS _
 		byval _string as zstring ptr, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as string = "0" _
+		byval _value as zstring ptr = @"0" _
 	) static
 
 	dim as string ostr
@@ -156,7 +156,7 @@ private sub hEmitSTABS _
 	ostr += ","
 	ostr += str( _desc )
 	ostr += ","
-	ostr += _value
+	ostr += *_value
 
 	emitWriteStr( ostr, TRUE )
 
@@ -192,7 +192,7 @@ private sub hEmitSTABN _
 		byval _type as integer, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as string = "0" _
+		byval _value as zstring ptr = @"0" _
 	) static
 
 

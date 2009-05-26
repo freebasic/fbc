@@ -75,7 +75,7 @@ function cPrintStmt  _
 
 	'' side-effect?
 	'' (vars may also cause side-effects if modified by printed expressions)
-	if( astIsConstant( filexpr ) = FALSE ) then
+	if( astIsCONST( filexpr ) = FALSE ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 
@@ -234,7 +234,7 @@ function cWriteStmt _
 
 	'' side-effect?
 	'' (vars may also cause side-effects if modified by printed expressions)
-	if( astIsConstant( filexpr ) = FALSE ) then
+	if( astIsCONST( filexpr ) = FALSE ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 

@@ -569,9 +569,8 @@ function cProcHeader _
 	subtype = NULL
 	stats = 0
 
-	if ucase( *lexGetText( ) ) = "NAKED" then
+	if hMatchText( "NAKED" ) then
 		attrib or= FB_SYMBATTRIB_NAKED
-		lexSkipToken( )
 	end if
 
 	'' CallConvention?
@@ -1451,9 +1450,8 @@ function cOperatorHeader _
 
 	subtype = NULL
 
-	if ucase( *lexGetText( ) ) = "NAKED" then
+	if hMatchText( "NAKED" ) then
 		attrib or= FB_SYMBATTRIB_NAKED
-		lexSkipToken( )
 	end if
 
 	'' CallConvention?
@@ -1924,9 +1922,8 @@ function cPropertyHeader _
 	subtype = NULL
 	stats = 0
 
-	if ucase( *lexGetText( ) ) = "NAKED" then
+	if hMatchText( "NAKED" ) then
 		attrib or= FB_SYMBATTRIB_NAKED
-		lexSkipToken( )
 	end if
 
 	'' CallConvention?
@@ -2257,9 +2254,8 @@ function cCtorHeader _
 		is_extern = TRUE
 	end if
 
-	if ucase( *lexGetText( ) ) = "NAKED" then
+	if hMatchText( "NAKED" ) then
 		attrib or= FB_SYMBATTRIB_NAKED
-		lexSkipToken( )
 	end if
 
 	'' CallConvention?

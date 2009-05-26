@@ -1349,6 +1349,7 @@ end sub
 
 
 '':::::
+#if 0 '' function not actually needed - astIsCONST macro (n->defined) seems to cover all cases
 function astIsConstant _
 	( _
 		byval n as ASTNODE ptr _
@@ -1387,5 +1388,6 @@ function astIsConstant _
 	end if
 	
 end function
+#endif
 
 

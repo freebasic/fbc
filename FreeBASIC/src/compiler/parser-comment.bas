@@ -94,8 +94,7 @@ function cDirective as integer static
 
 			'' ONCE?
 			isonce = FALSE
-			if( ucase( *lexGetText( ) ) = "ONCE" ) then
-				lexSkipToken( )
+			if( hMatchText( "ONCE" ) ) then
 				isonce = TRUE
 			end if
 
@@ -139,9 +138,7 @@ function cDirective as integer static
 		
 		case else
 			'' Special case, allow $LANG metacommand in all dialects
-			if( ucase( *lexGetText( ) ) = "LANG" ) then
-
-				lexSkipToken( )
+			if( hMatchText( "LANG" ) ) then
 
 				'' ':'
 				if( hMatch( FB_TK_STMTSEP ) = FALSE ) then

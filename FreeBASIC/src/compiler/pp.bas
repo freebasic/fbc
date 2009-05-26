@@ -334,8 +334,7 @@ private function ppInclude( ) as integer
 	'' ONCE?
 	isonce = FALSE
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		if( ucase( *lexGetText( ) ) = "ONCE" ) then
-			lexSkipToken( )
+		if( hMatchText( "ONCE" ) ) then
 			isonce = TRUE
 		end if
 	end if

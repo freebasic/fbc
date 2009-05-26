@@ -1329,11 +1329,6 @@ declare function hTruncateInt _
 		byval value as integer ptr _
 	) as integer
 
-declare function astIsConstant _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
 ''
 '' macros
 ''

@@ -525,6 +525,23 @@ function cCompoundEnd( ) as integer
 	case FB_TK_EXTERN
 		function = cExternStmtEnd( )
 
+#if 0 '' END FOR/END DO/END WHILE
+	case FB_TK_FOR
+		'' END
+		lexSkipToken( )
+		function = cForStmtEnd( )
+
+	case FB_TK_DO
+		'' END
+		lexSkipToken( )
+		function = cDoStmtEnd( )
+
+	case FB_TK_WHILE
+		'' END
+		lexSkipToken( )
+		function = cWhileStmtEnd( )
+#endif
+
 	'' QB quirk: IF expr THEN END ELSE ...|ENDIF|END IF
 	case FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
 		function = cEndStatement( )
