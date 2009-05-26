@@ -3,6 +3,7 @@ Version 0.21.0 Beta:
 [added]
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
 - PRINT USING internals overhauled: it is now more reliable and behaves more like QBASIC in respect to parsing and printing (counting_pine)
+- PRINT USING now supports "&" for intelligent number formatting (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

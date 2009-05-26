@@ -121,11 +121,11 @@
     (LO32(x) & 0x7f800000) != 0x7f800000  )
 
 #define IS_INFINITE_F( x ) (                    \
-    (LO32(x) & 0x7fffffff == 0x7f800000   )
+    (LO32(x) & 0x7fffffff) == 0x7f800000  )
 
 #define IS_NAN_F( x ) (                         \
-    (LO32(x) & 0x7f800000 == 0x7f800000 &&      \
-    (LO32(x) & 0x007fffff != 0              )
+    (LO32(x) & 0x7f800000) == 0x7f800000 &&     \
+    (LO32(x) & 0x007fffff) != 0              )
 
 /*-------------------------------------------------------------*/
 
@@ -486,7 +486,7 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isnan, val_isfloat;
+	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
 	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
@@ -677,6 +677,7 @@ static int hPrintNumber
 	/* check flags */
 	val_isneg = ( (flags & VAL_ISNEG) != 0 );
 	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
+	val_issng = ( (flags & VAL_ISSNG) != 0 );
 
 	if( flags & (VAL_ISINF | VAL_ISNAN) )
 	{
@@ -720,6 +721,27 @@ static int hPrintNumber
 		}
 		else
 		{
+			if( val_issng )
+			{	/* crop to 7-digit precision */
+				if( val_digs > 7 )
+					val = hDivPow10_ULL( val, val_digs - 7 );
+					val_exp += val_digs - 7;
+					val_digs = 7;
+
+				if( val == 0 )
+				{	/* val has been scaled down to zero */
+					val_digs = 0;
+					val_exp = -decdigs;
+				}
+				else if( val == hPow10_ULL( val_digs ) )
+				{	/* rounding up took val to next power of 10:
+					   set value to 1, put val_digs zeroes onto val_exp */
+					val = 1;
+					val_exp += val_digs;
+					val_digs = 1;
+				}
+			}
+
 			if( val_isfloat )
 			{	/* remove trailing zeroes in float digits */
 				while( val_digs > 1 && (val % 10) == 0 )
@@ -741,7 +763,7 @@ static int hPrintNumber
 
 			if( val_isfloat )
 			{	/* scientific notation? e.g. 3.1E+42 */
-				if( intdigs > 16 || 
+				if( intdigs > 16 || (val_issng && intdigs > 7) ||
 				    val_digs + val_exp - 1 < -MIN_EXPDIGS )
 				{
 					intdigs = 1;
@@ -1216,7 +1238,38 @@ FBCALL int fb_PrintUsingSingle
 		int mask
 	)
 {
-	return fb_PrintUsingDouble( fnum, (double)value_f, mask );
+
+	int val_exp;
+	int flags;
+	unsigned long long val_ull = 1;
+
+	flags = VAL_ISFLOAT | VAL_ISSNG;
+
+	if( IS_NEG_F( value_f ) )
+		flags |= VAL_ISNEG;
+
+	if( IS_ZERO_F( value_f ) )
+	{
+		val_ull = 0;
+		val_exp = 0;
+	}
+	else if( IS_FINITE_F( value_f ) )
+	{
+		value_f = fabs( value_f );
+		val_ull = hScaleDoubleToULL( value_f, &val_exp );
+	}
+	else
+	{
+		if( IS_INFINITE_F( value_f ) )
+			flags |= VAL_ISINF;
+		else if( IS_NAN_F( value_f ) )
+			flags |= VAL_ISNAN;
+		else
+			DBG_ASSERT( 0 );
+	}
+
+	return hPrintNumber( fnum, val_ull, val_exp, flags, mask );
+
 }
 
 /*:::::*/
