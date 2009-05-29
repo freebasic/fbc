@@ -150,7 +150,9 @@ static void *window_thread(void *arg)
 		
 		fb_x11.update();
 		
-		XSync(fb_x11.display, False);
+		/* This line is causing fbgfx OpenGL code to freeze. - GOK
+		 * XSync(fb_x11.display, False);
+		 */
 		while (XPending(fb_x11.display)) {
 			e.type = 0;
 			XNextEvent(fb_x11.display, &event);
@@ -291,13 +293,14 @@ static void *window_thread(void *arg)
 					}
 					break;
 				
+				/* Dead Code? The window is created without a ClientMessage attribute. - GOK
 				case ClientMessage:
 					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
 						fb_hPostKey(KEY_QUIT);
 						e.type = EVENT_WINDOW_CLOSE;
 					}
 					break;
-				
+				*/
 			}
 			if (e.type)
 				fb_hPostEvent(&e);
@@ -364,28 +367,46 @@ void fb_hX11LeaveFullscreen(void)
 	}
 }
 
+/*:::::*/
+void WaitMapped(Window w)
+{
+	XEvent e;
+	do {
+		XMaskEvent(fb_x11.display, StructureNotifyMask, &e);
+	} while ((e.type != MapNotify) || (e.xmap.event != w));
+}
 
 /*:::::*/
 void fb_hX11InitWindow(int x, int y)
 {
-	XSetWindowAttributes attribs;
 	XEvent event;
 	
-	attribs.override_redirect = False;
-	XChangeWindowAttributes(fb_x11.display, fb_x11.window, CWOverrideRedirect, &attribs);
-	
-	if (!(fb_x11.flags & DRIVER_FULLSCREEN))
-		XMapRaised(fb_x11.display, fb_x11.window);
-	
-	if (fb_x11.flags & (DRIVER_FULLSCREEN | DRIVER_NO_FRAME))
-		XMoveResizeWindow(fb_x11.display, fb_x11.window, x, y, fb_x11.w, fb_x11.h);
-	else
+	if (!(fb_x11.flags & DRIVER_FULLSCREEN)){
+		/* windowed */
+		XResizeWindow(fb_x11.display, fb_x11.wmwindow, fb_x11.w, fb_x11.h);
 		XResizeWindow(fb_x11.display, fb_x11.window, fb_x11.w, fb_x11.h);
 	
-	if (fb_x11.flags & DRIVER_FULLSCREEN) {
-		attribs.override_redirect = True;
-		XChangeWindowAttributes(fb_x11.display, fb_x11.window, CWOverrideRedirect, &attribs);
+		if (!(fb_x11.flags & DRIVER_NO_FRAME)) {
+			XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.wmwindow, 0, 0);
+			XMapRaised(fb_x11.display,fb_x11.wmwindow);
+			WaitMapped(fb_x11.wmwindow);
+		}
 		XMapRaised(fb_x11.display, fb_x11.window);
+		if (fb_x11.flags & DRIVER_NO_FRAME)
+			XMoveWindow(fb_x11.display, fb_x11.window, x, y);
+		WaitMapped(fb_x11.window);
+		XRaiseWindow(fb_x11.display, fb_x11.window);
+	} else {
+		/* fullscreen */
+		XMoveResizeWindow(fb_x11.display, fb_x11.fswindow, 0, 0, fb_x11.w, fb_x11.h);
+		XMoveResizeWindow(fb_x11.display, fb_x11.window, 0, 0, fb_x11.w, fb_x11.h);	
+		XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.fswindow, 0, 0);
+		XMapRaised(fb_x11.display, fb_x11.fswindow);
+		/* use XSync instead of WaitMapped for unmanaged windows */
+		XSync(fb_x11.display, False);  
+		XMapRaised(fb_x11.display, fb_x11.window);
+		XSync(fb_x11.display, False);
+		XRaiseWindow(fb_x11.display, fb_x11.window);
 	}
 	
 	if (fb_x11.flags & DRIVER_ALWAYS_ON_TOP) {
@@ -393,7 +414,7 @@ void fb_hX11InitWindow(int x, int y)
 		event.xclient.type = ClientMessage;
 		event.xclient.send_event = True;
 		event.xclient.message_type = XInternAtom(fb_x11.display, "_NET_WM_STATE", False);
-		event.xclient.window = fb_x11.window;
+		event.xclient.window = fb_x11.wmwindow;
 		event.xclient.format = 32;
 		event.xclient.data.l[0] = 1;
 		event.xclient.data.l[1] = XInternAtom(fb_x11.display, "_NET_WM_STATE_ABOVE", False);
@@ -481,6 +502,14 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_x11.window = XCreateWindow(fb_x11.display, root_window, 0, 0, fb_x11.w, fb_x11.h,
 					0, fb_x11.depth, InputOutput, fb_x11.visual,
 					CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore | CWColormap, &attribs);
+	fb_x11.wmwindow = XCreateWindow(fb_x11.display, root_window, 0, 0, fb_x11.w, fb_x11.h,
+					0, fb_x11.depth, InputOutput, fb_x11.visual,
+					CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore | CWColormap, &attribs);
+	attribs.override_redirect = True;
+	fb_x11.fswindow = XCreateWindow(fb_x11.display, root_window, 0, 0, fb_x11.w, fb_x11.h,
+					0, fb_x11.depth, InputOutput, fb_x11.visual,
+					CWOverrideRedirect | CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore | CWColormap, &attribs);
+					
 	if (!fb_x11.window)
 		return -1;
 	XStoreName(fb_x11.display, fb_x11.window, title);
@@ -488,7 +517,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		hints.flags = IconPixmapHint | IconMaskHint;
 		xpm_attribs.valuemask = XpmReturnAllocPixels | XpmReturnExtensions;
 		XpmCreatePixmapFromData(fb_x11.display, fb_x11.window, fb_program_icon, &hints.icon_pixmap, &hints.icon_mask, &xpm_attribs);
-		XSetWMHints(fb_x11.display, fb_x11.window, &hints);
+		XSetWMHints(fb_x11.display, fb_x11.wmwindow, &hints);
 	}
 	
 	size = XAllocSizeHints();
@@ -506,6 +535,10 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	size->width_inc = 0x10000;
 	size->height_inc = 0x10000;
 	XSetWMNormalHints(fb_x11.display, fb_x11.window, size);
+	XSetWMNormalHints(fb_x11.display, fb_x11.fswindow, size);
+	size->max_width = size->min_width;
+	size->max_height = size->min_height;
+	XSetWMNormalHints(fb_x11.display, fb_x11.wmwindow, size);
 	XFree(size);
 	
 	if (flags & DRIVER_NO_FRAME) {
@@ -522,7 +555,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	}
 	
 	wm_delete_window = XInternAtom(fb_x11.display, "WM_DELETE_WINDOW", False);
-	XSetWMProtocols(fb_x11.display, fb_x11.window, &wm_delete_window, 1);
+	XSetWMProtocols(fb_x11.display, fb_x11.wmwindow, &wm_delete_window, 1);
 	
 	if (fb_x11.visual->class == PseudoColor) {
 		color_map = XCreateColormap(fb_x11.display, root_window, fb_x11.visual, AllocAll);
@@ -637,13 +670,14 @@ void fb_hX11Exit(void)
 			XFreeColormap(fb_x11.display, color_map);
 		if (wm_intern_hints != None)
 			XDeleteProperty(fb_x11.display, fb_x11.window, wm_intern_hints);
-		if (fb_x11.window != None)
-			XDestroyWindow(fb_x11.display, fb_x11.window);
+		if (fb_x11.window != None) XDestroyWindow(fb_x11.display, fb_x11.window);
+		if (fb_x11.fswindow != None) XDestroyWindow(fb_x11.display, fb_x11.fswindow);
+		if (fb_x11.wmwindow != None) XDestroyWindow(fb_x11.display, fb_x11.wmwindow);
 		if (fb_x11.config) {
 			XRRFreeScreenConfigInfo(fb_x11.config);
 			fb_x11.config = NULL;
 		}
-		XCloseDisplay(fb_x11.display);
+		if(fb_x11.display) XCloseDisplay(fb_x11.display);
 		fb_x11.display = NULL;
 	}
 }
@@ -756,7 +790,7 @@ void fb_hX11SetMouse(int x, int y, int show, int clip)
 /*:::::*/
 void fb_hX11SetWindowTitle(char *title)
 {
-	XStoreName(fb_x11.display, fb_x11.window, title);
+	XStoreName(fb_x11.display, fb_x11.wmwindow, title);
 }
 
 
@@ -796,6 +830,7 @@ int fb_hX11SetWindowPos(int x, int y)
 	XMoveWindow(fb_x11.display, window, x, y);
 	set_attribs.override_redirect = False;
 	XChangeWindowAttributes(fb_x11.display, window, CWOverrideRedirect, &set_attribs);
+	XClearWindow(fb_x11.display, fb_x11.wmwindow);
 	
 	/* remove any mouse motion events */
 	while (XCheckWindowEvent(fb_x11.display, fb_x11.window, PointerMotionMask, &event))

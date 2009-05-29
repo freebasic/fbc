@@ -49,6 +49,8 @@ typedef struct X11DRIVER
 	Visual *visual;
 	int screen;
 	Window window;
+	Window wmwindow;
+	Window fswindow;
 	GC gc;
 	XRRScreenConfiguration *config;
 	int w, h, depth, visual_depth, flags;

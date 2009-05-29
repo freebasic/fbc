@@ -175,6 +175,8 @@ static int x11_init(void)
 				fb_hX11LeaveFullscreen();
 				return -1;
 			}
+			XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.fswindow, 0, 0);
+			XMoveResizeWindow(fb_x11.display, fb_x11.fswindow, 0,0,fb_x11.w, h);
 			XMoveResizeWindow(fb_x11.display, fb_x11.window, 0, 0, fb_x11.w, h);
 			fb_x11.display_offset = (h - fb_x11.h) >> 1;
 		}
@@ -211,6 +213,14 @@ static int x11_init(void)
 	return 0;
 }
 
+/*:::::*/
+void WaitUnmapped(Window w)
+{
+	XEvent e;
+	do {
+		XMaskEvent(fb_x11.display, StructureNotifyMask, &e);
+	} while ((e.type != UnmapNotify) || (e.xmap.event != w));
+}
 
 /*:::::*/
 static void x11_exit(void)
@@ -218,7 +228,16 @@ static void x11_exit(void)
 	if (fb_x11.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
 	XUnmapWindow(fb_x11.display, fb_x11.window);
+	WaitUnmapped(fb_x11.window);
+	if (fb_x11.flags & DRIVER_FULLSCREEN) {
+		XUnmapWindow(fb_x11.display, fb_x11.fswindow);
 	XSync(fb_x11.display, False);
+	} else {
+		if (!(fb_x11.flags & DRIVER_NO_FRAME)) {
+			XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
+			WaitUnmapped(fb_x11.wmwindow);
+		}
+	}
 	if (image) {
 		if (is_shm) {
 			XShmDetach(fb_x11.display, &shm_info);
@@ -270,7 +289,6 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_x11.init = x11_init;
 	fb_x11.exit = x11_exit;
 	fb_x11.update = x11_update;
-	
 	return fb_hX11Init(title, w, h, depth, refresh_rate, flags);
 }
 

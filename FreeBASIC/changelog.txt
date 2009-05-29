@@ -81,6 +81,7 @@ Version 0.21.0 Beta:
 - #2038682: faulty optimisation - 16-bit ops on constants could result in constant values that weren't truncated to fit the result type (counting_pine)
 - PRINT|WRITE #f could print to the wrong file number if it printed an expression that modified f (counting_pine)
 - #2433409 - Bugs in graphics driver selection fallback.  Thanks to sisophon2001 for patch (counting_pine)
+- Linux: fixed problems when switching graphics screens between full-screen and windowed.  Thanks to sisophon2001 for patch (counting_pine)
 
 
 Version 0.20.0 Beta:

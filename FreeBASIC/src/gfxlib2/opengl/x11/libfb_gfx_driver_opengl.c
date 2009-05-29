@@ -113,6 +113,9 @@ static int opengl_window_init(void)
 				fb_hX11LeaveFullscreen();
 				return -1;
 			}
+			XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.fswindow, 0, 0);
+			XMoveResizeWindow(fb_x11.display, fb_x11.fswindow, 0,0,fb_x11.w, fb_x11.h);
+			XMoveResizeWindow(fb_x11.display, fb_x11.window, 0,0,fb_x11.w, fb_x11.h);
 		}
 		else
 			return -1;
@@ -123,13 +126,22 @@ static int opengl_window_init(void)
 	return 0;
 }
 
-
 /*:::::*/
 static void opengl_window_exit(void)
 {
 	if (fb_x11.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
+		
 	XUnmapWindow(fb_x11.display, fb_x11.window);
+	WaitUnmapped(fb_x11.window);
+	if (fb_x11.flags & DRIVER_FULLSCREEN) {
+		XUnmapWindow(fb_x11.display, fb_x11.fswindow);
+	XSync(fb_x11.display, False);
+	} else {
+		XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
+		WaitUnmapped(fb_x11.wmwindow);
+}
+	//usleep(500);
 	XSync(fb_x11.display, False);
 }
 
@@ -147,6 +159,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
 		"glXMakeCurrent", "glXSwapBuffers", NULL
 	};
+	static Display * dpy = 0;
 	GLXFUNCS *funcs = &__fb_glX;
 	void **funcs_ptr = (void **)funcs;
 	XVisualInfo *info;
@@ -159,7 +172,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	if (!(flags & DRIVER_OPENGL))
 		return -1;
-
 	fb_hGL_NormalizeParameters(flags);
 	*attrib++ = GLX_RED_SIZE;
 	*attrib++ = __fb_gl_params.color_red_bits;
@@ -197,44 +209,42 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_x11.init = opengl_window_init;
 	fb_x11.exit = opengl_window_exit;
 	fb_x11.update = opengl_window_update;
-
 	fb_hXlibInit();
-	
-	fb_x11.display = XOpenDisplay(NULL);
-	if (!fb_x11.display)
+	if(!dpy)
+		dpy = XOpenDisplay(NULL);
+	if (!dpy)
 		return -1;
-	fb_x11.screen = XDefaultScreen(fb_x11.display);
+	fb_x11.screen = XDefaultScreen(dpy);
+	if (!gl_lib) gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
 	
-	gl_lib = fb_hDynLoad("libGL.so.1", glx_funcs, funcs_ptr);
 	if (!gl_lib)
 		return -1;
 	
 	do {
-		if ((info = __fb_glX.ChooseVisual(fb_x11.display, fb_x11.screen, attribs))) {
+		if ((info = __fb_glX.ChooseVisual(dpy, fb_x11.screen, attribs))) {
 			fb_x11.visual = info->visual;
-			context = __fb_glX.CreateContext(fb_x11.display, info, NULL, True);
+			context = __fb_glX.CreateContext(dpy, info, NULL, True);
 			XFree(info);
 			if ((intptr_t)context > 0)
 				break;
 			else
-				__fb_glX.DestroyContext(fb_x11.display, context);
+				__fb_glX.DestroyContext(dpy, context);
 		}
 	} while ((samples_attrib) && ((*samples_attrib -= 2) >= 0));
-	if (!info)
+
+	if (!info) {
 		return -1;
-	
+	}
+	fb_x11.display = dpy;
 	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
 	if (result)
 		return result;
-	
 	__fb_glX.MakeCurrent(fb_x11.display, fb_x11.window, context);
 	
 	if (fb_hGL_Init(gl_lib, NULL))
 		return -1;
-	
 	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
-	
 	return 0;
 }
 
