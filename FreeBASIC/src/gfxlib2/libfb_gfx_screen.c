@@ -318,8 +318,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
             for (try_count = (driver_name ? 4 : 2); try_count; try_count--) {
                 for (i = 0; __fb_gfx_drivers_list[i >> 1]; i++) {
                     driver = __fb_gfx_drivers_list[i >> 1];
-                    if ((driver_name) && !(try_count & 0x1) && (strcasecmp(driver_name, driver->name)))
+                    if ((driver_name) && !(try_count & 0x1) && (strcasecmp(driver_name, driver->name))) {
+                        driver = NULL;
                         continue;
+					}
                     if (!driver->init(__fb_window_title, __fb_gfx->w, __fb_gfx->h * __fb_gfx->scanline_size, __fb_gfx->depth, (i & 0x1) ? 0 : refresh_rate, flags))
                         break;
                     driver->exit();
@@ -328,7 +330,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
                 if (driver)
                     break;
                 if (driver_name) {
-                    if (try_count == 2)
+                    if (try_count == 3)
                         flags ^= DRIVER_FULLSCREEN;
                 }
                 else

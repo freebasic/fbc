@@ -71,7 +71,7 @@ Version 0.21.0 Beta:
 - Error messages were printed without a newline when compiling Unicode source (counting_pine)
 - STRPTR/SADD were returning a reference that could be directly modified (e.g STRPTR(s) = 0), which wasn't safe (counting_pine)
 - #2533376 - FBC could crash on new[count] if count wasn't an Integer (counting_pine)
-- #2659332 - buggy implementation of warning message when GET/PUT was used for UDTs with pointer fields - thanks to dkls for patch; slightly more helpful warning when just passing a pointer (counting_pine)
+- #2659332 - buggy implementation of warning message when GET/PUT was used for UDTs with pointer fields (thanks to dkls for patch); add slightly more helpful warning when just passing a pointer (counting_pine)
 - SLEEP() was registered as a function when it should have been a sub (counting_pine)
 - #2617069 InStrRev was skipping over some matches (counting_pine)
 - In -g mode, .file/.stabs paths could be emitted with unescaped single backslashes - reported by KetilO (counting_pine)
@@ -80,6 +80,7 @@ Version 0.21.0 Beta:
 - FB was "ghosting" parameter names in error messages, in cases where the parameter was unnamed, but a previous function header had a parameter with a name in the same position (counting_pine)
 - #2038682: faulty optimisation - 16-bit ops on constants could result in constant values that weren't truncated to fit the result type (counting_pine)
 - PRINT|WRITE #f could print to the wrong file number if it printed an expression that modified f (counting_pine)
+- #2433409 - Bugs in graphics driver selection fallback.  Thanks to sisophon2001 for patch (counting_pine)
 
 
 Version 0.20.0 Beta:
