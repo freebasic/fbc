@@ -553,6 +553,12 @@ private function hParamDecl _
     			end if
     		end if
     	end if
+
+	case FB_DATATYPE_STRING
+		if( mode = FB_PARAMMODE_BYVAL ) then
+			hParamWarning( proc, id, FB_WARNINGMSG_BYVALASSTRING )
+		end if
+
     end select
 
     '' calc len

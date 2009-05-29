@@ -68,8 +68,9 @@ end type
 		( 0, @"Passing Pointer" ), _
 		( 0, @"Command line option overrides directive" ), _
 		( 0, @"Directive ignored after first pass" ), _
-		( 0, @"'IF' found directly after multi-line 'ELSE'" ), _
-		( 0, @"Shift value greater than or equal to number of bits in data type" ) _
+		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
+		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
+		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
