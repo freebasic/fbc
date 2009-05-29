@@ -73,30 +73,45 @@ function cPrintStmt  _
 		end if
 	end if
 
-	'' (USING Expression{str} ';')?
-	usingexpr = NULL
-	if( hMatch( FB_TK_USING ) ) then
-		hMatchExpressionEx( usingexpr, FB_DATATYPE_STRING )
-
-		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDSEMICOLON ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-		if( rtlPrintUsingInit( usingexpr, islprint ) = FALSE ) then
-			exit function
-		end if
-	end if
-
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
+	'' (vars may also cause side-effects if modified by printed expressions)
+	if( astIsCONST( filexpr ) = FALSE ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
+
+	usingexpr = NULL
 
 	'' (Expression?|SPC(Expression)|TAB(Expression) ';'|"," )*
 	expressions = 0
 	do
+
+		'' (USING Expression{str} ';')?
+		if( hMatch( FB_TK_USING ) ) then
+
+			if( usingexpr <> NULL ) then
+#if 1 '' remove this to allow multiple USINGs on one line
+				errReport( FB_ERRMSG_EXPECTEDEOL )
+#endif
+				filexprcopy = astCloneTree( filexpr )
+				if( rtlPrintUsingEnd( filexprcopy, _
+				                      islprint ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			hMatchExpressionEx( usingexpr, FB_DATATYPE_STRING )
+
+			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDSEMICOLON ) = FALSE ) then
+					exit function
+				end if
+			end if
+
+			if( rtlPrintUsingInit( usingexpr, islprint ) = FALSE ) then
+				exit function
+			end if
+		end if
+
 		'' (Expression?|SPC(Expression)|TAB(Expression)
 		isspc = FALSE
 		istab = FALSE
@@ -128,48 +143,35 @@ function cPrintStmt  _
 			issemicolon = TRUE
 		end if
 
-		filexprcopy = astCloneTree( filexpr )
-
 		'' handle PRINT w/o expressions
 		if( (iscomma = FALSE) and _
 			(issemicolon = FALSE) and _
 			(expr = NULL) ) then
-			if( usingexpr = NULL ) then
-				if( expressions = 0 ) then
-					if( rtlPrint( filexprcopy, _
-								  FALSE, _
-								  FALSE, _
-								  NULL, _
-								  islprint ) = FALSE ) then
-						exit function
-					end if
-				end if
-			else
-				if( rtlPrintUsingEnd( filexprcopy, _
-									  islprint ) = FALSE ) then
-					exit function
-				end if
-			end if
 
 			exit do
 		end if
 
-		if( usingexpr = NULL ) then
-			if( isspc ) then
-				if( rtlPrintSPC( filexprcopy, _
-								 expr, _
-								 islprint ) = FALSE ) then
-					exit function
-				end if
+		if( isspc ) then
+			filexprcopy = astCloneTree( filexpr )
+			if( rtlPrintSPC( filexprcopy, _
+							 expr, _
+							 islprint ) = FALSE ) then
+				exit function
+			end if
 
-			elseif( istab ) then
-				if( rtlPrintTab( filexprcopy, _
-								 expr, _
-								 islprint ) = FALSE ) then
-					exit function
-				end if
+		elseif( istab ) then
+			filexprcopy = astCloneTree( filexpr )
+			if( rtlPrintTab( filexprcopy, _
+							 expr, _
+							 islprint ) = FALSE ) then
+				exit function
+			end if
 
-			else
+		else
+			if( usingexpr = NULL /'or expr = NULL'/ ) then
+			/' (commented check allows multiple consecutive commas/semicolons in USING statements.
+			   QB doesn't support it though, so I'm not sure we should. '/
+				filexprcopy = astCloneTree( filexpr )
 				if( rtlPrint( filexprcopy, _
 							  iscomma, _
 							  issemicolon, _
@@ -180,23 +182,43 @@ function cPrintStmt  _
 						exit function
 					end if
 				end if
-			end if
 
-		else
-			if( rtlPrintUsing( filexprcopy, _
-							   expr, _
-							   iscomma, _
-							   issemicolon, _
-							   islprint ) = FALSE ) then
+			else
+				filexprcopy = astCloneTree( filexpr )
+				if( rtlPrintUsing( filexprcopy, _
+								   expr, _
+								   iscomma, _
+								   issemicolon, _
+								   islprint ) = FALSE ) then
 
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
+					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+						exit function
+					end if
 				end if
 			end if
 		end if
 
 		expressions += 1
 	loop while( iscomma or issemicolon )
+
+	if( usingexpr = NULL ) then
+		if( expressions = 0 ) then
+			filexprcopy = astCloneTree( filexpr )
+			if( rtlPrint( filexprcopy, _
+						  FALSE, _
+						  FALSE, _
+						  NULL, _
+						  islprint ) = FALSE ) then
+				exit function
+			end if
+		end if
+	else
+		filexprcopy = astCloneTree( filexpr )
+		if( rtlPrintUsingEnd( filexprcopy, _
+							  islprint ) = FALSE ) then
+			exit function
+		end if
+	end if
 
 	''
 	astDelTree( filexpr )
@@ -232,7 +254,8 @@ function cWriteStmt _
 	end if
 
 	'' side-effect?
-	if( astIsClassOnTree( AST_NODECLASS_CALL, filexpr ) <> NULL ) then
+	'' (vars may also cause side-effects if modified by printed expressions)
+	if( astIsCONST( filexpr ) = FALSE ) then
 		astAdd( astRemSideFx( filexpr ) )
 	end if
 

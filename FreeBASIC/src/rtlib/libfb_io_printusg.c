@@ -1139,11 +1139,11 @@ static int hPrintNumber
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
+	if( mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) )
+		fb_PrintVoid( fnum, mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) );
+
 	if( mask & FB_PRINT_ISLAST )
 	{
-		if( mask & FB_PRINT_NEWLINE )
-			fb_PrintVoid( fnum, FB_PRINT_NEWLINE );
-
 		fb_StrDelete( &ctx->fmtstr );
 	}
 

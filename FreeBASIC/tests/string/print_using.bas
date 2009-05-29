@@ -152,6 +152,30 @@ private function pow_ull( byval m as ulongint, byval n as integer ) as ulongint
 
 end function
 
+sub stmttest cdecl ()
+	OPEN_FILE( "print_using_stmttest.txt" )
+
+	print #1, "abc, abc"
+	print #1, using "&"; "def, def"
+
+	print #1, "ghi"; ", "; using "&"; "ghi"
+
+	print #1, """a"; spc(5); "b"", "; using """&&"""; "a"; spc(5); "b"
+
+	print #1, """a"; tab(10); "b"""
+	print #1, using """&&"""; "a"; tab(10); "b"
+
+#if 0
+	print #1,           """"; "a", "b"; """"
+	print #1, using """&&"""; "a", "b"
+
+	print #1,               """a", , "b"""
+	print #1, using """&&"""; "a", , "b"
+#endif
+
+	CLOSE_TEST_FILE()
+end sub
+
 sub numtest cdecl ()
 
 	dim num as double, num_ll as longint, num_ull as ulongint
@@ -427,6 +451,7 @@ end sub
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.string_.printusing")
+	fbcu.add_test("statement parsing test", @stmttest)
 	fbcu.add_test("number test", @numtest)
 	fbcu.add_test("format parsing test", @fmttest)
 	fbcu.add_test("inf/nan printing test", @infnantest)
