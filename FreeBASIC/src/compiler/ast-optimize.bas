@@ -1627,8 +1627,8 @@ private function hOptLogic _
 	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
 		if( n->class = AST_NODECLASS_UOP ) then
-			if( l->class = AST_NODECLASS_UOP ) then
-				if( (n->op.op = AST_OP_NOT) ) then
+			if( n->op.op = AST_OP_NOT ) then
+				if( l->class = AST_NODECLASS_UOP ) then
 					if( l->op.op = AST_OP_NOT ) then
 
 						'' convert NOT NOT x to x
@@ -1637,6 +1637,41 @@ private function hOptLogic _
 						astDelNode( l )
 						astDelNode( n )
 						n = hOptLogic( m )
+					end if
+
+				elseif( l->class = AST_NODECLASS_BOP ) then
+					if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+						if( l->op.op = AST_OP_XOR ) then
+							if( astIsCONST( l->l ) ) then
+								'' convert:
+								'' not (const xor x)    to    (not const) xor x
+
+								if( symbGetDataSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
+									v = l->l->con.val.int
+								else
+									v = l->l->con.val.long
+								end if
+
+								l->l->con.val.long = not v
+								astDelNode( n )
+								n = hOptLogic( l )
+
+							elseif( astIsCONST( l->r ) ) then
+								'' convert:
+								'' not (x xor const)    to    x xor (not const)
+
+								if( symbGetDataSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
+									v = l->r->con.val.int
+								else
+									v = l->r->con.val.long
+								end if
+
+								l->r->con.val.long = not v
+								astDelNode( n )
+								n = hOptLogic( l )
+
+							end if
+						end if
 					end if
 				end if
 			end if
