@@ -1737,6 +1737,30 @@ private function hOptLogic _
 
 						n = m
 
+					elseif( (op = AST_OP_XOR) and (l->op.op = AST_OP_NOT) ) then
+						'' convert:
+						'' (not x) xor y    to    not (x xor y)
+
+						m = astNewUOP( AST_OP_NOT, n )
+
+						n->l = l->l
+
+						astDelNode( l )
+
+						n = m
+
+					elseif( (op = AST_OP_XOR) and (r->op.op = AST_OP_NOT) ) then
+						'' convert:
+						'' x xor (not y)    to    not (x xor y)
+
+						m = astNewUOP( AST_OP_NOT, n)
+
+						n->r = r->l
+
+						astDelNode( r )
+
+						n = m
+
 					end if
 				end select
 			end if
