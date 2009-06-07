@@ -121,17 +121,20 @@
     (LO32(x) & 0x7f800000) != 0x7f800000  )
 
 #define IS_INFINITE_F( x ) (                    \
-    (LO32(x) & 0x7fffffff == 0x7f800000   )
+    (LO32(x) & 0x7fffffff) == 0x7f800000  )
 
 #define IS_NAN_F( x ) (                         \
-    (LO32(x) & 0x7f800000 == 0x7f800000 &&      \
-    (LO32(x) & 0x007fffff != 0              )
+    (LO32(x) & 0x7f800000) == 0x7f800000 &&     \
+    (LO32(x) & 0x007fffff) != 0              )
 
 /*-------------------------------------------------------------*/
 
 #define VAL_ISNEG 0x1
 #define VAL_ISINF 0x2
 #define VAL_ISNAN 0x4
+
+#define VAL_ISFLOAT 0x8
+#define VAL_ISSNG 0x10
 
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -374,7 +377,11 @@ FBCALL int fb_PrintUsingStr
 		switch( c )
 		{
 		case '!':
-			buffer[0] = s->data[0];
+			if( FB_STRSIZE( s ) >= 1 )
+				buffer[0] = s->data[0];
+			else
+				buffer[0] = ' ';
+
 			buffer[1] = '\0';
 			fb_PrintFixString( fnum, buffer, 0 );
 
@@ -479,11 +486,12 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isnan;
+	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
 	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
+	int isamp;
 	int i;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
@@ -509,6 +517,7 @@ static int hPrintNumber
 	signatini  = 0;
 	plussign   = 0;
 	toobig     = 0;
+	isamp      = 0;
 
 	lc = -1;
 
@@ -517,8 +526,8 @@ static int hPrintNumber
 
 	while( ctx->chars > 0 )
 	{
-		/* exit if just parsed end '+'/'-' sign */
-		if( signatend ) break;
+		/* exit if just parsed end '+'/'-' sign, or '&' sign */
+		if( signatend || isamp ) break;
 
 		c = *ctx->ptr;
 		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
@@ -638,6 +647,18 @@ static int hPrintNumber
 				doexit = 1;
 			break;
 
+		case '&':
+			/* string format '&'
+			   print number in most natural form - similar to STR */
+			if( intdigs == 0 && decdigs == -1 && !signatini )
+			{
+				DBG_ASSERT( expdigs == 0 );
+				isamp = 1;
+			}
+			else
+				doexit = 1;
+			break;
+
 		default:
 			doexit = 1;
 		}
@@ -655,6 +676,9 @@ static int hPrintNumber
 
 	/* check flags */
 	val_isneg = ( (flags & VAL_ISNEG) != 0 );
+	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
+	val_issng = ( (flags & VAL_ISSNG) != 0 );
+
 	if( flags & (VAL_ISINF | VAL_ISNAN) )
 	{
 		val_isinf = ( (flags & VAL_ISINF) != 0 );
@@ -672,6 +696,88 @@ static int hPrintNumber
 	{
 		val_isinf = 0;
 		val_isnan = 0;
+	}
+
+	if( val != 0 && !(val_isinf || val_isnan) )
+		val_digs = hLog10_ULL( val ) + 1;
+	else
+		val_digs = 0;
+	val_zdigs = 0;
+
+	/* Special '&' format? */
+	if( isamp )
+	{
+		if( val_isinf )
+		{
+			intdigs = strlen(STR_INF);
+			decdigs = 0;
+			decpoint = 0;
+		}
+		else if( val_isnan )
+		{
+			intdigs = strlen(STR_NAN);
+			decdigs = 0;
+			decpoint = 0;
+		}
+		else
+		{
+			if( val_issng )
+			{	/* crop to 7-digit precision */
+				if( val_digs > 7 )
+					val = hDivPow10_ULL( val, val_digs - 7 );
+					val_exp += val_digs - 7;
+					val_digs = 7;
+
+				if( val == 0 )
+				{	/* val has been scaled down to zero */
+					val_digs = 0;
+					val_exp = -decdigs;
+				}
+				else if( val == hPow10_ULL( val_digs ) )
+				{	/* rounding up took val to next power of 10:
+					   set value to 1, put val_digs zeroes onto val_exp */
+					val = 1;
+					val_exp += val_digs;
+					val_digs = 1;
+				}
+			}
+
+			if( val_isfloat )
+			{	/* remove trailing zeroes in float digits */
+				while( val_digs > 1 && (val % 10) == 0 )
+				{
+					val /= 10;
+					--val_digs;
+					++val_exp;
+				}
+			}
+
+			/* set digits for fixed-point */
+			if( val_digs + val_exp > 0 )
+				intdigs = val_digs + val_exp;
+			else
+				intdigs = 1;
+
+			if( val_exp < 0 )
+				decdigs = -val_exp;
+
+			if( val_isfloat )
+			{	/* scientific notation? e.g. 3.1E+42 */
+				if( intdigs > 16 || (val_issng && intdigs > 7) ||
+				    val_digs + val_exp - 1 < -MIN_EXPDIGS )
+				{
+					intdigs = 1;
+					decdigs = val_digs - 1;
+
+					expdigs = 2 + hLog10_ULL( abs(val_digs + val_exp - 1) ) + 1;
+					if( expdigs < MIN_EXPDIGS + 1 )
+						expdigs = MIN_EXPDIGS;
+				}
+			}
+		}
+
+		if( val_isneg )
+			signatini = 1;
 	}
 
 	/* crop number of digits */
@@ -711,12 +817,6 @@ static int hPrintNumber
 		signatini = 1;
 		--intdigs;
 	}
-
-	if( val != 0 && !(val_isinf || val_isnan) )
-		val_digs = hLog10_ULL( val ) + 1;
-	else
-		val_digs = 0;
-	val_zdigs = 0;
 
 	/* fixed-point format? */
 	if( expdigs < MIN_EXPDIGS )
@@ -758,11 +858,13 @@ static int hPrintNumber
 			if( addcommas )
 				intdigs2 += (intdigs2 - 1) / 3;
 
+			/* compare fixed/floating point representations, 
+			   and use the one that needs fewest digits */
 			if( intdigs2 > intdigs + MIN_EXPDIGS )
 			{	/* too many digits in number for fixed point:
 				   switch to floating-point */
 
-				expdigs = MIN_EXPDIGS; /* add four digits for exp notation */
+				expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
 				toobig = 1;  /* add '%' sign */
 
 				/* restore unscaled value */
@@ -835,9 +937,10 @@ static int hPrintNumber
 		totdigs = intdigs + decdigs; /* treat intdigs and decdigs the same */
 		val_exp += decdigs; /* move decimal position to end */
 
-		/* blank first digit if positive and no explicit sign (pos/neg
-		   numbers should be formatted the same where possible, as in QB) */
-		if( val_isneg == 0 && signatini == 0 && signatend == 0 )
+		/* blank first digit if positive and no explicit sign
+		   (pos/neg numbers should be formatted the same where
+		   possible, as in QB) */
+		if( !isamp && !val_isneg && !(signatini || signatend) )
 			if( intdigs >= 1 && totdigs > 1 )
 				--totdigs;
 
@@ -895,7 +998,7 @@ static int hPrintNumber
 				ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 				val_exp /= 10;
 			} while( val_exp > 9 );
-			ADD_CHAR( CHAR_ZERO +val_exp );
+			ADD_CHAR( CHAR_ZERO + val_exp );
 #endif
 			ADD_CHAR( CHAR_TOOBIG ); /* add a '%' sign */
 		}
@@ -1036,11 +1139,11 @@ static int hPrintNumber
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
+	if( mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) )
+		fb_PrintVoid( fnum, mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) );
+
 	if( mask & FB_PRINT_ISLAST )
 	{
-		if( mask & FB_PRINT_NEWLINE )
-			fb_PrintVoid( fnum, FB_PRINT_NEWLINE );
-
 		fb_StrDelete( &ctx->fmtstr );
 	}
 
@@ -1098,7 +1201,7 @@ FBCALL int fb_PrintUsingDouble
 	int flags;
 	unsigned long long val_ull = 1;
 
-	flags = 0;
+	flags = VAL_ISFLOAT;
 
 	if( IS_NEG( value ) )
 		flags |= VAL_ISNEG;
@@ -1135,7 +1238,38 @@ FBCALL int fb_PrintUsingSingle
 		int mask
 	)
 {
-	return fb_PrintUsingDouble( fnum, (double)value_f, mask );
+
+	int val_exp;
+	int flags;
+	unsigned long long val_ull = 1;
+
+	flags = VAL_ISFLOAT | VAL_ISSNG;
+
+	if( IS_NEG_F( value_f ) )
+		flags |= VAL_ISNEG;
+
+	if( IS_ZERO_F( value_f ) )
+	{
+		val_ull = 0;
+		val_exp = 0;
+	}
+	else if( IS_FINITE_F( value_f ) )
+	{
+		value_f = fabs( value_f );
+		val_ull = hScaleDoubleToULL( value_f, &val_exp );
+	}
+	else
+	{
+		if( IS_INFINITE_F( value_f ) )
+			flags |= VAL_ISINF;
+		else if( IS_NAN_F( value_f ) )
+			flags |= VAL_ISNAN;
+		else
+			DBG_ASSERT( 0 );
+	}
+
+	return hPrintNumber( fnum, val_ull, val_exp, flags, mask );
+
 }
 
 /*:::::*/

@@ -351,8 +351,11 @@ function symbGetConstValueAsStr _
   	case FB_DATATYPE_ULONGINT
   	    function = str( cunsg( symbGetConstValLong( s ) ) )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = str( symbGetConstValFloat( s ) )
+	case FB_DATATYPE_SINGLE
+		function = str( csng( symbGetConstValFloat( s ) ) )
+
+	case FB_DATATYPE_DOUBLE
+		function = str( symbGetConstValFloat( s ) )
 
   	case FB_DATATYPE_LONG
   		if( FB_LONGSIZE = len( integer ) ) then

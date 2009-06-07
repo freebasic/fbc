@@ -1469,6 +1469,15 @@ function rtlPrintUsing _
     '' byval mask as integer
 	if( iscomma or issemicolon ) then
 		mask = 0
+
+#if 0
+		'' this allows commas to print padding like in regular PRINTs
+		'' (QB doesn't support this though - the IDE just converts them to semicolons)
+		if( iscomma ) then
+			mask or= FB_PRINTMASK_PAD
+		end if
+#endif
+
 	else
 		mask = FB_PRINTMASK_NEWLINE or FB_PRINTMASK_ISLAST
 	end if

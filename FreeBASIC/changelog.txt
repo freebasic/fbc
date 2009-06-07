@@ -38,6 +38,9 @@ Version 0.21.0 Beta:
 - support for BYREF AS ZSTRING/BYREF AS WSTRING parameters (counting_pine)
 - Warning when BYVAL AS STRING is used instead of BYREF AS ZSTRING (counting_pine)
 - lang qb: __SCREEN keyword for accessing FB's normal SCREEN syntax (counting_pine)
+- PRINT USING now supports "&" for intelligent number formatting (counting_pine)
+- PRINT USING: normal expressions allowed before USING (counting_pine)
+- PRINT USING: support for SPC/TAB (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
