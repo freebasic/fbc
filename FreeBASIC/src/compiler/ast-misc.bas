@@ -468,8 +468,11 @@ function astGetValueAsStr _
   	case FB_DATATYPE_ULONGINT
   		function = str( cast( ulongint, astGetValLong( n ) ) )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = str( astGetValFloat( n ) )
+	case FB_DATATYPE_SINGLE
+		function = str( csng( astGetValFloat( n ) ) )
+
+	case FB_DATATYPE_DOUBLE
+		function = str( astGetValFloat( n ) )
 
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		function = str( astGetValInt( n ) )
@@ -509,7 +512,10 @@ function astGetValueAsWstr _
 	case FB_DATATYPE_ULONGINT
 		res = wstr( cast( ulongint, astGetValLong( n ) ) )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE
+		res = wstr( csng( astGetValFloat( n ) ) )
+
+	case FB_DATATYPE_DOUBLE
 		res = wstr( astGetValFloat( n ) )
 
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
@@ -1346,48 +1352,5 @@ sub astSetType _
 	end select
 
 end sub
-
-
-'':::::
-#if 0 '' function not actually needed - astIsCONST macro (n->defined) seems to cover all cases
-function astIsConstant _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
-	dim as FBSYMBOL ptr sym = any
-
-	function = FALSE
-
-	if( n <> NULL ) then 
-
-		'' detects number literals/constants, enums
-		if( astGetClass( n ) = AST_NODECLASS_CONST ) then
-			return TRUE
-		elseif( astGetClass( n ) = AST_NODECLASS_ENUM ) then
-			return TRUE
-		end if
-
-		'' detects string literals/constants
-		sym = astGetSymbol( n )
-		if( sym <> NULL ) then
-			if( symbIsLiteralConst( sym ) ) then
-				return TRUE
-			elseif( symbIsEnum( sym ) ) then
-				return TRUE
-			end if
-		end if
-
-#if 0
-		'' detects const-qualified types (probably best to ignore them here)
-		if( typeIsConst( astGetFullType( n ) ) ) then
-			return TRUE
-		end if
-#endif
-
-	end if
-	
-end function
-#endif
 
 
