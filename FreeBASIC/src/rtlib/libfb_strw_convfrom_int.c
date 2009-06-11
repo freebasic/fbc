@@ -69,6 +69,11 @@ FBCALL int fb_WstrToInt( const FB_WCHAR *src, int len )
 			case L'B':
 				radix = 2;
 				break;
+
+			default: /* assume octal */
+				radix = 8;
+				r--;
+				break;
 		}
 
 		if( radix != 10 )

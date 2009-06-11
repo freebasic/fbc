@@ -44,6 +44,7 @@ FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 {
     char 	*p;
     int 	radix;
+	int 	skip;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
@@ -55,6 +56,7 @@ FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 	radix = 10;
 	if( (len >= 2) && (p[0] == '&') )
 	{
+		skip = 2;
 		switch( p[1] )
 		{
 			case 'h':
@@ -69,10 +71,15 @@ FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 			case 'B':
 				radix = 2;
 				break;
+
+			default: /* assume octal */
+				radix = 8;
+				skip = 1;
+				break;
 		}
 
 		if( radix != 10 )
-			p += 2;
+			p += skip;
 	}
 
 	return strtoul( p, NULL, radix );

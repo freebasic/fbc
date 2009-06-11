@@ -69,6 +69,11 @@ FBCALL unsigned long long fb_WstrToULongint( const FB_WCHAR *src, int len )
 			case L'B':
 				radix = 2;
 				break;
+
+			default: /* assume octal */
+				radix = 8;
+				r--;
+				break;
 		}
 
 		if( radix != 10 )
@@ -101,5 +106,3 @@ FBCALL unsigned long long fb_WstrValULng ( const FB_WCHAR *str )
 
 	return val;
 }
-
-

@@ -44,6 +44,7 @@ FBCALL int fb_hStr2Int( char *src, int len )
 {
     char 	*p;
     int 	radix;
+	int 	skip;
 
 	/* skip white spc */
 	p = fb_hStrSkipChar( src, len, 32 );
@@ -55,6 +56,7 @@ FBCALL int fb_hStr2Int( char *src, int len )
 	else if( (len >= 2) && (p[0] == '&') )
 	{
 		radix = 0;
+		skip = 2;
 		switch( p[1] )
 		{
 			case 'h':
@@ -69,10 +71,15 @@ FBCALL int fb_hStr2Int( char *src, int len )
 			case 'B':
 				radix = 2;
 				break;
+
+			default: /* assume octal */
+				radix = 8;
+				skip = 1;
+				break;
 		}
 
 		if( radix != 0 )
-			return fb_hStrRadix2Int( &p[2], len-2, radix );
+			return fb_hStrRadix2Int( &p[skip], len - skip, radix );
 	}
 
 	/* atoi() saturates values outside [-2^31, 2^31)

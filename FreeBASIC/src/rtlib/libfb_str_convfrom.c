@@ -45,6 +45,7 @@ FBCALL double fb_hStr2Double( char *src, int len )
 	char *p, *q, c;
 	int radix;
 	int i;
+	int skip;
 	double ret;
 
 	/* skip white spc */
@@ -56,6 +57,7 @@ FBCALL double fb_hStr2Double( char *src, int len )
 
 	else if( (len >= 2) && (p[0] == '&') )
 	{
+		skip = 2;
 		radix = 0;
 		switch( p[1] )
 		{
@@ -71,10 +73,15 @@ FBCALL double fb_hStr2Double( char *src, int len )
 			case 'B':
 				radix = 2;
 				break;
+
+			default: /* assume octal */
+				radix = 8;
+				skip = 1;
+				break;
 		}
 
 		if( radix != 0 )
-			return (double)fb_hStrRadix2Longint( &p[2], len-2, radix );
+			return (double)fb_hStrRadix2Longint( &p[skip], len - skip, radix );
 	}
 
 	/* Workaround: strtod() does not allow 'd' as an exponent specifier on 
