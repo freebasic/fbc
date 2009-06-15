@@ -519,11 +519,13 @@ private function hReadNonDecNumber _
 	lgt = 0
 	skipchar = FALSE
 
-	select case as const lexCurrentChar( )
+	c = lexCurrentChar( )
+
+	select case as const c
 	'' hex
 	case CHAR_HUPP, CHAR_HLOW
 		pnum[0] = CHAR_AMP
-		pnum[1] = CHAR_HLOW
+		pnum[1] = c
 		pnum += 2
 		tlen += 2
 		lexEatChar( )
@@ -585,7 +587,7 @@ private function hReadNonDecNumber _
 	'' oct
 	case CHAR_OUPP, CHAR_OLOW
 		pnum[0] = CHAR_AMP
-		pnum[1] = CHAR_OLOW
+		pnum[1] = c
 		pnum += 2
 		tlen += 2
 		lexEatChar( )
@@ -669,7 +671,7 @@ private function hReadNonDecNumber _
 	'' bin
 	case CHAR_BUPP, CHAR_BLOW
 		pnum[0] = CHAR_AMP
-		pnum[1] = CHAR_BLOW
+		pnum[1] = c
 		pnum += 2
 		tlen += 2
 		lexEatChar( )
@@ -1143,21 +1145,20 @@ read_char:
 			'' 'F' | 'f'
 			case CHAR_FUPP, CHAR_FLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
-					dtype = FB_DATATYPE_SINGLE
-					lexEatChar( )
+					if( forcedsign = FALSE ) then
+						dtype = FB_DATATYPE_SINGLE
+						lexEatChar( )
+					end if
 				end if
-
-			'' '!'
-			case FB_TK_SGNTYPECHAR
-				dtype = FB_DATATYPE_SINGLE
-				lexEatChar( )
 
 			'' 'D' | 'd'
 			'' (NOTE: should this ever occur? Wouldn't it have been parsed as a float already?)
 			case CHAR_DUPP, CHAR_DLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
-					dtype = FB_DATATYPE_DOUBLE
-					lexEatChar( )
+					if( forcedsign = FALSE ) then
+						dtype = FB_DATATYPE_DOUBLE
+						lexEatChar( )
+					end if
 				end if
 
 			'' '%'
@@ -1190,12 +1191,21 @@ read_char:
 
 				lexEatChar( )
 
+			'' '!'
+			case FB_TK_SGNTYPECHAR
+				if( forcedsign = FALSE ) then
+					dtype = FB_DATATYPE_SINGLE
+					lexEatChar( )
+				end if
+
 			'' '#'
 			case FB_TK_DBLTYPECHAR
-				'' isn't it a '##'?
-				if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-					dtype = FB_DATATYPE_DOUBLE
-					lexEatChar( )
+				if( forcedsign = FALSE ) then
+					'' isn't it a '##'?
+					if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
+						dtype = FB_DATATYPE_DOUBLE
+						lexEatChar( )
+					end if
 				end if
 
 			end select
@@ -1882,7 +1892,7 @@ read_char:
 			'' in lang fb, only check for multiline comment if not inside
 			'' a single line comment already (thanks to VonGodric for help)
 			if( (flags and LEXCHECK_NOMULTILINECOMMENT) = 0 or _
-				 fbLangIsSet( FB_LANG_FB ) = FALSE ) then'/
+				 fbLangIsSet( FB_LANG_FB ) = FALSE ) then
 				'' "/'"?
 				if( lexCurrentChar( ) = CHAR_APOST ) then
 					'' multi-line comment..

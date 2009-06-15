@@ -6,7 +6,7 @@ namespace fbc_tests.file.input_large_int
 	const HEX_COUNT = 16
 	const OCT_COUNT = 22
 	const BIN_COUNT = 64
-	const MISC_COUNT = 6 + 4 + 4 + 4*4 + 4
+	const MISC_COUNT = 7 + 4 + 4 + 4*4 + 4
 
 	const COUNT = DEC_COUNT * 4 + 4 + _
 				  HEX_COUNT * 4 + (OCT_COUNT + BIN_COUNT) * 2 + _
@@ -14,7 +14,7 @@ namespace fbc_tests.file.input_large_int
 
 	dim shared as longint check(0 to COUNT-1)
 	dim shared as integer check_misc(0 to MISC_COUNT-1) => { _
-		3, 3, 63, 63, 255, 255, _
+		3, 3, 63, 63, 63, 255, 255, _
 		15, 15, 15, 15,         _
 		123, 12, 34, 345,       _
 		10, 200, 3000, 40000,   _
@@ -24,7 +24,7 @@ namespace fbc_tests.file.input_large_int
 		1, 7, 15, 15 }
 
 #if 0
-	sub generate_csv constructor
+	sub generate_csv () constructor
 		
 		dim n as longint
 		
@@ -64,7 +64,7 @@ namespace fbc_tests.file.input_large_int
 			next i
 			
 			''misc
-			print #1, "&b11, &B11, &o77, &O77, &hff, &HFF"  '' 3, 3, 63, 63, 255, 255
+			print #1, "&b11, &B11, &o77, &O77, &77, &hff, &HFF"  '' 3, 3, 63, 63, 63, 255, 255
 			print #1, "&hf, &hF, &Hf, &HF"                  '' 15, 15, 15, 15
 			
 			print #1, "1.23d+2, 1.2D+1, 3.4e+1, 3.45E+2"    '' 123, 12, 34, 345
@@ -81,7 +81,7 @@ namespace fbc_tests.file.input_large_int
 	end sub
 #endif
 
-	sub generate_check
+	sub generate_check ()
 		
 		dim i as integer, j as integer, p as integer
 		dim n as longint
@@ -127,22 +127,22 @@ namespace fbc_tests.file.input_large_int
 		
 	end sub
 
-	sub run_test
+	sub run_test cdecl ()
 
 #macro TYPE_TEST( t )
 		open "./file/large_int.csv" for input as #1
 			for i as integer = 0 to COUNT-1
 				dim n as t
 				input #1, n
-#if t = single 
+ #if t = single 
 				CU_ASSERT_DOUBLE_EQUAL( check(i), n, check(i) \ 10000000 )
-#elseif t = double
+ #elseif t = double
 				CU_ASSERT_DOUBLE_EQUAL( check(i), n, check(i) \ 1000000000000000ll )
-#else
+ #else
 				if( clngint( cast( t, check(i) ) ) = check(i) ) then
 					CU_ASSERT_EQUAL( check(i), clngint(n) )
 				end if
-#endif
+ #endif
 			next i
 		close #1
 #endmacro
