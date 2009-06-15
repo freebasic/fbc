@@ -6,7 +6,7 @@
 
 namespace fbcu
 
-	declare sub add_suite (byval as string, byval as CU_InitializeFunc = 0, byval as CU_CleanupFunc = 0)
-	declare sub add_test (byval as string, byval as CU_TestFunc)
+	declare sub add_suite (byref as string, byval as CU_InitializeFunc = 0, byval as CU_CleanupFunc = 0)
+	declare sub add_test (byref as string, byval as CU_TestFunc)
 
 end namespace

@@ -8,8 +8,8 @@ namespace fbc_tests.quirk.typeof_
 	end type
 
 	operator +( l as foobar, r as foobar ) as foobar
+		return type<foobar>( 69, 69 )
 	end operator
-	
 
 	function ret_int() as integer
 		return 69

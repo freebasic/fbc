@@ -16,7 +16,7 @@ namespace fbc_tests.functions.naked
 
 	end function
 
-	sub test ( )
+	sub test cdecl ( )
 
 		CU_ASSERT_EQUAL( add_cdecl( 3, 7 ), 10 )
 

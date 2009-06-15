@@ -133,7 +133,7 @@ end sub
 
 private sub test_str( _
 		byref fmt as string, _
-		byval s as string, _
+		byref s as string, _
 		byref cmp as string)
 
 	PRINT_USING( fmt & "_$", s, cmp & "$" )

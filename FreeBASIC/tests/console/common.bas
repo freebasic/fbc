@@ -28,7 +28,7 @@ end sub
 
 
 '':::::
-sub center( byval y as integer, byval s as string )
+sub center( byval y as integer, byref s as string )
 	locate y, ((loword(width()) - len(s)) \ 2) + 1
 	print s;
 end sub

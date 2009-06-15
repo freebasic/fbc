@@ -7,7 +7,7 @@
 	
 namespace fbc_tests.file.encod
 
-private sub WriteToFile (byval encod as string)
+private sub WriteToFile (byref encod as string)
 
 	if( open( "test_" + encod + ".txt", for output, encoding encod, as #1 ) <> 0 ) then
 		CU_FAIL_FATAL("couldn't open test file.")
@@ -23,7 +23,7 @@ private sub WriteToFile (byval encod as string)
 
 end sub
 
-private sub ReadFromFile (byval encod as string)
+private sub ReadFromFile (byref encod as string)
 
 	dim s as string
 	dim ws as wstring * 100
@@ -52,7 +52,7 @@ private sub ReadFromFile (byval encod as string)
 
 end sub
 
-private sub performTest (byval encod as string)
+private sub performTest (byref encod as string)
 
 	'//
 	'// write

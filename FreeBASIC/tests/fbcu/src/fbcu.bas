@@ -11,7 +11,7 @@ namespace fbcu
 
 	':: add_suite
 
-	sub add_suite(byval sname as string, byval init as CU_InitializeFunc = 0, byval cleanup as CU_CleanupFunc = 0)
+	sub add_suite(byref sname as string, byval init as CU_InitializeFunc = 0, byval cleanup as CU_CleanupFunc = 0)
 	
 	# if not defined (FBCU_CONFIG_COMPILEONLY)
 		check_fbcu_initialization()
@@ -30,7 +30,7 @@ namespace fbcu
 	
 	':: add_test
 
-	sub add_test(byval sname as string, byval test as CU_TestFunc)
+	sub add_test(byref sname as string, byval test as CU_TestFunc)
 
 	# if not defined (FBCU_CONFIG_COMPILEONLY)
 		check_fbcu_initialization()

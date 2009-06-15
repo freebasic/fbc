@@ -11,7 +11,7 @@ namespace fbc_tests.interactive.input_
 ''
 ''	User input methods test
 
-declare sub inkey_test( byval title as string )
+declare sub inkey_test( byref title as string )
 
 dim shared as integer w, h
 
@@ -108,7 +108,7 @@ sub test_1 cdecl ()
 	
 end sub
 
-sub inkey_test( byval title as string )
+sub inkey_test( byref title as string )
 	using fbc_tests.console
 	
 	dim as string s
