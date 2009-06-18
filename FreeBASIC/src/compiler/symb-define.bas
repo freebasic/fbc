@@ -40,6 +40,8 @@ type SYMBDEF
 end type
 
 declare function	hDefFile_cb			( ) as string
+declare function	hDefFpmode_cb		( ) as string
+declare function	hDefFpu_cb			( ) as string
 declare function	hDefFunction_cb		( ) as string
 declare function	hDefLine_cb			( ) as string
 declare function	hDefDate_cb			( ) as string
@@ -95,6 +97,8 @@ const SYMB_MAXDEFINES = 32 '' 28
         (@"__FB_DEBUG__"              ,   NULL                ,  1,   @hDefDebug_cb          ), _
         (@"__FB_ERR__"                ,   NULL                ,  1,   @hDefErr_cb            ), _
         (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
+        (@"__FB_FPU__"                ,   NULL                ,  0,   @hDefFpu_cb            ), _
+        (@"__FB_FPMODE__"             ,   NULL                ,  0,   @hDefFpmode_cb         ), _
 		(NULL) _
 	}
 
@@ -254,6 +258,34 @@ end function
 private function hDefLang_cb ( ) as string
 
 	function = fbGetLangName( env.clopt.lang )
+
+end function
+
+'':::::
+private function hDefFpu_cb ( ) as string
+
+	select case fbGetOption( FB_COMPOPT_FPUTYPE )
+	case FB_FPUTYPE_FPU
+		return "x87"
+	case FB_FPUTYPE_SSE
+		return "sse"
+	case else
+		assert( 0 )
+	end select
+
+end function
+
+'':::::
+private function hDefFpmode_cb ( ) as string
+
+	select case fbGetOption( FB_COMPOPT_FPMODE )
+	case FB_FPMODE_PRECISE
+		return "precise"
+	case FB_FPMODE_FAST
+		return "fast"
+	case else
+		assert( 0 )
+	end select
 
 end function
 

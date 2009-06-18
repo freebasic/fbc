@@ -1331,7 +1331,7 @@ private function processOptions _
 				end if
 
 				select case ucase( *nxt )
-				case "FPU"
+				case "X87", "FPU"
 					value = FB_FPUTYPE_FPU
 				case "SSE"
 					value = FB_FPUTYPE_SSE
@@ -1988,7 +1988,7 @@ private sub printOptions( )
 	printOption( "-export", "Export symbols for dynamic linkage" )
 	print "-forcelang <name>"; " Select language compatibility, overriding #lang/$lang in code"
 	print "-fpmode <mode>"; " Select accuracy/speed of floating-point math (FAST, PRECISE)"
-	printOption( "-fpu <type>", "Select FPU (FPU, SSE)" )
+	printOption( "-fpu <type>", "Select FPU (x87, sse)" )
 	printOption( "-g", "Add debug info" )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"

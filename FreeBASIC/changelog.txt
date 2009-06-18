@@ -21,6 +21,8 @@ Version 0.21.0 Beta:
 - certain single-precision math approximations when using "-fpu SSE" and "-fpmode FAST" (brybry)
 - automatic vectorization for floating-point numbers in "-fpu SSE" FPU mode (brybry)
 - "-vec n" command line option to enable level n of vectorization (brybry)
+- "__FB_FPU__" define whose value is the FPU mode ("x87"|"sse") (counting_pine)
+- "__FB_FPMODE__" define whose value is the type of FPU precision ("precise"|"fast") (counting_pine)
 - "__FB_VECTORIZE__" define whose value is the level of vectorization (brybry)
 - FORMAT now supports the "n" character to unambiguously specify minutes, as in VB - e.g. 'format( now(), "nn:ss" )' (counting_pine)
 - display objinfo configuration in -version (DrV)
