@@ -1700,7 +1700,7 @@ private function hOptLogic _
 					''  |    |         /  \
 					''  x    y        x    y
 
-					if( (l->op.op = AST_OP_NOT) and (r->op.op = AST_OP_NOT) ) then
+					if( (l->op.op = AST_OP_NOT) and (l->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) and (r->class = AST_NODECLASS_UOP) ) then
 
 						l = hOptLogic( l->l )
 						r = hOptLogic( r->l )
@@ -1724,7 +1724,7 @@ private function hOptLogic _
 					'' (instead of the other expr) to allow compile-time evaluation
 					'' since x XOR y is equivalent to (not x) XOR (not y)
 
-					elseif( astIsCONST( l ) and (r->op.op = AST_OP_NOT) ) then
+					elseif( astIsCONST( l ) and (r->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) ) then
 						'' convert:
 						'' const and (not x)    to    not ((not const) or  x)
 						'' const or  (not x)    to    not ((not const) and x)
@@ -1748,7 +1748,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( astIsConst( r ) and (l->op.op = AST_OP_NOT) ) then
+					elseif( astIsConst( r ) and (l->class = AST_NODECLASS_UOP) and (l->op.op = AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) and const    to    not (x or  (not const))
 						'' (not x) or  const    to    not (x and (not const))
@@ -1772,7 +1772,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( (op = AST_OP_XOR) and (l->op.op = AST_OP_NOT) ) then
+					elseif( (op = AST_OP_XOR) and (l->class = AST_NODECLASS_UOP) and (l->op.op = AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) xor y    to    not (x xor y)
 
@@ -1784,7 +1784,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( (op = AST_OP_XOR) and (r->op.op = AST_OP_NOT) ) then
+					elseif( (op = AST_OP_XOR) and (r->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) ) then
 						'' convert:
 						'' x xor (not y)    to    not (x xor y)
 
