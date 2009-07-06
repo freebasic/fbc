@@ -1006,21 +1006,22 @@ function hEscapeW _
 
     static as DZSTRING res
     dim as uinteger char, c
-    dim as integer lgt, i, wstrlen
+	dim as integer lgt, i, wcharlen
     dim as wstring ptr src, src_end
     dim as zstring ptr dst
 
 	'' convert the internal escape sequences to GAS format
 
-	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wcharlen = symbGetDataSize( FB_DATATYPE_WCHAR )
 
-	'' up to 4 ascii chars can be used p/ unicode char (\ooo)
+	'' up to (4 * wcharlen) ascii chars can be used per unicode char
+	'' (up to one '\ooo' per byte of wchar)
 	lgt = len( *text )
 	if( lgt = 0 ) then
 		return NULL
 	end if
 
-	DZstrAllocate( res, lgt * (1+3) * wstrlen )
+	DZstrAllocate( res, lgt * (1+3) * wcharlen )
 
 	src = text
 	dst = res.data
@@ -1068,7 +1069,7 @@ function hEscapeW _
 
 		'' convert every char to octagonal form as GAS can't
 		'' handle unicode literal strings
-		for i = 1 to wstrlen
+		for i = 1 to wcharlen
 			*dst = CHAR_RSLASH
 			dst += 1
 

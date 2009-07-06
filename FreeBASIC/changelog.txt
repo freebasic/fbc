@@ -89,6 +89,7 @@ Version 0.21.0 Beta:
 - #2433409 - Bugs in graphics driver selection fallback.  Thanks to sisophon2001 for patch (counting_pine)
 - Linux: fixed problems when switching graphics screens between full-screen and windowed.  Thanks to sisophon2001 for patch (counting_pine)
 - SINGLE constants were being converted to string with double precision (counting_pine)
+- #2806342 - symb can lose wstring literals - thanks to dkls for patch (counting_pine)
 
 
 Version 0.20.0 Beta:

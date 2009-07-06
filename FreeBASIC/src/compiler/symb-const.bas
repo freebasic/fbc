@@ -271,6 +271,7 @@ function symbAllocWStrConst _
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
 	dim as integer strlen = any
+	dim as integer wcharlen = any
 
 	function = NULL
 
@@ -281,8 +282,10 @@ function symbAllocWStrConst _
 		lgt = strlen
 	end if
 
-	'' hEscapeW() can use up to 4 chars p/ unicode char (\ooo)
-	if( strlen * (3+1) <= FB_MAXNAMELEN-6 ) then
+	wcharlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	'' hEscapeW() can use up to (4 * wcharlen) ascii chars per unicode char
+	'' (up to one '\ooo' per byte of wchar)
+	if( strlen * ((1+3) * wcharlen) <= FB_MAXNAMELEN-6 ) then
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
