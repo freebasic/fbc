@@ -556,7 +556,9 @@ private function hParamDecl _
 
 	case FB_DATATYPE_STRING
 		if( mode = FB_PARAMMODE_BYVAL ) then
-			hParamWarning( proc, id, FB_WARNINGMSG_BYVALASSTRING )
+			if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
+				hParamWarning( proc, id, FB_WARNINGMSG_BYVALASSTRING )
+			end if
 		end if
 
     end select

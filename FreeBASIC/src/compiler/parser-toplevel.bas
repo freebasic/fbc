@@ -142,6 +142,12 @@ function cLine as integer
 
 	dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
 
+	dim as integer eofnewline = FALSE
+
+	if( LexGetToken( ) = FB_TK_EOF ) then
+		eofnewline = TRUE
+	end if
+
     '' Label?
     cLabel( )
 
@@ -183,6 +189,9 @@ function cLine as integer
 		function = TRUE
 
 	case FB_TK_EOF
+		if( eofnewline = FALSE ) then
+			errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
+		end if
 		function = FALSE
 
 	case else
