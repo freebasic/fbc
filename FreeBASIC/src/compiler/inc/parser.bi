@@ -343,7 +343,8 @@ declare function cStaticArrayDecl _
 	( _
 		byref dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval checkprnts as integer = TRUE _
+		byval checkprnts as integer = TRUE, _
+		byval allow_ellipsis as integer = TRUE _
 	) as integer
 
 declare function cArrayDecl _
@@ -1138,7 +1139,15 @@ declare function hSymbolType _
 		byref lgt as integer _
 	) as integer
 
+declare function hCheckForDefiniteTypes _
+	( _
+		_
+	) as integer
 
+declare function hCheckForDefiniteExprs _
+	( _
+		_
+	) as integer
 
 ''
 '' macros

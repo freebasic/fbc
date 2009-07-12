@@ -445,7 +445,7 @@ private function hTypeMultElementDecl _
 	    bits = 0
 
 		'' ArrayDecl?
-		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
+		if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
 
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -585,7 +585,7 @@ private function hTypeElementDecl _
 	bits = 0
 
 	'' ArrayDecl?
-	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
+	if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
 		'' ':' NUMLIT?
 		if( lexGetToken( ) = FB_TK_STMTSEP ) then
 			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then

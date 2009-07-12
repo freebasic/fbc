@@ -1839,7 +1839,8 @@ function cStaticArrayDecl _
 	( _
 		byref dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval checkprnts as integer _
+		byval checkprnts as integer, _
+		byval allow_ellipsis as integer _
 	) as integer
 
     dim as integer i = any
@@ -1863,7 +1864,8 @@ function cStaticArrayDecl _
     do
 		dim as integer dimension_has_ellipsis = FALSE
 
-		if hMatchEllipsis( ) then
+		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
+			print __line__
 			has_any_ellipsis = TRUE
 			dimension_has_ellipsis = TRUE
 			dTB(i).lower = -1
@@ -1905,7 +1907,8 @@ function cStaticArrayDecl _
 				exit function
 			end if
 
-			if hMatchEllipsis( ) then
+			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
+				print __line__
 				has_any_ellipsis = TRUE
 				dimension_has_ellipsis = TRUE
 				dTB(i).upper = -1
@@ -2373,4 +2376,5 @@ function cAutoVarDecl _
 	function = TRUE
 
 end function
+
 
