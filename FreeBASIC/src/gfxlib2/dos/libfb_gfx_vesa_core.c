@@ -353,7 +353,7 @@ static void fb_dos_vesa_set_palette_pm(void)
 	
 	__asm__ __volatile__ (
 		"pushw %%ds \n\t"
-		"movw %2, %%ds \n\t"
+		"movw %1, %%ds \n\t"
 		"call *%0 \n\t"
 		"popw %%ds \n\t"
 		:
