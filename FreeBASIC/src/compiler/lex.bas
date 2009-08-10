@@ -2113,6 +2113,11 @@ sub lexSkipToken _
     	UPDATE_LINENUM( )
     	parser.stmt.cnt += 1
 
+	case FB_TK_EOF
+		'' fixes bug #2102417 (scope exit problems if
+		'' program ends on LOOP/WEND with no EOL)
+		parser.stmt.cnt += 1
+
     case FB_TK_STMTSEP
     	parser.stmt.cnt += 1
     end select

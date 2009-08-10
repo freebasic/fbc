@@ -493,7 +493,7 @@ end sub
 
 
 #define hisInside( blk, lbl_stmt ) _
-	iif( lbl_stmt < blk->block.inistmt, FALSE, lbl_stmt < blk->block.endstmt )
+	( (lbl_stmt) >= (blk)->block.inistmt andalso (lbl_stmt) < (blk)->block.endstmt)
 
 
 '':::::
