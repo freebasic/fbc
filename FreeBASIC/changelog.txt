@@ -45,6 +45,7 @@ Version 0.21.0 Beta:
 - PRINT USING: support for SPC/TAB (counting_pine)
 - VAL/VALINT/... now support "&..." for octal numbers, e.g. "&123" (counting_pine)
 - Warning if the file doesn't have a newline at the end (counting_pine)
+- Err may now be called as "Err()", like with a normal function (counting_pine)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

@@ -88,6 +88,12 @@ function cErrorFunct _
 	'' ERR
 	lexSkipToken( )
 
+	'' ('(' ')')?
+	if( hMatch( CHAR_LPRNT ) ) then
+		'' ')'
+		hMatchRPRNT( )
+	end if
+
 	funcexpr = rtlErrorGetNum( )
 
 	function = TRUE

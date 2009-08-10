@@ -1865,7 +1865,6 @@ function cStaticArrayDecl _
 		dim as integer dimension_has_ellipsis = FALSE
 
 		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-			print __line__
 			has_any_ellipsis = TRUE
 			dimension_has_ellipsis = TRUE
 			dTB(i).lower = -1
@@ -1908,7 +1907,6 @@ function cStaticArrayDecl _
 			end if
 
 			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-				print __line__
 				has_any_ellipsis = TRUE
 				dimension_has_ellipsis = TRUE
 				dTB(i).upper = -1
