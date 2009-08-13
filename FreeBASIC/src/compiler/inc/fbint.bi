@@ -602,6 +602,7 @@ type FBTARGET
 	underprefix		as integer					'' whether symbols are prefixed with an underscore
 	constsection	as zstring ptr				'' linker section to use for constant data
 	allowstdcall	as integer					'' whether stdcall calling convention should be allowed (if false, treat as CDECL)
+	omitsectiondirective	as integer					'' whether to omit .section before section names in the assembly output
 end type
 
 type FBOPTION

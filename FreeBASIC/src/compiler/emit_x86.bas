@@ -7018,7 +7018,13 @@ private function _getSectionString _
 		return NULL
 	end if
 
-	ostr = NEWLINE + ".section ."
+	ostr = NEWLINE
+
+	if( env.target.omitsectiondirective = FALSE ) then
+		ostr += ".section "
+	end if
+
+	ostr += "."
 
 	select case as const section
 	case IR_SECTION_CONST

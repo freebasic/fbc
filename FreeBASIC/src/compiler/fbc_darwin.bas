@@ -306,12 +306,12 @@ private function _compileResFiles _
 		''
 		fo = freefile()
 		open iconsrc for output as #fo
-		print #fo, ".section .rodata"
+		print #fo, ".const"
 		for label = 0 to outstr_count-1
 			print #fo, "_l" + hex( label ) + ":"
 			print #fo, ".string " + QUOTE + outstr( label ) + QUOTE
 		next label
-		print #fo, ".section .data"
+		print #fo, ".data"
 		print #fo, ".align 32"
 		print #fo, "_xpm_data:"
 		for label = 0 to outstr_count-1
@@ -467,8 +467,9 @@ function fbcInit_darwin( ) as integer
 	env.target.define = @"__FB_DARWIN__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE
-	env.target.constsection = @"rodata"
+	env.target.constsection = @"const"
 	env.target.allowstdcall = FALSE
+	env.target.omitsectiondirective = TRUE
 
 	return TRUE
 
