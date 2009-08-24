@@ -17,6 +17,7 @@ Sleep
 End
 
 FAILED:
-Print Err
+Dim As Integer e = Err
+Print e
 Sleep
 End

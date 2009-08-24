@@ -1,8 +1,7 @@
-{{fbdoc item="title" value="Community Tutorials"}}----
+{{image url="/images/fbwct.png"}} ----
 Tutorials submitted by the FreeBASIC community:
-
-{{fbdoc item="section" value="Getting Started"}}
-	-[[TutGettingStarted Getting Started with FreeBASIC]] //by [[JasonFirth SJ Zero]]//
+<< {{fbdoc item="section" value="Getting Started"}}
+	-[[TutGettingStartedQB Getting Started with FreeBASIC]] //by [[JasonFirth SJ Zero]]//
 	-[[TutUsingLibs Using libraries in FreeBASIC]] //by [[JasonFirth SJ Zero]]//
 	-[[TutUsingMouse Using the Mouse in FreeBASIC]] //by MystikShadows//
 	-[[TutBasicInput Get Information into your program]] //by [[TekRat TekRat]]//
@@ -33,7 +32,7 @@ Tutorials submitted by the FreeBASIC community:
 	-[[TutLinkedLists Using Linked Lists]] //by Parker//
 	-[[TutDynaArrayType Dynamic Arrays in Types]] //by [[WikiRick rdc]]//
 
-{{fbdoc item="section" value="Intermediate Techniques"}}
+<< >> {{fbdoc item="section" value="Intermediate Techniques"}}
 	-[[TutFunctionOverloading Introduction to Function Overloading in FreeBASIC]] //by [[LaananFisher :stylin:]]//
 
 {{fbdoc item="section" value="Mathematics"}}
@@ -57,5 +56,6 @@ Tutorials submitted by the FreeBASIC community:
 {{fbdoc item="section" value="FBgfx"}}
 	-[[TutFBgfxImgAndFontBuf Creating and Understanding Your FBgfx Img and Font Buffer]] //by ""The FB Community""//
 
-
+>>
+::c::
 {{fbdoc item="back" value="FBWiki|Main Page"}}

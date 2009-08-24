@@ -23,7 +23,7 @@ Rem comment
 
 Print "Hello" /' embedded comment'/ " world"
 %%
-	Note: If FreeBASIC encounters a close-comment marker while it's not in a multi-line comment, it will treat it as a normal single-line comment due to the single quote.
+	Note: If ""FreeBASIC"" encounters a close-comment marker while it's not in a multi-line comment, it will treat it as a normal single-line comment due to the single quote.
 
 {{fbdoc item="section" value="Nested Comments"}}
 	A multi-line comment can contain other multi-line comments inside it.  Each inner comment has its own open- and close-comment markers.
@@ -37,10 +37,10 @@ Print "Hello" /' embedded comment'/ " world"
 	This Is a comment.
 '/
 %%
-	A multi-line comment can contain unlimited levels of nested comments.  FreeBASIC will continue to parse the multi-line comment for more markers until the number of close-comment markers reaches the number of open-comment markers, i.e. when it has closed all the comments it has opened.
+	A multi-line comment can contain unlimited levels of nested comments.  ""FreeBASIC"" will continue to parse the multi-line comment for more markers until the number of close-comment markers reaches the number of open-comment markers, i.e. when it has closed all the comments it has opened.
 
 {{fbdoc item="section" value="Comments after line continuation"}}
-	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.  FreeBASIC does not parse the text after the line continuation character, though, so you can't open multi-line comments after them.
+	A single-line comment may appear after the line continuation character ( ##**_**## ) in a multi-line statement.  ""FreeBASIC"" does not parse the text after the line continuation character, though, so you can't open multi-line comments after them.
 
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment5.bas"}}%%(freebasic)
 Print _ ' line
@@ -60,9 +60,10 @@ Rem $Static
 %%
 
 {{fbdoc item="section" value="Single-line comment parsing"}}
-	When you make a single-line comment, FreeBASIC will parse the comment, to check for a metacommand.  If it finds a multi-line comment, it will treat it as usual, and continue parsing the single-line comment after the close-comment marker.
+	When you make a single-line comment, ""FreeBASIC"" will parse the comment, to check for a metacommand.  If it finds a multi-line comment, it will treat it as usual, and continue parsing the single-line comment after the close-comment marker.
 
-	If you want to prevent FreeBASIC parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  FreeBASIC will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.  Other words encountered in a comment will also stop the parsing.
+	If you want to prevent ""FreeBASIC"" parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  ""FreeBASIC"" will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.  Other words encountered in a comment will also stop the parsing.
+	~&//Note: As of version 0.21.0, this will not longer apply in the //[[CompilerOptlang -lang fb]]// dialect, and multi-line comment markers will be completely ignored inside single-line comments//
 
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment7.bas"}}%%(freebasic)
 '' $static <-- will not get parsed

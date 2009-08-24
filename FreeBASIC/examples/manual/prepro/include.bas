@@ -8,5 +8,8 @@
 
 ' main.bas file
 #include "header.bi"
+
+Dim Foo As FooType
+
 Foo.Bar = 1
 Foo.Barbeque = 2

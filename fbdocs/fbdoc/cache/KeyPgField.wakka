@@ -7,6 +7,8 @@ Specifies alignment.
 End [[KeyPgType Type]]
 ##
 {{fbdoc item="desc"}}
+~&//Note: The following information is likely incorrect, FB follows the GCC padding rules, which these next sentences do not describe.  The source file symb-struct.bas of the compiler shows the exact method.//
+
 	A ##[[KeyPgType Type]]## variable has its fields aligned to the word length of the system, 4 bytes presently. ##**Field**## modifies the default alignment to one byte (##**Field**## 1) or two bytes (##**Field**## 2). This helps ""FreeBASIC"" maintain compatibility with structures created in other languages.
 
 {{fbdoc item="ex"}}

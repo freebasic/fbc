@@ -5,7 +5,7 @@ Gets the least-significant word (LSW, or //lo-word//) of an ##[[KeyPgUinteger Ui
 	[[KeyPgPpdefine #define]] **Loword**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h0000FFFF )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Loword**(//expr//)
+	//result// = **Loword**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##

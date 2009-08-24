@@ -12,10 +12,6 @@ Windows users should use MSYS to compile the SVN. Linux users will usually have 
 	{{fbdoc item="keyword" value="SVNLinux|Compiling from SVN for Linux"}}
 	{{fbdoc item="keyword" value="SVNDOSWin32|Compiling from SVN for DOS on Win32"}}
 
-##100101## , ##ikkejw## and ##DrV## have kindly set up web pages that compile the FreeBASIC sources for Windows, Linux and DOS, and make them available for download to the public.  You can find these pages here:
-
-1000101's daily Windows build: [[http://ecowles.dyndns.org/fbdu/]]
-ikkejw's daily Linux build: 	[[http://ikkejw.homelinux.com/]]
-DrV's daily DOS build:		[[http://drv.nu/freebasic/dev/]]
+There is no official "daily SVN build" provided by the development team.  Hovewer, there may be people in the ""FreeBASIC"" community who provide this service.  Check for Sticky threads on the [[http://www.freebasic.net/forum FreeBASIC forum]], in your operating system's subforum, to find out whether this service is available for your OS, and what its status is.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

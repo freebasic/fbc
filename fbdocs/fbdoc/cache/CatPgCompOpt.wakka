@@ -29,6 +29,8 @@ Command line compiler options for the fbc compiler:
 		- Export symbols for dynamic linkage
 	{{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang <name>"}}
 		- Select language compatibility, overriding #lang/$lang in code
+	{{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}
+		- Select between fast and accurate floating-point operations (default: PRECISE)
 	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
 		- Set the floating point arithmetics unit (default: FPU)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
@@ -77,6 +79,8 @@ Command line compiler options for the fbc compiler:
 		- Set stack size in kbytes (default: 1M)
 	{{fbdoc item="keyword" value="CompilerOptv|-v"}}
 		- Be verbose
+	{{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}
+		- Set level of vector optimizations enabled by the compiler (default: 0)
 	{{fbdoc item="keyword" value="CompilerOptversion|-version"}}
 		- Show compiler version
 	{{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}

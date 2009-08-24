@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="PEEK"}}----
 Gets the value of an arbitrary type at an address in memory
 
-~&//Note: ##**Peek**## returns a reference to the value at the specified address. As of version 0.18.5b, FB's syntax has no way to specify returning a reference, although this will change in future versions.  At that time, this syntax should be changed to accommodate returning a reference.//
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Peek** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] //datatype//
 ##
+~&//Note: ##**Peek**## returns a reference to the value at the specified address. See [[CompilerFAQ Compiler FAQ]].//
 
 {{fbdoc item="usage"}}##
 	**Peek**( [ //datatype//, ] //address// )

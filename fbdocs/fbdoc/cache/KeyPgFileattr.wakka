@@ -6,12 +6,12 @@ Returns information about an open file number
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
-	//result// = **""FileAttr""** ( //filenum//, [ //returntype// ] )
+	//result// = **""FileAttr""**( //filenum//, [ //returntype// ] )
 ##
 //or//
 ##
 	#include "vbcompat.bi"
-	//result// = **""FileAttr""** ( //filenum//, [ //returntype// ] )
+	//result// = **""FileAttr""**( //filenum//, [ //returntype// ] )
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

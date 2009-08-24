@@ -5,7 +5,7 @@ Returns //**e**// raised to the power of a given number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Exp** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Exp** ( //number// )
+	//result// = **Exp**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

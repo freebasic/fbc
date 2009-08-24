@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="IMAGEDESTROY"}}----
-Frees memory associated with an image buffer
+Destroys and deallocates storage for an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""**( //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""** ( [[KeyPgByval byval]] //image// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
-	**""ImageDestroy""**( //pointer// )
+	**""ImageDestroy""**( //image// )
 ##
 {{fbdoc item="param"}}
-	##//pointer//##
-		The address of the image buffer to be freed.
+	##//image//##
+		The address of the image to destroy.
 
 {{fbdoc item="desc"}}
-	Frees memory previously allocated with the ##[[KeyPgImagecreate ImageCreate]]## function. After the memory is freed, ##//pointer//## will be invalid.
+	Destroys the image pointed to by ##//image//##, which must be an address returned from a call to ##[[KeyPgImagecreate ImageCreate]]##.
 
 {{fbdoc item="ex"}}
-	See the ##[[KeyPgImagecreate ImageCreate]]## function for an example on using ##**""ImageDestroy""**##.
+	See ##[[KeyPgImagecreate ImageCreate]]## for an example on using ##**""ImageDestroy""**##.
 
 
 {{fbdoc item="lang"}}
@@ -25,7 +25,6 @@ Frees memory associated with an image buffer
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

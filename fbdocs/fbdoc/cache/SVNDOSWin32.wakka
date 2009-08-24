@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Compiling from SVN for DOS on Win32"}}----
-If you want the very latest version of ""FreeBASIC"" on DOS, it can be compiled using DJGPP on a Win32 system.  Most users should stay with the stable DOS build!  But the latest additions and corrections are available in this way.  These instructions describe how to cross-compile the DOS compiler using a ""Win32"" build of fbc.
+If you want the very latest version of ""FreeBASIC"" on DOS, it can be compiled using DJGPP on a ""Win32"" system.  Most users should stay with the stable DOS build!  But the latest additions and corrections are available in this way.  These instructions describe how to cross-compile the DOS compiler using a ""Win32"" build of fbc.
 
 =={{anchor name="setup|Setting up the DJGPP environment"}}==
 	- {{anchor name="setup1|Install the packages for DJGPP"}}
@@ -19,12 +19,12 @@ If you want the very latest version of ""FreeBASIC"" on DOS, it can be compiled 
 
 	{{anchor name="setup1"}}{{fbdoc item="subsect" value="Install the packages for DJGPP"}}
 
-		The packages you will need can be found on the Getting djgpp page at http://www.delorie.com/djgpp/getting.html from the /current/ directory. These should be installed or extracted to C:\DJGPP
+		The packages you will need can be found on the Getting djgpp page at [[http://www.delorie.com/djgpp/getting.html]] from the ##current/## directory. These should be installed or extracted to ##C:\DJGPP##.
 			- autoconf (acnf*.zip)
 			- automake (amak*.zip)
 			- binutils (bnu*.zip)
 			- bash (bsh*.zip)
-			- djdev (djdev*.zip)
+			- djdev (djdev*.zip) - //pick up djdev204.zip or later from the ##beta/## directory//
 			- fileutils (fil*.zip)
 			- gcc (gcc*.zip)
 			- gpp (gpp*.zip)
@@ -40,20 +40,20 @@ If you want the very latest version of ""FreeBASIC"" on DOS, it can be compiled 
 
 	{{anchor name="setup2"}}{{fbdoc item="subsect" value="Add other necessary files and packages"}}
 
-		You will need SVN for Win32 to download the latest FreeBASIC code. At the time of writing, the latest version of SVN can be retrieved from: http://subversion.tigris.org/files/documents/15/36797/svn-1.4.3-setup.exe .  Run the setup program and ensure the installation directory is in your PATH
+		You will need SVN for ""Win32"" to download the latest ""FreeBASIC"" code. At the time of writing, the latest version of SVN can be retrieved from: [[http://subversion.tigris.org/files/documents/15/36797/svn-1.4.3-setup.exe]].  Run the setup program and ensure the installation directory is in your PATH
 
 	{{anchor name="setup3"}}{{fbdoc item="subsect" value="Add the FreeBASIC program"}}
 
 		(For the following steps, you will need to type these commands into a ""Win32"" command prompt.)
-		You will need the latest version of ""FreeBASIC"" for ""Win32"" in order to compile fbc.exe.  This next step will assume that you have it installed in C:\Program Files\""FreeBASIC""
+		You will need the latest version of ""FreeBASIC"" for ""Win32"" in order to compile fbc.exe.  This next step will assume that you have it installed in ##C:\Program Files\""FreeBASIC""##.
 
-		Open up a DJGPP command prompt and in it, type the following commands to copy ""FreeBASIC"" into the /FBbin directory:
+		Open up a DJGPP command prompt and in it, type the following commands to copy ""FreeBASIC"" into the ##/FBbin## directory:
 		%%bash
 mkdir /FBbin
 cp -prv "/dev/c/Program Files/FreeBASIC"/* /FBbin%%
 
 		In order for the shell to be able to find ""FreeBASIC"", you will need to add it to the PATH environment variable. Type the following command:
-		%%export PATH="/FBbin:$PATH%%
+		%%export PATH="/FBbin:$PATH"%%
 		This adds the /FBbin directory to the PATH environment variable for this session only.
 
 {{anchor name="making"}}{{fbdoc item="section" value="Making the FreeBASIC executable and libraries"}}
@@ -95,7 +95,7 @@ make FB_BFD=1 BFD_VER=217%%
 
 {{anchor name="updating"}}{{fbdoc item="section" value="Updating the installed FreeBASIC software"}}
 
-	The following steps will update the copy of ""FreeBASIC"" you installed in /FBbin.  (Again, the commands should be typed at a DJGPP bash prompt.)
+	The following steps will update the copy of ""FreeBASIC"" you installed in ##/FBbin##.  (Again, the commands should be typed at a DJGPP bash prompt.)
 
 	{{anchor name="updating1"}}{{fbdoc item="subsect" value="Replace the old .bi files with the new ones from the source folder"}}
 
@@ -109,8 +109,8 @@ cp -pfv ~/fbcSVN/FreeBASIC/src/rtlib/obj/dos/*.a /FBbin/lib/dos
 cp -pfv ~/fbcSVN/FreeBASIC/src/rtlib/obj/dos/fbrt0.o /FBbin/lib/dos
 cp -pfv ~/fbcSVN/FreeBASIC/src/gfxlib2/obj/dos/*.a /FBbin/lib/dos%%
 
-	And you're ready to roll! The newest FB is now in \FBbin.
+	And you're ready to roll! The newest FB is now in ##\FBbin##.
 
-	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info: http://www.freebasic.net/forum/viewtopic.php?p=32260
+	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info: [[http://www.freebasic.net/forum/viewtopic.php?p=32260]]
 
 {{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

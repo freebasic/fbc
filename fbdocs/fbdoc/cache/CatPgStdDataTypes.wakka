@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Standard Data Types"}}----
 Built-in numerical and string types.
 
-**{{anchor name="INTEGRAL|Integral types"}}**
+**{{anchor name="INTEGER|Integer types"}}**
 	Types that store integer values, whose range is determined by the size of the data type and its signedness.
 **{{anchor name="FLOATING|Floating-point types"}}**
 	Types that store real number values, whose range and precision is determined by the size of the data type.
@@ -10,7 +10,7 @@ Built-in numerical and string types.
 **{{anchor name="STRING|String types"}}**
 	Types that store or point to an array of characters.
 
-<<{{anchor name="INTEGRAL"}}{{fbdoc item="section" value="Integral types"}}
+<<{{anchor name="INTEGER"}}{{fbdoc item="section" value="Integer types"}}
 	=={{fbdoc item="keyword" value="KeyPgByte|BYTE"}} and {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}==
 		8-bit wide data types that store integer values.
 	=={{fbdoc item="keyword" value="KeyPgShort|SHORT"}} and {{fbdoc item="keyword" value="KeyPgUshort|USHORT"}}==

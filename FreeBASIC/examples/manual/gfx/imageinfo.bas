@@ -6,31 +6,32 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageInfo
 '' --------
 
-Dim img As Any Ptr, pixdata As Any Ptr, pitch As Integer
-
-'' Create 32-bit screen and image buffer
+'' Create 32-bit graphics screen and image.
 ScreenRes 320, 200, 32
-img = ImageCreate(64, 64)
+Dim image As Any Ptr = ImageCreate( 64, 64 )
 
+Dim pitch As Integer
+Dim pixels As Any Ptr
 
-'' get pitch and pixel data pointer of image
-ImageInfo img, ,,, pitch, pixdata
+'' Get enough information to iterate through the pixel data.
+If 0 <> ImageInfo( image, ,,, pitch, pixels ) Then
+	Print "unable to retrieve image information."
+	Sleep
+	End
+End If
 
-'' draw pattern directly into the image memory
+'' Draw a pattern on the image by directly manipulating pixel memory.
 For y As Integer = 0 To 63
-	Dim As UInteger Ptr p = pixdata + y * pitch
-   
+	Dim row As UInteger Ptr = pixels + y * pitch
+	
 	For x As Integer = 0 To 63
-	    p[x] = RGB(x * 4, y * 4, (x Xor y) * 4)
+		row[x] = RGB(x * 4, y * 4, (x Xor y) * 4)
 	Next x
 Next y
 
+'' Draw the image onto the screen.
+Put (10, 10), image
 
-'' Put the image to screen
-Put (10, 10), img
+ImageDestroy( image )
 
-'' Free the image memory
-ImageDestroy img
-
-'' Wait for a keypress before closing
 Sleep

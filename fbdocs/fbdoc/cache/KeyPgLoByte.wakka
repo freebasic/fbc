@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="LOBYTE"}}----
-Gets the least-significant byte (LSB, or //hi-byte//) of an ##[[KeyPgUinteger Uinteger]]## value.
+Gets the least-significant byte (LSB, or //lo-byte//) of an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine #define]] **Lobyte**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h000000FF )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Lobyte**(//expr//)
+	//result// = **Lobyte**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##

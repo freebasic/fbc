@@ -4,7 +4,7 @@ Returns a reference to memory offset from an address
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator []## (Pointer index)** returns a reference.  As of 02.27.07, ""FreeBASIC"" syntax does not support returning references. When it does, this syntax will need to be changed.//
+~&//Note that **##Operator []## (Pointer index)** returns a reference. See [[CompilerFAQ CompilerFAQ]].//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **[** //rhs// **]**

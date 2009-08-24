@@ -2,7 +2,12 @@
 Graphics statement to render text to an image or screen.
 
 {{fbdoc item="syntax"}}##
-	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) ] ] ] ]
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// [,//color// [, //font// [, //method// [, (//alpha//|//blender//) [, //parameter//] ] ] ] ]
+##
+{{fbdoc item="usage"}}##
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// [, //color//]
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// , , //font// [, //method// [, //alpha// ] ]
+	**Draw String** [//buffer//,] [STEP] (//x//, //y//), //text// , , //font//, [[KeyPgCustomgfx Custom]], //blender// [, //parameter//]
 ##
 {{fbdoc item="param"}}
 	##//buffer//##
@@ -14,15 +19,18 @@ Graphics statement to render text to an image or screen.
 	##//text//##
 		the string containing the text to draw
 	##//color//##
-		if no font is supplied, this allows you to choose the color of the text. If font is supplied, the font itself specifies the color for each pixel.
+		if no font is supplied, this allows you to choose the color of the text.  If omitted, the default foreground ##[[KeyPgColor Color]]## is used.
+		If a font is supplied, ##//color//## is ignored, and the font itself specifies the color for each pixel.
 	##//font//##
-		an image buffer containing a custom font. If no font is supplied, the standard font for the current mode is used.
-	##//method//##
-		specifies how the font characters are drawn on top of the target surface. The same methods as found for the ##[[KeyPgPutgraphics Put]]## statement are allowed, with the only difference that the default method is ##TRANS## for this function.
+		an image buffer containing a custom font. If no font is supplied, the standard font for the current text resolution is used, and the following parameters are ignored.
+	##//method//## | ##**Custom**##
+		specifies how the font characters are drawn on top of the target surface. The same methods as found for the ##[[KeyPgPutgraphics Put]]## statement are allowed, with the only difference that the default method is ##[[KeyPgTransGfx Trans]]## for this function.  This parameter only applies to custom fonts.
 	##//alpha//##
-		alpha value for the ##ALPHA## drawing method, ranging 0-255.
+		alpha value, ranging 0-255.  This parameter only applies to the ##[[KeyPgAddGfx Add]]## or ##[[KeyPgAlphaGfx Alpha]]## methods.
 	##//blender//##
-		custom blender function for the ##CUSTOM## drawing method; see ##[[KeyPgPutgraphics Put (Graphics)]]## statement description for details.
+		custom blender function for the ##[[KeyPgCustomgfx Custom]]## drawing method; see ##[[KeyPgPutgraphics Put (Graphics)]]## statement description for details.  This parameter only applies to the ##[[KeyPgCustomgfx Custom]]## method.
+	##//parameter//##
+		optional ##[[KeyPgPointer pointer]]## to be passed to the custom blender function; if omitted, the default value is zero (##0##).
 
 {{fbdoc item="desc"}}
 	This graphics keyword prints a string to the screen with pixel positioning, transparent background, and can use an user-supplied font. **##Draw String##** does not update any text or graphics cursor.  It doesn't wrap at the end of line.  Tabs, carriage returns and other special characters have no special behavior in **##Draw String##**, and are treated as normal characters.
@@ -33,12 +41,12 @@ Graphics statement to render text to an image or screen.
 	    - Like ##[[KeyPgPutgraphics Put]]##, ##**Draw String**## has several different methods for printing text, such as ##[[KeyPgAlphaGfx Alpha]]## and ##[[KeyPgCustomgfx Custom]]##.
 	    - ##**Draw String**## isn't limited to a single character set: it is possible to supply a custom font to be used instead.
 	
-	Note: If a custom font isn't supplied, **##Draw String##** will default to the standard font, as used by ##[[KeyPgPrint Print]]##, with character size dictated by ##[[KeyPgWidth Width]]##.
+	Note: If a custom font isn't supplied, **##Draw String##** will default to the standard font, as used by ##[[KeyPgPrint Print]]##, with character size dictated by ##[[KeyPgWidth Width]]##.  ##//method//## - if passed - will be ignored, and the text will be drawn using the color supplied, with a transparent background.
 
 ==The custom font format:==
-	The font is stored  in a standard ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer; the font has to be stored in a buffer using the same depth as the current color depth, otherwise **##Draw String##** will bump out with an illegal function call runtime error.
+	The font is stored in a standard ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer; the font has to be stored in a buffer using the same depth as the current color depth, otherwise **##Draw String##** will bump out with an illegal function call runtime error.
 
-	First line of pixels in the font buffer holds the header of the font, on a byte (and NOT pixel) basis. The very first byte identifies the font header version; currently this must be ##0##. The second byte gives the ascii code of the first supported character in the font; the third byte gives the ascii code of the last supported character. So if the font supports the full range 0-255, ##0## and ##255## will be the contents of these two bytes.
+	The first line of pixels in the font buffer holds the header of the font, on a byte (**not** pixel) basis. The very first byte identifies the font header version; currently this must be ##0##. The second byte gives the ascii code of the first supported character in the font; the third byte gives the ascii code of the last supported character. So if the font supports the full range 0-255, ##0## and ##255## will be the contents of these two bytes.
 	Next comes the width of each of the supported characters, each in a byte. Supposing the font holds 96 characters, ranging from 32 to 127 (inclusive), the header would have the first three bytes holding ##0##, ##32## and ##127##, followed by 96 bytes giving the widths of the corresponding chars.
 
 	The font height is obtained by subtracting 1 from the buffer height, that is, while the first buffer line of pixels acts as a font header, the remaining lines define the glyphs' layout. The buffer must be as wide as necessary to hold all the supported character sprites in the same row, one after another.
@@ -122,7 +130,7 @@ sleep
 {{image class="center" title="Draw String Example 2" url="/images/drawstr2.png"}}
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint Print]]##

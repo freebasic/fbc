@@ -39,6 +39,57 @@ loop     'Goes back to do as long as x_value is less than x_max_value
 sleep   'Waits for any key to be pressed so you can see the work done.
 %%
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/gfx/pcopy_cons.bas"}}%%(freebasic)
+' Console mode example:
+
+'' set the working page number to 0, and the visible page number to 1
+#if __FB_LANG__ = "QB"
+screen ,, 0, 1
+#else
+screen , 0, 1
+#endif
+
+dim as integer i, frames, fps
+dim as double t
+
+t = timer
+
+do
+
+
+	'' fill working page with a certain color and character
+	cls
+	locate 1, 1
+	color (i and 15), 0
+	print string$(80 * 25, hex$(i, 1));
+	i += 1
+
+
+	'' show frames per second
+	color 15, 0
+	locate 1, 1
+	print "fps: " & fps,
+	if int(t) <> int(timer) then
+		t = timer
+		fps = frames
+		frames = 0
+	end if
+	frames += 1
+
+
+	'' copy working page to visible page
+	pcopy
+
+
+	'' sleep 50ms per frame to free up cpu time
+	sleep 50, 1
+
+
+	'' run loop until user presses a key
+loop until len(inkey$)
+%%
+
 {{fbdoc item="target"}}
 	- Maximum number of text pages in Windows is 4.
 	- Maximum number of text pages in DOS is 8.
@@ -49,7 +100,9 @@ sleep   'Waits for any key to be pressed so you can see the work done.
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgFlip Flip]]##
 	- ##[[KeyPgScreencopy Screencopy]]##
+	- ##[[KeyPgFlip Flip]]##
+	- ##[[KeyPgScreengraphics Screen]]##
+
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

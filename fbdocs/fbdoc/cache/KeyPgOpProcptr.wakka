@@ -48,9 +48,13 @@ end function
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
 
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
+	- ##[[KeyPgOpStrptr Strptr]]##
 	- [[ProPgPointers Pointers]]
 
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

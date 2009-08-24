@@ -42,9 +42,10 @@ print array(i, j)
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgDestructor Destructor (Class)]]##
 	- ##[[KeyPgModuleConstructor Constructor (Module)]]##
 	- ##[[KeyPgSub Sub]]##
 

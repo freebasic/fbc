@@ -5,7 +5,7 @@ Gets the value of an integer with a specified bit cleared.
 	[[KeyPgPpdefine #define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpAnd and]] [[KeyPgOpNot not]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bitreset**(//value//, //bit_number//)
+	//result// = **Bitreset**( //value//, //bit_number// )
 ##
 {{fbdoc item="param"}}
 	##//value//##

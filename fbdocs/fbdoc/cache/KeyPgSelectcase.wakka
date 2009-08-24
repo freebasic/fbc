@@ -18,7 +18,7 @@ Conditional statement block
 ##
 {{fbdoc item="desc"}}
 
-	##**Select Case**## executes specific code depending on the value of an expression. The expression is compared against each ##**Case**##, in order, until a matching expression is found. The code inside the matching Case branch is executed, and the program skips down to the end of the ##**Select Case**## block. ##**Case Else**## matches any case not already matched, so if there is a ##**Case Else**##, at least one ##**Case**## is guaranteed to be executed. If no ##**Case**##s match, the whole ##**Select Case**## block will be skipped.
+	##**Select Case**## executes specific code depending on the value of an expression. The expression is evaluated once, and compared against each ##**Case**##, in order, until a matching expression is found. The code inside the matching Case branch is executed, and the program skips down to the end of the ##**Select Case**## block. ##**Case Else**## matches any case not already matched, so if there is a ##**Case Else**##, at least one ##**Case**## is guaranteed to be executed. If no ##**Case**##s match, the whole ##**Select Case**## block will be skipped.
 	
 	##**End Select**## is used to close the ##**Select Case...End Select**## block.
 
@@ -29,8 +29,14 @@ Conditional statement block
 	Syntax of an expression list:
 	##{ //expression// | //expression// **To** //expression// | **Is** //relational operator// //expression// }[, ...]##
 
+	- ##//expr//##: evaluates ##//expr//##, and compares for equality with the original expression.  If they are equal, then a match has been found.  This could be considered as a shorthand for "##**Is** = //expr//##" (see below).
+	- ##//expr1// **To** //expr2//##: evaluates ##//expr1//## and checks to see if it is less than or equal to the original expression.  If so, it evaluates ##//expr2//##, and checks to see if it is greater than or equal to the original expression.  If so, then a match has been found.
+	- ##**Is** //relational_operator// //expr//##: evaluates ##//expr//##, and compares the original operation against it, using the supplied ##//relational_operator//## (##=##, ##>##, ##<##, ##<>##, ##<=##, ##>=##).  If the comparison is true, then a match has been found.
+
+	Multiple checks can be made in each ##**Case**##, by separating them by a comma (##,##).  Once a match is found, the program finishes its checks, and goes on to execute the code statements for that ##**Case**## block.  No further expressions are evaluated or checked.
+
 	example of expression lists:
-	{{table columns="2" cellpadding="1" cells="Case 1 ;constant;Case 5.4 To 10.1;range;Case Is > 3;bigger than-smaller than;Case 1, 3, 5, 7, 9;enumeration;Case x ;value of a variable"}}
+	{{table columns="2" cellpadding="1" cells="Case 1 ;constant;Case 5.4 To 10.1;range;Case Is > 3;bigger than-smaller than;Case 1, 3, 5, 7 to 9;match against a set of values;Case x ;value of a variable"}}
 
 	If ##**As Const**## is used, only ##[[KeyPgInteger Integer]]## constants can be evaluated and the expression list supports single constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
 
@@ -58,6 +64,7 @@ end select
 
 {{fbdoc item="diff"}}
 	- ##**Select Case As Const**## did not exist in QB
+	- in an "##//expr1// TO //expr2//##" case, QB would always evaluate both expressions, even if ##//expr1//## was higher than the original expression.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgIfthen If...Then]]##

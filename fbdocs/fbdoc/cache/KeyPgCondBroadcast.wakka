@@ -2,7 +2,7 @@
 Restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condbroadcast** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]])
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condbroadcast** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Condbroadcast** ( //handle// )

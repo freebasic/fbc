@@ -5,7 +5,7 @@ Gets the state of an individual bit in an integer value.
 	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgOpAnd and]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//))) <> 0)
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bit**(//value//, //bit_number//)
+	//result// = **Bit**( //value//, //bit_number// )
 ##
 {{fbdoc item="param"}}
 	##//value//##

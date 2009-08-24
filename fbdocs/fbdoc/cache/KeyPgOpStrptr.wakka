@@ -52,9 +52,12 @@ Print
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC"", but does exactly the same thing as ##[[KeyPgSadd Sadd]]##
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgSadd Sadd]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
+	- ##[[KeyPgOpProcptr Procptr]]##
 	- [[ProPgPointers Pointers]]
 
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOpString|String Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

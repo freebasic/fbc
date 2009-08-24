@@ -88,7 +88,7 @@ End
 {{fbdoc item="filename" value="examples/manual/fileio/opencom.bas"}}%%(freebasic)
 'OPEN A COM PORT
 Open Com "COM1:9600,N,8,1" As #1
-if Err>0 then print "The port could not be opended"
+if Err>0 then print "The port could not be opened."
 
 'COM1, 9600 BAUD, NO PARITY BIT, EIGHT DATA BITS, ONE STOP BIT
 %%
@@ -128,4 +128,3 @@ End If
 	- ##[[KeyPgOpenCons Open Cons]]##, ##[[KeyPgOpenErr Open Err]]##, ##[[KeyPgOpenPipe Open Pipe]]##, ##[[KeyPgOpenLpt Open Lpt]]##, ##[[KeyPgOpenCom Open Com]]##, ##[[KeyPgOpenScrn Open Scrn]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

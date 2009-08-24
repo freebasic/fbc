@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutfileio
 '' --------
 
-' Create a integer variable
-Dim buffer As Integer, f As Integer
+' Create integer variables (our buffer has just 4 bytes)
+Dim As Integer buffer , f 
 
 ' Find the first free file file number.
 f = FreeFile

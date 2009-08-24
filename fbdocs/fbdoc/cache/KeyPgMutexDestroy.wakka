@@ -9,7 +9,7 @@ Destroys a mutex
 ##
 {{fbdoc item="param"}}
 	##//id//##
-	    The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex to be destroyed.
+		The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex to be destroyed.
 
 {{fbdoc item="desc"}}
 	##Mutexdestroy## discards a mutex created by ##[[KeyPgMutexCreate Mutexcreate]]##.  This call should be executed after any threads using the mutex are no longer in use.

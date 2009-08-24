@@ -46,6 +46,8 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a com
 		- The file doesn't have any of the supported types 
 		- A general read error occurred.
 
+~&//Note: When you use ##**BLoad**## to load a BMP file into an image buffer, the original dimensions of the image are not changed.  If you want the image buffer to have the same dimensions as the BMP file, you have to find out the dimensions beforehand, and create an image of the right size yourself.  See below for an example of how to do this.//
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/bload.bas"}}%%(freebasic)
 'Load a graphic to current work page
@@ -65,6 +67,59 @@ imagedestroy( myImage )
 sleep
 %%
 
+{{fbdoc item="filename" value="examples/manual/gfx/bload3.bas"}}%%(freebasic)
+'' A function that creates an image buffer with the same 
+'' dimensions as a BMP image, and loads a file into it.
+
+const NULL as any ptr = 0
+
+function bmp_load( byref filename as string ) as any ptr
+
+	dim as integer filenum, bmpwidth, bmpheight
+	dim as any ptr img
+
+	'' open BMP file
+	filenum = freefile()
+	if open( filename for binary access read as #filenum ) <> 0 then return NULL
+
+		'' retrieve BMP dimensions
+		get #filenum, 19, bmpwidth
+		get #filenum, 23, bmpheight
+
+	close #filenum
+
+	'' create image with BMP dimensions
+	img = imagecreate( bmpwidth, abs(bmpheight) )
+
+	if img = NULL then return NULL
+
+	'' load BMP file into image buffer
+	if bload( filename, img ) <> 0 then imagedestroy( img ): return NULL
+
+	return img
+
+end function
+
+
+
+dim as any ptr img
+
+screenres 640, 480, 32
+
+img = bmp_load( "picture.bmp" )
+
+if img = NULL then
+	print "bmp_load failed"
+
+else
+
+	put (10, 10), img
+
+	imagedestroy( img )
+
+end if
+
+sleep%%
 {{fbdoc item="diff"}}
 	- Support for loading BMP files is new to ""FreeBASIC"".
 	- Support for retrieving the palette from BMP files is new to ""FreeBASIC"".
@@ -75,6 +130,6 @@ sleep
 	- ##[[KeyPgPalette Palette]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
-	- [[GfxInternalFormats Internal Pixel Formats]]
+	- [[GfxInternalFormats Internal Graphics Formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

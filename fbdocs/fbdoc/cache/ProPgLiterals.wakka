@@ -1,12 +1,15 @@
 {{fbdoc item="title" value="Literals"}}----
 Non-variable compile-time string and numeric values.
 
-Literals are numbers or strings of characters specified directly in the source code.  Literals may be used to assign a variable or constant a value, passed to a procedure, or used in an expression.
+Literals are numbers or strings of characters specified directly in the source code.  Literal values may be used by assigning them to a variable or constant, passing them to a procedure, or using them in an expression.
 
-{{fbdoc item="section" value="Decimal, Hexadecimal, Octal, and Binary Literals"}}
+Numeric literals come in two forms - integer and floating-point.  
+
+{{fbdoc item="section" value="Integer Literals"}}
 
 	__Decimal__
-	Decimal digits ( 0 1 2 3 4 5 6 7 8 9 ).  A decimal integer may be prefixed with a minus sign (-) to indicate that the number is negative.
+	Decimal digits ( ##0 1 2 3 4 5 6 7 8 9## ).
+	//Note: to get negative values, a "##-##" sign (##[[KeyPgOpNegate Operator - (Negate)]]##) can be placed before a numeric literal//
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/dec.bas"}}%%(freebasic)
 Dim x as integer = 123456
@@ -14,22 +17,22 @@ Dim b as byte = -128
 %%
 
 	__Hexadecimal__
-	"&h" or "&H", followed by hexadecimal digits ( 0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F )
+	"##&H##", followed by hexadecimal digits ( ##0 1 2 3 4 5 6 7 8 9 A B C D E F## ).
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/hex.bas"}}%%(freebasic)
-Dim x as integer = &h1E240
-Dim b as byte = &H80
+Dim x As Integer = &h1E240
+Dim b As Byte = &H80
 %%
 		
 	__Octal__
-	"&o" or "&O" ( O as in Octal ), followed by octal digits ( 0 1 2 3 4 5 6 7 )
+	"##&O##" ( O as in "Octal" ), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/oct.bas"}}%%(freebasic)
 Dim x as integer = &O361100
 Dim b as byte = &O400
 %%
 	__Binary__
-	"&b" or "&B", followed by binary digits ( 0 1 )
+	"##&B##", followed by binary digits ( ##0 1## )
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/bin.bas"}}%%(freebasic)
 Dim x as integer = &B11110001001000000
@@ -40,11 +43,14 @@ Dim b as byte = &B10000000
 	If an integer literal suffix is not given, the number field size required to hold the literal is automatically calculated.  Specifying a size suffix guarantees that the compiler will consider a number as a specific integer size.
 
 	Integer literals ending with:
-	- "l" or "L" are considered as signed 32 bit integers. (INTEGER)
-	- "u", "U", "ul", or "UL", are considered as unsigned 32 bit integers. (UINTEGER)
-	- "ll" or "LL", are considered as signed 64 bit integers. (LONGINT)
-	- "ull" or "ULL", are considered as unsigned 64 bit integers. (ULONGINT)
+	- "##L##", "##%##", are considered as signed 32 bit integers. (##[[KeyPgInteger Integer]]##)
+	- "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong Long]]##)
+	- "##U##", "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUinteger Uinteger]]##)
+	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint Longint]]##)
+	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint Ulongint]]##)
 
+	The prefixes, suffixes, and hexadecimal letter digits are all case-insensitive.
+	
 {{fbdoc item="filename" value="examples/manual/proguide/literals/intsuff.bas"}}%%(freebasic)
 Dim a as integer = 123L
 Dim b as uinteger = &h1234u
@@ -55,29 +61,29 @@ Dim d as ulongint = &b1010101ULL
 {{fbdoc item="section" value="Floating Point Literals"}}
 	Floating point numbers are specified in decimal digits, may be positive or negative, have a fractional portion, and optionally an exponent.  The format of a floating point literal is as follows:
 
-	##[-]number[.[fraction]][suffix[-|+]exponent]##
+	##""number[.[fraction]][[D|E][[+|-]exponent]][suffix]""##
 	//or//
-	##[-].fraction[suffix[-|+]exponent]##
-
-	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value.
+	##"".fraction[[D|E][[+|-]exponent]][suffix]""##
+	
+	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value, except in the //[[CompilerOptlang -lang qb]]// dialect, where numbers of 7 digits or fewer are considered to be single precision.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/floats.bas"}}%%(freebasic)
 Dim a as double = 123.456
 Dim b as double = -123.0
 %%
 
-	A suffix of "d", "D", "e", or "E" on the number portion indicates a double precision (64 bit total) floating point value.  
-{{fbdoc item="filename" value="examples/manual/proguide/literals/hex2.bas"}}%%(freebasic)
-Dim a as double = -123.0d
-Dim b as double = -123.0e
-%%
-	An exponent may immediately follow the suffix.  The exponent may be specified as either positive or negative with a plus (+) or minus (-) sign.  Exponents that do not have a sign are positive.
+	The letter "##D##" or "##E##", placed after the number/fraction part, allows the number to be given an exponent.  The exponent may be specified as either positive or negative with a plus (""##+##"") or minus (""##-##"") sign.  Exponents that do not have a sign are positive.
+	An exponent is not required after the letter, so the letter can be used on its own just to specify the type.  "##D##" indicates a double-precision floating-point number.  "##E##" indicates a floating-point number using the default precision.
+
 {{fbdoc item="filename" value="examples/manual/proguide/literals/dblsuff.bas"}}%%(freebasic)
+Dim a as double = -123.0d
+Dim b as double = -123e
 Dim c as double = 743.1e+13
 Dim d as double = 743.1d-13
 Dim e as double = 743.1e13
 %%
 
-	A suffix of "!", "f" or "F" on a number indicates a single precision (32 bit total) floating point value.  An equivalent suffix, "#", indicates double precision.  Note that an exponent cannot follow this kind of suffix.
+	A suffix of "##!##" or "##F##" on a number indicates a single precision (32 bit total) floating point value.  An equivalent suffix, "##""#""##", indicates double precision.  Note that the letter suffixes are all case-insensitive.
+	
 {{fbdoc item="filename" value="examples/manual/proguide/literals/singsuff.bas"}}%%(freebasic)
 Dim a as single = 3.1!
 Dim b as single = -123.456e-7f
@@ -94,19 +100,19 @@ print "That's right!"
 print "See the ""word"" contained in double quotes."
 %%
 
-	String leterals can contain escape sequences if the string literal is prefixed by the [[KeyPgOpPpEscape ! operator]] (Escaped String Literal).  See [[TblEscapeSequences Escape Sequences]] for a list of accepted escape sequences.
+	String literals can contain escape sequences if the string literal is prefixed by the ##[[KeyPgOpPpEscape ! operator]]## (Escaped String Literal).  See [[TblEscapeSequences Escape Sequences]] for a list of accepted escape sequences.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/escape.bas"}}%%(freebasic)
 print !"Hello\nWorld!"
 %%
 
 	By default, string literals are non-escaped unless ##[[KeyPgOptionescape Option Escape]]## was used in the source in which case all string literals following are by default escaped.
 
-	A string may be explicitly specified as non-escaped when prefixed by the [[KeyPgOpPpEscape $ operator]] (Non-Escaped String Literal).
+	A string may be explicitly specified as non-escaped when prefixed by the ##[[KeyPgOpPpEscape $ operator]]## (Non-Escaped String Literal).
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"
 %%
 
-	Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
+	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##

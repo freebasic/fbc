@@ -5,7 +5,7 @@ Returns the decimal part of a number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Frac** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Frac** ( //number// )
+	//result// = **Frac**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

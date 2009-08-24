@@ -2,16 +2,16 @@
 Returns the last modified date and time of a file as [[ProPgDates Date Serial]] 
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileDateTime""**( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileDateTime""** ( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
-	//result// = **""FileDateTime""** ( //filename// )
+	//result// = **""FileDateTime""**( //filename// )
 ##
 //or//
 ##
 	#include "vbcompat.bi"
-	//result// = **""FileDateTime""** ( //filename// )
+	//result// = **""FileDateTime""**( //filename// )
 ##
 {{fbdoc item="param"}}
 	##//filename//##

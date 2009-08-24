@@ -6,13 +6,10 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSadd
 '' --------
 
-'' Compile with -lang qb or fblite
+Dim s As String
 
-'$lang: "qb"
-
-Print SAdd(s$)
-s$ = "hello"
-Print SAdd(s$)
-s$ = "abcdefg, 1234567, 54321"
-Print SAdd(s$)
-Sleep
+Print SAdd(s)
+s = "hello"
+Print SAdd(s)
+s = "abcdefg, 1234567, 54321"
+Print SAdd(s)

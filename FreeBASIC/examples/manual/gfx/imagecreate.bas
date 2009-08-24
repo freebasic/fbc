@@ -6,30 +6,26 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImagecreate
 '' --------
 
-Dim image_buffer As Any Ptr
-Const NULL As Any Ptr = 0
-
-'' set screen mode (this must be done before trying to create an image)
+'' Create a graphics screen.
 ScreenRes 320, 200, 32
 
-'' allocate an image buffer with a darkish green background
-image_buffer = ImageCreate(64, 64, RGB(0, 128, 0))
+'' Create a 64x64 pixel image with a darkish green background.
+Dim image As Any Ptr = ImageCreate( 64, 64, RGB(0, 128, 0) )
 
-'' check that image creation succeeded
-If image_buffer = NULL Then
-	Print "Image creation failed!"
+If image = 0 Then
+	Print "Failed to create image."
 	Sleep
-	End
+	End -1
 End If
 
-'' draw a semi-transparent, red circle to the image buffer
-Circle image_buffer, (32, 32), 28, RGBA(255, 0, 0, 128),,, 1.0, F
+'' Draw a semi-transparent, red circle in the center of the image.
+Circle image, (32, 32), 28, RGBA(255, 0, 0, 128),,, 1.0, f
 
-'' blit image buffer to screen
-Put (120, 60), image_buffer, PSet
-Put (140, 80), image_buffer, Alpha
+'' Draw the image onto the screen using various blitting methods.
+Put (120, 60), image, PSet
+Put (140, 80), image, Alpha
+
+'' Destroy the image.
+ImageDestroy image
 
 Sleep
-
-'' free image buffer memory
-ImageDestroy image_buffer

@@ -2,6 +2,13 @@
 Declares a user-defined type.
 
 {{fbdoc item="syntax"}}##
+
+	**Type** //typename//
+		//fieldname1// [[KeyPgAs as]] //[[DataType DataType]]//
+		//fieldname2// [[KeyPgAs as]] //[[DataType DataType]]//
+		...
+	**End Type**
+
 	**Type** //typename// [ [[KeyPgField Field]] = //alignment// ]
 		[ [[KeyPgVisPrivate Private]]: ]
 		[ [[KeyPgVisPublic Public]]: ]
@@ -140,12 +147,12 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 	- At present, fixed-length strings have an extra, redundant character on the end, which means they take up one more byte than they do in QB.  For this reason, UDTs that use them are not compatible with QB when used for file I/O.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgTypeAlias Type (Alias)]]##
+	- ##[[KeyPgTypeTemp Type (Temporary)]]##
 	- ##[[KeyPgUnion Union]]##
 	- ##[[KeyPgEnum Enum]]##
-	- ##[[KeyPgOffsetof OffsetOf]]##
-	- ##[[KeyPgTypeTemp Type (Temporary)]]##
-	- ##[[KeyPgTypeAlias Type (Alias)]]##
 	- ##[[KeyPgTypeof Typeof]]##
+	- ##[[KeyPgOffsetof OffsetOf]]##
 	- ##[[KeyPgField Field]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Frequently Asked Questions"}}----
 {{anchor name="item0"}}
 
-**FreeBASIC questions:**
+**""FreeBASIC"" questions:**
 
 	==- {{anchor name="item1|What is FreeBASIC?"}}==
 	==- {{anchor name="item2|Who is responsible for FreeBASIC?"}}==
@@ -17,7 +17,7 @@
 	==- {{anchor name="item12|Can I use a non-latin charset in my FreeBASIC apps?"}}==
 	==- {{anchor name="item13|Can I use Serial/COM and Hardware/CPU ports in FB?"}}==
 
-**Getting Started with FreeBASIC questions**
+**Getting Started with ""FreeBASIC"" questions**
 	
 	==- {{anchor name="item20|Where can I find more information about FreeBASIC?"}}==
 	==- {{anchor name="item21|Why doesn't the QB GUI open when I start FreeBASIC?"}}==
@@ -25,7 +25,7 @@
 	==- {{anchor name="item23|What's the idea behind the FB dialects?"}}==
 	==- {{anchor name="item24|Why does my program crash when I define an array larger than xx ?"}}==
 
-**Advanced FreeBASIC**
+**Advanced ""FreeBASIC""**
 
 	==- {{anchor name="item31|How do I link to C libraries?"}}==
 	==- {{anchor name="item32|Can I use a debugger?"}}==
@@ -33,6 +33,7 @@
 	==- {{anchor name="item34|Is there a limit on how big my source files can be?"}}==
 	==- {{anchor name="item35|Can I write an OS in FreeBASIC ?"}}==
 	==- {{anchor name="item36|I'm developing an OS, can FreeBASIC be ported to my OS ?"}}==
+	==- {{anchor name="item37|Does FreeBASIC support returning reference from Functions, like in C++?"}}==
 
 {{anchor name="item999|See also"}}
 
@@ -40,69 +41,69 @@
 
 ----
 
-@@**FreeBASIC questions**@@
+@@**""FreeBASIC"" questions**@@
 
-{{anchor name="item1"}}==What is FreeBASIC?==
-	FreeBASIC is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft QuickBasic, but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, and many others with its default installation.
+{{anchor name="item1"}}==What is ""FreeBASIC""?==
+	""FreeBASIC"" is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft ""QuickBASIC"", but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, and many others with its default installation.
 
-	Aside from having a syntax mostly compatible with QuickBasic, FreeBASIC introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
+	Aside from having a syntax mostly compatible with ""QuickBASIC"", ""FreeBASIC"" introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
 
-	FreeBASIC compiler is self-hosting - written in FreeBASIC, most libraries however are written in C.
+	""FreeBASIC"" compiler is self-hosting - written in ""FreeBASIC"", the libraries however are written in C.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item2"}}==Who is responsible for FreeBASIC?==
-	The first versions of FreeBASIC were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and DrV, who developed the DOS port. 
+{{anchor name="item2"}}==Who is responsible for ""FreeBASIC""?==
+	The first versions of ""FreeBASIC"" were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and DrV, who developed the DOS port. 
 
 	See the [[CompilerCredits FreeBASIC Credits]] page.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item3"}}==Why should I use FreeBASIC rather than QBasic?==
-	FreeBASIC has innumerable advantages over QBasic, QuickBasic, PDS, and Visual Basic for DOS. 
-		- It supports 32-bit processors, where QBasic is designed for 16-bit CPU's.
+{{anchor name="item3"}}==Why should I use ""FreeBASIC"" rather than ""QBasic""?==
+	""FreeBASIC"" has innumerable advantages over ""QBasic"", ""QuickBASIC"", PDS, and Visual Basic for DOS. 
+		- It supports 32-bit processors, where ""QBasic"" is designed for 16-bit CPU's.
 		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
 		- It supports modern APIs such as SDL, DirectX, Win32, and OpenGL.
-		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of QuickBasic / other BASICs.
+		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of ""QuickBASIC"" / other BASICs.
 		- The library is distributed under the LGPL with additional exception, meaning you may do whatever you want with your compiled programs, including selling them (note: possible problem with graphics library).
-		- FreeBASIC is many times faster than QuickBasic / other BASICs.
-		- FreeBASIC supports many features, such as pointers and inline Assembly, which are not available in QuickBasic / other BASICs.
-		- QuickBASIC only supports DOS. Windows support for DOS emulation (and thus QuickBasic) is becoming thinner with every new version. Vista does not support graphics or fullscreen text for DOS applications.
+		- ""FreeBASIC"" is many times faster than ""QuickBASIC"" / other BASICs.
+		- ""FreeBASIC"" supports many features, such as pointers and inline Assembly, which are not available in ""QuickBASIC"" / other BASICs.
+		- ""QuickBASIC"" only supports DOS. Windows support for DOS emulation (and thus ""QuickBASIC"") is becoming thinner with every new version. Vista does not support graphics or fullscreen text for DOS applications.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item4"}}==Why should I use FreeBASIC rather than some other newer BASIC ?==
-	FreeBASIC has many traits which make it more desirable than most other BASIC language implementations:
-		- FreeBASIC adheres closely to the standard BASIC syntax, making it easier to use.
-		- FreeBASIC is compiled to actual programs (executables), not bytecode.
-		- FreeBASIC has a large, dedicated community which has actively participated in the development of FreeBASIC.
-		- FreeBASIC utilizes standard methods of accessing common C libraries. SDL, for example, is standard C SDL, not a new set of intrinsic commands.
-		- FreeBASIC has ports to Windows, Linux, and 32-bit DOS. It retains consistent syntax between the three ports.
+{{anchor name="item4"}}==Why should I use ""FreeBASIC"" rather than some other newer BASIC ?==
+	""FreeBASIC"" has many traits which make it more desirable than most other BASIC language implementations:
+		- ""FreeBASIC"" adheres closely to the standard BASIC syntax, making it easier to use.
+		- ""FreeBASIC"" is compiled to actual programs (executables), not bytecode.
+		- ""FreeBASIC"" has a large, dedicated community which has actively participated in the development of ""FreeBASIC"".
+		- ""FreeBASIC"" utilizes standard methods of accessing common C libraries. SDL, for example, is standard C SDL, not a new set of intrinsic commands.
+		- ""FreeBASIC"" has ports to Windows, Linux, and 32-bit DOS. It retains consistent syntax between the three ports.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item5"}}==How fast is FreeBASIC?==
-	Most tests run by the community have shown FreeBASIC is significantly faster than QuickBasic, faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
-	The [[http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=all Computer Languages Benchmark Game]], an independent test team, give FreeBASIC for Linux a speed 1.8 times slower than  ""GNU g++"". Tests are about calculation, memory and disk access speed in console programs, no graphics capabilities were tested. This is not a bad result considering FreeBASIC is not yet an optimizing compiler.
-	One area where there is a notable speed deficiency is in 32-bit console modes. While FreeBASIC is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in QuickBasic. In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
+{{anchor name="item5"}}==How fast is ""FreeBASIC""?==
+	Most tests run by the community have shown ""FreeBASIC"" is significantly faster than ""QuickBasic"", faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
+	The [[http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=all Computer Languages Benchmark Game]], an independent test team, give ""FreeBASIC"" for Linux a speed 1.8 times slower than  ""GNU g++"". Tests are about calculation, memory and disk access speed in console programs, no graphics capabilities were tested. This is not a bad result considering ""FreeBASIC"" is not yet an optimizing compiler.
+	One area where there is a notable speed deficiency is in 32-bit console modes. While ""FreeBASIC"" is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in ""QuickBasic"". In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item6"}}==How compatible is FreeBASIC with QuickBasic?==
-	The FreeBASIC built in graphics library emulates the most used QB graphics modes (modes 7,12,13) and implements all the drawing primitives featured in QB. 
+{{anchor name="item6"}}==How compatible is ""FreeBASIC"" with ""QuickBasic""?==
+	The ""FreeBASIC"" built in graphics library emulates the most used QB graphics modes (modes 7,12,13) and implements all the drawing primitives featured in QB. 
 	Most compatibility problems arise from the use of 8086-DOS-hardware specific low-level techniques in the old QB programs. VGA port programming, DOS interrupts, memory segment switching, poking to the screen memory or music playing using the PC speaker are not directly supported, even if they can be supported/emulated by external libraries. 
-	Other issues in porting old QB programs, like variable name clashes with new FB keywords, variables with the name of a QB keyword plus a type suffix, default integer size being 32 bits in FB, are addressed by running FreeBASIC with the commandline switch ##-lang qb## .
+	Other issues in porting old QB programs, like variable name clashes with new FB keywords, variables with the name of a QB keyword plus a type suffix, default integer size being 32 bits in FB, are addressed by running ""FreeBASIC"" with the commandline switch ##-lang qb## .
 
 	See [[LangQB Differences between FreeBASIC and QuickBasic]].
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item7"}}==How compatible is FreeBASIC with Windows? DOS? Linux? ==
-	FreeBASIC is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availability in mind -- code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
+{{anchor name="item7"}}==How compatible is ""FreeBASIC"" with Windows? DOS? Linux? ==
+	""FreeBASIC"" is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availability in mind -- code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item8"}}==Does FreeBASIC support Object Oriented Programming?==
+{{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
 	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future. At the moment (V0.18.5) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented . For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
@@ -126,9 +127,9 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item12"}}==Can I use a non-latin charset in my FreeBASIC apps?==
+{{anchor name="item12"}}==Can I use a non-latin charset in my ""FreeBASIC"" apps?==
 
-	FreeBASIC has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As FreeBASIC is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
+	""FreeBASIC"" has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As ""FreeBASIC"" is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
 	For the output to screen the support is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font supports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
 
 {{anchor name="item0|Back to top"}}
@@ -139,20 +140,20 @@
 {{anchor name="item0|Back to top"}}
 ----
 
-@@**Getting Started with FreeBASIC questions**@@
+@@**Getting Started with ""FreeBASIC"" questions**@@
 
-{{anchor name="item20"}}==Where can I find more information about FreeBASIC?==
-	The FreeBASIC Wiki is the most up-to-date manual for using FreeBASIC, available [[http://www.freebasic.net/wiki/ here]].
+{{anchor name="item20"}}==Where can I find more information about ""FreeBASIC""?==
+	The ""FreeBASIC"" Wiki is the most up-to-date manual for using ""FreeBASIC"", available [[http://www.freebasic.net/wiki/ here]].
 
-	Active FreeBASIC related forums, besides the [[http://www.freebasic.net/forum official one]], can be found at [[http://www.qbasicnews.com/ qbasicnews]], [[http://www.petesqbsite.com/forum/ Pete's QB Site]] , [[http://games.freebasic.net/forum/index.php the FB Games directory]]  or  [[http://www.freebasic-portal.de freebasic-portal.de (in German)]]. 
+	Active ""FreeBASIC"" related forums, besides the [[http://www.freebasic.net/forum official one]], can be found at [[http://www.qbasicnews.com/ qbasicnews]], [[http://www.petesqbsite.com/forum/ Pete's QB Site]] , [[http://games.freebasic.net/forum/index.php the FB Games directory]]  or  [[http://www.freebasic-portal.de freebasic-portal.de (in German)]]. 
 
-	Active magazines which regularly have FreeBASIC related articles are [[http://www.petesqbsite.com/sections/express/express.shtml QB Express]] and [[http://www.qbxl.net/ QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about FreeBASIC, submit it!
+	Active magazines which regularly have ""FreeBASIC"" related articles are [[http://www.petesqbsite.com/sections/express/express.shtml QB Express]] and [[http://www.qbxl.net/ QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about ""FreeBASIC"", submit it!
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item21"}}==Why doesn't the QB GUI open when I start FreeBASIC?==
-	QB had an Integrated Development Environment (IDE).  FreeBASIC does not.
-	FreeBASIC is only a compiler, not a complete QuickBasic clone. It is a console mode application. It will accept a BAS file on the command line, and spit out an EXE file.
+{{anchor name="item21"}}==Why doesn't the QB GUI open when I start ""FreeBASIC""?==
+	QB had an Integrated Development Environment (IDE).  ""FreeBASIC"" does not.
+	""FreeBASIC"" is only a compiler, not a complete ""QuickBASIC"" clone. It is a console mode application. It will accept a BAS file on the command line, and spit out an EXE file.
 	You can create the BAS file with the simplest plain text editor in your OS (Notepad, EDIT, nano,...), then run the compiler. 
 	If you can't live without  syntax coloring, error highlighting, multiple file managing, integrated debugger, context help or other features, you need an IDE. See the {{anchor name="item999|OS specific FAQ's"}} for the IDE's and editors available.
  
@@ -169,7 +170,7 @@
 	The three dialects  (-lang fb, -lang qb, -lang fblite) allow to combine the best of two worlds. 
 	-##lang fb## provides the framework required for OOP programming . Other dialects don't give access to OOP.
 	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with two underscores.  For example, ##Getmouse## can be called by using ##_####_Getmouse##
-	-##lang fblite## offers FreeBASIC language compatibility, with a more QBASIC-compatible coding style.
+	-##lang fblite## offers ""FreeBASIC"" language compatibility, with a more QBASIC-compatible coding style.
 
 	See [[http://www.freebasic.net/wiki/wikka.php?wakka=CompilerDialects Compiler Dialects]] for details.
 
@@ -195,18 +196,18 @@
 
 ----
 
-@@**Advanced FreeBASIC**@@
+@@**Advanced ""FreeBASIC""**@@
 
 {{anchor name="item31"}}==How do I link to C libraries?==
-	C libraries are set up in much the same way in FreeBASIC as they are in C. Every library included with FreeBASIC has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommand to include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. FreeBASIC includes hundreds of BI files, see full list of library headers [[ExtLibTOC here]].
+	C libraries are set up in much the same way in ""FreeBASIC"" as they are in C. Every library included with ""FreeBASIC"" has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommand to include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. ""FreeBASIC"" includes hundreds of BI files, see full list of library headers [[ExtLibTOC here]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item32"}}==Can I use a debugger?==
-	FreeBASIC can use preferably a debugger compatible with GNU GDB. 
-	- Win32: Insight is an user friendly wrapper for GDB, see [[FaqPgWin32 Win32 related FAQ]]. 
-	- DOS: Be warned that DOS also has product named "Insight", but it's a real mode debugger not usable with FreeBASIC, use GDB or a DPMI32 debugger at least.
-	- Linux: use GDB.
+	""FreeBASIC"" can use preferably a debugger compatible with GNU GDB. 
+		- Win32: Insight is an user friendly wrapper for GDB, see [[FaqPgWin32 Win32 related FAQ]]. 
+		- DOS: Be warned that DOS also has product named "Insight", but it's a real mode debugger not usable with ""FreeBASIC"", use GDB or some DPMI32 debugger at least.
+		- Linux: use GDB.
 
 	See the {{anchor name="item999|OS specific FAQ's"}} for details for your OS.
 
@@ -218,23 +219,33 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item34"}}==Is there a limit on how big my source files can be?==
-	Yes, since FreeBASIC is a fully 32-bit compiler it may operate on source files up to theoretically 4GB or 4294967296 bytes, however your RAM capacity should be significantly above the size of your source, otherwise the compilation won't finish or will be very slow at least. 
+	Yes, since ""FreeBASIC"" is a fully 32-bit compiler it may operate on source files up to theoretically 4GB or 4294967296 bytes, however your RAM capacity should be significantly above the size of your source, otherwise the compilation won't finish or will be very slow at least. 
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item35"}}==Can I write an OS in FreeBASIC ?==
+{{anchor name="item35"}}==Can I write an OS in ""FreeBASIC"" ?==
 
 	YES and NO. If you really insist to write an OS and involve FB, the answer is YES. If the question is, whether it is a good idea that you, even more if a beginner, should start coding an OS using FB now, the answer is NO. Several pitfalls apply:
 		- OS development is hard, see [[http://www.osdev.org/wiki/Getting_Started]] .
 		- FB won't help you to bypass the need to deal with assembly, also C might be almost impossible to avoid.
 		- You won't be able to use most of the trusted FB features, like graphics, file I/O, threads, memory management, even console I/O ... just control flow, math and logic. If you need those library functions, you will have to **reimplement** them.
-	FreeBASIC relies on GCC, and available informations about developing an OS in C apply to FreeBASIC as well. FB will help you neither more nor less than GCC.
+	""FreeBASIC"" relies on GCC, and available informations about developing an OS in C apply to ""FreeBASIC"" as well. FB will help you neither more nor less than GCC.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item36"}}==I'm developing an OS, can FreeBASIC be ported to my OS ?==
+{{anchor name="item36"}}==I'm developing an OS, can ""FreeBASIC"" be ported to my OS ?==
 
 Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (console I/O (seeking, multiple files open, ...), file I/O, memory management) **and** has a port of GCC, then the answer is YES. If you have at least an other somewhat compliant C compiler **with** libraries, it might be possible. You can't reasonably port FB for example to an OS allowing to load or save a file in one block only, or a 16-bit OS.   
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item37"}}==Does ""FreeBASIC"" support returning references from Functions, like in ""C++""?==
+
+As of version 0.20.0b, no. There are some keywords, such as ##[[KeyPgPeek Peek]]## and the [[CatPgOpIndexing indexing operators]], for instance, that behave as if they were ##[[KeyPgFunction Function]]## procedures that return a reference, as in ""C++"". That is, they evaluate to something that can be used in place of an object, much like [[ProPgPassingArguments reference parameters]].
+
+For example, if ##//mystring//## is of type ##[[KeyPgString String]]## of non-zero length, then ##//mystring[0]//## evaluates to a reference to the first character (a ##[[KeyPgUbyte UByte]]##), which can be assigned to and modified, passed to procedures, etc.
+
+##[[KeyPgPeek Peek]]## and the [[CatPgOpIndexing indexing operators]] are documented as ##[[KeyPgFunction Function]]## procedures or operators that return a value, since ""FreeBASIC"" does not yet support returning references. When returning references is supported, the documentation will be changed to reflect that.
 
 {{anchor name="item0|Back to top"}}
 

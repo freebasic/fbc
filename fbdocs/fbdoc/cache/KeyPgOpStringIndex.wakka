@@ -6,7 +6,7 @@ Returns a reference to a character in a string
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgZstring zstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator {}## (String index)** returns a reference. As of Feb 27 2007, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
+~&//Note that **##Operator {}## (String index)** returns a reference. See [CompilerFAQ Compiler FAQ]].//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **[** //rhs// **]**

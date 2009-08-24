@@ -17,7 +17,7 @@ Renames a file on disk
 	Returns zero (0) on success and non-zero on failure.
 
 {{fbdoc item="desc"}}
-	Renames a file originally called ##//oldname//## to ##//newname//##.
+	Renames a file or folder originally called ##//oldname//## to ##//newname//##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/name.bas"}}%%(freebasic)

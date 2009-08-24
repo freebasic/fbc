@@ -91,7 +91,7 @@ Statements and Procedures that work with strings.
 	=={{fbdoc item="keyword" value="KeyPgCvd|CVD"}}==
 		Returns a [[KeyPgDouble Double]] representation of an eight character [[KeyPgString String]].
 	=={{fbdoc item="keyword" value="KeyPgCvi|CVI"}}==
-		Returns a [[KeyPgUinteger UInteger]] representation of a four character [[KeyPgString String]].
+		Returns an [[KeyPgInteger Integer]] representation of a four character [[KeyPgString String]].
 	=={{fbdoc item="keyword" value="KeyPgCvl|CVL"}}==
 		Returns a [[KeyPgLong Long]] representation of a four character [[KeyPgString String]].
 	=={{fbdoc item="keyword" value="KeyPgCvlongint|CVLONGINT"}}==

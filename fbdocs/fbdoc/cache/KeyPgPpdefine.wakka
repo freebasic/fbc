@@ -2,17 +2,19 @@
 Preprocessor directive to define a macro
 
 {{fbdoc item="syntax"}}##
-	#define //identifier//
 	#define //identifier// //text//
 	#define //identifier//([//parameters//]) //macro_text//
 ##
 {{fbdoc item="desc"}}
 	Preprocessor keyword that defines an identifier with a custom meaning:
-		- Empty defines (without //text//) can be checked for existence with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]## to hide parts of code to the compiler (conditional compiling).
-		- Non-empty defines (with //text//) are substituted by its //text// when the source is parsed, allowing a sort of "shorthand".
-		- Defines with parameters are substituted by the //macro_text//, that will contain all the arguments passed replaced.  **Note:** The open parentheses character ('(') must immediately follow the //identifier//, there should be no white-spaces between them.
+		- Non-empty defines (with ##//text//##) are substituted by its ##//text//## when the source is parsed, allowing a sort of "shorthand".  ##//text//## may be empty, which is useful for making defines that are just designed for checking with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]##.
+		- Defines with parameters are substituted by the ##//macro_text//##, that will contain all the arguments passed replaced.  **Note:** The open parentheses character ("##(##") must immediately follow the ##//identifier//##, there should be no white-spaces between them, otherwise the parentheses will be taken as part of ##//text//##.
 		- Defines are visible only in the scope where they are defined.  If defined at module level, the define is visible throughout the module.  If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub Sub]]##, ##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##, etc), the ##//identifier//## is visible only within that scope.
 		- Namespaces do not have any effect on the visibility of a define.
+
+	##//Identifier//##s can be checked to see whether they have been defined with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]##, which can be used to hide parts of code to the compiler (conditional compiling).
+
+	For defining identifiers with constant values associated with them ##[[KeyPgConst Const]]## may be used as a more powerful method.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)
@@ -54,17 +56,16 @@ end namespace
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseif]]## 
-	- ##[[KeyPgPpendif #endif]]## 
+	- ##[[KeyPgOpPpStringize # Preprocessor stringize]]##
+	- ##[[KeyPgOpPpConcat ## Preprocessor concatenate]]##
 	- ##[[KeyPgPpifdef #ifdef]]##
 	- ##[[KeyPgPpifndef #ifndef]]##
 	- ##[[KeyPgPpundef #undef]]##
 	- ##[[KeyPgDefined defined]]##
+	- ##[[KeyPgConst Const]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

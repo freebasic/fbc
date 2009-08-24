@@ -297,7 +297,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
-
+<<>>
 {{fbdoc item="section" value="Meta Commands"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
@@ -318,7 +318,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
-<<>>
+
 {{fbdoc item="section" value="Modularizing"}}
 	- {{fbdoc item="keyword" value="KeyPgCommon|COMMON"}}
 	- {{fbdoc item="keyword" value="KeyPgDylibfree|DYLIBFREE"}}
@@ -346,7 +346,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 
-{{fbdoc item="section" value="Os / shell"}}
+{{fbdoc item="section" value="OS / shell"}}
 	- {{fbdoc item="keyword" value="KeyPgChain|CHAIN"}}
 	- {{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgCommand|COMMAND"}}
@@ -463,6 +463,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgLib|LIB"}}
+	- {{fbdoc item="keyword" value="KeyPgNaked|NAKED"}}
 	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOverload|OVERLOAD"}}
 	- {{fbdoc item="keyword" value="KeyPgPascal|PASCAL"}}

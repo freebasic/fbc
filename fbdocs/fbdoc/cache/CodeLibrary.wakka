@@ -6,7 +6,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit, an IDE for FB by KetilO (Win32)]]
 	[[http://www.planetsquires.com/jellyfishpro_freebasic.htm JellyFish Pro, an IDE for FB by Paul Squires (Win32)]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9035 VISG GUI Builder (WIN) by mrhx]]
-	[[http://www.freewebs.com/fielden/ EzeeGui GUI builder (WIN) by Jerry Fielden]]
+	[[http://www.freewebs.com/fielden/ EzeeGui GUI builder (WIN) by Jerry Fielden]]	         
 
 {{anchor name="GRAPHIC"}}{{fbdoc item="section" value="Graphics Code"}}
 	==Demos==
@@ -99,6 +99,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.execulink.com/~coder/freebasic/jmgui.html In Game GUI by coderJeff]]
 	[[http://sourceforge.net/projects/zine/ Zine GUI by VonGodric]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=76965#76965 WX GUI example by ciw1973]]
+	[[http://www.imakegames.com/?q=node/23 KwikGUI (WIN/LIN/DOS) by Vincent DeCampo]]
 
 {{anchor name="WEB"}}{{fbdoc item="section" value="Web Code"}}
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4199 FB Web Server (Win) by parakeet]]
@@ -126,7 +127,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70771 ShellExecute wrapper by RayBritton]]
 	[[http://www.execulink.com/~coder/freebasic/fbwiki.html FBWiki to chm format converter by coderjeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=75625 FB ODBC library by KaraK]]
-
+	[[http://www.freebasic.net/forum/viewtopic.php?p=119557 Get a file from an URL bt Sisophon]]
 	==Linux==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8040 Printing on Linux by coderJeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7611 Using GfxLib on Gtk by caseih]]
@@ -157,7 +158,7 @@ If you're looking for a code snippet demonstrating compiler features or how to u
 	[[http://www.freebasic.net/forum/viewtopic.php?p=84902&highlight=#84902 Use of the FBGfx built-in LZW routines by Lillo and DJ Peters]]
 	[[http://rapidq.phatcode.net/tutorial/Freebasic_DLL_tutorial.html Using FB dll's in RapidQ programs by JohnK]]
 
- 	==serial port==
+ 	==Serial Port==
 	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 Drive a Parallax servo controller by phishguy]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=34643 Modbus device finder by Antoni]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=3132 Serial port terminal program by Antoni]]

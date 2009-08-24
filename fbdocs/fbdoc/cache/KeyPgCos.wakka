@@ -5,7 +5,7 @@ Returns the cosine of a number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cos** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Cos** ( //number// )
+	//result// = **Cos**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

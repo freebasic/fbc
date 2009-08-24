@@ -37,7 +37,7 @@ print a, b, c
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- QB has a bug in INPUT # that causes it to read past the end of the line if it does not find a matching end-quote when reading a string. If you are porting QB code that relies upon this bug, you may need to edit your data files to remove newlines from inside quoted strings, or to use a custom function to piece back together the multiline string.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInput Input]]##

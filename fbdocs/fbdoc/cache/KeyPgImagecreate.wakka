@@ -1,63 +1,60 @@
 {{fbdoc item="title" value="IMAGECREATE"}}----
-Creates and initializes storage for an image
+Allocates and initializes storage for an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **""ImageCreate""**( //width// [[KeyPgAs as]] [[KeyPgInteger integer]], //height// [[KeyPgAs as]] [[KeyPgInteger integer]] [, [ //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ] [, //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] ]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] = **transparent_color** ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] = **transparent_color**, [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//buffer// = **""ImageCreate""**( //width//, //height// [, [ //color// ][, //depth// ]] )
+	//result// = **""ImageCreate""**( //width//, //height// [, [ //color// ][, //depth// ]] )
 ##
 {{fbdoc item="param"}}
 	##//width//##
-		Desired width of the image buffer to create.
+		The desired width, in number of pixels.
 	##//height//##
-		Desired height of the image buffer to create.
+		The desired height, in number of pixels.
 	##//color//##
-		The pixel value to fill the image buffer with upon creation.
+		The pixel value to fill the area of the image.
 	##//depth//##
-		Desired color depth of the image buffer, in bits per pixel.
+		The desired color depth, in bits per pixel.
 
 {{fbdoc item="ret"}}
-	The address of the image buffer, or NULL (0) if the buffer could not be created.
+	If the image could not be created, NULL (##0##) is returned. Otherwise, the address of the image is returned.
 
 {{fbdoc item="desc"}}
-	Allocates and initializes a memory buffer for an image. If ##//color//## is omitted, a value of 0 will be used for paletted (8-bit or less) modes, or [[KeyPgRgb RGB]](255, 0, 255) for higher color depth modes (this translates to &hF81F and &hFFFF00FF for 15/16-bit and 24/32-bit modes, respectively - see the [[GfxInternalFormats internal gfx formats]] reference for more info). These are special mask colors, which will be transparent when using ##[[KeyPgPutgraphics Put]]## with the ##[[KeyPgTransGfx Trans]]## method.
-	
-	##**""ImageCreate""**## only works when a graphics mode has been set up with the ##[[KeyPgScreengraphics Screen]]## statement or ##[[KeyPgScreenres ScreenRes]]## statement.  Images can be set up with different color depths from the screen color depth, using the ##//depth//## parameter.  An image buffer can be passed to graphics functions across mode changes as long as the different modes use the same color depth.
-	
-	Images should be deleted with ##[[KeyPgImageDestroy ImageDestroy]]## when they are no longer needed, in order to prevent memory leaks.
+	Both procedures attempt to allocate memory for an image of the specified ##//width//## and ##//height//##. If not successful, NULL (##0##) is returned. Otherwise, an image of that size is created and initialized by filling the entire area of pixels with the value ##//color//##. If not specified, ##//color//## assumes the value of the transparent color for the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol ScreenControl]]##. In any case, the address of the image is returned, which is then controlled by the user, and must be destroyed using ##[[KeyPgImageDestroy ImageDestroy]]##.
 
-	The ##**""ImageCreate""**## function is an alternative to using the ##[[KeyPgGetgraphics Get (Graphics)]]## statement to create a buffer, and can ease the creation of an image buffer for use 2D drawing functions. It is recommended that you always use ##**""ImageCreate""**## though, as it automatically allocates the correct size for the buffer, given its dimensions and the current color depth; the image header may vary in size in future FreeBASIC releases, so using ##[[KeyPgGetgraphics Get (Graphics)]]## with a buffer allocated on the stack may result in corrupted data, as the static buffer size may have been manually computed using a formula that is no longer valid.
+	The first procedure creates an image with a color depth matching that of the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol ScreenControl]]##. The second procedure creates an image with a color depth of ##//depth//##, in bits per pixel. For both procedures, the resulting image can be used in drawing procedures while in any screen mode -- and across mode changes -- as long as the color depth of the image matches that of the graphics screen.
+
+	##**""ImageCreate""**## is the recommended way to allocate memory for new images. The memory layout -- size, structure, etc. -- while documented, may change from version to version, making manual calculation of the sizes involved error-prone. However, ##[[KeyPgImageInfo ImageInfo]]## can be used to retrieve, among other things, the size, in bytes, of an existing image, allowing memory to be manually allocated for a copy of an image, or to be read from or written to a file or device.
+
+	##[[KeyPgGetgraphics Get (Graphics)]]## can be used to initialize an image using pre-allocated memory.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/imagecreate.bas"}}%%(freebasic)
-Dim image_buffer As Any Ptr
-Const NULL as Any Ptr = 0
+'' Create a graphics screen.
+screenres 320, 200, 32
 
-'' set screen mode (this must be done before trying to create an image)
-Screenres 320, 200, 32
+'' Create a 64x64 pixel image with a darkish green background.
+dim image as any ptr = imagecreate( 64, 64, rgb(0, 128, 0) )
 
-'' allocate an image buffer with a darkish green background
-image_buffer = ImageCreate(64, 64, RGB(0, 128, 0))
+if image = 0 then
+	print "Failed to create image."
+	sleep
+	end -1
+end if
 
-'' check that image creation succeeded
-If image_buffer = NULL Then
-	Print "Image creation failed!"
-	Sleep
-	End
-End If
+'' Draw a semi-transparent, red circle in the center of the image.
+circle image, (32, 32), 28, rgba(255, 0, 0, 128),,, 1.0, f
 
-'' draw a semi-transparent, red circle to the image buffer
-Circle image_buffer, (32, 32), 28, RGBA(255, 0, 0, 128),,, 1.0, F
+'' Draw the image onto the screen using various blitting methods.
+put (120, 60), image, pset
+put (140, 80), image, alpha
 
-'' blit image buffer to screen
-Put (120, 60), image_buffer, PSet
-Put (140, 80), image_buffer, Alpha
+'' Destroy the image.
+imagedestroy image
 
-Sleep
-
-'' free image buffer memory
-ImageDestroy image_buffer
+sleep
 %%
 {{image class="center" title="Imagecreate example output" url="/images/imagecreate.png"}}
 
@@ -69,9 +66,9 @@ ImageDestroy image_buffer
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- ##[[KeyPgImageInfo ImageInfo]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##
+	- ##[[KeyPgImageInfo ImageInfo]]##
+	- ##[[KeyPgGetgraphics Get (Graphics)]]##
 	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

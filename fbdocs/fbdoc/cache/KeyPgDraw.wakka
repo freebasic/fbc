@@ -15,7 +15,7 @@ Statement for sequenced pixel plotting
 	The ##**Draw**## statement can be used to issue several drawing commands all at once; it is useful to quickly draw figures. The command string accepts the following commands:
 
 	Commands to plot pixels:
-	{{table columns="2" cellpadding="1" cells="Command;Description;###;Commands to plot pixels:;B;Optional prefix: move but do not draw.;N;Optional prefix: draw but do not move.;Mx,y;Move to specified screen location. if + or - precedes x, movement is relative to current cursor position.;U[n];Move n units up. If n is omitted, 1 is assumed.;D[n];Move n units down. If n is omitted, 1 is assumed.;L[n];Move n units left. If n is omitted, 1 is assumed.;R[n];Move n units right. If n is omitted, 1 is assumed.;E[n];Move n units up and right. If n is omitted, 1 is assumed.;F[n];Move n units down and right. If n is omitted, 1 is assumed.;G[n];Move n units down and left. If n is omitted, 1 is assumed.;H[n];Move n units up and left. If n is omitted, 1 is assumed.;###;Commands to color:;Cn;Changes current foreground color to n.;Pp,b;Flood fills region with border color b with color p.;###;Commands to scale and rotate:;Sn;Sets the current unit length, default is 4.  A unit length of 4 is equal to 1 pixel.;An;Rotate n*90 degrees (n ranges 0-3).;TAn;Rotate n degrees (n ranges 0-359);###;Extra commands:;Xp;Executes commands at address p."}}
+	{{table columns="2" cellpadding="1" cells="Command;Description;###;Commands to plot pixels:;B;Optional prefix: move but do not draw.;N;Optional prefix: draw but do not move.;M x,y;Move to specified screen location. if a '+' or '-' sign precedes x, movement is relative to current cursor position.  x's sign has no effect on the sign of y.;U [n];Move n units up. If n is omitted, 1 is assumed.;D [n];Move n units down. If n is omitted, 1 is assumed.;L [n];Move n units left. If n is omitted, 1 is assumed.;R [n];Move n units right. If n is omitted, 1 is assumed.;E [n];Move n units up and right. If n is omitted, 1 is assumed.;F [n];Move n units down and right. If n is omitted, 1 is assumed.;G [n];Move n units down and left. If n is omitted, 1 is assumed.;H [n];Move n units up and left. If n is omitted, 1 is assumed.;###;Commands to color:;C n;Changes current foreground color to n.;P p,b;PAINTs (flood fills) region of border color b with color p.;###;Commands to scale and rotate:;S n;Sets the current unit length, default is 4.  A unit length of 4 is equal to 1 pixel.;A n;Rotate n*90 degrees (n ranges 0-3).;TA n;Rotate n degrees (n ranges 0-359).;###;Extra commands:;X p;Executes commands at p, where p is a STRING PTR."}}
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/draw.bas"}}%%(freebasic)
@@ -63,7 +63,8 @@ sleep
 {{image class="center" title="Draw example output" url="/images/draw2.png"}}
 
 {{fbdoc item="diff"}}
-	- QB used the special pointer keyword VARPTR$ with the ##Xp## command.
+	- QB used the special pointer keyword VARPTR$ with the ##X p## command.
+	- FB does not currently allow sub-pixel movements: all movements are rounded to the nearest integer coordinate.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDrawString Draw String]]##

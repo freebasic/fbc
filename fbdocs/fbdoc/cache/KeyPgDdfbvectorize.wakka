@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="__FB_VECTORIZE__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_VECTORIZE__""
+##
+{{fbdoc item="desc"}}
+	Defined as the vectorisation level number set by the //[[CompilerOptvec -vec]]// command-line option.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbvectorize.bas"}}%%(freebasic)
+#if __FB_VECTORIZE__ = 2
+  ' ... instructions only for vectorization level 2...
+#else
+  ' ...
+#endif
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOptvec Compiler Option: -vec]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

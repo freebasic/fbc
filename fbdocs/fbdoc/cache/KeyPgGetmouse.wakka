@@ -20,20 +20,20 @@ Retrieves the status of the mouse pointing device
 		clip status
 
 {{fbdoc item="ret"}}
-	0 on success or 1 on failure.
+	##0## on success or ##1## on failure.
 
 {{fbdoc item="desc"}}
-	##**Getmouse**## retrieves the mouse position and buttons status; information is returned in the variables passed to this function by reference. If a mouse is not available, all variables will contain the -1 value. 
+	##**Getmouse**## retrieves the mouse position and buttons status; information is returned in the variables passed to this function by reference. If a mouse is not available, all variables will contain the ##-1## value. 
 	
-	If in console mode, the ##//x//## and ##//y//## coordinates are the character cell coordinates the mouse is currently on; the upper left corner of the screen is at coordinates 0, 0. If the mouse moves out of the console window, ##**Getmouse**## returns the last coordinate on the window that the mouse was on. 
+	If in console mode, the ##//x//## and ##//y//## coordinates are the character cell coordinates the mouse is currently on; the upper left corner of the screen is at coordinates ##0, 0##. If the mouse moves out of the console window, ##**Getmouse**## returns the last coordinate on the window that the mouse was on. 
 	
-	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics View]]## or ##[[KeyPgWindow Window]]## do not affect the coordinates returned by ##**Getmouse**##. If the mouse runs off the window, all values are set to -1.
+	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics View]]## or ##[[KeyPgWindow Window]]## do not affect the coordinates returned by ##**Getmouse**##. If the mouse runs off the window, all values are set to ##-1##.
 	
-	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. FreeBASIC may not always support mouse wheels for a given platform, in which case 0 is always returned.
+	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
 	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button / wheel is down.
 
-	##//Clip//## stores the mouse clipping status; if 1, the mouse is currently clipped to the graphics window; if 0, the mouse is not clipped.
+	##//Clip//## stores the mouse clipping status; if ##1##, the mouse is currently clipped to the graphics window; if ##0##, the mouse is not clipped.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)
@@ -63,15 +63,43 @@ DO
 LOOP WHILE INKEY = ""
 END
 %%
+{{fbdoc item="filename" value="examples/manual/input/getmouse2.bas"}}%%(freebasic)
+'Example 2: type-union-type structure
+type mouse
+	as integer res
+	as integer x, y, wheel, clip
+	union
+	    buttons as integer
+	    type
+	        left:1 as integer
+	        right:1 as integer
+	        middle:1 as integer
+	    end type
+	end union
+end type
+ 
+screen 11
+dim as mouse m
+
+do
+	m.res = getmouse( m.x, m.y, m.wheel, m.buttons, m.clip )
+	cls
+	print using "res = #"; m.res
+	print using "x = ###; y = ###; wheel = +###; clip = ##"; m.x; m.y; m.wheel; m.clip
+	print using "buttons = ##; left = #; middle = #; right = #"; m.buttons; m.left; m.middle; m.right
+	sleep 10, 1
+loop while inkey = ""
+%%
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="target"}}
-	- On DOS, the "clip" value has no relevance. The wheel and middle button will work if supported and enabled by the mouse driver - see [[FaqDOS]].
+	- On DOS, the "clip" value has no relevance.
+	- The wheel and middle button will work if supported and enabled by the mouse driver - see [[FaqDOS]].
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenres Screenres]]## setting graph mode by resolution

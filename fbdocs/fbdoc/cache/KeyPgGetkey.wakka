@@ -42,6 +42,7 @@ loop until foo = 27
 	- New to FreeBASIC
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgGetmouse GetMouse]]##
 	- ##[[KeyPgInkey Inkey]]##
 	- ##[[KeyPgInputnum Input()]]##
 	- ##[[KeyPgMultikey Multikey]]##

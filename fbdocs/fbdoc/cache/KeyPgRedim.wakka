@@ -27,9 +27,9 @@ Defines or resizes a variable-length array
 		##[[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
 		Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
 		If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
-	
-	- ##**Redim**## cannot be used on fixed-size arrays, i.e. arrays with constant bounds.  This includes arrays contained in UDTs (user-defined ##[[KeyPgType Type]]##s), because currently only fixed-size arrays are supported in UDTs.
-	
+
+	- ##**Redim**## cannot be used on fixed-size arrays - i.e. arrays with constant bounds made with ##[[KeyPgDim Dim]]##.  This includes arrays contained in UDTs (user-defined ##[[KeyPgType Type]]##s), because currently only fixed-size arrays are supported in UDTs.  This also includes fixed-length arrays passed as parameters in a function.  ""FreeBASIC"" cannot prevent you trying this at compile-time, but the results at run-time will be undefined.
+
 	- Using ##**Redim**## within a member procedure with an array that contains an instance of the object class is undefined, and will [hopefully] result in horrible crashes.
 
 {{fbdoc item="ex"}}
@@ -156,4 +156,3 @@ Print
 	- ##[[KeyPgVar Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}
-   

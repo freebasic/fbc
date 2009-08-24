@@ -7,7 +7,7 @@ Variable declaration and scope modifier
 {{fbdoc item="desc"}}
 	Declares a variable which is shared between code modules. A matching ##**Common**## statement must appear in all other code modules using the variable. 
 
-	The ##**Shared**## optional parameter makes the variable global so that it can be used inside sub's and functions, as well as at module level. ##**Common**## arrays are always variable-length, and must be defined with an empty parameter list (), and its dimensions set in a later ##[[KeyPgDim Dim]]## or ##[[KeyPgRedim Redim]]## statement.
+	The ##**Shared**## optional parameter makes the variable global so that it can be used inside ##[[KeyPgSub sub]]##s and ##[[KeyPgFunction function]]##s, as well as at module level. ##**Common**## arrays are always variable-length, and must be defined with an empty parameter list ##()##, and its dimensions set in a later ##[[KeyPgDim Dim]]## or ##[[KeyPgRedim Redim]]## statement.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/common1.bas"}}%%(freebasic)
@@ -42,7 +42,7 @@ Output:
 
 {{fbdoc item="diff"}}
 	- The arrays will be always variable-length.
-	- ##/blockname/## is not needed and must be removed because the order of declaration no longer matters, only the symbol names.
+	- ##//blockname//## is not needed and must be removed because the order of declaration no longer matters, only the symbol names.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

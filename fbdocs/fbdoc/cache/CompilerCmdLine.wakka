@@ -73,13 +73,16 @@ Using the **fbc** command-line.
 		=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
 			Set the target platform for cross compilation
 		=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
-			Set the floating point arithmetics unit (default: FPU)
+			Set the floating point arithmetics unit (default: ##FPU##)
+		=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
+			Select between fast and accurate floating-point operations (default: ##PRECISE##)
 		=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==
 			Set subsystem (##gui##, ##console##)
 		=={{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}==
 			Set stack size in kbytes (default: 1M)
-
-	{{fbdoc item="subsect" value="Miscellaneous"}}
+		=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
+			Set level of vector optimizations enabled by the compiler (default: ##0##)
+<<>>{{fbdoc item="subsect" value="Miscellaneous"}}
 		=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 			Do not delete the object file(s)
 		=={{fbdoc item="keyword" value="CompilerOptrupp|-R"}}==
@@ -87,7 +90,7 @@ Using the **fbc** command-line.
 		=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
 			Be verbose
 		=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
-			Show compiler version
+			Show compiler version (note: the compiler will display this info on the command line and quit without compiling or checking other parameters when this parameter is used)
 		=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 			Pass options to GAS (separated by commas)
 		=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
@@ -96,7 +99,8 @@ Using the **fbc** command-line.
 			Sets the compiler backend (default is 'gas').
 		=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
 			Sets miscellaneous or experimental options.
-<<>>{{fbdoc item="section" value="Linking options"}}
+
+	{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
 		=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==
 			Add an object file to linker's list

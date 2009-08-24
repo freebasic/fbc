@@ -5,7 +5,7 @@ Returns a random [[KeyPgDouble double]] precision number in the range ##[0, 1)##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rnd** ( [[KeyPgByval byval]] //seed// [[KeyPgAs as]] [[KeyPgSingle single]] = 1.0 ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Rnd** ( //seed// )
+	//result// = **Rnd**( //seed// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

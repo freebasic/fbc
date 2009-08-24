@@ -81,6 +81,8 @@ Keywords that work with procedures.
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous"}}
 	=={{fbdoc item="keyword" value="KeyPgCall|Call"}}==
 		Invokes a procedure.
+	=={{fbdoc item="keyword" value="KeyPgNaked|Naked"}}==
+		Specifies that a function body is not to be given any prolog/epilog code
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

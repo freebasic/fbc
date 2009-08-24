@@ -5,7 +5,7 @@ Gets the most-significant word (MSW, or //hi-word//) of an ##[[KeyPgUinteger Uin
 	[[KeyPgPpdefine #define]] **Hiword**( //expr// ) ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpShiftRight shr]] 16 )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Hiword**(//expr//)
+	//result// = **Hiword**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##

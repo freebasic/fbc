@@ -57,9 +57,10 @@ Destructor2() called
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- [[KeyPgConstructor Constructor (Class)]]
 	- [[KeyPgModuleDestructor Destructor (Module)]]
 	- [[KeyPgSub Sub]]
 

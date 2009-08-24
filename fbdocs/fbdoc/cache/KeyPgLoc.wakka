@@ -5,7 +5,7 @@ Returns the file position where the last file read/write was performed
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Loc** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Loc** ( //filenum// )
+	//result// = **Loc**( //filenum// )
 ##
 {{fbdoc item="param"}}
 	##//filenum//##

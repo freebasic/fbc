@@ -5,7 +5,7 @@ Returns the sine of a number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Sin** ( //number// )
+	//result// = **Sin**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

@@ -2,7 +2,7 @@
 Sets the printable area of the screen
 
 {{fbdoc item="syntax"}}##
-	**View Print** //firstrow// **To** //lastrow//
+	**View Print** [ //firstrow// **To** //lastrow// ]
 ##
 {{fbdoc item="param"}}
 	##//firstrow//##
@@ -11,7 +11,8 @@ Sets the printable area of the screen
 		last row of print area
 
 {{fbdoc item="desc"}}
-	Sets the boundaries of the console screen text area to the lines starting at first up to and including last.  Lines are counted starting with 1.  The text cursor is moved to the beginning of the first line specified.
+	Sets the boundaries of the console screen text area to the lines starting at first up to and including last.  Lines are counted starting with ##1##.  The text cursor is moved to the beginning of the first line specified.
+	If the row numbers are omitted, the entire screen is used as the text area.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/view.bas"}}%%(freebasic)
@@ -22,8 +23,7 @@ Color , 1
 Cls 
 %%
 
-**View Print** can be used in graphics mode to avoid the text output overwriting graphics.
-{{fbdoc item="ex"}}
+##**View Print**## can be used in graphics mode to avoid the text output overwriting graphics:
 {{fbdoc item="filename" value="examples/manual/console/view-gfx.bas"}}%%(freebasic)
 screen 12
 dim as integer R,Y,x,y1
@@ -49,6 +49,7 @@ loop until len(inkey)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCls Cls]]##
+	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgColor Color]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

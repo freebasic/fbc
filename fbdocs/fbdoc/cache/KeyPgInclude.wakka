@@ -11,14 +11,15 @@ Preprocessor statement to include contents of another source file
 
 	The ##**once**## specifier tells the compiler to include the file only once even if it is included several times by the source code.
 
-	##[[KeyPgMetaInclude $Include]]## is an alternate form of ##**include**##, it exists for compatibility with QuickBasic. It is recommended to use ##**#include**## instead.
+	##[[KeyPgMetaInclude $Include]]## is an alternative form of ##**include**##, existing only for compatibility with ""QuickBasic"". It is recommended to use ##**#include**## instead.
 
-	The compiler will automatically convert path separator characters ( '**/**' and '**\**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
+	The compiler will automatically convert path separator characters ( '**##/##**' and '**##\##**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
 
 	For relative paths, or where no path is given at all, the include file is search for in the following order:
 	- Relative from the directory of the source file
 	- Relative from the current working directory
-	- Relative from addition directories specified with the //-i// command line option
+	- Relative from addition directories specified with the //[[CompilerOpti -i]]// command line option
+	- The include folder of the ""FreeBASIC"" installation (##**""FreeBASIC""\inc**##, where ##**""FreeBASIC""**## is the folder where the ##**fbc**## executable is located)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/header.bi"}}%%(freebasic)
@@ -27,17 +28,19 @@ TYPE FooType
 	Bar AS BYTE
 	Barbeque AS BYTE 
 END TYPE
-DIM Foo as FooType
 %%
 
 {{fbdoc item="filename" value="examples/manual/prepro/include.bas"}}%%(freebasic)
 ' main.bas file
 #INCLUDE "header.bi"
+
+DIM Foo AS FooType
+
 Foo.Bar = 1
 Foo.Barbeque = 2
 %%
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##

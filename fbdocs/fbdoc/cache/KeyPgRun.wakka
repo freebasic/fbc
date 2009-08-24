@@ -2,7 +2,7 @@
 Transfers execution to an external program
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = ##"####"## ) [[KeyPgAs as]] [[KeyPgString integer]]
+	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = "####" ) [[KeyPgAs as]] [[KeyPgString integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Run**( //program// [, //arguments// ] )
@@ -14,7 +14,7 @@ Transfers execution to an external program
 		The command-line arguments to be passed to the program.
 
 {{fbdoc item="ret"}}
-	Returns negative one (-1) if the program could not be executed.
+	Returns negative one (##-1##) if the program could not be executed.
 
 {{fbdoc item="desc"}}
 	Transfers control over to an external program. When the program exits, execution will return to the system.
@@ -30,11 +30,11 @@ Dim result As Integer = Run("program.exe")
 
 {{fbdoc item="target"}}
 	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being run may be case sensitive for its command line parameters.
-	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+	- Path separators in Linux are forward slashes ("##/##"). Windows uses backward slashes ("##\##") although some versions of Windows allow forward slashes.  DOS uses backward slashes. 
 
 {{fbdoc item="diff"}}
-	- ##**Run**## needs the full executable name, including extension (##.exe##) on platforms that have one (Win32, DOS).
-	- Returning an error code is new to FreeBASIC.
+	- ##**Run**## needs the full executable name, including extension (##.exe##) on platforms that have one (""Win32"", DOS).
+	- Returning an error code is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgChain Chain]]##

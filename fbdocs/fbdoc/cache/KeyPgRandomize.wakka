@@ -9,7 +9,7 @@ Seeds the random number generator
 ##
 {{fbdoc item="param"}}
 	##//seed//##
-		A ##[[KeyPgDouble double]]## seed value for the random number generator.  If omitted or set to ##-1.0##, a value based on ##[[KeyPgTimer Timer]]## will be used instead.
+		A ##[[KeyPgDouble double]]## seed value for the random number generator.  If omitted, a value based on ##[[KeyPgTimer Timer]]## will be used instead.
 	##//algorithm//##
 		An ##[[KeyPgInteger integer]]## value to select the algorithm used.  If omitted, the default algorithm for the current [[CompilerDialects language dialect]] is used.
 
@@ -22,10 +22,10 @@ Seeds the random number generator
 		##**3**## - Uses the Mersenne Twister. This should be stable across all platforms, provides 32-bit granularity, and gives a high degree of randomness.
 		##**4**## - Uses a function that is designed to give the same random number sequences as QBASIC. This should be stable across all platforms, and provides 24-bit precision, with a low degree of randomness.
 		
-		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed.  If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer Timer]]##.  Omitting the seed parameter will use a value based on this.
-		##**Randomize** [[KeyPgTimer Timer]]## should not be called too frequently though, because for the non-QB algorithms the integer value is used, so the seed will only change once a second, and calling ##**Randomize**## with the same seed will reset it to the same sequence each time.
-		In versions of ""FreeBASIC"" after v0.20.0b, omitting the first parameter or setting it to ##-1.0## will make it use a value based on the timer that changes more than once every second, so it is recommended to use this over ##[[KeyPgTimer Timer]]##.
-		
+		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed.  If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer Timer]]##.  Omitting the ##//seed//## parameter will use a value based on this.
+		Note: using the ##[[KeyPgTimer Timer]]## value directly as a parameter will produce the same seed if used more than once in the same second.  However, it is generally not worth calling ##**Randomize**## twice with unpredictable seeds anyway, because the second sequence will be no more random than the first.  In most cases, the Mersenne twister should provide a sufficiently random sequence of numbers, without requiring reseeding between ##[[KeyPgRnd Rnd]]## calls.
+
+
 		When you call ##**Randomize**## with the QB compatible algorithm, part of the old seed is retained.  This means that if you call ##**Randomize**## several times with the same seed, you will **not** get the same sequence each time.  To get a specific sequence in QB compatible mode, set the seed by calling ##[[KeyPgRnd Rnd]]## with a negative parameter.
 
 {{fbdoc item="ex"}}

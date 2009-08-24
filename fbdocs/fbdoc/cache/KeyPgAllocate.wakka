@@ -2,13 +2,13 @@
 Allocates a block of memory from the free store
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** ( //size// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Allocate**( //size// )
+	//result// = **Allocate**( //count// )
 ##
 {{fbdoc item="param"}}
-	##//size//##
+	##//count//##
 		The size, in bytes, of the block of memory to allocate.
 
 {{fbdoc item="ret"}}

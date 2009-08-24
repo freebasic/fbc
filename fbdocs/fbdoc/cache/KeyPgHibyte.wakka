@@ -5,7 +5,7 @@ Gets the most-significant byte (MSB, or //hi-byte//) of the least-significant wo
 	[[KeyPgPpdefine #define]] **Hibyte**( //expr// ) ( ( [[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h0000FF00 ) [[KeyPgOpShiftRight shr]] 8 )
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Hibyte**(//expr//)
+	//result// = **Hibyte**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##

@@ -7,8 +7,12 @@
 '' --------
 
 Dim a As String
+
 Do
-Input "Input filename ";a
-If a="" Then Exit Do
-Open a For Input As #1
-Loop Until Err=0
+	Line Input "Input filename: ", a
+	If a = "" Then End
+	Open a For Input As #1
+Loop Until Err = 0
+
+Print "File " & a & " opened successfully"
+Close #1

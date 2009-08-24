@@ -6,12 +6,12 @@ Sets the math unit to be used for floating point arithmetics.
 ##
 {{fbdoc item="param"}}
 	##//type//##
-		The floating point unit: ##FPU## | ##SSE##.
+		The floating point unit: ##X87## | ##SSE##.
 
 {{fbdoc item="desc"}}
-	The ##-fpu## compiler option sets the math unit to be used for floating point arithmetics.  If this option is not specified, the default is ##-fpu FPU##.
+	The ##-fpu## compiler option sets the math unit to be used for floating point arithmetics.  If this option is not specified, the default is ##-fpu X87##.
 
-	##-fpu FPU## will generate floating point instructions for the 387.
+	##-fpu X87## will generate floating point instructions for the 387.
 
 	##-fpu SSE## will generate floating point instructions for SSE and SSE2 with some math support still done by the 387.
 
@@ -20,5 +20,6 @@ Sets the math unit to be used for floating point arithmetics.
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]
 	- ##[[KeyPgOption Option()]]##
+	- ##[[KeyPgDdfbfpu __FB_FPU__]]##
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

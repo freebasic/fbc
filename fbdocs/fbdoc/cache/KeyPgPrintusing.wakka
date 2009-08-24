@@ -8,12 +8,12 @@ Outputs formatted text to the screen
 	##//formatstring//##
 		Format string to use.
 	##//expressionlist//##
-		List of items to print.
+		List of items to print, separated by semi-colons.
 
 {{fbdoc item="desc"}}
-	Print to screen various expressions using a format determined by the ##//formatstring//## parameter. Internally, ##**Print Using**## uses a buffer size of 2048 bytes, while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
+	Print to screen various expressions using a format determined by the ##//formatstring//## parameter. Internally, ##**Print Using**## uses a buffer size of 2048 bytes: while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
 
-	If no expression list is given, nothing will be output (note that the semi-colon after the format string is still necessary, even if no expression list is given).
+	If no expression list is given, the format string will be printed up to the first special marker.  Note that the semi-colon after the format string is still necessary, even if no expression list is given.
 
 	The format string dictates how the expressions are to be formatted when output to the screen, indicated by the use of special marker characters. There are markers for formatting both string and numeric output:
 
@@ -23,36 +23,35 @@ Outputs formatted text to the screen
 
 	{{fbdoc item="section" value="Numeric formatting"}}
 
-		{{table columns="2" cellpadding="2" cells="Marker;Formatting;#;placeholder for a digit;.; placed near # indicates place for the decimal point;+;prints the sign of the number when placed to the left of numeric formatting;^^^^;prints exponential notation when placed to the right of numeric formatting"}}
+		{{table columns="2" cellpadding="2" cells="Marker;Formatting;#;placeholder for a digit;,; placed after integer digit indicates groups of 3 digits should be separated by commas;.; placed near # indicates place for the decimal point;+;prints the sign of the number when placed to the left of numeric formatting;^^^^;prints exponential notation when placed to the right of numeric formatting;&;prints a number intelligently, using the exact number of digits required (new to version 0.21.0b)"}}
 
-	All of the special marker characters can be escaped, or preceded, with the underscore character ##"_"##, allowing them to be printed directly (##"_!"## prints ##"!"##).
+	All of the special marker characters can be escaped, or preceded, with the underscore character ##"_"##, allowing them to be printed directly.  For example, ##"_!"## is printed as ##"!"##.
 
-	If a numerical value can't be formatted in the form indicated by the format string, the formatting is ignored and the number is printed preceded by the percent ##"%"## character. E.g., the number ##2E+200## with a ##//formatstring//## of " ""##"".""##"" " would be printed as ##"%2E+200"##.
+	If a numerical value doesn't fit in the form indicated by the format string, the formatting is ignored and the number is printed preceded by the percent ##"%"## character. E.g., the number ##1234## with a ##//formatstring//## of ##"""##.##"""## would be printed as ##"%1234.00"##.
 
 	All other characters within the format string are printed as they appear.
-
-	The ##**Using**## keyword is used with a different meaning with the ##[[KeyPgPalette Palette]]## graphics command
-	    
 
 {{fbdoc item="ex"}}
 
 {{fbdoc item="filename" value="examples/manual/console/print-using.bas"}}%%(freebasic)
 Print Using "The value is #.## seconds"; 1.019
-Print Using "The ASCII code for the pound sign (_#) is ###"; asc("#")
-Print Using "The last day in the year is ## \ \"; 31, "December"
+Print Using "The ASCII code for the pound sign (_#) is ###"; Asc("#")
+Print Using "The last day in the year is & \ \"; 31; "December"
 %%
 	will produce the output:
 
 %%The value is 1.02 seconds
-Number sign is # and its ASCII code is  35
+The ASCII code for the pound sign (#) is  35
 The last day in the year is 31 Dec%%
 
 {{fbdoc item="diff"}}
-	- In QB a not-to-be-formatted ##//expressionlist//## could be entered before the USING clause;
+	- QB didn't allow ##"&"## to be used for printing numbers.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint Print]]##
 	- ##[[KeyPgPrintusingPp Print # Using]]##
-	- ##[[KeyPgPalette Palette]]##
+	- ##[[KeyPgFormat Format]]##
+	- ##[[KeyPgUsing Using]]##
+	- ##[[KeyPgPalette Palette Using]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

@@ -18,6 +18,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbfpmode|__FB_FPMODE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbfpu|__FB_FPU__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
@@ -38,6 +40,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbvectorize|__FB_VECTORIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
@@ -322,6 +325,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
 {{fbdoc item="section" value="N"}}
+	- {{fbdoc item="keyword" value="KeyPgNaked|NAKED"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}

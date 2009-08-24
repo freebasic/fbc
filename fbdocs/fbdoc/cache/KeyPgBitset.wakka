@@ -5,7 +5,7 @@ Gets the value of an integer with a specified bit set.
 	[[KeyPgPpdefine #define]] **Bitset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpOr or]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Bitset**(//value//, //bit_number//)
+	//result// = **Bitset**( //value//, //bit_number// )
 ##
 {{fbdoc item="param"}}
 	##//value//##

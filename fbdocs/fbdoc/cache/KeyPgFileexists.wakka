@@ -2,16 +2,16 @@
 Tests the existence of a file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileExists""**( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileExists""** ( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
-	//result// = **""FileExists""** ( //filename// )
+	//result// = **""FileExists""**( //filename// )
 ##
 //or//
 ##
 	#include "vbcompat.bi"
-	//result// = **""FileExists""** ( //filename// )
+	//result// = **""FileExists""**( //filename// )
 ##
 {{fbdoc item="param"}}
 	##//filename//##

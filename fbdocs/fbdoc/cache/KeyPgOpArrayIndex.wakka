@@ -4,7 +4,7 @@ Returns a reference to an element in an array
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **()** ( //lhs//() [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]], ... ) [[KeyPgAs as]] //T//
 ##
-~&//Note that **##Operator ()## (Array index)** returns a reference.  As of 02.27.07, ""FreeBASIC"" syntax does not support returning references.  When it does, this syntax will need to be changed.//
+~&//Note that **##Operator ()## (Array index)** returns a reference. See [[CompilerFAQ Compiler FAQ]].//
 
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **(** //rhs// [, ...] **)**

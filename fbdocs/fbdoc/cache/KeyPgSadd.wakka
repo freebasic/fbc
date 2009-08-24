@@ -7,7 +7,7 @@ Returns a pointer to a string variable's data
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgZstring Zstring]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Sadd** ( //str// )
+	//result// = **Sadd**( //str// )
 ##
 {{fbdoc item="param"}}
 	##//str//##
@@ -21,22 +21,21 @@ Returns a pointer to a string variable's data
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/sadd.bas"}}%%(freebasic)
-'' Compile with -lang qb or fblite
+Dim s as String
 
-'$lang: "qb"
-
-Print SAdd(s$)
-s$ = "hello"
-Print SAdd(s$)
-s$ = "abcdefg, 1234567, 54321"
-Print SAdd(s$)
-Sleep
+Print SAdd(s)
+s = "hello"
+Print SAdd(s)
+s = "abcdefg, 1234567, 54321"
+Print SAdd(s)
 %%
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpStrptr Strptr]]##
 	- ##[[KeyPgOpVarptr Varptr]]##
+	- ##[[KeyPgOpProcptr Procptr]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

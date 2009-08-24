@@ -5,7 +5,7 @@ Returns the integer part of a number, rounding towards zero
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Fix** ( //number// )
+	//result// = **Fix**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##

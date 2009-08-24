@@ -13,7 +13,7 @@ Sets the position of the next read/write operation on a file
 {{fbdoc item="desc"}}
 	Sets the position at which the next read or write operation on a file will occur.
 
-	The position is given in records if the file was opened in ##[[KeyPgRandom Random]]## access mode, in bytes in any other case. The position is 1 based, the first record of a file is at position 1.
+	The position is given in records if the file was opened in ##[[KeyPgRandom Random]]## access mode, in bytes in any other case. The position is 1 based -- the first record of a file is at position 1.
 
 	The ##[[KeyPgSeekreturn Seek]]## function is used to get the position of the next read or write operation.
 

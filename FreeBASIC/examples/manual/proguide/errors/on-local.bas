@@ -16,6 +16,7 @@ Sleep
 Sub foo
 	
 	Dim filename As String
+	Dim errmsg As String
 	filename = ""
 	On Local Error Goto fail
   Open filename For Input Access Read As #1
@@ -24,6 +25,9 @@ Sub foo
 	Exit Sub
 	
   fail:
-  Print ("Error " & Err & " in function " & *Erfn & " on line " & Erl)
+  errmsg = "Error " & Err & _
+	       " in function " & *Erfn & _
+	       " on line " & Erl
+  Print errmsg
 	
 End Sub

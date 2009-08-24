@@ -7,9 +7,7 @@
 '' --------
 
   '' WINDOWS ONLY EXAMPLE! - We just set the graphics method to use
-  '' GDI rather than OpenGL, DirectX, or X Driver.
-  '' Try changing this to OpenGL or DirectX On Windows
-  '' Or xlib on Linux
+  '' GDI rather than DirectX.
   '' You may note a difference in FPS.
 SetEnviron("fbgfx=GDI")
 

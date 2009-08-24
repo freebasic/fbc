@@ -6,6 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgErrorHandling
 '' --------
 
+Dim As Integer e
 Open "xzxwz.zwz" For Input As #1
-Print Err
+e = Err
+Print e
 Sleep

@@ -5,7 +5,7 @@ Returns the sign part of a number
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sgn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Sgn** ( //number// )
+	//result// = **Sgn**( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
