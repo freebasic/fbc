@@ -44,7 +44,8 @@ print point(20,20)
 12
 %%
 {{fbdoc item="diff"}}
-	- None, in the QB-compatible ##[[KeyPgScreengraphics Screen]]## modes. In SVGA modes, it returns an RGB value
+	- ##//buffer//## is new to ""FreeBASIC""
+	- In SVGA modes, a 32-bit RGB value is returned
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPset Pset]]##

@@ -44,7 +44,7 @@ End Function
 	- On Linux systems, //stdcall// procedures are the same as //cdecl// procedures (//see [[KeyPgCdecl Cdecl]], [[KeyPgExternBlock Extern "C"]]//), except that variadic procedures are still not allowed.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgPascal Pascal]], [[KeyPgCdecl Cdecl]]

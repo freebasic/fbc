@@ -24,10 +24,9 @@ print helloworld
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[CatPgPreProcess Preprocessor]]
 
 {{fbdoc item="back" value="CatPgOpPrepro|Preprocessor Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

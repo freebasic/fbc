@@ -68,9 +68,9 @@ sleep
 {{image class="center" title="Circle example output" url="/images/circle.png"}}
 
 {{fbdoc item="diff"}}
-	- As the FreeBASIC implementation obviously uses a different algorithm for ellipse/arc drawing than QB, the result may not be equal to QB for every pixel.
-	- The F flag to draw filled circles/ellipses is new in FreeBASIC.
-	- ##//target//## new to FreeBASIC
+	- ##//target//## is new to ""FreeBASIC""
+	- The ""FreeBASIC"" implementation uses a different algorithm for ellipse/arc drawing than QB, so the result may not be equal to QB for every pixel.
+	- The F flag to draw filled circles/ellipses is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##

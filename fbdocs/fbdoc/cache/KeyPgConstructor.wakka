@@ -145,7 +145,7 @@ print "  x4 = "; x4
 	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Class]]##

@@ -26,7 +26,7 @@ Naming conventions for FreeBASIC symbols.
 	- Periods in symbol names are only supported in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
-	- Support for the underscore character (##_##) in symbol names is new to FreeBASIC.
+	- Support for the underscore character (##_##) in symbol names is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- [[ProPgVariables Variables]]

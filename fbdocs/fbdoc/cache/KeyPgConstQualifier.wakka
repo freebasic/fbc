@@ -143,7 +143,7 @@ foo( y )
 '' called 'foo( byref n as const integer )'
 %%
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgConst Const]]##

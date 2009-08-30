@@ -33,7 +33,7 @@ Print "x ="; x; ", "; "y ="; y
 	- Explicit SCOPE..END SCOPE blocks are not available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

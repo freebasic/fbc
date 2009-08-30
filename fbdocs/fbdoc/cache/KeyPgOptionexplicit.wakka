@@ -23,7 +23,7 @@ a = 1                       ' ..or this statement will fail to compile.
 	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
-	-New to FreeBASIC
+	-New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]##

@@ -48,7 +48,7 @@ myVariable.number = 69
 	- Available only in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVisPublic Public:]]## (Access Control)

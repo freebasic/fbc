@@ -30,7 +30,7 @@ printf("%d * %d = %d\r\n", a, b, a * b)
 	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptionescape __FB_OPTION_ESCAPE__]]##
@@ -39,4 +39,3 @@ printf("%d * %d = %d\r\n", a, b, a * b)
 	- [[ProPgLiterals Literals]]
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}
-   

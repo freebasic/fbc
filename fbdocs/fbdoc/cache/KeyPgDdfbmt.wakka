@@ -19,7 +19,7 @@ Intrinsic define (macro value) set by the compiler
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##

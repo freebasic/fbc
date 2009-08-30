@@ -78,7 +78,7 @@ loop
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencopy""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC. QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.
+	- New to ""FreeBASIC"". QB had ##[[KeyPgPcopy Pcopy]]## to do the same function.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##

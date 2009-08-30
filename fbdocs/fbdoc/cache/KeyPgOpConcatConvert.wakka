@@ -40,7 +40,7 @@ The result is: 124.3
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgOpConcat Operator + (String concatenation)]]

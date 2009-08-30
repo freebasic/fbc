@@ -49,7 +49,7 @@ The Binary representation of the LSW Is    1111111111111111
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__LOWORD""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLoByte Lobyte]]##

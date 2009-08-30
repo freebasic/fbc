@@ -42,7 +42,7 @@ Dim b As /' can comment in here also '/    Integer
 %%
 
 {{fbdoc item="diff"}}
-	- Multiline comments new to FreeBASIC version 0.16
+	- Multiline comments are new to ""FreeBASIC"" version 0.16
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpif #if]]##

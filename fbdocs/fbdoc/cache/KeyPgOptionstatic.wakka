@@ -26,7 +26,7 @@ Dim bar(100) As Integer			' declares a fixed-length array
 	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgMetaDynamic $Dynamic]]##

@@ -50,7 +50,7 @@ print "the Unicode of the second char of " & a & " is: " & asc(a)
 	- DOS does not support the wide-character string version of ##**ASC**##.
 
 {{fbdoc item="diff"}}
-	- The optional ##//position//## argument is new to FreeBASIC.
+	- The optional ##//position//## argument is new to ""FreeBASIC"".
 	- QB does not support the wide-character string version of ##**ASC**##
 
 {{fbdoc item="see"}}

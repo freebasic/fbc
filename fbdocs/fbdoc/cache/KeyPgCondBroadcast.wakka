@@ -25,7 +25,7 @@ Restarts all threads ##[[KeyPgCondWait Condwait]]##ing for the handle
 	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

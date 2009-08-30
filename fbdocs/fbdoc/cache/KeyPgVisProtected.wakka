@@ -31,7 +31,7 @@ Specifies protected member access control in a ##[[KeyPgType Type]]## or ##[[Key
 	- Available only in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass Class]]##

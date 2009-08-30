@@ -35,7 +35,7 @@ print !"4.\tascii char   (\\65): \65"
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgOpPpNoescape Operator $ (Non-Escaped String Literal)]]

@@ -125,9 +125,9 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- The QB version could not draw onto a ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer.
-	- In QB, the fill pattern was always 8-bits wide, and the height was the length of the string (up to 64). In FreeBASIC, the fill pattern is 8 pixels wide, independent of the color depth, and the height is always 8.
-	- The background color parameter supported by QB is not supported by the FreeBASIC version.
+	- ##//target//## is new to ""FreeBASIC""
+	- In QB, the fill pattern was always 8-bits wide, and the height was the length of the string (up to 64). In FreeBASIC, the fill pattern is 8 pixels wide, independent of the color depth, and the height is always 8
+	- The background color parameter supported by QB is not supported by the ""FreeBASIC"" version
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreengraphics Screen]]##

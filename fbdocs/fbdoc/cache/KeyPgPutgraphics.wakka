@@ -162,11 +162,11 @@ end function
 {{image class="center" title="Put example output" url="/images/putgfx2.png"}}
 
 {{fbdoc item="diff"}}
-	- FB uses a different image format internally, which is unsupported by QB.
-	- The ##TRANS##, ##ALPHA##, ##ADD## and ##CUSTOM## methods are new to ""FreeBASIC"".
-	- In QB, the destination was always the screen.
-	- QB throws a run-time error instead of clipping out of bounds images.
-	- In QB, only arrays can be specified as source images.
+	- ##//target//## is new to ""FreeBASIC""
+	- The ##TRANS##, ##ALPHA##, ##ADD## and ##CUSTOM## methods are new to ""FreeBASIC""
+	- FB uses a different image format internally, which is unsupported by QB
+	- QB throws a run-time error instead of clipping out-of-bounds images
+	- In QB, only arrays can be specified as source images
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutfileio Put (File I/O)]]##

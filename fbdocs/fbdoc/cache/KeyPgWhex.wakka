@@ -54,7 +54,7 @@ print Hex(54321, 5)
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Whex""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC.
+	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgHex Hex]]##

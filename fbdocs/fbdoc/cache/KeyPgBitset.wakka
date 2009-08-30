@@ -36,7 +36,7 @@ print hex(bitset(1ull, 63))
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC.
+	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgBit Bit]]##

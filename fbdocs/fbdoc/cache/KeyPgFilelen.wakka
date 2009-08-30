@@ -32,7 +32,7 @@ length = FILELEN("file.txt")
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC.  Existed in Visual Basic.
+	- New to ""FreeBASIC"".  Existed in Visual Basic.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLof Lof]]##

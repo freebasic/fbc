@@ -38,7 +38,7 @@ SLEEP
 %%
 
 {{fbdoc item="diff"}}
-	- ##//target//## new to FreeBASIC
+	- ##//target//## is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPset PSet]]##

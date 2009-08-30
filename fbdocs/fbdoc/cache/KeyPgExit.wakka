@@ -43,7 +43,7 @@ Next i
 %%
 
 {{fbdoc item="diff"}}
-	- EXIT WHILE and EXIT SELECT are New to FreeBASIC
+	- EXIT WHILE and EXIT SELECT are new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##

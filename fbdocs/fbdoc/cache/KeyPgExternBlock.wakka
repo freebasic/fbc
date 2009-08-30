@@ -43,7 +43,7 @@ end extern
 	- ##**Extern**## blocks are only available in the //[[CompilerOptlang -lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="target"}}
 	- In Linux platforms, ##**Extern "Windows"**## blocks never append a ##"@//N//"## suffix to procedure names.
@@ -54,4 +54,3 @@ end extern
 	- ##[[KeyPgExtern Extern]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}
-   

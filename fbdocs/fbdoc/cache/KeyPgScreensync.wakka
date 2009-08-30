@@ -35,7 +35,7 @@ LOOP UNTIL INKEY <> ""
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screensync""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC. 
+	- New to ""FreeBASIC"". 
 	- QBasic used WAIT &H3DA,8 for this purpose.
 
 {{fbdoc item="see"}}

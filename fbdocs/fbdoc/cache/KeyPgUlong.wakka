@@ -22,7 +22,7 @@ Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ulong""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLong Long]]##

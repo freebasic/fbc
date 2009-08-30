@@ -68,7 +68,7 @@ close #1
 {{fbdoc item="diff"}}
 	- None for ##//returntype//## = 1
 	- QBasic and 16-bit Visual Basic returned DOS file handle for ##//returntype//## = 2
-	- ##//returntype//## = 3 is new to FreeBASIC
+	- ##//returntype//## = 3 is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

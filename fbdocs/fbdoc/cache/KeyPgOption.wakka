@@ -30,7 +30,7 @@ declare function ValueInStZero () as double option("fpu")
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[CompilerOptfpu Compiler Option: -fpu]]

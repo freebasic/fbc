@@ -108,7 +108,7 @@ conddestroy hcondstart
 	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondBroadcast Condbroadcast]]##

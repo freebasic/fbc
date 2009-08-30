@@ -63,6 +63,7 @@ sleep
 {{image class="center" title="Draw example output" url="/images/draw2.png"}}
 
 {{fbdoc item="diff"}}
+	- ##//target//## is new to ""FreeBASIC""
 	- QB used the special pointer keyword VARPTR$ with the ##X p## command.
 	- FB does not currently allow sub-pixel movements: all movements are rounded to the nearest integer coordinate.
 

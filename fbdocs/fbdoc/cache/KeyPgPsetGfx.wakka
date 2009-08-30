@@ -39,7 +39,7 @@ sleep
 %%
 {{image class="center" title="Put PSet example output" url="/images/putpset.png"}}
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPset PSet]]##

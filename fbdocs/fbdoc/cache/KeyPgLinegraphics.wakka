@@ -58,7 +58,7 @@ Sleep
 %%
 
 {{fbdoc item="diff"}}
-	- QB LINE could not draw onto GET/PUT buffers.
+	- ##//target//## is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgCircle Circle]]

@@ -13,6 +13,6 @@ Intrinsic define (macro string) set by the compiler
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

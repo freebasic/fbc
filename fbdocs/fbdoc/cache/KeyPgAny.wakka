@@ -80,7 +80,7 @@ End Sub
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- Pointers and initializers are new to FreeBASIC.
+	- Pointers and initializers are new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##

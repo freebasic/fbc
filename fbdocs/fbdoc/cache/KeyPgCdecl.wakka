@@ -26,7 +26,7 @@ Declare Function strcpy cdecl Alias "strcpy" (ByVal dest As ZString Ptr, ByVal s
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgPascal Pascal]], [[KeyPgStdcall Stdcall]]

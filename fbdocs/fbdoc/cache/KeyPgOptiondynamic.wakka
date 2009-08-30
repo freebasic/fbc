@@ -25,7 +25,7 @@ ReDim bar(199) As Integer   ' resize the array
 	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]##

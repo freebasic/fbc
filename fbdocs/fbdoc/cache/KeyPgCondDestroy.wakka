@@ -24,7 +24,7 @@ Destroys a multi-threading conditional variable when it is no more needed
 	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCondCreate Condcreate]]##

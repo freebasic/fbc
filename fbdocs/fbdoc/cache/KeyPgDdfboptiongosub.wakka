@@ -23,7 +23,7 @@ Intrinsic define (macro value) set by the compiler
 	- Defaults to ##-1## in the //[[CompilerOptlang -lang qb]]// dialect and ##0## in all other dialects.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgOptiongosub Option Gosub]]##

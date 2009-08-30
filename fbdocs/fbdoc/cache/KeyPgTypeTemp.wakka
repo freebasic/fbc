@@ -99,7 +99,7 @@ test( type<U>( 1 ) )
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType Type...End Type]]##

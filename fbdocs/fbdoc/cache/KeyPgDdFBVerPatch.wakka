@@ -21,7 +21,7 @@ Print "Welcome to FreeBASIC ";fbMajorVersion;".";fbMinorVersion;" , Revision ";f
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
 	- ##[[KeyPgDdFBVerMajor __FB_VER_MAJOR__]]##

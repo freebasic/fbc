@@ -34,10 +34,9 @@ Dim MyVar(2) As mytype => _
 	For module-level, static, or global variables, initialized values must be constant expressions.  FreeBASIC will report a compile-time error if otherwise.
 
 {{fbdoc item="diff"}}
-	- Variable Initializers are new to FreeBASIC
+	- Variable Initializers are new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

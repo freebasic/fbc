@@ -55,7 +55,7 @@ Forms.AdjustPoint( pt2, 1, 1 )
 	- Namespaces are not supported in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgUsing Using (Namespaces)]]

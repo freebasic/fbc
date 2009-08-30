@@ -12,7 +12,7 @@ type listnode
 	as listnode ptr pPrev
 end type
 %%
-As a side note, if whoever has access to these scripts would like to update it so it contains the keywords new to FreeBASIC (such as ptr), feel free to :) Also, LIST doesn't appear to be an FB keyword (correct me if I'm wrong).
+As a side note, if whoever has access to these scripts would like to update it so it contains the keywords new to ""FreeBASIC"" (such as ptr), feel free to :) Also, LIST doesn't appear to be an FB keyword (correct me if I'm wrong).
 
 This structure contains three pointers. The first is a pointer to anything (Any Ptr), that means that you can store strings, integers, characters, even user defined types and unions. But it also means that you must pass a pointer. You can obtain a pointer by using the Allocate (or CAllocate) function.
 The next two pointers are pointers to listnodes, that is, you are technically allowed to do this:

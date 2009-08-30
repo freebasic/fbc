@@ -45,7 +45,7 @@ Print2( "Hello", "World" )
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##

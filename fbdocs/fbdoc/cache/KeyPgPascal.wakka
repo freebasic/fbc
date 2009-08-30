@@ -25,7 +25,7 @@ Declare Function MyFunc pascal Alias "MyFunc" (MyParm As Integer) As Integer
 %%
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgCdecl Cdecl]], [[KeyPgStdcall Stdcall]]

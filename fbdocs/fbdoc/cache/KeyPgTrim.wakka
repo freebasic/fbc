@@ -51,11 +51,10 @@ Print "'" + trim(s2, any "Ba") + "'"
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Trim""**##.
 
 {{fbdoc item="diff"}}
-	- New to FreeBASIC
+	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
 	- [[KeyPgLtrim Ltrim]] 
 	- [[KeyPgRtrim Rtrim]]
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
-   
