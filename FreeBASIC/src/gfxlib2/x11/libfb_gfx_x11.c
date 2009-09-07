@@ -293,14 +293,12 @@ static void *window_thread(void *arg)
 					}
 					break;
 				
-				/* Dead Code? The window is created without a ClientMessage attribute. - GOK
 				case ClientMessage:
 					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
 						fb_hPostKey(KEY_QUIT);
 						e.type = EVENT_WINDOW_CLOSE;
 					}
 					break;
-				*/
 			}
 			if (e.type)
 				fb_hPostEvent(&e);
