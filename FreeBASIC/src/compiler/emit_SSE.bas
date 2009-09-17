@@ -119,34 +119,8 @@ type EMITDATATYPE
 	mname			as zstring * 11+1
 end type
 
-	'' same order as FB_DATATYPE
-	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
-	{ _
-		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
-		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
-		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _	'' long
-		( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, 2, "dword ptr" ), _   '' ulong
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
-		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
-		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
-		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
-		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' struct
-		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
-		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
-		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ) _	'' pointer
-	}
+
+extern dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE
 
 const EMIT_MAXRNAMES  = REG_MAXREGS
 const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
@@ -1864,7 +1838,7 @@ private sub _emitNEGF_SSE _
 	end if
 	sym->var_.align = 16
 
-	hPrepOperand( tempVreg, src )
+	hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 
 	if( ddsize > 4 ) then
 		outp "xorpd " + dst + COMMA + src
@@ -1943,7 +1917,7 @@ private sub _emitABSF_SSE _
 	end if
 	sym->var_.align = 16
 
-	hPrepOperand( tempVreg, src )
+	hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 
 	if( ddsize > 4 ) then
 		outp "andpd " + dst + COMMA + src
@@ -1988,13 +1962,13 @@ private sub _emitSGNF_SSE _
 		sym = symbAllocLongIntConst(&h7FFFFFFFFFFFFFFF, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
-		hPrepOperand( tempVreg, src )
+		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 		outp "orpd " + dst + COMMA + src
 
 		sym = symbAllocLongIntConst(&hBFF0000000000000, FB_DATATYPE_ULONGINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_ULONGINT, NULL, sym, symbGetOfs( sym ) )
-		hPrepOperand( tempVreg, src )
+		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 		outp "andpd xmm7" + COMMA + src
 
 		outp "andpd " + dst + COMMA + "xmm7"
@@ -2005,14 +1979,14 @@ private sub _emitSGNF_SSE _
 		sym = symbAllocIntConst(&h7FFFFFFF, FB_DATATYPE_UINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_UINT, NULL, sym, symbGetOfs( sym ) )
-		hPrepOperand( tempVreg, src )
+		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
 		outp "orps " + dst + COMMA + src		'' set bits 31-0, sign is unchanged"
 
 		sym = symbAllocIntConst(&hBF800000, FB_DATATYPE_UINT)
 		sym->var_.align = 16
 		tempVreg = irAllocVRVAR( FB_DATATYPE_UINT, NULL, sym, symbGetOfs( sym ) )
-		hPrepOperand( tempVreg, src )
-		outp "andps xmm7" + COMMA + src		'' load -1.0f, kill if == 0.0f"
+		hPrepOperand( tempVreg, src, FB_DATATYPE_XMMWORD )
+		outp "andps xmm7" + COMMA + src			'' load -1.0f, kill if == 0.0f"
 
 		outp "andps " + dst + COMMA + "xmm7"	'' get +/-1.0f or 0.0f"
 	end if
@@ -2145,7 +2119,7 @@ if( iscos = FALSE ) then
 	outp "and		dword ptr [esp], 0x80000000"
 end if
 
-	hPrepOperand( vReg_invSignBitMask, src )
+	hPrepOperand( vReg_invSignBitMask, src, FB_DATATYPE_XMMWORD )
 	outp "andps	" + dst + COMMA + src
 
 if( iscos = TRUE ) then
@@ -2722,7 +2696,7 @@ private sub _emitFLOOR_SSE _
 	sym->var_.align = 16
 
 	hPrepOperand( dvreg, dst )
-	hPrepOperand( vreg, neg1 )
+	hPrepOperand( vreg, neg1, FB_DATATYPE_XMMWORD )
 
 	outp "sub esp, 8"
 
@@ -2795,8 +2769,8 @@ private sub _emitFIX_SSE _
 	absval_sym->var_.align = 16
 
 	hPrepOperand( dvreg, dst )
-	hPrepOperand( neg1_vreg, neg1 )
-	hPrepOperand( absval_vreg, absval )
+	hPrepOperand( neg1_vreg, neg1, FB_DATATYPE_XMMWORD )
+	hPrepOperand( absval_vreg, absval, FB_DATATYPE_XMMWORD )
 
 	outp "sub esp" + COMMA + str( ddsize + 8 )
 
@@ -2876,8 +2850,8 @@ private sub _emitFRAC_SSE _
 	absval_sym->var_.align = 16
 
 	hPrepOperand( dvreg, dst )
-	hPrepOperand( neg1_vreg, neg1 )
-	hPrepOperand( absval_vreg, absval )
+	hPrepOperand( neg1_vreg, neg1, FB_DATATYPE_XMMWORD )
+	hPrepOperand( absval_vreg, absval, FB_DATATYPE_XMMWORD )
 
 	outp "sub esp" + COMMA + str( ddsize+8 )
 
@@ -2911,7 +2885,7 @@ private sub _emitFRAC_SSE _
 	outp "fistp qword ptr [esp]"
 	outp "cmpnles" + suffix + "xmm7" + COMMA + dst			'' f < 0 ? 1 : 0
 	outp "fild qword ptr [esp]"
-	outp "andps " + "xmm7" + COMMA + absval					'' f < 0 ? - : +
+	outp "andp" + suffix + "xmm7" + COMMA + absval					'' f < 0 ? - : +
 	outp "fstp " + dtypeTB(dvreg->dtype).mname + " [esp]"	'' round(f)
 	outp "subs" + suffix + dst + COMMA + "[esp]"			'' difference = (f - round(f))
 	outp "xorp" + suffix + dst + COMMA + "xmm7"				'' f < 0 ? -difference : difference

@@ -115,6 +115,9 @@ declare function _init_opFnTB_SSE _
 	}
 
 	'' same order as FB_DATATYPE
+
+	extern dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE
+
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
 		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
@@ -140,7 +143,8 @@ declare function _init_opFnTB_SSE _
 		( FB_DATACLASS_INTEGER, 0  				, 0, "" 		), _	'' namespace
 		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
 		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ) _	'' pointer
+		( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , 2, "dword ptr" ), _	'' pointer
+		( FB_DATACLASS_INTEGER, 16              , 3, "xmmword ptr" ) _	'' 128-bit 
 	}
 
 const EMIT_MAXKEYWORDS = 600
