@@ -2368,7 +2368,8 @@ private sub _emitLOADF2L _
 	hPrepOperand64( dvreg, dst, aux )
 
 	'' signed?
-	if( symbIsSigned( dvreg->dtype ) ) then
+	'' (handle ULONGINT here too - workaround for #2082801)
+	if( symbIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
 
 		outp "sub esp, 8"
 
