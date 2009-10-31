@@ -161,7 +161,7 @@ private sub hULONG2DBL _
 
 	label = *hMakeTmpStr( )
 
-	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 4, TRUE )
+	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 0, TRUE )
 	ostr = "cmp " + aux + ", 0"
 
 	outp ostr

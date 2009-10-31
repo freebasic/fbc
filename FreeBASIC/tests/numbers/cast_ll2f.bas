@@ -9,10 +9,12 @@ namespace fbc_tests.numbers.cast_ll2f
 		dim as ulongint n = 1ull
 		dim as double x = 1.0
 
-		for i as integer = 0 to 62
+		for i as integer = 0 to 63
 
 			cu_assert_equal( cdbl(n), x )
-			cu_assert_equal( cdbl(n + c), x + c )
+			if n <= not c then
+				cu_assert_equal( cdbl(n + c), x + c )
+			end if
 			if n >= c then
 				cu_assert_equal( cdbl(n - c), x - c )
 			end if
@@ -37,14 +39,23 @@ namespace fbc_tests.numbers.cast_ll2f
 			cu_assert_equal( cdbl(n), x )
 			cu_assert_equal( cdbl(n + c), x + c )
 			cu_assert_equal( cdbl(n - c), x - c )
+
+			cu_assert_equal( cdbl(-n), -x )
+			cu_assert_equal( cdbl(-n + c), -x + c )
+			cu_assert_equal( cdbl(-n - c), -x - c )
+
 			if( i <= 52) then
 				cu_assert_equal( cdbl(n + 1), x + 1.0 )
 				cu_assert_equal( cdbl(n - 1), x - 1.0 )
+				cu_assert_equal( cdbl(-n + 1), -x + 1.0 )
+				cu_assert_equal( cdbl(-n - 1), -x - 1.0 )
 			end if
 
 			n shl= 1: x *= 2.0
 
 		next
+
+		cu_assert_equal( cdbl(n), -n )
 
 	end sub
 
