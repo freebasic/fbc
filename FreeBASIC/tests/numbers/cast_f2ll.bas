@@ -13,7 +13,9 @@ namespace fbc_tests.numbers.cast_f2ll
 
 			cu_assert_equal( culngint(x), n )
 			cu_assert_equal( culngint(x + c), n + c )
-			cu_assert_equal( culngint(x - c), n - c )
+			if n >= c then
+				cu_assert_equal( culngint(x - c), n - c )
+			end if
 			if( i <= 52) then
 				cu_assert_equal( culngint(x + 1.0), n + 1 )
 				cu_assert_equal( culngint(x - 1.0), n - 1 )

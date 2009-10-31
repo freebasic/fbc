@@ -157,18 +157,18 @@ private sub hULONG2DBL _
 		byval svreg as IRVREG ptr _
 	) static
 
-	dim as string label, src, ostr
+	dim as string label, aux, ostr
 
 	label = *hMakeTmpStr( )
 
-	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 4 )
-	ostr = "cmp " +  src + ", 0"
+	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 4, TRUE )
+	ostr = "cmp " + aux + ", 0"
 
 	outp ostr
 	ostr = "jns " + label
 	outp ostr
-	hPUSH( "16447" )
-	hPUSH( "-2147483648" )
+	hPUSH( "0x403f" )
+	hPUSH( "0x80000000" )
 	hPUSH( "0" )
 	outp "fldt [esp]"
 	outp "add esp, 12"

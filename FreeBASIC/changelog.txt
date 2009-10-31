@@ -94,7 +94,7 @@ Version 0.21.0 Beta:
 - #2806342 - symb can lose wstring literals - thanks to dkls for patch (counting_pine)
 - #2102417 - Scope/Dtor problem if no new-line after "LOOP"-statement (counting_pine)
 - Fixed incorrect pointer sizes being emitted in -fpu SSE code (brybry)
-- #2082801 - errors when converting ulongint numbers to floating-point (counting_pine)
+- #2082801 - errors when converting floating-point numbers to ulongint, or ulongint expressions to floating-point (counting_pine)
 
 
 Version 0.20.0 Beta:
