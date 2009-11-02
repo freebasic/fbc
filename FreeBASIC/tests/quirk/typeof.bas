@@ -35,7 +35,9 @@ namespace fbc_tests.quirk.typeof_
 		dim as string bar(2)
 		dim as const integer ptr ptr const ptr const ptr cp = 0
 		dim as typeof(cp) dp = 0
-		
+
+		dim as string * 10 s10
+
 		#if typeof(cp) <> typeof(dp)
 			CU_ASSERT(0)
 		#endif
@@ -57,7 +59,11 @@ namespace fbc_tests.quirk.typeof_
 		#if typeof(ret_int()) <> integer
 			CU_ASSERT(0)
 		#endif
-		
+
+		#if typeof(s10) <> typeof(string * 10)
+			CU_ASSERT(0)
+		#endif
+
 	end sub
 
 	sub typeof_expressions cdecl( )
