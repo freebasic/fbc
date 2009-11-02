@@ -58,6 +58,141 @@ private function hMathOp _
 end function
 
 '':::::
+private function hAtan2 _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr expr = any, expr2 = any
+
+	'' ATAN2( Expression ',' Expression )
+	lexSkipToken( )
+
+	hMatchLPRNT( )
+
+	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+
+	hMatchCOMMA( )
+
+	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
+
+	hMatchRPRNT( )
+
+	funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
+	if( funcexpr = NULL ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		else
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	end if
+
+	function = TRUE
+
+end function
+
+'':::::
+private function hLenSizeof _
+	( _
+		byval is_len as integer, _
+		byref funcexpr as ASTNODE ptr, _
+		byval isasm as integer = FALSE _
+	) as integer
+
+	dim as ASTNODE ptr expr = any, expr2 = any
+	dim as integer dtype = any, lgt = any, is_type = any
+	dim as FBSYMBOL ptr sym = any, subtype = any
+
+	'' LEN | SIZEOF
+	lexSkipToken( )
+
+	hMatchLPRNT( )
+
+	'' token after next is operator or '['? 
+	if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR _
+		or lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
+		'' disambiguation: types can't be followed by an operator
+		'' (note: can't check periods here, because it could be a namespace resolution)
+		is_type = FALSE
+	elseif( fbLangIsSet( FB_LANG_QB ) ) then
+		'' QB quirk: LEN() only takes expressions
+		if( is_len ) then
+			is_type = FALSE
+		else
+			'' SIZEOF()
+			is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+		end if
+	else
+		is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
+	end if
+
+	''
+	expr = NULL
+	if( is_type = FALSE ) then
+		fbSetCheckArray( FALSE )
+		expr = cExpression( )
+		if( expr = NULL ) then
+			fbSetCheckArray( TRUE )
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+
+		else
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( expr ) ) then
+				is_len = FALSE
+				expr2 = astGetLeft( expr )
+				astDelNode( expr )
+				expr = expr2
+			end if
+		end if
+
+		fbSetCheckArray( TRUE )
+	end if
+
+	'' string expressions with SIZEOF() are not allowed
+	if( expr <> NULL ) then
+		if( is_len = FALSE ) then
+			if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
+				if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
+					if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake an expr
+						astDelTree( expr )
+						expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					end if
+				end if
+			end if
+		end if
+	end if
+
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			hSkipUntil( CHAR_RPRNT, TRUE )
+		end if
+	else
+		if isasm = FALSE then
+			lexSkipToken( )
+		end if
+	end if
+
+	if( expr <> NULL ) then
+		funcexpr = rtlMathLen( expr, is_len )
+	else
+		funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
+	end if
+
+	function = TRUE
+
+end function
+
+'':::::
 '' cMathFunct	=	ABS( Expression )
 '' 				|   SGN( Expression )
 ''				|   FIX( Expression )
@@ -71,7 +206,7 @@ function cMathFunct _
 		byval isasm as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr expr = any, expr2 = any
+	dim as ASTNODE ptr expr = any, expr2 = any
 
 	function = FALSE
 
@@ -126,120 +261,14 @@ function cMathFunct _
 
 	'' ATAN2( Expression ',' Expression )
 	case FB_TK_ATAN2
-		lexSkipToken( )
-
-		hMatchLPRNT( )
-
-		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
-		hMatchCOMMA( )
-
-		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
-
-		hMatchRPRNT( )
-
-		funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
-		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-		end if
-
-		function = TRUE
+		function = hAtan2( funcexpr )
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
-	case FB_TK_LEN, FB_TK_SIZEOF
-    	dim as integer is_len = any, dtype = any, lgt = any, is_type = any
-    	dim as FBSYMBOL ptr sym = any, subtype = any
+	case FB_TK_LEN
+		function = hLenSizeof( TRUE, funcexpr )
 
-		is_len = (tk = FB_TK_LEN)
-		lexSkipToken( )
-
-		hMatchLPRNT( )
-
-		'' token after next is operator or '['? 
-		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR _
-			or lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
-			'' disambiguation: types can't be followed by an operator
-			'' (note: can't check periods here, because it could be a namespace resolution)
-			is_type = FALSE
-		elseif( fbLangIsSet( FB_LANG_QB ) ) then
-			'' QB quirk: LEN() only takes expressions
-			if( is_len ) then
-				is_type = FALSE
-			else
-				'' SIZEOF()
-				is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
-			end if
-		else
-			is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
-		end if
-
-		''
-		expr = NULL
-		if( is_type = FALSE ) then
-			fbSetCheckArray( FALSE )
-			expr = cExpression( )
-			if( expr = NULL ) then
-				fbSetCheckArray( TRUE )
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
-
-			else
-				'' ugly hack to deal with arrays w/o indexes
-				if( astIsNIDXARRAY( expr ) ) then
-					is_len = FALSE
-					expr2 = astGetLeft( expr )
-					astDelNode( expr )
-					expr = expr2
-				end if
-			end if
-
-			fbSetCheckArray( TRUE )
-		end if
-
-		'' string expressions with SIZEOF() are not allowed
-		if( expr <> NULL ) then
-			if( is_len = FALSE ) then
-				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
-					if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
-						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake an expr
-							astDelTree( expr )
-							expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-						end if
-					end if
-				end if
-			end if
-		end if
-
-		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-		else
-			if isasm = FALSE then
-				lexSkipToken( )
-			end if
-		end if
-
-		if( expr <> NULL ) then
-			funcexpr = rtlMathLen( expr, is_len )
-		else
-			funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
-		end if
-
-		function = TRUE
+	case FB_TK_SIZEOF
+		function = hLenSizeof( FALSE, funcexpr )
 
 	end select
 
