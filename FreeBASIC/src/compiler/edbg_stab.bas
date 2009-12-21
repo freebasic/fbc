@@ -1075,6 +1075,15 @@ sub edbgEmitGlobalVar _
     '' data type
     desc += hGetDataType( sym )
 
+	'' hack to fix the stabs data for global redim-arrays
+	'' see: http://www.freebasic.net/forum/viewtopic.php?p=117584#117584
+	#if 1 ''SARG BEGIN
+	'' workaround in case redim shared : use of back link !!!
+	if( right(desc, 2) = ":S" ) then
+		desc = *symbGetDBGName( sym->var_.desc.array ) + ":S" + hGetDataType( sym->var_.desc.array )
+	end if
+	#endif ''SARG END
+
     ''
     if( symbIsDynamic( sym ) ) then
     	sname = symbGetMangledName( symbGetArrayDescriptor( sym ) )
