@@ -1153,6 +1153,10 @@ private function hVregToStr _
 		dim as integer do_deref = any, add_plus = any
 
 		if( vreg->sym <> NULL ) then
+
+			'' !!!FIXME!!! offset or idx? pointer arith is done at the ast..
+			var is_ptrarith = ( vreg->ofs <> 0 or vreg->vidx <> NULL )
+
 			'' type casting?
 			if( vreg->dtype <> symbGetType( vreg->sym ) or _
 				vreg->subtype <> symbGetSubType( vreg->sym ) ) then
@@ -1172,7 +1176,11 @@ private function hVregToStr _
 				operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
 
 				if( is_ptr = FALSE ) then
-					operand += "*)(&"
+					operand += "*)("
+					if( is_ptrarith ) then
+						operand += "(ubyte *)"
+					end if
+					operand += "&"
 				else
 					operand += ")("
 				end if
@@ -1184,16 +1192,16 @@ private function hVregToStr _
 
 				' no & for array access..
 				if symbGetArrayDimensions( vreg->sym ) > 0 then
-					do_deref = 1
+					do_deref = TRUE
 					operand += "*("
-				elseif( do_deref ) then
-					operand += "*(&"
-				end if
-			end if
 
-			'' !!!FIXME!!! offset or idx? pointer arith is done at the ast..
-			if( vreg->ofs <> 0 or vreg->vidx <> NULL ) then
-				operand += "(ubyte *)"
+				elseif( do_deref ) then
+					operand += "*("
+					if( is_ptrarith ) then
+						operand += "(ubyte *)"
+					end if
+					operand += "&"
+				end if
 			end if
 
 			operand += *symbGetMangledName( vreg->sym )
@@ -1207,7 +1215,7 @@ private function hVregToStr _
 
 		if( vreg->vidx <> NULL ) then
 			if( add_plus ) then
-				operand += "+"
+				operand += " + "
 			end if
 			operand += hVregToStr( vreg->vidx )
 			add_plus = TRUE
@@ -1216,7 +1224,7 @@ private function hVregToStr _
 		'' offset?
 		if( vreg->ofs <> 0 ) then
 			if( add_plus ) then
-				operand += "+"
+				operand += " + "
 			end if
 			operand += str( vreg->ofs )
 		end if
