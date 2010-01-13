@@ -674,6 +674,7 @@ private function hDoPointerArith _
     '' calc len( *p )
     lgt = symbCalcLen( typeDeref( astGetDataType( p ) ), astGetSubType( p ) )
 
+
 	'' incomplete type?
 	if( lgt = 0 ) then
 		'' unless it's a void ptr.. pretend it's a byte ptr
@@ -718,8 +719,18 @@ private function hDoPointerArith _
     	'' multiple by length
 		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
-		'' do op
-		function = astNewBOP( op, p, e )
+		'' do op, taking care with the arith if the IR is high-level (ie: the gcc emitter)
+		var n = astNewBOP( op, _
+					   	   iif( irGetOption( IR_OPT_HIGHLEVEL ), _
+					   			astNewCONV( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, p ), _
+					   			p ), _
+					   	   e )
+
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			n = astNewCONV( astGetDataType( p ), astGetSubType( p ), n )
+		end if
+
+		function = n
 
     case else
     	'' allow AND and OR??
