@@ -204,10 +204,10 @@ private sub hProcFlush _
 		symbSetProcIsEmitted( sym )
 
 		irEmitPROCBEGIN( sym, p->block.initlabel )
-	end if
 
-	'' allocate the non-static local variables on stack
-	symbProcAllocLocalVars( sym )
+		'' allocate the non-static local variables on stack
+		symbProcAllocLocalVars( sym )
+	end if
 
 	'' flush nodes
 	n = p->l
@@ -315,6 +315,15 @@ function astAdd _
 
 	if( n = NULL ) then
 		return NULL
+	end if
+
+	'' RTL function and the result was discarded? do not allocate a result
+	if( astIsCALL( n ) ) then
+		if( n->call.isrtl ) then
+			if( astGetFullType( n ) <> FB_DATATYPE_VOID ) then
+				astSetType( n, FB_DATATYPE_VOID, NULL )
+			end if
+		end if
 	end if
 
 	'' typeIniUpdate() and hCallCtors() will recurse in this function

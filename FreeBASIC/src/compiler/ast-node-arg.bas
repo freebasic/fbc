@@ -34,7 +34,7 @@ private function hParamError _
 		byval parent as ASTNODE ptr, _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	) as integer
-	
+
 	function = errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
 
 end function
@@ -348,7 +348,7 @@ private function hStrArgToStrPtrParam _
     					   	   NULL, _
 						   	   astNewADDROF( n->l ) )
 		end if
-		
+
 		astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
 
 	'' w- or z-string
@@ -467,9 +467,9 @@ private function hCheckByDescParam _
 		hParamError( parent )
 		return FALSE
 	end if
-	
+
 	sym_dtype = symbGetType( param )
-	
+
 	'' same type? (don't check if it's a rtl proc, or a forward call)
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
 		if( (symbGetDataClass( arg_dtype ) <> symbGetDataClass( sym_dtype )) or _
@@ -862,7 +862,7 @@ private function hCheckParam _
     dim as integer param_dtype = any, arg_dtype
 
     function = FALSE
-    
+
 	'' string concatenation is delayed for optimization reasons..
 	n->l = astUpdStrConcat( n->l )
 
@@ -910,7 +910,7 @@ private function hCheckParam _
 									symbGetSubtype( param ), _
 									arg, _
 									@err_num )
-		
+
 		if( proc <> NULL ) then
     		static as integer rec_cnt = 0
     		'' recursion? (astBuildCall() will call newARG with the same expr)
@@ -941,7 +941,7 @@ private function hCheckParam _
 	'' string arg? check z- and w-string ptr params
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-        
+
 		select case param_dtype
 		'' zstring ptr param?
 		case typeAddrOf( FB_DATATYPE_CHAR )
@@ -1124,7 +1124,7 @@ function astNewARG _
 
     '' check const arg to non-const non-byval param (if not rtl)
     if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
-    	
+
     	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
     		if( symbIsParamInstance( param ) ) then
     			errReport( FB_ERRMSG_NONCONSTUDTTOCONSTMETHOD, TRUE )
@@ -1133,9 +1133,9 @@ function astNewARG _
 			end if
 			exit function
 		end if
-		
+
     end if
-	
+
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n

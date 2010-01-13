@@ -1103,7 +1103,7 @@ private function hOptFieldsCalc _
 	'' (@((@foo + offsetof(bar))->bar) + offsetof(baz)))->baz to
     if( n->class = AST_NODECLASS_FIELD ) then
     	l = n->l
-    	
+
     	if( l->class = AST_NODECLASS_DEREF ) then
 	    	dim as ASTNODE ptr ll = l->l
 	    	if( ll->class = AST_NODECLASS_BOP ) then
@@ -1125,17 +1125,17 @@ private function hOptFieldsCalc _
 	    		end if
 	    	end if
     	else
-    		
+
 	    	'' resolve bitfields before deleting the field, because
 	    	'' otherwise that'd only happen in LoadFIELD, which won't
 	    	'' get called since the field node is destroyed
-	    	
+
 	    	'' don't touch assignments though, they'll be handled in
 	    	'' LoadASSIGN... this feels hackish
 	    	if( iif( parent, parent->class <> AST_NODECLASS_ASSIGN, FALSE ) ) then
 	    		astUpdateBitfieldAccess( l )
 	    	end if
-	    	
+
     		astDelNode( n )
     		n = l
     	end if
@@ -1449,13 +1449,13 @@ private function hOptNullOp _
 	''         'a XOR 0'  to 'a'
 	''         'a AND -1' to 'a'
 	''         'a AND 0'  to '0'*
-	
+
 	''         '0 * a'    to '0'*
 	''         '0 \ a'    to '0'*
 	''         '0 MOD a'  to '0'*
 	''         '0 SHR a'  to '0'*
 	''         '0 SHL a'  to '0'*
-	
+
 	''*  'a' can't be deleted if it has side-effects
 	''** convert 'a * 0' to 'a AND 0' to optimize speed without changing side-effects
 
@@ -1741,7 +1741,7 @@ private function hOptLogic _
 				end select
 			end if
 		end if
-	end if	
+	end if
 
 	function = n
 
@@ -2203,7 +2203,7 @@ function hOptSelfAssign _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
-	
+
 	''  =           NOP
 	'' / \   =>
 	'' d  d
@@ -2216,22 +2216,22 @@ function hOptSelfAssign _
 	if( n = NULL ) then
 		exit function
 	end if
-	
+
 	if n->class <> AST_NODECLASS_ASSIGN then
 		exit function
 	end if
-	
+
 	l = n->l
 	r = n->r
-	
+
 	if( astIsTreeEqual( l, r ) = FALSE ) then
 		exit function
 	end if
-	
+
 	astDelNode( n )
 	astDelTree( l )
 	astDelTree( r )
-	
+
 	function = astNewNOP( )
 end function
 
@@ -2249,20 +2249,20 @@ function hOptSelfCompare _
 	if( n = NULL ) then
 		exit function
 	end if
-	
+
 	if n->class <> AST_NODECLASS_BOP then
 		exit function
 	end if
-	
+
 	l = n->l
 	r = n->r
-	
+
 	if( astIsTreeEqual( l, r ) = FALSE ) then
 		exit function
 	end if
-	
+
 	dim as integer c
-	
+
 	select case as const n->op.op
 	case AST_OP_EQ, AST_OP_LE, AST_OP_GE
 		c = -1
@@ -2271,11 +2271,11 @@ function hOptSelfCompare _
 	case else
 		exit function
 	end select
-	
+
 	astDelNode( n )
 	astDelTree( l )
 	astDelTree( r )
-	
+
 	function = astNewCONSTi( c )
 end function
 
@@ -2335,7 +2335,7 @@ function astOptimizeTree _
 	( _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
-	
+
 	'' high-level IR? don't do anything..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		return n

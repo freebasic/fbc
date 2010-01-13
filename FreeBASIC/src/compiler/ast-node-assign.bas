@@ -503,7 +503,7 @@ function astNewASSIGN _
 		'' otherwise, don't do any assignment by now to allow optimizations..
 		if( (options and AST_OPOPT_ISINI) <> 0 ) then
 			'' unless it's an initialization
-			return rtlStrAssign( l, r, TRUE )
+			return rtlStrAssign( l, r, TRUE	)
 		end if
 
 	'' UDT's?

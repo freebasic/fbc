@@ -924,26 +924,30 @@ declare function rtlStrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval is_ini as integer = FALSE _
+		byval is_ini as integer = FALSE, _
+		byval kill_return as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function rtlWstrAssign _
 	( _
 		byval dst as ASTNODE ptr, _
 		byval src as ASTNODE ptr, _
-		byval is_ini as integer = FALSE _
+		byval is_ini as integer = FALSE, _
+		byval kill_return as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function rtlStrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval kill_return as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function rtlWstrConcatAssign _
 	( _
 		byval dst as ASTNODE ptr, _
-		byval src as ASTNODE ptr _
+		byval src as ASTNODE ptr, _
+		byval kill_return as integer = TRUE _
 	) as ASTNODE ptr
 
 declare function rtlStrDelete _

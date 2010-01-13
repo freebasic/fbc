@@ -393,7 +393,7 @@ function cProcCall _
 		end if
 	end if
 
-	'' !!!CHECKME!!! is this really nedeed? astSetType() should be removed in future
+	'' tell the emitter to not allocate a result
 	astSetType( procexpr, FB_DATATYPE_VOID, NULL )
 
 	astAdd( procexpr )

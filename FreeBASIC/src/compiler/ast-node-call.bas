@@ -55,17 +55,17 @@ private sub hAllocTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetUDTInRegister( sym ) = FALSE ) then
-		
+
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
 									     symbGetSubtype( sym ), _
 									     FALSE, _
 									     FALSE )
-		
+
 		if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
 			astDtorListAdd( n->call.tmpres )
 		end if
-		
+
 	end if
 
 end sub
@@ -291,7 +291,7 @@ private sub hCheckTempStruct _
     							 			   TRUE ) ) )
 
     	irEmitPUSHARG( vr, 0 )
-    	
+
 	end if
 
 end sub

@@ -145,7 +145,7 @@ end type
         ( @"POKE"       , FB_TK_POKE        , FB_TKCLASS_KEYWORD ), _
         ( @"SWAP"       , FB_TK_SWAP        , FB_TKCLASS_KEYWORD ), _
         ( @"COMMON"     , FB_TK_COMMON      , FB_TKCLASS_KEYWORD ), _
-        ( @"ENUM"       , FB_TK_ENUM        , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"ENUM"       , FB_TK_ENUM        , FB_TKCLASS_KEYWORD ), _
         ( @"ASM"        , FB_TK_ASM         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"EXTERN"     , FB_TK_EXTERN      , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"WITH"       , FB_TK_WITH        , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _

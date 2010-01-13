@@ -396,8 +396,8 @@ private sub hDeclProc _
 	end if
 
 	var str_static = ""
-	' TODO FIXME THIS DOESN'T WORK WITH CTOR??
-	if( symbIsStatic( s ) ) then
+
+	if( symbIsPrivate( s ) ) then
 		str_static = "static "
 	end if
 
@@ -1255,7 +1255,7 @@ private function hVregToStr _
 		end select
 
 	case IR_VREGTYPE_REG
-		return "temp_var$" & vreg->reg
+		return "vr$" & vreg->reg
 
 	case else
 		return "/* unknown */"
@@ -1415,27 +1415,6 @@ private sub hWriteBOP _
 		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) & "))", FALSE )
 	else
 		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & hBOPToStr( op ) & hVregToStr( v2 ) )
-	end if
-
-end sub
-
-private sub hWriteBOPEx _
-	( _
-		byref op as string, _
-		byval vr as IRVREG ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
-''Alternate form of binary operators where the actual operator is a function call.
-
-	if( vr = NULL ) then
-		vr = v1
-	end if
-
-	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & " )))", FALSE )
-	else
-		hWriteLine( hVregToStr( vr ) & " = " & op & "( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & " )" )
 	end if
 
 end sub
@@ -1619,8 +1598,6 @@ private sub _emitSpillRegs _
 
 	/' do nothing '/
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
 end sub
 
 '':::::
@@ -1763,20 +1740,7 @@ private sub _emitCall _
 
 			var ln = hPopParamListNames( proc )
 
-			select case *symbGetMangledName( proc )
-			case "fb_GfxScreen", "fb_GfxScreenQB", "fb_GfxScreenRes", "fb_StrAssign", "fb_FileGet", "fb_FileOpen", "fb_FileClose", "fb_GfxBload", "fb_GfxPut", "fb_Color", "fb_SleepEx"
-			''These functions return an integer value but it cannot be used like that in FB so
-			''we simply disregard that value. Otherwise these calls will be placed in a #define
-			''and never actually called.
-				hWriteLine( *symbGetMangledName( proc ) & ln )
-			case "fb_StrConcat", "fb_StrConcatAssign"
-				'' This could be either used or discarded return, it needs to be called
-				'' anyway, so can't use a define unless it can be determined if it is
-				'' used or not.
-				hWriteLine( *hDtypeToStr( vr->dtype, vr->subtype ) & " " & hVregToStr( vr ) & " = (" & *hDtypeToStr( vr->dtype, vr->subtype ) & ")" & *symbGetMangledName( proc ) & ln )
-			case else
-				hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln &"))", FALSE )
-			end select
+			hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln & "))", FALSE )
 		else
 
 			var ln = hPopParamListNames( proc )
