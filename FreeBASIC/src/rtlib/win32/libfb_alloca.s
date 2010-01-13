@@ -27,6 +27,8 @@
 		.intel_syntax noprefix
 /*		.arch i386 */ /* This option is only for ALPHA */
 
+/* MinGW now includes it's own alloca() */
+#if __GNUC__ < 4
 
 .section .text
 #:::::
@@ -52,3 +54,4 @@ _rem:		sub 	ecx, eax
 		jmp 	eax
 
 
+#endif

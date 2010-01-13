@@ -75,3 +75,12 @@ void fb_hInit ( void )
 
 	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
 }
+
+#ifdef TARGET_WIN32
+/* needed now by MinGW, see http://lists-archives.org/mingw-users/12883-linking-error-with-msvc-6-0.html */
+int _get_output_format( void )
+{
+	return 0;
+}
+#endif
+
