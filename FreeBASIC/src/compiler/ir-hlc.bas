@@ -37,8 +37,8 @@ end enum
 
 '' Argument stack list type for function calls
 type ARGLIST
-	s as string ptr     ' string containing the vreg of this arg
-	next as ARGLIST ptr
+	vr 				as IRVREG ptr
+	next 			as ARGLIST ptr
 end type
 
 type DTYPEINFO
@@ -113,21 +113,18 @@ private sub hPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
 
 	dim as ARGLIST ptr node = callocate( sizeof( ARGLIST ) )
 
-	node->s = callocate( sizeof( string ) )
-	*node->s = hVregToStr( vr )
+	node->vr = vr
 	node->next = ctx.arg_stack
 	ctx.arg_stack = node
 
 end sub
 
 '':::::
-private function hPopArg( ) as string
+private function hPopArg( ) as IRVREG ptr
 
 	if ctx.arg_stack then
 		dim as ARGLIST ptr node = ctx.arg_stack
-		function = *node->s
-		*node->s = ""
-		deallocate( node->s )
+		function = node->vr
 		ctx.arg_stack = node->next
 		deallocate( node )
 	else
@@ -1705,15 +1702,7 @@ private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
 		ln += "( "
 		var temp_proc_param = symbGetProcLastParam( proc )
 		while temp_proc_param
-			' cast the arg to the right type
-			ln += "("
-			ln += *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
-			if temp_proc_param->param.mode = FB_PARAMMODE_BYREF then
-				' TODO FIXME how should byref be done?
-				ln += " *"
-			end if
-			ln += ")"
-			ln += hPopArg( )
+			ln += hVregToStr( hPopArg( ) )
 			temp_proc_param = symbGetProcPrevParam( proc, temp_proc_param )
 			if temp_proc_param then
 				ln += ", "

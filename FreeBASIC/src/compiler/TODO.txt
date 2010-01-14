@@ -1,3 +1,30 @@
+[ ] add a C backend
+	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
+	    access varargs
+        [ ] function calls must be passed complete to IR, with params
+        [ ] stdcall names shouldn't be mangled, but anything else should - at least
+            the g++ mangling uses no special characters
+	[ ] how to handle VARINI###? pass it as a tree plus a callback?
+	[ ] DATA arrays must be emitted in the inverse order because the forward ref links
+        [ ] only accept inline asm in GCC format, pass as-is
+	[x] how to acccess fields? (see the next item)
+	  	foo.bar.baz would become:
+	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
+	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
+	  	even if structs are fully emitted
+	  	- (not so simple) solution: let the AST do it
+	[ ] structs must be fully translated, because the way functions will returned in
+	    registers depend on the field types (besides debugging info)
+	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
+	[x] can't use casting from fpoint to int type directly because C won't do rounding,
+	    use inline functions instead (inline ASM if x86)
+	[x] shared/module-level vars must be emitted before any proc
+	[x] scopes must be preserved or local vars won't work
+	[x] use GCC as a high-level assembler, no headers, nothing
+	[x] linking should still be done by us
+	[ ] if everything is solved, it would become much simpler to add a LLVM back-end as
+	    it's essentially a high-level ASM with virtual-regs
+
 [ ] CONST qualifier
     [x] ptr checking must be updated
     [x] must check assignment
@@ -107,31 +134,6 @@
     - add virtual (functions only)
       - the vtable must be compatible with G++ 3.x (ie: compatible with
         COM interfaces in Windows)
-
-[ ] add a C backend
-	- can't use casting from fpoint to int type directly because C won't do rounding,
-	  use inline functions instead (inline ASM if x86)
-	- the va_* macros/quirk-func must be passed to AST, each ABI has different way to
-	  access varargs
-	- how to acccess fields?
-	  	foo.bar.baz would become:
-	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
-	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
-	  	even if structs are fully emitted
-	  	- (not so simple) solution: let the AST do it
-	- shared/module-level vars must be emitted before any proc
-	- scopes must be preserved or local vars won't work
-        - function calls must be passed complete to IR, with params
-        - stdcall names shouldn't be mangled, but anything else should - at least
-          the g++ mangling uses no special characters
-	- how to handle VARINI###? pass it as a tree plus a callback?
-	- DATA arrays must be emitted in the inverse order because the forward ref links
-	- structs must be fully translated
-        - only accept inline asm in GCC format, pass as-is
-	- use GCC as a high-level assembler, no headers, nothing
-	- linking should still be done by us
-	- if everything is solved, it would become much simpler to add a LLVM back-end as
-	  it's essentially a high-level ASM with virtual-regs
 
 [ ] ParamArray, but with this syntax: foo(...) as bar
 	- array must be built at compile-time and destroyed after the call
