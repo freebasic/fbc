@@ -81,25 +81,25 @@ private sub hCreateDescDimType _
 	static as FBARRAYDIM dTB(0)
 
    	''
-   	ctx.array_dimtype = symbStructBegin( NULL, NULL, NULL, FALSE, 0 )
+   	ctx.array_dimtype = symbStructBegin( NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0 )
 
 	'' elements		as integer
 	symbAddField( ctx.array_dimtype, _
-				  NULL, _
+				  "elements", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
 	'' lbound		as integer
 	symbAddField( ctx.array_dimtype, _
-				  NULL, _
+				  "lbound", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
 	'' ubound		as integer
 	symbAddField( ctx.array_dimtype, _
-				  NULL, _
+				  "ubound", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
@@ -119,39 +119,42 @@ private function hCreateDescType _
     dim as FBSYMBOL ptr sym = any, dimtype = any
 
     ''
-    sym = symbStructBegin( NULL, NULL, NULL, FALSE, 0 )
+    static as string tmp
+    tmp = *hMakeTmpStrNL( )
+
+    sym = symbStructBegin( NULL, tmp, NULL, FALSE, 0 )
 
     '' data			as any ptr
 	symbAddField( sym, _
-				  NULL, _
+				  "data", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, _
-				  NULL, _
+				  "ptr", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
 
     '' size			as integer
 	symbAddField( sym, _
-				  NULL, _
+				  "size", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
     '' element_len	as integer
 	symbAddField( sym, _
-				  NULL, _
+				  "element_len", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
 
     '' dimensions	as integer
 	symbAddField( sym, _
-				  NULL, _
+				  "dimensions", _
 				  0, dTB(), _
 				  FB_DATATYPE_INTEGER, NULL, _
 				  FB_INTEGERSIZE, 0 )
@@ -168,7 +171,7 @@ private function hCreateDescType _
 	dimtype = ctx.array_dimtype
 
 	symbAddField( sym, _
-				  NULL, _
+				  "dimTB", _
 				  1, dTB(), _
 				  FB_DATATYPE_STRUCT, dimtype, _
 				  symbGetLen( dimtype ), 0 )
@@ -204,7 +207,9 @@ function symbAddArrayDesc _
 
 	'' field?
 	if( symbIsField( array ) ) then
-		id = hMakeTmpStrNL( )
+		static as string tmp
+		tmp = *hMakeTmpStrNL( )
+		id = strptr( tmp )
 
 		attrib = FB_SYMBATTRIB_LOCAL
 
@@ -224,7 +229,9 @@ function symbAddArrayDesc _
 
 		'' otherwise, create a temporary name..
 		else
-			id = hMakeTmpStrNL( )
+			static as string tmp
+			tmp = *hMakeTmpStrNL( )
+			id = strptr( tmp )
 		end if
 
 		attrib = array->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -395,10 +402,10 @@ sub symbSetArrayDimTb _
 		if do_build = TRUE then
 			if( s->var_.array.desc = NULL ) then
 				s->var_.array.desc = symbAddArrayDesc( s, dimensions )
-	
+
 				s->var_.array.desc->var_.initree = _
 					astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
-	
+
 			end if
 		end if
 	else

@@ -305,7 +305,7 @@ private sub hCreateDataDesc _
 
 	static as FBARRAYDIM dTB(0)
 
-   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC__", NULL, FALSE, 1 )
+   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC$", NULL, FALSE, 1 )
 
 	'' type	as short
 	symbAddField( ast.data.desc, _

@@ -50,6 +50,8 @@ end type
 type IRHLCCTX
 	identcnt		as integer     ' how many levels of indent
 	regcnt			as integer     ' temporary labels counter
+	lblcnt			as integer
+	tmpcnt			as integer
 	vregTB			as TFLIST
 
 	arg_stack		as ARGLIST ptr ' local stack for args recieved
@@ -440,12 +442,14 @@ private sub hDeclStruct _
 		byval s as FBSYMBOL ptr _
 	)
 
-	var udt_len = symbGetUDTLen( s, FALSE )
-	if symbGetName( s ) <> NULL then
-		hWriteLine( "typedef struct _" & *symbGetName( s ) & " { ubyte dummy[" & udt_len & "]; } " & *symbGetName( s ) & ";", FALSE )
-	else
-		'' TODO FIXME nameless structs???
+	var id = symbGetName( s )
+	if id = NULL then
+		id = hMakeTmpStrNL( )
 	end if
+
+	var udt_len = symbGetUDTLen( s, FALSE )
+
+	hWriteLine( "typedef struct _" & *id & " { ubyte dummy[" & udt_len & "]; } " & *id & ";", FALSE )
 
 end sub
 
@@ -672,6 +676,8 @@ private function _emitBegin _
 
 	ctx.identcnt = 0
 	ctx.regcnt = 0
+	ctx.lblcnt = 0
+	ctx.tmpcnt = 0
 
 	ctx.section = SECTION_HEAD
 
@@ -896,10 +902,15 @@ private function _makeTmpStr _
 		byval islabel as integer _
 	) as zstring ptr
 
-	static as zstring * 5 + 10 + 1 res
+	static as zstring * 6 + 10 + 1 res
 
-	res = "label$" & ctx.regcnt
-	ctx.regcnt += 1
+	if( islabel ) then
+		res = "label$" & ctx.lblcnt
+		ctx.lblcnt += 1
+	else
+		res = "tmp$" & ctx.tmpcnt
+		ctx.tmpcnt += 1
+	end if
 
 	function = @res
 
@@ -1752,25 +1763,18 @@ private sub _emitCall _
 		byval vr as IRVREG ptr _
 	)
 
-	if( vr = NULL ) then
+	var ln = hPopParamListNames( proc )
 
-		var ln = hPopParamListNames( proc )
+	if( vr = NULL ) then
 
 		hWriteLine( *symbGetMangledName( proc ) & ln )
 	else
 		hLoadVreg( vr )
 
 		if( irIsREG( vr ) ) then
-
-			var ln = hPopParamListNames( proc )
-
 			hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln & "))", FALSE )
 		else
-
-			var ln = hPopParamListNames( proc )
-
 			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & ln )
-
 		end if
 	end if
 
@@ -2066,10 +2070,10 @@ private sub _emitProcBegin _
 			var pvar = symbGetParamVar( param )
 			ln += *hDtypeToStr( symbGetType( pvar ), symbGetSubType( pvar ) )
 
-			if( symbIsParamByRef( pvar ) ) then
-				ln += " *"
-			else
+			if( symbIsParamByVal( pvar ) ) then
 				ln += " "
+			else
+				ln += " *"
 			end if
 
 			ln += *symbGetName( pvar )

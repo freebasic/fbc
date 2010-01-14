@@ -1,4 +1,8 @@
 [ ] add a C backend
+	[ ] local dynamic arrays are been allocated
+	    [x] the descriptor set is borked
+	    [ ] redim is causing an ICE
+
 	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
 	    access varargs
         [ ] function calls must be passed complete to IR, with params
