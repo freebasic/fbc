@@ -1,9 +1,12 @@
 [ ] add a C backend
-	[ ] structs must be fully translated, because:
+	[x] structs must be fully translated, because:
 	    - global variable initializers
 	    - functions will returned in registers depending on the field types
 	    - debugging info
 	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
+	    [ ] handle forward references
+	    [ ] handle function pointers
+	    [ ] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
 	[ ] functions that return structs should be passed as-is, no special handling
 	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
 	    access varargs

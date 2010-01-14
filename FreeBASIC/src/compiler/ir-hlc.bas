@@ -199,7 +199,7 @@ private sub hEmitVar _
 
 	var attrib = symbGetAttrib( s )
 
-	var elements = 1
+	var elements = 0
     if( symbGetArrayDimensions( s ) > 0 ) then
     	elements = symbGetArrayElements( s )
 		if( symbGetType( s ) = FB_DATATYPE_FIXSTR ) then
@@ -210,7 +210,7 @@ private sub hEmitVar _
     '''''hEmitBssHeader( )
 
     var sign = *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s )
-    if( elements > 1 ) then
+    if( elements > 0 ) then
     	sign += "[" & elements & "]"
     end if
 
@@ -418,7 +418,35 @@ private sub hDeclStruct _
 
 	var udt_len = symbGetUDTLen( s, FALSE )
 
-	hWriteLine( "typedef struct _" & *id & " { ubyte dummy[" & udt_len & "]; } " & *id & ";", FALSE )
+	hWriteLine( "typedef struct _" & *id & " {" )
+
+	ctx.identcnt += 1
+
+	var e = symbGetUDTFirstElm( s )
+	do while( e <> NULL )
+        var ln = *hDtypeToStr( symbGetType( e ), symbGetSubtype( e ) ) + " " + *symbGetName( e )
+
+		var elements = 0
+    	if( symbGetArrayDimensions( e ) > 0 ) then
+    		elements = symbGetArrayElements( e )
+			if( symbGetType( e ) = FB_DATATYPE_FIXSTR ) then
+				elements *= symbGetStrLen( e )
+			end if
+		end if
+
+        if( elements > 0 ) then
+        	ln += "[" & elements & "]"
+        end if
+
+        hWriteLine( ln )
+
+		e = symbGetUDTNextElm( e )
+	loop
+
+
+	ctx.identcnt -= 1
+
+	hWriteLine( "} " & *id )
 
 end sub
 
@@ -1210,8 +1238,9 @@ private function hVregToStr _
 			operand += *symbGetMangledName( vreg->sym )
 			add_plus = TRUE
 
+		'' ptr?
 		else
-			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)("
+			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)((ubyte *)"
 			do_deref = TRUE
 			add_plus = FALSE
 		end if
@@ -2104,6 +2133,7 @@ private sub _emitProcBegin _
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
 
+	''
 	hEmitUDTs( symbGetProcSymbTbHead( proc ) )
 
 end sub
@@ -2130,6 +2160,7 @@ private sub _emitScopeBegin _
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
 
+	''
 	hEmitUDTs( symbGetScopeSymbTbHead( s ) )
 
 

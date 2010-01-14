@@ -319,14 +319,14 @@ private sub hCreateDataDesc _
 
 	'' type	as short
 	symbAddField( ast.data.desc, _
-				  NULL, _
+				  "type", _
 				  0, dTB(), _
 				  FB_DATATYPE_SHORT, NULL, _
 				  2, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, _
-				  NULL, _
+				  "node", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
