@@ -755,6 +755,8 @@ type SYMBCTX
 	globOpOvlTb ( _
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
+
+	arrdesctype		as FBSYMBOL ptr				'' array descriptor type
 end type
 
 type SYMB_DATATYPE

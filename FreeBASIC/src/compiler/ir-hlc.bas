@@ -361,7 +361,12 @@ private sub hDeclProc _
     				end if
     			end select
 
-			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+			case FB_PARAMMODE_BYREF
+				is_byref = TRUE
+
+			case FB_PARAMMODE_BYDESC
+				dtype = FB_DATATYPE_STRUCT
+				subtype = symb.arrdesctype
 				is_byref = TRUE
 			end select
 
@@ -2009,6 +2014,31 @@ private sub _emitVarIniSeparator _
 end sub
 
 '':::::
+private sub hEmitUDTs _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	do while( s <> NULL )
+
+		select case symbGetClass( s )
+		case FB_SYMBCLASS_NAMESPACE
+			hEmitUDTs( symbGetNamespaceTbHead( s ) )
+
+		case FB_SYMBCLASS_ENUM
+			hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+
+		case FB_SYMBCLASS_STRUCT
+			hDeclStruct s
+
+		end select
+
+		s = s->next
+	loop
+
+end sub
+
+'':::::
 private sub _emitProcBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2041,7 +2071,16 @@ private sub _emitProcBegin _
 		var param = symbGetProcLastParam( proc )
 		while param
 			var pvar = symbGetParamVar( param )
-			ln += *hDtypeToStr( symbGetType( pvar ), symbGetSubType( pvar ) )
+
+			var dtype = symbGetType( pvar )
+			var subtype = symbGetSubType( pvar )
+
+			if( symbIsParamByDesc( pvar ) ) then
+				dtype = FB_DATATYPE_STRUCT
+				subtype = symb.arrdesctype
+			end if
+
+			ln += *hDtypeToStr( dtype, subtype )
 
 			if( symbIsParamByVal( pvar ) ) then
 				ln += " "
@@ -2064,6 +2103,8 @@ private sub _emitProcBegin _
 
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
+
+	hEmitUDTs( symbGetProcSymbTbHead( proc ) )
 
 end sub
 
@@ -2088,6 +2129,9 @@ private sub _emitScopeBegin _
 
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
+
+	hEmitUDTs( symbGetScopeSymbTbHead( s ) )
+
 
 end sub
 

@@ -521,9 +521,11 @@ private function hCheckByDescParam _
     end if
 
     '' create a new
-    n->l = astNewLINK( astNewADDROF( astNewVAR( desc, _
-        					   	  			  	0, _
-        					   	  			  	FB_DATATYPE_VOID ) ), _
+    n->l = astNewLINK( astNewCONV( typeAddrOf( FB_DATATYPE_STRUCT ), _
+    							   symb.arrdesctype, _
+    				   			   astNewADDROF( astNewVAR( desc, _
+        					   	  			  				0, _
+        					   	  			  				FB_DATATYPE_VOID ) ) ), _
         			   desc_tree )
 
     function = TRUE

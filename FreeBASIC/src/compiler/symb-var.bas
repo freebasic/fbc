@@ -42,9 +42,15 @@ declare sub 		hDelVarDims			( _
 											byval s as FBSYMBOL ptr _
 										)
 
-declare sub 		hCreateDescDimType  ( _
+declare sub 		hCreateArrayDescriptorType ( _
 											_
 										)
+
+declare function 	hCreateDescType 	( _
+											byval dims as integer, _
+											byval id as zstring ptr = NULL _
+										) as FBSYMBOL ptr
+
 
 '' globals
 	dim shared as FB_SYMVAR_CTX ctx
@@ -57,7 +63,7 @@ sub symbVarInit( )
 	'' assuming it's safe to create UDT symbols here, the array
 	'' dimension type must be allocated at module-level or it
 	'' would be removed when going out scope
-	hCreateDescDimType( )
+	hCreateArrayDescriptorType( )
 
 end sub
 
@@ -73,14 +79,14 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hCreateDescDimType _
+private sub hCreateArrayDescriptorType _
 	( _
 		_
 	)
 
 	static as FBARRAYDIM dTB(0)
 
-   	''
+   	'' type TDimtTb
    	ctx.array_dimtype = symbStructBegin( NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0 )
 
 	'' elements		as integer
@@ -107,22 +113,31 @@ private sub hCreateDescDimType _
     ''
 	symbStructEnd( ctx.array_dimtype )
 
+
+	''
+   	symb.arrdesctype = hCreateDescType( -1, "__FB_ARRAYDESC$" )
+
+
 end sub
 
 '':::::
 private function hCreateDescType _
 	( _
-		byval dims as integer _
+		byval dims as integer, _
+		byval id as zstring ptr = NULL _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr sym = any, dimtype = any
 
     ''
-    static as string tmp
-    tmp = *hMakeTmpStrNL( )
+    if( id = NULL ) then
+    	static as string tmp
+    	tmp = *hMakeTmpStrNL( )
+    	id = strptr( tmp )
+    end if
 
-    sym = symbStructBegin( NULL, tmp, NULL, FALSE, 0 )
+    sym = symbStructBegin( NULL, id, NULL, FALSE, 0 )
 
     '' data			as any ptr
 	symbAddField( sym, _

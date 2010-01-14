@@ -166,14 +166,14 @@ sub irDelCallArgs _
 		byval arg_list as IR_CALL_ARG_LIST ptr _
 	)
 
-	dim as FB_CALL_ARG ptr arg, nxt
+	dim as IR_CALL_ARG ptr arg, nxt
 
 	'' WARNING: the arg list is not updated
 
 	arg = arg_list->head
 	do while( arg <> NULL )
 		nxt = arg->next
-		irDelCallArg( arg_list->list, arg )
+		irDelCallArg( arg_list, arg )
 		arg = nxt
 	loop
 
