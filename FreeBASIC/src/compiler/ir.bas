@@ -23,6 +23,7 @@
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\list.bi"
 #include once "inc\ir.bi"
 
 declare function irTAC_ctor _
@@ -72,6 +73,8 @@ function irInit _
 
 	if( ir.vtbl.init( backend ) ) then
 		ir.inited = TRUE
+
+		listNew( @ir.arglist, 32*4, len( IR_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 	end if
 
 	function = ir.inited
@@ -88,6 +91,9 @@ sub irEnd _
 	end if
 
 	ir.vtbl.end( )
+
+
+	listFree( @ir.arglist )
 
 	ir.inited = FALSE
 
@@ -113,4 +119,63 @@ function irGetVRDataSize _
 
 end function
 
+'':::::
+function irNewCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval vreg as IRVREG ptr, _
+		byval lgt as integer _
+	) as IR_CALL_ARG ptr
+
+	dim as IR_CALL_ARG ptr arg = listNewNode( arg_list->list )
+
+	if( arg_list->head = NULL ) then
+		arg_list->head = arg
+	else
+		arg_list->tail->next = arg
+	end if
+
+	arg->prev =	arg_list->tail
+	arg->next = NULL
+	arg_list->tail = arg
+
+	arg_list->args += 1
+
+	arg->vr = vreg
+	arg->lgt = lgt
+
+	function = arg
+
+end function
+
+''::::::
+sub irDelCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval arg as IR_CALL_ARG ptr _
+	)
+
+	listDelNode( arg_list->list, arg )
+
+end sub
+
+
+'':::::
+sub irDelCallArgs _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
+	)
+
+	dim as FB_CALL_ARG ptr arg, nxt
+
+	'' WARNING: the arg list is not updated
+
+	arg = arg_list->head
+	do while( arg <> NULL )
+		nxt = arg->next
+		irDelCallArg( arg_list->list, arg )
+		arg = nxt
+	loop
+
+end sub
 

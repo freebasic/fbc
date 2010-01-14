@@ -35,12 +35,6 @@ enum section_e
 	SECTION_FOOT
 end enum
 
-'' Argument stack list type for function calls
-type ARGLIST
-	vr 				as IRVREG ptr
-	next 			as ARGLIST ptr
-end type
-
 type DTYPEINFO
 	class			as integer
 	size			as integer
@@ -54,7 +48,6 @@ type IRHLCCTX
 	tmpcnt			as integer
 	vregTB			as TFLIST
 
-	arg_stack		as ARGLIST ptr ' local stack for args recieved
 	section			as section_e   ' current section to write to
 	head_txt		as string      ' buffer for header text
 	body_txt		as string      ' buffer for body text
@@ -111,31 +104,6 @@ dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
 }
 
 '':::::
-private sub hPushArg( byval vr as IRVREG ptr, byval _done_ as integer )
-
-	dim as ARGLIST ptr node = callocate( sizeof( ARGLIST ) )
-
-	node->vr = vr
-	node->next = ctx.arg_stack
-	ctx.arg_stack = node
-
-end sub
-
-'':::::
-private function hPopArg( ) as IRVREG ptr
-
-	if ctx.arg_stack then
-		dim as ARGLIST ptr node = ctx.arg_stack
-		function = node->vr
-		ctx.arg_stack = node->next
-		deallocate( node )
-	else
-		errReportEx( FB_ERRMSG_INTERNAL, "Arg stack pop failure." )
-	end if
-
-end function
-
-'':::::
 private function _init _
 	( _
 		byval backend as FB_BACKEND _
@@ -160,10 +128,6 @@ end function
 
 '':::::
 private sub _end
-
-	if ctx.arg_stack then
-		errReportEx( FB_ERRMSG_INTERNAL, "Argument stack not empty." )
-	end if
 
 	flistFree( @ctx.vregTB )
 
@@ -822,8 +786,17 @@ private function _procAllocLocal _
 	) as integer
 
 	dim as string ln
-	dim as integer elements = 0
-	dim as integer weird = 0 ' weird ones are things like array descriptors..
+
+    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
+	if( (sym->attrib and (FB_SYMBATTRIB_EXTERN or _
+			   			  FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+		return 0
+	end if
+
+    '' a string or array descriptor?
+	if( symbGetLen( sym ) <= 0 ) then
+		return 0
+	end if
 
 	if symbIsArray( sym ) then
 		return procAllocLocalArray( proc, sym, lgt )
@@ -835,20 +808,10 @@ private function _procAllocLocal _
 
 	' is it some weird typeless item?
 	if *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) = "" then
-		weird = 1
-		ln += "ubyte "
-		if sym->typ = FB_DATATYPE_STRUCT then
-			'ln += " /* array descriptor? */ "
-		end if
+    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 	else
 		ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
-	end if
-
-	if weird = 0 then
 		ln += *symbGetMangledName( sym )
-	else
-		ln += *symbGetMangledName( sym )
-		ln += "[" & symbGetUDTLen( sym, FALSE ) & "]" ' TODO FIXME BAD HACK, nameless memory? array descriptors use this??
 	end if
 
 	hWriteLine( ln )
@@ -1694,7 +1657,7 @@ private sub _emitPushArg _
 		byval plen as integer _
 	)
 
-	hPushArg( vr, FALSE )
+	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -1727,47 +1690,56 @@ private sub _emitAddr _
 
 end sub
 
+
 '':::::
-private function hPopParamListNames( byval proc as FBSYMBOL ptr ) as string
+private function hEmitCallArgs _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
+	) as string
 
-	var ln = ""
 
-
-	if proc->proc.params = 0 then
-
-		ln += "( )"
-
-	else
-		ln += "( "
-		var temp_proc_param = symbGetProcLastParam( proc )
-		while temp_proc_param
-			ln += hVregToStr( hPopArg( ) )
-			temp_proc_param = symbGetProcPrevParam( proc, temp_proc_param )
-			if temp_proc_param then
-				ln += ", "
-			end if
-		wend
-		ln += " )"
+	if( arg_list = NULL orelse arg_list->head = NULL ) then
+		return "( )"
 	end if
+
+	var ln = "( "
+	var arg = arg_list->tail
+
+	do while( arg )
+        var nxt = arg->prev
+
+		ln += hVregToStr( arg->vr )
+
+		irDelCallArg( arg_list, arg )
+
+		if( nxt ) then
+			ln += ", "
+		end if
+
+		arg = nxt
+	loop
+
+	ln += " )"
 
 	return ln
 
 end function
 
-
 '':::::
 private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
 
-	var ln = hPopParamListNames( proc )
+	var ln = hEmitCallArgs( arg_list )
 
 	if( vr = NULL ) then
 
 		hWriteLine( *symbGetMangledName( proc ) & ln )
+
 	else
 		hLoadVreg( vr )
 
@@ -1784,6 +1756,7 @@ end sub
 private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer _
 	)

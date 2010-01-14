@@ -109,6 +109,21 @@ type IRVREG
 	taclast		as IRTAC ptr					'' /
 end type
 
+
+type IR_CALL_ARG
+	vr				as IRVREG ptr
+	lgt				as integer
+	prev			as IR_CALL_ARG ptr
+	next			as IR_CALL_ARG ptr
+end type
+
+type IR_CALL_ARG_LIST
+	list			as TLIST ptr
+	args			as integer
+	head			as IR_CALL_ARG ptr
+	tail			as IR_CALL_ARG ptr
+end type
+
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
 	init as function _
@@ -322,6 +337,7 @@ type IR_VTBL
 	emitCall as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
@@ -329,6 +345,7 @@ type IR_VTBL
 	emitCallPtr as sub _
 	( _
 		byval v1 as IRVREG ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer _
 	)
@@ -562,6 +579,7 @@ type IRCTX
 	inited			as integer
 	vtbl			as IR_VTBL
 	options			as IR_OPT
+	arglist			as TLIST
 end type
 
 ''
@@ -585,6 +603,26 @@ declare function irGetVRDataSize _
 	( _
 		byval vreg as IRVREG ptr _
 	) as integer
+
+
+declare function irNewCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval vreg as IRVREG ptr, _
+		byval lgt as integer _
+	) as IR_CALL_ARG ptr
+
+declare sub irDelCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval arg as IR_CALL_ARG ptr _
+	)
+
+declare sub irDelCallArgs _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
+	)
+
 
 ''
 '' macros
@@ -715,9 +753,9 @@ declare function irGetVRDataSize _
 
 #define irEmitLABELNF(s) ir.vtbl.emitLabelNF( s )
 
-#define irEmitCALLFUNCT(proc, bytestopop, vr) ir.vtbl.emitCall( proc, bytestopop, vr )
+#define irEmitCALLFUNCT(proc, arg_list, bytestopop, vr) ir.vtbl.emitCall( proc, arg_list, bytestopop, vr )
 
-#define irEmitCALLPTR(v1, vr, bytestopop) ir.vtbl.emitCallPtr( v1, vr, bytestopop )
+#define irEmitCALLPTR(v1, arg_list, vr, bytestopop) ir.vtbl.emitCallPtr( v1, arg_list, vr, bytestopop )
 
 #define irEmitSTACKALIGN(bytes) ir.vtbl.emitStackAlign( bytes )
 
