@@ -1,21 +1,24 @@
 [ ] add a C backend
+	[ ] structs must be fully translated, because:
+	    - global variable initializers
+	    - functions will returned in registers depending on the field types
+	    - debugging info
+	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
+	[ ] functions that return structs should be passed as-is, no special handling
 	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
 	    access varargs
-        [x] function calls must be passed complete to IR, with params
         [ ] stdcall names shouldn't be mangled, but anything else should - at least
             the g++ mangling uses no special characters
 	[ ] how to handle VARINI###? pass it as a tree plus a callback?
 	[ ] DATA arrays must be emitted in the inverse order because the forward ref links
         [ ] only accept inline asm in GCC format, pass as-is
-	[x] how to acccess fields? (see the next item)
+	[x] how to acccess fields?
 	  	foo.bar.baz would become:
 	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))
 	  	but offsetof() is resolved at FBC compile-time, making the access ABI-dependent
 	  	even if structs are fully emitted
 	  	- (not so simple) solution: let the AST do it
-	[ ] structs must be fully translated, because the way functions will returned in
-	    registers depend on the field types (besides debugging info)
-	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
+        [x] function calls must be passed complete to IR, with params
 	[x] can't use casting from fpoint to int type directly because C won't do rounding,
 	    use inline functions instead (inline ASM if x86)
 	[x] shared/module-level vars must be emitted before any proc

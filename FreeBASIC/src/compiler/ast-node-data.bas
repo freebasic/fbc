@@ -151,6 +151,8 @@ sub astDataStmtEnd _
 	'' initialize it
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, ast.data.desc, TRUE )
 
+	astTypeIniScopeBegin( initree )
+
 	'' for each node..
 	n = tree->l
 	for i = 0 to tree->data.elmts - 1
@@ -183,17 +185,25 @@ sub astDataStmtEnd _
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-        '' .node = expr
+    	astTypeIniSeparator( initree )
     	elm = symbGetNext( elm )
+
+        '' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
 
     	'' next
 		dim as ASTNODE ptr nxt = n->r
 		astDelNode( n )
 		n = nxt
+
+		if( n ) then
+			astTypeIniSeparator( initree )
+		end if
 	next
 
     ''
+    astTypeIniScopeEnd( initree )
+
     astTypeIniEnd( initree, TRUE )
 
     symbSetTypeIniTree( array, initree )
