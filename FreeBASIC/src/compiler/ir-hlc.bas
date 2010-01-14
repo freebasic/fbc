@@ -1154,9 +1154,6 @@ private function hVregToStr _
 
 		if( vreg->sym <> NULL ) then
 
-			'' !!!FIXME!!! offset or idx? pointer arith is done at the ast..
-			var is_ptrarith = ( vreg->ofs <> 0 or vreg->vidx <> NULL )
-
 			'' type casting?
 			if( vreg->dtype <> symbGetType( vreg->sym ) or _
 				vreg->subtype <> symbGetSubType( vreg->sym ) ) then
@@ -1177,7 +1174,9 @@ private function hVregToStr _
 
 				if( is_ptr = FALSE ) then
 					operand += "*)("
-					if( is_ptrarith ) then
+
+					'' offset or idx? pointer arith is done at the ast..
+					if( vreg->ofs <> 0 or vreg->vidx <> NULL ) then
 						operand += "(ubyte *)"
 					end if
 					operand += "&"
@@ -1190,17 +1189,17 @@ private function hVregToStr _
 			else
 				do_deref = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
 
-				' no & for array access..
+				var deref = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)"
+
+				' no deref (&) for array access..
 				if symbGetArrayDimensions( vreg->sym ) > 0 then
 					do_deref = TRUE
-					operand += "*("
+					operand += deref
+					operand += "((ubyte *)"
 
 				elseif( do_deref ) then
-					operand += "*("
-					if( is_ptrarith ) then
-						operand += "(ubyte *)"
-					end if
-					operand += "&"
+					operand += deref
+					operand += "((ubyte *)&"
 				end if
 			end if
 
