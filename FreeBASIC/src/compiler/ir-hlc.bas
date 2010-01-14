@@ -236,6 +236,9 @@ private sub hEmitVar _
 	var elements = 1
     if( symbGetArrayDimensions( s ) > 0 ) then
     	elements = symbGetArrayElements( s )
+		if( symbGetType( s ) = FB_DATATYPE_FIXSTR ) then
+			elements *= symbGetStrLen( s )
+		end if
 	end if
 
     '''''hEmitBssHeader( )
@@ -372,16 +375,39 @@ private sub hDeclProc _
 		params += "( "
 		var param = symbGetProcLastParam( s )
 		do while param
+
+    		var is_byref = FALSE
+    		var dtype = symbGetType( param )
+    		var subtype = symbGetSubType( param )
+
+			select case param->param.mode
+			case FB_PARAMMODE_BYVAL
+    			select case symbGetType( param )
+    			'' byval string? it's actually an pointer to a zstring
+    			case FB_DATATYPE_STRING
+    				is_byref = TRUE
+    				dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+
+    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    				'' has a dtor, copy ctor or virtual methods? it's a copy..
+    				if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+    					is_byref = TRUE
+    				end if
+    			end select
+
+			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+				is_byref = TRUE
+			end select
+
 			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 				params += "..."
 			else
-				params += *hDtypeToStr( symbGetType( param ), symbGetSubType( param ) )
+				params += *hDtypeToStr( dtype, subtype )
 			end if
 
-			select case param->param.mode
-			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-				params += "*"
-			end select
+			if( is_byref ) then
+				params += " *"
+			end if
 
 			param = symbGetProcPrevParam( s, param )
 			if param then
@@ -765,13 +791,15 @@ private function procAllocLocalArray _
 
 	dim as string ln
 
-	if symbGetArrayDimensions( sym ) > 1 then
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	end if
-
 	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
 	ln += *symbGetMangledName( sym )
-	ln += "[" & symbGetArrayElements( sym ) & "]"
+
+	var elements = symbGetArrayElements( sym )
+	if( symbGetType( sym ) = FB_DATATYPE_FIXSTR ) then
+		elements *= symbGetStrLen( sym )
+	end if
+
+	ln += "[" & elements & "]"
 
 	hWriteLine( ln )
 
@@ -2033,17 +2061,21 @@ private sub _emitProcBegin _
 	else
 
 		ln += "( "
-		var temp_proc_param = symbGetProcLastParam( proc )
-		while temp_proc_param
-			ln += *hDtypeToStr( symbGetType( temp_proc_param ), symbGetSubType( temp_proc_param ) )
-			if temp_proc_param->param.mode = FB_PARAMMODE_BYREF then
-				' TODO FIXME how should byref be done?
-				ln += " *" &  ucase( *symbGetName( temp_proc_param ) )
+		var param = symbGetProcLastParam( proc )
+		while param
+			var pvar = symbGetParamVar( param )
+			ln += *hDtypeToStr( symbGetType( pvar ), symbGetSubType( pvar ) )
+
+			if( symbIsParamByRef( pvar ) ) then
+				ln += " *"
 			else
-				ln += " " &  ucase( *symbGetName( temp_proc_param ) )
+				ln += " "
 			end if
-			temp_proc_param = symbGetProcPrevParam( proc, temp_proc_param )
-			if temp_proc_param then
+
+			ln += *symbGetName( pvar )
+
+			param = symbGetProcPrevParam( proc, param )
+			if param then
 				ln += ", "
 			end if
 		wend

@@ -490,23 +490,23 @@ function astProcBegin _
 	''
 	irProcBegin( sym )
 
-' Don't allocate anything for a naked function, because they will be allowed
-' at ebp-N, which won't exist, no result is needed either
-if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	' Don't allocate anything for a naked function, because they will be allowed
+	' at ebp-N, which won't exist, no result is needed either
+	if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
-    '' alloc parameters
-    if( hDeclProcParams( sym ) = FALSE ) then
-    	exit function
-    end if
+    	'' alloc parameters
+    	if( hDeclProcParams( sym ) = FALSE ) then
+    		exit function
+    	end if
 
-	'' alloc result local var
-	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-		if( symbAddProcResult( sym ) = NULL ) then
-			exit function
+		'' alloc result local var
+		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+			if( symbAddProcResult( sym ) = NULL ) then
+				exit function
+			end if
 		end if
-	end if
 
-end if
+	end if
 
 	'' local error handler
 	with sym->proc.ext->err
