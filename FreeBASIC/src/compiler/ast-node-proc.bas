@@ -684,18 +684,18 @@ function astProcEnd _
 
 		' Don't load the result for naked functions
 		if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
-		'' if it's a function, load result
-		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+			'' if it's a function, load result
+			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 
-			select case symbGetType( sym )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetProcStatAssignUsed( sym ) ) then
-					head_node = hCallResultCtor( head_node, sym )
-				end if
-			end select
+				select case symbGetType( sym )
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					if( symbGetProcStatAssignUsed( sym ) ) then
+						head_node = hCallResultCtor( head_node, sym )
+					end if
+				end select
 
-        	hLoadProcResult( sym )
-		end if
+        		hLoadProcResult( sym )
+			end if
 		end if
 	end if
 
@@ -801,7 +801,7 @@ private sub hLoadProcResult _
 	)
 
     dim as FBSYMBOL ptr s = any
-    dim as ASTNODE ptr n = any, t = any
+    dim as ASTNODE ptr n = any
     dim as integer dtype = any
 
 	s = symbGetProcResult( proc )
@@ -815,8 +815,11 @@ private sub hLoadProcResult _
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	case FB_DATATYPE_STRING
-		t = astNewVAR( s, 0, FB_DATATYPE_STRING )
-		n = rtlStrAllocTmpResult( t )
+		n = rtlStrAllocTmpResult( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
+
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			n = astNewLOAD( n, dtype, TRUE )
+		end if
 
 	'' UDT? use the real type
 	case FB_DATATYPE_STRUCT

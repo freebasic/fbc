@@ -2033,13 +2033,13 @@ private sub _emitProcBegin _
 		ln = "static "
 	end if
 
-	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ) )
+	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
 	ln += hCallConvToStr( proc ) & " "
 	ln += *symbGetMangledName( proc )
 
 	if proc->proc.params = 0 then
 
-		ln += "( void )" 'This is just to prevent warnings from some C compilers.
+		ln += "( void )"
 
 	else
 
