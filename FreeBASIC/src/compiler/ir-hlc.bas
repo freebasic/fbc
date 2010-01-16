@@ -71,6 +71,16 @@ declare function hVregToStr _
 		byval vreg as IRVREG ptr _
 	) as string
 
+declare sub hEmitStruct _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+declare sub hEmitFuncPtrProto _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
 '' globals
 dim shared as IRHLCCTX ctx
 
@@ -191,11 +201,48 @@ private function hCallConvToStr _
 end function
 
 '':::::
+private sub hEmitUDT _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+	if( symbGetIsEmitted( s ) ) then
+		return
+	end if
+
+	var oldsection = ctx.section
+	ctx.section = SECTION_HEAD
+
+ 	select case as const symbGetClass( s )
+ 	case FB_SYMBCLASS_ENUM
+ 		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+
+ 	case FB_SYMBCLASS_STRUCT
+ 		hEmitStruct s
+
+ 	case FB_SYMBCLASS_PROC
+ 		if( symbGetIsFuncPtr( s ) ) then
+ 			hEmitFuncPtrProto s
+ 		end if
+
+ 	end select
+
+ 	symbSetIsEmitted( s )
+
+ 	ctx.section = oldsection
+
+end sub
+
+'':::::
 private sub hEmitVar _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval isInit as integer = FALSE _
 	)
+
+	if( symbGetSubtype( s ) <> NULL ) then
+		hEmitUDT symbGetSubType( s )
+	end if
 
 	var attrib = symbGetAttrib( s )
 
@@ -234,7 +281,7 @@ end sub
 
 
 '':::::
-private sub hDeclVariable _
+private sub hEmitVariable _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
@@ -269,6 +316,10 @@ private sub hDeclVariable _
     	    end if
 		end if
 
+		if( symbGetSubtype( s ) <> NULL ) then
+			hEmitUDT symbGetSubType( s )
+		end if
+
 		''''hEmitDataHeader( )
 		astTypeIniFlush( s->var_.initree, _
 						 s, _
@@ -292,8 +343,77 @@ private sub hDeclVariable _
 
 end sub
 
+
 ''::::
-private sub hDeclProc _
+private function hEmitFuncParams _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string
+
+	if symbGetProcParams( s ) = 0 then
+		return "( void )"
+	end if
+
+	var params = "( "
+	var param = symbGetProcLastParam( s )
+	do while param
+
+    	var is_byref = FALSE
+    	var dtype = symbGetType( param )
+    	var subtype = symbGetSubType( param )
+
+		select case param->param.mode
+		case FB_PARAMMODE_BYVAL
+    		select case symbGetType( param )
+    		'' byval string? it's actually an pointer to a zstring
+    		case FB_DATATYPE_STRING
+    			is_byref = TRUE
+    			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+
+    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    			'' has a dtor, copy ctor or virtual methods? it's a copy..
+    			if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+    				is_byref = TRUE
+    			end if
+    		end select
+
+		case FB_PARAMMODE_BYREF
+			is_byref = TRUE
+
+		case FB_PARAMMODE_BYDESC
+			dtype = FB_DATATYPE_STRUCT
+			subtype = symb.arrdesctype
+			is_byref = TRUE
+		end select
+
+		if( subtype <> NULL ) then
+			hEmitUDT subtype
+		end if
+
+		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+			params += "..."
+		else
+			params += *hDtypeToStr( dtype, subtype )
+		end if
+
+		if( is_byref ) then
+			params += " *"
+		end if
+
+		param = symbGetProcPrevParam( s, param )
+		if param then
+			params += ", "
+		end if
+	loop
+
+	params += " )"
+
+	function = params
+
+end function
+
+''::::
+private sub hEmitFuncProto _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
@@ -311,6 +431,9 @@ private sub hDeclProc _
 	if( symbGetIsDupDecl( s ) ) then
 		return
 	end if
+
+	var oldsection = ctx.section
+	ctx.section = SECTION_HEAD
 
 	'' gcc builtin? gen a wrapper..
 	if( symbGetIsGccBuiltin( s ) ) then
@@ -331,86 +454,62 @@ private sub hDeclProc _
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
 					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE )
 
-		return
-	end if
-
-	var params = ""
-	if symbGetProcParams( s ) = 0 then
-		params += "( void )"
 	else
-		params += "( "
-		var param = symbGetProcLastParam( s )
-		do while param
 
-    		var is_byref = FALSE
-    		var dtype = symbGetType( param )
-    		var subtype = symbGetSubType( param )
+		var str_static = ""
 
-			select case param->param.mode
-			case FB_PARAMMODE_BYVAL
-    			select case symbGetType( param )
-    			'' byval string? it's actually an pointer to a zstring
-    			case FB_DATATYPE_STRING
-    				is_byref = TRUE
-    				dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+		if( symbIsPrivate( s ) ) then
+			str_static = "static "
+		end if
 
-    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    				'' has a dtor, copy ctor or virtual methods? it's a copy..
-    				if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-    					is_byref = TRUE
-    				end if
-    			end select
+		var sign = str_static & _
+			   	   *hDtypeToStr( symbGetType( s ), _
+							 	symbGetSubType( s ), _
+							 	DT2STR_OPTION_STRINGRETFIX ) & _
+				    " " & hCallConvToStr( s ) & *symbGetMangledName( s )
 
-			case FB_PARAMMODE_BYREF
-				is_byref = TRUE
-
-			case FB_PARAMMODE_BYDESC
-				dtype = FB_DATATYPE_STRUCT
-				subtype = symb.arrdesctype
-				is_byref = TRUE
-			end select
-
-			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				params += "..."
-			else
-				params += *hDtypeToStr( dtype, subtype )
-			end if
-
-			if( is_byref ) then
-				params += " *"
-			end if
-
-			param = symbGetProcPrevParam( s, param )
-			if param then
-				params += ", "
-			end if
-		loop
-
-		params += " )"
+		hWriteLine( sign & hEmitFuncParams( s ) )
 	end if
 
-	var str_static = ""
-
-	if( symbIsPrivate( s ) ) then
-		str_static = "static "
-	end if
-
-	var sign = str_static & _
-			   *hDtypeToStr( symbGetType( s ), _
-							 symbGetSubType( s ), _
-							 DT2STR_OPTION_STRINGRETFIX ) & _
-				" " & hCallConvToStr( s ) & *symbGetMangledName( s )
-
-	hWriteLine( sign & params )
+	ctx.section = oldsection
 
 end sub
 
 ''::::
-private sub hDeclStruct _
+private sub hEmitFuncPtrProto _
 	( _
 		byval s as FBSYMBOL ptr _
 	)
 
+	hWriteLine( "typedef " & _
+			    *hDtypeToStr( symbGetType( s ), _
+				 			  symbGetSubType( s ), _
+				 			  DT2STR_OPTION_STRINGRETFIX ) & _
+				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
+				hEmitFuncParams( s ) )
+
+end sub
+
+
+''::::
+private sub hEmitStruct _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
+
+
+	'' check every field, for non-emitted subtypes
+	var e = symbGetUDTFirstElm( s )
+	do while( e <> NULL )
+		if( symbGetSubtype( e ) <> NULL ) then
+			if( symbGetSubtype( e ) <> s ) then
+				hEmitUDT symbGetSubtype( e )
+			end if
+		end if
+		e = symbGetUDTNextElm( e )
+	loop
+
+	''
 	var id = symbGetName( s )
 	if id = NULL then
 		id = hMakeTmpStrNL( )
@@ -418,13 +517,27 @@ private sub hDeclStruct _
 
 	var udt_len = symbGetUDTLen( s, FALSE )
 
-	hWriteLine( "typedef struct _" & *id & " {" )
+	var tname = "struct"
+	if( symbGetUDTIsUnion( s ) ) then
+		tname = "union"
+	end if
+
+	hWriteLine( "typedef " + tname + " _" + *id + " {" )
 
 	ctx.identcnt += 1
 
-	var e = symbGetUDTFirstElm( s )
+	e = symbGetUDTFirstElm( s )
 	do while( e <> NULL )
-        var ln = *hDtypeToStr( symbGetType( e ), symbGetSubtype( e ) ) + " " + *symbGetName( e )
+        var subtype = symbGetSubtype( e )
+
+        var ln = ""
+        if( subtype <> s ) then
+        	ln = *hDtypeToStr( symbGetType( e ), subtype ) + " "
+        else
+        	ln = tname + " _" + *id + " *"
+        end if
+
+        ln += *symbGetName( e )
 
 		var elements = 0
     	if( symbGetArrayDimensions( e ) > 0 ) then
@@ -458,26 +571,22 @@ private sub hEmitDecls _
 
 	do while( s <> NULL )
 
-		select case symbGetClass( s )
-		case FB_SYMBCLASS_NAMESPACE
-			hEmitDecls( symbGetNamespaceTbHead( s ) )
+ 		select case as const symbGetClass( s )
+ 		case FB_SYMBCLASS_NAMESPACE
+ 			hEmitDecls( symbGetNamespaceTbHead( s ) )
 
-		case FB_SYMBCLASS_SCOPE
-			hEmitDecls( symbGetScopeSymbTbHead( s ) )
+ 		case FB_SYMBCLASS_SCOPE
+ 			hEmitDecls( symbGetScopeSymbTbHead( s ) )
 
-		case FB_SYMBCLASS_VAR
-			hDeclVariable s
+ 		case FB_SYMBCLASS_VAR
+ 			hEmitVariable s
 
-		case FB_SYMBCLASS_ENUM
-			hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+ 		case FB_SYMBCLASS_PROC
+ 			if( symbGetIsFuncPtr( s ) = FALSE ) then
+ 				hEmitFuncProto s
+ 			end if
 
-		case FB_SYMBCLASS_STRUCT
-			hDeclStruct s
-
-		case FB_SYMBCLASS_PROC
-			hDeclProc s
-
-		end select
+ 		end select
 
 		s = s->next
 	loop
@@ -680,6 +789,8 @@ private function _emitBegin _
 
 	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE )
 
+	hEmitTypedefs( )
+
 	ctx.section = SECTION_BODY
 
 	function = TRUE
@@ -694,8 +805,6 @@ private sub _emitEnd _
 
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
-
-	hEmitTypedefs( )
 
 	hEmitBuiltins( )
 
@@ -829,6 +938,10 @@ private function _procAllocLocal _
     '' a string or array descriptor?
 	if( symbGetLen( sym ) <= 0 ) then
 		return 0
+	end if
+
+	if( symbGetSubtype( sym ) <> NULL ) then
+		hEmitUDT symbGetSubtype( sym )
 	end if
 
 	if symbIsArray( sym ) then
@@ -1141,6 +1254,10 @@ private function hDtypeToStr _
 	select case as const dtype
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		res = *symbGetName( subtype )
+
+	case FB_DATATYPE_FUNCTION
+		res = *symbGetMangledName( subtype )
+		ptrcnt -= 1
 
 	case FB_DATATYPE_STRING
 		res = dtypeTb(dtype).name
@@ -2043,31 +2160,6 @@ private sub _emitVarIniSeparator _
 end sub
 
 '':::::
-private sub hEmitUDTs _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-	do while( s <> NULL )
-
-		select case symbGetClass( s )
-		case FB_SYMBCLASS_NAMESPACE
-			hEmitUDTs( symbGetNamespaceTbHead( s ) )
-
-		case FB_SYMBCLASS_ENUM
-			hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
-
-		case FB_SYMBCLASS_STRUCT
-			hDeclStruct s
-
-		end select
-
-		s = s->next
-	loop
-
-end sub
-
-'':::::
 private sub _emitProcBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2109,6 +2201,10 @@ private sub _emitProcBegin _
 				subtype = symb.arrdesctype
 			end if
 
+			if( subtype <> NULL ) then
+				hEmitUDT subtype
+			end if
+
 			ln += *hDtypeToStr( dtype, subtype )
 
 			if( symbIsParamByVal( pvar ) ) then
@@ -2133,9 +2229,6 @@ private sub _emitProcBegin _
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
 
-	''
-	hEmitUDTs( symbGetProcSymbTbHead( proc ) )
-
 end sub
 
 '':::::
@@ -2159,10 +2252,6 @@ private sub _emitScopeBegin _
 
 	hWriteLine( "{", FALSE )
 	ctx.identcnt += 1
-
-	''
-	hEmitUDTs( symbGetScopeSymbTbHead( s ) )
-
 
 end sub
 

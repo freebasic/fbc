@@ -124,6 +124,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_CANTUNDEF    = &h00800000
     FB_SYMBSTATS_UNIONFIELD   = &h01000000
     FB_SYMBSTATS_RTL_CONST    = &h02000000
+    FB_SYMBSTATS_EMITTED      = &h04000000		'' needed by high-level IRs
 
     '' reuse - take care
     FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
@@ -2039,6 +2040,9 @@ declare sub symbFreeOvlCallArgs _
 
 #define symbGetIsRTLConst(s) ((s->stats and FB_SYMBSTATS_RTL_CONST) <> 0)
 #define symbSetIsRTLConst(s) s->stats or= FB_SYMBSTATS_RTL_CONST
+
+#define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
+#define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
 
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED

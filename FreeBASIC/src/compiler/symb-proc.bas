@@ -1055,7 +1055,7 @@ function symbAddProcPtr _
 
 	'' create a new prototype
 	sym = symbAddPrototype( proc, _
-							id, NULL, NULL, _
+							id, hMakeTmpStrNL(), NULL, _
 							dtype, subtype, _
 							0, mode, _
 							options or FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
