@@ -2190,8 +2190,14 @@ private sub _emitProcBegin _
 		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
 	end if
 
+
+	if( symbIsExport( proc ) ) then
+		ln += "__declspec(dllexport) "
+	end if
+
+
 	if( symbIsPublic( proc ) = FALSE ) then
-		ln = "static "
+		ln += "static "
 	end if
 
 	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
