@@ -415,11 +415,12 @@ end function
 ''::::
 private sub hEmitFuncProto _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval checkcalled as integer = TRUE _
 	)
 
 
-	if( not symbGetIsCalled( s ) ) then
+	if( checkcalled and not symbGetIsCalled( s ) ) then
 		return
 	end if
 
@@ -556,10 +557,25 @@ private sub hEmitStruct _
 		e = symbGetUDTNextElm( e )
 	loop
 
-
 	ctx.identcnt -= 1
 
 	hWriteLine( "} " & *id )
+
+	'' methods will included references to self (this)
+	symbSetIsEmitted( s )
+
+	'' emit methods
+	e = symbGetCompSymbTb( s ).head
+	do while( e <> NULL )
+    	'' method?
+    	if( symbGetClass( e ) = FB_SYMBCLASS_PROC ) then
+			if( symbGetIsFuncPtr( e ) = FALSE ) then
+				hEmitFuncProto e, FALSE
+			end if
+    	end if
+
+    	e = e->next
+    loop
 
 end sub
 
