@@ -734,6 +734,9 @@ private function hMangleVariable  _
     			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 					id_str = sym->id.name
 
+    				suffix_str = @"$"
+    				suffix_len = 1
+
 				'' else, the case-sensitive name saved in the alias..
 				else
 	    			id_str = sym->id.alias

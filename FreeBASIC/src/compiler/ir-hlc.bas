@@ -2331,6 +2331,8 @@ private sub _emitProcBegin _
 
 			ln += *symbGetName( pvar )
 
+			ln += "$"
+
 			param = symbGetProcPrevParam( proc, param )
 			if param then
 				ln += ", "
