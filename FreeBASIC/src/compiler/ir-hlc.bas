@@ -69,7 +69,8 @@ declare function hDtypeToStr _
 
 declare function hVregToStr _
 	( _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval addcast as integer = TRUE _
 	) as string
 
 declare sub hEmitStruct _
@@ -112,8 +113,8 @@ dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' struct
 	( FB_DATACLASS_INTEGER, 0  				, "" 		), _			'' namespace
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' function
-	( FB_DATACLASS_INTEGER, 1			    , ""  ), _					'' fwd-ref
-	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "" ) _					'' pointer
+	( FB_DATACLASS_INTEGER, 1			    , "void"  ), _				'' fwd-ref
+	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "void" ) _				'' pointer
 }
 
 '':::::
@@ -649,9 +650,12 @@ end sub
 '':::::
 private sub hEmitForwardDecls( )
 
+	if( ctx.forwardlist.lastitem = NULL ) then
+		return
+	end if
+
 	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
 	do while( s <> NULL )
-        print *symbGetName( s )
         hEmitUDT( s )
 		s = flistGetNext( s )
 	loop
@@ -1371,7 +1375,8 @@ end function
 '':::::
 private function hVregToStr _
 	( _
-		byval vreg as IRVREG ptr _
+		byval vreg as IRVREG ptr, _
+		byval addcast as integer = TRUE _
 	) as string
 
 	select case as const vreg->typ
@@ -1395,10 +1400,14 @@ private function hVregToStr _
 				if( is_ptr = FALSE ) then
 					operand = "*("
 				else
-					operand = "("
+					if( addcast ) then
+						operand = "("
+					end if
 				end if
 
-				operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
+				if( is_ptr = FALSE or addcast ) then
+					operand += *hDtypeToStr( vreg->dtype, vreg->subtype )
+				end if
 
 				if( is_ptr = FALSE ) then
 					operand += "*)("
@@ -1409,7 +1418,11 @@ private function hVregToStr _
 					end if
 					operand += "&"
 				else
-					operand += ")("
+					if( addcast ) then
+						operand += ")("
+					else
+						operand += "("
+					end if
 				end if
 
 				do_deref = TRUE
@@ -1439,6 +1452,7 @@ private function hVregToStr _
 			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)((ubyte *)"
 			do_deref = TRUE
 			add_plus = FALSE
+
 		end if
 
 		if( vreg->vidx <> NULL ) then
@@ -1909,9 +1923,9 @@ private sub _emitAddr _
 	select case op
 	case AST_OP_ADDROF
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1 ) & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1, FALSE ) & "))", FALSE )
 		else
-			hWriteLine( hVregToStr( vr ) & " = &" & hVregToStr( v1 ) )
+			hWriteLine( hVregToStr( vr ) & " = &" & hVregToStr( v1, FALSE ) )
 		end if
 
 	case AST_OP_DEREF

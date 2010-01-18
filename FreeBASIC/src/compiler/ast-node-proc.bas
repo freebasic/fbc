@@ -803,9 +803,11 @@ private sub hLoadProcResult _
     dim as FBSYMBOL ptr s = any
     dim as ASTNODE ptr n = any
     dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype = any
 
 	s = symbGetProcResult( proc )
 	dtype = symbGetFullType( proc )
+	subtype = symbGetSubtype( proc )
     n = NULL
 
 	select case typeGet( dtype )
@@ -824,10 +826,14 @@ private sub hLoadProcResult _
 	'' UDT? use the real type
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetProcRealType( proc )
+	    if( dtype <> FB_DATATYPE_STRUCT ) then
+	    	subtype = NULL
+	    end if
+
 	end select
 
 	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, 0, dtype, NULL ), dtype, TRUE )
+		n = astNewLOAD( astNewVAR( s, 0, dtype, subtype ), dtype, TRUE )
 	end if
 
 	astAdd( n )
