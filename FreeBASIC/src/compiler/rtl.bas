@@ -216,7 +216,7 @@ sub rtlAddIntrinsicProcs _
 
 								'' add it
 								subtype = symbAddPrototype( inner_proc, _
-															NULL, NULL, NULL, _
+															NULL, hMakeTmpStrNL( ), NULL, _
 															.dtype, NULL, _
 															0, FB_FUNCMODE_DEFAULT, _
 															FB_SYMBOPT_DECLARING )

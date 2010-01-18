@@ -11,7 +11,7 @@
 	[ ] functions that return structs should be passed as-is, no special handling
 	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
 	    access varargs
-        [ ] stdcall names shouldn't be mangled, but anything else should - at least
+        [x] stdcall names shouldn't be mangled, but anything else should - at least
             the g++ mangling uses no special characters
 	[ ] how to handle VARINI###? pass it as a tree plus a callback?
 	[ ] DATA arrays must be emitted in the inverse order because the forward ref links

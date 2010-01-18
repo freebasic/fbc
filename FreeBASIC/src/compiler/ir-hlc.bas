@@ -1268,8 +1268,15 @@ private function hDtypeToStr _
 	end if
 
 	select case as const dtype
-	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+	case FB_DATATYPE_STRUCT
 		res = *symbGetName( subtype )
+
+	case FB_DATATYPE_ENUM
+		if( subtype = NULL ) then
+			res = dtypeTb(FB_DATATYPE_INTEGER).name
+		else
+			res = *symbGetName( subtype )
+		end if
 
 	case FB_DATATYPE_FUNCTION
 		res = *symbGetMangledName( subtype )
@@ -1728,6 +1735,10 @@ private sub _emitConvert _
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 
+	if( subtype <> NULL ) then
+		hEmitUDT( subtype )
+	end if
+
 	if( irIsREG( v1 ) ) then
 		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
 	else
@@ -1928,7 +1939,10 @@ private sub _emitCallPtr _
 		byval bytestopop as integer _
 	)
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	var ln = hEmitCallArgs( arg_list )
+
+	hWriteLine( "(" & hVregToStr( v1 ) & ")" & ln )
+	''errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
