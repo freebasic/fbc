@@ -73,12 +73,14 @@ declare function hVregToStr _
 
 declare sub hEmitStruct _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr = NULL _
 	)
 
 declare sub hEmitFuncPtrProto _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr = NULL _
 	)
 
 '' globals
@@ -203,7 +205,8 @@ end function
 '':::::
 private sub hEmitUDT _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr = NULL _
 	)
 
 	if( symbGetIsEmitted( s ) ) then
@@ -218,11 +221,11 @@ private sub hEmitUDT _
  		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
 
  	case FB_SYMBCLASS_STRUCT
- 		hEmitStruct s
+ 		hEmitStruct s, top
 
  	case FB_SYMBCLASS_PROC
  		if( symbGetIsFuncPtr( s ) ) then
- 			hEmitFuncPtrProto s
+ 			hEmitFuncPtrProto s, top
  		end if
 
  	end select
@@ -347,15 +350,16 @@ end sub
 ''::::
 private function hEmitFuncParams _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr = NULL _
 	) as string
 
-	if symbGetProcParams( s ) = 0 then
+	if symbGetProcParams( proc ) = 0 then
 		return "( void )"
 	end if
 
 	var params = "( "
-	var param = symbGetProcLastParam( s )
+	var param = symbGetProcLastParam( proc )
 	do while param
 
     	var is_byref = FALSE
@@ -387,7 +391,13 @@ private function hEmitFuncParams _
 		end select
 
 		if( subtype <> NULL ) then
-			hEmitUDT subtype
+			'' not a circular reference? emit..
+			if( subtype <> top ) then
+				hEmitUDT subtype, top
+			else
+				hWriteLine( "typedef struct " & *symbGetName( subtype ) & " " & *symbGetName( subtype ) )
+				symbSetIsEmitted( subtype )
+			end if
 		end if
 
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
@@ -400,7 +410,7 @@ private function hEmitFuncParams _
 			params += " *"
 		end if
 
-		param = symbGetProcPrevParam( s, param )
+		param = symbGetProcPrevParam( proc, param )
 		if param then
 			params += ", "
 		end if
@@ -479,7 +489,8 @@ end sub
 ''::::
 private sub hEmitFuncPtrProto _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr _
 	)
 
 	hWriteLine( "typedef " & _
@@ -487,7 +498,7 @@ private sub hEmitFuncPtrProto _
 				 			  symbGetSubType( s ), _
 				 			  DT2STR_OPTION_STRINGRETFIX ) & _
 				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
-				hEmitFuncParams( s ) )
+				hEmitFuncParams( s, top ) )
 
 end sub
 
@@ -495,16 +506,25 @@ end sub
 ''::::
 private sub hEmitStruct _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval top as FBSYMBOL ptr _
 	)
 
 
 	'' check every field, for non-emitted subtypes
 	var e = symbGetUDTFirstElm( s )
 	do while( e <> NULL )
-		if( symbGetSubtype( e ) <> NULL ) then
-			if( symbGetSubtype( e ) <> s ) then
-				hEmitUDT symbGetSubtype( e )
+		var subtype = symbGetSubtype( e )
+		if( subtype <> NULL ) then
+			if( subtype <> s ) then
+				'' not a circular reference? emit..
+				if( subtype <> top ) then
+					hEmitUDT symbGetSubtype( e ), s
+
+				'' shouldn't happen, because the function ptr proto will create a forward ref typedef
+				else
+					errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+				end if
 			end if
 		end if
 		e = symbGetUDTNextElm( e )
