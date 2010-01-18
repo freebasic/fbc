@@ -800,6 +800,9 @@ private function _emitBegin _
 	ctx.regcnt = 0
 	ctx.lblcnt = 0
 	ctx.tmpcnt = 0
+	ctx.head_txt = ""
+	ctx.body_txt = ""
+	ctx.foot_txt = ""
 
 	ctx.section = SECTION_HEAD
 
@@ -1904,9 +1907,9 @@ private function hEmitCallArgs _
 end function
 
 '':::::
-private sub _emitCall _
+private sub hDoCall _
 	( _
-		byval proc as FBSYMBOL ptr, _
+		byval pname as zstring ptr, _
 		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
@@ -1916,17 +1919,30 @@ private sub _emitCall _
 
 	if( vr = NULL ) then
 
-		hWriteLine( *symbGetMangledName( proc ) & ln )
+		hWriteLine( *pname & ln )
 
 	else
 		hLoadVreg( vr )
 
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & *symbGetMangledName( proc ) & ln & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & *pname & ln & "))", FALSE )
 		else
-			hWriteLine( hVregToStr( vr ) & " = " & *symbGetMangledName( proc ) & ln )
+			hWriteLine( hVregToStr( vr ) & " = " & *pname & ln )
 		end if
 	end if
+
+end sub
+
+'':::::
+private sub _emitCall _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval bytestopop as integer, _
+		byval vr as IRVREG ptr _
+	)
+
+	hDoCall symbGetMangledName( proc ), arg_list, bytestopop, vr
 
 end sub
 
@@ -1939,10 +1955,7 @@ private sub _emitCallPtr _
 		byval bytestopop as integer _
 	)
 
-	var ln = hEmitCallArgs( arg_list )
-
-	hWriteLine( "(" & hVregToStr( v1 ) & ")" & ln )
-	''errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	hDoCall "(" & hVregToStr( v1 ) & ")", arg_list, bytestopop, vr
 
 end sub
 
@@ -1979,7 +1992,7 @@ private sub _emitBranch _
 	case AST_OP_JMP
 		hWriteLine( "goto " & *symbGetMangledName( label ) )
 	case else
-		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled branch type." )
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 	end select
 
 end sub
