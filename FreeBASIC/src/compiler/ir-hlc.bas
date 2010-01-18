@@ -47,6 +47,7 @@ type IRHLCCTX
 	lblcnt			as integer
 	tmpcnt			as integer
 	vregTB			as TFLIST
+	forwardlist		as TFLIST
 
 	section			as section_e   ' current section to write to
 	head_txt		as string      ' buffer for header text
@@ -123,6 +124,8 @@ private function _init _
 
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
+	flistNew( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
+
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				 IR_OPT_CPU_BOPSELF or _
 				 IR_OPT_REUSEOPER or _
@@ -140,6 +143,8 @@ end function
 
 '':::::
 private sub _end
+
+	flistFree( @ctx.forwardlist )
 
 	flistFree( @ctx.vregTB )
 
@@ -219,6 +224,7 @@ private sub hEmitUDT _
  	select case as const symbGetClass( s )
  	case FB_SYMBCLASS_ENUM
  		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+		symbSetIsEmitted( s )
 
  	case FB_SYMBCLASS_STRUCT
  		hEmitStruct s, top
@@ -229,8 +235,6 @@ private sub hEmitUDT _
  		end if
 
  	end select
-
- 	symbSetIsEmitted( s )
 
  	ctx.section = oldsection
 
@@ -500,6 +504,9 @@ private sub hEmitFuncPtrProto _
 				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
 				hEmitFuncParams( s, top ) )
 
+
+	symbSetIsEmitted( s )
+
 end sub
 
 
@@ -510,6 +517,10 @@ private sub hEmitStruct _
 		byval top as FBSYMBOL ptr _
 	)
 
+	var tname = "struct"
+	if( symbGetUDTIsUnion( s ) ) then
+		tname = "union"
+	end if
 
 	'' check every field, for non-emitted subtypes
 	var e = symbGetUDTFirstElm( s )
@@ -520,10 +531,15 @@ private sub hEmitStruct _
 				'' not a circular reference? emit..
 				if( subtype <> top ) then
 					hEmitUDT symbGetSubtype( e ), s
-
-				'' shouldn't happen, because the function ptr proto will create a forward ref typedef
+				'' yeap, emit a forward reference to this struct and add it to the circular list
 				else
-					errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+					'' HACK: reusing the accessed flag (that's used by variables only)
+					if( symbGetIsAccessed( s ) = FALSE ) then
+						hWriteLine( "typedef " & tname  &  " _" & *symbGetName( s ) & "$fwd " & *symbGetName( s ) )
+						symbSetIsAccessed( s )
+						*cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
+					end if
+					return
 				end if
 			end if
 		end if
@@ -531,19 +547,20 @@ private sub hEmitStruct _
 	loop
 
 	''
-	var id = symbGetName( s )
-	if id = NULL then
-		id = hMakeTmpStrNL( )
+	dim as string id
+	if symbGetName( s ) = NULL then
+		id = *hMakeTmpStrNL( )
+	else
+		id = *symbGetName( s )
+		'' see the HACK above
+		if( symbGetIsAccessed( s ) ) then
+			id += "$fwd"
+		end if
 	end if
 
 	var udt_len = symbGetUDTLen( s, FALSE )
 
-	var tname = "struct"
-	if( symbGetUDTIsUnion( s ) ) then
-		tname = "union"
-	end if
-
-	hWriteLine( "typedef " + tname + " _" + *id + " {" )
+	hWriteLine( "typedef " + tname + " _" + id + " {" )
 
 	ctx.identcnt += 1
 
@@ -555,7 +572,7 @@ private sub hEmitStruct _
         if( subtype <> s ) then
         	ln = *hDtypeToStr( symbGetType( e ), subtype ) + " "
         else
-        	ln = tname + " _" + *id + " *"
+        	ln = tname + " _" + id + " *"
         end if
 
         ln += *symbGetName( e )
@@ -579,7 +596,7 @@ private sub hEmitStruct _
 
 	ctx.identcnt -= 1
 
-	hWriteLine( "} " & *id )
+	hWriteLine( "} " & id )
 
 	'' methods will included references to self (this)
 	symbSetIsEmitted( s )
@@ -626,6 +643,20 @@ private sub hEmitDecls _
 
 		s = s->next
 	loop
+
+end sub
+
+'':::::
+private sub hEmitForwardDecls( )
+
+	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
+	do while( s <> NULL )
+        print *symbGetName( s )
+        hEmitUDT( s )
+		s = flistGetNext( s )
+	loop
+
+	flistReset( @ctx.forwardlist )
 
 end sub
 
@@ -848,6 +879,8 @@ private sub _emitEnd _
 	hEmitBuiltins( )
 
 	hEmitDecls( symbGetGlobalTbHead( ) )
+
+	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
