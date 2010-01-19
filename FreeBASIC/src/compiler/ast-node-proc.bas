@@ -492,7 +492,7 @@ function astProcBegin _
 
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
 
     	'' alloc parameters
     	if( hDeclProcParams( sym ) = FALSE ) then
@@ -683,7 +683,7 @@ function astProcEnd _
 		end if
 
 		' Don't load the result for naked functions
-		if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+		if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 

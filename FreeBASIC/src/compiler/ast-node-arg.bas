@@ -525,7 +525,8 @@ private function hCheckByDescParam _
     							   symb.arrdesctype, _
     				   			   astNewADDROF( astNewVAR( desc, _
         					   	  			  				0, _
-        					   	  			  				FB_DATATYPE_VOID ) ) ), _
+        					   	  			  				FB_DATATYPE_STRUCT, _
+        					   	  			  				symb.arrdesctype ) ) ), _
         			   desc_tree )
 
     function = TRUE

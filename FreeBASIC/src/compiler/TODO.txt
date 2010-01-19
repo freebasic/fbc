@@ -9,13 +9,13 @@
 	    [x] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
 	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
 	[ ] functions that return structs should be passed as-is, no special handling
-	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to
-	    access varargs
+	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
+	    - they are incompatible with C (va_next() doesn't exist), so disable the va_* in -gen gcc mode
         [x] stdcall names shouldn't be mangled, but anything else should - at least
             the g++ mangling uses no special characters
-	[ ] how to handle VARINI###? pass it as a tree plus a callback?
+	[x] how to handle VARINI###? pass it as a tree plus a callback?
 	[ ] DATA arrays must be emitted in the inverse order because the forward ref links
-        [ ] only accept inline asm in GCC format, pass as-is
+        [x] only accept inline asm in GCC format, pass as-is
 	[x] how to acccess fields?
 	  	foo.bar.baz would become:
 	  	*((typeof(bar.baz) *)((char *)&foo + offsetof(foo, bar) + offsetof(bar, baz))

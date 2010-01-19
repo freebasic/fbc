@@ -48,7 +48,9 @@ declare sub 		hCreateArrayDescriptorType ( _
 
 declare function 	hCreateDescType 	( _
 											byval dims as integer, _
-											byval id as zstring ptr = NULL _
+											byval id as zstring ptr = NULL, _
+											byval dtype as integer = FB_DATATYPE_VOID, _
+											byval subtype as FBSYMBOL ptr = NULL _
 										) as FBSYMBOL ptr
 
 
@@ -124,7 +126,9 @@ end sub
 private function hCreateDescType _
 	( _
 		byval dims as integer, _
-		byval id as zstring ptr = NULL _
+		byval id as zstring ptr = NULL, _
+		byval dtype as integer = FB_DATATYPE_VOID, _
+		byval subtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 	static as FBARRAYDIM dTB(0)
@@ -143,14 +147,14 @@ private function hCreateDescType _
 	symbAddField( sym, _
 				  "data", _
 				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+				  typeAddrOf( dtype ), subtype, _
 				  FB_POINTERSIZE, 0 )
 
 	'' ptr			as any ptr
 	symbAddField( sym, _
 				  "ptr", _
 				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+				  typeAddrOf( dtype ), subtype, _
 				  FB_POINTERSIZE, 0 )
 
     '' size			as integer
@@ -272,7 +276,7 @@ function symbAddArrayDesc _
 
 	attrib or= FB_SYMBATTRIB_DESCRIPTOR
 
-	desctype = hCreateDescType( dimensions )
+	desctype = hCreateDescType( dimensions, NULL, symbGetType( array ), symbGetSubType( array ) )
 
 	'' field?
 	if( symbIsField( array ) ) then

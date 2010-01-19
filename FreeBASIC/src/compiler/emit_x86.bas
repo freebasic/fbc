@@ -1349,49 +1349,49 @@ private sub hCreateFrame _
 	' No frame for naked functions
 	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
+    	if( (bytestoalloc <> 0) or _
+    		(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        	symbGetIsMainProc( proc ) or _
+        	env.clopt.debug or _
+			env.clopt.profile ) then
 
-    	hPUSH( "ebp" )
-    	outp( "mov ebp, esp" )
+    		hPUSH( "ebp" )
+    		outp( "mov ebp, esp" )
 
-        if( symbGetIsMainProc( proc ) ) then
-			outp( "and esp, 0xFFFFFFF0" )
-	    end if
+        	if( symbGetIsMainProc( proc ) ) then
+				outp( "and esp, 0xFFFFFFF0" )
+	    	end if
 
-    	if( bytestoalloc > 0 ) then
-    		outp( "sub esp, " + str( bytestoalloc ) )
+    		if( bytestoalloc > 0 ) then
+    			outp( "sub esp, " + str( bytestoalloc ) )
+    		end if
     	end if
-    end if
 
-	if( env.clopt.target = FB_COMPTARGET_DOS ) then
-		if( env.clopt.profile ) then
-			lprof = hMakeProfileLabelName()
+		if( env.clopt.target = FB_COMPTARGET_DOS ) then
+			if( env.clopt.profile ) then
+				lprof = hMakeProfileLabelName()
 
-			outEx(".section .data" + NEWLINE )
-			outEx( ".balign 4" + NEWLINE )
-			outEx( "." + *lprof + ":" + NEWLINE )
-			outp( ".long 0" )
-			outEx( ".section .text" + NEWLINE )
-			outp( "mov edx, offset ." + *lprof )
-			outp( "call _mcount" )
+				outEx(".section .data" + NEWLINE )
+				outEx( ".balign 4" + NEWLINE )
+				outEx( "." + *lprof + ":" + NEWLINE )
+				outp( ".long 0" )
+				outEx( ".section .text" + NEWLINE )
+				outp( "mov edx, offset ." + *lprof )
+				outp( "call _mcount" )
+			end if
 		end if
-	end if
 
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPUSH( "ebx" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPUSH( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPUSH( "edi" )
-    end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    		hPUSH( "ebx" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    		hPUSH( "esi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    		hPUSH( "edi" )
+    	end if
 
 	end if
 
@@ -1414,34 +1414,34 @@ private sub hDestroyFrame _
 	' don't do anything for naked functions, except the .size at the end
 	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
-    dim as integer bytestoalloc
+    	dim as integer bytestoalloc
 
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPOP( "edi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPOP( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPOP( "ebx" )
-    end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    		hPOP( "edi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    		hPOP( "esi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    		hPOP( "ebx" )
+    	end if
 
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
-    	outp( "mov esp, ebp" )
-    	hPOP( "ebp" )
-    end if
+    	if( (bytestoalloc <> 0) or _
+    		(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        	symbGetIsMainProc( proc ) or _
+        	env.clopt.debug or _
+			env.clopt.profile ) then
+    		outp( "mov esp, ebp" )
+    		hPOP( "ebp" )
+    	end if
 
-    if( bytestopop > 0 ) then
-    	outp( "ret " + str( bytestopop ) )
-    else
-    	outp( "ret" )
-    end if
+    	if( bytestopop > 0 ) then
+    		outp( "ret " + str( bytestopop ) )
+    	else
+    		outp( "ret" )
+    	end if
 
 	end if
 

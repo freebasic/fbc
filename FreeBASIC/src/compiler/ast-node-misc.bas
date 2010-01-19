@@ -163,7 +163,11 @@ function astLoadASM _
 		if( ast.doemit ) then
 			select case node->type
 			case FB_ASMTOK_SYMB
-				asmline += emitGetVarName( node->sym )
+				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+					asmline += *symbGetMangledName( node->sym )
+				else
+					asmline += emitGetVarName( node->sym )
+				end if
 			case FB_ASMTOK_TEXT
 				asmline += *node->text
 			end select
@@ -258,11 +262,11 @@ function astLoadNOP	_
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
-	
+
 	'' do nothing
-	
+
 	function = NULL
-	
+
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -305,9 +309,9 @@ end function
 '' dumping
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'' The tables below use 'NameInfo' as the struct for 
+'' The tables below use 'NameInfo' as the struct for
 '' information. To keep the size down, the FullName
-'' field and value field (unused anyway) are commented 
+'' field and value field (unused anyway) are commented
 '' out.
 
 type NameInfo
@@ -336,7 +340,7 @@ private sub dbg_astOutput _
 		pad = col
 	end select
 
-	if( depth < 0 ) then	
+	if( depth < 0 ) then
 		print space(pad-1); s
 	else
 		print str(depth); space(pad-1 - len(str(depth)) ); s
@@ -540,9 +544,9 @@ private function hSymbToStr _
 	( _
 		byval s as FBSYMBOL ptr _
 	) as string
-	
+
 	if( s = NULL ) then return ""
-	
+
 	if( s->id.name ) then
 		return *(s->id.name)
 	elseif( s->id.alias ) then
@@ -584,13 +588,13 @@ private function hAstNodeToStr _
 
 	case AST_NODECLASS_VAR
 		return """" & *symbGetName( n->sym ) & """"
-	
+
 	case AST_NODECLASS_LABEL
 		return "LABEL: " & hSymbToStr( n->sym )
-	
+
 	case AST_NODECLASS_BRANCH
 		return "BRANCH: " & hAstNodeOpToStr( n->op.op ) & " " & hSymbToStr( n->op.ex )
-	
+
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
 
@@ -614,7 +618,7 @@ private sub astDumpTreeEx _
 	end if
 
 	dim as string s = hAstNodeToStr( n )
-	dbg_astOutput( s, col, just, depth )	
+	dbg_astOutput( s, col, just, depth )
 
 	depth += 1
 
@@ -656,10 +660,10 @@ sub astDumpList _
 		byval n as ASTNODE ptr, _
 		byval col as integer _
 	)
-	
+
 	do while( n <> NULL )
 		astDumpTree( n, col )
 		n = n->next
 	loop
-	
+
 end sub

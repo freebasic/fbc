@@ -478,13 +478,22 @@ private sub hEmitFuncProto _
 			str_static = "static "
 		end if
 
-		var sign = str_static & _
-			   	   *hDtypeToStr( symbGetType( s ), _
-							 	symbGetSubType( s ), _
-							 	DT2STR_OPTION_STRINGRETFIX ) & _
-				    " " & hCallConvToStr( s ) & *symbGetMangledName( s )
+		var ln = str_static & _
+			   	 *hDtypeToStr( symbGetType( s ), _
+					 		   symbGetSubType( s ), _
+							   DT2STR_OPTION_STRINGRETFIX ) & _
+				 " " & hCallConvToStr( s ) & *symbGetMangledName( s )
 
-		hWriteLine( sign & hEmitFuncParams( s ) )
+
+		ln += hEmitFuncParams( s )
+
+		if( symbGetIsGlobalCtor( s ) ) then
+			ln += " __attribute__ ((constructor)) "
+		elseif( symbGetIsGlobalDtor( s ) ) then
+			ln += " __attribute__ ((destructor)) "
+		end if
+
+		hWriteLine( ln )
 	end if
 
 	ctx.section = oldsection
@@ -1329,7 +1338,11 @@ private function hDtypeToStr _
 
 	select case as const dtype
 	case FB_DATATYPE_STRUCT
-		res = *symbGetName( subtype )
+		if( subtype = NULL ) then
+			res = "void"
+		else
+			res = *symbGetName( subtype )
+		end if
 
 	case FB_DATATYPE_ENUM
 		if( subtype = NULL ) then
@@ -2118,7 +2131,7 @@ private sub _emitASM _
 		byval text as zstring ptr _
 	)
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	hWriteLine( "__asm__ ( " + *text + " )" )
 
 end sub
 
@@ -2296,6 +2309,11 @@ private sub _emitProcBegin _
 
 	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
 	ln += hCallConvToStr( proc ) & " "
+
+	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
+		ln += "__attribute__ ((naked)) "
+	end if
+
 	ln += *symbGetMangledName( proc )
 
 	if proc->proc.params = 0 then
