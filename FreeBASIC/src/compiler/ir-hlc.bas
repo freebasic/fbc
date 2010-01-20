@@ -294,9 +294,17 @@ private sub hEmitVar _
 		end if
 	end if
 
-    '''''hEmitBssHeader( )
+    var is_extern = ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or ((attrib and FB_SYMBATTRIB_PUBLIC) <> 0)
 
-    var sign = *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s )
+    var sign = ""
+    if( is_extern = FALSE ) then
+    	if( symbIsLocal( s ) = FALSE or symbIsStatic( s ) ) then
+    		sign = "static "
+    	end if
+    end if
+
+    sign += *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s )
+
     if( elements > 0 ) then
     	sign += "[" & elements & "]"
     end if
@@ -339,8 +347,8 @@ private sub hEmitVariable _
     	return
 	end if
 
-	'' initialized?
-	if( symbGetIsInitialized( s ) ) then
+	'' initialized? only if not local or local and static
+	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
 
 		'' extern or jump-tb?
     	if( symbIsExtern( s ) ) then
@@ -350,22 +358,24 @@ private sub hEmitVariable _
 		end if
 
     	'' never referenced?
-    	if( symbGetIsAccessed( s ) = FALSE ) then
-			'' not public?
-    	    if( symbIsPublic( s ) = FALSE ) then
-    	    	return
-    	    end if
+    	if( symbIsLocal( s ) = FALSE ) then
+    		if( symbGetIsAccessed( s ) = FALSE ) then
+				'' not public?
+    	    	if( symbIsPublic( s ) = FALSE ) then
+    	    		return
+    	    	end if
+			end if
 		end if
 
 		if( symbGetSubtype( s ) <> NULL ) then
 			hEmitUDT symbGetSubType( s )
 		end if
 
-		''''hEmitDataHeader( )
 		astTypeIniFlush( s->var_.initree, _
 						 s, _
 						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
 
+		s->var_.initree = NULL
 		return
 	end if
 
@@ -1071,7 +1081,7 @@ private function _procAllocLocal _
 		byval lgt as integer _
 	) as integer
 
-	dim as string ln
+	/'dim as string ln
 
     '' extern or dynamic (for the latter, only the array descriptor is emitted)?
 	if( (sym->attrib and (FB_SYMBATTRIB_EXTERN or _
@@ -1096,15 +1106,12 @@ private function _procAllocLocal _
 		ln = "static "
 	end if
 
-	' is it some weird typeless item?
-	if *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) = "" then
-    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	else
-		ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
-		ln += *symbGetMangledName( sym )
-	end if
+	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
+	ln += *symbGetMangledName( sym )
 
-	hWriteLine( ln, TRUE )
+	hWriteLine( ln )'/
+
+	hEmitVariable( sym )
 
 	function = 0
 
@@ -2282,7 +2289,7 @@ private sub _emitVarIniOfs _
 		byval ofs as integer _
 	)
 
-	static as string operand
+	static as string operand, ln
 
 	' find literal strings, and just print the text, not the label
 	if symbGetIsLiteral( sym ) and (symbGetType( sym ) = FB_DATATYPE_CHAR) then
@@ -2291,7 +2298,9 @@ private sub _emitVarIniOfs _
 		operand = *symbGetMangledName( sym )
 	end if
 
-	hWriteLine( "(ubyte *)&" & operand & " + " & ofs, FALSE, TRUE )
+	ln = "(" & *hDtypeToStr( symbGetType( sym ), symbGetSubtype( sym ) ) & " *)((ubyte *)&" & operand & " + " & ofs & ")"
+
+	hWriteLine( ln, FALSE, TRUE )
 
 end sub
 
@@ -2437,9 +2446,7 @@ private sub _emitProcBegin _
 				ln += " *"
 			end if
 
-			ln += *symbGetName( pvar )
-
-			ln += "$"
+			ln += *symbGetMangledName( pvar )
 
 			param = symbGetProcPrevParam( proc, param )
 			if param then

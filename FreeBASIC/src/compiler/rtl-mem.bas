@@ -387,13 +387,14 @@ function rtlMemSwap _
 	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst ) or (l_bf or r_bf)) ) then
 
 		dim as ASTNODE ptr d = any, s = any
-		dim as FBSYMBOL ptr l_sym = any, r_sym = any
+		dim as FBSYMBOL ptr l_sym = any, r_sym = any, tmpvar = any
 
 		'' left-side is bitfield...
 		if( l_bf ) then
 
 			'' allocate temp var
-			l_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( dst ) ) ) )
+			dst_dtype = symbGetFullType( astGetSubtype( astGetLeft( dst ) ) )
+			l_sym = symbAddTempVar( dst_dtype )
 
 			'' left-side references temp var
 			d = astNewVAR( l_sym )
@@ -406,8 +407,14 @@ function rtlMemSwap _
 			d = dst
 		end if
 
-		'' push left-side
-		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
+		'' high-level IR? use a temp var...
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		    tmpvar = symbAddTempVar( dst_dtype, NULL )
+			astAdd( astNewASSIGN( astNewVAR( tmpvar ), astCloneTree( d ) ) )
+		else
+			'' push left-side
+			astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
+		end if
 
 		'' right-side is bitfield...
 		if( r_bf ) then
@@ -440,8 +447,13 @@ function rtlMemSwap _
 			astAdd( astNewASSIGN( src, astCloneTree( s ) ) )
 
 		else
-			'' pop to right-side
-			astAdd( astNewSTACK( AST_OP_POP, src ) )
+			'' high-level IR? use a temp var...
+			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+				astAdd( astNewASSIGN( src, astNewVAR( tmpvar ) ) )
+			else
+				'' pop to right-side
+				astAdd( astNewSTACK( AST_OP_POP, src ) )
+			end if
 		end if
 
 		exit function

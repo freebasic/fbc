@@ -576,11 +576,11 @@ end sub
 function hJumpTbAllocSym _
 	( _
 		_
-	) as any ptr static
+	) as any ptr
 
-	static as zstring * FB_MAXNAMELEN+1 sname
-	dim as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s
+	dim as zstring * FB_MAXNAMELEN+1 sname = any
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
 
 	sname = *hMakeTmpStr( )
 

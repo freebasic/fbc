@@ -234,6 +234,13 @@ function symbGetMangledName _
 
 	sym->id.mangled = id_mangled
 
+	'' silly periods..
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			hReplaceChar( id_mangled, asc( "." ), asc( "$" ) )
+		end if
+	end if
+
 	function = id_mangled
 
 end function
@@ -712,8 +719,16 @@ private function hMangleVariable  _
 
 		if( isglobal or docpp ) then
 
+    		suffix_len = 0
+
     		'' BASIC? use the upper-cased name
     		if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+    			'' high-level?
+				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    				suffix_str = @"$"
+    				suffix_len = 1
+				end if
+
 				id_str = sym->id.name
 
 			'' else, the case-sensitive name saved in the alias..
@@ -723,8 +738,15 @@ private function hMangleVariable  _
 
     		'' suffixed?
     		if( symbIsSuffixed( sym ) ) then
-    			suffix_str = @typecodeTB( symbGetType( sym ) )
-    			suffix_len = 1
+    			if( suffix_len = 0 ) then
+    				suffix_str = @typecodeTB( symbGetType( sym ) )
+    			else
+    				static as string tmp
+    				tmp = typecodeTB( symbGetType( sym ) ) + "$"
+    				suffix_str = strptr( tmp )
+    			end if
+
+    			suffix_len += 1
     		end if
 
 		else

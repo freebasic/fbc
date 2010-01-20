@@ -293,6 +293,24 @@ function hReplaceW _
 end function
 
 '':::::
+function hReplaceChar _
+	( _
+		byval orgtext as zstring ptr, _
+		byval oldchar as integer, _
+		byval newchar as integer _
+	) as zstring ptr
+
+    for i as integer = 0 to len( *orgtext ) - 1
+    	if( orgtext[i] = oldchar ) then
+    		orgtext[i] = newchar
+    	end if
+    next
+
+	function = orgtext
+
+end function
+
+'':::::
 function hReEscape _
 	( _
 		byval text as zstring ptr, _

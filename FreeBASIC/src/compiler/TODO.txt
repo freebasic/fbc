@@ -1,5 +1,6 @@
 [ ] add a C backend
 	[ ] functions that return structs should be passed as-is, no special handling
+	[x] SWAP
 	[ ] UTF literal strings
 	[x] debugging support
 	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
