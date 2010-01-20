@@ -159,6 +159,8 @@ sub astDataStmtEnd _
 		id = n->data.id
 		expr = n->l
 
+		astTypeIniScopeBegin( initree )
+
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR
 			id = symbGetStrLen( astGetStrLitSymbol( expr ) ) - 1
@@ -190,6 +192,8 @@ sub astDataStmtEnd _
 
         '' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
+
+    	astTypeIniScopeEnd( initree )
 
     	'' next
 		dim as ASTNODE ptr nxt = n->r

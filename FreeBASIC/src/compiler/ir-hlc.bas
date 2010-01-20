@@ -572,6 +572,11 @@ private sub hEmitStruct _
 
 	hWriteLine( "typedef " + tname + " _" + id + " {" )
 
+	var attrib = ""
+	if( s->udt.align = 1 ) then
+		attrib = " __attribute__((__packed__))"
+	end if
+
 	ctx.identcnt += 1
 
 	e = symbGetUDTFirstElm( s )
@@ -598,6 +603,8 @@ private sub hEmitStruct _
         if( elements > 0 ) then
         	ln += "[" & elements & "]"
         end if
+
+        ln += attrib
 
         hWriteLine( ln )
 
@@ -2202,7 +2209,16 @@ private sub _emitVarIniOfs _
 		byval ofs as integer _
 	)
 
-	hWriteLine( "(ubyte *)&" & *symbGetMangledName( sym ) & " + " & ofs, FALSE )
+	static as string operand
+
+	' find literal strings, and just print the text, not the label
+	if symbGetIsLiteral( sym ) and (symbGetType( sym ) = FB_DATATYPE_CHAR) then
+		operand =  """" & *hEscape( symbGetVarLitText( sym ) ) & """"
+	else
+		operand = *symbGetMangledName( sym )
+	end if
+
+	hWriteLine( "(ubyte *)&" & operand & " + " & ofs, FALSE )
 
 end sub
 
