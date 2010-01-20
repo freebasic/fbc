@@ -349,6 +349,13 @@ type FB_DEFTOK
 	next			as FB_DEFTOK ptr
 end type
 
+enum FB_DEFINE_FLAGS
+	FB_DEFINE_FLAGS_NONE		= &h00000000
+	FB_DEFINE_FLAGS_STR			= &h00000000
+	FB_DEFINE_FLAGS_NUM			= &h00000001
+	FB_DEFINE_FLAGS_NOGCC		= &h00000002
+end enum
+
 type FBS_DEFINE
 	params			as integer
 	paramhead 		as FB_DEFPARAM ptr
@@ -360,9 +367,7 @@ type FBS_DEFINE
 	end union
 
 	isargless		as integer
-    flags           as integer          		'' flags:
-                                        		'' bit    meaning
-                                        		'' 0      1=numeric, 0=string
+    flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
 	proc			as function( ) as string
 end type
 
@@ -553,7 +558,7 @@ type FBS_PROC
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
 	lib				as FBS_LIB ptr
 	lgt				as integer					'' parameters length (in bytes)
-	returnMethod		as FB_PROC_RETURN_METHOD
+	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
@@ -974,7 +979,7 @@ declare function symbAddDefine _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as function() as string = NULL, _
-		byval flags as integer = 0 _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineW _
@@ -984,7 +989,7 @@ declare function symbAddDefineW _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as function() as string = NULL, _
-		byval flags as integer = 0 _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineMacro _
@@ -992,7 +997,8 @@ declare function symbAddDefineMacro _
 		byval symbol as zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
-		byval paramhead as FB_DEFPARAM ptr _
+		byval paramhead as FB_DEFPARAM ptr, _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineParam _

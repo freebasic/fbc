@@ -9,7 +9,7 @@
 	    [x] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
 	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
 	[ ] functions that return structs should be passed as-is, no special handling
-	[ ] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
+	[x] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
 	    - they are incompatible with C (va_next() doesn't exist), so disable the va_* in -gen gcc mode
         [x] stdcall names shouldn't be mangled, but anything else should - at least
             the g++ mangling uses no special characters

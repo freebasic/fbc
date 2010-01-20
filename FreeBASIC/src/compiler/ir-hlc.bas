@@ -1809,8 +1809,8 @@ end sub
 '':::::
 private sub _emitConvert _
 	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr _
 	)
@@ -1818,16 +1818,16 @@ private sub _emitConvert _
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 
-	if( subtype <> NULL ) then
-		hEmitUDT( subtype )
+	if( to_subtype <> NULL ) then
+		hEmitUDT( to_subtype )
 	end if
 
 	if( irIsREG( v1 ) ) then
 		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
+
 	else
-		hWriteLine( hVregToStr( v1 ) & _
-					" = (" & *hDtypeToStr( v1->dtype, v1->subtype ) & ")" & _
-					hVregToStr( v2 ) )
+		dim as string to_type = *hDtypeToStr( v1->dtype, v1->subtype )
+		hWriteLine( hVregToStr( v1 ) & " = (" & to_type & ")" & hVregToStr( v2 ) )
 	end if
 
 end sub
@@ -1842,7 +1842,7 @@ private sub _emitStore _
 	if( v1 <> v2 ) then
 		'' casting needed?
 		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
-			_emitConvert( FB_DATATYPE_VOID, NULL, v1, v2 )
+			_emitConvert( v1->dtype, v1->subtype, v1, v2 )
 
 		else
 			hLoadVreg( v1 )

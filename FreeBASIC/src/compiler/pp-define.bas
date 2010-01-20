@@ -661,6 +661,19 @@ function ppDefineLoad _
 		end if
 	end if
 
+	'' invalid with a high-level IR?
+	if( (s->def.flags and FB_DEFINE_FLAGS_NOGCC) <> 0 ) then
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC ) = FALSE ) then
+				return FALSE
+			else
+				'' error recovery: skip
+				hSkipUntil( INVALID, FALSE, LEX_FLAGS )
+				return TRUE
+			end if
+		end if
+	end if
+
 	'' only one level
 	if( lex.ctx->currmacro = NULL ) then
 		lex.ctx->currmacro = s
@@ -1001,7 +1014,7 @@ function ppDefine _
     end if
 
     lexEatToken( @defname, flags )
-    
+
     if( hIsValidSymbolName( defname ) = FALSE ) then
     	exit function
     end if

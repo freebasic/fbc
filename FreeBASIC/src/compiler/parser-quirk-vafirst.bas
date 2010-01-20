@@ -72,19 +72,28 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 	end if
 
-	'' @param
-	expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
-	expr = astNewADDROF( expr )
+	'' high-level IR? va_* not supported
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE ) = FALSE ) then
+			exit function
+		end if
 
-	'' + paramlen( param )
-	funcexpr = astNewBOP( AST_OP_ADD, _
-						  expr, _
-						  astNewCONSTi( symbCalcparamLen( param->typ, _
-						  								  param->subtype, _
-						  								  param->param.mode ), _
-						  				FB_DATATYPE_UINT ) )
+		'' error recovery: fake an expr
+		funcexpr = astNewCONSTi( 0 )
 
+	else
+		'' @param
+		expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
+		expr = astNewADDROF( expr )
 
+		'' + paramlen( param )
+		funcexpr = astNewBOP( AST_OP_ADD, _
+						  	  expr, _
+						  	  astNewCONSTi( symbCalcparamLen( param->typ, _
+						  								  	  param->subtype, _
+						  								  	  param->param.mode ), _
+						  					FB_DATATYPE_UINT ) )
+	end if
 
 	function = TRUE
 

@@ -813,6 +813,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
  	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
+	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 end enum
 
 type FB_RTL_PARAMDEF

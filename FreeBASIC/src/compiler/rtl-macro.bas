@@ -71,7 +71,7 @@
 		/' #define va_arg(a,t) peek( t, a ) '/ _
 		( _
 			@"VA_ARG", _
-	 		FB_RTL_OPT_NOQB, _
+	 		FB_RTL_OPT_NOQB or FB_RTL_OPT_NOGCC, _
 	 		2, _
 	 		{ _
 	 			@"A", @"T" _
@@ -88,7 +88,7 @@
 		/' #define va_next(a,t) (a + len( t )) '/ _
 		( _
 			@"VA_NEXT", _
-	 		FB_RTL_OPT_NOQB, _
+	 		FB_RTL_OPT_NOQB or FB_RTL_OPT_NOGCC, _
 	 		2, _
 	 		{ _
 	 			@"A", @"T" _
@@ -311,6 +311,7 @@ sub rtlAddIntrinsicMacros _
 
 	'' for each macro..
 	do
+		var flags = FB_DEFINE_FLAGS_NONE
 		if( macdef->name = NULL ) then
 			exit do
 		end if
@@ -329,11 +330,20 @@ sub rtlAddIntrinsicMacros _
 		'' for each token..
 		tok_head = NULL
 
-    	'' only if debugging?
     	dim as integer addbody = TRUE
+
+    	'' only if debugging?
     	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
     		if( env.clopt.debug = FALSE ) then
     			addbody = FALSE
+    		end if
+    	end if
+
+    	'' not supported in high-level IR?
+    	if( (macdef->options and FB_RTL_OPT_NOGCC) <> 0 ) then
+    		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    			addbody = FALSE
+                flags or= FB_DEFINE_FLAGS_NOGCC
     		end if
     	end if
 
@@ -374,7 +384,7 @@ sub rtlAddIntrinsicMacros _
     		end if
     	end if
 
-       	symbAddDefineMacro( mname, tok_head, macdef->params, param_head )
+       	symbAddDefineMacro( mname, tok_head, macdef->params, param_head, flags )
 
 		'' next
         macdef += 1
