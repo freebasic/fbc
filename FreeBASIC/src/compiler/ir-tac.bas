@@ -588,13 +588,14 @@ end sub
 ''::::
 private sub _emitJmpTb _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
 	) static
 
 	_flush( )
 
-	emitJMPTB( dtype, symbGetMangledName( label ) )
+	emitJMPTB( op, dtype, symbGetMangledName( label ) )
 
 end sub
 

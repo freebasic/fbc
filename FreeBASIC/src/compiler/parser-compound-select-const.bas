@@ -433,28 +433,38 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 
 	idxexpr = astNewBOP( AST_OP_MUL, _
 						 astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
-    				  	 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+    				  	 astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, -minval*FB_INTEGERSIZE, FB_DATATYPE_UINT ), _
-    				  idxexpr, FB_DATATYPE_UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE, typeAddrOf( FB_DATATYPE_VOID ) ), _
+    				  idxexpr, typeAddrOf( FB_DATATYPE_VOID ), NULL )
 
-    astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+	'' not high-level IR? emit the jump before the table
+	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+    	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+    end if
 
     '' emit table
-    astAdd( astNewLABEL( tbsym ) )
+    astAdd( astNewJMPTB_Begin( tbsym ) )
 
     ''
     i = stk->select.const_.base
     for value = minval to maxval
     	if( value = ctx.caseTB(i).value ) then
-    		astAdd( astNewJMPTB( FB_DATATYPE_UINT, ctx.caseTB(i).label ) )
+    		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, ctx.caseTB(i).label ) )
     		i += 1
     	else
-    		astAdd( astNewJMPTB( FB_DATATYPE_UINT, deflabel ) )
+    		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, deflabel ) )
     	end if
     next
 
     ctx.base = stk->select.const_.base
+
+    astAdd( astNewJMPTB_End( tbsym ) )
+
+	'' high-level IR? emit the jump after the table
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+    end if
 
     '' emit exit label
     astAdd( astNewLABEL( stk->select.endlabel ) )

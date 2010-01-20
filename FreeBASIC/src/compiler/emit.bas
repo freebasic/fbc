@@ -228,7 +228,8 @@ sub emitFlush( )
 			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
-			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.dtype, _
+			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.op, _
+															n->jtb.dtype, _
 													   		n->jtb.text )
 
 			ZstrFree( n->jtb.text )
@@ -582,6 +583,7 @@ end function
 '':::::
 private function hNewJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval text as zstring ptr _
 	) as EMIT_NODE ptr static
@@ -590,6 +592,7 @@ private function hNewJMPTB _
 
 	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
 
+	n->jtb.op = op
 	n->jtb.dtype = dtype
 	n->jtb.text = ZstrAllocate( len( *text ) )
 	*n->jtb.text = *text
@@ -1576,11 +1579,12 @@ end function
 '':::::
 function emitJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval text as zstring ptr _
 	) as EMIT_NODE ptr static
 
-	function = hNewJMPTB( dtype, text )
+	function = hNewJMPTB( op, dtype, text )
 
 end function
 

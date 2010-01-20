@@ -755,7 +755,7 @@ private function assembleFiles_GCC _
 
     	'' gcc' options
     	ascline = "-c -nostdlib -nostdinc " & _
-    			  "-Wall -Wno-unused-label " & _
+    			  "-Wall -Wno-unused-label -Wunused-function -Wunused-variable " & _
     			  "-finline -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
     			  "-O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
 

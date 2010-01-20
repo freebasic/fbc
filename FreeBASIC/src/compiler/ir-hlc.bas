@@ -48,6 +48,7 @@ type IRHLCCTX
 	tmpcnt			as integer
 	vregTB			as TFLIST
 	forwardlist		as TFLIST
+	jmptbsym		as FBSYMBOL ptr
 
 	section			as section_e   ' current section to write to
 	head_txt		as string      ' buffer for header text
@@ -100,8 +101,8 @@ dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
 	( FB_DATACLASS_INTEGER, 2  				, "short" ), _				'' wchar
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' int
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "uinteger" ), _   		'' uint
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "int" ), _				'' enum
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "int" ), _				'' bitfield
+	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' enum
+	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' bitfield
 	( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "long" ), _				'' long
 	( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "ulong" ), _   			'' ulong
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "longint" ), _			'' longint
@@ -276,6 +277,7 @@ private sub hEmitVar _
 		end if
 	else
        	hWriteLine( "extern " & sign )
+    	sign += " __attribute__((common))"
     end if
 
 	'' emit
@@ -568,15 +570,19 @@ private sub hEmitStruct _
 		end if
 	end if
 
-	var udt_len = symbGetUDTLen( s, FALSE )
-
 	hWriteLine( "typedef " + tname + " _" + id + " {" )
 
+	''
 	var attrib = ""
-	if( s->udt.align = 1 ) then
-		attrib = " __attribute__((__packed__))"
+	if( s->udt.align > 0 ) then
+		if( s->udt.align = 1 ) then
+			attrib = " __attribute__((packed))"
+		else
+			attrib = " __attribute__((aligned (" & s->udt.align & ")))"
+		end if
 	end if
 
+	''
 	ctx.identcnt += 1
 
 	e = symbGetUDTFirstElm( s )
@@ -603,6 +609,12 @@ private sub hEmitStruct _
         if( elements > 0 ) then
         	ln += "[" & elements & "]"
         end if
+
+        /' the bitfield calcs are done by FB
+        if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
+        	ln += " :" & subtype->bitfld.bits
+        end if
+        '/
 
         ln += attrib
 
@@ -1378,6 +1390,13 @@ private function hDtypeToStr _
 			end if
 		end if
 
+	case FB_DATATYPE_BITFIELD
+        if( subtype <> NULL ) then
+        	res = dtypeTb(symbGetType( subtype )).name
+        else
+        	res = "integer"
+        end if
+
 	case else
 		res = dtypeTb(dtype).name
 	end select
@@ -1571,11 +1590,24 @@ end sub
 ''::::
 private sub _emitJmpTb _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
 	)
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	select case op
+	case AST_JMPTB_BEGIN
+		ctx.jmptbsym = label
+		hWriteLine( "static const void * " & *symbGetMangledName( label ) & "[] = {", FALSE )
+		ctx.identcnt += 1
+
+	case AST_JMPTB_END
+		ctx.identcnt -= 1
+		hWriteLine( "(void *)0 }" )
+
+	case AST_JMPTB_LABEL
+		hWriteLine( "&&" & *symbGetMangledName( label ) & ",", FALSE )
+	end select
 
 end sub
 
@@ -2064,7 +2096,7 @@ private sub _emitJumpPtr _
 		byval v1 as IRVREG ptr _
 	)
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+	hWriteLine( "goto *" & hVregToStr( v1 ) )
 
 end sub
 

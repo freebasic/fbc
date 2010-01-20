@@ -1500,14 +1500,22 @@ end sub
 '':::::
 private sub _emitJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
-		byval symbol as zstring ptr _
+		byval label as zstring ptr _
 	) static
 
     dim ostr as string
 
-	ostr = *_getTypeString( dtype ) + " " + *symbol
-	outp( ostr )
+	select case op
+	case AST_JMPTB_LABEL
+		ostr = *_getTypeString( dtype ) + " " + *label
+		outp( ostr )
+	case AST_JMPTB_BEGIN
+		ostr = *label
+		ostr += ":" + NEWLINE
+		outEx( ostr )
+	end select
 
 end sub
 

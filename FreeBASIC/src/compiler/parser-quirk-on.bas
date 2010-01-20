@@ -108,30 +108,38 @@ function cGOTBStmt _
 
 	idxexpr = astNewBOP( AST_OP_MUL, _
 						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-						 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+						 astNewCONSTi( FB_POINTERSIZE, FB_DATATYPE_UINT ) )
 
 	expr = astNewIDX( astNewVAR( tbsym, _
-								 -1*FB_INTEGERSIZE, _
-								 FB_DATATYPE_UINT ), _
+								 -1*FB_POINTERSIZE, _
+								 typeAddrOf( FB_DATATYPE_VOID ) ), _
 					  idxexpr, _
-					  FB_DATATYPE_UINT, NULL )
+					  typeAddrOf( FB_DATATYPE_VOID ), NULL )
 
-	if( isgoto ) then
-		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-
-	else
-		astGosubAddJumpPtr( parser.currproc, expr, exitlabel )
-
+	'' not high-level IR? emit the jump before the table
+	if( (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE) or (isgoto = FALSE) ) then
+		if( isgoto ) then
+			astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+		else
+			astGosubAddJumpPtr( parser.currproc, expr, exitlabel )
+		end if
 	end if
 
 	'' emit table
-	astAdd( astNewLABEL( tbsym ) )
+	astAdd( astNewJMPTB_Begin( tbsym ) )
 
 	''
 	dim as integer i = any
 	for i = 0 to l-1
-		astAdd( astNewJMPTB( FB_DATATYPE_UINT, labelTB(i) ) )
+		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, labelTB(i) ) )
 	next
+
+	astAdd( astNewJMPTB_End( tbsym ) )
+
+	'' high-level IR? emit the jump after the table
+	if( irGetOption( IR_OPT_HIGHLEVEL and isgoto ) ) then
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+    end if
 
 	'' emit exit label
 	astAdd( astNewLABEL( exitlabel ) )

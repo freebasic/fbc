@@ -260,6 +260,7 @@ type IR_VTBL
 
 	emitJmpTb as sub _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
 	)
@@ -713,7 +714,7 @@ declare sub irDelCallArgs _
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB(dtype, label) ir.vtbl.emitJmpTb( dtype, label )
+#define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
 
 #define irEmitInfoSection( liblist, libpathlist ) ir.vtbl.emitInfoSection( liblist, libpathlist )
 

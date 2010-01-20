@@ -177,6 +177,7 @@ end type
 
 type AST_NODE_JMPTB
 	label			as FBSYMBOL ptr
+	op				as AST_JMPTB_OP
 end type
 
 type AST_NODE_DBG
@@ -771,10 +772,20 @@ declare function astNewASM _
 		byval listhead as FB_ASMTOK_ ptr _
 	) as ASTNODE ptr
 
-declare function astNewJMPTB _
+declare function astNewJMPTB_Label _
 	( _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function astNewJMPTB_Begin _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function astNewJMPTB_End _
+	( _
+		byval s as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewDBG _

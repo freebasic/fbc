@@ -188,6 +188,7 @@ type EMIT_LITNODE
 end type
 
 type EMIT_JTBNODE
+	op			as AST_JMPTB_OP
 	dtype		as integer
 	text		as zstring ptr
 end type
@@ -248,7 +249,8 @@ type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
 type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval dtype as integer, _
+type EMIT_JTBCB as sub( byval op as AST_JMPTB_OP, _
+						byval dtype as integer, _
 						byval text as zstring ptr )
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
@@ -451,6 +453,7 @@ declare function emitLIT _
 
 declare function emitJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval text as zstring ptr _
 	) as EMIT_NODE ptr

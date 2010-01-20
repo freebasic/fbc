@@ -1,6 +1,12 @@
 [ ] add a C backend
+	[ ] functions that return structs should be passed as-is, no special handling
+	[ ] UTF literal strings
+	[ ] debugging support
 	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
+	[x] jump-tables (used in select as const)
+	[x] unitialized static and global vars must be zeroed (gas does that automatically because .comm is used)
 	[x] structs
+	    [x] bitfields - note: ABI-dependent
 	    [x] non exported or extern vars should have an suffix ($) to not clash with gcc symbols
 	    	and to support structs with the same name
 	    [x] method protos must be emitted
@@ -8,13 +14,12 @@
 	    [x] handle function pointers
 	    [x] emit only the used UDTs (hard to do, because func protos and other structs could set the flag)
 	    Note: field access is stills done by pointers, what is ABI-dependent (ie: fails on x64)
-	[ ] functions that return structs should be passed as-is, no special handling
 	[x] the va_* macros/quirk-func must be passed to AST, each ABI has different way to access varargs
 	    - they are incompatible with C (va_next() doesn't exist), so disable the va_* in -gen gcc mode
         [x] stdcall names shouldn't be mangled, but anything else should - at least
             the g++ mangling uses no special characters
 	[x] how to handle VARINI###? pass it as a tree plus a callback?
-	[ ] DATA arrays must be emitted in the inverse order because the forward ref links
+	[x] DATA arrays must be emitted in the inverse order because the forward ref links
         [x] only accept inline asm in GCC format, pass as-is
 	[x] how to acccess fields?
 	  	foo.bar.baz would become:
