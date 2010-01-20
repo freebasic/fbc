@@ -26,6 +26,7 @@
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\flist.bi"
+#include once "inc\lex.bi"
 
 '' flags that are stored in ctx to know what part of the output hWriteFile
 '' should write to
@@ -49,6 +50,7 @@ type IRHLCCTX
 	vregTB			as TFLIST
 	forwardlist		as TFLIST
 	jmptbsym		as FBSYMBOL ptr
+	linenum			as integer
 
 	section			as section_e   ' current section to write to
 	head_txt		as string      ' buffer for header text
@@ -84,6 +86,13 @@ declare sub hEmitFuncPtrProto _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval top as FBSYMBOL ptr = NULL _
+	)
+
+declare sub _emitDBG _
+	( _
+		byval op as integer, _
+		byval proc as FBSYMBOL ptr, _
+		byval ex as integer _
 	)
 
 '' globals
@@ -156,14 +165,46 @@ end sub
 private sub hWriteLine _
 	( _
 		byval s as zstring ptr = NULL, _
-		byval addcommas as integer = TRUE _
+		byval addcommas as integer = TRUE, _
+		byval noline as integer = FALSE _
 	)
 
-	static as string ln
+	static as string ln, idstr, dbgln
+
+#macro writeToSection(ln)
+	' write it out to the current section
+	select case as const ctx.section
+	case SECTION_HEAD
+		ctx.head_txt += ln
+	case SECTION_BODY
+		ctx.body_txt += ln
+	case SECTION_FOOT
+		ctx.foot_txt += ln
+	end select
+#endmacro
 
 	if( s <> NULL ) then
+		'' the redundancy here is needed to keep string allocated and speed up concatenation, DON'T CHANGE!
+
 		if( ctx.identcnt > 0 ) then
-			ln = string( ctx.identcnt, TABCHAR )
+			idstr = string( ctx.identcnt, TABCHAR )
+		end if
+
+		if( env.clopt.debug and noline = FALSE ) then
+			if( ctx.identcnt > 0 ) then
+				dbgln = idstr
+				dbgln += "#line "
+			else
+				dbgln = "#line "
+			end if
+
+			dbgln += ctx.linenum & " """ & env.inf.name & """" & NEWLINE
+
+			writeToSection( dbgln )
+		end if
+
+		if( ctx.identcnt > 0 ) then
+			ln = idstr
 			ln += *s
 		else
 			ln = *s
@@ -179,17 +220,7 @@ private sub hWriteLine _
 		ln = NEWLINE
 	end if
 
-	' write it out to the current section
-	select case as const ctx.section
-		case SECTION_HEAD
-			ctx.head_txt += ln
-		case SECTION_BODY
-			ctx.body_txt += ln
-		case SECTION_FOOT
-			ctx.foot_txt += ln
-		case else
-			errReportEx( FB_ERRMSG_INTERNAL, "Bad section." )
-	end select
+	writeToSection( ln )
 
 end sub
 
@@ -225,7 +256,7 @@ private sub hEmitUDT _
 
  	select case as const symbGetClass( s )
  	case FB_SYMBCLASS_ENUM
- 		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE )
+ 		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE, FALSE )
 		symbSetIsEmitted( s )
 
  	case FB_SYMBCLASS_STRUCT
@@ -273,16 +304,16 @@ private sub hEmitVar _
     '' allocation modifier
     if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
       	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
-       		hWriteLine( "extern " & sign )
+       		hWriteLine( "extern " & sign, TRUE )
 		end if
 	else
-       	hWriteLine( "extern " & sign )
+       	hWriteLine( "extern " & sign, TRUE )
     	sign += " __attribute__((common))"
     end if
 
 	'' emit
     if( not isInit ) then
-    	hWriteLine( sign )
+    	hWriteLine( sign, TRUE )
     else
     	hWriteLine( sign & " = ", FALSE )
     end if
@@ -402,7 +433,7 @@ private function hEmitFuncParams _
 			if( subtype <> top ) then
 				hEmitUDT subtype, top
 			else
-				hWriteLine( "typedef struct " & *symbGetName( subtype ) & " " & *symbGetName( subtype ) )
+				hWriteLine( "typedef struct " & *symbGetName( subtype ) & " " & *symbGetName( subtype ), TRUE )
 				symbSetIsEmitted( subtype )
 			end if
 		end if
@@ -470,7 +501,7 @@ private sub hEmitFuncProto _
 		loop
 
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
-					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE )
+					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE, TRUE )
 
 	else
 
@@ -495,7 +526,7 @@ private sub hEmitFuncProto _
 			ln += " __attribute__ ((destructor)) "
 		end if
 
-		hWriteLine( ln )
+		hWriteLine( ln, TRUE )
 	end if
 
 	ctx.section = oldsection
@@ -514,7 +545,7 @@ private sub hEmitFuncPtrProto _
 				 			  symbGetSubType( s ), _
 				 			  DT2STR_OPTION_STRINGRETFIX ) & _
 				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
-				hEmitFuncParams( s, top ) )
+				hEmitFuncParams( s, top ), TRUE )
 
 
 	symbSetIsEmitted( s )
@@ -547,7 +578,7 @@ private sub hEmitStruct _
 				else
 					'' HACK: reusing the accessed flag (that's used by variables only)
 					if( symbGetIsAccessed( s ) = FALSE ) then
-						hWriteLine( "typedef " & tname  &  " _" & *symbGetName( s ) & "$fwd " & *symbGetName( s ) )
+						hWriteLine( "typedef " & tname  &  " _" & *symbGetName( s ) & "$fwd " & *symbGetName( s ), TRUE )
 						symbSetIsAccessed( s )
 						*cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
 					end if
@@ -570,7 +601,7 @@ private sub hEmitStruct _
 		end if
 	end if
 
-	hWriteLine( "typedef " + tname + " _" + id + " {" )
+	hWriteLine( "typedef " + tname + " _" + id + " {", TRUE )
 
 	''
 	var attrib = ""
@@ -618,14 +649,14 @@ private sub hEmitStruct _
 
         ln += attrib
 
-        hWriteLine( ln )
+        hWriteLine( ln, TRUE )
 
 		e = symbGetUDTNextElm( e )
 	loop
 
 	ctx.identcnt -= 1
 
-	hWriteLine( "} " & id )
+	hWriteLine( "} " & id, TRUE )
 
 	'' methods will included references to self (this)
 	symbSetIsEmitted( s )
@@ -696,17 +727,17 @@ end sub
 private sub hEmitTypedefs( )
 
 	'' typedef's for debugging
-	hWriteLine( "typedef char byte" )
-	hWriteLine( "typedef unsigned char ubyte" )
-	hWriteLine( "typedef unsigned short ushort" )
-	hWriteLine( "typedef int integer" )
-	hWriteLine( "typedef unsigned int uinteger" )
-	hWriteLine( "typedef unsigned long ulong" )
-	hWriteLine( "typedef long long longint" )
-	hWriteLine( "typedef unsigned long long ulongint" )
-	hWriteLine( "typedef float single" )
-	hWriteLine( "typedef struct _string { char *data; int len; int size; } string" )
-	hWriteLine( "typedef char fixstr" )
+	hWriteLine( "typedef char byte", TRUE )
+	hWriteLine( "typedef unsigned char ubyte", TRUE )
+	hWriteLine( "typedef unsigned short ushort", TRUE )
+	hWriteLine( "typedef int integer", TRUE )
+	hWriteLine( "typedef unsigned int uinteger", TRUE )
+	hWriteLine( "typedef unsigned long ulong", TRUE )
+	hWriteLine( "typedef long long longint", TRUE )
+	hWriteLine( "typedef unsigned long long ulongint", TRUE )
+	hWriteLine( "typedef float single", TRUE )
+	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
+	hWriteLine( "typedef char fixstr", TRUE )
 
 end sub
 
@@ -785,7 +816,7 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (unsigned long long int)fb_ftosl( v )", FALSE )
+		hWriteLine( "#define fb_ftoul( v ) (unsigned long long int)fb_ftosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
@@ -798,23 +829,23 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (unsigned int)fb_ftosi( v )", FALSE )
+		hWriteLine( "#define fb_ftoui( v ) (unsigned int)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", FALSE )
+		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (unsigned short)fb_ftosi( v )", FALSE )
+		hWriteLine( "#define fb_ftous( v ) (unsigned short)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE )
+		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE )
+		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	'' double
@@ -824,7 +855,7 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (unsigned long long int)fb_dtosl( v )", FALSE )
+		hWriteLine( "#define fb_dtoul( v ) (unsigned long long int)fb_dtosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
@@ -837,23 +868,23 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (unsigned int)fb_dtosi( v )", FALSE )
+		hWriteLine( "#define fb_dtoui( v ) (unsigned int)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", FALSE )
+		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (unsigned short)fb_dtosi( v )", FALSE )
+		hWriteLine( "#define fb_dtous( v ) (unsigned short)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE )
+		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE )
+		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 end sub
@@ -886,10 +917,15 @@ private function _emitBegin _
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
+	ctx.linenum = 0
 
 	ctx.section = SECTION_HEAD
 
-	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE )
+	if( env.clopt.debug ) then
+		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
+	end if
+
+	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE, TRUE )
 
 	hEmitTypedefs( )
 
@@ -916,7 +952,7 @@ private sub _emitEnd _
 
 	ctx.section = SECTION_FOOT
 
-	hWriteLine( "/* Total compilation time: " & tottime & " seconds. */", FALSE )
+	hWriteLine( "/* Total compilation time: " & tottime & " seconds. */", FALSE, TRUE )
 
 	' flush all sections to file
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
@@ -973,6 +1009,8 @@ private sub _procBegin _
 		byval proc as FBSYMBOL ptr _
 	)
 
+	proc->proc.ext->dbg.iniline = lexLineNum( )
+
 end sub
 
 '':::::
@@ -980,6 +1018,8 @@ private sub _procEnd _
 	( _
 		byval proc as FBSYMBOL ptr _
 	)
+
+	proc->proc.ext->dbg.endline = lexLineNum( )
 
 end sub
 
@@ -1017,7 +1057,7 @@ private function procAllocLocalArray _
 
 	ln += "[" & elements & "]"
 
-	hWriteLine( ln )
+	hWriteLine( ln, TRUE )
 
 	function = 0
 
@@ -1064,7 +1104,7 @@ private function _procAllocLocal _
 		ln += *symbGetMangledName( sym )
 	end if
 
-	hWriteLine( ln )
+	hWriteLine( ln, TRUE )
 
 	function = 0
 
@@ -1561,7 +1601,7 @@ private sub _emitLabel _
 		byval label as FBSYMBOL ptr _
 	)
 
-	hWriteLine( *symbGetMangledName( label ) + ":" )
+	hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
 
 end sub
 
@@ -1571,7 +1611,7 @@ private sub _emitLabelNF _
 		byval label as FBSYMBOL ptr _
 	)
 
-	hWriteLine( *symbGetMangledName( label ) + ":" )
+	hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
 
 end sub
 
@@ -1603,7 +1643,7 @@ private sub _emitJmpTb _
 
 	case AST_JMPTB_END
 		ctx.identcnt -= 1
-		hWriteLine( "(void *)0 }" )
+		hWriteLine( "(void *)0 }", TRUE )
 
 	case AST_JMPTB_LABEL
 		hWriteLine( "&&" & *symbGetMangledName( label ) & ",", FALSE )
@@ -1714,7 +1754,7 @@ private sub hWriteBOP _
 	end if
 
 	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) & "))", FALSE )
+		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) & "))", FALSE, TRUE )
 	else
 		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & hBOPToStr( op ) & hVregToStr( v2 ) )
 	end if
@@ -1749,7 +1789,7 @@ private sub _emitBopEx _
 		'' vr = ~(v1 ^ v2)
 		if( irIsREG( vr ) ) then
 			hWriteLine( hPrepDefine( vr ) & "~(" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")))", FALSE )
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")))", FALSE, TRUE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = ~(" & _
 						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")" )
@@ -1763,7 +1803,7 @@ private sub _emitBopEx _
 		'' vr = ~v1 | v2
 		if( irIsREG( vr ) ) then
 			hWriteLine( hPrepDefine( vr ) & "~" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & "))", FALSE )
+						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & "))", FALSE, TRUE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = ~" & _
 						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) )
@@ -1813,7 +1853,7 @@ private sub hWriteUOP _
 	end if
 
 	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & " )))", FALSE )
+		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & " )))", FALSE, TRUE )
 	else
 		hWriteLine( hVregToStr( vr ) & " = " & op & "( " & hVregToStr( v1 ) & " )" )
 	end if
@@ -1862,7 +1902,7 @@ private sub _emitConvert _
 	end if
 
 	if( irIsREG( v1 ) ) then
-		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
+		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE, TRUE )
 
 	else
 		dim as string to_type = *hDtypeToStr( v1->dtype, v1->subtype )
@@ -1888,7 +1928,7 @@ private sub _emitStore _
 			hLoadVreg( v2 )
 
 			if( irIsREG( v1 ) ) then
-				hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE )
+				hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE, TRUE )
 			else
 				hWriteLine( hVregToStr( v1 ) & " = " & hVregToStr( v2 ) )
 			end if
@@ -1975,14 +2015,14 @@ private sub _emitAddr _
 	select case op
 	case AST_OP_ADDROF
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1, FALSE ) & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1, FALSE ) & "))", FALSE, TRUE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = &" & hVregToStr( v1, FALSE ) )
 		end if
 
 	case AST_OP_DEREF
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & "))", FALSE, TRUE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = *" & hVregToStr( v1 ) )
 		end if
@@ -2044,7 +2084,7 @@ private sub hDoCall _
 		hLoadVreg( vr )
 
 		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & *pname & ln & "))", FALSE )
+			hWriteLine( hPrepDefine( vr ) & *pname & ln & "))", FALSE, TRUE )
 		else
 			hWriteLine( hVregToStr( vr ) & " = " & *pname & ln )
 		end if
@@ -2128,10 +2168,10 @@ private sub _emitMem _
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )" )
+		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )", TRUE )
 
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )" )
+		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )", TRUE )
 
 	end select
 
@@ -2146,10 +2186,10 @@ private sub _emitDBG _
 		byval ex as integer _
 	)
 
-'	Encase the line number in a comment so the c compiler doesn't freak out.
-' 	if( op = AST_OP_DBG_LINEINI ) then
-' 		hWriteLine( "/* #line " & ex & " """ & env.inf.name & """ */", FALSE )
-'	end if
+ 	if( op = AST_OP_DBG_LINEINI ) then
+ 		hWriteLine( "#line " & ex & " """ & env.inf.name & """", FALSE, TRUE )
+ 		ctx.linenum = ex
+	end if
 
 end sub
 
@@ -2159,8 +2199,9 @@ private sub _emitComment _
 		byval text as zstring ptr _
 	)
 
-	/' use old C style comments for greater compatibility '/
-	if len(trim(*text)) > 0 then hWriteLine( "/* " & *text & " */", FALSE ) 'no point in writing blank comments.
+	if( len( trim( *text ) ) > 0 ) then
+		hWriteLine( "/* " & *text & " */", FALSE, TRUE )
+	end if
 
 end sub
 
@@ -2196,7 +2237,7 @@ private sub _emitVarIniEnd _
 
 	ctx.identcnt -= 1
 
-	hWriteLine( "" )
+	hWriteLine( "", TRUE, TRUE )
 
 
 end sub
@@ -2208,7 +2249,7 @@ private sub _emitVarIniI _
 		byval value as integer _
 	)
 
-	hWriteLine( str( value ), FALSE )
+	hWriteLine( str( value ), FALSE, TRUE )
 
 end sub
 
@@ -2219,7 +2260,7 @@ private sub _emitVarIniF _
 		byval value as double _
 	)
 
-	hWriteLine( str( value ), FALSE )
+	hWriteLine( str( value ), FALSE, TRUE )
 
 end sub
 
@@ -2230,7 +2271,7 @@ private sub _emitVarIniI64 _
 		byval value as longint _
 	)
 
-	hWriteLine( str( value ), FALSE )
+	hWriteLine( str( value ), FALSE, TRUE )
 
 end sub
 
@@ -2250,7 +2291,7 @@ private sub _emitVarIniOfs _
 		operand = *symbGetMangledName( sym )
 	end if
 
-	hWriteLine( "(ubyte *)&" & operand & " + " & ofs, FALSE )
+	hWriteLine( "(ubyte *)&" & operand & " + " & ofs, FALSE, TRUE )
 
 end sub
 
@@ -2264,11 +2305,11 @@ private sub _emitVarIniStr _
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
-		hWriteLine( """""", FALSE )
+		hWriteLine( """""", FALSE, TRUE )
 		exit sub
 	end if
 
-	hWriteLine( """" & *hEscape( litstr ) & """", FALSE )
+	hWriteLine( """" & *hEscape( litstr ) & """", FALSE, TRUE )
 
 end sub
 
@@ -2282,11 +2323,11 @@ private sub _emitVarIniWstr _
 
 	'' wstring * 1?
 	if( totlgt = 0 ) then
-		hWriteLine( """""", FALSE )
+		hWriteLine( """""", FALSE, TRUE )
 		exit sub
 	end if
 
-	hWriteLine( """" & *hEscapeW( litstr ) & """", FALSE )
+	hWriteLine( """" & *hEscapeW( litstr ) & """", FALSE, TRUE )
 
 end sub
 
@@ -2326,7 +2367,7 @@ private sub _emitVarIniSeparator _
 		_
 	)
 
-	hWriteLine( ", ", FALSE )
+	hWriteLine( ", ", FALSE, TRUE )
 
 end sub
 
@@ -2343,6 +2384,7 @@ private sub _emitProcBegin _
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
+		ctx.linenum = 0
 	end if
 
 
@@ -2408,9 +2450,9 @@ private sub _emitProcBegin _
 
 	end if
 
-	hWriteLine( ln, FALSE )
+	hWriteLine( ln, FALSE, TRUE )
 
-	hWriteLine( "{", FALSE )
+	hWriteLine( "{", FALSE, TRUE )
 	ctx.identcnt += 1
 
 end sub
@@ -2424,7 +2466,7 @@ private sub _emitProcEnd _
 	)
 
 	ctx.identcnt -= 1
-	hWriteLine( "}", FALSE )
+	hWriteLine( "}", FALSE, TRUE )
 
 end sub
 
@@ -2434,7 +2476,7 @@ private sub _emitScopeBegin _
 		byval s as FBSYMBOL ptr _
 	)
 
-	hWriteLine( "{", FALSE )
+	hWriteLine( "{", FALSE, TRUE )
 	ctx.identcnt += 1
 
 end sub
@@ -2446,7 +2488,7 @@ private sub _emitScopeEnd _
 	)
 
 	ctx.identcnt -= 1
-	hWriteLine( "}" )
+	hWriteLine( "}", TRUE, TRUE )
 
 end sub
 

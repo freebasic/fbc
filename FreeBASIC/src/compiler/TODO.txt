@@ -1,7 +1,7 @@
 [ ] add a C backend
 	[ ] functions that return structs should be passed as-is, no special handling
 	[ ] UTF literal strings
-	[ ] debugging support
+	[x] debugging support
 	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] jump-tables (used in select as const)
 	[x] unitialized static and global vars must be zeroed (gas does that automatically because .comm is used)
