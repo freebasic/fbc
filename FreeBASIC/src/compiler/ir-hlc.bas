@@ -148,6 +148,9 @@ private function _init _
 	' initialize the current section
 	ctx.section = SECTION_HEAD
 
+	'' wchar len depends on the target platform
+	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
+
 	function = TRUE
 
 end function
@@ -1572,8 +1575,13 @@ private function hVregToStr _
 		end if
 
 		' find literal strings, and just print the text, not the label
-		if symbGetIsLiteral( vreg->sym ) and (symbGetType( vreg->sym ) = FB_DATATYPE_CHAR) then
-			operand =  """" & *hEscape( symbGetVarLitText( vreg->sym ) ) & """"
+		if( symbGetIsLiteral( vreg->sym ) ) then
+			select case symbGetType( vreg->sym )
+			case FB_DATATYPE_CHAR
+				operand =  """" & *hEscape( symbGetVarLitText( vreg->sym ) ) & """"
+			case FB_DATATYPE_WCHAR
+				operand =  "(" & dtypeTB(FB_DATATYPE_WCHAR).name & " *)&""" & *hEscapeW( symbGetVarLitTextW( vreg->sym ) ) & "\0"""
+			end select
 		end if
 
 		return operand
@@ -2292,8 +2300,15 @@ private sub _emitVarIniOfs _
 	static as string operand, ln
 
 	' find literal strings, and just print the text, not the label
-	if symbGetIsLiteral( sym ) and (symbGetType( sym ) = FB_DATATYPE_CHAR) then
-		operand =  """" & *hEscape( symbGetVarLitText( sym ) ) & """"
+	if symbGetIsLiteral( sym ) then
+		select case symbGetType( sym )
+		case FB_DATATYPE_CHAR
+			operand =  """" & *hEscape( symbGetVarLitText( sym ) ) & """"
+		case FB_DATATYPE_WCHAR
+			operand =  """" & *hEscapeW( symbGetVarLitTextW( sym ) ) & "\0"""
+		case else
+			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		end select
 	else
 		operand = *symbGetMangledName( sym )
 	end if
