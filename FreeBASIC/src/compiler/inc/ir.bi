@@ -447,14 +447,20 @@ type IR_VTBL
 
 	emitVarIniScopeBegin as sub _
 	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
 	)
 
 	emitVarIniScopeEnd as sub _
 	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
 	)
 
 	emitVarIniSeparator as sub _
 	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
 	)
 
 	allocVreg as function _
@@ -696,11 +702,11 @@ declare sub irDelCallArgs _
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
 
-#define irEmitVARINISCOPEINI() ir.vtbl.emitVarIniScopeBegin( )
+#define irEmitVARINISCOPEINI(basesym, s) ir.vtbl.emitVarIniScopeBegin( basesym, s )
 
-#define irEmitVARINISCOPEEND() ir.vtbl.emitVarIniScopeEnd( )
+#define irEmitVARINISCOPEEND(basesym, s) ir.vtbl.emitVarIniScopeEnd( basesym, s )
 
-#define irEmitVARINISEPARATOR() ir.vtbl.emitVarIniSeparator( )
+#define irEmitVARINISEPARATOR(basesym, s) ir.vtbl.emitVarIniSeparator( basesym, s )
 
 #define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 

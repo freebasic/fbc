@@ -735,6 +735,9 @@ private function hArchToGccArch _
 	case FB_CPUTYPE_PENTIUMSSE3
 		march = "prescott"
 
+	case FB_CPUTYPE_NATIVE
+		march = "native"
+
 	end select
 
 	function = march
@@ -755,8 +758,8 @@ private function assembleFiles_GCC _
 
     	'' gcc' options
     	ascline = "-c -nostdlib -nostdinc " & _
-    			  "-Wall -Wno-unused-label -Wunused-function -Wunused-variable " & _
-    			  "-finline -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
+    			  "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
+    			  "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
     			  "-O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
 
     	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then

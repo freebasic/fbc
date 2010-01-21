@@ -85,6 +85,11 @@ function symbStructBegin _
 
 	''
 	s->ofs = 0
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		if( align = 0 ) then
+			align = 1
+		end if
+	end if
 	s->udt.align = align
 	s->udt.lfldlen = 0
 	s->udt.bitpos = 0
@@ -563,7 +568,8 @@ private function hGetReturnType _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-	dim as FB_DATATYPE dtype = symbGetFullType( sym ), res = FB_DATATYPE_VOID
+	var dtype = symbGetFullType( sym )
+	var res = FB_DATATYPE_VOID
 
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers

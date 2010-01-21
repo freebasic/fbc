@@ -171,9 +171,13 @@ private function hArrayInit _
 	if( lexGetToken( ) = CHAR_LBRACE ) then
 		lexSkipToken( )
 
-		astTypeIniScopeBegin( ctx.tree )
-
 		ctx.dimcnt += 1
+
+		'' open a scope only if it's the first dim -- used by the gcc emitter
+		if( ctx.dimcnt = 1 ) then
+			astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		end if
+
 		'' too many dimensions?
 		if( ctx.dimcnt > dimensions ) then
 			if( errReport( iif( dimensions > 0, _
@@ -279,7 +283,7 @@ private function hArrayInit _
 			exit do
 		end if
 
-        astTypeIniSeparator( ctx.tree )
+        astTypeIniSeparator( ctx.tree, ctx.sym )
 	loop
 
 	'' pad
@@ -325,7 +329,10 @@ private function hArrayInit _
 
 	if( isarray ) then
 
-		astTypeIniScopeEnd( ctx.tree )
+		'' close the scope only if it's the first dim -- used by the gcc emitter
+		if( ctx.dimcnt = 1 ) then
+			astTypeIniScopeEnd( ctx.tree, ctx.sym )
+		end if
 
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
@@ -434,7 +441,7 @@ private function hUDTInit _
 		end if
 
 	else
-		astTypeIniScopeBegin( ctx.tree )
+		astTypeIniScopeBegin( ctx.tree, ctx.sym )
 	end if
 
 	if( parenth ) then
@@ -583,17 +590,15 @@ private function hUDTInit _
 			exit do
 		end if
 
-        astTypeIniSeparator( ctx.tree )
+        astTypeIniSeparator( ctx.tree, ctx.sym )
 	loop
-
-	'' restore parent
-	ctx = old_ctx
 
 	'' ')'
 	if( parenth ) then
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				rec_cnt -= 1
+				ctx = old_ctx
 				exit function
 			else
 				'' error recovery: skip until next ')'
@@ -601,9 +606,12 @@ private function hUDTInit _
 			end if
 		else
 			lexSkipToken( )
-			astTypeIniScopeEnd( ctx.tree )
+			astTypeIniScopeEnd( ctx.tree, ctx.sym )
 		end if
 	end if
+
+	'' restore parent
+	ctx = old_ctx
 
 	''
 	dim as integer sym_len = symbCalcLen( dtype, subtype )

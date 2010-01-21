@@ -279,7 +279,8 @@ end function
 '':::::
 function astTypeIniScopeBegin _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -289,6 +290,8 @@ function astTypeIniScopeBegin _
 				  FB_DATATYPE_INVALID, _
 				  NULL )
 
+	n->sym = sym
+
 	function = n
 
 end function
@@ -296,7 +299,8 @@ end function
 '':::::
 function astTypeIniScopeEnd _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -306,6 +310,8 @@ function astTypeIniScopeEnd _
 				  FB_DATATYPE_INVALID, _
 				  NULL )
 
+	n->sym = sym
+
 	function = n
 
 end function
@@ -313,7 +319,8 @@ end function
 '':::::
 function astTypeIniSeparator _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -322,6 +329,8 @@ function astTypeIniSeparator _
 				  AST_NODECLASS_TYPEINI_SEPARATOR, _
 				  FB_DATATYPE_INVALID, _
 				  NULL )
+
+	n->sym = sym
 
 	function = n
 
@@ -697,13 +706,13 @@ private function hFlushTreeStatic _
     		irEmitVARINIPAD( n->typeini.bytes )
 
     	case AST_NODECLASS_TYPEINI_SCOPEINI
-    		irEmitVARINISCOPEINI( )
+    		irEmitVARINISCOPEINI( basesym, n->sym )
 
     	case AST_NODECLASS_TYPEINI_SCOPEEND
-    		irEmitVARINISCOPEEND( )
+    		irEmitVARINISCOPEEND( basesym, n->sym )
 
     	case AST_NODECLASS_TYPEINI_SEPARATOR
-    		irEmitVARINISEPARATOR( )
+    		irEmitVARINISEPARATOR( basesym, n->sym )
 
     	case else
 			hFlushExprStatic( n, basesym )

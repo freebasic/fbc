@@ -1048,7 +1048,8 @@ end sub
 '':::::
 private sub _emitVarIniScopeBegin _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	) static
 
 	emitVARINISCOPEINI( )
@@ -1058,7 +1059,8 @@ end sub
 '':::::
 private sub _emitVarIniScopeEnd _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	) static
 
 	emitVARINISCOPEEND( )
@@ -1068,7 +1070,8 @@ end sub
 '':::::
 private sub _emitVarIniSeparator _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	) static
 
 	emitVARINISEPARATOR( )

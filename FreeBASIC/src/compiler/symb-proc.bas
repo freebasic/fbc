@@ -1180,6 +1180,7 @@ function symbAddProcResultParam _
 
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
+    static as string id
 
 	'' UDT?
 	if( proc->typ <> FB_DATATYPE_STRUCT ) then
@@ -1191,7 +1192,8 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-    s = symbAddVarEx( NULL, NULL, _
+   	id = *hMakeTmpStrNL( )
+    s = symbAddVarEx( id, NULL, _
     				  FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
     				  0, dTB(), _
     				  FB_SYMBATTRIB_PARAMBYREF, _

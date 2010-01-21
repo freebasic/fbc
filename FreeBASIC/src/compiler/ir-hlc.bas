@@ -37,25 +37,29 @@ enum section_e
 end enum
 
 type DTYPEINFO
-	class			as integer
-	size			as integer
-	name			as zstring * 31+1
+	class				as integer
+	size				as integer
+	name				as zstring * 31+1
 end type
 
 type IRHLCCTX
-	identcnt		as integer     ' how many levels of indent
-	regcnt			as integer     ' temporary labels counter
-	lblcnt			as integer
-	tmpcnt			as integer
-	vregTB			as TFLIST
-	forwardlist		as TFLIST
-	jmptbsym		as FBSYMBOL ptr
-	linenum			as integer
+	identcnt			as integer     ' how many levels of indent
+	regcnt				as integer     ' temporary labels counter
+	lblcnt				as integer
+	tmpcnt				as integer
+	vregTB				as TFLIST
+	forwardlist			as TFLIST
+	jmptbsym			as FBSYMBOL ptr
+	linenum				as integer
 
-	section			as section_e   ' current section to write to
-	head_txt		as string      ' buffer for header text
-	body_txt		as string      ' buffer for body text
-	foot_txt		as string      ' buffer for footer text
+	ini_isfixstrarray	as integer
+	ini_strdata			as string
+	ini_iswstr			as integer
+
+	section				as section_e   ' current section to write to
+	head_txt			as string      ' buffer for header text
+	body_txt			as string      ' buffer for body text
+	foot_txt			as string      ' buffer for footer text
 end type
 
 enum DT2STR_OPTION
@@ -94,6 +98,11 @@ declare sub _emitDBG _
 		byval proc as FBSYMBOL ptr, _
 		byval ex as integer _
 	)
+
+declare function hEscapeUCN _
+	( _
+		byval text as wstring ptr _
+	) as zstring ptr
 
 '' globals
 dim shared as IRHLCCTX ctx
@@ -292,9 +301,12 @@ private sub hEmitVar _
 	var elements = 0
     if( symbGetArrayDimensions( s ) > 0 ) then
     	elements = symbGetArrayElements( s )
-		if( symbGetType( s ) = FB_DATATYPE_FIXSTR ) then
+		select case symbGetType( s )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 			elements *= symbGetStrLen( s )
-		end if
+		case FB_DATATYPE_WCHAR
+			elements *= symbGetWstrLen( s )
+		end select
 	end if
 
     var is_extern = ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or ((attrib and FB_SYMBATTRIB_PUBLIC) <> 0)
@@ -397,15 +409,25 @@ private sub hEmitVariable _
 
 end sub
 
-
 ''::::
 private function hEmitFuncParams _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr = NULL _
+		byval top as FBSYMBOL ptr = NULL, _
+		byval isproto as integer = TRUE _
 	) as string
 
-	if symbGetProcParams( proc ) = 0 then
+	''
+	dim as FBSYMBOL ptr hidden_param = NULL
+	select case symbGetType( proc )
+	case FB_DATATYPE_STRUCT
+		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
+        	hidden_param = proc->proc.ext->res
+		end if
+	end select
+
+	''
+	if( symbGetProcParams( proc ) = 0 and hidden_param = NULL ) then
 		return "( void )"
 	end if
 
@@ -414,8 +436,11 @@ private function hEmitFuncParams _
 	do while param
 
     	var is_byref = FALSE
-    	var dtype = symbGetType( param )
-    	var subtype = symbGetSubType( param )
+
+    	var pvar = iif( isproto, param, symbGetParamVar( param ) )
+
+    	var dtype = symbGetType( pvar )
+    	var subtype = symbGetSubType( pvar )
 
 		select case param->param.mode
 		case FB_PARAMMODE_BYVAL
@@ -446,8 +471,11 @@ private function hEmitFuncParams _
 			if( subtype <> top ) then
 				hEmitUDT subtype, top
 			else
-				hWriteLine( "typedef struct " & *symbGetName( subtype ) & " " & *symbGetName( subtype ), TRUE )
-				symbSetIsEmitted( subtype )
+				'' HACK: reusing the accessed flag (that's used by variables only)
+				if( symbGetIsAccessed( subtype ) = FALSE ) then
+					hWriteLine( "typedef struct _" & *symbGetName( subtype ) & "$fwd " & *symbGetName( subtype ), TRUE )
+					symbSetIsAccessed( subtype )
+				end if
 			end if
 		end if
 
@@ -461,11 +489,32 @@ private function hEmitFuncParams _
 			params += " *"
 		end if
 
+		if( isproto = FALSE ) then
+			if( is_byref = FALSE ) then
+				params += " "
+			end if
+			params += *symbGetMangledName( pvar )
+		end if
+
 		param = symbGetProcPrevParam( proc, param )
 		if param then
 			params += ", "
 		end if
+
 	loop
+
+	''
+	if( hidden_param ) then
+        if( proc->proc.params > 0 ) then
+           	params += ", "
+        end if
+
+    	params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), symbGetSubtype( hidden_param ) )
+
+		if( isproto = FALSE ) then
+        	params += " " & *symbGetMangledName( hidden_param )
+		end if
+	end if
 
 	params += " )"
 
@@ -525,7 +574,7 @@ private sub hEmitFuncProto _
 		end if
 
 		var ln = str_static & _
-			   	 *hDtypeToStr( symbGetType( s ), _
+			   	 *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
 					 		   symbGetSubType( s ), _
 							   DT2STR_OPTION_STRINGRETFIX ) & _
 				 " " & hCallConvToStr( s ) & *symbGetMangledName( s )
@@ -554,7 +603,7 @@ private sub hEmitFuncPtrProto _
 	)
 
 	hWriteLine( "typedef " & _
-			    *hDtypeToStr( symbGetType( s ), _
+			    *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
 				 			  symbGetSubType( s ), _
 				 			  DT2STR_OPTION_STRINGRETFIX ) & _
 				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
@@ -645,9 +694,12 @@ private sub hEmitStruct _
 		var elements = 0
     	if( symbGetArrayDimensions( e ) > 0 ) then
     		elements = symbGetArrayElements( e )
-			if( symbGetType( e ) = FB_DATATYPE_FIXSTR ) then
+			select case symbGetType( e )
+			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 				elements *= symbGetStrLen( e )
-			end if
+			case FB_DATATYPE_WCHAR
+				elements *= symbGetWstrLen( e )
+			end select
 		end if
 
         if( elements > 0 ) then
@@ -931,6 +983,8 @@ private function _emitBegin _
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
 	ctx.linenum = 0
+	ctx.ini_isfixstrarray = FALSE
+	ctx.ini_iswstr = FALSE
 
 	ctx.section = SECTION_HEAD
 
@@ -1051,68 +1105,12 @@ private function _procAllocArg _
 end function
 
 '':::::
-private function procAllocLocalArray _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
-
-	dim as string ln
-
-	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
-	ln += *symbGetMangledName( sym )
-
-	var elements = symbGetArrayElements( sym )
-	if( symbGetType( sym ) = FB_DATATYPE_FIXSTR ) then
-		elements *= symbGetStrLen( sym )
-	end if
-
-	ln += "[" & elements & "]"
-
-	hWriteLine( ln, TRUE )
-
-	function = 0
-
-end function
-
-'':::::
 private function _procAllocLocal _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval lgt as integer _
 	) as integer
-
-	/'dim as string ln
-
-    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
-	if( (sym->attrib and (FB_SYMBATTRIB_EXTERN or _
-			   			  FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
-		return 0
-	end if
-
-    '' a string or array descriptor?
-	if( symbGetLen( sym ) <= 0 ) then
-		return 0
-	end if
-
-	if( symbGetSubtype( sym ) <> NULL ) then
-		hEmitUDT symbGetSubtype( sym )
-	end if
-
-	if symbIsArray( sym ) then
-		return procAllocLocalArray( proc, sym, lgt )
-	end if
-
-	if( symbIsStatic( sym ) ) then
-		ln = "static "
-	end if
-
-	ln += *hDtypeToStr( symbGetType( sym ), symbGetSubType( sym ) ) & " "
-	ln += *symbGetMangledName( sym )
-
-	hWriteLine( ln )'/
 
 	hEmitVariable( sym )
 
@@ -2319,6 +2317,23 @@ private sub _emitVarIniOfs _
 
 end sub
 
+private function hIsFixStrArray _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	if( sym <> NULL andalso symbGetArrayDimensions( sym ) > 0 ) then
+		select case symbGetType( sym )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			return TRUE
+		end select
+	end if
+
+	return FALSE
+
+end function
+
+
 '':::::
 private sub _emitVarIniStr _
 	( _
@@ -2329,11 +2344,26 @@ private sub _emitVarIniStr _
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
-		hWriteLine( """""", FALSE, TRUE )
+		if( ctx.ini_isfixstrarray = FALSE ) then
+			hWriteLine( """""", FALSE, TRUE )
+		end if
 		exit sub
 	end if
 
-	hWriteLine( """" & *hEscape( litstr ) & """", FALSE, TRUE )
+	var s = """" & *hEscape( litstr ) & "\0"""
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		hWriteLine( s, FALSE, TRUE )
+	else
+		ctx.ini_strdata += s
+
+		if( totlgt > litlgt ) then
+			var pad = ""
+			for i as integer = litlgt to totlgt - 1
+				pad += "\0"
+			next
+			ctx.ini_strdata += " """ & pad & """"
+		end if
+	end if
 
 end sub
 
@@ -2347,11 +2377,26 @@ private sub _emitVarIniWstr _
 
 	'' wstring * 1?
 	if( totlgt = 0 ) then
-		hWriteLine( """""", FALSE, TRUE )
+		if( ctx.ini_isfixstrarray = FALSE ) then
+			hWriteLine( "L""""", FALSE, TRUE )
+		end if
 		exit sub
 	end if
 
-	hWriteLine( """" & *hEscapeW( litstr ) & """", FALSE, TRUE )
+	var s = " L""" & *hEscapeUCN( litstr ) & "\0"""
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		hWriteLine( s, FALSE, TRUE )
+	else
+		ctx.ini_strdata += s
+
+		if( totlgt > litlgt ) then
+			var pad = ""
+			for i as integer = litlgt to totlgt - 1
+				pad += "\0"
+			next
+			ctx.ini_strdata += " L""" & pad & """"
+		end if
+	end if
 
 end sub
 
@@ -2361,37 +2406,77 @@ private sub _emitVarIniPad _
 		byval bytes as integer _
 	)
 
-	'' do nothing..
+	if( bytes <= 0 ) then
+		return
+	end if
+
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		return
+	end if
+
+	if( ctx.ini_iswstr ) then
+		bytes \= symbGetDataSize( FB_DATATYPE_WCHAR )
+	end if
+
+	var pad = ""
+	do while( bytes > 0 )
+		pad += "\0"
+		bytes -= 1
+	loop
+
+	ctx.ini_strdata += " """ & pad & """"
 
 end sub
 
 '':::::
 private sub _emitVarIniScopeBegin _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	)
 
-	hWriteLine( "{", FALSE )
+	ctx.ini_isfixstrarray = hIsFixStrArray( sym )
+
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		hWriteLine( "{", FALSE )
+	else
+		ctx.ini_iswstr = symbGetType( sym ) = FB_DATATYPE_WCHAR
+		ctx.ini_strdata = ""
+	end if
 
 end sub
 
 '':::::
 private sub _emitVarIniScopeEnd _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	)
 
-	hWriteLine( "}", FALSE )
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		hWriteLine( "}", FALSE )
+	else
+		ctx.ini_isfixstrarray = FALSE
+
+		if( len( ctx.ini_strdata ) >= 4 ) then
+			ctx.ini_strdata = left( ctx.ini_strdata, len( ctx.ini_strdata ) - 3 ) + """"
+		end if
+
+		hWriteLine( ctx.ini_strdata )
+	end if
 
 end sub
 
 '':::::
 private sub _emitVarIniSeparator _
 	( _
-		_
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	)
 
-	hWriteLine( ", ", FALSE, TRUE )
+	if( hIsFixStrArray( sym ) = FALSE ) then
+		hWriteLine( ", ", FALSE, TRUE )
+	end if
 
 end sub
 
@@ -2421,7 +2506,8 @@ private sub _emitProcBegin _
 		ln += "static "
 	end if
 
-	ln += *hDtypeToStr( symbGetType( proc ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
+	''
+	ln += *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
 	ln += hCallConvToStr( proc ) & " "
 
 	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
@@ -2430,47 +2516,7 @@ private sub _emitProcBegin _
 
 	ln += *symbGetMangledName( proc )
 
-	if proc->proc.params = 0 then
-
-		ln += "( void )"
-
-	else
-
-		ln += "( "
-		var param = symbGetProcLastParam( proc )
-		while param
-			var pvar = symbGetParamVar( param )
-
-			var dtype = symbGetType( pvar )
-			var subtype = symbGetSubType( pvar )
-
-			if( symbIsParamByDesc( pvar ) ) then
-				dtype = FB_DATATYPE_STRUCT
-				subtype = symb.arrdesctype
-			end if
-
-			if( subtype <> NULL ) then
-				hEmitUDT subtype
-			end if
-
-			ln += *hDtypeToStr( dtype, subtype )
-
-			if( symbIsParamByVal( pvar ) ) then
-				ln += " "
-			else
-				ln += " *"
-			end if
-
-			ln += *symbGetMangledName( pvar )
-
-			param = symbGetProcPrevParam( proc, param )
-			if param then
-				ln += ", "
-			end if
-		wend
-		ln += " )"
-
-	end if
+	ln += hEmitFuncParams( proc, NULL, FALSE )
 
 	hWriteLine( ln, FALSE, TRUE )
 

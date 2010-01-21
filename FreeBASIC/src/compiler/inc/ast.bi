@@ -930,17 +930,20 @@ declare sub astTypeIniEnd _
 
 declare function astTypeIniScopeBegin _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeEnd _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astTypeIniSeparator _
 	( _
-		byval tree as ASTNODE ptr _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astTypeIniAddPad _

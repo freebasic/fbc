@@ -151,7 +151,7 @@ sub astDataStmtEnd _
 	'' initialize it
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, ast.data.desc, TRUE )
 
-	astTypeIniScopeBegin( initree )
+	astTypeIniScopeBegin( initree, NULL )
 
 	'' for each node..
 	n = tree->l
@@ -159,7 +159,7 @@ sub astDataStmtEnd _
 		id = n->data.id
 		expr = n->l
 
-		astTypeIniScopeBegin( initree )
+		astTypeIniScopeBegin( initree, NULL )
 
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR
@@ -187,13 +187,13 @@ sub astDataStmtEnd _
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-    	astTypeIniSeparator( initree )
+    	astTypeIniSeparator( initree, NULL )
     	elm = symbGetNext( elm )
 
         '' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
 
-    	astTypeIniScopeEnd( initree )
+    	astTypeIniScopeEnd( initree, NULL )
 
     	'' next
 		dim as ASTNODE ptr nxt = n->r
@@ -201,12 +201,12 @@ sub astDataStmtEnd _
 		n = nxt
 
 		if( n ) then
-			astTypeIniSeparator( initree )
+			astTypeIniSeparator( initree, NULL )
 		end if
 	next
 
     ''
-    astTypeIniScopeEnd( initree )
+    astTypeIniScopeEnd( initree, NULL )
 
     astTypeIniEnd( initree, TRUE )
 
