@@ -1208,6 +1208,11 @@ declare function symbAddProcPtr _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
+declare function symbAddProcPtrFromFunction _
+	( _
+		byval base_proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
 declare function symbPreAddProc _
 	( _
 		byval symbol as zstring ptr _

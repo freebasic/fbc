@@ -1069,6 +1069,39 @@ function symbAddProcPtr _
 end function
 
 '':::::
+function symbAddProcPtrFromFunction _
+	( _
+		byval base_proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+	var proc = symbPreAddProc( NULL )
+
+	proc->proc.returnMethod = base_proc->proc.returnMethod
+
+	'' params
+	var param = symbGetProcHeadParam( base_proc )
+    do while( param <> NULL )
+    	var p = symbAddProcParam( proc, _
+    					  		  NULL, NULL, _
+    					  		  symbGetFullType( param ), symbGetSubtype( param ), _
+    					  		  symbGetLen( param ), symbGetParamMode( param ), _
+    					  		  symbGetAttrib( param ), param->param.optexpr )
+
+		if( symbGetDontInit( param ) ) then
+			symbSetDontInit( p )
+		end if
+
+		param = param->next
+    loop
+
+	function = symbAddProcPtr( proc, _
+							   symbGetFullType( base_proc ), _
+							   symbGetSubtype( base_proc ), _
+							   symbGetProcMode( base_proc ) )
+
+end function
+
+'':::::
 function symbPreAddProc _
 	( _
 		byval symbol as zstring ptr _

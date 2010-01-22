@@ -2255,7 +2255,7 @@ function cAutoVarDecl _
 		'' check for special types
    		dim as integer has_defctor = FALSE, has_ctor = FALSE, has_dtor = FALSE
 
-		select case as const dtype
+		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
 		case FB_DATATYPE_WCHAR
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
@@ -2279,6 +2279,13 @@ function cAutoVarDecl _
 			has_ctor = symbGetHasCtor( subtype )
 			'' dtor?
 			has_dtor = symbGetCompDtor( subtype ) <> NULL
+
+    	'' if it's a function pointer and not a fun ptr prototype, create one
+    	case typeAddrOf( FB_DATATYPE_FUNCTION )
+            if( symbGetIsFuncPtr( subtype ) = FALSE ) then
+            	subtype = symbAddProcPtrFromFunction( subtype )
+            end if
+
     	end select
 
 		'' add var after parsing the expression, or the the var itself could be used

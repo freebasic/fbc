@@ -941,7 +941,7 @@ private sub hEmitFTOIBuiltins( )
 		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
+	if( symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
 		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
