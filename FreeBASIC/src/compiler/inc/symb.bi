@@ -598,6 +598,10 @@ type FBVAR_DESC
 	array			as FBSYMBOL_ ptr			'' back-link
 end type
 
+type FBVAR_DATA
+	prev			as FBSYMBOL_ ptr
+end type
+
 type FBS_VAR
 	union
 		littext		as zstring ptr
@@ -607,9 +611,8 @@ type FBS_VAR
 	array			as FBS_ARRAY
 	desc			as FBVAR_DESC
 	stmtnum			as integer					'' can't use colnum as it's unreliable
-
 	align			as integer					'' 0 = use default alignment
-
+	data			as FBVAR_DATA				'' used with DATA stmts
 end type
 
 '' namespace

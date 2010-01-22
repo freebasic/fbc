@@ -772,6 +772,20 @@ private sub hEmitDecls _
 end sub
 
 '':::::
+private sub hEmitDataStmt _
+	( _
+		_
+	)
+
+	var s = astGetLastDataStmtSymbol( )
+	do while( s <> NULL )
+ 		hEmitVariable s
+		s = s->var_.data.prev
+	loop
+
+end sub
+
+'':::::
 private sub hEmitForwardDecls( )
 
 	if( ctx.forwardlist.lastitem = NULL ) then
@@ -1012,6 +1026,8 @@ private sub _emitEnd _
 	ctx.section = SECTION_HEAD
 
 	hEmitBuiltins( )
+
+	hEmitDataStmt( )
 
 	hEmitDecls( symbGetGlobalTbHead( ) )
 

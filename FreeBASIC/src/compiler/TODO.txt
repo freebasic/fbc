@@ -1,5 +1,5 @@
 [ ] add a C backend
-	[ ] functions that return structs should be passed as-is, no special handling
+	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
 	[x] SWAP
 	[x] UTF literal strings
 	[x] debugging support

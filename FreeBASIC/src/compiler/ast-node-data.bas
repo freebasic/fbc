@@ -216,21 +216,25 @@ sub astDataStmtEnd _
 	'' link the last data to this one
 	if( ast.data.lastsym <> NULL ) then
     	'' lastarray(ubound(lastarray)).next = @array(0)
-    	initree = symbGetTypeIniTree( ast.data.lastsym )
+    	initree = symbGetTypeIniTree( astGetLastDataStmtSymbol( ) )
 
     	n = initree->l
+    	var tn = n
     	do while( n->r <> NULL )
+    		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+    			tn = n
+    		end if
     		n = n->r
     	loop
 
     	'' del the NULL expr
-    	astDelNode( n->l )
+    	astDelNode( tn->l )
 
     	'' replace the node
-    	n->l = astNewADDROF( astNewVAR( array, _
-    									0, _
-    									FB_DATATYPE_STRUCT, _
-    									ast.data.desc ) )
+    	tn->l = astNewADDROF( astNewVAR( array, _
+    									 0, _
+    									 FB_DATATYPE_STRUCT, _
+    									 ast.data.desc ) )
 	end if
 
 	ast.data.lastsym = array
@@ -307,6 +311,8 @@ function astDataStmtAdd _
 					  	dTB(), _
 					  	FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
 					  	FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+
+	sym->var_.data.prev = astGetLastDataStmtSymbol( )
 
 	function = sym
 

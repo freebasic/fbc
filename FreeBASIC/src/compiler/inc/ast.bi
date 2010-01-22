@@ -1445,6 +1445,8 @@ declare function astLoadIIF _
 
 #define astGetFirstDataStmtSymbol( ) ast.data.firstsym
 
+#define astGetLastDataStmtSymbol( ) ast.data.lastsym
+
 #define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
 
 #define astGetCastDoConv( n ) n->cast.doconv
