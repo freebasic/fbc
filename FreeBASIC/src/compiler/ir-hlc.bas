@@ -980,7 +980,7 @@ private sub hEmitFTOIBuiltins( )
 		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
-	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
+	if( symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
 		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
