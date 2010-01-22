@@ -51,7 +51,7 @@ function hTruncateInt _
 
 	case FB_DATATYPE_UBYTE
 		*value = cubyte( cuint( value0 ) )
-		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0) 
+		return (cbyte( *value ) <> value0) and (cubyte( *value ) <> value0)
 
 	case FB_DATATYPE_SHORT
 		*value = cshort( value0 )

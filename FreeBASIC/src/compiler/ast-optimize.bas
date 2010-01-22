@@ -2397,7 +2397,7 @@ function astOptimizeTree _
 
 	'' high-level IR? don't do anything..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		return n
+		return hOptConstIDX( n )
 	end if
 
 	'' calls must be done in the order below

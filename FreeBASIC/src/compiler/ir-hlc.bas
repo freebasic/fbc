@@ -133,7 +133,7 @@ dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
 	( FB_DATACLASS_INTEGER, 0  				, "" 		), _			'' namespace
 	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' function
 	( FB_DATACLASS_INTEGER, 1			    , "void"  ), _				'' fwd-ref
-	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "void" ) _				'' pointer
+	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "void *" ) _				'' pointer
 }
 
 '':::::
@@ -264,7 +264,9 @@ private sub hEmitUDT _
 	end if
 
 	var oldsection = ctx.section
-	ctx.section = SECTION_HEAD
+	if( symbIsLocal( s ) = false ) then
+		ctx.section = SECTION_HEAD
+	end if
 
  	select case as const symbGetClass( s )
  	case FB_SYMBCLASS_ENUM

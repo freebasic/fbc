@@ -814,7 +814,7 @@ function astTypeIniFlush _
 	'' TODO: find out why, but for now, only cases seem to be when errors exceed -maxerr
 	#if 0
 	assert( tree <> NULL )
-	#else 
+	#else
 	if( tree = NULL ) then return NULL
 	#endif
 

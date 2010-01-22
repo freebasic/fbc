@@ -63,6 +63,7 @@ declare function 	hDefExErr_cb 		( ) as string
 declare function 	hDefExxErr_cb 		( ) as string
 declare function	hDefLang_cb			( ) as string
 declare function    hDefPath_cb         ( ) as string
+declare function    hDefGcc_cb         	( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
 const SYMB_MAXDEFINES = 32 '' 28
@@ -99,6 +100,7 @@ const SYMB_MAXDEFINES = 32 '' 28
         (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
         (@"__FB_FPU__"                ,   NULL                ,  0,   @hDefFpu_cb            ), _
         (@"__FB_FPMODE__"             ,   NULL                ,  0,   @hDefFpmode_cb         ), _
+        (@"__FB_GCC__"                ,   NULL                ,  1,   @hDefGcc_cb    		 ), _
 		(NULL) _
 	}
 
@@ -286,6 +288,13 @@ private function hDefFpmode_cb ( ) as string
 	case else
 		assert( 0 )
 	end select
+
+end function
+
+'':::::
+private function hDefGcc_cb( ) as string static
+
+	function = str( irGetOption( IR_OPT_HIGHLEVEL ) )
 
 end function
 
