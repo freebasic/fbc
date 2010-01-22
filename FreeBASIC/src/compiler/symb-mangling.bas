@@ -603,9 +603,9 @@ private function hGetVarPrefix _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval docpp as integer _
-	) as zstring ptr static
+	) as zstring ptr
 
-	dim as integer isimport
+	static as integer isimport = FALSE
 
 	'' not global or public? no prefix
 	if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
@@ -617,7 +617,9 @@ private function hGetVarPrefix _
 	end if
 
 	'' imported? Windows only..
-	isimport = symbIsImport( sym )
+	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+		isimport = symbIsImport( sym )
+	end if
 
 	'' no C++? do nothing..
 	if( docpp = FALSE ) then

@@ -309,7 +309,7 @@ private sub hEmitVar _
 		end select
 	end if
 
-    var is_extern = ((attrib and FB_SYMBATTRIB_COMMON) <> 0) or ((attrib and FB_SYMBATTRIB_PUBLIC) <> 0)
+    var is_extern = (attrib and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
 
     var sign = ""
     if( is_extern = FALSE ) then
@@ -324,10 +324,21 @@ private sub hEmitVar _
     	sign += "[" & elements & "]"
     end if
 
+    ''
+    if( symbIsImport( s ) ) then
+    	sign += " __attribute__((dllimport))"
+    end if
+
     '' allocation modifier
     if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-      	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
+      	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0 ) then
        		hWriteLine( "extern " & sign, TRUE )
+
+			'' just an extern that was never allocated? exit..
+			if( symbIsExtern( s ) ) then
+				return
+			end if
+
 		end if
 	else
        	hWriteLine( "extern " & sign, TRUE )
@@ -394,9 +405,8 @@ private sub hEmitVariable _
 		return
 	end if
 
-    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
-	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
-			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+    '' dynamic? only the array descriptor is emitted
+	if( symbGetIsDynamic( s ) ) then
 		return
 	end if
 
@@ -422,7 +432,11 @@ private function hEmitFuncParams _
 	select case symbGetType( proc )
 	case FB_DATATYPE_STRUCT
 		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
-        	hidden_param = proc->proc.ext->res
+        	if( isproto = FALSE ) then
+        		hidden_param = proc->proc.ext->res
+        	else
+        		hidden_param = symbGetSubType( proc )
+        	end if
 		end if
 	end select
 
@@ -509,7 +523,7 @@ private function hEmitFuncParams _
            	params += ", "
         end if
 
-    	params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), symbGetSubtype( hidden_param ) )
+    	params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), iif( isproto = FALSE, symbGetSubtype( hidden_param ), hidden_param ) )
 
 		if( isproto = FALSE ) then
         	params += " " & *symbGetMangledName( hidden_param )
@@ -542,6 +556,8 @@ private sub hEmitFuncProto _
 	if( symbGetIsDupDecl( s ) ) then
 		return
 	end if
+
+	'print , *symbGetMangledName( s )
 
 	var oldsection = ctx.section
 	ctx.section = SECTION_HEAD
@@ -2505,6 +2521,8 @@ private sub _emitProcBegin _
 
 	dim as string ln
 
+	'print *symbGetMangledName( proc ) & "{"
+
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
@@ -2548,6 +2566,8 @@ private sub _emitProcEnd _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
+
+	'print "}"
 
 	ctx.identcnt -= 1
 	hWriteLine( "}", FALSE, TRUE )
