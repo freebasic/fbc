@@ -229,14 +229,14 @@ function astNewUOP _
 
 	'' convert byte to integer
 	if( symbGetDataSize( dtype ) = 1 ) then
-		
+
 		dim as integer nd = any
 		if( symbIsSigned( dtype ) ) then
 			nd = FB_DATATYPE_INTEGER
 		else
 			nd = FB_DATATYPE_UINT
 		end if
-		
+
 		dtype = typeJoin( dtype, nd )
 
 		'' !!!FIXME!!! if ENUM's could be BYTE's in future, this will fail
@@ -352,6 +352,23 @@ chk_ulong:
 	end if
 
 	'' alloc new node
+
+	''
+	if( irGetOption( IR_OPT_NOINLINEOPS ) ) then
+
+		select case as const op
+		case AST_OP_SGN, AST_OP_ABS, AST_OP_FIX, AST_OP_FRAC, _
+			 AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
+			 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
+		 	 AST_OP_EXP, AST_OP_FLOOR
+
+		 	 return rtlMathUop( op, o )
+
+		end select
+
+	end if
+
+
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
 	if( n = NULL ) then
 		exit function

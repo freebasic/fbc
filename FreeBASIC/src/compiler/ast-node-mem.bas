@@ -38,18 +38,20 @@ function astNewMEM _
 
     dim as ASTNODE ptr n = any
 
+    var blkmaxlen = irGetOptionValue( IR_OPTIONVALUE_MAXMEMBLOCKLEN )
+
 	dim as integer lgt = bytes
     if( op = AST_OP_MEMCLEAR ) then
     	if( astIsCONST( r ) ) then
     		lgt = r->con.val.int
     	else
-    		lgt = IR_MEMBLOCK_MAXLEN+1
+    		lgt = blkmaxlen + 1
     	end if
     end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
 	'' the adress-of and let emit() do the rest
-	if( lgt > IR_MEMBLOCK_MAXLEN ) then
+	if( lgt > blkmaxlen ) then
 		l = astNewADDROF( l )
 
 		if( op = AST_OP_MEMMOVE ) then

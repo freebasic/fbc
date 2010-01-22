@@ -85,6 +85,11 @@ function symbStructBegin _
 
 	''
 	s->ofs = 0
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		if( align = 0 ) then
+			align = 1
+		end if
+	end if
 	s->udt.align = align
 	s->udt.lfldlen = 0
 	s->udt.bitpos = 0
@@ -562,9 +567,10 @@ private function hGetReturnType _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-	
-	dim as FB_DATATYPE dtype = symbGetFullType( sym ), res = FB_DATATYPE_VOID
-	
+
+	var dtype = symbGetFullType( sym )
+	var res = FB_DATATYPE_VOID
+
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
 	if( symbIsTrivial( sym ) = FALSE ) then
@@ -645,20 +651,20 @@ private function hGetReturnType _
 				end if
 			loop
 		end if
-		
+
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
 		end if
 
 	end select
-	
+
 	res = typeJoin( dtype, res )
-	
+
 	'' if nothing matched, it's the pointer that was passed as the 1st arg
 	if( res = FB_DATATYPE_VOID ) then
 		res = typeAddrOf( dtype )
 	end if
-	
+
 	function = res
 
 end function
@@ -709,7 +715,7 @@ function symbCloneStruct _
 	'' created by symbAddArrayDesc())
 
 	clone = symbStructBegin( NULL, _
-						 	 NULL, _
+						 	 hMakeTmpStrNL( ), _
 						 	 NULL, _
 						 	 (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
 							 sym->udt.align )
@@ -718,7 +724,7 @@ function symbCloneStruct _
     fld = sym->udt.ns.symtb.head
     do while( fld <> NULL )
     	symbAddField( clone, _
-    				  NULL, _
+    				  symbGetName( fld ), _
     				  0, _
     				  dTB(), _
     				  symbGetType( fld ), _

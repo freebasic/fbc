@@ -1611,7 +1611,7 @@ private function hGfxlib_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-	
+
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
@@ -1671,6 +1671,9 @@ private function hGetPutter _
 
 	''
 	n = astNewOFFSET( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
+
+	symbSetIsCalled( proc )
+
 
 	function = n
 

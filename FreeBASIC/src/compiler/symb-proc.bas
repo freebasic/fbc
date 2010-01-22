@@ -78,9 +78,9 @@ function symbCalcProcParamLen _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE _
 	) as integer
-	
+
 	'' assumes dtype has const info stripped
-	
+
     select case as const mode
     case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
     	function = FB_POINTERSIZE
@@ -745,7 +745,7 @@ add_proc:
 		if( parser.scope > FB_MAINSCOPE ) then
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
-        
+
 		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
 							  sym, _
 						  	  symbtb, hashtb, _
@@ -1055,7 +1055,7 @@ function symbAddProcPtr _
 
 	'' create a new prototype
 	sym = symbAddPrototype( proc, _
-							id, NULL, NULL, _
+							id, hMakeTmpStrNL(), NULL, _
 							dtype, subtype, _
 							0, mode, _
 							options or FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
@@ -1180,6 +1180,7 @@ function symbAddProcResultParam _
 
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
+    static as string id
 
 	'' UDT?
 	if( proc->typ <> FB_DATATYPE_STRUCT ) then
@@ -1191,7 +1192,8 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-    s = symbAddVarEx( NULL, NULL, _
+   	id = *hMakeTmpStrNL( )
+    s = symbAddVarEx( id, NULL, _
     				  FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
     				  0, dTB(), _
     				  FB_SYMBATTRIB_PARAMBYREF, _
@@ -1267,11 +1269,11 @@ function symAddProcInstancePtr _
 	case FB_SYMBCLASS_CLASS
 		'dtype = FB_DATATYPE_CLASS
 	end select
-	
+
 	if( symbIsConstant( proc ) ) then
-		dtype = typeSetIsConst( dtype ) 
+		dtype = typeSetIsConst( dtype )
 	end if
-	
+
     function = symbAddProcParam( proc, _
     							 FB_INSTANCEPTR, NULL, _
     					  		 dtype, parent, FB_POINTERSIZE, _
@@ -1504,7 +1506,7 @@ private function hCalcTypesDiff _
 	) as integer
 
 	dim as integer arg_dclass = any
-	
+
     '' don't take the const qualifier into account
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
     arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
@@ -1579,11 +1581,11 @@ private function hCalcTypesDiff _
 
 				'' param is an any ptr?
 				if( param_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-					
+
 					'' we return a full match only if they're both any
 					if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
 						return FB_OVLPROC_FULLMATCH
-						
+
 					'' other wise, it's a half match
 					'' the arg indirection level shouldn't matter (as in g++)
 					else
@@ -1770,14 +1772,14 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-		
+
 		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
 
 			'' same subtype? full match..
 			if( param_subtype = arg_subtype ) then
 				return FB_OVLPROC_FULLMATCH
 			end if
-		
+
 		elseif( typeGetConstMask( param_dtype ) ) then
 
 			'' same subtype? ..
@@ -1804,7 +1806,7 @@ private function hCheckOvlParam _
 				end if
 			end if
 		end if
-		
+
 		'' pointer? check if valid (could be a NULL)
 		if( typeIsPtr( param_dtype ) ) then
 			if( astPtrCheck( param_dtype, _
@@ -1919,7 +1921,7 @@ function symbFindClosestOvlProc _
 
 			matches = 0
 			exact_matches = 0
-			
+
 			'' for each arg..
 			arg = arg_head
 			for i = 0 to args-1
@@ -1929,21 +1931,21 @@ function symbFindClosestOvlProc _
 					matches = 0
 					exit for
 				end if
-				
+
 				'' exact checks are required for operator overload candidates
 				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
 					if( arg_matches = FB_OVLPROC_FULLMATCH ) then
 						exact_matches += 1
 					end if
 				end if
-				
+
 				matches += arg_matches
 
                	'' next param
 				param = symbGetProcPrevParam( ovl, param )
 				arg = arg->next
 			next
-			
+
 			'' fewer params? check if the ones missing are optional
 			dim as integer total_args = args
 			if( args < params ) then
@@ -1966,9 +1968,9 @@ function symbFindClosestOvlProc _
 
 		    '' closer?
 		    if( matches > max_matches ) then
-		    	
+
 				dim as integer eligible = TRUE
-				
+
 				'' an operator overload candidate is only eligible if
 				'' there is at least one exact arg match
 				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
@@ -1976,7 +1978,7 @@ function symbFindClosestOvlProc _
 						eligible = FALSE
 					end if
 				end if
-				
+
 				'' it's eligible, update
 				if( eligible ) then
 				   	closest_proc = ovl
@@ -2844,9 +2846,9 @@ function symbGetDefaultCallConv _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
-	
+
 	'' assumes dtype has const info stripped
-	
+
 	select case as const dtype
     case FB_DATATYPE_FWDREF, _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
@@ -2862,4 +2864,57 @@ function symbGetDefaultCallConv _
 
 end function
 
+
+'':::::
+function symbAllocOvlCallArg _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval to_head as integer _
+	) as FB_CALL_ARG ptr
+
+	dim as FB_CALL_ARG ptr arg = listNewNode( list )
+
+	if( to_head = FALSE ) then
+		if( arg_list->head = NULL ) then
+			arg_list->head = arg
+		else
+			arg_list->tail->next = arg
+		end if
+
+		arg->next = NULL
+		arg_list->tail = arg
+
+	else
+		if( arg_list->tail = NULL ) then
+			arg_list->tail = arg
+		end if
+
+		arg->next = arg_list->head
+		arg_list->head = arg
+	end if
+
+	arg_list->args += 1
+
+	function = arg
+
+end function
+
+'':::::
+sub symbFreeOvlCallArgs _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	)
+
+	dim as FB_CALL_ARG ptr arg, nxt
+
+	arg = arg_list->head
+	do while( arg <> NULL )
+		nxt = arg->next
+		symbFreeOvlCallArg( list, arg )
+		arg = nxt
+	loop
+
+end sub
 

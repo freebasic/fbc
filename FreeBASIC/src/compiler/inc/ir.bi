@@ -24,8 +24,6 @@ const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
 const IR_MAXDIST			= 2147483647
 
-const IR_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
-
 ''
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_OPER							'' used by DAG only
@@ -53,7 +51,11 @@ enum IR_REGFAMILY
 	IR_REG_FPU_STACK
 	IR_REG_SSE
 end enum
-	
+
+enum IR_OPTIONVALUE
+	IR_OPTIONVALUE_MAXMEMBLOCKLEN				= 1
+end enum
+
 
 ''
 type IRVREG_ as IRVREG
@@ -108,6 +110,21 @@ type IRVREG
 	taclast		as IRTAC ptr					'' /
 end type
 
+
+type IR_CALL_ARG
+	vr				as IRVREG ptr
+	lgt				as integer
+	prev			as IR_CALL_ARG ptr
+	next			as IR_CALL_ARG ptr
+end type
+
+type IR_CALL_ARG_LIST
+	list			as TLIST ptr
+	args			as integer
+	head			as IR_CALL_ARG ptr
+	tail			as IR_CALL_ARG ptr
+end type
+
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
 	init as function _
@@ -131,6 +148,11 @@ type IR_VTBL
 	( _
 		byval tottime as double _
 	)
+
+	getOptionValue as function _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
 
 	procBegin as sub _
 	( _
@@ -239,6 +261,7 @@ type IR_VTBL
 
 	emitJmpTb as sub _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
 	)
@@ -316,6 +339,7 @@ type IR_VTBL
 	emitCall as sub _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
@@ -323,6 +347,7 @@ type IR_VTBL
 	emitCallPtr as sub _
 	( _
 		byval v1 as IRVREG ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer _
 	)
@@ -419,6 +444,24 @@ type IR_VTBL
 	emitVarIniPad as sub _
 	( _
 		byval bytes as integer _
+	)
+
+	emitVarIniScopeBegin as sub _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
+	)
+
+	emitVarIniScopeEnd as sub _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
+	)
+
+	emitVarIniSeparator as sub _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval ym as FBSYMBOL ptr _
 	)
 
 	allocVreg as function _
@@ -535,6 +578,7 @@ enum IR_OPT
 	IR_OPT_REUSEOPER        = &h00200000			'' reuse destine operand
 	IR_OPT_IMMOPER          = &h00400000			'' allow immediate operands
 	IR_OPT_NESTEDFIELDS		= &h00800000			'' optimize (reduce) the accesses to UDT fields?
+	IR_OPT_NOINLINEOPS		= &h01000000			'' don't pass down to IR the complex operators
 
 	IR_OPT_HIGHLEVEL		= &h10000000			'' high-level, preserve the HL constructions
 end enum
@@ -543,6 +587,7 @@ type IRCTX
 	inited			as integer
 	vtbl			as IR_VTBL
 	options			as IR_OPT
+	arglist			as TLIST
 end type
 
 ''
@@ -567,12 +612,34 @@ declare function irGetVRDataSize _
 		byval vreg as IRVREG ptr _
 	) as integer
 
+
+declare function irNewCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval vreg as IRVREG ptr, _
+		byval lgt as integer _
+	) as IR_CALL_ARG ptr
+
+declare sub irDelCallArg _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
+		byval arg as IR_CALL_ARG ptr _
+	)
+
+declare sub irDelCallArgs _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
+	)
+
+
 ''
 '' macros
 ''
 #define irGetOption( op ) ((ir.options and op) <> 0)
 
 #define irSetOption( op ) ir.options or= op
+
+#define irGetOptionValue( opt ) ir.vtbl.getOptionValue( opt )
 
 #define irAllocVreg(dtype, stype) ir.vtbl.allocVreg( dtype, stype )
 
@@ -636,6 +703,12 @@ declare function irGetVRDataSize _
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
 
+#define irEmitVARINISCOPEINI(basesym, s) ir.vtbl.emitVarIniScopeBegin( basesym, s )
+
+#define irEmitVARINISCOPEEND(basesym, s) ir.vtbl.emitVarIniScopeEnd( basesym, s )
+
+#define irEmitVARINISEPARATOR(basesym, s) ir.vtbl.emitVarIniSeparator( basesym, s )
+
 #define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 
 #define irEmitLABEL(label) ir.vtbl.emitLabel( label )
@@ -648,7 +721,7 @@ declare function irGetVRDataSize _
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB(dtype, label) ir.vtbl.emitJmpTb( dtype, label )
+#define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
 
 #define irEmitInfoSection( liblist, libpathlist ) ir.vtbl.emitInfoSection( liblist, libpathlist )
 
@@ -688,9 +761,9 @@ declare function irGetVRDataSize _
 
 #define irEmitLABELNF(s) ir.vtbl.emitLabelNF( s )
 
-#define irEmitCALLFUNCT(proc, bytestopop, vr) ir.vtbl.emitCall( proc, bytestopop, vr )
+#define irEmitCALLFUNCT(proc, arg_list, bytestopop, vr) ir.vtbl.emitCall( proc, arg_list, bytestopop, vr )
 
-#define irEmitCALLPTR(v1, vr, bytestopop) ir.vtbl.emitCallPtr( v1, vr, bytestopop )
+#define irEmitCALLPTR(v1, arg_list, vr, bytestopop) ir.vtbl.emitCallPtr( v1, arg_list, vr, bytestopop )
 
 #define irEmitSTACKALIGN(bytes) ir.vtbl.emitStackAlign( bytes )
 
@@ -732,7 +805,6 @@ declare function irGetVRDataSize _
 #define hMakeTmpStr( ) ir.vtbl.makeTmpStr( TRUE )
 
 #define hMakeTmpStrNL( ) ir.vtbl.makeTmpStr( FALSE )
-
 
 
 ''

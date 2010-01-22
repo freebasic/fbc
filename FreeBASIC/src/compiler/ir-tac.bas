@@ -243,6 +243,17 @@ private sub _emitEnd _
 end sub
 
 '':::::
+private function _getOptionValue _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
+
+    function = emitGetOptionValue( opt )
+
+end function
+
+
+'':::::
 private sub hLoadIDX _
 	( _
 		byval vreg as IRVREG ptr _
@@ -577,13 +588,14 @@ end sub
 ''::::
 private sub _emitJmpTb _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
 	) static
 
 	_flush( )
 
-	emitJMPTB( dtype, symbGetMangledName( label ) )
+	emitJMPTB( op, dtype, symbGetMangledName( label ) )
 
 end sub
 
@@ -756,12 +768,40 @@ private sub _emitLabelNF _
 end sub
 
 '':::::
+private sub hEmitCallArgs _
+	( _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
+	)
+
+	if( arg_list = NULL ) then
+		return
+	end if
+
+	var arg = arg_list->head
+
+	do while( arg )
+        var nxt = arg->next
+
+		irEmitPUSHARG( arg->vr, arg->lgt )
+
+		irDelCallArg( arg_list, arg )
+
+		arg = nxt
+	loop
+
+
+end sub
+
+'':::::
 private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
+
+	hEmitCallArgs( arg_list )
 
 	_emit( AST_OP_CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
 
@@ -771,9 +811,12 @@ end sub
 private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer _
 	)
+
+	hEmitCallArgs( arg_list )
 
 	_emit( AST_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
 
@@ -999,6 +1042,39 @@ private sub _emitVarIniPad _
 	) static
 
 	emitVARINIPAD( bytes )
+
+end sub
+
+'':::::
+private sub _emitVarIniScopeBegin _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+	emitVARINISCOPEINI( )
+
+end sub
+
+'':::::
+private sub _emitVarIniScopeEnd _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+	emitVARINISCOPEEND( )
+
+end sub
+
+'':::::
+private sub _emitVarIniSeparator _
+	( _
+		byval basesym as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+	emitVARINISEPARATOR( )
 
 end sub
 
@@ -2825,6 +2901,7 @@ function irTAC_ctor _
 		@_flush, _
 		@_emitBegin, _
 		@_emitEnd, _
+		@_getOptionValue, _
 		@_procBegin, _
 		@_procEnd, _
 		@_procAllocArg, _
@@ -2873,6 +2950,9 @@ function irTAC_ctor _
 		@_emitVarIniStr, _
 		@_emitVarIniWstr, _
 		@_emitVarIniPad, _
+		@_emitVarIniScopeBegin, _
+		@_emitVarIniScopeEnd, _
+		@_emitVarIniSeparator, _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _

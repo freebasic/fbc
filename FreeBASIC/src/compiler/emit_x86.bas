@@ -33,6 +33,8 @@
 #include once "inc\hash.bi"
 #include once "inc\symb.bi"
 
+const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
+
 ''
 type EMITDATATYPE
 	class			as integer
@@ -1351,49 +1353,49 @@ private sub hCreateFrame _
 	' No frame for naked functions
 	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
+    	if( (bytestoalloc <> 0) or _
+    		(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        	symbGetIsMainProc( proc ) or _
+        	env.clopt.debug or _
+			env.clopt.profile ) then
 
-    	hPUSH( "ebp" )
-    	outp( "mov ebp, esp" )
+    		hPUSH( "ebp" )
+    		outp( "mov ebp, esp" )
 
-        if( symbGetIsMainProc( proc ) ) then
-			outp( "and esp, 0xFFFFFFF0" )
-	    end if
+        	if( symbGetIsMainProc( proc ) ) then
+				outp( "and esp, 0xFFFFFFF0" )
+	    	end if
 
-    	if( bytestoalloc > 0 ) then
-    		outp( "sub esp, " + str( bytestoalloc ) )
+    		if( bytestoalloc > 0 ) then
+    			outp( "sub esp, " + str( bytestoalloc ) )
+    		end if
     	end if
-    end if
 
-	if( env.clopt.target = FB_COMPTARGET_DOS ) then
-		if( env.clopt.profile ) then
-			lprof = hMakeProfileLabelName()
+		if( env.clopt.target = FB_COMPTARGET_DOS ) then
+			if( env.clopt.profile ) then
+				lprof = hMakeProfileLabelName()
 
-			outEx(".section .data" + NEWLINE )
-			outEx( ".balign 4" + NEWLINE )
-			outEx( "." + *lprof + ":" + NEWLINE )
-			outp( ".long 0" )
-			outEx( ".section .text" + NEWLINE )
-			outp( "mov edx, offset ." + *lprof )
-			outp( "call _mcount" )
+				outEx(".section .data" + NEWLINE )
+				outEx( ".balign 4" + NEWLINE )
+				outEx( "." + *lprof + ":" + NEWLINE )
+				outp( ".long 0" )
+				outEx( ".section .text" + NEWLINE )
+				outp( "mov edx, offset ." + *lprof )
+				outp( "call _mcount" )
+			end if
 		end if
-	end if
 
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPUSH( "ebx" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPUSH( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPUSH( "edi" )
-    end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    		hPUSH( "ebx" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    		hPUSH( "esi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    		hPUSH( "edi" )
+    	end if
 
 	end if
 
@@ -1416,34 +1418,34 @@ private sub hDestroyFrame _
 	' don't do anything for naked functions, except the .size at the end
 	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
 
-    dim as integer bytestoalloc
+    	dim as integer bytestoalloc
 
-    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
-    	hPOP( "edi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
-    	hPOP( "esi" )
-    end if
-    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
-    	hPOP( "ebx" )
-    end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    		hPOP( "edi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    		hPOP( "esi" )
+    	end if
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    		hPOP( "ebx" )
+    	end if
 
-    if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
-        symbGetIsMainProc( proc ) or _
-        env.clopt.debug or _
-		env.clopt.profile ) then
-    	outp( "mov esp, ebp" )
-    	hPOP( "ebp" )
-    end if
+    	if( (bytestoalloc <> 0) or _
+    		(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
+        	symbGetIsMainProc( proc ) or _
+        	env.clopt.debug or _
+			env.clopt.profile ) then
+    		outp( "mov esp, ebp" )
+    		hPOP( "ebp" )
+    	end if
 
-    if( bytestopop > 0 ) then
-    	outp( "ret " + str( bytestopop ) )
-    else
-    	outp( "ret" )
-    end if
+    	if( bytestopop > 0 ) then
+    		outp( "ret " + str( bytestopop ) )
+    	else
+    		outp( "ret" )
+    	end if
 
 	end if
 
@@ -1502,14 +1504,22 @@ end sub
 '':::::
 private sub _emitJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
-		byval symbol as zstring ptr _
+		byval label as zstring ptr _
 	) static
 
     dim ostr as string
 
-	ostr = *_getTypeString( dtype ) + " " + *symbol
-	outp( ostr )
+	select case op
+	case AST_JMPTB_LABEL
+		ostr = *_getTypeString( dtype ) + " " + *label
+		outp( ostr )
+	case AST_JMPTB_BEGIN
+		ostr = *label
+		ostr += ":" + NEWLINE
+		outEx( ostr )
+	end select
 
 end sub
 
@@ -3681,7 +3691,7 @@ private sub hSHIFTL _
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
 
-	
+
 
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
 	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
@@ -3707,7 +3717,7 @@ private sub hSHIFTL _
 			else
 				outp "mov " + b + ", 0"
 			end if
-			
+
 			if( av->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + a + ", " + a
 			else
@@ -3768,35 +3778,35 @@ private sub hSHIFTL _
 				outp mnemonic64 + a + ", " + tmpregname + ", " + src
 				outp mnemonic32 + tmpregname + ", " + src
 				outp "mov " + b + ", " + tmpregname
-				
+
 				if( preserveeax ) then
 					hPOP( "eax" )
 				end if
 			end if
-			
+
 		end if
 
 	else
 		'' if src is not an imm, use cl and check for the x86 glitches
-		
+
 		dim as integer iseaxfree, isedxfree, isecxfree
 		dim as integer eaxindest, edxindest, ecxindest
 		dim as integer ofs
-		
+
 		label = *hMakeTmpStr( )
-		
+
 		hPUSH( dst2 )
 		hPUSH( dst1 )
 		ofs = 0
-		
+
 		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 		isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 		isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
-		
+
 		eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
  		edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
  		ecxindest = hIsRegInVreg( dvreg, EMIT_REG_ECX )
-		
+
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
 			if( symbGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
@@ -3805,7 +3815,7 @@ private sub hSHIFTL _
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
  				end if
  			end if
- 
+
  			if( isecxfree = FALSE ) then
  				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
  					hMOV( "ecx", src )
@@ -3836,7 +3846,7 @@ private sub hSHIFTL _
  				outp "mov eax, [esp+" + str( ofs+0 ) + "]"
  			end if
  		end if
- 
+
  		'' load dst2 to edx
  		if( edxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3851,7 +3861,7 @@ private sub hSHIFTL _
  				outp "mov edx, [esp+" + str( ofs+4 ) + "]"
  			end if
  		end if
- 		
+
 		if( op = AST_OP_SHL ) then
  			outp "shld edx, eax, cl"
  			outp mnemonic32 + " eax, cl"
@@ -3859,10 +3869,10 @@ private sub hSHIFTL _
  			outp "shrd eax, edx, cl"
  			outp mnemonic32 + " edx, cl"
  		end if
- 
+
  		outp "test cl, 32"
  		hBRANCH( "jz", label )
- 		
+
  		if( op = AST_OP_SHL ) then
  			outp "mov edx, eax"
  			outp "xor eax, eax"
@@ -3874,13 +3884,13 @@ private sub hSHIFTL _
  				outp "xor edx, edx"
  			end if
  		end if
- 
+
  		hLABEL( label )
- 
+
  		if( isecxfree = FALSE ) then
  			hPOP "ecx"
  		end if
- 		
+
 		'' save dst2
  		if( edxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3895,7 +3905,7 @@ private sub hSHIFTL _
  				outp "mov [esp+4], edx"
  			end if
  		end if
- 
+
  		'' save dst1
  		if( eaxindest ) then
  			if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -3910,7 +3920,7 @@ private sub hSHIFTL _
  				outp "mov [esp+0], eax"
  			end if
  		end if
- 		
+
 		hPOP( dst1 )
 		hPOP( dst2 )
 	end if
@@ -5963,7 +5973,7 @@ private sub _emitMEMMOVE _
 	) static
 
 	'' handle the assumption done at ast-node-mem::newMEM()
-	if( bytes > IR_MEMBLOCK_MAXLEN ) then
+	if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 		hMemMoveRep( dvreg, svreg, bytes )
 	else
 		hMemMoveBlk( dvreg, svreg, bytes )
@@ -6182,7 +6192,7 @@ private sub _emitMEMCLEAR _
 	'' handle the assumption done at ast-node-mem::newMEM()
 	if( irIsIMM( svreg ) ) then
 		dim as integer bytes = svreg->value.int
-		if( bytes > IR_MEMBLOCK_MAXLEN ) then
+		if( bytes > EMIT_MEMBLOCK_MAXLEN ) then
 			hMemClearRepIMM( dvreg, bytes )
 		else
 			hMemClearBlkIMM( dvreg, bytes )
@@ -6408,6 +6418,36 @@ sub emitVARINIPAD _
 
 end sub
 
+'':::::
+sub emitVARINISCOPEINI _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
+'':::::
+sub emitVARINISCOPEEND _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
+'':::::
+sub emitVARINISEPARATOR _
+	( _
+		_
+	)
+
+	'' do nothing, needed by the gcc emitter
+
+end sub
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' functions table
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -6470,7 +6510,7 @@ end sub
 		EMIT_CBENTRY(TAN), EMIT_CBENTRY(ATAN), _
 		EMIT_CBENTRY(SQRT), _
 	   _
-		NULL, _	
+		NULL, _
 		NULL, _
 	   _
 		EMIT_CBENTRY(LOG), _
@@ -6571,6 +6611,24 @@ private sub _end
     hEndKeywordsTB( )
 
 end sub
+
+'':::::
+private function _getOptionValue _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
+
+	select case opt
+	case IR_OPTIONVALUE_MAXMEMBLOCKLEN
+		return EMIT_MEMBLOCK_MAXLEN
+
+	case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+
+	end select
+
+end function
+
 
 '':::::
 private function _open _
@@ -7091,6 +7149,7 @@ function emitGasX86_ctor _
 	( _
 		@_init, _
 		@_end, _
+		@_getOptionValue, _
 		@_open, _
 		@_close, _
 		@_isKeyword, _

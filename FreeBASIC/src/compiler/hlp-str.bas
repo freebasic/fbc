@@ -293,6 +293,24 @@ function hReplaceW _
 end function
 
 '':::::
+function hReplaceChar _
+	( _
+		byval orgtext as zstring ptr, _
+		byval oldchar as integer, _
+		byval newchar as integer _
+	) as zstring ptr
+
+    for i as integer = 0 to len( *orgtext ) - 1
+    	if( orgtext[i] = oldchar ) then
+    		orgtext[i] = newchar
+    	end if
+    next
+
+	function = orgtext
+
+end function
+
+'':::::
 function hReEscape _
 	( _
 		byval text as zstring ptr, _
@@ -998,6 +1016,7 @@ private function hU16ToWchar _
 
 end function
 
+
 '':::::
 function hEscapeW _
 	( _
@@ -1093,6 +1112,130 @@ function hEscapeW _
 
         	char shr= 8
 		next
+
+	loop
+
+	'' null=term
+	*dst = 0
+
+	function = res.data
+
+end function
+
+'':::::
+function hEscapeUCN _
+	( _
+		byval text as wstring ptr _
+	) as zstring ptr
+
+    static as DZSTRING res
+    dim as uinteger char = any, c = any
+    dim as integer lgt = any, i = any, wstrlen = any
+    dim as wstring ptr src = any, src_end = any
+    dim as zstring ptr dst = any
+
+	'' convert the internal escape sequences to GCC format
+
+	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	var u_char = iif( wstrlen = len( FB_INTEGERSIZE ), asc( "U" ), asc( "u" ) )
+
+	'' up to 6 ascii chars can be used p/ unicode char (\uxxxx) -- or \Uxxxxxxxx
+	lgt = len( *text )
+	if( lgt = 0 ) then
+		return NULL
+	end if
+
+	DZstrAllocate( res, lgt * (2+wstrlen*2) + 1 )
+
+	src = text
+	dst = res.data
+
+	src_end = src + lgt
+	do while( src < src_end )
+		char = *src
+		src += 1
+
+		'' internal espace char?
+		if( char = FB_INTSCAPECHAR ) then
+			if( src >= src_end ) then exit do
+			char = *src
+			src += 1
+
+			'' octagonal? convert to integer..
+			'' note: it can be up to 6 digits due wchr()
+			'' when evaluated at compile-time
+			if( (char >= 1) and (char <= 6) ) then
+				i = char
+				char = 0
+
+				if( src + i > src_end ) then exit do
+
+				do while( i > 0 )
+					char = (char * 8) + (*src - CHAR_0)
+					src += 1
+					i -= 1
+				loop
+
+			else
+			    '' unicode 16-bit?
+			    if( char = asc( "u" ) ) then
+			    	if( src + 4 > src_end ) then exit do
+			    	char = hU16ToWchar( src )
+			    	src += 4
+
+                '' remap char as they will become a octagonal seq
+                else
+			    	char = hRemapChar( char )
+                end if
+			end if
+
+		end if
+
+		''
+		if( char < &h00A0 ) then
+			if( c < 32 ) then
+				*dst = CHAR_RSLASH
+				dst += 1
+				if( c < 8 ) then
+					dst[0] = CHAR_0 + c
+					dst += 1
+
+				else
+					dst[0] = CHAR_0 + (c shr 3)
+					dst[1] = CHAR_0 + (c and 7)
+					dst += 2
+				end if
+			else
+				*dst = char
+				dst += 1
+			end if
+
+		else
+			dst[0] = CHAR_RSLASH
+			dst[1] = u_char
+			dst += 2
+
+			if( wstrlen = len( FB_INTEGERSIZE ) ) then
+				for i = 0 to 3
+					*dst = CHAR_0
+					dst += 1
+				next
+			end if
+
+			for i = 3 to 0 step -1
+				'' x86 little-endian assumption
+				c = char and 15
+				if( c < 10 ) then
+					dst[i] = CHAR_0 + c
+				else
+					dst[i] = asc( "A" ) + (c - 10)
+				end if
+
+        		char shr= 4
+			next
+
+			dst += 4
+		end if
 
 	loop
 

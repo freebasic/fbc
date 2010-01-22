@@ -172,6 +172,12 @@ private function hArrayInit _
 		lexSkipToken( )
 
 		ctx.dimcnt += 1
+
+		'' open a scope only if it's the first dim -- used by the gcc emitter
+		if( ctx.dimcnt = 1 ) then
+			astTypeIniScopeBegin( ctx.tree, ctx.sym )
+		end if
+
 		'' too many dimensions?
 		if( ctx.dimcnt > dimensions ) then
 			if( errReport( iif( dimensions > 0, _
@@ -271,8 +277,14 @@ private function hArrayInit _
 			end if
 		end if
 
-	'' ','
-	loop while( hMatch( CHAR_COMMA ) )
+
+		'' ','
+		if( hMatch( CHAR_COMMA ) = FALSE ) then
+			exit do
+		end if
+
+        astTypeIniSeparator( ctx.tree, ctx.sym )
+	loop
 
 	'' pad
 	elements -= elm_cnt
@@ -316,6 +328,12 @@ private function hArrayInit _
 	end if
 
 	if( isarray ) then
+
+		'' close the scope only if it's the first dim -- used by the gcc emitter
+		if( ctx.dimcnt = 1 ) then
+			astTypeIniScopeEnd( ctx.tree, ctx.sym )
+		end if
+
 		'' '}'
 		if( lexGetToken( ) <> CHAR_RBRACE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
@@ -421,7 +439,11 @@ private function hUDTInit _
 			rec_cnt -= 1
 			return hElmInit( ctx )
 		end if
+
+	else
+		astTypeIniScopeBegin( ctx.tree, ctx.sym )
 	end if
+
 	if( parenth ) then
 		lexSkipToken( )
 	end if
@@ -448,7 +470,7 @@ private function hUDTInit _
 	ctx.options and= not FB_INIOPT_DODEREF
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
-	
+
 	'' for each UDT element..
 	elm_cnt = 1
 	do
@@ -568,16 +590,15 @@ private function hUDTInit _
 			exit do
 		end if
 
+        astTypeIniSeparator( ctx.tree, ctx.sym )
 	loop
-
-	'' restore parent
-	ctx = old_ctx
 
 	'' ')'
 	if( parenth ) then
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				rec_cnt -= 1
+				ctx = old_ctx
 				exit function
 			else
 				'' error recovery: skip until next ')'
@@ -585,8 +606,12 @@ private function hUDTInit _
 			end if
 		else
 			lexSkipToken( )
+			astTypeIniScopeEnd( ctx.tree, ctx.sym )
 		end if
 	end if
+
+	'' restore parent
+	ctx = old_ctx
 
 	''
 	dim as integer sym_len = symbCalcLen( dtype, subtype )

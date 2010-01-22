@@ -192,7 +192,7 @@ function cProcCall _
 
 	'' method call?
 	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 		arg->expr = thisexpr
 		arg->mode = hGetInstPtrMode( thisexpr )
 		options or= FB_PARSEROPT_HASINSTPTR
@@ -220,7 +220,7 @@ function cProcCall _
 				end if
 			end if
 
-			dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+			dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 			arg->expr = expr
 			arg->mode = INVALID
 
@@ -393,7 +393,7 @@ function cProcCall _
 		end if
 	end if
 
-	'' !!!CHECKME!!! is this really nedeed? astSetType() should be removed in future
+	'' tell the emitter to not allocate a result
 	astSetType( procexpr, FB_DATATYPE_VOID, NULL )
 
 	astAdd( procexpr )
@@ -1139,7 +1139,7 @@ function hForwardCall _
 			exit do
 		end if
 
-		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 		arg->expr = expr
 		arg->mode = INVALID
 
@@ -1169,7 +1169,7 @@ function hForwardCall _
     proc = symbAddPrototype( proc, id, NULL, NULL, _
     						 FB_DATATYPE_VOID, NULL, 0, _
     					     FB_FUNCMODE_DEFAULT )
-	
+
     if( proc = NULL ) then
     	if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     		exit function

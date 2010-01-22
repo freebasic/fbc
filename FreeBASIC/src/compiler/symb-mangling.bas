@@ -234,6 +234,13 @@ function symbGetMangledName _
 
 	sym->id.mangled = id_mangled
 
+	'' silly periods..
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			hReplaceChar( id_mangled, asc( "." ), asc( "$" ) )
+		end if
+	end if
+
 	function = id_mangled
 
 end function
@@ -410,13 +417,13 @@ function symbMangleType _
 
     case FB_DATATYPE_STRING
        	sig = "8FBSTRING"
-	
+
 	case else
 		'' builtin?
 		if( typeGet( dtype ) = dtype ) then
 			return typecodeTB( dtype )
 		end if
-	
+
 		'' reference?
 		if( typeIsRef( dtype ) ) then
 			'' const?
@@ -426,12 +433,12 @@ function symbMangleType _
 				sig = "R"
 			end if
 			sig += symbMangleType( typeUnsetIsRef( dtype ), subtype )
-	
+
 		'' array?
 		elseif( typeIsArray( dtype ) ) then
 			sig = "A"
 			sig += symbMangleType( typeUnsetIsArray( dtype ), subtype )
-	
+
 		'' pointer? (must be checked/emitted before CONST)
 		elseif( typeIsPtr( dtype ) ) then
 			'' const?
@@ -440,16 +447,16 @@ function symbMangleType _
 			else
 				sig = "P"
 			end if
-	
+
 			sig += symbMangleType( typeDeref( dtype ), subtype )
-	
+
 		'' const..
 		else
 			'' note: nothing is added (as in C++) because it's not a 'const ptr'
 			sig += symbMangleType( typeUnsetIsConst( dtype ), subtype )
-	
+
 		end if
-		
+
     end select
 
     hAbbrevAdd( dtype, subtype )
@@ -712,8 +719,16 @@ private function hMangleVariable  _
 
 		if( isglobal or docpp ) then
 
+    		suffix_len = 0
+
     		'' BASIC? use the upper-cased name
     		if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+    			'' high-level?
+				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+    				suffix_str = @"$"
+    				suffix_len = 1
+				end if
+
 				id_str = sym->id.name
 
 			'' else, the case-sensitive name saved in the alias..
@@ -723,8 +738,15 @@ private function hMangleVariable  _
 
     		'' suffixed?
     		if( symbIsSuffixed( sym ) ) then
-    			suffix_str = @typecodeTB( symbGetType( sym ) )
-    			suffix_len = 1
+    			if( suffix_len = 0 ) then
+    				suffix_str = @typecodeTB( symbGetType( sym ) )
+    			else
+    				static as string tmp
+    				tmp = typecodeTB( symbGetType( sym ) ) + "$"
+    				suffix_str = strptr( tmp )
+    			end if
+
+    			suffix_len += 1
     		end if
 
 		else
@@ -733,6 +755,17 @@ private function hMangleVariable  _
     			'' BASIC? use the upper-cased name
     			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 					id_str = sym->id.name
+
+    				'' suffixed?
+    				if( symbIsSuffixed( sym ) ) then
+    					static as string tmp
+    					tmp = typecodeTB( symbGetType( sym ) ) + "$"
+    					suffix_str = strptr( tmp )
+    					suffix_len = 2
+    				else
+    					suffix_str = @"$"
+    					suffix_len = 1
+    				end if
 
 				'' else, the case-sensitive name saved in the alias..
 				else
@@ -1156,10 +1189,11 @@ end function
 private function hMangleProc  _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as zstring ptr static
+	) as zstring ptr
 
-    static as zstring ptr prefix_str, nspc_str, id_str, param_str, suffix_str
-    static as integer docpp, prefix_len, nspc_len, id_len, param_len, suffix_len, add_len
+    dim as zstring ptr prefix_str = any, nspc_str = any, id_str = any, param_str = any, suffix_str = any
+    dim as integer prefix_len = any, nspc_len = any, id_len = any, param_len = any, suffix_len = any, add_len = any
+    dim as integer docpp = any
 
     docpp = hDoCppMangling( sym )
 
@@ -1238,32 +1272,38 @@ private function hMangleProc  _
     end if
 
 	'' concat
-	dim as zstring ptr dst, id_alias
+	dim as zstring ptr dst = any, id_alias = any
 
-	id_alias = ZStrAllocate( prefix_len + nspc_len + id_len + param_len + suffix_len )
+	var tlen = prefix_len + nspc_len + id_len + param_len + suffix_len
+	if tlen = 0 then
+		id_alias = NULL
 
-	dst = id_alias
-	if( prefix_str <> NULL ) then
-		*dst = *prefix_str
-		dst += prefix_len
-	end if
+	else
+		id_alias = ZStrAllocate( tlen )
 
-	if( nspc_len <> 0 ) then
-		*dst = *nspc_str
-		dst += nspc_len
-	end if
+		dst = id_alias
+		if( prefix_str <> NULL ) then
+			*dst = *prefix_str
+			dst += prefix_len
+		end if
 
-	*dst = *id_str
-	dst += id_len
+		if( nspc_len <> 0 ) then
+			*dst = *nspc_str
+			dst += nspc_len
+		end if
 
-	if( param_str <> NULL ) then
-		*dst = *param_str
-		dst += param_len
-	end if
+		*dst = *id_str
+		dst += id_len
 
-	if( suffix_str <> NULL ) then
-		*dst = *suffix_str
-	end if
+		if( param_str <> NULL ) then
+			*dst = *param_str
+			dst += param_len
+		end if
+
+		if( suffix_str <> NULL ) then
+			*dst = *suffix_str
+		end if
+    end if
 
 	function = id_alias
 

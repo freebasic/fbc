@@ -62,7 +62,7 @@ function cFunctionCall _
 
 	'' method call?
 	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 		arg->expr = thisexpr
 		arg->mode = hGetInstPtrMode( thisexpr )
 		options or= FB_PARSEROPT_HASINSTPTR
@@ -226,7 +226,7 @@ function cCtorCall _
 	end if
 
     '' pass the instance ptr
-	dim as FB_CALL_ARG ptr arg = hAllocCallArg( @arg_list, FALSE )
+	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
 	arg->expr = astBuildVarField( tmp )
 	arg->mode = INVALID
 

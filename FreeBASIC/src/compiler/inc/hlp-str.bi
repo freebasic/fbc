@@ -135,6 +135,13 @@ declare function hReplaceW _
 		byval newtext as wstring ptr _
 	) as wstring ptr
 
+declare function hReplaceChar _
+	( _
+		byval orgtext as zstring ptr, _
+		byval oldchar as integer, _
+		byval newchar as integer _
+	) as zstring ptr
+
 declare function hGetWstrNull _
 	( _
 	) as zstring ptr

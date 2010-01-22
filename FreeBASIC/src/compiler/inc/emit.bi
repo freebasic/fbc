@@ -192,6 +192,7 @@ type EMIT_LITNODE
 end type
 
 type EMIT_JTBNODE
+	op			as AST_JMPTB_OP
 	dtype		as integer
 	text		as zstring ptr
 end type
@@ -252,7 +253,8 @@ type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
 type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval dtype as integer, _
+type EMIT_JTBCB as sub( byval op as AST_JMPTB_OP, _
+						byval dtype as integer, _
 						byval text as zstring ptr )
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
@@ -273,6 +275,11 @@ type EMIT_VTBL
 	end as sub _
 	( _
 	)
+
+	getOptionValue as function _
+	( _
+		byval opt as IR_OPTIONVALUE _
+	) as integer
 
 	open as function _
 	( _
@@ -316,6 +323,7 @@ type EMIT_VTBL
 	procGetFrameRegName as function _
 	( _
 	) as zstring ptr
+
 
 	procBegin as sub _
 	( _
@@ -449,6 +457,7 @@ declare function emitLIT _
 
 declare function emitJMPTB _
 	( _
+		byval op as AST_JMPTB_OP, _
 		byval dtype as integer, _
 		byval text as zstring ptr _
 	) as EMIT_NODE ptr
@@ -892,6 +901,21 @@ declare sub emitVARINIPAD _
 		byval bytes as integer _
 	)
 
+declare sub emitVARINISCOPEINI _
+	( _
+		_
+	)
+
+declare sub emitVARINISCOPEEND _
+	( _
+		_
+	)
+
+declare sub emitVARINISEPARATOR _
+	( _
+		_
+	)
+
 declare sub emitWriteStr _
 	( _
 		byval s as zstring ptr, _
@@ -913,6 +937,9 @@ declare sub emitFlush _
 	( _
 		_
 	)
+
+
+#define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
 
 #define emitGetVarName( s ) emit.vtbl.getVarName( s )
 

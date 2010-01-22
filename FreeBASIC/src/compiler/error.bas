@@ -308,7 +308,8 @@ end type
 		@"Can't use ... as lower bound", _
 		@"FOR/NEXT variable name mismatch", _
 		@"Selected option requires an SSE FPU mode", _
-		@"Expected relational operator ( =, >, <, <>, <=, >= )" _
+		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
+		@"Unsupported statement in -gen gcc mode" _
 	}
 
 

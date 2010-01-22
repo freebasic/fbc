@@ -172,8 +172,10 @@ declare sub getDefaultLibs _
 		( FBC_OPT_FORCELANG		, @"forcelang"   ), _
 		( FBC_OPT_WA			, @"Wa"     	 ), _
 		( FBC_OPT_WL			, @"Wl"     	 ), _
+		( FBC_OPT_WC			, @"Wc"     	 ), _
 		( FBC_OPT_GEN			, @"gen"		 ), _
 		( FBC_OPT_PREFIX		, @"prefix"      ), _
+		( FBC_OPT_OPTIMIZE		, @"O"      	 ), _
 		( FBC_OPT_EXTRAOPT		, @"z"			 ) _
 	}
 
@@ -220,7 +222,7 @@ declare sub getDefaultLibs _
     if( fbc.verbose or fbc.showversion ) then
     	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
-    	print "Copyright (C) 2004-2008 The FreeBASIC development team."
+    	print "Copyright (C) 2004-2010 The FreeBASIC development team."
 
 #ifndef STANDALONE
 		print "Configured with prefix " + FB_ARCH_PREFIX
@@ -537,7 +539,7 @@ private function compileFiles _
 			end if
 
 			if( fbCheckRestartCompile( ) ) then
-				
+
 				'' Errors? Don't bother restarting ...
 				if( errGetCount( ) <> 0 ) then
 					exit function
@@ -547,7 +549,7 @@ private function compileFiles _
 					'' shutdown the parser (it will be restarted)
 					fbEnd( )
 				end if
-			
+
 			else
 
 				'' update the list of libs and paths, with the ones found when parsing
@@ -687,11 +689,68 @@ private function assembleFile_GCC _
 end function
 
 '':::::
+private function hArchToGccArch _
+	( _
+		byval arch as integer _
+	) as string
+
+	dim as string march
+
+	select case as const arch
+	case FB_CPUTYPE_386
+		march = "i386"
+
+	case FB_CPUTYPE_486
+		march = "i486"
+
+	case FB_CPUTYPE_586
+		march = "i586"
+
+	case FB_CPUTYPE_686
+		march = "i686"
+
+	case FB_CPUTYPE_ATHLON
+		march = "athlon"
+
+	case FB_CPUTYPE_ATHLONXP
+		march = "athlon-xp"
+
+	case FB_CPUTYPE_ATHLONFX
+		march = "athlon-fx"
+
+	case FB_CPUTYPE_ATHLONSSE3
+		march = "k8-sse3"
+
+	case FB_CPUTYPE_PENTIUMMMX
+		march = "pentium-mmx"
+
+	case FB_CPUTYPE_PENTIUM2
+		march = "pentium2"
+
+	case FB_CPUTYPE_PENTIUM3
+		march = "pentium3"
+
+	case FB_CPUTYPE_PENTIUM4
+		march = "pentium4"
+
+	case FB_CPUTYPE_PENTIUMSSE3
+		march = "prescott"
+
+	case FB_CPUTYPE_NATIVE
+		march = "native"
+
+	end select
+
+	function = march
+
+end function
+'':::::
 private function assembleFiles_GCC _
 	( _
 	) as integer
 
 	dim as string ascline
+	dim as string march = "-mtune=" & hArchToGccArch( fbGetOption( FB_COMPOPT_CPUTYPE ) ) & " "
 
 	function = FALSE
 
@@ -699,20 +758,27 @@ private function assembleFiles_GCC _
 	do while( iof <> NULL )
 
     	'' gcc' options
-    	ascline = "-c -nostdlib -nostdinc "
+    	ascline = "-c -nostdlib -nostdinc " & _
+    			  "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
+    			  "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
+    			  "-O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
 
-    	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-			ascline = "-c "
-    	else
-    		ascline = ""
+    	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
+			ascline += "-g "
+    	end if
+
+    	ascline += march
+
+    	if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
+    		ascline += "-mfpmath=sse -msse2 "
     	end if
 
 		ascline += QUOTE + iof->asmf + _
 				   (QUOTE + " -o " + QUOTE) + _
 				   iof->outf + (QUOTE) + _
-                   fbc.extopt.gas
+                   fbc.extopt.gcc
 
-    	'' invoke as
+    	'' invoke gcc
 		if( assembleFile_GCC( ascline ) = FALSE ) then
 			exit function
 		end if
@@ -1315,6 +1381,24 @@ private function processOptions _
 					value = FB_CPUTYPE_586
 				case "686"
 					value = FB_CPUTYPE_686
+				case "athlon"
+					value = FB_CPUTYPE_ATHLON
+				case "athlon-xp"
+					value = FB_CPUTYPE_ATHLONXP
+				case "athlon-fx"
+					value = FB_CPUTYPE_ATHLONFX
+				case "k8-sse3"
+					value = FB_CPUTYPE_ATHLONSSE3
+				case "pentium-mmx"
+					value = FB_CPUTYPE_PENTIUMMMX
+				case "pentium2"
+					value = FB_CPUTYPE_PENTIUM2
+				case "pentium3"
+					value = FB_CPUTYPE_PENTIUM3
+				case "pentium4"
+					value = FB_CPUTYPE_PENTIUM4
+				case "pentium4-sse3"
+					value = FB_CPUTYPE_PENTIUMSSE3
 				case else
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function
@@ -1701,6 +1785,28 @@ private function processOptions _
 
 				del_cnt += 1
 
+			case FBC_OPT_OPTIMIZE
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				if( *nxt = "max" ) then
+					value = 3
+				else
+					value = valint( *nxt )
+					if( value < 0 ) then
+						value = 0
+						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					elseif( value > 3 ) then
+						value = 3
+					end if
+				end if
+
+				fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
+
+				del_cnt += 1
+
 			case FBC_OPT_WA
 				if( nxt = NULL ) then
 					printInvalidOpt( arg )
@@ -1718,6 +1824,16 @@ private function processOptions _
 				end if
 
 				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
+
+				del_cnt += 1
+
+			case FBC_OPT_WC
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.extopt.gcc = " " + hReplace( *nxt, ",", " " ) + " "
 
 				del_cnt += 1
 
@@ -1990,6 +2106,7 @@ private sub printOptions( )
 	print "-fpmode <mode>"; " Select accuracy/speed of floating-point math (FAST, PRECISE)"
 	printOption( "-fpu <type>", "Select FPU (x87, sse)" )
 	printOption( "-g", "Add debug info" )
+	printOption( "-gen <name>", "Select the code generator (gas, gcc)" )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"
 	printOption( "-l <name>", "Add a library file to linker's list" )
@@ -2004,6 +2121,7 @@ private sub printOptions( )
 	printOption( "-nodeflibs", "Do not include the default libraries" )
 	printOption( "-noerrline", "Do not show source line where error occurred" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
+	printOption( "-O <value>", "Optimization level (default: 0)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
 	print "-prefix <path>"; " Set the compiler prefix path"
 	printOption( "-profile", "Enable function profiling" )
@@ -2070,6 +2188,7 @@ private sub printOptions( )
 	printOption( "-version", "Show compiler version" )
 	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
 	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
+	printOption( "-Wc <opt>", "Pass options to GCC when using -gen gcc (separated by commas)" )
 	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
 	printOption( "-x <name>", "Set executable/library path/name" )
 

@@ -151,11 +151,15 @@ sub astDataStmtEnd _
 	'' initialize it
 	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, ast.data.desc, TRUE )
 
+	astTypeIniScopeBegin( initree, NULL )
+
 	'' for each node..
 	n = tree->l
 	for i = 0 to tree->data.elmts - 1
 		id = n->data.id
 		expr = n->l
+
+		astTypeIniScopeBegin( initree, NULL )
 
 		select case n->data.id
 		case FB_DATASTMT_ID_ZSTR
@@ -183,17 +187,27 @@ sub astDataStmtEnd _
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-        '' .node = expr
+    	astTypeIniSeparator( initree, NULL )
     	elm = symbGetNext( elm )
+
+        '' .node = expr
 		astTypeIniAddAssign( initree, expr, elm )
+
+    	astTypeIniScopeEnd( initree, NULL )
 
     	'' next
 		dim as ASTNODE ptr nxt = n->r
 		astDelNode( n )
 		n = nxt
+
+		if( n ) then
+			astTypeIniSeparator( initree, NULL )
+		end if
 	next
 
     ''
+    astTypeIniScopeEnd( initree, NULL )
+
     astTypeIniEnd( initree, TRUE )
 
     symbSetTypeIniTree( array, initree )
@@ -202,21 +216,25 @@ sub astDataStmtEnd _
 	'' link the last data to this one
 	if( ast.data.lastsym <> NULL ) then
     	'' lastarray(ubound(lastarray)).next = @array(0)
-    	initree = symbGetTypeIniTree( ast.data.lastsym )
+    	initree = symbGetTypeIniTree( astGetLastDataStmtSymbol( ) )
 
     	n = initree->l
+    	var tn = n
     	do while( n->r <> NULL )
+    		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+    			tn = n
+    		end if
     		n = n->r
     	loop
 
     	'' del the NULL expr
-    	astDelNode( n->l )
+    	astDelNode( tn->l )
 
     	'' replace the node
-    	n->l = astNewADDROF( astNewVAR( array, _
-    									0, _
-    									FB_DATATYPE_STRUCT, _
-    									ast.data.desc ) )
+    	tn->l = astNewADDROF( astNewVAR( array, _
+    									 0, _
+    									 FB_DATATYPE_STRUCT, _
+    									 ast.data.desc ) )
 	end if
 
 	ast.data.lastsym = array
@@ -294,6 +312,8 @@ function astDataStmtAdd _
 					  	FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
 					  	FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
+	sym->var_.data.prev = astGetLastDataStmtSymbol( )
+
 	function = sym
 
 end function
@@ -305,18 +325,18 @@ private sub hCreateDataDesc _
 
 	static as FBARRAYDIM dTB(0)
 
-   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC__", NULL, FALSE, 1 )
+   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC$", NULL, FALSE, 1 )
 
 	'' type	as short
 	symbAddField( ast.data.desc, _
-				  NULL, _
+				  "type", _
 				  0, dTB(), _
 				  FB_DATATYPE_SHORT, NULL, _
 				  2, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
 	symbAddField( ast.data.desc, _
-				  NULL, _
+				  "node", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )

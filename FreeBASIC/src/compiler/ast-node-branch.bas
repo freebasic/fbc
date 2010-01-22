@@ -88,7 +88,7 @@ function astLoadBRANCH _
 				irEmitJUMPPTR( vr )
 
 			case AST_OP_CALLPTR
-				irEmitCALLPTR( vr, NULL, 0 )
+				irEmitCALLPTR( vr, NULL, NULL, 0 )
 
 			case AST_OP_RET
 				irEmitRETURN( 0 )
@@ -108,7 +108,7 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewJMPTB _
+function astNewJMPTB_Label _
 	( _
 		byval dtype as integer, _
 		byval label as FBSYMBOL ptr _
@@ -122,7 +122,44 @@ function astNewJMPTB _
 		return NULL
 	end if
 
+	n->jmptb.op = AST_JMPTB_LABEL
 	n->jmptb.label = label
+
+	function = n
+
+end function
+
+'':::::
+function astNewJMPTB_Begin _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr n = any
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_JMPTB, FB_DATATYPE_VOID )
+
+	n->jmptb.op = AST_JMPTB_BEGIN
+	n->jmptb.label = s
+
+	function = n
+
+end function
+
+'':::::
+function astNewJMPTB_END _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr n = any
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_JMPTB, FB_DATATYPE_VOID )
+
+	n->jmptb.op = AST_JMPTB_END
+	n->jmptb.label = s
 
 	function = n
 
@@ -135,7 +172,7 @@ function astLoadJMPTB _
 	) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitJMPTB( astGetDataType( n ), n->jmptb.label )
+		irEmitJMPTB( n->jmptb.op, astGetDataType( n ), n->jmptb.label )
 	end if
 
 	function = NULL

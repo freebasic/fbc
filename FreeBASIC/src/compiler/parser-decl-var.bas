@@ -430,7 +430,7 @@ private function hDeclStaticVar _
 		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 			options or= FB_SYMBOPT_UNSCOPE
 		end if
-        
+
     	sym = symbAddVarEx( id, idalias, dtype, subtype, _
     				  	  	lgt, dimensions, dTB(), _
     				  	  	attrib, options )
@@ -483,13 +483,13 @@ private function hDeclDynArray _
 
     '' any variable already defined?
     if( sym <> NULL ) then
-    	
+
     	'' array in a udt?
     	if( symbIsField( sym ) ) then
     		errReportEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
     		exit function
     	end if
-    	
+
    		'' typeless REDIM's?
    		if( is_typeless ) then
    			dtype = symbGetType( sym )
@@ -544,7 +544,7 @@ private function hDeclDynArray _
 			'' dim foo(variable)? (without a preceeding COMMON)
 			elseif( (is_redim = FALSE) and (symbIsCommon( sym ) = FALSE) ) then
 				sym = NULL
-				
+
 			end if
 		end if
 	end if
@@ -555,14 +555,14 @@ private function hDeclDynArray _
 		exit function
 	end if
 
-	'' don't allow const dynamic arrays... 
+	'' don't allow const dynamic arrays...
 	'' they can't be assigned even if resized...
 	if( typeIsConst( symbGetFullType( sym ) ) ) then
 		if( errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST ) = FALSE ) then
 			exit function
 		end if
 	end if
-	
+
 	attrib = symbGetAttrib( sym )
 
 	'' external? don't do any checks..
@@ -848,7 +848,7 @@ private function hVarInitDefault _
 	if( sym = NULL ) then
 		exit function
 	end if
-		
+
 	attrib = symbGetAttrib( sym )
 
 	'' need initializer?
@@ -864,7 +864,7 @@ private function hVarInitDefault _
 		end if
 
 	end if
-		
+
     '' ctor?
     if( has_defctor ) then
 		'' not already declared, extern, common or dynamic?
@@ -911,7 +911,7 @@ function hHasEllipsis _
 			end if
 		end if
 	end if
-	
+
 end function
 
 '':::::
@@ -984,7 +984,7 @@ private function hVarInit _
 				symbSetDontInit( sym )
 			end if
 		end if
-		
+
 		'' ...or const-qualified vars
 		if( typeIsConst( symbGetFullType( sym ) ) ) then
 			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
@@ -994,7 +994,7 @@ private function hVarInit _
 				return astNewCONSTi( 0 )
 			end if
 		end if
-		
+
 		lexSkipToken( )
 
 		exit function
@@ -1150,7 +1150,7 @@ private function hCallGlobalCtor _
 	if( (initree = NULL) and (has_dtor = FALSE) ) then
 		return var_decl
 	end if
-    
+
 	astProcAddGlobalInstance( sym, initree, has_dtor )
 
 	'' remove the temps from the dtors list if any was added
@@ -1171,9 +1171,9 @@ private function hFlushInitializer _
 		byval has_defctor as integer, _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
-	
+
 	'' has_defctor is unused -cha0s
-	
+
 	'' object?
     if( has_dtor ) then
     	'' check visibility
@@ -1605,7 +1605,7 @@ function hVarDeclEx _
 			select case lexGetToken( )
 			case FB_TK_DBLEQ, FB_TK_EQ
 				initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
-	
+
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
 					'' local?
 					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
@@ -1892,7 +1892,7 @@ function cStaticArrayDecl _
 					end if
 				end if
 			end if
-	
+
 			dTB(i).lower = astGetValueAsInt( expr )
 			astDelNode( expr )
 		end if
@@ -1932,7 +1932,7 @@ function cStaticArrayDecl _
 						end if
 					end if
 				end if
-	
+
 				dTB(i).upper = astGetValueAsInt( expr )
 				astDelNode( expr )
 			end if
@@ -2028,7 +2028,7 @@ function cArrayDecl _
 					end if
 					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end if
-	
+
 			else
 				'' check if non-numeric
 				select case as const astGetDataType( expr )
@@ -2042,7 +2042,7 @@ function cArrayDecl _
 					end if
 				end select
 			end if
-	
+
 			exprTB(i,0) = expr
 		end if
 
@@ -2071,7 +2071,7 @@ function cArrayDecl _
 						hSkipUntil( CHAR_COMMA )
 						expr = astCloneTree( exprTB(i,0) )
 					end if
-	
+
 				else
 					'' check if non-numeric
 					select case as const astGetDataType( expr )
@@ -2084,7 +2084,7 @@ function cArrayDecl _
 						end if
 					end select
 				end if
-	
+
 				exprTB(i,1) = expr
 			end if
 

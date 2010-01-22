@@ -125,10 +125,14 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_CANTUNDEF    = &h00800000
     FB_SYMBSTATS_UNIONFIELD   = &h01000000
     FB_SYMBSTATS_RTL_CONST    = &h02000000
+    FB_SYMBSTATS_EMITTED      = &h04000000		'' needed by high-level IRs
 
+    '' reuse - take care
     FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
     FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED
     FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
+    FB_SYMBSTATS_ISDUPDECL 		= FB_SYMBSTATS_CANTDUP
+    FB_SYMBSTATS_GCCBUILTIN		= FB_SYMBSTATS_HASCTOR
 end enum
 
 '' symbol attributes mask
@@ -163,14 +167,14 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PUBLIC	= &h02000000	'' class members only
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' /
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
-	FB_SYMBATTRIB_NAKED             = &h10000000
+	FB_SYMBATTRIB_NAKED         = &h10000000
 
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 
 	'' reuse - take care
 	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD
 	FB_SYMBATTRIB_STATICLOCALS	= FB_SYMBATTRIB_OPTIONAL
-	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_FUNCRESULT
+	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_NAKED
 end enum
 
 '' parameter modes
@@ -212,7 +216,7 @@ end enum
 '' options when looking up symbols
 enum FB_SYMBLOOKUPOPT
 	FB_SYMBLOOKUPOPT_NONE    = &h00000000
-	
+
 	FB_SYMBLOOKUPOPT_PROPGET = &h00000001
 	FB_SYMBLOOKUPOPT_BOP_OVL = &h00000002
 end enum
@@ -346,6 +350,13 @@ type FB_DEFTOK
 	next			as FB_DEFTOK ptr
 end type
 
+enum FB_DEFINE_FLAGS
+	FB_DEFINE_FLAGS_NONE		= &h00000000
+	FB_DEFINE_FLAGS_STR			= &h00000000
+	FB_DEFINE_FLAGS_NUM			= &h00000001
+	FB_DEFINE_FLAGS_NOGCC		= &h00000002
+end enum
+
 type FBS_DEFINE
 	params			as integer
 	paramhead 		as FB_DEFPARAM ptr
@@ -357,9 +368,7 @@ type FBS_DEFINE
 	end union
 
 	isargless		as integer
-    flags           as integer          		'' flags:
-                                        		'' bit    meaning
-                                        		'' 0      1=numeric, 0=string
+    flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
 	proc			as function( ) as string
 end type
 
@@ -550,7 +559,7 @@ type FBS_PROC
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
 	lib				as FBS_LIB ptr
 	lgt				as integer					'' parameters length (in bytes)
-	returnMethod		as FB_PROC_RETURN_METHOD
+	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
@@ -590,6 +599,10 @@ type FBVAR_DESC
 	array			as FBSYMBOL_ ptr			'' back-link
 end type
 
+type FBVAR_DATA
+	prev			as FBSYMBOL_ ptr
+end type
+
 type FBS_VAR
 	union
 		littext		as zstring ptr
@@ -599,9 +612,8 @@ type FBS_VAR
 	array			as FBS_ARRAY
 	desc			as FBVAR_DESC
 	stmtnum			as integer					'' can't use colnum as it's unreliable
-
 	align			as integer					'' 0 = use default alignment
-
+	data			as FBVAR_DATA				'' used with DATA stmts
 end type
 
 '' namespace
@@ -753,6 +765,8 @@ type SYMBCTX
 	globOpOvlTb ( _
 					0 to AST_OPCODES-1 _
 				)	as SYMB_OVLOP				'' global operator overloading
+
+	arrdesctype		as FBSYMBOL ptr				'' array descriptor type
 end type
 
 type SYMB_DATATYPE
@@ -969,7 +983,7 @@ declare function symbAddDefine _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as function() as string = NULL, _
-		byval flags as integer = 0 _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineW _
@@ -979,7 +993,7 @@ declare function symbAddDefineW _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as function() as string = NULL, _
-		byval flags as integer = 0 _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineMacro _
@@ -987,7 +1001,8 @@ declare function symbAddDefineMacro _
 		byval symbol as zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
-		byval paramhead as FB_DEFPARAM ptr _
+		byval paramhead as FB_DEFPARAM ptr, _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineParam _
@@ -1733,13 +1748,13 @@ declare function symbGetCompCloneProc _
 declare sub symbCompAddDefCtor _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) 
-	
+	)
+
 declare sub symbCompAddDefDtor _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) 
-	
+	)
+
 declare sub symbCompAddDefMembers _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -1860,6 +1875,22 @@ declare function symbCheckConstAssign _
 		byval mode as FB_PARAMMODE = 0, _
 		byref misses as integer = 0 _
 	) as integer
+
+
+declare function symbAllocOvlCallArg _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval to_head as integer = FALSE _
+	) as FB_CALL_ARG ptr
+
+#define symbFreeOvlCallArg( list, arg ) listDelNode( list, arg )
+
+declare sub symbFreeOvlCallArgs _
+	( _
+		byval list as TLIST ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr _
+	)
 
 
 ''
@@ -2020,8 +2051,17 @@ declare function symbCheckConstAssign _
 #define symbGetIsRTLConst(s) ((s->stats and FB_SYMBSTATS_RTL_CONST) <> 0)
 #define symbSetIsRTLConst(s) s->stats or= FB_SYMBSTATS_RTL_CONST
 
+#define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
+#define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
+
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
+
+#define symbGetIsDupDecl(s) ((s->stats and FB_SYMBSTATS_ISDUPDECL) <> 0)
+#define symbSetIsDupDecl(s) s->stats or= FB_SYMBSTATS_ISDUPDECL
+
+#define symbGetIsGccBuiltin(s) ((s->stats and FB_SYMBSTATS_GCCBUILTIN) <> 0)
+#define symbSetIsGccBuiltin(s) s->stats or= FB_SYMBSTATS_GCCBUILTIN
 
 #define symbGetStats(s) s->stats
 

@@ -55,17 +55,17 @@ private sub hAllocTempStruct _
 
 	'' follow GCC 3.x's ABI
 	if( symbGetUDTInRegister( sym ) = FALSE ) then
-		
+
 		'' create a temp struct (can't be static, could be an object)
 		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
 									     symbGetSubtype( sym ), _
 									     FALSE, _
 									     FALSE )
-		
+
 		if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
 			astDtorListAdd( n->call.tmpres )
 		end if
-		
+
 	end if
 
 end sub
@@ -152,6 +152,7 @@ private function hCallProc _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr, _
 		byval mode as integer, _
+		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval bytesaligned as integer _
 	) as IRVREG ptr
@@ -209,7 +210,7 @@ private function hCallProc _
 	p = n->l
 	if( p = NULL ) then
 		if( ast.doemit ) then
-			irEmitCALLFUNCT( sym, bytestopop, vreg )
+			irEmitCALLFUNCT( sym, arg_list, bytestopop, vreg )
 		end if
 
 	'' ptr..
@@ -217,7 +218,7 @@ private function hCallProc _
 		vr = astLoad( p )
 		astDelNode( p )
 		if( ast.doemit ) then
-			irEmitCALLPTR( vr, vreg, bytestopop )
+			irEmitCALLPTR( vr, arg_list, vreg, bytestopop )
 		end if
 	end if
 
@@ -270,7 +271,8 @@ end sub
 private sub hCheckTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval arg_list as IR_CALL_ARG_LIST ptr _
 	)
 
 	dim as IRVREG ptr vr = any
@@ -290,8 +292,8 @@ private sub hCheckTempStruct _
     							 			   symbGetSubtype( sym ), _
     							 			   TRUE ) ) )
 
-    	irEmitPUSHARG( vr, 0 )
-    	
+    	irNewCallArg( arg_list, vr, 0 )
+
 	end if
 
 end sub
@@ -307,6 +309,7 @@ function astLoadCALL _
     dim as integer mode = any, topop = any, toalign = any
     dim as integer params = any, inc = any, args = any
     dim as IRVREG ptr vr = any
+    dim as IR_CALL_ARG_LIST arg_list = ( @ir.arglist, 0, NULL, NULL )
 
 	sym = n->sym
 
@@ -370,7 +373,7 @@ function astLoadCALL _
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( vr, arg->arg.lgt )
+			irNewCallArg( @arg_list, vr, arg->arg.lgt )
 		end if
 
 		astDelNode( arg )
@@ -384,10 +387,10 @@ function astLoadCALL _
 	loop
 
 	'' handle functions returning structs
-	hCheckTempStruct( n, sym )
+	hCheckTempStruct( n, sym, @arg_list )
 
 	'' invoke
-	vr = hCallProc( n, sym, mode, topop, toalign )
+	vr = hCallProc( n, sym, mode, @arg_list, topop, toalign )
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )

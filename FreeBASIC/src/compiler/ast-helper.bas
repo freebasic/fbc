@@ -54,7 +54,7 @@ private function astSetBitField _
 	'' make sure result will fit in destination...
 	r = astNewBOP( AST_OP_AND, r, _
 				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
-	
+
 	if( s->bitfld.bitpos > 0 ) then
 		r = astNewBOP( AST_OP_SHL, r, _
 				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
@@ -81,9 +81,9 @@ sub astUpdateBitfieldAssignment _
 			l = astGetLeft( l )
 		end if
 	end if
-	
+
 end sub
-	
+
 '':::::
 function astBuildVarAssign _
 	( _
@@ -753,7 +753,7 @@ function astBuildInstPtr _
 		subtype = symbGetSubtype( fld )
 
 		'' build sym.field( index )
-		
+
 		ofs = symbGetOfs( fld )
 		if( ofs <> 0 ) then
 			expr = astNewBOP( AST_OP_ADD, _
@@ -976,6 +976,8 @@ function astBuildArrayDescIniTree _
     	array_expr = astNewADDROF( array_expr )
     end if
 
+    astTypeIniScopeBegin( tree, NULL )
+
     '' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 					   	 astNewBOP( AST_OP_ADD, _
@@ -984,11 +986,13 @@ function astBuildArrayDescIniTree _
 					   			  				  FB_DATATYPE_INTEGER ) ), _
 					   	 elm )
 
+	astTypeIniSeparator( tree, NULL )
 	elm = symbGetNext( elm )
 
 	'' .ptr	= @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
+    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .size = len( array ) * elements( array )
@@ -997,6 +1001,7 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
+    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .element_len	= len( array )
@@ -1005,6 +1010,7 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
+    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .dimensions = dims( array )
@@ -1013,10 +1019,13 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
+    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' setup dimTB
     dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
+
+    astTypeIniScopeBegin( tree, NULL )
 
     '' static array?
     if( symbGetIsDynamic( array ) = FALSE ) then
@@ -1026,12 +1035,15 @@ function astBuildArrayDescIniTree _
     	do while( d <> NULL )
 			elm = dimtb
 
+			astTypeIniScopeBegin( tree, NULL )
+
 			'' .elements = (ubound( array, d ) - lbound( array, d )) + 1
     		astTypeIniAddAssign( tree, _
     				   		     astNewCONSTi( d->upper - d->lower + 1, _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
+			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
@@ -1040,6 +1052,7 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
+			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
@@ -1048,7 +1061,13 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
+			astTypeIniScopeEnd( tree, NULL )
+
 			d = d->next
+
+			if( d ) then
+				astTypeIniSeparator( tree, NULL )
+			end if
     	loop
 
     '' dynamic..
@@ -1057,7 +1076,11 @@ function astBuildArrayDescIniTree _
         astTypeIniAddPad( tree, dims * len( FB_ARRAYDESCDIM ) )
     end if
 
+    astTypeIniScopeEnd( tree, NULL )
+
     ''
+    astTypeIniScopeEnd( tree, NULL )
+
     astTypeIniEnd( tree, TRUE )
 
     ''

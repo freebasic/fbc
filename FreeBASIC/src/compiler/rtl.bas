@@ -57,12 +57,19 @@ declare sub			rtlSystemModEnd		( )
 declare sub			rtlGosubModEnd		( )
 
 
+type RTLCTX
+	arglist		as TLIST
+end type
+
 ''globals
+	dim shared ctx as RTLCTX
 	dim shared rtlLookupTB(0 to FB_RTL_INDEXES-1) as FBSYMBOL ptr
 
 
 '':::::
 sub rtlInit static
+
+	listNew( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
@@ -98,6 +105,8 @@ sub rtlEnd
 	rtlDataModEnd( )
 	rtlConsoleModEnd( )
 	rtlArrayModEnd( )
+
+	listFree( @ctx.arglist )
 
 	'' reset the table as the pointers will change if
 	'' the compiler is reinitialized
@@ -201,13 +210,13 @@ sub rtlAddIntrinsicProcs _
 							next
 
 							'' next arg is result type
-							
+
 							i += 1
 							with procdef->paramTb(i)
 
 								'' add it
 								subtype = symbAddPrototype( inner_proc, _
-															NULL, NULL, NULL, _
+															NULL, hMakeTmpStrNL( ), NULL, _
 															.dtype, NULL, _
 															0, FB_FUNCMODE_DEFAULT, _
 															FB_SYMBOPT_DECLARING )
@@ -215,14 +224,14 @@ sub rtlAddIntrinsicProcs _
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
 								end if
-                                
-								'' due to the ambiguity (need to say it's optional to 
-								'' even get to this point), the symbol's return type will 
+
+								'' due to the ambiguity (need to say it's optional to
+								'' even get to this point), the symbol's return type will
 								'' be what specifies if the parent symbol is optional
                                 if( .isopt = FALSE ) then
                                 	attrib = 0
                                 end if
-                                
+
 							end with
 
 							param_optval = NULL
@@ -242,13 +251,13 @@ sub rtlAddIntrinsicProcs _
 					else
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
-					
+
 					var parm = symbAddProcParam( proc, _
 					                             NULL, NULL, _
 					                             .dtype, subtype, _
 					                             lgt, .mode, _
 					                             attrib, param_optval )
-					
+
 					if( .check_const ) then
 						symbSetIsRTLConst( parm )
 					end if
@@ -265,7 +274,8 @@ sub rtlAddIntrinsicProcs _
 			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
-			
+
+			''
 			dim as zstring ptr pname = procdef->name
 
 			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
@@ -276,7 +286,7 @@ sub rtlAddIntrinsicProcs _
 						tmp_alias = *pname
 						procdef->alias = strptr( tmp_alias )
         			end if
-        			
+
         			static as string tmp_name
         			tmp_name = "__" + *pname
         			pname = strptr( tmp_name )
@@ -314,6 +324,14 @@ sub rtlAddIntrinsicProcs _
 				symbSetProcCallback( proc, procdef->callback )
 				if( (procdef->options and FB_RTL_OPT_ERROR) <> 0 ) then
 					symbSetIsThrowable( proc )
+				end if
+
+				if( (procdef->options and FB_RTL_OPT_DUPDECL) <> 0 ) then
+					symbSetIsDupDecl( proc )
+				end if
+
+				if( (procdef->options and FB_RTL_OPT_GCCBUILTIN) <> 0 ) then
+					symbSetIsGccBuiltin( proc )
 				end if
 			else
 				if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
@@ -356,7 +374,7 @@ function rtlProcLookup _
 				else
 					rtlLookupTB( pidx ) = chain_->sym
 				end if
-			
+
 			else
 				errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 				rtlLookupTB( pidx ) = NULL
@@ -367,6 +385,58 @@ function rtlProcLookup _
 	end if
 
 	function = rtlLookupTB( pidx )
+
+end function
+
+'':::::
+function rtlOvlProcCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval param1 as ASTNODE ptr, _
+		byval param2 as ASTNODE ptr _
+	) as ASTNODE ptr
+
+    dim as FB_ERRMSG err_num = any
+    dim as integer args = 0
+    dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
+
+	var arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
+	arg->expr = param1
+	arg->mode = FB_PARAMMODE_BYVAL
+	args += 1
+
+	if( param2 <> NULL ) then
+		arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
+		arg->expr = param2
+		arg->mode = FB_PARAMMODE_BYVAL
+		args += 1
+	end if
+
+	var proc = symbFindClosestOvlProc( sym, args, arg_list.head, @err_num, FB_SYMBLOOKUPOPT_NONE )
+
+	if( proc = NULL ) then
+		symbFreeOvlCallArgs( @ctx.arglist, @arg_list )
+		return NULL
+	end if
+
+	var procexpr = astNewCALL( proc, NULL )
+
+    '' add to tree
+	arg = arg_list.head
+	do while( arg <> NULL )
+        var nxt = arg->next
+
+		if( astNewARG( procexpr, arg->expr, FB_DATATYPE_INVALID, arg->mode ) = NULL ) then
+			return NULL
+		end if
+
+		symbFreeOvlCallArg( @ctx.arglist, arg )
+
+		'' next
+		arg = nxt
+	loop
+
+	function = procexpr
 
 end function
 
@@ -420,7 +490,7 @@ function rtlCalcStrLen _
 	) as integer
 
 	dim as FBSYMBOL ptr s
-	
+
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 		function = 0

@@ -73,7 +73,7 @@ function cAsmCode _
 		text = *lexGetText( )
 		sym = NULL
 		doskip = FALSE
-        
+
 		select case as const lexGetClass( LEX_FLAGS )
 
 		'' id?
@@ -113,7 +113,8 @@ function cAsmCode _
 					end if
 
 				end if
-			elseif( emitIsKeyword( lcase(text) ) = FALSE ) then
+
+			elseif( irGetOption( IR_OPT_HIGHLEVEL ) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )

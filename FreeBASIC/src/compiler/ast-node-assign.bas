@@ -123,12 +123,12 @@ private function hCheckWstringOps _
 	) as integer
 
 	function = FALSE
-	
+
 	dim as FB_DATATYPE ld = any, rd = any
-	
+
 	ld = typeGet( ldtype )
 	rd = typeGet( rdtype )
-	
+
     '' left?
 	if( ld = FB_DATATYPE_WCHAR ) then
 		'' is right a zstring? (fixed- or
@@ -213,7 +213,7 @@ private function hCheckEnumOps _
 	) as integer
 
 	function = FALSE
-    
+
     '' not the same?
     if( astGetDataType( l ) <> astGetDataType( r ) ) then
     	if( (ldclass <> FB_DATACLASS_INTEGER) or _
@@ -236,7 +236,7 @@ private function hCheckConstAndPointerOps _
 	) as integer
 
 	function = FALSE
-	
+
 	'' check constant
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
@@ -245,7 +245,7 @@ private function hCheckConstAndPointerOps _
 			return TRUE
 		end if
 	end if
-	
+
 	if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
@@ -254,7 +254,7 @@ private function hCheckConstAndPointerOps _
 	elseif( typeIsPtr( rdtype ) ) then
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 	end if
-    
+
     function = TRUE
 
 end function
@@ -345,7 +345,7 @@ function astCheckASSIGN _
 	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
 		exit function
 	end if
-	
+
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
 		'' don't convert strings
@@ -503,7 +503,7 @@ function astNewASSIGN _
 		'' otherwise, don't do any assignment by now to allow optimizations..
 		if( (options and AST_OPOPT_ISINI) <> 0 ) then
 			'' unless it's an initialization
-			return rtlStrAssign( l, r, TRUE )
+			return rtlStrAssign( l, r, TRUE	)
 		end if
 
 	'' UDT's?
@@ -558,7 +558,7 @@ function astNewASSIGN _
             lsubtype = NULL
             ldclass = symbGetDataClass( ldtype )
             astSetType( l, ldfull, NULL )
-            
+
             rdfull = ldfull
             rdtype = ldtype
             rdclass = ldclass
@@ -634,9 +634,11 @@ function astNewASSIGN _
 			'' let the fpu do the convertion if any operand
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
-			if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
-				if( ldtype <> FB_DATATYPE_ULONGINT ) then
-					doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
+			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+				if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
+					if( ldtype <> FB_DATATYPE_ULONGINT ) then
+						doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
+					end if
 				end if
 			end if
 
@@ -658,7 +660,7 @@ function astNewASSIGN _
 			end if
 		end if
 	end if
-	
+
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
 
@@ -681,7 +683,7 @@ function astLoadASSIGN _
 
     dim as ASTNODE ptr l = any, r = any
     dim as IRVREG ptr vs = any, vr = any
-    
+
 	l = n->l
 	r = n->r
 	if( (l = NULL) or (r = NULL) ) then

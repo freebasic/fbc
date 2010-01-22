@@ -367,9 +367,9 @@ function symbAddDefine _
 		byval symbol as zstring ptr, _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
-		byval isargless as integer = FALSE, _
-		byval proc as function( ) as string = NULL, _
-        byval flags as integer = 0 _
+		byval isargless as integer, _
+		byval proc as function( ) as string, _
+        byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -406,9 +406,9 @@ function symbAddDefineW _
 		byval symbol as zstring ptr, _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
-		byval isargless as integer = FALSE, _
-		byval proc as function( ) as string = NULL, _
-        byval flags as integer = 0 _
+		byval isargless as integer, _
+		byval proc as function( ) as string, _
+        byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -445,7 +445,8 @@ function symbAddDefineMacro _
 		byval symbol as zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
-		byval paramhead as FB_DEFPARAM ptr _
+		byval paramhead as FB_DEFPARAM ptr, _
+		byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -468,7 +469,7 @@ function symbAddDefineMacro _
 	sym->def.paramhead = paramhead
 	sym->def.isargless = FALSE
 	sym->def.proc = NULL
-    sym->def.flags = 0
+    sym->def.flags = flags
 
 	function = sym
 

@@ -93,6 +93,10 @@ const fbdllreason = "__FB_DLLREASON__"
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
     astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
+
+	'' tell the emitter to not allocate a result
+	astSetType( main, FB_DATATYPE_VOID, NULL )
+
     astAdd( main )
 
 	'' end if
@@ -125,6 +129,10 @@ private sub hDllMainBegin_GlobCtor ( )
     main = astNewCALL( env.main.proc )
     astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
     astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
+
+	'' tell the emitter to not allocate a result
+	astSetType( main, FB_DATATYPE_VOID, NULL )
+
     astAdd( main )
 
    	astProcEnd( procnode, FALSE )
@@ -151,7 +159,6 @@ private sub hMainBegin _
 	)
 
     dim as FBSYMBOL ptr proc
-    dim as integer attrib
 
 const fbargc = "__FB_ARGC__"
 const fbargv = "__FB_ARGV__"
@@ -171,15 +178,19 @@ const fbargv = "__FB_ARGV__"
 					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
 					  				  0, NULL )
 
-	''
-	if( isdllmain = FALSE ) then
-		attrib = FB_SYMBATTRIB_PUBLIC
-	else
+	'' if it's a dll, the main() function should be private
+	var attrib = FB_SYMBATTRIB_PUBLIC
+	var id = fbGetEntryPoint( )
+	if( isdllmain ) then
 		attrib = FB_SYMBATTRIB_PRIVATE
+		'' if it's high level, give it a random name
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			id = *hMakeTmpStrNL()
+		end if
 	end if
 
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
-	env.main.proc = symbAddProc( proc, NULL, fbGetEntryPoint( ), NULL, _
+	env.main.proc = symbAddProc( proc, NULL, id, NULL, _
 								 FB_DATATYPE_INTEGER, NULL, _
 								 attrib, _
 								 FB_FUNCMODE_CDECL )

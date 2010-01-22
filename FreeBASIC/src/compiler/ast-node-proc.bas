@@ -204,10 +204,10 @@ private sub hProcFlush _
 		symbSetProcIsEmitted( sym )
 
 		irEmitPROCBEGIN( sym, p->block.initlabel )
-	end if
 
-	'' allocate the non-static local variables on stack
-	symbProcAllocLocalVars( sym )
+		'' allocate the non-static local variables on stack
+		symbProcAllocLocalVars( sym )
+	end if
 
 	'' flush nodes
 	n = p->l
@@ -315,6 +315,15 @@ function astAdd _
 
 	if( n = NULL ) then
 		return NULL
+	end if
+
+	'' RTL function and the result was discarded? do not allocate a result
+	if( astIsCALL( n ) ) then
+		if( n->call.isrtl ) then
+			if( astGetFullType( n ) <> FB_DATATYPE_VOID ) then
+				astSetType( n, FB_DATATYPE_VOID, NULL )
+			end if
+		end if
 	end if
 
 	'' typeIniUpdate() and hCallCtors() will recurse in this function
@@ -481,23 +490,23 @@ function astProcBegin _
 	''
 	irProcBegin( sym )
 
-' Don't allocate anything for a naked function, because they will be allowed
-' at ebp-N, which won't exist, no result is needed either
-if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	' Don't allocate anything for a naked function, because they will be allowed
+	' at ebp-N, which won't exist, no result is needed either
+	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
 
-    '' alloc parameters
-    if( hDeclProcParams( sym ) = FALSE ) then
-    	exit function
-    end if
+    	'' alloc parameters
+    	if( hDeclProcParams( sym ) = FALSE ) then
+    		exit function
+    	end if
 
-	'' alloc result local var
-	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-		if( symbAddProcResult( sym ) = NULL ) then
-			exit function
+		'' alloc result local var
+		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+			if( symbAddProcResult( sym ) = NULL ) then
+				exit function
+			end if
 		end if
-	end if
 
-end if
+	end if
 
 	'' local error handler
 	with sym->proc.ext->err
@@ -674,19 +683,19 @@ function astProcEnd _
 		end if
 
 		' Don't load the result for naked functions
-		if (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 then
-		'' if it's a function, load result
-		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+		if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
+			'' if it's a function, load result
+			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 
-			select case symbGetType( sym )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetProcStatAssignUsed( sym ) ) then
-					head_node = hCallResultCtor( head_node, sym )
-				end if
-			end select
+				select case symbGetType( sym )
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					if( symbGetProcStatAssignUsed( sym ) ) then
+						head_node = hCallResultCtor( head_node, sym )
+					end if
+				end select
 
-        	hLoadProcResult( sym )
-		end if
+        		hLoadProcResult( sym )
+			end if
 		end if
 	end if
 
@@ -796,11 +805,13 @@ private sub hLoadProcResult _
 	)
 
     dim as FBSYMBOL ptr s = any
-    dim as ASTNODE ptr n = any, t = any
+    dim as ASTNODE ptr n = any
     dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype = any
 
 	s = symbGetProcResult( proc )
 	dtype = symbGetFullType( proc )
+	subtype = symbGetSubtype( proc )
     n = NULL
 
 	select case typeGet( dtype )
@@ -810,16 +821,23 @@ private sub hLoadProcResult _
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	case FB_DATATYPE_STRING
-		t = astNewVAR( s, 0, FB_DATATYPE_STRING )
-		n = rtlStrAllocTmpResult( t )
+		n = rtlStrAllocTmpResult( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
+
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			n = astNewLOAD( n, dtype, TRUE )
+		end if
 
 	'' UDT? use the real type
 	case FB_DATATYPE_STRUCT
 		dtype = symbGetProcRealType( proc )
+	    if( dtype <> FB_DATATYPE_STRUCT ) then
+	    	subtype = NULL
+	    end if
+
 	end select
 
 	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, 0, dtype, NULL ), dtype, TRUE )
+		n = astNewLOAD( astNewVAR( s, 0, dtype, subtype ), dtype, TRUE )
 	end if
 
 	astAdd( n )

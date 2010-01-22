@@ -507,35 +507,46 @@ function astNewCONV _
 		return l
 	end if
 
-	'' only convert if the classes are different (ie, floating<->integer) or
-	'' if sizes are different (ie, byte<->int)
 	dim as integer doconv = TRUE
-	if( ldclass = symbGetDataClass( to_dtype ) ) then
-		if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
-			doconv = FALSE
-		end if
-	end if
 
-	if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
-		if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
-			if( symbGetDataSize( ldtype ) <> symbGetDataSize( to_dtype ) ) then
-				doConv = TRUE
+	'' high-level IR? always convert..
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	    '' special case: if it's a float to int, use a builtin function
+	    if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
+        	return rtlMathFTOI( l, to_dtype )
+        end if
+
+	else
+		'' only convert if the classes are different (ie, floating<->integer) or
+		'' if sizes are different (ie, byte<->int)
+		if( ldclass = symbGetDataClass( to_dtype ) ) then
+			if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+				doconv = FALSE
+			end if
+		end if
+
+		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+			if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+				if( symbGetDataSize( ldtype ) <> symbGetDataSize( to_dtype ) ) then
+					doConv = TRUE
+				end if
+			end if
+		end if
+
+		'' casting another cast?
+		if( l->class = AST_NODECLASS_CONV ) then
+			'' no conversion in both?
+			if( l->cast.doconv = FALSE ) then
+				if( doconv = FALSE ) then
+					'' just replace the bottom cast()'s type
+					astGetFullType( l ) = to_dtype
+					l->subtype = to_subtype
+					return l
+				end if
 			end if
 		end if
 	end if
 
-	'' casting another cast?
-	if( l->class = AST_NODECLASS_CONV ) then
-		'' no conversion in both?
-		if( l->cast.doconv = FALSE ) then
-			if( doconv = FALSE ) then
-				'' just replace the bottom cast()'s type
-				astGetFullType( l ) = to_dtype
-				l->subtype = to_subtype
-				return l
-			end if
-		end if
-	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )

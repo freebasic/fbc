@@ -296,7 +296,7 @@ function hStripUnderscore _
 	( _
 		byval symbol as zstring ptr _
 	) as string static
-	
+
 	if env.target.underprefix then
 		function = *(symbol + 1)
 	else
@@ -576,17 +576,17 @@ end sub
 function hJumpTbAllocSym _
 	( _
 		_
-	) as any ptr static
+	) as any ptr
 
-	static as zstring * FB_MAXNAMELEN+1 sname
-	dim as FBARRAYDIM dTB(0)
-	dim as FBSYMBOL ptr s
+	dim as zstring * FB_MAXNAMELEN+1 sname = any
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
 
 	sname = *hMakeTmpStr( )
 
 	s = symbAddVarEx( @sname, NULL, _
-					  FB_DATATYPE_UINT, NULL, _
-					  FB_INTEGERSIZE, _
+					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+					  FB_POINTERSIZE, _
 					  1, dTB(), _
 					  FB_SYMBATTRIB_SHARED )
 
@@ -716,19 +716,19 @@ function hEnvDir( ) as string static
 end function
 
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer
-	
+
 	if( sym = NULL ) then exit function
-	
+
 	var symlen = len( *sym )
-	
+
 	if( symlen = 0 ) then exit function
-	
+
 	if( (hIsChar(sym[0]) orelse (sym[0] = asc("_"))) = FALSE ) then exit function
-	
+
 	for i as integer = 1 to symlen-1
 		if( ((hIsChar(sym[i])) orelse (sym[i] = asc("_")) orelse (hIsCharNumeric(sym[i]))) = FALSE ) then exit function
 	next
-	
+
 	function = TRUE
-	
+
 end function
