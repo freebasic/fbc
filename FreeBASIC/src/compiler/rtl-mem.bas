@@ -372,7 +372,7 @@ function rtlMemSwap _
 		if( astIsCALL( src ) ) then
 			dim as FBSYMBOL ptr subtype = src->subtype
 			'' patch type
-			if( typeGetDtAndPtrOnly( symbGetUDTRetType( subtype ) ) <> typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+			if( symbIsUDTReturnedInRegs( subtype ) ) then
 				astSetType( src, symbGetUDTRetType( subtype ), NULL )
 			end if
 		end if

@@ -1313,7 +1313,8 @@ declare function astGetOFFSETChildOfs _
 
 declare function astGetCALLResUDT _
 	( _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr, _
+		byval onlyvars as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astFindLocalSymbol _

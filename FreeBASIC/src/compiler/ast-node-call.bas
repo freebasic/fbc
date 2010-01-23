@@ -510,17 +510,19 @@ end sub
 '':::::
 function astGetCALLResUDT _
 	( _
-		byval expr as ASTNODE ptr _
+		byval expr as ASTNODE ptr,  _
+		byval onlyvars as integer _
 	) as ASTNODE ptr
 
+	var subtype = astGetSubtype( expr )
+
 	'' returning an UDT in registers?
-	if( symbGetUDTRetType( astGetSubtype( expr ) ) <> _
-						   typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+	if( symbIsUDTReturnedInRegs( subtype ) ) then
 
 		'' move to a temp var
 		'' (note: if it's being returned in regs, there's no DTOR)
 		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-				  	  	  	  					  astGetSubtype( expr ), _
+				  	  	  	  					  subtype, _
 				  	  	  	  					  FALSE, _
 				  	  	  	  					  FALSE )
 
@@ -530,9 +532,34 @@ function astGetCALLResUDT _
 
     	function = astNewLINK( astBuildVarField( tmp ), expr )
 
-    '' returning result in a hidden arg..
+    '' not in res..
     else
-    	function = astBuildCallHiddenResVar( expr )
+    	'' returning result in a hidden arg?
+    	if( typeIsPtr( symbGetUDTRetType( subtype ) ) ) then
+    		function = astBuildCallHiddenResVar( expr )
+
+    	'' it's the whole udt (high-level emitter)
+    	else
+    		'' can the result node be a call?
+    		if( onlyvars = FALSE ) then
+    			function = expr
+
+    		'' make a copy to a temp var..
+    		else
+				dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
+				  	  	  	  					  		  subtype, _
+				  	  	  	  					  		  FALSE, _
+				  	  	  	  					  		  FALSE )
+
+				expr = astNewASSIGN( astBuildVarField( tmp ), _
+				  	  	 	 		 expr, _
+				  	  	 	 		 AST_OPOPT_DONTCHKOPOVL )
+
+    			function = astNewLINK( astBuildVarField( tmp ), expr )
+    		end if
+    	end if
     end if
 
 end function
+
+

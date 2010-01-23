@@ -514,12 +514,12 @@ function astNewASSIGN _
 			exit function
 		end if
 
-        '' is r an UDT too?
         dim as integer is_udt = TRUE
         if( astIsCALL( r ) ) then
-        	is_udt = typeGetDtAndPtrOnly( symbGetUDTRetType( r->subtype ) ) = typeAddrOf( FB_DATATYPE_STRUCT )
+        	is_udt = (symbIsUDTReturnedInRegs( r->subtype ) = FALSE)
         end if
 
+        '' is r an UDT too?
 		if( is_udt ) then
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then
@@ -540,15 +540,22 @@ function astNewASSIGN _
 
 			'' do a shallow copy..
 
-			'' call? deref the pointer
+			'' call and returning a pointer? deref the hidden arg (the result)
+			var do_move = TRUE
 			if( astIsCALL( r ) ) then
-				r = astBuildCallHiddenResVar( r )
+				if( typeIsPtr( symbGetUDTRetType( r->subtype ) ) ) then
+					r = astBuildCallHiddenResVar( r )
+				else
+					do_move = FALSE
+				end if
 			end if
 
-			return astNewMEM( AST_OP_MEMMOVE, _
-							  l, _
-							  r, _
-							  symbGetUDTUnpadLen( l->subtype ) )
+			if( do_move ) then
+				return astNewMEM( AST_OP_MEMMOVE, _
+							  	l, _
+							  	r, _
+							  	symbGetUDTUnpadLen( l->subtype ) )
+			end if
 
 		'' r is function returning an UDT on registers
 		else

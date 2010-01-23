@@ -303,30 +303,30 @@ private function hMemberId _
 		'' no error recovery: caller will take care
 		return NULL
 	end select
-    
+
     dim as FBSYMBOL ptr res = NULL
     select case as const lexGetToken( )
-    	
+
 	case FB_TK_CONSTRUCTOR
 		res = symbGetCompCtorHead( parent )
 		if( res = NULL ) then
 			symbCompAddDefCtor( parent )
 			res = symbGetCompCtorHead( parent )
 		end if
-			
+
 	case FB_TK_DESTRUCTOR
 		res = symbGetCompDtor( parent )
 		if( res = NULL ) then
 			symbCompAddDefDtor( parent )
 			res = symbGetCompDtor( parent )
 		end if
-			
+
     end select
-    
+
 	if( res ) then
 		return res
     end if
-    
+
     dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
     if( chain_ = NULL ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, _
@@ -403,7 +403,7 @@ function cUdtMember _
 		byval varexpr as ASTNODE ptr, _
 		byval check_array as integer _
 	) as ASTNODE ptr
-	
+
 	'' note: assuming a pointer is being passed to this function
 	dim as integer is_ptr = TRUE, mask = typeGetConstMask( dtype )
 
@@ -412,7 +412,7 @@ function cUdtMember _
 		if(	fld	= NULL ) then
 			return NULL
 		end	if
-		
+
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit
 		case FB_SYMBCLASS_CONST
@@ -459,13 +459,13 @@ function cUdtMember _
 			if( is_ptr = FALSE ) then
 				varexpr	= astNewADDROF(	varexpr	)
 			end if
-			
+
 			varexpr	= astNewBOP( AST_OP_ADD, varexpr, fldexpr )
 
 			varexpr	= astNewDEREF( varexpr, dtype, subtype )
 
 			varexpr	= astNewFIELD( varexpr,	fld, dtype, subtype )
-			
+
 			if( is_nidxarray ) then
 				return astNewNIDXARRAY( varexpr )
 			end if
@@ -537,7 +537,7 @@ function cMemberAccess _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr )
+		expr = astGetCALLResUDT( expr, TRUE )
 	end if
 
  	'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
@@ -1731,7 +1731,7 @@ function cImplicitDataMember _
 		errReport( FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR )
 		return NULL
 	end if
-    
+
     function = hImpField( this_, _
     					  symbGetFullType( this_ ), _
     					  symbGetSubtype( this_ ), _

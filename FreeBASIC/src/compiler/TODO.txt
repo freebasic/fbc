@@ -1,12 +1,14 @@
 [ ] add a C backend
+	[ ] address of labels (used by the error trapping) must be emitted with 2 "&"'s
+	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
 	[x] SWAP
 	[x] UTF literal strings
 	[x] debugging support
-	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] jump-tables (used in select as const)
 	[x] unitialized static and global vars must be zeroed (gas does that automatically because .comm is used)
 	[x] structs
+	    [x] can't change type of functions that return structs in registers, they must be handled by GCC
 	    [x] bitfields - note: ABI-dependent
 	    [x] non exported or extern vars should have an suffix ($) to not clash with gcc symbols
 	    	and to support structs with the same name

@@ -663,6 +663,11 @@ private function hGetReturnType _
 	'' if nothing matched, it's the pointer that was passed as the 1st arg
 	if( res = FB_DATATYPE_VOID ) then
 		res = typeAddrOf( dtype )
+	else
+		'' high-level IR? don't change anything
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			res = dtype
+		end if
 	end if
 
 	function = res
@@ -999,3 +1004,21 @@ function symbGetUDTNextElm _
 	function = NULL
 
 end function
+
+''::::::
+function symbIsUDTReturnedInRegs _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
+	select case typeGetDtAndPtrOnly( symbGetUDTRetType( s ) )
+    case typeAddrOf( FB_DATATYPE_STRUCT ), FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    	return FALSE
+
+    case else
+    	return TRUE
+    end select
+
+end function
+
+

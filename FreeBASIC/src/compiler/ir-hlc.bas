@@ -99,10 +99,6 @@ declare sub _emitDBG _
 		byval ex as integer _
 	)
 
-declare function hEscapeUCN _
-	( _
-		byval text as wstring ptr _
-	) as zstring ptr
 
 '' globals
 dim shared as IRHLCCTX ctx
@@ -252,6 +248,26 @@ private function hCallConvToStr _
 
 end function
 
+private function hGetUDTName _
+	( _
+       byval s as FBSYMBOL ptr _
+    ) as string
+
+    dim as FBSYMBOL ptr ns = symbGetNamespace( s )
+
+    var sig = ""
+    do until( ns = @symbGetGlobalNamespc( ) )
+    	sig += *symbGetName( ns )
+    	sig += "$"
+    	ns = symbGetNamespace( ns )
+    loop
+
+    sig += *symbGetName( s )
+
+    function = sig
+
+end function
+
 '':::::
 private sub hEmitUDT _
 	( _
@@ -270,7 +286,7 @@ private sub hEmitUDT _
 
  	select case as const symbGetClass( s )
  	case FB_SYMBCLASS_ENUM
- 		hWriteLine( "typedef int " & *symbGetName( s ) & ";", FALSE, FALSE )
+ 		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
 		symbSetIsEmitted( s )
 
  	case FB_SYMBCLASS_STRUCT
@@ -453,63 +469,65 @@ private function hEmitFuncParams _
 
     	var is_byref = FALSE
 
-    	var pvar = iif( isproto, param, symbGetParamVar( param ) )
-
-    	var dtype = symbGetType( pvar )
-    	var subtype = symbGetSubType( pvar )
-
-		select case param->param.mode
-		case FB_PARAMMODE_BYVAL
-    		select case symbGetType( param )
-    		'' byval string? it's actually an pointer to a zstring
-    		case FB_DATATYPE_STRING
-    			is_byref = TRUE
-    			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    			'' has a dtor, copy ctor or virtual methods? it's a copy..
-    			if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-    				is_byref = TRUE
-    			end if
-    		end select
-
-		case FB_PARAMMODE_BYREF
-			is_byref = TRUE
-
-		case FB_PARAMMODE_BYDESC
-			dtype = FB_DATATYPE_STRUCT
-			subtype = symb.arrdesctype
-			is_byref = TRUE
-		end select
-
-		if( subtype <> NULL ) then
-			'' not a circular reference? emit..
-			if( subtype <> top ) then
-				hEmitUDT subtype, top
-			else
-				'' HACK: reusing the accessed flag (that's used by variables only)
-				if( symbGetIsAccessed( subtype ) = FALSE ) then
-					hWriteLine( "typedef struct _" & *symbGetName( subtype ) & "$fwd " & *symbGetName( subtype ), TRUE )
-					symbSetIsAccessed( subtype )
-				end if
-			end if
-		end if
-
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			params += "..."
-		else
-			params += *hDtypeToStr( dtype, subtype )
-		end if
 
-		if( is_byref ) then
-			params += " *"
-		end if
+    	else
+    		var pvar = iif( isproto, param, symbGetParamVar( param ) )
 
-		if( isproto = FALSE ) then
-			if( is_byref = FALSE ) then
-				params += " "
+    		var dtype = symbGetType( pvar )
+    		var subtype = symbGetSubType( pvar )
+
+			select case param->param.mode
+			case FB_PARAMMODE_BYVAL
+    			select case symbGetType( param )
+    			'' byval string? it's actually an pointer to a zstring
+    			case FB_DATATYPE_STRING
+    				is_byref = TRUE
+    				dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+
+    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+    				'' has a dtor, copy ctor or virtual methods? it's a copy..
+    				if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+    					is_byref = TRUE
+    				end if
+    			end select
+
+			case FB_PARAMMODE_BYREF
+				is_byref = TRUE
+
+			case FB_PARAMMODE_BYDESC
+				dtype = FB_DATATYPE_STRUCT
+				subtype = symb.arrdesctype
+				is_byref = TRUE
+			end select
+
+			if( subtype <> NULL ) then
+				'' not a circular reference? emit..
+				if( subtype <> top ) then
+					hEmitUDT subtype, top
+				else
+					'' HACK: reusing the accessed flag (that's used by variables only)
+					if( symbGetIsAccessed( subtype ) = FALSE ) then
+						hWriteLine( "typedef struct _" & hGetUDTName( subtype ) & "$fwd " & *symbGetMangledName( subtype ), TRUE )
+						symbSetIsAccessed( subtype )
+					end if
+				end if
 			end if
-			params += *symbGetMangledName( pvar )
+
+			params += *hDtypeToStr( dtype, subtype )
+
+			if( is_byref ) then
+				params += " *"
+			end if
+
+			if( isproto = FALSE ) then
+				if( is_byref = FALSE ) then
+					params += " "
+				end if
+				params += *symbGetMangledName( pvar )
+			end if
+
 		end if
 
 		param = symbGetProcPrevParam( proc, param )
@@ -658,7 +676,7 @@ private sub hEmitStruct _
 				else
 					'' HACK: reusing the accessed flag (that's used by variables only)
 					if( symbGetIsAccessed( s ) = FALSE ) then
-						hWriteLine( "typedef " & tname  &  " _" & *symbGetName( s ) & "$fwd " & *symbGetName( s ), TRUE )
+						hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s ) & "$fwd " & hGetUDTName( s ), TRUE )
 						symbSetIsAccessed( s )
 						*cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
 					end if
@@ -674,7 +692,7 @@ private sub hEmitStruct _
 	if symbGetName( s ) = NULL then
 		id = *hMakeTmpStrNL( )
 	else
-		id = *symbGetName( s )
+		id = hGetUDTName( s )
 		'' see the HACK above
 		if( symbGetIsAccessed( s ) ) then
 			id += "$fwd"
@@ -1442,14 +1460,14 @@ private function hDtypeToStr _
 		if( subtype = NULL ) then
 			res = "void"
 		else
-			res = *symbGetName( subtype )
+			res = hGetUDTName( subtype )
 		end if
 
 	case FB_DATATYPE_ENUM
 		if( subtype = NULL ) then
 			res = dtypeTb(FB_DATATYPE_INTEGER).name
 		else
-			res = *symbGetName( subtype )
+			res = hGetUDTName( subtype )
 		end if
 
 	case FB_DATATYPE_FUNCTION

@@ -662,14 +662,16 @@ function ppDefineLoad _
 	end if
 
 	'' invalid with a high-level IR?
-	if( (s->def.flags and FB_DEFINE_FLAGS_NOGCC) <> 0 ) then
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-			if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC ) = FALSE ) then
-				return FALSE
-			else
-				'' error recovery: skip
-				hSkipUntil( INVALID, FALSE, LEX_FLAGS )
-				return TRUE
+	if( pp.skipping = FALSE ) then
+		if( (s->def.flags and FB_DEFINE_FLAGS_NOGCC) <> 0 ) then
+			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+				if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC ) = FALSE ) then
+					return FALSE
+				else
+					'' error recovery: skip
+					hSkipUntil( INVALID, FALSE, LEX_FLAGS )
+					return TRUE
+				end if
 			end if
 		end if
 	end if

@@ -68,7 +68,7 @@ function cOperator _
 
 	case FB_TK_ANDALSO
 	op = AST_OP_ANDALSO
-	
+
 	case FB_TK_ORELSE
 	op = AST_OP_ORELSE
 
@@ -603,7 +603,7 @@ private function hAssignFromField _
 	expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetOfs( fld ), FB_DATATYPE_INTEGER ) )
 	expr = astNewDEREF( expr, symbGetFullType( fld ), symbGetSubType( fld ) )
 	expr = astNewFIELD( expr, fld, symbGetFullType( fld ), symbGetSubType( fld ) )
-	
+
     expr = astNewASSIGN( lhs, expr )
     if( expr = NULL ) then
 		if( hReportLetError( FB_ERRMSG_ILLEGALASSIGNMENT, num ) = FALSE ) then
@@ -789,7 +789,7 @@ function cAssignmentOrPtrCall _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr )
+		expr = astGetCALLResUDT( expr, TRUE )
 	end if
 
 	dim as FBSYMBOL ptr tmp = NULL

@@ -240,6 +240,8 @@ private function ppSkip( ) as integer
 
 	function = FALSE
 
+	pp.skipping = TRUE
+
 	'' Comment?
 	cComment( )
 
@@ -249,6 +251,7 @@ private function ppSkip( ) as integer
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+			pp.skipping = FALSE
 			exit function
 		else
 			'' error recovery: skip until next line
@@ -274,20 +277,24 @@ private function ppSkip( ) as integer
 
         	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
         		if( iflevel = pp.level ) then
+        			pp.skipping = FALSE
         			return ppCondElse( )
 
 				elseif( iflevel = 0 ) then
             		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+						pp.skipping = FALSE
 						exit function
 					end if
         		end if
 
         	case FB_TK_PP_ENDIF
         		if( iflevel = pp.level ) then
+        			pp.skipping = FALSE
         			return ppCondEndIf( )
 
 				elseif( iflevel = 0 ) then
 	          		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+						pp.skipping = FALSE
 						exit function
 					end if
 				else
@@ -300,12 +307,14 @@ private function ppSkip( ) as integer
 
         	case else
         		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+        			pp.skipping = FALSE
         			exit function
         		end if
         	end select
 
        	case FB_TK_EOF
         	if( errReport( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
+        		pp.skipping = FALSE
         		exit function
         	else
        			function = TRUE
@@ -319,6 +328,8 @@ private function ppSkip( ) as integer
 			lexSkipToken( )
 		end if
 	loop
+
+	pp.skipping = FALSE
 
 end function
 
@@ -369,7 +380,7 @@ private sub hHighestPrecision _
 				l.num.int = l.num.float
 				r.num.int = r.num.float
 			end if
-  				
+
 
   		case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
   			if( only_integer ) then
@@ -460,7 +471,7 @@ private sub hNumLogBOP _
 		byref l as PPEXPR, _
 		byref r as PPEXPR _
 	)
-	
+
 	'' integers
 	hHighestPrecision( l, r, TRUE )
 
@@ -508,10 +519,10 @@ private sub hNumRelBOP _
 		byref l as PPEXPR, _
 		byref r as PPEXPR _
 	)
-    
+
     '' type is flexible
     hHighestPrecision( l, r, FALSE )
-    
+
     '' do operation
    	select case as const op
    	case FB_TK_EQ
@@ -641,7 +652,7 @@ private sub hNumAddMulBOP _
 		byref l as PPEXPR, _
 		byref r as PPEXPR _
 	)
-    
+
     '' type is flexible
     hHighestPrecision( l, r, FALSE )
 
@@ -665,7 +676,7 @@ private sub hNumAddMulBOP _
   			l.num.int = l.num.int op r.num.int
   		end select
 #endmacro
-    
+
     '' do operation
    	select case as const op
 
@@ -674,7 +685,7 @@ private sub hNumAddMulBOP _
 	   	do_op( CHAR_CARET , * )
 	   	do_op( CHAR_SLASH , / )
 	   	do_op( CHAR_RSLASH, \ )
-	
+
    	end select
 
 end sub
@@ -979,7 +990,7 @@ private function ppAddExpression _
 	( _
 		byref add_expr as PPEXPR _
 	) as integer
-	
+
     dim as integer op = any
     dim as PPEXPR mult_expr
 
@@ -1078,7 +1089,7 @@ private function ppMultExpression _
 	( _
 		byref mul_expr as PPEXPR _
 	) as integer
-	
+
     dim as integer op = any
     dim as PPEXPR parexpr
 
@@ -1088,7 +1099,7 @@ private function ppMultExpression _
     if( ppParentExpr( mul_expr ) = FALSE ) then
     	exit function
     end if
-    
+
     '' ( ... )*
     do
     	'' Mul/Div operator
@@ -1179,14 +1190,14 @@ private function ppParentExpr _
   	'' TYPEOF '(' Expression ')'
   	case FB_TK_TYPEOF
   		lexSkipToken( )
-        
+
 		parexpr.class = PPEXPR_CLASS_STR
 		dim as zstring ptr res = ppTypeOf( )
 		if( res = NULL ) then
 			exit function
 		end if
 		parexpr.str += *res
-	    
+
   	'' '(' Expression ')'
   	case CHAR_LPRNT
   		lexSkipToken( )

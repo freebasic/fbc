@@ -688,15 +688,15 @@ private sub hUDTPassByval _
 		'' not returned in registers?
 		dim as integer is_udt = TRUE
 		if( astIsCALL( arg ) ) then
-			is_udt = typeGetDtAndPtrOnly( symbGetUDTRetType( subtype ) ) = typeAddrOf( FB_DATATYPE_STRUCT )
+			is_udt = (symbIsUDTReturnedInRegs( subtype ) = FALSE)
 		end if
 
 		'' udt? push byte by byte to stack
 		if( is_udt ) then
 			n->arg.lgt = FB_ROUNDLEN( symbGetLen( symbGetSubtype( param ) ) )
 
-			'' call? use the hidden call arg
-			if( astIsCALL( arg ) ) then
+			'' call and returning a pointer? use the hidden call arg
+			if( astIsCALL( arg ) and typeIsPtr( symbGetUDTRetType( subtype ) ) ) then
 				n->l = astBuildCallHiddenResVar( arg )
 			end if
 
@@ -819,8 +819,7 @@ private function hCheckUDTParam _
 	case FB_PARAMMODE_BYREF
 		'' it's a proc call, but was it originally returning an UDT?
     	if( astIsCALL( arg ) ) then
-			if( typeGetDtAndPtrOnly( symbGetUDTRetType( arg->subtype ) ) <> _
-									typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+			if( symbIsUDTReturnedInRegs( arg->subtype ) ) then
 
 				'' create a temporary UDT and pass it..
 				dim as FBSYMBOL ptr tmp = any

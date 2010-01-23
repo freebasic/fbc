@@ -108,6 +108,8 @@ sub ppInit( )
     next
 
 	''
+	pp.skipping = FALSE
+
 	ppDefineInit( )
 
 	ppCondInit( )
@@ -456,7 +458,7 @@ private function ppLang( ) as integer
 	end if
 
 	lexEatToken( opt )
-	
+
 	id = fbGetLangId( @opt )
 
 	if( id = FB_LANG_INVALID ) then
@@ -465,7 +467,7 @@ private function ppLang( ) as integer
 		end if
 
 	else
-		'' fbChangeOption will return FALSE if we should stop 
+		'' fbChangeOption will return FALSE if we should stop
 		'' parsing and TRUE if we should continue.
 
 		function = fbChangeOption( FB_COMPOPT_LANG, id )

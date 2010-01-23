@@ -1399,6 +1399,8 @@ private function processOptions _
 					value = FB_CPUTYPE_PENTIUM4
 				case "pentium4-sse3"
 					value = FB_CPUTYPE_PENTIUMSSE3
+				case "native"
+					value = FB_CPUTYPE_NATIVE
 				case else
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					exit function

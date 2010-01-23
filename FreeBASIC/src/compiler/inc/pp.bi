@@ -45,6 +45,7 @@ type PP_CTX
 	kwdns		as FBSYMBOL
 	argtblist	as TLIST
 	level 		as integer
+	skipping	as integer
 end type
 
 declare sub ppInit _

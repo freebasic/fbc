@@ -47,7 +47,7 @@ private function hDoCleanup _
 	'' complex UDT?
 	case FB_DATATYPE_STRUCT
     	if( symbGetUDTHasCtorField( symbGetSubtype( sym ) ) or _
-    		(typeGetDtAndPtrOnly( symbGetUDTRetType( symbGetSubtype( sym ) ) ) = typeAddrOf( FB_DATATYPE_STRUCT )) ) then
+    		symbIsUDTReturnedInRegs( symbGetSubtype( sym ) ) = FALSE ) then
         	lgt = symbGetLen( sym )
 		else
 			return NULL
