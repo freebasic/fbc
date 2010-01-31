@@ -96,7 +96,7 @@ private function hLenSizeof _
 	( _
 		byval is_len as integer, _
 		byref funcexpr as ASTNODE ptr, _
-		byval isasm as integer = FALSE _
+		byval isasm as integer _
 	) as integer
 
 	dim as ASTNODE ptr expr = any, expr2 = any
@@ -177,7 +177,7 @@ private function hLenSizeof _
 			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 	else
-		if isasm = FALSE then
+		if( isasm = FALSE ) then
 			lexSkipToken( )
 		end if
 	end if
@@ -205,8 +205,6 @@ function cMathFunct _
 		byref funcexpr as ASTNODE ptr, _
 		byval isasm as integer = FALSE _
 	) as integer
-
-	dim as ASTNODE ptr expr = any, expr2 = any
 
 	function = FALSE
 
@@ -265,10 +263,10 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN
-		function = hLenSizeof( TRUE, funcexpr )
+		function = hLenSizeof( TRUE, funcexpr, isasm )
 
 	case FB_TK_SIZEOF
-		function = hLenSizeof( FALSE, funcexpr )
+		function = hLenSizeof( FALSE, funcexpr, isasm )
 
 	end select
 
