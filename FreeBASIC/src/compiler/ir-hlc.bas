@@ -509,7 +509,7 @@ private function hEmitFuncParams _
 				else
 					'' HACK: reusing the accessed flag (that's used by variables only)
 					if( symbGetIsAccessed( subtype ) = FALSE ) then
-						hWriteLine( "typedef struct _" & hGetUDTName( subtype ) & "$fwd " & *symbGetMangledName( subtype ), TRUE )
+						hWriteLine( "typedef struct _" & hGetUDTName( subtype ) & "$fwd " & hGetUDTName( subtype ), TRUE )
 						symbSetIsAccessed( subtype )
 					end if
 				end if
@@ -609,6 +609,10 @@ private sub hEmitFuncProto _
 			str_static = "static "
 		end if
 
+		if( symbGetSubType( s ) <> NULL ) then
+			hEmitUdt symbGetSubType( s )
+		end if
+
 		var ln = str_static & _
 			   	 *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
 					 		   symbGetSubType( s ), _
@@ -637,6 +641,10 @@ private sub hEmitFuncPtrProto _
 		byval s as FBSYMBOL ptr, _
 		byval top as FBSYMBOL ptr _
 	)
+
+	if( symbGetSubType( s ) <> NULL ) then
+		hEmitUdt symbGetSubType( s ), top
+	end if
 
 	hWriteLine( "typedef " & _
 			    *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
@@ -2561,6 +2569,10 @@ private sub _emitProcBegin _
 	end if
 
 	''
+	if( symbGetSubType( proc ) <> NULL ) then
+		hEmitUdt symbGetSubType( proc )
+	end if
+
 	ln += *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
 	ln += hCallConvToStr( proc ) & " "
 
