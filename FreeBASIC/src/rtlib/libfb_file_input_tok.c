@@ -167,7 +167,7 @@ int fb_FileInputNextToken
 
 	c = hSkipWhiteSpc( ctx );
 
-	while( c != EOF )
+	while( (c != EOF) && (len < max_chars) )
 	{
 		switch( c )
 		{
@@ -255,9 +255,6 @@ savechar:
             ++len;
             break;
 		}
-
-		if( len >= max_chars )
-			break;
 
 		c = hReadChar( ctx );
 	}
