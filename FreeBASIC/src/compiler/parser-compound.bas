@@ -657,7 +657,6 @@ function cCompStmtPush _
 		parser.stmt.proc = stk
 	end select
 
-	parser.stmt.lastid = parser.stmt.id
 	parser.stmt.id = id
 
 	function = stk
@@ -759,7 +758,12 @@ sub cCompStmtPop _
 
 	stackPop( @parser.stmt.stk )
 
-	parser.stmt.id = parser.stmt.lastid
+	stk = stackGetTOS( @parser.stmt.stk )
+	if( stk ) then
+		parser.stmt.id = stk->id
+	else
+		parser.stmt.id = 0
+	end if
 
 end sub
 

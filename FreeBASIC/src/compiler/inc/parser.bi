@@ -159,7 +159,6 @@ end type
 type FBPARSER_STMT
 	stk				as TSTACK
 	id				as FB_TOKEN					'' current compound stmt id
-	lastid			as FB_TOKEN					'' preview 	  /       /   /
 
 	cnt				as integer		            '' keep track of :'s to help scope break's
 
