@@ -431,7 +431,12 @@ private sub hBOPConstFoldFlt _
 		l->con.val.float = l->con.val.float * r->con.val.float
 
 	case AST_OP_DIV
-		l->con.val.float = l->con.val.float / r->con.val.float
+		'' report error for 'constant / 0'
+		if( r->con.val.float = 0.0 ) then
+			errReport( FB_ERRMSG_DIVBYZERO )
+		else
+			l->con.val.float = l->con.val.float / r->con.val.float
+		end if
 
     case AST_OP_POW
 		l->con.val.float = l->con.val.float ^ r->con.val.float
@@ -1438,6 +1443,18 @@ function astNewBOP _
 
 			end select
 			op = AST_OP_ADD
+
+		'' report error for 'x / 0'
+		case AST_OP_DIV
+			if( r->con.val.float = 0 ) then
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
+
+		'' report error for 'x \ 0', 'x mod 0'
+		case AST_OP_INTDIV, AST_OP_MOD
+			if( r->con.val.int = 0 ) then
+				errReport( FB_ERRMSG_DIVBYZERO )
+			end if
 
 		case AST_OP_POW
 
