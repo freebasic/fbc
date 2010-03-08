@@ -674,6 +674,7 @@ function cInitializer _
 	ctx.sym = sym
 	ctx.dim_ = NULL
 	ctx.dimcnt = 0
+	ctx.init_expr = NULL
 
 	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )
 
