@@ -46,6 +46,7 @@ Version 0.21.0 Beta:
 - VAL/VALINT/... now support "&..." for octal numbers, e.g. "&123" (counting_pine)
 - Warning if the file doesn't have a newline at the end (counting_pine)
 - Err may now be called as "Err()", like with a normal function (counting_pine)
+- errors for several cases of division by constant zero (dkls)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
@@ -98,6 +99,7 @@ Version 0.21.0 Beta:
 - Debug mode: emit correct stabs for global redim arrays - patch by SARG (counting_pine)
 - #2914509 - INPUT was reading last char twice when reaching the 4096 char limit (dkls)
 - #2776255 - not handling nested compounds in an EXTERN correctly caused bad name mangling (dkls)
+- global destructors could be EXPORT'ed (dkls)
 
 Version 0.20.0 Beta:
 

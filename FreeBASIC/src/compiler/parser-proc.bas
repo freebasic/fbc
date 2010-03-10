@@ -367,7 +367,7 @@ private function hParseAttributes _
     '' EXPORT?
     if( lexGetToken( ) = FB_TK_EXPORT ) then
 		'' ctor or dtor?
-		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALCTOR)) <> 0 ) then
+		if( (stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR)) <> 0 ) then
     		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		else
