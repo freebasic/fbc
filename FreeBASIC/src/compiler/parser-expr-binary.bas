@@ -304,6 +304,12 @@ function cRelExpression _
     	'' Relational operator
     	select case as const lexGetToken( )
     	case FB_TK_EQ
+			'' eq only inside parentheses?
+			if( fbGetEqInParentsOnly( ) ) then
+				if( parser.prntcnt <= 0 ) then
+					exit do
+				end if
+			end if
     		op = AST_OP_EQ
     	case FB_TK_GT
     		op = AST_OP_GT

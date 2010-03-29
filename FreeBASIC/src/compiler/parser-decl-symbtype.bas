@@ -37,7 +37,7 @@ function cConstExprValue _
 
 	function = FALSE
 
-	expr = cExpression( )
+	expr = cEqInParentsOnlyExpr( )
 	if( expr = NULL ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function

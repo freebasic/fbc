@@ -181,6 +181,7 @@ enum FB_PARSEROPT
 	FB_PARSEROPT_OPTONLY		= &h00000020
 	FB_PARSEROPT_HASINSTPTR		= &h00000040
 	FB_PARSEROPT_ISPROPGET		= &h00000080
+	FB_PARSEROPT_EQINPARENTSONLY= &h00000100	'' only check for '=' if inside parentheses
 end enum
 
 type PARSERCTX
@@ -726,6 +727,11 @@ declare function cTypeConvExpr _
 		byval isASM as integer = FALSE _
 	) as ASTNODE ptr
 
+declare function cEqInParentsOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
 declare function cParentExpression _
 	( _
 		_
@@ -1265,6 +1271,16 @@ declare function hCheckForDefiniteExprs _
 		parser.options or= FB_PARSEROPT_ISSCOPE
 	else
 		parser.options and= not FB_PARSEROPT_ISSCOPE
+	end if
+#endmacro
+
+#define fbGetEqInParentsOnly( ) ((parser.options and FB_PARSEROPT_EQINPARENTSONLY) <> 0)
+
+#macro fbSetEqInParentsOnly( _bool )
+	if( _bool ) then
+		parser.options or= FB_PARSEROPT_EQINPARENTSONLY
+	else
+		parser.options and= not FB_PARSEROPT_EQINPARENTSONLY
 	end if
 #endmacro
 

@@ -26,6 +26,24 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
+function cEqInParentsOnlyExpr _
+	( _
+		_
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr = any
+
+	dim as integer eqinparentsonly = fbGetEqInParentsOnly( )
+	fbSetEqInParentsOnly( TRUE )
+
+	expr = cExpression( )
+
+	fbSetEqInParentsOnly( eqinparentsonly )
+
+	return expr
+
+end function
+
 '':::::
 ''ParentExpression=   '(' Expression ')' .
 ''
