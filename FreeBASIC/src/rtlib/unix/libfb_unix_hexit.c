@@ -77,6 +77,11 @@ void fb_hExitConsole( void )
 		/* Restore old console keyboard state */
 		fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);
 		tcsetattr(__fb_con.h_in, TCSANOW, &__fb_con.old_term_in);
+
+		if (__fb_con.f_in) {
+			fclose(__fb_con.f_in);
+			__fb_con.f_in = NULL;
+		}
 	}
 }
 

@@ -101,6 +101,7 @@ Version 0.21.0 Beta:
 - #2776255 - not handling nested compounds in an EXTERN correctly caused bad name mangling (dkls)
 - global destructors could be EXPORT'ed (dkls)
 - 'dim a as string * expr = ""' wasn't working because of expression/varinit ambiguity (dkls)
+- #2590116 - unix rtlib was repeatedly leaking its /dev/tty file handle (dkls)
 
 Version 0.20.0 Beta:
 
