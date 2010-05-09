@@ -573,7 +573,7 @@ private function hDeclDynArray _
 	'' not an argument passed by descriptor or a common array?
 	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		if( (dtype <> symbGetType( sym )) or _
+		if( (dtype <> symbGetFullType( sym )) or _
 			(subtype <> symbGetSubType( sym )) ) then
     		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, caller will take care of that
@@ -590,7 +590,7 @@ private function hDeclDynArray _
 
 	'' else, can't check it's dimensions at compile-time
 	else
-		if( (dtype <> symbGetType( sym )) or _
+		if( (dtype <> symbGetFullType( sym )) or _
 			(subtype <> symbGetSubType( sym )) ) then
     		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, ditto
