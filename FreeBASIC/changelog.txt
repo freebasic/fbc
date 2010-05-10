@@ -47,6 +47,7 @@ Version 0.21.0 Beta:
 - Warning if the file doesn't have a newline at the end (counting_pine)
 - Err may now be called as "Err()", like with a normal function (counting_pine)
 - errors for several cases of division by constant zero (dkls)
+- search 32-bit library paths in the linker scripts for Linux and FreeBSD (cha0s)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
