@@ -3,7 +3,7 @@ OUTPUT_FORMAT("elf32-i386-freebsd", "elf32-i386-freebsd",
 	      "elf32-i386-freebsd")
 OUTPUT_ARCH(i386)
 ENTRY(_start)
-SEARCH_DIR("/lib"); SEARCH_DIR("/usr/lib");
+SEARCH_DIR("/usr/local/lib32"); SEARCH_DIR("/lib32"); SEARCH_DIR("/usr/lib32");SEARCH_DIR("/usr/local/lib"); SEARCH_DIR("/lib"); SEARCH_DIR("/usr/lib");
 /* Do we need any of these for elf?
    __DYNAMIC = 0;    */
 SECTIONS
