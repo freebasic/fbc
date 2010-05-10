@@ -292,20 +292,6 @@ sub hClearName _
 end sub
 
 '':::::
-function hStripUnderscore _
-	( _
-		byval symbol as zstring ptr _
-	) as string static
-
-	if env.target.underprefix then
-		function = *(symbol + 1)
-	else
-		function = *symbol
-	end if
-
-end function
-
-'':::::
 function hStripExt _
 	( _
 		byval filename as zstring ptr _
