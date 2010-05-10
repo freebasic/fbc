@@ -103,6 +103,7 @@ Version 0.21.0 Beta:
 - 'dim a as string * expr = ""' wasn't working because of expression/varinit ambiguity (dkls)
 - #2590116 - unix rtlib was repeatedly leaking its /dev/tty file handle (dkls)
 - #2974397 - Dynamic arrays with any const qualifiers below the first level (aka [ptr ]*) would erroneously report duplicate definition (cha0s)
+- The final slash stripping code in fbcGetLibPathList() was only working properly on systems using '\' as a path separator. (cha0s)
  
 Version 0.20.0 Beta:
 

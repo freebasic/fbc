@@ -2240,7 +2240,7 @@ function fbcGetLibPathList _
 
 	dim as FBS_LIB ptr libp = listGetHead( @fbc.ld_libpathlist )
 	do while( libp <> NULL )
-		if( right( *libp->name, 1 ) = RSLASH ) then
+		if( right( *libp->name, 1 ) = FB_HOST_PATHDIV ) then
     		list += " -L " + QUOTE + left( *libp->name, len(*libp->name) - 1 ) + QUOTE
 		else
     		list += " -L " + QUOTE + *libp->name + QUOTE
