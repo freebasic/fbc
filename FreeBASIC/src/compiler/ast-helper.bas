@@ -71,14 +71,17 @@ sub astUpdateBitfieldAssignment _
 		byref r as ASTNODE ptr _
 	)
 
+    dim as ASTNODE ptr lchild = any
+
 	'' handle bitfields..
 	if( l->class = AST_NODECLASS_FIELD ) then
-		if( astGetDataType( astGetLeft( l ) ) = FB_DATATYPE_BITFIELD ) then
+        lchild = astGetLeft( l )
+		if( astGetDataType( lchild ) = FB_DATATYPE_BITFIELD ) then
 			'' l is a field node, use its left child instead
-			r = astSetBitField( astGetLeft( l ), r )
+			r = astSetBitField( lchild, r )
 			'' the field node can be removed
 			astDelNode( l )
-			l = astGetLeft( l )
+			l = lchild
 		end if
 	end if
 
