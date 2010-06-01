@@ -48,6 +48,7 @@ Version 0.21.0 Beta:
 - Err may now be called as "Err()", like with a normal function (counting_pine)
 - errors for several cases of division by constant zero (dkls)
 - search 32-bit library paths in the linker scripts for Linux and FreeBSD (cha0s)
+- preprocessor-only mode, activated by '-pp' command-line option (dkls)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

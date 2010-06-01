@@ -652,6 +652,8 @@ type FBENV
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
 
+	ppfile_num		as integer					'' -pp output file
+
 	'' include files
 	incpaths		as integer
 	incfilehash		as THASH

@@ -153,6 +153,7 @@ declare sub getDefaultLibs _
 		( FBC_OPT_STATICLIB		, @"lib"         ), _
 		( FBC_OPT_PRESERVEOBJ	, @"C"           ), _
 		( FBC_OPT_PRESERVEASM 	, @"R"           ), _
+		( FBC_OPT_PPONLY		, @"pp"          ), _
 		( FBC_OPT_VERBOSE		, @"v"           ), _
 		( FBC_OPT_VERSION		, @"version"     ), _
 		( FBC_OPT_OUTPUTNAME	, @"x"           ), _
@@ -1494,6 +1495,12 @@ private function processOptions _
 			case FBC_OPT_PRESERVEASM
 				fbc.preserveasm = TRUE
 
+			case FBC_OPT_PPONLY
+				fbSetOption( FB_COMPOPT_PPONLY, TRUE )
+				fbc.compileonly = TRUE
+				fbc.emitonly = TRUE
+				fbc.preserveasm = FALSE
+
 			case FBC_OPT_SHAREDLIB
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
 
@@ -2125,6 +2132,7 @@ private sub printOptions( )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
 	printOption( "-O <value>", "Optimization level (default: 0)" )
 	printOption( "-p <name>", "Add a path to search for libraries" )
+	printOption( "-pp", "Emit the preprocessed input file only, do not compile")
 	print "-prefix <path>"; " Set the compiler prefix path"
 	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Write asm only, do not compile" )

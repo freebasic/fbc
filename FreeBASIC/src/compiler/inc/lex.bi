@@ -80,6 +80,8 @@ type FBTOKEN
 		hasesc		as integer					'' any '\' in literals
 	end union
 
+	after_space		as integer
+
 	next			as FBTOKEN ptr
 end type
 
@@ -139,6 +141,8 @@ type LEX_TKCTX
 	lastfilepos 	as integer
 
 	currline		as DZSTRING					'' current line in text form
+
+	after_space		as integer
 end type
 
 type LEX_CTX

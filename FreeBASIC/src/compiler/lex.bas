@@ -143,6 +143,8 @@ sub lexInit _
 		lex.insidemacro = FALSE
 	end if
 
+	lex.ctx->after_space = FALSE
+
 	if( isinclude = FALSE ) then
 		ppInit( )
 	end if
@@ -342,6 +344,7 @@ function lexCurrentChar _
 
     if( skipwhitespc ) then
     	do while( (lex.ctx->currchar = CHAR_TAB) or (lex.ctx->currchar = CHAR_SPACE) )
+			lex.ctx->after_space = TRUE
     		lexEatChar( )
     		lex.ctx->currchar = hReadChar( )
     	loop
@@ -364,6 +367,7 @@ function lexGetLookAheadChar _
 
     if( skipwhitespc ) then
     	do while( (lex.ctx->lahdchar = CHAR_TAB) or (lex.ctx->lahdchar = CHAR_SPACE) )
+			lex.ctx->after_space = TRUE
     		hSkipChar( )
     		lex.ctx->lahdchar = hReadChar( )
     	loop
@@ -1559,6 +1563,9 @@ sub lexNextToken _
 	dim as integer islinecont = any, lgt = any
 	dim as FBSYMCHAIN ptr chain_ = any
 
+	t->after_space = lex.ctx->after_space
+	lex.ctx->after_space = FALSE
+
 re_read:
 	t->text[0] = 0									'' t.text = ""
 	t->len = 0
@@ -1628,6 +1635,7 @@ re_read:
 				exit sub
 
 			else
+				t->after_space = TRUE
 				UPDATE_LINENUM( )
 				parser.stmt.cnt += 1
 				islinecont = FALSE
@@ -1636,6 +1644,7 @@ re_read:
 
 		'' white-space?
 		case CHAR_TAB, CHAR_SPACE
+			t->after_space = TRUE
 			if( islinecont = FALSE ) then
 				if( (flags and LEXCHECK_NOWHITESPC) <> 0 ) then
 					exit do
@@ -1739,6 +1748,7 @@ read_id:
 			if( symbGetClass( chain_->sym ) = FB_SYMBCLASS_DEFINE ) then
 				'' restart..
 				if( ppDefineLoad( chain_->sym ) ) then
+					t->after_space = TRUE
 					goto re_read
 				end if
 			end if
@@ -1897,6 +1907,7 @@ read_char:
 				if( lexCurrentChar( ) = CHAR_APOST ) then
 					'' multi-line comment..
 					hMultiLineComment( )
+					t->after_space = TRUE
 					goto re_read
 				end if
 			end if
@@ -2101,11 +2112,74 @@ private sub hMoveKDown( ) static
 
 end sub
 
+private sub hEmitToken( )
+	static as string currentline
+
+	'' EOF/Single-line comment?
+	select case lexGetToken( )
+	case FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+		return
+	end select
+
+	'' EOL?
+	if( lexGetToken( ) = FB_TK_EOL ) then
+
+		if( len(currentline) > 0 ) then
+			print #env.ppfile_num, currentline
+		end if
+
+		currentline = ""
+
+		if( lex.ctx->lasttk_id = FB_TK_EOL ) then
+			print #env.ppfile_num, ""
+		end if
+
+		return
+	end if
+
+	'' Everything else...
+	if( lex.ctx->head->after_space ) then
+		currentline += " "
+	end if
+
+	select case lexGetToken( )
+	case FB_TK_STRLIT_ESC
+		currentline += "!"
+
+	case FB_TK_STRLIT_NOESC
+		currentline += "$"
+
+	end select
+
+	select case as const lexGetToken( )
+	case FB_TK_STRLIT, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC
+		currentline += QUOTE
+
+		'' Escape "'s.
+		currentline += hReplace( *lexGetText( ), QUOTE, QUOTE + QUOTE )
+
+		currentline += QUOTE
+
+	case else
+		currentline += *lexGetText( )
+
+	end select
+
+end sub
+
 '':::::
 sub lexSkipToken _
 	( _
 		byval flags as LEXCHECK _
 	) static
+
+	'' Emit current token, if -pp was given, except if called from the PP,
+	'' so only the tokens seen by the parser are written.
+	if( env.ppfile_num > 0 ) then
+		if( lex.ctx->reclevel = 0 ) then
+			hEmitToken( )
+		end if
+	end if
 
     '' update stats
     select case lex.ctx->head->id

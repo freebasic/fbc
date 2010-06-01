@@ -148,6 +148,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_FINDBIN
 	FB_COMPOPT_EXTRAOPT
 	FB_COMPOPT_OPTIMIZELEVEL
+	FB_COMPOPT_PPONLY
 
 	FB_COMPOPTIONS
 end enum
@@ -342,6 +343,7 @@ type FBCMMLINEOPT
 	findbin			as FB_FINDBIN				'' find bin file search options
 	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
 	optlevel		as integer					'' optimize level (for gcc)
+	pponly			as integer
 end type
 
 

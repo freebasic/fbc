@@ -618,6 +618,9 @@ sub fbSetOption _
 	case FB_COMPOPT_OPTIMIZELEVEL
 		env.clopt.optlevel = value
 
+	case FB_COMPOPT_PPONLY
+		env.clopt.pponly = value
+
 	end select
 
 end sub
@@ -716,6 +719,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_OPTIMIZELEVEL
 		function = env.clopt.optlevel
+
+	case FB_COMPOPT_PPONLY
+		function = env.clopt.pponly
 
 	case else
 		function = FALSE
@@ -943,6 +949,17 @@ function fbCompile _
 		exit function
 	end if
 
+	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
+		env.ppfile_num = freefile()
+		dim as string ppfile = hStripExt( env.inf.name ) + ".pp.bas"
+		if( open( ppfile, for output, as #env.ppfile_num ) <> 0 ) then
+			errReportEx( FB_ERRMSG_FILEACCESSERROR, ppfile, -1 )
+			exit function
+		end if
+	else
+		env.ppfile_num = 0
+	end if
+
 	fbMainBegin( )
 
 	tmr = timer( )
@@ -960,6 +977,10 @@ function fbCompile _
 
 	'' save
 	irEmitEnd( tmr )
+
+	if( env.ppfile_num > 0 ) then
+		close #env.ppfile_num
+	end if
 
 	'' close src
 	if( close( #env.inf.num ) <> 0 ) then
