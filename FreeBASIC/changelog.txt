@@ -49,6 +49,7 @@ Version 0.21.0 Beta:
 - errors for several cases of division by constant zero (dkls)
 - search 32-bit library paths in the linker scripts for Linux and FreeBSD (cha0s)
 - preprocessor-only mode, activated by '-pp' command-line option (dkls)
+- @<file> command-line option, to read command-line options from files (dkls)
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)

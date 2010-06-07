@@ -29,6 +29,9 @@ const FBC_INITFILES	  = 64
 const FBC_MINSTACKSIZE = 32 * 1024
 const FBC_DEFSTACKSIZE = 1024 * 1024
 
+'' Maximum nesting/recursion limit for command-line option files (@filename)
+const FBC_MAXCMDFILE_RECLEVEL = 128
+
 '' command-line options (linked to the fbc::optionTb() array)
 enum FBC_OPT
 	FBC_OPT_E				= 1

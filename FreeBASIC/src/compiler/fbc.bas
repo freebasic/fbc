@@ -1943,6 +1943,81 @@ private function processCompLists _
 end function
 
 '':::::
+private sub parseCmdFile _
+	( _
+		byref optfilearg as string _
+	)
+
+	static as integer nestinglevel = 0
+
+	'' Extract the filename; will be empty if the argument was '@' only.
+	dim as string filename = right( optfilearg, len( optfilearg ) - 1 )
+
+	if( nestinglevel > FBC_MAXCMDFILE_RECLEVEL ) then
+		errReportEx( FB_ERRMSG_RECLEVELTOODEEP, "@" + filename, -1 )
+		fbcEnd( 1 )
+	end if
+
+	if( hFileExists( filename ) = FALSE ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, "@" + filename, -1 )
+		fbcEnd( 1 )
+	end if
+
+	dim as integer fnum = freefile( )
+	if( open( filename, for input, as #fnum ) <> 0 ) then
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, "@" + filename, -1 )
+		fbcEnd( 1 )
+	end if
+
+	dim as string ln = ""
+	dim as string arg = ""
+	while( eof(fnum) = FALSE )
+		line input #fnum, ln
+		ln = trim(ln)
+
+		dim as integer linepos = 0
+		while( linepos < len( ln ) )
+			dim as integer i = linepos
+
+			'' Parse the first arg from the line, i.e. everything before SPACE
+			'' or newline. Double-quoted strings are handled too.
+			dim as integer inside_string = FALSE
+			for i = linepos to len( ln ) - 1
+				select case ln[i]
+				case asc(" ")
+					if( inside_string = FALSE ) then
+						exit for
+					end if
+
+				case asc(!"\"")
+					inside_string = (inside_string = FALSE)
+
+				end select
+			next
+
+			arg = trim( mid( ln, linepos + 1, i - linepos ) )
+			linepos = i + 1
+
+			'' Not just space?
+			if( len( arg ) > 0 ) then
+				'' Check for @filename in such a file (recursion/nesting):
+				if( arg[0] = asc("@") ) then
+					nestinglevel += 1
+					parseCmdFile( arg )
+					nestinglevel -= 1
+				else
+					'' Remember normal argument for later...
+					dim as string ptr node = listNewNode( @fbc.arglist )
+					*node = arg
+				end if
+			end if
+		wend
+	wend
+
+	close #fnum
+end sub
+
+'':::::
 private sub parseCmd _
 	( _
 	)
@@ -1959,6 +2034,11 @@ private sub parseCmd _
 		if( len( arg[0] ) = 0 ) then
 			listDelNode( @fbc.arglist, arg )
 			exit do
+		end if
+
+		if( (*arg)[0] = asc("@") ) then
+			parseCmdFile( *arg )
+			listDelNode( @fbc.arglist, arg )
 		end if
 
 		argc += 1
@@ -2092,6 +2172,7 @@ private sub printOptions( )
 	print
 	print "options:"
 
+	printOption( "@<file>", "Read command-line options from a file" )
 	printOption( "-a <name>", "Add an object file to linker's list" )
 	printOption( "-arch <type>", "Set target architecture (default: 486)" )
 	printOption( "-b <name>", "Add a source file to compilation" )
