@@ -1,0 +1,145 @@
+TRAM 2 - Testing Release Archive Maker
+
+This tool can build fbc/rtlib/gfxlib, copy in binaries & libraries from
+MinGW/DJGPP or the previous FB release, package everything into archives,
+build the Windows installer, and more. Everything automated, so it doesn't have
+to be done manually.
+
+The win32 version builds for either win32 or dos, the linux version builds for
+linux (could easily build for all unix-like targets).
+
+Notes:
+* tram isn't smart, it just executes a bunch of steps.
+* Wrong files in the code base won't stop tram.
+* Only one tram can work in a code base at once, otherwise they would overwrite
+  each-other's fbc executables and/or other things in the code base.
+* You may want to avoid running tram in your main stable FreeBASIC installation,
+  because tram may mess it up.
+* No SPACE's in paths please, makefiles don't handle it, so tram doesn't either.
+* All files for/in the DOS package should probably use the 8.3 filename format.
+  Anyways, not all do.
+
+Compile tram itself with a simple
+    make
+
+Usage:  tram2 [options]
+Options:
+    dos
+    linux
+    win32
+        Enables this target, instead of defaulting to the host.
+        (Note: currently only the 'dos' option is useful)
+
+    clean
+        Perform the clean-up versions of each step.
+
+        e.g. 'pullbin clean' will remove binaries instead of copying them
+        into the root tree,
+
+        'compiler make clean' will run 'make clean' on the compiler and
+        remove fbc.exe, instead of compiling it, etc.
+
+        Steps that have nothing to clean up (e.g. remake) will be ignored.
+        (for remake: removing fbc.exe and it's .o's can already be done with
+        'compiler make clean')
+
+    pullbin
+        Copy in binaries & libraries from MinGW/DJGPP & the previous FB release.
+        binaries-<target>.ini files contain lists.
+
+    compiler
+    rtlib
+    gfxlib2
+
+    configure
+    make
+        compiler/rtlib/gfxlib2 will only be configured/compiled etc if
+        specified on the command-line.
+
+    remake      (Applies to 'compiler' only)
+        Re-build fbc with the one present in the root tree.
+        (Requires binaries & libraries in the root tree)
+
+    genlist
+        Generate the manifest
+
+    testlist
+        Check for all files specified in the manifest
+
+    package
+        Put everything in an archive ready for uploading.
+
+    installer
+        Build the installer exe.
+
+    manifest=<path>
+        Manifest file name, default: manifest/current/win32.lst
+
+    If no options are specified, tram will do nothing.
+
+--------------------------------------------------------------------------------
+
+Needed stuff (paths can be changed in the source code):
+
+linux: 
+    
+
+win32 & dos:
+    * Working win32 FreeBASIC that can cross-compile to dos
+      (For the dos build, the win32 fbc is used with -target dos, because the
+      dos fbc cannot handle long commandlines, and fbc doesn't have an
+      '@optionfile' feature yet)
+
+    * Previous win32 & dos FreeBASIC releases
+
+    * MinGW/MSYS (win32 GCC)
+
+        Download from http://sourceforge.net/downloads/mingw/
+
+            binutils-2.19.1-mingw32-bin.tar.gz
+            mingwrt-3.17-mingw32-dev.tar.gz
+            mingwrt-3.17-mingw32-dll.tar.gz
+            w32api-3.14-mingw32-dev.tar.gz
+            make-3.81-20090914-mingw32-bin.tar.gz
+            gdb-6.8-mingw-3.tar.bz2                 (for gdb.exe)
+            gettext-0.17-1-mingw32-dev.tar.lzma     (for libintl.a)
+
+        And from http://sourceforge.net/downloads/tdm-gcc/
+
+            gcc-4.4.1-tdm-2-core.tar.gz
+            gcc-4.4.1-tdm-2-g++.tar.gz
+
+        Extract into C:\MinGW, so you end up with e.g. C:\MinGW\bin\gcc.exe.
+
+    * DJGPP (GCC, binutils, etc, for DOS)
+
+        Download from the homepage:
+
+            http://www.delorie.com/pub/djgpp/current/v2/djdev203.zip        (core)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219b.zip      (binutils 2.19 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219a.zip      (libiberty, BFD headers, ..)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gcc442b.zip      (gcc 4.4.2 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gdb611b.zip      (gdb 6.1.1 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gpp442b.zip      (gpp (g++) 4.4.2 binaries)
+
+        or from http://djgpp.cybermirror.org/current.
+
+        Extract into C:\djgpp, so you end up with e.g. C:\djgpp\bin\gcc.exe.
+
+        Add environment variable:
+            DJGPP   =   C:\djgpp\djgpp.env
+
+        Copy/rename
+            C:\djgpp\lib\gcc\djgpp\4.42\libsupcxx.a
+        to
+            C:\djgpp\lib\gcc\djgpp\4.42\libsupcx.a
+        (fbc expects that, some 8.3 filename issue)
+
+        Get stdint.h (rtlib needs it) from DJGPP's CVS:
+            http://www.delorie.com/bin/cvsweb.cgi/djgpp/
+        goes into C:/djgpp/include
+
+    * NSIS (for the win32 installer)
+        Download from http://nsis.sourceforge.net/Download
+
+    * ddraw.h & dinput.h in C:/MinGW/include (win32 DirectX headers to compile fbgfx)
