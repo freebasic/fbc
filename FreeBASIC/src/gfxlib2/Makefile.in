@@ -111,25 +111,56 @@ all: $(FBRT_TOOLS) $(FBRT_LIB)
 .SUFFIXES: .c .s .o $(EXEEXT)
 
 $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
-	$(COMPILE) $< -o $@
+ifeq (@FBRT_TARGET@,dos)
+	echo $(DEFS) $(ALL_CFLAGS) -c $< -o $@ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
+	$(CC) $(DEFS) $(ALL_CFLAGS) -c $< -o $@
+endif
 
 $(FBRT_OBJDEST)/%.o : %.s fb_gfx_mmx.h
+ifeq (@FBRT_TARGET@,dos)
+	echo $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
 	$(CC) $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@
+endif
 
 $(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
+ifeq (@FBRT_TARGET@,dos)
+	echo $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS) > longopt.tmp
+	echo $(AR) @longopt.tmp | sh
+	echo $(RANLIB) $(FBRT_LIB) | sh
+else
 	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OPENGLDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
+endif
 
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
+ifeq (@FBRT_TARGET@,dos)
+	echo $(FBRT_OBJDEST)/mk_dat$(EXEEXT) -o $@ -I @srcdir@/data | sh
+else
 	$(FBRT_OBJDEST)/mk_dat$(EXEEXT) -o $@ -I @srcdir@/data
+endif
 
 $(FBRT_OBJDEST)/mk_dat$(EXEEXT): $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OBJDEST)/libfb_gfx_lzw.o $(FBRT_OBJDEST)/libfb_gfx_lzw_enc.o $(FBRT_OBJDEST)/libfb_gfx_vars.o
 
 $(FBRT_OBJDEST)/%$(EXEEXT): $(FBRT_OBJDEST)/%.o
+ifeq (@FBRT_TARGET@,dos)
+	echo $(CFLAGS) -o $@ $^ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
 	$(CC) $(CFLAGS) -o $@ $^
+endif
+
 
 $(FBRT_OBJDEST)/%.o: @srcdir@/tools/%.c
-	$(COMPILE) -o $@ $<
+ifeq (@FBRT_TARGET@,dos)
+	echo $(DEFS) $(ALL_CFLAGS) -c $< > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
+	$(CC) $(DEFS) $(ALL_CFLAGS) -c -o $@ $<
+endif
 
 
 ##################################################################
@@ -166,6 +197,9 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 mostlyclean:
 	-rm -rf $(FBRT_OBJS) $(FBRT_BASEDEPOBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_OBJDEST)/mk_dat$(EXEEXT) $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OPENGLDEPOBJS)
 	-rm -f $(srcdir)/data/data.dat $(srcdir)/libfb_gfx_data.c
+ifeq (@FBRT_TARGET@,dos)
+	-rm -f longopt.tmp
+endif
 
 clean: mostlyclean
 	-rm -rf makedepend$(EXEEXT) $(FBRT_LIB) $(srcdir)/autom4te.cache
@@ -195,11 +229,12 @@ install:
   maintainer-clean check installcheck dvi html info install-info \
   install-man update-po
 
-COMPILE = $(CC) $(DEFS) $(ALL_CFLAGS) -c
-
-# Implicit rules
-
 .c.o:
-	$(COMPILE) $<
+ifeq (@FBRT_TARGET@,dos)
+	echo $(DEFS) $(ALL_CFLAGS) -c $< > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
+	$(CC) $(DEFS) $(ALL_CFLAGS) -c $<
+endif
 
 .NOEXPORT:

@@ -103,14 +103,30 @@ all: $(FBRT_LIB) $(FBRT_STATICOBJS)
 .SUFFIXES: .c .s .o
 
 $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
-	$(COMPILE) $< -o $@
+ifeq (@FBRT_TARGET@,dos)
+	echo $(DEFS) $(ALL_CFLAGS) -c $< -o $@ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
+	$(CC) $(DEFS) $(ALL_CFLAGS) -c $< -o $@
+endif
 
 $(FBRT_OBJDEST)/%.o : %.s
+ifeq (@FBRT_TARGET@,dos)
+	echo -x assembler-with-cpp -c $(CFLAGS) $< -o $@ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
 	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
+endif
 
 $(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_BASEDEPOBJS) $(FBRT_CPUDEPOBJS)
+ifeq (@FBRT_TARGET@,dos)
+	echo  $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_BASEDEPOBJS) $(FBRT_CPUDEPOBJS) > longopt.tmp
+	echo $(AR) @longopt.tmp | sh
+	echo $(RANLIB) $(FBRT_LIB) | sh
+else
 	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_BASEDEPOBJS) $(FBRT_CPUDEPOBJS)
 	$(RANLIB) $(FBRT_LIB)
+endif
 
 ##################################################################
 
@@ -145,6 +161,9 @@ $(srcdir)/config.in: @MAINT@ $(srcdir)/configure
 
 mostlyclean:
 	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS) $(FBRT_CPUDEPOBJS) $(FBRT_BASEDEPOBJS) $(FBRT_STATICOBJS)
+ifeq (@FBRT_TARGET@,dos)
+	-rm -f longopt.tmp
+endif
 
 clean: mostlyclean
 	-rm -rf makedepend$(EXEEXT) $(FBRT_LIB) $(srcdir)/autom4te.cache
@@ -175,11 +194,12 @@ install:
   maintainer-clean check installcheck dvi html info install-info \
   install-man update-po
 
-COMPILE = $(CC) $(DEFS) $(ALL_CFLAGS) -c
-
-# Implicit rules
-
 .c.o:
-	$(COMPILE) $<
+ifeq (@FBRT_TARGET@,dos)
+	echo $(DEFS) $(ALL_CFLAGS) -c $< > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
+	$(CC) $(DEFS) $(ALL_CFLAGS) -c $<
+endif
 
 .NOEXPORT:

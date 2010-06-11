@@ -6,8 +6,6 @@
 
 @SET_MAKE@
 
-AR = ar
-ARFLAGS = cru
 ACLOCAL = @ACLOCAL@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -80,45 +78,49 @@ endif
 #
 
 ifeq (@FBC_HOST@,cygwin)
-	DEFS := -d HOST_CYGWIN
-	FBC_LIBS += -l intl
+    DEFS := -d HOST_CYGWIN
+    FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_HOST@,darwin)
-	DEFS := -d HOST_DARWIN
+    DEFS := -d HOST_DARWIN
 endif
 
 ifeq (@FBC_HOST@,dos)
-	DEFS := -d HOST_DOS
-	FBC_LIBS += -l intl
+    DEFS := -d HOST_DOS
+    FBC_LIBS += -l intl
+    # libbfd.a/libiberty.a from DJGPP's bnu219a.zip require zlib.
+    ifeq (@FBC_OBJINFO@,objinfo)
+        FBC_LIBS += -l z
+    endif
 endif
 
 ifeq (@FBC_HOST@,freebsd)
-	DEFS := -d HOST_FREEBSD
-	ifeq (@FBC_OBJINFO@,objinfo)
-		FBC_LIBS += -l intl
-	endif
+    DEFS := -d HOST_FREEBSD
+    ifeq (@FBC_OBJINFO@,objinfo)
+        FBC_LIBS += -l intl
+    endif
 endif
 
 ifeq (@FBC_HOST@,linux)
-	DEFS := -d HOST_LINUX
+    DEFS := -d HOST_LINUX
 endif
 
 ifeq (@FBC_HOST@,netbsd)
-	DEFS := -d HOST_NETBSD
+    DEFS := -d HOST_NETBSD
 endif
 
 ifeq (@FBC_HOST@,openbsd)
-	DEFS := -d HOST_OPENBSD
-	ifeq (@FBC_OBJINFO@,objinfo)
-		FBC_LIBS += -l intl
-	endif
+    DEFS := -d HOST_OPENBSD
+    ifeq (@FBC_OBJINFO@,objinfo)
+        FBC_LIBS += -l intl
+    endif
 endif
 
 ifeq (@FBC_HOST@,win32)
-	DEFS := -d HOST_WIN32
-	FBC_LFLAGS += -t 2048
-	FBC_LIBS += -l intl
+    DEFS := -d HOST_WIN32
+    FBC_LFLAGS += -t 2048
+    FBC_LIBS += -l intl -l user32
 endif
 
 
@@ -128,48 +130,48 @@ endif
 #
 
 ifeq (@FBC_TARGET@,cygwin)
-	FBC_OSDEPSRCS := fbc_cyg.bas
-	DEFS += -d TARGET_CYGWIN
+    FBC_OSDEPSRCS := fbc_cyg.bas
+    DEFS += -d TARGET_CYGWIN
 endif
 
 ifeq (@FBC_TARGET@,darwin)
-	FBC_OSDEPSRCS := fbc_darwin.bas
-	DEFS += -d TARGET_DARWIN
+    FBC_OSDEPSRCS := fbc_darwin.bas
+    DEFS += -d TARGET_DARWIN
 endif
 
 ifeq (@FBC_TARGET@,dos)
-	FBC_OSDEPSRCS := fbc_dos.bas
-	DEFS += -d TARGET_DOS
+    FBC_OSDEPSRCS := fbc_dos.bas
+    DEFS += -d TARGET_DOS
 endif
 
 ifeq (@FBC_TARGET@,freebsd)
-	FBC_OSDEPSRCS := fbc_freebsd.bas
-	DEFS += -d TARGET_FREEBSD
+    FBC_OSDEPSRCS := fbc_freebsd.bas
+    DEFS += -d TARGET_FREEBSD
 endif
 
 ifeq (@FBC_TARGET@,linux)
-	FBC_OSDEPSRCS := fbc_linux.bas
-	DEFS += -d TARGET_LINUX
+    FBC_OSDEPSRCS := fbc_linux.bas
+    DEFS += -d TARGET_LINUX
 endif
 
 ifeq (@FBC_TARGET@, netbsd)
-	FBC_OSDEPSRCS := fbc_netbsd.bas
-	DEFS += -d TARGET_NETBSD
+    FBC_OSDEPSRCS := fbc_netbsd.bas
+    DEFS += -d TARGET_NETBSD
 endif
 
 ifeq (@FBC_TARGET@,openbsd)
-	FBC_OSDEPSRCS := fbc_openbsd.bas
-	DEFS += -d TARGET_OPENBSD
+    FBC_OSDEPSRCS := fbc_openbsd.bas
+    DEFS += -d TARGET_OPENBSD
 endif
 
 ifeq (@FBC_TARGET@,win32)
-	FBC_OSDEPSRCS := fbc_win32.bas
-	DEFS += -d TARGET_WIN32
+    FBC_OSDEPSRCS := fbc_win32.bas
+    DEFS += -d TARGET_WIN32
 endif
 
 ifeq (@FBC_TARGET@,xbox)
-	FBC_OSDEPSRCS := fbc_xbox.bas
-	DEFS += -d TARGET_XBOX
+    FBC_OSDEPSRCS := fbc_xbox.bas
+    DEFS += -d TARGET_XBOX
 endif
 
 
@@ -178,48 +180,48 @@ endif
 #
 
 ifeq (@FBC_CROSSCOMP_CYGWIN@,yes)
-	FBC_OSDEPSRCS += fbc_cyg.bas
-	DEFS += -d CROSSCOMP_CYGWIN
+    FBC_OSDEPSRCS += fbc_cyg.bas
+    DEFS += -d CROSSCOMP_CYGWIN
 endif
 
 ifeq (@FBC_CROSSCOMP_DARWIN@,yes)
-	FBC_OSDEPSRCS += fbc_darwin.bas
-	DEFS += -d CROSSCOMP_DARWIN
+    FBC_OSDEPSRCS += fbc_darwin.bas
+    DEFS += -d CROSSCOMP_DARWIN
 endif
 
 ifeq (@FBC_CROSSCOMP_DOS@,yes)
-	FBC_OSDEPSRCS += fbc_dos.bas
-	DEFS += -d CROSSCOMP_DOS
+    FBC_OSDEPSRCS += fbc_dos.bas
+    DEFS += -d CROSSCOMP_DOS
 endif
 
 ifeq (@FBC_CROSSCOMP_FREEBSD@,yes)
-	FBC_OSDEPSRCS += fbc_freebsd.bas
-	DEFS += -d CROSSCOMP_FREEBSD
+    FBC_OSDEPSRCS += fbc_freebsd.bas
+    DEFS += -d CROSSCOMP_FREEBSD
 endif
 
 ifeq (@FBC_CROSSCOMP_LINUX@,yes)
-	FBC_OSDEPSRCS += fbc_linux.bas
-	DEFS += -d CROSSCOMP_LINUX
+    FBC_OSDEPSRCS += fbc_linux.bas
+    DEFS += -d CROSSCOMP_LINUX
 endif
 
 ifeq (@FBC_CROSSCOMP_NETBSD@,yes)
-	FBC_OSDEPSRCS += fbc_netbsd.bas
-	DEFS += -d CROSSCOMP_NETBSD
+    FBC_OSDEPSRCS += fbc_netbsd.bas
+    DEFS += -d CROSSCOMP_NETBSD
 endif
 
 ifeq (@FBC_CROSSCOMP_OPENBSD@,yes)
-	FBC_OSDEPSRCS += fbc_openbsd.bas
-	DEFS += -d CROSSCOMP_OPENBSD
+    FBC_OSDEPSRCS += fbc_openbsd.bas
+    DEFS += -d CROSSCOMP_OPENBSD
 endif
 
 ifeq (@FBC_CROSSCOMP_WIN32@,yes)
-	FBC_OSDEPSRCS += fbc_win32.bas
-	DEFS += -d CROSSCOMP_WIN32
+    FBC_OSDEPSRCS += fbc_win32.bas
+    DEFS += -d CROSSCOMP_WIN32
 endif
 
 ifeq (@FBC_CROSSCOMP_XBOX@,yes)
-	FBC_OSDEPSRCS += fbc_xbox.bas
-	DEFS += -d CROSSCOMP_XBOX
+    FBC_OSDEPSRCS += fbc_xbox.bas
+    DEFS += -d CROSSCOMP_XBOX
 endif
 
 #
@@ -227,15 +229,15 @@ endif
 #
 
 ifeq (@FBC_HOST_CPU@,x86)
-	DEFS += -d HOST_X86
-	# !!!FIXME!!! -arch can't be assumed, using host_cpu will give
-	#             "686" for example, making fbc to fail in non mmx-cpu's
-	FBC_CFLAGS += -arch 486
+    DEFS += -d HOST_X86
+    # !!!FIXME!!! -arch can't be assumed, using host_cpu will give
+    #             "686" for example, making fbc to fail in non mmx-cpu's
+    FBC_CFLAGS += -arch 486
 endif
 
 ifeq (@FBC_HOST_CPU@,x86_64)
-	DEFS += -d HOST_X86_64
-	FBC_CFLAGS += -arch x86_64
+    DEFS += -d HOST_X86_64
+    FBC_CFLAGS += -arch x86_64
 endif
 
 #
@@ -243,11 +245,11 @@ endif
 #
 
 ifeq (@FBC_TARGET_CPU@,x86)
-	DEFS += -d TARGET_X86
+    DEFS += -d TARGET_X86
 endif
 
 ifeq (@FBC_TARGET_CPU@,x86_64)
-	DEFS += -d TARGET_X86_64
+    DEFS += -d TARGET_X86_64
 endif
 
 
@@ -257,16 +259,16 @@ endif
 
 # compiling the standalone compiler?
 ifeq (@FBC_STANDALONE@,yes)
-	DEFS += -d STANDALONE
+    DEFS += -d STANDALONE
 else
-	DEFS += -d ARCH_PREFIX=$(prefix)
+    DEFS += -d ARCH_PREFIX=$(prefix)
 endif
 
 # big or little endian?
 ifeq (@FBC_HOST_ENDIAN@,little)
-	DEFS += -d HOST_LITTLE_ENDIAN
+    DEFS += -d HOST_LITTLE_ENDIAN
 else
-	DEFS += -d HOST_BIG_ENDIAN
+    DEFS += -d HOST_BIG_ENDIAN
 endif
 
 # if objinfo disabled, set a define so we can exclude sections
@@ -361,13 +363,28 @@ all: $(FBC_COMP)
 .SUFFIXES: .bas $(EXEEXT)
 
 %.o : %.bas $(FBC_HEADERS)
+ifeq (@FBC_TARGET@,dos)
+	echo $(FBC_CFLAGS) $(DEFS) $< -o $@ > longopt.tmp
+	echo $(FBC) @longopt.tmp | sh
+else
 	$(FBC) $(FBC_CFLAGS) $(DEFS) $< -o $@
+endif
 
 c-objinfo.o : c-objinfo.c
+ifeq (@FBC_TARGET@,dos)
+	echo $(ALL_CFLAGS) -c $< -o $@ > longopt.tmp
+	echo $(CC) @longopt.tmp | sh
+else
 	$(CC) $(ALL_CFLAGS) -c $< -o $@
+endif
 
 $(FBC_COMP) : $(FBC_OBJS) 
+ifeq (@FBC_TARGET@,dos)
+	echo $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) $(FBC_LIBS) -x $@ > longopt.tmp
+	echo $(FBC) @longopt.tmp | sh
+else
 	$(FBC) $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) $(FBC_LIBS) -x $@
+endif
 
 
 ##################################################################
@@ -396,6 +413,9 @@ stamp-h1: config.status
 
 mostlyclean:
 	-rm -rf $(FBC_OBJS)
+ifeq (@FBC_TARGET@,dos)
+	-rm -f longopt.tmp
+endif
 
 clean: mostlyclean
 	-rm -rf makedepend$(EXEEXT) $(FBC_COMP) $(srcdir)/autom4te.cache
@@ -423,12 +443,5 @@ install:
 .PHONY: installdirs install install-strip mostlyclean clean distclean \
   maintainer-clean check installcheck dvi html info install-info \
   install-man update-po
-
-COMPILE = $(CC) $(DEFS) $(ALL_CFLAGS) -c
-
-# Implicit rules
-
-.c.o:
-	$(COMPILE) $<
 
 .NOEXPORT:
