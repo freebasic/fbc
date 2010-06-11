@@ -447,7 +447,7 @@ Sub x_AtoF(Byref x As ext, Byval value As String)
             Endif
             d=1
         Endif
-        If (c>"/") And (c<":") Then 'c$ is digit between 0 and 9
+        If (c>"/") And (c<":") Then 'c is digit between 0 and 9
             If ((c="0") And (i=0)) Then
                 If d=0 Then
                     Goto atof1nxtch

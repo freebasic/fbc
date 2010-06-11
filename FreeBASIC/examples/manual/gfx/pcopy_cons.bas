@@ -27,7 +27,7 @@ Do
 	Cls
 	Locate 1, 1
 	Color (i And 15), 0
-	Print String$(80 * 25, Hex$(i, 1));
+	Print String(80 * 25, Hex(i, 1));
 	i += 1
 
 
@@ -52,4 +52,4 @@ Do
 
 
 	'' run loop until user presses a key
-Loop Until Len(Inkey$)
+Loop Until Len(Inkey)

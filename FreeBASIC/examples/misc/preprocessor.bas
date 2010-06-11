@@ -56,6 +56,6 @@ function func1( byval arg1 as integer ) as integer
 	
 	sleep
 	
-	function = 0
+	return 0
 
 end function

@@ -84,12 +84,12 @@ Dim Image As UInteger Ptr
 
 ScreenRes 640, 480, 32
 
-Image = FI_Load(Command$(1))
+Image = FI_Load(Command(1))
 
 If Image <> 0 Then
 	Put (0, 0), Image
 Else
-	Print "Problem Loading File : " & Command$(1)
+	Print "Problem Loading File : " & Command(1)
 End If
 
 Sleep

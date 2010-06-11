@@ -21,9 +21,10 @@ declare sub doinput( byref file as string )
 	
 
 sub doinput( byref file as string )
-
-	dim i as integer, f as double, s as string
-
+	dim as integer i = 1234
+	dim as double f = 5678.901
+	dim as string s = "xyz zzz"
+	
 	open file for input as #1
 	
 	input #1, s
@@ -34,5 +35,4 @@ sub doinput( byref file as string )
 	print i, f, s
 	
 	close #1
-	
 end sub

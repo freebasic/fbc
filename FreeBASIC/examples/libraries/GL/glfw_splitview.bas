@@ -9,8 +9,6 @@
 ''  because I am not a friend of orthogonal projections)
 ''========================================================================
 
-
-
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
 #include once "GL/glfw.bi"

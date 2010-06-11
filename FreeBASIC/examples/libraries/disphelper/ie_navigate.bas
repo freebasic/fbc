@@ -2,8 +2,6 @@
 '' IExplorer example
 ''
 
-
-
 #define UNICODE
 #include "disphelper/disphelper.bi"
 

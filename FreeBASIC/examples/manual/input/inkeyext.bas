@@ -7,7 +7,7 @@
 '' --------
 
 #if __FB_LANG__ = "qb"
-#define EXTCHAR Chr$(0)
+#define EXTCHAR Chr(0)
 #else
 #define EXTCHAR Chr(255)
 #endif
@@ -17,18 +17,18 @@ Dim k As String
 Print "Press a key, or Escape to end"
 Do
 
-	k = Inkey$
+	k = Inkey
 
 	Select Case k
 
 	    Case "A" To "Z", "a" To "z": Print "Letter: " & k
 	    Case "1" To "9":             Print "Number: " & k
 
-	    Case Chr$(32): Print "Space"
+	    Case Chr(32): Print "Space"
 
-	    Case Chr$(27): Print "Escape"
+	    Case Chr(27): Print "Escape"
 
-	    Case Chr$(32) To Chr$(127)
+	    Case Chr(32) To Chr(127)
 	        Print "Printable character: " & k
 
 	    Case EXTCHAR & "G": Print "Up Left / Home"
@@ -43,10 +43,10 @@ Do
 	    Case EXTCHAR & "P": Print "Down"
 	    Case EXTCHAR & "Q": Print "Down Right / PgDn"
 
-	    Case EXTCHAR & Chr$(59) To EXTCHAR & Chr$(68)
+	    Case EXTCHAR & Chr(59) To EXTCHAR & Chr(68)
 	        Print "Function key: F" & Asc(k, 2) - 58
 
-	    Case EXTCHAR & Chr$(133) To EXTCHAR & Chr$(134)
+	    Case EXTCHAR & Chr(133) To EXTCHAR & Chr(134)
 	        Print "Function key: F" & Asc(k, 2) - 122
 
 	    Case Else
@@ -58,7 +58,7 @@ Do
 
 	End Select
 
-	If k = Chr$(27) Then Exit Do
+	If k = Chr(27) Then Exit Do
 
 	Sleep 1, 1
 

@@ -2,6 +2,7 @@
 '' compile as: fbc onerror.bas -ex
 ''
 
+#lang "fblite"
 
 '':::::
 function hFileExists( filename as string ) as integer static

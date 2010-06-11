@@ -6,6 +6,6 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIif
 '' --------
 
-Dim As Integer a, b, x, y, z, temp
+Dim As Integer a, b, x, y, z = 7, temp
 If b > 0 Then temp = 4 Else temp = 7
 a = (x + y + temp) \ z

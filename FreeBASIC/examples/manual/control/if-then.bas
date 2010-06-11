@@ -22,12 +22,13 @@ Do 'Start a loop
 	If guess > 10 OrElse guess < 1 Then  'The user's guess is out of range
 		Print "The number can't be greater then 10 or less than 1!"
 	ElseIf guess > num Then  'The user's guess is too low
-		Print "Too low"
-	ElseIf guess < num Then  'The user's guess is too high
 		Print "Too high"
+	ElseIf guess < num Then  'The user's guess is too high
+		Print "Too low"
 	ElseIf guess = num Then  'The user guessed the right number!
 		Print "Correct!"
 		Exit Do   'Exit the loop
 	End If
 
 Loop 'Go back to the start of the loop
+Sleep

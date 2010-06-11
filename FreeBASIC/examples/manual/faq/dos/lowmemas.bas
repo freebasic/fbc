@@ -20,12 +20,12 @@ Dim As UInteger DDS
 DDS=_dos_ds
 
 ? : ? "Hello world !"
-? "_dos_ds=$";Hex$(DDS) 
+? "_dos_ds=$";Hex(DDS) 
 ? "This is just a tEst - abcd ABCD XYZ xyz @[`{ - press any key ..."
 
 Do
   Sleep 1000
-  If Inkey$<>"" Then Exit Do
+  If Inkey<>"" Then Exit Do
   Asm
 	mov  eax,[DDS] '' Directly using "_dos_ds" won't work here !!!
 	push eax

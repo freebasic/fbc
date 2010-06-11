@@ -11,7 +11,7 @@ depth(2) = 32
 FOR i = 0 to 2
 	SCREEN 14, depth(i)
 	SCREENINFO w, h, d,,,rate, driver
-	LINE(0,0)-(w-1,h-1),IIF(i = 0, 40, RGB(255, 0, 0)),B
+	LINE(0,0)-(w-1,h-1),IIF(i = 0, 40, CINT(RGB(255, 0, 0))),B
 	LOCATE 2,2: PRINT "Mode: " + STR(w) + "x" + STR(h) + "x" + STR(d);
 	IF (rate > 0) THEN
 		PRINT " @ " + STR(rate) + " Hz";

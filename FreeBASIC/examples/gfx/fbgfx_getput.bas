@@ -54,20 +54,20 @@ declare sub redraw(byref title as string)
 	cls: put (0,0), @udt, pset: sleep
 	k = inkey
 
-	redraw "udt_ptr": clear udt,,64004
-	get (0,0)-(319,199), udt_ptr
-	cls: put (0,0), udt_ptr, pset: sleep
-	k = inkey
+	'redraw "udt_ptr": clear udt,,64004
+	'get (0,0)-(319,199), udt_ptr
+	'cls: put (0,0), udt_ptr, pset: sleep
+	'k = inkey
 
 	redraw "@array_ptr[i]": clear array(0),,64004
 	get (0,0)-(319,199), @array_ptr[i]
 	cls: put (0,0), @array_ptr[i], pset: sleep
 	k = inkey
 
-	redraw "@udt_ptr[i]": clear udt,,64004
-	get (0,0)-(319,199), @udt_ptr[i]
-	cls: put (0,0), @udt_ptr[i], pset: sleep
-	k = inkey
+	'redraw "@udt_ptr[i]": clear udt,,64004
+	'get (0,0)-(319,199), @udt_ptr[i]
+	'cls: put (0,0), @udt_ptr[i], pset: sleep
+	'k = inkey
 
 	redraw "udt.array": clear udtf.array(0),,64004
 	get (0,0)-(319,199), udtf.array

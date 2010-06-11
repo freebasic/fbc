@@ -13,3 +13,4 @@ Print Cast( Byte, &h0080 )
 '' will print 3 because the floating-point value will be converted to an Integer
 '' (this Casting operator is equivalent to using CInt)
 Print Cast( Integer, 3.1 )
+Sleep

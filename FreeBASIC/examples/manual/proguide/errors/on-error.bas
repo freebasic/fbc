@@ -6,9 +6,9 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgErrorHandling
 '' --------
 
-'' Compile with QB (-lang qb) dialect
+'' Compile with "-lang fblite" and "-exx"
 
-'$lang: "qb"
+#lang "fblite"
 
 On Error Goto FAILED
 Open "xzxwz.zwz" For Input As #1

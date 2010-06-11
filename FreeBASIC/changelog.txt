@@ -15,6 +15,7 @@ Version 0.21.0 Beta:
 - DRAW now accepts numbers with multiple signs/whitespace prepended, and recognises relational distances from the x coordinate only, like in QBASIC (counting_pine)
 - PRINT USING internals overhauled: it is now more reliable and behaves more like QBASIC with respect to parsing and printing (counting_pine)
 - #2483518: Disregard letter suffixes on numbers in asm blocks, so things like "je 2f" can work (counting_pine)
+- Updated examples to current FB, thanks to MOD for the patch (dkls)
 
 [added]
 - "-fpmode FAST|PRECISE" command line option (brybry)
@@ -108,7 +109,7 @@ Version 0.21.0 Beta:
 - #2974397 - Dynamic arrays with any const qualifiers below the first level (aka [ptr ]*) would erroneously report duplicate definition (cha0s)
 - The final slash stripping code in fbcGetLibPathList() was only working properly on systems using '\' as a path separator. (cha0s)
 - Assignments to bitfields in globals were broken (dkls)
- 
+
 Version 0.20.0 Beta:
 
 [changed]

@@ -1,4 +1,3 @@
- 
 'Calling functions in the GSL 
 'main site http://www.gnu.org/software/gsl/ 
 'a windows port is at http://gnuwin32.sourceforge.net/packages/gsl.htm 

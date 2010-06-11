@@ -25,8 +25,7 @@ end type
 	list.tail = @nodeTB(MAXNODES-1)
 	
 	p = NULL
-	dim as integer i
-	for i = 0 to (MAXNODES-1)-1
+	for i as integer = 0 to (MAXNODES-1)-1
 		nodeTB(i).id  = i
 		nodeTB(i).prv = p
 		nodeTB(i).nxt = @nodeTB(i+1)

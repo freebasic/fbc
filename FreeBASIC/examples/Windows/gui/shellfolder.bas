@@ -80,3 +80,4 @@ end function
 
 ''
 	print BrowseForFolder( NULL, "Shell Folder Test", BIF_RETURNONLYFSDIRS Or BIF_USENEWUI, "c:\" ) 
+sleep
