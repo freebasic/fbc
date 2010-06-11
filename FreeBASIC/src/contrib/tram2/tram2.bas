@@ -252,9 +252,10 @@ sub makeImportLibraries()
         sh("rm -f lib/win32/*.dll.a")
     else
         print "Generating import libraries..."
-        cd("src/contrib/w32_inst")
+        cd("src/contrib/genimplibs")
         STEP_BEGIN()
-            sh("make implibs FBC=" + tram.fbc)
+            sh("make")
+            sh("genimplibs -f -a")
         STEP_END()
         cd("../../..")
     end if
