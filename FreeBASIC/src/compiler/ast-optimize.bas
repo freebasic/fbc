@@ -1127,17 +1127,21 @@ private function hOptFieldsCalc _
     	else
 
 	    	'' resolve bitfields before deleting the field, because
-	    	'' otherwise that'd only happen in LoadFIELD, which won't
-	    	'' get called since the field node is destroyed
+	    	'' otherwise that'd only happen in LoadFIELD/LoadASSIGN,
+	    	'' which won't get called since the field node is destroyed.
+            if( parent ) then
+                if( parent->class = AST_NODECLASS_ASSIGN ) then
+                    astUpdateBitfieldAssignment( n, parent->r )
+                else
+                    astUpdateBitfieldAccess( l )
+                    astDelNode( n )
+                    n = l
+                end if
+            else
+                astDelNode( n )
+                n = l
+            end if
 
-	    	'' don't touch assignments though, they'll be handled in
-	    	'' LoadASSIGN... this feels hackish
-	    	if( iif( parent, parent->class <> AST_NODECLASS_ASSIGN, FALSE ) ) then
-	    		astUpdateBitfieldAccess( l )
-	    	end if
-
-    		astDelNode( n )
-    		n = l
     	end if
     end if
 
