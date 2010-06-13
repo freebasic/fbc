@@ -49,7 +49,7 @@ sub strSplit _
     end if
 end sub
 
-function fileExists(byref file as string) as bool
+function fileExists(byref file as string) as boolean
     dim as integer fnum = freefile()
     if (open(file, for binary, access read, as #fnum) = 0) then
         close #fnum

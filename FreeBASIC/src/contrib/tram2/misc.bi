@@ -11,4 +11,4 @@ declare sub strSplit _
         byref l as string, _
         byref r as string _
     )
-declare function fileExists(byref file as string) as bool
+declare function fileExists(byref file as string) as boolean

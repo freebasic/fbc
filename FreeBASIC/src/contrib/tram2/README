@@ -19,10 +19,13 @@ Notes:
 * All files for/in the DOS package should probably use the 8.3 filename format.
   Anyways, not all do.
 
-Compile tram itself with a simple
+Usage:
+    cd src/contrib/tram2
     make
+    ./tram2 [options]
 
-Usage:  tram2 [options]
+tram will cd ../../.., to work in the FreeBASIC root directory.
+
 Options:
     dos
     linux
@@ -40,12 +43,19 @@ Options:
         remove fbc.exe, instead of compiling it, etc.
 
         Steps that have nothing to clean up (e.g. remake) will be ignored.
-        (for remake: removing fbc.exe and it's .o's can already be done with
-        'compiler make clean')
+        (e.g. for 'remake': removing fbc.exe and it's .o's can already be done
+        via 'compiler make clean')
 
     pullbin
-        Copy in binaries & libraries from MinGW/DJGPP & the previous FB release.
-        binaries-<target>.ini files contain lists.
+        Copy in binaries & libraries from MinGW/DJGPP/the system & the previous
+        FB release. The binaries-<target>.ini files contain the lists.
+        Only applies if standalone is enabled (i.e. not on linux if 'standalone'
+        wasn't specified).
+
+    standalone
+        linux: Build the standalone compiler/package instead of the normal one.
+        win32/dos: standalone is always enabled by default, this option is not
+        required.
 
     compiler
     rtlib
@@ -61,16 +71,19 @@ Options:
         (Requires binaries & libraries in the root tree)
 
     genlist
-        Generate the manifest
+        Generate the manifest in manifest/current/<target>.lst,
+        based on the include/exclude patterns in
+        src/contrib/tram2/manifest-pattern.ini.
 
     testlist
-        Check for all files specified in the manifest
+        Check whether the files specified in the manifest exist physically.
+        Missing files will be reported (but not files that are not listed).
 
     package
         Put everything in an archive ready for uploading.
 
     installer
-        Build the installer exe.
+        Build the installer exe. (win32 only)
 
     manifest=<path>
         Manifest file name, default: manifest/current/win32.lst
@@ -79,39 +92,65 @@ Options:
 
 --------------------------------------------------------------------------------
 
-Needed stuff (paths can be changed in the source code):
+Building & packaging:
+    Command-lines to copy in binaries/libs, build everything, generate new a
+    manifest and create the package based on that manifest:
+    (output packages are placed in the parent directory of the FreeBASIC/ tree)
 
-linux: 
-    
+    linux -> linux:
+        $ ./tram2 compiler rtlib gfxlib2 configure make remake genlist package
+        $ ./tram2 compiler rtlib gfxlib2 make clean
+        leaves: ../../../../FreeBASIC-0.21-linux.tar.lzma
 
-win32 & dos:
-    * Working win32 FreeBASIC that can cross-compile to dos
-      (For the dos build, the win32 fbc is used with -target dos, because the
-      dos fbc cannot handle long commandlines, and fbc doesn't have an
-      '@optionfile' feature yet)
+    linux -> linux standalone:
+        $ ./tram2 pullbin standalone compiler rtlib gfxlib2 configure make remake genlist package
+        $ ./tram2 pullbin standalone compiler rtlib gfxlib2 make clean
+        leaves: ../../../../FreeBASIC-0.21-linux-standalone.tar.lzma
 
-    * Previous win32 & dos FreeBASIC releases
+    win32 -> dos:
+        $ tram2 dos pullbin compiler rtlib gfxlib2 configure make remake genlist package
+        $ tram2 dos pullbin compiler rtlib gfxlib2 make clean
+        leaves: ../../../../FreeBASIC-0.21-dos.zip
 
-    * MinGW/MSYS (win32 GCC)
+    win32 -> win32:
+        $ tram2 pullbin compiler rtlib gfxlib2 configure make remake genlist package installer
+        $ tram2 pullbin compiler rtlib gfxlib2 make clean
+        leaves: ../../../../FreeBASIC-0.21-win32.zip
+                ../w32_inst/FreeBASIC-0.21-win32.exe
 
-        Download from http://sourceforge.net/downloads/mingw/
+Manifest generation:
+    Since manifests are in SVN you don't always need this, but it's important to
+    update the manifests after files were added/removed from the code base.
 
-            binutils-2.19.1-mingw32-bin.tar.gz
-            mingwrt-3.17-mingw32-dev.tar.gz
-            mingwrt-3.17-mingw32-dll.tar.gz
-            w32api-3.14-mingw32-dev.tar.gz
-            make-3.81-20090914-mingw32-bin.tar.gz
-            gdb-6.8-mingw-3.tar.bz2                 (for gdb.exe)
-            gettext-0.17-1-mingw32-dev.tar.lzma     (for libintl.a)
+    linux -> linux:             $ ./tram2 genlist
+    linux -> linux standalone:  $ ./tram2 standalone genlist
+    win32 -> dos:               $ tram2 dos genlist
+    win32 -> win32:             $ tram2 genlist
 
-        And from http://sourceforge.net/downloads/tdm-gcc/
+Testing the FreeBASIC/ tree against manifests:
+    linux -> linux:             $ ./tram2 testlist
+    linux -> linux standalone:  $ ./tram2 standalone testlist
+    win32 -> dos:               $ tram2 dos testlist
+    win32 -> win32:             $ tram2 testlist
 
-            gcc-4.4.1-tdm-2-core.tar.gz
-            gcc-4.4.1-tdm-2-g++.tar.gz
+--------------------------------------------------------------------------------
 
-        Extract into C:\MinGW, so you end up with e.g. C:\MinGW\bin\gcc.exe.
+Needed stuff (paths can be changed in the source code) & how to setup:
 
-    * DJGPP (GCC, binutils, etc, for DOS)
+all <target>'s:
+    * Working <target> FreeBASIC, defaults:
+        dos:    C:/FreeBASIC-dos
+        linux:  ~/FreeBASIC
+        win32:  C:/FreeBASIC
+
+    * Previous <target> FreeBASIC release, defaults:
+      (only needed for standalone)
+        dos:    C:/FreeBASIC-dos-0.20
+        linux:  ~/FreeBASIC-0.20-standalone
+        win32:  C:/FreeBASIC-0.20
+
+dos:
+    * DJGPP (GCC, binutils, etc, for DOS), default: C:/djgpp
 
         Download from the homepage:
 
@@ -139,7 +178,50 @@ win32 & dos:
             http://www.delorie.com/bin/cvsweb.cgi/djgpp/
         goes into C:/djgpp/include
 
-    * NSIS (for the win32 installer)
+linux:
+
+linux standalone:
+    * Download recent binutils sources, e.g. binutils-2.20.51.
+      Build it and install it on your system, overwriting your current tools.
+      These binutils will have less shared library dependencies.
+      This will also avoid issues regarding libbfd.
+
+        Ubuntu has binutils etc in /usr, while binutils default prefix is
+        /usr/local, so use /usr as prefix.
+
+        $ cd ~/binutils-2.20.51
+        $ ./configure --prefix=/usr --disable-shared
+        $ make
+        ($ make check)
+        $ cd bfd      ; sudo make install-strip; cd ..
+        $ cd binutils ; sudo make install-strip; cd ..
+        $ cd gas      ; sudo make install-strip; cd ..
+        $ cd gprof    ; sudo make install-strip; cd ..
+        $ cd intl     ; sudo make install-strip; cd ..
+        $ cd ld       ; sudo make install-strip; cd ..
+        $ cd libiberty; sudo make install      ; cd ..
+        $ cd opcodes  ; sudo make install-strip; cd ..
+
+win32:
+    * MinGW/MSYS (win32 GCC), defaults: C:/MinGW and C:/msys/1.0
+        Download from http://sourceforge.net/downloads/mingw/
+
+            binutils-2.19.1-mingw32-bin.tar.gz
+            mingwrt-3.17-mingw32-dev.tar.gz
+            mingwrt-3.17-mingw32-dll.tar.gz
+            w32api-3.14-mingw32-dev.tar.gz
+            make-3.81-20090914-mingw32-bin.tar.gz
+            gdb-6.8-mingw-3.tar.bz2                 (for gdb.exe)
+            gettext-0.17-1-mingw32-dev.tar.lzma     (for libintl.a)
+
+        And from http://sourceforge.net/downloads/tdm-gcc/
+
+            gcc-4.4.1-tdm-2-core.tar.gz
+            gcc-4.4.1-tdm-2-g++.tar.gz
+
+    * NSIS (for the win32 installer), default: C:/NSIS
         Download from http://nsis.sourceforge.net/Download
 
-    * ddraw.h & dinput.h in C:/MinGW/include (win32 DirectX headers to compile fbgfx)
+    * ddraw.h & dinput.h in C:/MinGW/include
+      (win32 DirectX headers needed to compile gfxlib2)
+

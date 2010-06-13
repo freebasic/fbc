@@ -1,5 +1,6 @@
 FBC = fbc
 
+OS := $(shell uname)
 ifeq ($(OS),Linux)
 	EXEEXT :=
 else
