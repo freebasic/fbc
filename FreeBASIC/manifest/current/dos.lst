@@ -1,12 +1,9 @@
-changelog.txt
-fbc.exe
-migrating.txt
-readme.txt
 bin/dos/ar.exe
 bin/dos/as.exe
 bin/dos/gdb.exe
 bin/dos/gprof.exe
 bin/dos/ld.exe
+changelog.txt
 docs/fbc.1
 docs/gpl.txt
 docs/lgpl.txt
@@ -17,9 +14,13 @@ examples/DOS/textbuff.bas
 examples/DOS/vga13h.bas
 examples/classes/iterator.bas
 examples/classes/iterator2.bas
+examples/classes/method-pointer.bas
 examples/classes/property-indexed.bas
 examples/classes/property.bas
 examples/deprecated/onerror.bas
+examples/events/timer/test.bas
+examples/events/timer/timer.bas
+examples/events/timer/timer.bi
 examples/export/export.bas
 examples/export/import.bas
 examples/gfx/fbgfx_depth.bas
@@ -42,13 +43,18 @@ examples/gfx/rel-blob.bas
 examples/gfx/rel-flower.bas
 examples/gfx/rel-juliarings.bas
 examples/gfx/rel-lens.bas
+examples/gfx/rel-plasma.bas
+examples/gfx/rel-sprites.bas
 examples/gfx/rel-torus.bas
+examples/libraries/ASpell/aspell_test.bas
 examples/libraries/Allegro/dialog.bas
 examples/libraries/Allegro/hello.bas
 examples/libraries/Allegro/mouse.bas
 examples/libraries/Allegro/stars.bas
 examples/libraries/Allegro/timer.bas
 examples/libraries/CGUI/hello.bas
+examples/libraries/CUnit/interfaces.bas
+examples/libraries/CUnit/simple.bas
 examples/libraries/Curl/CHttp/CHttp.bas
 examples/libraries/Curl/CHttp/CHttp.bi
 examples/libraries/Curl/CHttp/CHttpForm.bas
@@ -101,6 +107,7 @@ examples/libraries/sound/bass_test.bas
 examples/libraries/sound/bassmod_test.bas
 examples/libraries/sound/data/dne_trtn.mod
 examples/libraries/sound/data/prodigy.wav
+examples/libraries/sound/fmodtest.bas
 examples/libraries/sound/openaltest.bas
 examples/libraries/sound/playmp3.bas
 examples/libraries/spidermonkey/callback.bas
@@ -272,11 +279,14 @@ examples/manual/defines/fbdarwin.bas
 examples/manual/defines/fbdebug.bas
 examples/manual/defines/fbdos.bas
 examples/manual/defines/fberr.bas
+examples/manual/defines/fbfpmode.bas
+examples/manual/defines/fbfpu.bas
 examples/manual/defines/fbfreebsd.bas
 examples/manual/defines/fblang.bas
 examples/manual/defines/fblinux.bas
 examples/manual/defines/fbmain.bas
 examples/manual/defines/fbminversion.bas
+examples/manual/defines/fbmt.bas
 examples/manual/defines/fbnetbsd.bas
 examples/manual/defines/fbopenbsd.bas
 examples/manual/defines/fboptionbyval.bas
@@ -291,6 +301,7 @@ examples/manual/defines/fboutlib.bas
 examples/manual/defines/fboutobj.bas
 examples/manual/defines/fbsignature.bas
 examples/manual/defines/fbsse.bas
+examples/manual/defines/fbvectorize.bas
 examples/manual/defines/fbvermajor.bas
 examples/manual/defines/fbverminor.bas
 examples/manual/defines/fbverpatch.bas
@@ -367,6 +378,7 @@ examples/manual/fileio/seek-statment.bas
 examples/manual/fileio/write.bas
 examples/manual/gfx/bload.bas
 examples/manual/gfx/bload2.bas
+examples/manual/gfx/bload3.bas
 examples/manual/gfx/bsave.bas
 examples/manual/gfx/circle.bas
 examples/manual/gfx/cls-memset.bas
@@ -388,6 +400,7 @@ examples/manual/gfx/palette.bas
 examples/manual/gfx/palette2.bas
 examples/manual/gfx/palette3.bas
 examples/manual/gfx/pcopy.bas
+examples/manual/gfx/pcopy_cons.bas
 examples/manual/gfx/pmap.bas
 examples/manual/gfx/point.bas
 examples/manual/gfx/preset.bas
@@ -435,6 +448,7 @@ examples/manual/hardware/wait.bas
 examples/manual/input/getjoystick.bas
 examples/manual/input/getkey.bas
 examples/manual/input/getmouse.bas
+examples/manual/input/getmouse2.bas
 examples/manual/input/inkey.bas
 examples/manual/input/inkeyext.bas
 examples/manual/input/multikey.bas
@@ -498,6 +512,7 @@ examples/manual/module/extern1.bas
 examples/manual/module/extern2.bas
 examples/manual/module/import.bas
 examples/manual/module/mydll.bas
+examples/manual/module/mydll.c
 examples/manual/module/mydll2.bas
 examples/manual/module/namespace.bas
 examples/manual/module/sub-private.bas
@@ -611,6 +626,7 @@ examples/manual/procs/lib.bas
 examples/manual/procs/mod-ctor.bas
 examples/manual/procs/mod-dtor.bas
 examples/manual/procs/mydll.bas
+examples/manual/procs/naked.bas
 examples/manual/procs/overload.bas
 examples/manual/procs/pascal.bas
 examples/manual/procs/stdcall.bas
@@ -860,6 +876,7 @@ examples/manual/udt/type2.bas
 examples/manual/udt/union.bas
 examples/manual/udt/with-1.bas
 examples/manual/udt/with-2.bas
+examples/manual/udt/with-3.bas
 examples/manual/variable/const.bas
 examples/manual/variable/dim.bas
 examples/manual/variable/scope.bas
@@ -894,6 +911,8 @@ examples/misc/imp_conv.bas
 examples/misc/inkey.bas
 examples/misc/inlineasm.bas
 examples/misc/macro.bas
+examples/misc/mutex.bas
+examples/misc/naked_func.bas
 examples/misc/optargs.bas
 examples/misc/overload.bas
 examples/misc/pcopy.bas
@@ -905,6 +924,7 @@ examples/misc/scope.bas
 examples/misc/select.bas
 examples/misc/sieve.bas
 examples/misc/str_index.bas
+examples/misc/threads.bas
 examples/misc/typedef.bas
 examples/misc/var-args.bas
 examples/misc/var_initializers.bas
@@ -919,6 +939,15 @@ examples/namespace/cpp/test.bas
 examples/namespace/scoped.bas
 examples/pre-include/preinc.bi
 examples/pre-include/test.bas
+fbc.exe
+inc/CUnit/Automated.bi
+inc/CUnit/Basic.bi
+inc/CUnit/CUError.bi
+inc/CUnit/CUnit.bi
+inc/CUnit/Console.bi
+inc/CUnit/MyMem.bi
+inc/CUnit/TestDB.bi
+inc/CUnit/TestRun.bi
 inc/FreeImage.bi
 inc/IL/il.bi
 inc/IL/ilu.bi
@@ -942,6 +971,7 @@ inc/IUP/iupval.bi
 inc/Lua/lauxlib.bi
 inc/Lua/lua.bi
 inc/Lua/lualib.bi
+inc/Newton.bi
 inc/allegro.bi
 inc/allegro/3d.bi
 inc/allegro/3dmaths.bi
@@ -994,6 +1024,7 @@ inc/allegro/system.bi
 inc/allegro/text.bi
 inc/allegro/timer.bi
 inc/allegro/unicode.bi
+inc/aspell.bi
 inc/bass.bi
 inc/bassmod.bi
 inc/bfd.bi
@@ -1033,6 +1064,7 @@ inc/crt/malloc.bi
 inc/crt/math.bi
 inc/crt/netdb.bi
 inc/crt/netinet/in.bi
+inc/crt/netinet/linux/in.bi
 inc/crt/process.bi
 inc/crt/setjmp.bi
 inc/crt/stdarg.bi
@@ -1081,6 +1113,7 @@ inc/fastcgi/fcgi_stdio.bi
 inc/fastcgi/fcgiapp.bi
 inc/fbgfx.bi
 inc/file.bi
+inc/fmod.bi
 inc/freetype2/config/ftconfig.bi
 inc/freetype2/config/ftoption.bi
 inc/freetype2/config/ftstdlib.bi
@@ -1428,6 +1461,7 @@ inc/ode/ode.bi
 inc/ode/odemath.bi
 inc/ode/rotation.bi
 inc/ode/timer.bi
+inc/ogg/ogg.bi
 inc/pcre/pcre.bi
 inc/pcre/pcreposix.bi
 inc/pdflib.bi
@@ -1450,6 +1484,10 @@ inc/string.bi
 inc/tinyptc.bi
 inc/utf_conv.bi
 inc/vbcompat.bi
+inc/vorbis/codec.bi
+inc/vorbis/vorbisenc.bi
+inc/vorbis/vorbisfile.bi
+inc/windows.bi
 inc/zlib.bi
 lib/dos/crt0.o
 lib/dos/fbrt0.o
@@ -1473,3 +1511,6 @@ lib/dos/libm.a
 lib/dos/libsupcx.a
 lib/dos/libtinyptc.a
 lib/dos/libz.a
+migrating.txt
+readme.txt
+
