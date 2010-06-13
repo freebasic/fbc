@@ -179,6 +179,8 @@ dos:
         goes into C:/djgpp/include
 
 linux:
+    * Several -dev packages are required that are not normally installed,
+      especially for the gfxlib.
 
 linux standalone:
     * Download recent binutils sources, e.g. binutils-2.20.51.
@@ -190,20 +192,19 @@ linux standalone:
         /usr/local, so use /usr as prefix.
 
         $ cd ~/binutils-2.20.51
-        $ ./configure --prefix=/usr --disable-shared
+        $ ./configure --prefix=/usr --disable-shared --disable-nls
         $ make
-        ($ make check)
         $ cd bfd      ; sudo make install-strip; cd ..
         $ cd binutils ; sudo make install-strip; cd ..
         $ cd gas      ; sudo make install-strip; cd ..
         $ cd gprof    ; sudo make install-strip; cd ..
-        $ cd intl     ; sudo make install-strip; cd ..
         $ cd ld       ; sudo make install-strip; cd ..
         $ cd libiberty; sudo make install      ; cd ..
         $ cd opcodes  ; sudo make install-strip; cd ..
 
 win32:
-    * MinGW/MSYS (win32 GCC), defaults: C:/MinGW and C:/msys/1.0
+    * With MinGW 5.1.6 and TDM GCC 4.4.1:
+
         Download from http://sourceforge.net/downloads/mingw/
 
             binutils-2.19.1-mingw32-bin.tar.gz
@@ -219,9 +220,56 @@ win32:
             gcc-4.4.1-tdm-2-core.tar.gz
             gcc-4.4.1-tdm-2-g++.tar.gz
 
+    * With current MinGW (GCC 4.5.0):
+
+            Download from http://sourceforge.net/downloads/mingw/
+
+                binutils-2.20.1-2-mingw32-bin.tar.gz
+                gcc-c++-4.5.0-1-mingw32-bin.tar.lzma
+                gcc-core-4.5.0-1-mingw32-bin.tar.lzma
+                libgmp-5.0.1-1-mingw32-dll-10.tar.lzma
+                libmpc-0.8.1-1-mingw32-dll-2.tar.lzma
+                libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma
+                make-3.81-20090914-mingw32-bin.tar.gz
+                mingwrt-3.18-mingw32-dev.tar.gz
+                mingwrt-3.18-mingw32-dll.tar.gz
+                w32api-3.14-mingw32-dev.tar.gz
+
+            Download & build current binutils snapshot, e.g.  binutils-2.20.51,
+            in order to replace MinGW's binutils-2.20.1, because those contain
+            an 'as' which generates bad code with fbc's Intel-syntax asm output.
+
+            Note: the libbfd built here does not depend on libintl.a, so the
+            -l intl can be removed from src/compiler/Makefile.in, aswell as
+            libintl.a from src/contrib/tram2/binaries-win32.ini.
+            Besides that, the compiler probably can't use this directly through
+            the FB headers (as in 'make FB_BFD=1 BFD_VER=2.20'), because there
+            are no bfd 2.20 headers for FB yet. It'll work with the normal build
+            (as in 'make', which uses the C bfd wrapper).
+
+                $ cd /c/binutils-2.20.51
+                $ ./configure --prefix=C:/MinGW --disable-shared --disable-nls
+                $ make
+                $ cd bfd      ; make install-strip; cd ..
+                $ cd binutils ; make install-strip; cd ..
+                $ cd gas      ; make install-strip; cd ..
+                $ cd gprof    ; make install-strip; cd ..
+                $ cd ld       ; make install-strip; cd ..
+                $ cd libiberty; make install      ; cd ..
+                $ cd opcodes  ; make install-strip; cd ..
+
+            Download & build current GDB snapshot, e.g. gdb-7.1.tar.bz2, in
+            order to avoid the GDB from MinGW because it depends on
+            libexpat-1.dll. That way we avoid having to distribute the DLL in
+            FreeBASIC/bin/win32.
+                $ cd /c/gdb-7.1.50.20100613
+                $ ./configure --disable-gdbmi --without-expat --without-python
+                $ make
+                $ cp gdb/gdb.exe C:/MinGW/bin/gdb.exe
+                $ strip C:/MinGW/bin/gdb.exe
+
     * NSIS (for the win32 installer), default: C:/NSIS
         Download from http://nsis.sourceforge.net/Download
 
     * ddraw.h & dinput.h in C:/MinGW/include
       (win32 DirectX headers needed to compile gfxlib2)
-

@@ -400,8 +400,11 @@ sub remakeCompiler()
     cd("src/compiler/obj/" + tram.target_name)
 
     STEP_BEGIN()
-        print "Re-compiling compiler."
         sh("make clean")
+    STEP_END()
+
+    STEP_BEGIN()
+        print "Re-compiling compiler."
         sh("make")
     STEP_END()
 
@@ -615,16 +618,9 @@ sub createPackage()
     STEP_END()
 
     STEP_BEGIN()
-        dim as string package = "../" + title
-        if (tram.target = TARGET_LINUX) then
-            package += ".tar.lzma"
-            print "Packaging '";package;"'."
-            sh("tar --lzma -cf " + package + " " + title)
-        else
-            package += ".zip"
-            print "Packaging '";package;"'."
-            sh("zip -q -9 " + package + " " + title)
-        end if
+        dim as string package = "../" + title + ".tar.lzma"
+        print "Packaging '";package;"'."
+        sh("tar --lzma -cf " + package + " " + title)
     STEP_END()
 
     STEP_BEGIN()
