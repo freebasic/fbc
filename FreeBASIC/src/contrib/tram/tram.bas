@@ -100,12 +100,6 @@ private function processOptions _
 					ctx.distro = FB_LINUX
 				case "DOS"
 					ctx.distro = FB_DOS
-				case "COMPILER"
-					ctx.distro = FB_COMPILER
-				case "RTLIB"
-					ctx.distro = FB_RTLIB
-				case "GFXLIB"
-					ctx.distro = FB_GFXLIB
 				case else
 					return vbFalse
 			end select
@@ -179,12 +173,6 @@ private function processOptions _
 				ctx.output &= "linux"
 			case FB_DOS
 				ctx.output &= "dos"
-			case FB_COMPILER
-				ctx.output &= "src-compiler"
-			case FB_RTLIB
-				ctx.output &= "src-rtlib"
-			case FB_GFXLIB
-				ctx.output &= "src-gfxlib"
 		end select
 	end if
 

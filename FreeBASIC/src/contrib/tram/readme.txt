@@ -5,7 +5,7 @@ o Usage:
 
 tram [-root=base_path  ] 
      [-date=yyyy/mm/dd ] [-time=hh:mm:ss]
-     [-file=output_name] [-dist=win32|linux|dos|compiler|rtlib|gfxlib]
+     [-file=output_name] [-dist=win32|linux|dos]
 
 o Notes:
 	
@@ -14,10 +14,12 @@ o Notes:
 	If -root is omitted, "../../.." is assumed.
 	
 	If -dist is omitted, "win32" is assumed.
-		o The file lists are pulled from [root]/manifest/current
+		o The file lists are pulled from [root]/manifest
 	
 	If -file is omitted, it is constructed as follows:
 		FB-v[FB_VER_MAJOR].[FB_VER_MINOR]-[monthname( month( now ), -1 )]-[day( now )]-[year( now )]-[dist].[zip|gz]
+
+    The [root] directory must end in FreeBASIC/.
 	
 o Example:
 

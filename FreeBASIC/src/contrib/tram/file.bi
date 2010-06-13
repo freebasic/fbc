@@ -5,9 +5,6 @@ enum FB_DISTRO
 	FB_WIN32
 	FB_LINUX
 	FB_DOS
-	FB_COMPILER
-	FB_RTLIB
-	FB_GFXLIB
 	FB_DISTROS
 end enum
 
@@ -70,12 +67,9 @@ namespace fb.file
 	end type
 	
 	'' dirty
-	dim shared as zstring ptr DISTRO_FILE(FB_DISTROS-1) = { @"manifest/current/win32.lst"       , _
-	                                                        @"manifest/current/linux.lst"       , _
-	                                                        @"manifest/current/dos32.lst"       , _
-	                                                        @"manifest/current/compiler_src.lst", _
-	                                                        @"manifest/current/rtlib_src.lst"   , _
-	                                                        @"manifest/current/gfxlib2_src.lst" }
+	dim shared as zstring ptr DISTRO_FILE(FB_DISTROS-1) = { @"manifest/win32.lst"       , _
+	                                                        @"manifest/linux.lst"       , _
+	                                                        @"manifest/dos.lst"         }
 	
 end namespace
 

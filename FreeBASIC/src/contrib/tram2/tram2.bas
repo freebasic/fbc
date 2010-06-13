@@ -724,7 +724,7 @@ end sub
     tram.ranlib = tram.sys_gcc + "/bin/ranlib" + tram.exeext
 
     if (len(tram.manifest) = 0) then
-        tram.manifest = "manifest/current/" + tram.target_name
+        tram.manifest = "manifest/" + tram.target_name
         appendStandalone(tram.manifest)
         tram.manifest += ".lst"
     end if

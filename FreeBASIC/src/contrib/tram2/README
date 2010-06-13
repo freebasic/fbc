@@ -71,7 +71,7 @@ Options:
         (Requires binaries & libraries in the root tree)
 
     genlist
-        Generate the manifest in manifest/current/<target>.lst,
+        Generate the manifest in manifest/<target>.lst,
         based on the include/exclude patterns in
         src/contrib/tram2/manifest-pattern.ini.
 
@@ -86,7 +86,7 @@ Options:
         Build the installer exe. (win32 only)
 
     manifest=<path>
-        Manifest file name, default: manifest/current/win32.lst
+        Manifest file name, default: manifest/<target>.lst
 
     If no options are specified, tram will do nothing.
 
