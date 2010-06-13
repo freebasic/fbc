@@ -148,7 +148,7 @@ sub genlibs( byval path as string, byval killat as integer )
 	dim as string bpath, lpath, dpath, dlltool
 	
 	bpath = exepath + "\..\..\..\bin\" + opt.platform + "\"
-	lpath = exepath + "\..\..\" + opt.platform + "\"
+	lpath = exepath + "\..\..\..\lib\" + opt.platform + "\"
 	dpath = exepath + path
 
 	dlltool = bpath + "dlltool.exe"
