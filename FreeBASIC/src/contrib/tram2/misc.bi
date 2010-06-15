@@ -12,3 +12,5 @@ declare sub strSplit _
         byref r as string _
     )
 declare function fileExists(byref file as string) as boolean
+declare function getDateStamp() as string
+

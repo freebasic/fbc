@@ -1,4 +1,6 @@
 #include once "misc.bi"
+#include once "datetime.bi"
+#include once "string.bi"
 
 function strReplace _
     ( _
@@ -57,3 +59,8 @@ function fileExists(byref file as string) as boolean
     end if
     return FALSE
 end function
+
+function getDateStamp() as string
+    return format(now(), "yyyy-mm-dd")
+end function
+

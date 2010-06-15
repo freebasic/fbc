@@ -1,4 +1,3 @@
-#include once "dir.bi"
 #include once "misc.bi"
 
 enum
@@ -12,37 +11,35 @@ type TRAMCTX
     as string target_name
     as string exeext
 
-    as string sys_fbc   '' Path to stable native FreeBASIC
     as string sys_prev  '' Path to previous FreeBASIC release
-    as string sys_gcc   '' Path to MinGW/DJGPP
-    as string sys_shell '' Path to MSYS
-
-    as string conf_compiler
-    as string conf_rtlib
-    as string conf_gfxlib2
+    as string sys_gcc   '' Path to MinGW, DJGPP or /usr (to copy libs/binutils from)
 
     as string fbc
     as string gcc
     as string ar
     as string ranlib
 
+    as string conf_rtlib
+    as string conf_gfxlib2
+    as string conf_compiler
+
     as string manifest
 
-    as boolean pullbin     '': 1
-    as boolean compiler    '': 1
-    as boolean rtlib       '': 1
-    as boolean gfxlib2     '': 1
-    as boolean clean       '': 1
-    as boolean configure   '': 1
-    as boolean make        '': 1
-    as boolean remake      '': 1
-    as boolean genlist     '': 1
-    as boolean testlist    '': 1
-    as boolean package     '': 1
-    as boolean setup       '': 1
-    as boolean standalone  '': 1
+    as boolean pullbin    : 1
+    as boolean rtlib      : 1
+    as boolean gfxlib2    : 1
+    as boolean compiler   : 1
+    as boolean clean      : 1
+    as boolean configure  : 1
+    as boolean make       : 1
+    as boolean remake     : 1
+    as boolean genlist    : 1
+    as boolean testlist   : 1
+    as boolean package    : 1
+    as boolean installer  : 1
+    as boolean standalone : 1
 
-    as boolean had_error   '': 1
+    as boolean had_error  : 1
 end type
 
 dim shared as TRAMCTX tram
@@ -131,14 +128,14 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
         case "pullbin"
             tram.pullbin = TRUE
 
-        case "compiler"
-            tram.compiler = TRUE
-
         case "rtlib"
             tram.rtlib = TRUE
 
         case "gfxlib2"
             tram.gfxlib2 = TRUE
+
+        case "compiler"
+            tram.compiler = TRUE
 
         case "configure"
             tram.configure = TRUE
@@ -147,6 +144,14 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
             tram.make = TRUE
 
         case "remake"
+            tram.remake = TRUE
+
+        case "build"
+            tram.rtlib = TRUE
+            tram.gfxlib2 = TRUE
+            tram.compiler = TRUE
+            tram.configure = TRUE
+            tram.make = TRUE
             tram.remake = TRUE
 
         case "genlist"
@@ -158,24 +163,15 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
         case "package"
             tram.package = TRUE
 
-        case "setup"
-            tram.setup = TRUE
+        case "installer"
+            tram.installer = TRUE
 
         case "standalone"
             tram.standalone = TRUE
 
         case else
-
-            strSplit(arg, "=", variable, value)
-
-            select case (variable)
-            case "manifest"
-                tram.manifest = value
-
-            case else
-                print "Warning: ignoring unknown command-line option: '";arg;"'"
-
-            end select
+            print "Error: unknown command-line option: '";arg;"'"
+            tram.had_error = TRUE
 
         end select
     next
@@ -561,13 +557,14 @@ sub testManifest()
     print good & " good, " & missing & " missing."
 end sub
 
-sub appendStandalone(byref s as string)
+function getStandalone() as string
     if (tram.target = TARGET_LINUX) then
         if (tram.standalone) then
-            s += "-standalone"
+            return "-standalone"
         end if
     end if
-end sub
+    return ""
+end function
 
 sub createPackageTree(byref targetdir as string)
     dim as integer f = freefile()
@@ -596,22 +593,14 @@ sub createPackage()
 
     print "Copying package files into tempory directory."
 
-    '' Note: This is used as file name for the resulting archive (extension is
-    '' added automatically), and also as the name of the temporary directory.
-    dim as string title = "FreeBASIC-0.21-" + tram.target_name
-    appendStandalone(title)
+    dim as string title = _
+            "FreeBASIC-testing-" + getDateStamp() + "-" + _
+            tram.target_name + getStandalone()
 
-    '' Copy the whole FreeBASIC/ tree into another directory named something
-    '' like: FreeBASIC-0.21-win32
-    '' Then this new temporary directory can be archived.
-    '' 1) This allows to have the "FreeBASIC-0.21-win32" folder in the archive,
-    ''    so "Extract here" will give a nice result.
-    '' 2) This avoids dependencies on the actual name of the FreeBASIC/ folder
-    ''    we're working in; it could very well be named FreeBASIC-dev/ or
-    ''    whatever.
-
-    '' Copy each file from the manifest manually... very slow, but makes the
-    '' archiving easier.
+    '' Copy each file from the manifest into the temporary directory.
+    '' (very slow but makes the archiving easier, allows to have a nice
+    '' root directory in the archive, and everything stays independant of
+    '' the actual name of our working root's name)
     STEP_BEGIN()
         mkdir_(title)
         createPackageTree(title)
@@ -628,7 +617,7 @@ sub createPackage()
     STEP_END()
 end sub
 
-sub createSetup()
+sub createInstaller()
     if (tram.clean) then return
     if (tram.target <> TARGET_WIN32) then return
 
@@ -661,73 +650,73 @@ end sub
 
     checkForTarget(__FB_ARGC__, __FB_ARGV__)
 
-    '' Commandline may change options
-    parseArgs(__FB_ARGC__, __FB_ARGV__)
-
     select case (tram.target)
     case TARGET_DOS
-        tram.standalone = TRUE
-
         tram.target_name = "dos"
         tram.exeext = ".exe"
 
-        tram.sys_fbc    = "C:/FreeBASIC-dos"
-        '' A win32 fbc can be used too (we're using -target dos either way)
-        ''tram.sys_fbc    = "C:/FreeBASIC"
-        tram.sys_prev   = "C:/FreeBASIC-dos-0.20"
-        tram.sys_gcc    = "C:/djgpp"
-        tram.sys_shell  = "C:/msys/1.0"
+        tram.sys_gcc  = "C:/djgpp"
+        tram.sys_prev = "C:/FreeBASIC-dos-0.20"
+
+        tram.fbc    = "C:/FreeBASIC-dos/fbc.exe"
+        tram.gcc    = tram.sys_gcc + "/bin/gcc.exe"
+        tram.ar     = tram.sys_gcc + "/bin/ar.exe"
+        tram.ranlib = tram.sys_gcc + "/bin/ranlib.exe"
 
         '' Note: using --host so fbc is called with -target dos, see README.
-        tram.conf_compiler  = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
-        tram.conf_rtlib     = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
-        tram.conf_gfxlib2   = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
+        tram.conf_rtlib    = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
+        tram.conf_gfxlib2  = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
+        tram.conf_compiler = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
+        tram.standalone = TRUE
 
     case TARGET_LINUX
         tram.target_name = "linux"
         tram.exeext = ""
 
-        tram.sys_fbc    = "~/FreeBASIC"
-        if (tram.standalone) then
-            tram.sys_prev   = "~/FreeBASIC-0.20-standalone"
-        else
-            tram.sys_prev   = "~/FreeBASIC-0.20"
-        end if
-        tram.sys_gcc    = "/usr"
-        tram.sys_shell  = "/"
+        tram.sys_prev = "~/FreeBASIC-0.20" + getStandalone()
+        tram.sys_gcc  = "/usr"
+
+        tram.fbc    = "fbc"
+        tram.gcc    = "gcc"
+        tram.ar     = "ar"
+        tram.ranlib = "ranlib"
 
     case TARGET_WIN32
-        tram.standalone = TRUE
-
         tram.target_name = "win32"
         tram.exeext = ".exe"
 
-        tram.sys_fbc    = "C:/FreeBASIC"
-        tram.sys_prev   = "C:/FreeBASIC-0.20"
-        tram.sys_gcc    = "C:/MinGW"
-        tram.sys_shell  = "C:/msys/1.0"
+        tram.sys_prev = "C:/FreeBASIC-0.20"
+        tram.sys_gcc  = "C:/MinGW"
+
+        tram.fbc    = "fbc"
+        tram.gcc    = "gcc"
+        tram.ar     = "ar"
+        tram.ranlib = "ranlib"
 
         tram.conf_compiler  = " --enable-crosscomp-dos --enable-crosscomp-cygwin"
+        tram.standalone = TRUE
 
     end select
 
+    '' No -g
+    tram.conf_rtlib   += " CFLAGS=-O2"
+    tram.conf_gfxlib2 += " CFLAGS=-O2"
+
+    '' The default manifest is manifest/<target>.lst.
+    tram.manifest = "manifest/" + tram.target_name + getStandalone() + ".lst"
+
+    '' -------------------------------------------------------------------------
+
+    '' Commandline may change/overwrite options/defaults.
+    parseArgs(__FB_ARGC__, __FB_ARGV__)
+
+    '' We always use standalone for dos/win32 targets, but for linux, there is
+    '' the 'standalone' tram2 commandline option.
     if (tram.standalone) then
         tram.conf_compiler += " --enable-standalone"
     end if
 
-    tram.conf_rtlib   += " CFLAGS=-O2"
-    tram.conf_gfxlib2 += " CFLAGS=-O2"
-
-    tram.fbc    = tram.sys_fbc + "/fbc"        + tram.exeext
-    tram.gcc    = tram.sys_gcc + "/bin/gcc"    + tram.exeext
-    tram.ar     = tram.sys_gcc + "/bin/ar"     + tram.exeext
-    tram.ranlib = tram.sys_gcc + "/bin/ranlib" + tram.exeext
-
-    if (len(tram.manifest) = 0) then
-        tram.manifest = "manifest/" + tram.target_name
-        appendStandalone(tram.manifest)
-        tram.manifest += ".lst"
-    end if
+    '' -------------------------------------------------------------------------
 
     print "TRAM 2, target ";tram.target_name
 
@@ -735,7 +724,7 @@ end sub
     cd("../../..")
 
     if (tram.had_error) then
-        print "Error, aborted."
+        print "Error, aborting."
         end 1
     end if
 
@@ -812,11 +801,12 @@ end sub
         STEP_END()
     end if
 
-    if (tram.setup) then
+    if (tram.installer) then
         STEP_BEGIN()
-            createSetup()
+            createInstaller()
         STEP_END()
     end if
 
     print "Done."
+
 

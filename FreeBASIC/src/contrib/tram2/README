@@ -24,7 +24,7 @@ Usage:
     make
     ./tram2 [options]
 
-tram will cd ../../.., to work in the FreeBASIC root directory.
+tram will cd ../../.. to work in the FreeBASIC root directory.
 
 Options:
     dos
@@ -57,18 +57,24 @@ Options:
         win32/dos: standalone is always enabled by default, this option is not
         required.
 
-    compiler
     rtlib
     gfxlib2
+    compiler
+        What to configure/make.
 
     configure
-    make
-        compiler/rtlib/gfxlib2 will only be configured/compiled etc if
-        specified on the command-line.
+        Run configure script(s); exact options are hard-coded, except for linux
+        standalone.
 
-    remake      (Applies to 'compiler' only)
-        Re-build fbc with the one present in the root tree.
-        (Requires binaries & libraries in the root tree)
+    make
+        Compile stuff.
+
+    remake      (Requires 'pullbin compiler')
+        Re-compile fbc with the one present in the root tree.
+
+    build
+        Shortcut for 'rtlib gfxlib2 compiler configure make remake',
+        i.e. compile everything.
 
     genlist
         Generate the manifest in manifest/<target>.lst,
@@ -83,42 +89,38 @@ Options:
         Put everything in an archive ready for uploading.
 
     installer
-        Build the installer exe. (win32 only)
-
-    manifest=<path>
-        Manifest file name, default: manifest/<target>.lst
+        Build the Windows installer.
 
     If no options are specified, tram will do nothing.
 
 --------------------------------------------------------------------------------
 
-Building & packaging:
-    Command-lines to copy in binaries/libs, build everything, generate new a
+All-in-one, from zero to release package:
+
+    The resulting packages (.tar.lzma) are placed in the parent directory of
+    the FreeBASIC/ tree.
+
+    Command-lines to copy in binaries/libs, build everything, generate a new
     manifest and create the package based on that manifest:
-    (output packages are placed in the parent directory of the FreeBASIC/ tree)
 
     linux -> linux:
-        $ ./tram2 compiler rtlib gfxlib2 configure make remake genlist package
-        $ ./tram2 compiler rtlib gfxlib2 make clean
-        leaves: ../../../../FreeBASIC-0.21-linux.tar.lzma
+        $ ./tram2 build genlist package
+        $ ./tram2 build clean
 
     linux -> linux standalone:
-        $ ./tram2 pullbin standalone compiler rtlib gfxlib2 configure make remake genlist package
-        $ ./tram2 pullbin standalone compiler rtlib gfxlib2 make clean
-        leaves: ../../../../FreeBASIC-0.21-linux-standalone.tar.lzma
+        $ ./tram2 pullbin standalone build genlist package
+        $ ./tram2 pullbin standalone build clean
 
     win32 -> dos:
-        $ tram2 dos pullbin compiler rtlib gfxlib2 configure make remake genlist package
-        $ tram2 dos pullbin compiler rtlib gfxlib2 make clean
-        leaves: ../../../../FreeBASIC-0.21-dos.zip
+        $ tram2 dos pullbin build genlist package
+        $ tram2 dos pullbin build clean
 
-    win32 -> win32:
-        $ tram2 pullbin compiler rtlib gfxlib2 configure make remake genlist package installer
-        $ tram2 pullbin compiler rtlib gfxlib2 make clean
-        leaves: ../../../../FreeBASIC-0.21-win32.zip
-                ../w32_inst/FreeBASIC-0.21-win32.exe
+    win32 -> win32: ('installer' could be specified additionally)
+        $ tram2 pullbin build genlist package
+        $ tram2 pullbin build clean
 
 Manifest generation:
+
     Since manifests are in SVN you don't always need this, but it's important to
     update the manifests after files were added/removed from the code base.
 
@@ -273,3 +275,4 @@ win32:
 
     * ddraw.h & dinput.h in C:/MinGW/include
       (win32 DirectX headers needed to compile gfxlib2)
+
