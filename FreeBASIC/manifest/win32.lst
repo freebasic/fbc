@@ -1288,6 +1288,7 @@ examples/unicode/hello_japanese.bas
 examples/unicode/hello_korean.bas
 examples/unicode/hello_russian.bas
 fbc.exe
+fblogo.ico
 inc/CUnit/Automated.bi
 inc/CUnit/Basic.bi
 inc/CUnit/CUError.bi
@@ -2645,11 +2646,14 @@ lib/win32/libavifil32.a
 lib/win32/libbass.dll.a
 lib/win32/libbassmod.dll.a
 lib/win32/libbfd.a
+lib/win32/libbig_int.a
 lib/win32/libbthprops.a
 lib/win32/libcairo.dll.a
 lib/win32/libcap.a
 lib/win32/libcfgmgr32.a
+lib/win32/libcgi-util.a
 lib/win32/libcgui.dll.a
+lib/win32/libcoldname.a
 lib/win32/libcomctl32.a
 lib/win32/libcomdlg32.a
 lib/win32/libcrtdll.a
@@ -2658,6 +2662,7 @@ lib/win32/libcrypt32.a
 lib/win32/libctl3d32.a
 lib/win32/libcunit.a
 lib/win32/libcurl.dll.a
+lib/win32/libcurses.a
 lib/win32/libd3d8.a
 lib/win32/libd3d9.a
 lib/win32/libd3dim.a
@@ -2669,6 +2674,7 @@ lib/win32/libddraw.a
 lib/win32/libdhcpcsvc.a
 lib/win32/libdinput.a
 lib/win32/libdinput8.a
+lib/win32/libdisphelper.a
 lib/win32/libdlcapi.a
 lib/win32/libdmoguids.a
 lib/win32/libdnsapi.a
@@ -2693,14 +2699,17 @@ lib/win32/libfcgi.dll.a
 lib/win32/libfmod.dll.a
 lib/win32/libfreetype.dll.a
 lib/win32/libgcc.a
+lib/win32/libgd.a
 lib/win32/libgdi32.a
 lib/win32/libgdiplus.dll.a
 lib/win32/libgdk-win32-2.0.dll.a
 lib/win32/libgdk_pixbuf-2.0.dll.a
 lib/win32/libgdkglext-win32-1.0.dll.a
+lib/win32/libgdsl.a
 lib/win32/libglade-2.0.dll.a
 lib/win32/libglaux.a
 lib/win32/libglaux.dll.a
+lib/win32/libglfw.a
 lib/win32/libglib-2.0.dll.a
 lib/win32/libglu32.a
 lib/win32/libglut.dll.a
@@ -2709,6 +2718,7 @@ lib/win32/libgmodule-2.0.dll.a
 lib/win32/libgmon.a
 lib/win32/libgmp.dll.a
 lib/win32/libgobject-2.0.dll.a
+lib/win32/libgrx20.a
 lib/win32/libgsl.dll.a
 lib/win32/libgtk-win32-2.0.dll.a
 lib/win32/libgtkglext-win32-1.0.dll.a
@@ -2730,6 +2740,8 @@ lib/win32/libkernel32.a
 lib/win32/libksproxy.a
 lib/win32/libksuser.a
 lib/win32/liblargeint.a
+lib/win32/liblua.a
+lib/win32/liblualib.a
 lib/win32/liblz32.a
 lib/win32/libmapi32.a
 lib/win32/libmcd.a
@@ -2749,6 +2761,7 @@ lib/win32/libmsvcp60.a
 lib/win32/libmsvcrt.a
 lib/win32/libmsvfw32.a
 lib/win32/libmswsock.a
+lib/win32/libmxml.a
 lib/win32/libmySQL.dll.a
 lib/win32/libnddeapi.a
 lib/win32/libndis.a
@@ -2805,6 +2818,9 @@ lib/win32/libtapi32.a
 lib/win32/libtdi.a
 lib/win32/libth32.a
 lib/win32/libthunk32.a
+lib/win32/libtinyptc-win.a
+lib/win32/libtinyptc.a
+lib/win32/libtre.a
 lib/win32/liburl.a
 lib/win32/libusbcamd.a
 lib/win32/libusbcamd2.a

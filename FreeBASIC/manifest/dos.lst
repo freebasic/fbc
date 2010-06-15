@@ -1487,7 +1487,6 @@ inc/vbcompat.bi
 inc/vorbis/codec.bi
 inc/vorbis/vorbisenc.bi
 inc/vorbis/vorbisfile.bi
-inc/windows.bi
 inc/zlib.bi
 lib/dos/crt0.o
 lib/dos/fbrt0.o

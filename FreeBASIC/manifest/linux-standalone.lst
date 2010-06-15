@@ -1160,6 +1160,7 @@ examples/unicode/hello_UTF32BE.bas
 examples/unicode/hello_UTF32LE.bas
 examples/unicode/hello_UTF8.bas
 fbc
+fblogo.xpm
 inc/al/al.bi
 inc/al/alc.bi
 inc/al/alext.bi
