@@ -650,6 +650,8 @@ end sub
 
     checkForTarget(__FB_ARGC__, __FB_ARGV__)
 
+    parseArgs(__FB_ARGC__, __FB_ARGV__)
+
     select case (tram.target)
     case TARGET_DOS
         tram.target_name = "dos"
@@ -704,11 +706,6 @@ end sub
 
     '' The default manifest is manifest/<target>.lst.
     tram.manifest = "manifest/" + tram.target_name + getStandalone() + ".lst"
-
-    '' -------------------------------------------------------------------------
-
-    '' Commandline may change/overwrite options/defaults.
-    parseArgs(__FB_ARGC__, __FB_ARGV__)
 
     '' We always use standalone for dos/win32 targets, but for linux, there is
     '' the 'standalone' tram2 commandline option.
