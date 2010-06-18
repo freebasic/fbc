@@ -782,6 +782,9 @@ end sub
     '' The default manifest is manifest/<target>.lst.
     tram.manifest = "manifest/" + tram.target_name + getStandalone() + ".lst"
 
+    tram.title = "FreeBASIC-" + FB_VERSION + "-" + getDateStamp() + "-" + _
+                 tram.target_name + getStandalone()
+
     '' We always use standalone for dos/win32 targets, but for linux, there is
     '' the 'standalone' tram2 commandline option.
     if (tram.standalone) then
