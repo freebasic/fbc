@@ -1,5 +1,8 @@
 #include once "misc.bi"
 
+''const FB_VERSION = "0.21"
+const FB_VERSION = "testing"
+
 enum
     TARGET_DOS = 0
     TARGET_LINUX
@@ -25,7 +28,10 @@ type TRAMCTX
 
     as string manifest
 
+    as string title     '' Title for output package/installer, e.g. FreeBASIC-0.21-win32
+
     as boolean pullbin    : 1
+    as boolean genimplibs : 1
     as boolean rtlib      : 1
     as boolean gfxlib2    : 1
     as boolean compiler   : 1
@@ -89,6 +95,7 @@ end sub
 
         print "Please fix this, then press SPACE to retry or CTRL+C to abort. "
         print "Waiting...";
+        while (inkey() <> "") : wend
         sleep
         while (inkey() <> "") : wend
         tram.had_error = FALSE
@@ -122,11 +129,17 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
         select case (arg)
         case "dos", "linux", "win32"
 
+        case "standalone"
+            tram.standalone = TRUE
+
         case "clean"
             tram.clean = TRUE
 
         case "pullbin"
             tram.pullbin = TRUE
+
+        case "genimplibs"
+            tram.genimplibs = TRUE
 
         case "rtlib"
             tram.rtlib = TRUE
@@ -165,9 +178,6 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 
         case "installer"
             tram.installer = TRUE
-
-        case "standalone"
-            tram.standalone = TRUE
 
         case else
             print "Error: unknown command-line option: '";arg;"'"
@@ -246,7 +256,7 @@ sub pullBinaries()
     close #f
 end sub
 
-sub makeImportLibraries()
+sub generateImportLibraries()
     if (tram.target <> TARGET_WIN32) then return
 
     if (tram.clean) then
@@ -257,6 +267,8 @@ sub makeImportLibraries()
         cd("src/contrib/genimplibs")
         STEP_BEGIN()
             sh("make")
+        STEP_END()
+        STEP_BEGIN()
             sh("genimplibs -f -a")
         STEP_END()
         cd("../../..")
@@ -309,32 +321,34 @@ end sub
 sub makeRtlib()
     cd("src/rtlib/obj/" + tram.target_name)
 
-    STEP_BEGIN()
-        if (tram.clean) then
-            print "Cleaning up rtlib."
-            sh("make clean")
-            rmLib("libfb.a")
-            rmLib("fbrt0.o")
-        else
-            print "Compiling rtlib."
-            sh("make")
-            cpToLib("libfb.a")
-            cpToLib("fbrt0.o")
-        end if
-    STEP_END()
+    if (tram.clean) then
+        print "Cleaning up rtlib."
+        sh("make clean")
+        rmLib("libfb.a")
+        rmLib("fbrt0.o")
+    else
+        print "Compiling rtlib."
+        sh("make")
+        cpToLib("libfb.a")
+        cpToLib("fbrt0.o")
+    end if
 
-    if (tram.target <> TARGET_DOS) then
-        STEP_BEGIN()
-            if (tram.clean) then
-                print "Cleaning up multi-threaded rtlib."
-                sh("make clean MULTITHREADED=1")
-                rmLib("libfbmt.a")
-            else
-                print "Compiling multi-threaded rtlib."
-                sh("make MULTITHREADED=1")
-                cpToLib("libfbmt.a")
-            end if
-        STEP_END()
+    cd("../../../..")
+end sub
+
+sub makeRtlibMt()
+    if (tram.target = TARGET_DOS) then return
+
+    cd("src/rtlib/obj/" + tram.target_name)
+
+    if (tram.clean) then
+        print "Cleaning up multi-threaded rtlib."
+        sh("make clean MULTITHREADED=1")
+        rmLib("libfbmt.a")
+    else
+        print "Compiling multi-threaded rtlib."
+        sh("make MULTITHREADED=1")
+        cpToLib("libfbmt.a")
     end if
 
     cd("../../../..")
@@ -343,17 +357,15 @@ end sub
 sub makeGfxlib2()
     cd("src/gfxlib2/obj/" + tram.target_name)
 
-    STEP_BEGIN()
-        if (tram.clean) then
-            print "Cleaning up gfxlib2."
-            sh("make clean")
-            rmLib("libfbgfx.a")
-        else
-            print "Compiling gfxlib2."
-            sh("make")
-            cpToLib("libfbgfx.a")
-        end if
-    STEP_END()
+    if (tram.clean) then
+        print "Cleaning up gfxlib2."
+        sh("make clean")
+        rmLib("libfbgfx.a")
+    else
+        print "Compiling gfxlib2."
+        sh("make")
+        cpToLib("libfbgfx.a")
+    end if
 
     cd("../../../..")
 end sub
@@ -361,18 +373,16 @@ end sub
 sub makeCompiler()
     cd("src/compiler/obj/" + tram.target_name)
 
-    STEP_BEGIN()
-        dim as string fbc = "../../../../fbc" + tram.exeext
-        if (tram.clean) then
-            print "Cleaning up compiler."
-            sh("make clean")
-            rm(fbc)
-        else
-            print "Compiling compiler."
-            sh("make")
-            cp("fbc_new" + tram.exeext, fbc)
-        end if
-    STEP_END()
+    dim as string fbc = "../../../../fbc" + tram.exeext
+    if (tram.clean) then
+        print "Cleaning up compiler."
+        sh("make clean")
+        rm(fbc)
+    else
+        print "Compiling compiler."
+        sh("make")
+        cp("fbc_new" + tram.exeext, fbc)
+    end if
 
     cd("../../../..")
 end sub
@@ -507,16 +517,14 @@ sub generateManifest()
     STEP_BEGIN()
         print "Sorting & removing duplicates."
         '' Sort: case-insensitive, removing duplicates.
-        sh("sort -u " + manifest + " > " + tram.manifest)
+        sh("sort --unique --ignore-case " + manifest + " > " + tram.manifest)
     STEP_END()
 
-    /'
-    if (tram.target <> TARGET_LINUX) then
+    #ifdef __FB_WIN32__
         STEP_BEGIN()
             sh("dos2unix --dos2unix " + tram.manifest)
         STEP_END()
-    end if
-    '/
+    #endif
 
     rm(manifest2)
     rm(manifest)
@@ -543,12 +551,14 @@ sub testManifest()
     while (eof(f) = FALSE)
         line input #f, ln
 
-        if (fileExists(ln)) then
-            good += 1
-        else
-            missing += 1
-            print "Missing: ";ln
-            tram.had_error = TRUE
+        if (len(ln)) then
+            if (fileExists(ln)) then
+                good += 1
+            else
+                missing += 1
+                print "Missing: ";ln
+                tram.had_error = TRUE
+            end if
         end if
     wend
 
@@ -566,7 +576,35 @@ function getStandalone() as string
     return ""
 end function
 
-sub createPackageTree(byref targetdir as string)
+sub createPackage()
+    if (tram.clean) then return
+
+    dim as string package = "../" + tram.title + ".tar.lzma"
+    print "Packaging '";package;"'."
+
+    dim as string ln = "tar"
+
+    '' Create archive using LZMA compression
+    ln += " -c --lzma"
+
+    '' Read input files from the manifest
+    ln += " -T " + tram.manifest
+
+    '' Prefix all filenames with the <title>/ directory, i.e. put all files
+    '' in that directory in the archive.
+    ln += " --transform=""s,^," + tram.title + "/,"""
+
+    '' Output filename
+    ln += " -f " + package
+
+    sh(ln)
+end sub
+
+sub emitPath(byval o as integer, byref cmd as string, byref path as string)
+    print #o, "    " + cmd + " ""$INSTDIR\" + path + """"
+end sub
+
+sub emitInstallerFiles(byval o as integer, byval install as boolean)
     dim as integer f = freefile()
     if (open(tram.manifest, for input, as #f)) then
         print "Error: Cannot access '" + tram.manifest + "'."
@@ -574,68 +612,105 @@ sub createPackageTree(byref targetdir as string)
         return
     end if
 
-    dim as string source = ""
+    dim as string filename = ""
+    dim as string path = ""
+    dim as string prevpath = ""
 
     while (eof(f) = FALSE)
-        line input #f, source
-        if (len(source) > 0) then
-            STEP_BEGIN()
-                sh("cp --parents " + source + " " + targetdir)
-            STEP_END()
+        line input #f, filename
+
+        if (len(filename)) then
+            '' Use backslashes for NSIS...
+            filename = strReplace(filename, "/", "\")
+
+            path = pathStripFile(filename)
+            if (path <> prevpath) then
+                if (install) then
+                    emitPath(o, "SetOutPath", path)
+                else
+                    while ((len(prevpath) > 0) and _
+                           (prevpath <> left(path, len(prevpath))))
+                        emitPath(o, "RMDir ", prevpath)
+                        prevpath = pathStripComponent(prevpath)
+                    wend
+                end if
+                prevpath = path
+            end if
+
+            if (install) then
+                filename = "                   File """ + filename + """"
+            else
+                filename = "    Delete ""$INSTDIR\" + filename + """"
+            end if
+
+            print #o, filename
         end if
     wend
 
     close #f
 end sub
 
-sub createPackage()
-    if (tram.clean) then return
+sub createNsisScript(byref script as string, byref setupexe as string)
+    dim as string template = "src/contrib/tram2/installer-template.nsi"
 
-    print "Copying package files into tempory directory."
+    print "Creating NSIS script '" + script + "' from '" + template + "'."
 
-    dim as string title = _
-            "FreeBASIC-testing-" + getDateStamp() + "-" + _
-            tram.target_name + getStandalone()
+    dim as integer i = freefile()
+    if (open(template, for input, as #i)) then
+        print "Error: Cannot access '" + template + "'."
+        tram.had_error = TRUE
+        return
+    end if
 
-    '' Copy each file from the manifest into the temporary directory.
-    '' (very slow but makes the archiving easier, allows to have a nice
-    '' root directory in the archive, and everything stays independant of
-    '' the actual name of our working root's name)
-    STEP_BEGIN()
-        mkdir_(title)
-        createPackageTree(title)
-    STEP_END()
+    dim as integer o = freefile()
+    if (open(script, for output, as #o)) then
+        print "Error: Cannot access '" + script + "'."
+        tram.had_error = TRUE
+        return
+    end if
 
-    STEP_BEGIN()
-        dim as string package = "../" + title + ".tar.lzma"
-        print "Packaging '";package;"'."
-        sh("tar --lzma -cf " + package + " " + title)
-    STEP_END()
+    dim as string ln = ""
 
-    STEP_BEGIN()
-        sh("rm -r -f " + title)
-    STEP_END()
+    while (eof(i) = FALSE)
+        line input #i, ln
+
+        ln = strReplace(ln, ";;;SETUP_EXE_NAME;;;", setupexe)
+        ln = strReplace(ln, ";;;VERSION;;;", FB_VERSION)
+
+        select case (trim(ln))
+        case ";;;INSTALL;;;"
+            STEP_BEGIN()
+                emitInstallerFiles(o, TRUE)
+            STEP_END()
+
+        case ";;;UNINSTALL;;;"
+            STEP_BEGIN()
+                emitInstallerFiles(o, FALSE)
+            STEP_END()
+
+        case else
+            print #o, ln
+
+        end select
+    wend
+
+    close #o
+    close #i
 end sub
 
 sub createInstaller()
     if (tram.clean) then return
     if (tram.target <> TARGET_WIN32) then return
 
-    print "Creating installer."
+    dim as string setupexe = "../" + tram.title + ".exe"
+    dim as string script = "src/contrib/tram2/installer.nsi"
 
-    cd("src/contrib/w32_inst")
+    createNsisScript(script, setupexe)
 
-    STEP_BEGIN()
-        sh("make FBC=" + tram.fbc)
-    STEP_END()
+    print "Creating installer '";setupexe;"'."
+    sh("C:/NSIS/makensis.exe -NOCD -V2 " + script)
 
-    const MAKENSIS = "C:/NSIS/makensis.exe"
-
-    STEP_BEGIN()
-        sh("make Setup.exe MAKENSIS=" + MAKENSIS)
-    STEP_END()
-
-    cd("../../..")
+    rm(script)
 end sub
 
 ''
@@ -729,8 +804,11 @@ end sub
         STEP_BEGIN()
             pullBinaries()
         STEP_END()
+    end if
+
+    if (tram.genimplibs) then
         STEP_BEGIN()
-            makeImportLibraries()
+            generateImportLibraries()
         STEP_END()
     end if
 
@@ -758,6 +836,9 @@ end sub
         if (tram.rtlib) then
             STEP_BEGIN()
                 makeRtlib()
+            STEP_END()
+            STEP_BEGIN()
+                makeRtlibMt()
             STEP_END()
         end if
 
@@ -805,5 +886,3 @@ end sub
     end if
 
     print "Done."
-
-

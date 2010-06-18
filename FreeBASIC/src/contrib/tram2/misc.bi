@@ -13,4 +13,5 @@ declare sub strSplit _
     )
 declare function fileExists(byref file as string) as boolean
 declare function getDateStamp() as string
-
+declare function pathStripFile(byref path as string) as string
+declare function pathStripComponent(byref path as string) as string

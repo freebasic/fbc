@@ -64,3 +64,33 @@ function getDateStamp() as string
     return format(now(), "yyyy-mm-dd")
 end function
 
+'' Searches backwards for the last '/' or '\'.
+private function findFileName(byref path as string) as integer
+    for i as integer = (len(path)-1) to 0 step -1
+        dim as integer ch = path[i]
+        if ((ch = asc("/")) or (ch = asc("\"))) then
+            return i + 1
+        end if
+    next
+    return 0
+end function
+
+function pathStripFile(byref path as string) as string
+    return left(path, findFileName(path))
+end function
+
+function pathStripComponent(byref path as string) as string
+    dim as string s = path
+
+    '' Strip path div at the end
+    dim as integer length = len(s)
+    if (length > 0) then
+        dim as integer ch = s[length-1]
+        if ((ch = asc("/")) or (ch = asc("\"))) then
+            s = left(s, len(s) - 1)
+        end if
+    end if
+
+    '' Strip the last component
+    return pathStripFile(s)
+end function

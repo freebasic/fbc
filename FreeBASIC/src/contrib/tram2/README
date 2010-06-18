@@ -33,6 +33,11 @@ Options:
         Enables this target, instead of defaulting to the host.
         (Note: currently only the 'dos' option is useful)
 
+    standalone
+        linux: Build the standalone compiler/package instead of the normal one.
+        win32/dos: standalone is always enabled by default, this option is not
+        required.
+
     clean
         Perform the clean-up versions of each step.
 
@@ -52,10 +57,8 @@ Options:
         Only applies if standalone is enabled (i.e. not on linux if 'standalone'
         wasn't specified).
 
-    standalone
-        linux: Build the standalone compiler/package instead of the normal one.
-        win32/dos: standalone is always enabled by default, this option is not
-        required.
+    genimplibs  (win32 only)
+        Run ../genimplibs/genimplibs.exe to generate all import libraries.
 
     rtlib
     gfxlib2
@@ -108,21 +111,23 @@ All-in-one, from zero to release package:
         $ ./tram2 build clean
 
     linux -> linux standalone:
-        $ ./tram2 pullbin standalone build genlist package
-        $ ./tram2 pullbin standalone build clean
+        $ ./tram2 standalone pullbin build genlist package
+        $ ./tram2 standalone pullbin build clean
 
     win32 -> dos:
         $ tram2 dos pullbin build genlist package
         $ tram2 dos pullbin build clean
 
-    win32 -> win32: ('installer' could be specified additionally)
-        $ tram2 pullbin build genlist package
-        $ tram2 pullbin build clean
+    win32 -> win32:
+        $ tram2 pullbin genimplibs build genlist package installer
+        $ tram2 pullbin genimplibs build clean
 
 Manifest generation:
 
     Since manifests are in SVN you don't always need this, but it's important to
     update the manifests after files were added/removed from the code base.
+    This implies all needed binaries/libraries are present in the tree.
+    Make sure to check the new manifest.
 
     linux -> linux:             $ ./tram2 genlist
     linux -> linux standalone:  $ ./tram2 standalone genlist

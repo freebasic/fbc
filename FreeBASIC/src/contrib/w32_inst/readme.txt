@@ -40,7 +40,7 @@ Without modifying the Makefile, makescript.bas, and the .conf files, it's
 probably best that this is only every invoked from the 
 ./src/contrib/w32_inst directory.
 
-By default, ../../../manifest/current/win32.lst is used as the manifest to
+By default, ../../../manifest/win32.lst is used as the manifest to
 check the installer script's file list.
 
 Usage:

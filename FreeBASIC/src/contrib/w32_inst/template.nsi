@@ -96,10 +96,6 @@ LangString TEXT_SECTION_LIBS ${LANG_ENGLISH} "Libraries"
 LangString TEXT_SECTION_LIBS ${LANG_GERMAN}  "Bibliotheken"
 LangString TEXT_SECTION_LIBS ${LANG_PORTUGUESEBR} "Bibliotecas"
 
-;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_ENGLISH} "Sources"
-;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_GERMAN}  "Quelltexte"
-;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_PORTUGUESEBR}  "Código-Fonte"
-
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler and obligatory libraries"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler und Bibliotheken"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_PORTUGUESEBR} "Compilador e bibliotecas obrigatórias"
@@ -111,10 +107,6 @@ LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_PORTUGUESEBR} "Aplicativos de exemplo
 LangString TEXT_SECT_DESCR_LIBS ${LANG_ENGLISH} "External libraries and their include files"
 LangString TEXT_SECT_DESCR_LIBS ${LANG_GERMAN}  "Bibliotheken und Include-Dateien"
 LangString TEXT_SECT_DESCR_LIBS ${LANG_PORTUGUESEBR} "Bibliotecas externas e seus cabeçalhos"
-
-;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_ENGLISH} "Sources the compiler and its libraries were built from"
-;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_GERMAN}  "Quelltexte aus denen der Compiler und die Bibliotheken erstellt wurden"
-;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_PORTUGUESEBR} "Código-fonte do compilador e suas bibliotecas"
 
 LangString TEXT_FINISHPAGE_README     ${LANG_ENGLISH} "Show readme.txt"
 LangString TEXT_FINISHPAGE_README     ${LANG_GERMAN}  "LiesMich-Datei anzeigen (Englische Version)"
@@ -161,14 +153,6 @@ Section $(TEXT_SECTION_EXAMPLES) SEC03
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
-;;;ENABLE_SOURCES;;;Section /o $(TEXT_SECTION_SOURCES) SEC04
-  ;;;FILES_SOURCES;;;
-
-; Shortcuts
-;;;ENABLE_SOURCES;;;  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-;;;ENABLE_SOURCES;;;  !insertmacro MUI_STARTMENU_WRITE_END
-;;;ENABLE_SOURCES;;;SectionEnd
-
 Section -AdditionalIcons
   SetOutPath $INSTDIR
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -197,7 +181,6 @@ SectionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "$(TEXT_SECT_DESCR_MAIN)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "$(TEXT_SECT_DESCR_LIBS)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "$(TEXT_SECT_DESCR_EXAMPLES)"
-;;;ENABLE_SOURCES;;;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "$(TEXT_SECT_DESCR_SOURCES)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section Uninstall
@@ -207,7 +190,6 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\fblogo.ico"
   Delete "$INSTDIR\start_shell.exe"
-  ;;;DELETE_SOURCES;;;
   ;;;DELETE_LIBS;;;
   ;;;DELETE_EXAMPLES;;;
   ;;;DELETE_MAIN;;;
