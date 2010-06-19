@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
-''	Copyright (C) 2004-2008 The FreeBASIC development team.
+''	Copyright (C) 2004-2010 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 21
+const FB_VER_MINOR          = 22
 const FB_VER_PATCH          = 0
 
 
