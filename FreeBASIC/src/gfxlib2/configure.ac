@@ -1,7 +1,7 @@
 # configure.ac for the FB Gfx Library		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbgfxlib],[0.20.0],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbgfxlib],[0.21.0],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
 AC_COPYRIGHT([Copyright (C) 2005-2007 Angelo Mottola (a.mottola@libero.it)])

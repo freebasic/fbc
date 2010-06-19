@@ -1,7 +1,6 @@
 #include once "misc.bi"
 
-''const FB_VERSION = "0.21"
-const FB_VERSION = "testing"
+const FB_VERSION = "0.21"
 
 enum
     TARGET_DOS = 0
@@ -782,7 +781,7 @@ end sub
     '' The default manifest is manifest/<target>.lst.
     tram.manifest = "manifest/" + tram.target_name + getStandalone() + ".lst"
 
-    tram.title = "FreeBASIC-" + FB_VERSION + "-" + getDateStamp() + "-" + _
+    tram.title = "FreeBASIC-" + FB_VERSION + /'"-" + getDateStamp() + "-" +'/ _
                  tram.target_name + getStandalone()
 
     '' We always use standalone for dos/win32 targets, but for linux, there is
