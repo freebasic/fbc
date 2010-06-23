@@ -598,8 +598,8 @@ SHELL=${CONFIG_SHELL-/bin/sh}
 # Identity of this package.
 PACKAGE_NAME='fbgfxlib'
 PACKAGE_TARNAME='fbgfxlib'
-PACKAGE_VERSION='0.20.0'
-PACKAGE_STRING='fbgfxlib 0.20.0'
+PACKAGE_VERSION='0.21.0'
+PACKAGE_STRING='fbgfxlib 0.21.0'
 PACKAGE_BUGREPORT='http://sourceforge.net/projects/fbc'
 
 ac_unique_file="fb_gfx.h"
