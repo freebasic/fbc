@@ -1,7 +1,6 @@
 #include once "misc.bi"
 
-''const FB_VERSION = "0.21"
-const FB_VERSION = "testing"
+const FB_VERSION = "trunk"
 
 enum
     TARGET_DOS = 0
@@ -75,7 +74,7 @@ sub cd(byref folder as string)
 end sub
 
 sub cp(byref source as string, byref dest as string)
-    sh("cp " + source + " " + dest)
+    sh("cp --preserve " + source + " " + dest)
 end sub
 
 sub rm(byref file as string)
@@ -307,7 +306,8 @@ sub configureCompiler()
     print "Configuring compiler."
     configure("compiler", " FBC=" + tram.fbc + _
                           " CC=" + tram.gcc + _
-                          tram.conf_compiler)
+                          tram.conf_compiler + _
+                          " --disable-objinfo")
 end sub
 
 sub cpToLib(byref file as string)
@@ -732,7 +732,7 @@ end sub
         tram.target_name = "dos"
         tram.exeext = ".exe"
 
-        tram.sys_gcc  = "C:/djgpp"
+        tram.sys_gcc  = "C:/DJGPP"
         tram.sys_prev = "C:/FreeBASIC-dos-0.20"
 
         tram.fbc    = "C:/FreeBASIC-dos/fbc.exe"
