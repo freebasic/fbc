@@ -157,37 +157,46 @@ all <target>'s:
         win32:  C:/FreeBASIC-0.20
 
 dos:
-    * DJGPP (GCC, binutils, etc, for DOS), default: C:/djgpp
+    * DJGPP 2.03 (DJGPP current), default: C:/DJGPP
 
-        Download from the homepage:
+        2.03 misses snprintf(), so the rtlib falls back to vsnprintf(), but that
+        is apparently only provided by libiberty. This means fbc would always
+        have to link in libiberty when using the rtlib.
 
-            http://www.delorie.com/pub/djgpp/current/v2/djdev203.zip        (core)
-            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219b.zip      (binutils 2.19 binaries)
-            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219a.zip      (libiberty, BFD headers, ..)
-            http://www.delorie.com/pub/djgpp/current/v2gnu/gcc442b.zip      (gcc 4.4.2 binaries)
-            http://www.delorie.com/pub/djgpp/current/v2gnu/gdb611b.zip      (gdb 6.1.1 binaries)
-            http://www.delorie.com/pub/djgpp/current/v2gnu/gpp442b.zip      (gpp (g++) 4.4.2 binaries)
+        2.03 misses stdint.h, which is needed by the rtlib, so it must be copied
+        from 2.04 (DJGPP beta).
 
-        or from http://djgpp.cybermirror.org/current.
+        2.04 misses fseeko()/ftello() & co, but libbfd needs those, so currently
+        2.04 can't be used (although it would probably be possible to use libsupp
+        and build DOS libbfd with it, it maps ftello() to libsupp_ftello()...)
 
-        Extract into C:\djgpp, so you end up with e.g. C:\djgpp\bin\gcc.exe.
+        Download for 2.03:
+
+            http://www.delorie.com/pub/djgpp/current/v2/djdev203.zip       (core)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219b.zip     (binutils 2.19 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219a.zip     (binutils additional stuff: libiberty, BFD headers, ..)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gcc442b.zip     (gcc 4.4.2 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gdb611b.zip     (gdb 6.1.1 binaries)
+            http://www.delorie.com/pub/djgpp/current/v2gnu/gpp442b.zip     (g++ 4.4.2 binaries)
+
+        Download for 2.04:
+
+            http://www.delorie.com/pub/djgpp/beta/v2/djdev204.zip       (core)
+            http://www.delorie.com/pub/djgpp/beta/v2gnu/bnu219b.zip     (binutils 2.19 binaries)
+            http://www.delorie.com/pub/djgpp/beta/v2gnu/bnu219a.zip     (binutils additional stuff: libiberty, BFD headers, ..)
+            http://www.delorie.com/pub/djgpp/beta/v2gnu/gcc442b.zip     (gcc 4.4.2 binaries)
+            http://www.delorie.com/pub/djgpp/beta/v2gnu/gdb64b.zip      (gdb 6.4 binaries)
+            http://www.delorie.com/pub/djgpp/beta/v2gnu/gpp442b.zip     (g++ 4.4.2 binaries)
+            http://www.delorie.com/pub/djgpp/beta/v2tk/lsupp64a.zip     (libsupp support library, contains functions from DJGPP's CVS which are not yet released)
 
         Add environment variable:
-            DJGPP   =   C:\djgpp\djgpp.env
+            DJGPP   =   C:\DJGPP\djgpp.env
 
         Copy/rename
-            C:\djgpp\lib\gcc\djgpp\4.42\libsupcxx.a
+            C:\DJGPP\lib\gcc\djgpp\4.42\libsupcxx.a
         to
-            C:\djgpp\lib\gcc\djgpp\4.42\libsupcx.a
-        (fbc expects that, some 8.3 filename issue)
-
-        Get stdint.h (rtlib needs it) from DJGPP's CVS:
-            http://www.delorie.com/bin/cvsweb.cgi/djgpp/
-        goes into C:/djgpp/include
-
-linux:
-    * Several -dev packages are required that are not normally installed,
-      especially for the gfxlib.
+            C:\DJGPP\lib\gcc\djgpp\4.42\libsupcx.a
+        (fbc expects that, probably some 8.3 filename issue)
 
 linux standalone:
     * Download recent binutils sources, e.g. binutils-2.20.51.
@@ -210,7 +219,7 @@ linux standalone:
         $ cd opcodes  ; sudo make install-strip; cd ..
 
 win32:
-    * With MinGW 5.1.6 and TDM GCC 4.4.1:
+    * With TDM-GCC 4.4.1, binutils 2.19
 
         Download from http://sourceforge.net/downloads/mingw/
 
@@ -227,57 +236,56 @@ win32:
             gcc-4.4.1-tdm-2-core.tar.gz
             gcc-4.4.1-tdm-2-g++.tar.gz
 
-    * With current MinGW (GCC 4.5.0):
 
-            Download from http://sourceforge.net/downloads/mingw/
+    * With MinGW GCC 4.5.0, binutils 2.20.51
 
-                binutils-2.20.1-2-mingw32-bin.tar.gz
-                gcc-c++-4.5.0-1-mingw32-bin.tar.lzma
-                gcc-core-4.5.0-1-mingw32-bin.tar.lzma
-                libgmp-5.0.1-1-mingw32-dll-10.tar.lzma
-                libmpc-0.8.1-1-mingw32-dll-2.tar.lzma
-                libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma
-                make-3.81-20090914-mingw32-bin.tar.gz
-                mingwrt-3.18-mingw32-dev.tar.gz
-                mingwrt-3.18-mingw32-dll.tar.gz
-                w32api-3.14-mingw32-dev.tar.gz
+        With GCC 4.5.0, fbc would need to link in libgcc_eh with libsupc++.
+        (That's already done on linux, probably it's just MinGW catching up)
 
-            Download & build current binutils snapshot, e.g.  binutils-2.20.51,
-            in order to replace MinGW's binutils-2.20.1, because those contain
-            an 'as' which generates bad code with fbc's Intel-syntax asm output.
+        * Download current MinGW (GCC 4.5.0) from http://sourceforge.net/downloads/mingw/
 
-            Note: the libbfd built here does not depend on libintl.a, so the
-            -l intl can be removed from src/compiler/Makefile.in, aswell as
-            libintl.a from src/contrib/tram2/binaries-win32.ini.
-            Besides that, the compiler probably can't use this directly through
-            the FB headers (as in 'make FB_BFD=1 BFD_VER=2.20'), because there
-            are no bfd 2.20 headers for FB yet. It'll work with the normal build
-            (as in 'make', which uses the C bfd wrapper).
+            binutils-2.20.51-1-mingw32-bin.tar.lzma
+            gcc-c++-4.5.0-1-mingw32-bin.tar.lzma
+            gcc-core-4.5.0-1-mingw32-bin.tar.lzma
+            libgmp-5.0.1-1-mingw32-dll-10.tar.lzma
+            libmpc-0.8.1-1-mingw32-dll-2.tar.lzma
+            libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma
+            mingwrt-3.18-mingw32-dev.tar.gz
+            mingwrt-3.18-mingw32-dll.tar.gz
+            w32api-3.14-mingw32-dev.tar.gz
 
-                $ cd /c/binutils-2.20.51
-                $ ./configure --prefix=C:/MinGW --disable-shared --disable-nls
-                $ make
-                $ cd bfd      ; make install-strip; cd ..
-                $ cd binutils ; make install-strip; cd ..
-                $ cd gas      ; make install-strip; cd ..
-                $ cd gprof    ; make install-strip; cd ..
-                $ cd ld       ; make install-strip; cd ..
-                $ cd libiberty; make install      ; cd ..
-                $ cd opcodes  ; make install-strip; cd ..
+        * Download & build current binutils snapshot, e.g. binutils-2.20.51,
+          in order to replace MinGW's binutils-2.20.51.
+          (The libbfd from MinGW depends on libintl & libiconv, with libiconv
+          being 1 MB, thus increasing fbc.exe's size by a lot. The libbfd
+          built here doesn't have these dependencies.)
 
-            Download & build current GDB snapshot, e.g. gdb-7.1.tar.bz2, in
-            order to avoid the GDB from MinGW because it depends on
-            libexpat-1.dll. That way we avoid having to distribute the DLL in
-            FreeBASIC/bin/win32.
-                $ cd /c/gdb-7.1.50.20100613
-                $ ./configure --disable-gdbmi --without-expat --without-python
-                $ make
-                $ cp gdb/gdb.exe C:/MinGW/bin/gdb.exe
-                $ strip C:/MinGW/bin/gdb.exe
+            $ cd /c/binutils-2.20.51
+            $ ./configure --prefix=C:/MinGW --disable-shared --disable-nls
+            $ make
+            $ cd bfd      ; make install-strip; cd ..
+            $ cd binutils ; make install-strip; cd ..
+            $ cd gas      ; make install-strip; cd ..
+            $ cd gprof    ; make install-strip; cd ..
+            $ cd ld       ; make install-strip; cd ..
+            $ cd libiberty; make install      ; cd ..
+            $ cd opcodes  ; make install-strip; cd ..
+
+        * Download & build current GDB snapshot, e.g. gdb-7.1.tar.bz2, in
+          order to avoid the GDB from MinGW because it depends on
+          libexpat-1.dll. That way we can avoid having to distribute the DLL
+          in FreeBASIC/bin/win32.
+            $ cd /c/gdb-7.1.50.20100613
+            $ ./configure --disable-gdbmi --without-expat --without-python
+            $ make
+            $ cp gdb/gdb.exe C:/MinGW/bin/gdb.exe
+            $ strip C:/MinGW/bin/gdb.exe
+
+    * Download libgdsl sources & compile it, put it into C:/MinGW/lib.
+        (Replacement for the libgdsl from FreeBASIC-0.20, which was apparently broken)
 
     * NSIS (for the win32 installer), default: C:/NSIS
         Download from http://nsis.sourceforge.net/Download
 
     * ddraw.h & dinput.h in C:/MinGW/include
       (win32 DirectX headers needed to compile gfxlib2)
-
