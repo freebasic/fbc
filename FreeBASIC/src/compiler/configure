@@ -576,8 +576,8 @@ SHELL=${CONFIG_SHELL-/bin/sh}
 # Identity of this package.
 PACKAGE_NAME='fbc'
 PACKAGE_TARNAME='fbc'
-PACKAGE_VERSION='0.20.0'
-PACKAGE_STRING='fbc 0.20.0'
+PACKAGE_VERSION='0.22.0'
+PACKAGE_STRING='fbc 0.22.0'
 PACKAGE_BUGREPORT='http://sourceforge.net/projects/fbc'
 
 ac_unique_file="inc/fb.bi"
