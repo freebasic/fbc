@@ -53,19 +53,43 @@ ifdef EXTRAERR
     FBC_CFLAGS += -exx
 endif
 
+ifeq (@FBC_HOST@,win32)
+    FBC_LFLAGS += -t 2048
+endif
+
 # don't do anything with BFD unless objinfo feature enabled
 ifeq (@FBC_OBJINFO@,objinfo)
-
-ifdef FB_BFD
-    FBC_CFLAGS += -d USE_FB_BFD_HEADER
-endif
-
-# if FB_BFD is undefined then this probably won't matter
-ifdef BFD_VER
-    FBC_CFLAGS += -d __BFD_VER__=$(BFD_VER)
-endif
+    ifdef FB_BFD
+        FBC_CFLAGS += -d USE_FB_BFD_HEADER
+        ifdef BFD_VER
+            FBC_CFLAGS += -d __BFD_VER__=$(BFD_VER)
+        endif
+    endif
 
     FBC_LIBS = -l bfd -l iberty
+
+    ifeq (@FBC_HOST@,cygwin)
+        FBC_LIBS += -l intl
+    endif
+
+    ifeq (@FBC_HOST@,dos)
+        FBC_LIBS += -l intl
+        # DJGPP 2.03's bfd/iberty require zlib.
+        FBC_LIBS += -l z
+    endif
+
+    ifeq (@FBC_HOST@,freebsd)
+        FBC_LIBS += -l intl
+    endif
+
+    ifeq (@FBC_HOST@,openbsd)
+        FBC_LIBS += -l intl
+    endif
+
+    ifeq (@FBC_HOST@,win32)
+        # for libiberty
+        FBC_LIBS += -l user32
+    endif
 endif
 
 ##################################################################
@@ -79,7 +103,6 @@ endif
 
 ifeq (@FBC_HOST@,cygwin)
     DEFS := -d HOST_CYGWIN
-    FBC_LIBS += -l intl
 endif
 
 ifeq (@FBC_HOST@,darwin)
@@ -88,18 +111,10 @@ endif
 
 ifeq (@FBC_HOST@,dos)
     DEFS := -d HOST_DOS
-    FBC_LIBS += -l intl
-    # libbfd.a/libiberty.a from DJGPP's bnu219a.zip require zlib.
-    ifeq (@FBC_OBJINFO@,objinfo)
-        FBC_LIBS += -l z
-    endif
 endif
 
 ifeq (@FBC_HOST@,freebsd)
     DEFS := -d HOST_FREEBSD
-    ifeq (@FBC_OBJINFO@,objinfo)
-        FBC_LIBS += -l intl
-    endif
 endif
 
 ifeq (@FBC_HOST@,linux)
@@ -112,15 +127,10 @@ endif
 
 ifeq (@FBC_HOST@,openbsd)
     DEFS := -d HOST_OPENBSD
-    ifeq (@FBC_OBJINFO@,objinfo)
-        FBC_LIBS += -l intl
-    endif
 endif
 
 ifeq (@FBC_HOST@,win32)
     DEFS := -d HOST_WIN32
-    FBC_LFLAGS += -t 2048
-    FBC_LIBS += -l intl -l user32
 endif
 
 
