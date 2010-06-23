@@ -76,7 +76,7 @@ __##flags## details:__
 ~~-##GFX_ACCUMULATION_BUFFER##: Forces OpenGL to use Accumulation buffer
 ~~-##GFX_MULTISAMPLE##: Requests fullscreen anti-aliasing through the ARB_multisample extension
 
-	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it'll try in windowed mode. If windowed mide is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr Screenptr]]## function; see its page for details.
+	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it'll try in windowed mode. If windowed mode is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr Screenptr]]## function; see its page for details.
 
 __Graphics mode console__
 	Console commands (##[[KeyPgLocate Locate]]##, ##[[KeyPgPrint Print]]##), input can be used both with standard QB ##**Screen**## modes and with the extended ones too, provided the standard color depth is not modified by using the second argument of ##**Screen**##. Where the table says more than one text resolution is available for the text mode, the required text resolution can be requested by using ##[[KeyPgWidth Width]]##.  Any characters ##[[KeyPgPrint Print]]##ed will erase the background around them; it does not use a transparent background.
@@ -115,7 +115,7 @@ Sleep
 %%
 
 {{fbdoc item="target"}}
-	- In DOS, linear framebuffer or banked VESA VBE modes are used whenever possible; if not available, drivers for the standard VGA modes or a 320*240*8 ""ModeX"" driver are used if possible. Windowing and OpenGL related switches are not available. 
+	- In DOS, Windowing and OpenGL related switches are not available, see also [[GfxLib GfxLib overview]]
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the usage is:
@@ -131,8 +131,8 @@ Sleep
 {{fbdoc item="see"}}
 	- ##[[KeyPgScreenCons Screen (Console)]]##
 	- ##[[KeyPgScreenres Screenres]]## More flexible alternative to ##**Screen**##
-	- ##[[KeyPgScreenlist Screenlist]]## List display modes available for FB to use
-	- ##[[KeyPgScreencontrol Screencontrol]]##
+	- ##[[KeyPgScreenlist Screenlist]]## Check display modes available for FB ""GfxLib"" to use
+	- ##[[KeyPgScreencontrol Screencontrol]]## Select driver and more 
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenunlock Screenunlock]]##
 	- ##[[KeyPgScreenptr Screenptr]]## Semi-low level access

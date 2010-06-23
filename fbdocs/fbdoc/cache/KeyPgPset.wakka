@@ -22,6 +22,8 @@ Plots a single pixel
 
 	##//color//## specifies the color attribute.  If omitted, ##//color//## defaults to the current foreground color.  See ##[[KeyPgColor Color]]##.  ##//color//## is graphics mode specific, see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details.
 
+	Optimization note: while **Pset** and the opposite ##[[KeyPgPoint Point]]## provide valid results, they are very slow. Much better performance can be achieved by using ##[[KeyPgPoke Poke]]## after calculating the address yourself from values obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##, or even more usig inline ASM.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/pset.bas"}}%%(freebasic)
 ' Set an appropriate Screen mode.
@@ -58,8 +60,8 @@ End
 	- ##//target//## is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPoint Point]]##
-	- ##[[KeyPgPreset PReset]]##
+	- ##[[KeyPgPoint Point]]## - read out pixels 
+	- ##[[KeyPgPreset PReset]]## 
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 	- ##[[KeyPgWindow Window]]##
 

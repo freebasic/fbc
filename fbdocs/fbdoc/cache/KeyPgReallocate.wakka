@@ -2,7 +2,7 @@
 Reallocates storage for an existing reserved block of memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate** ( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Reallocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
 		//result// = **Reallocate**( //pointer//, //count// )

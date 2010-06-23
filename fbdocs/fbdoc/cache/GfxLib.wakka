@@ -1,5 +1,59 @@
-{{fbdoc item="title" value="GfxLib"}}----
-GfxLib is the built-in graphics library included in FreeBASIC. As well as re-creating every QuickBASIC graphics command, GfxLib has built-in commands to handle input from the keyboard and mouse.
+{{fbdoc item="title" value="GfxLib - FreeBASIC graphics library overview"}}----
+
+""GfxLib"" is the built-in graphics library included in FreeBASIC. As well as re-creating every QuickBASIC graphics command, ""GfxLib"" has built-in commands to handle input from the keyboard and mouse. Major contributors of the library are Lillo, ""CoderJeff"" and DrV.
+
+The library supports various drivers depending on the platform: 
+
+	- All:
+		- **##Null##** Does nothing. Purpose = ??? [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/libfb_gfx_driver_null.c?view=markup (SVN libfb_gfx_driver_null.c)]] 
+
+	- ""Win32"" and ""Linux"":
+		- **##OpenGL##** 
+
+	- ""Win32"":
+		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/win32/libfb_gfx_driver_ddraw.c?view=markup (SVN libfb_gfx_driver_ddraw.c)]] Bug note: broken in FB versions 0.20 and (some ?) 0.18.x (crash if not available), fixed in 0.21 SVN. [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]]
+		- **##GDI##** The "safest" one, available in all ""Win32"" versions. [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/win32/libfb_gfx_driver_gdi.c?view=markup (SVN libfb_gfx_driver_gdi.c)]] Bug note: broken in FB versions 0.20 and  (some ?) 0.18.x ("banding effects"), not fixed in 0.21 SVN. [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]]
+
+	- ""Linux"":
+		- **##???##**
+
+	- DOS:
+		- **##BIOS##** [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/dos/libfb_gfx_driver_bios.c?view=markup (SVN libfb_gfx_driver_bios.c)]]
+		- **##""ModeX""##** "tuned" 320x240x8bpp VGA mode [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/dos/libfb_gfx_driver_modex.c?view=markup (SVN libfb_gfx_driver_modex.c)]]
+		- **##VESA banked##** compatible with very old VESA 1.x implementations [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/dos/libfb_gfx_driver_vesa_bnk.c?view=markup (SVN libfb_gfx_driver_vesa_bnk.c)]]
+		- **##VESA linear##** needs VESA version at least 2.0, usually faster than banked VESA [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/dos/libfb_gfx_driver_vesa_lin.c?view=markup (SVN libfb_gfx_driver_vesa_lin.c)]]
+		- **##VGA##** [[http://fbc.svn.sourceforge.net/viewvc/fbc/trunk/FreeBASIC/src/gfxlib2/dos/libfb_gfx_driver_vga.c?view=markup (SVN libfb_gfx_driver_vga.c)]]
+		- Bug note: [[KeyPgPalette Palette]] doesn't work well [[http://freebasic.net/forum/viewtopic.php?t=12691 (forum discussion: t=12691)]] 
+
+##[[KeyPgScreencontrol Screencontrol]]## can be used (SET_DRIVER_NAME 103) to override the default driver preferences. 
+
+{{fbdoc item="target"}}
+	- In DOS, ""GfxLib"" will create and "manage" a mouse arrow if a mouse driver is detected. There is no "official" way to disable this. Also the arrow doesn't react to mouse movements while the screen is locked.
+	- In DOS, Windowing and OpenGL related commands and switches are not available (they exist but do nothing, or return some values with no meaning)
+	- In DOS, the resolution must match one supported by the graphics card. ""GfxLib"" will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Unsupported resolutions may currently crash the program, though in future ""GfxLib"" may try to find a close match instead. For optimal compatibility, you should support "safe" resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on many other cards. Also modes 1024x768 and above are not available on older cards and laptops. 
+
+{{fbdoc item="diff"}}
+	- Graphics support was internally redesigned. QB used VGA graphics modes, and wrote directly into the VGA RAM. Multiple pages were available as long as the card supported them. FB uses backbuffers, one per defined page, and copies them to the video RAM (VGA (DOS), VESA (DOS), DirectX (""Win32""), ...) in the background. Graphics commands do work as they used to in QB, but a few notable differences are present:
+		- The background screen updating eats a considerable amount of CPU performance.
+		- There is a thread (""Win32"" and ""Linux"") or ISR (DOS, uses the PIT) active for this.
+		- Mixing FB's graphics support with low-level screen accesses (VGA) is absolutely prohibited, even in DOS, OTOH semi-low-level can be done using Screenptr and Screenlock, and is even portable. In DOS VGA and VESA are still available, but can't be mixed with FB's graphics support.
 
 {{fbdoc item="see"}}
 	- [[CatPgGfx GFX Functions Index]]
+	- ##[[KeyPgScreengraphics Screen]]## The QB-like way to set graphics mode
+	- ##[[KeyPgScreenres Screenres]]## More flexible alternative to ##**Screen**##
+	- ##[[KeyPgScreenlist Screenlist]]## Check display modes available for FB ""GfxLib"" to use
+	- ##[[KeyPgScreencontrol Screencontrol]]## Select driver and more 
+	- ##[[KeyPgScreenlock Screenlock]]##
+	- ##[[KeyPgScreenunlock Screenunlock]]##
+	- ##[[KeyPgScreenptr Screenptr]]## Semi-low level access
+	- ##[[KeyPgScreenset Screenset]]##
+	- ##[[KeyPgScreencopy Screencopy]]##
+	- ##[[KeyPgScreeninfo Screeninfo]]##
+	- ##[[KeyPgScreenglproc Screenglproc]]##
+	- ##[[GfxInternalFormats Internal pixel formats]]##
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+
+   

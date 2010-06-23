@@ -59,3 +59,4 @@ Loop Until Inkey = Chr(27)
 	- ##[[KeyPgGetkey Getkey]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}
+   

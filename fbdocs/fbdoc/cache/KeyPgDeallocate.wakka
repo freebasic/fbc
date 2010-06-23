@@ -2,7 +2,7 @@
 Frees previously allocated memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Deallocate** ( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Deallocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Deallocate**( //pointer// )
@@ -90,7 +90,7 @@ end sub
    end 0
 %%
 
-In the program above, a reference pointer in a function is set to null after deallocating the memory it points to. An [[KeyPgAssert ASSERT]] macro is used to test if the original pointer is in fact null after the function call. This example implies the correct way to pass pointers to functions that deallocate the memory they point to is by reference.
+In the program above, a reference pointer in a function is set to null after deallocating the memory it points to. An ##[[KeyPgAssert ASSERT]]## macro is used to test if the original pointer is in fact null after the function call. This example implies the correct way to pass pointers to functions that deallocate the memory they point to is by reference.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Deallocate""**##.

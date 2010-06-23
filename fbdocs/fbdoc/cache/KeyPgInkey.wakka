@@ -17,8 +17,7 @@ Returns a string representing the first key waiting in the keyboard buffer
 
 	The ""Shift"", ""Ctrl"", ""Alt"", and ""AltGr"" keys can't be read independently by this function as they never enter the keyboard buffer (although, perhaps obviously, Shift-A will be reported by ##**Inkey**## differently than Control-A et cetera; Alt-A is an extended key a la the above).
 	
-	To wait for a key press, ##**Inkey**## can be polled in a loop.  However, a simple loop will hog the CPU, so it is worth putting a short ##[[KeyPgSleep Sleep]]## inside the loop, to free up the CPU.  The result is that the ##**Inkey**## check will run every few milliseconds, instead of happening as fast as possible.
-	See also ##[[KeyPgInputnum Input()]]## or ##[[KeyPgGetkey Getkey]]##.  In many cases, ##[[KeyPgSleep Sleep]]## can also be used on its own to wait for a key press.
+	See also ##[[KeyPgInputnum Input()]]## or ##[[KeyPgGetkey Getkey]]##, or ##[[KeyPgSleep Sleep]]## to wait for a key press if the keyboard buffer is empty.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/inkey.bas"}}%%(freebasic)

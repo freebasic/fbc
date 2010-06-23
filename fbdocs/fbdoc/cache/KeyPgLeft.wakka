@@ -10,7 +10,7 @@ Returns the leftmost substring of a string
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		The source string..
+		The source string.
 	##//n//##
 		The number of characters to return from the source string.
 
@@ -18,7 +18,7 @@ Returns the leftmost substring of a string
 	Returns the leftmost substring from ##//str//##.
 
 {{fbdoc item="desc"}}
-	Returns the leftmost ##//n//## characters starting from the left (beginning) of ##//str//##. If ##//str//## is empty, then the null string (##"####"##) is returned. If ##//n// <= 0## then the null string ("") is returned. If ##//n// > len(//str//)## then the entire source string is returned.
+	Returns the leftmost ##//n//## characters starting from the left (beginning) of ##//str//##. If ##//str//## is empty, then the null string (##"####"##) is returned. If ##//n// <= 0## then the null string (##"####"##) is returned. If ##//n// > len(//str//)## then the entire source string is returned.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/left.bas"}}%%(freebasic)
@@ -37,7 +37,7 @@ print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
 <<::c::
 
 {{fbdoc item="target"}}
-	- DOS does not support the wide-character string version of **##Right##**.
+	- DOS does not support the wide-character string version of **##Left##**.
 
 {{fbdoc item="lang"}}
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.

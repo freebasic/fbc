@@ -37,7 +37,8 @@ Dim result As Integer = Run("program.exe")
 	- Returning an error code is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgChain Chain]]##
-	- ##[[KeyPgExec Exec]]##
+	- ##[[KeyPgExec Exec]]## transfer temporarily, with arguments  
+	- ##[[KeyPgChain Chain]]## transfer temporarily, without arguments
+	- ##[[KeyPgCommand Command]]## pick arguments
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

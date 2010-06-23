@@ -2,8 +2,8 @@
 Converts a string to an integer number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valuint** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valuint** ( //strnum// )

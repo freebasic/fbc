@@ -26,3 +26,4 @@ print "The cursor is on row:"; CSRLIN
 	- ##[[KeyPgPos Pos]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}
+   

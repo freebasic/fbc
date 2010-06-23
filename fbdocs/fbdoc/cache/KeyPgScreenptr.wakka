@@ -18,6 +18,8 @@ Returns a pointer to the current work page's framebuffer
 	In order to access a pixel in the screen buffer, you will need to know the screen's width, height, bytes per pixel and pitch (bytes per row).  This information can be found out using ##[[KeyPgScreeninfo Screeninfo]]##.
 	Each row in the frame buffer is ##//pitch//## bytes long.  The frame buffer consists of ##//height//## rows, stored in order of their position on the screen, running from top to bottom, left to right.
 
+	Because of the design of ""FreeBasic"" graphics library, ##**Screenptr**## (if non-ZERO) will always point to the backbuffer, and never to actual video RAM.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenptr.bas"}}%%(freebasic)
 Const SCREEN_WIDTH = 640, SCREEN_HEIGHT = 480
@@ -111,7 +113,6 @@ ScreenUnlock()
 '' Wait for the user to press a key before closing the program
 Sleep
 %%
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenptr""**##.

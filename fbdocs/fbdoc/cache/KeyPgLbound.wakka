@@ -38,3 +38,4 @@ print lbound(array, 3) 'returns 1
 	- ##[[KeyPgRedim Redim]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}
+   

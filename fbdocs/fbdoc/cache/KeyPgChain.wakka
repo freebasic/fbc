@@ -35,13 +35,15 @@ Temporarily transfers control to an external program
 %%
 {{fbdoc item="target"}}
 	- Linux requires the ##//program//## name case matches the real name of the file. Windows and DOS  are case insensitive. The program  chained may be case sensitive for its command line parameters.
-	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
+	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes.
+	- Exit code is limited to 8 bits in DOS.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExec Exec]]##
-	- ##[[KeyPgRun Run]]##
+	- ##[[KeyPgExec Exec]]## transfer temporarily, with arguments  
+	- ##[[KeyPgRun Run]]## one-way transfer
+	- ##[[KeyPgCommand Command]]## pick arguments
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: @file"}}----
+Read (additional) command-line options from the file
+
+{{fbdoc item="syntax"}}##
+		@//file//
+##
+{{fbdoc item="param"}}
+	##//file//##
+		Name of a text file containing command line options. It's possible to use multiple lines in the file. The options in a line must be separated by SPACEs and support Double-quoted strings (like the real command line). This file can contain more @file options.
+
+{{fbdoc item="desc"}}
+	The ##@file## compiler option tells the compiler to parse the specified file to find more command line options. The options found in the file are treated as if they were found on the command line. This can be useful to pass very long command lines to the compiler, for example on DOS, where command lines are limited in length.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

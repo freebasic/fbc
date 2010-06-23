@@ -23,10 +23,11 @@ Macros that work with the bits and bytes of numbers.
 	=={{fbdoc item="keyword" value="KeyPgBit|BIT"}}==
 		Gets the state of an individual bit in an integer value.
 	=={{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}==
-		Gets the value of an integer with a specified bit set.
-	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
 		Gets the value of an integer with a specified bit cleared.
+	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
+		Gets the value of an integer with a specified bit set.
 
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

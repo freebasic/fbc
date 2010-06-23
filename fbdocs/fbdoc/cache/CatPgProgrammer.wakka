@@ -90,17 +90,16 @@ FreeBASIC programmer's guide.
 	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
 	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="ProPgRadians|Radians"}}
-	External Graphics File Formats
+	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
+	External Graphics File Formats
 	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
 	{{fbdoc item="keyword" value="ProPgFileIO|File I/O in FreeBASIC"}}
 
-
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
-
 
 >>::c::
 

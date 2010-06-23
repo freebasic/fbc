@@ -44,11 +44,12 @@ Print "'" + trim(s2, any "Ba") + "'"
 %%
 
 {{fbdoc item="target"}}
-	- DOS version/target of FreeBASIC does not support the wide-character version of ##**Trim**##.
-
+	- DOS version/target of ""FreeBASIC"" does not support the wide-character version of ##**Trim**##.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Trim""**##.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

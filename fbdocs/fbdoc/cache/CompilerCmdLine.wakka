@@ -99,6 +99,10 @@ Using the **fbc** command-line.
 			Sets the compiler backend (default is 'gas').
 		=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
 			Sets miscellaneous or experimental options.
+		=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
+			Emit the preprocessed input file only, do not compile
+		=={{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}==
+			Read (additional) command-line options from the file
 
 	{{fbdoc item="section" value="Linking options"}}
 	{{fbdoc item="subsect" value="Object code"}}
@@ -155,3 +159,4 @@ Using the **fbc** command-line.
 	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

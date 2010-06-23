@@ -43,8 +43,11 @@ Print "'" + ltrim(s2, any "BaA") + "'"
 'BAA Test Pattern'
 ' Test Pattern'
 %%
+
+{{fbdoc item="target"}}
+	- DOS version/target of ""FreeBASIC"" does not support the wide-character version of ##**LTrim**##.
+
 {{fbdoc item="lang"}}
-	- DOS does not support the wide-character version of ##**Ltrim**##.
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
 	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
 

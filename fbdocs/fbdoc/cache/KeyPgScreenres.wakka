@@ -54,8 +54,7 @@ End
 %%
 
 {{fbdoc item="target"}}
-	- In DOS the resolution must match one supported by the graphics card. GfxLib will try to find an appropriate mode from VGA modes, ""ModeX"" or VESA, preferring VESA LFB interface if available, or banked VESA otherwise. Windowing and OpenGL related switches are not available. Unsupported resolutions may currently crash the program, though in future GfxLib may try to find a close match instead. For optimal compatibility, you should support safe resolutions like 640x480 and 800x600, and maybe 1024x768. There are various additional modes like 768x576 around, but they are vendor specific and lacking on most cards. Also modes 1024x768 and above are not available on older cards and laptops. 
-
+	- In DOS, Windowing and OpenGL related switches are not available, see also [[GfxLib GfxLib overview]]
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenres""**##.
@@ -64,10 +63,9 @@ End
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen]]## The QB-like way to do
-	- ##[[KeyPgScreenCons Screen (Console)]]##
-	- ##[[KeyPgScreenlist Screenlist]]## Check available modes
-	- ##[[KeyPgScreencontrol Screencontrol]]##
+	- ##[[KeyPgScreengraphics Screen]]## The QB-like way to set graphics mode
+	- ##[[KeyPgScreenlist Screenlist]]## Check display modes available for FB ""GfxLib"" to use
+	- ##[[KeyPgScreencontrol Screencontrol]]## Select driver and more 
 	- ##[[KeyPgScreenlock Screenlock]]##
 	- ##[[KeyPgScreenunlock Screenunlock]]##
 	- ##[[KeyPgScreenptr Screenptr]]## Semi-low level access

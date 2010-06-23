@@ -92,11 +92,11 @@ loop while inkey = ""
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Getmouse""**##.  The variables passed must also be of type ##[[KeyPgLong Long]]## instead of ##[[KeyPgInteger Integer]]##.
 
 {{fbdoc item="target"}}
-	- On DOS, the "clip" value has no relevance.
-	- The wheel and middle button will work if supported and enabled by the mouse driver - see [[FaqDOS]].
+	- On ""Win32"", scroll wheel changes are not guaranteed to be detected in full-screen console mode. 
+	- In DOS, the "clip" value has no relevance.  Additionally the wheel and middle button will not work unless supported and enabled by the mouse driver. See also [[FaqDOS]].
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -109,3 +109,4 @@ loop while inkey = ""
 	- ##[[KeyPgGetjoystick Getjoystick]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}
+   

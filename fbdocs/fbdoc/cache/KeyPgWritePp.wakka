@@ -52,3 +52,4 @@ write #filenum, i, d, s
 	- ##[[KeyPgInputPp Input #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+   

@@ -2,17 +2,24 @@
 Invoking the compiler after installation.
 
 {{fbdoc item="section" value="Windows"}}
-	A desktop icon and start-menu links should have been created by the installer, and can be used to open the console directly into the directory where ""FreeBASIC"" was installed - ##""C:\Program Files\FreeBASIC""## by default. Alternatively, using the console ("MS-DOS prompt"), navigate to the directory where ""FreeBASIC"" was installed.
+	The compiler can be manually invoked from the command-line, or automatically by your IDE/Code Editor. If you're using an IDE, you will usually have to tell it where the compiler was installed, so it can find it. How exactly to do that depends on the IDE. 
+	
+	To compile manually, you should append the FreeBASIC installation directory to your PATH environment variable, separating it from previous entries using a semi-colon. Now you can simply use "fbc" from the command prompt, instead of always having to type in the full path (e.g. "C:\FreeBASIC\fbc.exe").
 
-	At the prompt, type,
+	Then, open a console/command prompt/MS DOS prompt, in the same directory as your program. To compile your program, you can use:
 
-		##fbc##
+		##C:\mystuff\myprogram\> fbc myprogram.bas##
 
-	to see a list of options. To compile the "Hello, world!" example program type,
+	and ##myprogram.exe## will be created in the same directory.
 
-		##fbc examples\misc\hello.bas##
-
-	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
+	A console can be launched in a specific directory from Explorer by using Microsoft's "Open Command Window Here" ""PowerToy"" on Windows XP. On Windows Vista & above you can SHIFT+""RightClick"" on a folder in Explorer to see the 'Open Command Window Here' option. As a last resort, you can also select Start -> Run, type "cmd" and hit Enter, and use the "cd" command to change the current directory.
+	
+	
+	Note: You can in fact invoke the compiler from any directory you like, but you have to specifiy the correct path to your program, so the compiler can find it, for example:
+	
+		##C:\> fbc mystuff\myprogram\myprogram.bas##
+		
+	The resulting executable will still be put in the same directory as the program.
 
 {{fbdoc item="section" value="Linux"}}
 	If the install.sh script was successfully executed with enough priviledges, the compiler binary should have been copied ##/usr/local/bin/fbc##, allowing any user access to the compiler from any directory.

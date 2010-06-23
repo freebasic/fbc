@@ -1,6 +1,8 @@
 {{fbdoc item="title" value="Compiler Options"}}----
 Command line compiler options for the fbc compiler:
 
+	{{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}
+		- Read (additional) command-line options from the file
 	{{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}
 		- Add an object file to linker's list
 	{{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}
@@ -63,6 +65,8 @@ Command line compiler options for the fbc compiler:
 		- Set object file path/name (must be passed after the .bas file)
 	{{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}
 		- Add a path to search for libraries
+	{{fbdoc item="keyword" value="CompilerOptpp|-pp"}}
+		- Emit the preprocessed input file only, do not compile
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}
 		- Set the compiler prefix path
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}

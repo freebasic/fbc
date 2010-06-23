@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ANY"}}----
-Built-in pseudo data type used in declarations and initializers
+##**Any**## is not a real type, but it's used as a placeholder in various ways.
 
 {{fbdoc item="syntax"}}##
 	//identifier// [[KeyPgAs as]] **Any** [[KeyPgPointer Pointer]]|[[KeyPgPtr ptr]]
@@ -9,25 +9,24 @@ Built-in pseudo data type used in declarations and initializers
 	[[KeyPgDim Dim]] //identifier// [[KeyPgAs as]] [[DataType datatype]] = **Any**
 ##
 {{fbdoc item="usage"}}##
-	Dim //identifier// as **Any** ptr
+	**##1)**## Dim //identifier// as **Any** ptr
 //or//
-	Declare Sub //identifier// ( byref //identifier// as **Any** )
+	**##1)**## Declare Sub //identifier// ( [ byval | byref ] //identifier// as **Any** ptr )
 //or//
-	Declare Sub //identifier// ( [ byval | byref ] //identifier// as **Any** ptr )
+	**##2)**## Dim //identifier// As //datatype// = **Any**
 //or//
-	Dim //identifier// As //datatype// = **Any**
+	**##3)**## Declare Sub //identifier// ( byref //identifier// as **Any** )
 ##
 {{fbdoc item="desc"}}
-	##**Any**## can be used in three contexts: pointers, variable initializers, pointer arguments of functions and function declarations to indicate an unknown data type.
+	##**1)**## A special pointer type called the ##**Any [[KeyPgPtr Pointer]]**## allows pointing to any variable type. If you cast it to an ##[[KeyPgInteger Integer]] [[KeyPgPtr Pointer]]##, it will operate on the subject as though it were an ##[[KeyPgInteger Integer]]##, etc.
+
+	You may not create variables of the type ##**Any**##. It is illegal to dereference an ##**Any Pointer**##, but an ##**Any Pointer Pointer**## may be dereferenced, because doing so will result in an ##**Any Pointer**##. Trying to dereference that resulting ##**Any Pointer**## would be illegal.
+
+	This should not be confused with ##Variant##, a Visual Basic data type which can contain any type of variable. ""FreeBASIC"" does not natively support the ##Variant## type.
 	
-	 A pointer defined as an ##**Any** Ptr## disables the compiler checking for the type of data it points to. It is useful as it can point to different types of data. Before dereferencing it (accessing to the data it points to) it must be ##[[KeyPgCast Cast]]## to a known data type.
-	This should not be confused with ##Variant##, a Visual Basic data type which can contain any type of variable, which is not intrinsically supported by FreeBASIC.
+	##**2) **## ##**Any**## can be used as a fake initializer to disable the default initialization to ##0## of the variables. This may save time in critical sections of the programs. It is up to the program to fill the variables with significant data. You may recognize this as the default behavior of C.
 	
-	##**Any**## can be used as a fake initializer to disable the default initialization to 0 of the variables. This may save time in critical sections of the programs. Is up to the program to fill the variables with significant data.
-	
-	**##Any##** can be used  in function parameter lists with ##[[KeyPgPtr Ptr]]## arguments to allow the passing of any type of pointers. In this case the function must ##[[KeyPgCast Cast]]## the pointer argument to a known data type before accessing it.
-	
-	**##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to  disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it is only there for compatibility with QB, where it was the only way of passing arrays as arguments.
+	##**3) **## **##Any##** can be used  in function prototypes (in a ##[[KeyPgDeclare Declare]]## statement) with ##[[KeyPgByref ByRef]]## arguments to disable the compiler checking for the correct type of the variable passed. This use of ##**Any**## is deprecated and it is only there for compatibility with QB, where it was the only way of passing arrays as arguments.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/any.bas"}}%%(freebasic)

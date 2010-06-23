@@ -2,8 +2,8 @@
 Converts a string to a unsigned long integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** [[KeyPgOverload overload]] ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByval byval]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valulng** ( //strnum// )

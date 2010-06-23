@@ -13,7 +13,7 @@ Sets the current cursor position
 	##//column//##
 		the 1-based horizontal character position in the console.
 	##//cursorstate//##
-		the state of the cursor. 0 is off, 1 is on (console-mode only).
+		the state of the cursor. ##0## is off, ##1## is on (console-mode only).
 	##//start//##
 		Ignored. Allowed for //[[CompilerOptlang -lang qb]]// dialect compatibility only.
 	##//stop//##
@@ -29,7 +29,7 @@ print "Current line:"; CSRLIN
 %%
 
 {{fbdoc item="diff"}}
-	- The ##//start//## and ##//stop//## arguments have no effect in FreeBASIC.
+	- The ##//start//## and ##//stop//## arguments have no effect in ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsrlin Csrlin]]##

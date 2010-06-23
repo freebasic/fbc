@@ -58,8 +58,9 @@ Let i = 300 ' <-alternate syntax
 {{fbdoc item="diff"}}
 	- None
 
-{{fbdoc item="see"}}
+{{fbdoc item="see"}} 
 	- ##[[KeyPgOpEqual Operator = (Equal)]]##
 	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
+	- ##[[KeyPgSwap Swap]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

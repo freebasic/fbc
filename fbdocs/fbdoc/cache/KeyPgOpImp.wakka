@@ -53,3 +53,4 @@ c = a imp b '' c = &b11110101
 	- [[TblTruth Operator Truth Tables]]
 
 {{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

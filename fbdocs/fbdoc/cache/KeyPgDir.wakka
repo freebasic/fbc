@@ -144,7 +144,7 @@ Print "Found " & filecount & " files and " & dircount & " subdirs"
 {{fbdoc item="target"}}
 	- Linux requires the ##//filename//## case to match the real name of the file. Windows and DOS are case insensitive.
 	- Path separators in Linux are forward slashes ##/##. Windows uses backslashes ##\## but it allows for forward slashes.  DOS uses backslashes.
-	- In DOS, an attrib mask value of ##&h8## returns the Volume, even if current directory is not the main directory.  The value ##&h37## (##&h3f [[KeyPgOpAnd And]] [[KeyPgOpNot Not]] &h8##) can be used to return all files and directories, including ##.## and ##..##, but no Volume. A value of ##&h3f## returns both.
+	- In DOS, the attrib mask value of ##&h37## (##&h3F## usually works also, but ##&h37## is safer) returns all files and directories, including "." and "..", but no Volume: the value ##8## returns the Volume, even if current directory is not the main directory.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dir""**##.

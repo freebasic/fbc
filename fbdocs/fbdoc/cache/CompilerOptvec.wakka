@@ -24,3 +24,4 @@ Enables vector optimizations by the compiler.
 	- [[CompilerOptfpu Compiler option -fpu]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
+   

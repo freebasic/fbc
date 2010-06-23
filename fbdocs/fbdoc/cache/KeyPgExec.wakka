@@ -35,8 +35,7 @@ END IF
 {{fbdoc item="target"}}
 	- Linux requires the //program// case matches the real name of the file. Windows and DOS  are case insensitive. The program being executed may be case sensitive for its command line parameters.
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
-
-
+	- Exit code is limited to 8 bits in DOS.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Exec""**##.
@@ -45,8 +44,8 @@ END IF
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgChain Chain]]##
-	- ##[[KeyPgRun Run]]##
-	- ##[[KeyPgCommand Command]]##
+	- ##[[KeyPgChain Chain]]## transfer temporarily, without arguments
+	- ##[[KeyPgRun Run]]## one-way transfer
+	- ##[[KeyPgCommand Command]]## pick arguments
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -23,7 +23,7 @@ Set minimum warning level.
 
 	Note that the ##**param**##, ##**escape**##, ##**pedantic**## and ##**next**## arguments provide additional warnings not ordinarily output, even by default.
 
-	If the ##**-w**## option is not specified, it's as if ##**-w 0**## was used. The ##**-w**## option can be specifies multiple times.
+	If the ##**-w**## option is not specified, it's as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

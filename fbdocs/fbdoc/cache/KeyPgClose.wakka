@@ -2,18 +2,23 @@
 Stream I/O function to terminate access to a device
 
 {{fbdoc item="syntax"}}##
+	//result// = **Close** [[#]//filenum// ] [, [#]//filenum// ...]
+	            // or //
 	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		list of file numbers to close
+		List of file numbers to close.
 
 {{fbdoc item="desc"}}
 	Closes the files whose file numbers are passed as arguments. If an unused file number is passed, ##**Close**## returns an error.
 
 	##**Close**## without arguments closes all the files presently opened.
-	
+
 	Terminating the program using an ##[[KeyPgEnd End]]## statement will automatically close all files.
+
+{{fbdoc item="ret"}}
+	##**Close**## returns zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/close.bas"}}%%(freebasic)

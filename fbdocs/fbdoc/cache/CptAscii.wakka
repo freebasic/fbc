@@ -308,3 +308,4 @@ UNICODE is a newer standard of character sets involving two or more bytes per ch
 In graphics modes, ##[[KeyPgDrawString Draw String]]## does not give special meaning to control characters allowing an alternative to display all characters in the set. 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
+   

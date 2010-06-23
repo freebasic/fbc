@@ -42,6 +42,7 @@ Built-in numerical and string types.
 		Fixed-length and variable-length null-terminated strings.
 	=={{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}==
 		Fixed-length and variable-length null-terminated strings of wide characters.
+	
 >>::c::
 
 {{fbdoc item="see"}}

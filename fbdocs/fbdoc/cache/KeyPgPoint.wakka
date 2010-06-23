@@ -31,7 +31,9 @@ Returns the color attribute of a specified pixel coordinate
 	
 	If supplied with a single value it returns the one of the coordinates of the graphics cursor as set by the last graphics command executed. If the last command was executed in a buffer, the values returned will be coordinates in the buffer. Arguments out of the range ##0##-##3## will return ##0##.
 
-	The function ##**Point**## does not work in text modes.
+	The function ##**Point**## does not work in text modes. 
+
+	Optimization note: while **Point** and the opposite ##[[KeyPgPset Pset]]## provide valid results, they are very slow. Much better performance can be achieved by using ##[[KeyPgPeek Peek]]## after calculating the address yourself from values obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##, or even more usig inline ASM.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/point.bas"}}%%(freebasic)

@@ -2,9 +2,9 @@
 FreeBASIC installation.
 
 {{fbdoc item="section" value="Windows"}}
-	Open and run the installer executable, and follow its instructions. Don't forget to check which external libraries are being installed, as some are not selected by default. FreeBASIC uses the NSIS installer having a strong compression. The download size is cca 6 MiB, after extraction the full total size is cca 50 MiB, but can be much less if you don't install the optional libraries.
+	Run the installer executable, and follow its instructions. FreeBASIC uses the NSIS installer which has a strong compression. The download size is ca 6 MB, after extraction the full total size is ca 50 MB.
 
-	If successful, FreeBASIC will be installed in ##C:\Program Files\FreeBASIC##, or if you chose a different installation directory, in your chosen directory. Desktop and Start Menu shortcuts will be installed by default as well.
+	FreeBASIC will be installed in ##C:\FreeBASIC##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the Uninstaller and website will be installed as well.
 
 {{fbdoc item="section" value="Linux"}}
 	Unpack the archive to a temporary folder and navigate to the root FreeBASIC installation directory. For example, if the FreeBASIC package you downloaded was called ##""FreeBASIC-vX.XX.Xb-linux.tar.gz""## and was in your home directory, type,
@@ -61,3 +61,4 @@ FreeBASIC installation.
 	- [[CompilerCmdLine Compiler Command Line Options]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

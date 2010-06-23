@@ -40,7 +40,7 @@
 
 {{anchor name="item03"}}==My GUI program does nothing when run / The program compiles but I get a permission denied error in the linker==
 	The problem may be related with the previous question. If a program tries to PRINT and it was compiled with ##"-s gui"## it will freeze because no console is available. If the PRINT is issued before the first window is registered/opened, nothing will show in the screen or in the taskbar. The running program can only be seen in (and killed from) the task manager's processes tab. If a new compilation is tried  before killing the process it will give a "Permission denied" error when the compiler tries to modify a still running .exe.
-	In Windows GUI programs do not use console commands. Use MessageBox or print to a log file to issue any error message to the user. Be sure any PRINT to console you used for debugging is not compiled in the final version. 
+	In Windows GUI programs do not use console commands. Use ""MessageBox"" or print to a log file to issue any error message to the user. Be sure any PRINT to console you used for debugging is not compiled in the final version. 
 
 {{anchor name="item0|Back to top"}}
 

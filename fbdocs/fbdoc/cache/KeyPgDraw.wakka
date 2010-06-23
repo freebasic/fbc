@@ -16,46 +16,79 @@ Statement for sequenced pixel plotting
 
 	Commands to plot pixels:
 	{{table columns="2" cellpadding="1" cells="Command;Description;###;Commands to plot pixels:;B;Optional prefix: move but do not draw.;N;Optional prefix: draw but do not move.;M x,y;Move to specified screen location. if a '+' or '-' sign precedes x, movement is relative to current cursor position.  x's sign has no effect on the sign of y.;U [n];Move n units up. If n is omitted, 1 is assumed.;D [n];Move n units down. If n is omitted, 1 is assumed.;L [n];Move n units left. If n is omitted, 1 is assumed.;R [n];Move n units right. If n is omitted, 1 is assumed.;E [n];Move n units up and right. If n is omitted, 1 is assumed.;F [n];Move n units down and right. If n is omitted, 1 is assumed.;G [n];Move n units down and left. If n is omitted, 1 is assumed.;H [n];Move n units up and left. If n is omitted, 1 is assumed.;###;Commands to color:;C n;Changes current foreground color to n.;P p,b;PAINTs (flood fills) region of border color b with color p.;###;Commands to scale and rotate:;S n;Sets the current unit length, default is 4.  A unit length of 4 is equal to 1 pixel.;A n;Rotate n*90 degrees (n ranges 0-3).;TA n;Rotate n degrees (n ranges 0-359).;###;Extra commands:;X p;Executes commands at p, where p is a STRING PTR."}}
+	
+Commands to set the color, size and angle will take affect all subsequent ##**Draw**## operations.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/draw.bas"}}%%(freebasic)
-'' set the screen mode to 320 * 200, 256 color
-Screen 13
+screen 13
 
-'' start in the center of the screen
-Draw "BM160,100"
+'Move to (50,50) without drawing
+draw "BM 50,50"
 
-'' Draw a box
-Draw "U10 R5 D10 L5"
-Sleep
+'Set drawing color to 2 (green)
+draw "C2"
+
+'Draw a box
+draw "R50 D30 L50 U30"
+
+'Move inside the box
+draw "BM +1,1"
+
+'Flood fill with color 1 (blue) up to border color 2 
+draw "P 1,2"
+
+sleep
 %%
+{{image class="center" title="Draw example output" url="/images/draw1.png"}}
 
 {{fbdoc item="filename" value="examples/manual/gfx/draw2.bas"}}%%(freebasic)
-dim as string fill, angle, pattern
+'' Draws a flower on-screen
+
 dim as integer i, a, c
+dim as string fill, setangle
 
-pattern = ("X" & varptr(angle)) _
-	    & "C15" _
-	      "M+100,+10" _
-	      "M +15,-10" _
-	      "M -15,-10" _
-	      "M-100,+10" _
-	    & "BM+100,0" & ("X" & varptr(fill)) & "BM-100,0"
+'' pattern for each petal
+dim as const string petal = _
+	_
+	("X" & varptr(setangle)) _ '' link to angle-setting string
+	_
+	& "C15" _       '' set outline color (white)
+	& "M+100,+10" _ '' draw outline
+	"M +15,-10" _
+	"M -15,-10" _
+	"M-100,+10" _
+	_
+	& "BM+100,0" _              '' move inside petal
+	& ("X" & varptr(fill)) _    '' flood-fill petal (by linking to fill string)
+	& "BM-100,0"                '' move back out
 
 
+
+'' set screen
 screenres 320, 240, 8
 
+'' move to center
 draw "BM 160, 120"
+
+'' set initial angle and color number
 a = 0: c = 32
+
 for i = 1 to 24
-	
-	angle = "TA" & a
+
+	'' make angle-setting and filling command strings
+	setangle = "TA" & a
 	fill = "P" & c & ",15"
-	a += 15: c += 1
+
+	'' draw the petal pattern, which links to angle-setting and filling strings
+	draw petal
 	
-	draw pattern
+	'' short delay
 	sleep 100
-	
+
+	'' increment angle and color number
+	a += 15: c += 1
+
 next i
 
 sleep
@@ -71,5 +104,6 @@ sleep
 	- ##[[KeyPgDrawString Draw String]]##
 	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
 	- ##[[KeyPgOpVarptr VarPtr]]##
+	- ##[[KeyPgPaint Paint]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -293,9 +293,11 @@ The only annoying feature of this method is the fact you need a separate source 
 Instead of encryption you can use BINARY files, which I don't know how to use at this moment (don’t have time to learn; I’m submitting the tutorial in the nick of time), and which also AREN'T the same as ENCRYPTION. Encrypted files using these routines  people can only decrypt if they know the password (well, most people), while BINARIES can be read by anyone having your source. Ah yes, when providing your source code to public be sure to change the encryption passwords inside it.
 Anyway, you might not need or prefer encryption at all. But I personally like having my high score/script files encrypted so than not every Dick and Tom can change/read them with Notepad. Unencrypted high scores might kill the challenge to beat them with some players.
 Name inputting routine I won't go describing as that's irrelevant. You have to code, read it. It's much better than plain INPUT (you can use it with custom font printing libraries) and allows you to limit the number of characters in the name. The routine was done by 'Ryan Szrama', and all thanks go to him.
-Download the extended example (with encryption and better name inputting): [[http://lachie.phatcode.net/Lachie_HiScoreTut/highscore_example_2.zip]]
+Download the extended example (with encryption and better name inputting): [[http://lachie.phatcode.net/Downloads/Managing_A_High_Score_Table.zip]]
 
 And that's it for this tutorial.
 Until next time, have fun!
 
 A tutorial written by Lachie D. (mailto CHR$(58) lachie13 CHR$(64) yahoo CHR$(46) com ; [[http://lachie.phatcode.net]] - The Maker Of Stuff)
+
+   

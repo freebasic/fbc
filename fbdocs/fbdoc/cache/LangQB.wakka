@@ -13,12 +13,9 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- If a single line [[KeyPgIfthen IF]] has an (unnecessary) colon directly after the THEN, it has to be terminated by an [[KeyPgEndif END IF]] in FB. If that unneeded colon is removed, FB will behave as QB.
 
 ==Design differences==
-	- Graphics support was internally redesigned. QB used VGA graphics modes, and wrote directly into the VGA RAM. Multiple pages were available as long as the card supported them. FB uses backbuffers, one per defined page, and copies them to the video RAM (VGA (DOS), VESA (DOS), DirectX (Win32), ...) in the background. Graphics commands do work as they used to in QB, but a few notable differences are present:
-		- The background screen updating eats a considerable amount of CPU performance.
-		- There is a thread (Win32 and Linux) or ISR (DOS, uses the PIT) active for this.
-		- Mixing FB's graphics support with low-level screen accesses (VGA) is absolutely prohibited, even in DOS, OTOH semi-low-level can be done using Screenptr and Screenlock, and is even portable. In DOS VGA and VESA are still available, but can't be mixed with FB's graphics support.    
+	- Graphics support was internally redesigned, see [[GfxLib GfxLib overview]]
 	- CLEAR is no longer used to reset all variables and set the stack. Variables must be reset one by one, and stack size can be changed in the compiler command line. The keyword CLEAR is used to do memory fills in FB.
-	- String DATA items must be enclosed in quotes in FB, in QB this was optional 
+	- String DATA items must be enclosed in quotes in FB, in QB this was optional
 	- All functions must have been declared, even with a CALL in FreeBASIC. With CALL it was possible to invoke prototype-less functions in QuickBASIC. (to be supported in future with -lang qb)
 	- In FreeBASIC all arrays must be explicitly declared. (Interpreted QuickBASIC arrays are automatically created with up to 10 indices.)
 	- Strings use a null (char 0) terminator to be compatible with C libraries and the Windows API, fixed-length strings can't contain chr$(0) chars for now.

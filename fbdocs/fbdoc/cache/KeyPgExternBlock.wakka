@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="EXTERN...END EXTERN"}}----
-Statement block to give external linkage to declarative statements
+Statement block to allow calling of functions compiled for specific languages or platforms.
 
 {{fbdoc item="syntax"}}##
 	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS"""** }
@@ -7,7 +7,7 @@ Statement block to give external linkage to declarative statements
 	**End Extern**
 ##
 {{fbdoc item="desc"}}
-	##**Extern**## blocks give external linkage to the names declared within them. They also provide default calling conventions for procedures and mandate a certain name decoration.
+	##**Extern**## blocks provide default calling conventions for procedures and mandate a certain name decoration.
 
 	##**Extern """C"""**## blocks provide a default ##[[KeyPgCdecl Cdecl]]## calling convention to procedures, and also preserve the case of all names declared within them.
 
