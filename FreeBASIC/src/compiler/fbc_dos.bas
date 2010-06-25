@@ -263,9 +263,6 @@ private sub _getDefaultLibs _
 	hAddLib( "m" )
 	hAddLib( "supcx" )
 
-    '' libiberty is needed by the rtlib, for vsnprintf(). (with DJGPP 2.03)
-	hAddLib( "iberty" )
-
 end sub
 
 
