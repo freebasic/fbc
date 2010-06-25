@@ -2,6 +2,17 @@
 
 namespace fbc_tests.functions.zwstring_params
 
+	'' Declares to test implicit BYREFs
+	declare sub foo(  s as  string )
+	declare sub zfoo( z as zstring )
+	declare sub wfoo( w as wstring )
+
+	sub foo( byref s as string )
+
+		CU_ASSERT_EQUAL( s, "Test" )
+
+	end sub
+
 	sub zfoo( byref z as zstring )
 
 		CU_ASSERT_EQUAL( z, "Test" )
@@ -21,6 +32,12 @@ namespace fbc_tests.functions.zwstring_params
 		s10 = "Test"
 		z10 = "Test"
 		w10 = "Test"
+
+		foo( "Test" )
+		foo( s )
+		foo( s10 )
+		foo( z10 )
+		foo( w10 )
 
 		zfoo( "Test" )
 		zfoo( s )

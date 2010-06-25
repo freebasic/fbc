@@ -421,6 +421,7 @@ private function hParamDecl _
 		dtype  = FB_DATATYPE_INVALID
 	end if
 
+	use_default = FALSE
 	if( mode = INVALID ) then
 		mode = env.opt.parammode
 		use_default = TRUE
@@ -495,7 +496,7 @@ private function hParamDecl _
 
 		'' we have to delay the true default until now, since
 		'' byval/byref depends on the symbol type
-		if( use_default = TRUE ) then
+		if( use_default ) then
 			mode = symbGetDefaultCallConv( typeGet( dtype ), subtype )
 		end if
 
