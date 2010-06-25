@@ -27,118 +27,78 @@ Usage:
 tram will cd ../../.. to work in the FreeBASIC root directory.
 
 Options:
-    dos
-    linux
-    win32
+    dos, linux, win32
         Enables this target, instead of defaulting to the host.
         (Note: currently only the 'dos' option is useful)
 
     standalone
-        linux: Build the standalone compiler/package instead of the normal one.
-        win32/dos: standalone is always enabled by default, this option is not
-        required.
+        Needed to build linux-standalone instead of linux.
+        (win32/dos: standalone is enabled by default already)
 
     clean
         Perform the clean-up versions of each step.
 
-        e.g. 'pullbin clean' will remove binaries instead of copying them
-        into the root tree,
-
-        'compiler make clean' will run 'make clean' on the compiler and
-        remove fbc.exe, instead of compiling it, etc.
-
-        Steps that have nothing to clean up (e.g. remake) will be ignored.
-        (e.g. for 'remake': removing fbc.exe and it's .o's can already be done
-        via 'compiler make clean')
-
     pullbin
         Copy in binaries & libraries from MinGW/DJGPP/the system & the previous
         FB release. The binaries-<target>.ini files contain the lists.
-        Only applies if standalone is enabled (i.e. not on linux if 'standalone'
-        wasn't specified).
 
     genimplibs  (win32 only)
-        Run ../genimplibs/genimplibs.exe to generate all import libraries.
+        Use the src/contrib/genimplibs tool to generate all import libraries.
 
-    rtlib
-    gfxlib2
-    compiler
+    rtlib, gfxlib2, compiler
         What to configure/make.
 
     configure
-        Run configure script(s); exact options are hard-coded, except for linux
-        standalone.
+        Run configure script(s); exact options are hard-coded.
 
     make
         Compile stuff.
 
-    remake      (Requires 'pullbin compiler')
+    remake
         Re-compile fbc with the one present in the root tree.
 
     build
         Shortcut for 'rtlib gfxlib2 compiler configure make remake',
         i.e. compile everything.
 
-    genlist
-        Generate the manifest in manifest/<target>.lst,
-        based on the include/exclude patterns in
-        src/contrib/tram2/manifest-pattern.ini.
+    manifest
+        Generate manifest/<target>.lst, based on the include/exclude patterns
+        in src/contrib/tram2/manifest-pattern.ini.
 
-    testlist
-        Check whether the files specified in the manifest exist physically.
-        Missing files will be reported (but not files that are not listed).
-
-    package
+    archive
         Put everything in an archive ready for uploading.
 
     installer
         Build the Windows installer.
 
+    source
+        Create a source code archive (uses svn export).
+
     If no options are specified, tram will do nothing.
 
 --------------------------------------------------------------------------------
 
-All-in-one, from zero to release package:
+All-in-one, from zero to release archive:
 
-    The resulting packages (.tar.lzma) are placed in the parent directory of
-    the FreeBASIC/ tree.
-
-    Command-lines to copy in binaries/libs, build everything, generate a new
-    manifest and create the package based on that manifest:
+    The resulting archives (.tar.lzma) are placed in the parent directory of
+    the FreeBASIC/ tree. You can easily see differences between the generated
+    manifest and your SVN working base.
 
     linux -> linux:
-        $ ./tram2 build genlist package
+        $ ./tram2 build manifest archive
         $ ./tram2 build clean
 
     linux -> linux standalone:
-        $ ./tram2 standalone pullbin build genlist package
+        $ ./tram2 standalone pullbin build manifest archive
         $ ./tram2 standalone pullbin build clean
 
     win32 -> dos:
-        $ tram2 dos pullbin build genlist package
+        $ tram2 dos pullbin build manifest archive
         $ tram2 dos pullbin build clean
 
     win32 -> win32:
-        $ tram2 pullbin genimplibs build genlist package installer
+        $ tram2 pullbin genimplibs build manifest archive installer
         $ tram2 pullbin genimplibs build clean
-
-Manifest generation:
-
-    Since manifests are in SVN you don't always need this, but it's important to
-    update the manifests after files were added/removed from the code base.
-    This implies all needed binaries/libraries are present in the tree.
-    Make sure to check the new manifest.
-
-    linux -> linux:             $ ./tram2 genlist
-    linux -> linux standalone:  $ ./tram2 standalone genlist
-    win32 -> dos:               $ tram2 dos genlist
-    win32 -> win32:             $ tram2 genlist
-
-Testing the FreeBASIC/ tree against manifests:
-    linux -> linux:             $ ./tram2 testlist
-    linux -> linux standalone:  $ ./tram2 standalone testlist
-    win32 -> dos:               $ tram2 dos testlist
-    win32 -> win32:             $ tram2 testlist
 
 --------------------------------------------------------------------------------
 

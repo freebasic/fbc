@@ -27,8 +27,9 @@ type TRAMCTX
 
     as string manifest
 
-    as string title     '' Title for output package/installer, e.g. FreeBASIC-0.21-win32
+    as string title     '' Title for output archive/installer, e.g. FreeBASIC-0.21-win32
 
+    as boolean standalone : 1
     as boolean pullbin    : 1
     as boolean genimplibs : 1
     as boolean rtlib      : 1
@@ -38,11 +39,10 @@ type TRAMCTX
     as boolean configure  : 1
     as boolean make       : 1
     as boolean remake     : 1
-    as boolean genlist    : 1
-    as boolean testlist   : 1
-    as boolean package    : 1
+    as boolean genmanifest: 1
+    as boolean archive    : 1
     as boolean installer  : 1
-    as boolean standalone : 1
+    as boolean source     : 1
 
     as boolean had_error  : 1
 end type
@@ -166,17 +166,17 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
             tram.make = TRUE
             tram.remake = TRUE
 
-        case "genlist"
-            tram.genlist = TRUE
+        case "manifest"
+            tram.genmanifest = TRUE
 
-        case "testlist"
-            tram.testlist = TRUE
-
-        case "package"
-            tram.package = TRUE
+        case "archive"
+            tram.archive = TRUE
 
         case "installer"
             tram.installer = TRUE
+
+        case "source"
+            tram.source = TRUE
 
         case else
             print "Error: unknown command-line option: '";arg;"'"
@@ -192,11 +192,6 @@ sub replacePathVars(byref path as string)
 end sub
 
 sub pullBinaries()
-    if (tram.standalone = FALSE) then
-        print "Ignoring 'pullbin' because 'standalone' wasn't specified."
-        return
-    end if
-
     dim as string binariesfile = "src/contrib/tram2/binaries-" + tram.target_name + ".ini"
 
     if (tram.clean) then
@@ -256,20 +251,14 @@ sub pullBinaries()
 end sub
 
 sub generateImportLibraries()
-    if (tram.target <> TARGET_WIN32) then return
-
     if (tram.clean) then
         print "Removing import libraries."
         sh("rm -f lib/win32/*.dll.a")
     else
         print "Generating import libraries."
         cd("src/contrib/genimplibs")
-        STEP_BEGIN()
-            sh("make")
-        STEP_END()
-        STEP_BEGIN()
-            sh("genimplibs -f -a")
-        STEP_END()
+        sh("make")
+        sh("genimplibs -f -a")
         cd("../../..")
     end if
 end sub
@@ -281,8 +270,6 @@ sub configure(byref tree as string, byref options as string)
 end sub
 
 sub configureRtlib()
-    if (tram.clean) then return
-
     print "Configuring rtlib."
     configure("rtlib", " CC=" + tram.gcc + _
                        " AR=" + tram.ar + _
@@ -291,8 +278,6 @@ sub configureRtlib()
 end sub
 
 sub configureGfxlib2()
-    if (tram.clean) then return
-
     print "Configuring gfxlib2."
     configure("gfxlib2", " CC=" + tram.gcc + _
                          " AR=" + tram.ar + _
@@ -301,8 +286,6 @@ sub configureGfxlib2()
 end sub
 
 sub configureCompiler()
-    if (tram.clean) then return
-
     print "Configuring compiler."
     configure("compiler", " FBC=" + tram.fbc + _
                           " CC=" + tram.gcc + _
@@ -337,8 +320,6 @@ sub makeRtlib()
 end sub
 
 sub makeRtlibMt()
-    if (tram.target = TARGET_DOS) then return
-
     cd("src/rtlib/obj/" + tram.target_name)
 
     if (tram.clean) then
@@ -371,15 +352,15 @@ sub makeGfxlib2()
 end sub
 
 sub makeCompiler()
+    print "Compiling fbc."
+
     cd("src/compiler/obj/" + tram.target_name)
 
     dim as string fbc = "../../../../fbc" + tram.exeext
     if (tram.clean) then
-        print "Cleaning up compiler."
         sh("make clean")
         rm(fbc)
     else
-        print "Compiling compiler."
         sh("make")
         cp("fbc_new" + tram.exeext, fbc)
     end if
@@ -388,61 +369,81 @@ sub makeCompiler()
 end sub
 
 sub remakeCompiler()
-    if (tram.clean) then return
-
     '' Rebuild fbc with the one that was built before, this fbc will be
     '' built with the tools in the root tree, and linked against the libs
     '' in the root tree.
+    print "Re-compiling fbc."
 
     dim as string fbc = "../../../../fbc" + tram.exeext
 
-    STEP_BEGIN()
-        print "Re-configuring compiler."
-        configure("compiler", " FBC=" + fbc + _
-                              " CC=" + tram.gcc + _
-                              tram.conf_compiler)
-    STEP_END()
+    configure("compiler", " FBC=" + fbc + _
+                          " CC=" + tram.gcc + _
+                          tram.conf_compiler)
 
     cd("src/compiler/obj/" + tram.target_name)
-
-    STEP_BEGIN()
-        sh("make clean")
-    STEP_END()
-
-    STEP_BEGIN()
-        print "Re-compiling compiler."
-        sh("make")
-    STEP_END()
-
+    sh("make clean")
+    sh("make")
     cp("fbc_new" + tram.exeext, fbc)
-
     cd("../../../..")
 end sub
 
-sub generateManifest()
-    if (tram.clean) then return
+sub applyPattern _
+    ( _
+        byref manifest as string, _
+        byref filelist as string, _
+        byref pattern as string, _  
+        byval exclude as boolean _
+    )
 
-    print "Generating manifest '" + tram.manifest + "'."
+    dim as string cmd = ""
+    dim as string temp = "../manifest.tmp"  '' Temporary file used when excluding
+
+    '' Run the files list through the pattern.
+    '' Note: using double quotes to prevent quirks with the
+    '' cmd.exe escape character '^'.
+    cmd = "grep -E """ + pattern + """ "
+
+    if (exclude) then
+        '' Excluding: Apply the inversed pattern to
+        '' the current manifest (removing from what was gathered
+        '' already), and overwrite the current manifest.
+        cmd += "-v " + manifest + " > " + temp
+    else
+        '' Including: Apply the pattern to the whole file list,
+        '' append the result to the manifest (duplicates are
+        '' removed later).
+        cmd += filelist + " >> " + manifest
+    end if
+
+    '' grep will return exit code '1' if no matches were found,
+    '' so handle this special case as not-an-error. 
+    '' On linux a '256' exit code is coming from somewhere,
+    '' when not matches were found, weird...
+    sh(cmd, 256)
+
+    if (exclude) then
+        cp(temp, manifest)
+    end if
+
+    rm(temp)
+end sub
+
+sub generateManifest(byref manifest as string, byref patternfile as string)
+    print "Generating manifest '" + manifest + "' using '";patternfile;"'."
 
     '' Note: creating temp files outside the tree, otherwise they'd be listed too...
-    dim as string files = "../files.tmp"            '' Temp file holding the full list of files
-    dim as string manifest = "../manifest1.tmp"     '' Main temp file holding the current result
-    dim as string manifest2 = "../manifest2.tmp"    '' Temp file used when excluding
+    dim as string filelist = "../filelist.tmp"
 
     '' Find files (files only, no directories), and remove leading ./, because
     '' find's output looks like:
-    ''  ./file.a
-    ''  ./dir/file.bas
+    ''      ./file.a
+    ''      ./dir/file.bas
     '' but we want:
-    ''  file.a
-    ''  dir/file.bas
-    STEP_BEGIN()
-        print "Generating temporary list of all files."
-        sh("find . -type f | sed 's/^\.\///' > " + files)
-    STEP_END()
+    ''      file.a
+    ''      dir/file.bas
+    sh("find . -type f | sed 's/^\.\///' > " + filelist)
 
     '' Read in & apply the regexps
-    dim as string patternfile = "src/contrib/tram2/manifest-pattern.ini"
     dim as integer f = freefile()
     if (open(patternfile, for input, as #f)) then
         print "Can't access " + patternfile
@@ -450,10 +451,7 @@ sub generateManifest()
         return
     end if
 
-    print "Applying include/exclude patterns from '";patternfile;"'."
-
     dim as string ln = ""
-    dim as string cmd = ""
     dim as boolean skipping = FALSE
 
     while (eof(f) = FALSE)
@@ -463,48 +461,28 @@ sub generateManifest()
         if (len(ln) > 0) then
             select case (ln[0])
             case asc("+"), asc("-")
-                dim as boolean exclude = (ln[0] = asc("-"))
-
                 if (skipping = FALSE) then
+                    '' '-' means "exclude it".
+                    dim as boolean exclude = (ln[0] = asc("-"))
+
+                    '' Cut off +/- at the front.
                     ln = trim(right(ln, len(ln) - 1))
 
+                    '' Replace '<target>' by 'win32' etc.
                     ln = strReplace(ln, "<target>", tram.target_name)
 
-                    '' Run the files list through the pattern.
-                    '' Note: using double quotes to prevent quirks with the
-                    '' cmd.exe escape character '^'.
-                    cmd = "grep -E """ + ln + """ "
-
-                    if (exclude) then
-                        '' Excluding: Apply the inversed pattern to
-                        '' the current manifest (removing from what was gathered
-                        '' already), and overwrite the current manifest.
-                        cmd += "-v " + manifest + " > " + manifest2
-                    else
-                        '' Including: Apply the pattern to the whole file list,
-                        '' append the result to the manifest (duplicates are
-                        '' removed later).
-                        cmd += files + " >> " + manifest
-                    end if
-
-                    STEP_BEGIN()
-                        '' grep will return exit code '1' if no matches were found,
-                        '' so handle this special case as not-an-error. 
-                        '' On linux a '256' exit code is coming from somewhere,
-                        '' when not matches were found, weird...
-                        sh(cmd, 256)
-                    STEP_END()
-
-                    STEP_BEGIN()
-                        if (exclude) then
-                            cp(manifest2, manifest)
-                        end if
-                    STEP_END()
+                    applyPattern(manifest, filelist, ln, exclude)
                 end if
 
+            '' '[' [Target] ']'
             case asc("[")
                 if (right(ln, 1) = "]") then
+                    '' Cut off the []'s.
                     ln = trim(mid(ln, 2, len(ln)-2))
+
+                    '' Finding empty []'s/the correct target stops skipping.
+                    '' If a different target is found, this section is skipped
+                    '' until the next [...].
                     skipping = ((len(ln) > 0) and (ln <> tram.target_name))
                 end if
 
@@ -514,88 +492,35 @@ sub generateManifest()
 
     close #f
 
-    STEP_BEGIN()
-        print "Sorting & removing duplicates."
-        '' Sort: case-insensitive, removing duplicates.
-        sh("sort --unique --ignore-case " + manifest + " > " + tram.manifest)
-    STEP_END()
+    '' Sort: case-insensitive, removing duplicates.
+    dim as string temp = "../manifest.tmp"
+    sh("sort --ignore-case --unique " + manifest + " > " + temp)
+    cp(temp, manifest)
+    rm(temp)
 
     #ifdef __FB_WIN32__
-        STEP_BEGIN()
-            sh("dos2unix --dos2unix " + tram.manifest)
-        STEP_END()
+        sh("dos2unix --dos2unix " + manifest)
     #endif
 
-    rm(manifest2)
-    rm(manifest)
-    rm(files)
+    rm(filelist)
 end sub
 
-sub testManifest()
-    if (tram.clean) then return
-
-    print "Testing file tree against '";tram.manifest;"'."
-
-    dim as integer good = 0
-    dim as integer missing = 0
-
-    dim as integer f = freefile()
-    if (open(tram.manifest, for input, as #f)) then
-        print "Error: Cannot access '" + tram.manifest + "'."
-        tram.had_error = TRUE
-        return
-    end if
-
-    dim as string ln = ""
-
-    while (eof(f) = FALSE)
-        line input #f, ln
-
-        if (len(ln)) then
-            if (fileExists(ln)) then
-                good += 1
-            else
-                missing += 1
-                print "Missing: ";ln
-                tram.had_error = TRUE
-            end if
-        end if
-    wend
-
-    close #f
-
-    print good & " good, " & missing & " missing."
-end sub
-
-function getStandalone() as string
-    if (tram.target = TARGET_LINUX) then
-        if (tram.standalone) then
-            return "-standalone"
-        end if
-    end if
-    return ""
-end function
-
-sub createPackage()
-    if (tram.clean) then return
-
-    dim as string package = "../" + tram.title + ".tar.lzma"
-    print "Packaging '";package;"'."
-
-    dim as string ln = "tar"
+sub createArchive(byref title as string, byref manifest as string)
+    dim as string archive = "../" + title + ".tar.lzma"
+    print "Archiving '";archive;"'."
 
     '' Create archive using LZMA compression
-    ln += " -c --lzma"
-
-    '' Read input files from the manifest
-    ln += " -T " + tram.manifest
+    dim as string ln = "tar -c --lzma"
 
     '' Prefix all filenames with the <title>/ directory, i.e. put all files
     '' in that directory in the archive.
-    ln += " --transform=""s,^," + tram.title + "/,"""
+    ln += " --transform=""s,^," + title + "/,"""
+
+    '' Read input files from the manifest
+    ln += " -T " + manifest
 
     '' Output filename
-    ln += " -f " + package
+    ln += " -f " + archive
 
     sh(ln)
 end sub
@@ -699,9 +624,6 @@ sub createNsisScript(byref script as string, byref setupexe as string)
 end sub
 
 sub createInstaller()
-    if (tram.clean) then return
-    if (tram.target <> TARGET_WIN32) then return
-
     dim as string setupexe = "../" + tram.title + ".exe"
     dim as string script = "src/contrib/tram2/installer.nsi"
 
@@ -712,6 +634,30 @@ sub createInstaller()
 
     rm(script)
 end sub
+
+sub createSourceArchive()
+    dim as string title = tram.title + "-source"
+    dim as string archive = "../" + title + ".tar.lzma"
+
+    print "Creating source code archive '";archive;"'."
+
+    '' Duplicate the working copy
+    sh("svn export . " + title)
+
+    '' Create .tar.lzma tarball
+    sh("tar -c --lzma -f " + archive + " " + title)
+
+    sh("rm -r -f " + title)
+end sub
+
+function getStandaloneTitle() as string
+    if (tram.target = TARGET_LINUX) then
+        if (tram.standalone) then
+            return "-standalone"
+        end if
+    end if
+    return ""
+end function
 
 ''
 '' main
@@ -750,7 +696,7 @@ end sub
         tram.target_name = "linux"
         tram.exeext = ""
 
-        tram.sys_prev = "~/FreeBASIC-0.20" + getStandalone()
+        tram.sys_prev = "~/FreeBASIC-0.20" + getStandaloneTitle()
         tram.sys_gcc  = "/usr"
 
         tram.fbc    = "fbc"
@@ -780,10 +726,10 @@ end sub
     tram.conf_gfxlib2 += " CFLAGS=-O2"
 
     '' The default manifest is manifest/<target>.lst.
-    tram.manifest = "manifest/" + tram.target_name + getStandalone() + ".lst"
+    tram.manifest = "manifest/" + tram.target_name + getStandaloneTitle() + ".lst"
 
     tram.title = "FreeBASIC-" + FB_VERSION + "-" + getDateStamp() + "-" + _
-                 tram.target_name + getStandalone()
+                 tram.target_name + getStandaloneTitle()
 
     '' We always use standalone for dos/win32 targets, but for linux, there is
     '' the 'standalone' tram2 commandline option.
@@ -816,22 +762,24 @@ end sub
     end if
 
     if (tram.configure) then
-        if (tram.rtlib) then
-            STEP_BEGIN()
-                configureRtlib()
-            STEP_END()
-        end if
+        if (tram.clean = FALSE) then
+            if (tram.rtlib) then
+                STEP_BEGIN()
+                    configureRtlib()
+                STEP_END()
+            end if
 
-        if (tram.gfxlib2) then
-            STEP_BEGIN()
-                configureGfxlib2()
-            STEP_END()
-        end if
+            if (tram.gfxlib2) then
+                STEP_BEGIN()
+                    configureGfxlib2()
+                STEP_END()
+            end if
 
-        if (tram.compiler) then
-            STEP_BEGIN()
-                configureCompiler()
-            STEP_END()
+            if (tram.compiler) then
+                STEP_BEGIN()
+                    configureCompiler()
+                STEP_END()
+            end if
         end if
     end if
 
@@ -840,9 +788,11 @@ end sub
             STEP_BEGIN()
                 makeRtlib()
             STEP_END()
-            STEP_BEGIN()
-                makeRtlibMt()
-            STEP_END()
+            if (tram.target <> TARGET_DOS) then
+                STEP_BEGIN()
+                    makeRtlibMt()
+                STEP_END()
+            end if
         end if
 
         if (tram.gfxlib2) then
@@ -858,34 +808,36 @@ end sub
         end if
     end if
 
-    if (tram.remake and tram.compiler) then
-        STEP_BEGIN()
-            remakeCompiler()
-        STEP_END()
-    end if
+    if (tram.clean = FALSE) then
+        if (tram.remake and tram.compiler) then
+            STEP_BEGIN()
+                remakeCompiler()
+            STEP_END()
+        end if
 
-    if (tram.genlist) then
-        STEP_BEGIN()
-            generateManifest()
-        STEP_END()
-    end if
+        if (tram.genmanifest) then
+            STEP_BEGIN()
+                generateManifest(tram.manifest, "src/contrib/tram2/manifest-pattern.ini")
+            STEP_END()
+        end if
 
-    if (tram.testlist) then
-        STEP_BEGIN()
-            testManifest()
-        STEP_END()
-    end if
+        if (tram.archive) then
+            STEP_BEGIN()
+                createArchive(tram.title, tram.manifest)
+            STEP_END()
+        end if
 
-    if (tram.package) then
-        STEP_BEGIN()
-            createPackage()
-        STEP_END()
-    end if
+        if (tram.installer) then
+            STEP_BEGIN()
+                createInstaller()
+            STEP_END()
+        end if
 
-    if (tram.installer) then
-        STEP_BEGIN()
-            createInstaller()
-        STEP_END()
+        if (tram.source) then
+            STEP_BEGIN()
+                createSourceArchive()
+            STEP_END()
+        end if
     end if
 
     print "Done."
