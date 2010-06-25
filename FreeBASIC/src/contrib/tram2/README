@@ -117,37 +117,15 @@ all <target>'s:
         win32:  C:/FreeBASIC-0.20
 
 dos:
-    * DJGPP 2.03 (DJGPP current), default: C:/DJGPP
+    * DJGPP 2.03/current packages with djdev204.zip from DJGPP 204/beta, default: C:/DJGPP
+        Download:
 
-        2.03 misses snprintf(), so the rtlib falls back to vsnprintf(), but that
-        is apparently only provided by libiberty. This means fbc would always
-        have to link in libiberty when using the rtlib.
-
-        2.03 misses stdint.h, which is needed by the rtlib, so it must be copied
-        from 2.04 (DJGPP beta).
-
-        2.04 misses fseeko()/ftello() & co, but libbfd needs those, so currently
-        2.04 can't be used (although it would probably be possible to use libsupp
-        and build DOS libbfd with it, it maps ftello() to libsupp_ftello()...)
-
-        Download for 2.03:
-
-            http://www.delorie.com/pub/djgpp/current/v2/djdev203.zip       (core)
+            http://www.delorie.com/pub/djgpp/beta/v2/djdev204.zip       (core)
             http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219b.zip     (binutils 2.19 binaries)
             http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219a.zip     (binutils additional stuff: libiberty, BFD headers, ..)
             http://www.delorie.com/pub/djgpp/current/v2gnu/gcc442b.zip     (gcc 4.4.2 binaries)
             http://www.delorie.com/pub/djgpp/current/v2gnu/gdb611b.zip     (gdb 6.1.1 binaries)
             http://www.delorie.com/pub/djgpp/current/v2gnu/gpp442b.zip     (g++ 4.4.2 binaries)
-
-        Download for 2.04:
-
-            http://www.delorie.com/pub/djgpp/beta/v2/djdev204.zip       (core)
-            http://www.delorie.com/pub/djgpp/beta/v2gnu/bnu219b.zip     (binutils 2.19 binaries)
-            http://www.delorie.com/pub/djgpp/beta/v2gnu/bnu219a.zip     (binutils additional stuff: libiberty, BFD headers, ..)
-            http://www.delorie.com/pub/djgpp/beta/v2gnu/gcc442b.zip     (gcc 4.4.2 binaries)
-            http://www.delorie.com/pub/djgpp/beta/v2gnu/gdb64b.zip      (gdb 6.4 binaries)
-            http://www.delorie.com/pub/djgpp/beta/v2gnu/gpp442b.zip     (g++ 4.4.2 binaries)
-            http://www.delorie.com/pub/djgpp/beta/v2tk/lsupp64a.zip     (libsupp support library, contains functions from DJGPP's CVS which are not yet released)
 
         Add environment variable:
             DJGPP   =   C:\DJGPP\djgpp.env
