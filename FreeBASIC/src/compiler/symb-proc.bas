@@ -2885,6 +2885,7 @@ function symbGetDefaultCallConv _
 	select case as const dtype
     case FB_DATATYPE_FWDREF, _
          FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, _
+	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
          FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 
          return FB_PARAMMODE_BYREF
