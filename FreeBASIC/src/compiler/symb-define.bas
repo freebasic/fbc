@@ -64,9 +64,11 @@ declare function 	hDefExxErr_cb 		( ) as string
 declare function	hDefLang_cb			( ) as string
 declare function    hDefPath_cb         ( ) as string
 declare function    hDefGcc_cb         	( ) as string
+declare function    hDefUnix_cb         ( ) as string  
+declare function    hDefPCOS_cb         ( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 32 '' 28
+const SYMB_MAXDEFINES = 34
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -95,6 +97,8 @@ const SYMB_MAXDEFINES = 32 '' 28
         (@"__FB_OUT_LIB__"            ,   NULL                ,  1,   @hDefOutLib_cb         ), _
         (@"__FB_OUT_DLL__"            ,   NULL                ,  1,   @hDefOutDll_cb         ), _
         (@"__FB_OUT_OBJ__"            ,   NULL                ,  1,   @hDefOutObj_cb         ), _
+        (@"__FB_UNIX__"               ,   NULL                ,  1,   @hDefUnix_cb           ), _
+        (@"__FB_PCOS__"               ,   NULL                ,  1,   @hDefPCOS_cb           ), _
         (@"__FB_DEBUG__"              ,   NULL                ,  1,   @hDefDebug_cb          ), _
         (@"__FB_ERR__"                ,   NULL                ,  1,   @hDefErr_cb            ), _
         (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
@@ -295,6 +299,40 @@ end function
 private function hDefGcc_cb( ) as string static
 
 	function = str( irGetOption( IR_OPT_HIGHLEVEL ) )
+
+end function
+
+'':::::
+private function hDefUnix_cb( ) as string
+
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case /'FB_COMPTARGET_BEOS,'/ _  '' TODO: update when new targets have been added
+         FB_COMPTARGET_CYGWIN, _
+         FB_COMPTARGET_DARWIN, _
+         FB_COMPTARGET_FREEBSD, _
+         /'FB_COMPTARGET_INTERIX,'/ _
+         FB_COMPTARGET_LINUX, _
+         FB_COMPTARGET_NETBSD, _
+         FB_COMPTARGET_OPENBSD
+		return "-1"
+	case else
+		return "0"
+	end select
+
+end function
+
+'':::::
+private function hDefPCOS_cb( ) as string
+
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_DOS, _
+         /'FB_COMPTARGET_OS2,'/ _
+         /'FB_COMPTARGET_SYMBIAN,'/ _
+         FB_COMPTARGET_WIN32
+		return "-1"
+	case else
+		return "0"
+	end select
 
 end function
 
