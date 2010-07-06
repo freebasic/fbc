@@ -37,4 +37,4 @@
   IupMainLoop()      
   
   '' Finishes IUP
-  IupClose()         
+  IupClose()

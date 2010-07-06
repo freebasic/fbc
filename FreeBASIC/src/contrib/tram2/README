@@ -44,6 +44,9 @@ Options:
 
     genimplibs  (win32 only)
         Use the src/contrib/genimplibs tool to generate all import libraries.
+        Currently disabled because genimplibs generates "broken" libs.
+        (dlltool 2.19 generates libs differently than dlltool 2.15)
+        The import libs are copied in by pullbin instead.
 
     rtlib, gfxlib2, compiler
         What to configure/make.
