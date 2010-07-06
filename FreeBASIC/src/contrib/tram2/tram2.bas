@@ -251,6 +251,7 @@ sub pullBinaries()
 end sub
 
 sub generateImportLibraries()
+#if 0
     if (tram.clean) then
         print "Removing import libraries."
         sh("rm -f lib/win32/*.dll.a")
@@ -261,6 +262,9 @@ sub generateImportLibraries()
         sh("genimplibs -f -a")
         cd("../../..")
     end if
+#else
+    print "Ignoring genimplibs"
+#endif
 end sub
 
 sub configure(byref tree as string, byref options as string)
