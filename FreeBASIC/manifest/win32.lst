@@ -2699,11 +2699,9 @@ lib/win32/libgdsl.a
 lib/win32/libgif.dll.a
 lib/win32/libglade-2.0.dll.a
 lib/win32/libglaux.a
-lib/win32/libglaux.dll.a
 lib/win32/libglfw.a
 lib/win32/libglib-2.0.dll.a
 lib/win32/libglu32.a
-lib/win32/libglut.dll.a
 lib/win32/libglut32.dll.a
 lib/win32/libgmodule-2.0.dll.a
 lib/win32/libgmon.a

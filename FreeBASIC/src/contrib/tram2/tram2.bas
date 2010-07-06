@@ -435,6 +435,8 @@ end sub
 sub generateManifest(byref manifest as string, byref patternfile as string)
     print "Generating manifest '" + manifest + "' using '";patternfile;"'."
 
+    rm(manifest)
+
     '' Note: creating temp files outside the tree, otherwise they'd be listed too...
     dim as string filelist = "../filelist.tmp"
 
