@@ -5,8 +5,14 @@ MinGW/DJGPP or the previous FB release, package everything into archives,
 build the Windows installer, and more. Everything automated, so it doesn't have
 to be done manually.
 
-The win32 version builds for either win32 or dos, the linux version builds for
-linux (could easily build for all unix-like targets).
+tram2 host:         can build these FB releases:
+    win32               win32, dos
+    linux               linux, linux-standalone
+
+The binaries-<target>.ini files contain the lists of what binaries/libraries to
+copy. manifest-pattern.ini contains regexp patterns that will be passed to
+"grep -E" to generate manifests. The Windows installer is created based on
+installer-template.nsi.
 
 Notes:
 * tram isn't smart, it just executes a bunch of steps.
@@ -24,45 +30,21 @@ Usage:
     make
     ./tram2 [options]
 
-tram will cd ../../.. to work in the FreeBASIC root directory.
+tram will work in the FreeBASIC tree it is located in.
 
 Options:
-    dos, linux, win32
-        Enables this target, instead of defaulting to the host.
-        (Note: currently only the 'dos' option is useful)
+    dos     (win32 only)
+        Switch to target dos, instead of the default win32.
 
     standalone
         Needed to build linux-standalone instead of linux.
-        (win32/dos: standalone is enabled by default already)
+        win32/dos: standalone is enabled by default already.
+
+    build
+        Configure & compile everything.
 
     clean
         Perform the clean-up versions of each step.
-
-    pullbin
-        Copy in binaries & libraries from MinGW/DJGPP/the system & the previous
-        FB release. The binaries-<target>.ini files contain the lists.
-
-    genimplibs  (win32 only)
-        Use the src/contrib/genimplibs tool to generate all import libraries.
-        Currently disabled because genimplibs generates "broken" libs.
-        (dlltool 2.19 generates libs differently than dlltool 2.15)
-        The import libs are copied in by pullbin instead.
-
-    rtlib, gfxlib2, compiler
-        What to configure/make.
-
-    configure
-        Run configure script(s); exact options are hard-coded.
-
-    make
-        Compile stuff.
-
-    remake
-        Re-compile fbc with the one present in the root tree.
-
-    build
-        Shortcut for 'rtlib gfxlib2 compiler configure make remake',
-        i.e. compile everything.
 
     manifest
         Generate manifest/<target>.lst, based on the include/exclude patterns
@@ -92,22 +74,24 @@ All-in-one, from zero to release archive:
         $ ./tram2 build clean
 
     linux -> linux standalone:
-        $ ./tram2 standalone pullbin build manifest archive
-        $ ./tram2 standalone pullbin build clean
+        $ ./tram2 standalone build manifest archive
+        $ ./tram2 standalone build clean
 
     win32 -> dos:
-        $ tram2 dos pullbin build manifest archive
-        $ tram2 dos pullbin build clean
+        $ tram2 dos build manifest archive
+        $ tram2 dos build clean
 
     win32 -> win32:
-        $ tram2 pullbin genimplibs build manifest archive installer
-        $ tram2 pullbin genimplibs build clean
+        $ tram2 build manifest archive installer
+        $ tram2 build clean
 
 --------------------------------------------------------------------------------
 
 Needed stuff (paths can be changed in the source code) & how to setup:
 
-all <target>'s:
+all <target>'s
+--------------
+
     * Working <target> FreeBASIC, defaults:
         dos:    C:/FreeBASIC-dos
         linux:  ~/FreeBASIC
@@ -119,7 +103,9 @@ all <target>'s:
         linux:  ~/FreeBASIC-0.20-standalone
         win32:  C:/FreeBASIC-0.20
 
-dos:
+dos
+---
+
     * DJGPP 2.03/current packages with djdev204.zip from DJGPP 204/beta, default: C:/DJGPP
         Download:
 
@@ -139,17 +125,27 @@ dos:
             C:\DJGPP\lib\gcc\djgpp\4.42\libsupcx.a
         (fbc expects that, probably some 8.3 filename issue)
 
-linux standalone:
-    * Download recent binutils sources, e.g. binutils-2.20.51.
-      Build it and install it on your system, overwriting your current tools.
-      These binutils will have less shared library dependencies.
-      This will also avoid issues regarding libbfd.
+    tram2 uses C:\DJGPP\bin\gcc.exe etc directly, so DJGPP does not need to be
+    in the PATH.
+    The (win32) MSYS is needed in the PATH.
 
-        Ubuntu has binutils etc in /usr, while binutils default prefix is
-        /usr/local, so use /usr as prefix.
+linux
+-----
 
-        $ cd ~/binutils-2.20.51
-        $ ./configure --prefix=/usr --disable-shared --disable-nls
+    tram2 uses the system's gcc/binutils (whatever is in the PATH), often that
+     will be the ones in /usr, e.g. /usr/bin/gcc,
+
+linux standalone
+----------------
+
+    * Download binutils 2.19.1 sources:
+            http://ftp.gnu.org/gnu/binutils/binutils-2.19.1.tar.bz2
+      Build it and install it on your system. These binutils will have less
+      shared library dependencies than the ones distributed with Ubuntu for
+      example.
+
+        $ cd ~/binutils-build
+        $ ../binutils-2.19.1/configure --disable-shared --disable-nls
         $ make
         $ cd bfd      ; sudo make install-strip; cd ..
         $ cd binutils ; sudo make install-strip; cd ..
@@ -159,7 +155,17 @@ linux standalone:
         $ cd libiberty; sudo make install      ; cd ..
         $ cd opcodes  ; sudo make install-strip; cd ..
 
-win32:
+        (The more recent binutils-2.20.51 can also be used, if desired)
+
+    tram2 still uses the system's binutils, but the system should prefer /usr/local
+    over /usr. Usually gcc will still be in /usr (unless you have a self-compiled
+    version of it). Take care to avoid conflicts between /usr and /usr/local,
+    e.g. make sure libbfd/bfd.h from /usr/local are used instead of the ones
+    you might have in /usr.
+
+win32
+-----
+
     * With TDM-GCC 4.4.1, binutils 2.19
 
         Download from http://sourceforge.net/downloads/mingw/
@@ -201,8 +207,8 @@ win32:
           being 1 MB, thus increasing fbc.exe's size by a lot. The libbfd
           built here doesn't have these dependencies.)
 
-            $ cd /c/binutils-2.20.51
-            $ ./configure --prefix=C:/MinGW --disable-shared --disable-nls
+            $ cd /c/binutils-build
+            $ ../binutils-2.20.51/configure --prefix=C:/MinGW --disable-shared --disable-nls
             $ make
             $ cd bfd      ; make install-strip; cd ..
             $ cd binutils ; make install-strip; cd ..
@@ -230,3 +236,6 @@ win32:
 
     * ddraw.h & dinput.h in C:/MinGW/include
       (win32 DirectX headers needed to compile gfxlib2)
+
+    tram2 will use the gcc/binutils/shell tools from PATH, so MinGW & MSYS must
+    be in your PATH.
