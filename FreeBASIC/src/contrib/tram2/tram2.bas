@@ -13,8 +13,8 @@ type TRAMCTX
     as string target_name
     as string exeext
 
-    as string sys_prev  '' Path to previous FreeBASIC release
-    as string sys_gcc   '' Path to MinGW, DJGPP or /usr (to copy libs/binutils from)
+    as string path_prev '' Path to previous FreeBASIC release
+    as string path_sys  '' Path to MinGW, DJGPP or /usr/local (to copy libs/binutils from)
 
     as string fbc
     as string gcc
@@ -30,15 +30,8 @@ type TRAMCTX
     as string title     '' Title for output archive/installer, e.g. FreeBASIC-0.21-win32
 
     as boolean standalone : 1
-    as boolean pullbin    : 1
-    as boolean genimplibs : 1
-    as boolean rtlib      : 1
-    as boolean gfxlib2    : 1
-    as boolean compiler   : 1
+    as boolean build      : 1
     as boolean clean      : 1
-    as boolean configure  : 1
-    as boolean make       : 1
-    as boolean remake     : 1
     as boolean genmanifest: 1
     as boolean archive    : 1
     as boolean installer  : 1
@@ -109,10 +102,6 @@ sub checkForTarget(byval argc as integer, byval argv as zstring ptr ptr)
         select case (arg)
         case "dos"
             tram.target = TARGET_DOS
-        case "linux"
-            tram.target = TARGET_LINUX
-        case "win32"
-            tram.target = TARGET_WIN32
         end select
     next
 end sub
@@ -126,45 +115,16 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
         arg = *argv[i]
 
         select case (arg)
-        case "dos", "linux", "win32"
+        case "dos"
 
         case "standalone"
             tram.standalone = TRUE
 
+        case "build"
+            tram.build = TRUE
+
         case "clean"
             tram.clean = TRUE
-
-        case "pullbin"
-            tram.pullbin = TRUE
-
-        case "genimplibs"
-            tram.genimplibs = TRUE
-
-        case "rtlib"
-            tram.rtlib = TRUE
-
-        case "gfxlib2"
-            tram.gfxlib2 = TRUE
-
-        case "compiler"
-            tram.compiler = TRUE
-
-        case "configure"
-            tram.configure = TRUE
-
-        case "make"
-            tram.make = TRUE
-
-        case "remake"
-            tram.remake = TRUE
-
-        case "build"
-            tram.rtlib = TRUE
-            tram.gfxlib2 = TRUE
-            tram.compiler = TRUE
-            tram.configure = TRUE
-            tram.make = TRUE
-            tram.remake = TRUE
 
         case "manifest"
             tram.genmanifest = TRUE
@@ -186,12 +146,22 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
     next
 end sub
 
-sub replacePathVars(byref path as string)
-    path = strReplace(path, "<gcc>", tram.sys_gcc)
-    path = strReplace(path, "<prev>", tram.sys_prev)
+sub configure(byref options as string)
+    sh("sh ../../configure" + options)
 end sub
 
-sub pullBinaries()
+sub make(byref options as string)
+    sh(" make" + options)
+end sub
+
+sub replacePathVars(byref path as string)
+    path = strReplace(path, "<prev>", tram.path_prev)
+    path = strReplace(path, "<sys>", tram.path_sys)
+end sub
+
+'' Copies in binaries/libraries listed in the binaries-<target>.ini and runs
+'' genimplibs.
+sub getBinsAndLibs()
     dim as string binariesfile = "src/contrib/tram2/binaries-" + tram.target_name + ".ini"
 
     if (tram.clean) then
@@ -248,147 +218,151 @@ sub pullBinaries()
     wend
 
     close #f
+
+    '' Currently disabled because genimplibs generates "broken" libs.
+    '' (dlltool 2.19 generates libs differently than dlltool 2.15)
+    '' The import libs are copied in from the previous release instead.
+    #if 0
+
+    '' Run genimplibs
+    STEP_BEGIN()
+        if (tram.clean) then
+            print "Removing import libraries."
+            sh("rm -f lib/win32/*.dll.a")
+        else
+            print "Generating import libraries."
+            cd("src/contrib/genimplibs")
+            make("")
+            sh("genimplibs -f -a")
+            cd("../../..")
+        end if
+    STEP_END()
+
+    #endif
 end sub
 
-sub generateImportLibraries()
-#if 0
-    if (tram.clean) then
-        print "Removing import libraries."
-        sh("rm -f lib/win32/*.dll.a")
-    else
-        print "Generating import libraries."
-        cd("src/contrib/genimplibs")
-        sh("make")
-        sh("genimplibs -f -a")
-        cd("../../..")
+sub buildRtlib()
+    print "Compiling rtlib."
+
+    cd("src/rtlib/obj/" + tram.target_name)
+
+    STEP_BEGIN()
+        configure(" CC=" + tram.gcc + _
+                  " AR=" + tram.ar + _
+                  " RANLIB=" + tram.ranlib + _
+                  tram.conf_rtlib)
+    STEP_END()
+
+    STEP_BEGIN()
+        make("")
+    STEP_END()
+
+    if (tram.target <> TARGET_DOS) then
+        STEP_BEGIN()
+            make(" MULTITHREADED=1")
+        STEP_END()
     end if
-#else
-    print "Ignoring genimplibs"
-#endif
-end sub
 
-sub configure(byref tree as string, byref options as string)
-    cd("src/" + tree + "/obj/" + tram.target_name)
-    sh("sh ../../configure" + options)
+    make(" install")
+
     cd("../../../..")
 end sub
 
-sub configureRtlib()
-    print "Configuring rtlib."
-    configure("rtlib", " CC=" + tram.gcc + _
-                       " AR=" + tram.ar + _
-                       " RANLIB=" + tram.ranlib + _
-                       tram.conf_rtlib)
+sub buildGfxlib()
+    print "Compiling gfxlib."
+
+    cd("src/gfxlib2/obj/" + tram.target_name)
+
+    STEP_BEGIN()
+        configure(" CC=" + tram.gcc + _
+                  " AR=" + tram.ar + _
+                  " RANLIB=" + tram.ranlib + _
+                  tram.conf_gfxlib2)
+    STEP_END()
+
+    STEP_BEGIN()
+        make("")
+    STEP_END()
+
+    make(" install")
+
+    cd("../../../..")
 end sub
 
-sub configureGfxlib2()
-    print "Configuring gfxlib2."
-    configure("gfxlib2", " CC=" + tram.gcc + _
-                         " AR=" + tram.ar + _
-                         " RANLIB=" + tram.ranlib + _
-                         tram.conf_gfxlib2)
-end sub
+sub buildCompiler()
+    print "Compiling fbc."
 
-sub configureCompiler()
-    print "Configuring compiler."
-    configure("compiler", " FBC=" + tram.fbc + _
-                          " CC=" + tram.gcc + _
-                          tram.conf_compiler + _
-                          " --disable-objinfo")
-end sub
+    cd("src/compiler/obj/" + tram.target_name)
 
-sub cpToLib(byref file as string)
-    cp(file, "../../../../lib/" + tram.target_name + "/" + file)
+    STEP_BEGIN()
+        configure(" FBC=" + tram.fbc + _
+                  " CC=" + tram.gcc + _
+                  tram.conf_compiler + _
+                  " --disable-objinfo")
+    STEP_END()
+
+    STEP_BEGIN()
+        make("")
+    STEP_END()
+
+    make(" install")
+
+    '' Rebuild fbc with the one that was built before, this fbc will be
+    '' built with the tools in the root tree, and linked against the libs
+    '' in the root tree.
+    print "Re-compiling fbc."
+
+    STEP_BEGIN()
+        configure(" FBC=" + "../../../../fbc" + tram.exeext + _
+                  " CC=" + tram.gcc + _
+                  tram.conf_compiler)
+    STEP_END()
+
+    make(" clean")
+
+    STEP_BEGIN()
+        make("")
+    STEP_END()
+
+    make(" install")
+
+    cd("../../../..")
 end sub
 
 sub rmLib(byref file as string)
     rm("../../../../lib/" + tram.target_name + "/" + file)
 end sub
 
-sub makeRtlib()
-    cd("src/rtlib/obj/" + tram.target_name)
+sub build()
+    if (tram.standalone) then
+        getBinsAndLibs()
+    end if
 
     if (tram.clean) then
-        print "Cleaning up rtlib."
-        sh("make clean")
+        cd("src/rtlib/obj/" + tram.target_name)
+        make(" clean")
         rmLib("libfb.a")
         rmLib("fbrt0.o")
-    else
-        print "Compiling rtlib."
-        sh("make")
-        cpToLib("libfb.a")
-        cpToLib("fbrt0.o")
-    end if
+        if (tram.target <> TARGET_DOS) then
+            make(" clean MULTITHREADED=1")
+            rmLib("libfbmt.a")
+        end if
 
-    cd("../../../..")
-end sub
-
-sub makeRtlibMt()
-    cd("src/rtlib/obj/" + tram.target_name)
-
-    if (tram.clean) then
-        print "Cleaning up multi-threaded rtlib."
-        sh("make clean MULTITHREADED=1")
-        rmLib("libfbmt.a")
-    else
-        print "Compiling multi-threaded rtlib."
-        sh("make MULTITHREADED=1")
-        cpToLib("libfbmt.a")
-    end if
-
-    cd("../../../..")
-end sub
-
-sub makeGfxlib2()
-    cd("src/gfxlib2/obj/" + tram.target_name)
-
-    if (tram.clean) then
-        print "Cleaning up gfxlib2."
-        sh("make clean")
+        cd("../../../gfxlib2/obj/" + tram.target_name)
+        make(" clean")
         rmLib("libfbgfx.a")
+        cd("../../../..")
+
+        cd("src/compiler/obj/" + tram.target_name)
+        make(" clean")
+        cd("../../../..")
+
+        rm("fbc" + tram.exeext)
     else
-        print "Compiling gfxlib2."
-        sh("make")
-        cpToLib("libfbgfx.a")
+        buildRtlib()
+        buildGfxlib()
+        buildCompiler()
     end if
-
-    cd("../../../..")
-end sub
-
-sub makeCompiler()
-    print "Compiling fbc."
-
-    cd("src/compiler/obj/" + tram.target_name)
-
-    dim as string fbc = "../../../../fbc" + tram.exeext
-    if (tram.clean) then
-        sh("make clean")
-        rm(fbc)
-    else
-        sh("make")
-        cp("fbc_new" + tram.exeext, fbc)
-    end if
-
-    cd("../../../..")
-end sub
-
-sub remakeCompiler()
-    '' Rebuild fbc with the one that was built before, this fbc will be
-    '' built with the tools in the root tree, and linked against the libs
-    '' in the root tree.
-    print "Re-compiling fbc."
-
-    dim as string fbc = "../../../../fbc" + tram.exeext
-
-    configure("compiler", " FBC=" + fbc + _
-                          " CC=" + tram.gcc + _
-                          tram.conf_compiler)
-
-    cd("src/compiler/obj/" + tram.target_name)
-    sh("make clean")
-    sh("make")
-    cp("fbc_new" + tram.exeext, fbc)
-    cd("../../../..")
 end sub
 
 sub applyPattern _
@@ -684,13 +658,13 @@ end function
         tram.target_name = "dos"
         tram.exeext = ".exe"
 
-        tram.sys_gcc  = "C:/DJGPP"
-        tram.sys_prev = "C:/FreeBASIC-dos-0.20"
+        tram.path_prev = "C:/FreeBASIC-dos-0.20"
+        tram.path_sys  = "C:/DJGPP"
 
         tram.fbc    = "C:/FreeBASIC-dos/fbc.exe"
-        tram.gcc    = tram.sys_gcc + "/bin/gcc.exe"
-        tram.ar     = tram.sys_gcc + "/bin/ar.exe"
-        tram.ranlib = tram.sys_gcc + "/bin/ranlib.exe"
+        tram.gcc    = tram.path_sys + "/bin/gcc.exe"
+        tram.ar     = tram.path_sys + "/bin/ar.exe"
+        tram.ranlib = tram.path_sys + "/bin/ranlib.exe"
 
         '' Note: using --host so fbc is called with -target dos, see README.
         tram.conf_rtlib    = " --target=i386-pc-msdosdjgpp --host=i386-pc-msdosdjgpp"
@@ -702,8 +676,8 @@ end function
         tram.target_name = "linux"
         tram.exeext = ""
 
-        tram.sys_prev = "~/FreeBASIC-0.20" + getStandaloneTitle()
-        tram.sys_gcc  = "/usr"
+        tram.path_sys  = "/usr/local"
+        tram.path_prev = "~/FreeBASIC-0.20" + getStandaloneTitle()
 
         tram.fbc    = "fbc"
         tram.gcc    = "gcc"
@@ -714,8 +688,8 @@ end function
         tram.target_name = "win32"
         tram.exeext = ".exe"
 
-        tram.sys_prev = "C:/FreeBASIC-0.20"
-        tram.sys_gcc  = "C:/MinGW"
+        tram.path_sys  = "C:/MinGW"
+        tram.path_prev = "C:/FreeBASIC-0.20"
 
         tram.fbc    = "fbc"
         tram.gcc    = "gcc"
@@ -755,72 +729,11 @@ end function
         end 1
     end if
 
-    if (tram.pullbin) then
-        STEP_BEGIN()
-            pullBinaries()
-        STEP_END()
-    end if
-
-    if (tram.genimplibs) then
-        STEP_BEGIN()
-            generateImportLibraries()
-        STEP_END()
-    end if
-
-    if (tram.configure) then
-        if (tram.clean = FALSE) then
-            if (tram.rtlib) then
-                STEP_BEGIN()
-                    configureRtlib()
-                STEP_END()
-            end if
-
-            if (tram.gfxlib2) then
-                STEP_BEGIN()
-                    configureGfxlib2()
-                STEP_END()
-            end if
-
-            if (tram.compiler) then
-                STEP_BEGIN()
-                    configureCompiler()
-                STEP_END()
-            end if
-        end if
-    end if
-
-    if (tram.make) then
-        if (tram.rtlib) then
-            STEP_BEGIN()
-                makeRtlib()
-            STEP_END()
-            if (tram.target <> TARGET_DOS) then
-                STEP_BEGIN()
-                    makeRtlibMt()
-                STEP_END()
-            end if
-        end if
-
-        if (tram.gfxlib2) then
-            STEP_BEGIN()
-                makeGfxlib2()
-            STEP_END()
-        end if
-
-        if (tram.compiler) then
-            STEP_BEGIN()
-                makeCompiler()
-            STEP_END()
-        end if
+    if (tram.build) then
+        build()
     end if
 
     if (tram.clean = FALSE) then
-        if (tram.remake and tram.compiler) then
-            STEP_BEGIN()
-                remakeCompiler()
-            STEP_END()
-        end if
-
         if (tram.genmanifest) then
             STEP_BEGIN()
                 generateManifest(tram.manifest, "src/contrib/tram2/manifest-pattern.ini")
