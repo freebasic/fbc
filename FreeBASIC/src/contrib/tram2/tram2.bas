@@ -219,26 +219,21 @@ sub getBinsAndLibs()
 
     close #f
 
-    '' Currently disabled because genimplibs generates "broken" libs.
-    '' (dlltool 2.19 generates libs differently than dlltool 2.15)
-    '' The import libs are copied in from the previous release instead.
-    #if 0
-
-    '' Run genimplibs
-    STEP_BEGIN()
-        if (tram.clean) then
-            print "Removing import libraries."
-            sh("rm -f lib/win32/*.dll.a")
-        else
-            print "Generating import libraries."
-            cd("src/contrib/genimplibs")
-            make("")
-            sh("genimplibs -f -a")
-            cd("../../..")
-        end if
-    STEP_END()
-
-    #endif
+    if (tram.target = TARGET_WIN32) then
+        '' Run genimplibs
+        STEP_BEGIN()
+            if (tram.clean) then
+                print "Removing import libraries."
+                sh("rm -f lib/win32/*.dll.a")
+            else
+                print "Generating import libraries."
+                cd("src/contrib/genimplibs")
+                make("")
+                sh("genimplibs -f -a")
+                cd("../../..")
+            end if
+        STEP_END()
+    end if
 end sub
 
 sub buildRtlib()
