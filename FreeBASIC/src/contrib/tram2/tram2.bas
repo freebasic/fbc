@@ -1,6 +1,6 @@
 #include once "misc.bi"
 
-const FB_VERSION = "0.21"
+const FB_VERSION = "0.21.0"
 
 enum
     TARGET_DOS = 0
@@ -26,8 +26,6 @@ type TRAMCTX
     as string conf_compiler
 
     as string manifest
-
-    as string title     '' Title for output archive/installer, e.g. FreeBASIC-0.21-win32
 
     as boolean standalone : 1
     as boolean build      : 1
@@ -94,6 +92,27 @@ end sub
         print " retrying."
     loop
 #endmacro
+
+function getStandaloneTitle() as string
+    if (tram.target = TARGET_LINUX) then
+        if (tram.standalone) then
+            return "-standalone"
+        end if
+    end if
+    return ""
+end function
+
+function getTargetTitle() as string
+    return tram.target_name + getStandaloneTitle()
+end function
+
+function getReleaseTitle() as string
+    return "FreeBASIC-" + FB_VERSION + "-" + getTargetTitle()
+end function
+
+function getSourceTitle() as string
+    return "FreeBASIC-" + FB_VERSION + "-source"
+end function
 
 sub checkForTarget(byval argc as integer, byval argv as zstring ptr ptr)
     dim as string arg = ""
@@ -599,7 +618,7 @@ sub createNsisScript(byref script as string, byref setupexe as string)
 end sub
 
 sub createInstaller()
-    dim as string setupexe = "../" + tram.title + ".exe"
+    dim as string setupexe = "../" + getReleaseTitle() + ".exe"
     dim as string script = "src/contrib/tram2/installer.nsi"
 
     createNsisScript(script, setupexe)
@@ -611,7 +630,7 @@ sub createInstaller()
 end sub
 
 sub createSourceArchive()
-    dim as string title = tram.title + "-source"
+    dim as string title = getSourceTitle()
     dim as string archive = "../" + title + ".tar.lzma"
 
     print "Creating source code archive '";archive;"'."
@@ -624,15 +643,6 @@ sub createSourceArchive()
 
     sh("rm -r -f " + title)
 end sub
-
-function getStandaloneTitle() as string
-    if (tram.target = TARGET_LINUX) then
-        if (tram.standalone) then
-            return "-standalone"
-        end if
-    end if
-    return ""
-end function
 
 ''
 '' main
@@ -701,10 +711,8 @@ end function
     tram.conf_gfxlib2 += " CFLAGS=-O2"
 
     '' The default manifest is manifest/<target>.lst.
-    tram.manifest = "manifest/" + tram.target_name + getStandaloneTitle() + ".lst"
+    tram.manifest = "manifest/" + getTargetTitle() + ".lst"
 
-    tram.title = "FreeBASIC-" + FB_VERSION + "-" + /'getDateStamp() + "-" +'/ _
-                 tram.target_name + getStandaloneTitle()
 
     '' We always use standalone for dos/win32 targets, but for linux, there is
     '' the 'standalone' tram2 commandline option.
@@ -737,7 +745,7 @@ end function
 
         if (tram.archive) then
             STEP_BEGIN()
-                createArchive(tram.title, tram.manifest)
+                createArchive(getReleaseTitle(), tram.manifest)
             STEP_END()
         end if
 
