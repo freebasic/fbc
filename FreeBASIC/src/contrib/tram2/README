@@ -138,14 +138,14 @@ linux
 linux standalone
 ----------------
 
-    * Download binutils 2.19.1 sources:
-            http://ftp.gnu.org/gnu/binutils/binutils-2.19.1.tar.bz2
+    * Download binutils 2.20.51 sources:
+            ftp://sourceware.org/pub/binutils/snapshots/binutils-2.20.51.tar.bz2
       Build it and install it on your system. These binutils will have less
       shared library dependencies than the ones distributed with Ubuntu for
       example.
 
         $ cd ~/binutils-build
-        $ ../binutils-2.19.1/configure --disable-shared --disable-nls
+        $ ../binutils-2.20.51/configure --disable-shared --disable-nls
         $ make
         $ cd bfd      ; sudo make install-strip; cd ..
         $ cd binutils ; sudo make install-strip; cd ..
@@ -155,7 +155,8 @@ linux standalone
         $ cd libiberty; sudo make install      ; cd ..
         $ cd opcodes  ; sudo make install-strip; cd ..
 
-        (The more recent binutils-2.20.51 can also be used, if desired)
+        (Note: binutils-2.19.1's ld caused trouble on 64bit Linux systems, and
+        binutils-2.20.1 can't be used because of a bug in gas)
 
     tram2 still uses the system's binutils, but the system should prefer /usr/local
     over /usr. Usually gcc will still be in /usr (unless you have a self-compiled
