@@ -1,15 +1,21 @@
-Version 0.22.0 Beta:
+Version 0.22.0:
+
+[changed]
+
+[added]
+
+[fixed]
+
+Version 0.21.1:
 
 [changed]
 - Removed the "v" and "b" from the version number in __FB_SIGNATURE__, following the release archive names
-
-[added]
 
 [fixed]
 - #3034516: Remove trailing backslash from #macro line in inc/ode/odemath.bi
 - gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position. 
 
-Version 0.21.0 Beta:
+Version 0.21.0:
 
 [changed]
 - BLOAD with 32-bpp BMP files now keeps alpha no matter what kind of header is used; fixes custom 32-bpp DRAW STRING fonts - thanks to Sisophon2001 for spotting this (DrV)
