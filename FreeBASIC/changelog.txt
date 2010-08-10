@@ -62,6 +62,7 @@ Version 0.21.0 Beta:
 - search 32-bit library paths in the linker scripts for Linux and FreeBSD (cha0s)
 - preprocessor-only mode, activated by '-pp' command-line option (dkls)
 - @<file> command-line option, to read command-line options from files (dkls)
+- __FB_UNIX__/__FB_PCOS__ target type specific defines, thanks to segin for the patch
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
