@@ -1,6 +1,7 @@
 Version 0.22.0 Beta:
 
 [changed]
+- Removed the "v" and "b" from the version number in __FB_SIGNATURE__, following the release archive names
 
 [added]
 
