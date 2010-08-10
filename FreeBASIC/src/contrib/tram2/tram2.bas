@@ -1,6 +1,6 @@
 #include once "misc.bi"
 
-const FB_VERSION = "0.21.0"
+const FB_VERSION = "0.21.1"
 
 enum
     TARGET_DOS = 0

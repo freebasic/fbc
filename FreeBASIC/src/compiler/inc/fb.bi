@@ -20,7 +20,7 @@
 
 const FB_VER_MAJOR          = 0
 const FB_VER_MINOR          = 21
-const FB_VER_PATCH          = 0
+const FB_VER_PATCH          = 1
 
 
 #define QUOTE !"\""
