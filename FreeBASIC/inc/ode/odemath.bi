@@ -65,7 +65,7 @@ declare sub dPlaneSpace cdecl alias "dPlaneSpace" ( n as dVector3 ptr, _
 #define dCROSS441(a,op,b,c) dCROSSpqr(a,op,b,c,4,4,1)
 #define dCROSS444(a,op,b,c) dCROSSpqr(a,op,b,c,4,4,4)
 
-#macro dDISTANCE(a,b) \
+#macro dDISTANCE(a,b)
    Sqr( ((a)[0]-(b)[0])*((a)[0]-(b)[0]) _
       + ((a)[1]-(b)[1])*((a)[1]-(b)[1]) _
       + ((a)[2]-(b)[2])*((a)[2]-(b)[2]) )

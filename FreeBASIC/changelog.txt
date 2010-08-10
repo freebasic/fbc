@@ -1,3 +1,12 @@
+Version 0.21.1:
+
+[changed]
+- Removed the "v" and "b" from the version number in __FB_SIGNATURE__, following the release archive names
+
+[fixed]
+- #3034516: Remove trailing backslash from #macro line in inc/ode/odemath.bi
+- gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position. 
+
 Version 0.21.0 Beta:
 
 [changed]

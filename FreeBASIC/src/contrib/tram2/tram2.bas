@@ -14,7 +14,7 @@ type TRAMCTX
     as string exeext
 
     as string path_prev '' Path to previous FreeBASIC release
-    as string path_sys  '' Path to MinGW, DJGPP or /usr/local (to copy libs/binutils from)
+    as string path_sys  '' Path to MinGW, DJGPP etc. (to copy libs/binutils from)
 
     as string fbc
     as string gcc
@@ -681,7 +681,7 @@ end sub
         tram.target_name = "linux"
         tram.exeext = ""
 
-        tram.path_sys  = "/usr/local"
+        tram.path_sys  = "/usr"
         tram.path_prev = "~/FreeBASIC-0.20" + getStandaloneTitle()
 
         tram.fbc    = "fbc"

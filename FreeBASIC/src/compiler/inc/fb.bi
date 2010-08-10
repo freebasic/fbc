@@ -77,7 +77,7 @@ const INVALID               = -1
 ''
 const FB_VERSION            = FB_VER_MAJOR & "." & FB_VER_MINOR & "." & FB_VER_PATCH
 const FB_BUILD_DATE         = __DATE__
-const FB_SIGN               = "FreeBASIC v" &  FB_VERSION & "b"
+const FB_SIGN               = "FreeBASIC " &  FB_VERSION
 const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
 const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
 const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )

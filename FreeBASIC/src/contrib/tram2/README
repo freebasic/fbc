@@ -129,40 +129,6 @@ dos
     in the PATH.
     The (win32) MSYS is needed in the PATH.
 
-linux
------
-
-    tram2 uses the system's gcc/binutils (whatever is in the PATH), often that
-     will be the ones in /usr, e.g. /usr/bin/gcc,
-
-linux standalone
-----------------
-
-    * Download binutils 2.20.51 sources:
-            ftp://sourceware.org/pub/binutils/snapshots/binutils-2.20.51.tar.bz2
-      Build it and install it on your system. These binutils will have less
-      shared library dependencies than the ones distributed with Ubuntu for
-      example.
-
-        $ cd ~/binutils-build
-        $ ../binutils-2.20.51/configure --disable-shared --disable-nls
-        $ make
-        $ cd bfd      ; sudo make install-strip; cd ..
-        $ cd binutils ; sudo make install-strip; cd ..
-        $ cd gas      ; sudo make install-strip; cd ..
-        $ cd gprof    ; sudo make install-strip; cd ..
-        $ cd ld       ; sudo make install-strip; cd ..
-        $ cd libiberty; sudo make install      ; cd ..
-        $ cd opcodes  ; sudo make install-strip; cd ..
-
-        (Note: binutils-2.19.1's ld caused trouble on 64bit Linux systems, and
-        binutils-2.20.1 can't be used because of a bug in gas)
-
-    tram2 still uses the system's binutils, but the system should prefer /usr/local
-    over /usr. Usually gcc will still be in /usr (unless you have a self-compiled
-    version of it). Take care to avoid conflicts between /usr and /usr/local,
-    e.g. make sure libbfd/bfd.h from /usr/local are used instead of the ones
-    you might have in /usr.
 
 win32
 -----
@@ -184,50 +150,6 @@ win32
             gcc-4.4.1-tdm-2-core.tar.gz
             gcc-4.4.1-tdm-2-g++.tar.gz
 
-
-    * With MinGW GCC 4.5.0, binutils 2.20.51
-
-        With GCC 4.5.0, fbc would need to link in libgcc_eh with libsupc++.
-        (That's already done on linux, probably it's just MinGW catching up)
-
-        * Download current MinGW (GCC 4.5.0) from http://sourceforge.net/downloads/mingw/
-
-            binutils-2.20.51-1-mingw32-bin.tar.lzma
-            gcc-c++-4.5.0-1-mingw32-bin.tar.lzma
-            gcc-core-4.5.0-1-mingw32-bin.tar.lzma
-            libgmp-5.0.1-1-mingw32-dll-10.tar.lzma
-            libmpc-0.8.1-1-mingw32-dll-2.tar.lzma
-            libmpfr-2.4.1-1-mingw32-dll-1.tar.lzma
-            mingwrt-3.18-mingw32-dev.tar.gz
-            mingwrt-3.18-mingw32-dll.tar.gz
-            w32api-3.14-mingw32-dev.tar.gz
-
-        * Download & build current binutils snapshot, e.g. binutils-2.20.51,
-          in order to replace MinGW's binutils-2.20.51.
-          (The libbfd from MinGW depends on libintl & libiconv, with libiconv
-          being 1 MB, thus increasing fbc.exe's size by a lot. The libbfd
-          built here doesn't have these dependencies.)
-
-            $ cd /c/binutils-build
-            $ ../binutils-2.20.51/configure --prefix=C:/MinGW --disable-shared --disable-nls
-            $ make
-            $ cd bfd      ; make install-strip; cd ..
-            $ cd binutils ; make install-strip; cd ..
-            $ cd gas      ; make install-strip; cd ..
-            $ cd gprof    ; make install-strip; cd ..
-            $ cd ld       ; make install-strip; cd ..
-            $ cd libiberty; make install      ; cd ..
-            $ cd opcodes  ; make install-strip; cd ..
-
-        * Download & build current GDB snapshot, e.g. gdb-7.1.tar.bz2, in
-          order to avoid the GDB from MinGW because it depends on
-          libexpat-1.dll. That way we can avoid having to distribute the DLL
-          in FreeBASIC/bin/win32.
-            $ cd /c/gdb-7.1.50.20100613
-            $ ./configure --disable-gdbmi --without-expat --without-python
-            $ make
-            $ cp gdb/gdb.exe C:/MinGW/bin/gdb.exe
-            $ strip C:/MinGW/bin/gdb.exe
 
     * Download libgdsl sources & compile it, put it into C:/MinGW/lib.
         (Replacement for the libgdsl from FreeBASIC-0.20, which was apparently broken)
