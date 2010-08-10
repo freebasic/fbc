@@ -248,6 +248,7 @@ int fb_DevFileOpenEncod
     if( handle->size == -1 )
     {
     	fclose( fp );
+        FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
