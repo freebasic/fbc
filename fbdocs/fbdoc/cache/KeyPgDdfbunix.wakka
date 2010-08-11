@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="__FB_UNIX__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_UNIX__""
+##
+{{fbdoc item="desc"}}
+	Define with -1 if the OS is reasonably enough like UNIX that you can call it UNIX, otherwise 0.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbunix.bas"}}%%(freebasic)
+#IF __FB_UNIX__
+  '...instructions for UNIX-family OSes...
+#ELSE
+  '...instructions for other OSes
+#ENDIF 
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
+	- ##[[KeyPgDdfbfreebsd __FB_FREEBSD__]]##
+	- ##[[KeyPgDdfbopenbsd __FB_OPENBSD__]]##
+	- ##[[KeyPgDdfbnetbsd __FB_NETBSD__]]##
+	- ##[[KeyPgDdfbcygwin __FB_CYGWIN__]]##
+	- ##[[KeyPgDdfbdarwin __FB_DARWIN__]]##
+	- ##[[KeyPgDdfbpcos __FB_PCOS__]]##
+	- [[CompilerOpttarget Compiler Option: -target]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="INSTRREV"}}----
 Locates the last occurrence of a substring or character within a string
 
-~&//**Important note**: In versions up to and including v0.20.0b, ##**Instrrev**## contains a bug which may cause it to skip some matches.  This will be corrected in the next release.//
+~&//**Important note**: In versions up to and including v0.20.0b, ##**Instrrev**## contains a bug which may cause it to skip some matches.  This is corrected as of v0.21.0b.//
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instrrev** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -68,3 +68,4 @@ print instrrev(text,"&#1077;&#1090;") ' displays 5
 	- ##[[KeyPgMidfunction Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
+   

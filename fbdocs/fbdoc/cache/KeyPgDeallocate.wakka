@@ -103,3 +103,4 @@ In the program above, a reference pointer in a function is set to null after dea
 	- ##[[KeyPgReallocate Reallocate]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}
+   

@@ -107,3 +107,5 @@ End
 %%
 
 If you compare the two programs, you can see that the logic is quite similar, however the Select Case is much more readable and understandable than the If-ElseIf ladder.
+
+   

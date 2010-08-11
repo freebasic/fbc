@@ -71,4 +71,3 @@ loop while lcase(yn) = "y"
 	- ##[[KeyPgLineinput Line Input]]##
 
 {{fbdoc item="back" value="CatPgInput|User Input"}}
-   

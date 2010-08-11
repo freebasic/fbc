@@ -91,6 +91,8 @@ Command line compiler options for the fbc compiler:
 		- Set min warning level: all, pedantic or a value
 	{{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}
 		- Pass options to GAS (separated by commas)
+	{{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}
+		- Pass options to GCC (separated by commas)
 	{{fbdoc item="keyword" value="CompilerOptWl|-Wl < opt >"}}
 		- Pass options to LD (separated by commas)
 	{{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}
@@ -102,3 +104,4 @@ Command line compiler options for the fbc compiler:
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

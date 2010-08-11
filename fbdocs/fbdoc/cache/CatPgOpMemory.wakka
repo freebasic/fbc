@@ -12,3 +12,4 @@ The memory operators provide a way to dynamically allocate and deallocate variab
 >>::c::
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

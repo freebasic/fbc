@@ -37,3 +37,4 @@ Print "GetValue = &h"; Hex(GetValue())
 	- ##[[KeyPgInclib #inclib]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}
+   

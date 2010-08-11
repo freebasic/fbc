@@ -35,5 +35,3 @@ Error: a = -32767 in test.bas (__FB_MAINPROC__) line 47
 	- ##[[KeyPgDdline __LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
-
-   

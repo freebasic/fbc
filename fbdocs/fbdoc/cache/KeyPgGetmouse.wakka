@@ -109,4 +109,3 @@ loop while inkey = ""
 	- ##[[KeyPgGetjoystick Getjoystick]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}
-   

@@ -94,4 +94,3 @@ It means //safety//: You may notice that I utilize two OPTIONs in these examples
 
 
 I hope you have learned at least the basics of function overloading (since that's all I covered). And I hope you start thinking about the themes I've brought up, if you haven't before. Next time I'll discuss overloading functions with different numbers of parameters, different return types, as well as the joys and pitfalls of both. Stay tuned.
-   

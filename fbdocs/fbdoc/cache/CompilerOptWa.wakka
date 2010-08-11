@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Compiler Option: -Wa"}}----
-Pass options to the assembler.
+Pass options to the assembler when using the assembly emitter (-gen gas), the default.
 
 {{fbdoc item="syntax"}}##
 	**-Wa** < //options// >
@@ -10,8 +10,12 @@ Pass options to the assembler.
 
 {{fbdoc item="desc"}}
 	The ##-Wa## compiler option passes additional options to GAS, the assembler.  Options must be separated by commas only.
+	For example:
+		##fbc -Wa -o,output.o,--verbose##
 
 {{fbdoc item="see"}}
+	- [[CompilerOptgen Compiler Option: -gen]]
+	- [[CompilerOptWc Compiler Option: -Wc]]
 	- [[CompilerOptWl Compiler Option: -Wl]]
 	- [[CompilerCmdLine Using the Command Line]]
 

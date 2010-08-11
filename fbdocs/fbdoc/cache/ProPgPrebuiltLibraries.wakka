@@ -62,4 +62,3 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 	- The shared library (.DLL) must be present on the host computer where the compiled program will run.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

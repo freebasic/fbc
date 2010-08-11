@@ -25,3 +25,4 @@ Sub _bload( file As String, p As Any Ptr )
   Close 
   
 End Sub%%
+   

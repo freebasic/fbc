@@ -30,4 +30,3 @@ Standard data type: unsigned integer having same size as ##[[KeyPgSizeof Sizeof]
 	- ##[[KeyPgUlongint Ulongint]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-   

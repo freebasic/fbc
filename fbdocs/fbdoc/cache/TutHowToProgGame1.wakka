@@ -300,5 +300,3 @@ Both these lines should be put in the code before the SCREEN statement. That's t
 
 After the screen resolution, color depth and number of work pages are set, we will hide our work page before loading graphics onto it since we don't want for the user to see all of the program's graphics every time he or she starts our program. To accomplish that we'll use the SCREENSET statement. What it does? It sets the work page (first parameter) and the visible page (second parameter). In our case we will set page 1 as the work page and page 0 as the visible page. After using 'SCREENSET 1, 0' every time we draw or load something on the screen it will be loaded/drawn on the work page and won't be visible to the user until we use the statement SCREENCOPY or SCREENSET with different parameters (SCREENSET 1, 1). This allows us to load graphics onto the screen we don't want for the user to see and delete it before coping the content on the work page to the visible page. This page flipping is also useful in loops with "graphics demanding" programs to avoid flicker or some other unwanted occurrence.
 
-
-   

@@ -6,6 +6,7 @@
 	{{fbdoc item="keyword" value="CatPgFullIndex|Keywords - Alphabetical"}}
 	{{fbdoc item="keyword" value="CatPgFunctIndex|Keywords - Functional"}}
 	{{fbdoc item="keyword" value="CatPgGfx|Graphics Keywords"}}
+	{{fbdoc item="keyword" value="CatPgOpIndex|Operators List"}}
 	
 	{{fbdoc item="subsect" value="Variables and Data Types"}}
 		{{fbdoc item="keyword" value="CatPgVariables|Variable Declarations"}}

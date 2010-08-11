@@ -93,6 +93,8 @@ Using the **fbc** command-line.
 			Show compiler version (note: the compiler will display this info on the command line and quit without compiling or checking other parameters when this parameter is used)
 		=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 			Pass options to GAS (separated by commas)
+		=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==
+			Pass options to GCC (separated by commas)
 		=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
 			Set the compiler prefix path
 		=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
@@ -159,4 +161,3 @@ Using the **fbc** command-line.
 	- [[CompilerRunning Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

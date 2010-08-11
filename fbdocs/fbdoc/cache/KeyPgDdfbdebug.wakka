@@ -27,4 +27,3 @@ Intrinsic define (macro value) set by the compiler
 	- [[CompilerOptg Compiler Option: -g]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
-   

@@ -13,7 +13,7 @@ PRINT __FB_SIGNATURE__
 %%
 
 %%
-FreeBASIC v0.18.2b
+FreeBASIC 0.21.1
 %%
 
 {{fbdoc item="diff"}}
@@ -26,3 +26,4 @@ FreeBASIC v0.18.2b
 	- ##[[KeyPgDdfbdos __FB_DOS__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
+   

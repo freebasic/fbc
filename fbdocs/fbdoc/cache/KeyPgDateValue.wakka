@@ -61,3 +61,4 @@ print "Number of days between dates is " & abs( v2 - v1 )
 	- ##[[KeyPgTimeValue TimeValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
+   

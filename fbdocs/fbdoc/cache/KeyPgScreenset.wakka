@@ -51,3 +51,4 @@ LOOP WHILE INKEY = ""
 	- ##[[KeyPgScreencopy Screencopy]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}
+   

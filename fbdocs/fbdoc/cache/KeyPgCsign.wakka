@@ -28,4 +28,3 @@ print csign(value)  '' will print -1
 	- ##[[KeyPgCunsg Cunsg]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
-   

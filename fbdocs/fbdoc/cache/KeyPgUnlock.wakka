@@ -33,3 +33,4 @@ Removes a previous access restriction (lock) on a file
 	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
+   

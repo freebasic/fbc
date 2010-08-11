@@ -43,4 +43,3 @@ print hex(bitset(1ull, 63))
 	- ##[[KeyPgBitreset Bitreset]]##
 	
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}
-   

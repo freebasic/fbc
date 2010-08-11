@@ -17,7 +17,7 @@ Returns the address of a string literal, variable, object or procedure
 	Returns the address of the right-hand side (##//rhs//##) operand.
 
 {{fbdoc item="desc"}}
-	**##Operator @## (Address of)** returns the memory address of it's operand.
+	**##Operator @## (Address of)** returns the memory address of its operand.
 
 	When the operand is of type ##[[KeyPgString String]]##, the address of the internal string descriptor is returned. Use ##[[KeyPgOpStrptr Operator Strptr]]## (String pointer) to retrieve the address of the string data.
 

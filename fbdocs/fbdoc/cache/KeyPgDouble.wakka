@@ -7,7 +7,7 @@ Standard data type: 64 bit floating point
 {{fbdoc item="desc"}}
 	Double is a 64-bit, floating-point data type used to store precise decimal numbers. They can hold values in a range of  -2.2E-308 to +1.7E+308. Its precision is of 15 decimal digits. They are similar to ##[[KeyPgSingle Single]]## data types but more precise and with an extended range. 
 
-	As precise as doubles are, they still have limited accuracy which can lead to significant inaccuracies if not used properly.
+	##**Double**##s have a greater range and precision than ##[[KeyPgSingle Single]]##s, they still have limited accuracy which can lead to significant inaccuracies if not used properly.  They are dyadic numbers - i.e. they can only accurately hold multiples of powers of two, which will lead to inaccuracies in most base-10 fractions.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/double.bas"}}%%(freebasic)
@@ -29,3 +29,4 @@ sleep
 	- [[TblVarTypes]] Table with variable types overview, limits and suffixes
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+   

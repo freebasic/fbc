@@ -34,3 +34,4 @@ print cast( integer, 3.1 )
 	- ##[[KeyPgTypeof Typeof]]##
 	 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}
+   
