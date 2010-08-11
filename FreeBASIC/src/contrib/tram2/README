@@ -130,6 +130,23 @@ dos
     The (win32) MSYS is needed in the PATH.
 
 
+linux
+-----
+
+    * Download binutils 2.20.51 sources:
+            ftp://sourceware.org/pub/binutils/snapshots/binutils-2.20.51.tar.bz2
+      Build & install it.
+
+        $ cd ~/binutils-2.20.51-build
+        $ ../binutils-2.20.51/configure --disable-shared --disable-nls
+        $ make
+        $ cd bfd      ; sudo make install-strip; cd ..
+        $ cd binutils ; sudo make install-strip; cd ..
+        $ cd gas      ; sudo make install-strip; cd ..
+        $ cd gprof    ; sudo make install-strip; cd ..
+        $ cd ld       ; sudo make install-strip; cd ..
+        $ cd libiberty; sudo make install      ; cd ..
+
 win32
 -----
 

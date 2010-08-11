@@ -41,18 +41,13 @@ end type
 dim shared as TRAMCTX tram
 
 sub sh(byref cmd as string, byval max_good_exitcode as integer = 0)
+    if (tram.had_error) then return
     print "    $ ";cmd
     dim as integer exitcode = shell(cmd)
     if (exitcode > max_good_exitcode) then
         print "Error: exit code " + str(exitcode)
         tram.had_error = TRUE
     end if
-end sub
-
-sub mkdir_(byref folder as string)
-    if (tram.had_error) then return
-    print "    $ mkdir ";folder
-    mkdir(folder)
 end sub
 
 sub cd(byref folder as string)
@@ -94,11 +89,11 @@ end sub
 #endmacro
 
 function getStandaloneTitle() as string
-    if (tram.target = TARGET_LINUX) then
+    #ifdef __FB_LINUX__
         if (tram.standalone) then
             return "-standalone"
         end if
-    end if
+    #endif
     return ""
 end function
 
@@ -114,6 +109,7 @@ function getSourceTitle() as string
     return "FreeBASIC-" + FB_VERSION + "-source"
 end function
 
+#ifdef __FB_WIN32__
 sub checkForTarget(byval argc as integer, byval argv as zstring ptr ptr)
     dim as string arg = ""
     for i as integer = 1 to (argc-1)
@@ -124,6 +120,7 @@ sub checkForTarget(byval argc as integer, byval argv as zstring ptr ptr)
         end select
     next
 end sub
+#endif
 
 sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
     dim as string arg = ""
@@ -170,7 +167,7 @@ sub configure(byref options as string)
 end sub
 
 sub make(byref options as string)
-    sh(" make" + options)
+    sh("make" + options)
 end sub
 
 sub replacePathVars(byref path as string)
@@ -238,21 +235,23 @@ sub getBinsAndLibs()
 
     close #f
 
-    if (tram.target = TARGET_WIN32) then
-        '' Run genimplibs
-        STEP_BEGIN()
-            if (tram.clean) then
-                print "Removing import libraries."
-                sh("rm -f lib/win32/*.dll.a")
-            else
-                print "Generating import libraries."
-                cd("src/contrib/genimplibs")
-                make("")
-                sh("genimplibs -f -a")
-                cd("../../..")
-            end if
-        STEP_END()
-    end if
+    #ifdef __FB_WIN32__
+        if (tram.target = TARGET_WIN32) then
+            '' Run genimplibs
+            STEP_BEGIN()
+                if (tram.clean) then
+                    print "Removing import libraries."
+                    sh("rm -f lib/win32/*.dll.a")
+                else
+                    print "Generating import libraries."
+                    cd("src/contrib/genimplibs")
+                    make("")
+                    sh("genimplibs -f -a")
+                    cd("../../..")
+                end if
+            STEP_END()
+        end if
+    #endif
 end sub
 
 sub buildRtlib()
@@ -326,8 +325,42 @@ sub buildCompiler()
     '' in the root tree.
     print "Re-compiling fbc."
 
+    #ifdef __FB_LINUX__
+        '' For the normal (non-standalone) linux build, get fbc to run in the dev
+        '' tree, even though it's configured with prefix /usr/local.
+        '' This seems like a better solution then let tram2 run install.sh -i
+        '' and alter the system...
+        '' Without this workaround, the non-standalone fbc would use whatever libs
+        '' exist in /usr/local, instead of what we just built in the dev tree.
+        dim as boolean workaround = (tram.standalone = FALSE)
+
+        if (workaround) then
+            '' Recreate part of the non-standalone directory structure in the dev tree...
+            '' include/freebasic is covered by the -i inc.
+            cd("../../../..")
+
+            '' lib/freebasic can partly be covered by -p lib/linux, but it's
+            '' not enough, because fbc doesn't look for fbrt0.o in lib paths.
+            cd("lib")
+            sh("mkdir -p freebasic")
+            sh("cp -r linux freebasic/linux")
+            cd("..")
+
+            cd("src/compiler/obj/linux")
+        end if
+    #endif
+
     STEP_BEGIN()
-        configure(" FBC=" + "../../../../fbc" + tram.exeext + _
+        dim as string fbc = "../../../../fbc" + tram.exeext
+
+        #ifdef __FB_LINUX__
+            if (workaround) then
+                '' Use -prefix to override /usr/local...
+                fbc = """" + fbc + " -prefix ../../../.. -i ../../../../inc"""
+            end if
+        #endif
+
+        configure(" FBC=" + fbc + _
                   " CC=" + tram.gcc + _
                   tram.conf_compiler)
     STEP_END()
@@ -341,6 +374,14 @@ sub buildCompiler()
     make(" install")
 
     cd("../../../..")
+
+    #ifdef __FB_LINUX__
+        if (workaround) then
+            cd("lib")
+            sh("rm -r -f freebasic")
+            cd("..")
+        end if
+    #endif
 end sub
 
 sub rmLib(byref file as string)
@@ -619,6 +660,7 @@ end sub
 
 sub createInstaller()
     dim as string setupexe = "../" + getReleaseTitle() + ".exe"
+
     dim as string script = "src/contrib/tram2/installer.nsi"
 
     createNsisScript(script, setupexe)
@@ -654,7 +696,9 @@ end sub
         tram.target = TARGET_LINUX
     #endif
 
-    checkForTarget(__FB_ARGC__, __FB_ARGV__)
+    #ifdef __FB_WIN32__
+        checkForTarget(__FB_ARGC__, __FB_ARGV__)
+    #endif
 
     parseArgs(__FB_ARGC__, __FB_ARGV__)
 
