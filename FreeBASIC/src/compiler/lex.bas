@@ -2115,27 +2115,32 @@ end sub
 private sub hEmitToken( )
 	static as string currentline
 
-	'' EOF/Single-line comment?
 	select case lexGetToken( )
-	case FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+	case FB_TK_COMMENT, FB_TK_REM
+        '' Single-line comment
 		return
-	end select
 
-	'' EOL?
-	if( lexGetToken( ) = FB_TK_EOL ) then
+    case FB_TK_EOF, FB_TK_EOL
+        '' EOF/EOL
 
+        '' Don't write out empty lines (e.g. from PP directives)...
 		if( len(currentline) > 0 ) then
+
 			print #env.ppfile_num, currentline
-		end if
+            currentline = ""
 
-		currentline = ""
+        elseif( lexGetToken( ) = FB_TK_EOL ) then
 
-		if( lex.ctx->lasttk_id = FB_TK_EOL ) then
-			print #env.ppfile_num, ""
+            '' except for lines that really were empty, to help readability in the output.
+            if( lex.ctx->lasttk_id = FB_TK_EOL ) then
+                print #env.ppfile_num, ""
+            end if
+
 		end if
 
 		return
-	end if
+
+	end select
 
 	'' Everything else...
 	if( lex.ctx->head->after_space ) then
