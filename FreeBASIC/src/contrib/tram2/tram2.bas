@@ -36,6 +36,7 @@ type TRAMCTX
     as boolean genmanifest: 1
     as boolean archive    : 1
     as boolean installer  : 1
+    as boolean deb        : 1
     as boolean source     : 1
 
     as boolean had_error  : 1
@@ -94,10 +95,6 @@ sub strSplit _
         r = ""
     end if
 end sub
-
-function getDateStamp() as string
-    return format(now(), "yyyy-mm-dd")
-end function
 
 sub sh(byref cmd as string, byval max_good_exitcode as integer = 0)
     if (tram.had_error) then return
@@ -161,7 +158,7 @@ function getTargetTitle() as string
 end function
 
 function getReleaseTitle() as string
-    return "FreeBASIC-" + FB_VERSION + "-" + getDateStamp() + "-" + getTargetTitle()
+    return "FreeBASIC-" + FB_VERSION + "-" + getTargetTitle()
 end function
 
 function getSourceTitle() as string
@@ -209,6 +206,9 @@ sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 
         case "installer"
             tram.installer = TRUE
+
+        case "deb"
+            tram.deb = TRUE
 
         case "source"
             tram.source = TRUE
@@ -361,7 +361,7 @@ sub buildGfxlib()
     cd("../../../..")
 end sub
 
-sub buildCompiler()
+sub buildCompiler1()
     print "Compiling fbc."
 
     cd("src/compiler/obj/" + tram.target_name)
@@ -378,22 +378,23 @@ sub buildCompiler()
     STEP_END()
 
     make(" install")
+    cd("../../../..")
+end sub
 
+sub buildCompiler2(byval deb_ready as boolean)
     '' Rebuild fbc with the one that was built before, this fbc will be
     '' built with the tools in the root tree, and linked against the libs
     '' in the root tree.
     print "Re-compiling fbc."
 
-    #ifdef __FB_LINUX__
-        '' For the normal (non-standalone) linux build, get fbc to run in the dev
-        '' tree, even though it's configured with prefix /usr/local.
-        '' This seems like a better solution then let tram2 run install.sh -i
-        '' and alter the system...
-        '' Without this workaround, the non-standalone fbc would use whatever libs
-        '' exist in /usr/local, instead of what we just built in the dev tree.
-        dim as boolean workaround = (tram.standalone = FALSE)
+    cd("src/compiler/obj/" + tram.target_name)
 
-        if (workaround) then
+    #ifdef __FB_LINUX__
+        '' Hack to get the normal (non-standalone) linux fbc to run in the dev
+        '' tree, instead of using stuff in /usr/local.
+        '' This seems like a better solution then running install.sh -i and
+        '' altering the system...
+        if (tram.standalone = FALSE) then
             '' Recreate part of the non-standalone directory structure in the dev tree...
             '' include/freebasic is covered by the -i inc.
             cd("../../../..")
@@ -411,16 +412,24 @@ sub buildCompiler()
 
     STEP_BEGIN()
         dim as string fbc = "../../../../fbc" + tram.exeext
+        dim as string prefix = ""
 
         #ifdef __FB_LINUX__
-            if (workaround) then
+            if (tram.standalone = FALSE) then
                 '' Use -prefix to override /usr/local...
                 fbc = """" + fbc + " -prefix ../../../.. -i ../../../../inc"""
+
+                '' For non-standalone .deb, use /usr prefix instead of the
+                '' default /usr/local.
+                if (deb_ready) then
+                    prefix = " --prefix=/usr"
+                end if
             end if
         #endif
 
         configure(" FBC=" + fbc + _
                   " CC=" + tram.gcc + _
+                  prefix + _
                   tram.conf_compiler)
     STEP_END()
 
@@ -435,7 +444,7 @@ sub buildCompiler()
     cd("../../../..")
 
     #ifdef __FB_LINUX__
-        if (workaround) then
+        if (tram.standalone = FALSE) then
             cd("lib")
             sh("rm -r -f freebasic")
             cd("..")
@@ -475,7 +484,8 @@ sub build()
     else
         buildRtlib()
         buildGfxlib()
-        buildCompiler()
+        buildCompiler1()
+        buildCompiler2(FALSE)
     end if
 end sub
 
@@ -619,11 +629,29 @@ sub createArchive(byref title as string, byref manifest as string)
     sh(ln)
 end sub
 
+#ifdef __FB_WIN32__
 sub createInstaller()
     cd("src/contrib/installer")
     sh("create.bat")
     cd("../../..")
 end sub
+#endif
+
+#ifdef __FB_LINUX__
+sub createDeb()
+    '' But not when standalone is enabled
+    if (tram.standalone) then
+        return
+    end if
+
+    '' Build compiler with /usr prefix.
+    buildCompiler2(TRUE)
+
+    cd("src/contrib/deb")
+    sh("sh makedeb.sh ../../../../freebasic_" + FB_VERSION + "-1_i386.deb")
+    cd("../../..")
+end sub
+#endif
 
 sub createSourceArchive()
     dim as string title = getSourceTitle()
@@ -746,11 +774,21 @@ end sub
             STEP_END()
         end if
 
-        if (tram.installer) then
-            STEP_BEGIN()
-                createInstaller()
-            STEP_END()
-        end if
+        #ifdef __FB_WIN32__
+            if (tram.installer) then
+                STEP_BEGIN()
+                    createInstaller()
+                STEP_END()
+            end if
+        #endif
+
+        #ifdef __FB_LINUX__
+            if (tram.deb) then
+                STEP_BEGIN()
+                    createDeb()
+                STEP_END()
+            end if
+        #endif
 
         if (tram.source) then
             STEP_BEGIN()

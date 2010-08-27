@@ -52,8 +52,11 @@ Options:
     archive
         Put everything in an archive ready for uploading.
 
-    installer
+    installer   (win32 only)
         Build the Windows installer.
+
+    deb         (linux only, ignored if standalone is given)
+        Create the .deb package containing the linux fbc with /usr prefix.
 
     source
         Create a source code archive (uses svn export).
@@ -69,7 +72,7 @@ All-in-one, from zero to release archive:
     manifest and your SVN working base.
 
     linux -> linux:
-        $ ./tram2 build manifest archive
+        $ ./tram2 build manifest archive deb
         $ ./tram2 build clean
 
     linux -> linux standalone:
