@@ -11,8 +11,7 @@ tram2 host:         can build these FB releases:
 
 The binaries-<target>.ini files contain the lists of what binaries/libraries to
 copy. manifest-pattern.ini contains regexp patterns that will be passed to
-"grep -E" to generate manifests. The Windows installer is created based on
-installer-template.nsi.
+"grep -E" to generate manifests.
 
 Notes:
 * tram isn't smart, it just executes a bunch of steps.

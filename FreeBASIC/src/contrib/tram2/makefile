@@ -1,5 +1,3 @@
-FBC = fbc
-
 OS := $(shell uname)
 ifeq ($(OS),Linux)
 	EXEEXT :=
@@ -7,23 +5,14 @@ else
 	EXEEXT := .exe
 endif
 
+FBC = fbc
+FBCFLAGS = -exx
 EXE := tram2$(EXEEXT)
 
-CFLAGS += -m tram2 -include common.bi
-CFLAGS += -g -exx
-LFLAGS += -g -exx
-
-INC := $(wildcard *.bi)
-BAS := $(wildcard *.bas)
-OBJ := $(patsubst %.bas,obj/%.o,$(BAS))
-
-$(EXE): $(OBJ)
-	$(FBC) $(LFLAGS) $(OBJ) -x $(EXE)
-
-obj/%.o: %.bas $(INC)
-	$(FBC) $(CFLAGS) -c $< -o $@
+$(EXE): tram2.bas
+	$(FBC) $(FBCFLAGS) $< -x $@
 
 clean: 
-	-rm -f $(OBJ) $(EXE)
+	-rm -f $(EXE)
 
 .PHONY: clean

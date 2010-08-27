@@ -1,6 +1,9 @@
-#include once "misc.bi"
+const FALSE = 0
+const TRUE = -1
+const NULL = 0
+type boolean as integer
 
-const FB_VERSION = "trunk"
+const FB_VERSION = "0.22.0"
 
 enum
     TARGET_DOS = 0
@@ -39,6 +42,62 @@ type TRAMCTX
 end type
 
 dim shared as TRAMCTX tram
+
+#include once "datetime.bi"
+#include once "string.bi"
+
+function strReplace _
+    ( _
+        byref text as string, _
+        byref a as string, _
+        byref b as string _
+    ) as string
+
+    static as string result
+    static as string keep
+
+    result = text
+
+    dim as integer alen = len(a)
+    dim as integer blen = len(b)
+
+    dim as integer p = 0
+    do
+        p = instr(p + 1, result, a)
+        if (p = 0) then
+            exit do
+        end if
+
+        keep = mid(result, p + alen)
+        result = left(result, p - 1)
+        result += b
+        result += keep
+        p += blen - 1
+    loop
+
+    return result
+end function
+
+sub strSplit _
+    ( _
+        byref s as string, _
+        byref delimiter as string, _
+        byref l as string, _
+        byref r as string _
+    )
+    dim as integer leftlen = instr(s, delimiter) - 1
+    if (leftlen > 0) then
+        l = left(s, leftlen)
+        r = right(s, len(s) - leftlen - len(delimiter))
+    else
+        l = s
+        r = ""
+    end if
+end sub
+
+function getDateStamp() as string
+    return format(now(), "yyyy-mm-dd")
+end function
 
 sub sh(byref cmd as string, byval max_good_exitcode as integer = 0)
     if (tram.had_error) then return
@@ -560,115 +619,10 @@ sub createArchive(byref title as string, byref manifest as string)
     sh(ln)
 end sub
 
-sub emitPath(byval o as integer, byref cmd as string, byref path as string)
-    print #o, "    " + cmd + " ""$INSTDIR\" + path + """"
-end sub
-
-sub emitInstallerFiles(byval o as integer, byval install as boolean)
-    dim as integer f = freefile()
-    if (open(tram.manifest, for input, as #f)) then
-        print "Error: Cannot access '" + tram.manifest + "'."
-        tram.had_error = TRUE
-        return
-    end if
-
-    dim as string filename = ""
-    dim as string path = ""
-    dim as string prevpath = ""
-
-    while (eof(f) = FALSE)
-        line input #f, filename
-
-        if (len(filename)) then
-            '' Use backslashes for NSIS...
-            filename = strReplace(filename, "/", "\")
-
-            path = pathStripFile(filename)
-            if (path <> prevpath) then
-                if (install) then
-                    emitPath(o, "SetOutPath", path)
-                else
-                    while ((len(prevpath) > 0) and _
-                           (prevpath <> left(path, len(prevpath))))
-                        emitPath(o, "RMDir ", prevpath)
-                        prevpath = pathStripComponent(prevpath)
-                    wend
-                end if
-                prevpath = path
-            end if
-
-            if (install) then
-                filename = "                   File """ + filename + """"
-            else
-                filename = "    Delete ""$INSTDIR\" + filename + """"
-            end if
-
-            print #o, filename
-        end if
-    wend
-
-    close #f
-end sub
-
-sub createNsisScript(byref script as string, byref setupexe as string)
-    dim as string template = "src/contrib/tram2/installer-template.nsi"
-
-    print "Creating NSIS script '" + script + "' from '" + template + "'."
-
-    dim as integer i = freefile()
-    if (open(template, for input, as #i)) then
-        print "Error: Cannot access '" + template + "'."
-        tram.had_error = TRUE
-        return
-    end if
-
-    dim as integer o = freefile()
-    if (open(script, for output, as #o)) then
-        print "Error: Cannot access '" + script + "'."
-        tram.had_error = TRUE
-        return
-    end if
-
-    dim as string ln = ""
-
-    while (eof(i) = FALSE)
-        line input #i, ln
-
-        ln = strReplace(ln, ";;;SETUP_EXE_NAME;;;", setupexe)
-        ln = strReplace(ln, ";;;VERSION;;;", FB_VERSION)
-
-        select case (trim(ln))
-        case ";;;INSTALL;;;"
-            STEP_BEGIN()
-                emitInstallerFiles(o, TRUE)
-            STEP_END()
-
-        case ";;;UNINSTALL;;;"
-            STEP_BEGIN()
-                emitInstallerFiles(o, FALSE)
-            STEP_END()
-
-        case else
-            print #o, ln
-
-        end select
-    wend
-
-    close #o
-    close #i
-end sub
-
 sub createInstaller()
-    dim as string setupexe = "../" + getReleaseTitle() + ".exe"
-
-    dim as string script = "src/contrib/tram2/installer.nsi"
-
-    createNsisScript(script, setupexe)
-
-    print "Creating installer '";setupexe;"'."
-    sh("C:/NSIS/makensis.exe -NOCD -V2 " + script)
-
-    rm(script)
+    cd("src/contrib/installer")
+    sh("create.bat")
+    cd("../../..")
 end sub
 
 sub createSourceArchive()
