@@ -6,6 +6,7 @@ Version 0.22.0:
 
 [fixed]
 - #3052712: -pp was not emitting the last line of input if it didn't have an EOL marker
+- inc/win/vfw.bi: Some vfw functions need to use cdecl instead of stdcall (weird API), also added #inclib "vfw32"
 
 Version 0.21.1:
 

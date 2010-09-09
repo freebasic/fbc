@@ -16,6 +16,7 @@
 #inclib "avifil32"
 #inclib "avicap32"
 #inclib "uuid"
+#inclib "vfw32"
 
 #define ICERR_OK 0
 #define ICERR_DONTDRAW 1
@@ -1202,8 +1203,8 @@ type CAPCONTROLCALLBACK as function (byval as HWND, byval as integer) as LRESULT
 declare function VideoForWindowsVersion alias "VideoForWindowsVersion" () as DWORD
 declare function InitVFW alias "InitVFW" () as LONG
 declare function TermVFW alias "TermVFW" () as LONG
-declare function ICCompress alias "ICCompress" (byval as HIC, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPDWORD, byval as LPDWORD, byval as LONG, byval as DWORD, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID) as DWORD
-declare function ICDecompress alias "ICDecompress" (byval as HIC, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPBITMAPINFOHEADER, byval as LPVOID) as DWORD
+declare function ICCompress cdecl alias "ICCompress" (byval as HIC, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPDWORD, byval as LPDWORD, byval as LONG, byval as DWORD, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID) as DWORD
+declare function ICDecompress cdecl alias "ICDecompress" (byval as HIC, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPVOID, byval as LPBITMAPINFOHEADER, byval as LPVOID) as DWORD
 declare function ICSendMessage alias "ICSendMessage" (byval as HIC, byval as UINT, byval as DWORD, byval as DWORD) as LRESULT
 declare function ICImageCompress alias "ICImageCompress" (byval as HIC, byval as UINT, byval as LPBITMAPINFO, byval as LPVOID, byval as LPBITMAPINFO, byval as LONG, byval as LONG ptr) as HANDLE
 declare function ICImageDecompress alias "ICImageDecompress" (byval as HIC, byval as UINT, byval as LPBITMAPINFO, byval as LPVOID, byval as LPBITMAPINFO) as HANDLE
@@ -1216,8 +1217,8 @@ declare function ICOpenFunction alias "ICOpenFunction" (byval as DWORD, byval as
 declare function ICClose alias "ICClose" (byval hic as HIC) as LRESULT
 declare function ICLocate alias "ICLocate" (byval as DWORD, byval as DWORD, byval as LPBITMAPINFOHEADER, byval as LPBITMAPINFOHEADER, byval as WORD) as HIC
 declare function ICGetDisplayFormat alias "ICGetDisplayFormat" (byval as HIC, byval as LPBITMAPINFOHEADER, byval as LPBITMAPINFOHEADER, byval as INT_, byval as INT_, byval as INT_) as HIC
-declare function ICDrawBegin alias "ICDrawBegin" (byval as HIC, byval as DWORD, byval as HPALETTE, byval as HWND, byval as HDC, byval as INT_, byval as INT_, byval as INT_, byval as INT_, byval as LPBITMAPINFOHEADER, byval as INT_, byval as INT_, byval as INT_, byval as INT_, byval as DWORD, byval as DWORD) as DWORD
-declare function ICDraw alias "ICDraw" (byval as HIC, byval as DWORD, byval as LPVOID, byval as LPVOID, byval as DWORD, byval as LONG) as DWORD
+declare function ICDrawBegin cdecl alias "ICDrawBegin" (byval as HIC, byval as DWORD, byval as HPALETTE, byval as HWND, byval as HDC, byval as INT_, byval as INT_, byval as INT_, byval as INT_, byval as LPBITMAPINFOHEADER, byval as INT_, byval as INT_, byval as INT_, byval as INT_, byval as DWORD, byval as DWORD) as DWORD
+declare function ICDraw cdecl alias "ICDraw" (byval as HIC, byval as DWORD, byval as LPVOID, byval as LPVOID, byval as DWORD, byval as LONG) as DWORD
 declare function ICCompressorChoose alias "ICCompressorChoose" (byval as HWND, byval as UINT, byval as LPVOID, byval as LPVOID, byval as PCOMPVARS, byval as LPSTR) as BOOL
 declare function ICSeqCompressFrameStart alias "ICSeqCompressFrameStart" (byval as PCOMPVARS, byval as LPBITMAPINFO) as BOOL
 declare sub ICSeqCompressFrameEnd alias "ICSeqCompressFrameEnd" (byval as PCOMPVARS)
@@ -1290,7 +1291,7 @@ declare function AVIStreamInfo alias "AVIStreamInfoW" (byval as PAVISTREAM, byva
 declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewW" (byval as LPOPENFILENAMEW) as BOOL
 declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewW" (byval as LPOPENFILENAMEW) as BOOL
 #endif
-declare function MCIWndCreate alias "MCIWndCreateW" (byval as HWND, byval as HINSTANCE, byval as DWORD, byval as LPCWSTR) as HWND
+declare function MCIWndCreate cdecl alias "MCIWndCreateW" (byval as HWND, byval as HINSTANCE, byval as DWORD, byval as LPCWSTR) as HWND
 
 type AVISTREAMINFO as AVISTREAMINFOW
 type LPAVISTREAMINFO as LPAVISTREAMINFOW
@@ -1328,7 +1329,7 @@ declare function AVIStreamInfo alias "AVIStreamInfoA" (byval as PAVISTREAM, byva
 declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewA" (byval as LPOPENFILENAMEA) as BOOL
 declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewA" (byval as LPOPENFILENAMEA) as BOOL
 #endif
-declare function MCIWndCreate alias "MCIWndCreateA" (byval as HWND, byval as HINSTANCE, byval as DWORD, byval as LPCSTR) as HWND
+declare function MCIWndCreate cdecl alias "MCIWndCreateA" (byval as HWND, byval as HINSTANCE, byval as DWORD, byval as LPCSTR) as HWND
 
 type AVISTREAMINFO as AVISTREAMINFOA
 type LPAVISTREAMINFO as LPAVISTREAMINFOA
