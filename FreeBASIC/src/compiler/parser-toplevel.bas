@@ -189,8 +189,10 @@ function cLine as integer
 		function = TRUE
 
 	case FB_TK_EOF
-		if( eofnewline = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
+		if( fbPdCheckIsSet( FB_PDCHECK_EOFNONEWLINE ) ) then
+			if( eofnewline = FALSE ) then
+				errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
+			end if
 		end if
 		function = FALSE
 

@@ -1,12 +1,14 @@
 Version 0.22.0:
 
 [changed]
+- "No newline at end of file" warning suppressed unless compiling with -w pedantic
 
 [added]
 
 [fixed]
 - #3052712: -pp was not emitting the last line of input if it didn't have an EOL marker
 - inc/win/vfw.bi: Some vfw functions need to use cdecl instead of stdcall (weird API), also added #inclib "vfw32"
+
 
 Version 0.21.1:
 
@@ -17,6 +19,7 @@ Version 0.21.1:
 - #3034516: Remove trailing backslash from #macro line in inc/ode/odemath.bi
 - gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position. 
 - Added some missing FB_UNLOCK()'s to the rtlib
+
 
 Version 0.21.0:
 
@@ -130,6 +133,7 @@ Version 0.21.0:
 - #2974397 - Dynamic arrays with any const qualifiers below the first level (aka [ptr ]*) would erroneously report duplicate definition (cha0s)
 - The final slash stripping code in fbcGetLibPathList() was only working properly on systems using '\' as a path separator. (cha0s)
 - Assignments to bitfields in globals were broken (dkls)
+
 
 Version 0.20.0 Beta:
 
@@ -926,6 +930,7 @@ Version 0.15 Beta:
 - a division of a signed integer by a power of 2 constant would give a wrong result if the left-operand was negative (v1c)
 - exponent handling (including when too big to fit) in PRINT USING (v1c)
 - the subtraction of two pointer operands was not been divided by the operands' length (v1c)
+
 
 Version 0.14 Beta:
 
