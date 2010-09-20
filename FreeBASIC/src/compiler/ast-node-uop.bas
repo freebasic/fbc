@@ -113,9 +113,7 @@ private sub hUOPConstFoldFlt _
 		v->con.val.float = fix( v->con.val.float )
 
 	case AST_OP_FRAC
-#ifdef frac
 		v->con.val.float = frac( v->con.val.float )
-#endif
 	end select
 
 end sub
@@ -263,7 +261,7 @@ function astNewUOP _
 	'' transcendental can only operate on floats
 	case AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
 		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, _
-		 AST_OP_EXP, AST_OP_FLOOR
+		 AST_OP_EXP
 
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			o = astNewCONV( FB_DATATYPE_DOUBLE, NULL, o )
@@ -271,11 +269,22 @@ function astNewUOP _
 			subtype = NULL
 		end if
 
-	'' fix and frac only take floats
-	case AST_OP_FIX, AST_OP_FRAC
-		'' integer? do nothing..
+	'' fix and floor only affect floats
+	case AST_OP_FIX, AST_OP_FLOOR
+		'' integer?
 		if( dclass = FB_DATACLASS_INTEGER ) then
-			return o
+			'' return value unchanged (hack: add 0 to prevent passing byref)
+			return astNewBOP(AST_OP_ADD, o, astNewconsti(0, dtype))
+		end if
+
+	'' frac returns 0 for non-floats
+	case AST_OP_FRAC
+		'' integer?
+		if( dclass = FB_DATACLASS_INTEGER ) then
+			if op = AST_OP_FRAC then
+				'' return zero (opimization should eliminate 'AND 0' tree if no classes on o)
+				return astNewBOP(AST_OP_AND, o, astNewCONSTi(0, dtype))
+			end if
 		end if
 
 	'' '+'? do nothing..

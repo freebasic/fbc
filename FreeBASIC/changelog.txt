@@ -2,6 +2,7 @@ Version 0.22.0:
 
 [changed]
 - "No newline at end of file" warning suppressed unless compiling with -w pedantic
+- FIX(n)/INT(n) no longer affect the type/value of integer-type expressions
 
 [added]
 
@@ -9,6 +10,8 @@ Version 0.22.0:
 - #3052712: -pp was not emitting the last line of input if it didn't have an EOL marker
 - inc/win/vfw.bi: Some vfw functions need to use cdecl instead of stdcall (weird API), also added #inclib "vfw32"
 - SGN(const_longint) was leaving the upper 32 bits unchanged
+- FRAC(n) was returning not 0 but n, for integer n
+- FIX(n)/FRAC(n) were allowing the unchanged variable n to be passed by reference.
 
 
 Version 0.21.1:
