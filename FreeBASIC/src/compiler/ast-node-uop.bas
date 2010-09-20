@@ -138,7 +138,7 @@ private sub hUOPConstFold64 _
 		v->con.val.long = abs( v->con.val.long )
 
 	case AST_OP_SGN
-		v->con.val.int = sgn( v->con.val.long )
+		v->con.val.long = sgn( v->con.val.long )
 	end select
 
 end sub
