@@ -111,7 +111,7 @@ dos
     * DJGPP 2.03/current packages with djdev204.zip from DJGPP 204/beta, default: C:/DJGPP
         Download:
 
-            http://www.delorie.com/pub/djgpp/beta/v2/djdev204.zip       (core)
+            http://www.delorie.com/pub/djgpp/beta/v2/djdev204.zip          (core)
             http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219b.zip     (binutils 2.19 binaries)
             http://www.delorie.com/pub/djgpp/current/v2gnu/bnu219a.zip     (binutils additional stuff: libiberty, BFD headers, ..)
             http://www.delorie.com/pub/djgpp/current/v2gnu/gcc442b.zip     (gcc 4.4.2 binaries)
@@ -128,8 +128,7 @@ dos
         (fbc expects that, probably some 8.3 filename issue)
 
     tram2 uses C:\DJGPP\bin\gcc.exe etc directly, so DJGPP does not need to be
-    in the PATH.
-    The (win32) MSYS is needed in the PATH.
+    in the PATH. However, the (win32) MSYS is needed in the PATH.
 
 
 linux

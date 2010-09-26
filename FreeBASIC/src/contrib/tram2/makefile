@@ -6,13 +6,12 @@ else
 endif
 
 FBC = fbc
-FBCFLAGS = -exx
-EXE := tram2$(EXEEXT)
+TRAM2 := tram2$(EXEEXT)
 
-$(EXE): tram2.bas
-	$(FBC) $(FBCFLAGS) $< -x $@
+$(TRAM2): tram2.bas
+	$(FBC) -exx $< -x $@
 
 clean: 
-	-rm -f $(EXE)
+	-rm -f $(TRAM2)
 
 .PHONY: clean
