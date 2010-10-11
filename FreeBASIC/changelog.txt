@@ -12,6 +12,7 @@ Version 0.22.0:
 - SGN(const_longint) was leaving the upper 32 bits unchanged
 - FRAC(n) was returning not 0 but n, for integer n
 - FIX(n)/FRAC(n) were allowing the unchanged variable n to be passed by reference.
+- SCREEN(x,y) and VIEW|WINDOW SCREEN weren't recognised in lang QB (it was necessary to use __SCREEN)
 
 
 Version 0.21.1:

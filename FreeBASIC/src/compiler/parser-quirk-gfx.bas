@@ -774,12 +774,13 @@ function cGfxView( byval isview as integer ) as integer
 	function = FALSE
 
 	'' SCREEN?
-	if( lexGetToken() = FB_TK_SCREEN ) then
+	select case lexGetToken() 
+	case FB_TK_SCREEN, FB_TK_SCREENQB
 		lexSkipToken
 		flags = FBGFX_VIEW_SCREEN_FLAG
-	else
+	case else
     	flags = 0
-	end if
+	end select
 
 	''
 	x1expr = NULL

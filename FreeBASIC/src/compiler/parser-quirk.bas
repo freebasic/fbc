@@ -232,7 +232,7 @@ function cQuirkFunction _
 		funcexpr = cColorStmt( TRUE )
 		res = funcexpr <> NULL
 
-	case FB_TK_SCREEN
+	case FB_TK_SCREEN, FB_TK_SCREENQB
 		res = cScreenFunct( funcexpr )
 
 	end select
