@@ -5,6 +5,7 @@ Version 0.22.0:
 - FIX(n)/INT(n) no longer affect the type/value of integer-type expressions
 
 [added]
+- Variadic macros: #define a(x, y...) f(x, y)
 
 [fixed]
 - #3052712: -pp was not emitting the last line of input if it didn't have an EOL marker

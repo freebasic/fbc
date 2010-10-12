@@ -159,7 +159,6 @@
 	- painful to add
 	- don't allow it if any line was parsed already
     - [macro expansion: won't work for inner macros
-    - add varargs support, like foo(arg1, ...) ...
     - support default arguments?
 
 [ ] SCOPE..END SCOPE:
