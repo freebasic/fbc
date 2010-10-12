@@ -69,7 +69,7 @@ typedef enum _FB_FILE_ENCOD {
 #define FB_FILE_FROM_HANDLE(handle) \
     (((handle) - __fb_ctx.fileTB) + 1 - FB_RESERVED_FILES)
 #define FB_FILE_INDEX_VALID(index) \
-    ((index)>=1 && ((index)<(FB_MAX_FILES-FB_RESERVED_FILES)))
+    ((index)>=1 && ((index)<=(FB_MAX_FILES-FB_RESERVED_FILES)))
 
 #define FB_INDEX_IS_SPECIAL(index) \
     (((index) < 1) && (((index) > (-FB_RESERVED_FILES))

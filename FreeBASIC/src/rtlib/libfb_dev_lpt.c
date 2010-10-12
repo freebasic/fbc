@@ -47,7 +47,7 @@ FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
   size_t i;
 	/* Test if the printer is already open. */
 	for( i=0;
-			 i!=FB_MAX_FILES;
+			 i<FB_MAX_FILES;
 			 ++i )
 	{
 		FB_FILE *handle = __fb_ctx.fileTB + i;

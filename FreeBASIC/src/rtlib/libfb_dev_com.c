@@ -434,7 +434,7 @@ int fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width )
 
     /* Test all printers. */
     for( i=0;
-         i!=FB_MAX_FILES;
+         i<FB_MAX_FILES;
          ++i )
     {
         FB_FILE *tmp_handle = __fb_ctx.fileTB + i;

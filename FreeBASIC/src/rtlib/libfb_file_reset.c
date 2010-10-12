@@ -53,7 +53,7 @@ FBCALL void fb_FileReset ( void )
 
     FB_LOCK();
 
-    for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) 
+    for( i = 1; i <= (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) 
 	{
         FB_FILE *handle = FB_FILE_TO_HANDLE_VALID( i );
         if( handle->hooks != NULL ) 

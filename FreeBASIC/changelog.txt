@@ -13,6 +13,7 @@ Version 0.22.0:
 - FRAC(n) was returning not 0 but n, for integer n
 - FIX(n)/FRAC(n) were allowing the unchanged variable n to be passed by reference.
 - SCREEN(x,y) and VIEW|WINDOW SCREEN weren't recognised in lang QB (it was necessary to use __SCREEN)
+- rtlib allocated room for N user file numbers but only allowed N-1 to be used
 
 
 Version 0.21.1:
