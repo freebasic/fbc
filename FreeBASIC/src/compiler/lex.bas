@@ -2112,21 +2112,63 @@ private sub hMoveKDown( ) static
 
 end sub
 
-private sub hEmitToken( )
-	static as string currentline
+private sub hGetStrLitText( byref s as string, byval is_escaped as integer )
+    s += QUOTE
 
-	select case lexGetToken( )
-	case FB_TK_COMMENT, FB_TK_REM
+    '' Escaping is enabled for this string literal, so it could contain
+    ''  \"  (which didn't stop the string token parser), or
+    ''  "   (from "" sequences).
+    ''
+    '' And \" shouldn't be turned into \"" in the -pp output...
+
+    dim as integer saw_backslash = FALSE
+    dim as ubyte ptr p = lexGetText( )
+    do
+        select case *p
+        case 0
+            exit do
+
+        case asc(QUOTE)
+            if (saw_backslash) then
+                '' It's just a '\"'
+                s += QUOTE
+            else
+                '' It's a '"', and the user did '""'
+                s += QUOTE + QUOTE
+            end if
+            saw_backslash = FALSE
+
+        case asc("\")
+            saw_backslash = is_escaped
+            s += "\"
+
+        case else
+            saw_backslash = FALSE
+            s += chr(*p)
+
+        end select
+
+        p += 1
+    loop
+
+    s += QUOTE
+end sub
+
+private sub hEmitToken( )
+    static as string currentline
+
+    select case lexGetToken( )
+    case FB_TK_COMMENT, FB_TK_REM
         '' Single-line comment
-		return
+        return
 
     case FB_TK_EOF, FB_TK_EOL
         '' EOF/EOL
 
         '' Don't write out empty lines (e.g. from PP directives)...
-		if( len(currentline) > 0 ) then
+        if( len(currentline) > 0 ) then
 
-			print #env.ppfile_num, currentline
+            print #env.ppfile_num, currentline
             currentline = ""
 
         elseif( lexGetToken( ) = FB_TK_EOL ) then
@@ -2136,39 +2178,33 @@ private sub hEmitToken( )
                 print #env.ppfile_num, ""
             end if
 
-		end if
+        end if
 
-		return
+        return
 
-	end select
+    end select
 
-	'' Everything else...
-	if( lex.ctx->head->after_space ) then
-		currentline += " "
-	end if
+    '' Everything else...
+    if( lex.ctx->head->after_space ) then
+        currentline += " "
+    end if
 
-	select case lexGetToken( )
-	case FB_TK_STRLIT_ESC
-		currentline += "!"
+    select case lexGetToken( )
+    case FB_TK_STRLIT
+        hGetStrLitText( currentline, FALSE )
 
-	case FB_TK_STRLIT_NOESC
-		currentline += "$"
+    case FB_TK_STRLIT_ESC
+        currentline += "!"
+        hGetStrLitText( currentline, TRUE )
 
-	end select
+    case FB_TK_STRLIT_NOESC
+        currentline += "$"
+        hGetStrLitText( currentline, FALSE )
 
-	select case as const lexGetToken( )
-	case FB_TK_STRLIT, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC
-		currentline += QUOTE
+    case else
+        currentline += *lexGetText( )
 
-		'' Escape "'s.
-		currentline += hReplace( *lexGetText( ), QUOTE, QUOTE + QUOTE )
-
-		currentline += QUOTE
-
-	case else
-		currentline += *lexGetText( )
-
-	end select
+    end select
 
 end sub
 
