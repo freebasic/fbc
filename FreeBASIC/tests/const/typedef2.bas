@@ -1,3 +1,5 @@
+' TEST_MODE : COMPILE_ONLY_FAIL
+
 type blahhh as blah
 type blah as const foo
 type blahh as bar

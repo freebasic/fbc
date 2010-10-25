@@ -17,6 +17,9 @@ Version 0.22.0:
 - rtlib allocated room for N user file numbers but only allowed N-1 to be used
 - #3089481: -pp didn't distinguish \" escapes from "" sequences
 - #3089424: type parameter error and missing types in commctrl.bi (thanks to vbmrupp)
+- Multiple typedefs in the same line were not being accepted if each had its own type: 'type a as integer, b as integer'
+- Could not typedef to a forward reference with multi-declaration syntax: 'type as Forward Foo'
+- CONST's on PTR's weren't always preserved on typedefs to forward references
 
 
 Version 0.21.1:

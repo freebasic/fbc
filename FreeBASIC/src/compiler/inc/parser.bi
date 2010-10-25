@@ -321,9 +321,13 @@ declare function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare function cTypedefDecl _
+declare function cTypedefMultDecl _
+    ( _
+    ) as integer
+
+declare function cTypedefSingleDecl _
 	( _
-		byval id as zstring ptr _
+		byval pid as zstring ptr _
 	) as integer
 
 declare function cEnumDecl _

@@ -1060,8 +1060,8 @@ function cTypeDecl _
     	if( isunion = FALSE ) then
     		'' AS?
     		if( lexGetToken( ) = FB_TK_AS ) then
-    			lexSkipToken( )
-    			return cTypedefDecl( NULL )
+                '' (Note: the typedef parser will skip the AS)
+    			return cTypedefMultDecl( )
     		end if
     	end if
 
@@ -1125,9 +1125,8 @@ function cTypeDecl _
 			end if
 		end if
 
-		lexSkipToken( )
-
-		return cTypedefDecl( id )
+        '' (Note: the typedef parser will skip the AS)
+		return cTypedefSingleDecl( id )
 
 	'' (ALIAS LITSTR)?
 	case FB_TK_ALIAS

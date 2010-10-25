@@ -31,6 +31,7 @@ string \
 structs \
 swap \
 threads \
+typedef \
 wstring
 
 DIRLIST_QB := \
