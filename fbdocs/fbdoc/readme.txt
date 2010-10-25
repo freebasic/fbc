@@ -49,31 +49,21 @@ Purpose of fbdoc:
   continue to work for years to come.
 
 
-Installing:
+Compiling:
+
+  Type in a command prompt in the fbdoc directory:
+    $ make
+  This will generate the "fbdoc" executable.
 
   o Requirements:
 
     - FreeBASIC Compiler version 0.17 or greater and compatible build 
       environment.
-
+    - Windows or Linux OS (DOS not supported)
     - pcre
     - libcurl
     - internet connection ( optional, to download wiki pages not in SVN )
-
-  o Windows version:
-
-    - type "make TARGET=win32" in the fbdoc directory at the command prompt.
-      This will generate "fbdoc.exe"
-      
-  o Linux version:
-
-    - type "make TARGET=linux" in the fbdoc directory at the command prompt.  
-      This will generate "fbdoc"
-
-  o DOS:
-
-    - not supported
-
+    - make
 
 
 Running:
@@ -103,7 +93,7 @@ Running:
       type "fbdoc -useweb -chm"
 
     - When the process is complete, use html help compiler to make the CHM 
-      using ./html/fbdoc.hhp as the project file.
+      using ../manual/html/fbdoc.hhp as the project file.
 
 
   o Building the CHM using an MySQL Database source:
@@ -118,7 +108,7 @@ Running:
       type "fbdoc -usesql -chm"
 
     - When the process is complete, use html help compiler to make the CHM
-      using ./html/fbdoc.hhp as the project file.
+      using ../manual/html/fbdoc.hhp as the project file.
 
 
   o Building the FBHELP.DAT format using the existing cache:

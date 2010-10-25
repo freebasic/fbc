@@ -25,8 +25,8 @@
 #include once "CRegex.bi"
 #include once "pcre/pcre.bi" 
 
-#print __FB_VER_MAJOR__
-#print __FB_VER_MINOR__
+''#print __FB_VER_MAJOR__
+''#print __FB_VER_MINOR__
 
 '' compatibility hack due to pcre header change in 0.18.4
 #if(( __FB_VER_MAJOR__ <= 0 ) and ( __FB_VER_MINOR__ <= 17 ))

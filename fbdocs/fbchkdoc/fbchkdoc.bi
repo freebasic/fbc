@@ -5,13 +5,13 @@
 const default_optFile = "fbchkdoc.ini"
 
 '' cache dirs
-const default_CacheDir = "../fbdoc/cache/"
-const default_web_CacheDir = "../fbdoc/cache.web/"
-const default_dev_CacheDir = "../fbdoc/cache.dev/"
+const default_CacheDir = "../manual/cache/"
+const default_web_CacheDir = "../manual/cache.web/"
+const default_dev_CacheDir = "../manual/cache.dev/"
 
 '' other common defaults
 const def_index_file = "PageIndex.txt"
-const default_image_dir = "../fbdoc/html/images/"
+const default_image_dir = "../manual/html/images/"
 const default_fb_dir = "../../FreeBASIC/"
 
 #endif

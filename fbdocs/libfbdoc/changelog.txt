@@ -1,7 +1,3 @@
-October 25, 2010
-- moved libfbdoc and the output directories into their own directories to more
-  easily allow for automatic creation of the FB manual releases.
-
 April 9, 2008
 - added first version of texinfo emitter (W.I.P.) cloned from the plain
   text emitter.

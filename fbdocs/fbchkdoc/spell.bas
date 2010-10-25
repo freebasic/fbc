@@ -486,7 +486,7 @@ if( webPageCount > 0 ) then
 		end if
 	end scope
 
-	fb.fbdoc.fbdoc_loadkeywords( "../fbdoc/templates/default/keywords.lst" )
+	fb.fbdoc.fbdoc_loadkeywords( "../manual/templates/default/keywords.lst" )
 	SpellCheck_Init( "en_US" )
 
 ''	h = freefile

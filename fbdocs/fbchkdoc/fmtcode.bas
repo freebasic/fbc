@@ -142,7 +142,7 @@ function FormatFbCode( byref txt as string ) as string
 
 	if( kw_loaded = FALSE ) then
 		'' Load the keywords, this will allow keywords to be cased.
-		fbdoc_loadkeywords( "../fbdoc/templates/default/keywords.lst" )
+		fbdoc_loadkeywords( "../manual/templates/default/keywords.lst" )
 		kw_loaded = TRUE
 	end if
 

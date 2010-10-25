@@ -1,136 +1,123 @@
-## makefile for fbchkdoc 
-##
-## this has only ever been used on win32 platform
-## and needs to modified/tested for other platforms
-##
-
-ifndef FBDOCDIR
-FBDOCDIR := ../fbdoc
+OS := $(shell uname)
+ifeq ($(OS),Linux)
+	EXEEXT :=
+else
+	EXEEXT := .exe
 endif
 
-EXEEXT := .exe
-FBC := fbc$(EXEEXT)
+FBC := fbc
 
-##########################
+LIBFBDOC_DIR := ../libfbdoc
+LIBFBDOC := $(LIBFBDOC_DIR)/libfbdoc.a
 
-LIB_SRCS := \
-funcs.bas \
-funcsdir.bas \
-fmtcode.bas \
-buffer.bas
+################################################################################
 
-LIB_NAME := libfuncs.a
+LIBFUNCS_SRC := \
+    funcs.bas \
+    funcsdir.bas \
+    fmtcode.bas \
+    buffer.bas
 
-APP_LIST := \
-getindex$(EXEEXT) \
-getpage$(EXEEXT) \
-putpage$(EXEEXT) \
-chkdocs$(EXEEXT) \
-replace$(EXEEXT) \
-rebuild$(EXEEXT) \
-mkprntoc$(EXEEXT) \
-mkerrlst$(EXEEXT) \
-delextra$(EXEEXT) \
-mkimglst$(EXEEXT) \
-getimage$(EXEEXT) \
-spellit$(EXEEXT) \
-spell$(EXEEXT) \
-samps$(EXEEXT)
+LIBFUNCS := libfuncs.a
+
+APPS := \
+    getindex$(EXEEXT) \
+    getpage$(EXEEXT) \
+    putpage$(EXEEXT) \
+    chkdocs$(EXEEXT) \
+    replace$(EXEEXT) \
+    rebuild$(EXEEXT) \
+    mkprntoc$(EXEEXT) \
+    mkerrlst$(EXEEXT) \
+    delextra$(EXEEXT) \
+    mkimglst$(EXEEXT) \
+    getimage$(EXEEXT) \
+    spellit$(EXEEXT) \
+    spell$(EXEEXT) \
+    samps$(EXEEXT)
 
 SAMPS_SRCS := \
-samps.bas \
-samps_wiki.bas \
-samps_file.bas \
-samps_logfile.bas
-
+    samps.bas \
+    samps_wiki.bas \
+    samps_file.bas \
+    samps_logfile.bas
 
 TEMP_FILES := \
-results.txt \
-PageIndex.txt \
-linklist.csv \
-samplist.log \
-fixlist.txt \
-timer.log \
-DocPages.txt \
-mkerrtxt$(EXEEXT) \
-mkerrtxt.bas \
-imagelist.txt \
-imagepages.txt
+    results.txt \
+    PageIndex.txt \
+    linklist.csv \
+    samplist.log \
+    fixlist.txt \
+    timer.log \
+    DocPages.txt \
+    mkerrtxt$(EXEEXT) \
+    mkerrtxt.bas \
+    imagelist.txt \
+    imagepages.txt
 
 HEADERS := $(wildcard *.bi)
-DEP_LIST = $(FBDOCDIR)/libfbdoc.a $(HEADERS)
+DEPS = $(LIBFBDOC) $(HEADERS)
 
-FBCFLAGS := -w pedantic -w next
+FBCFLAGS += -exx -g -i $(LIBFBDOC_DIR)
+FBLFLAGS += -exx -g -p $(LIBFBDOC_DIR) -l fbdoc 
 
-ifdef DEBUG
-FBCFLAGS += -g
-endif
+################################################################################
 
-ifdef PROFILE
-FBCFLAGS += -profile
-endif
+all: $(APPS) $(LIBFBDOC)
 
-FBCFLAGS += -w 0 -i $(FBDOCDIR) -exx
-FBLFLAGS := -p $(FBDOCDIR) -l fbdoc 
-
-.SUFFIXES:
-.SUFFIXES: .bas
-
-VPATH = .
-
-##########################
-
-all: $(APP_LIST) $(FBDOCDIR)/libfbdoc.a
-
-getindex$(EXEEXT): getindex.bas $(DEP_LIST)
+getindex$(EXEEXT): getindex.bas $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-getpage$(EXEEXT): getpage.bas $(LIB_NAME) $(DEP_LIST)
+getpage$(EXEEXT): getpage.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-putpage$(EXEEXT): putpage.bas $(LIB_NAME) $(DEP_LIST)
+putpage$(EXEEXT): putpage.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-chkdocs$(EXEEXT): chkdocs.bas $(LIB_NAME) $(DEP_LIST)
+chkdocs$(EXEEXT): chkdocs.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-replace$(EXEEXT): replace.bas $(LIB_NAME) $(DEP_LIST)
+replace$(EXEEXT): replace.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-rebuild$(EXEEXT): rebuild.bas $(LIB_NAME) $(DEP_LIST)
+rebuild$(EXEEXT): rebuild.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-mkprntoc$(EXEEXT): mkprntoc.bas $(LIB_NAME) $(DEP_LIST)
+mkprntoc$(EXEEXT): mkprntoc.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 mkerrlst$(EXEEXT): mkerrlst.bas
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-delextra$(EXEEXT): delextra.bas $(LIB_NAME) $(DEP_LIST)
+delextra$(EXEEXT): delextra.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-mkimglst$(EXEEXT): mkimglst.bas $(LIB_NAME) $(DEP_LIST)
+mkimglst$(EXEEXT): mkimglst.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
-getimage$(EXEEXT): getimage.bas $(LIB_NAME) $(DEP_LIST)
+getimage$(EXEEXT): getimage.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 spellit$(EXEEXT): spellit.bas spellcheck.bas
 	$(FBC) $(FBCFLAGS) spellit.bas spellcheck.bas $(FBLFLAGS) -x $@
 
-spell$(EXEEXT): spell.bas spellcheck.bas $(LIB_NAME) $(DEP_LIST)
+spell$(EXEEXT): spell.bas spellcheck.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) spell.bas spellcheck.bas $(FBLFLAGS) -x $@
 
-samps$(EXEEXT): $(SAMPS_SRCS) $(LIB_NAME) $(DEP_LIST)
+samps$(EXEEXT): $(SAMPS_SRCS) $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $(SAMPS_SRCS) $(FBLFLAGS) -x $@
 
-$(LIB_NAME): $(LIB_SRCS) $(HEADERS)
-	$(FBC) -lib -x funcs $(LIB_SRCS) $(FBCFLAGS)
+$(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
+	$(FBC) -lib -x funcs $(LIBFUNCS_SRC) $(FBCFLAGS)
 
-##########################
+$(LIBFBDOC):
+	cd $(LIBFBDOC_DIR) && make
 
-.PHONY : clean
+################################################################################
+
 clean:
-	-rm -f $(APP_LIST)
-	-rm -f $(LIB_NAME)
+	-rm -f $(APPS)
+	-rm -f $(LIBFUNCS)
 	-rm -f $(TEMP_FILES)
+
+.PHONY: clean

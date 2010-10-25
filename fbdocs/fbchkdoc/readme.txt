@@ -114,7 +114,7 @@ passwords and to avoid having it committed to SVN by accident, it has a
 different name. A description of the options in this file are below:
 
     cache_dir
-        normally '../fbdoc/cache'.  This is where the wakka source files are
+        normally '../manual/cache'.  This is where the wakka source files are
         stored and modified.
 
     web_cache_dir    

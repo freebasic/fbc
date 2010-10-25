@@ -47,8 +47,9 @@
 using fb
 using fbdoc
 
+const ManualDir = "../manual/"
 const default_wiki_url = "http://www.freebasic.net/wiki/wikka.php"
-const default_CacheDir = "cache/"
+const default_CacheDir = ManualDir + "cache/"
 const default_TocPage = "DocToc"
 
 enum OUTPUT_FORMATS
@@ -280,7 +281,7 @@ end enum
 	end if
 
 	'' Load language options
-	sLangFile = "templates/default/lang/en/common.ini"
+	sLangFile = ManualDir + "templates/default/lang/en/common.ini"
 	if( Lang.LoadOptions( sLangFile ) = FALSE ) then
 		print "Unable to load language file '" + sLangFile + "'"
 		end 1
@@ -352,7 +353,7 @@ end enum
 	end if
 
 	'' Load Keywords
-	fbdoc_loadkeywords( "templates/default/keywords.lst" )
+	fbdoc_loadkeywords( ManualDir + "templates/default/keywords.lst" )
 
 	if( bMakeTitles = TRUE ) then
 		'misc_dump_keypageslist( paglist, "keypages.txt" )
@@ -369,8 +370,8 @@ end enum
 	if( ( bEmitFormats and OUT_CHM ) <> 0 )then
 
 		'' Generate CHM
-		sOutputDir = "html/"
-		sTemplateDir = "templates/default/code/"
+		sOutputDir = ManualDir + "html/"
+		sTemplateDir = ManualDir + "templates/default/code/"
 
 		Templates.Clear()
 		Templates.LoadFile( "chm_idx", sTemplateDir + "chm_idx.tpl.html" )
@@ -390,8 +391,8 @@ end enum
 	if( ( bEmitFormats and OUT_FBHELP ) <> 0 )then
 
 		'' Generate fbhelp output for fbhelp console viewer
-		sOutputDir = "fbhelp/"
-		sTemplateDir = "templates/default/code/"
+		sOutputDir = ManualDir + "fbhelp/"
+		sTemplateDir = ManualDir + "templates/default/code/"
 
 		Templates.Clear()
 		Templates.LoadFile( "fbhelp_doctoc", sTemplateDir + "fbhelp_doctoc.tpl.txt" )
@@ -406,8 +407,8 @@ end enum
 	if( ( bEmitFormats and OUT_TXT ) <> 0 )then
 
 		'' Generate ascii Txt output for single txt file
-		sOutputDir = "txt/"
-		sTemplateDir = "templates/default/code/"
+		sOutputDir = ManualDir + "txt/"
+		sTemplateDir = ManualDir + "templates/default/code/"
 
 		Templates.Clear()
 		Templates.LoadFile( "txt_doctoc", sTemplateDir + "txt_doctoc.tpl.txt" )
@@ -422,8 +423,8 @@ end enum
 	if( ( bEmitFormats and OUT_TEXINFO ) <> 0 )then
 
 		'' Generate ascii Txt output for single txt file
-		sOutputDir = "texinfo/"
-		sTemplateDir = "templates/default/code/"
+		sOutputDir = ManualDir + "texinfo/"
+		sTemplateDir = ManualDir + "templates/default/code/"
 
 		Templates.Clear()
 		Templates.LoadFile( "texinfo_def", sTemplateDir + "texinfo_def.tpl.texinfo" )
@@ -445,5 +446,3 @@ end enum
 	LocalCache_Destroy()
 
 	delete connopts
-
-	end
