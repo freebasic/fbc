@@ -48,24 +48,20 @@ private sub hOptConstRemNeg _
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
 	if( p <> NULL ) then
-		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op.op = AST_OP_NEG ) then
-				l = n->l
-				if( l->class = AST_NODECLASS_VAR ) then
-					if( p->class = AST_NODECLASS_BOP ) then
-						if( p->op.op = AST_OP_ADD ) then
-							r = p->r
-							if( astIsCONST( r ) ) then
-								p->op.op = AST_OP_SUB
-								p->l = p->r
-								p->r = n->l
-								astDelNode( n )
-								exit sub
-							end if
-						end if
+		if( astIsUOP( n, AST_OP_NEG ) ) then
+			l = n->l
+			if( l->class = AST_NODECLASS_VAR ) then
+				if( astIsBOP( p, AST_OP_ADD ) ) then
+					r = p->r
+					if( astIsCONST( r ) ) then
+						p->op.op = AST_OP_SUB
+						p->l = p->r
+						p->r = n->l
+						astDelNode( n )
+						exit sub
 					end if
 				end if
-		    end if
+			end if
 		end if
 	end if
 
@@ -425,11 +421,7 @@ private function hConstAccumMUL _
 		return NULL
 	end if
 
-	if( n->class <> AST_NODECLASS_BOP ) then
-		return n
-	end if
-
-	if( n->op.op = AST_OP_MUL ) then
+	if( astIsBOP( n, AST_OP_MUL ) ) then
 		l = n->l
 		r = n->r
 
@@ -632,11 +624,7 @@ private function hConstDistMUL _
 		return NULL
 	end if
 
-	if( n->class <> AST_NODECLASS_BOP ) then
-		return n
-	end if
-
-	if( n->op.op = AST_OP_ADD ) then
+	if( astIsBOP( n, AST_OP_ADD) ) then
 		l = n->l
 		r = n->r
 
@@ -1630,52 +1618,46 @@ private function hOptLogic _
 
 	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
-		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op.op = AST_OP_NOT ) then
-				if( l->class = AST_NODECLASS_UOP ) then
-					if( l->op.op = AST_OP_NOT ) then
+		if( astIsUOP( n, AST_OP_NOT ) ) then
+			if( astIsUOP( l, AST_OP_NOT ) ) then
 
-						'' convert NOT NOT x to x
+				'' convert NOT NOT x to x
 
-						m = l->l
-						astDelNode( l )
-						astDelNode( n )
-						n = hOptLogic( m )
-					end if
+				m = l->l
+				astDelNode( l )
+				astDelNode( n )
+				n = hOptLogic( m )
 
-				elseif( l->class = AST_NODECLASS_BOP ) then
-					if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-						if( l->op.op = AST_OP_XOR ) then
-							if( astIsCONST( l->l ) ) then
-								'' convert:
-								'' not (const xor x)    to    (not const) xor x
+			elseif( astIsBOP( l, AST_OP_XOR ) ) then
+				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+					if( astIsCONST( l->l ) ) then
+						'' convert:
+						'' not (const xor x)    to    (not const) xor x
 
-								if( symbGetDataSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
-									v = l->l->con.val.int
-								else
-									v = l->l->con.val.long
-								end if
-
-								l->l->con.val.long = not v
-								astDelNode( n )
-								n = hOptLogic( l )
-
-							elseif( astIsCONST( l->r ) ) then
-								'' convert:
-								'' not (x xor const)    to    x xor (not const)
-
-								if( symbGetDataSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
-									v = l->r->con.val.int
-								else
-									v = l->r->con.val.long
-								end if
-
-								l->r->con.val.long = not v
-								astDelNode( n )
-								n = hOptLogic( l )
-
-							end if
+						if( symbGetDataSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
+							v = l->l->con.val.int
+						else
+							v = l->l->con.val.long
 						end if
+
+						l->l->con.val.long = not v
+						astDelNode( n )
+						n = hOptLogic( l )
+
+					elseif( astIsCONST( l->r ) ) then
+						'' convert:
+						'' not (x xor const)    to    x xor (not const)
+
+						if( symbGetDataSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
+							v = l->r->con.val.int
+						else
+							v = l->r->con.val.long
+						end if
+
+						l->r->con.val.long = not v
+						astDelNode( n )
+						n = hOptLogic( l )
+
 					end if
 				end if
 			end if
@@ -2356,12 +2338,12 @@ private function hOptReciprocal _
 	end if
 
 	'' first check if the op is a divide
-	if( n->class = AST_NODECLASS_BOP ) AndAlso ( n->op.op = AST_OP_DIV ) then
+	if( astIsBOP( n, AST_OP_DIV ) ) then
 		l = n->l
 		if( astIsCONST( l ) ) then
-			if( ( astGetDataType( l ) = FB_DATATYPE_SINGLE ) AndAlso ( l->con.val.float = 1.0f ) ) then
+			if( ( astGetDataType( l ) = FB_DATATYPE_SINGLE ) andalso ( astGetValFloat( l ) = 1.0f ) ) then
 				r = n->r
-				if( ( r->class = AST_NODECLASS_UOP ) AndAlso ( r->op.op = AST_OP_SQRT ) ) then
+				if( astIsUOP( r, AST_OP_SQRT ) ) then
 					'' change this to a rsqrt
 					*n = *r
 					n->class = AST_NODECLASS_UOP

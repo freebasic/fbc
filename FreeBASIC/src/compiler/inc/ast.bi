@@ -1466,6 +1466,11 @@ declare function hTruncateInt _
 
 #define astGetCastDoConv( n ) n->cast.doconv
 
+
+#define astIsUOP( n, uop ) ( ((n)->op.op = (uop)) andalso ((n)->class = AST_NODECLASS_UOP) )
+
+#define astIsBOP( n, bop ) ( ((n)->op.op = (bop)) andalso ((n)->class = AST_NODECLASS_BOP) )
+
 ''
 '' inter-module globals
 ''
