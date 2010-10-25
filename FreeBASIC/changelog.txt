@@ -16,6 +16,7 @@ Version 0.22.0:
 - SCREEN(x,y) and VIEW|WINDOW SCREEN weren't recognised in lang QB (it was necessary to use __SCREEN)
 - rtlib allocated room for N user file numbers but only allowed N-1 to be used
 - #3089481: -pp didn't distinguish \" escapes from "" sequences
+- #3089424: type parameter error and missing types in commctrl.bi (thanks to vbmrupp)
 
 
 Version 0.21.1:

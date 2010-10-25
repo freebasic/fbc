@@ -2272,6 +2272,23 @@ end type
 type PNMLVCACHEHINT as NMLVCACHEHINT ptr
 type HTREEITEM as TREEITEM ptr
 
+type NMLVFINDITEMA
+	hdr as NMHDR
+	iStart as integer
+	lvfi as LVFINDINFOA
+end type
+
+type LPNMLVFINDITEMA as NMLVFINDITEMA ptr
+
+#ifdef UNICODE
+type NMLVFINDITEMW
+	hdr as NMHDR
+	iStart as integer
+	lvfi as LVFINDINFOW
+end type
+type LPNMLVFINDITEMW as NMLVFINDITEMW ptr
+#endif
+
 #ifndef UNICODE
 type LVCOLUMNA
 	mask as UINT
@@ -2324,6 +2341,8 @@ end type
 
 type LPTVITEMA as TVITEMA ptr
 
+type LPNMLVFINDITEM as LPNMLVFINDITEMA
+
 type TVINSERTSTRUCTA
 	hParent as HTREEITEM
 	hInsertAfter as HTREEITEM
@@ -2370,6 +2389,8 @@ type TVITEMW
 end type
 
 type LPTVITEMW as TVITEMW ptr
+
+type LPNMLVFINDITEM as LPNMLVFINDITEMW
 
 type TVITEMEXW
 	mask as UINT
@@ -2791,15 +2812,15 @@ declare function LBItemFromPt alias "LBItemFromPt" (byval as HWND, byval as POIN
 
 #define ListView_GetBkColor(w) cuint(SNDMSG(w,LVM_GETBKCOLOR,0,0))
 #define ListView_GetImageList(w,i) cast(HIMAGELIST,SNDMSG(w,LVM_GETIMAGELIST,(i),0))
-#define ListView_GetItemCountw cint(SNDMSG(w,LVM_GETITEMCOUNT,0,0))
+#define ListView_GetItemCount(w) cint(SNDMSG(w,LVM_GETITEMCOUNT,0,0))
 #define ListView_GetItem(w,i) cint(SNDMSG(w,LVM_GETITEM,0,cint( i)))
 #define ListView_SetBkColor(w,c) cint(SNDMSG(w,LVM_SETBKCOLOR,0,cint(c)))
 #define ListView_SetImageList(w,h,i) cast(HIMAGELIST,cuint(SNDMSG(w,LVM_SETIMAGELIST,i,cint( h))))
 #define ListView_SetItem(w,i) cint(SNDMSG(w,LVM_SETITEM,0,cint( cast(LV_ITEM ptr,i))))
 #define ListView_InsertItem(w,i) cint(SNDMSG(w,LVM_INSERTITEM,0,cint( cast(LV_ITEM ptr,i))))
 #define ListView_DeleteItem(w,i) cint(SNDMSG(w,LVM_DELETEITEM,i,0))
-#define ListView_DeleteAllItemsw cint(SNDMSG(w,LVM_DELETEALLITEMS,0,0))
-#define ListView_GetCallbackMaskw cint(SNDMSG(w,LVM_GETCALLBACKMASK,0,0))
+#define ListView_DeleteAllItems(w) cint(SNDMSG(w,LVM_DELETEALLITEMS,0,0))
+#define ListView_GetCallbackMask(w) cint(SNDMSG(w,LVM_GETCALLBACKMASK,0,0))
 #define ListView_SetCallbackMask(w,m) cint(SNDMSG(w,LVM_SETCALLBACKMASK,m,0))
 #define ListView_GetNextItem(w,i,f) cint(SNDMSG(w,LVM_GETNEXTITEM,i,MAKELPARAM((f),0)))
 #define ListView_FindItem(w,i,p) cint(SNDMSG(w, LVM_FINDITEM,i,cint( cast(LV_FINDINFO ptr,p))))
@@ -2817,24 +2838,24 @@ declare function LBItemFromPt alias "LBItemFromPt" (byval as HWND, byval as POIN
 #define ListView_GetEditControlw cast(HWND,SNDMSG(w,LVM_GETEDITCONTROL,0,0))
 #define ListView_GetColumn(w,i,p) cint(SNDMSG(w,LVM_GETCOLUMN,i,cint( cast(LV_COLUMN ptr,p))))
 #define ListView_SetColumn(w,i,p) cint(SNDMSG(w,LVM_SETCOLUMN,i,cint( cast(LV_COLUMN ptr,p))))
-#define ListView_InsertColumn(w,i,p) cint(SNDMSG(w,LVM_INSERTCOLUMN,i,cint( cast(LV_COLUMN ptr,p))))
+#define ListView_InsertColumn(w,i,p) cint(SNDMSG(w,LVM_INSERTCOLUMN,i,cint( cast(LVCOLUMN ptr,p))))
 #define ListView_DeleteColumn(w,i) cint(SNDMSG(w,LVM_DELETECOLUMN,i,0))
 #define ListView_GetColumnWidth(w,i) cint(SNDMSG(w,LVM_GETCOLUMNWIDTH,i,0))
 #define ListView_SetColumnWidth(w,i,x) cint(SNDMSG(w,LVM_SETCOLUMNWIDTH,i,MAKELPARAM((x),0)))
 #define ListView_CreateDragImage(w,i,p) cast(HIMAGELIST,SNDMSG(w,LVM_CREATEDRAGIMAGE,i,cint( cast(LPPOINT,p))))
 #define ListView_GetViewRect(w,p) cint(SNDMSG(w,LVM_GETVIEWRECT,0,cint( cast(LPRECT,p))))
-#define ListView_GetTextColorw cuint(SNDMSG(w,LVM_GETTEXTCOLOR,0,0))
+#define ListView_GetTextColor(w) cuint(SNDMSG(w,LVM_GETTEXTCOLOR,0,0))
 #define ListView_SetTextColor(w,c) cint(SNDMSG(w,LVM_SETTEXTCOLOR,0,cint( cuint(c))))
-#define ListView_GetTextBkColorw cuint(SNDMSG(w,LVM_GETTEXTBKCOLOR,0,0))
+#define ListView_GetTextBkColor(w) cuint(SNDMSG(w,LVM_GETTEXTBKCOLOR,0,0))
 #define ListView_SetTextBkColor(w,c) cint(SNDMSG(w,LVM_SETTEXTBKCOLOR,0,cint(cuint(c))))
-#define ListView_GetTopIndexw cint(SNDMSG(w,LVM_GETTOPINDEX,0,0))
-#define ListView_GetCountPerPagew cint(SNDMSG(w,LVM_GETCOUNTPERPAGE,0,0))
+#define ListView_GetTopIndex(w) cint(SNDMSG(w,LVM_GETTOPINDEX,0,0))
+#define ListView_GetCountPerPage(w) cint(SNDMSG(w,LVM_GETCOUNTPERPAGE,0,0))
 #define ListView_GetOrigin(w,p) cint(SNDMSG(w,LVM_GETORIGIN,0,cint( cast(POINT ptr,p))))
 #define ListView_Update(w,i) cint(SNDMSG(w,LVM_UPDATE,i,0))
 #define ListView_GetItemState(w,i,m) cuint(SNDMSG(w,LVM_GETITEMSTATE,i,m))
 #define ListView_SetItemCount(w,n) SNDMSG(w,LVM_SETITEMCOUNT,n,0)
 #define ListView_SortItems(w,f,l) cint(SNDMSG(w,LVM_SORTITEMS,l,cint(f)))
-#define ListView_GetSelectedCountw cuint(SNDMSG(w,LVM_GETSELECTEDCOUNT,0,0))
+#define ListView_GetSelectedCount(w) cuint(SNDMSG(w,LVM_GETSELECTEDCOUNT,0,0))
 
 declare function MakeDragList alias "MakeDragList" (byval as HWND) as BOOL
 declare sub MenuHelp alias "MenuHelp" (byval as UINT, byval as WPARAM, byval as LPARAM, byval as HMENU, byval as HINSTANCE, byval as HWND, byval as PUINT)
@@ -2869,9 +2890,9 @@ declare function _TrackMouseEvent alias "_TrackMouseEvent" (byval as LPTRACKMOUS
 #define TabCtrl_SetItem(w,i,p) cint(SNDMSG(w,TCM_SETITEM,i,cint(cast(TC_ITEM ptr,p))))
 #define TabCtrl_InsertItem(w,i,p) cint(SNDMSG(w,TCM_INSERTITEM,i,cint(cast(TC_ITEM ptr,p))))
 #define TabCtrl_DeleteItem(w,i) cint(SNDMSG(w,TCM_DELETEITEM,i,0))
-#define TabCtrl_DeleteAllItemsw cint(SNDMSG(w,TCM_DELETEALLITEMS,0,0))
+#define TabCtrl_DeleteAllItems(w) cint(SNDMSG(w,TCM_DELETEALLITEMS,0,0))
 #define TabCtrl_GetItemRect(w,i,p) cint(SNDMSG(w,TCM_GETITEMRECT,i,cint(cast(LPRECT,p))))
-#define TabCtrl_GetCurSelw cint(SNDMSG(w,TCM_GETCURSEL,0,0))
+#define TabCtrl_GetCurSel(w) cint(SNDMSG(w,TCM_GETCURSEL,0,0))
 #define TabCtrl_SetCurSel(w,i) cint(SNDMSG(w,TCM_SETCURSEL,i,0))
 #define TabCtrl_HitTest(w,p) cint(SNDMSG(w,TCM_HITTEST,0,cint(cast(TC_HITTESTINFO ptr,p))))
 #define TabCtrl_SetItemExtra(w,c) cint(SNDMSG(w,TCM_SETITEMEXTRA,c,0))
@@ -2879,13 +2900,13 @@ declare function _TrackMouseEvent alias "_TrackMouseEvent" (byval as LPTRACKMOUS
 #define TabCtrl_SetItemSize(w,x,y) cuint(SNDMSG(w,TCM_SETITEMSIZE,0,MAKELPARAM(x,y)))
 #define TabCtrl_RemoveImage(w,i) SNDMSG(w,TCM_REMOVEIMAGE,i,0)
 #define TabCtrl_SetPadding(w,x,y) SNDMSG(w,TCM_SETPADDING,0,MAKELPARAM(x,y))
-#define TabCtrl_GetRowCountw cint(SNDMSG(w,TCM_GETROWCOUNT,0,0))
-#define TabCtrl_GetToolTipsw cast(HWND,SNDMSG(w,TCM_GETTOOLTIPS,0,0))
+#define TabCtrl_GetRowCount(w) cint(SNDMSG(w,TCM_GETROWCOUNT,0,0))
+#define TabCtrl_GetToolTips(w) cast(HWND,SNDMSG(w,TCM_GETTOOLTIPS,0,0))
 #define TabCtrl_SetToolTips(w,t) SNDMSG(w,TCM_SETTOOLTIPS,cuint(t),0)
-#define TabCtrl_GetCurFocusw cint(SNDMSG(w,TCM_GETCURFOCUS,0,0))
+#define TabCtrl_GetCurFocus(w) cint(SNDMSG(w,TCM_GETCURFOCUS,0,0))
 #define TabCtrl_SetCurFocus(w,i) SNDMSG(w,TCM_SETCURFOCUS,i,0)
 #define TabCtrl_SetImageList(w,h) cast((HIMAGELIST,SNDMSG(w,TCM_SETIMAGELIST,0,cint(cUINT(h))))
-#define TabCtrl_GetItemCountw cint(SNDMSG(w,TCM_GETITEMCOUNT,0,0))
+#define TabCtrl_GetItemCount(w) cint(SNDMSG(w,TCM_GETITEMCOUNT,0,0))
 
 #define TreeView_InsertItem(w,i) cast(HTREEITEM,SNDMSG((w),TVM_INSERTITEM,0,cast(LPARAM,cast(LPTV_INSERTSTRUCT,i))))
 #define TreeView_DeleteItem(w,i) cast(BOOL,SNDMSG((w),TVM_DELETEITEM,0,cast(LPARAM,cast(HTREEITEM,i))))
