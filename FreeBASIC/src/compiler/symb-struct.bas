@@ -702,7 +702,7 @@ sub symbStructEnd _
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
-		symbCheckFwdRef( sym, FB_SYMBCLASS_STRUCT )
+		symbCheckFwdRef( sym )
 	end if
 
 end sub

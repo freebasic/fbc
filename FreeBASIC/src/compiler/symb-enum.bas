@@ -74,7 +74,7 @@ function symbAddEnum _
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
-		symbCheckFwdRef( e, FB_SYMBCLASS_ENUM )
+		symbCheckFwdRef( e )
 	end if
 
 	function = e

@@ -20,6 +20,8 @@ Version 0.22.0:
 - Multiple typedefs in the same line were not being accepted if each had its own type: 'type a as integer, b as integer'
 - Could not typedef to a forward reference with multi-declaration syntax: 'type as Forward Foo'
 - CONST's on PTR's weren't always preserved on typedefs to forward references
+- Using typedefs and forward references, types with more than 8 PTR's could be created, this will now result in an error
+- Forward references solving was faulty, e.g. a forward reference couldn't be solved with a function pointer or another forward reference
 
 
 Version 0.21.1:

@@ -1507,8 +1507,7 @@ declare function symbCheckBitField _
 
 declare sub symbCheckFwdRef _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval class as integer _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare function symbIsEqual _

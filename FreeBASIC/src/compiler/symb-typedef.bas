@@ -51,6 +51,10 @@ sub symbAddToFwdRef _
 		byval ref as FBSYMBOL ptr _
 	)
 
+    '' Add a symbol (ref) to the fwdref's list of references/users. The symbol
+    '' uses the fwdref as its subtype, and will need patching later when the
+    '' fwdref's actual type is known and can be filled in.
+
 	dim as FBFWDREF ptr n = listNewNode( @symb.fwdlist )
 
 	n->ref = ref
@@ -62,43 +66,102 @@ sub symbAddToFwdRef _
 end sub
 
 '':::::
+private sub symbReplaceForwardRef _
+    ( _
+        byval s as FBSYMBOL ptr, _
+        byval dtype as integer, _
+        byval subtype as FBSYMBOL ptr _
+    )
+
+    dim as integer oldptrcount = any, addptrcount = any
+
+    '' Replace/merge the symbol's current type with the replacement type.
+
+    '' Existing PTR's (pointer to forward ref, e.g. on typedefs/variables),
+    oldptrcount = symbGetPtrCnt( s )
+
+    '' and additional PTR's
+    addptrcount = typeGetPtrCnt( dtype )
+
+    '' Too many PTR's after replacing the forward ref with its actual type?
+    if( (oldptrcount + addptrcount) > FB_DT_PTRLEVELS ) then
+        errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
+        '' Error recovery: use the max. amount of PTR's on the final type
+        oldptrcount = FB_DT_PTRLEVELS - addptrcount
+    end if
+
+    '' Replace the forward ref:
+
+    '' dtype (but preserve existing PTR's and CONST's)
+    symbGetFullType( s ) = typeMultAddrOf( dtype, oldptrcount ) or _
+                             typeGetConstMask( symbGetFullType( s ) )
+    '' subtype
+    symbGetSubtype( s ) = subtype
+
+    s->lgt = symbCalcLen( symbGetType( s ), subtype )
+
+    '' We might have substituted the fwdref by another fwdref, and then this
+    '' symbol must be patched again.
+    if( typeGetDtOnly( dtype ) = FB_DATATYPE_FWDREF ) then
+        symbAddToFwdRef( subtype, s )
+    end if
+
+end sub
+
+'':::::
 private sub hFixForwardRef _
 	( _
-		byval f as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval class_ as integer _
+		byval fwd as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr _
 	)
 
-    dim as FBFWDREF ptr n = any, p = any
-    dim as FBSYMBOL ptr ref = any
+    dim as FBFWDREF ptr node = any, prev = any
+    dim as FBSYMBOL ptr subtype = any
     dim as integer dtype = any
-	
-	dtype = symbGetFullType( sym )
-	
-	select case as const class_
-	case FB_SYMBCLASS_TYPEDEF
-		sym = symbGetSubtype( sym )
-		if( sym ) then
-			dtype = symbGetFullType( sym )
-		end if
-	end select
-	
-	n = f->fwd.reftail
-	do while( n <> NULL )
-		p = n->prev
 
-		ref = n->ref
-        
-		symbGetFullType( ref ) = typeMultAddrOf( dtype, symbGetPtrCnt( ref ) ) or typeGetConstMask( symbGetFullType( ref ) )
-		symbGetSubtype( ref ) = sym
-		ref->lgt = symbCalcLen( symbGetType( ref ), sym )
+    '' Replace all uses of this forward ref <fwd> with its actual
+    '' enum/struct/typedef replacement <sym>.
+    '' All symbols that use this fwdref were added to the fwdref's list of
+    '' references and now they can be updated.
 
-		listDelNode( @symb.fwdlist, n )
+    '' This is exactly what cSymbolType() is doing too:
+    select case as const symbGetClass( sym )
+    case FB_SYMBCLASS_STRUCT
+        dtype = FB_DATATYPE_STRUCT
+        subtype = sym
 
-		n = p
+    case FB_SYMBCLASS_ENUM
+        dtype = FB_DATATYPE_ENUM
+        subtype = sym
+
+    case FB_SYMBCLASS_TYPEDEF
+        '' For an enum/struct the dtype will simply be FB_DATATYPE_ENUM/STRUCT,
+        '' but for a typedef, it can contain PTR's and CONST's, and the type
+        '' can be anything, even another FB_DATATYPE_FWDREF.
+        dtype = symbGetFullType( sym )
+
+        '' For a typedef, its subtype (and not the typedef itself) is used to
+        '' replace the fwdref. Afterall there is no typedef data type.
+        subtype = symbGetSubtype( sym )
+
+    case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    end select
+
+    '' Cycle through the forward ref's list of users
+	node = fwd->fwd.reftail
+	do while( node <> NULL )
+
+        '' Do the replacement in the user
+        symbReplaceForwardRef( node->ref, dtype, subtype )
+
+		prev = node->prev
+		listDelNode( @symb.fwdlist, node )
+		node = prev
 	loop
 
-	symbFreeSymbol( f )
+    '' Delete the forward ref symbol -- since it's no longer used anywhere
+	symbFreeSymbol( fwd )
 
 	symb.fwdrefcnt -= 1
 
@@ -107,17 +170,18 @@ end sub
 '':::::
 sub symbCheckFwdRef _
 	( _
-		byval sym as FBSYMBOL ptr, _
-		byval class_ as integer _
+		byval sym as FBSYMBOL ptr _
 	)
 
 	dim as FBSYMBOL ptr fwd = any
+
+    '' Find the fwdref that can be resolved with this <sym> (the new typedef/enum/type).
 
     '' to tail
     fwd = sym
     do
     	if( fwd->class = FB_SYMBCLASS_FWDREF ) then
-			hFixForwardRef( fwd, sym, class_ )
+			hFixForwardRef( fwd, sym )
 			exit sub
 		end if
 
@@ -129,7 +193,7 @@ sub symbCheckFwdRef _
 	do while( fwd <> NULL )
 
     	if( fwd->class = FB_SYMBCLASS_FWDREF ) then
-			hFixForwardRef( fwd, sym, class_ )
+			hFixForwardRef( fwd, sym )
 			exit sub
 		end if
 
@@ -165,7 +229,7 @@ function symbAddTypedef _
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
-		symbCheckFwdRef( t, FB_SYMBCLASS_TYPEDEF )
+		symbCheckFwdRef( t )
 	end if
 
 	''
