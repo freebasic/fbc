@@ -2211,6 +2211,14 @@ end type
 
 type LPFINDINFOA as LVFINDINFOA ptr
 
+type NMLVFINDITEMA
+	hdr as NMHDR
+	iStart as integer
+	lvfi as LVFINDINFOA
+end type
+
+type LPNMLVFINDITEMA as NMLVFINDITEMA ptr
+
 #else ''UNICODE
 type LVITEMW
 	mask as UINT
@@ -2239,6 +2247,14 @@ type LVFINDINFOW
 end type
 
 type LPFINDINFOW as LVFINDINFOW ptr
+
+type NMLVFINDITEMW
+	hdr as NMHDR
+	iStart as integer
+	lvfi as LVFINDINFOW
+end type
+
+type LPNMLVFINDITEMW as NMLVFINDITEMW ptr
 
 #endif ''UNICODE
 
@@ -2271,23 +2287,6 @@ end type
 
 type PNMLVCACHEHINT as NMLVCACHEHINT ptr
 type HTREEITEM as TREEITEM ptr
-
-type NMLVFINDITEMA
-	hdr as NMHDR
-	iStart as integer
-	lvfi as LVFINDINFOA
-end type
-
-type LPNMLVFINDITEMA as NMLVFINDITEMA ptr
-
-#ifdef UNICODE
-type NMLVFINDITEMW
-	hdr as NMHDR
-	iStart as integer
-	lvfi as LVFINDINFOW
-end type
-type LPNMLVFINDITEMW as NMLVFINDITEMW ptr
-#endif
 
 #ifndef UNICODE
 type LVCOLUMNA
