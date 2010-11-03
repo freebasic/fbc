@@ -22,6 +22,7 @@ Version 0.22.0:
 - CONST's on PTR's weren't always preserved on typedefs to forward references
 - Using typedefs and forward references, types with more than 8 PTR's could be created, this will now result in an error
 - Forward references solving was faulty, e.g. a forward reference couldn't be solved with a function pointer or another forward reference
+- #3076871: typeof() was not preserving the data type length when used on operation expressions
 
 
 Version 0.21.1:

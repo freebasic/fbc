@@ -230,6 +230,7 @@ function cTypeOf _
 		if( sym = NULL ) then
 			dtype	= astGetFullType( expr )
 			subtype = astGetSubtype( expr )
+            lgt = symbCalcLen( dtype, subtype )
 		else
 			while( walk <> NULL )
 				select case as const astGetClass( walk )
