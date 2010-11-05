@@ -409,8 +409,9 @@ function rtlMemSwap _
 
 		'' high-level IR? use a temp var...
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		    tmpvar = symbAddTempVar( dst_dtype, NULL )
-			astAdd( astNewASSIGN( astNewVAR( tmpvar ), astCloneTree( d ) ) )
+		    tmpvar = symbAddTempVar( dst_dtype, astGetSubType( d ) )
+			astAdd( astNewASSIGN( astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ), _
+                                  astCloneTree( d ) ) )
 		else
 			'' push left-side
 			astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
@@ -449,7 +450,8 @@ function rtlMemSwap _
 		else
 			'' high-level IR? use a temp var...
 			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-				astAdd( astNewASSIGN( src, astNewVAR( tmpvar ) ) )
+				astAdd( astNewASSIGN( src, _
+                                      astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ) ) )
 			else
 				'' pop to right-side
 				astAdd( astNewSTACK( AST_OP_POP, src ) )
