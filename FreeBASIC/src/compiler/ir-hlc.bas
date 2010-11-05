@@ -1572,6 +1572,72 @@ private function hDtypeToStr _
 end function
 
 '':::::
+private function hEmitInt( byval value as integer ) as string
+
+    if( value < 0 ) then
+        '' Convert -5 to '((-4)-1)', to prevent GCC warnings for INT_MIN
+        return "((-" & (abs(value) - 1) & ") - 1)"
+    end if
+
+    return str( value )
+
+end function
+
+'':::::
+private function hEmitUint( byval value as uinteger ) as string
+
+    return str( value ) + "u"
+
+end function
+
+'':::::
+private function hEmitLong( byval value as longint ) as string
+
+    if( value < 0 ) then
+        '' Ditto, prevent warnings for LLONG_MIN
+        return "((-" & (abs(value) - 1) & "ll) - 1)"
+    end if
+
+    return str( value ) + "ll"
+
+end function
+
+'':::::
+private function hEmitUlong( byval value as ulongint ) as string
+
+    return str( value ) + "ull"
+
+end function
+
+'':::::
+private function hEmitSingle( byval value as single ) as string
+
+    dim as string s = str( value )
+
+    if( instr( s, "." ) = 0 ) then
+        s += ".0"
+    end if
+
+    s += "f"
+
+    return s
+
+end function
+
+'':::::
+private function hEmitDouble( byval value as double ) as string
+
+    dim as string s = str( value )
+
+    if( instr( s, "." ) = 0 ) then
+        s += ".0"
+    end if
+
+    return s
+
+end function
+
+'':::::
 private function hVregToStr _
 	( _
 		byval vreg as IRVREG ptr, _
@@ -1708,16 +1774,44 @@ private function hVregToStr _
 		return operand
 
 	case IR_VREGTYPE_IMM
+        var s = "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")"
+
 		select case as const vreg->dtype
-		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.long
+		case FB_DATATYPE_LONGINT
+            s += hEmitLong( vreg->value.long )
 
-		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.float
+        case FB_DATATYPE_ULONGINT
+            s += hEmitUlong( vreg->value.long )
 
-		case else
-			return "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")" & vreg->value.int
+		case FB_DATATYPE_SINGLE
+            s += hEmitSingle( vreg->value.float )
+
+        case FB_DATATYPE_DOUBLE
+			s += hEmitDouble( vreg->value.float )
+
+  		case FB_DATATYPE_LONG
+  	    	if( FB_LONGSIZE = len( integer ) ) then
+                s += hEmitInt( vreg->value.int )
+  	    	else
+                s += hEmitLong( vreg->value.long )
+  	    	end if
+
+        case FB_DATATYPE_ULONG
+  	    	if( FB_LONGSIZE = len( integer ) ) then
+                s += hEmitUint( vreg->value.int )
+  	    	else
+                s += hEmitUlong( vreg->value.long )
+  	    	end if
+
+		case FB_DATATYPE_UINT
+            s += hEmitUint( vreg->value.int )
+
+        case else
+            s += hEmitInt( vreg->value.int )
+
 		end select
+
+        return s
 
 	case IR_VREGTYPE_REG
 		return "vr$" & vreg->reg
@@ -2383,7 +2477,19 @@ private sub _emitVarIniI _
 		byval value as integer _
 	)
 
-	hWriteLine( str( value ), FALSE, TRUE )
+    dim as string s
+
+    select case as const dtype
+    case FB_DATATYPE_UINT, FB_DATATYPE_ULONG
+        '' Treat as unsigned
+        s = hEmitUint( value )
+
+    case else
+        s = hEmitInt( value )
+
+    end select
+
+	hWriteLine( s, FALSE, TRUE )
 
 end sub
 
@@ -2394,7 +2500,18 @@ private sub _emitVarIniF _
 		byval value as double _
 	)
 
-	hWriteLine( str( value ), FALSE, TRUE )
+    dim as string s
+
+    select case as const dtype
+    case FB_DATATYPE_SINGLE
+        s = hEmitSingle( value )
+
+    case else
+        s = hEmitDouble( value )
+
+    end select
+
+	hWriteLine( s, FALSE, TRUE )
 
 end sub
 
@@ -2405,7 +2522,19 @@ private sub _emitVarIniI64 _
 		byval value as longint _
 	)
 
-	hWriteLine( str( value ), FALSE, TRUE )
+    dim as string s
+
+    select case as const dtype
+    case FB_DATATYPE_ULONGINT, FB_DATATYPE_ULONG
+        '' Treat as unsigned
+        s = hEmitUlong( value )
+
+    case else
+        s = hEmitLong( value )
+
+    end select
+
+	hWriteLine( s, FALSE, TRUE )
 
 end sub
 
@@ -2418,8 +2547,8 @@ private sub _emitVarIniOfs _
 
 	static as string operand, ln
 
-	' find literal strings, and just print the text, not the label
-	if symbGetIsLiteral( sym ) then
+	'' find literal strings, and just print the text, not the label
+	if( symbGetIsLiteral( sym ) ) then
 		select case symbGetType( sym )
 		case FB_DATATYPE_CHAR
 			operand =  """" & *hEscape( symbGetVarLitText( sym ) ) & """"
@@ -2453,7 +2582,6 @@ private function hIsFixStrArray _
 	return FALSE
 
 end function
-
 
 '':::::
 private sub _emitVarIniStr _
