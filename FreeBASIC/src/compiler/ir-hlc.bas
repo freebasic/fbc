@@ -36,12 +36,6 @@ enum section_e
 	SECTION_FOOT
 end enum
 
-type DTYPEINFO
-	class				as integer
-	size				as integer
-	name				as zstring * 31+1
-end type
-
 type IRHLCCTX
 	identcnt			as integer     ' how many levels of indent
 	regcnt				as integer     ' temporary labels counter
@@ -103,32 +97,32 @@ declare sub _emitDBG _
 dim shared as IRHLCCTX ctx
 
 '' same order as FB_DATATYPE
-dim shared dtypeTB(0 to FB_DATATYPES-1) as DTYPEINFO => _
+dim shared as zstring ptr dtypeTB(0 to FB_DATATYPES-1) = _
 { _
-	( FB_DATACLASS_INTEGER, 0 			    , "void"  ), _				'' void
-	( FB_DATACLASS_INTEGER, 1			    , "byte"  ), _				'' byte
-	( FB_DATACLASS_INTEGER, 1			    , "ubyte"  ), _				'' ubyte
-	( FB_DATACLASS_INTEGER, 1               , "char"  ), _				'' char
-	( FB_DATACLASS_INTEGER, 2               , "short"  ), _				'' short
-	( FB_DATACLASS_INTEGER, 2               , "ushort"  ), _			'' ushort
-	( FB_DATACLASS_INTEGER, 2  				, "short" ), _				'' wchar
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' int
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "uinteger" ), _   		'' uint
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' enum
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "integer" ), _			'' bitfield
-	( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "long" ), _				'' long
-	( FB_DATACLASS_INTEGER, FB_LONGSIZE  	, "ulong" ), _   			'' ulong
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "longint" ), _			'' longint
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, "ulongint" ), _			'' ulongint
-	( FB_DATACLASS_FPOINT , 4			    , "single" ), _				'' single
-	( FB_DATACLASS_FPOINT , 8			    , "double" ), _				'' double
-	( FB_DATACLASS_STRING , FB_STRDESCLEN	, "string" ), _				'' string
-	( FB_DATACLASS_STRING , 1               , "fixstr"  ), _			'' fix-len string
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' struct
-	( FB_DATACLASS_INTEGER, 0  				, "" 		), _			'' namespace
-	( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , "" ), _					'' function
-	( FB_DATACLASS_INTEGER, 1			    , "void"  ), _				'' fwd-ref
-	( FB_DATACLASS_INTEGER, FB_POINTERSIZE  , "void *" ) _				'' pointer
+    @"void"     , _ '' void
+    @"byte"     , _ '' byte
+    @"ubyte"    , _ '' ubyte
+    @"char"     , _ '' char
+    @"short"    , _ '' short
+    @"ushort"   , _ '' ushort
+    @"wchar"    , _ '' wchar
+    @"integer"  , _ '' int
+    @"uinteger" , _ '' uint
+    @"integer"  , _ '' enum
+    @"integer"  , _ '' bitfield
+    @"long"     , _ '' long
+    @"ulong"    , _ '' ulong
+    @"longint"  , _ '' longint
+    @"ulongint" , _ '' ulongint
+    @"single"   , _ '' single
+    @"double"   , _ '' double
+    @"string"   , _ '' string
+    @"fixstr"   , _ '' fix-len string
+    @""         , _ '' struct
+    @""         , _ '' namespace
+    @""         , _ '' function
+    @"void"     , _ '' fwd-ref
+    @"void *"     _ '' pointer
 }
 
 '':::::
@@ -151,9 +145,6 @@ private function _init _
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD
-
-	'' wchar len depends on the target platform
-	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
 
 	function = TRUE
 
@@ -907,6 +898,22 @@ private sub hEmitTypedefs( )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
 	hWriteLine( "typedef char fixstr", TRUE )
 
+    '' Target-dependant wchar type
+    dim as string wchartype
+
+    select case as const env.target.wchar.type
+    case FB_DATATYPE_UBYTE      '' DOS
+        wchartype = "ubyte"
+    case FB_DATATYPE_USHORT     '' Windows, cygwin
+        wchartype = "ushort"
+    case FB_DATATYPE_UINT       '' Linux & co
+        wchartype = "uinteger"
+    case else
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    end select
+
+    hWriteLine( "typedef " + wchartype + " wchar", TRUE )
+
 end sub
 
 '':::::
@@ -914,7 +921,6 @@ private function hProcIsUsed _
 	( _
 		byval proc as FBSYMBOL ptr _
 	)  as integer
-
 
 	do while( proc <> NULL )
 		if( symbGetIsCalled( proc ) ) then
@@ -1523,7 +1529,7 @@ private function hDtypeToStr _
 
 	case FB_DATATYPE_ENUM
 		if( subtype = NULL ) then
-			res = dtypeTb(FB_DATATYPE_INTEGER).name
+			res = *dtypeTb(FB_DATATYPE_INTEGER)
 		else
             hEmitUDT( subtype, (ptrcnt > 0) )
 			res = hGetUDTName( subtype )
@@ -1535,7 +1541,7 @@ private function hDtypeToStr _
 		ptrcnt -= 1
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		res = dtypeTb(dtype).name
+		res = *dtypeTb(dtype)
 		if( (options and DT2STR_OPTION_STRINGRETFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
 				ptrcnt = 1
@@ -1543,7 +1549,7 @@ private function hDtypeToStr _
 		end if
 
 	case FB_DATATYPE_VOID
-		res = dtypeTb(dtype).name
+		res = *dtypeTb(dtype)
 		if( (options and DT2STR_OPTION_VOIDPARAMFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
 				ptrcnt = 1
@@ -1552,13 +1558,13 @@ private function hDtypeToStr _
 
 	case FB_DATATYPE_BITFIELD
         if( subtype <> NULL ) then
-        	res = dtypeTb(symbGetType( subtype )).name
+        	res = *dtypeTb(symbGetType( subtype ))
         else
         	res = "integer"
         end if
 
 	case else
-		res = dtypeTb(dtype).name
+		res = *dtypeTb(dtype)
 	end select
 
 	if( ptrcnt > 0 ) then
@@ -1767,7 +1773,7 @@ private function hVregToStr _
 			case FB_DATATYPE_CHAR
 				operand =  """" & *hEscape( symbGetVarLitText( vreg->sym ) ) & """"
 			case FB_DATATYPE_WCHAR
-				operand =  "(" & dtypeTB(FB_DATATYPE_WCHAR).name & " *)&""" & *hEscapeW( symbGetVarLitTextW( vreg->sym ) ) & "\0"""
+				operand =  "(" & *dtypeTB(FB_DATATYPE_WCHAR) & " *)&""" & *hEscapeW( symbGetVarLitTextW( vreg->sym ) ) & "\0"""
 			end select
 		end if
 
