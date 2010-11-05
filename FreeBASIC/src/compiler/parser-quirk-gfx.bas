@@ -223,7 +223,7 @@ end function
 '':::::
 private function hGetMode _
 	( _
-		byref mode as uinteger, _
+		byref mode as integer, _
 		byref alphaexpr as ASTNODE ptr, _
 		byref funcexpr as ASTNODE ptr, _
 		byref paramexpr as ASTNODE ptr _
