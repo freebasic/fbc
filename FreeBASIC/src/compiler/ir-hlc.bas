@@ -1897,7 +1897,8 @@ end sub
 private sub hEmitVregExpr _
 	( _
 		byval vr as IRVREG ptr, _
-		byref expr as string _
+		byref expr as string, _
+		byval is_call as integer = FALSE _
 	)
 
 	if( irIsREG( vr ) ) then
@@ -1905,7 +1906,11 @@ private sub hEmitVregExpr _
 		var typ = *hDtypeToStr( vr->dtype, vr->subtype )
 		var id = hVregToStr( vr )
 
-        ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
+		if( is_call ) then
+			ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
+		else
+			ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
+		end if
 
 		hWriteLine( ln, FALSE, TRUE )
 	else
@@ -2277,7 +2282,7 @@ private sub hDoCall _
 		hWriteLine( *pname & ln )
 	else
 		hLoadVreg( vr )
-        hEmitVregExpr( vr, *pname & ln )
+        hEmitVregExpr( vr, *pname & ln, TRUE )
 	end if
 
 end sub
