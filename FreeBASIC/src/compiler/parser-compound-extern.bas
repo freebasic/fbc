@@ -62,6 +62,7 @@ function cExternStmtBegin _
 		else
 			'' error recovery: assume it's "C"
 			litstr = @"c"
+            
 		end if
 	else
 		litstr = lexGetText( )
@@ -70,15 +71,19 @@ function cExternStmtBegin _
 	select case lcase( *litstr )
 	case "c"
 		mangling = FB_MANGLING_CDECL
+        lexSkipToken( )
 
 	case "windows"
 		mangling = FB_MANGLING_STDCALL
+        lexSkipToken( )
 
 	case "windows-ms"
 		mangling = FB_MANGLING_STDCALL_MS
+        lexSkipToken( )
 
 	case "c++"
 		mangling = FB_MANGLING_CPP
+        lexSkipToken( )
 
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
@@ -86,12 +91,9 @@ function cExternStmtBegin _
 		else
 			'' error recovery: assume it's "C"
 			mangling = FB_MANGLING_CDECL
+            lexSkipToken( )
 		end if
 	end select
-
-	if( litstr <> @"c" ) then
-		lexSkipToken( )
-	end if
 
     library = NULL
 	if( lexGetToken( ) = FB_TK_LIB ) then
