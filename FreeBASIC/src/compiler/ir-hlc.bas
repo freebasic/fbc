@@ -1894,19 +1894,25 @@ private sub _emitInfoSection _
 end sub
 
 '':::::
-private function hPrepDefine _
+private sub hEmitVregExpr _
 	( _
-		byval vreg as IRVREG ptr _
-	) as string
+		byval vr as IRVREG ptr, _
+		byref expr as string _
+	)
 
+	if( irIsREG( vr ) ) then
+		var ln = ""
+		var typ = *hDtypeToStr( vr->dtype, vr->subtype )
+		var id = hVregToStr( vr )
 
-	function = "#define " & _
-				hVregToStr( vreg ) & _
-				" ((" & _
-				*hDtypeToStr( vreg->dtype, vreg->subtype ) & _
-				")("
+        ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
 
-end function
+		hWriteLine( ln, FALSE, TRUE )
+	else
+		hWriteLine( hVregToStr( vr ) & " = (" & expr & ")" )
+	end if
+
+end sub
 
 ''::::
 private function hBOPToStr _
@@ -1984,11 +1990,7 @@ private sub hWriteBOP _
 		rcast += "(double)"
 	end if
 
-	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) & "))", FALSE, TRUE )
-	else
-		hWriteLine( hVregToStr( vr ) & " = " & hVregToStr( v1 ) & hBOPToStr( op ) & hVregToStr( v2 ) )
-	end if
+	hEmitVregExpr( vr, lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) )
 
 end sub
 
@@ -2018,13 +2020,7 @@ private sub _emitBopEx _
 		end if
 
 		'' vr = ~(v1 ^ v2)
-		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "~(" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")))", FALSE, TRUE )
-		else
-			hWriteLine( hVregToStr( vr ) & " = ~(" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")" )
-		end if
+        hEmitVregExpr( vr, "~(" & hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & ")" )
 
 	case AST_OP_IMP
 		if( vr = NULL ) then
@@ -2032,13 +2028,7 @@ private sub _emitBopEx _
 		end if
 
 		'' vr = ~v1 | v2
-		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "~" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) & "))", FALSE, TRUE )
-		else
-			hWriteLine( hVregToStr( vr ) & " = ~" & _
-						hVregToStr( v1 ) & "^" & hVregToStr( v2 ) )
-		end if
+        hEmitVregExpr( vr, "~" & hVregToStr( v1 ) & "|" & hVregToStr( v2 ) )
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr <> NULL ) then
@@ -2083,11 +2073,7 @@ private sub hWriteUOP _
 		vr = v1
 	end if
 
-	if( irIsREG( vr ) ) then
-		hWriteLine( hPrepDefine( vr ) & op & "( " & hVregToStr( v1 ) & " )))", FALSE, TRUE )
-	else
-		hWriteLine( hVregToStr( vr ) & " = " & op & "( " & hVregToStr( v1 ) & " )" )
-	end if
+    hEmitVregExpr( vr, op & "(" & hVregToStr( v1 ) & ")" )
 
 end sub
 
@@ -2130,13 +2116,7 @@ private sub _emitConvert _
 
     hEmitUDT( to_subtype, typeIsPtr( to_dtype ) )
 
-	if( irIsREG( v1 ) ) then
-		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE, TRUE )
-
-	else
-		dim as string to_type = *hDtypeToStr( v1->dtype, v1->subtype )
-		hWriteLine( hVregToStr( v1 ) & " = (" & to_type & ")" & hVregToStr( v2 ) )
-	end if
+    hEmitVregExpr( v1, hVregToStr( v2 ) )
 
 end sub
 
@@ -2151,16 +2131,11 @@ private sub _emitStore _
 		'' casting needed?
 		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
 			_emitConvert( v1->dtype, v1->subtype, v1, v2 )
-
 		else
 			hLoadVreg( v1 )
 			hLoadVreg( v2 )
 
-			if( irIsREG( v1 ) ) then
-				hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE, TRUE )
-			else
-				hWriteLine( hVregToStr( v1 ) & " = " & hVregToStr( v2 ) )
-			end if
+            hEmitVregExpr( v1, hVregToStr( v2 ) )
 		end if
 	end if
 
@@ -2243,18 +2218,11 @@ private sub _emitAddr _
 
 	select case op
 	case AST_OP_ADDROF
-		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & "&" & hVregToStr( v1, FALSE ) & "))", FALSE, TRUE )
-		else
-			hWriteLine( hVregToStr( vr ) & " = &" & hVregToStr( v1, FALSE ) )
-		end if
+        hEmitVregExpr( vr, "&" + hVregToStr( v1, FALSE ) )
 
 	case AST_OP_DEREF
-		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & hVregToStr( v1 ) & "))", FALSE, TRUE )
-		else
-			hWriteLine( hVregToStr( vr ) & " = *" & hVregToStr( v1 ) )
-		end if
+        hEmitVregExpr( vr, hVregToStr( v1 ) )
+
 	end select
 
 end sub
@@ -2306,17 +2274,10 @@ private sub hDoCall _
 	var ln = hEmitCallArgs( arg_list )
 
 	if( vr = NULL ) then
-
 		hWriteLine( *pname & ln )
-
 	else
 		hLoadVreg( vr )
-
-		if( irIsREG( vr ) ) then
-			hWriteLine( hPrepDefine( vr ) & *pname & ln & "))", FALSE, TRUE )
-		else
-			hWriteLine( hVregToStr( vr ) & " = " & *pname & ln )
-		end if
+        hEmitVregExpr( vr, *pname & ln )
 	end if
 
 end sub
