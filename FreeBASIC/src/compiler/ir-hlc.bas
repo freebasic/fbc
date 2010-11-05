@@ -828,25 +828,30 @@ end sub
 '':::::
 private sub hEmitDecls _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval procs as integer = FALSE _
 	)
 
 	do while( s <> NULL )
 
  		select case as const symbGetClass( s )
  		case FB_SYMBCLASS_NAMESPACE
- 			hEmitDecls( symbGetNamespaceTbHead( s ) )
+			hEmitDecls( symbGetNamespaceTbHead( s ) )
 
  		case FB_SYMBCLASS_SCOPE
- 			hEmitDecls( symbGetScopeSymbTbHead( s ) )
+			hEmitDecls( symbGetScopeSymbTbHead( s ) )
 
  		case FB_SYMBCLASS_VAR
- 			hEmitVariable( s )
+			if( procs = FALSE ) then
+				hEmitVariable( s )
+			end if
 
  		case FB_SYMBCLASS_PROC
- 			if( symbGetIsFuncPtr( s ) = FALSE ) then
- 				hEmitFuncProto( s )
- 			end if
+			if( procs ) then
+				if( symbGetIsFuncPtr( s ) = FALSE ) then
+					hEmitFuncProto( s )
+				end if
+			end if
 
  		end select
 
@@ -1113,7 +1118,11 @@ private sub _emitEnd _
 
 	hEmitDataStmt( )
 
-	hEmitDecls( symbGetGlobalTbHead( ) )
+	'' Emit proc decls first (because of function pointer initializers referencing procs)
+	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
+
+	'' Then the variables
+	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
 
 	hEmitForwardDecls( )
 
