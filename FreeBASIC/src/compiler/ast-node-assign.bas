@@ -453,7 +453,7 @@ function astNewASSIGN _
 				end if
 
 				'' build a proc call
-				return astNewLINK( result, astBuildCall( proc, 2, l, r ) )
+				return astNewLINK( result, astBuildCall( proc, l, r ) )
 			else
 				if( err_num <> FB_ERRMSG_OK ) then
 					return NULL
@@ -475,7 +475,7 @@ function astNewASSIGN _
 			'' operator LET, which was handled just above.
 
 			'' build a proc call
-			r = astBuildCall( proc, 1, r )
+			r = astBuildCall( proc, r, NULL )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL

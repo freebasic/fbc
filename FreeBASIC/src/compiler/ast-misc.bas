@@ -1011,7 +1011,7 @@ function astUpdComp2Branch _
 		end if
 
 		'' build cast call
-		n = astBuildCall( ovlProc, 1, n )
+		n = astBuildCall( ovlProc, n, NULL )
 		dtype = astGetDataType( n )
 
 	end select

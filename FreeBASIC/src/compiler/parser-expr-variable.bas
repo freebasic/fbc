@@ -642,7 +642,7 @@ function cMemberDeref _
 				proc = symbFindUopOvlProc( AST_OP_FLDDEREF, varexpr, @err_num )
 				if( proc <> NULL ) then
     				'' build a proc call
-					varexpr = astBuildCall( proc, 1, varexpr )
+					varexpr = astBuildCall( proc, varexpr, NULL )
 					if( varexpr = NULL ) then
 						exit function
 					end if

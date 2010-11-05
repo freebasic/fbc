@@ -1088,11 +1088,11 @@ declare function astBuildVarField _
 		byval ofs as integer = 0 _
 	) as ASTNODE ptr
 
-declare function astBuildCall cdecl _
+declare function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval args as integer, _
-		... _
+		byval arg1 as ASTNODE ptr, _
+		byval arg2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astBuildCtorCall _

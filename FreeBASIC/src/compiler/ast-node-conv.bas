@@ -383,7 +383,7 @@ end function
 		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, 1, l )
+			return astBuildCall( proc, l, NULL )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL

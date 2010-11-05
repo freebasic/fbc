@@ -849,7 +849,7 @@ end function
 		proc = symbFindBopOvlProc( op, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, 2, l, r )
+			return astBuildCall( proc, l, r )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
@@ -861,7 +861,7 @@ end function
 				proc = symbFindBopOvlProc( op, r, l, @err_num )
 				if( proc <> NULL ) then
 					'' build a proc call
-					return astBuildCall( proc, 2, r, l )
+					return astBuildCall( proc, r, l )
 				else
 					if( err_num <> FB_ERRMSG_OK ) then
 						return NULL
@@ -1587,7 +1587,7 @@ end function
 		proc = symbFindSelfBopOvlProc( op, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			function = astBuildCall( proc, 2, l, r )
+			function = astBuildCall( proc, l, r )
 			exit function
 		else
 			if( err_num <> FB_ERRMSG_OK ) then

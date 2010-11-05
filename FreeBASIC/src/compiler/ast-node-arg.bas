@@ -919,7 +919,7 @@ private function hCheckParam _
     		if( rec_cnt = 0 ) then
 				'' build a proc call
 				rec_cnt += 1
-				n->l = astBuildCall( proc, 1, arg )
+				n->l = astBuildCall( proc, arg, NULL )
 				rec_cnt -= 1
 
 				arg = n->l

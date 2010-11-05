@@ -604,7 +604,7 @@ private function hVarPtrBody _
 		proc = symbFindSelfUopOvlProc( AST_OP_ADDROF, expr, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, 1, expr )
+			return astBuildCall( proc, expr, NULL )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL

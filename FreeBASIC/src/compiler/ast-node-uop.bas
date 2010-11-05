@@ -163,7 +163,7 @@ function astNewUOP _
 		proc = symbFindUopOvlProc( op, o, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, 1, o )
+			return astBuildCall( proc, o, NULL )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				exit function

@@ -416,27 +416,27 @@ end sub
 ''
 
 '':::::
-function astBuildCall cdecl _
+function astBuildCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval args as integer, _
-		... _
+		byval arg1 as ASTNODE ptr, _
+		byval arg2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr p = any
-    dim as any ptr arg  = any
-    dim as integer i  = any
 
     p = astNewCALL( proc )
 
-    arg = va_first( )
-    for i = 0 to args-1
-    	if( astNewARG( p, va_arg( arg, ASTNODE ptr ) ) = NULL ) then
-    		return NULL
-    	end if
-
-    	arg = va_next( arg, ASTNODE ptr )
-    next
+	if( arg1 ) then
+		if( astNewARG( p, arg1 ) = NULL ) then
+			return NULL
+		end if
+	end if
+	if( arg2 ) then
+		if( astNewARG( p, arg2 ) = NULL ) then
+			return NULL
+		end if
+	end if
 
     function = p
 
@@ -886,7 +886,7 @@ function astBuildMultiDeref _
 			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
 			if( proc <> NULL ) then
     			'' build a proc call
-				expr = astBuildCall( proc, 1, expr )
+				expr = astBuildCall( proc, expr, NULL )
 				if( expr = NULL ) then
 					return NULL
 				end if
