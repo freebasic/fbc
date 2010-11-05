@@ -1615,6 +1615,12 @@ private function hVregToStr _
 					if( vreg->ofs <> 0 or vreg->vidx <> NULL ) then
 						operand += "(ubyte *)"
 					end if
+
+                    '' Emit && to get the address value of labels (used by -exx code)
+                    if( symbIsLabel( vreg->sym ) ) then
+                        operand += "&"
+                    end if
+
 					operand += "&"
 				else
 					if( addcast ) then
