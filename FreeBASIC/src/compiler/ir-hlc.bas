@@ -313,6 +313,28 @@ private sub hEmitUDT _
  	ctx.section = oldsection
 end sub
 
+'' Array or fixlen string?
+private function hSymbIsEmittedAsArray( byval s as FBSYMBOL ptr ) as integer
+
+    if( s = NULL ) then
+        assert(FALSE)   '' TODO: can the symbol be NULL in the places this function is called?
+        return FALSE
+    end if
+
+    if( symbIsArray( s ) ) then
+        return TRUE
+    end if
+
+    '' Fixlen strings are always emitted as arrays (see hEmitArrayDecl())
+    select case as const symbGetType( s )
+    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+        return TRUE
+    end select
+
+    return FALSE
+
+end function
+
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
 private function hEmitArrayDecl( byval s as FBSYMBOL ptr ) as string
 
@@ -1600,12 +1622,11 @@ private function hVregToStr _
 
 				var deref = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)"
 
-				' no deref (&) for array access..
-				if symbGetArrayDimensions( vreg->sym ) > 0 then
+				'' No addrof (&) for array access
+				if( hSymbIsEmittedAsArray( vreg->sym ) ) then
 					do_deref = TRUE
 					operand += deref
 					operand += "((ubyte *)"
-
 				elseif( do_deref ) then
 					operand += deref
 					operand += "((ubyte *)&"
@@ -1646,14 +1667,20 @@ private function hVregToStr _
 		return operand
 
 	case IR_VREGTYPE_OFS
-		dim as string operand = "&"
+		dim as string operand
+
+        '' No addrof (&) for fixlen strings
+        if( hSymbIsEmittedAsArray( vreg->sym ) = FALSE ) then
+            operand += "&"
+        end if
+
 		operand += *symbGetMangledName( vreg->sym )
 		if( vreg->ofs <> 0 ) then
 			operand += " + "
 			operand += str( vreg->ofs )
 		end if
 
-		' find literal strings, and just print the text, not the label
+		'' find literal strings, and just print the text, not the label
 		if( symbGetIsLiteral( vreg->sym ) ) then
 			select case symbGetType( vreg->sym )
 			case FB_DATATYPE_CHAR
