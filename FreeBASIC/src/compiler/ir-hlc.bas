@@ -205,7 +205,7 @@ private sub hWriteLine _
 				dbgln = "#line "
 			end if
 
-			dbgln += ctx.linenum & " """ & env.inf.name & """" & NEWLINE
+			dbgln += ctx.linenum & " """ & hReplace( env.inf.name, "\", "\\" ) & """" & NEWLINE
 
 			writeToSection( dbgln )
 		end if
@@ -1095,7 +1095,7 @@ private function _emitBegin _
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
 	end if
 
-	hWriteLine( "/* Compilation of " & env.inf.name & " started at " & time & " on " & date & " */", FALSE, TRUE )
+	hWriteLine( "// Compilation of " & env.inf.name & " started at " & time & " on " & date, FALSE, TRUE )
 
 	hEmitTypedefs( )
 
@@ -1128,7 +1128,7 @@ private sub _emitEnd _
 
 	ctx.section = SECTION_FOOT
 
-	hWriteLine( "/* Total compilation time: " & tottime & " seconds. */", FALSE, TRUE )
+	hWriteLine( "// Total compilation time: " & tottime & " seconds. ", FALSE, TRUE )
 
 	' flush all sections to file
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
@@ -1817,7 +1817,8 @@ private function hVregToStr _
 		return "vr$" & vreg->reg
 
 	case else
-		return "/* unknown */"
+		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		return "__unknown__"
 
 	end select
 
@@ -2415,7 +2416,7 @@ private sub _emitDBG _
 	)
 
  	if( op = AST_OP_DBG_LINEINI ) then
- 		hWriteLine( "#line " & ex & " """ & env.inf.name & """", FALSE, TRUE )
+ 		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", "\\" ) & """", FALSE, TRUE )
  		ctx.linenum = ex
 	end if
 
@@ -2427,8 +2428,16 @@ private sub _emitComment _
 		byval text as zstring ptr _
 	)
 
-	if( len( trim( *text ) ) > 0 ) then
-		hWriteLine( "/* " & *text & " */", FALSE, TRUE )
+    static as string s
+
+    s = *text
+    s = trim(s)
+
+	if( len( s ) > 0 ) then
+        if( right( s, 1 ) = "\" ) then
+            s += "not_an_escape"
+        end if
+		hWriteLine( "// " & s, FALSE, TRUE )
 	end if
 
 end sub
@@ -2449,7 +2458,6 @@ private sub _emitVarIniBegin _
 		byval sym as FBSYMBOL ptr _
 	)
 
-
 	hEmitVar( sym, TRUE )
 
 	ctx.identcnt += 1
@@ -2462,11 +2470,9 @@ private sub _emitVarIniEnd _
 		byval sym as FBSYMBOL ptr _
 	)
 
-
 	ctx.identcnt -= 1
 
 	hWriteLine( "", TRUE, TRUE )
-
 
 end sub
 
