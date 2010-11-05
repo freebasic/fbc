@@ -1534,7 +1534,7 @@ private function hDtypeToStr _
 		res = *symbGetMangledName( subtype )
 		ptrcnt -= 1
 
-	case FB_DATATYPE_STRING
+	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		res = dtypeTb(dtype).name
 		if( (options and DT2STR_OPTION_STRINGRETFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
