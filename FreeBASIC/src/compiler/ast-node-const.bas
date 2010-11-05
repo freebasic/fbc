@@ -254,7 +254,7 @@ function astLoadCONST _
 
 		''
 		case else
-			return irAllocVRIMM( dtype, NULL, n->con.val.int )
+			return irAllocVRIMM( dtype, astGetSubtype( n ), n->con.val.int )
 		end select
 	end if
 
