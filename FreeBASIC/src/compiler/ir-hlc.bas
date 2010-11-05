@@ -673,8 +673,8 @@ private sub hEmitStruct _
             '' and remember it for emitting later.
             '' HACK: reusing the accessed flag (that's used by variables only)
             if( symbGetIsAccessed( s ) = FALSE ) then
-                hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s ) & "$fwd " & hGetUDTName( s ), TRUE )
                 symbSetIsAccessed( s )
+                hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ), TRUE )
                 *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
             end if
 
@@ -709,11 +709,7 @@ private sub hEmitStruct _
 	if( symbGetName( s ) = NULL ) then
 		id = *hMakeTmpStrNL( )
 	else
-		id = hGetUDTName( s )
-		'' see the HACK above
-		if( symbGetIsAccessed( s ) ) then
-			id += "$fwd"
-		end if
+		id = hGetUDTName( s, TRUE )
 	end if
 
 	hWriteLine( "typedef " + tname + " _" + id + " {", FALSE )
@@ -1491,6 +1487,7 @@ private function hDtypeToStr _
 		end if
 
 	case FB_DATATYPE_FUNCTION
+        assert( subtype <> NULL )
 		res = *symbGetMangledName( subtype )
 		ptrcnt -= 1
 

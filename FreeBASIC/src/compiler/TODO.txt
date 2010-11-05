@@ -1,6 +1,6 @@
 [ ] add a C backend
 	[ ] address of labels (used by the error trapping) must be emitted with 2 "&"'s
-	[ ] the forward typedefs can't have a temp name or the g++ mangling will be wrong
+	[x] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
 	[x] SWAP
 	[x] UTF literal strings
