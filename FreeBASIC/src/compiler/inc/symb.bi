@@ -125,7 +125,8 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_CANTUNDEF    = &h00800000
     FB_SYMBSTATS_UNIONFIELD   = &h01000000
     FB_SYMBSTATS_RTL_CONST    = &h02000000
-    FB_SYMBSTATS_EMITTED      = &h04000000		'' needed by high-level IRs
+    FB_SYMBSTATS_EMITTED      = &h04000000		'' needed by high-level IRs, to avoid emitting structs etc twice
+    FB_SYMBSTATS_BEINGEMITTED = &h08000000		'' ditto, for circular dependencies with structs
 
     '' reuse - take care
     FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
@@ -2063,6 +2064,10 @@ declare function symbIsUDTReturnedInRegs _
 
 #define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
 #define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
+
+#define symbGetIsBeingEmitted(s) ((s->stats and FB_SYMBSTATS_BEINGEMITTED) <> 0)
+#define symbSetIsBeingEmitted(s) s->stats or= FB_SYMBSTATS_BEINGEMITTED
+#define symbResetIsBeingEmitted(s) s->stats and= not FB_SYMBSTATS_BEINGEMITTED
 
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED

@@ -83,13 +83,12 @@ declare function hVregToStr _
 declare sub hEmitStruct _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr = NULL _
+        byval is_ptr as integer _
 	)
 
 declare sub hEmitFuncPtrProto _
 	( _
-		byval proc as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr = NULL _
+		byval proc as FBSYMBOL ptr _
 	)
 
 declare sub _emitDBG _
@@ -250,7 +249,8 @@ end function
 
 private function hGetUDTName _
 	( _
-       byval s as FBSYMBOL ptr _
+        byval s as FBSYMBOL ptr, _
+        byval need_original_name as integer = FALSE _
     ) as string
 
     dim as FBSYMBOL ptr ns = symbGetNamespace( s )
@@ -264,6 +264,13 @@ private function hGetUDTName _
 
     sig += *symbGetName( s )
 
+    if( need_original_name = FALSE ) then
+        '' see the HACK in hEmitStruct()
+        if( symbGetIsAccessed( s ) ) then
+            sig += "$type"
+        end if
+    end if
+
     function = sig
 
 end function
@@ -272,8 +279,12 @@ end function
 private sub hEmitUDT _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr = NULL _
+        byval is_ptr as integer _
 	)
+
+    if( s = NULL ) then
+        return
+    end if
 
 	if( symbGetIsEmitted( s ) ) then
 		return
@@ -286,21 +297,20 @@ private sub hEmitUDT _
 
  	select case as const symbGetClass( s )
  	case FB_SYMBCLASS_ENUM
+        symbSetIsEmitted( s )
  		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
-		symbSetIsEmitted( s )
 
  	case FB_SYMBCLASS_STRUCT
- 		hEmitStruct s, top
+ 		hEmitStruct( s, is_ptr )
 
  	case FB_SYMBCLASS_PROC
  		if( symbGetIsFuncPtr( s ) ) then
- 			hEmitFuncPtrProto s, top
+ 			hEmitFuncPtrProto( s )
  		end if
 
  	end select
 
  	ctx.section = oldsection
-
 end sub
 
 '':::::
@@ -310,9 +320,7 @@ private sub hEmitVar _
 		byval isInit as integer = FALSE _
 	)
 
-	if( symbGetSubtype( s ) <> NULL ) then
-		hEmitUDT symbGetSubType( s )
-	end if
+    hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
 
 	var attrib = symbGetAttrib( s )
 
@@ -411,9 +419,7 @@ private sub hEmitVariable _
 			end if
 		end if
 
-		if( symbGetSubtype( s ) <> NULL ) then
-			hEmitUDT symbGetSubType( s )
-		end if
+        hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
 
 		astTypeIniFlush( s->var_.initree, _
 						 s, _
@@ -441,7 +447,6 @@ end sub
 private function hEmitFuncParams _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr = NULL, _
 		byval isproto as integer = TRUE _
 	) as string
 
@@ -502,18 +507,7 @@ private function hEmitFuncParams _
 				is_byref = TRUE
 			end select
 
-			if( subtype <> NULL ) then
-				'' not a circular reference? emit..
-				if( subtype <> top ) then
-					hEmitUDT subtype, top
-				else
-					'' HACK: reusing the accessed flag (that's used by variables only)
-					if( symbGetIsAccessed( subtype ) = FALSE ) then
-						hWriteLine( "typedef struct _" & hGetUDTName( subtype ) & "$fwd " & hGetUDTName( subtype ), TRUE )
-						symbSetIsAccessed( subtype )
-					end if
-				end if
-			end if
+            hEmitUDT( subtype, typeIsPtr( symbGetType( pvar ) ) or is_byref )
 
 			params += *hDtypeToStr( dtype, subtype )
 
@@ -577,8 +571,6 @@ private sub hEmitFuncProto _
 		return
 	end if
 
-	'print , *symbGetMangledName( s )
-
 	var oldsection = ctx.section
 	ctx.section = SECTION_HEAD
 
@@ -609,9 +601,7 @@ private sub hEmitFuncProto _
 			str_static = "static "
 		end if
 
-		if( symbGetSubType( s ) <> NULL ) then
-			hEmitUdt symbGetSubType( s )
-		end if
+        hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
 
 		var ln = str_static & _
 			   	 *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
@@ -638,32 +628,33 @@ end sub
 ''::::
 private sub hEmitFuncPtrProto _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr _
 	)
 
-	if( symbGetSubType( s ) <> NULL ) then
-		hEmitUdt symbGetSubType( s ), top
-	end if
+    hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
+    var params = hEmitFuncParams( s )
+
+    '' Emitted in the meantime?
+    if( symbGetIsEmitted( s ) ) then
+        return
+    end if
 
 	hWriteLine( "typedef " & _
 			    *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), _
 				 			  symbGetSubType( s ), _
 				 			  DT2STR_OPTION_STRINGRETFIX ) & _
 				" " & hCallConvToStr( s ) & "(*" & *symbGetMangledName( s ) & ") " & _
-				hEmitFuncParams( s, top ), TRUE )
+				params, TRUE )
 
-
-	symbSetIsEmitted( s )
+    symbSetIsEmitted( s )
 
 end sub
-
 
 ''::::
 private sub hEmitStruct _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval top as FBSYMBOL ptr _
+		byval is_ptr as integer _
 	)
 
 	var tname = "struct"
@@ -671,33 +662,51 @@ private sub hEmitStruct _
 		tname = "union"
 	end if
 
+    '' Already emitting this UDT currently? This means there is a circular
+    '' dependency between this UDT and one (or multiple) other UDT(s).
+    if( symbGetIsBeingEmitted( s ) ) then
+        '' Is this struct referenced through only a pointer? Then we can create a
+        '' forward reference.
+        if( is_ptr ) then
+
+            '' Emit a forward reference to this struct (if not yet done),
+            '' and remember it for emitting later.
+            '' HACK: reusing the accessed flag (that's used by variables only)
+            if( symbGetIsAccessed( s ) = FALSE ) then
+                hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s ) & "$fwd " & hGetUDTName( s ), TRUE )
+                symbSetIsAccessed( s )
+                *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
+            end if
+
+            return
+        end if
+
+        '' No forward reference can be created, because the struct is used
+        '' directly (not through a pointer). It must be declared before its
+        '' parent is.
+    end if
+
+    symbSetIsBeingEmitted( s )
+
 	'' check every field, for non-emitted subtypes
 	var e = symbGetUDTFirstElm( s )
 	do while( e <> NULL )
-		var subtype = symbGetSubtype( e )
-		if( subtype <> NULL ) then
-			if( subtype <> s ) then
-				'' not a circular reference? emit..
-				if( subtype <> top ) then
-					hEmitUDT symbGetSubtype( e ), s
-				'' yeap, emit a forward reference to this struct and add it to the circular list
-				else
-					'' HACK: reusing the accessed flag (that's used by variables only)
-					if( symbGetIsAccessed( s ) = FALSE ) then
-						hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s ) & "$fwd " & hGetUDTName( s ), TRUE )
-						symbSetIsAccessed( s )
-						*cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
-					end if
-					return
-				end if
-			end if
-		end if
+        hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
 		e = symbGetUDTNextElm( e )
 	loop
 
-	''
+    '' Has this UDT been emitted in the mean time? (maybe one of the fields
+    '' did that)
+    if( symbGetIsEmitted( s ) ) then
+        return
+    end if
+
+    '' We'll emit it now.
+    symbSetIsEmitted( s )
+
+	'' UDT name
 	dim as string id
-	if symbGetName( s ) = NULL then
+	if( symbGetName( s ) = NULL ) then
 		id = *hMakeTmpStrNL( )
 	else
 		id = hGetUDTName( s )
@@ -707,9 +716,9 @@ private sub hEmitStruct _
 		end if
 	end if
 
-	hWriteLine( "typedef " + tname + " _" + id + " {", TRUE )
+	hWriteLine( "typedef " + tname + " _" + id + " {", FALSE )
 
-	''
+	'' Alignment (field = N)
 	var attrib = ""
 	if( s->udt.align > 0 ) then
 		if( s->udt.align = 1 ) then
@@ -719,7 +728,7 @@ private sub hEmitStruct _
 		end if
 	end if
 
-	''
+	'' Write out the elements
 	ctx.identcnt += 1
 
 	e = symbGetUDTFirstElm( s )
@@ -765,18 +774,19 @@ private sub hEmitStruct _
 
 	ctx.identcnt -= 1
 
+    '' Close UDT body
 	hWriteLine( "} " & id, TRUE )
 
-	'' methods will included references to self (this)
-	symbSetIsEmitted( s )
+	symbResetIsBeingEmitted( s )
 
-	'' emit methods
+	'' Emit methods (not part of the struct anymore, but they will include
+    '' references to self (this))
 	e = symbGetCompSymbTb( s ).head
 	do while( e <> NULL )
     	'' method?
     	if( symbGetClass( e ) = FB_SYMBCLASS_PROC ) then
 			if( symbGetIsFuncPtr( e ) = FALSE ) then
-				hEmitFuncProto e, FALSE
+				hEmitFuncProto( e, FALSE )
 			end if
     	end if
 
@@ -801,11 +811,11 @@ private sub hEmitDecls _
  			hEmitDecls( symbGetScopeSymbTbHead( s ) )
 
  		case FB_SYMBCLASS_VAR
- 			hEmitVariable s
+ 			hEmitVariable( s )
 
  		case FB_SYMBCLASS_PROC
  			if( symbGetIsFuncPtr( s ) = FALSE ) then
- 				hEmitFuncProto s
+ 				hEmitFuncProto( s )
  			end if
 
  		end select
@@ -823,7 +833,7 @@ private sub hEmitDataStmt _
 
 	var s = astGetLastDataStmtSymbol( )
 	do while( s <> NULL )
- 		hEmitVariable s
+ 		hEmitVariable( s )
 		s = s->var_.data.prev
 	loop
 
@@ -838,7 +848,7 @@ private sub hEmitForwardDecls( )
 
 	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
 	do while( s <> NULL )
-        hEmitUDT( s )
+        hEmitUDT( s, FALSE )
 		s = flistGetNext( s )
 	loop
 
@@ -1468,6 +1478,7 @@ private function hDtypeToStr _
 		if( subtype = NULL ) then
 			res = "void"
 		else
+            hEmitUDT( subtype, (ptrcnt > 0) )
 			res = hGetUDTName( subtype )
 		end if
 
@@ -1475,6 +1486,7 @@ private function hDtypeToStr _
 		if( subtype = NULL ) then
 			res = dtypeTb(FB_DATATYPE_INTEGER).name
 		else
+            hEmitUDT( subtype, (ptrcnt > 0) )
 			res = hGetUDTName( subtype )
 		end if
 
@@ -1970,9 +1982,7 @@ private sub _emitConvert _
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
 
-	if( to_subtype <> NULL ) then
-		hEmitUDT( to_subtype )
-	end if
+    hEmitUDT( to_subtype, typeIsPtr( to_dtype ) )
 
 	if( irIsREG( v1 ) ) then
 		hWriteLine( hPrepDefine( v1 ) & hVregToStr( v2 ) & "))", FALSE, TRUE )
@@ -2174,7 +2184,7 @@ private sub _emitCall _
 		byval vr as IRVREG ptr _
 	)
 
-	hDoCall symbGetMangledName( proc ), arg_list, bytestopop, vr
+	hDoCall( symbGetMangledName( proc ), arg_list, bytestopop, vr )
 
 end sub
 
@@ -2187,7 +2197,7 @@ private sub _emitCallPtr _
 		byval bytestopop as integer _
 	)
 
-	hDoCall "(" & hVregToStr( v1 ) & ")", arg_list, bytestopop, vr
+	hDoCall( "(" & hVregToStr( v1 ) & ")", arg_list, bytestopop, vr )
 
 end sub
 
@@ -2549,8 +2559,6 @@ private sub _emitProcBegin _
 
 	dim as string ln
 
-	'print *symbGetMangledName( proc ) & "{"
-
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
@@ -2569,9 +2577,7 @@ private sub _emitProcBegin _
 	end if
 
 	''
-	if( symbGetSubType( proc ) <> NULL ) then
-		hEmitUdt symbGetSubType( proc )
-	end if
+    hEmitUDT( symbGetSubType( proc ), typeIsPtr( symbGetType( proc ) ) )
 
 	ln += *hDtypeToStr( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), DT2STR_OPTION_STRINGRETFIX )
 	ln += hCallConvToStr( proc ) & " "
@@ -2582,7 +2588,7 @@ private sub _emitProcBegin _
 
 	ln += *symbGetMangledName( proc )
 
-	ln += hEmitFuncParams( proc, NULL, FALSE )
+	ln += hEmitFuncParams( proc, FALSE )
 
 	hWriteLine( ln, FALSE, TRUE )
 
@@ -2598,8 +2604,6 @@ private sub _emitProcEnd _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
-
-	'print "}"
 
 	ctx.identcnt -= 1
 	hWriteLine( "}", FALSE, TRUE )
