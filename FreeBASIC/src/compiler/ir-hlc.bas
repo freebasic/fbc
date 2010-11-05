@@ -313,6 +313,44 @@ private sub hEmitUDT _
  	ctx.section = oldsection
 end sub
 
+'' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
+private function hEmitArrayDecl( byval s as FBSYMBOL ptr ) as string
+
+    dim as integer n = 0
+
+    if( symbIsArray( s ) ) then
+        '' Count of *all* elements in the whole array (not just one dimension)
+        n = symbGetArrayElements( s )
+        assert( n > 0 )
+    end if
+
+    '' Emit fixlen strings as arrays
+    '' Note: these may or may not be arrays of fixlen strings
+    select case as const symbGetType( s )
+    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+        if( n > 0 ) then
+            n *= symbGetStrLen( s )
+        else
+            n = symbGetStrLen( s )
+        end if
+
+    case FB_DATATYPE_WCHAR
+        if( n > 0 ) then
+            n *= symbGetWstrLen( s )
+        else
+            n = symbGetWstrLen( s )
+        end if
+
+    end select
+
+    if( n > 0 ) then
+        return "[" & n & "]"
+    end if
+
+    return ""
+
+end function
+
 '':::::
 private sub hEmitVar _
 	( _
@@ -323,17 +361,6 @@ private sub hEmitVar _
     hEmitUDT( symbGetSubType( s ), typeIsPtr( symbGetType( s ) ) )
 
 	var attrib = symbGetAttrib( s )
-
-	var elements = 0
-    if( symbGetArrayDimensions( s ) > 0 ) then
-    	elements = symbGetArrayElements( s )
-		select case symbGetType( s )
-		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			elements *= symbGetStrLen( s )
-		case FB_DATATYPE_WCHAR
-			elements *= symbGetWstrLen( s )
-		end select
-	end if
 
     var is_extern = (attrib and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
 
@@ -346,9 +373,7 @@ private sub hEmitVar _
 
     sign += *hDtypeToStr( symbGetType( s ), symbGetSubType( s ) ) & " " & *symbGetMangledName( s )
 
-    if( elements > 0 ) then
-    	sign += "[" & elements & "]"
-    end if
+    sign += hEmitArrayDecl( s )
 
     ''
     if( symbIsImport( s ) ) then
@@ -740,20 +765,7 @@ private sub hEmitStruct _
 
         ln += *symbGetName( e )
 
-		var elements = 0
-    	if( symbGetArrayDimensions( e ) > 0 ) then
-    		elements = symbGetArrayElements( e )
-			select case symbGetType( e )
-			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-				elements *= symbGetStrLen( e )
-			case FB_DATATYPE_WCHAR
-				elements *= symbGetWstrLen( e )
-			end select
-		end if
-
-        if( elements > 0 ) then
-        	ln += "[" & elements & "]"
-        end if
+        ln += hEmitArrayDecl( e )
 
         /' the bitfield calcs are done by FB
         if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
