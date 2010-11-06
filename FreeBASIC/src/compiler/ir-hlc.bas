@@ -97,7 +97,7 @@ declare sub _emitDBG _
 dim shared as IRHLCCTX ctx
 
 '' same order as FB_DATATYPE
-dim shared as zstring ptr dtypeTB(0 to FB_DATATYPES-1) = _
+dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
     @"void"     , _ '' void
     @"byte"     , _ '' byte
@@ -1529,7 +1529,7 @@ private function hDtypeToStr _
 
 	case FB_DATATYPE_ENUM
 		if( subtype = NULL ) then
-			res = *dtypeTb(FB_DATATYPE_INTEGER)
+			res = *dtypeName(FB_DATATYPE_INTEGER)
 		else
             hEmitUDT( subtype, (ptrcnt > 0) )
 			res = hGetUDTName( subtype )
@@ -1541,7 +1541,7 @@ private function hDtypeToStr _
 		ptrcnt -= 1
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		res = *dtypeTb(dtype)
+		res = *dtypeName(dtype)
 		if( (options and DT2STR_OPTION_STRINGRETFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
 				ptrcnt = 1
@@ -1549,7 +1549,7 @@ private function hDtypeToStr _
 		end if
 
 	case FB_DATATYPE_VOID
-		res = *dtypeTb(dtype)
+		res = *dtypeName(dtype)
 		if( (options and DT2STR_OPTION_VOIDPARAMFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
 				ptrcnt = 1
@@ -1558,13 +1558,13 @@ private function hDtypeToStr _
 
 	case FB_DATATYPE_BITFIELD
         if( subtype <> NULL ) then
-        	res = *dtypeTb(symbGetType( subtype ))
+        	res = *dtypeName(symbGetType( subtype ))
         else
         	res = "integer"
         end if
 
 	case else
-		res = *dtypeTb(dtype)
+		res = *dtypeName(dtype)
 	end select
 
 	if( ptrcnt > 0 ) then
@@ -1640,6 +1640,49 @@ private function hEmitDouble( byval value as double ) as string
     end if
 
     return s
+
+end function
+
+'':::::
+private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
+
+	dim as string expr
+
+	'' For literal strings, just print the text, not the label
+	if( symbGetIsLiteral( sym ) ) then
+		select case symbGetType( sym )
+		case FB_DATATYPE_CHAR
+			expr += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
+		case FB_DATATYPE_WCHAR
+            '' wstr("a") becomes (wchar *)"\141\0\0"
+            '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
+			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + "\0"""
+		case else
+			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+		end select
+	else
+        '' No addrof (&) for fixlen strings
+        if( hSymbIsEmittedAsArray( sym ) = FALSE ) then
+            expr += "&"
+        end if
+
+        '' Name of the array that's being accessed, or the function in @func, etc
+		expr += *symbGetMangledName( sym )
+	end if
+
+    assert( iif( symbIsProc( sym ), (ofs = 0), TRUE ) )
+
+    '' Cast to actual data type (always a pointer), but not for function pointers
+    if( symbIsProc( sym ) = FALSE ) then
+        '' Offset (in bytes)
+        if( ofs <> 0 ) then
+            expr = "((ubyte *)" + expr + " + " + str( ofs ) + ")"
+        end if
+
+        expr = "(" + *hDtypeToStr( symbGetType( sym ), symbGetSubtype( sym ) ) + " *)" + expr
+    end if
+
+    return expr
 
 end function
 
@@ -1754,30 +1797,7 @@ private function hVregToStr _
 		return operand
 
 	case IR_VREGTYPE_OFS
-		dim as string operand
-
-        '' No addrof (&) for fixlen strings
-        if( hSymbIsEmittedAsArray( vreg->sym ) = FALSE ) then
-            operand += "&"
-        end if
-
-		operand += *symbGetMangledName( vreg->sym )
-		if( vreg->ofs <> 0 ) then
-			operand += " + "
-			operand += str( vreg->ofs )
-		end if
-
-		'' find literal strings, and just print the text, not the label
-		if( symbGetIsLiteral( vreg->sym ) ) then
-			select case symbGetType( vreg->sym )
-			case FB_DATATYPE_CHAR
-				operand =  """" & *hEscape( symbGetVarLitText( vreg->sym ) ) & """"
-			case FB_DATATYPE_WCHAR
-				operand =  "(" & *dtypeTB(FB_DATATYPE_WCHAR) & " *)&""" & *hEscapeW( symbGetVarLitTextW( vreg->sym ) ) & "\0"""
-			end select
-		end if
-
-		return operand
+		return hEmitOffset( vreg->sym, vreg->ofs )
 
 	case IR_VREGTYPE_IMM
         var s = "(" & *hDtypeToStr( vreg->dtype, vreg->subtype ) & ")"
@@ -2523,25 +2543,7 @@ private sub _emitVarIniOfs _
 		byval ofs as integer _
 	)
 
-	static as string operand, ln
-
-	'' find literal strings, and just print the text, not the label
-	if( symbGetIsLiteral( sym ) ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_CHAR
-			operand =  """" & *hEscape( symbGetVarLitText( sym ) ) & """"
-		case FB_DATATYPE_WCHAR
-			operand =  """" & *hEscapeW( symbGetVarLitTextW( sym ) ) & "\0"""
-		case else
-			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-		end select
-	else
-		operand = *symbGetMangledName( sym )
-	end if
-
-	ln = "(" & *hDtypeToStr( symbGetType( sym ), symbGetSubtype( sym ) ) & " *)((ubyte *)&" & operand & " + " & ofs & ")"
-
-	hWriteLine( ln, FALSE, TRUE )
+	hWriteLine( hEmitOffset( sym, ofs ), FALSE, TRUE )
 
 end sub
 
