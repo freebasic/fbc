@@ -62,13 +62,14 @@ declare function 	hDefErr_cb 			( ) as string
 declare function 	hDefExErr_cb 		( ) as string
 declare function 	hDefExxErr_cb 		( ) as string
 declare function	hDefLang_cb			( ) as string
+declare function    hDefBackend_cb      ( ) as string
 declare function    hDefPath_cb         ( ) as string
 declare function    hDefGcc_cb         	( ) as string
 declare function    hDefUnix_cb         ( ) as string  
 declare function    hDefPCOS_cb         ( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 34
+const SYMB_MAXDEFINES = 35
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -102,6 +103,7 @@ const SYMB_MAXDEFINES = 34
         (@"__FB_DEBUG__"              ,   NULL                ,  1,   @hDefDebug_cb          ), _
         (@"__FB_ERR__"                ,   NULL                ,  1,   @hDefErr_cb            ), _
         (@"__FB_LANG__"               ,   NULL                ,  0,   @hDefLang_cb           ), _
+        (@"__FB_BACKEND__"            ,   NULL                ,  0,   @hDefBackend_cb        ), _
         (@"__FB_FPU__"                ,   NULL                ,  0,   @hDefFpu_cb            ), _
         (@"__FB_FPMODE__"             ,   NULL                ,  0,   @hDefFpmode_cb         ), _
         (@"__FB_GCC__"                ,   NULL                ,  1,   @hDefGcc_cb    		 ), _
@@ -264,6 +266,20 @@ end function
 private function hDefLang_cb ( ) as string
 
 	function = fbGetLangName( env.clopt.lang )
+
+end function
+
+'':::::
+private function hDefBackend_cb ( ) as string
+
+	select case env.clopt.backend
+	case FB_BACKEND_GAS
+		function = "gas"
+
+	case FB_BACKEND_GCC
+		function = "gcc"
+
+    end select
 
 end function
 
