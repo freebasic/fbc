@@ -1736,7 +1736,10 @@ private function hVregToStr _
                         operand += "&"
                     end if
 
-					operand += "&"
+                    '' No addrof (&) for array access
+                    if( hSymbIsEmittedAsArray( vreg->sym ) = FALSE ) then
+                        operand += "&"
+                    end if
 				else
 					if( addcast ) then
 						operand += ")("
@@ -2547,6 +2550,122 @@ private sub _emitVarIniOfs _
 
 end sub
 
+private sub hEmitVarIniStr _
+	( _
+		byval totlgt as integer, _
+		byref s as string, _
+		byval litlgt as integer, _
+        byval is_wstr as integer _
+	)
+
+    '' String literal too long? (GCC would show a warning)
+    if( totlgt < litlgt ) then
+        '' Cut off; may be empty afterwards
+        s = left( s, totlgt )
+    ''elseif( totlgt > litlgt ) then
+        '' Too short, remaining space will be filled with 0's by GCC
+    end if
+
+	if( ctx.ini_isfixstrarray ) then
+        '' Fixed-length string arrays are just emitted as a simple [w]char array,
+        '' not as a 2D array, so the whole initializer needs to be merged into
+        '' one string, which then has to contain terminating/padding \0's.
+
+        s = """" + s
+        if( is_wstr ) then
+            s = "L" + s
+        end if
+
+        '' NULL terminator
+        s += "\0"
+
+        '' If too short, add padding 0's, to fill this one element of the
+        '' fixed-length string array.
+        for i as integer = litlgt to totlgt - 1
+            s += "\0"
+        next
+
+        s += """"
+
+		ctx.ini_strdata += s
+    else
+        '' Simple fixed-length string initialized from string literal
+        s = """" + s + """"
+        if( is_wstr ) then
+            s = "L" + s
+        end if
+
+		hWriteLine( s, FALSE, TRUE )
+	end if
+
+end sub
+
+'':::::
+private sub _emitVarIniStr _
+	( _
+		byval totlgt as integer, _
+		byval litstr as zstring ptr, _
+		byval litlgt as integer _
+	)
+
+    static as string s
+
+    s = *hEscape( litstr )
+
+    hEmitVarIniStr( totlgt, s, litlgt, FALSE )
+
+end sub
+
+'':::::
+private sub _emitVarIniWstr _
+	( _
+		byval totlgt as integer, _
+		byval litstr as wstring ptr, _
+		byval litlgt as integer _
+	)
+
+    static as string s
+
+    s = *hEscapeUCN( litstr )
+
+    hEmitVarIniStr( totlgt, s, litlgt, TRUE )
+
+end sub
+
+'':::::
+private sub _emitVarIniPad _
+	( _
+		byval bytes as integer _
+	)
+
+	if( ctx.ini_isfixstrarray = FALSE ) then
+		return
+	end if
+
+	if( ctx.ini_iswstr ) then
+		bytes \= symbGetDataSize( FB_DATATYPE_WCHAR )
+	end if
+
+	if( bytes <= 0 ) then
+		return
+	end if
+
+    static as string pad
+
+    pad = """"
+
+	do while( bytes > 0 )
+		pad += "\0"
+		bytes -= 1
+	loop
+
+    pad += """"
+
+	ctx.ini_strdata += pad
+
+end sub
+
+'':::::
 private function hIsFixStrArray _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -2564,100 +2683,6 @@ private function hIsFixStrArray _
 end function
 
 '':::::
-private sub _emitVarIniStr _
-	( _
-		byval totlgt as integer, _
-		byval litstr as zstring ptr, _
-		byval litlgt as integer _
-	)
-
-	'' zstring * 1?
-	if( totlgt = 0 ) then
-		if( ctx.ini_isfixstrarray = FALSE ) then
-			hWriteLine( """""", FALSE, TRUE )
-		end if
-		exit sub
-	end if
-
-	var s = """" & *hEscape( litstr ) & "\0"""
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		hWriteLine( s, FALSE, TRUE )
-	else
-		ctx.ini_strdata += s
-
-		if( totlgt > litlgt ) then
-			var pad = ""
-			for i as integer = litlgt to totlgt - 1
-				pad += "\0"
-			next
-			ctx.ini_strdata += " """ & pad & """"
-		end if
-	end if
-
-end sub
-
-'':::::
-private sub _emitVarIniWstr _
-	( _
-		byval totlgt as integer, _
-		byval litstr as wstring ptr, _
-		byval litlgt as integer _
-	)
-
-	'' wstring * 1?
-	if( totlgt = 0 ) then
-		if( ctx.ini_isfixstrarray = FALSE ) then
-			hWriteLine( "L""""", FALSE, TRUE )
-		end if
-		exit sub
-	end if
-
-	var s = " L""" & *hEscapeUCN( litstr ) & "\0"""
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		hWriteLine( s, FALSE, TRUE )
-	else
-		ctx.ini_strdata += s
-
-		if( totlgt > litlgt ) then
-			var pad = ""
-			for i as integer = litlgt to totlgt - 1
-				pad += "\0"
-			next
-			ctx.ini_strdata += " L""" & pad & """"
-		end if
-	end if
-
-end sub
-
-'':::::
-private sub _emitVarIniPad _
-	( _
-		byval bytes as integer _
-	)
-
-	if( bytes <= 0 ) then
-		return
-	end if
-
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		return
-	end if
-
-	if( ctx.ini_iswstr ) then
-		bytes \= symbGetDataSize( FB_DATATYPE_WCHAR )
-	end if
-
-	var pad = ""
-	do while( bytes > 0 )
-		pad += "\0"
-		bytes -= 1
-	loop
-
-	ctx.ini_strdata += " """ & pad & """"
-
-end sub
-
-'':::::
 private sub _emitVarIniScopeBegin _
 	( _
 		byval basesym as FBSYMBOL ptr, _
@@ -2666,11 +2691,11 @@ private sub _emitVarIniScopeBegin _
 
 	ctx.ini_isfixstrarray = hIsFixStrArray( sym )
 
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		hWriteLine( "{", FALSE )
-	else
-		ctx.ini_iswstr = symbGetType( sym ) = FB_DATATYPE_WCHAR
+	if( ctx.ini_isfixstrarray ) then
+		ctx.ini_iswstr = (symbGetType( sym ) = FB_DATATYPE_WCHAR)
 		ctx.ini_strdata = ""
+    else
+		hWriteLine( "{", FALSE )
 	end if
 
 end sub
@@ -2682,16 +2707,17 @@ private sub _emitVarIniScopeEnd _
 		byval sym as FBSYMBOL ptr _
 	)
 
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		hWriteLine( "}", FALSE )
-	else
+	if( ctx.ini_isfixstrarray ) then
 		ctx.ini_isfixstrarray = FALSE
 
+        '' Cut off last \0, since there is an implicit NULL already...
 		if( len( ctx.ini_strdata ) >= 4 ) then
 			ctx.ini_strdata = left( ctx.ini_strdata, len( ctx.ini_strdata ) - 3 ) + """"
 		end if
 
 		hWriteLine( ctx.ini_strdata )
+    else
+		hWriteLine( "}", FALSE )
 	end if
 
 end sub
