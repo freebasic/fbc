@@ -1993,6 +1993,26 @@ private function hBOPToStr _
 end function
 
 '':::::
+private function hEmitBOP _
+    ( _
+		byval op as integer, _
+		byref l as string, _
+		byref r as string _
+    ) as string
+
+    dim as string bop = l + hBOPToStr( op ) + r
+
+    select case as const op
+    case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_GE, AST_OP_LE
+        '' Add a negation in order to convert the "boolean" 1 to -1 (0 stays 0)
+        bop = "(-(" + bop + "))"
+    end select
+
+    return bop
+
+end function
+
+'':::::
 private sub hWriteBOP _
 	( _
 		byval op as integer, _
@@ -2015,13 +2035,15 @@ private sub hWriteBOP _
 		rcast += "(ubyte *)"
 	end if
 
-	' look for /, floating point divide
-	if op = AST_OP_DIV then
+	'' look for /, floating point divide
+	if( op = AST_OP_DIV ) then
 		lcast += "(double)"
 		rcast += "(double)"
 	end if
 
-	hEmitVregExpr( vr, lcast & hVregToStr( v1 ) & hBOPToStr( op ) & rcast & hVregToStr( v2 ) )
+	hEmitVregExpr( vr, hEmitBOP( op, _
+                                 lcast + hVregToStr( v1 ), _
+                                 rcast + hVregToStr( v2 ) ) )
 
 end sub
 
@@ -2065,11 +2087,10 @@ private sub _emitBopEx _
 		if( vr <> NULL ) then
 			hWriteBOP( op, vr, v1, v2 )
 		else
-			hWriteLine( "if (" & _
-						hVregToStr( v1 ) & _
-						hBOPToStr( op ) & _
-						hVregToStr( v2 ) & _
-						") goto " & _
+			hWriteLine( "if (" + hEmitBOP( op, _
+                                           hVregToStr( v1 ), _
+                                           hVregToStr( v2 ) ) + _
+                        ") goto " + _
 						*symbGetMangledName( ex ) _
 					)
 		end if
