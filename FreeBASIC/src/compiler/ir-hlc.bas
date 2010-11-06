@@ -1736,10 +1736,7 @@ private function hVregToStr _
                         operand += "&"
                     end if
 
-                    '' No addrof (&) for array access
-                    if( hSymbIsEmittedAsArray( vreg->sym ) = FALSE ) then
-                        operand += "&"
-                    end if
+                    operand += "&"
 				else
 					if( addcast ) then
 						operand += ")("
