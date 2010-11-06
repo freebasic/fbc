@@ -31,6 +31,7 @@ Version 0.22.0:
 - C emitter: addrof on functions and string literals in variable initializers
 - C emitter: function pointers/string literals/array/fixlen string accesses
 - C emitter: number literals
+- C emitter: comparisons returned 1 and 0 instead of -1 and 0
 
 
 Version 0.21.1:
