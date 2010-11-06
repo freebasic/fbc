@@ -1193,16 +1193,15 @@ function hEscapeUCN _
 
 		''
 		if( char < &h00A0 ) then
-			if( c < 32 ) then
+			if( char < 32 ) then
 				*dst = CHAR_RSLASH
 				dst += 1
-				if( c < 8 ) then
-					dst[0] = CHAR_0 + c
+				if( char < 8 ) then
+					dst[0] = CHAR_0 + char
 					dst += 1
-
 				else
-					dst[0] = CHAR_0 + (c shr 3)
-					dst[1] = CHAR_0 + (c and 7)
+					dst[0] = CHAR_0 + (char shr 3)
+					dst[1] = CHAR_0 + (char and 7)
 					dst += 2
 				end if
 			else
