@@ -304,28 +304,6 @@ private sub hEmitUDT _
  	ctx.section = oldsection
 end sub
 
-'' Array or fixlen string?
-private function hSymbIsEmittedAsArray( byval s as FBSYMBOL ptr ) as integer
-
-    if( s = NULL ) then
-        assert(FALSE)   '' TODO: can the symbol be NULL in the places this function is called?
-        return FALSE
-    end if
-
-    if( symbIsArray( s ) ) then
-        return TRUE
-    end if
-
-    '' Fixlen strings are always emitted as arrays (see hEmitArrayDecl())
-    select case as const symbGetType( s )
-    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-        return TRUE
-    end select
-
-    return FALSE
-
-end function
-
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
 private function hEmitArrayDecl( byval s as FBSYMBOL ptr ) as string
 
@@ -1661,11 +1639,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 		end select
 	else
-        '' No addrof (&) for fixlen strings
-        if( hSymbIsEmittedAsArray( sym ) = FALSE ) then
-            expr += "&"
-        end if
-
+        expr += "&"
         '' Name of the array that's being accessed, or the function in @func, etc
 		expr += *symbGetMangledName( sym )
 	end if
@@ -1753,7 +1727,7 @@ private function hVregToStr _
 				var deref = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)"
 
 				'' No addrof (&) for array access
-				if( hSymbIsEmittedAsArray( vreg->sym ) ) then
+				if( symbGetArrayDimensions( vreg->sym ) ) then
 					do_deref = TRUE
 					operand += deref
 					operand += "((ubyte *)"
