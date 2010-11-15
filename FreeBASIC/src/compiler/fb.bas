@@ -945,7 +945,7 @@ function fbCompile _
 
 	''
 	if( irEmitBegin( ) = FALSE ) then
-		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, env.outf.name, -1 )
 		exit function
 	end if
 
