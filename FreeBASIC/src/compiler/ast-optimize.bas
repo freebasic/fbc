@@ -345,7 +345,7 @@ private function hConstAccumADDSUB _
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				select case o
 				case AST_OP_ADD
-					select case as const typeGEt( dtype )
+					select case as const typeGet( dtype )
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long += r->con.val.long
 
@@ -842,65 +842,63 @@ private sub hOptConstIdxMult _
 	dim as ASTNODE ptr l = n->l
 
 	'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete the * node
-	if( l->class = AST_NODECLASS_BOP ) then
-		if( l->op.op = AST_OP_MUL ) then
-			dim as ASTNODE ptr lr = l->r
-			if( astIsCONST( lr ) ) then
-				if( irGetOption( IR_OPT_ADDRCISC ) ) then
-					dim as integer c = any
-					select case as const astGetDataType( lr )
-					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						c = cint( lr->con.val.long )
+	if( astIsBOP(l, AST_OP_MUL ) ) then
+		dim as ASTNODE ptr lr = l->r
+		if( astIsCONST( lr ) ) then
+			if( irGetOption( IR_OPT_ADDRCISC ) ) then
+				dim as integer c = any
+				select case as const astGetDataType( lr )
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+					c = cint( lr->con.val.long )
 
-					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-						c = cint( lr->con.val.float )
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+					c = cint( lr->con.val.float )
 
-    				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-    					if( FB_LONGSIZE = len( integer ) ) then
-    						c = cint( lr->con.val.int )
-    					else
-    						c = cint( lr->con.val.long )
-    					end if
-
-					case else
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
 						c = cint( lr->con.val.int )
+					else
+						c = cint( lr->con.val.long )
+					end if
+
+				case else
+					c = cint( lr->con.val.int )
+				end select
+
+				if( c < 10 ) then
+					dim as integer delnode = any
+					select case as const c
+					case 6, 7
+						delnode = FALSE
+					case 3, 5, 9
+						delnode = TRUE
+						'' x86 assumption: not possible if there's already an index (EBP)
+						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
+						if( symbIsParam( s ) ) then
+							delnode = FALSE
+						elseif( symbIsLocal( s ) ) then
+							if( symbIsStatic( s ) = FALSE ) then
+								delnode = FALSE
+							end if
+						end if
+					case else
+						delnode = TRUE
 					end select
 
-					if( c < 10 ) then
-						dim as integer delnode = any
-						select case as const c
-						case 6, 7
-							delnode = FALSE
-						case 3, 5, 9
-							delnode = TRUE
-							'' x86 assumption: not possible if there's already an index (EBP)
-							dim as FBSYMBOL ptr s = astGetSymbol( n->r )
-							if( symbIsParam( s ) ) then
-								delnode = FALSE
-							elseif( symbIsLocal( s ) ) then
-								if( symbIsStatic( s ) = FALSE ) then
-									delnode = FALSE
-								end if
-							end if
-						case else
-							delnode = TRUE
-						end select
+					if( delnode ) then
+						n->idx.mult = c
 
-		    			if( delnode ) then
-		    				n->idx.mult = c
+						'' relink
+						n->l = l->l
 
-							'' relink
-							n->l = l->l
+						'' del const node and the BOP itself
+						astDelNode( lr )
+						astDelNode( l )
 
-		    				'' del const node and the BOP itself
-		    				astDelNode( lr )
-							astDelNode( l )
-
-							l = n->l
-						end if
+						l = n->l
 					end if
 				end if
-		    end if
+			end if
 		end if
 	end if
 
@@ -1228,22 +1226,18 @@ private function hOptAssocMUL _
 	end if
 
 	'' convert a*(b*c) to a*b*c
-	if( n->class = AST_NODECLASS_BOP ) then
-		if( n->op.op = AST_OP_MUL ) then
-			r = n->r
-			if( r->class = AST_NODECLASS_BOP ) then
-				if( r->op.op = AST_OP_MUL ) then
-					n_old = n
+	if( astIsBOP( n, AST_OP_MUL ) ) then
+		r = n->r
+		if( astIsBOP( r, AST_OP_MUL ) ) then
+			n_old = n
 
-					'' n = (( n->l, r->l ), r->r)
-					n = astNewBOP( AST_OP_MUL, _
-							   	   astNewBOP( AST_OP_MUL, n->l, r->l ), _
-							   	   r->r )
+			'' n = (( n->l, r->l ), r->r)
+			n = astNewBOP( AST_OP_MUL, _
+			               astNewBOP( AST_OP_MUL, n->l, r->l ), _
+			               r->r )
 
-					astDelNode( r )
-					astDelNode( n_old )
-				end if
-			end if
+			astDelNode( r )
+			astDelNode( n_old )
 		end if
 	end if
 
@@ -1686,7 +1680,7 @@ private function hOptLogic _
 					''  |    |         /  \
 					''  x    y        x    y
 
-					if( (l->op.op = AST_OP_NOT) and (l->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) and (r->class = AST_NODECLASS_UOP) ) then
+					if( astIsUOP(l, AST_OP_NOT) and astIsUOP(r, AST_OP_NOT) ) then
 
 						l = hOptLogic( l->l )
 						r = hOptLogic( r->l )
@@ -1710,7 +1704,7 @@ private function hOptLogic _
 					'' (instead of the other expr) to allow compile-time evaluation
 					'' since x XOR y is equivalent to (not x) XOR (not y)
 
-					elseif( astIsCONST( l ) and (r->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) ) then
+					elseif( astIsCONST( l ) and astisUOP(r, AST_OP_NOT) ) then
 						'' convert:
 						'' const and (not x)    to    not ((not const) or  x)
 						'' const or  (not x)    to    not ((not const) and x)
@@ -1734,7 +1728,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( astIsConst( r ) and (l->class = AST_NODECLASS_UOP) and (l->op.op = AST_OP_NOT) ) then
+					elseif( astIsConst( r ) and astIsUOP(l, AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) and const    to    not (x or  (not const))
 						'' (not x) or  const    to    not (x and (not const))
@@ -1758,7 +1752,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( (op = AST_OP_XOR) and (l->class = AST_NODECLASS_UOP) and (l->op.op = AST_OP_NOT) ) then
+					elseif( (op = AST_OP_XOR) and astIsUOP(l, AST_OP_NOT) ) then
 						'' convert:
 						'' (not x) xor y    to    not (x xor y)
 
@@ -1770,7 +1764,7 @@ private function hOptLogic _
 
 						n = m
 
-					elseif( (op = AST_OP_XOR) and (r->class = AST_NODECLASS_UOP) and (r->op.op = AST_OP_NOT) ) then
+					elseif( (op = AST_OP_XOR) and astIsUOP(r, AST_OP_NOT) ) then
 						'' convert:
 						'' x xor (not y)    to    not (x xor y)
 
