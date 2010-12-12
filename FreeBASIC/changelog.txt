@@ -33,6 +33,7 @@ Version 0.22.0:
 - C emitter: number literals
 - C emitter: comparisons returned 1 and 0 instead of -1 and 0
 - #2099245: mixing signed and unsigned operands (e.g. c1 + uv1) could result in the wrong result type if the first operand was a const
+- QB-compatible SCREEN modes now default to the same number of pages as QB instead of just 1 (e.g. SCREEN 7 now defaults to 8 pages)
 
 
 Version 0.21.1:
