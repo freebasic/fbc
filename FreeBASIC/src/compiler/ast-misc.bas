@@ -143,7 +143,6 @@ function astIsTreeEqual _
 		end if
 
 	case AST_NODECLASS_CONST
-		const DBL_EPSILON = 2.2204460492503131e-016
 
 		select case as const astGetDataType( l )
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -152,7 +151,7 @@ function astIsTreeEqual _
 			end if
 
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			if( abs( l->con.val.float - r->con.val.float ) > DBL_EPSILON ) then
+			if( l->con.val.float <> r->con.val.float ) then
 				exit function
 			end if
 
