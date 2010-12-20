@@ -94,10 +94,9 @@ int fb_GfxGetkey(void)
 	if (!__fb_gfx)
 		return 0;
 
-	do {
-		key = get_key();
+	while ((key = get_key()) == 0) {
 		fb_Sleep(20);
-	} while (key == 0);
+	}
 
 	return key;
 }

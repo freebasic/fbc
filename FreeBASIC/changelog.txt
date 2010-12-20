@@ -35,6 +35,7 @@ Version 0.22.0:
 - #2099245: mixing signed and unsigned operands (e.g. c1 + uv1) could result in the wrong result type if the first operand was a const
 - Expressions containing constants that differed by "small" amounts (e.g. a*1e-20, a*1e-30) could be assumed to be equal in comparisons
 - QB-compatible SCREEN modes now default to the same number of pages as QB instead of just 1 (e.g. SCREEN 7 now defaults to 8 pages)
+- patch #3108334: GetKey in graphics modes shouldn't wait 20ms if there is a key already in the key buffer (thanks to TeeEmCee for patch)
 
 
 Version 0.21.1:
