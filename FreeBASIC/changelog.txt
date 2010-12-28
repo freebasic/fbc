@@ -3,6 +3,7 @@ Version 0.22.0:
 [changed]
 - "No newline at end of file" warning suppressed unless compiling with -w pedantic
 - FIX(n)/INT(n) no longer affect the type/value of integer-type expressions
+- __FB_UNIX__ and __FB_PCOS__ are no longer defined when false, allowing #IFDEF to work
 
 [added]
 - Variadic macros: #define a(x, y...) f(x, y)

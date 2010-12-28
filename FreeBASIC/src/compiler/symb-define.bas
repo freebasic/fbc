@@ -366,7 +366,7 @@ sub symbDefineInit _
 
 		symbAddDefine( @"__FB_UNIX__", NULL, 0 )
 
-#elseif 0 '' "#if" check (compromise, "#if not" will fail)
+#elseif 1 '' "#if" check (compromise, "#if not" will fail)
 
 		symbAddDefine( @"__FB_UNIX__", @"-1", 2 )
 
@@ -390,7 +390,7 @@ sub symbDefineInit _
 
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 
-#elseif 0 '' "#if" check (compromise, "#if not" will fail)
+#elseif 1 '' "#if" check (compromise, "#if not" will fail)
 
 		symbAddDefine( @"__FB_PCOS__", @"-1", 2 )
 
