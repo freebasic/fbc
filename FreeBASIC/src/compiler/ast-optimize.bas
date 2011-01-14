@@ -2397,7 +2397,9 @@ function astOptimizeTree _
 
 	n = hOptAssocMUL( n )
 
+#if 0
 	n = hOptConstDistMUL( n )
+#endif
 
 	n = hOptConstAccum1( n )
 

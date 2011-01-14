@@ -37,6 +37,7 @@ Version 0.22.0:
 - Expressions containing constants that differed by "small" amounts (e.g. a*1e-20, a*1e-30) could be assumed to be equal in comparisons
 - QB-compatible SCREEN modes now default to the same number of pages as QB instead of just 1 (e.g. SCREEN 7 now defaults to 8 pages)
 - patch #3108334: GetKey in graphics modes shouldn't wait 20ms if there is a key already in the key buffer (thanks to TeeEmCee for patch)
+- #3153953: Faulty reoptimisation on (i - (j+C1)*C2 + k)
 
 
 Version 0.21.1:
