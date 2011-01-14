@@ -1486,4 +1486,10 @@ extern ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO
 
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
+declare sub astDumpTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer = 0 _
+	)
+
 #endif '' __AST_BI__

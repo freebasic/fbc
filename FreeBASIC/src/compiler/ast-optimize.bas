@@ -27,11 +27,6 @@
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare sub astDumpTree _
-	( _
-		byval n as ASTNODE ptr, _
-		byval col as integer = 0 _
-	)
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' constant folding optimizations
