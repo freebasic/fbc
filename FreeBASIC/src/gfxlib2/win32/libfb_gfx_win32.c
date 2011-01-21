@@ -733,6 +733,7 @@ void fb_hWin32SetWindowTitle(char *title)
 {
 	if (__fb_gfx->lock_count != 0)
 		LeaveCriticalSection(&update_lock);
+	fb_win32.window_title = title;
 	SetWindowText(fb_win32.wnd, title);
 	if (__fb_gfx->lock_count != 0)
 		EnterCriticalSection(&update_lock);
