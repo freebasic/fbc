@@ -448,6 +448,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.h = h;
 	info.depth = depth;
 	info.scanline_size = 1;
+	info.num_pages = 1;
 	info.palette = &fb_palette_256;
 	info.font = &fb_font_8x8;
 	info.text_w = w / info.font->w;
