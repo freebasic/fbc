@@ -4,6 +4,7 @@ Version 0.22.0:
 - "No newline at end of file" warning suppressed unless compiling with -w pedantic
 - FIX(n)/INT(n) no longer affect the type/value of integer-type expressions
 - __FB_UNIX__ and __FB_PCOS__ are no longer defined when false, allowing #IFDEF to work
+- MID(s,n,0)=t statement was equivalent to MID(s,n)=t; now it more intuitively sets 0 chars (i.e. does nothing) like in QB
 
 [added]
 - Variadic macros: #define a(x, y...) f(x, y)

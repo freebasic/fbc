@@ -67,11 +67,11 @@ FBCALL void fb_StrAssignMid ( FBSTRING *dst, int start, int len, FBSTRING *src )
 	src_len = FB_STRSIZE( src );
 	dst_len = FB_STRSIZE( dst );
 
-    if( (start > 0) && (start <= dst_len) )
+	if( (start > 0) && (start <= dst_len) && (len != 0) )
     {
 		--start;
 
-        if( (len < 1) || (len > src_len) )
+		if( (len < 0) || (len > src_len) )
 			len = src_len;
 
         if( start + len > dst_len )
