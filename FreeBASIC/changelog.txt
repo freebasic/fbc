@@ -40,6 +40,7 @@ Version 0.22.0:
 - patch #3108334: GetKey in graphics modes shouldn't wait 20ms if there is a key already in the key buffer (thanks to TeeEmCee for patch)
 - #3153953: Faulty reoptimisation on (i - (j+C1)*C2 + k)
 - #1444576: WINDOWTITLE() does not persist
+- va_first() not taking into account 4 byte parameter alignment
 
 
 Version 0.21.1:

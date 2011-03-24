@@ -109,10 +109,43 @@ sub test_1 cdecl ()
 
 end sub
 
+
+sub testVaFirstBehindByte cdecl(byval n as byte, ...)
+    '' va_first() was returning @n + 1, but it should do @n + 4 in this case,
+    '' because 4 bytes are pushed for 'n'.
+    dim as integer ptr p = va_first()
+    CU_ASSERT( *p = &hAABBCCDD )
+end sub
+
+sub testVaFirstBehindShort cdecl(byval n as short, ...)
+    '' sizeof(n) = 2, but 4 bytes pushed...
+    dim as integer ptr p = va_first()
+    CU_ASSERT( *p = &h44332211 )
+end sub
+
+type T field = 1
+    as integer a
+    as byte b
+end type
+
+sub testVaFirstBehindUdt cdecl(byval n as T, ...)
+    '' sizeof(n) = 5, but 8 bytes pushed...
+    dim as integer ptr p = va_first()
+    CU_ASSERT( *p = &hFF006622 )
+end sub
+
+sub testVaFirstBehindAlignedParams cdecl ()
+    testVaFirstBehindByte(-1, &hAABBCCDD)
+    testVaFirstBehindShort(-1, &h44332211)
+    testVaFirstBehindUdt(type<T>(-1, -1), &hFF006622)
+end sub
+
+
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.functions.var_args")
 	fbcu.add_test("test_1", @test_1)
+	fbcu.add_test("testVaFirstBehindAlignedParams", @testVaFirstBehindAlignedParams)
 
 end sub
 

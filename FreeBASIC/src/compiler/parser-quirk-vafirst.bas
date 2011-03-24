@@ -86,12 +86,12 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
 		expr = astNewADDROF( expr )
 
-		'' + paramlen( param )
+		'' + FB_ROUNDLEN( paramlen( param ) )
 		funcexpr = astNewBOP( AST_OP_ADD, _
 						  	  expr, _
-						  	  astNewCONSTi( symbCalcparamLen( param->typ, _
-						  								  	  param->subtype, _
-						  								  	  param->param.mode ), _
+						  	  astNewCONSTi( FB_ROUNDLEN( symbCalcParamLen( param->typ, _
+                                                                           param->subtype, _
+						  								  	               param->param.mode ) ), _
 						  					FB_DATATYPE_UINT ) )
 	end if
 
