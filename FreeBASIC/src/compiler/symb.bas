@@ -1929,12 +1929,12 @@ function symbIsChildOf _
 	) as integer
 
 	do
-		if( sym = parent ) then
-			return TRUE
-		end if
-
 		if( sym = @symbGetGlobalNamespc( ) ) then
 			return FALSE
+		end if
+
+		if( sym = parent ) then
+			return TRUE
 		end if
 
 		sym = symbGetNamespace( sym )
@@ -1952,11 +1952,23 @@ function symbCheckAccess _
 	) as integer
 
 	if( sym <> NULL ) then
+    	'' private?
     	if( symbIsVisPrivate( sym ) ) then
     		return (parent = symbGetCurrentNamespc( ))
 
+    	'' protected?
     	elseif( symbIsVisProtected( sym ) ) then
-	   		return symbIsChildOf( parent, symbGetCurrentNamespc( ) )
+	   		var ns = symbGetCurrentNamespc( )
+	   		
+	   		'' is symbol from a base class?
+	   		select case ns->typ
+	   		case FB_DATATYPE_STRUCT
+	   			return ( parent = ns or ns->udt.base = parent )
+	   		case else
+	   			'' symbol is from a child namespace?
+	   			return symbIsChildOf( parent, ns )
+	   		End Select
+	   		
     	end if
     end if
 

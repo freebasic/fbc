@@ -430,7 +430,8 @@ end type
 type FBS_STRUCT
 	'' extends FBNAMESCP
 	ns 				as FBNAMESPC
-
+	
+	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	elements		as integer
 	lfldlen			as integer					'' largest field len
@@ -684,8 +685,8 @@ type FBSYMBOL
 
 	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
 
-	parent          as FBSYMBOL ptr
-
+	parent          as FBSYMBOL Ptr
+	
 	prev			as FBSYMBOL ptr				'' next in symbol tb list
 	next			as FBSYMBOL ptr             '' prev /
 end type
@@ -1596,6 +1597,12 @@ declare function symbNamespaceImport _
 		byval ns as FBSYMBOL ptr _
 	) as integer
 
+declare function symbNamespaceImportEx _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval to_ns as FBSYMBOL ptr _
+	) as integer
+
 declare sub symbNamespaceRemove _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1902,6 +1909,13 @@ declare function symbIsUDTReturnedInRegs _
 	( _
 		byval s as FBSYMBOL ptr _
 	) as integer
+
+declare function symbIsUDTBaseOf _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as Integer
+
 
 
 ''

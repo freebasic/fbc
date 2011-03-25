@@ -1021,4 +1021,25 @@ function symbIsUDTReturnedInRegs _
 
 end function
 
-
+'':::::
+function symbIsUDTBaseOf _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as Integer
+	
+	if( s = NULL or baseSym = NULL ) then
+		return FALSE
+	end if
+	
+	do until( s->udt.base = NULL )
+		if( s->udt.base = baseSym ) then
+			return TRUE
+		End If
+		
+		s = s->udt.base 
+	Loop
+	
+	return FALSE
+	
+End Function

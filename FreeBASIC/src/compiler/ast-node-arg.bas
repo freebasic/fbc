@@ -808,10 +808,21 @@ private function hCheckUDTParam _
     '' check for invalid UDT's (different subtypes)
 	if( symbGetSubtype( param ) <> arg->subtype ) then
 		if( hImplicitCtor( parent, param, n ) = FALSE ) then
-			hParamError( parent )
-			return FALSE
+			
+			if( symbIsUDTBaseOf( arg->subtype, symbGetSubtype( param ) ) = FALSE ) then
+				hParamError( parent )
+				return FALSE
+			else
+				n->l = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
+				if( n->l = NULL ) then
+					hParamError( parent )
+					return FALSE
+				End If
+			End If
+			
+		else
+			return TRUE
 		end if
-		return TRUE
 	end if
 
 	select case symbGetParamMode( param )

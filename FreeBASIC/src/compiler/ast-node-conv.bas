@@ -340,9 +340,9 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? can't convert..
+	'' UDT? only downcasting supported by now
 	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		exit function
+		return symbIsUDTBaseOf( l->subtype, to_subtype )
 	end if
 
 	ldtype = astGetFullType( l )
@@ -422,9 +422,13 @@ function astNewCONV _
 	select case as const typeGet( to_dtype )
 	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
 	'' to cast to be most precise possible) and strings
-	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, _
-		 FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
 		exit function
+		 
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbIsUDTBaseOf( l->subtype, to_subtype ) = FALSE ) then
+			exit function
+		End If
 
 	case else
 		select case typeGet( ldtype )
@@ -520,9 +524,15 @@ function astNewCONV _
 		'' only convert if the classes are different (ie, floating<->integer) or
 		'' if sizes are different (ie, byte<->int)
 		if( ldclass = symbGetDataClass( to_dtype ) ) then
-			if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+			select case typeGet( to_dtype )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
+				'' do nothing
 				doconv = FALSE
-			end if
+			case else
+				if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+					doconv = FALSE
+				end if
+			End Select
 		end if
 
 		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then

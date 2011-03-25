@@ -209,13 +209,18 @@ private function hIsOnImportList _
 		byval dst_ns as FBSYMBOL ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( dst_ns )
-	do while( imp_ <> NULL )
-	    if( symbGetImportNamespc( imp_ ) = src_ns ) then
-	    	return TRUE
-	    end if
-		imp_ = symbGetImportNext( imp_ )
-	loop
+	if( symbGetCompExt( dst_ns ) <> NULL ) Then
+	
+		dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( dst_ns )
+		
+		do while( imp_ <> NULL )
+		    if( symbGetImportNamespc( imp_ ) = src_ns ) then
+		    	return TRUE
+		    end if
+			imp_ = symbGetImportNext( imp_ )
+		Loop
+	
+	End if
 
 	function = FALSE
 

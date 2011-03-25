@@ -689,7 +689,10 @@ private function hTypeAdd _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
-		byval align as integer _
+		byval align as integer, _
+		byval baseDType as integer = FB_DATATYPE_VOID, _
+		byval baseSubtype as FBSYMBOL ptr = NULL, _
+		byval baseLgt as integer = 0 _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
@@ -720,6 +723,22 @@ private function hTypeAdd _
     		hSkipUntil( INVALID, TRUE )
     	end if
 	end if
+	
+	'' any extends?
+	if( baseDType <> FB_DATATYPE_VOID ) then
+		static as FBARRAYDIM dTB(0 to 0)
+		
+		if( symbAddField( s, @"base", _
+						  0, dTB(), _
+						  baseDtype, baseSubtype, _
+						  baseLgt, 0 ) <> NULL ) then
+						  	
+			s->udt.base = baseSubtype
+			
+			symbNamespaceImportEx( baseSubtype, s )
+		End If
+	end if
+	
 
 	'' TypeBody
 	dim as integer res = hTypeBody( s )
@@ -1029,7 +1048,7 @@ function hCheckForCDtorOrMethods _
 end function
 
 '':::::
-''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (FIELD '=' Expression)? Comment? SttSeparator
+''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)? Comment? SttSeparator
 ''						TypeLine+
 ''					  END (TYPE|UNION) .
 function cTypeDecl _
@@ -1143,6 +1162,34 @@ function cTypeDecl _
 
 	end select
 
+	
+    '' (EXTENDS SymbolType)?
+    dim as integer baseDtype, baseLgt
+    dim as FBSYMBOL ptr baseSubtype = NULL
+	if( lexGetToken( ) = FB_TK_EXTENDS ) then
+    	lexSkipToken( )
+    
+    	'' SymbolType
+    	if( hSymbolType( baseDtype, baseSubtype, baseLgt ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			exit function
+			else
+				'' error recovery: skip
+				baseDtype = FB_DATATYPE_VOID
+			end if
+    	end if
+    	
+    	'' is the base type a struct?
+    	if( baseDType <> FB_DATATYPE_STRUCT ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDCLASSTYPE ) = FALSE ) then
+    			exit function
+			else
+				'' error recovery: skip
+				baseDtype = FB_DATATYPE_VOID
+			end if
+    	end if
+   	end if
+	
 	'' (FIELD '=' Expression)?
     if( lexGetToken( ) = FB_TK_FIELD ) then
 		lexSkipToken( )
@@ -1201,7 +1248,7 @@ function cTypeDecl _
 	dim as FBSYMBOL ptr currprocsym = parser.currproc, currblocksym = parser.currblock
 	dim as integer scope_depth = parser.scope
 
-	sym = hTypeAdd( NULL, id, palias, isunion, align )
+	sym = hTypeAdd( NULL, id, palias, isunion, align, baseDtype, baseSubtype, baseLgt )
 
 	'' restore the context
 	ast.proc.curr = currproc
