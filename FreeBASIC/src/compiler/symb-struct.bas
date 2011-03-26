@@ -1033,11 +1033,11 @@ function symbIsUDTBaseOf _
 	end if
 	
 	do until( s->udt.base = NULL )
-		if( s->udt.base = baseSym ) then
+		if( s->udt.base->subtype = baseSym ) then
 			return TRUE
 		End If
 		
-		s = s->udt.base 
+		s = s->udt.base->subtype 
 	Loop
 	
 	return FALSE

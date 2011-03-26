@@ -1963,7 +1963,16 @@ function symbCheckAccess _
 	   		'' is symbol from a base class?
 	   		select case ns->typ
 	   		case FB_DATATYPE_STRUCT
-	   			return ( parent = ns or ns->udt.base = parent )
+	   			If( parent = ns ) Then
+	   				Return TRUE
+	   			End If
+	   			
+	   			If( ns->udt.base = NULL ) Then
+	   				Return FALSE
+	   			End If
+	   			
+	   			Return ns->udt.base->subtype = parent
+	   			
 	   		case else
 	   			'' symbol is from a child namespace?
 	   			return symbIsChildOf( parent, ns )

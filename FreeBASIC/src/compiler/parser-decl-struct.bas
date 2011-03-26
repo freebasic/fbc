@@ -728,12 +728,10 @@ private function hTypeAdd _
 	if( baseDType <> FB_DATATYPE_VOID ) then
 		static as FBARRAYDIM dTB(0 to 0)
 		
-		if( symbAddField( s, @"base", _
-						  0, dTB(), _
-						  baseDtype, baseSubtype, _
-						  baseLgt, 0 ) <> NULL ) then
-						  	
-			s->udt.base = baseSubtype
+		s->udt.base = symbAddField( s, @"base", 0, dTB(), baseDtype, baseSubtype, baseLgt, 0 )
+		
+		if( s->udt.base <> NULL ) then
+			s->udt.base->attrib or= FB_SYMBATTRIB_VIS_PROTECTED  
 			
 			symbNamespaceImportEx( baseSubtype, s )
 		End If
