@@ -1106,6 +1106,29 @@ private sub hCallFieldCtors _
 end sub
 
 '':::::
+private sub hCallBaseCtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _		
+	)
+	
+	if( parent->udt.base = NULL ) then
+		exit sub
+	End If
+	
+	var ctor = symbGetCompDefCtor( symbGetSubtype( parent->udt.base ) )
+	
+	if( ctor = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+	hCallFieldCtor( this_, parent->udt.base )
+
+End Sub
+
+'':::::
 private sub hCallCtors _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -1116,12 +1139,60 @@ private sub hCallCtors _
 	parent = symbGetNamespace( proc )
 
 	'' 1st) base ctors
-    '' ...
+    hCallBaseCtors( parent, proc ) 
 
 	'' 2nd) field ctors
     hCallFieldCtors( parent, proc )
 
 end sub
+
+'':::::
+private sub hCallFieldDtor _
+	( _
+		byval this_ as FBSYMBOL ptr, _
+		byval fld as FBSYMBOL ptr _
+	)		
+
+	select case symbGetType( fld )
+	case FB_DATATYPE_STRING
+
+		var fldexpr = astBuildInstPtr( this_, fld )
+
+    	'' not an array?
+    	if( (symbGetArrayDimensions( fld ) = 0) or _
+    		(symbGetArrayElements( fld ) = 1) ) then
+
+    		astAdd( rtlStrDelete( fldexpr ) )
+
+		'' array..
+		else
+	    	astAdd( rtlArrayStrErase( fldexpr ) )
+		end if
+
+	case FB_DATATYPE_STRUCT
+    	var subtype = symbGetSubtype( fld )
+
+    	'' has a dtor too?
+    	if( symbGetHasDtor( subtype ) ) then
+
+    		'' not an array?
+    		if( (symbGetArrayDimensions( fld ) = 0) or _
+    			(symbGetArrayElements( fld ) = 1) ) then
+
+    			'' dtor( this.field )
+    			astAdd( astBuildDtorCall( subtype, _
+    									  astBuildInstPtr( this_, fld ) ) )
+
+    		'' array..
+    		else
+    			hCallCtorList( FALSE, this_, fld )
+    		end if
+
+    	end if
+
+	end Select
+
+End Sub
 
 '':::::
 private sub hCallFieldDtors _
@@ -1145,53 +1216,36 @@ private sub hCallFieldDtors _
 			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
 			If( fld <> parent->udt.base ) Then
 
-				select case symbGetType( fld )
-				case FB_DATATYPE_STRING
-					dim as ASTNODE ptr fldexpr
-	
-	        		fldexpr = astBuildInstPtr( this_, fld )
-	
-	            	'' not an array?
-	            	if( (symbGetArrayDimensions( fld ) = 0) or _
-	            		(symbGetArrayElements( fld ) = 1) ) then
-	
-	            		astAdd( rtlStrDelete( fldexpr ) )
-	
-	        		'' array..
-	        		else
-	        	    	astAdd( rtlArrayStrErase( fldexpr ) )
-					end if
-	
-				case FB_DATATYPE_STRUCT
-	            	dim as FBSYMBOL ptr subtype
-	
-	            	subtype = symbGetSubtype( fld )
-	
-	            	'' has a dtor too?
-	            	if( symbGetHasDtor( subtype ) ) then
-	
-	            		'' not an array?
-	            		if( (symbGetArrayDimensions( fld ) = 0) or _
-	            			(symbGetArrayElements( fld ) = 1) ) then
-	
-	            			'' dtor( this.field )
-	            			astAdd( astBuildDtorCall( subtype, _
-	            									  astBuildInstPtr( this_, fld ) ) )
-	
-	            		'' array..
-	            		else
-	            			hCallCtorList( FALSE, this_, fld )
-	            		end if
-	
-	            	end if
-	
-				end Select
+				hCallFieldDtor( this_, fld )
 				
 			End if
 		end if
 
 		fld = fld->prev
 	loop
+
+end sub
+
+'':::::
+private sub hCallBaseDtors _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	)
+	
+	if( parent->udt.base = NULL ) then
+		exit sub
+	End If
+	
+	var dtor = symbGetCompDtor( symbGetSubtype( parent->udt.base ) )
+	
+	if( dtor = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+	hCallFieldDtor( this_, parent->udt.base )
 
 end sub
 
@@ -1209,7 +1263,7 @@ private sub hCallDtors _
     hCallFieldDtors( parent, proc )
 
 	'' 2nd) base dtors
-	'' ...
+	hCallBaseDtors( parent, proc )
 
 end sub
 
