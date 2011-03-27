@@ -773,6 +773,7 @@ declare function cWithVariable _
 
 declare function cImplicitDataMember _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval checkarray as integer _
 	) as ASTNODE ptr

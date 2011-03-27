@@ -32,6 +32,16 @@ declare function hCtorChain	_
 		_
 	) as integer
 
+declare function hBaseCtorCall _
+	( _
+		_
+	) as integer
+
+declare function hBaseMemberAccess _
+	( _
+		_
+	) as integer
+
 declare function hForwardCall _
 	( _
 		_
@@ -744,7 +754,7 @@ private function hAssignOrCall _
 	        			exit function
 	        		end if
 	        	else
-	        		expr = cImplicitDataMember( chain_, TRUE )
+	        		expr = cImplicitDataMember( base_parent, chain_, TRUE )
 	        		if( expr = NULL ) then
 	        			exit function
 	        		end if
@@ -942,6 +952,16 @@ function cProcCallOrAssign _
 
 			return hCtorChain( )
 
+		'' BASE?
+		case FB_TK_BASE
+
+			'' accessing a base member?
+			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+				return hBaseMemberAccess( )
+			else
+				return hBaseCtorCall( )
+			End If
+
 		'' CALL?
 		case FB_TK_CALL
 
@@ -1030,7 +1050,13 @@ private function hCtorChain _
 
 	ctor_head = symbGetCompCtorHead( parent )
 	if( ctor_head = NULL ) then
-		return FALSE
+		if( errReport( FB_ERRMSG_CLASSWITHOUTCTOR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
 	end if
 
 	'' this must be set before doing any AST call, or the ctor
@@ -1048,6 +1074,152 @@ private function hCtorChain _
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 
+end function
+
+'':::::
+private function hBaseCtorCall _
+	( _
+		_
+	) as integer
+
+	dim as FBSYMBOL ptr proc = any, parent = any, ctor_head = any
+
+	proc = parser.currproc
+
+	'' not inside a ctor?
+	if( symbIsConstructor( proc ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+	if( base_ = NULL ) then
+		if( errReport( FB_ERRMSG_CLASSNOTDERIVED ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	End If
+	
+	'' not the first stmt?
+	if( symbGetIsCtorInited( proc ) ) then
+		if( errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	ctor_head = symbGetCompCtorHead( symbGetSubtype( base_ ) )
+	if( ctor_head = NULL ) then
+		if( errReport( FB_ERRMSG_CLASSWITHOUTCTOR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	'' BASE
+	lexSkipToken( )
+
+	'' this must be set before doing any AST call, or the ctor
+	'' initialization would be trigged
+	symbSetIsCtorInited( proc )
+
+	var this_ = symbGetProcHeadParam( proc )
+	if( this_ = NULL ) then
+		return FALSE
+	end if
+
+	var this_expr = astBuildInstPtr( symbGetParamVar( this_ ), base_ )
+
+	cProcCall( NULL, ctor_head, NULL, this_expr )
+
+	function = (errGetLast( ) = FB_ERRMSG_OK)
+
+end function
+
+'':::::
+'' BaseMemberAccess	= (BASE '.')+ ID
+''
+''
+private function hBaseMemberAccess _
+	( _
+		_
+	) as integer
+	
+	var proc = parser.currproc
+
+	'' not inside a method?
+	if( symbIsMethod( proc ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	End If
+
+	var parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+
+	do
+		if( base_ = NULL ) then
+			if( errReport( FB_ERRMSG_CLASSNOTDERIVED ) = FALSE ) then
+				return FALSE
+			else
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
+			end if
+		End If
+	
+		'' skip BASE
+	    lexSkipToken( LEXCHECK_NOPERIOD )
+	    
+	    '' skip '.'
+	    lexSkipToken()
+	
+	    '' (BASE '.')?
+	    if( lexGetToken() <> FB_TK_BASE ) then
+	    	exit do
+	    EndIf
+	    
+	    '' '.'
+	    if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+			if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
+				return FALSE
+			else
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
+			end if
+	    End If
+	    
+	    base_ = symbGetSubtype( base_ )->udt.base
+	loop
+
+    dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
+    
+	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
+	
 end function
 
 '':::::

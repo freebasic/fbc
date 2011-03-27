@@ -1967,11 +1967,17 @@ function symbCheckAccess _
 	   				Return TRUE
 	   			End If
 	   			
-	   			If( ns->udt.base = NULL ) Then
-	   				Return FALSE
-	   			End If
-	   			
-	   			Return ns->udt.base->subtype = parent
+	   			'' try until the last base class
+	   			var base_ = ns->udt.base
+	   			do while( base_ <> NULL )
+	   				if( symbGetSubType( base_ ) = parent ) then
+	   					return TRUE
+	   				End If
+	   				
+	   				base_ = symbGetSubtype( base_ )->udt.base 
+	   			loop
+	   				
+	   			return FALSE
 	   			
 	   		case else
 	   			'' symbol is from a child namespace?

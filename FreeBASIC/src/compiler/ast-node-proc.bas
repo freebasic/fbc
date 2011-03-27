@@ -1075,23 +1075,29 @@ private sub hCallFieldCtors _
     do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
-			'' part of an union?
-			if( symbGetIsUnionField( fld ) ) then
-				fld = hClearUnionFields( this_, fld )
-
-				'' skip next
-				continue do
-
-			else
-				'' not initialized?
-				if( symbGetTypeIniTree( fld ) = NULL ) then
-					hCallFieldCtor( this_, fld )
-
-				'' flush the tree..
+			
+			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
+			If( fld <> parent->udt.base ) Then
+			
+				'' part of an union?
+				if( symbGetIsUnionField( fld ) ) then
+					fld = hClearUnionFields( this_, fld )
+	
+					'' skip next
+					continue do
+	
 				else
-					hFlushFieldInitTree( this_, fld )
-				end if
-			end if
+					'' not initialized?
+					if( symbGetTypeIniTree( fld ) = NULL ) then
+						hCallFieldCtor( this_, fld )
+	
+					'' flush the tree..
+					else
+						hFlushFieldInitTree( this_, fld )
+					end if
+				end If
+			
+			End If
 		end if
 
 		fld = fld->next
@@ -1136,47 +1142,52 @@ private sub hCallFieldDtors _
 
 		if( symbIsField( fld ) ) then
 
-			select case symbGetType( fld )
-			case FB_DATATYPE_STRING
-				dim as ASTNODE ptr fldexpr
+			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
+			If( fld <> parent->udt.base ) Then
 
-        		fldexpr = astBuildInstPtr( this_, fld )
-
-            	'' not an array?
-            	if( (symbGetArrayDimensions( fld ) = 0) or _
-            		(symbGetArrayElements( fld ) = 1) ) then
-
-            		astAdd( rtlStrDelete( fldexpr ) )
-
-        		'' array..
-        		else
-        	    	astAdd( rtlArrayStrErase( fldexpr ) )
-				end if
-
-			case FB_DATATYPE_STRUCT
-            	dim as FBSYMBOL ptr subtype
-
-            	subtype = symbGetSubtype( fld )
-
-            	'' has a dtor too?
-            	if( symbGetHasDtor( subtype ) ) then
-
-            		'' not an array?
-            		if( (symbGetArrayDimensions( fld ) = 0) or _
-            			(symbGetArrayElements( fld ) = 1) ) then
-
-            			'' dtor( this.field )
-            			astAdd( astBuildDtorCall( subtype, _
-            									  astBuildInstPtr( this_, fld ) ) )
-
-            		'' array..
-            		else
-            			hCallCtorList( FALSE, this_, fld )
-            		end if
-
-            	end if
-
-			end select
+				select case symbGetType( fld )
+				case FB_DATATYPE_STRING
+					dim as ASTNODE ptr fldexpr
+	
+	        		fldexpr = astBuildInstPtr( this_, fld )
+	
+	            	'' not an array?
+	            	if( (symbGetArrayDimensions( fld ) = 0) or _
+	            		(symbGetArrayElements( fld ) = 1) ) then
+	
+	            		astAdd( rtlStrDelete( fldexpr ) )
+	
+	        		'' array..
+	        		else
+	        	    	astAdd( rtlArrayStrErase( fldexpr ) )
+					end if
+	
+				case FB_DATATYPE_STRUCT
+	            	dim as FBSYMBOL ptr subtype
+	
+	            	subtype = symbGetSubtype( fld )
+	
+	            	'' has a dtor too?
+	            	if( symbGetHasDtor( subtype ) ) then
+	
+	            		'' not an array?
+	            		if( (symbGetArrayDimensions( fld ) = 0) or _
+	            			(symbGetArrayElements( fld ) = 1) ) then
+	
+	            			'' dtor( this.field )
+	            			astAdd( astBuildDtorCall( subtype, _
+	            									  astBuildInstPtr( this_, fld ) ) )
+	
+	            		'' array..
+	            		else
+	            			hCallCtorList( FALSE, this_, fld )
+	            		end if
+	
+	            	end if
+	
+				end Select
+				
+			End if
 		end if
 
 		fld = fld->prev

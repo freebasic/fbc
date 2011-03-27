@@ -346,7 +346,7 @@ private function hMemberId _
 				select case as const symbGetClass( sym )
 				'' const? (enum elmts too)
 				case FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
-    				'' check visibility
+    				'' check visibility					
 					if( symbCheckAccess( parent, sym ) = FALSE ) then
 						if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
 							return NULL
@@ -1716,6 +1716,7 @@ end function
 ''
 function cImplicitDataMember _
 	( _
+		byval base_parent as FBSYMBOL ptr, _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval check_array as integer _
 	) as ASTNODE ptr
@@ -1731,10 +1732,14 @@ function cImplicitDataMember _
 		errReport( FB_ERRMSG_STATICMEMBERHASNOINSTANCEPTR )
 		return NULL
 	end if
+	
+	if( base_parent = NULL ) then
+		base_parent = symbGetSubtype( this_ )
+	End If
 
     function = hImpField( this_, _
     					  symbGetFullType( this_ ), _
-    					  symbGetSubtype( this_ ), _
+    					  base_parent, _
     					  check_array )
 
 end function
