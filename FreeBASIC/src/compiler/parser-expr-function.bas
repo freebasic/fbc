@@ -63,7 +63,14 @@ function cFunctionCall _
 	'' method call?
 	if( thisexpr <> NULL ) then
 		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
+		
+		var instParam = symbGetProcHeadParam( sym )
+		if( astGetSubtype( thisexpr ) <> symbGetSubtype( instParam ) ) then
+			thisexpr = astNewCONV( symbGetType( instParam ), symbGetSubType( instParam ), thisexpr )
+		EndIf
+		
 		arg->expr = thisexpr
+		
 		arg->mode = hGetInstPtrMode( thisexpr )
 		options or= FB_PARSEROPT_HASINSTPTR
 	end if

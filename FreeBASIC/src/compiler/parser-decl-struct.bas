@@ -728,7 +728,7 @@ private function hTypeAdd _
 	if( baseDType <> FB_DATATYPE_VOID ) then
 		static as FBARRAYDIM dTB(0 to 0)
 		
-		s->udt.base = symbAddField( s, @"{fb}base", 0, dTB(), baseDtype, baseSubtype, baseLgt, 0 )
+		s->udt.base = symbAddField( s, hMakeTmpStrNL( ), 0, dTB(), baseDtype, baseSubtype, baseLgt, 0 )
 		
 		if( s->udt.base <> NULL ) then
 			symbNamespaceImportEx( baseSubtype, s )
