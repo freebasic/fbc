@@ -105,7 +105,8 @@ private function hCheckUDTOps _
 
    	'' different subtypes?
 	if( l->subtype <> r->subtype ) then
-		exit function
+		'' check if lhs is a base type of rhs
+		return symbGetUDTBaseLevel( r->subtype, l->subtype ) > 0
 	end if
 
 	function = TRUE
@@ -248,8 +249,20 @@ private function hCheckConstAndPointerOps _
 
 	if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			'' if both are UDT, a derived lhs can't be assigned from a base rhs
+			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
+				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then
+					if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
+						exit function
+					else
+						return TRUE
+					end if
+				else
+					errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+				end if
+			end if
 		end if
+		
 	'' r-side expr is a ptr?
 	elseif( typeIsPtr( rdtype ) ) then
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )

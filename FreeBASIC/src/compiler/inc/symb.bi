@@ -1910,11 +1910,11 @@ declare function symbIsUDTReturnedInRegs _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare function symbIsUDTBaseOf _
+declare function symbGetUDTBaseLevel _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval baseSym as FBSYMBOL ptr _
-	) as Integer
+	) as integer
 
 
 

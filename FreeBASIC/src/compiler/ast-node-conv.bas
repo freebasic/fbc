@@ -342,7 +342,7 @@ function astCheckCONV _
 
 	'' UDT? only downcasting supported by now
 	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		return symbIsUDTBaseOf( l->subtype, to_subtype )
+		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
 	end if
 
 	ldtype = astGetFullType( l )
@@ -426,7 +426,7 @@ function astNewCONV _
 		exit function
 		 
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbIsUDTBaseOf( l->subtype, to_subtype ) = FALSE ) then
+		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
 			exit function
 		End If
 

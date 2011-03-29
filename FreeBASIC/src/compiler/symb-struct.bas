@@ -1022,24 +1022,26 @@ function symbIsUDTReturnedInRegs _
 end function
 
 '':::::
-function symbIsUDTBaseOf _
+function symbGetUDTBaseLevel _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval baseSym as FBSYMBOL ptr _
-	) as Integer
+	) as integer
 	
 	if( s = NULL or baseSym = NULL ) then
-		return FALSE
+		return 0
 	end if
 	
+	var level = 1
 	do until( s->udt.base = NULL )
 		if( s->udt.base->subtype = baseSym ) then
-			return TRUE
+			return level
 		End If
 		
-		s = s->udt.base->subtype 
+		s = s->udt.base->subtype
+		level += 1 
 	Loop
 	
-	return FALSE
+	return 0
 	
 End Function

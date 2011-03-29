@@ -1674,8 +1674,12 @@ function symbIsEqual _
     end if
 
     select case sym1->class
-    '' UDT or enum?
-    case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM
+    '' UDT?
+    case FB_SYMBCLASS_STRUCT '', FB_SYMBCLASS_CLASS  
+    	return symbGetUDTBaseLevel( sym1, sym2 ) > 0
+    	
+    '' enum?
+    case FB_SYMBCLASS_ENUM
     	'' no check, they are pointing to different symbols
     	exit function
 

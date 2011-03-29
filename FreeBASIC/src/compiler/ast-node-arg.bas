@@ -807,21 +807,17 @@ private function hCheckUDTParam _
 
     '' check for invalid UDT's (different subtypes)
 	if( symbGetSubtype( param ) <> arg->subtype ) then
-		if( hImplicitCtor( parent, param, n ) = FALSE ) then
-			
-			if( symbIsUDTBaseOf( arg->subtype, symbGetSubtype( param ) ) = FALSE ) then
-				hParamError( parent )
-				return FALSE
-			else
+		'' param is not a base type of arg?
+		if( symbGetUDTBaseLevel( arg->subtype, symbGetSubtype( param ) ) = 0 ) then
+			'' no ctor in the param's type?
+			if( hImplicitCtor( parent, param, n ) = FALSE ) then
+				'' no cast operator? 
 				n->l = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
 				if( n->l = NULL ) then
 					hParamError( parent )
 					return FALSE
 				End If
 			End If
-			
-		else
-			return TRUE
 		end if
 	end if
 
@@ -1065,7 +1061,19 @@ private function hCheckParam _
 			if( typeIsPtr( arg_dtype ) = FALSE ) then
 				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
-				hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+				'' if both are UDT, a base param can't be passed to a derived arg
+				if( typeGetDtOnly( param_dtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( arg_dtype ) = FB_DATATYPE_STRUCT ) then
+					if( symbGetUDTBaseLevel( symbGetSubtype( param ), astGetSubType( arg ) ) > 0 ) then
+						hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
+						exit function
+					else
+						hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+					End If
+					  
+				else
+					hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+				end if
+				
 			end if
 		end if
 
