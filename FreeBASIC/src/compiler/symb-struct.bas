@@ -1045,3 +1045,26 @@ function symbGetUDTBaseLevel _
 	return 0
 	
 End Function
+
+'':::::
+function symbGetUDTBaseSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+	
+	if( s = NULL or baseSym = NULL ) then
+		return NULL
+	end if
+	
+	do until( s->udt.base = NULL )
+		if( s->udt.base->subtype = baseSym ) then
+			return s->udt.base 
+		End If
+		
+		s = s->udt.base->subtype
+	Loop
+	
+	return NULL
+	
+End Function

@@ -1916,6 +1916,11 @@ declare function symbGetUDTBaseLevel _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbGetUDTBaseSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
 
 ''

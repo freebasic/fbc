@@ -812,12 +812,18 @@ private function hCheckUDTParam _
 			'' no ctor in the param's type?
 			if( hImplicitCtor( parent, param, n ) = FALSE ) then
 				'' no cast operator? 
-				n->l = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
-				if( n->l = NULL ) then
+				arg = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
+				if( arg = NULL ) then
 					hParamError( parent )
 					return FALSE
 				End If
+				n->l = arg
 			End If
+		
+		'' cast to the base type
+		else
+			arg = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
+			n->l = arg
 		end if
 	end if
 
