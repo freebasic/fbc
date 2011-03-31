@@ -282,6 +282,7 @@ end sub
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
 		byval expr_dtype as integer, _
 		byval expr as ASTNODE ptr _
 	) as integer
@@ -322,7 +323,45 @@ private function hCheckPtr _
 				exit function
 			end if
 		end select
+	
 	end if
+
+	'' if any of them is a derived class, only allow cast to a base or derived
+	if( typeGetDtOnly( to_dtype ) = FB_DATATYPE_STRUCT ) then
+		if( to_subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else			
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
+
+	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
+		if( expr->subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
 
 	function = TRUE
 
@@ -340,7 +379,7 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? only downcasting supported by now
+	'' UDT? only upcasting supported by now
 	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
 		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
 	end if
@@ -353,7 +392,7 @@ function astCheckCONV _
 	end if
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
@@ -451,7 +490,7 @@ function astNewCONV _
 	end select
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
