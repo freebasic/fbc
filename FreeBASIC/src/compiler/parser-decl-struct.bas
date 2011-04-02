@@ -690,16 +690,14 @@ private function hTypeAdd _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval baseDType as integer = FB_DATATYPE_VOID, _
-		byval baseSubtype as FBSYMBOL ptr = NULL, _
-		byval baseLgt as integer = 0 _
+		byval baseSubtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
-	s = symbStructBegin( parent, id, id_alias, isunion, align )
+	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
 	if( s = NULL ) then
     	if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     		exit function
@@ -724,25 +722,8 @@ private function hTypeAdd _
     	end if
 	end if
 	
-	'' any extends?
-	if( baseDType <> FB_DATATYPE_VOID ) then
-		static as FBARRAYDIM dTB(0 to 0)
-		
-		s->udt.base = symbAddField( s, hMakeTmpStrNL( ), 0, dTB(), baseDtype, baseSubtype, baseLgt, 0 )
-		
-		if( s->udt.base <> NULL ) then
-			symbNamespaceImportEx( baseSubtype, s )
-		End If
-	end if
-	
-
 	'' TypeBody
 	dim as integer res = hTypeBody( s )
-
-	'' end nesting
-	if( symbGetIsUnique( s ) ) then
-		symbNestEnd( FALSE )
-	end if
 
 	if( res = FALSE ) then
 		exit function
@@ -753,7 +734,7 @@ private function hTypeAdd _
 	end if
 
 	'' finalize
-	symbStructEnd( s )
+	symbStructEnd( s, symbGetIsUnique( s ) )
 
 	'' END TYPE|UNION
 	if( lexGetToken( ) <> FB_TK_END ) then
@@ -1160,12 +1141,12 @@ function cTypeDecl _
 
 	
     '' (EXTENDS SymbolType)?
-    dim as integer baseDtype, baseLgt
     dim as FBSYMBOL ptr baseSubtype = NULL
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
     	lexSkipToken( )
     
     	'' SymbolType
+    	dim as integer baseDtype, baseLgt
     	if( hSymbolType( baseDtype, baseSubtype, baseLgt ) = FALSE ) then
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
@@ -1181,7 +1162,7 @@ function cTypeDecl _
     			exit function
 			else
 				'' error recovery: skip
-				baseDtype = FB_DATATYPE_VOID
+				baseSubtype = NULL
 			end if
     	end if
    	end if
@@ -1244,7 +1225,7 @@ function cTypeDecl _
 	dim as FBSYMBOL ptr currprocsym = parser.currproc, currblocksym = parser.currblock
 	dim as integer scope_depth = parser.scope
 
-	sym = hTypeAdd( NULL, id, palias, isunion, align, baseDtype, baseSubtype, baseLgt )
+	sym = hTypeAdd( NULL, id, palias, isunion, align, baseSubtype )
 
 	'' restore the context
 	ast.proc.curr = currproc

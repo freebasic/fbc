@@ -253,7 +253,11 @@ private function hGetUDTName _
     	ns = symbGetNamespace( ns )
     loop
 
-    sig += *symbGetName( s )
+    if( s->id.alias <> NULL ) then
+    	sig += *s->id.alias
+    else
+    	sig += *symbGetName( s )
+    EndIf
 
     if( need_original_name = FALSE ) then
         '' see the HACK in hEmitStruct()

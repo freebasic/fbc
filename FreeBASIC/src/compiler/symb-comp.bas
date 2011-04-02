@@ -34,7 +34,6 @@ type FB_SYMBNEST
 	ns				as FBSYMBOL ptr				'' prev namespace
 end type
 
-
 '':::::
 sub symbCompInit
 	dim as integer i
@@ -45,7 +44,7 @@ sub symbCompInit
 
 	''
 	stackNew( @symb.neststk, 16, len( FB_SYMBNEST ), FALSE )
-
+	
 end sub
 
 '':::::
@@ -205,6 +204,78 @@ private sub hAddCtor _
 	symbSetCantUndef( sym )
 
 end sub
+
+private sub hAddRTTI _
+	( _
+		sym as FBSYMBOL ptr _ 
+	)
+	
+	static as FBARRAYDIM dTB(0)
+	
+	var mname = *symbGetMangledName( sym )
+	
+	if( sym->udt.ext = NULL ) then
+		sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+	end if
+
+	'' create a virtual-table struct (extends $fb_BaseVT)
+	var sname = "_ZTV" + mname + "_type"
+	var vtableType = symbStructBegin( NULL, sname, sname, FALSE, 0, symb.rtti.fb_baseVT )
+		
+	'' TODO: add this symbol's virtual methods as function pointers with "this" as the first param
+	
+	symbStructEnd( vtableType, TRUE )
+	
+	'' create the run-time info instance ($fb_RTTI)
+	sname = "_ZTS" + *symbGetMangledName( sym )
+	var rtti = symbAddVarEx( NULL, sname, _
+						     FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, _
+						     symbGetLen( symb.rtti.fb_rtti ), _
+						     0, dTB(), _
+						     FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+						     FB_SYMBOPT_PRESERVECASE )
+	
+	sym->udt.ext->rtti = rtti
+	
+	'' initialize..
+	var initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
+	
+		astTypeIniScopeBegin( initree, rtti )
+	
+			'' stdlistVT = NULL
+			var elm = symbGetUDTFirstElm( symb.rtti.fb_rtti )
+			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
+			
+			'' id = @"mangled name"
+			elm = symbGetUDTNextElm( elm, FALSE ) 
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVar( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
+			
+			'' pRTTIBase = @base's RTTI struct
+			elm = symbGetUDTNextElm( elm, FALSE )
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVar( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
+	
+		astTypeIniScopeEnd( initree, rtti )
+	astTypeIniEnd( initree, TRUE ) 
+	
+	symbSetTypeIniTree( rtti, initree )
+	symbSetIsInitialized( rtti )
+	
+
+	'' create the vtable instance
+	sname = "_ZTV" + mname
+
+	var vtable = symbAddVarEx( NULL, sname, _
+						       FB_DATATYPE_STRUCT, vtableType, _
+						       symbGetLen( vtableType ), _
+						       0, dTB(), _
+						       FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED, _
+						       FB_SYMBOPT_PRESERVECASE )
+	
+	sym->udt.ext->vtable = vtable
+	
+	'' initialize..
+	
+End Sub
 
 '':::::
 private sub hAssignList _
@@ -379,6 +450,14 @@ sub symbCompAddDefMembers _
 		byval sym as FBSYMBOL ptr _
 	) static
 
+	'' RTTI?
+	if( symbGetHasRTTI( sym ) ) then
+		'' only if it isn't FB's own Object base super class
+		if( sym <> symb.rtti.fb_object ) then
+			hAddRTTI( sym )
+		end if
+	End if
+	
 	'' has fields with ctors?
 	if( symbGetUDTHasCtorField( sym ) ) then
 		'' any ctor explicitly defined?
@@ -407,7 +486,7 @@ sub symbCompAddDefMembers _
 			hAddCtor( sym, FALSE, FALSE )
 		end if
 	end if
-
+	
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1145,4 +1224,112 @@ sub symbCompDelImportList _
 
 end sub
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' RTTI
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+''::::
+sub symbCompRTTIInit
+	
+	static as FBARRAYDIM dTB(0)
+	
+    '' create the $fb_RTTI struct
+    var rtti = symbStructBegin( NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0 )
+	symb.rtti.fb_rtti = rtti
+	
+	'' stdlibVT as any ptr
+	symbAddField( rtti, _
+				  "stdlibVT", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+				  FB_POINTERSIZE, 0 )
+	 
+	
+	'' dim id as zstring ptr 
+	symbAddField( rtti, _
+				  "id", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_CHAR ), NULL, _
+				  FB_POINTERSIZE, 0 )
+	
+	'' dim pRTTIBase as $fb_RTTI ptr
+	symbAddField( rtti, _
+				  "pRTTIBase", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
+				  FB_POINTERSIZE, 0 )
+	
+	symbStructEnd( rtti )
+	
+	'' create the $fb_BaseVT struct
+    var baseVT = symbStructBegin( NULL, "$fb_BaseVT", "$fb_BaseVT", FALSE, 0 )
+	symb.rtti.fb_baseVT = baseVT
+    
+	'' dim nullPtr as any ptr
+	symbAddField( baseVT, _
+				  "nullPtr", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+				  FB_POINTERSIZE, 0 )
+
+	'' dim pRTTIBase as $fb_RTTI ptr
+	symbAddField( baseVT, _
+				  "pRTTI", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
+				  FB_POINTERSIZE, 0 )
+	
+	symbStructEnd( baseVT )
+	
+	'' create the $fb_ObjectVT struct (extends $fb_BaseVT)
+	var objVT = symbStructBegin( NULL, "$fb_ObjectVT", "$fb_ObjectVT", FALSE, 0, baseVT )
+		
+	symbStructEnd( objVT, TRUE )
+	
+	'' create the $fb_Object struct
+	var obj = symbStructBegin( NULL, "Object", "$fb_Object", FALSE, 0 )
+    symb.rtti.fb_object = obj
+		
+	symbSetHasRTTI( obj )
+	symbSetIsUnique( obj )
+	symbNestBegin( obj, FALSE )
+	
+	'' dim pvt as as $fb_BaseVT ptr
+	symbAddField( obj, _
+				  "$fb_pvt", _
+				  0, dTB(), _
+				  typeAddrOf( FB_DATATYPE_STRUCT ), baseVT, _
+				  FB_POINTERSIZE, 0 )
+	
+    '' declare constructor( )
+	var ctor = symbPreAddProc( NULL )    
+    
+    symAddProcInstancePtr( obj, ctor )
+    
+   	symbAddCtor( ctor, NULL, NULL, _
+    			 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
+    			 
+	symbStructEnd( obj, TRUE )
+	
+    '' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
+    var objRTTI = symbAddVarEx( NULL, "__fb_ZTS6Object", _
+    							FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, _
+    							symbGetLen( symb.rtti.fb_rtti ), 0, dTB(), _
+    							FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, _ 
+    							FB_SYMBOPT.FB_SYMBOPT_PRESERVECASE )
+    				
+	
+	'' update the obj struct RTTI (used to create the link with base classes)
+	if( obj->udt.ext = NULL ) then
+		obj->udt.ext = callocate( sizeof( FB_STRUCTEXT ) )
+	End If
+	
+	obj->udt.ext->rtti = objRTTI     
+				 
+		
+End Sub
+
+''::::
+sub symbCompRTTIEnd
+	
+End Sub

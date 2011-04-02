@@ -62,6 +62,11 @@ declare sub 		symbCompInit		( )
 
 declare sub 		symbCompEnd			( )
 
+declare sub 		symbCompRTTIInit	( )
+
+declare sub 		symbCompRTTIEnd		( )
+
+
 ''globals
 	dim shared as SYMBCTX symb
 
@@ -178,6 +183,9 @@ sub symbInit _
 
 	''
 	hInitDefTypeTb( )
+	
+	''
+	symbCompRTTIInit( )
 
     ''
     symb.inited = TRUE
@@ -208,6 +216,9 @@ sub symbEnd
     ''
     hashFree( @symb.globnspc.nspc.ns.hashtb.tb )
 
+	''
+	symbCompRTTIEnd( )
+	
 	''
 	symbProcEnd( )
 

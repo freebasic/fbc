@@ -267,17 +267,19 @@
 		[ ] base IS some_derived 
     [ ] down casting
 		[ ] static (base to derived)
-		[ ] dynamic (polymorphic)
+		[ ] dynamic (polymorphic) 
     [ ] exceptions - with stack unwind support
 
 	
 ---------------------------------------------------------------------------------
 
-G++ 4.x RTTI and VT formats:
+G++ 4.x RTTI and VT formats in Win32:
+
+- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
 
 - all structs are emited with: 
-	.globl, .section	
-	.rdata$[struct name],"dr" 
+	.globl [struct name]
+	.section rdata$[struct name],"dr" 
 	.linkonce same_size
 
 	struct RTTI {
