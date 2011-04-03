@@ -41,8 +41,18 @@
 
 FBCALL int fb_IsTypeOf( FB_OBJECT *obj, FB_RTTI *typeRTTI )
 {
-	FB_RTTI *objRTTI = ((FB_BASEVT *)(((unsigned char *)obj->pVT) - sizeof( FB_BASEVT )))->pRTTI;
+	if( obj == NULL )
+		return FB_FALSE;
 	
-	/* note: can't compare just the address because object or type could be declared in a DLL */
-	return (strcmp( objRTTI->id, typeRTTI->id ) == 0? -1: 0);
+	FB_RTTI *objRTTI = ((FB_BASEVT *)(((unsigned char *)obj->pVT) - sizeof( FB_BASEVT )))->pRTTI;
+	while( objRTTI != NULL )
+	{	
+		/* note: can't compare just the address because object or type could be declared in a DLL */
+		if( strcmp( objRTTI->id, typeRTTI->id ) == 0 ) 
+			return FB_TRUE;
+			
+		objRTTI = objRTTI->pRTTIBase;
+	}
+	
+	return FB_FALSE;
 }
