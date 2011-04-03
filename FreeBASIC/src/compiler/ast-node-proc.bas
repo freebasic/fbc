@@ -1129,6 +1129,32 @@ private sub hCallBaseCtors _
 End Sub
 
 '':::::
+private sub hInitVtable _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _		
+	)
+	
+	if( symbGetHasRTTI( parent ) = FALSE ) then
+		exit sub
+	End If
+	
+	if( parent->udt.ext = NULL ) then
+		exit sub
+	End If
+	
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	
+    '' this.pvt = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) ) 
+    astAdd( _ 
+    	astNewASSIGN( _ 
+    		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
+    		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+    				astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) ) )
+
+End Sub
+
+'':::::
 private sub hCallCtors _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -1143,6 +1169,9 @@ private sub hCallCtors _
 
 	'' 2nd) field ctors
     hCallFieldCtors( parent, proc )
+    
+    '' 3rd) setup de vtable ptr
+    hInitVtable( parent, proc )
 
 end sub
 

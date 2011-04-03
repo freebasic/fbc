@@ -342,7 +342,7 @@ FBC_SRCS += reg.bas
 
 FBC_SRCS += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
 FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-gosub.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
-FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
+FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas rtl-oop.bas
 
 FBC_SRCS += symb.bas symb-const.bas symb-data.bas symb-define.bas symb-enum.bas
 FBC_SRCS += symb-keyword.bas symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas

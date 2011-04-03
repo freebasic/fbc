@@ -627,6 +627,12 @@ declare sub astDelCALL _
 			AST_OPFLAGS_NONE, _
 			@"<=" _
 		), _
+		/' AST_OP_IS '/ _
+		( _
+			AST_NODECLASS_COMP, _
+			AST_OPFLAGS_NONE, _
+			@"is" _
+		), _
 		/' AST_OP_NOT '/ _
 		( _
 			AST_NODECLASS_UOP, _

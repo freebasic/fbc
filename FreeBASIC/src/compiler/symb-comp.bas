@@ -238,8 +238,7 @@ private sub hAddRTTI _
 	sym->udt.ext->rtti = rtti
 	
 	'' initialize..
-	var initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )
-	
+	var initree = astTypeIniBegin( FB_DATATYPE_STRUCT, symb.rtti.fb_rtti, FALSE, 0 )	
 		astTypeIniScopeBegin( initree, rtti )
 	
 			'' stdlistVT = NULL
@@ -247,12 +246,14 @@ private sub hAddRTTI _
 			astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
 			
 			'' id = @"mangled name"
-			elm = symbGetUDTNextElm( elm, FALSE ) 
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVar( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
+			elm = symbGetUDTNextElm( elm, FALSE )
+			astTypeIniSeparator( initree, rtti )			 
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
 			
 			'' pRTTIBase = @base's RTTI struct
 			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniAddAssign( initree, astNewADDROF( astNewVar( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
+			astTypeIniSeparator( initree, rtti )
+			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
 	
 		astTypeIniScopeEnd( initree, rtti )
 	astTypeIniEnd( initree, TRUE ) 
@@ -274,6 +275,25 @@ private sub hAddRTTI _
 	sym->udt.ext->vtable = vtable
 	
 	'' initialize..
+	initree = astTypeIniBegin( FB_DATATYPE_STRUCT, vtableType, FALSE, 0 )	
+		astTypeIniScopeBegin( initree, vtable )
+			astTypeIniScopeBegin( initree, vtable )
+		
+				'' base.nullPtr = NULL	
+				elm = symbGetUDTFirstElm( symb.rtti.fb_baseVT )
+				astTypeIniAddAssign( initree, astNewCONSTi( 0, typeAddrOf( FB_DATATYPE_VOID ), NULL ), elm )
+			
+				'' base.pRTTI = @rtti
+				elm = symbGetUDTNextElm( elm, FALSE )
+				astTypeIniSeparator( initree, vtable )
+				astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0 ) ), elm )
+
+			astTypeIniScopeEnd( initree, vtable )
+		astTypeIniScopeEnd( initree, vtable )
+	astTypeIniEnd( initree, TRUE ) 
+	
+	symbSetTypeIniTree( vtable, initree )
+	symbSetIsInitialized( vtable )
 	
 End Sub
 

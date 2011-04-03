@@ -313,7 +313,10 @@ end type
 		@"TYPE can only extend other TYPE symbols", _
 		@"Illegal outside a CLASS, TYPE or UNION method", _
 		@"CLASS, TYPE or UNION not derived", _
-		@"CLASS, TYPE or UNION has no constructor" _		
+		@"CLASS, TYPE or UNION has no constructor", _
+		@"Symbol type has no Run-Time Type Info (RTTI)", _
+		@"Types have no hierarchical relation", _
+		@"Expected a CLASS, TYPE or UNION symbol type" _
 	}
 
 

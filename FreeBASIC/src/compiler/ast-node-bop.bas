@@ -874,6 +874,19 @@ end function
 #endmacro
 
 '':::::
+private function hCmpDynType _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
+	
+	'' all checks already done at parser level
+	
+	return rtlOOPIsTypeOf( l, r )
+	
+End Function
+
+'':::::
 function astNewBOP _
 	( _
 		byval op as integer, _
@@ -896,13 +909,17 @@ function astNewBOP _
 
 	is_str = FALSE
 
-	'' special case..
-	if( op = AST_OP_CONCAT ) then
+	'' special cases..
+	select case op
+	case AST_OP_CONCAT
 		if( hToStr( l, r ) = FALSE ) then
 			exit function
 		end if
 		op = AST_OP_ADD
-	end if
+	
+	case AST_OP_IS
+		return hCmpDynType( l, r )
+	End Select
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
