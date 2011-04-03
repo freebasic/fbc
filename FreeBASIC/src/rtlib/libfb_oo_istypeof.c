@@ -30,7 +30,7 @@
  */
 
 /*
- * oop_object.c -- Object class methods
+ * oop_istypeof.c -- is operator
  *
  * chng: april/2011 written [v1ctor]
  *
@@ -39,10 +39,10 @@
 #include "fb.h"
 #include "fb_oop.h"
 
-	FB_RTTI __fb_ZTS6Object = { NULL, "6OBJECT", NULL };
-	static FB_BASEVT Object_VT = { NULL, &__fb_ZTS6Object };
-
-void _ZN10$fb_ObjectC1Ev( FB_OBJECT *THIS )
+FBCALL int fb_IsTypeOf( FB_OBJECT *obj, FB_RTTI *typeRTTI )
 {
-	THIS->pVT = (FB_BASEVT *)(((unsigned char *)&Object_VT) + sizeof( FB_BASEVT ));
+	FB_RTTI *objRTTI = ((FB_BASEVT *)(((unsigned char *)obj->pVT) - sizeof( FB_BASEVT )))->pRTTI;
+	
+	/* note: can't compare just the address because object or type could be declared in a DLL */
+	return (strcmp( objRTTI->id, typeRTTI->id ) == 0? -1: 0);
 }
