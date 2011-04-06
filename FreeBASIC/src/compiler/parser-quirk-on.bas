@@ -71,9 +71,18 @@ function cGOTBStmt _
 				exit function
 			end if
 
-			labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-			if( labelTB(l) = NULL ) then
-				labelTB(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+			'' Not not too many target labels yet?
+			if( l < FB_MAXGOTBITEMS ) then
+				labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+				if( labelTB(l) = NULL ) then
+					labelTB(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+				end if
+			elseif( l = FB_MAXGOTBITEMS ) then '' (Only show the error once)
+				if( errReport( FB_ERRMSG_TOOMANYLABELS ) = FALSE ) then
+					exit function
+				end if
+				'' Error recovery: continue parsing all labels, but don't add
+				'' them to the table anymore
 			end if
 
 			lexSkipToken( )
@@ -82,13 +91,20 @@ function cGOTBStmt _
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
-				'' error recovery: fake an label
-				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
+				if( l < FB_MAXGOTBITEMS ) then
+					'' error recovery: fake an label
+					labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
+				end if
 			end if
 		end select
 
 		l += 1
 	loop while( hMatch( CHAR_COMMA ) )
+
+	'' Too many target labels?
+	if( l >= FB_MAXGOTBITEMS ) then
+		l = FB_MAXGOTBITEMS - 1
+	end if
 
 	''
 	exitlabel = symbAddLabel( NULL )

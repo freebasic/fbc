@@ -309,7 +309,8 @@ end type
 		@"FOR/NEXT variable name mismatch", _
 		@"Selected option requires an SSE FPU mode", _
 		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
-		@"Unsupported statement in -gen gcc mode" _
+		@"Unsupported statement in -gen gcc mode", _
+		@"Too many labels" _
 	}
 
 
