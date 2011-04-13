@@ -1,15 +1,14 @@
-const FALSE = 0
-const TRUE = -1
-const NULL = 0
-type boolean as integer
+#define NULL 0
+#define FALSE 0
+#define TRUE (-1)
+#define STRINGIFY(s) #s
 
-const MANIFEST = "../../../manifest/win32.lst"
-const SCRIPT_TEMPLATE = "template.nsi"
+private sub fatalCantOpenFile(byref file as string)
+    print "Error: Could not open file: '" + file + "'"
+    end 1
+end sub
 
-'' The installer script is put in the root FreeBASIC folder. makensis will cd there.
-const SCRIPT = "../../../installer.nsi"
-
-function strReplace _
+private function strReplace _
     ( _
         byref text as string, _
         byref a as string, _
@@ -52,11 +51,11 @@ private function findFileName(byref path as string) as integer
     return 0
 end function
 
-function pathStripFile(byref path as string) as string
+private function pathStripFile(byref path as string) as string
     return left(path, findFileName(path))
 end function
 
-function pathStripComponent(byref path as string) as string
+private function pathStripComponent(byref path as string) as string
     dim as string s = path
 
     '' Strip path div at the end
@@ -72,15 +71,20 @@ function pathStripComponent(byref path as string) as string
     return pathStripFile(s)
 end function
 
-sub emitPath(byval o as integer, byref cmd as string, byref path as string)
+private sub emitPath(byval o as integer, byref cmd as string, byref path as string)
     print #o, "    " + cmd + " ""$INSTDIR\" + path + """"
 end sub
 
-sub emitInstallerFiles(byval o as integer, byval install as boolean)
+private sub emitInstallerFiles _
+    ( _
+        byref manifest as string, _
+        byval o as integer, _
+        byval install as integer _
+    )
+
     dim as integer f = freefile()
-    if (open(MANIFEST, for input, as #f)) then
-        print "Error: Cannot open " + MANIFEST
-        end(1)
+    if (open(manifest, for input, as #f)) then
+        fatalCantOpenFile(manifest)
     end if
 
     dim as string filename = ""
@@ -123,16 +127,23 @@ sub emitInstallerFiles(byval o as integer, byval install as boolean)
     close #f
 end sub
 
+if (__FB_ARGC__ <> 4) then
+    print "Usage: makescript manifest.lst template.nsi outputscript.nsi"
+    end 1
+end if
+
+dim as string manifest  = *__FB_ARGV__[1]
+dim as string inscript  = *__FB_ARGV__[2]
+dim as string outscript = *__FB_ARGV__[3]
+
 dim as integer i = freefile()
-if (open(SCRIPT_TEMPLATE, for input, as #i)) then
-    print "Error: Cannot open " + SCRIPT_TEMPLATE
-    end(1)
+if (open(inscript, for input, as #i)) then
+    fatalCantOpenFile(inscript)
 end if
 
 dim as integer o = freefile()
-if (open(SCRIPT, for output, as #o)) then
-    print "Error: Cannot open " + SCRIPT
-    end(1)
+if (open(outscript, for output, as #o)) then
+    fatalCantOpenFile(outscript)
 end if
 
 dim as string ln = ""
@@ -142,16 +153,15 @@ while (eof(i) = FALSE)
 
     select case (trim(ln))
     case ";;;INSTALL;;;"
-        emitInstallerFiles(o, TRUE)
+        emitInstallerFiles(manifest, o, TRUE)
 
     case ";;;UNINSTALL;;;"
-        emitInstallerFiles(o, FALSE)
+        emitInstallerFiles(manifest, o, FALSE)
 
     case else
+        ln = strReplace(ln, ";;;FB_VERSION;;;", STRINGIFY(FB_VERSION))
+        ln = strReplace(ln, ";;;INSTALLER_EXE;;;", STRINGIFY(INSTALLER_EXE))
         print #o, ln
 
     end select
 wend
-
-close #o
-close #i
