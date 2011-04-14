@@ -13,7 +13,11 @@
 #ifndef __aspell_bi__
 #define __aspell_bi__
 
-#inclib "aspell-15"
+#ifdef __FB_WIN32__
+    #inclib "aspell-15"
+#else
+    #inclib "aspell"
+#endif
 
 union AspellTypeId
 	num as uinteger
