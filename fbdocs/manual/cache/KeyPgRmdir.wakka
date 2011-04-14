@@ -38,4 +38,3 @@ If 0 <> result Then Print "error: unable to remove folder " & pathname & " in th
 	- ##[[KeyPgMkdir Mkdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
-   

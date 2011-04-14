@@ -14,7 +14,7 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibgd|gd"}} - Open source code library for the dynamic creation of images by programmers.
 	{{fbdoc item="keyword" value="ExtLibgiflib|gif_lib"}} - GIFLIB is a package of portable tools and library routines for working with GIF images.
 	{{fbdoc item="keyword" value="ExtLibgrx|grx"}} - 2D graphics library.
-	{{fbdoc item="keyword" value="ExtLibgtk|GTK"}} - Cross-platform Graphical User Interface Library.
+	{{fbdoc item="keyword" value="ExtLibgtk|GTK+"}} - Cross-platform Graphical User Interface Library.
 	{{fbdoc item="keyword" value="ExtLibIL|IL"}} - A full featured cross-platform image library.
 	{{fbdoc item="keyword" value="ExtLibIUP|IUP"}} - Portable toolkit for building graphical user interfaces.
 	{{fbdoc item="keyword" value="ExtLibjapi|japi"}} - Open source free software GUI toolkit using Java's AWT Toolkit.

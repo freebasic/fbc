@@ -17,6 +17,8 @@ Writes text to the screen
 
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.  A ##**Print**## without any expressions or separators following it will just print a new-line.
 
+	    NOTE: ##**Print**## resets the ##[[KeyPgErr Err]]## value after each expression is printed.
+	    
 	For more control over character style and text position in graphics modes, consider using ##[[KeyPgDrawString Draw String]]##.
 
 {{fbdoc item="ex"}}

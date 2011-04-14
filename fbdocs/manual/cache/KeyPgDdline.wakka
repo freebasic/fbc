@@ -30,5 +30,3 @@ Error: a = -32767 in test.bas (MAIN) line 47
 	- ##[[KeyPgDdfunction __FUNCTION__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
-
-   

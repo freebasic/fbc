@@ -35,4 +35,3 @@ print format(ds, "yyyy/mm/dd "); day(ds)
 	- [[ProPgDates Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
-   

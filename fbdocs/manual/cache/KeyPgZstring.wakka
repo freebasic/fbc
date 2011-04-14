@@ -44,4 +44,3 @@ print sizeof(*str2)  'returns len(zstring), the size of the variable
 	- ##[[KeyPgWstring Wstring]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}
-   

@@ -62,4 +62,3 @@ print int(rnd_range(69, 421))
 	- ##[[KeyPgInt Int]]##
 
 {{fbdoc item="back" value="CatPgMath|Math"}}
-   

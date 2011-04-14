@@ -19,3 +19,4 @@
 	GOSUB
 		Do not use [[KeyPgGosub GOSUB]] in SUBs or FUNCTIONs anymore; allowed in ##-lang qb## mode.
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+   

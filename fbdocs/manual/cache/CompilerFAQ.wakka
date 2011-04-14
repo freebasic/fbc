@@ -8,13 +8,13 @@
 	==- {{anchor name="item3|Why should I use FreeBASIC rather than QBasic?"}}==
 	==- {{anchor name="item4|Why should I use FreeBASIC rather than some other newer BASIC ?"}}==
 	==- {{anchor name="item5|How fast is FreeBASIC?"}}==
-	==- {{anchor name="item6|How compatible is FreeBASIC with QuickBasic?"}}==
+	==- {{anchor name="item6|How compatible is FreeBASIC with QuickBASIC?"}}==
 	==- {{anchor name="item7|How compatible is FreeBASIC with Windows? DOS? Linux?"}}==
 	==- {{anchor name="item8|Does FreeBASIC support Object Oriented Programming?"}}==
 	==- {{anchor name="item9|What are the future plans with FB / ToDo list ?"}}==
 	==- {{anchor name="item10|Can I program GUI applications in FB ?"}}==
 	==- {{anchor name="item11|Is FB suitable for complex / big applications?"}}==
-	==- {{anchor name="item12|Can I use a non-latin charset in my FreeBASIC apps?"}}==
+	==- {{anchor name="item12|Can I use a non-latin charset in my FreeBASIC applications?"}}==
 	==- {{anchor name="item13|Can I use Serial/COM and Hardware/CPU ports in FB?"}}==
 
 **Getting Started with ""FreeBASIC"" questions**
@@ -44,7 +44,7 @@
 @@**""FreeBASIC"" questions**@@
 
 {{anchor name="item1"}}==What is ""FreeBASIC""?==
-	""FreeBASIC"" is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft ""QuickBASIC"", but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, OpenGL, and many others with its default installation.
+	""FreeBASIC"" is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft ""QuickBASIC"", but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, ""OpenGL"", and many others with its default installation.
 
 	Aside from having a syntax mostly compatible with ""QuickBASIC"", ""FreeBASIC"" introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
 
@@ -53,7 +53,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==Who is responsible for ""FreeBASIC""?==
-	The first versions of ""FreeBASIC"" were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and DrV, who developed the DOS port. 
+	The first versions of ""FreeBASIC"" were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and ""DrV"", who developed the DOS port. 
 
 	See the [[CompilerCredits FreeBASIC Credits]] page.
 
@@ -63,7 +63,7 @@
 	""FreeBASIC"" has innumerable advantages over ""QBasic"", ""QuickBASIC"", PDS, and Visual Basic for DOS. 
 		- It supports 32-bit processors, where ""QBasic"" is designed for 16-bit CPU's.
 		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
-		- It supports modern APIs such as SDL, DirectX, Win32, and OpenGL.
+		- It supports modern APIs such as SDL, ""DirectX"", ""Win32"", and ""OpenGL"".
 		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of ""QuickBASIC"" / other BASICs.
 		- The library is distributed under the LGPL with additional exception, meaning you may do whatever you want with your compiled programs, including selling them (note: possible problem with graphics library).
 		- ""FreeBASIC"" is many times faster than ""QuickBASIC"" / other BASICs.
@@ -83,23 +83,23 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item5"}}==How fast is ""FreeBASIC""?==
-	Most tests run by the community have shown ""FreeBASIC"" is significantly faster than ""QuickBasic"", faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
+	Most tests run by the community have shown ""FreeBASIC"" is significantly faster than ""QuickBASIC"", faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
 	The [[http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=all Computer Languages Benchmark Game]], an independent test team, give ""FreeBASIC"" for Linux a speed 1.8 times slower than  ""GNU g++"". Tests are about calculation, memory and disk access speed in console programs, no graphics capabilities were tested. This is not a bad result considering ""FreeBASIC"" is not yet an optimizing compiler.
-	One area where there is a notable speed deficiency is in 32-bit console modes. While ""FreeBASIC"" is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in ""QuickBasic"". In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
+	One area where there is a notable speed deficiency is in 32-bit console modes. While ""FreeBASIC"" is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in ""QuickBASIC"". In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item6"}}==How compatible is ""FreeBASIC"" with ""QuickBasic""?==
+{{anchor name="item6"}}==How compatible is ""FreeBASIC"" with ""QuickBASIC""?==
 	The ""FreeBASIC"" built in graphics library emulates the most used QB graphics modes (modes 7,12,13) and implements all the drawing primitives featured in QB. 
 	Most compatibility problems arise from the use of 8086-DOS-hardware specific low-level techniques in the old QB programs. VGA port programming, DOS interrupts, memory segment switching, poking to the screen memory or music playing using the PC speaker are not directly supported, even if they can be supported/emulated by external libraries. 
 	Other issues in porting old QB programs, like variable name clashes with new FB keywords, variables with the name of a QB keyword plus a type suffix, default integer size being 32 bits in FB, are addressed by running ""FreeBASIC"" with the commandline switch ##-lang qb## .
 
-	See [[LangQB Differences between FreeBASIC and QuickBasic]].
+	See [[LangQB Differences between FreeBASIC and QuickBASIC]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item7"}}==How compatible is ""FreeBASIC"" with Windows? DOS? Linux? ==
-	""FreeBASIC"" is fully compatible with Windows, MS-DOS, Free-DOS and Linux. When planning to create a program for all three platforms, however, keep API availability in mind -- code utilizing OpenGL will work in Windows and Linux, for example, but won't in DOS, because OpenGL is not available for DOS.
+	""FreeBASIC"" is fully compatible with Windows, MS-DOS, ""FreeDOS"" and Linux. When planning to create a program for all three platforms, however, keep API availability in mind -- code utilizing ""OpenGL"" will work in Windows and Linux, for example, but won't in DOS, because ""OpenGL"" is not available for DOS.
 
 {{anchor name="item0|Back to top"}}
 
@@ -116,7 +116,7 @@
 
 {{anchor name="item10"}}==Can I program GUI applications in FB ?==
 	Yes, you can. Headers allowing you to call the  GUI API of Windows and Linux are supplied with the respective versions, but the programs made this way are not portable.
-	There are some API wrappers and experimental RAD apps that create non-portable GUI code for Windows.
+	There are some API wrappers and experimental RAD applications that create non-portable GUI code for Windows.
 	For portable programming a multiplatform GUI wrapper  library  as GTK or wx-Widgets may be used. GTK headers are provided with FB, but the OOP functionality currently available in FB prevents the use of wx-Widgets. The programs created with these libraries may require the user to install the wrapper libraries in their systems.
 	For games and small graphics applications there are some FB-specific libraries that draw and manage  simple controls as buttons and edit boxes inside the graphics screen, programs made with those libs are entirely portable. 
 
@@ -127,7 +127,7 @@
 
 {{anchor name="item0|Back to top"}}
 
-{{anchor name="item12"}}==Can I use a non-latin charset in my ""FreeBASIC"" apps?==
+{{anchor name="item12"}}==Can I use a non-latin charset in my ""FreeBASIC"" applications?==
 
 	""FreeBASIC"" has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As ""FreeBASIC"" is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
 	For the output to screen the support is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font supports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
@@ -161,7 +161,7 @@
 
 {{anchor name="item22"}}==Can I have an offline version of the documentation?==
 	The official documentation for FB is this Wiki, usually it is current with the latest improvements found in the SVN.
-	From time to tine this Wiki is converted to an off-line readable format. [[http://sourceforge.net/project/showfiles.php?group_id=122342&package_id=159165 CHM]] for Windows users, other formats [[http://www.execulink.com/~coder/freebasic/docs.html here]]
+	From time to time this Wiki is converted to several offline readable formats. [[http://sourceforge.net/project/showfiles.php?group_id=122342&package_id=159165 CHM]] for Windows users, other formats here: [[http://sourceforge.net/projects/fbc/files/Documentation/ sf.net/.../Documentation]], ""CoderJeff""'s page (has FBHELP, doesn't have up-to-date manuals): [[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/.../docs.html]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -185,7 +185,7 @@
 		- defining the array with an empty subscript list (using ##[[KeyPgDim Dim]]##), or
 		- defining the array with variable subscripts instead of numeric literals, [[KeyPgConst constants]] or [[KeyPgEnum enums]] (using ##[[KeyPgDim Dim]]##), or
 		- defining the array with ##[[KeyPgRedim Redim]]##
-	- reserve more memory for the program stack by using the ##-t## command-line option. The default is ##-t 1024## (kilobytes).
+	- reserve more memory for the program stack by using the ##-t## [[CompilerCmdLine command-line option]] when compiling. The default is ##-t 1024## (kilobytes). Note: it's a bad idea to use very large values here.
 	- create a //static// array by defining the array with ##[[KeyPgStatic Static]]## rather than ##[[KeyPgDim Dim]]## (only locally visible, but globally preserved)
 	- define the array with ##[[KeyPgShared Shared]]## access using ##[[KeyPgDim Dim]]## (this makes the array fully global)
 	- use [[ProPgPointers Pointers]] and [[CatPgMemory Memory Functions]] like ##[[KeyPgAllocate Allocate]]## and ##[[KeyPgDeallocate Deallocate]]## to manage memory yourself - this is the preferred way for storing big buffers, but not for beginners.
@@ -205,7 +205,7 @@
 
 {{anchor name="item32"}}==Can I use a debugger?==
 	""FreeBASIC"" can use preferably a debugger compatible with GNU GDB. 
-		- Win32: Insight is an user friendly wrapper for GDB, see [[FaqPgWin32 Win32 related FAQ]]. 
+		- ""Win32"": Insight is an user friendly wrapper for GDB, see [[FaqPgWin32 Win32 related FAQ]]. 
 		- DOS: Be warned that DOS also has product named "Insight", but it's a real mode debugger not usable with ""FreeBASIC"", use GDB or some DPMI32 debugger at least.
 		- Linux: use GDB.
 
@@ -254,7 +254,7 @@ For example, if ##//mystring//## is of type ##[[KeyPgString String]]## of non-ze
 	- [[FaqDOS DOS related FAQ]]
 	- [[FaqPgLinux Linux related FAQ]]
 and
-	- [[FaqPgrtlib FB Run-Time Library FAQ]]
+	- [[FaqPgrtlib FB Runtime Library FAQ]]
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

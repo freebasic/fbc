@@ -1,13 +1,23 @@
 {{fbdoc item="title" value="LIB"}}----
-Specifies the DLL where a sub or function can be found as part of a declaration
+Specifies the library where a sub or function can be found as part of a declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// **Lib** "//dllname//" [[KeyPgAlias alias]] "//symbol_name//" ( //arguments list// ) [[KeyPgAs as]] //return_type//
+	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// **lib** "//libname//" [ [[KeyPgAlias alias]] "//symbol_name//" ] ( //arguments list// ) [[KeyPgAs as]] //return_type//
+	
+	[[KeyPgExternBlock extern]] "//mangling//" lib "//libname//"
+		//declarative statements//
+	end [[KeyPgExternBlock extern]]
+	
+	[[KeyPgType type]] //T//
+		[[KeyPgAs as]] [[KeyPgInteger integer]] dummy
+		[[KeyPgDeclare declare]] [[KeyPgConstructor constructor]] **lib** "//libname//" [ [[KeyPgAlias alias]] "//symbol_name//" ] ( //arguments list// )
+	end [[KeyPgType type]]
+
 ##
 {{fbdoc item="desc"}}
-	In ##[[KeyPgSub Sub]]## and ##[[KeyPgFunction Function]]## declarations, ##**Lib**## indicates the dll containing the function. Libraries specified in this way are linked as if the library had been specified with ##[[KeyPgInclib #inclib]]##.
-
-	When specifying ##//dllname//##, do not include the extension of the file name.  For example, if the declaration is meant to reference the file ##mydll.dll## or ##mydll.so##, use ##**Lib** "mydll"##.
+	In ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## declarations, and also in class method declarations (including constructors and destructors), ##**lib**## indicates the library containing the function. Libraries specified in this way are linked in as if ##[[KeyPgInclib #inclib "libname"]]## or ##[[CompilerOptl -l libname]]## had been used.
+	
+	##**lib**## can also be used with [[KeyPgExternBlock Extern ... End Extern blocks]] to specifiy a ##**lib**## for all declarations inside.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/mydll.bas"}}%%(freebasic)
@@ -37,4 +47,3 @@ Print "GetValue = &h"; Hex(GetValue())
 	- ##[[KeyPgInclib #inclib]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}
-   

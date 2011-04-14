@@ -36,7 +36,7 @@ The library supports various drivers depending on the platform:
 	- Graphics support was internally redesigned. QB used VGA graphics modes, and wrote directly into the VGA RAM. Multiple pages were available as long as the card supported them. FB uses backbuffers, one per defined page, and copies them to the video RAM (VGA (DOS), VESA (DOS), DirectX (""Win32""), ...) in the background. Graphics commands do work as they used to in QB, but a few notable differences are present:
 		- The background screen updating eats a considerable amount of CPU performance.
 		- There is a thread (""Win32"" and ""Linux"") or ISR (DOS, uses the PIT) active for this.
-		- Mixing FB's graphics support with low-level screen accesses (VGA) is absolutely prohibited, even in DOS, OTOH semi-low-level can be done using Screenptr and Screenlock, and is even portable. In DOS VGA and VESA are still available, but can't be mixed with FB's graphics support.
+		- Mixing FB's graphics support with low-level screen accesses (VGA) is not supported, even in DOS. However direct screen memory access is possible using Screenptr and Screenlock and is fully portable. In DOS VGA and VESA are still available, but can't be mixed with FB's graphics support.
 
 {{fbdoc item="see"}}
 	- [[CatPgGfx GFX Functions Index]]

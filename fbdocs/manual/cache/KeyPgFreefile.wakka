@@ -8,10 +8,12 @@ Returns a free file number
 	//result// = **Freefile**
 ##
 {{fbdoc item="ret"}}
-	The next available file number.
+	The next available file number, if any, otherwise zero (##0##).
 
 {{fbdoc item="desc"}}
-	Returns the number of the next free file number. This value is a required argument to ##[[KeyPgOpen Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
+	Returns the number of the next free file number with valid values ##1## to ##255##, or ##0## if there are already 255 files opened. This value is a required argument to ##[[KeyPgOpen Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
+	Make sure to always close files when no longer needed, otherwise you will get a file number leak, and won't be able to open any files anymore after 255 filenumbers are exhausted while your program is running.
+	##**Freefile**## will always return the smallest free file number.  The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen Open]]##ed, or until a smaller file number is ##[[KeyPgClose Close]]##d.  For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen Open]]##, to ensure that the file number is not returned and opened elsewhere first.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)
@@ -29,7 +31,7 @@ Open "file.ext" For Binary As #f
 Put #f, , buffer
 
 ' Close the file.
-Close
+Close #f
 
 ' End the program. (Check the file "file.ext" upon running to see the output.)
 End
@@ -38,24 +40,28 @@ End
 	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen Open]]## statement:
 {{fbdoc item="filename" value="examples/manual/fileio/freefile-good.bas"}}%%(freebasic)
 dim fr as integer, fs as integer
-' The CORRECT WAY:
+' The CORRECT way:
 fr = FREEFILE
 OPEN "File1" FOR INPUT AS #fr
+
 fs = FREEFILE
-OPEN "file2" FOR INPUT AS #fs
+OPEN "File2" FOR INPUT AS #fs
 %%
+
 	As opposed to:
 {{fbdoc item="filename" value="examples/manual/fileio/freefile-bad.bas"}}%%(freebasic)
 dim fr as integer, fs as integer
- ' The WRONG way:
+' The WRONG way:
 fr = FREEFILE
-fs = FREEFILE
+fs = FREEFILE '' fs has taken the same file number as fr
+
 OPEN "file1" FOR INPUT AS #fr
-OPEN "file2" FOR INPUT AS #fs
+OPEN "file2" FOR INPUT AS #fs '' error: file number already opened
 %%
 
 {{fbdoc item="target"}}
 	- On Windows, a file number used in a dynamic link library is not the same as an identical file number used in the main program.  File numbers can not be passed or returned and then used between a DLL and an executable.
+	- Besides ""FreeBASIC's"" limit of 255 files per program opened at same time, there is an OS limit of total amount of opened files, but usually you won't touch it except in DOS, where the limit may be as low as 15 files total.
 
 {{fbdoc item="diff"}}
 	- None

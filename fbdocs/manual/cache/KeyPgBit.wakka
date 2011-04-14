@@ -2,7 +2,7 @@
 Gets the state of an individual bit in an integer value.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgOpAnd and]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//))) <> 0)
+	[[KeyPgPpdefine #define]] **Bit**( //value//, //bit_number// ) (((//value//) [[KeyPgOpAnd and]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//))) <> 0)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bit**( //value//, //bit_number// )
@@ -44,4 +44,3 @@ PRINT BIT(&H8000000000000000ULL,63)
 	- ##[[KeyPgBitreset Bitreset]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}
-   

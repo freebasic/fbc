@@ -20,7 +20,7 @@ Reads data from a file to a buffer
 		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof EOF]]## is reached.
 		When getting arrays, ##//data//## should be followed by an empty pair of brackets: "##()##".  ##**Get**## will read data for all of the values in the array.  ##//amount//## is not allowed.
 		When getting ##[[KeyPgString String]]##s, the number of bytes read is the same as the number of bytes in the string data. ##//amount//## is not allowed.
-		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.)  Get will automatically infer that the rest of the buffer continues after the first variable.  If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
+		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer. (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
 	##//amount//##
 		Makes ##**Get**## read ##//amount//## consecutive variables from file to memory, i.e. it reads ##(//amount// * [[KeyPgSizeof Sizeof]](//data//) )## bytes of data from file into the memory starting at ##//data//##'s memory location.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Get**## just reads a single variable.
 	##//bytesread//##
@@ -151,4 +151,3 @@ Print ExampleStr
 	- ##[[ProPgFileIO File I/O methods comparison]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

@@ -24,118 +24,118 @@ Using the **fbc** command-line.
 
 		{{table columns="2" cellpadding="1" cells="File extension;Description;.bas;FreeBASIC source file;.a;Library;.o;Object file;.rc;Resource script (Windows only);.res;Compiled resource (Windows only);.xpm;X icon pixmap (Linux only)"}}
 
-<<{{fbdoc item="section" value="Compiling options"}}
-	{{fbdoc item="subsect" value="Source code"}}
-		=={{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}==
-			Add a source file to compilation
-		=={{fbdoc item="keyword" value="CompilerOptc|-c"}}==
-			Compile only, do not link
-		=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
-			Write asm only, do not compile or link
-		=={{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}==
-			Set object file path/name (must be passed after the .bas file)
-		=={{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}==
-			Add a path to search for include files
-		=={{fbdoc item="keyword" value="CompilerOptinclude|-include < name >"}}==
-			Include a header file on each source compiled
-		=={{fbdoc item="keyword" value="CompilerOptd|-d < name=val >"}}==
-			Add a preprocessor's define
-		=={{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang < name >"}}==
-			Select language compatibility: ##fb##, ##fblite##, ##qb##, ##deprecated## (overides statements in code)
-		=={{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}==
-			Select language compatibility: ##fb##, ##fblite##, ##qb##, ##deprecated##
-		=={{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}==
-			Main file without extension, the entry point (default is the first .bas file on the command line)
-		=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
-			Main file without extension, the entry point (default is the first .bas file on the command line)
+<<{{fbdoc item="section" value="Source code"}}
+	=={{fbdoc item="keyword" value="CompilerOptb|-b < name >"}}==
+		Add a source file to compilation
+	=={{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}==
+		Add a path to search for include files
+	=={{fbdoc item="keyword" value="CompilerOptinclude|-include < name >"}}==
+		Include a header file on each source compiled
+	=={{fbdoc item="keyword" value="CompilerOptd|-d < name=val >"}}==
+		Add a preprocessor's define
+	=={{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}==
+		Select language mode: ##fb##, ##fblite##, ##qb##, ##deprecated##
+	=={{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang < name >"}}==
+		Select language mode: ##fb##, ##fblite##, ##qb##, ##deprecated## (overides statements in code)
 
-	{{fbdoc item="subsect" value="Error checking and Debugging"}}
-		=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
-			Set min warning level: ##all##, ##pedantic##, ##next## or a value
-		=={{fbdoc item="keyword" value="CompilerOpte|-e"}}==
-			Add error checking
-		=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
-			Add error checking with RESUME support
-		=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
-			Same as ##-ex## plus array bounds and null-pointer checking
-		=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
-			Add debug info
-		=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
-			Do not show source line where error occurred
-		=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
-			Enable function profiling
-		=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
-			Only stop parsing if <val> errors occurred
+{{fbdoc item="section" value="Code generation"}}
+	=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
+		Set the target platform for cross compilation
+	=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
+		Sets the compiler backend (default is 'gas').
+	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
+		Set target architecture (default: ##486##)
+	=={{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}==
+		Set the optimization level (-gen gcc).
+	=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
+		Set level of vector optimizations enabled by the compiler (default: ##0##)
+	=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
+		Set the floating point arithmetics unit (default: ##FPU##)
+	=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
+		Select between fast and accurate floating-point operations (default: ##PRECISE##)
+	=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
+		Sets miscellaneous or experimental options.
 
-	{{fbdoc item="subsect" value="Platform specific"}}
-		=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
-			Set target architecture (default: ##486##)
-		=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
-			Set the target platform for cross compilation
-		=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
-			Set the floating point arithmetics unit (default: ##FPU##)
-		=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
-			Select between fast and accurate floating-point operations (default: ##PRECISE##)
-		=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==
-			Set subsystem (##gui##, ##console##)
-		=={{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}==
-			Set stack size in kbytes (default: 1M)
-		=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
-			Set level of vector optimizations enabled by the compiler (default: ##0##)
-<<>>{{fbdoc item="subsect" value="Miscellaneous"}}
-		=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
-			Do not delete the object file(s)
-		=={{fbdoc item="keyword" value="CompilerOptrupp|-R"}}==
-			Do not delete the asm file(s)
-		=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
-			Be verbose
-		=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
-			Show compiler version (note: the compiler will display this info on the command line and quit without compiling or checking other parameters when this parameter is used)
-		=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
-			Pass options to GAS (separated by commas)
-		=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==
-			Pass options to GCC (separated by commas)
-		=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
-			Set the compiler prefix path
-		=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
-			Sets the compiler backend (default is 'gas').
-		=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
-			Sets miscellaneous or experimental options.
-		=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
-			Emit the preprocessed input file only, do not compile
-		=={{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}==
-			Read (additional) command-line options from the file
+{{fbdoc item="section" value="Compilation"}}
+	=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
+		Main file without extension, the entry point (default is the first .bas file on the command line)
+	=={{fbdoc item="keyword" value="CompilerOptg|-g"}}==
+		Add debug info
+	=={{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}==
+		Enable function profiling
+	=={{fbdoc item="keyword" value="CompilerOpte|-e"}}==
+		Add error checking
+	=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
+		Add error checking with RESUME support
+	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
+		Same as ##-ex## plus array bounds and null-pointer checking
+	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
+		Pass options to GAS (separated by commas)
+	=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==
+		Pass options to GCC (separated by commas)
+	=={{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}==
+		Set object file path/name (must be passed after the .bas file)
 
-	{{fbdoc item="section" value="Linking options"}}
-	{{fbdoc item="subsect" value="Object code"}}
-		=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==
-			Add an object file to linker's list
-		=={{fbdoc item="keyword" value="CompilerOptl|-l < name >"}}==
-			Add a library file to linker's list
-		=={{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}==
-			Set executable/library path/name
-		=={{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}==
-			Add a path to search for libraries
-		=={{fbdoc item="keyword" value="CompilerOptWl|-Wl < opt >"}}==
-			Pass options to LD (separated by commas)
+<<>>{{fbdoc item="section" value="Linking"}}
+	=={{fbdoc item="keyword" value="CompilerOpta|-a < name >"}}==
+		Add an object file to linker's list
+	=={{fbdoc item="keyword" value="CompilerOptl|-l < name >"}}==
+		Add a library file to linker's list
+	=={{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}==
+		Add a path to search for libraries
+	=={{fbdoc item="keyword" value="CompilerOptmt|-mt"}}==
+		Link with thread-safe runtime library
+	=={{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}==
+		Do not include the default libraries
+	=={{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}==
+		Save the linking map to file name
+	=={{fbdoc item="keyword" value="CompilerOptWl|-Wl < opt >"}}==
+		Pass options to LD (separated by commas)
+	=={{fbdoc item="keyword" value="CompilerOptexport|-export"}}==
+		Export symbols for dynamic linkage
+	=={{fbdoc item="keyword" value="CompilerOptlib|-lib"}}==
+		Create a static library
+	=={{fbdoc item="keyword" value="CompilerOptdylib|-dylib"}}==
+		Create a DLL, including the import library
+	=={{fbdoc item="keyword" value="CompilerOptdll|-dll"}}==
+		Create a DLL, including the import library.  (Same as ##-dylib##)
+	=={{fbdoc item="keyword" value="CompilerOptx|-x < name >"}}==
+		Set executable/library path/name
 
-	{{fbdoc item="subsect" value="Runtime"}}
-		=={{fbdoc item="keyword" value="CompilerOptlib|-lib"}}==
-			Create a static library
-		=={{fbdoc item="keyword" value="CompilerOptdll|-dll"}}==
-			Create a DLL, including the import library.  (Same as ##-dylib##)
-		=={{fbdoc item="keyword" value="CompilerOptdylib|-dylib"}}==
-			Create a DLL, including the import library
-		=={{fbdoc item="keyword" value="CompilerOptmt|-mt"}}==
-			Link with thread-safe runtime library
-		=={{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}==
-			Do not include the default libraries
-	
-	{{fbdoc item="subsect" value="Miscellaneous"}}
-		=={{fbdoc item="keyword" value="CompilerOptexport|-export"}}==
-			Export symbols for dynamic linkage
-		=={{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}==
-			Save the linking map to file name
+{{fbdoc item="section" value="Behaviour"}}
+	=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
+		Set the compiler prefix path
+	=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
+		Show compiler version on the command line, do not compile or link.
+	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
+		Be verbose
+	=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
+		Emit the preprocessed input file only, do not compile
+	=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
+		Write asm only, do not compile or link
+	=={{fbdoc item="keyword" value="CompilerOptc|-c"}}==
+		Compile only, do not link
+	=={{fbdoc item="keyword" value="CompilerOptrupp|-R"}}==
+		Do not delete the asm file(s)
+	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
+		Do not delete the object file(s)
+	=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
+		Set min warning level: ##all##, ##pedantic##, ##next## or a value
+	=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
+		Only stop parsing if <val> errors occurred
+	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
+		Do not show source line where error occurred
+
+{{fbdoc item="section" value="Target specific"}}
+	=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==
+		Set subsystem (##gui##, ##console##)
+	=={{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}==
+		Set stack size in kbytes (default: 1M)
+
+{{fbdoc item="section" value="Meta"}}
+	=={{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}==
+		Read (additional) command-line options from a file
+
 >>::c::
 
 {{fbdoc item="ex"}}

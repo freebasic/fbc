@@ -29,4 +29,3 @@ Procedures that operate on one or more operands.
 	Operators that use iterator objects in ##[[KeyPgFornext For...Next]]## statements.
 >>::c::
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

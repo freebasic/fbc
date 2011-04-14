@@ -95,4 +95,3 @@ print rect2.x, rect2.y '' 3,  4
 	- ##[[KeyPgType Type]]##
 	
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
-   

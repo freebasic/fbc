@@ -36,6 +36,10 @@ Preprocessor symbols defined by the compiler.
 		Defined if compiling for Xbox.
 	=={{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}==
 		Defined if compiling on a system using big-endian byte-order.
+	=={{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}}==
+		Defined if compiling for a common PC OS (e.g. DOS, Windows, OS/2).
+	=={{fbdoc item="keyword" value="KeyPgDdfbunix|__FB_UNIX__"}}==
+		Defined if compiling for a Unix-like OS.
 
 {{anchor name="VERSION"}}{{fbdoc item="section" value="Version Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}==
@@ -54,6 +58,8 @@ Preprocessor symbols defined by the compiler.
 		Defined as a string literal of the compiler signature.
 
 {{anchor name="CMDLINE"}}{{fbdoc item="section" value="Command-line switches"}}
+	=={{fbdoc item="keyword" value="KeyPgDdFBBackend|__FB_BACKEND__"}}==
+		Defined to either ##"gas"## or ##"gcc"## depending on [[CompilerOptgen -gen]].
 	=={{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}==
 		Defined if compiling a module with an entry point.
 	=={{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}==

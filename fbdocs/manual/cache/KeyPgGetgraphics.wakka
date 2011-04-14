@@ -53,3 +53,5 @@ Gets a copy of a portion of the current work page or an image buffer
 	- [[GfxInternalFormats Internal graphics formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
+
+   

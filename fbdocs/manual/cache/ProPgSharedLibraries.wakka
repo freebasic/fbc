@@ -60,7 +60,7 @@ Print Add2(1,2)
 
 	Shared libraries can optionally contain debugging information specified with the //[[CompilerOptg -g]]// command line option.
 
-	Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC run-time library.
+	Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC runtime library.
 
 {{fbdoc item="section" value="Using Shared Libraries on Windows"}}
 	On windows, the shared library must be stored in a location where it can be found by the executable that needs it a run-time.  

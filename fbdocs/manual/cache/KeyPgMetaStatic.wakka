@@ -35,4 +35,3 @@ Dim b(100)   '<<this array will be fixed-length
 	- ##[[KeyPgOptionstatic Option Static]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}
-   

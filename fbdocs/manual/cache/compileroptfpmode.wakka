@@ -25,4 +25,3 @@ Selects faster, less accurate or slower, more precise floating-point math.
 	- ##[[KeyPgDdfbfpmode __FB_FPMODE__]]##
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
-   

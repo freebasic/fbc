@@ -11,7 +11,7 @@ Metacommand statement to include contents of another source file
 
 	The ##**once**## specifier tells the compiler to include the file only once even if it is included several times by the source code.
 
-	##**'$Include:**## exists for compatibility with QuickBasic. It is recommended to use ##[[KeyPgInclude #include]]## instead.
+	##**'$Include:**## exists for compatibility with QuickBASIC. It is recommended to use ##[[KeyPgInclude #include]]## instead.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/header.bi"}}%%(freebasic)

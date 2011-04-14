@@ -34,7 +34,7 @@
 		{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 
 {{fbdoc item="section" value="Runtime Library Reference"}}
-	Procedures and macros that are a part of the ""FreeBASIC"" run-time library.
+	Procedures and macros that are a part of the ""FreeBASIC"" runtime library.
 	
 	{{fbdoc item="keyword" value="CatPgArray|Array Functions"}}
 	{{fbdoc item="keyword" value="CatPgBits|Bit Manipulation"}}
@@ -85,7 +85,7 @@
 {{fbdoc item="section" value="FAQs"}}
 	{{fbdoc item="keyword" value="CompilerFAQ|Compiler FAQ"}}
 	{{fbdoc item="keyword" value="FaqPggfxlib2|Graphics Library FAQ"}}
-	{{fbdoc item="keyword" value="FaqPgrtlib|Run-Time Library FAQ"}}
+	{{fbdoc item="keyword" value="FaqPgrtlib|Runtime Library FAQ"}}
 	{{fbdoc item="keyword" value="FaqPgxbox|Xbox port FAQ"}}
 	{{fbdoc item="keyword" value="FaqDOS|DOS related FAQ"}}
 	{{fbdoc item="keyword" value="FaqPgWin32|Windows related FAQ"}}

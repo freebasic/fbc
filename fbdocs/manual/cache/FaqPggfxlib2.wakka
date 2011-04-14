@@ -88,10 +88,8 @@ Loop Until key = Chr(27) Or key = Chr(255, 107) 'escape or x-button
 
 {{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]].
-	- [[FaqPgrtlib FB Run-Time Library FAQ]].
+	- [[FaqPgrtlib FB Runtime Library FAQ]].
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   
-
    

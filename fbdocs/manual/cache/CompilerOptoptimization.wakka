@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="Compiler Option: -O"}}----
+Set the optimization level for GCC
+
+{{fbdoc item="syntax"}}##
+	**-O** < level >
+##
+{{fbdoc item="param"}}
+	##//level//##
+		The optimization level: ##0##, ##1##, ##2##, ##3## or ##max## (##3##).
+
+{{fbdoc item="desc"}}
+	Specifies the optimization level to be passed to GCC when using ##**[[CompilerOptgen -gen gcc]]**##.
+
+{{fbdoc item="see"}}
+	- [[CompilerOptgen Compiler Option: -gen gcc]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

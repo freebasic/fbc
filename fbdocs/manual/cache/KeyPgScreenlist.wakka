@@ -15,9 +15,9 @@ Finds available fullscreen video modes
 	returns 0, when there are no more resolutions to read.
 
 {{fbdoc item="desc"}}
-	It works like the ##[[KeyPgDir Dir]]## function: the first call to the function requires the ##//depth//## parameter to be specified, it  returns the lowest supported resolution for the requested depth. Further calls to ##**Screenlist**## without arguments returns the next resolutions. When no more resolutions are available, ##[[KeyPgScreenres Screenres]]## returns 0.
+	It works like the ##[[KeyPgDir Dir]]## function: the first call to the function requires the ##//depth//## parameter to be specified, it  returns the lowest supported resolution for the requested depth. Further calls to ##**Screenlist**## without arguments returns the next resolutions. When no more resolutions are available, ##[[KeyPgScreenlist Screenlist]]## returns 0.
 
-	The result of ##[[KeyPgScreenres Screenres]]## is encoded in an integer with the  screen width as the high word and height and the height as the low word respectively.
+	The result of ##[[KeyPgScreenlist Screenlist]]## is encoded in an integer with the  screen width as the high word and height and the height as the low word respectively.
 
 	Resolutions are returned from lowest to highest supported ones. 
 

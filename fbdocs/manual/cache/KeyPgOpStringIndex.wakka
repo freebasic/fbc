@@ -20,9 +20,9 @@ Returns a reference to a character in a string
 		The wide-character type (varies per platform).
 
 {{fbdoc item="desc"}}
-	This operator returns a reference to a specific character in a string.
-
-	The user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen Len]](//lhs//) - 1##]". Outside this range, results are undefined.
+	This operator returns a reference to a specific character in a string:
+		- This operator must not be used in case of empty string because reference is undefined (inducing runtime error).
+		- Otherwise, the user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen Len]](//lhs//) - 1##]". Outside this range, results are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/stringindex.bas"}}%%(freebasic)

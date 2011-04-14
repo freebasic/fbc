@@ -203,11 +203,11 @@ Deallocate(s3)
 	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
 
 {{fbdoc item="diff"}}
-	- Variable Initializers are new to ""FreeBASIC""
-	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to ""FreeBASIC""
+	- Variable Initializers are new to ""FreeBASIC"".
+	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to ""FreeBASIC"".
 	- Multidimensional arrays are stored in row-major order in ""FreeBASIC"", they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
 	- Variable length arrays up to 2 ""GiB"" in size are possible in ""FreeBASIC"". In QB, ##$STATIC## arrays were limited to 64 ""KiB"" , or to the DOS memory available (several 100 ""KiB"" at best) if made ##$DYNAMIC## and ///AH// was used.
-	- The ellipsis form for upper bounds is new to ""FreeBASIC""
+	- The ellipsis form for upper bounds is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVar Var]]##

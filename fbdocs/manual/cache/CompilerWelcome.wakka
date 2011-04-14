@@ -13,7 +13,7 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 {{fbdoc item="section" value="Running"}}
 	FreeBASIC is a compiler and as such is not packaged with an IDE (Integrated Development Editor), although there are a few IDE's available. For information on using FreeBASIC without an IDE, see //[[CompilerRunning Running]]//.
 
-{{fbdoc item="section" value="Compatibility with QuickBasic"}}
+{{fbdoc item="section" value="Compatibility with QuickBASIC"}}
 	FreeBASIC is designed to be syntax compatible with QuickBASIC.  For best code-compatibility with QuickBASIC, the //[[CompilerDialects QB dialect]]// can be used when compiling source code. See //[[CompilerDialects FreeBASIC Dialects]]// and //[[LangQB Differences from QB]]//.
 
 {{fbdoc item="section" value="Documentation"}}
@@ -32,4 +32,3 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 Thank you for using FreeBASIC.  Happy coding!
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

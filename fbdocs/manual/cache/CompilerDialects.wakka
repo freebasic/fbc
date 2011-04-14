@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="FreeBASIC Dialects"}}----
 
-	FreeBASIC version 0.17b introduces a //[[CompilerOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
+	""FreeBASIC"" version 0.17b introduces a //[[CompilerOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
 
-	Starting with version 0.18.3b the //[[CompilerOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in QuickBASIC.
+	Starting with version 0.18.3b the //[[CompilerOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in [[QuickBASIC QuickBASIC]].
 
 	In version 0.18.4b the //[[CompilerOptlang -lang fblite]]// dialect was added, intended to replace ##-lang deprecated## in future.
 
@@ -10,7 +10,7 @@
 
 	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;fblite;FreeBASIC language compatibility, with a more QBASIC-compatible coding style;deprecated;compatibility with FB 0.16"}}
 
-	The //[[CompilerOptlang -lang]]// option was needed to allow FreeBASIC to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old FreeBASIC sources, and without making FreeBASIC difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for FreeBASIC.
+	The //[[CompilerOptlang -lang]]// option was needed to allow ""FreeBASIC"" to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old ""FreeBASIC"" sources, and without making ""FreeBASIC"" difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for ""FreeBASIC"".
 
 	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the //[[CompilerOptlang -lang qb]]// option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
 

@@ -182,6 +182,13 @@ sub ExtractPageNames _
 
 end sub
 
+#ifdef __FB_UNIX__
+extern "c"
+    declare function strcasecmp(byval as const zstring ptr, byval as const zstring ptr) as integer
+end extern
+#define _stricmp strcasecmp
+#endif
+
 ''
 function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as integer
 	function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )

@@ -9,13 +9,13 @@
 
 	In August of 1981 Microsoft released the next major step in its BASIC line, "Advanced BASIC", as part of a commission for IBM's PC-DOS, and is more often called by its executable name, BASICA.EXE.  For Microsoft's new MS-DOS, they released GW-BASIC, which was, for the most part, a port of BASICA that did not require IBM's Basic ROM included with its systems.
 
-	BASICA and GW-BASIC are interpreters.  Interpreters read source code and "interpret" it into computer code as it is read.  This is useful, but slow.  Microsoft, in 1983, released BASCOM for MS-DOS.  BASCOM compiled BASIC code into native machine code, which ran much faster than interpreted code.  This was repackaged with an IDE and released as QuickBasic in 1985.
+	BASICA and GW-BASIC are interpreters.  Interpreters read source code and "interpret" it into computer code as it is read.  This is useful, but slow.  Microsoft, in 1983, released BASCOM for MS-DOS.  BASCOM compiled BASIC code into native machine code, which ran much faster than interpreted code.  This was repackaged with an IDE and released as QuickBASIC in 1985.
 
 
-==QuickBasic==
+==QuickBASIC==
 	From 1985 to 1992, QuickBASIC was the primary BASIC product, released by Microsoft and using BASCOM, and later the Microsoft BASIC Compiler.  In 1991, a slimmed down interpreter often thought to be the missing "QuickBASIC 5.0" was packaged with MS-DOS 5.0 and released as "QBasic 1.1".
 
-	QuickBasic as a BASIC dialect provides a loose standard for modern BASIC compilers.  It abolishes the need for line numbers as a used in previous BASIC interpreters, is case sensitive and has keywords that are in plain English.  QuickBASIC also featured a runtime library, a library compiled by default and usable in source code, with many useful commands.
+	QuickBASIC as a BASIC dialect provides a loose standard for modern BASIC compilers.  It abolishes the need for line numbers as a used in previous BASIC interpreters, is case sensitive and has keywords that are in plain English.  QuickBASIC also featured a runtime library, a library compiled by default and usable in source code, with many useful commands.
 
 	In 1991, Microsoft combined a drag-and-drop GUI designer made in 1988 called 'Ruby' with QuickBASIC.  This product was called "Visual Basic", and marks the beginning of the end of QuickBASIC.  Microsoft released one last version of QuickBASIC called "Visual Basic for DOS" in 1992, and discontinued the product forever.
 
@@ -34,4 +34,3 @@
 	Because of its open source, its well-written code and its similarity to QB, FreeBASIC has become popular among the "QB Community" and its boundaries continue to grow as it receives more attention and gathers more features that promise to move BASIC into the future.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

@@ -29,7 +29,7 @@ Print Open ("xzxwz.zwz" For Input As #1)
 Sleep
 %%
 
-{{fbdoc item="section" value="QuickBasic-like error handling"}}
+{{fbdoc item="section" value="QuickBASIC-like error handling"}}
 
 	If the  //[[CompilerOpte -e]]// or //[[CompilerOptex -ex]]// switch is used at compile time, the program is expected to have a QB-like error handler enabled. If no handler processes the error, the program stops with an error.
 

@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="Differences from QB"}}----
-Since version 0.17, FreeBASIC introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the most QB compatible parser. All differences listed below assume that -lang qb was used.
+Since version 0.17, ""FreeBASIC"" introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the most QB compatible parser. All differences listed below assume that -lang qb was used.
 
 ==Architecture/Platform incompatibilities==
-	- FreeBASIC is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS/EMS, ...). 	
+	- ""FreeBASIC"" is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS/EMS, ...). 	
 	- DEF SEG is no longer necessary and will not work - any code which POKEs to video memory this way will no longer function, however, for DOS it can be easily rewritten using DPMI features. 
 	- CALL INTERRUPT no longer functions, as it relies on 16-bit DOS. DOS interrupts can be called in the DOS32 version by using the DPMI library, but they might work slowly because of the 32bit-16bit-32bit  mode changes the processor will have to perform. 
 
@@ -16,20 +16,22 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 	- Graphics support was internally redesigned, see [[GfxLib GfxLib overview]]
 	- CLEAR is no longer used to reset all variables and set the stack. Variables must be reset one by one, and stack size can be changed in the compiler command line. The keyword CLEAR is used to do memory fills in FB.
 	- String DATA items must be enclosed in quotes in FB, in QB this was optional
-	- All functions must have been declared, even with a CALL in FreeBASIC. With CALL it was possible to invoke prototype-less functions in QuickBASIC. (to be supported in future with -lang qb)
-	- In FreeBASIC all arrays must be explicitly declared. (Interpreted QuickBASIC arrays are automatically created with up to 10 indices.)
+	- All functions must have been declared, even with a CALL in ""FreeBASIC"". With CALL it was possible to invoke prototype-less functions in ""QuickBASIC"". (to be supported in future with -lang qb)
+	- In ""FreeBASIC"" all arrays must be explicitly declared. (Interpreted ""QuickBASIC"" arrays are automatically created with up to 10 indices.)
 	- Strings use a null (char 0) terminator to be compatible with C libraries and the Windows API, fixed-length strings can't contain chr$(0) chars for now.
 	- When INKEY[$] reads an extended key (Num Pad, Arrows...) it returns a two character string. In FB the first character is CHR[$](255), while in QB this first char is CHR$(0). 
-	- With fixed length strings FreeBASIC gives the real length as [[KeyPgLen LEN]] plus one (null-char), even on [[KeyPgType TYPE]] fields.
+	- With fixed length strings ""FreeBASIC"" gives the real length as [[KeyPgLen LEN]] plus one (null-char), even on [[KeyPgType TYPE]] fields.
+	- In ""FreeBASIC"", unused characters of fixed-length strings are set to 0, regardless of what "-lang" compiler option is used. In QB, unused characters are set to 32 (space, or " ", in ASCII).
+	- When a fixed-length string is declared, but still not initialized, all characters are set to 0, both in ""FreeBASIC"" and QB.
 	- The arrays are stored in row-major order in FB, they were stored in column-major order in QB by default. Row major order: data with the same  last index are contiguous. Column-major order: data wih the same first index are contiguous.  For example, if you have DIM A(1 TO 3, 1 TO 8), in row-major order the elements are stored such that A(3,5) is followed in memory by A(3,6); in column-major order A(3,5) is followed in memory by A(4,5).
-	- Programs don't stop anymore on run-time errors unless //[[CompilerOpte -e]]// or //[[CompilerOptex -ex]]// option is used in the command line. Using these options allow the use of QB style error handling (ON ERROR, RESUME...).
+	- Programs don't stop anymore on runtime errors unless //[[CompilerOpte -e]]// or //[[CompilerOptex -ex]]// option is used in the command line. Using these options allow the use of QB style error handling (ON ERROR, RESUME...).
 	- Octal numbers are written "&o...", whereas in QB they could be written as "&o..." or "&...".
 	- PRINT requires the USING clause, if used, to be the first argument. QB allowed PRINT to have not-to be-formatted arguments before USING. 
 	- In FB FOR loops in subs/functions do not accept arguments received byref as counters. A local variable must be used. 
 	- FB's [[KeyPgLocate LOCATE]] does not respect the fourth and fifth arguments for cursor shape.
 	- FB's [[KeyPgScreenCons SCREEN]] does not allow switching the visible or the work-page. Use [[KeyPgScreenset SCREENSET]] instead.
 	- FB's [[KeyPgColor COLOR]] does not allow a third argument for border color.
-	- FB's [[KeyPgTimer TIMER]] returns the number of seconds since the computer started, while QB's TIMER returns the number of seconds since midnight. (Win32 and Linux only: No more wrapping at midnight! :))
+	- FB's [[KeyPgTimer TIMER]] returns the number of seconds since the computer started, while QB's TIMER returns the number of seconds since midnight. (""Win32"" and Linux only: No more wrapping at midnight! :))
 	- In QB a chr$(13) inside a string did a CR+LF when PRINT'ed. In FB the CHR(13) prints just at what it is, a CR.
 	- EOF can no longer be used to detect an empty comms buffer. Empty buffer should be tested comparing LOC with 0 in FB. Also, for files opened in RANDOM or BINARY mode, EOF returns non-zero already after reading exactly the file size, see ##[[KeyPgEof Eof]]##. 
 	- Integer variables do not signal overflow errors in FB, even with the //[[CompilerOptex -ex]]// option on. Any QB code relying in catching integer overflow errors will not work in FB. 
@@ -37,7 +39,7 @@ Since version 0.17, FreeBASIC introduced a -lang command-line option, that is us
 ==Archaic commands==
 	- BSAVE and BLOAD can be used in FB only to save and retrieve screens or graphic buffers. They will work only if gfxlib is linked, this is,  if a graphics screen mode is requested somewhere in the program. The console can't be saved with BSAVE or retrieved with BLOAD. The other use of BSAVE-BLOAD, saving and loading full arrays, can be achieved easily with GET and PUT.
 	- FIELD statement (for record definition at runtime) has been left aside. The keyword FIELD is used in FB to specify field alignment in [[KeyPgType TYPE]] variables.
-	- PC Speaker commands no longer function: Any references to SOUND or PLAY statements will result in an error message. There is a third party library available to emulate this functionality, but it's not included with FreeBASIC.
+	- PC Speaker commands no longer function: Any references to SOUND or PLAY statements will result in an error message. There is a third party library available to emulate this functionality, but it's not included with ""FreeBASIC"".
 	- Fake event-driven programming (ON KEY, ON PEN, ON STRIG, ON TIMER) no longer works. They could be emulated by a separate library.
 	- MKSMBF$ and all the ""MKxMBF$"" commands supporting the pre-QB4.0 Microsoft proprietary floating point format (MBF) are not implemented.
 	- The use of parenthesis in the arguments passed to a function to emulate by-value passing is not permitted. The CALL quirk resulting in all arguments being passed by value, no longer works. The proper [[KeyPgByval BYVAL]] and [[KeyPgByref BYREF]] keywords must be used.

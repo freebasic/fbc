@@ -74,5 +74,3 @@ Print "Your age is: " + str(age_ubyte)
 	- ##[[KeyPgOutput Output]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-
-   

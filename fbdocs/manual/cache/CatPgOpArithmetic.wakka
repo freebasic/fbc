@@ -25,4 +25,3 @@ The mathematical operators perform mathematical operations with the values of th
 	Returns the result of a bitwise shift right of an operand.
 >>::c::
 {{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

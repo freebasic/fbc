@@ -20,6 +20,8 @@ Restricts read/write access to a file or portion of a file
 
 	After modifying the data, an ##[[KeyPgUnlock Unlock]]## with the same parameters as the ##**Lock**## should be issued.
 
+	**Note: This command does not always work, neither as documented nor as expected. It appears to be broken at the moment.**
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/lock.bas"}}%%(freebasic)
 '' e.g. locking a file, reading 100 bytes, and unlocking it. 
@@ -47,4 +49,3 @@ close #f
 	- ##[[KeyPgUnlock Unlock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

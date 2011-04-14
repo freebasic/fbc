@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VA_ARG"}}----
-Returns the current argument from a variable argument list
+Returns the current argument from a variable argument list.
 
 {{fbdoc item="syntax"}}##
 	//variable// = **va_arg** ( //argument_list//, [[DataType datatype]] )
@@ -9,6 +9,8 @@ Returns the current argument from a variable argument list
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/va_arg.bas"}}%%(freebasic)
+
+' Note that CDECL is used here --> it must be used with an ellipsis argument (...).
 FUNCTION Avg cdecl (Count as INTEGER, ... ) AS DOUBLE
 	DIM ARG AS ANY PTR 
 	DIM SUM AS DOUBLE = 0
@@ -47,4 +49,3 @@ The output would look like:
 	- ##[[KeyPgVaNext va_next]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}
-   

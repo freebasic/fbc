@@ -19,19 +19,19 @@ Code block that allows the use of architecture-specific instructions.
 
 	##Asm## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem comments]]  - use ""FreeBASIC""-like " ##'## " comments, not " ##;## " as usual in ASM. 
 
-	==x86 x86 Specific:==
+	==x86 Specific:==
 
 		==Syntax==
 			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by ""FreeBASIC"" is GAS, using the ##.intel_syntax noprefix## directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal.
 
 			Instruction syntax is mostly the same as FASM uses, one important difference is that GAS requires size settings to be followed by the word "ptr".
+			
 			%%(freebasic)
 ' Assuming "blah" is a FB global or local UINTEGER variable
 mov  eax, [blah]        ' OK: size is apparent from eax
 inc  [blah]             ' Not OK: size is not given
 inc  dword [blah]       ' Not OK: size given, but still not accepted by GAS
-inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here
-%%
+inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here%%
 
 		==Register Preservation==
 			When an ASM block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
@@ -121,4 +121,3 @@ Print "4 + 5 ="; AddFive(i)
 	- ##[[KeyPgFunction Function]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

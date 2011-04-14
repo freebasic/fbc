@@ -1,7 +1,7 @@
-{{fbdoc item="title" value="Frequently Asked FB Run-Time Library Questions"}}----
+{{fbdoc item="title" value="Frequently Asked FB Runtime Library Questions"}}----
 
 {{anchor name="item0"}}
-**FreeBASIC Run-Time Library questions:**
+**FreeBASIC Runtime Library questions:**
 
 	==- {{anchor name="item1|How do I play sound?"}}==
 	==- {{anchor name="item2|How do I access the serial ports?"}}==
@@ -13,7 +13,7 @@
 
 ----
 
-@@**FreeBASIC Run-Time Library questions**@@
+@@**FreeBASIC Runtime Library questions**@@
 
 {{anchor name="item1"}}== How do I play sound?==
 	Of the QB's sound keywords only BEEP is implemented in FB. 

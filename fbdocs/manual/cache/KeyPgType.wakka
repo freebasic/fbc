@@ -154,5 +154,6 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 	- ##[[KeyPgTypeof Typeof]]##
 	- ##[[KeyPgOffsetof OffsetOf]]##
 	- ##[[KeyPgField Field]]##
+	- ##[[KeyPgWith With]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

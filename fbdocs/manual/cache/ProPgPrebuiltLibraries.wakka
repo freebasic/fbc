@@ -16,8 +16,8 @@ Although many headers can be used on any of the platforms supported by FreeBASIC
 	- ##string.bi## - Declarations for ##[[KeyPgFormat format]]##
 	- ##vbcompat.bi## - Includes datetime.bi, dir.bi, file.bi, and string.bi plus additional constants compatible with Microsoft Visual Basic.
 
-{{fbdoc item="section" value="C Run-Time (CRT)"}}
-	Where possible cross-platform compatible headers have been provided for the C run-time (CRT).  For example,
+{{fbdoc item="section" value="C Runtime (CRT)"}}
+	Where possible cross-platform compatible headers have been provided for the C runtime (CRT).  For example,
 {{fbdoc item="filename" value="examples/manual/proguide/libs/libs1.bas"}}%%(freebasic)
 #include once "crt.bi"
 printf( !"Hello World\n" )

@@ -9,7 +9,21 @@ Set target architecture
 		The target architecture.
 
 {{fbdoc item="desc"}}
-	The ##-arch## compiler option sets the target CPU architecture.  The default is //486// if the //-arch// option is not specified.  Can be one of //386//, //486//, //586//, or //686//.
+	The ##-arch## compiler option sets the target CPU architecture.  The default is //486// if the //-arch// option is not specified.  Recognized values:
+		//386//
+		//486//
+		//586//
+		//686//
+		//athlon//
+		//athlon-xp//
+		//athlon-fx//
+		//k8-sse3//
+		//pentium-mmx//
+		//pentium2//
+		//pentium3//
+		//pentium4//
+		//pentium4-sse3//
+		//native//
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]

@@ -22,4 +22,3 @@ Intrinsic define (macro string) set by the compiler
 	- ##[[KeyPgDdfile __FILE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
-   

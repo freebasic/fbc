@@ -22,7 +22,7 @@ Intrinsic define set by the compiler
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
 	- ##[[KeyPgDdfbwin32 __FB_WIN32_]]##
+	- ##[[KeyPgDdfbunix __FB_UNIX__]]##
 	- [[CompilerOpttarget Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}
-   

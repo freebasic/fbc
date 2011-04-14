@@ -3,7 +3,8 @@ Preprocessor directive to define a macro
 
 {{fbdoc item="syntax"}}##
 	#define //identifier// //text//
-	#define //identifier//([//parameters//]) //macro_text//
+	#define //identifier//( [ //parameters// ] ) //macro_text//
+	#define //identifier//( [ //parameters//, ] //variadic_parameter//[[KeyPgDots ...]] ) //macro_text//
 ##
 {{fbdoc item="desc"}}
 	Preprocessor keyword that defines an identifier with a custom meaning:
@@ -15,6 +16,8 @@ Preprocessor directive to define a macro
 	##//Identifier//##s can be checked to see whether they have been defined with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]##, which can be used to hide parts of code to the compiler (conditional compiling).
 
 	For defining identifiers with constant values associated with them ##[[KeyPgConst Const]]## may be used as a more powerful method.
+	
+	Using ##[[KeyPgDots ...]]## (an ellipsis) behind the last parameter of a macro allows to create a variadic macro. This means it is possible to pass any number of arguments to the //variadic_parameter//, which can be used in the //macro_text//, just like a normal macro parameter. The //variadic_parameter// will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)
@@ -53,6 +56,17 @@ end namespace
 #ifdef NSDEF
 #	print NSDEF is defined
 #endif
+%%
+
+{{fbdoc item="filename" value="examples/manual/prepro/variadic.bas"}}%%(freebasic)
+'' Using a variadic macro to wrap a variadic function
+#include "crt.bi"
+#define eprintf(format, args...) fprintf(stderr, format, args)
+eprintf(!"Hello from printf: %i %s %i\n", 5, "test", 123)
+
+'' LISP-like accessors allowing to modify comma-separated lists
+#define car(a, b...) a
+#define cdr(a, b...) b
 %%
 
 {{fbdoc item="diff"}}

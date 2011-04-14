@@ -11,7 +11,7 @@ Preprocessor statement to include contents of another source file
 
 	The ##**once**## specifier tells the compiler to include the file only once even if it is included several times by the source code.
 
-	##[[KeyPgMetaInclude $Include]]## is an alternative form of ##**include**##, existing only for compatibility with ""QuickBasic"". It is recommended to use ##**#include**## instead.
+	##[[KeyPgMetaInclude $Include]]## is an alternative form of ##**include**##, existing only for compatibility with ""QuickBASIC"". It is recommended to use ##**#include**## instead.
 
 	The compiler will automatically convert path separator characters ( '**##/##**' and '**##\##**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
 

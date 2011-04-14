@@ -2,7 +2,7 @@
 Statement block to allow calling of functions compiled for specific languages or platforms.
 
 {{fbdoc item="syntax"}}##
-	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS"""** }
+	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS""" }** [ **[[KeyPgLib Lib]]** "//libname//" ]
 		//declarative statements//
 	**End Extern**
 ##
@@ -16,6 +16,8 @@ Statement block to allow calling of functions compiled for specific languages or
 	##**Extern """Windows"""**## blocks provide a default ##[[KeyPgStdcall Stdcall]]## calling convention to procedures, preserve the case of all names declared within them and on DOS/Windows platforms, append a ##"@//N//"## suffix to procedure names, where ##//N//## is the total size in bytes of any procedure parameters.
 
 	##**Extern """Windows-MS"""**## blocks are exactly like ##**Extern """Windows"""**## blocks but do not append the ##"@//N//"## suffix to procedure names in DOS/Windows platforms.
+	
+	##[[KeyPgLib Lib]] "//libname//"## can be used to specify a library which will be linked in as if ##[[KeyPgInclib #inclib "libname"]]## or ##[[CompilerOptl -l libname]]## had been used. Additionally, all procedure declarations inside the **Extern** block will use the specified ##[[KeyPgLib Lib]] "//libname//"## as if it was specified as part of their declarations (but it can still be overridden with an explicit ##[[KeyPgLib Lib]] "//libname//"##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/extern-block.bas"}}%%(freebasic)
@@ -54,4 +56,3 @@ end extern
 	- ##[[KeyPgExtern Extern]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}
-   

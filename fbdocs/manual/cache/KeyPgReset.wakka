@@ -53,7 +53,7 @@ close #1
 %%
 {{fbdoc item="diff"}}
 	- None for ##**Reset**()##.
-	- The ##**Reset**(//streamno//)## usage are new to ""FreeBASIC"".
+	- The ##**Reset**(//streamno//)## usage is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClose Close]]##

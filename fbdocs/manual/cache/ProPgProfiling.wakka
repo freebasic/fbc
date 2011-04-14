@@ -56,7 +56,7 @@ gprof program[.exe] --brief --flat-profile > profile.txt
 	- Call to ##"mcount()"## at the beginning of each procedure.  This is how the profiling library keeps track of what function is being and by which other function.
 	- Linking of additional program startup object code.  (e.g. ##gcrt?.o## )
 
-	The profiling library itself may be in a separate library or part of the C run-time library.
+	The profiling library itself may be in a separate library or part of the C runtime library.
 	- mingw will require ##gcrt2.o## and ##libgmon.a ##
 	- cygwin will require gcrt0.o and ##libgmon.a##
 	- dos will require ##gcrt0.o## (profiler code is in ##libc.a##) 

@@ -19,8 +19,6 @@ Command line compiler options for the fbc compiler:
 		- Create a DLL, including the import library.  (Same as ##-dylib##)
 	{{fbdoc item="keyword" value="CompilerOptdylib|-dylib"}}
 		- Create a DLL, including the import library
-	{{fbdoc item="keyword" value="CompilerOptentry|-entry < name >"}}
-		- Main file without extension, the entry point (default is the first .bas file on the command line)
 	{{fbdoc item="keyword" value="CompilerOpte|-e"}}
 		- Add error checking
 	{{fbdoc item="keyword" value="CompilerOptex|-ex"}}
@@ -63,6 +61,8 @@ Command line compiler options for the fbc compiler:
 		- Do not show source line where error occurred
 	{{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}
 		- Set object file path/name (must be passed after the .bas file)
+	{{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}
+		- Set the optimization level (-gen gcc)
 	{{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}
 		- Add a path to search for libraries
 	{{fbdoc item="keyword" value="CompilerOptpp|-pp"}}
@@ -104,4 +104,3 @@ Command line compiler options for the fbc compiler:
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

@@ -108,7 +108,7 @@
 	**Marzec** (marzce[at]sbox.tugraz.at):
 		- Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
 		- Translated the first SDL headers (replaced by new ones since version 0.11b).
-		- Wrote the first file routines for the run-time library.
+		- Wrote the first file routines for the runtime library.
 
 	**Nek** (dave[at]nodtveidt.net):
 		- Translated the Windows API headers, integrating parts of fsw's work (later replaced by the SWIG FB wrapper version).

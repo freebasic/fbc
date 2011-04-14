@@ -128,9 +128,9 @@ Print x(c())
 {{fbdoc item="diff"}}
 	- Parameters can be optional in ""FreeBASIC"".
 	- In QBASIC, the return type could only specified with a suffix, not with ##AS TYPE##, and only allowed functions to return a built-in type.
-	- Return value can now be specified by a ##[[KeyPgReturn Return]]## statement
+	- Return value can now be specified by a ##[[KeyPgReturn Return]]## statement.
 	- Function ##[[KeyPgOverload Overload]]##ing is supported in ""FreeBASIC"".
-	- The return value of ##[[KeyPgInteger Integer]]## functions can be ignored in the calling code.
+	- The return value of ##[[KeyPgInteger Integer]]## functions (all integer types) can be ignored in the calling code.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##

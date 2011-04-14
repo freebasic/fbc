@@ -5,11 +5,11 @@ Intrinsic define set by the compiler
 	""__FB_PCOS__""
 ##
 {{fbdoc item="desc"}}
-	Define with -1 if the OS has filesystem behavior styled like common PC OSes, e.g. DOS, Windows, OS/2, Symbian OS, possibly others. Drive letters, backslashes, that stuff, else define with 0.
+	Define created at compile time if the OS has filesystem behavior styled like common PC OSes, e.g. DOS, Windows, OS/2, Symbian OS, possibly others. Drive letters, backslashes, that stuff, otherwise undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbpcos.bas"}}%%(freebasic)
-#IF __FB_PCOS__
+#IFDEF __FB_PCOS__
   '...instructions for PC-ish OSes...
 #ELSE
   '...instructions for other OSes

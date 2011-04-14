@@ -9,7 +9,7 @@ Declares a variable whose type is implied from the initializer expression
 
 	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble Double]]##.
 
-	All literal strings default to the type 'zstring', however, if you initialize a variable using ##[[KeyPgWstring Wstring]]##, and a literal string, the variable will be "promoted" to a variable length string.
+	All ##[[KeyPgZstring Zstring]]## expressions, including string literals and dereferenced ##[[KeyPgZstring Zstring]]## ##[[KeyPgPtr Ptr]]##s, will be given the ##[[KeyPgString String]]## variable type.
 
 	Explicit suffixes may be used on literal variables, to change/clarify their type. See [[ProPgLiterals Literals]] and [[TblVarTypes Variable Types]] for some more information about suffixes that can be used on literals.
 

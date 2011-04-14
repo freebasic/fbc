@@ -23,6 +23,7 @@ Type EVENT Field = 1
 		End Type
 		button As Integer
 		z As Integer
+		w As Integer
 	End Union
 End Type
 %%
@@ -45,6 +46,7 @@ The ##Type Field## will contain the event type ID, while the remaining 4 integer
 	- ##EVENT_WINDOW_GOT_FOCUS## (##11##) The program window has got focus.
 	- ##EVENT_WINDOW_LOST_FOCUS## (##12##) The program window has lost focus.
 	- ##EVENT_WINDOW_CLOSE## (##13##) The user attempted to close the program window.
+	- ##EVENT_MOUSE_HWHEEL## (##14##) The horizontal mouse wheel was used; the new horizontal wheel position is returned into the ##.w## field. (Note: currently implemented on Windows only)
 
 
 The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type.

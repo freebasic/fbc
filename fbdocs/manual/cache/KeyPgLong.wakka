@@ -32,4 +32,3 @@ Standard data type: signed integer having same size as ##[[KeyPgSizeof Sizeof]](
 	- ##[[KeyPgUlong Ulong]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
-   

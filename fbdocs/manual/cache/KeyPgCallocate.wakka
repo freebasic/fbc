@@ -5,7 +5,7 @@ Allocates memory for a certain number of elements from the free store and clears
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Callocate**( //bytes// [, //size// ] )
+	//result// = **Callocate**( //num_elements// [, //size// ] )
 ##
 {{fbdoc item="param"}}
 	##//num_elements//##

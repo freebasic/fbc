@@ -216,10 +216,9 @@ type RegTypeX as __dpmi_regs
 	No, it's not a bug in ""FreeBASIC"" and it's not really DOS specific, see also [[CompilerFAQ Compiler FAQ]]. For a beginner, the easy solution is to use ##[[KeyPgShared Shared]]## for arrays. More advanced users could consider using memory management functions like ##[[KeyPgAllocate Allocate]]##. This is even more important in DOS, since it allows the application to run on low memory PCs (and still edit at least small texts for example), as well as to use all huge RAM if available (and edit huge texts for example).  
 
 {{anchor name="item23"}}==23. Threading functions are disallowed in DOS? Help!==
-	YES, the [[CatPgThreading Threading Support Functions]] are not supported for DOS target by now, and most likely won't be soon/ever. The reason is simple: neither the DOS kernel, nor the DPMI host/standard, nor "GO32" DOS Extender do support them, unlike the ""Win32"" or Linux kernel. As usual, DOS won't help you here, OTOH nothing is impossible in DOS: you can set up your threading on the top of DPMI, there are multiple possibilities: 
+	The [[CatPgThreading Threading Support Functions]] are not supported for DOS target, and most likely won't be soon/ever. The reason is simple: neither the DOS kernel, nor the DPMI host/standard, nor "GO32" DOS Extender support threading, unlike the ""Win32"" or Linux kernel. However nothing is impossible in DOS: you can set up your threading on the top of DPMI. There are multiple possibilities, two of which are: 
 		- Set up an ISR, see "ISR_TIMER.BAS" example. This is not a "full" replacement, but sufficient in some cases.
 		- There is a **pthreads** library for DJGPP allowing to "emulate" Linux-like threading to some degree. It works acceptably for [P]7-ZIP DJGPP port (written in C+ + ), no tests with FB yet.
-		- !writeme!
 
 {{anchor name="item24"}}==24. Executables made with FB DOS are bloated!==
 	This is true but there is no easy/fast way to fix. FB is a 32-bit HLL compiler, and most of the size is imported from DJGPP. !writeme! ( see forum: [[http://freebasic.net/forum/viewtopic.php?t=11757 freebasic.net/forum/viewtopic.php?t=11757]] )
@@ -255,8 +254,7 @@ type RegTypeX as __dpmi_regs
 
 {{anchor name="item999"}}{{fbdoc item="see"}}
 	- [[CompilerFAQ Compiler FAQ]].
-	- [[FaqPgrtlib FB Run-Time Library FAQ]].
+	- [[FaqPgrtlib FB Runtime Library FAQ]].
 	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-   

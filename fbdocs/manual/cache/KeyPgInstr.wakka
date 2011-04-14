@@ -68,4 +68,3 @@ print instr(text,"&#1077;&#1090;") ' displays 5
 	- ##[[KeyPgMidfunction Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}
-   

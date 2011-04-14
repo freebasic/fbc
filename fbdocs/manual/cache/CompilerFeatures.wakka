@@ -2,7 +2,7 @@
 
 {{fbdoc item="section" value="BASIC compatibility"}}
 	- FreeBASIC is not a "new" BASIC language. You don't need to learn much new if you are familiar with any Microsoft-BASIC variant. You can use either ##"-lang qb"## for compatibility, or (default) ##"-lang fb"##  for some of the new features, but it also brings some restrictions and some similarity with the "C" programming language. See also [[CompilerDialects]].
-	- FreeBASIC is case-insensitive; explicit "main" procedure is not required; most of the graphic and console statements and procedures found in MS-QuickBasic are implemented, et cetera.
+	- FreeBASIC is case-insensitive; explicit "main" procedure is not required; most of the graphic and console statements and procedures found in Microsoft QuickBASIC are implemented, et cetera.
 	- Only with ##"-lang qb"##: scalar variables don't need to be dimensioned and suffixes can be used; line numbers are supported; ##[[KeyPgOnerror On Error]]## and ##[[KeyPgGosub Gosub]]## supported.
 
 {{fbdoc item="section" value="Clean syntax"}}
@@ -14,7 +14,7 @@
 
 {{fbdoc item="section" value="Multi-platform"}}
 	- FreeBASIC currently runs on 32-bit Windows, Linux, and DOS (a 16-bit DOS is good enough, although FreeBASIC itself and compiler output are 32-bit) and also creates applications for the Xbox console. More platforms to come.
-	- The run-time library was written with portability in mind. All third-party tools used exist on most operating systems already as they are from the GNU binutils. The compiler is written in 100% FreeBASIC code (that is, FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it doesn't depend on non-portable tools.
+	- The runtime library was written with portability in mind. All third-party tools used exist on most operating systems already as they are from the GNU binutils. The compiler is written in 100% FreeBASIC code (that is, FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it doesn't depend on non-portable tools.
 
 {{fbdoc item="section" value="Unicode support"}}
 	- Besides ASCII files with [[Unicode Unicode]] escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
@@ -94,6 +94,6 @@
 	- While FreeBASIC is not an optimizing compiler, it does many kinds of general optimizations to generate the fastest possible code on x86 CPU's, not losing to other BASIC alternatives, including the commercial ones.
 
 {{fbdoc item="section" value="Completely free"}}
-	- All third-party tools are also free. No piece of abandoned or copyrighted software is used (except GoRC on Win32). The assembler, linker, archiver, and other command-line applications come from the GNU binutil programming tools.
+	- All third-party tools are also free. No piece of abandoned or copyrighted software is used (except GoRC on Win32). The assembler, linker, archiver, and other command-line applications come from the GNU binutils programming tools.
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

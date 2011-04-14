@@ -18,9 +18,9 @@ Unlocks work page's framebuffer
 
 	An internal counter exists that remembers the screen lock state, thus ##**Screenunlock**## has an effect only on a screen that is locked.  A screen that has not been locked with ##**Screenlock**## cannot get unlocked, however ##**Screenunlock**## still will force an update of given area or full screen.   
 
-	Calls to ##**Screenunlock**## must be paired with a matching call to ##**[[KeyPgScreenlock Screenlock]]**##.  Only the first call to ##**[[KeyPgScreenlock Screenlock]]**## actually performs a locking operation.  Subsequent calls to ##**Screenlock**## only increment the counter.  Conversely, ##**Screenunlock**## only decrements the lock counter until it reaches zero at which time the actual unlock operation will be performed.  Using ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## will release all locks and set the lock counter back to zero before changing screen modes.
+	Calls to ##**Screenunlock**## must be paired with matching calls to ##**[[KeyPgScreenlock Screenlock]]**##.  Only the first call to ##**[[KeyPgScreenlock Screenlock]]**## actually performs a locking operation.  Subsequent calls to ##**Screenlock**## only increment the lock counter.  Conversely, ##**Screenunlock**## only decrements the lock counter until it reaches zero at which time the actual unlock operation will be performed.  Using ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## will release all locks and set the lock counter back to zero before changing screen modes.
 
-	After ##**Screenunlock**## is called, all graphics statements still may be safely used, OTOH accessing the work page framebuffer directly via ##[[KeyPgScreenptr Screenptr]]## may only be used after locking the screen again with ##[[KeyPgScreenlock Screenlock]]##.
+	All graphic statements automatically lock the screen before the function call, and unlock the screen afterwards, so you do not need to do this explicitly using ##**[[KeyPgScreenlock Screenlock]]**## and ##**Screenunlock**##. You only need to lock the screen when you wish to access the screen (framebuffer) directly using ##[[KeyPgScreenptr Screenptr]]##  or when you wish to group several graphic statements together so their effects appear simultaneously on screen, thus avoiding potential screen flicker during screen updates.
 
 	Warning (Win32, Linux) : The screen is locked by stopping the thread that processes also the OS' events. This means the screen should be locked only for the short time required to redraw it, and no user input will be received while the screen is locked.
 
@@ -39,4 +39,3 @@ Unlocks work page's framebuffer
 	- ##[[KeyPgScreenptr Screenptr]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}
-   

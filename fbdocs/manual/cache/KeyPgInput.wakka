@@ -63,7 +63,6 @@ loop while lcase(yn) = "y"
 {{fbdoc item="diff"}}
 	- If the user inputs the wrong number of values, or if it expects a number for a value and gets a string that is not a valid number, then QBASIC issues the message "Redo from start", and does not continue further until it receives a valid input.
 	- QB does not treat space as a delimiter when inputting a number from the console.
-	- If no prompt is given, QBASIC will prompt with "? ", while FreeBASIC will not give any prompt.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInputPp Input #]]##

@@ -57,7 +57,7 @@ More than one source module can be used when making a library.  And basic progra
 
 Libraries can optionally contain debugging information specified with the //[[CompilerOptg -g]]// command line option.
 
-Object files, and therefore libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC run-time library.
+Object files, and therefore libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC runtime library.
 
 {{fbdoc item="see"}}
 	- [[ProPgSharedLibraries Shared Libraries]]
@@ -66,4 +66,3 @@ Object files, and therefore libraries, are platform specific and in some cases s
 	- [[CompilerOptlib Compiler Option: -lib]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

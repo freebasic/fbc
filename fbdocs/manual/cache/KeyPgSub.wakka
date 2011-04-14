@@ -78,8 +78,8 @@ TestSub
 	- In the //[[CompilerOptlang -lang fb]]// dialect, numeric parameters are passed ##[[KeyPgByval Byval]]## by default.  ##[[KeyPgString String]]##s and UDTs are passed ##[[KeyPgByref Byref]]## by default.
 
 {{fbdoc item="diff"}}
-	- Public and Private access specifiers are new to ""FreeBASIC""
-	- Constructor subroutines are new to ""FreeBASIC""
+	- Public and Private access specifiers are new to ""FreeBASIC"".
+	- Constructor subroutines are new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare Declare]]##

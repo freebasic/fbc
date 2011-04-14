@@ -20,6 +20,8 @@ Removes a previous access restriction (lock) on a file
 
 	It is strongly recommended to use the same arguments used in the previous ##[[KeyPgLock Lock]]##.
 
+	**Note: This command does not always work, neither as documented nor as expected. It appears to be broken at the moment.**
+
 {{fbdoc item="ex"}}
 	     For an example see ##[[KeyPgLock Lock]]##.
 
@@ -33,4 +35,3 @@ Removes a previous access restriction (lock) on a file
 	- ##[[KeyPgOpen Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

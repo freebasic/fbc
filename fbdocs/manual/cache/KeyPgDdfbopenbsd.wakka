@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_OPENBSD__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time in the OpenBSD version of the compiler, or when the //[[CompilerOpttarget -target openbsd]]// command line option is used. It can be used to compile parts of the program only if the target is OpenBSD.
+	Define without a value created at compile time in the ""OpenBSD"" version of the compiler, or when the //[[CompilerOpttarget -target openbsd]]// command line option is used. It can be used to compile parts of the program only if the target is ""OpenBSD"".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbopenbsd.bas"}}%%(freebasic)
@@ -22,6 +22,7 @@ Intrinsic define set by the compiler
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
 	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
+	- ##[[KeyPgDdfbunix __FB_UNIX__]]##
 	- [[CompilerOpttarget Compiler Option: -target]]
 
 

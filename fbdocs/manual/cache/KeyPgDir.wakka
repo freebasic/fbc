@@ -40,7 +40,7 @@ Searches for and returns information about an item in the filesystem, performs a
 	The fourth procedure behaves the same as ##**Dir**( "####", , *//p_out_attrib// )##.
 
 **File Attributes:**
-	Files and directories and other items can be said to possess so-called file attributes; metadata that describes item. The meaning of this metadata varies with operating system and the file system it uses. The following macros are used as bit-flags with ##//attrib_mask//##, ##//out_attrib//## and ##*//p_out_attrib//##. Their values can be combined to form a mask using ##[[KeyPgOpOr Operator Or]]##. To access them, ##[[KeyPgInclude Include]] "dir.bi"##.
+	Files and directories and other items can be said to possess so-called file attributes; metadata that describes the item. The meaning of this metadata varies with operating system and the file system it uses. The following macros are used as bit-flags with ##//attrib_mask//##, ##//out_attrib//## and ##*//p_out_attrib//##. Their values can be combined to form a mask using ##[[KeyPgOpOr Operator Or]]##. To access them, ##[[KeyPgInclude Include]] "dir.bi"##.
 
 	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##. An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##. Further, if ##//attrib_mask// [[KeyPgOpAnd And]] **fbArchive**## is zero, then ##//attrib_mask//## is assigned to ##//attrib_mask// [[KeyPgOpOr Or]] **fbDirectory**## before checking the file for matching attributes.
 
@@ -48,27 +48,26 @@ Searches for and returns information about an item in the filesystem, performs a
 		//The item cannot be written to or deleted.//
 		**DOS & Windows**: The item has the "read-only" attribute set.
 		**Linux**:The item has no write permissions associated with the current user or group, nor is it globally writable.  (Whether or not the user has root permissions is ignored.)
-	
+
 	## # define fbHidden &h02 ##
 		//The item is hidden in ordinary directory listings.//
 		**DOS & Windows**: The item has the "hidden" attribute set.
 		**Linux**: The item's name has a period (##.##) as the first character.
-	
+
 	## # define fbSystem &h04 ##
 		//The item is used almost exclusively by the system.//
 		**DOS & Windows**: The item has the "system" attribute set.
 		**Linux**: The item is either a character device, block device, named pipe (FIFO) or Unix socket.
-	
+
 	## # define fbDirectory &h10 ## 
 		//The item is a directory. Includes the current (##.##) and parent (##..##) directories as well.//
-		**DOS & Windows**: The item has the "directory" attribute set.
-		**Linux**: The item is a directory.
-	
+		**DOS & Windows & Linux**: The item is a directory.
+
 	## # define fbArchive &h20 ##
 		//The item may be backed up after some automated operations.//
-		**DOS & Windows**: The item has the "archive" attribute set.
+		**DOS & Windows**: The item has the "archive" attribute set (automatically set after every write access to a file).
 		**Linux**: The item is not a directory; typical filesystems do not support this metadata.
-	
+
 	## # define fbNormal (fbReadOnly or fbArchive) ##
 		//The item is a file or directory.//
 
