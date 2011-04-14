@@ -733,7 +733,7 @@ function rtlInitApp _
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			if( env.clopt.profile ) then
 				'' __monstartup()
-    			proc = astNewCALL( PROCLOOKUP( PROFILEMONSTARTUP ), NULL )
+    			proc = rtlProfileCall_monstartup( )
     			astAdd( proc )
 			end if
 		end select
