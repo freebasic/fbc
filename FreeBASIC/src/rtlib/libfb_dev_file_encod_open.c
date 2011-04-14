@@ -41,14 +41,6 @@
 #include <string.h>
 #include "fb.h"
 
-long fb_DevFileGetSize
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_back
-	);
-
 int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars );
 int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len );
 int fb_DevFileReadEncod( struct _FB_FILE *handle, void *dst, size_t *max_chars );

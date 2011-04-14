@@ -57,6 +57,7 @@
        int          fb_DevFileReadLineWstr  ( struct _FB_FILE *handle, FB_WCHAR *dst,
                                               int dst_chars );
        int          fb_DevFileSeek          ( struct _FB_FILE *handle, fb_off_t offset, int whence );
+       fb_off_t     fb_DevFileGetSize       ( FILE *fp, int mode, FB_FILE_ENCOD encod, int seek_back );
        int          fb_DevFileTell          ( struct _FB_FILE *handle, fb_off_t *pOffset );
        int          fb_DevFileUnlock        ( struct _FB_FILE *handle, fb_off_t position,
                                               fb_off_t size );

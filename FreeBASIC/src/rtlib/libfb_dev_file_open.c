@@ -49,14 +49,6 @@ int fb_hDevFileSeekStart
 		int seek_zero
 	);
 
-long fb_DevFileGetSize
-	(
-		FILE *fp,
-		int mode,
-		FB_FILE_ENCOD encod,
-		int seek_back
-	);
-
 static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
