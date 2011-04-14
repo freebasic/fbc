@@ -182,7 +182,7 @@ sub ExtractPageNames _
 
 end sub
 
-#ifdef __FB_UNIX__
+#ifdef __FB_LINUX__
 extern "c"
     declare function strcasecmp(byval as const zstring ptr, byval as const zstring ptr) as integer
 end extern
