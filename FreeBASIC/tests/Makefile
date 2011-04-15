@@ -17,6 +17,7 @@ XARGS := xargs
 GREP := grep
 SED := sed
 ECHO := echo
+PRINTF := printf
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
@@ -60,41 +61,41 @@ LOGTESTS_MAKEFILE := log-tests.mk
 .PHONY all :
 all : 
 
-	@$(ECHO) -e "usage: make target [options]"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Targets: (using cunit):"
-	@$(ECHO) -e "   cunit-tests"
-	@$(ECHO) -e "   log-tests"
-	@$(ECHO) -e "   failed-tests"
-	@$(ECHO) -e "   check"
-	@$(ECHO) -e "   mostlyclean"
-	@$(ECHO) -e "   clean"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Targets: (bypassing cunit)"
-	@$(ECHO) -e "   log-tests ALLOW_CUNIT=1"
-	@$(ECHO) -e "   failed-tests ALLOW_CUNIT=1"
-	@$(ECHO) -e "   mostlyclean ALLOW_CUNIT=1"
-	@$(ECHO) -e "   clean ALLOW_CUNIT=1"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Options:"
-	@$(ECHO) -e "   FBC=/path/fbc"
-	@$(ECHO) -e "   FB_LANG=fb | fblite | qb | deprecated"
-	@$(ECHO) -e "   DEBUG=1"
-	@$(ECHO) -e "   EXTRAERR=1"
-	@$(ECHO) -e "   ARCH=arch (default is 486)"
-	@$(ECHO) -e "   OS=DOS"
-	@$(ECHO) -e "   FPU=fpu | sse"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Targets: Configuration and Checks"
-	@$(ECHO) -e "   check"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Example: make all available tests"
-	@$(ECHO) -e "   make cunit-tests"
-	@$(ECHO) -e "   make log-tests"
-	@$(ECHO) -e ""
-	@$(ECHO) -e "Example: make obj -lang qb tests"
-	@$(ECHO) -e "   make log-tests FB_LANG=qb"
-	@$(ECHO) -e ""
+	@$(ECHO) "usage: make target [options]"
+	@$(ECHO) ""
+	@$(ECHO) "Targets: (using cunit):"
+	@$(ECHO) "   cunit-tests"
+	@$(ECHO) "   log-tests"
+	@$(ECHO) "   failed-tests"
+	@$(ECHO) "   check"
+	@$(ECHO) "   mostlyclean"
+	@$(ECHO) "   clean"
+	@$(ECHO) ""
+	@$(ECHO) "Targets: (bypassing cunit)"
+	@$(ECHO) "   log-tests ALLOW_CUNIT=1"
+	@$(ECHO) "   failed-tests ALLOW_CUNIT=1"
+	@$(ECHO) "   mostlyclean ALLOW_CUNIT=1"
+	@$(ECHO) "   clean ALLOW_CUNIT=1"
+	@$(ECHO) ""
+	@$(ECHO) "Options:"
+	@$(ECHO) "   FBC=/path/fbc"
+	@$(ECHO) "   FB_LANG=fb | fblite | qb | deprecated"
+	@$(ECHO) "   DEBUG=1"
+	@$(ECHO) "   EXTRAERR=1"
+	@$(ECHO) "   ARCH=arch (default is 486)"
+	@$(ECHO) "   OS=DOS"
+	@$(ECHO) "   FPU=fpu | sse"
+	@$(ECHO) ""
+	@$(ECHO) "Targets: Configuration and Checks"
+	@$(ECHO) "   check"
+	@$(ECHO) ""
+	@$(ECHO) "Example: make all available tests"
+	@$(ECHO) "   make cunit-tests"
+	@$(ECHO) "   make log-tests"
+	@$(ECHO) ""
+	@$(ECHO) "Example: make obj -lang qb tests"
+	@$(ECHO) "   make log-tests FB_LANG=qb"
+	@$(ECHO) ""
 
 # ------------------------------------------------------------------------
 # Sanity checks
@@ -103,38 +104,38 @@ all :
 .PHONY: check
 check :
 # ------------------------------------------------------------------------
-	@$(ECHO) -e "Checking that fb compiler $(FBC) exists: \c"
+	@$(PRINTF) "Checking that fb compiler $(FBC) exists: "
 	@-if $(FBC) -version > /dev/null 2>&1 \
 	; then \
-		$(ECHO) -e "OK" && \
+		$(ECHO) "OK" && \
 		true \
 	; else \
-		$(ECHO) -e "Failed" && \
+		$(ECHO) "Failed" && \
 		false \
 	; fi
 # ------------------------------------------------------------------------
-	@$(ECHO) -e "Checking that $(FBC) working: \c"
-	@$(ECHO) -e "end 0" > fbcworks.bas
+	@$(PRINTF) "Checking that $(FBC) working: "
+	@$(ECHO) "end 0" > fbcworks.bas
 	@-if $(FBC) fbcworks.bas > /dev/null 2>&1 \
 	; then \
-		$(ECHO) -e "OK" && \
+		$(ECHO) "OK" && \
 		$(RM) -f fbcworks.bas && \
 		true \
 	; else \
-		$(ECHO) -e "Failed" && \
+		$(ECHO) "Failed" && \
 		$(RM) -f fbcworks.bas && \
 		$(RM) -f fbcworks.exe && \
 		false \
 	; fi
 # ------------------------------------------------------------------------
-	@$(ECHO) -e "Checking that compiled program executes: \c"
+	@$(PRINTF) "Checking that compiled program executes: "
 	@-if ./fbcworks$(EXEEXT) > /dev/null 2>&1 \
 	; then \
-		$(ECHO) -e "OK" && \
+		$(ECHO) "OK" && \
 		$(RM) -f fbcworks$(EXEEXT) && \
 		true \
 	; else \
-		$(ECHO) -e "Failed" && \
+		$(ECHO) "Failed" && \
 		$(RM) -f fbcworks$(EXEEXT) && \
 		false \
 	; fi

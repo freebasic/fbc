@@ -20,6 +20,7 @@ GREP := grep
 SED := sed
 ECHO := echo
 CAT := cat
+PRINTF := printf
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
@@ -163,15 +164,15 @@ all : $(LOGLIST_ALL)
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_COMPILE_ONLY_OK),)
 $(LOGLIST_COMPILE_ONLY_OK) : %.log : %.bas
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_OK"
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_OK" > $@
+	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_OK"
+	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_OK" > $@
 	@if $(FBC) $(FBC_CFLAGS) -c $< \
 	; then \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; else \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
-		$(ECHO) -e "SRCLIST_COMPILE_ONLY_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "$< : RESULT=FAILED" && \
+		$(ECHO) "SRCLIST_COMPILE_ONLY_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; fi >> $@ 2>&1
 endif
@@ -179,16 +180,16 @@ endif
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_COMPILE_ONLY_FAIL),)
 $(LOGLIST_COMPILE_ONLY_FAIL) : %.log : %.bas
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_FAIL"
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_FAIL" > $@
+	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_FAIL"
+	@$(ECHO) "$< : TEST_MODE=COMPILE_ONLY_FAIL" > $@
 	@if $(FBC) $(FBC_CFLAGS) -c $< \
 	; then \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
+		$(ECHO) "$< : RESULT=FAILED" && \
 		$(RM) -f $(patsubst %.bas,%.o,$<) && \
-		$(ECHO) -e "SRCLIST_COMPILE_ONLY_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "SRCLIST_COMPILE_ONLY_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; else \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; fi >> $@ 2>&1
 endif
@@ -196,15 +197,15 @@ endif
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_COMPILE_AND_RUN_OK),)
 $(LOGLIST_COMPILE_AND_RUN_OK) : %.log : %.bas
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_AND_RUN_OK"
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_AND_RUN_OK" > $@
+	@$(ECHO) "$< : TEST_MODE=COMPILE_AND_RUN_OK"
+	@$(ECHO) "$< : TEST_MODE=COMPILE_AND_RUN_OK" > $@
 	@if cd . && $(MAKE) -f bmk-make.mk FILE=$< TEST_MODE=COMPILE_AND_RUN_OK LOGFILE=$@ \
 	; then \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; else \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
-		$(ECHO) -e "SRCLIST_COMPILE_AND_RUN_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "$< : RESULT=FAILED" && \
+		$(ECHO) "SRCLIST_COMPILE_AND_RUN_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; fi >> $@ 2>&1
 endif
@@ -212,15 +213,15 @@ endif
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_COMPILE_AND_RUN_FAIL),)
 $(LOGLIST_COMPILE_AND_RUN_FAIL) : %.log : %.bas
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_AND_RUN_FAIL"
-	@$(ECHO) -e "$< : TEST_MODE=COMPILE_AND_RUN_FAIL" > $@
+	@$(ECHO) "$< : TEST_MODE=COMPILE_AND_RUN_FAIL"
+	@$(ECHO) "$< : TEST_MODE=COMPILE_AND_RUN_FAIL" > $@
 	@if cd . && $(MAKE) -f bmk-make.mk FILE=$< TEST_MODE=COMPILE_AND_RUN_FAIL LOGFILE=$@ \
 	; then \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; else \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
-		$(ECHO) -e "SRCLIST_COMPILE_AND_RUN_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "$< : RESULT=FAILED" && \
+		$(ECHO) "SRCLIST_COMPILE_AND_RUN_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; fi >> $@ 2>&1
 endif
@@ -228,15 +229,15 @@ endif
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_MULTI_MODULE_OK),)
 $(LOGLIST_MULTI_MODULE_OK)  : %.log : %.bmk
-	@$(ECHO) -e "$< : TEST_MODE=MULTI_MODULE_OK"
-	@$(ECHO) -e "$< : TEST_MODE=MULTI_MODULE_OK" > $@
+	@$(ECHO) "$< : TEST_MODE=MULTI_MODULE_OK"
+	@$(ECHO) "$< : TEST_MODE=MULTI_MODULE_OK" > $@
 	@if cd . && $(MAKE) -f bmk-make.mk BMK=$< TEST_MODE=MULTI_MODULE_OK LOGFILE=$@ \
 	; then \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; else \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
-		$(ECHO) -e "SRCLIST_MULTI_MODULE_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "$< : RESULT=FAILED" && \
+		$(ECHO) "SRCLIST_MULTI_MODULE_OK += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; fi >> $@ 2>&1
 endif
@@ -244,15 +245,15 @@ endif
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_MULTI_MODULE_FAIL),)
 $(LOGLIST_MULTI_MODULE_FAIL)  : %.log : %.bmk
-	@$(ECHO) -e "$< : TEST_MODE=MULTI_MODULE_FAIL"
-	@$(ECHO) -e "$< : TEST_MODE=MULTI_MODULE_FAIL" > $@
+	@$(ECHO) "$< : TEST_MODE=MULTI_MODULE_FAIL"
+	@$(ECHO) "$< : TEST_MODE=MULTI_MODULE_FAIL" > $@
 	@if cd . && $(MAKE) -f bmk-make.mk BMK=$< TEST_MODE=MULTI_MODULE_FAIL LOGFILE=$@ \
 	; then \
-		$(ECHO) -e "$< : RESULT=PASSED" && \
+		$(ECHO) "$< : RESULT=PASSED" && \
 		true \
 	; else \
-		$(ECHO) -e "$< : RESULT=FAILED" && \
-		$(ECHO) -e "SRCLIST_MULTI_MODULE_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
+		$(ECHO) "$< : RESULT=FAILED" && \
+		$(ECHO) "SRCLIST_MULTI_MODULE_FAIL += $<" >> $(FAILED_LOG_TESTS_INC) && \
 		$(ABORT_CMD) \
 	; fi >> $@ 2>&1
 endif
@@ -262,78 +263,78 @@ endif
 # from all dirs listed in DIRLIST from DIRLIST_INC
 #
 $(FAILED_LOG_TESTS_INC) :
-	@$(ECHO) -e "Generating $(FAILED_LOG_TESTS_INC) : \c"
-	@$(ECHO) -e "# This file automatically generated - DO NOT EDIT" > $(FAILED_LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(FAILED_LOG_TESTS_INC)
+	@$(PRINTF) "Generating $(FAILED_LOG_TESTS_INC) : "
+	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(FAILED_LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(FAILED_LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.log' \
 | $(XARGS) $(GREP) -l -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' \
 | $(SED) -e 's/\(^.*\)[[:space:]]\:[[:space:]]TESTMODE=\(.*\)/SRCLIST_\2 \+\= \1/g' \
 >> $(FAILED_LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(FAILED_LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(FAILED_LOG_TESTS_INC)
 
-	@$(ECHO) -e " Done"
+	@$(ECHO) " Done"
 
 # ------------------------------------------------------------------------
 # Auto-generate the LOG_TESTS_INC - needed by this makefile
 # from all dirs listed in DIRLIST from DIRLIST_INC
 #
 $(LOG_TESTS_INC) :
-	@$(ECHO) -e "Generating $(LOG_TESTS_INC) : \c"
-	@$(ECHO) -e "# This file automatically generated - DO NOT EDIT" > $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(PRINTF) "Generating $(LOG_TESTS_INC) : "
+	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_ONLY_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_ONLY_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_ONLY_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_ONLY_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_AND_RUN_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_AND_RUN_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*COMPILE_AND_RUN_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_COMPILE_AND_RUN_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*MULTI_MODULE_OK' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_MULTI_MODULE_OK \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*MULTI_MODULE_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_MULTI_MODULE_FAIL \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e ".\c"
+	@$(PRINTF) "."
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu\.bi\"' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_CUNIT \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
-	@$(ECHO) -e "#" >> $(LOG_TESTS_INC)
+	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
-	@$(ECHO) -e " Done"
+	@$(ECHO) " Done"
 
 # ------------------------------------------------------------------------
 # results
@@ -341,18 +342,18 @@ $(LOG_TESTS_INC) :
 
 results : $(LOGLIST_ALL)
 
-	@$(ECHO) -e "\n\nFAILED LOG - for log-tests -lang $(FB_LANG)" > $(FAILED_LOG)
+	@$(PRINTF) "\n\nFAILED LOG - for log-tests -lang $(FB_LANG)\n" > $(FAILED_LOG)
 
 ifeq ($(LOGLIST_ALL),)
-	@$(ECHO) -e "None Found\n" >> $(FAILED_LOG)
+	@$(PRINTF) "None Found\n\n" >> $(FAILED_LOG)
 else
 	@if  \
 $(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' $(LOGLIST_ALL) \
 	; then \
-		$(ECHO) -e " " && \
+		$(PRINTF) " \n" && \
 		true \
 	; else \
-		$(ECHO) -e "None Found\n" && \
+		$(PRINTF) "None Found\n\n" && \
 		true \
 	; fi  >> $(FAILED_LOG)
 endif

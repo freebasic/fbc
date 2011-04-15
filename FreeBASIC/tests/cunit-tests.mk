@@ -19,6 +19,7 @@ XARGS := xargs
 GREP := grep
 SED := sed
 ECHO := echo
+PRINTF := printf
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
@@ -109,9 +110,9 @@ make_fbcu : $(FBCU_BIN)
 #
 #
 $(CUNIT_TESTS_INC) : $(DIRLIST_INC)
-	@$(ECHO) -e "Generating $(CUNIT_TESTS_INC) : \c"
-	@$(ECHO) -e "# This file automatically generated - DO NOT EDIT" > $(CUNIT_TESTS_INC)
-	@$(ECHO) -e "#" >> $(CUNIT_TESTS_INC)
+	@$(PRINTF) "Generating $(CUNIT_TESTS_INC) : "
+	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(CUNIT_TESTS_INC)
+	@$(ECHO) "#" >> $(CUNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu\.bi\"' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
@@ -120,6 +121,7 @@ $(CUNIT_TESTS_INC) : $(DIRLIST_INC)
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*CUNIT_COMPATIBLE' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
 >> $(CUNIT_TESTS_INC)
+	@$(ECHO) "Done"
 
 # ------------------------------------------------------------------------
 
