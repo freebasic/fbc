@@ -192,9 +192,13 @@ enum FB_FUNCMODE
 	FB_FUNCMODE_STDCALL_MS						'' ms/vb-style: don't include the @n suffix
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
+
+    '' This constant is used to tell cProcCallingConv() and the RTL procedure
+    '' definitions to use env.target.fbcall (which cannot be a constant because
+    '' it depends on the [cross-compiling] target).
+    FB_USE_FUNCMODE_FBCALL = -1
 end enum
 
-const FB_FUNCMODE_DEFAULT		= FB_FUNCMODE_STDCALL
 '' C standard types
 enum FB_CSTDTYPE
 	FB_CSTDTYPE_SIZET			= 1

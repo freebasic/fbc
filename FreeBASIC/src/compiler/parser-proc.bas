@@ -443,6 +443,11 @@ function cProcCallingConv _
 		byval default as FB_FUNCMODE _
 	) as FB_FUNCMODE
 
+    '' Use the default FBCALL?
+    if( default = FB_USE_FUNCMODE_FBCALL ) then
+        default = env.target.fbcall
+    end if
+
 	'' (CDECL|STDCALL|PASCAL)?
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
@@ -450,7 +455,9 @@ function cProcCallingConv _
 		lexSkipToken( )
 
 	case FB_TK_STDCALL
-		function = FB_FUNCMODE_STDCALL
+		'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
+		'' for targets that do not support the @N suffix
+		function = env.target.stdcall
 		lexSkipToken( )
 
 	case FB_TK_PASCAL
@@ -466,7 +473,9 @@ function cProcCallingConv _
 			function = FB_FUNCMODE_CDECL
 
 		case FB_MANGLING_STDCALL
-			function = FB_FUNCMODE_STDCALL
+			'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
+			'' for targets that do not support the @N suffix
+			function = env.target.stdcall
 
 		case FB_MANGLING_STDCALL_MS
 			function = FB_FUNCMODE_STDCALL_MS

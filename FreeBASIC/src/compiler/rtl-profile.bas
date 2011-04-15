@@ -29,7 +29,7 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 2 ) = _
 	{ _
-		/' mcount ( void ) as void'/ _
+		/' mcount cdecl ( void ) as void'/ _
 		( _
 			@FB_RTL_PROFILEMCOUNT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _

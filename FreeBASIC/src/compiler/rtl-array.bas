@@ -150,7 +150,7 @@
 		/' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -165,7 +165,7 @@
 		/' fb_ArrayEraseObj ( array() as ANY, byval dtor as sub cdecl() ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYERASE_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -180,7 +180,7 @@
 		/' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -196,7 +196,7 @@
 							  byval dofill as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR_OBJ, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		4, _
 	 		{ _
@@ -217,7 +217,7 @@
 		/' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYLBOUND, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -232,7 +232,7 @@
 		/' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYUBOUND, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -247,7 +247,7 @@
 		/' fb_ArrayStrErase ( array() as any ) as void '/ _
 		( _
 			@FB_RTL_ARRAYSTRERASE, NULL, _
-	 		FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -260,7 +260,7 @@
 								 byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYSNGBOUNDCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ),FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		4, _
 	 		{ _
@@ -283,7 +283,7 @@
 							  byval linenum as integer ) as any ptr '/ _
 		( _
 			@FB_RTL_ARRAYBOUNDCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ),FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		5, _
 	 		{ _

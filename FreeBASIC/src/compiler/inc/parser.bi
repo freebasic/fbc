@@ -852,7 +852,7 @@ declare function cProcReturnMethod _
 
 declare function cProcCallingConv _
 	( _
-		byval default as FB_FUNCMODE = FB_FUNCMODE_DEFAULT _
+		byval default as FB_FUNCMODE = FB_USE_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
 
 declare function cFunctionCall _

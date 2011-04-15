@@ -58,12 +58,12 @@ const fbdllreason = "__FB_DLLREASON__"
 					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
-	'' function DllMain( byval instance as any ptr, byval reason as uinteger, _
-	''                   byval reserved as any ptr ) as integer
+	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
+	''                           byval reserved as any ptr ) as integer
 	proc = symbAddProc( proc, NULL, "DllMain", NULL, _
 						FB_DATATYPE_INTEGER, NULL, _
 						FB_SYMBATTRIB_PUBLIC, _
-						FB_FUNCMODE_STDCALL )
+						env.target.stdcall )
 
     ''
 	procnode = astProcBegin( proc, FALSE )

@@ -192,19 +192,12 @@ private function hCallProc _
 		end if
 	end if
 
-	if( mode <> FB_FUNCMODE_CDECL ) then
-		select case mode
-		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-			if( env.target.allowstdcall ) then
-				bytestopop = 0
-			end if
-		case else
-			bytestopop = 0
-		end select
-	else
-		bytestopop += bytesaligned
-		bytesaligned = 0
-	end if
+    if( mode = FB_FUNCMODE_CDECL ) then
+        bytestopop += bytesaligned
+        bytesaligned = 0
+    else
+        bytestopop = 0
+    end if
 
 	'' function?
 	p = n->l

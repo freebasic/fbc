@@ -31,7 +31,7 @@
 		/' fb_GosubPush ( byval ctx as any ptr ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_GOSUBPUSH, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -43,7 +43,7 @@
 		/' fb_GosubPop ( byval ctx as any ptr ptr ) as integer '/ _
 		( _
 			@FB_RTL_GOSUBPOP, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -55,7 +55,7 @@
 		/' fb_GosubReturn ( byval ctx as any ptr ptr ) as integer '/ _
 		( _
 			@FB_RTL_GOSUBRETURN, NULL, _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -67,7 +67,7 @@
 		/' fb_GosubExit ( byval ctx as any ptr ptr ) as void '/ _
 		( _
 			@FB_RTL_GOSUBEXIT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -84,7 +84,7 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata1( 0 to 1 ) = _
 	{ _
-		/' fb_SetJmp ( byval buf as any ptr ) as integer '/ _
+		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
 		( _
 			@FB_RTL_SETJMP, @"_setjmp", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -104,7 +104,7 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata2( 0 to 1 ) = _
 	{ _
-		/' fb_SetJmp ( byval buf as any ptr ) as integer '/ _
+		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
 		( _
 			@FB_RTL_SETJMP, @"setjmp", _
 	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _

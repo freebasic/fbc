@@ -231,9 +231,7 @@ private function hCallConvToStr _
 
 	select case as const symbGetProcMode( proc )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-		if( env.target.allowstdcall ) then
-			return " __stdcall "
-		end if
+        return " __attribute__((__stdcall__)) "
 	end select
 
 end function

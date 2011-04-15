@@ -34,7 +34,7 @@
 				        byval len as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
@@ -64,7 +64,7 @@
 							 byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_ENCOD, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -97,7 +97,7 @@
 		                     byref lock_mode as string) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_SHORT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
@@ -126,7 +126,7 @@
 							byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_CONS, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -158,7 +158,7 @@
 						   byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_ERR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -190,7 +190,7 @@
 							byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_PIPE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -222,7 +222,7 @@
 							byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_SCRN, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -254,7 +254,7 @@
 						   byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_LPT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -286,7 +286,7 @@
 						   byval len as integer, byval encoding as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_COM, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
@@ -318,7 +318,7 @@
 						  byval len as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEOPEN_QB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
@@ -345,7 +345,7 @@
 		/' fb_FileClose	( byval filenum as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILECLOSE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -358,7 +358,7 @@
 						value as any, byval valuelen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -380,7 +380,7 @@
 						value as any, byval valuelen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUTLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -402,7 +402,7 @@
 						   byref str as any, byval strlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUTSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -424,7 +424,7 @@
 						   byref str as any, byval strlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUTSTRLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -446,7 +446,7 @@
 							 array() as any ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUTARRAY, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -465,7 +465,7 @@
 							 array() as any ) as integer '/ _
 		( _
 			@FB_RTL_FILEPUTARRAYLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -484,7 +484,7 @@
 						byref value as any, byval valuelen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEGET, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -506,7 +506,7 @@
 						byref value as any, byval valuelen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -528,7 +528,7 @@
 						   byref str as any, byval strlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -550,7 +550,7 @@
 						   byref str as any, byval strlen as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETSTRLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -572,7 +572,7 @@
 							 array() as any ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETARRAY, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -591,7 +591,7 @@
 							 array() as any ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETARRAYLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -611,7 +611,7 @@
 						byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -637,7 +637,7 @@
 						byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETLARGEIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -663,7 +663,7 @@
 						   byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETSTRIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -689,7 +689,7 @@
 						   byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETSTRLARGEIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -715,7 +715,7 @@
 							 byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETARRAYIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -738,7 +738,7 @@
 							 byref bytesread as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILEGETARRAYLARGEIOB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -759,7 +759,7 @@
 		/' fb_FileTell ( byval filenum as integer ) as longint '/ _
 		( _
 			@FB_RTL_FILETELL, NULL, _
-			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -771,7 +771,7 @@
 		/' fb_FileSeek ( byval filenum as integer, byval newpos as uinteger ) as integer '/ _
 		( _
 			@FB_RTL_FILESEEK, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -786,7 +786,7 @@
 		/' fb_FileSeekLarge ( byval filenum as integer, byval newpos as longint ) as integer '/ _
 		( _
 			@FB_RTL_FILESEEKLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -802,7 +802,7 @@
 							 byval filenum as integer = 0 ) as string '/ _
 		( _
 			@FB_RTL_FILESTRINPUT, NULL, _
-			FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -819,7 +819,7 @@
 							  byval fillrem as integer = 1 ) as integer '/ _
 		( _
 			@FB_RTL_FILELINEINPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
@@ -842,7 +842,7 @@
 							  	  byval maxchars as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILELINEINPUTWSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -863,7 +863,7 @@
 						  byval addnewline as integer ) as integer '/ _
 		( _
 			@FB_RTL_CONSOLELINEINPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
@@ -893,7 +893,7 @@
 						      byval addnewline as integer ) as integer '/ _
 		( _
 			@FB_RTL_CONSOLELINEINPUTWSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
@@ -917,7 +917,7 @@
 		/' fb_FileInput ( byval filenum as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEINPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -930,7 +930,7 @@
 						     byval addnewline as integer ) as integer '/ _
 		( _
 			@FB_RTL_CONSOLEINPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -948,7 +948,7 @@
 		/' fb_InputByte ( x as byte ) as void '/ _
 		( _
 			@FB_RTL_INPUTBYTE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -960,7 +960,7 @@
 		/' fb_InputUbyte ( x as ubyte ) as void '/ _
 		( _
 			@FB_RTL_INPUTUBYTE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -972,7 +972,7 @@
 		/' fb_InputShort ( x as short ) as void '/ _
 		( _
 			@FB_RTL_INPUTSHORT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -984,7 +984,7 @@
 		/' fb_InputUshort ( x as ushort ) as void '/ _
 		( _
 			@FB_RTL_INPUTUSHORT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -996,7 +996,7 @@
 		/' fb_InputInt ( x as integer ) as void '/ _
 		( _
 			@FB_RTL_INPUTINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1008,7 +1008,7 @@
 		/' fb_InputUint ( x as uinteger ) as void '/ _
 		( _
 			@FB_RTL_INPUTUINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1020,7 +1020,7 @@
 		/' fb_InputLongint ( x as longint ) as void '/ _
 		( _
 			@FB_RTL_INPUTLONGINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1032,7 +1032,7 @@
 		/' fb_InputUlongint ( x as ulongint ) as void '/ _
 		( _
 			@FB_RTL_INPUTULONGINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1044,7 +1044,7 @@
 		/' fb_InputSingle ( x as single ) as void '/ _
 		( _
 			@FB_RTL_INPUTSINGLE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1056,7 +1056,7 @@
 		/' fb_InputDouble ( x as double ) as void '/ _
 		( _
 			@FB_RTL_INPUTDOUBLE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1069,7 +1069,7 @@
 							byval fillrem as integer = 1 ) as void '/ _
 		( _
 			@FB_RTL_INPUTSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -1088,7 +1088,7 @@
 						  byval maxchars as integer ) as integer '/ _
 		( _
 			@FB_RTL_INPUTWSTR, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -1103,7 +1103,7 @@
 		/' fb_FileLock ( byval filenum as integer, byval inipos as integer, byval endpos as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILELOCK, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -1121,7 +1121,7 @@
 		/' fb_FileLockLarge ( byval filenum as integer, byval inipos as longint, byval endpos as longint ) as integer '/ _
 		( _
 			@FB_RTL_FILELOCKLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -1139,7 +1139,7 @@
 		/' fb_FileUnlock ( byval filenum as integer, byval inipos as integer, byval endpos as integer ) as integer '/ _
 		( _
 			@FB_RTL_FILEUNLOCK, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -1157,7 +1157,7 @@
 		/' fb_FileUnlockLarge ( byval filenum as integer, byval inipos as longint, byval endpos as longint ) as integer '/ _
 		( _
 			@FB_RTL_FILEUNLOCKLARGE, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
@@ -1172,7 +1172,7 @@
 	 			) _
 	 		} _
 		), _
-		/' rename ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
+		/' rename cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
 		( _
 			@FB_RTL_FILERENAME, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -1190,7 +1190,7 @@
 		/' fb_FileWstrInput ( byval chars as integer, byval filenum as integer = 0 ) as wstring '/ _
 		( _
 			@"winput", @"fb_FileWstrInput", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			2, _
 	 		{ _
@@ -1205,14 +1205,14 @@
 		/' fb_FileFree ( ) as integer '/ _
 		( _
 			@"freefile", @"fb_FileFree", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
 		/' fb_FileEof ( byval filenum as integer ) as integer '/ _
 		( _
 			@"eof", @"fb_FileEof", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1224,7 +1224,7 @@
 		/' fb_FileKill ( s as string ) as integer '/ _
 		( _
 			@"kill", @"fb_FileKill", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1236,14 +1236,14 @@
 		/' reset ( ) as void '/ _
 		( _
 			@"reset", @"fb_FileReset", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			0 _
 		), _
 		/' reset ( byval streamno as integer ) as void '/ _
 		( _
 			@"reset", @"fb_FileResetEx", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -1255,7 +1255,7 @@
 		/' lof ( byval filenum as integer ) as longint '/ _
 		( _
 			@"lof", @"fb_FileSize", _
-			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1267,7 +1267,7 @@
 		/' loc ( byval filenum as integer ) as longint '/ _
 		( _
 			@"loc", @"fb_FileLocation", _
-			FB_DATATYPE_LONGINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_LONGINT, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -1279,7 +1279,7 @@
 		/' lpos( int ) as integer '/ _
 		( _
 			@"lpos", @"fb_LPos", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _

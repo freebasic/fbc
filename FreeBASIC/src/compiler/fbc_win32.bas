@@ -620,7 +620,13 @@ function fbcInit_win32( ) as integer
 	env.target.entrypoint = @"main"
 	env.target.underprefix = TRUE
 	env.target.constsection = @"rdata"
-	env.target.allowstdcall = TRUE
+
+    '' Default calling convention, must match the rtlib's FBCALL
+    env.target.fbcall = FB_FUNCMODE_STDCALL
+
+    '' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+    '' or STDCALL_MS (without @N).
+    env.target.stdcall = FB_FUNCMODE_STDCALL
 
 	return TRUE
 

@@ -31,7 +31,7 @@
 		/' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr '/ _
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+	 		typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -67,7 +67,7 @@
 		/' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void '/ _
 		( _
 			@FB_RTL_MEMSWAP, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -85,7 +85,7 @@
 		/' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -106,7 +106,7 @@
 		/' fre ( ) as uinteger '/ _
 		( _
 			@"fre", @"fb_GetMemAvail", _
-			FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_UINT, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -115,7 +115,7 @@
 	 			) _
 	 		} _
 		), _
-		/' allocate ( byval bytes as integer ) as any ptr '/ _
+		/' allocate cdecl ( byval bytes as integer ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -127,7 +127,7 @@
 	 			) _
 	 		} _
 		), _
-		/' callocate ( byval bytes as integer ) as any ptr '/ _
+		/' callocate cdecl ( byval bytes as integer ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -142,7 +142,7 @@
 	 			) _
 	 		} _
 		), _
-		/' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
+		/' reallocate cdecl ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -157,7 +157,7 @@
 	 			) _
 	 		} _
 		), _
-		/' deallocate ( byval p as any ptr ) as void '/ _
+		/' deallocate cdecl ( byval p as any ptr ) as void '/ _
 		( _
 			@"deallocate", @"free", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -169,7 +169,7 @@
 	 			) _
 	 		} _
 		), _
-		/' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
+		/' clear cdecl ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
 		( _
 			@"clear", @"memset", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -187,7 +187,7 @@
 	 			) _
 	 		} _
 	 	), _
-		/' new ( byval bytes as uinteger ) as any ptr '/ _
+		/' new cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			cast( zstring ptr, AST_OP_NEW ), NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -199,7 +199,7 @@
 	 			) _
 	 		} _
 		), _
-		/' new[] ( byval bytes as uinteger ) as any ptr '/ _
+		/' new[] cdecl ( byval bytes as uinteger ) as any ptr '/ _
 		( _
 			cast( zstring ptr, AST_OP_NEW_VEC ), NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -211,7 +211,7 @@
 	 			) _
 	 		} _
 		), _
-		/' delete ( byval ptr as any ptr ) '/ _
+		/' delete cdecl ( byval ptr as any ptr ) '/ _
 		( _
 			cast( zstring ptr, AST_OP_DEL ), NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -223,7 +223,7 @@
 	 			) _
 	 		} _
 		), _
-		/' delete[] ( byval ptr as any ptr ) '/ _
+		/' delete[] cdecl ( byval ptr as any ptr ) '/ _
 		( _
 			cast( zstring ptr, AST_OP_DEL_VEC ), NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _

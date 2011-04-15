@@ -601,8 +601,14 @@ type FBTARGET
 	entrypoint		as zstring ptr				'' entry point of executable (usually "main")
 	underprefix		as integer					'' whether symbols are prefixed with an underscore
 	constsection	as zstring ptr				'' linker section to use for constant data
-	allowstdcall	as integer					'' whether stdcall calling convention should be allowed (if false, treat as CDECL)
 	omitsectiondirective	as integer					'' whether to omit .section before section names in the assembly output
+
+    '' Tells what the target-specific FBCALL really is, must match the rtlib
+    fbcall          as FB_FUNCMODE
+
+    '' Remap FB_FUNCMODE_STDCALL to FB_FUNCMODE_STDCALL_MS on non-Windows
+    '' systems, to emit stdcall functions without @N, like gcc does.
+    stdcall         as FB_FUNCMODE
 end type
 
 type FBOPTION

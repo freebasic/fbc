@@ -890,10 +890,7 @@ private function hGetProcSuffix _
 
 	static as zstring * 1 + 10 + 1 suffix = "@"
 
-	if( env.target.allowstdcall = FALSE ) then
-		return NULL
-	end if
-
+    '' Only add the @N suffix for STDCALL.
 	if( sym->proc.mode <> FB_FUNCMODE_STDCALL ) then
 		return NULL
 	end if

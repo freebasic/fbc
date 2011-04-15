@@ -120,11 +120,20 @@ sub rtlAddIntrinsicProcs _
 		byval procdef as FB_RTL_PROCDEF ptr _
 	)
 
+    dim as integer callconv = any
+
 	'' for each proc..
 	do
 		if( procdef->name = NULL ) then
 			exit do
 		end if
+
+        callconv = procdef->callconv
+
+        '' Use the default FBCALL?
+        if( callconv = FB_USE_FUNCMODE_FBCALL ) then
+            callconv = env.target.fbcall
+        end if
 
 		dim as integer doadd = TRUE
 		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
@@ -215,10 +224,14 @@ sub rtlAddIntrinsicProcs _
 							with procdef->paramTb(i)
 
 								'' add it
+								'' Note: using FBCALL for the function pointer.
+								'' Must match the function's declaration in the
+								'' rtlib. Currently only fb_ThreadCreate() is
+								'' affected.
 								subtype = symbAddPrototype( inner_proc, _
 															NULL, hMakeTmpStrNL( ), NULL, _
 															.dtype, NULL, _
-															0, FB_FUNCMODE_DEFAULT, _
+															0, env.target.fbcall, _
 															FB_SYMBOPT_DECLARING )
 
 								if( subtype <> NULL ) then
@@ -303,7 +316,7 @@ sub rtlAddIntrinsicProcs _
 				proc = symbAddPrototype( proc, _
 								 	 	 pname, procdef->alias, NULL, _
 								 	 	 procdef->dtype, NULL, _
-								 	 	 attrib, procdef->callconv, _
+								 	 	 attrib, callconv, _
 								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
@@ -312,7 +325,7 @@ sub rtlAddIntrinsicProcs _
 										cast( AST_OP, pname ), NULL, NULL, _
     						    		procdef->dtype, NULL, _
     					        		attrib or FB_SYMBATTRIB_OPERATOR, _
-    					        		procdef->callconv, _
+    					        		callconv, _
     					        		FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
     			if( proc <> NULL ) then

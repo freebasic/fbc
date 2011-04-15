@@ -32,7 +32,7 @@
 		/' fb_DataRestore ( byval labeladdrs as void ptr ) as void '/ _
 		( _
 			@FB_RTL_DATARESTORE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -45,7 +45,7 @@
 							byval fillrem as integer = 1 ) as void '/ _
 		( _
 			@FB_RTL_DATAREADSTR, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		3, _
 	 		{ _
@@ -64,7 +64,7 @@
 							 byval dst_size as integer ) as void '/ _
 		( _
 			@FB_RTL_DATAREADWSTR, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
@@ -79,7 +79,7 @@
 		/' fb_DataReadByte ( byref dst as byte ) as void '/ _
 		( _
 			@FB_RTL_DATAREADBYTE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -91,7 +91,7 @@
 		/' fb_DataReadShort ( byref dst as short ) as void '/ _
 		( _
 			@FB_RTL_DATAREADSHORT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -103,7 +103,7 @@
 		/' fb_DataReadInt ( byref dst as integer ) as void '/ _
 		( _
 			@FB_RTL_DATAREADINT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -115,7 +115,7 @@
 		/' fb_DataReadLongint ( byref dst as longint ) as void '/ _
 		( _
 			@FB_RTL_DATAREADLONGINT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -127,7 +127,7 @@
 		/' fb_DataReadUByte ( byref dst as ubyte ) as void '/ _
 		( _
 			@FB_RTL_DATAREADUBYTE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -139,7 +139,7 @@
 		/' fb_DataReadUShort ( byref dst as ushort ) as void '/ _
 		( _
 			@FB_RTL_DATAREADUSHORT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -151,7 +151,7 @@
 		/' fb_DataReadUInt ( byref dst as uinteger ) as void '/ _
 		( _
 			@FB_RTL_DATAREADUINT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -163,7 +163,7 @@
 		/' fb_DataReadUInt ( byref dst as uinteger ) as void '/ _
 		( _
 			@FB_RTL_DATAREADPTR, @FB_RTL_DATAREADUINT, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_DUPDECL, _
 	 		1, _
 	 		{ _
@@ -175,7 +175,7 @@
 		/' fb_DataReadULongint ( byref dst as ulongint ) as void '/ _
 		( _
 			@FB_RTL_DATAREADULONGINT, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -187,7 +187,7 @@
 		/' fb_DataReadSingle ( byref dst as single ) as void '/ _
 		( _
 			@FB_RTL_DATAREADSINGLE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -199,7 +199,7 @@
 		/' fb_DataReadDouble ( byref dst as single ) as void '/ _
 		( _
 			@FB_RTL_DATAREADDOUBLE, NULL, _
-	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _

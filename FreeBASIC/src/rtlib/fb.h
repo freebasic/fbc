@@ -215,7 +215,7 @@ extern "C" {
 
 
 #ifndef FBCALL
-# define FBCALL
+# define FBCALL __cdecl
 #endif /* !defined FBCALL */
 
 #ifndef FB_LOCK

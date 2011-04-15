@@ -314,7 +314,13 @@ function fbcInit_dos( ) as integer
 	env.target.entrypoint = @"main"
 	env.target.underprefix = TRUE
 	env.target.constsection = @"rdata"
-	env.target.allowstdcall = FALSE
+
+    '' Default calling convention, must match the rtlib's FBCALL
+    env.target.fbcall = FB_FUNCMODE_CDECL
+
+    '' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+    '' or STDCALL_MS (without @N).
+    env.target.stdcall = FB_FUNCMODE_STDCALL_MS
 
 	return TRUE
 

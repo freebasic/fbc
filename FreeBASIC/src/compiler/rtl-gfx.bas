@@ -46,7 +46,7 @@ declare function hPorts_cb _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _
 		( _
 			@FB_RTL_GFXPSET, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
@@ -73,7 +73,7 @@ declare function hPorts_cb _
 		/' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer '/ _
 		( _
 			@FB_RTL_GFXPOINT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -93,7 +93,7 @@ declare function hPorts_cb _
 		              byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA ) as integer '/ _
 		( _
 			@FB_RTL_GFXLINE, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			9, _
 			{ _
@@ -128,11 +128,11 @@ declare function hPorts_cb _
 		), _
 		/' fb_GfxEllipse ( byref target as any, byval x as single, byval y as single, byval radius as single, _
 						   byval color as uinteger = DEFAULT_COLOR, byval aspect as single = 0.0, _
-						   byval iniarc as single = 0.0, byval endarc as single = 6.283185, _
+						   byval iniarc as single = 0.0, byval endarc as single = 6.283186, _
 						   byval FillFlag as integer = 0, byval CoordType as integer = COORD_TYPE_A ) as integer '/ _
 		( _
 			@FB_RTL_GFXCIRCLE, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			10, _
 			{ _
@@ -173,7 +173,7 @@ declare function hPorts_cb _
 								byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer '/ _
 		( _
 			@FB_RTL_GFXPAINT, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			8, _
 			{ _
@@ -206,7 +206,7 @@ declare function hPorts_cb _
 		/' fb_GfxDraw ( byref target as any, cmd as string ) '/ _
 		( _
 			@FB_RTL_GFXDRAW, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -226,7 +226,7 @@ declare function hPorts_cb _
 		                    byval param as any ptr = NULL ) '/ _
 		( _
 			@FB_RTL_GFXDRAWSTRING, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			11, _
 			{ _
@@ -271,7 +271,7 @@ declare function hPorts_cb _
 		                byval screenFlag as integer = 0) as integer '/ _
 		( _
 			@FB_RTL_GFXVIEW, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			7, _
 			{ _
@@ -302,7 +302,7 @@ declare function hPorts_cb _
 		 						byval y2 as single = 0, byval screenflag as integer = 0 ) as integer '/ _
 		( _
 			@FB_RTL_GFXWINDOW, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -327,7 +327,7 @@ declare function hPorts_cb _
 						  byval g as integer = -1, byval b as integer = -1 ) as void '/ _
 		( _
 			@FB_RTL_GFXPALETTE, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -348,7 +348,7 @@ declare function hPorts_cb _
 		/' fb_GfxPaletteUsing ( array as integer ) as void '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -361,7 +361,7 @@ declare function hPorts_cb _
 									byref g as integer, byref b as integer ) as void '/ _
 		( _
 			@FB_RTL_GFXPALETTEGET, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
@@ -382,7 +382,7 @@ declare function hPorts_cb _
 		/' fb_GfxPaletteGetUsing ( array as integer ) as void '/ _
 		( _
 			@FB_RTL_GFXPALETTEGETUSING, NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -400,7 +400,7 @@ declare function hPorts_cb _
 					   byval param as any ptr = NULL ) as integer '/ _
 		( _
 			@FB_RTL_GFXPUT, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			14, _
 			{ _
@@ -452,7 +452,7 @@ declare function hPorts_cb _
 					   byref array as any, byval coordType as integer, array() as any ) as integer '/ _
 		( _
 			@FB_RTL_GFXGET, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			8, _
 			{ _
@@ -486,7 +486,7 @@ declare function hPorts_cb _
 					   byref array as any, byval coordType as integer, array() as any ) as integer '/ _
 		( _
 			@FB_RTL_GFXGETQB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			8, _
 			{ _
@@ -520,7 +520,7 @@ declare function hPorts_cb _
 		                byval flags as integer = 0, byval refresh_rate as integer = 0 ) as integer '/ _
 		( _
 			@FB_RTL_GFXSCREENSET, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
@@ -545,7 +545,7 @@ declare function hPorts_cb _
 							byval visible as integer = -1 ) as integer '/ _
 		( _
 			@FB_RTL_GFXSCREENSETQB, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
@@ -564,7 +564,7 @@ declare function hPorts_cb _
 									byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 ) '/ _
 		( _
 			@FB_RTL_GFXSCREENRES, NULL, _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
@@ -591,7 +591,7 @@ declare function hPorts_cb _
 		/' fb_GfxBload ( filename as string, byval dest as any ptr = NULL, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bload", @"fb_GfxBload", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			3, _
 			{ _
@@ -609,7 +609,7 @@ declare function hPorts_cb _
 		/' fb_GfxBloadQB ( filename as string, byval dest as any ptr = NULL, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bload", @"fb_GfxBloadQB", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			3, _
 			{ _
@@ -627,7 +627,7 @@ declare function hPorts_cb _
 		/' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			4, _
 			{ _
@@ -648,7 +648,7 @@ declare function hPorts_cb _
 		/' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void '/ _
 		( _
 			@"flip", @"fb_GfxFlip", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -662,7 +662,7 @@ declare function hPorts_cb _
 		), _
 		( _
 			@"screencopy", @"fb_GfxFlip", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -677,7 +677,7 @@ declare function hPorts_cb _
 		/' fb_GfxCursor ( number as integer) as single '/ _
 		( _
 			@"pointcoord", @"fb_GfxCursor", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -689,7 +689,7 @@ declare function hPorts_cb _
 		/' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single '/ _
 		( _
 			@"pmap", @"fb_GfxPMap", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
@@ -704,7 +704,7 @@ declare function hPorts_cb _
 		/' fb_Out( byval port as ushort, byval data as ubyte ) as void '/ _
 		( _
 			@"out", @"fb_Out", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			 @hPorts_cb, FB_RTL_OPT_ERROR, _
 			2, _
 			{ _
@@ -719,7 +719,7 @@ declare function hPorts_cb _
 		/' fb_In( byval port as ushort ) as integer '/ _
 		( _
 			@"inp", @"fb_In", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			@hPorts_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
@@ -731,7 +731,7 @@ declare function hPorts_cb _
 		/' fb_Wait ( byval port as ushort, byval and_mask as integer, byval xor_mask as integer = 0 ) '/ _
 		( _
 			@"wait", @"fb_Wait", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			@hPorts_cb, FB_RTL_OPT_ERROR, _
 			3, _
 			{ _
@@ -749,7 +749,7 @@ declare function hPorts_cb _
 		/' fb_GfxWaitVSync ( void ) as integer '/ _
 		( _
 			@"screensync", @"fb_GfxWaitVSync", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
@@ -771,14 +771,14 @@ declare function hPorts_cb _
 		/' fb_GfxLock ( ) as void '/ _
 		( _
 			@"screenlock", @"fb_GfxLock", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_GfxUnlock ( ) as void '/ _
 		( _
 			@"screenunlock", @"fb_GfxUnlock", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -793,14 +793,14 @@ declare function hPorts_cb _
 		/' fb_GfxScreenPtr ( ) as any ptr '/ _
 		( _
 			@"screenptr", @"fb_GfxScreenPtr", _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
 		/' fb_GfxSetWindowTitle ( title as string ) as void '/ _
 		( _
 			@"windowtitle", @"fb_GfxSetWindowTitle", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -812,7 +812,7 @@ declare function hPorts_cb _
 		/' fb_Multikey ( byval scancode as integer ) as integer '/ _
 		( _
 			@"multikey", @"fb_Multikey", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -824,7 +824,7 @@ declare function hPorts_cb _
 		/' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer, byref clip as integer ) as integer '/ _
 		( _
 			@"getmouse", @"fb_GetMouse", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -848,7 +848,7 @@ declare function hPorts_cb _
 		/' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1, byval clip as integer = -1 ) as integer '/ _
 		( _
 			@"setmouse", @"fb_SetMouse", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@rtlMultinput_cb, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
@@ -873,7 +873,7 @@ declare function hPorts_cb _
 							    ) as integer '/ _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
@@ -912,7 +912,7 @@ declare function hPorts_cb _
 		/' fb_GfxStickQB ( byval arg as integer ) as integer '/ _
 		( _
 			@"stick", @"fb_GfxStickQB", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -924,7 +924,7 @@ declare function hPorts_cb _
 		/' fb_GfxStrigQB ( byval arg as integer ) as integer '/ _
 		( _
 			@"strig", @"fb_GfxStrigQB", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
@@ -937,7 +937,7 @@ declare function hPorts_cb _
 							  byref bpp as integer, byref pitch as integer, byref driver_name as string ) as void '/ _
 		( _
 			@"screeninfo", @"fb_GfxScreenInfo", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
@@ -967,7 +967,7 @@ declare function hPorts_cb _
 		/' fb_GfxScreenList ( byval depth as integer ) as integer '/ _
 		( _
 			@"screenlist", @"fb_GfxScreenList", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -980,7 +980,7 @@ declare function hPorts_cb _
 							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATE, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_FBONLY, _
 			5, _
 			{ _
@@ -1005,7 +1005,7 @@ declare function hPorts_cb _
 							   byval color as uinteger = DEFAULT_COLOR, byval depth as integer = 0 ) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATEQB, NULL, _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -1029,7 +1029,7 @@ declare function hPorts_cb _
 		/' fb_GfxImageDestroy ( byval image as any ptr ) as void '/ _
 		( _
 			@"imagedestroy", @"fb_GfxImageDestroy", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1044,7 +1044,7 @@ declare function hPorts_cb _
 							byref imgsize as integer = 0 ) as integer '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
@@ -1076,7 +1076,7 @@ declare function hPorts_cb _
 								  byval width as integer, byval isrgb as integer = 1 ) as void '/ _
 		( _
 			@"imageconvertrow", @"fb_GfxImageConvertRow", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
@@ -1103,7 +1103,7 @@ declare function hPorts_cb _
 		/' fb_GfxEvent ( byval e as any ptr = NULL ) as integer '/ _
 		( _
 			@"screenevent", @"fb_GfxEvent", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1115,7 +1115,7 @@ declare function hPorts_cb _
 		/' fb_GfxControl_s ( byval what as integer, byref param1 as string ) as void '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_s", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
@@ -1131,7 +1131,7 @@ declare function hPorts_cb _
 		                                            byref param3 as integer, byref param4 as integer ) as void '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_i", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
@@ -1155,7 +1155,7 @@ declare function hPorts_cb _
 		/' fb_GfxGetGLProcAddress ( byval proc as string ) as any ptr '/ _
 		( _
 			@"screenglproc", @"fb_GfxGetGLProcAddress", _
-			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_STDCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_USE_FUNCMODE_FBCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
@@ -1164,9 +1164,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutTrans ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutTrans cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                                byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                                byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTTRANS, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1202,9 +1202,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutPSet ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutPSet cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                               byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                               byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTPSET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1240,9 +1240,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutPReset ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutPReset cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                                 byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                                 byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTPRESET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1278,9 +1278,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutAnd ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutAnd cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                              byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                              byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTAND, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1316,9 +1316,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutOr ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutOr cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                             byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                             byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTOR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1354,9 +1354,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutXor ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutXor cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                              byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                              byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTXOR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1392,9 +1392,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutAlpha ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutAlpha cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                                byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                                byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTALPHA, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1430,9 +1430,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutBlend ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutBlend cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                                byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                                byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTBLEND, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1468,9 +1468,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutAdd ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutAdd cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                              byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                              byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTADD, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
@@ -1506,9 +1506,9 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_hPutCustom ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
-						  byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
-						  byval blender as any ptr, byval param as any ptr ) as void '/ _
+        /' fb_hPutCustom cdecl ( byval src as ubyte ptr, byval dest as ubyte ptr, byval w as integer, byval h as integer, _
+                                 byval src_pitch as integer, byval dest_pitch as integer, byval alpha as integer, _
+                                 byval blender as any ptr, byval param as any ptr ) as void '/ _
 		( _
 			@FB_RTL_GFXPUTCUSTOM, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _

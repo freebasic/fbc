@@ -28,7 +28,7 @@
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to 63 ) = _
 	{ _
-		/' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint '/ _
+		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
 			@FB_RTL_LONGINTDIV, NULL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
@@ -43,7 +43,7 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
+		/' fb_ULongintDIV cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
 			@FB_RTL_ULONGINTDIV, NULL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
@@ -58,7 +58,7 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint '/ _
+		/' fb_LongintMOD cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
 			@FB_RTL_LONGINTMOD, NULL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
@@ -73,7 +73,7 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
+		/' fb_ULongintMOD cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
 			@FB_RTL_ULONGINTMOD, NULL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
@@ -88,7 +88,7 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_Dbl2ULongint ( byval x as double ) as ulongint '/ _
+		/' fb_Dbl2ULongint cdecl ( byval x as double ) as ulongint '/ _
 		( _
 			@FB_RTL_DBL2ULONGINT, NULL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
@@ -118,7 +118,7 @@
 		/' randomize ( byval seed as double = -1.0, byval algorithm as integer = 0 ) as void '/ _
 		( _
 			@"randomize", @"fb_Randomize", _
-			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
@@ -133,7 +133,7 @@
 		/' rnd ( byval n as single ) as double '/ _
 		( _
 			@"rnd", @"fb_Rnd", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
@@ -433,7 +433,7 @@
 		/' sgn overload ( byval x as byte ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNb", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -445,7 +445,7 @@
 		/' sgn overload ( byval x as short ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNs", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -457,7 +457,7 @@
 		/' sgn overload ( byval x as integer ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNi", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -469,7 +469,7 @@
 		/' sgn overload ( byval x as longint ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNl", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -481,7 +481,7 @@
 		/' sgn overload ( byval x as single ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNSingle", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -493,7 +493,7 @@
 		/' sgn overload ( byval x as double ) as integer '/ _
 		( _
 			@FB_RTL_sgn, @"fb_SGNDouble", _
-			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -505,7 +505,7 @@
 		/' fix overload ( byval x as single ) as single '/ _
 		( _
 			@FB_RTL_fix, @"fb_FIXSingle", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -517,7 +517,7 @@
 		/' fix overload ( byval x as double ) as double '/ _
 		( _
 			@FB_RTL_fix, @"fb_FIXDouble", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -529,7 +529,7 @@
 		/' frac overload ( byval x as single ) as single '/ _
 		( _
 			@FB_RTL_frac, @"fb_FRACf", _
-			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_SINGLE, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -541,7 +541,7 @@
 		/' frac overload ( byval x as double ) as double '/ _
 		( _
 			@FB_RTL_frac, @"fb_FRACd", _
-			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
+			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
@@ -580,7 +580,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftosl ( byval x as single ) as long '/ _
+		/' ftosl cdecl ( byval x as single ) as long '/ _
 		( _
 			@FB_RTL_FTOSL, @"fb_ftosl", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
@@ -592,7 +592,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtosl ( byval x as double ) as long '/ _
+		/' dtosl cdecl ( byval x as double ) as long '/ _
 		( _
 			@FB_RTL_DTOSL, @"fb_dtosl", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
@@ -604,7 +604,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftosi ( byval x as single ) as integer '/ _
+		/' ftosi cdecl ( byval x as single ) as integer '/ _
 		( _
 			@FB_RTL_FTOSI, @"fb_ftosi", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -616,7 +616,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtosi ( byval x as double ) as integer '/ _
+		/' dtosi cdecl ( byval x as double ) as integer '/ _
 		( _
 			@FB_RTL_DTOSI, @"fb_dtosi", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
@@ -628,7 +628,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftoss ( byval x as single ) as short '/ _
+		/' ftoss cdecl ( byval x as single ) as short '/ _
 		( _
 			@FB_RTL_FTOSS, @"fb_ftoss", _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
@@ -640,7 +640,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtoss ( byval x as double ) as short '/ _
+		/' dtoss cdecl ( byval x as double ) as short '/ _
 		( _
 			@FB_RTL_DTOSS, @"fb_dtoss", _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
@@ -652,7 +652,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftosb ( byval x as single ) as byte '/ _
+		/' ftosb cdecl ( byval x as single ) as byte '/ _
 		( _
 			@FB_RTL_FTOSB, @"fb_ftosb", _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
@@ -664,7 +664,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtosb ( byval x as double ) as byte '/ _
+		/' dtosb cdecl ( byval x as double ) as byte '/ _
 		( _
 			@FB_RTL_DTOSB, @"fb_dtosb", _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
@@ -676,7 +676,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftoul ( byval x as single ) as long '/ _
+		/' ftoul cdecl ( byval x as single ) as long '/ _
 		( _
 			@FB_RTL_FTOUL, @"fb_ftoul", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
@@ -688,7 +688,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtoul ( byval x as double ) as long '/ _
+		/' dtoul cdecl ( byval x as double ) as long '/ _
 		( _
 			@FB_RTL_DTOUL, @"fb_dtoul", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
@@ -700,7 +700,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftoui ( byval x as single ) as integer '/ _
+		/' ftoui cdecl ( byval x as single ) as integer '/ _
 		( _
 			@FB_RTL_FTOUI, @"fb_ftoui", _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
@@ -712,7 +712,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtoui ( byval x as double ) as integer '/ _
+		/' dtoui cdecl ( byval x as double ) as integer '/ _
 		( _
 			@FB_RTL_DTOUI, @"fb_dtoui", _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
@@ -724,7 +724,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftous ( byval x as single ) as short '/ _
+		/' ftous cdecl ( byval x as single ) as short '/ _
 		( _
 			@FB_RTL_FTOUS, @"fb_ftous", _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
@@ -736,7 +736,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtous ( byval x as double ) as short '/ _
+		/' dtous cdecl ( byval x as double ) as short '/ _
 		( _
 			@FB_RTL_DTOUS, @"fb_dtous", _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
@@ -748,7 +748,7 @@
 	 			) _
 	 		} _
 		), _
-		/' ftoub ( byval x as single ) as byte '/ _
+		/' ftoub cdecl ( byval x as single ) as byte '/ _
 		( _
 			@FB_RTL_FTOUB, @"fb_ftoub", _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
@@ -760,7 +760,7 @@
 	 			) _
 	 		} _
 		), _
-		/' dtoub ( byval x as double ) as byte '/ _
+		/' dtoub cdecl ( byval x as double ) as byte '/ _
 		( _
 			@FB_RTL_DTOUB, @"fb_dtoub", _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _

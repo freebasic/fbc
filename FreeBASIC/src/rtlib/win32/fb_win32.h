@@ -39,11 +39,7 @@
 #ifndef __FB_WIN32_H__
 #define __FB_WIN32_H__
 
-#if defined(NOSTDCALL)
-# define FBCALL __cdecl
-#else
-# define FBCALL __stdcall
-#endif
+#define FBCALL __stdcall
 
 #ifdef TARGET_WIN32
 /* don't include liboldname */

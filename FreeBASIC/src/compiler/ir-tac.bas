@@ -546,20 +546,11 @@ private sub _emitProcEnd _
 
 	_flush( )
 
-	select case as const symbGetProcMode( proc )
-	case FB_FUNCMODE_CDECL
+	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
 		bytestopop = 0
-
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-		if( env.target.allowstdcall ) then
-			bytestopop = symbGetProcParamsLen( proc )
-		else
-			bytestopop = 0
-		end if
-
-	case else
+	else
 		bytestopop = symbGetProcParamsLen( proc )
-	end select
+	end if
 
 	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
 
@@ -1696,15 +1687,7 @@ private sub hFlushCALL _
 				bytestopop = symbGetProcParamsLen( proc )
 			end if
 
-		case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-			'' nothing to pop, unless -nostdcall was used
-			if( env.target.allowstdcall = FALSE ) then
-				if( bytestopop = 0 ) then
-					bytestopop = symbGetProcParamsLen( proc )
-				end if
-			end if
-
-		'' pascal etc.. nothing to pop
+		'' stdcall/pascal etc.. nothing to pop
 		case else
 			bytestopop = 0
 		end select

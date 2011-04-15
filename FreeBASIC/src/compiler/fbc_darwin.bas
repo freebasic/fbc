@@ -468,10 +468,15 @@ function fbcInit_darwin( ) as integer
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE
 	env.target.constsection = @"const"
-	env.target.allowstdcall = FALSE
 	env.target.omitsectiondirective = TRUE
+
+    '' Default calling convention, must match the rtlib's FBCALL
+    env.target.fbcall = FB_FUNCMODE_CDECL
+
+    '' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+    '' or STDCALL_MS (without @N).
+    env.target.stdcall = FB_FUNCMODE_STDCALL_MS
 
 	return TRUE
 
 end function
-
