@@ -1430,6 +1430,18 @@ sub symbFreeSymbol _
 		byval s as FBSYMBOL ptr _
 	)
 
+    '' Symbol has forward type? That means it was added to the fwdref's list
+    '' of references/users for backpatching later. If the fwdref type is
+    '' still here, that means no backpatching happened yet, so the fwdref node
+    '' still exists and may do backpatching later. 
+    '' This symbol must be removed from the fwdref's user list, otherwise the
+    '' fwdref could backpatch a deleted node and would then corrupt any symbol
+    '' allocated at that address.
+    if( typeGetDtOnly( s->typ ) = FB_DATATYPE_FWDREF ) then
+        assert( s->subtype->class = FB_SYMBCLASS_FWDREF )
+        symbRemoveFromFwdRef( s->subtype, s )
+    end if
+
 	'' revove from hash tb
 	symbDelFromHash( s )
 
@@ -2064,3 +2076,28 @@ function symbCheckConstAssign _
 	
 end function
 
+'' For debugging
+function symbDump(byval s as FBSYMBOL ptr) as string
+
+    dim as string dump
+
+    dim as zstring ptr id = s->id.name
+    if( id = NULL ) then
+        id = @"<unknown>"
+    end if
+
+    dump += "[" + hex(s) + "] "
+    dump += *id
+    dump += "("
+    dump += "datatype " & typeGetDtOnly( s->typ )
+    if( typeGetPtrCnt( s->typ ) <> 0 ) then
+        dump += ", ptrcount " & typeGetPtrCnt( s->typ )
+    end if
+    if( s->subtype ) then
+        dump += ", subtype " + symbDump( s->subtype )
+    end if
+    dump += ")"
+
+    return dump
+
+end function

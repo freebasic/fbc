@@ -43,6 +43,7 @@ Version 0.22.0:
 - va_first() not taking into account 4 byte parameter alignment
 - ON ... GOTO with more than the supported number of target labels didn't cause an error
 - Specifying 'stdcall' for procedures did not have an effect on DOS and Unix-like systems
+- Symbol data types could be corrupted when unsolved forward references were used in procedure parameters, local variables and such
 
 
 Version 0.21.1:

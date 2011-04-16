@@ -380,13 +380,12 @@ end type
 
 '' forward definition
 type FBFWDREF
-	ref				as FBSYMBOL_ ptr
+	ref				as FBSYMBOL_ ptr    '' The user that has to be backpatched
 	prev			as FBFWDREF ptr
 end type
 
 type FBS_FWDREF
-	refs			as integer
-	reftail			as FBFWDREF ptr
+	tail			as FBFWDREF ptr     '' List of users of this fwdref
 end type
 
 '' label
@@ -1285,6 +1284,12 @@ declare sub symbAddToFwdRef _
 		byval f as FBSYMBOL ptr, _
 		byval ref as FBSYMBOL ptr _
 	)
+
+declare sub symbRemoveFromFwdRef _
+    ( _
+        byval f as FBSYMBOL ptr, _
+        byval ref as FBSYMBOL ptr _
+    )
 
 declare sub symbRecalcUDTSize _
 	( _
@@ -2568,6 +2573,12 @@ declare function symbIsUDTReturnedInRegs _
 #define	typeUnsetIsArray( dt ) (dt and not FB_DATATYPE_ARRAY)
 
 #define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
+
+'' For debugging, use e.g. like this:
+''  symbTrace(a), "(replacing this)"
+''  symbTrace(b), "(with this)"
+#define symbTrace( s ) print __FUNCTION__ + ": " + symbDump( s )
+declare function symbDump( byval s as FBSYMBOL ptr ) as string
 
 ''
 '' inter-module globals

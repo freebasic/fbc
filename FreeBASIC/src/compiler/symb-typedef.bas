@@ -58,10 +58,44 @@ sub symbAddToFwdRef _
 	dim as FBFWDREF ptr n = listNewNode( @symb.fwdlist )
 
 	n->ref = ref
-	n->prev	= f->fwd.reftail
-	f->fwd.reftail = n
+	n->prev = f->fwd.tail
+	f->fwd.tail = n
 
-	f->fwd.refs += 1
+end sub
+
+'':::::
+sub symbRemoveFromFwdRef _
+    ( _
+        byval f as FBSYMBOL ptr, _
+        byval ref as FBSYMBOL ptr _
+    )
+
+    dim as FBFWDREF ptr n = f->fwd.tail
+    dim as FBFWDREF ptr nxt = NULL
+
+    do
+        '' The symbol should be in the fwdref's backpatching list, otherwise it
+        '' shouldn't have the fwdref datatype that got us here...
+        assert( n <> NULL )
+
+        '' Found it?
+        if( n->ref = ref ) then
+            exit do
+        end if
+
+        nxt = n
+        n = n->prev
+    loop
+
+    if( nxt = NULL ) then
+        '' Removing the tail of the list
+        f->fwd.tail = n->prev
+    else
+        '' Link out of the middle
+        nxt->prev = n->prev
+    end if
+
+    listDelNode( @symb.fwdlist, n )
 
 end sub
 
@@ -149,7 +183,7 @@ private sub hFixForwardRef _
     end select
 
     '' Cycle through the forward ref's list of users
-	node = fwd->fwd.reftail
+	node = fwd->fwd.tail
 	do while( node <> NULL )
 
         '' Do the replacement in the user
@@ -258,8 +292,7 @@ function symbAddFwdRef _
     	return NULL
     end if
 
-   	f->fwd.refs = 0
-   	f->fwd.reftail = NULL
+   	f->fwd.tail = NULL
 
    	''
    	symb.fwdrefcnt += 1
