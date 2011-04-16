@@ -263,8 +263,8 @@ private function hIsConst _
 	for i as integer = 0 to dimensions-1
 		if( astIsCONST( exprTB(i, 0) ) = FALSE ) then
 			return FALSE
-		elseif exprTB(i, 1) = NULL then
-			' do nothing, allow NULL expression here for ellipsis
+		elseif( exprTB(i, 1) = NULL ) then
+			'' do nothing, allow NULL expression here for ellipsis
 		elseif( astIsCONST( exprTB(i, 1) ) = FALSE ) then
 			return FALSE
 		end if
@@ -812,18 +812,20 @@ private sub hMakeArrayDimTB _
 
 		'' upper bound
 		expr = exprTB(i, 1)
-		if expr = NULL then
-			' if a null expr is found, that means it was an ellipsis for the
-			' upper bound, so we set a special upper value, and CONTINUE in
-			' order to skip the check
-			dTB(i).upper = -1
+		if( expr = NULL ) then
+			'' if a null expr is found, that means it was an ellipsis for the
+			'' upper bound, so we set a special upper value, and CONTINUE in
+			'' order to skip the check
+			dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			continue for
 		else
 			dTB(i).upper = astGetValueAsInt( expr )
 			astDelNode( expr )
 		end if
 
-    	if( dTB(i).upper < dTB(i).lower ) then
+		'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
+		'' specified, otherwise we'd think ellipsis was given...
+		if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
 			errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
     	end if
 	next
@@ -1362,10 +1364,10 @@ function hVarDeclEx _
 	    					exit function
     					end if
 
-						' If there were any ellipsises in the
-						' array decl then we mark the symbol before initializing
+						'' If there were any ellipsises in the
+						'' array decl then we mark the symbol before initializing
 						for i as integer = 0 to dimensions - 1
-							if dTB(i).upper = -1 then
+							if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
 								has_ellipsis = TRUE
 							end if
 						next i
@@ -1380,10 +1382,10 @@ function hVarDeclEx _
 
 						check_exprtb = TRUE
 
-						' If there were any ellipsises in the
-						' array decl then we mark the symbol before initializing
+						'' If there were any ellipsises in the
+						'' array decl then we mark the symbol before initializing
 						for i as integer = 0 to dimensions - 1
-							if exprTB(i,1) = NULL then
+							if( exprTB(i,1) = NULL ) then
 								has_ellipsis = TRUE
 							end if
 						next i
@@ -1491,7 +1493,7 @@ function hVarDeclEx _
 						  chain_, _
 						  dtype, _
 						  is_typeless, _
-						  suffix <> FB_DATATYPE_INVALID, _
+						  (suffix <> FB_DATATYPE_INVALID), _
 						  options )
 
     	if( sym = NULL ) then
@@ -1813,9 +1815,9 @@ function hMatchEllipsis _
 
 	function = FALSE
 
-	if lexGetToken( ) = CHAR_DOT then
-		if lexGetLookAhead( 1 ) = CHAR_DOT then
-			if lexGetLookAhead( 2 ) = CHAR_DOT then
+	if( lexGetToken( ) = CHAR_DOT ) then
+		if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+			if( lexGetLookAhead( 2 ) = CHAR_DOT ) then
 				select case lexGetLookAhead( 3 )
 					case CHAR_COMMA, CHAR_RPRNT, FB_TK_TO
 						function = TRUE
@@ -1845,7 +1847,6 @@ function cStaticArrayDecl _
 
     dim as integer i = any
     dim as ASTNODE ptr expr = any
-	dim as integer has_any_ellipsis = FALSE
 
     function = FALSE
 
@@ -1865,9 +1866,11 @@ function cStaticArrayDecl _
 		dim as integer dimension_has_ellipsis = FALSE
 
 		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-			has_any_ellipsis = TRUE
 			dimension_has_ellipsis = TRUE
-			dTB(i).lower = -1
+			'' This is for the case of '( ... )' with the lower bound being
+			'' automatically chosen based on OPTION BASE. It will be given
+			'' to dTB(i).upper below.
+			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
 			'' Expression
 			expr = cExpression( )
@@ -1901,15 +1904,14 @@ function cStaticArrayDecl _
     	if( lexGetToken( ) = FB_TK_TO ) then
     		lexSkipToken( )
 
-			if dimension_has_ellipsis = TRUE then
+			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
 				exit function
 			end if
 
 			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
-				has_any_ellipsis = TRUE
 				dimension_has_ellipsis = TRUE
-				dTB(i).upper = -1
+				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
 				'' Expression
 				expr = cExpression( )
@@ -1942,9 +1944,11 @@ function cStaticArrayDecl _
     		dTB(i).lower = env.opt.base
     	end if
 
-		' Don't check if we have ellipsis, as upper will be set to -1
-		if dimension_has_ellipsis = FALSE then
-			if( dTB(i).upper < dTB(i).lower ) then
+		'' Don't check when we have ellipsis, as upper will be set to FB_ARRAYDIM_UNKNOWN
+		if( dimension_has_ellipsis = FALSE ) then
+			'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
+			'' specified, otherwise we'd think ellipsis was given...
+			if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
 				if( errReport( FB_ERRMSG_INVALIDSUBSCRIPT ) = FALSE ) then
 					exit function
 				end if
@@ -2000,7 +2004,6 @@ function cArrayDecl _
 
 	dim as integer i = any
 	dim as ASTNODE ptr expr = any
-	dim as integer has_any_ellipsis = FALSE
 
 	function = FALSE
 
@@ -2010,8 +2013,7 @@ function cArrayDecl _
 	do
 		dim as integer dimension_has_ellipsis = FALSE
 
-		if hMatchEllipsis( ) then
-			has_any_ellipsis = TRUE
+		if( hMatchEllipsis( ) ) then
 			dimension_has_ellipsis = TRUE
 			exprTB(i,0) = NULL
 		else
@@ -2050,13 +2052,12 @@ function cArrayDecl _
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			if dimension_has_ellipsis = TRUE then
+			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
 				exit function
 			end if
 
-			if hMatchEllipsis( ) then
-				has_any_ellipsis = TRUE
+			if( hMatchEllipsis( ) ) then
 				dimension_has_ellipsis = TRUE
 				exprTB(i,1) = NULL
 			else

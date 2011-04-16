@@ -5,6 +5,7 @@ Version 0.22.0:
 - FIX(n)/INT(n) no longer affect the type/value of integer-type expressions
 - __FB_UNIX__ and __FB_PCOS__ are no longer defined when false, allowing #IFDEF to work
 - MID(s,n,0)=t statement was equivalent to MID(s,n)=t; now it more intuitively sets 0 chars (i.e. does nothing) like in QB
+- Allow -1 to be used as array upper bound, at the cost of -2147483648 being disallowed
 
 [added]
 - Variadic macros: #define a(x, y...) f(x, y)

@@ -222,7 +222,8 @@ private function hArrayInit _
 	if( ctx.dim_ <> NULL ) then
 		dTB(ctx.dimcnt - 1).lower = ctx.dim_->lower
 		dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
-		if ctx.dim_->upper = -1 then
+		'' Ellipsis?
+		if( ctx.dim_->upper = FB_ARRAYDIM_UNKNOWN ) then
 			elements = -1
 		else
 			elements = (ctx.dim_->upper - ctx.dim_->lower) + 1
@@ -262,9 +263,9 @@ private function hArrayInit _
 		end if
 
 		elm_cnt += 1
-		if elements = -1 then
-			' ellipsis elements...
-			if lexGetToken( ) <> CHAR_COMMA then
+		if( elements = -1 ) then
+			'' ellipsis elements...
+			if( lexGetToken( ) <> CHAR_COMMA ) then
 				elements = elm_cnt
 				ctx.dim_->upper = ctx.dim_->lower + elm_cnt - 1
 				dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper

@@ -390,9 +390,9 @@ sub symbSetArrayDimTb _
 			for i = 0 to dimensions-1
 				if( symbNewArrayDim( s, dTB(i).lower, dTB(i).upper ) = NULL ) then
 				end if
-				' If any dimension size is unknown yet (ellipsis), hold off on the actual build
-				' until called later when it's known.
-				if dTB(i).upper = -1 then do_build = FALSE
+				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
+				'' until called later when it's known.
+				if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then do_build = FALSE
 			next
 
 		else
@@ -400,9 +400,9 @@ sub symbSetArrayDimTb _
 			for i = 0 to dimensions-1
 				d->lower = dTB(i).lower
 				d->upper = dTB(i).upper
-				' If any dimension size is unknown yet (ellipsis), hold off on the actual build
-				' until called later when it's known.
-				if d->upper = -1 then do_build = FALSE
+				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
+				'' until called later when it's known.
+				if( d->upper = FB_ARRAYDIM_UNKNOWN ) then do_build = FALSE
 				d = d->next
 			next
 		end if
@@ -418,7 +418,7 @@ sub symbSetArrayDimTb _
 
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then
-		if do_build = TRUE then
+		if( do_build ) then
 			if( s->var_.array.desc = NULL ) then
 				s->var_.array.desc = symbAddArrayDesc( s, dimensions )
 

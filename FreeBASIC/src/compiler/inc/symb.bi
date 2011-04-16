@@ -257,6 +257,12 @@ type FBARRAYDIM
 	upper			as integer
 end type
 
+'' Special upper bound value used to represent that ellipsis was specified
+'' for the upper bound. Should the user specify this value as array upper
+'' bound, we'll think it was an ellipsis. But using this as upper bound would
+'' not make sense anyways...
+const FB_ARRAYDIM_UNKNOWN = &h80000000
+
 type FBVARDIM
 	lower			as integer
 	upper			as integer
