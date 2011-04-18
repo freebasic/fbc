@@ -153,7 +153,8 @@ private function hCallProc _
 		byval sym as FBSYMBOL ptr, _
 		byval mode as integer, _
 		byval bytestopop as integer, _
-		byval bytesaligned as integer _
+		byval bytesaligned as integer, _
+		byval reclevel as integer _
 	) as IRVREG ptr
 
     dim as IRVREG ptr vreg = any, vr = any
@@ -202,7 +203,7 @@ private function hCallProc _
 	p = n->l
 	if( p = NULL ) then
 		if( ast.doemit ) then
-			irEmitCALLFUNCT( sym, bytestopop, vreg )
+			irEmitCALLFUNCT( sym, bytestopop, vreg, reclevel )
 		end if
 
 	'' ptr..
@@ -210,7 +211,7 @@ private function hCallProc _
 		vr = astLoad( p )
 		astDelNode( p )
 		if( ast.doemit ) then
-			irEmitCALLPTR( vr, vreg, bytestopop )
+			irEmitCALLPTR( vr, vreg, bytestopop, reclevel )
 		end if
 	end if
 
@@ -263,7 +264,8 @@ end sub
 private sub hCheckTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval reclevel as integer _
 	)
 
 	dim as IRVREG ptr vr = any
@@ -283,7 +285,7 @@ private sub hCheckTempStruct _
     							 			   symbGetSubtype( sym ), _
     							 			   TRUE ) ) )
 
-        irEmitPushArg( vr, 0 )
+        irEmitPUSHARG( vr, 0, reclevel )
 
 	end if
 
@@ -295,11 +297,15 @@ function astLoadCALL _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
+    static as integer reclevel = 0
+
     dim as ASTNODE ptr arg = any, next_arg = any, l = any
     dim as FBSYMBOL ptr sym = any, param = any, last_param = any
     dim as integer mode = any, topop = any, toalign = any
     dim as integer params = any, inc = any, args = any
     dim as IRVREG ptr vr = any
+
+    reclevel += 1
 
 	sym = n->sym
 
@@ -363,7 +369,7 @@ function astLoadCALL _
 		astDelNode( l )
 
 		if( ast.doemit ) then
-			irEmitPUSHARG( vr, arg->arg.lgt )
+			irEmitPUSHARG( vr, arg->arg.lgt, reclevel )
 		end if
 
 		astDelNode( arg )
@@ -377,13 +383,15 @@ function astLoadCALL _
 	loop
 
 	'' handle functions returning structs
-	hCheckTempStruct( n, sym )
+	hCheckTempStruct( n, sym, reclevel )
 
 	'' invoke
-	vr = hCallProc( n, sym, mode, topop, toalign )
+	vr = hCallProc( n, sym, mode, topop, toalign, reclevel )
 
 	'' del temp strings and copy back if needed
 	hCheckTmpStrings( n )
+
+    reclevel -= 1
 
     function = vr
 

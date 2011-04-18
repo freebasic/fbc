@@ -45,6 +45,7 @@ Version 0.22.0:
 - ON ... GOTO with more than the supported number of target labels didn't cause an error
 - Specifying 'stdcall' for procedures did not have an effect on DOS and Unix-like systems
 - Symbol data types could be corrupted when unsolved forward references were used in procedure parameters, local variables and such
+- #2973014: Compiler was crashing on function calls with certain number and kind of arguments
 
 
 Version 0.21.1:

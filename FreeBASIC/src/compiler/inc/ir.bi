@@ -230,7 +230,8 @@ type IR_VTBL
 	emitPushArg as sub _
 	( _
 		byval vr as IRVREG ptr, _
-		byval plen as integer _
+		byval plen as integer, _
+		byval level as integer _
 	)
 
 	emitASM as sub _
@@ -324,14 +325,16 @@ type IR_VTBL
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval bytestopop as integer, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval level as integer _
 	)
 
 	emitCallPtr as sub _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval bytestopop as integer _
+		byval bytestopop as integer, _
+		byval level as integer _
 	)
 
 	emitStackAlign as sub _
@@ -677,7 +680,7 @@ declare function irGetVRDataSize _
 
 #define irEmitRETURN(bytestopop) ir.vtbl.emitReturn( bytestopop )
 
-#define irEmitPUSHARG(vr, plen) ir.vtbl.emitPushArg( vr, plen )
+#define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
 
 #define irEmitASM(text) ir.vtbl.emitASM( text )
 
@@ -723,9 +726,9 @@ declare function irGetVRDataSize _
 
 #define irEmitLABELNF(s) ir.vtbl.emitLabelNF( s )
 
-#define irEmitCALLFUNCT(proc, bytestopop, vr) ir.vtbl.emitCall( proc, bytestopop, vr )
+#define irEmitCALLFUNCT(proc, bytestopop, vr, level) ir.vtbl.emitCall( proc, bytestopop, vr, level )
 
-#define irEmitCALLPTR(v1, vr, bytestopop) ir.vtbl.emitCallPtr( v1, vr, bytestopop )
+#define irEmitCALLPTR(v1, vr, bytestopop, level) ir.vtbl.emitCallPtr( v1, vr, bytestopop, level )
 
 #define irEmitSTACKALIGN(bytes) ir.vtbl.emitStackAlign( bytes )
 

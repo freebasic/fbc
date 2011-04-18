@@ -725,7 +725,8 @@ end sub
 private sub _emitPushArg _
 	( _
 		byval vr as IRVREG ptr, _
-		byval plen as integer _
+		byval plen as integer, _
+		byval level as integer _
 	) static
 
 	if( plen = 0 ) then
@@ -763,7 +764,8 @@ private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval bytestopop as integer, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval level as integer _
 	)
 
 	_emit( AST_OP_CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
@@ -775,7 +777,8 @@ private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval bytestopop as integer _
+		byval bytestopop as integer, _
+		byval level as integer _
 	)
 
 	_emit( AST_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )

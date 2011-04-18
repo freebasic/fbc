@@ -38,6 +38,7 @@ end enum
 
 type IRCALLARG
     vr as IRVREG ptr
+    level as integer
 end type
 
 type IRHLCCTX
@@ -2227,13 +2228,15 @@ end sub
 private sub _emitPushArg _
     ( _
         byval vr as IRVREG ptr, _
-        byval plen as integer _
+        byval plen as integer, _
+        byval level as integer _
     )
 
     '' Remember for later, so during _emitCall[Ptr] we can emit the whole
     '' call in one go
     dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
     arg->vr = vr
+    arg->level = level
 
 end sub
 
@@ -2262,12 +2265,13 @@ end sub
 '':::::
 private function hEmitCallArgs _
     ( _
+        byval level as integer _
     ) as string
 
     var ln = "( "
 
     dim as IRCALLARG ptr arg = listGetTail( @ctx.callargs )
-    while( arg )
+    while( arg andalso (arg->level = level) )
         dim as IRCALLARG ptr prev = listGetPrev( arg )
 
         ln += hVregToStr( arg->vr )
@@ -2275,7 +2279,9 @@ private function hEmitCallArgs _
         listDelNode( @ctx.callargs, arg )
 
         if( prev ) then
-            ln += ", "
+            if( prev->level = level ) then
+                ln += ", "
+            end if
         end if
 
         arg = prev
@@ -2292,10 +2298,11 @@ private sub hDoCall _
 	( _
 		byval pname as zstring ptr, _
 		byval bytestopop as integer, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval level as integer _
 	)
 
-	var ln = hEmitCallArgs( )
+	var ln = hEmitCallArgs( level )
 
 	if( vr = NULL ) then
 		hWriteLine( *pname & ln )
@@ -2311,10 +2318,11 @@ private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval bytestopop as integer, _
-		byval vr as IRVREG ptr _
+		byval vr as IRVREG ptr, _
+		byval level as integer _
 	)
 
-	hDoCall( symbGetMangledName( proc ), bytestopop, vr )
+	hDoCall( symbGetMangledName( proc ), bytestopop, vr, level )
 
 end sub
 
@@ -2323,10 +2331,11 @@ private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
-		byval bytestopop as integer _
+		byval bytestopop as integer, _
+		byval level as integer _
 	)
 
-	hDoCall( "(" & hVregToStr( v1 ) & ")", bytestopop, vr )
+	hDoCall( "(" & hVregToStr( v1 ) & ")", bytestopop, vr, level )
 
 end sub
 

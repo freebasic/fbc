@@ -88,7 +88,7 @@ function astLoadBRANCH _
 				irEmitJUMPPTR( vr )
 
 			case AST_OP_CALLPTR
-				irEmitCALLPTR( vr, NULL, 0 )
+				irEmitCALLPTR( vr, NULL, 0, -1 )
 
 			case AST_OP_RET
 				irEmitRETURN( 0 )
