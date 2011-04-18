@@ -36,6 +36,10 @@ enum section_e
 	SECTION_FOOT
 end enum
 
+type IRCALLARG
+    vr as IRVREG ptr
+end type
+
 type IRHLCCTX
 	identcnt			as integer     ' how many levels of indent
 	regcnt				as integer     ' temporary labels counter
@@ -43,6 +47,7 @@ type IRHLCCTX
 	tmpcnt				as integer
 	vregTB				as TFLIST
 	forwardlist			as TFLIST
+	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
 
@@ -132,8 +137,8 @@ private function _init _
 	) as integer
 
 	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-
 	flistNew( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
+	listNew( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				 IR_OPT_CPU_BOPSELF or _
@@ -153,8 +158,8 @@ end function
 '':::::
 private sub _end
 
+	listFree( @ctx.callargs )
 	flistFree( @ctx.forwardlist )
-
 	flistFree( @ctx.vregTB )
 
 end sub
@@ -2220,12 +2225,15 @@ end sub
 
 '':::::
 private sub _emitPushArg _
-	( _
-		byval vr as IRVREG ptr, _
-		byval plen as integer _
-	)
+    ( _
+        byval vr as IRVREG ptr, _
+        byval plen as integer _
+    )
 
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    '' Remember for later, so during _emitCall[Ptr] we can emit the whole
+    '' call in one go
+    dim as IRCALLARG ptr arg = listNewNode( @ctx.callargs )
+    arg->vr = vr
 
 end sub
 
@@ -2251,38 +2259,31 @@ private sub _emitAddr _
 
 end sub
 
-
 '':::::
 private function hEmitCallArgs _
-	( _
-		byval arg_list as IR_CALL_ARG_LIST ptr _
-	) as string
+    ( _
+    ) as string
 
+    var ln = "( "
 
-	if( arg_list = NULL orelse arg_list->head = NULL ) then
-		return "( )"
-	end if
+    dim as IRCALLARG ptr arg = listGetTail( @ctx.callargs )
+    while( arg )
+        dim as IRCALLARG ptr prev = listGetPrev( arg )
 
-	var ln = "( "
-	var arg = arg_list->tail
+        ln += hVregToStr( arg->vr )
 
-	do while( arg )
-        var nxt = arg->prev
+        listDelNode( @ctx.callargs, arg )
 
-		ln += hVregToStr( arg->vr )
+        if( prev ) then
+            ln += ", "
+        end if
 
-		irDelCallArg( arg_list, arg )
+        arg = prev
+    wend
 
-		if( nxt ) then
-			ln += ", "
-		end if
+    ln += " )"
 
-		arg = nxt
-	loop
-
-	ln += " )"
-
-	return ln
+    return ln
 
 end function
 
@@ -2290,12 +2291,11 @@ end function
 private sub hDoCall _
 	( _
 		byval pname as zstring ptr, _
-		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
 
-	var ln = hEmitCallArgs( arg_list )
+	var ln = hEmitCallArgs( )
 
 	if( vr = NULL ) then
 		hWriteLine( *pname & ln )
@@ -2310,12 +2310,11 @@ end sub
 private sub _emitCall _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval bytestopop as integer, _
 		byval vr as IRVREG ptr _
 	)
 
-	hDoCall( symbGetMangledName( proc ), arg_list, bytestopop, vr )
+	hDoCall( symbGetMangledName( proc ), bytestopop, vr )
 
 end sub
 
@@ -2323,12 +2322,11 @@ end sub
 private sub _emitCallPtr _
 	( _
 		byval v1 as IRVREG ptr, _
-		byval arg_list as IR_CALL_ARG_LIST ptr, _
 		byval vr as IRVREG ptr, _
 		byval bytestopop as integer _
 	)
 
-	hDoCall( "(" & hVregToStr( v1 ) & ")", arg_list, bytestopop, vr )
+	hDoCall( "(" & hVregToStr( v1 ) & ")", bytestopop, vr )
 
 end sub
 
