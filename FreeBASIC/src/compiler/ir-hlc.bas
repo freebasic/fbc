@@ -809,10 +809,10 @@ private sub hEmitDecls _
 
  		select case as const symbGetClass( s )
  		case FB_SYMBCLASS_NAMESPACE
-			hEmitDecls( symbGetNamespaceTbHead( s ) )
+			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
 
  		case FB_SYMBCLASS_SCOPE
-			hEmitDecls( symbGetScopeSymbTbHead( s ) )
+			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
 
  		case FB_SYMBCLASS_VAR
 			if( procs = FALSE ) then
