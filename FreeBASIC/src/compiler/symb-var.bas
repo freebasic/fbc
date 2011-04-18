@@ -278,6 +278,17 @@ function symbAddArrayDesc _
 
 	desctype = hCreateDescType( dimensions, NULL, symbGetType( array ), symbGetSubType( array ) )
 
+    '' If the descriptor symbol isn't going to be local, don't make the
+    '' descriptor struct local either, otherwise the C emitter will get
+    '' confused on global arrays with multiple dimensions and initializer:
+    '' It would create a global array, and a global array descriptor, but the
+    '' descriptor struct would be emitted in local scope...
+    '' symbNewSymbol() will have made the struct local in that case, because
+    '' the typeini stuff adds a scope block temporarily.
+    if( (attrib and FB_SYMBATTRIB_LOCAL) = 0 ) then
+        desctype->attrib and= not FB_SYMBATTRIB_LOCAL
+    end if
+
 	'' field?
 	if( symbIsField( array ) ) then
 		'' if at mod-level, it can't be static, alloc on main()'s stack
