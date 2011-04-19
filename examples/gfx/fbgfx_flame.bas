@@ -73,7 +73,7 @@ end sub
 	'' load image and get palette
 	''
 	screenset 2
-	bload "fblogo.bmp"
+	bload "../fblogo.bmp"
 	palette get using pal
 	
 	'' image uses first 64 colors; since we need colors 0-191, we need to move
