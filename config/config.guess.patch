@@ -1,0 +1,12 @@
+--- config.guess.orig	2011-04-03 15:50:48.933242025 +0200
++++ config.guess	2011-04-03 15:51:54.025241932 +0200
+@@ -807,6 +807,9 @@
+     *:MINGW*:*)
+ 	echo ${UNAME_MACHINE}-pc-mingw32
+ 	exit ;;
++    i*:xbox*:*)
++	echo ${UNAME_MACHINE}-pc-xbox
++	exit ;;
+     i*:windows32*:*)
+ 	# uname -m includes "-pc" on this system.
+ 	echo ${UNAME_MACHINE}-mingw32
