@@ -73,7 +73,8 @@ end function
 private function hCallCtor _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval initree as ASTNODE ptr, _
+		byval no_ctorcall as integer _
 	) as ASTNODE ptr
 
 	dim as integer lgt = any
@@ -103,6 +104,12 @@ private function hCallCtor _
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
    		'' has a default ctor?
    		if( symbGetCompDefCtor( subtype ) <> NULL ) then
+            '' Special case used by local UDT FOR iterators: They will already be
+            '' initialized to the FOR start value using an appropriate constructor.
+            if( no_ctorcall ) then
+                exit function
+            end if
+
    			'' proc result? astProcEnd() will take care of this
    			if( (symbGetAttrib( sym ) and FB_SYMBATTRIB_FUNCRESULT) <> 0 ) then
    				exit function
@@ -146,7 +153,8 @@ function astNewDECL _
 	( _
 		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval initree as ASTNODE ptr, _
+		byval no_ctorcall as integer _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr n = any
@@ -159,7 +167,7 @@ function astNewDECL _
 
 	select case symclass
 	case FB_SYMBCLASS_VAR
-		n->l = hCallCtor( sym, initree )
+		n->l = hCallCtor( sym, initree, no_ctorcall )
 	end select
 
 	function = n

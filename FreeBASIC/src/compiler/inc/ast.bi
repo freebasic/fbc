@@ -839,7 +839,8 @@ declare function astNewDECL _
 	( _
 		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr _
+		byval initree as ASTNODE ptr, _
+		byval no_ctorcall as integer = FALSE _
 	) as ASTNODE ptr
 
 declare function astNewNIDXARRAY _

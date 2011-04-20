@@ -48,6 +48,7 @@ Version 0.22.0:
 - Symbol data types could be corrupted when unsolved forward references were used in procedure parameters, local variables and such
 - #2973014: Compiler was crashing on function calls with certain number and kind of arguments
 - va_first() now always returns an ANY PTR
+- #3251750: Local UDT FOR..NEXT iterators could be constructed twice (for i as UDT = ...)
 
 
 Version 0.21.1:

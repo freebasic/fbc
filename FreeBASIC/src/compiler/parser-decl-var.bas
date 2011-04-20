@@ -1663,7 +1663,12 @@ function hVarDeclEx _
    					symbSetDontInit( sym )
     			end if
 
-				var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
+                '' Note: temporary (local) UDT FOR iterators will be constructed with
+                '' the FOR start value already, so tell astNewDECL() to omit the call
+                '' to the default constructor. (Other non-UDT temporary FOR variables
+                '' and also UDTs without default constructor will avoid initialization
+                '' due to the symbSetDontInit() above)
+				var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree, is_fordecl )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
