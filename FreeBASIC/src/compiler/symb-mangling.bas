@@ -1120,6 +1120,30 @@ private function hGetOperatorName _
 	case AST_OP_FLOOR
 		function = @"fl"
 
+	case AST_OP_EXP
+		function = @"ex"
+
+	case AST_OP_LOG
+		function = @"lg"
+
+	case AST_OP_SIN
+		function = @"sn"
+
+	case AST_OP_ASIN
+		function = @"as"
+
+	case AST_OP_COS
+		function = @"cs"
+
+	case AST_OP_ACOS
+		function = @"ac"
+
+	case AST_OP_TAN
+		function = @"tn"
+
+	case AST_OP_ATAN
+		function = @"at"
+
 	case AST_OP_NEW, AST_OP_NEW_SELF
 		function = @"nw"
 

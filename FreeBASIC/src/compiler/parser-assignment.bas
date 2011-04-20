@@ -52,7 +52,7 @@ function cOperator _
 
     '' right class?
     select case lexGetClass( )
-    case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
+    case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 
     case else
     	exit function
@@ -201,6 +201,70 @@ function cOperator _
 
     	lexSkipToken( )
     	return AST_OP_FLOOR
+
+	case FB_TK_EXP
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_EXP
+
+	case FB_TK_LOG
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_LOG
+
+	case FB_TK_SIN
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_SIN
+
+	case FB_TK_ASIN
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_ASIN
+
+	case FB_TK_COS
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_COS
+
+	case FB_TK_ACOS
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_ACOS
+
+	case FB_TK_TAN
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_TAN
+
+	case FB_TK_ATN
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_ATAN
 
 	case FB_TK_FIELDDEREF
     	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
