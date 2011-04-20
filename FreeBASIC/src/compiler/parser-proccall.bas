@@ -181,6 +181,39 @@ function cAssignFunctResult _
 
 end function
 
+sub hMethodCallAddInstPtrOvlArg _
+    ( _
+        byval proc as FBSYMBOL ptr, _
+        byval thisexpr as ASTNODE ptr, _
+        byval arg_list as FB_CALL_ARG_LIST ptr, _
+        byval options as FB_PARSEROPT ptr _
+    )
+
+    '' Only for method calls
+    if( thisexpr = NULL ) then
+        return
+    end if
+
+    '' The proc given here can be a method with THIS pointer or a static
+    '' member proc, depending on which was declared/found first, but it's
+    '' not known yet whether the exact overload that's going to be called
+    '' will be static or not. So the thisexpr needs to be preserved here,
+    '' the rest is done after the args were parsed.
+
+    dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+    
+    dim as FBSYMBOL ptr parent = symbGetParent( proc )
+    if( astGetSubtype( thisexpr ) <> parent ) then
+        thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
+    end if
+    
+    arg->expr = thisexpr
+    arg->mode = hGetInstPtrMode( thisexpr )
+
+    *options or= FB_PARSEROPT_HASINSTPTR
+
+end sub
+
 '':::::
 function cProcCall _
 	( _
@@ -200,19 +233,7 @@ function cProcCall _
 
 	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
 
-	'' method call?
-	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-		
-		var instParam = symbGetProcHeadParam( sym )
-		if( astGetSubtype( thisexpr ) <> symbGetSubtype( instParam ) ) then
-			thisexpr = astNewCONV( symbGetType( instParam ), symbGetSubType( instParam ), thisexpr )
-		EndIf
-		
-		arg->expr = thisexpr
-		arg->mode = hGetInstPtrMode( thisexpr )
-		options or= FB_PARSEROPT_HASINSTPTR
-	end if
+    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then

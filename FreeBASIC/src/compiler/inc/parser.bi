@@ -864,6 +864,14 @@ declare function cFunctionCall _
 		byval thisexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
+declare sub hMethodCallAddInstPtrOvlArg _
+    ( _
+        byval proc as FBSYMBOL ptr, _
+        byval thisexpr as ASTNODE ptr, _
+        byval arg_list as FB_CALL_ARG_LIST ptr, _
+        byval options as FB_PARSEROPT ptr _
+    )
+
 declare function cProcCall _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
