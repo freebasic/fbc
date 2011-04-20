@@ -46,6 +46,7 @@ Version 0.22.0:
 - Specifying 'stdcall' for procedures did not have an effect on DOS and Unix-like systems
 - Symbol data types could be corrupted when unsolved forward references were used in procedure parameters, local variables and such
 - #2973014: Compiler was crashing on function calls with certain number and kind of arguments
+- va_first() now always returns an ANY PTR
 
 
 Version 0.21.1:

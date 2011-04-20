@@ -86,6 +86,9 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
 		expr = astNewADDROF( expr )
 
+        '' Convert to ANY PTR, to hide that it's based on the last param...
+        expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
+
 		'' + FB_ROUNDLEN( paramlen( param ) )
 		funcexpr = astNewBOP( AST_OP_ADD, _
 						  	  expr, _
