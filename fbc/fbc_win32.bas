@@ -21,11 +21,11 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\fbc.bi"
-#include once "inc\hlp.bi"
-#include once "inc\list.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "fbc.bi"
+#include once "hlp.bi"
+#include once "list.bi"
 
 declare function makeImpLib _
 	( _

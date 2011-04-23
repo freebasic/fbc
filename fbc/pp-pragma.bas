@@ -20,11 +20,11 @@
 '' chng: oct/2005 written [v1ctor]
 ''       jan/2006 updated [jeffm] added 'once'
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\lex.bi"
-#include once "inc\parser.bi"
-#include once "inc\pp.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "lex.bi"
+#include once "parser.bi"
+#include once "pp.bi"
 
 enum LEXPP_PRAGMAFLAG_ENUM
 	LEXPP_PRAGMAFLAG_NONE = 0

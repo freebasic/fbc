@@ -22,7 +22,7 @@
 '' internal compiler definitions
 ''
 
-#include once "inc\fb.bi"
+#include once "fb.bi"
 
 const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
@@ -549,9 +549,9 @@ enum FB_TKCLASS
 	FB_TKCLASS_UNKNOWN
 end enum
 
-#include once "inc\hash.bi"
-#include once "inc\stack.bi"
-#include once "inc\symb.bi"
+#include once "hash.bi"
+#include once "stack.bi"
+#include once "symb.bi"
 
 ''
 enum FB_ASMTOK_TYPE
@@ -674,7 +674,7 @@ type FBENV
 end type
 
 
-#include once "inc\hlp.bi"
+#include once "hlp.bi"
 
 ''
 '' macros

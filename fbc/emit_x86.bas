@@ -23,15 +23,15 @@
 ''  	 may/2008 SSE/SSE2 instructions [Bryan Stoeberl]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\reg.bi"
-#include once "inc\ir.bi"
-#include once "inc\rtl.bi"
-#include once "inc\emit.bi"
-#include once "inc\emitdbg.bi"
-#include once "inc\hash.bi"
-#include once "inc\symb.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "reg.bi"
+#include once "ir.bi"
+#include once "rtl.bi"
+#include once "emit.bi"
+#include once "emitdbg.bi"
+#include once "hash.bi"
+#include once "symb.bi"
 
 const EMIT_MEMBLOCK_MAXLEN	= 16				'' when to use memblk clear/move (needed by AST)
 

@@ -23,9 +23,9 @@
 ''
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\lex.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "lex.bi"
 
 #define UTF16_MAX_BMP 		 &h0000FFFF
 #define	UTF16_SUR_HIGH_START &hD800

@@ -21,12 +21,12 @@
 '' chng: dec/2006 written [v1ctor]
 '' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ir.bi"
-#include once "inc\rtl.bi"
-#include once "inc\flist.bi"
-#include once "inc\lex.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ir.bi"
+#include once "rtl.bi"
+#include once "flist.bi"
+#include once "lex.bi"
 
 '' flags that are stored in ctx to know what part of the output hWriteFile
 '' should write to

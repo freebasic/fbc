@@ -21,10 +21,10 @@
 '' chng: dec/2004 written [lillo]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\fbc.bi"
-#include once "inc\hlp.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "fbc.bi"
+#include once "hlp.bi"
 
 enum GCC_LIB
 	CRT1_O

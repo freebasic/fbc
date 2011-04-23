@@ -25,14 +25,14 @@
 ''
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\list.bi"
-#include once "inc\lex.bi"
-#include once "inc\parser.bi"
-#include once "inc\ir.bi"
-#include once "inc\rtl.bi"
-#include once "inc\ast.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "list.bi"
+#include once "lex.bi"
+#include once "parser.bi"
+#include once "ir.bi"
+#include once "rtl.bi"
+#include once "ast.bi"
 
 type FB_GLOBINSTANCE
 	sym				as FBSYMBOL_ ptr			'' for symbol

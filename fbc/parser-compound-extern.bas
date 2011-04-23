@@ -21,9 +21,9 @@
 '' chng: may/2006 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\parser.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "parser.bi"
 
 '':::::
 ''ExternStmtBegin  =   EXTERN "mangling_spec" (LIB LITSTR)? .

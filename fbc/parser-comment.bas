@@ -21,9 +21,9 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\parser.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "parser.bi"
 
 #define LEX_FLAGS (LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOSUFFIX or LEXCHECK_NOMULTILINECOMMENT)
 

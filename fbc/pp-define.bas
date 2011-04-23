@@ -20,13 +20,13 @@
 '' chng: dec/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\lex.bi"
-#include once "inc\parser.bi"
-#include once "inc\pp.bi"
-#include once "inc\list.bi"
-#include once "inc\dstr.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "lex.bi"
+#include once "parser.bi"
+#include once "pp.bi"
+#include once "list.bi"
+#include once "dstr.bi"
 
 #define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
 				   LEXCHECK_NOSUFFIX or _

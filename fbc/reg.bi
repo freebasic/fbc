@@ -26,7 +26,7 @@ type REG_FREETB 	as integer
 
 '#endif
 
-#include once "inc\ir.bi"
+#include once "ir.bi"
 
 enum REG_SIZEMASK
 	REG_SIZEMASK_8	= &h0001

@@ -30,8 +30,8 @@ const FB_VER_PATCH          = 0
 #define ESCCHAR !"\27"
 #define LFCHAR !"\n"
 
-#include once "inc\list.bi"
-#include once "inc\hash.bi"
+#include once "list.bi"
+#include once "hash.bi"
 
 #define FB_STRINGIZE(_x) #_x
 
@@ -408,8 +408,8 @@ type FBS_LIB
 	hashindex		as uinteger
 end type
 
-#include once "inc\error.bi"
-#include once "inc\fb-obj.bi"
+#include once "error.bi"
+#include once "fb-obj.bi"
 
 ''
 ''

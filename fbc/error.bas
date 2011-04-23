@@ -20,11 +20,11 @@
 ''
 ''
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ir.bi"
-#include once "inc\lex.bi"
-#include once "inc\parser.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ir.bi"
+#include once "lex.bi"
+#include once "parser.bi"
 
 type FBWARNING
 	level		as integer

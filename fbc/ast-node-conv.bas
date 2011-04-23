@@ -21,11 +21,11 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ir.bi"
-#include once "inc\rtl.bi"
-#include once "inc\ast.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ir.bi"
+#include once "rtl.bi"
+#include once "ast.bi"
 
 
 '':::::

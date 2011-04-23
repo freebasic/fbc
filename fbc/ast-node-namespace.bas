@@ -21,9 +21,9 @@
 '' chng: jun/2006 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ast.bi"
 
 
 '':::::

@@ -325,7 +325,7 @@ enum FB_RTERROR
 	FB_RTERROR_ENDOFFILE
 end enum
 
-#include once "inc\hash.bi"
+#include once "hash.bi"
 
 type FB_ERRCTX
 	cnt				as integer

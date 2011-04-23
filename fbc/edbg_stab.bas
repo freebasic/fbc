@@ -21,13 +21,13 @@
 '' chng: nov/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\lex.bi"
-#include once "inc\ir.bi"
-#include once "inc\emit.bi"
-#include once "inc\emitdbg.bi"
-#include once "inc\stabs.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "lex.bi"
+#include once "ir.bi"
+#include once "emit.bi"
+#include once "emitdbg.bi"
+#include once "stabs.bi"
 
 type EDBGCTX
 	typecnt			as uinteger

@@ -22,9 +22,9 @@
 ''		 dec/2004 linux support added [lillo]
 ''		 jan/2005 dos support added [DrV]
 
-#include once "inc\fb.bi"
-#include once "inc\fbc.bi"
-#include once "inc\hlp.bi"
+#include once "fb.bi"
+#include once "fbc.bi"
+#include once "hlp.bi"
 
 #ifdef USE_FB_BFD_HEADER
 #include "bfd.bi"

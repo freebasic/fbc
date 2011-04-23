@@ -19,10 +19,10 @@
 '' symbol table protos
 ''
 
-#include once "inc\list.bi"
-#include once "inc\clist.bi"
-#include once "inc\pool.bi"
-#include once "inc\ast-op.bi"
+#include once "list.bi"
+#include once "clist.bi"
+#include once "pool.bi"
+#include once "ast-op.bi"
 
 ''
 enum FB_DATACLASS

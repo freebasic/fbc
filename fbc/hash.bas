@@ -26,9 +26,9 @@ const NULL = 0
 const FALSE = 0
 const TRUE = not FALSE
 
-#include once "inc\hash.bi"
-#include once "inc\list.bi"
-#include once "inc\hlp.bi"
+#include once "hash.bi"
+#include once "list.bi"
+#include once "hlp.bi"
 
 type HASHCTX
 	refcnt		as integer

@@ -21,11 +21,11 @@
 '' chng: oct/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
-#include once "inc\lex.bi"
-#include once "inc\rtl.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ast.bi"
+#include once "lex.bi"
+#include once "rtl.bi"
 
 #define FB_COLOR_FG_DEFAULT		&h00000001
 #define FB_COLOR_BG_DEFAULT		&h00000002

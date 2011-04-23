@@ -23,7 +23,7 @@
 ''
 
 
-#include once "inc\pool.bi"
+#include once "pool.bi"
 
 const NULL = 0
 

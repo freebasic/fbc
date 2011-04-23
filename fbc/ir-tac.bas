@@ -21,13 +21,13 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\reg.bi"
-#include once "inc\emit.bi"
-#include once "inc\flist.bi"
-#include once "inc\ir.bi"
-#include once "inc\hlp.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "reg.bi"
+#include once "emit.bi"
+#include once "flist.bi"
+#include once "ir.bi"
+#include once "hlp.bi"
 
 type IRTAC_CTX
 	tacTB			as TFLIST

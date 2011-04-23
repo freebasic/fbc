@@ -1,5 +1,5 @@
-#ifndef __POOL_BI__
-#define __POOL_BI__
+#ifndef __CLIST_BI__
+#define __CLIST_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2010 The FreeBASIC development team.
@@ -18,43 +18,31 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#include once "inc\list.bi"
+#include once "list.bi"
 
-type TPOOLITEM
-	idx			as integer
+type TCLIST
+	list	as TLIST
+	head	as TLISTNODE ptr
+	tail	as TLISTNODE ptr
 end type
 
-type TPOOL
-	chunks		as integer
-	chunksize   as integer
-	chunkTb		as TLIST ptr
-end type
-
-declare function poolNew _
+declare function clistNew _
 	( _
-		byval pool as TPOOL ptr, _
-		byval items as integer, _
-		byval minlen as integer, _
-		byval maxlen as integer _
+		byval clist as TCLIST ptr, _
+		byval nodes as integer, _
+		byval nodelen as integer, _
+		byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
 	) as integer
 
-
-declare sub poolFree _
+declare function clistFree _
 	( _
-		byval pool as TPOOL ptr _
-	)
+		byval clist as TCLIST ptr _
+	) as integer
 
-declare function poolNewItem _
+declare function clistNextNode _
 	( _
-		byval pool as TPOOL ptr, _
-		byval len_ as integer _
+		byval clist as TCLIST ptr, _
+		byval do_circ as integer = TRUE _
 	) as any ptr
 
-declare sub poolDelItem _
-	( _
-		byval pool as TPOOL ptr, _
-		byval node as any ptr _
-	)
-
-
-#endif '' __POOL_BI__
+#endif '' __LIST_BI__

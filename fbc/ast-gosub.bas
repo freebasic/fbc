@@ -20,11 +20,11 @@
 ''
 '' chng: apr/2008 written [jeffm]
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
-#include once "inc\lex.bi"
-#include once "inc\rtl.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ast.bi"
+#include once "lex.bi"
+#include once "rtl.bi"
 
 ''
 '' GOSUB/RETURN support

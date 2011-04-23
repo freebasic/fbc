@@ -23,7 +23,7 @@
 ''
 
 
-#include once "inc\clist.bi"
+#include once "clist.bi"
 
 const NULL = 0
 

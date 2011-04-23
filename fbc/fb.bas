@@ -21,14 +21,14 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\fbc.bi"
-#include once "inc\parser.bi"
-#include once "inc\lex.bi"
-#include once "inc\rtl.bi"
-#include once "inc\ast.bi"
-#include once "inc\ir.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "fbc.bi"
+#include once "parser.bi"
+#include once "lex.bi"
+#include once "rtl.bi"
+#include once "ast.bi"
+#include once "ir.bi"
 
 type FB_LANG_INFO
 	name		as zstring ptr

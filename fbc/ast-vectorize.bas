@@ -21,9 +21,9 @@
 '' chng: june/2008 written [bryan]
 '' chng: nov/2008 allow singles/doubles mixed expression [bryan]
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ast.bi"
 
 dim shared as integer			vectorWidth
 dim shared as integer			maxVectorWidth			'' 2 if doubles are found anywhere, otherwise 4

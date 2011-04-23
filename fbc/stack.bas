@@ -24,7 +24,7 @@
 
 const NULL = 0
 
-#include once "inc\stack.bi"
+#include once "stack.bi"
 
 declare function hAllocTB		( _
 									byval stk as TSTACK ptr, _

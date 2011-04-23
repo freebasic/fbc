@@ -21,12 +21,12 @@
 ''
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\fbc.bi"
-#include once "inc\ir.bi"
-#include once "inc\lex.bi"
-#include once "inc\dstr.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "fbc.bi"
+#include once "ir.bi"
+#include once "lex.bi"
+#include once "dstr.bi"
 
 type FBHLPCTX
 	profilecnt  as uinteger

@@ -16,8 +16,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "inc\ast.bi"
-#include once "inc\fbint.bi"
+#include once "ast.bi"
+#include once "fbint.bi"
 
 '' NOTE: when adding any RTL proc that will be called from rtl*.bas,
 '' always update the FB_RTL_IDX enum below

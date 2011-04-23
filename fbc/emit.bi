@@ -19,10 +19,10 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "inc\flist.bi"
-#include once "inc\reg.bi"
-#include once "inc\ast.bi"
-#include once "inc\ir.bi"
+#include once "flist.bi"
+#include once "reg.bi"
+#include once "ast.bi"
+#include once "ir.bi"
 
 const EMIT_INITNODES	= 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3

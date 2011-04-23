@@ -142,7 +142,7 @@ declare function hHexUInt _
 
 declare function hIsValidSymbolName( byval sym as zstring ptr ) as integer
 
-#include once "inc\hlp-str.bi"
+#include once "hlp-str.bi"
 
 #define hIsCharLower(_c) ( (_c >= asc("a")) andalso (_c <= asc("z")) )
 #define hIsCharUpper(_c) ( (_c <= asc("Z")) andalso (_c >= asc("A")) )

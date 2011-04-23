@@ -167,29 +167,29 @@ extern "C" {
     ((int) (((((unsigned) (k)) & 0xFF)==FB_EXT_CHAR) && (((k) & 0xFF00)!=0)))
 
 #if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
-#include "win32/fb_win32.h"
+#include "fb_win32.h"
 #elif defined(TARGET_LINUX)
-#include "unix/fb_unix.h"
-#include "linux/fb_linux.h"
+#include "fb_unix.h"
+#include "fb_linux.h"
 #elif defined(TARGET_DOS)
-#include "dos/fb_dos.h"
+#include "fb_dos.h"
 #elif defined(TARGET_XBOX)
-#include "xbox/fb_xbox.h"
+#include "fb_xbox.h"
 #elif defined(TARGET_FREEBSD)
-#include "unix/fb_unix.h"
-#include "freebsd/fb_freebsd.h"
+#include "fb_unix.h"
+#include "fb_freebsd.h"
 #elif defined(TARGET_SOLARIS)
-#include "unix/fb_unix.h"
-#include "solaris/fb_solaris.h"
+#include "fb_unix.h"
+#include "fb_solaris.h"
 #elif defined(TARGET_DARWIN)
-#include "unix/fb_unix.h"
-#include "darwin/fb_darwin.h"
+#include "fb_unix.h"
+#include "fb_darwin.h"
 #elif defined(TARGET_OPENBSD)
-#include "unix/fb_unix.h"
-#include "openbsd/fb_openbsd.h"
+#include "fb_unix.h"
+#include "fb_openbsd.h"
 #elif defined(TARGET_NETBSD)
-#include "unix/fb_unix.h"
-#include "netbsd/fb_netbsd.h"
+#include "fb_unix.h"
+#include "fb_netbsd.h"
 #else
 #error target not supported
 #endif

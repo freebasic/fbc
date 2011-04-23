@@ -22,9 +22,9 @@
 ''
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\fbc.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "fbc.bi"
 
 	'' same order as FB_DATATYPE
 	dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _

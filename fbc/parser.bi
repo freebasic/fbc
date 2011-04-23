@@ -20,8 +20,8 @@
 '' parser protos
 ''
 
-#include once "inc\lex.bi"
-#include once "inc\ast.bi"
+#include once "lex.bi"
+#include once "ast.bi"
 
 '' compound statements permissions
 enum FB_CMPSTMT_MASK

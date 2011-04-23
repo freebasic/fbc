@@ -21,11 +21,11 @@
 '' chng: may/2006 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\flist.bi"
-#include once "inc\hash.bi"
-#include once "inc\ir.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "flist.bi"
+#include once "hash.bi"
+#include once "ir.bi"
 
 type FB_MANGLEABBR
 	idx				as integer

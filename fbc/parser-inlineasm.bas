@@ -21,12 +21,12 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\list.bi"
-#include once "inc\parser.bi"
-#include once "inc\ast.bi"
-#include once "inc\emit.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "list.bi"
+#include once "parser.bi"
+#include once "ast.bi"
+#include once "emit.bi"
 
 const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
 

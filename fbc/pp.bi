@@ -18,7 +18,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-#include once "inc\list.bi"
+#include once "list.bi"
 
 enum FB_TOKEN_PP
 	FB_TK_PP_IF					= FB_TK_IF

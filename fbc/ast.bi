@@ -19,8 +19,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-#include once "inc\list.bi"
-#include once "inc\ast-op.bi"
+#include once "list.bi"
+#include once "ast-op.bi"
 
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
@@ -343,7 +343,7 @@ type ASTCTX
 	flushdtorlist	as integer
 end Type
 
-#include once "inc\ir.bi"
+#include once "ir.bi"
 
 enum AST_OPFLAGS
 	AST_OPFLAGS_NONE		= &h00000000

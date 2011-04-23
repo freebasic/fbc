@@ -21,10 +21,10 @@
 '' chng: oct/2004 written [v1ctor]
 ''       jan/2007 fb_DylibSymbolByOrd [voodooattack]
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\ast.bi"
-#include once "inc\rtl.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "ast.bi"
+#include once "rtl.bi"
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 

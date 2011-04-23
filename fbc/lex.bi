@@ -20,7 +20,7 @@
 '' lex protos
 ''
 
-#include once "inc\dstr.bi"
+#include once "dstr.bi"
 
 enum LEXCHECK
 	

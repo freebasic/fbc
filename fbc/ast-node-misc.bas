@@ -20,13 +20,13 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\lex.bi"
-#include once "inc\parser.bi"
-#include once "inc\ir.bi"
-#include once "inc\ast.bi"
-#include once "inc\emit.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "lex.bi"
+#include once "parser.bi"
+#include once "ir.bi"
+#include once "ast.bi"
+#include once "emit.bi"
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' labels (l = NULL; r = NULL)

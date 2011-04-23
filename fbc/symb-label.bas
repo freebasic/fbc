@@ -22,12 +22,12 @@
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\parser.bi"
-#include once "inc\hash.bi"
-#include once "inc\list.bi"
-#include once "inc\lex.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "parser.bi"
+#include once "hash.bi"
+#include once "list.bi"
+#include once "lex.bi"
 
 '':::::
 function symbAddLabel _

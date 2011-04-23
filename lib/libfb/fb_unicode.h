@@ -60,14 +60,15 @@ typedef uint8_t  UTF_8;
 #define	UTF16_HALFMASK 		 (UTF_32)0x3FFUL
 
 #if defined(TARGET_DOS)
-# include "dos/fb_unicode.h"
+# include "fb_unicode_dos.h"
 #elif defined(TARGET_XBOX)
-# include "xbox/fb_unicode.h"
+# error "Where is fb_unicode.h for the xbox build?"
+//# include "xbox/fb_unicode.h"
 #elif defined(TARGET_CYGWIN)
 /* dumb cygwin ... */
-# include "dos/fb_unicode.h"
+# include "fb_unicode_dos.h"
 #elif defined(TARGET_WIN32)
-# include "win32/fb_unicode.h"
+# include "fb_unicode_win32.h"
 #else
 # define __USE_ISOC99 1
 # define __USE_ISOC95 1

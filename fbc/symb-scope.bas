@@ -21,12 +21,12 @@
 '' chng: sep/2004 written [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\parser.bi"
-#include once "inc\list.bi"
-#include once "inc\ast.bi"
-#include once "inc\rtl.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "parser.bi"
+#include once "list.bi"
+#include once "ast.bi"
+#include once "rtl.bi"
 
 '':::::
 function symbAddScope _

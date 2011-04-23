@@ -21,9 +21,9 @@
 ''
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\dstr.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "dstr.bi"
 
 declare sub hRealloc _
 	( _

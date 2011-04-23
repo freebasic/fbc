@@ -22,10 +22,10 @@
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 
-#include once "inc\fb.bi"
-#include once "inc\fbint.bi"
-#include once "inc\hash.bi"
-#include once "inc\list.bi"
+#include once "fb.bi"
+#include once "fbint.bi"
+#include once "hash.bi"
+#include once "list.bi"
 
 enum KWD_OPTION
     KWD_OPTION_DEFAULT 		= &h00000000
