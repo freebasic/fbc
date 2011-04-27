@@ -557,6 +557,8 @@ ac_unique_file="fbc/fbc.bas"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 FBC
+FBLFLAGS
+FBCFLAGS
 SET_MAKE
 MKDIR_P
 CPP
@@ -639,7 +641,9 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
-CPP'
+CPP
+FBCFLAGS
+FBLFLAGS'
 
 
 # Initialize some variables set by options.
@@ -1271,6 +1275,8 @@ Some influential environment variables:
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
+  FBCFLAGS    Additional fbc flags to use when compiling
+  FBLFLAGS    Additional fbc flags to use when linking
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -3026,6 +3032,17 @@ else
 $as_echo "no" >&6; }
   SET_MAKE="MAKE=${MAKE-make}"
 fi
+
+
+# Preserve the FBCFLAGS and FBLFLAGS variables and choose default values for
+# them like autoconf already does for CFLAGS.
+if test "${FBCFLAGS+x}" != "x"; then
+    FBCFLAGS="-g"
+fi
+if test "${FBLFLAGS+x}" != "x"; then
+    FBLFLAGS="-g"
+fi
+
 
 
 # Check for FreeBASIC compiler and preserve the FBC variable.

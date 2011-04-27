@@ -121,6 +121,17 @@ AC_PROG_CPP
 AC_PROG_MKDIR_P
 AC_PROG_MAKE_SET
 
+# Preserve the FBCFLAGS and FBLFLAGS variables and choose default values for
+# them like autoconf already does for CFLAGS.
+if test "${FBCFLAGS+x}" != "x"; then
+    FBCFLAGS="-g"
+fi
+if test "${FBLFLAGS+x}" != "x"; then
+    FBLFLAGS="-g"
+fi
+AC_ARG_VAR([FBCFLAGS], [Additional fbc flags to use when compiling])
+AC_ARG_VAR([FBLFLAGS], [Additional fbc flags to use when linking])
+
 # Check for FreeBASIC compiler and preserve the FBC variable.
 # This also checks for i686-pc-linux-gnu-fbc and such when cross-compiling.
 AC_CHECK_TOOL([FBC], [fbc], [:])
