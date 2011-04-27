@@ -1,0 +1,7 @@
+FONT,    FONT_8,  fb_font_8x8,     8,    8,     fnt08x08.fnt
+FONT,    FONT_14, fb_font_8x14,    8,    14,    fnt08x14.fnt
+FONT,    FONT_16, fb_font_8x16,    8,    16,    fnt08x16.fnt
+PALETTE, PAL_2,   fb_palette_2,    2,    0,     pal002.pal
+PALETTE, PAL_16,  fb_palette_16,   16,   0,     pal016.pal
+PALETTE, PAL_64,  fb_palette_64,   64,   0,     pal064.pal
+PALETTE, PAL_256, fb_palette_256,  256,  0,     pal256.pal

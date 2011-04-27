@@ -167,6 +167,28 @@ AC_PROG_CPP
 # ar (this also preserves AR)
 AC_CHECK_TOOL([AR], [ar], [:])
 
+# $build system specifics, the detection of which autoconf doesn't support...
+# (Same problems as with CC_FOR_BUILD etc. in binutils/gcc)
+# Luckily for fbc there is not much to detect anyways.
+# Determine working values, unless the user already set the variables.
+AC_ARG_VAR([BUILD_FBC], [FreeBASIC compiler used to compile tools for the build system])
+AC_ARG_VAR([BUILD_EXEEXT], [Executable file extension on the build system])
+if test "$build" != "$host"; then
+    if test -z "$BUILD_FBC"; then
+        # 'fbc' is the native-to-native compiler, just what we want.
+        BUILD_FBC=${BUILD_FBC-"fbc"};
+    fi
+    case "$build_os" in
+    cygwin* | mingw* | msdos* )
+        BUILD_EXEEXT=${BUILD_EXEEXT-".exe"}
+        ;;
+    esac
+else
+    # Not cross-compiling, so just use the host variables.
+    BUILD_FBC=${BUILD_FBC-"$FBC"}
+    BUILD_EXEEXT=${BUILD_EXEEXT-"$EXEEXT"}
+fi
+
 # Checks for header files
 
 AC_HEADER_DIRENT

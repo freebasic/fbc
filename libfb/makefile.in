@@ -932,11 +932,22 @@ $(MTCOBJECTS): %.mt.o: %.c $(HSOURCES)
 $(MTSOBJECTS): %.mt.o: %.s $(HSOURCES)
 	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
+MAKEDATA := ./makedata$(BUILD_EXEEXT)
+
+libfb_gfx_data.h: data/data.lst $(MAKEDATA) $(GFX_DATA_FILES)
+	$(MAKEDATA) $< $@
+
+$(MAKEDATA): makedata.bas
+	$(BUILD_FBC) -g -exx $< -o $(patsubst %.bas,%.o,$<) -x $@ -l fbgfx
+
 .PHONY: clean
 clean:
 	-rm -f $(OBJS) libfb.a
 ifneq ($(HOST_OSFAMILY),dos)
 	-rm -f $(OBJSMT) libfbmt.a
+endif
+ifeq ($(ENABLE_GFX),yes)
+	-rm -f libfb_gfx_data.h $(MAKEDATA)
 endif
 
 .PHONY: distclean
