@@ -167,6 +167,12 @@ AC_PROG_CPP
 # ar (this also preserves AR)
 AC_CHECK_TOOL([AR], [ar], [:])
 
+if test "x$HOST_OSFAMILY" = "xwindows"; then
+    # dlltool and windres, both used as part of fbportio build.
+    AC_CHECK_TOOL([DLLTOOL], [dlltool], [:])
+    AC_CHECK_TOOL([WINDRES], [windres], [:])
+fi
+
 # $build system specifics, the detection of which autoconf doesn't support...
 # (Same problems as with CC_FOR_BUILD etc. in binutils/gcc)
 # Luckily for fbc there is not much to detect anyways.

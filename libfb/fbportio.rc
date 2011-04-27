@@ -1,0 +1,34 @@
+#include <windows.h>
+
+#define VER_VERSION_UNICODE_LANG    "000004B0" /* LANG_NEUTRAL/SUBLANG_NEUTRAL, Unicode CP */
+#define VER_VERSION_TRANSLATION     0x0000, 0x04B0
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     0,90,0,0
+PRODUCTVERSION  0,90,0,0
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+FILEFLAGS       0
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_DRV
+FILESUBTYPE     VFT2_DRV_SYSTEM
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK VER_VERSION_UNICODE_LANG
+        BEGIN
+            VALUE "CompanyName",     "FreeBASIC project, http://www.freebasic.net"
+            VALUE "FileDescription", "FreeBASIC direct I/O ports access driver"
+            VALUE "FileVersion",     "0.90"
+            VALUE "InternalName",    "fbportio.sys"
+            VALUE "LegalCopyright",  "FreeBASIC development team"
+            VALUE "OriginalFilename","fbportio.sys"
+            VALUE "ProductName",     "FB Ports I/O driver 1.0"
+            VALUE "ProductVersion",  "0.90"
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", VER_VERSION_TRANSLATION
+    END
+END

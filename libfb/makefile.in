@@ -7,6 +7,17 @@
 # on the requested host OS and CPU, once normally for libfb, and once with
 # -DMULTITHREADED for libfbmt.
 #
+# There are two special cases that require extra work:
+#   1) The font/palette data files for FB graphics: they need to be compressed
+#      and turned into a C array of bytes, so that they can be uncompressed and
+#      used at runtime. The makedata.bas tool generates the libfb_gfx_data.h
+#      header which is #included by libfb_gfx_data.c.
+#   2) The FB Windows port I/O driver (fbportio): it is compiled and then
+#      also turned into a C array of bytes using the makedriver.bas tool,
+#      so at runtime it can be written out and installed as a file. makedriver
+#      generates the fbportio_driver.h header which is #included by
+#      libfb_sys_ports_windows.c.
+#
 # Pass CFLAGS="-O0 -g -DDEBUG" to build a debug version with assertions.
 
 BUILD_FBC:=@BUILD_FBC@
@@ -34,14 +45,11 @@ WITH_X:=@WITH_X@
 srcdir:=@srcdir@
 VPATH=@srcdir@
 
+CFLAGS += -Wall -march=$(host_cpu)
 CFLAGS += -include config.h
-
 ifneq ($(X_INCLUDES),)
     CFLAGS += -I$(X_INCLUDES)
 endif
-
-CFLAGS += -Wall -march=$(host_cpu)
-
 # Some special treatment for xbox.
 # TODO: Test me, update me!
 ifeq ($(HOST_OS),xbox)
@@ -736,7 +744,7 @@ ifeq ($(HOST_OSFAMILY),unix)
         libfb_unix_hinit_unix.c
 endif
 
-ifeq ($(HOST_OS),win32)
+ifeq ($(HOST_OS),mingw)
     HSOURCES += \
         fb_gfx_win32.h \
         fb_unicode_win32.h \
@@ -901,6 +909,15 @@ ifeq ($(HOST_OSFAMILY),xbox)
     SSOURCES += libfb_alloca_xbox.s
 endif
 
+GFX_DATA_FILES := \
+    data/fnt08x08.fnt \
+    data/fnt08x14.fnt \
+    data/fnt08x16.fnt \
+    data/pal002.pal \
+    data/pal016.pal \
+    data/pal064.pal \
+    data/pal256.pal
+
 COBJECTS := $(patsubst %.c,%.o,$(CSOURCES))
 SOBJECTS := $(patsubst %.s,%.o,$(SSOURCES))
 MTCOBJECTS := $(patsubst %.o,%.mt.o,$(COBJECTS))
@@ -933,12 +950,37 @@ $(MTSOBJECTS): %.mt.o: %.s $(HSOURCES)
 	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
 MAKEDATA := ./makedata$(BUILD_EXEEXT)
+MAKEDRIVER := ./makedriver$(BUILD_EXEEXT)
 
 libfb_gfx_data.h: data/data.lst $(MAKEDATA) $(GFX_DATA_FILES)
 	$(MAKEDATA) $< $@
 
 $(MAKEDATA): makedata.bas
 	$(BUILD_FBC) -g -exx $< -o $(patsubst %.bas,%.o,$<) -x $@ -l fbgfx
+
+fbportio_driver.h: fbportio.sys $(MAKEDRIVER)
+	$(MAKEDRIVER) $< $@
+
+$(MAKEDRIVER): makedriver.bas
+	$(BUILD_FBC) -g -exx $< -o $(patsubst %.bas,%.o,$<) -x $@
+
+fbportio.sys: fbportio.c fbportio_rc.o libntoskrnl_missing.a
+	$(CC) -Wall -O2 -nostartfiles -nodefaultlibs -nostdlib \
+        -Wl,-shared \
+        -Wl,--entry,_DriverEntry@8 \
+        -Wl,--subsystem,native \
+        -Wl,--image-base,0x10000 \
+        -Wl,--strip-all \
+        $^ -lntoskrnl -o $@
+
+fbportio_rc.o: fbportio.rc
+	$(WINDRES) $< $@
+
+# Small import library to compensate for MinGW's ntoskrnl import library not
+# containing PsLookupProcessByProcessId@8.
+# TODO: Remove, when the driver starts working with just MinGW's library.
+libntoskrnl_missing.a: libntoskrnl_missing.def
+	$(DLLTOOL) -d $< -l $@ --kill-at
 
 .PHONY: clean
 clean:
@@ -948,6 +990,9 @@ ifneq ($(HOST_OSFAMILY),dos)
 endif
 ifeq ($(ENABLE_GFX),yes)
 	-rm -f libfb_gfx_data.h $(MAKEDATA)
+endif
+ifeq ($(HOST_OSFAMILY),windows)
+	-rm -f fbportio_driver.h fbportio.sys fbportio_rc.o libntoskrnl_missing.a $(MAKEDRIVER)
 endif
 
 .PHONY: distclean
