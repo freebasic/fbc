@@ -1,0 +1,251 @@
+#!/usr/bin/make -f
+# @configure_input@
+
+CC:=@CC@
+CFLAGS:=@CFLAGS@
+EXEEXT:=@EXEEXT@
+FBC:=@FBC@
+FBCFLAGS:=@FBCFLAGS@
+FBLFLAGS:=@FBLFLAGS@
+
+host_cpu:=@host_cpu@
+HOST_OS:=@HOST_OS@
+
+ENABLE_OBJINFO:=@ENABLE_OBJINFO@
+
+srcdir:=@srcdir@
+VPATH=@srcdir@
+
+FBCNEW := fbc-new$(EXEEXT)
+
+FBCFLAGS := -w pedantic -m fbc -include config.bi
+
+ifeq (@HOST_OSFAMILY@,win32)
+    FBCLFLAGS += -t 2048
+endif
+
+ifeq ($(ENABLE_OBJINFO),yes)
+    FBLFLAGS += -l bfd -l iberty
+
+    ifeq (@HOST_OS@,cygwin)
+        FBLFLAGS += -l intl
+    else ifeq (@HOST_OS@,dos)
+        FBLFLAGS += -l intl -l z
+    else ifeq (@HOST_OS@,freebsd)
+        FBLFLAGS += -l intl
+    else ifeq (@HOST_OS@,openbsd)
+        FBLFLAGS += -l intl
+    else ifeq (@HOST_OS@,mingw)
+        FBLFLAGS += -l user32
+    endif
+endif
+
+CFLAGS += -Wall -march=$(host_cpu)
+
+HEADERS := \
+    ast.bi \
+    ast-op.bi \
+    clist.bi \
+    dstr.bi \
+    emit.bi \
+    emitdbg.bi \
+    error.bi \
+    fb-bfd-bridge.bi \
+    fb.bi \
+    fbc.bi \
+    fbint.bi \
+    fb-obj.bi \
+    flist.bi \
+    hash.bi \
+    hlp.bi \
+    hlp-str.bi \
+    ir.bi \
+    lex.bi \
+    list.bi \
+    parser.bi \
+    pool.bi \
+    pp.bi \
+    reg.bi \
+    rtl.bi \
+    stabs.bi \
+    stack.bi \
+    symb.bi
+
+SOURCES := \
+    ast.bas \
+    ast-gosub.bas \
+    ast-helper.bas \
+    ast-misc.bas \
+    ast-node-addr.bas \
+    ast-node-arg.bas \
+    ast-node-assign.bas \
+    ast-node-bop.bas \
+    ast-node-branch.bas \
+    ast-node-call.bas \
+    ast-node-check.bas \
+    ast-node-const.bas \
+    ast-node-conv.bas \
+    ast-node-data.bas \
+    ast-node-decl.bas \
+    ast-node-enum.bas \
+    ast-node-field.bas \
+    ast-node-idx.bas \
+    ast-node-iif.bas \
+    ast-node-link.bas \
+    ast-node-load.bas \
+    ast-node-mem.bas \
+    ast-node-misc.bas \
+    ast-node-namespace.bas \
+    ast-node-proc.bas \
+    ast-node-ptr.bas \
+    ast-node-scope.bas \
+    ast-node-stack.bas \
+    ast-node-typeini.bas \
+    ast-node-uop.bas \
+    ast-node-var.bas \
+    ast-optimize.bas \
+    ast-vectorize.bas \
+    clist.bas \
+    dstr.bas \
+    edbg_stab.bas \
+    emit.bas \
+    emit_SSE.bas \
+    emit_x86.bas \
+    error.bas \
+    fb.bas \
+    fbc.bas \
+    fbc_cyg.bas \
+    fbc_darwin.bas \
+    fbc_dos.bas \
+    fbc_freebsd.bas \
+    fbc_linux.bas \
+    fbc_netbsd.bas \
+    fbc_openbsd.bas \
+    fbc_win32.bas \
+    fbc_xbox.bas \
+    fb-main.bas \
+    fb-objinfo.bas \
+    flist.bas \
+    hash.bas \
+    hlp.bas \
+    hlp-str.bas \
+    ir.bas \
+    ir-hlc.bas \
+    ir-tac.bas \
+    lex.bas \
+    lex-utf.bas \
+    list.bas \
+    parser-assignment.bas \
+    parser-comment.bas \
+    parser-compound.bas \
+    parser-compound-do.bas \
+    parser-compound-extern.bas \
+    parser-compound-for.bas \
+    parser-compound-if.bas \
+    parser-compound-namespace.bas \
+    parser-compound-scope.bas \
+    parser-compound-select.bas \
+    parser-compound-select-const.bas \
+    parser-compound-while.bas \
+    parser-compound-with.bas \
+    parser-decl.bas \
+    parser-decl-const.bas \
+    parser-decl-def.bas \
+    parser-decl-enum.bas \
+    parser-decl-option.bas \
+    parser-decl-proc.bas \
+    parser-decl-proc-params.bas \
+    parser-decl-struct.bas \
+    parser-decl-symb-init.bas \
+    parser-decl-symbtype.bas \
+    parser-decl-typedef.bas \
+    parser-decl-var.bas \
+    parser-expr-atom.bas \
+    parser-expr-binary.bas \
+    parser-expr-constant.bas \
+    parser-expr-function.bas \
+    parser-expr-unary.bas \
+    parser-expr-variable.bas \
+    parser-identifier.bas \
+    parser-inlineasm.bas \
+    parser-label.bas \
+    parser-proc.bas \
+    parser-proccall-args.bas \
+    parser-proccall.bas \
+    parser-quirk-array.bas \
+    parser-quirk.bas \
+    parser-quirk-casting.bas \
+    parser-quirk-console.bas \
+    parser-quirk-data.bas \
+    parser-quirk-error.bas \
+    parser-quirk-file.bas \
+    parser-quirk-gfx.bas \
+    parser-quirk-goto-return.bas \
+    parser-quirk-iif.bas \
+    parser-quirk-math.bas \
+    parser-quirk-mem.bas \
+    parser-quirk-on.bas \
+    parser-quirk-peekpoke.bas \
+    parser-quirk-string.bas \
+    parser-quirk-vafirst.bas \
+    parser-statement.bas \
+    parser-toplevel.bas \
+    pool.bas \
+    pp.bas \
+    pp-cond.bas \
+    pp-define.bas \
+    pp-pragma.bas \
+    reg.bas \
+    rtl-array.bas \
+    rtl.bas \
+    rtl-console.bas \
+    rtl-data.bas \
+    rtl-error.bas \
+    rtl-file.bas \
+    rtl-gfx.bas \
+    rtl-gosub.bas \
+    rtl-macro.bas \
+    rtl-math.bas \
+    rtl-mem.bas \
+    rtl-print.bas \
+    rtl-profile.bas \
+    rtl-string.bas \
+    rtl-system.bas \
+    stack.bas \
+    symb.bas \
+    symb-bitfield.bas \
+    symb-comp.bas \
+    symb-const.bas \
+    symb-data.bas \
+    symb-define.bas \
+    symb-enum.bas \
+    symb-keyword.bas \
+    symb-label.bas \
+    symb-lib.bas \
+    symb-mangling.bas \
+    symb-namespace.bas \
+    symb-proc.bas \
+    symb-scope.bas \
+    symb-struct.bas \
+    symb-typedef.bas \
+    symb-var.bas
+
+OBJECTS := $(patsubst %.bas,%.o,$(SOURCES))
+
+.SUFFIXES:
+
+.PHONY: all
+all: $(FBCNEW)
+
+$(FBCNEW): $(OBJECTS)
+	$(FBC) $(FBLFLAGS) $^ -x $@
+
+$(OBJECTS): %.o: %.bas $(HEADERS)
+	$(FBC) $(FBCFLAGS) -c $< -o $@
+
+c-objinfo.o: c-objinfo.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean: 
+	-rm -f $(OBJECTS) $(FBCNEW)

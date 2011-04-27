@@ -1,0 +1,27 @@
+/'
+    @configure_input@
+
+    Compilation options -- this is supposed to be similar to a config.h that
+    autoconf/configure can generate, but unfortunately autoconf doesn't
+    know FreeBASIC, so this is rather different than a config.h and
+    achieved purely through autoconf variable substitution.
+
+    Useful side-effect: we can put other global stuff in here.
+'/
+
+#define NULL 0
+#define FALSE 0
+#define TRUE (-1)
+
+#define __STRINGIFY(s) #s
+
+#define HOST_CANON          __STRINGIFY(@host@)
+#define HOST_NONCANON       __STRINGIFY(@host_noncanonical@)
+#define HOST_CPU            __STRINGIFY(@host_cpu@)
+#define HOST_OS             __STRINGIFY(@HOST_OS@)
+#define HOST_OSFAMILY       __STRINGIFY(@HOST_OSFAMILY@)
+
+'' Objinfo support?
+#if ("@ENABLE_OBJINFO@" <> "no")
+    #define ENABLE_OBJINFO TRUE
+#endif

@@ -1,0 +1,944 @@
+#!/usr/bin/make -f
+# @configure_input@
+#
+# This makefile builds libfb.a, libfbmt.a (except on DOS) and fbrt0.o.
+#
+# For the most part this will just compile the C and assembly modules, based
+# on the requested host OS and CPU, once normally for libfb, and once with
+# -DMULTITHREADED for libfbmt.
+#
+# Pass CFLAGS="-O0 -g -DDEBUG" to build a debug version with assertions.
+
+BUILD_FBC:=@BUILD_FBC@
+BUILD_EXEEXT:=@BUILD_EXEEXT@
+
+AR:=@AR@
+CC:=@CC@
+DLLTOOL:=@DLLTOOL@
+WINDRES:=@WINDRES@
+FBC:=@FBC@
+EXEEXT:=@EXEEXT@
+CFLAGS:=@CFLAGS@
+OPENXDK:=@OPENXDK@
+X_INCLUDES:=@X_INCLUDES@
+
+HOST_CPUFAMILY:=@HOST_CPUFAMILY@
+HOST_OS:=@HOST_OS@
+HOST_OSFAMILY:=@HOST_OSFAMILY@
+host_cpu:=@host_cpu@
+
+ENABLE_OPENGL:=@ENABLE_OPENGL@
+ENABLE_GFX:=@ENABLE_GFX@
+WITH_X:=@WITH_X@
+
+srcdir:=@srcdir@
+VPATH=@srcdir@
+
+CFLAGS += -include config.h
+
+ifneq ($(X_INCLUDES),)
+    CFLAGS += -I$(X_INCLUDES)
+endif
+
+CFLAGS += -Wall -march=$(host_cpu)
+
+# Some special treatment for xbox.
+# TODO: Test me, update me!
+ifeq ($(HOST_OS),xbox)
+    CFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
+    CFLAGS += -std=gnu99
+    CFLAGS += -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions
+    CFLAGS += -mno-cygwin
+    CFLAGS += -I$(OPENXDK)/i386-pc-xbox/include -I$(OPENXDK)/include -I$(OPENXDK)/include/SDL
+endif
+
+HSOURCES := config.h \
+    fb_array.h \
+    fb_colors.h \
+    fb_config.h \
+    fb_con.h \
+    fb_console.h \
+    fb_data.h \
+    fb_datetime.h \
+    fb_device.h \
+    fb_error.h \
+    fb_file.h \
+    fb.h \
+    fb_hook.h \
+    fb_intern.h \
+    fb_math.h \
+    fb_port.h \
+    fb_printer.h \
+    fb_scancodes.h \
+    fb_serial.h \
+    fb_string.h \
+    fb_system.h \
+    fb_thread.h \
+    fb_unicode.h \
+    libfb_con_print_raw_uni.h \
+    libfb_con_print_tty_uni.h
+
+CSOURCES := \
+    libfb_array_boundchk.c \
+    libfb_array_clear.c \
+    libfb_array_clear_obj.c \
+    libfb_array_core.c \
+    libfb_array_erase.c \
+    libfb_array_erase_obj.c \
+    libfb_array_erasestr.c \
+    libfb_array_lbound.c \
+    libfb_array_redim.c \
+    libfb_array_redim_obj.c \
+    libfb_array_redimpresv.c \
+    libfb_array_redimpresv_obj.c \
+    libfb_array_resetdesc.c \
+    libfb_array_setdesc.c \
+    libfb_array_tmpdesc.c \
+    libfb_array_ubound.c \
+    libfb_assert.c \
+    libfb_assert_wstr.c \
+    libfb_con_lineinp.c \
+    libfb_con_lineinp_wstr.c \
+    libfb_con_locate.c \
+    libfb_con_pos.c \
+    libfb_con_print_raw.c \
+    libfb_con_print_raw_wstr.c \
+    libfb_con_print_tty.c \
+    libfb_con_print_tty_wstr.c \
+    libfb_con_readline.c \
+    libfb_data.c \
+    libfb_data_readbyte.c \
+    libfb_data_readdouble.c \
+    libfb_data_readint.c \
+    libfb_data_readlong.c \
+    libfb_data_readshort.c \
+    libfb_data_readsingle.c \
+    libfb_data_readstr.c \
+    libfb_data_readubyte.c \
+    libfb_data_readuint.c \
+    libfb_data_readulong.c \
+    libfb_data_readushort.c \
+    libfb_data_read_wstr.c \
+    libfb_data_rest.c \
+    libfb_dev_com.c \
+    libfb_dev_com_test.c \
+    libfb_dev_cons_open.c \
+    libfb_dev_err_open.c \
+    libfb_dev_file_close.c \
+    libfb_dev_file_encod_open.c \
+    libfb_dev_file_encod_read.c \
+    libfb_dev_file_encod_read_core.c \
+    libfb_dev_file_encod_readline.c \
+    libfb_dev_file_encod_readline_wstr.c \
+    libfb_dev_file_encod_read_wstr.c \
+    libfb_dev_file_encod_write.c \
+    libfb_dev_file_encod_write_wstr.c \
+    libfb_dev_file_eof.c \
+    libfb_dev_file_flush.c \
+    libfb_dev_file_lock.c \
+    libfb_dev_file_open.c \
+    libfb_dev_file_read.c \
+    libfb_dev_file_readline.c \
+    libfb_dev_file_readline_wstr.c \
+    libfb_dev_file_read_wstr.c \
+    libfb_dev_file_seek.c \
+    libfb_dev_file_size.c \
+    libfb_dev_file_tell.c \
+    libfb_dev_file_unlock.c \
+    libfb_dev_file_write.c \
+    libfb_dev_file_write_wstr.c \
+    libfb_dev_lpt.c \
+    libfb_dev_lpt_close.c \
+    libfb_dev_lpt_test.c \
+    libfb_dev_lpt_write.c \
+    libfb_dev_lpt_write_wstr.c \
+    libfb_dev_scrn.c \
+    libfb_dev_scrn_close.c \
+    libfb_dev_scrn_eof.c \
+    libfb_dev_scrn_init.c \
+    libfb_dev_scrn_read.c \
+    libfb_dev_scrn_readline.c \
+    libfb_dev_scrn_readline_wstr.c \
+    libfb_dev_scrn_read_wstr.c \
+    libfb_dev_scrn_write.c \
+    libfb_dev_scrn_write_wstr.c \
+    libfb_dev_stdio_close.c \
+    libfb_error.c \
+    libfb_error_getset.c \
+    libfb_error_ptrchk.c \
+    libfb_exit.c \
+    libfb_file_attr.c \
+    libfb_file_close.c \
+    libfb_file_copy.c \
+    libfb_file_datetime.c \
+    libfb_file_encod.c \
+    libfb_file_eof.c \
+    libfb_file_exists.c \
+    libfb_file_free.c \
+    libfb_file_getarray.c \
+    libfb_file_get.c \
+    libfb_file_getstr.c \
+    libfb_file_get_wstr.c \
+    libfb_file_input_byte.c \
+    libfb_file_input_con.c \
+    libfb_file_input_file.c \
+    libfb_file_input_float.c \
+    libfb_file_input_int.c \
+    libfb_file_input_longint.c \
+    libfb_file_input_short.c \
+    libfb_file_input_str.c \
+    libfb_file_inputstr.c \
+    libfb_file_input_tok.c \
+    libfb_file_input_tok_wstr.c \
+    libfb_file_input_ubyte.c \
+    libfb_file_input_uint.c \
+    libfb_file_input_ulongint.c \
+    libfb_file_input_ushort.c \
+    libfb_file_input_wstr.c \
+    libfb_file_kill.c \
+    libfb_file_len.c \
+    libfb_file_lineinp.c \
+    libfb_file_lineinp_wstr.c \
+    libfb_file_loc.c \
+    libfb_file_lock.c \
+    libfb_file_open.c \
+    libfb_file_opencom.c \
+    libfb_file_opencons.c \
+    libfb_file_openencod.c \
+    libfb_file_openerr.c \
+    libfb_file_openlpt.c \
+    libfb_file_openpipe.c \
+    libfb_file_openscrn.c \
+    libfb_file_openshort.c \
+    libfb_file_print.c \
+    libfb_file_print_wstr.c \
+    libfb_file_putarray.c \
+    libfb_file_putback.c \
+    libfb_file_putback_wstr.c \
+    libfb_file_put.c \
+    libfb_file_putstr.c \
+    libfb_file_put_wstr.c \
+    libfb_file_reset.c \
+    libfb_file_seek.c \
+    libfb_file_size.c \
+    libfb_file_tell.c \
+    libfb_file_winputstr.c \
+    libfb_gosub.c \
+    libfb_hook_cls.c \
+    libfb_hook_color.c \
+    libfb_hook_getsize.c \
+    libfb_hook_getx.c \
+    libfb_hook_getxy.c \
+    libfb_hook_gety.c \
+    libfb_hook_inkey.c \
+    libfb_hook_isredir.c \
+    libfb_hook_lineinp.c \
+    libfb_hook_lineinp_wstr.c \
+    libfb_hook_locate_ex.c \
+    libfb_hook_mouse.c \
+    libfb_hook_multikey.c \
+    libfb_hook_pageset.c \
+    libfb_hook_pcopy.c \
+    libfb_hook_ports.c \
+    libfb_hook_printstr.c \
+    libfb_hook_print_wstr.c \
+    libfb_hook_readstr.c \
+    libfb_hook_readxy.c \
+    libfb_hook_sleep.c \
+    libfb_hook_view_update.c \
+    libfb_hook_width.c \
+    libfb_init.c \
+    libfb_intl_get.c \
+    libfb_intl_getdateformat.c \
+    libfb_intl_getmonthname.c \
+    libfb_intl_getset.c \
+    libfb_intl_gettimeformat.c \
+    libfb_intl_getweekdayname.c \
+    libfb_io_lpos.c \
+    libfb_io_lprint_byte.c \
+    libfb_io_lprint_fix.c \
+    libfb_io_lprint_fp.c \
+    libfb_io_lprint_int.c \
+    libfb_io_lprint_longint.c \
+    libfb_io_lprint_short.c \
+    libfb_io_lprint_str.c \
+    libfb_io_lprintusg.c \
+    libfb_io_lprintvoid.c \
+    libfb_io_lprint_wstr.c \
+    libfb_io_print_byte.c \
+    libfb_io_print.c \
+    libfb_io_print_fix.c \
+    libfb_io_print_fp.c \
+    libfb_io_print_int.c \
+    libfb_io_print_longint.c \
+    libfb_io_printpad.c \
+    libfb_io_printpad_wstr.c \
+    libfb_io_print_short.c \
+    libfb_io_printusg.c \
+    libfb_io_printvoid.c \
+    libfb_io_printvoid_wstr.c \
+    libfb_io_print_wstr.c \
+    libfb_io_setpos.c \
+    libfb_io_spc.c \
+    libfb_io_view.c \
+    libfb_io_viewhlp.c \
+    libfb_io_widthdev.c \
+    libfb_io_widthfile.c \
+    libfb_io_writebyte.c \
+    libfb_io_writefloat.c \
+    libfb_io_writeint.c \
+    libfb_io_writelongint.c \
+    libfb_io_writeshort.c \
+    libfb_io_writestr.c \
+    libfb_io_writevoid.c \
+    libfb_io_write_wstr.c \
+    libfb_list.c \
+    libfb_listdyn.c \
+    libfb_math_fix.c \
+    libfb_math_frac.c \
+    libfb_math_rnd.c \
+    libfb_math_sgn.c \
+    libfb_mem_copyclear.c \
+    libfb_qb_file_open.c \
+    libfb_qb_inkey.c \
+    libfb_qb_sleep.c \
+    libfb_qb_str_convto.c \
+    libfb_qb_str_convto_flt.c \
+    libfb_qb_str_convto_lng.c \
+    libfb_signals.c \
+    libfb_str_asc.c \
+    libfb_str_assign.c \
+    libfb_str_base.c \
+    libfb_str_bin.c \
+    libfb_str_bin_lng.c \
+    libfb_str_chr.c \
+    libfb_str_comp.c \
+    libfb_str_concatassign.c \
+    libfb_str_concat.c \
+    libfb_str_convfrom.c \
+    libfb_str_convfrom_int.c \
+    libfb_str_convfrom_lng.c \
+    libfb_str_convfrom_rad.c \
+    libfb_str_convfrom_radlng.c \
+    libfb_str_convfrom_uint.c \
+    libfb_str_convfrom_ulng.c \
+    libfb_str_convto.c \
+    libfb_str_convto_flt.c \
+    libfb_str_convto_lng.c \
+    libfb_str_core.c \
+    libfb_str_cvmk.c \
+    libfb_str_del.c \
+    libfb_str_fill.c \
+    libfb_str_format.c \
+    libfb_str_ftoa.c \
+    libfb_str_hex.c \
+    libfb_str_hex_lng.c \
+    libfb_str_instrany.c \
+    libfb_str_instr.c \
+    libfb_str_instrrevany.c \
+    libfb_str_instrrev.c \
+    libfb_str_lcase.c \
+    libfb_str_left.c \
+    libfb_str_len.c \
+    libfb_str_ltrimany.c \
+    libfb_str_ltrim.c \
+    libfb_str_ltrimex.c \
+    libfb_str_midassign.c \
+    libfb_str_mid.c \
+    libfb_str_misc.c \
+    libfb_str_oct.c \
+    libfb_str_oct_lng.c \
+    libfb_str_right.c \
+    libfb_str_rtrimany.c \
+    libfb_str_rtrim.c \
+    libfb_str_rtrimex.c \
+    libfb_str_set.c \
+    libfb_str_tempdescf.c \
+    libfb_str_tempdescv.c \
+    libfb_str_tempdescz.c \
+    libfb_str_tempres.c \
+    libfb_str_trimany.c \
+    libfb_str_trim.c \
+    libfb_str_trimex.c \
+    libfb_str_ucase.c \
+    libfb_strw_alloc.c \
+    libfb_strw_asc.c \
+    libfb_strw_assign.c \
+    libfb_strw_bin.c \
+    libfb_strw_bin_lng.c \
+    libfb_strw_chr.c \
+    libfb_strw_comp.c \
+    libfb_strw_concatassign.c \
+    libfb_strw_concat.c \
+    libfb_strw_convassign.c \
+    libfb_strw_convconcat.c \
+    libfb_strw_convfrom.c \
+    libfb_strw_convfrom_int.c \
+    libfb_strw_convfrom_lng.c \
+    libfb_strw_convfrom_rad.c \
+    libfb_strw_convfrom_radlng.c \
+    libfb_strw_convfrom_str.c \
+    libfb_strw_convfrom_uint.c \
+    libfb_strw_convfrom_ulng.c \
+    libfb_strw_convto.c \
+    libfb_strw_convto_flt.c \
+    libfb_strw_convto_lng.c \
+    libfb_strw_convto_str.c \
+    libfb_strw_del.c \
+    libfb_strw_fill.c \
+    libfb_strw_ftoa.c \
+    libfb_strw_hex.c \
+    libfb_strw_hex_lng.c \
+    libfb_strw_instrany.c \
+    libfb_strw_instr.c \
+    libfb_strw_instrrevany.c \
+    libfb_strw_instrrev.c \
+    libfb_strw_lcase.c \
+    libfb_strw_left.c \
+    libfb_strw_len.c \
+    libfb_strw_ltrimany.c \
+    libfb_strw_ltrim.c \
+    libfb_strw_ltrimex.c \
+    libfb_strw_midassign.c \
+    libfb_strw_mid.c \
+    libfb_strw_oct.c \
+    libfb_strw_oct_lng.c \
+    libfb_strw_right.c \
+    libfb_strw_rtrimany.c \
+    libfb_strw_rtrim.c \
+    libfb_strw_rtrimex.c \
+    libfb_strw_set.c \
+    libfb_strw_space.c \
+    libfb_strw_trimany.c \
+    libfb_strw_trim.c \
+    libfb_strw_trimex.c \
+    libfb_strw_ucase.c \
+    libfb_swap_mem.c \
+    libfb_swap_str.c \
+    libfb_swap_wstr.c \
+    libfb_sys_beep.c \
+    libfb_sys_cdir.c \
+    libfb_sys_chain.c \
+    libfb_sys_chdir.c \
+    libfb_sys_cmd.c \
+    libfb_sys_environ.c \
+    libfb_sys_exec_core.c \
+    libfb_sys_exepath.c \
+    libfb_sys_mkdir.c \
+    libfb_sys_rmdir.c \
+    libfb_sys_run.c \
+    libfb_thread_ctx.c \
+    libfb_time_core.c \
+    libfb_time_dateadd.c \
+    libfb_time_date.c \
+    libfb_time_datediff.c \
+    libfb_time_datepart.c \
+    libfb_time_dateserial.c \
+    libfb_time_dateset.c \
+    libfb_time_datevalue.c \
+    libfb_time_decodeserdate.c \
+    libfb_time_decodesertime.c \
+    libfb_time_isdate.c \
+    libfb_time_monthname.c \
+    libfb_time_now.c \
+    libfb_time_parsedate.c \
+    libfb_time_parsedatetime.c \
+    libfb_time_parsetime.c \
+    libfb_time_sleepex.c \
+    libfb_time_time.c \
+    libfb_time_timeserial.c \
+    libfb_time_timeset.c \
+    libfb_time_timevalue.c \
+    libfb_time_week.c \
+    libfb_time_weekdayname.c \
+    libfb_utf_convfrom_char.c \
+    libfb_utf_convfrom_wchar.c \
+    libfb_utf_convto_char.c \
+    libfb_utf_convto_wchar.c \
+    libfb_utf_core.c \
+    libfb_vfs_open.c
+
+SSOURCES :=
+
+ifeq ($(ENABLE_GFX),yes)
+    HSOURCES += \
+        fb_gfx_data.h \
+        fb_gfx_gl.h \
+        fb_gfx.h \
+        fb_gfx_lzw.h \
+        libfb_gfx_data.h
+    CSOURCES += \
+        libfb_gfx_access.c \
+        libfb_gfx_blitter.c \
+        libfb_gfx_bload.c \
+        libfb_gfx_box.c \
+        libfb_gfx_bsave.c \
+        libfb_gfx_circle.c \
+        libfb_gfx_cls.c \
+        libfb_gfx_color.c \
+        libfb_gfx_control.c \
+        libfb_gfx_core.c \
+        libfb_gfx_data.c \
+        libfb_gfx_draw.c \
+        libfb_gfx_drawstring.c \
+        libfb_gfx_driver_null.c \
+        libfb_gfx_event.c \
+        libfb_gfx_get.c \
+        libfb_gfx_getmouse.c \
+        libfb_gfx_image.c \
+        libfb_gfx_image_convert.c \
+        libfb_gfx_image_info.c \
+        libfb_gfx_inkey.c \
+        libfb_gfx_line.c \
+        libfb_gfx_lineinp.c \
+        libfb_gfx_lineinp_wstr.c \
+        libfb_gfx_lzw.c \
+        libfb_gfx_lzw_enc.c \
+        libfb_gfx_multikey.c \
+        libfb_gfx_page.c \
+        libfb_gfx_paint.c \
+        libfb_gfx_palette.c \
+        libfb_gfx_paletteget.c \
+        libfb_gfx_pmap.c \
+        libfb_gfx_point.c \
+        libfb_gfx_print.c \
+        libfb_gfx_print_wstr.c \
+        libfb_gfx_pset.c \
+        libfb_gfx_put_add.c \
+        libfb_gfx_put_alpha.c \
+        libfb_gfx_put_and.c \
+        libfb_gfx_put_blend.c \
+        libfb_gfx_put.c \
+        libfb_gfx_put_custom.c \
+        libfb_gfx_put_or.c \
+        libfb_gfx_put_preset.c \
+        libfb_gfx_put_pset.c \
+        libfb_gfx_put_trans.c \
+        libfb_gfx_put_xor.c \
+        libfb_gfx_readstr.c \
+        libfb_gfx_readxy.c \
+        libfb_gfx_screen.c \
+        libfb_gfx_screeninfo.c \
+        libfb_gfx_screenlist.c \
+        libfb_gfx_setmouse.c \
+        libfb_gfx_sleep.c \
+        libfb_gfx_softcursor.c \
+        libfb_gfx_stick.c \
+        libfb_gfx_vars.c \
+        libfb_gfx_vgaemu.c \
+        libfb_gfx_view.c \
+        libfb_gfx_vsync.c \
+        libfb_gfx_width.c \
+        libfb_gfx_window.c
+endif
+
+ifeq ($(HOST_OS),darwin)
+    HSOURCES += fb_darwin.h
+endif
+
+ifeq ($(HOST_OS),dos)
+    HSOURCES += \
+        fb_dos.h \
+        fb_gfx_dos.h \
+        fb_unicode_dos.h \
+        vesa_dos.h \
+        vga_dos.h
+    CSOURCES += \
+        libfb_dev_pipe_close_dos.c \
+        libfb_dev_pipe_open_dos.c \
+        libfb_drv_file_copy_dos.c \
+        libfb_drv_intl_dos.c \
+        libfb_drv_intl_data_dos.c \
+        libfb_drv_intl_get_dos.c \
+        libfb_drv_intl_getdateformat_dos.c \
+        libfb_drv_intl_getmonthname_dos.c \
+        libfb_drv_intl_gettimeformat_dos.c \
+        libfb_drv_intl_getweekdayname_dos.c \
+        libfb_drv_isr_dos.s \
+        libfb_farmemset_dos.c \
+        libfb_file_dir_dos.c \
+        libfb_file_hconvpath_dos.c \
+        libfb_file_hlock_dos.c \
+        libfb_file_resetex_dos.c \
+        libfb_gfx_dos_dos.c \
+        libfb_gfx_driver_bios_dos.c \
+        libfb_gfx_driver_modex_dos.c \
+        libfb_gfx_driver_vesa_bnk_dos.c \
+        libfb_gfx_driver_vesa_lin_dos.c \
+        libfb_gfx_driver_vga_dos.c \
+        libfb_gfx_joystick_dos.c \
+        libfb_gfx_mouse_dos.s \
+        libfb_gfx_vesa_core_dos.c \
+        libfb_gfx_vesa_dos.s \
+        libfb_hexit_dos.c \
+        libfb_hinit_dos.c \
+        libfb_hsignals_dos.c \
+        libfb_io_cls_dos.c \
+        libfb_io_color_dos.c \
+        libfb_io_getsize_dos.c \
+        libfb_io_inkey_dos.c \
+        libfb_io_isredir_dos.c \
+        libfb_io_locate_dos.c \
+        libfb_io_maxrow_dos.c \
+        libfb_io_mouse_dos.c \
+        libfb_io_multikey_dos.c \
+        libfb_io_pageset_dos.c \
+        libfb_io_pcopy_dos.c \
+        libfb_io_printbuff_dos.c \
+        libfb_io_printbuff_wstr_dos.c \
+        libfb_io_printer_dos.c \
+        libfb_io_readstr_dos.c \
+        libfb_io_scroll_dos.c \
+        libfb_io_serial_dos.c \
+        libfb_io_viewupdate_dos.c \
+        libfb_io_width_dos.c \
+        libfb_sys_beep_dos.c \
+        libfb_sys_exec_dos.c \
+        libfb_sys_fmem_dos.c \
+        libfb_sys_getcwd_dos.c \
+        libfb_sys_getexename_dos.c \
+        libfb_sys_getexepath_dos.c \
+        libfb_sys_getshortpath_dos.c \
+        libfb_sys_isr_dos.c \
+        libfb_sys_ports_dos.c \
+        libfb_sys_shell_dos.c \
+        libfb_sys_sleep_dos.c \
+        libfb_thread_cond_dos.c \
+        libfb_thread_core_dos.c \
+        libfb_thread_mutex_dos.c \
+        libfb_time_setdate_dos.c \
+        libfb_time_settime_dos.c \
+        libfb_time_sleep_dos.c \
+        libfb_time_tmr_dos.c
+endif
+
+ifeq ($(HOST_OS),freebsd)
+    HSOURCES += fb_freebsd.h
+    CSOURCES += \
+        libfb_gfx_freebsd_freebsd.c \
+        libfb_gfx_joystick_freebsd.c \
+        libfb_hexit_freebsd.c \
+        libfb_hinit_freebsd.c \
+        libfb_io_mouse_freebsd.c \
+        libfb_io_multikey_freebsd.c \
+        libfb_sys_fmem_freebsd.c \
+        libfb_sys_getexename_freebsd.c \
+        libfb_sys_getexepath_freebsd.c
+endif
+
+ifeq ($(HOST_OS),linux)
+    HSOURCES += \
+        fb_gfx_linux.h \
+        fb_linux.h
+    CSOURCES += \
+        libfb_gfx_driver_fbdev_linux.c \
+        libfb_gfx_joystick_linux.c \
+        libfb_gfx_linux_linux.c \
+        libfb_hexit_linux.c \
+        libfb_hinit_linux.c \
+        libfb_io_mouse_linux.c \
+        libfb_io_multikey_linux.c \
+        libfb_io_serial_linux.c \
+        libfb_sys_fmem_linux.c \
+        libfb_sys_getexename_linux.c \
+        libfb_sys_getexepath_linux.c \
+        libfb_sys_ports_linux.c
+endif
+
+ifeq ($(HOST_OS),netbsd)
+    HSOURCES += fb_netbsd.h
+    CSOURCES += \
+        libfb_hexit_netbsd.c \
+        libfb_hinit_netbsd.c \
+        libfb_io_mouse_netbsd.c \
+        libfb_io_multikey_netbsd.c \
+        libfb_sys_fmem_netbsd.c \
+        libfb_sys_getexename_netbsd.c \
+        libfb_sys_getexepath_netbsd.c
+endif
+
+ifeq ($(HOST_OS),openbsd)
+    HSOURCES += fb_openbsd.h
+    CSOURCES += \
+        libfb_gfx_joystick_openbsd.c \
+        libfb_gfx_openbsd_openbsd.c \
+        libfb_hexit_openbsd.c \
+        libfb_hinit_openbsd.c \
+        libfb_io_mouse_openbsd.c \
+        libfb_io_multikey_openbsd.c \
+        libfb_sys_fmem_openbsd.c \
+        libfb_sys_getexename_openbsd.c \
+        libfb_sys_getexepath_openbsd.c \
+        swprintf_hack_openbsd.c
+endif
+
+ifeq ($(ENABLE_OPENGL),yes)
+    CSOURCES += libfb_gfx_opengl.c
+    ifeq ($(HOST_GFXFAMILY),win32)
+        CSOURCES += libfb_gfx_driver_opengl_win32.c
+    else ifeq ($(HOST_GFXFAMILY),x11)
+        ifeq ($(WITH_X),yes)
+            CSOURCES += libfb_gfx_driver_opengl_x11.c
+        endif
+    endif
+endif
+
+ifeq ($(HOST_OSFAMILY),unix)
+    HSOURCES += fb_unix.h
+    CSOURCES += \
+        libfb_dev_pipe_close_unix.c \
+        libfb_dev_pipe_open_unix.c \
+        libfb_drv_file_copy_unix.c \
+        libfb_drv_intl_get_unix.c \
+        libfb_drv_intl_getdateformat_unix.c \
+        libfb_drv_intl_getmonthname_unix.c \
+        libfb_drv_intl_gettimeformat_unix.c \
+        libfb_drv_intl_getweekdayname_unix.c \
+        libfb_file_dir_unix.c \
+        libfb_file_hconvpath_unix.c \
+        libfb_file_hlock_unix.c \
+        libfb_file_resetex_unix.c \
+        libfb_hdynload_unix.c \
+        libfb_hsignals_unix.c \
+        libfb_io_cls_unix.c \
+        libfb_io_color_unix.c \
+        libfb_io_getsize_unix.c \
+        libfb_io_inkey_unix.c \
+        libfb_io_isredir_unix.c \
+        libfb_io_locate_unix.c \
+        libfb_io_maxrow_unix.c \
+        libfb_io_pageset_unix.c \
+        libfb_io_pcopy_unix.c \
+        libfb_io_printbuff_unix.c \
+        libfb_io_printbuff_wstr_unix.c \
+        libfb_io_printer_unix.c \
+        libfb_io_readstr_unix.c \
+        libfb_io_scroll_unix.c \
+        libfb_io_viewupdate_unix.c \
+        libfb_io_width_unix.c \
+        libfb_io_xfocus_unix.c \
+        libfb_scancodes_unix.c \
+        libfb_sys_beep_unix.c \
+        libfb_sys_delay_unix.c \
+        libfb_sys_dylib_unix.c \
+        libfb_sys_exec_unix.c \
+        libfb_sys_getcwd_unix.c \
+        libfb_sys_getshortpath_unix.c \
+        libfb_sys_shell_unix.c \
+        libfb_thread_cond_unix.c \
+        libfb_thread_core_unix.c \
+        libfb_thread_mutex_unix.c \
+        libfb_time_setdate_unix.c \
+        libfb_time_settime_unix.c \
+        libfb_time_sleep_unix.c \
+        libfb_time_tmr_unix.c \
+        libfb_unix_hexit_unix.c \
+        libfb_unix_hinit_unix.c
+endif
+
+ifeq ($(HOST_OS),win32)
+    HSOURCES += \
+        fb_gfx_win32.h \
+        fb_unicode_win32.h \
+        fb_win32.h \
+        fbportio_driver.h
+    CSOURCES += \
+        libfb_dev_pipe_close_win32.c \
+        libfb_dev_pipe_open_win32.c \
+        libfb_drv_file_copy_win32.c \
+        libfb_drv_intl_get_win32.c \
+        libfb_drv_intl_getdateformat_win32.c \
+        libfb_drv_intl_getmonthname_win32.c \
+        libfb_drv_intl_gettimeformat_win32.c \
+        libfb_drv_intl_getweekdayname_win32.c \
+        libfb_file_dir_win32.c \
+        libfb_file_hconvpath_win32.c \
+        libfb_file_hlock_win32.c \
+        libfb_file_resetex_win32.c \
+        libfb_gfx_driver_ddraw_win32.c \
+        libfb_gfx_driver_gdi_win32.c \
+        libfb_gfx_joystick_win32.c \
+        libfb_gfx_win32_win32.c \
+        libfb_hdynload_win32.c \
+        libfb_hexit_win32.c \
+        libfb_hinit_win32.c \
+        libfb_hsignals_win32.c \
+        libfb_intl_conv_w32_win32.c \
+        libfb_intl_w32_win32.c \
+        libfb_io_cls_win32.c \
+        libfb_io_clsex_win32.c \
+        libfb_io_color_win32.c \
+        libfb_io_colorget_win32.c \
+        libfb_io_gethnd_win32.c \
+        libfb_io_getsize_win32.c \
+        libfb_io_getwindow_win32.c \
+        libfb_io_getwindowex_win32.c \
+        libfb_io_getx_win32.c \
+        libfb_io_getxy_win32.c \
+        libfb_io_gety_win32.c \
+        libfb_io_inkey_win32.c \
+        libfb_io_input_win32.c \
+        libfb_io_isredir_win32.c \
+        libfb_io_locate_win32.c \
+        libfb_io_locateex_win32.c \
+        libfb_io_maxrow_win32.c \
+        libfb_io_mouse_win32.c \
+        libfb_io_multikey_win32.c \
+        libfb_io_pageset_win32.c \
+        libfb_io_pcopy_win32.c \
+        libfb_io_printbuff_win32.c \
+        libfb_io_printbuff_wstr_win32.c \
+        libfb_io_printer_win32.c \
+        libfb_io_readstr_win32.c \
+        libfb_io_readxy_win32.c \
+        libfb_io_screensize_win32.c \
+        libfb_io_scroll_win32.c \
+        libfb_io_scrollex_win32.c \
+        libfb_io_serial_win32.c \
+        libfb_io_viewupdate_win32.c \
+        libfb_io_width_win32.c \
+        libfb_io_window_win32.c \
+        libfb_sys_dylib_win32.c \
+        libfb_sys_exec_win32.c \
+        libfb_sys_fmem_win32.c \
+        libfb_sys_getcwd_win32.c \
+        libfb_sys_getexename_win32.c \
+        libfb_sys_getexepath_win32.c \
+        libfb_sys_getshortpath_win32.c \
+        libfb_sys_ports_win32.c \
+        libfb_sys_shell_win32.c \
+        libfb_sys_sleep_win32.c \
+        libfb_thread_cond_win32.c \
+        libfb_thread_core_win32.c \
+        libfb_thread_mutex_win32.c \
+        libfb_time_setdate_win32.c \
+        libfb_time_settime_win32.c \
+        libfb_time_sleep_win32.c \
+        libfb_time_tmr_win32.c
+    SSOURCES += libfb_alloca_win32.s
+endif
+
+ifeq ($(HOST_GFXFAMILY),x11)
+    ifeq ($(WITH_X),yes)
+        HSOURCES += fb_gfx_x11.h
+        CSOURCES += \
+            libfb_gfx_driver_x11.c \
+            libfb_gfx_x11.c
+    endif
+endif
+
+ifeq ($(HOST_CPUFAMILY),x86)
+    HSOURCES += \
+        fb_gfx_mmx_x86.h \
+        fb_x86.h
+    SSOURCES += \
+        libfb_cpudetect_x86.s \
+        libfb_gfx_blitter_mmx_x86.s \
+        libfb_gfx_mmx_x86.s \
+        libfb_gfx_put_add_mmx_x86.s \
+        libfb_gfx_put_alpha_mmx_x86.s \
+        libfb_gfx_put_and_mmx_x86.s \
+        libfb_gfx_put_blend_mmx_x86.s \
+        libfb_gfx_put_or_mmx_x86.s \
+        libfb_gfx_put_preset_mmx_x86.s \
+        libfb_gfx_put_pset_mmx_x86.s \
+        libfb_gfx_put_trans_mmx_x86.s \
+        libfb_gfx_put_xor_mmx_x86.s
+endif
+
+ifeq ($(HOST_OSFAMILY),xbox)
+    HSOURCES += fb_xbox.h
+    CSOURCES += \
+        libfb_dev_pipe_close_xbox.c \
+        libfb_dev_pipe_open_xbox.c \
+        libfb_drv_file_copy_xbox.c \
+        libfb_drv_intl_get_xbox.c \
+        libfb_drv_intl_getdateformat_xbox.c \
+        libfb_drv_intl_getmonthname_xbox.c \
+        libfb_drv_intl_gettimeformat_xbox.c \
+        libfb_drv_intl_getweekdayname_xbox.c \
+        libfb_file_dir_xbox.c \
+        libfb_file_hconvpath_xbox.c \
+        libfb_file_hlock_xbox.c \
+        libfb_gfx_driver_xbox_xbox.c \
+        libfb_hexit_xbox.c \
+        libfb_hinit_xbox.c \
+        libfb_io_cls_xbox.c \
+        libfb_io_color_xbox.c \
+        libfb_io_getsize_xbox.c \
+        libfb_io_inkey_xbox.c \
+        libfb_io_isredir_xbox.c \
+        libfb_io_locate_xbox.c \
+        libfb_io_maxrow_xbox.c \
+        libfb_io_mouse_xbox.c \
+        libfb_io_multikey_xbox.c \
+        libfb_io_pageset_xbox.c \
+        libfb_io_pcopy_xbox.c \
+        libfb_io_printbuff_xbox.c \
+        libfb_io_printbuff_wstr_xbox.c \
+        libfb_io_printer_xbox.c \
+        libfb_io_readstr_xbox.c \
+        libfb_io_scroll_xbox.c \
+        libfb_io_serial_xbox.c \
+        libfb_io_viewupdate_xbox.c \
+        libfb_io_width_xbox.c \
+        libfb_sys_dylib_xbox.c \
+        libfb_sys_exec_xbox.c \
+        libfb_sys_fmem_xbox.c \
+        libfb_sys_getcwd_xbox.c \
+        libfb_sys_getexename_xbox.c \
+        libfb_sys_getexepath_xbox.c \
+        libfb_sys_getshortpath_xbox.c \
+        libfb_sys_shell_xbox.c \
+        libfb_sys_sleep_xbox.c \
+        libfb_thread_cond_xbox.c \
+        libfb_thread_core_xbox.c \
+        libfb_thread_mutex_xbox.c \
+        libfb_time_setdate_xbox.c \
+        libfb_time_settime_xbox.c \
+        libfb_time_sleep_xbox.c \
+        libfb_time_tmr_xbox.c
+    SSOURCES += libfb_alloca_xbox.s
+endif
+
+COBJECTS := $(patsubst %.c,%.o,$(CSOURCES))
+SOBJECTS := $(patsubst %.s,%.o,$(SSOURCES))
+MTCOBJECTS := $(patsubst %.o,%.mt.o,$(COBJECTS))
+MTSOBJECTS := $(patsubst %.o,%.mt.o,$(SOBJECTS))
+
+.SUFFIXES:
+
+.PHONY: all
+all: libfb.a fbrt0.o
+ifneq ($(HOST_OSFAMILY),dos)
+all: libfbmt.a
+endif
+
+libfb.a: $(COBJECTS) $(SOBJECTS)
+	$(AR) rcs $@ $^
+
+libfbmt.a: $(MTCOBJECTS) $(MTSOBJECTS)
+	$(AR) rcs $@ $^
+
+$(COBJECTS) fbrt0.o: %.o: %.c $(HSOURCES)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(SOBJECTS): %.o: %.s $(HSOURCES)
+	$(CC) $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+
+$(MTCOBJECTS): %.mt.o: %.c $(HSOURCES)
+	$(CC) -DMULTITHREADED $(CFLAGS) -c $< -o $@
+
+$(MTSOBJECTS): %.mt.o: %.s $(HSOURCES)
+	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+
+.PHONY: clean
+clean:
+	-rm -f $(OBJS) libfb.a
+ifneq ($(HOST_OSFAMILY),dos)
+	-rm -f $(OBJSMT) libfbmt.a
+endif
+
+.PHONY: distclean
+distclean: clean
+	-rm -rf $(srcdir)/autom4te.cache config.log config.status makefile config.h
