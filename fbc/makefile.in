@@ -12,6 +12,7 @@ host_cpu:=@host_cpu@
 HOST_OS:=@HOST_OS@
 
 ENABLE_OBJINFO:=@ENABLE_OBJINFO@
+ENABLE_FBBFD:=@ENABLE_FBBFD@
 
 srcdir:=@srcdir@
 VPATH=@srcdir@
@@ -232,12 +233,19 @@ SOURCES := \
 
 OBJECTS := $(patsubst %.bas,%.o,$(SOURCES))
 
+COBJINFO :=
+ifeq ($(ENABLE_OBJINFO),yes)
+    ifneq ($(ENABLE_FBBFD),no)
+        COBJINFO := c-objinfo.o
+    endif
+endif
+
 .SUFFIXES:
 
 .PHONY: all
 all: $(FBCNEW)
 
-$(FBCNEW): $(OBJECTS)
+$(FBCNEW): $(OBJECTS) $(COBJINFO)
 	$(FBC) $(FBLFLAGS) $^ -x $@
 
 $(OBJECTS): %.o: %.bas $(HEADERS)
@@ -248,4 +256,4 @@ c-objinfo.o: c-objinfo.c
 
 .PHONY: clean
 clean: 
-	-rm -f $(OBJECTS) $(FBCNEW)
+	-rm -f $(OBJECTS) $(COBJINFO) $(FBCNEW)

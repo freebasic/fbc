@@ -42,4 +42,4 @@ clean: make-fbc make-libfb
 distclean: SUBMAKE_TARGET = distclean
 distclean: make-fbc make-libfb
 	-rm -rf $(srcdir)/autom4te.cache config.log config.status \
-    makefile fbc/makefile fbc/config.bi tests/makefile
+    makefile fbc/makefile fbc/config.bi

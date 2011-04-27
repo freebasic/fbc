@@ -102,6 +102,20 @@ AC_ARG_ENABLE(
 )
 AC_SUBST([ENABLE_OBJINFO])
 
+# --enable-fbbfd=217
+AC_ARG_ENABLE(
+    [fbbfd],
+    [AS_HELP_STRING([[--enable-fbbfd[=version]]],
+                    [Build fbc using the FB bfd headers for the specified \
+                     libbfd version, instead of using the bfd.h of the system. \
+                     If the version is not explicitely specified, it will \
+                     default to 217.])],
+    [AS_IF([test "x$enableval" = "xyes"], [ENABLE_FBBFD=217],
+           [ENABLE_FBBFD=$enableval])],
+    [ENABLE_FBBFD=no]
+)
+AC_SUBST([ENABLE_FBBFD])
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_MKDIR_P

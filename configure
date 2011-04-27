@@ -567,6 +567,7 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+ENABLE_FBBFD
 ENABLE_OBJINFO
 HOST_OSFAMILY
 HOST_OS
@@ -628,6 +629,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_objinfo
+enable_fbbfd
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1254,6 +1256,11 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-objinfo       Disable the objinfo feature of fbc, so libbfd will
                           not be needed.
+  --enable-fbbfd[=version]
+                          Build fbc using the FB bfd headers for the specified
+                          libbfd version, instead of using the bfd.h of the
+                          system. If the version is not explicitely specified,
+                          it will default to 217.
 
 Some influential environment variables:
   CC          C compiler command
@@ -2000,6 +2007,21 @@ if test "${enable_objinfo+set}" = set; then :
   enableval=$enable_objinfo; ENABLE_OBJINFO=$enableval
 else
   ENABLE_OBJINFO=yes
+
+fi
+
+
+
+# --enable-fbbfd=217
+# Check whether --enable-fbbfd was given.
+if test "${enable_fbbfd+set}" = set; then :
+  enableval=$enable_fbbfd; if test "x$enableval" = "xyes"; then :
+  ENABLE_FBBFD=217
+else
+  ENABLE_FBBFD=$enableval
+fi
+else
+  ENABLE_FBBFD=no
 
 fi
 
