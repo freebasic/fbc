@@ -28,9 +28,9 @@ Dim As String      VGSTEMP, VGSFILE1, VGSFILE2
 
 ? : Read VGSTEMP : ? VGSTEMP : Read VGSTEMP : ? VGSTEMP : ?
 
-VGSTEMP=Command(1) : VGSFILE1="BLAH"
+VGSTEMP=Command$(1) : VGSFILE1="BLAH"
 If (VGSTEMP<>"") Then VGSFILE1=VGSTEMP
-VGSTEMP=Command(2) : VGSFILE2=VGSFILE1
+VGSTEMP=Command$(2) : VGSFILE2=VGSFILE1
 If (VGSTEMP<>"") Then VGSFILE2=VGSTEMP
 
 BUF = Allocate(32768) '' 32 KiB - hoping it won't fail, BUF could be 0 ...

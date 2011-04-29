@@ -6,12 +6,21 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDraw
 '' --------
 
-'' set the screen mode to 320 * 200, 256 color
 Screen 13
 
-'' start in the center of the screen
-Draw "BM160,100"
+'Move to (50,50) without drawing
+Draw "BM 50,50"
 
-'' Draw a box
-Draw "U10 R5 D10 L5"
+'Set drawing color to 2 (green)
+Draw "C2"
+
+'Draw a box
+Draw "R50 D30 L50 U30"
+
+'Move inside the box
+Draw "BM +1,1"
+
+'Flood fill with color 1 (blue) up to border color 2 
+Draw "P 1,2"
+
 Sleep

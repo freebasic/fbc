@@ -8,4 +8,3 @@
 
 Dim value As UShort = 65535
 Print CSign(value)  '' will print -1
-Sleep

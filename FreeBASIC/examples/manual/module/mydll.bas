@@ -8,9 +8,9 @@
 
 '' mydll.dll
 
-'' in the DLL the function must be declared as CDECL and export
+'' in the DLL the function must be declared as export
 
-Function AddNumbers cdecl Alias "AddNumbers" _
+Function AddNumbers Alias "AddNumbers" _
   ( _
 	ByVal operand1 As Integer, ByVal operand2 As Integer _
   ) As Integer Export

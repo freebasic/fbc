@@ -17,7 +17,7 @@ Specifies a //cdecl//-style calling convention in a procedure declaration
 {{fbdoc item="desc"}}
 	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the ##**cdecl**## calling convention. In the ##**cdecl**## calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
 
-	##**cdecl**## is the default calling convention for procedures declared within ##[[KeyPgExternBlock Extern "C"]]## and ##[[KeyPgExternBlock Extern "C++"]]## blocks. ##**cdecl**## is also typically the default calling convention for many C compilers.
+	//cdecl// is the default calling convention on Linux, the *BSDs, and DOS, unless another calling convention is explicitly specified or implied by one of the [[KeyPgExternBlock EXTERN blocks]]. ##**cdecl**## is typically the default calling convention for C compilers, and it's used almost exclusively on Unix-like systems.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/cdecl.bas"}}%%(freebasic)
@@ -34,3 +34,4 @@ Declare Function strcpy cdecl Alias "strcpy" (ByVal dest As ZString Ptr, ByVal s
 	- [[KeyPgSub Sub]], [[KeyPgFunction Function]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}
+   

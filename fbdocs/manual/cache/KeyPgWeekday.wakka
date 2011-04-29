@@ -43,3 +43,4 @@ print format(a, "yyyy/mm/dd hh:mm:ss "); weekday(a)
 	- [[ProPgDates Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
+   

@@ -12,4 +12,3 @@ intval = &h0080
 intptr = @intval
 '' will print -128 and 128, as the first expression will be "seen" as an signed byte
 Print *CPtr( Byte Ptr, intptr ), *intptr
-Sleep

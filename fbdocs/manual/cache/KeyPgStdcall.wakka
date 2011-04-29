@@ -19,14 +19,14 @@ Specifies a //stdcall//-style calling convention in a procedure declaration
 	
 	##**Stdcall**## is not allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots ...]]##").
 
-	//stdcall// is the default calling convention for procedures not declared with a calling convention specifier, or that are declared within ##[[KeyPgExternBlock Extern "Windows"]]## blocks. //stdcall// is also the standard calling convention used in BASIC languages, and the Windows API.
+	//stdcall// is the default calling convention on Windows, unless another calling convention is explicitly specified or implied by one of the [[KeyPgExternBlock EXTERN blocks]]. //stdcall// is also the standard (or most common) calling convention used in BASIC languages, and the Windows API.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/stdcall.bas"}}%%(freebasic)
 Declare Function Example stdcall (param1 As Integer, param2 As Integer) As Integer
 Declare Function Example2 cdecl (param1 As Integer, param2 As Integer) As Integer
 
-Function Example (param1 As Integer, param2 As Integer) As Integer
+Function Example stdcall (param1 As Integer, param2 As Integer) As Integer
 	' This is an STDCALL function, the first parameter on the stack is param2, since it was pushed last.
 	Print param1, param2
 	Return param1 Mod param2
@@ -40,8 +40,7 @@ End Function
 %%
 
 {{fbdoc item="target"}}
-	- On Dos and Windows systems, //stdcall// procedures append an "@//N//" decoration to the internal/external procedure name, where //N// is the size of the parameter list, in bytes.
-	- On Linux systems, //stdcall// procedures are the same as //cdecl// procedures (//see [[KeyPgCdecl Cdecl]], [[KeyPgExternBlock Extern "C"]]//), except that variadic procedures are still not allowed.
+	- On Windows systems, //stdcall// procedures have an "@//N//" decoration added to their internal/external name, where //N// is the size of the parameter list, in bytes.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

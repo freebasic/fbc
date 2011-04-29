@@ -7,8 +7,9 @@
 '' --------
 
 Dim fr As Integer, fs As Integer
- ' The WRONG way:
+' The WRONG way:
 fr = FreeFile
-fs = FreeFile
+fs = FreeFile '' fs has taken the same file number as fr
+
 Open "file1" For Input As #fr
-Open "file2" For Input As #fs
+Open "file2" For Input As #fs '' error: file number already opened

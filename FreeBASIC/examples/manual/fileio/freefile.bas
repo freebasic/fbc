@@ -20,7 +20,7 @@ Open "file.ext" For Binary As #f
 Put #f, , buffer
 
 ' Close the file.
-Close
+Close #f
 
 ' End the program. (Check the file "file.ext" upon running to see the output.)
 End

@@ -351,6 +351,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOpenLpt|OPEN LPT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenPipe|OPEN PIPE"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
+	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbase|OPTION BASE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionbyval|OPTION BYVAL"}}
@@ -362,7 +363,6 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
-	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
 	- {{fbdoc item="keyword" value="KeyPgOpOr|OR"}}
 	- {{fbdoc item="keyword" value="KeyPgOrGfx|OR (GRAPHICS PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpOrElse|ORELSE"}}

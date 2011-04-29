@@ -38,7 +38,7 @@ Declares or defines an overloaded operator.
 	##//assignment_op//## 
 		##let += -= *= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
 	##//unary_op//##
-		##""-"" not @ * -> abs sgn fix frac int##
+		##""-"" not @ * -> abs sgn fix frac int exp log sin asin cos acos tan atn##
 	##//binary_op//##
 		##+ - * / \ mod shl shr and or xor imp eqv ^ = <> < > <= >= andalso orelse##
 

@@ -15,6 +15,6 @@ Error 150
 End
 
 Error_Handler:
-  n = Err
+  n = Err()
   Print "Error #"; n
   Resume Next

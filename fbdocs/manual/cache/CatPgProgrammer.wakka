@@ -57,6 +57,7 @@ FreeBASIC programmer's guide.
 	{{fbdoc item="keyword" value="ProPgOperatorOverloading|Operator Overloading"}}
 	Iterators
 	New and Delete
+	{{fbdoc item="keyword" value="ProPgTypeObjects|Types as Objects"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	Assignments
 	{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}

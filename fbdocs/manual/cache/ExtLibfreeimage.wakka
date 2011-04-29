@@ -1,9 +1,91 @@
 {{fbdoc item="title" value="FreeImage"}}----
-Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF.
+FreeImage is an Open Source library project for developers who would like to support popular graphics image formats like PNG, BMP, JPEG, TIFF and others as needed by today's multimedia applications. FreeImage is easy to use, fast, multithreading safe, compatible with all 32-bit versions of Windows, and cross-platform (works both with Linux and Mac OS X).
 
-Website: http://freeimage.sf.net
+Website: http://freeimage.sourceforge.net/
 Platforms supported: Win32, Linux
 Headers to include: FreeImage.bi
 Example included: yes, in examples/gfx/freeimage.bas
+
+Here follows an example of using FreeImage in FreeBASIC.  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/ FreeImage site]].
+
+##{{fbdoc item="filename" value="examples/manual/extras/freeimage.bas"}}%%(freebasic)
+'' Code example for loading all common image types using FreeImage.
+'' The example loads an image passed as a command line argument.
+
+'' The function FI_Load returns a null pointer (0) if there was an error during
+'' loading.  Otherwise it returns a 32-bit PUT compatible buffer.
+
+#include "freeimage.bi"
+#include "crt.bi"
+#include "fbgfx.bi"
+
+function FI_Load(filename as string) as any ptr
+	'' Find out the image format
+	dim as FREE_IMAGE_FORMAT form = FreeImage_GetFileType(strptr(filename), 0)
+	if form = FIF_UNKNOWN then
+	    form = FreeImage_GetFIFFromFilename(strptr(filename))
+	end if
+
+	'' Exit if unknown
+	if form = FIF_UNKNOWN then
+	    return NULL
+	end if
+
+	'' Always load jpegs accurately
+	dim as uinteger flags = 0
+	if form = FIF_JPEG then
+	    flags = JPEG_ACCURATE
+	end if
+
+	'' Load the image into memory
+	dim as FIBITMAP ptr image = FreeImage_Load(form, strptr(filename), flags)
+	if image = NULL then
+	    '' FreeImage failed to read in the image
+	    return NULL
+	end if
+
+	'' Flip the image so it matches FB's coordinate system
+	FreeImage_FlipVertical(image)
+
+	'' Convert to 32 bits per pixel
+	dim as FIBITMAP ptr image32 = FreeImage_ConvertTo32Bits(image)
+
+	'' Get the image's size
+	dim as uinteger w = FreeImage_GetWidth(image)
+	dim as uinteger h = FreeImage_GetHeight(image)
+
+	'' Create an FB image of the same size
+	dim as fb.Image ptr sprite = imagecreate(w, h)
+
+	dim as byte ptr target = cptr(byte ptr, sprite + 1)
+	dim as integer target_pitch = sprite->pitch
+
+	dim as any ptr source = FreeImage_GetBits(image32)
+	dim as integer source_pitch = FreeImage_GetPitch(image32)
+
+	'' And copy over the pixels, row by row
+	for y as integer = 0 to (h - 1)
+	    memcpy(target + (y * target_pitch), _
+	           source + (y * source_pitch), _
+	           w * 4)
+	next
+
+	FreeImage_Unload(image32)
+	FreeImage_Unload(image)
+
+	return sprite
+end function
+
+screenres 640, 480, 32
+
+dim as any ptr image = FI_Load(command(1))
+if image <> 0 then
+	put (0, 0), image
+else
+	print "Problem while loading file : " & command(1)
+end if
+
+sleep
+%%##
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

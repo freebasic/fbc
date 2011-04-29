@@ -20,7 +20,13 @@ End Extern
 
 Extern "Windows"
 	'' This procedure uses the STDCALL convention and is seen externally
-	'' as "YetAnotherProcedure@4" on DOS/Windows platforms, and
-	'' "YetAnotherProcedure" on Linux platforms.
+	'' as "YetAnotherProcedure@4" on Windows, and
+	'' "YetAnotherProcedure" on Linux, *BSD and DOS.
+	Declare Function YetAnotherProcedure ( ByVal As Integer ) As Integer
+End Extern
+
+Extern "Windows-MS"
+	'' This procedure uses the STDCALL convention and is seen externally
+	'' as "YetAnotherProcedure".
 	Declare Function YetAnotherProcedure ( ByVal As Integer ) As Integer
 End Extern

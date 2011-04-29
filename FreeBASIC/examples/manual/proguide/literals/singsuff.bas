@@ -8,4 +8,5 @@
 
 Dim a As Single = 3.1!
 Dim b As Single = -123.456e-7f
-Dim c As Double = 3.14159265e3#
+Dim c As Double = 0#
+Dim d As Double = 3.141592653589e3#

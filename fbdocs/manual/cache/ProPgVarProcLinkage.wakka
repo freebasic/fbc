@@ -38,4 +38,3 @@ Name visibility within and between modules
 		Currently, names declared at local-scope cannot have external linkage.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

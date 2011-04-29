@@ -22,4 +22,4 @@ LPrint
 LPrint "Hello!", "World!"
 
 '' end of page
-LPrint Chr(12)
+LPrint Chr$(12)

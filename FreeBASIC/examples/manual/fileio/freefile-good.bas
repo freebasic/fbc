@@ -7,8 +7,9 @@
 '' --------
 
 Dim fr As Integer, fs As Integer
-' The CORRECT WAY:
+' The CORRECT way:
 fr = FreeFile
 Open "File1" For Input As #fr
+
 fs = FreeFile
-Open "file2" For Input As #fs
+Open "File2" For Input As #fs

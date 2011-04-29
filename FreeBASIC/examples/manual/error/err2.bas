@@ -6,13 +6,15 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErr
 '' --------
 
-Dim a As String
+'' compile without -e switch
+
+Dim filename As String
 
 Do
-	Line Input "Input filename: ", a
-	If a = "" Then End
-	Open a For Input As #1
-Loop Until Err = 0
+	Line Input "Input filename: ", filename
+	If filename = "" Then End
+	Open filename For Input As #1
+Loop Until Err() = 0
 
-Print "File " & a & " opened successfully"
+Print Using "File '&' opened successfully"; filename
 Close #1

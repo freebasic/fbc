@@ -85,4 +85,6 @@ Do
 			End
 		End Select
 	End If
+
+	Sleep 1
 Loop

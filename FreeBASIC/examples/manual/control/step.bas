@@ -7,6 +7,6 @@
 '' --------
 
 Dim i As Integer
-For i = 10 To 1 Step -1
+For I=10 To 1 Step -1
 Next
 

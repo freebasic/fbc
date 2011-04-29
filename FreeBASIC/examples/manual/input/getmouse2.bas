@@ -25,11 +25,9 @@ Dim As mouse m
 
 Do
 	m.res = GetMouse( m.x, m.y, m.wheel, m.buttons, m.clip )
-	ScreenLock
 	Cls
 	Print Using "res = #"; m.res
 	Print Using "x = ###; y = ###; wheel = +###; clip = ##"; m.x; m.y; m.wheel; m.clip
 	Print Using "buttons = ##; left = #; middle = #; right = #"; m.buttons; m.left; m.middle; m.right
-	ScreenUnLock
 	Sleep 10, 1
 Loop While Inkey = ""

@@ -53,4 +53,3 @@ loop until len(inkey)
 	- ##[[KeyPgColor Color]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}
-   

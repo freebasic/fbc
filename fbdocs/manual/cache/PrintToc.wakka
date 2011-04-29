@@ -366,6 +366,7 @@
 		[[KeyPgOpenLpt OPEN LPT]]
 		[[KeyPgOpenPipe OPEN PIPE]]
 		[[KeyPgOpenScrn OPEN SCRN]]
+		[[KeyPgOperator OPERATOR]]
 		[[KeyPgOption OPTION()]]
 		[[KeyPgOptionbase OPTION BASE]]
 		[[KeyPgOptionbyval OPTION BYVAL]]
@@ -377,7 +378,6 @@
 		[[KeyPgOptionnokeyword OPTION NOKEYWORD]]
 		[[KeyPgOptionprivate OPTION PRIVATE]]
 		[[KeyPgOptionstatic OPTION STATIC]]
-		[[KeyPgOperator OPERATOR]]
 		[[KeyPgOpOr OR]]
 		[[KeyPgOrGfx OR (GRAPHICS PUT)]]
 		[[KeyPgOpOrElse ORELSE]]
@@ -754,6 +754,7 @@
 		[[ProPgMemberProcedures Member Procedures]]
 		[[ProPgMemberAccessRights Member Access Rights]]
 		[[ProPgOperatorOverloading Operator Overloading]]
+		[[ProPgTypeObjects Types as Objects]]
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
 		[[OpPrecedence Operator Precedence]]

@@ -6,6 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgVaArg
 '' --------
 
+
+' Note that CDECL is used here --> it must be used with an ellipsis argument (...).
 Function Avg cdecl (Count As Integer, ... ) As Double
 	Dim ARG As Any Ptr 
 	Dim SUM As Double = 0

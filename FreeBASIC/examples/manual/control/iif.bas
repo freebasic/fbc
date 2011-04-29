@@ -6,5 +6,5 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIif
 '' --------
 
-Dim As Integer a, b, x, y, z = 7
+Dim As Integer a, b, x, y, z
 a = (x + y + IIf(b > 0, 4, 7)) \ z
