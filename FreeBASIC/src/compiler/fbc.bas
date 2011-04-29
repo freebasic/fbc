@@ -1,5 +1,5 @@
 ''	FreeBASIC - 32-bit BASIC Compiler.
-''	Copyright (C) 2004-2010 The FreeBASIC development team.
+''	Copyright (C) 2004-2011 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -223,7 +223,7 @@ declare sub getDefaultLibs _
     if( fbc.verbose or fbc.showversion ) then
     	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
-    	print "Copyright (C) 2004-2010 The FreeBASIC development team."
+    	print "Copyright (C) 2004-2011 The FreeBASIC development team."
 
 #ifndef STANDALONE
 		print "Configured with prefix " + FB_ARCH_PREFIX

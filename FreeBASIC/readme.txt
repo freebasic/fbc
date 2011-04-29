@@ -1,6 +1,6 @@
 
   FreeBASIC - A multi-platform 32-bit BASIC Compiler
-  Copyright (C) 2004-2010 The FreeBASIC development team.
+  Copyright (C) 2004-2011 The FreeBASIC development team.
 
 
 License:

@@ -2,7 +2,7 @@
 #define __REG_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
-''	Copyright (C) 2004-2010 The FreeBASIC development team.
+''	Copyright (C) 2004-2011 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
