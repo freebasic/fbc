@@ -85,6 +85,7 @@ examples/libraries/DB/sqlite3_test.db
 examples/libraries/disphelper/httpget.bas
 examples/libraries/disphelper/ie_navigate.bas
 examples/libraries/disphelper/vbs.bas
+examples/libraries/fblogo.bmp
 examples/libraries/freetype/ft2_print.bas
 examples/libraries/freetype/ft2_test.bas
 examples/libraries/GL/fbgfx_opengl.bas
@@ -225,6 +226,7 @@ examples/libraries/Gtk/Tutorials/statusbar.bas
 examples/libraries/Gtk/Tutorials/table.bas
 examples/libraries/Gtk/Tutorials/text.bas
 examples/libraries/Gtk/Tutorials/tree.bas
+examples/libraries/IL-test.bas
 examples/libraries/IUP/buttons.bas
 examples/libraries/IUP/color.bas
 examples/libraries/IUP/frame.bas
@@ -234,6 +236,7 @@ examples/libraries/libxml/test.xml
 examples/libraries/Lua/minmax.bas
 examples/libraries/Lua/minmax.lua
 examples/libraries/networking/http-get.bas
+examples/libraries/Newton-test.bas
 examples/libraries/pdflib/logo.gif
 examples/libraries/pdflib/pdflib_test.bas
 examples/libraries/regex/CRegex/CRegex.bas
@@ -316,9 +319,6 @@ examples/manual/casting/culng.bas
 examples/manual/casting/culngint.bas
 examples/manual/casting/cunsg.bas
 examples/manual/casting/cushort.bas
-examples/manual/check/FBWikiKeywordTemplate_1.bas
-examples/manual/check/FBWikiTopicSample_1.bas
-examples/manual/check/FBWikiTutorialTemplate_1.bas
 examples/manual/check/KeyPgClass_1.bas
 examples/manual/check/KeyPgCommand_1.bas
 examples/manual/check/KeyPgCommand_2.bas
@@ -365,6 +365,7 @@ examples/manual/control/end.bas
 examples/manual/control/endblock.bas
 examples/manual/control/exit2.bas
 examples/manual/control/exit.bas
+examples/manual/control/for-next2.bas
 examples/manual/control/for-next.bas
 examples/manual/control/gosub.bas
 examples/manual/control/goto.bas
@@ -465,8 +466,10 @@ examples/manual/defines/fboutdll.bas
 examples/manual/defines/fboutexe.bas
 examples/manual/defines/fboutlib.bas
 examples/manual/defines/fboutobj.bas
+examples/manual/defines/fbpcos.bas
 examples/manual/defines/fbsignature.bas
 examples/manual/defines/fbsse.bas
+examples/manual/defines/fbunix.bas
 examples/manual/defines/fbvectorize.bas
 examples/manual/defines/fbvermajor.bas
 examples/manual/defines/fbverminor.bas
@@ -493,8 +496,6 @@ examples/manual/error/resume.bas
 examples/manual/error/resume-next.bas
 examples/manual/extras/freeimage.bas
 examples/manual/extras/gfx-null.bas
-examples/manual/faq/dos/call-int.bas
-examples/manual/faq/dos/lowmemas.bas
 examples/manual/faq/gfxlib2/bload-workaround.bas
 examples/manual/faq/gfxlib2/check-for-close.bas
 examples/manual/faq/gfxlib2/image-header.bas
@@ -772,6 +773,7 @@ examples/manual/prepro/pragma.bas
 examples/manual/prepro/print.bas
 examples/manual/prepro/stringize.bas
 examples/manual/prepro/undef.bas
+examples/manual/prepro/variadic.bas
 examples/manual/procs/alias2.bas
 examples/manual/procs/alias.bas
 examples/manual/procs/byref.bas
@@ -840,7 +842,6 @@ examples/manual/proguide/literals/dblsuff.bas
 examples/manual/proguide/literals/dec.bas
 examples/manual/proguide/literals/escape.bas
 examples/manual/proguide/literals/floats.bas
-examples/manual/proguide/literals/hex2.bas
 examples/manual/proguide/literals/hex.bas
 examples/manual/proguide/literals/intsuff.bas
 examples/manual/proguide/literals/noescape.bas
@@ -1025,9 +1026,7 @@ examples/manual/udt/constructor-ptr.bas
 examples/manual/udt/destructor.bas
 examples/manual/udt/enum.bas
 examples/manual/udt/field.bas
-examples/manual/udt/for.bas
 examples/manual/udt/function.bas
-examples/manual/udt/next.bas
 examples/manual/udt/operator.bas
 examples/manual/udt/private.bas
 examples/manual/udt/property2.bas
