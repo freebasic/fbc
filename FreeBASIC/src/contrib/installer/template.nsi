@@ -115,7 +115,6 @@ Section Uninstall
 
     Delete "$INSTDIR\open-console.exe"
     Delete "$INSTDIR\wiki.url"
-    RMDir "$INSTDIR"
 
     !insertmacro MUI_STARTMENU_GETFOLDER Application $FB_STARTMENU
     Delete "$SMPROGRAMS\$FB_STARTMENU\Open console.lnk"
@@ -124,4 +123,6 @@ Section Uninstall
 
     DeleteRegKey SHCTX "${REGKEY_UNINST}"
     Delete "$INSTDIR\uninstall.exe"
+
+    RMDir "$INSTDIR"
 SectionEnd
