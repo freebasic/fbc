@@ -50,7 +50,7 @@ end sub
     filename = command(1)
     
     if( len( filename ) = 0 ) then
-    	print "Usage: read1 filename"
+    	print "Usage: libxml filename"
     	end 1
 	end if
     	
