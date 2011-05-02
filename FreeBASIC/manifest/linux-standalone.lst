@@ -85,6 +85,7 @@ examples/libraries/DB/sqlite3_test.db
 examples/libraries/disphelper/httpget.bas
 examples/libraries/disphelper/ie_navigate.bas
 examples/libraries/disphelper/vbs.bas
+examples/libraries/fastcgi.bas
 examples/libraries/fblogo.bmp
 examples/libraries/freetype/ft2_print.bas
 examples/libraries/freetype/ft2_test.bas
@@ -231,12 +232,13 @@ examples/libraries/IUP/buttons.bas
 examples/libraries/IUP/color.bas
 examples/libraries/IUP/frame.bas
 examples/libraries/IUP/message.bas
-examples/libraries/libxml/read1.bas
-examples/libraries/libxml/test.xml
+examples/libraries/Java/Hello.java
+examples/libraries/Java/test.bas
 examples/libraries/Lua/minmax.bas
 examples/libraries/Lua/minmax.lua
 examples/libraries/networking/http-get.bas
 examples/libraries/Newton-test.bas
+examples/libraries/ode-test.bas
 examples/libraries/pdflib/logo.gif
 examples/libraries/pdflib/pdflib_test.bas
 examples/libraries/regex/CRegex/CRegex.bas
@@ -285,6 +287,9 @@ examples/libraries/spidermonkey/function_cb.bas
 examples/libraries/wx-c/mdi.bas
 examples/libraries/wx-c/sizers.bas
 examples/libraries/wx-c/wx-c_demo.bas
+examples/libraries/xml/expat.bas
+examples/libraries/xml/libxml.bas
+examples/libraries/xml/test.xml
 examples/makefile
 examples/manual/array/clear.bas
 examples/manual/array/ellipsis.bas
