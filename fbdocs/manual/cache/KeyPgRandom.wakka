@@ -92,4 +92,3 @@ data "pqrs",     "tuv",      "wxyz"
 	- ##[[KeyPgPutfileio Put #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

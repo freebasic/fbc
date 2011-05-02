@@ -34,4 +34,3 @@ Declare Function strcpy cdecl Alias "strcpy" (ByVal dest As ZString Ptr, ByVal s
 	- [[KeyPgSub Sub]], [[KeyPgFunction Function]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}
-   

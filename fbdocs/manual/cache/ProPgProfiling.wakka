@@ -65,4 +65,3 @@ gprof program[.exe] --brief --flat-profile > profile.txt
 	The details may vary from one port of FreeBASIC to the next, but source code built for profiling with FreeBASIC should be compatible with other languages also supporting GPROF.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   

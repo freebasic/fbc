@@ -44,4 +44,3 @@ PRINT BIT(&H8000000000000000ULL,63)
 	- ##[[KeyPgBitreset Bitreset]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}
-   
