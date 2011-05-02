@@ -34,4 +34,3 @@ SetDate m + "/" + d + "/" + y
 	- ##[[KeyPgSettime Settime]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
-   

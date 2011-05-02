@@ -15,11 +15,15 @@ Here follows an example of using FreeImage in FreeBASIC.  If using Windows you w
 '' The function FI_Load returns a null pointer (0) if there was an error during
 '' loading.  Otherwise it returns a 32-bit PUT compatible buffer.
 
-#include "freeimage.bi"
+#include "FreeImage.bi"
 #include "crt.bi"
 #include "fbgfx.bi"
 
 function FI_Load(filename as string) as any ptr
+	if len(filename) = 0 then
+		return NULL
+	end if
+
 	'' Find out the image format
 	dim as FREE_IMAGE_FORMAT form = FreeImage_GetFileType(strptr(filename), 0)
 	if form = FIF_UNKNOWN then
@@ -78,11 +82,13 @@ end function
 
 screenres 640, 480, 32
 
-dim as any ptr image = FI_Load(command(1))
+dim as string filename = command(1)
+
+dim as any ptr image = FI_Load(filename)
 if image <> 0 then
 	put (0, 0), image
 else
-	print "Problem while loading file : " & command(1)
+	print "Problem while loading file : " & filename
 end if
 
 sleep

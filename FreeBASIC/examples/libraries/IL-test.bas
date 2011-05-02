@@ -26,12 +26,14 @@ ilInit()
 dim as ILuint fblogo
 ilGenImages(1, @fblogo)
 ilBindImage(fblogo)
+
+print "Loading fblogo.bmp..."
 ilLoadImage("fblogo.bmp")
 
 '' Save a copy
+print "Saving a copy, fblogo-copy.bmp..."
 ilEnable(IL_FILE_OVERWRITE)
 ilSaveImage("fblogo-copy.bmp")
 
 '' Clean up
 ilDeleteImages(1, @fblogo)
-

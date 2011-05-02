@@ -54,4 +54,3 @@ Compares an expression greater than another expression
 	- ##[[KeyPgOpLessThanOrEqual Operator <=]]## (Less than or equal)
 
 {{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
-   

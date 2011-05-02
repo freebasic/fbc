@@ -39,4 +39,3 @@ Print Format(ds, "yyyy/mm/dd hh:mm:ss "); MonthName(Month(ds))
 	- [[ProPgDates Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}
-   

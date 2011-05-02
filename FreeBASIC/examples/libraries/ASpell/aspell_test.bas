@@ -17,7 +17,7 @@
 	dim as AspellCanHaveError ptr possible_err = new_aspell_speller(spell_config)
 
 	if (aspell_error_number(possible_err) <> 0) then
-		print aspell_error_message(possible_err)
+		print *aspell_error_message(possible_err)
 		end 1
 	else
 		spell_checker = to_aspell_speller(possible_err)

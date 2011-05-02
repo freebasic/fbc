@@ -28,4 +28,3 @@ Destroys and deallocates storage for an image
 	- ##[[KeyPgImagecreate ImageCreate]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
-   

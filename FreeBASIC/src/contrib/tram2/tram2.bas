@@ -527,7 +527,7 @@ sub generateManifest(byref manifest as string)
     sh("mv " + TEMP_MANIFEST + " " + manifest)
 end sub
 
-'' Packages the folder <title> into <title>.zip or <title>.tar.lzma
+'' Packages the folder <title> into <title>.zip or <title>.tar.gz
 sub packageThis(byref title as string)
     #ifdef __FB_WIN32__
         '' dos/win32: make a .zip
@@ -535,10 +535,10 @@ sub packageThis(byref title as string)
         sh("rm -f " + archive)
         sh("zip -q -9 -r " + archive + " " + title)
     #else
-        '' linux/freebsd: make a .tar.lzma
-        dim as string archive = "../" + title + ".tar.lzma"
+        '' linux/freebsd: make a .tar.gz
+        dim as string archive = "../" + title + ".tar.gz"
         sh("rm -f " + archive)
-        sh("tar -c --lzma -f " + archive + " " + title)
+        sh("tar -c -z -f " + archive + " " + title)
     #endif
 end sub
 
