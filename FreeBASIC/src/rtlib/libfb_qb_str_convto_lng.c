@@ -82,7 +82,7 @@ FBCALL FBSTRING *fb_ULongintToStrQB ( unsigned long long num )
 		dst->data[0] = ' ';
 		_ui64toa( num, dst->data + 1, 10 );
 #else
-		sprintf( dst->data, "%llu", num );
+		sprintf( dst->data, " %llu", num );
 #endif
 		fb_hStrSetLength( dst, strlen( dst->data ) );
 	}
