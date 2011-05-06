@@ -52,6 +52,7 @@ Version 0.22.0:
 - STR$() in -lang qb didn't prepend ULONGINT's with a space when evaluated at runtime on non-Windows systems
 - PROTECTED members could be accessed from outside the UDT's namespace
 - inc/crt/stdint.bi: uint64_t wasn't unsigned
+- inc/GL/glext.bi: GL{int|sizei}ptr[ARB] typedefs should be integers, not pointers
 
 
 Version 0.21.1:

@@ -2210,10 +2210,10 @@
 #define GL_RENDERBUFFER_STENCIL_SIZE_EXT &h8D55
 
 type GLchar as byte
-type GLintptr as any ptr
-type GLsizeiptr as any ptr
-type GLintptrARB as any ptr
-type GLsizeiptrARB as any ptr
+type GLintptr as integer    '' FIXME: These GL{int|sizei}ptr[ARB] types should actually use ptrdiff_t
+type GLsizeiptr as integer
+type GLintptrARB as integer
+type GLsizeiptrARB as integer
 type GLcharARB as byte
 type GLhandleARB as uinteger
 type GLhalfARB as ushort
