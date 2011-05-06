@@ -1934,29 +1934,6 @@ function symbCalcLen _
 end function
 
 '':::::
-function symbIsChildOf _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval parent as FBSYMBOL ptr _
-	) as integer
-
-	do
-		if( sym = parent ) then
-			return TRUE
-		end if
-
-		if( sym = @symbGetGlobalNamespc( ) ) then
-			return FALSE
-		end if
-
-		sym = symbGetNamespace( sym )
-	loop
-
-	function = FALSE
-
-end function
-
-'':::::
 function symbCheckAccess _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -1964,11 +1941,8 @@ function symbCheckAccess _
 	) as integer
 
 	if( sym <> NULL ) then
-    	if( symbIsVisPrivate( sym ) ) then
+    	if( symbIsVisPrivate( sym ) or symbIsVisProtected( sym ) ) then
     		return (parent = symbGetCurrentNamespc( ))
-
-    	elseif( symbIsVisProtected( sym ) ) then
-	   		return symbIsChildOf( parent, symbGetCurrentNamespc( ) )
     	end if
     end if
 
@@ -2077,26 +2051,42 @@ function symbCheckConstAssign _
 end function
 
 '' For debugging
-function symbDump(byval s as FBSYMBOL ptr) as string
+function symbDump( byval s as FBSYMBOL ptr ) as string
 
     dim as string dump
 
     dim as zstring ptr id = s->id.name
     if( id = NULL ) then
-        id = @"<unknown>"
+        id = @"<unspecified>"
     end if
 
     dump += "[" + hex(s) + "] "
     dump += *id
-    dump += "("
-    dump += "datatype " & typeGetDtOnly( s->typ )
-    if( typeGetPtrCnt( s->typ ) <> 0 ) then
-        dump += ", ptrcount " & typeGetPtrCnt( s->typ )
+    dump += " as "
+
+    if( (s->typ >= lbound(symb_dtypeTB)) and (s->typ <= ubound(symb_dtypeTB)) ) then
+        '' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
+        '' so treat that as special case, so symbTypeToStr() doesn't crash.
+        if( s->subtype = NULL ) then
+            select case as const s->typ
+            case FB_DATATYPE_FWDREF
+                dump += "<fwdref"
+            case FB_DATATYPE_STRUCT
+                dump += "<struct>"
+            case FB_DATATYPE_ENUM
+                dump += "<enum>"
+            case else
+                dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+            end select
+        else
+            dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+        end if
+
+    elseif( s->typ = FB_DATATYPE_INVALID ) then
+        dump += "<invalid>"
+    else
+        dump += "<unspecified>"
     end if
-    if( s->subtype ) then
-        dump += ", subtype " + symbDump( s->subtype )
-    end if
-    dump += ")"
 
     return dump
 
