@@ -51,6 +51,7 @@ Version 0.22.0:
 - #3251750: Local UDT FOR..NEXT iterators could be constructed twice (for i as UDT = ...)
 - STR$() in -lang qb didn't prepend ULONGINT's with a space when evaluated at runtime on non-Windows systems
 - PROTECTED members could be accessed from outside the UDT's namespace
+- inc/crt/stdint.bi: uint64_t wasn't unsigned
 
 
 Version 0.21.1:
