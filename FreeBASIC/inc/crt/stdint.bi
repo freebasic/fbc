@@ -23,7 +23,7 @@ type uint32_t as uinteger
 #ifdef __FB_64BIT__
 type uint64_t as ulong
 #else
-type uint64_t as longint
+type uint64_t as ulongint
 #endif
 
 type int_least8_t as byte
