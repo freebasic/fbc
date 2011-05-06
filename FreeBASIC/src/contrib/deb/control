@@ -1,14 +1,14 @@
 Package: freebasic
-Version: 0.22.0
+Version: <version>
 Section: devel
 Priority: optional
 Maintainer: FreeBASIC Development Team
-Homepage: http://www.freebasic.net
-Architecture: i386
-Depends: libc6, libncurses5, binutils, libc6-dev, libncurses5-dev, libstdc++6-4.4-dev, libx11-dev, libxext-dev, libxpm-dev, libxrender-dev, libxrandr-dev
+Homepage: http://www.freebasic.net/wiki/
+Architecture: <arch>
+Depends: <depends>
 Conflicts: libfreebasic
 Recommends: 
-Suggests: gdb, geany
+Suggests: <suggests>
 Installed-Size: <installedsize>
 Description: The FreeBASIC Compiler
  This is the FreeBASIC Compiler - a multi-platform 32-bit BASIC Compiler.
@@ -31,4 +31,3 @@ Description: The FreeBASIC Compiler
  to extend the capabilities of Microsoft QuickBasic in a number of ways,
  supporting more data types, language constructs, programming styles, and
  modern platforms and APIs.
-
