@@ -1937,29 +1937,6 @@ function symbCalcLen _
 end function
 
 '':::::
-function symbIsChildOf _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval parent as FBSYMBOL ptr _
-	) as integer
-
-	do
-		if( sym = @symbGetGlobalNamespc( ) ) then
-			return FALSE
-		end if
-
-		if( sym = parent ) then
-			return TRUE
-		end if
-
-		sym = symbGetNamespace( sym )
-	loop
-
-	function = FALSE
-
-end function
-
-'':::::
 function symbCheckAccess _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -1991,14 +1968,9 @@ function symbCheckAccess _
 	   				
 	   				base_ = symbGetSubtype( base_ )->udt.base 
 	   			loop
-	   				
-	   			return FALSE
-	   			
-	   		case else
-	   			'' symbol is from a child namespace?
-	   			return symbIsChildOf( parent, ns )
-	   		End Select
-	   		
+	   		end select
+
+            return FALSE
     	end if
     end if
 

@@ -1827,12 +1827,6 @@ declare function symbGetCStdType _
 		byval ctype as FB_CSTDTYPE _
 	) as integer
 
-declare function symbIsChildOf _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval parent as FBSYMBOL ptr _
-	) as integer
-
 declare function symbCheckAccess _
 	( _
 		byval parent as FBSYMBOL ptr, _
