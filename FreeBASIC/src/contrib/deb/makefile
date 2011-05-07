@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
-# Usage: 'make' or 'make ARCH=i386' to build freebasic_0.22.0-1_i386.deb,
-# 'make ARCH=amd64' to build freebasic_0.22.0-1_amd64.deb.
+# Usage: 'make' or 'make ARCH=i386' to build freebasic_*_i386.deb,
+# 'make ARCH=amd64' to build freebasic_*_amd64.deb.
 
 FB_VERSION := 0.22.0
 DEB_VERSION := $(FB_VERSION)-1
@@ -27,20 +27,20 @@ PACKAGE := freebasic_$(DEB_VERSION)_$(ARCH).deb
 
 $(PACKAGE): $(FB_TARBALL) control
     # Create directory structure for the package build
-	mkdir -p package/DEBIAN/ package/usr/local/
+	mkdir -p package/DEBIAN/ package/usr/
 
     # Unpack the FB files into '.', resulting in a FreeBASIC-x.xx.x-linux directory
 	tar -xzf $(FB_TARBALL)
 
     # Install that FB into the package build directory
-	cd $(FB_TITLE) && ./install.sh -i ../package/usr/local/
+	cd $(FB_TITLE) && ./install.sh -i ../package/usr/
 
     # Generate the md5sums
-	cd package && find usr/local/ -type f | xargs md5sum > DEBIAN/md5sums
+	cd package && find usr/ -type f | xargs md5sum > DEBIAN/md5sums
 
     # Copy in the DEBIAN/control file, and fill in the placeholder strings in
     # it. 'du' is used to find out the installed size.
-	installedsize=`du -s package/usr/local/ | sed "s,	package/usr/local/,,g"` && \
+	installedsize=`du -s package/usr/ | sed "s,	package/usr/,,g"` && \
     sed -e "s/<version>/$(DEB_VERSION)/g"         \
         -e "s/<arch>/$(ARCH)/g"                  \
         -e "s/<depends>/$(depends)/g"            \
