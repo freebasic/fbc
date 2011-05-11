@@ -50,7 +50,7 @@ FBCALL unsigned long long fb_hStr2ULongint( char *src, int len )
 		if( radix != 10 )
 		{
 			p += skip;
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 			return fb_hStrRadix2Longint( p, len - skip, radix );
 #endif
 		}

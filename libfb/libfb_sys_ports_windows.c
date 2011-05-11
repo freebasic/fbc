@@ -7,8 +7,8 @@
 
 #include "fb.h"
 #include "fb_win32.h"
-#include "portio/fbportio.h"
-#include "portio/fbportio_driver.h"
+#include "fbportio.h"
+#include "fbportio_driver.h"
 #include <winioctl.h>
 
 

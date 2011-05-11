@@ -15,10 +15,10 @@ static void close_printer_handle(void)
     FB_HANDLE_PRINTER->hooks->pfnClose( FB_HANDLE_PRINTER );
 }
 
-#if defined( TARGET_WIN32 ) || defined( TARGET_CYGWIN )
+#if defined(HOST_WINDOWS)
 static const char *pszPrinterDev = "LPT:EMU=TTY";
 #else
-#if defined( TARGET_LINUX )
+#if defined(HOST_LINUX)
 static const char *pszPrinterDev = "LPT:";
 #else
 static const char *pszPrinterDev = "LPT1:";

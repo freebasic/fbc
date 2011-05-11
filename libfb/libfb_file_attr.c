@@ -40,7 +40,7 @@ FBCALL int fb_FileAttr
 			break;
 			
 /* FB_FILE_ATTR_HANDLE only enabled on x86 for now due to return value size issues */
-#ifdef TARGET_X86
+#ifdef HOST_X86
 
 
 		case FB_FILE_ATTR_HANDLE:
@@ -51,7 +51,7 @@ FBCALL int fb_FileAttr
 			{
 				if( file->opaque )
 				{
-#if (defined(TARGET_WIN32) || defined(TARGET_CYGWIN))
+#if defined(HOST_WINDOWS)
 					if( *((int*)file->opaque) ) /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
 					{
 					  ret = **((int**)file->opaque); /* WARNING: unsafe when sizeof(void *) > sizeof(int) */

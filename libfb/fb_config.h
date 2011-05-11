@@ -42,7 +42,7 @@
 #endif
 
 #if !defined(HAVE_SNPRINTF) || defined(_NO_OLDNAMES)
- #ifdef TARGET_WIN32
+ #ifdef HOST_MINGW
   #undef snprintf
   #define snprintf _snprintf
  #else
@@ -57,7 +57,7 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 
     return res;
 }
- #endif /* TARGET_WIN32 */
+ #endif /* HOST_MINGW */
 #endif /* HAVE_SNPRINTF */
 
 #if !defined(HAVE_FSEEKO)

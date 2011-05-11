@@ -7,7 +7,7 @@
 
 #include "fb_gfx.h"
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 /* MMX functions declarations */
 extern void fb_hBlit8to15RGBMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit8to15BGRMMX(unsigned char *dest, int pitch);
@@ -795,7 +795,7 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 		fb_hBlit8to15BGR, fb_hBlit8to16BGR, fb_hBlit8to24BGR, fb_hBlit8to32BGR,
 		fb_hBlit16to15BGR, fb_hBlitCopy, fb_hBlit16to24, fb_hBlit16to32,
 		fb_hBlit32to15BGR, fb_hBlit32to16BGR, fb_hBlit32to24BGR, fb_hBlitCopy,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		/* RGB (MMX) */
 		fb_hBlit8to15RGBMMX, fb_hBlit8to16RGBMMX, fb_hBlit8to24RGBMMX, fb_hBlit8to32RGBMMX,
 		fb_hBlit16to15RGBMMX, fb_hBlit16to16RGBMMX, fb_hBlit16to24MMX, fb_hBlit16to32MMX,
@@ -819,7 +819,7 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 		}
 	}
 	
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 	if ((__fb_gfx->flags & HAS_MMX) && (__fb_gfx->scanline_size == 1) && !(__fb_gfx->w & 0x3))
 		blitter = &blitter[24];
 #endif

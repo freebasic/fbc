@@ -8,7 +8,7 @@
 #include "fb_gfx.h"
 
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -25,7 +25,7 @@ static void fb_hPutAlphaMask(unsigned char *src, unsigned char *dest, int w, int
 	unsigned int dc, sc;
 	int x;
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 	if (__fb_gfx->flags & HAS_MMX) {
 		fb_hPutAlphaMaskMMX(src, dest, w, h, src_pitch, dest_pitch, alpha, blender, param);
 		return;

@@ -47,7 +47,7 @@ FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
 
 		if( radix != 10 )
 		{
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 			return fb_WstrRadix2Longint( r, len - fb_wstr_CalcDiff( p, r ), radix );
 #else
 			p = r;

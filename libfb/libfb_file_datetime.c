@@ -10,7 +10,7 @@
 #include <time.h>
 #include <sys/stat.h>
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 #define stat _stat
 #endif
 

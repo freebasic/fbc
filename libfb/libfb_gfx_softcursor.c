@@ -92,7 +92,7 @@ void fb_hSoftCursorInit(void)
 {
 	cursor_area = malloc(CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	fb_dos_lock_data(cursor_area, CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 #endif
 
@@ -110,7 +110,7 @@ void fb_hSoftCursorInit(void)
 /*:::::*/
 void fb_hSoftCursorExit(void)
 {
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 	fb_dos_unlock_data(cursor_area, CURSOR_W * CURSOR_H * __fb_gfx->bpp);
 #endif
 	free(cursor_area);

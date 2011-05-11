@@ -16,7 +16,7 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
     char buffer[MAX_PATH+1], *application, *arguments;
     int	res = 0, got_program;
     size_t len_arguments;
-#ifndef TARGET_WIN32
+#ifndef HOST_MINGW
     size_t len_program;
 #endif
 
@@ -35,7 +35,7 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
         FB_MEMCPY(application, program->data, FB_STRSIZE( program ) );
     }
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
     if( args==NULL ) {
         arguments = "";
     } else {
@@ -70,7 +70,7 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
     FB_CON_CORRECT_POSITION();
 
 	{
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
         if( do_fork )
         	res = _spawnl( _P_WAIT, buffer, buffer, arguments, NULL );
         else

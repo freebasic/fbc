@@ -8,7 +8,7 @@
 #include "fb_gfx.h"
 
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -91,7 +91,7 @@ void fb_hPutTrans(unsigned char *src, unsigned char *dest, int w, int h, int src
 {
 	static PUTTER *all_putters[] = {
 		fb_hPutTrans1C, fb_hPutTrans2C, NULL, fb_hPutTrans4C,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		fb_hPutTrans1MMX, fb_hPutTrans2MMX, NULL, fb_hPutTrans4MMX,
 #endif
 	};
@@ -99,7 +99,7 @@ void fb_hPutTrans(unsigned char *src, unsigned char *dest, int w, int h, int src
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_TRANS]) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		if (__fb_gfx->flags & HAS_MMX)
 			context->putter[PUT_MODE_TRANS] = &all_putters[4];
 		else

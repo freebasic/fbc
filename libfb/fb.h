@@ -98,7 +98,7 @@ extern "C" {
 #define NULL     0
 #endif
 
-#if !(defined(TARGET_WIN32) || defined(TARGET_CYGWIN))
+#if !defined(HOST_WINDOWS)
     /** Maximum path length for Non-Win32 targets.
      *
      * For Win32 targets, this value will be set automatically by the
@@ -135,28 +135,28 @@ extern "C" {
 #define FB_IS_EXT_KEY(k) \
     ((int) (((((unsigned) (k)) & 0xFF)==FB_EXT_CHAR) && (((k) & 0xFF00)!=0)))
 
-#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
+#if defined(HOST_WINDOWS)
 #include "fb_win32.h"
-#elif defined(TARGET_LINUX)
+#elif defined(HOST_LINUX)
 #include "fb_unix.h"
 #include "fb_linux.h"
-#elif defined(TARGET_DOS)
+#elif defined(HOST_DOS)
 #include "fb_dos.h"
-#elif defined(TARGET_XBOX)
+#elif defined(HOST_XBOX)
 #include "fb_xbox.h"
-#elif defined(TARGET_FREEBSD)
+#elif defined(HOST_FREEBSD)
 #include "fb_unix.h"
 #include "fb_freebsd.h"
-#elif defined(TARGET_SOLARIS)
+#elif defined(HOST_SOLARIS)
 #include "fb_unix.h"
 #include "fb_solaris.h"
-#elif defined(TARGET_DARWIN)
+#elif defined(HOST_DARWIN)
 #include "fb_unix.h"
 #include "fb_darwin.h"
-#elif defined(TARGET_OPENBSD)
+#elif defined(HOST_OPENBSD)
 #include "fb_unix.h"
 #include "fb_openbsd.h"
-#elif defined(TARGET_NETBSD)
+#elif defined(HOST_NETBSD)
 #include "fb_unix.h"
 #include "fb_netbsd.h"
 #else
@@ -171,7 +171,7 @@ extern "C" {
 /**
  * CPU-dependent macros and inline functions
  */
-#ifdef TARGET_X86
+#ifdef HOST_X86
 #include "x86/fb_x86.h"
 #else
 #include "fb_port.h"

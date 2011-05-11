@@ -8,7 +8,7 @@
 #include "fb_gfx.h"
 
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -33,7 +33,7 @@ void fb_hPutPSet(unsigned char *src, unsigned char *dest, int w, int h, int src_
 {
 	static PUTTER *all_putters[] = {
 		fb_hPutPSetC, fb_hPutPSetC, NULL, fb_hPutPSetC,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		fb_hPutPSetMMX, fb_hPutPSetMMX, NULL, fb_hPutPSetMMX,
 #endif
 	};
@@ -41,7 +41,7 @@ void fb_hPutPSet(unsigned char *src, unsigned char *dest, int w, int h, int src_
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_PSET]) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		if (__fb_gfx->flags & HAS_MMX)
 			context->putter[PUT_MODE_PSET] = &all_putters[4];
 		else

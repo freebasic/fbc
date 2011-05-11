@@ -23,7 +23,7 @@ FBCALL FBSTRING *fb_IntToStr ( int num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 		_itoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%d", num );
@@ -46,7 +46,7 @@ FBCALL FBSTRING *fb_UIntToStr ( unsigned int num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 		_ultoa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%u", num );

@@ -72,7 +72,7 @@ static void console_resize(int sig)
 	win.ws_row = 0xFFFF;
 	ioctl(__fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
-#ifdef TARGET_LINUX
+#ifdef HOST_LINUX
 		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
 		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
 			win.ws_row = r;
@@ -101,7 +101,7 @@ static void console_resize(int sig)
 	__fb_con.attr_buffer = attr_buffer;
 	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
-#ifdef TARGET_LINUX
+#ifdef HOST_LINUX
 	fflush(stdin);
 	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
 	fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x);
@@ -199,7 +199,7 @@ int fb_hInitConsole ( )
 	__fb_con.in_flags = __fb_con.old_in_flags | O_NONBLOCK;
 	fcntl(__fb_con.h_in, F_SETFL, __fb_con.in_flags);
 
-#ifdef TARGET_LINUX
+#ifdef HOST_LINUX
 	if (__fb_con.inited == INIT_CONSOLE)
 		fb_hTermOut(SEQ_INIT_CHARSET, 0, 0);
 #endif

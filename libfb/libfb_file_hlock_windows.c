@@ -9,7 +9,7 @@
 #include <io.h>
 #include "fb.h"
 
-#ifdef TARGET_CYGWIN
+#ifdef HOST_CYGWIN
 #include <stdio.h>
 #define _get_osfhandle get_osfhandle
 #define _fileno fileno

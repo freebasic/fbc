@@ -64,7 +64,7 @@
 #define SEQ_MAX				17
 #define SEQ_EXTRA			100
 
-#ifdef TARGET_LINUX
+#ifdef HOST_LINUX
 #define SEQ_INIT_CHARSET	100			/* xxxx - inits PC 437 characters set */
 #define SEQ_EXIT_CHARSET	101			/* xxxx - exits PC 437 characters set */
 #define SEQ_QUERY_CURSOR	102			/* xxxx - query cursor position (not in termcap) */

@@ -8,7 +8,7 @@
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 
-#ifndef TARGET_CYGWIN
+#ifndef HOST_CYGWIN
 
 #include <objbase.h>
 #include <ddraw.h>

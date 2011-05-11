@@ -10,7 +10,7 @@
 
 extern void fb_hPutPSetC(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -53,7 +53,7 @@ void fb_hPutAlpha(unsigned char *src, unsigned char *dest, int w, int h, int src
 {
 	static PUTTER *all_putters[] = {
 		fb_hPutPSetC, fb_hPutPSetC, NULL, fb_hPutAlpha4C,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		fb_hPutPSetMMX, fb_hPutPSetMMX, NULL, fb_hPutAlpha4MMX,
 #endif
 	};
@@ -61,7 +61,7 @@ void fb_hPutAlpha(unsigned char *src, unsigned char *dest, int w, int h, int src
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_ALPHA]) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		if (__fb_gfx->flags & HAS_MMX)
 			context->putter[PUT_MODE_ALPHA] = &all_putters[4];
 		else

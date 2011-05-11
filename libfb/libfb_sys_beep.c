@@ -12,7 +12,7 @@
 FBCALL void fb_Beep( void )
 {
 
-#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
+#if defined(HOST_WINDOWS)
 	Beep( 1000, 250 );
 #else
 	putc('\a', stdout);

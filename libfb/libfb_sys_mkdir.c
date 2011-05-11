@@ -6,7 +6,7 @@
  */
 
 #include "fb.h"
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 #include <dir.h>
 #else
 #include <sys/stat.h>

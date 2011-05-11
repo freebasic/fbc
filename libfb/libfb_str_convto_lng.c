@@ -23,7 +23,7 @@ FBCALL FBSTRING *fb_LongintToStr ( long long num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 		_i64toa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%lld", num );
@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_ULongintToStr ( unsigned long long num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 		_ui64toa( num, dst->data, 10 );
 #else
 		sprintf( dst->data, "%llu", num );

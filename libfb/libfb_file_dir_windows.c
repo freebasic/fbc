@@ -14,7 +14,7 @@
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
     _findclose( ctx->handle );
 #else
     FindClose( ctx->handle );
@@ -29,7 +29,7 @@ static char *find_next ( int *attrib )
 	char *name = NULL;
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 	do
 	{
 		if( _findnext( ctx->handle, &ctx->data ) )
@@ -84,7 +84,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 		if( ctx->in_use )
 			close_dir( );
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
         ctx->handle = _findfirst( filespec->data, &ctx->data );
         handle_ok = ctx->handle != -1;
 #else
@@ -100,7 +100,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 			if( (attrib & 0x10) == 0 )
 				ctx->attrib |= 0x20;
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 			if( ctx->data.attrib & ~ctx->attrib )
 				name = find_next( out_attrib );
 			else

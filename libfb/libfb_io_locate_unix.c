@@ -79,7 +79,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 		/* Note we read reply from stdin, NOT from __fb_con.f_in */
 		BG_LOCK();
 
-#ifdef TARGET_LINUX
+#ifdef HOST_LINUX
 		fflush(stdin);
 		fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
 		if (fscanf(stdin, "\e[%d;%dR", &y, &x) != 2)

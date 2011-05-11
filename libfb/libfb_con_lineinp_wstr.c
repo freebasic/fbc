@@ -9,7 +9,7 @@
 
 static const char *pszDefaultQuestion = "? ";
 
-#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS)
+#if defined(HOST_WINDOWS) || defined(HOST_DOS)
 
 /*:::::*/
 int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,

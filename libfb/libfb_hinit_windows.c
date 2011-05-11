@@ -21,7 +21,7 @@ FB_CONSOLE_CTX __fb_con /* not initialized */;
 /*:::::*/
 void fb_hInit ( void )
 {
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
     /* set FPU precision to 64-bit and round to nearest (as in QB) */
     _controlfp( _PC_64|_RC_NEAR, _MCW_PC|_MCW_RC );
 #elif defined(__GNUC__) && defined(__i386__)
@@ -45,7 +45,7 @@ void fb_hInit ( void )
 	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
 }
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 /* needed now by MinGW, see http://lists-archives.org/mingw-users/12883-linking-error-with-msvc-6-0.html */
 int _get_output_format( void )
 {

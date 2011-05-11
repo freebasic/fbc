@@ -13,7 +13,7 @@
 WIN32DRIVER fb_win32;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
-#ifndef TARGET_CYGWIN
+#ifndef HOST_CYGWIN
 	&fb_gfxDriverDirectDraw,
 #endif
 	&fb_gfxDriverGDI,
@@ -562,7 +562,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	if (!(flags & DRIVER_OPENGL)) {
 		InitializeCriticalSection(&update_lock);
         events[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
         events[1] = (HANDLE)_beginthread(fb_win32.thread, 0, events[0]);
 #else
         {

@@ -33,7 +33,7 @@ static void fb_hDoExit( void )
 /* This puts the init/exit global ctor/dtor for the rtlib in the sorted ctors/dtors
    section.  A named section of .?tors.65435 = Priority(100) */
 
-#ifdef TARGET_DARWIN
+#ifdef HOST_DARWIN
 
 static void * priorityhDoInit __attribute__((section(".ctors.65435,"), used)) = fb_hDoInit;
 static void * priorityhDoExit __attribute__((section(".dtors.65435,"), used)) = fb_hDoExit;

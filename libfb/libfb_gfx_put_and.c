@@ -8,7 +8,7 @@
 #include "fb_gfx.h"
 
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -50,7 +50,7 @@ void fb_hPutAnd(unsigned char *src, unsigned char *dest, int w, int h, int src_p
 {
 	static PUTTER *all_putters[] = {
 		fb_hPutAndC, fb_hPutAndC, NULL, fb_hPutAndC,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		fb_hPutAndMMX, fb_hPutAndMMX, NULL, fb_hPutAndMMX,
 #endif
 	};
@@ -58,7 +58,7 @@ void fb_hPutAnd(unsigned char *src, unsigned char *dest, int w, int h, int src_p
 	FB_GFXCTX *context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_AND]) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		if (__fb_gfx->flags & HAS_MMX)
 			context->putter[PUT_MODE_AND] = &all_putters[4];
 		else

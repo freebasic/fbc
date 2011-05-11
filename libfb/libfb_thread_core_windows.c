@@ -9,7 +9,7 @@
 #include "fb.h"
 
 /* thread proxy to user's thread proc */
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 static unsigned int WINAPI threadproc( void *param )
 #else
 static DWORD WINAPI threadproc( LPVOID param )
@@ -30,7 +30,7 @@ static DWORD WINAPI threadproc( LPVOID param )
 FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size )
 {
 	FBTHREAD *thread;
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 	unsigned int dwThreadId;
 #else
     DWORD dwThreadId;
@@ -43,7 +43,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_siz
     thread->proc	= proc;
     thread->param 	= param;
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
     thread->id = (HANDLE)_beginthreadex( NULL, 
     									 stack_size, 
     									 threadproc, 

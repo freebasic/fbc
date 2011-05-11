@@ -11,7 +11,7 @@
 extern void fb_hPutTrans1C(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 extern void fb_hPutTrans(unsigned char *src, unsigned char *dest, int w, int h, int src_pitch, int dest_pitch, int alpha, BLENDER *blender, void *param);
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 
 #include "fb_gfx_mmx.h"
 
@@ -112,7 +112,7 @@ void fb_hPutBlend(unsigned char *src, unsigned char *dest, int w, int h, int src
 {
 	static PUTTER *all_putters[] = {
 		fb_hPutTrans1C, fb_hPutBlend2C, NULL, fb_hPutBlend4C,
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		fb_hPutTrans1MMX, fb_hPutBlend2MMX, NULL, fb_hPutBlend4MMX,
 #endif
 	};
@@ -126,7 +126,7 @@ void fb_hPutBlend(unsigned char *src, unsigned char *dest, int w, int h, int src
 	context = fb_hGetContext();
 	
 	if (!context->putter[PUT_MODE_BLEND]) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 		if (__fb_gfx->flags & HAS_MMX)
 			context->putter[PUT_MODE_BLEND] = &all_putters[4];
 		else

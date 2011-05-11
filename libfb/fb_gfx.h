@@ -51,7 +51,7 @@ extern "C" {
 #endif
 #define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
-#ifdef TARGET_X86
+#ifdef HOST_X86
  #define RORW(num, bits) __asm__ __volatile__("rorw %1, %0" : "=m"(num) : "c"(bits) : "memory")
  #define RORW1(num)      __asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
 #else

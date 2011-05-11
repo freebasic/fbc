@@ -14,7 +14,7 @@ static void (*fb_hPutPixelAlpha)(FB_GFXCTX *ctx, int x, int y, unsigned int colo
 static void *(*fb_hPixelSetAlpha)(void *dest, int color, size_t size);
 static unsigned int (*fb_hGetPixel)(struct FB_GFXCTX *ctx, int x, int y);
 
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 extern void *fb_hPixelSet2MMX(void *dest, int color, size_t size);
 extern void *fb_hPixelSet4MMX(void *dest, int color, size_t size);
 extern void *fb_hPixelSetAlpha4MMX(void *dest, int color, size_t size);
@@ -326,7 +326,7 @@ static void *fb_hPixelCpy4(void *dest, const void *src, size_t size)
 /*:::::*/
 void fb_hSetupFuncs(int bpp)
 {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 	if (fb_CpuDetect() & 0x800000) {
 		__fb_gfx->flags |= HAS_MMX;
 		fb_hMemCpy = fb_hMemCpyMMX;
@@ -336,7 +336,7 @@ void fb_hSetupFuncs(int bpp)
 #endif
 		fb_hMemCpy = memcpy;
 		fb_hMemSet = memset;
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 	}
 #endif
 	switch (bpp) {
@@ -350,7 +350,7 @@ void fb_hSetupFuncs(int bpp)
 		case 2:
 			fb_hPutPixelSolid = fb_hPutPixelAlpha = fb_hPutPixel2;
 			fb_hGetPixel = fb_hGetPixel2;
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 			if (__fb_gfx->flags & HAS_MMX)
 				fb_hPixelSetSolid = fb_hPixelSetAlpha = fb_hPixelSet2MMX;
 			else
@@ -362,7 +362,7 @@ void fb_hSetupFuncs(int bpp)
 		default:
 			fb_hPutPixelSolid = fb_hPutPixel4;
 			fb_hGetPixel = fb_hGetPixel4;
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 			if (__fb_gfx->flags & HAS_MMX)
 				fb_hPixelSetSolid = fb_hPixelSet4MMX;
 			else
@@ -370,7 +370,7 @@ void fb_hSetupFuncs(int bpp)
 				fb_hPixelSetSolid = fb_hPixelSet4;
 			fb_hPixelCpy = fb_hPixelCpy4;
 			if (__fb_gfx->flags & ALPHA_PRIMITIVES) {
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 				if (__fb_gfx->flags & HAS_MMX) {
 					fb_hPutPixelAlpha = fb_hPutPixelAlpha4MMX;
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4MMX;
@@ -379,7 +379,7 @@ void fb_hSetupFuncs(int bpp)
 #endif
 					fb_hPutPixelAlpha = fb_hPutPixelAlpha4;
 					fb_hPixelSetAlpha = fb_hPixelSetAlpha4;
-#if defined(TARGET_X86)
+#if defined(HOST_X86)
 				}
 #endif
 			}

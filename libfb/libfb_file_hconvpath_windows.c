@@ -19,7 +19,7 @@ char *fb_hConvertPath( char *path, int len )
     len = strlen( path );
 	for (i = 0; i < len; i++)
     {
-#ifdef TARGET_CYGWIN
+#ifdef HOST_CYGWIN
 		if ( path[i] == '\\' )
             path[i] = '/';
 #else

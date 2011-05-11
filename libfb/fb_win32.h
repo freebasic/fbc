@@ -14,7 +14,7 @@
 # define FBCALL __stdcall
 #endif
 
-#ifdef TARGET_WIN32
+#ifdef HOST_MINGW
 /* don't include liboldname */
 #define _NO_OLDNAMES 1
 #endif
@@ -31,7 +31,7 @@
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")
 
-#ifdef TARGET_CYGWIN
+#ifdef HOST_CYGWIN
 #define FB_LL_FMTMOD "ll"
 #else
 #define FB_LL_FMTMOD "I64"
@@ -41,7 +41,7 @@ typedef struct _FB_DIRCTX
 {
 	int in_use;
     int attrib;
-#ifdef TARGET_CYGWIN
+#ifdef HOST_CYGWIN
     WIN32_FIND_DATA data;
     HANDLE handle;
 #else
@@ -50,7 +50,7 @@ typedef struct _FB_DIRCTX
 #endif
 } FB_DIRCTX;
 
-#ifdef TARGET_CYGWIN
+#ifdef HOST_CYGWIN
 typedef _off64_t fb_off_t;
 #else
 typedef off64_t fb_off_t;

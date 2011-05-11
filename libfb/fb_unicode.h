@@ -28,15 +28,15 @@ typedef uint8_t  UTF_8;
 #define	UTF16_HALFBASE 		 (UTF_32)0x0010000UL
 #define	UTF16_HALFMASK 		 (UTF_32)0x3FFUL
 
-#if defined(TARGET_DOS)
+#if defined(HOST_DOS)
 # include "fb_unicode_dos.h"
-#elif defined(TARGET_XBOX)
+#elif defined(HOST_XBOX)
 # error "Where is fb_unicode.h for the xbox build?"
 //# include "xbox/fb_unicode.h"
-#elif defined(TARGET_CYGWIN)
+#elif defined(HOST_CYGWIN)
 /* dumb cygwin ... */
 # include "fb_unicode_dos.h"
-#elif defined(TARGET_WIN32)
+#elif defined(HOST_MINGW)
 # include "fb_unicode_win32.h"
 #else
 # define __USE_ISOC99 1
