@@ -764,7 +764,7 @@ type SYMB_DATATYPE
 end type
 
 
-#include once "inc\ast.bi"
+#include once "ast.bi"
 
 declare sub symbInit _
 	( _
