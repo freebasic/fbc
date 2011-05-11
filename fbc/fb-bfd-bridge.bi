@@ -1,8 +1,9 @@
 #ifndef __FB_BFD_BRIDGE_BI__
 #define __FB_BFD_BRIDGE_BI__
 
-#if defined(USE_FB_BFD_HEADER)
+#ifdef ENABLE_FBBFD
 
+#define __BFD_VER__ ENABLE_FBBFD
 #include once "bfd.bi"
 
 #else
@@ -83,6 +84,6 @@ end extern
 #define bfd_set_section_contents fb_bfd_set_section_contents
 #define bfd_set_arch_mach fb_bfd_set_arch_mach
 
-#endif '' defined(USE_FB_BFD_HEADER)
+#endif
 
 #endif '' __FB_BFD_BRIDGE_BI__

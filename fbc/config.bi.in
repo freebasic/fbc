@@ -22,11 +22,11 @@
 #define HOST_OSFAMILY       __STRINGIFY(@HOST_OSFAMILY@)
 
 '' Objinfo support?
-#if ("@ENABLE_OBJINFO@" <> "no")
+#if "@ENABLE_OBJINFO@" <> "no"
     #define ENABLE_OBJINFO TRUE
 #endif
 
 '' FB bfd headers?
-#if ("@ENABLE_FBBFD@" <> "no")
+#if "@ENABLE_FBBFD@" <> "no"
     #define ENABLE_FBBFD @ENABLE_FBBFD@
 #endif
