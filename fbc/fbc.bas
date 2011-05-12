@@ -203,15 +203,15 @@ declare sub getDefaultLibs _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2010 The FreeBASIC development team."
 
-#ifdef DISABLE_OBJINFO
-		print "objinfo disabled"
-#else
+#ifdef ENABLE_OBJINFO
 		print "objinfo enabled ";
 #ifdef ENABLE_FBBFD
 		print "using FB BFD header version " & ENABLE_FBBFD
 #else
 		print "using C BFD wrapper"
 #endif
+#else
+		print "objinfo disabled"
 #endif
 
     	print
@@ -787,11 +787,7 @@ private function hAddInfoObject as integer
     	safeKill( FB_INFOSEC_OBJNAME )
     end if
 
-#ifdef DISABLE_OBJINFO
-	function = FALSE
-
-#else '' DISABLE_OBJINFO
-
+#ifdef ENABLE_OBJINFO
     if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
     	function = TRUE
 
@@ -803,8 +799,9 @@ private function hAddInfoObject as integer
 
     	function = FALSE
     end if
-
-#endif '' DISABLE_OBJINFO
+#else
+	function = FALSE
+#endif
 
 end function
 
@@ -827,7 +824,7 @@ private function archiveFiles _
     '' output library file name
     arcline += QUOTE + fbc.outname + (QUOTE + " ")
 
-#ifndef DISABLE_OBJINFO
+#ifdef ENABLE_OBJINFO
     '' the first object must be the info one
     if( fbIsCrossComp( ) = FALSE ) then
     	if( hAddInfoObject( ) ) then
@@ -835,7 +832,7 @@ private function archiveFiles _
     		has_infobj = TRUE
     	end if
     end if
-#endif '' DISABLE_OBJINFO
+#endif
 
     '' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -986,11 +983,7 @@ private function collectObjInfo _
 		return FALSE
     end if
 
-#ifdef DISABLE_OBJINFO
-	function = FALSE
-
-#else '' DISABLE_OBJINFO
-
+#ifdef ENABLE_OBJINFO
 	scope
 		'' for each object passed in the cmd-line
 		dim as string ptr obj = listGetHead( @fbc.objlist )
@@ -1022,8 +1015,9 @@ private function collectObjInfo _
 	end scope
 
 	function = TRUE
-
-#endif '' DISABLE_OBJINFO
+#else
+	function = FALSE
+#endif
 
 end function
 

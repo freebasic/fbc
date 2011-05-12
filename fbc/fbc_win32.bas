@@ -140,8 +140,12 @@ private function _linkFiles _
 		end if
 	end if
 
-	'' set script file and subsystem
-	ldcline = ("-T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
+	ldcline = " -subsystem " + fbc.subsystem
+
+#ifdef ENABLE_OBJINFO
+	'' supplementary ld script to drop the fbctinf objinfo section
+	ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
+#endif
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		''

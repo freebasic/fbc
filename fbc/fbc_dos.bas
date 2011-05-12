@@ -40,7 +40,7 @@ private function _linkFiles _
 	( _
 	) as integer
 
-	dim as string ldcline, ldpath
+	dim as string ldcline = "", ldpath
 #ifdef __FB_WIN32__
 	dim as string resfile
 #endif
@@ -61,13 +61,13 @@ private function _linkFiles _
 		end select
 	end if
 
-	'' set script file
+#ifdef ENABLE_OBJINFO
 	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T " + QUOTE + fbGetPath( FB_PATH_SCRIPT ) + "i386go32.x" + QUOTE
-	case else
-		ldcline = ""
+		'' supplementary ld script to drop the fbctinf objinfo section
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
 	end select
+#endif
 
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile

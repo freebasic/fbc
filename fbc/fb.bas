@@ -785,15 +785,13 @@ sub fbSetPaths _
 
 	dim as string target_dir = *env.target.targetdir
 
-	pathTB(FB_PATH_BIN   ) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
-	pathTB(FB_PATH_INC   ) = prefix + FB_INCPATH
-	pathTB(FB_PATH_LIB   ) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
-	pathTB(FB_PATH_SCRIPT) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
+	pathTB(FB_PATH_BIN) = prefix + FB_BINPATH + target_dir + FB_HOST_PATHDIV
+	pathTB(FB_PATH_INC) = prefix + FB_INCPATH
+	pathTB(FB_PATH_LIB) = prefix + FB_LIBPATH + target_dir + FB_HOST_PATHDIV
 
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( pathTB(FB_PATH_LIB), FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( pathTB(FB_PATH_SCRIPT), FALSE, asc(FB_HOST_PATHDIV) )
 
 end sub
 

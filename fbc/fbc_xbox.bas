@@ -49,9 +49,12 @@ private function _linkFiles _
 	
 	tmpexename = fbc.outname + ".exe"
 	
-	'' set script file
-	ldcline = "-T " + QUOTE + fbGetPath( FB_PATH_SCRIPT ) + ("i386pe.x" + QUOTE + _
-		" -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared")
+	ldcline = " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
+
+#ifdef ENABLE_OBJINFO
+	'' supplementary ld script to drop the fbctinf objinfo section
+	ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
+#endif
 	
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
