@@ -10,6 +10,7 @@ FBLFLAGS:=@FBLFLAGS@
 
 host_cpu:=@host_cpu@
 HOST_OS:=@HOST_OS@
+HOST_OSFAMILY:=@HOST_OSFAMILY@
 
 ENABLE_OBJINFO:=@ENABLE_OBJINFO@
 ENABLE_FBBFD:=@ENABLE_FBBFD@
@@ -21,22 +22,22 @@ FBCNEW := fbc-new$(EXEEXT)
 
 FBCFLAGS := -w pedantic -m fbc -include config.bi
 
-ifeq (@HOST_OSFAMILY@,win32)
+ifeq ($(HOST_OSFAMILY),windows)
     FBCLFLAGS += -t 2048
 endif
 
 ifeq ($(ENABLE_OBJINFO),yes)
     FBLFLAGS += -l bfd -l iberty
 
-    ifeq (@HOST_OS@,cygwin)
+    ifeq ($(HOST_OS),cygwin)
         FBLFLAGS += -l intl
-    else ifeq (@HOST_OS@,dos)
+    else ifeq ($(HOST_OS),djgpp)
         FBLFLAGS += -l intl -l z
-    else ifeq (@HOST_OS@,freebsd)
+    else ifeq ($(HOST_OS),freebsd)
         FBLFLAGS += -l intl
-    else ifeq (@HOST_OS@,openbsd)
+    else ifeq ($(HOST_OS),openbsd)
         FBLFLAGS += -l intl
-    else ifeq (@HOST_OS@,mingw)
+    else ifeq ($(HOST_OS),mingw)
         FBLFLAGS += -l user32
     endif
 endif

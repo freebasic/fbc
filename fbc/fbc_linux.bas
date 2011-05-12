@@ -103,11 +103,6 @@ private function _linkFiles _
 		end if
 	end if
 
-#ifdef STANDALONE
-	'' set script file
-	ldcline += (" -T " + QUOTE) + fbGetPath( FB_PATH_SCRIPT ) + ("elf_i386.x" + QUOTE)
-#endif
-
 	'' set emulation
 	ldcline += " -m elf_i386" 
 

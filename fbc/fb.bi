@@ -18,8 +18,6 @@ const FB_VER_PATCH          = 0
 
 #define FB_STRINGIZE(_x) #_x
 
-const FB_ARCH_PREFIX = FB_STRINGIZE(ARCH_PREFIX)
-
 ''
 const FB_MAXPATHLEN         = 260
 

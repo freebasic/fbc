@@ -110,20 +110,9 @@ declare sub	parserSetCtx ( )
 	'' filenames of gcc-libs
 	dim shared gccLibFileNameTb(  ) as zstring ptr
 
-#if defined(STANDALONE)
-
-const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
-const FB_INCPATH = FB_HOST_PATHDIV + "inc" + FB_HOST_PATHDIV
-const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
-
-#else
-
 const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
 const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
 const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
-
-#endif
-
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
@@ -790,19 +779,9 @@ sub fbSetPaths _
 	dim as string prefix = fbPrefix
 	dim as integer usetargetdir = FALSE
 
-#if defined(STANDALONE)
-
 	if( len(prefix) = 0 ) then
-		prefix = exepath()
+		prefix = exepath() + FB_HOST_PATHDIV + ".."
 	end if
-
-#else
-
-	if( len(prefix) = 0 ) then
-		prefix = FB_ARCH_PREFIX
-	end if
-
-#endif
 
 	dim as string target_dir = *env.target.targetdir
 
