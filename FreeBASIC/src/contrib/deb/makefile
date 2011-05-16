@@ -2,7 +2,7 @@
 # Usage: 'make' or 'make ARCH=i386' to build freebasic_*_i386.deb,
 # 'make ARCH=amd64' to build freebasic_*_amd64.deb.
 
-FB_VERSION := 0.22.0
+FB_VERSION := 0.23.0
 DEB_VERSION := $(FB_VERSION)-1
 FB_TITLE := FreeBASIC-$(FB_VERSION)-linux
 FB_TARBALL := $(FB_TITLE).tar.gz
