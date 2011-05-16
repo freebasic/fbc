@@ -899,6 +899,16 @@ private function hCheckParam _
 
 			return TRUE
 		end if
+
+		'' Passing a bitfield arg to a byref param? Can't be allowed,
+		'' @udt.bitfield isn't possible either...
+		if( astGetClass( arg ) = AST_NODECLASS_FIELD ) then
+			if( astGetDataType( astGetLeft( arg ) ) = FB_DATATYPE_BITFIELD ) then
+				hParamError( parent )
+				exit function
+			end if
+		end if
+
 	end select
 
 	'' UDT arg? convert to param type if possible (including strings)
