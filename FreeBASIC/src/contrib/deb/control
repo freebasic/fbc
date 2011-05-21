@@ -2,7 +2,7 @@ Package: freebasic
 Version: <version>
 Section: devel
 Priority: optional
-Maintainer: FreeBASIC Development Team
+Maintainer: FreeBASIC development team, dkl <dkls@users.sourceforge.net>
 Homepage: http://www.freebasic.net/wiki/
 Architecture: <arch>
 Depends: <depends>
