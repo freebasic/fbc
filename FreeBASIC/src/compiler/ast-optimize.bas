@@ -391,6 +391,9 @@ private function hConstAccumADDSUB _
 			n->l = hConstAccumADDSUB( l, v, op )
 
 			if( o = AST_OP_SUB ) then
+#if 1 '' simple fix for #3153953
+				exit select
+#endif
 				op = -op
 			end if
 
@@ -2392,9 +2395,7 @@ function astOptimizeTree _
 
 	n = hOptAssocMUL( n )
 
-#if 0
 	n = hOptConstDistMUL( n )
-#endif
 
 	n = hOptConstAccum1( n )
 
