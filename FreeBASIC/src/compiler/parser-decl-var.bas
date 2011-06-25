@@ -2008,7 +2008,7 @@ function cArrayDecl _
 	) as integer
 
 	dim as integer i = any
-	dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any, i_expr = any
 
 	function = FALSE
 
@@ -2048,6 +2048,22 @@ function cArrayDecl _
 						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 					end if
 				end select
+
+				'' make sure expr is integral
+				i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
+
+				if( i_expr <> NULL ) then
+					expr = i_expr
+				else
+					if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake an expr
+						astDelTree( expr )
+						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+					end if
+				end if
+
 			end if
 
 			exprTB(i,0) = expr
@@ -2089,6 +2105,22 @@ function cArrayDecl _
 							expr = astCloneTree( exprTB(i,0) )
 						end if
 					end select
+
+					'' make sure expr is integral
+					i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
+
+					if( i_expr <> NULL ) then
+						expr = i_expr
+					else
+						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake an expr
+							astDelTree( expr )
+							expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+						end if
+					end if
+
 				end if
 
 				exprTB(i,1) = expr

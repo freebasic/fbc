@@ -43,7 +43,7 @@ function cOperatorNew _
 	lexSkipToken( )
 
 	dim as AST_OP op = AST_OP_NEW
-	dim as ASTNODE ptr elmts_expr = NULL, placement_expr = NULL
+	dim as ASTNODE ptr elmts_expr = NULL, placement_expr = NULL, i_expr = NULL
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -151,9 +151,11 @@ function cOperatorNew _
 	if( elmts_expr = NULL ) then
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	else
-		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes #2533376 (counting_pine)
-		elmts_expr = astNewCONV( FB_DATATYPE_UINT, NULL, elmts_expr )
-		if( elmts_expr = NULL ) Then
+		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
+		i_expr = astNewCONV( FB_DATATYPE_UINT, elmts_expr->subtype, elmts_expr )
+		if( i_expr <> NULL ) Then
+			elmts_expr = i_expr
+		else
 			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 			elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 		end if
