@@ -539,7 +539,7 @@ private function hFileClose _
     	filenum = cExpression( )
     	if( filenum = NULL ) then
 			if( cnt = 0 ) then
-				filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				'' pass NULL to rtlFileClose to get close-all function
 			else
 				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function

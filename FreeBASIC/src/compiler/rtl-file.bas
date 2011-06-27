@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 65 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 66 ) = _
 	{ _
 		/' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 				        byval lock as integer, byval filenum as integer, _
@@ -353,6 +353,18 @@
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
+		), _
+		/' fb_FileCloseAll( ) as integer '/ _
+		( _
+			@FB_RTL_FILECLOSEALL, NULL, _
+			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0/', _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		}'/ _
 		), _
 		/' fb_FilePut ( byval filenum as integer, byval offset as uinteger,
 						value as any, byval valuelen as integer ) as integer '/ _
@@ -1509,12 +1521,16 @@ function rtlFileClose _
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( FILECLOSE ) )
+	if( filenum <> NULL ) then
+		proc = astNewCALL( PROCLOOKUP( FILECLOSE ) )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
- 		exit function
- 	end if
+		'' byval filenum as integer
+		if( astNewARG( proc, filenum ) = NULL ) then
+			exit function
+		end if
+	else
+		proc = astNewCALL( PROCLOOKUP( FILECLOSEALL) )
+	end if
 
     ''
     if( isfunc = FALSE ) then

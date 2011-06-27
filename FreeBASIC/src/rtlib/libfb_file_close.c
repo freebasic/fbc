@@ -70,11 +70,20 @@ int fb_FileCloseEx( FB_FILE *handle )
 /*:::::*/
 FBCALL int fb_FileClose( int fnum )
 {
-	/* QB quirk: CLOSE w/o arguments closes all files */
+	/* make CLOSE #0 return an error
+	(QBASIC quirk: return no error; old FB quirk: close all files */
 	if( fnum == 0 ) {
-		fb_FileReset( );
-		return fb_ErrorSetNum( FB_RTERROR_OK );
+		/*fb_FileReset( );*/
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
-    return fb_FileCloseEx( FB_FILE_TO_HANDLE(fnum) );
+	return fb_FileCloseEx( FB_FILE_TO_HANDLE(fnum) );
+}
+
+/*:::::*/
+FBCALL int fb_FileCloseAll( )
+{
+	/* As in QB: CLOSE w/o arguments closes all files */
+	fb_FileReset( );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 

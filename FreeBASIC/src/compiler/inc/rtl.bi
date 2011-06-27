@@ -258,6 +258,7 @@
 #define FB_RTL_FILEOPEN_COM 			"fb_FileOpenCom"
 #define FB_RTL_FILEOPEN_QB  			"fb_FileOpenQB"
 #define FB_RTL_FILECLOSE 				"fb_FileClose"
+#define FB_RTL_FILECLOSEALL 			"fb_FileCloseAll"
 
 #define FB_RTL_FILEPUT 					"fb_FilePut"
 #define FB_RTL_FILEPUTLARGE 			"fb_FilePutLarge"
@@ -648,6 +649,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILEOPEN_COM
 	FB_RTL_IDX_FILEOPEN_QB
 	FB_RTL_IDX_FILECLOSE
+	FB_RTL_IDX_FILECLOSEALL
 
 	FB_RTL_IDX_FILEPUT
 	FB_RTL_IDX_FILEPUTLARGE
