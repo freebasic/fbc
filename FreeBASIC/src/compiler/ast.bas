@@ -989,7 +989,7 @@ declare sub astDelCALL _
 		) _
 	}
 
-	dim shared as uinteger ast_bitmaskTB( 0 to 32 ) = _
+	dim shared as uinteger ast_bitmaskTB( 0 to ... ) = _
 	{ _
 		0, _
 		1, 3, 7, 15, 31, 63, 127, 255, _

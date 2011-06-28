@@ -40,7 +40,7 @@ declare function hPorts_cb _
 	) as integer
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 62 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_GfxPset ( byref target as any, byval x as single, byval y as single, byval color as uinteger, _
 						byval coordType as integer, byval ispreset as integer ) as void '/ _

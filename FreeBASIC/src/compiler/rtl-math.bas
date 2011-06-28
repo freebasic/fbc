@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 63 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _

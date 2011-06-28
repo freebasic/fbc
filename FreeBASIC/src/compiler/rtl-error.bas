@@ -27,7 +27,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 19 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
 								   byval reslabel as any ptr, _

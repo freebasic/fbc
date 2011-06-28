@@ -31,7 +31,7 @@
 #define FB_COLOR_BG_DEFAULT		&h00000002
 
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 16 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_ConsoleView ( byval toprow as integer = 0, _
 							byval botrow as integer = 0 ) as void '/ _

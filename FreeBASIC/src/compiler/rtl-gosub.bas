@@ -26,7 +26,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 4 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_GosubPush ( byval ctx as any ptr ptr ) as any ptr '/ _
 		( _
@@ -82,7 +82,7 @@
 	 	) _
 	 }
 
-	dim shared as FB_RTL_PROCDEF funcdata1( 0 to 1 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata1( 0 to ... ) = _
 	{ _
 		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
 		( _
@@ -102,7 +102,7 @@
 	 	) _
 	 }
 
-	dim shared as FB_RTL_PROCDEF funcdata2( 0 to 1 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata2( 0 to ... ) = _
 	{ _
 		/' fb_SetJmp cdecl ( byval buf as any ptr ) as integer '/ _
 		( _

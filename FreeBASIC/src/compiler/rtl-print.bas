@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 51 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_PrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void '/ _
 		( _

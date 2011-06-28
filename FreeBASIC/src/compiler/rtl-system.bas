@@ -28,7 +28,7 @@
 
 declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 48 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_CpuDetect cdecl ( ) as uinteger '/ _
 		( _

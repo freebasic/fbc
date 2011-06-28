@@ -27,7 +27,7 @@
 #include once "inc\rtl.bi"
 
 '' globals
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_DataRestore ( byval labeladdrs as void ptr ) as void '/ _
 		( _

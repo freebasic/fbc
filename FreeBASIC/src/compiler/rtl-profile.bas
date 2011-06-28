@@ -27,7 +27,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 2 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' mcount cdecl ( void ) as void'/ _
 		( _

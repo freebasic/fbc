@@ -27,7 +27,7 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 19 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_ArrayRedimEx CDECL ( array() as ANY, byval elementlen as integer, _
 							   	   byval doclear as integer, byval isvarlen as integer, _

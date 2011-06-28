@@ -26,7 +26,7 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 172 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_StrInit ( byref dst as any, byval dst_len as integer, _
 		 				byref src as any, byval src_len as integer, _
