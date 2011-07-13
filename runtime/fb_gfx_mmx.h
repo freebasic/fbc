@@ -12,7 +12,7 @@
 #include <config.h>
 #endif
 
-#if defined(HOST_WINDOWS) || defined(HOST_DOS) || defined(HOST_XBOX)
+#if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_XBOX)
 #define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name :
 #define VAR(name)		.globl _##name ; _##name :
 #define GLOBL(name)		_##name

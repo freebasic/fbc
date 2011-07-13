@@ -12,7 +12,7 @@
 FBCALL void fb_Beep( void )
 {
 
-#if defined(HOST_WINDOWS)
+#if defined(HOST_WIN32)
 	Beep( 1000, 250 );
 #else
 	putc('\a', stdout);

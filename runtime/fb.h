@@ -54,7 +54,7 @@ extern "C" {
 /* Max length to allocated for a temporary buffer on stack */
 #define FB_LOCALBUFF_MAXLEN   32768
 
-#ifndef HOST_WINDOWS
+#ifndef HOST_WIN32
 	/* Maximum path length for Non-Win32 targets. For Win32 targets, this
 	   value will be set automatically by windows.h. */
 	#define MAX_PATH    1024
@@ -79,7 +79,7 @@ extern "C" {
 	((int) (((((unsigned) (k)) & 0xFF) == FB_EXT_CHAR) && \
 	        (((k) & 0xFF00) != 0)))
 
-#if defined(HOST_WINDOWS)
+#if defined(HOST_WIN32)
 	#include "fb_win32.h"
 #elif defined(HOST_LINUX)
 	#include "fb_unix.h"
