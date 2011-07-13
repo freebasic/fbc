@@ -146,7 +146,6 @@ extern "C" {
 #include "fb_xbox.h"
 #elif defined(HOST_FREEBSD)
 #include "fb_unix.h"
-#include "fb_freebsd.h"
 #elif defined(HOST_SOLARIS)
 #include "fb_unix.h"
 #include "fb_solaris.h"
@@ -154,10 +153,8 @@ extern "C" {
 #include "fb_unix.h"
 #elif defined(HOST_OPENBSD)
 #include "fb_unix.h"
-#include "fb_openbsd.h"
 #elif defined(HOST_NETBSD)
 #include "fb_unix.h"
-#include "fb_netbsd.h"
 #else
 #error target not supported
 #endif
