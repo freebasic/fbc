@@ -1,16 +1,15 @@
-/*
- * alloca.s -- alloca() implementation for Win32, as it's not part of m$'s crt
- *
- * note: code came from mingw
- *
- */
+/* alloca() implementation for win32, as it's not part of msvcrt.
+   Note: Code from MinGW. */
+
+/* MinGW now includes it's own alloca() */
+#if __GNUC__ < 4
 
 		.intel_syntax noprefix
 /*		.arch i386 */ /* This option is only for ALPHA */
 
 
 .section .text
-/*:::::*/
+
 /* void _alloca( size_t size -- passed in EAX! ); */
 .globl __alloca
 __alloca:
@@ -32,4 +31,4 @@ _rem:		sub 	ecx, eax
 		mov 	eax, [eax+4]
 		jmp 	eax
 
-
+#endif
