@@ -152,7 +152,6 @@ extern "C" {
 #include "fb_solaris.h"
 #elif defined(HOST_DARWIN)
 #include "fb_unix.h"
-#include "fb_darwin.h"
 #elif defined(HOST_OPENBSD)
 #include "fb_unix.h"
 #include "fb_openbsd.h"
