@@ -1,10 +1,4 @@
-/*
- * list.c -- generic internal lists based on static arrays
- *
- * chng: oct/2004 written [v1ctor]
- *       feb/2005 moved into a separated generic module [lillo]
- *
- */
+/* generic internal lists based on static arrays */
 
 #include <stdlib.h>
 #include "fb.h"

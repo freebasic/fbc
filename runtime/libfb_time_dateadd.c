@@ -1,9 +1,4 @@
-/*
- * time_dateadd.c -- dateadd function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* dateadd function */
 
 #include "fb.h"
 

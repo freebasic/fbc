@@ -1,9 +1,4 @@
-/*
- * init.c -- libfb initialization for FreeBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* libfb initialization for FreeBSD */
 
 #include "fb.h"
 

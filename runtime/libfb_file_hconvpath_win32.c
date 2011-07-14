@@ -1,9 +1,4 @@
-/*
- * str_convpath - path conversion for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* path conversion for Windows */
 
 #include <string.h>
 #include "fb.h"

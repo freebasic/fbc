@@ -1,9 +1,4 @@
-/*
- * hook_getsize.c -- getsize entrypoint, default to console mode
- *
- * chng: dec/2004 written [v1ctor]
- *
- */
+/* getsize entrypoint, default to console mode */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * exit.c -- end helper for OpenBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* end helper for OpenBSD */
 
 #include "fb.h"
 

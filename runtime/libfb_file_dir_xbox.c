@@ -1,9 +1,4 @@
-/*
- * libfb_file_dir.c -- dir$ implementation
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* dir$ implementation */
 
 #include <string.h>
 #include <unistd.h>

@@ -1,9 +1,4 @@
-/*
- * file_inputstr - input$ function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input$ function */
 
 #include <stdio.h>
 #include <stdlib.h>

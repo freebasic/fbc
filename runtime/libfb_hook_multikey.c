@@ -1,9 +1,4 @@
-/*
- * hook_multikey.c -- multikey entrypoint, default to console mode
- *
- * chng: jun/2005 written [lillo]
- *
- */
+/* multikey entrypoint, default to console mode */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- *	file_hlock - low-level lock and unlock functions for xbox
- *
- *  chng: jan/2005 written [v1ctor]
- *
- */
+/* low-level lock and unlock functions for xbox */
 
 
 #include "fb.h"

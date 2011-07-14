@@ -1,9 +1,4 @@
-/*
- *	file_put_wstr - put # function for wstrings
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* put # function for wstrings */
 
 #include <stdio.h>
 #include <stdlib.h>

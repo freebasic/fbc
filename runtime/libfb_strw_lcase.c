@@ -1,9 +1,4 @@
-/*
- * strw_lcase.c -- lcasew$ function
- *
- * chng: ago/2005 written [v1ctor]
- *
- */
+/* lcasew$ function */
 
 #include "fb.h"
 

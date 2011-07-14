@@ -1,9 +1,4 @@
-/*
- * io_multikey.c -- Linux multikey function implementation
- *
- * chng: jul/2005 written [lillo]
- *
- */
+/* Linux multikey function implementation */
 
 #ifdef WITH_X
 

@@ -1,13 +1,6 @@
-/*
- * io_hgetstr - console line input function for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* console line input function for Linux */
 
 #include "fb.h"
-
 
 /*:::::*/
 char *fb_ConsoleReadStr( char *buffer, int len )

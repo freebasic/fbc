@@ -1,9 +1,4 @@
-/*
- * io_inkey.c -- inkey$ function for Windows console mode apps
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* inkey$ function for Windows console mode apps */
 
 #include "fb.h"
 

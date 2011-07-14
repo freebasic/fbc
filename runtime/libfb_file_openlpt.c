@@ -1,9 +1,4 @@
-/*
- *	file_openlpt - open LPTx
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open LPTx */
 
 #include <stdlib.h>
 #include "fb.h"

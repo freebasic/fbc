@@ -1,10 +1,4 @@
-/*
- * io_inkey.c -- inkey$ function for Linux console mode apps
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* inkey$ function for Linux console mode apps */
 
 #include "fb.h"
 

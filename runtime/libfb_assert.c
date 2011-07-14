@@ -1,9 +1,4 @@
-/*
- * assert.c -- assertion functions
- *
- * chng: jul/2005 written [v1ctor]
- *
- */
+/* assertion functions */
 
 #include "fb.h"
 #include <stdlib.h>

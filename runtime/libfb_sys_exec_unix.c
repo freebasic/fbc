@@ -1,10 +1,4 @@
-/*
- * sys_exec.c -- exec function for Linux
- *
- * chng: nov/2004 written [lillo]
- *       dec/2006 updated [jeffmarshall] using fb_hParseArgs
- *
- */
+/* exec function for Linux */
 
 #include <stdlib.h>
 #include <string.h>

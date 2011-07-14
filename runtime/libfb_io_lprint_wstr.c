@@ -1,9 +1,4 @@
-/*
- * io_print.c -- print [#] functions
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* print [#] functions */
 
 #include <stdlib.h>
 #include "fb.h"

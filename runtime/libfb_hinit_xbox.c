@@ -1,9 +1,4 @@
-/*
- * init.c -- libfb initialization for xbox
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* libfb initialization for xbox */
 
 #include <stdlib.h>
 #include "fb.h"

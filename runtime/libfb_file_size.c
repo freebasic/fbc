@@ -1,9 +1,4 @@
-/*
- *	file_size - file size
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* file size */
 
 #include <stdio.h>
 #include <stdlib.h>

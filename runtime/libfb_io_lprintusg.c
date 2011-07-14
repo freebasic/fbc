@@ -1,9 +1,4 @@
-/*
- * io_printusg - print using function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* print using function */
 
 #include <stdlib.h>
 #include <string.h>

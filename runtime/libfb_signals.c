@@ -1,9 +1,4 @@
-/*
- * signal.c -- signal handlers
- *
- * chng: jul/2005 written [v1ctor]
- *
- */
+/* signal handlers */
 
 #include <signal.h>
 #include "fb.h"

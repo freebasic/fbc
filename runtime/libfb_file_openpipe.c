@@ -1,9 +1,4 @@
-/*
- *	file_openpipe - open PIPE
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open PIPE */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * file_copy.c -- win32 file copy
- *
- * chng: dec/2005 written [DrV]
- *
- */
+/* win32 file copy */
 
 #include <windows.h>
 #include "fb.h"

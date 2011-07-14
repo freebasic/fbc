@@ -1,9 +1,4 @@
-/*
- * screeninfo.c -- Function to get informations about current gfx mode.
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* Function to get informations about current gfx mode. */
 
 #include "fb_gfx.h"
 

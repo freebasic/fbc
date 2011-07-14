@@ -1,9 +1,4 @@
-/*
- * data_ushort.c -- read stmt for ushort's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for ushort's */
 
 #include <stdlib.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * put_xor.c -- XOR drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* XOR drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * sys_exepath.c -- exepath$
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* exepath$ */
 
 #include <stdlib.h>
 #include <string.h>

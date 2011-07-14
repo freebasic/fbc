@@ -1,10 +1,4 @@
-/*
- * sys_exec.c -- exec function for DOS
- *
- * chng: jan/2005 written [DrV]
- *       dec/2006 updated [jeffmarshall] using fb_hParseArgs
- *
- */
+/* exec function for DOS */
 
 #include "fb.h"
 

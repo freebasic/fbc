@@ -1,9 +1,4 @@
-/*
- * strw_oct.c -- woct$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* woct$ routines */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for Linux
- *
- * chng: oct/2004 written [lillo]
- *
- */
+/* get the executable path for Linux */
 
 #include <malloc.h>
 #include <string.h>

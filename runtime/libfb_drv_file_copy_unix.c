@@ -1,9 +1,4 @@
-/*
- * file_copy.c -- generic C stdio file copy
- *
- * chng: jun/2006 written [DrV]
- *
- */
+/* generic C stdio file copy */
  
 #define FILE_COPY_BUF_SIZE 512
 

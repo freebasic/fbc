@@ -1,9 +1,4 @@
-/*
- *	file_opencons - open CONS
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open CONS */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * put_custom.c -- CUSTOM drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* CUSTOM drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

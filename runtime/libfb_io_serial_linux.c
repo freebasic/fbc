@@ -1,8 +1,4 @@
-/* io_serial.c -- serial port access for Linux
- *
- * chng: jul/2006 written [jpostigo] Jose Manuel Postigo postigo@uma.es
- *
- */
+/* serial port access for Linux */
 
 #include <termios.h>
 #include <stdio.h>

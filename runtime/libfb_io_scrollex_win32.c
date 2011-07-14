@@ -1,11 +1,4 @@
-/*
- * io_scroll.c -- console scrolling for when VIEW is used for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: only use window width [mjs]
- *                mod: use convert*console functions [mjs]
- *
- */
+/* console scrolling for when VIEW is used for Windows */
 
 #include "fb.h"
 

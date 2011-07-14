@@ -1,9 +1,4 @@
-/*
- * array_redim.c -- redim function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* redim function */
 
 #include <stdlib.h>
 #include <stdarg.h>

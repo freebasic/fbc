@@ -1,9 +1,4 @@
-/*
- * hook_readstr.c -- input$|line input entrypoint, default to console mode
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* input$|line input entrypoint, default to console mode */
 
 #include "fb.h"
 #include <stdio.h>

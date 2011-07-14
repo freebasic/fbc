@@ -1,9 +1,4 @@
-/*
- * libfb_io_vwupd.c -- view print update (console, no gfx) for Windows
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* view print update (console, no gfx) for Windows */
 
 #include "fb.h"
 

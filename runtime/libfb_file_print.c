@@ -1,9 +1,4 @@
-/*
- *	file_print - print # function (formating is done at io_prn)
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* print # function (formating is done at io_prn) */
 
 #include <stdio.h>
 #include <stdlib.h>

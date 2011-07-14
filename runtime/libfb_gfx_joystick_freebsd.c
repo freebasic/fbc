@@ -1,9 +1,4 @@
-/*
- * joystick.c -- joystick handling, freebsd
- *
- * chng: / written []
- *
- */
+/* joystick handling, freebsd */
 
 #include "fb_gfx.h"
 

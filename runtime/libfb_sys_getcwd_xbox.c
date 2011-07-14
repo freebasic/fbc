@@ -1,9 +1,4 @@
-/*
- * sys_getcwd.c -- get current dir for xbox
- *
- * chng: jul/2005 written [lillo]
- *
- */
+/* get current dir for xbox */
 
 #include "../fb.h"
 

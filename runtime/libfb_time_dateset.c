@@ -1,10 +1,4 @@
-/*
- * time_dateset.c -- setdate function
- *
- * chng: jan/2005 written [DrV]
- *       dec/2005 major string to int conversion bug fixed [DrV]
- *
- */
+/* setdate function */
 
 
 #include <stdio.h>

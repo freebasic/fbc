@@ -1,9 +1,4 @@
-/*
- * vsync.c -- vertical sync routine
- *
- * chng: may/2005 written [lillo]
- *
- */
+/* vertical sync routine */
 
 #include "fb_gfx.h"
 

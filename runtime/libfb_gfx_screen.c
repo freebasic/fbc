@@ -1,9 +1,4 @@
-/*
- * screen.c -- screen function and drivers handling
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* screen function and drivers handling */
 
 #include "fb_gfx.h"
 

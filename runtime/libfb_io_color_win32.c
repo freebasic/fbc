@@ -1,9 +1,4 @@
-/*
- * io_color.c -- color (console, no gfx) function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* color (console, no gfx) function for Windows */
 
 #include "fb.h"
 #include "fb_colors.h"

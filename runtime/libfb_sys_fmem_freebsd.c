@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for FreeBSD
- *
- * chng: jan/2008 written [DrV]
- *
- */
+/* fre function for FreeBSD */
 
 #include "fb.h"
 #include <unistd.h>

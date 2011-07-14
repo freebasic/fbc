@@ -1,9 +1,4 @@
-/*
- * sys_getexename.c -- get the executable's name for xbox
- *
- * chng: jul/2005 written []
- *
- */
+/* get the executable's name for xbox */
 
 #include <malloc.h>
 #include <string.h>

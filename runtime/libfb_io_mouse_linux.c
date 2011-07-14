@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- Linux console mouse functions implementation
- *
- * chng: jul/2005 written [lillo]
- *
- */
+/* Linux console mouse functions implementation */
 
 #include "fb.h"
 #include "fb_linux.h"

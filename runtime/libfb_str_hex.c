@@ -1,10 +1,4 @@
-/*
- * str_hex.c -- hex$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *       jul/2005 rewritten to use consistent case across platforms [DrV]
- *
- */
+/* hex$ routines */
 
 #include <stdlib.h>
 #include "fb.h"

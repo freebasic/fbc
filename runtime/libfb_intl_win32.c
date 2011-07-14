@@ -1,9 +1,4 @@
-/*
- * intl_w32.c -- Core Win32 i18n functions
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* Core Win32 i18n functions */
 
 #include "fb.h"
 #include <stddef.h>

@@ -1,9 +1,4 @@
-/*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded wstring file writing */
 
 #include "fb.h"
 

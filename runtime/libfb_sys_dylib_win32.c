@@ -1,9 +1,4 @@
-/*
- * sys_dylib.c -- Dynamic library loading and symbols retrieving
- *
- * chng: feb/2005 written [lillo]
- *		 jan/2007 fb_DylibSymbolByOrd [voodooattack]
- */
+/* Dynamic library loading and symbols retrieving */
 
 #include <stdio.h>
 #include "fb.h"

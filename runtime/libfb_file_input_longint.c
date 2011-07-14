@@ -1,9 +1,4 @@
-/*
- * file_input - input function for signed long long's
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function for signed long long's */
 
 #include <stdio.h>
 #include <stdlib.h>

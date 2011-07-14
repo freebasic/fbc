@@ -1,9 +1,4 @@
-/*
- * io_getsize.c -- get size (console, no gfx) function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* get size (console, no gfx) function for DOS */
 
 #include "fb.h"
 #include <pc.h>

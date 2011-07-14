@@ -1,11 +1,4 @@
-/*
- * str_instr.c -- instr function
- *
- * chng: oct/2004 written [v1ctor]
- * chng: aug/2005 added boyer-moore and quick search algorithms [mjs]
- *                added special search case with pattern length = 1 [mjs]
- *
- */
+/* instr function */
 
 #include <stdlib.h>
 #include <string.h>

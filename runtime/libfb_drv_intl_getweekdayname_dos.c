@@ -1,9 +1,4 @@
-/*
- * drv_intl_getweekdayname.c -- get localized weekday name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get localized weekday name */
 
 #include "fb.h"
 

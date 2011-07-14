@@ -1,9 +1,4 @@
-/*
- * time_sleep.c -- sleep function
- *
- * chng: oct/2005 written [mjs]
- *
- */
+/* sleep function */
 
 #include "fb.h"
 

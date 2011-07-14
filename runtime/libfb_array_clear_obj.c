@@ -1,9 +1,4 @@
-/*
- * array_clear_obj.c -- ERASE function for static arrays of objects
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* ERASE function for static arrays of objects */
 
 #include <stdlib.h>
 #include "fb.h"

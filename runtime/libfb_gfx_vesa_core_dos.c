@@ -1,8 +1,5 @@
-/*
- * vesa.c -- common VESA VBE routines
- *
- * chng: apr/2005 written [DrV] (partially based on Allegro src/dos/vesa.c)
- *
+/* common VESA VBE routines
+ * Partially based on Allegro src/dos/vesa.c
  */
 
 #include "fb_gfx_dos.h"

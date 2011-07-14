@@ -1,9 +1,4 @@
-/*
- * str_ltrim.c -- ltrim$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ltrim$ function */
 
 #include "fb.h"
 

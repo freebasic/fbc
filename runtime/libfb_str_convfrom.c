@@ -1,9 +1,4 @@
-/*
- * str_convfrom.c -- val function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* val function */
 
 #include <stdlib.h>
 #include "fb.h"

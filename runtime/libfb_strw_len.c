@@ -1,9 +1,4 @@
-/*
- * strw_len.c -- wstring length function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* wstring length function */
 
 #include "fb.h"
 

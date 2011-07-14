@@ -1,9 +1,4 @@
-/*
- * io_printbuff.c -- low-level print to console function for xbox
- *
- * chng: / written []
- *
- */
+/* low-level print to console function for xbox */
 
 #include "fb.h"
 

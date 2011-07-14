@@ -1,9 +1,4 @@
-/*
- * strw_convto_str.c -- unicode to ascii string convertion function
- *
- * chng: ago/2005 written [v1ctor]
- *
- */
+/* unicode to ascii string convertion function */
 
 #include "fb.h"
 

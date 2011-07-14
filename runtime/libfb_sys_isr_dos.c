@@ -1,10 +1,4 @@
-/*
- * sys_isr.c -- ISR handling for DOS
- *
- * chng: aug/2005 written [mjs]
- *       jun/2006 ugly memory locking hack added [DrV]
- *
- */
+/* ISR handling for DOS */
 
 #include "fb.h"
 #include "fb_dos.h"

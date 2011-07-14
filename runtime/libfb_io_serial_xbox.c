@@ -1,9 +1,4 @@
-/*
- * io_serial.c -- serial port access for xbox
- *
- * chng: / written []
- *
- */
+/* serial port access for xbox */
 
 #include "fb.h"
 

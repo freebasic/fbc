@@ -1,9 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for OpenBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* get the executable path for OpenBSD */
 
 #include "fb.h"
 #include <string.h>

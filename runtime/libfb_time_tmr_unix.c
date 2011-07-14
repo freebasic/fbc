@@ -1,9 +1,4 @@
-/*
- * time_tmr.c -- linux timer# function
- *
- * chng: oct/2004 written [lillo]
- *
- */
+/* linux timer# function */
 
 #include <time.h>
 #include <sys/time.h>

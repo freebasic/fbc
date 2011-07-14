@@ -1,9 +1,4 @@
-/*
- * sys_getexename.c -- get the executable's name for OpenBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* get the executable's name for OpenBSD */
 
 #include "fb.h"
 #include <string.h>

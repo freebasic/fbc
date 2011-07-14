@@ -1,14 +1,7 @@
-/*
- * thread_core.c -- Linux (pthreads) thread creation and destruction
- *
- * chng: feb/2005 written [lillo]
- *
- */
-
+/* Linux (pthreads) thread creation and destruction */
 
 #include <pthread.h>
 #include "fb.h"
-
 
 /* thread proxy to user's thread proc */
 static void *threadproc( void *param )

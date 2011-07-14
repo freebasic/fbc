@@ -1,9 +1,4 @@
-/*
- * put_pset.c -- PSET drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* PSET drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

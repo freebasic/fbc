@@ -1,12 +1,6 @@
-/*
- * array_lbound.c -- lbound function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* lbound function */
 
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL int fb_ArrayLBound
@@ -20,5 +14,3 @@ FBCALL int fb_ArrayLBound
 
     return array->dimTB[dimension].lbound;
 }
-
-

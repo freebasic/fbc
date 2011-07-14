@@ -1,12 +1,5 @@
 /*!!!REMOVEME!!!*/
-
-/*
- * array_tmpdesc.c -- temp descriptor core, for array fields passed by descriptor
- *
- * chng: jan/2005 written [v1ctor]
- *       feb/2005 modified to use the generic list routines [lillo]
- *
- */
+/* temp descriptor core, for array fields passed by descriptor */
 
 #include <stdlib.h>
 #include <stdarg.h>

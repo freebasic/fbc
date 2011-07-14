@@ -1,9 +1,4 @@
-/*
- * readstr.c -- gfx hook for INPUT support
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* gfx hook for INPUT support */
 
 #include "fb_gfx.h"
 

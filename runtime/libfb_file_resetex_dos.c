@@ -1,9 +1,4 @@
-/*
- * file_resetex - recover stdio after redirection
- *
- * chng: oct/2007 written [jeffm]
- *
- */
+/* recover stdio after redirection */
 
 #include "fb.h"
 

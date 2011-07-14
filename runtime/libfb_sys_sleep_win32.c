@@ -1,9 +1,4 @@
-/*
- * sys_sleep.c -- sleep function for Windows
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* sleep function for Windows */
 
 #include "fb.h"
 

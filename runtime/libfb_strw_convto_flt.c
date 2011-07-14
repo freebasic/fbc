@@ -1,9 +1,4 @@
-/*
- * strw_convto_flt.c -- strw$ routines for float and double
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* strw$ routines for float and double */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * sys_sleep.c -- sleep function for Linux
- *
- * chng: nov/2004 written [lillo]
- *
- */
+/* sleep function for Linux */
 
 #include "fb.h"
 

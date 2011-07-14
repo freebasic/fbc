@@ -1,9 +1,4 @@
-/*
- * time_setdate.c -- set date function for xbox
- *
- * chng: jul/2005 written []
- *
- */
+/* set date function for xbox */
 
 #include "../fb.h"
 

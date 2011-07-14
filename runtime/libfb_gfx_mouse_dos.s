@@ -1,9 +1,4 @@
-/*
- * libfb_gfx_mouse.s -- dos mouse isr
- *
- * chng: jul/2006 written [DrV]
- *
- */
+/* dos mouse isr */
 
 .intel_syntax noprefix
 

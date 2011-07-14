@@ -1,9 +1,4 @@
-/*
- * signal.c -- low-level signal handlers for DOS
- *
- * chng: jul/2005 written []
- *
- */
+/* low-level signal handlers for DOS */
 
 #include "fb.h"
 

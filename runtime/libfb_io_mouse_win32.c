@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- mouse functions for Windows console mode apps
- *
- * chng: jun/2005 written [lillo]
- *
- */
+/* mouse functions for Windows console mode apps */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * con_print_tty.c -- print text data - using TTY (teletype) interpretation
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* print text data - using TTY (teletype) interpretation */
 
 #include <string.h>
 #include "fb_con.h"

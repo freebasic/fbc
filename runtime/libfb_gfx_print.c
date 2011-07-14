@@ -1,9 +1,4 @@
-/*
- * print.c -- graphical mode text output
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* graphical mode text output */
 
 #include "fb_gfx.h"
 #include "../rtlib/fb_con.h"

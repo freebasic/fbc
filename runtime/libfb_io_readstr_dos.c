@@ -1,9 +1,4 @@
-/*
- * io_hgetstr - console line input function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* console line input function for DOS */
 
 #include <stdio.h>
 #include <stdlib.h>

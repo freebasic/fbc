@@ -1,9 +1,4 @@
-/*
- * str_ftoa.c -- float to string, internal usage
- *
- * chng: dec/2005 written [v1ctor]
- *
- */
+/* float to string, internal usage */
 
 #include <stdlib.h>
 #include <stdio.h>

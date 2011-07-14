@@ -1,9 +1,4 @@
-/*
- * file_openencod - UTF-encoded file open function
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded file open function */
 
 #include "fb.h"
 

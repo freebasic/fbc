@@ -1,10 +1,4 @@
-/*
- * io_printbuff.c -- low-level print to console function for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* low-level print to console function for Linux */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * time_datepart.c -- datepart function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* datepart function */
 
 #include "fb.h"
 

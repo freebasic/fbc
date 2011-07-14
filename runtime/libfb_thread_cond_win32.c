@@ -1,10 +1,5 @@
-/*
- * thread_cond.c -- Windows condition variables handling routines, based on
- *		    paper by Douglas C. Schmidt and Irfan Pyarali
- *
- * chng: feb/2005 written [lillo]
- *       dec/2007 use SignalObjectAndWait when available; add mutex param to CondWait [DrV]
- *
+/* Windows condition variables handling routines,
+ * based on paper by Douglas C. Schmidt and Irfan Pyarali.
  */
 
 #include "fb.h"
@@ -19,7 +14,7 @@ typedef struct _FBCOND {
 	
 	union {
 		struct {
-			HANDLE event[2];	
+			HANDLE event[2];
 		} w9x;
 		
 		struct {

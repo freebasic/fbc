@@ -1,9 +1,4 @@
-/*
- * file_input - input function for unsigned bytes
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function for unsigned bytes */
 
 #include <stdio.h>
 #include <stdlib.h>

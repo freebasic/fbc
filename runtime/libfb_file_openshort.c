@@ -1,9 +1,4 @@
-/*
- *	file_open - short version of OPEN
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* short version of OPEN */
 
 #include <stdio.h>
 #include <stdlib.h>

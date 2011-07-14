@@ -1,9 +1,4 @@
-/*
- * file_lineinput - line input function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* line input function */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,4 @@
-/*
- * math_fix.c -- fix function for singles and doubles FIX( x ) = SGN( x ) * INT( ABS( x ) )
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* fix function for singles and doubles FIX( x ) = SGN( x ) * INT( ABS( x ) ) */
 
 #include "fb.h"
 #include <math.h>

@@ -1,9 +1,4 @@
-/*
- * vgaemu.c -- VGA in/out emulation
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* VGA in/out emulation */
 
 #include "fb_gfx.h"
 

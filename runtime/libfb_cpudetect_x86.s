@@ -1,9 +1,4 @@
-/*
- * cpudetect_x86.s -- x86 processor identification
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* x86 processor identification */
 
 	.intel_syntax noprefix
 

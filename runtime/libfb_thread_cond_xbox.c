@@ -1,9 +1,4 @@
-/*
- * thread_cond.c -- xbox condition variables handling routines
- *
- * chng: jul/2005 written []
- *
- */
+/* xbox condition variables handling routines */
 
 #include "fb.h"
 

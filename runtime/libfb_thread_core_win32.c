@@ -1,9 +1,4 @@
-/*
- * thread_core.c -- Windows thread creation and destruction
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* Windows thread creation and destruction */
 
 #include <process.h>
 #include "fb.h"

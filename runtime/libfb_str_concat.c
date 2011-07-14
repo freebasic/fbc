@@ -1,9 +1,4 @@
-/*
- * str_concat.c -- string concatenation function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string concatenation function */
 
 #include <stdlib.h>
 #include <string.h>

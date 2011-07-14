@@ -1,9 +1,5 @@
-/*
- * dev_efile_read_core - UTF-encoded to char or wchar file reading
- *
- * chng: nov/2005 written [v1ctor]
- *		 (based on ConvertUTF.c free implementation from Unicode, Inc)
- *
+/* UTF-encoded to char or wchar file reading
+ * (based on ConvertUTF.c free implementation from Unicode, Inc)
  */
 
 #include <stdlib.h>

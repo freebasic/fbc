@@ -1,9 +1,4 @@
-/*
- * screenlist.c -- Function to get supported video modes.
- *
- * chng: may/2005 written [lillo]
- *
- */
+/* Function to get supported video modes. */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * io_view.c -- view print (console, no gfx)
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* view print (console, no gfx) */
 
 #include "fb.h"
 

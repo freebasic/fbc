@@ -1,9 +1,4 @@
-/*
- * mem_copyclear.c -- LSET for non-strings
- *
- * chng: apr/2005 written [v1ctor]
- *
- */
+/* LSET for non-strings */
 
 #include <stdlib.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * file_encod - string to file encoding function
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* string to file encoding function */
 
 #include "fb.h"
 

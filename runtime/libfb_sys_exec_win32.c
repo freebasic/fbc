@@ -1,9 +1,4 @@
-/*
- * sys_exec.c -- exec function for Windows
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* exec function for Windows */
 
 #include <stdlib.h>
 #include <string.h>

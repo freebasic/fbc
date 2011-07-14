@@ -1,9 +1,4 @@
-/*
- * strw_instrrev.c -- instrrevw function
- *
- * chng: dec/2007 written [jeffm]
- *
- */
+/* instrrevw function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * utf_convfrom_char - ascii to UTF conversion
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* ascii to UTF conversion */
 
 #include "fb.h"
 

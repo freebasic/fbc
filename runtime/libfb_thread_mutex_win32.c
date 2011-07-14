@@ -1,9 +1,4 @@
-/*
- * thread_mutex.c -- Windows mutex handling routines
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* Windows mutex handling routines */
 
 #include "fb.h"
 

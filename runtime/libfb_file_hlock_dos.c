@@ -1,10 +1,4 @@
-/*
- *	file_hlock - low-level lock and unlock functions for DOS
- *
- *  chng: jan/2005 written [DrV]
- *
- */
-
+/* low-level lock and unlock functions for DOS */
 
 #include "fb.h"
 #include <io.h>

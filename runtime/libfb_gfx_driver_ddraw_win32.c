@@ -1,9 +1,4 @@
-/*
- * ddraw.c -- DirectDraw gfx driver
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* DirectDraw gfx driver */
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"

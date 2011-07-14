@@ -1,9 +1,4 @@
-/*
- *	dev_com - COMx device
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* COMx device */
 
 #include <stdio.h>
 #include <stdlib.h>

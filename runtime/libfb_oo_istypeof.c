@@ -1,9 +1,4 @@
-/*
- * oop_istypeof.c -- is operator
- *
- * chng: april/2011 written [v1ctor]
- *
- */
+/* is operator */
 
 #include "fb.h"
 #include "fb_oop.h"

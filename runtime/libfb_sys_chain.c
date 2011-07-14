@@ -1,9 +1,4 @@
-/*
- * sys_chain.c -- chain function
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* chain function */
 
 #include "fb.h"
 

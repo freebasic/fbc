@@ -1,10 +1,4 @@
-/*
- * bsave.c -- BSAVE support.
- *
- * chng: jan/2005 written [lillo]
- *       may/2005 added BMP saving support [lillo]
- *
- */
+/* BSAVE support. */
 
 #include "fb_gfx.h"
 

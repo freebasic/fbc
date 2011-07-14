@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- mouse functions for xbox console mode apps
- *
- * chng: jul/2005 written []
- *
- */
+/* mouse functions for xbox console mode apps */
 
 #include "fb.h"
 

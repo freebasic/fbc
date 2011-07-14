@@ -1,9 +1,4 @@
-/*
- * sys_rmdir.c -- rmdir function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* rmdir function */
 
 #include "fb.h"
 #ifdef HOST_MINGW

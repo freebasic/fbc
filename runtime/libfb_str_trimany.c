@@ -1,9 +1,4 @@
-/*
- * str_trim.c -- trim$ ANY function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* trim$ ANY function */
 
 #include "fb.h"
 

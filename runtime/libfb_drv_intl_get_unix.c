@@ -1,9 +1,4 @@
-/*
- * drv_intl_get.c -- get i18n data
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get i18n data */
 
 #include <stddef.h>
 #include <langinfo.h>

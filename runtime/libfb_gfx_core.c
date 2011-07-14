@@ -1,10 +1,4 @@
-/*
- * core.c -- core internal routines
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 added gfx target handling [lillo]
- *
- */
+/* core internal routines */
 
 #include "fb_gfx.h"
 

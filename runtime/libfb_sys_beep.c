@@ -1,9 +1,4 @@
-/*
- * sys_beep.c -- beep function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* beep function */
 
 #include "fb.h"
 #include <stdlib.h>

@@ -1,9 +1,4 @@
-/*
- * str_mid.c -- mid$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* mid$ function */
 
 #include <stddef.h>
 #include <string.h>

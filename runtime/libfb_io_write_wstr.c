@@ -1,9 +1,4 @@
-/*
- * io_write_wstr.c -- write [#] wstring functions
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* write [#] wstring functions */
 
 #include <stdio.h>
 #include "fb.h"

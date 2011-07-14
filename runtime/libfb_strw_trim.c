@@ -1,9 +1,4 @@
-/*
- * strw_trim.c -- trimw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* trimw$ function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * signal.c -- low-level signal handlers for Windows
- *
- * chng: jul/2005 written [v1ctor]
- *
- */
+/* low-level signal handlers for Windows */
 
 #include <signal.h>
 #include "fb.h"

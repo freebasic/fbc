@@ -1,9 +1,4 @@
-/*
- * pset.c -- pixel plotting
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* pixel plotting */
 
 #include "fb_gfx.h"
 

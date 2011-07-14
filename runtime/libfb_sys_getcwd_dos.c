@@ -1,9 +1,4 @@
-/*
- * sys_getcwd.c -- get current dir for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* get current dir for DOS */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- *	file_eof - eof function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* eof function */
 
 #include <stdio.h>
 #include <stdlib.h>

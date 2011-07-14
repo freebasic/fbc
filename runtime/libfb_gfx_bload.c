@@ -1,10 +1,4 @@
-/*
- * bload.c -- BLOAD support.
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 added BMP loading support [lillo]
- *
- */
+/* BLOAD support. */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * file_input - input function for float's and double's
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function for float's and double's */
 
 #define _ISOC99_SOURCE
 #include <stdlib.h>

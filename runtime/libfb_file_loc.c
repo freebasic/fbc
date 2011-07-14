@@ -1,9 +1,4 @@
-/*
- *	file_seek - seek function and stmt
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* seek function and stmt */
 
 #include <stdio.h>
 #include <stdlib.h>

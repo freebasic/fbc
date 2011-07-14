@@ -1,9 +1,4 @@
-/*
- * strw_ltrim.c -- ltrimw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ltrimw$ function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * io_screensize.c -- size of the screen buffer
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* size of the screen buffer */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * strw_space.c -- spacew$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* spacew$ function */
 
 #include "fb.h"
 

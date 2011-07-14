@@ -1,9 +1,4 @@
-/*
- * drawstring.c -- advanced graphical string drawing routine
- *
- * chng: feb/2006 written [lillo]
- *
- */
+/* advanced graphical string drawing routine */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * driver_xbox.c -- xbox fbgfx driver
- *
- * chng: apr/2007 written [DrV]
- *
- */
+/* xbox fbgfx driver */
 
 #include "fb_gfx.h"
 

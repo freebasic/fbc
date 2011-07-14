@@ -1,9 +1,4 @@
-/*
- * str_tempdescz.c -- temp string descriptor allocation for zstring's
- *
- * chng: may/2005 written [v1ctor]
- *
- */
+/* temp string descriptor allocation for zstring's */
 
 #include <stdlib.h>
 #include <string.h>

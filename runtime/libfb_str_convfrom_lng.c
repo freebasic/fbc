@@ -1,9 +1,4 @@
-/*
- * str_convfrom_lng.c -- vallng function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* vallng function */
 
 #include <stdlib.h>
 #include "fb.h"

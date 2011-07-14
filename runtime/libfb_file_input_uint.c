@@ -1,9 +1,4 @@
-/*
- * file_input - input function for unsigned integers
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function for unsigned integers */
 
 #include <stdio.h>
 #include <stdlib.h>

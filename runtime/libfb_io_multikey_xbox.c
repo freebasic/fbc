@@ -1,9 +1,4 @@
-/*
- * io_multikey.c -- multikey function for xbox console mode apps
- *
- * chng: jul/2005 written []
- *
- */
+/* multikey function for xbox console mode apps */
 
 #include "fb.h"
 

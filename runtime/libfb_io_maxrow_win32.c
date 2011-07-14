@@ -1,10 +1,4 @@
-/*
- * io_maxrow.c -- get max row (console, no gfx) for Windows
- *
- * chng: nov/2004 written [v1ctor]
- *       jul/2005 mod: return 25 when function fails [mjs]
- *
- */
+/* get max row (console, no gfx) for Windows */
 
 #include "fb.h"
 

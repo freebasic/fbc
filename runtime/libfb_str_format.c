@@ -1,9 +1,4 @@
-/*
- * str_format.c -- format function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* format function */
 
 #include <stdlib.h>
 #include <float.h>

@@ -1,9 +1,4 @@
-/*
- * hook_print_wstr.c -- print wstring entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* print wstring entrypoint, default to console mode */
 
 #include "fb.h"
 

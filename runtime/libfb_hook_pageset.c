@@ -1,9 +1,4 @@
-/*
- * hook_pageset.c -- 'screen , pg, pg' entrypoint, default to console mode
- *
- * chng: set/2007 written [v1ctor]
- *
- */
+/* 'screen , pg, pg' entrypoint, default to console mode */
 
 #include "fb.h"
 

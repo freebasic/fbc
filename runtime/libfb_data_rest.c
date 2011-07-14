@@ -1,15 +1,8 @@
-/*
- * data.c -- RESTORE stmt
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* RESTORE stmt */
 
 #include "fb.h"
 
-
 FB_DATADESC *__fb_data_ptr = NULL;
-
 
 /*:::::*/
 FBCALL void fb_DataRestore( FB_DATADESC *labeladdr )

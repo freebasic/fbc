@@ -1,9 +1,5 @@
-/*
- * lzw.c -- tiny LZW codec
- *          Based on code by Mark Nelson, Dr. Dobb's Journal October, 1989
- *
- * chng: mar/2005 written [lillo]
- *
+/* tiny LZW codec
+ * Based on code by Mark Nelson, Dr. Dobb's Journal October, 1989
  */
 
 #include "fb_gfx.h"

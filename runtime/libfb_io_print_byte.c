@@ -1,10 +1,4 @@
-/*
- * io_print_byte.c -- print [#] function (byte)
- *
- * chng: oct/2004 written [v1ctor]
- *       nov/2004 fixed scrolling problem if printing at bottom/right w/o a newline [v1ctor]
- *
- */
+/* print [#] function (byte) */
 
 #include <stdio.h>
 #include "fb.h"

@@ -1,10 +1,4 @@
-/*
- *	file_lock - lock and unlock functions
- *
- * chng: nov/2004 written [v1ctor]
- *       jan/2005 os-dep calls moved to proper dirs [v1ctor]
- *
- */
+/* lock and unlock functions */
 
 #include "fb.h"
 

@@ -1,11 +1,4 @@
-/*
- * str_instrrev.c -- instrrev function
- *
- * chng: dec/2007 written [jeffm] - thanks to counting_pine for 
- *                providing the reverse implementation based on
- *                the one in str_instr.c.
- *
- */
+/* instrrev function */
 
 #include <stdlib.h>
 #include <string.h>

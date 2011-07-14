@@ -1,9 +1,4 @@
-/*
- * strw_ftoa.c -- float to wstring, internal usage
- *
- * chng: dec/2005 written [v1ctor]
- *
- */
+/* float to wstring, internal usage */
 
 #include "fb.h"
 

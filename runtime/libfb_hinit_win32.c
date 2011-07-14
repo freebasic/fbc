@@ -1,9 +1,4 @@
-/*
- * init.c -- libfb initialization for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* libfb initialization for Windows */
 
 #include <stdlib.h>
 #include <float.h>

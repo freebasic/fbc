@@ -1,9 +1,4 @@
-/*
- * str_midassign.c -- mid$ statement
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* mid$ statement */
 
 #include <stdlib.h>
 #include <string.h>

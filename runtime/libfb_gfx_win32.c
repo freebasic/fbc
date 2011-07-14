@@ -1,9 +1,4 @@
-/*
- * win32.c -- common win32 routines and drivers list
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* common win32 routines and drivers list */
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"

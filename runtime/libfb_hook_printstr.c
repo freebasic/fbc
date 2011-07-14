@@ -1,9 +1,4 @@
-/*
- * hook_printstr.c -- print string entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* print string entrypoint, default to console mode */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * hook_width.c -- width entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* width entrypoint, default to console mode */
 
 #include "fb.h"
 

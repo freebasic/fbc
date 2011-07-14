@@ -1,9 +1,4 @@
-/*
- * file_input_tok - input function core
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function core */
 
 #include <stdio.h>
 #include <stdlib.h>

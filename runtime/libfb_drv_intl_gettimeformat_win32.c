@@ -1,9 +1,4 @@
-/*
- * time_getformat.c -- get short TIME format
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get short TIME format */
 
 #include <stdlib.h>
 #include <string.h>

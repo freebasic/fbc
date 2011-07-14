@@ -1,9 +1,4 @@
-/*
- * io_pageset.c -- 'screen , pg, pg' (console, no gfx) function for XBOX
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* 'screen , pg, pg' (console, no gfx) function for XBOX */
 
 #include "fb.h"
 

@@ -1,11 +1,5 @@
 /*!!!REMOVEME!!!*/
-
-/*
- * array_resetdesc.c -- descriptor reset, for dynamic local arrays
- *
- * chng: apr/2006 written [v1ctor]
- *
- */
+/* descriptor reset, for dynamic local arrays */
 
 #include "fb.h"
 #include <limits.h>

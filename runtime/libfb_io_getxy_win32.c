@@ -1,10 +1,4 @@
-/*
- * io_getxy.c -- GetXY function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *
- */
+/* GetXY function for Windows */
 
 #include "fb.h"
 

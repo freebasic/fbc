@@ -1,9 +1,4 @@
-/*
- * data_double.c -- read stmt for double's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for double's */
 
 #include <stdlib.h>
 #include "fb.h"

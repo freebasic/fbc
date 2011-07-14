@@ -1,9 +1,4 @@
-/*
- * strw_alloc.c -- wstring allocation function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* wstring allocation function */
 
 #include "fb.h"
 

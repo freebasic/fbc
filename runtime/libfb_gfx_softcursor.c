@@ -1,9 +1,4 @@
-/*
- * softcursor.c -- Software cursor helper routines
- *
- * chng: feb/2006 written [lillo]
- *
- */
+/* Software cursor helper routines */
 
 #include "fb_gfx.h"
 

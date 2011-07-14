@@ -1,9 +1,4 @@
-/*
- * hook_isredir.c -- input/ouput redirection check
- *
- * chng: dec/2005 written [v1ctor]
- *
- */
+/* input/ouput redirection check */
 
 #include "fb.h"
 

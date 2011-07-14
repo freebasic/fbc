@@ -1,9 +1,4 @@
-/*
- * str_chr.c -- chr$ routine
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* chr$ routine */
 
 #include <stdlib.h>
 #include <stdarg.h>

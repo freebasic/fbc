@@ -1,9 +1,4 @@
-/*
- * setmouse.c -- SETMOUSE function support.
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* SETMOUSE function support. */
 
 #include "fb_gfx.h"
 

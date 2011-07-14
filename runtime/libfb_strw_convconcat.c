@@ -1,9 +1,4 @@
-/*
- * strw_convconcat.c -- wstring concatenation + convertion functions
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* wstring concatenation + convertion functions */
 
 #include "fb.h"
 

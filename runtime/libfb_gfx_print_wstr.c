@@ -1,9 +1,4 @@
-/*
- * print_wstr.c -- graphical mode wstring text output
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* graphical mode wstring text output */
 
 #include "fb_gfx.h"
 #include "../rtlib/fb_con.h"

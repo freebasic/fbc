@@ -1,9 +1,4 @@
-/*
- * file_exists.c -- file existence testing
- *
- * chng: jul/2006 written [DrV]
- *
- */
+/* file existence testing */
 
 #include "fb.h"
 

@@ -1,10 +1,4 @@
-/*
- * io_scroll.c -- console scrolling for when VIEW is used for DOS
- *
- * chng: jan/2005 written [DrV]
- *       sep/2005 heavily enhanced to do *real* scrolling [mjs]
- *
- */
+/* console scrolling for when VIEW is used for DOS */
 
 #include "fb.h"
 #include <dpmi.h>

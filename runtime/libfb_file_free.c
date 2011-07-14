@@ -1,7 +1,4 @@
-/*
- * file_free - freefile function
- *
- */
+/* freefile function */
 
 #include <stdio.h>
 #include <stdlib.h>

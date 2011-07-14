@@ -1,9 +1,4 @@
-/*
- * str_len.c -- string length function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string length function */
 
 #include <stdlib.h>
 #include <string.h>

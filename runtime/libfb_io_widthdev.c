@@ -1,9 +1,4 @@
-/*
- * io_widthdev.c -- set the with for devices
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* set the with for devices */
 
 #include <stdlib.h>
 #include <string.h>

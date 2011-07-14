@@ -1,9 +1,4 @@
-/*
- * vars.c -- all global variables are defined here
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* all global variables are defined here */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * io_locate.c -- locate (console, no gfx) function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* locate (console, no gfx) function for Windows */
 
 #include "fb.h"
 

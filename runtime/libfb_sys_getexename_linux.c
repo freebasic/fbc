@@ -1,9 +1,4 @@
-/*
- * sys_getexename.c -- get the executables name for Linux
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* get the executables name for Linux */
 
 #include <malloc.h>
 #include <string.h>

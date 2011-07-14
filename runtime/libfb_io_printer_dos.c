@@ -1,10 +1,4 @@
-/*
- * io_printer.c -- dos printer driver
- *
- * chng: jul/2006 written [jeffmarshall]
- * chng: 
- *
- */
+/* dos printer driver */
 
 #include <stdio.h>
 #include <stddef.h>

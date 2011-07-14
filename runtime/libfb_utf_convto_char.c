@@ -1,9 +1,5 @@
-/*
- * utf_convto_char - UTF to zstring conversion
- *
- * chng: mar/2006 written [v1ctor]
- *		 (based on ConvertUTF.c free implementation from Unicode, Inc)
- *
+/* UTF to zstring conversion
+ * (based on ConvertUTF.c free implementation from Unicode, Inc)
  */
 
 #include <stdlib.h>

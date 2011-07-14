@@ -1,9 +1,4 @@
-/*
- * dev_file_readling_wstr - wstring LINE INPUT for file devices
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* wstring LINE INPUT for file devices */
 
 #include "fb.h"
 

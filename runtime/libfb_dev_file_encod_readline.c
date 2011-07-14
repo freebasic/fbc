@@ -1,9 +1,4 @@
-/*
- * dev_file_encod_readline - UTF-encoded file device LINE INPUT for strings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded file device LINE INPUT for strings */
 
 #include "fb.h"
 

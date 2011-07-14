@@ -1,10 +1,4 @@
-/*
- * init.c -- libfb initialization for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
-
+/* libfb initialization for DOS */
 
 #include "fb.h"
 

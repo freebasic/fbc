@@ -1,9 +1,4 @@
-/*
- *	file_openerr - open ERR
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open ERR */
 
 #include "fb.h"
 

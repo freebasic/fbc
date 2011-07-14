@@ -1,9 +1,4 @@
-/*
- * con_lineinp_wstr - console line input function for wstrings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* console line input function for wstrings */
 
 #include "fb.h"
 

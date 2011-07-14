@@ -1,9 +1,4 @@
-/*
- * access.c -- low level screen access routines
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* low level screen access routines */
 
 #include "fb_gfx.h"
 

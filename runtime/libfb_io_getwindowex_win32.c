@@ -1,10 +1,4 @@
-/*
- * io_getwindowex.c -- size of the console window
- *
- * chng: jul/2005 written [mjs]
- *       jul/2005 mod: added convert*console functions [mjs]
- *
- */
+/* size of the console window */
 
 #include <stdlib.h>
 #include "fb.h"

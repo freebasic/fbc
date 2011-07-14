@@ -1,9 +1,4 @@
-/*
- * time_weekdayname.c -- returns the weekday name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* returns the weekday name */
 
 #include "fb.h"
 

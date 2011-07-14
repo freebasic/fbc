@@ -1,9 +1,4 @@
-/*
- * exit.c -- end helper for NetBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* end helper for NetBSD */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * file_copy.c -- file copy
- *
- * chng: dec/2005 written [DrV]
- *
- */
+/* file copy */
 
 #include "fb.h"
 

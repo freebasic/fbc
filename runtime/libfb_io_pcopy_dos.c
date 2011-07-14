@@ -1,9 +1,4 @@
-/*
- * io_pcopy.c -- pcopy (console, no gfx) function for DOS
- *
- * chng: sep/2007 written [v1ctor]
- *
- */
+/* pcopy (console, no gfx) function for DOS */
 
 #include "fb.h"
 

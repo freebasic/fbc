@@ -1,9 +1,4 @@
-/*
- * thread_mutex.c -- xbox mutex handling routines
- *
- * chng: jul/2005 written []
- *
- */
+/* xbox mutex handling routines */
 
 #include "fb.h"
 

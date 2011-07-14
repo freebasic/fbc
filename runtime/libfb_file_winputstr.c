@@ -1,9 +1,4 @@
-/*
- * file_inputstr - winput$ function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* winput$ function */
 
 #include "fb.h"
 

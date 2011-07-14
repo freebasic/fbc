@@ -1,9 +1,4 @@
-/*
- * str_tempdescv.c -- temp string descriptor allocation for var-len strings
- *
- * chng: may/2005 written [v1ctor]
- *
- */
+/* temp string descriptor allocation for var-len strings */
 
 #include <stdlib.h>
 #include <string.h>

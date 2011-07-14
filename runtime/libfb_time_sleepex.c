@@ -1,9 +1,4 @@
-/*
- * time_sleepex.c -- sleep multiplexer function
- *
- * chng: oct/2005 written [mjs]
- *
- */
+/* sleep multiplexer function */
 
 #include "fb.h"
 

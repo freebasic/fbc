@@ -1,9 +1,4 @@
-/*
- * line.c -- LINE statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* LINE statement */
 
 #include "fb_gfx.h"
 

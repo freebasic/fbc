@@ -1,9 +1,4 @@
-/*
- * time_week.c -- week functions
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* week functions */
 
 #include <math.h>
 #include "fb.h"

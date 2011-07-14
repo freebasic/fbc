@@ -1,9 +1,4 @@
-/*
- * str_rtrim.c -- rtrim$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* rtrim$ function */
 
 #include "fb.h"
 

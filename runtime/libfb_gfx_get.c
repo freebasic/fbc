@@ -1,9 +1,4 @@
-/*
- * get.c -- GET statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* GET statement */
 
 #include "fb_gfx.h"
 

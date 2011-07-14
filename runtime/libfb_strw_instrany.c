@@ -1,9 +1,4 @@
-/*
- * strw_instrany.c -- instranyw function
- *
- * chng: dec/2007 written [jeffm]
- *
- */
+/* instranyw function */
 
 #include "fb.h"
 

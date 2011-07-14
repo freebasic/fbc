@@ -1,9 +1,4 @@
-/*
- * width.c -- graphical text console mode changing
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* graphical text console mode changing */
 
 #include "fb_gfx.h"
 

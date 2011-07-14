@@ -1,9 +1,4 @@
-/*
- * time_monthname.c -- returns the month name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* returns the month name */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * exit.c -- end helper for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* end helper for Windows */
 
 #include <stdlib.h>
 #include "fb.h"

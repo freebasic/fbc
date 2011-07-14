@@ -1,9 +1,4 @@
-/*
- * str_ltrimex.c -- enhanced ltrim$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* enhanced ltrim$ function */
 
 #include "fb.h"
 

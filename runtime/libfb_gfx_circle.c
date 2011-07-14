@@ -1,9 +1,4 @@
-/*
- * circle.c -- CIRCLE statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* CIRCLE statement */
 
 #include "fb_gfx.h"
 

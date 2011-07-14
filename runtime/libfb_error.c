@@ -1,10 +1,4 @@
-/*
- *	error - runtime error handling
- *
- * chng: oct/2004 written [v1ctor]
- *       jan/2005 resume support added [v1ctor]
- *
- */
+/* runtime error handling */
 
 #include <stdio.h>
 #include <stdlib.h>

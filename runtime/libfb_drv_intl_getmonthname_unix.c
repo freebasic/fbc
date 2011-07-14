@@ -1,9 +1,4 @@
-/*
- * drv_intl_getmonthname.c -- get localized month name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get localized month name */
 
 #include "fb.h"
 #include <stddef.h>

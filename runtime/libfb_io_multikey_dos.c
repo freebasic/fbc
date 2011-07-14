@@ -1,9 +1,4 @@
-/*
- * io_multikey.c -- multikey function for DOS console mode apps
- *
- * chng: jun/2005 written [DrV]
- *
- */
+/* multikey function for DOS console mode apps */
 
 #include "fb.h"
 #include "fb_scancodes.h"

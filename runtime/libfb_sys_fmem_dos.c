@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* fre function for DOS */
 
 #include "fb.h"
 

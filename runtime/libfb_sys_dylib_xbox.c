@@ -1,9 +1,4 @@
-/*
- * sys_dylib.c -- Dynamic library loading and symbols retrieving (not available on xbox)
- *
- * chng: jul/2005 written []
- *
- */
+/* Dynamic library loading and symbols retrieving (not available on xbox) */
 
 #include "fb.h"
 

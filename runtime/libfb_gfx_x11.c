@@ -1,9 +1,4 @@
-/*
- * x11.c -- x11 window management code shared by x11 and opengl drivers
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* x11 window management code shared by x11 and opengl drivers */
 
 #ifdef WITH_X
 

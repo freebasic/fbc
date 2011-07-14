@@ -1,9 +1,4 @@
-/*
- * error_ptrchk.c -- null pointer checking function
- *
- * chng: jul/2005 written [v1ctor]
- *
- */
+/* null pointer checking function */
 
 #include "fb.h"
 

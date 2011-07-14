@@ -1,11 +1,4 @@
-/*
- * io_printbuff.c -- low-level print to console function for Windows
- *
- * chng: oct/2004 written [v1ctor]
- *       nov/2004 fixed scrolling problem if printing at Bottom/Right w/o a newline [v1ctor]
- *       sep/2005 re-implemented all printing stuff [mjs]
- *
- */
+/* low-level print to console function for Windows */
 
 #include <assert.h>
 #include <stdio.h>

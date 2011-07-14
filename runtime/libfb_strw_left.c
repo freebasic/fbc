@@ -1,9 +1,4 @@
-/*
- * strw_left.c -- leftw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* leftw$ function */
 
 #include "fb.h"
 

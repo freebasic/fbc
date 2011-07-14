@@ -1,9 +1,4 @@
-/*
- * time_time.c -- time$ function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* time$ function */
 
 #include <stdlib.h>
 #include <string.h>

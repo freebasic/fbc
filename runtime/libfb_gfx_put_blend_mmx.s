@@ -1,9 +1,4 @@
-/*
- * put_blend_mmx.s -- MMX version of the BLEND drawing mode for PUT
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* MMX version of the BLEND drawing mode for PUT */
 
 #include "fb_gfx_mmx.h"
 

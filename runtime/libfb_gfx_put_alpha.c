@@ -1,9 +1,4 @@
-/*
- * put_alpha.c -- ALPHA drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* ALPHA drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

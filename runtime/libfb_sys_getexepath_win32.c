@@ -1,9 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for Windows
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* get the executable path for Windows */
 
 #include <string.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * strw_ucase.c -- ucasew$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ucasew$ function */
 
 #include "fb.h"
 

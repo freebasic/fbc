@@ -1,9 +1,4 @@
-/*
- * strw_convfrom.c -- valw function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* valw function */
 
 #include "fb.h"
 

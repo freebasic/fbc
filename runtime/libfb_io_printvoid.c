@@ -1,9 +1,4 @@
-/*
- * io_printvoid.c -- print functions
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* print functions */
 
 #include <stdio.h>
 #include "fb.h"

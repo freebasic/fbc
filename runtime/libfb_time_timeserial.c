@@ -1,9 +1,4 @@
-/*
- * time_timeserial.c -- timeserial function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* timeserial function */
 
 #include "fb.h"
 

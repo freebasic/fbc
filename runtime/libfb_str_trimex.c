@@ -1,9 +1,4 @@
-/*
- * str_trim.c -- enhanced trim$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* enhanced trim$ function */
 
 #include "fb.h"
 

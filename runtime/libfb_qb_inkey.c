@@ -1,9 +1,4 @@
-/*
- * InkeyQB - QB compatible INKEY
- *
- * chng: oct/2007 written [jeffm]
- *
- */
+/* QB compatible INKEY */
 
 #include "fb.h"
 

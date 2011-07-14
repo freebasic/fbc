@@ -1,9 +1,4 @@
-/*
- * strw_bin_lng.c -- binw$ routine for long long's
- *
- * chng: apr/2005 written [v1ctor]
- *
- */
+/* binw$ routine for long long's */
 
 #include "fb.h"
 

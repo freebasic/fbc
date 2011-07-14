@@ -1,9 +1,4 @@
-/*
- * file_openqb - QB compatible OPEN
- *
- * chng: dec/2006 written [cha0s]
- *
- */
+/* QB compatible OPEN */
 
 #include <stdio.h>
 #include <stdlib.h>

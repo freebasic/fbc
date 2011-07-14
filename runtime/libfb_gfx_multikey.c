@@ -1,9 +1,4 @@
-/*
- * multikey.c -- MULTIKEY function for multiple keypresses detection.
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* MULTIKEY function for multiple keypresses detection. */
 
 #include "fb_gfx.h"
 

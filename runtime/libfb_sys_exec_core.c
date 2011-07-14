@@ -1,9 +1,4 @@
-/*
- * sys_exec_core.c -- helper functions for fb_Exec(), fb_ExecEx()
- *
- * chng: dec/2006 written [jeffmarshall]
- *
- */
+/* helper functions for fb_Exec(), fb_ExecEx() */
 
 #include "fb.h"
 #include "fb_system.h"

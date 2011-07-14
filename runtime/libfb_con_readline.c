@@ -1,9 +1,4 @@
-/*
- *	con_readline - comfortable INPUT function
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* comfortable INPUT function */
 
 #include <stdio.h>
 #include <stdlib.h>

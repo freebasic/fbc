@@ -1,9 +1,4 @@
-/*
- * sys_run.c -- RUN function
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* RUN function */
 
 #include "fb.h"
 

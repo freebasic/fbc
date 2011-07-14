@@ -1,9 +1,4 @@
-/*
- * opengl.c -- OpenGL gfx driver
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* OpenGL gfx driver */
 
 #ifdef WITH_X
 

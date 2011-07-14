@@ -1,9 +1,4 @@
-/*
- * str_misc.c -- misc string routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* misc string routines */
 
 #include <stdlib.h>
 #include "fb.h"

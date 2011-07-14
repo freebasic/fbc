@@ -1,9 +1,4 @@
-/*
- * strw_rtrimany.c -- rtrimw$ ANY function
- *
- * chng: nov/2005 written [mjs]
- *
- */
+/* rtrimw$ ANY function */
 
 #include <stdlib.h>
 #include "fb.h"

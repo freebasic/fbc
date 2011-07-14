@@ -1,9 +1,4 @@
-/*
- *	file_get - get # function for strings
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* get # function for strings */
 
 #include <stdio.h>
 #include <stdlib.h>

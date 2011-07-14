@@ -1,9 +1,4 @@
-/*
- * lineinp.c -- LINE INPUT function
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* LINE INPUT function */
 
 #include "fb_gfx.h"
 

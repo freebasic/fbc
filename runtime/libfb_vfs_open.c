@@ -1,9 +1,4 @@
-/*
- *	vfs_open - open file (vfs) functions
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open file (vfs) functions */
 
 #include <stdio.h>
 #include <stdlib.h>

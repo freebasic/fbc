@@ -1,9 +1,4 @@
-/*
- * str_tempres.c -- temp result string allocation
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* temp result string allocation */
 
 #include <stdlib.h>
 #include <string.h>

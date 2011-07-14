@@ -1,9 +1,4 @@
-/*
- * str_instrrev.c -- instrrev function
- *
- * chng: dec/2007 written [jeffm]
- *
- */
+/* instrrev function */
 
 #include <stdlib.h>
 #include <string.h>

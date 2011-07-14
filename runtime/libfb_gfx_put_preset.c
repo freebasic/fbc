@@ -1,9 +1,4 @@
-/*
- * put_preset.c -- PRESET drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* PRESET drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * file_datetime.c -- get file date/time by filename
- *
- * chng: jul/2006 written [v1ctor]
- *
- */
+/* get file date/time by filename */
 
 #include "fb.h"
 

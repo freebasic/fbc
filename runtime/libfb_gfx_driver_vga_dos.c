@@ -1,10 +1,4 @@
-/*
- * vga.c -- VGA gfx driver
- *
- * chng: apr/2005 written [DrV]
- *       jul/2005 added tweaked modes from Allegro [DrV]
- *
- */
+/* VGA gfx driver */
 
 #include "fb_gfx_dos.h"
 

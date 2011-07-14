@@ -1,9 +1,4 @@
-/*
- * ctor.c -- rtlib initialization and cleanup
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* FB runtime initialization and cleanup */
 
 #include "fb.h"
 

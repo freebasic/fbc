@@ -1,9 +1,4 @@
-/*
- * file_attr.c -- file open mode and attribs
- *
- * chng: jun/2006 written [DrV]
- *
- */
+/* file open mode and attribs */
 
 #include "fb.h"
 

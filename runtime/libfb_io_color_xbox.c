@@ -1,9 +1,4 @@
-/*
- * io_color.c -- color (console, no gfx) function for xbox
- *
- * chng: / written []
- *
- */
+/* color (console, no gfx) function for xbox */
 
 #include "fb.h"
 

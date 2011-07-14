@@ -1,9 +1,4 @@
-/*
- * strw_midassign.c -- midw$ statement
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* midw$ statement */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * hook_getxy.c -- getxy entrypoint, default to console mode
- *
- * chng: dec/2004 written [v1ctor]
- *
- */
+/* getxy entrypoint, default to console mode */
 
 #include "fb.h"
 

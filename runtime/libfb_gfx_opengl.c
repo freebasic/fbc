@@ -1,9 +1,4 @@
-/*
- * opengl.c -- OpenGL core support functions
- *
- * chng: nov/2006 written [lillo]
- *
- */
+/* OpenGL core support functions */
 
 #include "fb_gfx.h"
 #include <GL/gl.h>

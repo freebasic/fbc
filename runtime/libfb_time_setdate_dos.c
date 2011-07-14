@@ -1,13 +1,6 @@
-/*
- * time_setdate.c -- set date function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
-
+/* set date function for DOS */
 
 #include "fb.h"
-
 #include <dos.h>
 
 /*:::::*/

@@ -1,9 +1,4 @@
-/*
- * sys_environ.c -- environ$ function and setenviron stmt
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* environ$ function and setenviron stmt */
 
 #include "fb.h"
 #include <stdlib.h>

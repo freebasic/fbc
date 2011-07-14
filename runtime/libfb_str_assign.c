@@ -1,9 +1,4 @@
-/*
- * str_assign.c -- string assigning function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string assigning function */
 
 #include <stdlib.h>
 #include <string.h>

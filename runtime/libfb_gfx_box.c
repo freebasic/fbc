@@ -1,9 +1,4 @@
-/*
- * box.c -- internal box drawing routine. Used both by VIEW and LINE.
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* internal box drawing routine. Used both by VIEW and LINE. */
 
 #include "fb_gfx.h"
 

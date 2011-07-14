@@ -1,10 +1,4 @@
-/*
- * io_locate.c -- locate (console, no gfx) function for DOS
- *
- * chng: jan/2005 written [DrV]
- *       sep/2005 heavily rewritten to use BIOS instead [mjs]
- *
- */
+/* locate (console, no gfx) function for DOS */
 
 #include "fb.h"
 #include <go32.h>

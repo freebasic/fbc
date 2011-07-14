@@ -1,9 +1,4 @@
-/*
- * time_tmr.c -- DOS timer# function
- *
- * chng: feb/2005 written [v1ctor]
- *
- */
+/* DOS timer# function */
 
 #include "fb.h"
 #include <time.h>

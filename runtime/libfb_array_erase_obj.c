@@ -1,9 +1,4 @@
-/*
- * array_erase_obj.c -- ERASE function for dynamic arrays of objects
- *
- * chng: sep/2006 written [v1ctor]
- *
- */
+/* ERASE function for dynamic arrays of objects */
 
 #include <stdlib.h>
 #include "fb.h"

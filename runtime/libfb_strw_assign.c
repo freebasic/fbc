@@ -1,9 +1,4 @@
-/*
- * strw_assign.c -- unicode string assigning function
- *
- * chng: ago/2005 written [v1ctor]
- *
- */
+/* unicode string assigning function */
 
 #include "fb.h"
 

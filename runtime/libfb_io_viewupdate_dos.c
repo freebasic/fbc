@@ -1,10 +1,4 @@
-/*
- * libfb_io_vwupd.c -- view print update (console, no gfx) for DOS
- *
- * chng: jan/2005 written [DrV]
- *       sep/2005 removed conio dependency [mjs]
- *
- */
+/* view print update (console, no gfx) for DOS */
 
 #include "fb.h"
 

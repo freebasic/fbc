@@ -1,9 +1,4 @@
-/*
- * listdyn.c -- generic internal dynamic lists
- *
- * chng: jul/2005 written [mjs], some lines copied from libfb_list.c
- *
- */
+/* generic internal dynamic lists */
 
 #include <stdlib.h>
 #include "fb.h"

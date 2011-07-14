@@ -1,9 +1,4 @@
-/*
- *	dev_file_eof - detects EOF for file device
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* detects EOF for file device */
 
 #include <stdio.h>
 #include <stdlib.h>

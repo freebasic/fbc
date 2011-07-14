@@ -1,9 +1,4 @@
-/*
- * put_blend.c -- BLEND drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* BLEND drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

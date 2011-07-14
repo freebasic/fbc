@@ -1,9 +1,4 @@
-/*
- * io_cls.c -- cls (console, no gfx) function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* cls (console, no gfx) function for DOS */
 
 #include "fb.h"
 #include <conio.h>

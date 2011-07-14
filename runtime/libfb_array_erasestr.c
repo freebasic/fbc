@@ -1,9 +1,4 @@
-/*
- * array_erasestr.c -- ERASE for dynamic arrays of var-len strings
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ERASE for dynamic arrays of var-len strings */
 
 #include <stdlib.h>
 #include "fb.h"

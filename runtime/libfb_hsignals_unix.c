@@ -1,9 +1,4 @@
-/*
- * signal.c -- low-level signal handlers for Linux
- *
- * chng: jul/2005 written []
- *
- */
+/* low-level signal handlers for Linux */
 
 #include "fb.h"
 

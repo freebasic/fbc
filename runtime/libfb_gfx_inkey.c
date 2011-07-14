@@ -1,9 +1,4 @@
-/*
- * inkey.c -- inkey$ handling
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* inkey$ handling */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * str_convpath - path conversion for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* path conversion for DOS */
 
 #include <string.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * sys_getshorpath.c -- get short path for Windows
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* get short path for Windows */
 
 #include <string.h>
 #include "fb.h"

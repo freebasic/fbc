@@ -1,9 +1,4 @@
-/*
- * strw_convfrom_lng.c -- valwlng function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valwlng function */
 
 #include "fb.h"
 

@@ -1,13 +1,6 @@
-/*
- * thread_cond.c -- DOS condition variables handling routines (empty)
- *
- * chng: feb/2005 written [DrV]
- *
- */
-
+/* DOS condition variables handling routines (empty) */
 
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL struct _FBCOND *fb_CondCreate( void )

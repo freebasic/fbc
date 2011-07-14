@@ -1,9 +1,4 @@
-/*
- * data_single.c -- read stmt for single's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for single's */
 
 #include <stdlib.h>
 #include "fb.h"

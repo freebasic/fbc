@@ -1,9 +1,4 @@
-/*
- * color.c -- color statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* color statement */
 
 #include "fb_gfx.h"
 

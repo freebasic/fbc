@@ -1,12 +1,6 @@
-/*
- * io_multikey.c -- OpenBSD console multikey function implementation
- *
- * chng: / written []
- *
- */
+/* OpenBSD console multikey function implementation */
 
 #include "fb.h"
-
 
 /*:::::*/
 int fb_ConsoleMultikey(int scancode)

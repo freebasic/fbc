@@ -1,9 +1,4 @@
-/*
- * str_bin_lng.c -- bin$ routine for long long's
- *
- * chng: apr/2005 written [v1ctor]
- *
- */
+/* bin$ routine for long long's */
 
 
 #include <stdlib.h>

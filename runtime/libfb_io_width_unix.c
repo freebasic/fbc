@@ -1,9 +1,4 @@
-/*
- * io_width.c -- width (console, no gfx) for Linux
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* width (console, no gfx) for Linux */
 
 #include "fb.h"
 

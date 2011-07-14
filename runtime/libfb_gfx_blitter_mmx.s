@@ -1,9 +1,4 @@
-/*
- * blitter_mmx.s -- MMX versions of the blitter routines.
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* MMX versions of the blitter routines. */
 
 #include "fb_gfx_mmx.h"
 

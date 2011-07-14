@@ -1,9 +1,4 @@
-/*
- *	dev_file - file device
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* file device */
 
 #include "fb.h"
 

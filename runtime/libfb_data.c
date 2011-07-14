@@ -1,9 +1,4 @@
-/*
- * data.c -- DATA core
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* DATA core */
 
 #include <stdlib.h>
 #include "fb.h"

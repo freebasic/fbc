@@ -1,9 +1,4 @@
-/*
- * blitter.c -- blitter functions for different color depths
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* blitter functions for different color depths */
 
 #include "fb_gfx.h"
 

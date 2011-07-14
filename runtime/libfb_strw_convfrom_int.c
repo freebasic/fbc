@@ -1,9 +1,4 @@
-/*
- * strw_convfrom_int.c -- valwint function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valwint function */
 
 #include "fb.h"
 

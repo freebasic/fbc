@@ -1,9 +1,4 @@
-/*
- * date_getformat.c -- get short DATE format
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get short DATE format */
 
 #include <stdlib.h>
 #include <string.h>

@@ -1,9 +1,4 @@
-/*
- * time_dateserial.c -- dateserial function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* dateserial function */
 
 #include "fb.h"
 

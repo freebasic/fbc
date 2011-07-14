@@ -1,10 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for DOS
- *
- * chng: jan/2005 written [DrV]
- *       jun/2007 properly handle both / and \ in input (always return with \)
- *
- */
+/* get the executable path for DOS */
 
 #include "fb.h"
 

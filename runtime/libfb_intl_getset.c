@@ -1,9 +1,4 @@
-/*
- *	intl_getset.c - turns internationalization on/off and queries status
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* turns internationalization on/off and queries status */
 
 #include "fb.h"
 

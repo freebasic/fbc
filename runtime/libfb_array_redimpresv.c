@@ -1,9 +1,4 @@
-/*
- * array_redimpresv.c -- redim preserve function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* redim preserve function */
 
 #include <stdlib.h>
 #include <stdarg.h>

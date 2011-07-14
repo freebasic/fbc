@@ -1,9 +1,4 @@
-/*
- *	file_get_wstr - get # function for wstrings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* get # function for wstrings */
 
 #include "fb.h"
 

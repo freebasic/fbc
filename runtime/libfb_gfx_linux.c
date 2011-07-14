@@ -1,9 +1,4 @@
-/*
- * linux.c -- list of linux gfx drivers
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* list of linux gfx drivers */
 
 #include "fb_gfx.h"
 

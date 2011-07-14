@@ -1,10 +1,4 @@
-/*
- * io_input.c -- console input functions for Windows console mode apps
- *
- * chng: jun/2005 written [lillo]
- *       aug/2005 modified to read keyboard events [mjs]
- *
- */
+/* console input functions for Windows console mode apps */
 
 #include "fb.h"
 #include <ctype.h>

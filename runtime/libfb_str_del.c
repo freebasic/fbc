@@ -1,9 +1,4 @@
-/*
- * str_del.c -- string deletion function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string deletion function */
 
 #include <stdlib.h>
 #include <string.h>

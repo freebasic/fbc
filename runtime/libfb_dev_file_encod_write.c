@@ -1,9 +1,4 @@
-/*
- * dev_efile_write - UTF-encoded file writing
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded file writing */
 
 #include <stdio.h>
 #include <stdlib.h>

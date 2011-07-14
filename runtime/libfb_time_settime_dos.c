@@ -1,9 +1,4 @@
-/*
- * time_settime.c -- set time function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* set time function for DOS */
 
 
 #include "fb.h"

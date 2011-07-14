@@ -1,9 +1,4 @@
-/*
- * put_and.c -- AND drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* AND drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

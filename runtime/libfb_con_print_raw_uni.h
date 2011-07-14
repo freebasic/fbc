@@ -1,9 +1,4 @@
-/*
- * con_print_raw.c -- print raw data - no interpretation is done
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* print raw data - no interpretation is done */
 
 #include "fb_con.h"
 

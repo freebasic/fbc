@@ -1,9 +1,4 @@
-/*
- * sys_getexename.c -- get the executable's name for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* get the executable's name for DOS */
 
 #include "fb.h"
 

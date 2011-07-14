@@ -1,9 +1,4 @@
-/*
- * readxy.c -- implementation of SCREEN function for graphics mode
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* implementation of SCREEN function for graphics mode */
 
 #include "fb_gfx.h"
 

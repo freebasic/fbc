@@ -1,9 +1,4 @@
-/*
- * array_core.c -- dynamic arrays core
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* dynamic arrays core */
 
 #include <stdlib.h>
 #include "fb.h"

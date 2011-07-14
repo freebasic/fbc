@@ -1,9 +1,4 @@
-/*
- * strw_convfrom_uint.c -- valwuint function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valwuint function */
 
 #include "fb.h"
 

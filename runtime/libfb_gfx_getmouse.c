@@ -1,9 +1,4 @@
-/*
- * getmouse.c -- GETMOUSE function support.
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* GETMOUSE function support. */
 
 #include "fb_gfx.h"
 

@@ -1,9 +1,4 @@
-/*
- * hook_ports.c -- ports I/O hooks, default to system implementations
- *
- * chng: aug/2005 written [lillo]
- *
- */
+/* ports I/O hooks, default to system implementations */
 
 #include "fb.h"
 

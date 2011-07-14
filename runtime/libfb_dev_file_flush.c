@@ -1,9 +1,4 @@
-/*
- *	dev_file_flush - file device
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* file device */
 
 #include <stdio.h>
 #include <stdlib.h>

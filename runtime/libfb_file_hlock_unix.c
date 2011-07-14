@@ -1,10 +1,4 @@
-/*
- *	file_hlock - low-level lock and unlock functions for Linux
- *
- *  chng: jan/2005 written [lillo]
- *        oct/2007 rewritten to use fcntl instead of flock [DrV]
- *
- */
+/* low-level lock and unlock functions for Linux */
 
 #include "fb.h"
 #include <fcntl.h>

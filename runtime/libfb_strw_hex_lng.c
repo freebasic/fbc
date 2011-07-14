@@ -1,9 +1,4 @@
-/*
- * strw_hex_lng.c -- hexw$ routine for long long's
- *
- * chng: apr/2005 written [v1ctor]
- *
- */
+/* hexw$ routine for long long's */
 
 #include "fb.h"
 

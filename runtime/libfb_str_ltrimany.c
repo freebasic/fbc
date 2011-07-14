@@ -1,9 +1,4 @@
-/*
- * str_rtrimany.c -- ltrim$ ANY function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* ltrim$ ANY function */
 
 #include "fb.h"
 

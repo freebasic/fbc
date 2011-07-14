@@ -1,9 +1,4 @@
-/*
- * paletteget.c -- palette retrieving routines
- *
- * chng: may/2005 written [lillo]
- *
- */
+/* palette retrieving routines */
 
 #include "fb_gfx.h"
 

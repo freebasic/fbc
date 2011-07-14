@@ -1,10 +1,4 @@
-/*
- * libfb_file_dir.c -- dos dir$ implementation
- *
- * chng: jan/2005 written [DrV]
- *       feb/2007 fixed to return only files with the proper attributes and use thread context
- *
- */
+/* dos dir$ implementation */
 
 #include "fb.h"
 

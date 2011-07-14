@@ -1,9 +1,4 @@
-/*
- * strw_convfrom_ulng.c -- valwulng function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valwulng function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * freebsd.c -- list of FreeBSD gfx drivers
- *
- * chng: jan/2007 written [DrV]
- *
- */
+/* list of FreeBSD gfx drivers */
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"

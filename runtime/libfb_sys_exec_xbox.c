@@ -1,9 +1,4 @@
-/*
- * sys_exec.c -- exec function for xbox
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* exec function for xbox */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * time_sleep.c -- sleep function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* sleep function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * thread_ctx.c -- thread local context storage
- *
- * chng: oct/2005 written [v1ctor]
- *
- */
+/* thread local context storage */
 
 #include "fb.h"
 

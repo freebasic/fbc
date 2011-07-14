@@ -1,9 +1,4 @@
-/*
- * file_input - input function for usigned shorts
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* input function for usigned shorts */
 
 #include <stdio.h>
 #include <stdlib.h>

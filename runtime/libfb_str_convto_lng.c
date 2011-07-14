@@ -1,11 +1,7 @@
-/*
- * str_convto_lng.c -- str$ routines for longint, ulongint
+/* str$ routines for longint, ulongint
  *
- * obs.: the result string's len is being "faked" to appear as if it were shorter
- *       than the one that has to be allocated to fit _itoa and _gvct buffers.
- *
- * chng: mar/2005 written [v1ctor]
- *
+ * the result string's len is being "faked" to appear as if it were shorter
+ * than the one that has to be allocated to fit _itoa and _gvct buffers.
  */
 
 #include <stdlib.h>

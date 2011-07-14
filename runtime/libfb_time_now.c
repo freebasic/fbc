@@ -1,9 +1,4 @@
-/*
- * time_now.c -- NOW function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* NOW function */
 
 #include <time.h>
 #include "fb.h"

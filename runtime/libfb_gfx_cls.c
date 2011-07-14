@@ -1,9 +1,4 @@
-/*
- * cls.c -- screen clearing routine
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* screen clearing routine */
 
 #include "fb_gfx.h"
 

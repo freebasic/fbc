@@ -1,9 +1,4 @@
-/*
- * drv_intl_getdateformat.c -- get localized short DATE format
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get localized short DATE format */
 
 #include <string.h>
 #include "fb.h"

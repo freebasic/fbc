@@ -1,9 +1,4 @@
-/*
- * hook_mouse.c -- mouse entrypoints, default to console mode
- *
- * chng: jun/2005 written [lillo]
- *
- */
+/* mouse entrypoints, default to console mode */
 
 #include "fb.h"
 

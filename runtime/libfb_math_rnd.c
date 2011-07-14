@@ -1,9 +1,4 @@
-/*
- * math_rnd.c -- rnd# function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* rnd# function */
 
 #include <stdlib.h>
 #include <stdlib.h>

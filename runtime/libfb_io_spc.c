@@ -1,9 +1,4 @@
-/*
- * io_spc.c -- spc and tab functions
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* spc and tab functions */
 
 #include "fb.h"
 

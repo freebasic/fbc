@@ -1,10 +1,4 @@
-/*
- * io_scroll.c -- console scrolling for when VIEW is used for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* console scrolling for when VIEW is used for Linux */
 
 #include "fb.h"
 

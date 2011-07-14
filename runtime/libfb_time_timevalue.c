@@ -1,9 +1,4 @@
-/*
- * time_timevalue.c -- timevalue function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* timevalue function */
 
 #include "fb.h"
 

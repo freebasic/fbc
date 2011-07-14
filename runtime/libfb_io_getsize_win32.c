@@ -1,10 +1,4 @@
-/*
- * io_getsize.c -- get size (console, no gfx) function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use previously remembered console window size [mjs]
- *
- */
+/* get size (console, no gfx) function for Windows */
 
 #include <stdio.h>
 #include "fb.h"

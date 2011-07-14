@@ -1,9 +1,4 @@
-/*
- * sys_ports.c -- ports I/O for Win32
- *
- * chng: aug/2005 written [lillo]
- *
- */
+/* ports I/O for Win32 */
 
 #include "fb.h"
 #include "fb_win32.h"

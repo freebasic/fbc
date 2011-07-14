@@ -1,9 +1,4 @@
-/*
- * time_datediff.c -- datediff function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* datediff function */
 
 #include <math.h>
 #include "fb.h"

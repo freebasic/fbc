@@ -1,9 +1,4 @@
-/*
- * swap_str.c -- swap f/ strings
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* swap for strings */
 
 #include <stdlib.h>
 #include "fb.h"

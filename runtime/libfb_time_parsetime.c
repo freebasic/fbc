@@ -1,9 +1,4 @@
-/*
- * time_parsetime.c -- parse a string time
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* parse a string time */
 
 #include <ctype.h>
 #include <stdlib.h>

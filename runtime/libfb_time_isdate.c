@@ -1,9 +1,4 @@
-/*
- * time_isdate.c -- isdate function
- *
- * chng: aug/2006 written [jeffmarshall]
- *
- */
+/* isdate function */
 
 #include "fb.h"
 

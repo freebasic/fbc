@@ -1,9 +1,4 @@
-/*
- * vesa.h -- VESA VBE structures and constants
- *
- * chng: jun/2005 written [DrV]
- *
- */
+/* VESA VBE structures and constants */
 
 #ifndef __FB_DOS_VESA_H__
 #define __FB_DOS_VESA_H__

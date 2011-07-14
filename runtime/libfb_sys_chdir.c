@@ -1,9 +1,4 @@
-/*
- * sys_chdir.c -- chdir function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* chdir function */
 
 #include "fb.h"
 #ifdef HOST_MINGW

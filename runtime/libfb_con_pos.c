@@ -1,9 +1,4 @@
-/*
- * con_pos.c -- implementation of pos(dummy), simply redirects to fb_GetX()
- *
- * chng: dec/2004 written [v1ctor]
- *
- */
+/* implementation of pos(dummy), simply redirects to fb_GetX() */
 
 #include "fb.h"
 

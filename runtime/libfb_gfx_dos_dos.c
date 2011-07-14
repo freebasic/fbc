@@ -1,9 +1,4 @@
-/*
- * libfb_gfx_dos.c -- list of dos gfx drivers and common code
- *
- * chng: mar/2005 written [DrV]
- *
- */
+/* list of dos gfx drivers and common code */
 
 #include "fb_gfx_dos.h"
 

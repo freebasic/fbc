@@ -1,9 +1,4 @@
-/*
- * io_lpos.c -- Returns the printers X position
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* Returns the printers X position */
 
 #include <stdio.h>
 #include "fb.h"

@@ -1,10 +1,3 @@
-/*
- * window.c -- ...
- *
- * chng: ago/2005 written [mjs]
- *
- */
-
 #include <stdlib.h>
 #include <float.h>
 #include "fb.h"

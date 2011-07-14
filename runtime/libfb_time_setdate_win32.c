@@ -1,9 +1,4 @@
-/*
- * time_setdate.c -- set date function for Windows
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* set date function for Windows */
 
 #include <stdio.h>
 #include <stdlib.h>

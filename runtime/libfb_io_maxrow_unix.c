@@ -1,10 +1,4 @@
-/*
- * io_maxrow.c -- get max row (console, no gfx) for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* get max row (console, no gfx) for Linux */
 
 #include "fb.h"
 

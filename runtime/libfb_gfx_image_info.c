@@ -1,9 +1,4 @@
-/*
- * imageinfo.c -- function to get information about FB image buffers.
- *
- * chng: apr/2008 written [counting_pine]
- *
- */
+/* function to get information about FB image buffers. */
 
 #include "fb_gfx.h"
 

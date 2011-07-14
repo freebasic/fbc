@@ -1,9 +1,4 @@
-/*
- * hook_color.c -- color entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* color entrypoint, default to console mode */
 
 #include "fb.h"
 

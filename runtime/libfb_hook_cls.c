@@ -1,9 +1,4 @@
-/*
- * hook_cls.c -- cls entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* cls entrypoint, default to console mode */
 
 #include "fb.h"
 

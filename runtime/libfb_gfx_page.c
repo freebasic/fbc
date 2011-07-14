@@ -1,9 +1,4 @@
-/*
- * page.c -- screen multiple pages handling
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* screen multiple pages handling */
 
 #include "fb_gfx.h"
 

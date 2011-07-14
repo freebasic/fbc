@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for xbox
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* fre function for xbox */
 
 #include "fb.h"
 

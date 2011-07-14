@@ -1,9 +1,4 @@
-/*
- * io_serial.c -- serial port driver for Dos
- *
- * chng: feb/2007 written [jeffm]
- *
- */
+/* serial port driver for Dos */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * drv_intl.c -- helper functions for internationalization support
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* helper functions for internationalization support */
 
 #include <stddef.h>
 #include "fb.h"

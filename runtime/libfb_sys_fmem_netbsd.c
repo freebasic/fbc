@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for NetBSD
- *
- * chng: / written []
- *
- */
+/* fre function for NetBSD */
 
 #include "fb.h"
 

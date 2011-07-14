@@ -1,9 +1,4 @@
-/*
- * strw_convto.c -- strw$ routines for int, uint
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* strw$ routines for int, uint */
 
 #include "fb.h"
 

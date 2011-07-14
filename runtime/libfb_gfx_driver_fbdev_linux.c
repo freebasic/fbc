@@ -1,9 +1,4 @@
-/*
- * fbdev.c -- Framebuffer device gfx driver
- *
- * chng: feb/2006 written [lillo]
- *
- */
+/* Framebuffer device gfx driver */
 
 #include "fb_gfx.h"
 

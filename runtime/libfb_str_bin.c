@@ -1,9 +1,4 @@
-/*
- * str_bin.c -- bin$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* bin$ routines */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * strw_fill.c -- stringw$ function
- *
- * chng: ago/2005 written [v1ctor]
- *
- */
+/* stringw$ function */
 
 #include "fb.h"
 

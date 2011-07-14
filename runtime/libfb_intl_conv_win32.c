@@ -1,9 +1,4 @@
-/*
- * intl_conv_w32.c -- Convert a strings character set to another character set.
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* Convert a strings character set to another character set. */
 
 #include "fb.h"
 #include <stddef.h>

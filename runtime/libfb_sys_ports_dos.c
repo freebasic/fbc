@@ -1,9 +1,4 @@
-/*
- * sys_ports.c -- ports I/O for DOS
- *
- * chng: aug/2005 written [lillo]
- *
- */
+/* ports I/O for DOS */
 
 #include "fb.h"
 #include "fb_dos.h"

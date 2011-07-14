@@ -1,9 +1,4 @@
-/*
- *	dev_lpt - LPTx device
- *
- * chng: jul/2006 written [jeffmarshall]
- *
- */
+/* LPTx device */
 
 #include <stdio.h>
 #include <stdlib.h>

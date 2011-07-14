@@ -1,9 +1,4 @@
-/*
- *	file_kill - kill function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* kill function */
 
 #include <stdio.h>
 #include <stdlib.h>

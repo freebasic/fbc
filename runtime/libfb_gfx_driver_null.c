@@ -1,9 +1,4 @@
-/*
- * driver_null.c -- null driver for non-displayed gfx handling
- *
- * chng: aug/2005 written [lillo]
- *
- */
+/* null driver for non-displayed gfx handling */
 
 #include "fb_gfx.h"
 

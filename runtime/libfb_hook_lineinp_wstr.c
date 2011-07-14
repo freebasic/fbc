@@ -1,10 +1,4 @@
-/*
- * con_lineinp - console line input function
- *
- * chng: nov/2004 written [v1ctor]
- *       sep/2005 split into two files, file_lineinp.c and con_lineinp.c
- *
- */
+/* console line input function */
 
 #include "fb.h"
 

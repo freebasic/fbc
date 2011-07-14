@@ -1,9 +1,4 @@
-/*
- * mmx.s -- MMX detection and memory copy/set routines
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* MMX detection and memory copy/set routines */
 
 #include "fb_gfx_mmx.h"
 

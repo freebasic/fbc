@@ -1,9 +1,4 @@
-/*
- * str_convfrom_int.c -- valint function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valint function */
 
 #include <stdlib.h>
 #include "fb.h"

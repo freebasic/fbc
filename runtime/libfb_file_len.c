@@ -1,9 +1,4 @@
-/*
- * file_len.c -- get file length by filename
- *
- * chng: jun/2006 written [DrV]
- *
- */
+/* get file length by filename */
 
 #include "fb.h"
 

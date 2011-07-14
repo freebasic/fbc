@@ -1,9 +1,4 @@
-/*
- * data_byte.c -- read stmt for byte's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for byte's */
 
 #include <stdlib.h>
 #include "fb.h"

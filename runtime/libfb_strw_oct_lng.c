@@ -1,9 +1,4 @@
-/*
- * strw_oct.c -- octw$ routine for long long's
- *
- * chng: apr/2005 written [v1ctor]
- *
- */
+/* octw$ routine for long long's */
 
 #include "fb.h"
 

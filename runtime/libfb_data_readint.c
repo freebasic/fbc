@@ -1,9 +1,4 @@
-/*
- * data_int.c -- read stmt for integer's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for integer's */
 
 #include <stdlib.h>
 #include "fb.h"

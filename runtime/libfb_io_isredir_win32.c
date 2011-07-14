@@ -1,9 +1,4 @@
-/*
- * io_isredir - console redirection check
- *
- * chng: dec/2005 written [v1ctor]
- *
- */
+/* console redirection check */
 
 #include "fb_con.h"
 

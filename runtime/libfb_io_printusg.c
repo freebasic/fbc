@@ -1,10 +1,4 @@
-/*
- * io_printusg - print using function
- *
- * chng: nov/2004 written [v1ctor]
- * chng: aug/2008 overhauled number formatting [counting_pine]
- *
- */
+/* print using function */
 
 #include <stdlib.h>
 #include <string.h>

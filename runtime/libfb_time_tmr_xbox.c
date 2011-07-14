@@ -1,9 +1,4 @@
-/*
- * time_tmr.c -- xbox timer function
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* xbox timer function */
 
 #include "../fb.h"
 #include "fb_xbox.h"

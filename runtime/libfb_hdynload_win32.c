@@ -1,9 +1,4 @@
-/*
- * dynload.c -- Dynamic library functions loading
- *
- * chng: oct/2006 written [lillo]
- *
- */
+/* Dynamic library functions loading */
 
 #include "fb.h"
 

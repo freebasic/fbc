@@ -1,9 +1,4 @@
-/*
- * str_left.c -- left$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* left$ function */
 
 #include <stdlib.h>
 #include "fb.h"

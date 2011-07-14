@@ -1,9 +1,4 @@
-/*
- * dev_efile_open - UTF-encoded file devices open
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded file devices open */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,4 @@
-/*
- * SleepQB - QB compatible SLEEP
- *
- * chng: oct/2007 written [jeffm]
- *
- */
+/* QB compatible SLEEP */
 
 #include "fb.h"
 

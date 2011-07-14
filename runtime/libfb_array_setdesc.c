@@ -1,11 +1,5 @@
 /*!!!REMOVEME!!!*/
-
-/*
- * array_setdesc.c -- descriptor set, for non-dynamic local arrays
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* descriptor set, for non-dynamic local arrays */
 
 #include <stdlib.h>
 #include <stdarg.h>

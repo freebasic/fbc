@@ -1,10 +1,4 @@
-/*
- *	file_get - get # function
- *
- * chng: oct/2004 written [v1ctor]
- * chng: nov/2005 unicode support added [v1ctor]
- *
- */
+/* get # function */
 
 #include <stdio.h>
 #include <stdlib.h>

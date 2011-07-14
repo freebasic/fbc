@@ -1,9 +1,4 @@
-/*
- * time_timeset.c -- settime function
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* settime function */
 
 
 #include <stdio.h>

@@ -1,9 +1,4 @@
-/*
- * str_comp.c -- string compare function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string compare function */
 
 #include <stddef.h>
 #include <string.h>

@@ -1,9 +1,4 @@
-/*
- * sys_getshorpath.c -- get short path for Linux
- *
- * chng: nov/2004 written [lillo]
- *
- */
+/* get short path for Linux */
 
 #include <stdlib.h>
 #include <string.h>

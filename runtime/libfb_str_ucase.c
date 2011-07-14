@@ -1,9 +1,4 @@
-/*
- * str_ucase.c -- ucase$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ucase$ function */
 
 #include <stdlib.h>
 #include <ctype.h>

@@ -1,9 +1,4 @@
-/*
- * time_decodesertime.c -- functions to decode a serial time number
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* functions to decode a serial time number */
 
 #include "fb.h"
 

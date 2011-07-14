@@ -1,9 +1,4 @@
-/*
- * io_gethnd - console handle getter
- *
- * chng: dec/2005 written [v1ctor]
- *
- */
+/* console handle getter */
 
 #include "fb_con.h"
 

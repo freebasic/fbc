@@ -1,9 +1,4 @@
-/*
- * io_width.c -- width (console, no gfx) for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* width (console, no gfx) for DOS */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * palette.c -- palette management
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* palette management */
 
 #include "fb_gfx.h"
 

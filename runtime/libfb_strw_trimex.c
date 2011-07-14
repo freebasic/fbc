@@ -1,9 +1,4 @@
-/*
- * strw_trim.c -- enhanced trimw$ function
- *
- * chng: nov/2005 written [mjs]
- *
- */
+/* enhanced trimw$ function */
 
 #include <stdlib.h>
 #include "fb.h"

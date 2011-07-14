@@ -1,9 +1,4 @@
-/*
- * put_or.c -- OR drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* OR drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

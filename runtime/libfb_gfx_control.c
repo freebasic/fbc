@@ -1,9 +1,4 @@
-/*
- * control.c -- Screen states getter/setter routines.
- *
- * chng: oct/2006 written [lillo]
- *
- */
+/* Screen states getter/setter routines. */
 
 #include "fb_gfx.h"
 

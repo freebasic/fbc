@@ -1,9 +1,4 @@
-/*
- * swap_wstr.c -- swap f/ wstrings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* swap for wstrings */
 
 #include <stdlib.h>
 #include "fb.h"

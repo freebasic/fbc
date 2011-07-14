@@ -1,9 +1,4 @@
-/*
- * io_printbuff.c -- low-level print to console function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* low-level print to console function for DOS */
 
 #include "fb.h"
 #include "fb_con.h"

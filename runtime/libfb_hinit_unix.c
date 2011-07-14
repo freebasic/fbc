@@ -1,10 +1,4 @@
-/*
- * init.c -- libfb initialization for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* libfb initialization for Unix */
 
 #include "fb.h"
 #include "fb_unix.h"

@@ -1,9 +1,4 @@
-/*
- * io_print_longint.c -- print [#] function (longint)
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* print [#] function (longint) */
 
 #include <stdio.h>
 #include "fb.h"

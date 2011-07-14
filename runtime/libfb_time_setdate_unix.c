@@ -1,10 +1,4 @@
-/*
- * time_setdate.c -- set date function for Linux
- *
- * chng: jan/2005 written [nobody]
- *
- */
-
+/* set date function for Linux */
 
 #include <stdio.h>
 #include <stdlib.h>

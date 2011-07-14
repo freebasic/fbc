@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- NetBSD console mouse functions implementation
- *
- * chng: / written []
- *
- */
+/* NetBSD console mouse functions implementation */
 
 #include "fb.h"
 

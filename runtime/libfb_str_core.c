@@ -1,17 +1,11 @@
-/*
- * str_core.c -- string/descriptor allocation, deletion, assignament, etc
+/* string/descriptor allocation, deletion, assignament, etc
  *
- * obs.: string is interpreted depending on the size argument passed:
- *		 -1 = var-len
- *		  0 = fixed-len, size unknown (ie, returned from a non-FB function)
- *		 >0 = fixed-len, size known (this size isn't used tho, as string will
- *									 have garbage after the null-term, ie: spaces)
- *		 destine string size can't be 0, as it is always known
- *
- * chng: oct/2004 written [v1ctor]
- *       dec/2004 all functions called by FB are now in different modules [v1ctor]
- *       feb/2005 modified to use the generic list routines [lillo]
- *
+ * string is interpreted depending on the size argument passed:
+ * -1 = var-len
+ *  0 = fixed-len, size unknown (ie, returned from a non-FB function)
+ * >0 = fixed-len, size known (this size isn't used tho, as string will
+ *      have garbage after the null-term, ie: spaces)
+ *      destine string size can't be 0, as it is always known
  */
 
 #include <stdlib.h>

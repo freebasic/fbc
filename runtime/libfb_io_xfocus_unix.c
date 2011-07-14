@@ -1,9 +1,4 @@
-/*
- * io_xfocus.c -- XTerm focus query function
- *
- * chng: jul/2005 written [lillo]
- *
- */
+/* XTerm focus query function */
 
 #include "fb.h"
 

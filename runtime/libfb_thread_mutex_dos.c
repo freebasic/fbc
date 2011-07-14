@@ -1,14 +1,6 @@
-/*
- * thread_mutex.c -- DOS mutex handling routines (empty)
- *
- * chng: feb/2005 written [DrV]
- *
- */
-
+/* DOS mutex handling routines (empty) */
 
 #include "fb.h"
-
-
 
 /*:::::*/
 FBCALL struct _FBMUTEX *fb_MutexCreate( void )

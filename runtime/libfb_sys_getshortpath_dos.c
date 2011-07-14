@@ -1,9 +1,4 @@
-/*
- * sys_getshorpath.c -- get short path for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* get short path for DOS */
 
 #include "fb.h"
 

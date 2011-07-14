@@ -1,9 +1,4 @@
-/*
- * io_inkey.c -- inkey$ function for DOS console mode apps
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* inkey$ function for DOS console mode apps */
 
 #include "fb.h"
 

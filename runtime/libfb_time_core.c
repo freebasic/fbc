@@ -1,9 +1,4 @@
-/*
- * time_core.c -- core time/date functions
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* core time/date functions */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * array_erase.c -- erase function for dynamic arrays
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* erase function for dynamic arrays */
 
 #include <stdlib.h>
 #include "fb.h"

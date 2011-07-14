@@ -1,9 +1,4 @@
-/*
- * str_oct.c -- oct$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* oct$ routines */
 
 #include "fb.h"
 

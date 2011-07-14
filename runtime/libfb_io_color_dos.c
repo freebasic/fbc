@@ -1,9 +1,4 @@
-/*
- * io_color.c -- color (console, no gfx) function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* color (console, no gfx) function for DOS */
 
 #include "fb.h"
 #include "fb_colors.h"

@@ -1,9 +1,4 @@
-/*
- * str_tempdescf.c -- temp string descriptor allocation for fixed-len strings
- *
- * chng: may/2005 written [v1ctor]
- *
- */
+/* temp string descriptor allocation for fixed-len strings */
 
 #include <stdlib.h>
 #include <string.h>

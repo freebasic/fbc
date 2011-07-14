@@ -1,9 +1,4 @@
-/*
- * strw_asc.c -- ascw function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ascw function */
 
 #include "fb.h"
 

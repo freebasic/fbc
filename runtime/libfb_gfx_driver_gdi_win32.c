@@ -1,9 +1,4 @@
-/*
- * gdi.c -- GDI gfx driver
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* GDI gfx driver */
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"

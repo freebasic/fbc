@@ -1,12 +1,6 @@
-/*
- * sys_beep.c -- beep function for Linux
- *
- * chng: feb/2005 written [lillo]
- *
- */
+/* beep function for Linux */
 
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL void beep(void)

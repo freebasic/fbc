@@ -1,9 +1,4 @@
-/*
- * io_maxrow.c -- get max row (console, no gfx) for Windows
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* get max row (console, no gfx) for Windows */
 
 #include "fb.h"
 

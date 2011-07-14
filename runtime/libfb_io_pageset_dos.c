@@ -1,9 +1,4 @@
-/*
- * io_pageset.c -- 'screen , pg, pg' (console, no gfx) function for DOS
- *
- * chng: sep/2007 written [v1c]
- *
- */
+/* 'screen , pg, pg' (console, no gfx) function for DOS */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * file_putback_wstr - ungetwc-like function
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* ungetwc-like function */
 
 #include <stdio.h>
 #include <stdlib.h>

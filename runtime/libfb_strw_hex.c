@@ -1,9 +1,4 @@
-/*
- * strw_hex.c -- hexw$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* hexw$ routines */
 
 #include "fb.h"
 

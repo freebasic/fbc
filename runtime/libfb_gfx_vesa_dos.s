@@ -1,9 +1,4 @@
-/*
- * libfb_gfx_vesa.s -- vesa support functions
- *
- * chng: oct/2006 written [DrV]
- *
- */
+/* vesa support functions */
 
 .intel_syntax noprefix
 

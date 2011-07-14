@@ -1,9 +1,4 @@
-/*
- * strw_comp.c -- wstring compare function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* wstring compare function */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * str_asc.c -- asc function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* asc function */
 
 #include <stdlib.h>
 #include "fb.h"

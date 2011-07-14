@@ -1,9 +1,4 @@
-/*
- * exit.c -- end and system routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* end and system routines */
 
 #include <stdlib.h>
 #include "fb.h"

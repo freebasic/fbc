@@ -1,9 +1,4 @@
-/*
- * strw_bin.c -- binw$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* binw$ routines */
 
 #include "fb.h"
 

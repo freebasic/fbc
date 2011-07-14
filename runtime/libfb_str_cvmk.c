@@ -1,9 +1,4 @@
-/*
- * str_cvmk.c -- CV# and MK#$ routines
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* CV# and MK#$ routines */
 
 #include <stdlib.h>
 #include "fb.h"

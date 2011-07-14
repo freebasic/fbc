@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- mouse functions for DOS console mode apps
- *
- * chng: jun/2005 written [DrV]
- *
- */
+/* mouse functions for DOS console mode apps */
 
 #include "fb.h"
 

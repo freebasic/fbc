@@ -1,10 +1,4 @@
-/*
- * thread_cond.c -- Linux (pthreads) condition variables handling routines
- *
- * chng: feb/2005 written [lillo]
- *
- */
-
+/* Linux (pthreads) condition variables handling routines */
 
 #include <pthread.h>
 #include "fb.h"

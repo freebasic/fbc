@@ -1,9 +1,4 @@
-/*
- * io_pcopy.c -- pcopy (console, no gfx) function for Linux
- *
- * chng: set/2007 written [v1ctor]
- *
- */
+/* pcopy (console, no gfx) function for Linux */
 
 #include "fb.h"
 #include "fb_colors.h"

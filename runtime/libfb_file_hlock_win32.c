@@ -1,9 +1,4 @@
-/*
- *	file_hlock - low-level lock and unlock functions for Windows
- *
- *  chng: jan/2005 written [v1ctor]
- *
- */
+/* low-level lock and unlock functions for Windows */
 
 
 #include <io.h>

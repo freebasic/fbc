@@ -1,9 +1,4 @@
-/*
- * sys_cdir.c -- curdir$
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* curdir$ */
 
 #include <stdlib.h>
 #include <string.h>

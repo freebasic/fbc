@@ -1,9 +1,4 @@
-/*
- * gosub.c -- GOSUB support
- *
- * chng: apr/2008 written [jeffm]
- *
- */
+/* GOSUB support */
 
 #include <stdlib.h>
 #include <setjmp.h>

@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for Linux
- *
- * chng: dec/2004 written [lillo]
- *
- */
+/* fre function for Linux */
 
 #include "fb.h"
 #include <unistd.h>

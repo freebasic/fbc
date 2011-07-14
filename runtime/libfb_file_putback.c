@@ -1,9 +1,4 @@
-/*
- *	file_putback - some kind of ungetc function
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* some kind of ungetc function */
 
 #include <stdio.h>
 #include <stdlib.h>

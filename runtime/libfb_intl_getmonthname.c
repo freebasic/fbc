@@ -1,9 +1,4 @@
-/*
- * intl_getmonthname.c -- get month name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get month name */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * strw_concat.c -- wstring concatenation function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* wstring concatenation function */
 
 #include "fb.h"
 

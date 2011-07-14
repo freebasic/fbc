@@ -1,9 +1,4 @@
-/*
- * init.c -- libfb initialization for NetBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* libfb initialization for NetBSD */
 
 #include "fb.h"
 

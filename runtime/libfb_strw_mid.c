@@ -1,9 +1,4 @@
-/*
- * strw_mid.c -- midw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* midw$ function */
 
 #include "fb.h"
 

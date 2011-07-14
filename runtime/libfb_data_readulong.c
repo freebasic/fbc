@@ -1,9 +1,4 @@
-/*
- * data_ulong.c -- read stmt for ulong integer's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for ulong integer's */
 
 #include <stdlib.h>
 #include "fb.h"

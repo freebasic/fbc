@@ -1,9 +1,4 @@
-/*
- * io_widthfile.c -- set the with for files
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* set the with for files */
 
 #include <stdlib.h>
 #include <string.h>

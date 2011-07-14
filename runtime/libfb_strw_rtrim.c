@@ -1,9 +1,4 @@
-/*
- * strw_rtrim.c -- rtrimw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* rtrimw$ function */
 
 #include "fb.h"
 

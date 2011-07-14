@@ -1,10 +1,6 @@
-/*
- * vga.c -- Mode X gfx driver
- *
- * Mode X setting code derived from original Michael Abrash article in Dr. Dobb's Journal/Graphics Programming Black Book
- *
- * chng: apr/2005 written [DrV]
- *
+/* Mode X gfx driver
+ * Mode X setting code derived from original Michael Abrash article in
+ * Dr. Dobb's Journal/Graphics Programming Black Book
  */
 
 #include "fb_gfx_dos.h"

@@ -1,9 +1,4 @@
-/*
- * event.c -- system events retrieving
- *
- * chng: oct/2006 written [lillo]
- *
- */
+/* system events retrieving */
 
 #include "fb_gfx.h"
 

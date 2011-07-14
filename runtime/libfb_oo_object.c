@@ -1,9 +1,4 @@
-/*
- * oop_object.c -- Object class methods
- *
- * chng: april/2011 written [v1ctor]
- *
- */
+/* Object class methods */
 
 #include "fb.h"
 #include "fb_oop.h"

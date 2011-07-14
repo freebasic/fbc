@@ -1,9 +1,4 @@
-/*
- * thread_core.c -- xbox thread creation and destruction
- *
- * chng: apr/2007 written [DrV]
- *
- */
+/* xbox thread creation and destruction */
 
 #include "fb.h"
 

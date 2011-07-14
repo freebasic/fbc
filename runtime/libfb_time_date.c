@@ -1,9 +1,4 @@
-/*
- * time_data.c -- date$ function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* date$ function */
 
 #include <stdlib.h>
 #include <string.h>

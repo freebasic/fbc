@@ -1,9 +1,4 @@
-/*
- * math_sgn.c -- SGN function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* SGN function */
 
 #include "fb.h"
 

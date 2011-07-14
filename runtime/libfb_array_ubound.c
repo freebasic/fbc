@@ -1,12 +1,6 @@
-/*
- * array_ubound.c -- ubound function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* ubound function */
 
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL int fb_ArrayUBound

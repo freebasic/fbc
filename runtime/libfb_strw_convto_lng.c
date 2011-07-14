@@ -1,9 +1,4 @@
-/*
- * strw_convto_lng.c -- strw$ routines for longint, ulongint
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* strw$ routines for longint, ulongint */
 
 #include "fb.h"
 

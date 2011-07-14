@@ -1,9 +1,4 @@
-/*
- * strw_right.c -- rightw$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* rightw$ function */
 
 #include "fb.h"
 

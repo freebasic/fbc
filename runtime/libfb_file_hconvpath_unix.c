@@ -1,9 +1,4 @@
-/*
- * file_convpath - path conversion for Linux
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* path conversion for Linux */
 
 #include <string.h>
 #include "fb.h"

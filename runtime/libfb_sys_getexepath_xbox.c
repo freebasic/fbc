@@ -1,9 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for xbox
- *
- * chng: jul/2005 written []
- *
- */
+/* get the executable path for xbox */
 
 #include <malloc.h>
 #include <string.h>

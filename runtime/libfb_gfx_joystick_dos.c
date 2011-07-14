@@ -1,9 +1,4 @@
-/*
- * joystick.c -- joystick handling, dos
- *
- * chng: jun/2005 written [DrV]
- *
- */
+/* joystick handling, dos */
 
 #include "fb_gfx.h"
 #include "fb_gfx_dos.h"

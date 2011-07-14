@@ -1,9 +1,4 @@
-/*
- *	file_openscrn - open SCRN
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* open SCRN */
 
 #include "fb.h"
 

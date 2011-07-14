@@ -1,9 +1,4 @@
-/*
- * time_htimeset.c -- set time function for Linux
- *
- * chng: jan/2005 written [nobody]
- *
- */
+/* set time function for Linux */
 
 
 #include <stdio.h>

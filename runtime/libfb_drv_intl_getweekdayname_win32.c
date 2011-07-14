@@ -1,9 +1,4 @@
-/*
- * time_getweekdayname.c -- get weekday name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get weekday name */
 
 #include <stdlib.h>
 #include <string.h>

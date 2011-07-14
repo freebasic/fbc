@@ -1,9 +1,4 @@
-/*
- * time_parsedatetime.c -- parse a string containing a date and/or time
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* parse a string containing a date and/or time */
 
 #include <ctype.h>
 #include "fb.h"

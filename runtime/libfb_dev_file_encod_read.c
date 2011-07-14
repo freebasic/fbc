@@ -1,9 +1,4 @@
-/*
- * dev_file_encod_read - UTF-encoded input for file devices
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded input for file devices */
 
 #include "fb.h"
 

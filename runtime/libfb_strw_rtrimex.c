@@ -1,9 +1,4 @@
-/*
- * strw_rtrimex.c -- enhanced rtrimw$ function
- *
- * chng: nov/2005 written [mjs]
- *
- */
+/* enhanced rtrimw$ function */
 
 #include <stdlib.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * point.c -- pixel retrieving
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* pixel retrieving */
 
 #include "fb_gfx.h"
 

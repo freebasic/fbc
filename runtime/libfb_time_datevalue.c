@@ -1,9 +1,4 @@
-/*
- * time_datevalue.c -- datevalue function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* datevalue function */
 
 #include "fb.h"
 

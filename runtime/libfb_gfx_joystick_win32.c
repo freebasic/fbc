@@ -1,9 +1,4 @@
-/*
- * joystick.c -- joystick handling, win32
- *
- * chng: apr/2005 written [lillo]
- *
- */
+/* joystick handling, win32 */
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"

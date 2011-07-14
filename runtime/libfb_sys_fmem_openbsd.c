@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for OpenBSD
- *
- * chng: / written []
- *
- */
+/* fre function for OpenBSD */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * sys_mkdir.c -- mkdir function
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* mkdir function */
 
 #include "fb.h"
 #ifdef HOST_MINGW

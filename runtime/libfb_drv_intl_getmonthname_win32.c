@@ -1,9 +1,4 @@
-/*
- * time_getmonthname.c -- get month name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get month name */
 
 #include <stdlib.h>
 #include <string.h>

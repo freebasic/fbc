@@ -1,9 +1,4 @@
-/*
- * io_pageset.c -- 'screen , pg, pg' (console, no gfx) function for Windows
- *
- * chng: sep/2007 written [v1ctor]
- *
- */
+/* 'screen , pg, pg' (console, no gfx) function for Windows */
 
 #include "fb.h"
 #include "fb_colors.h"

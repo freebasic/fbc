@@ -1,10 +1,4 @@
-/*
- * io_printpad.c -- print functions
- *
- * chng: oct/2004 written [v1ctor]
- *       jul/2004 moved to separate file [mjs]
- *
- */
+/* print functions */
 
 #include <stdio.h>
 #include "fb.h"

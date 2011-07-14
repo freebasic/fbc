@@ -1,9 +1,4 @@
-/*
- * str_lcase.c -- lcase$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* lcase$ function */
 
 #include <stdlib.h>
 #include <ctype.h>

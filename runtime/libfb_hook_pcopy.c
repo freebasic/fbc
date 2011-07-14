@@ -1,9 +1,4 @@
-/*
- * hook_pcopy.c -- pcopy entrypoint, default to console mode
- *
- * chng: set/2007 written [v1ctor]
- *
- */
+/* pcopy entrypoint, default to console mode */
 
 #include "fb.h"
 

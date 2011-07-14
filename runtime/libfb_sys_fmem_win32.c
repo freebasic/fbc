@@ -1,9 +1,4 @@
-/*
- * sys_fmem.c -- fre function for Windows
- *
- * chng: dec/2004 written [v1ctor]
- *
- */
+/* fre function for Windows */
 
 #include "fb.h"
 

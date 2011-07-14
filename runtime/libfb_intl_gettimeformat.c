@@ -1,9 +1,4 @@
-/*
- * intl_gettimeformat.c -- get short TIME format
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get short TIME format */
 
 #include "fb.h"
 

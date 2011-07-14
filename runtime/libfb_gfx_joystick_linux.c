@@ -1,9 +1,4 @@
-/*
- * joystick.c -- joystick handling, linux
- *
- * chng: apr/2005 written [lillo]
- *
- */
+/* joystick handling, linux */
 
 #include "fb_gfx.h"
 

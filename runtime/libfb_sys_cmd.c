@@ -1,9 +1,4 @@
-/*
- * sys_cmd.c -- command$
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* command$ */
 
 #include <string.h>
 #include "fb.h"

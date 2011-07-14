@@ -1,12 +1,6 @@
-/*
- * io_width.c -- width (console, no gfx) for xbox
- *
- * chng: / written []
- *
- */
+/* width (console, no gfx) for xbox */
 
 #include "fb.h"
-
 
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )

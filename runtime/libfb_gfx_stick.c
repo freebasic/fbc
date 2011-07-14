@@ -1,9 +1,4 @@
-/*
- * stick.c -- QB compatible STICK(n) and STRIG(n) functions
- *
- * chng: oct/2007 written [jeffm]
- *
- */
+/* QB compatible STICK(n) and STRIG(n) functions */
 
 #include "fb_gfx.h"
 

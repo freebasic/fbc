@@ -1,9 +1,4 @@
-/*
- * bios.c -- BIOS gfx driver
- *
- * chng: oct/2005 written [mjs]
- *
- */
+/* BIOS gfx driver */
 
 #include "fb_gfx_dos.h"
 #include <go32.h>

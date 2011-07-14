@@ -1,9 +1,4 @@
-/*
- * x11.c -- X11 gfx driver
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* X11 gfx driver */
 
 #ifdef WITH_X
 

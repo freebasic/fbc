@@ -1,9 +1,4 @@
-/*
- * str_concatassign.c -- string concat and assigning (s = s + expr) function
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* string concat and assigning (s = s + expr) function */
 
 #include <stdlib.h>
 #include <string.h>

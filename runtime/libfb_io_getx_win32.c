@@ -1,10 +1,4 @@
-/*
- * io_getx.c -- GetX function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *
- */
+/* GetX function for Windows */
 
 #include "fb.h"
 

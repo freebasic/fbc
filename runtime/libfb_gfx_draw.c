@@ -1,9 +1,4 @@
-/*
- * draw.c -- DRAW command
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* DRAW command */
 
 #include "fb_gfx.h"
 #include <ctype.h>

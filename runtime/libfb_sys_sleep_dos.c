@@ -1,9 +1,4 @@
-/*
- * sys_sleep.c -- sleep function for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* sleep function for DOS */
 
 #include "fb.h"
 

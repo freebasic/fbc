@@ -1,9 +1,4 @@
-/*
- * file_input_wstr - input function for wstring's
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* input function for wstring's */
 
 #include "fb.h"
 

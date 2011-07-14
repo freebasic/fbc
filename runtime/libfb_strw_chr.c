@@ -1,9 +1,4 @@
-/*
- * strw_chr.c -- chrw$ routine
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* chrw$ routine */
 
 #include <stdarg.h>
 #include "fb.h"

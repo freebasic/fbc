@@ -1,9 +1,4 @@
-/*
- * file_close - CLOSE function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* CLOSE function */
 
 #include <stdio.h>
 #include <stdlib.h>

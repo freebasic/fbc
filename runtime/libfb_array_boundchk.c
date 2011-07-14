@@ -1,9 +1,4 @@
-/*
- * array_boundchk.c -- bound checking functions
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* Array bound checking functions */
 
 #include "fb.h"
 

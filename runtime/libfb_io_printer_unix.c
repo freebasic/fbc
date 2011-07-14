@@ -1,9 +1,4 @@
-/*
- * io_printer.c -- Linux printer driver
- *
- * chng: jun/2006 written [jeffmarshall]
- *			 
- */
+/* Linux printer driver */
 
 #include <stddef.h>
 #include <string.h>

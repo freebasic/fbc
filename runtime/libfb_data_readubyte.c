@@ -1,9 +1,4 @@
-/*
- * data_ubyte.c -- read stmt for ubyte's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for ubyte's */
 
 #include <stdlib.h>
 #include "fb.h"

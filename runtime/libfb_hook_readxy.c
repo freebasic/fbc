@@ -1,9 +1,4 @@
-/*
- * hook_readxy.c -- reads color valoe or character from X/Y position
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* reads color valoe or character from X/Y position */
 
 #include "fb.h"
 

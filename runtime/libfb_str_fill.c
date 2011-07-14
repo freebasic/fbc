@@ -1,9 +1,4 @@
-/*
- * str_fill.c -- string$ function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* string$ function */
 
 #include <stdlib.h>
 #include <string.h>

@@ -1,9 +1,4 @@
-/*
- * dev_file_write_wstr - wstring to ascii file writing function
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* wstring to ascii file writing function */
 
 #include <stdio.h>
 #include <stdlib.h>

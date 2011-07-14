@@ -1,9 +1,4 @@
-/*
- * vesa.c -- banked VESA gfx driver
- *
- * chng: apr/2005 written [DrV]
- *
- */
+/* banked VESA gfx driver */
 
 #include "fb_gfx_dos.h"
 

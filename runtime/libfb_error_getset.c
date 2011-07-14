@@ -1,9 +1,4 @@
-/*
- * error - runtime error handling, set & get
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* runtime error handling, set & get */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,4 @@
-/*
- * paint.c -- PAINT statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* PAINT statement */
 
 #include "fb_gfx.h"
 

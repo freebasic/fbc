@@ -1,9 +1,4 @@
-/*
- * pmap.c -- pmap statement and point function with one argument
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* pmap statement and point function with one argument */
 
 #include "fb_gfx.h"
 

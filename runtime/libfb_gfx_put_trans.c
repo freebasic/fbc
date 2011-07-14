@@ -1,9 +1,4 @@
-/*
- * put_trans.c -- TRANS drawing method for PUT statement
- *
- * chng: mar/2007 written [lillo]
- *
- */
+/* TRANS drawing method for PUT statement */
 
 #include "fb_gfx.h"
 

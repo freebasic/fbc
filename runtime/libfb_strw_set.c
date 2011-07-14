@@ -1,9 +1,4 @@
-/*
- * strw_set.c -- lsetw and rsetw functions
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* lsetw and rsetw functions */
 
 #include "fb.h"
 

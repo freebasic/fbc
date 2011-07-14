@@ -1,9 +1,4 @@
-/*
- *	file_opencom - open COMx
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* open COMx */
 
 #include <stdlib.h>
 #include "fb.h"

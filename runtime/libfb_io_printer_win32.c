@@ -1,10 +1,4 @@
-/*
- * io_printer.c -- printer access for Windows
- *
- * chng: jul/2005 written [mjs]
- * chng: jun/2006 wide character fixes and default printer selection [jeffmarshall]
- *
- */
+/* printer access for Windows */
 
 #include <windows.h>
 #include <stdio.h>

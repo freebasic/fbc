@@ -1,9 +1,4 @@
-/*
- * io_write.c -- write [#] functions
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* write [#] functions */
 
 #include <stdio.h>
 #include "fb.h"

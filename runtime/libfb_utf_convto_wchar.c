@@ -1,9 +1,5 @@
-/*
- * utf_convto_wchar - UTF to wstring conversion
- *
- * chng: mar/2006 written [v1ctor]
- *		 (based on ConvertUTF.c free implementation from Unicode, Inc)
- *
+/* UTF to wstring conversion
+ * (based on ConvertUTF.c free implementation from Unicode, Inc)
  */
 
 #include <stdlib.h>

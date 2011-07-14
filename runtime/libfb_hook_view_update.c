@@ -1,10 +1,4 @@
-/*
- * hook_view_update.c -- call back function that gets called whenever VIEW PRINT
- *                       was called
- *
- * chng: sep/2005 written [mjs]
- *
- */
+/* call back function that gets called whenever VIEW PRINT was called */
 
 #include "fb.h"
 

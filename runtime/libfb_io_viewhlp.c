@@ -1,9 +1,4 @@
-/*
- * io_getview.c -- view print helpers (console, no gfx)
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* view print helpers (console, no gfx) */
 
 #include "fb.h"
 

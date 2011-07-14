@@ -1,9 +1,4 @@
-/*
- * hook_locate_ex.c -- locate entrypoint, default to console mode
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* locate entrypoint, default to console mode */
 
 #include "fb.h"
 

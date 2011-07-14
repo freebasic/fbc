@@ -1,9 +1,4 @@
-/*
- * str_set.c -- lset and rset functions
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* lset and rset functions */
 
 #include <stdlib.h>
 #include <string.h>

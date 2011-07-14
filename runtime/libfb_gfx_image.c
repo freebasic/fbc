@@ -1,9 +1,4 @@
-/*
- * image.c -- image create/destroy functions
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* image create/destroy functions */
 
 #include "fb_gfx.h"
 

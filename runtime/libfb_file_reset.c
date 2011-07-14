@@ -1,9 +1,4 @@
-/*
- * file_reset - RESET function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* RESET function */
 
 #include <stdio.h>
 #include <stdlib.h>

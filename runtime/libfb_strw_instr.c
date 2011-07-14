@@ -1,9 +1,4 @@
-/*
- * strw_instr.c -- instrw function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* instrw function */
 
 #include "fb.h"
 

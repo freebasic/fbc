@@ -1,11 +1,4 @@
-/*
- * io_locate.c -- locate (console, no gfx) function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *                mod: fixed return and default values [mjs]
- *
- */
+/* locate (console, no gfx) function for Windows */
 
 #include "fb.h"
 

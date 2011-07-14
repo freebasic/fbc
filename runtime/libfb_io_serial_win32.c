@@ -1,9 +1,4 @@
-/*
- * io_serial.c -- serial port access for Windows
- *
- * chng: aug/2005 written [mjs]
- *			 jun/2006 added \\.\ to CreateFile() [jeffmarshall]
- */
+/* serial port access for Windows */
 
 #include <windows.h>
 #include <stdio.h>

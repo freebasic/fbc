@@ -1,9 +1,4 @@
-/*
- * view.c -- VIEW statement
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* VIEW statement */
 
 #include "fb_gfx.h"
 

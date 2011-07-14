@@ -1,9 +1,4 @@
-/*
- * image_convert.c -- bpp conversion
- *
- * chng: jan/2005 written [lillo]
- *
- */
+/* bpp conversion */
 
 #include "fb_gfx.h"
 

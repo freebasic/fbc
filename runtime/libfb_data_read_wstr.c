@@ -1,9 +1,4 @@
-/*
- * data_wstr.c -- read stmt for wstring's
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* read stmt for wstring's */
 
 #include <stdlib.h>
 #include "fb.h"

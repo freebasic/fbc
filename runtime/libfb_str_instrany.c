@@ -1,9 +1,4 @@
-/*
- * str_instrany.c -- instrany function
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* instrany function */
 
 #include <stdlib.h>
 #include <string.h>

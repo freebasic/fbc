@@ -1,10 +1,4 @@
-/*
- * io_readxy.c -- SCREEN() function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *       jul/2005 mod: use convert*console functions [mjs]
- *
- */
+/* SCREEN() function for Windows */
 
 #include "fb.h"
 

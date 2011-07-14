@@ -1,9 +1,4 @@
-/*
- * dev_file_size - file device size calc
- *
- * chng: jul/2005 written [v1ctor]
- *
- */
+/* file device size calc */
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,9 +1,4 @@
-/*
- * swap_mem.c -- swap f/ non-strings
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* swap for non-strings */
 
 #include <stdlib.h>
 #include "fb.h"

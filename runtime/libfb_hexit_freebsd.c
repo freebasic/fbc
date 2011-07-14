@@ -1,9 +1,4 @@
-/*
- * exit.c -- end helper for FreeBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* end helper for FreeBSD */
 
 #include "fb.h"
 

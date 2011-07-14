@@ -1,9 +1,4 @@
-/*
- * dev_file_encod_readline_wstr - UTF-encoded file device LINE INPUT for wstrings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* UTF-encoded file device LINE INPUT for wstrings */
 
 #include "fb.h"
 

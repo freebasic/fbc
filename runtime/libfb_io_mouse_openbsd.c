@@ -1,9 +1,4 @@
-/*
- * io_mouse.c -- OpenBSD console mouse functions implementation
- *
- * chng: / written []
- *
- */
+/* OpenBSD console mouse functions implementation */
 
 #include "fb.h"
 

@@ -1,10 +1,4 @@
-/*
- * io_getsize.c -- get size (console, no gfx) function for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* get size (console, no gfx) function for Linux */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * intl_getweekdayname.c -- get weekday name
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get weekday name */
 
 #include "fb.h"
 

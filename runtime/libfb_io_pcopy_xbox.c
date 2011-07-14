@@ -1,9 +1,4 @@
-/*
- * io_pcopy.c -- pcopy (console, no gfx) function for XBOX
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* pcopy (console, no gfx) function for XBOX */
 
 #include "fb.h"
 

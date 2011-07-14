@@ -1,9 +1,4 @@
-/*
- * init.c -- libfb initialization
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* libfb initialization */
 
 #include <stdlib.h>
 #include "fb.h"

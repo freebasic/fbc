@@ -1,9 +1,4 @@
-/*
- * libfb_io_vwupd.c -- view print update (console, no gfx) for xbox
- *
- * chng: / written []
- *
- */
+/* view print update (console, no gfx) for xbox */
 
 #include "fb.h"
 

@@ -1,9 +1,4 @@
-/*
- * strw_convassign.c -- ascii <-> unicode string convertion functions
- *
- * chng: ago/2005 written [v1ctor]
- *
- */
+/* ascii <-> unicode string convertion functions */
 
 #include "fb.h"
 

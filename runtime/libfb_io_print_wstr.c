@@ -1,9 +1,4 @@
-/*
- * io_print_wstr.c -- print [#] wstring functions
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* print [#] wstring functions */
 
 #include <stdlib.h>
 #include "fb.h"

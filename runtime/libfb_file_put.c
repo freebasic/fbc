@@ -1,9 +1,4 @@
-/*
- *	file_put - put # function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* put # function */
 
 #include <stdio.h>
 #include <stdlib.h>

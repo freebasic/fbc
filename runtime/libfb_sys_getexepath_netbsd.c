@@ -1,9 +1,4 @@
-/*
- * sys_getexepath.c -- get the executable path for NetBSD
- *
- * chng: sep/2007 written [DrV]
- *
- */
+/* get the executable path for NetBSD */
 
 #include "fb.h"
 #include <string.h>

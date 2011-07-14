@@ -1,9 +1,4 @@
-/*
- * io_getsize.c -- get size (console, no gfx) function for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* get size (console, no gfx) function for Windows */
 
 #include "fb.h"
 

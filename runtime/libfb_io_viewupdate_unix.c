@@ -1,13 +1,6 @@
-/*
- * libfb_io_viewupdate.c -- view print update (console, no gfx) for Linux
- *
- * chng: jan/2005 written [DrV]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* view print update (console, no gfx) for Linux */
 
 #include "fb.h"
-
 
 /*:::::*/
 void fb_ConsoleViewUpdate(void)

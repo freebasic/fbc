@@ -1,9 +1,4 @@
-/*
- * str_convfrom_uint.c -- valuint function
- *
- * chng: mar/2005 written [v1ctor]
- *
- */
+/* valuint function */
 
 #include <stdlib.h>
 #include "fb.h"

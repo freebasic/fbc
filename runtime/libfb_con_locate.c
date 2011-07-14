@@ -1,9 +1,4 @@
-/*
- * con_locate.c -- locate function entry point, returns current position
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+/* locate function entry point, returns current position */
 
 #include "fb.h"
 

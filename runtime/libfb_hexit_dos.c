@@ -1,9 +1,4 @@
-/*
- * exit.c -- end helper for DOS
- *
- * chng: jan/2005 written [DrV]
- *
- */
+/* end helper for DOS */
 
 #include <stdlib.h>
 #include "fb.h"

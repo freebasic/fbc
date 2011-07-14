@@ -1,9 +1,4 @@
-/*
- * io_multikey.c -- multikey function for Windows console mode apps
- *
- * chng: jun/2005 written [lillo]
- *
- */
+/* multikey function for Windows console mode apps */
 
 #include "fb.h"
 #include "fb_win32.h"

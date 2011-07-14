@@ -1,9 +1,4 @@
-/*
- * time_tmr.c -- win32 timer# function
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
+/* win32 timer# function */
 
 #include <time.h>
 #include "fb.h"

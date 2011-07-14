@@ -1,10 +1,4 @@
-/*
- * thread_mutex.c -- Linux (pthreads) mutex handling routines
- *
- * chng: feb/2005 written [lillo]
- *
- */
-
+/* Linux (pthreads) mutex handling routines */
 
 #include <pthread.h>
 #include "fb.h"

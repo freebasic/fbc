@@ -1,11 +1,4 @@
-/*
- * file_open - open and core file functions
- *
- * chng: oct/2004 written [v1ctor]
- *       jul/2005 modified to use the VFS OPEN method
- *       aug/2005 added OPEN hook
- *
- */
+/* open and core file functions */
 
 #include <stdlib.h>
 #include "fb.h"

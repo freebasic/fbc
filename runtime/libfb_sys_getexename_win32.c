@@ -1,9 +1,4 @@
-/*
- * sys_getexename.c -- get the executable's name for Windows
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* get the executable's name for Windows */
 
 #include <string.h>
 #include "fb.h"

@@ -1,9 +1,4 @@
-/*
- * io_printbuff_wstr.c -- low-level print to console function for wstrings
- *
- * chng: nov/2005 written [v1ctor]
- *
- */
+/* low-level print to console function for wstrings */
 
 #include "fb.h"
 #include "fb_con.h"

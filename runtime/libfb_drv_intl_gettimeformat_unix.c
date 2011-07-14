@@ -1,9 +1,4 @@
-/*
- * drv_intl_gettimeformat.c -- get localized short TIME format
- *
- * chng: aug/2005 written [mjs]
- *
- */
+/* get localized short TIME format */
 
 #include "fb.h"
 #include <stddef.h>

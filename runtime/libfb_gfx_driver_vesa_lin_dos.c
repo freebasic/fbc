@@ -1,9 +1,4 @@
-/*
- * vesa_lin.c -- linear VESA gfx driver
- *
- * chng: jul/2006 written [DrV]
- *
- */
+/* linear VESA gfx driver */
 
 #include "fb_gfx_dos.h"
 

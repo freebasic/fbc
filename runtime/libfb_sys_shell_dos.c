@@ -1,9 +1,4 @@
-/*
- * sys_shell.c -- SHELL command for DOS
- *
- * chng: apr/2005 written [lillo]
- *
- */
+/* SHELL command for DOS */
 
 #include <stdlib.h>
 

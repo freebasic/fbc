@@ -1,10 +1,5 @@
-/*
- * io_width.c -- width (console, no gfx) for Windows
- *
- * credits: code based on PDCurses, Win32 port by Chris Szurgot (szurgot@itribe.net)
- *
- * chng: nov/2004 written [v1ctor]
- *
+/* width (console, no gfx) for Windows
+ * code based on PDCurses, Win32 port by Chris Szurgot (szurgot@itribe.net)
  */
 
 #include "fb.h"

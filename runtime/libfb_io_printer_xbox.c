@@ -1,9 +1,4 @@
-/*
- * io_printer.c -- printer access for xbox
- *
- * chng: / written []
- *
- */
+/* printer access for xbox */
 
 #include "fb.h"
 

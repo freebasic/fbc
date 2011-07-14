@@ -1,9 +1,4 @@
-/*
- * sys_ports.c -- ports I/O for Linux
- *
- * chng: aug/2005 written [lillo]
- *
- */
+/* ports I/O for Linux */
 
 #include "fb.h"
 #include "fb_linux.h"

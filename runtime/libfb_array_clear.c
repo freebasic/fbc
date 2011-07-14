@@ -1,9 +1,4 @@
-/*
- * array_clear.c -- erase function for static arrays
- *
- * chng: jan/2005 written [v1ctor]
- *
- */
+/* ERASE function for static arrays */
 
 #include <stddef.h>
 #include "fb.h"

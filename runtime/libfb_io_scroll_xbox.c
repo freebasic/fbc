@@ -1,9 +1,4 @@
-/*
- * io_scroll.c -- console scrolling for when VIEW is used for xbox
- *
- * chng: / written []
- *
- */
+/* console scrolling for when VIEW is used for xbox */
 
 #include "fb.h"
 

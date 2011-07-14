@@ -1,9 +1,4 @@
-/*
- * farmemset.c -- farptr memset routines for DOS
- *
- * chng: jul/2005 written [DrV]
- *
- */
+/* farptr memset routines for DOS */
 
 #include "fb.h"
 

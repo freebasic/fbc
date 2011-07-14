@@ -1,10 +1,4 @@
-/*
- * exit.c -- end helper for Linux
- *
- * chng: jan/2005 written [lillo]
- *       feb/2005 rewritten to remove ncurses dependency [lillo]
- *
- */
+/* end helper for Linux */
 
 #include "fb.h"
 

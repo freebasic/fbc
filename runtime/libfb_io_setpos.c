@@ -1,9 +1,4 @@
-/*
- * io_setpos.c -- Sets a file handles line length
- *
- * chng: jul/2005 written [mjs]
- *
- */
+/* Sets a file handles line length */
 
 #include <stdio.h>
 #include "fb.h"
