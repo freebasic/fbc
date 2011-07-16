@@ -40,7 +40,9 @@ WINDRES := windres
 # defaults before this #include.
 -include config.mk
 
+#
 # System-specific configuration
+# -----------------------------
 #
 # build system: where the build is taking place. (default: guessed from uname)
 # host system: where the new compiler is going to run. (default: build)
@@ -64,88 +66,66 @@ WINDRES := windres
 # If BUILD is not specified, then by default all these three variables will
 # be empty and native tools will be used. It's still ok to specify HOST (with
 # or without TARGETS) or TARGETS only.
+#
+#
 
-# Code snippet for GNU triplet deciphering.
-# $1 is either "BUILD", "HOST" or "TARGET" variable.
-# For example, for BUILD, the variables BUILD_OS and BUILD_CPU will be set.
-define parse-gnu-triplet
-  # $$($1) is something like 'i686-pc-linux-gnu' (we'd see this as 4
-  # words/parts), or just 'mingw32' (1 word/part).
-  # Unfortunately we need to escape many $'s via $$ to prevent them
-  # from being expanded a level too early. The $(call) (or simply $())
-  # will expand the $1's and any other $()'s immediately, without
-  # actually parsing the syntax. That's done afterwards by the $(eval),
-  # which will parse the if's, variable assignments, etc. and (again) do
-  # expansion during that.
+################################################################################
+# GNU system triplet parsing
+# It's nice to support the triplets for cross builds etc. just like autoconf,
+# so the proper cross-tools can be invoked. In autoconf you'd use a shell case
+# statement and check for *-*-mingw*, but here we convert the dashes in the
+# triplets to spaces ('i686-pc-mingw32' -> 'i686 pc mingw32') and then use
+# make's word/text processing functions to analyze it.
 
-  # Disallow spaces that are already in
-  ifneq ($$(firstword $$($1)),$$($1))
-    $$(error $1='$$($1)' must not contain spaces, that would be too difficult \
-             to handle. Who'd use that anyways? Does autoconf even allow it?)
-  endif
+# os = {all the words 3..EOL | the last word if 3..EOL was empty}
+# 'i686 pc linux gnu' -> 'linux gnu'
+# 'mingw32'           -> 'mingw32'
+extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
 
-  # Replace the hyphens by spaces, so we can use make's $(word) type
-  # of functions to parse the parts.
-  $1_LIST := $$(subst -, ,$$($1))
+# cpu = iif(has >= 2 words, first word, unknown)
+# 'i686 pc linux gnu' -> 'i686'
+# 'mingw32'           -> 'unknown'
+extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 
-  # We're interested in the architecture (part 1) and the OS/kernel,
-  # which is the whole junk at the end, and sometimes the only thing
-  # in the triplet.
-  # Are there parts 3..EOL?
-  $1_OS := $$(wordlist 3,$$(words $$($1_LIST)),$$($1_LIST))
-  $1_CPU := $$(firstword $$($1_LIST))
+triplet-oops = \
+  $(error Sorry, '$(1)' does not look like one of the known GNU triplets. \
+          Maybe you mistyped, or the system is not yet supported by FB)
 
-  ifeq ($$($1_OS),)
-    # Is there a part 2?
-    $1_OS := $$(word 2,$$($1_LIST))
-    ifeq ($$($1_OS),)
-      # Well, then there only is 1 part. It must do.
-      $1_OS := $$($1_CPU)
-      $1_CPU :=
-      ifeq ($$($1_OS),)
-        # $1 contained just '-' or similar
-        $$(error Sorry, $1='$$($1)' does not seem to be a valid system id)
-      endif
-    endif
-  else
-    # Turn 'linux gnu' back into 'linux-gnu'
-    $1_OS := $$(subst  ,-,$$($1_OS))
-  endif
+# Canonical name to FB's internal short name translation
+parse-os = \
+  $(or $(findstring cygwin,$(1)), \
+       $(findstring darwin,$(1)), \
+       $(findstring freebsd,$(1)), \
+       $(findstring linux,$(1)), \
+       $(findstring mingw,$(1)), \
+       $(findstring djgpp,$(1)), \
+       $(findstring netbsd,$(1)), \
+       $(findstring openbsd,$(1)), \
+       $(findstring solaris,$(1)), \
+       $(findstring xbox,$(1)), \
+       $(call triplet-oops,$(2)))
 
-  # Parse the operating system/kernel name part of the GNU triplet,
-  # and translate it to its corresponding FB short system name.
-  ifneq ($$(filter cygwin%,$$($1_OS)),)
-    $1_OS := cygwin
-  else ifneq ($$(filter darwin%,$$($1_OS)),)
-    $1_OS := darwin
-  else ifneq ($$(filter freebsd%,$$($1_OS)),)
-    $1_OS := freebsd
-  else ifneq ($$(filter linux%,$$($1_OS)),)
-    $1_OS := linux
-  else ifneq ($$(filter mingw%,$$($1_OS)),)
-    $1_OS := win32
-  else ifneq ($$(filter msdos%,$$($1_OS)),)
-    $1_OS := dos
-  else ifneq ($$(filter netbsd%,$$($1_OS)),)
-    $1_OS := netbsd
-  else ifneq ($$(filter openbsd%,$$($1_OS)),)
-    $1_OS := openbsd
-  else ifneq ($$(filter solaris%,$$($1_OS)),)
-    $1_OS := solaris
-  else ifneq ($$(filter xbox%,$$($1_OS)),)
-    $1_OS := xbox
-  else
-    $$(error Sorry, $1='$$($1)' does not look like any of the expected GNU \
-             triplet values. Maybe this system is not yet supported by FB, \
-             or this value has just never been expected so far)
-  endif
-endef
+parse-cpu = \
+  $(or $(and $(filter i386,$(1)),386), \
+       $(and $(filter i486,$(1)),486), \
+       $(and $(filter i586,$(1)),586), \
+       $(and $(filter i686,$(1)),686), \
+       $(filter x86_64 sparc sparc64 powerpc64,$(1)), \
+       $(call triplet-oops,$(2)))
 
-# BUILD given?
+triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
+triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
+
+################################################################################
+
+
+
 ifneq ($(BUILD),)
-  # Parse
-  $(eval $(call parse-gnu-triplet,BUILD))
-else
+  # The user set BUILD to something specific, so we're going to extract
+  # BUILD_OS and BUILD_CPU from it.
+  BUILD_OS := $(call triplet-os,$(BUILD))
+  BUILD_CPU := $(call triplet-cpu,$(BUILD))
+  BUILD_PREFIX := $(BUILD)-
 endif
 
 # If the BUILD_OS isn't already set from 
