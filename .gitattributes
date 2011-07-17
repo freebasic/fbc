@@ -1,0 +1,15 @@
+FreeBASIC/src/compiler/configure        eol=lf
+FreeBASIC/src/compiler/configure.ac     eol=lf
+FreeBASIC/src/compiler/Makefile.in      eol=lf
+
+FreeBASIC/src/config/*                  eol=lf
+
+FreeBASIC/src/gfxlib2/config.in         eol=lf
+FreeBASIC/src/gfxlib2/configure         eol=lf
+FreeBASIC/src/gfxlib2/configure.ac      eol=lf
+FreeBASIC/src/gfxlib2/Makefile.in       eol=lf
+
+FreeBASIC/src/rtlib/config.in           eol=lf
+FreeBASIC/src/rtlib/configure           eol=lf
+FreeBASIC/src/rtlib/configure.ac        eol=lf
+FreeBASIC/src/rtlib/Makefile.in         eol=lf
