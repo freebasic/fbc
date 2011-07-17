@@ -1601,9 +1601,17 @@ end function
 '':::::
 private function hEmitSingle( byval value as single ) as string
 
-	'' Same considerations as for doubles apply (see below),
-	'' but the 'f' suffix should solve this here.
-	return str( value ) & "f"
+	dim as string s = str( value )
+
+	'' Same considerations as for doubles (see below), and besides,
+	'' apparently the 'f' suffix cannot be used unless the literal
+	'' really looks like a float, i.e. has a dot or exponent.
+
+	if( instr( s, any "e." ) = 0 ) then
+		s += ".0"
+	end if
+
+	return s & "f"
 
 end function
 
