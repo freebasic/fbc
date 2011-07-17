@@ -1618,14 +1618,15 @@ end function
 '':::::
 private function hEmitDouble( byval value as double ) as string
 
+	dim as string s = str( value )
+
 	'' This can be something like '1', '0.1, or '1e-100'.
 	'' We want to make sure gcc always treats it as a double;
 	'' unfortunately there is no double type suffix, so we add '.0'
 	'' to prevent it from being treated as integer (that would cause
 	'' problems with doubles bigger than the int range allows).
-	dim as string s = str( value )
 
-	if( instr( s, any "ed+-." ) = 0 ) then
+	if( instr( s, any "e." ) = 0 ) then
 		s += ".0"
 	end if
 
