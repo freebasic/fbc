@@ -489,6 +489,20 @@ private function hEmitFuncParams _
 	end if
 
 	var params = "( "
+
+	if( hidden_param ) then
+		params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), _
+		                        iif( isproto = FALSE, symbGetSubtype( hidden_param ), hidden_param ) )
+
+		if( isproto = FALSE ) then
+			params += " " & *symbGetMangledName( hidden_param )
+		end if
+
+		if( proc->proc.params > 0 ) then
+			params += ", "
+		end if
+	end if
+
 	var param = symbGetProcLastParam( proc )
 	do while param
 
@@ -550,19 +564,6 @@ private function hEmitFuncParams _
 		end if
 
 	loop
-
-	''
-	if( hidden_param ) then
-        if( proc->proc.params > 0 ) then
-           	params += ", "
-        end if
-
-    	params += *hDtypeToStr( typeAddrOf( symbGetType( hidden_param ) ), iif( isproto = FALSE, symbGetSubtype( hidden_param ), hidden_param ) )
-
-		if( isproto = FALSE ) then
-        	params += " " & *symbGetMangledName( hidden_param )
-		end if
-	end if
 
 	params += " )"
 
