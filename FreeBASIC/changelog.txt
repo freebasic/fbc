@@ -7,6 +7,7 @@ Version 0.23.0:
 - Bitfields were allowed to be passed to BYREF parameters
 - #3153953: Faulty reoptimisation of constant optimizing in complex nested addition/subtraction expressions
 - #3327533: Internal compiler error trying to parse non-integer bounds in array declarations
+- C emitter: Erroneous '.0' being appended to double floating point literals like '1e-100'
 
 
 Version 0.22.0:
