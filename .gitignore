@@ -1,0 +1,10 @@
+*.o
+*.a
+
+# All the Makefiles and configure logs, etc.
+FreeBASIC/src/compiler/obj/*
+FreeBASIC/src/rtlib/obj/*
+FreeBASIC/src/gfxlib2/obj/*
+
+# This is auto-generated
+FreeBASIC/src/gfxlib2/libfb_gfx_data.c
