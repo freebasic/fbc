@@ -131,6 +131,7 @@ Version 0.21.0:
 - preprocessor-only mode, activated by '-pp' command-line option (dkls)
 - @<file> command-line option, to read command-line options from files (dkls)
 - __FB_UNIX__/__FB_PCOS__ target type specific defines, thanks to segin for the patch
+- C emitter backend (-gen gcc), experimental
 
 [fixed]
 - WIDTH was crashing when optional parameter was not specified (DrV)
