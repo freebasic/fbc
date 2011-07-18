@@ -1,7 +1,7 @@
 # include "fbcu.bi"
 
 #define REMOVE_TEMP_FILE
-#define PRINT_IF_UNEQUAL
+'#define PRINT_IF_UNEQUAL
 
 #define QT(s) ("""" & (s) & """")
 
@@ -111,7 +111,7 @@ end sub
 
 private sub test_sng2( _
 		byref fmt as string, _
-		byval num as double, byval num2 as double, _
+		byval num as single, byval num2 as single, _
 		byref cmp as string)
 
 	PRINT_USING( fmt & "_!", csng(num);csng(num2), cmp & "!" )
@@ -123,6 +123,9 @@ private sub test_sng( _
 		byval num as double, _
 		byref cmp as string, _
 		byval do_dbl as integer = 1)
+
+	'' note: num is a Double to prevent
+	'' decimal vals getting corrupted in Double test
 
 	PRINT_USING( fmt & "_!", csng(num), cmp & "!" )
 	if( do_dbl ) then 
@@ -181,6 +184,7 @@ sub numtest cdecl ()
 	dim num as double, num_ll as longint, num_ull as ulongint
 	dim as string fmt, cmp
 	dim as integer i, e
+	dim as single s
 
 	OPEN_FILE( "print_using_numtest.txt" )
 
@@ -235,7 +239,10 @@ sub numtest cdecl ()
 	fmt = HASHES(2) & "." & HASHES(18) & CARETS(4)
 
 	'' test 2^-23 (double precision should cut off last '5' digit and round up from ...25 to ...30)
-	test_dbl( fmt, 2 ^ -23, " 1.192092895507813000E-07" )
+	'' (Use a Single value here because Linux
+	'' doesn't seem to emit decimal 2^-23 accurately for Doubles)
+	s = 2^-23
+	test_sng( fmt, s, " 1.192092895507813000E-07" )
 
 	'' test 2^-22 .. 2^0 in floating-point (should all fit within double precision digits)
 	for i = -22 to 0
