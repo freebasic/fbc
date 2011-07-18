@@ -1153,7 +1153,9 @@ static int hPrintNumber
 /*:::::*/
 static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 {
+	DBG_ASSERT( value >= 0.0 );
 
+#if 0
 	/* scale down to a 16-digit number, plus base-10 exponent */
 
 	if( value == 0.0 )
@@ -1185,7 +1187,81 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 
 	*pval_exp = val_exp;
 	return val_ull;
+#else
 
+	/*(assumes x86 endian, IEEE-754 floating-point format) */
+
+	unsigned long long val_ull;
+	int digs;
+	int pow2, pow10;
+
+	val_ull = *(unsigned long long *)&value;
+	pow2 = (val_ull >> 52) - 1023;
+	val_ull &= (1ull << 52)-1;
+
+	if( pow2 > -1023 )
+	{	/* normalized */
+		val_ull |= (1ull << 52);
+	}
+	else
+	{	/* denormed */
+		pow2 += 1;
+	}
+	pow2 -= 52; /* 52 (+1?) integer bits in val_ull */
+	
+	pow10 = 0;
+
+	while( pow2 > 0 )
+	{
+		/* essentially, val_ull*=2, --pow2,
+		 * dividing by 5 when necessary to keep within 64 bits) */
+		if( val_ull < (1ull << 63) )
+		{
+			val_ull *= 2;
+			--pow2;
+		}
+		else
+		{
+			/* divide by 5, rounding to nearest
+			 * (val_ull will be much bigger than 3 so no underflow) */
+			val_ull = (val_ull - 3) / 5 + 1;
+			++pow10;
+			--pow2;
+		}
+	}
+
+	while( pow2 < 0 )
+	{
+		/* essentially, val_ull/=2, ++pow2,
+		 * multiplying by 5 when possible to keep precision high */
+		if( val_ull <= 0x3333333333333333ull )
+		{	/* multiply by 5 (max 0xffffffffffffffff) */
+			val_ull *= 5;
+			--pow10;
+			++pow2;
+		}
+		else
+		{	/* divide by 2, rounding to even */
+			val_ull = val_ull / 2 + (val_ull & (val_ull / 2) & 1);
+			++pow2;
+		}
+	}
+
+	digs = hLog10_ULL( val_ull ) + 1;
+	if( digs > 16 )
+	{	/* scale to 16 digits */
+
+		int scale = digs - 16;
+		val_ull = hDivPow10_ULL( val_ull, scale );
+		pow10 += scale;
+
+		DBG_ASSERT( val_ull <= hPow10_ULL( 16 ) );
+	}
+
+	*pval_exp = pow10;
+	return val_ull;
+
+#endif
 }
 
 /*:::::*/

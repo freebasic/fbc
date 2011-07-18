@@ -9,6 +9,7 @@ Version 0.23.0:
 - #3327533: Internal compiler error trying to parse non-integer bounds in array declarations
 - C emitter: Erroneous '.0' being appended to double floating point literals like '1e-100'
 - C emitter: Hidden UDT result parameters were emitted last rather than first in function declarations
+- Fixed buggy PRINT USING floating-point scaling, now works more consistently across all platforms
 
 
 Version 0.22.0:
