@@ -328,7 +328,7 @@ private function hLoadDefine _
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
             if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
-				text = QUOTE + symbGetDefineCallback( s )( ) + QUOTE
+				text = "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE
             else
 				text = symbGetDefineCallback( s )( )
             end if
@@ -652,7 +652,7 @@ private function hLoadDefineW _
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
             if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
-				DWstrAssignA( text, QUOTE + symbGetDefineCallback( s )( ) + QUOTE )
+				DWstrAssignA( text, "$" + QUOTE + symbGetDefineCallback( s )( ) + QUOTE )
             else
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
             end if
