@@ -1347,38 +1347,13 @@ $(RUNTIME_S_OBJECTS): %.o: %.s $(RUNTIME_HEADERS)
 #$(MTSOBJECTS): %.mt.o: %.s $(RUNTIME_HEADERS)
 #	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
-MAKEDATA := ./makedata$(BUILD_EXEEXT)
-MAKEDRIVER := ./makedriver$(BUILD_EXEEXT)
 
-libfb_gfx_data.h: runtime/data/data.lst $(MAKEDATA) $(GFX_DATA_FILES)
-	$(MAKEDATA) $< $@
 
-$(MAKEDATA): makedata.bas
-	$(BUILD_FBC) -g -exx $< -o $(patsubst %.bas,%.o,$<) -x $@ -l fbgfx
 
-fbportio_driver.h: fbportio.sys $(MAKEDRIVER)
-	$(MAKEDRIVER) $< $@
 
-$(MAKEDRIVER): makedriver.bas
-	$(BUILD_FBC) -g -exx $< -o $(patsubst %.bas,%.o,$<) -x $@
 
-fbportio.sys: fbportio.c fbportio_rc.o libntoskrnl_missing.a
-	$(CC) -Wall -O2 -nostartfiles -nodefaultlibs -nostdlib \
-	-Wl,-shared \
-	-Wl,--entry,_DriverEntry@8 \
-	-Wl,--subsystem,native \
-	-Wl,--image-base,0x10000 \
-	-Wl,--strip-all \
-	$^ -lntoskrnl -o $@
 
-fbportio_rc.o: fbportio.rc
-	$(WINDRES) $< $@
 
-# Small import library to compensate for MinGW's ntoskrnl import library not
-# containing PsLookupProcessByProcessId@8.
-# TODO: Remove, when the driver starts working with just MinGW's library.
-libntoskrnl_missing.a: libntoskrnl_missing.def
-	$(DLLTOOL) -d $< -l $@ --kill-at
 
 .PHONY: install
 install: $(FBCNEW)
