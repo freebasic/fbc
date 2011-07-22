@@ -15,22 +15,6 @@
 #    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
 # FreeBASIC CPU names:
 #    386 486 586 686 x86_64 sparc sparc64 powerpc64
-#
-# The runtime consists of libfb.a, libfbmt.a (libfb.a but with
-# -DMULTITHREADED), libfbgfx.a and fbrt0.o. Many C modules, some assembly,
-# many system-dependant parts.
-# There are two special cases that require extra work:
-#   1) libfbgfx's font/palette data files: they need to be compressed and
-#      turned into a C array of bytes, so that they can be uncompressed and
-#      used at runtime. The makedata.bas tool generates the libfb_gfx_data.h
-#      header which is #included by libfb_gfx_data.c.
-#   2) libfb's FB Windows port I/O driver (fbportio): it is compiled and then
-#      also turned into a C array of bytes using the makedriver.bas tool,
-#      so at runtime it can be written out and installed as a file. makedriver
-#      generates the fbportio_driver.h header which is #included by
-#      libfb_sys_ports_win32.c.
-#
-
 # Determine the srcdir (like the one normally given by configure),
 # to allow building in a separate build directory.
 VPATH := $(dir $(MAKEFILE_LIST))
