@@ -4,7 +4,7 @@ static unsigned char internal_data[];
 static unsigned char inited = FALSE;
 
 // Pull in the auto-generated data...
-#include "libfb_gfx_data.h"
+#include "gfxdata/inline.h"
 
 static unsigned char internal_data[DATA_SIZE];
 

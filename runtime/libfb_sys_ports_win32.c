@@ -1,10 +1,11 @@
 /* ports I/O for Win32 */
 
 #include "fb.h"
-#include "fbportio.h"
-#include "fbportio_driver.h"
+#include "fbportio/fbportio.h"
 #include <winioctl.h>
 
+// Pull in the auto-generated data...
+#include "fbportio/inline.h"
 
 static int inited = FALSE;
 
