@@ -1,8 +1,6 @@
 /* ISR handling for DOS */
 
 #include "fb.h"
-#include "fb_dos.h"
-
 
 #include <dpmi.h>
 #include <go32.h>

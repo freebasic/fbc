@@ -1,7 +1,6 @@
 /* ports I/O for Win32 */
 
 #include "fb.h"
-#include "fb_win32.h"
 #include "fbportio.h"
 #include "fbportio_driver.h"
 #include <winioctl.h>

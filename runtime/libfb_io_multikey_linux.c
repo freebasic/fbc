@@ -1,7 +1,6 @@
 /* Linux multikey function implementation */
 
 #include "fb.h"
-#include "fb_linux.h"
 #include "fb_scancodes.h"
 
 #ifdef WITH_X

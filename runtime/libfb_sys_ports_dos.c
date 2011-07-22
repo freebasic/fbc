@@ -1,8 +1,6 @@
 /* ports I/O for DOS */
 
 #include "fb.h"
-#include "fb_dos.h"
-
 
 /*:::::*/
 int fb_hIn( unsigned short port )
@@ -22,4 +20,3 @@ int fb_hOut( unsigned short port, unsigned char value )
 	
 	return FB_RTERROR_OK;
 }
-

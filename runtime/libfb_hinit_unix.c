@@ -1,7 +1,6 @@
 /* libfb initialization for Unix */
 
 #include "fb.h"
-#include "fb_unix.h"
 
 #ifdef MULTITHREADED
 pthread_mutex_t __fb_global_mutex;

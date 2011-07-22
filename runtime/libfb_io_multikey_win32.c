@@ -1,7 +1,6 @@
 /* multikey function for Windows console mode apps */
 
 #include "fb.h"
-#include "fb_win32.h"
 #include "fb_scancodes.h"
 
 const unsigned char __fb_keytable[][3] = {
