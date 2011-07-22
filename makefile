@@ -18,19 +18,6 @@
 # We don't want to use any of make's built-in suffixes/rules
 .SUFFIXES:
 
-AR := ar
-BUILD_FBC := fbc
-CC := gcc
-CFLAGS := -g -O0 -DDEBUG
-DLLTOOL := dlltool
-FBC := fbc
-FBFLAGS := -g -exx
-PREFIX := /usr/local
-WINDRES := windres
-
-# config.mk can be used to define variables/settings, so we need to set the
-# defaults before this #include.
--include config.mk
 
 ################################################################################
 # Triplet parsing
@@ -79,6 +66,10 @@ triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
 
 ################################################################################
 
+# The ./config.mk and ./$(new)/config.mk files can be used to set variables,
+# so they don't have to be specified at the command line again and again.
+-include config.mk
+
 # The build directory -- where all generated/compiled files go.
 # We want the newly built fbc to be runnable from there, for testing without
 # installing, and we want to allow changing the build directory, to allow
@@ -86,6 +77,9 @@ triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
 ifndef new
   new := new
 endif
+
+-include $(new)/config.mk
+
 # HOST: cross-compile fbc to run on this host, defaults to the build system.
 ifneq ($(HOST),)
   HOST_OS := $(call triplet-os,$(HOST))
@@ -155,10 +149,6 @@ ifeq ($(HOST_CPU),)
   endif
 endif
 
-ifeq ($(HOST_OS),mingw)
-	EXEEXT := .exe
-endif
-
 # TARGET: default target of the new compiler, defaults to same as HOST.
 ifeq ($(TARGET),)
   TARGET := $(HOST)
@@ -171,7 +161,77 @@ else
   TARGET_PREFIX := $(TARGET)-
 endif
 
+ifndef HOST_FBC
+  HOST_FBC := $(HOST_PREFIX)$(FBC)
+endif
+
+ifndef HOST_CC
+  HOST_CC := $(HOST_PREFIX)$(CC)
+endif
+
+ifndef TARGET_AR
+  TARGET_AR := $(TARGET_PREFIX)$(AR)
+endif
+
+ifndef TARGET_CC
+  TARGET_CC := $(TARGET_PREFIX)$(CC)
+endif
+
+ifneq ($(filter dos cygwin win32,$(HOST_OS)),)
+  EXEEXT := .exe
+endif
+
+# Default prefix is /usr/local, except when cross-compiling, then you typically
+# don't want to install into the build system, and when on Windows (with MinGW),
+# installing into /usr/local isn't all that helpful (especially if MSYS isn't
+# installed).
+ifndef prefix
+  ifneq ($(HOST),)
+    prefix := .
+  else ifeq ($(HOST_OS),win32)
+    prefix := .
+  else
+    prefix := /usr/local
+  endif
+endif
+
+ifndef FBC
+  FBC := fbc
+endif
+
+ifndef CC
+  CC := gcc
+endif
+
+ifndef AR
+  AR := ar
+endif
+
+ifndef CFLAGS
+  CFLAGS := -g -O2
+endif
+
+ifndef FBFLAGS
+  FBFLAGS := -g
+endif
+
+# Don't build libfbmt on DOS
+ifeq ($(TARGET_OS),dos)
+  DISABLE_MT := YesPlease
+endif
+
 ################################################################################
+
+# Protect against dangerous path values, we do not want to end up with
+# 'rm -rf /'. Assuming <nothing> means '.'.
+ifeq ($(prefix),)
+  override prefix := .
+endif
+ifdef new
+  ifeq ($(new),)
+    override new := .
+  endif
+endif
 
 newcompiler := $(new)/compiler
 newruntime := $(new)/runtime
@@ -1318,17 +1378,27 @@ help:
 	@echo "  install       to install into PREFIX."
 	@echo "  uninstall     to remove from PREFIX."
 	@echo "  clean         to remove built files from the source tree."
-	@echo "You can set the following variables:"
-	@echo "  V             to see more verbose command lines."
-	@echo "  FBFLAGS       to override the default '-g -exx'."
-	@echo "  CFLAGS        to override the default '-g -O0 -DDEBUG'."
-	@echo "  PREFIX        to override the default /usr/local prefix."
-	@echo "You can set/define the following configuration options:"
-	@echo "  ENABLE_FBBFD=217  (or similar) to use the FB headers for this exact libbfd,"
+	@echo "Variables:"
+	@echo "  FBFLAGS ('-g'), CFLAGS ('-g -O2')"
+	@echo "  new     The build dir ('new')"
+	@echo "  prefix  The install dir ('.' on Windows/DOS; '/usr/local' elsewhere)"
+	@echo "  HOST    A GNU triplet to cross-compile an fbc that will run on HOST."
+	@echo "  TARGET  A GNU triplet to build a cross-fbc that produces for TARGET,"
+	@echo "          and to cross-compile the runtime to run on TARGET."
+	@echo "  SUFFIX  A string to append to the file/dir names of fbc and lib/freebasic,"
+	@echo "          distinguishing it from other installed versions."
+	@echo "  FBC     The 'fbc', 'gcc', 'ar' tools to use. Note: When cross-compiling,"
+	@echo "  CC      these cannot contain paths, because the host/target triplets will"
+	@echo "  AR      be prepended. However, you can always set those variables directly:"
+	@echo "          HOST_FBC, HOST_CC, TARGET_AR, TARGET_CC"
+	@echo "  V       For verbose command lines"
+	@echo "FreeBASIC configuration options:"
+	@echo "  ENABLE_FBBFD=217  To use the FB headers for this exact libbfd version,"
 	@echo "                    instead of using the system's bfd.h via a C wrapper."
-	@echo "  DISABLE_OBJINFO   to disable fbc's objinfo feature, to avoid using libbfd."
-	@echo "  DISABLE_GFX       to build libfb without its graphics part."
-	@echo "  DISABLE_OPENGL    to omit the OpenGL backend from libfb's graphics part."
-	@echo "  DISABLE_X         to build libfbgfx without X11 support on Linux & co."
-	@echo "This makefile will also #include a config.mk file if it exists;"
-	@echo "you may put configuration in there too."
+	@echo "  DISABLE_OBJINFO   To disable fbc's objinfo feature and not use libbfd"
+	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
+	@echo "  DISABLE_GFX       Don't build libfbgfx"
+	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
+	@echo "  DISABLE_X11       For libfbgfx without X11 support (Unix)"
+	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use"
+	@echo "them to set variables in a more permanent and even build-dir specific way."
