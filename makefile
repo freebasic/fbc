@@ -157,6 +157,33 @@ ifeq ($(HOST_OS),)
   endif
 endif
 
+# Same for HOST_CPU
+ifeq ($(HOST_CPU),)
+  uname_m := $(shell uname -m 2>&1 || echo unknown)
+
+  ifeq ($(uname_m),i386)
+    HOST_CPU = 386
+  else ifeq ($(uname_m),i486)
+    HOST_CPU = 486
+  else ifeq ($(uname_m),i586)
+    HOST_CPU = 586
+  else ifeq ($(uname_m),i686)
+    HOST_CPU = 686
+  else ifeq ($(uname_m),x86_64)
+    HOST_CPU = x86_64
+  else ifeq ($(uname_m),sparc)
+    HOST_CPU = sparc
+  else ifeq ($(uname_m),sparc64)
+    HOST_CPU = sparc64
+  else ifeq ($(uname_m),powerpc64)
+    HOST_CPU = powerpc64
+  else
+    $(error Sorry, the CPU type could not be identified automatically. \
+            Please set HOST_CPU; use the 'help' makefile command to get a list \
+            of possible values. 'uname -m' returned: '$(uname -m)')
+  endif
+endif
+
 ifeq ($(HOST_OS),mingw)
 	EXEEXT := .exe
 endif
