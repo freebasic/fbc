@@ -1,8 +1,13 @@
 #!/usr/bin/make -f
 #
 # This is fbc's toplevel makefile whopper, please enjoy it. It builds the
-# compiler program (fbc) and the runtime libraries (libfb*) for each enabled
-# target. Try 'make help' for some information on what you can configure.
+# compiler (fbc) and the runtime (libfb*, fbrt0). Try 'make help' for
+# information on what you can configure.
+#
+# Cross-compilation and building a cross-compiler is supported similar to
+# autoconf: through the HOST and TARGET variables that can be set to GNU
+# triplets. By default TARGET is the same as HOST, and HOST is the same as
+# the build system, which is guessed mostly via uname.
 #
 # In case the triplet parsing or default system detection fails,
 # HOST_{OS|CPU} and TARGET_{OS|CPU} can be set directly. Possible values are:
@@ -46,27 +51,6 @@ WINDRES := windres
 # config.mk can be used to define variables/settings, so we need to set the
 # defaults before this #include.
 -include config.mk
-
-#
-# System-specific configuration
-# -----------------------------
-#
-# build system: where the build is taking place. (default: guessed from uname)
-# host system: where the new compiler is going to run. (default: build)
-# target system(s): target(s) the new compiler is going to support,
-#                   system(s) to build the runtime for. (default: host)
-#
-# HOST and TARGETS are GNU system triplets (as known from autoconf):
-#
-# HOST defaults to the same as the build system, but can be set to something
-# else to cross-compile an fbc that will run on that HOST system. It will be
-# used as triplet prefix for FBC (and GCC when the C objinfo wrapper is used).
-#
-# TARGETS defaults to HOST, but can be set to a (space-separated) list of
-# triplets of systems that the new compiler should support. The runtime will
-# be build once for each target (allowing for a multi-target or multi-lib
-# build).
-#
 
 ################################################################################
 # Triplet parsing
@@ -188,19 +172,17 @@ ifeq ($(HOST_OS),mingw)
 	EXEEXT := .exe
 endif
 
-
-# We need to build the runtime once for each target the compiler is going to
-# to support. If a specific compiler host was given, but no specific target(s),
-# then the target defaults to the host, and we'll built one runtime for that
-# system. By default (for native builds where build = host = target) we build
-# one runtime for the host system, but without using the system prefixes.
-
-define runtime-rules
-runtime's target-specific build rules...
-endef
-
-#ifeq ($(TARGET_PREFIXES),)
-#$(eval $(foreach i,$(TARGET_PREFIXES),$(call runtime-rules,$(i))))
+# TARGET: default target of the new compiler, defaults to same as HOST.
+ifeq ($(TARGET),)
+  TARGET := $(HOST)
+  TARGET_OS := $(HOST_OS)
+  TARGET_CPU := $(HOST_CPU)
+  TARGET_PREFIX := $(HOST_PREFIX)
+else
+  TARGET_OS := $(call triplet-os,$(TARGET))
+  TARGET_CPU := $(call triplet-cpu,$(TARGET))
+  TARGET_PREFIX := $(TARGET)-
+endif
 
 COMPILER_HEADERS :=
 COMPILER_OBJECTS :=
@@ -1301,13 +1283,6 @@ endif
 ifdef ENABLE_FBBFD
 	echo "#define ENABLE_FBBFD $(ENABLE_FBBFD)" >> $@
 endif
-
-# runtime compilation rules
-# $(1) = The target prefix, if any
-define runtime-rules
-runtime/$(1)
-endef
-
 
 libfb.a: $(RUNTIME_OBJECTS) $(RUNTIME_S_OBJECTS)
 	$(AR) rcs $@ $^
