@@ -15,9 +15,6 @@
 #    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
 # FreeBASIC CPU names:
 #    386 486 586 686 x86_64 sparc sparc64 powerpc64
-# We don't want to use any of make's built-in suffixes/rules
-.SUFFIXES:
-
 
 ################################################################################
 # Triplet parsing
@@ -233,10 +230,77 @@ ifdef new
   endif
 endif
 
+ifdef ENABLE_STANDALONE
+  FBC_NAME := fbc$(EXEEXT)
+  FREEBASIC_NAME := freebasic
+  newbin := $(new)
+  newlib := $(new)/lib
+  prefixbin := $(prefix)
+  prefixlib := $(prefix)/lib
+else
+  FBC_NAME := $(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+  FREEBASIC_NAME := $(TARGET_PREFIX)freebasic$(SUFFIX)
+  newbin := $(new)/bin
+  newlib := $(new)/lib/$(FREEBASIC_NAME)
+  prefixbin := $(prefix)/bin
+  prefixlib := $(prefix)/lib/$(FREEBASIC_NAME)
+endif
+
+FBC_NEW      := $(newbin)/$(FBC_NAME)
+FBRT0_NEW    := $(newlib)/fbrt0.o
+LIBFB_NEW    := $(newlib)/libfb.a
+
+FBC_PREFIX      := $(prefixbin)/$(FBC_NAME)
+FBRT0_PREFIX    := $(prefixlib)/fbrt0.o
+LIBFB_PREFIX    := $(prefixlib)/libfb.a
+
+ifndef DISABLE_MT
+  LIBFBMT_NEW  := $(newlib)/libfbmt.a
+  LIBFBMT_PREFIX  := $(prefixlib)/libfbmt.a
+endif
+
+ifndef DISABLE_GFX
+  LIBFBGFX_NEW := $(newlib)/libfbgfx.a
+  LIBFBGFX_PREFIX := $(prefixlib)/libfbgfx.a
+endif
+
 newcompiler := $(new)/compiler
 newruntime := $(new)/runtime
 FBC_CONFIG := $(newcompiler)/config.bi
 LIBFB_CONFIG := $(newruntime)/config.h
+
+FBCFLAGS := $(FBFLAGS) -w all -w pedantic -m fbc -include $(FBC_CONFIG)
+FBLFLAGS := $(FBFLAGS)
+ALLCFLAGS := $(CFLAGS) -Wall -include $(LIBFB_CONFIG)
+
+ifneq ($(filter cygwin win32,$(HOST_OS)),)
+  FBLFLAGS += -t 2048
+endif
+
+ifndef DISABLE_OBJINFO
+  FBLFLAGS += -l bfd -l iberty
+  ifeq ($(HOST_OS),cygwin)
+    FBLFLAGS += -l intl
+  else ifeq ($(HOST_OS),dos)
+    FBLFLAGS += -l intl -l z
+  else ifeq ($(HOST_OS),freebsd)
+    FBLFLAGS += -l intl
+  else ifeq ($(HOST_OS),openbsd)
+    FBLFLAGS += -l intl
+  else ifeq ($(HOST_OS),win32)
+    FBLFLAGS += -l user32
+  endif
+endif
+
+# Some special treatment for xbox. TODO: Test me, update me!
+ifeq ($(HOST_OS),xbox)
+  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
+  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
+  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
+  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
+  ALLCFLAGS += -I$(OPENXDK)/include
+  ALLCFLAGS += -I$(OPENXDK)/include/SDL
+endif
 
 FBC_BI := $(FBC_CONFIG)
 FBC_BI += compiler/ast.bi
@@ -1266,118 +1330,144 @@ ifndef DISABLE_MT
   LIBFBMT_S := $(patsubst %.o,%.mt.o,$(LIBFB_S))
 endif
 
-FBCNEW := fbc$(EXEEXT)
-
-ifeq ($(HOST_OSFAMILY),windows)
-	FBCLFLAGS += -t 2048
-endif
-
-ifeq ($(ENABLE_OBJINFO),yes)
-	FBLFLAGS += -l bfd -l iberty
-	ifeq ($(HOST_OS),cygwin)
-		FBLFLAGS += -l intl
-	else ifeq ($(HOST_OS),djgpp)
-		FBLFLAGS += -l intl -l z
-	else ifeq ($(HOST_OS),freebsd)
-		FBLFLAGS += -l intl
-	else ifeq ($(HOST_OS),openbsd)
-		FBLFLAGS += -l intl
-	else ifeq ($(HOST_OS),mingw)
-		FBLFLAGS += -l user32
-	endif
-endif
-
-# Some special treatment for xbox.
-# TODO: Test me, update me!
-#ifeq ($(HOST_OS),xbox)
-#	CFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
-#	CFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
-#	CFLAGS += -ffreestanding -fno-builtin -fno-exceptions
-#	CFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
-#	CFLAGS += -I$(OPENXDK)/include
-#	CFLAGS += -I$(OPENXDK)/include/SDL
-#endif
 
 ifndef V
-	QUIET_FBC  = @echo "FBC $@";
-	QUIET_CC   = @echo "CC $@";
-	QUIET_AR   = @echo "AR $@";
-	QUIET_LINK = @echo "LINK $@";
+  QUIET_GEN     = @echo "GEN $@";
+  QUIET_FBC     = @echo "FBC $@";
+  QUIET_LINK    = @echo "LINK $@";
+  QUIET_CC      = @echo "CC $@";
+  QUIET_CPPAS   = @echo "CPPAS $@";
+  QUIET_AR      = @echo "AR $@";
 endif
+
+# We don't want to use any of make's built-in suffixes/rules
+.SUFFIXES:
+
 
 .PHONY: all
-all: $(FBCNEW)
-all: libfb.a fbrt0.o
-#ifneq ($(HOST_OSFAMILY),dos)
-#all: libfbmt.a
-#endif
+all: compiler runtime
 
-$(FBCNEW): $(COMPILER_OBJECTS) $(COMPILER_C_OBJECTS)
-	$(FBC) $(FBFLAGS) $^ -x $@
 
-$(COMPILER_OBJECTS): %.o: %.bas $(COMPILER_HEADERS)
-	$(FBC) -w pedantic -m fbc -include config.bi -c $< -o $@
+.PHONY: compiler
+compiler: $(FBC_NEW)
 
-$(COMPILER_C_OBJECTS): %.o: %.c
-	$(CC) -Wall $(CFLAGS) -c $< -o $@
+$(FBC_NEW): $(FBC_BAS) | $(newbin)
+	$(QUIET_LINK)$(FBC) $(FBLFLAGS) $^ -x $@
 
-compiler/config.bi: compiler/config.bi.in
-	cp $< $@
 ifndef DISABLE_OBJINFO
-	echo "#define ENABLE_OBJINFO" >> $@
+ifndef ENABLE_FBBFD
+$(FBC_NEW): $(newcompiler)/c-objinfo.o
+endif
+endif
+
+$(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI) | $(newcompiler)
+	$(QUIET_FBC)$(FBC) $(FBCFLAGS) -c $< -o $@
+
+$(newcompiler)/c-objinfo.o: compiler/c-objinfo.c | $(newcompiler)
+	$(QUIET_CC)$(CC) -Wall -O2 -c $< -o $@
+
+$(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
+	$(QUIET_GEN)cp $< $@
+ifndef DISABLE_OBJINFO
+	@echo "#define ENABLE_OBJINFO" >> $@
 endif
 ifdef ENABLE_FBBFD
-	echo "#define ENABLE_FBBFD $(ENABLE_FBBFD)" >> $@
+	@echo "#define ENABLE_FBBFD $(ENABLE_FBBFD)" >> $@
 endif
 
-libfb.a: $(RUNTIME_OBJECTS) $(RUNTIME_S_OBJECTS)
-	$(AR) rcs $@ $^
 
-#libfbmt.a: $(MTCOBJECTS) $(MTSOBJECTS)
-#	$(AR) rcs $@ $^
+.PHONY: runtime
+runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
 
-$(RUNTIME_OBJECTS) fbrt0.o: %.o: %.c $(RUNTIME_HEADERS)
-	$(CC) -Wall $(CFLAGS) -c $< -o $@
+$(FBRT0_NEW): runtime/fbrt0.c $(LIBFB_H) | $(newlib)
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(RUNTIME_S_OBJECTS): %.o: %.s $(RUNTIME_HEADERS)
-	$(CC) -Wall $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+$(LIBFB_NEW): $(LIBFB_C) $(LIBFB_S) | $(newlib)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-#$(MTCOBJECTS): %.mt.o: %.c $(RUNTIME_HEADERS)
-#	$(CC) -DMULTITHREADED $(CFLAGS) -c $< -o $@
+$(LIBFBMT_NEW): $(LIBFBMT_C) $(LIBFBMT_S) | $(newlib)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-#$(MTSOBJECTS): %.mt.o: %.s $(RUNTIME_HEADERS)
-#	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
+$(LIBFBGFX_NEW): $(LIBFBGFX_C) $(LIBFBGFX_S) | $(newlib)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+
+$(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H) | $(newruntime)
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H) | $(newruntime)
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H) | $(newruntime)
+	$(QUIET_CC)$(TARGET_CC) -DMULTITHREADED $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H) | $(newruntime)
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DMULTITHREADED $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H) | $(newruntime)
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H) | $(newruntime)
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+
+$(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
+	$(QUIET_GEN)cp $< $@
+
 
 .PHONY: install
-install: $(FBCNEW)
-	mkdir -p $(PREFIX)/bin
-	cp $(FBCNEW) $(PREFIX)/bin
+install: install-compiler install-runtime
+
+.PHONY: install-compiler
+install-compiler: $(FBC_NEW) | $(prefixbin)
+	cp $^ $|
+
+.PHONY: install-runtime
+install-runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) | $(prefixlib)
+	cp $^ $|
+
+
+$(newbin) $(newcompiler) $(newlib) $(newruntime) $(prefixbin) $(prefixlib):
+	mkdir -p $@
+
 
 .PHONY: uninstall
-uninstall:
-	rm -f $(PREFIX)/bin/$(FBCNEW)
+uninstall: uninstall-compiler uninstall-runtime
+
+.PHONY: uninstall-compiler
+uninstall-compiler:
+	rm -f $(FBC_PREFIX)
+
+.PHONY: uninstall-runtime
+uninstall-runtime:
+	rm -f $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX)
+# Remove the lib/freebasic/ dir, unless we're standalone and it's just lib/
+ifndef ENABLE_STANDALONE
+	-rmdir $(prefixlib)
+endif
+
 
 .PHONY: clean
-clean:
-	rm -f $(COMPILER_OBJECTS) $(COMPILER_C_OBJECTS) $(FBCNEW)
-	rm -f $(RUNTIME_OBJECTS) $(RUNTIME_S_OBJECTS) libfb.a
-#ifneq ($(HOST_OSFAMILY),dos)
-#	rm -f $(OBJSMT) libfbmt.a
-#endif
-ifndef DISABLE_GFX
-	rm -f libfb_gfx_data.h $(MAKEDATA)
-endif
-ifeq ($(HOST_OSFAMILY),windows)
-	rm -f fbportio_driver.h fbportio.sys fbportio_rc.o libntoskrnl_missing.a $(MAKEDRIVER)
-endif
+clean: clean-compiler clean-runtime
+
+.PHONY: clean-compiler
+clean-compiler:
+	rm -f $(FBC_NEW) $(FBC_CONFIG) $(newcompiler)/*.o
+	-rmdir -p $(newcompiler) $(newbin)
+
+.PHONY: clean-runtime
+clean-runtime:
+	rm -f $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) $(LIBFB_CONFIG) $(newruntime)/*.o
+	-rmdir -p $(newruntime) $(newlib)
+
 
 .PHONY: help
 help:
 	@echo "Available commands:"
-	@echo "  <none>|all    to compile fbc and libfb."
-	@echo "  install       to install into PREFIX."
-	@echo "  uninstall     to remove from PREFIX."
-	@echo "  clean         to remove built files from the source tree."
+	@echo "  <none>|all                     to build compiler and runtime."
+	@echo "  compiler                       (compiler only)"
+	@echo "  runtime                        (runtime only)"
+	@echo "  clean[-compiler|-runtime]      to remove built files."
+	@echo "  install[-compiler|-runtime]    to install into prefix."
+	@echo "  uninstall[-compiler|-runtime]  to remove from prefix."
 	@echo "Variables:"
 	@echo "  FBFLAGS ('-g'), CFLAGS ('-g -O2')"
 	@echo "  new     The build dir ('new')"
