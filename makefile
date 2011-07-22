@@ -4,6 +4,13 @@
 # compiler program (fbc) and the runtime libraries (libfb*) for each enabled
 # target. Try 'make help' for some information on what you can configure.
 #
+# In case the triplet parsing or default system detection fails,
+# HOST_{OS|CPU} and TARGET_{OS|CPU} can be set directly. Possible values are:
+# FreeBASIC OS names:
+#    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
+# FreeBASIC CPU names:
+#    386 486 586 686 x86_64 sparc sparc64 powerpc64
+#
 # The runtime consists of libfb.a, libfbmt.a (libfb.a but with
 # -DMULTITHREADED), libfbgfx.a and fbrt0.o. Many C modules, some assembly,
 # many system-dependant parts.
@@ -49,46 +56,23 @@ WINDRES := windres
 # target system(s): target(s) the new compiler is going to support,
 #                   system(s) to build the runtime for. (default: host)
 #
-# BUILD, HOST, and TARGETS are GNU system triplets (as known from autoconf):
+# HOST and TARGETS are GNU system triplets (as known from autoconf):
 #
-# If BUILD is set then it will be used as the triplet prefix for BUILD_FBC,
-# used as part of the runtime buil, and to determine how to set BUILD_EXEEXT.
-#
-# HOST defaults to BUILD, but can be set to something else to cross-compile an
-# fbc that will run on that HOST system. It will be used as triplet prefix for
-# FBC (and GCC when the C objinfo wrapper is used).
+# HOST defaults to the same as the build system, but can be set to something
+# else to cross-compile an fbc that will run on that HOST system. It will be
+# used as triplet prefix for FBC (and GCC when the C objinfo wrapper is used).
 #
 # TARGETS defaults to HOST, but can be set to a (space-separated) list of
 # triplets of systems that the new compiler should support. The runtime will
 # be build once for each target (allowing for a multi-target or multi-lib
 # build).
 #
-# If BUILD is not specified, then by default all these three variables will
-# be empty and native tools will be used. It's still ok to specify HOST (with
-# or without TARGETS) or TARGETS only.
-#
-#
 
 ################################################################################
-# GNU system triplet parsing
-# It's nice to support the triplets for cross builds etc. just like autoconf,
-# so the proper cross-tools can be invoked. In autoconf you'd use a shell case
-# statement and check for *-*-mingw*, but here we convert the dashes in the
-# triplets to spaces ('i686-pc-mingw32' -> 'i686 pc mingw32') and then use
-# make's word/text processing functions to analyze it.
-
-# os = {all the words 3..EOL | the last word if 3..EOL was empty}
-# 'i686 pc linux gnu' -> 'linux gnu'
-# 'mingw32'           -> 'mingw32'
-extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
-
-# cpu = iif(has >= 2 words, first word, unknown)
-# 'i686 pc linux gnu' -> 'i686'
-# 'mingw32'           -> 'unknown'
-extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
+# Triplet parsing
 
 triplet-oops = \
-  $(error Sorry, '$(1)' does not look like one of the known GNU triplets. \
+  $(error Sorry, '$(1)' does not look like one of the expected triplets. \
           Maybe you mistyped, or the system is not yet supported by FB)
 
 # Canonical name to FB's internal short name translation
@@ -97,8 +81,8 @@ parse-os = \
        $(findstring darwin,$(1)), \
        $(findstring freebsd,$(1)), \
        $(findstring linux,$(1)), \
-       $(findstring mingw,$(1)), \
-       $(findstring djgpp,$(1)), \
+       $(and $(findstring mingw,$(1)), win32), \
+       $(and $(findstring djgpp,$(1)), dos), \
        $(findstring netbsd,$(1)), \
        $(findstring openbsd,$(1)), \
        $(findstring solaris,$(1)), \
@@ -113,89 +97,64 @@ parse-cpu = \
        $(filter x86_64 sparc sparc64 powerpc64,$(1)), \
        $(call triplet-oops,$(2)))
 
+# os = {all the words 3..EOL | the last word if 3..EOL was empty}
+# 'i686 pc linux gnu' -> 'linux gnu'
+# 'mingw32'           -> 'mingw32'
+extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
+
+# cpu = iif(has >= 2 words, first word, unknown)
+# 'i686 pc linux gnu' -> 'i686'
+# 'mingw32'           -> 'unknown'
+extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
+
+# In autoconf we used a shell case statement and checked for *-*-mingw*, but
+# here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
+# word/text processing functions to analyze it.
 triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
 triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
 
 ################################################################################
 
-
-
-ifneq ($(BUILD),)
-  # The user set BUILD to something specific, so we're going to extract
-  # BUILD_OS and BUILD_CPU from it.
-  BUILD_OS := $(call triplet-os,$(BUILD))
-  BUILD_CPU := $(call triplet-cpu,$(BUILD))
-  BUILD_PREFIX := $(BUILD)-
-endif
-
-# If the BUILD_OS isn't already set from 
-ifeq ($(BUILD_OS),)
-	# Try to automatically figure out what the build system is, so we can
-	# set BUILD_EXEEXT, HOST_OS and TARGET_OS automatically.
-	# uname is available on every system we currently support, except on
-	# Windows with MinGW but not MSYS, we try to detect that below.
-	uname_s := $(shell uname -s 2>&1 || echo unknown)
-	#uname_o := $(shell uname -o 2>&1 || echo unknown)
-	uname_m := $(shell uname -m 2>&1 || echo unknown)
-
-	ifneq ($(findstring CYGWIN,$(uname_s)),)
-		BUILD_OS := cygwin
-	else ifeq ($(uname_s),Darwin)
-		BUILD_OS := darwin
-	else ifeq ($(uname_s),FreeBSD)
-		BUILD_OS := freebsd
-	else ifeq ($(uname_s),Linux)
-		BUILD_OS := linux
-	else ifneq ($(findstring MINGW,$(uname_s)),)
-		BUILD_OS := win32
-	else ifeq ($(uname_s),NetBSD)
-		BUILD_OS := netbsd
-	else ifeq ($(uname_s),OpenBSD)
-		BUILD_OS := openbsd
-	else ifeq ($(uname_s),MS-DOS)
-		BUILD_OS := dos
-	else ifneq ($(COMSPEC),)
-		# This check lets us support mingw32-make without MSYS.
-		# TODO: any better way to check this?
-		BUILD_OS := win32
-	else
-                $(error Sorry, the operating system could not be identified \
-                        automatically. Please set BUILD_OS; see 'make help' for \
-                        possible values. 'uname -s' returned: '$(uname_s)')
-	endif
-endif
-
-# Build-system specific configuration
-ifeq ($(BUILD_OS),dos)
-	BUILD_EXEEXT := .exe
-else ifeq ($(BUILD_OS),cygwin)
-	BUILD_EXEEXT := .exe
-else ifeq ($(BUILD_OS),darwin)
-else ifeq ($(BUILD_OS),freebsd)
-else ifeq ($(BUILD_OS),linux)
-else ifeq ($(BUILD_OS),netbsd)
-else ifeq ($(BUILD_OS),openbsd)
-else ifeq ($(BUILD_OS),solaris)
-else ifeq ($(BUILD_OS),win32)
-	BUILD_EXEEXT := .exe
-else ifeq ($(BUILD_OS),xbox)
-else
-        $(error Unexpected BUILD_OS: '$(BUILD_OS)', see 'make help' for \
-                possible values)
-endif
-
-# Should we cross-compile to a specific host?
+# HOST: cross-compile fbc to run on this host, defaults to the build system.
 ifneq ($(HOST),)
-	HOST_PREFIX := $(HOST)-
-
-	# No target given? Then default to the host.
-	ifeq ($(TARGETS),)
-		TARGETS := $(HOST)
-	endif
+  HOST_OS := $(call triplet-os,$(HOST))
+  HOST_CPU := $(call triplet-cpu,$(HOST))
+  HOST_PREFIX := $(HOST)-
 endif
 
-ifneq ($(TARGETS),)
-	TARGET_PREFIXES := $(patsubst %,%-,$(TARGETS))
+# Try to guess the HOST_OS if the user hasn't set it directly or via HOST
+ifeq ($(HOST_OS),)
+  # No BUILD given, so we need to guess via uname or something else.
+  # uname is available on every system we currently support, except on
+  # Windows with MinGW but not MSYS, we try to detect that below.
+  uname_s := $(shell uname -s 2>&1 || echo unknown)
+  #uname_o := $(shell uname -o 2>&1 || echo unknown)
+
+  ifneq ($(findstring CYGWIN,$(uname_s)),)
+    HOST_OS := cygwin
+  else ifeq ($(uname_s),Darwin)
+    HOST_OS := darwin
+  else ifeq ($(uname_s),FreeBSD)
+    HOST_OS := freebsd
+  else ifeq ($(uname_s),Linux)
+    HOST_OS := linux
+  else ifneq ($(findstring MINGW,$(uname_s)),)
+    HOST_OS := win32
+  else ifeq ($(uname_s),NetBSD)
+    HOST_OS := netbsd
+  else ifeq ($(uname_s),OpenBSD)
+    HOST_OS := openbsd
+  else ifeq ($(uname_s),MS-DOS)
+    HOST_OS := dos
+  else ifneq ($(COMSPEC),)
+    # This check lets us support mingw32-make without MSYS.
+    # TODO: any better way to check this?
+    HOST_OS := win32
+  else
+    $(error Sorry, the operating system could not be identified automatically. \
+            Please set HOST_OS; use the 'help' makefile command to get a list \
+            of possible values. 'uname -s' returned: '$(uname_s)')
+  endif
 endif
 
 ifeq ($(HOST_OS),mingw)
@@ -215,12 +174,6 @@ endef
 
 #ifeq ($(TARGET_PREFIXES),)
 #$(eval $(foreach i,$(TARGET_PREFIXES),$(call runtime-rules,$(i))))
-
-
-HOST_CPUFAMILY:=@HOST_CPUFAMILY@
-HOST_OS:=@HOST_OS@
-HOST_OSFAMILY:=@HOST_OSFAMILY@
-host_cpu:=@host_cpu@
 
 COMPILER_HEADERS :=
 COMPILER_OBJECTS :=
@@ -1347,14 +1300,6 @@ $(RUNTIME_S_OBJECTS): %.o: %.s $(RUNTIME_HEADERS)
 #$(MTSOBJECTS): %.mt.o: %.s $(RUNTIME_HEADERS)
 #	$(CC) -DMULTITHREADED $(CFLAGS) -x assembler-with-cpp -c $< -o $@
 
-
-
-
-
-
-
-
-
 .PHONY: install
 install: $(FBCNEW)
 	mkdir -p $(PREFIX)/bin
@@ -1399,7 +1344,3 @@ help:
 	@echo "  DISABLE_X         to build libfbgfx without X11 support on Linux & co."
 	@echo "This makefile will also #include a config.mk file if it exists;"
 	@echo "you may put configuration in there too."
-	@echo "Special variables:"
-	@echo "  BUILD_OS"
-	@echo "FreeBASIC system names (for BUILD_OS):"
-	@echo "  dos|cygwin|darwin|freebsd|linux|netbsd|openbsd|solaris|win32|xbox"
