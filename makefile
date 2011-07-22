@@ -1196,13 +1196,6 @@ ifeq ($(HOST_OSFAMILY),xbox)
 	RUNTIME_S_OBJECTS += runtime/libfb_alloca.o
 endif
 
-GFX_DATA_FILES := runtime/data/fnt08x08.fnt
-GFX_DATA_FILES += runtime/data/fnt08x14.fnt
-GFX_DATA_FILES += runtime/data/fnt08x16.fnt
-GFX_DATA_FILES += runtime/data/pal002.pal
-GFX_DATA_FILES += runtime/data/pal016.pal
-GFX_DATA_FILES += runtime/data/pal064.pal
-GFX_DATA_FILES += runtime/data/pal256.pal
 
 FBCNEW := fbc$(EXEEXT)
 
