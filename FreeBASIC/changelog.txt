@@ -11,6 +11,7 @@ Version 0.23.0:
 - C emitter: Hidden UDT result parameters were emitted last rather than first in function declarations
 - Fixed buggy PRINT USING floating-point scaling, now works more consistently across all platforms
 - Built-in defines (__FILE__ & co) didn't use $ to prevent escaping
+- time() crashed when the system time couldn't be retrieved
 
 
 Version 0.22.0:
