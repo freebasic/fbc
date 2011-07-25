@@ -7,64 +7,11 @@
 # Cross-compilation and building a cross-compiler is supported similar to
 # autoconf: through the HOST and TARGET variables that can be set to GNU
 # triplets. By default TARGET is the same as HOST, and HOST is the same as
-# the build system, which is guessed mostly via uname.
-#
-# In case the triplet parsing or default system detection fails,
-# HOST_{OS|CPU} and TARGET_{OS|CPU} can be set directly. Possible values are:
-# FreeBASIC OS names:
-#    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
-# FreeBASIC CPU names:
-#    386 486 586 686 x86_64 sparc sparc64 powerpc64
-
-################################################################################
-# Triplet parsing
-
-triplet-oops = \
-  $(error Sorry, '$(1)' does not look like one of the expected triplets. \
-          Maybe you mistyped, or the system is not yet supported by FB)
-
-# Canonical name to FB's internal short name translation
-parse-os = \
-  $(or $(findstring cygwin,$(1)), \
-       $(findstring darwin,$(1)), \
-       $(findstring freebsd,$(1)), \
-       $(findstring linux,$(1)), \
-       $(and $(findstring mingw,$(1)), win32), \
-       $(and $(findstring djgpp,$(1)), dos), \
-       $(findstring netbsd,$(1)), \
-       $(findstring openbsd,$(1)), \
-       $(findstring solaris,$(1)), \
-       $(findstring xbox,$(1)), \
-       $(call triplet-oops,$(2)))
-
-parse-cpu = \
-  $(or $(and $(filter i386,$(1)),386), \
-       $(and $(filter i486,$(1)),486), \
-       $(and $(filter i586,$(1)),586), \
-       $(and $(filter i686,$(1)),686), \
-       $(filter x86_64 sparc sparc64 powerpc64,$(1)), \
-       $(call triplet-oops,$(2)))
-
-# os = {all the words 3..EOL | the last word if 3..EOL was empty}
-# 'i686 pc linux gnu' -> 'linux gnu'
-# 'mingw32'           -> 'mingw32'
-extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
-
-# cpu = iif(has >= 2 words, first word, unknown)
-# 'i686 pc linux gnu' -> 'i686'
-# 'mingw32'           -> 'unknown'
-extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
-
-# In autoconf we used a shell case statement and checked for *-*-mingw*, but
-# here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
-# word/text processing functions to analyze it.
-triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
-triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
-
-################################################################################
+# the build system, which is guessed mostly via uname. In case the triplet
+# parsing or default system detection fails, please fix it and make it work!
 
 # The ./config.mk and ./$(new)/config.mk files can be used to set variables,
-# so they don't have to be specified at the command line again and again.
+# so they don't have to be specified on the command line again and again.
 -include config.mk
 
 # The build directory -- where all generated/compiled files go.
@@ -77,86 +24,237 @@ endif
 
 -include $(new)/config.mk
 
-# HOST: cross-compile fbc to run on this host, defaults to the build system.
-ifneq ($(HOST),)
-  HOST_OS := $(call triplet-os,$(HOST))
-  HOST_CPU := $(call triplet-cpu,$(HOST))
-  HOST_PREFIX := $(HOST)-
-endif
 
-# Try to guess the HOST_OS if the user hasn't set it directly or via HOST
-ifeq ($(HOST_OS),)
-  # No BUILD given, so we need to guess via uname or something else.
+#
+# Triplet parsing code
+#
+
+# os = {all the words 3..EOL | the last word if 3..EOL was empty}
+# 'i686 pc linux gnu' -> 'linux gnu'
+# 'mingw32'           -> 'mingw32'
+extract-triplet-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
+
+# cpu = iif(has >= 2 words, first word, unknown)
+# 'i686 pc linux gnu' -> 'i686'
+# 'mingw32'           -> 'unknown'
+extract-triplet-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
+
+# In autoconf we used a shell case statement and checked for *-*-mingw*, but
+# here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
+# word/text processing functions to analyze it.
+get-triplet-os  = $(call extract-triplet-os,$(subst -, ,$(1)))
+get-triplet-cpu = $(call extract-triplet-cpu,$(subst -, ,$(1)))
+
+# This is needed for both HOST and TARGET, so unfortunately we need to $(eval)
+# this to avoid duplicate code.
+# Note: First the $(call) will expand the whole thing as one string,
+# without parsing if's or variable assignments. That's why it may be
+# necessary to delay some expansions until the $(eval) parse by quoting their $.
+# (Especially $(error)s that should show up conditionally only, instead of
+# always being "expanded" during the $(call))
+define parse-triplet
+  os := $(call get-triplet-os,$($(1)))
+  ifneq ($(findstring cygwin,$(os)),)
+    $(1)_CYGWIN := YesPlease
+    $(1)_WIN32 := YesPlease
+  else ifneq ($(findstring darwin,$(os)),)
+    $(1)_DARWIN := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring freebsd,$(os)),)
+    $(1)_FREEBSD := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring linux,$(os)),)
+    $(1)_LINUX := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring mingw,$(os)),)
+    $(1)_MINGW := YesPlease
+    $(1)_WIN32 := YesPlease
+  else ifneq ($(findstring djgpp,$(os)),)
+    $(1)_DOS := YesPlease
+  else ifneq ($(findstring netbsd,$(os)),)
+    $(1)_NETBSD := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring openbsd,$(os)),)
+    $(1)_OPENBSD := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring solaris,$(os)),)
+    $(1)_SOLARIS := YesPlease
+    $(1)_UNIX := YesPlease
+  else ifneq ($(findstring xbox,$(os)),)
+    $(1)_XBOX := YesPlease
+  else
+    $$(error Sorry, OS='$(os)' from $(1)='$($(1))' doesn't look like one of \
+            the expected OS names. Maybe the makefile should be fixed to \
+            recognize it.)
+  endif
+
+  cpu := $(call get-triplet-cpu,$(HOST))
+  ifeq ($(cpu),i386)
+    $(1)_X86 := YesPlease
+  else ifeq ($(cpu),i486)
+    $(1)_X86 := YesPlease
+  else ifeq ($(cpu),i586)
+    $(1)_X86 := YesPlease
+  else ifeq ($(cpu),i686)
+    $(1)_X86 := YesPlease
+  else ifeq ($(cpu),x86_64)
+    $(1)_X86_64 := YesPlease
+  else ifeq ($(cpu),sparc)
+    $(1)_SPARC := YesPlease
+  else ifeq ($(cpu),sparc64)
+    $(1)_SPARC64 := YesPlease
+  else ifeq ($(cpu),powerpc64)
+    $(1)_POWERPC64 := YesPlease
+  else
+    $$(error Sorry, CPU='$(cpu)' from $(1)='$($(1))' doesn't look like one of \
+            the expected CPU names. Maybe the makefile should be fixed to \
+            recognize it.)
+  endif
+endef
+
+
+#
+# Host/target system determination
+#
+
+ifdef HOST
+  # Cross-compile fbc to run on this HOST
+  HOST_PREFIX := $(HOST)-
+  $(eval $(call parse-triplet,HOST))
+else
+  # No HOST given, so guess the build OS & CPU via uname or something else.
   # uname is available on every system we currently support, except on
   # Windows with MinGW but not MSYS, we try to detect that below.
+
+  # OS
   uname_s := $(shell uname -s 2>&1 || echo unknown)
   #uname_o := $(shell uname -o 2>&1 || echo unknown)
-
   ifneq ($(findstring CYGWIN,$(uname_s)),)
-    HOST_OS := cygwin
+    HOST_CYGWIN := YesPlease
+    HOST_WIN32 := YesPlease
   else ifeq ($(uname_s),Darwin)
-    HOST_OS := darwin
+    HOST_DARWIN := YesPlease
+    HOST_UNIX := YesPlease
   else ifeq ($(uname_s),FreeBSD)
-    HOST_OS := freebsd
+    HOST_FREEBSD := YesPlease
+    HOST_UNIX := YesPlease
   else ifeq ($(uname_s),Linux)
-    HOST_OS := linux
+    HOST_LINUX := YesPlease
+    HOST_UNIX := YesPlease
   else ifneq ($(findstring MINGW,$(uname_s)),)
-    HOST_OS := win32
+    HOST_MINGW := YesPlease
+    HOST_WIN32 := YesPlease
   else ifeq ($(uname_s),NetBSD)
-    HOST_OS := netbsd
+    HOST_NETBSD := YesPlease
+    HOST_UNIX := YesPlease
   else ifeq ($(uname_s),OpenBSD)
-    HOST_OS := openbsd
+    HOST_OPENBSD := YesPlease
+    HOST_UNIX := YesPlease
   else ifeq ($(uname_s),MS-DOS)
-    HOST_OS := dos
+    HOST_DOS := YesPlease
   else ifneq ($(COMSPEC),)
     # This check lets us support mingw32-make without MSYS.
     # TODO: any better way to check this?
-    HOST_OS := win32
+    HOST_MINGW := YesPlease
+    HOST_WIN32 := YesPlease
   else
-    $(error Sorry, the operating system could not be identified automatically. \
-            Please set HOST_OS; use the 'help' makefile command to get a list \
-            of possible values. 'uname -s' returned: '$(uname_s)')
+    $(error Sorry, the OS could not be identified automatically. Please fix \
+            the makefile. 'uname -s' returned: '$(uname_s)')
   endif
-endif
 
-# Same for HOST_CPU
-ifeq ($(HOST_CPU),)
+  # CPU
   uname_m := $(shell uname -m 2>&1 || echo unknown)
-
   ifeq ($(uname_m),i386)
-    HOST_CPU = 386
+    HOST_X86 := YesPlease
   else ifeq ($(uname_m),i486)
-    HOST_CPU = 486
+    HOST_X86 := YesPlease
   else ifeq ($(uname_m),i586)
-    HOST_CPU = 586
+    HOST_X86 := YesPlease
   else ifeq ($(uname_m),i686)
-    HOST_CPU = 686
+    HOST_X86 := YesPlease
   else ifeq ($(uname_m),x86_64)
-    HOST_CPU = x86_64
+    HOST_X86_64 := YesPlease
   else ifeq ($(uname_m),sparc)
-    HOST_CPU = sparc
+    HOST_SPARC := YesPlease
   else ifeq ($(uname_m),sparc64)
-    HOST_CPU = sparc64
+    HOST_SPARC64 := YesPlease
   else ifeq ($(uname_m),powerpc64)
-    HOST_CPU = powerpc64
+    HOST_POWERPC64 := YesPlease
   else
-    $(error Sorry, the CPU type could not be identified automatically. \
-            Please set HOST_CPU; use the 'help' makefile command to get a list \
-            of possible values. 'uname -m' returned: '$(uname -m)')
+    $(error Sorry, the CPU could not be identified automatically. Please fix \
+            the makefile. 'uname -m' returned: '$(uname -m)')
   endif
 endif
 
-# TARGET: default target of the new compiler, defaults to same as HOST.
-ifeq ($(TARGET),)
-  TARGET := $(HOST)
-  TARGET_OS := $(HOST_OS)
-  TARGET_CPU := $(HOST_CPU)
-  TARGET_PREFIX := $(HOST_PREFIX)
-else
-  TARGET_OS := $(call triplet-os,$(TARGET))
-  TARGET_CPU := $(call triplet-cpu,$(TARGET))
+ifdef TARGET
+  # TARGET given, so parse it.
   TARGET_PREFIX := $(TARGET)-
+  $(eval $(call parse-triplet,TARGET))
+else
+  # No TARGET given, so set the same values/defines as for HOST
+  ifdef HOST
+    TARGET := $(HOST)
+    TARGET_PREFIX := $(HOST_PREFIX)
+  endif
+
+  ifdef HOST_CYGWIN
+    TARGET_CYGWIN := YesPlease
+  endif
+  ifdef HOST_DARWIN
+    TARGET_DARWIN := YesPlease
+  endif
+  ifdef HOST_DOS
+    TARGET_DOS := YesPlease
+  endif
+  ifdef HOST_FREEBSD
+    TARGET_FREEBSD := YesPlease
+  endif
+  ifdef HOST_LINUX
+    TARGET_LINUX := YesPlease
+  endif
+  ifdef HOST_MINGW
+    TARGET_MINGW := YesPlease
+  endif
+  ifdef HOST_NETBSD
+    TARGET_NETBSD := YesPlease
+  endif
+  ifdef HOST_OPENBSD
+    TARGET_OPENBSD := YesPlease
+  endif
+  ifdef HOST_SOLARIS
+    TARGET_SOLARIS := YesPlease
+  endif
+  ifdef HOST_UNIX
+    TARGET_UNIX := YesPlease
+  endif
+  ifdef HOST_WIN32
+    TARGET_WIN32 := YesPlease
+  endif
+  ifdef HOST_XBOX
+    TARGET_XBOX := YesPlease
+  endif
+
+  ifdef HOST_X86
+    TARGET_X86 := YesPlease
+  endif
+  ifdef HOST_X86_64
+    TARGET_X86_64 := YesPlease
+  endif
+  ifdef HOST_SPARC
+    TARGET_SPARC := YesPlease
+  endif
+  ifdef HOST_SPARC64
+    TARGET_SPARC64 := YesPlease
+  endif
+  ifdef HOST_POWERPC64
+    TARGET_POWERPC64 := YesPlease
+  endif
 endif
+
+
+#
+# Variable defaults
+#
 
 ifndef HOST_FBC
   HOST_FBC := $(HOST_PREFIX)$(FBC)
@@ -174,18 +272,22 @@ ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
-ifneq ($(filter dos cygwin win32,$(HOST_OS)),)
+ifdef HOST_WIN32
+  EXEEXT := .exe
+else ifdef HOST_DOS
   EXEEXT := .exe
 endif
 
 # Default prefix is /usr/local, except when cross-compiling, then you typically
 # don't want to install into the build system, and when on Windows (with MinGW),
 # installing into /usr/local isn't all that helpful (especially if MSYS isn't
-# installed).
+# installed). For Cygwin it's probably always ok to use /usr/local, isn't it?
 ifndef prefix
-  ifneq ($(HOST),)
+  ifdef HOST
     prefix := .
-  else ifeq ($(HOST_OS),win32)
+  else ifdef HOST_MINGW
+    prefix := .
+  else ifdef HOST_DOS
     prefix := .
   else
     prefix := /usr/local
@@ -212,22 +314,39 @@ ifndef FBFLAGS
   FBFLAGS := -g
 endif
 
-# Don't build libfbmt on DOS
-ifeq ($(TARGET_OS),dos)
+# Don't build libfbmt for DOS
+ifdef TARGET_DOS
   DISABLE_MT := YesPlease
 endif
 
-################################################################################
 
-# Protect against dangerous path values, we do not want to end up with
+#
+# Directory layout setup
+#
+# Normally we have this:
+#    bin/[target-]fbc[-suffix]
+#    bin/[target-]binutils
+#    include/[target-]freebasic[-suffix]/fbgfx.bi
+#    lib/[target-]freebasic[-suffix]/fbgfx.bi
+# This works for Linux /usr or /usr/local installations, and also for MinGW.
+# It allows installing multiple fbc's, distinguished by the name suffix and/or
+# their default cross-compiling target, and is similar to gcc/binutils.
+#
+# For a standalone build we have this:
+#    fbc
+#    bin/binutils
+#    include/fbgfx.bi
+#    lib/libfb.a
+# This is intended for native self-contained DOS/Windows installations.
+#
+
+# Protect against dangerous empty path variables, we do not want to end up with
 # 'rm -rf /'. Assuming <nothing> means '.'.
 ifeq ($(prefix),)
   override prefix := .
 endif
-ifdef new
-  ifeq ($(new),)
-    override new := .
-  endif
+ifeq ($(new),)
+  override new := .
 endif
 
 ifdef ENABLE_STANDALONE
@@ -269,31 +388,36 @@ newruntime := $(new)/runtime
 FBC_CONFIG := $(newcompiler)/config.bi
 LIBFB_CONFIG := $(newruntime)/config.h
 
+
+#
+# Compiler flags
+#
+
 FBCFLAGS := $(FBFLAGS) -w all -w pedantic -m fbc -include $(FBC_CONFIG)
 FBLFLAGS := $(FBFLAGS)
 ALLCFLAGS := $(CFLAGS) -Wall -include $(LIBFB_CONFIG)
 
-ifneq ($(filter cygwin win32,$(HOST_OS)),)
+ifdef HOST_WIN32
   FBLFLAGS += -t 2048
 endif
 
 ifndef DISABLE_OBJINFO
   FBLFLAGS += -l bfd -l iberty
-  ifeq ($(HOST_OS),cygwin)
+  ifdef HOST_CYGWIN
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),dos)
+  else ifdef HOST_DOS
     FBLFLAGS += -l intl -l z
-  else ifeq ($(HOST_OS),freebsd)
+  else ifdef HOST_FREEBSD
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),openbsd)
+  else ifdef HOST_OPENBSD
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),win32)
+  else ifdef HOST_MINGW
     FBLFLAGS += -l user32
   endif
 endif
 
 # Some special treatment for xbox. TODO: Test me, update me!
-ifeq ($(HOST_OS),xbox)
+ifdef TARGET_XBOX
   ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
   ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
   ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
@@ -301,6 +425,11 @@ ifeq ($(HOST_OS),xbox)
   ALLCFLAGS += -I$(OPENXDK)/include
   ALLCFLAGS += -I$(OPENXDK)/include/SDL
 endif
+
+
+#
+# Sources
+#
 
 FBC_BI := $(FBC_CONFIG)
 FBC_BI += compiler/ast.bi
@@ -896,7 +1025,7 @@ LIBFB_C += $(newruntime)/libfb_vfs_open.o
 
 LIBFB_S :=
 
-ifeq ($(TARGET_OS),dos)
+ifdef TARGET_DOS
   LIBFB_H += runtime/fb_dos.h
   LIBFB_H += runtime/fb_unicode_dos.h
   LIBFB_C += $(newruntime)/libfb_dev_pipe_close_dos.o
@@ -957,7 +1086,7 @@ ifeq ($(TARGET_OS),dos)
   LIBFB_C += $(newruntime)/libfb_time_tmr_dos.o
 endif
 
-ifeq ($(TARGET_OS),freebsd)
+ifdef TARGET_FREEBSD
   LIBFB_C += $(newruntime)/libfb_hexit_freebsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_freebsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_freebsd.o
@@ -967,7 +1096,7 @@ ifeq ($(TARGET_OS),freebsd)
   LIBFB_C += $(newruntime)/libfb_sys_getexepath_freebsd.o
 endif
 
-ifeq ($(TARGET_OS),linux)
+ifdef TARGET_LINUX
   LIBFB_H += runtime/fb_gfx_linux.h
   LIBFB_H += runtime/fb_linux.h
   LIBFB_C += $(newruntime)/libfb_hexit_linux.o
@@ -981,7 +1110,7 @@ ifeq ($(TARGET_OS),linux)
   LIBFB_C += $(newruntime)/libfb_sys_ports_linux.o
 endif
 
-ifeq ($(TARGET_OS),netbsd)
+ifdef TARGET_NETBSD
   LIBFB_C += $(newruntime)/libfb_hexit_netbsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_netbsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_netbsd.o
@@ -991,7 +1120,7 @@ ifeq ($(TARGET_OS),netbsd)
   LIBFB_C += $(newruntime)/libfb_sys_getexepath_netbsd.o
 endif
 
-ifeq ($(TARGET_OS),openbsd)
+ifdef TARGET_OPENBSD
   LIBFB_C += $(newruntime)/libfb_hexit_openbsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_openbsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_openbsd.o
@@ -1002,7 +1131,7 @@ ifeq ($(TARGET_OS),openbsd)
   LIBFB_C += $(newruntime)/swprintf_hack_openbsd.o
 endif
 
-ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+ifdef TARGET_UNIX
   LIBFB_H += runtime/fb_unix.h
   LIBFB_C += $(newruntime)/libfb_dev_pipe_close_unix.o
   LIBFB_C += $(newruntime)/libfb_dev_pipe_open_unix.o
@@ -1054,7 +1183,7 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   LIBFB_C += $(newruntime)/libfb_time_tmr_unix.o
 endif
 
-ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+ifdef TARGET_WIN32
   LIBFB_H += runtime/fb_unicode_win32.h
   LIBFB_H += runtime/fb_win32.h
   LIBFB_H += runtime/fbportio_driver.h
@@ -1129,7 +1258,7 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   LIBFB_S += $(newruntime)/libfb_alloca.o
 endif
 
-ifeq ($(TARGET_OS),xbox)
+ifdef TARGET_XBOX
   LIBFB_H += runtime/fb_xbox.h
   LIBFB_C += $(newruntime)/libfb_dev_pipe_close_xbox.o
   LIBFB_C += $(newruntime)/libfb_dev_pipe_open_xbox.o
@@ -1255,21 +1384,24 @@ ifndef DISABLE_GFX
   LIBFBGFX_C += $(newruntime)/libfb_gfx_width.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_window.o
 
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-    ifeq ($(TARGET_OS),freebsd)
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd_freebsd.o
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
-    endif
-    ifeq ($(TARGET_OS),linux)
-      LIBFBGFX_H += runtime/fb_gfx_linux.h
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_fbdev_linux.o
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_linux_linux.o
-    endif
-    ifeq ($(TARGET_OS),openbsd)
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd_openbsd.o
-    endif
+  ifdef TARGET_FREEBSD
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd_freebsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
+  endif
+
+  ifdef TARGET_LINUX
+    LIBFBGFX_H += runtime/fb_gfx_linux.h
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_fbdev_linux.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_linux_linux.o
+  endif
+
+  ifdef TARGET_OPENBSD
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd_openbsd.o
+  endif
+
+  ifdef TARGET_UNIX
     ifndef DISABLE_X11
       LIBFBGFX_H += runtime/fb_gfx_x11.h
       LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_x11.o
@@ -1278,7 +1410,9 @@ ifndef DISABLE_GFX
         LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_x11.o
       endif
     endif
-  else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  endif
+
+  ifdef TARGET_WIN32
     LIBFBGFX_H += runtime/fb_gfx_win32.h
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_ddraw_win32.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_gdi_win32.o
@@ -1287,7 +1421,9 @@ ifndef DISABLE_GFX
     ifndef DISABLE_OPENGL
       LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_win32.o
     endif
-  else ifeq ($(TARGET_OS),dos)
+  endif
+
+  ifdef TARGET_DOS
     LIBFBGFX_H += runtime/fb_gfx_dos.h
     LIBFBGFX_H += runtime/vesa_dos.h
     LIBFBGFX_H += runtime/vga_dos.h
@@ -1301,12 +1437,14 @@ ifndef DISABLE_GFX
     LIBFBGFX_C += $(newruntime)/libfb_gfx_mouse_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_core_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_dos.o
-  else ifeq ($(TARGET_OS),xbox)
+  endif
+
+  ifdef TARGET_XBOX
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_xbox_xbox.o
   endif
 endif
 
-ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+ifdef TARGET_X86
   LIBFB_H += runtime/fb_x86.h
   LIBFB_S += $(newruntime)/libfb_cpudetect_x86.o
   ifndef DISABLE_GFX
@@ -1330,6 +1468,10 @@ ifndef DISABLE_MT
   LIBFBMT_S := $(patsubst %.o,%.mt.o,$(LIBFB_S))
 endif
 
+
+#
+# Build rules
+#
 
 ifndef V
   QUIET_GEN     = @echo "GEN $@";
@@ -1470,13 +1612,13 @@ help:
 	@echo "  uninstall[-compiler|-runtime]  to remove from prefix."
 	@echo "Variables:"
 	@echo "  FBFLAGS ('-g'), CFLAGS ('-g -O2')"
-	@echo "  new     The build dir ('new')"
-	@echo "  prefix  The install dir ('.' on Windows/DOS; '/usr/local' elsewhere)"
+	@echo "  new     The build directory ('new')"
+	@echo "  prefix  The install directory ('.' on Windows/DOS; '/usr/local' elsewhere)"
 	@echo "  HOST    A GNU triplet to cross-compile an fbc that will run on HOST."
 	@echo "  TARGET  A GNU triplet to build a cross-fbc that produces for TARGET,"
 	@echo "          and to cross-compile the runtime to run on TARGET."
-	@echo "  SUFFIX  A string to append to the file/dir names of fbc and lib/freebasic,"
-	@echo "          distinguishing it from other installed versions."
+	@echo "  SUFFIX  A string to append to the fbc program name and the lib/freebasic/"
+	@echo "          directory, distinguishing this build from other installed versions."
 	@echo "  FBC     The 'fbc', 'gcc', 'ar' tools to use. Note: When cross-compiling,"
 	@echo "  CC      these cannot contain paths, because the host/target triplets will"
 	@echo "  AR      be prepended. However, you can always set those variables directly:"
@@ -1490,5 +1632,5 @@ help:
 	@echo "  DISABLE_GFX       Don't build libfbgfx"
 	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
 	@echo "  DISABLE_X11       For libfbgfx without X11 support (Unix)"
-	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use"
-	@echo "them to set variables in a more permanent and even build-dir specific way."
+	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
+	@echo "to set variables in a more permanent and even build-directory specific way."
