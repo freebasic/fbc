@@ -1515,6 +1515,9 @@ ifndef DISABLE_OBJINFO
 endif
 ifdef ENABLE_FBBFD
 	@echo "#define ENABLE_FBBFD $(ENABLE_FBBFD)" >> $@
+ifdef ENABLE_STANDALONE
+	@echo '#define ENABLE_STANDALONE' >> $@
+endif
 endif
 
 
@@ -1632,5 +1635,9 @@ help:
 	@echo "  DISABLE_GFX       Don't build libfbgfx"
 	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
 	@echo "  DISABLE_X11       For libfbgfx without X11 support (Unix)"
+	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
+	@echo "                    toplevel directory (instead of bin/) and does not use"
+	@echo "                    freebasic/ sub-directories in include/ and lib/."
+	@echo "                    (intended for self-contained installations)"
 	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
 	@echo "to set variables in a more permanent and even build-directory specific way."

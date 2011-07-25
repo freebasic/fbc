@@ -110,9 +110,15 @@ declare sub	parserSetCtx ( )
 	'' filenames of gcc-libs
 	dim shared gccLibFileNameTb(  ) as zstring ptr
 
-const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
+#ifdef ENABLE_STANDALONE
+const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
+const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV
+const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
+#else
+const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
 const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
 const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
+#endif
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
