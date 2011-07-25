@@ -75,7 +75,7 @@ static void fb_Die
 	int pos = 0;
 	
 	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-					 FB_NEWLINE "Aborting due to runtime error %d", err_num );
+	                 "\nAborting due to runtime error %d", err_num );
 
 	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
@@ -87,15 +87,15 @@ static void fb_Die
 
 	if( mod_name != NULL )
 		if( fun_name != NULL )
-	    	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-	    				 	 " %s %s::%s()" FB_NEWLINE FB_NEWLINE, (char *)(line_num > 0? &"of" : &"in"), 
-							 (char *)mod_name, (char *)fun_name );
+			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			                 " %s %s::%s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
+			                 (char *)mod_name, (char *)fun_name );
 		else
-	    	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-	    				 	 " %s %s()" FB_NEWLINE FB_NEWLINE, (char *)(line_num > 0? &"of" : &"in"), 
-							 (char *)mod_name );
+			pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+			                 " %s %s()\n\n", (char *)(line_num > 0? &"of" : &"in"),
+			                 (char *)mod_name );
 	else
-		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, FB_NEWLINE FB_NEWLINE );
+		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, "\n\n" );
 	
 	error_buffer[FB_ERROR_MESSAGE_SIZE-1] = '\0';
 	
