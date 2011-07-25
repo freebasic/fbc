@@ -579,7 +579,6 @@ end type
 
 type FBTARGET
 	wchar			as FBTARGET_WCHAR
-	targetdir		as zstring ptr				'' directory to look for target bin, lib, etc.
 	define		as zstring ptr				'' __FB_target__ preprocessor define name
 	entrypoint		as zstring ptr				'' entry point of executable (usually "main")
 	underprefix		as integer					'' whether symbols are prefixed with an underscore

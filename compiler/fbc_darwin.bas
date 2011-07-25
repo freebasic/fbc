@@ -445,7 +445,6 @@ function fbcInit_darwin( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"darwin"
 	env.target.define = @"__FB_DARWIN__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE

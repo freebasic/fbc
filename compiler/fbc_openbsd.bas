@@ -448,7 +448,6 @@ function fbcInit_openbsd( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"openbsd"
 	env.target.define = @"__FB_OPENBSD__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE

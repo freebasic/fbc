@@ -460,7 +460,6 @@ function fbcInit_netbsd( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"netbsd"
 	env.target.define = @"__FB_NETBSD__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE

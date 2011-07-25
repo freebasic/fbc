@@ -401,7 +401,6 @@ function fbcInit_xbox( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"xbox"
 	env.target.define = @"__FB_XBOX__"
 	env.target.entrypoint = @"XBoxStartup"
 	env.target.underprefix = TRUE

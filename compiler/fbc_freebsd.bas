@@ -458,7 +458,6 @@ function fbcInit_freebsd( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"freebsd"
 	env.target.define = @"__FB_FREEBSD__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE

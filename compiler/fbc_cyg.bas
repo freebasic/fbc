@@ -484,7 +484,6 @@ function fbcInit_cygwin( ) as integer
 	env.target.wchar.type = FB_DATATYPE_USHORT
 	env.target.wchar.size = 2
 
-	env.target.targetdir = @"cygwin"
 	env.target.define = @"__FB_CYGWIN__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = TRUE

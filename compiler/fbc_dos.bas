@@ -291,7 +291,6 @@ function fbcInit_dos( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UBYTE
 	env.target.wchar.size = 1
 
-	env.target.targetdir = @"dos"
 	env.target.define = @"__FB_DOS__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = TRUE

@@ -468,7 +468,6 @@ function fbcInit_linux( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
-	env.target.targetdir = @"linux"
 	env.target.define = @"__FB_LINUX__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE
