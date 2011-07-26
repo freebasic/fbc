@@ -1,13 +1,6 @@
-''
+'' The makefile will append some configuration #defines (ENABLE_*, TARGET_*)
+'' and then #include this from the fbc command line into all files.
 
 #define NULL 0
 #define FALSE 0
 #define TRUE (-1)
-
-#define __STRINGIFY(s) #s
-
-#define HOST_CANON          __STRINGIFY(@host@)
-#define HOST_NONCANON       __STRINGIFY(@host_noncanonical@)
-#define HOST_CPU            __STRINGIFY(@host_cpu@)
-#define HOST_OS             __STRINGIFY(@HOST_OS@)
-#define HOST_OSFAMILY       __STRINGIFY(@HOST_OSFAMILY@)
