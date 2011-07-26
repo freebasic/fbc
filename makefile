@@ -1413,7 +1413,7 @@ all: compiler runtime
 compiler: $(FBC_NEW)
 
 $(FBC_NEW): $(FBC_BAS) | $(newbin)
-	$(QUIET_LINK)$(FBC) $(FBLFLAGS) $^ -x $@
+	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
 
 ifndef DISABLE_OBJINFO
 ifndef ENABLE_FBBFD
@@ -1422,10 +1422,11 @@ endif
 endif
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI) | $(newcompiler)
-	$(QUIET_FBC)$(FBC) $(FBCFLAGS) -c $< -o $@
+	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c | $(newcompiler)
-	$(QUIET_CC)$(CC) -Wall -O2 -c $< -o $@
+	$(QUIET_CC)$(HOST_CC) -Wall -O2 -c $< -o $@
+
 
 $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
 	$(QUIET_GEN)cp $< $@
