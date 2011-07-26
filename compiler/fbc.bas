@@ -203,6 +203,10 @@ declare sub getDefaultLibs _
     		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
     	print "Copyright (C) 2004-2010 The FreeBASIC development team."
 
+#ifdef ENABLE_STANDALONE
+		print "Configured as standalone"
+#endif
+
 #ifdef ENABLE_OBJINFO
 		print "objinfo enabled ";
 #ifdef ENABLE_FBBFD

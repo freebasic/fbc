@@ -19,6 +19,18 @@
 # so there we have HOST_MINGW/CYGWIN and the HOST_WIN32 common to both.
 # In the makefile/compiler win32 means just mingw though.
 #
+# FB directory layout:
+#    a) Default (for Linux /usr[/local] installations, and also for MinGW):
+#          bin/target-fbc-suffix
+#          bin/target-binutils
+#          include/target-freebasic-suffix/fbgfx.bi
+#          lib/target-freebasic-suffix/fbgfx.bi
+#    b) Standalone (for self-contained DOS/Windows installations):
+#          target-fbc-suffix
+#          bin/target-binutils
+#          target-include-suffix/fbgfx.bi
+#          target-lib-suffix/libfb.a
+#
 
 CFLAGS := -g -O2
 FBFLAGS := -g
@@ -251,22 +263,6 @@ endif
 #
 # Directory layout setup
 #
-# Normally we have this:
-#    bin/[target-]fbc[-suffix]
-#    bin/[target-]binutils
-#    include/[target-]freebasic[-suffix]/fbgfx.bi
-#    lib/[target-]freebasic[-suffix]/fbgfx.bi
-# This works for Linux /usr or /usr/local installations, and also for MinGW.
-# It allows installing multiple fbc's, distinguished by the name suffix and/or
-# their default cross-compiling target, and is similar to gcc/binutils.
-#
-# For a standalone build we have this:
-#    fbc
-#    bin/binutils
-#    include/fbgfx.bi
-#    lib/libfb.a
-# This is intended for native self-contained DOS/Windows installations.
-#
 
 # Protect against dangerous empty path variables, we do not want to end up with
 # 'rm -rf /'. Assuming <nothing> means '.'.
@@ -278,32 +274,28 @@ ifndef new
 endif
 
 ifdef ENABLE_STANDALONE
-  FBC_NAME := fbc$(EXEEXT)
-  FREEBASIC_NAME := freebasic
   newbin := $(new)
-  newlib := $(new)/lib
+  newlib := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
   prefixbin := $(prefix)
-  prefixlib := $(prefix)/lib
+  prefixlib := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
-  FBC_NAME := $(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
-  FREEBASIC_NAME := $(TARGET_PREFIX)freebasic$(SUFFIX)
   newbin := $(new)/bin
-  newlib := $(new)/lib/$(FREEBASIC_NAME)
+  newlib := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
   prefixbin := $(prefix)/bin
-  prefixlib := $(prefix)/lib/$(FREEBASIC_NAME)
+  prefixlib := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
 endif
 
-FBC_NEW      := $(newbin)/$(FBC_NAME)
-FBRT0_NEW    := $(newlib)/fbrt0.o
-LIBFB_NEW    := $(newlib)/libfb.a
+FBC_NEW   := $(newbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+FBRT0_NEW := $(newlib)/fbrt0.o
+LIBFB_NEW := $(newlib)/libfb.a
 
-FBC_PREFIX      := $(prefixbin)/$(FBC_NAME)
-FBRT0_PREFIX    := $(prefixlib)/fbrt0.o
-LIBFB_PREFIX    := $(prefixlib)/libfb.a
+FBC_PREFIX   := $(prefixbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+FBRT0_PREFIX := $(prefixlib)/fbrt0.o
+LIBFB_PREFIX := $(prefixlib)/libfb.a
 
 ifndef DISABLE_MT
-  LIBFBMT_NEW  := $(newlib)/libfbmt.a
-  LIBFBMT_PREFIX  := $(prefixlib)/libfbmt.a
+  LIBFBMT_NEW := $(newlib)/libfbmt.a
+  LIBFBMT_PREFIX := $(prefixlib)/libfbmt.a
 endif
 
 ifndef DISABLE_GFX
@@ -1502,6 +1494,7 @@ $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
   ifdef ENABLE_STANDALONE
 	@echo '#define ENABLE_STANDALONE' >> $@
   endif
+	@echo '#define FB_SUFFIX "$(SUFFIX)"' >> $@
 
 .PHONY: runtime
 runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)

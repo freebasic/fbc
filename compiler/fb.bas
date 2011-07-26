@@ -110,16 +110,6 @@ declare sub	parserSetCtx ( )
 	'' filenames of gcc-libs
 	dim shared gccLibFileNameTb(  ) as zstring ptr
 
-#ifdef ENABLE_STANDALONE
-const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
-const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV
-const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV
-#else
-const FB_BINPATH = FB_HOST_PATHDIV + "bin" + FB_HOST_PATHDIV
-const FB_INCPATH = FB_HOST_PATHDIV + "include" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
-const FB_LIBPATH = FB_HOST_PATHDIV + "lib" + FB_HOST_PATHDIV + "freebasic" + FB_HOST_PATHDIV
-#endif
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -482,7 +472,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
-#if defined(TARGET_LINUX) or defined(TARGET_FREEBSD) or defined(TARGET_OPENBSD) or defined(TARGET_DARWIN) or defined(TARGET_NETBSD)
+#ifdef __FB_UNIX__
 	env.clopt.findbin		= _
 		FB_FINDBIN_ALLOW_ENVVAR _
 		or FB_FINDBIN_ALLOW_BINDIR _
@@ -788,9 +778,23 @@ sub fbSetPaths _
 		prefix = exepath() + FB_HOST_PATHDIV + ".."
 	end if
 
-	pathTB(FB_PATH_BIN) = prefix + FB_BINPATH
-	pathTB(FB_PATH_INC) = prefix + FB_INCPATH
-	pathTB(FB_PATH_LIB) = prefix + FB_LIBPATH
+	prefix += FB_HOST_PATHDIV
+
+	'' See the makefile for directory layout info
+	pathTB(FB_PATH_BIN) = prefix + "bin" + FB_HOST_PATHDIV
+	pathTB(FB_PATH_INC) = prefix
+	pathTB(FB_PATH_LIB) = prefix
+
+	#ifdef ENABLE_STANDALONE
+		pathTB(FB_PATH_INC) += fbc.triplet + "include"
+		pathTB(FB_PATH_LIB) += fbc.triplet + "lib"
+	#else
+		pathTB(FB_PATH_INC) += "include" + FB_HOST_PATHDIV + fbc.triplet + "freebasic"
+		pathTB(FB_PATH_LIB) += "lib" + FB_HOST_PATHDIV + fbc.triplet + "freebasic"
+	#endif
+
+	pathTB(FB_PATH_INC) += FB_SUFFIX + FB_HOST_PATHDIV
+	pathTB(FB_PATH_LIB) += FB_SUFFIX + FB_HOST_PATHDIV
 
 	hRevertSlash( pathTB(FB_PATH_BIN), FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( pathTB(FB_PATH_INC), FALSE, asc(FB_HOST_PATHDIV) )
