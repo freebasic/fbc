@@ -4,10 +4,7 @@
 '' chng: may/2006 written [v1ctor]
 ''
 
-
 #include once "pool.bi"
-
-const NULL = 0
 
 const MIN_SIZE = 4
 

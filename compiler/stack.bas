@@ -3,9 +3,6 @@
 '' chng: jan/2005 written [v1ctor]
 ''
 
-
-const NULL = 0
-
 #include once "stack.bi"
 
 declare function hAllocTB		( _

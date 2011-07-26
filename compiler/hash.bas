@@ -3,11 +3,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
-
-const NULL = 0
-const FALSE = 0
-const TRUE = not FALSE
-
 #include once "hash.bi"
 #include once "list.bi"
 #include once "hlp.bi"

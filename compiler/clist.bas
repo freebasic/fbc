@@ -7,8 +7,6 @@
 
 #include once "clist.bi"
 
-const NULL = 0
-
 '':::::
 function clistNew _
 	( _

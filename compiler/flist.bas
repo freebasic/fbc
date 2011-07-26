@@ -7,8 +7,6 @@
 
 #include once "flist.bi"
 
-const NULL = 0
-
 '':::::
 function flistNew _
 	( _
