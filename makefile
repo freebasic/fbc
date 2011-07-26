@@ -1491,6 +1491,9 @@ $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
   ifdef DISABLE_OBJINFO
 	@echo '#define ENABLE_OBJINFO' >> $@
   endif
+  ifdef ENABLE_PREFIX
+	@echo '#define ENABLE_PREFIX "$(prefix)"' >> $@
+  endif
   ifdef ENABLE_STANDALONE
 	@echo '#define ENABLE_STANDALONE' >> $@
   endif
@@ -1653,6 +1656,8 @@ help:
 	@echo "  DISABLE_GFX       Don't build libfbgfx"
 	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
 	@echo "  DISABLE_X11       For libfbgfx without X11 support (Unix)"
+	@echo "  ENABLE_PREFIX     Hard-code the PREFIX into the compiler, instead of"
+	@echo "                    building a relocatable compiler."
 	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
 	@echo "                    toplevel directory (instead of bin/) and does not use"
 	@echo "                    freebasic/ sub-directories in include/ and lib/."

@@ -772,10 +772,20 @@ sub fbSetPaths _
 	( _
 	)
 
+	'' The prefix can be set via the -prefix command line option too
 	dim as string prefix = fbPrefix
 
 	if( len(prefix) = 0 ) then
-		prefix = exepath() + FB_HOST_PATHDIV + ".."
+		'' Normally fbc is relocatable, i.e. no fixed prefix is
+		'' compiled in. However we still have the ENABLE_PREFIX
+		'' option to allow hard-coding the prefix.
+		'' (e.g. deb/rpm packages usually don't need/want to be
+		'' relocatable)
+		#ifdef ENABLE_PREFIX
+			prefix = ENABLE_PREFIX
+		#else
+			prefix = exepath() + FB_HOST_PATHDIV + ".."
+		#endif
 	end if
 
 	prefix += FB_HOST_PATHDIV
