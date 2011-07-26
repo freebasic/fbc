@@ -214,6 +214,27 @@ ifeq ($(TARGET_OS),dos)
   DISABLE_MT := YesPlease
 endif
 
+ifeq ($(TARGET_OS),cygwin)
+  ENABLE_CYGWIN := YesPlease
+else ifeq ($(TARGET_OS),darwin)
+  ENABLE_DARWIN := YesPlease
+else ifeq ($(TARGET_OS),dos)
+  ENABLE_DOS := YesPlease
+else ifeq ($(TARGET_OS),freebsd)
+  ENABLE_FREEBSD := YesPlease
+else ifeq ($(TARGET_OS),linux)
+  ENABLE_LINUX := YesPlease
+else ifeq ($(TARGET_OS),win32)
+  ENABLE_WIN32 := YesPlease
+else ifeq ($(TARGET_OS),netbsd)
+  ENABLE_NETBSD := YesPlease
+else ifeq ($(TARGET_OS),openbsd)
+  ENABLE_OPENBSD := YesPlease
+else ifeq ($(TARGET_OS),solaris)
+  ENABLE_SOLARIS := YesPlease
+else ifeq ($(TARGET_OS),xbox)
+  ENABLE_XBOX := YesPlease
+endif
 
 #
 # Directory layout setup
@@ -399,15 +420,33 @@ FBC_BAS += $(newcompiler)/fb.o
 FBC_BAS += $(newcompiler)/fb-main.o
 FBC_BAS += $(newcompiler)/fb-objinfo.o
 FBC_BAS += $(newcompiler)/fbc.o
-FBC_BAS += $(newcompiler)/fbc_cyg.o
-FBC_BAS += $(newcompiler)/fbc_darwin.o
-FBC_BAS += $(newcompiler)/fbc_dos.o
-FBC_BAS += $(newcompiler)/fbc_freebsd.o
-FBC_BAS += $(newcompiler)/fbc_linux.o
-FBC_BAS += $(newcompiler)/fbc_netbsd.o
-FBC_BAS += $(newcompiler)/fbc_openbsd.o
-FBC_BAS += $(newcompiler)/fbc_win32.o
-FBC_BAS += $(newcompiler)/fbc_xbox.o
+ifdef ENABLE_CYGWIN
+  FBC_BAS += $(newcompiler)/fbc_cyg.o
+endif
+ifdef ENABLE_DARWIN
+  FBC_BAS += $(newcompiler)/fbc_darwin.o
+endif
+ifdef ENABLE_DOS
+  FBC_BAS += $(newcompiler)/fbc_dos.o
+endif
+ifdef ENABLE_FREEBSD
+  FBC_BAS += $(newcompiler)/fbc_freebsd.o
+endif
+ifdef ENABLE_LINUX
+  FBC_BAS += $(newcompiler)/fbc_linux.o
+endif
+ifdef ENABLE_NETBSD
+  FBC_BAS += $(newcompiler)/fbc_netbsd.o
+endif
+ifdef ENABLE_OPENBSD
+  FBC_BAS += $(newcompiler)/fbc_openbsd.o
+endif
+ifdef ENABLE_WIN32
+  FBC_BAS += $(newcompiler)/fbc_win32.o
+endif
+ifdef ENABLE_XBOX
+  FBC_BAS += $(newcompiler)/fbc_xbox.o
+endif
 FBC_BAS += $(newcompiler)/flist.o
 FBC_BAS += $(newcompiler)/hash.o
 FBC_BAS += $(newcompiler)/hlp.o
@@ -1491,7 +1530,8 @@ help:
 	@echo "  uninstall[-compiler|-runtime]  to remove from prefix."
 	@echo "Variables:"
 	@echo "  FBFLAGS ('-g'), CFLAGS ('-g -O2')"
-	@echo "  new     The build directory ('new')"
+	@echo "  new     The build directory ('new'); change this to differentiate multiple"
+	@echo "          builds in one source tree."
 	@echo "  prefix  The install directory ('.' on Windows/DOS; '/usr/local' elsewhere)"
 	@echo "  HOST    A GNU triplet to cross-compile an fbc that will run on HOST."
 	@echo "  TARGET  A GNU triplet to build a cross-fbc that produces for TARGET,"
@@ -1515,5 +1555,7 @@ help:
 	@echo "                    toplevel directory (instead of bin/) and does not use"
 	@echo "                    freebasic/ sub-directories in include/ and lib/."
 	@echo "                    (intended for self-contained installations)"
+	@echo "  ENABLE_<TARGET>   For building a multi-target compiler. The ENABLE_* for"
+	@echo "                    the default TARGET will automatically be defined."
 	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
 	@echo "to set variables in a more permanent and even build-directory specific way."
