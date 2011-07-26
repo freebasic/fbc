@@ -175,6 +175,18 @@ endif
 # Variable defaults
 #
 
+ifndef FBC
+  FBC := fbc
+endif
+
+ifndef CC
+  CC := gcc
+endif
+
+ifndef AR
+  AR := ar
+endif
+
 ifndef HOST_FBC
   HOST_FBC := $(HOST_PREFIX)$(FBC)
 endif
@@ -207,18 +219,6 @@ ifndef prefix
   else
     prefix := /usr/local
   endif
-endif
-
-ifndef FBC
-  FBC := fbc
-endif
-
-ifndef CC
-  CC := gcc
-endif
-
-ifndef AR
-  AR := ar
 endif
 
 # Don't build libfbmt for DOS
