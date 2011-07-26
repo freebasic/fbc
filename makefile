@@ -9,15 +9,24 @@
 # triplets. By default TARGET is the same as HOST, and HOST is the same as
 # the build system, which is guessed mostly via uname. In case the triplet
 # parsing or default system detection fails, please fix it and make it work!
+#
+# FB OS names:
+#    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
+#    (where 'dos' should be 'djgpp', and 'win32' should be 'mingw')
+# FB CPU names:
+#    386 486 586 686 x86_64 sparc sparc64 powerpc64
+# Note: In the runtime, the win32 parts are used for both mingw and cygwin,
+# so there we have HOST_MINGW/CYGWIN and the HOST_WIN32 common to both.
+# In the makefile/compiler win32 means just mingw though.
+#
 
-# The ./config.mk and ./$(new)/config.mk files can be used to set variables,
-# so they don't have to be specified on the command line again and again.
+CFLAGS := -g -O2
+FBFLAGS := -g
+
+
 -include config.mk
 
-# The build directory -- where all generated/compiled files go.
-# We want the newly built fbc to be runnable from there, for testing without
-# installing, and we want to allow changing the build directory, to allow
-# having multiple at once.
+# The build directory
 ifndef new
   new := new
 endif
@@ -29,88 +38,47 @@ endif
 # Triplet parsing code
 #
 
+triplet-oops = \
+  $(error Sorry, '$(1)' does not look like one of the expected triplets. \
+          Maybe the makefile should be changed to recognize it.)
+
+# Canonical name to FB name translation
+parse-os = \
+  $(or $(findstring cygwin,$(1)), \
+       $(findstring darwin,$(1)), \
+       $(findstring freebsd,$(1)), \
+       $(findstring linux,$(1)), \
+       $(and $(findstring mingw,$(1)), win32), \
+       $(and $(findstring djgpp,$(1)), dos), \
+       $(findstring netbsd,$(1)), \
+       $(findstring openbsd,$(1)), \
+       $(findstring solaris,$(1)), \
+       $(findstring xbox,$(1)), \
+       $(call triplet-oops,$(2)))
+
+parse-cpu = \
+  $(or $(and $(filter i386,$(1)),386), \
+       $(and $(filter i486,$(1)),486), \
+       $(and $(filter i586,$(1)),586), \
+       $(and $(filter i686,$(1)),686), \
+       $(filter x86_64 sparc sparc64 powerpc64,$(1)), \
+       $(call triplet-oops,$(2)))
+
 # os = {all the words 3..EOL | the last word if 3..EOL was empty}
 # 'i686 pc linux gnu' -> 'linux gnu'
 # 'mingw32'           -> 'mingw32'
-extract-triplet-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
+extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
 
 # cpu = iif(has >= 2 words, first word, unknown)
 # 'i686 pc linux gnu' -> 'i686'
 # 'mingw32'           -> 'unknown'
-extract-triplet-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
+extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 
 # In autoconf we used a shell case statement and checked for *-*-mingw*, but
 # here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
 # word/text processing functions to analyze it.
-get-triplet-os  = $(call extract-triplet-os,$(subst -, ,$(1)))
-get-triplet-cpu = $(call extract-triplet-cpu,$(subst -, ,$(1)))
-
-# This is needed for both HOST and TARGET, so unfortunately we need to $(eval)
-# this to avoid duplicate code.
-# Note: First the $(call) will expand the whole thing as one string,
-# without parsing if's or variable assignments. That's why it may be
-# necessary to delay some expansions until the $(eval) parse by quoting their $.
-# (Especially $(error)s that should show up conditionally only, instead of
-# always being "expanded" during the $(call))
-define parse-triplet
-  os := $(call get-triplet-os,$($(1)))
-  ifneq ($(findstring cygwin,$(os)),)
-    $(1)_CYGWIN := YesPlease
-    $(1)_WIN32 := YesPlease
-  else ifneq ($(findstring darwin,$(os)),)
-    $(1)_DARWIN := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring freebsd,$(os)),)
-    $(1)_FREEBSD := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring linux,$(os)),)
-    $(1)_LINUX := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring mingw,$(os)),)
-    $(1)_MINGW := YesPlease
-    $(1)_WIN32 := YesPlease
-  else ifneq ($(findstring djgpp,$(os)),)
-    $(1)_DOS := YesPlease
-  else ifneq ($(findstring netbsd,$(os)),)
-    $(1)_NETBSD := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring openbsd,$(os)),)
-    $(1)_OPENBSD := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring solaris,$(os)),)
-    $(1)_SOLARIS := YesPlease
-    $(1)_UNIX := YesPlease
-  else ifneq ($(findstring xbox,$(os)),)
-    $(1)_XBOX := YesPlease
-  else
-    $$(error Sorry, OS='$(os)' from $(1)='$($(1))' doesn't look like one of \
-            the expected OS names. Maybe the makefile should be fixed to \
-            recognize it.)
-  endif
-
-  cpu := $(call get-triplet-cpu,$(HOST))
-  ifeq ($(cpu),i386)
-    $(1)_X86 := YesPlease
-  else ifeq ($(cpu),i486)
-    $(1)_X86 := YesPlease
-  else ifeq ($(cpu),i586)
-    $(1)_X86 := YesPlease
-  else ifeq ($(cpu),i686)
-    $(1)_X86 := YesPlease
-  else ifeq ($(cpu),x86_64)
-    $(1)_X86_64 := YesPlease
-  else ifeq ($(cpu),sparc)
-    $(1)_SPARC := YesPlease
-  else ifeq ($(cpu),sparc64)
-    $(1)_SPARC64 := YesPlease
-  else ifeq ($(cpu),powerpc64)
-    $(1)_POWERPC64 := YesPlease
-  else
-    $$(error Sorry, CPU='$(cpu)' from $(1)='$($(1))' doesn't look like one of \
-            the expected CPU names. Maybe the makefile should be fixed to \
-            recognize it.)
-  endif
-endef
+triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
+triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
 
 
 #
@@ -120,135 +88,74 @@ endef
 ifdef HOST
   # Cross-compile fbc to run on this HOST
   HOST_PREFIX := $(HOST)-
-  $(eval $(call parse-triplet,HOST))
+  HOST_OS := $(call triplet-os,$(HOST))
+  HOST_CPU := $(call triplet-cpu,$(HOST))
 else
   # No HOST given, so guess the build OS & CPU via uname or something else.
   # uname is available on every system we currently support, except on
   # Windows with MinGW but not MSYS, we try to detect that below.
-
-  # OS
   uname_s := $(shell uname -s 2>&1 || echo unknown)
-  #uname_o := $(shell uname -o 2>&1 || echo unknown)
   ifneq ($(findstring CYGWIN,$(uname_s)),)
-    HOST_CYGWIN := YesPlease
-    HOST_WIN32 := YesPlease
+    HOST_OS := cygwin
   else ifeq ($(uname_s),Darwin)
-    HOST_DARWIN := YesPlease
-    HOST_UNIX := YesPlease
+    HOST_OS := darwin
   else ifeq ($(uname_s),FreeBSD)
-    HOST_FREEBSD := YesPlease
-    HOST_UNIX := YesPlease
+    HOST_OS := freebsd
   else ifeq ($(uname_s),Linux)
-    HOST_LINUX := YesPlease
-    HOST_UNIX := YesPlease
+    HOST_OS := linux
   else ifneq ($(findstring MINGW,$(uname_s)),)
-    HOST_MINGW := YesPlease
-    HOST_WIN32 := YesPlease
-  else ifeq ($(uname_s),NetBSD)
-    HOST_NETBSD := YesPlease
-    HOST_UNIX := YesPlease
-  else ifeq ($(uname_s),OpenBSD)
-    HOST_OPENBSD := YesPlease
-    HOST_UNIX := YesPlease
+    HOST_OS := win32
   else ifeq ($(uname_s),MS-DOS)
-    HOST_DOS := YesPlease
+    HOST_OS := dos
+  else ifeq ($(uname_s),NetBSD)
+    HOST_OS := netbsd
+  else ifeq ($(uname_s),OpenBSD)
+    HOST_OS := openbsd
   else ifneq ($(COMSPEC),)
     # This check lets us support mingw32-make without MSYS.
     # TODO: any better way to check this?
-    HOST_MINGW := YesPlease
-    HOST_WIN32 := YesPlease
+    HOST_OS := win32
   else
-    $(error Sorry, the OS could not be identified automatically. Please fix \
-            the makefile. 'uname -s' returned: '$(uname_s)')
+    $(error Sorry, the OS could not be identified automatically. Maybe the \
+            makefile should be fixed. 'uname -s' returned: '$(uname_s)')
   endif
 
-  # CPU
   uname_m := $(shell uname -m 2>&1 || echo unknown)
   ifeq ($(uname_m),i386)
-    HOST_X86 := YesPlease
+    HOST_CPU = 386
   else ifeq ($(uname_m),i486)
-    HOST_X86 := YesPlease
+    HOST_CPU = 486
   else ifeq ($(uname_m),i586)
-    HOST_X86 := YesPlease
+    HOST_CPU = 586
   else ifeq ($(uname_m),i686)
-    HOST_X86 := YesPlease
+    HOST_CPU = 686
   else ifeq ($(uname_m),x86_64)
-    HOST_X86_64 := YesPlease
+    HOST_CPU = x86_64
   else ifeq ($(uname_m),sparc)
-    HOST_SPARC := YesPlease
+    HOST_CPU = sparc
   else ifeq ($(uname_m),sparc64)
-    HOST_SPARC64 := YesPlease
+    HOST_CPU = sparc64
   else ifeq ($(uname_m),powerpc64)
-    HOST_POWERPC64 := YesPlease
+    HOST_CPU = powerpc64
   else
-    $(error Sorry, the CPU could not be identified automatically. Please fix \
-            the makefile. 'uname -m' returned: '$(uname -m)')
+    $(error Sorry, the CPU could not be identified automatically. Maybe the \
+            makefile should be fixed. 'uname -m' returned: '$(uname -m)')
   endif
 endif
 
 ifdef TARGET
   # TARGET given, so parse it.
   TARGET_PREFIX := $(TARGET)-
-  $(eval $(call parse-triplet,TARGET))
+  TARGET_OS := $(call triplet-os,$(TARGET))
+  TARGET_CPU := $(call triplet-cpu,$(TARGET))
 else
   # No TARGET given, so set the same values/defines as for HOST
   ifdef HOST
     TARGET := $(HOST)
     TARGET_PREFIX := $(HOST_PREFIX)
   endif
-
-  ifdef HOST_CYGWIN
-    TARGET_CYGWIN := YesPlease
-  endif
-  ifdef HOST_DARWIN
-    TARGET_DARWIN := YesPlease
-  endif
-  ifdef HOST_DOS
-    TARGET_DOS := YesPlease
-  endif
-  ifdef HOST_FREEBSD
-    TARGET_FREEBSD := YesPlease
-  endif
-  ifdef HOST_LINUX
-    TARGET_LINUX := YesPlease
-  endif
-  ifdef HOST_MINGW
-    TARGET_MINGW := YesPlease
-  endif
-  ifdef HOST_NETBSD
-    TARGET_NETBSD := YesPlease
-  endif
-  ifdef HOST_OPENBSD
-    TARGET_OPENBSD := YesPlease
-  endif
-  ifdef HOST_SOLARIS
-    TARGET_SOLARIS := YesPlease
-  endif
-  ifdef HOST_UNIX
-    TARGET_UNIX := YesPlease
-  endif
-  ifdef HOST_WIN32
-    TARGET_WIN32 := YesPlease
-  endif
-  ifdef HOST_XBOX
-    TARGET_XBOX := YesPlease
-  endif
-
-  ifdef HOST_X86
-    TARGET_X86 := YesPlease
-  endif
-  ifdef HOST_X86_64
-    TARGET_X86_64 := YesPlease
-  endif
-  ifdef HOST_SPARC
-    TARGET_SPARC := YesPlease
-  endif
-  ifdef HOST_SPARC64
-    TARGET_SPARC64 := YesPlease
-  endif
-  ifdef HOST_POWERPC64
-    TARGET_POWERPC64 := YesPlease
-  endif
+  TARGET_OS := $(HOST_OS)
+  TARGET_CPU := $(HOST_CPU)
 endif
 
 
@@ -272,9 +179,7 @@ ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
-ifdef HOST_WIN32
-  EXEEXT := .exe
-else ifdef HOST_DOS
+ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
 endif
 
@@ -285,9 +190,7 @@ endif
 ifndef prefix
   ifdef HOST
     prefix := .
-  else ifdef HOST_MINGW
-    prefix := .
-  else ifdef HOST_DOS
+  else ifneq ($(filter dos win32,$(HOST_OS)),)
     prefix := .
   else
     prefix := /usr/local
@@ -306,16 +209,8 @@ ifndef AR
   AR := ar
 endif
 
-ifndef CFLAGS
-  CFLAGS := -g -O2
-endif
-
-ifndef FBFLAGS
-  FBFLAGS := -g
-endif
-
 # Don't build libfbmt for DOS
-ifdef TARGET_DOS
+ifeq ($(TARGET_OS),dos)
   DISABLE_MT := YesPlease
 endif
 
@@ -342,10 +237,10 @@ endif
 
 # Protect against dangerous empty path variables, we do not want to end up with
 # 'rm -rf /'. Assuming <nothing> means '.'.
-ifeq ($(prefix),)
+ifndef prefix
   override prefix := .
 endif
-ifeq ($(new),)
+ifndef new
   override new := .
 endif
 
@@ -397,27 +292,27 @@ FBCFLAGS := $(FBFLAGS) -w all -w pedantic -m fbc -include $(FBC_CONFIG)
 FBLFLAGS := $(FBFLAGS)
 ALLCFLAGS := $(CFLAGS) -Wall -include $(LIBFB_CONFIG)
 
-ifdef HOST_WIN32
+ifneq ($(filter cygwin win32,$(HOST_OS)),)
   FBLFLAGS += -t 2048
 endif
 
 ifndef DISABLE_OBJINFO
   FBLFLAGS += -l bfd -l iberty
-  ifdef HOST_CYGWIN
+  ifeq ($(HOST_OS),cygwin)
     FBLFLAGS += -l intl
-  else ifdef HOST_DOS
+  else ifeq ($(HOST_OS),dos)
     FBLFLAGS += -l intl -l z
-  else ifdef HOST_FREEBSD
+  else ifeq ($(HOST_OS),freebsd)
     FBLFLAGS += -l intl
-  else ifdef HOST_OPENBSD
+  else ifeq ($(HOST_OS),openbsd)
     FBLFLAGS += -l intl
-  else ifdef HOST_MINGW
+  else ifeq ($(HOST_OS),win32)
     FBLFLAGS += -l user32
   endif
 endif
 
 # Some special treatment for xbox. TODO: Test me, update me!
-ifdef TARGET_XBOX
+ifeq ($(TARGET_OS),xbox)
   ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
   ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
   ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
@@ -1025,292 +920,6 @@ LIBFB_C += $(newruntime)/libfb_vfs_open.o
 
 LIBFB_S :=
 
-ifdef TARGET_DOS
-  LIBFB_H += runtime/fb_dos.h
-  LIBFB_H += runtime/fb_unicode_dos.h
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_dos.o
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_file_copy_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_data_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_get_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_isr_dos.o
-  LIBFB_C += $(newruntime)/libfb_farmemset_dos.o
-  LIBFB_C += $(newruntime)/libfb_file_dir_dos.o
-  LIBFB_C += $(newruntime)/libfb_file_hconvpath_dos.o
-  LIBFB_C += $(newruntime)/libfb_file_hlock_dos.o
-  LIBFB_C += $(newruntime)/libfb_file_resetex_dos.o
-  LIBFB_C += $(newruntime)/libfb_hexit_dos.o
-  LIBFB_C += $(newruntime)/libfb_hinit_dos.o
-  LIBFB_C += $(newruntime)/libfb_hsignals_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_cls_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_color_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_getsize_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_inkey_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_isredir_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_locate_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_maxrow_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_pageset_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_pcopy_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_printer_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_readstr_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_scroll_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_serial_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_viewupdate_dos.o
-  LIBFB_C += $(newruntime)/libfb_io_width_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_beep_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_exec_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_getcwd_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_isr_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_ports_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_shell_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_sleep_dos.o
-  LIBFB_C += $(newruntime)/libfb_thread_cond_dos.o
-  LIBFB_C += $(newruntime)/libfb_thread_core_dos.o
-  LIBFB_C += $(newruntime)/libfb_thread_mutex_dos.o
-  LIBFB_C += $(newruntime)/libfb_time_setdate_dos.o
-  LIBFB_C += $(newruntime)/libfb_time_settime_dos.o
-  LIBFB_C += $(newruntime)/libfb_time_sleep_dos.o
-  LIBFB_C += $(newruntime)/libfb_time_tmr_dos.o
-endif
-
-ifdef TARGET_FREEBSD
-  LIBFB_C += $(newruntime)/libfb_hexit_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_hinit_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_freebsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_freebsd.o
-endif
-
-ifdef TARGET_LINUX
-  LIBFB_H += runtime/fb_gfx_linux.h
-  LIBFB_H += runtime/fb_linux.h
-  LIBFB_C += $(newruntime)/libfb_hexit_linux.o
-  LIBFB_C += $(newruntime)/libfb_hinit_linux.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_linux.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_linux.o
-  LIBFB_C += $(newruntime)/libfb_io_serial_linux.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_linux.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_linux.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_linux.o
-  LIBFB_C += $(newruntime)/libfb_sys_ports_linux.o
-endif
-
-ifdef TARGET_NETBSD
-  LIBFB_C += $(newruntime)/libfb_hexit_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_hinit_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_netbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_netbsd.o
-endif
-
-ifdef TARGET_OPENBSD
-  LIBFB_C += $(newruntime)/libfb_hexit_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_hinit_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_openbsd.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_openbsd.o
-  LIBFB_C += $(newruntime)/swprintf_hack_openbsd.o
-endif
-
-ifdef TARGET_UNIX
-  LIBFB_H += runtime/fb_unix.h
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_unix.o
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_file_copy_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_get_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_unix.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_unix.o
-  LIBFB_C += $(newruntime)/libfb_file_dir_unix.o
-  LIBFB_C += $(newruntime)/libfb_file_hconvpath_unix.o
-  LIBFB_C += $(newruntime)/libfb_file_hlock_unix.o
-  LIBFB_C += $(newruntime)/libfb_file_resetex_unix.o
-  LIBFB_C += $(newruntime)/libfb_hdynload_unix.o
-  LIBFB_C += $(newruntime)/libfb_hexit_unix.o
-  LIBFB_C += $(newruntime)/libfb_hinit_unix.o
-  LIBFB_C += $(newruntime)/libfb_hsignals_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_cls_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_color_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_getsize_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_inkey_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_isredir_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_locate_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_maxrow_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_pageset_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_pcopy_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_printer_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_readstr_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_scroll_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_viewupdate_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_width_unix.o
-  LIBFB_C += $(newruntime)/libfb_io_xfocus_unix.o
-  LIBFB_C += $(newruntime)/libfb_scancodes_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_beep_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_delay_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_dylib_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_exec_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_getcwd_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_shell_unix.o
-  LIBFB_C += $(newruntime)/libfb_thread_cond_unix.o
-  LIBFB_C += $(newruntime)/libfb_thread_core_unix.o
-  LIBFB_C += $(newruntime)/libfb_thread_mutex_unix.o
-  LIBFB_C += $(newruntime)/libfb_time_setdate_unix.o
-  LIBFB_C += $(newruntime)/libfb_time_settime_unix.o
-  LIBFB_C += $(newruntime)/libfb_time_sleep_unix.o
-  LIBFB_C += $(newruntime)/libfb_time_tmr_unix.o
-endif
-
-ifdef TARGET_WIN32
-  LIBFB_H += runtime/fb_unicode_win32.h
-  LIBFB_H += runtime/fb_win32.h
-  LIBFB_H += runtime/fbportio_driver.h
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_win32.o
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_file_copy_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_get_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_win32.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_win32.o
-  LIBFB_C += $(newruntime)/libfb_file_dir_win32.o
-  LIBFB_C += $(newruntime)/libfb_file_hconvpath_win32.o
-  LIBFB_C += $(newruntime)/libfb_file_hlock_win32.o
-  LIBFB_C += $(newruntime)/libfb_file_resetex_win32.o
-  LIBFB_C += $(newruntime)/libfb_hdynload_win32.o
-  LIBFB_C += $(newruntime)/libfb_hexit_win32.o
-  LIBFB_C += $(newruntime)/libfb_hinit_win32.o
-  LIBFB_C += $(newruntime)/libfb_hsignals_win32.o
-  LIBFB_C += $(newruntime)/libfb_intl_conv_win32.o
-  LIBFB_C += $(newruntime)/libfb_intl_w32_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_cls_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_clsex_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_color_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_colorget_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_gethnd_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_getsize_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_getwindow_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_getwindowex_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_getx_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_getxy_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_gety_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_inkey_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_input_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_isredir_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_locate_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_locateex_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_maxrow_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_pageset_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_pcopy_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_printer_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_readstr_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_readxy_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_screensize_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_scroll_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_scrollex_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_serial_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_viewupdate_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_width_win32.o
-  LIBFB_C += $(newruntime)/libfb_io_window_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_dylib_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_exec_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_getcwd_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_ports_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_shell_win32.o
-  LIBFB_C += $(newruntime)/libfb_sys_sleep_win32.o
-  LIBFB_C += $(newruntime)/libfb_thread_cond_win32.o
-  LIBFB_C += $(newruntime)/libfb_thread_core_win32.o
-  LIBFB_C += $(newruntime)/libfb_thread_mutex_win32.o
-  LIBFB_C += $(newruntime)/libfb_time_setdate_win32.o
-  LIBFB_C += $(newruntime)/libfb_time_settime_win32.o
-  LIBFB_C += $(newruntime)/libfb_time_sleep_win32.o
-  LIBFB_C += $(newruntime)/libfb_time_tmr_win32.o
-  LIBFB_S += $(newruntime)/libfb_alloca.o
-endif
-
-ifdef TARGET_XBOX
-  LIBFB_H += runtime/fb_xbox.h
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_xbox.o
-  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_file_copy_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_get_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_xbox.o
-  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_xbox.o
-  LIBFB_C += $(newruntime)/libfb_file_dir_xbox.o
-  LIBFB_C += $(newruntime)/libfb_file_hconvpath_xbox.o
-  LIBFB_C += $(newruntime)/libfb_file_hlock_xbox.o
-  LIBFB_C += $(newruntime)/libfb_hexit_xbox.o
-  LIBFB_C += $(newruntime)/libfb_hinit_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_cls_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_color_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_getsize_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_inkey_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_isredir_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_locate_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_maxrow_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_mouse_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_multikey_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_pageset_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_pcopy_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_printer_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_readstr_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_scroll_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_serial_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_viewupdate_xbox.o
-  LIBFB_C += $(newruntime)/libfb_io_width_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_dylib_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_exec_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_fmem_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_getcwd_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexename_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_getexepath_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_shell_xbox.o
-  LIBFB_C += $(newruntime)/libfb_sys_sleep_xbox.o
-  LIBFB_C += $(newruntime)/libfb_thread_cond_xbox.o
-  LIBFB_C += $(newruntime)/libfb_thread_core_xbox.o
-  LIBFB_C += $(newruntime)/libfb_thread_mutex_xbox.o
-  LIBFB_C += $(newruntime)/libfb_time_setdate_xbox.o
-  LIBFB_C += $(newruntime)/libfb_time_settime_xbox.o
-  LIBFB_C += $(newruntime)/libfb_time_sleep_xbox.o
-  LIBFB_C += $(newruntime)/libfb_time_tmr_xbox.o
-  LIBFB_S += $(newruntime)/libfb_alloca.o
-endif
-
 LIBFBGFX_H := $(LIBFB_H)
 LIBFBGFX_C :=
 
@@ -1383,47 +992,68 @@ ifndef DISABLE_GFX
   LIBFBGFX_C += $(newruntime)/libfb_gfx_vsync.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_width.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_window.o
+endif
 
-  ifdef TARGET_FREEBSD
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd_freebsd.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
-  endif
-
-  ifdef TARGET_LINUX
-    LIBFBGFX_H += runtime/fb_gfx_linux.h
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_fbdev_linux.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_linux_linux.o
-  endif
-
-  ifdef TARGET_OPENBSD
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd_openbsd.o
-  endif
-
-  ifdef TARGET_UNIX
-    ifndef DISABLE_X11
-      LIBFBGFX_H += runtime/fb_gfx_x11.h
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_x11.o
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_x11.o
-      ifndef DISABLE_OPENGL
-        LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_x11.o
-      endif
-    endif
-  endif
-
-  ifdef TARGET_WIN32
-    LIBFBGFX_H += runtime/fb_gfx_win32.h
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_ddraw_win32.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_gdi_win32.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_win32.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_win32_win32.o
-    ifndef DISABLE_OPENGL
-      LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_win32.o
-    endif
-  endif
-
-  ifdef TARGET_DOS
+ifeq ($(TARGET_OS),dos)
+  LIBFB_H += runtime/fb_dos.h
+  LIBFB_H += runtime/fb_unicode_dos.h
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_dos.o
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_file_copy_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_data_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_get_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_dos.o
+  LIBFB_C += $(newruntime)/libfb_drv_isr_dos.o
+  LIBFB_C += $(newruntime)/libfb_farmemset_dos.o
+  LIBFB_C += $(newruntime)/libfb_file_dir_dos.o
+  LIBFB_C += $(newruntime)/libfb_file_hconvpath_dos.o
+  LIBFB_C += $(newruntime)/libfb_file_hlock_dos.o
+  LIBFB_C += $(newruntime)/libfb_file_resetex_dos.o
+  LIBFB_C += $(newruntime)/libfb_hexit_dos.o
+  LIBFB_C += $(newruntime)/libfb_hinit_dos.o
+  LIBFB_C += $(newruntime)/libfb_hsignals_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_cls_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_color_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_getsize_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_inkey_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_isredir_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_locate_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_maxrow_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_pageset_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_pcopy_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_printer_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_readstr_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_scroll_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_serial_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_viewupdate_dos.o
+  LIBFB_C += $(newruntime)/libfb_io_width_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_beep_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_exec_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_getcwd_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_isr_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_ports_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_shell_dos.o
+  LIBFB_C += $(newruntime)/libfb_sys_sleep_dos.o
+  LIBFB_C += $(newruntime)/libfb_thread_cond_dos.o
+  LIBFB_C += $(newruntime)/libfb_thread_core_dos.o
+  LIBFB_C += $(newruntime)/libfb_thread_mutex_dos.o
+  LIBFB_C += $(newruntime)/libfb_time_setdate_dos.o
+  LIBFB_C += $(newruntime)/libfb_time_settime_dos.o
+  LIBFB_C += $(newruntime)/libfb_time_sleep_dos.o
+  LIBFB_C += $(newruntime)/libfb_time_tmr_dos.o
+  ifndef DISABLE_GFX
     LIBFBGFX_H += runtime/fb_gfx_dos.h
     LIBFBGFX_H += runtime/vesa_dos.h
     LIBFBGFX_H += runtime/vga_dos.h
@@ -1438,13 +1068,259 @@ ifndef DISABLE_GFX
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_core_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_dos.o
   endif
-
-  ifdef TARGET_XBOX
+else ifeq ($(TARGET_OS),freebsd)
+  LIBFB_C += $(newruntime)/libfb_hexit_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_hinit_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_freebsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_freebsd.o
+  ifndef DISABLE_GFX
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd_freebsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
+  endif
+else ifeq ($(TARGET_OS),linux)
+  LIBFB_H += runtime/fb_gfx_linux.h
+  LIBFB_H += runtime/fb_linux.h
+  LIBFB_C += $(newruntime)/libfb_hexit_linux.o
+  LIBFB_C += $(newruntime)/libfb_hinit_linux.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_linux.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_linux.o
+  LIBFB_C += $(newruntime)/libfb_io_serial_linux.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_linux.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_linux.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_linux.o
+  LIBFB_C += $(newruntime)/libfb_sys_ports_linux.o
+  ifndef DISABLE_GFX
+    LIBFBGFX_H += runtime/fb_gfx_linux.h
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_fbdev_linux.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_linux_linux.o
+  endif
+else ifeq ($(TARGET_OS),netbsd)
+  LIBFB_C += $(newruntime)/libfb_hexit_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_hinit_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_netbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_netbsd.o
+else ifeq ($(TARGET_OS),openbsd)
+  LIBFB_C += $(newruntime)/libfb_hexit_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_hinit_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_openbsd.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_openbsd.o
+  LIBFB_C += $(newruntime)/swprintf_hack_openbsd.o
+  ifndef DISABLE_GFX
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd_openbsd.o
+  endif
+else ifeq ($(TARGET_OS),xbox)
+  LIBFB_H += runtime/fb_xbox.h
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_xbox.o
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_file_copy_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_get_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_xbox.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_xbox.o
+  LIBFB_C += $(newruntime)/libfb_file_dir_xbox.o
+  LIBFB_C += $(newruntime)/libfb_file_hconvpath_xbox.o
+  LIBFB_C += $(newruntime)/libfb_file_hlock_xbox.o
+  LIBFB_C += $(newruntime)/libfb_hexit_xbox.o
+  LIBFB_C += $(newruntime)/libfb_hinit_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_cls_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_color_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_getsize_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_inkey_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_isredir_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_locate_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_maxrow_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_pageset_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_pcopy_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_printer_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_readstr_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_scroll_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_serial_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_viewupdate_xbox.o
+  LIBFB_C += $(newruntime)/libfb_io_width_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_dylib_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_exec_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_getcwd_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_shell_xbox.o
+  LIBFB_C += $(newruntime)/libfb_sys_sleep_xbox.o
+  LIBFB_C += $(newruntime)/libfb_thread_cond_xbox.o
+  LIBFB_C += $(newruntime)/libfb_thread_core_xbox.o
+  LIBFB_C += $(newruntime)/libfb_thread_mutex_xbox.o
+  LIBFB_C += $(newruntime)/libfb_time_setdate_xbox.o
+  LIBFB_C += $(newruntime)/libfb_time_settime_xbox.o
+  LIBFB_C += $(newruntime)/libfb_time_sleep_xbox.o
+  LIBFB_C += $(newruntime)/libfb_time_tmr_xbox.o
+  LIBFB_S += $(newruntime)/libfb_alloca.o
+  ifndef DISABLE_GFX
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_xbox_xbox.o
   endif
 endif
 
-ifdef TARGET_X86
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  LIBFB_H += runtime/fb_unix.h
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_unix.o
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_file_copy_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_get_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_unix.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_unix.o
+  LIBFB_C += $(newruntime)/libfb_file_dir_unix.o
+  LIBFB_C += $(newruntime)/libfb_file_hconvpath_unix.o
+  LIBFB_C += $(newruntime)/libfb_file_hlock_unix.o
+  LIBFB_C += $(newruntime)/libfb_file_resetex_unix.o
+  LIBFB_C += $(newruntime)/libfb_hdynload_unix.o
+  LIBFB_C += $(newruntime)/libfb_hexit_unix.o
+  LIBFB_C += $(newruntime)/libfb_hinit_unix.o
+  LIBFB_C += $(newruntime)/libfb_hsignals_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_cls_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_color_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_getsize_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_inkey_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_isredir_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_locate_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_maxrow_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_pageset_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_pcopy_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_printer_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_readstr_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_scroll_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_viewupdate_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_width_unix.o
+  LIBFB_C += $(newruntime)/libfb_io_xfocus_unix.o
+  LIBFB_C += $(newruntime)/libfb_scancodes_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_beep_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_delay_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_dylib_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_exec_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_getcwd_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_unix.o
+  LIBFB_C += $(newruntime)/libfb_sys_shell_unix.o
+  LIBFB_C += $(newruntime)/libfb_thread_cond_unix.o
+  LIBFB_C += $(newruntime)/libfb_thread_core_unix.o
+  LIBFB_C += $(newruntime)/libfb_thread_mutex_unix.o
+  LIBFB_C += $(newruntime)/libfb_time_setdate_unix.o
+  LIBFB_C += $(newruntime)/libfb_time_settime_unix.o
+  LIBFB_C += $(newruntime)/libfb_time_sleep_unix.o
+  LIBFB_C += $(newruntime)/libfb_time_tmr_unix.o
+  ifndef DISABLE_GFX
+    ifndef DISABLE_X11
+      LIBFBGFX_H += runtime/fb_gfx_x11.h
+      LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_x11.o
+      LIBFBGFX_C += $(newruntime)/libfb_gfx_x11.o
+      ifndef DISABLE_OPENGL
+        LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_x11.o
+      endif
+    endif
+  endif
+else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  LIBFB_H += runtime/fb_unicode_win32.h
+  LIBFB_H += runtime/fb_win32.h
+  LIBFB_H += runtime/fbportio_driver.h
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_close_win32.o
+  LIBFB_C += $(newruntime)/libfb_dev_pipe_open_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_file_copy_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_get_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getdateformat_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_win32.o
+  LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_win32.o
+  LIBFB_C += $(newruntime)/libfb_file_dir_win32.o
+  LIBFB_C += $(newruntime)/libfb_file_hconvpath_win32.o
+  LIBFB_C += $(newruntime)/libfb_file_hlock_win32.o
+  LIBFB_C += $(newruntime)/libfb_file_resetex_win32.o
+  LIBFB_C += $(newruntime)/libfb_hdynload_win32.o
+  LIBFB_C += $(newruntime)/libfb_hexit_win32.o
+  LIBFB_C += $(newruntime)/libfb_hinit_win32.o
+  LIBFB_C += $(newruntime)/libfb_hsignals_win32.o
+  LIBFB_C += $(newruntime)/libfb_intl_conv_win32.o
+  LIBFB_C += $(newruntime)/libfb_intl_w32_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_cls_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_clsex_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_color_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_colorget_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_gethnd_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_getsize_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_getwindow_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_getwindowex_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_getx_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_getxy_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_gety_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_inkey_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_input_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_isredir_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_locate_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_locateex_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_maxrow_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_mouse_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_multikey_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_pageset_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_pcopy_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_printbuff_wstr_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_printer_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_readstr_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_readxy_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_screensize_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_scroll_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_scrollex_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_serial_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_viewupdate_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_width_win32.o
+  LIBFB_C += $(newruntime)/libfb_io_window_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_dylib_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_exec_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_fmem_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_getcwd_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexename_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_getexepath_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_getshortpath_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_ports_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_shell_win32.o
+  LIBFB_C += $(newruntime)/libfb_sys_sleep_win32.o
+  LIBFB_C += $(newruntime)/libfb_thread_cond_win32.o
+  LIBFB_C += $(newruntime)/libfb_thread_core_win32.o
+  LIBFB_C += $(newruntime)/libfb_thread_mutex_win32.o
+  LIBFB_C += $(newruntime)/libfb_time_setdate_win32.o
+  LIBFB_C += $(newruntime)/libfb_time_settime_win32.o
+  LIBFB_C += $(newruntime)/libfb_time_sleep_win32.o
+  LIBFB_C += $(newruntime)/libfb_time_tmr_win32.o
+  LIBFB_S += $(newruntime)/libfb_alloca.o
+  ifndef DISABLE_GFX
+    LIBFBGFX_H += runtime/fb_gfx_win32.h
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_ddraw_win32.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_gdi_win32.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_win32.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_win32_win32.o
+    ifndef DISABLE_OPENGL
+      LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_win32.o
+    endif
+  endif
+endif
+
+ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
   LIBFB_H += runtime/fb_x86.h
   LIBFB_S += $(newruntime)/libfb_cpudetect_x86.o
   ifndef DISABLE_GFX
