@@ -6,73 +6,96 @@
     Forum:              http://www.freebasic.net/forum/
     Wiki:               http://www.freebasic.net/wiki/
     fbc project page:   http://www.sourceforge.net/projects/fbc/
-    IRC channel:        ##freebasic at freenode.net
+    IRC channel:        ##freebasic at irc.freenode.net
 
   o License
 
     The FreeBASIC compiler (fbc) is licensed under the GPLv2, see
-    fbc/license.txt for details.
+    compiler/license.txt for details.
 
     The FreeBASIC runtime (libfb) is licensed under the LGPLv2 with an
-    exception, see libfb/license.txt for details.
+    exception, see runtime/license.txt for details.
 
   o Installing
 
-    The fbc project provides a .zip package and an installer for Windows,
-    a .tar.gz package for Linux, and a .zip package for DOS. 
+    FreeBASIC comes as fbc (the command line compiler), the runtime libraries
+    (needed to compile FB programs) and compiler tools (assembler, linker).
+    In general it just needs to be extracted somewhere, then it can be used
+    immediately.
 
-    The packages can be unpacked anywhere, and fbc can be used from there.
+    The fbc project provides full installers for Windows (.exe) and Unix-like
+    systems (.run). Simply run them and then follow their instructions.
+    These full installers include extra headers and libraries that you can
+    choose to install.
 
-    On Windows and DOS, it can be very useful to add the FreeBASIC\bin\
-    directory to the PATH environment variable, so it's enough to simply type
-    "fbc" in a console and fbc.exe will be found.
+    The fbc project also provides smaller .zip (Windows) and .tar.gz archives
+    (Unix), and last but not least, the DOS version comes in a .zip only.
+    The archives can be extracted anywhere, and the compiler will work.
 
-    On Linux, programs are typically installed into /usr or /usr/local. The
-    Linux fbc package comes with an install.sh script that will copy fbc into
-    /usr/local. It can be used like this (you may need root/superuser rights
-    for this):
-        For installing:
-            $ ./install.sh -i
-        For uninstalling:
-            $ ./install.sh -u
     Note: FreeBASIC may be included in the official package repositories of
-    some distributions, in which cases it is enough to install it via the
-    corresponding package manager. Then there is no need for an install.sh
-    script.
+    some Linux distributions, FreeDOS, or other systems, in which cases you
+    can install their FreeBASIC package (maybe via a package manager) instead
+    of one from the fbc project.
 
   o Running
 
-    fbc is a command-line compiler; it does not have a graphical editor.
+    fbc is a command-line compiler; it does not include a text editor.
+    Some text editors and development environments can be told to use fbc
+    to compile code; please refer to their documentation.
 
-    Open a console and enter "fbc" to see a list of options. If "fbc" cannot
-    be found, you may need to specify the full path to fbc.exe instead, or
-    make sure that the directory containing fbc.exe is listed in the PATH
-    environment variable.
+    To see a list of fbc's options, open a console (terminal, command prompt,
+    cmd.exe), enter "fbc" and run it by pressing ENTER. If "fbc" cannot be
+    found, you may need to specify the full path to the fbc (or fbc.exe)
+    executable instead, or make sure that the directory containing fbc is
+    listed in the PATH environment variable.
 
     To compile a "Hello, world!" program, create a text file called "hello.bas"
     with this content:
             print "Hello, world!"
             sleep
-    Then open a console and go to the directory where you created the hello.bas
-    file:
-            cd path/to/hello.bas/file
-    Now compile the hello.bas file into a program executable by entering:
-            fbc hello.bas
-    This will create the "hello" executable file (named "hello.exe" on Windows
-    and DOS).
+    In a console, use fbc to compile the hello.bas into a program executable:
+            fbc path/to/hello.bas
+    This should create the "hello.exe" (just "hello" on Unix) executable file.
 
   o Credits
 
     Project members:
     - Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
+          Founder, main compiler developer (sole author of the initial
+          versions), author of many parts of the runtime.
     - Angelo Mottola (a.mottola[at]libero.it)
+          Author of the FB graphics runtime library, built-in threads,
+          thread-safe runtime, ports I/O, dynamic library loading,
+          Linux port.
     - Bryan Stoeberl (b_stoeberl[at]yahoo.com)
+          SSE/SSE2 floating point math, AST vectorization.
+    - Daniel C. Klauer (daniel.c.klauer@web.de)
+          FB releases since 0.21, preprocessor-only mode, miscellaneous
+          fixes and improvements.
     - Daniel R. Verkamp (i_am_drv[at]yahoo.com)
+          DOS, XBox, Darwin, *BSD ports, DLL and static library automation,
+          VB-compatible runtime functions, compiler optimizations,
+          miscellaneous fixes and improvements.
     - Jeff Marshall (coder[at]execulink.com)
+          FB releases since 0.17, FB documentation (wiki maintenance,
+          fbdocs offline-docs generator), Gosub/Return, profiling support,
+          dialect specifics, DOS serial driver, miscellaneous fixes and
+          improvements.
     - Mark Junker (mjscod[at]gmx.de)
+          Author of huge parts of the runtime (printing support,
+          SCR/LPTx/COM/console/keyboard I/O, date/time functions),
+          Cygwin port, first FB installer scripts.
     - Matthew Fearnley (counting.pine[at]virgin.net)
+          Print Using & Co, ImageInfo, and also others, dialect specifics,
+          optimization improvements in the compiler, many fixes.
     - Ruben Rodriguez (rubentbstk[at]gmail.com)
+          Var keyword, const specifier, placement new, operator overloading and
+          other OOP-related work, C BFD wrapper, many fixes and improvements.
     - Simon Nash
+          AndAlso/OrElse operators, ellipsis for array initializers,
+          miscellaneous fixes and improvements.
+    - Sterling Christensen (sterling[at]engineer.com)
+          Author of the initial QB-like graphics library.
 
     Contributors:
     - Abdullah Ali (voodooattack[at]hotmail.com)
@@ -94,17 +117,19 @@
     - Nek (dave[at]nodtveidt.net)
     - plasma
     - Randy Keeling (randy[at]keeling.com)
-    - Sterling Christensen (sterling[at]engineer.com)
     - Steven Hidy (subxero[at]phatcode.net)
     - zydon
-    and many others.
+    and many others: Thanks for writing FB headers, examples, documentation,
+    bug reports and patches.
 
     Included/used third-party tools:
-    - GNU binutils (http://www.gnu.org/software/binutils/)
     - DJGPP (http://www.delorie.com/)
-    - MinGW (http://www.mingw.org/)
+    - GNU binutils (http://www.gnu.org/software/binutils/)
+    - GNU debugger (http://www.gnu.org/software/gdb/)
     - GoRC (http://www.godevtool.com/)
+    - MinGW (http://www.mingw.org/)
     - OpenXDK (http://www.openxdk.org/)
+    - TDM-GCC (http://tdm-gcc.tdragon.net/)
 
   o Greetings
     - Plasma: Owner of the freebasic.net domain and main site hoster,
