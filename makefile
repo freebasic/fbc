@@ -214,26 +214,38 @@ ifeq ($(TARGET_OS),dos)
   DISABLE_MT := YesPlease
 endif
 
+# Enable the default target in the compiler, and set the default triplet,
+# which can be empty.
 ifeq ($(TARGET_OS),cygwin)
   ENABLE_CYGWIN := YesPlease
+  TRIPLET_CYGWIN:=$(TARGET)
 else ifeq ($(TARGET_OS),darwin)
   ENABLE_DARWIN := YesPlease
+  TRIPLET_DARWIN:=$(TARGET)
 else ifeq ($(TARGET_OS),dos)
   ENABLE_DOS := YesPlease
+  TRIPLET_DOS:=$(TARGET)
 else ifeq ($(TARGET_OS),freebsd)
   ENABLE_FREEBSD := YesPlease
+  TRIPLET_FREEBSD:=$(TARGET)
 else ifeq ($(TARGET_OS),linux)
   ENABLE_LINUX := YesPlease
+  TRIPLET_LINUX:=$(TARGET)
 else ifeq ($(TARGET_OS),win32)
   ENABLE_WIN32 := YesPlease
+  TRIPLET_WIN32:=$(TARGET)
 else ifeq ($(TARGET_OS),netbsd)
   ENABLE_NETBSD := YesPlease
+  TRIPLET_NETBSD:=$(TARGET)
 else ifeq ($(TARGET_OS),openbsd)
   ENABLE_OPENBSD := YesPlease
+  TRIPLET_OPENBSD:=$(TARGET)
 else ifeq ($(TARGET_OS),solaris)
   ENABLE_SOLARIS := YesPlease
+  TRIPLET_SOLARIS:=$(TARGET)
 else ifeq ($(TARGET_OS),xbox)
   ENABLE_XBOX := YesPlease
+  TRIPLET_XBOX:=$(TARGET)
 endif
 
 #
@@ -1451,6 +1463,35 @@ $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
   else ifeq ($(TARGET_CPU),x86_64)
 	@echo '#define TARGET_X86_64' >> $@
   endif
+  # The compiler expects ENABLE_* defines for all the targets that
+  # should be compiled in, including the default target.
+  ifdef ENABLE_CYGWIN
+	@echo '#define ENABLE_CYGWIN "$(TRIPLET_CYGWIN)"' >> $@
+  endif
+  ifdef ENABLE_DARWIN
+	@echo '#define ENABLE_DARWIN "$(TRIPLET_DARWIN)"' >> $@
+  endif
+  ifdef ENABLE_DOS
+	@echo '#define ENABLE_DOS "$(TRIPLET_DOS)"' >> $@
+  endif
+  ifdef ENABLE_FREEBSD
+	@echo '#define ENABLE_FREEBSD "$(TRIPLET_FREEBSD)"' >> $@
+  endif
+  ifdef ENABLE_LINUX
+	@echo '#define ENABLE_LINUX "$(TRIPLET_LINUX)"' >> $@
+  endif
+  ifdef ENABLE_NETBSD
+	@echo '#define ENABLE_NETBSD "$(TRIPLET_NETBSD)"' >> $@
+  endif
+  ifdef ENABLE_OPENBSD
+	@echo '#define ENABLE_OPENBSD "$(TRIPLET_OPENBSD)"' >> $@
+  endif
+  ifdef ENABLE_WIN32
+	@echo '#define ENABLE_WIN32 "$(TRIPLET_WIN32)"' >> $@
+  endif
+  ifdef ENABLE_XBOX
+	@echo '#define ENABLE_XBOX "$(TRIPLET_XBOX)"' >> $@
+  endif
   # Configuration
   ifdef ENABLE_FBBFD
 	@echo '#define ENABLE_FBBFD $(ENABLE_FBBFD)' >> $@
@@ -1625,5 +1666,9 @@ help:
 	@echo "                    (intended for self-contained installations)"
 	@echo "  ENABLE_<TARGET>   For building a multi-target compiler. The ENABLE_* for"
 	@echo "                    the default TARGET will automatically be defined."
+	@echo "  TRIPLET_<TARGET>=<default-triplet>  For enabled targets, the compiler will"
+	@echo "                    use the triplets to find binutils/libraries, unless the"
+	@echo "                    user gave another one via the -target option. The triplet"
+	@echo "                    for the default TARGET will automatically be defined."
 	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
 	@echo "to set variables in a more permanent and even build-directory specific way."
