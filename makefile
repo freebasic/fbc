@@ -31,6 +31,31 @@
 #          target-include-suffix/fbgfx.bi
 #          target-lib-suffix/libfb.a
 #
+# libbfd tips:
+#    fbc uses libbfd to add and read out extra information from object files.
+#    It's an optional but convenient feature. (see DISABLE_OBJINFO)
+#    Read more here: <http://www.freebasic.net/wiki/wikka.php?wakka=DevObjinfo>
+#    For the releases made by the fbc project, fbc is linked against a static
+#    libbfd 2.17,
+#        a) to avoid dependencies on a shared libbfd, because many Linux
+#           distributions have different versions of it, and
+#        b) to avoid licensing conflicts between fbc (GPLv2) and
+#           statically-linked libbfd > 2.17 (GPLv3).
+#
+# XBox/OpenXDK-related tips (TODO: Test me, update me!)
+#  - Install OpenXDK as usual (preferably from SVN if there are no recent
+#    releases). Apply openxdk/configure.in-mingw.patch if necessary.
+#  - Replace $OPENXDK/bin/i386-pc-xbox-gcc with the one from
+#    openxdk/i386-pc-xbox-gcc - this avoids having to rebuild gcc while still
+#    getting the OpenXDK include and lib directories instead of the MinGW ones
+#    so that configure will work correctly. Modify this script if needed to
+#    run MinGW gcc (the current one should work in MSYS) or if OpenXDK is
+#    installed somewhere else.
+#  - !!!WRITEME!!! cp $MINGW/include/{x,y,z}.h $OPENXDK/i386-pc-xbox/include/
+#  - Make sure $OPENXDK/bin is in $PATH
+#      export PATH=$PATH:/usr/local/openxdk/bin
+#  - Build for or enable the "i386-pc-xbox" target.
+#
 
 CFLAGS := -g -O2
 FBFLAGS := -g

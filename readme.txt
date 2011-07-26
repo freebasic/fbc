@@ -141,74 +141,29 @@
     - All users that reported bugs, requested features and as such helped 
       improving the compiler, language and run-time library somehow.
 
---------------------------------------------------------------------------------
+  o Compiling FreeBASIC (itself)
 
-Compiling FreeBASIC and installing the result:
+    The toplevel makefile builds the compiler and the runtime.
+    For a simple native build just do a 'make'. For more information on
+    configuration possibilities and cross-compiling check the makefile, and
+    its 'help' target ('make help').
 
-    Generally, this should work:
-        $ ./configure
-        $ make
-        $ make install
+    Requirements:
 
-    It can be useful to build outside the source directory. Assuming the FB
-    sources are in a directory called "freebasic", this can be done like this:
-        $ ls freebasic
-        $ mkdir freebasic-build
-        $ cd freebasic-build
-        $ ../freebasic/configure
-        $ make
-        $ make install
+    - (GNU?) make
+    - fbc
+    - binutils' libbfd development files (for the compiler)
 
-  o Requirements
-    - A working fbc
-    - A working gcc
-    - libbfd (from binutils)
+    - DOS:
+        - DJGPP 2.04
 
-    When targetting Windows:
-        - A MinGW toolchain
-        - DirectX headers (only for libfb graphics, see --disable-gfx)
-
-    When targetting DOS:
-        - A DJGPP toolchain
-
-    When targetting Linux:
-        - X11 headers (only for libfb graphics, see --disable-gfx)
-        - ncurses headers
+    - Linux (and also *BSD etc.):
+        - native gcc/binutils
+        - X11 headers (for the graphics runtime)
+        - ncurses development files
         - gpm (general purpose mouse) headers
         - GL headers (typically from freeglut)
 
-
-  o libbfd related tips
-    fbc uses libbfd to add and read out extra information from object files.
-    It's an optional but convenient feature. (see --disable-objinfo)
-    Read more here:
-        http://www.freebasic.net/wiki/wikka.php?wakka=DevObjinfo
-
-    For the releases made by the fbc project, fbc is linked against a static
-    libbfd 2.17,
-        a) to avoid dependencies on a shared libbfd, because many Linux
-           distributions have different versions of it, and
-        b) to avoid licensing conflicts between fbc (GPLv2) and libbfd > 2.17
-           (GPLv3).
-
-  o XBox/OpenXDK-related tips
-    Note: this hasn't been tested in a long time, please provide feedback!
-
-    - Install OpenXDK as usual (preferably from SVN if there are no recent
-      releases). Apply openxdk/configure.in-mingw.patch if necessary.
-
-    - Replace $OPENXDK/bin/i386-pc-xbox-gcc with the one from
-      openxdk/i386-pc-xbox-gcc - this avoids having to rebuild gcc while still
-      getting the OpenXDK include and lib directories instead of the MinGW ones
-      so that configure will work correctly. Modify this script if needed to
-      run MinGW gcc (the current one should work in MSYS) or if OpenXDK is
-      installed somewhere else.
-
-    - !!!WRITEME!!! cp $MINGW/include/{x,y,z}.h $OPENXDK/i386-pc-xbox/include/
-
-    - Make sure $OPENXDK/bin is in $PATH
-        export PATH=$PATH:/usr/local/openxdk/bin
-
-    - Build for or enable the "i386-pc-xbox" target.
-      (FB's config/config.guess and config/config.sub are modified to recognize
-      and return xbox as OS, so that the fbc/libfb builds know what to do.)
+    - Win32:
+        - MinGW
+        - DirectX headers (for the graphics runtime)
