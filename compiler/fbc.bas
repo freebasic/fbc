@@ -370,47 +370,47 @@ end sub
 private sub initTarget( )
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-#if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
+#ifdef ENABLE_WIN32
 	case FB_COMPTARGET_WIN32
 		fbcInit_win32( )
 #endif
 
-#if defined(TARGET_CYGWIN) or defined(CROSSCOMP_CYGWIN)
+#ifdef ENABLE_CYGWIN
 	case FB_COMPTARGET_CYGWIN
 		fbcInit_cygwin( )
 #endif
 
-#if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
+#ifdef ENABLE_LINUX
 	case FB_COMPTARGET_LINUX
 		fbcInit_linux( )
 #endif
 
-#if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
+#ifdef ENABLE_DOS
 	case FB_COMPTARGET_DOS
 		fbcInit_dos( )
 #endif
 
-#if defined(TARGET_XBOX) or defined(CROSSCOMP_XBOX)
+#ifdef ENABLE_XBOX
 	case FB_COMPTARGET_XBOX
 		fbcInit_xbox( )
 #endif
 
-#if defined(TARGET_FREEBSD) or defined(CROSSCOMP_FREEBSD)
+#ifdef ENABLE_FREEBSD
 	case FB_COMPTARGET_FREEBSD
 		fbcInit_freebsd( )
 #endif
 
-#if defined(TARGET_OPENBSD) or defined(CROSSCOMP_OPENBSD)
+#ifdef ENABLE_OPENBSD
 	case FB_COMPTARGET_OPENBSD
 		fbcInit_openbsd( )
 #endif
 
-#if defined(TARGET_DARWIN) or defined(CROSSCOMP_DARWIN)
+#ifdef ENABLE_DARWIN
 	case FB_COMPTARGET_DARWIN
 		fbcInit_darwin( )
 #endif
 
-#if defined(TARGET_NETBSD) or defined(CROSSCOMP_NETBSD)
+#ifdef ENABLE_NETBSD
 	case FB_COMPTARGET_NETBSD
 		fbcInit_netbsd( )
 #endif
@@ -419,6 +419,11 @@ private sub initTarget( )
 		print "unsupported target in " & __FILE__
 
 	end select
+
+	fbc.triplet = *env.target.triplet
+	if( len(fbc.triplet) > 0 ) then
+		fbc.triplet += "-"
+	end if
 
 end sub
 
@@ -1143,52 +1148,56 @@ private function processTargetOptions _
 				end if
 
 				select case *nxt
-#if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
+#ifdef ENABLE_DOS
 				case "dos"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DOS )
 #endif
 
-#if defined(TARGET_CYGWIN) or defined(CROSSCOMP_CYGWIN)
+#ifdef ENABLE_CYGWIN
 				case "cygwin"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_CYGWIN )
 #endif
 
-#if defined(TARGET_LINUX) or defined(CROSSCOMP_LINUX)
+#ifdef ENABLE_LINUX
 				case "linux"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_LINUX )
 #endif
 
-#if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
+#ifdef ENABLE_WIN32
 				case "win32"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_WIN32 )
 #endif
 
-#if defined(TARGET_XBOX) or defined(CROSSCOMP_XBOX)
+#ifdef ENABLE_XBOX
 				case "xbox"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_XBOX )
 #endif
 
-#if defined(TARGET_FREEBSD) or defined(CROSSCOMP_FREEBSD)
+#ifdef ENABLE_FREEBSD
 				case "freebsd"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_FREEBSD )
 #endif
 
-#if defined(TARGET_OPENBSD) or defined(CROSSCOMP_OPENBSD)
+#ifdef ENABLE_OPENBSD
 				case "openbsd"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_OPENBSD )
 #endif
 
-#if defined(TARGET_DARWIN) or defined(CROSSCOMP_DARWIN)
+#ifdef ENABLE_DARWIN
 				case "darwin"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DARWIN )
 #endif
 
-#if defined(TARGET_NETBSD) or defined(CROSSCOMP_NETBSD)
+#ifdef ENABLE_NETBSD
 				case "netbsd"
 					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_NETBSD )
 #endif
 
 				case else
+					'' TODO: Accept & parse GNU triplets, like in the makefile,
+					'' to support more than the default triplets specified at
+					'' compile time.
+					''fbc.triplet = triplet + "-"
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					return FALSE
 				end select
@@ -2120,21 +2129,8 @@ private sub printOptions( )
 		printOption( "", "*.xpm = icon resource" )
 	end select
 
-#if defined(CROSSCOMP_WIN32) or _
-	defined(CROSSCOMP_CYGWIN) or _
-	defined(CROSSCOMP_DOS) or _
-	defined(CROSSCOMP_LINUX) or _
-	defined(CROSSCOMP_XBOX) or _
-	defined(CROSSCOMP_FREEBSD) or _
-	defined(CROSSCOMP_OPENBSD) or _
-	defined(CROSSCOMP_DARWIN) or _
-	defined(CROSSCOMP_NETBSD)
-
 	print
-	print "invoke as 'fbc -target PLATFORM' alone to show options for cross compilation to that platform"
-
-#endif
-
+	print "Use 'fbc -target <target>' alone to see target-specific options."
 	print
 	print "options:"
 
@@ -2193,49 +2189,28 @@ private sub printOptions( )
 		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
 	end select
 
-#if defined(CROSSCOMP_WIN32) or _
-	defined(CROSSCOMP_CYGWIN) or _
-	defined(CROSSCOMP_DOS) or _
-	defined(CROSSCOMP_LINUX) or _
-	defined(CROSSCOMP_XBOX) or _
-	defined(CROSSCOMP_FREEBSD) or _
-	defined(CROSSCOMP_OPENBSD) or _
-	defined(CROSSCOMP_DARWIN) or _
-	defined(CROSSCOMP_NETBSD)
-
-	' note: alphabetical order
-
-	desc = " Cross-compile to:"
- #ifdef CROSSCOMP_CYGWIN
-	desc += " cygwin"
- #endif
- #ifdef CROSSCOMP_DARWIN
-	desc += " darwin"
- #endif
- #ifdef CROSSCOMP_DOS
-	desc += " dos"
- #endif
-  #ifdef CROSSCOMP_FREEBSD
-	desc += " freebsd"
- #endif
- #ifdef CROSSCOMP_LINUX
-	desc += " linux"
- #endif
- #ifdef CROSSCOMP_NETBSD
-	desc += " netbsd"
- #endif
- #ifdef CROSSCOMP_OPENBSD
-	desc += " openbsd"
- #endif
- #ifdef CROSSCOMP_WIN32
-	desc += " win32"
- #endif
- #ifdef CROSSCOMP_XBOX
-	desc += " xbox"
- #endif
-
+	desc = " Available (cross-)compilation targets:"
+	#macro listTarget(defname, fbname)
+		#ifdef ENABLE_##defname
+			desc += " " & fbname
+			if( len( ENABLE_##defname ) > 0 ) then
+				desc += " (" & ENABLE_##defname & ")"
+			end if
+			#ifdef TARGET_##defname
+				desc += " (default)"
+			#endif
+		#endif
+	#endmacro
+	listTarget(CYGWIN, "cygwin")
+	listTarget(DARWIN, "darwin")
+	listTarget(DOS, "dos")
+	listTarget(FREEBSD, "freebsd")
+	listTarget(LINUX, "linux")
+	listTarget(NETBSD, "netbsd")
+	listTarget(OPENBSD, "openbsd")
+	listTarget(WIN32, "win32")
+	listTarget(XBOX, "xbox")
 	print "-target <name>"; desc
-#endif
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
 		printOption( "-title <name>", "Set XBE display title" )

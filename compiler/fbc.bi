@@ -187,6 +187,8 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 
 	vtbl				as FBC_VTBL
+
+	triplet as string  '' GNU triplet to prefix in front of cross-compiling tool names
 end type
 
 

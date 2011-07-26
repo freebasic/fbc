@@ -601,6 +601,7 @@ function fbcInit_win32( ) as integer
 	env.target.wchar.type = FB_DATATYPE_USHORT
 	env.target.wchar.size = 2
 
+	env.target.triplet = @ENABLE_WIN32
 	env.target.define = @"__FB_WIN32__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = TRUE

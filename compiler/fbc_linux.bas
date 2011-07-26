@@ -87,9 +87,7 @@ private function _linkFiles _
 
 	''
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
-#ifdef TARGET_LINUX
 		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
-#endif
 	end if
 
 	''
@@ -468,6 +466,7 @@ function fbcInit_linux( ) as integer
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE
 
+	env.target.triplet = @ENABLE_LINUX
 	env.target.define = @"__FB_LINUX__"
 	env.target.entrypoint = @"main"
 	env.target.underprefix = FALSE

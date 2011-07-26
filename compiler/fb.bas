@@ -1507,6 +1507,7 @@ function fbFindBinFile _
 	'' if not set, get a default value
 	if( len(path) = 0 ) then
 		path = fbGetPath( FB_PATH_BIN )
+		path += fbc.triplet
 		path += *filename
 		path += FB_HOST_EXEEXT
 	end if
@@ -1520,7 +1521,7 @@ function fbFindBinFile _
 
 		'' system default allowed?
 		if( (opts and FB_FINDBIN_ALLOW_SYSTEM) <> 0 ) then
-			path = *filename + FB_HOST_EXEEXT
+			path = fbc.triplet + *filename + FB_HOST_EXEEXT
 			return path
 		end if
 
