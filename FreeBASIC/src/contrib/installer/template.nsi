@@ -78,7 +78,7 @@ Function .onInit
 FunctionEnd
 
 Section Install
-    SetOverwrite try
+    SetOverwrite on
     SetOutPath $INSTDIR
 
     ; makescript will put all files to install here
