@@ -1425,16 +1425,42 @@ $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c | $(newcompiler)
 
 $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
 	$(QUIET_GEN)cp $< $@
-ifndef DISABLE_OBJINFO
-	@echo "#define ENABLE_OBJINFO" >> $@
-endif
-ifdef ENABLE_FBBFD
-	@echo "#define ENABLE_FBBFD $(ENABLE_FBBFD)" >> $@
-ifdef ENABLE_STANDALONE
+  # The compiler expects the TARGET_* define for the default target.
+  ifeq ($(TARGET_OS),cygwin)
+	@echo '#define TARGET_CYGWIN' >> $@
+  else ifeq ($(TARGET_OS),darwin)
+	@echo '#define TARGET_DARWIN' >> $@
+  else ifeq ($(TARGET_OS),dos)
+	@echo '#define TARGET_DOS' >> $@
+  else ifeq ($(TARGET_OS),freebsd)
+	@echo '#define TARGET_FREEBSD' >> $@
+  else ifeq ($(TARGET_OS),linux)
+	@echo '#define TARGET_LINUX' >> $@
+  else ifeq ($(TARGET_OS),netbsd)
+	@echo '#define TARGET_NETBSD' >> $@
+  else ifeq ($(TARGET_OS),openbsd)
+	@echo '#define TARGET_OPENBSD' >> $@
+  else ifeq ($(TARGET_OS),win32)
+	@echo '#define TARGET_WIN32' >> $@
+  else ifeq ($(TARGET_OS),xbox)
+	@echo '#define TARGET_XBOX' >> $@
+  endif
+  # CPU
+  ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+	@echo '#define TARGET_X86' >> $@
+  else ifeq ($(TARGET_CPU),x86_64)
+	@echo '#define TARGET_X86_64' >> $@
+  endif
+  # Configuration
+  ifdef ENABLE_FBBFD
+	@echo '#define ENABLE_FBBFD $(ENABLE_FBBFD)' >> $@
+  endif
+  ifdef DISABLE_OBJINFO
+	@echo '#define ENABLE_OBJINFO' >> $@
+  endif
+  ifdef ENABLE_STANDALONE
 	@echo '#define ENABLE_STANDALONE' >> $@
-endif
-endif
-
+  endif
 
 .PHONY: runtime
 runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
@@ -1471,6 +1497,48 @@ $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H) | $(newruntime)
 
 $(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
 	$(QUIET_GEN)cp $< $@
+  # The runtime expects the HOST_* defines for the system it's supposed to run on.
+  # Note that we compile only one runtime: the one for the compiler's default
+  # target.
+  ifeq ($(TARGET_OS),cygwin)
+	@echo '#define HOST_CYGWIN' >> $@
+  else ifeq ($(TARGET_OS),darwin)
+	@echo '#define HOST_DARWIN' >> $@
+  else ifeq ($(TARGET_OS),dos)
+	@echo '#define HOST_DOS' >> $@
+  else ifeq ($(TARGET_OS),freebsd)
+	@echo '#define HOST_FREEBSD' >> $@
+  else ifeq ($(TARGET_OS),linux)
+	@echo '#define HOST_LINUX' >> $@
+  else ifeq ($(TARGET_OS),win32)
+	@echo '#define HOST_MINGW' >> $@
+  else ifeq ($(TARGET_OS),netbsd)
+	@echo '#define HOST_NETBSD' >> $@
+  else ifeq ($(TARGET_OS),openbsd)
+	@echo '#define HOST_OPENBSD' >> $@
+  else ifeq ($(TARGET_OS),solaris)
+	@echo '#define HOST_SOLARIS' >> $@
+  else ifeq ($(TARGET_OS),xbox)
+	@echo '#define HOST_XBOX' >> $@
+  endif
+  # OS family
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+	@echo '#define HOST_UNIX' >> $@
+  else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+	@echo '#define HOST_WIN32' >> $@
+  endif
+  # CPU
+  ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+	@echo '#define HOST_X86' >> $@
+  else ifeq ($(TARGET_CPU),x86_64)
+	@echo '#define HOST_X86_64' >> $@
+  else ifeq ($(TARGET_CPU),sparc)
+	@echo '#define HOST_SPARC' >> $@
+  else ifeq ($(TARGET_CPU),sparc64)
+	@echo '#define HOST_SPARC64' >> $@
+  else ifeq ($(TARGET_CPU),powerpc64)
+	@echo '#define HOST_POWERPC64' >> $@
+  endif
 
 
 .PHONY: install
