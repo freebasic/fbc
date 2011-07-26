@@ -178,7 +178,7 @@ private sub hWriteLine _
 				dbgln = "#line "
 			end if
 
-			dbgln += ctx.linenum & " """ & hReplace( env.inf.name, "\", "\\" ) & """" & NEWLINE
+			dbgln += ctx.linenum & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" & NEWLINE
 
 			writeToSection( dbgln )
 		end if
@@ -1616,7 +1616,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 		case FB_DATATYPE_WCHAR
             '' wstr("a") becomes (wchar *)"\141\0\0"
             '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + "\0"""
+			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
 		case else
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 		end select
@@ -2385,7 +2385,7 @@ private sub _emitDBG _
 	)
 
  	if( op = AST_OP_DBG_LINEINI ) then
- 		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", "\\" ) & """", FALSE, TRUE )
+ 		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", $"\\" ) & """", FALSE, TRUE )
  		ctx.linenum = ex
 	end if
 
@@ -2551,12 +2551,12 @@ private sub hEmitVarIniStr _
         end if
 
         '' NULL terminator
-        s += "\0"
+        s += $"\0"
 
         '' If too short, add padding 0's, to fill this one element of the
         '' fixed-length string array.
         for i as integer = litlgt to totlgt - 1
-            s += "\0"
+            s += $"\0"
         next
 
         s += """"
@@ -2629,7 +2629,7 @@ private sub _emitVarIniPad _
     pad = """"
 
 	do while( bytes > 0 )
-		pad += "\0"
+		pad += $"\0"
 		bytes -= 1
 	loop
 
