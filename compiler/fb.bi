@@ -16,8 +16,6 @@ const FB_VER_PATCH          = 0
 #include once "list.bi"
 #include once "hash.bi"
 
-#define FB_STRINGIZE(_x) #_x
-
 ''
 const FB_MAXPATHLEN         = 260
 
