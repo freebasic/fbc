@@ -211,7 +211,7 @@ declare sub getDefaultLibs _
 		print "Configured as standalone"
 #endif
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
 		print "objinfo enabled ";
 #ifdef ENABLE_FBBFD
 		print "using FB BFD header version " & ENABLE_FBBFD
@@ -800,7 +800,7 @@ private function hAddInfoObject as integer
     	safeKill( FB_INFOSEC_OBJNAME )
     end if
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
     if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
     	function = TRUE
 
@@ -837,7 +837,7 @@ private function archiveFiles _
     '' output library file name
     arcline += QUOTE + fbc.outname + (QUOTE + " ")
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
     '' the first object must be the info one
     if( fbIsCrossComp( ) = FALSE ) then
     	if( hAddInfoObject( ) ) then
@@ -996,7 +996,7 @@ private function collectObjInfo _
 		return FALSE
     end if
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
 	scope
 		'' for each object passed in the cmd-line
 		dim as string ptr obj = listGetHead( @fbc.objlist )

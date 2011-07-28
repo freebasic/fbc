@@ -142,7 +142,7 @@ private function _linkFiles _
 
 	ldcline = " -subsystem " + fbc.subsystem
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
 	'' supplementary ld script to drop the fbctinf objinfo section
 	ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
 #endif

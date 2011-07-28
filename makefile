@@ -1515,7 +1515,7 @@ $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
 	@echo '#define ENABLE_FBBFD $(ENABLE_FBBFD)' >> $@
   endif
   ifdef DISABLE_OBJINFO
-	@echo '#define ENABLE_OBJINFO' >> $@
+	@echo '#define DISABLE_OBJINFO' >> $@
   endif
   ifdef ENABLE_PREFIX
 	@echo '#define ENABLE_PREFIX "$(prefix)"' >> $@

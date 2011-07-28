@@ -61,7 +61,7 @@ private function _linkFiles _
 		end select
 	end if
 
-#ifdef ENABLE_OBJINFO
+#ifndef DISABLE_OBJINFO
 	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE
 		'' supplementary ld script to drop the fbctinf objinfo section
