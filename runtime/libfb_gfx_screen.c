@@ -455,14 +455,10 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 
 
 /*:::::*/
-#if !defined(HAVE_GL_GL_H)
+#ifdef DISABLE_OPENGL
 FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 {
-	/* if gl.h header was not found at configure time
-	 * then no OpenGL support will be compiled in, and
-	 * this function won't be defined anywhere else, so
-	 * just provide a stub in such a case (jeffm).
-	 */
+	/* Stub function in case OpenGL support is disabled at compile time */
 	return NULL;
 }
 #endif

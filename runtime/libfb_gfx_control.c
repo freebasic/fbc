@@ -32,7 +32,7 @@ FBCALL void fb_GfxControl_s( int what, FBSTRING *param )
 	case GET_GL_EXTENSIONS:
 		if ((!__fb_gfx) || (!(__fb_gfx->flags & OPENGL_SUPPORT)))
 			src = &__fb_ctx.null_desc;
-#ifdef HAVE_GL_GL_H
+#ifndef DISABLE_OPENGL
 		else
 			src = fb_StrAllocTempDescF( __fb_gl.extensions, strlen(__fb_gl.extensions) + 1 );
 #endif
@@ -174,7 +174,7 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		}
 		break;
 	
-#ifdef HAVE_GL_GL_H
+#ifndef DISABLE_OPENGL
 
 	case SET_GL_COLOR_BITS:
 		__fb_gl_params.color_bits = *param1;
@@ -228,7 +228,7 @@ FBCALL void fb_GfxControl_i( int what, int *param1, int *param2, int *param3, in
 		__fb_gl_params.num_samples = *param1;
 		break;
 
-#endif /* HAVE_GL_GL_H */
+#endif
 
 	case POLL_EVENTS:
 		if ((__fb_gfx) && (__fb_gfx->driver->poll_events))

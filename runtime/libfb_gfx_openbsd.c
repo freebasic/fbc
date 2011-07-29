@@ -5,7 +5,7 @@
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 	&fb_gfxDriverX11,
-#ifdef HAVE_GL_GL_H
+#ifndef DISABLE_OPENGL
 	&fb_gfxDriverOpenGL,
 #endif
 	NULL

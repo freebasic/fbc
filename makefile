@@ -1600,6 +1600,10 @@ $(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
   else ifeq ($(TARGET_CPU),powerpc64)
 	@echo '#define HOST_POWERPC64' >> $@
   endif
+  # Configuration
+  ifdef DISABLE_OPENGL
+	@echo '#define DISABLE_OPENGL' >> $@
+  endif
   ifdef DISABLE_X
 	@echo '#define DISABLE_X' >> $@
   endif
