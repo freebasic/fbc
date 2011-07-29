@@ -336,9 +336,10 @@ LIBFB_CONFIG := $(newruntime)/config.h
 # Compiler flags
 #
 
-FBCFLAGS := $(FBFLAGS) -w all -w pedantic -m fbc -include $(FBC_CONFIG)
+FBCFLAGS := $(FBFLAGS) -maxerr 1 -w all -w pedantic
+FBCFLAGS += -m fbc -include $(FBC_CONFIG)
 FBLFLAGS := $(FBFLAGS)
-ALLCFLAGS := $(CFLAGS) -Wall -include $(LIBFB_CONFIG)
+ALLCFLAGS := $(CFLAGS) -Wfatal-errors -Wall -include $(LIBFB_CONFIG)
 
 ifneq ($(filter cygwin win32,$(HOST_OS)),)
   FBLFLAGS += -t 2048
