@@ -1,7 +1,7 @@
 /* path conversion for xbox */
 
 #include <string.h>
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 char *fb_hConvertPath( char *path, int len )

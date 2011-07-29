@@ -1,6 +1,6 @@
 /* get current dir for xbox */
 
-#include "../fb.h"
+#include "fb.h"
 
 /* !!!WRITEME!!! */
 

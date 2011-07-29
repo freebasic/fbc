@@ -1,6 +1,6 @@
 /* set time function for xbox */
 
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 int fb_hSetTime( int h, int m, int s )

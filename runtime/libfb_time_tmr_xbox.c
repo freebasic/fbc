@@ -1,6 +1,6 @@
 /* xbox timer function */
 
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 FBCALL double fb_Timer ( void )

@@ -1,6 +1,6 @@
 /* sleep function for xbox */
 
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 FBCALL void fb_Delay ( int msecs )

@@ -2,7 +2,7 @@
 
 #include <malloc.h>
 #include <string.h>
-#include "../fb.h"
+#include "fb.h"
 
 /*:::::*/
 char *fb_hGetExePath( char *dst, int maxlen )

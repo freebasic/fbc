@@ -8,8 +8,8 @@
 #ifndef __FB_GFX_DOS_H__
 #define __FB_GFX_DOS_H__
 
-#include "../fb_gfx.h"
-#include "../../rtlib/dos/fb_dos.h"
+#include "fb_gfx.h"
+#include "fb_dos.h"
 
 #include <conio.h>
 #include <dpmi.h>

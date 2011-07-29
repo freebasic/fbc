@@ -22,9 +22,9 @@ extern "C" {
 #include "fb_gfx_gl.h"
 #endif
 
-#include "../rtlib/fb.h"
-#include "../rtlib/fb_error.h"
-#include "../rtlib/fb_scancodes.h"
+#include "fb.h"
+#include "fb_error.h"
+#include "fb_scancodes.h"
 
 #ifdef PI
 #undef PI
