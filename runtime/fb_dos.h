@@ -231,7 +231,7 @@ typedef FB_DOS_THREAD *FB_THREADID;
 
 extern FBMUTEX __fb_thread_mutex;
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 extern FBMUTEX __fb_global_mutex;
 extern FBMUTEX __fb_string_mutex;
 

@@ -113,7 +113,7 @@ extern int fb_hXTermHasFocus(void);
 extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
 
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 extern pthread_mutex_t __fb_global_mutex;
 extern pthread_mutex_t __fb_string_mutex;
 # define FB_LOCK()					pthread_mutex_lock(&__fb_global_mutex)

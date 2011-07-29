@@ -18,7 +18,7 @@ FBCALL void fb_End ( int errlevel )
 /*:::::*/
 void fb_hRtExit ( void )
 {
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
     int i;
 #endif
 
@@ -35,7 +35,7 @@ void fb_hRtExit ( void )
 	/* os-dep termination */
 	fb_hEnd( 0 );
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	/* free thread local storage plus the keys */
 	for( i = 0; i < FB_TLSKEYS; i++ )
 	{

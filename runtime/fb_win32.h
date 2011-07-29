@@ -56,7 +56,7 @@ typedef _off64_t fb_off_t;
 typedef off64_t fb_off_t;
 #endif
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 extern CRITICAL_SECTION __fb_global_mutex;
 extern CRITICAL_SECTION __fb_string_mutex;
 extern CRITICAL_SECTION __fb_mtcore_mutex;

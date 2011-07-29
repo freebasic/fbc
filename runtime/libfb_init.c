@@ -12,7 +12,7 @@ FB_RTLIB_CTX __fb_ctx /* not initialized */;
 /*:::::*/
 void fb_hRtInit ( void )
 {
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	int i;
 #endif
 
@@ -27,7 +27,7 @@ void fb_hRtInit ( void )
 	/* os-dep initialization */
 	fb_hInit( );
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	/* allocate thread local storage keys */
 	for( i = 0; i < FB_TLSKEYS; i++ )
 		FB_TLSALLOC( __fb_ctx.tls_ctxtb[i] );

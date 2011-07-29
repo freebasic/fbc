@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 pthread_mutex_t __fb_global_mutex;
 pthread_mutex_t __fb_string_mutex;
 extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
@@ -218,7 +218,7 @@ void fb_unix_hInit ( void )
 	struct termios tty;
     int i;
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
     pthread_mutexattr_t attr;
 #endif
 
@@ -233,7 +233,7 @@ void fb_unix_hInit ( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 #endif
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
 

@@ -1545,10 +1545,10 @@ $(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H) | $(newruntime)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H) | $(newruntime)
-	$(QUIET_CC)$(TARGET_CC) -DMULTITHREADED $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H) | $(newruntime)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DMULTITHREADED $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H) | $(newruntime)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@

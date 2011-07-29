@@ -58,7 +58,7 @@ void fb_unix_hEnd ( int unused )
 	}
 	pthread_mutex_destroy(&__fb_con.bg_mutex);
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&__fb_global_mutex);
 	pthread_mutex_destroy(&__fb_string_mutex);

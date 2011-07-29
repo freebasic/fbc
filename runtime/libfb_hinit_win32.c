@@ -5,7 +5,7 @@
 #include "fb.h"
 
 /* globals */
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 CRITICAL_SECTION __fb_global_mutex;
 CRITICAL_SECTION __fb_string_mutex;
 CRITICAL_SECTION __fb_mtcore_mutex;
@@ -31,7 +31,7 @@ void fb_hInit ( void )
     }
 #endif
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 	InitializeCriticalSection(&__fb_global_mutex);
 	InitializeCriticalSection(&__fb_string_mutex);
 	InitializeCriticalSection(&__fb_mtcore_mutex);

@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "fb.h"
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 CRITICAL_SECTION __fb_global_mutex;
 CRITICAL_SECTION __fb_string_mutex;
 #endif
@@ -21,7 +21,7 @@ void fb_hInit ( void )
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
 
 
-#ifdef MULTITHREADED
+#ifdef ENABLE_MT
 
 	/* !!!FIXME!!! replace with xbox/openxdk equivalents */
 
