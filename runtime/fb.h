@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#define FB_TRUE -1
+#define FB_TRUE (-1)
 #define FB_FALSE 0
 #ifndef FALSE
 #define FALSE    0
