@@ -237,15 +237,16 @@ void fb_unix_hInit ( void )
 	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
 
-#	ifdef HAVE_PTHREAD_MUTEX_RECURSIVE
-		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-#	else
-#		ifdef HAVE_PTHREAD_MUTEX_RECURSIVE_NP
-			pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
-#		else
-#			error Need PTHREAD_MUTEX_RECURSIVE or PTHREAD_MUTEX_RECURSIVE_NP
-#		endif
-#	endif
+	/* TODO: Figure out which Unixy systems have/don't have PTHREAD_MUTEX_RECURSIVE[_NP] */
+	/* Currently it seems that PTHREAD_MUTEX_RECURSIVE is the standard POSIX name,
+	   while PTHREAD_MUTEX_RECURSIVE_NP is something non-posixy used on Linux.
+	   Some Linux distros (or glibc/pthread versions) only seemed to make the *_NP
+	   version available (at least this was observed in the past). */
+#ifdef HOST_LINUX
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+#else
+	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+#endif
 
 	/* Init multithreading support */
 	pthread_mutex_init(&__fb_global_mutex, &attr);
