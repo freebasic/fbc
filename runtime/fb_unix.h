@@ -26,9 +26,7 @@
 
 #include <termcap.h>
 
-#ifdef HAVE_SYS_IO_H
-# include <sys/io.h>
-#endif
+#include <sys/io.h>
 #include <sys/ioctl.h>
 
 #define INIT_CONSOLE		1
