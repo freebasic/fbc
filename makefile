@@ -337,7 +337,7 @@ LIBFB_CONFIG := $(newruntime)/config.h
 #
 
 FBCFLAGS := $(FBFLAGS) -maxerr 1 -w all -w pedantic
-FBCFLAGS += -m fbc -include $(FBC_CONFIG)
+FBCFLAGS += -e -m fbc -include $(FBC_CONFIG)
 FBLFLAGS := $(FBFLAGS)
 ALLCFLAGS := $(CFLAGS) -Wfatal-errors -Wall -include $(LIBFB_CONFIG)
 
