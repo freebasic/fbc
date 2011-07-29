@@ -995,7 +995,7 @@ ifndef DISABLE_GFX
   LIBFBGFX_H += runtime/fb_gfx_gl.h
   LIBFBGFX_H += runtime/fb_gfx.h
   LIBFBGFX_H += runtime/fb_gfx_lzw.h
-  LIBFBGFX_H += runtime/libfb_gfx_data.h
+  LIBFBGFX_H += runtime/gfxdata/inline.h
 
   LIBFBGFX_C += $(newruntime)/libfb_gfx_access.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_blitter.o
@@ -1102,7 +1102,6 @@ ifeq ($(TARGET_OS),dos)
   LIBFB_C += $(newruntime)/libfb_io_serial_dos.o
   LIBFB_C += $(newruntime)/libfb_io_viewupdate_dos.o
   LIBFB_C += $(newruntime)/libfb_io_width_dos.o
-  LIBFB_C += $(newruntime)/libfb_sys_beep_dos.o
   LIBFB_C += $(newruntime)/libfb_sys_exec_dos.o
   LIBFB_C += $(newruntime)/libfb_sys_fmem_dos.o
   LIBFB_C += $(newruntime)/libfb_sys_getcwd_dos.o
@@ -1124,7 +1123,7 @@ ifeq ($(TARGET_OS),dos)
     LIBFBGFX_H += runtime/fb_gfx_dos.h
     LIBFBGFX_H += runtime/vesa_dos.h
     LIBFBGFX_H += runtime/vga_dos.h
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_dos_dos.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_bios_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_modex_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_vesa_bnk_dos.o
@@ -1144,7 +1143,7 @@ else ifeq ($(TARGET_OS),freebsd)
   LIBFB_C += $(newruntime)/libfb_sys_getexename_freebsd.o
   LIBFB_C += $(newruntime)/libfb_sys_getexepath_freebsd.o
   ifndef DISABLE_GFX
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd_freebsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
   endif
 else ifeq ($(TARGET_OS),linux)
@@ -1163,7 +1162,7 @@ else ifeq ($(TARGET_OS),linux)
     LIBFBGFX_H += runtime/fb_gfx_linux.h
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_fbdev_linux.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_linux_linux.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_linux.o
   endif
 else ifeq ($(TARGET_OS),netbsd)
   LIBFB_C += $(newruntime)/libfb_hexit_netbsd.o
@@ -1184,7 +1183,7 @@ else ifeq ($(TARGET_OS),openbsd)
   LIBFB_C += $(newruntime)/swprintf_hack_openbsd.o
   ifndef DISABLE_GFX
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd_openbsd.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd.o
   endif
 else ifeq ($(TARGET_OS),xbox)
   LIBFB_H += runtime/fb_xbox.h
@@ -1238,7 +1237,7 @@ else ifeq ($(TARGET_OS),xbox)
   LIBFB_C += $(newruntime)/libfb_time_tmr_xbox.o
   LIBFB_S += $(newruntime)/libfb_alloca.o
   ifndef DISABLE_GFX
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_xbox_xbox.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_xbox.o
   endif
 endif
 
@@ -1278,7 +1277,6 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   LIBFB_C += $(newruntime)/libfb_io_width_unix.o
   LIBFB_C += $(newruntime)/libfb_io_xfocus_unix.o
   LIBFB_C += $(newruntime)/libfb_scancodes_unix.o
-  LIBFB_C += $(newruntime)/libfb_sys_beep_unix.o
   LIBFB_C += $(newruntime)/libfb_sys_delay_unix.o
   LIBFB_C += $(newruntime)/libfb_sys_dylib_unix.o
   LIBFB_C += $(newruntime)/libfb_sys_exec_unix.o
@@ -1305,7 +1303,8 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
 else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   LIBFB_H += runtime/fb_unicode_win32.h
   LIBFB_H += runtime/fb_win32.h
-  LIBFB_H += runtime/fbportio_driver.h
+  LIBFB_H += runtime/fbportio/fbportio.h
+  LIBFB_H += runtime/fbportio/inline.h
   LIBFB_C += $(newruntime)/libfb_dev_pipe_close_win32.o
   LIBFB_C += $(newruntime)/libfb_dev_pipe_open_win32.o
   LIBFB_C += $(newruntime)/libfb_drv_file_copy_win32.o
@@ -1380,7 +1379,7 @@ else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_ddraw_win32.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_gdi_win32.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_win32.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_win32_win32.o
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_win32.o
     ifndef DISABLE_OPENGL
       LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_opengl_win32.o
     endif
@@ -1391,18 +1390,18 @@ ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
   LIBFB_H += runtime/fb_x86.h
   LIBFB_S += $(newruntime)/libfb_cpudetect_x86.o
   ifndef DISABLE_GFX
-    LIBFBGFX_H += runtime/fb_gfx_mmx_x86.h
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_blitter_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_add_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_alpha_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_and_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_blend_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_or_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_preset_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_pset_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_trans_mmx_x86.o
-    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_xor_mmx_x86.o
+    LIBFBGFX_H += runtime/fb_gfx_mmx.h
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_blitter_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_add_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_alpha_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_and_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_blend_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_or_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_preset_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_pset_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_trans_mmx.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_put_xor_mmx.o
   endif
 endif
 
