@@ -1,12 +1,8 @@
 #ifndef __FB_UNICODE__
 #define __FB_UNICODE__
 
-#ifdef HAVE_STDINT_H
 #include <stdint.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 
