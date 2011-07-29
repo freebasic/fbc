@@ -24,9 +24,7 @@
 #include <X11/keysym.h>
 #endif
 
-#ifdef HAVE_TERMCAP_H
-# include <termcap.h>
-#endif
+#include <termcap.h>
 
 #ifdef HAVE_SYS_IO_H
 # include <sys/io.h>
