@@ -1,6 +1,6 @@
 /* OpenGL gfx driver */
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"

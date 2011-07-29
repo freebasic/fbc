@@ -1,6 +1,6 @@
 /* Linux multikey function implementation */
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 
 #include "fb.h"
 #include "fb_scancodes.h"

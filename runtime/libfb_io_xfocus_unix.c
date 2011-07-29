@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 #include <X11/Xlib.h>
 
 typedef Display *(*XOPENDISPLAY)(char *);
@@ -21,12 +21,12 @@ static X_FUNCS X = { NULL };
 static Display *display;
 static Window xterm_window;
 
-#endif /* WITH_X */
+#endif
 
 /*:::::*/
 int fb_hXTermInitFocus(void)
 {
-#if WITH_X
+#ifndef DISABLE_X
 	const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
 	int dummy;
 	
@@ -53,7 +53,7 @@ int fb_hXTermInitFocus(void)
 /*:::::*/
 void fb_hXTermExitFocus(void)
 {
-#if WITH_X
+#ifndef DISABLE_X
 	ref_count--;
 	if (ref_count > 0)
 		return;
@@ -66,7 +66,7 @@ void fb_hXTermExitFocus(void)
 /*:::::*/
 int fb_hXTermHasFocus(void)
 {
-#if WITH_X
+#ifndef DISABLE_X
 	Window focus_window;
 	int dummy;
 	

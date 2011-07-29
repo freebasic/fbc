@@ -5,7 +5,7 @@
  *
  */
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 
 #ifndef __FB_GFX_X11_H__
 #define __FB_GFX_X11_H__

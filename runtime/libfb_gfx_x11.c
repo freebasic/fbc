@@ -1,6 +1,6 @@
 /* x11 window management code shared by x11 and opengl drivers */
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"

@@ -1291,7 +1291,7 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   LIBFB_C += $(newruntime)/libfb_time_sleep_unix.o
   LIBFB_C += $(newruntime)/libfb_time_tmr_unix.o
   ifndef DISABLE_GFX
-    ifndef DISABLE_X11
+    ifndef DISABLE_X
       LIBFBGFX_H += runtime/fb_gfx_x11.h
       LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_x11.o
       LIBFBGFX_C += $(newruntime)/libfb_gfx_x11.o
@@ -1600,6 +1600,9 @@ $(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
   else ifeq ($(TARGET_CPU),powerpc64)
 	@echo '#define HOST_POWERPC64' >> $@
   endif
+  ifdef DISABLE_X
+	@echo '#define DISABLE_X' >> $@
+  endif
 
 
 .PHONY: install
@@ -1679,7 +1682,7 @@ help:
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
 	@echo "  DISABLE_GFX       Don't build libfbgfx"
 	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
-	@echo "  DISABLE_X11       For libfbgfx without X11 support (Unix)"
+	@echo "  DISABLE_X         For libfbgfx without X support (Unix)"
 	@echo "  ENABLE_PREFIX     Hard-code the PREFIX into the compiler, instead of"
 	@echo "                    building a relocatable compiler."
 	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"

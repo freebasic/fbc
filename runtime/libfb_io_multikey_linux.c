@@ -3,7 +3,7 @@
 #include "fb.h"
 #include "fb_scancodes.h"
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #endif
@@ -18,7 +18,7 @@
 static int keyboard_init(void);
 static void keyboard_exit(void);
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
 typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);
@@ -36,7 +36,7 @@ typedef struct {
 
 static pid_t main_pid;
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 static Display *display;
 static void *xlib = NULL;
 static X_FUNCS X = { NULL };
@@ -243,7 +243,7 @@ static void keyboard_console_handler(void)
 }
 
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 
 /*:::::*/
 static void keyboard_x11_handler(void)
@@ -267,7 +267,7 @@ static void keyboard_x11_handler(void)
 /*:::::*/
 static int keyboard_init(void)
 {
-#ifdef WITH_X
+#ifndef DISABLE_X
 	const char *funcs[] = {
 		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
 	};
@@ -300,7 +300,7 @@ static int keyboard_init(void)
 		ioctl(key_fd, KDGETLED, &key_leds);
 	}
 
-#ifdef WITH_X
+#ifndef DISABLE_X
 	else {
 	    xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
 	    if (!xlib)
@@ -343,7 +343,7 @@ static void keyboard_exit(void)
 		close(key_fd);
 		key_fd = -1;
 	}
-#ifdef WITH_X
+#ifndef DISABLE_X
 	else if (__fb_con.inited == INIT_X11) {
 		X.CloseDisplay(display);
 		fb_hDynUnload(&xlib);
