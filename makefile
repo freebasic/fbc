@@ -57,9 +57,7 @@
 #  - Build for or enable the "i386-pc-xbox" target.
 #
 
-CFLAGS := -g -O2
-FBFLAGS := -g
-
+CFLAGS := -O2
 
 -include config.mk
 
