@@ -1313,7 +1313,7 @@ else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   LIBFB_C += $(newruntime)/libfb_hinit_win32.o
   LIBFB_C += $(newruntime)/libfb_hsignals_win32.o
   LIBFB_C += $(newruntime)/libfb_intl_conv_win32.o
-  LIBFB_C += $(newruntime)/libfb_intl_w32_win32.o
+  LIBFB_C += $(newruntime)/libfb_intl_win32.o
   LIBFB_C += $(newruntime)/libfb_io_cls_win32.o
   LIBFB_C += $(newruntime)/libfb_io_clsex_win32.o
   LIBFB_C += $(newruntime)/libfb_io_color_win32.o
