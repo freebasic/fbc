@@ -166,11 +166,13 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     char *c, *driver_name;
     unsigned char *dest;
 
-    if (num_pages <= 0)
-        if (info != NULL)
-            num_pages = info->num_pages;
-        else
-            num_pages = 1;
+	if (num_pages <= 0) {
+		if (info != NULL) {
+			num_pages = info->num_pages;
+		} else {
+			num_pages = 1;
+		}
+	}
 
 	/* normalize flags */
 	if ((flags >= 0) && (flags & DRIVER_SHAPED_WINDOW))

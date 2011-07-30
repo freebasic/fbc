@@ -118,7 +118,6 @@ int fb_SerialOpen
 {
     int res = FB_RTERROR_OK;
     int DesiredAccess = O_RDWR|O_NOCTTY|O_NONBLOCK;
-    unsigned int RxBufferSize = BUFSIZ*2;
     int SerialFD = (-1);
     char DeviceName[512];
     struct termios oldserp, nwserp;
@@ -237,11 +236,6 @@ int fb_SerialOpen
 		nwserp.c_iflag &= ~(IXON | IXOFF | IXANY); /* Disable Software Flow Control */
     	nwserp.c_cflag |= CREAD; /* Enable receiver */
 
-		if( options->ReceiveBuffer ) 
-		{
-			RxBufferSize = options->ReceiveBuffer;
-		}
-	
 	    if( options->AddLF ) 
 	    {
 			/*With AddFl Set, Process Canonical output/input */

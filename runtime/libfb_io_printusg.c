@@ -249,10 +249,10 @@ static int fb_PrintUsingFmtStr
 
 		case '+':
 			/* "+#...", "+$$...", "+**...", "+.#..." */
-			if( nc == '#' ||
-			    nc == '$' && nnc == '$' ||
-			    nc == '*' && nnc == '*' ||
-			    nc == '.' && nnc == '#' )
+			if( (nc == '#') ||
+			    ((nc == '$') && (nnc == '$')) ||
+			    ((nc == '*') && (nnc == '*')) ||
+			    ((nc == '.') && (nnc == '#')) )
 
 				doexit = 1;
 			break;
@@ -312,7 +312,7 @@ FBCALL int fb_PrintUsingStr
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
-	int c, nc, lc, strchars, doexit, i;
+	int c, nc, strchars, doexit, i;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -413,8 +413,6 @@ FBCALL int fb_PrintUsingStr
 
 		++ctx->ptr;
 		--ctx->chars;
-
-		lc = c;
 	}
 
 	/* any text */
@@ -450,7 +448,7 @@ static int hPrintNumber
 	unsigned long long val0;
 	int val_digs0, val_exp0;
 	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
-	int c, nc, lc;
+	int c, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatini, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
@@ -493,7 +491,6 @@ static int hPrintNumber
 		if( signatend || isamp ) break;
 
 		c = *ctx->ptr;
-		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = 0;
 		switch( c )
