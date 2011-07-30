@@ -14,11 +14,6 @@
 # define FBCALL __stdcall
 #endif
 
-#ifdef HOST_MINGW
-/* don't include liboldname */
-#define _NO_OLDNAMES 1
-#endif
-
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <io.h>

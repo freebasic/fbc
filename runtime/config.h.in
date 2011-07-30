@@ -4,3 +4,9 @@
 /* Causes fopen/fseeko/... to be mapped to fopen64/fseeko64/...,
    with glibc at least (e.g. MinGW does not recognize this) */
 #define _FILE_OFFSET_BITS 64
+
+#ifdef HOST_MINGW
+	/* Don't include liboldname; this means we'll use the native Windows
+	   _mkdir() & co. instead of the wrapper mkdir(). */
+	#define _NO_OLDNAMES 1
+#endif
