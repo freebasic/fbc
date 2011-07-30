@@ -57,7 +57,10 @@
 #  - Build for or enable the "i386-pc-xbox" target.
 #
 
+FBC := fbc
+CC := gcc
 CFLAGS := -O2
+AR := ar
 
 -include config.mk
 
@@ -195,20 +198,8 @@ endif
 
 
 #
-# Variable defaults
+# System specific configuration
 #
-
-ifndef FBC
-  FBC := fbc
-endif
-
-ifndef CC
-  CC := gcc
-endif
-
-ifndef AR
-  AR := ar
-endif
 
 ifndef HOST_FBC
   HOST_FBC := $(HOST_PREFIX)$(FBC)
