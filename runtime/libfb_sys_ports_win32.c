@@ -18,7 +18,7 @@ static void remove_driver( void )
 
 	manager = OpenSCManager( NULL, NULL, GENERIC_ALL );
 	if( manager ) {
-		service = OpenService( manager, FBPORTIO_NAME, SERVICE_ALL_ACCESS );
+		service = OpenService( manager, "fbportio", SERVICE_ALL_ACCESS );
 		if( service ) {
 			ControlService( service, SERVICE_CONTROL_STOP, &status );
 			DeleteService( service );
@@ -39,14 +39,14 @@ static SC_HANDLE install_driver( SC_HANDLE manager )
 	remove_driver( );
 	
 	if( GetSystemDirectory( driver_filename, MAX_PATH ) ) {
-		strncat( driver_filename, "\\Drivers\\" FBPORTIO_NAME ".sys", MAX_PATH-1 );
+		strncat( driver_filename, "\\Drivers\\fbportio.sys", MAX_PATH-1 );
 		f = fopen( driver_filename, "wb" );
 		fwrite( fbportio_driver, FBPORTIO_DRIVER_SIZE, 1, f );
 		fclose( f );
 		
-		service = CreateService( manager, FBPORTIO_NAME, FBPORTIO_NAME,
+		service = CreateService( manager, "fbportio", "fbportio",
 			SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-			"System32\\Drivers\\" FBPORTIO_NAME ".sys", NULL, NULL, NULL, NULL, NULL );
+			"System32\\Drivers\\fbportio.sys", NULL, NULL, NULL, NULL, NULL );
 	}
 	return service;
 }
@@ -61,7 +61,7 @@ static void start_driver( void )
 	if( !manager )
 		manager = OpenSCManager( NULL, NULL, GENERIC_READ );
 	if( manager ) {
-		service = OpenService( manager, FBPORTIO_NAME, SERVICE_ALL_ACCESS );
+		service = OpenService( manager, "fbportio", SERVICE_ALL_ACCESS );
 		if( (!service ) || (!StartService( service, 0, NULL ) ) ) {
 			if( service )
 				CloseServiceHandle( service );
@@ -95,7 +95,7 @@ static int init_ports( void )
 		
 		case VER_PLATFORM_WIN32_NT:
 			do {
-				driver = CreateFile( "\\\\.\\" FBPORTIO_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+				driver = CreateFile( "\\\\.\\fbportio", GENERIC_READ | GENERIC_WRITE, 0, NULL,
 					OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
 				if( driver == INVALID_HANDLE_VALUE ) {
 					if( !started ) {
