@@ -50,6 +50,8 @@ extern GFXDRIVER fb_gfxDriverOpenGL;
 
 extern void *fb_program_icon;
 
+void WaitUnmapped(Window w);
+
 extern void fb_hXlibInit(void);
 extern int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_hX11Exit(void);
