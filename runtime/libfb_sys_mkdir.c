@@ -12,6 +12,8 @@ FBCALL int fb_MkDir( FBSTRING *path )
 {
 	int res;
 
+	/* Note: for MinGW mkdir() is redefined in fb_config.h,
+	   this becomes just _mkdir(path->data) */
 	res = mkdir( path->data, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
 
 	/* del if temp */
