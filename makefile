@@ -1439,7 +1439,7 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI) | $(newcompiler)
 	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c | $(newcompiler)
-	$(QUIET_CC)$(HOST_CC) -Wall -O2 -c $< -o $@
+	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
 
 $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
