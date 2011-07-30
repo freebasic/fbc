@@ -227,9 +227,12 @@ FBCALL int          fb_FileOpenPipe     ( FBSTRING *str_filename, unsigned int m
 FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );
+
+       int          fb_LPrintInit       (void);
 FBCALL int          fb_FileOpenLpt      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );
+
 FBCALL int          fb_FileOpenCom      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );

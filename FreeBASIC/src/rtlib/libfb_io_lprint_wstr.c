@@ -39,8 +39,6 @@
 #include <stdlib.h>
 #include "fb.h"
 
-int LPrintInit(void);
-
 /*:::::*/
 FBCALL void fb_LPrintWstr
 	(
@@ -49,8 +47,7 @@ FBCALL void fb_LPrintWstr
 		int mask
 	)
 {
-    LPrintInit( );
-
+    fb_LPrintInit();
     fb_PrintWstrEx( FB_FILE_TO_HANDLE(fnum),
                     s,
                     FB_PRINT_CONVERT_BIN_NEWLINE(mask) );

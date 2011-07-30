@@ -56,7 +56,7 @@ static const char *pszPrinterDev = "LPT1:";
 #endif
 #endif
 
-int LPrintInit(void)
+int fb_LPrintInit(void)
 {
     if( FB_HANDLE_PRINTER->hooks==NULL) {
         int res = fb_FileOpenVfsRawEx( FB_HANDLE_PRINTER,
