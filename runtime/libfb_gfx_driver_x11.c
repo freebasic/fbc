@@ -190,7 +190,7 @@ static int x11_init(void)
 }
 
 /*:::::*/
-void WaitUnmapped(Window w)
+void fb_hX11WaitUnmapped(Window w)
 {
 	XEvent e;
 	do {
@@ -204,14 +204,14 @@ static void x11_exit(void)
 	if (fb_x11.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
 	XUnmapWindow(fb_x11.display, fb_x11.window);
-	WaitUnmapped(fb_x11.window);
+	fb_hX11WaitUnmapped(fb_x11.window);
 	if (fb_x11.flags & DRIVER_FULLSCREEN) {
 		XUnmapWindow(fb_x11.display, fb_x11.fswindow);
 	XSync(fb_x11.display, False);
 	} else {
 		if (!(fb_x11.flags & DRIVER_NO_FRAME)) {
 			XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
-			WaitUnmapped(fb_x11.wmwindow);
+			fb_hX11WaitUnmapped(fb_x11.wmwindow);
 		}
 	}
 	if (image) {

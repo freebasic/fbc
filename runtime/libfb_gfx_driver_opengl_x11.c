@@ -109,13 +109,13 @@ static void opengl_window_exit(void)
 		fb_hX11LeaveFullscreen();
 		
 	XUnmapWindow(fb_x11.display, fb_x11.window);
-	WaitUnmapped(fb_x11.window);
+	fb_hX11WaitUnmapped(fb_x11.window);
 	if (fb_x11.flags & DRIVER_FULLSCREEN) {
 		XUnmapWindow(fb_x11.display, fb_x11.fswindow);
 	XSync(fb_x11.display, False);
 	} else {
 		XUnmapWindow(fb_x11.display, fb_x11.wmwindow);
-		WaitUnmapped(fb_x11.wmwindow);
+		fb_hX11WaitUnmapped(fb_x11.wmwindow);
 }
 	//usleep(500);
 	XSync(fb_x11.display, False);
