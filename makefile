@@ -13,7 +13,7 @@
 # FB OS names:
 #    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
 #    (where 'dos' should be 'djgpp', and 'win32' should be 'mingw')
-# FB CPU names:
+# FB architecture names:
 #    386 486 586 686 x86_64 sparc sparc64 powerpc64
 # Note: In the runtime, the win32 parts are used for both mingw and cygwin,
 # so there we have HOST_MINGW/CYGWIN and the HOST_WIN32 common to both.
@@ -93,7 +93,7 @@ parse-os = \
        $(findstring xbox,$(1)), \
        $(call triplet-oops,$(2)))
 
-parse-cpu = \
+parse-arch = \
   $(or $(and $(filter i386,$(1)),386), \
        $(and $(filter i486,$(1)),486), \
        $(and $(filter i586,$(1)),586), \
@@ -106,16 +106,16 @@ parse-cpu = \
 # 'mingw32'           -> 'mingw32'
 extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
 
-# cpu = iif(has >= 2 words, first word, unknown)
+# arch = iif(has >= 2 words, first word, unknown)
 # 'i686 pc linux gnu' -> 'i686'
 # 'mingw32'           -> 'unknown'
-extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
+extract-arch = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 
 # In autoconf we used a shell case statement and checked for *-*-mingw*, but
 # here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
 # word/text processing functions to analyze it.
 triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
-triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
+triplet-arch = $(call parse-arch,$(call extract-arch,$(subst -, ,$(1))),$(1))
 
 #
 # Host/target system determination
@@ -125,9 +125,9 @@ ifdef HOST
   # Cross-compile fbc to run on this HOST
   HOST_PREFIX := $(HOST)-
   HOST_OS := $(call triplet-os,$(HOST))
-  HOST_CPU := $(call triplet-cpu,$(HOST))
+  HOST_ARCH := $(call triplet-arch,$(HOST))
 else
-  # No HOST given, so guess the build OS & CPU via uname or something else.
+  # No HOST given, so guess the build OS & arch via uname or something else.
   # uname is available on every system we currently support, except on
   # Windows with MinGW but not MSYS, we try to detect that below.
   uname_s := $(shell uname -s)
@@ -171,41 +171,41 @@ else
 
   uname_m := $(shell uname -m)
   ifeq ($(uname_m),i386)
-    HOST_CPU = 386
+    HOST_ARCH = 386
   endif
   ifeq ($(uname_m),i486)
-    HOST_CPU = 486
+    HOST_ARCH = 486
   endif
   ifeq ($(uname_m),i586)
-    HOST_CPU = 586
+    HOST_ARCH = 586
   endif
   ifeq ($(uname_m),i686)
-    HOST_CPU = 686
+    HOST_ARCH = 686
   endif
   ifeq ($(uname_m),x86_64)
-    HOST_CPU = x86_64
+    HOST_ARCH = x86_64
   endif
   ifeq ($(uname_m),sparc)
-    HOST_CPU = sparc
+    HOST_ARCH = sparc
   endif
   ifeq ($(uname_m),sparc64)
-    HOST_CPU = sparc64
+    HOST_ARCH = sparc64
   endif
   ifeq ($(uname_m),powerpc64)
-    HOST_CPU = powerpc64
+    HOST_ARCH = powerpc64
   endif
 
   # For DJGPP, just build for i386.
   # Also: a) DJGPP's uname -m just returns 'pc', and b) it doesn't seem to work
   # from $(shell) at all, maybe it's an issue with the COMMAND.COM?
-  ifndef HOST_CPU
+  ifndef HOST_ARCH
     ifeq ($(HOST_OS),dos)
-      HOST_CPU := 386
+      HOST_ARCH := 386
     endif
   endif
 
-  ifndef HOST_CPU
-    $(error Sorry, the CPU could not be identified automatically. Maybe the \
+  ifndef HOST_ARCH
+    $(error Sorry, the arch could not be identified automatically. Maybe the \
             makefile should be fixed. 'uname -m' returned: '$(uname -m)')
   endif
 endif
@@ -214,7 +214,7 @@ ifdef TARGET
   # TARGET given, so parse it.
   TARGET_PREFIX := $(TARGET)-
   TARGET_OS := $(call triplet-os,$(TARGET))
-  TARGET_CPU := $(call triplet-cpu,$(TARGET))
+  TARGET_ARCH := $(call triplet-arch,$(TARGET))
 else
   # No TARGET given, so set the same values/defines as for HOST
   ifdef HOST
@@ -222,7 +222,7 @@ else
     TARGET_PREFIX := $(HOST_PREFIX)
   endif
   TARGET_OS := $(HOST_OS)
-  TARGET_CPU := $(HOST_CPU)
+  TARGET_ARCH := $(HOST_ARCH)
 endif
 
 #
@@ -1441,7 +1441,7 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   endif
 endif
 
-ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
   LIBFB_H += runtime/fb_x86.h
   LIBFB_S += $(newruntime)/libfb_cpudetect_x86.o
   ifndef DISABLE_GFX
@@ -1543,11 +1543,11 @@ $(FBC_CONFIG): compiler/config.bi.in
   ifeq ($(TARGET_OS),xbox)
 	@echo '#define TARGET_XBOX' >> $@
   endif
-  # CPU
-  ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+  # arch
+  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
 	@echo '#define TARGET_X86' >> $@
   endif
-  ifeq ($(TARGET_CPU),x86_64)
+  ifeq ($(TARGET_ARCH),x86_64)
 	@echo '#define TARGET_X86_64' >> $@
   endif
   # The compiler expects ENABLE_* defines for all the targets that
@@ -1673,20 +1673,20 @@ $(LIBFB_CONFIG): runtime/config.h.in
   ifneq ($(filter cygwin win32,$(TARGET_OS)),)
 	@echo '#define HOST_WIN32' >> $@
   endif
-  # CPU
-  ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
+  # arch
+  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
 	@echo '#define HOST_X86' >> $@
   endif
-  ifeq ($(TARGET_CPU),x86_64)
+  ifeq ($(TARGET_ARCH),x86_64)
 	@echo '#define HOST_X86_64' >> $@
   endif
-  ifeq ($(TARGET_CPU),sparc)
+  ifeq ($(TARGET_ARCH),sparc)
 	@echo '#define HOST_SPARC' >> $@
   endif
-  ifeq ($(TARGET_CPU),sparc64)
+  ifeq ($(TARGET_ARCH),sparc64)
 	@echo '#define HOST_SPARC64' >> $@
   endif
-  ifeq ($(TARGET_CPU),powerpc64)
+  ifeq ($(TARGET_ARCH),powerpc64)
 	@echo '#define HOST_POWERPC64' >> $@
   endif
   # Configuration
