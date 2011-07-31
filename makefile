@@ -9,6 +9,7 @@
 # triplets. By default TARGET is the same as HOST, and HOST is the same as
 # the build system, which is guessed mostly via uname. In case the triplet
 # parsing or default system detection fails, please fix it and make it work!
+# Or set HOST_OS, HOST_ARCH and/or TARGET_OS, TARGET_ARCH directly.
 #
 # FB OS names:
 #    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
@@ -124,78 +125,81 @@ triplet-arch = $(call parse-arch,$(call extract-arch,$(subst -, ,$(1))),$(1))
 ifdef HOST
   # Cross-compile fbc to run on this HOST
   HOST_PREFIX := $(HOST)-
-  HOST_OS := $(call triplet-os,$(HOST))
-  HOST_ARCH := $(call triplet-arch,$(HOST))
+  ifndef HOST_OS
+    HOST_OS := $(call triplet-os,$(HOST))
+  endif
+  ifndef HOST_ARCH
+    HOST_ARCH := $(call triplet-arch,$(HOST))
+  endif
 else
   # No HOST given, so guess the build OS & arch via uname or something else.
   # uname is available on every system we currently support, except on
   # Windows with MinGW but not MSYS, we try to detect that below.
-  uname_s := $(shell uname -s)
-  ifneq ($(findstring CYGWIN,$(uname_s)),)
-    HOST_OS := cygwin
-  endif
-  ifeq ($(uname_s),Darwin)
-    HOST_OS := darwin
-  endif
-  ifeq ($(uname_s),FreeBSD)
-    HOST_OS := freebsd
-  endif
-  ifeq ($(uname_s),Linux)
-    HOST_OS := linux
-  endif
-  ifneq ($(findstring MINGW,$(uname_s)),)
-    HOST_OS := win32
-  endif
-  ifeq ($(uname_s),MS-DOS)
-    HOST_OS := dos
-  endif
-  ifeq ($(uname_s),NetBSD)
-    HOST_OS := netbsd
-  endif
-  ifeq ($(uname_s),OpenBSD)
-    HOST_OS := openbsd
-  endif
 
   ifndef HOST_OS
-    ifneq ($(COMSPEC),)
-      # This check lets us support mingw32-make without MSYS.
-      # TODO: any better way to check this?
+    uname := $(shell uname)
+    ifneq ($(findstring CYGWIN,$(uname)),)
+      HOST_OS := cygwin
+    endif
+    ifeq ($(uname),Darwin)
+      HOST_OS := darwin
+    endif
+    ifeq ($(uname),FreeBSD)
+      HOST_OS := freebsd
+    endif
+    ifeq ($(uname),Linux)
+      HOST_OS := linux
+    endif
+    ifneq ($(findstring MINGW,$(uname)),)
       HOST_OS := win32
+    endif
+    ifeq ($(uname),MS-DOS)
+      HOST_OS := dos
+    endif
+    ifeq ($(uname),NetBSD)
+      HOST_OS := netbsd
+    endif
+    ifeq ($(uname),OpenBSD)
+      HOST_OS := openbsd
+    endif
+
+#    # No output from uname? Maybe it's DJGPP without sh etc., or MinGW without
+#    # MSYS. So, check COMSPEC. That's probably not the best thing to do,
+#    # but it lets us do builds without requiring MSYS to be installed, which
+#    # is nice. While at it we also assume that we must use DOS-style commands,
+#    # instead of Unixy ones.
+#    # As far as the HOST_ARCH is concerned, for DOS we'll always default to
+#    # i386 anyways, and for Windows, if uname failed above, then we won't
+#    # bother trying uname -m below either, so default to something useful.
+#    ifndef uname
+#      comspec := $(shell echo %COMSPEC%)
+#      ifneq ($(findstring COMMAND.COM,$(comspec)),)
+#        HOST_OS := dos
+#        ENABLE_DOSCMD := YesPlease
+#      endif
+#      ifneq ($(findstring cmd.exe,$(comspec)),)
+#        HOST_OS := win32
+#        ENABLE_DOSCMD := YesPlease
+#        ifndef HOST_ARCH
+#          HOST_ARCH := 486
+#        endif
+#      endif
+#    endif
+#
+# TODO: In case of ENABLE_DOSCMD, we'd have to use normal mkdir/rmdir
+# instead of mkdir -p or rmdir -p, \ instead of / path separators,
+# del instead of rm -f and trim down command line even more,
+# because anything that needs to go through cmd.exe is limited to 8k chars.
+# Note that unless an recipe uses cmd.exe shell syntax like ';' or redirection,
+# the limit doesn't apply (seemed like it during testing anyways).
+
+    ifndef HOST_OS
+      $(error Sorry, the OS could not be identified. Maybe the makefile \
+              should be fixed. 'uname' returned: '$(uname)')
     endif
   endif
 
-  ifndef HOST_OS
-    $(error Sorry, the OS could not be identified automatically. Maybe the \
-            makefile should be fixed. 'uname -s' returned: '$(uname_s)')
-  endif
-
-  uname_m := $(shell uname -m)
-  ifeq ($(uname_m),i386)
-    HOST_ARCH = 386
-  endif
-  ifeq ($(uname_m),i486)
-    HOST_ARCH = 486
-  endif
-  ifeq ($(uname_m),i586)
-    HOST_ARCH = 586
-  endif
-  ifeq ($(uname_m),i686)
-    HOST_ARCH = 686
-  endif
-  ifeq ($(uname_m),x86_64)
-    HOST_ARCH = x86_64
-  endif
-  ifeq ($(uname_m),sparc)
-    HOST_ARCH = sparc
-  endif
-  ifeq ($(uname_m),sparc64)
-    HOST_ARCH = sparc64
-  endif
-  ifeq ($(uname_m),powerpc64)
-    HOST_ARCH = powerpc64
-  endif
-
-  # For DJGPP, just build for i386.
+  # For DOS, just build for i386 and don't bother with uname -m.
   # Also: a) DJGPP's uname -m just returns 'pc', and b) it doesn't seem to work
   # from $(shell) at all, maybe it's an issue with the COMMAND.COM?
   ifndef HOST_ARCH
@@ -205,24 +209,60 @@ else
   endif
 
   ifndef HOST_ARCH
-    $(error Sorry, the arch could not be identified automatically. Maybe the \
-            makefile should be fixed. 'uname -m' returned: '$(uname -m)')
+    uname_m := $(shell uname -m)
+    ifeq ($(uname_m),i386)
+      HOST_ARCH = 386
+    endif
+    ifeq ($(uname_m),i486)
+      HOST_ARCH = 486
+    endif
+    ifeq ($(uname_m),i586)
+      HOST_ARCH = 586
+    endif
+    ifeq ($(uname_m),i686)
+      HOST_ARCH = 686
+    endif
+    ifeq ($(uname_m),x86_64)
+      HOST_ARCH = x86_64
+    endif
+    ifeq ($(uname_m),sparc)
+      HOST_ARCH = sparc
+    endif
+    ifeq ($(uname_m),sparc64)
+      HOST_ARCH = sparc64
+    endif
+    ifeq ($(uname_m),powerpc64)
+      HOST_ARCH = powerpc64
+    endif
+
+    ifndef HOST_ARCH
+      $(error Sorry, the arch could not be identified. Maybe the makefile \
+              should be fixed. 'uname -m' returned: '$(uname_m)')
+    endif
   endif
 endif
 
 ifdef TARGET
   # TARGET given, so parse it.
   TARGET_PREFIX := $(TARGET)-
-  TARGET_OS := $(call triplet-os,$(TARGET))
-  TARGET_ARCH := $(call triplet-arch,$(TARGET))
+  ifndef TARGET_OS
+    TARGET_OS := $(call triplet-os,$(TARGET))
+  endif
+  ifndef TARGET_ARCH
+    TARGET_ARCH := $(call triplet-arch,$(TARGET))
+  endif
 else
   # No TARGET given, so set the same values/defines as for HOST
   ifdef HOST
     TARGET := $(HOST)
     TARGET_PREFIX := $(HOST_PREFIX)
   endif
-  TARGET_OS := $(HOST_OS)
-  TARGET_ARCH := $(HOST_ARCH)
+  ifndef TARGET_OS
+    TARGET_OS := $(HOST_OS)
+  endif
+  ifndef TARGET_ARCH
+    TARGET_ARCH := $(HOST_ARCH)
+  endif
 endif
 
 #
@@ -232,20 +272,15 @@ endif
 ifndef HOST_FBC
   HOST_FBC := $(HOST_PREFIX)$(FBC)
 endif
-
 ifndef HOST_CC
   HOST_CC := $(HOST_PREFIX)$(CC)
 endif
-
 ifndef TARGET_AR
   TARGET_AR := $(TARGET_PREFIX)$(AR)
 endif
-
 ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
-
-TARGET_CPPAS := $(TARGET_CC) -x assembler-with-cpp
 
 ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
@@ -616,7 +651,7 @@ FBC_BAS += $(newcompiler)/symb-struct.o
 FBC_BAS += $(newcompiler)/symb-typedef.o
 FBC_BAS += $(newcompiler)/symb-var.o
 
-FBC_COBJINFO := 
+FBC_COBJINFO :=
 ifndef DISABLE_OBJINFO
   ifndef ENABLE_FBBFD
     FBC_COBJINFO := $(newcompiler)/c-objinfo.o
@@ -1489,12 +1524,12 @@ endif
 .SUFFIXES:
 
 ifndef V
-  QUIET_GEN     = @echo "GEN $@";
-  QUIET_FBC     = @echo "FBC $@";
-  QUIET_LINK    = @echo "LINK $@";
-  QUIET_CC      = @echo "CC $@";
-  QUIET_CPPAS   = @echo "CPPAS $@";
-  QUIET_AR      = @echo "AR $@";
+  QUIET_GEN   = @echo "GEN $@";
+  QUIET_FBC   = @echo "FBC $@";
+  QUIET_LINK  = @echo "LINK $@";
+  QUIET_CC    = @echo "CC $@";
+  QUIET_CPPAS = @echo "CPPAS $@";
+  QUIET_AR    = @echo "AR $@";
 endif
 
 .PHONY: all
@@ -1617,19 +1652,19 @@ $(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CPPAS) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CPPAS) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
-	$(QUIET_CPPAS)$(TARGET_CPPAS) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_CONFIG): runtime/config.h.in
 	$(QUIET_GEN)cp $< $@
