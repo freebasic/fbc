@@ -1115,7 +1115,6 @@ ifeq ($(TARGET_OS),dos)
   LIBFB_C += $(newruntime)/libfb_drv_intl_getmonthname_dos.o
   LIBFB_C += $(newruntime)/libfb_drv_intl_gettimeformat_dos.o
   LIBFB_C += $(newruntime)/libfb_drv_intl_getweekdayname_dos.o
-  LIBFB_C += $(newruntime)/libfb_drv_isr_dos.o
   LIBFB_C += $(newruntime)/libfb_farmemset_dos.o
   LIBFB_C += $(newruntime)/libfb_file_dir_dos.o
   LIBFB_C += $(newruntime)/libfb_file_hconvpath_dos.o
@@ -1160,10 +1159,11 @@ ifeq ($(TARGET_OS),dos)
   LIBFB_C += $(newruntime)/libfb_time_settime_dos.o
   LIBFB_C += $(newruntime)/libfb_time_sleep_dos.o
   LIBFB_C += $(newruntime)/libfb_time_tmr_dos.o
+  LIBFB_S += $(newruntime)/libfb_drv_isr.o
   ifndef DISABLE_GFX
     LIBFBGFX_H += runtime/fb_gfx_dos.h
-    LIBFBGFX_H += runtime/vesa_dos.h
-    LIBFBGFX_H += runtime/vga_dos.h
+    LIBFBGFX_H += runtime/vesa.h
+    LIBFBGFX_H += runtime/vga.h
     LIBFBGFX_C += $(newruntime)/libfb_gfx_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_bios_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_modex_dos.o
@@ -1171,9 +1171,9 @@ ifeq ($(TARGET_OS),dos)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_vesa_lin_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_driver_vga_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_dos.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_mouse_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_core_dos.o
-    LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_dos.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_mouse_dos.o
+    LIBFBGFX_S += $(newruntime)/libfb_gfx_vesa_dos.o
   endif
 endif
 

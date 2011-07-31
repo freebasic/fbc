@@ -1,8 +1,8 @@
         .intel_syntax noprefix
         
-        /* This is the ISR handler. It has to be written in ASM because
-         * GCC doesn't know something like __declspec(naked) or __interrupt
-         * for x86 targets.
+        /* This is the ISR handler for DOS. It has to be written in ASM because
+         * DJGPP/GCC doesn't know something like __declspec(naked) or
+         * __interrupt for x86 targets.
          */
 
 #define FUNC(name)              .globl _##name ; .balign 8, 0x90 ; _##name :
