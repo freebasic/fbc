@@ -904,6 +904,8 @@ LIBFB_C += $(newruntime)/libfb_math_frac.o
 LIBFB_C += $(newruntime)/libfb_math_rnd.o
 LIBFB_C += $(newruntime)/libfb_math_sgn.o
 LIBFB_C += $(newruntime)/libfb_mem_copyclear.o
+LIBFB_C += $(newruntime)/libfb_oo_istypeof.o
+LIBFB_C += $(newruntime)/libfb_oo_object.o
 LIBFB_C += $(newruntime)/libfb_qb_file_open.o
 LIBFB_C += $(newruntime)/libfb_qb_inkey.o
 LIBFB_C += $(newruntime)/libfb_qb_sleep.o
@@ -1102,6 +1104,9 @@ ifndef DISABLE_GFX
   LIBFBGFX_C += $(newruntime)/libfb_gfx_lzw.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_lzw_enc.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_multikey.o
+  ifndef DISABLE_OPENGL
+    LIBFBGFX_C += $(newruntime)/libfb_gfx_opengl.o
+  endif
   LIBFBGFX_C += $(newruntime)/libfb_gfx_page.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_paint.o
   LIBFBGFX_C += $(newruntime)/libfb_gfx_palette.o
