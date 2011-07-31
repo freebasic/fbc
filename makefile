@@ -267,9 +267,11 @@ ifndef prefix
   endif
 endif
 
-# Don't build libfbmt for DOS
 ifeq ($(TARGET_OS),dos)
+  # Don't build libfbmt for DOS
   DISABLE_MT := YesPlease
+  # And also no OpenGL support
+  DISABLE_OPENGL := YesPlease
 endif
 
 # Enable the default target in the compiler, and set the default triplet,
