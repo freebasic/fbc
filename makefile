@@ -71,7 +71,6 @@ endif
 
 -include $(new)/config.mk
 
-
 #
 # Triplet parsing code
 #
@@ -118,7 +117,6 @@ extract-cpu = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
 triplet-cpu = $(call parse-cpu,$(call extract-cpu,$(subst -, ,$(1))),$(1))
 
-
 #
 # Host/target system determination
 #
@@ -132,50 +130,81 @@ else
   # No HOST given, so guess the build OS & CPU via uname or something else.
   # uname is available on every system we currently support, except on
   # Windows with MinGW but not MSYS, we try to detect that below.
-  uname_s := $(shell uname -s 2>&1 || echo unknown)
+  uname_s := $(shell uname -s)
   ifneq ($(findstring CYGWIN,$(uname_s)),)
     HOST_OS := cygwin
-  else ifeq ($(uname_s),Darwin)
+  endif
+  ifeq ($(uname_s),Darwin)
     HOST_OS := darwin
-  else ifeq ($(uname_s),FreeBSD)
+  endif
+  ifeq ($(uname_s),FreeBSD)
     HOST_OS := freebsd
-  else ifeq ($(uname_s),Linux)
+  endif
+  ifeq ($(uname_s),Linux)
     HOST_OS := linux
-  else ifneq ($(findstring MINGW,$(uname_s)),)
+  endif
+  ifneq ($(findstring MINGW,$(uname_s)),)
     HOST_OS := win32
-  else ifeq ($(uname_s),MS-DOS)
+  endif
+  ifeq ($(uname_s),MS-DOS)
     HOST_OS := dos
-  else ifeq ($(uname_s),NetBSD)
+  endif
+  ifeq ($(uname_s),NetBSD)
     HOST_OS := netbsd
-  else ifeq ($(uname_s),OpenBSD)
+  endif
+  ifeq ($(uname_s),OpenBSD)
     HOST_OS := openbsd
-  else ifneq ($(COMSPEC),)
-    # This check lets us support mingw32-make without MSYS.
-    # TODO: any better way to check this?
-    HOST_OS := win32
-  else
+  endif
+
+  ifndef HOST_OS
+    ifneq ($(COMSPEC),)
+      # This check lets us support mingw32-make without MSYS.
+      # TODO: any better way to check this?
+      HOST_OS := win32
+    endif
+  endif
+
+  ifndef HOST_OS
     $(error Sorry, the OS could not be identified automatically. Maybe the \
             makefile should be fixed. 'uname -s' returned: '$(uname_s)')
   endif
 
-  uname_m := $(shell uname -m 2>&1 || echo unknown)
+  uname_m := $(shell uname -m)
   ifeq ($(uname_m),i386)
     HOST_CPU = 386
-  else ifeq ($(uname_m),i486)
+  endif
+  ifeq ($(uname_m),i486)
     HOST_CPU = 486
-  else ifeq ($(uname_m),i586)
+  endif
+  ifeq ($(uname_m),i586)
     HOST_CPU = 586
-  else ifeq ($(uname_m),i686)
+  endif
+  ifeq ($(uname_m),i686)
     HOST_CPU = 686
-  else ifeq ($(uname_m),x86_64)
+  endif
+  ifeq ($(uname_m),x86_64)
     HOST_CPU = x86_64
-  else ifeq ($(uname_m),sparc)
+  endif
+  ifeq ($(uname_m),sparc)
     HOST_CPU = sparc
-  else ifeq ($(uname_m),sparc64)
+  endif
+  ifeq ($(uname_m),sparc64)
     HOST_CPU = sparc64
-  else ifeq ($(uname_m),powerpc64)
+  endif
+  ifeq ($(uname_m),powerpc64)
     HOST_CPU = powerpc64
-  else
+  endif
+
+  # For DJGPP, just build for i386.
+  # Also: a) DJGPP's uname -m just returns 'pc', and b) it doesn't seem to work
+  # from $(shell) at all, maybe it's an issue with the COMMAND.COM?
+  ifndef HOST_CPU
+    ifeq ($(HOST_OS),dos)
+      HOST_CPU := 386
+    endif
+  endif
+
+  ifndef HOST_CPU
     $(error Sorry, the CPU could not be identified automatically. Maybe the \
             makefile should be fixed. 'uname -m' returned: '$(uname -m)')
   endif
@@ -195,7 +224,6 @@ else
   TARGET_OS := $(HOST_OS)
   TARGET_CPU := $(HOST_CPU)
 endif
-
 
 #
 # System specific configuration
@@ -217,6 +245,8 @@ ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
+TARGET_CPPAS := $(TARGET_CC) -x assembler-with-cpp
+
 ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
 endif
@@ -228,10 +258,12 @@ endif
 ifndef prefix
   ifdef HOST
     prefix := .
-  else ifneq ($(filter dos win32,$(HOST_OS)),)
-    prefix := .
   else
-    prefix := /usr/local
+    ifneq ($(filter dos win32,$(HOST_OS)),)
+      prefix := .
+    else
+      prefix := /usr/local
+    endif
   endif
 endif
 
@@ -245,31 +277,40 @@ endif
 ifeq ($(TARGET_OS),cygwin)
   ENABLE_CYGWIN := YesPlease
   TRIPLET_CYGWIN:=$(TARGET)
-else ifeq ($(TARGET_OS),darwin)
+endif
+ifeq ($(TARGET_OS),darwin)
   ENABLE_DARWIN := YesPlease
   TRIPLET_DARWIN:=$(TARGET)
-else ifeq ($(TARGET_OS),dos)
+endif
+ifeq ($(TARGET_OS),dos)
   ENABLE_DOS := YesPlease
   TRIPLET_DOS:=$(TARGET)
-else ifeq ($(TARGET_OS),freebsd)
+endif
+ifeq ($(TARGET_OS),freebsd)
   ENABLE_FREEBSD := YesPlease
   TRIPLET_FREEBSD:=$(TARGET)
-else ifeq ($(TARGET_OS),linux)
+endif
+ifeq ($(TARGET_OS),linux)
   ENABLE_LINUX := YesPlease
   TRIPLET_LINUX:=$(TARGET)
-else ifeq ($(TARGET_OS),win32)
+endif
+ifeq ($(TARGET_OS),win32)
   ENABLE_WIN32 := YesPlease
   TRIPLET_WIN32:=$(TARGET)
-else ifeq ($(TARGET_OS),netbsd)
+endif
+ifeq ($(TARGET_OS),netbsd)
   ENABLE_NETBSD := YesPlease
   TRIPLET_NETBSD:=$(TARGET)
-else ifeq ($(TARGET_OS),openbsd)
+endif
+ifeq ($(TARGET_OS),openbsd)
   ENABLE_OPENBSD := YesPlease
   TRIPLET_OPENBSD:=$(TARGET)
-else ifeq ($(TARGET_OS),solaris)
+endif
+ifeq ($(TARGET_OS),solaris)
   ENABLE_SOLARIS := YesPlease
   TRIPLET_SOLARIS:=$(TARGET)
-else ifeq ($(TARGET_OS),xbox)
+endif
+ifeq ($(TARGET_OS),xbox)
   ENABLE_XBOX := YesPlease
   TRIPLET_XBOX:=$(TARGET)
 endif
@@ -322,7 +363,6 @@ newruntime := $(new)/runtime
 FBC_CONFIG := $(newcompiler)/config.bi
 LIBFB_CONFIG := $(newruntime)/config.h
 
-
 #
 # Compiler flags
 #
@@ -340,13 +380,17 @@ ifndef DISABLE_OBJINFO
   FBLFLAGS += -l bfd -l iberty
   ifeq ($(HOST_OS),cygwin)
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),dos)
+  endif
+  ifeq ($(HOST_OS),dos)
     FBLFLAGS += -l intl -l z
-  else ifeq ($(HOST_OS),freebsd)
+  endif
+  ifeq ($(HOST_OS),freebsd)
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),openbsd)
+  endif
+  ifeq ($(HOST_OS),openbsd)
     FBLFLAGS += -l intl
-  else ifeq ($(HOST_OS),win32)
+  endif
+  ifeq ($(HOST_OS),win32)
     FBLFLAGS += -l user32
   endif
 endif
@@ -360,7 +404,6 @@ ifeq ($(TARGET_OS),xbox)
   ALLCFLAGS += -I$(OPENXDK)/include
   ALLCFLAGS += -I$(OPENXDK)/include/SDL
 endif
-
 
 #
 # Sources
@@ -570,6 +613,13 @@ FBC_BAS += $(newcompiler)/symb-scope.o
 FBC_BAS += $(newcompiler)/symb-struct.o
 FBC_BAS += $(newcompiler)/symb-typedef.o
 FBC_BAS += $(newcompiler)/symb-var.o
+
+FBC_COBJINFO := 
+ifndef DISABLE_OBJINFO
+  ifndef ENABLE_FBBFD
+    FBC_COBJINFO := $(newcompiler)/c-objinfo.o
+  endif
+endif
 
 LIBFB_H := $(LIBFB_CONFIG)
 LIBFB_H += runtime/fb.h
@@ -1125,7 +1175,9 @@ ifeq ($(TARGET_OS),dos)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_core_dos.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_vesa_dos.o
   endif
-else ifeq ($(TARGET_OS),freebsd)
+endif
+
+ifeq ($(TARGET_OS),freebsd)
   LIBFB_C += $(newruntime)/libfb_hexit_freebsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_freebsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_freebsd.o
@@ -1137,7 +1189,9 @@ else ifeq ($(TARGET_OS),freebsd)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_freebsd.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_freebsd.o
   endif
-else ifeq ($(TARGET_OS),linux)
+endif
+
+ifeq ($(TARGET_OS),linux)
   LIBFB_H += runtime/fb_gfx_linux.h
   LIBFB_H += runtime/fb_linux.h
   LIBFB_C += $(newruntime)/libfb_hexit_linux.o
@@ -1155,7 +1209,9 @@ else ifeq ($(TARGET_OS),linux)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_linux.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_linux.o
   endif
-else ifeq ($(TARGET_OS),netbsd)
+endif
+
+ifeq ($(TARGET_OS),netbsd)
   LIBFB_C += $(newruntime)/libfb_hexit_netbsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_netbsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_netbsd.o
@@ -1163,7 +1219,9 @@ else ifeq ($(TARGET_OS),netbsd)
   LIBFB_C += $(newruntime)/libfb_sys_fmem_netbsd.o
   LIBFB_C += $(newruntime)/libfb_sys_getexename_netbsd.o
   LIBFB_C += $(newruntime)/libfb_sys_getexepath_netbsd.o
-else ifeq ($(TARGET_OS),openbsd)
+endif
+
+ifeq ($(TARGET_OS),openbsd)
   LIBFB_C += $(newruntime)/libfb_hexit_openbsd.o
   LIBFB_C += $(newruntime)/libfb_hinit_openbsd.o
   LIBFB_C += $(newruntime)/libfb_io_mouse_openbsd.o
@@ -1176,7 +1234,9 @@ else ifeq ($(TARGET_OS),openbsd)
     LIBFBGFX_C += $(newruntime)/libfb_gfx_joystick_openbsd.o
     LIBFBGFX_C += $(newruntime)/libfb_gfx_openbsd.o
   endif
-else ifeq ($(TARGET_OS),xbox)
+endif
+
+ifeq ($(TARGET_OS),xbox)
   LIBFB_H += runtime/fb_xbox.h
   LIBFB_C += $(newruntime)/libfb_dev_pipe_close_xbox.o
   LIBFB_C += $(newruntime)/libfb_dev_pipe_open_xbox.o
@@ -1291,7 +1351,9 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
       endif
     endif
   endif
-else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+endif
+
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   LIBFB_H += runtime/fb_unicode_win32.h
   LIBFB_H += runtime/fb_win32.h
   LIBFB_H += runtime/fbportio/fbportio.h
@@ -1401,7 +1463,6 @@ ifndef DISABLE_MT
   LIBFBMT_S := $(patsubst %.o,%.mt.o,$(LIBFB_S))
 endif
 
-
 #
 # Build rules
 #
@@ -1418,56 +1479,56 @@ endif
 # We don't want to use any of make's built-in suffixes/rules
 .SUFFIXES:
 
-
 .PHONY: all
 all: compiler runtime
 
-
 .PHONY: compiler
-compiler: $(FBC_NEW)
+compiler: $(newcompiler) $(newbin) $(FBC_NEW)
 
-$(FBC_NEW): $(FBC_BAS) | $(newbin)
-	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
+$(FBC_NEW): $(FBC_BAS) $(FBC_COBJINFO)
+	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $(FBC_BAS) $(FBC_COBJINFO) -x $@
 
-ifndef DISABLE_OBJINFO
-ifndef ENABLE_FBBFD
-$(FBC_NEW): $(newcompiler)/c-objinfo.o
-endif
-endif
-
-$(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI) | $(newcompiler)
+$(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
-$(newcompiler)/c-objinfo.o: compiler/c-objinfo.c | $(newcompiler)
+$(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
-
-$(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
+$(FBC_CONFIG): compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
   # The compiler expects the TARGET_* define for the default target.
   ifeq ($(TARGET_OS),cygwin)
 	@echo '#define TARGET_CYGWIN' >> $@
-  else ifeq ($(TARGET_OS),darwin)
+  endif
+  ifeq ($(TARGET_OS),darwin)
 	@echo '#define TARGET_DARWIN' >> $@
-  else ifeq ($(TARGET_OS),dos)
+  endif
+  ifeq ($(TARGET_OS),dos)
 	@echo '#define TARGET_DOS' >> $@
-  else ifeq ($(TARGET_OS),freebsd)
+  endif
+  ifeq ($(TARGET_OS),freebsd)
 	@echo '#define TARGET_FREEBSD' >> $@
-  else ifeq ($(TARGET_OS),linux)
+  endif
+  ifeq ($(TARGET_OS),linux)
 	@echo '#define TARGET_LINUX' >> $@
-  else ifeq ($(TARGET_OS),netbsd)
+  endif
+  ifeq ($(TARGET_OS),netbsd)
 	@echo '#define TARGET_NETBSD' >> $@
-  else ifeq ($(TARGET_OS),openbsd)
+  endif
+  ifeq ($(TARGET_OS),openbsd)
 	@echo '#define TARGET_OPENBSD' >> $@
-  else ifeq ($(TARGET_OS),win32)
+  endif
+  ifeq ($(TARGET_OS),win32)
 	@echo '#define TARGET_WIN32' >> $@
-  else ifeq ($(TARGET_OS),xbox)
+  endif
+  ifeq ($(TARGET_OS),xbox)
 	@echo '#define TARGET_XBOX' >> $@
   endif
   # CPU
   ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
 	@echo '#define TARGET_X86' >> $@
-  else ifeq ($(TARGET_CPU),x86_64)
+  endif
+  ifeq ($(TARGET_CPU),x86_64)
 	@echo '#define TARGET_X86_64' >> $@
   endif
   # The compiler expects ENABLE_* defines for all the targets that
@@ -1515,80 +1576,95 @@ $(FBC_CONFIG): compiler/config.bi.in | $(newcompiler)
 	@echo '#define FB_SUFFIX "$(SUFFIX)"' >> $@
 
 .PHONY: runtime
-runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
+runtime: $(newruntime) $(newlib) \
+         $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
 
-$(FBRT0_NEW): runtime/fbrt0.c $(LIBFB_H) | $(newlib)
+$(FBRT0_NEW): runtime/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_NEW): $(LIBFB_C) $(LIBFB_S) | $(newlib)
+$(LIBFB_NEW): $(LIBFB_C) $(LIBFB_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(LIBFBMT_NEW): $(LIBFBMT_C) $(LIBFBMT_S) | $(newlib)
+$(LIBFBMT_NEW): $(LIBFBMT_C) $(LIBFBMT_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(LIBFBGFX_NEW): $(LIBFBGFX_C) $(LIBFBGFX_S) | $(newlib)
+$(LIBFBGFX_NEW): $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H) | $(newruntime)
+$(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H) | $(newruntime)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+$(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H)
+	$(QUIET_CPPAS)$(TARGET_CPPAS) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H) | $(newruntime)
+$(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H) | $(newruntime)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+$(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H)
+	$(QUIET_CPPAS)$(TARGET_CPPAS) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H) | $(newruntime)
+$(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H) | $(newruntime)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+$(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
+	$(QUIET_CPPAS)$(TARGET_CPPAS) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
+$(LIBFB_CONFIG): runtime/config.h.in
 	$(QUIET_GEN)cp $< $@
   # The runtime expects the HOST_* defines for the system it's supposed to run on.
   # Note that we compile only one runtime: the one for the compiler's default
   # target.
   ifeq ($(TARGET_OS),cygwin)
 	@echo '#define HOST_CYGWIN' >> $@
-  else ifeq ($(TARGET_OS),darwin)
+  endif
+  ifeq ($(TARGET_OS),darwin)
 	@echo '#define HOST_DARWIN' >> $@
-  else ifeq ($(TARGET_OS),dos)
+  endif
+  ifeq ($(TARGET_OS),dos)
 	@echo '#define HOST_DOS' >> $@
-  else ifeq ($(TARGET_OS),freebsd)
+  endif
+  ifeq ($(TARGET_OS),freebsd)
 	@echo '#define HOST_FREEBSD' >> $@
-  else ifeq ($(TARGET_OS),linux)
+  endif
+  ifeq ($(TARGET_OS),linux)
 	@echo '#define HOST_LINUX' >> $@
-  else ifeq ($(TARGET_OS),win32)
+  endif
+  ifeq ($(TARGET_OS),win32)
 	@echo '#define HOST_MINGW' >> $@
-  else ifeq ($(TARGET_OS),netbsd)
+  endif
+  ifeq ($(TARGET_OS),netbsd)
 	@echo '#define HOST_NETBSD' >> $@
-  else ifeq ($(TARGET_OS),openbsd)
+  endif
+  ifeq ($(TARGET_OS),openbsd)
 	@echo '#define HOST_OPENBSD' >> $@
-  else ifeq ($(TARGET_OS),solaris)
+  endif
+  ifeq ($(TARGET_OS),solaris)
 	@echo '#define HOST_SOLARIS' >> $@
-  else ifeq ($(TARGET_OS),xbox)
+  endif
+  ifeq ($(TARGET_OS),xbox)
 	@echo '#define HOST_XBOX' >> $@
   endif
   # OS family
   ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
 	@echo '#define HOST_UNIX' >> $@
-  else ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  endif
+  ifneq ($(filter cygwin win32,$(TARGET_OS)),)
 	@echo '#define HOST_WIN32' >> $@
   endif
   # CPU
   ifneq ($(filter 386 486 586 686,$(TARGET_CPU)),)
 	@echo '#define HOST_X86' >> $@
-  else ifeq ($(TARGET_CPU),x86_64)
+  endif
+  ifeq ($(TARGET_CPU),x86_64)
 	@echo '#define HOST_X86_64' >> $@
-  else ifeq ($(TARGET_CPU),sparc)
+  endif
+  ifeq ($(TARGET_CPU),sparc)
 	@echo '#define HOST_SPARC' >> $@
-  else ifeq ($(TARGET_CPU),sparc64)
+  endif
+  ifeq ($(TARGET_CPU),sparc64)
 	@echo '#define HOST_SPARC64' >> $@
-  else ifeq ($(TARGET_CPU),powerpc64)
+  endif
+  ifeq ($(TARGET_CPU),powerpc64)
 	@echo '#define HOST_POWERPC64' >> $@
   endif
   # Configuration
@@ -1599,22 +1675,17 @@ $(LIBFB_CONFIG): runtime/config.h.in | $(newruntime)
 	@echo '#define DISABLE_X' >> $@
   endif
 
-
 .PHONY: install
 install: install-compiler install-runtime
 
 .PHONY: install-compiler
-install-compiler: $(FBC_NEW) | $(prefixbin)
-	cp $^ $|
+install-compiler: $(prefixbin) $(FBC_NEW)
+	cp $(FBC_NEW) $(prefixbin)
 
 .PHONY: install-runtime
-install-runtime: $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) | $(prefixlib)
-	cp $^ $|
-
-
-$(newbin) $(newcompiler) $(newlib) $(newruntime) $(prefixbin) $(prefixlib):
-	mkdir -p $@
-
+install-runtime: $(prefixlib) \
+                 $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
+	cp $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) $(prefixlib)
 
 .PHONY: uninstall
 uninstall: uninstall-compiler uninstall-runtime
@@ -1631,6 +1702,8 @@ ifndef ENABLE_STANDALONE
 	-rmdir $(prefixlib)
 endif
 
+$(newbin) $(newcompiler) $(newlib) $(newruntime) $(prefixbin) $(prefixlib):
+	mkdir -p $@
 
 .PHONY: clean
 clean: clean-compiler clean-runtime
@@ -1644,7 +1717,6 @@ clean-compiler:
 clean-runtime:
 	rm -f $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) $(LIBFB_CONFIG) $(newruntime)/*.o
 	-rmdir -p $(newruntime) $(newlib)
-
 
 .PHONY: help
 help:
