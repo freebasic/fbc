@@ -1468,6 +1468,25 @@ endif
 #
 # Build rules
 #
+# Note: We're linking/ar'ing in uglier ways than would normally be necessary,
+# in order to work around command line length limits, especially with DJGPP.
+#
+# This is needed for the runtime, because it consists of tons of objects, and
+# with file names like new/runtime/libfb_foo_bar.o, the ar command line gets
+# *really* long (14.5k chars), causing it (or *something*) to fail.
+# (Windows XP cmd.exe -> DJGPP make.exe -> COMMAND.COM? -> DJGPP ar.exe)
+#
+# To get shorter file names we cd into new/runtime and run the ar command from
+# there. That reduces the line to 9.3k chars.
+#
+# The "cd ../.."s are there because (for some reason I haven't figured out)
+# cds in recipes change the curdir of the whole DJGPP make process. Normally
+# each line in a recipe should be executed in its own shell, but in the DJGPP
+# case something must be wrong, maybe the old 3.79.1 make is too buggish.
+#
+
+# We don't want to use any of make's built-in suffixes/rules
+.SUFFIXES:
 
 ifndef V
   QUIET_GEN     = @echo "GEN $@";
@@ -1478,9 +1497,6 @@ ifndef V
   QUIET_AR      = @echo "AR $@";
 endif
 
-# We don't want to use any of make's built-in suffixes/rules
-.SUFFIXES:
-
 .PHONY: all
 all: compiler runtime
 
@@ -1488,7 +1504,8 @@ all: compiler runtime
 compiler: $(newcompiler) $(newbin) $(FBC_NEW)
 
 $(FBC_NEW): $(FBC_BAS) $(FBC_COBJINFO)
-	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $(FBC_BAS) $(FBC_COBJINFO) -x $@
+	$(QUIET_LINK)cd $(newcompiler); $(HOST_FBC) $(FBLFLAGS) $(patsubst $(newcompiler)/%,%,$^) -x ../../$@; cd ../..
+#	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
@@ -1585,13 +1602,16 @@ $(FBRT0_NEW): runtime/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_NEW): $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
+#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(LIBFBMT_NEW): $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
+#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(LIBFBGFX_NEW): $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
+#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
