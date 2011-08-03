@@ -61,4 +61,3 @@ BSAVE "hello.bmp", 0
 	- ##[[KeyPgPalette Palette]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
-   

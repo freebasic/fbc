@@ -23,7 +23,7 @@ Searches for and returns information about an item in the filesystem, performs a
 	##//out_attrib//##
 		Reference to a bit mask that's assigned each of the found item's attributes, if any.
 	##//p_out_attrib//##
-		The address of a bit mask that's assigned each of the found item's attributes, if any.
+		Pointer to a bit mask that's assigned each of the found item's attributes, if any.
 
 {{fbdoc item="ret"}}
 	If no item matching the name ##//item_spec//## or the attribute mask ##//attrib_mask//## was found, then ##//out_attrib//## (or ##*//p_out_attrib//##) is assigned to zero and an empty string is returned. Otherwise, ##//out_attrib//## (or ##*//p_out_attrib//##) is assigned the attribute mask of the item, and the item name, without a path, is returned.
@@ -40,9 +40,7 @@ Searches for and returns information about an item in the filesystem, performs a
 	The fourth procedure behaves the same as ##**Dir**( "####", , *//p_out_attrib// )##.
 
 **File Attributes:**
-	Files and directories and other items can be said to possess so-called file attributes; metadata that describes the item. The meaning of this metadata varies with operating system and the file system it uses. The following macros are used as bit-flags with ##//attrib_mask//##, ##//out_attrib//## and ##*//p_out_attrib//##. Their values can be combined to form a mask using ##[[KeyPgOpOr Operator Or]]##. To access them, ##[[KeyPgInclude Include]] "dir.bi"##.
-
-	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##. An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##. Further, if ##//attrib_mask// [[KeyPgOpAnd And]] **fbArchive**## is zero, then ##//attrib_mask//## is assigned to ##//attrib_mask// [[KeyPgOpOr Or]] **fbDirectory**## before checking the file for matching attributes.
+	Files and directories and other items can be said to possess so-called file attributes; metadata that describes the item. The meaning of this metadata varies with operating system and the file system it uses. The following macros are used as bit-flags with ##//attrib_mask//##, ##//out_attrib//## and ##*//p_out_attrib//##. Their values can be combined to form a mask using ##[[KeyPgOpOr Operator Or]]##, or individual values can be checked using ##[[KeyPgOpAnd Operator And]]##. To access them, ##[[KeyPgInclude Include]] "dir.bi"##.
 
 	## # define fbReadOnly &h01 ##
 		//The item cannot be written to or deleted.//
@@ -70,6 +68,9 @@ Searches for and returns information about an item in the filesystem, performs a
 
 	## # define fbNormal (fbReadOnly or fbArchive) ##
 		//The item is a file or directory.//
+
+	Items found having no attributes are always matched, regardless of the value of ##//attrib_mask//##. An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.
+	If ##//attrib_mask//## does not include ##**fbArchive**##, then ##**Dir**## may widen the check to include ##**fbDirectory**##, but it is recommended to add ##**fbDirectory**## explicitly, if that is the behaviour sought.  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
@@ -117,17 +118,17 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 
 	    Print fname,
 
-	    If out_attr And fbDirectory Then
+	    If (out_attr And fbDirectory) <> 0 Then
 	        Print "- directory";
 	        dircount += 1
 	    Else
 	        Print "- file";
 	        filecount += 1
 	    End If
-	    If out_attr And fbReadOnly Then Print ", read-only";
-	    If out_attr And fbHidden Then Print ", hidden";
-	    If out_attr And fbSystem Then Print ", system";
-	    If out_attr And fbArchive Then Print ", archived";
+	    If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
+	    If (out_attr And fbHidden) <> 0 Then Print ", hidden";
+	    If (out_attr And fbSystem) <> 0 Then Print ", system";
+	    If (out_attr And fbArchive) <> 0 Then Print ", archived";
 	    Print
 
 	End If

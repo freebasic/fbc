@@ -25,8 +25,9 @@ Set target architecture
 		//pentium4-sse3//
 		//native//
 
+	Note: This option only affects newly generated code, not already-compiled code such as the ""FreeBASIC"" runtime libraries.
+
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
-   

@@ -104,7 +104,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future. At the moment (V0.18.5) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented . For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
+	Some OOP functionality is available to the FB users since version 0.17. Complete OOP functionality is expected for the future (0.23). At the moment (version 0.22) there are methods inside UDT and operator overloading but inheritance and polymorphism are not yet implemented. For more information see: [[http://www.freebasic.net/wiki/wikka.php?wakka=TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]] and [[http://www.freebasic.net/forum/viewtopic.php?t=17571 Forum t=17571 "New fbc branch ('inheritance') on sourceforge (fbc SVN)"]].
 
 {{anchor name="item0|Back to top"}}
 

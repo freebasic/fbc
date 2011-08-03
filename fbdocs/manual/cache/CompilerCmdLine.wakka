@@ -112,9 +112,9 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
 		Emit the preprocessed input file only, do not compile
 	=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
-		Write asm only, do not compile or link
+		Compile into asm file(s) only, do not assemble or link
 	=={{fbdoc item="keyword" value="CompilerOptc|-c"}}==
-		Compile only, do not link
+		Compile and assemble source file only, do not link
 	=={{fbdoc item="keyword" value="CompilerOptrupp|-R"}}==
 		Do not delete the asm file(s)
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==

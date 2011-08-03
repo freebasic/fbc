@@ -2,9 +2,9 @@
 Stream I/O function to terminate access to a device
 
 {{fbdoc item="syntax"}}##
-	//result// = **Close** [[#]//filenum// ] [, [#]//filenum// ...]
-	            // or //
 	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
+	            // or //
+	//result// = **Close**( [#//filenum//] )
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
@@ -53,4 +53,3 @@ End
 	- ##[[KeyPgFreefile Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}
-   

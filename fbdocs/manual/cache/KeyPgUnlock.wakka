@@ -29,9 +29,9 @@ Removes a previous access restriction (lock) on a file
 	- Currently, FB cannot implicitly unlock the entire file
 	- In ##[[KeyPgRandom Random]]## mode, FB cannot unlock a range of records
 
-
 {{fbdoc item="see"}}
 	- ##[[KeyPgLock Lock]]##
 	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgScreenUnlock ScreenUnlock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

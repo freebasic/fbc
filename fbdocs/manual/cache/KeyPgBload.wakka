@@ -23,7 +23,7 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a com
 
 	##**Bload**## can load 3 different types of files:
 		- Old QB-like data files, saved with ##BSAVE## from QB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFD##, up to 64 ""KiB"" in size
-		- New FB-like data files, saved with ##[[KeyPgBsave Bsave]]## from FB code, containing "raw" data preceded by a 7-byte header, beginning with ##&HFE##. There is no 64 ""KiB"" limit with this format
+		- New FB-like data files, saved with ##[[KeyPgBsave Bsave]]## from FB code, containing "raw" data preceded by a 5-byte header, beginning with ##&HFE##. There is no 64 ""KiB"" limit with this format
 		- BMP image files, supports a subset of valid ("Windows") .BMP files, beginning with ##"BM"##, saved from FB code with ##[[KeyPgBsave Bsave]]##, or created / saved in a compatible format using a graphics editor / converter.
 	QB-like data files and BMP files are converted to an FB-compatible image format when opened.
 
@@ -46,7 +46,7 @@ Loads arbitrary data from a file created with ##[[KeyPgBsave Bsave]]##, or a com
 		- The file doesn't have any of the supported types 
 		- A general read error occurred.
 
-~&//Note: When you use ##**BLoad**## to load a BMP file into an image buffer, the original dimensions of the image are not changed.  If you want the image buffer to have the same dimensions as the BMP file, you have to find out the dimensions beforehand, and create an image of the right size yourself.  See below for an example of how to do this.//
+~&//Note: When you use ##**BLoad**## to load a BMP file into an image buffer, the original dimensions of the image are not changed.  If you want the image buffer to have the same dimensions as the BMP file, you have to find out the dimensions beforehand, and create an image of the right size yourself.  See {{anchor name="bmp_load|the example below"}} for an example of how to do this.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/bload.bas"}}%%(freebasic)
@@ -67,13 +67,14 @@ imagedestroy( myImage )
 sleep
 %%
 
+{{anchor name="bmp_load"}}
 {{fbdoc item="filename" value="examples/manual/gfx/bload3.bas"}}%%(freebasic)
 '' A function that creates an image buffer with the same 
 '' dimensions as a BMP image, and loads a file into it.
 
 const NULL as any ptr = 0
 
-function bmp_load( byref filename as string ) as any ptr
+function bmp_load( byref filename as const string ) as any ptr
 
 	dim as integer filenum, bmpwidth, bmpheight
 	dim as any ptr img

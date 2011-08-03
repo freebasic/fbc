@@ -9,3 +9,4 @@ These operators return references to members of objects, given an object or its 
 	Returns a reference to a member from a pointer.
 >>::c::
 {{fbdoc item="back" value="CatPgOperators|Operators"}}
+   

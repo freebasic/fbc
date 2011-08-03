@@ -176,4 +176,3 @@ end function
 	- [[GfxInternalFormats Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
-   

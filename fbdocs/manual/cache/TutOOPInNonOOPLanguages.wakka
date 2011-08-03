@@ -109,4 +109,3 @@ sub StringB_Append(byref Me as StringB, byref other as StringB)
   StringB_Append Me, StringB_ToString(other)
 end sub
 %%
-   

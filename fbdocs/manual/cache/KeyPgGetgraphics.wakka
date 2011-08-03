@@ -42,7 +42,54 @@ Gets a copy of a portion of the current work page or an image buffer
 		##size = 4 + (w * h * bpp)##
 
 {{fbdoc item="ex"}}
-	For an example see ##[[KeyPgPutgraphics Put (Graphics)]]##.
+	{{fbdoc item="filename" value="examples/manual/gfx/get.bas"}}%%(freebasic)
+#include once "fbgfx.bi"
+
+'' Setup a 400x300 32bit screen
+screenres 400, 300, 32
+
+'' First draw funny stuff...
+line (10,10)-(140,30), rgb(255,255,0), bf
+draw string (20, 20), "Hello there!", rgb(255,0,0)
+
+'' Now capture a 150x50 block from the top-left of the screen into an image
+'' buffer with GET...
+dim as fb.Image ptr image = imagecreate(150, 50)
+get (1,1)-(150,50), image
+
+'' And duplicate it all over the place!
+put (1,50), image
+put (1,100), image
+put (1,150), image
+put (1,200), image
+put (1,250), image
+put (150,1), image
+put (150,50), image
+put (150,100), image
+put (150,150), image
+put (150,200), image
+put (150,250), image
+
+'' And a frame around a whole screen..
+line (1,1)-(400-1,300-1), rgb(255,255,0), b
+
+'' Now get the whole screen...
+dim as fb.Image ptr big = imagecreate(400, 300)
+get (1,1)-(400-1,300-1), big
+
+'' And display that "screenshot" as if it was scrolling by...
+dim as integer x = -350
+while ((inkey() = "") and (x < 350))
+	screenlock
+		cls
+		put (x,1), big
+	screenunlock
+
+	sleep 100, 1
+
+	x += 10
+wend
+%%
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPutgraphics Put (Graphics)]]##

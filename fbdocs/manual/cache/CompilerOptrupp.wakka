@@ -5,7 +5,7 @@ Do not delete the asm file(s)
 	**-R**
 ##
 {{fbdoc item="desc"}}
-	The ##-R## compiler option causes the asm file(s) that are generated during the compile process to not be deleted. Preprocessor macros are expanded in these files.
+	The ##-R## compiler option causes the asm file(s) that are generated during the compile process to not be deleted. Preprocessor macros are expanded in these files. Note that in case of [[CompilerOptgen -gen gcc]] ##*.c## files are generated, instead of the normal ##*.asm## files.
 
 {{fbdoc item="see"}}
 	- [[CompilerOptcupp Compiler Option: -C]]
