@@ -57,6 +57,16 @@
 #      export PATH=$PATH:/usr/local/openxdk/bin
 #  - Build for or enable the "i386-pc-xbox" target.
 #
+# Rough overview of what this makefile does:
+#  - #include config.mk and new/config.mk,
+#  - Guess the OS/arch types, or parse the HOST/TARGET triplets to find out
+#  - Set HOST_FBC, TARGET_CC, prefix, EXEEXT, etc. based on that
+#  - Figure out the directory layout (normal vs. standalone), same for
+#    file names/locations of fbc/libfb.a, once in new/ and once in $prefix/.
+#  - Set FBCFLAGS, FBLFLAGS and ALLCFLAGS
+#  - Select compiler/runtime sources based on host/target systems
+#  - Perform build/install rules
+#
 
 FBC := fbc
 CC := gcc
@@ -190,7 +200,7 @@ else
 # instead of mkdir -p or rmdir -p, \ instead of / path separators,
 # del instead of rm -f and trim down command line even more,
 # because anything that needs to go through cmd.exe is limited to 8k chars.
-# Note that unless an recipe uses cmd.exe shell syntax like ';' or redirection,
+# Note that unless a recipe uses cmd.exe shell syntax like ';' or redirection,
 # the limit doesn't apply (seemed like it during testing anyways).
 
     ifndef HOST_OS
@@ -243,7 +253,7 @@ else
 endif
 
 ifdef TARGET
-  # TARGET given, so parse it.
+  # TARGET given, so parse it
   TARGET_PREFIX := $(TARGET)-
   ifndef TARGET_OS
     TARGET_OS := $(call triplet-os,$(TARGET))
@@ -252,7 +262,7 @@ ifdef TARGET
     TARGET_ARCH := $(call triplet-arch,$(TARGET))
   endif
 else
-  # No TARGET given, so set the same values/defines as for HOST
+  # No TARGET given, so use the same values as for HOST
   ifdef HOST
     TARGET := $(HOST)
     TARGET_PREFIX := $(HOST_PREFIX)
@@ -366,32 +376,46 @@ ifndef new
 endif
 
 ifdef ENABLE_STANDALONE
-  newbin := $(new)
-  newlib := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
-  prefixbin := $(prefix)
-  prefixlib := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
+  newbin     := $(new)
+  newinclude := $(new)/$(TARGET_PREFIX)include$(SUFFIX)
+  newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
+  prefixbin     := $(prefix)
+  prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
+  prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
-  newbin := $(new)/bin
-  newlib := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  prefixbin := $(prefix)/bin
-  prefixlib := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  newbin     := $(new)/bin
+  newinclude := $(new)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  newlib     := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  prefixbin     := $(prefix)/bin
+  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
 endif
 
-FBC_NEW   := $(newbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
-FBRT0_NEW := $(newlib)/fbrt0.o
-LIBFB_NEW := $(newlib)/libfb.a
+NEW_FBC := $(newbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+NEW_HEADERS := $(newinclude)/datetime.bi
+NEW_HEADERS += $(newinclude)/dir.bi
+NEW_HEADERS += $(newinclude)/fbgfx.bi
+NEW_HEADERS += $(newinclude)/file.bi
+NEW_HEADERS += $(newinclude)/string.bi
+NEW_HEADERS += $(newinclude)/utf_conv.bi
+NEW_HEADERS += $(newinclude)/vbcompat.bi
+NEW_FBRT0 := $(newlib)/fbrt0.o
+NEW_LIBFB := $(newlib)/libfb.a
+ifndef DISABLE_MT
+  NEW_LIBFBMT := $(newlib)/libfbmt.a
+endif
+ifndef DISABLE_GFX
+  NEW_LIBFBGFX := $(newlib)/libfbgfx.a
+endif
 
-FBC_PREFIX   := $(prefixbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+FBC_PREFIX := $(prefixbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+HEADERS_PREFIX := $(patsubst $(newinclude)/,$(prefixinclude)/,$(NEW_HEADERS))
 FBRT0_PREFIX := $(prefixlib)/fbrt0.o
 LIBFB_PREFIX := $(prefixlib)/libfb.a
-
 ifndef DISABLE_MT
-  LIBFBMT_NEW := $(newlib)/libfbmt.a
   LIBFBMT_PREFIX := $(prefixlib)/libfbmt.a
 endif
-
 ifndef DISABLE_GFX
-  LIBFBGFX_NEW := $(newlib)/libfbgfx.a
   LIBFBGFX_PREFIX := $(prefixlib)/libfbgfx.a
 endif
 
@@ -1529,6 +1553,7 @@ endif
 .SUFFIXES:
 
 ifndef V
+  QUIET_CP    = @echo "CP $@";
   QUIET_GEN   = @echo "GEN $@";
   QUIET_FBC   = @echo "FBC $@";
   QUIET_LINK  = @echo "LINK $@";
@@ -1541,9 +1566,9 @@ endif
 all: compiler runtime
 
 .PHONY: compiler
-compiler: $(newcompiler) $(newbin) $(FBC_NEW)
+compiler: $(newcompiler) $(newbin) $(NEW_FBC)
 
-$(FBC_NEW): $(FBC_BAS) $(FBC_COBJINFO)
+$(NEW_FBC): $(FBC_BAS) $(FBC_COBJINFO)
 	$(QUIET_LINK)cd $(newcompiler); $(HOST_FBC) $(FBLFLAGS) $(patsubst $(newcompiler)/%,%,$^) -x ../../$@; cd ../..
 #	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
 
@@ -1635,21 +1660,25 @@ $(FBC_CONFIG): compiler/config.bi.in
 	@echo '#define FB_SUFFIX "$(SUFFIX)"' >> $@
 
 .PHONY: runtime
-runtime: $(newruntime) $(newlib) \
-         $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
+runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
 
-$(FBRT0_NEW): runtime/fbrt0.c $(LIBFB_H)
+# Copy the headers into new/ too; that's only done to allow the new compiler
+# to be tested from the build directory.
+$(NEW_HEADERS): $(newinclude)/%.bi: include/%.bi
+	$(QUIET_CP)cp $< $@
+
+$(NEW_FBRT0): runtime/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_NEW): $(LIBFB_C) $(LIBFB_S)
+$(NEW_LIBFB): $(LIBFB_C) $(LIBFB_S)
 	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
 #	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(LIBFBMT_NEW): $(LIBFBMT_C) $(LIBFBMT_S)
+$(NEW_LIBFBMT): $(LIBFBMT_C) $(LIBFBMT_S)
 	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
 #	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(LIBFBGFX_NEW): $(LIBFBGFX_C) $(LIBFBGFX_S)
+$(NEW_LIBFBGFX): $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
 #	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
@@ -1741,13 +1770,12 @@ $(LIBFB_CONFIG): runtime/config.h.in
 install: install-compiler install-runtime
 
 .PHONY: install-compiler
-install-compiler: $(prefixbin) $(FBC_NEW)
-	cp $(FBC_NEW) $(prefixbin)
+install-compiler: $(prefixbin) $(NEW_FBC)
+	cp $(NEW_FBC) $(prefixbin)
 
 .PHONY: install-runtime
-install-runtime: $(prefixlib) \
-                 $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW)
-	cp $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) $(prefixlib)
+install-runtime: $(prefixlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
+	cp $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(prefixlib)
 
 .PHONY: uninstall
 uninstall: uninstall-compiler uninstall-runtime
@@ -1758,13 +1786,11 @@ uninstall-compiler:
 
 .PHONY: uninstall-runtime
 uninstall-runtime:
-	rm -f $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX)
-# Remove the lib/freebasic/ dir, unless we're standalone and it's just lib/
-ifndef ENABLE_STANDALONE
+	rm -f $(HEADERS_PREFIX) $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX)
+	-rmdir $(prefixinclude)
 	-rmdir $(prefixlib)
-endif
 
-$(newbin) $(newcompiler) $(newlib) $(newruntime) $(prefixbin) $(prefixlib):
+$(newbin) $(newcompiler) $(newinclude) $(newlib) $(newruntime) $(prefixbin) $(prefixinclude) $(prefixlib):
 	mkdir -p $@
 
 .PHONY: clean
@@ -1772,13 +1798,13 @@ clean: clean-compiler clean-runtime
 
 .PHONY: clean-compiler
 clean-compiler:
-	rm -f $(FBC_NEW) $(FBC_CONFIG) $(newcompiler)/*.o
+	rm -f $(NEW_FBC) $(FBC_CONFIG) $(newcompiler)/*.o
 	-rmdir -p $(newcompiler) $(newbin)
 
 .PHONY: clean-runtime
 clean-runtime:
-	rm -f $(FBRT0_NEW) $(LIBFB_NEW) $(LIBFBMT_NEW) $(LIBFBGFX_NEW) $(LIBFB_CONFIG) $(newruntime)/*.o
-	-rmdir -p $(newruntime) $(newlib)
+	rm -f $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(LIBFB_CONFIG) $(newruntime)/*.o
+	-rmdir -p $(newinclude) $(newruntime) $(newlib)
 
 .PHONY: help
 help:
