@@ -30,6 +30,6 @@ end function
 dim methodPointer as function(byref as MyFavoriteType, byval as integer) as integer
 methodPointer = ProcPtr(MyFavoriteType.myFavoriteMethod)
 
-dim as MyFavoriteType object
+dim as MyFavoriteType obj
 
-print methodPointer(object, 69) '' prints 489
+print methodPointer(obj, 69) '' prints 489
