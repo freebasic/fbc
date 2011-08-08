@@ -665,7 +665,8 @@ private function hDoPointerArith _
 	( _
 		byval op as integer, _
 		byval p as ASTNODE ptr, _
-		byval e as ASTNODE ptr _
+		byval e as ASTNODE ptr, _
+		byval swapped as integer = FALSE _
 	) as ASTNODE ptr
 
     dim as integer edtype = any
@@ -732,6 +733,11 @@ private function hDoPointerArith _
     '' any op but +|-?
     select case op
     case AST_OP_ADD, AST_OP_SUB
+
+		if( (op = AST_OP_SUB) andalso swapped ) then
+			exit function
+		end if
+
     	'' multiple by length
 		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
@@ -943,7 +949,7 @@ function astNewBOP _
     elseif( typeIsPtr( rdtype ) ) then
 		'' do arithmetics?
 		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
-			return hDoPointerArith( op, r, l )
+			return hDoPointerArith( op, r, l, TRUE )
 		else
     		if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
     			exit function
