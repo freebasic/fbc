@@ -310,7 +310,8 @@ end type
 		@"Selected option requires an SSE FPU mode", _
 		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
 		@"Unsupported statement in -gen gcc mode", _
-		@"Too many labels" _
+		@"Too many labels", _
+		@"Expected '#ENDIF'" _
 	}
 
 

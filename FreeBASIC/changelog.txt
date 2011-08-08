@@ -2,6 +2,7 @@ Version 0.24.0:
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
+- FBC should give an error if EOF reached while parsing code inside an #IF block
 
 
 Version 0.23.0:

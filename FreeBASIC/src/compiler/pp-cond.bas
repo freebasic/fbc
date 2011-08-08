@@ -313,7 +313,7 @@ private function ppSkip( ) as integer
         	end select
 
        	case FB_TK_EOF
-        	if( errReport( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_EXPECTEDPPENDIF ) = FALSE ) then
         		pp.skipping = FALSE
         		exit function
         	else

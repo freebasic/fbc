@@ -27,6 +27,7 @@
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
+#include once "inc\pp.bi"
 
 declare sub	parserCompoundStmtInit ( )
 
@@ -106,6 +107,8 @@ end sub
 ''
 function cProgram( ) as integer
 
+	dim as integer startlevel = pp.level
+
     do
     	if( cLine( ) = FALSE ) then
     		exit do
@@ -115,7 +118,13 @@ function cProgram( ) as integer
     if( errGetCount( ) = 0 ) then
     	'' EOF?
     	if( lexGetToken( ) = FB_TK_EOF ) then
+
+			if( pp.level <> startlevel ) then '' inside #IF block?
+				errReport( FB_ERRMSG_EXPECTEDPPENDIF )
+			end if
+
     		lexSkipToken( )
+
     	end if
 
     	'' only check compound stmts if not parsing an include file
