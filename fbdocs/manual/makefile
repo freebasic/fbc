@@ -3,7 +3,7 @@ FBDOC := ../fbdoc/fbdoc
 MAKEFBHELP := ../makefbhelp/makefbhelp
 
 # Nice names for the resulting .zip's and the important files
-FB_VERSION  = 0.22.0
+FB_VERSION  = 0.23.0
 TITLE       = FB-manual-$(FB_VERSION)
 CHM         = $(TITLE).chm
 CHMZIP      = $(TITLE)-chm.zip
