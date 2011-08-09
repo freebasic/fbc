@@ -1,12 +1,16 @@
 /* The makefile will append some configuration #defines and then #include this
    from the gcc command line into all files. */
 
-/* Causes fopen/fseeko/... to be mapped to fopen64/fseeko64/...,
+/* For Unix: This causes fopen/fseeko/... to be mapped to fopen64/fseeko64/...,
    with glibc at least (e.g. MinGW does not recognize this) */
 #define _FILE_OFFSET_BITS 64
 
-#ifdef HOST_MINGW
-	/* Don't include liboldname; this means we'll use the native Windows
-	   _mkdir() & co. instead of the wrapper mkdir(). */
-	#define _NO_OLDNAMES 1
-#endif
+/* For MinGW: This #define causes some MinGW functions (including those from
+   libmoldname) to be unavailable, effectively forcing the runtime to be coded
+   using just msvcrt (or mostly anyways).
+   For example, the native msvcrt provides _mkdir(), while mkdir() is an
+   "oldname" wrapper around _mkdir() implemented by MinGW to provide some of
+   the more Unixy functions.
+   Technically we want this #define for MinGW only, but if it doesn't get in
+   the way elsewhere, then it may aswell always be defined. */
+#define _NO_OLDNAMES 1
