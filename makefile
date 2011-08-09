@@ -173,35 +173,28 @@ else
       HOST_OS := openbsd
     endif
 
-#    # No output from uname? Maybe it's DJGPP without sh etc., or MinGW without
-#    # MSYS. So, check COMSPEC. That's probably not the best thing to do,
-#    # but it lets us do builds without requiring MSYS to be installed, which
-#    # is nice. While at it we also assume that we must use DOS-style commands,
-#    # instead of Unixy ones.
-#    # As far as the HOST_ARCH is concerned, for DOS we'll always default to
-#    # i386 anyways, and for Windows, if uname failed above, then we won't
-#    # bother trying uname -m below either, so default to something useful.
-#    ifndef uname
-#      comspec := $(shell echo %COMSPEC%)
-#      ifneq ($(findstring COMMAND.COM,$(comspec)),)
-#        HOST_OS := dos
-#        ENABLE_DOSCMD := YesPlease
-#      endif
-#      ifneq ($(findstring cmd.exe,$(comspec)),)
-#        HOST_OS := win32
-#        ENABLE_DOSCMD := YesPlease
-#        ifndef HOST_ARCH
-#          HOST_ARCH := 486
-#        endif
-#      endif
-#    endif
-#
-# TODO: In case of ENABLE_DOSCMD, we'd have to use normal mkdir/rmdir
-# instead of mkdir -p or rmdir -p, \ instead of / path separators,
-# del instead of rm -f and trim down command line even more,
-# because anything that needs to go through cmd.exe is limited to 8k chars.
-# Note that unless a recipe uses cmd.exe shell syntax like ';' or redirection,
-# the limit doesn't apply (seemed like it during testing anyways).
+    # No output from uname? Maybe it's DJGPP without sh etc., or MinGW without
+    # MSYS. So, check COMSPEC. That's probably not the best thing to do,
+    # but it lets us do builds without requiring MSYS to be installed, which
+    # is nice. While at it we also assume that we must use DOS-style commands,
+    # instead of Unixy ones.
+    # As far as the HOST_ARCH is concerned, for DOS we'll always default to
+    # i386 anyways, and for Windows, if uname failed above, then we prevent
+    # the uname -m call below aswell, by defaulting to something useful.
+    ifndef uname
+      comspec := $(shell echo %COMSPEC%)
+      ifneq ($(findstring COMMAND.COM,$(comspec)),)
+        HOST_OS := dos
+        ENABLE_DOSCMD := YesPlease
+      endif
+      ifneq ($(findstring cmd.exe,$(comspec)),)
+        HOST_OS := win32
+        ENABLE_DOSCMD := YesPlease
+        ifndef HOST_ARCH
+          HOST_ARCH := 486
+        endif
+      endif
+    endif
 
     ifndef HOST_OS
       $(error Sorry, the OS could not be identified. Maybe the makefile \
