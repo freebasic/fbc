@@ -1,4 +1,4 @@
-/* Automatically created by makedata, to be used by libfb_gfx_data.c */
+/* Automatically created by makedata, to be used by gfx_data.c */
 /* Compressed internal font/palette data for FB graphics */
 
 #define DATA_FONT_8 0x00000000

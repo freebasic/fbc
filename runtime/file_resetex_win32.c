@@ -17,7 +17,7 @@ FBCALL void fb_FileResetEx ( int streamno )
 
 		FB_LOCK();
 
-		/* in libfb_io_gethnd.c */
+		/* in io_gethnd.c */
 		fb_hConsoleResetHandles();
 
 		if( streamno == 0 )

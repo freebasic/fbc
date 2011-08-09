@@ -37,7 +37,7 @@ static void fb_dos_restore_video_mode(void);
 static __dpmi_regs fb_dos_mouse_regs;
 static __dpmi_raddr fb_dos_mouse_isr_rmcb;
 
-/* layout from libfb_gfx_mouse.s */
+/* layout from gfx_mouse.s */
 
 extern void fb_dos_mouse_isr_start(void);
 extern short fb_dos_mouse_x;
@@ -47,28 +47,28 @@ extern char fb_dos_mouse_buttons;
 extern void fb_dos_mouse_isr(void);
 extern void fb_dos_mouse_isr_end(void);
 
-/* from libfb_gfx_softcursor.c */
+/* from gfx_softcursor.c */
 
 extern char fb_hSoftCursor_data_start;
 extern char fb_hSoftCursor_data_end;
 extern void fb_hSoftCursor_code_start(void);
 extern void fb_hSoftCursor_code_end(void);
 
-/* from libfb_gfx_blitter.c */
+/* from gfx_blitter.c */
 extern void fb_hBlit_code_start(void);
 extern void fb_hBlit_code_end(void);
 
-/* from libfb_gfx_blitter_mmx.s */
+/* from gfx_blitter_mmx.s */
 extern char fb_hBlitMMX_data_start;
 extern char fb_hBlitMMX_data_end;
 extern void fb_hBlitMMX_code_start(void);
 extern void fb_hBlitMMX_code_end(void);
 
-/* from libfb_gfx_mmx.s */
+/* from gfx_mmx.s */
 extern void fb_MMX_code_start(void);
 extern void fb_MMX_code_end(void);
 
-/* from libfb_gfx_core.c */
+/* from gfx_core.c */
 void fb_hPostEvent_code_start(void);
 void fb_hPostEvent_code_end(void);
 

@@ -268,7 +268,7 @@ end sub
 
     readInAllDataFiles()
 
-    emit("/* Automatically created by makedata, to be used by libfb_gfx_data.c */" + _
+    emit("/* Automatically created by makedata, to be used by gfx_data.c */" + _
          !"\n/* Compressed internal font/palette data for FB graphics */\n\n")
 
     emitEntryDecls()

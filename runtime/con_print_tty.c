@@ -11,4 +11,4 @@
 #define FB_TCHAR_GET_CHAR_SIZE(p)       1
 #define _TC(c)                          c
 
-#include "libfb_con_print_tty_uni.h"
+#include "con_print_tty_uni.h"

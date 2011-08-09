@@ -122,7 +122,7 @@ void (*__fb_dos_multikey_hook)(int scancode, int flags);
 #define KB_NUMLOCK  0x00000040
 #define KB_EXTENDED 0x00000080
 
-/* libfb_farmemset.c */
+/* farmemset.c */
 
 extern void fb_hFarMemSet ( unsigned short selector, unsigned long dest, unsigned char char_to_set, size_t bytes );
 extern void fb_hFarMemSetW( unsigned short selector, unsigned long dest, unsigned short word_to_set, size_t words );

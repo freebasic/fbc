@@ -9,7 +9,7 @@ extern int __fb_is_inicnt;
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
-	/* note: fb_RtExit() will be called from static/libfb_ctor.c */
+	/* note: fb_RtExit() will be called from fbrt0 */
 
 	exit( errlevel );
 }
