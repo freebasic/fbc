@@ -83,7 +83,7 @@ private function _linkFiles _
 
 	''
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline = "-shared --export-dynamic -h" + hStripPath( fbc.outname )
+		ldcline += " -shared --export-dynamic -h" + hStripPath( fbc.outname )
 
 	else
 		'' tell LD to add all symbols declared as EXPORT to the symbol table
@@ -91,6 +91,11 @@ private function _linkFiles _
 			ldcline += " --export-dynamic"
 		end if
 	end if
+
+#ifndef DISABLE_OBJINFO
+	'' Supplementary ld script to drop the fbctinf objinfo section
+	ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
+#endif
 
 	if( len( fbc.mapfile ) > 0 ) then
 		ldcline += " -Map " + fbc.mapfile

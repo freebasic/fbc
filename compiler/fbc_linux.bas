@@ -85,21 +85,21 @@ private function _linkFiles _
 		end select
 	end if
 
-	''
-	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
-		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
-	end if
-
-	''
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		ldcline = "-shared --export-dynamic -h" + hStripPath( fbc.outname )
-
 	else
+		ldcline = "-dynamic-linker /lib/ld-linux.so.2"
+
 		'' tell LD to add all symbols declared as EXPORT to the symbol table
 		if( fbGetOption( FB_COMPOPT_EXPORT ) ) then
 			ldcline += " --export-dynamic"
 		end if
 	end if
+
+#ifndef DISABLE_OBJINFO
+	'' Supplementary ld script to drop the fbctinf objinfo section
+	ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
+#endif
 
 	'' set emulation
 	ldcline += " -m elf_i386" 

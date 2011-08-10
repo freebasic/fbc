@@ -62,11 +62,8 @@ private function _linkFiles _
 	end if
 
 #ifndef DISABLE_OBJINFO
-	select case fbGetOption( FB_COMPOPT_OUTTYPE )
-	case FB_OUTTYPE_EXECUTABLE
-		'' supplementary ld script to drop the fbctinf objinfo section
-		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
-	end select
+	'' Supplementary ld script to drop the fbctinf objinfo section
+	ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
 #endif
 
 	if( len( fbc.mapfile ) > 0) then
