@@ -1661,7 +1661,7 @@ endif
 # in order to work around command line length limits, especially with DJGPP.
 #
 # This is needed for the runtime, because it consists of tons of objects, and
-# with file names like new/runtime/libfb_foo_bar.o, the ar command line gets
+# with file names like new/runtime/foo_bar.o, the ar command line gets
 # *really* long (14.5k chars), causing it (or *something*) to fail.
 # (Windows XP cmd.exe -> DJGPP make.exe -> COMMAND.COM? -> DJGPP ar.exe)
 #
@@ -1672,6 +1672,14 @@ endif
 # cds in recipes change the curdir of the whole DJGPP make process. Normally
 # each line in a recipe should be executed in its own shell, but in the DJGPP
 # case something must be wrong, maybe the old 3.79.1 make is too buggish.
+#
+# In case of ENABLE_DOSCMD (for building on DOS/Windows without Unixy
+# environment installed), it's necessary to use normal mkdir/rmdir instead
+# of mkdir -p or rmdir -p, \ instead of / path separators, del instead of
+# rm -f. And additionally all command lines need to be trimmed down even more,
+# because anything that needs to go through cmd.exe is limited to 8k chars.
+# Note that unless a recipe uses cmd.exe shell syntax like ';' or redirection,
+# the limit doesn't apply (seemed like it during testing anyways).
 #
 
 # We don't want to use any of make's built-in suffixes/rules
@@ -1685,6 +1693,18 @@ ifndef V
   QUIET_CC    = @echo "CC $@";
   QUIET_CPPAS = @echo "CPPAS $@";
   QUIET_AR    = @echo "AR $@";
+endif
+
+ifdef ENABLE_DOSCMD
+  do-cp = copy $(subst /,\,$(1))
+  do-rm = del $(subst /,\,$(1))
+  do-mkdir = mkdir $(subst /,\,$(1))
+  do-rmdir = rmdir $(subst /,\,$(1))
+else
+  do-cp = cp $(1)
+  do-rm = rm -f $(1)
+  do-mkdir = mkdir -p $(1)
+  do-rmdir = rmdir $(1)
 endif
 
 .PHONY: all
@@ -1704,7 +1724,7 @@ $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
 $(FBC_CONFIG): compiler/config.bi.in
-	$(QUIET_GEN)cp $< $@
+	$(QUIET_GEN)$(call do-cp,$< $@)
   # The compiler expects the TARGET_* define for the default target.
   ifeq ($(TARGET_OS),cygwin)
 	@echo '#define TARGET_CYGWIN' >> $@
@@ -1790,7 +1810,7 @@ runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
 $(NEW_HEADERS): $(newinclude)/%.bi: include/%.bi
-	$(QUIET_CP)cp $< $@
+	$(QUIET_CP)$(call do-cp,$< $@)
 
 $(NEW_FBRT0): runtime/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
@@ -1826,7 +1846,7 @@ $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_CONFIG): runtime/config.h.in
-	$(QUIET_GEN)cp $< $@
+	$(QUIET_GEN)$(call do-cp,$< $@)
   # The runtime expects the HOST_* defines for the system it's supposed to run on.
   # Note that we compile only one runtime: the one for the compiler's default
   # target.
@@ -1896,40 +1916,40 @@ install: install-compiler install-runtime
 
 .PHONY: install-compiler
 install-compiler: $(prefixbin) $(NEW_FBC)
-	cp $(NEW_FBC) $(prefixbin)
+	$(call do-cp,$(NEW_FBC) $(prefixbin))
 
 .PHONY: install-runtime
 install-runtime: $(prefixlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
-	cp $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(prefixlib)
+	$(call do-cp,$(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(prefixlib))
 
 .PHONY: uninstall
 uninstall: uninstall-compiler uninstall-runtime
 
 .PHONY: uninstall-compiler
 uninstall-compiler:
-	rm -f $(FBC_PREFIX)
+	$(call do-rm,$(FBC_PREFIX))
 
 .PHONY: uninstall-runtime
 uninstall-runtime:
-	rm -f $(HEADERS_PREFIX) $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX)
-	-rmdir $(prefixinclude)
-	-rmdir $(prefixlib)
+	$(call do-rm,$(HEADERS_PREFIX) $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX))
+	-$(call do-rmdir,$(prefixinclude))
+	-$(call do-rmdir,$(prefixlib))
 
 $(newbin) $(newcompiler) $(newinclude) $(newlib) $(newruntime) $(prefixbin) $(prefixinclude) $(prefixlib):
-	mkdir -p $@
+	$(call do-mkdir,$@)
 
 .PHONY: clean
 clean: clean-compiler clean-runtime
 
 .PHONY: clean-compiler
 clean-compiler:
-	rm -f $(NEW_FBC) $(FBC_CONFIG) $(newcompiler)/*.o
-	-rmdir -p $(newcompiler) $(newbin)
+	-$(call do-rm,$(NEW_FBC) $(FBC_CONFIG) $(newcompiler)/*.o)
+	-$(call do-rmdir,$(newcompiler) $(newbin))
 
 .PHONY: clean-runtime
 clean-runtime:
-	rm -f $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(LIBFB_CONFIG) $(newruntime)/*.o
-	-rmdir -p $(newinclude) $(newruntime) $(newlib)
+	-$(call do-rm,$(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(LIBFB_CONFIG) $(newruntime)/*.o)
+	-$(call do-rmdir,$(newinclude) $(newruntime) $(newlib))
 
 .PHONY: help
 help:
