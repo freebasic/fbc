@@ -1686,13 +1686,14 @@ endif
 .SUFFIXES:
 
 ifndef V
-  QUIET_CP    = @echo "CP $@";
-  QUIET_GEN   = @echo "GEN $@";
-  QUIET_FBC   = @echo "FBC $@";
-  QUIET_LINK  = @echo "LINK $@";
-  QUIET_CC    = @echo "CC $@";
-  QUIET_CPPAS = @echo "CPPAS $@";
-  QUIET_AR    = @echo "AR $@";
+  QUIET       = @
+  QUIET_CP    = @echo CP $@
+  QUIET_GEN   = @echo GEN $@
+  QUIET_FBC   = @echo FBC $@
+  QUIET_LINK  = @echo LINK $@
+  QUIET_CC    = @echo CC $@
+  QUIET_CPPAS = @echo CPPAS $@
+  QUIET_AR    = @echo AR $@
 endif
 
 ifdef ENABLE_DOSCMD
@@ -1714,14 +1715,17 @@ all: compiler runtime
 compiler: $(newcompiler) $(newbin) $(NEW_FBC)
 
 $(NEW_FBC): $(FBC_BAS) $(FBC_COBJINFO)
-	$(QUIET_LINK)cd $(newcompiler); $(HOST_FBC) $(FBLFLAGS) $(patsubst $(newcompiler)/%,%,$^) -x ../../$@; cd ../..
-#	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
+	$(QUIET_LINK)
+	$(QUIET)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
+	$(QUIET_FBC)
+	$(QUIET)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
-	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
+	$(QUIET_CC)
+	$(QUIET)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
+
 # Note: # is escaped as \# to prevent make from treating it as a comment
 ifdef ENABLE_DOSCMD
   config-define = $(QUIET)echo \#define $(1) >> $@
@@ -1733,7 +1737,8 @@ config-ifdef = $(if $(1),$(call config-define,$(2)))
 config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 
 $(FBC_CONFIG): compiler/config.bi.in
-	$(QUIET_GEN)$(call do-cp,$< $@)
+	$(QUIET_GEN)
+	$(QUIET)$(call do-cp,$< $@)
 	$(call config-filter,$(TARGET_OS),cygwin,TARGET_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,TARGET_DARWIN)
 	$(call config-filter,$(TARGET_OS),dos,TARGET_DOS)
@@ -1766,43 +1771,54 @@ runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
 $(NEW_HEADERS): $(newinclude)/%.bi: include/%.bi
-	$(QUIET_CP)$(call do-cp,$< $@)
+	$(QUIET_CP)
+	$(QUIET)$(call do-cp,$< $@)
 
 $(NEW_FBRT0): runtime/fbrt0.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)
+	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(NEW_LIBFB): $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
-#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)
+	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 1, 200, $^)
+	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 200, $(words $^), $^)
 
 $(NEW_LIBFBMT): $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
-#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)
+	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 1, 200, $^)
+	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 200, $(words $^), $^)
 
 $(NEW_LIBFBGFX): $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)cd $(newruntime); $(TARGET_AR) rcs ../../$@ $(patsubst $(newruntime)/%,%,$^); cd ../..
-#	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)
+	$(QUIET)$(TARGET_AR) rcs $@ $^
 
 $(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)
+	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)
+	$(QUIET)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)
+	$(QUIET)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)
+	$(QUIET)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)
+	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)
+	$(QUIET)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_CONFIG): runtime/config.h.in
-	$(QUIET_GEN)$(call do-cp,$< $@)
+	$(QUIET_GEN)
+	$(QUIET)$(call do-cp,$< $@)
 	$(call config-filter,$(TARGET_OS),cygwin,HOST_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,HOST_DARWIN)
 	$(call config-filter,$(TARGET_OS),dos,HOST_DOS)
