@@ -181,6 +181,16 @@ ifdef HOST
       HOST_ARCH := powerpc64
     endif
 
+    # For triplets like 'mingw32' there is no arch part and we get 'unknown',
+    # it's probably best to choose a good default in that case.
+    ifeq ($(triplet_arch),unknown)
+      ifeq ($(HOST_OS),dos)
+        HOST_ARCH := 386
+      else
+        HOST_ARCH := 486
+      endif
+    endif
+
     ifndef HOST_ARCH
       $(error Sorry, the CPU arch part of HOST='$(HOST)' could not be \
               identified. Maybe the makefile should be fixed.)
@@ -361,6 +371,16 @@ ifdef TARGET
     endif
     ifeq ($(triplet_arch),powerpc64)
       TARGET_ARCH := powerpc64
+    endif
+
+    # For triplets like 'mingw32' there is no arch part and we get 'unknown',
+    # it's probably best to choose a good default in that case.
+    ifeq ($(triplet_arch),unknown)
+      ifeq ($(TARGET_OS),dos)
+        TARGET_ARCH := 386
+      else
+        TARGET_ARCH := 486
+      endif
     endif
 
     ifndef TARGET_ARCH
