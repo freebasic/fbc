@@ -67,6 +67,13 @@
 #  - Select compiler/runtime sources based on host/target systems
 #  - Perform build/install rules
 #
+# Note: In order to be compatible to older makes, e.g. DJGPP's GNU make 3.79.1,
+# features added in more recent versions aren't used. For example:
+#  - "else if"
+#  - Order-only prerequisites
+#  - $(or ...), $(and ...)
+#  - $(eval ...)
+#
 
 FBC := fbc
 CC := gcc
@@ -83,39 +90,13 @@ endif
 -include $(new)/config.mk
 
 #
-# Triplet parsing code
+# Host/target system determination
 #
 
-triplet-oops = \
-  $(error Sorry, '$(1)' does not look like one of the expected triplets. \
-          Maybe the makefile should be changed to recognize it.)
-
-# Canonical name to FB name translation
-parse-os = \
-  $(or $(findstring cygwin,$(1)), \
-       $(findstring darwin,$(1)), \
-       $(findstring freebsd,$(1)), \
-       $(findstring linux,$(1)), \
-       $(and $(findstring mingw,$(1)), win32), \
-       $(and $(findstring djgpp,$(1)), dos), \
-       $(findstring netbsd,$(1)), \
-       $(findstring openbsd,$(1)), \
-       $(findstring solaris,$(1)), \
-       $(findstring xbox,$(1)), \
-       $(call triplet-oops,$(2)))
-
-parse-arch = \
-  $(or $(and $(filter i386,$(1)),386), \
-       $(and $(filter i486,$(1)),486), \
-       $(and $(filter i586,$(1)),586), \
-       $(and $(filter i686,$(1)),686), \
-       $(filter x86_64 sparc sparc64 powerpc64,$(1)), \
-       $(call triplet-oops,$(2)))
-
-# os = {all the words 3..EOL | the last word if 3..EOL was empty}
+# os = iif(has >= 3 words, words 3..EOL, last word)
 # 'i686 pc linux gnu' -> 'linux gnu'
 # 'mingw32'           -> 'mingw32'
-extract-os = $(or $(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
+extract-os = $(if $(word 3,$(1)),$(wordlist 3,$(words $(1)),$(1)),$(lastword $(1)))
 
 # arch = iif(has >= 2 words, first word, unknown)
 # 'i686 pc linux gnu' -> 'i686'
@@ -124,22 +105,86 @@ extract-arch = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 
 # In autoconf we used a shell case statement and checked for *-*-mingw*, but
 # here we convert 'i686-pc-mingw32' to 'i686 pc mingw32' and then use make's
-# word/text processing functions to analyze it.
-triplet-os  = $(call parse-os,$(call extract-os,$(subst -, ,$(1))),$(1))
-triplet-arch = $(call parse-arch,$(call extract-arch,$(subst -, ,$(1))),$(1))
-
-#
-# Host/target system determination
-#
+# word/text processing functions to take it apart.
+extract-triplet-os = $(call extract-os,$(subst -, ,$(1)))
+extract-triplet-arch = $(call extract-arch,$(subst -, ,$(1)))
 
 ifdef HOST
   # Cross-compile fbc to run on this HOST
   HOST_PREFIX := $(HOST)-
+
   ifndef HOST_OS
-    HOST_OS := $(call triplet-os,$(HOST))
+    triplet_os := $(call extract-triplet-os,$(HOST))
+
+    ifneq ($(filter cygwin%,$(triplet_os)),)
+      HOST_OS := cygwin
+    endif
+    ifneq ($(filter darwin%,$(triplet_os)),)
+      HOST_OS := darwin
+    endif
+    ifneq ($(filter djgpp%,$(triplet_os)),)
+      HOST_OS := dos
+    endif
+    ifneq ($(filter freebsd%,$(triplet_os)),)
+      HOST_OS := freebsd
+    endif
+    ifneq ($(filter linux%,$(triplet_os)),)
+      HOST_OS := linux
+    endif
+    ifneq ($(filter mingw%,$(triplet_os)),)
+      HOST_OS := win32
+    endif
+    ifneq ($(filter netbsd%,$(triplet_os)),)
+      HOST_OS := netbsd
+    endif
+    ifneq ($(filter openbsd%,$(triplet_os)),)
+      HOST_OS := openbsd
+    endif
+    ifneq ($(filter solaris%,$(triplet_os)),)
+      HOST_OS := solaris
+    endif
+    ifneq ($(filter xbox%,$(triplet_os)),)
+      HOST_OS := xbox
+    endif
+
+    ifndef HOST_OS
+      $(error Sorry, the OS part of HOST='$(HOST)' could not be identified. \
+              Maybe the makefile should be fixed.)
+    endif
   endif
+
   ifndef HOST_ARCH
-    HOST_ARCH := $(call triplet-arch,$(HOST))
+    triplet_arch := $(call extract-triplet-arch,$(HOST))
+
+    ifeq ($(triplet_arch),i386)
+      HOST_ARCH := 386
+    endif
+    ifeq ($(triplet_arch),i486)
+      HOST_ARCH := 486
+    endif
+    ifeq ($(triplet_arch),i586)
+      HOST_ARCH := 586
+    endif
+    ifeq ($(triplet_arch),i686)
+      HOST_ARCH := 686
+    endif
+    ifeq ($(triplet_arch),x86_64)
+      HOST_ARCH := x86_64
+    endif
+    ifeq ($(triplet_arch),sparc)
+      HOST_ARCH := sparc
+    endif
+    ifeq ($(triplet_arch),sparc64)
+      HOST_ARCH := sparc64
+    endif
+    ifeq ($(triplet_arch),powerpc64)
+      HOST_ARCH := powerpc64
+    endif
+
+    ifndef HOST_ARCH
+      $(error Sorry, the CPU arch part of HOST='$(HOST)' could not be \
+              identified. Maybe the makefile should be fixed.)
+    endif
   endif
 else
   # No HOST given, so guess the build OS & arch via uname or something else.
@@ -197,8 +242,8 @@ else
     endif
 
     ifndef HOST_OS
-      $(error Sorry, the OS could not be identified. Maybe the makefile \
-              should be fixed. 'uname' returned: '$(uname)')
+      $(error Sorry, your OS could not be identified automatically. \
+              Maybe the makefile should be fixed. 'uname' returned: '$(uname)')
     endif
   endif
 
@@ -239,8 +284,9 @@ else
     endif
 
     ifndef HOST_ARCH
-      $(error Sorry, the arch could not be identified. Maybe the makefile \
-              should be fixed. 'uname -m' returned: '$(uname_m)')
+      $(error Sorry, your system's CPU arch could not be identified \
+              automatically. Maybe the makefile should be fixed. \
+              'uname -m' returned: '$(uname_m)')
     endif
   endif
 endif
@@ -248,11 +294,79 @@ endif
 ifdef TARGET
   # TARGET given, so parse it
   TARGET_PREFIX := $(TARGET)-
+
   ifndef TARGET_OS
-    TARGET_OS := $(call triplet-os,$(TARGET))
+    triplet_os := $(call extract-triplet-os,$(TARGET))
+
+    ifneq ($(filter cygwin%,$(triplet_os)),)
+      TARGET_OS := cygwin
+    endif
+    ifneq ($(filter darwin%,$(triplet_os)),)
+      TARGET_OS := darwin
+    endif
+    ifneq ($(filter djgpp%,$(triplet_os)),)
+      TARGET_OS := dos
+    endif
+    ifneq ($(filter freebsd%,$(triplet_os)),)
+      TARGET_OS := freebsd
+    endif
+    ifneq ($(filter linux%,$(triplet_os)),)
+      TARGET_OS := linux
+    endif
+    ifneq ($(filter mingw%,$(triplet_os)),)
+      TARGET_OS := win32
+    endif
+    ifneq ($(filter netbsd%,$(triplet_os)),)
+      TARGET_OS := netbsd
+    endif
+    ifneq ($(filter openbsd%,$(triplet_os)),)
+      TARGET_OS := openbsd
+    endif
+    ifneq ($(filter solaris%,$(triplet_os)),)
+      TARGET_OS := solaris
+    endif
+    ifneq ($(filter xbox%,$(triplet_os)),)
+      TARGET_OS := xbox
+    endif
+
+    ifndef TARGET_OS
+      $(error Sorry, the OS part of TARGET='$(TARGET)' could not be \
+              identified. Maybe the makefile should be fixed.)
+    endif
   endif
+
   ifndef TARGET_ARCH
-    TARGET_ARCH := $(call triplet-arch,$(TARGET))
+    triplet_arch := $(call extract-triplet-arch,$(TARGET))
+
+    ifeq ($(triplet_arch),i386)
+      TARGET_ARCH := 386
+    endif
+    ifeq ($(triplet_arch),i486)
+      TARGET_ARCH := 486
+    endif
+    ifeq ($(triplet_arch),i586)
+      TARGET_ARCH := 586
+    endif
+    ifeq ($(triplet_arch),i686)
+      TARGET_ARCH := 686
+    endif
+    ifeq ($(triplet_arch),x86_64)
+      TARGET_ARCH := x86_64
+    endif
+    ifeq ($(triplet_arch),sparc)
+      TARGET_ARCH := sparc
+    endif
+    ifeq ($(triplet_arch),sparc64)
+      TARGET_ARCH := sparc64
+    endif
+    ifeq ($(triplet_arch),powerpc64)
+      TARGET_ARCH := powerpc64
+    endif
+
+    ifndef TARGET_ARCH
+      $(error Sorry, the CPU arch part of TARGET='$(TARGET)' could not be
+              identified. Maybe the makefile should be fixed.)
+    endif
   endif
 else
   # No TARGET given, so use the same values as for HOST
