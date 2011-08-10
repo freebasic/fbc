@@ -1722,87 +1722,43 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
+# Note: # is escaped as \# to prevent make from treating it as a comment
+ifdef ENABLE_DOSCMD
+  config-define = $(QUIET)echo \#define $(1) >> $@
+else
+  config-define = $(QUIET)echo '\#define $(1)' >> $@
+endif
+
+config-ifdef = $(if $(1),$(call config-define,$(2)))
+config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 
 $(FBC_CONFIG): compiler/config.bi.in
 	$(QUIET_GEN)$(call do-cp,$< $@)
-  # The compiler expects the TARGET_* define for the default target.
-  ifeq ($(TARGET_OS),cygwin)
-	@echo '#define TARGET_CYGWIN' >> $@
-  endif
-  ifeq ($(TARGET_OS),darwin)
-	@echo '#define TARGET_DARWIN' >> $@
-  endif
-  ifeq ($(TARGET_OS),dos)
-	@echo '#define TARGET_DOS' >> $@
-  endif
-  ifeq ($(TARGET_OS),freebsd)
-	@echo '#define TARGET_FREEBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),linux)
-	@echo '#define TARGET_LINUX' >> $@
-  endif
-  ifeq ($(TARGET_OS),netbsd)
-	@echo '#define TARGET_NETBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),openbsd)
-	@echo '#define TARGET_OPENBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),win32)
-	@echo '#define TARGET_WIN32' >> $@
-  endif
-  ifeq ($(TARGET_OS),xbox)
-	@echo '#define TARGET_XBOX' >> $@
-  endif
-  # arch
-  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
-	@echo '#define TARGET_X86' >> $@
-  endif
-  ifeq ($(TARGET_ARCH),x86_64)
-	@echo '#define TARGET_X86_64' >> $@
-  endif
-  # The compiler expects ENABLE_* defines for all the targets that
-  # should be compiled in, including the default target.
-  ifdef ENABLE_CYGWIN
-	@echo '#define ENABLE_CYGWIN "$(TRIPLET_CYGWIN)"' >> $@
-  endif
-  ifdef ENABLE_DARWIN
-	@echo '#define ENABLE_DARWIN "$(TRIPLET_DARWIN)"' >> $@
-  endif
-  ifdef ENABLE_DOS
-	@echo '#define ENABLE_DOS "$(TRIPLET_DOS)"' >> $@
-  endif
-  ifdef ENABLE_FREEBSD
-	@echo '#define ENABLE_FREEBSD "$(TRIPLET_FREEBSD)"' >> $@
-  endif
-  ifdef ENABLE_LINUX
-	@echo '#define ENABLE_LINUX "$(TRIPLET_LINUX)"' >> $@
-  endif
-  ifdef ENABLE_NETBSD
-	@echo '#define ENABLE_NETBSD "$(TRIPLET_NETBSD)"' >> $@
-  endif
-  ifdef ENABLE_OPENBSD
-	@echo '#define ENABLE_OPENBSD "$(TRIPLET_OPENBSD)"' >> $@
-  endif
-  ifdef ENABLE_WIN32
-	@echo '#define ENABLE_WIN32 "$(TRIPLET_WIN32)"' >> $@
-  endif
-  ifdef ENABLE_XBOX
-	@echo '#define ENABLE_XBOX "$(TRIPLET_XBOX)"' >> $@
-  endif
-  # Configuration
-  ifdef ENABLE_FBBFD
-	@echo '#define ENABLE_FBBFD $(ENABLE_FBBFD)' >> $@
-  endif
-  ifdef DISABLE_OBJINFO
-	@echo '#define DISABLE_OBJINFO' >> $@
-  endif
-  ifdef ENABLE_PREFIX
-	@echo '#define ENABLE_PREFIX "$(prefix)"' >> $@
-  endif
-  ifdef ENABLE_STANDALONE
-	@echo '#define ENABLE_STANDALONE' >> $@
-  endif
-	@echo '#define FB_SUFFIX "$(SUFFIX)"' >> $@
+	$(call config-filter,$(TARGET_OS),cygwin,TARGET_CYGWIN)
+	$(call config-filter,$(TARGET_OS),darwin,TARGET_DARWIN)
+	$(call config-filter,$(TARGET_OS),dos,TARGET_DOS)
+	$(call config-filter,$(TARGET_OS),freebsd,TARGET_FREEBSD)
+	$(call config-filter,$(TARGET_OS),linux,TARGET_LINUX)
+	$(call config-filter,$(TARGET_OS),netbsd,TARGET_NETBSD)
+	$(call config-filter,$(TARGET_OS),openbsd,TARGET_OPENBSD)
+	$(call config-filter,$(TARGET_OS),win32,TARGET_WIN32)
+	$(call config-filter,$(TARGET_OS),xbox,TARGET_XBOX)
+	$(call config-filter,$(TARGET_ARCH),386 486 586 686,TARGET_X86)
+	$(call config-filter,$(TARGET_ARCH),x86_64,TARGET_X86_64)
+	$(call config-ifdef,$(ENABLE_CYGWIN),ENABLE_CYGWIN "$(TRIPLET_CYGWIN)")
+	$(call config-ifdef,$(ENABLE_DARWIN),ENABLE_DARWIN "$(TRIPLET_DARWIN)")
+	$(call config-ifdef,$(ENABLE_DOS),ENABLE_DOS "$(TRIPLET_DOS)")
+	$(call config-ifdef,$(ENABLE_FREEBSD),ENABLE_FREEBSD "$(TRIPLET_FREEBSD)")
+	$(call config-ifdef,$(ENABLE_LINUX),ENABLE_LINUX "$(TRIPLET_LINUX)")
+	$(call config-ifdef,$(ENABLE_NETBSD),ENABLE_NETBSD "$(TRIPLET_NETBSD)")
+	$(call config-ifdef,$(ENABLE_OPENBSD),ENABLE_OPENBSD "$(TRIPLET_OPENBSD)")
+	$(call config-ifdef,$(ENABLE_WIN32),ENABLE_WIN32 "$(TRIPLET_WIN32)")
+	$(call config-ifdef,$(ENABLE_XBOX),ENABLE_XBOX "$(TRIPLET_XBOX)")
+	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
+	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
+	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")
+	$(call config-ifdef,$(ENABLE_STANDALONE),ENABLE_STANDALONE)
+	$(call config-define,FB_SUFFIX "$(SUFFIX)")
 
 .PHONY: runtime
 runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
@@ -1847,69 +1803,25 @@ $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
 
 $(LIBFB_CONFIG): runtime/config.h.in
 	$(QUIET_GEN)$(call do-cp,$< $@)
-  # The runtime expects the HOST_* defines for the system it's supposed to run on.
-  # Note that we compile only one runtime: the one for the compiler's default
-  # target.
-  ifeq ($(TARGET_OS),cygwin)
-	@echo '#define HOST_CYGWIN' >> $@
-  endif
-  ifeq ($(TARGET_OS),darwin)
-	@echo '#define HOST_DARWIN' >> $@
-  endif
-  ifeq ($(TARGET_OS),dos)
-	@echo '#define HOST_DOS' >> $@
-  endif
-  ifeq ($(TARGET_OS),freebsd)
-	@echo '#define HOST_FREEBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),linux)
-	@echo '#define HOST_LINUX' >> $@
-  endif
-  ifeq ($(TARGET_OS),win32)
-	@echo '#define HOST_MINGW' >> $@
-  endif
-  ifeq ($(TARGET_OS),netbsd)
-	@echo '#define HOST_NETBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),openbsd)
-	@echo '#define HOST_OPENBSD' >> $@
-  endif
-  ifeq ($(TARGET_OS),solaris)
-	@echo '#define HOST_SOLARIS' >> $@
-  endif
-  ifeq ($(TARGET_OS),xbox)
-	@echo '#define HOST_XBOX' >> $@
-  endif
-  # OS family
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-	@echo '#define HOST_UNIX' >> $@
-  endif
-  ifneq ($(filter cygwin win32,$(TARGET_OS)),)
-	@echo '#define HOST_WIN32' >> $@
-  endif
-  # arch
-  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
-	@echo '#define HOST_X86' >> $@
-  endif
-  ifeq ($(TARGET_ARCH),x86_64)
-	@echo '#define HOST_X86_64' >> $@
-  endif
-  ifeq ($(TARGET_ARCH),sparc)
-	@echo '#define HOST_SPARC' >> $@
-  endif
-  ifeq ($(TARGET_ARCH),sparc64)
-	@echo '#define HOST_SPARC64' >> $@
-  endif
-  ifeq ($(TARGET_ARCH),powerpc64)
-	@echo '#define HOST_POWERPC64' >> $@
-  endif
-  # Configuration
-  ifdef DISABLE_OPENGL
-	@echo '#define DISABLE_OPENGL' >> $@
-  endif
-  ifdef DISABLE_X
-	@echo '#define DISABLE_X' >> $@
-  endif
+	$(call config-filter,$(TARGET_OS),cygwin,HOST_CYGWIN)
+	$(call config-filter,$(TARGET_OS),darwin,HOST_DARWIN)
+	$(call config-filter,$(TARGET_OS),dos,HOST_DOS)
+	$(call config-filter,$(TARGET_OS),freebsd,HOST_FREEBSD)
+	$(call config-filter,$(TARGET_OS),linux,HOST_LINUX)
+	$(call config-filter,$(TARGET_OS),netbsd,HOST_NETBSD)
+	$(call config-filter,$(TARGET_OS),openbsd,HOST_OPENBSD)
+	$(call config-filter,$(TARGET_OS),win32,HOST_MINGW)
+	$(call config-filter,$(TARGET_OS),solaris,HOST_SOLARIS)
+	$(call config-filter,$(TARGET_OS),xbox,HOST_XBOX)
+	$(call config-filter,$(TARGET_OS),darwin freebsd linux netbsd openbsd solaris,HOST_UNIX)
+	$(call config-filter,$(TARGET_OS),cygwin win32,HOST_WIN32)
+	$(call config-filter,$(TARGET_ARCH),386 486 586 686,HOST_X86)
+	$(call config-filter,$(TARGET_ARCH),x86_64,HOST_X86_64)
+	$(call config-filter,$(TARGET_ARCH),sparc,HOST_SPARC)
+	$(call config-filter,$(TARGET_ARCH),sparc64,HOST_SPARC64)
+	$(call config-filter,$(TARGET_ARCH),powerpc64,HOST_POWERPC64)
+	$(call config-ifdef,$(DISABLE_OPENGL),DISABLE_OPENGL)
+	$(call config-ifdef,$(DISABLE_X),DISABLE_X)
 
 .PHONY: install
 install: install-compiler install-runtime
