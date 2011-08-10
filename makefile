@@ -229,20 +229,18 @@ else
     endif
 
     # No output from uname? Maybe it's DJGPP without sh etc., or MinGW without
-    # MSYS. So, check COMSPEC. That's probably not the best thing to do,
-    # but it lets us do builds without requiring MSYS to be installed, which
-    # is nice. While at it we also assume that we must use DOS-style commands,
+    # MSYS. These are some attempts at work-arounds to still allow automatic
+    # detection. While at it we also assume that we must use DOS-style commands,
     # instead of Unixy ones.
     # As far as the HOST_ARCH is concerned, for DOS we'll always default to
     # i386 anyways, and for Windows, if uname failed above, then we prevent
     # the uname -m call below aswell, by defaulting to something useful.
     ifndef uname
-      comspec := $(shell echo %COMSPEC%)
-      ifneq ($(findstring COMMAND.COM,$(comspec)),)
+      ifneq ($(findstring COMMAND.COM,$(SHELL)),)
         HOST_OS := dos
         ENABLE_DOSCMD := YesPlease
       endif
-      ifneq ($(findstring cmd.exe,$(comspec)),)
+      ifneq ($(findstring cmd.exe,$(shell echo %COMSPEC%)),)
         HOST_OS := win32
         ENABLE_DOSCMD := YesPlease
         ifndef HOST_ARCH
