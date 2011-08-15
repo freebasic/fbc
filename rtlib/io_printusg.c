@@ -183,6 +183,11 @@ static int hLog10_ULL( unsigned long long a )
 	return ret;
 }
 
+static int hNumDigits( unsigned long long a )
+{
+	 return hLog10_ULL( a ) + 1;
+}
+
 static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
 {
 	unsigned long long b, ret;
@@ -753,7 +758,7 @@ static int hPrintNumber
 	}
 
 	if( val != 0 && !(val_isinf || val_isnan) )
-		val_digs = hLog10_ULL( val ) + 1;
+		val_digs = hNumDigits( val );
 	else
 		val_digs = 0;
 	val_zdigs = 0;
@@ -823,7 +828,7 @@ static int hPrintNumber
 					intdigs = 1;
 					decdigs = val_digs - 1;
 
-					expdigs = 2 + hLog10_ULL( abs(val_digs + val_exp - 1) ) + 1;
+					expdigs = 2 + hNumDigits( abs(val_digs + val_exp - 1) );
 					if( expdigs < MIN_EXPDIGS + 1 )
 						expdigs = MIN_EXPDIGS;
 				}
@@ -1300,7 +1305,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 		}
 	}
 
-	digs = hLog10_ULL( val_ull ) + 1;
+	digs = hNumDigits( val_ull );
 	if( digs > 16 )
 	{	/* scale to 16 digits */
 
