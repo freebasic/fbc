@@ -43,6 +43,8 @@ typedef struct {
 
 #define STR_NAN "NAN"
 #define STR_INF "INF"
+#define STR_IND "IND"
+#define STR_NAN "NAN"
 
 #define ADD_CHAR( c )              \
     do {                           \
@@ -108,10 +110,11 @@ typedef struct {
 
 #define VAL_ISNEG 0x1
 #define VAL_ISINF 0x2
-#define VAL_ISNAN 0x4
+#define VAL_ISIND 0x4
+#define VAL_ISNAN 0x8
 
-#define VAL_ISFLOAT 0x8
-#define VAL_ISSNG 0x10
+#define VAL_ISFLOAT 0x10
+#define VAL_ISSNG 0x20
 
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -551,7 +554,7 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
+	int val_isneg, val_isinf, val_isind, val_isnan, val_isfloat, val_issng;
 	int c, lc;
 #ifdef DEBUG
 	int nc; /* used for sanity checks */
@@ -748,9 +751,10 @@ static int hPrintNumber
 	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
 	val_issng = ( (flags & VAL_ISSNG) != 0 );
 
-	if( flags & (VAL_ISINF | VAL_ISNAN) )
+	if( flags & (VAL_ISINF | VAL_ISIND | VAL_ISNAN) )
 	{
 		val_isinf = ( (flags & VAL_ISINF) != 0 );
+		val_isind = ( (flags & VAL_ISIND) != 0 );
 		val_isnan = ( (flags & VAL_ISNAN) != 0 );
 
 		intdigs += (decdigs + 1);
@@ -764,10 +768,11 @@ static int hPrintNumber
 	else
 	{
 		val_isinf = 0;
+		val_isind = 0;
 		val_isnan = 0;
 	}
 
-	if( val != 0 && !(val_isinf || val_isnan) )
+	if( val != 0 && !(val_isinf || val_isind || val_isnan) )
 		val_digs = hNumDigits( val );
 	else
 		val_digs = 0;
@@ -779,6 +784,12 @@ static int hPrintNumber
 		if( val_isinf )
 		{
 			intdigs = strlen(STR_INF);
+			decdigs = 0;
+			decpoint = 0;
+		}
+		else if( val_isind )
+		{
+			intdigs = strlen(STR_IND);
 			decdigs = 0;
 			decpoint = 0;
 		}
@@ -894,7 +905,7 @@ static int hPrintNumber
 		for( ; expdigs > 0; --expdigs )
 			ADD_CHAR( '^' );
 
-		if( !(val_isinf || val_isnan) )
+		if( !(val_isinf || val_isind || val_isnan) )
 		{
 			/* backup unscaled value */
 			val0 = val;
@@ -966,6 +977,14 @@ static int hPrintNumber
 				if( intdigs < strlen(STR_INF) )
 				{
 					intdigs = strlen(STR_INF);
+					toobig = 1;
+				}
+			}
+			else if( val_isind )
+			{
+				if( intdigs < strlen(STR_IND) )
+				{
+					intdigs = strlen(STR_IND);
 					toobig = 1;
 				}
 			}
@@ -1108,7 +1127,7 @@ static int hPrintNumber
 	}
 
 
-	if( !(val_isinf || val_isnan) )
+	if( !(val_isinf || val_isind || val_isnan) )
 	{	/* output int part */
 		i = 0;
 		for( ;; )
@@ -1145,13 +1164,22 @@ static int hPrintNumber
 		}
 	}
 	else
-	{	/* output INF/NAN string */
+	{	/* output INF/IND/NAN string */
 		if( val_isinf )
 		{
 			DBG_ASSERT( intdigs >= strlen(STR_INF) );
 			for( i = strlen(STR_INF)-1; i >= 0; --i )
 			{
 				ADD_CHAR( STR_INF[i] );
+				--intdigs;
+			}
+		}
+		else if( val_isind )
+		{
+			DBG_ASSERT( intdigs >= strlen(STR_IND) );
+			for( i = strlen(STR_IND)-1; i >= 0; --i )
+			{
+				ADD_CHAR( STR_IND[i] );
 				--intdigs;
 			}
 		}
@@ -1357,6 +1385,8 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 	{
 		if( IS_INFINITE( value ) )
 			flags |= VAL_ISINF;
+		else if( IS_IND( value ) )
+			flags |= VAL_ISIND;
 		else if( IS_NAN( value ) )
 			flags |= VAL_ISNAN;
 		else
@@ -1391,6 +1421,8 @@ FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 	{
 		if( IS_INFINITE_F( value_f ) )
 			flags |= VAL_ISINF;
+		else if( IS_IND_F( value_f ) )
+			flags |= VAL_ISIND;
 		else if( IS_NAN_F( value_f ) )
 			flags |= VAL_ISNAN;
 		else
