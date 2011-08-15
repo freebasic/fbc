@@ -37,6 +37,10 @@ typedef struct {
 #define CHAR_EXP_DOUBLE  'D'
 #endif
 
+#define SNG_AUTODIGS 7
+#define DBL_AUTODIGS 15
+#define DBL_MAXDIGS 16
+
 #define STR_NAN "NAN"
 #define STR_INF "INF"
 
@@ -782,10 +786,10 @@ static int hPrintNumber
 		{
 			if( val_issng )
 			{	/* crop to 7-digit precision */
-				if( val_digs > 7 )
-					val = hDivPow10_ULL( val, val_digs - 7 );
-					val_exp += val_digs - 7;
-					val_digs = 7;
+				if( val_digs > SNG_AUTODIGS )
+					val = hDivPow10_ULL( val, val_digs - SNG_AUTODIGS );
+					val_exp += val_digs - SNG_AUTODIGS;
+					val_digs = SNG_AUTODIGS;
 
 				if( val == 0 )
 				{	/* val has been scaled down to zero */
@@ -1306,14 +1310,14 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 	}
 
 	digs = hNumDigits( val_ull );
-	if( digs > 16 )
+	if( digs > DBL_MAXDIGS )
 	{	/* scale to 16 digits */
 
-		int scale = digs - 16;
+		int scale = digs - DBL_MAXDIGS;
 		val_ull = hDivPow10_ULL( val_ull, scale );
 		pow10 += scale;
 
-		DBG_ASSERT( val_ull <= hPow10_ULL( 16 ) );
+		DBG_ASSERT( val_ull <= hPow10_ULL( DBL_MAXDIGS ) );
 	}
 
 	*pval_exp = pow10;
