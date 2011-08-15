@@ -80,6 +80,9 @@ typedef struct {
     (HI32(x) & 0x7ff00000) == 0x7ff00000 &&     \
     ((HI32(x) & 0x000fffff) | LO32(x)) != 0   )
 
+#define IS_IND( x ) (                           \
+    (HI32(x) == 0xfff80000) && LO32(x) == 0   )
+
 
 
 #define IS_NEG_F( x ) (                         \
@@ -97,6 +100,9 @@ typedef struct {
 #define IS_NAN_F( x ) (                         \
     (LO32(x) & 0x7f800000) == 0x7f800000 &&     \
     (LO32(x) & 0x007fffff) != 0              )
+
+#define IS_IND_F( x ) (                         \
+    (LO32(x) == 0x7f800000 == 0xffc00000     )
 
 /*-------------------------------------------------------------*/
 
