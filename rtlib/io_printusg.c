@@ -62,6 +62,45 @@ typedef struct {
  * TODO: use a proper implementation: most/all platforms       *
  * have specific functions built-in for this                   */
 
+static long long hDoubleToLongBits(double d)
+{
+	union{ double d; unsigned long long ll; } dtoll;
+	dtoll.d = d;
+	return dtoll.ll;
+}
+
+static int hIsNeg(double d)
+{
+	return hDoubleToLongBits(d) < 0ll;
+}
+
+static int hIsZero(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7fffffffffffffffll) == 0ll;
+}
+
+static int hIsFinite(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7ff0000000000000ll) < 0x7ff0000000000000ll;
+}
+
+static int hIsInf(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7fffffffffffffffll) == 0x7ff0000000000000ll;
+}
+
+static int hIsInd(double d)
+{
+	return hDoubleToLongBits(d) == 0xfff8000000000000ll;
+}
+
+static int hIsNan(double d)
+{
+	return !(hIsFinite(d) || hIsInf(d) || hIsInd(d));
+}
+
+
+
 #define LO32( x ) (((uint32_t *)&(x))[0])
 #define HI32( x ) (((uint32_t *)&(x))[1])
 
@@ -1291,7 +1330,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 	int digs;
 	int pow2, pow10;
 
-	val_ull = *(unsigned long long *)&value;
+	val_ull = hDoubleToLongBits( value );
 	pow2 = (val_ull >> 52) - 1023;
 	val_ull &= (1ull << 52)-1;
 
@@ -1368,26 +1407,26 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 
 	flags = VAL_ISFLOAT;
 
-	if( IS_NEG( value ) )
+	if( hIsNeg( value ) )
 		flags |= VAL_ISNEG;
 
-	if( IS_ZERO( value ) )
+	if( hIsZero( value ) )
 	{
 		val_ull = 0;
 		val_exp = 0;
 	}
-	else if( IS_FINITE( value ) )
+	else if( hIsFinite( value ) )
 	{
 		value = fabs( value );
 		val_ull = hScaleDoubleToULL( value, &val_exp );
 	}
 	else
 	{
-		if( IS_INFINITE( value ) )
+		if( hIsInf( value ) )
 			flags |= VAL_ISINF;
-		else if( IS_IND( value ) )
+		else if( hIsInd( value ) )
 			flags |= VAL_ISIND;
-		else if( IS_NAN( value ) )
+		else if( hIsNan( value ) )
 			flags |= VAL_ISNAN;
 		else
 			DBG_ASSERT( 0 );
@@ -1404,26 +1443,26 @@ FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 
 	flags = VAL_ISFLOAT | VAL_ISSNG;
 
-	if( IS_NEG_F( value_f ) )
+	if( hIsNeg( value_f ) )
 		flags |= VAL_ISNEG;
 
-	if( IS_ZERO_F( value_f ) )
+	if( hIsZero( value_f ) )
 	{
 		val_ull = 0;
 		val_exp = 0;
 	}
-	else if( IS_FINITE_F( value_f ) )
+	else if( hIsFinite( value_f ) )
 	{
 		value_f = fabs( value_f );
 		val_ull = hScaleDoubleToULL( value_f, &val_exp );
 	}
 	else
 	{
-		if( IS_INFINITE_F( value_f ) )
+		if( hIsInf( value_f ) )
 			flags |= VAL_ISINF;
-		else if( IS_IND_F( value_f ) )
+		else if( hIsInd( value_f ) )
 			flags |= VAL_ISIND;
-		else if( IS_NAN_F( value_f ) )
+		else if( hIsNan( value_f ) )
 			flags |= VAL_ISNAN;
 		else
 			DBG_ASSERT( 0 );
