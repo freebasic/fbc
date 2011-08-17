@@ -4,8 +4,20 @@
 # compiler (fbc) and the runtime (libfb*, fbrt0). Try 'make help' for
 # information on what you can configure.
 #
+# A Unixy shell environment is required. It would be too hard and ugly to
+# support multiple other shells (e.g. cmd.exe, COMMAND.COM) and work-around
+# their limitations (recursive directory creation, command line length limits,
+# missing commands, case-preservation in file names, different syntax for
+# quoting and escaping, file name restrictions, forward slashes vs.
+# backslashes). If FB had less build modes (standalone vs. normal directory
+# layout) and would just consist of fbc and one libfreebasic this all would
+# be easier. And then there's the problem of whether the test suite or fbdocs
+# (and other things in the FB source) will work without a Unixy shell, not to
+# mention building other projects such as binutils, for which a Unixy shell is
+# needed anyways.
+#
 # Cross-compilation and building a cross-compiler is supported similar to
-# autoconf: through the HOST and TARGET variables that can be set to GNU
+# autoconf: through the HOST and TARGET variables that can be set to system
 # triplets. By default TARGET is the same as HOST, and HOST is the same as
 # the build system, which is guessed mostly via uname. In case the triplet
 # parsing or default system detection fails, please fix it and make it work!
@@ -227,37 +239,14 @@ else
     ifeq ($(uname),OpenBSD)
       HOST_OS := openbsd
     endif
-
-    # No output from uname? Maybe it's DJGPP without sh etc., or MinGW without
-    # MSYS. These are some attempts at work-arounds to still allow automatic
-    # detection. While at it we also assume that we must use DOS-style commands,
-    # instead of Unixy ones.
-    # As far as the HOST_ARCH is concerned, for DOS we'll always default to
-    # i386 anyways, and for Windows, if uname failed above, then we prevent
-    # the uname -m call below aswell, by defaulting to something useful.
-    ifndef uname
-      ifneq ($(findstring COMMAND.COM,$(SHELL)),)
-        HOST_OS := dos
-        ENABLE_DOSCMD := YesPlease
-      endif
-      ifneq ($(findstring cmd.exe,$(shell echo %COMSPEC%)),)
-        HOST_OS := win32
-        ENABLE_DOSCMD := YesPlease
-        ifndef HOST_ARCH
-          HOST_ARCH := 486
-        endif
-      endif
-    endif
-
     ifndef HOST_OS
       $(error Sorry, your OS could not be identified automatically. \
               Maybe the makefile should be fixed. 'uname' returned: '$(uname)')
     endif
   endif
 
-  # For DOS, just build for i386 and don't bother with uname -m.
-  # Also: a) DJGPP's uname -m just returns 'pc', and b) it doesn't seem to work
-  # from $(shell) at all, maybe it's an issue with the COMMAND.COM?
+  # For the DJGPP build, just use i386, and don't bother calling 'uname -m',
+  # which only returns 'pc' anyways.
   ifndef HOST_ARCH
     ifeq ($(HOST_OS),dos)
       HOST_ARCH := 386
@@ -553,10 +542,9 @@ LIBFB_CONFIG := $(newruntime)/config.h
 # Compiler flags
 #
 
-FBCFLAGS := $(FBFLAGS) -maxerr 1 -w all -w pedantic
-FBCFLAGS += -e -m fbc -include $(FBC_CONFIG)
-FBLFLAGS := $(FBFLAGS)
-ALLCFLAGS := $(CFLAGS) -Wfatal-errors -Wall -include $(LIBFB_CONFIG)
+FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(FBFLAGS)
+FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
+ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
 
 ifneq ($(filter cygwin win32,$(HOST_OS)),)
   FBLFLAGS += -t 2048
@@ -1657,56 +1645,24 @@ endif
 #
 # Build rules
 #
-# Note: We're linking/ar'ing in uglier ways than would normally be necessary,
-# in order to work around command line length limits, especially with DJGPP.
-#
-# This is needed for the runtime, because it consists of tons of objects, and
-# with file names like new/runtime/foo_bar.o, the ar command line gets
-# *really* long (14.5k chars), causing it (or *something*) to fail.
-# (Windows XP cmd.exe -> DJGPP make.exe -> COMMAND.COM? -> DJGPP ar.exe)
-#
-# To get shorter file names we cd into new/runtime and run the ar command from
-# there. That reduces the line to 9.3k chars.
-#
-# The "cd ../.."s are there because (for some reason I haven't figured out)
-# cds in recipes change the curdir of the whole DJGPP make process. Normally
-# each line in a recipe should be executed in its own shell, but in the DJGPP
-# case something must be wrong, maybe the old 3.79.1 make is too buggish.
-#
-# In case of ENABLE_DOSCMD (for building on DOS/Windows without Unixy
-# environment installed), it's necessary to use normal mkdir/rmdir instead
-# of mkdir -p or rmdir -p, \ instead of / path separators, del instead of
-# rm -f. And additionally all command lines need to be trimmed down even more,
-# because anything that needs to go through cmd.exe is limited to 8k chars.
-# Note that unless a recipe uses cmd.exe shell syntax like ';' or redirection,
-# the limit doesn't apply (seemed like it during testing anyways).
-#
 
 # We don't want to use any of make's built-in suffixes/rules
 .SUFFIXES:
 
 ifndef V
   QUIET       = @
-  QUIET_CP    = @echo CP $@
-  QUIET_GEN   = @echo GEN $@
-  QUIET_FBC   = @echo FBC $@
-  QUIET_LINK  = @echo LINK $@
-  QUIET_CC    = @echo CC $@
-  QUIET_CPPAS = @echo CPPAS $@
-  QUIET_AR    = @echo AR $@
+  QUIET_CP    = @echo "CP $@";
+  QUIET_GEN   = @echo "GEN $@";
+  QUIET_FBC   = @echo "FBC $@";
+  QUIET_LINK  = @echo "LINK $@";
+  QUIET_CC    = @echo "CC $@";
+  QUIET_CPPAS = @echo "CPPAS $@";
+  QUIET_AR    = @echo "AR $@";
 endif
 
-ifdef ENABLE_DOSCMD
-  do-cp = copy $(subst /,\,$(1))
-  do-rm = del $(subst /,\,$(1))
-  do-mkdir = mkdir $(subst /,\,$(1))
-  do-rmdir = rmdir $(subst /,\,$(1))
-else
-  do-cp = cp $(1)
-  do-rm = rm -f $(1)
-  do-mkdir = mkdir -p $(1)
-  do-rmdir = rmdir $(1)
-endif
+config-define = $(QUIET)echo '\#define $(1)' >> $@
+config-ifdef = $(if $(1),$(call config-define,$(2)))
+config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 
 .PHONY: all
 all: compiler runtime
@@ -1715,30 +1671,16 @@ all: compiler runtime
 compiler: $(newcompiler) $(newbin) $(NEW_FBC)
 
 $(NEW_FBC): $(FBC_BAS) $(FBC_COBJINFO)
-	$(QUIET_LINK)
-	$(QUIET)$(HOST_FBC) $(FBLFLAGS) $^ -x $@
+	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)
-	$(QUIET)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
+	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
-	$(QUIET_CC)
-	$(QUIET)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
-
-# Note: # is escaped as \# to prevent make from treating it as a comment
-ifdef ENABLE_DOSCMD
-  config-define = $(QUIET)echo \#define $(1) >> $@
-else
-  config-define = $(QUIET)echo '\#define $(1)' >> $@
-endif
-
-config-ifdef = $(if $(1),$(call config-define,$(2)))
-config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
+	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
 $(FBC_CONFIG): compiler/config.bi.in
-	$(QUIET_GEN)
-	$(QUIET)$(call do-cp,$< $@)
+	$(QUIET_GEN)cp $< $@
 	$(call config-filter,$(TARGET_OS),cygwin,TARGET_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,TARGET_DARWIN)
 	$(call config-filter,$(TARGET_OS),dos,TARGET_DOS)
@@ -1771,54 +1713,40 @@ runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
 $(NEW_HEADERS): $(newinclude)/%.bi: include/%.bi
-	$(QUIET_CP)
-	$(QUIET)$(call do-cp,$< $@)
+	$(QUIET_CP)cp $< $@
 
 $(NEW_FBRT0): runtime/fbrt0.c $(LIBFB_H)
-	$(QUIET_CC)
-	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(NEW_LIBFB): $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)
-	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 1, 200, $^)
-	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 200, $(words $^), $^)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(NEW_LIBFBMT): $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)
-	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 1, 200, $^)
-	$(QUIET)$(TARGET_AR) rcs $@ $(wordlist 200, $(words $^), $^)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(NEW_LIBFBGFX): $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)
-	$(QUIET)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
 $(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
-	$(QUIET_CC)
-	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)
-	$(QUIET)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H)
-	$(QUIET_CC)
-	$(QUIET)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)
-	$(QUIET)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H)
-	$(QUIET_CC)
-	$(QUIET)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
-	$(QUIET_CPPAS)
-	$(QUIET)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_CONFIG): runtime/config.h.in
-	$(QUIET_GEN)
-	$(QUIET)$(call do-cp,$< $@)
+	$(QUIET_GEN)cp $< $@
 	$(call config-filter,$(TARGET_OS),cygwin,HOST_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,HOST_DARWIN)
 	$(call config-filter,$(TARGET_OS),dos,HOST_DOS)
@@ -1844,24 +1772,50 @@ install: install-compiler install-runtime
 
 .PHONY: install-compiler
 install-compiler: $(prefixbin) $(NEW_FBC)
-	$(call do-cp,$(NEW_FBC) $(prefixbin))
+	cp $(FBC_NEW) $(FBC_PREFIX)
 
 .PHONY: install-runtime
 install-runtime: $(prefixlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
-	$(call do-cp,$(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(prefixlib))
+	cp $(NEW_INCLUDES) $(prefixinclude)/
+  ifndef DISABLE_OBJINFO
+	cp $(newlib)/fbextra.x $(prefixlib)/
+  endif
+	cp $(newlib)/fbrt0.o $(prefixlib)/
+	cp $(newlib)/libfb.a $(prefixlib)/
+  ifndef DISABLE_MT
+	cp $(newlib)/libfbmt.a $(prefixlib)/
+  endif
+  ifndef DISABLE_GFX
+	cp $(newlib)/libfbgfx.a $(prefixlib)/
+  endif
 
 .PHONY: uninstall
 uninstall: uninstall-compiler uninstall-runtime
 
 .PHONY: uninstall-compiler
 uninstall-compiler:
-	$(call do-rm,$(FBC_PREFIX))
+	rm -f $(FBC_PREFIX)
 
 .PHONY: uninstall-runtime
 uninstall-runtime:
-	$(call do-rm,$(HEADERS_PREFIX) $(FBRT0_PREFIX) $(LIBFB_PREFIX) $(LIBFBMT_PREFIX) $(LIBFBGFX_PREFIX))
-	-$(call do-rmdir,$(prefixinclude))
-	-$(call do-rmdir,$(prefixlib))
+	rm -f $(HEADERS_PREFIX)
+  ifndef DISABLE_OBJINFO
+	rm -f $(prefixlib)/fbextra.x
+  endif
+	rm -f $(prefixlib)/fbrt0.o
+	rm -f $(prefixlib)/libfb.a
+  ifndef DISABLE_MT
+	rm -f $(prefixlib)/libfbmt.a
+  endif
+  ifndef DISABLE_GFX
+	rm -f $(prefixlib)/libfbgfx.a
+  endif
+  # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
+  # that we should remove if empty.
+  ifndef ENABLE_STANDALONE
+	-rmdir $(prefixinclude)
+	-rmdir $(prefixlib)
+  endif
 
 $(newbin) $(newcompiler) $(newinclude) $(newlib) $(newruntime) $(prefixbin) $(prefixinclude) $(prefixlib):
 	$(call do-mkdir,$@)
@@ -1871,13 +1825,34 @@ clean: clean-compiler clean-runtime
 
 .PHONY: clean-compiler
 clean-compiler:
-	-$(call do-rm,$(NEW_FBC) $(FBC_CONFIG) $(newcompiler)/*.o)
-	-$(call do-rmdir,$(newcompiler) $(newbin))
+	rm -f $(newcompiler)/config.bi $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
+	-rmdir $(newbin)
+	-rmdir $(newcompiler)
 
 .PHONY: clean-runtime
 clean-runtime:
-	-$(call do-rm,$(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX) $(LIBFB_CONFIG) $(newruntime)/*.o)
-	-$(call do-rmdir,$(newinclude) $(newruntime) $(newlib))
+	rm -f $(NEW_HEADERS)
+  ifndef DISABLE_OBJINFO
+	rm -f $(newlib)/fbextra.x
+  endif
+	rm -f $(newlib)/fbrt0.o $(newlibfb)/config.h
+	rm -f $(newlib)/libfb.a $(newlibfb)/*.o
+	-rmdir $(newlibfb)
+  ifndef DISABLE_MT
+	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
+	-rmdir $(newlibfbmt)
+  endif
+  ifndef DISABLE_GFX
+	rm -f $(newlib)/libfbgfx.a
+  endif
+	-rmdir $(newinclude)
+  ifndef ENABLE_STANDALONE
+	-rmdir $(new)/include
+  endif
+	-rmdir $(newlib)
+  ifndef ENABLE_STANDALONE
+	-rmdir $(new)/lib
+  endif
 
 .PHONY: help
 help:
