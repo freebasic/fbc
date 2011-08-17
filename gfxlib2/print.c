@@ -1,7 +1,7 @@
 /* graphical mode text output */
 
 #include "fb_gfx.h"
-#include "fb_con.h"
+#include "../rtlib/fb_con.h"
 
 typedef struct _fb_PrintInfo {
 	FB_GFXCTX *context;

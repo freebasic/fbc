@@ -14,3 +14,4 @@
    Technically we want this #define for MinGW only, but if it doesn't get in
    the way elsewhere, then it may aswell always be defined. */
 #define _NO_OLDNAMES 1
+

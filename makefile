@@ -35,12 +35,10 @@
 # FB directory layout:
 #    a) Default (for Linux /usr[/local] installations, and also for MinGW):
 #          bin/target-fbc-suffix
-#          bin/target-binutils
 #          include/target-freebasic-suffix/fbgfx.bi
-#          lib/target-freebasic-suffix/fbgfx.bi
+#          lib/target-freebasic-suffix/libfb.a
 #    b) Standalone (for self-contained DOS/Windows installations):
 #          target-fbc-suffix
-#          bin/target-binutils
 #          target-include-suffix/fbgfx.bi
 #          target-lib-suffix/libfb.a
 #
@@ -74,7 +72,7 @@
 #  - Guess the OS/arch types, or parse the HOST/TARGET triplets to find out
 #  - Set HOST_FBC, TARGET_CC, prefix, EXEEXT, etc. based on that
 #  - Figure out the directory layout (normal vs. standalone), same for
-#    file names/locations of fbc/libfb.a, once in new/ and once in $prefix/.
+#    file names/locations of compiler/libfb.a, once in new/ and once in $prefix/.
 #  - Set FBCFLAGS, FBLFLAGS and ALLCFLAGS
 #  - Select compiler/runtime sources based on host/target systems
 #  - Perform build/install rules
@@ -389,26 +387,13 @@ else
   endif
 endif
 
-#
-# System specific configuration
-#
-
-ifndef HOST_FBC
-  HOST_FBC := $(HOST_PREFIX)$(FBC)
-endif
-ifndef HOST_CC
-  HOST_CC := $(HOST_PREFIX)$(CC)
-endif
-ifndef TARGET_AR
-  TARGET_AR := $(TARGET_PREFIX)$(AR)
-endif
-ifndef TARGET_CC
-  TARGET_CC := $(TARGET_PREFIX)$(CC)
-endif
-
 ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
 endif
+
+#
+# Directory layout setup
+#
 
 # Default prefix is /usr/local, except when cross-compiling, then you typically
 # don't want to install into the build system, and when on Windows (with MinGW),
@@ -426,12 +411,95 @@ ifndef prefix
   endif
 endif
 
-ifeq ($(TARGET_OS),dos)
-  # Don't build libfbmt for DOS
-  DISABLE_MT := YesPlease
-  # And also no OpenGL support
-  DISABLE_OPENGL := YesPlease
+# Protect against dangerous empty path variables, we do not want to end up with
+# 'rm -rf /'. Assuming <nothing> means '.'.
+ifndef prefix
+  override prefix := .
 endif
+ifndef new
+  override new := .
+endif
+
+ifdef ENABLE_STANDALONE
+  newbin     := $(new)
+  newinclude := $(new)/$(TARGET_PREFIX)include$(SUFFIX)
+  newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
+  prefixbin     := $(prefix)
+  prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
+  prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
+else
+  newbin     := $(new)/bin
+  newinclude := $(new)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  newlib     := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  prefixbin     := $(prefix)/bin
+  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+endif
+
+FBC_EXE := $(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+
+newcompiler := $(new)/compiler
+newlibfb    := $(new)/libfb
+newlibfbmt  := $(new)/libfbmt
+newlibfbgfx := $(new)/libfbgfx
+
+#
+# Compilers and flags
+#
+
+ifndef HOST_FBC
+  HOST_FBC := $(HOST_PREFIX)$(FBC)
+endif
+ifndef HOST_CC
+  HOST_CC := $(HOST_PREFIX)$(CC)
+endif
+ifndef TARGET_AR
+  TARGET_AR := $(TARGET_PREFIX)$(AR)
+endif
+ifndef TARGET_CC
+  TARGET_CC := $(TARGET_PREFIX)$(CC)
+endif
+
+FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(FBFLAGS)
+FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
+ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
+
+ifneq ($(filter cygwin win32,$(HOST_OS)),)
+  FBLFLAGS += -t 2048
+endif
+
+ifndef DISABLE_OBJINFO
+  FBLFLAGS += -l bfd -l iberty
+  ifeq ($(HOST_OS),cygwin)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(HOST_OS),dos)
+    FBLFLAGS += -l intl -l z
+  endif
+  ifeq ($(HOST_OS),freebsd)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(HOST_OS),openbsd)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(HOST_OS),win32)
+    FBLFLAGS += -l user32
+  endif
+endif
+
+# Some special treatment for xbox. TODO: Test me, update me!
+ifeq ($(TARGET_OS),xbox)
+  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
+  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
+  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
+  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
+  ALLCFLAGS += -I$(OPENXDK)/include
+  ALLCFLAGS += -I$(OPENXDK)/include/SDL
+endif
+
+#
+# Sources
+#
 
 # Enable the default target in the compiler, and set the default triplet,
 # which can be empty.
@@ -476,114 +544,7 @@ ifeq ($(TARGET_OS),xbox)
   TRIPLET_XBOX:=$(TARGET)
 endif
 
-#
-# Directory layout setup
-#
-
-# Protect against dangerous empty path variables, we do not want to end up with
-# 'rm -rf /'. Assuming <nothing> means '.'.
-ifndef prefix
-  override prefix := .
-endif
-ifndef new
-  override new := .
-endif
-
-ifdef ENABLE_STANDALONE
-  newbin     := $(new)
-  newinclude := $(new)/$(TARGET_PREFIX)include$(SUFFIX)
-  newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
-  prefixbin     := $(prefix)
-  prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
-  prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
-else
-  newbin     := $(new)/bin
-  newinclude := $(new)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  newlib     := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  prefixbin     := $(prefix)/bin
-  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
-endif
-
-NEW_FBC := $(newbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
-NEW_HEADERS := $(newinclude)/datetime.bi
-NEW_HEADERS += $(newinclude)/dir.bi
-NEW_HEADERS += $(newinclude)/fbgfx.bi
-NEW_HEADERS += $(newinclude)/file.bi
-NEW_HEADERS += $(newinclude)/string.bi
-NEW_HEADERS += $(newinclude)/utf_conv.bi
-NEW_HEADERS += $(newinclude)/vbcompat.bi
-NEW_FBRT0 := $(newlib)/fbrt0.o
-NEW_LIBFB := $(newlib)/libfb.a
-ifndef DISABLE_MT
-  NEW_LIBFBMT := $(newlib)/libfbmt.a
-endif
-ifndef DISABLE_GFX
-  NEW_LIBFBGFX := $(newlib)/libfbgfx.a
-endif
-
-FBC_PREFIX := $(prefixbin)/$(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
-HEADERS_PREFIX := $(patsubst $(newinclude)/,$(prefixinclude)/,$(NEW_HEADERS))
-FBRT0_PREFIX := $(prefixlib)/fbrt0.o
-LIBFB_PREFIX := $(prefixlib)/libfb.a
-ifndef DISABLE_MT
-  LIBFBMT_PREFIX := $(prefixlib)/libfbmt.a
-endif
-ifndef DISABLE_GFX
-  LIBFBGFX_PREFIX := $(prefixlib)/libfbgfx.a
-endif
-
-newcompiler := $(new)/compiler
-newruntime := $(new)/runtime
-FBC_CONFIG := $(newcompiler)/config.bi
-LIBFB_CONFIG := $(newruntime)/config.h
-
-#
-# Compiler flags
-#
-
-FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(FBFLAGS)
-FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
-ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
-
-ifneq ($(filter cygwin win32,$(HOST_OS)),)
-  FBLFLAGS += -t 2048
-endif
-
-ifndef DISABLE_OBJINFO
-  FBLFLAGS += -l bfd -l iberty
-  ifeq ($(HOST_OS),cygwin)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(HOST_OS),dos)
-    FBLFLAGS += -l intl -l z
-  endif
-  ifeq ($(HOST_OS),freebsd)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(HOST_OS),openbsd)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(HOST_OS),win32)
-    FBLFLAGS += -l user32
-  endif
-endif
-
-# Some special treatment for xbox. TODO: Test me, update me!
-ifeq ($(TARGET_OS),xbox)
-  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
-  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
-  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
-  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
-  ALLCFLAGS += -I$(OPENXDK)/include
-  ALLCFLAGS += -I$(OPENXDK)/include/SDL
-endif
-
-#
-# Sources
-#
-
-FBC_BI := $(FBC_CONFIG)
+FBC_BI := $(newcompiler)/config.bi
 FBC_BI += compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
 FBC_BI += compiler/clist.bi
@@ -612,181 +573,68 @@ FBC_BI += compiler/stabs.bi
 FBC_BI += compiler/stack.bi
 FBC_BI += compiler/symb.bi
 
-FBC_BAS := $(newcompiler)/ast.o
-FBC_BAS += $(newcompiler)/ast-gosub.o
-FBC_BAS += $(newcompiler)/ast-helper.o
-FBC_BAS += $(newcompiler)/ast-misc.o
-FBC_BAS += $(newcompiler)/ast-node-addr.o
-FBC_BAS += $(newcompiler)/ast-node-arg.o
-FBC_BAS += $(newcompiler)/ast-node-assign.o
-FBC_BAS += $(newcompiler)/ast-node-bop.o
-FBC_BAS += $(newcompiler)/ast-node-branch.o
-FBC_BAS += $(newcompiler)/ast-node-call.o
-FBC_BAS += $(newcompiler)/ast-node-check.o
-FBC_BAS += $(newcompiler)/ast-node-const.o
-FBC_BAS += $(newcompiler)/ast-node-conv.o
-FBC_BAS += $(newcompiler)/ast-node-data.o
-FBC_BAS += $(newcompiler)/ast-node-decl.o
-FBC_BAS += $(newcompiler)/ast-node-enum.o
-FBC_BAS += $(newcompiler)/ast-node-field.o
-FBC_BAS += $(newcompiler)/ast-node-idx.o
-FBC_BAS += $(newcompiler)/ast-node-iif.o
-FBC_BAS += $(newcompiler)/ast-node-link.o
-FBC_BAS += $(newcompiler)/ast-node-load.o
-FBC_BAS += $(newcompiler)/ast-node-mem.o
-FBC_BAS += $(newcompiler)/ast-node-misc.o
-FBC_BAS += $(newcompiler)/ast-node-namespace.o
-FBC_BAS += $(newcompiler)/ast-node-proc.o
-FBC_BAS += $(newcompiler)/ast-node-ptr.o
-FBC_BAS += $(newcompiler)/ast-node-scope.o
-FBC_BAS += $(newcompiler)/ast-node-stack.o
-FBC_BAS += $(newcompiler)/ast-node-typeini.o
-FBC_BAS += $(newcompiler)/ast-node-uop.o
-FBC_BAS += $(newcompiler)/ast-node-var.o
-FBC_BAS += $(newcompiler)/ast-optimize.o
-FBC_BAS += $(newcompiler)/ast-vectorize.o
-FBC_BAS += $(newcompiler)/clist.o
-FBC_BAS += $(newcompiler)/dstr.o
-FBC_BAS += $(newcompiler)/edbg_stab.o
-FBC_BAS += $(newcompiler)/emit.o
-FBC_BAS += $(newcompiler)/emit_SSE.o
-FBC_BAS += $(newcompiler)/emit_x86.o
-FBC_BAS += $(newcompiler)/error.o
-FBC_BAS += $(newcompiler)/fb.o
-FBC_BAS += $(newcompiler)/fb-main.o
-FBC_BAS += $(newcompiler)/fb-objinfo.o
-FBC_BAS += $(newcompiler)/fbc.o
+FBC_BAS := \
+  ast ast-gosub ast-helper ast-misc \
+  ast-node-addr ast-node-arg ast-node-assign ast-node-bop ast-node-branch \
+  ast-node-call ast-node-check ast-node-const ast-node-conv ast-node-data \
+  ast-node-decl ast-node-enum ast-node-field ast-node-idx ast-node-iif \
+  ast-node-link ast-node-load ast-node-mem ast-node-misc ast-node-namespace \
+  ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
+  ast-node-uop ast-node-var ast-optimize ast-vectorize \
+  clist dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main fb-objinfo \
+  fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
+  parser-assignment parser-comment parser-compound parser-compound-do \
+  parser-compound-extern parser-compound-for parser-compound-if \
+  parser-compound-namespace parser-compound-scope parser-compound-select \
+  parser-compound-select-const parser-compound-while parser-compound-with \
+  parser-decl parser-decl-const parser-decl-def parser-decl-enum \
+  parser-decl-option parser-decl-proc parser-decl-proc-params \
+  parser-decl-struct parser-decl-symb-init parser-decl-symbtype \
+  parser-decl-typedef parser-decl-var parser-expr-atom parser-expr-binary \
+  parser-expr-constant parser-expr-function parser-expr-unary \
+  parser-expr-variable parser-identifier parser-inlineasm parser-label \
+  parser-proc parser-proccall-args parser-proccall parser-quirk-array \
+  parser-quirk parser-quirk-casting parser-quirk-console parser-quirk-data \
+  parser-quirk-error parser-quirk-file parser-quirk-gfx \
+  parser-quirk-goto-return parser-quirk-iif parser-quirk-math \
+  parser-quirk-mem parser-quirk-on parser-quirk-peekpoke parser-quirk-string \
+  parser-quirk-vafirst parser-statement parser-toplevel \
+  pool pp pp-cond pp-define pp-pragma reg \
+  rtl rtl-array rtl-console rtl-data rtl-error rtl-file rtl-gfx rtl-gosub \
+  rtl-macro rtl-math rtl-mem rtl-print rtl-profile rtl-string rtl-system \
+  stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
+  symb-enum symb-keyword symb-label symb-lib symb-mangling symb-namespace \
+  symb-proc symb-scope symb-struct symb-typedef symb-var
+
 ifdef ENABLE_CYGWIN
-  FBC_BAS += $(newcompiler)/fbc_cyg.o
+  FBC_BAS += fbc_cyg
 endif
 ifdef ENABLE_DARWIN
-  FBC_BAS += $(newcompiler)/fbc_darwin.o
+  FBC_BAS += fbc_darwin
 endif
 ifdef ENABLE_DOS
-  FBC_BAS += $(newcompiler)/fbc_dos.o
+  FBC_BAS += fbc_dos
 endif
 ifdef ENABLE_FREEBSD
-  FBC_BAS += $(newcompiler)/fbc_freebsd.o
+  FBC_BAS += fbc_freebsd
 endif
 ifdef ENABLE_LINUX
-  FBC_BAS += $(newcompiler)/fbc_linux.o
+  FBC_BAS += fbc_linux
 endif
 ifdef ENABLE_NETBSD
-  FBC_BAS += $(newcompiler)/fbc_netbsd.o
+  FBC_BAS += fbc_netbsd
 endif
 ifdef ENABLE_OPENBSD
-  FBC_BAS += $(newcompiler)/fbc_openbsd.o
+  FBC_BAS += fbc_openbsd
 endif
 ifdef ENABLE_WIN32
-  FBC_BAS += $(newcompiler)/fbc_win32.o
+  FBC_BAS += fbc_win32
 endif
 ifdef ENABLE_XBOX
-  FBC_BAS += $(newcompiler)/fbc_xbox.o
+  FBC_BAS += fbc_xbox
 endif
-FBC_BAS += $(newcompiler)/flist.o
-FBC_BAS += $(newcompiler)/hash.o
-FBC_BAS += $(newcompiler)/hlp.o
-FBC_BAS += $(newcompiler)/hlp-str.o
-FBC_BAS += $(newcompiler)/ir.o
-FBC_BAS += $(newcompiler)/ir-hlc.o
-FBC_BAS += $(newcompiler)/ir-tac.o
-FBC_BAS += $(newcompiler)/lex.o
-FBC_BAS += $(newcompiler)/lex-utf.o
-FBC_BAS += $(newcompiler)/list.o
-FBC_BAS += $(newcompiler)/parser-assignment.o
-FBC_BAS += $(newcompiler)/parser-comment.o
-FBC_BAS += $(newcompiler)/parser-compound.o
-FBC_BAS += $(newcompiler)/parser-compound-do.o
-FBC_BAS += $(newcompiler)/parser-compound-extern.o
-FBC_BAS += $(newcompiler)/parser-compound-for.o
-FBC_BAS += $(newcompiler)/parser-compound-if.o
-FBC_BAS += $(newcompiler)/parser-compound-namespace.o
-FBC_BAS += $(newcompiler)/parser-compound-scope.o
-FBC_BAS += $(newcompiler)/parser-compound-select.o
-FBC_BAS += $(newcompiler)/parser-compound-select-const.o
-FBC_BAS += $(newcompiler)/parser-compound-while.o
-FBC_BAS += $(newcompiler)/parser-compound-with.o
-FBC_BAS += $(newcompiler)/parser-decl.o
-FBC_BAS += $(newcompiler)/parser-decl-const.o
-FBC_BAS += $(newcompiler)/parser-decl-def.o
-FBC_BAS += $(newcompiler)/parser-decl-enum.o
-FBC_BAS += $(newcompiler)/parser-decl-option.o
-FBC_BAS += $(newcompiler)/parser-decl-proc.o
-FBC_BAS += $(newcompiler)/parser-decl-proc-params.o
-FBC_BAS += $(newcompiler)/parser-decl-struct.o
-FBC_BAS += $(newcompiler)/parser-decl-symb-init.o
-FBC_BAS += $(newcompiler)/parser-decl-symbtype.o
-FBC_BAS += $(newcompiler)/parser-decl-typedef.o
-FBC_BAS += $(newcompiler)/parser-decl-var.o
-FBC_BAS += $(newcompiler)/parser-expr-atom.o
-FBC_BAS += $(newcompiler)/parser-expr-binary.o
-FBC_BAS += $(newcompiler)/parser-expr-constant.o
-FBC_BAS += $(newcompiler)/parser-expr-function.o
-FBC_BAS += $(newcompiler)/parser-expr-unary.o
-FBC_BAS += $(newcompiler)/parser-expr-variable.o
-FBC_BAS += $(newcompiler)/parser-identifier.o
-FBC_BAS += $(newcompiler)/parser-inlineasm.o
-FBC_BAS += $(newcompiler)/parser-label.o
-FBC_BAS += $(newcompiler)/parser-proc.o
-FBC_BAS += $(newcompiler)/parser-proccall-args.o
-FBC_BAS += $(newcompiler)/parser-proccall.o
-FBC_BAS += $(newcompiler)/parser-quirk-array.o
-FBC_BAS += $(newcompiler)/parser-quirk.o
-FBC_BAS += $(newcompiler)/parser-quirk-casting.o
-FBC_BAS += $(newcompiler)/parser-quirk-console.o
-FBC_BAS += $(newcompiler)/parser-quirk-data.o
-FBC_BAS += $(newcompiler)/parser-quirk-error.o
-FBC_BAS += $(newcompiler)/parser-quirk-file.o
-FBC_BAS += $(newcompiler)/parser-quirk-gfx.o
-FBC_BAS += $(newcompiler)/parser-quirk-goto-return.o
-FBC_BAS += $(newcompiler)/parser-quirk-iif.o
-FBC_BAS += $(newcompiler)/parser-quirk-math.o
-FBC_BAS += $(newcompiler)/parser-quirk-mem.o
-FBC_BAS += $(newcompiler)/parser-quirk-on.o
-FBC_BAS += $(newcompiler)/parser-quirk-peekpoke.o
-FBC_BAS += $(newcompiler)/parser-quirk-string.o
-FBC_BAS += $(newcompiler)/parser-quirk-vafirst.o
-FBC_BAS += $(newcompiler)/parser-statement.o
-FBC_BAS += $(newcompiler)/parser-toplevel.o
-FBC_BAS += $(newcompiler)/pool.o
-FBC_BAS += $(newcompiler)/pp.o
-FBC_BAS += $(newcompiler)/pp-cond.o
-FBC_BAS += $(newcompiler)/pp-define.o
-FBC_BAS += $(newcompiler)/pp-pragma.o
-FBC_BAS += $(newcompiler)/reg.o
-FBC_BAS += $(newcompiler)/rtl.o
-FBC_BAS += $(newcompiler)/rtl-array.o
-FBC_BAS += $(newcompiler)/rtl-console.o
-FBC_BAS += $(newcompiler)/rtl-data.o
-FBC_BAS += $(newcompiler)/rtl-error.o
-FBC_BAS += $(newcompiler)/rtl-file.o
-FBC_BAS += $(newcompiler)/rtl-gfx.o
-FBC_BAS += $(newcompiler)/rtl-gosub.o
-FBC_BAS += $(newcompiler)/rtl-macro.o
-FBC_BAS += $(newcompiler)/rtl-math.o
-FBC_BAS += $(newcompiler)/rtl-mem.o
-FBC_BAS += $(newcompiler)/rtl-print.o
-FBC_BAS += $(newcompiler)/rtl-profile.o
-FBC_BAS += $(newcompiler)/rtl-string.o
-FBC_BAS += $(newcompiler)/rtl-system.o
-FBC_BAS += $(newcompiler)/stack.o
-FBC_BAS += $(newcompiler)/symb.o
-FBC_BAS += $(newcompiler)/symb-bitfield.o
-FBC_BAS += $(newcompiler)/symb-comp.o
-FBC_BAS += $(newcompiler)/symb-const.o
-FBC_BAS += $(newcompiler)/symb-data.o
-FBC_BAS += $(newcompiler)/symb-define.o
-FBC_BAS += $(newcompiler)/symb-enum.o
-FBC_BAS += $(newcompiler)/symb-keyword.o
-FBC_BAS += $(newcompiler)/symb-label.o
-FBC_BAS += $(newcompiler)/symb-lib.o
-FBC_BAS += $(newcompiler)/symb-mangling.o
-FBC_BAS += $(newcompiler)/symb-namespace.o
-FBC_BAS += $(newcompiler)/symb-proc.o
-FBC_BAS += $(newcompiler)/symb-scope.o
-FBC_BAS += $(newcompiler)/symb-struct.o
-FBC_BAS += $(newcompiler)/symb-typedef.o
-FBC_BAS += $(newcompiler)/symb-var.o
+
+FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
 
 FBC_COBJINFO :=
 ifndef DISABLE_OBJINFO
@@ -795,852 +643,371 @@ ifndef DISABLE_OBJINFO
   endif
 endif
 
-LIBFB_H := $(LIBFB_CONFIG)
-LIBFB_H += runtime/fb.h
-LIBFB_H += runtime/fb_array.h
-LIBFB_H += runtime/fb_colors.h
-LIBFB_H += runtime/fb_config.h
-LIBFB_H += runtime/fb_con.h
-LIBFB_H += runtime/fb_console.h
-LIBFB_H += runtime/fb_data.h
-LIBFB_H += runtime/fb_datetime.h
-LIBFB_H += runtime/fb_device.h
-LIBFB_H += runtime/fb_error.h
-LIBFB_H += runtime/fb_file.h
-LIBFB_H += runtime/fb_hook.h
-LIBFB_H += runtime/fb_intern.h
-LIBFB_H += runtime/fb_math.h
-LIBFB_H += runtime/fb_port.h
-LIBFB_H += runtime/fb_printer.h
-LIBFB_H += runtime/fb_scancodes.h
-LIBFB_H += runtime/fb_serial.h
-LIBFB_H += runtime/fb_string.h
-LIBFB_H += runtime/fb_system.h
-LIBFB_H += runtime/fb_thread.h
-LIBFB_H += runtime/fb_unicode.h
-LIBFB_H += runtime/con_print_raw_uni.h
-LIBFB_H += runtime/con_print_tty_uni.h
+ifeq ($(TARGET_OS),dos)
+  # Don't build libfbmt for DOS
+  DISABLE_MT := YesPlease
+  # And also no OpenGL support
+  DISABLE_OPENGL := YesPlease
+endif
 
-LIBFB_C := $(newruntime)/array_boundchk.o
-LIBFB_C += $(newruntime)/array_clear.o
-LIBFB_C += $(newruntime)/array_clear_obj.o
-LIBFB_C += $(newruntime)/array_core.o
-LIBFB_C += $(newruntime)/array_erase.o
-LIBFB_C += $(newruntime)/array_erase_obj.o
-LIBFB_C += $(newruntime)/array_erasestr.o
-LIBFB_C += $(newruntime)/array_lbound.o
-LIBFB_C += $(newruntime)/array_redim.o
-LIBFB_C += $(newruntime)/array_redim_obj.o
-LIBFB_C += $(newruntime)/array_redimpresv.o
-LIBFB_C += $(newruntime)/array_redimpresv_obj.o
-LIBFB_C += $(newruntime)/array_resetdesc.o
-LIBFB_C += $(newruntime)/array_setdesc.o
-LIBFB_C += $(newruntime)/array_tmpdesc.o
-LIBFB_C += $(newruntime)/array_ubound.o
-LIBFB_C += $(newruntime)/assert.o
-LIBFB_C += $(newruntime)/assert_wstr.o
-LIBFB_C += $(newruntime)/con_lineinp.o
-LIBFB_C += $(newruntime)/con_lineinp_wstr.o
-LIBFB_C += $(newruntime)/con_locate.o
-LIBFB_C += $(newruntime)/con_pos.o
-LIBFB_C += $(newruntime)/con_print_raw.o
-LIBFB_C += $(newruntime)/con_print_raw_wstr.o
-LIBFB_C += $(newruntime)/con_print_tty.o
-LIBFB_C += $(newruntime)/con_print_tty_wstr.o
-LIBFB_C += $(newruntime)/con_readline.o
-LIBFB_C += $(newruntime)/data.o
-LIBFB_C += $(newruntime)/data_readbyte.o
-LIBFB_C += $(newruntime)/data_readdouble.o
-LIBFB_C += $(newruntime)/data_readint.o
-LIBFB_C += $(newruntime)/data_readlong.o
-LIBFB_C += $(newruntime)/data_readshort.o
-LIBFB_C += $(newruntime)/data_readsingle.o
-LIBFB_C += $(newruntime)/data_readstr.o
-LIBFB_C += $(newruntime)/data_readubyte.o
-LIBFB_C += $(newruntime)/data_readuint.o
-LIBFB_C += $(newruntime)/data_readulong.o
-LIBFB_C += $(newruntime)/data_readushort.o
-LIBFB_C += $(newruntime)/data_read_wstr.o
-LIBFB_C += $(newruntime)/data_rest.o
-LIBFB_C += $(newruntime)/dev_com.o
-LIBFB_C += $(newruntime)/dev_com_test.o
-LIBFB_C += $(newruntime)/dev_cons_open.o
-LIBFB_C += $(newruntime)/dev_err_open.o
-LIBFB_C += $(newruntime)/dev_file_close.o
-LIBFB_C += $(newruntime)/dev_file_encod_open.o
-LIBFB_C += $(newruntime)/dev_file_encod_read.o
-LIBFB_C += $(newruntime)/dev_file_encod_read_core.o
-LIBFB_C += $(newruntime)/dev_file_encod_readline.o
-LIBFB_C += $(newruntime)/dev_file_encod_readline_wstr.o
-LIBFB_C += $(newruntime)/dev_file_encod_read_wstr.o
-LIBFB_C += $(newruntime)/dev_file_encod_write.o
-LIBFB_C += $(newruntime)/dev_file_encod_write_wstr.o
-LIBFB_C += $(newruntime)/dev_file_eof.o
-LIBFB_C += $(newruntime)/dev_file_flush.o
-LIBFB_C += $(newruntime)/dev_file_lock.o
-LIBFB_C += $(newruntime)/dev_file_open.o
-LIBFB_C += $(newruntime)/dev_file_read.o
-LIBFB_C += $(newruntime)/dev_file_readline.o
-LIBFB_C += $(newruntime)/dev_file_readline_wstr.o
-LIBFB_C += $(newruntime)/dev_file_read_wstr.o
-LIBFB_C += $(newruntime)/dev_file_seek.o
-LIBFB_C += $(newruntime)/dev_file_size.o
-LIBFB_C += $(newruntime)/dev_file_tell.o
-LIBFB_C += $(newruntime)/dev_file_unlock.o
-LIBFB_C += $(newruntime)/dev_file_write.o
-LIBFB_C += $(newruntime)/dev_file_write_wstr.o
-LIBFB_C += $(newruntime)/dev_lpt.o
-LIBFB_C += $(newruntime)/dev_lpt_close.o
-LIBFB_C += $(newruntime)/dev_lpt_test.o
-LIBFB_C += $(newruntime)/dev_lpt_write.o
-LIBFB_C += $(newruntime)/dev_lpt_write_wstr.o
-LIBFB_C += $(newruntime)/dev_scrn.o
-LIBFB_C += $(newruntime)/dev_scrn_close.o
-LIBFB_C += $(newruntime)/dev_scrn_eof.o
-LIBFB_C += $(newruntime)/dev_scrn_init.o
-LIBFB_C += $(newruntime)/dev_scrn_read.o
-LIBFB_C += $(newruntime)/dev_scrn_readline.o
-LIBFB_C += $(newruntime)/dev_scrn_readline_wstr.o
-LIBFB_C += $(newruntime)/dev_scrn_read_wstr.o
-LIBFB_C += $(newruntime)/dev_scrn_write.o
-LIBFB_C += $(newruntime)/dev_scrn_write_wstr.o
-LIBFB_C += $(newruntime)/dev_stdio_close.o
-LIBFB_C += $(newruntime)/error.o
-LIBFB_C += $(newruntime)/error_getset.o
-LIBFB_C += $(newruntime)/error_ptrchk.o
-LIBFB_C += $(newruntime)/exit.o
-LIBFB_C += $(newruntime)/file_attr.o
-LIBFB_C += $(newruntime)/file_close.o
-LIBFB_C += $(newruntime)/file_copy.o
-LIBFB_C += $(newruntime)/file_datetime.o
-LIBFB_C += $(newruntime)/file_encod.o
-LIBFB_C += $(newruntime)/file_eof.o
-LIBFB_C += $(newruntime)/file_exists.o
-LIBFB_C += $(newruntime)/file_free.o
-LIBFB_C += $(newruntime)/file_getarray.o
-LIBFB_C += $(newruntime)/file_get.o
-LIBFB_C += $(newruntime)/file_getstr.o
-LIBFB_C += $(newruntime)/file_get_wstr.o
-LIBFB_C += $(newruntime)/file_input_byte.o
-LIBFB_C += $(newruntime)/file_input_con.o
-LIBFB_C += $(newruntime)/file_input_file.o
-LIBFB_C += $(newruntime)/file_input_float.o
-LIBFB_C += $(newruntime)/file_input_int.o
-LIBFB_C += $(newruntime)/file_input_longint.o
-LIBFB_C += $(newruntime)/file_input_short.o
-LIBFB_C += $(newruntime)/file_input_str.o
-LIBFB_C += $(newruntime)/file_inputstr.o
-LIBFB_C += $(newruntime)/file_input_tok.o
-LIBFB_C += $(newruntime)/file_input_tok_wstr.o
-LIBFB_C += $(newruntime)/file_input_ubyte.o
-LIBFB_C += $(newruntime)/file_input_uint.o
-LIBFB_C += $(newruntime)/file_input_ulongint.o
-LIBFB_C += $(newruntime)/file_input_ushort.o
-LIBFB_C += $(newruntime)/file_input_wstr.o
-LIBFB_C += $(newruntime)/file_kill.o
-LIBFB_C += $(newruntime)/file_len.o
-LIBFB_C += $(newruntime)/file_lineinp.o
-LIBFB_C += $(newruntime)/file_lineinp_wstr.o
-LIBFB_C += $(newruntime)/file_loc.o
-LIBFB_C += $(newruntime)/file_lock.o
-LIBFB_C += $(newruntime)/file_open.o
-LIBFB_C += $(newruntime)/file_opencom.o
-LIBFB_C += $(newruntime)/file_opencons.o
-LIBFB_C += $(newruntime)/file_openencod.o
-LIBFB_C += $(newruntime)/file_openerr.o
-LIBFB_C += $(newruntime)/file_openlpt.o
-LIBFB_C += $(newruntime)/file_openpipe.o
-LIBFB_C += $(newruntime)/file_openscrn.o
-LIBFB_C += $(newruntime)/file_openshort.o
-LIBFB_C += $(newruntime)/file_print.o
-LIBFB_C += $(newruntime)/file_print_wstr.o
-LIBFB_C += $(newruntime)/file_putarray.o
-LIBFB_C += $(newruntime)/file_putback.o
-LIBFB_C += $(newruntime)/file_putback_wstr.o
-LIBFB_C += $(newruntime)/file_put.o
-LIBFB_C += $(newruntime)/file_putstr.o
-LIBFB_C += $(newruntime)/file_put_wstr.o
-LIBFB_C += $(newruntime)/file_reset.o
-LIBFB_C += $(newruntime)/file_seek.o
-LIBFB_C += $(newruntime)/file_size.o
-LIBFB_C += $(newruntime)/file_tell.o
-LIBFB_C += $(newruntime)/file_winputstr.o
-LIBFB_C += $(newruntime)/gosub.o
-LIBFB_C += $(newruntime)/hook_cls.o
-LIBFB_C += $(newruntime)/hook_color.o
-LIBFB_C += $(newruntime)/hook_getsize.o
-LIBFB_C += $(newruntime)/hook_getx.o
-LIBFB_C += $(newruntime)/hook_getxy.o
-LIBFB_C += $(newruntime)/hook_gety.o
-LIBFB_C += $(newruntime)/hook_inkey.o
-LIBFB_C += $(newruntime)/hook_isredir.o
-LIBFB_C += $(newruntime)/hook_lineinp.o
-LIBFB_C += $(newruntime)/hook_lineinp_wstr.o
-LIBFB_C += $(newruntime)/hook_locate_ex.o
-LIBFB_C += $(newruntime)/hook_mouse.o
-LIBFB_C += $(newruntime)/hook_multikey.o
-LIBFB_C += $(newruntime)/hook_pageset.o
-LIBFB_C += $(newruntime)/hook_pcopy.o
-LIBFB_C += $(newruntime)/hook_ports.o
-LIBFB_C += $(newruntime)/hook_printstr.o
-LIBFB_C += $(newruntime)/hook_print_wstr.o
-LIBFB_C += $(newruntime)/hook_readstr.o
-LIBFB_C += $(newruntime)/hook_readxy.o
-LIBFB_C += $(newruntime)/hook_sleep.o
-LIBFB_C += $(newruntime)/hook_view_update.o
-LIBFB_C += $(newruntime)/hook_width.o
-LIBFB_C += $(newruntime)/init.o
-LIBFB_C += $(newruntime)/intl_get.o
-LIBFB_C += $(newruntime)/intl_getdateformat.o
-LIBFB_C += $(newruntime)/intl_getmonthname.o
-LIBFB_C += $(newruntime)/intl_getset.o
-LIBFB_C += $(newruntime)/intl_gettimeformat.o
-LIBFB_C += $(newruntime)/intl_getweekdayname.o
-LIBFB_C += $(newruntime)/io_lpos.o
-LIBFB_C += $(newruntime)/io_lprint_byte.o
-LIBFB_C += $(newruntime)/io_lprint_fix.o
-LIBFB_C += $(newruntime)/io_lprint_fp.o
-LIBFB_C += $(newruntime)/io_lprint_int.o
-LIBFB_C += $(newruntime)/io_lprint_longint.o
-LIBFB_C += $(newruntime)/io_lprint_short.o
-LIBFB_C += $(newruntime)/io_lprint_str.o
-LIBFB_C += $(newruntime)/io_lprintusg.o
-LIBFB_C += $(newruntime)/io_lprintvoid.o
-LIBFB_C += $(newruntime)/io_lprint_wstr.o
-LIBFB_C += $(newruntime)/io_print_byte.o
-LIBFB_C += $(newruntime)/io_print.o
-LIBFB_C += $(newruntime)/io_print_fix.o
-LIBFB_C += $(newruntime)/io_print_fp.o
-LIBFB_C += $(newruntime)/io_print_int.o
-LIBFB_C += $(newruntime)/io_print_longint.o
-LIBFB_C += $(newruntime)/io_printpad.o
-LIBFB_C += $(newruntime)/io_printpad_wstr.o
-LIBFB_C += $(newruntime)/io_print_short.o
-LIBFB_C += $(newruntime)/io_printusg.o
-LIBFB_C += $(newruntime)/io_printvoid.o
-LIBFB_C += $(newruntime)/io_printvoid_wstr.o
-LIBFB_C += $(newruntime)/io_print_wstr.o
-LIBFB_C += $(newruntime)/io_setpos.o
-LIBFB_C += $(newruntime)/io_spc.o
-LIBFB_C += $(newruntime)/io_view.o
-LIBFB_C += $(newruntime)/io_viewhlp.o
-LIBFB_C += $(newruntime)/io_widthdev.o
-LIBFB_C += $(newruntime)/io_widthfile.o
-LIBFB_C += $(newruntime)/io_writebyte.o
-LIBFB_C += $(newruntime)/io_writefloat.o
-LIBFB_C += $(newruntime)/io_writeint.o
-LIBFB_C += $(newruntime)/io_writelongint.o
-LIBFB_C += $(newruntime)/io_writeshort.o
-LIBFB_C += $(newruntime)/io_writestr.o
-LIBFB_C += $(newruntime)/io_writevoid.o
-LIBFB_C += $(newruntime)/io_write_wstr.o
-LIBFB_C += $(newruntime)/list.o
-LIBFB_C += $(newruntime)/listdyn.o
-LIBFB_C += $(newruntime)/math_fix.o
-LIBFB_C += $(newruntime)/math_frac.o
-LIBFB_C += $(newruntime)/math_rnd.o
-LIBFB_C += $(newruntime)/math_sgn.o
-LIBFB_C += $(newruntime)/mem_copyclear.o
-LIBFB_C += $(newruntime)/oo_istypeof.o
-LIBFB_C += $(newruntime)/oo_object.o
-LIBFB_C += $(newruntime)/qb_file_open.o
-LIBFB_C += $(newruntime)/qb_inkey.o
-LIBFB_C += $(newruntime)/qb_sleep.o
-LIBFB_C += $(newruntime)/qb_str_convto.o
-LIBFB_C += $(newruntime)/qb_str_convto_flt.o
-LIBFB_C += $(newruntime)/qb_str_convto_lng.o
-LIBFB_C += $(newruntime)/signals.o
-LIBFB_C += $(newruntime)/str_asc.o
-LIBFB_C += $(newruntime)/str_assign.o
-LIBFB_C += $(newruntime)/str_base.o
-LIBFB_C += $(newruntime)/str_bin.o
-LIBFB_C += $(newruntime)/str_bin_lng.o
-LIBFB_C += $(newruntime)/str_chr.o
-LIBFB_C += $(newruntime)/str_comp.o
-LIBFB_C += $(newruntime)/str_concatassign.o
-LIBFB_C += $(newruntime)/str_concat.o
-LIBFB_C += $(newruntime)/str_convfrom.o
-LIBFB_C += $(newruntime)/str_convfrom_int.o
-LIBFB_C += $(newruntime)/str_convfrom_lng.o
-LIBFB_C += $(newruntime)/str_convfrom_rad.o
-LIBFB_C += $(newruntime)/str_convfrom_radlng.o
-LIBFB_C += $(newruntime)/str_convfrom_uint.o
-LIBFB_C += $(newruntime)/str_convfrom_ulng.o
-LIBFB_C += $(newruntime)/str_convto.o
-LIBFB_C += $(newruntime)/str_convto_flt.o
-LIBFB_C += $(newruntime)/str_convto_lng.o
-LIBFB_C += $(newruntime)/str_core.o
-LIBFB_C += $(newruntime)/str_cvmk.o
-LIBFB_C += $(newruntime)/str_del.o
-LIBFB_C += $(newruntime)/str_fill.o
-LIBFB_C += $(newruntime)/str_format.o
-LIBFB_C += $(newruntime)/str_ftoa.o
-LIBFB_C += $(newruntime)/str_hex.o
-LIBFB_C += $(newruntime)/str_hex_lng.o
-LIBFB_C += $(newruntime)/str_instrany.o
-LIBFB_C += $(newruntime)/str_instr.o
-LIBFB_C += $(newruntime)/str_instrrevany.o
-LIBFB_C += $(newruntime)/str_instrrev.o
-LIBFB_C += $(newruntime)/str_lcase.o
-LIBFB_C += $(newruntime)/str_left.o
-LIBFB_C += $(newruntime)/str_len.o
-LIBFB_C += $(newruntime)/str_ltrimany.o
-LIBFB_C += $(newruntime)/str_ltrim.o
-LIBFB_C += $(newruntime)/str_ltrimex.o
-LIBFB_C += $(newruntime)/str_midassign.o
-LIBFB_C += $(newruntime)/str_mid.o
-LIBFB_C += $(newruntime)/str_misc.o
-LIBFB_C += $(newruntime)/str_oct.o
-LIBFB_C += $(newruntime)/str_oct_lng.o
-LIBFB_C += $(newruntime)/str_right.o
-LIBFB_C += $(newruntime)/str_rtrimany.o
-LIBFB_C += $(newruntime)/str_rtrim.o
-LIBFB_C += $(newruntime)/str_rtrimex.o
-LIBFB_C += $(newruntime)/str_set.o
-LIBFB_C += $(newruntime)/str_tempdescf.o
-LIBFB_C += $(newruntime)/str_tempdescv.o
-LIBFB_C += $(newruntime)/str_tempdescz.o
-LIBFB_C += $(newruntime)/str_tempres.o
-LIBFB_C += $(newruntime)/str_trimany.o
-LIBFB_C += $(newruntime)/str_trim.o
-LIBFB_C += $(newruntime)/str_trimex.o
-LIBFB_C += $(newruntime)/str_ucase.o
-LIBFB_C += $(newruntime)/strw_alloc.o
-LIBFB_C += $(newruntime)/strw_asc.o
-LIBFB_C += $(newruntime)/strw_assign.o
-LIBFB_C += $(newruntime)/strw_bin.o
-LIBFB_C += $(newruntime)/strw_bin_lng.o
-LIBFB_C += $(newruntime)/strw_chr.o
-LIBFB_C += $(newruntime)/strw_comp.o
-LIBFB_C += $(newruntime)/strw_concatassign.o
-LIBFB_C += $(newruntime)/strw_concat.o
-LIBFB_C += $(newruntime)/strw_convassign.o
-LIBFB_C += $(newruntime)/strw_convconcat.o
-LIBFB_C += $(newruntime)/strw_convfrom.o
-LIBFB_C += $(newruntime)/strw_convfrom_int.o
-LIBFB_C += $(newruntime)/strw_convfrom_lng.o
-LIBFB_C += $(newruntime)/strw_convfrom_rad.o
-LIBFB_C += $(newruntime)/strw_convfrom_radlng.o
-LIBFB_C += $(newruntime)/strw_convfrom_str.o
-LIBFB_C += $(newruntime)/strw_convfrom_uint.o
-LIBFB_C += $(newruntime)/strw_convfrom_ulng.o
-LIBFB_C += $(newruntime)/strw_convto.o
-LIBFB_C += $(newruntime)/strw_convto_flt.o
-LIBFB_C += $(newruntime)/strw_convto_lng.o
-LIBFB_C += $(newruntime)/strw_convto_str.o
-LIBFB_C += $(newruntime)/strw_del.o
-LIBFB_C += $(newruntime)/strw_fill.o
-LIBFB_C += $(newruntime)/strw_ftoa.o
-LIBFB_C += $(newruntime)/strw_hex.o
-LIBFB_C += $(newruntime)/strw_hex_lng.o
-LIBFB_C += $(newruntime)/strw_instrany.o
-LIBFB_C += $(newruntime)/strw_instr.o
-LIBFB_C += $(newruntime)/strw_instrrevany.o
-LIBFB_C += $(newruntime)/strw_instrrev.o
-LIBFB_C += $(newruntime)/strw_lcase.o
-LIBFB_C += $(newruntime)/strw_left.o
-LIBFB_C += $(newruntime)/strw_len.o
-LIBFB_C += $(newruntime)/strw_ltrimany.o
-LIBFB_C += $(newruntime)/strw_ltrim.o
-LIBFB_C += $(newruntime)/strw_ltrimex.o
-LIBFB_C += $(newruntime)/strw_midassign.o
-LIBFB_C += $(newruntime)/strw_mid.o
-LIBFB_C += $(newruntime)/strw_oct.o
-LIBFB_C += $(newruntime)/strw_oct_lng.o
-LIBFB_C += $(newruntime)/strw_right.o
-LIBFB_C += $(newruntime)/strw_rtrimany.o
-LIBFB_C += $(newruntime)/strw_rtrim.o
-LIBFB_C += $(newruntime)/strw_rtrimex.o
-LIBFB_C += $(newruntime)/strw_set.o
-LIBFB_C += $(newruntime)/strw_space.o
-LIBFB_C += $(newruntime)/strw_trimany.o
-LIBFB_C += $(newruntime)/strw_trim.o
-LIBFB_C += $(newruntime)/strw_trimex.o
-LIBFB_C += $(newruntime)/strw_ucase.o
-LIBFB_C += $(newruntime)/swap_mem.o
-LIBFB_C += $(newruntime)/swap_str.o
-LIBFB_C += $(newruntime)/swap_wstr.o
-LIBFB_C += $(newruntime)/sys_beep.o
-LIBFB_C += $(newruntime)/sys_cdir.o
-LIBFB_C += $(newruntime)/sys_chain.o
-LIBFB_C += $(newruntime)/sys_chdir.o
-LIBFB_C += $(newruntime)/sys_cmd.o
-LIBFB_C += $(newruntime)/sys_environ.o
-LIBFB_C += $(newruntime)/sys_exec_core.o
-LIBFB_C += $(newruntime)/sys_exepath.o
-LIBFB_C += $(newruntime)/sys_mkdir.o
-LIBFB_C += $(newruntime)/sys_rmdir.o
-LIBFB_C += $(newruntime)/sys_run.o
-LIBFB_C += $(newruntime)/thread_ctx.o
-LIBFB_C += $(newruntime)/time_core.o
-LIBFB_C += $(newruntime)/time_dateadd.o
-LIBFB_C += $(newruntime)/time_date.o
-LIBFB_C += $(newruntime)/time_datediff.o
-LIBFB_C += $(newruntime)/time_datepart.o
-LIBFB_C += $(newruntime)/time_dateserial.o
-LIBFB_C += $(newruntime)/time_dateset.o
-LIBFB_C += $(newruntime)/time_datevalue.o
-LIBFB_C += $(newruntime)/time_decodeserdate.o
-LIBFB_C += $(newruntime)/time_decodesertime.o
-LIBFB_C += $(newruntime)/time_isdate.o
-LIBFB_C += $(newruntime)/time_monthname.o
-LIBFB_C += $(newruntime)/time_now.o
-LIBFB_C += $(newruntime)/time_parsedate.o
-LIBFB_C += $(newruntime)/time_parsedatetime.o
-LIBFB_C += $(newruntime)/time_parsetime.o
-LIBFB_C += $(newruntime)/time_sleepex.o
-LIBFB_C += $(newruntime)/time_time.o
-LIBFB_C += $(newruntime)/time_timeserial.o
-LIBFB_C += $(newruntime)/time_timeset.o
-LIBFB_C += $(newruntime)/time_timevalue.o
-LIBFB_C += $(newruntime)/time_week.o
-LIBFB_C += $(newruntime)/time_weekdayname.o
-LIBFB_C += $(newruntime)/utf_convfrom_char.o
-LIBFB_C += $(newruntime)/utf_convfrom_wchar.o
-LIBFB_C += $(newruntime)/utf_convto_char.o
-LIBFB_C += $(newruntime)/utf_convto_wchar.o
-LIBFB_C += $(newruntime)/utf_core.o
-LIBFB_C += $(newruntime)/vfs_open.o
+NEW_INCLUDES := \
+  $(newinclude)/datetime.bi \
+  $(newinclude)/dir.bi \
+  $(newinclude)/fbgfx.bi \
+  $(newinclude)/file.bi \
+  $(newinclude)/string.bi \
+  $(newinclude)/utf_conv.bi \
+  $(newinclude)/vbcompat.bi
+
+LIBFB_H := $(newlibfb)/config.h
+LIBFB_H += rtlib/fb.h
+LIBFB_H += rtlib/fb_array.h
+LIBFB_H += rtlib/fb_colors.h
+LIBFB_H += rtlib/fb_config.h
+LIBFB_H += rtlib/fb_con.h
+LIBFB_H += rtlib/fb_console.h
+LIBFB_H += rtlib/fb_data.h
+LIBFB_H += rtlib/fb_datetime.h
+LIBFB_H += rtlib/fb_device.h
+LIBFB_H += rtlib/fb_error.h
+LIBFB_H += rtlib/fb_file.h
+LIBFB_H += rtlib/fb_hook.h
+LIBFB_H += rtlib/fb_intern.h
+LIBFB_H += rtlib/fb_math.h
+LIBFB_H += rtlib/fb_port.h
+LIBFB_H += rtlib/fb_printer.h
+LIBFB_H += rtlib/fb_scancodes.h
+LIBFB_H += rtlib/fb_serial.h
+LIBFB_H += rtlib/fb_string.h
+LIBFB_H += rtlib/fb_system.h
+LIBFB_H += rtlib/fb_thread.h
+LIBFB_H += rtlib/fb_unicode.h
+LIBFB_H += rtlib/con_print_raw_uni.h
+LIBFB_H += rtlib/con_print_tty_uni.h
+
+LIBFB_C := \
+  array_boundchk array_clear array_clear_obj array_core array_erase \
+  array_erase_obj array_erasestr array_lbound array_redim array_redim_obj \
+  array_redimpresv array_redimpresv_obj array_resetdesc array_setdesc \
+  array_tmpdesc array_ubound \
+  assert assert_wstr \
+  con_lineinp con_lineinp_wstr con_locate con_pos con_print_raw \
+  con_print_raw_wstr con_print_tty con_print_tty_wstr con_readline \
+  data data_readbyte data_readdouble data_readint data_readlong \
+  data_readshort data_readsingle data_readstr data_readubyte data_readuint \
+  data_readulong data_readushort data_read_wstr data_rest \
+  dev_com dev_com_test dev_cons_open dev_err_open dev_file_close \
+  dev_file_encod_open dev_file_encod_read dev_file_encod_read_core \
+  dev_file_encod_readline dev_file_encod_readline_wstr \
+  dev_file_encod_read_wstr dev_file_encod_write dev_file_encod_write_wstr \
+  dev_file_eof dev_file_flush dev_file_lock dev_file_open dev_file_read \
+  dev_file_readline dev_file_readline_wstr dev_file_read_wstr dev_file_seek \
+  dev_file_size dev_file_tell dev_file_unlock dev_file_write \
+  dev_file_write_wstr dev_lpt dev_lpt_close dev_lpt_test dev_lpt_write \
+  dev_lpt_write_wstr dev_scrn dev_scrn_close dev_scrn_eof dev_scrn_init \
+  dev_scrn_read dev_scrn_readline dev_scrn_readline_wstr dev_scrn_read_wstr \
+  dev_scrn_write dev_scrn_write_wstr dev_stdio_close \
+  error error_getset error_ptrchk \
+  exit \
+  file_attr file_close file_copy file_datetime file_encod file_eof \
+  file_exists file_free file_getarray file_get file_getstr file_get_wstr \
+  file_input_byte file_input_con file_input_file file_input_float \
+  file_input_int file_input_longint file_input_short file_input_str \
+  file_inputstr file_input_tok file_input_tok_wstr file_input_ubyte \
+  file_input_uint file_input_ulongint file_input_ushort file_input_wstr \
+  file_kill file_len file_lineinp file_lineinp_wstr file_loc file_lock \
+  file_open file_opencom file_opencons file_openencod file_openerr \
+  file_openlpt file_openpipe file_openscrn file_openshort file_print \
+  file_print_wstr file_putarray file_putback file_putback_wstr file_put \
+  file_putstr file_put_wstr file_reset file_seek file_size file_tell \
+  file_winputstr \
+  gosub \
+  hook_cls hook_color hook_getsize hook_getx hook_getxy hook_gety hook_inkey \
+  hook_isredir hook_lineinp hook_lineinp_wstr hook_locate_ex hook_mouse \
+  hook_multikey hook_pageset hook_pcopy hook_ports hook_printstr \
+  hook_print_wstr hook_readstr hook_readxy hook_sleep hook_view_update \
+  hook_width \
+  init \
+  intl_get intl_getdateformat intl_getmonthname intl_getset intl_gettimeformat \
+  intl_getweekdayname \
+  io_lpos io_lprint_byte io_lprint_fix io_lprint_fp io_lprint_int \
+  io_lprint_longint io_lprint_short io_lprint_str io_lprintusg io_lprintvoid \
+  io_lprint_wstr io_print_byte io_print io_print_fix io_print_fp io_print_int \
+  io_print_longint io_printpad io_printpad_wstr io_print_short io_printusg \
+  io_printvoid io_printvoid_wstr io_print_wstr io_setpos io_spc io_view \
+  io_viewhlp io_widthdev io_widthfile io_writebyte io_writefloat io_writeint \
+  io_writelongint io_writeshort io_writestr io_writevoid io_write_wstr \
+  list listdyn \
+  math_fix math_frac math_rnd math_sgn \
+  mem_copyclear \
+  oo_istypeof oo_object \
+  qb_file_open qb_inkey qb_sleep qb_str_convto qb_str_convto_flt \
+  qb_str_convto_lng \
+  signals \
+  str_asc str_assign str_base str_bin str_bin_lng str_chr str_comp \
+  str_concatassign str_concat str_convfrom str_convfrom_int str_convfrom_lng \
+  str_convfrom_rad str_convfrom_radlng str_convfrom_uint str_convfrom_ulng \
+  str_convto str_convto_flt str_convto_lng str_core str_cvmk str_del str_fill \
+  str_format str_ftoa str_hex str_hex_lng str_instrany str_instr \
+  str_instrrevany str_instrrev str_lcase str_left str_len str_ltrimany \
+  str_ltrim str_ltrimex str_midassign str_mid str_misc str_oct str_oct_lng \
+  str_right str_rtrimany str_rtrim str_rtrimex str_set str_tempdescf \
+  str_tempdescv str_tempdescz str_tempres str_trimany str_trim str_trimex \
+  str_ucase \
+  strw_alloc strw_asc strw_assign strw_bin strw_bin_lng strw_chr strw_comp \
+  strw_concatassign strw_concat strw_convassign strw_convconcat strw_convfrom \
+  strw_convfrom_int strw_convfrom_lng strw_convfrom_rad strw_convfrom_radlng \
+  strw_convfrom_str strw_convfrom_uint strw_convfrom_ulng strw_convto \
+  strw_convto_flt strw_convto_lng strw_convto_str strw_del strw_fill strw_ftoa \
+  strw_hex strw_hex_lng strw_instrany strw_instr strw_instrrevany \
+  strw_instrrev strw_lcase strw_left strw_len strw_ltrimany strw_ltrim \
+  strw_ltrimex strw_midassign strw_mid strw_oct strw_oct_lng strw_right \
+  strw_rtrimany strw_rtrim strw_rtrimex strw_set strw_space strw_trimany \
+  strw_trim strw_trimex strw_ucase \
+  swap_mem swap_str swap_wstr \
+  sys_beep sys_cdir sys_chain sys_chdir sys_cmd sys_environ sys_exec_core \
+  sys_exepath sys_mkdir sys_rmdir sys_run \
+  thread_ctx \
+  time_core time_dateadd time_date time_datediff time_datepart time_dateserial \
+  time_dateset time_datevalue time_decodeserdate time_decodesertime \
+  time_isdate time_monthname time_now time_parsedate time_parsedatetime \
+  time_parsetime time_sleepex time_time time_timeserial time_timeset \
+  time_timevalue time_week time_weekdayname \
+  utf_convfrom_char utf_convfrom_wchar utf_convto_char utf_convto_wchar \
+  utf_core \
+  vfs_open
 
 LIBFB_S :=
 
-LIBFBGFX_H := $(LIBFB_H)
-LIBFBGFX_C :=
-
-ifndef DISABLE_GFX
-  LIBFBGFX_H += runtime/fb_gfx_data.h
-  LIBFBGFX_H += runtime/fb_gfx_gl.h
-  LIBFBGFX_H += runtime/fb_gfx.h
-  LIBFBGFX_H += runtime/fb_gfx_lzw.h
-  LIBFBGFX_H += runtime/gfxdata/inline.h
-
-  LIBFBGFX_C += $(newruntime)/gfx_access.o
-  LIBFBGFX_C += $(newruntime)/gfx_blitter.o
-  LIBFBGFX_C += $(newruntime)/gfx_bload.o
-  LIBFBGFX_C += $(newruntime)/gfx_box.o
-  LIBFBGFX_C += $(newruntime)/gfx_bsave.o
-  LIBFBGFX_C += $(newruntime)/gfx_circle.o
-  LIBFBGFX_C += $(newruntime)/gfx_cls.o
-  LIBFBGFX_C += $(newruntime)/gfx_color.o
-  LIBFBGFX_C += $(newruntime)/gfx_control.o
-  LIBFBGFX_C += $(newruntime)/gfx_core.o
-  LIBFBGFX_C += $(newruntime)/gfx_data.o
-  LIBFBGFX_C += $(newruntime)/gfx_draw.o
-  LIBFBGFX_C += $(newruntime)/gfx_drawstring.o
-  LIBFBGFX_C += $(newruntime)/gfx_driver_null.o
-  LIBFBGFX_C += $(newruntime)/gfx_event.o
-  LIBFBGFX_C += $(newruntime)/gfx_get.o
-  LIBFBGFX_C += $(newruntime)/gfx_getmouse.o
-  LIBFBGFX_C += $(newruntime)/gfx_image.o
-  LIBFBGFX_C += $(newruntime)/gfx_image_convert.o
-  LIBFBGFX_C += $(newruntime)/gfx_image_info.o
-  LIBFBGFX_C += $(newruntime)/gfx_inkey.o
-  LIBFBGFX_C += $(newruntime)/gfx_line.o
-  LIBFBGFX_C += $(newruntime)/gfx_lineinp.o
-  LIBFBGFX_C += $(newruntime)/gfx_lineinp_wstr.o
-  LIBFBGFX_C += $(newruntime)/gfx_lzw.o
-  LIBFBGFX_C += $(newruntime)/gfx_lzw_enc.o
-  LIBFBGFX_C += $(newruntime)/gfx_multikey.o
-  ifndef DISABLE_OPENGL
-    LIBFBGFX_C += $(newruntime)/gfx_opengl.o
-  endif
-  LIBFBGFX_C += $(newruntime)/gfx_page.o
-  LIBFBGFX_C += $(newruntime)/gfx_paint.o
-  LIBFBGFX_C += $(newruntime)/gfx_palette.o
-  LIBFBGFX_C += $(newruntime)/gfx_paletteget.o
-  LIBFBGFX_C += $(newruntime)/gfx_pmap.o
-  LIBFBGFX_C += $(newruntime)/gfx_point.o
-  LIBFBGFX_C += $(newruntime)/gfx_print.o
-  LIBFBGFX_C += $(newruntime)/gfx_print_wstr.o
-  LIBFBGFX_C += $(newruntime)/gfx_pset.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_add.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_alpha.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_and.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_blend.o
-  LIBFBGFX_C += $(newruntime)/gfx_put.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_custom.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_or.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_preset.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_pset.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_trans.o
-  LIBFBGFX_C += $(newruntime)/gfx_put_xor.o
-  LIBFBGFX_C += $(newruntime)/gfx_readstr.o
-  LIBFBGFX_C += $(newruntime)/gfx_readxy.o
-  LIBFBGFX_C += $(newruntime)/gfx_screen.o
-  LIBFBGFX_C += $(newruntime)/gfx_screeninfo.o
-  LIBFBGFX_C += $(newruntime)/gfx_screenlist.o
-  LIBFBGFX_C += $(newruntime)/gfx_setmouse.o
-  LIBFBGFX_C += $(newruntime)/gfx_sleep.o
-  LIBFBGFX_C += $(newruntime)/gfx_softcursor.o
-  LIBFBGFX_C += $(newruntime)/gfx_stick.o
-  LIBFBGFX_C += $(newruntime)/gfx_vars.o
-  LIBFBGFX_C += $(newruntime)/gfx_vgaemu.o
-  LIBFBGFX_C += $(newruntime)/gfx_view.o
-  LIBFBGFX_C += $(newruntime)/gfx_vsync.o
-  LIBFBGFX_C += $(newruntime)/gfx_width.o
-  LIBFBGFX_C += $(newruntime)/gfx_window.o
-endif
-
 ifeq ($(TARGET_OS),dos)
-  LIBFB_H += runtime/fb_dos.h
-  LIBFB_H += runtime/fb_unicode_dos.h
-  LIBFB_C += $(newruntime)/dev_pipe_close_dos.o
-  LIBFB_C += $(newruntime)/dev_pipe_open_dos.o
-  LIBFB_C += $(newruntime)/drv_file_copy_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_data_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_get_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_getdateformat_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_getmonthname_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_gettimeformat_dos.o
-  LIBFB_C += $(newruntime)/drv_intl_getweekdayname_dos.o
-  LIBFB_C += $(newruntime)/farmemset_dos.o
-  LIBFB_C += $(newruntime)/file_dir_dos.o
-  LIBFB_C += $(newruntime)/file_hconvpath_dos.o
-  LIBFB_C += $(newruntime)/file_hlock_dos.o
-  LIBFB_C += $(newruntime)/file_resetex_dos.o
-  LIBFB_C += $(newruntime)/hexit_dos.o
-  LIBFB_C += $(newruntime)/hinit_dos.o
-  LIBFB_C += $(newruntime)/hsignals_dos.o
-  LIBFB_C += $(newruntime)/io_cls_dos.o
-  LIBFB_C += $(newruntime)/io_color_dos.o
-  LIBFB_C += $(newruntime)/io_getsize_dos.o
-  LIBFB_C += $(newruntime)/io_inkey_dos.o
-  LIBFB_C += $(newruntime)/io_isredir_dos.o
-  LIBFB_C += $(newruntime)/io_locate_dos.o
-  LIBFB_C += $(newruntime)/io_maxrow_dos.o
-  LIBFB_C += $(newruntime)/io_mouse_dos.o
-  LIBFB_C += $(newruntime)/io_multikey_dos.o
-  LIBFB_C += $(newruntime)/io_pageset_dos.o
-  LIBFB_C += $(newruntime)/io_pcopy_dos.o
-  LIBFB_C += $(newruntime)/io_printbuff_dos.o
-  LIBFB_C += $(newruntime)/io_printbuff_wstr_dos.o
-  LIBFB_C += $(newruntime)/io_printer_dos.o
-  LIBFB_C += $(newruntime)/io_readstr_dos.o
-  LIBFB_C += $(newruntime)/io_scroll_dos.o
-  LIBFB_C += $(newruntime)/io_serial_dos.o
-  LIBFB_C += $(newruntime)/io_viewupdate_dos.o
-  LIBFB_C += $(newruntime)/io_width_dos.o
-  LIBFB_C += $(newruntime)/sys_exec_dos.o
-  LIBFB_C += $(newruntime)/sys_fmem_dos.o
-  LIBFB_C += $(newruntime)/sys_getcwd_dos.o
-  LIBFB_C += $(newruntime)/sys_getexename_dos.o
-  LIBFB_C += $(newruntime)/sys_getexepath_dos.o
-  LIBFB_C += $(newruntime)/sys_getshortpath_dos.o
-  LIBFB_C += $(newruntime)/sys_isr_dos.o
-  LIBFB_C += $(newruntime)/sys_ports_dos.o
-  LIBFB_C += $(newruntime)/sys_shell_dos.o
-  LIBFB_C += $(newruntime)/sys_sleep_dos.o
-  LIBFB_C += $(newruntime)/thread_cond_dos.o
-  LIBFB_C += $(newruntime)/thread_core_dos.o
-  LIBFB_C += $(newruntime)/thread_mutex_dos.o
-  LIBFB_C += $(newruntime)/time_setdate_dos.o
-  LIBFB_C += $(newruntime)/time_settime_dos.o
-  LIBFB_C += $(newruntime)/time_sleep_dos.o
-  LIBFB_C += $(newruntime)/time_tmr_dos.o
-  LIBFB_S += $(newruntime)/drv_isr.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_H += runtime/fb_gfx_dos.h
-    LIBFBGFX_H += runtime/vesa.h
-    LIBFBGFX_H += runtime/vga.h
-    LIBFBGFX_C += $(newruntime)/gfx_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_bios_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_modex_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_vesa_bnk_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_vesa_lin_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_vga_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_joystick_dos.o
-    LIBFBGFX_C += $(newruntime)/gfx_vesa_core_dos.o
-    LIBFBGFX_S += $(newruntime)/gfx_mouse_dos.o
-    LIBFBGFX_S += $(newruntime)/gfx_vesa_dos.o
-  endif
+  LIBFB_H += rtlib/fb_dos.h
+  LIBFB_H += rtlib/fb_unicode_dos.h
+  LIBFB_C += \
+    dev_pipe_close_dos dev_pipe_open_dos \
+    drv_file_copy_dos drv_intl_dos drv_intl_data_dos drv_intl_get_dos \
+    drv_intl_getdateformat_dos drv_intl_getmonthname_dos \
+    drv_intl_gettimeformat_dos drv_intl_getweekdayname_dos \
+    farmemset_dos \
+    file_dir_dos file_hconvpath_dos file_hlock_dos file_resetex_dos \
+    hexit_dos \
+    hinit_dos \
+    hsignals_dos \
+    io_cls_dos io_color_dos io_getsize_dos io_inkey_dos io_isredir_dos \
+    io_locate_dos io_maxrow_dos io_mouse_dos io_multikey_dos io_pageset_dos \
+    io_pcopy_dos io_printbuff_dos io_printbuff_wstr_dos io_printer_dos \
+    io_readstr_dos io_scroll_dos io_serial_dos io_viewupdate_dos io_width_dos \
+    sys_exec_dos sys_fmem_dos sys_getcwd_dos sys_getexename_dos \
+    sys_getexepath_dos sys_getshortpath_dos sys_isr_dos sys_ports_dos \
+    sys_shell_dos sys_sleep_dos \
+    thread_cond_dos thread_core_dos thread_mutex_dos \
+    time_setdate_dos time_settime_dos time_sleep_dos time_tmr_dos
+  LIBFB_S += drv_isr
 endif
 
 ifeq ($(TARGET_OS),freebsd)
-  LIBFB_C += $(newruntime)/hexit_freebsd.o
-  LIBFB_C += $(newruntime)/hinit_freebsd.o
-  LIBFB_C += $(newruntime)/io_mouse_freebsd.o
-  LIBFB_C += $(newruntime)/io_multikey_freebsd.o
-  LIBFB_C += $(newruntime)/sys_fmem_freebsd.o
-  LIBFB_C += $(newruntime)/sys_getexename_freebsd.o
-  LIBFB_C += $(newruntime)/sys_getexepath_freebsd.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_C += $(newruntime)/gfx_freebsd.o
-    LIBFBGFX_C += $(newruntime)/gfx_joystick_freebsd.o
-  endif
+  LIBFB_C += \
+    hexit_freebsd \
+    hinit_freebsd \
+    io_mouse_freebsd io_multikey_freebsd \
+    sys_fmem_freebsd sys_getexename_freebsd sys_getexepath_freebsd
 endif
 
 ifeq ($(TARGET_OS),linux)
-  LIBFB_H += runtime/fb_gfx_linux.h
-  LIBFB_H += runtime/fb_linux.h
-  LIBFB_C += $(newruntime)/hexit_linux.o
-  LIBFB_C += $(newruntime)/hinit_linux.o
-  LIBFB_C += $(newruntime)/io_mouse_linux.o
-  LIBFB_C += $(newruntime)/io_multikey_linux.o
-  LIBFB_C += $(newruntime)/io_serial_linux.o
-  LIBFB_C += $(newruntime)/sys_fmem_linux.o
-  LIBFB_C += $(newruntime)/sys_getexename_linux.o
-  LIBFB_C += $(newruntime)/sys_getexepath_linux.o
-  LIBFB_C += $(newruntime)/sys_ports_linux.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_H += runtime/fb_gfx_linux.h
-    LIBFBGFX_C += $(newruntime)/gfx_driver_fbdev_linux.o
-    LIBFBGFX_C += $(newruntime)/gfx_joystick_linux.o
-    LIBFBGFX_C += $(newruntime)/gfx_linux.o
-  endif
+  LIBFB_H += rtlib/fb_linux.h
+  LIBFB_C += \
+    hexit_linux \
+    hinit_linux \
+    io_mouse_linux io_multikey_linux io_serial_linux \
+    sys_fmem_linux sys_getexename_linux sys_getexepath_linux sys_ports_linux
 endif
 
 ifeq ($(TARGET_OS),netbsd)
-  LIBFB_C += $(newruntime)/hexit_netbsd.o
-  LIBFB_C += $(newruntime)/hinit_netbsd.o
-  LIBFB_C += $(newruntime)/io_mouse_netbsd.o
-  LIBFB_C += $(newruntime)/io_multikey_netbsd.o
-  LIBFB_C += $(newruntime)/sys_fmem_netbsd.o
-  LIBFB_C += $(newruntime)/sys_getexename_netbsd.o
-  LIBFB_C += $(newruntime)/sys_getexepath_netbsd.o
+  LIBFB_C += \
+    hexit_netbsd \
+    hinit_netbsd \
+    io_mouse_netbsd io_multikey_netbsd \
+    sys_fmem_netbsd sys_getexename_netbsd sys_getexepath_netbsd
 endif
 
 ifeq ($(TARGET_OS),openbsd)
-  LIBFB_C += $(newruntime)/hexit_openbsd.o
-  LIBFB_C += $(newruntime)/hinit_openbsd.o
-  LIBFB_C += $(newruntime)/io_mouse_openbsd.o
-  LIBFB_C += $(newruntime)/io_multikey_openbsd.o
-  LIBFB_C += $(newruntime)/sys_fmem_openbsd.o
-  LIBFB_C += $(newruntime)/sys_getexename_openbsd.o
-  LIBFB_C += $(newruntime)/sys_getexepath_openbsd.o
-  LIBFB_C += $(newruntime)/swprintf_hack_openbsd.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_C += $(newruntime)/gfx_joystick_openbsd.o
-    LIBFBGFX_C += $(newruntime)/gfx_openbsd.o
-  endif
+  LIBFB_C += \
+    hexit_openbsd \
+    hinit_openbsd \
+    io_mouse_openbsd io_multikey_openbsd \
+    sys_fmem_openbsd sys_getexename_openbsd sys_getexepath_openbsd \
+    swprintf_hack_openbsd
 endif
 
 ifeq ($(TARGET_OS),xbox)
-  LIBFB_H += runtime/fb_xbox.h
-  LIBFB_C += $(newruntime)/dev_pipe_close_xbox.o
-  LIBFB_C += $(newruntime)/dev_pipe_open_xbox.o
-  LIBFB_C += $(newruntime)/drv_file_copy_xbox.o
-  LIBFB_C += $(newruntime)/drv_intl_get_xbox.o
-  LIBFB_C += $(newruntime)/drv_intl_getdateformat_xbox.o
-  LIBFB_C += $(newruntime)/drv_intl_getmonthname_xbox.o
-  LIBFB_C += $(newruntime)/drv_intl_gettimeformat_xbox.o
-  LIBFB_C += $(newruntime)/drv_intl_getweekdayname_xbox.o
-  LIBFB_C += $(newruntime)/file_dir_xbox.o
-  LIBFB_C += $(newruntime)/file_hconvpath_xbox.o
-  LIBFB_C += $(newruntime)/file_hlock_xbox.o
-  LIBFB_C += $(newruntime)/hexit_xbox.o
-  LIBFB_C += $(newruntime)/hinit_xbox.o
-  LIBFB_C += $(newruntime)/io_cls_xbox.o
-  LIBFB_C += $(newruntime)/io_color_xbox.o
-  LIBFB_C += $(newruntime)/io_getsize_xbox.o
-  LIBFB_C += $(newruntime)/io_inkey_xbox.o
-  LIBFB_C += $(newruntime)/io_isredir_xbox.o
-  LIBFB_C += $(newruntime)/io_locate_xbox.o
-  LIBFB_C += $(newruntime)/io_maxrow_xbox.o
-  LIBFB_C += $(newruntime)/io_mouse_xbox.o
-  LIBFB_C += $(newruntime)/io_multikey_xbox.o
-  LIBFB_C += $(newruntime)/io_pageset_xbox.o
-  LIBFB_C += $(newruntime)/io_pcopy_xbox.o
-  LIBFB_C += $(newruntime)/io_printbuff_xbox.o
-  LIBFB_C += $(newruntime)/io_printbuff_wstr_xbox.o
-  LIBFB_C += $(newruntime)/io_printer_xbox.o
-  LIBFB_C += $(newruntime)/io_readstr_xbox.o
-  LIBFB_C += $(newruntime)/io_scroll_xbox.o
-  LIBFB_C += $(newruntime)/io_serial_xbox.o
-  LIBFB_C += $(newruntime)/io_viewupdate_xbox.o
-  LIBFB_C += $(newruntime)/io_width_xbox.o
-  LIBFB_C += $(newruntime)/sys_dylib_xbox.o
-  LIBFB_C += $(newruntime)/sys_exec_xbox.o
-  LIBFB_C += $(newruntime)/sys_fmem_xbox.o
-  LIBFB_C += $(newruntime)/sys_getcwd_xbox.o
-  LIBFB_C += $(newruntime)/sys_getexename_xbox.o
-  LIBFB_C += $(newruntime)/sys_getexepath_xbox.o
-  LIBFB_C += $(newruntime)/sys_getshortpath_xbox.o
-  LIBFB_C += $(newruntime)/sys_shell_xbox.o
-  LIBFB_C += $(newruntime)/sys_sleep_xbox.o
-  LIBFB_C += $(newruntime)/thread_cond_xbox.o
-  LIBFB_C += $(newruntime)/thread_core_xbox.o
-  LIBFB_C += $(newruntime)/thread_mutex_xbox.o
-  LIBFB_C += $(newruntime)/time_setdate_xbox.o
-  LIBFB_C += $(newruntime)/time_settime_xbox.o
-  LIBFB_C += $(newruntime)/time_sleep_xbox.o
-  LIBFB_C += $(newruntime)/time_tmr_xbox.o
-  LIBFB_S += $(newruntime)/alloca.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_C += $(newruntime)/gfx_driver_xbox.o
-  endif
+  LIBFB_H += rtlib/fb_xbox.h
+  LIBFB_C += \
+    dev_pipe_close_xbox dev_pipe_open_xbox \
+    drv_file_copy_xbox drv_intl_get_xbox drv_intl_getdateformat_xbox \
+    drv_intl_getmonthname_xbox drv_intl_gettimeformat_xbox \
+    drv_intl_getweekdayname_xbox \
+    file_dir_xbox file_hconvpath_xbox file_hlock_xbox \
+    hexit_xbox \
+    hinit_xbox \
+    io_cls_xbox io_color_xbox io_getsize_xbox io_inkey_xbox io_isredir_xbox \
+    io_locate_xbox io_maxrow_xbox io_mouse_xbox io_multikey_xbox \
+    io_pageset_xbox io_pcopy_xbox io_printbuff_xbox io_printbuff_wstr_xbox \
+    io_printer_xbox io_readstr_xbox io_scroll_xbox io_serial_xbox \
+    io_viewupdate_xbox io_width_xbox \
+    sys_dylib_xbox sys_exec_xbox sys_fmem_xbox sys_getcwd_xbox \
+    sys_getexename_xbox sys_getexepath_xbox sys_getshortpath_xbox \
+    sys_shell_xbox sys_sleep_xbox \
+    thread_cond_xbox thread_core_xbox thread_mutex_xbox \
+    time_setdate_xbox time_settime_xbox time_sleep_xbox time_tmr_xbox
+  LIBFB_S += alloca
 endif
 
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-  LIBFB_H += runtime/fb_unix.h
-  LIBFB_C += $(newruntime)/dev_pipe_close_unix.o
-  LIBFB_C += $(newruntime)/dev_pipe_open_unix.o
-  LIBFB_C += $(newruntime)/drv_file_copy_unix.o
-  LIBFB_C += $(newruntime)/drv_intl_get_unix.o
-  LIBFB_C += $(newruntime)/drv_intl_getdateformat_unix.o
-  LIBFB_C += $(newruntime)/drv_intl_getmonthname_unix.o
-  LIBFB_C += $(newruntime)/drv_intl_gettimeformat_unix.o
-  LIBFB_C += $(newruntime)/drv_intl_getweekdayname_unix.o
-  LIBFB_C += $(newruntime)/file_dir_unix.o
-  LIBFB_C += $(newruntime)/file_hconvpath_unix.o
-  LIBFB_C += $(newruntime)/file_hlock_unix.o
-  LIBFB_C += $(newruntime)/file_resetex_unix.o
-  LIBFB_C += $(newruntime)/hdynload_unix.o
-  LIBFB_C += $(newruntime)/hexit_unix.o
-  LIBFB_C += $(newruntime)/hinit_unix.o
-  LIBFB_C += $(newruntime)/hsignals_unix.o
-  LIBFB_C += $(newruntime)/io_cls_unix.o
-  LIBFB_C += $(newruntime)/io_color_unix.o
-  LIBFB_C += $(newruntime)/io_getsize_unix.o
-  LIBFB_C += $(newruntime)/io_inkey_unix.o
-  LIBFB_C += $(newruntime)/io_isredir_unix.o
-  LIBFB_C += $(newruntime)/io_locate_unix.o
-  LIBFB_C += $(newruntime)/io_maxrow_unix.o
-  LIBFB_C += $(newruntime)/io_pageset_unix.o
-  LIBFB_C += $(newruntime)/io_pcopy_unix.o
-  LIBFB_C += $(newruntime)/io_printbuff_unix.o
-  LIBFB_C += $(newruntime)/io_printbuff_wstr_unix.o
-  LIBFB_C += $(newruntime)/io_printer_unix.o
-  LIBFB_C += $(newruntime)/io_readstr_unix.o
-  LIBFB_C += $(newruntime)/io_scroll_unix.o
-  LIBFB_C += $(newruntime)/io_viewupdate_unix.o
-  LIBFB_C += $(newruntime)/io_width_unix.o
-  LIBFB_C += $(newruntime)/io_xfocus_unix.o
-  LIBFB_C += $(newruntime)/scancodes_unix.o
-  LIBFB_C += $(newruntime)/sys_delay_unix.o
-  LIBFB_C += $(newruntime)/sys_dylib_unix.o
-  LIBFB_C += $(newruntime)/sys_exec_unix.o
-  LIBFB_C += $(newruntime)/sys_getcwd_unix.o
-  LIBFB_C += $(newruntime)/sys_getshortpath_unix.o
-  LIBFB_C += $(newruntime)/sys_shell_unix.o
-  LIBFB_C += $(newruntime)/thread_cond_unix.o
-  LIBFB_C += $(newruntime)/thread_core_unix.o
-  LIBFB_C += $(newruntime)/thread_mutex_unix.o
-  LIBFB_C += $(newruntime)/time_setdate_unix.o
-  LIBFB_C += $(newruntime)/time_settime_unix.o
-  LIBFB_C += $(newruntime)/time_sleep_unix.o
-  LIBFB_C += $(newruntime)/time_tmr_unix.o
-  ifndef DISABLE_GFX
-    ifndef DISABLE_X
-      LIBFBGFX_H += runtime/fb_gfx_x11.h
-      LIBFBGFX_C += $(newruntime)/gfx_driver_x11.o
-      LIBFBGFX_C += $(newruntime)/gfx_x11.o
-      ifndef DISABLE_OPENGL
-        LIBFBGFX_C += $(newruntime)/gfx_driver_opengl_x11.o
-      endif
-    endif
-  endif
+  LIBFB_H += rtlib/fb_unix.h
+  LIBFB_C += \
+    dev_pipe_close_unix dev_pipe_open_unix \
+    drv_file_copy_unix drv_intl_get_unix drv_intl_getdateformat_unix \
+    drv_intl_getmonthname_unix drv_intl_gettimeformat_unix \
+    drv_intl_getweekdayname_unix \
+    file_dir_unix file_hconvpath_unix file_hlock_unix file_resetex_unix \
+    hdynload_unix \
+    hexit_unix \
+    hinit_unix \
+    hsignals_unix \
+    io_cls_unix io_color_unix io_getsize_unix io_inkey_unix io_isredir_unix \
+    io_locate_unix io_maxrow_unix io_pageset_unix io_pcopy_unix \
+    io_printbuff_unix io_printbuff_wstr_unix io_printer_unix io_readstr_unix \
+    io_scroll_unix io_viewupdate_unix io_width_unix io_xfocus_unix \
+    scancodes_unix \
+    sys_delay_unix sys_dylib_unix sys_exec_unix sys_getcwd_unix \
+    sys_getshortpath_unix sys_shell_unix \
+    thread_cond_unix thread_core_unix thread_mutex_unix \
+    time_setdate_unix time_settime_unix time_sleep_unix time_tmr_unix
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
-  LIBFB_H += runtime/fb_unicode_win32.h
-  LIBFB_H += runtime/fb_win32.h
-  LIBFB_H += runtime/fbportio/fbportio.h
-  LIBFB_H += runtime/fbportio/inline.h
-  LIBFB_C += $(newruntime)/dev_pipe_close_win32.o
-  LIBFB_C += $(newruntime)/dev_pipe_open_win32.o
-  LIBFB_C += $(newruntime)/drv_file_copy_win32.o
-  LIBFB_C += $(newruntime)/drv_intl_get_win32.o
-  LIBFB_C += $(newruntime)/drv_intl_getdateformat_win32.o
-  LIBFB_C += $(newruntime)/drv_intl_getmonthname_win32.o
-  LIBFB_C += $(newruntime)/drv_intl_gettimeformat_win32.o
-  LIBFB_C += $(newruntime)/drv_intl_getweekdayname_win32.o
-  LIBFB_C += $(newruntime)/file_dir_win32.o
-  LIBFB_C += $(newruntime)/file_hconvpath_win32.o
-  LIBFB_C += $(newruntime)/file_hlock_win32.o
-  LIBFB_C += $(newruntime)/file_resetex_win32.o
-  LIBFB_C += $(newruntime)/hdynload_win32.o
-  LIBFB_C += $(newruntime)/hexit_win32.o
-  LIBFB_C += $(newruntime)/hinit_win32.o
-  LIBFB_C += $(newruntime)/hsignals_win32.o
-  LIBFB_C += $(newruntime)/intl_conv_win32.o
-  LIBFB_C += $(newruntime)/intl_win32.o
-  LIBFB_C += $(newruntime)/io_cls_win32.o
-  LIBFB_C += $(newruntime)/io_clsex_win32.o
-  LIBFB_C += $(newruntime)/io_color_win32.o
-  LIBFB_C += $(newruntime)/io_colorget_win32.o
-  LIBFB_C += $(newruntime)/io_gethnd_win32.o
-  LIBFB_C += $(newruntime)/io_getsize_win32.o
-  LIBFB_C += $(newruntime)/io_getwindow_win32.o
-  LIBFB_C += $(newruntime)/io_getwindowex_win32.o
-  LIBFB_C += $(newruntime)/io_getx_win32.o
-  LIBFB_C += $(newruntime)/io_getxy_win32.o
-  LIBFB_C += $(newruntime)/io_gety_win32.o
-  LIBFB_C += $(newruntime)/io_inkey_win32.o
-  LIBFB_C += $(newruntime)/io_input_win32.o
-  LIBFB_C += $(newruntime)/io_isredir_win32.o
-  LIBFB_C += $(newruntime)/io_locate_win32.o
-  LIBFB_C += $(newruntime)/io_locateex_win32.o
-  LIBFB_C += $(newruntime)/io_maxrow_win32.o
-  LIBFB_C += $(newruntime)/io_mouse_win32.o
-  LIBFB_C += $(newruntime)/io_multikey_win32.o
-  LIBFB_C += $(newruntime)/io_pageset_win32.o
-  LIBFB_C += $(newruntime)/io_pcopy_win32.o
-  LIBFB_C += $(newruntime)/io_printbuff_win32.o
-  LIBFB_C += $(newruntime)/io_printbuff_wstr_win32.o
-  LIBFB_C += $(newruntime)/io_printer_win32.o
-  LIBFB_C += $(newruntime)/io_readstr_win32.o
-  LIBFB_C += $(newruntime)/io_readxy_win32.o
-  LIBFB_C += $(newruntime)/io_screensize_win32.o
-  LIBFB_C += $(newruntime)/io_scroll_win32.o
-  LIBFB_C += $(newruntime)/io_scrollex_win32.o
-  LIBFB_C += $(newruntime)/io_serial_win32.o
-  LIBFB_C += $(newruntime)/io_viewupdate_win32.o
-  LIBFB_C += $(newruntime)/io_width_win32.o
-  LIBFB_C += $(newruntime)/io_window_win32.o
-  LIBFB_C += $(newruntime)/sys_dylib_win32.o
-  LIBFB_C += $(newruntime)/sys_exec_win32.o
-  LIBFB_C += $(newruntime)/sys_fmem_win32.o
-  LIBFB_C += $(newruntime)/sys_getcwd_win32.o
-  LIBFB_C += $(newruntime)/sys_getexename_win32.o
-  LIBFB_C += $(newruntime)/sys_getexepath_win32.o
-  LIBFB_C += $(newruntime)/sys_getshortpath_win32.o
-  LIBFB_C += $(newruntime)/sys_ports_win32.o
-  LIBFB_C += $(newruntime)/sys_shell_win32.o
-  LIBFB_C += $(newruntime)/sys_sleep_win32.o
-  LIBFB_C += $(newruntime)/thread_cond_win32.o
-  LIBFB_C += $(newruntime)/thread_core_win32.o
-  LIBFB_C += $(newruntime)/thread_mutex_win32.o
-  LIBFB_C += $(newruntime)/time_setdate_win32.o
-  LIBFB_C += $(newruntime)/time_settime_win32.o
-  LIBFB_C += $(newruntime)/time_sleep_win32.o
-  LIBFB_C += $(newruntime)/time_tmr_win32.o
-  LIBFB_S += $(newruntime)/alloca.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_H += runtime/fb_gfx_win32.h
-    LIBFBGFX_C += $(newruntime)/gfx_driver_ddraw_win32.o
-    LIBFBGFX_C += $(newruntime)/gfx_driver_gdi_win32.o
-    LIBFBGFX_C += $(newruntime)/gfx_joystick_win32.o
-    LIBFBGFX_C += $(newruntime)/gfx_win32.o
-    ifndef DISABLE_OPENGL
-      LIBFBGFX_C += $(newruntime)/gfx_driver_opengl_win32.o
-    endif
-  endif
+  LIBFB_H += rtlib/fb_unicode_win32.h
+  LIBFB_H += rtlib/fb_win32.h
+  LIBFB_H += rtlib/fbportio/fbportio.h
+  LIBFB_H += rtlib/fbportio/inline.h
+  LIBFB_C += \
+    dev_pipe_close_win32 dev_pipe_open_win32 \
+    drv_file_copy_win32 drv_intl_get_win32 drv_intl_getdateformat_win32 \
+    drv_intl_getmonthname_win32 drv_intl_gettimeformat_win32 \
+    drv_intl_getweekdayname_win32 \
+    file_dir_win32 file_hconvpath_win32 file_hlock_win32 file_resetex_win32 \
+    hdynload_win32 \
+    hexit_win32 \
+    hinit_win32 \
+    hsignals_win32 \
+    intl_conv_win32 intl_win32 \
+    io_cls_win32 io_clsex_win32 io_color_win32 io_colorget_win32 \
+    io_gethnd_win32 io_getsize_win32 io_getwindow_win32 io_getwindowex_win32 \
+    io_getx_win32 io_getxy_win32 io_gety_win32 io_inkey_win32 io_input_win32 \
+    io_isredir_win32 io_locate_win32 io_locateex_win32 io_maxrow_win32 \
+    io_mouse_win32 io_multikey_win32 io_pageset_win32 io_pcopy_win32 \
+    io_printbuff_win32 io_printbuff_wstr_win32 io_printer_win32 \
+    io_readstr_win32 io_readxy_win32 io_screensize_win32 io_scroll_win32 \
+    io_scrollex_win32 io_serial_win32 io_viewupdate_win32 io_width_win32 \
+    io_window_win32 \
+    sys_dylib_win32 sys_exec_win32 sys_fmem_win32 sys_getcwd_win32 \
+    sys_getexename_win32 sys_getexepath_win32 sys_getshortpath_win32 \
+    sys_ports_win32 sys_shell_win32 sys_sleep_win32 \
+    thread_cond_win32 thread_core_win32 thread_mutex_win32 \
+    time_setdate_win32 time_settime_win32 time_sleep_win32 time_tmr_win32
+  LIBFB_S += alloca
 endif
 
 ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
-  LIBFB_H += runtime/fb_x86.h
-  LIBFB_S += $(newruntime)/cpudetect_x86.o
-  ifndef DISABLE_GFX
-    LIBFBGFX_H += runtime/fb_gfx_mmx.h
-    LIBFBGFX_S += $(newruntime)/gfx_blitter_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_add_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_alpha_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_and_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_blend_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_or_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_preset_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_pset_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_trans_mmx.o
-    LIBFBGFX_S += $(newruntime)/gfx_put_xor_mmx.o
+  LIBFB_H += rtlib/fb_x86.h
+  LIBFB_S += cpudetect_x86
+endif
+
+LIBFB_C := $(patsubst %,$(newlibfb)/%.o,$(LIBFB_C))
+LIBFB_S := $(patsubst %,$(newlibfb)/%.o,$(LIBFB_S))
+
+ifndef DISABLE_MT
+  LIBFBMT_C := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_C))
+  LIBFBMT_S := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_S))
+endif
+
+ifndef DISABLE_GFX
+  LIBFBGFX_H := $(LIBFB_H)
+  LIBFBGFX_H += gfxlib2/fb_gfx_data.h
+  LIBFBGFX_H += gfxlib2/fb_gfx_gl.h
+  LIBFBGFX_H += gfxlib2/fb_gfx.h
+  LIBFBGFX_H += gfxlib2/fb_gfx_lzw.h
+  LIBFBGFX_H += gfxlib2/gfxdata/inline.h
+
+  LIBFBGFX_C += \
+    access blitter bload box bsave circle cls color control core data draw \
+    drawstring driver_null event get getmouse image image_convert image_info \
+    inkey line lineinp lineinp_wstr lzw lzw_enc multikey page paint palette \
+    paletteget pmap point print print_wstr pset put_add put_alpha put_and \
+    put_blend put put_custom put_or put_preset put_pset put_trans put_xor \
+    readstr readxy screen screeninfo screenlist setmouse sleep softcursor \
+    stick vars vgaemu view vsync width window
+
+  ifndef DISABLE_OPENGL
+    LIBFBGFX_C += opengl
+  endif
+
+  LIBFBGFX_S :=
+
+  ifeq ($(TARGET_OS),dos)
+    LIBFBGFX_H += gfxlib2/fb_gfx_dos.h
+    LIBFBGFX_H += gfxlib2/vesa.h
+    LIBFBGFX_H += gfxlib2/vga.h
+    LIBFBGFX_C += \
+      dos driver_bios_dos driver_modex_dos driver_vesa_bnk_dos \
+      driver_vesa_lin_dos driver_vga_dos joystick_dos vesa_core_dos
+    LIBFBGFX_S += mouse_dos vesa_dos
+  endif
+
+  ifeq ($(TARGET_OS),freebsd)
+    LIBFBGFX_C += freebsd joystick_freebsd
+  endif
+
+  ifeq ($(TARGET_OS),linux)
+    LIBFBGFX_H += gfxlib2/fb_gfx_linux.h
+    LIBFBGFX_C += driver_fbdev_linux joystick_linux linux
+  endif
+
+  ifeq ($(TARGET_OS),openbsd)
+    LIBFBGFX_C += joystick_openbsd openbsd
+  endif
+
+  ifeq ($(TARGET_OS),xbox)
+    LIBFBGFX_C += driver_xbox
+  endif
+
+  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+    ifndef DISABLE_X
+      LIBFBGFX_H += gfxlib2/fb_gfx_x11.h
+      LIBFBGFX_C += driver_x11 x11
+      ifndef DISABLE_OPENGL
+        LIBFBGFX_C += driver_opengl_x11
+      endif
+    endif
+  endif
+
+  ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+    LIBFBGFX_H += gfxlib2/fb_gfx_win32.h
+    LIBFBGFX_C += driver_ddraw_win32 driver_gdi_win32 joystick_win32 win32
+    ifndef DISABLE_OPENGL
+      LIBFBGFX_C += driver_opengl_win32
+    endif
+  endif
+
+  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
+    LIBFBGFX_H += gfxlib2/fb_gfx_mmx.h
+    LIBFBGFX_S += \
+      blitter_mmx mmx put_add_mmx put_alpha_mmx put_and_mmx put_blend_mmx \
+      put_or_mmx put_preset_mmx put_pset_mmx put_trans_mmx put_xor_mmx
   endif
 endif
 
-ifndef DISABLE_MT
-  LIBFBMT_C := $(patsubst %.o,%.mt.o,$(LIBFB_C))
-  LIBFBMT_S := $(patsubst %.o,%.mt.o,$(LIBFB_S))
-endif
+LIBFBGFX_C := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_C))
+LIBFBGFX_S := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_S))
 
 #
 # Build rules
@@ -1667,10 +1034,16 @@ config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 .PHONY: all
 all: compiler runtime
 
-.PHONY: compiler
-compiler: $(newcompiler) $(newbin) $(NEW_FBC)
+$(new) $(newcompiler) $(newbin) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
+$(new)/include $(newinclude) $(new)/lib $(newlib) \
+$(prefix) $(prefixbin) \
+$(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib):
+	mkdir $@
 
-$(NEW_FBC): $(FBC_BAS) $(FBC_COBJINFO)
+.PHONY: compiler
+compiler: $(new) $(newcompiler) $(newbin) $(newbin)/$(FBC_EXE)
+
+$(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_COBJINFO)
 	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
@@ -1679,7 +1052,7 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 $(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
-$(FBC_CONFIG): compiler/config.bi.in
+$(newcompiler)/config.bi: compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
 	$(call config-filter,$(TARGET_OS),cygwin,TARGET_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,TARGET_DARWIN)
@@ -1708,44 +1081,54 @@ $(FBC_CONFIG): compiler/config.bi.in
 	$(call config-define,FB_SUFFIX "$(SUFFIX)")
 
 .PHONY: runtime
-runtime: $(newinclude) $(newruntime) $(newlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
+runtime: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
 
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
-$(NEW_HEADERS): $(newinclude)/%.bi: include/%.bi
+runtime: $(NEW_INCLUDES)
+$(newinclude)/%.bi: include/%.bi
 	$(QUIET_CP)cp $< $@
 
-$(NEW_FBRT0): runtime/fbrt0.c $(LIBFB_H)
+
+runtime: $(newlib)/fbrt0.o
+$(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(NEW_LIBFB): $(LIBFB_C) $(LIBFB_S)
+runtime: $(newlib)/libfb.a
+$(newlib)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
-$(NEW_LIBFBMT): $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
-
-$(NEW_LIBFBGFX): $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
-
-$(LIBFB_C): $(newruntime)/%.o: runtime/%.c $(LIBFB_H)
+$(LIBFB_C): $(newlibfb)/%.o: rtlib/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFB_S): $(newruntime)/%.o: runtime/%.s $(LIBFB_H)
+$(LIBFB_S): $(newlibfb)/%.o: rtlib/%.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBMT_C): $(newruntime)/%.mt.o: runtime/%.c $(LIBFB_H)
+ifndef DISABLE_MT
+runtime: $(newlibfbmt) $(newlib)/libfbmt.a
+$(newlib)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+
+$(LIBFBMT_C): $(newlibfbmt)/%.o: rtlib/%.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBMT_S): $(newruntime)/%.mt.o: runtime/%.s $(LIBFB_H)
+$(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+endif
 
-$(LIBFBGFX_C): $(newruntime)/%.o: runtime/%.c $(LIBFBGFX_H)
+ifndef DISABLE_GFX
+runtime: $(newlibfbgfx) $(newlib)/libfbgfx.a
+$(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
+	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+
+$(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-$(LIBFBGFX_S): $(newruntime)/%.o: runtime/%.s $(LIBFBGFX_H)
+$(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+endif
 
-$(LIBFB_CONFIG): runtime/config.h.in
+$(newlibfb)/config.h: rtlib/config.h.in
 	$(QUIET_GEN)cp $< $@
 	$(call config-filter,$(TARGET_OS),cygwin,HOST_CYGWIN)
 	$(call config-filter,$(TARGET_OS),darwin,HOST_DARWIN)
@@ -1771,11 +1154,11 @@ $(LIBFB_CONFIG): runtime/config.h.in
 install: install-compiler install-runtime
 
 .PHONY: install-compiler
-install-compiler: $(prefixbin) $(NEW_FBC)
-	cp $(FBC_NEW) $(FBC_PREFIX)
+install-compiler: compiler $(prefixbin)
+	cp $(newbin)/$(FBC_EXE) $(prefixbin)/$(FBC_EXE)
 
 .PHONY: install-runtime
-install-runtime: $(prefixlib) $(NEW_HEADERS) $(NEW_FBRT0) $(NEW_LIBFB) $(NEW_LIBFBMT) $(NEW_LIBFBGFX)
+install-runtime: runtime $(prefixinclude) $(prefixlib)
 	cp $(NEW_INCLUDES) $(prefixinclude)/
   ifndef DISABLE_OBJINFO
 	cp $(newlib)/fbextra.x $(prefixlib)/
@@ -1794,11 +1177,11 @@ uninstall: uninstall-compiler uninstall-runtime
 
 .PHONY: uninstall-compiler
 uninstall-compiler:
-	rm -f $(FBC_PREFIX)
+	rm -f $(prefixbin)/$(FBC_EXE)
 
 .PHONY: uninstall-runtime
 uninstall-runtime:
-	rm -f $(HEADERS_PREFIX)
+	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_INCLUDES))
   ifndef DISABLE_OBJINFO
 	rm -f $(prefixlib)/fbextra.x
   endif
@@ -1817,11 +1200,9 @@ uninstall-runtime:
 	-rmdir $(prefixlib)
   endif
 
-$(newbin) $(newcompiler) $(newinclude) $(newlib) $(newruntime) $(prefixbin) $(prefixinclude) $(prefixlib):
-	$(call do-mkdir,$@)
-
 .PHONY: clean
 clean: clean-compiler clean-runtime
+	-rmdir $(new)
 
 .PHONY: clean-compiler
 clean-compiler:
@@ -1831,7 +1212,7 @@ clean-compiler:
 
 .PHONY: clean-runtime
 clean-runtime:
-	rm -f $(NEW_HEADERS)
+	rm -f $(NEW_INCLUDES)
   ifndef DISABLE_OBJINFO
 	rm -f $(newlib)/fbextra.x
   endif

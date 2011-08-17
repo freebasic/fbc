@@ -1,7 +1,7 @@
 /* graphical mode wstring text output */
 
 #include "fb_gfx.h"
-#include "fb_con.h"
+#include "../rtlib/fb_con.h"
 #include <stdlib.h>
 
 /*:::::*/
