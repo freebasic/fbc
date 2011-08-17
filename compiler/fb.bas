@@ -796,11 +796,24 @@ sub fbSetPaths _
 	pathTB(FB_PATH_LIB) = prefix
 
 	#ifdef ENABLE_STANDALONE
+		'' [target-]lib/
 		pathTB(FB_PATH_INC) += fbc.triplet + "include"
 		pathTB(FB_PATH_LIB) += fbc.triplet + "lib"
 	#else
-		pathTB(FB_PATH_INC) += "include" + FB_HOST_PATHDIV + fbc.triplet + "freebasic"
-		pathTB(FB_PATH_LIB) += "lib" + FB_HOST_PATHDIV + fbc.triplet + "freebasic"
+		'' lib/[target-]freebasic[-suffix]/
+		pathTB(FB_PATH_INC) += "include" + FB_HOST_PATHDIV + fbc.triplet
+		pathTB(FB_PATH_LIB) += "lib" + FB_HOST_PATHDIV + fbc.triplet
+
+		'' Our subdirectory in include/ and lib/ is usually called
+		'' freebasic/, but on DOS that's too long... of course almost
+		'' no target triplet or suffix can be used either
+		#ifdef __FB_DOS__
+			pathTB(FB_PATH_INC) += "freebas"
+			pathTB(FB_PATH_LIB) += "freebas"
+		#else
+			pathTB(FB_PATH_INC) += "freebasic"
+			pathTB(FB_PATH_LIB) += "freebasic"
+		#endif
 	#endif
 
 	pathTB(FB_PATH_INC) += FB_SUFFIX + FB_HOST_PATHDIV

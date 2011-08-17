@@ -428,12 +428,17 @@ ifdef ENABLE_STANDALONE
   prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
   prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
+  ifeq ($(HOST_OS),dos)
+    FB_NAME := freebas
+  else
+    FB_NAME := freebasic
+  endif
   newbin     := $(new)/bin
-  newinclude := $(new)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  newlib     := $(new)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  newinclude := $(new)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
   prefixbin     := $(prefix)/bin
-  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)freebasic$(SUFFIX)
-  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)freebasic$(SUFFIX)
+  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
 FBC_EXE := $(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
