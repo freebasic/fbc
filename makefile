@@ -441,7 +441,7 @@ else
   prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
-FBC_EXE := $(TARGET_PREFIX)fbc$(SUFFIX)$(EXEEXT)
+FBC_EXE := $(TARGET_PREFIX)fbc$(SUFFIX)$(SUFFIX2)$(EXEEXT)
 
 newcompiler := $(new)/compiler
 newlibfb    := $(new)/libfb
@@ -1250,29 +1250,33 @@ help:
 	@echo "  install[-compiler|-runtime]    to install into prefix."
 	@echo "  uninstall[-compiler|-runtime]  to remove from prefix."
 	@echo "Variables:"
-	@echo "  FBFLAGS ('-g'), CFLAGS ('-g -O2')"
+	@echo "  FBFLAGS, CFLAGS  Use these to disable optimizations or add debugging options"
 	@echo "  new     The build directory ('new'); change this to differentiate multiple"
 	@echo "          builds in one source tree."
 	@echo "  prefix  The install directory ('.' on Windows/DOS; '/usr/local' elsewhere)"
-	@echo "  HOST    A GNU triplet to cross-compile an fbc that will run on HOST."
-	@echo "  TARGET  A GNU triplet to build a cross-fbc that produces for TARGET,"
+	@echo "  HOST    A system triplet to cross-compile an fbc that will run on HOST."
+	@echo "  TARGET  A system triplet to build a cross-fbc that produces for TARGET,"
 	@echo "          and to cross-compile the runtime to run on TARGET."
 	@echo "  SUFFIX  A string to append to the fbc program name and the lib/freebasic/"
 	@echo "          directory, distinguishing this build from other installed versions."
+	@echo "  SUFFIX2 A second string to append to the fbc program name. This one is not"
+	@echo "          added to the freebasic/ sub-directories, allowing to install multiple"
+	@echo "          fbcs that use the same runtime."
 	@echo "  FBC     The 'fbc', 'gcc', 'ar' tools to use. Note: When cross-compiling,"
 	@echo "  CC      these cannot contain paths, because the host/target triplets will"
 	@echo "  AR      be prepended. However, you can always set those variables directly:"
 	@echo "          HOST_FBC, HOST_CC, TARGET_AR, TARGET_CC"
 	@echo "  V       For verbose command lines"
 	@echo "FreeBASIC configuration options:"
-	@echo "  ENABLE_FBBFD=217  To use the FB headers for this exact libbfd version,"
+	@echo "  ENABLE_FBBFD=217  Use the FB headers for this exact libbfd version,"
 	@echo "                    instead of using the system's bfd.h via a C wrapper."
-	@echo "  DISABLE_OBJINFO   To disable fbc's objinfo feature and not use libbfd"
+	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
-	@echo "  DISABLE_GFX       Don't build libfbgfx"
-	@echo "  DISABLE_OPENGL    For libfbgfx without OpenGL support (Unix/Windows)"
-	@echo "  DISABLE_X         For libfbgfx without X support (Unix)"
-	@echo "  ENABLE_PREFIX     Hard-code the PREFIX into the compiler, instead of"
+	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
+	@echo "                    or when the target system isn't yet supported by libfbgfx)"
+	@echo "  DISABLE_OPENGL    Don't use OpenGL in libfbgfx (Unix/Windows versions)"
+	@echo "  DISABLE_X         Don't use X in libfbgfx (Unix version)"
+	@echo "  ENABLE_PREFIX     Hard-code the prefix into the compiler, instead of"
 	@echo "                    building a relocatable compiler."
 	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
 	@echo "                    toplevel directory (instead of bin/) and does not use"
