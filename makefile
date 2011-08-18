@@ -120,12 +120,11 @@ extract-triplet-os = $(call extract-os,$(subst -, ,$(1)))
 extract-triplet-arch = $(call extract-arch,$(subst -, ,$(1)))
 
 ifdef HOST
-  # Cross-compile fbc to run on this HOST
+  # Parse the HOST triplet
   HOST_PREFIX := $(HOST)-
 
   ifndef HOST_OS
     triplet_os := $(call extract-triplet-os,$(HOST))
-
     ifneq ($(filter cygwin%,$(triplet_os)),)
       HOST_OS := cygwin
     endif
@@ -156,16 +155,10 @@ ifdef HOST
     ifneq ($(filter xbox%,$(triplet_os)),)
       HOST_OS := xbox
     endif
-
-    ifndef HOST_OS
-      $(error Sorry, the OS part of HOST='$(HOST)' could not be identified. \
-              Maybe the makefile should be fixed.)
-    endif
   endif
 
   ifndef HOST_ARCH
     triplet_arch := $(call extract-triplet-arch,$(HOST))
-
     ifeq ($(triplet_arch),i386)
       HOST_ARCH := 386
     endif
@@ -190,27 +183,29 @@ ifdef HOST
     ifeq ($(triplet_arch),powerpc64)
       HOST_ARCH := powerpc64
     endif
+  endif
 
-    # For triplets like 'mingw32' there is no arch part and we get 'unknown',
-    # it's probably best to choose a good default in that case.
-    ifeq ($(triplet_arch),unknown)
-      ifeq ($(HOST_OS),dos)
-        HOST_ARCH := 386
-      else
-        HOST_ARCH := 486
-      endif
+  # For some triplets we can choose good default archs, e.g. i486 for 'mingw32'
+  ifndef HOST_ARCH
+    ifeq ($(HOST_OS),dos)
+      HOST_ARCH := 386
     endif
-
-    ifndef HOST_ARCH
-      $(error Sorry, the CPU arch part of HOST='$(HOST)' could not be \
-              identified. Maybe the makefile should be fixed.)
+    ifeq ($(HOST_OS),win32)
+      HOST_ARCH := 486
     endif
   endif
-else
-  # No HOST given, so guess the build OS & arch via uname or something else.
-  # uname is available on every system we currently support, except on
-  # Windows with MinGW but not MSYS, we try to detect that below.
 
+  ifndef HOST_OS
+    $(error Sorry, the OS part of HOST='$(HOST)' could not be identified. \
+            Maybe the makefile should be fixed.)
+  endif
+
+  ifndef HOST_ARCH
+    $(error Sorry, the CPU arch part of HOST='$(HOST)' could not be \
+            identified. Maybe the makefile should be fixed.)
+  endif
+else
+  # No HOST given, so try to guess it via uname.
   ifndef HOST_OS
     uname := $(shell uname)
     ifneq ($(findstring CYGWIN,$(uname)),)
@@ -251,6 +246,7 @@ else
     endif
   endif
 
+  # Otherwise try to guess the HOST_ARCH based on 'uname -m'
   ifndef HOST_ARCH
     uname_m := $(shell uname -m)
     ifeq ($(uname_m),i386)
@@ -277,7 +273,6 @@ else
     ifeq ($(uname_m),powerpc64)
       HOST_ARCH = powerpc64
     endif
-
     ifndef HOST_ARCH
       $(error Sorry, your system's CPU arch could not be identified \
               automatically. Maybe the makefile should be fixed. \
@@ -292,7 +287,6 @@ ifdef TARGET
 
   ifndef TARGET_OS
     triplet_os := $(call extract-triplet-os,$(TARGET))
-
     ifneq ($(filter cygwin%,$(triplet_os)),)
       TARGET_OS := cygwin
     endif
@@ -323,16 +317,10 @@ ifdef TARGET
     ifneq ($(filter xbox%,$(triplet_os)),)
       TARGET_OS := xbox
     endif
-
-    ifndef TARGET_OS
-      $(error Sorry, the OS part of TARGET='$(TARGET)' could not be \
-              identified. Maybe the makefile should be fixed.)
-    endif
   endif
 
   ifndef TARGET_ARCH
     triplet_arch := $(call extract-triplet-arch,$(TARGET))
-
     ifeq ($(triplet_arch),i386)
       TARGET_ARCH := 386
     endif
@@ -357,21 +345,26 @@ ifdef TARGET
     ifeq ($(triplet_arch),powerpc64)
       TARGET_ARCH := powerpc64
     endif
+  endif
 
-    # For triplets like 'mingw32' there is no arch part and we get 'unknown',
-    # it's probably best to choose a good default in that case.
-    ifeq ($(triplet_arch),unknown)
-      ifeq ($(TARGET_OS),dos)
-        TARGET_ARCH := 386
-      else
-        TARGET_ARCH := 486
-      endif
+  # For some triplets we can choose good default archs, e.g. i486 for 'mingw32'
+  ifndef TARGET_ARCH
+    ifeq ($(TARGET_OS),dos)
+      TARGET_ARCH := 386
     endif
+    ifeq ($(TARGET_OS),win32)
+      TARGET_ARCH := 486
+    endif
+  endif
 
-    ifndef TARGET_ARCH
-      $(error Sorry, the CPU arch part of TARGET='$(TARGET)' could not be
-              identified. Maybe the makefile should be fixed.)
-    endif
+  ifndef TARGET_OS
+    $(error Sorry, the OS part of TARGET='$(TARGET)' could not be \
+            identified. Maybe the makefile should be fixed.)
+  endif
+
+  ifndef TARGET_ARCH
+    $(error Sorry, the CPU arch part of TARGET='$(TARGET)' could not be \
+            identified. Maybe the makefile should be fixed.)
   endif
 else
   # No TARGET given, so use the same values as for HOST
