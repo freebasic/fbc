@@ -92,9 +92,9 @@ AR := ar
 
 -include config.mk
 
-# The build directory
+# The default build directory
 ifndef new
-  new := new
+  override new := new
 endif
 
 -include $(new)/config.mk
@@ -395,29 +395,8 @@ endif
 # Directory layout setup
 #
 
-# Default prefix is /usr/local, except when cross-compiling, then you typically
-# don't want to install into the build system, and when on Windows (with MinGW),
-# installing into /usr/local isn't all that helpful (especially if MSYS isn't
-# installed). For Cygwin it's probably always ok to use /usr/local, isn't it?
 ifndef prefix
-  ifdef HOST
-    prefix := .
-  else
-    ifneq ($(filter dos win32,$(HOST_OS)),)
-      prefix := .
-    else
-      prefix := /usr/local
-    endif
-  endif
-endif
-
-# Protect against dangerous empty path variables, we do not want to end up with
-# 'rm -rf /'. Assuming <nothing> means '.'.
-ifndef prefix
-  override prefix := .
-endif
-ifndef new
-  override new := .
+  override prefix := /usr/local
 endif
 
 ifdef ENABLE_STANDALONE
