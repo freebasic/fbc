@@ -641,10 +641,10 @@ ifeq ($(TARGET_OS),dos)
   DISABLE_OPENGL := YesPlease
 endif
 
-NEW_INCLUDES := \
+# rtlib FB includes (gfxlib2's fbgfx.bi is handled separately)
+NEW_FB_INCLUDES := \
   $(newinclude)/datetime.bi \
   $(newinclude)/dir.bi \
-  $(newinclude)/fbgfx.bi \
   $(newinclude)/file.bi \
   $(newinclude)/string.bi \
   $(newinclude)/utf_conv.bi \
@@ -1076,8 +1076,12 @@ runtime: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
 
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
-runtime: $(NEW_INCLUDES)
-$(newinclude)/%.bi: include/%.bi
+runtime: $(NEW_FB_INCLUDES)
+$(NEW_FB_INCLUDES): $(newinclude)/%.bi: rtlib/%.bi
+	$(QUIET_CP)cp $< $@
+
+runtime: $(newinclude)/fbgfx.bi
+$(newinclude)/fbgfx.bi: gfxlib2/fbgfx.bi
 	$(QUIET_CP)cp $< $@
 
 ifdef FB_LDSCRIPT
@@ -1157,7 +1161,7 @@ install-compiler: compiler $(prefixbin)
 
 .PHONY: install-runtime
 install-runtime: runtime $(prefixinclude) $(prefixlib)
-	cp $(NEW_INCLUDES) $(prefixinclude)/
+	cp $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi $(prefixinclude)/
   ifdef FB_LDSCRIPT
 	cp $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
   endif
@@ -1178,7 +1182,7 @@ uninstall-compiler:
 
 .PHONY: uninstall-runtime
 uninstall-runtime:
-	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_INCLUDES))
+	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_FB_INCLUDES)) $(prefixinclude)/fbgfx.bi
   ifdef FB_LDSCRIPT
 	rm -f $(prefixlib)/$(FB_LDSCRIPT)
   endif
@@ -1187,7 +1191,7 @@ uninstall-runtime:
 	rm -f $(prefixlib)/libfbmt.a
   endif
   ifndef DISABLE_GFX
-	rm -f $(prefixlib)/libfbgfx.a
+	rm -f $(prefixinclude)/fbgfx.bi $(prefixlib)/libfbgfx.a
   endif
   # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
   # that we should remove if empty.
@@ -1208,7 +1212,7 @@ clean-compiler:
 
 .PHONY: clean-runtime
 clean-runtime:
-	rm -f $(NEW_INCLUDES)
+	rm -f $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi
   ifdef FB_LDSCRIPT
 	rm -f $(newlib)/$(FB_LDSCRIPT)
   endif
@@ -1219,7 +1223,8 @@ clean-runtime:
 	-rmdir $(newlibfbmt)
   endif
   ifndef DISABLE_GFX
-	rm -f $(newlib)/libfbgfx.a
+	rm -f $(newinclude)/fbgfx.bi $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
+	-rmdir $(newlibfbgfx)
   endif
 	-rmdir $(newinclude)
   ifndef ENABLE_STANDALONE
