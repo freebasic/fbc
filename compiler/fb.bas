@@ -784,7 +784,10 @@ sub fbSetPaths _
 		#ifdef ENABLE_PREFIX
 			prefix = ENABLE_PREFIX
 		#else
-			prefix = exepath() + FB_HOST_PATHDIV + ".."
+			prefix = exepath()
+			#ifndef ENABLE_STANDALONE
+				prefix += FB_HOST_PATHDIV + ".."
+			#endif
 		#endif
 	end if
 
