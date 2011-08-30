@@ -61,10 +61,11 @@ private function _linkFiles _
 		end select
 	end if
 
-#ifndef DISABLE_OBJINFO
-	'' Supplementary ld script to drop the fbctinf objinfo section
-	ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
-#endif
+	'' The custom ldscript must always be used, to get ctors/dtors into
+	'' the correct order that lets fbrt0's ctor be the first and fbrt0's
+	'' dtor the last one called. (needed until DJGPP's default ldscripts
+	'' are fixed)
+	ldcline += " -T " + QUOTE + fbGetPath( FB_PATH_LIB ) + "i386go32.x" + QUOTE
 
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile

@@ -420,6 +420,20 @@ newlibfb    := $(new)/libfb
 newlibfbmt  := $(new)/libfbmt
 newlibfbgfx := $(new)/libfbgfx
 
+# Unless objinfo is disabled, we use the fbextra.x supplemental ldscript to
+# drop objinfo sections when linking. This lets the system/linker's default
+# script still take effect, which is good e.g. to support extra library search
+# paths specified in the ldscript (e.g. multi-arch directory layout on Debian).
+# For DOS/DJGPP FB however we have modified ld's ldscript to fix the order of
+# ctors/dtors, so that's a special case.
+ifeq ($(TARGET_OS),dos)
+  FB_LDSCRIPT := i386go32.x
+else
+  ifndef DISABLE_OBJINFO
+    FB_LDSCRIPT := fbextra.x
+  endif
+endif
+
 #
 # Compilers and flags
 #
@@ -1066,6 +1080,13 @@ runtime: $(NEW_INCLUDES)
 $(newinclude)/%.bi: include/%.bi
 	$(QUIET_CP)cp $< $@
 
+ifdef FB_LDSCRIPT
+runtime: $(newlib)/$(FB_LDSCRIPT)
+$(newlib)/fbextra.x: compiler/fbextra.x
+	$(QUIET_CP)cp $< $@
+$(newlib)/i386go32.x: contrib/djgpp/i386go32.x
+	$(QUIET_CP)cp $< $@
+endif
 
 runtime: $(newlib)/fbrt0.o
 $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
@@ -1137,11 +1158,10 @@ install-compiler: compiler $(prefixbin)
 .PHONY: install-runtime
 install-runtime: runtime $(prefixinclude) $(prefixlib)
 	cp $(NEW_INCLUDES) $(prefixinclude)/
-  ifndef DISABLE_OBJINFO
-	cp $(newlib)/fbextra.x $(prefixlib)/
+  ifdef FB_LDSCRIPT
+	cp $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
   endif
-	cp $(newlib)/fbrt0.o $(prefixlib)/
-	cp $(newlib)/libfb.a $(prefixlib)/
+	cp $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	cp $(newlib)/libfbmt.a $(prefixlib)/
   endif
@@ -1159,11 +1179,10 @@ uninstall-compiler:
 .PHONY: uninstall-runtime
 uninstall-runtime:
 	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_INCLUDES))
-  ifndef DISABLE_OBJINFO
-	rm -f $(prefixlib)/fbextra.x
+  ifdef FB_LDSCRIPT
+	rm -f $(prefixlib)/$(FB_LDSCRIPT)
   endif
-	rm -f $(prefixlib)/fbrt0.o
-	rm -f $(prefixlib)/libfb.a
+	rm -f $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
   ifndef DISABLE_MT
 	rm -f $(prefixlib)/libfbmt.a
   endif
@@ -1190,11 +1209,10 @@ clean-compiler:
 .PHONY: clean-runtime
 clean-runtime:
 	rm -f $(NEW_INCLUDES)
-  ifndef DISABLE_OBJINFO
-	rm -f $(newlib)/fbextra.x
+  ifdef FB_LDSCRIPT
+	rm -f $(newlib)/$(FB_LDSCRIPT)
   endif
-	rm -f $(newlib)/fbrt0.o $(newlibfb)/config.h
-	rm -f $(newlib)/libfb.a $(newlibfb)/*.o
+	rm -f $(newlib)/fbrt0.o $(newlibfb)/config.h $(newlib)/libfb.a $(newlibfb)/*.o
 	-rmdir $(newlibfb)
   ifndef DISABLE_MT
 	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
@@ -1240,6 +1258,11 @@ help:
 	@echo "          HOST_FBC, HOST_CC, TARGET_AR, TARGET_CC"
 	@echo "  V       For verbose command lines"
 	@echo "FreeBASIC configuration options:"
+	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
+	@echo "                    toplevel directory, and always use the custom ldscripts."
+	@echo "                    (intended for self-contained installations)"
+	@echo "  ENABLE_PREFIX     Hard-code the prefix into the compiler, instead of"
+	@echo "                    building a relocatable compiler."
 	@echo "  ENABLE_FBBFD=217  Use the FB headers for this exact libbfd version,"
 	@echo "                    instead of using the system's bfd.h via a C wrapper."
 	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
@@ -1248,12 +1271,6 @@ help:
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
 	@echo "  DISABLE_OPENGL    Don't use OpenGL in libfbgfx (Unix/Windows versions)"
 	@echo "  DISABLE_X         Don't use X in libfbgfx (Unix version)"
-	@echo "  ENABLE_PREFIX     Hard-code the prefix into the compiler, instead of"
-	@echo "                    building a relocatable compiler."
-	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
-	@echo "                    toplevel directory (instead of bin/) and does not use"
-	@echo "                    freebasic/ sub-directories in include/ and lib/."
-	@echo "                    (intended for self-contained installations)"
 	@echo "  ENABLE_<TARGET>   For building a multi-target compiler. The ENABLE_* for"
 	@echo "                    the default TARGET will automatically be defined."
 	@echo "  TRIPLET_<TARGET>=<default-triplet>  For enabled targets, the compiler will"

@@ -1,4 +1,10 @@
-OUTPUT_FORMAT("coff-go32")
+/* From C:\DJGPP\lib\ldscripts\, modified for FB:
+   - .ctors sorted in front of .ctors.*, same for dtors
+     Together with the fixed _main this guarantees fbrt0's .ctors.65435 will be first,
+     and .dtors.65435 will be last.
+   - The FB objinfo section is discarded (see also fbextra.x) */
+/* Default linker script, for normal executables */
+OUTPUT_FORMAT("coff-go32-exe")
 ENTRY(start)
 SECTIONS
 {
@@ -9,8 +15,7 @@ SECTIONS
     *(.const*)
     *(.ro*)
     *(.gnu.linkonce.r*)
-    etext  =  . ;
-    PROVIDE(_etext  =  .);
+    etext  =  . ; PROVIDE(_etext = .) ;
     . = ALIGN(0x200);
   }
   .data  ALIGN(0x200) : {
@@ -24,30 +29,27 @@ SECTIONS
     *(SORT(.dtors.*))
     *(.dtor)
     djgpp_last_dtor = . ;
+
     __environ = . ;
-    PROVIDE(_environ = .);
-    LONG(0)
+    PROVIDE(_environ = .) ;
+    LONG(0) ;
     *(.data)
     *(.data.*)
-    *(.gnu.linkonce.d*)
     *(.gcc_exc*)
     ___EH_FRAME_BEGIN__ = . ;
     *(.eh_fram*)
     ___EH_FRAME_END__ = . ;
-    LONG(0)
-    edata  =  . ;
-    PROVIDE(_edata  =  .);
+    LONG(0);
+    *(.gnu.linkonce.d*)
+    edata  =  . ; PROVIDE(_edata = .) ;
     . = ALIGN(0x200);
   }
   .bss  SIZEOF(.data) + ADDR(.data) :
-  { 					
-    _object.2 = . ;
-    . += 24 ;
+  {
     *(.bss .bss.* .gnu.linkonce.b.*)
     *(COMMON)
-    end = . ;
-    PROVIDE(_end = .);
-    . = ALIGN(0x200);
+     end = . ; PROVIDE(_end = .) ;
+     . = ALIGN(0x200);
   }
   /* Stabs debugging sections.  */
   .stab 0 : { *(.stab) }
@@ -62,4 +64,8 @@ SECTIONS
   .debug_str      0 : { *(.debug_str) }
   .debug_loc      0 : { *(.debug_loc) }
   .debug_macinfo  0 : { *(.debug_macinfo) }
+  /DISCARD/ :
+  {
+    *(.fbctinf)
+  }
 }

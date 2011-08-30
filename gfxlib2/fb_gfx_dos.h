@@ -9,7 +9,7 @@
 #define __FB_GFX_DOS_H__
 
 #include "fb_gfx.h"
-#include "fb_dos.h"
+#include "../rtlib/fb_dos.h"
 
 #include <conio.h>
 #include <dpmi.h>
