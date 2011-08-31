@@ -141,29 +141,12 @@
     - All users that reported bugs, requested features and as such helped 
       improving the compiler, language and run-time library somehow.
 
-  o Compiling FreeBASIC (itself)
+  o Building FreeBASIC
 
-    The toplevel makefile builds the compiler and the runtime.
-    For a simple native build just do a 'make'. For more information on
-    configuration possibilities and cross-compiling check the makefile, and
-    its 'help' target ('make help').
-
-    Requirements:
-
-    - (GNU?) make
-    - fbc
-    - binutils' libbfd development files (for the compiler)
-
-    - DOS:
-        - DJGPP 2.04
-
-    - Linux (and also *BSD etc.):
-        - native gcc/binutils
-        - X11 headers (for the graphics runtime)
-        - ncurses development files
-        - gpm (general purpose mouse) headers
-        - GL headers (typically from freeglut)
-
-    - Win32:
-        - MinGW
-        - DirectX headers (for the graphics runtime)
+    The toplevel makefile builds the FB compiler (fbc) and the FB runtime
+    (libfb*.a, fbrt0.o). It requires fbc to compile the new fbc, gcc to compile
+    the runtime libraries, and a Unix-like shell environment (DOS: DJGPP,
+    Windows: MinGW/MSYS).
+    For a simple native build just do a 'make'; for more information on
+    requirements, configuration options and cross-compiling please check the
+    makefile and also its 'help' command ('make help').

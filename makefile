@@ -4,17 +4,29 @@
 # compiler (fbc) and the runtime (libfb*, fbrt0). Try 'make help' for
 # information on what you can configure.
 #
-# A Unixy shell environment is required. It would be too hard and ugly to
-# support multiple other shells (e.g. cmd.exe, COMMAND.COM) and work-around
-# their limitations (recursive directory creation, command line length limits,
-# missing commands, case-preservation in file names, different syntax for
-# quoting and escaping, file name restrictions, forward slashes vs.
-# backslashes). If FB had less build modes (standalone vs. normal directory
-# layout) and would just consist of fbc and one libfreebasic this all would
-# be easier. And then there's the problem of whether the test suite or fbdocs
-# (and other things in the FB source) will work without a Unixy shell, not to
-# mention building other projects such as binutils, for which a Unixy shell is
-# needed anyways.
+# Requirements:
+#  - (GNU?) make to run this makefile
+#  - fbc (it compiles itself)
+#  - binutils' libbfd development files (for the compiler, optional)
+#  - Unixy shell environment
+#
+#  - DOS:
+#    - DJGPP 2.04
+#    - FB currently relies on a patched version of DJGPP's libc/crt0/_main.c,
+#      see contrib/djgpp/, it has to be used instead of DJGPP's own for any
+#      FB program that uses FB runtime functions from global ctors/dtors or
+#      has global UDTs/objects.
+#
+#  - Linux (and also *BSD etc.):
+#    - gcc & binutils
+#    - X11 development files (for the graphics runtime, optional)
+#    - ncurses development files
+#    - gpm (general purpose mouse) headers
+#    - GL headers (typically from freeglut, optional)
+#
+#  - Win32:
+#    - MinGW & MSYS
+#    - DirectX headers (for the graphics runtime)
 #
 # Cross-compilation and building a cross-compiler is supported similar to
 # autoconf: through the HOST and TARGET variables that can be set to system
@@ -52,6 +64,7 @@
 #           distributions have different versions of it, and
 #        b) to avoid licensing conflicts between fbc (GPLv2) and
 #           statically-linked libbfd > 2.17 (GPLv3).
+#           TODO: Is this really an issue?
 #
 # XBox/OpenXDK-related tips (TODO: Test me, update me!)
 #  - Install OpenXDK as usual (preferably from SVN if there are no recent
@@ -83,6 +96,18 @@
 #  - Order-only prerequisites
 #  - $(or ...), $(and ...)
 #  - $(eval ...)
+#
+# A Unixy shell environment is required. It would be too hard and ugly to
+# support multiple other shells (e.g. cmd.exe, COMMAND.COM) and work-around
+# their limitations (recursive directory creation, command line length limits,
+# missing commands, case-preservation in file names, different syntax for
+# quoting and escaping, file name restrictions, forward slashes vs.
+# backslashes). If FB had less build modes (standalone vs. normal directory
+# layout) and would just consist of fbc and one libfreebasic this all would
+# be easier. And then there's the problem of whether the test suite or fbdocs
+# (and other things in the FB source) will work without a Unixy shell, not to
+# mention building other projects such as binutils, for which a Unixy shell is
+# needed anyways.
 #
 
 FBC := fbc
