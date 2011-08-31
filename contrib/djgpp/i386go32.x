@@ -1,8 +1,3 @@
-/* From C:\DJGPP\lib\ldscripts\, modified for FB:
-   - .ctors sorted in front of .ctors.*, same for dtors
-     Together with the fixed _main this guarantees fbrt0's .ctors.65435 will be first,
-     and .dtors.65435 will be last.
-   - The FB objinfo section is discarded (see also fbextra.x) */
 /* Default linker script, for normal executables */
 OUTPUT_FORMAT("coff-go32-exe")
 ENTRY(start)
