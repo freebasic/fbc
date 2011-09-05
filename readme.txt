@@ -10,11 +10,14 @@
 
   o License
 
-    The FreeBASIC compiler (fbc) is licensed under the GPLv2, see
+    The FreeBASIC compiler (fbc) is licensed under the GNU GPLv2, see
     compiler/license.txt for details.
 
-    The FreeBASIC runtime (libfb) is licensed under the LGPLv2 with an
-    exception, see runtime/license.txt for details.
+    The FreeBASIC runtime library (libfb) is licensed under the GNU LGPLv2,
+    with an additional exception, see rtlib/license.txt for details.
+
+    The FreeBASIC graphics library (libfbgfx) is licensed under the GNU LGPLv2,
+    see gfxlib2/license.txt for details.
 
   o Installing
 
