@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# The big file list is expected on command line
+BIGLIST=$1
+
+# Aswell as the output file
+MANIFEST=$2
+
+# Create new/overwrite existing manifest
+: > $MANIFEST
+
+include() {
+    # Including: Apply the pattern to the big file list, append the result to
+    # the manifest (duplicates are removed later).
+    grep -E "$1" $BIGLIST >> $MANIFEST
+}
+
+exclude() {
+    # Excluding: Apply the inversed pattern (grep -v) to the current manifest,
+    # removing files from the list that was gathered already.
+    grep -E "$1" -v $MANIFEST > temp
+    mv temp $MANIFEST
+}
+
+# makelist.bas adds commands below

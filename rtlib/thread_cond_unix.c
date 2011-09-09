@@ -1,0 +1,62 @@
+/* Linux (pthreads) condition variables handling routines */
+
+#include <pthread.h>
+#include "fb.h"
+
+typedef struct _FBCOND
+{
+	pthread_cond_t id;
+} FBCOND;
+
+
+/*:::::*/
+FBCALL FBCOND *fb_CondCreate( void )
+{
+	FBCOND *cond;
+
+	cond = (FBCOND *)malloc( sizeof( FBCOND ) );
+	if( !cond )
+		return NULL;
+
+	pthread_cond_init( &cond->id, NULL );
+
+	return cond;
+}
+
+/*:::::*/
+FBCALL void fb_CondDestroy( FBCOND *cond )
+{
+	if( cond == NULL )
+		return;
+
+	pthread_cond_destroy( &cond->id );
+
+	free( (void *)cond );
+}
+
+/*:::::*/
+FBCALL void fb_CondSignal( FBCOND *cond )
+{
+	if( cond == NULL )
+		return;
+
+	pthread_cond_signal( &cond->id );
+}
+
+/*:::::*/
+FBCALL void fb_CondBroadcast( FBCOND *cond )
+{
+	if( cond == NULL )
+		return;
+
+	pthread_cond_broadcast( &cond->id );
+}
+
+/*:::::*/
+FBCALL void fb_CondWait( FBCOND *cond, FBMUTEX *mutex )
+{
+	if( cond == NULL )
+		return;
+
+	pthread_cond_wait( &cond->id, &mutex->id );
+}

@@ -1,6 +1,0 @@
-LIBRARY libpcreposix-0.dll
-EXPORTS
-regcomp                 	@1
-regerror                	@2
-regexec                 	@3
-regfree                 	@4
