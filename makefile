@@ -597,7 +597,7 @@ FBC_BAS := \
   ast-node-link ast-node-load ast-node-mem ast-node-misc ast-node-namespace \
   ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
-  clist dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main fb-objinfo \
+  clist dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
   fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
   parser-assignment parser-comment parser-compound parser-compound-do \
   parser-compound-extern parser-compound-for parser-compound-if \
@@ -648,6 +648,10 @@ ifdef ENABLE_WIN32
 endif
 ifdef ENABLE_XBOX
   FBC_BAS += fbc_xbox
+endif
+
+ifndef DISABLE_OBJINFO
+  FBC_BAS += fb-objinfo
 endif
 
 FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
