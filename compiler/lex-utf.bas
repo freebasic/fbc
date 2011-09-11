@@ -240,10 +240,10 @@ sub lexReadUTF8( )
 	elseif sizeof(wstring) = 2 then
 		chars = hUTF8ToUTF16LE( )
 	else
-#ifdef HOST_LITTLE_ENDIAN
-		chars = hUTF8ToUTF32LE( )
-#else
+#ifdef __FB_BIGENDIAN__
 		chars = hUTF8ToUTF32BE( )
+#else
+		chars = hUTF8ToUTF32LE( )
 #endif
 	end if
 
@@ -376,10 +376,10 @@ sub lexReadUTF16LE( ) static
 	elseif sizeof(wstring) = 2 then
 		chars = hUTF16LEToUTF16LE( )
 	else
-#ifdef HOST_LITTLE_ENDIAN
-		chars = hUTF16LEToUTF32LE( )
-#else
+#ifdef __FB_BIGENDIAN__
 		chars = hUTF16LEToUTF32BE( )
+#else
+		chars = hUTF16LEToUTF32LE( )
 #endif
 	end if
 
@@ -511,10 +511,10 @@ sub lexReadUTF16BE( ) static
 	elseif sizeof(wstring) = 2 then
 		chars = hUTF16BEToUTF16LE( )
 	else
-#ifdef HOST_LITTLE_ENDIAN
-		chars = hUTF16BEToUTF32LE( )
-#else
+#ifdef __FB_BIGENDIAN__
 		chars = hUTF16BEToUTF32BE( )
+#else
+		chars = hUTF16BEToUTF32LE( )
 #endif
 	end if
 
@@ -635,10 +635,10 @@ sub lexReadUTF32LE( )
 	elseif sizeof(wstring) = 2 then
 		chars = hUTF32LEToUTF16LE( )
 	else
-#ifdef HOST_LITTLE_ENDIAN
-		chars = hUTF32LEToUTF32LE( )
-#else
+#ifdef __FB_BIGENDIAN__
 		chars = hUTF32LEToUTF32BE( )
+#else
+		chars = hUTF32LEToUTF32LE( )
 #endif
 	end if
 
@@ -759,10 +759,10 @@ sub lexReadUTF32BE( )
 	elseif sizeof(wstring) = 2 then
 		chars = hUTF32BEToUTF16LE( )
 	else
-#ifdef HOST_LITTLE_ENDIAN
-		chars = hUTF32BEToUTF32LE( )
-#else
+#ifdef __FB_BIGENDIAN__
 		chars = hUTF32BEToUTF32BE( )
+#else
+		chars = hUTF32BEToUTF32LE( )
 #endif
 	end if
 
