@@ -1,11 +1,6 @@
 #ifndef __HELP_BI__
 #define __HELP_BI__
 
-#ifndef FALSE
-const FALSE = 0
-const TRUE  = -1
-#endif
-
 #ifndef INVALID
 const INVALID = -1
 #endif

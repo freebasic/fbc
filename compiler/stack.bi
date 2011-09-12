@@ -1,11 +1,6 @@
 #ifndef __STACK_BI__
 #define __STACK_BI__
 
-#ifndef FALSE
-const FALSE = 0
-const TRUE  = -1
-#endif
-
 type TSTACKNODE
 	prev	as TSTACKNODE ptr
 	next	as TSTACKNODE ptr

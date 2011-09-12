@@ -1,11 +1,6 @@
 #ifndef __LIST_BI__
 #define __LIST_BI__
 
-#ifndef FALSE
-const FALSE = 0
-const TRUE  = -1
-#endif
-
 enum LIST_FLAGS
 	LIST_FLAGS_NONE				= &h00000000
 
