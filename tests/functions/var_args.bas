@@ -140,12 +140,54 @@ sub testVaFirstBehindAlignedParams cdecl ()
     testVaFirstBehindUdt(type<T>(-1, -1), &hFF006622)
 end sub
 
+sub testVaNext cdecl(byval n as integer, ...)
+
+	#macro case_T(T) _
+	case sizeof(T)
+		CU_ASSERT_EQUAL(*cptr(T ptr, p), i)
+		p = va_next(p, T)
+	#endmacro
+
+	dim as integer ptr p = va_first()
+
+	for i as integer = 1 to n
+		dim as integer siz = *p
+		p = va_next(p, integer)
+		select case siz
+		case_T(byte)
+		case_T(short)
+		case_T(integer)
+		case_T(longint)
+		case else
+			CU_FAIL( "Unexpected argument size" )
+		end select
+	next
+
+end sub
+
+sub testVaNextArgs cdecl ()
+
+	testVaNext( 4, _
+		sizeof(byte), cbyte(1), _
+		sizeof(short), cshort(2), _
+		sizeof(integer), cint(3), _
+		sizeof(longint), clngint(4) )
+
+	testVaNext( 4, _
+		sizeof(ulongint), culngint(1), _
+		sizeof(uinteger), cuint(2), _
+		sizeof(ushort), cushort(3), _
+		sizeof(ubyte), cubyte(4) )
+
+end sub
+
 
 sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.functions.var_args")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("testVaFirstBehindAlignedParams", @testVaFirstBehindAlignedParams)
+	fbcu.add_test("testVaNextArgs", @testVaNextArgs)
 
 end sub
 

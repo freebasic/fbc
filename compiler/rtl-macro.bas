@@ -67,7 +67,7 @@
 	 			( -1 ) _
 	 		} _
 	 	), _
-		/' #define va_next(a,t) (a + len( t )) '/ _
+		/' #define va_next(a,t) (cptr(t ptr, cptr(byte ptr, a) + (sizeof(t)+sizeof(any ptr)-1 and -sizeof(any ptr)) ) ) '/ _
 		( _
 			@"VA_NEXT", _
 	 		FB_RTL_OPT_NOQB or FB_RTL_OPT_NOGCC, _
@@ -76,11 +76,13 @@
 	 			@"A", @"T" _
 	 		}, _
 	 		{ _
-	 			( FB_DEFTOK_TYPE_TEX, @"(cast(" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @"(cptr(" ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @" ptr," ), _
+	 			( FB_DEFTOK_TYPE_TEX, @" ptr, cptr(byte ptr, " ), _
 	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 0 ) ), _
-	 			( FB_DEFTOK_TYPE_TEX, @") + 1)" ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") + (sizeof(" ), _
+	 			( FB_DEFTOK_TYPE_PARAM, cast( any ptr, 1 ) ), _
+	 			( FB_DEFTOK_TYPE_TEX, @") + sizeof(any ptr)-1 and -sizeof(any ptr)) ) )" ), _
 	 			( -1 ) _
 	 		} _
 	 	), _
