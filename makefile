@@ -1189,11 +1189,11 @@ $(newlibfb)/config.h: rtlib/config.h.in
 install: install-compiler install-runtime
 
 .PHONY: install-compiler
-install-compiler: compiler $(prefixbin)
+install-compiler: $(prefixbin)
 	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
 
 .PHONY: install-runtime
-install-runtime: runtime $(prefixinclude) $(prefixlib)
+install-runtime: $(prefixinclude) $(prefixlib)
 	$(INSTALL_FILE) $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi $(prefixinclude)/
   ifdef FB_LDSCRIPT
 	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
