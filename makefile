@@ -115,6 +115,11 @@ CC := gcc
 CFLAGS := -O2
 AR := ar
 
+# For copying fbc and the includes/libraries into $(prefix),
+# should be better than plain cp at replacing fbc while fbc is running.
+INSTALL_PROGRAM := install
+INSTALL_FILE := install -m 644
+
 -include config.mk
 
 # The default build directory
@@ -1185,20 +1190,20 @@ install: install-compiler install-runtime
 
 .PHONY: install-compiler
 install-compiler: compiler $(prefixbin)
-	cp $(newbin)/$(FBC_EXE) $(prefixbin)/$(FBC_EXE)
+	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
 
 .PHONY: install-runtime
 install-runtime: runtime $(prefixinclude) $(prefixlib)
-	cp $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi $(prefixinclude)/
+	$(INSTALL_FILE) $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi $(prefixinclude)/
   ifdef FB_LDSCRIPT
-	cp $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
+	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
   endif
-	cp $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
+	$(INSTALL_FILE) $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
-	cp $(newlib)/libfbmt.a $(prefixlib)/
+	$(INSTALL_FILE) $(newlib)/libfbmt.a $(prefixlib)/
   endif
   ifndef DISABLE_GFX
-	cp $(newlib)/libfbgfx.a $(prefixlib)/
+	$(INSTALL_FILE) $(newlib)/libfbgfx.a $(prefixlib)/
   endif
 
 .PHONY: uninstall
