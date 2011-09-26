@@ -1113,10 +1113,6 @@ runtime: $(NEW_FB_INCLUDES)
 $(NEW_FB_INCLUDES): $(newinclude)/%.bi: rtlib/%.bi
 	$(QUIET_CP)cp $< $@
 
-runtime: $(newinclude)/fbgfx.bi
-$(newinclude)/fbgfx.bi: gfxlib2/fbgfx.bi
-	$(QUIET_CP)cp $< $@
-
 ifdef FB_LDSCRIPT
 runtime: $(newlib)/$(FB_LDSCRIPT)
 $(newlib)/fbextra.x: compiler/fbextra.x
@@ -1152,6 +1148,10 @@ $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 endif
 
 ifndef DISABLE_GFX
+runtime: $(newinclude)/fbgfx.bi
+$(newinclude)/fbgfx.bi: gfxlib2/fbgfx.bi
+	$(QUIET_CP)cp $< $@
+
 runtime: $(newlibfbgfx) $(newlib)/libfbgfx.a
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
@@ -1186,46 +1186,32 @@ $(newlibfb)/config.h: rtlib/config.h.in
 	$(call config-ifdef,$(DISABLE_X),DISABLE_X)
 
 .PHONY: install
-install: install-compiler install-runtime
+install: install-compiler install-rtlib install-gfxlib2
 
 .PHONY: install-compiler
 install-compiler: $(prefixbin)
 	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
-
-.PHONY: install-runtime
-install-runtime: $(prefixinclude) $(prefixlib)
-	$(INSTALL_FILE) $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi $(prefixinclude)/
   ifdef FB_LDSCRIPT
 	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
   endif
+
+.PHONY: install-rtlib
+install-rtlib: $(prefixinclude) $(prefixlib)
+	$(INSTALL_FILE) $(NEW_FB_INCLUDES) $(prefixinclude)/
 	$(INSTALL_FILE) $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(newlib)/libfbmt.a $(prefixlib)/
   endif
+
+.PHONY: install-gfxlib2
+install-gfxlib2: $(prefixinclude) $(prefixlib)
   ifndef DISABLE_GFX
+	$(INSTALL_FILE) $(newinclude)/fbgfx.bi $(prefixinclude)/
 	$(INSTALL_FILE) $(newlib)/libfbgfx.a $(prefixlib)/
   endif
 
-.PHONY: uninstall
-uninstall: uninstall-compiler uninstall-runtime
-
-.PHONY: uninstall-compiler
-uninstall-compiler:
-	rm -f $(prefixbin)/$(FBC_EXE)
-
-.PHONY: uninstall-runtime
-uninstall-runtime:
-	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_FB_INCLUDES)) $(prefixinclude)/fbgfx.bi
-  ifdef FB_LDSCRIPT
-	rm -f $(prefixlib)/$(FB_LDSCRIPT)
-  endif
-	rm -f $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
-  ifndef DISABLE_MT
-	rm -f $(prefixlib)/libfbmt.a
-  endif
-  ifndef DISABLE_GFX
-	rm -f $(prefixinclude)/fbgfx.bi $(prefixlib)/libfbgfx.a
-  endif
+.PHONY: uninstall uninstall-compiler uninstall-rtlib uninstall-gfxlib2
+uninstall: uninstall-compiler uninstall-rtlib uninstall-gfxlib2
   # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
   # that we should remove if empty.
   ifndef ENABLE_STANDALONE
@@ -1233,32 +1219,27 @@ uninstall-runtime:
 	-rmdir $(prefixlib)
   endif
 
-.PHONY: clean
-clean: clean-compiler clean-runtime
-	-rmdir $(new)
-
-.PHONY: clean-compiler
-clean-compiler:
-	rm -f $(newcompiler)/config.bi $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
-	-rmdir $(newbin)
-	-rmdir $(newcompiler)
-
-.PHONY: clean-runtime
-clean-runtime:
-	rm -f $(NEW_FB_INCLUDES) $(newinclude)/fbgfx.bi
+uninstall-compiler:
+	rm -f $(prefixbin)/$(FBC_EXE)
   ifdef FB_LDSCRIPT
-	rm -f $(newlib)/$(FB_LDSCRIPT)
+	rm -f $(prefixlib)/$(FB_LDSCRIPT)
   endif
-	rm -f $(newlib)/fbrt0.o $(newlibfb)/config.h $(newlib)/libfb.a $(newlibfb)/*.o
-	-rmdir $(newlibfb)
+
+uninstall-rtlib:
+	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_FB_INCLUDES))
+	rm -f $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
   ifndef DISABLE_MT
-	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
-	-rmdir $(newlibfbmt)
+	rm -f $(prefixlib)/libfbmt.a
   endif
+
+uninstall-gfxlib2:
   ifndef DISABLE_GFX
-	rm -f $(newinclude)/fbgfx.bi $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
-	-rmdir $(newlibfbgfx)
+	rm -f $(prefixinclude)/fbgfx.bi $(prefixlib)/libfbgfx.a
   endif
+
+.PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
+clean: clean-compiler clean-rtlib clean-gfxlib2
+	-rmdir $(newbin)
 	-rmdir $(newinclude)
   ifndef ENABLE_STANDALONE
 	-rmdir $(new)/include
@@ -1267,16 +1248,37 @@ clean-runtime:
   ifndef ENABLE_STANDALONE
 	-rmdir $(new)/lib
   endif
+	-rmdir $(new)
+
+clean-compiler:
+	rm -f $(newcompiler)/config.bi $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
+  ifdef FB_LDSCRIPT
+	rm -f $(newlib)/$(FB_LDSCRIPT)
+  endif
+	-rmdir $(newcompiler)
+
+clean-rtlib:
+	rm -f $(NEW_FB_INCLUDES) $(newlib)/fbrt0.o $(newlibfb)/config.h $(newlib)/libfb.a $(newlibfb)/*.o
+	-rmdir $(newlibfb)
+  ifndef DISABLE_MT
+	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
+	-rmdir $(newlibfbmt)
+  endif
+
+clean-gfxlib2:
+  ifndef DISABLE_GFX
+	rm -f $(newinclude)/fbgfx.bi $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
+	-rmdir $(newlibfbgfx)
+  endif
 
 .PHONY: help
 help:
 	@echo "Available commands:"
-	@echo "  <none>|all                     to build compiler and runtime."
-	@echo "  compiler                       (compiler only)"
-	@echo "  runtime                        (runtime only)"
-	@echo "  clean[-compiler|-runtime]      to remove built files."
-	@echo "  install[-compiler|-runtime]    to install into prefix."
-	@echo "  uninstall[-compiler|-runtime]  to remove from prefix."
+	@echo "  <none>|all                 to build compiler and libraries."
+	@echo "  compiler|rtlib|gfxlib2     (specific component only)"
+	@echo "  clean[-<component>]        to remove built files."
+	@echo "  install[-<component>]      to install into prefix."
+	@echo "  uninstall[-<component>]    to remove from prefix."
 	@echo "Variables:"
 	@echo "  FBFLAGS, CFLAGS  Use these to disable optimizations or add debugging options"
 	@echo "  new     The build directory ('new'); change this to differentiate multiple"
