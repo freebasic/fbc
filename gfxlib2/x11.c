@@ -6,6 +6,18 @@
 #include "fb_gfx_x11.h"
 #include <unistd.h>
 
+/* Horizontal scroll wheel (6 == left, 7 == right)
+   X headers do not define these, as X was not designed for this,
+   but they are still generated, on modern systems anyways. There probably
+   is no guarantee that 6 and 7 will always be hwheel, but as far as gfxlib2
+   is concerned it should be ok to assume 6 and 7 to be hwheel instead of
+   treating them as regular buttondown. */
+#ifndef Button6
+#define Button6			6
+#endif
+#ifndef Button7
+#define Button7			7
+#endif
 
 X11DRIVER fb_x11;
 
@@ -22,7 +34,7 @@ static int orig_rate, target_rate;
 static Rotation orig_rotation;
 static Cursor blank_cursor, arrow_cursor = None;
 static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
-static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
+static int mouse_x, mouse_y, mouse_wheel, mouse_hwheel, mouse_buttons, mouse_on;
 static int mouse_x_root, mouse_y_root;
 
 
@@ -187,19 +199,34 @@ static void *window_thread(void *arg)
 					break;
 				
 				case ButtonPress:
-					e.type = EVENT_MOUSE_BUTTON_PRESS;
 					switch (event.xbutton.button) {
-						case Button1:	mouse_buttons |= BUTTON_LEFT  ; e.button = BUTTON_LEFT  ; break;
-						case Button3:	mouse_buttons |= BUTTON_RIGHT ; e.button = BUTTON_RIGHT ; break;
-						case Button2:	mouse_buttons |= BUTTON_MIDDLE; e.button = BUTTON_MIDDLE; break;
-						case Button4:	e.z = mouse_wheel++; e.type = EVENT_MOUSE_WHEEL; break;
-						case Button5:	e.z = mouse_wheel--; e.type = EVENT_MOUSE_WHEEL; break;
+					case Button1: mouse_buttons |= BUTTON_LEFT  ; e.button = BUTTON_LEFT  ; break;
+					case Button3: mouse_buttons |= BUTTON_RIGHT ; e.button = BUTTON_RIGHT ; break;
+					case Button2: mouse_buttons |= BUTTON_MIDDLE; e.button = BUTTON_MIDDLE; break;
+					case Button4: e.z = mouse_wheel++; break;
+					case Button5: e.z = mouse_wheel--; break;
+					case Button6: e.w = mouse_hwheel--; break;
+					case Button7: e.w = mouse_hwheel++; break;
 					}
-					if ((event.xbutton.button != Button4) && (event.xbutton.button != Button5)) {
+
+					switch (event.xbutton.button) {
+					case Button4:
+					case Button5:
+						e.type = EVENT_MOUSE_WHEEL;
+						break;
+					case Button6:
+					case Button7:
+						e.type = EVENT_MOUSE_HWHEEL;
+						break;
+					default:
+						e.type = EVENT_MOUSE_BUTTON_PRESS;
+						/* Double click check -- done for everything except [h]wheel scrolling */
 						if (event.xbutton.time - last_click_time < DOUBLE_CLICK_TIME)
 							e.type = EVENT_MOUSE_DOUBLE_CLICK;
 						last_click_time = event.xbutton.time;
+						break;
 					}
+
 					break;
 					
 				case ButtonRelease:
