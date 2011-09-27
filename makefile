@@ -1056,7 +1056,7 @@ config-ifdef = $(if $(1),$(call config-define,$(2)))
 config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 
 .PHONY: all
-all: compiler runtime
+all: compiler rtlib gfxlib2
 
 $(new) $(newcompiler) $(newbin) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
 $(new)/include $(newinclude) $(new)/lib $(newlib) \
@@ -1065,7 +1065,17 @@ $(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib):
 	mkdir $@
 
 .PHONY: compiler
-compiler: $(new) $(newcompiler) $(newbin) $(newbin)/$(FBC_EXE)
+compiler: $(new) $(newcompiler) $(newbin) $(new)/lib $(newlib)
+compiler: $(newbin)/$(FBC_EXE)
+ifdef FB_LDSCRIPT
+compiler: $(newlib)/$(FB_LDSCRIPT)
+endif
+
+$(newlib)/fbextra.x: compiler/fbextra.x
+	$(QUIET_CP)cp $< $@
+
+$(newlib)/i386go32.x: contrib/djgpp/i386go32.x
+	$(QUIET_CP)cp $< $@
 
 $(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_COBJINFO)
 	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) -x $@ $^
@@ -1104,28 +1114,23 @@ $(newcompiler)/config.bi: compiler/config.bi.in
 	$(call config-ifdef,$(ENABLE_STANDALONE),ENABLE_STANDALONE)
 	$(call config-define,FB_SUFFIX "$(SUFFIX)")
 
-.PHONY: runtime
-runtime: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
+.PHONY: rtlib
+rtlib: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
+rtlib: $(NEW_FB_INCLUDES)
+rtlib: $(newlib)/fbrt0.o
+rtlib: $(newlib)/libfb.a
+ifndef DISABLE_MT
+rtlib: $(newlibfbmt) $(newlib)/libfbmt.a
+endif
 
 # Copy the headers into new/ too; that's only done to allow the new compiler
 # to be tested from the build directory.
-runtime: $(NEW_FB_INCLUDES)
 $(NEW_FB_INCLUDES): $(newinclude)/%.bi: rtlib/%.bi
 	$(QUIET_CP)cp $< $@
 
-ifdef FB_LDSCRIPT
-runtime: $(newlib)/$(FB_LDSCRIPT)
-$(newlib)/fbextra.x: compiler/fbextra.x
-	$(QUIET_CP)cp $< $@
-$(newlib)/i386go32.x: contrib/djgpp/i386go32.x
-	$(QUIET_CP)cp $< $@
-endif
-
-runtime: $(newlib)/fbrt0.o
 $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
 
-runtime: $(newlib)/libfb.a
 $(newlib)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
@@ -1135,8 +1140,6 @@ $(LIBFB_C): $(newlibfb)/%.o: rtlib/%.c $(LIBFB_H)
 $(LIBFB_S): $(newlibfb)/%.o: rtlib/%.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-ifndef DISABLE_MT
-runtime: $(newlibfbmt) $(newlib)/libfbmt.a
 $(newlib)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
@@ -1145,14 +1148,18 @@ $(LIBFBMT_C): $(newlibfbmt)/%.o: rtlib/%.c $(LIBFB_H)
 
 $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+
+.PHONY: gfxlib2
+gfxlib2:
+ifndef DISABLE_GFX
+gfxlib2: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
+gfxlib2: $(newinclude)/fbgfx.bi
+gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 endif
 
-ifndef DISABLE_GFX
-runtime: $(newinclude)/fbgfx.bi
 $(newinclude)/fbgfx.bi: gfxlib2/fbgfx.bi
 	$(QUIET_CP)cp $< $@
 
-runtime: $(newlibfbgfx) $(newlib)/libfbgfx.a
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
 
@@ -1161,7 +1168,6 @@ $(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
 
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
-endif
 
 $(newlibfb)/config.h: rtlib/config.h.in
 	$(QUIET_GEN)cp $< $@
