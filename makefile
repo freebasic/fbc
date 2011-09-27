@@ -1189,7 +1189,7 @@ $(newlibfb)/config.h: rtlib/config.h.in
 install: install-compiler install-rtlib install-gfxlib2
 
 .PHONY: install-compiler
-install-compiler: $(prefixbin)
+install-compiler: $(prefixbin) $(prefixlib)
 	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
   ifdef FB_LDSCRIPT
 	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
