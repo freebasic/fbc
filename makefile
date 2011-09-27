@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 #
-# This is fbc's toplevel makefile whopper, please enjoy it. It builds the
-# compiler (fbc) and the runtime (libfb*, fbrt0). Try 'make help' for
-# information on what you can configure.
+# This is the main makefile that builds the compiler (fbc) and the runtime
+# libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx).
+# Try 'make help' for information on what you can configure.
 #
 # Requirements:
 #  - (GNU?) make to run this makefile
@@ -19,10 +19,10 @@
 #
 #  - Linux (and also *BSD etc.):
 #    - gcc & binutils
-#    - X11 development files (for the graphics runtime, optional)
+#    - X11 development files (for the graphics runtime, can be disabled)
 #    - ncurses development files
 #    - gpm (general purpose mouse) headers
-#    - GL headers (typically from freeglut, optional)
+#    - GL headers (typically from freeglut, can be disabled)
 #
 #  - Win32:
 #    - MinGW & MSYS
@@ -30,11 +30,16 @@
 #
 # Cross-compilation and building a cross-compiler is supported similar to
 # autoconf: through the HOST and TARGET variables that can be set to system
-# triplets. By default TARGET is the same as HOST, and HOST is the same as
+# triplets. For example, on Debian with i586-mingw32msvc-binutils and
+# i586-mingw32msvc-gcc you can build a i586-mingw32msvc-fbc:
+#    make TARGET=i586-mingw32msvc
+# By default TARGET is the same as HOST, and HOST is the same as
 # the build system, which is guessed mostly via uname. In case the triplet
 # parsing or default system detection fails, please fix it and make it work!
-# Or set HOST_OS, HOST_ARCH and/or TARGET_OS, TARGET_ARCH directly.
 #
+# Alternatively (instead of using a system triplet) you can set HOST_OS,
+# HOST_ARCH and/or TARGET_OS, TARGET_ARCH directly, which should allow
+# building a cross-compiler without the target triplet name prefix.
 # FB OS names:
 #    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
 #    (where 'dos' should be 'djgpp', and 'win32' should be 'mingw')
@@ -44,35 +49,40 @@
 # so there we have HOST_MINGW/CYGWIN and the HOST_WIN32 common to both.
 # In the makefile/compiler win32 means just mingw though.
 #
-# FB directory layout:
-#    a) Default (for Linux /usr[/local] installations, and also for MinGW):
+# FB directory layout ('target-' is the cross-compiler name prefix,
+# '-suffix' is the optional name suffix that can be used to differentiate
+# parallel fbc installations):
+#    a) Default (for Unixy installations):
 #          bin/target-fbc-suffix
 #          include/target-freebasic-suffix/fbgfx.bi
 #          lib/target-freebasic-suffix/libfb.a
 #    b) Standalone (for self-contained DOS/Windows installations):
-#          target-fbc-suffix
+#          target-fbc-suffix.exe
 #          target-include-suffix/fbgfx.bi
 #          target-lib-suffix/libfb.a
 #
 # libbfd tips:
-#    fbc uses libbfd to add and read out extra information from object files.
+#    fbc uses libbfd to add and read out extra information to/from object files
+#    and static libraries, for example a list of library names from '-l somelib'
+#    command line options and #inclibs in FB source code, to allow users to
+#    compile and link in separate steps without having to explicitly specify
+#    all '-l somelib' options for the link step. 
 #    It's an optional but convenient feature. (see DISABLE_OBJINFO)
 #    Read more here: <http://www.freebasic.net/wiki/wikka.php?wakka=DevObjinfo>
 #    For the releases made by the fbc project, fbc is linked against a static
 #    libbfd 2.17,
 #        a) to avoid dependencies on a shared libbfd, because many Linux
 #           distributions have different versions of it, and
-#        b) to avoid licensing conflicts between fbc (GPLv2) and
+#        b) to avoid licensing related issues with fbc (GPLv2) and
 #           statically-linked libbfd > 2.17 (GPLv3).
-#           TODO: Is this really an issue?
 #
-# XBox/OpenXDK-related tips (TODO: Test me, update me!)
+# XBox/OpenXDK-related tips (TODO: Not tested in a long time, needs updating!)
 #  - Install OpenXDK as usual (preferably from SVN if there are no recent
-#    releases). Apply openxdk/configure.in-mingw.patch if necessary.
+#    releases). Apply contrib/openxdk/configure.in-mingw.patch if necessary.
 #  - Replace $OPENXDK/bin/i386-pc-xbox-gcc with the one from
-#    openxdk/i386-pc-xbox-gcc - this avoids having to rebuild gcc while still
-#    getting the OpenXDK include and lib directories instead of the MinGW ones
-#    so that configure will work correctly. Modify this script if needed to
+#    contrib/openxdk/i386-pc-xbox-gcc - this avoids having to rebuild gcc while
+#    still getting the OpenXDK include and lib directories instead of the MinGW
+#    ones so that configure will work correctly. Modify this script if needed to
 #    run MinGW gcc (the current one should work in MSYS) or if OpenXDK is
 #    installed somewhere else.
 #  - !!!WRITEME!!! cp $MINGW/include/{x,y,z}.h $OPENXDK/i386-pc-xbox/include/
@@ -85,13 +95,15 @@
 #  - Guess the OS/arch types, or parse the HOST/TARGET triplets to find out
 #  - Set HOST_FBC, TARGET_CC, prefix, EXEEXT, etc. based on that
 #  - Figure out the directory layout (normal vs. standalone), same for
-#    file names/locations of compiler/libfb.a, once in new/ and once in $prefix/.
+#    file names/locations of fbc/libfb etc., for both new/ and $prefix/
+#    directories.
 #  - Set FBCFLAGS, FBLFLAGS and ALLCFLAGS
 #  - Select compiler/runtime sources based on host/target systems
 #  - Perform build/install rules
 #
-# Note: In order to be compatible to older makes, e.g. DJGPP's GNU make 3.79.1,
-# features added in more recent versions aren't used. For example:
+# Note: In order to be compatible to older makes, namely DJGPP's
+# GNU make 3.79.1, features added in more recent versions cannot be used.
+# For example:
 #  - "else if"
 #  - Order-only prerequisites
 #  - $(or ...), $(and ...)
