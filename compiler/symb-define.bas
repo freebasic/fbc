@@ -12,6 +12,9 @@
 #include once "lex.bi"
 #include once "hlp.bi"
 
+#include once "datetime.bi"
+#include once "string.bi"
+
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
@@ -27,6 +30,7 @@ declare function	hDefFpu_cb			( ) as string
 declare function	hDefFunction_cb		( ) as string
 declare function	hDefLine_cb			( ) as string
 declare function	hDefDate_cb			( ) as string
+declare function	hDefDateISO_cb		( ) as string
 declare function	hDefTime_cb			( ) as string
 declare function    hDefMultithread_cb	( ) as string
 declare function    hDefOptByval_cb		( ) as string
@@ -49,7 +53,7 @@ declare function    hDefPath_cb         ( ) as string
 declare function    hDefGcc_cb         	( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 33
+const SYMB_MAXDEFINES = 34
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -66,6 +70,7 @@ const SYMB_MAXDEFINES = 33
         (@"__FUNCTION_NQ__"           ,   NULL                ,  1,   @hDefFunction_cb       ), _
         (@"__LINE__"                  ,   NULL                ,  1,   @hDefLine_cb           ), _
         (@"__DATE__"                  ,   NULL                ,  0,   @hDefDate_cb           ), _
+        (@"__DATE_ISO__"              ,   NULL                ,  0,   @hDefDateISO_cb        ), _
         (@"__TIME__"                  ,   NULL                ,  0,   @hDefTime_cb           ), _
         (@"__PATH__"                  ,   NULL                ,  0,   @hDefPath_cb           ), _
         (@"__FB_OPTION_BYVAL__"       ,   NULL                ,  1,   @hDefOptByval_cb       ), _
@@ -126,6 +131,13 @@ end function
 private function hDefDate_cb( ) as string static
 
 	function = date
+
+end function
+
+'':::::
+private function hDefDateISO_cb( ) as string static
+
+	function = format( now( ), "yyyy-mm-dd" )
 
 end function
 

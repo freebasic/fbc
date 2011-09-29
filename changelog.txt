@@ -7,12 +7,13 @@ Version 0.24.0:
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
+- __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
 - FBC should give an error if EOF reached while parsing code inside an #IF block
 - Possible crashes in date() and now() if the system time couldn't be retrieved
-- VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
+- #3398498: VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
 
 
 Version 0.23.0:
