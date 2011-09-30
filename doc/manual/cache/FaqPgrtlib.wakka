@@ -1,0 +1,70 @@
+{{fbdoc item="title" value="Frequently Asked FB Runtime Library Questions"}}----
+
+{{anchor name="item0"}}
+**FreeBASIC Runtime Library questions:**
+
+	==- {{anchor name="item1|How do I play sound?"}}==
+	==- {{anchor name="item2|How do I access the serial ports?"}}==
+	==- {{anchor name="item3|How do I print?"}}==
+	==- {{anchor name="item4|How do I access the hardware ports?"}}==
+	==- {{anchor name="item5|What is the behavior of strings passed byval?"}}==
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+----
+
+@@**FreeBASIC Runtime Library questions**@@
+
+{{anchor name="item1"}}== How do I play sound?==
+	Of the QB's sound keywords only BEEP is implemented in FB. 
+	If PC speaker sound is required, it should be programmed using IN and OUT. See the example in the OUT keyword for a replacement of SOUND. 
+	There is a library called QBSound that allows to emulate qb's ability to PLAY in the background tunes encoded in strings, it uses the soundcard's synthesizer.
+	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the [[FaqDOS DOS FAQ section]].
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item2"}}==How do I access the serial ports?==
+
+	**DOS**
+	See [[FaqDOS DOS FAQ section]].
+
+	**Windows and Linux**
+	See [[KeyPgOpenCom Open Com]].
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item3"}}==How do I print?==
+	Since version 0.15 FB supports character output to printer. 
+	To print graphics two approaches are possible:
+	- Preprocess the graphics, program the printer and send the pixels in FB. This is OS-portable but depends on the printer model. The only way for DOS, see also [[FaqDOS DOS FAQ section]].
+	- In Windows and Linux there are specific API calls. This is not OS-portable but the OS's printer driver makes it printer-independent 
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item4"}}==How do I access the hardware ports?==
+
+	As of V0.15 QB's INP, OUT and WAIT are implemented. 
+	The GfxLib intercepts the calls to some VGA ports to emulate the widely used QB's palete manipulation and vsync methods. So ports &H3DA, &H3C7, &H3C8 and &H3C9 can't be accessed it GfxLib is used. All other ports are accessible. 
+	No further care is required to use INP and OUT in Linux or DOS. For the Windows version the required device driver is installed each first time the program is run in a windows session; this requires Administrator rights for this first run or the program will end with an error. 
+
+{{anchor name="item0|Back to top"}}
+
+{{anchor name="item5"}}==What is the behavior of strings passed byval?==
+
+~&This item is written as of 01.30.2007.
+
+	A FreeBASIC [[KeyPgString String]] is essentially a built-in user-defined type that, among other things, contains a pointer to the string data and it's length. This type is called a 'descriptor' internally, and it is this descriptor that is passed to procedures when it's parameters are passed by reference.
+	When passed by value, however, the actual string data is passed, not the descriptor. Internally, the string data is terminated with the NULL character (chr(0)). When the temporary [[KeyPgString String]] is created for the procedure, FreeBASIC copies the string data passed up until the first NULL character. If the [[KeyPgString String]] argument passed contained NULL characters within the string, then the rest of the string data after the first NULL is not copied, and the string is truncated. You also run the risk of writing outside the bounds of the allocated memory.
+	This behavior will eventually be fixed to act as it should: a temporary descriptor will be created for the procedure and a 'deep copy' of it's fields will be made (notably, the entire string data itself will be copied into new memory, and the new descriptor will point to that memory).
+	To be safe, pass [[KeyPgString Strings]] by reference. If you need to simulate the correct behavior of passing a [[KeyPgString String]] by value, either 1) create a temporary [[KeyPgString String]], initialize it with the [[KeyPgString String]] you want to pass and pass the temporary by reference, or 2) pass the [[KeyPgString String]] by reference and have the procedure create and initialize a temporary [[KeyPgString String]] and work with the temporary.
+
+{{anchor name="item0|Back to top"}}
+
+See also:
+	- [[CompilerFAQ Compiler FAQ]]
+	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
+and
+	- [[FaqPgWin32 Win32 related FAQ]]
+	- [[FaqDOS DOS related FAQ]]
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

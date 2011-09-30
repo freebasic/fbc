@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="CAST"}}----
+Converts an expression to a specified data type
+
+{{fbdoc item="syntax"}}##
+	Cast( [[DataType datatype]], //expression// )
+##
+{{fbdoc item="desc"}}
+	Converts ##//expression//## into a different ##[[DataType datatype]]##. Useful to be used in macros when ##[[DataType datatype]]## is unknown and also when converting to [[KeyPgTypeAlias Type Alias]].
+
+	Note: this is a general form of conversion operators such as ##[[KeyPgCint Cint]]## or ##[[KeyPgCdbl Cdbl]]##.  They are more versatile because they can be used on types that have a ##[[KeyPgOpCast Cast]]## operator, but don't have a built-in keyword for it. e.g. ##**Cast**( //my_type//, //expr//)##.  They are also suitable for use in cases where the type of a variable is not fixed in the code - for example, it might be ##[[KeyPgPpdefine Define]]##d earlier, or may be the ##[[KeyPgTypeof Type of]]## a different variable or expression.
+
+	Note: If you want to use an operator specifically for converting to different types of ##[[KeyPgPointer Pointer]]##s, consider using ##[[KeyPgCptr Cptr]]## instead.
+  
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/casting/cast.bas"}}%%(freebasic)
+'' will print -128 because the integer literal will be converted to a signed Byte
+'' (this Casting operation is equivalent to using CByte)
+print cast( byte, &h0080 )
+
+'' will print 3 because the floating-point value will be converted to an Integer
+'' (this Casting operator is equivalent to using CInt)
+print cast( integer, 3.1 )
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cast""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCptr Cptr]]##
+	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgTypeof Typeof]]##
+	 
+{{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

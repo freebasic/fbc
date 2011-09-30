@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="SQR"}}----
+Returns a square root of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sqr** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	result = **Sqr**( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		the number (greater than or equal to zero)
+
+{{fbdoc item="ret"}}
+	Returns the square root of the argument ##//number//##.
+
+	If ##//number//## equals zero, **Sqr** returns zero. 
+
+	If ##//number//## is less than zero, **Sqr** returns a special value representing "not defined", printing like """NaN""" or "IND", exact text is platform dependent.
+
+{{fbdoc item="desc"}}
+	This is the same as raising the argument //number// to the one-half power: y = x ^ (1/2) . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)
+'' Example of sqr function: Pythagorean theorem 
+DIM AS SINGLE a , b
+
+PRINT "Pythagorean theorem , right triangle"
+PRINT
+INPUT "Please enter one leg side length: ", a
+INPUT "Please enter the other leg side length: ", b
+PRINT 
+PRINT "The hypotenuse has a length of: " ; SQR ( a * a + b * b )
+
+SLEEP
+%%
+
+The output would look like:
+%%
+Pythagorean theorem , right triangle
+
+Please enter one leg side length: 3
+Please enter the other leg side length: 4
+
+The hypotenuse has a length of: 5
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Arithmetic Operators]]
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

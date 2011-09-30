@@ -1,0 +1,52 @@
+{{fbdoc item="title" value="STRING"}}----
+Standard data type: 8 bit character string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **String** [ * //size//]
+##
+{{fbdoc item="desc"}}
+	A ##**String**## is an array of characters.
+
+	A ##**String**## declared without the ##//size//## parameter is dynamically resized depending on the length of the string. The length can range from 0 bytes to 2 gigabytes. A descriptor contains a pointer to the actual string and the length of the string. ##[[KeyPgOpVarptr Varptr]]## will return a pointer to the descriptor, while ##[[KeyPgOpStrptr Strptr]]## will point to the actual string.
+	Despite the use of the descriptor, an implicit ##NULL## character (##[[KeyPgChr chr]](0)##) is added to the end of the string, to allow passing them to functions in external libraries without making slow copies.  ""FreeBASIC""'s internal functions will ignore this character, and not treat it as part of the string.
+
+	A ##**String**## declared with a ##//fixed size//## is a QB-style fixed length string, with the exception that unused characters are set to 0, regardless of what "-lang" compiler option is used. It has no descriptor and it is not resized to fit its contents. As in QB, if data overflows the size of the string, it is truncated on the right side.
+	Fixed length strings are also terminated with a ##NULL## character, and so they use ##//size// + 1## bytes of space.  This ##NULL## terminator may be removed in future, to prevent the redundant character complicating data layout in user-defined ##[[KeyPgType Type]]##s.
+
+	String variable names need not end in a dollar sign ##$## as in other dialects of BASIC.  In //[[CompilerDialects lang fb]]// variable suffixes, including the dollar sign, are disallowed entirely.
+
+	Note: When passing ##**String**##s as parameters to ##[[KeyPgSub Sub]]##s, they should always be passed by reference (##[[KeyPgByref ByRef]]##).  Currently, ##[[KeyPgByval ByVal]]## does not pass a copy of the string, but a ##[[KeyPgPtr Pointer]]## to the string data.  This can cause unexpected behavior.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/string.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
+'' Variable-length
+Dim a As String
+a = "Hello"
+
+'' Or
+Dim b$
+b$ = "World"
+
+'' Fixed-length
+Dim c As String * 32
+c = "Hello World"
+%%
+
+{{fbdoc item="diff"}}
+	- In QB the strings were limited to 32767 characters.
+	- In QB, the unused characters of a fixed-length string were initialized with 32 (space, or " ", in ASCII).
+	- In QB static or fixed-size strings were often used in records to represent a number of bytes of data;  for example, a string of 1 length to represent 1 byte in a UDT read from a file.  This is not possible in ""FreeBASIC"" since strings always have an ##NULL## character following.  When converting QBasic code that reads UDTs from files, make sure all instances of "##As String * //n//##" are replaced with "##As uByte (0 to //n// - 1)##" or your files will be incompatible.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgStringFunction String (Function)]]##
+	- ##[[KeyPgZstring Zstring]]##
+	- ##[[KeyPgWstring Wstring]]##
+	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgOpStrptr Strptr]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

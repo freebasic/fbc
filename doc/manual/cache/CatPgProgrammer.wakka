@@ -1,0 +1,107 @@
+{{fbdoc item="title" value="Programmer's Guide"}}----
+FreeBASIC programmer's guide.
+
+//Work in Progress: **New pages created for this guide should use the ""ProPg""* prefix.**//
+
+<<{{fbdoc item="section" value="Getting Started"}}
+	{{fbdoc item="keyword" value="ProPgHelloWorld|Hello World"}}
+	{{fbdoc item="keyword" value="ProPgPrimer1|FreeBASIC Primer #1"}}
+
+{{fbdoc item="section" value="Source Files"}}
+	{{fbdoc item="keyword" value="ProPgSourceFiles|Source Files (.bas)"}}
+	{{fbdoc item="keyword" value="ProPgHeaderFiles|Header Files (.bi)"}}
+	{{fbdoc item="keyword" value="ProPgPrebuiltLibraries|Using Prebuilt Libraries"}}
+
+{{fbdoc item="section" value="Lexical Conventions"}}
+	{{fbdoc item="keyword" value="ProPgComments|Comments"}}
+	{{fbdoc item="keyword" value="ProPgIdentifierRules|Identifier Rules"}}
+	{{fbdoc item="keyword" value="ProPgLiterals|Literals"}}
+	{{fbdoc item="keyword" value="ProPgLabels|Labels"}}
+
+{{fbdoc item="section" value="Variables and Datatypes"}}
+	Constants and Enumerations
+	Numeric Types
+	Strings (string, zstring, and wstring)
+	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
+	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
+	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
+
+	{{fbdoc item="subsect" value="Arrays"}}
+		{{fbdoc item="keyword" value="ProPgArrays|Overview"}}
+		{{fbdoc item="keyword" value="ProPgFixLenArrays|Fixed-length Arrays"}}
+		{{fbdoc item="keyword" value="ProPgVarLenArrays|Variable-length Arrays"}}
+		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
+		Passing Arrays to Procedures
+
+	{{fbdoc item="subsect" value="Pointers"}}
+		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
+		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer Arithmetic"}}
+
+{{fbdoc item="section" value="Declarations"}}
+	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
+	{{fbdoc item="keyword" value="ProPgInitialization|Initialization"}}
+	{{fbdoc item="keyword" value="ProPgStorageClasses|Storage Classes"}}
+	Variable Lifetime
+	{{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}
+	Namespaces
+	{{fbdoc item="keyword" value="ProPgVarProcLinkage|Variable and Procedure Linkage"}}
+
+{{fbdoc item="section" value="User Defined Types"}}
+	{{fbdoc item="keyword" value="ProPgUDTs|Overview"}}
+	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
+	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
+	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors"}}
+	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
+	Properties
+	{{fbdoc item="keyword" value="ProPgMemberAccessRights|Member Access Rights"}}
+	{{fbdoc item="keyword" value="ProPgOperatorOverloading|Operator Overloading"}}
+	Iterators
+	New and Delete
+	{{fbdoc item="keyword" value="ProPgTypeObjects|Types as Objects"}}
+<<>>{{fbdoc item="section" value="Statements and Expressions"}}
+	Assignments
+	{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}
+	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
+	{{fbdoc item="keyword" value="ProPgControlFlow|Control Flow Statements"}}
+
+{{fbdoc item="section" value="Procedures"}}
+	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
+	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
+	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
+	Procedure Scopes
+	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
+	Recursion
+	Constructors and Destructors
+	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
+	{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
+
+{{fbdoc item="section" value="Making Binaries"}}
+	Executables
+	{{fbdoc item="keyword" value="ProPgStaticLibraries|Static Libraries"}}
+	{{fbdoc item="keyword" value="ProPgSharedLibraries|Shared Libraries (DLLs)"}}
+	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
+
+{{fbdoc item="section" value="Preprocessor"}}
+	Overview
+	Conditional Compilation
+	Macros
+
+{{fbdoc item="section" value="Other Topics"}}
+(And topics that need to get placed elsewhere)
+	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
+	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
+	{{fbdoc item="keyword" value="ProPgRadians|Radians"}}
+	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
+	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
+	External Graphics File Formats
+	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
+	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
+	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}
+	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
+	{{fbdoc item="keyword" value="ProPgFileIO|File I/O in FreeBASIC"}}
+
+NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
+
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

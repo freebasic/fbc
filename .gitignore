@@ -1,0 +1,4 @@
+*.o
+*.a
+new*/
+config.mk

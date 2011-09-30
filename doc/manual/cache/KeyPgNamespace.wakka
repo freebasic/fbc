@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="NAMESPACE"}}----
+Declares a namespace block
+
+{{fbdoc item="syntax"}}##
+	**Namespace** //identifier// [ [[KeyPgAlias Alias]] "//aliasname//" ]
+		//statements//
+	**End Namespace**
+##
+{{fbdoc item="param"}}
+	##//identifier//##
+		The name of the namespace.
+	##//aliasname//##
+		An alternate external name for the namespace.
+
+{{fbdoc item="desc"}}
+	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the Global Namespace). 
+
+	For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. 
+
+	To access duplicated symbols defined in the global namespace use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/module/namespace.bas"}}%%(freebasic)
+Namespace Forms
+	Type Point '' A 2D point
+		As Integer x
+		As Integer y
+	End Type
+	'' Since we are inside of the namespace, Point resolves to Forms.Point.
+	Sub AdjustPoint( ByRef pt As Point, ByVal newx As Integer, ByVal newy As Integer )
+		pt.x = newx
+		pt.y = newy
+	End Sub
+End Namespace
+
+Type Point '' A 3D point
+	As Integer x
+	As Integer y
+	As Integer z
+End Type
+
+Sub AdjustPoint( ByRef pt As Point, ByVal newx As Integer, ByVal newy As Integer, ByVal newz As Integer )
+	pt.x = newx
+	pt.y = newy
+	pt.z = newz
+End Sub
+
+Dim pt1 As Point
+AdjustPoint( pt1, 1, 1, 1 )
+Dim pt2 As Forms.Point
+Forms.AdjustPoint( pt2, 1, 1 )
+%%
+
+{{fbdoc item="lang"}}
+	- Namespaces are not supported in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[KeyPgUsing Using (Namespaces)]]
+
+{{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

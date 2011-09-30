@@ -1,0 +1,56 @@
+{{fbdoc item="title" value="ABS"}}----
+Calculates the absolute value of a number
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Abs** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+{{fbdoc item="usage"}}##
+	result = **Abs**( //number// )
+##
+{{fbdoc item="param"}}
+	##//number//##
+		Value to find the absolute value of.
+
+{{fbdoc item="ret"}}
+	The absolute value of ##//number//##.
+
+{{fbdoc item="desc"}}
+	The absolute value of a number is its unsigned magnitude. For example, ##Abs(-1)## and ##Abs(1)## both return ##1##. The required ##//number//## argument can be any valid numeric expression.
+
+	The ##**Abs**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/abs.bas"}}%%(freebasic)
+dim n as integer
+
+print Abs( -1 )
+print Abs( -3.1415 )
+print Abs( 42 )
+print Abs( n )
+
+n = -69
+
+print Abs( n )
+%%
+Output:
+%%
+1
+3.1415
+42
+0
+69
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSgn Sgn]]##
+	- ##[[KeyPgOperator Operator]]##
+
+{{fbdoc item="back" value="CatPgMath|Math"}}

@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="gmp, The GNU Multiple Precision Arithmetic Library"}}----
+Free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating point numbers.
+
+Website: http://www.gmplib.org
+Platforms supported: Win32, Linux
+Headers to include: gmp.bi
+Example Usage: yes, in examples/libraries/GMP/
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

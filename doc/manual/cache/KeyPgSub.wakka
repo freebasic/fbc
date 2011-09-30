@@ -1,0 +1,93 @@
+{{fbdoc item="title" value="SUB"}}----
+Defines a procedure
+
+{{fbdoc item="syntax"}}##
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]]
+		//statements//
+		...
+		[[[KeyPgReturn Return]]]
+		...
+	[[KeyPgEndblock End]] Sub
+
+	[[[KeyPgPublic Public]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [()] [[[KeyPgModuleConstructor Constructor]]|[[KeyPgModuleDestructor Destructor]]] [[[KeyPgStatic Static]]]
+		//statements//
+		...
+		[[[KeyPgReturn Return]]]
+		...
+	[[KeyPgEndblock End]] Sub
+##
+{{fbdoc item="param"}}
+		##//identifier//##: the name of the subroutine
+		##//external_identifier//##: externally visible (to the linker) name enclosed in quotes
+		##//parameter_list//##: parameter[, parameter[, ...]]
+		##//parameter//##: ##[[[KeyPgByref ByRef]]|[[KeyPgByval ByVal]]] //identifier// [[[KeyPgAs As]] //type//] [= //default_value//]##
+			##//identifier//##: the name of the variable referenced in the subroutine
+			##//type//##: the type of variable
+			##//default_value//##: the value of the argument if none is specified in the call
+		##//statements//##: one or more statements that make up the subroutine body
+
+{{fbdoc item="desc"}}
+	A subroutine is a block of code which may be called at any time from a program.  This code may need to be executed multiple times, and subroutines provide an invaluable means to simplify code by replacing these blocks of code with a single subroutine call.  A subroutine also serves to allow a user to extend the ""FreeBASIC"" language to provide custom commands.  Many of the functions built into ""FreeBASIC"" are merely subroutines part of a "runtime library" linked to by default.
+
+	The ##**Sub**## keyword marks the beginning of a subroutine, and its end is marked by ##**End Sub**##.  The "name" parameter is the name by which this subroutine is called.  For instance, if the declaration is "##**Sub**...**End Sub**##", the user can execute the code in between "##**Sub** foo##" and "##**End Sub**##" by using "##foo##" as a statement.  This code is executed separate from the code which calls the subroutine, so any variable names, unless they are shared, are not available to the subroutine.  Values can, however, be passed using parameters.
+
+	Parameters are the arguments passed to any statement.  For instance, if a user executes a statement as "##[[KeyPgPrint Print]] 4##", the value "4" is passed to the function "##[[KeyPgPrint Print]]##".  Parameters that need to be passed to a subroutine are supplied by one or more parameter arguments in the "##**Sub**##" keyword.  Creating a subroutine with "##**Sub** mysub(foo, bar)...**End Sub**##", allows the code in between "##**Sub**##" and "##**End Sub**##" to refer to the first passed argument as "foo" and the second passed argument as "bar".  If a parameter is given a default value, that parameter is optional.
+
+	Parameters must also have a supplied type, in the form "##//parameter// as //type//##".  If this is omitted, ##//type//## is assumed to be ##[[KeyPgInteger Integer]]##.  A passed value MUST be of the type specified.
+
+	A subroutine can also specify how parameters are passed, either as "##[[KeyPgByref Byref]]##" or "##[[KeyPgByval Byval]]##", as shown in the syntax definition.  If a parameter is "##[[KeyPgByref Byref]]##", the parameter name literally becomes a reference to the original variable passed to the subroutine.  Any changes made to that variable will be reflected outside of the subroutine.  If a parameter is passed "##[[KeyPgByval Byval]]##", however, the value of any passed variable is copied into a new variable, and any changes made to it will not affect the original.  (Note: this does not currently apply to ##[[KeyPgString String]]##s, and "##[[KeyPgByval Byval]]##" should be avoided with them for the time being.)
+
+	The ##[[KeyPgStatic Static]]## specifier indicates that the values of all local variables defined in the sub should be preserved between calls.  To specify individual local variables as static see the ##[[KeyPgStatic Static]]## keyword.
+
+	Sub is the same as ##[[KeyPgFunction Function]]##, except it does not allow a value to be returned.
+
+	The second syntax defines either a constructor or destructor using the ##[[KeyPgModuleConstructor Constructor]]## and ##[[KeyPgModuleDestructor Destructor]]## keywords, respectively.  Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/sub-1.bas"}}%%(freebasic)
+'' Example of writing colored text using a sub:
+
+sub PrintColoredText( byval colour as integer, byref text as string )
+   color colour
+   print text
+end sub
+
+   PrintColoredText( 1, "blue" )        '' a few colors
+   PrintColoredText( 2, "green" )
+   PrintColoredText( 4, "red" )
+   print
+   
+   dim i as integer
+   for i = 0 to 15                        '' all 16 colors
+	  PrintColoredText( i, ("color " & i) )
+   next i
+%%
+{{fbdoc item="filename" value="examples/manual/procs/sub-2.bas"}}%%(freebasic)
+' The following demonstrates optional parameters.
+
+Sub TestSub(P As String = "Default")
+	Print P
+End Sub
+
+TestSub "Testing:"
+TestSub
+%%
+
+{{fbdoc item="lang"}}
+	- The //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects keep the QB convention: parameters are ##[[KeyPgByref Byref]]## by default.
+	- In the //[[CompilerOptlang -lang fb]]// dialect, numeric parameters are passed ##[[KeyPgByval Byval]]## by default.  ##[[KeyPgString String]]##s and UDTs are passed ##[[KeyPgByref Byref]]## by default.
+
+{{fbdoc item="diff"}}
+	- Public and Private access specifiers are new to ""FreeBASIC"".
+	- Constructor subroutines are new to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDeclare Declare]]##
+	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgExit Exit]]##
+	- ##[[KeyPgPublic Public]]##
+	- ##[[KeyPgPrivate Private]]##
+	- ##[[KeyPgStatic Static]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}
+   

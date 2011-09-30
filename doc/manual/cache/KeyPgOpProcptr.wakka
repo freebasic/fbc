@@ -1,0 +1,60 @@
+{{fbdoc item="title" value="Operator PROCPTR (Procedure pointer)"}}----
+Returns the address of a procedure
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Procptr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T// [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Procptr** ( //lhs// )
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		A procedure.
+	##//T//##
+		The type of procedure.
+
+{{fbdoc item="ret"}}
+	Returns the address of the procedure.
+
+{{fbdoc item="desc"}}
+	This operator returns the address of a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## procedure.
+
+	##[[KeyPgOpAt Operator @ (Address of)]]##, when used with procedures, has identical behavior.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
+' This example uses ProcPtr to demonstrate function pointers
+Declare Function Subtract( x as Integer, y as Integer) as Integer
+Declare Function Add( x as Integer, y as Integer) as Integer
+Dim myFunction as Function( x as Integer, y as Integer) as Integer
+
+' myFunction will now be assigned to Add
+myFunction = Procptr( Add )
+print myFunction(2, 3)
+
+' myFunction will now be assigned to Subtract.  Notice the different output.
+myFunction = Procptr( Subtract )
+print myFunction(2, 3)
+
+Function Add( x as Integer, y as Integer) as Integer
+	return x + y
+end function
+
+Function Subtract( x as Integer, y as Integer) as Integer
+	return x - y
+end function
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgOpVarptr Varptr]]##
+	- ##[[KeyPgOpStrptr Strptr]]##
+	- [[ProPgPointers Pointers]]
+
+{{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

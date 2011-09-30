@@ -1,0 +1,19 @@
+{{fbdoc item="title" value="Compiler Option: -l"}}----
+Add a library file to the linker's list.
+
+{{fbdoc item="syntax"}}##
+	**-l** < //libname// >
+##
+{{fbdoc item="param"}}
+	##//libname//##
+		Name of the library to link in. The library file name's extension should not be included.  For example, when using ##-l something##, the linker will look for the files ##libsomething.a##, ##libsomething.dll.a## (Windows), ##something.dll## (Windows) or ##something.so## (Linux).
+
+{{fbdoc item="desc"}}
+	The ##-l## compiler option adds a library file to the linker's list, to be linked into the final executable or library if needed to satisfy dependencies.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInclib #inclib]]##
+	- [[CompilerOptp Compiler Option: -p]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

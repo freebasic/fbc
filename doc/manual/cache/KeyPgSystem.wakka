@@ -1,0 +1,32 @@
+{{fbdoc item="title" value="SYSTEM"}}----
+Closes all open files and ends the program
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **System** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
+##
+{{fbdoc item="usage"}}##
+	**System**( [ //retval// ] )
+##
+{{fbdoc item="param"}}
+	##//retval//##
+		Error code returned to system.
+
+{{fbdoc item="desc"}}
+	Closes all open files and returns to the system. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned. This is the same as ##[[KeyPgEnd End]]## and is here for compatibility between older BASIC dialects. It is recommended to use ##[[KeyPgEnd End]]## instead.
+	
+	Usage of this statement does not cleanly close scope. Variables and memory are not destroyed automatically and object destructors are not called. Calling the required destructors and other clean-up should be explicitly performed before a ##**System**## statement.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/system.bas"}}%%(freebasic)
+print "this text is shown"
+system
+print "this text will never be shown"
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgEnd End]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

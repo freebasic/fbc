@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="MID (Function)"}}----
+Returns a substring of a string
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Mid**[$]( //str//, //start// [, //n// ] )
+##
+{{fbdoc item="param"}}
+	##//str//##
+		The source string.
+	##//start//##
+		The start position in ##//str//## of the substring.
+	##//n//##
+		The substring length, in characters.
+
+{{fbdoc item="desc"}}
+	Returns a substring starting from ##//start//## in ##//str//##. If ##//str//## is empty then the null string (##"####"##) is returned. If ##//start// <= 0## then the null string (##"####"##) is returned.
+	
+	In the first form of ##**Mid**##, all of the remaining characters are returned. In the second form, if ##//n// < 0## or ##//n// >= len(//str//)## then all of the remaining characters are returned.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/strings/mid-func.bas"}}%%(freebasic)
+PRINT MID("abcdefg", 3, 2)
+PRINT MID("abcdefg", 3)
+PRINT MID("abcdefg", 2, 1)
+%%
+	will produce the output:
+%%cd
+cdefg
+b
+%%
+A Unicode example:
+~&Wiki: code rendered this way to allow display of the Unicode characters.
+
+	<<dim text as wstring * 20
+	text = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;!"
+	print mid(text, 6, 4) ' displays "&#1090;, &#1084;"<<::c::
+
+{{fbdoc item="target"}}
+	- DOS does not support the wide-character string versions of **##Mid##**.
+
+{{fbdoc item="lang"}}
+	- The string type suffix "##$##" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
+	- The string type suffix "##$##" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+
+{{fbdoc item="diff"}}
+	- QB does not support Unicode.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgInstr Instr]]##
+	- ##[[KeyPgMidstatement Mid (Statement)]]##
+	- ##[[KeyPgLeft Left]]##
+	- ##[[KeyPgRight Right]]##
+	- ##[[KeyPgAsc Asc]]##
+
+{{fbdoc item="back" value="CatPgString|String Functions"}}

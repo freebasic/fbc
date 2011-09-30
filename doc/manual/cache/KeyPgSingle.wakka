@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="SINGLE"}}----
+Standard data type: 32 bit floating point
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Single**
+##
+{{fbdoc item="desc"}}
+	Single is a 32-bit, floating point data type used to store decimal numbers. They can hold positive values in the range ##1.401298e-45## to ##3.402823e+38##, or negative values in the range ##-1.401298e-45## to ##-3.402823e+38##, or zero (##0##).  They contain at most 24 bits of precision, or about 6 decimal digits.
+	
+	They are similar to ##[[KeyPgDouble Double]]## data types, but less precise. 
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/single.bas"}}%%(freebasic)
+'Example of using a single variable.
+
+dim a as single
+a = 1.9857665
+print a
+
+sleep
+%%
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDouble Double]]## More precise float type
+	- ##[[KeyPgCsng Csng]]##
+	- [[TblVarTypes]] Table with variable types overview, limits and suffixes
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

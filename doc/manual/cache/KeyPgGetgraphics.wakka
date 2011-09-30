@@ -1,0 +1,102 @@
+{{fbdoc item="title" value="GET (GRAPHICS)"}}----
+Gets a copy of a portion of the current work page or an image buffer
+
+{{fbdoc item="syntax"}}##
+	**Get** [//source//,] [Step] (//x1//, //y1//) - [STEP] (//x2//, //y2//), //dest//]
+##
+{{fbdoc item="param"}}
+	##//source//##
+		the address of an image buffer.
+	##Step##
+		indicates that the following co-ordinates are not absolute co-ordinates.
+	##//x1//##,  ##//y1//##
+		co-ordinates of the upper-left corner of the sub-image to copy.
+	##//x2//##,  ##//y2//##
+		co-ordinates of the lower-right corner of the sub-image to copy.
+	##//dest//##
+		the address of a previously allocated buffer to store the image data.
+
+{{fbdoc item="desc"}}
+	##**Get**## copies a rectangular portion of the current work page specified by the co-ordinates (##//x1//##,  ##//y1//##) and (##//x2//##,  ##//y2//##), which represent the upper-left and lower-right corners of the rectangle, respectively. ##**Step**## specifies that the upper-left co-ordinates are relative to the current graphics pen location, and/or that the lower-right co-ordinates are relative to the upper-left co-ordinates. The new image buffer is formatted to match the current screen mode [[GfxInternalFormats pixel format]].
+
+	##//dest//## can be an address, an [[ProPgArrays array]], or a reference to the first element in an [[ProPgArrays array]] that will receive the new image buffer. This memory must be sufficiently allocated to hold the image buffer; the number of bytes required varies with the [[CompilerOptlang -lang dialect]] used to compile the program.
+
+	##//source//## can be an address, an [[ProPgArrays array]], or a reference to the first element in an [[ProPgArrays array]] that holds an image buffer to retrieve a portion of. ##//x1//##,  ##//y1//##, ##//x2//##,  ##//y2//##, ##**Step**## and ##//dest//## have the same meaning in this case.
+
+	The co-ordinates of the rectangle are affected by the most recent ##[[KeyPgWindow Window]]## and ##[[KeyPgViewgraphics View (Graphics)]]## statements, and must both be within the current clipping region set by ##[[KeyPgViewgraphics View (Graphics)]]##, otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
+
+**Runtime errors:**
+	##**Get**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+
+	//(##1##) Illegal function call//
+		- ##//dest//## is an array, but is not big enough to hold the image buffer.
+		- The upper-left or lower-right co-ordinates of the rectangle are outside the current clipping region. See ##[[KeyPgViewgraphics View (Graphics)]]##.
+
+{{fbdoc item="lang"}}
+	There are 2 types of buffers (details see [[GfxInternalFormats]]) depending from FB dialect used:
+
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##//dest//## receives a new-style image buffer, which consists of a 32-byte image header followed by pixel data which is row-padded to the next paragraph boundary (16 bytes). Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode:
+		##size = 32 + (((w * bpp + &hF) and not &hF) * h)##
+
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, ##//dest//## receives a QB-style image buffer, which consists of a 4-byte image header followed by pixel data which is not row-padded. Use the following formula to calculate the total size, in bytes, required to store the image buffer, where ##w## and ##h## are the respective width and height of the rectangular portion of the current work page or source image buffer, and ##bpp## is the number of bytes per pixel of the current screen mode:
+		##size = 4 + (w * h * bpp)##
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/gfx/get.bas"}}%%(freebasic)
+#include once "fbgfx.bi"
+
+'' Setup a 400x300 32bit screen
+screenres 400, 300, 32
+
+'' First draw funny stuff...
+line (10,10)-(140,30), rgb(255,255,0), bf
+draw string (20, 20), "Hello there!", rgb(255,0,0)
+
+'' Now capture a 150x50 block from the top-left of the screen into an image
+'' buffer with GET...
+dim as fb.Image ptr image = imagecreate(150, 50)
+get (1,1)-(150,50), image
+
+'' And duplicate it all over the place!
+put (1,50), image
+put (1,100), image
+put (1,150), image
+put (1,200), image
+put (1,250), image
+put (150,1), image
+put (150,50), image
+put (150,100), image
+put (150,150), image
+put (150,200), image
+put (150,250), image
+
+'' And a frame around a whole screen..
+line (1,1)-(400-1,300-1), rgb(255,255,0), b
+
+'' Now get the whole screen...
+dim as fb.Image ptr big = imagecreate(400, 300)
+get (1,1)-(400-1,300-1), big
+
+'' And display that "screenshot" as if it was scrolling by...
+dim as integer x = -350
+while ((inkey() = "") and (x < 350))
+	screenlock
+		cls
+		put (x,1), big
+	screenunlock
+
+	sleep 100, 1
+
+	x += 10
+wend
+%%
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
+	- ##[[KeyPgWindow Window]]##
+	- ##[[KeyPgViewgraphics View (Graphics)]]##
+	- [[GfxInternalFormats Internal graphics formats]]
+
+{{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

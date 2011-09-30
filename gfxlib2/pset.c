@@ -1,0 +1,41 @@
+/* pixel plotting */
+
+#include "fb_gfx.h"
+
+
+/*:::::*/
+FBCALL void fb_GfxPset(void *target, float fx, float fy, unsigned int color, int flags, int ispreset)
+{
+	FB_GFXCTX *context = fb_hGetContext();
+	int x, y;
+	
+	if (!__fb_gfx)
+		return;
+
+	fb_hPrepareTarget(context, target);
+	
+	if (flags & DEFAULT_COLOR_1) {
+		if (ispreset)
+			color = context->bg_color;
+		else
+			color = context->fg_color;
+	}
+	else
+		color = fb_hFixColor(context->target_bpp, color);
+	
+	fb_hSetPixelTransfer(context, color);
+	
+	fb_hFixRelative(context, flags, &fx, &fy, NULL, NULL);
+	
+	fb_hTranslateCoord(context, fx, fy, &x, &y);
+	
+	if ((x < context->view_x) || (y < context->view_y) ||
+	    (x >= context->view_x + context->view_w) || (y >= context->view_y + context->view_h))
+		return;
+	
+	DRIVER_LOCK();
+	context->put_pixel(context, x, y, color);
+	if (__fb_gfx->framebuffer == context->line[0])
+		__fb_gfx->dirty[y] = TRUE;
+	DRIVER_UNLOCK();
+}

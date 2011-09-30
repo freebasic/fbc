@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="__FB_GCC__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_GCC__""
+##
+{{fbdoc item="desc"}}
+	Defined to true (##-1##) if [[CompilerOptgen -gen gcc]] is used, or false (##0##) otherwise.
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

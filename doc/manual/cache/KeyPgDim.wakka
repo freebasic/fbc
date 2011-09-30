@@ -1,0 +1,224 @@
+{{fbdoc item="title" value="DIM"}}----
+Declares a variable
+
+{{fbdoc item="syntax"}}
+	Declaring a Single Variable:
+		##**Dim** [[[KeyPgShared Shared]]] //symbolname// [As [[DataType DataType]]] [, ...]##
+		##**Dim** [[[KeyPgShared Shared]]] As [[DataType DataType]] //symbolname// [, ...]##
+
+	Declaring Arrays:
+		##**Dim** [[[KeyPgShared Shared]]] //symbolname// ( [//lbound// To] //ubound// [, ...] ) [As [[DataType DataType]]] [,...]##
+		##**Dim** [[[KeyPgShared Shared]]] As [[DataType DataType]] //symbolname// ( [//lbound// To] //ubound// [, ...] ) [,...]##
+	
+	Initializing Values:
+		##**Dim** //scalar_symbol// As [[DataType DataType]]] = //expression// | [[KeyPgAny Any]]##
+		##**Dim** //array_symbol// ([//lbound// To] //ubound//) [AS [[DataType DataType]]] => { //expression// [, ...] } | [[KeyPgAny Any]]##
+		##**Dim** //udt_symbol// As [[DataType DataType]] = ( //expression// [, ...] ) | [[KeyPgAny Any]]##
+
+{{fbdoc item="desc"}}
+	Declares a variable by name and reserves memory to accommodate it.
+
+	Variables must be declared before they can be used in the //[[CompilerOptlang -lang fb]]// dialect or when using ##[[KeyPgOptionexplicit Option Explicit]]## in the other dialects.  Only in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects variables may be used without first declaring them, in such a case they are called implicit variables.
+
+	##**Dim**## can be used to declare and assign variables of any of the supported data types, user defined types, or enumerations.
+
+	Depending on where and how a variable or array is declared can change how it is allocated in memory.  See //[[ProPgStorageClasses Storage Classes]]//.
+
+{{fbdoc item="section" value="Explicit Variables with Explicit Data Types"}}
+	In the default dialect //[[CompilerOptlang -lang fb]]//, each variable must be explicitly declared with a desired data type. Type suffixes are not allowed.
+
+	More than one variable may be declared in a single ##**Dim**## statement by separating each variable declaration with a comma.
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_1.bas"}}%%(freebasic)
+'' Variable declaration examples
+
+'' One variable per DIM statement
+dim text as string
+dim x as double
+
+'' More than one variable declared, different data types
+dim k as single, factor as double, s as string
+
+'' More than one variable declared, all same data types
+dim as integer mx, my, mz ,mb
+
+'' Variable having an initializer
+dim px as double ptr = @x
+%%
+
+{{fbdoc item="section" value="Explicit Variables with Implicit Data Types"}}
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, even if the variable is declared explicitly, it will be given a default data type if the data type is not explicitly given either by name or by type suffix.  The default data type is ##[[KeyPgSingle Single]]## in the //[[CompilerOptlang -lang qb]]// dialect and ##[[KeyPgInteger Integer]]## in the //[[CompilerOptlang -lang fblite]]// dialect.  The default data type can be changed throughout a source listing by use of the ##**Def""###""**## statements. (for example, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefstr DefStr]]##, ##[[KeyPgDefsng DefSng]]##)
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_2.bas"}}%%(freebasic)
+'' Compile with -lang qb
+
+'$lang: "qb"
+
+'' All variables beginning with A through N default to the INTEGER data type
+'' All other variables will default to the SINGLE data type
+DefInt I-N
+
+'' I and J are INTEGERs
+'' X and Y are SINGLEs
+'' T$ is STRING
+'' D is DOUBLE
+
+Dim I, J, X, Y, T$, D As Double
+%%
+
+{{fbdoc item="section" value="Arrays"}}
+	As with most BASIC dialects, ""FreeBASIC"" supports arrays with indexes ranging from a lower bound to an upper bound.  In the syntaxes shown, ##//lbound//## refers to the lower bound, or the smallest index.  And ##//Ubound//## refers to the upper bound, or the largest index.  If a lower bound is not specified, it is assumed to be zero by default, unless ##[[KeyPgOptionbase Option Base]]## is used.
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_3.bas"}}%%(freebasic)
+Const upperbound = 10
+
+'' Declare an array with indexes ranging from 0 to upperbound, 
+'' for a total of (upperbound + 1) indexes.
+Dim array(upperbound) As Single
+%%
+
+	Multidimensional arrays can be declared as well.  and are stored in row-major order: values with the same last index are contiguous. (This is different from QB's default).  The maximum number of dimensions of a multidimensional array is 8. 
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_4.bas"}}%%(freebasic)
+'' declare a three-dimensional array of single 
+'' precision floating-point numbers.
+Dim array(1 To 2, 6, 3 To 5) As Single
+
+'' The first dimension of the declared array 
+'' has indices from 1 to 2, the second, 0 to 6, 
+'' and the third, 3 to 5.
+%%			
+
+	For more information on arrays see [[ProPgArrays Arrays Overview]].
+
+	If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic Static]]## (unless ##[[KeyPgOptiondynamic Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it variable length, even if ##[[KeyPgOptionstatic Option Static]]## is in effect.
+
+	Arrays can be declared as variable length in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim Redim]]##, or declaring it past the metacommand ##[[KeyPgMetaDynamic $Dynamic]]##. Variable length arrays can't use initializers.
+
+	Arrays declared with ##**Dim**## having constant indexes and not preceeded by ##[[KeyPgOptiondynamic Option Dynamic]]## are fixed length (not resizable at runtime) and can use initializers.
+
+	The upper bound can be an ellipsis (##[[KeyPgDots ...]]##, 3 dots).  This will cause to upper bound to be set automatically based on the number of elements found in the initializer.  When ellipsis is used in this manner, an initializer must be used, and it may not be ##**Any**##.  See the [[KeyPgDots Ellipsis]] page for a short example.
+
+	See also //[[ProPgFixLenArrays Fixed-Length Arrays]]// and //[[ProPgVarLenArrays Variable-Length Arrays]]//.
+
+{{fbdoc item="section" value="Initializers"}}
+	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero or null strings by default when they are created.
+
+	To avoid the overhead of initializing the variables the ##**Any**## initializer can be used with ##**Dim**## to tell the compiler to only reserve the place for the variable in memory but don't initialize it, so the variable will contain garbage. In this case the programmer should not make assumptions about the initial values.
+
+	Fixed-length arrays, variables, zstrings and UDTs may be given a value at the time of their declaration by following the variable declaration with an initializer.  Note the difference between initializing different types. Arrays, variables and UDTs are initialized as they would in a normal assignment, using an equal ( ##=## ) sign.  The ##=>## sign can be used with fixed length strings to avoid the declaration resembling an expression.
+
+	 Array values are given in comma-delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.  These methods of initializing variables can be nested within one another for complex assignments. Nesting allows for arrays of any dimension to be initialized.
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_5.bas"}}%%(freebasic)
+'' Declare an array of 2 by 5 elements
+'' and initialize
+Dim array(1 To 2, 1 To 5) As Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}
+%%			
+
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_6.bas"}}%%(freebasic)
+'' declare a simple UDT
+Type mytype
+	var1 As Double
+	var2 As Integer
+End Type
+
+'' declare a 3 element array and initialize the first
+'' 2 mytype elements
+Dim myvar(0 To 2) As mytype => {(1.0, 1), (2.0, 2)}
+%%	
+	For module-level, fixed-length, or global variables, initialized values must be constant expressions.  ""FreeBASIC"" will report a compile-time error if otherwise.
+
+	Note: Initializing UDT's with strings is not supported at this time.
+
+{{fbdoc item="section" value="Explicit Variables with Type Suffixes"}}
+	In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the data type of a variable may be indicated with a type suffix ( ##$## ##%## ##""#""## ##!## ##&## ).
+
+{{fbdoc item="filename" value="examples/manual/check/KeyPgDim_7.bas"}}%%(freebasic)
+'' Compile with -lang qb or fblite
+
+'$lang: "qb"
+
+'' A string variable using the $ type suffix
+Dim strVariable$
+
+'' An integer variable using the % type suffix
+Dim intVariable%
+
+'' A long variable using the & type suffix
+Dim lngVariable&
+
+'' A single precision floating point variable using the ! type suffix
+Dim sngVariable!
+
+'' A double precision floating point variable using the # type suffix
+Dim dblVariable#
+%%
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/variable/dim.bas"}}%%(freebasic)
+Dim a As Byte
+Dim b As Short
+Dim c As Integer
+Dim d As LongInt
+Dim au As UByte
+Dim bu As UShort
+Dim cu As UInteger
+Dim du As ULongInt
+Dim e As Single
+Dim f As Double
+Dim g As Integer Ptr
+Dim h As Byte Ptr
+Dim s1 As String * 10   '' fixed length string
+Dim s2 As String        '' variable length string
+Dim s3 As ZString Ptr   '' zstring
+
+s1 = "Hello World!"
+s2 = "Hello World from FreeBasic!"
+s3 = Allocate( Len( s2 ) + 1 )
+*s3 = s2
+
+Print "Byte: "; Len(a)
+Print "Short: "; Len(b)
+Print "Integer: "; Len(c)
+Print "Longint: "; Len(d)
+Print "UByte: "; Len(au)
+Print "UShort: "; Len(bu)
+Print "UInteger: "; Len(cu)
+Print "ULongint: "; Len(du)
+Print "Single: "; Len(e)
+Print "Double: "; Len(f)
+Print "Integer Pointer: "; Len(g)
+Print "Byte Pointer: "; Len(h)
+Print "Fixed String: "; Len(s1)
+Print "Variable String: "; Len(s2)
+Print "ZString: "; Len(*s3)
+
+Deallocate(s3)
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables have procedure scope if the variable is defined inside a procedure, and for the entire module if the variable is defined with ##**Dim Shared**##.
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables defined inside compound block statements (##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##) have local [[ProPgVariableScope scopes]], and are visible only within these blocks.
+	- In the //[[CompilerOptlang -lang fb]]// dialect, ##**Option**## statements (e.g. ##[[KeyPgOptionbase Option Base]]##, ##[[KeyPgOptiondynamic Option Dynamic]]##), metacommands(e.g. ##[[KeyPgMetaStatic $Static]]##) and ##**Def""###""**## statements (e.g. ##[[KeyPgDefint DefInt]]##) are not allowed.
+
+{{fbdoc item="diff"}}
+	- Variable Initializers are new to ""FreeBASIC"".
+	- The alternate syntax ##Dim As DataType //symbolname//, [...]## is new to ""FreeBASIC"".
+	- Multidimensional arrays are stored in row-major order in ""FreeBASIC"", they were stored in column-major order in QB by default. Row major order: values with the same last index are contiguous. Column-major order: values with the same first index are contiguous.
+	- Variable length arrays up to 2 ""GiB"" in size are possible in ""FreeBASIC"". In QB, ##$STATIC## arrays were limited to 64 ""KiB"" , or to the DOS memory available (several 100 ""KiB"" at best) if made ##$DYNAMIC## and ///AH// was used.
+	- The ellipsis form for upper bounds is new to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgVar Var]]##
+	- ##[[KeyPgCommon Common]]##
+	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgPreserve Preserve]]##
+	- ##[[KeyPgShared Shared]]##
+	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgErase Erase]]##
+	- ##[[KeyPgLbound LBound]]##
+	- ##[[KeyPgUbound UBound]]##
+	- ##[[KeyPgDots ... (Ellipsis)]]##
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

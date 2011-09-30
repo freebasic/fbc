@@ -1,0 +1,66 @@
+{{fbdoc item="title" value="Operator = (Assign)"}}----
+Assigns a value to a variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Let** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+##
+{{fbdoc item="usage"}}##
+	//lhs// **=** //rhs//
+
+		##//or, in the //QB// dialect,//##
+
+	[ [[KeyPgLet Let]] ] //lhs// **=** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The variable to assign to.
+	##//T1//##
+		Any numeric, string or pointer type.
+	##//rhs//##
+		The value to assign to ##//lhs//##.
+	##//T2//##
+		Any type convertible to ##//T2//##.
+
+{{fbdoc item="desc"}}
+	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
+
+	Avoid confusion with ##[[KeyPgOpEqual Operator = (Equal)]]##, which also uses the '=' symbol.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/assign.bas"}}%%(freebasic)
+dim i as integer
+i = 420    ' <- this is the assignment operator
+
+if  i = 69 then   '<-this is the equivalence operator 
+  print "ERROR: i should equal 420"
+  end -1
+end if
+
+print "All is good."
+end 0
+%%
+
+{{fbdoc item="filename" value="examples/manual/operator/assign-let.bas"}}%%(freebasic)
+' compile with -lang fblite or qb
+
+#lang "fblite"
+
+Dim i As Integer
+Let i = 300 ' <-alternate syntax
+%%
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}} 
+	- ##[[KeyPgOpEqual Operator = (Equal)]]##
+	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
+	- ##[[KeyPgSwap Swap]]##
+
+{{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

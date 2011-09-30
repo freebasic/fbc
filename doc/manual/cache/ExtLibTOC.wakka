@@ -1,0 +1,91 @@
+{{fbdoc item="title" value="Library Headers Index"}}----
+An index of header files distributed with FreeBASIC for use with external libraries.  Only the headers (include files) are distributed with FreeBASIC.  To obtain a needed external library, visit the link shown on the information for each individual library below.
+
+{{fbdoc item="section" value="Graphics"}}
+	{{fbdoc item="keyword" value="ExtLiballegro|allegro"}} - Game programming library.
+	{{fbdoc item="keyword" value="ExtLibDUGL|DUGL"}} - Game and graphics library for DOS.
+	{{fbdoc item="keyword" value="ExtLibcaca|caca"}} - A colour ASCII art library. 
+	{{fbdoc item="keyword" value="ExtLibcairo|cairo"}} - 2D graphics library with support for multiple output devices.
+	{{fbdoc item="keyword" value="ExtLibcgui|cgui"}} - Library for making GUIs in a simple way.
+	{{fbdoc item="keyword" value="ExtLibcurses|Curses"}} - Standardized console user interface library.
+	{{fbdoc item="keyword" value="ExtLibdislin|dislin"}} - Library of subroutines and functions that display data graphically.
+	{{fbdoc item="keyword" value="ExtLibfreeimage|FreeImage"}} - Open Source library to support popular graphics image formats.
+	{{fbdoc item="keyword" value="ExtLibfreetype2|Freetype2"}} - A Free, High-Quality, and Portable Font Engine.
+	{{fbdoc item="keyword" value="ExtLibgd|gd"}} - Open source code library for the dynamic creation of images by programmers.
+	{{fbdoc item="keyword" value="ExtLibgiflib|gif_lib"}} - GIFLIB is a package of portable tools and library routines for working with GIF images.
+	{{fbdoc item="keyword" value="ExtLibgrx|grx"}} - 2D graphics library.
+	{{fbdoc item="keyword" value="ExtLibgtk|GTK+"}} - Cross-platform Graphical User Interface Library.
+	{{fbdoc item="keyword" value="ExtLibIL|IL"}} - A full featured cross-platform image library.
+	{{fbdoc item="keyword" value="ExtLibIUP|IUP"}} - Portable toolkit for building graphical user interfaces.
+	{{fbdoc item="keyword" value="ExtLibjapi|japi"}} - Open source free software GUI toolkit using Java's AWT Toolkit.
+	{{fbdoc item="keyword" value="ExtLibjpeglib|jpeglib"}} - Cross-platform library for reading/writing jpeg images.
+	{{fbdoc item="keyword" value="ExtLibjpgalleg|jpgalleg"}} - JPGalleg is a small add-on for Allegro that adds JPG images handling capabilities to the library.
+	{{fbdoc item="keyword" value="ExtLiblibpng|libpng"}} - Allows reading and writing PNG images.
+	{{fbdoc item="keyword" value="ExtLibOpenGL|OpenGL"}} - Cross-platform 3D Graphics library.
+	{{fbdoc item="keyword" value="ExtLibpdflib|pdflib"}} - PDFlib is a development tool for PDF-enabling your software.
+	{{fbdoc item="keyword" value="ExtLibSDL|SDL"}} - Cross-platform multimedia library.
+	{{fbdoc item="keyword" value="ExtLibtinyptc|tinyptc"}} - A small and easy to use framebuffer graphics library.
+	{{fbdoc item="keyword" value="ExtLibwxc|wx-c"}} - Cross-platform Graphical User Interface Library.
+
+{{fbdoc item="section" value="Database"}}
+	{{fbdoc item="keyword" value="ExtLibmysql|mysql"}} - High-Quality, widely used database engine.
+	{{fbdoc item="keyword" value="ExtLibpostgresql|postgresql"}} - Free software object-relational database management system 
+	{{fbdoc item="keyword" value="ExtLibsqlite|sqlite"}} - Small C library that implements a self-contained, embeddable, zero-configuration SQL database engine.
+
+{{fbdoc item="section" value="Music / Sound"}}
+	{{fbdoc item="keyword" value="ExtLibbass|BASS"}} - Audio library for use in Windows with a beta for Linux.
+	{{fbdoc item="keyword" value="ExtLibbassmod|BASSMOD"}} - BASSMOD is a MOD only (XM, IT, S3M, MOD, MTM, UMX) version of BASS
+	{{fbdoc item="keyword" value="ExtLibfmod|FMOD"}} - Audio library supporting just about any format.
+	{{fbdoc item="keyword" value="ExtLibal|OpenAL"}} - Cross-platform 3D audio API.
+
+{{fbdoc item="section" value="Development Helpers"}}
+	{{fbdoc item="keyword" value="ExtLibbfd|bfd"}} - Allows applications to use the same routines to operate on object files whatever the object file format.
+	{{fbdoc item="keyword" value="ExtLibCUnit|CUnit"}} - Lightweight system for writing, administering, and running unit tests in C.
+	{{fbdoc item="keyword" value="ExtLibgdsl|gdsl"}} - The Generic Data Structures Library is a collection of routines for generic data structures.
+	{{fbdoc item="keyword" value="ExtLibaspell|GNU ASpell"}} - Free and Open Source spell checker.
+
+{{fbdoc item="section" value="Embeddable Languages"}}
+	{{fbdoc item="keyword" value="ExtLibjni|jni"}} - Standard programming interface for writing Java native methods and embedding the Java virtual machine* into native applications.
+	{{fbdoc item="keyword" value="ExtLibLua|Lua"}} - Lightweight, embeddable scripting engine using the Lua language.
+	{{fbdoc item="keyword" value="ExtLibspidermonkey|spidermonkey"}} - Embeddable javascript engine.
+
+{{fbdoc item="section" value="Cryptography"}}
+	{{fbdoc item="keyword" value="ExtLibcryptlib|cryptlib"}} - A powerful security toolkit which allows even inexperienced crypto programmers to easily add encryption and authentication services to their software.
+
+{{fbdoc item="section" value="Mathematics"}}
+	{{fbdoc item="keyword" value="ExtLibbigint|big_int"}} - Library for using arbitrarily large integers.
+	{{fbdoc item="keyword" value="ExtLibgmp|gmp"}} - Free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating point numbers.
+	{{fbdoc item="keyword" value="ExtLibgsl|gsl"}} - Provides a wide range of mathematical routines such as random number generators, special functions and least-squares fitting.
+	{{fbdoc item="keyword" value="ExtLibnewton|Newton"}} - Integrated solution for real time simulation of physics environments. 
+	{{fbdoc item="keyword" value="ExtLibode|ode"}} - Open source, high performance library for simulating rigid body dynamics.		
+
+{{fbdoc item="section" value="Networking"}}
+	{{fbdoc item="keyword" value="ExtLibcgiutil|cgi-util"}} - Small C library for creating CGI programs for Websites.
+	{{fbdoc item="keyword" value="ExtLibcurl|curl"}} - Free and easy-to-use client-side URL transfer library supporting almost every protocol.
+	{{fbdoc item="keyword" value="ExtLibFastCGI|FastCGI"}} - Open extension to CGI that provides high performance without the limitations of server specific APIs.
+
+{{fbdoc item="section" value="eXtensible Markup Language (XML)"}}
+	{{fbdoc item="keyword" value="ExtLibexpat|expat"}} - Stream oriented XML parser library with several useful features.
+	{{fbdoc item="keyword" value="ExtLiblibxml|libxml"}} - De-facto standard library for accessing xml files.
+	{{fbdoc item="keyword" value="ExtLiblibxslt|libxslt"}} - XSLT itself is a an XML language to define transformation for XML.
+	{{fbdoc item="keyword" value="ExtLibmxml|mxml"}} - Small XML parsing library that you can use to read XML and XML-like data files in your application.
+
+{{fbdoc item="section" value="Regular Expressions"}}
+	{{fbdoc item="keyword" value="ExtLibpcre|pcre"}} - Regular expression pattern matching using the same syntax as Perl.
+	{{fbdoc item="keyword" value="ExtLibtre|tre"}} - Lightweight, robust, and efficient POSIX compliant regexp matching library.
+
+{{fbdoc item="section" value="Compression"}}
+	{{fbdoc item="keyword" value="ExtLibLzo|LZO"}} - Offers fast compression and very fast decompression.
+	{{fbdoc item="keyword" value="ExtLibquicklz|QuickLZ"}} - Very fast Compression Library
+	{{fbdoc item="keyword" value="ExtLibzlib|zlib"}} - Lossless data compression library unencumbered by patents.
+
+{{fbdoc item="section" value="System Specific"}}
+	{{fbdoc item="keyword" value="ExtLibCRT|C Runtime Library"}}
+	{{fbdoc item="keyword" value="ExtLibdos|DOS API"}}
+	{{fbdoc item="keyword" value="ExtLibdisphelper|disphelper"}} - Helper library to use COM objects from plain C 
+	{{fbdoc item="keyword" value="ExtLibwindows|Windows API"}}
+
+{{fbdoc item="section" value="User Contributed Libraries"}}
+	Visit http://www.freebasic.net/arch/ for other libraries.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="SETMOUSE"}}----
+Sets the position and visibility of the mouse cursor
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])
+##
+{{fbdoc item="param"}}
+	(For each parameter, ##-1## is a special value indicating "no changes.")
+	##//x//##
+		optional - set x coordinate
+	##//y//##
+		optional - set y coordinate
+	##//visibility//##
+		optional - set visibility: ##1## indicates visible, ##0## indicates hidden
+	##//clip//##
+		optional - set clipping: ##1## indicates mouse is clipped to graphics window, ##0## indicates no clipping
+
+{{fbdoc item="ret"}}
+	Zero (##0##) on success, non-zero to indicate failure.
+
+{{fbdoc item="desc"}}
+	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  THe mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if visibility is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
+Dim As Integer x, y, buttons
+
+' create a screen 640*480
+ScreenRes 640, 480
+Print "Click the mouse button to center the mouse"
+
+Do
+	' get mouse x, y and button state (wait until mouse is onscreen)
+	Do: Sleep 1: Loop While GetMouse( x, y , , buttons) <> 0
+
+	If buttons And 1 Then
+	    ' on left mouse click, center mouse
+	    SetMouse 320, 240
+	End If
+
+	' run loop until Escape is pressed
+Loop Until Inkey = Chr(27)
+%%
+
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Setmouse""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgGetmouse Getmouse]]##
+	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgMultikey Multikey]]##
+	- ##[[KeyPgGetkey Getkey]]##
+
+{{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

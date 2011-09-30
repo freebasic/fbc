@@ -1,0 +1,64 @@
+{{fbdoc item="title" value="EVENT"}}----
+Pre-defined structure(UDT) used by [[KeyPgScreenevent Screenevent]] to return event data 
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Event**
+##
+{{fbdoc item="desc"}}
+ Here we report the ##EVENT## structure for clarity:
+		
+	{{fbdoc item="filename" value="examples/manual/check/KeyPgScreenevent_1.bas"}}%%(freebasic)
+Type EVENT Field = 1
+	Type As Integer
+	Union
+		Type
+			scancode As Integer
+			ascii As Integer
+		End Type
+		Type
+			x As Integer
+			y As Integer
+			dx As Integer
+			dy As Integer
+		End Type
+		button As Integer
+		z As Integer
+		w As Integer
+	End Union
+End Type
+%%
+
+The ##Type Field## will contain the event type ID, while the remaining 4 integers will hold sensitive data to the event type. 
+
+	__Event types__
+		The event type is identified by an ID number returned into the first integer of the ##//event//## buffer (the ##.type## field in the ##EVENT## structure). Known event type IDs - and their values at time of writing - are:
+
+	- ##EVENT_KEY_PRESS## (##1##) A key was pressed on the keyboard. The ##.scancode## field contains the platform independent scancode value for the key; if the key has an ascii representation, it is held into the ##.ascii## field, which otherwise has a value of 0.
+	- ##EVENT_KEY_RELEASE## (##2##) A key was released on the keyboard. The ##.scancode## and ##.ascii## fields have the same meaning as with the ##EVENT_KEY_PRESS## event.
+	- ##EVENT_KEY_REPEAT## (##3##) A key is being held down repeatedly. The ##.scancode## and ##.ascii## fields have the same meaning as with the ##EVENT_KEY_PRESS## event.
+	- ##EVENT_MOUSE_MOVE## (##4##) The mouse was moved while it was on the program window. The ##.x## and ##.y## fields contain the new mouse position relative to the upper-left corner of the screen, while the ##.dx## and ##.dy## fields contain the motion deltas.
+	- ##EVENT_MOUSE_BUTTON_PRESS## (##5##) One of the mouse buttons was pressed. The ##.button## field has one bit set identifying the button that was pressed; bit 0 identifies the left mouse button, bit 1 the right mouse button and bit 2 the middle mouse button.
+	- ##EVENT_MOUSE_BUTTON_RELEASE## (##6##) One of the mouse buttons was released. The ##.button## field has the same meaning as with the ##EVENT_MOUSE_BUTTON_PRESS## event.
+	- ##EVENT_MOUSE_DOUBLE_CLICK## (##7##)  One of the mouse buttons was double clicked. The ##.button## field has the same meaning as with the ##EVENT_MOUSE_BUTTON_PRESS## event.
+	- ##EVENT_MOUSE_WHEEL## (##8##) The mouse wheel was used; the new wheel position is returned into the ##.z## field.
+	- ##EVENT_MOUSE_ENTER## (##9##) The mouse was moved into the program window.
+	- ##EVENT_MOUSE_EXIT## (##10##) The mouse was moved out of the program window.
+	- ##EVENT_WINDOW_GOT_FOCUS## (##11##) The program window has got focus.
+	- ##EVENT_WINDOW_LOST_FOCUS## (##12##) The program window has lost focus.
+	- ##EVENT_WINDOW_CLOSE## (##13##) The user attempted to close the program window.
+	- ##EVENT_MOUSE_HWHEEL## (##14##) The horizontal mouse wheel was used; the new horizontal wheel position is returned into the ##.w## field. (Note: currently implemented on Windows only)
+
+
+The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type.
+		
+{{fbdoc item="lang"}}
+	- In //[[CompilerDialects lang fb]]//, the structure and constants are stored in the ##FB## ##[[KeyPgNamespace Namespace]]##.
+
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgScreenEvent ScreenEvent]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

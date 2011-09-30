@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="__FB_BACKEND__"}}----
+Intrinsic define set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_BACKEND__""
+##
+{{fbdoc item="desc"}}
+	Defined to either ##"gas"## or ##"gcc"##, depending on which backend was specified via [[CompilerOptgen -gen]].
+
+{{fbdoc item="diff"}}
+	- Did not exist in QB
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

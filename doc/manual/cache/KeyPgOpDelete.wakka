@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="Operator Delete"}}----
+Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **delete** ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **delete[]** ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+##
+{{fbdoc item="usage"}}##
+	**Delete** //expression//
+		//or//
+	**Delete[]** //expression//
+##
+{{fbdoc item="param"}}
+	##//buf//## 
+		An address of memory to free.
+	##//expression//##
+		An address of memory to free.
+
+{{fbdoc item="desc"}}
+	##**Delete**## is used to destroy and free the memory of an object created with [[KeyPgOpNew New]]. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew New]]##.
+
+	The array version of ##**Delete**##, ##**Delete[]**##, is used to destroy an array of objects previously created with [[KeyPgOpNew New]][]. Destructors will be called here as well.
+
+	##**Delete**## must be used with addresses returned from [[KeyPgOpNew New]], and ##**Delete[]**## with [[KeyPgOpNew New]][]. You cannot mix and match the different versions of the operators.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/delete.bas"}}%%(freebasic)
+type Rational
+	as integer	numerator, denominator
+end type
+
+scope
+
+	' Create and initialize a Rational, and store it's address.
+	dim p as Rational ptr = new Rational(3, 4)
+
+	print p->numerator & "/" & p->denominator
+
+	' Destroy the rational and give its memory back to the system. 
+	delete p
+
+end scope
+
+scope
+
+	' Allocate memory for 100 integers, store the address of the first one.
+	dim p as integer ptr = new integer[100]
+
+	' Assign some values to the integers in the array.
+	for i as integer = 0 to 99
+		p[i] = i
+	next
+
+	' Free the entire integer array.
+	delete[] p
+
+end scope
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpNew New]]##
+
+{{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

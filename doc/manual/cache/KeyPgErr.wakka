@@ -1,0 +1,62 @@
+{{fbdoc item="title" value="ERR"}}----
+Error handling function to return the error number of the last error
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Err** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Err**
+##
+{{fbdoc item="ret"}}
+	After an error, returns the error code that occurred. 
+
+{{fbdoc item="desc"}}
+	##**Err**## can always be used, even if QB-like error handling is not enabled.
+
+	##**Err**## is reset by ##[[KeyPgResume Resume]]## and ##[[KeyPgResumenext Resume Next]]##.
+
+	    NOTE: Care should be taken when calling an internal function (such as ##[[KeyPgPrint Print]]##) after an error occurs because it will reset the error value with its own error status.  To preserve the ##**Err**## value, it is a good idea to store it in a variable as soon as the error handler is entered.
+
+	See [[TblRuntimeErrors Runtime Error Codes]] for a listing of runtime error numbers and their associated meaning.
+
+{{fbdoc item="ex"}}
+An example using QBasic style error handling (compile with -ex option)
+{{fbdoc item="filename" value="examples/manual/error/err1.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
+On Error Goto Error_Handler
+Error 150
+End
+
+Error_Handler:
+  n = Err()
+  Print "Error #"; n
+  Resume Next
+%%
+An example using inline error handling (note: ##[[KeyPgOpen Open]]## can also return its own error status when called as a function)
+{{fbdoc item="filename" value="examples/manual/error/err2.bas"}}%%(freebasic)
+'' compile without -e switch
+
+dim filename as string
+
+do
+	line input "Input filename: ", filename
+	if filename = "" then end
+	open filename for input as #1
+loop until err() = 0
+
+print using "File '&' opened successfully"; filename
+close #1
+%%
+
+{{fbdoc item="diff"}}
+	- Error numbers are not the same as in QB.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOnerror On Error]]##
+	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}} 
+	- [[TblRuntimeErrors Runtime Error Codes]]
+
+{{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

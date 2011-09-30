@@ -1,0 +1,12 @@
+{{fbdoc item="title" value="curl"}}----
+Free and easy-to-use client-side URL transfer library supporting almost every protocol.
+
+Website: http://curl.haxx.se/libcurl/
+Platforms supported: Win32, Linux, DOS
+Headers to include: curl.bi
+Version: 7.15.4
+Example Usage: yes, in examples/libraries/Curl/
+
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
+   

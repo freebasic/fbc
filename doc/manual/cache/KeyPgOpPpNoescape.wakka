@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="Operator $ (Non-Escaped String Literal)"}}----
+Explicitly indicates that a string literal should not be processed for escape sequences.
+
+{{fbdoc item="syntax"}}##
+	**$**"//text//"
+##
+{{fbdoc item="param"}}
+	##**$**##
+		The preprocessor non-escaped operator
+	##"//text//"##	
+		The string literal
+
+{{fbdoc item="desc"}}
+	This operator explicitly indicates that the string literal following it (wrapped in double quotes) should not be processed for escape sequences.  This a preprocessor operator and can only be used with string literals at compile time.
+
+	The default behavior for string literals is that they not be processed for escape sequences.  However, ##[[KeyPgOptionescape Option Escape]]## in the //[[CompilerOptlang -lang fblite]]// dialect can be used to override this default behaviour causing all strings to be processed for escape sequences.
+
+	Use the [[KeyPgOpPpEscape ! operator (Escaped String Literal)]] to explicitly indicate that a string should be processed for escape sequences.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/prepro/noescape.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
+Print "Default"
+Print "Backslash  : \\"
+Print !"Backslash !: \\"
+Print $"Backslash $: \\"
+Print
+
+Option Escape
+
+Print "Option Escape"
+Print "Backslash  : \\"
+Print !"Backslash !: \\"
+Print $"Backslash $: \\"
+Print
+
+'' OUTPUT:
+
+'' Default
+'' Backslash  : \\
+'' Backslash !: \
+'' Backslash $: \\
+
+'' Option Escape
+'' Backslash  : \
+'' Backslash !: \
+'' Backslash $: \\
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[KeyPgOpPpEscape Operator ! (Escaped String Literal)]]
+	- ##[[KeyPgOptionescape Option Escape]]##
+	- [[CatPgPreProcess Preprocessor]]
+	- [[ProPgLiterals Literals]]
+	- [[TblEscapeSequences Escape Sequences]]
+
+{{fbdoc item="back" value="CatPgOpPrepro|Preprocessor Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,0 +1,15 @@
+freebasic (0.22.0-2) unstable; urgency=low
+
+  * amd64: Removed getlibs dependency; the 32bit X libraries are
+    already retrieved from ia32-libs-dev.
+
+  * Fixed most lintian complaints.
+
+-- dkls <dkls@users.sourceforge.net>  Sat, 21 May 2011 16:53:22 +0200
+
+
+freebasic (0.22.0-1) unstable; urgency=low
+
+  * Unofficial FreeBASIC package for Debian systems
+
+ -- dkls <dkls@users.sourceforge.net>  Sun, 08 May 2011 03:53:00 +0200

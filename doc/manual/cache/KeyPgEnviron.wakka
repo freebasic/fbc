@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="ENVIRON"}}----
+Returns the value of a system environment variable
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Environ**( //varname// )
+##
+{{fbdoc item="param"}}
+	##//varname//##
+		The name of an environment variable.
+
+{{fbdoc item="ret"}}
+	Returns the text value of the environmental variable, or the empty string (##"####"##) if the variable does not exist.
+
+{{fbdoc item="desc"}}
+	##**Environ**## returns the text value of a system environment variable.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/environ.bas"}}%%(freebasic)
+'e.g. to show the system variable "path":
+
+print environ("path")
+%%
+
+{{fbdoc item="diff"}}
+	- The ##**ENVIRON**## statement is now called ##[[KeyPgSetenviron Setenviron]]##.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSetenviron Setenviron]]##
+	- ##[[KeyPgShell Shell]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

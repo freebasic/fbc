@@ -1,0 +1,139 @@
+{{fbdoc item="title" value="FreeBASIC Dialects"}}----
+
+	""FreeBASIC"" version 0.17b introduces a //[[CompilerOptlang -lang]]// command-line option, used to change the language compatibility mode for different dialects of the basic language.
+
+	Starting with version 0.18.3b the //[[CompilerOptlang -lang qb]]// dialect has been further restricted to only allow what would have been allowed in [[QuickBASIC QuickBASIC]].
+
+	In version 0.18.4b the //[[CompilerOptlang -lang fblite]]// dialect was added, intended to replace ##-lang deprecated## in future.
+
+	In version 0.20.0b the ##[[KeyPgPplang #lang]]## directive and ##[[KeyPgMetaLang $lang]]## metacommand were added to specify a dialect from source.
+
+	{{table columns="2" cellpadding="1" cells="-lang option;description;fb;FreeBASIC compatibility (default);qb;qbasic compatibility;fblite;FreeBASIC language compatibility, with a more QBASIC-compatible coding style;deprecated;compatibility with FB 0.16"}}
+
+	The //[[CompilerOptlang -lang]]// option was needed to allow ""FreeBASIC"" to support object-orientation and other features in the future, without crippling the ""QuickBASIC"" support or breaking compatibility with old ""FreeBASIC"" sources, and without making ""FreeBASIC"" difficult to maintain with many different versions of very similar packages. The ""QuickBASIC"" support can continue to be improved, if needed, without breaking the sources written specifically for ""FreeBASIC"".
+
+	To compile old GW-BASIC or ""QuickBASIC/QBasic"" sources without too many changes, use the //[[CompilerOptlang -lang qb]]// option on the command-line when running ##fbc##. This option will evolve into a better compatibility with ""QuickBASIC/QBasic"" code.
+
+	To compile ""FreeBASIC"" sources from 0.16b, use the //[[CompilerOptlang -lang deprecated]]// option. This option is maintained for compatibility and will not evolve in the future, and it's likely to disappear when ""FreeBASIC"" reaches a non-beta release.
+
+	For programmers who want to access some of ""FreeBASIC""'s newer features, but want to retain a more QBASIC-friendly programming style, use the //[[CompilerOptlang -lang fblite]]// option.  This dialect will not undergo significant changes in the future, but will continue to be maintained and supported.
+	This option is also the most compatible with sources that were made using older versions of ""FreeBASIC"".
+	
+	It is recommended to use //[[CompilerOptlang -lang fb]]// for new projects, as new features (object classes, inheritance..) will be added exclusively to this dialect.
+	
+	
+{{fbdoc item="section" value="-lang fb (the default mode)"}}
+	
+	**Not supported:**
+
+	""1"") implicit variable declaration
+		- All variables must be explicitly declared, using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgVar Var]]##, ##[[KeyPgConst Const]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##.
+
+	""2"") type suffixes (##!, #, $, %, &##)
+		- They are only allowed for numeric literals, but it's recommended to use ##[[KeyPgCast Cast]]## or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##uinteger##), ##ull## (##ulongint##) numeric literal suffixes to resolve overloading.
+
+	""3"") ##[[KeyPgDefbyte Defbyte]]##, ##[[KeyPgDefubyte Defubyte]]##, ##[[KeyPgDefshort Defshort]]##, ##[[KeyPgDefushort Defushort]]##, ##[[KeyPgDefint Defint]]##, ##[[KeyPgDefuint Defuint]]##, ##[[KeyPgDeflng Deflng]]##, ##[[KeyPgDeflongint Deflongint]]##, ##[[KeyPgDefulongint Defulongint]]##, ##[[KeyPgDefsng Defsng]]##, ##[[KeyPgDefdbl Defdbl]]##, ##[[KeyPgDefstr Defstr]]##
+		- An explicit type ("##As //T//##") is needed when declaring variables using ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]##. Variables declared using ##[[KeyPgVar Var]]## or ##[[KeyPgConst Const]]## have their types inferred from an initialization value (an explicit type is optional using ##[[KeyPgConst Const]]##).
+
+	""4"") all parameters passed by reference by default
+		- By default, all intrinsic scalar types - numeric and pointer types - are passed by value (##[[KeyPgByval Byval]]##). Any other type - ##[[KeyPgString String]]## or user-defined type - is passed by reference (##[[KeyPgByref Byref]]##).
+		- Use the ##-w pedantic## command-line option to have parameters without explicit ##[[KeyPgByval Byval]]## or ##[[KeyPgByref Byref]]## reported.
+
+	""5"") ##OPTION##s of any kind (no context-sensitivity)
+		- Instead of ##[[KeyPgOptionnokeyword Option Nokeyword]]##, use ###undef##.
+		- Instead of ##[[KeyPgOptionescape Option Escape]]##, use: ##!"some esc seq \n\r"## (notice the '##!##' char) and pass ##-w pedantic## to check for possible escape sequences.
+		- ##[[KeyPgOptionexplicit Option Explicit]]## isn't needed, see item 1.
+		- Instead of ##[[KeyPgOptiondynamic Option Dynamic]]##, declare variable-length arrays using ##[[KeyPgRedim Redim]]##. ##[[KeyPgDim Dim]]## can also be used to declare variable-length arrays using variable or no subscripts.
+		- Instead of ##[[KeyPgOptionbase Option Base]]##, use explicit lower-bound subscripts in arrays declarations.
+		- Instead of ##[[KeyPgOptionprivate Option Private]]##, use ##[[KeyPgPrivate Private]]## to declare procedures with internal linkage.
+		- Instead of ##[[KeyPgOptiongosub Option Gosub]]## and ##[[KeyPgOptionnogosub Option Nogosub]]##, use procedures with ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##.
+
+	""6"") periods in symbol names 
+		- Use namespaces instead.
+	 
+	""7"") ##[[KeyPgGosub Gosub]]## or ##[[KeyPgReturn Return (from Gosub)]]##
+		- Nested procedures may be allowed in future.
+
+	""8"") ##[[KeyPgOngosub On Gosub]]## or ##[[KeyPgOngoto On Goto]]##
+		- Use ##SELECT expr AS CONST## for the latter.
+
+	""9"") ##[[KeyPgOnerror On Error]]## or ##[[KeyPgResume Resume]]##
+		- Most runtime and graphics library procedures now return an error code, like:  ##IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error##... 
+
+	""10"") ##'$DYNAMIC##, ##'$STATIC##, ##'$INCLUDE## meta-commands embedded in comments
+		- See item 5 about ##[[KeyPgOptiondynamic Option Dynamic]]##.
+		- Use ###include "filename"## instead of ##'$include##.
+
+	""11"") ##[[KeyPgCall Call]]## or ##[[KeyPgLet Let]]##
+		- Just remove them.
+
+	""12"") numeric labels
+		- No comment.
+
+	""13"") global symbols with the same name as keywords 
+		- Declare them inside a namespace. 
+
+
+{{fbdoc item="section" value="-lang deprecated"}}
+	 
+	**Supported:** //Anything allowed in version 0.16b, but://
+
+	""1"") ##GOSUB##/##RETURN## and ##ON ... GOSUB## (even at module-level)
+		- so the ##GOSUB## implementation could be thread-unsafe in the ##-lang qb## mode, allowing fast execution (##-lang qb## doesn't support multi-threading, while ##-lang deprecated## does).
+
+	**Not supported:**
+
+	""1"") Classes
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
+	""2"") Operator overloading
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
+	""3"") Constructors, destructors and methods in ##TYPE##s.
+		- Periods allowed in symbol names make it too difficult and/or ambiguous.
+
+
+{{fbdoc item="section" value="-lang fblite"}}
+	 
+	**Supported:** //Anything allowed in the //[[CompilerOptlang -lang deprecated]]// dialect, plus..//
+	
+	""1"") ##GOSUB##/##RETURN##
+	    - Use ##[[KeyPgOptiongosub Option Gosub]]## to enable.  This will disable ##RETURN## from exiting a procedure, due to ambiguity.
+	
+	**Not supported:**
+
+	""1"") ##[[KeyPgScope Scope]]## blocks
+		- All variables are given procedure scope.  Explicit ##[[KeyPgScope Scope]]## blocks may be added later.
+
+{{fbdoc item="section" value="-lang qb"}}
+	
+	**Supported:** //Everything not supported/allowed in the //[[CompilerOptlang -lang fb]]// dialect, plus..//
+
+	""1"") ##[[KeyPgCall Call]]## can be used with forward-referenced functions.
+
+	""2"") ##[[KeyPgShared Shared]]## can be used inside functions. (W.I.P.)
+
+	""3"") All variables, implicitly or explicitly declared, are always allocated in the procedure scope, like in ""QuickBASIC"".
+
+	""4"") The ##[[KeyPgData Data]]## statement won't look up symbols, every token is assumed to be a literal string even without quotes, like in ""QuickBASIC"".
+
+
+	**Not supported:**
+
+	""1"") Multi-threading
+		- None of the ##[[CatPgThreading threading]]## procedures may be used.
+
+	""2"") Classes and Namespaces
+
+	""3"") Procedure and operator overloading
+
+	""4"") Constructors, destructors and other member procedures in ##[[KeyPgType Type]]## definitions.
+
+	""5"") ##[[KeyPgScope Scope]]## blocks
+
+	""6"") ##[[KeyPgExternBlock Extern]]## blocks
+
+	""7"") Variable initialization
+		- All variables are moved to the procedure scope (like in ""QuickBASIC""), making initializing local variables too difficult to support.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

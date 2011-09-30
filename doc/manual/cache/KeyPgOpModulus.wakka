@@ -1,0 +1,53 @@
+{{fbdoc item="title" value="Operator Mod (Modulus)"}}----
+Finds the remainder from a division operation
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Mod** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = //lhs// **Mod** //rhs//
+##
+{{fbdoc item="param"}}
+	##//lhs//##
+		The left-hand side dividend expression.
+	##//rhs//##
+		The right-hand side divisor expression.
+
+{{fbdoc item="ret"}}
+	Returns the remainder of a division operation.
+
+{{fbdoc item="desc"}}
+	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the remainder. Numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down.
+
+	Neither of the operands are modified in any way.
+
+	This operator can be overloaded for user-defined types.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/operator/mod.bas"}}%%(freebasic)
+PRINT 47 MOD 7
+PRINT 5.6 MOD 2.1
+PRINT 5.1 MOD 2.8
+%%
+Output:
+%%
+5
+0
+2
+%%
+
+This is because: 
+	- 47 divided by 7 gives a remainder of 5
+	- 5.6 is rounded to 6 while 2.1 is rounded to 2. This makes the problem 6 MOD 2 which means 6 divided by 2 which gives a remainder of 0
+	- 5.1 is rounded to 5 while 2.8 is rounded to 3. This makes the problem 5 MOD 3 which means 5 divided by 3 which gives a remainder of 2
+
+{{fbdoc item="lang"}}
+	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+
+{{fbdoc item="diff"}}
+	- None
+
+{{fbdoc item="see"}}
+	- [[CatPgMath Mathematical Functions]]
+
+{{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

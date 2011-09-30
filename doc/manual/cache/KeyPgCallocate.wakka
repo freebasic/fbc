@@ -1,0 +1,57 @@
+{{fbdoc item="title" value="CALLOCATE"}}----
+Allocates memory for a certain number of elements from the free store and clears the contents
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Callocate**( //num_elements// [, //size// ] )
+##
+{{fbdoc item="param"}}
+	##//num_elements//##
+		The number of elements to allocate memory for.
+	##//size//##
+		The size, in bytes, of each element.
+
+{{fbdoc item="ret"}}
+	If successful, the address of the start of the allocated memory is returned. Otherwise, the null pointer (##0##) is returned.
+
+{{fbdoc item="desc"}}
+	##**Callocate**## initializes the allocated memory with zeros.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
+' Allocate and initialize space for 10 integer elements.
+dim p as integer ptr = callocate(10, sizeof(integer))
+
+' Fill the memory with integer values.
+for index as integer = 0 to 9
+	p[index] = (index + 1) * 10
+next
+
+' Display the integer values.
+for index as integer = 0 to 9
+	print p[index] ;
+next
+
+' Free the memory.
+deallocate(p)
+%%
+Outputs:
+%% 10 20 30 40 50 60 70 80 90 100%%
+
+{{fbdoc item="target"}}
+	- This procedure is not guaranteed to be thread-safe.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Callocate""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgAllocate Allocate]]##
+	- ##[[KeyPgDeallocate Deallocate]]##
+	- ##[[KeyPgReallocate Reallocate]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

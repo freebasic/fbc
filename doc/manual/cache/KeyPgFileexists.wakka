@@ -1,0 +1,55 @@
+{{fbdoc item="title" value="FILEEXISTS"}}----
+Tests the existence of a file
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileExists""** ( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	#include "file.bi"
+	//result// = **""FileExists""**( //filename// )
+##
+//or//
+##
+	#include "vbcompat.bi"
+	//result// = **""FileExists""**( //filename// )
+##
+{{fbdoc item="param"}}
+	##//filename//##
+		Filename to test for existence.
+
+{{fbdoc item="ret"}}
+	Returns non-zero (##-1##) if the file exists, otherwise returns zero (##0##).
+
+{{fbdoc item="desc"}}
+	##**""FileExists""**## tests for the existence of a file.
+	Internally, it may issue an Open() and a Close() function, which may have consequences - eg, any existing ##[[KeyPgLock Lock]]##(s) on the file may be released.
+	Depending on the exact requirements, alternative methods of checking for file existence may be to use the ##[[KeyPgDir Dir]]()## function (being careful of attributes and ensuring the path doesn't contain wildcards), or to try ##[[KeyPgOpen Open]]##ing the file and checking the return value for success.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/system/fileexists.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+
+dim filename as string
+
+print "Enter a filename: "
+line input filename
+
+if fileexists( filename ) then
+  print "File found: " & filename
+else
+  print "File not found: " & filename
+end if
+%%
+
+{{fbdoc item="target"}}
+	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
+	- Path separators in Linux are forward slashes ##/##. Windows uses backward slashes ##\## but it allows for forward slashes.  DOS uses backward ##\## slashes. 
+
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDir Dir]]##
+
+{{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}
