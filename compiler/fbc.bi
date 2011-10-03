@@ -182,8 +182,6 @@ type FBCCTX
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
 
-	opthash				as THASH
-
 	objinf				as FBC_OBJINF
 
 	vtbl				as FBC_VTBL
