@@ -563,9 +563,6 @@ sub fbSetOption _
 	case FB_COMPOPT_MAXERRORS
 		env.clopt.maxerrors = value
 
-	case FB_COMPOPT_SHOWSUSPERRORS
-		env.clopt.showsusperrors = value
-
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
 		hSetLangOptions( value )
@@ -665,9 +662,6 @@ function fbGetOption _
 
 	case FB_COMPOPT_MAXERRORS
 		function = env.clopt.maxerrors
-
-	case FB_COMPOPT_SHOWSUSPERRORS
-		function = env.clopt.showsusperrors
 
 	case FB_COMPOPT_LANG
 		function = env.clopt.lang

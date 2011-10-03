@@ -118,7 +118,6 @@ declare sub getDefaultLibs _
 		( FBC_OPT_EXPORT		, @"export"      ), _
 		( FBC_OPT_NOUNDERSCORE	, @"nounderscore"), _
 		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
-		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
 		( FBC_OPT_ARCH			, @"arch"        ), _
 		( FBC_OPT_FPU			, @"fpu"         ), _
 		( FBC_OPT_VECTORIZE		, @"vec"         ), _
@@ -1347,8 +1346,6 @@ private function processOptions _
 			case FBC_OPT_EXPORT
 				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 
-			case FBC_OPT_SHOWSUSPERR
-				fbSetOption( FB_COMPOPT_SHOWSUSPERRORS, FALSE )
 
 			case FBC_OPT_ARCH
 				if( nxt = NULL ) then
