@@ -116,8 +116,6 @@ declare sub getDefaultLibs _
 		( FBC_OPT_NOERRLINE		, @"noerrline"   ), _
 		( FBC_OPT_NODEFLIBS		, @"nodeflibs"   ), _
 		( FBC_OPT_EXPORT		, @"export"      ), _
-		( FBC_OPT_NOUNDERSCORE	, @"nounderscore"), _
-		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
 		( FBC_OPT_ARCH			, @"arch"        ), _
 		( FBC_OPT_FPU			, @"fpu"         ), _
 		( FBC_OPT_VECTORIZE		, @"vec"         ), _
