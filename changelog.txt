@@ -4,6 +4,7 @@ Version 0.24.0:
 - System triplets are now used (like gcc/binutils), instead of the previous nested target-specific subdirectories
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
 - fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which relies on a modified ldscript)
+- It's now possible to build a Windows/DOS version of fbc that can be installed into MinGW/DJGPP, and will ask gcc for paths (as is done on Linux & co already)
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11

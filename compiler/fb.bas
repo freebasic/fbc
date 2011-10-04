@@ -1115,8 +1115,14 @@ function fbFindGccLib _
 		return file_loc
 	end if
 
-'' only query gcc if the host is unix-like
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_DARWIN__)
+#ifndef ENABLE_STANDALONE
+	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
+	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
+	'' a specific gcc target/version).
+	'' The normal build needs to ask gcc to find out where those files are,
+	'' while the standalone build is supposed to be standalone and have
+	'' everything in its own lib/ directory.
 
 	dim as string path
 	dim as integer ff = any
@@ -1147,7 +1153,6 @@ function fbFindGccLib _
 		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
 		exit function
 	end if
-
 #endif
 
 	function = file_loc
