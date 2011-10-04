@@ -222,7 +222,7 @@ declare sub getDefaultLibs _
 				case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 				     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
 				     FB_COMPTARGET_NETBSD
-					'' Compile the given .xpm or create a stub for fb_program_icon
+					'' Compile the given .xpm, if any
 					if( compileXpm( ) = FALSE ) then
 						delFiles( )
 						fbcEnd( 1 )
@@ -844,16 +844,7 @@ private function compileXpm() as integer
 	end if
 
 	if( len( fbc.xpmfile ) = 0 ) then
-		'' no icon supplied, provide a NULL symbol
-		iconsrc = "$$fb_icon$$.asm"
-		fo = freefile()
-		open iconsrc for output as #fo
-		print #fo, ".data"
-		print #fo, ".align 32"
-		print #fo, ".globl fb_program_icon"
-		print #fo, "fb_program_icon:"
-		print #fo, ".long 0"
-		close #fo
+		return TRUE
 	else
 		'' invoke
 		if( fbc.verbose ) then
@@ -1031,9 +1022,7 @@ private sub delFiles()
 	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_NETBSD
 		'' delete compiled icon object
-		if( len( fbc.xpmfile ) = 0 ) then
-			safeKill( "$$fb_icon$$.o" )
-		else
+		if( len( fbc.xpmfile ) > 0 ) then
 			safeKill( hStripExt( hStripPath( fbc.xpmfile ) ) + ".o" )
 		end if
 

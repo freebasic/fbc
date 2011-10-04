@@ -1019,7 +1019,7 @@ ifndef DISABLE_GFX
   ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
     ifndef DISABLE_X
       LIBFBGFX_H += gfxlib2/fb_gfx_x11.h
-      LIBFBGFX_C += driver_x11 x11
+      LIBFBGFX_C += driver_x11 x11 x11_icon_stub
       ifndef DISABLE_OPENGL
         LIBFBGFX_C += driver_opengl_x11
       endif
