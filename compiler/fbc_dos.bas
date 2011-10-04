@@ -181,27 +181,6 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-private function _compileResFiles as integer
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _delFiles as integer
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _listFiles( byval argv as zstring ptr ) as integer
-
-	function = FALSE
-
-end function
-
-'':::::
 private sub _getDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _
@@ -245,11 +224,8 @@ function fbcInit_dos( ) as integer
 
 	static as FBC_VTBL vtbl = _
 	( _
-		@_listFiles, _
-		@_compileResFiles, _
 		@_linkFiles, _
 		@_archiveFiles, _
-		@_delFiles, _
 		@_setDefaultLibPaths, _
 		@_getDefaultLibs, _
 		@_addGfxLibs, _

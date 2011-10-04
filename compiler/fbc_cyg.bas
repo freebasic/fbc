@@ -14,11 +14,6 @@ declare function makeImpLib _
 		byval dllname as zstring ptr _
 	) as integer
 
-''
-'' globals
-''
-	dim shared rclist as TLIST
-
 '':::::
 private sub _setDefaultLibPaths
 
@@ -198,86 +193,6 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-private function _compileResFiles _
-	( _
-	) as integer
-
-	dim as string rescmppath, rescmpcline, oldinclude
-	dim as integer res = any
-
-	function = FALSE
-
-	'' replace the include env var
-	oldinclude = trim( environ( "INCLUDE" ) )
-	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
-
-	''
-	rescmppath = fbFindBinFile( "GoRC" )
-	if( len( rescmppath ) = 0 ) then
-		exit function
-	end if
-
-	'' set input files (.rc's and .res') and output files (.obj's)
-	dim as string ptr rcf = listGetHead( @rclist )
-	do while( rcf <> NULL )
-
-		'' windres options
-		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt( *rcf ) + _
-					  (".obj" + QUOTE + " " + QUOTE) + *rcf + QUOTE
-
-		'' invoke
-		if( fbc.verbose ) then
-			print "compiling resource: ", rescmpcline
-		end if
-
-		res = exec( rescmppath, rescmpcline )
-		if( res <> 0 ) then
-			exit function
-		end if
-
-		'' add to obj list
-		dim as string ptr objf = listNewNode( @fbc.objlist )
-		*objf = hStripExt( *rcf ) + ".obj"
-
-		rcf = listGetNext( rcf )
-	loop
-
-	'' restore the include env var
-	if( len( oldinclude ) > 0 ) then
-		setenviron "INCLUDE=" + oldinclude
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _delFiles as integer
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _listFiles _
-	( _
-		byval argv as zstring ptr _
-	) as integer
-
-	select case hGetFileExt( argv )
-	case "rc", "res"
-		dim as string ptr rcf = listNewNode( @rclist )
-		*rcf = *argv
-
-		return TRUE
-
-	case else
-		return FALSE
-	end select
-
-end function
-
-'':::::
 function clearDefList( byval dllfile as zstring ptr ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
@@ -425,11 +340,8 @@ function fbcInit_cygwin( ) as integer
 
 	static as FBC_VTBL vtbl = _
 	( _
-		@_listFiles, _
-		@_compileResFiles, _
 		@_linkFiles, _
 		@_archiveFiles, _
-		@_delFiles, _
 		@_setDefaultLibPaths, _
 		@_getDefaultLibs, _
 		@_addGfxLibs, _
@@ -437,9 +349,6 @@ function fbcInit_cygwin( ) as integer
 	)
 
 	fbc.vtbl = vtbl
-
-	''
-	listNew( @rclist, FBC_INITARGS\4, len( string ) )
 
 	env.target.wchar.type = FB_DATATYPE_USHORT
 	env.target.wchar.size = 2

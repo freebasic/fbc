@@ -20,11 +20,6 @@ enum GCC_LIB
 	GCC_LIBS
 end enum
 
-''
-'' globals
-''
-	dim shared xpmfile as string
-
 '':::::
 private sub _setDefaultLibPaths
 
@@ -196,172 +191,6 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 
 end function
 
-#define STATE_OUT_STRING	0
-#define STATE_IN_STRING		1
-
-'':::::
-private function _compileResFiles _
-	( _
-	) as integer
-
-	dim as integer fi, fo
-	dim as integer outstr_count, buffer_len, state, label
-	dim as ubyte ptr p
-	dim as string * 4096 chunk
-	dim as string aspath, iconsrc, buffer, outstr()
-
-	function = FALSE
-
-	if( fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_EXECUTABLE ) then
-		return TRUE
-	end if
-
-	if( len( xpmfile ) = 0 ) then
-
-		'' no icon supplied, provide a NULL symbol
-		iconsrc = "$$fb_icon$$.asm"
-		fo = freefile()
-		open iconsrc for output as #fo
-		print #fo, ".data"
-		print #fo, ".align 32"
-		print #fo, ".globl fb_program_icon"
-		print #fo, "fb_program_icon:"
-		print #fo, ".long 0"
-		close #fo
-
-	else
-		'' invoke
-		if( fbc.verbose ) then
-			print "compiling XPM icon resource: ", xpmfile
-		end if
-
-		''
-		if( hFileExists( xpmfile ) = FALSE ) then
-			exit function
-		end if
-		iconsrc = hStripExt( hStripPath( xpmfile ) ) + ".asm"
-
-		''
-		fi = freefile()
-		open xpmfile for input as #fi
-		line input #1, buffer
-		if( ucase( buffer ) <> "/* XPM */" ) then
-			close #fi
-			exit function
-		end if
-		buffer = ""
-		while eof( fi ) = FALSE
-			buffer_len = seek( fi )
-			get #1,, chunk
-			buffer_len = seek( fi ) - buffer_len
-			buffer += left( chunk, buffer_len )
-		wend
-		close #fi
-		buffer_len = len( buffer )
-		p = sadd( buffer )
-
-		''
-		do
-			select case state
-
-			case STATE_OUT_STRING
-				if( *p = CHAR_QUOTE ) then
-					state = STATE_IN_STRING
-					outstr_count += 1
-					redim preserve outstr(outstr_count) as string
-					outstr(outstr_count-1) = ""
-				end if
-
-			case STATE_IN_STRING
-				if( *p = CHAR_QUOTE ) then
-					state = STATE_OUT_STRING
-				elseif( *p = CHAR_TAB ) then
-					outstr(outstr_count-1) += RSLASH + "t"
-				else
-					outstr(outstr_count-1) += chr(*p)
-				end if
-
-			end select
-			p += 1
-			buffer_len -= 1
-		loop while buffer_len > 0
-		if( state <> STATE_OUT_STRING ) then
-			exit function
-		end if
-
-		''
-		fo = freefile()
-		open iconsrc for output as #fo
-		print #fo, ".section .rodata"
-		for label = 0 to outstr_count-1
-			print #fo, "_l" + hex( label ) + ":"
-			print #fo, ".string " + QUOTE + outstr( label ) + QUOTE
-		next label
-		print #fo, ".section .data"
-		print #fo, ".align 32"
-		print #fo, "_xpm_data:"
-		for label = 0 to outstr_count-1
-			print #fo, ".long _l" + hex( label )
-		next label
-		print #fo, ".align 32"
-		print #fo, ".globl fb_program_icon"
-		print #fo, "fb_program_icon:"
-		print #fo, ".long _xpm_data"
-		close #fo
-	end if
-
-	'' compile icon source file
-	aspath = fbFindBinFile( "as" )
-	if( len( aspath ) = 0 ) then
-		exit function
-	end if
-
-	if( exec( aspath, iconsrc + " -o " + hStripExt( iconsrc ) + ".o" ) ) then
-		kill( iconsrc )
-		exit function
-	end if
-
-	kill( iconsrc )
-
-	'' add to obj list
-	dim as string ptr objf = listNewNode( @fbc.objlist )
-	*objf = hStripExt( iconsrc ) + ".o"
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _delFiles as integer
-
-	'' delete compiled icon object
-	if( len( xpmfile ) = 0 ) then
-		safeKill( "$$fb_icon$$.o" )
-	else
-		safeKill( hStripExt( hStripPath( xpmfile ) ) + ".o" )
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-private function _listFiles( byval argv as zstring ptr ) as integer
-
-	if( hGetFileExt( argv ) = "xpm" ) then
-		if( len( xpmfile ) <> 0 ) then
-			return FALSE
-		end if
-
-		xpmfile = *argv
-		return TRUE
-
-	else
-		return FALSE
-	end if
-
-end function
-
 '':::::
 private sub _getDefaultLibs _
 	( _
@@ -418,11 +247,8 @@ function fbcInit_freebsd( ) as integer
 
     static as FBC_VTBL vtbl = _
     ( _
-		@_listFiles, _
-		@_compileResFiles, _
 		@_linkFiles, _
 		@_archiveFiles, _
-		@_delFiles, _
 		@_setDefaultLibPaths, _
 		@_getDefaultLibs, _
 		@_addGfxLibs, _
@@ -430,9 +256,6 @@ function fbcInit_freebsd( ) as integer
 	)
 
 	fbc.vtbl = vtbl
-
-	''
-	xpmfile = ""
 
 	fbAddGccLib( @"crt1.o", CRT1_O )
 	fbAddGccLib( @"crtbegin.o", CRTBEGIN_O )

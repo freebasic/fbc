@@ -94,15 +94,6 @@ end type
 
 '' if changed, update the fbcInit_* functions at each fbc_*.bas file
 type FBC_VTBL
-	listFiles as function _
-	( _
-		byval argv as zstring ptr _
-	) as integer
-
-	compileResFiles as function _
-	( _
-	) as integer
-
 	linkFiles as function _
 	( _
 	) as integer
@@ -110,10 +101,6 @@ type FBC_VTBL
 	archiveFiles as function _
 	( _
 		byval cmdline as zstring ptr _
-	) as integer
-
-	delFiles as function _
-	( _
 	) as integer
 
 	setDefaultLibPaths as sub _
@@ -158,6 +145,7 @@ type FBCCTX
 	incpathlist			as TLIST					'' of string ptr
 	liblist				as TLIST					'' of string ptr
 	libpathlist			as TLIST					'' of string ptr
+	rclist				as TLIST   '' List of input .rc's (for win32)
 
 	'' libs and paths passed to LD
 	ld_liblist			as TLIST					'' of FBS_LIB
@@ -175,14 +163,13 @@ type FBCCTX
 	mainset				as integer
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
+	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
+	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
+	xpmfile				as zstring * FB_MAXPATHLEN+1
 
 	objinf				as FBC_OBJINF
 
 	vtbl				as FBC_VTBL
-
-	triplet 			as string  '' GNU triplet to prefix in front of cross-compiling tool names
-
-	xbe_title 			as string  '' For the '-title <title>' xbox option
 end type
 
 

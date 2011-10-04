@@ -73,13 +73,13 @@ declare function archiveFiles _
 	( _
 	) as integer
 
-declare function compileResFiles _
+declare function compileXpm() as integer
+
+declare function compileRcs _
 	( _
 	) as integer
 
-declare function delFiles _
-	( _
-	) as integer
+declare sub delFiles()
 
 declare sub setMainModule _
 	( _
@@ -211,11 +211,24 @@ declare sub getDefaultLibs _
 				'' objects and static libraries, for speed/size reasons
 				getDefaultLibs( )
 
-				'' resource files..
-				if( compileResFiles( ) = FALSE ) then
-					delFiles( )
-					fbcEnd( 1 )
-				end if
+				select case as const fbGetOption( FB_COMPOPT_TARGET )
+				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+					'' Compile *.rc's, if any
+					if( compileRcs( ) = FALSE ) then
+						delFiles( )
+						fbcEnd( 1 )
+					end if
+
+				case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+				     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+				     FB_COMPTARGET_NETBSD
+					'' Compile the given .xpm or create a stub for fb_program_icon
+					if( compileXpm( ) = FALSE ) then
+						delFiles( )
+						fbcEnd( 1 )
+					end if
+
+				end select
 
 				if( linkFiles( ) = FALSE ) then
 					delFiles( )
@@ -226,9 +239,7 @@ declare sub getDefaultLibs _
 	end if
 
 	'' del temps
-	if( delFiles( ) = FALSE ) then
-		fbcEnd( 1 )
-	end if
+	delFiles( )
 
 	fbcEnd( 0 )
 
@@ -257,6 +268,7 @@ private sub fbcInit( )
 	listNew( @fbc.liblist, FBC_INITFILES\4, len( string ) )
 	listNew( @fbc.libpathlist, FBC_INITFILES\4, len( string ) )
 	listNew( @fbc.incpathlist, FBC_INITFILES\4, len( string ) )
+	listNew( @fbc.rclist, FBC_INITARGS\4, len( string ) )
 
 	'' the final lib and search path lists passed to LD
 	listNew( @fbc.ld_liblist, FBC_INITFILES\2, len( FBS_LIB ) )
@@ -813,17 +825,189 @@ private function linkFiles as integer
 end function
 
 '':::::
-private function compileResFiles as integer
+private function compileXpm() as integer
+	#define STATE_OUT_STRING	0
+	#define STATE_IN_STRING		1
 
-	function = fbc.vtbl.compileResFiles( )
+	dim as integer fi, fo
+	dim as integer outstr_count, buffer_len, state, label
+	dim as ubyte ptr p
+	dim as string * 4096 chunk
+	dim as string aspath, iconsrc, buffer, outstr()
 
+	function = FALSE
+
+	'' executbles as well as dynamic libs (ldopen can fail otherwise)
+	if( (fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_EXECUTABLE) and _ 
+	    (fbGetOption( FB_COMPOPT_OUTTYPE ) <> FB_OUTTYPE_DYNAMICLIB) ) then
+		return TRUE
+	end if
+
+	if( len( fbc.xpmfile ) = 0 ) then
+		'' no icon supplied, provide a NULL symbol
+		iconsrc = "$$fb_icon$$.asm"
+		fo = freefile()
+		open iconsrc for output as #fo
+		print #fo, ".data"
+		print #fo, ".align 32"
+		print #fo, ".globl fb_program_icon"
+		print #fo, "fb_program_icon:"
+		print #fo, ".long 0"
+		close #fo
+	else
+		'' invoke
+		if( fbc.verbose ) then
+			print "compiling XPM icon resource: ", fbc.xpmfile
+		end if
+
+		''
+		if( hFileExists( fbc.xpmfile ) = FALSE ) then
+			exit function
+		end if
+		iconsrc = hStripExt( hStripPath( fbc.xpmfile ) ) + ".asm"
+
+		''
+		fi = freefile()
+		open fbc.xpmfile for input as #fi
+		line input #1, buffer
+		if( ucase( buffer ) <> "/* XPM */" ) then
+			close #fi
+			exit function
+		end if
+		buffer = ""
+		while eof( fi ) = FALSE
+			buffer_len = seek( fi )
+			get #1,, chunk
+			buffer_len = seek( fi ) - buffer_len
+			buffer += left( chunk, buffer_len )
+		wend
+		close #fi
+		buffer_len = len( buffer )
+		p = sadd( buffer )
+
+		''
+		do
+			select case state
+
+			case STATE_OUT_STRING
+				if( *p = CHAR_QUOTE ) then
+					state = STATE_IN_STRING
+					outstr_count += 1
+					redim preserve outstr(outstr_count) as string
+					outstr(outstr_count-1) = ""
+				end if
+
+			case STATE_IN_STRING
+				if( *p = CHAR_QUOTE ) then
+					state = STATE_OUT_STRING
+				elseif( *p = CHAR_TAB ) then
+					outstr(outstr_count-1) += RSLASH + "t"
+				else
+					outstr(outstr_count-1) += chr(*p)
+				end if
+
+			end select
+			p += 1
+			buffer_len -= 1
+		loop while buffer_len > 0
+		if( state <> STATE_OUT_STRING ) then
+			exit function
+		end if
+
+		''
+		fo = freefile()
+		open iconsrc for output as #fo
+		print #fo, ".section .rodata"
+		for label = 0 to outstr_count-1
+			print #fo, "_l" + hex( label ) + ":"
+			print #fo, ".string " + QUOTE + outstr( label ) + QUOTE
+		next label
+		print #fo, ".section .data"
+		print #fo, ".align 32"
+		print #fo, "_xpm_data:"
+		for label = 0 to outstr_count-1
+			print #fo, ".long _l" + hex( label )
+		next label
+		print #fo, ".align 32"
+		print #fo, ".globl fb_program_icon"
+		print #fo, "fb_program_icon:"
+		print #fo, ".long _xpm_data"
+		close #fo
+	end if
+
+	'' compile icon source file
+	aspath = fbFindBinFile( "as" )
+	if( len( aspath ) = 0 ) then
+		exit function
+	end if
+
+	if( exec( aspath, iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) ) then
+		kill( iconsrc )
+		exit function
+	end if
+
+	kill( iconsrc )
+
+	'' add to obj list
+	dim as string ptr objf = listNewNode( @fbc.objlist )
+	*objf = hStripExt( iconsrc ) + ".o"
+
+	function = TRUE
 end function
 
 '':::::
-private function delFiles as integer
+private function compileRcs() as integer
+	dim as string rescmppath, rescmpcline, oldinclude
+	dim as integer res = any
 
-    function = FALSE
+	'' change the include env var
+	oldinclude = trim( environ( "INCLUDE" ) )
+	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
 
+	''
+	rescmppath = fbFindBinFile( "GoRC" )
+	if( len( rescmppath ) = 0 ) then
+		return FALSE
+	end if
+
+	'' set input files (.rc's and .res') and output files (.obj's)
+	dim as string ptr rcf = listGetHead( @fbc.rclist )
+	do while( rcf <> NULL )
+
+		'' windres options
+		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt( *rcf ) + _
+					  (".obj" + QUOTE + " " + QUOTE) + *rcf + QUOTE
+
+		'' invoke
+		if( fbc.verbose ) then
+			print "compiling resource: ", rescmpcline
+		end if
+
+		res = exec( rescmppath, rescmpcline )
+		if( res <> 0 ) then
+			if( fbc.verbose ) then
+				print "compiling resource failed: error code " & res
+			end if
+			exit function
+		end if
+
+		'' add to obj list
+		dim as string ptr objf = listNewNode( @fbc.objlist )
+		*objf = hStripExt( *rcf ) + ".obj"
+
+		rcf = listGetNext( rcf )
+	loop
+
+	'' restore the include env var
+	if( len( oldinclude ) > 0 ) then
+		setenviron "INCLUDE=" + oldinclude
+	end if
+
+	return TRUE
+end function
+
+'':::::
+private sub delFiles()
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 
 	do while( iof <> NULL )
@@ -837,12 +1021,24 @@ private function delFiles as integer
 			end if
 		end if
 
-    	iof = listGetNext( iof )
-    loop
+		iof = listGetNext( iof )
+	loop
 
-    function = fbc.vtbl.delFiles( )
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 
-end function
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_NETBSD
+		'' delete compiled icon object
+		if( len( fbc.xpmfile ) = 0 ) then
+			safeKill( "$$fb_icon$$.o" )
+		else
+			safeKill( hStripExt( hStripPath( fbc.xpmfile ) ) + ".o" )
+		end if
+
+	end select
+end sub
 
 '':::::
 private sub objinf_addLibCb _
@@ -1149,8 +1345,6 @@ private function checkFiles _
 		byval arg as string ptr _
 	) as integer
 
-	function = FALSE
-
 	select case hGetFileExt( arg[0] )
 	case "bas"
 		dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
@@ -1160,31 +1354,50 @@ private function checkFiles _
 			fbc.iof_head = iof
 		end if
 
-		hDelArgNode( arg )
-
 	case "a"
 		dim as string ptr libf = listNewNode( @fbc.liblist )
 		*libf = *arg
-
-		hDelArgNode( arg )
 
 	case "o"
 		dim as string ptr objf = listNewNode( @fbc.objlist )
 		*objf = *arg
 
-		hDelArgNode( arg )
+	case "rc", "res"
+		'' Only for Win32 & co
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 
-	case else
-		if( fbc.vtbl.listFiles( arg[0] ) = FALSE ) then
+		case else
+			return FALSE
+
+		end select
+
+		dim as string ptr rcf = listNewNode( @fbc.rclist )
+		*rcf = *arg
+
+	case "xpm"
+		'' Only for Linux & co
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+		     FB_COMPTARGET_NETBSD
+
+		case else
+			return FALSE
+
+		end select
+
+		if( len( fbc.xpmfile ) <> 0 ) then
 			return FALSE
 		end if
+		fbc.xpmfile = *arg
 
-		hDelArgNode( arg )
+	case else
+		return FALSE
 
 	end select
 
-	function = TRUE
-
+	return TRUE
 end function
 
 '':::::
@@ -1216,6 +1429,8 @@ private function processOptions _
 				printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 				exit function
 			end if
+
+			hDelArgNode( arg )
 			continue do
 		end if
 
@@ -2187,15 +2402,9 @@ private sub printOptions( )
 	print
 
 	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "", "*.rc = resource script, *.res = compiled resource" )
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD
-		printOption( "", "*.xpm = icon resource" )
-	end select
+	printOption( "", "*.rc = resource script, *.res = compiled resource (win32 only)" )
+	printOption( "", "*.xpm = icon resource (linux, *bsd only)" )
 
-	print
-	print "Use 'fbc -target <target>' alone to see target-specific options."
 	print
 	print "options:"
 
