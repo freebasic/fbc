@@ -1689,6 +1689,51 @@ private function processOptions _
 
 			end select
 
+		case asc("s")
+			select case *p
+			case "s"
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.subsystem = *nxt
+				if( len( fbc.subsystem ) = 0 ) then
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					exit function
+				end if
+
+				del_cnt += 1
+
+			end select
+
+		case asc("t")
+			select case *p
+			case "t"
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.stacksize = valint( *nxt ) * 1024
+				if( fbc.stacksize < FBC_MINSTACKSIZE ) then
+					fbc.stacksize = FBC_MINSTACKSIZE
+				end if
+
+				del_cnt += 1
+
+			case "title"
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				fbc.xbe_title = *nxt
+
+				del_cnt += 1
+
+			end select
+
 		case asc("v")
 			select case *p
 			case "v"
@@ -1881,14 +1926,8 @@ private function processOptions _
 
 
 		case else
-			'' Not found; is it a target-specific option?
-			if( fbc.vtbl.processOptions( arg, nxt ) = FALSE ) then
-				printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-				exit function
-			end if
-
-			hDelArgNodes( arg, nxt )
-			continue do
+			printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+			exit function
 
 		end select
 
@@ -2218,14 +2257,8 @@ private sub printOptions( )
 	printOption( "-profile", "Enable function profiling" )
 	printOption( "-r", "Write asm only, do not compile" )
 	printOption( "-R", "Do not delete the asm file(s)" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "-s <name>", "Set subsystem (gui, console)" )
-	end select
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS
-		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
-	end select
+	printOption( "-s <name>", "Set subsystem, 'gui' or 'console' (win32 only)" )
+	printOption( "-t <value>", "Set stack size in kbytes, default: 1M (win32/dos only)" )
 
 	desc = " Available (cross-)compilation targets:"
 	#macro listTarget(defname, fbname)
@@ -2250,9 +2283,7 @@ private sub printOptions( )
 	listTarget(XBOX, "xbox")
 	print "-target <name>"; desc
 
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
-		printOption( "-title <name>", "Set XBE display title" )
-	end if
+	printOption( "-title <name>", "Set XBE display title (xbox only)" )
 	printOption( "-v", "Be verbose" )
 	printOption( "-vec <val>", "Enable <val> level of automatic vectorization (def: 0)" )
 	printOption( "-version", "Show compiler version" )

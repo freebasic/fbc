@@ -13,8 +13,6 @@
 '' globals
 ''
 	dim shared rclist as TLIST
-	
-	dim shared xbe_title as string
 
 '':::::
 private sub _setDefaultLibPaths
@@ -124,11 +122,11 @@ private function _linkFiles _
 	end if
 	
 	'' xbe title
-	if( len(xbe_title) = 0 ) then
-		xbe_title = hStripExt(fbc.outname)
+	if( len(fbc.xbe_title) = 0 ) then
+		fbc.xbe_title = hStripExt(fbc.outname)
 	end if
 	
-	cxbecline = "-TITLE:" + QUOTE + xbe_title + (QUOTE + " ")
+	cxbecline = "-TITLE:" + QUOTE + fbc.xbe_title + (QUOTE + " ")
 	
 	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 		cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
@@ -274,49 +272,6 @@ private function _listFiles( byval argv as zstring ptr ) as integer
 end function
 
 '':::::
-private function _processOptions _
-	( _
-		byval opt as string ptr, _
-		byval argv as string ptr _
-	) as integer
-	
-	select case mid( *opt, 2 )
-	case "s"
-		if( argv = NULL ) then
-			return FALSE
-		end if
-		
-		fbc.subsystem = *argv
-		if( len( fbc.subsystem ) = 0 ) then
-			return FALSE
-		end if
-		return TRUE
-		
-	case "t"
-		if( argv = NULL ) then
-			return FALSE
-		end if
-		
-		fbc.stacksize = valint( *argv ) * 1024
-		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
-			fbc.stacksize = FBC_MINSTACKSIZE
-		end if
-		return TRUE
-		
-	case "title"
-		xbe_title = *argv
-		return TRUE
-		
-	case else
-		
-		return FALSE
-		
-	end select
-
-end function
-
-
-'':::::
 private function _stripUnderscore _
 	( _
 		byval symbol as zstring ptr _
@@ -381,7 +336,6 @@ function fbcInit_xbox( ) as integer
 	
 	static as FBC_VTBL vtbl = _
 	( _
-		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _
 		@_linkFiles, _

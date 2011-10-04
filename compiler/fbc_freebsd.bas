@@ -363,18 +363,6 @@ private function _listFiles( byval argv as zstring ptr ) as integer
 end function
 
 '':::::
-private function _processOptions _
-	( _
-		byval opt as string ptr, _
-		byval argv as string ptr _
-	) as integer
-
-	function = FALSE
-
-end function
-
-
-'':::::
 private sub _getDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _
@@ -430,7 +418,6 @@ function fbcInit_freebsd( ) as integer
 
     static as FBC_VTBL vtbl = _
     ( _
-		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _
 		@_linkFiles, _

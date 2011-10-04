@@ -94,12 +94,6 @@ end type
 
 '' if changed, update the fbcInit_* functions at each fbc_*.bas file
 type FBC_VTBL
-	processOptions as function _
-	( _
-		byval opt as string ptr, _
-		byval argv as string ptr _
-	) as integer
-
 	listFiles as function _
 	( _
 		byval argv as zstring ptr _
@@ -186,7 +180,9 @@ type FBCCTX
 
 	vtbl				as FBC_VTBL
 
-	triplet as string  '' GNU triplet to prefix in front of cross-compiling tool names
+	triplet 			as string  '' GNU triplet to prefix in front of cross-compiling tool names
+
+	xbe_title 			as string  '' For the '-title <title>' xbox option
 end type
 
 

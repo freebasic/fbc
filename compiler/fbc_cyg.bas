@@ -278,43 +278,6 @@ private function _listFiles _
 end function
 
 '':::::
-private function _processOptions _
-	( _
-		byval opt as string ptr, _
-		byval argv as string ptr _
-	) as integer
-
-    select case mid( *opt, 2 )
-	case "s"
-		if( argv = NULL ) then
-			return FALSE
-		end if
-
-		fbc.subsystem = *argv
-		if( len( fbc.subsystem ) = 0 ) then
-			return FALSE
-		end if
-		return TRUE
-
-	case "t"
-		if( argv = NULL ) then
-			return FALSE
-		end if
-
-		fbc.stacksize = valint( *argv ) * 1024
-		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
-			fbc.stacksize = FBC_MINSTACKSIZE
-		end if
-		return TRUE
-
-	case else
-		return FALSE
-
-	end select
-
-end function
-
-'':::::
 function clearDefList( byval dllfile as zstring ptr ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
@@ -462,7 +425,6 @@ function fbcInit_cygwin( ) as integer
 
 	static as FBC_VTBL vtbl = _
 	( _
-		@_processOptions, _
 		@_listFiles, _
 		@_compileResFiles, _
 		@_linkFiles, _
