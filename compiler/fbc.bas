@@ -85,10 +85,6 @@ declare sub setMainModule _
 	( _
 	)
 
-declare sub setCompOptions _
-	( _
-	)
-
 declare function collectObjInfo _
 	( _
 	) as integer
@@ -130,9 +126,6 @@ declare sub getDefaultLibs _
     if( processOptions( ) = FALSE ) then
     	fbcEnd( 1 )
     end if
-
-    ''
-    setCompOptions( )
 
     ''
     if( fbc.showversion = FALSE ) then
@@ -366,11 +359,6 @@ private sub initTarget( )
 	if( len(fbc.triplet) > 0 ) then
 		fbc.triplet += "-"
 	end if
-
-end sub
-
-'':::::
-private sub setCompOptions( )
 
 end sub
 
