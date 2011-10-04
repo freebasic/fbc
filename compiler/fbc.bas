@@ -1423,12 +1423,13 @@ private function processOptions _
 			continue do
 		end if
 
-		'' option..
-		dim as integer del_cnt = 1
-
+		'' '-' only
 		if( len( arg[0] ) = 1 ) then
 			continue do
 		end if
+
+		'' option..
+		dim as integer del_cnt = 0
 
 		dim as zstring ptr p = strptr(*arg) + 1
 
@@ -1449,7 +1450,7 @@ private function processOptions _
 				dim as string ptr objf = listNewNode( @fbc.objlist )
 				*objf = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "arch"
 				if( nxt = NULL ) then
@@ -1493,7 +1494,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
-				del_cnt += 1
+				del_cnt = 2
 			end select
 
 		case asc("b")
@@ -1515,7 +1516,7 @@ private function processOptions _
 					fbc.iof_head = iof
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1526,6 +1527,7 @@ private function processOptions _
 				fbc.compileonly = TRUE
 				fbc.emitonly = FALSE
 				fbc.preserveobj = TRUE
+				del_cnt = 1
 
 			end select
 
@@ -1545,10 +1547,11 @@ private function processOptions _
 				dim as string ptr def = listNewNode( @fbc.deflist )
 				*def = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "dylib", "dll"
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
+				del_cnt = 1
 
 			end select
 
@@ -1556,18 +1559,22 @@ private function processOptions _
 			select case *p
 			case "e"
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+				del_cnt = 1
 
 			case "ex"
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+				del_cnt = 1
 
 			case "exx"
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
+				del_cnt = 1
 
 			case "export"
 				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+				del_cnt = 1
 
 			end select
 
@@ -1590,7 +1597,7 @@ private function processOptions _
 				fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
 				fbc.objinf.lang = value
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "fpu"
 				if( nxt = NULL ) then
@@ -1610,7 +1617,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_FPUTYPE, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "fpmode"
 				if( nxt = NULL ) then
@@ -1630,7 +1637,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_FPMODE, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1638,6 +1645,7 @@ private function processOptions _
 			select case *p
 			case "g"
 				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
+				del_cnt = 1
 
 			case "gen"
 				if( nxt = NULL ) then
@@ -1657,7 +1665,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_BACKEND, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1677,7 +1685,7 @@ private function processOptions _
 				dim as string ptr incp = listNewNode( @fbc.incpathlist )
 				*incp = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "include"
 				if( nxt = NULL ) then
@@ -1693,7 +1701,7 @@ private function processOptions _
 				dim as string ptr incf = listNewNode( @fbc.preinclist )
 				*incf = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1713,7 +1721,7 @@ private function processOptions _
 				dim as string ptr libf = listNewNode( @fbc.liblist )
 				*libf = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "lang"
 				if( nxt = NULL ) then
@@ -1731,10 +1739,11 @@ private function processOptions _
 				fbSetOption( FB_COMPOPT_LANG, value )
 				fbc.objinf.lang = value
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "lib"
 				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
+				del_cnt = 1
 
 			end select
 
@@ -1743,6 +1752,7 @@ private function processOptions _
 			case "mt"
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 				fbc.objinf.mt = TRUE
+				del_cnt = 1
 
 			case "m"
 				if( nxt = NULL ) then
@@ -1758,7 +1768,7 @@ private function processOptions _
 				fbc.mainpath = hStripFilename( *nxt )
 				fbc.mainset = TRUE
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "map"
 				if( nxt = NULL ) then
@@ -1772,7 +1782,7 @@ private function processOptions _
 					exit function
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "maxerr"
 				if( nxt = NULL ) then
@@ -1792,7 +1802,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_MAXERRORS, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1800,9 +1810,11 @@ private function processOptions _
 			select case *p
 			case "noerrline"
 				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+				del_cnt = 1
 
 			case "nodeflibs"
 				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
+				del_cnt = 1
 
 			end select
 
@@ -1827,7 +1839,7 @@ private function processOptions _
 				fbc.iof_head->outf = *nxt
 				fbc.iof_head = listGetNext( fbc.iof_head )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1847,13 +1859,14 @@ private function processOptions _
 				dim as string ptr incp = listNewNode( @fbc.libpathlist )
 				*incp = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "pp"
 				fbSetOption( FB_COMPOPT_PPONLY, TRUE )
 				fbc.compileonly = TRUE
 				fbc.emitonly = TRUE
 				fbc.preserveasm = FALSE
+				del_cnt = 1
 
 			case "prefix"
 				if( nxt = NULL ) then
@@ -1863,10 +1876,11 @@ private function processOptions _
 
 				fbSetPrefix( *nxt )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "profile"
 				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+				del_cnt = 1
 
 			end select
 
@@ -1878,6 +1892,7 @@ private function processOptions _
 					fbc.emitonly = TRUE
 				end if
 				fbc.preserveasm = TRUE
+				del_cnt = 1
 
 			end select
 
@@ -1895,7 +1910,7 @@ private function processOptions _
 					exit function
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1912,7 +1927,7 @@ private function processOptions _
 					fbc.stacksize = FBC_MINSTACKSIZE
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "title"
 				if( nxt = NULL ) then
@@ -1922,7 +1937,7 @@ private function processOptions _
 
 				fbc.xbe_title = *nxt
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -1930,6 +1945,7 @@ private function processOptions _
 			select case *p
 			case "v"
 				fbc.verbose = TRUE
+				del_cnt = 1
 
 			case "vec"
 				if( nxt = NULL ) then
@@ -1951,10 +1967,11 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_VECTORIZE, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "version"
 				fbc.showversion = TRUE
+				del_cnt = 1
 
 			end select
 
@@ -1996,7 +2013,7 @@ private function processOptions _
 					fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -2014,7 +2031,7 @@ private function processOptions _
 					exit function
 				end if
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -2038,7 +2055,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_EXTRAOPT, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -2046,6 +2063,7 @@ private function processOptions _
 			select case *p
 			case "C"
 				fbc.preserveobj = TRUE
+				del_cnt = 1
 
 			end select
 
@@ -2071,7 +2089,7 @@ private function processOptions _
 
 				fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
 
@@ -2079,6 +2097,7 @@ private function processOptions _
 			select case *p
 			case "R"
 				fbc.preserveasm = TRUE
+				del_cnt = 1
 
 			end select
 
@@ -2092,7 +2111,7 @@ private function processOptions _
 
 				fbc.extopt.gas = " " + hReplace( *nxt, ",", " " ) + " "
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "Wl"
 				if( nxt = NULL ) then
@@ -2102,7 +2121,7 @@ private function processOptions _
 
 				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
 
-				del_cnt += 1
+				del_cnt = 2
 
 			case "Wc"
 				if( nxt = NULL ) then
@@ -2112,19 +2131,18 @@ private function processOptions _
 
 				fbc.extopt.gcc = " " + hReplace( *nxt, ",", " " ) + " "
 
-				del_cnt += 1
+				del_cnt = 2
 
 			end select
-
-
-		case else
-			printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-			exit function
-
 		end select
 
+		if( del_cnt = 0 ) then
+			printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+			exit function
+		end if
+
 		hDelArgNode( arg )
-		if( del_cnt > 1 ) then
+		if( del_cnt = 2 ) then
 			arg = listGetNext( nxt )
 			hDelArgNode( nxt )
 			nxt = arg
