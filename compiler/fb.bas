@@ -1091,12 +1091,8 @@ function fbFindGccLib _
 
 	file_loc = fbGetPath( FB_PATH_LIB ) + *gccLibFileNameTb( lib_id )
 
-	'' Cross compiling? then expect that the needed file will be in the target directory
-	if( fbIsCrossComp() ) then
-		return file_loc
-	end if
-
-	'' let the ones in lib override if necessary
+	'' Files in our lib/ directory have precedence, and are in fact
+	'' required for standalone builds.
 	if( hFileExists( file_loc ) ) then
 		return file_loc
 	end if
@@ -1109,6 +1105,9 @@ function fbFindGccLib _
 	'' The normal build needs to ask gcc to find out where those files are,
 	'' while the standalone build is supposed to be standalone and have
 	'' everything in its own lib/ directory.
+	''
+	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
+	'' not the host gcc.)
 
 	dim as string path
 	dim as integer ff = any
