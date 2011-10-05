@@ -270,16 +270,6 @@ end enum
 
 const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
-''
-enum FB_FINDBIN
-	FB_FINDBIN_USE_DEFAULT = 0
-	FB_FINDBIN_ALLOW_ENVVAR = 1
-	FB_FINDBIN_ALLOW_BINDIR = 2
-	FB_FINDBIN_ALLOW_SYSTEM = 4
-end enum
-
-const FB_DEFAULT_FINDBIN = FB_FINDBIN_ALLOW_ENVVAR or FB_FINDBIN_ALLOW_BINDIR
-
 '' Extra options
 enum FB_EXTRAOPT
 	FB_EXTRAOPT_NONE              = &h00000000
@@ -319,7 +309,6 @@ type FBCMMLINEOPT
 	lang			as FB_LANG					'' lang compatibility
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 	backend			as FB_BACKEND				'' backend
-	findbin			as FB_FINDBIN				'' find bin file search options
 	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
 	optlevel		as integer					'' optimize level (for gcc)
 	pponly			as integer
@@ -599,8 +588,7 @@ declare sub fbSetPrefix _
 
 declare function fbFindBinFile _
 	( _
-		byval filename as zstring ptr, _
-		byval findopts as FB_FINDBIN = FB_FINDBIN_USE_DEFAULT _
+		byval filename as zstring ptr _
 	) as string
 
 declare function fbGetLangId _

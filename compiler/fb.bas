@@ -472,14 +472,6 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
 	env.clopt.backend		= FB_DEFAULT_BACKEND
-#ifdef __FB_UNIX__
-	env.clopt.findbin		= _
-		FB_FINDBIN_ALLOW_ENVVAR _
-		or FB_FINDBIN_ALLOW_BINDIR _
-		or FB_FINDBIN_ALLOW_SYSTEM
-#else
-	env.clopt.findbin		= FB_DEFAULT_FINDBIN
-#endif
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
@@ -572,9 +564,6 @@ sub fbSetOption _
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
-
-	case FB_COMPOPT_FINDBIN
-		env.clopt.findbin = value
 
 	case FB_COMPOPT_EXTRAOPT
 		env.clopt.extraopt = value
@@ -671,9 +660,6 @@ function fbGetOption _
 
 	case FB_COMPOPT_BACKEND
 		function = env.clopt.backend
-
-	case FB_COMPOPT_FINDBIN
-		function = env.clopt.findbin
 
 	case FB_COMPOPT_EXTRAOPT
 		function = env.clopt.extraopt
@@ -1509,55 +1495,37 @@ end sub
 '':::::
 function fbFindBinFile _
 	( _
-		byval filename as zstring ptr, _
-		byval findopts as FB_FINDBIN _
+		byval filename as zstring ptr _
 	) as string
 
-	dim path as string
-	dim isenv as integer = FALSE
-	dim as FB_FINDBIN opts = any
-
-	function = ""
-
-	if( findopts = FB_FINDBIN_USE_DEFAULT ) then
-		opts = fbGetOption( FB_COMPOPT_FINDBIN )
-	else
-		opts = findopts
+	'' Check for an environment variable.
+	'' (e.g. fbFindBinFile("ld") will check the LD environment variable)
+	dim as string path = environ( ucase(*filename) )
+	if( len(path) > 0 ) then
+		'' The environment variable is set, this should be it.
+		'' If this path doesn't work, then why did someone set the
+		'' variable that way?
+		return path
 	end if
 
-	'' get from environment variable if allowed
-	if( (opts and FB_FINDBIN_ALLOW_ENVVAR) <> 0 ) then
-		path = environ( ucase(*filename) )
-		if( len(path) ) then
-			isenv = TRUE
-		end if
-	end if
-
-	'' if not set, get a default value
-	if( len(path) = 0 ) then
-		path = fbGetPath( FB_PATH_BIN )
-		path += fbc.triplet
-		path += *filename
-		path += FB_HOST_EXEEXT
-	end if
-
-	'' Found it?
+	'' Check whether the program exists in the bin/ directory and we can
+	'' invoke it without relying on PATH. This is for all setups in which
+	'' fbc is installed in the same path as gcc/binutils, and also lets
+	'' us prefer our local tools over system-wide ones.
+	path = fbGetPath( FB_PATH_BIN )
+	path += fbc.triplet
+	path += *filename
+	path += FB_HOST_EXEEXT
 	if( hFileExists( path ) ) then
 		return path
 	end if
 
-	if( isenv = FALSE ) then
-
-		'' system default allowed?
-		if( (opts and FB_FINDBIN_ALLOW_SYSTEM) <> 0 ) then
-			path = fbc.triplet + *filename + FB_HOST_EXEEXT
-			return path
-		end if
-
-	end if
-
-	errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
-
+	'' Use the system default (relying on it to be in PATH, if it's
+	'' not installed, the exec()s later will result in an error message).
+	'' This is used e.g. when fbc is installed in /usr/local,
+	'' but gcc/binutils are located in /usr. It's also useful during
+	'' development.
+	return fbc.triplet + *filename + FB_HOST_EXEEXT
 end function
 
 '':::::
