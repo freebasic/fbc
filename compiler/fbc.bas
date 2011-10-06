@@ -85,6 +85,8 @@ declare sub setMainModule _
 	( _
 	)
 
+declare sub setPaths()
+
 declare function collectObjInfo _
 	( _
 	) as integer
@@ -168,8 +170,7 @@ declare sub getDefaultLibs _
     	end if
     end if
 
-    ''
-    fbSetPaths( )
+	setPaths()
 
     ''
     setMainModule( )
@@ -822,7 +823,7 @@ function fbcFindGccLib(byref file as string) as string
 
 	'' Files in our lib/ directory have precedence, and are in fact
 	'' required for standalone builds.
-	found = fbGetPath( FB_PATH_LIB ) + file
+	found = fbc.libpath + file
 
 #ifndef ENABLE_STANDALONE
 	if( hFileExists( found ) ) then
@@ -1018,9 +1019,10 @@ private function compileRcs() as integer
 	dim as string rescmppath, rescmpcline, oldinclude
 	dim as integer res = any
 
-	'' change the include env var
+	'' Change the include env var to point to the (hopefully present)
+	'' win/rc/*.h headers.
 	oldinclude = trim( environ( "INCLUDE" ) )
-	setenviron "INCLUDE=" + fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
+	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
 
 	''
 	rescmppath = fbFindBinFile( "GoRC" )
@@ -1240,6 +1242,65 @@ private sub setMainModule( )
 		fbc.outaddext = TRUE
 	end if
 
+end sub
+
+private sub setPaths()
+	'' Setup/calculate the paths to bin/ (needed when invoking helper
+	'' tools), include/ (needed when searching headers), and lib/ (needed
+	'' to find libraries when linking).
+	'' (See the makefile for some directory layout info)
+
+	'' Not already set from -prefix command line option?
+	if (len(fbc.prefix) = 0) then
+		'' Then default to exepath() or the hard-coded prefix.
+		'' Normally fbc is relocatable, i.e. no fixed prefix is
+		'' compiled in, but there still is ENABLE_PREFIX to do just
+		'' that if desired.
+		#ifdef ENABLE_PREFIX
+			fbc.prefix = ENABLE_PREFIX
+		#else
+			fbc.prefix = exepath()
+			#ifndef ENABLE_STANDALONE
+				'' Non-standalone fbc is in prefix/bin,
+				'' it can add '..' to get to prefix.
+				fbc.prefix += FB_HOST_PATHDIV + ".."
+			#endif
+		#endif
+	end if
+
+	fbc.prefix += FB_HOST_PATHDIV
+
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
+	fbc.incpath = fbc.prefix
+	fbc.libpath = fbc.prefix
+
+	#ifdef ENABLE_STANDALONE
+		'' [triplet-]lib[-suffix]/
+		fbc.incpath += fbc.triplet + "include"
+		fbc.libpath += fbc.triplet + "lib"
+	#else
+		'' lib/[triplet-]freebasic[-suffix]/
+		fbc.incpath += "include" + FB_HOST_PATHDIV + fbc.triplet
+		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
+		#ifdef __FB_DOS__
+			'' Our subdirectory in include/ and lib/ is usually called
+			'' freebasic/, but on DOS that's too long... of course almost
+			'' no target triplet or suffix can be used either.
+			'' (Note: When changing, update the makefile too)
+			fbc.incpath += "freebas"
+			fbc.libpath += "freebas"
+		#else
+			fbc.incpath += "freebasic"
+			fbc.libpath += "freebasic"
+		#endif
+	#endif
+
+	fbc.incpath += FB_SUFFIX + FB_HOST_PATHDIV
+	fbc.libpath += FB_SUFFIX + FB_HOST_PATHDIV
+
+	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
 end sub
 
 '':::::
@@ -1941,7 +2002,20 @@ private function processOptions _
 					exit function
 				end if
 
-				fbSetPrefix( *nxt )
+				fbc.prefix = *nxt
+
+				'' Trim trailing slash
+				if( right( fbc.prefix, 1 )  = "/" ) then
+					fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
+				end if
+
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+				'' On Windows/DOS, also trim trailing backslash
+				'' (additionally to the forward slash check)
+				if( right( fbc.prefix, 1 ) = RSLASH ) then
+					fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
+				end if
+#endif
 
 				del_cnt = 2
 
@@ -2448,9 +2522,9 @@ end sub
 private sub setDefaultLibPaths
 
 	'' compiler's /lib
-	fbcAddDefLibPath( fbGetPath( FB_PATH_LIB ) )
+	fbcAddDefLibPath( fbc.libpath )
 
-    '' and the current path
+	'' and the current path
 	fbcAddDefLibPath( "./" )
 
 	'' platform dependent paths

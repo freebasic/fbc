@@ -26,8 +26,6 @@ declare sub	parserSetCtx ( )
 '' globals
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
-	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
-	dim shared as string fbPrefix
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -333,7 +331,7 @@ private sub hSetCtx( )
 	''
 	env.incpaths = 0
 
-	fbAddIncPath( fbGetPath( FB_PATH_INC ) )
+	fbAddIncPath( fbc.incpath )
 
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
@@ -741,99 +739,6 @@ function fbIsCrossComp _
 	function = (env.clopt.target <> FB_DEFAULT_TARGET)
 
 end function
-
-
-'':::::
-sub fbSetPaths _
-	( _
-	)
-
-	'' The prefix can be set via the -prefix command line option too
-	dim as string prefix = fbPrefix
-
-	if( len(prefix) = 0 ) then
-		'' Normally fbc is relocatable, i.e. no fixed prefix is
-		'' compiled in. However we still have the ENABLE_PREFIX
-		'' option to allow hard-coding the prefix.
-		'' (e.g. deb/rpm packages usually don't need/want to be
-		'' relocatable)
-		#ifdef ENABLE_PREFIX
-			prefix = ENABLE_PREFIX
-		#else
-			prefix = exepath()
-			#ifndef ENABLE_STANDALONE
-				prefix += FB_HOST_PATHDIV + ".."
-			#endif
-		#endif
-	end if
-
-	prefix += FB_HOST_PATHDIV
-
-	'' See the makefile for directory layout info
-	pathTB(FB_PATH_BIN) = prefix + "bin" + FB_HOST_PATHDIV
-	pathTB(FB_PATH_INC) = prefix
-	pathTB(FB_PATH_LIB) = prefix
-
-	#ifdef ENABLE_STANDALONE
-		'' [target-]lib/
-		pathTB(FB_PATH_INC) += fbc.triplet + "include"
-		pathTB(FB_PATH_LIB) += fbc.triplet + "lib"
-	#else
-		'' lib/[target-]freebasic[-suffix]/
-		pathTB(FB_PATH_INC) += "include" + FB_HOST_PATHDIV + fbc.triplet
-		pathTB(FB_PATH_LIB) += "lib" + FB_HOST_PATHDIV + fbc.triplet
-
-		'' Our subdirectory in include/ and lib/ is usually called
-		'' freebasic/, but on DOS that's too long... of course almost
-		'' no target triplet or suffix can be used either
-		#ifdef __FB_DOS__
-			pathTB(FB_PATH_INC) += "freebas"
-			pathTB(FB_PATH_LIB) += "freebas"
-		#else
-			pathTB(FB_PATH_INC) += "freebasic"
-			pathTB(FB_PATH_LIB) += "freebasic"
-		#endif
-	#endif
-
-	pathTB(FB_PATH_INC) += FB_SUFFIX + FB_HOST_PATHDIV
-	pathTB(FB_PATH_LIB) += FB_SUFFIX + FB_HOST_PATHDIV
-
-	hRevertSlash( pathTB(FB_PATH_BIN), FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( pathTB(FB_PATH_INC), FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( pathTB(FB_PATH_LIB), FALSE, asc(FB_HOST_PATHDIV) )
-
-end sub
-
-'':::::
-function fbGetPath _
-	( _
-		byval path as integer _
-	) as string static
-
-	function = pathTB( path )
-
-end function
-
-'':::::
-sub fbSetPrefix _
-	( _
-		byref prefix as string _
-	)
-
-	fbPrefix = prefix
-
-	'' trim trailing slash
-	if( right( fbPrefix, 1 )  = "/" ) then
-		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
-	end if
-
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	if( right( fbPrefix, 1 ) = RSLASH ) then
-		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
-	end if
-#endif
-
-end sub
 
 '':::::
 function fbGetEntryPoint( ) as string static
@@ -1401,7 +1306,7 @@ function fbFindBinFile _
 	'' invoke it without relying on PATH. This is for all setups in which
 	'' fbc is installed in the same path as gcc/binutils, and also lets
 	'' us prefer our local tools over system-wide ones.
-	path = fbGetPath( FB_PATH_BIN )
+	path = fbc.binpath
 	path += fbc.triplet
 	path += *filename
 	path += FB_HOST_EXEEXT

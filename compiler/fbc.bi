@@ -163,9 +163,15 @@ type FBCCTX
 	mainset				as integer
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
+	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
 	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	xpmfile				as zstring * FB_MAXPATHLEN+1
+
+	'' Compiler paths
+	binpath				as zstring * FB_MAXPATHLEN+1
+	incpath				as zstring * FB_MAXPATHLEN+1
+	libpath				as zstring * FB_MAXPATHLEN+1
 
 	objinf				as FBC_OBJINF
 

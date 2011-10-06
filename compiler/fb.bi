@@ -346,14 +346,6 @@ enum FB_LANG_OPT
     FB_LANG_OPT_QUIRKFUNC   = &h20000000
 end enum
 
-'' paths
-enum FB_PATH
-	FB_PATH_BIN
-	FB_PATH_INC
-	FB_PATH_LIB
-	FB_MAXPATHS
-end enum
-
 '' info section
 const FB_INFOSEC_VERSION = &h10
 const FB_INFOSEC_NAME = "fbctinf"
@@ -401,15 +393,6 @@ declare function fbCompile _
 declare function fbCheckRestartCompile _
 	( _
 	) as integer
-
-declare sub fbSetPaths _
-	( _
-	)
-
-declare function fbGetPath _
-	( _
-		byval path as integer _
-	) as string
 
 declare sub fbSetDefaultOptions _
 	( _
@@ -558,11 +541,6 @@ declare function fbGetLangName _
 	( _
 		byval lang as FB_LANG _
 	) as string
-
-declare sub fbSetPrefix _
-	( _
-		byref prefix as string _
-	)
 
 declare function fbFindBinFile _
 	( _

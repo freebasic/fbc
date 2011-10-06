@@ -70,7 +70,7 @@ private function _linkFiles _
 	'' the correct order that lets fbrt0's ctor be the first and fbrt0's
 	'' dtor the last one called. (needed until DJGPP's default ldscripts
 	'' are fixed)
-	ldcline += " -T " + QUOTE + fbGetPath( FB_PATH_LIB ) + "i386go32.x" + QUOTE
+	ldcline += " -T " + QUOTE + fbc.libpath + "i386go32.x" + QUOTE
 
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
@@ -117,7 +117,7 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination, must be included in the group
-		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
+		ldcline += QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
 	end if
 
 	'' end lib group

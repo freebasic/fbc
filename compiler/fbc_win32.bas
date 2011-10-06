@@ -162,7 +162,7 @@ private function _linkFiles _
 
 #ifndef DISABLE_OBJINFO
 	'' supplementary ld script to drop the fbctinf objinfo section
-	ldcline += " " + QUOTE + fbGetPath( FB_PATH_LIB ) + "fbextra.x" + QUOTE
+	ldcline += " " + QUOTE + fbc.libpath + "fbextra.x" + QUOTE
 #endif
 
 	if( len( fbc.mapfile ) > 0) then
@@ -221,7 +221,7 @@ private function _linkFiles _
 		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
 		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
 		'' 		 will be the first/last called, respectively
-		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
+		ldcline += QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
 	end if
 
 	ldcline += "-) "
