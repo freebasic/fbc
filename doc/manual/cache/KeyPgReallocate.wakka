@@ -17,9 +17,13 @@ Reallocates storage for an existing reserved block of memory
 	The address of the reallocated memory. A null (##0##) pointer is returned if reallocation was unsuccessful, and the original memory pointed to by ##//pointer//## remains unchanged.
 
 {{fbdoc item="desc"}}
-	Attempts to reallocate, or resize, memory previously allocated with ##[[KeyPgAllocate Allocate]]##. The contents of the buffer are preserved, although if ##//count//## is less than the original size of the memory block, the buffer will be truncated.
+	Attempts to reallocate, or resize, memory previously allocated with ##[[KeyPgAllocate Allocate]]## or ##[[KeyPgCallocate Callocate]]##. The contents of the buffer are preserved, although if ##//count//## is less than the original size of the memory block, the buffer will be truncated. In case of increase of memory, the added memory range is not initialized.
+
+	When use with ##[[KeyPgString String]]## or ##[[KeyPgType UDT]]## containing string, and if ##//count//## is larger than the original size of the memory block, the new extra memory range must be explicitly cleared (set to 0) before the first string use (with for example keyword ##[[KeyPgClear Clear]]##), otherwise a not cleared string descriptor (containing random data) may induce corrupted string or more (trying to write to a random place in memory or trying to deallocate a random pointer).
 
 	If ##//pointer//## is null (##0##), then ##""ReAllocate""## behaves identically to ##[[KeyPgAllocate Allocate]]##.
+
+	If ##//pointer//## is valid and ##//count//## is null (0), then ##""ReAllocate""## behaves similar to ##[[KeyPgDeallocate Deallocate]]## and a null (0) pointer is returned.
 
 	Reallocated memory must be deallocated, or freed, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed.
 

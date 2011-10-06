@@ -4,8 +4,24 @@ Free library for arbitrary precision arithmetic, operating on signed integers, r
 Website: http://www.gmplib.org
 Platforms supported: Win32, Linux
 Headers to include: gmp.bi
-Example Usage: yes, in examples/libraries/GMP/
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/gmp.bas"}}%%(freebasic)
+#include once "gmp.bi"
+
+dim as mpz_ptr bignum = allocate(sizeof(__mpz_struct))
+mpz_init_set_si(bignum, 2)
+mpz_pow_ui(bignum, bignum, 65536)
+
+print "2^65536 = ";
+dim as zstring ptr s = mpz_get_str(0, 10, bignum)
+print *s;
+deallocate(s)
+print
+
+mpz_clear(bignum)
+deallocate(bignum)
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
    

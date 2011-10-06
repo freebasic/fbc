@@ -5,5 +5,46 @@ Website: http://xmlsoft.org/
 Platforms supported: Win32, Linux
 Headers to include: libxml/
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)
+#include once "libxml/xmlreader.bi"
+#define NULL 0
+
+dim as string filename = command(1)
+if( len( filename ) = 0 ) then
+	print "Usage: libxml filename"
+	end 1
+end if
+
+dim as xmlTextReaderPtr reader = xmlReaderForFile( filename, NULL, 0 )
+if (reader = NULL) then
+	print "Unable to open "; filename
+	return
+end if
+
+dim as integer ret = xmlTextReaderRead( reader )
+do while( ret = 1 )
+	dim as zstring ptr constname = xmlTextReaderConstName( reader )
+	dim as zstring ptr value = xmlTextReaderConstValue( reader )
+
+	print xmlTextReaderDepth( reader ); _
+		xmlTextReaderNodeType( reader ); _
+		" "; *constname; _
+		xmlTextReaderIsEmptyElement(reader); _
+		xmlTextReaderHasValue( reader ); _
+		*value
+
+	ret = xmlTextReaderRead( reader )
+loop
+
+xmlFreeTextReader( reader )
+
+if( ret <> 0 ) then
+	print "failed to parse: "; filename
+end if
+
+xmlCleanupParser( )
+xmlMemoryDump()
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

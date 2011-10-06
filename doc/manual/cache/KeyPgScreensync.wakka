@@ -11,7 +11,11 @@ Synchronizes display updates with hardware
 	Zero if successful, or non-zero if a graphics mode was not previously set.
 
 {{fbdoc item="desc"}}
-	This GfxLib statement stops the execution of the program until the graphics card signals it has ended tracing a frame and is going to start the new one. If the program uses the small interval of time between frames to redraw the image, the flickering is greatly reduced.
+	This GfxLib statement stops the execution of the program until the graphics card signals it has ended tracing a frame and is going to start the new one.
+
+	If the program uses this small interval of time between frames to redraw the image, the flickering is greatly reduced. In that use, **Screensync** is a reminiscence of QB where there was only that equivalent method (WAIT &H3DA, 8) to improve the flickering. It is an empirical method because it only allows to synchronize the beginning of the drawing with the fixed dead time between two frames. To be used occasionally to avoid flickering when only very short time of drawing.
+
+	Except the purpose to reduce the flickering, **Screensync** can be also used simply as a method of synchronization of graphic drawing with the screen frame tracing (similarly to statement ##[[KeyPgSleep Sleep]]##).
 
 	The use of the QB-compatible form WAIT &H3DA,8 is deprecated.
 

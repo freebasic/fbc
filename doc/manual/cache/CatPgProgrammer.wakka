@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Programmer's Guide"}}----
-FreeBASIC programmer's guide.
+""FreeBASIC"" programmer's guide.
 
 //Work in Progress: **New pages created for this guide should use the ""ProPg""* prefix.**//
 
@@ -52,7 +52,7 @@ FreeBASIC programmer's guide.
 	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
 	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors"}}
 	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
-	Properties
+	{{fbdoc item="keyword" value="ProPgProperties|Properties"}}
 	{{fbdoc item="keyword" value="ProPgMemberAccessRights|Member Access Rights"}}
 	{{fbdoc item="keyword" value="ProPgOperatorOverloading|Operator Overloading"}}
 	Iterators

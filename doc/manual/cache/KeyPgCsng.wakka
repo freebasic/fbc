@@ -45,7 +45,7 @@ SLEEP
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- The string argument was not allowed in QB
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCbyte Cbyte]]##

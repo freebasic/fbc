@@ -4,8 +4,104 @@ Disphelper is a COM helper library that can be used in plain C. No MFC or ATL is
 Website: http://disphelper.sourceforge.net/
 Platforms supported: Win32, Linux (using WINE)
 Headers to include: disphelper/disphelper.bi
-Example Usage: yes, in examples/libraries/disphelper/
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/disphelper1.bas"}}%%(freebasic)
+'' HTTP GET example, using MSXML2
+
+#define UNICODE
+#include "disphelper/disphelper.bi"
+
+DISPATCH_OBJ(objHTTP)
+
+dhInitialize(TRUE)
+dhToggleExceptions(TRUE)
+
+dhCreateObject("MSXML2.XMLHTTP.4.0", NULL, @objHTTP)
+
+dhCallMethod(objHTTP, ".Open(%s, %s, %b)", "GET", "http://sourceforge.net", FALSE)
+dhCallMethod(objHTTP, ".Send")
+
+dim as zstring ptr szResponse
+dhGetValue("%s", @szResponse, objHTTP, ".ResponseText")
+
+print "Response: "; *szResponse
+dhFreeString(szResponse)
+
+SAFE_RELEASE(objHTTP)
+dhUninitialize(TRUE)
+%%
+
+{{fbdoc item="filename" value="examples/manual/libraries/disphelper2.bas"}}%%(freebasic)
+'' IExplorer example
+
+#define UNICODE
+#include "disphelper/disphelper.bi"
+
+sub navigate(byref url as string)
+	DISPATCH_OBJ(ieApp)
+	dhInitialize(TRUE)
+	dhToggleExceptions(TRUE)
+
+	dhCreateObject("InternetExplorer.Application", NULL, @ieApp)
+	dhPutValue(ieApp, "Visible = %b", TRUE)
+	dhCallMethod(ieApp, ".Navigate(%s)", url)
+
+	SAFE_RELEASE(ieApp)
+	dhUninitialize(TRUE)
+end sub
+
+	navigate("www.freebasic.net")
+%%
+
+{{fbdoc item="filename" value="examples/manual/libraries/disphelper3.bas"}}%%(freebasic)
+'' VB Script example
+
+#define UNICODE
+#include "disphelper/disphelper.bi"
+
+'' This function runs a script using the MSScriptControl.
+'' Optionally returns a result.
+sub RunScript _
+	( _
+		byval result_identifier as LPWSTR, _
+		byval result as LPVOID, _
+		byval script as LPWSTR, _
+		byval language as LPWSTR _
+	)
+
+	DISPATCH_OBJ(control)
+	if (SUCCEEDED(dhCreateObject("MSScriptControl.ScriptControl", NULL, @control))) then
+		if (SUCCEEDED(dhPutValue(control, ".Language = %T", language))) then
+			dhPutValue(control, ".AllowUI = %b", TRUE)
+			dhPutValue(control, ".UseSafeSubset = %b", FALSE)
+
+			if (result) then
+				dhGetValue(result_identifier, result, control, ".Eval(%T)", script)
+			else
+				dhCallMethod(control, ".Eval(%T)", script)
+			end if
+		end if
+	end if
+
+	SAFE_RELEASE(control)
+end sub
+
+	dhInitialize(TRUE)
+	dhToggleExceptions(TRUE)
+
+	'' VBScript sample
+	RunScript(NULL, NULL, !"MsgBox(\"This is a VBScript test.\" & vbcrlf & \"It worked!\",64 Or 3)", "VBScript")
+
+	'' JScript sample
+	dim as integer result
+	RunScript("%d", @result, "Math.round(Math.pow(5, 2) * Math.PI)", "JScript")
+	print "Result ="; result
+
+	print "Press any key to exit..."
+	sleep
+
+	dhUninitialize(TRUE)
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

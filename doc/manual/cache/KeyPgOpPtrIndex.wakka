@@ -20,6 +20,9 @@ Returns a reference to memory offset from an address
 {{fbdoc item="desc"}}
 	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf *]](//lhs// [[KeyPgOpAdd +]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer POINTER]]## can be indexed except for an ##[[KeyPgAny ANY]]## ##[[KeyPgPointer POINTER]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
 
+	When using 'nD' pointer (n indexes, with n > 1): Pt[I1][I2].....[In], the indexes order (from left to right) corresponds to the dereferencing order.
+	Example for '2D' pointer: Pt[I1][I2] = *(Pt[I1] + I2) = *(*(Pt + I1) + I2)
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/pointer-index.bas"}}%%(freebasic)
 '' initialize a 5-element array

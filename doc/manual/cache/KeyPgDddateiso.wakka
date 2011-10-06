@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="__DATE_ISO__"}}----
+Intrinsic define (macro value) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__DATE_ISO__""
+##
+{{fbdoc item="desc"}}
+	Substitutes the compiler date in a literal string (##"yyyy-mm-dd"## format) where used.  This format is in line with ISO 8601 and can be used for lexicographical date comparisons.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/date.bas"}}%%(freebasic)
+Print "Compile Date: " & __DATE_ISO__
+
+If __DATE_ISO__ < "2011-12-25" Then
+	Print "Compiled before Christmas day 2011"
+Else
+	Print "Compiled after Christmas day 2011"
+End If
+%%
+
+%%
+Compile Date: 2011-09-29
+Compiled before Christmas day 2011
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDddate __DATE__]]##
+	- ##[[KeyPgDdtime __TIME__]]##
+	- ##[[KeyPgDate Date]]##
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

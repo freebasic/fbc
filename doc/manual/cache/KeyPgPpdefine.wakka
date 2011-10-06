@@ -2,22 +2,23 @@
 Preprocessor directive to define a macro
 
 {{fbdoc item="syntax"}}##
-	#define //identifier// //text//
-	#define //identifier//( [ //parameters// ] ) //macro_text//
-	#define //identifier//( [ //parameters//, ] //variadic_parameter//[[KeyPgDots ...]] ) //macro_text//
+	#define //identifier// //body//
+	#define //identifier//( [ //parameters// ] ) //body//
+	#define //identifier//( [ //parameters//, ] //[[KeyPgDots variadic_parameter...]]// ) //body//
 ##
 {{fbdoc item="desc"}}
-	Preprocessor keyword that defines an identifier with a custom meaning:
-		- Non-empty defines (with ##//text//##) are substituted by its ##//text//## when the source is parsed, allowing a sort of "shorthand".  ##//text//## may be empty, which is useful for making defines that are just designed for checking with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]##.
-		- Defines with parameters are substituted by the ##//macro_text//##, that will contain all the arguments passed replaced.  **Note:** The open parentheses character ("##(##") must immediately follow the ##//identifier//##, there should be no white-spaces between them, otherwise the parentheses will be taken as part of ##//text//##.
-		- Defines are visible only in the scope where they are defined.  If defined at module level, the define is visible throughout the module.  If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub Sub]]##, ##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##, etc), the ##//identifier//## is visible only within that scope.
-		- Namespaces do not have any effect on the visibility of a define.
-
-	##//Identifier//##s can be checked to see whether they have been defined with ##[[KeyPgPpifdef #ifdef]]## and ##[[KeyPgPpifndef #ifndef]]##, which can be used to hide parts of code to the compiler (conditional compiling).
-
-	For defining identifiers with constant values associated with them ##[[KeyPgConst Const]]## may be used as a more powerful method.
+	##**#define**## allows to declare text-based preprocessor macros. Once the compiler has seen a ##**#define**##, it will start replacing further occurrences of ##//identifier//## with ##//body//##. ##//body//## may be empty. The expansion is done recursively, until there is nothing more to expand and the compiler can continue analyzing the resulting code. ##[[KeyPgPpundef #undef]]## can be used to make the compiler forget about a ##**#define**##.
 	
-	Using ##[[KeyPgDots ...]]## (an ellipsis) behind the last parameter of a macro allows to create a variadic macro. This means it is possible to pass any number of arguments to the //variadic_parameter//, which can be used in the //macro_text//, just like a normal macro parameter. The //variadic_parameter// will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
+	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion. The ##[[KeyPgOpPpStringize # stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat ## concatenate]]## operator can be used to merge tokens together.
+	Note: In the function-like macro declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
+	
+	Defines are //scoped//; they are only visible in the scope they were defined in. If defined at module level, the define is visible throughout the module. If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub Sub]]##, ##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##, etc), the ##//identifier//## define is only visible within that scope. Namespaces on the other hand do not have any effect on the visibility of a define.
+	
+	##//Identifier//##s can be checked for with ##[[KeyPgPpifdef #ifdef]]## and others, which can be used to hide parts of code from the compiler (conditional compiling).
+	
+	The result of macro expansion can be checked by using the [[CompilerOptpp -pp]] compiler option.
+	
+	##**#define**##s are often used to declare constants. The ##[[KeyPgConst Const]]## statement is a type-safe alternative.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)
@@ -31,7 +32,7 @@ Preprocessor directive to define a macro
 #define FALSE 0
 #define TRUE (not FALSE)
 
-'' Function like definition
+'' Function-like definition
 #define MyRGB(R,G,B) (((R)SHL 16)  OR ((G)SHL 8) OR (B)) 
 print hex( MyRGB(&hff, &h00, &hff) )
 
@@ -58,17 +59,6 @@ end namespace
 #endif
 %%
 
-{{fbdoc item="filename" value="examples/manual/prepro/variadic.bas"}}%%(freebasic)
-'' Using a variadic macro to wrap a variadic function
-#include "crt.bi"
-#define eprintf(format, args...) fprintf(stderr, format, args)
-eprintf(!"Hello from printf: %i %s %i\n", 5, "test", 123)
-
-'' LISP-like accessors allowing to modify comma-separated lists
-#define car(a, b...) a
-#define cdr(a, b...) b
-%%
-
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
@@ -77,9 +67,8 @@ eprintf(!"Hello from printf: %i %s %i\n", 5, "test", 123)
 	- ##[[KeyPgOpPpStringize # Preprocessor stringize]]##
 	- ##[[KeyPgOpPpConcat ## Preprocessor concatenate]]##
 	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
 	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgDefined defined]]##
 	- ##[[KeyPgConst Const]]##
+	- ##[[KeyPgDots ...]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

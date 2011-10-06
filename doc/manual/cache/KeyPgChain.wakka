@@ -18,21 +18,19 @@ Temporarily transfers control to an external program
 	Transfers control over to an external program. When the program exits, execution resumes immediately after the call to ##**Chain**##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/chain.bas"}}%%(freebasic)
-#ifdef FB__LINUX
-#define CHAIN2	"chain2"
+	{{fbdoc item="filename" value="examples/manual/system/chain.bas"}}%%(freebasic)
+#ifdef __FB_LINUX__
+	dim as string program = "./program"
 #else
-#define CHAIN2	"chain2.exe"
+	dim as string program = "program.exe"
 #endif
 
-	print "chain1 begins"
-
-	chain CHAIN2
-
-	print "chain1 ends"
-
-	sleep
+print "Running " & program & "..."
+if (chain(program) <> 0) then
+	print program & " not found!"
+end if
 %%
+
 {{fbdoc item="target"}}
 	- Linux requires the ##//program//## name case matches the real name of the file. Windows and DOS  are case insensitive. The program  chained may be case sensitive for its command line parameters.
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes.

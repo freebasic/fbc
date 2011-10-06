@@ -1,11 +1,56 @@
 {{fbdoc item="title" value="gsl, The GNU Scientific Library"}}----
 Provides a wide range of mathematical routines such as random number generators, special functions and least-squares fitting.
 
-Website: http://www.gnu.org/software/gsl/
+Website: http://www.gnu.org/software/gsl/, Windows port: http://gnuwin32.sourceforge.net/packages/gsl.htm 
 Platforms supported: Win32, Linux
 Headers to include: gsl/*.bi
-Example Usage: yes, in examples/libraries/GSL/
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/gsl1.bas"}}%%(freebasic)
+'' Elementary math example
+#include "gsl/gsl_math.bi"
+
+'' Raise the value of 3.141 to the fourth power
+? "3.141 ^ 4 = "; gsl_pow_4(3.141)
+?
+
+'' Find the hypotenuse of a right triangle with sides 3 and 4 
+? "The hypotenuse of a right triangle with sides of length 3 and 4 is"; gsl_hypot(3,4)
+?
+
+sleep
+%%
+
+{{fbdoc item="filename" value="examples/manual/libraries/gsl2.bas"}}%%(freebasic)
+'' Matrix example
+#include "gsl/gsl_matrix.bi"
+
+'' gsl uses the c-style row major order, unlike VB or Fortran 
+? "A 3x3 matrix" 
+dim as gsl_matrix ptr m = gsl_matrix_alloc(3, 3)
+for i as integer = 0 to 2
+	for j as integer = 0 to 2
+		gsl_matrix_set (m, i, j, 0.23 + 100*i + j)
+	next
+next
+
+for i as integer = 0 to 2
+	for j as integer = 0 to 2
+		print "m(";i;",";j;") = "; gsl_matrix_get (m, i, j)
+	next
+next
+?
+
+gsl_matrix_transpose(m)
+
+? "And its transpose"
+for i as integer = 0 to 2
+	for j as integer = 0 to 2
+		print "m(";i;",";j;") = "; gsl_matrix_get (m, i, j)
+	next
+next
+
+sleep
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

@@ -5,5 +5,36 @@ Website: http://www.un4seen.com/bassmod.html
 Platforms supported: Win32, Linux
 Headers to include: bassmod.bi
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/bassmod.bas"}}%%(freebasic)
+#include once "bassmod.bi"
+
+const SOUND_FILE = "test.mod"
+
+if (BASSMOD_GetVersion() < 2) then
+	print "BASSMOD version 2 or above required!"
+	end 1
+end if
+
+if (BASSMOD_Init(-1, 44100, 0) = 0) then
+	print "Could not initialize BASSMOD"
+	end 1
+end if
+
+if (BASSMOD_MusicLoad(FALSE, SOUND_FILE, 0, 0, BASS_MUSIC_LOOP) = 0) then
+	print "BASSMOD could not load '" & SOUND_FILE & "'"
+	BASSMOD_Free()
+	end 1
+end if
+
+BASSMOD_MusicPlay()
+
+print "Sound playing; waiting for keypress to stop and exit..."
+sleep
+
+BASSMOD_MusicStop()
+BASSMOD_MusicFree()
+BASSMOD_Free()
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -47,31 +47,24 @@ End Function
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/command.bas"}}%%(freebasic)
-''
-'' command-line arguments example
-''
+print "program launched via: " & command(0)
 
- 	print "exe name= "; command( 0 )
+dim as integer i = 1
+do
+	dim as string arg = command(i)
+	if len(arg) = 0 then
+		exit do
+	end if
 
- 	dim argc as integer, argv as string
+	print "command line argument " & i & " = """ & arg & """"
+	i += 1
+loop
 
- 	argc = 1
- 	do
- 		argv = command( argc )
+if i = 1 then
+	print "(no command line arguments)"
+end if
 
- 		if( len( argv ) = 0 ) then
- 			exit do
- 		end if
-
- 		print "arg"; argc; " = """; argv; """"
-
- 		argc += 1
- 	loop
-
- 	if( argc = 1 ) then
- 		print "(no arguments)"
- 	end if
- 	print "The complete list: ";command
+sleep
 %%
 
 {{fbdoc item="lang"}}
