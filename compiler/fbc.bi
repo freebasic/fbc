@@ -230,6 +230,7 @@ declare function fbcGetLibPathList _
 declare function fbcFindGccLib(byref file as string) as string
 declare function fbcMakeLibFileName(byref libname as string) as string
 declare sub fbcAddLibPathFor(byref libname as string)
+declare function fbcFindBin(byval filename as zstring ptr) as string
 
 
 ''

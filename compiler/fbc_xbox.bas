@@ -26,7 +26,7 @@ private function _linkFiles _
 	function = FALSE
 	
 	'' set path
-	ldpath = fbFindBinFile( "ld" )
+	ldpath = fbcFindBin("ld")
 	if( len( ldpath ) = 0 ) then
 		exit function
 	end if
@@ -140,7 +140,7 @@ private function _linkFiles _
 		print "cxbe: ", cxbecline
 	end if
 
-	cxbepath = fbFindBinFile( "cxbe" )
+	cxbepath = fbcFindBin("cxbe")
 	if( len( cxbepath ) = 0 ) then
 		exit function
 	end if
@@ -170,7 +170,7 @@ private function _archiveFiles _
 	
 	dim arcpath as string
 
-	arcpath = fbFindBinFile( "ar" )
+	arcpath = fbcFindBin("ar")
 	if( len( arcpath ) = 0 ) then
 		return FALSE
 	end if

@@ -513,7 +513,7 @@ private function assembleFile_GAS _
     if( has_path = FALSE ) then
     	has_path = TRUE
 
-		path = fbFindBinFile( "as" )
+		path = fbcFindBin("as")
 		if( len( path ) = 0 ) then
 			return FALSE
 		end if
@@ -586,7 +586,7 @@ private function assembleFile_GCC _
 	if( has_path = FALSE ) then
 		has_path = TRUE
 
-		path = fbFindBinFile( "gcc" )
+		path = fbcFindBin("gcc")
 		if( len( path ) = 0 ) then
 			return FALSE
 		end if
@@ -845,7 +845,7 @@ function fbcFindGccLib(byref file as string) as string
 
 	function = ""
 
-	dim as string path = fbFindBinFile( "gcc" )
+	dim as string path = fbcFindBin("gcc")
 	if( len( path ) = 0 ) then
 		exit function
 	end if
@@ -884,6 +884,37 @@ sub fbcAddLibPathFor(byref libname as string)
 		fbcAddDefLibPath(path)
 	end if
 end sub
+
+function fbcFindBin(byval filename as zstring ptr) as string
+	'' Check for an environment variable.
+	'' (e.g. fbcFindBin("ld") will check the LD environment variable)
+	dim as string path = environ(ucase(*filename))
+	if (len(path) > 0) then
+		'' The environment variable is set, this should be it.
+		'' If this path doesn't work, then why did someone set the
+		'' variable that way?
+		return path
+	end if
+
+	'' Check whether the program exists in the bin/ directory and we can
+	'' invoke it without relying on PATH. This is for all setups in which
+	'' fbc is installed in the same path as gcc/binutils, and also lets
+	'' us prefer our local tools over system-wide ones.
+	path = fbc.binpath
+	path += fbc.triplet
+	path += *filename
+	path += FB_HOST_EXEEXT
+	if (hFileExists(path)) then
+		return path
+	end if
+
+	'' Use the system default (relying on it to be in PATH, if it's
+	'' not installed, the exec()s later will result in an error message).
+	'' This is used e.g. when fbc is installed in /usr/local,
+	'' but gcc/binutils are located in /usr. It's also useful during
+	'' development.
+	return fbc.triplet + *filename + FB_HOST_EXEEXT
+end function
 
 '':::::
 private function linkFiles as integer
@@ -995,7 +1026,7 @@ private function compileXpm() as integer
 	end if
 
 	'' compile icon source file
-	aspath = fbFindBinFile( "as" )
+	aspath = fbcFindBin("as")
 	if( len( aspath ) = 0 ) then
 		exit function
 	end if
@@ -1025,7 +1056,7 @@ private function compileRcs() as integer
 	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
 
 	''
-	rescmppath = fbFindBinFile( "GoRC" )
+	rescmppath = fbcFindBin("GoRC")
 	if( len( rescmppath ) = 0 ) then
 		return FALSE
 	end if

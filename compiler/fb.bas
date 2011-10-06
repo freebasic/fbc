@@ -1285,43 +1285,6 @@ sub fbReportRtError _
 
 end sub
 
-
-'':::::
-function fbFindBinFile _
-	( _
-		byval filename as zstring ptr _
-	) as string
-
-	'' Check for an environment variable.
-	'' (e.g. fbFindBinFile("ld") will check the LD environment variable)
-	dim as string path = environ( ucase(*filename) )
-	if( len(path) > 0 ) then
-		'' The environment variable is set, this should be it.
-		'' If this path doesn't work, then why did someone set the
-		'' variable that way?
-		return path
-	end if
-
-	'' Check whether the program exists in the bin/ directory and we can
-	'' invoke it without relying on PATH. This is for all setups in which
-	'' fbc is installed in the same path as gcc/binutils, and also lets
-	'' us prefer our local tools over system-wide ones.
-	path = fbc.binpath
-	path += fbc.triplet
-	path += *filename
-	path += FB_HOST_EXEEXT
-	if( hFileExists( path ) ) then
-		return path
-	end if
-
-	'' Use the system default (relying on it to be in PATH, if it's
-	'' not installed, the exec()s later will result in an error message).
-	'' This is used e.g. when fbc is installed in /usr/local,
-	'' but gcc/binutils are located in /usr. It's also useful during
-	'' development.
-	return fbc.triplet + *filename + FB_HOST_EXEEXT
-end function
-
 '':::::
 function fbGetLangId _
 	( _

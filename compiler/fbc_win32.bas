@@ -115,7 +115,7 @@ private function _linkFiles _
 	function = FALSE
 
 	'' set path
-	ldpath = fbFindBinFile( "ld" )
+	ldpath = fbcFindBin("ld")
 	if( len( ldpath ) = 0 ) then
 		exit function
 	end if
@@ -266,7 +266,7 @@ end function
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
-	arcpath = fbFindBinFile( "ar" )
+	arcpath = fbcFindBin("ar")
 	if( len( arcpath ) = 0 ) then
 		return FALSE
 	end if
@@ -287,7 +287,7 @@ private function makeDefList( dllname as string ) as integer
 
 	function = FALSE
 
-	pxpath = fbFindBinFile( "pexports" )
+	pxpath = fbcFindBin("pexports")
 	if( len( pxpath ) = 0 ) then
 		exit function
 	end if
@@ -358,7 +358,7 @@ private function makeImpLib _
 	function = FALSE
 
 	'' set path
-	dtpath = fbFindBinFile( "dlltool" )
+	dtpath = fbcFindBin("dlltool")
 	if( len(dtpath) = 0 ) then
 		exit function
 	end if

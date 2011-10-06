@@ -541,11 +541,6 @@ declare function fbGetLangName _
 		byval lang as FB_LANG _
 	) as string
 
-declare function fbFindBinFile _
-	( _
-		byval filename as zstring ptr _
-	) as string
-
 declare function fbGetLangId _
 	( _
 		byval txt as zstring ptr _
