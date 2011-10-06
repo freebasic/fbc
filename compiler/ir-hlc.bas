@@ -1878,17 +1878,6 @@ private sub _emitJmpTb _
 end sub
 
 '':::::
-private sub _emitInfoSection _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
 private sub hEmitVregExpr _
 	( _
 		byval vr as IRVREG ptr, _
@@ -2901,7 +2890,6 @@ function irHLC_ctor _
 		@_emitASM, _
 		@_emitComment, _
 		@_emitJmpTb, _
-		@_emitInfoSection, _
 		@_emitBop, _
 		@_emitBopEx, _
 		@_emitUop, _

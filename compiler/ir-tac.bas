@@ -573,17 +573,6 @@ private sub _emitJmpTb _
 end sub
 
 '':::::
-private sub _emitInfoSection _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
-	emitWriteInfoSection( liblist, libpathlist )
-
-end sub
-
-'':::::
 private sub _emitBop _
 	( _
 		byval op as integer, _
@@ -2858,7 +2847,6 @@ function irTAC_ctor _
 		@_emitASM, _
 		@_emitComment, _
 		@_emitJmpTb, _
-		@_emitInfoSection, _
 		@_emitBop, _
 		@_emitBopEx, _
 		@_emitUop, _

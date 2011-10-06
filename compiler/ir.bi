@@ -233,12 +233,6 @@ type IR_VTBL
 		byval label as FBSYMBOL ptr _
 	)
 
-	emitInfoSection as sub _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
 	emitBop as sub _
 	( _
 		byval op as integer, _
@@ -669,8 +663,6 @@ declare function irGetVRDataSize _
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
 #define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
-
-#define irEmitInfoSection( liblist, libpathlist ) ir.vtbl.emitInfoSection( liblist, libpathlist )
 
 #define irFlush() ir.vtbl.flush( )
 
