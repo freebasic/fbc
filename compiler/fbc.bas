@@ -763,8 +763,8 @@ private function archiveFiles _
 	function = FALSE
 
     ''
-    fbc.outname = hStripFilename( fbc.outname ) + "lib" + _
-				  hStripPath( fbc.outname ) + ".a"
+    fbc.outname = hStripFilename( fbc.outname ) + _
+			fbcMakeLibFileName( hStripPath( fbc.outname ) )
 
     arcline = "-rsc "
 
@@ -816,6 +816,73 @@ private function archiveFiles _
     function = TRUE
 
 end function
+
+function fbcFindGccLib(byref file as string) as string
+	dim as string found
+
+	'' Files in our lib/ directory have precedence, and are in fact
+	'' required for standalone builds.
+	found = fbGetPath( FB_PATH_LIB ) + file
+
+#ifndef ENABLE_STANDALONE
+	if( hFileExists( found ) ) then
+		return found
+	end if
+
+	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
+	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
+	'' a specific gcc target/version).
+	'' The normal build needs to ask gcc to find out where those files are,
+	'' while the standalone build is supposed to be standalone and have
+	'' everything in its own lib/ directory.
+	''
+	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
+	'' not the host gcc.)
+
+	dim as integer ff = any
+
+	function = ""
+
+	dim as string path = fbFindBinFile( "gcc" )
+	if( len( path ) = 0 ) then
+		exit function
+	end if
+
+	path += " -m32 -print-file-name=" + file
+
+	ff = freefile()
+	if( open pipe( path, for input, as ff ) <> 0 ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
+		exit function
+	end if
+
+	input #ff, found
+
+	close ff
+
+	dim as string fileonly = hStripPath( found )
+
+	if( found = fileonly ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
+		exit function
+	end if
+#endif
+
+	function = found
+
+end function
+
+function fbcMakeLibFileName(byref libname as string) as string
+	return "lib" + libname + ".a"
+end function
+
+sub fbcAddLibPathFor(byref libname as string)
+	dim as string path = hStripFilename(fbcFindGccLib(fbcMakeLibFileName(libname)))
+	if (len(path)) then
+		fbcAddDefLibPath(path)
+	end if
+end sub
 
 '':::::
 private function linkFiles as integer

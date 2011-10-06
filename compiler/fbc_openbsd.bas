@@ -8,42 +8,12 @@
 #include once "fbc.bi"
 #include once "hlp.bi"
 
-enum GCC_LIB
-	CRT0_O
-	CRTBEGIN_O
-	CRTEND_O
-	GCRT0_O
-	LIBGCC_A
-	LIBSUPC_A
-	GCC_LIBS
-end enum
-
 '':::::
-private sub _setDefaultLibPaths
-
-	'' only query gcc if this is not a cross compile
-	if( fbIsCrossComp() = FALSE ) then
-		dim as string file_loc
-		dim as integer i = any
-
-		'' add the paths required by gcc libs and object files
-		for i = 0 to GCC_LIBS - 1
-
-			file_loc = fbFindGccLib( i )
-
-			if( len( file_loc ) <> 0 ) then
-				fbSetGccLib( i, file_loc )
-				fbcAddDefLibPath( hStripFilename( file_loc ) )
-			end if
-		next 
-
-	else
-		dim as integer i = any
-		for i = 0 to GCC_LIBS - 1
-			fbSetGccLib( i, fbFindGccLib( i ) )
-		next
-	endif
-
+private sub _setDefaultLibPaths()
+	#ifndef ENABLE_STANDALONE
+		fbcAddLibPathFor("gcc")
+		fbcAddLibPathFor("supc++")
+	#endif
 end sub
 
 '':::::
@@ -106,13 +76,13 @@ private function _linkFiles _
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + fbGetGccLib( GCRT0_O ) + QUOTE
+			ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
 		else
-			ldcline += " " + QUOTE + fbGetGccLib( CRT0_O ) + QUOTE
+			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
 		end if
 	end if
 
-	ldcline += " " + QUOTE + fbGetGccLib( CRTBEGIN_O ) + QUOTE + " "
+	ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -147,7 +117,7 @@ private function _linkFiles _
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + fbGetGccLib( CRTEND_O ) + QUOTE
+	ldcline += QUOTE + fbcFindGccLib("crtend.o") + QUOTE
 
    	'' extra options
    	ldcline += fbc.extopt.ld
@@ -247,13 +217,6 @@ function fbcInit_openbsd( ) as integer
 	)
 
 	fbc.vtbl = vtbl
-
-	fbAddGccLib( @"crt0.o", CRT0_O )
-	fbAddGccLib( @"crtbegin.o", CRTBEGIN_O )
-	fbAddGccLib( @"crtend.o", CRTEND_O )
-	fbAddGccLib( @"gcrt0.o", GCRT0_O )
-	fbAddGccLib( @"libgcc.a", LIBGCC_A )
-	fbAddGccLib( @"libsupc++.a", LIBSUPC_A )
 
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE

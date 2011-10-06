@@ -8,44 +8,12 @@
 #include once "fbc.bi"
 #include once "hlp.bi"
 
-enum GCC_LIB
-	CRT1_O
-	CRTBEGIN_O
-	CRTEND_O
-	CRTI_O
-	CRTN_O
-	GCRT1_O
-	LIBGCC_A
-	LIBSUPC_A
-	GCC_LIBS
-end enum
-
 '':::::
-private sub _setDefaultLibPaths
-
-	'' only query gcc if this is not a cross compile
-	if( fbIsCrossComp() = FALSE ) then
-		dim as string file_loc
-		dim as integer i = any
-
-		'' add the paths required by gcc libs and object files
-		for i = 0 to GCC_LIBS - 1
-
-			file_loc = fbFindGccLib( i )
-
-			if( len( file_loc ) <> 0 ) then
-				fbSetGccLib( i, file_loc )
-				fbcAddDefLibPath( hStripFilename( file_loc ) )
-			end if
-		next 
-
-	else
-		dim as integer i = any
-		for i = 0 to GCC_LIBS - 1
-			fbSetGccLib( i, fbFindGccLib( i ) )
-		next
-	endif
-
+private sub _setDefaultLibPaths()
+	#ifndef ENABLE_STANDALONE
+		fbcAddLibPathFor("gcc")
+		fbcAddLibPathFor("supc++")
+	#endif
 end sub
 
 '':::::
@@ -109,14 +77,14 @@ private function _linkFiles _
 	'' crt init stuff
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + fbGetGccLib( GCRT1_O ) + QUOTE
+			ldcline += " " + QUOTE + fbcFindGccLib("gcrt1.o") + QUOTE
 		else
-			ldcline += " " + QUOTE + fbGetGccLib( CRT1_O ) + QUOTE
+			ldcline += " " + QUOTE + fbcFindGccLib("crt1.o") + QUOTE
 		end if
 	end if
 
-	ldcline += " " + QUOTE + fbGetGccLib( CRTI_O ) + QUOTE
-	ldcline += " " + QUOTE + fbGetGccLib( CRTBEGIN_O ) + QUOTE + " "
+	ldcline += " " + QUOTE + fbcFindGccLib("crti.o") + QUOTE
+	ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -151,8 +119,8 @@ private function _linkFiles _
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + fbGetGccLib( CRTEND_O ) + QUOTE
-	ldcline += " " + QUOTE + fbGetGccLib( CRTN_O ) + QUOTE
+	ldcline += QUOTE + fbcFindGccLib("crtend.o") + QUOTE
+	ldcline += " " + QUOTE + fbcFindGccLib("crtn.o") + QUOTE
 
    	'' extra options
    	ldcline += fbc.extopt.ld
@@ -256,15 +224,6 @@ function fbcInit_freebsd( ) as integer
 	)
 
 	fbc.vtbl = vtbl
-
-	fbAddGccLib( @"crt1.o", CRT1_O )
-	fbAddGccLib( @"crtbegin.o", CRTBEGIN_O )
-	fbAddGccLib( @"crtend.o", CRTEND_O )
-	fbAddGccLib( @"crti.o", CRTI_O )
-	fbAddGccLib( @"crtn.o", CRTN_O )
-	fbAddGccLib( @"gcrt1.o", GCRT1_O )
-	fbAddGccLib( @"libgcc.a", LIBGCC_A )
-	fbAddGccLib( @"libsupc++.a", LIBSUPC_A )
 
 	env.target.wchar.type = FB_DATATYPE_UINT
 	env.target.wchar.size = FB_INTEGERSIZE

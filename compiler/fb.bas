@@ -28,7 +28,6 @@ declare sub	parserSetCtx ( )
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 	dim shared as string fbPrefix
-	dim shared as string gccLibTb()
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -106,9 +105,6 @@ declare sub	parserSetCtx ( )
     		FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}
-
-	'' filenames of gcc-libs
-	dim shared gccLibFileNameTb(  ) as zstring ptr
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
@@ -1037,112 +1033,6 @@ sub fbListLibPathsEx _
 	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
 
 end sub
-
-'':::::
-sub fbAddGccLib _
-	( _
-		byval lib_filename as zstring ptr, _
-		byval lib_id as integer _
-	)
-
-	if lib_id >= ubound(gccLibFileNameTb) then
-		redim preserve gccLibFileNameTb(lib_id)
-		redim preserve gccLibTb(lib_id)
-	end if
-
-	gccLibFileNameTb(lib_id) = lib_filename
-
-end sub
-
-'':::::
-function fbGetGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-	if( len( gccLibTb( lib_id ) ) = 0 ) then
-		function = *gccLibFileNameTb( lib_id )
-	else
-		function = gccLibTb( lib_id )
-	end if
-
-end function
-
-'':::::
-sub fbSetGccLib _
-	( _
-		byval lib_id as integer, _
-		byref lib_name as string _
-	)
-
-	gccLibTb( lib_id ) = lib_name
-
-end sub
-
-'' :::::
-function fbFindGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-	dim as string file_loc
-
-	if gccLibFileNameTb( lib_id ) = NULL then return ""
-
-	file_loc = fbGetPath( FB_PATH_LIB ) + *gccLibFileNameTb( lib_id )
-
-	'' Files in our lib/ directory have precedence, and are in fact
-	'' required for standalone builds.
-	if( hFileExists( file_loc ) ) then
-		return file_loc
-	end if
-
-#ifndef ENABLE_STANDALONE
-	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
-	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
-	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
-	'' a specific gcc target/version).
-	'' The normal build needs to ask gcc to find out where those files are,
-	'' while the standalone build is supposed to be standalone and have
-	'' everything in its own lib/ directory.
-	''
-	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
-	'' not the host gcc.)
-
-	dim as string path
-	dim as integer ff = any
-
-	function = ""
-
-	path = fbFindBinFile( "gcc" )
-	if( len( path ) = 0 ) then
-		exit function
-	end if
-
-	path += " -m32 -print-file-name="
-	path += *gccLibFileNameTb( lib_id )
-
-	ff = freefile
-	if( open pipe( path, for input, as ff ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
-		exit function
-	end if
-
-	input #ff, file_loc
-
-	close ff
-
-	dim as string short_loc = hStripPath( file_loc )
-
-	if( file_loc = short_loc ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
-		exit function
-	end if
-#endif
-
-	function = file_loc
-
-end function
 
 '':::::
 sub fbGetDefaultLibs _

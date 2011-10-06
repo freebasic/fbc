@@ -528,28 +528,6 @@ declare function fbIsCrossComp _
 	( _
 	) as integer
 
-declare sub fbAddGccLib _
-	( _
-		byval lib_filename as zstring ptr, _
-		byval lib_id as integer _
-	)
-
-declare function fbGetGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-declare sub fbSetGccLib _
-	( _
-		byval lib_id as integer, _
-		byref lib_name as string _
-	)
-
-declare function fbFindGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
 declare sub fbGetDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _
