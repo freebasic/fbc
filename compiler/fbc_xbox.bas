@@ -9,7 +9,7 @@
 #include once "hlp.bi"
 
 '':::::
-private sub _setDefaultLibPaths
+private sub _setDefaultLibPaths()
 
 end sub
 
@@ -65,10 +65,8 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 	
-	dim as string libdir = fbGetPath( FB_PATH_LIB )
-	
 	'' link with crt0.o (C runtime init)
-	ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
+	ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE + " "
 	
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -93,7 +91,7 @@ private function _linkFiles _
 	
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination
-		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
 	end if
 	
 	'' end lib group

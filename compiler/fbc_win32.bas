@@ -16,8 +16,12 @@ declare function makeImpLib _
 	) as integer
 
 '':::::
-private sub _setDefaultLibPaths
-
+private sub _setDefaultLibPaths()
+	#ifndef ENABLE_STANDALONE
+		'' To allow installing into MinGW
+		fbcAddLibPathFor("gcc")
+		fbcAddLibPathFor("supc++")
+	#endif
 end sub
 
 /'
@@ -177,22 +181,20 @@ private function _linkFiles _
 	'' add the library search paths
 	ldcline += *fbcGetLibPathList( )
 
-	dim as string libdir = fbGetPath( FB_PATH_LIB )
-
 	'' crt entry
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " " + QUOTE + libdir + ("dllcrt2.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbcFindGccLib("dllcrt2.o") + QUOTE + " "
 	else
-		ldcline += " " + QUOTE + libdir + ("crt2.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbcFindGccLib("crt2.o") + QUOTE + " "
 
 		'' additional support for gmon
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += QUOTE + libdir + ("gcrt2.o" + QUOTE + " ")
+			ldcline += QUOTE + fbcFindGccLib("gcrt2.o") + QUOTE + " "
 		end if
 
 	end if
 
-	ldcline += "" + QUOTE + libdir + ("crtbegin.o" + QUOTE + " ")
+	ldcline += "" + QUOTE + libdir + fbcFindGccLib("crtbegin.o") + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
@@ -219,13 +221,13 @@ private function _linkFiles _
 		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
 		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
 		'' 		 will be the first/last called, respectively
-		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
 	end if
 
 	ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += QUOTE + libdir + ("crtend.o" + QUOTE)
+	ldcline += QUOTE + fbcFindGccLib("crtend.o") + QUOTE
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		'' create the def list to use when creating the import library

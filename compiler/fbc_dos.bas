@@ -9,8 +9,13 @@
 #include once "hlp.bi"
 
 '':::::
-private sub _setDefaultLibPaths
-
+private sub _setDefaultLibPaths()
+	#ifndef ENABLE_STANDALONE
+		fbcAddLibPathFor("gcc")
+		'' Note: The standalone DOS FB uses the renamed version: supcx
+		'' But this is for installing into DJGPP.
+		fbcAddLibPathFor("supcxx")
+	#endif
 end sub
 
 #ifdef __FB_WIN32__
@@ -80,13 +85,11 @@ private function _linkFiles _
 	'' add library search paths
 	ldcline += *fbcGetLibPathList( )
 
-	dim as string libdir = fbGetPath( FB_PATH_LIB )
-	
 	'' link with crt0.o (C runtime init) or gcrt0.o for gmon profiling
 	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		ldcline += " " + QUOTE + libdir + "gcrt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE + " "
 	else
-		ldcline += " " + QUOTE + libdir + "crt0.o" + QUOTE + " "
+		ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE + " "
 	end if
 
 	'' add objects from output list
@@ -114,7 +117,7 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination, must be included in the group
-		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + "fbrt0.o" + QUOTE + " "
 	end if
 
 	'' end lib group
@@ -193,7 +196,15 @@ private sub _getDefaultLibs _
 
 	hAddLib( "c" )
 	hAddLib( "m" )
-	hAddLib( "supcx" )
+
+	#ifdef ENABLE_STANDALONE
+		'' Renamed lib for the standalone build, working around
+		'' the long file name.
+		hAddLib( "supcx" )
+	#else
+		'' When installing into DJGPP, use its lib
+		hAddLib( "supcxx" )
+	#endif
 
 end sub
 

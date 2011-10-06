@@ -15,8 +15,11 @@ declare function makeImpLib _
 	) as integer
 
 '':::::
-private sub _setDefaultLibPaths
-
+private sub _setDefaultLibPaths()
+	#ifndef ENABLE_STANDALONE
+		fbcAddLibPathFor("gcc")
+		fbcAddLibPathFor("supc++")
+	#endif
 end sub
 
 '':::::
@@ -97,16 +100,15 @@ private function _linkFiles _
 	ldcline += *fbcGetLibPathList( )
 
 	'' crt entry
-	dim as string libdir = fbGetPath( FB_PATH_LIB )
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE + " "
 	else
 		'' FIXME
-		ldcline += " " + QUOTE + libdir + ("crt0.o" + QUOTE + " ")
+		ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE + " "
 
 		'' additional support for gmon
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += QUOTE + libdir + ("gcrt0.o" + QUOTE + " ")
+			ldcline += QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE + " "
 		end if
 
 	end if
@@ -136,7 +138,7 @@ private function _linkFiles _
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
 		'' rtlib initialization and termination
-		ldcline += QUOTE + libdir + ("fbrt0.o" + QUOTE + " ")
+		ldcline += QUOTE + fbGetPath( FB_PATH_LIB ) + ("fbrt0.o" + QUOTE + " ")
 	end if
 
 	'' end lib group
