@@ -95,9 +95,7 @@ declare sub setDefaultLibPaths _
 	( _
 	)
 
-declare sub getDefaultLibs _
-	( _
-	)
+declare sub addDefaultLibs()
 
 
 ''globals
@@ -208,9 +206,12 @@ declare sub getDefaultLibs _
 				end if
 
 			else
-				'' only add the default libraries to the LD cmd-line, and not to the
-				'' objects and static libraries, for speed/size reasons
-				getDefaultLibs( )
+				'' Add default libs for linking, unless -nodeflibs was given
+				'' Note: These aren't added into objinfo sections of objects or
+				'' static libraries. Only the non-default libs are needed there.
+				if (env.clopt.nodeflibs = FALSE) then
+					addDefaultLibs()
+				end if
 
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
@@ -2564,9 +2565,105 @@ private sub setDefaultLibPaths
 end sub
 
 '':::::
-private sub getDefaultLibs
+private sub addDefaultLibs()
+	'' note: list of FBS_LIB
+	dim as TLIST ptr dstlist = @fbc.ld_liblist
+	dim as THASH ptr dsthash = @fbc.ld_libhash
 
-    fbGetDefaultLibs( @fbc.ld_liblist, @fbc.ld_libhash )
+	#macro hAddLib( libname )
+		symbAddLibEx( dstlist, dsthash, libname, TRUE )
+	#endmacro
+
+	'' select the right FB rtlib
+	if( env.clopt.multithreaded ) then
+		hAddLib( "fbmt" )
+	else
+		hAddLib( "fb" )
+	end if
+
+	hAddLib( "gcc" )
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		hAddLib( "cygwin" )
+		hAddLib( "kernel32" )
+		hAddLib( "supc++" )
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
+
+	case FB_COMPTARGET_DARWIN
+		hAddLib( "System" )
+
+	case FB_COMPTARGET_DOS
+		hAddLib( "c" )
+		hAddLib( "m" )
+		#ifdef ENABLE_STANDALONE
+			'' Renamed lib for the standalone build, working around
+			'' the long file name.
+			hAddLib( "supcx" )
+		#else
+			'' When installing into DJGPP, use its lib
+			hAddLib( "supcxx" )
+		#endif
+
+	case FB_COMPTARGET_FREEBSD
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
+
+	case FB_COMPTARGET_LINUX
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "dl" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
+		hAddLib( "gcc_eh" )
+
+	case FB_COMPTARGET_NETBSD
+		'' TODO
+
+	case FB_COMPTARGET_OPENBSD
+		hAddLib( "c" )
+		hAddLib( "m" )
+		hAddLib( "pthread" )
+		hAddLib( "ncurses" )
+		hAddLib( "supc++" )
+
+	case FB_COMPTARGET_WIN32
+		hAddLib( "msvcrt" )
+		hAddLib( "kernel32" )
+		hAddLib( "mingw32" )
+		hAddLib( "mingwex" )
+		hAddLib( "moldname" )
+		hAddLib( "supc++" )
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
+
+	case FB_COMPTARGET_XBOX
+		hAddLib( "fbgfx" )
+		hAddLib( "openxdk" )
+		hAddLib( "hal" )
+		hAddLib( "c" )
+		hAddLib( "usb" )
+		hAddLib( "xboxkrnl" )
+		hAddLib( "m" )
+		hAddLib( "supc++" )
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			hAddLib( "gmon" )
+		end if
+
+	end select
 
 end sub
 

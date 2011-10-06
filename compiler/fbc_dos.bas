@@ -184,32 +184,6 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-private sub _getDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	hAddLib( "c" )
-	hAddLib( "m" )
-
-	#ifdef ENABLE_STANDALONE
-		'' Renamed lib for the standalone build, working around
-		'' the long file name.
-		hAddLib( "supcx" )
-	#else
-		'' When installing into DJGPP, use its lib
-		hAddLib( "supcxx" )
-	#endif
-
-end sub
-
-
-'':::::
 private sub _addGfxLibs _
 	( _
 	)
@@ -238,7 +212,6 @@ function fbcInit_dos( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_setDefaultLibPaths, _
-		@_getDefaultLibs, _
 		@_addGfxLibs, _
 		@_getCStdType _
 	)

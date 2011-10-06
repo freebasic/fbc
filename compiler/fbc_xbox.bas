@@ -193,35 +193,6 @@ private function _stripUnderscore _
 
 end function
 
-
-'':::::
-private sub _getDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	hAddLib( "fbgfx" )
-	hAddLib( "openxdk" )
-	hAddLib( "hal" )
-	hAddLib( "c" )
-	hAddLib( "usb" )
-	hAddLib( "xboxkrnl" )
-	hAddLib( "m" )
-	hAddLib( "supc++" )
-
-	'' profiling?
-	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		hAddLib( "gmon" )
-	end if
-
-end sub
-
-
 '':::::
 private sub _addGfxLibs _
 	( _
@@ -251,7 +222,6 @@ function fbcInit_xbox( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_setDefaultLibPaths, _
-		@_getDefaultLibs, _
 		@_addGfxLibs, _
 		@_getCStdType _
 	)

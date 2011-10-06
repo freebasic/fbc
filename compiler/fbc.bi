@@ -107,12 +107,6 @@ type FBC_VTBL
 	( _
 	)
 
-	getDefaultLibs as sub _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
 	addGfxLibs as sub _
 	( _
 	)

@@ -160,22 +160,6 @@ private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-private sub _getDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	'' TODO
-
-end sub
-
-
-'':::::
 private sub _addGfxLibs _
 	( _
 	)
@@ -214,7 +198,6 @@ function fbcInit_netbsd( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_setDefaultLibPaths, _
-		@_getDefaultLibs, _
 		@_addGfxLibs, _
 		@_getCStdType _
 	)

@@ -400,33 +400,6 @@ private function makeImpLib _
 
 end function
 
-
-'':::::
-private sub _getDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	hAddLib( "msvcrt" )
-	hAddLib( "kernel32" )
-	hAddLib( "mingw32" )
-	hAddLib( "mingwex" )
-	hAddLib( "moldname" )
-	hAddLib( "supc++" )
-
-	'' profiling?
-	if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-		hAddLib( "gmon" )
-	end if
-
-end sub
-
-
 '':::::
 private sub _addGfxLibs _
 	( _
@@ -460,7 +433,6 @@ function fbcInit_win32( ) as integer
 		@_linkFiles, _
 		@_archiveFiles, _
 		@_setDefaultLibPaths, _
-		@_getDefaultLibs, _
 		@_addGfxLibs, _
 		@_getCStdType _
 	)

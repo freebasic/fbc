@@ -939,37 +939,6 @@ sub fbListLibPathsEx _
 
 end sub
 
-'':::::
-sub fbGetDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-	'' note: list of FBS_LIB
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	'' don't add default libs?
-	if( env.clopt.nodeflibs ) then
-		exit sub
-	end if
-
-	'' select the right FB rtlib
-	if( env.clopt.multithreaded ) then
-		hAddLib( "fbmt" )
-	else
-		hAddLib( "fb" )
-	end if
-
-	hAddLib( "gcc" )
-
-	fbc.vtbl.getDefaultLibs( dstlist, dsthash )
-
-end sub
-
 ''::::
 function fbPragmaOnce _
 	( _
