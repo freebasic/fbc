@@ -897,24 +897,28 @@ function fbcFindBin(byval filename as zstring ptr) as string
 		return path
 	end if
 
-	'' Check whether the program exists in the bin/ directory and we can
-	'' invoke it without relying on PATH. This is for all setups in which
-	'' fbc is installed in the same path as gcc/binutils, and also lets
-	'' us prefer our local tools over system-wide ones.
+	'' Build the path to the program in our bin/ directory
 	path = fbc.binpath
 	path += fbc.triplet
 	path += *filename
 	path += FB_HOST_EXEEXT
+
+#ifdef __FB_UNIX__
+	'' On *nix/*BSD, check whether the program exists in bin/, and fallback
+	'' to the system default otherwise, i.e. tools installed in the same
+	'' location are preferred, but not required.
 	if (hFileExists(path)) then
 		return path
 	end if
 
-	'' Use the system default (relying on it to be in PATH, if it's
-	'' not installed, the exec()s later will result in an error message).
-	'' This is used e.g. when fbc is installed in /usr/local,
-	'' but gcc/binutils are located in /usr. It's also useful during
-	'' development.
+	'' Use the system default, it works with exec() on these systems.
 	return fbc.triplet + *filename + FB_HOST_EXEEXT
+#else
+	'' The programs must be reachable via relative or absolute path,
+	'' otherwise the CreateProcess() in exec() will fail.
+	return path
+#endif
+end function
 end function
 
 '':::::
