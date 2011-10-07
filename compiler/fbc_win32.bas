@@ -194,7 +194,7 @@ private function _linkFiles _
 
 	end if
 
-	ldcline += "" + QUOTE + libdir + fbcFindGccLib("crtbegin.o") + QUOTE + " "
+	ldcline += "" + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE + " "
 
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
