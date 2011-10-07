@@ -163,11 +163,6 @@ private function _linkFiles _
 end function
 
 '':::::
-private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
-end function
-
-'':::::
 function clearDefList( byval dllfile as zstring ptr ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
@@ -280,7 +275,6 @@ function fbcInit_cygwin( ) as integer
 	static as FBC_VTBL vtbl = _
 	( _
 		@_linkFiles, _
-		@_archiveFiles, _
 		@_setDefaultLibPaths, _
 		@_addGfxLibs, _
 		@_getCStdType _

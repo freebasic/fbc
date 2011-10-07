@@ -743,20 +743,17 @@ private function archiveFiles _
     	objf = listGetNext( objf )
     loop
 
-    '' invoke ar
-
     if( hFileExists( fbc.outname ) ) then
     	safeKill( fbc.outname )
     end if
 
-    fbc.vtbl.archiveFiles( arcline )
+	'' invoke ar
+	function = fbcRunBin("archiving", fbcFindBin("ar"), arcline)
 
     ''
     if( has_infobj ) then
     	safeKill( FB_INFOSEC_OBJNAME )
     end if
-
-    function = TRUE
 
 end function
 

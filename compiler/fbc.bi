@@ -98,11 +98,6 @@ type FBC_VTBL
 	( _
 	) as integer
 
-	archiveFiles as function _
-	( _
-		byval cmdline as zstring ptr _
-	) as integer
-
 	setDefaultLibPaths as sub _
 	( _
 	)

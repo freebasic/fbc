@@ -124,11 +124,6 @@ private function _linkFiles _
 end function
 
 '':::::
-private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
-end function
-
-'':::::
 private sub _addGfxLibs _
 	( _
 	)
@@ -155,7 +150,6 @@ function fbcInit_darwin( ) as integer
 	static as FBC_VTBL vtbl = _
 	( _
 		@_linkFiles, _
-		@_archiveFiles, _
 		@_setDefaultLibPaths, _
 		@_addGfxLibs, _
 		@_getCStdType _
