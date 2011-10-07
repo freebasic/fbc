@@ -158,14 +158,6 @@ private function _linkFiles _
 end function
 
 '':::::
-private sub _addGfxLibs _
-	( _
-	)
-
-end sub
-
-
-'':::::
 private function _getCStdType _
 	( _
 		byval ctype as FB_CSTDTYPE _
@@ -185,7 +177,6 @@ function fbcInit_dos( ) as integer
 	( _
 		@_linkFiles, _
 		@_setDefaultLibPaths, _
-		@_addGfxLibs, _
 		@_getCStdType _
 	)
 

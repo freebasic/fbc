@@ -245,18 +245,6 @@ private function makeImpLib _
 end function
 
 '':::::
-private sub _addGfxLibs _
-	( _
-	)
-
-	symbAddLib( "user32" )
-	symbAddLib( "gdi32" )
-	symbAddLib( "winmm" )
-
-end sub
-
-
-'':::::
 private function _getCStdType _
 	( _
 		byval ctype as FB_CSTDTYPE _
@@ -276,7 +264,6 @@ function fbcInit_cygwin( ) as integer
 	( _
 		@_linkFiles, _
 		@_setDefaultLibPaths, _
-		@_addGfxLibs, _
 		@_getCStdType _
 	)
 

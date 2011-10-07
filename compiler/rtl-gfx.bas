@@ -1594,14 +1594,38 @@ private function hGfxlib_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer added = FALSE
 
-	if( libsadded = FALSE ) then
-		libsAdded = TRUE
+	if (added = FALSE) then
+		added = TRUE
 
 		symbAddLib( "fbgfx" )
 
-		fbc.vtbl.addGfxLibs( )
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			symbAddLib( "user32" )
+			symbAddLib( "gdi32" )
+			symbAddLib( "winmm" )
+
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+
+
+			#if defined(__FB_LINUX__) or _
+			    defined(__FB_FREEBSD__) or _
+			    defined(__FB_OPENBSD__) or _
+			    defined(__FB_NETBSD__)
+				symbAddLibPath( "/usr/X11R6/lib" )
+			#endif
+
+			symbAddLib( "X11" )
+			symbAddLib( "Xext" )
+			symbAddLib( "Xpm" )
+			symbAddLib( "Xrandr" )
+			symbAddLib( "Xrender" )
+
+
+		end select
 
 	end if
 

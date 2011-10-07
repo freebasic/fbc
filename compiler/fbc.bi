@@ -102,10 +102,6 @@ type FBC_VTBL
 	( _
 	)
 
-	addGfxLibs as sub _
-	( _
-	)
-
 	getCStdType as function _
 	( _
 		byval ctype as FB_CSTDTYPE _
