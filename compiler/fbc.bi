@@ -225,7 +225,12 @@ declare function fbcFindGccLib(byref file as string) as string
 declare function fbcMakeLibFileName(byref libname as string) as string
 declare sub fbcAddLibPathFor(byref libname as string)
 declare function fbcFindBin(byval filename as zstring ptr) as string
-declare function fbcRunBin(byref tool as string, byref ln as string) as integer
+declare function fbcRunBin _
+	( _
+		byval action as zstring ptr, _
+		byref tool as string, _
+		byref ln as string _
+	) as integer
 
 ''
 '' macros

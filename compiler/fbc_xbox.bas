@@ -18,15 +18,12 @@ private function _linkFiles _
 	( _
 	) as integer
 	
-	dim as string ldcline, ldpath
+	dim as string ldcline
 	dim as string cxbepath, cxbecline
 	dim as string tmpexename
 	dim as integer res = any
 	
 	function = FALSE
-	
-	'' set path
-	ldpath = fbcFindBin("ld")
 	
 	'' add extension
 	if( fbc.outaddext ) then
@@ -98,11 +95,7 @@ private function _linkFiles _
 	ldcline += fbc.extopt.ld
 	
 	'' invoke ld
-	if( fbc.verbose ) then
-		print "linking: ", ldcline
-	end if
-
-	if (fbcRunBin(ldpath, ldcline) = FALSE) then
+	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
 		exit function
 	end if
 	
@@ -139,7 +132,7 @@ private function _linkFiles _
 	res = shell(cxbepath + " " + cxbecline)
 	if( res <> 0 ) then
 		if( fbc.verbose ) then
-			print "cxbe failed: error code " & res
+			print "cxbe failed: exit code " & res
 		end if
 		exit function
 	end if
@@ -153,7 +146,7 @@ end function
 
 '':::::
 private function _archiveFiles(byval cmdline as zstring ptr) as integer
-	return fbcRunBin(fbcFindBin("ar"), *cmdline)
+	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
 end function
 
 '':::::

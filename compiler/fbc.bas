@@ -514,11 +514,7 @@ private function assembleFile _
 		path = fbcFindBin(*assembler)
 	end if
 
-	if( fbc.verbose ) then
-		print "assembling: ", path + " " + cmdline
-	end if
-
-	return fbcRunBin(path, cmdline)
+	return fbcRunBin("assembling", path, cmdline)
 end function
 
 '':::::
@@ -748,9 +744,6 @@ private function archiveFiles _
     loop
 
     '' invoke ar
-    if( fbc.verbose ) then
-       print "archiving: ", arcline
-    end if
 
     if( hFileExists( fbc.outname ) ) then
     	safeKill( fbc.outname )
@@ -865,10 +858,20 @@ function fbcFindBin(byval filename as zstring ptr) as string
 #endif
 end function
 
-function fbcRunBin(byref tool as string, byref ln as string) as integer
+function fbcRunBin _
+	( _
+		byval action as zstring ptr, _
+		byref tool as string, _
+		byref ln as string _
+	) as integer
+
 	'' Note: We have to use exec(). shell() would require special care
 	'' with shell syntax (we'd have to quote escape chars in filenames
 	'' and such), and it's slower too.
+
+	if (fbc.verbose) then
+		print *action & ": ", tool & " " & ln
+	end if
 
 	dim as integer result = exec(tool, ln)
 	if (result = 0) then
@@ -884,7 +887,7 @@ function fbcRunBin(byref tool as string, byref ln as string) as integer
 		'' program should already have shown an error message, and the
 		'' exit code is only interesting for debugging purposes.
 		if (fbc.verbose) then
-			print "error: '" & tool & "' terminated with exit code " & result
+			print *action & " failed: '" & tool & "' terminated with exit code " & result
 		end if
 	end if
 
@@ -920,16 +923,15 @@ private function compileXpm() as integer
 	if( len( fbc.xpmfile ) = 0 ) then
 		return TRUE
 	else
-		'' invoke
-		if( fbc.verbose ) then
-			print "compiling XPM icon resource: ", fbc.xpmfile
-		end if
-
 		''
 		if( hFileExists( fbc.xpmfile ) = FALSE ) then
 			exit function
 		end if
 		iconsrc = hStripExt( hStripPath( fbc.xpmfile ) ) + ".asm"
+
+		if( fbc.verbose ) then
+			print "compiling XPM icon resource: ", fbc.xpmfile & " -o " & iconsrc
+		end if
 
 		''
 		fi = freefile()
@@ -1001,7 +1003,8 @@ private function compileXpm() as integer
 	end if
 
 	'' compile icon source file
-	if (fbcRunBin(fbcFindBin("as"), iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) = FALSE) then
+	if (fbcRunBin("assembling", fbcFindBin("as"), _
+	              iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) = FALSE) then
 		kill( iconsrc )
 		exit function
 	end if
@@ -1035,11 +1038,7 @@ private function compileRcs() as integer
 					  (".obj" + QUOTE + " " + QUOTE) + *rcf + QUOTE
 
 		'' invoke
-		if( fbc.verbose ) then
-			print "compiling resource: ", rescmpcline
-		end if
-
-		if (fbcRunBin(rescmppath, rescmpcline) = FALSE) then
+		if (fbcRunBin("compiling resource", rescmppath, rescmpcline) = FALSE) then
 			exit function
 		end if
 

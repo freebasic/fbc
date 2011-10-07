@@ -45,15 +45,12 @@ private function _linkFiles _
 	( _
 	) as integer
 
-	dim as string ldcline = "", ldpath
+	dim as string ldcline = ""
 #ifdef __FB_WIN32__
 	dim as string resfile
 #endif
 
 	function = FALSE
-
-	'' set path
-	ldpath = fbcFindBin("ld")
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -124,9 +121,6 @@ private function _linkFiles _
 	ldcline += fbc.extopt.ld
 
 	'' invoke ld
-	if( fbc.verbose ) then
-		print "linking: ", ldpath + " " + ldcline
-	end if
 
 #ifdef __FB_WIN32__
 	resfile = hCreateResFile( ldcline )
@@ -136,7 +130,7 @@ private function _linkFiles _
 	ldcline = "@" + resfile
 #endif
 
-	if (fbcRunBin(ldpath, ldcline) = FALSE) then
+	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
 		exit function
 	end if
 
@@ -165,7 +159,7 @@ end function
 
 '':::::
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	return fbcRunBin(fbcFindBin("ar"), *cmdline)
+	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
 end function
 
 '':::::

@@ -21,12 +21,9 @@ private function _linkFiles _
 	( _
 	) as integer
 
-	dim as string ldpath, ldcline, dllname
+	dim as string ldcline, dllname
 
 	function = FALSE
-
-	'' set path
-	ldpath = fbcFindBin("ld")
 
 	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 		dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -122,16 +119,12 @@ private function _linkFiles _
    	ldcline += fbc.extopt.ld
 
 	'' invoke ld
-	if( fbc.verbose ) then
-		print "linking: ", ldcline
-	end if
-
-	return fbcRunBin(ldpath, ldcline)
+	return fbcRunBin("linking", fbcFindBin("ld"), ldcline)
 end function
 
 '':::::
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	return fbcRunBin(fbcFindBin("ar"), *cmdline)
+	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
 end function
 
 '':::::

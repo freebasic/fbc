@@ -109,12 +109,9 @@ private function _linkFiles _
 	( _
 	) as integer
 
-	dim as string ldpath, ldcline, dllname
+	dim as string ldcline, dllname
 
 	function = FALSE
-
-	'' set path
-	ldpath = fbcFindBin("ld")
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -235,11 +232,7 @@ private function _linkFiles _
    	ldcline += fbc.extopt.ld
 
 	'' invoke ld
-	if( fbc.verbose ) then
-		print "linking: ", ldcline
-	end if
-
-	if (fbcRunBin(ldpath, ldcline) = FALSE) then
+	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
 		exit function
 	end if
 
@@ -256,7 +249,7 @@ end function
 
 '':::::
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	return fbcRunBin(fbcFindBin("ar"), *cmdline)
+	return fbcRunBin("archiving", fbcFindBin("ar"), *cmdline)
 end function
 
 #if 0
@@ -355,11 +348,7 @@ private function makeImpLib _
 			  " --dllname " + QUOTE) + *dllname + (".dll" + QUOTE + _
 			  " --output-lib " + QUOTE) + *dllpath + "lib" + *dllname + (".dll.a" + QUOTE)
 
-    if( fbc.verbose ) then
-    	print "dlltool: ", dtcline
-    end if
-
-	if (fbcRunBin(dtpath, dtcline) = FALSE) then
+	if (fbcRunBin("creating import library", dtpath, dtcline) = FALSE) then
 		exit function
 	end if
 
