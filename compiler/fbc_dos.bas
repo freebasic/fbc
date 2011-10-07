@@ -8,16 +8,6 @@
 #include once "fbc.bi"
 #include once "hlp.bi"
 
-'':::::
-private sub _setDefaultLibPaths()
-	#ifndef ENABLE_STANDALONE
-		fbcAddLibPathFor("gcc")
-		'' Note: The standalone DOS FB uses the renamed version: supcx
-		'' But this is for installing into DJGPP.
-		fbcAddLibPathFor("supcxx")
-	#endif
-end sub
-
 #ifdef __FB_WIN32__
 '':::::
 private function hCreateResFile( byval cline as zstring ptr ) as string
@@ -176,7 +166,6 @@ function fbcInit_dos( ) as integer
 	static as FBC_VTBL vtbl = _
 	( _
 		@_linkFiles, _
-		@_setDefaultLibPaths, _
 		@_getCStdType _
 	)
 

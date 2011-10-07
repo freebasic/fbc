@@ -15,15 +15,6 @@ declare function makeImpLib _
 		byval dllname as zstring ptr _
 	) as integer
 
-'':::::
-private sub _setDefaultLibPaths()
-	#ifndef ENABLE_STANDALONE
-		'' To allow installing into MinGW
-		fbcAddLibPathFor("gcc")
-		fbcAddLibPathFor("supc++")
-	#endif
-end sub
-
 /'
 '':::::
 private function hSplitPathEnv _
@@ -373,7 +364,6 @@ function fbcInit_win32( ) as integer
 	static as FBC_VTBL vtbl = _
 	( _
 		@_linkFiles, _
-		@_setDefaultLibPaths, _
 		@_getCStdType _
 	)
 

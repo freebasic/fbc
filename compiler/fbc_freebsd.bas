@@ -9,14 +9,6 @@
 #include once "hlp.bi"
 
 '':::::
-private sub _setDefaultLibPaths()
-	#ifndef ENABLE_STANDALONE
-		fbcAddLibPathFor("gcc")
-		fbcAddLibPathFor("supc++")
-	#endif
-end sub
-
-'':::::
 private function _linkFiles _
 	( _
 	) as integer
@@ -141,7 +133,6 @@ function fbcInit_freebsd( ) as integer
     static as FBC_VTBL vtbl = _
     ( _
 		@_linkFiles, _
-		@_setDefaultLibPaths, _
 		@_getCStdType _
 	)
 

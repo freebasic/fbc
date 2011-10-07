@@ -91,10 +91,7 @@ declare function collectObjInfo _
 	( _
 	) as integer
 
-declare sub setDefaultLibPaths _
-	( _
-	)
-
+declare sub setDefaultLibPaths()
 declare sub addDefaultLibs()
 
 
@@ -2507,7 +2504,7 @@ private sub setLibListFromCmd _
 end sub
 
 '':::::
-private sub setDefaultLibPaths
+private sub setDefaultLibPaths()
 
 	'' compiler's /lib
 	fbcAddDefLibPath( fbc.libpath )
@@ -2515,8 +2512,19 @@ private sub setDefaultLibPaths
 	'' and the current path
 	fbcAddDefLibPath( "./" )
 
-	'' platform dependent paths
-	fbc.vtbl.setDefaultLibPaths( )
+	'' Add gcc's private lib directory, to find libgcc and libsupc++
+	'' This is for installing into Unix-like systems, and not for
+	'' standalone, which has libgcc/libsupc++ in its own lib/.
+	#ifndef ENABLE_STANDALONE
+		fbcAddLibPathFor("gcc")
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+			'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
+			'' But this is for installing into DJGPP, where apparently supcxx is working fine.
+			fbcAddLibPathFor("supcxx")
+		else
+			fbcAddLibPathFor("supc++")
+		end if
+	#endif
 
 end sub
 
