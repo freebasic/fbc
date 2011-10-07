@@ -54,9 +54,6 @@ private function _linkFiles _
 
 	'' set path
 	ldpath = fbcFindBin("ld")
-	if( len( ldpath ) = 0 ) then
-		exit function
-	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -139,7 +136,7 @@ private function _linkFiles _
 	ldcline = "@" + resfile
 #endif
 
-	if( exec( ldpath, ldcline ) <> 0 ) then
+	if (fbcRunBin(ldpath, ldcline) = FALSE) then
 		exit function
 	end if
 
@@ -168,19 +165,7 @@ end function
 
 '':::::
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	dim arcpath as string
-
-	arcpath = fbcFindBin("ar")
-	if( len( arcpath ) = 0 ) then
-		return FALSE
-	end if
-
-	if( exec( arcpath, *cmdline ) <> 0 ) then
-		return FALSE
-	end if
-
-	return TRUE
-
+	return fbcRunBin(fbcFindBin("ar"), *cmdline)
 end function
 
 '':::::

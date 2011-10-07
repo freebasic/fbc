@@ -27,9 +27,6 @@ private function _linkFiles _
 	
 	'' set path
 	ldpath = fbcFindBin("ld")
-	if( len( ldpath ) = 0 ) then
-		exit function
-	end if
 	
 	'' add extension
 	if( fbc.outaddext ) then
@@ -105,11 +102,7 @@ private function _linkFiles _
 		print "linking: ", ldcline
 	end if
 
-	res = exec( ldpath, ldcline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "linking failed: error code " & res
-		end if
+	if (fbcRunBin(ldpath, ldcline) = FALSE) then
 		exit function
 	end if
 	
@@ -141,12 +134,8 @@ private function _linkFiles _
 	end if
 
 	cxbepath = fbcFindBin("cxbe")
-	if( len( cxbepath ) = 0 ) then
-		exit function
-	end if
-	
-	'' have to use shell instead of exec in order to use >nul
 
+	'' have to use shell instead of exec in order to use >nul
 	res = shell(cxbepath + " " + cxbecline)
 	if( res <> 0 ) then
 		if( fbc.verbose ) then
@@ -163,24 +152,8 @@ private function _linkFiles _
 end function
 
 '':::::
-private function _archiveFiles _
-	( _
-		byval cmdline as zstring ptr _
-	) as integer
-	
-	dim arcpath as string
-
-	arcpath = fbcFindBin("ar")
-	if( len( arcpath ) = 0 ) then
-		return FALSE
-	end if
-	
-	if( exec( arcpath, *cmdline ) <> 0 ) then
-		return FALSE
-	end if
-	
-	return TRUE
-
+private function _archiveFiles(byval cmdline as zstring ptr) as integer
+	return fbcRunBin(fbcFindBin("ar"), *cmdline)
 end function
 
 '':::::

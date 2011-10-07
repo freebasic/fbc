@@ -137,6 +137,7 @@ end type
 		@"Recursive DEFINE not allowed", _
 		@"Array fields cannot be redimensioned", _
 		@"Identifier cannot include periods", _
+		@"Executable not found", _
 		@"Array out-of-bounds", _
 		@"Missing command-line option for", _
 		@"Math overflow", _

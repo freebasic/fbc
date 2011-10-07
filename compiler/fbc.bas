@@ -502,39 +502,23 @@ private function compileFiles _
 end function
 
 '':::::
-private function assembleFile_GAS _
+private function assembleFile _
 	( _
+		byval assembler as zstring ptr, _
 		byref cmdline as string _
 	) as integer
 
 	static as string path
-	static as integer has_path = FALSE
-	static as integer res
 
-    if( has_path = FALSE ) then
-    	has_path = TRUE
-
-		path = fbcFindBin("as")
-		if( len( path ) = 0 ) then
-			return FALSE
-		end if
-
-    end if
-
-    if( fbc.verbose ) then
-    	print "assembling: ", path + " " + cmdline
-    end if
-
-	res = exec( path, cmdline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "assembling failed: returned error code " & res
-		end if
+	if (len(path) = 0) then
+		path = fbcFindBin(*assembler)
 	end if
 
-	function = (res = 0)
+	if( fbc.verbose ) then
+		print "assembling: ", path + " " + cmdline
+	end if
 
-
+	return fbcRunBin(path, cmdline)
 end function
 
 '':::::
@@ -562,8 +546,8 @@ private function assembleFiles_GAS _
 				   iof->outf + (QUOTE) + _
                    fbc.extopt.gas
 
-    	'' invoke as
-		if( assembleFile_GAS( ascline ) = FALSE ) then
+		'' invoke as
+		if( assembleFile( "as", ascline ) = FALSE ) then
 			exit function
 		end if
 
@@ -571,42 +555,6 @@ private function assembleFiles_GAS _
     loop
 
     function = TRUE
-
-end function
-
-'':::::
-private function assembleFile_GCC _
-	( _
-		byref cmdline as string _
-	) as integer
-
-	static as string path
-	static as integer has_path = FALSE
-	static as integer res
-
-	if( has_path = FALSE ) then
-		has_path = TRUE
-
-		path = fbcFindBin("gcc")
-		if( len( path ) = 0 ) then
-			return FALSE
-		end if
-
-	end if
-
-	if( fbc.verbose ) then
-		print "assembling: ", path + " " + cmdline
-	end if
-
-	res = exec( path, cmdline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "assembling failed: returned error code " & res
-		end if
-	end if
-
-	function = (res = 0)
-
 
 end function
 
@@ -700,8 +648,8 @@ private function assembleFiles_GCC _
 				   iof->outf + (QUOTE) + _
                    fbc.extopt.gcc
 
-    	'' invoke gcc
-		if( assembleFile_GCC( ascline ) = FALSE ) then
+		'' invoke gcc
+		if( assembleFile( "gcc", ascline ) = FALSE ) then
 			exit function
 		end if
 
@@ -847,9 +795,6 @@ function fbcFindGccLib(byref file as string) as string
 	function = ""
 
 	dim as string path = fbcFindBin("gcc")
-	if( len( path ) = 0 ) then
-		exit function
-	end if
 
 	path += " -m32 -print-file-name=" + file
 
@@ -919,6 +864,31 @@ function fbcFindBin(byval filename as zstring ptr) as string
 	return path
 #endif
 end function
+
+function fbcRunBin(byref tool as string, byref ln as string) as integer
+	'' Note: We have to use exec(). shell() would require special care
+	'' with shell syntax (we'd have to quote escape chars in filenames
+	'' and such), and it's slower too.
+
+	dim as integer result = exec(tool, ln)
+	if (result = 0) then
+		return TRUE
+	end if
+
+	'' A rather vague assumption on exec() return value:
+	''    -1 should be "not found"
+	if (result < 0) then
+		errReportEx(FB_ERRMSG_EXEMISSING, tool, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES)
+	else
+		'' Report bad exit codes only in verbose mode; normally the
+		'' program should already have shown an error message, and the
+		'' exit code is only interesting for debugging purposes.
+		if (fbc.verbose) then
+			print "error: '" & tool & "' terminated with exit code " & result
+		end if
+	end if
+
+	return FALSE
 end function
 
 '':::::
@@ -937,7 +907,7 @@ private function compileXpm() as integer
 	dim as integer outstr_count, buffer_len, state, label
 	dim as ubyte ptr p
 	dim as string * 4096 chunk
-	dim as string aspath, iconsrc, buffer, outstr()
+	dim as string iconsrc, buffer, outstr()
 
 	function = FALSE
 
@@ -1031,12 +1001,7 @@ private function compileXpm() as integer
 	end if
 
 	'' compile icon source file
-	aspath = fbcFindBin("as")
-	if( len( aspath ) = 0 ) then
-		exit function
-	end if
-
-	if( exec( aspath, iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) ) then
+	if (fbcRunBin(fbcFindBin("as"), iconsrc + " --32 -o " + hStripExt( iconsrc ) + ".o" ) = FALSE) then
 		kill( iconsrc )
 		exit function
 	end if
@@ -1053,18 +1018,13 @@ end function
 '':::::
 private function compileRcs() as integer
 	dim as string rescmppath, rescmpcline, oldinclude
-	dim as integer res = any
 
 	'' Change the include env var to point to the (hopefully present)
 	'' win/rc/*.h headers.
 	oldinclude = trim( environ( "INCLUDE" ) )
 	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
 
-	''
 	rescmppath = fbcFindBin("GoRC")
-	if( len( rescmppath ) = 0 ) then
-		return FALSE
-	end if
 
 	'' set input files (.rc's and .res') and output files (.obj's)
 	dim as string ptr rcf = listGetHead( @fbc.rclist )
@@ -1079,11 +1039,7 @@ private function compileRcs() as integer
 			print "compiling resource: ", rescmpcline
 		end if
 
-		res = exec( rescmppath, rescmpcline )
-		if( res <> 0 ) then
-			if( fbc.verbose ) then
-				print "compiling resource failed: error code " & res
-			end if
+		if (fbcRunBin(rescmppath, rescmpcline) = FALSE) then
 			exit function
 		end if
 

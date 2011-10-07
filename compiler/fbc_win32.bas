@@ -110,15 +110,11 @@ private function _linkFiles _
 	) as integer
 
 	dim as string ldpath, ldcline, dllname
-	dim as integer res = any
 
 	function = FALSE
 
 	'' set path
 	ldpath = fbcFindBin("ld")
-	if( len( ldpath ) = 0 ) then
-		exit function
-	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -243,11 +239,7 @@ private function _linkFiles _
 		print "linking: ", ldcline
 	end if
 
-	res = exec( ldpath, ldcline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "linking failed: error code " & res
-		end if
+	if (fbcRunBin(ldpath, ldcline) = FALSE) then
 		exit function
 	end if
 
@@ -264,19 +256,7 @@ end function
 
 '':::::
 private function _archiveFiles( byval cmdline as zstring ptr ) as integer
-	dim arcpath as string
-
-	arcpath = fbcFindBin("ar")
-	if( len( arcpath ) = 0 ) then
-		return FALSE
-	end if
-
-    if( exec( arcpath, *cmdline ) <> 0 ) then
-		return FALSE
-    end if
-
-	return TRUE
-
+	return fbcRunBin(fbcFindBin("ar"), *cmdline)
 end function
 
 #if 0
@@ -288,9 +268,6 @@ private function makeDefList( dllname as string ) as integer
 	function = FALSE
 
 	pxpath = fbcFindBin("pexports")
-	if( len( pxpath ) = 0 ) then
-		exit function
-	end if
 
 	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
 
@@ -359,9 +336,6 @@ private function makeImpLib _
 
 	'' set path
 	dtpath = fbcFindBin("dlltool")
-	if( len(dtpath) = 0 ) then
-		exit function
-	end if
 
 	''
 	dllfile = *dllpath + *dllname
@@ -385,13 +359,9 @@ private function makeImpLib _
     	print "dlltool: ", dtcline
     end if
 
-	res = exec( dtpath, dtcline )
-    if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "dlltool failed: error code " & res
-		end if
+	if (fbcRunBin(dtpath, dtcline) = FALSE) then
 		exit function
-    end if
+	end if
 
 	''
 	kill( dllfile + ".def" )
