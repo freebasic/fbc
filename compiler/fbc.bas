@@ -111,18 +111,9 @@ declare sub addDefaultLibs()
     	fbcEnd( 1 )
     end if
 
-    ''
-    if( processTargetOptions( ) = FALSE ) then
-    	fbcEnd( 1 )
-    end if
-
-    ''
-    initTarget( )
-
-    ''
-    if( processOptions( ) = FALSE ) then
-    	fbcEnd( 1 )
-    end if
+	if( processOptions( ) = FALSE ) then
+		fbcEnd( 1 )
+	end if
 
     ''
     if( fbc.showversion = FALSE ) then
@@ -164,6 +155,36 @@ declare sub addDefaultLibs()
     		fbcEnd( 0 )
     	end if
     end if
+
+	'' Resource scripts are only allowed for win32 & co
+	if (listGetHead(@fbc.rclist)) then
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+
+		case else
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, *cptr(string ptr, listGetHead(@fbc.rclist)), -1)
+			fbcEnd(1)
+		end select
+	end if
+
+	'' .xpm is only allowed for Linux & co
+	if (len(fbc.xpmfile) > 0) then
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+		     FB_COMPTARGET_NETBSD
+
+		case else
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, fbc.xpmfile, -1)
+			fbcEnd(1)
+		end select
+	end if
+
+	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
+	'' complain about it when the target doesn't allow it, or just
+	'' ignore silently (that might not even be too bad for portability)?
+
+	initTarget( )
 
 	setPaths()
 
@@ -1965,75 +1986,6 @@ private function parseTargetTriplet(byref triplet as string) as integer
 end function
 
 '':::::
-private function processTargetOptions _
-	( _
-	) as integer
-
-    dim as string ptr arg = any, nxt = any
-
-	function = FALSE
-
-	'' for each arg..
-	nxt = listGetHead( @fbc.arglist )
-	do while( nxt <> NULL )
-
-		arg = nxt
-		nxt = listGetNext( nxt )
-
-		if( len( arg[0] ) = 0 ) then
-			continue do
-		end if
-
-		if( (*arg)[0] = asc( "-" ) ) then
-
-			if( len( arg[0] ) = 1 ) then
-				continue do
-			end if
-
-			if( *(strptr( arg[0] ) + 1) = "target" ) then
-
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					return FALSE
-				end if
-
-				'' The argument given to -target is what will
-				'' be prepended to the executable names of
-				'' cross-tools, for example:
-				''    fbc -target dos
-				'' will try to use:
-				''    bin/dos-ld[.exe]
-				''
-				'' It allows fbc to work together with
-				'' cross-gcc/binutils using system triplets:
-				''    fbc -target i686-pc-mingw32
-				'' looks for:
-				''    bin/i686-pc-mingw32-ld[.exe]
-
-				fbc.triplet = *nxt + "-"
-
-				'' Identify the target
-				dim as integer comptarget = parseTargetTriplet(*nxt)
-
-				if (comptarget < 0) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					return FALSE
-				end if
-
-				fbSetOption( FB_COMPOPT_TARGET, comptarget )
-
-				hDelArgNodes( arg, nxt )
-			end if
-
-		end if
-
-	loop
-
-	function = TRUE
-
-end function
-
-'':::::
 private function checkFiles _
 	( _
 		byval arg as string ptr _
@@ -2057,30 +2009,10 @@ private function checkFiles _
 		*objf = *arg
 
 	case "rc", "res"
-		'' Only for Win32 & co
-		select case as const fbGetOption( FB_COMPOPT_TARGET )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-
-		case else
-			return FALSE
-
-		end select
-
 		dim as string ptr rcf = listNewNode( @fbc.rclist )
 		*rcf = *arg
 
 	case "xpm"
-		'' Only for Linux & co
-		select case as const fbGetOption( FB_COMPOPT_TARGET )
-		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-		     FB_COMPTARGET_NETBSD
-
-		case else
-			return FALSE
-
-		end select
-
 		if( len( fbc.xpmfile ) <> 0 ) then
 			return FALSE
 		end if
@@ -2644,6 +2576,37 @@ private function processOptions _
 				if( fbc.stacksize < FBC_MINSTACKSIZE ) then
 					fbc.stacksize = FBC_MINSTACKSIZE
 				end if
+
+				del_cnt = 2
+
+			case "target"
+				if( nxt = NULL ) then
+					printInvalidOpt( arg )
+					exit function
+				end if
+
+				'' The argument given to -target is what will
+				'' be prepended to the executable names of
+				'' cross-tools, for example:
+				''    fbc -target dos
+				'' will try to use:
+				''    bin/dos-ld[.exe]
+				''
+				'' It allows fbc to work together with
+				'' cross-gcc/binutils using system triplets:
+				''    fbc -target i686-pc-mingw32
+				'' looks for:
+				''    bin/i686-pc-mingw32-ld[.exe]
+				fbc.triplet = *nxt + "-"
+
+				'' Identify the target
+				dim as integer comptarget = parseTargetTriplet(*nxt)
+				if (comptarget < 0) then
+					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
+					exit function
+				end if
+
+				fbSetOption( FB_COMPOPT_TARGET, comptarget )
 
 				del_cnt = 2
 
@@ -3247,15 +3210,8 @@ private sub printOptions( )
 	printOption( "-c", "Compile only, do not link" )
 	printOption( "-C", "Do not delete the object file(s)" )
 	printOption( "-d <name=val>", "Add a preprocessor's define" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, FB_COMPTARGET_NETBSD
-		printOption( "-dll", "Same as -dylib" )
-		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
-			printOption( "-dylib", "Create a DLL, including the import library" )
-		else
-			printOption( "-dylib", "Create a shared library" )
-		end if
-	end select
+	printOption( "-dll", "Same as -dylib" )
+	printOption( "-dylib", "Create a DLL (win32) or shared library (*nix/*BSD)" )
 	printOption( "-e", "Add error checking" )
 	printOption( "-ex", "Add error checking with RESUME support" )
 	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
@@ -3273,9 +3229,7 @@ private sub printOptions( )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
 	printOption( "-map <name>", "Save the linking map to file name" )
 	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
-	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DOS ) then
-		printOption( "-mt", "Link with thread-safe runtime library" )
-	end if
+	printOption( "-mt", "Link with thread-safe runtime library" )
 	printOption( "-nodeflibs", "Do not include the default libraries" )
 	printOption( "-noerrline", "Do not show source line where error occurred" )
 	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
