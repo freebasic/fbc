@@ -889,9 +889,432 @@ function fbcRunBin _
 end function
 
 '':::::
-private function linkFiles as integer
+private function clearDefList( byval dllfile as zstring ptr ) as integer
+	dim inpf as integer, outf as integer
+	dim ln as string
 
-	function = fbc.vtbl.linkFiles( )
+	function = FALSE
+
+    if( hFileExists( *dllfile + ".def" ) = FALSE ) then
+    	exit function
+    end if
+
+    inpf = freefile
+    open *dllfile + ".def" for input as #inpf
+    outf = freefile
+    open *dllfile + ".clean.def" for output as #outf
+
+    '''''print #outf, "LIBRARY " + hStripPath( dllfile ) + ".dll"
+
+    do until eof( inpf )
+
+    	line input #inpf, ln
+
+    	if( right( ln, 4 ) =  "DATA" ) then
+    		ln = left( ln, len( ln ) - 4 )
+    	end if
+
+    	print #outf, ln
+    loop
+
+    close #outf
+    close #inpf
+
+    kill( *dllfile + ".def" )
+    name *dllfile + ".clean.def", *dllfile + ".def"
+
+    function = TRUE
+
+end function
+
+'':::::
+private function makeImpLib _
+	( _
+		byval dllpath as zstring ptr, _
+		byval dllname as zstring ptr _
+	) as integer
+
+	dim as string dtpath, dtcline, dllfile
+
+	function = FALSE
+
+	'' set path
+	dtpath = fbcFindBin("dlltool")
+
+	''
+	dllfile = *dllpath + *dllname
+
+	'' output def list
+	'''''if( makeDefList( dllname ) = FALSE ) then
+	'''''	exit function
+	'''''end if
+
+	'' for some weird reason, LD will declare all functions exported as if they were
+	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
+	if( clearDefList( dllfile ) = FALSE ) then
+		exit function
+	end if
+
+	dtcline = "--def " + QUOTE + dllfile + ".def" + QUOTE + _
+			  " --dllname " + QUOTE + *dllname + ".dll" + QUOTE + _
+			  " --output-lib " + QUOTE + *dllpath + "lib" + *dllname + (".dll.a" + QUOTE)
+
+	if (fbcRunBin("creating import library", dtpath, dtcline) = FALSE) then
+		exit function
+	end if
+
+	''
+	kill( dllfile + ".def" )
+
+    function = TRUE
+
+end function
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+private function hCreateResFile( byval cline as zstring ptr ) as string
+	dim as integer f
+	dim as string resfile
+
+	resfile = fbc.mainpath + "temp.res"
+
+	f = freefile( )
+	if( open( resfile, for output, as #f ) <> 0 ) then
+		return ""
+	end if
+
+	print #f, *cline
+
+	close #f
+
+	function = resfile
+
+end function
+#endif
+
+'':::::
+private function linkFiles() as integer
+	dim as string ldcline, dllname, resfile
+
+	function = FALSE
+
+	'' set executable name
+	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+
+		'' set default subsystem mode
+		if( len( fbc.subsystem ) = 0 ) then
+			fbc.subsystem = "console"
+		else
+			if( fbc.subsystem = "gui" ) then
+				fbc.subsystem = "windows"
+			end if
+		end if
+
+		ldcline += " -subsystem " + fbc.subsystem
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			''
+			dllname = hStripPath( hStripExt( fbc.outname ) )
+
+			'' create a dll
+			ldcline += " --dll --enable-stdcall-fixup"
+
+			'' set the entry-point
+			ldcline += " -e _DllMainCRTStartup@12"
+		end if
+
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			dllname = hStripPath( hStripExt( fbc.outname ) )
+			ldcline += " -shared -h" + hStripPath( fbc.outname )
+		else
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_FREEBSD
+				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
+			case FB_COMPTARGET_LINUX
+				ldcline += " -dynamic-linker /lib/ld-linux.so.2"
+			case FB_COMPTARGET_NETBSD
+				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
+			case FB_COMPTARGET_OPENBSD
+				ldcline += " -dynamic-linker /usr/libexec/ld.so"
+			end select
+		end if
+
+	case FB_COMPTARGET_XBOX
+		ldcline += " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
+
+	end select
+
+	'' export all symbols declared as EXPORT
+	if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
+	    fbGetOption( FB_COMPOPT_EXPORT ) ) then
+		ldcline += " --export-dynamic"
+	end if
+
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		'' For DJGPP, the custom ldscript must always be used,
+		'' to get ctors/dtors into the correct order that lets
+		'' fbrt0's c/dtor be the first/last respectively.
+		'' (needed until binutils' default DJGPP ldscripts are fixed)
+		ldcline += " -T " + QUOTE + fbc.libpath + "i386go32.x" + QUOTE
+
+#ifndef DISABLE_OBJINFO
+	else
+		'' Supplementary ld script to drop the fbctinf objinfo section
+		ldcline += " " + QUOTE + fbc.libpath + "fbextra.x" + QUOTE
+#endif
+
+	end if
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		'' stack size
+		ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			'' create the def list to use when creating the import library
+			ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
+		end if
+
+	case FB_COMPTARGET_LINUX
+		'' set emulation
+		ldcline += " -m elf_i386"
+
+	case FB_COMPTARGET_XBOX
+		'' set entry point
+		ldcline += " -e _WinMainCRTStartup"
+
+	end select
+
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
+
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
+			ldcline += " -s"
+		end if
+	end if
+
+	'' add the library search paths
+	ldcline += *fbcGetLibPathList( )
+
+	'' crt begin objects
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+		else
+			'' TODO
+			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+			'' additional support for gmon
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+			end if
+		end if
+
+	case FB_COMPTARGET_WIN32
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			ldcline += " " + QUOTE + fbcFindGccLib("dllcrt2.o") + QUOTE
+		else
+			ldcline += " " + QUOTE + fbcFindGccLib("crt2.o") + QUOTE
+			'' additional support for gmon
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				ldcline += " " + QUOTE + fbcFindGccLib("gcrt2.o") + QUOTE
+			end if
+		end if
+
+		ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE
+
+	case FB_COMPTARGET_DOS
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+		else
+			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+		end if
+
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				select case as const fbGetOption( FB_COMPOPT_TARGET )
+				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+					ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+				case else
+					ldcline += " " + QUOTE + fbcFindGccLib("gcrt1.o") + QUOTE
+				end select
+			else
+				select case as const fbGetOption( FB_COMPOPT_TARGET )
+				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+					ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+				case else
+					ldcline += " " + QUOTE + fbcFindGccLib("crt1.o") + QUOTE
+				end select
+			end if
+		end if
+
+		'' All have crti.o, except OpenBSD
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+			ldcline += " " + QUOTE + fbcFindGccLib("crti.o") + QUOTE
+		end if
+
+		ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE
+
+	case FB_COMPTARGET_XBOX
+		'' link with crt0.o (C runtime init)
+		ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+
+	end select
+
+	'' add objects from output list
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+		ldcline += " " + QUOTE + iof->outf + QUOTE
+		iof = listGetNext( iof )
+	loop
+
+	'' add objects from cmm-line
+	dim as string ptr objf = listGetHead( @fbc.objlist )
+	do while( objf <> NULL )
+		ldcline += " " + QUOTE + *objf + QUOTE
+		objf = listGetNext( objf )
+	loop
+
+	'' init lib group
+	ldcline += " -("
+
+	'' add libraries from command-line and found when parsing
+	ldcline += *fbcGetLibList( dllname )
+
+	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+		'' note: for some odd reason, this object must be included in the group when
+		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
+		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
+		'' 		 will be the first/last called, respectively
+		'' On *nix/*BSD: must be included in the group or
+		'' dlopen() will fail because fb_hRtExit() will be undefined.
+		ldcline += " " + QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
+	end if
+
+	'' end lib group
+	ldcline += " -)"
+
+	'' crt end
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+		ldcline += " " + QUOTE + fbcFindGccLib("crtend.o") + QUOTE
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+			ldcline += " " + QUOTE + fbcFindGccLib("crtn.o") + QUOTE
+		end if
+
+	case FB_COMPTARGET_WIN32
+		ldcline += " " + QUOTE + fbcFindGccLib("crtend.o") + QUOTE
+
+	end select
+
+	'' extra options
+	ldcline += " " + fbc.extopt.ld
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		dim as string resfile = hCreateResFile( ldcline )
+		if( len( resfile ) = 0 ) then
+			exit function
+		end if
+		ldcline = "@" + resfile
+	end if
+#endif
+
+	'' invoke ld
+	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
+		exit function
+	end if
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		kill( resfile )
+	end if
+#endif
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			'' create the import library for the dll built
+			if( makeImpLib( hStripFilename( fbc.outname ), dllname ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+	case FB_COMPTARGET_DOS
+		'' patch the exe to change the stack size
+		dim as integer f = freefile()
+
+		if (open(fbc.outname, for binary, access read write, as #f) <> 0) then
+			exit function
+		end if
+
+		put #f, 533, fbc.stacksize
+
+		close #f
+
+	case FB_COMPTARGET_XBOX
+		'' Turn .exe into .xbe
+		dim as string cxbepath, cxbecline
+		dim as integer res = any
+
+		'' xbe title
+		if( len(fbc.xbe_title) = 0 ) then
+			fbc.xbe_title = hStripExt(fbc.outname)
+		end if
+
+		cxbecline = "-TITLE:" + QUOTE + fbc.xbe_title + (QUOTE + " ")
+		
+		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
+			cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
+		end if
+
+		'' output xbe filename
+		cxbecline += " -OUT:" + QUOTE + hStripExt(fbc.outname) + ".xbe" + QUOTE
+
+		'' input exe filename
+		cxbecline += " " + QUOTE + fbc.outname + QUOTE
+
+		'' don't echo cxbe output
+		if( fbc.verbose = FALSE ) then
+			cxbecline += " >nul"
+		end if
+
+		'' invoke cxbe (exe -> xbe)
+		if( fbc.verbose ) then
+			print "cxbe: ", cxbecline
+		end if
+
+		cxbepath = fbcFindBin("cxbe")
+
+		'' have to use shell instead of exec in order to use >nul
+		res = shell(cxbepath + " " + cxbecline)
+		if( res <> 0 ) then
+			if( fbc.verbose ) then
+				print "cxbe failed: exit code " & res
+			end if
+			exit function
+		end if
+
+		'' remove .exe
+		kill fbc.outname
+
+	end select
+
+	function = TRUE
 
 end function
 
@@ -1224,7 +1647,31 @@ private sub setMainModule( )
 	'' if no executable name was defined, use the main module name
 	if( len( fbc.outname ) = 0 ) then
 		fbc.outname = fbc.mainpath + fbc.mainfile
-		fbc.outaddext = TRUE
+
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
+		case FB_OUTTYPE_EXECUTABLE
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
+			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+				'' Note: XBox target creates an .exe first,
+				'' then uses cxbe to turn it into an .xbe later
+				fbc.outname += ".exe"
+
+			end select
+
+		case FB_OUTTYPE_DYNAMICLIB
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+				fbc.outname += ".dll"
+
+			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+			     FB_COMPTARGET_OPENBSD
+				fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
+
+			end select
+
+		end select
 	end if
 
 end sub
@@ -1305,7 +1752,6 @@ private sub setDefaultOptions( )
     fbc.mapfile     = ""
 	fbc.mainset     = FALSE
 	fbc.outname     = ""
-	fbc.outaddext   = FALSE
 
 	fbc.extopt.gas	= ""
 	fbc.extopt.ld	= ""
@@ -2749,14 +3195,14 @@ function fbcGetLibList _
 		do while( libf <> NULL )
    			'' check if the lib isn't the dll's import library itself
    	        if( *libf->name <> *dllname ) then
-				list += "-l" + *libf->name + " "
+				list += " -l" + *libf->name
 			end if
 
 			libf = listGetNext( libf )
 		loop
     else
 		do while( libf <> NULL )
-			list += "-l" + *libf->name + " "
+			list += " -l" + *libf->name
 			libf = listGetNext( libf )
 		loop
 	end if

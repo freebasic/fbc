@@ -94,9 +94,6 @@ end type
 
 '' if changed, update the fbcInit_* functions at each fbc_*.bas file
 type FBC_VTBL
-	linkFiles as function _
-	( _
-	) as integer
 
 	getCStdType as function _
 	( _
@@ -137,7 +134,6 @@ type FBCCTX
 	iof_head			as FBC_IOFILE ptr			'' to keep track of the .bas' and -o's
 
 	outname 			as zstring * FB_MAXPATHLEN+1
-	outaddext			as integer
 	mainpath			as zstring * FB_MAXPATHLEN+1
 	mainfile			as zstring * FB_MAXNAMELEN+1
 	mapfile				as zstring * FB_MAXNAMELEN+1
