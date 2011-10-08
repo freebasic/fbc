@@ -534,49 +534,6 @@ endif
 # Sources
 #
 
-# Enable the default target in the compiler, and set the default triplet,
-# which can be empty.
-ifeq ($(TARGET_OS),cygwin)
-  ENABLE_CYGWIN := YesPlease
-  TRIPLET_CYGWIN:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),darwin)
-  ENABLE_DARWIN := YesPlease
-  TRIPLET_DARWIN:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),dos)
-  ENABLE_DOS := YesPlease
-  TRIPLET_DOS:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),freebsd)
-  ENABLE_FREEBSD := YesPlease
-  TRIPLET_FREEBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),linux)
-  ENABLE_LINUX := YesPlease
-  TRIPLET_LINUX:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),win32)
-  ENABLE_WIN32 := YesPlease
-  TRIPLET_WIN32:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),netbsd)
-  ENABLE_NETBSD := YesPlease
-  TRIPLET_NETBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),openbsd)
-  ENABLE_OPENBSD := YesPlease
-  TRIPLET_OPENBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),solaris)
-  ENABLE_SOLARIS := YesPlease
-  TRIPLET_SOLARIS:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),xbox)
-  ENABLE_XBOX := YesPlease
-  TRIPLET_XBOX:=$(TARGET)
-endif
-
 FBC_BI := $(newcompiler)/config.bi
 FBC_BI += compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
@@ -638,34 +595,6 @@ FBC_BAS := \
   stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
   symb-enum symb-keyword symb-label symb-lib symb-mangling symb-namespace \
   symb-proc symb-scope symb-struct symb-typedef symb-var
-
-ifdef ENABLE_CYGWIN
-  FBC_BAS += fbc_cyg
-endif
-ifdef ENABLE_DARWIN
-  FBC_BAS += fbc_darwin
-endif
-ifdef ENABLE_DOS
-  FBC_BAS += fbc_dos
-endif
-ifdef ENABLE_FREEBSD
-  FBC_BAS += fbc_freebsd
-endif
-ifdef ENABLE_LINUX
-  FBC_BAS += fbc_linux
-endif
-ifdef ENABLE_NETBSD
-  FBC_BAS += fbc_netbsd
-endif
-ifdef ENABLE_OPENBSD
-  FBC_BAS += fbc_openbsd
-endif
-ifdef ENABLE_WIN32
-  FBC_BAS += fbc_win32
-endif
-ifdef ENABLE_XBOX
-  FBC_BAS += fbc_xbox
-endif
 
 ifndef DISABLE_OBJINFO
   FBC_BAS += fb-objinfo
@@ -1111,15 +1040,6 @@ $(newcompiler)/config.bi: compiler/config.bi.in
 	$(call config-filter,$(TARGET_OS),xbox,TARGET_XBOX)
 	$(call config-filter,$(TARGET_ARCH),386 486 586 686,TARGET_X86)
 	$(call config-filter,$(TARGET_ARCH),x86_64,TARGET_X86_64)
-	$(call config-ifdef,$(ENABLE_CYGWIN),ENABLE_CYGWIN "$(TRIPLET_CYGWIN)")
-	$(call config-ifdef,$(ENABLE_DARWIN),ENABLE_DARWIN "$(TRIPLET_DARWIN)")
-	$(call config-ifdef,$(ENABLE_DOS),ENABLE_DOS "$(TRIPLET_DOS)")
-	$(call config-ifdef,$(ENABLE_FREEBSD),ENABLE_FREEBSD "$(TRIPLET_FREEBSD)")
-	$(call config-ifdef,$(ENABLE_LINUX),ENABLE_LINUX "$(TRIPLET_LINUX)")
-	$(call config-ifdef,$(ENABLE_NETBSD),ENABLE_NETBSD "$(TRIPLET_NETBSD)")
-	$(call config-ifdef,$(ENABLE_OPENBSD),ENABLE_OPENBSD "$(TRIPLET_OPENBSD)")
-	$(call config-ifdef,$(ENABLE_WIN32),ENABLE_WIN32 "$(TRIPLET_WIN32)")
-	$(call config-ifdef,$(ENABLE_XBOX),ENABLE_XBOX "$(TRIPLET_XBOX)")
 	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
 	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
 	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")
@@ -1329,11 +1249,5 @@ help:
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
 	@echo "  DISABLE_OPENGL    Don't use OpenGL in libfbgfx (Unix/Windows versions)"
 	@echo "  DISABLE_X         Don't use X in libfbgfx (Unix version)"
-	@echo "  ENABLE_<TARGET>   For building a multi-target compiler. The ENABLE_* for"
-	@echo "                    the default TARGET will automatically be defined."
-	@echo "  TRIPLET_<TARGET>=<default-triplet>  For enabled targets, the compiler will"
-	@echo "                    use the triplets to find binutils/libraries, unless the"
-	@echo "                    user gave another one via the -target option. The triplet"
-	@echo "                    for the default TARGET will automatically be defined."
 	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
 	@echo "to set variables in a more permanent and even build-directory specific way."

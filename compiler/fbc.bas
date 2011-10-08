@@ -316,60 +316,164 @@ end sub
 private sub initTarget( )
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-#ifdef ENABLE_WIN32
-	case FB_COMPTARGET_WIN32
-		fbcInit_win32( )
-#endif
-
-#ifdef ENABLE_CYGWIN
 	case FB_COMPTARGET_CYGWIN
-		fbcInit_cygwin( )
-#endif
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_USHORT
+		env.target.wchar.size = 2
 
-#ifdef ENABLE_LINUX
-	case FB_COMPTARGET_LINUX
-		fbcInit_linux( )
-#endif
+		env.target.define = @"__FB_CYGWIN__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = TRUE
+		env.target.constsection = @"rdata"
 
-#ifdef ENABLE_DOS
-	case FB_COMPTARGET_DOS
-		fbcInit_dos( )
-#endif
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_STDCALL
 
-#ifdef ENABLE_XBOX
-	case FB_COMPTARGET_XBOX
-		fbcInit_xbox( )
-#endif
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL
 
-#ifdef ENABLE_FREEBSD
-	case FB_COMPTARGET_FREEBSD
-		fbcInit_freebsd( )
-#endif
-
-#ifdef ENABLE_OPENBSD
-	case FB_COMPTARGET_OPENBSD
-		fbcInit_openbsd( )
-#endif
-
-#ifdef ENABLE_DARWIN
 	case FB_COMPTARGET_DARWIN
-		fbcInit_darwin( )
-#endif
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
 
-#ifdef ENABLE_NETBSD
+		env.target.define = @"__FB_DARWIN__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = FALSE
+		env.target.constsection = @"const"
+		env.target.omitsectiondirective = TRUE
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case FB_COMPTARGET_DOS
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UBYTE
+		env.target.wchar.size = 1
+
+		env.target.define = @"__FB_DOS__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = TRUE
+		env.target.constsection = @"rdata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case FB_COMPTARGET_FREEBSD
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+
+		env.target.define = @"__FB_FREEBSD__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = FALSE
+		env.target.constsection = @"rodata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case FB_COMPTARGET_LINUX
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+
+		env.target.define = @"__FB_LINUX__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = FALSE
+		env.target.constsection = @"rodata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
 	case FB_COMPTARGET_NETBSD
-		fbcInit_netbsd( )
-#endif
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+
+		env.target.define = @"__FB_NETBSD__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = FALSE
+		env.target.constsection = @"rodata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case FB_COMPTARGET_OPENBSD
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+
+		env.target.define = @"__FB_OPENBSD__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = FALSE
+		env.target.constsection = @"rodata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_CDECL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case FB_COMPTARGET_WIN32
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_USHORT
+		env.target.wchar.size = 2
+
+		env.target.define = @"__FB_WIN32__"
+		env.target.entrypoint = @"main"
+		env.target.underprefix = TRUE
+		env.target.constsection = @"rdata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL
+
+	case FB_COMPTARGET_XBOX
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+
+		env.target.define = @"__FB_XBOX__"
+		env.target.entrypoint = @"XBoxStartup"
+		env.target.underprefix = TRUE
+		env.target.constsection = @"rdata"
+
+		'' Default calling convention, must match the rtlib's FBCALL
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+
+		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
+		'' or STDCALL_MS (without @N).
+		env.target.stdcall = FB_FUNCMODE_STDCALL
 
 	case else
 		print "unsupported target in " & __FILE__
 
 	end select
-
-	fbc.triplet = *env.target.triplet
-	if( len(fbc.triplet) > 0 ) then
-		fbc.triplet += "-"
-	end if
 
 end sub
 
@@ -1788,6 +1892,78 @@ end sub
 	nxt = arg
 #endmacro
 
+private function parseTargetTriplet(byref triplet as string) as integer
+	'' To support the system triplets, we need to parse them,
+	'' to identify which target of ours it could mean (much like in the
+	'' FB makefile when cross-compiling FB).
+
+	'' Split the triplet into its components
+	''    [arch-][vendor-]os[-...]
+
+	'' Cut off up to two leading components to get to the OS
+	dim as string os = triplet
+	for i as integer = 0 to 1
+		dim as integer j = instr(1, os, "-")
+		if (j = 0) then
+			exit for
+		end if
+		os = right(os, len(os) - j)
+	next
+
+	if (len(os) = 0) then
+		return -1
+	end if
+
+	#macro MAYBE(target, comptarget)
+		'' Allow incomplete matches, e.g.:
+		'' 'linux' matches 'linux-gnu',
+		'' 'mingw' matches 'mingw32msvc', etc.
+		if (left(os, len(target)) = target) then
+			return comptarget
+		end if
+	#endmacro
+
+	select case as const (os[0])
+	case asc("c")
+		MAYBE("cygwin", FB_COMPTARGET_CYGWIN)
+
+	case asc("d")
+		MAYBE("darwin", FB_COMPTARGET_DARWIN)
+		MAYBE("djgpp", FB_COMPTARGET_DOS)
+		MAYBE("dos", FB_COMPTARGET_DOS)
+
+	case asc("f")
+		MAYBE("freebsd", FB_COMPTARGET_FREEBSD)
+
+	case asc("l")
+		MAYBE("linux", FB_COMPTARGET_LINUX)
+
+	case asc("m")
+		MAYBE("mingw", FB_COMPTARGET_WIN32)
+		MAYBE("msdos", FB_COMPTARGET_DOS)
+
+	case asc("n")
+		MAYBE("netbsd", FB_COMPTARGET_NETBSD)
+
+	case asc("o")
+		MAYBE("openbsd", FB_COMPTARGET_OPENBSD)
+
+	case asc("s")
+		'' TODO (not yet implemented in the compiler)
+		''MAYBE("solaris", FB_COMPTARGET_SOLARIS)
+
+	case asc("w")
+		MAYBE("win32", FB_COMPTARGET_WIN32)
+		MAYBE("windows", FB_COMPTARGET_WIN32)
+
+	case asc("x")
+		MAYBE("xbox", FB_COMPTARGET_XBOX)
+
+	end select
+
+	return -1
+end function
+
 '':::::
 private function processTargetOptions _
 	( _
@@ -1821,60 +1997,30 @@ private function processTargetOptions _
 					return FALSE
 				end if
 
-				select case *nxt
-#ifdef ENABLE_DOS
-				case "dos"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DOS )
-#endif
+				'' The argument given to -target is what will
+				'' be prepended to the executable names of
+				'' cross-tools, for example:
+				''    fbc -target dos
+				'' will try to use:
+				''    bin/dos-ld[.exe]
+				''
+				'' It allows fbc to work together with
+				'' cross-gcc/binutils using system triplets:
+				''    fbc -target i686-pc-mingw32
+				'' looks for:
+				''    bin/i686-pc-mingw32-ld[.exe]
 
-#ifdef ENABLE_CYGWIN
-				case "cygwin"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_CYGWIN )
-#endif
+				fbc.triplet = *nxt + "-"
 
-#ifdef ENABLE_LINUX
-				case "linux"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_LINUX )
-#endif
+				'' Identify the target
+				dim as integer comptarget = parseTargetTriplet(*nxt)
 
-#ifdef ENABLE_WIN32
-				case "win32"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_WIN32 )
-#endif
-
-#ifdef ENABLE_XBOX
-				case "xbox"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_XBOX )
-#endif
-
-#ifdef ENABLE_FREEBSD
-				case "freebsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_FREEBSD )
-#endif
-
-#ifdef ENABLE_OPENBSD
-				case "openbsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_OPENBSD )
-#endif
-
-#ifdef ENABLE_DARWIN
-				case "darwin"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DARWIN )
-#endif
-
-#ifdef ENABLE_NETBSD
-				case "netbsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_NETBSD )
-#endif
-
-				case else
-					'' TODO: Accept & parse GNU triplets, like in the makefile,
-					'' to support more than the default triplets specified at
-					'' compile time.
-					''fbc.triplet = triplet + "-"
+				if (comptarget < 0) then
 					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
 					return FALSE
-				end select
+				end if
+
+				fbSetOption( FB_COMPOPT_TARGET, comptarget )
 
 				hDelArgNodes( arg, nxt )
 			end if
@@ -3142,30 +3288,7 @@ private sub printOptions( )
 	printOption( "-R", "Do not delete the asm file(s)" )
 	printOption( "-s <name>", "Set subsystem, 'gui' or 'console' (win32 only)" )
 	printOption( "-t <value>", "Set stack size in kbytes, default: 1M (win32/dos only)" )
-
-	desc = " Available (cross-)compilation targets:"
-	#macro listTarget(defname, fbname)
-		#ifdef ENABLE_##defname
-			desc += " " & fbname
-			if( len( ENABLE_##defname ) > 0 ) then
-				desc += " (" & ENABLE_##defname & ")"
-			end if
-			#ifdef TARGET_##defname
-				desc += " (default)"
-			#endif
-		#endif
-	#endmacro
-	listTarget(CYGWIN, "cygwin")
-	listTarget(DARWIN, "darwin")
-	listTarget(DOS, "dos")
-	listTarget(FREEBSD, "freebsd")
-	listTarget(LINUX, "linux")
-	listTarget(NETBSD, "netbsd")
-	listTarget(OPENBSD, "openbsd")
-	listTarget(WIN32, "win32")
-	listTarget(XBOX, "xbox")
-	print "-target <name>"; desc
-
+	print "-target <system>  Set cross-compilation target (dos, win32, etc. or triplets)"
 	printOption( "-title <name>", "Set XBE display title (xbox only)" )
 	printOption( "-v", "Be verbose" )
 	printOption( "-vec <val>", "Enable <val> level of automatic vectorization (def: 0)" )

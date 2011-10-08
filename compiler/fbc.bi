@@ -92,16 +92,6 @@ type FBC_OBJINF
 	mt			as integer
 end type
 
-'' if changed, update the fbcInit_* functions at each fbc_*.bas file
-type FBC_VTBL
-
-	getCStdType as function _
-	( _
-		byval ctype as FB_CSTDTYPE _
-	) as integer
-
-end type
-
 '' global context
 type FBCCTX
 	arglist				as TLIST					'' of string ptr
@@ -151,8 +141,6 @@ type FBCCTX
 	libpath				as zstring * FB_MAXPATHLEN+1
 
 	objinf				as FBC_OBJINF
-
-	vtbl				as FBC_VTBL
 end type
 
 

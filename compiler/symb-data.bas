@@ -268,14 +268,3 @@ function symbGetUnsignedType _
 	function = typeJoin( dtype, nd )
 
 end function
-
-'':::::
-function symbGetCStdType _
-	( _
-		byval ctype as FB_CSTDTYPE _
-	) as integer
-
-	function = fbc.vtbl.getCStdType( ctype )
-
-end function
-

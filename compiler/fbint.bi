@@ -578,8 +578,8 @@ type FBTARGET_WCHAR
 end type
 
 type FBTARGET
+	size_t_type		as FB_DATATYPE
 	wchar			as FBTARGET_WCHAR
-	triplet         as zstring ptr                          '' Default triplet for this target, can be empty (normally just if it's the native target)
 	define		as zstring ptr				'' __FB_target__ preprocessor define name
 	entrypoint		as zstring ptr				'' entry point of executable (usually "main")
 	underprefix		as integer					'' whether symbols are prefixed with an underscore

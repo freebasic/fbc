@@ -182,11 +182,6 @@ enum FB_FUNCMODE
     FB_USE_FUNCMODE_FBCALL = -1
 end enum
 
-'' C standard types
-enum FB_CSTDTYPE
-	FB_CSTDTYPE_SIZET			= 1
-end enum
-
 '' options when adding new symbols
 enum FB_SYMBOPT
 	FB_SYMBOPT_NONE				= &h00000000
@@ -1798,11 +1793,6 @@ declare function symbCloneLabel _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
-
-declare function symbGetCStdType _
-	( _
-		byval ctype as FB_CSTDTYPE _
-	) as integer
 
 declare function symbCheckAccess _
 	( _
