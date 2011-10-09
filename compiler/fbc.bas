@@ -885,88 +885,6 @@ function fbcRunBin _
 	return FALSE
 end function
 
-'':::::
-private function clearDefList( byval dllfile as zstring ptr ) as integer
-	dim inpf as integer, outf as integer
-	dim ln as string
-
-	function = FALSE
-
-    if( hFileExists( *dllfile + ".def" ) = FALSE ) then
-    	exit function
-    end if
-
-    inpf = freefile
-    open *dllfile + ".def" for input as #inpf
-    outf = freefile
-    open *dllfile + ".clean.def" for output as #outf
-
-    '''''print #outf, "LIBRARY " + hStripPath( dllfile ) + ".dll"
-
-    do until eof( inpf )
-
-    	line input #inpf, ln
-
-    	if( right( ln, 4 ) =  "DATA" ) then
-    		ln = left( ln, len( ln ) - 4 )
-    	end if
-
-    	print #outf, ln
-    loop
-
-    close #outf
-    close #inpf
-
-    kill( *dllfile + ".def" )
-    name *dllfile + ".clean.def", *dllfile + ".def"
-
-    function = TRUE
-
-end function
-
-'':::::
-private function makeImpLib _
-	( _
-		byval dllpath as zstring ptr, _
-		byval dllname as zstring ptr _
-	) as integer
-
-	dim as string dtpath, dtcline, dllfile
-
-	function = FALSE
-
-	'' set path
-	dtpath = fbcFindBin("dlltool")
-
-	''
-	dllfile = *dllpath + *dllname
-
-	'' output def list
-	'''''if( makeDefList( dllname ) = FALSE ) then
-	'''''	exit function
-	'''''end if
-
-	'' for some weird reason, LD will declare all functions exported as if they were
-	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
-	if( clearDefList( dllfile ) = FALSE ) then
-		exit function
-	end if
-
-	dtcline = "--def " + QUOTE + dllfile + ".def" + QUOTE + _
-			  " --dllname " + QUOTE + *dllname + ".dll" + QUOTE + _
-			  " --output-lib " + QUOTE + *dllpath + "lib" + *dllname + (".dll.a" + QUOTE)
-
-	if (fbcRunBin("creating import library", dtpath, dtcline) = FALSE) then
-		exit function
-	end if
-
-	''
-	kill( dllfile + ".def" )
-
-    function = TRUE
-
-end function
-
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
 private function hCreateResFile( byval cline as zstring ptr ) as string
 	dim as integer f
@@ -1074,8 +992,15 @@ private function linkFiles() as integer
 		ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			'' create the def list to use when creating the import library
-			ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
+			'' When building DLLs, we also create an import library, as
+			'' convenience for the user. There are several ways to do this:
+			''    a) pexports + dlltool
+			''    b) ld --output-def + dlltool
+			''    c) ld --out-implib
+			'' Since ld can generate the import library directly, and could
+			'' also be told to write out a .def at the same time, we don't
+			'' need dlltool.
+			ldcline += " --out-implib " + QUOTE + hStripFilename( fbc.outname ) + "lib" + dllname + (".dll.a" + QUOTE)
 		end if
 
 	case FB_COMPTARGET_LINUX
@@ -1243,14 +1168,6 @@ private function linkFiles() as integer
 #endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			'' create the import library for the dll built
-			if( makeImpLib( hStripFilename( fbc.outname ), dllname ) = FALSE ) then
-				exit function
-			end if
-		end if
-
 	case FB_COMPTARGET_DOS
 		'' patch the exe to change the stack size
 		dim as integer f = freefile()
