@@ -100,8 +100,6 @@ declare function compileRcs _
 	( _
 	) as integer
 
-declare sub delFiles()
-
 declare sub setMainModule _
 	( _
 	)
@@ -185,7 +183,6 @@ declare sub addDefaultLibs()
 
     '' compile
     if( compileFiles( ) = FALSE ) then
-    	delFiles( )
     	fbcEnd( 1 )
     end if
 
@@ -195,7 +192,6 @@ declare sub addDefaultLibs()
 
 		'' assemble
 		if( assembleFiles( ) = FALSE ) then
-			delFiles( )
 			fbcEnd( 1 )
 		end if
 
@@ -211,7 +207,6 @@ declare sub addDefaultLibs()
 			'' link
 			if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
 				if( archiveFiles( ) = FALSE ) then
-					delFiles( )
 					fbcEnd( 1 )
 				end if
 
@@ -227,7 +222,6 @@ declare sub addDefaultLibs()
 				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 					'' Compile *.rc's, if any
 					if( compileRcs( ) = FALSE ) then
-						delFiles( )
 						fbcEnd( 1 )
 					end if
 
@@ -236,22 +230,17 @@ declare sub addDefaultLibs()
 				     FB_COMPTARGET_NETBSD
 					'' Compile the given .xpm, if any
 					if( compileXpm( ) = FALSE ) then
-						delFiles( )
 						fbcEnd( 1 )
 					end if
 
 				end select
 
 				if( linkFiles( ) = FALSE ) then
-					delFiles( )
 					fbcEnd( 1 )
 				end if
 			end if
 		end if
 	end if
-
-	'' del temps
-	delFiles( )
 
 	fbcEnd( 0 )
 
@@ -297,6 +286,27 @@ private sub fbcEnd _
 	(  _
 		byval errnum as integer _
 	)
+
+	'' Clean up temporary files
+	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+	do while( iof <> NULL )
+		if( fbc.preserveasm = FALSE ) then
+			safeKill( iof->asmf )
+		end if
+
+		if( fbc.emitonly = FALSE ) then
+			if( fbc.preserveobj = FALSE ) then
+				safeKill( iof->outf )
+			end if
+		end if
+
+		iof = listGetNext( iof )
+	loop
+
+	'' delete compiled icon object
+	if( len( fbc.xpmfile ) > 0 ) then
+		safeKill( hStripExt( hStripPath( fbc.xpmfile ) ) + ".o" )
+	end if
 
 	'' file and path lists
 	listFree( @fbc.inoutlist )
@@ -1387,38 +1397,6 @@ private function compileRcs() as integer
 
 	return TRUE
 end function
-
-'':::::
-private sub delFiles()
-	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-
-	do while( iof <> NULL )
-		if( fbc.preserveasm = FALSE ) then
-			safeKill( iof->asmf )
-		end if
-
-		if( fbc.emitonly = FALSE ) then
-			if( fbc.preserveobj = FALSE ) then
-				safeKill( iof->outf )
-			end if
-		end if
-
-		iof = listGetNext( iof )
-	loop
-
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_NETBSD
-		'' delete compiled icon object
-		if( len( fbc.xpmfile ) > 0 ) then
-			safeKill( hStripExt( hStripPath( fbc.xpmfile ) ) + ".o" )
-		end if
-
-	end select
-end sub
 
 '':::::
 private sub objinf_addLibCb _
