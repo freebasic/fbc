@@ -138,34 +138,6 @@ declare sub addDefaultLibs()
 		end if
 	end if
 
-	'' Resource scripts are only allowed for win32 & co
-	if (listGetHead(@fbc.rclist)) then
-		select case as const fbGetOption( FB_COMPOPT_TARGET )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-
-		case else
-			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, *cptr(string ptr, listGetHead(@fbc.rclist)), -1)
-			fbcEnd(1)
-		end select
-	end if
-
-	'' .xpm is only allowed for Linux & co
-	if (len(fbc.xpmfile) > 0) then
-		select case as const fbGetOption( FB_COMPOPT_TARGET )
-		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-		     FB_COMPTARGET_NETBSD
-
-		case else
-			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, fbc.xpmfile, -1)
-			fbcEnd(1)
-		end select
-	end if
-
-	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
-	'' complain about it when the target doesn't allow it, or just
-	'' ignore silently (that might not even be too bad for portability)?
-
 	fbcInit2()
 
     '' compile
