@@ -366,10 +366,9 @@ sub symbDefineInit _
 
 	symbAddDefine( def, NULL, 0 )
 
-	'' add __FB_UNIX__ / __FB_PCOS__ defines, if necessary
-
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case /'FB_COMPTARGET_BEOS,'/ _  '' TODO: update when new targets have been added
+	'' add __FB_UNIX__ / __FB_PCOS__ defines, as necessary
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case /'FB_COMPTARGET_BEOS,'/ _
 	     FB_COMPTARGET_CYGWIN, _
 	     FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_FREEBSD, _
@@ -378,48 +377,18 @@ sub symbDefineInit _
 	     FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
 
-#if 0 '' "#ifdef" check (more consistent with other defines)
-
 		symbAddDefine( @"__FB_UNIX__", NULL, 0 )
 
-#elseif 1 '' "#if" check (compromise, "#if not" will fail)
-
-		symbAddDefine( @"__FB_UNIX__", @"-1", 2 )
-
-#else '' "#if" check (0.21.0 compatible)
-
-		symbAddDefine( @"__FB_UNIX__", @"-1", 2 )
-	case else
-		symbAddDefine( @"__FB_UNIX__", @"0", 1 )
-
-#endif
-
-	end select
-
-	select case fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_DOS, _
 	     /'FB_COMPTARGET_OS2,'/ _
 	     /'FB_COMPTARGET_SYMBIAN,'/ _
 	     FB_COMPTARGET_WIN32
 
-#if 0 '' "#ifdef" check (more consistent with other defines)
-
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 
-#elseif 1 '' "#if" check (compromise, "#if not" will fail)
-
-		symbAddDefine( @"__FB_PCOS__", @"-1", 2 )
-
-#else '' "#if" check (0.21.0 compatible)
-
-		symbAddDefine( @"__FB_PCOS__", @"-1", 2 )
 	case else
-		symbAddDefine( @"__FB_PCOS__", @"0", 1 )
-
-#endif
-
+		fbcNotReached()
 	end select
-
 
 	'' add "main" define
 	if( ismain ) then
