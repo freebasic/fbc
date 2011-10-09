@@ -8,7 +8,12 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-#include once "fb-bfd-bridge.bi"
+#ifdef ENABLE_FBBFD
+	#define __BFD_VER__ ENABLE_FBBFD
+	#include once "bfd.bi"
+#else
+	#include once "bfd-wrapper.bi"
+#endif
 
 declare function hProcessObject _
 	( _

@@ -537,12 +537,12 @@ endif
 FBC_BI := $(newcompiler)/config.bi
 FBC_BI += compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
+FBC_BI += compiler/bfd-wrapper.bi
 FBC_BI += compiler/clist.bi
 FBC_BI += compiler/dstr.bi
 FBC_BI += compiler/emit.bi
 FBC_BI += compiler/emitdbg.bi
 FBC_BI += compiler/error.bi
-FBC_BI += compiler/fb-bfd-bridge.bi
 FBC_BI += compiler/fb.bi
 FBC_BI += compiler/fbc.bi
 FBC_BI += compiler/fbint.bi
@@ -602,10 +602,10 @@ endif
 
 FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
 
-FBC_COBJINFO :=
+FBC_BFDWRAPPER :=
 ifndef DISABLE_OBJINFO
   ifndef ENABLE_FBBFD
-    FBC_COBJINFO := $(newcompiler)/c-objinfo.o
+    FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
   endif
 endif
 
@@ -1018,7 +1018,7 @@ $(newlib)/fbextra.x: compiler/fbextra.x
 $(newlib)/i386go32.x: contrib/djgpp/i386go32.x
 	$(QUIET_CP)cp $< $@
 
-$(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_COBJINFO)
+$(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
 	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
