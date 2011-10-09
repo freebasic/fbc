@@ -31,6 +31,8 @@ declare sub printOptions _
 	( _
 	)
 
+declare sub printVersion()
+
 declare sub getLibList _
 	( _
 	)
@@ -110,36 +112,12 @@ declare sub addDefaultLibs()
     	end if
     end if
 
-    ''
-    if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
-    		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
-    	print "Copyright (C) 2004-2011 The FreeBASIC development team."
-
-#ifdef ENABLE_PREFIX
-		print "Configured with prefix " + ENABLE_PREFIX
-#endif
-
-#ifdef ENABLE_STANDALONE
-		print "Configured as standalone"
-#endif
-
-#ifndef DISABLE_OBJINFO
-		print "objinfo enabled ";
-#ifdef ENABLE_FBBFD
-		print "using FB BFD header version " & ENABLE_FBBFD
-#else
-		print "using C BFD wrapper"
-#endif
-#else
-		print "objinfo disabled"
-#endif
-
-    	print
-    	if( fbc.showversion ) then
-    		fbcEnd( 0 )
-    	end if
-    end if
+	if( fbc.verbose or fbc.showversion ) then
+		printVersion()
+		if( fbc.showversion ) then
+			fbcEnd( 0 )
+		end if
+	end if
 
 	'' Resource scripts are only allowed for win32 & co
 	if (listGetHead(@fbc.rclist)) then
@@ -3117,6 +3095,41 @@ private sub printOptions( )
 	 "  -x <name>     Set executable/library path/name"
 
 	print FBC_HELP
+end sub
+
+private sub printVersion()
+	dim as string s
+
+	s += !"FreeBASIC Compiler - Version " + FB_VERSION + _
+		" (" + FB_BUILD_DATE + ")" + _
+		" for " + FB_HOST + " (target:" + FB_TARGET + !")\n"
+	s += !"Copyright (C) 2004-2011 The FreeBASIC development team.\n"
+
+	#ifdef ENABLE_STANDALONE
+		s += "standalone, "
+	#endif
+
+	#ifdef ENABLE_PREFIX
+		s += "prefix: '" + ENABLE_PREFIX + "', "
+	#endif
+
+	s += "objinfo: "
+	#ifndef DISABLE_OBJINFO
+		s += "enabled ("
+		#ifdef ENABLE_FBBFD
+			s += "FB header " & ENABLE_FBBFD
+		#else
+			s += "C wrapper"
+		#endif
+		s += "), "
+	#else
+		s += "disabled, "
+	#endif
+
+	'' Trim ', ' at the end
+	s = left(s, len(s) - 2)
+
+	print s
 end sub
 
 '':::::
