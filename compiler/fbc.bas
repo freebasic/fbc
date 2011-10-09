@@ -45,9 +45,7 @@ declare sub setLibList _
 	( _
 	)
 
-declare sub initTarget _
-	( _
-	)
+declare sub fbcInit2()
 
 declare function compileFiles _
 	( _
@@ -99,12 +97,6 @@ declare function compileXpm() as integer
 declare function compileRcs _
 	( _
 	) as integer
-
-declare sub setMainModule _
-	( _
-	)
-
-declare sub setPaths()
 
 declare function collectObjInfo _
 	( _
@@ -174,12 +166,7 @@ declare sub addDefaultLibs()
 	'' complain about it when the target doesn't allow it, or just
 	'' ignore silently (that might not even be too bad for portability)?
 
-	initTarget( )
-
-	setPaths()
-
-    ''
-    setMainModule( )
+	fbcInit2()
 
     '' compile
     if( compileFiles( ) = FALSE ) then
@@ -327,56 +314,6 @@ private sub fbcEnd _
 
 	''
 	end errnum
-
-end sub
-
-'':::::
-private sub initTarget( )
-
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_USHORT
-		env.target.wchar.size = 2
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_DOS
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UBYTE
-		env.target.wchar.size = 1
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_DARWIN
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = FALSE
-
-	case FB_COMPTARGET_XBOX
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = TRUE
-
-	case else
-		fbcNotReached()
-	end select
-
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-		env.target.stdcall = FB_FUNCMODE_STDCALL
-
-	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_DOS, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
-		env.target.fbcall = FB_FUNCMODE_CDECL
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case else
-		fbcNotReached()
-	end select
 
 end sub
 
@@ -1511,123 +1448,6 @@ private function collectObjInfo _
 end function
 
 '':::::
-private sub setMainModule( )
-
-	if( len( fbc.mainfile ) = 0 ) then
-		dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-		dim as string ptr inf = NULL
-		if( iof <> NULL ) then
-			inf = @iof->inf
-		end if
-
-		if( inf <> NULL ) then
-			fbc.mainfile = hStripPath( hStripExt( *inf ) )
-			fbc.mainpath = hStripFilename( *inf )
-
-		else
-			dim as string ptr objf = listGetHead( @fbc.objlist )
-			if( objf <> NULL ) then
-				fbc.mainfile = hStripPath( hStripExt( *objf ) )
-				fbc.mainpath = hStripFilename( *objf )
-			else
-				fbc.mainfile = "undefined"
-				fbc.mainpath = ""
-			end if
-		end if
-	end if
-
-	'' if no executable name was defined, use the main module name
-	if( len( fbc.outname ) = 0 ) then
-		fbc.outname = fbc.mainpath + fbc.mainfile
-
-		select case fbGetOption( FB_COMPOPT_OUTTYPE )
-		case FB_OUTTYPE_EXECUTABLE
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
-			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-				'' Note: XBox target creates an .exe first,
-				'' then uses cxbe to turn it into an .xbe later
-				fbc.outname += ".exe"
-
-			end select
-
-		case FB_OUTTYPE_DYNAMICLIB
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-				fbc.outname += ".dll"
-
-			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-			     FB_COMPTARGET_OPENBSD
-				fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
-
-			end select
-
-		end select
-	end if
-
-end sub
-
-private sub setPaths()
-	'' Setup/calculate the paths to bin/ (needed when invoking helper
-	'' tools), include/ (needed when searching headers), and lib/ (needed
-	'' to find libraries when linking).
-	'' (See the makefile for some directory layout info)
-
-	'' Not already set from -prefix command line option?
-	if (len(fbc.prefix) = 0) then
-		'' Then default to exepath() or the hard-coded prefix.
-		'' Normally fbc is relocatable, i.e. no fixed prefix is
-		'' compiled in, but there still is ENABLE_PREFIX to do just
-		'' that if desired.
-		#ifdef ENABLE_PREFIX
-			fbc.prefix = ENABLE_PREFIX
-		#else
-			fbc.prefix = exepath()
-			#ifndef ENABLE_STANDALONE
-				'' Non-standalone fbc is in prefix/bin,
-				'' it can add '..' to get to prefix.
-				fbc.prefix += FB_HOST_PATHDIV + ".."
-			#endif
-		#endif
-	end if
-
-	fbc.prefix += FB_HOST_PATHDIV
-
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
-	fbc.incpath = fbc.prefix
-	fbc.libpath = fbc.prefix
-
-	#ifdef ENABLE_STANDALONE
-		'' [triplet-]lib[-suffix]/
-		fbc.incpath += fbc.triplet + "include"
-		fbc.libpath += fbc.triplet + "lib"
-	#else
-		'' lib/[triplet-]freebasic[-suffix]/
-		fbc.incpath += "include" + FB_HOST_PATHDIV + fbc.triplet
-		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
-		#ifdef __FB_DOS__
-			'' Our subdirectory in include/ and lib/ is usually called
-			'' freebasic/, but on DOS that's too long... of course almost
-			'' no target triplet or suffix can be used either.
-			'' (Note: When changing, update the makefile too)
-			fbc.incpath += "freebas"
-			fbc.libpath += "freebas"
-		#else
-			fbc.incpath += "freebasic"
-			fbc.libpath += "freebasic"
-		#endif
-	#endif
-
-	fbc.incpath += FB_SUFFIX + FB_HOST_PATHDIV
-	fbc.libpath += FB_SUFFIX + FB_HOST_PATHDIV
-
-	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
-end sub
-
-'':::::
 private sub setDefaultOptions( )
 
 	fbSetDefaultOptions( )
@@ -2610,6 +2430,167 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
 	'' complain about it when the target doesn't allow it, or just
 	'' ignore silently (that might not even be too bad for portability)?
+end sub
+
+'' After command line parsing
+private sub fbcInit2()
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_USHORT
+		env.target.wchar.size = 2
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_DOS
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UBYTE
+		env.target.wchar.size = 1
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_DARWIN
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = FALSE
+
+	case FB_COMPTARGET_XBOX
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = TRUE
+
+	case else
+		fbcNotReached()
+	end select
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+		env.target.stdcall = FB_FUNCMODE_STDCALL
+
+	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_DOS, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+		env.target.fbcall = FB_FUNCMODE_CDECL
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case else
+		fbcNotReached()
+	end select
+
+	'' Setup/calculate the paths to bin/ (needed when invoking helper
+	'' tools), include/ (needed when searching headers), and lib/ (needed
+	'' to find libraries when linking).
+	'' (See the makefile for some directory layout info)
+
+	'' Not already set from -prefix command line option?
+	if (len(fbc.prefix) = 0) then
+		'' Then default to exepath() or the hard-coded prefix.
+		'' Normally fbc is relocatable, i.e. no fixed prefix is
+		'' compiled in, but there still is ENABLE_PREFIX to do just
+		'' that if desired.
+		#ifdef ENABLE_PREFIX
+			fbc.prefix = ENABLE_PREFIX
+		#else
+			fbc.prefix = exepath()
+			#ifndef ENABLE_STANDALONE
+				'' Non-standalone fbc is in prefix/bin,
+				'' it can add '..' to get to prefix.
+				fbc.prefix += FB_HOST_PATHDIV + ".."
+			#endif
+		#endif
+	end if
+
+	fbc.prefix += FB_HOST_PATHDIV
+
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
+	fbc.incpath = fbc.prefix
+	fbc.libpath = fbc.prefix
+
+	#ifdef ENABLE_STANDALONE
+		'' [triplet-]lib[-suffix]/
+		fbc.incpath += fbc.triplet + "include"
+		fbc.libpath += fbc.triplet + "lib"
+	#else
+		'' lib/[triplet-]freebasic[-suffix]/
+		fbc.incpath += "include" + FB_HOST_PATHDIV + fbc.triplet
+		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
+		#ifdef __FB_DOS__
+			'' Our subdirectory in include/ and lib/ is usually called
+			'' freebasic/, but on DOS that's too long... of course almost
+			'' no target triplet or suffix can be used either.
+			'' (Note: When changing, update the makefile too)
+			fbc.incpath += "freebas"
+			fbc.libpath += "freebas"
+		#else
+			fbc.incpath += "freebasic"
+			fbc.libpath += "freebasic"
+		#endif
+	#endif
+
+	fbc.incpath += FB_SUFFIX + FB_HOST_PATHDIV
+	fbc.libpath += FB_SUFFIX + FB_HOST_PATHDIV
+
+	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
+
+	''
+	'' Determine the main module
+	''
+	if( len( fbc.mainfile ) = 0 ) then
+		dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
+		dim as string ptr inf = NULL
+		if( iof <> NULL ) then
+			inf = @iof->inf
+		end if
+
+		if( inf <> NULL ) then
+			fbc.mainfile = hStripPath( hStripExt( *inf ) )
+			fbc.mainpath = hStripFilename( *inf )
+
+		else
+			dim as string ptr objf = listGetHead( @fbc.objlist )
+			if( objf <> NULL ) then
+				fbc.mainfile = hStripPath( hStripExt( *objf ) )
+				fbc.mainpath = hStripFilename( *objf )
+			else
+				fbc.mainfile = "undefined"
+				fbc.mainpath = ""
+			end if
+		end if
+	end if
+
+	'' if no executable name was defined, use the main module name
+	if( len( fbc.outname ) = 0 ) then
+		fbc.outname = fbc.mainpath + fbc.mainfile
+
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
+		case FB_OUTTYPE_EXECUTABLE
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
+			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+				'' Note: XBox target creates an .exe first,
+				'' then uses cxbe to turn it into an .xbe later
+				fbc.outname += ".exe"
+
+			end select
+
+		case FB_OUTTYPE_DYNAMICLIB
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+				fbc.outname += ".dll"
+
+			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+			     FB_COMPTARGET_OPENBSD
+				fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
+
+			end select
+
+		end select
+	end if
 end sub
 
 '':::::
