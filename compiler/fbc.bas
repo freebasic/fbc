@@ -2960,63 +2960,62 @@ end sub
 '':::::
 private sub printOptions( )
 	const FBC_HELP = _
-	!"usage: fbc [options] <input files>\n"                             + _
-	!"\n"                                                               + _
-	!"input files:\n"                                                   + _
-	!"  *.a = static library, *.o = object file, *.bas = source\n"      + _
-	!"  *.rc = resource script, *res = compiled resource (win32)\n"     + _
-	!"  *.xpm = icon resource (*nix/*bsd)\n"                            + _
-	!"\n"                                                               + _
-	!"options:\n"                                                       + _
-	!"  @<file>       Read command-line options from a file\n"          + _
-	!"  -a <name>     Add an object file to linker's list\n"            + _
-	!"  -arch <type>  Set target architecture (default: 486)\n"         + _
-	!"  -b <name>     Add a source file to compilation\n"               + _
-	!"  -c            Compile only, do not link\n"                      + _
-	!"  -C            Do not delete the object file(s)\n"               + _
-	!"  -d <name=val> Add a preprocessor's define\n"                    + _
-	!"  -dll          Same as -dylib\n"                                 + _
-	!"  -dylib        Create a DLL (win32) or shared library (*nix/*BSD)\n" + _
-	!"  -e            Add error checking\n"                             + _
-	!"  -ex           Add error checking with RESUME support\n"         + _
-	!"  -exx          Same as above plus array bounds and null-pointer checking\n" + _
-	!"  -export       Export symbols for dynamic linkage\n"             + _
-	!"  -forcelang <name>  Select language compatibility, overriding #lang in code\n" + _
-	!"  -fpmode <mode>  Select accuracy/speed of floating-point math (FAST, PRECISE)\n" + _
-	!"  -fpu <type>   Select FPU (x87, sse)\n"                          + _
-	!"  -g            Add debug info\n"                                 + _
-	!"  -gen <name>   Select the code generator (gas, gcc)\n"           + _
-	!"  -i <name>     Add a path to search for include files\n"         + _
-	!"  -include <name>  Include a header file on each source compiled\n" + _
-	!"  -l <name>     Add a library file to linker's list\n"            + _
-	!"  -lang <name>  Select language compatibility: deprecated, fblite, qb\n" + _
-	!"  -lib          Create a static library\n"                        + _
-	!"  -m <name>     Main file w/o ext, the entry point (def: 1st .bas on list)\n" + _
-	!"  -map <name>   Save the linking map to file name\n"              + _
-	!"  -maxerr <val> Only stop parsing if <val> errors occurred\n"     + _
-	!"  -mt           Link with thread-safe runtime library\n"          + _
-	!"  -nodeflibs    Do not include the default libraries\n"           + _
-	!"  -noerrline    Do not show source line where error occurred\n"   + _
-	!"  -o <name>     Set object file path/name (must be passed after the .bas file)\n" + _
-	!"  -O <value>    Optimization level (default: 0)\n"                + _
-	!"  -p <name>     Add a path to search for libraries\n"             + _
-	!"  -pp           Emit the preprocessed input file only, do not compile\n" + _
-	!"  -prefix <path>  Set the compiler prefix path\n"                 + _
-	!"  -profile      Enable function profiling\n"                      + _
-	!"  -r            Write asm only, do not compile\n"                 + _
-	!"  -R            Do not delete the asm file(s)\n"                  + _
-	!"  -s <name>     Set subsystem, 'gui' or 'console' (win32 only)\n" + _
-	!"  -t <value>    Set stack size in kbytes, default: 1M (win32/dos only)\n" + _
-	!"  -target <system>  Set cross-compilation target (dos, win32, etc. or triplets)\n" + _
-	!"  -title <name> Set XBE display title (xbox only)\n"              + _
-	!"  -v            Be verbose\n"                                     + _
-	!"  -vec <val>    Enable <val> level of automatic vectorization (def: 0)\n" + _
-	!"  -version      Show compiler version\n"                          + _
-	!"  -w <value>    Set min warning level: all, pedantic or a value\n" + _
-	!"  -Wa <opt>     Pass options to GAS (separated by commas)\n"      + _
-	!"  -Wc <opt>     Pass options to GCC when using -gen gcc (separated by commas)\n" + _
-	!"  -Wl <opt>     Pass options to LD (separated by commas)\n"       + _
-	 "  -x <name>     Set executable/library path/name"
+	!"usage: fbc [options] <input files>\n"                                + _
+	!"input files:\n"                                                      + _
+	!"  *.a = static library, *.o = object file, *.bas = source\n"         + _
+	!"  *.rc = resource script, *res = compiled resource (win32)\n"        + _
+	!"  *.xpm = icon resource (*nix/*bsd)\n"                               + _
+	!"options:\n"                                                          + _
+	!"  @<file>          Read more command line arguments from a file\n"   + _
+	!"  -a <file>        Treat file as *.o/*.a input file\n"               + _
+	!"  -arch <type>     Set target architecture (default: 486)\n"         + _
+	!"  -b <file>        Treat file as *.bas input file\n"                 + _
+	!"  -c               Compile only, do not link\n"                      + _
+	!"  -C               Preserve generated *.o files\n"                   + _
+	!"  -d <name>[=<val>]  Add a global #define\n"                         + _
+	!"  -dll             Same as -dylib\n"                                 + _
+	!"  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)\n" + _
+	!"  -e               Enable runtime error checking\n"                  + _
+	!"  -ex              -e plus RESUME support\n"                         + _
+	!"  -exx             -ex plus array bounds/null-pointer checking\n"    + _
+	!"  -export          Export symbols for dynamic linkage\n"             + _
+	!"  -forcelang <name>  Override #lang statements in source code\n"     + _
+	!"  -fpmode fast|precise  Select floating-point math accuracy/speed\n" + _
+	!"  -fpu x87|sse     Set target FPU\n"                                 + _
+	!"  -g               Add debug info\n"                                 + _
+	!"  -gen gas|gcc     Select code generation backend\n"                 + _
+	!"  -i <path>        Add an include file search path\n"                + _
+	!"  -include <file>  Pre-#include a file for each input *.bas\n"       + _
+	!"  -l <name>        Link in a library\n"                              + _
+	!"  -lang <name>     Select FB dialect: deprecated, fblite, qb\n"      + _
+	!"  -lib             Create a static library\n"                        + _
+	!"  -m <name>        Set main module (default: first input *.bas)\n"   + _
+	!"  -map <file>      Save linking map to file\n"                       + _
+	!"  -maxerr <n>      Only show <n> errors\n"                           + _
+	!"  -mt              Use thread-safe FB runtime\n"                     + _
+	!"  -nodeflibs       Do not include the default libraries\n"           + _
+	!"  -noerrline       Do not show source context in error messages\n"   + _
+	!"  -o <file>        Set *.o file name for corresponding input *.bas\n" + _
+	!"  -O <value>       Optimization level (default: 0)\n"                + _
+	!"  -p <name>        Add a library search path\n"                      + _
+	!"  -pp              Write out preprocessed input file (*.pp.bas) only\n" + _
+	!"  -prefix <path>   Set the compiler prefix path\n"                   + _
+	!"  -profile         Enable function profiling\n"                      + _
+	!"  -r               Write out *.asm/*.c only, do not compile\n"       + _
+	!"  -R               Preserve generated *.asm/*.c files\n"             + _
+	!"  -s console|gui   Select win32 subsystem\n"                         + _
+	!"  -t <value>       Set *.exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
+	!"  -target <name>   Set cross-compilation target\n"                  + _
+	!"  -title <name>    Set XBE display title (xbox)\n"                   + _
+	!"  -v               Be verbose\n"                                     + _
+	!"  -vec <n>         Automatic vectorization level (default: 0)\n"     + _
+	!"  -version         Show compiler version\n"                          + _
+	!"  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value\n" + _
+	!"  -Wa <a,b,c>      Pass options to GAS\n"                            + _
+	!"  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)\n"            + _
+	!"  -Wl <a,b,c>      Pass options to LD\n"                             + _
+	!"  -x <file>        Set output executable/library file name\n"        + _
+	 "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 
 	print FBC_HELP
 end sub
