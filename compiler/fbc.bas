@@ -1014,6 +1014,10 @@ private function linkFiles() as integer
 
 	end select
 
+	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+		ldcline += " " + QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
+	end if
+
 	'' add objects from output list
 	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
 	do while( iof <> NULL )
@@ -1033,16 +1037,6 @@ private function linkFiles() as integer
 
 	'' add libraries from command-line and found when parsing
 	ldcline += *fbcGetLibList( dllname )
-
-	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
-		'' note: for some odd reason, this object must be included in the group when
-		'' 		 linking a DLL, or LD will fail with an "undefined symbol" msg. at least
-		'' 		 the order the .ctors/.dtors appeared will be preserved, so the rtlib ones
-		'' 		 will be the first/last called, respectively
-		'' On *nix/*BSD: must be included in the group or
-		'' dlopen() will fail because fb_hRtExit() will be undefined.
-		ldcline += " " + QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
-	end if
 
 	'' end lib group
 	ldcline += " -)"
