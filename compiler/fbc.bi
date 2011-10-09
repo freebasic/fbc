@@ -81,24 +81,6 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
-declare function fbcGetLibList _
-	( _
-		byval dllname as zstring ptr _
-	) as zstring ptr
-
-declare function fbcGetLibPathList _
-	( _
-	) as zstring ptr
-
-declare function fbcMakeLibFileName(byref libname as string) as string
-declare function fbcFindBin(byval filename as zstring ptr) as string
-declare function fbcRunBin _
-	( _
-		byval action as zstring ptr, _
-		byref tool as string, _
-		byref ln as string _
-	) as integer
-
 declare sub fbcAssert_ _
 	( _
 		byval test as integer, _
@@ -108,17 +90,6 @@ declare sub fbcAssert_ _
 		byval linenum as integer _
 	)
 #define fbcAssert(test) fbcAssert_((test), #test, __FILE__, __FUNCTION__, __LINE__)
-
-#macro safeKill(f)
-	if( kill( f ) <> 0 ) then
-	end if
-#endmacro
-
-#define fbcAddDefLibPath( path ) _
-	fbAddLibPathEx( @fbc.ld_libpathlist, _
-					@fbc.ld_libpathhash, _
-					path, _
-					TRUE )
 
 extern fbc as FBCCTX
 

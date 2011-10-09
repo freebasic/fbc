@@ -65,6 +65,35 @@ declare function archiveFiles _
 	( _
 	) as integer
 
+declare function fbcGetLibList _
+	( _
+		byval dllname as zstring ptr _
+	) as zstring ptr
+
+declare function fbcGetLibPathList _
+	( _
+	) as zstring ptr
+
+declare function fbcMakeLibFileName(byref libname as string) as string
+declare function fbcFindBin(byval filename as zstring ptr) as string
+declare function fbcRunBin _
+	( _
+		byval action as zstring ptr, _
+		byref tool as string, _
+		byref ln as string _
+	) as integer
+
+#define fbcAddDefLibPath( path ) _
+	fbAddLibPathEx( @fbc.ld_libpathlist, _
+					@fbc.ld_libpathhash, _
+					path, _
+					TRUE )
+
+#macro safeKill(f)
+	if( kill( f ) <> 0 ) then
+	end if
+#endmacro
+
 declare function compileXpm() as integer
 
 declare function compileRcs _
