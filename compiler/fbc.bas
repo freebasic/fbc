@@ -2480,7 +2480,6 @@ private sub handleArg(byref arg as string)
 			fbcEnd(1)
 		end if
 
-		print fbc.optid, "giving next arg"
 		handleOpt(fbc.optid, arg)
 		fbc.optid = -1
 		return
