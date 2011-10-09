@@ -12,69 +12,6 @@ const FBC_INITFILES	  = 64
 const FBC_MINSTACKSIZE = 32 * 1024
 const FBC_DEFSTACKSIZE = 1024 * 1024
 
-'' Maximum nesting/recursion limit for command-line option files (@filename)
-const FBC_MAXCMDFILE_RECLEVEL = 128
-
-'' command-line options (linked to the fbc::optionTb() array)
-enum FBC_OPT
-	FBC_OPT_E				= 1
-	FBC_OPT_EX
-	FBC_OPT_EXX
-	FBC_OPT_MT
-	FBC_OPT_PROFILE
-	FBC_OPT_NOERRLINE
-	FBC_OPT_NODEFLIBS
-	FBC_OPT_EXPORT
-	FBC_OPT_NOSTDCALL
-	FBC_OPT_STDCALL
-	FBC_OPT_NOUNDERSCORE
-	FBC_OPT_UNDERSCORE
-	FBC_OPT_SHOWSUSPERR
-	FBC_OPT_ARCH
-	FBC_OPT_FPU
-	FBC_OPT_FPMODE
-	FBC_OPT_VECTORIZE
-	FBC_OPT_DEBUG
-	FBC_OPT_COMPILEONLY
-	FBC_OPT_EMITONLY
-	FBC_OPT_SHAREDLIB
-	FBC_OPT_STATICLIB
-	FBC_OPT_PRESERVEOBJ
-	FBC_OPT_PRESERVEASM
-	FBC_OPT_PPONLY
-	FBC_OPT_VERBOSE
-	FBC_OPT_VERSION
-	FBC_OPT_OUTPUTNAME
-	FBC_OPT_MAINMODULE
-	FBC_OPT_MAPFILE
-	FBC_OPT_MAXERRORS
-	FBC_OPT_WARNLEVEL
-	FBC_OPT_LIBPATH
-	FBC_OPT_INCPATH
-	FBC_OPT_DEFINE
-	FBC_OPT_INPFILE
-	FBC_OPT_OUTFILE
-	FBC_OPT_OBJFILE
-	FBC_OPT_LIBFILE
-	FBC_OPT_INCLUDE
-	FBC_OPT_LANG
-	FBC_OPT_FORCELANG
-	FBC_OPT_WA
-	FBC_OPT_WL
-	FBC_OPT_WC
-	FBC_OPT_GEN
-	FBC_OPT_PREFIX
-	FBC_OPT_OPTIMIZE
-	FBC_OPT_EXTRAOPT
-
-	FBC_OPTS
-end enum
-
-type FBC_OPTION
-	id			as FBC_OPT
-	name		as zstring ptr
-end type
-
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
@@ -94,7 +31,8 @@ end type
 
 '' global context
 type FBCCTX
-	arglist				as TLIST					'' of string ptr
+	'' Current optin during command line parsing
+	optid				as integer
 
 	emitonly			as integer
 	compileonly			as integer
@@ -143,46 +81,6 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
-
-''
-'' prototypes
-''
-declare function fbcInit_dos _
-	( _
-	) as integer
-
-declare function fbcInit_linux _
-	( _
-	) as integer
-
-declare function fbcInit_win32 _
-	( _
-	) as integer
-
-declare function fbcInit_cygwin _
-	( _
-	) as integer
-
-declare function fbcInit_xbox _
-	( _
-	) as integer
-
-declare function fbcInit_freebsd _
-	( _
-	) as integer
-
-declare function fbcInit_openbsd _
-	( _
-	) as integer
-
-declare function fbcInit_darwin _
-	( _
-	) as integer
-
-declare function fbcInit_netbsd _
-	( _
-	) as integer
-
 declare function fbcGetLibList _
 	( _
 		byval dllname as zstring ptr _
@@ -192,9 +90,7 @@ declare function fbcGetLibPathList _
 	( _
 	) as zstring ptr
 
-declare function fbcFindGccLib(byref file as string) as string
 declare function fbcMakeLibFileName(byref libname as string) as string
-declare sub fbcAddLibPathFor(byref libname as string)
 declare function fbcFindBin(byval filename as zstring ptr) as string
 declare function fbcRunBin _
 	( _
@@ -203,9 +99,15 @@ declare function fbcRunBin _
 		byref ln as string _
 	) as integer
 
-''
-'' macros
-''
+declare sub fbcAssert_ _
+	( _
+		byval test as integer, _
+		byval testtext as zstring ptr, _
+		byval filename as zstring ptr, _
+		byval funcname as zstring ptr, _
+		byval linenum as integer _
+	)
+#define fbcAssert(test) fbcAssert_((test), #test, __FILE__, __FUNCTION__, __LINE__)
 
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
@@ -218,10 +120,6 @@ declare function fbcRunBin _
 					path, _
 					TRUE )
 
-
-''
-'' globals
-''
 extern fbc as FBCCTX
 
 #endif '' __FBC_BI__

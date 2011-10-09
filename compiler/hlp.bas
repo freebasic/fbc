@@ -700,3 +700,22 @@ function hIsValidSymbolName( byval sym as zstring ptr ) as integer
 	function = TRUE
 
 end function
+
+'' Checks whether a string starts with and ends in [double-]quotes.
+private function strIsQuoted(byref s as string) as integer
+	dim as integer last = len(s) - 1
+	if (last < 1) then
+		return FALSE
+	end if
+
+	return (((s[0] = asc("""")) and (s[last] = asc(""""))) or _
+	        ((s[0] = asc("'" )) and (s[last] = asc("'" ))))
+end function
+
+function strUnquote(byref s as string) as string
+	if (strIsQuoted(s)) then
+		return mid(s, 2, len(s) - 2)
+	end if
+	return s
+end function
+

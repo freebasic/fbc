@@ -17,23 +17,13 @@ declare sub fbcEnd _
 		byval errnum as integer _
 	)
 
-declare sub parseCmd _
-	( _
-	)
+declare sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 
 declare sub setDefaultOptions _
 	( _
 	)
 
-declare function processOptions _
-	( _
-	) as integer
-
 declare function processCompLists _
-	( _
-	) as integer
-
-declare function processTargetOptions _
 	( _
 	) as integer
 
@@ -103,17 +93,12 @@ declare sub addDefaultLibs()
 	''
     fbcInit( )
 
-    ''
-    parseCmd( )
-
-    if( listGetHead( @fbc.arglist ) = NULL ) then
-    	printOptions( )
-    	fbcEnd( 1 )
-    end if
-
-	if( processOptions( ) = FALSE ) then
+	if (__FB_ARGC__ = 1) then
+		printOptions( )
 		fbcEnd( 1 )
 	end if
+
+	parseArgs(__FB_ARGC__, __FB_ARGV__)
 
     ''
     if( fbc.showversion = FALSE ) then
@@ -277,9 +262,6 @@ private sub fbcInit( )
 
 	hashInit( )
 
-	'' arg list
-	listNew( @fbc.arglist, FBC_INITARGS, len( string ) )
-
 	'' file and path lists
 	listNew( @fbc.inoutlist, FBC_INITFILES, len( FBC_IOFILE ) )
 	listNew( @fbc.objlist, FBC_INITFILES, len( string ) )
@@ -308,8 +290,6 @@ private sub fbcEnd _
 	(  _
 		byval errnum as integer _
 	)
-
-	listFree( @fbc.arglist )
 
 	'' file and path lists
 	listFree( @fbc.inoutlist )
@@ -1886,33 +1866,26 @@ private sub setDefaultOptions( )
 
 end sub
 
-'':::::
-private sub printInvalidOpt _
+sub fbcAssert_ _
 	( _
-		byval arg as string ptr, _
-		byval errnum as FB_ERRMSG = FB_ERRMSG_MISSINGCMDOPTION _
+		byval test as integer, _
+		byval testtext as zstring ptr, _
+		byval filename as zstring ptr, _
+		byval funcname as zstring ptr, _
+		byval linenum as integer _
 	)
-
-	errReportEx( errnum, QUOTE + *arg + QUOTE, -1 )
-
+	if (test = FALSE) then
+		print "internal error at " & _
+			*filename & "(" & linenum & "):" & *funcname & "(): " & _
+			"assertion failed: " & *testtext
+	end if
 end sub
 
-'':::::
-#macro hDelArgNode( arg )
-	*arg = ""
-	listDelNode( @fbc.arglist, arg )
-#endmacro
+private sub fbcErrorInvalidOption(byref arg as string)
+	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+end sub
 
-'':::::
-#macro hDelArgNodes( arg, nxt )
-	hDelArgNode( arg )
-	if( nxt <> NULL ) then
-		arg = listGetNext( nxt )
-		hDelArgNode( nxt )
-	end if
-	nxt = arg
-#endmacro
-
+'' -target <triplet> parser
 private function parseTargetTriplet(byref triplet as string) as integer
 	'' To support the system triplets, we need to parse them,
 	'' to identify which target of ours it could mean (much like in the
@@ -1985,862 +1958,862 @@ private function parseTargetTriplet(byref triplet as string) as integer
 	return -1
 end function
 
-'':::::
-private function checkFiles _
-	( _
-		byval arg as string ptr _
-	) as integer
+enum
+	OPT_A = 0
+	OPT_ARCH
+	OPT_B
+	OPT_C
+	OPT_CKEEPOBJ
+	OPT_D
+	OPT_DLL
+	OPT_DYLIB
+	OPT_E
+	OPT_EX
+	OPT_EXX
+	OPT_EXPORT
+	OPT_FORCELANG
+	OPT_FPMODE
+	OPT_FPU
+	OPT_G
+	OPT_GEN
+	OPT_I
+	OPT_INCLUDE
+	OPT_L
+	OPT_LANG
+	OPT_LIB
+	OPT_M
+	OPT_MAP
+	OPT_MAXERR
+	OPT_MT
+	OPT_NODEFLIBS
+	OPT_NOERRLINE
+	OPT_O
+	OPT_OPTIMIZE
+	OPT_P
+	OPT_PP
+	OPT_PREFIX
+	OPT_PROFILE
+	OPT_R
+	OPT_RKEEPASM
+	OPT_S
+	OPT_T
+	OPT_TARGET
+	OPT_TITLE
+	OPT_V
+	OPT_VEC
+	OPT_VERSION
+	OPT_W
+	OPT_WA
+	OPT_WC
+	OPT_WL
+	OPT_X
+	OPT_Z
+	OPT__COUNT
+end enum
 
-	select case hGetFileExt( arg[0] )
-	case "bas"
+dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
+{ _
+	TRUE , _ '' OPT_A
+	TRUE , _ '' OPT_ARCH
+	TRUE , _ '' OPT_B
+	FALSE, _ '' OPT_C
+	FALSE, _ '' OPT_CKEEPOBJ
+	TRUE , _ '' OPT_D
+	FALSE, _ '' OPT_DLL
+	FALSE, _ '' OPT_DYLIB
+	FALSE, _ '' OPT_E
+	FALSE, _ '' OPT_EX
+	FALSE, _ '' OPT_EXX
+	FALSE, _ '' OPT_EXPORT
+	FALSE, _ '' OPT_FORCELANG
+	TRUE , _ '' OPT_FPMODE
+	TRUE , _ '' OPT_FPU
+	FALSE, _ '' OPT_G
+	TRUE , _ '' OPT_GEN
+	TRUE , _ '' OPT_I
+	TRUE , _ '' OPT_INCLUDE
+	TRUE , _ '' OPT_L
+	TRUE , _ '' OPT_LANG
+	FALSE, _ '' OPT_LIB
+	TRUE , _ '' OPT_M
+	TRUE , _ '' OPT_MAP
+	TRUE , _ '' OPT_MAXERR
+	FALSE, _ '' OPT_MT
+  	FALSE, _ '' OPT_NODEFLIBS
+	FALSE, _ '' OPT_NOERRLINE
+	TRUE , _ '' OPT_O
+	TRUE , _ '' OPT_OPTIMIZE
+	TRUE , _ '' OPT_P
+	FALSE, _ '' OPT_PP
+	TRUE , _ '' OPT_PREFIX
+	FALSE, _ '' OPT_PROFILE
+	FALSE, _ '' OPT_R
+	FALSE, _ '' OPT_RKEEPASM
+	TRUE , _ '' OPT_S
+	TRUE , _ '' OPT_T
+	TRUE , _ '' OPT_TARGET
+	TRUE , _ '' OPT_TITLE
+	FALSE, _ '' OPT_V
+	TRUE , _ '' OPT_VEC
+	FALSE, _ '' OPT_VERSION
+	TRUE , _ '' OPT_W
+	TRUE , _ '' OPT_WA
+	TRUE , _ '' OPT_WC
+	TRUE , _ '' OPT_WL
+	TRUE , _ '' OPT_X
+	TRUE   _ '' OPT_Z
+}
+
+private sub handleOpt(byval optid as integer, byref arg as string)
+	select case as const (optid)
+	case OPT_A
+		dim as string ptr objf = listNewNode( @fbc.objlist )
+		*objf = arg
+
+	case OPT_ARCH
+		dim as integer value = any
+
+		select case (arg)
+		case "386"
+			value = FB_CPUTYPE_386
+		case "486"
+			value = FB_CPUTYPE_486
+		case "586"
+			value = FB_CPUTYPE_586
+		case "686"
+			value = FB_CPUTYPE_686
+		case "athlon"
+			value = FB_CPUTYPE_ATHLON
+		case "athlon-xp"
+			value = FB_CPUTYPE_ATHLONXP
+		case "athlon-fx"
+			value = FB_CPUTYPE_ATHLONFX
+		case "k8-sse3"
+			value = FB_CPUTYPE_ATHLONSSE3
+		case "pentium-mmx"
+			value = FB_CPUTYPE_PENTIUMMMX
+		case "pentium2"
+			value = FB_CPUTYPE_PENTIUM2
+		case "pentium3"
+			value = FB_CPUTYPE_PENTIUM3
+		case "pentium4"
+			value = FB_CPUTYPE_PENTIUM4
+		case "pentium4-sse3"
+			value = FB_CPUTYPE_PENTIUMSSE3
+		case "native"
+			value = FB_CPUTYPE_NATIVE
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_CPUTYPE, value )
+
+	case OPT_B
 		dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
-		iof->inf = *arg
-
+		iof->inf = arg
 		if( fbc.iof_head = NULL ) then
 			fbc.iof_head = iof
 		end if
 
-	case "a"
-		dim as string ptr libf = listNewNode( @fbc.liblist )
-		*libf = *arg
+	case OPT_C
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+		fbc.compileonly = TRUE
+		fbc.emitonly = FALSE
+		fbc.preserveobj = TRUE
 
-	case "o"
-		dim as string ptr objf = listNewNode( @fbc.objlist )
-		*objf = *arg
+	case OPT_CKEEPOBJ
+		fbc.preserveobj = TRUE
 
-	case "rc", "res"
-		dim as string ptr rcf = listNewNode( @fbc.rclist )
-		*rcf = *arg
+	case OPT_D
+		dim as string ptr def = listNewNode( @fbc.deflist )
+		*def = arg
 
-	case "xpm"
-		if( len( fbc.xpmfile ) <> 0 ) then
-			return FALSE
+	case OPT_DLL, OPT_DYLIB
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
+
+	case OPT_E
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+
+	case OPT_EX
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+
+	case OPT_EXX
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+		fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
+
+	case OPT_EXPORT
+		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+
+	case OPT_FORCELANG
+		dim as integer value = fbGetLangId(strptr(arg))
+		if( value = FB_LANG_INVALID ) then
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
 		end if
-		fbc.xpmfile = *arg
+
+		fbSetOption( FB_COMPOPT_LANG, value )
+		fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
+		fbc.objinf.lang = value
+
+	case OPT_FPMODE
+		dim as integer value = any
+
+		select case ucase(arg)
+		case "PRECISE"
+			value = FB_FPMODE_PRECISE
+		case "FAST"
+			value = FB_FPMODE_FAST
+		case else
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end select
+
+		fbSetOption( FB_COMPOPT_FPMODE, value )
+
+	case OPT_FPU
+		dim as integer value = any
+
+		select case ucase(arg)
+		case "X87", "FPU"
+			value = FB_FPUTYPE_FPU
+		case "SSE"
+			value = FB_FPUTYPE_SSE
+		case else
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end select
+
+		fbSetOption( FB_COMPOPT_FPUTYPE, value )
+
+	case OPT_G
+		fbSetOption( FB_COMPOPT_DEBUG, TRUE )
+
+	case OPT_GEN
+		dim as integer value = any
+
+		select case (lcase(arg))
+		case "gas"
+			value = FB_BACKEND_GAS
+		case "gcc"
+			value = FB_BACKEND_GCC
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_BACKEND, value )
+
+	case OPT_I
+		dim as string ptr incp = listNewNode( @fbc.incpathlist )
+		*incp = arg
+
+	case OPT_INCLUDE
+		dim as string ptr incf = listNewNode( @fbc.preinclist )
+		*incf = arg
+
+	case OPT_L
+		dim as string ptr libf = listNewNode( @fbc.liblist )
+		*libf = arg
+
+	case OPT_LANG
+		dim as integer value = fbGetLangId( strptr(arg) )
+		if( value = FB_LANG_INVALID ) then
+			fbcErrorInvalidOption(arg)
+			return
+		end if
+
+		fbSetOption( FB_COMPOPT_LANG, value )
+		fbc.objinf.lang = value
+
+	case OPT_LIB
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
+
+	case OPT_M
+		fbc.mainfile = hStripPath( arg )
+		fbc.mainpath = hStripFilename( arg )
+		fbc.mainset = TRUE
+
+	case OPT_MAP
+		fbc.mapfile = arg
+
+	case OPT_MAXERR
+		dim as integer value = any
+
+		if( arg = "inf" ) then
+			value = FB_ERR_INFINITE
+		else
+			value = valint( arg )
+			if( value <= 0 ) then
+				value = 1
+				fbcErrorInvalidOption(arg)
+			end if
+		end if
+
+		fbSetOption( FB_COMPOPT_MAXERRORS, value )
+
+	case OPT_MT
+		fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+		fbc.objinf.mt = TRUE
+
+	case OPT_NODEFLIBS
+		fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
+
+	case OPT_NOERRLINE
+		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+
+	case OPT_O
+		if( fbc.iof_head = NULL ) then
+			fbcErrorInvalidOption(arg)
+			return
+		end if
+
+		fbc.iof_head->outf = arg
+		fbc.iof_head = listGetNext( fbc.iof_head )
+
+	case OPT_OPTIMIZE
+		dim as integer value = any
+
+		if (arg = "max") then
+			value = 3
+		else
+			value = valint(arg)
+			if (value < 0) then
+				value = 0
+				fbcErrorInvalidOption(arg)
+			elseif (value > 3) then
+				value = 3
+			end if
+		end if
+
+		fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
+
+	case OPT_P
+		dim as string ptr incp = listNewNode( @fbc.libpathlist )
+		*incp = arg
+
+	case OPT_PP
+		fbSetOption( FB_COMPOPT_PPONLY, TRUE )
+		fbc.compileonly = TRUE
+		fbc.emitonly = TRUE
+		fbc.preserveasm = FALSE
+
+	case OPT_PREFIX
+		fbc.prefix = arg
+
+		'' Trim trailing slash
+		if( right( fbc.prefix, 1 )  = "/" ) then
+			fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
+		end if
+
+		#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+			'' On Windows/DOS, also trim trailing backslash
+			'' (additionally to the forward slash check)
+			if( right( fbc.prefix, 1 ) = RSLASH ) then
+				fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
+			end if
+		#endif
+
+	case OPT_PROFILE
+		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+
+	case OPT_R
+		if( fbc.compileonly = FALSE )then
+			fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+			fbc.emitonly = TRUE
+		end if
+		fbc.preserveasm = TRUE
+
+	case OPT_RKEEPASM
+		fbc.preserveasm = TRUE
+
+	case OPT_S
+		fbc.subsystem = arg
+
+	case OPT_T
+		fbc.stacksize = valint(arg) * 1024
+		if( fbc.stacksize < FBC_MINSTACKSIZE ) then
+			fbc.stacksize = FBC_MINSTACKSIZE
+		end if
+
+	case OPT_TARGET
+		'' The argument given to -target is what will be prepended to
+		'' the executable names of cross-tools, for example:
+		''    fbc -target dos
+		'' will try to use:
+		''    bin/dos-ld[.exe]
+		''
+		'' It allows fbc to work together with cross-gcc/binutils
+		'' using system triplets:
+		''    fbc -target i686-pc-mingw32
+		'' looks for:
+		''    bin/i686-pc-mingw32-ld[.exe]
+		fbc.triplet = arg + "-"
+
+		'' Identify the target
+		dim as integer comptarget = parseTargetTriplet(arg)
+		if (comptarget < 0) then
+			fbcErrorInvalidOption(arg)
+			return
+		end if
+
+		fbSetOption( FB_COMPOPT_TARGET, comptarget )
+
+	case OPT_TITLE
+		fbc.xbe_title = arg
+
+	case OPT_V
+		fbc.verbose = TRUE
+
+	case OPT_VEC
+		dim as integer value = any
+
+		select case (ucase(arg))
+		case "NONE", "0"
+			value = FB_VECTORIZE_NONE
+		case "1"
+			value = FB_VECTORIZE_NORMAL
+		case "2"
+			value = FB_VECTORIZE_INTRATREE
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_VECTORIZE, value )
+
+	case OPT_VERSION
+		fbc.showversion = TRUE
+
+	case OPT_W
+		dim as integer value = -2
+
+		select case (arg)
+		case "all"
+			value = -1
+
+		case "param"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_PARAMMODE )
+
+		case "escape"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
+
+		case "next"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
+
+		case "pedantic"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
+			value = -1
+
+		case else
+			value = valint(arg)
+		end select
+
+		if( value >= -1 ) then
+			fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
+		end if
+
+	case OPT_WA
+		fbc.extopt.gas = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_WC
+		fbc.extopt.gcc = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_WL
+		fbc.extopt.ld = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_X
+		fbc.outname = arg
+
+	case OPT_Z
+		dim as integer value = fbGetOption( FB_COMPOPT_EXTRAOPT )
+
+		select case (lcase(arg))
+		case "gosub-setjmp"
+			value or= FB_EXTRAOPT_GOSUB_SETJMP
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
 
 	case else
-		return FALSE
+		fbcAssert(FALSE)
+	end select
+end sub
+
+private function parseOption(byval opt as zstring ptr) as integer
+	#macro CHECK(opttext, optid)
+		if (*opt = opttext) then
+			return optid
+		end if
+	#endmacro
+
+	#macro ONECHAR(optid)
+		if (cptr(ubyte ptr, opt)[1] = 0) then
+			return optid
+		end if
+	#endmacro
+
+	select case as const (cptr(ubyte ptr, opt)[0])
+	case asc("a")
+		ONECHAR(OPT_A)
+		CHECK("arch", OPT_ARCH)
+
+	case asc("b")
+		ONECHAR(OPT_B)
+
+	case asc("c")
+		ONECHAR(OPT_C)
+
+	case asc("C")
+		ONECHAR(OPT_CKEEPOBJ)
+
+	case asc("d")
+		ONECHAR(OPT_D)
+		CHECK("dll", OPT_DLL)
+		CHECK("dylib", OPT_DYLIB)
+
+	case asc("e")
+		ONECHAR(OPT_E)
+		CHECK("ex", OPT_EX)
+		CHECK("exx", OPT_EXX)
+		CHECK("export", OPT_EXPORT)
+
+	case asc("f")
+		CHECK("forcelang", OPT_FORCELANG)
+		CHECK("fpmode", OPT_FPMODE)
+		CHECK("fpu", OPT_FPU)
+
+	case asc("g")
+		ONECHAR(OPT_G)
+		CHECK("gen", OPT_GEN)
+
+	case asc("i")
+		ONECHAR(OPT_I)
+		CHECK("include", OPT_INCLUDE)
+
+	case asc("l")
+		ONECHAR(OPT_L)
+		CHECK("lang", OPT_LANG)
+		CHECK("lib", OPT_LIB)
+
+	case asc("m")
+		ONECHAR(OPT_M)
+		CHECK("map", OPT_MAP)
+		CHECK("maxerr", OPT_MAXERR)
+		CHECK("mt", OPT_MT)
+
+	case asc("n")
+		CHECK("noerrline", OPT_NOERRLINE)
+		CHECK("nodeflibs", OPT_NODEFLIBS)
+
+	case asc("o")
+		ONECHAR(OPT_O)
+
+	case asc("O")
+		ONECHAR(OPT_OPTIMIZE)
+
+	case asc("p")
+		ONECHAR(OPT_P)
+		CHECK("pp", OPT_PP)
+		CHECK("prefix", OPT_PREFIX)
+		CHECK("profile", OPT_PROFILE)
+
+	case asc("r")
+		ONECHAR(OPT_R)
+
+	case asc("R")
+		ONECHAR(OPT_RKEEPASM)
+
+	case asc("s")
+		ONECHAR(OPT_S)
+
+	case asc("t")
+		ONECHAR(OPT_T)
+		CHECK("target", OPT_TARGET)
+		CHECK("title", OPT_TITLE)
+
+	case asc("v")
+		ONECHAR(OPT_V)
+		CHECK("vec", OPT_VEC)
+		CHECK("version", OPT_VERSION)
+
+	case asc("w")
+		ONECHAR(OPT_W)
+
+	case asc("W")
+		CHECK("Wa", OPT_WA)
+		CHECK("Wl", OPT_WL)
+		CHECK("Wc", OPT_WC)
+
+	case asc("x")
+		ONECHAR(OPT_X)
+
+	case asc("z")
+		ONECHAR(OPT_Z)
 
 	end select
 
-	return TRUE
+	return -1
 end function
 
-'':::::
-private function processOptions _
-	( _
-	) as integer
+declare sub parseArgsFromFile(byref filename as string)
 
-    dim as string ptr arg = any, nxt = any
-    dim as integer value
-    dim as FBC_OPT id
-
-	function = FALSE
-
-	'' for each arg..
-	nxt = listGetHead( @fbc.arglist )
-	do while( nxt <> NULL )
-
-		arg = nxt
-		nxt = listGetNext( nxt )
-
-		if( len( arg[0] ) = 0 ) then
-			continue do
+private sub handleArg(byref arg as string)
+	'' If the previous option wants this argument as parameter,
+	'' call the handler with it, now that it's known.
+	'' Note: Anything is accepted, even if it starts with '-' or '@'.
+	if (fbc.optid >= 0) then
+		'' Complain about empty next argument
+		if (len(arg) = 0) then
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
 		end if
 
-		'' not an option?
-		if( (*arg)[0] <> asc( "-" ) ) then
-			'' file name?
-			if( checkFiles( arg ) = FALSE ) then
-				printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-				exit function
+		print fbc.optid, "giving next arg"
+		handleOpt(fbc.optid, arg)
+		fbc.optid = -1
+		return
+	end if
+
+	if (len(arg) = 0) then
+		'' Ignore empty argument
+		return
+	end if
+
+	select case (arg[0])
+	case asc("-")
+		dim as zstring ptr opt = strptr(arg) + 1
+
+		'' Complain about '-' only
+		if (cptr(ubyte ptr, opt)[0] = 0) then
+			'' Incomplete command line option
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Parse the option after the '-'
+		dim as integer optid = parseOption(opt)
+		if (optid < 0) then
+			'' Unrecognized command line option
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Does this option take a parameter?
+		if (option_takes_argument(optid)) then
+			'' Delay handling it, until the next argument is known.
+			fbc.optid = optid
+		else
+			'' Handle this option now
+			handleOpt(optid, arg)
+		end if
+
+	case asc("@")
+		'' Maximum nesting/recursion level
+		const MAX_LEVELS = 128
+		static as integer reclevel = 0
+
+		if (reclevel > MAX_LEVELS) then
+			'' Options file nesting level too deep (recursion?)
+			errReportEx( FB_ERRMSG_RECLEVELTOODEEP, arg, -1 )
+			fbcEnd(1)
+		end if
+
+		'' Cut off the '@' at the front to get just the file name
+		arg = right(arg, len(arg) - 1)
+
+		'' Complain about '@' only
+		if (len(arg) = 0) then
+			'' Missing file name after '@'
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Recursively read in the additional options from the file
+		reclevel += 1
+		parseArgsFromFile(arg)
+		reclevel -= 1
+
+	case else
+		'' Input file, get its extension to determine what it is
+		dim as string ext = hGetFileExt(arg)
+
+		#if defined(__FB_WIN32__) or _
+		    defined(__FB_DOS__) or _
+		    defined(__FB_CYGWIN__)
+			'' For case in-sensitive file systems
+			ext = lcase(ext)
+		#endif
+
+		select case (ext)
+		case "bas"
+			dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
+			iof->inf = arg
+			if( fbc.iof_head = NULL ) then
+				fbc.iof_head = iof
 			end if
 
-			hDelArgNode( arg )
-			continue do
-		end if
+		case "o"
+			dim as string ptr objf = listNewNode( @fbc.objlist )
+			*objf = arg
+
+		case "a"
+			dim as string ptr libf = listNewNode( @fbc.liblist )
+			*libf = arg
+
+		case "rc", "res"
+			dim as string ptr rcf = listNewNode( @fbc.rclist )
+			*rcf = arg
+
+		case "xpm"
+			if (len(fbc.xpmfile) > 0) then
+				'' Only one .xpm allowed
+				fbcErrorInvalidOption(arg)
+				fbcEnd(1)
+			end if
+			fbc.xpmfile = arg
+
+		case else
+			'' Input file without or with unknown extension
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
 
-		'' '-' only
-		if( len( arg[0] ) = 1 ) then
-			continue do
-		end if
-
-		'' option..
-		dim as integer del_cnt = 0
-
-		dim as zstring ptr p = strptr(*arg) + 1
-
-		select case as const cptr(ubyte ptr, p)[0]
-		case asc("a")
-			select case *p
-			case "a"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr objf = listNewNode( @fbc.objlist )
-				*objf = *nxt
-
-				del_cnt = 2
-
-			case "arch"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case *nxt
-				case "386"
-					value = FB_CPUTYPE_386
-				case "486"
-					value = FB_CPUTYPE_486
-				case "586"
-					value = FB_CPUTYPE_586
-				case "686"
-					value = FB_CPUTYPE_686
-				case "athlon"
-					value = FB_CPUTYPE_ATHLON
-				case "athlon-xp"
-					value = FB_CPUTYPE_ATHLONXP
-				case "athlon-fx"
-					value = FB_CPUTYPE_ATHLONFX
-				case "k8-sse3"
-					value = FB_CPUTYPE_ATHLONSSE3
-				case "pentium-mmx"
-					value = FB_CPUTYPE_PENTIUMMMX
-				case "pentium2"
-					value = FB_CPUTYPE_PENTIUM2
-				case "pentium3"
-					value = FB_CPUTYPE_PENTIUM3
-				case "pentium4"
-					value = FB_CPUTYPE_PENTIUM4
-				case "pentium4-sse3"
-					value = FB_CPUTYPE_PENTIUMSSE3
-				case "native"
-					value = FB_CPUTYPE_NATIVE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_CPUTYPE, value )
-
-				del_cnt = 2
-			end select
-
-		case asc("b")
-			select case *p
-			case "b"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
-				iof->inf = *nxt
-				if( fbc.iof_head = NULL ) then
-					fbc.iof_head = iof
-				end if
-
-				del_cnt = 2
-
-			end select
-
-		case asc("c")
-			select case *p
-			case "c"
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-				fbc.compileonly = TRUE
-				fbc.emitonly = FALSE
-				fbc.preserveobj = TRUE
-				del_cnt = 1
-
-			end select
-
-		case asc("d")
-			select case *p
-			case "d"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr def = listNewNode( @fbc.deflist )
-				*def = *nxt
-
-				del_cnt = 2
-
-			case "dylib", "dll"
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
-				del_cnt = 1
-
-			end select
-
-		case asc("e")
-			select case *p
-			case "e"
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				del_cnt = 1
-
-			case "ex"
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-				del_cnt = 1
-
-			case "exx"
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
-				del_cnt = 1
-
-			case "export"
-				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-				del_cnt = 1
-
-			end select
-
-		case asc("f")
-			select case *p
-			case "forcelang"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = fbGetLangId( strptr(*nxt) )
-
-				if( value = FB_LANG_INVALID ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				fbSetOption( FB_COMPOPT_LANG, value )
-				fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
-				fbc.objinf.lang = value
-
-				del_cnt = 2
-
-			case "fpu"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "X87", "FPU"
-					value = FB_FPUTYPE_FPU
-				case "SSE"
-					value = FB_FPUTYPE_SSE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_FPUTYPE, value )
-
-				del_cnt = 2
-
-			case "fpmode"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "PRECISE"
-					value = FB_FPMODE_PRECISE
-				case "FAST"
-					value = FB_FPMODE_FAST
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_FPMODE, value )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("g")
-			select case *p
-			case "g"
-				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
-				del_cnt = 1
-
-			case "gen"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case lcase( *nxt )
-				case "gas"
-					value = FB_BACKEND_GAS
-				case "gcc"
-					value = FB_BACKEND_GCC
-				case else
-					printInvalidOpt( arg )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_BACKEND, value )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("i")
-			select case *p
-			case "i"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incp = listNewNode( @fbc.incpathlist )
-				*incp = *nxt
-
-				del_cnt = 2
-
-			case "include"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incf = listNewNode( @fbc.preinclist )
-				*incf = *nxt
-
-				del_cnt = 2
-
-			end select
-
-		case asc("l")
-			select case *p
-			case "l"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr libf = listNewNode( @fbc.liblist )
-				*libf = *nxt
-
-				del_cnt = 2
-
-			case "lang"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = fbGetLangId( strptr(*nxt) )
-
-				if( value = FB_LANG_INVALID ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				fbSetOption( FB_COMPOPT_LANG, value )
-				fbc.objinf.lang = value
-
-				del_cnt = 2
-
-			case "lib"
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
-				del_cnt = 1
-
-			end select
-
-		case asc("m")
-			select case *p
-			case "mt"
-				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-				fbc.objinf.mt = TRUE
-				del_cnt = 1
-
-			case "m"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.mainfile = hStripPath( *nxt )
-				if( len( fbc.mainfile ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-				fbc.mainpath = hStripFilename( *nxt )
-				fbc.mainset = TRUE
-
-				del_cnt = 2
-
-			case "map"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.mapfile = *nxt
-				if( len( fbc.mapfile ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				del_cnt = 2
-
-			case "maxerr"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( *nxt = "inf" ) then
-					value = FB_ERR_INFINITE
-				else
-					value = valint( *nxt )
-					if( value <= 0 ) then
-						value = 1
-						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					end if
-				end if
-
-				fbSetOption( FB_COMPOPT_MAXERRORS, value )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("n")
-			select case *p
-			case "noerrline"
-				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
-				del_cnt = 1
-
-			case "nodeflibs"
-				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
-				del_cnt = 1
-
-			end select
-
-		case asc("o")
-			select case *p
-			case "o"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( fbc.iof_head = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.iof_head->outf = *nxt
-				fbc.iof_head = listGetNext( fbc.iof_head )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("p")
-			select case *p
-			case "p"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incp = listNewNode( @fbc.libpathlist )
-				*incp = *nxt
-
-				del_cnt = 2
-
-			case "pp"
-				fbSetOption( FB_COMPOPT_PPONLY, TRUE )
-				fbc.compileonly = TRUE
-				fbc.emitonly = TRUE
-				fbc.preserveasm = FALSE
-				del_cnt = 1
-
-			case "prefix"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.prefix = *nxt
-
-				'' Trim trailing slash
-				if( right( fbc.prefix, 1 )  = "/" ) then
-					fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
-				end if
-
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-				'' On Windows/DOS, also trim trailing backslash
-				'' (additionally to the forward slash check)
-				if( right( fbc.prefix, 1 ) = RSLASH ) then
-					fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
-				end if
-#endif
-
-				del_cnt = 2
-
-			case "profile"
-				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
-				del_cnt = 1
-
-			end select
-
-		case asc("r")
-			select case *p
-			case "r"
-				if( fbc.compileonly = FALSE )then
-					fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-					fbc.emitonly = TRUE
-				end if
-				fbc.preserveasm = TRUE
-				del_cnt = 1
-
-			end select
-
-		case asc("s")
-			select case *p
-			case "s"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.subsystem = *nxt
-				if( len( fbc.subsystem ) = 0 ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				del_cnt = 2
-
-			end select
-
-		case asc("t")
-			select case *p
-			case "t"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.stacksize = valint( *nxt ) * 1024
-				if( fbc.stacksize < FBC_MINSTACKSIZE ) then
-					fbc.stacksize = FBC_MINSTACKSIZE
-				end if
-
-				del_cnt = 2
-
-			case "target"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				'' The argument given to -target is what will
-				'' be prepended to the executable names of
-				'' cross-tools, for example:
-				''    fbc -target dos
-				'' will try to use:
-				''    bin/dos-ld[.exe]
-				''
-				'' It allows fbc to work together with
-				'' cross-gcc/binutils using system triplets:
-				''    fbc -target i686-pc-mingw32
-				'' looks for:
-				''    bin/i686-pc-mingw32-ld[.exe]
-				fbc.triplet = *nxt + "-"
-
-				'' Identify the target
-				dim as integer comptarget = parseTargetTriplet(*nxt)
-				if (comptarget < 0) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				fbSetOption( FB_COMPOPT_TARGET, comptarget )
-
-				del_cnt = 2
-
-			case "title"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.xbe_title = *nxt
-
-				del_cnt = 2
-
-			end select
-
-		case asc("v")
-			select case *p
-			case "v"
-				fbc.verbose = TRUE
-				del_cnt = 1
-
-			case "vec"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "NONE", "0"
-					value = FB_VECTORIZE_NONE
-				case "1"
-					value = FB_VECTORIZE_NORMAL
-				case "2"
-					value = FB_VECTORIZE_INTRATREE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_VECTORIZE, value )
-
-				del_cnt = 2
-
-			case "version"
-				fbc.showversion = TRUE
-				del_cnt = 1
-
-			end select
-
-		case asc("w")
-			select case *p
-			case "w"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = -2
-
-				select case *nxt
-				case "all"
-					value = -1
-
-				case "param"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_PARAMMODE )
-
-				case "escape"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
-
-				case "next"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
-
-				case "pedantic"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
-					value = -1
-
-				case else
-					value = valint( *nxt )
-				end select
-
-				if( value >= -1 ) then
-					fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
-				end if
-
-				del_cnt = 2
-
-			end select
-
-		case asc("x")
-			select case *p
-			case "x"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.outname = *nxt
-				if( len( fbc.outname ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				del_cnt = 2
-
-			end select
-
-		case asc("z")
-			select case *p
-			case "z"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = fbGetOption( FB_COMPOPT_EXTRAOPT )
-
-				select case lcase( *nxt )
-				case "gosub-setjmp"
-					value or= FB_EXTRAOPT_GOSUB_SETJMP
-				case else
-					printInvalidOpt( arg )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_EXTRAOPT, value )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("C")
-			select case *p
-			case "C"
-				fbc.preserveobj = TRUE
-				del_cnt = 1
-
-			end select
-
-		case asc("O")
-			select case *p
-			case "O"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( *nxt = "max" ) then
-					value = 3
-				else
-					value = valint( *nxt )
-					if( value < 0 ) then
-						value = 0
-						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					elseif( value > 3 ) then
-						value = 3
-					end if
-				end if
-
-				fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
-
-				del_cnt = 2
-
-			end select
-
-		case asc("R")
-			select case *p
-			case "R"
-				fbc.preserveasm = TRUE
-				del_cnt = 1
-
-			end select
-
-		case asc("W")
-			select case *p
-			case "Wa"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.gas = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt = 2
-
-			case "Wl"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt = 2
-
-			case "Wc"
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.gcc = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt = 2
-
-			end select
 		end select
+	end select
+end sub
 
-		if( del_cnt = 0 ) then
-			printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-			exit function
-		end if
+private sub parseArgsFromFile(byref filename as string)
+	dim as integer f = freefile()
+	if (open(filename, for input, as #f)) then
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, filename, -1 )
+		fbcEnd(1)
+	end if
 
-		hDelArgNode( arg )
-		if( del_cnt = 2 ) then
-			arg = listGetNext( nxt )
-			hDelArgNode( nxt )
-			nxt = arg
-		end if
-	loop
+	dim as string args
+	dim as string arg
+
+	while (eof(f) = FALSE)
+		line input #f, args
+		args = trim(args)
+
+		'' Parse the line containing command line arguments,
+		'' separated by spaces. Double- and single-quoted strings
+		'' are handled too, but nothing else.
+		do
+			dim as integer length = len(args)
+			if (length = 0) then
+				exit do
+			end if
+
+			dim as integer i = 0
+			dim as integer quotech = 0
+
+			while (i < length)
+				dim as integer ch = args[i]
+
+				select case as const (ch)
+				case asc(" ")
+					if (quotech = 0) then
+						exit while
+					end if
+
+				case asc(""""), asc("'")
+					if (quotech = ch) then
+						'' String closed
+						quotech = 0
+					elseif (quotech = 0) then
+						'' String opened
+						quotech = ch
+					end if
+
+				end select
+
+				i += 1
+			wend
+
+			if (i = 0) then
+				'' Just space, skip it
+				i = 1
+			else
+				arg = left(args, i)
+				arg = trim(arg)
+				arg = strUnquote(arg)
+				handleArg(arg)
+			end if
+
+			args = right(args, length - i)
+		loop
+	wend
+
+	close #f
+end sub
+
+private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
+	fbc.optid = -1
+
+	'' Note: ignoring argv[0], assuming it's the path used to run fbc
+	dim as string arg
+	for i as integer = 1 to (argc - 1)
+		arg = *argv[i]
+		handleArg(arg)
+	next
+
+	'' Waiting for argument to an option? If the user did something like
+	'' 'fbc foo.bas -o' this shows the error.
+	if (fbc.optid >= 0) then
+		'' Missing argument for command line option
+		fbcErrorInvalidOption(*argv[argc - 1])
+		fbcEnd(1)
+	end if
+
+	''
+	'' Check for incompatible options etc.
+	''
 
 	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
 		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
 			( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
 				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
-				exit function
+				return
 		end if
 	end if
 
-	function = TRUE
+	'' Resource scripts are only allowed for win32 & co
+	if (listGetHead(@fbc.rclist)) then
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
 
-end function
+		case else
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, *cptr(string ptr, listGetHead(@fbc.rclist)), -1)
+			fbcEnd(1)
+		end select
+	end if
+
+	'' .xpm is only allowed for Linux & co
+	if (len(fbc.xpmfile) > 0) then
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+		     FB_COMPTARGET_NETBSD
+
+		case else
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, fbc.xpmfile, -1)
+			fbcEnd(1)
+		end select
+	end if
+
+	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
+	'' complain about it when the target doesn't allow it, or just
+	'' ignore silently (that might not even be too bad for portability)?
+end sub
 
 '':::::
 private function processCompLists _
@@ -2884,110 +2857,6 @@ private function processCompLists _
     function = FALSE
 
 end function
-
-'':::::
-private sub parseCmdFile _
-	( _
-		byref optfilearg as string _
-	)
-
-	static as integer nestinglevel = 0
-
-	'' Extract the filename; will be empty if the argument was '@' only.
-	dim as string filename = right( optfilearg, len( optfilearg ) - 1 )
-
-	if( nestinglevel > FBC_MAXCMDFILE_RECLEVEL ) then
-		errReportEx( FB_ERRMSG_RECLEVELTOODEEP, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	if( hFileExists( filename ) = FALSE ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	dim as integer fnum = freefile( )
-	if( open( filename, for input, as #fnum ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILEACCESSERROR, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	dim as string ln = ""
-	dim as string arg = ""
-	while( eof(fnum) = FALSE )
-		line input #fnum, ln
-		ln = trim(ln)
-
-		dim as integer linepos = 0
-		while( linepos < len( ln ) )
-			dim as integer i = linepos
-
-			'' Parse the first arg from the line, i.e. everything before SPACE
-			'' or newline. Double-quoted strings are handled too.
-			dim as integer inside_string = FALSE
-			for i = linepos to len( ln ) - 1
-				select case ln[i]
-				case asc(" ")
-					if( inside_string = FALSE ) then
-						exit for
-					end if
-
-				case asc(!"\"")
-					inside_string = (inside_string = FALSE)
-
-				end select
-			next
-
-			arg = trim( mid( ln, linepos + 1, i - linepos ) )
-			linepos = i + 1
-
-			'' Not just space?
-			if( len( arg ) > 0 ) then
-				'' Check for @filename in such a file (recursion/nesting):
-				if( arg[0] = asc("@") ) then
-					nestinglevel += 1
-					parseCmdFile( arg )
-					nestinglevel -= 1
-				else
-					'' Remember normal argument for later...
-					dim as string ptr node = listNewNode( @fbc.arglist )
-					*node = arg
-				end if
-			end if
-		wend
-	wend
-
-	close #fnum
-end sub
-
-'':::::
-private sub parseCmd _
-	( _
-	)
-
-	dim as string ptr arg = any
-	dim as integer argc = any
-
-	argc = 1
-	do
-		arg = listNewNode( @fbc.arglist )
-		assert( arg <> NULL )
-
-		*arg = command( argc )
-		if( len( arg[0] ) = 0 ) then
-			listDelNode( @fbc.arglist, arg )
-			exit do
-		end if
-
-		if( (*arg)[0] = asc("@") ) then
-			parseCmdFile( *arg )
-			listDelNode( @fbc.arglist, arg )
-		end if
-
-		argc += 1
-	loop
-
-end sub
 
 '':::::
 private sub getLibList _
