@@ -4,6 +4,7 @@
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 
+#include once "fbc.bi"
 #include once "fb.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
@@ -339,8 +340,29 @@ sub symbDefineInit _
 		               FALSE, defTb(i).proc, defTb(i).flags )
 	next
 
-	'' add "target" define
-	def = env.target.define
+	'' Add __FB_<target>__ define
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		def = @"__FB_CYGWIN__"
+	case FB_COMPTARGET_DARWIN
+		def = @"__FB_DARWIN__"
+	case FB_COMPTARGET_DOS
+		def = @"__FB_DOS__"
+	case FB_COMPTARGET_FREEBSD
+		def = @"__FB_FREEBSD__"
+	case FB_COMPTARGET_LINUX
+		def = @"__FB_LINUX__"
+	case FB_COMPTARGET_NETBSD
+		def = @"__FB_NETBSD__"
+	case FB_COMPTARGET_OPENBSD
+		def = @"__FB_OPENBSD__"
+	case FB_COMPTARGET_WIN32
+		def = @"__FB_WIN32__"
+	case FB_COMPTARGET_XBOX
+		def = @"__FB_XBOX__"
+	case else
+		fbcNotReached()
+	end select
 
 	symbAddDefine( def, NULL, 0 )
 

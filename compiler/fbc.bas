@@ -324,163 +324,48 @@ end sub
 private sub initTarget( )
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 		env.target.size_t_type = FB_DATATYPE_UINT
 		env.target.wchar.type = FB_DATATYPE_USHORT
 		env.target.wchar.size = 2
-
-		env.target.define = @"__FB_CYGWIN__"
-		env.target.entrypoint = @"main"
 		env.target.underprefix = TRUE
-		env.target.constsection = @"rdata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL
-
-	case FB_COMPTARGET_DARWIN
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_DARWIN__"
-		env.target.entrypoint = @"main"
-		env.target.underprefix = FALSE
-		env.target.constsection = @"const"
-		env.target.omitsectiondirective = TRUE
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
 
 	case FB_COMPTARGET_DOS
 		env.target.size_t_type = FB_DATATYPE_ULONG
 		env.target.wchar.type = FB_DATATYPE_UBYTE
 		env.target.wchar.size = 1
-
-		env.target.define = @"__FB_DOS__"
-		env.target.entrypoint = @"main"
 		env.target.underprefix = TRUE
-		env.target.constsection = @"rdata"
 
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case FB_COMPTARGET_FREEBSD
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_DARWIN
 		env.target.size_t_type = FB_DATATYPE_UINT
 		env.target.wchar.type = FB_DATATYPE_UINT
 		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_FREEBSD__"
-		env.target.entrypoint = @"main"
 		env.target.underprefix = FALSE
-		env.target.constsection = @"rodata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case FB_COMPTARGET_LINUX
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_LINUX__"
-		env.target.entrypoint = @"main"
-		env.target.underprefix = FALSE
-		env.target.constsection = @"rodata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case FB_COMPTARGET_NETBSD
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_NETBSD__"
-		env.target.entrypoint = @"main"
-		env.target.underprefix = FALSE
-		env.target.constsection = @"rodata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case FB_COMPTARGET_OPENBSD
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_OPENBSD__"
-		env.target.entrypoint = @"main"
-		env.target.underprefix = FALSE
-		env.target.constsection = @"rodata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_CDECL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	case FB_COMPTARGET_WIN32
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_USHORT
-		env.target.wchar.size = 2
-
-		env.target.define = @"__FB_WIN32__"
-		env.target.entrypoint = @"main"
-		env.target.underprefix = TRUE
-		env.target.constsection = @"rdata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL
 
 	case FB_COMPTARGET_XBOX
 		env.target.size_t_type = FB_DATATYPE_ULONG
 		env.target.wchar.type = FB_DATATYPE_UINT
 		env.target.wchar.size = FB_INTEGERSIZE
-
-		env.target.define = @"__FB_XBOX__"
-		env.target.entrypoint = @"XBoxStartup"
 		env.target.underprefix = TRUE
-		env.target.constsection = @"rdata"
-
-		'' Default calling convention, must match the rtlib's FBCALL
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-
-		'' Specify whether stdcall or EXTERN "windows" result in STDCALL (with @N),
-		'' or STDCALL_MS (without @N).
-		env.target.stdcall = FB_FUNCMODE_STDCALL
 
 	case else
-		print "unsupported target in " & __FILE__
+		fbcNotReached()
+	end select
 
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+		env.target.stdcall = FB_FUNCMODE_STDCALL
+
+	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_DOS, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+		env.target.fbcall = FB_FUNCMODE_CDECL
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	case else
+		fbcNotReached()
 	end select
 
 end sub
@@ -1886,6 +1771,17 @@ sub fbcAssert_ _
 			*filename & "(" & linenum & "):" & *funcname & "(): " & _
 			"assertion failed: " & *testtext
 	end if
+end sub
+
+sub fbcNotReached_ _
+	( _
+		byval filename as zstring ptr, _
+		byval funcname as zstring ptr, _
+		byval linenum as integer _
+	)
+	print "internal error at " & _
+		*filename & "(" & linenum & "):" & *funcname & "(): " & _
+		"should not be reached"
 end sub
 
 private sub fbcErrorInvalidOption(byref arg as string)

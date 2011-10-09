@@ -743,7 +743,12 @@ end function
 '':::::
 function fbGetEntryPoint( ) as string static
 
-	function = *env.target.entrypoint
+	'' All targets use main(), except for xbox...
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX) then
+		function = "XBoxStartup"
+	else
+		function = "main"
+	end if
 
 end function
 

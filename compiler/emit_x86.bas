@@ -6,6 +6,7 @@
 
 
 #include once "fb.bi"
+#include once "fbc.bi"
 #include once "fbint.bi"
 #include once "reg.bi"
 #include once "ir.bi"
@@ -7059,7 +7060,8 @@ private function _getSectionString _
 
 	ostr = NEWLINE
 
-	if( env.target.omitsectiondirective = FALSE ) then
+	'' Omit the .section directive on Darwin
+	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 		ostr += ".section "
 	end if
 
@@ -7067,7 +7069,21 @@ private function _getSectionString _
 
 	select case as const section
 	case IR_SECTION_CONST
-		ostr += *env.target.constsection
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
+		     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+			ostr += "rdata"
+
+		case FB_COMPTARGET_DARWIN
+			ostr += "const"
+
+		case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
+		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+			ostr += "rodata"
+
+		case else
+			fbcNotReached()
+		end select
 
 	case IR_SECTION_DATA
 		ostr += "data"
