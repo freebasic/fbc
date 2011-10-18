@@ -41,16 +41,6 @@ const FB_DEFAULT_MAXERRORS  = 10
 
 const FB_ERR_INFINITE       = &h7fffffff
 
-''
-#ifndef TRUE
-const TRUE                  = -1
-const FALSE                 = 0
-#endif
-
-#ifndef NULL
-const NULL                  = 0
-#endif
-
 const INVALID               = -1
 
 ''
