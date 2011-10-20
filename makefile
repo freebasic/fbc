@@ -1024,7 +1024,7 @@ $(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
 
-$(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
+$(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
 $(newcompiler)/config.bi: compiler/config.bi.in
