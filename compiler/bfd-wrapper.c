@@ -40,8 +40,9 @@ bfd_format hMapFormat(enum fb_bfd_format format) {
 		return bfd_core;
 	case fb_bfd_type_end:
 		return bfd_type_end;
+	default:
+		return bfd_unknown;
 	}
-	return bfd_unknown;
 }
 
 enum fb_bfd_architecture {
@@ -53,8 +54,9 @@ enum bfd_architecture hMapArch(enum fb_bfd_architecture arch) {
 	switch (arch) {
 	case fb_bfd_arch_i386:
 		return bfd_arch_i386;
+	default:
+		return bfd_arch_unknown;
 	}
-	return bfd_arch_unknown;
 }
 
 void fb_bfd_init(void) {
