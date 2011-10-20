@@ -2788,6 +2788,7 @@ private sub addDefaultLibs()
 		hAddLib( "mingwex" )
 		hAddLib( "moldname" )
 		hAddLib( "supc++" )
+		hAddLib( "gcc_eh" )
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
