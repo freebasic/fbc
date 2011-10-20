@@ -2686,19 +2686,27 @@ private sub setDefaultLibPaths()
 	'' and the current path
 	fbcAddDefLibPath( "./" )
 
+#ifndef ENABLE_STANDALONE
 	'' Add gcc's private lib directory, to find libgcc and libsupc++
 	'' This is for installing into Unix-like systems, and not for
 	'' standalone, which has libgcc/libsupc++ in its own lib/.
-	#ifndef ENABLE_STANDALONE
-		fbcAddLibPathFor("gcc")
-		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-			'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
-			'' But this is for installing into DJGPP, where apparently supcxx is working fine.
-			fbcAddLibPathFor("supcxx")
-		else
-			fbcAddLibPathFor("supc++")
-		end if
-	#endif
+	fbcAddLibPathFor("gcc")
+
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
+		'' But this is for installing into DJGPP, where apparently supcxx is working fine.
+		fbcAddLibPathFor("supcxx")
+
+		'' Help out the DJGPP linker. It doesn't seem to add
+		'' the main DJGPP lib path by default like on other
+		'' systems.
+		'' Note: Shouldn't look for libc here -- we're supposed
+		'' to have the fixed version of it in our lib/freebas/.
+		fbcAddLibPathFor("m")
+	else
+		fbcAddLibPathFor("supc++")
+	end if
+#endif
 
 end sub
 
