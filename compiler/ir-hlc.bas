@@ -97,8 +97,8 @@ dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
     @"wchar"    , _ '' wchar
     @"integer"  , _ '' int
     @"uinteger" , _ '' uint
-    @"integer"  , _ '' enum
     @"bool32"   , _ '' boolean int
+    @"integer"  , _ '' enum
     @"integer"  , _ '' bitfield
     @"long"     , _ '' long
     @"ulong"    , _ '' ulong

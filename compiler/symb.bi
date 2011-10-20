@@ -17,7 +17,7 @@ enum FB_DATACLASS
 end enum
 
 '' if FB_DATATYPE changes, take care to update:
-'' - ir-hlc.bas::dtypeTB() array
+'' - ir-hlc.bas::dtypeName() array
 '' - edbg_stab.bas::remapTB() array
 '' - symb-mangling.bas::typecodeTB() array
 '' - symb-data.bas::symb_dtypeTB() array
