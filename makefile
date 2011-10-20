@@ -127,11 +127,6 @@ CC := gcc
 CFLAGS := -O2
 AR := ar
 
-# For copying fbc and the includes/libraries into $(prefix),
-# should be better than plain cp at replacing fbc while fbc is running.
-INSTALL_PROGRAM := install
-INSTALL_FILE := install -m 644
-
 -include config.mk
 
 # The default build directory
@@ -424,6 +419,13 @@ endif
 
 ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
+  INSTALL_PROGRAM := cp
+  INSTALL_FILE := cp
+else
+  # For copying fbc and the includes/libraries into $(prefix),
+  # should be better than plain cp at replacing fbc while fbc is running.
+  INSTALL_PROGRAM := install
+  INSTALL_FILE := install -m 644
 endif
 
 #
