@@ -516,7 +516,7 @@ ifndef DISABLE_OBJINFO
     FBLFLAGS += -l intl
   endif
   ifeq ($(HOST_OS),win32)
-    FBLFLAGS += -l user32
+    FBLFLAGS += -l intl -l user32
   endif
 endif
 
