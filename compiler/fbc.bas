@@ -1060,10 +1060,16 @@ private function linkFiles() as integer
 	ldcline += " " + fbc.extopt.ld
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
+	'' When using the DOS DJGPP tools, the command line length might be
+	'' limited, and with our generally long ld command lines (especially
+	'' when linking fbc) the line must be passed to ld through an @file.
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
 		dim as string resfile = hCreateResFile( ldcline )
 		if( len( resfile ) = 0 ) then
 			exit function
+		end if
+		if (fbc.verbose) then
+			print "ld options in '" & resfile & "': ", ldcline
 		end if
 		ldcline = "@" + resfile
 	end if
