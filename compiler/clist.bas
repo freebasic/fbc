@@ -21,9 +21,6 @@ function clistNew _
 						flags or LIST_FLAGS_LINKFREENODES )
 
 	clist->head = clist->list.fhead
-	clist->tail = cast( TLISTNODE ptr, _
-						cast( byte ptr, clist->list.fhead ) + _
-								((nodes-1) * clist->list.nodelen) )
 
 end function
 
@@ -34,7 +31,6 @@ function clistFree _
 	) as integer
 
 	clist->head = NULL
-	clist->tail = NULL
 
 	function = listFree( @clist->list )
 

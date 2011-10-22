@@ -6,7 +6,6 @@
 type TCLIST
 	list	as TLIST
 	head	as TLISTNODE ptr
-	tail	as TLISTNODE ptr
 end type
 
 declare function clistNew _
