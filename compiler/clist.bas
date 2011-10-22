@@ -43,27 +43,13 @@ end function
 '':::::
 function clistNextNode _
 	( _
-		byval clist as TCLIST ptr, _
-		byval do_circ as integer _
+		byval clist as TCLIST ptr _
 	) as any ptr
 
 	dim as TLISTNODE ptr node = any
 
 	if( clist->head = NULL ) then
-		if( do_circ = FALSE ) then
-			dim as integer nodes = cunsg(clist->list.nodes) \ 4
-			listAllocTB( @clist->list, nodes )
-
-			node = clist->list.fhead
-
-			clist->tail->next = clist->list.fhead
-
-			clist->tail = cast( TLISTNODE ptr, _
-							cast( byte ptr, node ) + ((nodes-1) * clist->list.nodelen) )
-
-		else
-			node = clist->list.tbhead->nodetb
-		end if
+		node = clist->list.tbhead->nodetb
 	else
 		node = clist->head
 	end if
@@ -73,5 +59,3 @@ function clistNextNode _
 	clist->head = node->next
 
 end function
-
-

@@ -24,8 +24,7 @@ declare function clistFree _
 
 declare function clistNextNode _
 	( _
-		byval clist as TCLIST ptr, _
-		byval do_circ as integer = TRUE _
+		byval clist as TCLIST ptr _
 	) as any ptr
 
 #endif '' __LIST_BI__
