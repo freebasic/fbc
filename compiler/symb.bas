@@ -62,8 +62,7 @@ sub symbInitSymbols static
     '' symbol id string pool
     poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
 
-	'' chain list
-	clistNew( @symb.chainlist, 32, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
+	symb.chainpoolhead = 0
 
 	'' namespace extension's list
 	listNew( @symb.nsextlist, FB_INITSYMBOLNODES \ 16, len( FBNAMESPC_EXT ), LIST_FLAGS_CLEAR )
@@ -210,8 +209,6 @@ sub symbEnd
 
 	''
 	listFree( @symb.nsextlist )
-
-	clistFree( @symb.chainlist )
 
 	poolFree( @symb.namepool )
 
@@ -825,6 +822,14 @@ sub symbHashListRemoveNamespace _
 
 end sub
 
+private function chainpoolNext() as FBSYMCHAIN ptr
+	symb.chainpoolhead += 1
+	if (symb.chainpoolhead >= CHAINPOOL_SIZE) then
+		symb.chainpoolhead = 0
+	end if
+	return @symb.chainpool(symb.chainpoolhead)
+end function
+
 '':::::
 function symbLookup _
 	( _
@@ -854,7 +859,7 @@ function symbLookup _
     do
     	dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
         if( sym <> NULL ) then
-            chain_ = clistNextNode( @symb.chainlist )
+			chain_ = chainpoolNext()
 
 			chain_->sym = sym
 			chain_->next = NULL
@@ -923,7 +928,7 @@ private function hLookupImportHash _
     	dim as FBSYMBOL ptr exp_ = symbGetCompExportHead( symbGetNamespace( chain_->sym ) )
     	do
     		if( symbGetExportNamespc( exp_ ) = ns ) then
-            	dim as FBSYMCHAIN ptr node = clistNextNode( @symb.chainlist )
+				dim as FBSYMCHAIN ptr node = chainpoolNext()
 
 				node->sym = chain_->sym
 				node->next = NULL
@@ -969,7 +974,7 @@ private function hLookupImportList _
 									id, _
 									index )
     	if( sym <> NULL ) then
-           	dim as FBSYMCHAIN ptr chain_ = clistNextNode( @symb.chainlist )
+			dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
 
 			chain_->sym = sym
             chain_->next = NULL
@@ -1019,7 +1024,7 @@ function symbLookupAt _
     	end if
 
     else
-    	dim as FBSYMCHAIN ptr chain_ = clistNextNode( @symb.chainlist )
+		dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
     	chain_->sym = sym
     	chain_->next = NULL
     	chain_->isimport = FALSE

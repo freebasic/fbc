@@ -3,7 +3,6 @@
 ''
 
 #include once "list.bi"
-#include once "clist.bi"
 #include once "pool.bi"
 #include once "ast-op.bi"
 
@@ -712,12 +711,17 @@ type FB_GLOBCTORLIST
 	list			as TLIST
 end type
 
+const CHAINPOOL_SIZE = 32
+
 type SYMBCTX
 	inited			as integer
 
 	symlist			as TLIST					'' (of FBSYMBOL)
 	hashlist		as FBHASHTBLIST
-	chainlist		as TCLIST					'' (of FBSYMHASH)
+
+	'' FBSYMCHAIN's are allocated from this buffer
+	chainpool(0 to (CHAINPOOL_SIZE - 1)) as FBSYMCHAIN
+	chainpoolhead		as integer
 
 	globnspc		as FBSYMBOL					'' global namespace
 

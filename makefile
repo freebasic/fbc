@@ -540,7 +540,6 @@ FBC_BI := $(newcompiler)/config.bi
 FBC_BI += compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
 FBC_BI += compiler/bfd-wrapper.bi
-FBC_BI += compiler/clist.bi
 FBC_BI += compiler/dstr.bi
 FBC_BI += compiler/emit.bi
 FBC_BI += compiler/emitdbg.bi
@@ -573,7 +572,7 @@ FBC_BAS := \
   ast-node-link ast-node-load ast-node-mem ast-node-misc ast-node-namespace \
   ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
-  clist dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
+  dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
   fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
   parser-assignment parser-comment parser-compound parser-compound-do \
   parser-compound-extern parser-compound-for parser-compound-if \
