@@ -152,6 +152,7 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_NATIVE
+	FB_CPUTYPECOUNT
 end enum
 
 const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486
@@ -512,13 +513,6 @@ declare sub fbMainBegin _
 
 declare sub fbMainEnd _
 	( _
-	)
-
-declare sub fbReportRtError _
-	( _
-		byval modname as zstring ptr, _
-		byval funname as zstring ptr, _
-		byval errnum as integer _
 	)
 
 declare function fbGetLangOptions _

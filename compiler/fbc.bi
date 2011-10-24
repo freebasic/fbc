@@ -18,10 +18,17 @@ type FBC_EXTOPT
 	gcc			as zstring * 128
 end type
 
-type FBC_IOFILE
-	inf			as string 							'' input file (*.bas)
-	asmf		as string 							'' intermediate file (*.asm)
-	outf		as string 							'' output file (*.o)
+enum
+	FBCMODULE_BAS = 0
+	FBCMODULE_RC
+	FBCMODULE_XPM
+end enum
+
+type FBCMODULE
+	as integer type   '' FBCMODULE_*
+	as string srcfile '' input file
+	as string asmfile '' intermediate .asm/.c file
+	as string objfile '' output .o file
 end type
 
 type FBC_OBJINF
@@ -31,8 +38,9 @@ end type
 
 '' global context
 type FBCCTX
-	'' Current optin during command line parsing
-	optid				as integer
+	'' For command line parsing
+	optid				as integer       '' Current option
+	nextmodule			as FBCMODULE ptr '' Input file that receives the next -o filename
 
 	emitonly			as integer
 	compileonly			as integer
@@ -41,25 +49,21 @@ type FBCCTX
 	verbose				as integer
 	stacksize			as integer
 	showversion			as integer
-	target				as integer
 
-	'' file and path passed on cmd-line
-	inoutlist			as TLIST					'' of FBC_IOFILE
-	objlist				as TLIST					'' of string ptr
-	deflist				as TLIST					'' of string ptr
-	preinclist			as TLIST					'' of string ptr
-	incpathlist			as TLIST					'' of string ptr
-	liblist				as TLIST					'' of string ptr
-	libpathlist			as TLIST					'' of string ptr
-	rclist				as TLIST   '' List of input .rc's (for win32)
+	modules				as TLIST '' FBCMODULE's
+	temps				as TLIST '' Temporary files to delete at shutdown
+	objlist				as TLIST '' Objects from command line and from compilation
+	deflist				as TLIST
+	preinclist			as TLIST
+	incpathlist			as TLIST
+	liblist				as TLIST
+	libpathlist			as TLIST
 
 	'' libs and paths passed to LD
 	ld_liblist			as TLIST					'' of FBS_LIB
 	ld_libhash			as THASH
 	ld_libpathlist		as TLIST					'' of FBS_LIB
 	ld_libpathhash		as THASH
-
-	iof_head			as FBC_IOFILE ptr			'' to keep track of the .bas' and -o's
 
 	outname 			as zstring * FB_MAXPATHLEN+1
 	mainpath			as zstring * FB_MAXPATHLEN+1
@@ -71,7 +75,6 @@ type FBCCTX
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
 	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
-	xpmfile				as zstring * FB_MAXPATHLEN+1
 
 	'' Compiler paths
 	binpath				as zstring * FB_MAXPATHLEN+1

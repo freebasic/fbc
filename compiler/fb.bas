@@ -1233,33 +1233,6 @@ function fbIncludeFile _
 end function
 
 '':::::
-sub fbReportRtError _
-	( _
-		byval modname as zstring ptr, _
-		byval funname as zstring ptr, _
-		byval errnum as integer _
-	) static
-
-	print
-
-	print "Internal compiler error"; errnum;
-	if( modname <> NULL ) then
-		print " at "; *modname; "::";
-		if( funname <> NULL ) then
-			print *funname;
-		end if
-	end if
-	print " while parsing "; env.inf.name;
-	if( parser.currproc <> NULL ) then
-		print ":"; *symbGetName( parser.currproc );
-	end if
-	print "("; cuint( lexLineNum( ) ); ")"
-
-	print
-
-end sub
-
-'':::::
 function fbGetLangId _
 	( _
 		byval txt as zstring ptr _
