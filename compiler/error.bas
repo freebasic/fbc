@@ -293,7 +293,8 @@ end type
 		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
 		@"Unsupported statement in -gen gcc mode", _
 		@"Too many labels", _
-		@"Expected '#ENDIF'" _
+		@"Expected '#ENDIF'", _
+		@"Resource file given for target system that does not support them" _
 	}
 
 

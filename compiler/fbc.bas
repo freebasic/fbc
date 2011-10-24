@@ -1629,36 +1629,17 @@ private sub handleArg(byref arg as string)
 			*libf = arg
 
 		case "rc", "res"
-			'' Resource scripts are only allowed for win32 & co
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
-
-			case else
-				fbcErrorInvalidOption(arg)
-				fbcEnd(1)
-			end select
-
 			addModule(arg, FBCMODULE_RC)
 
 		case "xpm"
 			static as integer count = 0
 
-			'' Can have only one .xpm
+			'' Can have only one .xpm, or the fb_program_icon
+			'' symbol will be duplicated
 			if (count >= 1) then
 				fbcErrorInvalidOption(arg)
 				fbcEnd(1)
 			end if
-
-			'' The embedded .xpm is only useful for the X11 gfxlib
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-			     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-			     FB_COMPTARGET_NETBSD
-
-			case else
-				fbcErrorInvalidOption(arg)
-				fbcEnd(1)
-			end select
 
 			count += 1
 			addModule(arg, FBCMODULE_XPM)
@@ -2103,6 +2084,17 @@ private function compileBas _
 end function
 
 private function compileXpm(byval module as FBCMODULE ptr) as integer
+	'' The embedded .xpm is only useful for the X11 gfxlib
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_NETBSD
+
+	case else
+		errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, module->srcfile, -1)
+		return FALSE
+	end select
+
 	#define STATE_OUT_STRING	0
 	#define STATE_IN_STRING		1
 
@@ -2337,6 +2329,15 @@ private function assembleBas(byval module as FBCMODULE ptr) as integer
 end function
 
 private function assembleRc(byval module as FBCMODULE ptr) as integer
+	'' Resource scripts are only allowed for win32 & co
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+
+	case else
+		errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, module->srcfile, -1)
+		return FALSE
+	end select
+
 	static as string compiler
 
 	if (len(compiler) = 0) then
