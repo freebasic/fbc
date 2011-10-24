@@ -84,20 +84,6 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
-declare sub fbcAssert_ _
-	( _
-		byval testtext as zstring ptr, _
-		byval filename as zstring ptr, _
-		byval funcname as zstring ptr, _
-		byval linenum as integer _
-	)
-#macro fbcAssert(test)
-	if ((test) = 0) then
-		fbcAssert_(#test, __FILE__, __FUNCTION__, __LINE__)
-	end if
-#endmacro
-#define fbcNotReached() fbcAssert(FALSE)
-
 extern fbc as FBCCTX
 
 #endif '' __FBC_BI__

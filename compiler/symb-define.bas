@@ -360,8 +360,6 @@ sub symbDefineInit _
 		def = @"__FB_WIN32__"
 	case FB_COMPTARGET_XBOX
 		def = @"__FB_XBOX__"
-	case else
-		fbcNotReached()
 	end select
 
 	symbAddDefine( def, NULL, 0 )
@@ -386,8 +384,6 @@ sub symbDefineInit _
 
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
 
-	case else
-		fbcNotReached()
 	end select
 
 	'' add "main" define

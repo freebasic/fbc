@@ -7077,12 +7077,9 @@ private function _getSectionString _
 		case FB_COMPTARGET_DARWIN
 			ostr += "const"
 
-		case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
-		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+		case else
 			ostr += "rodata"
 
-		case else
-			fbcNotReached()
 		end select
 
 	case IR_SECTION_DATA

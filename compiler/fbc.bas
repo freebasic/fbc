@@ -829,18 +829,6 @@ private sub setDefaultOptions( )
 
 end sub
 
-sub fbcAssert_ _
-	( _
-		byval testtext as zstring ptr, _
-		byval filename as zstring ptr, _
-		byval funcname as zstring ptr, _
-		byval linenum as integer _
-	)
-	print "bug: failure at " & _
-		*filename & "(" & linenum & "):" & *funcname & "(): " & _
-		*testtext
-end sub
-
 private sub fbcErrorInvalidOption(byref arg as string)
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
 end sub
@@ -1408,8 +1396,6 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
 
-	case else
-		fbcAssert(FALSE)
 	end select
 end sub
 
@@ -1770,14 +1756,6 @@ private sub fbcInit2()
 		env.target.wchar.size = 1
 		env.target.underprefix = TRUE
 
-	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_LINUX, _
-	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD, _
-	     FB_COMPTARGET_DARWIN
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = FALSE
-
 	case FB_COMPTARGET_XBOX
 		env.target.size_t_type = FB_DATATYPE_ULONG
 		env.target.wchar.type = FB_DATATYPE_UINT
@@ -1785,7 +1763,11 @@ private sub fbcInit2()
 		env.target.underprefix = TRUE
 
 	case else
-		fbcNotReached()
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = FALSE
+
 	end select
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -1793,13 +1775,10 @@ private sub fbcInit2()
 		env.target.fbcall = FB_FUNCMODE_STDCALL
 		env.target.stdcall = FB_FUNCMODE_STDCALL
 
-	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_DOS, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, FB_COMPTARGET_OPENBSD
+	case else
 		env.target.fbcall = FB_FUNCMODE_CDECL
 		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
 
-	case else
-		fbcNotReached()
 	end select
 
 	'' Setup/calculate the paths to bin/ (needed when invoking helper
