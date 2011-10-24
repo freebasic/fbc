@@ -1508,28 +1508,14 @@ end sub
 
 sub fbcAssert_ _
 	( _
-		byval test as integer, _
 		byval testtext as zstring ptr, _
 		byval filename as zstring ptr, _
 		byval funcname as zstring ptr, _
 		byval linenum as integer _
 	)
-	if (test = FALSE) then
-		print "internal error at " & _
-			*filename & "(" & linenum & "):" & *funcname & "(): " & _
-			"assertion failed: " & *testtext
-	end if
-end sub
-
-sub fbcNotReached_ _
-	( _
-		byval filename as zstring ptr, _
-		byval funcname as zstring ptr, _
-		byval linenum as integer _
-	)
-	print "internal error at " & _
+	print "bug: failure at " & _
 		*filename & "(" & linenum & "):" & *funcname & "(): " & _
-		"should not be reached"
+		*testtext
 end sub
 
 private sub fbcErrorInvalidOption(byref arg as string)

@@ -83,20 +83,17 @@ end type
 
 declare sub fbcAssert_ _
 	( _
-		byval test as integer, _
 		byval testtext as zstring ptr, _
 		byval filename as zstring ptr, _
 		byval funcname as zstring ptr, _
 		byval linenum as integer _
 	)
-#define fbcAssert(test) fbcAssert_((test), #test, __FILE__, __FUNCTION__, __LINE__)
-declare sub fbcNotReached_ _
-	( _
-		byval filename as zstring ptr, _
-		byval funcname as zstring ptr, _
-		byval linenum as integer _
-	)
-#define fbcNotReached() fbcNotReached_(__FILE__, __FUNCTION__, __LINE__)
+#macro fbcAssert(test)
+	if ((test) = 0) then
+		fbcAssert_(#test, __FILE__, __FUNCTION__, __LINE__)
+	end if
+#endmacro
+#define fbcNotReached() fbcAssert(FALSE)
 
 extern fbc as FBCCTX
 
