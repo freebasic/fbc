@@ -2281,6 +2281,11 @@ private function assembleBas(byval module as FBCMODULE ptr) as integer
 
 	function = FALSE
 
+	'' *.o name based on *.asm name unless given via -o <file>
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->asmfile) & ".o"
+	end if
+
 	if (len(assembler) = 0) then
 		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
 			assembler = "gcc"
@@ -2338,10 +2343,20 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 		return FALSE
 	end select
 
-	static as string compiler
+#if defined(ENABLE_STANDALONE) and defined(__FB_WIN32__)
+	'' Using GoRC for the classical native win32 standalone build
+	'' Note: GoRC /fo doesn't accept anything except *.obj, not even *.o,
+	'' so we need to make it *.obj and then rename it afterwards.
 
-	if (len(compiler) = 0) then
-		compiler = fbcFindBin("GoRC")
+	'' *.obj name based on *.asm name unless given via -o <file>
+	dim as integer need_rename = FALSE
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->asmfile) & ".obj"
+	else
+		if (hGetFileExt(module->objfile) <> "obj") then
+			need_rename = TRUE
+			module->objfile &= ".obj"
+		end if
 	end if
 
 	'' Change the include env var to point to the (hopefully present)
@@ -2349,16 +2364,11 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	dim as string oldinclude = trim(environ("INCLUDE"))
 	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
 
-	'' TODO: GoRC only accepts *.obj as output file name, not even .o
-	'' Work around by using a temporary .obj and then rename it to the
-	'' wanted -o name?
-	module->objfile = hStripExt(module->objfile) + ".obj"
-
 	dim as string ln = "/ni /nw /o "
-	ln &= "/fo """ & module->objfile & """ "
-	ln &= """" & module->srcfile & """"
+	ln &= "/fo """ & module->objfile & """"
+	ln &= " """ & module->srcfile & """"
 
-	if (fbcRunBin("compiling resource", compiler, ln) = FALSE) then
+	if (fbcRunBin("compiling .rc", fbcFindBin("GoRC"), ln) = FALSE) then
 		return FALSE
 	end if
 
@@ -2367,10 +2377,38 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 		setenviron "INCLUDE=" + oldinclude
 	end if
 
-	return TRUE
+	if (need_rename) then
+		dim as string badname = module->objfile
+		module->objfile = hStripExt(module->objfile)
+		'' Rename back so it will be found by ld/the user
+		function = (name(badname, module->objfile) = 0)
+	else
+		function = TRUE
+	end if
+
+#else
+	'' Using binutils' windres for all other setups (e.g. cross-compiling
+	'' linux -> win32)
+	'' Note: windres uses gcc -E to preprocess the .rc by default,
+	'' and that's not 100% compatible to GoRC (e.g. backslashes in
+	'' paths/filenames are seen as escape sequences by gcc, but not GoRC)
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->asmfile) & ".obj"
+	end if
+
+	dim as string ln = "--output-format=coff --target=pei-i386"
+	ln &= " """ & module->srcfile & """"
+	ln &= " """ & module->objfile & """"
+
+	function = fbcRunBin("compiling .rc", fbcFindBin("windres"), ln)
+#endif
 end function
 
 private function assembleXpm(byval module as FBCMODULE ptr) as integer
+	'' *.o name based on *.asm name unless given via -o <file>
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->asmfile) & ".o"
+	end if
 	dim as string ln = module->asmfile + " --32 -o " + module->objfile
 	return fbcRunBin("assembling", fbcFindBin("as"), ln)
 end function
@@ -2380,11 +2418,6 @@ private function assembleModules() as integer
 
 	dim as FBCMODULE ptr module = listGetHead(@fbc.modules)
 	while (module)
-		'' *.o file name, based on the *.asm file name unless given via -o ...
-		if (len(module->objfile) = 0) then
-			module->objfile = hStripExt(module->asmfile) + ".o"
-		end if
-
 		select case (module->type)
 		case FBCMODULE_BAS
 			assembleBas(module)
