@@ -879,16 +879,16 @@ private function linkFiles() as integer
 			end select
 		end if
 
+		'' export all symbols declared as EXPORT
+		if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
+		    fbGetOption( FB_COMPOPT_EXPORT ) ) then
+			ldcline += " --export-dynamic"
+		end if
+
 	case FB_COMPTARGET_XBOX
 		ldcline += " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
 
 	end select
-
-	'' export all symbols declared as EXPORT
-	if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
-	    fbGetOption( FB_COMPOPT_EXPORT ) ) then
-		ldcline += " --export-dynamic"
-	end if
 
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
 		'' For DJGPP, the custom ldscript must always be used,
