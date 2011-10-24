@@ -2009,6 +2009,16 @@ private function compileBas _
 
 	function = FALSE
 
+	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+		module->asmfile &= ".c"
+	else
+		module->asmfile &= ".asm"
+	end if
+
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(module->asmfile)
+	end if
+
 	if (fbc.verbose) then
 		print "compiling: ", module->srcfile; " -o "; module->asmfile
 	end if
@@ -2062,7 +2072,80 @@ private function compileBas _
 	function = TRUE
 end function
 
+private function parseXpm _
+	( _
+		byref xpmfile as string, _
+		byref code as string _
+	) as integer
+
+	code += !"\ndim shared as zstring ptr "
+	code += "fb_program_icon_data"
+	code += !"(0 to ...) = _\n{ _\n"
+
+	dim as integer f = freefile()
+	if (open(xpmfile, for input, as #f)) then
+		return FALSE
+	end if
+
+	dim as string ln
+
+	'' Check for the header line
+	line input #f, ln
+	if (ucase(ln) <> "/* XPM */") then
+		'' Invalid XPM header
+		return FALSE
+	end if
+
+	'' Check for lines containing strings (color and pixel lines)
+	'' Other lines (declaration line, empty lines, C comments, ...) aren't
+	'' explicitely handled, but should automatically be ignored, as long as
+	'' they don't contain strings.
+	dim as integer saw_rows = FALSE
+	while (eof(f) = FALSE)
+		line input #f, ln
+
+		'' Strip everything in front of the first '"'
+		ln = right(ln, len(ln) - (instr(ln, """") - 1))
+
+		'' Strip everything behind the second '"'
+		ln = left(ln, instr(2, ln, """"))
+
+		'' Got something left?
+		if (len(ln) > 0) then
+			'' Add an entry to the array, in a new line,
+			'' separated by a comma, if it's not the first one.
+			if (saw_rows) then
+				code += !", _\n"
+			end if
+			code += !"\t@" + ln
+			saw_rows = TRUE
+		end if
+	wend
+
+	if (saw_rows = FALSE) then
+		'' No image data found
+		return FALSE
+	end if
+
+	close #f
+
+	'' Line break after the last entry
+	code += !" _ \n"
+
+	code += !"}\n\n"
+
+	'' Symbol for the gfxlib
+	code += !"extern as zstring ptr ptr fb_program_icon alias ""fb_program_icon""\n"
+	code += "dim shared as zstring ptr ptr fb_program_icon = " & _
+					!"@fb_program_icon_data(0)\n"
+
+	return TRUE
+end function
+
 private function compileXpm(byval module as FBCMODULE ptr) as integer
+	'' Turn the .xpm icon resource into a .bas file, then compile that
+	'' using the normal fb compilation process.
+
 	'' The embedded .xpm is only useful for the X11 gfxlib
 	select case as const (fbGetOption(FB_COMPOPT_TARGET))
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
@@ -2074,90 +2157,36 @@ private function compileXpm(byval module as FBCMODULE ptr) as integer
 		return FALSE
 	end select
 
-	#define STATE_OUT_STRING	0
-	#define STATE_IN_STRING		1
+	dim as string xpmfile = module->srcfile
 
-	dim as integer fi, fo
-	dim as integer outstr_count, buffer_len, state, label
-	dim as ubyte ptr p
-	dim as string * 4096 chunk
-	dim as string buffer, outstr()
-
-	function = FALSE
+	'' Change this xpm module into a bas module, then compile and assemble
+	'' it (almost) like any other bas module. The temporary .bas file name
+	'' is based on the -o <name> given for the .xpm. compileBas() will
+	'' complete the module->asmfile name, and use the given module->objile
+	'' too.
+	module->type = FBCMODULE_BAS
+	module->srcfile = module->asmfile & ".bas"
 
 	if( fbc.verbose ) then
-		print "compiling .xpm: ", module->srcfile & " -o " & module->asmfile
+		print "compiling resource: ", xpmfile & " -o " & module->srcfile
 	end if
 
-	''
-	fi = freefile()
-	open module->srcfile for input as #fi
-	line input #1, buffer
-	if( ucase( buffer ) <> "/* XPM */" ) then
-		close #fi
-		exit function
+	dim as string code
+	parseXpm(xpmfile, code)
+
+	dim as integer fo = freefile()
+	if (open(module->srcfile, for output, as #fo)) then
+		return FALSE
 	end if
-	buffer = ""
-	while eof( fi ) = FALSE
-		buffer_len = seek( fi )
-		get #1,, chunk
-		buffer_len = seek( fi ) - buffer_len
-		buffer += left( chunk, buffer_len )
-	wend
-	close #fi
-	buffer_len = len( buffer )
-	p = sadd( buffer )
-
-	''
-	do
-		select case state
-
-		case STATE_OUT_STRING
-			if( *p = CHAR_QUOTE ) then
-				state = STATE_IN_STRING
-				outstr_count += 1
-				redim preserve outstr(outstr_count) as string
-				outstr(outstr_count-1) = ""
-			end if
-
-		case STATE_IN_STRING
-			if( *p = CHAR_QUOTE ) then
-				state = STATE_OUT_STRING
-			elseif( *p = CHAR_TAB ) then
-				outstr(outstr_count-1) += RSLASH + "t"
-			else
-				outstr(outstr_count-1) += chr(*p)
-			end if
-
-		end select
-		p += 1
-		buffer_len -= 1
-	loop while buffer_len > 0
-	if( state <> STATE_OUT_STRING ) then
-		exit function
-	end if
-
-	''
-	fo = freefile()
-	open module->asmfile for output as #fo
-	print #fo, ".section .rodata"
-	for label = 0 to outstr_count-1
-		print #fo, "_l" + hex( label ) + ":"
-		print #fo, ".string " + QUOTE + outstr( label ) + QUOTE
-	next label
-	print #fo, ".section .data"
-	print #fo, ".align 32"
-	print #fo, "_xpm_data:"
-	for label = 0 to outstr_count-1
-		print #fo, ".long _l" + hex( label )
-	next label
-	print #fo, ".align 32"
-	print #fo, ".globl fb_program_icon"
-	print #fo, "fb_program_icon:"
-	print #fo, ".long _xpm_data"
+	print #fo, code;
 	close #fo
 
-	function = TRUE
+	'' Clean up the temp .bas too
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(module->srcfile)
+	end if
+
+	function = compileBas(module, FALSE)
 end function
 
 private function compileModules() as integer
@@ -2176,16 +2205,11 @@ private function compileModules() as integer
 
 	dim as FBCMODULE ptr module = listGetHead(@fbc.modules)
 	while (module)
-		'' *.asm/*.c file name
-		''  - based on the -o <file> for this module, if given
-		''  - defaults to the same base name as the input file
-		''  - all modules' *.o names are based on it
-		''  - xpm needs .asm extension
-		''  - bas needs .asm or .c extension
-		''  - rc never uses the asmfile itself, except to determine
-		''    the .o name, so extension doesn't matter (but it must
-		''    have one, otherwise further hStripExt()'s might strip
-		''    the wrong thing off of the file name...)
+		'' The base file name for temporary file(s) created for this
+		'' module (bas: .asm/.c, .xpm: .bas) is based on the -o <file>
+		'' for this module, if given, and defaults to the same base
+		'' name as the input file. Later during assembling, the *.o
+		'' names are based on this too.
 		if (len(module->objfile) > 0) then
 			module->asmfile = module->objfile
 		else
@@ -2193,20 +2217,6 @@ private function compileModules() as integer
 		end if
 
 		module->asmfile = hStripExt(module->asmfile)
-
-		if ((module->type = FBCMODULE_BAS) and _
-		    (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC)) then
-			module->asmfile &= ".c"
-		else
-			module->asmfile &= ".asm"
-		end if
-
-		if (fbc.preserveasm = FALSE) then
-			select case (module->type)
-			case FBCMODULE_BAS, FBCMODULE_XPM
-				fbcAddTemp(module->asmfile)
-			end select
-		end if
 
 		select case (module->type)
 		case FBCMODULE_BAS
@@ -2223,6 +2233,14 @@ private function compileModules() as integer
 			if (compileXpm(module) = FALSE) then
 				exit function
 			end if
+
+		case FBCMODULE_RC
+			'' Note: rc never uses the asmfile itself, except to
+			'' determine the .o name, so extension doesn't matter
+			'' but it should still have one, otherwise further
+			'' hStripExt()'s might strip off the wrong thing of
+			'' the file name...
+			module->asmfile &= ".asm"
 
 		end select
 
@@ -2347,7 +2365,7 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	ln &= "/fo """ & module->objfile & """"
 	ln &= " """ & module->srcfile & """"
 
-	if (fbcRunBin("compiling .rc", fbcFindBin("GoRC"), ln) = FALSE) then
+	if (fbcRunBin("compiling resource", fbcFindBin("GoRC"), ln) = FALSE) then
 		return FALSE
 	end if
 
@@ -2364,7 +2382,6 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	else
 		function = TRUE
 	end if
-
 #else
 	'' Using binutils' windres for all other setups (e.g. cross-compiling
 	'' linux -> win32)
@@ -2379,39 +2396,25 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	ln &= " """ & module->srcfile & """"
 	ln &= " """ & module->objfile & """"
 
-	function = fbcRunBin("compiling .rc", fbcFindBin("windres"), ln)
+	function = fbcRunBin("compiling resource", fbcFindBin("windres"), ln)
 #endif
-end function
-
-private function assembleXpm(byval module as FBCMODULE ptr) as integer
-	'' *.o name based on *.asm name unless given via -o <file>
-	if (len(module->objfile) = 0) then
-		module->objfile = hStripExt(module->asmfile) & ".o"
-	end if
-	dim as string ln = module->asmfile + " --32 -o " + module->objfile
-	return fbcRunBin("assembling", fbcFindBin("as"), ln)
 end function
 
 private function assembleModules() as integer
 	function = FALSE
 
+	'' Note: If there was an .xpm module, it was changed to .bas by now
 	dim as FBCMODULE ptr module = listGetHead(@fbc.modules)
 	while (module)
-		select case (module->type)
-		case FBCMODULE_BAS
-			assembleBas(module)
-
-		case FBCMODULE_RC
+		if (module->type = FBCMODULE_RC) then
 			if (assembleRc(module) = FALSE) then
 				exit function
 			end if
-
-		case FBCMODULE_XPM
-			if (assembleXpm(module) = FALSE) then
+		else
+			if (assembleBas(module) = FALSE) then
 				exit function
 			end if
-
-		end select
+		end if
 
 		fbcAddObj(module->objfile)
 		if (fbc.preserveobj = FALSE) then
