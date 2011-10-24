@@ -825,9 +825,61 @@ private function hCreateResFile( byval cline as zstring ptr ) as string
 end function
 #endif
 
+private function clearDefList(byref deffile as string) as integer
+	dim as integer fi = freefile()
+	if (open(deffile, for input, as #fi)) then
+		return FALSE
+	end if
+
+	dim as string cleaned = hStripExt(deffile) + ".clean.def"
+	dim as integer fo = freefile()
+	if (open(cleaned, for output, as #fo)) then
+		close #fi
+		return FALSE
+	end if
+
+	dim as string ln
+	while (eof(fi) = FALSE)
+		line input #fi, ln
+
+		if (right(ln, 4) = "DATA") then
+			ln = left(ln, len(ln) - 4)
+		end if
+
+		print #fo, ln
+	wend
+
+	close #fo
+	close #fi
+
+	kill(deffile)
+	return (name(cleaned, deffile) = 0)
+end function
+
+private function makeImpLib(byref dllname as string, byref deffile as string) as integer
+	'' for some weird reason, LD will declare all functions exported as if they were
+	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
+	if (clearDefList(deffile) = FALSE) then
+		return FALSE
+	end if
+
+	dim as string ln
+	ln += "--def " + QUOTE + deffile + QUOTE
+	ln += " --dllname " + QUOTE + hStripPath(fbc.outname) + QUOTE
+	ln += " --output-lib " + QUOTE + hStripFilename(fbc.outname) + "lib" + dllname + (".dll.a" + QUOTE)
+
+	if (fbcRunBin("creating import library", fbcFindBin("dlltool"), ln) = FALSE) then
+		return FALSE
+	end if
+
+	kill(deffile)
+
+	return TRUE
+end function
+
 '':::::
 private function linkFiles() as integer
-	dim as string ldcline, dllname, resfile
+	dim as string ldcline, dllname, deffile, resfile
 
 	function = FALSE
 
@@ -913,13 +965,14 @@ private function linkFiles() as integer
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			'' When building DLLs, we also create an import library, as
 			'' convenience for the user. There are several ways to do this:
-			''    a) pexports + dlltool
-			''    b) ld --output-def + dlltool
-			''    c) ld --out-implib
-			'' Since ld can generate the import library directly, and could
-			'' also be told to write out a .def at the same time, we don't
-			'' need dlltool.
-			ldcline += " --out-implib " + QUOTE + hStripFilename( fbc.outname ) + "lib" + dllname + (".dll.a" + QUOTE)
+			''    a) ld --output-def + dlltool
+			''    b) ld --output-def --out-implib
+			''    c) pexports + dlltool
+			'' At the moment it seems like "ld --out-implib" alone
+			'' does not work, and b) shows a verbose message that
+			'' wouldn't be nice to have, so a) is the best way.
+			deffile = hStripExt( fbc.outname ) + ".def"
+			ldcline += " --output-def " + QUOTE + deffile + QUOTE
 		end if
 
 	case FB_COMPTARGET_LINUX
@@ -1098,6 +1151,14 @@ private function linkFiles() as integer
 		put #f, 533, fbc.stacksize
 
 		close #f
+
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			'' Create the .dll.a import library from the generated .def
+			if (makeImpLib(dllname, deffile) = FALSE) then
+				exit function
+			end if
+		end if
 
 	case FB_COMPTARGET_XBOX
 		'' Turn .exe into .xbe
