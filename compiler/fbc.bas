@@ -2396,7 +2396,7 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 		module->objfile = hStripExt(module->asmfile) & ".obj"
 	end if
 
-	dim as string ln = "--output-format=coff --target=pei-i386"
+	dim as string ln = "--output-format=coff "
 	ln &= " """ & module->srcfile & """"
 	ln &= " """ & module->objfile & """"
 
