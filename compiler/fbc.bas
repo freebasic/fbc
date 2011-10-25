@@ -361,7 +361,9 @@ private function makeImpLib(byref dllname as string, byref deffile as string) as
 		return FALSE
 	end if
 
-	kill(deffile)
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(deffile)
+	end if
 
 	return TRUE
 end function
@@ -2595,11 +2597,11 @@ private sub printOptions( )
 	!"  *.xpm = icon resource (*nix/*bsd)\n"                               + _
 	!"options:\n"                                                          + _
 	!"  @<file>          Read more command line arguments from a file\n"   + _
-	!"  -a <file>        Treat file as *.o/*.a input file\n"               + _
+	!"  -a <file>        Treat file as .o/.a input file\n"                 + _
 	!"  -arch <type>     Set target architecture (default: 486)\n"         + _
-	!"  -b <file>        Treat file as *.bas input file\n"                 + _
+	!"  -b <file>        Treat file as .bas input file\n"                  + _
 	!"  -c               Compile only, do not link\n"                      + _
-	!"  -C               Preserve generated *.o files\n"                   + _
+	!"  -C               Preserve temporary .o files\n"                    + _
 	!"  -d <name>[=<val>]  Add a global #define\n"                         + _
 	!"  -dll             Same as -dylib\n"                                 + _
 	!"  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)\n" + _
@@ -2613,7 +2615,7 @@ private sub printOptions( )
 	!"  -g               Add debug info\n"                                 + _
 	!"  -gen gas|gcc     Select code generation backend\n"                 + _
 	!"  -i <path>        Add an include file search path\n"                + _
-	!"  -include <file>  Pre-#include a file for each input *.bas\n"       + _
+	!"  -include <file>  Pre-#include a file for each input .bas\n"        + _
 	!"  -l <name>        Link in a library\n"                              + _
 	!"  -lang <name>     Select FB dialect: deprecated, fblite, qb\n"      + _
 	!"  -lib             Create a static library\n"                        + _
@@ -2623,17 +2625,17 @@ private sub printOptions( )
 	!"  -mt              Use thread-safe FB runtime\n"                     + _
 	!"  -nodeflibs       Do not include the default libraries\n"           + _
 	!"  -noerrline       Do not show source context in error messages\n"   + _
-	!"  -o <file>        Set *.o file name for corresponding input *.bas\n" + _
+	!"  -o <file>        Set .o file name for corresponding input .bas\n"  + _
 	!"  -O <value>       Optimization level (default: 0)\n"                + _
 	!"  -p <name>        Add a library search path\n"                      + _
-	!"  -pp              Write out preprocessed input file (*.pp.bas) only\n" + _
+	!"  -pp              Write out preprocessed input file (.pp.bas) only\n" + _
 	!"  -prefix <path>   Set the compiler prefix path\n"                   + _
 	!"  -profile         Enable function profiling\n"                      + _
 	!"  -r               Like -c, but write out .asm/.c only, do not assemble\n" + _
-	!"  -R               Preserve generated *.asm/*.c files\n"             + _
+	!"  -R               Preserve temporary non-.o files (.asm/.c etc.)\n" + _
 	!"  -s console|gui   Select win32 subsystem\n"                         + _
-	!"  -t <value>       Set *.exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
-	!"  -target <name>   Set cross-compilation target\n"                  + _
+	!"  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
+	!"  -target <name>   Set cross-compilation target\n"                   + _
 	!"  -title <name>    Set XBE display title (xbox)\n"                   + _
 	!"  -v               Be verbose\n"                                     + _
 	!"  -vec <n>         Automatic vectorization level (default: 0)\n"     + _

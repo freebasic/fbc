@@ -14,6 +14,7 @@ Version 0.24.0:
 - EVENT_MOUSE_HWHEEL for X11
 - __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
 - Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
+- The .def file generated when building a DLL is now preserved if -R was given
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
