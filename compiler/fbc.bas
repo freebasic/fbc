@@ -557,7 +557,7 @@ private function linkFiles() as integer
 	end select
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
-		ldcline += " " + QUOTE + fbc.libpath + "fbrt0.o" + QUOTE + " "
+		ldcline += " """ + fbc.libpath + "fbrt0.o"""
 	end if
 
 	dim as string ptr objfile = listGetHead(@fbc.objlist)
