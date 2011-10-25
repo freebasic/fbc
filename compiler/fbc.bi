@@ -18,16 +18,8 @@ type FBC_EXTOPT
 	gcc			as zstring * 128
 end type
 
-enum
-	FBCMODULE_BAS = 0
-	FBCMODULE_RC
-	FBCMODULE_XPM
-end enum
-
-type FBCMODULE
-	as integer type   '' FBCMODULE_*
+type FBCIOFILE
 	as string srcfile '' input file
-	as string asmfile '' intermediate .asm/.c file
 	as string objfile '' output .o file
 end type
 
@@ -40,7 +32,8 @@ end type
 type FBCCTX
 	'' For command line parsing
 	optid				as integer       '' Current option
-	nextmodule			as FBCMODULE ptr '' Input file that receives the next -o filename
+	lastiofile			as FBCIOFILE ptr '' Input file that receives the next -o filename
+	objfile				as string '' -o filename waiting for next input file
 
 	emitonly			as integer
 	compileonly			as integer
@@ -50,7 +43,9 @@ type FBCCTX
 	stacksize			as integer
 	showversion			as integer
 
-	modules				as TLIST '' FBCMODULE's
+	modules				as TLIST '' FBCIOFILE's for input .bas files
+	rcs				as TLIST '' FBCIOFILE's for input .rc/.res files
+	xpm				as FBCIOFILE '' .xpm input file
 	temps				as TLIST '' Temporary files to delete at shutdown
 	objlist				as TLIST '' Objects from command line and from compilation
 	deflist				as TLIST

@@ -7,6 +7,8 @@ Version 0.24.0:
 - It's now possible to build a Windows/DOS version of fbc that can be installed into MinGW/DJGPP, and will ask gcc for paths (as is done on Linux & co already)
 - __FB_UNIX__ and __FB_PCOS__ now work like the other target defines (check via #ifdef)
 - All cross-compilation targets are now always enabled in the compiler
+- -o now also affects .rc and .xpm input files (useful to change the file names of the temporary objects)
+- -o must now clearly be specified in front or behind of the corresponding input file, for example: "fbc 1.bas 2.bas -o 1.o -o 2.o" no longer works, but "fbc -o 1.o 1.bas" is possible now
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11

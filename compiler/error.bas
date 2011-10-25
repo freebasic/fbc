@@ -294,7 +294,8 @@ end type
 		@"Unsupported statement in -gen gcc mode", _
 		@"Too many labels", _
 		@"Expected '#ENDIF'", _
-		@"Resource file given for target system that does not support them" _
+		@"Resource file given for target system that does not support them", _
+		@"-o <file> option without corresponding input file" _
 	}
 
 

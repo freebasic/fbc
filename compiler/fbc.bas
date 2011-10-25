@@ -47,7 +47,8 @@ private sub fbcInit( )
 	hashInit( )
 
 	'' file and path lists
-	listNew( @fbc.modules, FBC_INITFILES, sizeof(FBCMODULE) )
+	listNew( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
+	listNew( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
 	listNew( @fbc.temps, FBC_INITARGS\4, len( string ) )
 	listNew( @fbc.objlist, FBC_INITFILES, len( string ) )
 	listNew( @fbc.deflist, FBC_INITFILES\4, len( string ) )
@@ -75,6 +76,7 @@ private sub fbcEnd(byval errnum as integer)
 
 	'' file and path lists
 	listFree( @fbc.modules )
+	listFree( @fbc.rcs )
 	listFree( @fbc.temps )
 	listFree( @fbc.objlist )
 	listFree( @fbc.deflist )
@@ -833,14 +835,26 @@ private sub fbcErrorInvalidOption(byref arg as string)
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
 end sub
 
-private sub addModule(byref srcfile as string, byval typ as integer)
-	dim as FBCMODULE ptr m = listNewNode(@fbc.modules)
-	m->type = typ
-	m->srcfile = srcfile
-
-	if (fbc.nextmodule = NULL) then
-		fbc.nextmodule = m
+private sub checkWaitingObjfile()
+	if (len(fbc.objfile) > 0) then
+		errReportEx( FB_ERRMSG_OBJFILEWITHOUTINPUTFILE, "-o " & fbc.objfile, -1 )
+		fbc.objfile = ""
 	end if
+end sub
+
+private sub setIofile(byval iofile as FBCIOFILE ptr, byref file as string)
+	iofile->srcfile = file
+	fbc.lastiofile = iofile
+
+	'' Got a waiting -o <file>? This module takes it.
+	if (len(fbc.objfile) > 0) then
+		iofile->objfile = fbc.objfile
+		fbc.objfile = ""
+	end if
+end sub
+
+private sub addBas(byref basfile as string)
+	setIofile(listNewNode(@fbc.modules), basfile)
 end sub
 
 '' -target <triplet> parser
@@ -1067,7 +1081,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
 	case OPT_B
-		addModule(arg, FBCMODULE_BAS)
+		addBas(arg)
 
 	case OPT_C
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
@@ -1218,13 +1232,16 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
 
 	case OPT_O
-		if (fbc.nextmodule = NULL) then
-			fbcErrorInvalidOption(arg)
-			return
-		end if
+		'' Error if there already is an -o waiting to be assigned
+		checkWaitingObjfile()
 
-		fbc.nextmodule->objfile = arg
-		fbc.nextmodule = listGetNext(fbc.nextmodule)
+		'' Assign it to the last module, if it doesn't have an -o filename yet,
+		'' or store it for later otherwise.
+		if (fbc.lastiofile andalso (len(fbc.lastiofile->objfile) = 0)) then
+			fbc.lastiofile->objfile = arg
+		else
+			fbc.objfile = arg
+		end if
 
 	case OPT_OPTIMIZE
 		dim as integer value = any
@@ -1605,7 +1622,7 @@ private sub handleArg(byref arg as string)
 
 		select case (ext)
 		case "bas"
-			addModule(arg, FBCMODULE_BAS)
+			addBas(arg)
 
 		case "o"
 			fbcAddObj(arg)
@@ -1615,20 +1632,17 @@ private sub handleArg(byref arg as string)
 			*libf = arg
 
 		case "rc", "res"
-			addModule(arg, FBCMODULE_RC)
+			setIofile(listNewNode(@fbc.rcs), arg)
 
 		case "xpm"
-			static as integer count = 0
-
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
-			if (count >= 1) then
+			if (len(fbc.xpm.srcfile) > 0) then
 				fbcErrorInvalidOption(arg)
 				fbcEnd(1)
 			end if
 
-			count += 1
-			addModule(arg, FBCMODULE_XPM)
+			setIofile(@fbc.xpm, arg)
 
 		case else
 			'' Input file without or with unknown extension
@@ -1707,7 +1721,6 @@ end sub
 
 private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 	fbc.optid = -1
-	fbc.nextmodule = NULL
 
 	'' Note: ignoring argv[0], assuming it's the path used to run fbc
 	dim as string arg
@@ -1724,6 +1737,10 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 		fbcEnd(1)
 	end if
 
+	'' In case there was an '-o <file>', but no corresponding input file,
+	'' this will report the error.
+	checkWaitingObjfile()
+
 	''
 	'' Check for incompatible options etc.
 	''
@@ -1735,6 +1752,31 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 				return
 		end if
 	end if
+
+	'' Resource scripts are only allowed for win32 & co,
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+
+	case else
+		dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
+		if (rc) then
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, rc->srcfile, -1)
+			fbcEnd(1)
+		end if
+	end select
+
+	'' The embedded .xpm is only useful for the X11 gfxlib
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_NETBSD
+
+	case else
+		if (len(fbc.xpm.srcfile) > 0) then
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, fbc.xpm.srcfile, -1)
+			fbcEnd(1)
+		end if
+	end select
 
 	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
 	'' complain about it when the target doesn't allow it, or just
@@ -1842,7 +1884,7 @@ private sub fbcInit2()
 	'' Determine the main module
 	''
 	if( len( fbc.mainfile ) = 0 ) then
-		dim as FBCMODULE ptr m = listGetHead( @fbc.modules )
+		dim as FBCIOFILE ptr m = listGetHead( @fbc.modules )
 		if( m ) then
 			fbc.mainfile = hStripPath( hStripExt( m->srcfile ) )
 			fbc.mainpath = hStripFilename( m->srcfile )
@@ -2001,26 +2043,36 @@ private sub setLibListFromCmd _
 
 end sub
 
+'' Generate the .asm/.c file name for the given .bas module
+private function getModuleAsmName(byval module as FBCIOFILE ptr) as string
+	'' Based on the objfile name so it's also affected by -o
+	dim as string asmfile = hStripExt(module->objfile)
+	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+		asmfile &= ".c"
+	else
+		asmfile &= ".asm"
+	end if
+	function = asmfile
+end function
+
 private function compileBas _
 	( _
-		byval module as FBCMODULE ptr, _
+		byval module as FBCIOFILE ptr, _
 		byval ismain as integer _
 	) as integer
 
-	function = FALSE
-
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
-		module->asmfile &= ".c"
-	else
-		module->asmfile &= ".asm"
+	'' *.o name based on input file name unless given via -o <file>
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->srcfile) & ".o"
 	end if
 
+	dim as string asmfile = getModuleAsmName(module)
 	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(module->asmfile)
+		fbcAddTemp(asmfile)
 	end if
 
 	if (fbc.verbose) then
-		print "compiling: ", module->srcfile; " -o "; module->asmfile
+		print "compiling: ", module->srcfile; " -o "; asmfile
 	end if
 
 	'' preserve orginal lang id, we may have to restore it.
@@ -2040,7 +2092,7 @@ private function compileBas _
 		'' add the libs and paths passed in the cmd-line
 		setLibList()
 
-		if (fbCompile(module->srcfile, module->asmfile, ismain, @fbc.preinclist) = FALSE) then
+		if (fbCompile(module->srcfile, asmfile, ismain, @fbc.preinclist) = FALSE) then
 			'' Restore original lang
 			fbSetOption(FB_COMPOPT_LANG, prevlangid)
 			exit function
@@ -2070,6 +2122,40 @@ private function compileBas _
 	fbSetOption( FB_COMPOPT_LANG, prevlangid )
 
 	function = TRUE
+end function
+
+private function compileModules() as integer
+	dim as integer ismain = FALSE
+	dim as integer checkmain = any
+
+	function = FALSE
+
+	select case fbGetOption( FB_COMPOPT_OUTTYPE )
+	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
+		checkmain = TRUE
+	case else
+		checkmain = fbc.mainset
+	end select
+
+	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
+	while (module)
+		if( checkmain ) then
+			ismain = (fbc.mainfile = hStripPath(hStripExt(module->srcfile)))
+		end if
+
+		if (compileBas(module, ismain) = FALSE) then
+			exit function
+		end if
+
+		module = listGetNext(module)
+	wend
+
+	'' Make sure to add libs if no input .bas were given
+	if (module = NULL) then
+		setLibListFromCmd()
+	end if
+
+	return TRUE
 end function
 
 private function parseXpm _
@@ -2142,40 +2228,32 @@ private function parseXpm _
 	return TRUE
 end function
 
-private function compileXpm(byval module as FBCMODULE ptr) as integer
+private function compileXpm() as integer
+	if (len(fbc.xpm.srcfile) = 0) then
+		return TRUE
+	end if
+
 	'' Turn the .xpm icon resource into a .bas file, then compile that
 	'' using the normal fb compilation process.
+	dim as string xpmfile = fbc.xpm.srcfile
 
-	'' The embedded .xpm is only useful for the X11 gfxlib
-	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_NETBSD
+	'' *.bas name based on input file name or -o <file>
+	'' Note: When naming after the input file, append .bas instead of
+	'' replacing the extension, to avoid overwriting an existing .bas.
+	if (len(fbc.xpm.objfile) > 0) then
+		fbc.xpm.srcfile = hStripExt(fbc.xpm.objfile)
+	end if
+	fbc.xpm.srcfile &= ".bas"
 
-	case else
-		errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, module->srcfile, -1)
-		return FALSE
-	end select
-
-	dim as string xpmfile = module->srcfile
-
-	'' Change this xpm module into a bas module, then compile and assemble
-	'' it (almost) like any other bas module. The temporary .bas file name
-	'' is based on the -o <name> given for the .xpm. compileBas() will
-	'' complete the module->asmfile name, and use the given module->objile
-	'' too.
-	module->type = FBCMODULE_BAS
-	module->srcfile = module->asmfile & ".bas"
-
-	if( fbc.verbose ) then
-		print "compiling resource: ", xpmfile & " -o " & module->srcfile
+	if (fbc.verbose) then
+		print "compiling xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
 	end if
 
 	dim as string code
 	parseXpm(xpmfile, code)
 
 	dim as integer fo = freefile()
-	if (open(module->srcfile, for output, as #fo)) then
+	if (open(fbc.xpm.srcfile, for output, as #fo)) then
 		return FALSE
 	end if
 	print #fo, code;
@@ -2183,76 +2261,10 @@ private function compileXpm(byval module as FBCMODULE ptr) as integer
 
 	'' Clean up the temp .bas too
 	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(module->srcfile)
+		fbcAddTemp(fbc.xpm.srcfile)
 	end if
 
-	function = compileBas(module, FALSE)
-end function
-
-private function compileModules() as integer
-	dim as integer saw_bas = FALSE
-	dim as integer ismain = FALSE
-	dim as integer checkmain = any
-
-	function = FALSE
-
-	select case fbGetOption( FB_COMPOPT_OUTTYPE )
-	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
-		checkmain = TRUE
-	case else
-		checkmain = fbc.mainset
-	end select
-
-	dim as FBCMODULE ptr module = listGetHead(@fbc.modules)
-	while (module)
-		'' The base file name for temporary file(s) created for this
-		'' module (bas: .asm/.c, .xpm: .bas) is based on the -o <file>
-		'' for this module, if given, and defaults to the same base
-		'' name as the input file. Later during assembling, the *.o
-		'' names are based on this too.
-		if (len(module->objfile) > 0) then
-			module->asmfile = module->objfile
-		else
-			module->asmfile = module->srcfile
-		end if
-
-		module->asmfile = hStripExt(module->asmfile)
-
-		select case (module->type)
-		case FBCMODULE_BAS
-			saw_bas = TRUE
-			if( checkmain ) then
-				ismain = (fbc.mainfile = hStripPath(hStripExt(module->srcfile)))
-			end if
-
-			if (compileBas(module, ismain) = FALSE) then
-				exit function
-			end if
-
-		case FBCMODULE_XPM
-			if (compileXpm(module) = FALSE) then
-				exit function
-			end if
-
-		case FBCMODULE_RC
-			'' Note: rc never uses the asmfile itself, except to
-			'' determine the .o name, so extension doesn't matter
-			'' but it should still have one, otherwise further
-			'' hStripExt()'s might strip off the wrong thing of
-			'' the file name...
-			module->asmfile &= ".asm"
-
-		end select
-
-		module = listGetNext(module)
-	wend
-
-	'' Make sure to add libs if no input .bas were given
-	if (saw_bas = FALSE) then
-		setLibListFromCmd()
-	end if
-
-	return TRUE
+	function = compileBas(@fbc.xpm, FALSE)
 end function
 
 dim shared as zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = _
@@ -2273,15 +2285,10 @@ dim shared as zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = _
 	@"native" _
 }
 
-private function assembleBas(byval module as FBCMODULE ptr) as integer
+private function assembleBas(byval module as FBCIOFILE ptr) as integer
 	static as string assembler
 
 	function = FALSE
-
-	'' *.o name based on *.asm name unless given via -o <file>
-	if (len(module->objfile) = 0) then
-		module->objfile = hStripExt(module->asmfile) & ".o"
-	end if
 
 	if (len(assembler) = 0) then
 		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
@@ -2318,7 +2325,7 @@ private function assembleBas(byval module as FBCMODULE ptr) as integer
 		end if
 	end if
 
-	ln += """" + module->asmfile + """ "
+	ln += """" + getModuleAsmName(module) + """ "
 	ln += "-o """ + module->objfile + """"
 
 	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
@@ -2327,32 +2334,53 @@ private function assembleBas(byval module as FBCMODULE ptr) as integer
 		ln += fbc.extopt.gas
 	end if
 
-	return fbcRunBin("assembling", assembler, ln)
+	if (fbcRunBin("assembling", assembler, ln) = FALSE) then
+		return FALSE
+	end if
+
+	fbcAddObj(module->objfile)
+	if (fbc.preserveobj = FALSE) then
+		fbcAddTemp(module->objfile)
+	end if
+
+	return TRUE
 end function
 
-private function assembleRc(byval module as FBCMODULE ptr) as integer
-	'' Resource scripts are only allowed for win32 & co
-	select case as const (fbGetOption(FB_COMPOPT_TARGET))
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+private function assembleModules() as integer
+	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
+	while (module)
+		if (assembleBas(module) = FALSE) then
+			return FALSE
+		end if
+		module = listGetNext(module)
+	wend
+	return TRUE
+end function
 
-	case else
-		errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, module->srcfile, -1)
-		return FALSE
-	end select
+private function assembleXpm() as integer
+	if (len(fbc.xpm.srcfile) = 0) then
+		function = TRUE
+	else
+		function = assembleBas(@fbc.xpm)
+	end if
+end function
 
+private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 #if defined(ENABLE_STANDALONE) and defined(__FB_WIN32__)
 	'' Using GoRC for the classical native win32 standalone build
 	'' Note: GoRC /fo doesn't accept anything except *.obj, not even *.o,
 	'' so we need to make it *.obj and then rename it afterwards.
 
-	'' *.obj name based on *.asm name unless given via -o <file>
+	'' *.obj name based on input file name unless given via -o <file>
 	dim as integer need_rename = FALSE
-	if (len(module->objfile) = 0) then
-		module->objfile = hStripExt(module->asmfile) & ".obj"
+	if (len(rc->objfile) = 0) then
+		'' Note: no need to worry about overwriting; nothing else uses
+		'' the .obj extension.
+		rc->objfile = hStripExt(rc->srcfile) & ".obj"
 	else
-		if (hGetFileExt(module->objfile) <> "obj") then
+		if (hGetFileExt(rc->objfile) <> "obj") then
 			need_rename = TRUE
-			module->objfile &= ".obj"
+			rc->objfile &= ".obj"
 		end if
 	end if
 
@@ -2362,10 +2390,10 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
 
 	dim as string ln = "/ni /nw /o "
-	ln &= "/fo """ & module->objfile & """"
-	ln &= " """ & module->srcfile & """"
+	ln &= "/fo """ & rc->objfile & """"
+	ln &= " """ & rc->srcfile & """"
 
-	if (fbcRunBin("compiling resource", fbcFindBin("GoRC"), ln) = FALSE) then
+	if (fbcRunBin("compiling rc", fbcFindBin("GoRC"), ln) = FALSE) then
 		return FALSE
 	end if
 
@@ -2375,10 +2403,10 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	end if
 
 	if (need_rename) then
-		dim as string badname = module->objfile
-		module->objfile = hStripExt(module->objfile)
+		dim as string badname = rc->objfile
+		rc->objfile = hStripExt(rc->objfile)
 		'' Rename back so it will be found by ld/the user
-		function = (name(badname, module->objfile) = 0)
+		function = (name(badname, rc->objfile) = 0)
 	else
 		function = TRUE
 	end if
@@ -2388,42 +2416,36 @@ private function assembleRc(byval module as FBCMODULE ptr) as integer
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
 	'' and that's not 100% compatible to GoRC (e.g. backslashes in
 	'' paths/filenames are seen as escape sequences by gcc, but not GoRC)
-	if (len(module->objfile) = 0) then
-		module->objfile = hStripExt(module->asmfile) & ".obj"
+
+	'' *.o name based on input file name unless given via -o <file>
+	if (len(rc->objfile) = 0) then
+		'' Note: Appending instead of replacing, to avoid overwriting
+		'' an existing object file.
+		rc->objfile = rc->srcfile & ".o"
 	end if
 
 	dim as string ln = "--output-format=coff "
-	ln &= " """ & module->srcfile & """"
-	ln &= " """ & module->objfile & """"
+	ln &= " """ & rc->srcfile & """"
+	ln &= " """ & rc->objfile & """"
 
-	function = fbcRunBin("compiling resource", fbcFindBin("windres"), ln)
+	function = fbcRunBin("compiling rc", fbcFindBin("windres"), ln)
 #endif
+
+	fbcAddObj(rc->objfile)
+	if (fbc.preserveobj = FALSE) then
+		fbcAddTemp(rc->objfile)
+	end if
 end function
 
-private function assembleModules() as integer
-	function = FALSE
-
-	'' Note: If there was an .xpm module, it was changed to .bas by now
-	dim as FBCMODULE ptr module = listGetHead(@fbc.modules)
-	while (module)
-		if (module->type = FBCMODULE_RC) then
-			if (assembleRc(module) = FALSE) then
-				exit function
-			end if
-		else
-			if (assembleBas(module) = FALSE) then
-				exit function
-			end if
+private function assembleRcs() as integer
+	'' Compile .rc/.res files
+	dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
+	while (rc)
+		if (assembleRc(rc) = FALSE) then
+			exit function
 		end if
-
-		fbcAddObj(module->objfile)
-		if (fbc.preserveobj = FALSE) then
-			fbcAddTemp(module->objfile)
-		end if
-
-		module = listGetNext(module)
+		rc = listGetNext(rc)
 	wend
-
 	function = TRUE
 end function
 
@@ -2745,18 +2767,32 @@ end function
 
 	fbcInit2()
 
-	'' Compile
+	'' Compile into temporary files
+
 	if (compileModules() = FALSE) then
 		fbcEnd( 1 )
+	end if
+
+	if (compileXpm() = FALSE) then
+		fbcEnd(1)
 	end if
 
 	if (fbc.emitonly) then
 		fbcEnd( 0 )
 	end if
 
-	'' Assemble
+	'' Generate objects
+
 	if (assembleModules() = FALSE) then
 		fbcEnd( 1 )
+	end if
+
+	if (assembleRcs() = FALSE) then
+		fbcEnd(1)
+	end if
+
+	if (assembleXpm() = FALSE) then
+		fbcEnd(1)
 	end if
 
 	if (fbc.compileonly) then
