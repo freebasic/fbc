@@ -565,13 +565,13 @@ private function linkFiles() as integer
 	wend
 
 	'' init lib group
-	ldcline += " -("
+	ldcline += " ""-("""
 
 	'' add libraries from command-line and found when parsing
 	ldcline += *fbcGetLibList( dllname )
 
 	'' end lib group
-	ldcline += " -)"
+	ldcline += " ""-)"""
 
 	'' crt end
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
