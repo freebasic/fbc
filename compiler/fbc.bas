@@ -2617,7 +2617,7 @@ private sub printOptions( )
 	!"  -l <name>        Link in a library\n"                              + _
 	!"  -lang <name>     Select FB dialect: deprecated, fblite, qb\n"      + _
 	!"  -lib             Create a static library\n"                        + _
-	!"  -m <name>        Set main module (default: first input *.bas)\n"   + _
+	!"  -m <name>        Set main module (default if not -c: first input .bas)\n" + _
 	!"  -map <file>      Save linking map to file\n"                       + _
 	!"  -maxerr <n>      Only show <n> errors\n"                           + _
 	!"  -mt              Use thread-safe FB runtime\n"                     + _
@@ -2629,7 +2629,7 @@ private sub printOptions( )
 	!"  -pp              Write out preprocessed input file (*.pp.bas) only\n" + _
 	!"  -prefix <path>   Set the compiler prefix path\n"                   + _
 	!"  -profile         Enable function profiling\n"                      + _
-	!"  -r               Write out *.asm/*.c only, do not compile\n"       + _
+	!"  -r               Like -c, but write out .asm/.c only, do not assemble\n" + _
 	!"  -R               Preserve generated *.asm/*.c files\n"             + _
 	!"  -s console|gui   Select win32 subsystem\n"                         + _
 	!"  -t <value>       Set *.exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
