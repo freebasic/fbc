@@ -74,25 +74,6 @@ private sub fbcEnd(byval errnum as integer)
 		file = listGetNext(file)
 	wend
 
-	'' file and path lists
-	listFree( @fbc.modules )
-	listFree( @fbc.rcs )
-	listFree( @fbc.temps )
-	listFree( @fbc.objlist )
-	listFree( @fbc.deflist )
-	listFree( @fbc.preinclist )
-	listFree( @fbc.liblist )
-	listFree( @fbc.libpathlist )
-	listFree( @fbc.incpathlist )
-
-	'' the final lib and search path lists passed to LD
-	listFree( @fbc.ld_liblist )
-	hashFree( @fbc.ld_libhash )
-	listFree( @fbc.ld_libpathlist )
-	hashFree( @fbc.ld_libpathhash )
-
-	hashEnd( )
-
 	end errnum
 end sub
 
