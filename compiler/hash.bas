@@ -4,7 +4,6 @@
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
 #include once "hash.bi"
-#include once "list.bi"
 #include once "hlp.bi"
 
 type HASHCTX
@@ -301,3 +300,52 @@ sub hashDel _
 
 end sub
 
+sub strsetAdd _
+	( _
+		byval set as TSTRSET ptr, _
+		byref s as string, _
+		byval userdata as integer _
+	)
+
+	dim as TSTRSETITEM ptr i = hashLookup(@set->hash, s)
+
+	'' Already exists?
+	if (i) then
+		exit sub
+	end if
+
+	'' Add new
+	i = listNewNode(@set->list)
+	i->s = s
+	i->userdata = userdata
+
+	'' No need to pass in a NULL pointer or an empty string
+	if (len(i->s) = 0) then
+		exit sub
+	end if
+
+	hashAdd(@set->hash, strptr(i->s), i, hashHash(strptr(i->s)))
+end sub
+
+sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)
+	dim as TSTRSETITEM ptr i = listGetHead(@source->list)
+	while (i)
+		strsetAdd(target, i->s, i->userdata)
+		i = listGetNext(i)
+	wend
+end sub
+
+sub strsetInit(byval set as TSTRSET ptr, byval nodes as integer)
+	listNew(@set->list, nodes, sizeof(TSTRSETITEM))
+	hashNew(@set->hash, nodes)
+end sub
+
+sub strsetEnd(byval set as TSTRSET ptr)
+	hashFree(@set->hash)
+	dim as TSTRSETITEM ptr i = listGetHead(@set->list)
+	while (i)
+		i->s = ""
+		i = listGetNext(i)
+	wend
+	listFree(@set->list)
+end sub

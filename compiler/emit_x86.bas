@@ -6660,7 +6660,7 @@ private sub _close _
 		'' compiling only?
 		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
 			'' store libs, paths and cmd-line options in the obj
-			emitWriteInfoSection( @symb.liblist, @symb.libpathlist )
+			emitWriteInfoSection(@env.libs.list, @env.libpaths.list)
 		end if
 	end if
 

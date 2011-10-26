@@ -43,6 +43,7 @@ type FBCCTX
 	stacksize			as integer
 	showversion			as integer
 
+	'' Command line input
 	modules				as TLIST '' FBCIOFILE's for input .bas files
 	rcs				as TLIST '' FBCIOFILE's for input .rc/.res files
 	xpm				as FBCIOFILE '' .xpm input file
@@ -51,14 +52,16 @@ type FBCCTX
 	deflist				as TLIST
 	preinclist			as TLIST
 	incpathlist			as TLIST
-	liblist				as TLIST
-	libpathlist			as TLIST
+	libs				as TSTRSET
+	libpaths			as TSTRSET
 
-	'' libs and paths passed to LD
-	ld_liblist			as TLIST					'' of FBS_LIB
-	ld_libhash			as THASH
-	ld_libpathlist		as TLIST					'' of FBS_LIB
-	ld_libpathhash		as THASH
+	'' Final list of libs and paths for linking
+	'' (each module can have #inclibs and #libpaths and add more, and for
+	'' objinfo emitting only the module-specific libs are wanted, so there
+	'' are multiple lists necessary to allow each module to start fresh
+	'' with the same input libs)
+	finallibs			as TSTRSET
+	finallibpaths			as TSTRSET
 
 	outname 			as zstring * FB_MAXPATHLEN+1
 	mainpath			as zstring * FB_MAXPATHLEN+1

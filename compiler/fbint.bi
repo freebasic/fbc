@@ -656,10 +656,17 @@ type FBENV
 
 	restarts		as integer					'' number of parser restarts
 	dorestart		as integer					'' request parser restart
+
+	'' Lists to collect #inclibs and #libpaths
+	libs			as TSTRSET
+	libpaths		as TSTRSET
 end type
 
 
 #include once "hlp.bi"
+
+declare sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
+declare sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
 
 ''
 '' macros

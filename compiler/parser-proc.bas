@@ -467,7 +467,7 @@ function cProcCallingConv _
 end function
 
 #define CREATEFAKEID( proc ) _
-	symbAddProc( proc, hMakeTmpStr( ), NULL, NULL, dtype, subtype, attrib, mode )
+	symbAddProc( proc, hMakeTmpStr( ), NULL, dtype, subtype, attrib, mode )
 
 '':::::
 private function hDoNesting _
@@ -501,7 +501,7 @@ function cProcHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
+    static as zstring * FB_MAXNAMELEN+1 id, aliasid
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
 
@@ -580,7 +580,6 @@ function cProcHeader _
 		lexSkipToken( )
 	end if
 
-	dim as zstring ptr plib = NULL
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' (LIB STR_LIT)?
 		if( lexGetToken( ) = FB_TK_LIB ) then
@@ -591,8 +590,8 @@ function cProcHeader _
 				end if
 
 			else
-				lexEatToken( libname )
-				plib = @libname
+				fbAddLib(*lexGetText(), FALSE)
+				lexSkipToken()
 			end if
 		end if
 	end if
@@ -730,9 +729,7 @@ function cProcHeader _
 
 	'' prototype?
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-    	proc = symbAddPrototype( proc, @id, palias, plib, _
-    						 	 dtype, subtype, _
-    					     	 attrib, mode )
+    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
@@ -757,9 +754,7 @@ function cProcHeader _
 			end if
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, NULL, _
-    					   		 dtype, subtype, _
-    					   		 attrib, mode )
+    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
 
     	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
@@ -801,9 +796,7 @@ function cProcHeader _
 					end if
 				end if
 
-    			head_proc = symbAddProc( proc, @id, palias, NULL, _
-    							   		 dtype, subtype, _
-    							   		 attrib, mode )
+    			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
     			'' dup def?
     			if( head_proc = NULL ) then
     				if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
@@ -1302,7 +1295,7 @@ function cOperatorHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 aliasid, libname
+    static as zstring * FB_MAXNAMELEN+1 aliasid
     dim as integer is_extern = any, first_def = FALSE
     dim as FBSYMBOL ptr proc = any, parent = any
 
@@ -1455,7 +1448,6 @@ function cOperatorHeader _
 		lexSkipToken( )
 	end if
 
-    dim as zstring ptr plib = NULL
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' (LIB STR_LIT)?
 		if( lexGetToken( ) = FB_TK_LIB ) then
@@ -1466,8 +1458,8 @@ function cOperatorHeader _
 				end if
 
 			else
-				lexEatToken( libname )
-				plib = @libname
+				fbAddLib(*lexGetText(), FALSE)
+				lexSkipToken()
 			end if
 		end if
 	end if
@@ -1589,9 +1581,7 @@ function cOperatorHeader _
 		'' check params
 		hCheckOpOvlParams( parent, op, proc, options )
 
-    	proc = symbAddOperator( proc, op, palias, plib, _
-    						    dtype, subtype, _
-    					        attrib, mode )
+    	proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
     	if( proc = NULL ) then
     		errReport( FB_ERRMSG_DUPDEFINITION )
     		return NULL
@@ -1624,10 +1614,8 @@ function cOperatorHeader _
     		exit function
     	end if
 
-    	head_proc = symbAddOperator( proc, op, palias, NULL, _
-    					   		  	 dtype, subtype, _
-	    					   	  	 attrib, mode, _
-    					   		  	 FB_SYMBOPT_DECLARING )
+		head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
+		                             attrib, mode, FB_SYMBOPT_DECLARING )
 
     	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
@@ -1662,10 +1650,8 @@ function cOperatorHeader _
     			exit function
     		end if
 
-    		head_proc = symbAddOperator( proc, op, palias, NULL, _
-    						   		  	 dtype, subtype, _
-    						   		  	 attrib, mode, _
-    						   		  	 FB_SYMBOPT_DECLARING )
+			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
+			                             attrib, mode, FB_SYMBOPT_DECLARING )
 
     		'' dup def?
     		if( head_proc = NULL ) then
@@ -1867,7 +1853,7 @@ function cPropertyHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, aliasid, libname
+    static as zstring * FB_MAXNAMELEN+1 id, aliasid
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
 
@@ -1927,7 +1913,6 @@ function cPropertyHeader _
 		lexSkipToken( )
 	end if
 
-	dim as zstring ptr plib = NULL
 	if( is_prototype ) then
 		'' (LIB STR_LIT)?
 		if( lexGetToken( ) = FB_TK_LIB ) then
@@ -1938,8 +1923,8 @@ function cPropertyHeader _
 				end if
 
 			else
-				lexEatToken( libname )
-				plib = @libname
+				fbAddLib(*lexGetText(), FALSE)
+				lexSkipToken()
 			end if
 		end if
 	end if
@@ -2035,9 +2020,7 @@ function cPropertyHeader _
 
 	'' prototype?
 	if( is_prototype ) then
-    	proc = symbAddPrototype( proc, @id, palias, plib, _
-    						     dtype, subtype, _
-    					         attrib, mode )
+    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
@@ -2076,9 +2059,7 @@ function cPropertyHeader _
 			end if
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, NULL, _
-    					   		 dtype, subtype, _
-    					   		 attrib, mode )
+    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
 
     	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
@@ -2121,9 +2102,7 @@ function cPropertyHeader _
 				end if
 			end if
 
-    		head_proc = symbAddProc( proc, @id, palias, NULL, _
-    						   		 dtype, subtype, _
-    						   		 attrib, mode )
+    		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
     		'' dup def?
     		if( head_proc = NULL ) then
     			if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
@@ -2213,7 +2192,10 @@ function cCtorHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 aliasid, libname
+	#define CREATEFAKE() symbAddProc( proc, hMakeTmpStr( ), NULL, _
+	                                  FB_DATATYPE_VOID, NULL, attrib, mode )
+
+    static as zstring * FB_MAXNAMELEN+1 aliasid
     dim as integer lgt = any, is_extern = any, is_ctor = any
     dim as FBSYMBOL ptr proc = any, parent = any
 
@@ -2260,7 +2242,6 @@ function cCtorHeader _
 		lexSkipToken( )
 	end if
 
-    dim as zstring ptr plib = NULL
 	if( is_prototype ) then
 		'' (LIB STR_LIT)?
 		if( lexGetToken( ) = FB_TK_LIB ) then
@@ -2271,8 +2252,8 @@ function cCtorHeader _
 				end if
 
 			else
-				lexEatToken( libname )
-				plib = @libname
+				fbAddLib(*lexGetText(), FALSE)
+				lexSkipToken()
 			end if
 		end if
 	end if
@@ -2345,8 +2326,7 @@ function cCtorHeader _
 	end if
 
 	if( is_prototype ) then
-    	proc = symbAddCtor( proc, palias, plib, _
-    						attrib, mode )
+    	proc = symbAddCtor( proc, palias, attrib, mode )
     	if( proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     			exit function
@@ -2378,20 +2358,14 @@ function cCtorHeader _
 			end if
     	end if
 
-    	head_proc = symbAddCtor( proc, palias, NULL, _
-	    					   	 attrib, mode, _
-    					   		 FB_SYMBOPT_DECLARING )
+    	head_proc = symbAddCtor( proc, palias, attrib, mode, FB_SYMBOPT_DECLARING )
 
     	if( head_proc = NULL ) then
     		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: create a fake symbol
-    			proc = symbAddProc( proc, _
-    							    hMakeTmpStr( ), _
-    							    NULL, NULL, _
-    							    FB_DATATYPE_VOID, NULL, _
-    							    attrib, mode )
+    			proc = CREATEFAKE()
     		end if
 
     	else
@@ -2412,9 +2386,7 @@ function cCtorHeader _
 				end if
     		end if
 
-    		head_proc = symbAddCtor( proc, palias, NULL, _
-    						   		 attrib, mode, _
-    						   		 FB_SYMBOPT_DECLARING )
+    		head_proc = symbAddCtor( proc, palias, attrib, mode, FB_SYMBOPT_DECLARING )
 
     		'' dup def?
     		if( head_proc = NULL ) then
@@ -2422,10 +2394,7 @@ function cCtorHeader _
     				exit function
     			else
     				'' error recovery: create a fake symbol
-    				return symbAddProc( proc, _
-    									hMakeTmpStr( ), NULL, NULL, _
-    									FB_DATATYPE_VOID, NULL, _
-    									attrib, mode )
+    				return CREATEFAKE()
     			end if
     		end if
 
@@ -2438,11 +2407,7 @@ function cCtorHeader _
     				exit function
     			else
     				'' error recovery: create a fake symbol
-    				return symbAddProc( proc, _
-    									hMakeTmpStr( ), NULL, NULL, _
-    									FB_DATATYPE_VOID, NULL, _
-    									attrib, _
-    									mode )
+    				return CREATEFAKE()
     			end if
     		end if
 
@@ -2453,11 +2418,7 @@ function cCtorHeader _
 					exit function
     			else
     				'' error recovery: create a fake symbol
-    				return symbAddProc( proc, _
-    									hMakeTmpStr( ), NULL, NULL, _
-    									FB_DATATYPE_VOID, NULL, _
-    									attrib, _
-    									mode )
+    				return CREATEFAKE()
     			end if
     		end if
 

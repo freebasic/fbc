@@ -99,7 +99,6 @@ type FB_CMPSTMT_NAMESPACE
 end type
 
 type FB_CMPSTMT_EXTERN
-	lastlib			as FBS_LIB ptr
 	lastmang		as FB_MANGLING
 end type
 
@@ -175,7 +174,6 @@ type PARSERCTX
 	scope			as uinteger					'' current scope (0=main module)
 
 	mangling		as FB_MANGLING				'' current EXTERN's mangling
-	currlib			as FBS_LIB ptr				'' current EXTERN's library
 
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)

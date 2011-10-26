@@ -348,14 +348,6 @@ enum IR_INFOSEC
 	FB_INFOSEC_CMD
 end enum
 
-'' lib symbol, declared here to be usable by the fbc module
-type FBS_LIB
-	name			as zstring ptr
-	isdefault		as integer
-	hashitem		as HASHITEM ptr
-	hashindex		as uinteger
-end type
-
 #include once "error.bi"
 #include once "fb-obj.bi"
 
@@ -410,74 +402,19 @@ declare function fbChangeOption _
 		byval value as integer _
 	) as integer
 
-declare sub fbListLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibPaths _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibPathsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
 declare sub fbAddIncPath _
 	( _
 		byval path as zstring ptr _
 	)
-
-declare function fbAddLib _
-	( _
-		byval libname as zstring ptr _
-	) as FBS_LIB ptr
-
-declare function fbaddLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval libname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-declare function fbAddLibPath _
-	( _
-		byval path as zstring ptr _
-	) as FBS_LIB ptr
-
-declare function fbaddLibPathEx _
-	( _
-		byval pathlist as TLIST ptr, _
-		byval pathhash as THASH ptr, _
-		byval pathname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
 
 declare sub fbAddDefine _
 	( _
 		byval dname as zstring ptr, _
 		byval dtext as zstring ptr _
 	)
+
+declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 
 declare function fbPragmaOnce _
 	( _

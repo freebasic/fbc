@@ -286,3 +286,11 @@ function listGetNext _
 
 end function
 
+sub strlistAppend(byval list as TLIST ptr, byref s as string)
+	dim as string ptr p = listNewNode(list)
+	*p = s
+end sub
+
+sub strlistInit(byval list as TLIST ptr, byval nodes as integer)
+	listNew(list, nodes, sizeof(string))
+end sub

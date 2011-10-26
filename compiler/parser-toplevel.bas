@@ -44,8 +44,6 @@ sub parserSetCtx( )
 
 	parser.mangling = FB_MANGLING_BASIC
 
-	parser.currlib = NULL
-
 	parser.stmt.cnt = 0
 	parser.stmt.id = 0
 

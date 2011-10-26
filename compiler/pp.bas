@@ -343,8 +343,6 @@ end function
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
 private function ppIncLib( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 libfile
-
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			return FALSE
@@ -355,18 +353,16 @@ private function ppIncLib( ) as integer
 		end if
 	end if
 
-	lexEatToken( libfile )
+	fbAddLib(lexGetText(), FALSE)
+	lexSkipToken()
 
-	function = symbAddLib( libfile ) <> NULL
-
+	function = TRUE
 end function
 
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
 private function ppLibPath( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 path
-
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			return FALSE
@@ -377,16 +373,10 @@ private function ppLibPath( ) as integer
 		end if
 	end if
 
-	lexEatToken( path )
-
-	if( symbAddLibPath( path ) = FALSE ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-			return FALSE
-		end if
-	end if
+	fbAddLibPath(lexGetText(), FALSE)
+	lexSkipToken()
 
 	function = TRUE
-
 end function
 
 '':::::

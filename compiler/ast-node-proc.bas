@@ -1310,10 +1310,7 @@ function astProcAddStaticInstance _
     ''
     wrap = listNewNode( dtorlist )
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
-						NULL, _
-						NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
@@ -1367,10 +1364,8 @@ private function hGlobCtorBegin _
     dim as FBSYMBOL ptr proc = any
     dim as ASTNODE ptr n = any
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-						NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )

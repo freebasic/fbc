@@ -20,10 +20,6 @@ declare sub 		symbDefineInit		( _
 
 declare sub 		symbDefineEnd		( )
 
-declare sub 		symbLibInit			( )
-
-declare sub 		symbLibEnd			( )
-
 declare sub 		symbFwdRefInit		( )
 
 declare sub 		symbFwdRefEnd		( )
@@ -148,9 +144,6 @@ sub symbInit _
 	'' forward refs
 	symbFwdRefInit( )
 
-	'' libraries
-	symbLibInit( )
-
 	'' arrays dim tb
 	symbVarInit( )
 
@@ -193,8 +186,6 @@ sub symbEnd
 	symbProcEnd( )
 
 	symbVarEnd( )
-
-	symbLibEnd( )
 
 	symbFwdRefEnd( )
 

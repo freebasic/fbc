@@ -143,52 +143,6 @@ sub fbAddDefine _
 end sub
 
 '':::::
-function fbAddLib _
-	( _
-		byval libname as zstring ptr _
-	) as FBS_LIB ptr
-
-	function = symbAddLib( libname )
-
-end function
-
-'':::::
-function fbaddLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval libname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-	function = symbAddLibEx( liblist, libhash, libname, isdefault )
-
-end function
-
-'':::::
-function fbAddLibPath _
-	( _
-		byval path as zstring ptr _
-	) as FBS_LIB ptr
-
-	function = symbAddLibPath( path )
-
-end function
-
-'':::::
-function fbAddLibPathEx _
-	( _
-		byval pathlist as TLIST ptr, _
-		byval pathhash as THASH ptr, _
-		byval pathname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-	function = symbAddLibEx( pathlist, pathhash, pathname, isdefault )
-
-end function
-
-'':::::
 private function hFindIncFile _
 	( _
 		byval incfilehash as THASH ptr, _
@@ -382,6 +336,9 @@ function fbInit _
 
 	function = FALSE
 
+	strsetInit(@env.libs, FB_INITLIBNODES\4)
+	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
+
 	''
 	env.restarts = restarts
 	env.dorestart = FALSE
@@ -450,6 +407,9 @@ sub fbEnd
 	erase incpathTB
 
 	erase infileTb
+
+	strsetEnd(@env.libs)
+	strsetEnd(@env.libpaths)
 
 end sub
 
@@ -884,64 +844,22 @@ function fbCheckRestartCompile _
 
 end function
 
-'':::::
-sub fbListLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: list of FBS_LIB
-
-	symbListLibs( dstlist, dsthash, delnodes )
-
+sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+	strsetCopy(@env.libs, libs)
+	strsetCopy(@env.libpaths, libpaths)
 end sub
 
-'':::::
-sub fbListLibsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: both lists of FBS_LIB
-
-	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
-
+sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+	strsetCopy(libs, @env.libs)
+	strsetCopy(libpaths, @env.libpaths)
 end sub
 
-'':::::
-sub fbListLibPaths _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: list of FBS_LIB
-
-	symbListLibPaths( dstlist, dsthash, delnodes )
-
+sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
+	strsetAdd(@env.libs, *libname, is_default)
 end sub
 
-'':::::
-sub fbListLibPathsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: both lists of FBS_LIB
-
-	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
-
+sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
+	strsetAdd(@env.libpaths, *path, is_default)
 end sub
 
 ''::::

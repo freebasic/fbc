@@ -91,23 +91,19 @@ private function hProcBegin _
 
 	'' cons|destructor?
 	if( op = INVALID ) then
-		proc = symbAddCtor( proc, _
-							NULL, _
-							NULL, 	_
-							attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_PRIVATE, _
-							FB_FUNCMODE_CDECL, _
-							FB_SYMBOPT_DECLARING )
+		proc = symbAddCtor( proc, NULL, _
+		                    attrib or FB_SYMBATTRIB_METHOD or _
+		                              FB_SYMBATTRIB_PRIVATE, _
+		                    FB_FUNCMODE_CDECL, _
+		                    FB_SYMBOPT_DECLARING )
 
 	'' op..
 	else
-		proc = symbAddOperator( proc, _
-								op, _
-								NULL, _
-								NULL, _
-								FB_DATATYPE_VOID, NULL, _
-								attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_PRIVATE, _
-								FB_FUNCMODE_CDECL, _
-								FB_SYMBOPT_DECLARING )
+		proc = symbAddOperator( proc, op, NULL, FB_DATATYPE_VOID, NULL, _
+		                        attrib or FB_SYMBATTRIB_METHOD or _
+		                                  FB_SYMBATTRIB_PRIVATE, _
+		                        FB_FUNCMODE_CDECL, _
+		                        FB_SYMBOPT_DECLARING )
 	end if
 
     ''

@@ -85,4 +85,7 @@ declare function listGetNext _
 		byval node as any ptr _
 	) as any ptr
 
+declare sub strlistAppend(byval list as TLIST ptr, byref s as string)
+declare sub strlistInit(byval list as TLIST ptr, byval nodes as integer)
+
 #endif '' __LIST_BI__
