@@ -35,6 +35,7 @@ private sub fbcInit( )
 	listNew( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
 	strlistInit( @fbc.temps, FBC_INITARGS\4 )
 	strlistInit( @fbc.objlist, FBC_INITFILES )
+	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
 	strlistInit( @fbc.deflist, FBC_INITFILES\4 )
 	strlistInit( @fbc.preinclist, FBC_INITFILES\4 )
 	strlistInit( @fbc.incpathlist, FBC_INITFILES\4 )
@@ -538,16 +539,30 @@ private function linkFiles() as integer
 		ldcline += " """ + fbc.libpath + "fbrt0.o"""
 	end if
 
-	dim as string ptr objfile = listGetHead(@fbc.objlist)
-	while (objfile)
-		ldcline += " """ + *objfile + """"
-		objfile = listGetNext(objfile)
-	wend
+	scope
+		dim as string ptr objfile = listGetHead(@fbc.objlist)
+		while (objfile)
+			ldcline += " """ + *objfile + """"
+			objfile = listGetNext(objfile)
+		wend
+	end scope
 
-	'' init lib group
+	'' Begin of lib group
+	'' All libraries are passed inside -( -) so we don't need to worry as
+	'' much about their order and/or listing them repeatedly.
 	ldcline += " ""-("""
 
-	'' Add libraries from command-line and those found during parsing
+	'' Add libraries passed by file name
+	scope
+		dim as string ptr libfile = listGetHead(@fbc.libfiles)
+		while (libfile)
+			ldcline += " """ + *libfile + """"
+			libfile = listGetNext(libfile)
+		wend
+	end scope
+
+	'' Add libraries from command-line, those found during parsing, and
+	'' the default ones
 	scope
 		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
 		dim as integer checkdllname = (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_DYNAMICLIB)
@@ -564,7 +579,7 @@ private function linkFiles() as integer
 		wend
 	end scope
 
-	'' end lib group
+	'' End of lib group
 	ldcline += " ""-)"""
 
 	'' crt end
@@ -1611,8 +1626,7 @@ private sub handleArg(byref arg as string)
 			fbcAddObj(arg)
 
 		case "a"
-			'' TODO: libs passed by file name can't be handled like -l
-			strsetAdd(@fbc.libs, arg, FALSE)
+			strlistAppend(@fbc.libfiles, arg)
 
 		case "rc", "res"
 			setIofile(listNewNode(@fbc.rcs), arg)

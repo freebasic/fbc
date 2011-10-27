@@ -49,6 +49,7 @@ type FBCCTX
 	xpm				as FBCIOFILE '' .xpm input file
 	temps				as TLIST '' Temporary files to delete at shutdown
 	objlist				as TLIST '' Objects from command line and from compilation
+	libfiles			as TLIST
 	deflist				as TLIST
 	preinclist			as TLIST
 	incpathlist			as TLIST
