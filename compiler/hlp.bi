@@ -84,6 +84,8 @@ declare function hRevertSlash _
 		byval repchar as integer _
 	) as zstring ptr
 
+declare function pathStripDiv(byref path as string) as string
+
 declare function hToPow2 _
 	( _
 		byval value as uinteger _

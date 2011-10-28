@@ -716,6 +716,15 @@ function fbGetModuleEntry( ) as string static
 
 end function
 
+'' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
+sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
+	strsetAdd(@env.libs, *libname, is_default)
+end sub
+
+sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
+	strsetAdd(@env.libpaths, pathStripDiv(*path), is_default)
+end sub
+
 '':::::
 function fbPreInclude _
 	( _
@@ -844,14 +853,6 @@ end sub
 sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 	strsetCopy(libs, @env.libs)
 	strsetCopy(libpaths, @env.libpaths)
-end sub
-
-sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
-	strsetAdd(@env.libs, *libname, is_default)
-end sub
-
-sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
-	strsetAdd(@env.libpaths, *path, is_default)
 end sub
 
 ''::::
@@ -1053,10 +1054,9 @@ function fbIncludeFile _
 
 			'' 3rd) try finding it at the inc paths
 			for i = env.incpaths-1 to 0 step -1
-				incfile = incpathTB(i)
-				incfile += *filename
 				if( hFileExists( incfile ) ) then
 					exit for
+				incfile = incpathTB(i) + FB_HOST_PATHDIV + *filename
 				end if
 			next
 

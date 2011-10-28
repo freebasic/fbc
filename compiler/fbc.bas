@@ -125,7 +125,7 @@ function fbcFindGccLib(byref file as string) as string
 
 	'' Files in our lib/ directory have precedence, and are in fact
 	'' required for standalone builds.
-	found = fbc.libpath + file
+	found = fbc.libpath + FB_HOST_PATHDIV + file
 
 #ifndef ENABLE_STANDALONE
 	if( hFileExists( found ) ) then
@@ -182,8 +182,9 @@ private sub fbcAddDefLibPath(byref path as string)
 end sub
 
 sub fbcAddLibPathFor(byref libname as string)
-	dim as string path = hStripFilename(fbcFindGccLib(fbcMakeLibFileName(libname)))
-	if (len(path)) then
+	dim as string path = pathStripDiv(hStripFilename( _
+	                           fbcFindGccLib(fbcMakeLibFileName(libname))))
+	if (len(path)> 0) then
 		fbcAddDefLibPath(path)
 	end if
 end sub
@@ -200,10 +201,8 @@ function fbcFindBin(byval filename as zstring ptr) as string
 	end if
 
 	'' Build the path to the program in our bin/ directory
-	path = fbc.binpath
-	path += fbc.triplet
-	path += *filename
-	path += FB_HOST_EXEEXT
+	path = fbc.binpath + FB_HOST_PATHDIV
+	path += fbc.triplet + *filename + FB_HOST_EXEEXT
 
 #ifdef __FB_UNIX__
 	'' On *nix/*BSD, check whether the program exists in bin/, and fallback
@@ -403,12 +402,12 @@ private function linkFiles() as integer
 		'' to get ctors/dtors into the correct order that lets
 		'' fbrt0's c/dtor be the first/last respectively.
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
-		ldcline += " -T " + QUOTE + fbc.libpath + "i386go32.x" + QUOTE
+		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 
 #ifndef DISABLE_OBJINFO
 	else
 		'' Supplementary ld script to drop the fbctinf objinfo section
-		ldcline += " " + QUOTE + fbc.libpath + "fbextra.x" + QUOTE
+		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 #endif
 
 	end if
@@ -428,7 +427,7 @@ private function linkFiles() as integer
 			'' does not work, and b) shows a verbose message that
 			'' wouldn't be nice to have, so a) is the best way.
 			deffile = hStripExt( fbc.outname ) + ".def"
-			ldcline += " --output-def " + QUOTE + deffile + QUOTE
+			ldcline += " --output-def """ + deffile + """"
 		end if
 
 	case FB_COMPTARGET_LINUX
@@ -455,13 +454,7 @@ private function linkFiles() as integer
 	scope
 		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibpaths.list)
 		while (i)
-			ldcline += " -L """
-			if (right(i->s, 1) = FB_HOST_PATHDIV) then
-				ldcline += left(i->s, len(i->s) - 1)
-			else
-				ldcline += i->s
-			end if
-			ldcline += """"
+			ldcline += " -L """ + i->s + """"
 			i = listGetNext(i)
 		wend
 	end scope
@@ -470,34 +463,34 @@ private function linkFiles() as integer
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
 		else
 			'' TODO
-			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-				ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+				ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
 			end if
 		end if
 
 	case FB_COMPTARGET_WIN32
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			ldcline += " " + QUOTE + fbcFindGccLib("dllcrt2.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("dllcrt2.o") + """"
 		else
-			ldcline += " " + QUOTE + fbcFindGccLib("crt2.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("crt2.o") + """"
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-				ldcline += " " + QUOTE + fbcFindGccLib("gcrt2.o") + QUOTE
+				ldcline += " """ + fbcFindGccLib("gcrt2.o") + """"
 			end if
 		end if
 
-		ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE
+		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
 
 	case FB_COMPTARGET_DOS
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
 		else
-			ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
 		end if
 
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
@@ -508,35 +501,35 @@ private function linkFiles() as integer
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
-					ldcline += " " + QUOTE + fbcFindGccLib("gcrt0.o") + QUOTE
+					ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
 				case else
-					ldcline += " " + QUOTE + fbcFindGccLib("gcrt1.o") + QUOTE
+					ldcline += " """ + fbcFindGccLib("gcrt1.o") + """"
 				end select
 			else
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
-					ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+					ldcline += " """ + fbcFindGccLib("crt0.o") + """"
 				case else
-					ldcline += " " + QUOTE + fbcFindGccLib("crt1.o") + QUOTE
+					ldcline += " """ + fbcFindGccLib("crt1.o") + """"
 				end select
 			end if
 		end if
 
 		'' All have crti.o, except OpenBSD
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
-			ldcline += " " + QUOTE + fbcFindGccLib("crti.o") + QUOTE
+			ldcline += " """ + fbcFindGccLib("crti.o") + """"
 		end if
 
-		ldcline += " " + QUOTE + fbcFindGccLib("crtbegin.o") + QUOTE
+		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
 
 	case FB_COMPTARGET_XBOX
 		'' link with crt0.o (C runtime init)
-		ldcline += " " + QUOTE + fbcFindGccLib("crt0.o") + QUOTE
+		ldcline += " """ + fbcFindGccLib("crt0.o") + """"
 
 	end select
 
 	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
-		ldcline += " """ + fbc.libpath + "fbrt0.o"""
+		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbrt0.o""")
 	end if
 
 	scope
@@ -587,13 +580,13 @@ private function linkFiles() as integer
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
-		ldcline += " " + QUOTE + fbcFindGccLib("crtend.o") + QUOTE
+		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
 			ldcline += " " + QUOTE + fbcFindGccLib("crtn.o") + QUOTE
 		end if
 
 	case FB_COMPTARGET_WIN32
-		ldcline += " " + QUOTE + fbcFindGccLib("crtend.o") + QUOTE
+		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
 
 	end select
 
@@ -1260,7 +1253,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
 
 	case OPT_P
-		strsetAdd(@fbc.libpaths, arg, FALSE)
+		strsetAdd(@fbc.libpaths, pathStripDiv(arg), FALSE)
 
 	case OPT_PP
 		fbSetOption( FB_COMPOPT_PPONLY, TRUE )
@@ -1269,20 +1262,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.preserveasm = FALSE
 
 	case OPT_PREFIX
-		fbc.prefix = arg
-
-		'' Trim trailing slash
-		if( right( fbc.prefix, 1 )  = "/" ) then
-			fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
-		end if
-
-		#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-			'' On Windows/DOS, also trim trailing backslash
-			'' (additionally to the forward slash check)
-			if( right( fbc.prefix, 1 ) = RSLASH ) then
-				fbc.prefix = left( fbc.prefix, len( fbc.prefix ) - 1 )
-			end if
-		#endif
+		fbc.prefix = pathStripDiv(arg)
 
 	case OPT_PROFILE
 		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
@@ -1845,7 +1825,7 @@ private sub fbcInit2()
 
 	fbc.prefix += FB_HOST_PATHDIV
 
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
+	fbc.binpath = fbc.prefix + "bin"
 	fbc.incpath = fbc.prefix
 	fbc.libpath = fbc.prefix
 
@@ -1870,8 +1850,8 @@ private sub fbcInit2()
 		#endif
 	#endif
 
-	fbc.incpath += FB_SUFFIX + FB_HOST_PATHDIV
-	fbc.libpath += FB_SUFFIX + FB_HOST_PATHDIV
+	fbc.incpath += FB_SUFFIX
+	fbc.libpath += FB_SUFFIX
 
 	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
@@ -2318,7 +2298,8 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	'' Change the include env var to point to the (hopefully present)
 	'' win/rc/*.h headers.
 	dim as string oldinclude = trim(environ("INCLUDE"))
-	setenviron "INCLUDE=" + fbc.incpath + ("win" + RSLASH + "rc")
+	setenviron "INCLUDE=" + fbc.incpath + _
+				(FB_HOST_PATHDIV + "win" + FB_HOST_PATHDIV + "rc")
 
 	dim as string ln = "/ni /nw /o "
 	ln &= "/fo """ & rc->objfile & """"
@@ -2383,10 +2364,10 @@ end function
 private sub setDefaultLibPaths()
 
 	'' compiler's lib/
-	fbcAddDefLibPath( fbc.libpath )
+	fbcAddDefLibPath(fbc.libpath)
 
 	'' and the current path
-	fbcAddDefLibPath( "./" )
+	fbcAddDefLibPath(".")
 
 #ifndef ENABLE_STANDALONE
 	'' Add gcc's private lib directory, to find libgcc and libsupc++

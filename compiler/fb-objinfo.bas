@@ -89,8 +89,7 @@ function fbObjInfoReadLib _
 	'' try finding it at the lib paths
 	dim as TSTRSETITEM ptr path = listGetHead(libpaths)
 	while (path)
-		libfile = path->s
-		libfile += FB_HOST_PATHDIV + filename
+		libfile = path->s + FB_HOST_PATHDIV + filename
 		if( hFileExists( libfile ) ) then
 #if defined( DEBUG_BFD )
 			print "BFD found library """ & libfile & """"
