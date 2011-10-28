@@ -270,12 +270,6 @@ enum FB_EXTRAOPT
 end enum
 
 ''
-'' Track options explicitly set on the command line
-type FBCMMLINEOPTEXPL
-	forcelang			as integer					'' TRUE if -forcelang was specified
-end type
-
-''
 type FBCMMLINEOPT
 	debug			as integer					'' true=add debug info (def= false)
 	cputype			as FB_CPUTYPE
@@ -297,6 +291,7 @@ type FBCMMLINEOPT
 	maxerrors		as integer					'' max number errors until the parser quit
 	showsusperrors	as integer					'' show suspicious errors (def= false)
 	lang			as FB_LANG					'' lang compatibility
+	forcelang		as integer					'' TRUE if -forcelang was specified
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 	backend			as FB_BACKEND				'' backend
 	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
@@ -384,11 +379,6 @@ declare sub fbSetOption _
 	( _
 		byval opt as integer, _
 		byval value as integer _
-	)
-
-declare sub fbSetOptionIsExplicit _
-	( _
-		byval opt as integer _
 	)
 
 declare function fbGetOption _

@@ -416,8 +416,6 @@ end sub
 '':::::
 sub fbSetDefaultOptions( )
 
-	env.cloptexpl.forcelang = FALSE
-
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
 	env.clopt.fpmode		= FB_DEFAULT_FPMODE
@@ -425,6 +423,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
+	env.clopt.forcelang		= FALSE
 	env.clopt.backend		= FB_DEFAULT_BACKEND
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
@@ -513,6 +512,9 @@ sub fbSetOption _
 		env.clopt.lang = value
 		hSetLangOptions( value )
 
+	case FB_COMPOPT_FORCELANG
+		env.clopt.forcelang = value
+
 	case FB_COMPOPT_PEDANTICCHK
 		env.clopt.pdcheckopt = value
 
@@ -528,19 +530,6 @@ sub fbSetOption _
 	case FB_COMPOPT_PPONLY
 		env.clopt.pponly = value
 
-	end select
-
-end sub
-
-'':::::
-sub fbSetOptionIsExplicit _
-	( _
-		byval opt as integer _
-	)
-
-	select case as const opt
-	case FB_COMPOPT_FORCELANG
-		env.cloptexpl.forcelang = TRUE
 	end select
 
 end sub
@@ -609,6 +598,9 @@ function fbGetOption _
 	case FB_COMPOPT_LANG
 		function = env.clopt.lang
 
+	case FB_COMPOPT_FORCELANG
+		function = env.clopt.forcelang
+
 	case FB_COMPOPT_PEDANTICCHK
 		function = env.clopt.pdcheckopt
 
@@ -661,8 +653,8 @@ function fbChangeOption _
 
 			'' module level
 			else
-				'' Explicit -forcelang on cmdline overrides directive
-				if( env.cloptexpl.forcelang ) then
+				'' If -forcelang is enabled, ignore #lang directives
+				if( env.clopt.forcelang ) then
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 

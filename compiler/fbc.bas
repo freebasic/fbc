@@ -1124,7 +1124,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
-		fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
+		fbSetOption( FB_COMPOPT_FORCELANG, TRUE )
 		fbc.objinf.lang = value
 
 	case OPT_FPMODE

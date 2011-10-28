@@ -649,7 +649,6 @@ type FBENV
 
 	lang			as FB_LANG_CTX				'' language supported features
 	clopt			as FBCMMLINEOPT				'' cmm-line options
-	cloptexpl		as FBCMMLINEOPTEXPL			'' cmm-line options explicitly set
 	target			as FBTARGET					'' target specific
 
 	opt				as FBOPTION					'' context-sensitive options
