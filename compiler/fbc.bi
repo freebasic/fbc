@@ -52,7 +52,6 @@ type FBCCTX
 	libfiles			as TLIST
 	deflist				as TLIST
 	preinclist			as TLIST
-	incpathlist			as TLIST
 	libs				as TSTRSET
 	libpaths			as TSTRSET
 

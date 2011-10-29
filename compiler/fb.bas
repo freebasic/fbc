@@ -25,7 +25,6 @@ declare sub	parserSetCtx ( )
 
 '' globals
 	dim shared infileTb( ) as FBFILE
-	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -108,30 +107,6 @@ declare sub	parserSetCtx ( )
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-sub fbAddIncPath _
-	( _
-		byval path as zstring ptr _
-	)
-
-	if( env.incpaths < FB_MAXINCPATHS ) then
-		' test for both path dividers because a slash is also supported
-		' under Win32 and DOS using DJGPP. However, the (back)slashes
-		' will always be converted to the OS' preferred type of slash.
-		select case right( *path, 1 )
-		case "/", RSLASH
-		case else
-			*path += FB_HOST_PATHDIV
-		end select
-
-		incpathTB( env.incpaths ) = *path
-
-		env.incpaths += 1
-	end if
-
-end sub
-
-'':::::
 sub fbAddDefine _
 	( _
 		byval dname as zstring ptr, _
@@ -223,19 +198,33 @@ function fbGetLangName _
 end function
 
 '':::::
-private sub hSetLangCtx _
+function fbInit _
 	( _
-		byval lang as FB_LANG _
-	)
+		byval ismain as integer, _
+		byval restarts as integer _
+	) as integer static
 
-	if( lang = FB_LANG_FB ) then
+	function = FALSE
+
+	strsetInit(@env.libs, FB_INITLIBNODES\4)
+	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
+
+	env.restarts = restarts
+	env.dorestart = FALSE
+
+	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
+
+	env.includerec = 0
+	env.main.proc = NULL
+
+	if( env.clopt.lang = FB_LANG_FB ) then
 		env.opt.explicit = TRUE
 	else
 		env.opt.explicit = FALSE
 	end if
 
-    '' data type remapping
-	if( lang <> FB_LANG_QB ) then
+	'' data type remapping
+	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
 		env.lang.sizeremap.integer = FB_INTEGERSIZE
 		env.lang.typeremap.long = FB_DATATYPE_LONG
@@ -266,92 +255,16 @@ private sub hSetLangCtx _
 	env.opt.dynamic			= FALSE
 	env.opt.base = 0
 
-	if( lang <> FB_LANG_QB ) then
+	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.opt.gosub = FALSE
 	else
 		env.opt.gosub = TRUE
 	end if
 
-end sub
-
-'':::::
-private sub hSetCtx( )
-
-	env.includerec = 0
-	env.main.proc = NULL
-
-	hSetLangCtx( env.clopt.lang )
-
-	''
-	env.incpaths = 0
-
-	fbAddIncPath( fbc.incpath )
-
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
-	''
 	parserSetCtx( )
 
-end sub
-
-'':::::
-private sub incTbInit( )
-
-	hashInit( )
-	hashNew( @env.incfilehash, FB_INITINCFILES )
-	hashNew( @env.inconcehash, FB_INITINCFILES )
-
-end sub
-
-'':::::
-private sub incTbEnd( )
-
-	hashFree( @env.inconcehash )
-	hashFree( @env.incfilehash )
-
-	hashEnd( )
-
-end sub
-
-'':::::
-private sub stmtStackInit( )
-
-	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-
-end sub
-
-'':::::
-private sub stmtStackEnd( )
-
-	stackFree( @parser.stmt.stk )
-
-end sub
-
-'':::::
-function fbInit _
-	( _
-		byval ismain as integer, _
-		byval restarts as integer _
-	) as integer static
-
-	function = FALSE
-
-	strsetInit(@env.libs, FB_INITLIBNODES\4)
-	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
-
-	''
-	env.restarts = restarts
-	env.dorestart = FALSE
-
-	''
-	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
-
-	redim incpathTB( 0 to FB_MAXINCPATHS-1 )
-
-	''
-	hSetCtx( )
-
-	''
 	symbInit( ismain )
 
 	hlpInit( )
@@ -364,9 +277,11 @@ function fbInit _
 		return FALSE
 	end if
 
-	incTbInit( )
+	hashInit( )
+	hashNew( @env.incfilehash, FB_INITINCFILES )
+	hashNew( @env.inconcehash, FB_INITINCFILES )
 
-	stmtStackInit( )
+	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 
 	lexInit( FALSE )
 
@@ -389,9 +304,12 @@ sub fbEnd
 
 	lexEnd( )
 
-	stmtStackEnd( )
+	stackFree( @parser.stmt.stk )
 
-	incTbEnd( )
+	hashFree( @env.inconcehash )
+	hashFree( @env.incfilehash )
+
+	hashEnd( )
 
 	irEnd( )
 
@@ -403,9 +321,6 @@ sub fbEnd
 
 	symbEnd( )
 
-	''
-	erase incpathTB
-
 	erase infileTb
 
 	strsetEnd(@env.libs)
@@ -413,8 +328,8 @@ sub fbEnd
 
 end sub
 
-'':::::
-sub fbSetDefaultOptions( )
+sub fbGlobalInit()
+	strlistInit(@env.includepaths, FB_INITINCFILES)
 
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
@@ -443,7 +358,10 @@ sub fbSetDefaultOptions( )
 	env.clopt.optlevel		= 0
 
 	hSetLangOptions( env.clopt.lang )
+end sub
 
+sub fbAddIncludePath(byref path as string)
+	strlistAppend(@env.includepaths, path)
 end sub
 
 '':::::
@@ -1053,15 +971,17 @@ function fbIncludeFile _
 		if( hFileExists( filename ) = FALSE ) then
 
 			'' 3rd) try finding it at the inc paths
-			for i = env.incpaths-1 to 0 step -1
-				if( hFileExists( incfile ) ) then
-					exit for
-				incfile = incpathTB(i) + FB_HOST_PATHDIV + *filename
+			dim as string ptr path = listGetHead(@env.includepaths)
+			while (path)
+				incfile = *path + FB_HOST_PATHDIV + *filename
+				if (hFileExists(incfile)) then
+					exit while
 				end if
-			next
+				path = listGetNext(path)
+			wend
 
 			'' not found?
-			if( i < 0 ) then
+			if (path = NULL) then
 				errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
 				return errFatal( )
 			end if

@@ -634,13 +634,20 @@ type FB_LANG_CTX
 end type
 
 type FBENV
+	'' Global fb interface data
+	includepaths		as TLIST
+
+	clopt			as FBCMMLINEOPT				'' cmm-line options
+	target			as FBTARGET					'' target specific
+
+	'' Parse-specific things
+
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
 
 	ppfile_num		as integer					'' -pp output file
 
 	'' include files
-	incpaths		as integer
 	incfilehash		as THASH
 	inconcehash		as THASH
 	includerec		as integer					'' >0 if parsing an include file
@@ -648,8 +655,6 @@ type FBENV
 	main			as FBMAIN
 
 	lang			as FB_LANG_CTX				'' language supported features
-	clopt			as FBCMMLINEOPT				'' cmm-line options
-	target			as FBTARGET					'' target specific
 
 	opt				as FBOPTION					'' context-sensitive options
 

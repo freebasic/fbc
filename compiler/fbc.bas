@@ -8,8 +8,6 @@
 #include once "fbc.bi"
 #include once "hlp.bi"
 
-declare sub setDefaultOptions( )
-
 declare function fbcMakeLibFileName(byref libname as string) as string
 
 declare function fbcRunBin _
@@ -38,14 +36,32 @@ private sub fbcInit( )
 	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
 	strlistInit( @fbc.deflist, FBC_INITFILES\4 )
 	strlistInit( @fbc.preinclist, FBC_INITFILES\4 )
-	strlistInit( @fbc.incpathlist, FBC_INITFILES\4 )
 	strsetInit( @fbc.libs, FBC_INITFILES\4 )
 	strsetInit( @fbc.libpaths, FBC_INITFILES\4 )
 
 	strsetInit(@fbc.finallibs, FBC_INITFILES\2)
 	strsetInit(@fbc.finallibpaths, FBC_INITFILES\2)
 
-	setDefaultOptions( )
+	fbGlobalInit()
+
+	fbc.emitonly    = FALSE
+	fbc.compileonly = FALSE
+	fbc.preserveasm	= FALSE
+	fbc.preserveobj	= FALSE
+	fbc.verbose     = FALSE
+	fbc.stacksize	= FBC_DEFSTACKSIZE
+
+	fbc.mainfile	= ""
+	fbc.mainpath	= ""
+	fbc.mapfile     = ""
+	fbc.mainset     = FALSE
+	fbc.outname     = ""
+
+	fbc.extopt.gas	= ""
+	fbc.extopt.ld	= ""
+
+	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
+	fbc.objinf.mt   = FALSE
 end sub
 
 private sub fbcEnd(byval errnum as integer)
@@ -801,32 +817,6 @@ private function collectObjInfo _
 
 end function
 
-'':::::
-private sub setDefaultOptions( )
-
-	fbSetDefaultOptions( )
-
-	fbc.emitonly    = FALSE
-	fbc.compileonly = FALSE
-	fbc.preserveasm	= FALSE
-	fbc.preserveobj	= FALSE
-	fbc.verbose     = FALSE
-	fbc.stacksize	= FBC_DEFSTACKSIZE
-
-	fbc.mainfile	= ""
-	fbc.mainpath	= ""
-    fbc.mapfile     = ""
-	fbc.mainset     = FALSE
-	fbc.outname     = ""
-
-	fbc.extopt.gas	= ""
-	fbc.extopt.ld	= ""
-
-	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
-	fbc.objinf.mt   = FALSE
-
-end sub
-
 private sub fbcErrorInvalidOption(byref arg as string)
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
 end sub
@@ -1169,7 +1159,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_BACKEND, value )
 
 	case OPT_I
-		strlistAppend(@fbc.incpathlist, arg)
+		fbAddIncludePath(pathStripDiv(arg))
 
 	case OPT_INCLUDE
 		strlistAppend(@fbc.preinclist, arg)
@@ -1857,6 +1847,10 @@ private sub fbcInit2()
 	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
 
+	'' Tell the compiler about the default include path (it's added after
+	'' the command line ones, so those will be searched first)
+	fbAddIncludePath(fbc.incpath)
+
 	''
 	'' Determine the main module
 	''
@@ -1917,13 +1911,6 @@ private function processCompLists _
     dim as string dname, dtext
 
 	function = FALSE
-
-    '' add inc files
-	dim as string ptr incp = listGetHead( @fbc.incpathlist )
-	do while( incp <> NULL )
-    	fbAddIncPath( *incp )
-    	incp = listGetNext( incp )
-    loop
 
     '' add defines
 	dim as string ptr def = listGetHead( @fbc.deflist )

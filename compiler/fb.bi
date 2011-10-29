@@ -24,8 +24,6 @@ const FB_MAXARGRECLEVEL     = 8
 const FB_MAXPRAGMARECLEVEL  = 8
 const FB_MAXNAMESPCRECLEVEL = 64
 
-const FB_MAXINCPATHS        = 16
-
 const FB_MAXARRAYDIMS       = 8
 const FB_MAXDEFINEARGS      = 32
 
@@ -346,9 +344,6 @@ end enum
 #include once "error.bi"
 #include once "fb-obj.bi"
 
-''
-''
-''
 declare function fbInit _
 	( _
 		byval ismain as integer, _
@@ -371,9 +366,8 @@ declare function fbCheckRestartCompile _
 	( _
 	) as integer
 
-declare sub fbSetDefaultOptions _
-	( _
-	)
+declare sub fbGlobalInit()
+declare sub fbAddIncludePath(byref path as string)
 
 declare sub fbSetOption _
 	( _
@@ -391,11 +385,6 @@ declare function fbChangeOption _
 		byval opt as integer, _
 		byval value as integer _
 	) as integer
-
-declare sub fbAddIncPath _
-	( _
-		byval path as zstring ptr _
-	)
 
 declare sub fbAddDefine _
 	( _
