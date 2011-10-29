@@ -34,8 +34,6 @@ private sub fbcInit( )
 	strlistInit( @fbc.temps, FBC_INITARGS\4 )
 	strlistInit( @fbc.objlist, FBC_INITFILES )
 	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
-	strlistInit( @fbc.deflist, FBC_INITFILES\4 )
-	strlistInit( @fbc.preinclist, FBC_INITFILES\4 )
 	strsetInit( @fbc.libs, FBC_INITFILES\4 )
 	strsetInit( @fbc.libpaths, FBC_INITFILES\4 )
 
@@ -1079,7 +1077,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.preserveobj = TRUE
 
 	case OPT_D
-		strlistAppend(@fbc.deflist, arg)
+		fbAddPreDefine(arg)
 
 	case OPT_DLL, OPT_DYLIB
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
@@ -1162,7 +1160,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbAddIncludePath(pathStripDiv(arg))
 
 	case OPT_INCLUDE
-		strlistAppend(@fbc.preinclist, arg)
+		fbAddPreInclude(arg)
 
 	case OPT_L
 		strsetAdd(@fbc.libs, arg, FALSE)
@@ -1902,42 +1900,6 @@ private sub fbcInit2()
 	end if
 end sub
 
-'':::::
-private function processCompLists _
-	( _
-	) as integer
-
-    dim as integer p
-    dim as string dname, dtext
-
-	function = FALSE
-
-    '' add defines
-	dim as string ptr def = listGetHead( @fbc.deflist )
-	do while( def <> NULL )
-
-    	p = instr( *def, "=" )
-    	if( p = 0 ) then
-    		p = len( *def ) + 1
-    	end if
-
-    	dname = left( *def, p-1 )
-
-		if( p < len( *def ) ) then
-			dtext = mid( *def, p+1 )
-		else
-			dtext = "1"
-    	end if
-
-    	fbAddDefine( dname, dtext )
-
-    	def = listGetNext( def )
-    loop
-
-    function = FALSE
-
-end function
-
 '' Generate the .asm/.c file name for the given .bas module
 private function getModuleAsmName(byval module as FBCIOFILE ptr) as string
 	'' Based on the objfile name so it's also affected by -o
@@ -1981,14 +1943,11 @@ private function compileBas _
 			exit function
 		end if
 
-		'' add include paths and defines
-		processCompLists()
-
 		'' add the libs and paths passed in the cmd-line, so the
 		'' compiler can add them to the module's objinfo section
 		fbSetLibs(@fbc.libs, @fbc.libpaths)
 
-		if (fbCompile(module->srcfile, asmfile, ismain, @fbc.preinclist) = FALSE) then
+		if (fbCompile(module->srcfile, asmfile, ismain) = FALSE) then
 			'' Restore original lang
 			fbSetOption(FB_COMPOPT_LANG, prevlangid)
 			exit function

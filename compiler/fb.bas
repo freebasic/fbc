@@ -107,16 +107,6 @@ declare sub	parserSetCtx ( )
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub fbAddDefine _
-	( _
-		byval dname as zstring ptr, _
-		byval dtext as zstring ptr _
-	)
-
-    symbAddDefine( dname, dtext, len( *dtext ) )
-
-end sub
-
 '':::::
 private function hFindIncFile _
 	( _
@@ -329,6 +319,8 @@ sub fbEnd
 end sub
 
 sub fbGlobalInit()
+	strlistInit(@env.predefines, FB_INITINCFILES)
+	strlistInit(@env.preincludes, FB_INITINCFILES)
 	strlistInit(@env.includepaths, FB_INITINCFILES)
 
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
@@ -362,6 +354,14 @@ end sub
 
 sub fbAddIncludePath(byref path as string)
 	strlistAppend(@env.includepaths, path)
+end sub
+
+sub fbAddPreDefine(byref def as string)
+	strlistAppend(@env.predefines, def)
+end sub
+
+sub fbAddPreInclude(byref file as string)
+	strlistAppend(@env.preincludes, file)
 end sub
 
 '':::::
@@ -643,25 +643,41 @@ sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
 	strsetAdd(@env.libpaths, pathStripDiv(*path), is_default)
 end sub
 
-'':::::
-function fbPreInclude _
-	( _
-		byval preinclist as TLIST ptr _
-	) as integer
+private sub fbParsePreDefines()
+	dim as string defid, deftext
+	dim as string ptr def = listGetHead(@env.predefines)
+	while (def)
+		dim as integer idlength = instr(*def, "=") - 1
+		if (idlength < 0) then
+			idlength = len(*def)
+		end if
 
-	if( preinclist <> NULL ) then
-		dim as string ptr incf = listGetHead( preinclist )
-		do while( incf <> NULL )
-			if( fbIncludeFile( *incf, TRUE ) = FALSE ) then
-				return FALSE
-			end if
+		defid = left(*def, idlength)
+		deftext = right(*def, len(*def) - idlength - 1)
 
-			incf = listGetNext( incf )
-		loop
-	end if
+		'' If no text was given, default to '1'
+		'' (this also means that it's not possible to make
+		'' empty defines with -d)
+		if (len(deftext) = 0) then
+			deftext = "1"
+		end if
 
-	function = TRUE
+		'' TODO: Check for invalid identifier and duplicated definition
+		symbAddDefine(defid, deftext, len(deftext))
 
+		def = listGetNext(def)
+	wend
+end sub
+
+private function fbParsePreIncludes() as integer
+	dim as string ptr file = listGetHead(@env.preincludes)
+	while (file)
+		if (fbIncludeFile(*file, TRUE) = FALSE) then
+			return FALSE
+		end if
+		file = listGetNext(file)
+	wend
+	return TRUE
 end function
 
 '':::::
@@ -669,11 +685,9 @@ function fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
-		byval ismain as integer, _
-		byval preinclist as TLIST ptr _
+		byval ismain as integer _
 	) as integer
 
-    dim as integer res
 	dim as double tmr
 
 	function = FALSE
@@ -721,11 +735,12 @@ function fbCompile _
 
 	tmr = timer( )
 
-	res = fbPreInclude( preinclist )
+	fbParsePreDefines()
 
-	if( res = TRUE ) then
+	dim as integer ok = fbParsePreIncludes()
+	if (ok) then
 		'' parse
-		res = cProgram( )
+		ok = cProgram( )
 	end if
 
 	tmr = timer( ) - tmr
@@ -745,7 +760,7 @@ function fbCompile _
 	end if
 
 	'' check if any label undefined was used
-	if( res = TRUE ) then
+	if (ok) then
 		symbCheckLabels( )
 		function = (errGetCount( ) = 0)
 	else

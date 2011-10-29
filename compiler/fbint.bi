@@ -635,6 +635,8 @@ end type
 
 type FBENV
 	'' Global fb interface data
+	predefines		as TLIST
+	preincludes		as TLIST
 	includepaths		as TLIST
 
 	clopt			as FBCMMLINEOPT				'' cmm-line options

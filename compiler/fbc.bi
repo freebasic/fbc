@@ -50,8 +50,6 @@ type FBCCTX
 	temps				as TLIST '' Temporary files to delete at shutdown
 	objlist				as TLIST '' Objects from command line and from compilation
 	libfiles			as TLIST
-	deflist				as TLIST
-	preinclist			as TLIST
 	libs				as TSTRSET
 	libpaths			as TSTRSET
 

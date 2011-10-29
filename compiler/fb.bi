@@ -358,8 +358,7 @@ declare function fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
-		byval ismain as integer, _
-	  	byval preinclist as TLIST ptr _
+		byval ismain as integer _
 	) as integer
 
 declare function fbCheckRestartCompile _
@@ -368,6 +367,8 @@ declare function fbCheckRestartCompile _
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
+declare sub fbAddPreDefine(byref def as string)
+declare sub fbAddPreInclude(byref file as string)
 
 declare sub fbSetOption _
 	( _
@@ -385,12 +386,6 @@ declare function fbChangeOption _
 		byval opt as integer, _
 		byval value as integer _
 	) as integer
-
-declare sub fbAddDefine _
-	( _
-		byval dname as zstring ptr, _
-		byval dtext as zstring ptr _
-	)
 
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
