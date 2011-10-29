@@ -114,6 +114,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_EXTRAOPT
 	FB_COMPOPT_OPTIMIZELEVEL
 	FB_COMPOPT_PPONLY
+	FB_COMPOPT_STACKSIZE
 
 	FB_COMPOPTIONS
 end enum
@@ -295,6 +296,7 @@ type FBCMMLINEOPT
 	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
 	optlevel		as integer					'' optimize level (for gcc)
 	pponly			as integer
+	stacksize		as integer
 end type
 
 

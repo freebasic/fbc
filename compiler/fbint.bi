@@ -7,6 +7,9 @@
 
 #include once "fb.bi"
 
+const FB_MINSTACKSIZE = 32 * 1024
+const FB_DEFSTACKSIZE = 1024 * 1024
+
 const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
 

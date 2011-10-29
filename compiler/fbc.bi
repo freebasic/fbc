@@ -9,9 +9,6 @@
 const FBC_INITARGS	  = 64
 const FBC_INITFILES	  = 64
 
-const FBC_MINSTACKSIZE = 32 * 1024
-const FBC_DEFSTACKSIZE = 1024 * 1024
-
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
@@ -40,7 +37,6 @@ type FBCCTX
 	preserveasm			as integer
 	preserveobj			as integer
 	verbose				as integer
-	stacksize			as integer
 	showversion			as integer
 
 	'' Command line input

@@ -348,6 +348,8 @@ sub fbGlobalInit()
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
 	env.clopt.extraopt      = FB_EXTRAOPT_NONE
 	env.clopt.optlevel		= 0
+	env.clopt.pponly        = FALSE
+	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
 	hSetLangOptions( env.clopt.lang )
 end sub
@@ -448,6 +450,12 @@ sub fbSetOption _
 	case FB_COMPOPT_PPONLY
 		env.clopt.pponly = value
 
+	case FB_COMPOPT_STACKSIZE
+		env.clopt.stacksize = value
+		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
+			env.clopt.stacksize = FB_MINSTACKSIZE
+		end if
+
 	end select
 
 end sub
@@ -533,6 +541,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_PPONLY
 		function = env.clopt.pponly
+
+	case FB_COMPOPT_STACKSIZE
+		functioN = env.clopt.stacksize
 
 	case else
 		function = FALSE
