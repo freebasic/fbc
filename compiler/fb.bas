@@ -343,7 +343,6 @@ sub fbGlobalInit()
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
-	env.clopt.showsusperrors= FALSE
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
 	env.clopt.extraopt      = FB_EXTRAOPT_NONE
 	env.clopt.optlevel		= 0

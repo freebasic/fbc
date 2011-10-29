@@ -288,7 +288,6 @@ type FBCMMLINEOPT
 	extraerrchk		as integer					'' add bounds plus null pointer checking
 	msbitfields		as integer					'' use M$'s bitfields packing
 	maxerrors		as integer					'' max number errors until the parser quit
-	showsusperrors	as integer					'' show suspicious errors (def= false)
 	lang			as FB_LANG					'' lang compatibility
 	forcelang		as integer					'' TRUE if -forcelang was specified
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
