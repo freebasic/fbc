@@ -5,7 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 #include once "parser.bi"
 #include once "lex.bi"
 #include once "rtl.bi"

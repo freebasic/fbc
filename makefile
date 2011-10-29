@@ -545,7 +545,6 @@ FBC_BI += compiler/emit.bi
 FBC_BI += compiler/emitdbg.bi
 FBC_BI += compiler/error.bi
 FBC_BI += compiler/fb.bi
-FBC_BI += compiler/fbc.bi
 FBC_BI += compiler/fbint.bi
 FBC_BI += compiler/fb-obj.bi
 FBC_BI += compiler/flist.bi
