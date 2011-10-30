@@ -1148,9 +1148,7 @@ function hForwardCall _
 	end if
 
     ''
-    proc = symbAddPrototype( proc, id, NULL, NULL, _
-    						 FB_DATATYPE_VOID, NULL, 0, _
-    					     env.target.fbcall )
+    proc = symbAddPrototype( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, env.target.fbcall )
 
     if( proc = NULL ) then
     	if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
