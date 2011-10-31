@@ -866,7 +866,7 @@ declare function rtlOvlProcCall _
 declare function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval realsize as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer
 
 declare function rtlCalcStrLen _

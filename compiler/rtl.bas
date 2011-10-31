@@ -434,7 +434,7 @@ end function
 function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr s = any
@@ -450,14 +450,7 @@ function rtlCalcExprLen _
 	case FB_DATATYPE_STRUCT
 		s = astGetSubtype( expr )
 		if( s <> NULL ) then
-			'' if it's a type field that's an udt, no padding is
-			'' ever added, unpadlen must be always TRUE
-			if( astIsFIELD( expr ) ) then
-				unpadlen = TRUE
-			end if
-
-			function = symbGetUDTLen( s, unpadlen )
-
+			function = symbCalcLen( dtype, s, unpadlen )
 		else
 			function = 0
 		end if

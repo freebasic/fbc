@@ -23,6 +23,7 @@ Version 0.24.0:
 - #3398498: VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
 - #3404250: *.a input files being wrongly passed to ld as -l*.a
 - Compiler crash on 'cast(T ptr, 0)->x'
+- #2828675: UDT fields not having tail padding (ABI now changed to match GCC)
 
 
 Version 0.23.0:

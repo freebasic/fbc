@@ -58,6 +58,37 @@ sub test_ofs cdecl ()
 	CU_ASSERT_EQUAL( offsetof( foo4, field4 ), len( long ) * (1+3) )
 end sub
 
+sub testAnonPadding cdecl()
+	type A
+		union
+			type
+				as short s
+				as byte b1
+			end type
+		end union
+		as byte b2
+	end type
+	CU_ASSERT(sizeof(A) = 6)
+	CU_ASSERT(offsetof(A, b2) = 4)
+
+	type B
+		union
+			type
+				as longint l
+				as integer i1
+			end type
+		end union
+		as integer i2
+	end type
+	#ifdef __FB_WIN32__
+		CU_ASSERT(sizeof(B) = 24)
+		CU_ASSERT(offsetof(B, i2) = 16)
+	#else
+		CU_ASSERT(sizeof(B) = 16)
+		CU_ASSERT(offsetof(B, i2) = 12)
+	#endif
+end sub
+
 private sub ctor () constructor
 
 	fbcu.add_suite("tests/structs/anon_align")

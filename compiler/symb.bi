@@ -926,12 +926,6 @@ declare function symbGetProcResult _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbGetUDTLen _
-	( _
-		byval udt as FBSYMBOL ptr, _
-		byval unpadlen as integer = TRUE _
-	) as integer
-
 declare function symbGetConstValueAsStr _
 	( _
 		byval s as FBSYMBOL ptr _
