@@ -674,8 +674,8 @@ end type
 
 #include once "hlp.bi"
 
-declare sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
-declare sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
+declare sub fbAddLib(byval libname as zstring ptr)
+declare sub fbAddLibPath(byval path as zstring ptr)
 
 ''
 '' macros

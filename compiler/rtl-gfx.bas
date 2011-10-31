@@ -1558,7 +1558,7 @@ private function hPorts_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("advapi32", TRUE)
+			fbAddLib("advapi32")
 		end select
 	end if
 
@@ -1579,7 +1579,7 @@ function rtlMultinput_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("user32", TRUE)
+			fbAddLib("user32")
 		end select
 	end if
 
@@ -1598,13 +1598,13 @@ private function hGfxlib_cb _
 	if (added = FALSE) then
 		added = TRUE
 
-		fbAddLib("fbgfx", TRUE)
+		fbAddLib("fbgfx")
 
 		select case as const fbGetOption( FB_COMPOPT_TARGET )
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("user32", TRUE)
-			fbAddLib("gdi32", TRUE)
-			fbAddLib("winmm", TRUE)
+			fbAddLib("user32")
+			fbAddLib("gdi32")
+			fbAddLib("winmm")
 
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
 		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
@@ -1613,14 +1613,14 @@ private function hGfxlib_cb _
 			    defined(__FB_FREEBSD__) or _
 			    defined(__FB_OPENBSD__) or _
 			    defined(__FB_NETBSD__)
-				fbAddLibPath("/usr/X11R6/lib", TRUE)
+				fbAddLibPath("/usr/X11R6/lib")
 			#endif
 
-			fbAddLib("X11", TRUE)
-			fbAddLib("Xext", TRUE)
-			fbAddLib("Xpm", TRUE)
-			fbAddLib("Xrandr", TRUE)
-			fbAddLib("Xrender", TRUE)
+			fbAddLib("X11")
+			fbAddLib("Xext")
+			fbAddLib("Xpm")
+			fbAddLib("Xrandr")
+			fbAddLib("Xrender")
 
 		end select
 

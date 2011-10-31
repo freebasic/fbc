@@ -85,7 +85,7 @@ function cExternStmtBegin _
 			end if
 
 		else
-			fbAddLib(*lexGetText(), FALSE)
+			fbAddLib(lexGetText())
 			lexSkipToken( )
 		end if
 	end if

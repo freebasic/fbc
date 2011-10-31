@@ -353,7 +353,7 @@ private function ppIncLib( ) as integer
 		end if
 	end if
 
-	fbAddLib(lexGetText(), FALSE)
+	fbAddLib(lexGetText())
 	lexSkipToken()
 
 	function = TRUE
@@ -373,7 +373,7 @@ private function ppLibPath( ) as integer
 		end if
 	end if
 
-	fbAddLibPath(lexGetText(), FALSE)
+	fbAddLibPath(lexGetText())
 	lexSkipToken()
 
 	function = TRUE

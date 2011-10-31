@@ -644,12 +644,12 @@ function fbGetModuleEntry( ) as string static
 end function
 
 '' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
-sub fbAddLib(byval libname as zstring ptr, byval is_default as integer)
-	strsetAdd(@env.libs, *libname, is_default)
+sub fbAddLib(byval libname as zstring ptr)
+	strsetAdd(@env.libs, *libname, FALSE)
 end sub
 
-sub fbAddLibPath(byval path as zstring ptr, byval is_default as integer)
-	strsetAdd(@env.libpaths, pathStripDiv(*path), is_default)
+sub fbAddLibPath(byval path as zstring ptr)
+	strsetAdd(@env.libpaths, pathStripDiv(*path), FALSE)
 end sub
 
 private sub fbParsePreDefines()

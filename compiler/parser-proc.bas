@@ -590,7 +590,7 @@ function cProcHeader _
 				end if
 
 			else
-				fbAddLib(*lexGetText(), FALSE)
+				fbAddLib(lexGetText())
 				lexSkipToken()
 			end if
 		end if
@@ -1458,7 +1458,7 @@ function cOperatorHeader _
 				end if
 
 			else
-				fbAddLib(*lexGetText(), FALSE)
+				fbAddLib(lexGetText())
 				lexSkipToken()
 			end if
 		end if
@@ -1923,7 +1923,7 @@ function cPropertyHeader _
 				end if
 
 			else
-				fbAddLib(*lexGetText(), FALSE)
+				fbAddLib(lexGetText())
 				lexSkipToken()
 			end if
 		end if
@@ -2252,7 +2252,7 @@ function cCtorHeader _
 				end if
 
 			else
-				fbAddLib(*lexGetText(), FALSE)
+				fbAddLib(lexGetText())
 				lexSkipToken()
 			end if
 		end if

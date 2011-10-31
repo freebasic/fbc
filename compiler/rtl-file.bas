@@ -1358,9 +1358,9 @@ function rtlFileOpen _
 		doencoding = FALSE
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			fbAddLib("user32", TRUE)
-			fbAddLib("gdi32", TRUE)
-			fbAddLib("winspool", TRUE)
+			fbAddLib("user32")
+			fbAddLib("gdi32")
+			fbAddLib("winspool")
 		end select
 	end select
 
