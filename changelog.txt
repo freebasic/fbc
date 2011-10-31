@@ -19,7 +19,7 @@ Version 0.24.0:
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
 - FBC should give an error if EOF reached while parsing code inside an #IF block
-- Possible crashes in date() and now() if the system time couldn't be retrieved
+- Possible crashes in Date(), Now(), FileDateTime() if the system time couldn't be interpreted
 - #3398498: VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
 - #3404250: *.a input files being wrongly passed to ld as -l*.a
 - Compiler crash on 'cast(T ptr, 0)->x'
