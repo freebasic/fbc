@@ -24,6 +24,7 @@ Version 0.24.0:
 - #3404250: *.a input files being wrongly passed to ld as -l*.a
 - Compiler crash on 'cast(T ptr, 0)->x'
 - #2828675: UDT fields not having tail padding (ABI now changed to match GCC)
+- #3422768: pp under -gen gcc complaining about va_arg/va_next tokens even if not used as the actual macros
 
 
 Version 0.23.0:

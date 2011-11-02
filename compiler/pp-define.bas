@@ -53,6 +53,19 @@ private function hReportMacroError _
 
 end function
 
+private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
+	'' The va_arg() and va_next() built in macros aren't supported with -gen gcc
+	'' Error recovery: continue parsing as usual
+	if (pp.skipping = FALSE) then
+		if (s->def.flags and FB_DEFINE_FLAGS_NOGCC) then
+			if (irGetOption(IR_OPT_HIGHLEVEL)) then
+				return errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
+			end if
+		end if
+	end if
+	return TRUE
+end function
+
 '':::::
 private function hLoadMacro _
 	( _
@@ -72,6 +85,10 @@ private function hLoadMacro _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
+		exit function
+	end if
+
+	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
 
@@ -402,6 +419,10 @@ private function hLoadMacroW _
 		exit function
 	end if
 
+	if (isMacroAllowed(s) = FALSE) then
+		exit function
+	end if
+
 	lexEatChar( )
 
 	'' allocate a new arg list (because the recursivity)
@@ -714,21 +735,6 @@ function ppDefineLoad _
 			'' error recovery: skip
 			hSkipUntil( INVALID, FALSE, LEX_FLAGS )
 			return TRUE
-		end if
-	end if
-
-	'' invalid with a high-level IR?
-	if( pp.skipping = FALSE ) then
-		if( (s->def.flags and FB_DEFINE_FLAGS_NOGCC) <> 0 ) then
-			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-				if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC ) = FALSE ) then
-					return FALSE
-				else
-					'' error recovery: skip
-					hSkipUntil( INVALID, FALSE, LEX_FLAGS )
-					return TRUE
-				end if
-			end if
 		end if
 	end if
 
