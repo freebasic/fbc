@@ -49,42 +49,6 @@ const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
 const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
 const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
 
-#if defined(__FB_WIN32__)
-const FB_HOST               = "win32"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = RSLASH
-#elseif defined(__FB_CYGWIN__)
-const FB_HOST               = "cygwin"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_LINUX__)
-const FB_HOST               = "linux"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_DOS__)
-const FB_HOST               = "dos"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = RSLASH
-#elseif defined(__FB_FREEBSD__)
-const FB_HOST               = "freebsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_OPENBSD__)
-const FB_HOST               = "openbsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_DARWIN__)
-const FB_HOST               = "darwin"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_NETBSD__)
-const FB_HOST               = "netbsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#else
-#error Unsupported host
-#endif
-
 '' compiler options
 enum FB_COMPOPT
 	FB_COMPOPT_DEBUG
@@ -204,37 +168,6 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_NETBSD
 end enum
 
-#if defined(TARGET_WIN32)
-const FB_TARGET         = "win32"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_WIN32
-#elseif defined(TARGET_CYGWIN)
-const FB_TARGET         = "cygwin"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_CYGWIN
-#elseif defined(TARGET_LINUX)
-const FB_TARGET         = "linux"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_LINUX
-#elseif defined(TARGET_DOS)
-const FB_TARGET         = "dos"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_DOS
-#elseif defined(TARGET_XBOX)
-const FB_TARGET         = "xbox"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
-#elseif defined(TARGET_FREEBSD)
-const FB_TARGET         = "freebsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
-#elseif defined(TARGET_OPENBSD)
-const FB_TARGET         = "openbsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_OPENBSD
-#elseif defined(TARGET_DARWIN)
-const FB_TARGET         = "darwin"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_DARWIN
-#elseif defined(TARGET_NETBSD)
-const FB_TARGET         = "netbsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_NETBSD
-#else
-#error Unsupported target
-#endif
-
 '' languages (update the fb.bas::langTb() array when changing this list)
 enum FB_LANG
 	FB_LANG_INVALID = -1
@@ -329,6 +262,50 @@ enum FB_LANG_OPT
     FB_LANG_OPT_SHAREDLOCAL = &h10000000
     FB_LANG_OPT_QUIRKFUNC   = &h20000000
 end enum
+
+#if defined(__FB_WIN32__)
+const FB_HOST               = "win32"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_WIN32
+#elseif defined(__FB_CYGWIN__)
+const FB_HOST               = "cygwin"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_CYGWIN
+#elseif defined(__FB_LINUX__)
+const FB_HOST               = "linux"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_LINUX
+#elseif defined(__FB_DOS__)
+const FB_HOST               = "dos"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_DOS
+#elseif defined(__FB_FREEBSD__)
+const FB_HOST               = "freebsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_FREEBSD
+#elseif defined(__FB_OPENBSD__)
+const FB_HOST               = "openbsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_OPENBSD
+#elseif defined(__FB_DARWIN__)
+const FB_HOST               = "darwin"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
+#elseif defined(__FB_NETBSD__)
+const FB_HOST               = "netbsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
+#else
+#error Unsupported host
+#endif
 
 '' info section
 const FB_INFOSEC_VERSION = &h10

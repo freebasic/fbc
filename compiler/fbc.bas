@@ -2573,8 +2573,7 @@ private sub printVersion()
 	dim as string s
 
 	s += !"FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + ")" + _
-		" for " + FB_HOST + " (target:" + FB_TARGET + !")\n"
+		" (" + FB_BUILD_DATE + ") for " + FB_HOST + !"\n"
 	s += !"Copyright (C) 2004-2011 The FreeBASIC development team.\n"
 
 	#ifdef ENABLE_STANDALONE
