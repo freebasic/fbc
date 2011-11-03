@@ -438,10 +438,10 @@ endif
 
 ifdef ENABLE_STANDALONE
   newbin     := $(new)
-  newinclude := $(new)/$(TARGET_PREFIX)include$(SUFFIX)
+  newinclude := $(new)/include
   newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
   prefixbin     := $(prefix)
-  prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
+  prefixinclude := $(prefix)/include
   prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
   ifeq ($(HOST_OS),dos)
@@ -450,10 +450,10 @@ else
     FB_NAME := freebasic
   endif
   newbin     := $(new)/bin
-  newinclude := $(new)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  newinclude := $(new)/include/$(FB_NAME)
   newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
   prefixbin     := $(prefix)/bin
-  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  prefixinclude := $(prefix)/include/$(FB_NAME)
   prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 

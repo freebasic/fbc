@@ -1884,12 +1884,14 @@ private sub fbcInit2()
 	fbc.libpath = fbc.prefix
 
 	#ifdef ENABLE_STANDALONE
+		'' include/
 		'' [triplet-]lib[-suffix]/
-		fbc.incpath += fbc.triplet + "include"
+		fbc.incpath += "include"
 		fbc.libpath += fbc.triplet + "lib"
 	#else
+		'' include/freebasic/
 		'' lib/[triplet-]freebasic[-suffix]/
-		fbc.incpath += "include" + FB_HOST_PATHDIV + fbc.triplet
+		fbc.incpath += "include" + FB_HOST_PATHDIV
 		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
 		#ifdef __FB_DOS__
 			'' Our subdirectory in include/ and lib/ is usually called
@@ -1904,7 +1906,6 @@ private sub fbcInit2()
 		#endif
 	#endif
 
-	fbc.incpath += FB_SUFFIX
 	fbc.libpath += FB_SUFFIX
 
 	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
