@@ -119,9 +119,9 @@ private function _init _
 		byval backend as FB_BACKEND _
 	) as integer
 
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistNew( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
-	listNew( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
+	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				 IR_OPT_CPU_BOPSELF or _
@@ -141,9 +141,9 @@ end function
 '':::::
 private sub _end
 
-	listFree( @ctx.callargs )
-	flistFree( @ctx.forwardlist )
-	flistFree( @ctx.vregTB )
+	listEnd( @ctx.callargs )
+	flistEnd( @ctx.forwardlist )
+	flistEnd( @ctx.vregTB )
 
 end sub
 

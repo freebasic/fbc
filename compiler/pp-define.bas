@@ -31,14 +31,14 @@ end type
 ''::::
 sub ppDefineInit( )
 
-	listNew( @pp.argtblist, 8, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
+	listInit( @pp.argtblist, 8, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 ''::::
 sub ppDefineEnd( )
 
-	listFree( @pp.argtblist )
+	listEnd( @pp.argtblist )
 
 end sub
 

@@ -42,7 +42,7 @@ declare function 	hCreateDescType 	( _
 '':::::
 sub symbVarInit( )
 
-	listNew( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
 
 	'' assuming it's safe to create UDT symbols here, the array
 	'' dimension type must be allocated at module-level or it
@@ -54,7 +54,7 @@ end sub
 '':::::
 sub symbVarEnd( )
 
-	listFree( @symb.dimlist )
+	listEnd( @symb.dimlist )
 
 end sub
 

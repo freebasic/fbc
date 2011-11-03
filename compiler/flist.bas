@@ -6,43 +6,32 @@
 
 #include once "flist.bi"
 
-'':::::
-function flistNew _
+sub flistInit _
 	( _
 		byval flist as TFLIST ptr, _
 		byval items as integer, _
 		byval itemlen as integer _
-	) as integer
+	)
 
 	flist->totitems	= items
 	flist->items 	= items
 
-	function = listNew( @flist->list, _
-						items, _
-						itemlen + len( TFLISTITEM ), _
-						LIST_FLAGS_NONE )
+	listInit( @flist->list, items, itemlen + len( TFLISTITEM ), LIST_FLAGS_NONE )
 
 	flist->listtb 	= flist->list.tbtail
 	flist->index 	= 0
 	flist->itemtb	= flist->listtb->nodetb
 	flist->lastitem	= NULL
 
-end function
+end sub
 
-'':::::
-function flistFree _
-	( _
-		byval flist as TFLIST ptr _
-	) as integer
-
+sub flistEnd(byval flist as TFLIST ptr)
 	flist->totitems	= 0
 	flist->items	= 0
 	flist->index	= 0
 	flist->lastitem	= NULL
-
-	function = listFree( @flist->list )
-
-end function
+	listEnd( @flist->list )
+end sub
 
 '':::::
 function flistNewItem _

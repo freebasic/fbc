@@ -58,7 +58,7 @@ declare sub astReplaceSymbolOnCALL _
 sub astMiscInit
 
 	''
-	listNew( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.dtorlist, 64, len( AST_DTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 	ast.flushdtorlist = TRUE
 
@@ -73,9 +73,9 @@ end sub
 '':::::
 sub astMiscEnd
 
-	listFree( @ast.dtorlist )
+	listEnd( @ast.dtorlist )
 
-End sub
+end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree scanning

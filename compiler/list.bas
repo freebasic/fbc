@@ -34,14 +34,13 @@ function xreallocate(byval old as any ptr, byval size as long) as any ptr
 	return p
 end function
 
-'':::::
-function listNew _
+sub listInit _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer, _
 		byval nodelen as integer, _
 		byval flags as LIST_FLAGS _
-	) as integer
+	)
 
 	'' fill ctrl struct
 	list->tbhead = NULL
@@ -53,17 +52,12 @@ function listNew _
 	list->flags	= flags
 
 	'' allocate the initial pool
-	function = listAllocTB( list, nodes )
+	listAllocTB( list, nodes )
 
-end function
+end sub
 
-'':::::
-function listFree _
-	( _
-		byval list as TLIST ptr _
-	) as integer
-
-    dim as TLISTTB ptr tb = any, nxt = any
+sub listEnd(byval list as TLIST ptr)
+	dim as TLISTTB ptr tb = any, nxt = any
 
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = list->tbhead
@@ -77,27 +71,19 @@ function listFree _
 	list->tbhead = NULL
 	list->tbtail = NULL
 	list->nodes	= 0
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-function listAllocTB _
+sub listAllocTB _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer _
-	) as integer
+	)
 
 	dim as TLISTNODE ptr nodetb = any, node = any, prv = any
 	dim as TLISTTB ptr tb = any
 	dim as integer i = any
 
-	function = FALSE
-
-	if( nodes < 1 ) then
-		exit function
-	end if
+	assert(nodes >= 1)
 
 	'' allocate the pool
 	if( (list->flags and LIST_FLAGS_CLEARNODES) <> 0 ) then
@@ -143,10 +129,7 @@ function listAllocTB _
 		node->next = NULL
 	end if
 
-	''
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 function listNewNode _
@@ -312,5 +295,5 @@ sub strlistAppend(byval list as TLIST ptr, byref s as string)
 end sub
 
 sub strlistInit(byval list as TLIST ptr, byval nodes as integer)
-	listNew(list, nodes, sizeof(string))
+	listInit(list, nodes, sizeof(string))
 end sub

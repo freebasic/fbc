@@ -35,18 +35,15 @@ type TLIST
 	flags	as LIST_FLAGS
 end type
 
-declare function listNew _
+declare sub listInit _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer, _
 		byval nodelen as integer, _
 		byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
-	) as integer
+	)
 
-declare function listFree _
-	( _
-		byval list as TLIST ptr _
-	) as integer
+declare sub listEnd(byval list as TLIST ptr)
 
 declare function listNewNode _
 	( _
@@ -59,11 +56,11 @@ declare sub listDelNode _
 		byval node as any ptr _
 	)
 
-declare function listAllocTB _
+declare sub listAllocTB _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer _
-	) as integer
+	)
 
 declare function listGetHead _
 	( _

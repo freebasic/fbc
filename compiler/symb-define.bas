@@ -317,10 +317,8 @@ sub symbDefineInit _
 	static as string value
 	dim as zstring ptr def = any
 
-	'' lists
-	listNew( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
-
-	listNew( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
 	'' add the pre-defines
 	for i as integer = 0 to SYMB_MAXDEFINES-1
@@ -414,10 +412,8 @@ sub symbDefineEnd( )
 
 	symb.def.param = 0
 
-	'' lists
-	listFree( @symb.def.paramlist )
-
-	listFree( @symb.def.toklist )
+	listEnd( @symb.def.paramlist )
+	listEnd( @symb.def.toklist )
 
 end sub
 

@@ -33,19 +33,19 @@ sub symbProcInit( )
 
 	symb.globctorlist.head = NULL
 	symb.globctorlist.tail = NULL
-	listNew( @symb.globctorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.globctorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 	symb.globdtorlist.head = NULL
 	symb.globdtorlist.tail = NULL
-	listNew( @symb.globdtorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.globdtorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 '':::::
 sub symbProcEnd( )
 
-	listFree( @symb.globdtorlist.list )
-	listFree( @symb.globctorlist.list )
+	listEnd( @symb.globdtorlist.list )
+	listEnd( @symb.globctorlist.list )
 
 end sub
 

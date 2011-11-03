@@ -11,14 +11,14 @@
 '':::::
 sub parserLetInit
 
-	listNew( @parser.stmt.let.list, 16, len( FB_LETSTMT_NODE ) )
+	listInit( @parser.stmt.let.list, 16, len( FB_LETSTMT_NODE ) )
 
 end sub
 
 '':::::
 sub parserLetEnd
 
-    listFree( @parser.stmt.let.list )
+    listEnd( @parser.stmt.let.list )
 
 end sub
 

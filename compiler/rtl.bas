@@ -51,7 +51,7 @@ end type
 '':::::
 sub rtlInit static
 
-	listNew( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
@@ -88,7 +88,7 @@ sub rtlEnd
 	rtlConsoleModEnd( )
 	rtlArrayModEnd( )
 
-	listFree( @ctx.arglist )
+	listEnd( @ctx.arglist )
 
 	'' reset the table as the pointers will change if
 	'' the compiler is reinitialized

@@ -28,7 +28,7 @@ private sub lazyInit()
 	const INITIAL_ITEMS = 8096
 
 	'' allocate the initial item list pool
-	listNew(@itempool.list, INITIAL_ITEMS, sizeof(HASHITEM), LIST_FLAGS_NOCLEAR)
+	listInit(@itempool.list, INITIAL_ITEMS, sizeof(HASHITEM), LIST_FLAGS_NOCLEAR)
 end sub
 
 private sub lazyEnd()
@@ -37,7 +37,7 @@ private sub lazyEnd()
 		exit sub
 	end if
 
-	listFree(@itempool.list)
+	listEnd(@itempool.list)
 end sub
 
 sub hashInit _
@@ -327,7 +327,7 @@ sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)
 end sub
 
 sub strsetInit(byval set as TSTRSET ptr, byval nodes as integer)
-	listNew(@set->list, nodes, sizeof(TSTRSETITEM))
+	listInit(@set->list, nodes, sizeof(TSTRSETITEM))
 	hashInit(@set->hash, nodes)
 end sub
 
@@ -338,5 +338,5 @@ sub strsetEnd(byval set as TSTRSET ptr)
 		i->s = ""
 		i = listGetNext(i)
 	wend
-	listFree(@set->list)
+	listEnd(@set->list)
 end sub

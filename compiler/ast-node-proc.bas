@@ -81,7 +81,7 @@ sub astProcListInit( )
 	ast.proc.curr = NULL
 
 	''
-	listNew( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
 	ast.globinst.ctorcnt = 0
 	ast.globinst.dtorcnt = 0
 
@@ -92,7 +92,7 @@ sub astProcListEnd( )
 
 	ast.globinst.dtorcnt = 0
 	ast.globinst.ctorcnt = 0
-	listFree( @ast.globinst.list )
+	listEnd( @ast.globinst.list )
 
 	''
 	ast.proc.head = NULL
@@ -1281,7 +1281,7 @@ private sub hGenStaticInstancesDtors _
     loop
 
     '' destroy list
-    listFree( dtorlist )
+    listEnd( dtorlist )
     deallocate( proc->proc.ext->statdtor )
     proc->proc.ext->statdtor = NULL
 
@@ -1304,7 +1304,7 @@ function astProcAddStaticInstance _
 		dtorlist = xcallocate( len( TLIST ) )
 		parser.currproc->proc.ext->statdtor = dtorlist
 
-		listNew( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
+		listInit( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
 	end if
 
     ''

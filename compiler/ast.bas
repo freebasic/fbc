@@ -984,7 +984,7 @@ declare sub astDelCALL _
 sub astInit static
 
 	''
-    listNew( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
+    listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ''
     ast.doemit = TRUE
@@ -1014,7 +1014,7 @@ sub astEnd static
     astCallEnd( )
 
 	''
-	listFree( @ast.astTB )
+	listEnd( @ast.astTB )
 
 end sub
 

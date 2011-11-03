@@ -15,14 +15,14 @@ const LEX_FLAGS = (LEXCHECK_NOWHITESPC or LEXCHECK_NOLETTERSUFFIX)
 '':::::
 sub parserAsmInit static
 
-	listNew( @parser.asmtoklist, 16, len( FB_ASMTOK ) )
+	listInit( @parser.asmtoklist, 16, len( FB_ASMTOK ) )
 
 end sub
 
 '':::::
 sub parserAsmEnd static
 
-	listFree( @parser.asmtoklist )
+	listEnd( @parser.asmtoklist )
 
 end sub
 

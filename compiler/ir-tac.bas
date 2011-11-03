@@ -170,10 +170,10 @@ private function _init _
 	ctx.taccnt = 0
 	ctx.tmpcnt = 0
 
-	flistNew( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
+	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 
 	''
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	''
 	emitInit( backend )
@@ -195,10 +195,10 @@ private sub _end
 	emitEnd( )
 
 	''
-	flistFree( @ctx.vregTB )
+	flistEnd( @ctx.vregTB )
 
 	''
-	flistFree( @ctx.tacTB )
+	flistEnd( @ctx.tacTB )
 
 	ctx.tacidx = NULL
 	ctx.taccnt = 0

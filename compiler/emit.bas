@@ -40,9 +40,9 @@ function emitInit _
 	hCallCtor( backend )
 
 	''
-	flistNew( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
+	flistInit( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
 
-	flistNew( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
+	flistInit( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
 	''
 	emit.inited = TRUE

@@ -53,15 +53,15 @@ declare sub 		symbCompEnd			( )
 sub symbInitSymbols static
 
 	'' symbols list
-	listNew( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), LIST_FLAGS_NOCLEAR )
 
-    '' symbol id string pool
-    poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
+	'' symbol id string pool
+	poolInit( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
 
 	symb.chainpoolhead = 0
 
 	'' namespace extension's list
-	listNew( @symb.nsextlist, FB_INITSYMBOLNODES \ 16, len( FBNAMESPC_EXT ), LIST_FLAGS_CLEAR )
+	listInit( @symb.nsextlist, FB_INITSYMBOLNODES \ 16, len( FBNAMESPC_EXT ), LIST_FLAGS_CLEAR )
 
 	'' global namespace - not complete, just a mock symbol
     symb.globnspc.class = FB_SYMBCLASS_NAMESPACE
@@ -86,7 +86,7 @@ sub symbInitSymbols static
 
 	'' import (USING) shared hash/list
 	hashInit( @symb.imphashtb, FB_INITSYMBOLNODES )
-	listNew( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
 
 	''
 	symb.lastlbl = NULL
@@ -173,7 +173,7 @@ sub symbEnd
 	symbDataEnd( )
 
 	''
-	listFree( @symb.imphashlist )
+	listEnd( @symb.imphashlist )
 	hashEnd( @symb.imphashtb )
 
 	hashEnd( @symb.globnspc.nspc.ns.hashtb.tb )
@@ -195,11 +195,11 @@ sub symbEnd
 	symbCompFreeExt( symb.globnspc.nspc.ns.ext )
 
 	''
-	listFree( @symb.nsextlist )
+	listEnd( @symb.nsextlist )
 
-	poolFree( @symb.namepool )
+	poolEnd( @symb.namepool )
 
-	listFree( @symb.symlist )
+	listEnd( @symb.symlist )
 
 	''
 	symb.inited = FALSE
