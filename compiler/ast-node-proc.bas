@@ -1301,7 +1301,7 @@ function astProcAddStaticInstance _
 
 	'' create a new list
 	if( dtorlist = NULL ) then
-		dtorlist = callocate( len( TLIST ) )
+		dtorlist = xcallocate( len( TLIST ) )
 		parser.currproc->proc.ext->statdtor = dtorlist
 
 		listNew( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )

@@ -1066,9 +1066,6 @@ function symbPreAddProc _
     dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
-	if( proc = NULL ) then
-		exit function
-	end if
 
 	proc->class = FB_SYMBCLASS_PROC
 	proc->proc.params = 0

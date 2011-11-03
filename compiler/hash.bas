@@ -57,7 +57,7 @@ sub hashNew _
 	)
 
 	'' allocate a fixed list of internal linked-lists
-	hash->list = callocate( nodes * len( HASHLIST ) )
+	hash->list = xcallocate( nodes * len( HASHLIST ) )
 	hash->nodes = nodes
 	hash->delstr = delstr
 

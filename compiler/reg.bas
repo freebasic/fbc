@@ -37,7 +37,7 @@ function regNewClass _
 
     dim as REGCLASS ptr this_
 
-	this_ = callocate( len( REGCLASS ) )
+	this_ = xcallocate( len( REGCLASS ) )
 
 	this_->class = class_
 	this_->regs = regs

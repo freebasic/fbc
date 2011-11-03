@@ -374,31 +374,19 @@ private sub hRealloc _
 			s->data = allocate( (newsize + 1) * charsize )
 			'' failed? try the original request
 			if( s->data = NULL ) then
-				s->data = allocate( (chars + 1) * charsize )
+				s->data = xallocate( (chars + 1) * charsize )
 				newsize = chars
 			end if
 
 		'' preserve..
 		else
-            p = s->data
+			p = s->data
 			s->data = reallocate( p, (newsize + 1) * charsize )
 			'' failed? try the original request
 			if( s->data = NULL ) then
-				s->data = reallocate( p, (chars + 1) * charsize )
-                if( s->data = NULL ) then
-                    '' restore the old memory block
-                    s->data = p
-                    exit sub
-                end if
+				s->data = xreallocate( p, (chars + 1) * charsize )
 				newsize = chars
-            end if
-		end if
-
-		'' failed?
-		if( s->data = NULL ) then
-            s->len = 0
-            s->size = 0
-			exit sub
+			end if
 		end if
 
 		s->size = newsize

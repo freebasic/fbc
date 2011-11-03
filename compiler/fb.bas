@@ -135,7 +135,7 @@ private function hAddIncFile _
     dim as zstring ptr fname, res
     dim as uinteger index
 
-	fname = allocate( len( *filename ) + 1 )
+	fname = xallocate( len( *filename ) + 1 )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	hUcase( filename, fname )
 #else

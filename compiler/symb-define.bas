@@ -560,9 +560,6 @@ function symbAddDefineParam _
     function = NULL
 
     param = listNewNode( @symb.def.paramlist )
-    if( param = NULL ) then
-    	exit function
-    end if
 
 	if( lastparam <> NULL ) then
 		lastparam->next = param
@@ -618,9 +615,6 @@ function symbAddDefineTok _
     function = NULL
 
     t = listNewNode( @symb.def.toklist )
-    if( t = NULL ) then
-    	exit function
-    end if
 
 	if( lasttok <> NULL ) then
 		lasttok->next = t

@@ -168,7 +168,7 @@ private function hFillSection _
 	if( buf_ptr + (bytes) >= buf_end ) then
 		buf_size += iif( (bytes) > 64, bytes, 64 )
 		buf_ptr -= cast( long, buf_ini )
-		buf_ini = reallocate( buf_ini, buf_size )
+		buf_ini = xreallocate( buf_ini, buf_size )
 		buf_end = buf_ini + buf_size
 		buf_ptr += cast( long, buf_ini )
 	end if
@@ -482,7 +482,7 @@ private function hProcessObject _
   	static as integer buf_len = 0
 
   	if( (buf_ini = NULL) or (size > buf_len) ) then
-  		buf_ini = reallocate( buf_ini, size )
+  		buf_ini = xreallocate( buf_ini, size )
   		buf_len = size
   	end if
 

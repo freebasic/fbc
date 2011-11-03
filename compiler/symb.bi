@@ -2288,7 +2288,7 @@ declare function symbIsUDTReturnedInRegs _
 
 #define symbGetProcOvlNext(f) f->proc.ovl.next
 
-#define symbAllocProcExt() callocate( len( FB_PROCEXT ) )
+#define symbAllocProcExt() xcallocate( len( FB_PROCEXT ) )
 
 #define symbFreeProcExt(f) deallocate( f->proc.ext )
 

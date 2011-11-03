@@ -474,7 +474,7 @@ sub symbSetCompCtorHead _
   	select case symbGetClass( sym )
    	case FB_SYMBCLASS_STRUCT
 		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 		end if
 
 		sym->udt.ext->anon.ctor_head = proc
@@ -619,7 +619,7 @@ sub symbSetCompDtor _
   	select case symbGetClass( sym )
    	case FB_SYMBCLASS_STRUCT
 		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 		end if
 
 		sym->udt.ext->anon.dtor = proc
@@ -725,7 +725,7 @@ sub symbSetCompOpOvlHead _
   		select case symbGetClass( sym )
    		case FB_SYMBCLASS_STRUCT
 			if( sym->udt.ext = NULL ) then
-				sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+				sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 			end if
 
 			symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE) = proc

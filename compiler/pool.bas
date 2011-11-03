@@ -24,7 +24,7 @@ function poolNew _
 	pool->chunks = (maxlen + (minlen-1)) \ minlen
 	pool->chunksize = minlen
 
-	pool->chunktb = allocate( len( TLIST ) * pool->chunks )
+	pool->chunktb = xallocate( len( TLIST ) * pool->chunks )
 
 	len_ = minlen
 	for i = 0 to pool->chunks-1
@@ -72,7 +72,7 @@ function poolNewItem _
     idx = (len_ - 1) \ pool->chunksize
 
 	if( idx >= pool->chunks ) then
-	    item = allocate( len_ + len( TPOOLITEM ) )
+	    item = xallocate( len_ + len( TPOOLITEM ) )
 	else
 		item = listNewNode( @pool->chunktb[idx] )
 	end if

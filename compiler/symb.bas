@@ -488,9 +488,6 @@ function symbNewSymbol _
     if( s = NULL ) then
     	delok = TRUE
     	s = listNewNode( @symb.symlist )
-    	if( s = NULL ) then
-    		exit function
-    	end if
     end if
 
     ''

@@ -339,9 +339,6 @@ function symbNewArrayDim _
     function = NULL
 
     d = listNewNode( @symb.dimlist )
-    if( d = NULL ) then
-    	exit function
-    end if
 
     d->lower = lower
     d->upper = upper

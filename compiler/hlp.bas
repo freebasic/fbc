@@ -408,7 +408,7 @@ function hRevertSlash _
     dim as integer i, c
 
 	if( allocnew ) then
-		res = allocate( len( *src ) + 1 )
+		res = xallocate( len( *src ) + 1 )
 
 		for i = 0 to len( *src )-1
 			c = src[i]

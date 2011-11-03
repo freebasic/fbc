@@ -5,6 +5,34 @@
 
 #include once "list.bi"
 
+private sub fatalOutOfMemory()
+	'' Abort right now, the rtlib will show the error
+	error(4)
+end sub
+
+function xallocate(byval size as long) as any ptr
+	dim as any ptr p = allocate(size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
+
+function xcallocate(byval size as long) as any ptr
+	dim as any ptr p = callocate(size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
+
+function xreallocate(byval old as any ptr, byval size as long) as any ptr
+	dim as any ptr p = reallocate(old, size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
 
 '':::::
 function listNew _
@@ -73,21 +101,13 @@ function listAllocTB _
 
 	'' allocate the pool
 	if( (list->flags and LIST_FLAGS_CLEARNODES) <> 0 ) then
-		nodetb = callocate( nodes * list->nodelen )
+		nodetb = xcallocate( nodes * list->nodelen )
 	else
-		nodetb = allocate( nodes * list->nodelen )
-	end if
-
-	if( nodetb = NULL ) then
-		exit function
+		nodetb = xallocate( nodes * list->nodelen )
 	end if
 
 	'' and the pool ctrl struct
-	tb = allocate( len( TLISTTB ) )
-	if( tb = NULL ) then
-		deallocate( nodetb )
-		exit function
-	end if
+	tb = xallocate( len( TLISTTB ) )
 
 	'' add the ctrl struct to pool list
 	if( list->tbhead = NULL ) then
