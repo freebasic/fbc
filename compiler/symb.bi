@@ -1867,7 +1867,7 @@ declare function symbIsUDTReturnedInRegs _
 	_hashtb.next = NULL
 
 	if( (_nodes) <> 0 ) then
-		hashNew( @_hashtb.tb, _nodes )
+		hashInit( @_hashtb.tb, _nodes )
 	end if
 
 #endmacro

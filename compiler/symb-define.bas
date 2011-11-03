@@ -402,7 +402,7 @@ sub symbDefineInit _
 	'' macro params
 	symb.def.param = 0
 
-	hashNew( @symb.def.paramhash, FB_MAXDEFINEARGS )
+	hashInit( @symb.def.paramhash, FB_MAXDEFINEARGS )
 
 end sub
 
@@ -410,7 +410,7 @@ end sub
 sub symbDefineEnd( )
 
 	'' macro params
-	hashFree( @symb.def.paramhash )
+	hashEnd( @symb.def.paramhash )
 
 	symb.def.param = 0
 

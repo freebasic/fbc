@@ -266,9 +266,8 @@ function fbInit _
 		return FALSE
 	end if
 
-	hashInit( )
-	hashNew( @env.incfilehash, FB_INITINCFILES )
-	hashNew( @env.inconcehash, FB_INITINCFILES )
+	hashInit( @env.incfilehash, FB_INITINCFILES )
+	hashInit( @env.inconcehash, FB_INITINCFILES )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 
@@ -295,10 +294,8 @@ sub fbEnd
 
 	stackFree( @parser.stmt.stk )
 
-	hashFree( @env.inconcehash )
-	hashFree( @env.incfilehash )
-
-	hashEnd( )
+	hashEnd( @env.inconcehash )
+	hashEnd( @env.incfilehash )
 
 	irEnd( )
 

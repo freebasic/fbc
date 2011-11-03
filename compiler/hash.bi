@@ -3,9 +3,6 @@
 
 #include once "list.bi"
 
-const HASH_INITENTRYNODES	= 1000
-const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
-
 type HASHITEM
 	name		as zstring ptr			'' shared
 	data		as any ptr				'' user data
@@ -26,24 +23,12 @@ end type
 
 declare sub hashInit _
 	( _
-		byval initnodes as integer = HASH_INITITEMNODES _
-	)
-
-declare sub hashEnd	 _
-	( _
-	)
-
-declare sub hashNew _
-	( _
 		byval hash as THASH ptr, _
 		byval nodes as integer, _
 		byval delstr as integer = FALSE _
 	)
 
-declare sub hashFree _
-	( _
-		byval hash as THASH ptr _
-	)
+declare sub hashEnd(byval hash as THASH ptr)
 
 declare function hashHash _
 	( _

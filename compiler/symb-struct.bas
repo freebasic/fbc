@@ -784,7 +784,7 @@ sub symbDelStruct _
 
 	''
 	if( (s->udt.options and FB_UDTOPT_ISANON) = 0 ) then
-		hashFree( @s->udt.ns.hashtb.tb )
+		hashEnd( @s->udt.ns.hashtb.tb )
 	end if
 
 	'' del the udt node

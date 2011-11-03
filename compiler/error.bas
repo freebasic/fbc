@@ -308,16 +308,14 @@ sub errInit
 	errctx.laststmt = -1
 
 	'' alloc the undefined symbols tb, used to not report them more than once
-	hashInit( )
-	hashNew( @errctx.undefhash, 64, TRUE )
+	hashInit( @errctx.undefhash, 64, TRUE )
 
 end sub
 
 '':::::
 sub errEnd
 
-	hashFree( @errctx.undefhash )
-	hashEnd( )
+	hashEnd( @errctx.undefhash )
 
 end sub
 

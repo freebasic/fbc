@@ -846,9 +846,7 @@ end sub
 private sub hInitKeywordsTB
     dim as integer t, i
 
-	hashInit( )
-
-	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
+	hashInit( @emit.keyhash, EMIT_MAXKEYWORDS )
 
 	'' add reg names
 	for t = 0 to EMIT_MAXRTABLES-1
@@ -876,9 +874,7 @@ end sub
 private sub hEndKeywordsTB
 
 	if( emit.keyinited ) then
-		hashFree( @emit.keyhash )
-
-		hashEnd( )
+		hashEnd( @emit.keyhash )
 	end if
 
 	emit.keyinited = FALSE

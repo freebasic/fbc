@@ -85,7 +85,7 @@ sub symbInitSymbols static
 	symbHashListAdd( symb.hashtb )
 
 	'' import (USING) shared hash/list
-	hashNew( @symb.imphashtb, FB_INITSYMBOLNODES )
+	hashInit( @symb.imphashtb, FB_INITSYMBOLNODES )
 	listNew( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
 
 	''
@@ -122,9 +122,6 @@ sub symbInit _
 	if( symb.inited ) then
 		exit sub
 	end if
-
-	''
-	hashInit( )
 
 	'' vars, arrays, procs & consts
 	symbInitSymbols( )
@@ -177,10 +174,9 @@ sub symbEnd
 
 	''
 	listFree( @symb.imphashlist )
-	hashFree( @symb.imphashtb )
+	hashEnd( @symb.imphashtb )
 
-    ''
-    hashFree( @symb.globnspc.nspc.ns.hashtb.tb )
+	hashEnd( @symb.globnspc.nspc.ns.hashtb.tb )
 
 	''
 	symbProcEnd( )
@@ -204,8 +200,6 @@ sub symbEnd
 	poolFree( @symb.namepool )
 
 	listFree( @symb.symlist )
-
-	hashEnd( )
 
 	''
 	symb.inited = FALSE

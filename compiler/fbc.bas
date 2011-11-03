@@ -98,8 +98,6 @@ declare function fbcFindBin(byval filename as zstring ptr) as string
 dim shared as FBCCTX fbc
 
 private sub fbcInit( )
-	hashInit( )
-
 	listNew( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listNew( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
 	strlistInit( @fbc.temps, FBC_INITARGS\4 )

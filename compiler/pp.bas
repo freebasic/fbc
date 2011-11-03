@@ -63,9 +63,6 @@ const SYMB_MAXKEYWORDS = 24
 sub ppInit( )
     dim as integer i
 
-	''
-	hashInit( )
-
 	'' create a fake namespace
     pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
     pp.kwdns.scope = FB_MAINSCOPE
@@ -121,8 +118,7 @@ sub ppEnd( )
     next
 
 	symbCompFreeExt( pp.kwdns.nspc.ns.ext )
-	hashFree( @pp.kwdns.nspc.ns.hashtb.tb )
-	hashEnd( )
+	hashEnd( @pp.kwdns.nspc.ns.hashtb.tb )
 
 end sub
 

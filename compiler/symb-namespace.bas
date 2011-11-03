@@ -99,7 +99,7 @@ sub symbDelNamespace _
 	end if
 
 	''
-	hashFree( @ns->nspc.ns.hashtb.tb )
+	hashEnd( @ns->nspc.ns.hashtb.tb )
 
 	'' del node
 	symbFreeSymbol( ns )
