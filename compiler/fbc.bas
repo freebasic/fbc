@@ -2470,99 +2470,99 @@ end sub
 
 '':::::
 private sub printOptions( )
-	const FBC_HELP = _
-	!"usage: fbc [options] <input files>\n"                                + _
-	!"input files:\n"                                                      + _
-	!"  *.a = static library, *.o = object file, *.bas = source\n"         + _
-	!"  *.rc = resource script, *res = compiled resource (win32)\n"        + _
-	!"  *.xpm = icon resource (*nix/*bsd)\n"                               + _
-	!"options:\n"                                                          + _
-	!"  @<file>          Read more command line arguments from a file\n"   + _
-	!"  -a <file>        Treat file as .o/.a input file\n"                 + _
-	!"  -arch <type>     Set target architecture (default: 486)\n"         + _
-	!"  -b <file>        Treat file as .bas input file\n"                  + _
-	!"  -c               Compile only, do not link\n"                      + _
-	!"  -C               Preserve temporary .o files\n"                    + _
-	!"  -d <name>[=<val>]  Add a global #define\n"                         + _
-	!"  -dll             Same as -dylib\n"                                 + _
-	!"  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)\n" + _
-	!"  -e               Enable runtime error checking\n"                  + _
-	!"  -ex              -e plus RESUME support\n"                         + _
-	!"  -exx             -ex plus array bounds/null-pointer checking\n"    + _
-	!"  -export          Export symbols for dynamic linkage\n"             + _
-	!"  -forcelang <name>  Override #lang statements in source code\n"     + _
-	!"  -fpmode fast|precise  Select floating-point math accuracy/speed\n" + _
-	!"  -fpu x87|sse     Set target FPU\n"                                 + _
-	!"  -g               Add debug info\n"                                 + _
-	!"  -gen gas|gcc     Select code generation backend\n"                 + _
-	!"  -i <path>        Add an include file search path\n"                + _
-	!"  -include <file>  Pre-#include a file for each input .bas\n"        + _
-	!"  -l <name>        Link in a library\n"                              + _
-	!"  -lang <name>     Select FB dialect: deprecated, fblite, qb\n"      + _
-	!"  -lib             Create a static library\n"                        + _
-	!"  -m <name>        Set main module (default if not -c: first input .bas)\n" + _
-	!"  -map <file>      Save linking map to file\n"                       + _
-	!"  -maxerr <n>      Only show <n> errors\n"                           + _
-	!"  -mt              Use thread-safe FB runtime\n"                     + _
-	!"  -nodeflibs       Do not include the default libraries\n"           + _
-	!"  -noerrline       Do not show source context in error messages\n"   + _
-	!"  -o <file>        Set .o file name for corresponding input .bas\n"  + _
-	!"  -O <value>       Optimization level (default: 0)\n"                + _
-	!"  -p <name>        Add a library search path\n"                      + _
-	!"  -pp              Write out preprocessed input file (.pp.bas) only\n" + _
-	!"  -prefix <path>   Set the compiler prefix path\n"                   + _
-	!"  -profile         Enable function profiling\n"                      + _
-	!"  -r               Like -c, but write out .asm/.c only, do not assemble\n" + _
-	!"  -R               Preserve temporary non-.o files (.asm/.c etc.)\n" + _
-	!"  -s console|gui   Select win32 subsystem\n"                         + _
-	!"  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
-	!"  -target <name>   Set cross-compilation target\n"                   + _
-	!"  -title <name>    Set XBE display title (xbox)\n"                   + _
-	!"  -v               Be verbose\n"                                     + _
-	!"  -vec <n>         Automatic vectorization level (default: 0)\n"     + _
-	!"  -version         Show compiler version\n"                          + _
-	!"  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value\n" + _
-	!"  -Wa <a,b,c>      Pass options to GAS\n"                            + _
-	!"  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)\n"            + _
-	!"  -Wl <a,b,c>      Pass options to LD\n"                             + _
-	!"  -x <file>        Set output executable/library file name\n"        + _
-	 "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
+	'' Note: must print each line separately to let the rtlib print the
+	'' proper line endings even if redirected to file/pipe, hard-coding \n
+	'' here isn't enough for DOS/Windows.
 
-	print FBC_HELP
+	print "usage: fbc [options] <input files>"
+	print "input files:"
+	print "  *.a = static library, *.o = object file, *.bas = source"
+	print "  *.rc = resource script, *res = compiled resource (win32)"
+	print "  *.xpm = icon resource (*nix/*bsd)"
+	print "options:"
+	print "  @<file>          Read more command line arguments from a file"
+	print "  -a <file>        Treat file as .o/.a input file"
+	print "  -arch <type>     Set target architecture (default: 486)"
+	print "  -b <file>        Treat file as .bas input file"
+	print "  -c               Compile only, do not link"
+	print "  -C               Preserve temporary .o files"
+	print "  -d <name>[=<val>]  Add a global #define"
+	print "  -dll             Same as -dylib"
+	print "  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)"
+	print "  -e               Enable runtime error checking"
+	print "  -ex              -e plus RESUME support"
+	print "  -exx             -ex plus array bounds/null-pointer checking"
+	print "  -export          Export symbols for dynamic linkage"
+	print "  -forcelang <name>  Override #lang statements in source code"
+	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
+	print "  -fpu x87|sse     Set target FPU"
+	print "  -g               Add debug info"
+	print "  -gen gas|gcc     Select code generation backend"
+	print "  -i <path>        Add an include file search path"
+	print "  -include <file>  Pre-#include a file for each input .bas"
+	print "  -l <name>        Link in a library"
+	print "  -lang <name>     Select FB dialect: deprecated, fblite, qb"
+	print "  -lib             Create a static library"
+	print "  -m <name>        Set main module (default if not -c: first input .bas)"
+	print "  -map <file>      Save linking map to file"
+	print "  -maxerr <n>      Only show <n> errors"
+	print "  -mt              Use thread-safe FB runtime"
+	print "  -nodeflibs       Do not include the default libraries"
+	print "  -noerrline       Do not show source context in error messages"
+	print "  -o <file>        Set .o file name for corresponding input .bas"
+	print "  -O <value>       Optimization level (default: 0)"
+	print "  -p <name>        Add a library search path"
+	print "  -pp              Write out preprocessed input file (.pp.bas) only"
+	print "  -prefix <path>   Set the compiler prefix path"
+	print "  -profile         Enable function profiling"
+	print "  -r               Like -c, but write out .asm/.c only, do not assemble"
+	print "  -R               Preserve temporary non-.o files (.asm/.c etc.)"
+	print "  -s console|gui   Select win32 subsystem"
+	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
+	print "  -target <name>   Set cross-compilation target"
+	print "  -title <name>    Set XBE display title (xbox)"
+	print "  -v               Be verbose"
+	print "  -vec <n>         Automatic vectorization level (default: 0)"
+	print "  -version         Show compiler version"
+	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
+	print "  -Wa <a,b,c>      Pass options to GAS"
+	print "  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)"
+	print "  -Wl <a,b,c>      Pass options to LD"
+	print "  -x <file>        Set output executable/library file name"
+	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 end sub
 
 private sub printVersion()
-	dim as string s
+	print "FreeBASIC Compiler - Version " + FB_VERSION + _
+		" (" + FB_BUILD_DATE + ") for " + FB_HOST
+	print "Copyright (C) 2004-2011 The FreeBASIC development team."
 
-	s += !"FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + ") for " + FB_HOST + !"\n"
-	s += !"Copyright (C) 2004-2011 The FreeBASIC development team.\n"
-
+	dim as string config
 	#ifdef ENABLE_STANDALONE
-		s += "standalone, "
+		config += "standalone, "
 	#endif
 
 	#ifdef ENABLE_PREFIX
-		s += "prefix: '" + ENABLE_PREFIX + "', "
+		config += "prefix: '" + ENABLE_PREFIX + "', "
 	#endif
 
-	s += "objinfo: "
+	config += "objinfo: "
 	#ifndef DISABLE_OBJINFO
-		s += "enabled ("
+		config += "enabled ("
 		#ifdef ENABLE_FBBFD
-			s += "FB header " & ENABLE_FBBFD
+			config += "FB header " & ENABLE_FBBFD
 		#else
-			s += "C wrapper"
+			config += "C wrapper"
 		#endif
-		s += "), "
+		config += "), "
 	#else
-		s += "disabled, "
+		config += "disabled, "
 	#endif
 
 	'' Trim ', ' at the end
-	s = left(s, len(s) - 2)
+	config = left(config, len(config) - 2)
 
-	print s
+	print config
 end sub
 
 	fbcInit()
