@@ -105,23 +105,13 @@ sub hashEnd(byval hash as THASH ptr)
 
 end sub
 
-'':::::
-function hashHash _
-	( _
-		byval symbol as zstring ptr _
-	) as uinteger
-
-	dim as uinteger index = any
-	dim as integer i = any
-
-	index = 0
-
-	for i = 0 to len( *symbol )-1
-		index = symbol[i] + (index shl 5) - index
-	next
-
-	function = index
-
+function hashHash(byval s as zstring ptr) as uinteger
+	dim as uinteger index = 0
+	while (s[0])
+		index = s[0] + (index shl 5) - index
+		s += 1
+	wend
+	return index
 end function
 
 ''::::::
