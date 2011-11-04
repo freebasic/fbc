@@ -34,29 +34,35 @@ Opens an external process' standard input (//stdin//) or output (//stdout//) str
 
 	The ##[[KeyPgBinary Binary]]## //file mode// opens the external process' //stdin// or //stdout// streams - depending on the //access type// specified (see description of the ##//access_type//## parameter above) - for random-access reading or writing of arbitrarily sized and interpreted raw data. Simple data type values, like ##[[KeyPgByte Byte]]## and ##[[KeyPgLongint Longint]]##, and whole chunks of memory can be read from or written to the streams with binary-mode file operations like ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
 	Bidirectional pipes are not supported by FB and must be implemented using the OS' API functions.
-{{fbdoc item="target"}}
-	- The ##[[KeyPgBinary Binary]]## //file mode// is not supported on all platforms; ##**Open Pipe**## will throw an error if it is unable to open the external process' //stdin// or //stdout// streams in binary mode.
-	
-	
-	
+
 **Runtime errors:**
 	    ##**Open Pipe**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
 	//(##1##) Illegal function call//
 		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
 
-
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openpipe.bas"}}%%(freebasic)
-dim text as string
-open pipe "fbc.exe" for input as #1
-print "Output of fbc:"
-do while not eof(1)
-   line input #1, text
-   print text
+'' This example uses Open Pipe to run a shell command and retrieve its output. 
+#ifdef __FB_UNIX__
+const TEST_COMMAND = "ls *"
+#else
+const TEST_COMMAND = "dir *.*"
+#endif
+
+open pipe TEST_COMMAND for input as #1
+
+dim as string ln
+do until eof(1)
+	line input #1, ln
+	print ln
 loop
+
 close #1
 %%
+
+{{fbdoc item="target"}}
+	- The ##[[KeyPgBinary Binary]]## //file mode// is not supported on all platforms; ##**Open Pipe**## will throw an error if it is unable to open the external process' //stdin// or //stdout// streams in binary mode.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

@@ -41,48 +41,74 @@ Specifies file or device to be opened for binary mode
 	
 	##//record_length//## is the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##, it must match the size of the buffer variable used when ##[[KeyPgGetfileio Get]]##ting and ##[[KeyPgPutfileio Put]]##ting data. If omitted, it defaults to ##128##.
 
-	{{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/math/random.bas"}}%%(freebasic)
-type UDT
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/math/random1.bas"}}%%(freebasic)
+'' This example generates a test file and then lets you view random records
+'' that are read live from the file.
+
+type Entry
 	slen as byte
 	sdata as string * 10
 end type
 
-dim i as integer
+dim u as Entry
 dim s as string
-dim u as UDT
 
-dim ff as ubyte
-dim fpos as integer
+open "testfile" for random as #1 len = sizeof(Entry)
 
-ff = freefile
-fpos = 10
-
-open "testfile" for random as #ff len=sizeof(UDT)
-for i = 1 to 9
+'' Write out 9 records with predefined data
+for i as integer = 1 to 9
 	read s
 	u = type( len(s), s )
-	put #ff, i, u
+	put #1, i, u
 next
 
+data ".,-?!'@:", "abc",      "def"
+data "ghi",      "jkl",      "mno"
+data "pqrs",     "tuv",      "wxyz"
+
+'' Let the user view records by specifying their index number
 do
+	dim i as integer
 	input "Record number: ", i
 	if i < 1 or i > 9 then exit do
+
 	get #1, i, u
 	print i & ": " & left( u.sdata, u.slen )
 	print
 loop
 
-close #ff
-end 0
+close #1
+%%
 
-data ".,-?!'@:", "abc",      "def"
-data "ghi",      "jkl",      "mno"
-data "pqrs",     "tuv",      "wxyz"
+{{fbdoc item="filename" value="examples/manual/math/random2.bas"}}%%(freebasic)
+type ScoreEntry field = 1
+	as string * 20 name
+	as single score
+end type
+
+dim as ScoreEntry entry
+
+'' Generate a fake boring highscore file
+open "scores.dat" for random access write as #1 len = sizeof(entry)
+for i as integer = 1 to 10
+	entry.name = "Player " & i
+	entry.score = i
+	put #1, i, entry
+next
+close #1
+
+'' Read out and display the entries
+open "scores.dat" for random access read as #1 len = sizeof(entry)
+for i as integer = 1 to 10
+	get #1, i, entry
+	print i & ":", entry.name, str(entry.score), entry.score
+next
+close #1
 %%
 
 {{fbdoc item="diff"}}
-	- In QB, String-contained runtime user defined types (UDT) are not implemented in ""FreeBASIC"".
+	- Care must be taken with dynamic or fixed length strings inside user defined types (UDT), see the warning at KeyPgType.
 	- The keyword ##[[KeyPgField Field]]## can only be used with ##[[KeyPgType Type]]## to specify the packing of the UDT. 
 
 {{fbdoc item="see"}}

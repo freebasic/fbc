@@ -28,14 +28,21 @@
 #    - MinGW & MSYS
 #    - DirectX headers (for the graphics runtime)
 #
-# Cross-compilation and building a cross-compiler is supported similar to
-# autoconf: through the HOST and TARGET variables that can be set to system
-# triplets. For example, on Debian with i586-mingw32msvc-binutils and
-# i586-mingw32msvc-gcc you can build a i586-mingw32msvc-fbc:
-#    make TARGET=i586-mingw32msvc
-# By default TARGET is the same as HOST, and HOST is the same as
-# the build system, which is guessed mostly via uname. In case the triplet
-# parsing or default system detection fails, please fix it and make it work!
+# Cross-compiling the compiler to run on a specific HOST is possible by setting
+# HOST to a system triplet that will passed to the compiling fbc through the
+# -target option. Cross-compiling the runtime libraries for a specific TARGET
+# is possible by setting TARGET to the wanted system triplet, which will cause
+# the corresponding <target>-gcc to be used. Setting HOST will also cause
+# TARGET to default to it.
+#
+# Note: There is no <anything>-fbc; cross-compiling with fbc is done through
+# its -target option, fbc always has all targets enabled and always defaults
+# to building for the host. All in all, this means only one copy of fbc needs
+# to be installed, while the FB runtime development libraries can be installed
+# as needed for all wanted targets.
+# 
+# By default, HOST is guessed by using uname. In case that detection (or the
+# HOST/TARGET triplet parsing) fails, please fix it and make it work!
 #
 # Alternatively (instead of using a system triplet) you can set HOST_OS,
 # HOST_ARCH and/or TARGET_OS, TARGET_ARCH directly, which should allow
@@ -93,7 +100,7 @@
 # Rough overview of what this makefile does:
 #  - #include config.mk and new/config.mk,
 #  - Guess the OS/arch types, or parse the HOST/TARGET triplets to find out
-#  - Set HOST_FBC, TARGET_CC, prefix, EXEEXT, etc. based on that
+#  - Set TARGET_CC, prefix, EXEEXT, etc. based on that
 #  - Figure out the directory layout (normal vs. standalone), same for
 #    file names/locations of fbc/libfb etc., for both new/ and $prefix/
 #    directories.
@@ -126,11 +133,6 @@ FBC := fbc
 CC := gcc
 CFLAGS := -O2
 AR := ar
-
-# For copying fbc and the includes/libraries into $(prefix),
-# should be better than plain cp at replacing fbc while fbc is running.
-INSTALL_PROGRAM := install
-INSTALL_FILE := install -m 644
 
 -include config.mk
 
@@ -424,6 +426,13 @@ endif
 
 ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
   EXEEXT := .exe
+  INSTALL_PROGRAM := cp
+  INSTALL_FILE := cp
+else
+  # For copying fbc and the includes/libraries into $(prefix),
+  # should be better than plain cp at replacing fbc while fbc is running.
+  INSTALL_PROGRAM := install
+  INSTALL_FILE := install -m 644
 endif
 
 #
@@ -436,10 +445,10 @@ endif
 
 ifdef ENABLE_STANDALONE
   newbin     := $(new)
-  newinclude := $(new)/$(TARGET_PREFIX)include$(SUFFIX)
+  newinclude := $(new)/include
   newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
   prefixbin     := $(prefix)
-  prefixinclude := $(prefix)/$(TARGET_PREFIX)include$(SUFFIX)
+  prefixinclude := $(prefix)/include
   prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
   ifeq ($(HOST_OS),dos)
@@ -448,14 +457,14 @@ else
     FB_NAME := freebasic
   endif
   newbin     := $(new)/bin
-  newinclude := $(new)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  newinclude := $(new)/include/$(FB_NAME)
   newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
   prefixbin     := $(prefix)/bin
-  prefixinclude := $(prefix)/include/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  prefixinclude := $(prefix)/include/$(FB_NAME)
   prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
-FBC_EXE := $(TARGET_PREFIX)fbc$(SUFFIX)$(SUFFIX2)$(EXEEXT)
+FBC_EXE := fbc$(SUFFIX)$(SUFFIX2)$(EXEEXT)
 
 newcompiler := $(new)/compiler
 newlibfb    := $(new)/libfb
@@ -480,9 +489,6 @@ endif
 # Compilers and flags
 #
 
-ifndef HOST_FBC
-  HOST_FBC := $(HOST_PREFIX)$(FBC)
-endif
 ifndef HOST_CC
   HOST_CC := $(HOST_PREFIX)$(CC)
 endif
@@ -496,6 +502,12 @@ endif
 FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(FBFLAGS)
 FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
 ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
+
+# If cross-compiling fbc, use -target
+ifneq ($(HOST),)
+  FBCFLAGS += -target $(HOST)
+  FBLFLAGS += -target $(HOST)
+endif
 
 ifneq ($(filter cygwin win32,$(HOST_OS)),)
   FBLFLAGS += -t 2048
@@ -516,7 +528,7 @@ ifndef DISABLE_OBJINFO
     FBLFLAGS += -l intl
   endif
   ifeq ($(HOST_OS),win32)
-    FBLFLAGS += -l user32
+    FBLFLAGS += -l intl -l user32
   endif
 endif
 
@@ -534,60 +546,15 @@ endif
 # Sources
 #
 
-# Enable the default target in the compiler, and set the default triplet,
-# which can be empty.
-ifeq ($(TARGET_OS),cygwin)
-  ENABLE_CYGWIN := YesPlease
-  TRIPLET_CYGWIN:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),darwin)
-  ENABLE_DARWIN := YesPlease
-  TRIPLET_DARWIN:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),dos)
-  ENABLE_DOS := YesPlease
-  TRIPLET_DOS:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),freebsd)
-  ENABLE_FREEBSD := YesPlease
-  TRIPLET_FREEBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),linux)
-  ENABLE_LINUX := YesPlease
-  TRIPLET_LINUX:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),win32)
-  ENABLE_WIN32 := YesPlease
-  TRIPLET_WIN32:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),netbsd)
-  ENABLE_NETBSD := YesPlease
-  TRIPLET_NETBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),openbsd)
-  ENABLE_OPENBSD := YesPlease
-  TRIPLET_OPENBSD:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),solaris)
-  ENABLE_SOLARIS := YesPlease
-  TRIPLET_SOLARIS:=$(TARGET)
-endif
-ifeq ($(TARGET_OS),xbox)
-  ENABLE_XBOX := YesPlease
-  TRIPLET_XBOX:=$(TARGET)
-endif
-
 FBC_BI := $(newcompiler)/config.bi
 FBC_BI += compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
-FBC_BI += compiler/clist.bi
+FBC_BI += compiler/bfd-wrapper.bi
 FBC_BI += compiler/dstr.bi
 FBC_BI += compiler/emit.bi
 FBC_BI += compiler/emitdbg.bi
 FBC_BI += compiler/error.bi
-FBC_BI += compiler/fb-bfd-bridge.bi
 FBC_BI += compiler/fb.bi
-FBC_BI += compiler/fbc.bi
 FBC_BI += compiler/fbint.bi
 FBC_BI += compiler/fb-obj.bi
 FBC_BI += compiler/flist.bi
@@ -614,7 +581,7 @@ FBC_BAS := \
   ast-node-link ast-node-load ast-node-mem ast-node-misc ast-node-namespace \
   ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
-  clist dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
+  dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
   fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
   parser-assignment parser-comment parser-compound parser-compound-do \
   parser-compound-extern parser-compound-for parser-compound-if \
@@ -637,36 +604,8 @@ FBC_BAS := \
   rtl-macro rtl-math rtl-mem rtl-oop rtl-print rtl-profile rtl-string \
   rtl-system \
   stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
-  symb-enum symb-keyword symb-label symb-lib symb-mangling symb-namespace \
+  symb-enum symb-keyword symb-label symb-mangling symb-namespace \
   symb-proc symb-scope symb-struct symb-typedef symb-var
-
-ifdef ENABLE_CYGWIN
-  FBC_BAS += fbc_cyg
-endif
-ifdef ENABLE_DARWIN
-  FBC_BAS += fbc_darwin
-endif
-ifdef ENABLE_DOS
-  FBC_BAS += fbc_dos
-endif
-ifdef ENABLE_FREEBSD
-  FBC_BAS += fbc_freebsd
-endif
-ifdef ENABLE_LINUX
-  FBC_BAS += fbc_linux
-endif
-ifdef ENABLE_NETBSD
-  FBC_BAS += fbc_netbsd
-endif
-ifdef ENABLE_OPENBSD
-  FBC_BAS += fbc_openbsd
-endif
-ifdef ENABLE_WIN32
-  FBC_BAS += fbc_win32
-endif
-ifdef ENABLE_XBOX
-  FBC_BAS += fbc_xbox
-endif
 
 ifndef DISABLE_OBJINFO
   FBC_BAS += fb-objinfo
@@ -674,10 +613,10 @@ endif
 
 FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
 
-FBC_COBJINFO :=
+FBC_BFDWRAPPER :=
 ifndef DISABLE_OBJINFO
   ifndef ENABLE_FBBFD
-    FBC_COBJINFO := $(newcompiler)/c-objinfo.o
+    FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
   endif
 endif
 
@@ -1021,7 +960,7 @@ ifndef DISABLE_GFX
   ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
     ifndef DISABLE_X
       LIBFBGFX_H += gfxlib2/fb_gfx_x11.h
-      LIBFBGFX_C += driver_x11 x11
+      LIBFBGFX_C += driver_x11 x11 x11_icon_stub
       ifndef DISABLE_OPENGL
         LIBFBGFX_C += driver_opengl_x11
       endif
@@ -1091,37 +1030,17 @@ $(newlib)/fbextra.x: compiler/fbextra.x
 $(newlib)/i386go32.x: contrib/djgpp/i386go32.x
 	$(QUIET_CP)cp $< $@
 
-$(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_COBJINFO)
-	$(QUIET_LINK)$(HOST_FBC) $(FBLFLAGS) -x $@ $^
+$(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
+	$(QUIET_LINK)$(FBC) $(FBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)$(HOST_FBC) $(FBCFLAGS) -c $< -o $@
+	$(QUIET_FBC)$(FBC) $(FBCFLAGS) -c $< -o $@
 
-$(newcompiler)/c-objinfo.o: compiler/c-objinfo.c
+$(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
 
 $(newcompiler)/config.bi: compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
-	$(call config-filter,$(TARGET_OS),cygwin,TARGET_CYGWIN)
-	$(call config-filter,$(TARGET_OS),darwin,TARGET_DARWIN)
-	$(call config-filter,$(TARGET_OS),dos,TARGET_DOS)
-	$(call config-filter,$(TARGET_OS),freebsd,TARGET_FREEBSD)
-	$(call config-filter,$(TARGET_OS),linux,TARGET_LINUX)
-	$(call config-filter,$(TARGET_OS),netbsd,TARGET_NETBSD)
-	$(call config-filter,$(TARGET_OS),openbsd,TARGET_OPENBSD)
-	$(call config-filter,$(TARGET_OS),win32,TARGET_WIN32)
-	$(call config-filter,$(TARGET_OS),xbox,TARGET_XBOX)
-	$(call config-filter,$(TARGET_ARCH),386 486 586 686,TARGET_X86)
-	$(call config-filter,$(TARGET_ARCH),x86_64,TARGET_X86_64)
-	$(call config-ifdef,$(ENABLE_CYGWIN),ENABLE_CYGWIN "$(TRIPLET_CYGWIN)")
-	$(call config-ifdef,$(ENABLE_DARWIN),ENABLE_DARWIN "$(TRIPLET_DARWIN)")
-	$(call config-ifdef,$(ENABLE_DOS),ENABLE_DOS "$(TRIPLET_DOS)")
-	$(call config-ifdef,$(ENABLE_FREEBSD),ENABLE_FREEBSD "$(TRIPLET_FREEBSD)")
-	$(call config-ifdef,$(ENABLE_LINUX),ENABLE_LINUX "$(TRIPLET_LINUX)")
-	$(call config-ifdef,$(ENABLE_NETBSD),ENABLE_NETBSD "$(TRIPLET_NETBSD)")
-	$(call config-ifdef,$(ENABLE_OPENBSD),ENABLE_OPENBSD "$(TRIPLET_OPENBSD)")
-	$(call config-ifdef,$(ENABLE_WIN32),ENABLE_WIN32 "$(TRIPLET_WIN32)")
-	$(call config-ifdef,$(ENABLE_XBOX),ENABLE_XBOX "$(TRIPLET_XBOX)")
 	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
 	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
 	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")
@@ -1293,49 +1212,35 @@ clean-gfxlib2:
 
 .PHONY: help
 help:
-	@echo "Available commands:"
-	@echo "  <none>|all                 to build compiler and libraries."
+	@echo "Available commands, use them to..."
+	@echo "  <none>|all                 build compiler and runtime libraries"
 	@echo "  compiler|rtlib|gfxlib2     (specific component only)"
-	@echo "  clean[-<component>]        to remove built files."
-	@echo "  install[-<component>]      to install into prefix."
-	@echo "  uninstall[-<component>]    to remove from prefix."
-	@echo "Variables:"
-	@echo "  FBFLAGS, CFLAGS  Use these to disable optimizations or add debugging options"
-	@echo "  new     The build directory ('new'); change this to differentiate multiple"
-	@echo "          builds in one source tree."
-	@echo "  prefix  The install directory ('.' on Windows/DOS; '/usr/local' elsewhere)"
-	@echo "  HOST    A system triplet to cross-compile an fbc that will run on HOST."
-	@echo "  TARGET  A system triplet to build a cross-fbc that produces for TARGET,"
-	@echo "          and to cross-compile the runtime to run on TARGET."
-	@echo "  SUFFIX  A string to append to the fbc program name and the lib/freebasic/"
-	@echo "          directory, distinguishing this build from other installed versions."
-	@echo "  SUFFIX2 A second string to append to the fbc program name. This one is not"
-	@echo "          added to the freebasic/ sub-directories, allowing to install multiple"
-	@echo "          fbcs that use the same runtime."
-	@echo "  FBC     The 'fbc', 'gcc', 'ar' tools to use. Note: When cross-compiling,"
-	@echo "  CC      these cannot contain paths, because the host/target triplets will"
-	@echo "  AR      be prepended. However, you can always set those variables directly:"
-	@echo "          HOST_FBC, HOST_CC, TARGET_AR, TARGET_CC"
-	@echo "  V       For verbose command lines"
-	@echo "FreeBASIC configuration options:"
-	@echo "  ENABLE_STANDALONE Use a simpler directory layout that places fbc into the"
-	@echo "                    toplevel directory, and always use the custom ldscripts."
-	@echo "                    (intended for self-contained installations)"
-	@echo "  ENABLE_PREFIX     Hard-code the prefix into the compiler, instead of"
-	@echo "                    building a relocatable compiler."
-	@echo "  ENABLE_FBBFD=217  Use the FB headers for this exact libbfd version,"
-	@echo "                    instead of using the system's bfd.h via a C wrapper."
+	@echo "  clean[-<component>]        remove built files"
+	@echo "  install[-<component>]      install into prefix"
+	@echo "  uninstall[-<component>]    remove from prefix"
+	@echo "Variables, use them to..."
+	@echo "  FBFLAGS  add '-exx' or similar (affects the compiler only)"
+	@echo "  CFLAGS   override the default '-O2' (affects the runtime only)"
+	@echo "  new      use another build directory (default: 'new')"
+	@echo "  prefix   install in a specific place (default: '/usr/local')"
+	@echo "  HOST     compile fbc to run on HOST (will also be its default target)"
+	@echo "  TARGET   compile the runtime to run on TARGET (does not affect fbc)"
+	@echo "  SUFFIX   append a string (e.g. '-0.23') to fbc and FB directory names"
+	@echo "  SUFFIX2  append a second string (e.g. '-test') only to the fbc executable"
+	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)
+	@echo "  HOST_CC, TARGET_AR, TARGET_CC  specify the tools directly"
+	@echo "  V        to get to see verbose command lines used by make"
+	@echo "FreeBASIC configuration options, use them to..."
+	@echo "  ENABLE_STANDALONE  use a simpler directory layout with fbc at toplevel"
+	@echo "                     (for self-contained installations)"
+	@echo "  ENABLE_PREFIX     hard-code the prefix into fbc (no longer relocatable)"
+	@echo "  ENABLE_FBBFD=217  use the FB headers for this exact libbfd version,"
+	@echo "                    instead of using the system's bfd.h through a C wrapper"
 	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
 	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
 	@echo "  DISABLE_OPENGL    Don't use OpenGL in libfbgfx (Unix/Windows versions)"
 	@echo "  DISABLE_X         Don't use X in libfbgfx (Unix version)"
-	@echo "  ENABLE_<TARGET>   For building a multi-target compiler. The ENABLE_* for"
-	@echo "                    the default TARGET will automatically be defined."
-	@echo "  TRIPLET_<TARGET>=<default-triplet>  For enabled targets, the compiler will"
-	@echo "                    use the triplets to find binutils/libraries, unless the"
-	@echo "                    user gave another one via the -target option. The triplet"
-	@echo "                    for the default TARGET will automatically be defined."
 	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
 	@echo "to set variables in a more permanent and even build-directory specific way."

@@ -33,19 +33,19 @@ sub symbProcInit( )
 
 	symb.globctorlist.head = NULL
 	symb.globctorlist.tail = NULL
-	listNew( @symb.globctorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.globctorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 	symb.globdtorlist.head = NULL
 	symb.globdtorlist.tail = NULL
-	listNew( @symb.globdtorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.globdtorlist.list, 8, len( FB_GLOBCTORLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 '':::::
 sub symbProcEnd( )
 
-	listFree( @symb.globdtorlist.list )
-	listFree( @symb.globctorlist.list )
+	listEnd( @symb.globdtorlist.list )
+	listEnd( @symb.globctorlist.list )
 
 end sub
 
@@ -562,7 +562,6 @@ private function hSetupProc _
 		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -819,16 +818,6 @@ add_proc:
 
 	proc->proc.rtl.callback = NULL
 
-	if( libname <> NULL ) then
-		if( len( *libname ) > 0 ) then
-			proc->proc.lib = symbAddLib( libname )
-		else
-			proc->proc.lib = NULL
-		end if
-	else
-		proc->proc.lib = parser.currlib
-	end if
-
 	'' if overloading, update the linked-list
 	if( symbIsOverloaded( proc ) ) then
 		dim as integer params = symbGetProcParams( proc )
@@ -873,7 +862,6 @@ function symbAddPrototype _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -883,10 +871,7 @@ function symbAddPrototype _
 
     function = NULL
 
-	proc = hSetupProc( proc, id, id_alias, libname, _
-					   dtype, subtype, _
-					   attrib, mode, _
-					   options )
+	proc = hSetupProc( proc, id, id_alias, dtype, subtype, attrib, mode, options )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -901,7 +886,6 @@ function symbAddProc _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -910,10 +894,8 @@ function symbAddProc _
 
     function = NULL
 
-	proc = hSetupProc( proc, id, id_alias, libname, _
-					   dtype, subtype, _
-					   attrib, mode, _
-					   FB_SYMBOPT_DECLARING )
+	proc = hSetupProc( proc, id, id_alias, dtype, subtype, _
+	                   attrib, mode, FB_SYMBOPT_DECLARING )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -928,7 +910,6 @@ function symbAddOperator _
 		byval proc as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -947,10 +928,8 @@ function symbAddOperator _
 	proc->proc.ext->opovl.op = op
 
 	''
-	sym = hSetupProc( proc, NULL, id_alias, libname, _
-					  dtype, subtype, _
-					  attrib, mode, _
-					  options )
+	sym = hSetupProc( proc, NULL, id_alias, dtype, subtype, _
+	                  attrib, mode, options )
 
 	if( sym = NULL ) then
 		symbFreeProcExt( proc )
@@ -966,7 +945,6 @@ function symbAddCtor _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
@@ -976,10 +954,8 @@ function symbAddCtor _
 
     function = NULL
 
-	sym = hSetupProc( proc, NULL, id_alias, libname, _
-					  FB_DATATYPE_VOID, NULL, _
-					  attrib, mode, _
-					  options )
+	sym = hSetupProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, _
+	                  attrib, mode, options )
 
 	if( sym = NULL ) then
 		exit function
@@ -1036,11 +1012,9 @@ function symbAddProcPtr _
 	end if
 
 	'' create a new prototype
-	sym = symbAddPrototype( proc, _
-							id, hMakeTmpStrNL(), NULL, _
-							dtype, subtype, _
-							0, mode, _
-							options or FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
+	sym = symbAddPrototype( proc, id, hMakeTmpStrNL(), dtype, subtype, _
+	                        0, mode, options or FB_SYMBOPT_DECLARING or _
+	                                 FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
 		symbSetIsFuncPtr( sym )
@@ -1092,9 +1066,6 @@ function symbPreAddProc _
     dim as FBSYMBOL ptr proc = any
 
 	proc = listNewNode( @symb.symlist )
-	if( proc = NULL ) then
-		exit function
-	end if
 
 	proc->class = FB_SYMBCLASS_PROC
 	proc->proc.params = 0

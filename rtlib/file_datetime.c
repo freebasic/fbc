@@ -20,9 +20,11 @@ FBCALL double fb_FileDateTime
 	
 	if( stat( filename, &buf ) != 0 )
 		return 0.0;
-		
+
 	tm = localtime( &buf.st_mtime );
-	
+	if (tm == NULL)
+		return 0.0;
+
 	return fb_DateSerial( 1900 + tm->tm_year, 1+tm->tm_mon, tm->tm_mday ) +
 		   fb_TimeSerial( tm->tm_hour, tm->tm_min, tm->tm_sec );
 }

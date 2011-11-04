@@ -1,0 +1,163 @@
+{{fbdoc item="title" value="Compiling from SVN for DOS on Win32"}}----
+This guide shows how to compile a DOS ""FreeBASIC"" (compiler and libraries) using DJGPP and a DOS version of ""FreeBASIC"". A cross-compilation (using a win32 fbc with -target dos) isn't necessary anymore since fbc version 0.21.0 (so maybe this will work directly on DOS now?).
+
+{{fbdoc item="section" value="Setting up the environment"}}
+
+	Choose a place for the SVN ""FreeBASIC"", for example ##C:\""FreeBASIC""-dos##. Then checkout the current development base [[https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC]] into ##C:\""FreeBASIC""-dos## using an SVN client.
+	
+	A working ""FreeBASIC"" installation is needed; this guide assumes it is in C:\""FreeBASIC""-0.21.1-dos, but of course it can be somewhere else too. It should also be possible to use FB 0.20.0, and maybe even earlier versions, to compile the current FB. The working fbc has to be in the PATH, or you'll have to specifiy ##FBC=C:/path/to/fbc## manually when configuring.
+	
+	""FreeBASIC"" needs a specific DJGPP setup currently. The needed packages can be found on the [[http://www.delorie.com/djgpp/getting.html DJGPP homepage]]. Download DJGPP 2.03 (current) packages, with djdev204.zip from DJGPP 2.04 (beta). For most of the following packages, the one ending in ##b## for binaries is needed.
+		- autoconf (acnf*.zip)
+		- automake (amak*.zip)
+		- binutils (bnu*b.zip, bnu*a.zip)
+		- bash (bsh*.zip)
+		- djdev (djdev*.zip) - //pick up djdev204.zip or later from the ##beta/## directory//
+		- fileutils (fil*.zip)
+		- gcc (gcc*.zip)
+		- gpp (gpp*.zip)
+		- grep (grep*.zip)
+		- awk (gwk*.zip)
+		- m4 (m4*.zip)
+		- make (mak*.zip)
+		- perl (perl*.zip)
+		- sed (sed*.zip)
+		- shellutils (shl*.zip)
+		- textutils (txt*.zip)
+	
+	Follow the DJGPP instructions to set up a standard DJGPP installation. Currently it comes down to:
+		- Extracting everything into ##C:\DJGPP##.
+		- Adding an environment variable named "DJGPP":
+			##DJGPP## = ##C:\DJGPP\djgpp.env##
+	
+	Additionally you should copy
+		##C:\DJGPP\lib\gcc\djgpp\4.42\libsupcxx.a##
+	to
+		##C:\DJGPP\lib\gcc\djgpp\4.42\libsupcx.a##
+	because fbc expects that shorter name (probably a 8.3 file name issue).
+	
+	Add C:\DJGPP\bin to the PATH and make sure ##gcc## really maps to ##C:\DJGPP\bin\gcc.exe## (ditto for the binutils). In case you're on win32 and have ""MinGW"" or MSYS installed, it might be safer to remove those from the PATH for a while, or use a batch script like this to open a console having DJGPP and the working DOS FB in its PATH:
+	
+	%%set DJDIR=C:\djgpp
+set DJGPP=%DJDIR%\djgpp.env
+
+set PATH=%DJDIR%\bin;%PATH%
+set PATH=C:\FreeBASIC-0.21.1-dos;%PATH%
+
+cd C:\FreeBASIC-dos
+cmd
+%%
+
+{{fbdoc item="section" value="Compiling FreeBASIC"}}
+
+	Enter the following commands into a DOS prompt. Note: DJGPP's bash can be used too, it contains a few bugs causing some problems with the ./configure scripts, but anyways that doesn't seem to make a difference for building ""FreeBASIC"". On the plus side, bash lets you run the configure scripts directly, without having to use ##sh##.
+
+	%%cd C:\FreeBASIC-dos%%
+	
+	Compile the new fbc.exe:
+	
+	%%cd src\compiler\obj\dos
+sh ../../configure --enable-standalone
+make
+make install
+cd ..\..\..\..%%
+
+	Note: The ../../configure output should say it's building for ##i386-pc-msdosdjgpp## (and not something with ##mingw##).
+	
+	Compile the new libfb.a:
+	
+	%%cd src\rtlib\obj\dos
+sh ../../configure CFLAGS=-O2
+make
+make install
+cd ..\..\..\..%%
+	
+	Compile the new libfbgfx.a:
+	
+	%%cd src\gfxlib2\obj\dos
+sh ../../configure CFLAGS=-O2
+make
+make install
+cd ..\..\..\..%%
+	
+	C:\""FreeBASIC""-dos now contains the new fbc.exe, while C:\""FreeBASIC""-dos\lib\dos contains the new fb/fbgfx libraries.
+
+{{fbdoc item="section" value="Making the new FreeBASIC tree usable"}}
+
+	Several files need to be copied into the C:\""FreeBASIC""-dos tree to enable it to compile ""FreeBASIC"" programs (and FreeBASIC itself again; those cases are marked with "for rebuilding").
+	
+	From ##C:\""FreeBASIC""-0.21.1-dos## into ##C:\""FreeBASIC""-dos\lib\dos##:
+		- ##libc.a## (Note: this is not the original one from DJGPP, we're using a modified version, see ""FreeBASIC""/src/contrib/djgpp/crt0)
+		- ##libintl.a## (for rebuilding)
+		- ##libz.a## (for rebuilding)
+	
+	From ##C:\""FreeBASIC""-0.21.1-dos## into ##C:\""FreeBASIC""-dos\bin\dos##: 
+		- ##ar.exe##
+		- ##as.exe##
+		- ##ld.exe##
+	
+	These files need to be copied from DJGPP into the C:\""FreeBASIC""-dos tree:
+	
+	From ##C:\DJGPP\lib\gcc\djgpp\<version>## into ##C:\""FreeBASIC""-dos\lib\dos##:
+		- ##libgcc.a##
+		- ##libsupcx.a## (Note: the original file is named ##libsupcxx.a##, but we're using the shorter version for FB to avoid long file name problems that occurred with this in the past)
+	
+	From ##C:\DJGPP\lib## into ##C:\""FreeBASIC""-dos\lib\dos##:
+		- ##crt0.o##
+		- ##gcrt0.o##
+		- ##libbfd.a## (for rebuilding)
+		- ##libemu.a##
+		- ##libiberty.a## (for rebuilding)
+		- ##libm.a##
+	
+	Now you can use C:\""FreeBASIC""-dos instead of C:\""FreeBASIC""-0.21.1-dos to compile FB programs.
+
+{{fbdoc item="section" value="Recompiling after SVN updates or changes to the source code"}}
+
+	For convenience you can rebuild the compiler and libraries (or just the changed component) in the same directory as before, using the same commands as before. However there may be chicken-egg problems after updates to the build system or the rtlib/gfxlib interface. Building fbc first avoids chicken-egg problems between fbc and the runtime libraries, but not all problems can be avoided while rebuilding in the same tree. It is safer (but more work) to use two separate FB directories (one being a working FB installation, the other being the tree you want to compile). 
+
+{{fbdoc item="section" value="Useful options for building rtlib and gfxlib"}}
+
+	{{fbdoc item="subsect" value="configure"}}
+	
+		- ##CC=<c:/path/to/gcc.exe>##
+			(Useful if not using whatever is found in the PATH)
+		
+		- ##RANLIB=<c:/path/to/ranlib.exe>##
+		
+		- ##CFLAGS=<gcc compile options>##
+			Useful to override the default "-O2 -g" and just use "-O2", unless you want debug symbols.
+		
+		You can pass these to the makefile too, but by passing them to configure they will be written to the makefile and you won't have to remember them the next time you're make'ing.
+	
+	{{fbdoc item="subsect" value="make"}}
+	
+		- ##AR=<c:/path/to/ar.exe>##
+			(The AR variable is not forwarded by configure currently, so it has to be passed to the makefile)
+
+{{fbdoc item="section" value="Useful options for building the compiler"}}
+
+	{{fbdoc item="subsect" value="configure"}}
+	
+		- ##--disable-objinfo##
+			If specified fbc will not be linked against libbfd/libiberty/libintl. This can save a lot of trouble during compilation of fbc, at the cost of the [[DevObjinfo objinfo feature]] being disabled.
+	
+		- ##--enable-standalone## (This is always used for the ""FreeBASIC""-dos release)
+			Build a standalone fbc that can run from the ""FreeBASIC"" tree. It will seek binutils and libraries in the ""FreeBASIC"" tree.
+	
+		- ##FBC=<c:/path/to/fbc.exe>##
+	
+	{{fbdoc item="subsect" value="make"}}
+	
+		- ##DEBUG=1##
+			fbc will be compiled with ##-g##. Useful for debugging fbc.
+			For example:
+				##make DEBUG=1##	
+	
+		- ##EXTRAERR=1##
+			fbc will be compiled with ##-exx##. Useful for debugging fbc. The resulting fbc will be notably slower.
+	
+		- ##FB_BFD=1 BFD_VER=<XXX>##
+			This will result in fbc using FB libbfd headers to use libbfd directly, instead of using the DJGPP's C libbfd headers through fbc's default C libbfd wrapper. The FB libbfd header version must be specified, for example ##BFD_VER=217##. The libbfd.a that this fbc will be linked against must match this version exactly.
+
+{{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

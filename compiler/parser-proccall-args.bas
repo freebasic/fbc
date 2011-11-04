@@ -12,13 +12,13 @@
 '':::::
 sub parserProcCallInit( )
 
-	listNew( @parser.ovlarglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listInit( @parser.ovlarglist, 32*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 sub parserProcCallEnd( )
 
-	listFree( @parser.ovlarglist )
+	listEnd( @parser.ovlarglist )
 
 end sub
 

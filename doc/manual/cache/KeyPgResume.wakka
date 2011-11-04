@@ -33,7 +33,7 @@ Resume ' execution jumps back to 'j = 1 / i' line, which does not cause an error
 %%
 
 {{fbdoc item="lang"}}
-	-  ON ERROR is not supported in the //[[CompilerOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
+	-  RESUME is not supported in the //[[CompilerOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
 {{fbdoc item="filename" value="examples/manual/check/KeyPgResume_1.bas"}}%%(freebasic)
 If Open( "text" For Input As #1 ) <> 0 Then
   Print "Unable to open file"

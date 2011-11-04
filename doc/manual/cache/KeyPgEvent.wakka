@@ -46,14 +46,12 @@ The ##Type Field## will contain the event type ID, while the remaining 4 integer
 	- ##EVENT_WINDOW_GOT_FOCUS## (##11##) The program window has got focus.
 	- ##EVENT_WINDOW_LOST_FOCUS## (##12##) The program window has lost focus.
 	- ##EVENT_WINDOW_CLOSE## (##13##) The user attempted to close the program window.
-	- ##EVENT_MOUSE_HWHEEL## (##14##) The horizontal mouse wheel was used; the new horizontal wheel position is returned into the ##.w## field. (Note: currently implemented on Windows only)
-
+	- ##EVENT_MOUSE_HWHEEL## (##14##) The horizontal mouse wheel was used; the new horizontal wheel position is returned into the ##.w## field.
 
 The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type.
-		
+
 {{fbdoc item="lang"}}
 	- In //[[CompilerDialects lang fb]]//, the structure and constants are stored in the ##FB## ##[[KeyPgNamespace Namespace]]##.
-
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

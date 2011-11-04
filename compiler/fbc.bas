@@ -5,795 +5,150 @@
 ''		 jan/2005 dos support added [DrV]
 
 #include once "fb.bi"
-#include once "fbc.bi"
+#include once "fbint.bi"
 #include once "hlp.bi"
+#include once "hash.bi"
+#include once "list.bi"
 
-declare sub fbcInit _
+const FBC_INITARGS	  = 64
+const FBC_INITFILES	  = 64
+
+type FBC_EXTOPT
+	gas			as zstring * 128
+	ld			as zstring * 128
+	gcc			as zstring * 128
+end type
+
+type FBCIOFILE
+	as string srcfile '' input file
+	as string objfile '' output .o file
+end type
+
+type FBC_OBJINF
+	lang		as FB_LANG
+	mt			as integer
+end type
+
+type FBCCTX
+	'' For command line parsing
+	optid				as integer       '' Current option
+	lastiofile			as FBCIOFILE ptr '' Input file that receives the next -o filename
+	objfile				as string '' -o filename waiting for next input file
+
+	emitonly			as integer
+	compileonly			as integer
+	preserveasm			as integer
+	preserveobj			as integer
+	verbose				as integer
+	showversion			as integer
+
+	'' Command line input
+	modules				as TLIST '' FBCIOFILE's for input .bas files
+	rcs				as TLIST '' FBCIOFILE's for input .rc/.res files
+	xpm				as FBCIOFILE '' .xpm input file
+	temps				as TLIST '' Temporary files to delete at shutdown
+	objlist				as TLIST '' Objects from command line and from compilation
+	libfiles			as TLIST
+	libs				as TSTRSET
+	libpaths			as TSTRSET
+
+	'' Final list of libs and paths for linking
+	'' (each module can have #inclibs and #libpaths and add more, and for
+	'' objinfo emitting only the module-specific libs are wanted, so there
+	'' are multiple lists necessary to allow each module to start fresh
+	'' with the same input libs)
+	finallibs			as TSTRSET
+	finallibpaths			as TSTRSET
+
+	outname 			as zstring * FB_MAXPATHLEN+1
+	mainpath			as zstring * FB_MAXPATHLEN+1
+	mainfile			as zstring * FB_MAXNAMELEN+1
+	mapfile				as zstring * FB_MAXNAMELEN+1
+	mainset				as integer
+	subsystem			as zstring * FB_MAXNAMELEN+1
+	extopt				as FBC_EXTOPT
+	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
+	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
+	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
+
+	'' Compiler paths
+	binpath				as zstring * FB_MAXPATHLEN+1
+	incpath				as zstring * FB_MAXPATHLEN+1
+	libpath				as zstring * FB_MAXPATHLEN+1
+
+	objinf				as FBC_OBJINF
+end type
+
+declare function fbcMakeLibFileName(byref libname as string) as string
+
+declare function fbcRunBin _
 	( _
-	)
-
-declare sub fbcEnd _
-	(  _
-		byval errnum as integer _
-	)
-
-declare sub parseCmd _
-	( _
-	)
-
-declare sub setDefaultOptions _
-	( _
-	)
-
-declare function processOptions _
-	( _
+		byval action as zstring ptr, _
+		byref tool as string, _
+		byref ln as string _
 	) as integer
 
-declare function processCompLists _
-	( _
-	) as integer
+declare function fbcFindBin(byval filename as zstring ptr) as string
 
-declare function processTargetOptions _
-	( _
-	) as integer
-
-declare sub printOptions _
-	( _
-	)
-
-declare sub getLibList _
-	( _
-	)
-
-declare sub setLibListFromCmd _
-	( _
-	)
-
-declare sub setLibList _
-	( _
-	)
-
-declare sub initTarget _
-	( _
-	)
-
-declare function compileFiles _
-	( _
-	) as integer
-
-declare function assembleFiles _
-	( _
-	) as integer
-
-declare function linkFiles _
-	( _
-	) as integer
-
-declare function archiveFiles _
-	( _
-	) as integer
-
-declare function compileResFiles _
-	( _
-	) as integer
-
-declare function delFiles _
-	( _
-	) as integer
-
-declare sub setMainModule _
-	( _
-	)
-
-declare sub setCompOptions _
-	( _
-	)
-
-declare function collectObjInfo _
-	( _
-	) as integer
-
-declare sub setDefaultLibPaths _
-	( _
-	)
-
-declare sub getDefaultLibs _
-	( _
-	)
-
-
-''globals
-	dim shared as FBCCTX fbc
-
-	'' command-line options
-	dim shared as FBC_OPTION optionTb(0 to FBC_OPTS-1) = _
-	{ _
-		( FBC_OPT_E				, @"e"			 ), _
-		( FBC_OPT_EX			, @"ex"          ), _
-		( FBC_OPT_EXX			, @"exx"         ), _
-		( FBC_OPT_MT			, @"mt"          ), _
-		( FBC_OPT_PROFILE		, @"profile"     ), _
-		( FBC_OPT_NOERRLINE		, @"noerrline"   ), _
-		( FBC_OPT_NODEFLIBS		, @"nodeflibs"   ), _
-		( FBC_OPT_EXPORT		, @"export"      ), _
-		( FBC_OPT_NOUNDERSCORE	, @"nounderscore"), _
-		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
-		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
-		( FBC_OPT_ARCH			, @"arch"        ), _
-		( FBC_OPT_FPU			, @"fpu"         ), _
-		( FBC_OPT_VECTORIZE		, @"vec"         ), _
-		( FBC_OPT_FPMODE		, @"fpmode"      ), _
-		( FBC_OPT_DEBUG			, @"g"           ), _
-		( FBC_OPT_COMPILEONLY	, @"c"           ), _
-		( FBC_OPT_EMITONLY		, @"r"           ), _
-		( FBC_OPT_SHAREDLIB		, @"dylib"       ), _
-		( FBC_OPT_SHAREDLIB		, @"dll"         ), _
-		( FBC_OPT_STATICLIB		, @"lib"         ), _
-		( FBC_OPT_PRESERVEOBJ	, @"C"           ), _
-		( FBC_OPT_PRESERVEASM 	, @"R"           ), _
-		( FBC_OPT_PPONLY		, @"pp"          ), _
-		( FBC_OPT_VERBOSE		, @"v"           ), _
-		( FBC_OPT_VERSION		, @"version"     ), _
-		( FBC_OPT_OUTPUTNAME	, @"x"           ), _
-		( FBC_OPT_MAINMODULE	, @"m"           ), _
-		( FBC_OPT_MAPFILE		, @"map"         ), _
-		( FBC_OPT_MAXERRORS		, @"maxerr"      ), _
-		( FBC_OPT_WARNLEVEL		, @"w"           ), _
-		( FBC_OPT_LIBPATH		, @"p"           ), _
-		( FBC_OPT_INCPATH		, @"i"           ), _
-		( FBC_OPT_DEFINE		, @"d"           ), _
-		( FBC_OPT_INPFILE		, @"b"           ), _
-		( FBC_OPT_OUTFILE		, @"o"           ), _
-		( FBC_OPT_OBJFILE		, @"a"           ), _
-		( FBC_OPT_LIBFILE		, @"l"           ), _
-		( FBC_OPT_INCLUDE		, @"include"     ), _
-		( FBC_OPT_LANG			, @"lang"     	 ), _
-		( FBC_OPT_FORCELANG		, @"forcelang"   ), _
-		( FBC_OPT_WA			, @"Wa"     	 ), _
-		( FBC_OPT_WL			, @"Wl"     	 ), _
-		( FBC_OPT_WC			, @"Wc"     	 ), _
-		( FBC_OPT_GEN			, @"gen"		 ), _
-		( FBC_OPT_PREFIX		, @"prefix"      ), _
-		( FBC_OPT_OPTIMIZE		, @"O"      	 ), _
-		( FBC_OPT_EXTRAOPT		, @"z"			 ) _
-	}
-
-	'on error goto runtime_err
-
-	''
-    fbcInit( )
-
-    ''
-    parseCmd( )
-
-    if( listGetHead( @fbc.arglist ) = NULL ) then
-    	printOptions( )
-    	fbcEnd( 1 )
-    end if
-
-    ''
-    if( processTargetOptions( ) = FALSE ) then
-    	fbcEnd( 1 )
-    end if
-
-    ''
-    initTarget( )
-
-    ''
-    if( processOptions( ) = FALSE ) then
-    	fbcEnd( 1 )
-    end if
-
-    ''
-    setCompOptions( )
-
-    ''
-    if( fbc.showversion = FALSE ) then
-    	if( (listGetHead( @fbc.inoutlist ) = NULL) and _
-    		(listGetHead( @fbc.objlist ) = NULL) and _
-    		(listGetHead( @fbc.liblist ) = NULL) ) then
-    		printOptions( )
-    		fbcEnd( 1 )
-    	end if
-    end if
-
-    ''
-    if( fbc.verbose or fbc.showversion ) then
-    	print "FreeBASIC Compiler - Version " + FB_VERSION + " (" + FB_BUILD_DATE + ")" + _
-    		  " for " + FB_HOST + " (target:" + FB_TARGET + ")"
-    	print "Copyright (C) 2004-2011 The FreeBASIC development team."
-
-#ifdef ENABLE_PREFIX
-		print "Configured with prefix " + ENABLE_PREFIX
-#endif
-
-#ifdef ENABLE_STANDALONE
-		print "Configured as standalone"
-#endif
-
-#ifndef DISABLE_OBJINFO
-		print "objinfo enabled ";
-#ifdef ENABLE_FBBFD
-		print "using FB BFD header version " & ENABLE_FBBFD
-#else
-		print "using C BFD wrapper"
-#endif
-#else
-		print "objinfo disabled"
-#endif
-
-    	print
-    	if( fbc.showversion ) then
-    		fbcEnd( 0 )
-    	end if
-    end if
-
-    ''
-    fbSetPaths( )
-
-    ''
-    setMainModule( )
-
-    '' compile
-    if( compileFiles( ) = FALSE ) then
-    	delFiles( )
-    	fbcEnd( 1 )
-    end if
-
-	if( fbc.emitonly ) then
-
-	else
-
-		'' assemble
-		if( assembleFiles( ) = FALSE ) then
-			delFiles( )
-			fbcEnd( 1 )
-		end if
-
-		if( fbc.compileonly ) then
-
-		else
-			'' set the default lib paths before scanning for other libs
-			setDefaultLibPaths( )
-
-			'' scan objects and libraries for more libraries and paths
-			collectObjInfo( )
-
-			'' link
-			if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_STATICLIB ) then
-				if( archiveFiles( ) = FALSE ) then
-					delFiles( )
-					fbcEnd( 1 )
-				end if
-
-			else
-				'' only add the default libraries to the LD cmd-line, and not to the
-				'' objects and static libraries, for speed/size reasons
-				getDefaultLibs( )
-
-				'' resource files..
-				if( compileResFiles( ) = FALSE ) then
-					delFiles( )
-					fbcEnd( 1 )
-				end if
-
-				if( linkFiles( ) = FALSE ) then
-					delFiles( )
-					fbcEnd( 1 )
-				end if
-			end if
-		end if
+#macro safeKill(f)
+	if( kill( f ) <> 0 ) then
 	end if
+#endmacro
 
-	'' del temps
-	if( delFiles( ) = FALSE ) then
-		fbcEnd( 1 )
-	end if
+dim shared as FBCCTX fbc
 
-	fbcEnd( 0 )
-
-runtime_err:
-#ifdef erfn
-	fbReportRtError( ermn, erfn, err )
-#else
-	fbReportRtError( NULL, NULL, err )
-#endif
-	end 1
-
-''':::::
 private sub fbcInit( )
-    dim as integer i
+	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
+	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
+	strlistInit( @fbc.temps, FBC_INITARGS\4 )
+	strlistInit( @fbc.objlist, FBC_INITFILES )
+	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
+	strsetInit( @fbc.libs, FBC_INITFILES\4 )
+	strsetInit( @fbc.libpaths, FBC_INITFILES\4 )
 
-	hashInit( )
+	strsetInit(@fbc.finallibs, FBC_INITFILES\2)
+	strsetInit(@fbc.finallibpaths, FBC_INITFILES\2)
 
-	'' create the cmd-line options hash
-	hashNew( @fbc.opthash, 32, FALSE )
+	fbGlobalInit()
 
-	for i = 0 to FBC_OPTS-1
-		hashAdd( @fbc.opthash, _
-				 optionTb(i).name, _
-				 cast( any ptr, optionTb(i).id ), _
-				 INVALID )
-	next
+	fbc.emitonly    = FALSE
+	fbc.compileonly = FALSE
+	fbc.preserveasm	= FALSE
+	fbc.preserveobj	= FALSE
+	fbc.verbose     = FALSE
 
-	'' arg list
-	listNew( @fbc.arglist, FBC_INITARGS, len( string ) )
+	fbc.mainfile	= ""
+	fbc.mainpath	= ""
+	fbc.mapfile     = ""
+	fbc.mainset     = FALSE
+	fbc.outname     = ""
 
-	'' file and path lists
-	listNew( @fbc.inoutlist, FBC_INITFILES, len( FBC_IOFILE ) )
-	listNew( @fbc.objlist, FBC_INITFILES, len( string ) )
-	listNew( @fbc.deflist, FBC_INITFILES\4, len( string ) )
-	listNew( @fbc.preinclist, FBC_INITFILES\4, len( string ) )
-	listNew( @fbc.liblist, FBC_INITFILES\4, len( string ) )
-	listNew( @fbc.libpathlist, FBC_INITFILES\4, len( string ) )
-	listNew( @fbc.incpathlist, FBC_INITFILES\4, len( string ) )
+	fbc.extopt.gas	= ""
+	fbc.extopt.ld	= ""
 
-	'' the final lib and search path lists passed to LD
-	listNew( @fbc.ld_liblist, FBC_INITFILES\2, len( FBS_LIB ) )
-	hashNew( @fbc.ld_libhash, FBC_INITFILES\2, FALSE )
-	listNew( @fbc.ld_libpathlist, FBC_INITFILES\2, len( FBS_LIB ) )
-	hashNew( @fbc.ld_libpathhash, FBC_INITFILES\2, FALSE )
-
-	fbc.iof_head = NULL
-
-	''
-	setDefaultOptions( )
-
+	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
+	fbc.objinf.mt   = FALSE
 end sub
 
-''':::::
-private sub fbcEnd _
-	(  _
-		byval errnum as integer _
-	)
+private sub fbcEnd(byval errnum as integer)
+	'' Clean up temporary files
+	dim as string ptr file = listGetHead(@fbc.temps)
+	while (file)
+		safeKill(*file)
+		file = listGetNext(file)
+	wend
 
-    '' free the cmd-line options hash
-	hashFree( @fbc.opthash )
-
-	listFree( @fbc.arglist )
-
-	'' file and path lists
-	listFree( @fbc.inoutlist )
-	listFree( @fbc.objlist )
-	listFree( @fbc.deflist )
-	listFree( @fbc.preinclist )
-	listFree( @fbc.liblist )
-	listFree( @fbc.libpathlist )
-	listFree( @fbc.incpathlist )
-
-	'' the final lib and search path lists passed to LD
-	listFree( @fbc.ld_liblist )
-	hashFree( @fbc.ld_libhash )
-	listFree( @fbc.ld_libpathlist )
-	hashFree( @fbc.ld_libpathhash )
-
-	hashEnd( )
-
-	''
 	end errnum
-
 end sub
 
-'':::::
-private sub initTarget( )
-
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-#ifdef ENABLE_WIN32
-	case FB_COMPTARGET_WIN32
-		fbcInit_win32( )
-#endif
-
-#ifdef ENABLE_CYGWIN
-	case FB_COMPTARGET_CYGWIN
-		fbcInit_cygwin( )
-#endif
-
-#ifdef ENABLE_LINUX
-	case FB_COMPTARGET_LINUX
-		fbcInit_linux( )
-#endif
-
-#ifdef ENABLE_DOS
-	case FB_COMPTARGET_DOS
-		fbcInit_dos( )
-#endif
-
-#ifdef ENABLE_XBOX
-	case FB_COMPTARGET_XBOX
-		fbcInit_xbox( )
-#endif
-
-#ifdef ENABLE_FREEBSD
-	case FB_COMPTARGET_FREEBSD
-		fbcInit_freebsd( )
-#endif
-
-#ifdef ENABLE_OPENBSD
-	case FB_COMPTARGET_OPENBSD
-		fbcInit_openbsd( )
-#endif
-
-#ifdef ENABLE_DARWIN
-	case FB_COMPTARGET_DARWIN
-		fbcInit_darwin( )
-#endif
-
-#ifdef ENABLE_NETBSD
-	case FB_COMPTARGET_NETBSD
-		fbcInit_netbsd( )
-#endif
-
-	case else
-		print "unsupported target in " & __FILE__
-
-	end select
-
-	fbc.triplet = *env.target.triplet
-	if( len(fbc.triplet) > 0 ) then
-		fbc.triplet += "-"
-	end if
-
+private sub fbcAddTemp(byref file as string)
+	strlistAppend(@fbc.temps, file)
 end sub
 
-'':::::
-private sub setCompOptions( )
-
+private sub fbcAddObj(byref file as string)
+	strlistAppend(@fbc.objlist, file)
 end sub
 
-'':::::
-private function hGetOutFileExt as string
-
-	select case fbGetOption( FB_COMPOPT_BACKEND )
-	case FB_BACKEND_GAS
-		return ".asm"
-
-	case FB_BACKEND_GCC
-		return ".c"
-
-	end select
-
-end function
-
-'':::::
-private function compileFiles _
-	( _
-	) as integer
-
-	dim as integer i, checkmain, ismain, res, restarts
-	dim as FBC_IOFILE ptr iof = any
-	dim as FB_LANG prevlangid = any
-	function = FALSE
-
-	''
-	select case fbGetOption( FB_COMPOPT_OUTTYPE )
-	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
-		checkmain = TRUE
-	case else
-		checkmain = fbc.mainset
-	end select
-
-	ismain = FALSE
-
-	'' for each input file..
-	iof = listGetHead( @fbc.inoutlist )
-	do while( iof <> NULL )
-
-		if( checkmain ) then
-			ismain = fbc.mainfile = hStripPath( hStripExt( iof->inf ) )
-		end if
-
-		'' preserve orginal lang id, we may have to restore it.
-		prevlangid = fbGetOption( FB_COMPOPT_LANG )
-
-		restarts = 0
-
-		do
-
-			'' init the parser
-			if( fbInit( ismain, restarts ) = FALSE ) then
-				exit function
-			end if
-
-			'' add include paths and defines
-			processCompLists( )
-
-			'' if no output file given, assume it's the
-			'' same name as input, with the .o extension
-			if( len( iof->outf ) = 0 ) then
-				iof->outf = hStripExt( iof->inf ) + ".o"
-			end if
-
-			'' create output asm name
-			iof->asmf = hStripExt( iof->outf ) + hGetOutFileExt( )
-
-			'' add the libs and paths passed in the cmd-line
-			setLibList( )
-
-			if( fbc.verbose ) then
-				print "compiling: ", iof->inf; " -o "; iof->asmf
-			end if
-
-			if( fbCompile( iof->inf, _
-						   iof->asmf, _
-						   ismain, _
-						   @fbc.preinclist ) = FALSE ) then
-
-				'' Restore original lang
-				fbSetOption( FB_COMPOPT_LANG, prevlangid )
-
-				exit function
-			end if
-
-			if( fbCheckRestartCompile( ) ) then
-
-				'' Errors? Don't bother restarting ...
-				if( errGetCount( ) <> 0 ) then
-					exit function
-				else
-					restarts += 1
-
-					'' shutdown the parser (it will be restarted)
-					fbEnd( )
-				end if
-
-			else
-
-				'' update the list of libs and paths, with the ones found when parsing
-				getLibList( )
-
-				'' shutdown the parser
-				fbEnd( )
-
-				'' Restore original lang
-				fbSetOption( FB_COMPOPT_LANG, prevlangid )
-
-				exit do
-
-			end if
-
-		loop
-
-		iof = listGetNext( iof )
-	loop
-
-	'' no default libs would be added if no inp files were given
-	if( listGetHead( @fbc.inoutlist ) = NULL ) then
-		setLibListFromCmd( )
-	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-private function assembleFile_GAS _
-	( _
-		byref cmdline as string _
-	) as integer
-
-	static as string path
-	static as integer has_path = FALSE
-	static as integer res
-
-    if( has_path = FALSE ) then
-    	has_path = TRUE
-
-		path = fbFindBinFile( "as" )
-		if( len( path ) = 0 ) then
-			return FALSE
-		end if
-
-    end if
-
-    if( fbc.verbose ) then
-    	print "assembling: ", path + " " + cmdline
-    end if
-
-	res = exec( path, cmdline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "assembling failed: returned error code " & res
-		end if
-	end if
-
-	function = (res = 0)
-
-
-end function
-
-'':::::
-private function assembleFiles_GAS _
-	( _
-	) as integer
-
-	dim as string ascline
-
-	function = FALSE
-
-	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-	do while( iof <> NULL )
-
-		'' gas' options --32 as we only compile for 32bit right now, and 64 bit systems will error trying to do
-		'' a 64 bit compile by default
-		if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
-			ascline = "--32 --strip-local-absolute "
-		else
-			ascline = "--32 "
-		end if
-
-		ascline += QUOTE + iof->asmf + _
-				   (QUOTE + " -o " + QUOTE) + _
-				   iof->outf + (QUOTE) + _
-                   fbc.extopt.gas
-
-    	'' invoke as
-		if( assembleFile_GAS( ascline ) = FALSE ) then
-			exit function
-		end if
-
-    	iof = listGetNext( iof )
-    loop
-
-    function = TRUE
-
-end function
-
-'':::::
-private function assembleFile_GCC _
-	( _
-		byref cmdline as string _
-	) as integer
-
-	static as string path
-	static as integer has_path = FALSE
-	static as integer res
-
-	if( has_path = FALSE ) then
-		has_path = TRUE
-
-		path = fbFindBinFile( "gcc" )
-		if( len( path ) = 0 ) then
-			return FALSE
-		end if
-
-	end if
-
-	if( fbc.verbose ) then
-		print "assembling: ", path + " " + cmdline
-	end if
-
-	res = exec( path, cmdline )
-	if( res <> 0 ) then
-		if( fbc.verbose ) then
-			print "assembling failed: returned error code " & res
-		end if
-	end if
-
-	function = (res = 0)
-
-
-end function
-
-'':::::
-private function hArchToGccArch _
-	( _
-		byval arch as integer _
-	) as string
-
-	dim as string march
-
-	select case as const arch
-	case FB_CPUTYPE_386
-		march = "i386"
-
-	case FB_CPUTYPE_486
-		march = "i486"
-
-	case FB_CPUTYPE_586
-		march = "i586"
-
-	case FB_CPUTYPE_686
-		march = "i686"
-
-	case FB_CPUTYPE_ATHLON
-		march = "athlon"
-
-	case FB_CPUTYPE_ATHLONXP
-		march = "athlon-xp"
-
-	case FB_CPUTYPE_ATHLONFX
-		march = "athlon-fx"
-
-	case FB_CPUTYPE_ATHLONSSE3
-		march = "k8-sse3"
-
-	case FB_CPUTYPE_PENTIUMMMX
-		march = "pentium-mmx"
-
-	case FB_CPUTYPE_PENTIUM2
-		march = "pentium2"
-
-	case FB_CPUTYPE_PENTIUM3
-		march = "pentium3"
-
-	case FB_CPUTYPE_PENTIUM4
-		march = "pentium4"
-
-	case FB_CPUTYPE_PENTIUMSSE3
-		march = "prescott"
-
-	case FB_CPUTYPE_NATIVE
-		march = "native"
-
-	end select
-
-	function = march
-
-end function
-'':::::
-private function assembleFiles_GCC _
-	( _
-	) as integer
-
-	dim as string ascline
-	dim as string march = "-mtune=" & hArchToGccArch( fbGetOption( FB_COMPOPT_CPUTYPE ) ) & " "
-
-	function = FALSE
-
-	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-	do while( iof <> NULL )
-
-    	'' gcc' options
-    	ascline = "-c -nostdlib -nostdinc " & _
-    			  "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
-    			  "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
-    			  "-O" & fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) & " "
-
-    	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
-			ascline += "-g "
-    	end if
-
-    	ascline += march
-
-    	if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
-    		ascline += "-mfpmath=sse -msse2 "
-    	end if
-
-		ascline += QUOTE + iof->asmf + _
-				   (QUOTE + " -o " + QUOTE) + _
-				   iof->outf + (QUOTE) + _
-                   fbc.extopt.gcc
-
-    	'' invoke gcc
-		if( assembleFile_GCC( ascline ) = FALSE ) then
-			exit function
-		end if
-
-    	iof = listGetNext( iof )
-    loop
-
-    function = TRUE
-
-end function
-
-'':::::
-private function assembleFiles _
-	( _
-	) as integer
-
-	select case fbGetOption( FB_COMPOPT_BACKEND )
-	case FB_BACKEND_GAS
-		return assembleFiles_GAS( )
-
-	case FB_BACKEND_GCC
-		return assembleFiles_GCC( )
-
-	end select
-
-end function
-
-
-'':::::
 private function hAddInfoObject as integer
 
     if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
@@ -801,7 +156,7 @@ private function hAddInfoObject as integer
     end if
 
 #ifndef DISABLE_OBJINFO
-    if( fbObjInfoWriteObj( @fbc.ld_liblist, @fbc.ld_libpathlist ) ) then
+    if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
     	function = TRUE
 
     '' and error occurred or there's no need for an info object, delete it
@@ -818,107 +173,606 @@ private function hAddInfoObject as integer
 
 end function
 
-'':::::
-private function archiveFiles _
+private function archiveFiles() as integer
+	fbc.outname = hStripFilename(fbc.outname) + _
+	              fbcMakeLibFileName(hStripPath(fbc.outname))
+
+	'' Remove lib*.a if it already exists, because ar doesn't overwrite
+	safeKill( fbc.outname )
+
+	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
+
+#ifndef DISABLE_OBJINFO
+	'' the first object must be the info one
+	if( fbIsCrossComp( ) = FALSE ) then
+		if( hAddInfoObject( ) ) then
+			ln += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
+			fbcAddTemp(FB_INFOSEC_OBJNAME)
+		end if
+	end if
+#endif
+
+	dim as string ptr objfile = listGetHead(@fbc.objlist)
+	while (objfile)
+		ln += QUOTE + *objfile + (QUOTE + " ")
+		objfile = listGetNext(objfile)
+	wend
+
+	'' invoke ar
+	return fbcRunBin("archiving", fbcFindBin("ar"), ln)
+end function
+
+function fbcFindGccLib(byref file as string) as string
+	dim as string found
+
+	'' Files in our lib/ directory have precedence, and are in fact
+	'' required for standalone builds.
+	found = fbc.libpath + FB_HOST_PATHDIV + file
+
+#ifndef ENABLE_STANDALONE
+	if( hFileExists( found ) ) then
+		return found
+	end if
+
+	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
+	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
+	'' a specific gcc target/version).
+	'' The normal build needs to ask gcc to find out where those files are,
+	'' while the standalone build is supposed to be standalone and have
+	'' everything in its own lib/ directory.
+	''
+	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
+	'' not the host gcc.)
+
+	dim as integer ff = any
+
+	function = ""
+
+	dim as string path = fbcFindBin("gcc")
+
+	path += " -m32 -print-file-name=" + file
+
+	ff = freefile()
+	if( open pipe( path, for input, as ff ) <> 0 ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
+		exit function
+	end if
+
+	input #ff, found
+
+	close ff
+
+	dim as string fileonly = hStripPath( found )
+
+	if( found = fileonly ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
+		exit function
+	end if
+#endif
+
+	function = found
+
+end function
+
+function fbcMakeLibFileName(byref libname as string) as string
+	return "lib" + libname + ".a"
+end function
+
+private sub fbcAddDefLibPath(byref path as string)
+	strsetAdd(@fbc.finallibpaths, path, TRUE)
+end sub
+
+sub fbcAddLibPathFor(byref libname as string)
+	dim as string path = pathStripDiv(hStripFilename( _
+	                           fbcFindGccLib(fbcMakeLibFileName(libname))))
+	if (len(path)> 0) then
+		fbcAddDefLibPath(path)
+	end if
+end sub
+
+function fbcFindBin(byval filename as zstring ptr) as string
+	'' Check for an environment variable.
+	'' (e.g. fbcFindBin("ld") will check the LD environment variable)
+	dim as string path = environ(ucase(*filename))
+	if (len(path) > 0) then
+		'' The environment variable is set, this should be it.
+		'' If this path doesn't work, then why did someone set the
+		'' variable that way?
+		return path
+	end if
+
+	'' Build the path to the program in our bin/ directory
+	path = fbc.binpath + FB_HOST_PATHDIV
+	path += fbc.triplet + *filename + FB_HOST_EXEEXT
+
+#ifdef __FB_UNIX__
+	'' On *nix/*BSD, check whether the program exists in bin/, and fallback
+	'' to the system default otherwise, i.e. tools installed in the same
+	'' location are preferred, but not required.
+	if (hFileExists(path)) then
+		return path
+	end if
+
+	'' Use the system default, it works with exec() on these systems.
+	return fbc.triplet + *filename + FB_HOST_EXEEXT
+#else
+	'' The programs must be reachable via relative or absolute path,
+	'' otherwise the CreateProcess() in exec() will fail.
+	return path
+#endif
+end function
+
+function fbcRunBin _
 	( _
+		byval action as zstring ptr, _
+		byref tool as string, _
+		byref ln as string _
 	) as integer
 
-    dim as string arcline
-    dim as integer has_infobj = FALSE
+	'' Note: We have to use exec(). shell() would require special care
+	'' with shell syntax (we'd have to quote escape chars in filenames
+	'' and such), and it's slower too.
+
+	if (fbc.verbose) then
+		print *action & ": ", tool & " " & ln
+	end if
+
+	dim as integer result = exec(tool, ln)
+	if (result = 0) then
+		return TRUE
+	end if
+
+	'' A rather vague assumption on exec() return value:
+	''    -1 should be "not found"
+	if (result < 0) then
+		errReportEx(FB_ERRMSG_EXEMISSING, tool, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES)
+	else
+		'' Report bad exit codes only in verbose mode; normally the
+		'' program should already have shown an error message, and the
+		'' exit code is only interesting for debugging purposes.
+		if (fbc.verbose) then
+			print *action & " failed: '" & tool & "' terminated with exit code " & result
+		end if
+	end if
+
+	return FALSE
+end function
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+private function hCreateResFile( byval cline as zstring ptr ) as string
+	dim as integer f
+	dim as string resfile
+
+	resfile = fbc.mainpath + "temp.res"
+
+	f = freefile( )
+	if( open( resfile, for output, as #f ) <> 0 ) then
+		return ""
+	end if
+
+	print #f, *cline
+
+	close #f
+
+	function = resfile
+
+end function
+#endif
+
+private function clearDefList(byref deffile as string) as integer
+	dim as integer fi = freefile()
+	if (open(deffile, for input, as #fi)) then
+		return FALSE
+	end if
+
+	dim as string cleaned = hStripExt(deffile) + ".clean.def"
+	dim as integer fo = freefile()
+	if (open(cleaned, for output, as #fo)) then
+		close #fi
+		return FALSE
+	end if
+
+	dim as string ln
+	while (eof(fi) = FALSE)
+		line input #fi, ln
+
+		if (right(ln, 4) = "DATA") then
+			ln = left(ln, len(ln) - 4)
+		end if
+
+		print #fo, ln
+	wend
+
+	close #fo
+	close #fi
+
+	kill(deffile)
+	return (name(cleaned, deffile) = 0)
+end function
+
+private function makeImpLib(byref dllname as string, byref deffile as string) as integer
+	'' for some weird reason, LD will declare all functions exported as if they were
+	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
+	if (clearDefList(deffile) = FALSE) then
+		return FALSE
+	end if
+
+	dim as string ln
+	ln += "--def " + QUOTE + deffile + QUOTE
+	ln += " --dllname " + QUOTE + hStripPath(fbc.outname) + QUOTE
+	ln += " --output-lib " + QUOTE + hStripFilename(fbc.outname) + "lib" + dllname + (".dll.a" + QUOTE)
+
+	if (fbcRunBin("creating import library", fbcFindBin("dlltool"), ln) = FALSE) then
+		return FALSE
+	end if
+
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(deffile)
+	end if
+
+	return TRUE
+end function
+
+'':::::
+private function linkFiles() as integer
+	dim as string ldcline, dllname, deffile, resfile
 
 	function = FALSE
 
-    ''
-    fbc.outname = hStripFilename( fbc.outname ) + "lib" + _
-				  hStripPath( fbc.outname ) + ".a"
+	'' set executable name
+	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
 
-    arcline = "-rsc "
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 
-    '' output library file name
-    arcline += QUOTE + fbc.outname + (QUOTE + " ")
-
-#ifndef DISABLE_OBJINFO
-    '' the first object must be the info one
-    if( fbIsCrossComp( ) = FALSE ) then
-    	if( hAddInfoObject( ) ) then
-    		arcline += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
-    		has_infobj = TRUE
-    	end if
-    end if
-#endif
-
-    '' add objects from output list
-	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-	do while( iof <> NULL )
-    	arcline += QUOTE + iof->outf + (QUOTE + " ")
-
-    	iof = listGetNext( iof )
-    loop
-
-    '' add objects from cmm-line
-	dim as string ptr objf = listGetHead( @fbc.objlist )
-	do while( objf <> NULL )
-    	arcline += QUOTE + *objf + (QUOTE + " ")
-
-    	objf = listGetNext( objf )
-    loop
-
-    '' invoke ar
-    if( fbc.verbose ) then
-       print "archiving: ", arcline
-    end if
-
-    if( hFileExists( fbc.outname ) ) then
-    	safeKill( fbc.outname )
-    end if
-
-    fbc.vtbl.archiveFiles( arcline )
-
-    ''
-    if( has_infobj ) then
-    	safeKill( FB_INFOSEC_OBJNAME )
-    end if
-
-    function = TRUE
-
-end function
-
-'':::::
-private function linkFiles as integer
-
-	function = fbc.vtbl.linkFiles( )
-
-end function
-
-'':::::
-private function compileResFiles as integer
-
-	function = fbc.vtbl.compileResFiles( )
-
-end function
-
-'':::::
-private function delFiles as integer
-
-    function = FALSE
-
-	dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-
-	do while( iof <> NULL )
-		if( fbc.preserveasm = FALSE ) then
-			safeKill( iof->asmf )
-		end if
-
-		if( fbc.emitonly = FALSE ) then
-			if( fbc.preserveobj = FALSE ) then
-				safeKill( iof->outf )
+		'' set default subsystem mode
+		if( len( fbc.subsystem ) = 0 ) then
+			fbc.subsystem = "console"
+		else
+			if( fbc.subsystem = "gui" ) then
+				fbc.subsystem = "windows"
 			end if
 		end if
 
-    	iof = listGetNext( iof )
-    loop
+		ldcline += " -subsystem " + fbc.subsystem
 
-    function = fbc.vtbl.delFiles( )
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			''
+			dllname = hStripPath( hStripExt( fbc.outname ) )
+
+			'' create a dll
+			ldcline += " --dll --enable-stdcall-fixup"
+
+			'' set the entry-point
+			ldcline += " -e _DllMainCRTStartup@12"
+		end if
+
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			dllname = hStripPath( hStripExt( fbc.outname ) )
+			ldcline += " -shared -h" + hStripPath( fbc.outname )
+		else
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_FREEBSD
+				ldcline += " -dynamic-linker /libexec/ld-elf.so.1"
+			case FB_COMPTARGET_LINUX
+				ldcline += " -dynamic-linker /lib/ld-linux.so.2"
+			case FB_COMPTARGET_NETBSD
+				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
+			case FB_COMPTARGET_OPENBSD
+				ldcline += " -dynamic-linker /usr/libexec/ld.so"
+			end select
+		end if
+
+		'' export all symbols declared as EXPORT
+		if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
+		    fbGetOption( FB_COMPOPT_EXPORT ) ) then
+			ldcline += " --export-dynamic"
+		end if
+
+	case FB_COMPTARGET_XBOX
+		ldcline += " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
+
+	end select
+
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		'' For DJGPP, the custom ldscript must always be used,
+		'' to get ctors/dtors into the correct order that lets
+		'' fbrt0's c/dtor be the first/last respectively.
+		'' (needed until binutils' default DJGPP ldscripts are fixed)
+		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
+
+#ifndef DISABLE_OBJINFO
+	else
+		'' Supplementary ld script to drop the fbctinf objinfo section
+		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
+#endif
+
+	end if
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		'' stack size
+		dim as integer stacksize = fbGetOption(FB_COMPOPT_STACKSIZE)
+		ldcline += " --stack " + str(stacksize) + "," + str(stacksize)
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			'' When building DLLs, we also create an import library, as
+			'' convenience for the user. There are several ways to do this:
+			''    a) ld --output-def + dlltool
+			''    b) ld --output-def --out-implib
+			''    c) pexports + dlltool
+			'' At the moment it seems like "ld --out-implib" alone
+			'' does not work, and b) shows a verbose message that
+			'' wouldn't be nice to have, so a) is the best way.
+			deffile = hStripExt( fbc.outname ) + ".def"
+			ldcline += " --output-def """ + deffile + """"
+		end if
+
+	case FB_COMPTARGET_LINUX
+		'' set emulation
+		ldcline += " -m elf_i386"
+
+	case FB_COMPTARGET_XBOX
+		'' set entry point
+		ldcline += " -e _WinMainCRTStartup"
+
+	end select
+
+	if( len( fbc.mapfile ) > 0) then
+		ldcline += " -Map " + fbc.mapfile
+	end if
+
+	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
+		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
+			ldcline += " -s"
+		end if
+	end if
+
+	'' Add the library search paths
+	scope
+		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibpaths.list)
+		while (i)
+			ldcline += " -L """ + i->s + """"
+			i = listGetNext(i)
+		wend
+	end scope
+
+	'' crt begin objects
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+		else
+			'' TODO
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+			'' additional support for gmon
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+			end if
+		end if
+
+	case FB_COMPTARGET_WIN32
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			ldcline += " """ + fbcFindGccLib("dllcrt2.o") + """"
+		else
+			ldcline += " """ + fbcFindGccLib("crt2.o") + """"
+			'' additional support for gmon
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				ldcline += " """ + fbcFindGccLib("gcrt2.o") + """"
+			end if
+		end if
+
+		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
+
+	case FB_COMPTARGET_DOS
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+		else
+			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+		end if
+
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+				select case as const fbGetOption( FB_COMPOPT_TARGET )
+				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+					ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+				case else
+					ldcline += " """ + fbcFindGccLib("gcrt1.o") + """"
+				end select
+			else
+				select case as const fbGetOption( FB_COMPOPT_TARGET )
+				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+					ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+				case else
+					ldcline += " """ + fbcFindGccLib("crt1.o") + """"
+				end select
+			end if
+		end if
+
+		'' All have crti.o, except OpenBSD
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+			ldcline += " """ + fbcFindGccLib("crti.o") + """"
+		end if
+
+		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
+
+	case FB_COMPTARGET_XBOX
+		'' link with crt0.o (C runtime init)
+		ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+
+	end select
+
+	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbrt0.o""")
+	end if
+
+	scope
+		dim as string ptr objfile = listGetHead(@fbc.objlist)
+		while (objfile)
+			ldcline += " """ + *objfile + """"
+			objfile = listGetNext(objfile)
+		wend
+	end scope
+
+	'' Begin of lib group
+	'' All libraries are passed inside -( -) so we don't need to worry as
+	'' much about their order and/or listing them repeatedly.
+	ldcline += " ""-("""
+
+	'' Add libraries passed by file name
+	scope
+		dim as string ptr libfile = listGetHead(@fbc.libfiles)
+		while (libfile)
+			ldcline += " """ + *libfile + """"
+			libfile = listGetNext(libfile)
+		wend
+	end scope
+
+	'' Add libraries from command-line, those found during parsing, and
+	'' the default ones
+	scope
+		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
+		dim as integer checkdllname = (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_DYNAMICLIB)
+		while (i)
+			'' Prevent linking DLLs against their own import library
+			'' (normally this shouldn't be needed though, even if
+			'' the lib is given to ld, it shouldn't be used normally
+			'' since the DLL will have all symbols itself already,
+			'' but safe is safe, with #inclib etc.)
+			if ((checkdllname = FALSE) orelse (i->s <> dllname)) then
+				ldcline += " -l" + i->s
+			end if
+			i = listGetNext(i)
+		wend
+	end scope
+
+	'' End of lib group
+	ldcline += " ""-)"""
+
+	'' crt end
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+	     FB_COMPTARGET_OPENBSD
+		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
+		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
+			ldcline += " " + QUOTE + fbcFindGccLib("crtn.o") + QUOTE
+		end if
+
+	case FB_COMPTARGET_WIN32
+		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
+
+	end select
+
+	'' extra options
+	ldcline += " " + fbc.extopt.ld
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+	'' When using the DOS DJGPP tools, the command line length might be
+	'' limited, and with our generally long ld command lines (especially
+	'' when linking fbc) the line must be passed to ld through an @file.
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		dim as string resfile = hCreateResFile( ldcline )
+		if( len( resfile ) = 0 ) then
+			exit function
+		end if
+		if (fbc.verbose) then
+			print "ld options in '" & resfile & "': ", ldcline
+		end if
+		ldcline = "@" + resfile
+	end if
+#endif
+
+	'' invoke ld
+	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
+		exit function
+	end if
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		kill( resfile )
+	end if
+#endif
+
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_DOS
+		'' patch the exe to change the stack size
+		dim as integer f = freefile()
+
+		if (open(fbc.outname, for binary, access read write, as #f) <> 0) then
+			exit function
+		end if
+
+		put #f, 533, fbGetOption(FB_COMPOPT_STACKSIZE)
+
+		close #f
+
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
+			'' Create the .dll.a import library from the generated .def
+			if (makeImpLib(dllname, deffile) = FALSE) then
+				exit function
+			end if
+		end if
+
+	case FB_COMPTARGET_XBOX
+		'' Turn .exe into .xbe
+		dim as string cxbepath, cxbecline
+		dim as integer res = any
+
+		'' xbe title
+		if( len(fbc.xbe_title) = 0 ) then
+			fbc.xbe_title = hStripExt(fbc.outname)
+		end if
+
+		cxbecline = "-TITLE:" + QUOTE + fbc.xbe_title + (QUOTE + " ")
+		
+		if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
+			cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
+		end if
+
+		'' output xbe filename
+		cxbecline += " -OUT:" + QUOTE + hStripExt(fbc.outname) + ".xbe" + QUOTE
+
+		'' input exe filename
+		cxbecline += " " + QUOTE + fbc.outname + QUOTE
+
+		'' don't echo cxbe output
+		if( fbc.verbose = FALSE ) then
+			cxbecline += " >nul"
+		end if
+
+		'' invoke cxbe (exe -> xbe)
+		if( fbc.verbose ) then
+			print "cxbe: ", cxbecline
+		end if
+
+		cxbepath = fbcFindBin("cxbe")
+
+		'' have to use shell instead of exec in order to use >nul
+		res = shell(cxbepath + " " + cxbecline)
+		if( res <> 0 ) then
+			if( fbc.verbose ) then
+				print "cxbe failed: exit code " & res
+			end if
+			exit function
+		end if
+
+		'' remove .exe
+		kill fbc.outname
+
+	end select
+
+	function = TRUE
 
 end function
 
@@ -929,8 +783,7 @@ private sub objinf_addLibCb _
 		byval objName as zstring ptr _
 	)
 
-	'' let the symbol module do the hard work for us
-	fbAddLibEx( @fbc.ld_liblist, @fbc.ld_libhash, libName, FALSE )
+	strsetAdd(@fbc.finallibs, *libName, FALSE)
 
 end sub
 
@@ -941,7 +794,7 @@ private sub objinf_addPathCb _
 		byval objName as zstring ptr _
 	)
 
-	fbAddLibPathEx( @fbc.ld_libpathlist, @fbc.ld_libpathhash, pathName, FALSE )
+	strsetAdd(@fbc.finallibpaths, *pathName, FALSE)
 
 end sub
 
@@ -1010,21 +863,18 @@ private function collectObjInfo _
 	end scope
 
 	scope
-		dim as TLIST ptr libpathlist = @fbc.ld_libpathlist
-
 		'' for each library found (must be done after processing all objects)
-		dim as FBS_LIB ptr lib_ = listGetHead( @fbc.ld_liblist )
-		do while( lib_ <> NULL )
-	    	if( lib_->isdefault = FALSE ) then
-	    		fbObjInfoReadLib( *lib_->name, _
-	    					 	  @objinf_addLibCb, _
-	    					 	  @objinf_addPathCb, _
-	    					 	  @objinf_addOption, _
-	    					 	  libpathlist )
+		dim as TSTRSETITEM ptr i = listGetHead(@fbc.finallibs.list)
+		while (i)
+			'' Not default?
+			if (i->userdata = FALSE) then
+				fbObjInfoReadLib(i->s, @objinf_addLibCb, _
+				                       @objinf_addPathCb, _
+				                       @objinf_addOption, _
+				                       @fbc.finallibpaths.list)
 			end if
-
-			lib_ = listGetNext( lib_ )
-		loop
+			i = listGetNext(i)
+		wend
 	end scope
 
 	function = TRUE
@@ -1034,20 +884,1008 @@ private function collectObjInfo _
 
 end function
 
-'':::::
-private sub setMainModule( )
+private sub fbcErrorInvalidOption(byref arg as string)
+	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+end sub
 
-	if( len( fbc.mainfile ) = 0 ) then
-		dim as FBC_IOFILE ptr iof = listGetHead( @fbc.inoutlist )
-		dim as string ptr inf = NULL
-		if( iof <> NULL ) then
-			inf = @iof->inf
+private sub checkWaitingObjfile()
+	if (len(fbc.objfile) > 0) then
+		errReportEx( FB_ERRMSG_OBJFILEWITHOUTINPUTFILE, "-o " & fbc.objfile, -1 )
+		fbc.objfile = ""
+	end if
+end sub
+
+private sub setIofile(byval iofile as FBCIOFILE ptr, byref file as string)
+	iofile->srcfile = file
+	fbc.lastiofile = iofile
+
+	'' Got a waiting -o <file>? This module takes it.
+	if (len(fbc.objfile) > 0) then
+		iofile->objfile = fbc.objfile
+		fbc.objfile = ""
+	end if
+end sub
+
+private sub addBas(byref basfile as string)
+	setIofile(listNewNode(@fbc.modules), basfile)
+end sub
+
+'' -target <triplet> parser
+private function parseTargetTriplet(byref triplet as string) as integer
+	'' To support the system triplets, we need to parse them,
+	'' to identify which target of ours it could mean (much like in the
+	'' FB makefile when cross-compiling FB).
+
+	'' Split the triplet into its components
+	''    [arch-][vendor-]os[-...]
+
+	'' Cut off up to two leading components to get to the OS
+	dim as string os = triplet
+	for i as integer = 0 to 1
+		dim as integer j = instr(1, os, "-")
+		if (j = 0) then
+			exit for
+		end if
+		os = right(os, len(os) - j)
+	next
+
+	if (len(os) = 0) then
+		return -1
+	end if
+
+	#macro MAYBE(target, comptarget)
+		'' Allow incomplete matches, e.g.:
+		'' 'linux' matches 'linux-gnu',
+		'' 'mingw' matches 'mingw32msvc', etc.
+		if (left(os, len(target)) = target) then
+			return comptarget
+		end if
+	#endmacro
+
+	select case as const (os[0])
+	case asc("c")
+		MAYBE("cygwin", FB_COMPTARGET_CYGWIN)
+
+	case asc("d")
+		MAYBE("darwin", FB_COMPTARGET_DARWIN)
+		MAYBE("djgpp", FB_COMPTARGET_DOS)
+		MAYBE("dos", FB_COMPTARGET_DOS)
+
+	case asc("f")
+		MAYBE("freebsd", FB_COMPTARGET_FREEBSD)
+
+	case asc("l")
+		MAYBE("linux", FB_COMPTARGET_LINUX)
+
+	case asc("m")
+		MAYBE("mingw", FB_COMPTARGET_WIN32)
+		MAYBE("msdos", FB_COMPTARGET_DOS)
+
+	case asc("n")
+		MAYBE("netbsd", FB_COMPTARGET_NETBSD)
+
+	case asc("o")
+		MAYBE("openbsd", FB_COMPTARGET_OPENBSD)
+
+	case asc("s")
+		'' TODO (not yet implemented in the compiler)
+		''MAYBE("solaris", FB_COMPTARGET_SOLARIS)
+
+	case asc("w")
+		MAYBE("win32", FB_COMPTARGET_WIN32)
+		MAYBE("windows", FB_COMPTARGET_WIN32)
+
+	case asc("x")
+		MAYBE("xbox", FB_COMPTARGET_XBOX)
+
+	end select
+
+	return -1
+end function
+
+enum
+	OPT_A = 0
+	OPT_ARCH
+	OPT_B
+	OPT_C
+	OPT_CKEEPOBJ
+	OPT_D
+	OPT_DLL
+	OPT_DYLIB
+	OPT_E
+	OPT_EX
+	OPT_EXX
+	OPT_EXPORT
+	OPT_FORCELANG
+	OPT_FPMODE
+	OPT_FPU
+	OPT_G
+	OPT_GEN
+	OPT_I
+	OPT_INCLUDE
+	OPT_L
+	OPT_LANG
+	OPT_LIB
+	OPT_M
+	OPT_MAP
+	OPT_MAXERR
+	OPT_MT
+	OPT_NODEFLIBS
+	OPT_NOERRLINE
+	OPT_O
+	OPT_OPTIMIZE
+	OPT_P
+	OPT_PP
+	OPT_PREFIX
+	OPT_PROFILE
+	OPT_R
+	OPT_RKEEPASM
+	OPT_S
+	OPT_T
+	OPT_TARGET
+	OPT_TITLE
+	OPT_V
+	OPT_VEC
+	OPT_VERSION
+	OPT_W
+	OPT_WA
+	OPT_WC
+	OPT_WL
+	OPT_X
+	OPT_Z
+	OPT__COUNT
+end enum
+
+dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
+{ _
+	TRUE , _ '' OPT_A
+	TRUE , _ '' OPT_ARCH
+	TRUE , _ '' OPT_B
+	FALSE, _ '' OPT_C
+	FALSE, _ '' OPT_CKEEPOBJ
+	TRUE , _ '' OPT_D
+	FALSE, _ '' OPT_DLL
+	FALSE, _ '' OPT_DYLIB
+	FALSE, _ '' OPT_E
+	FALSE, _ '' OPT_EX
+	FALSE, _ '' OPT_EXX
+	FALSE, _ '' OPT_EXPORT
+	FALSE, _ '' OPT_FORCELANG
+	TRUE , _ '' OPT_FPMODE
+	TRUE , _ '' OPT_FPU
+	FALSE, _ '' OPT_G
+	TRUE , _ '' OPT_GEN
+	TRUE , _ '' OPT_I
+	TRUE , _ '' OPT_INCLUDE
+	TRUE , _ '' OPT_L
+	TRUE , _ '' OPT_LANG
+	FALSE, _ '' OPT_LIB
+	TRUE , _ '' OPT_M
+	TRUE , _ '' OPT_MAP
+	TRUE , _ '' OPT_MAXERR
+	FALSE, _ '' OPT_MT
+  	FALSE, _ '' OPT_NODEFLIBS
+	FALSE, _ '' OPT_NOERRLINE
+	TRUE , _ '' OPT_O
+	TRUE , _ '' OPT_OPTIMIZE
+	TRUE , _ '' OPT_P
+	FALSE, _ '' OPT_PP
+	TRUE , _ '' OPT_PREFIX
+	FALSE, _ '' OPT_PROFILE
+	FALSE, _ '' OPT_R
+	FALSE, _ '' OPT_RKEEPASM
+	TRUE , _ '' OPT_S
+	TRUE , _ '' OPT_T
+	TRUE , _ '' OPT_TARGET
+	TRUE , _ '' OPT_TITLE
+	FALSE, _ '' OPT_V
+	TRUE , _ '' OPT_VEC
+	FALSE, _ '' OPT_VERSION
+	TRUE , _ '' OPT_W
+	TRUE , _ '' OPT_WA
+	TRUE , _ '' OPT_WC
+	TRUE , _ '' OPT_WL
+	TRUE , _ '' OPT_X
+	TRUE   _ '' OPT_Z
+}
+
+private sub handleOpt(byval optid as integer, byref arg as string)
+	select case as const (optid)
+	case OPT_A
+		fbcAddObj(arg)
+
+	case OPT_ARCH
+		dim as integer value = any
+
+		select case (arg)
+		case "386"
+			value = FB_CPUTYPE_386
+		case "486"
+			value = FB_CPUTYPE_486
+		case "586"
+			value = FB_CPUTYPE_586
+		case "686"
+			value = FB_CPUTYPE_686
+		case "athlon"
+			value = FB_CPUTYPE_ATHLON
+		case "athlon-xp"
+			value = FB_CPUTYPE_ATHLONXP
+		case "athlon-fx"
+			value = FB_CPUTYPE_ATHLONFX
+		case "k8-sse3"
+			value = FB_CPUTYPE_ATHLONSSE3
+		case "pentium-mmx"
+			value = FB_CPUTYPE_PENTIUMMMX
+		case "pentium2"
+			value = FB_CPUTYPE_PENTIUM2
+		case "pentium3"
+			value = FB_CPUTYPE_PENTIUM3
+		case "pentium4"
+			value = FB_CPUTYPE_PENTIUM4
+		case "pentium4-sse3"
+			value = FB_CPUTYPE_PENTIUMSSE3
+		case "native"
+			value = FB_CPUTYPE_NATIVE
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_CPUTYPE, value )
+
+	case OPT_B
+		addBas(arg)
+
+	case OPT_C
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+		fbc.compileonly = TRUE
+		fbc.emitonly = FALSE
+		fbc.preserveobj = TRUE
+
+	case OPT_CKEEPOBJ
+		fbc.preserveobj = TRUE
+
+	case OPT_D
+		fbAddPreDefine(arg)
+
+	case OPT_DLL, OPT_DYLIB
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
+
+	case OPT_E
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+
+	case OPT_EX
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+
+	case OPT_EXX
+		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
+		fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
+
+	case OPT_EXPORT
+		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
+
+	case OPT_FORCELANG
+		dim as integer value = fbGetLangId(strptr(arg))
+		if( value = FB_LANG_INVALID ) then
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
 		end if
 
-		if( inf <> NULL ) then
-			fbc.mainfile = hStripPath( hStripExt( *inf ) )
-			fbc.mainpath = hStripFilename( *inf )
+		fbSetOption( FB_COMPOPT_LANG, value )
+		fbSetOption( FB_COMPOPT_FORCELANG, TRUE )
+		fbc.objinf.lang = value
 
+	case OPT_FPMODE
+		dim as integer value = any
+
+		select case ucase(arg)
+		case "PRECISE"
+			value = FB_FPMODE_PRECISE
+		case "FAST"
+			value = FB_FPMODE_FAST
+		case else
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end select
+
+		fbSetOption( FB_COMPOPT_FPMODE, value )
+
+	case OPT_FPU
+		dim as integer value = any
+
+		select case ucase(arg)
+		case "X87", "FPU"
+			value = FB_FPUTYPE_FPU
+		case "SSE"
+			value = FB_FPUTYPE_SSE
+		case else
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end select
+
+		fbSetOption( FB_COMPOPT_FPUTYPE, value )
+
+	case OPT_G
+		fbSetOption( FB_COMPOPT_DEBUG, TRUE )
+
+	case OPT_GEN
+		dim as integer value = any
+
+		select case (lcase(arg))
+		case "gas"
+			value = FB_BACKEND_GAS
+		case "gcc"
+			value = FB_BACKEND_GCC
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_BACKEND, value )
+
+	case OPT_I
+		fbAddIncludePath(pathStripDiv(arg))
+
+	case OPT_INCLUDE
+		fbAddPreInclude(arg)
+
+	case OPT_L
+		strsetAdd(@fbc.libs, arg, FALSE)
+
+	case OPT_LANG
+		dim as integer value = fbGetLangId( strptr(arg) )
+		if( value = FB_LANG_INVALID ) then
+			fbcErrorInvalidOption(arg)
+			return
+		end if
+
+		fbSetOption( FB_COMPOPT_LANG, value )
+		fbc.objinf.lang = value
+
+	case OPT_LIB
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
+
+	case OPT_M
+		fbc.mainfile = hStripPath( arg )
+		fbc.mainpath = hStripFilename( arg )
+		fbc.mainset = TRUE
+
+	case OPT_MAP
+		fbc.mapfile = arg
+
+	case OPT_MAXERR
+		dim as integer value = any
+
+		if( arg = "inf" ) then
+			value = FB_ERR_INFINITE
+		else
+			value = valint( arg )
+			if( value <= 0 ) then
+				value = 1
+				fbcErrorInvalidOption(arg)
+			end if
+		end if
+
+		fbSetOption( FB_COMPOPT_MAXERRORS, value )
+
+	case OPT_MT
+		fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
+		fbc.objinf.mt = TRUE
+
+	case OPT_NODEFLIBS
+		fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
+
+	case OPT_NOERRLINE
+		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+
+	case OPT_O
+		'' Error if there already is an -o waiting to be assigned
+		checkWaitingObjfile()
+
+		'' Assign it to the last module, if it doesn't have an -o filename yet,
+		'' or store it for later otherwise.
+		if (fbc.lastiofile andalso (len(fbc.lastiofile->objfile) = 0)) then
+			fbc.lastiofile->objfile = arg
+		else
+			fbc.objfile = arg
+		end if
+
+	case OPT_OPTIMIZE
+		dim as integer value = any
+
+		if (arg = "max") then
+			value = 3
+		else
+			value = valint(arg)
+			if (value < 0) then
+				value = 0
+				fbcErrorInvalidOption(arg)
+			elseif (value > 3) then
+				value = 3
+			end if
+		end if
+
+		fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
+
+	case OPT_P
+		strsetAdd(@fbc.libpaths, pathStripDiv(arg), FALSE)
+
+	case OPT_PP
+		fbSetOption( FB_COMPOPT_PPONLY, TRUE )
+		fbc.compileonly = TRUE
+		fbc.emitonly = TRUE
+		fbc.preserveasm = FALSE
+
+	case OPT_PREFIX
+		fbc.prefix = pathStripDiv(arg)
+
+	case OPT_PROFILE
+		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
+
+	case OPT_R
+		if( fbc.compileonly = FALSE )then
+			fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+			fbc.emitonly = TRUE
+		end if
+		fbc.preserveasm = TRUE
+
+	case OPT_RKEEPASM
+		fbc.preserveasm = TRUE
+
+	case OPT_S
+		fbc.subsystem = arg
+
+	case OPT_T
+		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
+
+	case OPT_TARGET
+		'' The argument given to -target is what will be prepended to
+		'' the executable names of cross-tools, for example:
+		''    fbc -target dos
+		'' will try to use:
+		''    bin/dos-ld[.exe]
+		''
+		'' It allows fbc to work together with cross-gcc/binutils
+		'' using system triplets:
+		''    fbc -target i686-pc-mingw32
+		'' looks for:
+		''    bin/i686-pc-mingw32-ld[.exe]
+		fbc.triplet = arg + "-"
+
+		'' Identify the target
+		dim as integer comptarget = parseTargetTriplet(arg)
+		if (comptarget < 0) then
+			fbcErrorInvalidOption(arg)
+			return
+		end if
+
+		fbSetOption( FB_COMPOPT_TARGET, comptarget )
+
+	case OPT_TITLE
+		fbc.xbe_title = arg
+
+	case OPT_V
+		fbc.verbose = TRUE
+
+	case OPT_VEC
+		dim as integer value = any
+
+		select case (ucase(arg))
+		case "NONE", "0"
+			value = FB_VECTORIZE_NONE
+		case "1"
+			value = FB_VECTORIZE_NORMAL
+		case "2"
+			value = FB_VECTORIZE_INTRATREE
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_VECTORIZE, value )
+
+	case OPT_VERSION
+		fbc.showversion = TRUE
+
+	case OPT_W
+		dim as integer value = -2
+
+		select case (arg)
+		case "all"
+			value = -1
+
+		case "param"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_PARAMMODE )
+
+		case "escape"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
+
+		case "next"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
+
+		case "pedantic"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
+			value = -1
+
+		case else
+			value = valint(arg)
+		end select
+
+		if( value >= -1 ) then
+			fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
+		end if
+
+	case OPT_WA
+		fbc.extopt.gas = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_WC
+		fbc.extopt.gcc = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_WL
+		fbc.extopt.ld = " " + hReplace( arg, ",", " " ) + " "
+
+	case OPT_X
+		fbc.outname = arg
+
+	case OPT_Z
+		dim as integer value = fbGetOption( FB_COMPOPT_EXTRAOPT )
+
+		select case (lcase(arg))
+		case "gosub-setjmp"
+			value or= FB_EXTRAOPT_GOSUB_SETJMP
+		case else
+			fbcErrorInvalidOption(arg)
+			return
+		end select
+
+		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
+
+	end select
+end sub
+
+private function parseOption(byval opt as zstring ptr) as integer
+	#macro CHECK(opttext, optid)
+		if (*opt = opttext) then
+			return optid
+		end if
+	#endmacro
+
+	#macro ONECHAR(optid)
+		if (cptr(ubyte ptr, opt)[1] = 0) then
+			return optid
+		end if
+	#endmacro
+
+	select case as const (cptr(ubyte ptr, opt)[0])
+	case asc("a")
+		ONECHAR(OPT_A)
+		CHECK("arch", OPT_ARCH)
+
+	case asc("b")
+		ONECHAR(OPT_B)
+
+	case asc("c")
+		ONECHAR(OPT_C)
+
+	case asc("C")
+		ONECHAR(OPT_CKEEPOBJ)
+
+	case asc("d")
+		ONECHAR(OPT_D)
+		CHECK("dll", OPT_DLL)
+		CHECK("dylib", OPT_DYLIB)
+
+	case asc("e")
+		ONECHAR(OPT_E)
+		CHECK("ex", OPT_EX)
+		CHECK("exx", OPT_EXX)
+		CHECK("export", OPT_EXPORT)
+
+	case asc("f")
+		CHECK("forcelang", OPT_FORCELANG)
+		CHECK("fpmode", OPT_FPMODE)
+		CHECK("fpu", OPT_FPU)
+
+	case asc("g")
+		ONECHAR(OPT_G)
+		CHECK("gen", OPT_GEN)
+
+	case asc("i")
+		ONECHAR(OPT_I)
+		CHECK("include", OPT_INCLUDE)
+
+	case asc("l")
+		ONECHAR(OPT_L)
+		CHECK("lang", OPT_LANG)
+		CHECK("lib", OPT_LIB)
+
+	case asc("m")
+		ONECHAR(OPT_M)
+		CHECK("map", OPT_MAP)
+		CHECK("maxerr", OPT_MAXERR)
+		CHECK("mt", OPT_MT)
+
+	case asc("n")
+		CHECK("noerrline", OPT_NOERRLINE)
+		CHECK("nodeflibs", OPT_NODEFLIBS)
+
+	case asc("o")
+		ONECHAR(OPT_O)
+
+	case asc("O")
+		ONECHAR(OPT_OPTIMIZE)
+
+	case asc("p")
+		ONECHAR(OPT_P)
+		CHECK("pp", OPT_PP)
+		CHECK("prefix", OPT_PREFIX)
+		CHECK("profile", OPT_PROFILE)
+
+	case asc("r")
+		ONECHAR(OPT_R)
+
+	case asc("R")
+		ONECHAR(OPT_RKEEPASM)
+
+	case asc("s")
+		ONECHAR(OPT_S)
+
+	case asc("t")
+		ONECHAR(OPT_T)
+		CHECK("target", OPT_TARGET)
+		CHECK("title", OPT_TITLE)
+
+	case asc("v")
+		ONECHAR(OPT_V)
+		CHECK("vec", OPT_VEC)
+		CHECK("version", OPT_VERSION)
+
+	case asc("w")
+		ONECHAR(OPT_W)
+
+	case asc("W")
+		CHECK("Wa", OPT_WA)
+		CHECK("Wl", OPT_WL)
+		CHECK("Wc", OPT_WC)
+
+	case asc("x")
+		ONECHAR(OPT_X)
+
+	case asc("z")
+		ONECHAR(OPT_Z)
+
+	end select
+
+	return -1
+end function
+
+declare sub parseArgsFromFile(byref filename as string)
+
+private sub handleArg(byref arg as string)
+	'' If the previous option wants this argument as parameter,
+	'' call the handler with it, now that it's known.
+	'' Note: Anything is accepted, even if it starts with '-' or '@'.
+	if (fbc.optid >= 0) then
+		'' Complain about empty next argument
+		if (len(arg) = 0) then
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		handleOpt(fbc.optid, arg)
+		fbc.optid = -1
+		return
+	end if
+
+	if (len(arg) = 0) then
+		'' Ignore empty argument
+		return
+	end if
+
+	select case (arg[0])
+	case asc("-")
+		dim as zstring ptr opt = strptr(arg) + 1
+
+		'' Complain about '-' only
+		if (cptr(ubyte ptr, opt)[0] = 0) then
+			'' Incomplete command line option
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Parse the option after the '-'
+		dim as integer optid = parseOption(opt)
+		if (optid < 0) then
+			'' Unrecognized command line option
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Does this option take a parameter?
+		if (option_takes_argument(optid)) then
+			'' Delay handling it, until the next argument is known.
+			fbc.optid = optid
+		else
+			'' Handle this option now
+			handleOpt(optid, arg)
+		end if
+
+	case asc("@")
+		'' Maximum nesting/recursion level
+		const MAX_LEVELS = 128
+		static as integer reclevel = 0
+
+		if (reclevel > MAX_LEVELS) then
+			'' Options file nesting level too deep (recursion?)
+			errReportEx( FB_ERRMSG_RECLEVELTOODEEP, arg, -1 )
+			fbcEnd(1)
+		end if
+
+		'' Cut off the '@' at the front to get just the file name
+		arg = right(arg, len(arg) - 1)
+
+		'' Complain about '@' only
+		if (len(arg) = 0) then
+			'' Missing file name after '@'
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+		end if
+
+		'' Recursively read in the additional options from the file
+		reclevel += 1
+		parseArgsFromFile(arg)
+		reclevel -= 1
+
+	case else
+		'' Input file, get its extension to determine what it is
+		dim as string ext = hGetFileExt(arg)
+
+		#if defined(__FB_WIN32__) or _
+		    defined(__FB_DOS__) or _
+		    defined(__FB_CYGWIN__)
+			'' For case in-sensitive file systems
+			ext = lcase(ext)
+		#endif
+
+		select case (ext)
+		case "bas"
+			addBas(arg)
+
+		case "o"
+			fbcAddObj(arg)
+
+		case "a"
+			strlistAppend(@fbc.libfiles, arg)
+
+		case "rc", "res"
+			setIofile(listNewNode(@fbc.rcs), arg)
+
+		case "xpm"
+			'' Can have only one .xpm, or the fb_program_icon
+			'' symbol will be duplicated
+			if (len(fbc.xpm.srcfile) > 0) then
+				fbcErrorInvalidOption(arg)
+				fbcEnd(1)
+			end if
+
+			setIofile(@fbc.xpm, arg)
+
+		case else
+			'' Input file without or with unknown extension
+			fbcErrorInvalidOption(arg)
+			fbcEnd(1)
+
+		end select
+	end select
+end sub
+
+private sub parseArgsFromFile(byref filename as string)
+	dim as integer f = freefile()
+	if (open(filename, for input, as #f)) then
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, filename, -1 )
+		fbcEnd(1)
+	end if
+
+	dim as string args
+	dim as string arg
+
+	while (eof(f) = FALSE)
+		line input #f, args
+		args = trim(args)
+
+		'' Parse the line containing command line arguments,
+		'' separated by spaces. Double- and single-quoted strings
+		'' are handled too, but nothing else.
+		do
+			dim as integer length = len(args)
+			if (length = 0) then
+				exit do
+			end if
+
+			dim as integer i = 0
+			dim as integer quotech = 0
+
+			while (i < length)
+				dim as integer ch = args[i]
+
+				select case as const (ch)
+				case asc(" ")
+					if (quotech = 0) then
+						exit while
+					end if
+
+				case asc(""""), asc("'")
+					if (quotech = ch) then
+						'' String closed
+						quotech = 0
+					elseif (quotech = 0) then
+						'' String opened
+						quotech = ch
+					end if
+
+				end select
+
+				i += 1
+			wend
+
+			if (i = 0) then
+				'' Just space, skip it
+				i = 1
+			else
+				arg = left(args, i)
+				arg = trim(arg)
+				arg = strUnquote(arg)
+				handleArg(arg)
+			end if
+
+			args = right(args, length - i)
+		loop
+	wend
+
+	close #f
+end sub
+
+private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
+	fbc.optid = -1
+
+	'' Note: ignoring argv[0], assuming it's the path used to run fbc
+	dim as string arg
+	for i as integer = 1 to (argc - 1)
+		arg = *argv[i]
+		handleArg(arg)
+	next
+
+	'' Waiting for argument to an option? If the user did something like
+	'' 'fbc foo.bas -o' this shows the error.
+	if (fbc.optid >= 0) then
+		'' Missing argument for command line option
+		fbcErrorInvalidOption(*argv[argc - 1])
+		fbcEnd(1)
+	end if
+
+	'' In case there was an '-o <file>', but no corresponding input file,
+	'' this will report the error.
+	checkWaitingObjfile()
+
+	''
+	'' Check for incompatible options etc.
+	''
+
+	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
+		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
+			( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
+				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
+				return
+		end if
+	end if
+
+	'' Resource scripts are only allowed for win32 & co,
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_XBOX
+
+	case else
+		dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
+		if (rc) then
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, rc->srcfile, -1)
+			fbcEnd(1)
+		end if
+	end select
+
+	'' The embedded .xpm is only useful for the X11 gfxlib
+	select case as const (fbGetOption(FB_COMPOPT_TARGET))
+	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+	     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, _
+	     FB_COMPTARGET_NETBSD
+
+	case else
+		if (len(fbc.xpm.srcfile) > 0) then
+			errReportEx(FB_ERRMSG_RCFILEWRONGTARGET, fbc.xpm.srcfile, -1)
+			fbcEnd(1)
+		end if
+	end select
+
+	'' TODO: Check whether subsystem/stacksize/xboxtitle were set and
+	'' complain about it when the target doesn't allow it, or just
+	'' ignore silently (that might not even be too bad for portability)?
+end sub
+
+'' After command line parsing
+private sub fbcInit2()
+	'' Setup/calculate the paths to bin/ (needed when invoking helper
+	'' tools), include/ (needed when searching headers), and lib/ (needed
+	'' to find libraries when linking).
+	'' (See the makefile for some directory layout info)
+
+	'' Not already set from -prefix command line option?
+	if (len(fbc.prefix) = 0) then
+		'' Then default to exepath() or the hard-coded prefix.
+		'' Normally fbc is relocatable, i.e. no fixed prefix is
+		'' compiled in, but there still is ENABLE_PREFIX to do just
+		'' that if desired.
+		#ifdef ENABLE_PREFIX
+			fbc.prefix = ENABLE_PREFIX
+		#else
+			fbc.prefix = exepath()
+			#ifndef ENABLE_STANDALONE
+				'' Non-standalone fbc is in prefix/bin,
+				'' it can add '..' to get to prefix.
+				fbc.prefix += FB_HOST_PATHDIV + ".."
+			#endif
+		#endif
+	end if
+
+	fbc.prefix += FB_HOST_PATHDIV
+
+	fbc.binpath = fbc.prefix + "bin"
+	fbc.incpath = fbc.prefix
+	fbc.libpath = fbc.prefix
+
+	#ifdef ENABLE_STANDALONE
+		'' include/
+		'' [triplet-]lib[-suffix]/
+		fbc.incpath += "include"
+		fbc.libpath += fbc.triplet + "lib"
+	#else
+		'' include/freebasic/
+		'' lib/[triplet-]freebasic[-suffix]/
+		fbc.incpath += "include" + FB_HOST_PATHDIV
+		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
+		#ifdef __FB_DOS__
+			'' Our subdirectory in include/ and lib/ is usually called
+			'' freebasic/, but on DOS that's too long... of course almost
+			'' no target triplet or suffix can be used either.
+			'' (Note: When changing, update the makefile too)
+			fbc.incpath += "freebas"
+			fbc.libpath += "freebas"
+		#else
+			fbc.incpath += "freebasic"
+			fbc.libpath += "freebasic"
+		#endif
+	#endif
+
+	fbc.libpath += FB_SUFFIX
+
+	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
+	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
+
+	'' Tell the compiler about the default include path (it's added after
+	'' the command line ones, so those will be searched first)
+	fbAddIncludePath(fbc.incpath)
+
+	''
+	'' Determine the main module
+	''
+	if( len( fbc.mainfile ) = 0 ) then
+		dim as FBCIOFILE ptr m = listGetHead( @fbc.modules )
+		if( m ) then
+			fbc.mainfile = hStripPath( hStripExt( m->srcfile ) )
+			fbc.mainpath = hStripFilename( m->srcfile )
 		else
 			dim as string ptr objf = listGetHead( @fbc.objlist )
 			if( objf <> NULL ) then
@@ -1063,1230 +1901,755 @@ private sub setMainModule( )
 	'' if no executable name was defined, use the main module name
 	if( len( fbc.outname ) = 0 ) then
 		fbc.outname = fbc.mainpath + fbc.mainfile
-		fbc.outaddext = TRUE
-	end if
 
-end sub
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
+		case FB_OUTTYPE_EXECUTABLE
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
+			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+				'' Note: XBox target creates an .exe first,
+				'' then uses cxbe to turn it into an .xbe later
+				fbc.outname += ".exe"
 
-'':::::
-private sub setDefaultOptions( )
-
-	fbSetDefaultOptions( )
-
-	fbc.emitonly    = FALSE
-	fbc.compileonly = FALSE
-	fbc.preserveasm	= FALSE
-	fbc.preserveobj	= FALSE
-	fbc.verbose     = FALSE
-	fbc.stacksize	= FBC_DEFSTACKSIZE
-
-	fbc.mainfile	= ""
-	fbc.mainpath	= ""
-    fbc.mapfile     = ""
-	fbc.mainset     = FALSE
-	fbc.outname     = ""
-	fbc.outaddext   = FALSE
-
-	fbc.extopt.gas	= ""
-	fbc.extopt.ld	= ""
-
-	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
-	fbc.objinf.mt   = FALSE
-
-end sub
-
-'':::::
-private sub printInvalidOpt _
-	( _
-		byval arg as string ptr, _
-		byval errnum as FB_ERRMSG = FB_ERRMSG_MISSINGCMDOPTION _
-	)
-
-	errReportEx( errnum, QUOTE + *arg + QUOTE, -1 )
-
-end sub
-
-'':::::
-#macro hDelArgNode( arg )
-	*arg = ""
-	listDelNode( @fbc.arglist, arg )
-#endmacro
-
-'':::::
-#macro hDelArgNodes( arg, nxt )
-	hDelArgNode( arg )
-	if( nxt <> NULL ) then
-		arg = listGetNext( nxt )
-		hDelArgNode( nxt )
-	end if
-	nxt = arg
-#endmacro
-
-'':::::
-private function processTargetOptions _
-	( _
-	) as integer
-
-    dim as string ptr arg = any, nxt = any
-
-	function = FALSE
-
-	'' for each arg..
-	nxt = listGetHead( @fbc.arglist )
-	do while( nxt <> NULL )
-
-		arg = nxt
-		nxt = listGetNext( nxt )
-
-		if( len( arg[0] ) = 0 ) then
-			continue do
-		end if
-
-		if( (*arg)[0] = asc( "-" ) ) then
-
-			if( len( arg[0] ) = 1 ) then
-				continue do
-			end if
-
-			if( *(strptr( arg[0] ) + 1) = "target" ) then
-
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					return FALSE
-				end if
-
-				select case *nxt
-#ifdef ENABLE_DOS
-				case "dos"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DOS )
-#endif
-
-#ifdef ENABLE_CYGWIN
-				case "cygwin"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_CYGWIN )
-#endif
-
-#ifdef ENABLE_LINUX
-				case "linux"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_LINUX )
-#endif
-
-#ifdef ENABLE_WIN32
-				case "win32"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_WIN32 )
-#endif
-
-#ifdef ENABLE_XBOX
-				case "xbox"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_XBOX )
-#endif
-
-#ifdef ENABLE_FREEBSD
-				case "freebsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_FREEBSD )
-#endif
-
-#ifdef ENABLE_OPENBSD
-				case "openbsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_OPENBSD )
-#endif
-
-#ifdef ENABLE_DARWIN
-				case "darwin"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_DARWIN )
-#endif
-
-#ifdef ENABLE_NETBSD
-				case "netbsd"
-					fbSetOption( FB_COMPOPT_TARGET, FB_COMPTARGET_NETBSD )
-#endif
-
-				case else
-					'' TODO: Accept & parse GNU triplets, like in the makefile,
-					'' to support more than the default triplets specified at
-					'' compile time.
-					''fbc.triplet = triplet + "-"
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					return FALSE
-				end select
-
-				hDelArgNodes( arg, nxt )
-			end if
-
-		end if
-
-	loop
-
-	function = TRUE
-
-end function
-
-'':::::
-private function checkFiles _
-	( _
-		byval arg as string ptr _
-	) as integer
-
-	function = FALSE
-
-	select case hGetFileExt( arg[0] )
-	case "bas"
-		dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
-		iof->inf = *arg
-
-		if( fbc.iof_head = NULL ) then
-			fbc.iof_head = iof
-		end if
-
-		hDelArgNode( arg )
-
-	case "a"
-		dim as string ptr libf = listNewNode( @fbc.liblist )
-		*libf = *arg
-
-		hDelArgNode( arg )
-
-	case "o"
-		dim as string ptr objf = listNewNode( @fbc.objlist )
-		*objf = *arg
-
-		hDelArgNode( arg )
-
-	case else
-		if( fbc.vtbl.listFiles( arg[0] ) = FALSE ) then
-			return FALSE
-		end if
-
-		hDelArgNode( arg )
-
-	end select
-
-	function = TRUE
-
-end function
-
-'':::::
-private function processOptions _
-	( _
-	) as integer
-
-    dim as string ptr arg = any, nxt = any
-    dim as integer value
-    dim as FBC_OPT id
-
-	function = FALSE
-
-	'' for each arg..
-	nxt = listGetHead( @fbc.arglist )
-	do while( nxt <> NULL )
-
-		arg = nxt
-		nxt = listGetNext( nxt )
-
-		if( len( arg[0] ) = 0 ) then
-			continue do
-		end if
-
-		'' not an option?
-		if( (*arg)[0] <> asc( "-" ) ) then
-			'' file name?
-			if( checkFiles( arg ) = FALSE ) then
-				printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-				exit function
-			end if
-
-		'' option..
-		else
-			dim as integer del_cnt = 1
-
-			if( len( arg[0] ) = 1 ) then
-				continue do
-			end if
-
-			id = cast( FBC_OPT, hashLookUp( @fbc.opthash, _
-											strptr( arg[0] ) + 1 ) )
-
-			'' not found?
-			if( id = 0 ) then
-				'' target-dependent options?
-				if( fbc.vtbl.processOptions( arg, nxt ) = FALSE ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				hDelArgNodes( arg, nxt )
-				continue do
-			end if
-
-			select case as const id
-			case FBC_OPT_E
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-
-			case FBC_OPT_EX
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-
-			case FBC_OPT_EXX
-				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
-				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
-				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
-
-			case FBC_OPT_MT
-				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
-				fbc.objinf.mt = TRUE
-
-			case FBC_OPT_PROFILE
-				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
-
-			case FBC_OPT_NOERRLINE
-				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
-
-			case FBC_OPT_NODEFLIBS
-				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
-
-			case FBC_OPT_EXPORT
-				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
-
-			case FBC_OPT_SHOWSUSPERR
-				fbSetOption( FB_COMPOPT_SHOWSUSPERRORS, FALSE )
-
-			case FBC_OPT_ARCH
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case *nxt
-				case "386"
-					value = FB_CPUTYPE_386
-				case "486"
-					value = FB_CPUTYPE_486
-				case "586"
-					value = FB_CPUTYPE_586
-				case "686"
-					value = FB_CPUTYPE_686
-				case "athlon"
-					value = FB_CPUTYPE_ATHLON
-				case "athlon-xp"
-					value = FB_CPUTYPE_ATHLONXP
-				case "athlon-fx"
-					value = FB_CPUTYPE_ATHLONFX
-				case "k8-sse3"
-					value = FB_CPUTYPE_ATHLONSSE3
-				case "pentium-mmx"
-					value = FB_CPUTYPE_PENTIUMMMX
-				case "pentium2"
-					value = FB_CPUTYPE_PENTIUM2
-				case "pentium3"
-					value = FB_CPUTYPE_PENTIUM3
-				case "pentium4"
-					value = FB_CPUTYPE_PENTIUM4
-				case "pentium4-sse3"
-					value = FB_CPUTYPE_PENTIUMSSE3
-				case "native"
-					value = FB_CPUTYPE_NATIVE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_CPUTYPE, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_FPU
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "X87", "FPU"
-					value = FB_FPUTYPE_FPU
-				case "SSE"
-					value = FB_FPUTYPE_SSE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_FPUTYPE, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_FPMODE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "PRECISE"
-					value = FB_FPMODE_PRECISE
-				case "FAST"
-					value = FB_FPMODE_FAST
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_FPMODE, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_VECTORIZE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case ucase( *nxt )
-				case "NONE", "0"
-					value = FB_VECTORIZE_NONE
-				case "1"
-					value = FB_VECTORIZE_NORMAL
-				case "2"
-					value = FB_VECTORIZE_INTRATREE
-				case else
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_VECTORIZE, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_DEBUG
-				fbSetOption( FB_COMPOPT_DEBUG, TRUE )
-
-			case FBC_OPT_COMPILEONLY
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-				fbc.compileonly = TRUE
-				fbc.emitonly = FALSE
-				fbc.preserveobj = TRUE
-
-			case FBC_OPT_EMITONLY
-				if( fbc.compileonly = FALSE )then
-					fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-					fbc.emitonly = TRUE
-				end if
-				fbc.preserveasm = TRUE
-
-			case FBC_OPT_PRESERVEOBJ
-				fbc.preserveobj = TRUE
-
-			case FBC_OPT_PRESERVEASM
-				fbc.preserveasm = TRUE
-
-			case FBC_OPT_PPONLY
-				fbSetOption( FB_COMPOPT_PPONLY, TRUE )
-				fbc.compileonly = TRUE
-				fbc.emitonly = TRUE
-				fbc.preserveasm = FALSE
-
-			case FBC_OPT_SHAREDLIB
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_DYNAMICLIB )
-
-			case FBC_OPT_STATICLIB
-				fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
-
-			case FBC_OPT_VERBOSE
-				fbc.verbose = TRUE
-
-			case FBC_OPT_VERSION
-				fbc.showversion = TRUE
-
-			case FBC_OPT_OUTPUTNAME
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.outname = *nxt
-				if( len( fbc.outname ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				del_cnt += 1
-
-			case FBC_OPT_MAINMODULE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.mainfile = hStripPath( *nxt )
-				if( len( fbc.mainfile ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-				fbc.mainpath = hStripFilename( *nxt )
-				fbc.mainset = TRUE
-
-				del_cnt += 1
-
-			case FBC_OPT_MAPFILE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.mapfile = *nxt
-				if( len( fbc.mapfile ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				del_cnt += 1
-
-			case FBC_OPT_MAXERRORS
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( *nxt = "inf" ) then
-					value = FB_ERR_INFINITE
-				else
-					value = valint( *nxt )
-					if( value <= 0 ) then
-						value = 1
-						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					end if
-				end if
-
-				fbSetOption( FB_COMPOPT_MAXERRORS, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_WARNLEVEL
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = -2
-
-				select case *nxt
-				case "all"
-					value = -1
-
-				case "param"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_PARAMMODE )
-
-				case "escape"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
-
-				case "next"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
-								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_NEXTVAR )
-
-				case "pedantic"
-					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
-					value = -1
-
-				case else
-					value = valint( *nxt )
-				end select
-
-				if( value >= -1 ) then
-					fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
-				end if
-
-				del_cnt += 1
-
-			case FBC_OPT_LIBPATH
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incp = listNewNode( @fbc.libpathlist )
-				*incp = *nxt
-
-				del_cnt += 1
-
-			case FBC_OPT_INCPATH
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incp = listNewNode( @fbc.incpathlist )
-				*incp = *nxt
-
-				del_cnt += 1
-
-			case FBC_OPT_DEFINE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr def = listNewNode( @fbc.deflist )
-				*def = *nxt
-
-				del_cnt += 1
-
-			'' source files
-			case FBC_OPT_INPFILE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as FBC_IOFILE ptr iof = listNewNode( @fbc.inoutlist )
-				iof->inf = *nxt
-				if( fbc.iof_head = NULL ) then
-					fbc.iof_head = iof
-				end if
-
-				del_cnt += 1
-
-			case FBC_OPT_OUTFILE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( fbc.iof_head = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.iof_head->outf = *nxt
-				fbc.iof_head = listGetNext( fbc.iof_head )
-
-				del_cnt += 1
-
-			case FBC_OPT_OBJFILE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr objf = listNewNode( @fbc.objlist )
-				*objf = *nxt
-
-				del_cnt += 1
-
-			case FBC_OPT_LIBFILE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr libf = listNewNode( @fbc.liblist )
-				*libf = *nxt
-
-				del_cnt += 1
-
-			'' pre-include files
-			case FBC_OPT_INCLUDE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( len( *nxt ) = 0 ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				dim as string ptr incf = listNewNode( @fbc.preinclist )
-				*incf = *nxt
-
-				del_cnt += 1
-
-			case FBC_OPT_LANG, FBC_OPT_FORCELANG
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = fbGetLangId( strptr(*nxt) )
-
-				if( value = FB_LANG_INVALID ) then
-					printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					exit function
-				end if
-
-				fbSetOption( FB_COMPOPT_LANG, value )
-				if( id = FBC_OPT_FORCELANG ) then
-					fbSetOptionIsExplicit( FB_COMPOPT_FORCELANG )
-				end if
-				fbc.objinf.lang = value
-
-				del_cnt += 1
-
-			case FBC_OPT_GEN
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				select case lcase( *nxt )
-				case "gas"
-					value = FB_BACKEND_GAS
-				case "gcc"
-					value = FB_BACKEND_GCC
-				case else
-					printInvalidOpt( arg )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_BACKEND, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_OPTIMIZE
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				if( *nxt = "max" ) then
-					value = 3
-				else
-					value = valint( *nxt )
-					if( value < 0 ) then
-						value = 0
-						printInvalidOpt( arg, FB_ERRMSG_INVALIDCMDOPTION )
-					elseif( value > 3 ) then
-						value = 3
-					end if
-				end if
-
-				fbSetOption( FB_COMPOPT_OPTIMIZELEVEL, value )
-
-				del_cnt += 1
-
-			case FBC_OPT_WA
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.gas = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt += 1
-
-			case FBC_OPT_WL
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.ld = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt += 1
-
-			case FBC_OPT_WC
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbc.extopt.gcc = " " + hReplace( *nxt, ",", " " ) + " "
-
-				del_cnt += 1
-
-			case FBC_OPT_PREFIX
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				fbSetPrefix( *nxt )
-
-				del_cnt += 1
-
-			case FBC_OPT_EXTRAOPT
-				if( nxt = NULL ) then
-					printInvalidOpt( arg )
-					exit function
-				end if
-
-				value = fbGetOption( FB_COMPOPT_EXTRAOPT )
-
-				select case lcase( *nxt )
-				case "gosub-setjmp"
-					value or= FB_EXTRAOPT_GOSUB_SETJMP
-				case else
-					printInvalidOpt( arg )
-					exit function
-				end select
-
-				fbSetOption( FB_COMPOPT_EXTRAOPT, value )
-
-				del_cnt += 1
 			end select
 
-			hDelArgNode( arg )
-			if( del_cnt > 1 ) then
-				arg = listGetNext( nxt )
-				hDelArgNode( nxt )
-				nxt = arg
-			end if
-		end if
+		case FB_OUTTYPE_DYNAMICLIB
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+				fbc.outname += ".dll"
 
-	loop
+			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+			     FB_COMPTARGET_OPENBSD
+				fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
 
-	if ( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_FPU ) then
-		if( fbGetOption( FB_COMPOPT_VECTORIZE ) >= FB_VECTORIZE_NORMAL ) or _
-			( fbGetOption( FB_COMPOPT_FPMODE ) = FB_FPMODE_FAST ) then
-				errReportEx( FB_ERRMSG_OPTIONREQUIRESSSE, "", -1 )
-				exit function
-		end if
+			end select
+
+		end select
 	end if
-
-	function = TRUE
-
-end function
-
-'':::::
-private function processCompLists _
-	( _
-	) as integer
-
-    dim as integer p
-    dim as string dname, dtext
-
-	function = FALSE
-
-    '' add inc files
-	dim as string ptr incp = listGetHead( @fbc.incpathlist )
-	do while( incp <> NULL )
-    	fbAddIncPath( *incp )
-    	incp = listGetNext( incp )
-    loop
-
-    '' add defines
-	dim as string ptr def = listGetHead( @fbc.deflist )
-	do while( def <> NULL )
-
-    	p = instr( *def, "=" )
-    	if( p = 0 ) then
-    		p = len( *def ) + 1
-    	end if
-
-    	dname = left( *def, p-1 )
-
-		if( p < len( *def ) ) then
-			dtext = mid( *def, p+1 )
-		else
-			dtext = "1"
-    	end if
-
-    	fbAddDefine( dname, dtext )
-
-    	def = listGetNext( def )
-    loop
-
-    function = FALSE
-
-end function
-
-'':::::
-private sub parseCmdFile _
-	( _
-		byref optfilearg as string _
-	)
-
-	static as integer nestinglevel = 0
-
-	'' Extract the filename; will be empty if the argument was '@' only.
-	dim as string filename = right( optfilearg, len( optfilearg ) - 1 )
-
-	if( nestinglevel > FBC_MAXCMDFILE_RECLEVEL ) then
-		errReportEx( FB_ERRMSG_RECLEVELTOODEEP, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	if( hFileExists( filename ) = FALSE ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	dim as integer fnum = freefile( )
-	if( open( filename, for input, as #fnum ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILEACCESSERROR, "@" + filename, -1 )
-		fbcEnd( 1 )
-	end if
-
-	dim as string ln = ""
-	dim as string arg = ""
-	while( eof(fnum) = FALSE )
-		line input #fnum, ln
-		ln = trim(ln)
-
-		dim as integer linepos = 0
-		while( linepos < len( ln ) )
-			dim as integer i = linepos
-
-			'' Parse the first arg from the line, i.e. everything before SPACE
-			'' or newline. Double-quoted strings are handled too.
-			dim as integer inside_string = FALSE
-			for i = linepos to len( ln ) - 1
-				select case ln[i]
-				case asc(" ")
-					if( inside_string = FALSE ) then
-						exit for
-					end if
-
-				case asc(!"\"")
-					inside_string = (inside_string = FALSE)
-
-				end select
-			next
-
-			arg = trim( mid( ln, linepos + 1, i - linepos ) )
-			linepos = i + 1
-
-			'' Not just space?
-			if( len( arg ) > 0 ) then
-				'' Check for @filename in such a file (recursion/nesting):
-				if( arg[0] = asc("@") ) then
-					nestinglevel += 1
-					parseCmdFile( arg )
-					nestinglevel -= 1
-				else
-					'' Remember normal argument for later...
-					dim as string ptr node = listNewNode( @fbc.arglist )
-					*node = arg
-				end if
-			end if
-		wend
-	wend
-
-	close #fnum
 end sub
 
-'':::::
-private sub parseCmd _
+'' Generate the .asm/.c file name for the given .bas module
+private function getModuleAsmName(byval module as FBCIOFILE ptr) as string
+	'' Based on the objfile name so it's also affected by -o
+	dim as string asmfile = hStripExt(module->objfile)
+	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+		asmfile &= ".c"
+	else
+		asmfile &= ".asm"
+	end if
+	function = asmfile
+end function
+
+private function compileBas _
 	( _
-	)
+		byval module as FBCIOFILE ptr, _
+		byval ismain as integer _
+	) as integer
 
-	dim as string ptr arg = any
-	dim as integer argc = any
+	'' *.o name based on input file name unless given via -o <file>
+	if (len(module->objfile) = 0) then
+		module->objfile = hStripExt(module->srcfile) & ".o"
+	end if
 
-	argc = 1
+	dim as string asmfile = getModuleAsmName(module)
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(asmfile)
+	end if
+
+	if (fbc.verbose) then
+		print "compiling: ", module->srcfile; " -o "; asmfile
+	end if
+
+	'' preserve orginal lang id, we may have to restore it.
+	dim as FB_LANG prevlangid = fbGetOption(FB_COMPOPT_LANG)
+
+	dim as integer restarts = 0
+
 	do
-		arg = listNewNode( @fbc.arglist )
-		assert( arg <> NULL )
+		'' init the parser
+		if (fbInit(ismain, restarts) = FALSE) then
+			exit function
+		end if
 
-		*arg = command( argc )
-		if( len( arg[0] ) = 0 ) then
-			listDelNode( @fbc.arglist, arg )
+		'' add the libs and paths passed in the cmd-line, so the
+		'' compiler can add them to the module's objinfo section
+		fbSetLibs(@fbc.libs, @fbc.libpaths)
+
+		if (fbCompile(module->srcfile, asmfile, ismain) = FALSE) then
+			'' Restore original lang
+			fbSetOption(FB_COMPOPT_LANG, prevlangid)
+			exit function
+		end if
+
+		if (fbCheckRestartCompile() = FALSE) then
 			exit do
 		end if
 
-		if( (*arg)[0] = asc("@") ) then
-			parseCmdFile( *arg )
-			listDelNode( @fbc.arglist, arg )
+		'' Errors? Don't bother restarting ...
+		if (errGetCount() > 0) then
+			exit function
 		end if
 
-		argc += 1
+		'' Restart
+		restarts += 1
+		fbEnd()
 	loop
 
-end sub
+	'' update the list of libs and paths, with the ones found when parsing
+	fbGetLibs(@fbc.finallibs, @fbc.finallibpaths)
 
-'':::::
-private sub getLibList _
+	'' shutdown the parser
+	fbEnd( )
+
+	'' Restore original lang
+	fbSetOption( FB_COMPOPT_LANG, prevlangid )
+
+	function = TRUE
+end function
+
+private function compileModules() as integer
+	dim as integer ismain = FALSE
+	dim as integer checkmain = any
+
+	function = FALSE
+
+	select case fbGetOption( FB_COMPOPT_OUTTYPE )
+	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
+		checkmain = TRUE
+	case else
+		checkmain = fbc.mainset
+	end select
+
+	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
+	while (module)
+		if( checkmain ) then
+			ismain = (fbc.mainfile = hStripPath(hStripExt(module->srcfile)))
+		end if
+
+		if (compileBas(module, ismain) = FALSE) then
+			exit function
+		end if
+
+		module = listGetNext(module)
+	wend
+
+	'' Make sure to add libs from command line to final lists if no input
+	'' .bas were given
+	if (module = NULL) then
+		strsetCopy(@fbc.finallibs, @fbc.libs)
+		strsetCopy(@fbc.finallibpaths, @fbc.libpaths)
+	end if
+
+	return TRUE
+end function
+
+private function parseXpm _
 	( _
-	)
+		byref xpmfile as string, _
+		byref code as string _
+	) as integer
 
-	'' update libs
-	fbListLibs( @fbc.ld_liblist, _
-				@fbc.ld_libhash, _
-				TRUE )
+	code += !"\ndim shared as zstring ptr "
+	code += "fb_program_icon_data"
+	code += !"(0 to ...) = _\n{ _\n"
 
-	'' update paths
-	fbListLibPaths( @fbc.ld_libpathlist, _
-					@fbc.ld_libpathhash, _
-					TRUE )
+	dim as integer f = freefile()
+	if (open(xpmfile, for input, as #f)) then
+		return FALSE
+	end if
+
+	dim as string ln
+
+	'' Check for the header line
+	line input #f, ln
+	if (ucase(ln) <> "/* XPM */") then
+		'' Invalid XPM header
+		return FALSE
+	end if
+
+	'' Check for lines containing strings (color and pixel lines)
+	'' Other lines (declaration line, empty lines, C comments, ...) aren't
+	'' explicitely handled, but should automatically be ignored, as long as
+	'' they don't contain strings.
+	dim as integer saw_rows = FALSE
+	while (eof(f) = FALSE)
+		line input #f, ln
+
+		'' Strip everything in front of the first '"'
+		ln = right(ln, len(ln) - (instr(ln, """") - 1))
+
+		'' Strip everything behind the second '"'
+		ln = left(ln, instr(2, ln, """"))
+
+		'' Got something left?
+		if (len(ln) > 0) then
+			'' Add an entry to the array, in a new line,
+			'' separated by a comma, if it's not the first one.
+			if (saw_rows) then
+				code += !", _\n"
+			end if
+			code += !"\t@" + ln
+			saw_rows = TRUE
+		end if
+	wend
+
+	if (saw_rows = FALSE) then
+		'' No image data found
+		return FALSE
+	end if
+
+	close #f
+
+	'' Line break after the last entry
+	code += !" _ \n"
+
+	code += !"}\n\n"
+
+	'' Symbol for the gfxlib
+	code += !"extern as zstring ptr ptr fb_program_icon alias ""fb_program_icon""\n"
+	code += "dim shared as zstring ptr ptr fb_program_icon = " & _
+					!"@fb_program_icon_data(0)\n"
+
+	return TRUE
+end function
+
+private function compileXpm() as integer
+	if (len(fbc.xpm.srcfile) = 0) then
+		return TRUE
+	end if
+
+	'' Turn the .xpm icon resource into a .bas file, then compile that
+	'' using the normal fb compilation process.
+	dim as string xpmfile = fbc.xpm.srcfile
+
+	'' *.bas name based on input file name or -o <file>
+	'' Note: When naming after the input file, append .bas instead of
+	'' replacing the extension, to avoid overwriting an existing .bas.
+	if (len(fbc.xpm.objfile) > 0) then
+		fbc.xpm.srcfile = hStripExt(fbc.xpm.objfile)
+	end if
+	fbc.xpm.srcfile &= ".bas"
+
+	if (fbc.verbose) then
+		print "compiling xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
+	end if
+
+	dim as string code
+	parseXpm(xpmfile, code)
+
+	dim as integer fo = freefile()
+	if (open(fbc.xpm.srcfile, for output, as #fo)) then
+		return FALSE
+	end if
+	print #fo, code;
+	close #fo
+
+	'' Clean up the temp .bas too
+	if (fbc.preserveasm = FALSE) then
+		fbcAddTemp(fbc.xpm.srcfile)
+	end if
+
+	function = compileBas(@fbc.xpm, FALSE)
+end function
+
+dim shared as zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = _
+{ _
+	@"i386", _
+	@"i486", _
+	@"i586", _
+	@"i686", _
+	@"athlon", _
+	@"athlon-xp", _
+	@"athlon-fx", _
+	@"k8-sse3", _
+	@"pentium-mmx", _
+	@"pentium2", _
+	@"pentium3", _
+	@"pentium4", _
+	@"prescott", _
+	@"native" _
+}
+
+private function assembleBas(byval module as FBCIOFILE ptr) as integer
+	static as string assembler
+
+	function = FALSE
+
+	if (len(assembler) = 0) then
+		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+			assembler = "gcc"
+		else
+			assembler = "as"
+		end if
+		assembler = fbcFindBin(assembler)
+	end if
+
+	dim as string ln
+
+	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+		ln += "-c -nostdlib -nostdinc " & _
+		      "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
+		      "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
+		      "-O" & fbGetOption(FB_COMPOPT_OPTIMIZELEVEL) & " "
+
+		if (fbGetOption(FB_COMPOPT_DEBUG)) then
+			ln += "-g "
+		end if
+
+		ln += "-mtune=" & *gcc_architectures(fbGetOption(FB_COMPOPT_CPUTYPE)) & " "
+
+		if (fbGetOption(FB_COMPOPT_FPUTYPE) = FB_FPUTYPE_SSE) then
+			ln += "-mfpmath=sse -msse2 "
+		end if
+	else
+		'' --32 because we only compile for 32bit right now
+		ln = "--32 "
+
+		if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
+			ln += "--strip-local-absolute "
+		end if
+	end if
+
+	ln += """" + getModuleAsmName(module) + """ "
+	ln += "-o """ + module->objfile + """"
+
+	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+		ln += fbc.extopt.gcc
+	else
+		ln += fbc.extopt.gas
+	end if
+
+	if (fbcRunBin("assembling", assembler, ln) = FALSE) then
+		return FALSE
+	end if
+
+	fbcAddObj(module->objfile)
+	if (fbc.preserveobj = FALSE) then
+		fbcAddTemp(module->objfile)
+	end if
+
+	return TRUE
+end function
+
+private function assembleModules() as integer
+	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
+	while (module)
+		if (assembleBas(module) = FALSE) then
+			return FALSE
+		end if
+		module = listGetNext(module)
+	wend
+	return TRUE
+end function
+
+private function assembleXpm() as integer
+	if (len(fbc.xpm.srcfile) = 0) then
+		function = TRUE
+	else
+		function = assembleBas(@fbc.xpm)
+	end if
+end function
+
+private function assembleRc(byval rc as FBCIOFILE ptr) as integer
+#if defined(ENABLE_STANDALONE) and defined(__FB_WIN32__)
+	'' Using GoRC for the classical native win32 standalone build
+	'' Note: GoRC /fo doesn't accept anything except *.obj, not even *.o,
+	'' so we need to make it *.obj and then rename it afterwards.
+
+	'' *.obj name based on input file name unless given via -o <file>
+	dim as integer need_rename = FALSE
+	if (len(rc->objfile) = 0) then
+		'' Note: no need to worry about overwriting; nothing else uses
+		'' the .obj extension.
+		rc->objfile = hStripExt(rc->srcfile) & ".obj"
+	else
+		if (hGetFileExt(rc->objfile) <> "obj") then
+			need_rename = TRUE
+			rc->objfile &= ".obj"
+		end if
+	end if
+
+	'' Change the include env var to point to the (hopefully present)
+	'' win/rc/*.h headers.
+	dim as string oldinclude = trim(environ("INCLUDE"))
+	setenviron "INCLUDE=" + fbc.incpath + _
+				(FB_HOST_PATHDIV + "win" + FB_HOST_PATHDIV + "rc")
+
+	dim as string ln = "/ni /nw /o "
+	ln &= "/fo """ & rc->objfile & """"
+	ln &= " """ & rc->srcfile & """"
+
+	if (fbcRunBin("compiling rc", fbcFindBin("GoRC"), ln) = FALSE) then
+		return FALSE
+	end if
+
+	'' restore the include env var
+	if (len(oldinclude) > 0) then
+		setenviron "INCLUDE=" + oldinclude
+	end if
+
+	if (need_rename) then
+		dim as string badname = rc->objfile
+		rc->objfile = hStripExt(rc->objfile)
+		'' Rename back so it will be found by ld/the user
+		function = (name(badname, rc->objfile) = 0)
+	else
+		function = TRUE
+	end if
+#else
+	'' Using binutils' windres for all other setups (e.g. cross-compiling
+	'' linux -> win32)
+	'' Note: windres uses gcc -E to preprocess the .rc by default,
+	'' and that's not 100% compatible to GoRC (e.g. backslashes in
+	'' paths/filenames are seen as escape sequences by gcc, but not GoRC)
+
+	'' *.o name based on input file name unless given via -o <file>
+	if (len(rc->objfile) = 0) then
+		'' Note: Appending instead of replacing, to avoid overwriting
+		'' an existing object file.
+		rc->objfile = rc->srcfile & ".o"
+	end if
+
+	dim as string ln = "--output-format=coff "
+	ln &= " """ & rc->srcfile & """"
+	ln &= " """ & rc->objfile & """"
+
+	function = fbcRunBin("compiling rc", fbcFindBin("windres"), ln)
+#endif
+
+	fbcAddObj(rc->objfile)
+	if (fbc.preserveobj = FALSE) then
+		fbcAddTemp(rc->objfile)
+	end if
+end function
+
+private function assembleRcs() as integer
+	'' Compile .rc/.res files
+	dim as FBCIOFILE ptr rc = listGetHead(@fbc.rcs)
+	while (rc)
+		if (assembleRc(rc) = FALSE) then
+			exit function
+		end if
+		rc = listGetNext(rc)
+	wend
+	function = TRUE
+end function
+
+private sub setDefaultLibPaths()
+
+	'' compiler's lib/
+	fbcAddDefLibPath(fbc.libpath)
+
+	'' and the current path
+	fbcAddDefLibPath(".")
+
+#ifndef ENABLE_STANDALONE
+	'' Add gcc's private lib directory, to find libgcc and libsupc++
+	'' This is for installing into Unix-like systems, and not for
+	'' standalone, which has libgcc/libsupc++ in its own lib/.
+	fbcAddLibPathFor("gcc")
+
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+		'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
+		'' But this is for installing into DJGPP, where apparently supcxx is working fine.
+		fbcAddLibPathFor("supcxx")
+
+		'' Help out the DJGPP linker. It doesn't seem to add
+		'' the main DJGPP lib path by default like on other
+		'' systems.
+		'' Note: Shouldn't look for libc here -- we're supposed
+		'' to have the fixed version of it in our lib/freebas/.
+		fbcAddLibPathFor("m")
+	else
+		fbcAddLibPathFor("supc++")
+	end if
+#endif
 
 end sub
 
-'':::::
-private sub setLibList _
-	( _
-	)
-
-	dim as string ptr n = any
-
-	'' add libs
-	n = listGetHead( @fbc.liblist )
-	do while( n <> NULL )
-		fbAddLib( *n )
-		n = listGetNext( n )
-	loop
-
-	'' add lib paths
-	n = listGetHead( @fbc.libpathlist )
-	do while( n <> NULL )
-		fbAddLibPath( *n )
-		n = listGetNext( n )
-	loop
-
+private sub fbcAddDefLib(byval libname as zstring ptr)
+	strsetAdd(@fbc.finallibs, *libname, TRUE)
 end sub
 
 '':::::
-private sub setLibListFromCmd _
-	( _
-	)
+private sub addDefaultLibs()
+	'' select the right FB rtlib
+	if( env.clopt.multithreaded ) then
+		fbcAddDefLib("fbmt")
+	else
+		fbcAddDefLib("fb")
+	end if
 
-	dim as string ptr n = any
+	fbcAddDefLib("gcc")
 
-	'' add libs
-	n = listGetHead( @fbc.liblist )
-	do while( n <> NULL )
-		fbAddLibEx( @fbc.ld_liblist, _
-					@fbc.ld_libhash, _
-					*n, _
-					FALSE )
-		n = listGetNext( n )
-	loop
+	select case as const fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_CYGWIN
+		fbcAddDefLib("cygwin")
+		fbcAddDefLib("kernel32")
+		fbcAddDefLib("supc++")
 
-	'' add lib paths
-	n = listGetHead( @fbc.libpathlist )
-	do while( n <> NULL )
-		fbAddLibPathEx( @fbc.ld_libpathlist, _
-						@fbc.ld_libpathhash, _
-						*n, _
-						FALSE )
-		n = listGetNext( n )
-	loop
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			fbcAddDefLib("gmon")
+		end if
+
+	case FB_COMPTARGET_DARWIN
+		fbcAddDefLib("System")
+
+	case FB_COMPTARGET_DOS
+		fbcAddDefLib("c")
+		fbcAddDefLib("m")
+		#ifdef ENABLE_STANDALONE
+			'' Renamed lib for the standalone build, working around
+			'' the long file name.
+			fbcAddDefLib("supcx")
+		#else
+			'' When installing into DJGPP, use its lib
+			fbcAddDefLib("supcxx")
+		#endif
+
+	case FB_COMPTARGET_FREEBSD
+		fbcAddDefLib("c")
+		fbcAddDefLib("m")
+		fbcAddDefLib("pthread")
+		fbcAddDefLib("ncurses")
+		fbcAddDefLib("supc++")
+
+	case FB_COMPTARGET_LINUX
+		fbcAddDefLib("c")
+		fbcAddDefLib("m")
+		fbcAddDefLib("pthread")
+		fbcAddDefLib("dl")
+		fbcAddDefLib("ncurses")
+		fbcAddDefLib("supc++")
+		fbcAddDefLib("gcc_eh")
+
+	case FB_COMPTARGET_NETBSD
+		'' TODO
+
+	case FB_COMPTARGET_OPENBSD
+		fbcAddDefLib("c")
+		fbcAddDefLib("m")
+		fbcAddDefLib("pthread")
+		fbcAddDefLib("ncurses")
+		fbcAddDefLib("supc++")
+
+	case FB_COMPTARGET_WIN32
+		fbcAddDefLib("msvcrt")
+		fbcAddDefLib("kernel32")
+		fbcAddDefLib("mingw32")
+		fbcAddDefLib("mingwex")
+		fbcAddDefLib("moldname")
+		fbcAddDefLib("supc++")
+		fbcAddDefLib("gcc_eh")
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			fbcAddDefLib("gmon")
+		end if
+
+	case FB_COMPTARGET_XBOX
+		fbcAddDefLib("fbgfx")
+		fbcAddDefLib("openxdk")
+		fbcAddDefLib("hal")
+		fbcAddDefLib("c")
+		fbcAddDefLib("usb")
+		fbcAddDefLib("xboxkrnl")
+		fbcAddDefLib("m")
+		fbcAddDefLib("supc++")
+
+		'' profiling?
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			fbcAddDefLib("gmon")
+		end if
+
+	end select
 
 end sub
-
-'':::::
-private sub setDefaultLibPaths
-
-	'' compiler's /lib
-	fbcAddDefLibPath( fbGetPath( FB_PATH_LIB ) )
-
-    '' and the current path
-	fbcAddDefLibPath( "./" )
-
-	'' platform dependent paths
-	fbc.vtbl.setDefaultLibPaths( )
-
-end sub
-
-'':::::
-private sub getDefaultLibs
-
-    fbGetDefaultLibs( @fbc.ld_liblist, @fbc.ld_libhash )
-
-end sub
-
-'':::::
-#define printOption(_opt,_desc) print _opt, " "; _desc
 
 '':::::
 private sub printOptions( )
-	dim as string desc
+	const FBC_HELP = _
+	!"usage: fbc [options] <input files>\n"                                + _
+	!"input files:\n"                                                      + _
+	!"  *.a = static library, *.o = object file, *.bas = source\n"         + _
+	!"  *.rc = resource script, *res = compiled resource (win32)\n"        + _
+	!"  *.xpm = icon resource (*nix/*bsd)\n"                               + _
+	!"options:\n"                                                          + _
+	!"  @<file>          Read more command line arguments from a file\n"   + _
+	!"  -a <file>        Treat file as .o/.a input file\n"                 + _
+	!"  -arch <type>     Set target architecture (default: 486)\n"         + _
+	!"  -b <file>        Treat file as .bas input file\n"                  + _
+	!"  -c               Compile only, do not link\n"                      + _
+	!"  -C               Preserve temporary .o files\n"                    + _
+	!"  -d <name>[=<val>]  Add a global #define\n"                         + _
+	!"  -dll             Same as -dylib\n"                                 + _
+	!"  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)\n" + _
+	!"  -e               Enable runtime error checking\n"                  + _
+	!"  -ex              -e plus RESUME support\n"                         + _
+	!"  -exx             -ex plus array bounds/null-pointer checking\n"    + _
+	!"  -export          Export symbols for dynamic linkage\n"             + _
+	!"  -forcelang <name>  Override #lang statements in source code\n"     + _
+	!"  -fpmode fast|precise  Select floating-point math accuracy/speed\n" + _
+	!"  -fpu x87|sse     Set target FPU\n"                                 + _
+	!"  -g               Add debug info\n"                                 + _
+	!"  -gen gas|gcc     Select code generation backend\n"                 + _
+	!"  -i <path>        Add an include file search path\n"                + _
+	!"  -include <file>  Pre-#include a file for each input .bas\n"        + _
+	!"  -l <name>        Link in a library\n"                              + _
+	!"  -lang <name>     Select FB dialect: deprecated, fblite, qb\n"      + _
+	!"  -lib             Create a static library\n"                        + _
+	!"  -m <name>        Set main module (default if not -c: first input .bas)\n" + _
+	!"  -map <file>      Save linking map to file\n"                       + _
+	!"  -maxerr <n>      Only show <n> errors\n"                           + _
+	!"  -mt              Use thread-safe FB runtime\n"                     + _
+	!"  -nodeflibs       Do not include the default libraries\n"           + _
+	!"  -noerrline       Do not show source context in error messages\n"   + _
+	!"  -o <file>        Set .o file name for corresponding input .bas\n"  + _
+	!"  -O <value>       Optimization level (default: 0)\n"                + _
+	!"  -p <name>        Add a library search path\n"                      + _
+	!"  -pp              Write out preprocessed input file (.pp.bas) only\n" + _
+	!"  -prefix <path>   Set the compiler prefix path\n"                   + _
+	!"  -profile         Enable function profiling\n"                      + _
+	!"  -r               Like -c, but write out .asm/.c only, do not assemble\n" + _
+	!"  -R               Preserve temporary non-.o files (.asm/.c etc.)\n" + _
+	!"  -s console|gui   Select win32 subsystem\n"                         + _
+	!"  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)\n" + _
+	!"  -target <name>   Set cross-compilation target\n"                   + _
+	!"  -title <name>    Set XBE display title (xbox)\n"                   + _
+	!"  -v               Be verbose\n"                                     + _
+	!"  -vec <n>         Automatic vectorization level (default: 0)\n"     + _
+	!"  -version         Show compiler version\n"                          + _
+	!"  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value\n" + _
+	!"  -Wa <a,b,c>      Pass options to GAS\n"                            + _
+	!"  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)\n"            + _
+	!"  -Wl <a,b,c>      Pass options to LD\n"                             + _
+	!"  -x <file>        Set output executable/library file name\n"        + _
+	 "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 
-	print "Usage: fbc [options] inputlist"
-	print
-
-	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "", "*.rc = resource script, *.res = compiled resource" )
-	case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD
-		printOption( "", "*.xpm = icon resource" )
-	end select
-
-	print
-	print "Use 'fbc -target <target>' alone to see target-specific options."
-	print
-	print "options:"
-
-	printOption( "@<file>", "Read command-line options from a file" )
-	printOption( "-a <name>", "Add an object file to linker's list" )
-	printOption( "-arch <type>", "Set target architecture (default: 486)" )
-	printOption( "-b <name>", "Add a source file to compilation" )
-	printOption( "-c", "Compile only, do not link" )
-	printOption( "-C", "Do not delete the object file(s)" )
-	printOption( "-d <name=val>", "Add a preprocessor's define" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, FB_COMPTARGET_DARWIN, FB_COMPTARGET_NETBSD
-		printOption( "-dll", "Same as -dylib" )
-		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_WIN32 ) then
-			printOption( "-dylib", "Create a DLL, including the import library" )
-		else
-			printOption( "-dylib", "Create a shared library" )
-		end if
-	end select
-	printOption( "-e", "Add error checking" )
-	printOption( "-ex", "Add error checking with RESUME support" )
-	printOption( "-exx", "Same as above plus array bounds and null-pointer checking" )
-	printOption( "-export", "Export symbols for dynamic linkage" )
-	print "-forcelang <name>"; " Select language compatibility, overriding #lang/$lang in code"
-	print "-fpmode <mode>"; " Select accuracy/speed of floating-point math (FAST, PRECISE)"
-	printOption( "-fpu <type>", "Select FPU (x87, sse)" )
-	printOption( "-g", "Add debug info" )
-	printOption( "-gen <name>", "Select the code generator (gas, gcc)" )
-	printOption( "-i <name>", "Add a path to search for include files" )
-	print "-include <name>"; " Include a header file on each source compiled"
-	printOption( "-l <name>", "Add a library file to linker's list" )
-	printOption( "-lang <name>", "Select language compatibility: deprecated, fblite, qb" )
-	printOption( "-lib", "Create a static library" )
-	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
-	printOption( "-map <name>", "Save the linking map to file name" )
-	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
-	if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DOS ) then
-		printOption( "-mt", "Link with thread-safe runtime library" )
-	end if
-	printOption( "-nodeflibs", "Do not include the default libraries" )
-	printOption( "-noerrline", "Do not show source line where error occurred" )
-	printOption( "-o <name>", "Set object file path/name (must be passed after the .bas file)" )
-	printOption( "-O <value>", "Optimization level (default: 0)" )
-	printOption( "-p <name>", "Add a path to search for libraries" )
-	printOption( "-pp", "Emit the preprocessed input file only, do not compile")
-	print "-prefix <path>"; " Set the compiler prefix path"
-	printOption( "-profile", "Enable function profiling" )
-	printOption( "-r", "Write asm only, do not compile" )
-	printOption( "-R", "Do not delete the asm file(s)" )
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		printOption( "-s <name>", "Set subsystem (gui, console)" )
-	end select
-	select case fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS
-		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
-	end select
-
-	desc = " Available (cross-)compilation targets:"
-	#macro listTarget(defname, fbname)
-		#ifdef ENABLE_##defname
-			desc += " " & fbname
-			if( len( ENABLE_##defname ) > 0 ) then
-				desc += " (" & ENABLE_##defname & ")"
-			end if
-			#ifdef TARGET_##defname
-				desc += " (default)"
-			#endif
-		#endif
-	#endmacro
-	listTarget(CYGWIN, "cygwin")
-	listTarget(DARWIN, "darwin")
-	listTarget(DOS, "dos")
-	listTarget(FREEBSD, "freebsd")
-	listTarget(LINUX, "linux")
-	listTarget(NETBSD, "netbsd")
-	listTarget(OPENBSD, "openbsd")
-	listTarget(WIN32, "win32")
-	listTarget(XBOX, "xbox")
-	print "-target <name>"; desc
-
-	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX ) then
-		printOption( "-title <name>", "Set XBE display title" )
-	end if
-	printOption( "-v", "Be verbose" )
-	printOption( "-vec <val>", "Enable <val> level of automatic vectorization (def: 0)" )
-	printOption( "-version", "Show compiler version" )
-	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
-	printOption( "-Wa <opt>", "Pass options to GAS (separated by commas)" )
-	printOption( "-Wc <opt>", "Pass options to GCC when using -gen gcc (separated by commas)" )
-	printOption( "-Wl <opt>", "Pass options to LD (separated by commas)" )
-	printOption( "-x <name>", "Set executable/library path/name" )
-
+	print FBC_HELP
 end sub
 
-'':::::
-function fbcGetLibList _
-	( _
-		byval dllname as zstring ptr _
-	) as zstring ptr
+private sub printVersion()
+	dim as string s
 
-	static as string list
+	s += !"FreeBASIC Compiler - Version " + FB_VERSION + _
+		" (" + FB_BUILD_DATE + ") for " + FB_HOST + !"\n"
+	s += !"Copyright (C) 2004-2011 The FreeBASIC development team.\n"
 
-    list = ""
+	#ifdef ENABLE_STANDALONE
+		s += "standalone, "
+	#endif
 
-	dim as FBS_LIB ptr libf = listGetHead( @fbc.ld_liblist )
+	#ifdef ENABLE_PREFIX
+		s += "prefix: '" + ENABLE_PREFIX + "', "
+	#endif
 
-    '' add libraries from cmm-line and found when parsing
-    if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-		do while( libf <> NULL )
-   			'' check if the lib isn't the dll's import library itself
-   	        if( *libf->name <> *dllname ) then
-				list += "-l" + *libf->name + " "
-			end if
+	s += "objinfo: "
+	#ifndef DISABLE_OBJINFO
+		s += "enabled ("
+		#ifdef ENABLE_FBBFD
+			s += "FB header " & ENABLE_FBBFD
+		#else
+			s += "C wrapper"
+		#endif
+		s += "), "
+	#else
+		s += "disabled, "
+	#endif
 
-			libf = listGetNext( libf )
-		loop
-    else
-		do while( libf <> NULL )
-			list += "-l" + *libf->name + " "
-			libf = listGetNext( libf )
-		loop
+	'' Trim ', ' at the end
+	s = left(s, len(s) - 2)
+
+	print s
+end sub
+
+	fbcInit()
+
+	if (__FB_ARGC__ = 1) then
+		printOptions( )
+		fbcEnd( 1 )
 	end if
 
-    function = strptr( list )
+	parseArgs(__FB_ARGC__, __FB_ARGV__)
 
-end function
+	if (fbc.showversion) then
+		printVersion()
+		fbcEnd( 0 )
+	end if
 
-'':::::
-function fbcGetLibPathList _
-	( _
-	) as zstring ptr
+	if( (listGetHead(@fbc.modules) = NULL) and _
+	    (listGetHead(@fbc.objlist) = NULL) and _
+	    (listGetHead(@fbc.libs.list) = NULL)) then
+		printOptions()
+		fbcEnd( 1 )
+	end if
 
-	static as string list
+	if (fbc.verbose) then
+		printVersion()
+	end if
 
-    list = ""
+	fbcInit2()
 
-	dim as FBS_LIB ptr libp = listGetHead( @fbc.ld_libpathlist )
-	do while( libp <> NULL )
-		if( right( *libp->name, 1 ) = FB_HOST_PATHDIV ) then
-    		list += " -L " + QUOTE + left( *libp->name, len(*libp->name) - 1 ) + QUOTE
-		else
-    		list += " -L " + QUOTE + *libp->name + QUOTE
+	'' Compile into temporary files
+
+	if (compileModules() = FALSE) then
+		fbcEnd( 1 )
+	end if
+
+	if (compileXpm() = FALSE) then
+		fbcEnd(1)
+	end if
+
+	if (fbc.emitonly) then
+		fbcEnd( 0 )
+	end if
+
+	'' Generate objects
+
+	if (assembleModules() = FALSE) then
+		fbcEnd( 1 )
+	end if
+
+	if (assembleRcs() = FALSE) then
+		fbcEnd(1)
+	end if
+
+	if (assembleXpm() = FALSE) then
+		fbcEnd(1)
+	end if
+
+	if (fbc.compileonly) then
+		fbcEnd( 0 )
+	end if
+
+	'' Set the default lib paths before scanning for other libs
+	setDefaultLibPaths()
+
+	'' Scan objects and libraries for more libraries and paths,
+	'' before adding the default libs, which don't need to be searched,
+	'' because they don't contain objinfo anyways.
+	collectObjInfo()
+
+	if (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_STATICLIB) then
+		if (archiveFiles() = FALSE) then
+			fbcEnd( 1 )
 		end if
-    	libp = listGetNext( libp )
-    loop
+		fbcEnd( 0 )
+	end if
 
-    function = strptr( list )
+	'' Link
 
-end function
+	'' Add default libs for linking, unless -nodeflibs was given
+	'' Note: These aren't added into objinfo sections of objects or
+	'' static libraries. Only the non-default libs are needed there.
+	if (env.clopt.nodeflibs = FALSE) then
+		addDefaultLibs()
+	end if
 
+	if( linkFiles( ) = FALSE ) then
+		fbcEnd( 1 )
+	end if
+
+	fbcEnd( 0 )

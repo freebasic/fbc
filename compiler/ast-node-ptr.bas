@@ -75,7 +75,7 @@ function astNewDEREF _
 		return NULL
 	end if
 
-	n->l = l
+	n->l = l    '' Can be NULL e.g. if it was a constant
 	n->ptr.ofs = ofs
 
 	function = n

@@ -1,19 +1,31 @@
 Version 0.24.0:
 
 [changed]
-- System triplets are now used (like gcc/binutils), instead of the previous nested target-specific subdirectories
+- -target option now accepts system triplets (known from gcc/binutils), note: -target win32 will now look for bin/win32-ld[.exe] instead of bin/win32/ld[.exe]
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
-- fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which relies on a modified ldscript)
+- fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
+- __FB_UNIX__ and __FB_PCOS__ now work like the other target defines (check via #ifdef)
+- All cross-compilation targets are now always enabled in the compiler
+- -o now also affects .rc and .xpm input files (useful to change the file names of the temporary objects)
+- -o must now clearly be specified in front or behind of the corresponding input file, for example: "fbc 1.bas 2.bas -o 1.o -o 2.o" no longer works, but "fbc -o 1.o 1.bas" is possible now
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
 - __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
+- fbc can now be built for installation into MinGW/DJGPP
+- Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
+- The .def file generated when building a DLL is now preserved if -R was given
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
 - FBC should give an error if EOF reached while parsing code inside an #IF block
-- Possible crashes in date() and now() if the system time couldn't be retrieved
+- Possible crashes in Date(), Now(), FileDateTime() if the system time couldn't be interpreted
 - #3398498: VA_NEXT() intrinsic macro now works with types that aren't a multiple of 4 bytes
+- #3404250: *.a input files being wrongly passed to ld as -l*.a
+- Compiler crash on 'cast(T ptr, 0)->x'
+- #2828675: UDT fields not having tail padding (ABI now changed to match GCC)
+- #3422768: pp under -gen gcc complaining about va_arg/va_next tokens even if not used as the actual macros
+- #2188864: Compiler crash on out of memory
 
 
 Version 0.23.0:

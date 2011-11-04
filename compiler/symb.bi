@@ -3,7 +3,6 @@
 ''
 
 #include once "list.bi"
-#include once "clist.bi"
 #include once "pool.bi"
 #include once "ast-op.bi"
 
@@ -182,11 +181,6 @@ enum FB_FUNCMODE
     '' definitions to use env.target.fbcall (which cannot be a constant because
     '' it depends on the [cross-compiling] target).
     FB_USE_FUNCMODE_FBCALL = -1
-end enum
-
-'' C standard types
-enum FB_CSTDTYPE
-	FB_CSTDTYPE_SIZET			= 1
 end enum
 
 '' options when adding new symbols
@@ -556,7 +550,6 @@ type FBS_PROC
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	mode			as FB_FUNCMODE				'' calling convention
 	real_dtype		as FB_DATATYPE				'' used with STRING and UDT functions
-	lib				as FBS_LIB ptr
 	lgt				as integer					'' parameters length (in bytes)
 	returnMethod	as FB_PROC_RETURN_METHOD
 	rtl				as FB_PROCRTL
@@ -728,12 +721,17 @@ type FB_RTTICTX
 	fb_object		as FBSYMBOL ptr
 End Type
 
+const CHAINPOOL_SIZE = 32
+
 type SYMBCTX
 	inited			as integer
 
 	symlist			as TLIST					'' (of FBSYMBOL)
 	hashlist		as FBHASHTBLIST
-	chainlist		as TCLIST					'' (of FBSYMHASH)
+
+	'' FBSYMCHAIN's are allocated from this buffer
+	chainpool(0 to (CHAINPOOL_SIZE - 1)) as FBSYMCHAIN
+	chainpoolhead		as integer
 
 	globnspc		as FBSYMBOL					'' global namespace
 
@@ -746,11 +744,6 @@ type SYMBCTX
 	imphashlist		as TLIST					'' (of FBSYMHASH)
 
 	namepool		as TPOOL
-
-	liblist 		as TLIST					'' libraries
-	libhash			as THASH
-	libpathlist 	as TLIST					'' library paths
-	libpathhash		as THASH
 
 	dimlist			as TLIST					'' array dimensions
 
@@ -946,12 +939,6 @@ declare function symbGetProcResult _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbGetUDTLen _
-	( _
-		byval udt as FBSYMBOL ptr, _
-		byval unpadlen as integer = TRUE _
-	) as integer
-
 declare function symbGetConstValueAsStr _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -963,15 +950,6 @@ declare function symbCalcParamLen _
 		byval subtype as FBSYMBOL ptr, _
 		byval mode as integer _
 	) as integer
-
-declare sub symbListLibsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
 
 declare function symbAddKeyword _
 	( _
@@ -1166,7 +1144,6 @@ declare function symbAddPrototype _
 		byval proc as FBSYMBOL ptr, _
 		byval symbol as zstring ptr, _
 		byval aliasname as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -1179,7 +1156,6 @@ declare function symbAddProc _
 		byval proc as FBSYMBOL ptr, _
 		byval symbol as zstring ptr, _
 		byval aliasname as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -1191,7 +1167,6 @@ declare function symbAddOperator _
 		byval proc as FBSYMBOL ptr, _
 		byval op as AST_OP, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -1203,7 +1178,6 @@ declare function symbAddCtor _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id_alias as zstring ptr, _
-		byval libname as zstring ptr, _
 		byval attrib as integer, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
@@ -1231,14 +1205,6 @@ declare function symbAddProcResult _
 	( _
 		byval f as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
-
-declare function symbAddLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval libname as zstring ptr,  _
-		byval isdefault as integer = FALSE _
-	) as FBS_LIB ptr
 
 declare function symbAddParam _
 	( _
@@ -1376,13 +1342,6 @@ declare sub symbDelConst _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval is_tbdel as integer = FALSE _
-	)
-
-declare sub symbDelLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval l as FBS_LIB ptr _
 	)
 
 declare sub symbDelScope _
@@ -1820,11 +1779,6 @@ declare function symbCloneLabel _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbGetCStdType _
-	( _
-		byval ctype as FB_CSTDTYPE _
-	) as integer
-
 declare function symbCheckAccess _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -1946,7 +1900,7 @@ declare function symbGetUDTBaseSymbol _
 	_hashtb.next = NULL
 
 	if( (_nodes) <> 0 ) then
-		hashNew( @_hashtb.tb, _nodes )
+		hashInit( @_hashtb.tb, _nodes )
 	end if
 
 #endmacro
@@ -2009,10 +1963,6 @@ declare function symbGetUDTBaseSymbol _
 #define symbGetGlobCtorListHead( ) symb.globctorlist.head
 
 #define symbGetGlobDtorListHead( ) symb.globdtorlist.head
-
-#define symbGetLibListHead( ) listGetHead( @symb.liblist )
-
-#define symbGetLibPathListHead( ) listGetHead( @symb.libpathlist )
 
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
 #define symbSetIsAccessed(s) s->stats or= FB_SYMBSTATS_ACCESSED
@@ -2371,7 +2321,7 @@ declare function symbGetUDTBaseSymbol _
 
 #define symbGetProcOvlNext(f) f->proc.ovl.next
 
-#define symbAllocProcExt() callocate( len( FB_PROCEXT ) )
+#define symbAllocProcExt() xcallocate( len( FB_PROCEXT ) )
 
 #define symbFreeProcExt(f) deallocate( f->proc.ext )
 
@@ -2504,18 +2454,6 @@ declare function symbGetUDTBaseSymbol _
 
 #define symbGetLastLabel( ) symb.lastlbl
 #define symbSetLastLabel( l ) symb.lastlbl = l
-
-#define symbAddLib(libname) symbAddLibEx( @symb.liblist, @symb.libhash, libname )
-
-#define symbDelLib(l) symbDelLibEx( @symb.liblist, @symb.libhash, l )
-
-#define symbAddLibPath(path) symbAddLibEx( @symb.libpathlist, @symb.libpathhash, path )
-
-#define symbDelLibPath(l) symbDelLibEx( @symb.libpathlist, @symb.libpathhash, l )
-
-#define symbListLibs(dstlist, dsthash, delnodes) symbListLibsEx( @symb.liblist, @symb.libhash, dstlist, dsthash, delnodes )
-
-#define symbListLibPaths(dstlist, dsthash, delnodes) symbListLibsEx( @symb.libpathlist, @symb.libpathhash, dstlist, dsthash, delnodes )
 
 '' assuming all UDT's extend FBS_NAMESPACE
 #define symbCompAllocExt( ) listNewNode( @symb.nsextlist )

@@ -42,7 +42,7 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
-	proc = symbAddProc( proc, NULL, "DllMain", NULL, _
+	proc = symbAddProc( proc, NULL, "DllMain", _
 						FB_DATATYPE_INTEGER, NULL, _
 						FB_SYMBATTRIB_PUBLIC, _
 						env.target.stdcall )
@@ -95,7 +95,7 @@ private sub hDllMainBegin_GlobCtor ( )
    	dim as ASTNODE ptr main, procnode
 
 	'' sub ctor cdecl( )
-	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE, _
 						FB_FUNCMODE_CDECL )
@@ -172,7 +172,7 @@ const fbargv = "__FB_ARGV__"
 	end if
 
 	'' function main cdecl( byval argc as integer, byval argv as zstring ptr ptr) as integer
-	env.main.proc = symbAddProc( proc, NULL, id, NULL, _
+	env.main.proc = symbAddProc( proc, NULL, id, _
 								 FB_DATATYPE_INTEGER, NULL, _
 								 attrib, _
 								 FB_FUNCMODE_CDECL )
@@ -206,7 +206,7 @@ private sub hModLevelBegin( )
 
 	'' sub modlevel cdecl( ) constructor
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
-								 "{modlevel}", fbGetModuleEntry( ), NULL, _
+								 "{modlevel}", fbGetModuleEntry( ), _
 								 FB_DATATYPE_VOID, NULL, _
 								 FB_SYMBATTRIB_PRIVATE, _
 								 FB_FUNCMODE_CDECL )

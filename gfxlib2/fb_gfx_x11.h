@@ -43,7 +43,7 @@ extern X11DRIVER fb_x11;
 extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
 
-extern void *fb_program_icon;
+extern char **fb_program_icon;
 
 void fb_hX11WaitUnmapped(Window w);
 

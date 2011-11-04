@@ -81,7 +81,7 @@ sub astProcListInit( )
 	ast.proc.curr = NULL
 
 	''
-	listNew( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.globinst.list, 32, len( FB_GLOBINSTANCE ), LIST_FLAGS_NOCLEAR )
 	ast.globinst.ctorcnt = 0
 	ast.globinst.dtorcnt = 0
 
@@ -92,7 +92,7 @@ sub astProcListEnd( )
 
 	ast.globinst.dtorcnt = 0
 	ast.globinst.ctorcnt = 0
-	listFree( @ast.globinst.list )
+	listEnd( @ast.globinst.list )
 
 	''
 	ast.proc.head = NULL
@@ -1375,7 +1375,7 @@ private sub hGenStaticInstancesDtors _
     loop
 
     '' destroy list
-    listFree( dtorlist )
+    listEnd( dtorlist )
     deallocate( proc->proc.ext->statdtor )
     proc->proc.ext->statdtor = NULL
 
@@ -1395,19 +1395,16 @@ function astProcAddStaticInstance _
 
 	'' create a new list
 	if( dtorlist = NULL ) then
-		dtorlist = callocate( len( TLIST ) )
+		dtorlist = xcallocate( len( TLIST ) )
 		parser.currproc->proc.ext->statdtor = dtorlist
 
-		listNew( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
+		listInit( dtorlist, 16, len( FB_DTORWRAPPER ), LIST_FLAGS_NOCLEAR )
 	end if
 
     ''
     wrap = listNewNode( dtorlist )
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
-						NULL, _
-						NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
@@ -1461,10 +1458,8 @@ private function hGlobCtorBegin _
     dim as FBSYMBOL ptr proc = any
     dim as ASTNODE ptr n = any
 
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-    					hMakeTmpStr( ), _
+	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-						NULL, _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )

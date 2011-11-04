@@ -5,7 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 #include once "ast.bi"
 #include once "lex.bi"
 #include once "rtl.bi"
@@ -1559,7 +1558,7 @@ private function hPorts_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "advapi32" )
+			fbAddLib("advapi32")
 		end select
 	end if
 
@@ -1580,7 +1579,7 @@ function rtlMultinput_cb _
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			symbAddLib( "user32" )
+			fbAddLib("user32")
 		end select
 	end if
 
@@ -1594,14 +1593,36 @@ private function hGfxlib_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer added = FALSE
 
-	if( libsadded = FALSE ) then
-		libsAdded = TRUE
+	if (added = FALSE) then
+		added = TRUE
 
-		symbAddLib( "fbgfx" )
+		fbAddLib("fbgfx")
 
-		fbc.vtbl.addGfxLibs( )
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			fbAddLib("user32")
+			fbAddLib("gdi32")
+			fbAddLib("winmm")
+
+		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
+
+			#if defined(__FB_LINUX__) or _
+			    defined(__FB_FREEBSD__) or _
+			    defined(__FB_OPENBSD__) or _
+			    defined(__FB_NETBSD__)
+				fbAddLibPath("/usr/X11R6/lib")
+			#endif
+
+			fbAddLib("X11")
+			fbAddLib("Xext")
+			fbAddLib("Xpm")
+			fbAddLib("Xrandr")
+			fbAddLib("Xrender")
+
+		end select
 
 	end if
 

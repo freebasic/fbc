@@ -381,6 +381,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Predefined symbols"}}
 	- {{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}} 
+	- {{fbdoc item="keyword" value="KeyPgDddateiso|__DATE_ISO__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}

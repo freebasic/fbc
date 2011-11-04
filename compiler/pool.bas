@@ -8,15 +8,13 @@
 const MIN_SIZE = 4
 
 '':::::
-function poolNew _
+sub poolInit _
 	( _
 		byval pool as TPOOL ptr, _
 		byval items as integer, _
 		byval minlen as integer, _
 		byval maxlen as integer _
-	) as integer
-
-	dim as integer i, len_
+	)
 
 	minlen = (minlen + (MIN_SIZE-1)) and (not (MIN_SIZE-1))
 	maxlen = (maxlen + (MIN_SIZE-1)) and (not (MIN_SIZE-1))
@@ -24,35 +22,21 @@ function poolNew _
 	pool->chunks = (maxlen + (minlen-1)) \ minlen
 	pool->chunksize = minlen
 
-	pool->chunktb = allocate( len( TLIST ) * pool->chunks )
+	pool->chunktb = xallocate( len( TLIST ) * pool->chunks )
 
-	len_ = minlen
-	for i = 0 to pool->chunks-1
-		listNew( @pool->chunktb[i], _
-				 items, _
-				 len_, _
-				 LIST_FLAGS_LINKFREENODES )
+	dim as integer len_ = minlen
+	for i as integer = 0 to pool->chunks-1
+		listInit( @pool->chunktb[i], items, len_, LIST_FLAGS_LINKFREENODES )
 		len_ += pool->chunksize
 	next
 
-	function = TRUE
+end sub
 
-end function
-
-'':::::
-sub poolFree _
-	( _
-		byval pool as TPOOL ptr _
-	)
-
-	dim as integer i
-
-	for i = 0 to pool->chunks-1
-		listFree( @pool->chunktb[i] )
+sub poolEnd(byval pool as TPOOL ptr)
+	for i as integer = 0 to pool->chunks-1
+		listEnd( @pool->chunktb[i] )
 	next
-
 	deallocate( pool->chunktb )
-
 end sub
 
 '':::::
@@ -72,7 +56,7 @@ function poolNewItem _
     idx = (len_ - 1) \ pool->chunksize
 
 	if( idx >= pool->chunks ) then
-	    item = allocate( len_ + len( TPOOLITEM ) )
+	    item = xallocate( len_ + len( TPOOLITEM ) )
 	else
 		item = listNewNode( @pool->chunktb[idx] )
 	end if

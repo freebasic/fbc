@@ -1,0 +1,8 @@
+{{fbdoc item="title" value="libzip"}}----
+Easy-to-use library for creating, reading out or modifying .zip archives.
+
+Website: http://www.nih.at/libzip/
+Platforms supported: Win32, Linux, DOS
+Headers to include: zip.bi
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

@@ -1,0 +1,8 @@
+{{fbdoc item="title" value="liblzma"}}----
+Configurable compression library based around the LZMA algorithm with zlib-like API. liblzma is the heart of the xz-utils used to handle the .lzma and .xz file formats. It is based on 7-Zip's LZMA SDK.
+
+Website: http://tukaani.org/xz/
+Platforms supported: Win32, Linux, DOS
+Headers to include: lzma.bi
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

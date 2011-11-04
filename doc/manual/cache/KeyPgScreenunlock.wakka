@@ -22,7 +22,7 @@ Unlocks work page's framebuffer
 
 	All graphic statements automatically lock the screen before the function call, and unlock the screen afterwards, so you do not need to do this explicitly using ##**[[KeyPgScreenlock Screenlock]]**## and ##**Screenunlock**##. You only need to lock the screen when you wish to access the screen (framebuffer) directly using ##[[KeyPgScreenptr Screenptr]]##  or when you wish to group several graphic statements together so their effects appear simultaneously on screen, thus avoiding potential screen flicker during screen updates.
 
-	Warning (Win32, Linux) : The screen is locked by stopping the thread that processes also the OS' events. This means the screen should be locked only for the short time required to redraw it, and no user input will be received while the screen is locked.
+	Warning (Win32, Linux) : The screen is locked by stopping the thread that processes also the OS' events. This means the screen should be locked only for the short time required to redraw it, and no user input will be received while the screen is locked. When the induced lock time becomes too long, use preferably the method of double buffering (with ##[[KeyPgScreencopy Screencopy]]##).
 
 {{fbdoc item="ex"}}
 	See ##[[KeyPgScreenptr Screenptr]]## example.

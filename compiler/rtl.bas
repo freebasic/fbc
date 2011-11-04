@@ -53,7 +53,7 @@ end type
 '':::::
 sub rtlInit static
 
-	listNew( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
+	listInit( @ctx.arglist, 8*4, len( FB_CALL_ARG ), LIST_FLAGS_NOCLEAR )
 
 	rtlArrayModInit( )
 	rtlConsoleModInit( )
@@ -92,7 +92,7 @@ sub rtlEnd
 	rtlConsoleModEnd( )
 	rtlArrayModEnd( )
 
-	listFree( @ctx.arglist )
+	listEnd( @ctx.arglist )
 
 	'' reset the table as the pointers will change if
 	'' the compiler is reinitialized
@@ -214,11 +214,9 @@ sub rtlAddIntrinsicProcs _
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddPrototype( inner_proc, _
-															NULL, hMakeTmpStrNL( ), NULL, _
-															.dtype, NULL, _
-															0, env.target.fbcall, _
-															FB_SYMBOPT_DECLARING )
+								subtype = symbAddPrototype( inner_proc, NULL, hMakeTmpStrNL( ), _
+								                           .dtype, NULL, 0, env.target.fbcall, _
+								                           FB_SYMBOPT_DECLARING )
 
 								if( subtype <> NULL ) then
 									symbSetIsFuncPtr( subtype )
@@ -299,20 +297,15 @@ sub rtlAddIntrinsicProcs _
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-				proc = symbAddPrototype( proc, _
-								 	 	 pname, procdef->alias, NULL, _
-								 	 	 procdef->dtype, NULL, _
-								 	 	 attrib, callconv, _
-								 	 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				proc = symbAddPrototype( proc, pname, procdef->alias, _
+				                         procdef->dtype, NULL, attrib, callconv, _
+				                         FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
 			else
-				proc = symbAddOperator( proc, _
-										cast( AST_OP, pname ), NULL, NULL, _
-    						    		procdef->dtype, NULL, _
-    					        		attrib or FB_SYMBATTRIB_OPERATOR, _
-    					        		callconv, _
-    					        		FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				proc = symbAddOperator( proc, cast(AST_OP, pname), NULL, _
+				                        procdef->dtype, NULL, attrib or FB_SYMBATTRIB_OPERATOR, callconv, _
+				                        FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
     			if( proc <> NULL ) then
     				symbGetMangling( proc ) = FB_MANGLING_CPP
@@ -445,7 +438,7 @@ end function
 function rtlCalcExprLen _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval unpadlen as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr s = any
@@ -461,14 +454,7 @@ function rtlCalcExprLen _
 	case FB_DATATYPE_STRUCT
 		s = astGetSubtype( expr )
 		if( s <> NULL ) then
-			'' if it's a type field that's an udt, no padding is
-			'' ever added, unpadlen must be always TRUE
-			if( astIsFIELD( expr ) ) then
-				unpadlen = TRUE
-			end if
-
-			function = symbGetUDTLen( s, unpadlen )
-
+			function = symbCalcLen( dtype, s, unpadlen )
 		else
 			function = 0
 		end if

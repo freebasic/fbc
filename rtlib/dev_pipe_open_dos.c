@@ -26,12 +26,10 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     FILE *fp = NULL;
     char openmask[16];
     const char *fname;
-    size_t str_len;
 
     FB_LOCK();
 
     fname = filename;
-    str_len = filename_len;
 
     handle->hooks = &hooks_dev_pipe;
 

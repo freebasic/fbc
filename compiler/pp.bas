@@ -63,9 +63,6 @@ const SYMB_MAXKEYWORDS = 24
 sub ppInit( )
     dim as integer i
 
-	''
-	hashInit( )
-
 	'' create a fake namespace
     pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
     pp.kwdns.scope = FB_MAINSCOPE
@@ -121,8 +118,7 @@ sub ppEnd( )
     next
 
 	symbCompFreeExt( pp.kwdns.nspc.ns.ext )
-	hashFree( @pp.kwdns.nspc.ns.hashtb.tb )
-	hashEnd( )
+	hashEnd( @pp.kwdns.nspc.ns.hashtb.tb )
 
 end sub
 
@@ -343,8 +339,6 @@ end function
 '' ppIncLib			=   '#'INCLIB LIT_STR
 ''
 private function ppIncLib( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 libfile
-
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			return FALSE
@@ -355,18 +349,16 @@ private function ppIncLib( ) as integer
 		end if
 	end if
 
-	lexEatToken( libfile )
+	fbAddLib(lexGetText())
+	lexSkipToken()
 
-	function = symbAddLib( libfile ) <> NULL
-
+	function = TRUE
 end function
 
 '':::::
 '' ppLibPath		=   '#'LIBPATH LIT_STR
 ''
 private function ppLibPath( ) as integer
-    static as zstring * FB_MAXPATHLEN+1 path
-
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			return FALSE
@@ -377,16 +369,10 @@ private function ppLibPath( ) as integer
 		end if
 	end if
 
-	lexEatToken( path )
-
-	if( symbAddLibPath( path ) = FALSE ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-			return FALSE
-		end if
-	end if
+	fbAddLibPath(lexGetText())
+	lexSkipToken()
 
 	function = TRUE
-
 end function
 
 '':::::

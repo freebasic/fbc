@@ -93,8 +93,10 @@ Preprocessor symbols defined by the compiler.
 		Defined as an integer literal of the number of command-line arguments passed to the program.
 	=={{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}==
 		Defined as a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]] [[KeyPgPtr Ptr]]## to the command line arguments passed to the program.
-	=={{fbdoc item="keyword" value="KeyPgDddate|__DATE__"}}==
-		Defined as a string literal of the compilation date.
+	=={{fbdoc item="keyword" value="KeyPgDddateiso|__DATE__"}}==
+		Defined as a string literal of the compilation date in "mm-dd-yyyy" format.
+	=={{fbdoc item="keyword" value="KeyPgDddate|__DATE_ISO__"}}==
+		Defined as a string literal of the compilation date in "yyyy-mm-dd" format.
 	=={{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}==
 		Defined as a string literal of the compilation time.
 	=={{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}==

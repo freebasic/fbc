@@ -5,15 +5,42 @@
 
 #include once "list.bi"
 
+private sub fatalOutOfMemory()
+	'' Abort right now, the rtlib will show the error
+	error(4)
+end sub
 
-'':::::
-function listNew _
+function xallocate(byval size as long) as any ptr
+	dim as any ptr p = allocate(size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
+
+function xcallocate(byval size as long) as any ptr
+	dim as any ptr p = callocate(size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
+
+function xreallocate(byval old as any ptr, byval size as long) as any ptr
+	dim as any ptr p = reallocate(old, size)
+	if (p = NULL) then
+		fatalOutOfMemory()
+	end if
+	return p
+end function
+
+sub listInit _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer, _
 		byval nodelen as integer, _
 		byval flags as LIST_FLAGS _
-	) as integer
+	)
 
 	'' fill ctrl struct
 	list->tbhead = NULL
@@ -25,17 +52,12 @@ function listNew _
 	list->flags	= flags
 
 	'' allocate the initial pool
-	function = listAllocTB( list, nodes )
+	listAllocTB( list, nodes )
 
-end function
+end sub
 
-'':::::
-function listFree _
-	( _
-		byval list as TLIST ptr _
-	) as integer
-
-    dim as TLISTTB ptr tb = any, nxt = any
+sub listEnd(byval list as TLIST ptr)
+	dim as TLISTTB ptr tb = any, nxt = any
 
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = list->tbhead
@@ -49,45 +71,29 @@ function listFree _
 	list->tbhead = NULL
 	list->tbtail = NULL
 	list->nodes	= 0
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-function listAllocTB _
+sub listAllocTB _
 	( _
 		byval list as TLIST ptr, _
 		byval nodes as integer _
-	) as integer
+	)
 
 	dim as TLISTNODE ptr nodetb = any, node = any, prv = any
 	dim as TLISTTB ptr tb = any
 	dim as integer i = any
 
-	function = FALSE
-
-	if( nodes < 1 ) then
-		exit function
-	end if
+	assert(nodes >= 1)
 
 	'' allocate the pool
 	if( (list->flags and LIST_FLAGS_CLEARNODES) <> 0 ) then
-		nodetb = callocate( nodes * list->nodelen )
+		nodetb = xcallocate( nodes * list->nodelen )
 	else
-		nodetb = allocate( nodes * list->nodelen )
-	end if
-
-	if( nodetb = NULL ) then
-		exit function
+		nodetb = xallocate( nodes * list->nodelen )
 	end if
 
 	'' and the pool ctrl struct
-	tb = allocate( len( TLISTTB ) )
-	if( tb = NULL ) then
-		deallocate( nodetb )
-		exit function
-	end if
+	tb = xallocate( len( TLISTTB ) )
 
 	'' add the ctrl struct to pool list
 	if( list->tbhead = NULL ) then
@@ -123,10 +129,7 @@ function listAllocTB _
 		node->next = NULL
 	end if
 
-	''
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 function listNewNode _
@@ -286,3 +289,11 @@ function listGetNext _
 
 end function
 
+sub strlistAppend(byval list as TLIST ptr, byref s as string)
+	dim as string ptr p = listNewNode(list)
+	*p = s
+end sub
+
+sub strlistInit(byval list as TLIST ptr, byval nodes as integer)
+	listInit(list, nodes, sizeof(string))
+end sub

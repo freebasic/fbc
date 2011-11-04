@@ -44,8 +44,6 @@ sub parserSetCtx( )
 
 	parser.mangling = FB_MANGLING_BASIC
 
-	parser.currlib = NULL
-
 	parser.stmt.cnt = 0
 	parser.stmt.id = 0
 
@@ -101,6 +99,8 @@ function cProgram( ) as integer
     	'' EOF?
     	if( lexGetToken( ) = FB_TK_EOF ) then
 
+			parser.stmt.cnt += 1
+
 			if( pp.level <> startlevel ) then '' inside #IF block?
 				errReport( FB_ERRMSG_EXPECTEDPPENDIF )
 			end if
@@ -127,6 +127,8 @@ end function
 ''Line            =   Label? Statement? Comment? EOL .
 ''
 function cLine as integer
+
+	parser.stmt.cnt += 1
 
 	'' line begin
 	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )

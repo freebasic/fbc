@@ -5,7 +5,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 #include once "parser.bi"
 #include once "lex.bi"
 #include once "rtl.bi"
@@ -25,10 +24,6 @@ declare sub	parserSetCtx ( )
 
 '' globals
 	dim shared infileTb( ) as FBFILE
-	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
-	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
-	dim shared as string fbPrefix
-	dim shared as string gccLibTb()
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
 	{ _
@@ -107,92 +102,9 @@ declare sub	parserSetCtx ( )
 		) _
 	}
 
-	'' filenames of gcc-libs
-	dim shared gccLibFileNameTb(  ) as zstring ptr
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub fbAddIncPath _
-	( _
-		byval path as zstring ptr _
-	)
-
-	if( env.incpaths < FB_MAXINCPATHS ) then
-		' test for both path dividers because a slash is also supported
-		' under Win32 and DOS using DJGPP. However, the (back)slashes
-		' will always be converted to the OS' preferred type of slash.
-		select case right( *path, 1 )
-		case "/", RSLASH
-		case else
-			*path += FB_HOST_PATHDIV
-		end select
-
-		incpathTB( env.incpaths ) = *path
-
-		env.incpaths += 1
-	end if
-
-end sub
-
-'':::::
-sub fbAddDefine _
-	( _
-		byval dname as zstring ptr, _
-		byval dtext as zstring ptr _
-	)
-
-    symbAddDefine( dname, dtext, len( *dtext ) )
-
-end sub
-
-'':::::
-function fbAddLib _
-	( _
-		byval libname as zstring ptr _
-	) as FBS_LIB ptr
-
-	function = symbAddLib( libname )
-
-end function
-
-'':::::
-function fbaddLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval libname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-	function = symbAddLibEx( liblist, libhash, libname, isdefault )
-
-end function
-
-'':::::
-function fbAddLibPath _
-	( _
-		byval path as zstring ptr _
-	) as FBS_LIB ptr
-
-	function = symbAddLibPath( path )
-
-end function
-
-'':::::
-function fbAddLibPathEx _
-	( _
-		byval pathlist as TLIST ptr, _
-		byval pathhash as THASH ptr, _
-		byval pathname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-	function = symbAddLibEx( pathlist, pathhash, pathname, isdefault )
-
-end function
 
 '':::::
 private function hFindIncFile _
@@ -223,7 +135,7 @@ private function hAddIncFile _
     dim as zstring ptr fname, res
     dim as uinteger index
 
-	fname = allocate( len( *filename ) + 1 )
+	fname = xallocate( len( *filename ) + 1 )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 	hUcase( filename, fname )
 #else
@@ -243,16 +155,6 @@ private function hAddIncFile _
 	function = fname
 
 end function
-
-'':::::
-private sub hSetLangOptions _
-	( _
-		byval lang as FB_LANG _
-	)
-
-	env.lang.opt = langTb(lang).options
-
-end sub
 
 '':::::
 function fbGetLangOptions _
@@ -275,19 +177,33 @@ function fbGetLangName _
 end function
 
 '':::::
-private sub hSetLangCtx _
+function fbInit _
 	( _
-		byval lang as FB_LANG _
-	)
+		byval ismain as integer, _
+		byval restarts as integer _
+	) as integer static
 
-	if( lang = FB_LANG_FB ) then
+	function = FALSE
+
+	strsetInit(@env.libs, FB_INITLIBNODES\4)
+	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
+
+	env.restarts = restarts
+	env.dorestart = FALSE
+
+	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
+
+	env.includerec = 0
+	env.main.proc = NULL
+
+	if( env.clopt.lang = FB_LANG_FB ) then
 		env.opt.explicit = TRUE
 	else
 		env.opt.explicit = FALSE
 	end if
 
-    '' data type remapping
-	if( lang <> FB_LANG_QB ) then
+	'' data type remapping
+	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.lang.typeremap.integer = FB_DATATYPE_INTEGER
 		env.lang.sizeremap.integer = FB_INTEGERSIZE
 		env.lang.typeremap.long = FB_DATATYPE_LONG
@@ -318,89 +234,16 @@ private sub hSetLangCtx _
 	env.opt.dynamic			= FALSE
 	env.opt.base = 0
 
-	if( lang <> FB_LANG_QB ) then
+	if( env.clopt.lang <> FB_LANG_QB ) then
 		env.opt.gosub = FALSE
 	else
 		env.opt.gosub = TRUE
 	end if
 
-end sub
-
-'':::::
-private sub hSetCtx( )
-
-	env.includerec = 0
-	env.main.proc = NULL
-
-	hSetLangCtx( env.clopt.lang )
-
-	''
-	env.incpaths = 0
-
-	fbAddIncPath( fbGetPath( FB_PATH_INC ) )
-
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
-	''
 	parserSetCtx( )
 
-end sub
-
-'':::::
-private sub incTbInit( )
-
-	hashInit( )
-	hashNew( @env.incfilehash, FB_INITINCFILES )
-	hashNew( @env.inconcehash, FB_INITINCFILES )
-
-end sub
-
-'':::::
-private sub incTbEnd( )
-
-	hashFree( @env.inconcehash )
-	hashFree( @env.incfilehash )
-
-	hashEnd( )
-
-end sub
-
-'':::::
-private sub stmtStackInit( )
-
-	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-
-end sub
-
-'':::::
-private sub stmtStackEnd( )
-
-	stackFree( @parser.stmt.stk )
-
-end sub
-
-'':::::
-function fbInit _
-	( _
-		byval ismain as integer, _
-		byval restarts as integer _
-	) as integer static
-
-	function = FALSE
-
-	''
-	env.restarts = restarts
-	env.dorestart = FALSE
-
-	''
-	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
-
-	redim incpathTB( 0 to FB_MAXINCPATHS-1 )
-
-	''
-	hSetCtx( )
-
-	''
 	symbInit( ismain )
 
 	hlpInit( )
@@ -413,9 +256,10 @@ function fbInit _
 		return FALSE
 	end if
 
-	incTbInit( )
+	hashInit( @env.incfilehash, FB_INITINCFILES )
+	hashInit( @env.inconcehash, FB_INITINCFILES )
 
-	stmtStackInit( )
+	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 
 	lexInit( FALSE )
 
@@ -438,9 +282,10 @@ sub fbEnd
 
 	lexEnd( )
 
-	stmtStackEnd( )
+	stackFree( @parser.stmt.stk )
 
-	incTbEnd( )
+	hashEnd( @env.inconcehash )
+	hashEnd( @env.incfilehash )
 
 	irEnd( )
 
@@ -452,17 +297,61 @@ sub fbEnd
 
 	symbEnd( )
 
-	''
-	erase incpathTB
-
 	erase infileTb
+
+	strsetEnd(@env.libs)
+	strsetEnd(@env.libpaths)
 
 end sub
 
-'':::::
-sub fbSetDefaultOptions( )
+private sub setLangOptions()
+	env.lang.opt = langTb(env.clopt.lang).options
+end sub
 
-	env.cloptexpl.forcelang = FALSE
+private sub setTargetOptions()
+	select case as const (env.clopt.target)
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_USHORT
+		env.target.wchar.size = 2
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_DOS
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UBYTE
+		env.target.wchar.size = 1
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_XBOX
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = TRUE
+
+	case else
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = FALSE
+
+	end select
+
+	select case as const (env.clopt.target)
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+		env.target.stdcall = FB_FUNCMODE_STDCALL
+
+	case else
+		env.target.fbcall = FB_FUNCMODE_CDECL
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	end select
+end sub
+
+sub fbGlobalInit()
+	strlistInit(@env.predefines, FB_INITINCFILES)
+	strlistInit(@env.preincludes, FB_INITINCFILES)
+	strlistInit(@env.includepaths, FB_INITINCFILES)
 
 	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
@@ -471,15 +360,8 @@ sub fbSetDefaultOptions( )
 	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
 	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.lang			= FB_DEFAULT_LANG
+	env.clopt.forcelang		= FALSE
 	env.clopt.backend		= FB_DEFAULT_BACKEND
-#ifdef __FB_UNIX__
-	env.clopt.findbin		= _
-		FB_FINDBIN_ALLOW_ENVVAR _
-		or FB_FINDBIN_ALLOW_BINDIR _
-		or FB_FINDBIN_ALLOW_SYSTEM
-#else
-	env.clopt.findbin		= FB_DEFAULT_FINDBIN
-#endif
 	env.clopt.debug			= FALSE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
@@ -492,13 +374,26 @@ sub fbSetDefaultOptions( )
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
-	env.clopt.showsusperrors= FALSE
 	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
 	env.clopt.extraopt      = FB_EXTRAOPT_NONE
 	env.clopt.optlevel		= 0
+	env.clopt.pponly        = FALSE
+	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
-	hSetLangOptions( env.clopt.lang )
+	setLangOptions()
+	setTargetOptions()
+end sub
 
+sub fbAddIncludePath(byref path as string)
+	strlistAppend(@env.includepaths, path)
+end sub
+
+sub fbAddPreDefine(byref def as string)
+	strlistAppend(@env.predefines, def)
+end sub
+
+sub fbAddPreInclude(byref file as string)
+	strlistAppend(@env.preincludes, file)
 end sub
 
 '':::::
@@ -553,6 +448,7 @@ sub fbSetOption _
 
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
+		setTargetOptions()
 
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
@@ -563,21 +459,18 @@ sub fbSetOption _
 	case FB_COMPOPT_MAXERRORS
 		env.clopt.maxerrors = value
 
-	case FB_COMPOPT_SHOWSUSPERRORS
-		env.clopt.showsusperrors = value
-
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
-		hSetLangOptions( value )
+		setLangOptions()
+
+	case FB_COMPOPT_FORCELANG
+		env.clopt.forcelang = value
 
 	case FB_COMPOPT_PEDANTICCHK
 		env.clopt.pdcheckopt = value
 
 	case FB_COMPOPT_BACKEND
 		env.clopt.backend = value
-
-	case FB_COMPOPT_FINDBIN
-		env.clopt.findbin = value
 
 	case FB_COMPOPT_EXTRAOPT
 		env.clopt.extraopt = value
@@ -588,19 +481,12 @@ sub fbSetOption _
 	case FB_COMPOPT_PPONLY
 		env.clopt.pponly = value
 
-	end select
+	case FB_COMPOPT_STACKSIZE
+		env.clopt.stacksize = value
+		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
+			env.clopt.stacksize = FB_MINSTACKSIZE
+		end if
 
-end sub
-
-'':::::
-sub fbSetOptionIsExplicit _
-	( _
-		byval opt as integer _
-	)
-
-	select case as const opt
-	case FB_COMPOPT_FORCELANG
-		env.cloptexpl.forcelang = TRUE
 	end select
 
 end sub
@@ -666,20 +552,17 @@ function fbGetOption _
 	case FB_COMPOPT_MAXERRORS
 		function = env.clopt.maxerrors
 
-	case FB_COMPOPT_SHOWSUSPERRORS
-		function = env.clopt.showsusperrors
-
 	case FB_COMPOPT_LANG
 		function = env.clopt.lang
+
+	case FB_COMPOPT_FORCELANG
+		function = env.clopt.forcelang
 
 	case FB_COMPOPT_PEDANTICCHK
 		function = env.clopt.pdcheckopt
 
 	case FB_COMPOPT_BACKEND
 		function = env.clopt.backend
-
-	case FB_COMPOPT_FINDBIN
-		function = env.clopt.findbin
 
 	case FB_COMPOPT_EXTRAOPT
 		function = env.clopt.extraopt
@@ -689,6 +572,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_PPONLY
 		function = env.clopt.pponly
+
+	case FB_COMPOPT_STACKSIZE
+		functioN = env.clopt.stacksize
 
 	case else
 		function = FALSE
@@ -727,8 +613,8 @@ function fbChangeOption _
 
 			'' module level
 			else
-				'' Explicit -forcelang on cmdline overrides directive
-				if( env.cloptexpl.forcelang ) then
+				'' If -forcelang is enabled, ignore #lang directives
+				if( env.clopt.forcelang ) then
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 
@@ -766,103 +652,15 @@ function fbIsCrossComp _
 
 end function
 
-
-'':::::
-sub fbSetPaths _
-	( _
-	)
-
-	'' The prefix can be set via the -prefix command line option too
-	dim as string prefix = fbPrefix
-
-	if( len(prefix) = 0 ) then
-		'' Normally fbc is relocatable, i.e. no fixed prefix is
-		'' compiled in. However we still have the ENABLE_PREFIX
-		'' option to allow hard-coding the prefix.
-		'' (e.g. deb/rpm packages usually don't need/want to be
-		'' relocatable)
-		#ifdef ENABLE_PREFIX
-			prefix = ENABLE_PREFIX
-		#else
-			prefix = exepath()
-			#ifndef ENABLE_STANDALONE
-				prefix += FB_HOST_PATHDIV + ".."
-			#endif
-		#endif
-	end if
-
-	prefix += FB_HOST_PATHDIV
-
-	'' See the makefile for directory layout info
-	pathTB(FB_PATH_BIN) = prefix + "bin" + FB_HOST_PATHDIV
-	pathTB(FB_PATH_INC) = prefix
-	pathTB(FB_PATH_LIB) = prefix
-
-	#ifdef ENABLE_STANDALONE
-		'' [target-]lib/
-		pathTB(FB_PATH_INC) += fbc.triplet + "include"
-		pathTB(FB_PATH_LIB) += fbc.triplet + "lib"
-	#else
-		'' lib/[target-]freebasic[-suffix]/
-		pathTB(FB_PATH_INC) += "include" + FB_HOST_PATHDIV + fbc.triplet
-		pathTB(FB_PATH_LIB) += "lib" + FB_HOST_PATHDIV + fbc.triplet
-
-		'' Our subdirectory in include/ and lib/ is usually called
-		'' freebasic/, but on DOS that's too long... of course almost
-		'' no target triplet or suffix can be used either
-		#ifdef __FB_DOS__
-			pathTB(FB_PATH_INC) += "freebas"
-			pathTB(FB_PATH_LIB) += "freebas"
-		#else
-			pathTB(FB_PATH_INC) += "freebasic"
-			pathTB(FB_PATH_LIB) += "freebasic"
-		#endif
-	#endif
-
-	pathTB(FB_PATH_INC) += FB_SUFFIX + FB_HOST_PATHDIV
-	pathTB(FB_PATH_LIB) += FB_SUFFIX + FB_HOST_PATHDIV
-
-	hRevertSlash( pathTB(FB_PATH_BIN), FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( pathTB(FB_PATH_INC), FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( pathTB(FB_PATH_LIB), FALSE, asc(FB_HOST_PATHDIV) )
-
-end sub
-
-'':::::
-function fbGetPath _
-	( _
-		byval path as integer _
-	) as string static
-
-	function = pathTB( path )
-
-end function
-
-'':::::
-sub fbSetPrefix _
-	( _
-		byref prefix as string _
-	)
-
-	fbPrefix = prefix
-
-	'' trim trailing slash
-	if( right( fbPrefix, 1 )  = "/" ) then
-		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
-	end if
-
-#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-	if( right( fbPrefix, 1 ) = RSLASH ) then
-		fbPrefix = left( fbPrefix, len( fbPrefix ) - 1 )
-	end if
-#endif
-
-end sub
-
 '':::::
 function fbGetEntryPoint( ) as string static
 
-	function = *env.target.entrypoint
+	'' All targets use main(), except for xbox...
+	if (env.clopt.target = FB_COMPTARGET_XBOX) then
+		function = "XBoxStartup"
+	else
+		function = "main"
+	end if
 
 end function
 
@@ -878,25 +676,50 @@ function fbGetModuleEntry( ) as string static
 
 end function
 
-'':::::
-function fbPreInclude _
-	( _
-		byval preinclist as TLIST ptr _
-	) as integer
+'' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
+sub fbAddLib(byval libname as zstring ptr)
+	strsetAdd(@env.libs, *libname, FALSE)
+end sub
 
-	if( preinclist <> NULL ) then
-		dim as string ptr incf = listGetHead( preinclist )
-		do while( incf <> NULL )
-			if( fbIncludeFile( *incf, TRUE ) = FALSE ) then
-				return FALSE
-			end if
+sub fbAddLibPath(byval path as zstring ptr)
+	strsetAdd(@env.libpaths, pathStripDiv(*path), FALSE)
+end sub
 
-			incf = listGetNext( incf )
-		loop
-	end if
+private sub fbParsePreDefines()
+	dim as string defid, deftext
+	dim as string ptr def = listGetHead(@env.predefines)
+	while (def)
+		dim as integer idlength = instr(*def, "=") - 1
+		if (idlength < 0) then
+			idlength = len(*def)
+		end if
 
-	function = TRUE
+		defid = left(*def, idlength)
+		deftext = right(*def, len(*def) - idlength - 1)
 
+		'' If no text was given, default to '1'
+		'' (this also means that it's not possible to make
+		'' empty defines with -d)
+		if (len(deftext) = 0) then
+			deftext = "1"
+		end if
+
+		'' TODO: Check for invalid identifier and duplicated definition
+		symbAddDefine(defid, deftext, len(deftext))
+
+		def = listGetNext(def)
+	wend
+end sub
+
+private function fbParsePreIncludes() as integer
+	dim as string ptr file = listGetHead(@env.preincludes)
+	while (file)
+		if (fbIncludeFile(*file, TRUE) = FALSE) then
+			return FALSE
+		end if
+		file = listGetNext(file)
+	wend
+	return TRUE
 end function
 
 '':::::
@@ -904,11 +727,9 @@ function fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
-		byval ismain as integer, _
-		byval preinclist as TLIST ptr _
+		byval ismain as integer _
 	) as integer
 
-    dim as integer res
 	dim as double tmr
 
 	function = FALSE
@@ -956,11 +777,12 @@ function fbCompile _
 
 	tmr = timer( )
 
-	res = fbPreInclude( preinclist )
+	fbParsePreDefines()
 
-	if( res = TRUE ) then
+	dim as integer ok = fbParsePreIncludes()
+	if (ok) then
 		'' parse
-		res = cProgram( )
+		ok = cProgram( )
 	end if
 
 	tmr = timer( ) - tmr
@@ -980,7 +802,7 @@ function fbCompile _
 	end if
 
 	'' check if any label undefined was used
-	if( res = TRUE ) then
+	if (ok) then
 		symbCheckLabels( )
 		function = (errGetCount( ) = 0)
 	else
@@ -998,197 +820,14 @@ function fbCheckRestartCompile _
 
 end function
 
-'':::::
-sub fbListLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: list of FBS_LIB
-
-	symbListLibs( dstlist, dsthash, delnodes )
-
+sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+	strsetCopy(@env.libs, libs)
+	strsetCopy(@env.libpaths, libpaths)
 end sub
 
-'':::::
-sub fbListLibsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: both lists of FBS_LIB
-
-	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
-
-end sub
-
-'':::::
-sub fbListLibPaths _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: list of FBS_LIB
-
-	symbListLibPaths( dstlist, dsthash, delnodes )
-
-end sub
-
-'':::::
-sub fbListLibPathsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-	'' note: both lists of FBS_LIB
-
-	symbListLibsEx( srclist, srchash, dstlist, dsthash, delnodes )
-
-end sub
-
-'':::::
-sub fbAddGccLib _
-	( _
-		byval lib_filename as zstring ptr, _
-		byval lib_id as integer _
-	)
-
-	if lib_id >= ubound(gccLibFileNameTb) then
-		redim preserve gccLibFileNameTb(lib_id)
-		redim preserve gccLibTb(lib_id)
-	end if
-
-	gccLibFileNameTb(lib_id) = lib_filename
-
-end sub
-
-'':::::
-function fbGetGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-	if( len( gccLibTb( lib_id ) ) = 0 ) then
-		function = *gccLibFileNameTb( lib_id )
-	else
-		function = gccLibTb( lib_id )
-	end if
-
-end function
-
-'':::::
-sub fbSetGccLib _
-	( _
-		byval lib_id as integer, _
-		byref lib_name as string _
-	)
-
-	gccLibTb( lib_id ) = lib_name
-
-end sub
-
-'' :::::
-function fbFindGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-	dim as string file_loc
-
-	if gccLibFileNameTb( lib_id ) = NULL then return ""
-
-	file_loc = fbGetPath( FB_PATH_LIB ) + *gccLibFileNameTb( lib_id )
-
-	'' Cross compiling? then expect that the needed file will be in the target directory
-	if( fbIsCrossComp() ) then
-		return file_loc
-	end if
-
-	'' let the ones in lib override if necessary
-	if( hFileExists( file_loc ) ) then
-		return file_loc
-	end if
-
-'' only query gcc if the host is unix-like
-#if defined(__FB_LINUX__) or defined(__FB_FREEBSD__) or defined(__FB_OPENBSD__) or defined(__FB_DARWIN__)
-
-	dim as string path
-	dim as integer ff = any
-
-	function = ""
-
-	path = fbFindBinFile( "gcc" )
-	if( len( path ) = 0 ) then
-		exit function
-	end if
-
-	path += " -m32 -print-file-name="
-	path += *gccLibFileNameTb( lib_id )
-
-	ff = freefile
-	if( open pipe( path, for input, as ff ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
-		exit function
-	end if
-
-	input #ff, file_loc
-
-	close ff
-
-	dim as string short_loc = hStripPath( file_loc )
-
-	if( file_loc = short_loc ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, *gccLibFileNameTb( lib_id ), -1 )
-		exit function
-	end if
-
-#endif
-
-	function = file_loc
-
-end function
-
-'':::::
-sub fbGetDefaultLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr _
-	)
-
-	'' note: list of FBS_LIB
-
-#macro hAddLib( libname )
-	symbAddLibEx( dstlist, dsthash, libname, TRUE )
-#endmacro
-
-	'' don't add default libs?
-	if( env.clopt.nodeflibs ) then
-		exit sub
-	end if
-
-	'' select the right FB rtlib
-	if( env.clopt.multithreaded ) then
-		hAddLib( "fbmt" )
-	else
-		hAddLib( "fb" )
-	end if
-
-	hAddLib( "gcc" )
-
-	fbc.vtbl.getDefaultLibs( dstlist, dsthash )
-
+sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+	strsetCopy(libs, @env.libs)
+	strsetCopy(libpaths, @env.libpaths)
 end sub
 
 ''::::
@@ -1389,16 +1028,17 @@ function fbIncludeFile _
 		if( hFileExists( filename ) = FALSE ) then
 
 			'' 3rd) try finding it at the inc paths
-			for i = env.incpaths-1 to 0 step -1
-				incfile = incpathTB(i)
-				incfile += *filename
-				if( hFileExists( incfile ) ) then
-					exit for
+			dim as string ptr path = listGetHead(@env.includepaths)
+			while (path)
+				incfile = *path + FB_HOST_PATHDIV + *filename
+				if (hFileExists(incfile)) then
+					exit while
 				end if
-			next
+				path = listGetNext(path)
+			wend
 
 			'' not found?
-			if( i < 0 ) then
+			if (path = NULL) then
 				errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
 				return errFatal( )
 			end if
@@ -1476,88 +1116,6 @@ function fbIncludeFile _
 	'' pop context
 	env.includerec -= 1
 	env.inf = infileTb( env.includerec )
-
-end function
-
-'':::::
-sub fbReportRtError _
-	( _
-		byval modname as zstring ptr, _
-		byval funname as zstring ptr, _
-		byval errnum as integer _
-	) static
-
-	print
-
-	print "Internal compiler error"; errnum;
-	if( modname <> NULL ) then
-		print " at "; *modname; "::";
-		if( funname <> NULL ) then
-			print *funname;
-		end if
-	end if
-	print " while parsing "; env.inf.name;
-	if( parser.currproc <> NULL ) then
-		print ":"; *symbGetName( parser.currproc );
-	end if
-	print "("; cuint( lexLineNum( ) ); ")"
-
-	print
-
-end sub
-
-
-'':::::
-function fbFindBinFile _
-	( _
-		byval filename as zstring ptr, _
-		byval findopts as FB_FINDBIN _
-	) as string
-
-	dim path as string
-	dim isenv as integer = FALSE
-	dim as FB_FINDBIN opts = any
-
-	function = ""
-
-	if( findopts = FB_FINDBIN_USE_DEFAULT ) then
-		opts = fbGetOption( FB_COMPOPT_FINDBIN )
-	else
-		opts = findopts
-	end if
-
-	'' get from environment variable if allowed
-	if( (opts and FB_FINDBIN_ALLOW_ENVVAR) <> 0 ) then
-		path = environ( ucase(*filename) )
-		if( len(path) ) then
-			isenv = TRUE
-		end if
-	end if
-
-	'' if not set, get a default value
-	if( len(path) = 0 ) then
-		path = fbGetPath( FB_PATH_BIN )
-		path += fbc.triplet
-		path += *filename
-		path += FB_HOST_EXEEXT
-	end if
-
-	'' Found it?
-	if( hFileExists( path ) ) then
-		return path
-	end if
-
-	if( isenv = FALSE ) then
-
-		'' system default allowed?
-		if( (opts and FB_FINDBIN_ALLOW_SYSTEM) <> 0 ) then
-			path = fbc.triplet + *filename + FB_HOST_EXEEXT
-			return path
-		end if
-
-	end if
-
-	errReportEx( FB_ERRMSG_EXEMISSING, path, -1 )
 
 end function
 

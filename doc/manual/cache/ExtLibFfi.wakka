@@ -1,0 +1,105 @@
+{{fbdoc item="title" value="libffi"}}----
+""LibFFI"" is a foreign function interface library allowing programs to arbitrarily call native function without pointers and to bind function pointers to generic functions which take variable arguments via closures. It is used to bind native code in modern scripting languages.
+
+Website: http://sourceware.org/libffi/
+Platforms supported: Windows, Linux, DOS
+Headers to include: ffi.bi
+
+{{fbdoc item="ex"}}
+	Hello world:
+	{{fbdoc item="filename" value="examples/manual/libraries/ffi/helloworld.bas"}}%%(freebasic)
+#include "ffi.bi"
+
+' Simple "puts" equivalent function
+function printer cdecl (byval s as zstring ptr) as integer
+	print *s
+	return 42
+end function
+
+' Initialize the argument info vectors
+dim s as zstring ptr
+dim args(0 to 0) as ffi_type ptr = {@ffi_type_pointer}
+dim values(0 to 0) as any ptr = {@s}
+
+' Initialize the cif
+dim cif as ffi_cif
+dim result as ffi_status
+result = ffi_prep_cif( _
+	@cif,              _ ' call interface object
+	FFI_DEFAULT_ABI,   _ ' binary interface type
+	1,                 _ ' number of arguments
+	@ffi_type_uint,    _ ' return type
+	@args(0)           _ ' arguments
+)
+
+' Call function
+dim return_value as integer
+if result = FFI_OK then
+	s = @"Hello world"
+	ffi_call(@cif, FFI_FN(@printer), @return_value, @values(0))
+
+	' values holds a pointer to the function's arg, so to
+	' call puts() again all we need to do is change the
+	' value of s */
+	s = @"This is cool!"
+	ffi_call(@cif, FFI_FN(@printer), @return_value, @values(0))
+	print using "Function returned &"; return_value
+end if
+%%
+	Closures:
+	{{fbdoc item="filename" value="examples/manual/libraries/ffi/closures.bas"}}%%(freebasic)
+#include "ffi.bi"
+
+' Acts like puts with the file given at time of enclosure. 
+Sub Printer Cdecl(ByVal cif As ffi_cif Ptr, ByVal ret As Any Ptr, ByVal args As Any Ptr Ptr, ByVal File As Any Ptr)
+	Write #*CPtr(Integer Ptr, file), **CPtr(ZString Ptr Ptr, args[0])
+	*CPtr(UInteger Ptr, ret) = 42
+End Sub
+
+' Allocate the closure and function binding
+Dim PrinterBinding As Function(ByVal s As ZString Ptr) As Integer
+Dim closure as ffi_closure ptr 
+closure = ffi_closure_alloc(sizeof(ffi_closure), @PrinterBinding)
+
+If closure <> 0 Then
+	' Initialize the argument info vector
+	Dim args(0 to 0) as ffi_type ptr = {@ffi_type_pointer}
+	
+	' Initialize the call interface
+	Dim cif as ffi_cif
+	Dim prep_result as ffi_status = ffi_prep_cif( _
+	    @cif,            _ ' call interface object
+	    FFI_DEFAULT_ABI, _ ' binary interface type
+	    1,               _ ' number of arguments
+	    @ffi_type_uint,  _ ' return type
+	    @args(0)         _ ' arguments
+	) 
+	if prep_result = FFI_OK Then
+	    ' Open console file to send to PrinterBinding as user data
+	    Dim ConsoleFile As Integer = FreeFile()
+	    Open Cons For Output As ConsoleFile
+	    
+	    ' Initialize the closure, setting user data to the console file
+	    prep_result = ffi_prep_closure_loc( _
+	        closure,         _ ' closure object
+	        @cif,            _ ' call interface object
+	        @Printer,        _ ' actual closure function
+	        @ConsoleFile,    _ ' user data, our console file #
+	        PrinterBinding   _ ' pointer to binding
+	    )
+	    If prep_result = FFI_OK Then
+	        ' Call binding as a natural function call
+	        Dim Result As Integer
+	        Result = PrinterBinding("Hello World!")
+	        Print Using "Returned &"; Result
+	    End IF
+	    
+	    Close ConsoleFile
+	End If
+End If
+
+' Clean up
+ffi_closure_free(closure)
+%%
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

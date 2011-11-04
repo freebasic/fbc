@@ -11,7 +11,7 @@ Creates a conditional variable to be used in synchronizing threads
 	A handle to a newly created conditional variable, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Once the conditional is ##**KeyPgCondCreate Condcreate**##d and the threads are started, one or more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional is ##**[[KeyPgCondCreate Condcreate]]**##d and the threads are started, one or more of them can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/threads/condcreate.bas"}}%%(freebasic)

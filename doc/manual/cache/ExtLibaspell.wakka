@@ -2,10 +2,61 @@
 Free and Open Source spell checker.
 
 Website: http://aspell.net/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: aspell.bi
-Version: 0.50
-Example included: yes, in examples/libraries/ASpell/aspell_test.bas
 
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/aspell.bas"}}%%(freebasic)
+'' GNU-ASspell example, converted from http://aspell.net/win32/
+
+#include once "aspell.bi"
+
+dim as AspellConfig ptr spell_config = new_aspell_config()
+
+'' Change this to suit the installed dictionary language if desired
+aspell_config_replace(spell_config, "lang", "en_CA")
+
+'' Create speller object
+dim as AspellCanHaveError ptr possible_err = new_aspell_speller(spell_config)
+if (aspell_error_number(possible_err) <> 0) then
+	print *aspell_error_message(possible_err)
+	end 1
+end if
+dim as AspellSpeller ptr speller = to_aspell_speller(possible_err)
+
+dim as string word
+do
+	print 
+	input "Enter a word (blank to quit): ", word
+	if (len(word) = 0) then
+		exit do
+	end if
+
+	if (aspell_speller_check(speller, strptr(word), len(word)) <> 0) then
+		print "Word is Correct"
+	else
+		print "Suggestions:"
+		dim as AspellStringEnumeration ptr elements = _
+			aspell_word_list_elements(aspell_speller_suggest(speller, strptr(word), len(word)))
+		do
+			dim as zstring ptr w = aspell_string_enumeration_next(elements)
+			if (w = 0) then
+				exit do
+			end if
+			print "   "; *w
+		loop
+		delete_aspell_string_enumeration(elements)
+	end if
+
+	' - Report the replacement
+	'aspell_speller_store_repl(speller, misspelled_word, size,
+	'                          correctly_spelled_word, size);
+
+	' - Add to session or personal dictionary
+	'aspell_speller_add_to_session|personal(speller, word, size)
+loop
+
+delete_aspell_speller(speller)
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

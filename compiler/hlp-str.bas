@@ -32,7 +32,7 @@
 	end if														:_
                                                                 :_
 	if( dst_len <> src_len ) then                               :_
-		*dst = allocate( (src_len+1) * len( _type ) )    		:_
+		*dst = xallocate( (src_len+1) * len( _type ) )    		:_
 	end if
 
 '':::::
@@ -50,10 +50,10 @@
                                                                 :_
 	if( *dst = NULL ) then                                      :_
 		dst_len = 0                                             :_
-		*dst = allocate( (src_len+1) * len( _type ) )			:_
+		*dst = xallocate( (src_len+1) * len( _type ) )			:_
 	else                                                        :_
 		dst_len = len( **dst )									:_
-		*dst = reallocate( *dst, (dst_len+src_len+1) * len( _type ) ) :_
+		*dst = xreallocate( *dst, (dst_len+src_len+1) * len( _type ) ) :_
 	end if
 
 '':::::
@@ -185,7 +185,7 @@ function ZstrDup _
 
 	dim as zstring ptr dst
 
-	dst = allocate( len( *s ) + 1 )
+	dst = xallocate( len( *s ) + 1 )
 	*dst = *s
 
 	function = dst
@@ -200,7 +200,7 @@ function WstrDup _
 
 	dim as wstring ptr dst
 
-	dst = allocate( len( *s ) * len( wstring ) + len( wstring ) )
+	dst = xallocate( len( *s ) * len( wstring ) + len( wstring ) )
 	*dst = *s
 
 	function = dst

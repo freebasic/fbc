@@ -13,7 +13,7 @@
 '':::::
 sub symbFwdRefInit( )
 
-	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
 
 	symb.fwdrefcnt = 0
 
@@ -22,7 +22,7 @@ end sub
 '':::::
 sub symbFwdRefEnd( )
 
-	listFree( @symb.fwdlist )
+	listEnd( @symb.fwdlist )
 
 end sub
 

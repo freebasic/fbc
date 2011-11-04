@@ -60,7 +60,6 @@ int fb_SerialOpen( struct _FB_FILE *handle,
     DWORD dwDefaultRxBufferSize = 16384;
     DWORD dwDesiredAccess = 0;
     DWORD dwShareMode = 0;
-    size_t uiDevNameLen;
     char *pszDev, *p;
     HANDLE hDevice;
     int res;
@@ -117,7 +116,6 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 			if( p )
 				*p = '\0';
 		}
-		uiDevNameLen = strlen( pszDev );
 
 #if 0
     /* FIXME: Use default COM properties by default */

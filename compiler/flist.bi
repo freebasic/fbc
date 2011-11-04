@@ -17,17 +17,14 @@ type TFLIST
 	listtb 		as TLISTTB ptr
 end type
 
-declare function flistNew _
+declare sub flistInit _
 	( _
 		byval flist as TFLIST ptr, _
 		byval items as integer, _
 		byval itemlen as integer _
-	) as integer
+	)
 
-declare function flistFree _
-	( _
-		byval flist as TFLIST ptr _
-	) as integer
+declare sub flistEnd(byval flist as TFLIST ptr)
 
 declare function flistNewItem _
 	( _

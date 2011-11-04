@@ -16,14 +16,14 @@
 '':::::
 sub astCallInit
 
-	listNew( @ast.call.tmpstrlist, 32, len( AST_TMPSTRLIST_ITEM ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.call.tmpstrlist, 32, len( AST_TMPSTRLIST_ITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 '':::::
 sub astCallEnd
 
-	listFree( @ast.call.tmpstrlist )
+	listEnd( @ast.call.tmpstrlist )
 
 end sub
 

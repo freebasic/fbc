@@ -1,5 +1,9 @@
-{{fbdoc item="title" value="Library Headers Index"}}----
-An index of header files distributed with FreeBASIC for use with external libraries.  Only the headers (include files) are distributed with FreeBASIC.  To obtain a needed external library, visit the link shown on the information for each individual library below.
+{{fbdoc item="title" value="External Libraries Index"}}----
+This is a list of some of the external libraries that can be used from ""FreeBASIC"". The header files to many of them are distributed with ""FreeBASIC"" by default. Visit the link shown for each individual library below to see more information, including examples.
+
+For more headers (not all of them are included in ""FreeBASIC"" by default), please visit the [[http://code.google.com/p/freebasic-headers/ freebasic-headers]] project, which actively works on header translation, aswell as the [[http://www.freebasic.net/forum/ FB forum]], where users post new translations from time to time.
+
+To obtain a needed external library or DLL, please visit the library's homepage.
 
 {{fbdoc item="section" value="Graphics"}}
 	{{fbdoc item="keyword" value="ExtLiballegro|allegro"}} - Game programming library.
@@ -48,6 +52,8 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibjni|jni"}} - Standard programming interface for writing Java native methods and embedding the Java virtual machine* into native applications.
 	{{fbdoc item="keyword" value="ExtLibLua|Lua"}} - Lightweight, embeddable scripting engine using the Lua language.
 	{{fbdoc item="keyword" value="ExtLibspidermonkey|spidermonkey"}} - Embeddable javascript engine.
+	{{fbdoc item="keyword" value="ExtLibFfi|ffi"}} - Foreign function interface and closure library
+	{{fbdoc item="keyword" value="ExtLibJit|jit"}} - Runtime (just in time) compilation library
 
 {{fbdoc item="section" value="Cryptography"}}
 	{{fbdoc item="keyword" value="ExtLibcryptlib|cryptlib"}} - A powerful security toolkit which allows even inexperienced crypto programmers to easily add encryption and authentication services to their software.
@@ -75,8 +81,10 @@ An index of header files distributed with FreeBASIC for use with external librar
 	{{fbdoc item="keyword" value="ExtLibtre|tre"}} - Lightweight, robust, and efficient POSIX compliant regexp matching library.
 
 {{fbdoc item="section" value="Compression"}}
+	{{fbdoc item="keyword" value="ExtLibLzma|lzma"}} - Strong LZMA-based compression library used for .lzma and .xz file formats
 	{{fbdoc item="keyword" value="ExtLibLzo|LZO"}} - Offers fast compression and very fast decompression.
 	{{fbdoc item="keyword" value="ExtLibquicklz|QuickLZ"}} - Very fast Compression Library
+	{{fbdoc item="keyword" value="ExtLibZip|zip"}} - Easy-to-use library for creating and unpacking .zip files
 	{{fbdoc item="keyword" value="ExtLibzlib|zlib"}} - Lossless data compression library unencumbered by patents.
 
 {{fbdoc item="section" value="System Specific"}}

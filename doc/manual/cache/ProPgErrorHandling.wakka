@@ -90,8 +90,8 @@ Sub foo
 End Sub
 %%
 
-	If the //[[CompilerOpte -e]]// switch is used the error handler must terminate the program. 
-	With //[[CompilerOptex -ex]]// the error routine can end by using ##[[KeyPgResume Resume]]## (retries the statement that caused the error) or ##[[KeyPgResumenext Resume Next]]## (continues at the next instruction) .
+	If the //[[CompilerOpte -e]]// switch is used (whatever the //[[CompilerOptlang -lang]]// dialect), the error handler must terminate the program. 
+	With //[[CompilerOptex -ex]]// and //[[CompilerOptlang -lang qb]]// dialect only, the error routine can end by using ##[[KeyPgResume Resume]]## (retries the statement that caused the error) or ##[[KeyPgResumenext Resume Next]]## (continues at the next instruction) .
 
 {{fbdoc item="section" value="Error codes"}}
 

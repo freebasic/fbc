@@ -1067,49 +1067,53 @@ private function hOptFieldsCalc _
 	end if
 
 	'' (@((@foo + offsetof(bar))->bar) + offsetof(baz)))->baz to
-    if( n->class = AST_NODECLASS_FIELD ) then
-    	l = n->l
+	if( n->class = AST_NODECLASS_FIELD ) then
+		l = n->l
 
-    	if( l->class = AST_NODECLASS_DEREF ) then
-	    	dim as ASTNODE ptr ll = l->l
-	    	if( ll->class = AST_NODECLASS_BOP ) then
-	    		dim as ASTNODE ptr lll = ll->l
-	    		if( lll->class = AST_NODECLASS_ADDROF ) then
-	    			dim as ASTNODE ptr llll = lll->l
-	    			if( llll->class = AST_NODECLASS_FIELD ) then
-		    			dim as ASTNODE ptr lllll = llll->l
-		    			if( lllll->class = AST_NODECLASS_DEREF ) then
-		    				l->l = astNewBOP( AST_OP_ADD, _
-		    						   	   	  lllll->l, _
-		    						   	   	  ll->r )
-		    				astDelNode( ll )
-		    				astDelNode( lll )
-		    				astDelNode( llll )
-		    				astDelNode( lllll )
-		    			end if
-		    		end if
-	    		end if
-	    	end if
-    	else
+		if( l->class = AST_NODECLASS_DEREF ) then
+			dim as ASTNODE ptr ll = l->l
+			'' Note: DEREF->l can be NULL in case it was dereferencing a constant
+			if (ll) then
+				if( ll->class = AST_NODECLASS_BOP ) then
+					dim as ASTNODE ptr lll = ll->l
+					if( lll->class = AST_NODECLASS_ADDROF ) then
+						dim as ASTNODE ptr llll = lll->l
+						if( llll->class = AST_NODECLASS_FIELD ) then
+							dim as ASTNODE ptr lllll = llll->l
+							if( lllll->class = AST_NODECLASS_DEREF ) then
+								dim as ASTNODE ptr llllll = lllll->l
+								if (llllll) then
+									l->l = astNewBOP( AST_OP_ADD, llllll, ll->r )
+									astDelNode( ll )
+									astDelNode( lll )
+									astDelNode( llll )
+									astDelNode( lllll )
+								end if
+							end if
+						end if
+					end if
+				end if
+			end if
+		else
 
-	    	'' resolve bitfields before deleting the field, because
-	    	'' otherwise that'd only happen in LoadFIELD/LoadASSIGN,
-	    	'' which won't get called since the field node is destroyed.
-            if( parent ) then
-                if( parent->class = AST_NODECLASS_ASSIGN ) then
-                    astUpdateBitfieldAssignment( n, parent->r )
-                else
-                    astUpdateBitfieldAccess( l )
-                    astDelNode( n )
-                    n = l
-                end if
-            else
-                astDelNode( n )
-                n = l
-            end if
+			'' resolve bitfields before deleting the field, because
+			'' otherwise that'd only happen in LoadFIELD/LoadASSIGN,
+			'' which won't get called since the field node is destroyed.
+			if( parent ) then
+				if( parent->class = AST_NODECLASS_ASSIGN ) then
+					astUpdateBitfieldAssignment( n, parent->r )
+				else
+					astUpdateBitfieldAccess( l )
+					astDelNode( n )
+					n = l
+				end if
+			else
+				astDelNode( n )
+				n = l
+			end if
 
-    	end if
-    end if
+		end if
+	end if
 
 	function = n
 

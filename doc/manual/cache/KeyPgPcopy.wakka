@@ -21,73 +21,65 @@ Copies one graphical or text page onto another
 	If the ##//source//## argument is omitted, the current working page is assumed.  If the ##//destination//## page is omitted, the current visible page is assumed.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)
+
+	{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)
 screenres 320, 240, 32, 2    'Sets up the screen to be 320x240 in 32-bit color with 2 video pages.
 dim as integer max_x_value = 270, x_value = 50    'Dimension our working variables.
 
 do while x_value < max_x_value     'Loop while x_value is less than the max
-	screenset 2,1     'Sets the working page to 2 and the displayed page to 1
+	screenset 1,0     'Sets the working page to 1 and the displayed page to 0
 	cls    'Clears the screen so we can start fresh
-	circle (x_value,50),50,&h00FFFF00     'Draws a circle with a 50 pixel radius in yellow on page 2
-	screenset 1,1    'Sets the working page to 1 and the displayed page to 1
-	screensync    'Waits for vertical refresh
-	pcopy 2,1    'Copies our circle from page 2 to page 1
+	circle (x_value,50),50,&h00FFFF00     'Draws a circle with a 50 pixel radius in yellow on page 1
+	pcopy 1,0    'Copies our circle from page 1 to page 0
 	x_value += 1     'Increments x_value so it will move.
 	sleep 25     'Waits for 25 milliseconds.
 loop     'Goes back to do as long as x_value is less than x_max_value
 
 sleep   'Waits for any key to be pressed so you can see the work done.
 %%
+	
+	{{fbdoc item="filename" value="examples/manual/gfx/pcopy_cons.bas"}}%%(freebasic)
+'' Console mode example:
 
-{{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/gfx/pcopy_cons.bas"}}%%(freebasic)
-' Console mode example:
-
-'' set the working page number to 0, and the visible page number to 1
+'' Set the working page number to 0, and the visible page number to 1
 #if __FB_LANG__ = "QB"
-screen ,, 0, 1
+Screen ,, 0, 1
 #else
-screen , 0, 1
+Screen , 0, 1
 #endif
 
-dim as integer i, frames, fps
-dim as double t
+Dim As Integer i, frames, fps
+Dim As Double t
 
-t = timer
+t = Timer
 
-do
-
-
-	'' fill working page with a certain color and character
-	cls
-	locate 1, 1
-	color (i and 15), 0
-	print string$(80 * 25, hex$(i, 1));
+Do
+	'' Fill working page with a certain color and character
+	Cls
+	Locate 1, 1
+	Color (i And 15), 0
+	Print String$(80 * 25, Hex$(i, 1));
 	i += 1
 
-
-	'' show frames per second
-	color 15, 0
-	locate 1, 1
-	print "fps: " & fps,
-	if int(t) <> int(timer) then
-		t = timer
+	'' Show frames per second
+	Color 15, 0
+	Locate 1, 1
+	Print "fps: " & fps,
+	If Int(t) <> Int(Timer) Then
+		t = Timer
 		fps = frames
 		frames = 0
-	end if
+	End If
 	frames += 1
 
+	'' Copy working page to visible page
+	PCopy
 
-	'' copy working page to visible page
-	pcopy
+	'' Sleep 50ms per frame to free up cpu time
+	Sleep 50, 1
 
-
-	'' sleep 50ms per frame to free up cpu time
-	sleep 50, 1
-
-
-	'' run loop until user presses a key
-loop until len(inkey$)
+	'' Run loop until the user presses a key
+Loop Until Len(Inkey$)
 %%
 
 {{fbdoc item="target"}}

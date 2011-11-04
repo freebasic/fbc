@@ -60,11 +60,18 @@
 	{{fbdoc item="keyword" value="GfxDefPalettes|Default Palettes"}}
 
 <<>>{{fbdoc item="section" value="Tutorials"}}
-	How to write programs in ""FreeBASIC"".
 	
 	{{fbdoc item="keyword" value="CatPgProgrammer|Programmer's Guide"}}
+		""FreeBASIC"" explained.
+	
 	{{fbdoc item="keyword" value="CommunityTutorials|Community Tutorials"}}
+		How to learn programming, write games or use the Windows API, and more.
+	
 	{{fbdoc item="keyword" value="CodeLibrary|Community Code Library"}}
+		Tips and tricks and full programs available for review.
+	
+	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index"}}
+		Information and examples on third-party libraries.
 
 {{fbdoc item="section" value="Using the FreeBASIC compiler"}}
 	The ""FreeBASIC"" compiler is a command line tool that generates executables from ""FreeBASIC"" source code. It doesn't come with a source code editor. Still, IDEs specifically for ""FreeBASIC"" are available, aswell as ""FreeBASIC"" support in many other IDEs and code editors.
@@ -96,9 +103,12 @@
 	{{fbdoc item="keyword" value="GlossaryIndex|Glossary"}}
 	{{fbdoc item="keyword" value="CatPgMisc|Miscellaneous Keywords"}}
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
-	{{fbdoc item="keyword" value="ExtLibTOC|Library Headers Index"}}
 	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}
 	{{fbdoc item="keyword" value="TblRuntimeErrors|Runtime Error Codes"}}
+
+{{fbdoc item="section" value="FreeBASIC Internals"}}
+	{{fbdoc item="keyword" value="DevBuild|Compiling FreeBASIC itself"}}
+	{{fbdoc item="keyword" value="DevFbcTestSuite|Running the FreeBASIC test suite"}}
 
 >>::c::
 

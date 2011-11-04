@@ -119,9 +119,9 @@ private function _init _
 		byval backend as FB_BACKEND _
 	) as integer
 
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistNew( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
-	listNew( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
+	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
+	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
 				 IR_OPT_CPU_BOPSELF or _
@@ -141,9 +141,9 @@ end function
 '':::::
 private sub _end
 
-	listFree( @ctx.callargs )
-	flistFree( @ctx.forwardlist )
-	flistFree( @ctx.vregTB )
+	listEnd( @ctx.callargs )
+	flistEnd( @ctx.forwardlist )
+	flistEnd( @ctx.vregTB )
 
 end sub
 
@@ -933,7 +933,7 @@ private sub hWriteFTOI _
 	end select
 
 
-#ifdef TARGET_X86
+	'' TODO: x86 specific
 	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
 				!"\tvolatile " & rtype_str & !" result;\n" & _
 				!"\t__asm__ (\n" & _
@@ -944,9 +944,6 @@ private sub hWriteFTOI _
 				!"\t);\n" & _
 				!"\treturn result;\n" & _
 				!"}", FALSE )
-#else
-	#error !!!WRITEME!!!
-#endif
 
 end sub
 
@@ -1878,17 +1875,6 @@ private sub _emitJmpTb _
 	case AST_JMPTB_LABEL
 		hWriteLine( "&&" & *symbGetMangledName( label ) & ",", FALSE )
 	end select
-
-end sub
-
-'':::::
-private sub _emitInfoSection _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -2917,7 +2903,6 @@ function irHLC_ctor _
 		@_emitASM, _
 		@_emitComment, _
 		@_emitJmpTb, _
-		@_emitInfoSection, _
 		@_emitBop, _
 		@_emitBopEx, _
 		@_emitUop, _

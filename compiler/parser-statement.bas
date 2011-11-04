@@ -20,6 +20,7 @@ function cStatement as integer
 
 	'' ':'?
 	if( lexGetToken( ) = FB_TK_STMTSEP ) then
+		parser.stmt.cnt += 1
 		lexSkipToken( )
 	end if
 
@@ -35,6 +36,8 @@ function cStatement as integer
 				end if
 			end if
 		end if
+
+		parser.stmt.cnt += 1
 
 		'' ':'?
 		if( lexGetToken( ) <> FB_TK_STMTSEP ) then
@@ -57,7 +60,8 @@ function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
 	do
 		select case lexGetToken( lexflags )
 		case FB_TK_STMTSEP, FB_TK_EOL
-        	lexSkipToken( lexflags )
+			parser.stmt.cnt += 1
+			lexSkipToken( lexflags )
 		case else
 			exit do
 		end select

@@ -236,14 +236,7 @@ function symbAddField _
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( dtype, subtype, TRUE )
-
-	'' or use the non-padded len if it's a non-array UDT field (for array
-	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
-		if( dimensions = 0 ) then
-			lgt = subtype->udt.unpadlgt
-		end if
+		lgt	= symbCalcLen( dtype, subtype )
 	end if
 
     '' check if the parent ofs must be updated
@@ -533,14 +526,14 @@ sub symbInsertInnerUDT _
 
 	'' struct? update ofs + len
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
-		parent->ofs += inner->udt.unpadlgt
+		parent->ofs += inner->lgt
 		parent->lgt = parent->ofs
 
 	'' union.. update len, if bigger
 	else
 		parent->ofs = 0
-		if( inner->udt.unpadlgt > parent->lgt ) then
-			parent->lgt = inner->udt.unpadlgt
+		if( inner->lgt > parent->lgt ) then
+			parent->lgt = inner->lgt
 		end if
 	end if
 
@@ -686,7 +679,7 @@ sub symbStructEnd _
 		symbNestEnd( FALSE )
 	end if
 
-	'' save length w/o padding
+	'' save length without the tail padding added below
 	sym->udt.unpadlgt = sym->lgt
 
 	'' do round?
@@ -813,7 +806,7 @@ sub symbDelStruct _
 
 	''
 	if( (s->udt.options and FB_UDTOPT_ISANON) = 0 ) then
-		hashFree( @s->udt.ns.hashtb.tb )
+		hashEnd( @s->udt.ns.hashtb.tb )
 	end if
 
 	'' del the udt node
@@ -824,21 +817,6 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function symbGetUDTLen _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval unpadlen as integer _
-	) as integer static
-
-	if( unpadlen ) then
-		function = s->udt.unpadlgt
-	else
-		function = s->lgt
-	end if
-
-end function
 
 '':::::
 function symbGetUDTFirstElm _

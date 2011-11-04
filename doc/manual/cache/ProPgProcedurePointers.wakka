@@ -91,6 +91,40 @@ wend
 print "Value of 'i' after all operations performed: " & i
 %%
 
+{{fbdoc item="section" value="Pointers to member procedures"}}
+	Method pointers are not implemented yet, but it is possible to work-around that by using a static wrapper:
+
+{{fbdoc item="filename" value="examples/manual/proguide/procptrs/method-ptr.bas"}}%%(freebasic)
+/''
+ ' This example shows how you can simulate getting a class method pointer, 
+ ' until support is properly implemented in the compiler.
+ '
+ ' When this is supported, you will only need to remove the static wrapper
+ ' function presented here, to maintain compatibility. 
+ '/
+
+type T
+	declare function test(byval number as integer) as integer
+	declare static function test(byref this as T, byval number as integer) as integer
+	dim as integer i = 420
+end type
+
+function T.test(byval number as integer) as integer
+	return i + number
+end function
+
+function T.test(byref this as T, byval number as integer) as integer
+	return this.test(number)
+end function
+
+dim p as function(byref as T, byval as integer) as integer
+p = @T.test
+
+dim as T obj
+
+print p(obj, 69) '' prints 489
+%%
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub Sub]]##
 	- ##[[KeyPgFunction Function]]##

@@ -13,19 +13,16 @@ type TPOOL
 	chunkTb		as TLIST ptr
 end type
 
-declare function poolNew _
+declare sub poolInit _
 	( _
 		byval pool as TPOOL ptr, _
 		byval items as integer, _
 		byval minlen as integer, _
 		byval maxlen as integer _
-	) as integer
-
-
-declare sub poolFree _
-	( _
-		byval pool as TPOOL ptr _
 	)
+
+
+declare sub poolEnd(byval pool as TPOOL ptr)
 
 declare function poolNewItem _
 	( _

@@ -846,9 +846,7 @@ end sub
 private sub hInitKeywordsTB
     dim as integer t, i
 
-	hashInit( )
-
-	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
+	hashInit( @emit.keyhash, EMIT_MAXKEYWORDS )
 
 	'' add reg names
 	for t = 0 to EMIT_MAXRTABLES-1
@@ -876,9 +874,7 @@ end sub
 private sub hEndKeywordsTB
 
 	if( emit.keyinited ) then
-		hashFree( @emit.keyhash )
-
-		hashEnd( )
+		hashEnd( @emit.keyhash )
 	end if
 
 	emit.keyinited = FALSE
@@ -6659,7 +6655,7 @@ private sub _close _
 		'' compiling only?
 		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
 			'' store libs, paths and cmd-line options in the obj
-			emitWriteInfoSection( @symb.liblist, @symb.libpathlist )
+			emitWriteInfoSection(@env.libs.list, @env.libpaths.list)
 		end if
 	end if
 
@@ -7059,7 +7055,8 @@ private function _getSectionString _
 
 	ostr = NEWLINE
 
-	if( env.target.omitsectiondirective = FALSE ) then
+	'' Omit the .section directive on Darwin
+	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 		ostr += ".section "
 	end if
 
@@ -7067,7 +7064,18 @@ private function _getSectionString _
 
 	select case as const section
 	case IR_SECTION_CONST
-		ostr += *env.target.constsection
+		select case as const fbGetOption( FB_COMPOPT_TARGET )
+		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
+		     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+			ostr += "rdata"
+
+		case FB_COMPTARGET_DARWIN
+			ostr += "const"
+
+		case else
+			ostr += "rodata"
+
+		end select
 
 	case IR_SECTION_DATA
 		ostr += "data"

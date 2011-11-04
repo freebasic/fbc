@@ -124,7 +124,7 @@ sub symbDelEnum _
 
 	''
 	if( symbGetMangling( s ) = FB_MANGLING_BASIC ) then
-		hashFree( @s->enum_.ns.hashtb.tb )
+		hashEnd( @s->enum_.ns.hashtb.tb )
 	end if
 
 	'' del the enum node

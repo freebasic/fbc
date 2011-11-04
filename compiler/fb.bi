@@ -24,8 +24,6 @@ const FB_MAXARGRECLEVEL     = 8
 const FB_MAXPRAGMARECLEVEL  = 8
 const FB_MAXNAMESPCRECLEVEL = 64
 
-const FB_MAXINCPATHS        = 16
-
 const FB_MAXARRAYDIMS       = 8
 const FB_MAXDEFINEARGS      = 32
 
@@ -41,16 +39,6 @@ const FB_DEFAULT_MAXERRORS  = 10
 
 const FB_ERR_INFINITE       = &h7fffffff
 
-''
-#ifndef TRUE
-const TRUE                  = -1
-const FALSE                 = 0
-#endif
-
-#ifndef NULL
-const NULL                  = 0
-#endif
-
 const INVALID               = -1
 
 ''
@@ -60,42 +48,6 @@ const FB_SIGN               = "FreeBASIC " &  FB_VERSION
 const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
 const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
 const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
-
-#if defined(__FB_WIN32__)
-const FB_HOST               = "win32"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = RSLASH
-#elseif defined(__FB_CYGWIN__)
-const FB_HOST               = "cygwin"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_LINUX__)
-const FB_HOST               = "linux"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_DOS__)
-const FB_HOST               = "dos"
-const FB_HOST_EXEEXT        = ".exe"
-const FB_HOST_PATHDIV       = RSLASH
-#elseif defined(__FB_FREEBSD__)
-const FB_HOST               = "freebsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_OPENBSD__)
-const FB_HOST               = "openbsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_DARWIN__)
-const FB_HOST               = "darwin"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#elseif defined(__FB_NETBSD__)
-const FB_HOST               = "netbsd"
-const FB_HOST_EXEEXT        = ""
-const FB_HOST_PATHDIV       = "/"
-#else
-#error Unsupported host
-#endif
 
 '' compiler options
 enum FB_COMPOPT
@@ -119,15 +71,14 @@ enum FB_COMPOPT
 	FB_COMPOPT_EXTRAERRCHECK
 	FB_COMPOPT_MSBITFIELDS
 	FB_COMPOPT_MAXERRORS
-	FB_COMPOPT_SHOWSUSPERRORS
 	FB_COMPOPT_LANG
 	FB_COMPOPT_FORCELANG
 	FB_COMPOPT_PEDANTICCHK
 	FB_COMPOPT_BACKEND
-	FB_COMPOPT_FINDBIN
 	FB_COMPOPT_EXTRAOPT
 	FB_COMPOPT_OPTIMIZELEVEL
 	FB_COMPOPT_PPONLY
+	FB_COMPOPT_STACKSIZE
 
 	FB_COMPOPTIONS
 end enum
@@ -164,6 +115,7 @@ enum FB_CPUTYPE
 	FB_CPUTYPE_PENTIUM4
 	FB_CPUTYPE_PENTIUMSSE3
 	FB_CPUTYPE_NATIVE
+	FB_CPUTYPECOUNT
 end enum
 
 const FB_DEFAULT_CPUTYPE    = FB_CPUTYPE_486
@@ -216,37 +168,6 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_NETBSD
 end enum
 
-#if defined(TARGET_WIN32)
-const FB_TARGET         = "win32"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_WIN32
-#elseif defined(TARGET_CYGWIN)
-const FB_TARGET         = "cygwin"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_CYGWIN
-#elseif defined(TARGET_LINUX)
-const FB_TARGET         = "linux"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_LINUX
-#elseif defined(TARGET_DOS)
-const FB_TARGET         = "dos"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_DOS
-#elseif defined(TARGET_XBOX)
-const FB_TARGET         = "xbox"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
-#elseif defined(TARGET_FREEBSD)
-const FB_TARGET         = "freebsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_FREEBSD
-#elseif defined(TARGET_OPENBSD)
-const FB_TARGET         = "openbsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_OPENBSD
-#elseif defined(TARGET_DARWIN)
-const FB_TARGET         = "darwin"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_DARWIN
-#elseif defined(TARGET_NETBSD)
-const FB_TARGET         = "netbsd"
-const FB_DEFAULT_TARGET = FB_COMPTARGET_NETBSD
-#else
-#error Unsupported target
-#endif
-
 '' languages (update the fb.bas::langTb() array when changing this list)
 enum FB_LANG
 	FB_LANG_INVALID = -1
@@ -271,16 +192,6 @@ end enum
 
 const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
-''
-enum FB_FINDBIN
-	FB_FINDBIN_USE_DEFAULT = 0
-	FB_FINDBIN_ALLOW_ENVVAR = 1
-	FB_FINDBIN_ALLOW_BINDIR = 2
-	FB_FINDBIN_ALLOW_SYSTEM = 4
-end enum
-
-const FB_DEFAULT_FINDBIN = FB_FINDBIN_ALLOW_ENVVAR or FB_FINDBIN_ALLOW_BINDIR
-
 '' Extra options
 enum FB_EXTRAOPT
 	FB_EXTRAOPT_NONE              = &h00000000
@@ -289,12 +200,6 @@ enum FB_EXTRAOPT
 
 	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
 end enum
-
-''
-'' Track options explicitly set on the command line
-type FBCMMLINEOPTEXPL
-	forcelang			as integer					'' TRUE if -forcelang was specified
-end type
 
 ''
 type FBCMMLINEOPT
@@ -316,14 +221,14 @@ type FBCMMLINEOPT
 	extraerrchk		as integer					'' add bounds plus null pointer checking
 	msbitfields		as integer					'' use M$'s bitfields packing
 	maxerrors		as integer					'' max number errors until the parser quit
-	showsusperrors	as integer					'' show suspicious errors (def= false)
 	lang			as FB_LANG					'' lang compatibility
+	forcelang		as integer					'' TRUE if -forcelang was specified
 	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 	backend			as FB_BACKEND				'' backend
-	findbin			as FB_FINDBIN				'' find bin file search options
 	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
 	optlevel		as integer					'' optimize level (for gcc)
 	pponly			as integer
+	stacksize		as integer
 end type
 
 
@@ -358,13 +263,49 @@ enum FB_LANG_OPT
     FB_LANG_OPT_QUIRKFUNC   = &h20000000
 end enum
 
-'' paths
-enum FB_PATH
-	FB_PATH_BIN
-	FB_PATH_INC
-	FB_PATH_LIB
-	FB_MAXPATHS
-end enum
+#if defined(__FB_WIN32__)
+const FB_HOST               = "win32"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_WIN32
+#elseif defined(__FB_CYGWIN__)
+const FB_HOST               = "cygwin"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_CYGWIN
+#elseif defined(__FB_LINUX__)
+const FB_HOST               = "linux"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_LINUX
+#elseif defined(__FB_DOS__)
+const FB_HOST               = "dos"
+const FB_HOST_EXEEXT        = ".exe"
+const FB_HOST_PATHDIV       = RSLASH
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_DOS
+#elseif defined(__FB_FREEBSD__)
+const FB_HOST               = "freebsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_FREEBSD
+#elseif defined(__FB_OPENBSD__)
+const FB_HOST               = "openbsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_OPENBSD
+#elseif defined(__FB_DARWIN__)
+const FB_HOST               = "darwin"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_DARWIN
+#elseif defined(__FB_NETBSD__)
+const FB_HOST               = "netbsd"
+const FB_HOST_EXEEXT        = ""
+const FB_HOST_PATHDIV       = "/"
+const FB_DEFAULT_TARGET     = FB_COMPTARGET_NETBSD
+#else
+#error Unsupported host
+#endif
 
 '' info section
 const FB_INFOSEC_VERSION = &h10
@@ -378,20 +319,9 @@ enum IR_INFOSEC
 	FB_INFOSEC_CMD
 end enum
 
-'' lib symbol, declared here to be usable by the fbc module
-type FBS_LIB
-	name			as zstring ptr
-	isdefault		as integer
-	hashitem		as HASHITEM ptr
-	hashindex		as uinteger
-end type
-
 #include once "error.bi"
 #include once "fb-obj.bi"
 
-''
-''
-''
 declare function fbInit _
 	( _
 		byval ismain as integer, _
@@ -406,36 +336,22 @@ declare function fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
-		byval ismain as integer, _
-	  	byval preinclist as TLIST ptr _
+		byval ismain as integer _
 	) as integer
 
 declare function fbCheckRestartCompile _
 	( _
 	) as integer
 
-declare sub fbSetPaths _
-	( _
-	)
-
-declare function fbGetPath _
-	( _
-		byval path as integer _
-	) as string
-
-declare sub fbSetDefaultOptions _
-	( _
-	)
+declare sub fbGlobalInit()
+declare sub fbAddIncludePath(byref path as string)
+declare sub fbAddPreDefine(byref def as string)
+declare sub fbAddPreInclude(byref file as string)
 
 declare sub fbSetOption _
 	( _
 		byval opt as integer, _
 		byval value as integer _
-	)
-
-declare sub fbSetOptionIsExplicit _
-	( _
-		byval opt as integer _
 	)
 
 declare function fbGetOption _
@@ -449,74 +365,8 @@ declare function fbChangeOption _
 		byval value as integer _
 	) as integer
 
-declare sub fbListLibs _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibPaths _
-	( _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbListLibPathsEx _
-	( _
-		byval srclist as TLIST ptr, _
-		byval srchash as THASH ptr, _
-		byval dstlist as TLIST ptr, _
-		byval dsthash as THASH ptr, _
-		byval delnodes as integer _
-	)
-
-declare sub fbAddIncPath _
-	( _
-		byval path as zstring ptr _
-	)
-
-declare function fbAddLib _
-	( _
-		byval libname as zstring ptr _
-	) as FBS_LIB ptr
-
-declare function fbaddLibEx _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libhash as THASH ptr, _
-		byval libname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-declare function fbAddLibPath _
-	( _
-		byval path as zstring ptr _
-	) as FBS_LIB ptr
-
-declare function fbaddLibPathEx _
-	( _
-		byval pathlist as TLIST ptr, _
-		byval pathhash as THASH ptr, _
-		byval pathname as zstring ptr, _
-		byval isdefault as integer _
-	) as FBS_LIB ptr
-
-declare sub fbAddDefine _
-	( _
-		byval dname as zstring ptr, _
-		byval dtext as zstring ptr _
-	)
+declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
+declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 
 declare function fbPragmaOnce _
 	( _
@@ -540,28 +390,6 @@ declare function fbIsCrossComp _
 	( _
 	) as integer
 
-declare sub fbAddGccLib _
-	( _
-		byval lib_filename as zstring ptr, _
-		byval lib_id as integer _
-	)
-
-declare function fbGetGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
-declare sub fbSetGccLib _
-	( _
-		byval lib_id as integer, _
-		byref lib_name as string _
-	)
-
-declare function fbFindGccLib _
-	( _
-		byval lib_id as integer _
-	) as string
-
 declare sub fbGetDefaultLibs _
 	( _
 		byval dstlist as TLIST ptr, _
@@ -576,13 +404,6 @@ declare sub fbMainEnd _
 	( _
 	)
 
-declare sub fbReportRtError _
-	( _
-		byval modname as zstring ptr, _
-		byval funname as zstring ptr, _
-		byval errnum as integer _
-	)
-
 declare function fbGetLangOptions _
 	( _
 		byval lang as FB_LANG _
@@ -591,17 +412,6 @@ declare function fbGetLangOptions _
 declare function fbGetLangName _
 	( _
 		byval lang as FB_LANG _
-	) as string
-
-declare sub fbSetPrefix _
-	( _
-		byref prefix as string _
-	)
-
-declare function fbFindBinFile _
-	( _
-		byval filename as zstring ptr, _
-		byval findopts as FB_FINDBIN = FB_FINDBIN_USE_DEFAULT _
 	) as string
 
 declare function fbGetLangId _

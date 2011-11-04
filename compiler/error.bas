@@ -294,6 +294,8 @@ end type
 		@"Unsupported statement in -gen gcc mode", _
 		@"Too many labels", _
 		@"Expected '#ENDIF'", _
+		@"Resource file given for target system that does not support them", _
+		@"-o <file> option without corresponding input file", _
 		@"TYPE can only extend other TYPE symbols", _
 		@"Illegal outside a CLASS, TYPE or UNION method", _
 		@"CLASS, TYPE or UNION not derived", _
@@ -313,16 +315,14 @@ sub errInit
 	errctx.laststmt = -1
 
 	'' alloc the undefined symbols tb, used to not report them more than once
-	hashInit( )
-	hashNew( @errctx.undefhash, 64, TRUE )
+	hashInit( @errctx.undefhash, 64, TRUE )
 
 end sub
 
 '':::::
 sub errEnd
 
-	hashFree( @errctx.undefhash )
-	hashEnd( )
+	hashEnd( @errctx.undefhash )
 
 end sub
 
@@ -442,11 +442,9 @@ function errReportEx _
     end if
 
 	if( linenum = 0 ) then
-		if( env.clopt.showsusperrors = FALSE ) then
-			'' only one error per stmt
-			if( parser.stmt.cnt = errctx.laststmt ) then
-				return TRUE
-			end if
+		'' only one error per stmt
+		if( parser.stmt.cnt = errctx.laststmt ) then
+			return TRUE
 		end if
 
 		if( lex.ctx <> NULL ) then

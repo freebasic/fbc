@@ -16,7 +16,6 @@ function cExternStmtBegin _
 
     dim as FB_CMPSTMTSTK ptr stk = any
     dim as integer mangling = any
-    dim as FBS_LIB ptr library = any
     dim as zstring ptr litstr = any
 
 	function = FALSE
@@ -77,7 +76,6 @@ function cExternStmtBegin _
 		end if
 	end select
 
-    library = NULL
 	if( lexGetToken( ) = FB_TK_LIB ) then
 		lexSkipToken( )
 
@@ -87,7 +85,7 @@ function cExternStmtBegin _
 			end if
 
 		else
-			library = symbAddLib( lexGetText( ) )
+			fbAddLib(lexGetText())
 			lexSkipToken( )
 		end if
 	end if
@@ -99,9 +97,6 @@ function cExternStmtBegin _
 
 	stk->ext.lastmang = parser.mangling
 	parser.mangling = mangling
-
-	stk->ext.lastlib = library
-	parser.currlib = library
 
 	function = TRUE
 
@@ -125,7 +120,6 @@ function cExternStmtEnd as integer
 	lexSkipToken( )
 
 	'' pop from stmt stack
-	parser.currlib = stk->ext.lastlib
 	parser.mangling = stk->ext.lastmang
 	cCompStmtPop( stk )
 

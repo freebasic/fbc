@@ -4,7 +4,6 @@
 
 
 #include once "fb.bi"
-#include once "fbc.bi"
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "rtl.bi"
@@ -1517,7 +1516,7 @@ function hVarDeclEx _
 
 			'' "array too big for stack" check
 			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
-				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > fbc.stacksize ) then
+				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > env.clopt.stacksize ) then
 					if( is_dynamic = FALSE ) then
 						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
 					end if

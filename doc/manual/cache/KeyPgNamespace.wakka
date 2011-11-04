@@ -50,6 +50,36 @@ AdjustPoint( pt1, 1, 1, 1 )
 Dim pt2 As Forms.Point
 Forms.AdjustPoint( pt2, 1, 1 )
 %%
+	
+	Namespaces are GCC ""C++"" compatible, the following code aims to test that.
+	%%(cpp)
+// mylib.cpp
+// To compile:
+//	g++ -c mylib.cpp -o mylib.o
+//	ar rcs libmylib.a mylib.o
+
+#include <string.h>
+#include <ctype.h>
+
+namespace mylib
+{
+	int test() 
+	{
+		return 123;
+	}
+}
+%%
+	%%(freebasic)
+'' test.bas
+
+extern "c++" lib "mylib"
+	namespace mylib alias "mylib"
+		declare function test() as integer
+	end namespace
+end extern
+
+print mylib.test()
+%%
 
 {{fbdoc item="lang"}}
 	- Namespaces are not supported in the //[[CompilerOptlang -lang qb]]// dialect.

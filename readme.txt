@@ -72,7 +72,7 @@
           Linux port.
     - Bryan Stoeberl (b_stoeberl[at]yahoo.com)
           SSE/SSE2 floating point math, AST vectorization.
-    - Daniel C. Klauer (daniel.c.klauer@web.de)
+    - Daniel C. Klauer (daniel.c.klauer[at]web.de)
           FB releases since 0.21, preprocessor-only mode, miscellaneous
           fixes and improvements.
     - Daniel R. Verkamp (i_am_drv[at]yahoo.com)

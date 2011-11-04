@@ -1,0 +1,318 @@
+{{fbdoc item="title" value="Getting the FreeBASIC source code and compiling it"}}----
+
+The source code of ""FreeBASIC"" is maintained on Sourceforge using the Git version control system, which allows different developers to work on the source code at the same time and later combine their work. It is possible for users to download this source code using anonymous read access and compile it using GNU development tools.
+
+Compiling the development version is not recommended for most users. ""FreeBASIC"" is a self-hosting compiler, still in active development, so there will be times when the current development version cannot be compiled by the last official release. Note also that the procedures for building the compiler described here may change with future versions of ""FreeBASIC"".
+
+On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users will usually have the required development tools installed on their system already. The Cygwin build may be useful for Windows users wishing to access Linux libraries in windows. The DOS build is normally compiled on Windows using DJGPP. Advanced users may be able to cross-compile between other builds, but the correct development tools and libraries would be needed, and it has not been widely tested.
+
+
+**{{anchor name="PREVIOUS|Previous guides (for compiling FB 0.23 and earlier)"}}**
+**{{anchor name="SOURCE|Getting the current source code"}}**
+**{{anchor name="SETUP|Setting up the environment"}}**
+**{{anchor name="COMPILE|Compiling FreeBASIC"}}**
+**{{anchor name="CONFIG|Compilation options"}}**
+
+
+{{anchor name="PREVIOUS"}}{{fbdoc item="section" value="Previous guides (for compiling FB 0.23 and earlier)"}}
+
+	{{fbdoc item="keyword" value="SVNCygwin|Compiling from SVN for Cygwin"}}
+	{{fbdoc item="keyword" value="SVNWin32MSYS|Compiling from SVN for Win32, using MSYS on Win32"}}
+	{{fbdoc item="keyword" value="SVNLinux|Compiling from SVN for Linux"}}
+	{{fbdoc item="keyword" value="SVNDOSWin32|Compiling from SVN for DOS on Win32"}}
+	{{fbdoc item="keyword" value="SVNFreeBSD|Compiling from SVN for FreeBSD"}}
+
+
+{{anchor name="SOURCE"}}{{fbdoc item="section" value="Getting the current source code"}}
+
+	The current source (""FreeBASIC"" 0.24) is available from these Git repositories:
+	
+		Web view of main fbc/fbc repository: http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=summary
+		Git clone URL: ##""git://fbc.git.sourceforge.net/gitroot/fbc/fbc""##
+
+		Github mirror: https://github.com/freebasic/fbc
+		Git clone URL: ##""https://github.com/freebasic/fbc.git""##
+	
+	
+	==Git on Linux==
+	
+		Install the ##git## and ##git-gui## packages (might be called different depending on the distro), then clone the repository, resulting in a new fbc/ directory containing the source code:
+		
+			%%cd ~
+ls
+git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbc
+cd fbc/
+gitk --all
+git gui &
+%%
+		
+		To get nice anti-aliased fonts in git-gui and gitk on Debian/Ubuntu, you might need to install [[http://www.tcl.tk/ Tcl/Tk]] version 8.5 and enable it explicitly:
+			
+			%%apt-get install tcl8.5 tk8.5
+update-alternatives --config wish
+%%
+	
+	
+	==Linux file explorer integration==
+	
+		[[http://rabbitvcs.org/ RabbitVCS]] is a useful tool that acts as GUI frontend for several programs such as Git. It can integrate into the Nautilus file explorer much like ""TortoiseSVN"" on Windows. Install the ##rabbitvcs-nautilus## package on Debian/Ubuntu to get it.
+	
+	
+	==""MsysGit"" on Windows==
+	
+		Download the latest ##Git-*-preview*.exe## installer from https://code.google.com/p/msysgit/, and install it. The recommended setting for ##core.autocrlf## is ##true##, so that the FB source code in the working tree will have CRLF line endings. By default ""MsysGit"" will add some useful context-menu (right-click menu) entries for directories in the Explorer (it's the git-cheetah shell extension actually).
+			
+		After the installation, right click on your Desktop or somewhere in the Explorer and select "Git Gui" to bring up the Git Clone window. Here you can enter the Git clone URL of the fbc repository and the directory in which the clone should go. Note: Right-clicking and selecting //Git Gui// on directories that already //are// Git repositories will bring up the git-gui commit tool known from Linux.
+			
+		Alternatively, you can use the //Git Bash// terminal that comes with ""MsysGit"" and provides a Unixy shell environment based on MSYS, allowing you to work with Git much like you would on Linux. For example, open Git Bash, then:
+		
+			%%cd /c
+ls
+git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbc
+cd fbc/
+gitk --all
+git gui &
+%%
+	
+	
+	==""TortoiseGit"" on Windows==
+	
+			Download the latest version from https://code.google.com/p/tortoisegit/ and install it. It works like ""TortoiseSVN"", i.e. all interaction is done through the Explorer right-click menu.
+
+
+{{anchor name="SETUP"}}{{fbdoc item="section" value="Setting up the environment"}}
+
+	The ""FreeBASIC"" compiler is self-hosting, and a working ""FreeBASIC"" installation is needed to compile it, while ##gcc## is needed to compile the ""FreeBASIC"" runtime libraries. It should be possible to compile the current development version of ##fbc## using ""FreeBASIC"" 0.21 or up.
+	
+	
+	==DOS==
+	
+		The DOS version of ""FreeBASIC"" is typically compiled on Windows, using a DOS ""FreeBASIC"" and DJGPP. The DJGPP packages can be found on the [[http://www.delorie.com/djgpp/getting.html DJGPP homepage]]. ""FreeBASIC"" needs djdev204.zip from DJGPP 2.04 (DJGPP downloads directory: ##[[http://www.delorie.com/pub/djgpp/beta/v2/ beta/v2/]]##), but for the others it should be ok to use the ones from DJGPP 2.03 (DJGPP downloads directory: ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/ current/v2gnu/]]##).
+		
+			- ##binutils## (##bnu*b.zip##, ##bnu*a.zip##)
+			- ##bash## (##bsh*.zip##)
+			- ##djdev## (##djdev*.zip##) - //pick up djdev204.zip or later from the ##beta/## directory//
+			- ##fileutils## (##fil*.zip##)
+			- ##gcc## (##gcc*b.zip##)
+			- ##gpp## (##gpp*b.zip##)
+			- ##make## (##mak*b.zip##)
+			- ##shellutils## (##shl*b.zip##)
+			- ##textutils## (##txt*b.zip##)
+	
+		Setup DJGPP by extracting everything into ##C:\DJGPP## and adding an environment variable named "DJGPP", set to ##C:\DJGPP\djgpp.env##. Assuming your DOS ""FreeBASIC"" is installed at ##C:\FBDOS##, you can use the following ##djgpp.bat## script to get a "DJGPP-terminal", from which you can work, instead of modifying your system's global PATH environment variable:
+		
+			%%set DJGPP=C:\DJGPP\djgpp.env
+set PATH=C:\DJGPP\bin;%PATH%
+set PATH=C:\FBDOS;%PATH%
+cd C:\
+cmd%%
+		
+		It adds ##C:\DJGPP\bin## to its PATH, so that ##gcc## maps to ##C:\DJGPP\bin\gcc.exe## (ditto for the binutils). As long as there is no conflict with other gccs/binutils in the global PATH (such as ""MinGW""), then of course you can make DJGPP global too, including the DOS ""FreeBASIC"".
+	
+	
+	==Linux==
+	
+		This assumes a 32bit (x86) Linux system, however it should also be possible to crosscompile the (still only 32bit) ""FreeBASIC"" on a 64bit system, but the steps might be different. Roughly these Debian packages should be needed (with Fedora names in parentheses):
+		
+			- ##gcc##
+			- ##""g++""## (##""gcc-c++""##)
+			- ##binutils##
+			- ##binutils-dev## (##binutils-devel## or ##binutils-static##) - //libbfd for fbc's objinfo feature//
+			- ##make##
+			- ##libncurses-dev## (##ncurses-devel##) - //curses headers for the rtlib//
+			- ##libx11-dev## (##libX11-devel##) - //X11 headers for gfxlib2//
+			- ##libxext-dev## (##libXext-devel##)
+			- ##libxpm-dev## (##libXpm-devel##)
+			- ##libxrandr-dev## (##libXrandr-devel##)
+			- ##libxrender-dev## (##libXrender-devel##)
+			- ##libgpm-dev## (##gpm-devel##) - //General purpose mouse library headers for the rtlib//
+			- ##freeglut3-dev## (##freeglut-devel##) - //""OpenGL"" headers for gfxlib2//
+		
+		On 64bit Debian/Ubuntu, these packages should do the trick (To do: test and update):
+		
+			- ##ia32-libs-dev##
+			- ##libc6-dev-i386##
+			- ##gcc-multilib##
+			- ##""g++-multilib""##
+			- ##lib32ncurses5-dev##
+	
+	
+	==Windows==
+	
+		To install [[http://www.mingw.org MinGW/MSYS]], download the [[http://sourceforge.net/projects/mingw/files/Automated%20MinGW%20Installer/mingw-get-inst/ Automated Installer]] and install the //C compiler//, the //""C++"" compiler// (to get ""libsupc++.a""), and also the //MSYS Basic System//.
+
+		In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##C:\""MinGW""\include##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
+		
+		__//Manually downloading the needed ""MinGW"" packages from [[http://sourceforge.net/projects/mingw/files]]//__
+			""FreeBASIC"" needs mostly the core packages only, see [[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/ MinGW BaseSystem]] and [[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/ MSYS BaseSystem]]. The archives to download are typically called ##*-*-*-mingw32-bin.tar.lzma## and ##lib*-*-*-mingw32-dll-*.tar.lzma## (similar for MSYS) and can be extracted using [[http://www.7-zip.org/ 7-zip]].
+			
+			//""MinGW"" (binutils, GCC, ""Win32"" SDK)//
+				- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GCC/Version4/ gcc-core, gcc-g++]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GNU-Binutils/ binutils]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/ mingwrt]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/Win32-API/ w32api]]##
+			//MSYS (Unixy shell environment, make)//
+				- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/msys-core/ msys-core]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/bash/ bash]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/coreutils/ coreutils]]##
+				- ##[[http://sourceforge.net/projects/mingw/files/MSYS/make/ make]]##
+		
+		__//Using other GCC-for-""Win32"" ports like [[http://tdm-gcc.tdragon.net/ TDM-GCC]] or [[http://mingw-w64.sourceforge.net/ MinGW-w64]]//__
+			It should generally be possible to use non-mingw.org GCCs, since they usually are almost identical. Things like different exception handling or 64bit support currently do not matter for ""FreeBASIC"". TDM-GCC was successfully used for the ""FreeBASIC"" 0.21 - 0.23 releases.
+		
+		In the end ""MinGW"" should be installed in ##C:\""MinGW""##, and MSYS in ##C:\""MinGW""\msys\1.0##. You can use a ##mingw.bat## script like the following one to get a """MinGW-terminal"", from which you can work with ""MinGW"" without having to modify your system's global PATH environment variable (this assumes your Windows ""FreeBASIC"" is installed at ##""C:\FreeBASIC""##):
+		
+			%%set PATH=C:\MinGW\bin;%PATH%
+set PATH=C:\MinGW\msys\1.0\bin;%PATH%
+set PATH=C:\FreeBASIC;%PATH%
+bash --login
+%%
+		
+		Alternatively you can also add both ""MinGW""/MSYS ##bin/## directories to the global PATH and use plain cmd.exe or MSYS' msys.bat. The result should be a terminal (MSYS' console, or cmd.exe command prompt) where ##make##, ##gcc##, ##fbc## and Unixy commands such as ##cp## and ##rm## are working.
+
+
+{{anchor name="COMPILE"}}{{fbdoc item="section" value="Compiling FreeBASIC"}}
+
+	By default the compilation process creates a compiler that is intended to be installed into a unix-like directory tree such as ##/usr## or ##/usr/local## on Linux, or ##""C:\MinGW""## for the Windows version, or ##C:\DJGPP## for the DOS version.
+	
+	To compile ""FreeBASIC"", open a terminal (command prompt) and change to directory containing the ""FreeBASIC"" source code, then run:
+	
+		%%make%%
+	
+	The newly built compiler and run-time libraries will be placed in a build directory called ##new/##. This is a basically valid ""FreeBASIC"" installation, allowing it to be tested immediately, although on DOS and Windows there are additional steps necessary to get a fully working ""FreeBASIC"" tree.
+	
+	To install into ##/usr/local## on Linux:
+	
+		%%make install%%
+	
+	To install into ##""C:\MinGW""## on Windows:
+	
+		%%make install prefix=c:/mingw%%
+	
+	To install the DOS version:
+	
+		1) %%make install prefix=c:/djgpp%%
+		
+		1) Copy the modified ##libc.a## from the latest ""FreeBASIC-dos"" release into ##C:\DJGPP\lib\freebas##
+	
+	
+	{{fbdoc item="subsect" value="Building a standalone DOS version while on Windows, like the FreeBASIC-dos releases"}}
+	
+		Assuming the source code is in ##C:\fbc##:
+		
+			%%cd /c/fbc
+make clean
+# (This is added to config.mk so you don't have to retype it for every 'make' or 'make clean' etc.)
+echo "ENABLE_STANDALONE=1" > config.mk
+make clean
+make
+%%
+		
+		After the compilation, the following files need to be copied into the ##C:\fbc\new## tree:
+		
+		1) Copy to ##""C:\fbc\new\bin""##:
+			- ##C:\DJGPP\bin\{ar,as,ld}.exe##
+		
+		1) Copy to ##""C:\fbc\new\lib""##:
+			- ##C:\DJGPP\lib\{crt0,gcrt0}.o##
+			- ##C:\DJGPP\lib\lib{emu,m}.a##
+			- ##C:\DJGPP\lib\gcc\djgpp\<version>\lib{gcc,supcxx}.a##, and rename ##libsupcxx.a## to ##libsupcx.a## (8.3 file name)
+			- ##C:\DJGPP\lib\lib{bfd,iberty,intl,z}.a## //(For recompiling ""FreeBASIC"" using this tree)//
+			- The modified ##libc.a## from the latest ""FreeBASIC"" release //(Note: To use the libc.a from DJGPP, the _main.o it contains needs to be replaced with the one compiled from ##contrib/djgpp/libc/crt0/_main.c## from the fbc source code, to fix a bug in the original version from DJGPP)//
+			- and any additional libraries you want to use
+		
+		1) Copy to ##""C:\fbc\new\include""##:
+			- any headers you want to use, from [[http://code.google.com/p/freebasic-headers/ freebasic-headers]] or the previous ""FreeBASIC"" release, etc.
+		
+		After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
+	
+	
+	{{fbdoc item="subsect" value="Building a standalone Windows version, like the FreeBASIC-win32 releases"}}
+	
+		Assuming the source code is in ##C:\fbc##:
+	
+			%%cd /c/fbc
+make clean
+# (This is added to config.mk so you don't have to retype it for every 'make' or 'make clean' etc.)
+echo "ENABLE_STANDALONE=1" > config.mk
+make clean
+make
+%%
+		
+		After the compilation, the following files need to be copied into the ##C:\fbc\new## tree:
+		
+		1) Copy to ##""C:\fbc\new\bin""##:
+			- ##""C:\MinGW\bin\{ar,as,dlltool,ld}.exe""##
+			- ##""GoRC.exe""## (from [[http://www.godevtool.com/]] or the previous ""FreeBASIC"" release)
+		
+		1) Copy to ##""C:\fbc\new\lib""##:
+			- ##""C:\MinGW\lib\{crt2,dllcrt2,gcrt2}.o""##
+			- ##""C:\MinGW\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
+			- ##""C:\MinGW\lib\gcc\mingw32\<version>\{crtbegin,crtend}.o""##
+			- ##""C:\MinGW\lib\gcc\mingw32\<version>\lib{gcc,supc++}.a""##
+			- ##""C:\MinGW\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(Rename to ##lib*.dll.a## if preferred)//
+			- ##""C:\MinGW\lib\lib{bfd,iberty,intl}.a""## //(For recompiling ""FreeBASIC"" using this tree)//
+			- and any additional libraries you want to use
+		
+		1) Copy to ##""C:\fbc\new\include""##:
+			- any headers you want to use, from [[http://code.google.com/p/freebasic-headers/ freebasic-headers]] or the previous ""FreeBASIC"" release, etc.
+		
+		After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
+	
+	
+	{{fbdoc item="subsect" value="Getting source code updates and recompiling"}}
+	
+		To download updates made available in the fbc Git repository, you can do a pull, either using your preferred graphical Git tool, or in a terminal:
+		
+			%%git pull%%
+		
+		To take a look at incoming changes //before// applying them, do this:
+		
+			%%
+# Update remote branches
+git fetch
+
+# Take a look
+gitk --all
+
+# Everything looks ok? Then merge the remote branch into the current branch to apply the update.
+git merge origin/master
+%%
+		
+		Rebuilding is as easy as:
+		
+			%%make%%
+		
+		Note: If compilation options (like ENABLE_STANDALONE) were used for the previous build, it's necessary to specify them again this time. If they are set in ##config.mk## then they will be automatically set again.
+		
+	
+	{{fbdoc item="subsect" value="Recompiling fbc for debugging purposes"}}
+	
+		%%make clean-compiler
+make FBFLAGS=-exx%%
+
+
+{{anchor name="CONFIG"}}{{fbdoc item="section" value="Compilation options"}}
+
+	There are several compilation options that can be specified to the FB makefile via command line or inside a config.mk file that the makefile #includes. See also ##make help## for the full list.
+	
+	- ##DISABLE_OBJINFO=1##
+		If specified fbc will not use libbfd at all. This can save a lot of trouble, at the cost of the [[DevObjinfo objinfo feature]] being disabled. Problems that have been encountered with fbc + libbfd:
+			- Corruption and crashes due to libbfd ABI breaks
+			- fbc not starting due to depending on a shared libbfd with different soname than the one that's installed (different Linux distros have different libbfd versions, each with different soname)
+	
+	- ##ENABLE_FBBFD=217##
+		This will result in fbc using FB libbfd headers to use libbfd directly, instead of using the system's C libbfd headers through fbc's default C libbfd wrapper. The FB libbfd header version must be specified, for example ##217##. The libbfd.a that this fbc will be linked with must match this version exactly.
+
+	- ##ENABLE_STANDALONE=1##
+			This changes the directory layout expected by the compiler. By default this layout is used:
+	
+	- ##prefix=path/to/somewhere##
+			Changes the /usr/local prefix to something else.
+			Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
+	
+	- ##FBFLAGS='-g -exx'##
+		FBFLAGS can be used to specify extra options to be used when compiling fbc, for example to build a debug fbc.
+
+
+{{fbdoc item="back" value="DevToc|Table of Contents"}}

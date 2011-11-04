@@ -78,7 +78,7 @@ declare function hGetProcParamsTypeCode _
 '':::::
 sub symbMangleInit( )
 
-	flistNew( @ctx.flist, FB_INITMANGARGS, len( FB_MANGLEABBR ) )
+	flistInit( @ctx.flist, FB_INITMANGARGS, len( FB_MANGLEABBR ) )
 
 	ctx.cnt = 0
 
@@ -87,7 +87,7 @@ end sub
 '':::::
 sub symbMangleEnd( )
 
-	flistFree( @ctx.flist  )
+	flistEnd( @ctx.flist  )
 
 end sub
 

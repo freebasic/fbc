@@ -6,7 +6,6 @@
 
 #include once "fb.bi"
 #include once "fbint.bi"
-#include once "fbc.bi"
 
 	'' same order as FB_DATATYPE
 	dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
@@ -268,14 +267,3 @@ function symbGetUnsignedType _
 	function = typeJoin( dtype, nd )
 
 end function
-
-'':::::
-function symbGetCStdType _
-	( _
-		byval ctype as FB_CSTDTYPE _
-	) as integer
-
-	function = fbc.vtbl.getCStdType( ctype )
-
-end function
-

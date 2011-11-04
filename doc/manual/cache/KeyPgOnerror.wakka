@@ -18,7 +18,7 @@ Error handling statement to set the current error handler
 
 	##**On Error GOTO 0**## deactivates the current error handler.
 
-	The use of QB-like error handling requires compilation with switch //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]// or //[[CompilerOptexx -exx]]// activated.
+	The use of QB-like error handling requires compilation with switch //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]// or //[[CompilerOptexx -exx]]// activated, otherwise ##**On Error**## is  inactive but consumes CPU time (##**On Error**## can be used within a preprocessor conditional directive block depending on the value of ##[[KeyPgDdfberr __FB_ERR__]]## in order not to penalize the execution speed if no error checking option).
 
 	See [[TblRuntimeErrors Runtime Error Codes]] for a listing of runtime error numbers and their associated meaning.
 
@@ -37,8 +37,45 @@ Print "Error #"; Err; "!"
 End
 %%
 
+{{fbdoc item="filename" value="examples/manual/error/onerror2.bas"}}%%(freebasic)
+'' compile as: fbc onerror.bas -ex
+
+#lang "fblite"
+
+function hFileExists( filename as string ) as integer static
+	dim f as integer
+
+	hFileExists = 0
+
+	on local error goto exitfunction
+
+	f = freefile
+	open filename for input as #f
+	
+	close #f
+
+	hFileExists = -1
+
+exitfunction:
+	exit function
+end function
+
+
+	print "File exists (0=false): "; hFileExists( command )
+
+	on error goto errhandler
+	error 1234
+	print "back from resume next"
+	end 0
+
+errhandler:
+	print "error number: " + str( err ) + " at line: " + str( erl )
+	resume next
+%%
+
 {{fbdoc item="lang"}}
-	- ON ERROR is supported in the //[[CompilerOptlang -lang qb]]// dialect only. In the //[[CompilerOptlang -lang fb]]// dialect, statements can be used in function form to return an error code
+	- ON ERROR is supported in any //[[CompilerOptlang -lang]]// dialect.
+	- In the //[[CompilerOptlang -lang fb]]// dialect, statements can be used preferably in function form to return an error code: in that case ON ERROR being ineffective but consuming CPU time must be unused.
 {{fbdoc item="filename" value="examples/manual/check/KeyPgOnerror_2.bas"}}%%(freebasic)
 '' Compile with FB default (-lang fb) dialect 
 If Open( "text" For Input As #1 ) <> 0 Then
@@ -55,5 +92,6 @@ End If
 	- ##[[KeyPgLocal Local]]##
 	- ##[[KeyPgErr Err]]##
 	- [[TblRuntimeErrors Runtime Error Codes]]
+	- {{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

@@ -230,26 +230,25 @@ sub rtlMemModInit( )
 
 	'' remap the new/new[] size param, size_t can be unsigned (int | long),
 	'' making the mangling incompatible..
-    dim as integer dtype = symbGetCStdType( FB_CSTDTYPE_SIZET )
 
-#macro hRemap(op, dtype)
-    scope
-    	dim as FBSYMBOL ptr sym = any
+#macro hRemap(op)
+	scope
+		dim as FBSYMBOL ptr sym = any
 		sym = symbGetCompOpOvlHead( NULL, op )
-    	if( sym <> NULL ) then
-    		sym = symbGetProcHeadParam( sym )
-    		if( sym <> NULL ) then
-    			symbGetFullType( sym ) = dtype
-    		end if
-    	end if
-    end scope
+		if( sym <> NULL ) then
+			sym = symbGetProcHeadParam( sym )
+			if( sym <> NULL ) then
+				symbGetFullType( sym ) = env.target.size_t_type
+			end if
+		end if
+	end scope
 #endmacro
 
 	'' new
-	hRemap( AST_OP_NEW, dtype )
+	hRemap( AST_OP_NEW )
 
-    '' new[]
-    hRemap( AST_OP_NEW_VEC, dtype )
+	'' new[]
+	hRemap( AST_OP_NEW_VEC )
 
 end sub
 
@@ -447,7 +446,7 @@ function rtlMemSwap _
     proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
     '' always calc len before pushing the param
-    bytes = rtlCalcExprLen( dst )
+    bytes = rtlCalcExprLen( dst, TRUE )
 
     '' dst as any
     if( astNewARG( proc, dst ) = NULL ) then

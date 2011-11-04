@@ -13,8 +13,6 @@ FBCALL void fb_FileResetEx ( int streamno )
 
 	if( streamno >= 0 && streamno <= 1 )
 	{
-		HANDLE h;
-
 		FB_LOCK();
 
 		/* in io_gethnd.c */
@@ -27,7 +25,7 @@ FBCALL void fb_FileResetEx ( int streamno )
 			freopen( "CONOUT$", "w", stdout );
 
 		/* force handles to be reinitialized now */
-		h = fb_hConsoleGetHandle( TRUE );
+		fb_hConsoleGetHandle( TRUE );
 
 		FB_UNLOCK();
 	}

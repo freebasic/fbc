@@ -90,23 +90,19 @@ private function hProcBegin _
 
 	'' cons|destructor?
 	if( op = INVALID ) then
-		proc = symbAddCtor( proc, _
-							NULL, _
-							NULL, 	_
-							attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_PRIVATE, _
-							FB_FUNCMODE_CDECL, _
-							FB_SYMBOPT_DECLARING )
+		proc = symbAddCtor( proc, NULL, _
+		                    attrib or FB_SYMBATTRIB_METHOD or _
+		                              FB_SYMBATTRIB_PRIVATE, _
+		                    FB_FUNCMODE_CDECL, _
+		                    FB_SYMBOPT_DECLARING )
 
 	'' op..
 	else
-		proc = symbAddOperator( proc, _
-								op, _
-								NULL, _
-								NULL, _
-								FB_DATATYPE_VOID, NULL, _
-								attrib or FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_PRIVATE, _
-								FB_FUNCMODE_CDECL, _
-								FB_SYMBOPT_DECLARING )
+		proc = symbAddOperator( proc, op, NULL, FB_DATATYPE_VOID, NULL, _
+		                        attrib or FB_SYMBATTRIB_METHOD or _
+		                                  FB_SYMBATTRIB_PRIVATE, _
+		                        FB_FUNCMODE_CDECL, _
+		                        FB_SYMBOPT_DECLARING )
 	end if
 
     ''
@@ -577,7 +573,7 @@ sub symbSetCompCtorHead _
   	select case symbGetClass( sym )
    	case FB_SYMBCLASS_STRUCT
 		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 		end if
 
 		sym->udt.ext->anon.ctor_head = proc
@@ -722,7 +718,7 @@ sub symbSetCompDtor _
   	select case symbGetClass( sym )
    	case FB_SYMBCLASS_STRUCT
 		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 		end if
 
 		sym->udt.ext->anon.dtor = proc
@@ -828,7 +824,7 @@ sub symbSetCompOpOvlHead _
   		select case symbGetClass( sym )
    		case FB_SYMBCLASS_STRUCT
 			if( sym->udt.ext = NULL ) then
-				sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+				sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 			end if
 
 			symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE) = proc

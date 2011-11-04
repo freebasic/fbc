@@ -84,6 +84,8 @@ declare function hRevertSlash _
 		byval repchar as integer _
 	) as zstring ptr
 
+declare function pathStripDiv(byref path as string) as string
+
 declare function hToPow2 _
 	( _
 		byval value as uinteger _
@@ -118,6 +120,8 @@ declare function hHexUInt _
 	) as zstring ptr
 
 declare function hIsValidSymbolName( byval sym as zstring ptr ) as integer
+
+declare function strUnquote(byref s as string) as string
 
 #include once "hlp-str.bi"
 

@@ -12,7 +12,7 @@ LIBFBDOC := libfbdoc.a
 
 INC := $(wildcard *.bi)
 SRC := $(wildcard *.bas)
-OBJ := $(patsubst %.bas,obj/%.o,$(SRC))
+OBJ := $(patsubst %.bas,%.o,$(SRC))
 
 FBCFLAGS += -exx -g
 
@@ -21,7 +21,7 @@ FBCFLAGS += -exx -g
 $(LIBFBDOC): $(OBJ)
 	$(AR) rcs $@ $(OBJ)
 
-obj/%.o: %.bas $(INC)
+%.o: %.bas $(INC)
 	$(FBC) $(FBCFLAGS) -c $< -o $@
 
 clean:

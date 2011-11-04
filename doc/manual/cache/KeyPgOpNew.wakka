@@ -30,6 +30,8 @@ Operator to dynamically allocate memory and construct data of a specified type
 
 	##**New[]**## is the array-version of the ##**New**## operator and allocates enough memory for the specified number of objects.  The default constructor for the type will be used to set the initial values for each item.
 
+	The ##**New**## or ##**New[]**## operator cannot be directly used with ##[[KeyPgString String]]##, but works with ##[[KeyPgType UDT]]## containing string.
+
 	Objects created with ##**New**## must be freed with ##[[KeyPgOpDelete Delete]]##. Memory allocated with ##**New[]**## must be freed with ##**Delete[]**##, the array-version of ##[[KeyPgOpDelete Delete]]##. You cannot mix and match the different versions of the operators.
 
 	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##new datatype(any)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors.

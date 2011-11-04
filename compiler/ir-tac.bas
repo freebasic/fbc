@@ -170,10 +170,10 @@ private function _init _
 	ctx.taccnt = 0
 	ctx.tmpcnt = 0
 
-	flistNew( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
+	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 
 	''
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	''
 	emitInit( backend )
@@ -195,10 +195,10 @@ private sub _end
 	emitEnd( )
 
 	''
-	flistFree( @ctx.vregTB )
+	flistEnd( @ctx.vregTB )
 
 	''
-	flistFree( @ctx.tacTB )
+	flistEnd( @ctx.tacTB )
 
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
@@ -569,17 +569,6 @@ private sub _emitJmpTb _
 	_flush( )
 
 	emitJMPTB( op, dtype, symbGetMangledName( label ) )
-
-end sub
-
-'':::::
-private sub _emitInfoSection _
-	( _
-		byval liblist as TLIST ptr, _
-		byval libpathlist as TLIST ptr _
-	)
-
-	emitWriteInfoSection( liblist, libpathlist )
 
 end sub
 
@@ -2858,7 +2847,6 @@ function irTAC_ctor _
 		@_emitASM, _
 		@_emitComment, _
 		@_emitJmpTb, _
-		@_emitInfoSection, _
 		@_emitBop, _
 		@_emitBopEx, _
 		@_emitUop, _

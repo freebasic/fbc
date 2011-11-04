@@ -20,10 +20,6 @@ declare sub 		symbDefineInit		( _
 
 declare sub 		symbDefineEnd		( )
 
-declare sub 		symbLibInit			( )
-
-declare sub 		symbLibEnd			( )
-
 declare sub 		symbFwdRefInit		( )
 
 declare sub 		symbFwdRefEnd		( )
@@ -62,16 +58,15 @@ declare sub 		symbCompRTTIEnd		( )
 sub symbInitSymbols static
 
 	'' symbols list
-	listNew( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), LIST_FLAGS_NOCLEAR )
+	listInit( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), LIST_FLAGS_NOCLEAR )
 
-    '' symbol id string pool
-    poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
+	'' symbol id string pool
+	poolInit( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
 
-	'' chain list
-	clistNew( @symb.chainlist, 32, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
+	symb.chainpoolhead = 0
 
 	'' namespace extension's list
-	listNew( @symb.nsextlist, FB_INITSYMBOLNODES \ 16, len( FBNAMESPC_EXT ), LIST_FLAGS_CLEAR )
+	listInit( @symb.nsextlist, FB_INITSYMBOLNODES \ 16, len( FBNAMESPC_EXT ), LIST_FLAGS_CLEAR )
 
 	'' global namespace - not complete, just a mock symbol
     symb.globnspc.class = FB_SYMBCLASS_NAMESPACE
@@ -95,8 +90,8 @@ sub symbInitSymbols static
 	symbHashListAdd( symb.hashtb )
 
 	'' import (USING) shared hash/list
-	hashNew( @symb.imphashtb, FB_INITSYMBOLNODES )
-	listNew( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
+	hashInit( @symb.imphashtb, FB_INITSYMBOLNODES )
+	listInit( @symb.imphashlist, FB_INITSYMBOLNODES \ 2, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
 
 	''
 	symb.lastlbl = NULL
@@ -133,9 +128,6 @@ sub symbInit _
 		exit sub
 	end if
 
-	''
-	hashInit( )
-
 	'' vars, arrays, procs & consts
 	symbInitSymbols( )
 
@@ -153,9 +145,6 @@ sub symbInit _
 
 	'' forward refs
 	symbFwdRefInit( )
-
-	'' libraries
-	symbLibInit( )
 
 	'' arrays dim tb
 	symbVarInit( )
@@ -192,11 +181,10 @@ sub symbEnd
 	symbDataEnd( )
 
 	''
-	listFree( @symb.imphashlist )
-	hashFree( @symb.imphashtb )
+	listEnd( @symb.imphashlist )
+	hashEnd( @symb.imphashtb )
 
-    ''
-    hashFree( @symb.globnspc.nspc.ns.hashtb.tb )
+	hashEnd( @symb.globnspc.nspc.ns.hashtb.tb )
 
 	''
 	symbCompRTTIEnd( )
@@ -205,8 +193,6 @@ sub symbEnd
 	symbProcEnd( )
 
 	symbVarEnd( )
-
-	symbLibEnd( )
 
 	symbFwdRefEnd( )
 
@@ -220,15 +206,11 @@ sub symbEnd
 	symbCompFreeExt( symb.globnspc.nspc.ns.ext )
 
 	''
-	listFree( @symb.nsextlist )
+	listEnd( @symb.nsextlist )
 
-	clistFree( @symb.chainlist )
+	poolEnd( @symb.namepool )
 
-	poolFree( @symb.namepool )
-
-	listFree( @symb.symlist )
-
-	hashEnd( )
+	listEnd( @symb.symlist )
 
 	''
 	symb.inited = FALSE
@@ -511,9 +493,6 @@ function symbNewSymbol _
     if( s = NULL ) then
     	delok = TRUE
     	s = listNewNode( @symb.symlist )
-    	if( s = NULL ) then
-    		exit function
-    	end if
     end if
 
     ''
@@ -836,6 +815,14 @@ sub symbHashListRemoveNamespace _
 
 end sub
 
+private function chainpoolNext() as FBSYMCHAIN ptr
+	symb.chainpoolhead += 1
+	if (symb.chainpoolhead >= CHAINPOOL_SIZE) then
+		symb.chainpoolhead = 0
+	end if
+	return @symb.chainpool(symb.chainpoolhead)
+end function
+
 '':::::
 function symbLookup _
 	( _
@@ -865,7 +852,7 @@ function symbLookup _
     do
     	dim as FBSYMBOL ptr sym = hashLookupEx( @hashtb->tb, id, index )
         if( sym <> NULL ) then
-            chain_ = clistNextNode( @symb.chainlist, TRUE )
+			chain_ = chainpoolNext()
 
 			chain_->sym = sym
 			chain_->next = NULL
@@ -934,7 +921,7 @@ private function hLookupImportHash _
     	dim as FBSYMBOL ptr exp_ = symbGetCompExportHead( symbGetNamespace( chain_->sym ) )
     	do
     		if( symbGetExportNamespc( exp_ ) = ns ) then
-            	dim as FBSYMCHAIN ptr node = clistNextNode( @symb.chainlist, TRUE )
+				dim as FBSYMCHAIN ptr node = chainpoolNext()
 
 				node->sym = chain_->sym
 				node->next = NULL
@@ -980,7 +967,7 @@ private function hLookupImportList _
 									id, _
 									index )
     	if( sym <> NULL ) then
-           	dim as FBSYMCHAIN ptr chain_ = clistNextNode( @symb.chainlist, TRUE )
+			dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
 
 			chain_->sym = sym
             chain_->next = NULL
@@ -1030,7 +1017,7 @@ function symbLookupAt _
     	end if
 
     else
-    	dim as FBSYMCHAIN ptr chain_ = clistNextNode( @symb.chainlist, TRUE )
+		dim as FBSYMCHAIN ptr chain_ = chainpoolNext()
     	chain_->sym = sym
     	chain_->next = NULL
     	chain_->isimport = FALSE
