@@ -157,16 +157,6 @@ private function hAddIncFile _
 end function
 
 '':::::
-private sub hSetLangOptions _
-	( _
-		byval lang as FB_LANG _
-	)
-
-	env.lang.opt = langTb(lang).options
-
-end sub
-
-'':::::
 function fbGetLangOptions _
 	( _
 		byval lang as FB_LANG _
@@ -314,6 +304,50 @@ sub fbEnd
 
 end sub
 
+private sub setLangOptions()
+	env.lang.opt = langTb(env.clopt.lang).options
+end sub
+
+private sub setTargetOptions()
+	select case as const (env.clopt.target)
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_USHORT
+		env.target.wchar.size = 2
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_DOS
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UBYTE
+		env.target.wchar.size = 1
+		env.target.underprefix = TRUE
+
+	case FB_COMPTARGET_XBOX
+		env.target.size_t_type = FB_DATATYPE_ULONG
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = TRUE
+
+	case else
+		env.target.size_t_type = FB_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+		env.target.underprefix = FALSE
+
+	end select
+
+	select case as const (env.clopt.target)
+	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+		env.target.fbcall = FB_FUNCMODE_STDCALL
+		env.target.stdcall = FB_FUNCMODE_STDCALL
+
+	case else
+		env.target.fbcall = FB_FUNCMODE_CDECL
+		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
+
+	end select
+end sub
+
 sub fbGlobalInit()
 	strlistInit(@env.predefines, FB_INITINCFILES)
 	strlistInit(@env.preincludes, FB_INITINCFILES)
@@ -346,7 +380,8 @@ sub fbGlobalInit()
 	env.clopt.pponly        = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
-	hSetLangOptions( env.clopt.lang )
+	setLangOptions()
+	setTargetOptions()
 end sub
 
 sub fbAddIncludePath(byref path as string)
@@ -413,6 +448,7 @@ sub fbSetOption _
 
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
+		setTargetOptions()
 
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
@@ -425,7 +461,7 @@ sub fbSetOption _
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
-		hSetLangOptions( value )
+		setLangOptions()
 
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
@@ -620,7 +656,7 @@ end function
 function fbGetEntryPoint( ) as string static
 
 	'' All targets use main(), except for xbox...
-	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_XBOX) then
+	if (env.clopt.target = FB_COMPTARGET_XBOX) then
 		function = "XBoxStartup"
 	else
 		function = "main"

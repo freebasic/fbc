@@ -1816,44 +1816,6 @@ end sub
 
 '' After command line parsing
 private sub fbcInit2()
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_USHORT
-		env.target.wchar.size = 2
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_DOS
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UBYTE
-		env.target.wchar.size = 1
-		env.target.underprefix = TRUE
-
-	case FB_COMPTARGET_XBOX
-		env.target.size_t_type = FB_DATATYPE_ULONG
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = TRUE
-
-	case else
-		env.target.size_t_type = FB_DATATYPE_UINT
-		env.target.wchar.type = FB_DATATYPE_UINT
-		env.target.wchar.size = FB_INTEGERSIZE
-		env.target.underprefix = FALSE
-
-	end select
-
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
-		env.target.fbcall = FB_FUNCMODE_STDCALL
-		env.target.stdcall = FB_FUNCMODE_STDCALL
-
-	case else
-		env.target.fbcall = FB_FUNCMODE_CDECL
-		env.target.stdcall = FB_FUNCMODE_STDCALL_MS
-
-	end select
-
 	'' Setup/calculate the paths to bin/ (needed when invoking helper
 	'' tools), include/ (needed when searching headers), and lib/ (needed
 	'' to find libraries when linking).
