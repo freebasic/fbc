@@ -1039,8 +1039,6 @@ $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 
 $(newcompiler)/config.bi: compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
-	$(call config-filter,$(TARGET_ARCH),386 486 586 686,TARGET_X86)
-	$(call config-filter,$(TARGET_ARCH),x86_64,TARGET_X86_64)
 	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
 	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
 	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")

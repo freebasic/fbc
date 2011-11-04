@@ -9,9 +9,8 @@
 const EMIT_INITNODES	= 2048
 const EMIT_INITVREGNODES= EMIT_INITNODES*3
 
-'#ifdef TARGET_X86
+'' TODO: x86 specific
 const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
-'#endif
 
 '' if changed, update the _opFnTB() arrays at emit_*.bas
 enum EMIT_NODEOP

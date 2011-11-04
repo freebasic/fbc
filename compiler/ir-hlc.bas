@@ -929,7 +929,7 @@ private sub hWriteFTOI _
 	end select
 
 
-#ifdef TARGET_X86
+	'' TODO: x86 specific
 	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
 				!"\tvolatile " & rtype_str & !" result;\n" & _
 				!"\t__asm__ (\n" & _
@@ -940,9 +940,6 @@ private sub hWriteFTOI _
 				!"\t);\n" & _
 				!"\treturn result;\n" & _
 				!"}", FALSE )
-#else
-	#error !!!WRITEME!!!
-#endif
 
 end sub
 

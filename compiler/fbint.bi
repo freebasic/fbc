@@ -27,18 +27,18 @@ const FB_INITVARININODES	= 1000
 const FB_INITINCFILES		= 256
 const FB_INITSTMTSTACKNODES	= 128
 
-''
-#if defined(TARGET_X86)
+'' TODO: x86 specific
 const FB_INTEGERSIZE		= 4
 const FB_POINTERSIZE		= 4
 const FB_LONGSIZE			= FB_POINTERSIZE
-#elseif defined(TARGET_X86_64)
-const FB_INTEGERSIZE		= 4
-const FB_POINTERSIZE		= 8
-const FB_LONGSIZE			= 8 '' FIXME - windows x64 long is 4 bytes
-#else
-#error unsupported target cpu
-#endif
+
+'' x86_64
+''const FB_INTEGERSIZE = 4
+''const FB_POINTERSIZE = 8
+''const FB_LONGSIZE    = 8
+'' But on win32 (ok, win64):
+''const FB_LONGSIZE    = 4
+'' These cannot be hard coded since we have -target and -arch options
 
 '' array descriptor
 type FB_ARRAYDESC
