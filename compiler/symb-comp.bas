@@ -57,11 +57,8 @@ private sub hAddRhsParam _
 		'dtype = FB_DATATYPE_CLASS
 	end select
 
-	symbAddProcParam( proc, _
-					  "__FB_RHS__", NULL, _
-    				  dtype, parent, FB_POINTERSIZE, _
-    				  FB_PARAMMODE_BYREF, _
-    				  FB_SYMBATTRIB_NONE, NULL )
+	symbAddProcParam( proc, "__FB_RHS__", dtype, parent, FB_POINTERSIZE, _
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, NULL )
 
 end sub
 

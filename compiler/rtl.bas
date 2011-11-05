@@ -191,12 +191,8 @@ sub rtlAddIntrinsicProcs _
 										inner_param_len = FB_POINTERSIZE
 									end if
 
-									symbAddProcParam( inner_proc, _
-													  NULL, NULL, _
-													  .dtype, NULL, inner_param_len, _
-													  .mode, _
-													  inner_attrib, _
-													  inner_param_optval )
+									symbAddProcParam( inner_proc, NULL, .dtype, NULL, inner_param_len, _
+									                  .mode, inner_attrib, inner_param_optval )
 								end with
 							next
 
@@ -245,11 +241,8 @@ sub rtlAddIntrinsicProcs _
 						.dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					var parm = symbAddProcParam( proc, _
-					                             NULL, NULL, _
-					                             .dtype, subtype, _
-					                             lgt, .mode, _
-					                             attrib, param_optval )
+					var parm = symbAddProcParam( proc, NULL, .dtype, subtype, lgt, _
+					                             .mode, attrib, param_optval )
 
 					if( .check_const ) then
 						symbSetIsRTLConst( parm )

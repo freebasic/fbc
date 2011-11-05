@@ -24,21 +24,16 @@ const fbdllreason = "__FB_DLLREASON__"
 	proc = symbPreAddProc( NULL )
 
 	'' instance
-	symbAddProcParam( proc, "__FB_DLLINSTANCE__", NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  0, NULL )
+	symbAddProcParam( proc, "__FB_DLLINSTANCE__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reason
-	param = symbAddProcParam( proc, fbdllreason, NULL, _
-					  		  FB_DATATYPE_UINT, NULL, _
-					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  		  0, NULL )
+	param = symbAddProcParam( proc, fbdllreason, FB_DATATYPE_UINT, NULL, _
+	                          FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' reserved
-	symbAddProcParam( proc, "__FB_DLLRESERVED__", NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
+	symbAddProcParam( proc, "__FB_DLLRESERVED__", typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
@@ -149,16 +144,12 @@ const fbargv = "__FB_ARGV__"
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	env.main.argc = symbAddProcParam( proc, fbargc, NULL, _
-					  			   	  FB_DATATYPE_INTEGER, NULL, _
-					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  0, NULL )
+	env.main.argc = symbAddProcParam( proc, fbargc, FB_DATATYPE_INTEGER, NULL, _
+	                                  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' argv
-	env.main.argv = symbAddProcParam( proc, fbargv, NULL, _
-					  				  typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
-					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
-					  				  0, NULL )
+	env.main.argv = symbAddProcParam( proc, fbargv, typeMultAddrOf( FB_DATATYPE_CHAR, 2 ), NULL, _
+	                                  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, 0, NULL )
 
 	'' if it's a dll, the main() function should be private
 	var attrib = FB_SYMBATTRIB_PUBLIC

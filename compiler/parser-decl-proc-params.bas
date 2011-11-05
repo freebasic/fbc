@@ -228,12 +228,7 @@ private function hMockParam _
     	plen = 0
     end select
 
-	s = symbAddProcParam( proc, _
-						  NULL, _
-						  NULL, _
-						  dtype, NULL, plen, _
-					  	  pmode, _
-					  	  0, NULL )
+	s = symbAddProcParam( proc, NULL, dtype, NULL, plen, pmode, 0, NULL )
 
 	symbSetIsMock( s )
 
@@ -293,11 +288,8 @@ private function hParamDecl _
 				end if
 			end if
 
-			return symbAddProcParam( proc, _
-									 NULL, NULL, _
-						   	     	 FB_DATATYPE_INVALID, NULL, 0, _
-						   	     	 FB_PARAMMODE_VARARG, _
-						   	      	 0, NULL )
+			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, 0, _
+			                         FB_PARAMMODE_VARARG, 0, NULL )
 
 		'' syntax error..
 		else
@@ -605,11 +597,7 @@ private function hParamDecl _
     	id = NULL
     end if
 
-    s = symbAddProcParam( proc, _
-    					  id, NULL, _
-    					  dtype, subtype, _
-    					  param_len, mode, _
-    					  attrib, optval )
+	s = symbAddProcParam( proc, id, dtype, subtype, param_len, mode, attrib, optval )
 
 	if( s <> NULL ) then
 		if( dontinit ) then

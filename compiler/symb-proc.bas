@@ -129,7 +129,6 @@ function symbAddProcParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
@@ -142,13 +141,10 @@ function symbAddProcParam _
 
     function = NULL
 
-    param = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, _
-    					   NULL, _
-    					   @proc->proc.paramtb, NULL, _
-    					   FB_SYMBCLASS_PARAM, _
-    				   	   id, id_alias, _
-    				   	   dtype, subtype, _
-    				   	   attrib )
+	param = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, _
+	                       @proc->proc.paramtb, NULL, _
+	                       FB_SYMBCLASS_PARAM, _
+	                       id, NULL, dtype, subtype, attrib )
     if( param = NULL ) then
     	exit function
     end if
@@ -1037,11 +1033,13 @@ function symbAddProcPtrFromFunction _
 	'' params
 	var param = symbGetProcHeadParam( base_proc )
     do while( param <> NULL )
-    	var p = symbAddProcParam( proc, _
-    					  		  NULL, NULL, _
-    					  		  symbGetFullType( param ), symbGetSubtype( param ), _
-    					  		  symbGetLen( param ), symbGetParamMode( param ), _
-    					  		  symbGetAttrib( param ), param->param.optexpr )
+		var p = symbAddProcParam( proc, NULL, _
+		                          symbGetFullType( param ), _
+		                          symbGetSubtype( param ), _
+		                          symbGetLen( param ), _
+		                          symbGetParamMode( param ), _
+		                          symbGetAttrib( param ), _
+		                          param->param.optexpr )
 
 		if( symbGetDontInit( param ) ) then
 			symbSetDontInit( p )
@@ -1260,11 +1258,9 @@ function symAddProcInstancePtr _
 		dtype = typeSetIsConst( dtype )
 	end if
 
-    function = symbAddProcParam( proc, _
-    							 FB_INSTANCEPTR, NULL, _
-    					  		 dtype, parent, FB_POINTERSIZE, _
-    					  		 FB_PARAMMODE_BYREF, _
-    					  		 FB_SYMBATTRIB_PARAMINSTANCE, NULL )
+	function = symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
+	                             FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
+	                             FB_SYMBATTRIB_PARAMINSTANCE, NULL )
 
 end function
 

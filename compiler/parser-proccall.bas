@@ -1109,15 +1109,9 @@ function hForwardCall _
 		end select
 
         ''
-		if( symbAddProcParam( proc, _
-							  NULL, NULL, _
-						  	  dtype, NULL, _
-						  	  symbCalcProcParamLen( typeGet( dtype ), _
-						  	  						NULL, _
-						  	  						mode ), _
-						  	  mode, _
-						  	  0, _
-						  	  NULL ) = NULL ) then
+		if( symbAddProcParam( proc, NULL, dtype, NULL, _
+		                      symbCalcProcParamLen( typeGet( dtype ), NULL, mode ), _
+		                      mode, 0, NULL ) = NULL ) then
 			exit do
 		end if
 
