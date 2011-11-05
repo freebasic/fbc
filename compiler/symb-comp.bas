@@ -1304,9 +1304,11 @@ sub symbCompRTTIInit
     
     symAddProcInstancePtr( obj, ctor )
     
-   	symbAddCtor( ctor, NULL, NULL, _
-    			 FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
-    			 
+	symbAddCtor( ctor, NULL, _
+	             FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
+	                                  or FB_SYMBATTRIB_OVERLOADED, _
+	             FB_FUNCMODE_CDECL )
+
 	symbStructEnd( obj, TRUE )
 	
     '' declare extern shared as $fb_RTTI __fb_ZTS6Object (the Object class RTTI instance created in C)
