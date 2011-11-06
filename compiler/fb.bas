@@ -367,7 +367,6 @@ sub fbGlobalInit()
 	env.clopt.resumeerr 	= FALSE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= FALSE
-	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
@@ -433,9 +432,6 @@ sub fbSetOption _
 
 	case FB_COMPOPT_EXPORT
 		env.clopt.export = value
-
-	case FB_COMPOPT_NODEFLIBS
-		env.clopt.nodeflibs = value
 
 	case FB_COMPOPT_SHOWERROR
 		env.clopt.showerror = value
@@ -527,9 +523,6 @@ function fbGetOption _
 
 	case FB_COMPOPT_EXPORT
 		function = env.clopt.export
-
-	case FB_COMPOPT_NODEFLIBS
-		function = env.clopt.nodeflibs
 
 	case FB_COMPOPT_SHOWERROR
 		function = env.clopt.showerror

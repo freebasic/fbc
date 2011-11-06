@@ -63,7 +63,6 @@ enum FB_COMPOPT
 	FB_COMPOPT_RESUMEERROR
 	FB_COMPOPT_WARNINGLEVEL
 	FB_COMPOPT_EXPORT
-	FB_COMPOPT_NODEFLIBS
 	FB_COMPOPT_SHOWERROR
 	FB_COMPOPT_MULTITHREADED
 	FB_COMPOPT_PROFILE
@@ -213,7 +212,6 @@ type FBCMMLINEOPT
 	resumeerr 		as integer					'' add support for RESUME (def= false)
 	warninglevel	as integer					'' (def = 0)
 	export			as integer					'' export all symbols declared as EXPORT (def= true)
-	nodeflibs		as integer					'' don't include default libs (def= false)
 	showerror		as integer					'' show line giving error (def= true)
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 	profile			as integer					'' build profiling code (def= false)

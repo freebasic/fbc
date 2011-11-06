@@ -5,7 +5,6 @@
 ''		 jan/2005 dos support added [DrV]
 
 #include once "fb.bi"
-#include once "fbint.bi"
 #include once "hlp.bi"
 #include once "hash.bi"
 #include once "list.bi"
@@ -70,6 +69,7 @@ type FBCCTX
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
 	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
+	nodeflibs			as integer
 
 	'' Compiler paths
 	binpath				as zstring * FB_MAXPATHLEN+1
@@ -611,7 +611,7 @@ private function linkFiles() as integer
 
 	end select
 
-	if( fbGetOption( FB_COMPOPT_NODEFLIBS ) = FALSE ) then
+	if (fbc.nodeflibs = FALSE) then
 		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbrt0.o""")
 	end if
 
@@ -1275,7 +1275,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.objinf.mt = TRUE
 
 	case OPT_NODEFLIBS
-		fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
+		fbc.nodeflibs = TRUE
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
@@ -2375,7 +2375,7 @@ end sub
 '':::::
 private sub addDefaultLibs()
 	'' select the right FB rtlib
-	if( env.clopt.multithreaded ) then
+	if (fbGetOption(FB_COMPOPT_MULTITHREADED)) then
 		fbcAddDefLib("fbmt")
 	else
 		fbcAddDefLib("fb")
@@ -2644,7 +2644,7 @@ end sub
 	'' Add default libs for linking, unless -nodeflibs was given
 	'' Note: These aren't added into objinfo sections of objects or
 	'' static libraries. Only the non-default libs are needed there.
-	if (env.clopt.nodeflibs = FALSE) then
+	if (fbc.nodeflibs = FALSE) then
 		addDefaultLibs()
 	end if
 
