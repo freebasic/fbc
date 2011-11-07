@@ -144,9 +144,6 @@ function astNewDECL _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	select case symclass
 	case FB_SYMBCLASS_VAR

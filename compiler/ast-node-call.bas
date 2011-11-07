@@ -78,10 +78,6 @@ function astNewCALL _
 	n = astNewNode( AST_NODECLASS_CALL, dtype, subtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->sym = sym
 	n->l = ptrexpr
 	n->call.args = 0
@@ -118,9 +114,6 @@ function astNewCALLCTOR _
 	n = astNewNode( AST_NODECLASS_CALLCTOR, _
 					astGetFullType( instptr ), _
 					astGetSubtype( instptr ) )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = procexpr
 	n->r = instptr

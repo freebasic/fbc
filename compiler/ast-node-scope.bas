@@ -44,9 +44,6 @@ function astScopeBegin _
 
 	''
 	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
     n = astAdd( n )
 

@@ -1161,11 +1161,9 @@ function astNewNode _
 		byval class_ as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n
-
-	n = listNewNode( @ast.astTB )
+	dim as ASTNODE ptr n = listNewNode( @ast.astTB )
 
 	astInitNode( n, class_, dtype, subtype )
 

@@ -24,9 +24,6 @@ function astNewSTACK _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_STACK, astGetFullType( l ), NULL )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->stack.op = op
 	n->l = l

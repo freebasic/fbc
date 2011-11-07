@@ -1142,10 +1142,6 @@ function astNewARG _
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->l = arg
 	n->arg.mode = mode
 	n->arg.lgt = 0

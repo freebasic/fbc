@@ -26,9 +26,6 @@ function astNewLABEL _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LABEL, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->sym = sym
 	n->lbl.flush = doflush
@@ -77,9 +74,6 @@ function astNewLIT _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LIT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
@@ -118,9 +112,6 @@ function astNewASM _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->asm.head = listhead
 
@@ -193,9 +184,6 @@ function astNewDBG _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->dbg.op = op
 	n->dbg.ex = ex
@@ -232,9 +220,6 @@ function astNewNOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NOP, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	function = n
 
@@ -266,9 +251,6 @@ function astNewNIDXARRAY _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NIDXARRAY, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = expr
 

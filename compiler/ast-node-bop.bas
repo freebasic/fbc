@@ -1544,9 +1544,6 @@ function astNewBOP _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )
-	if( n = NULL ) then
-		exit function
-	end if
 
 	'' fill it
 	n->l = l

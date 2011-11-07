@@ -654,10 +654,6 @@ function astNewASSIGN _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
 	n->l = l
 	n->r = r
 

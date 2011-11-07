@@ -44,9 +44,6 @@ function astNewMEM _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_MEM, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->mem.op = op
 	n->l = l

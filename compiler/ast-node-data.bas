@@ -36,9 +36,6 @@ function astDataStmtBegin _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->data.elmts = 0
 
@@ -57,9 +54,6 @@ function astDataStmtStore _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DATASTMT, FB_DATATYPE_INVALID )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = expr
 	n->r = NULL

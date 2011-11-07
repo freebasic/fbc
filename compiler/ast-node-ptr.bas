@@ -71,10 +71,6 @@ function astNewDEREF _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DEREF, dtype, subtype )
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
 	n->l = l    '' Can be NULL e.g. if it was a constant
 	n->ptr.ofs = ofs
 

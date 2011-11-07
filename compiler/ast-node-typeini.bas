@@ -29,10 +29,6 @@ function astTypeIniBegin _
 					subtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->typeini.ofs = ofs
 
 	dim as integer add_scope = FALSE

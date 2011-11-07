@@ -533,9 +533,6 @@ function astNewCONV _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->l = l
 	n->cast.doconv = doconv
