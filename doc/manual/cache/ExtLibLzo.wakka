@@ -2,7 +2,7 @@
 LZO is a compression library offering fast compression and very fast decompression.
 
 Website: [[http://www.oberhumer.com/opensource/lzo/]]
-Platforms supported: Win32, Linux, DOS
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: LZO/lzo.bi
 
 {{fbdoc item="ex"}}

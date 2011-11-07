@@ -2,7 +2,7 @@
 OpenAL is a cross-platform 3D audio API appropriate for use with gaming applications and many other types of audio applications.
 
 Website: http://www.openal.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: al/al.bi
 
 {{fbdoc item="ex"}}

@@ -1,15 +1,19 @@
 {{fbdoc item="title" value="REDIM"}}----
 Defines or resizes a variable-length array
 
-{{fbdoc item="syntax"}}##
-	**Redim** [ [[KeyPgShared Shared]] ] [ [[KeyPgPreserve Preserve]] ] //symbolname//([//subscript// [, ...]]) As [[DataType datatype]] [, ...]
-	**Redim** [ [[KeyPgShared Shared]] ] [ [[KeyPgPreserve Preserve]] ] As [[DataType datatype]] //symbolname//([//subscript// [, ...]]) [, ...]
-##
+{{fbdoc item="syntax"}}
+	Declaring a Dynamic Array:
+		##**Redim** [ [[KeyPgShared Shared]] ] //symbolname//([//subscript// [, ...]]) As [[DataType datatype]] [, ...]##
+		##**Redim** [ [[KeyPgShared Shared]] ] As [[DataType datatype]] //symbolname//([//subscript// [, ...]]) [, ...]##
+
+	Resizing a Dynamic Array:
+		##**Redim** [ [[KeyPgPreserve Preserve]] ] //symbolname//([//subscript// [, ...]]) [, ...]##
+
 {{fbdoc item="param"}}
 	##[[KeyPgShared Shared]]##
 		Specifies shared (file-scope) access to the array throughout the module.
 	##[[KeyPgPreserve Preserve]]##
-		When used with an existing array, the contents of the array will be preserved during the resize. Note that ##[[KeyPgPreserve Preserve]]## will not work properly in all cases.
+		When used with an existing array, the contents of the array will be preserved during the resize. Note that in some cases ##[[KeyPgPreserve Preserve]]## will not preserve data at its original index, see below.
 	##//symbolname//##
 		A new or existing array id.
 	##//subscript//##: [ ##//lowerbound// To## ] ##//upperbound//##

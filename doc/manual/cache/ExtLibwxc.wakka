@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="wx-c, C Interface for WxWidgets"}}----
 Cross-platform Graphical User Interface library
 
-Website: http://wxc.sourceforge.net
-Platforms supported: Win32, Linux
+Website: http://wxnet.sourceforge.net/
+Platforms supported: ""Win32"", Linux
 Headers to include: wx-c/wx.bi
 Example Usage: yes, in examples/libraries/wx-c/
 

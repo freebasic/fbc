@@ -2,7 +2,7 @@
 2D graphics library with support for multiple output devices.
 
 Website: http://www.cairographics.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: cairo/cairo.bi
 
 {{fbdoc item="ex"}}

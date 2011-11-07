@@ -2,7 +2,7 @@
 A Free, High-Quality, and Portable Font Engine
 
 Website: http://www.freetype.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: freetype2/freetype.bi
 
 {{fbdoc item="ex"}}

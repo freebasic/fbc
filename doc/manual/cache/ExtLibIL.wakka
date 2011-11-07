@@ -2,7 +2,7 @@
 A full featured cross-platform image library.
 
 Website: http://openil.sourceforge.net/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: IL/il.bi
 
 {{fbdoc item="ex"}}

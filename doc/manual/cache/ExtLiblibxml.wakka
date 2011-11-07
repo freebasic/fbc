@@ -2,7 +2,7 @@
 De-facto standard library for accessing xml files.
 
 Website: http://xmlsoft.org/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: libxml/
 
 {{fbdoc item="ex"}}

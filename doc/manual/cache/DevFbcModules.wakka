@@ -1,0 +1,61 @@
+{{fbdoc item="title" value="Quick overview of all modules"}}(Only somewhat sorted)----
+
+''fbc''
+	Frontend: main module, entry point, command-line handling, assembling/linking/etc.
+
+''fb-objinfo''
+	[[DevObjinfo Object/library information]] section reader/writer, used by ''fbc''.
+
+''bfd-wrapper''
+	Small C wrapper around bfd.h (of the native libbfd) to avoid always having to use the exact matching FB headers. (FB headers for some libbfd versions exist, thus this wrapper isn't required, but it's the default to make compiling fbc less troublesome).
+
+''fb''
+	FB parser interface, starts the ''parser'' for every input/include file.
+
+''parser''
+	Recursive parser, asks ''lex'' for tokens, builds up the ''ast''.
+
+''lex'', ''pp''
+	Lexer/tokenizer and preprocessor directive parsing.
+
+''error''
+	Error reporting functions, used by many parts of fbc, mostly the ''parser'' though.
+
+''rtl''
+	Helper functions to build up the ''ast'' nodes for rtlib/gfxlib function calls. Declarations must match the actual functions in the rtlib/gfxlib2 source code.
+
+''symb''
+	Symbols lookup and storage (information on variables/functions), scope/namespace handling, name mangling; used by ''parser''/''ast''/emitters.
+
+''ast''
+	Abstract syntax tree: per-function code-flow + expressions.
+	astNew*(): Node creation/tree building, used by the ''parser''.
+	astLoad*(): First step in emitting, calls ''ir'', called after each function is parsed.
+
+''ir'', ''ir-hlc'', ''ir-tac''
+	Intermediate representation interface (using virtual registers) used to emit the ''ast''.
+	hlc: High level C emitter (gcc backend).
+	tac: Three-address-codes module (asm backend), calls ''emit''.
+
+''reg''
+	Register allocator for ''ir-tac''.
+
+''emit'', ''emit_SSE'', ''emit_x86''
+	Assembler emitter abstraction and SSE/x86 emitters.
+
+''edbg_stab''
+	Stabs debug format emitting for ''emit_x86''.
+
+''dstr''
+	Dynamic z/wstrings, used mostly by ''lex''.
+
+''hash''
+	Generic hash table, used by ''symb''/''fbc''.
+
+''hlp'', ''hlp-str''
+	Helper functions for all parts of the compiler, plus another implementation of dynamic z/wstrings.
+
+''list'', ''flist'', ''pool'', ''stack''
+	Generic linked list + memory pool, foundation of all other data structures.
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

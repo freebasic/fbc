@@ -2,7 +2,7 @@
 Lightweight, robust, and efficient POSIX compliant regexp matching library
 
 Website: [[http://laurikari.net/tre/]]
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: regex.bi
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

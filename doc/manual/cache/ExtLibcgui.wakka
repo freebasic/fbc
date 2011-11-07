@@ -2,7 +2,7 @@
 Library for making GUIs in a simple way.
 
 Website: http://cgui.sourceforge.net/index.html, http://www.allegro.cc/resource/Libraries/GUI/CGUI
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: cgui.bi
 Example Usage: yes, in examples/libraries/CGUI/
 

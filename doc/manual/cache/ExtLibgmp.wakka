@@ -2,7 +2,7 @@
 Free library for arbitrary precision arithmetic, operating on signed integers, rational numbers, and floating point numbers.
 
 Website: http://www.gmplib.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: gmp.bi
 
 {{fbdoc item="ex"}}

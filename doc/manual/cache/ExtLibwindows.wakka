@@ -2,7 +2,7 @@
 Standard API for all Windows Systems
 
 Website: http://msdn2.microsoft.com/en-us/library/aa383750.aspx
-Platforms supported: Win32, Linux (using WINE)
+Platforms supported: ""Win32"", Linux (using WINE)
 Headers to include: windows.bi
 
 

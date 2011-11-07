@@ -2,7 +2,7 @@
 Cross-platform fast compression library
 
 Website: http://www.quicklz.com
-Platforms supported: Win32, Linux, DOS
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: quicklz.bi
 
 {{fbdoc item="ex"}}

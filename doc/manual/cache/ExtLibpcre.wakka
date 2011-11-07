@@ -2,7 +2,7 @@
 Consists of a set of functions that implement regular expression pattern matching using the same syntax and semantics as Perl 5.
 
 Website: http://www.pcre.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: pcre/pcre.bi
 
 
