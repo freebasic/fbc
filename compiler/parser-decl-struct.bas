@@ -884,8 +884,7 @@ function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias = any
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as ASTNODE ptr expr = any
     dim as integer align, isunion, checkid = any
     dim as FBSYMBOL ptr sym = any
@@ -949,31 +948,18 @@ function cTypeDecl _
 		id = *hMakeTmpStrNL( )
 	end if
 
-	palias = NULL
-
-	''
-	select case lexGetToken( )
 	'' AS?
-	case FB_TK_AS
+	if (lexGetToken() = FB_TK_AS) then
 		if( isunion ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 
-        '' (Note: the typedef parser will skip the AS)
+		'' (Note: the typedef parser will skip the AS)
 		return cTypedefSingleDecl( id )
+	end if
 
-	'' (ALIAS LITSTR)?
-	case FB_TK_ALIAS
-    	lexSkipToken( )
-
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( @id_alias )
-			palias = @id_alias
-		end if
-
-	end select
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	'' (FIELD '=' Expression)?
     if( lexGetToken( ) = FB_TK_FIELD ) then

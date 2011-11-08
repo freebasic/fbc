@@ -1169,7 +1169,7 @@ function hVarDeclEx _
         byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, idalias
+    static as zstring * FB_MAXNAMELEN+1 id
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype = any
@@ -1316,18 +1316,10 @@ function hVarDeclEx _
     		is_dynamic = FALSE
     	end if
 
-		'' ALIAS LIT_STR?
 		palias = NULL
 		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0 ) then
-			if( lexGetToken( ) = FB_TK_ALIAS ) then
-				lexSkipToken( )
-				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-					errReport( FB_ERRMSG_SYNTAXERROR )
-				else
-					lexEatToken( idalias )
-					palias = @idalias
-				end if
-			end if
+			'' [ALIAS "id"]
+			palias = cAliasAttribute()
 		end if
 
     	if( is_multdecl = FALSE ) then

@@ -788,6 +788,8 @@ declare function cAsmBlock _
 		_
 	) as integer
 
+declare function cAliasAttribute() as zstring ptr
+
 declare function cProcReturnMethod _
 	( _
 		byval dtype as FB_DATATYPE _

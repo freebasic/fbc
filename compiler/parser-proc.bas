@@ -9,6 +9,24 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
+'' [ALIAS "id"]
+function cAliasAttribute() as zstring ptr
+	static as zstring * (FB_MAXNAMELEN+1) aliasid
+
+	if (lexGetToken() = FB_TK_ALIAS) then
+		lexSkipToken()
+
+		if (lexGetClass() = FB_TKCLASS_STRLITERAL) then
+			lexEatToken(aliasid)
+			return @aliasid
+		end if
+
+		errReport(FB_ERRMSG_SYNTAXERROR)
+	end if
+
+	return NULL
+end function
+
 '':::::
 private sub hParamError _
 	( _
@@ -438,7 +456,7 @@ function cProcHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, aliasid
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
 
@@ -525,17 +543,8 @@ function cProcHeader _
 		end if
 	end if
 
-	'' (ALIAS LIT_STRING)?
-	dim as zstring ptr palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( aliasid )
-			palias = @aliasid
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	proc = symbPreAddProc( @id )
 
@@ -1179,7 +1188,6 @@ function cOperatorHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 aliasid
     dim as integer is_extern = any, first_def = FALSE
     dim as FBSYMBOL ptr proc = any, parent = any
 
@@ -1327,17 +1335,8 @@ function cOperatorHeader _
 		end if
 	end if
 
-	'' (ALIAS LIT_STRING)?
-	dim as zstring ptr palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( aliasid )
-			palias = @aliasid
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	proc = symbPreAddProc( NULL )
 
@@ -1660,7 +1659,7 @@ function cPropertyHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, aliasid
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
 
@@ -1733,17 +1732,8 @@ function cPropertyHeader _
 		end if
 	end if
 
-	'' (ALIAS LIT_STRING)?
-	dim as zstring ptr palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( aliasid )
-			palias = @aliasid
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	proc = symbPreAddProc( @id )
 
@@ -1963,7 +1953,6 @@ function cCtorHeader _
 	#define CREATEFAKE() symbAddProc( proc, hMakeTmpStr( ), NULL, _
 	                                  FB_DATATYPE_VOID, NULL, attrib, mode )
 
-    static as zstring * FB_MAXNAMELEN+1 aliasid
     dim as integer lgt = any, is_extern = any, is_ctor = any
     dim as FBSYMBOL ptr proc = any, parent = any
 
@@ -2023,18 +2012,8 @@ function cCtorHeader _
 		end if
 	end if
 
-	'' (ALIAS LIT_STRING)?
-    dim as zstring ptr palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
-
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( aliasid )
-			palias = @aliasid
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	proc = symbPreAddProc( NULL )
 

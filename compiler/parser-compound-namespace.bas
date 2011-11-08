@@ -16,7 +16,7 @@ function cNamespaceStmtBegin _
 		_
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as zstring ptr palias = any
     dim as FBSYMBOL ptr sym = any
     dim as FBSYMCHAIN ptr chain_ = any
@@ -126,16 +126,8 @@ function cNamespaceStmtBegin _
 		'' create a new symbol?
 		if( sym = NULL ) then
 			if( levels = 1 )  then
-				'' (ALIAS LITSTR)?
-				if( lexGetToken( ) = FB_TK_ALIAS ) then
-					lexSkipToken( )
-					if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-						errReport( FB_ERRMSG_SYNTAXERROR )
-					else
-						lexEatToken( @id_alias )
-						palias = @id_alias
-					end if
-				end if
+				'' [ALIAS "id"]
+				palias = cAliasAttribute()
 			end if
 
 			sym = symbAddNamespace( @id, palias )

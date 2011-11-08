@@ -147,9 +147,8 @@ function cEnumDecl _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias = any
-    dim as FBSYMBOL ptr parent = any, e = any
+	static as zstring * FB_MAXNAMELEN+1 id
+	dim as FBSYMBOL ptr parent = any, e = any
 
 	function = FALSE
 
@@ -186,17 +185,8 @@ function cEnumDecl _
     	id = *hMakeTmpStrNL( )
     end select
 
-	'' (ALIAS LITSTR)?
-	palias = NULL
-	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			lexEatToken( @id_alias )
-			palias = @id_alias
-		end if
-	end if
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
 	e = symbAddEnum( @id, palias, attrib )
 	if( e = NULL ) then
