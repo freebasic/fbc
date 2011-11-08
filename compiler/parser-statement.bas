@@ -16,8 +16,7 @@
 ''									 | AssignmentOrPtrCall )?
 ''                    (STT_SEPARATOR Statement)* .
 ''
-function cStatement as integer
-
+sub cStatement()
 	'' ':'?
 	if( lexGetToken( ) = FB_TK_STMTSEP ) then
 		parser.stmt.cnt += 1
@@ -45,10 +44,7 @@ function cStatement as integer
 		end if
 		lexSkipToken( )
 	loop
-
-	function = (errGetLast( ) = FB_ERRMSG_OK)
-
-end function
+end sub
 
 '':::
 ''SttSeparator    =   (STT_SEPARATOR | EOL)+ .

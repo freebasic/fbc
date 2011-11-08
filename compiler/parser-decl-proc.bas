@@ -26,13 +26,13 @@ function cProcDecl as integer
 	select case as const lexGetToken( )
 	case FB_TK_SUB
 		lexSkipToken( )
-		function = cProcHeader( 0, _
-								is_nested, _
-								FB_PROCOPT_ISPROTO or FB_PROCOPT_ISSUB ) <> NULL
+		cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO or FB_PROCOPT_ISSUB )
+		function = TRUE
 
 	case FB_TK_FUNCTION
 		lexSkipToken( )
-		function = cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO ) <> NULL
+		cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO )
+		function = TRUE
 
 	case FB_TK_OPERATOR
 		lexSkipToken( )
@@ -41,7 +41,8 @@ function cProcDecl as integer
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: try to parse the prototype
-		function = cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO ) <> NULL
+		cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO )
+		function = TRUE
 	end select
 
 end function

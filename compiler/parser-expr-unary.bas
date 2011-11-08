@@ -570,10 +570,6 @@ function cAddrOfExpression _
 		if( check_id ) then
 			chain_ = cIdentifier( base_parent, _
 							  	  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				return NULL
-			end if
-
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		end if
 
@@ -632,10 +628,6 @@ function cAddrOfExpression _
 
 		chain_ = cIdentifier( base_parent, _
 							  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			return NULL
-		end if
-
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym = NULL ) then
 			errReport( FB_ERRMSG_UNDEFINEDSYMBOL )

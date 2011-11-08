@@ -58,13 +58,6 @@ private function hProcArg _
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym    = oldsym
-			parser.ctx_dtype = old_dtype
-			exit function
-		end if
-
 		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			expr = NULL
 		else
@@ -132,17 +125,15 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-private function hOvlProcArg _
+private sub hOvlProcArg _
 	( _
 		byval argnum as integer, _
 		byval arg as FB_CALL_ARG ptr, _
 		byval options as FB_PARSEROPT _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr oldsym = any
 	dim as integer old_dtype = any
-
-	function = FALSE
 
 	arg->expr = NULL
 	arg->mode = INVALID
@@ -160,13 +151,6 @@ private function hOvlProcArg _
 	'' Expression
 	arg->expr = cExpression( )
 	if( arg->expr = NULL ) then
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			parser.ctxsym    = oldsym
-			parser.ctx_dtype = old_dtype
-			exit function
-		end if
-
 		'' function? assume as optional..
 		if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
 			arg->expr = NULL
@@ -199,10 +183,7 @@ private function hOvlProcArg _
 			end if
 		end if
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
@@ -251,13 +232,7 @@ private function hOvlProcArgList _
 			'' alloc a new arg
 			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
-			if( hOvlProcArg( args - init_args, arg, options ) = FALSE ) then
-				'' not an error? (could be an optional)
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					symbFreeOvlCallArgs( @parser.ovlarglist, arg_list )
-					exit function
-				end if
-			end if
+			hOvlProcArg( args - init_args, arg, options )
 
 			'' ','?
 			if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -300,13 +275,8 @@ private function hOvlProcArgList _
 		end if
 
 		errReportParam( proc, 0, NULL, err_num )
-
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
-		end if
+		'' error recovery: fake an expr
+		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 	end if
 
 	proc = ovlproc
@@ -524,31 +494,22 @@ function cProcArgList _
 			end if
 
 			if( hProcArg( proc, param, args, expr, mode, options ) = FALSE ) then
-				'' not an error? (could be an optional)
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				else
-					exit do
-				end if
+				exit do
 			end if
 
 			'' add to tree
 			if( astNewARG( procexpr, expr, FB_DATATYPE_INVALID, mode ) = NULL ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
+				'' error recovery: skip until next stmt or ')'
+				if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
+					hSkipUntil( CHAR_RPRNT )
 				else
-					'' error recovery: skip until next stmt or ')'
-					if( (options and FB_PARSEROPT_ISFUNC) <> 0 ) then
-						hSkipUntil( CHAR_RPRNT )
-					else
-						hSkipStmt( )
-					end if
-
-					'' don't try to fake an arg, different modes and param
-					'' types like "as any" would break AST
-					astDelTree( procexpr )
-					return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+					hSkipStmt( )
 				end if
+
+				'' don't try to fake an arg, different modes and param
+				'' types like "as any" would break AST
+				astDelTree( procexpr )
+				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
 			end if
 
 			'' next

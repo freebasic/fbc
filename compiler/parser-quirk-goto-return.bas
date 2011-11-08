@@ -78,9 +78,6 @@ private function hGetLabelId _
 		dim as FBSYMBOL ptr base_parent = any
 		dim as FBSYMCHAIN ptr chain_ = cIdentifier( base_parent, _
 													FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 
@@ -100,24 +97,16 @@ private function hGetLabelId _
 
 end function
 
-'':::::
-private function hGosubBranch _
-	( _
-	) as integer
-
+private sub hGosubBranch()
 	dim as FBSYMBOL ptr l = any
 
 	lexSkipToken( )
 
 	l = hGetLabelId( )
 	if( l <> NULL ) then
-		function = astGosubAddJmp( parser.currproc, l )
-		
-	else
-		function = (errGetLast( ) = FB_ERRMSG_OK)
+		astGosubAddJmp( parser.currproc, l )
 	end if
-
-end function
+end sub
 
 '':::::
 private function hGosubReturn _
@@ -135,14 +124,14 @@ private function hGosubReturn _
 		 FB_TK_REM, FB_TK_ELSE, FB_TK_END, FB_TK_ENDIF
 
 		function = astGosubAddReturn( parser.currproc, NULL )
-		
+
 	'' label?
 	case else
 		l = hGetLabelId( )
 		if( l <> NULL ) then
 			function = astGosubAddReturn( parser.currproc, l )
 		else
-			function = (errGetLast( ) = FB_ERRMSG_OK)
+			function = TRUE
 		end if
 	end select
 
@@ -171,10 +160,8 @@ function cGotoStmt _
 		l = hGetLabelId( )
 		if( l <> NULL ) then
 			astScopeBreak( l )
-			function = TRUE
-		else
-			function = (errGetLast( ) = FB_ERRMSG_OK)
 		end if
+		function = TRUE
 
 	'' GOSUB LABEL
 	case FB_TK_GOSUB
@@ -187,13 +174,14 @@ function cGotoStmt _
 
 		'' gosub allowed by OPTION GOSUB?
 		if( env.opt.gosub ) then
-			return hGosubBranch( )
+			hGosubBranch()
 		else
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
 			errReport( FB_ERRMSG_NOGOSUB )
 			hSkipStmt( )
-			return TRUE
 		end if
+
+		return TRUE
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB_TK_RETURN

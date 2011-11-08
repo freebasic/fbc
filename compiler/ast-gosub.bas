@@ -80,12 +80,11 @@ sub astGosubAddInit _
 
 end sub
 
-'':::::
-function astGosubAddJmp _
+sub astGosubAddJmp _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval l as FBSYMBOL ptr _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr label = any
 
@@ -93,14 +92,11 @@ function astGosubAddJmp _
 	astGosubAddInit( proc )
 
 	if( AsmBackend() ) then
-		
 		'' ctx += 1
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
 		astAdd( astNewBRANCH( AST_OP_CALL, l ) )
-
 	else
-
 		'' if ( setjmp( fb_GosubPush( @ctx ) ) ) = 0 ) then
 		label = symbAddLabel( NULL )
 
@@ -119,20 +115,15 @@ function astGosubAddJmp _
 
 		'' end if
 		astAdd( astNewLABEL( label ) )
-
 	end if
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-function astGosubAddJumpPtr _
+sub astGosubAddJumpPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr label = any
 
@@ -140,7 +131,6 @@ function astGosubAddJumpPtr _
 	astGosubAddInit( proc )
 
 	if( AsmBackend() ) then
-
 		'' ctx += 1
 		astAdd( astBuildVarInc( symbGetProcGosubSym( proc ), 1 ) )
 
@@ -148,9 +138,7 @@ function astGosubAddJumpPtr _
 						 astNewADDROF( astNewVAR( exitlabel ) ) ) )
 
 		astAdd( astNewBranch( AST_OP_JUMPPTR, NULL, expr ) )
-
 	else
-
 		'' make sure gosub-ctx var is declared
 		astGosubAddInit( proc )
 
@@ -175,12 +163,8 @@ function astGosubAddJumpPtr _
 
 		'' jump to exit label
 		astAdd( astNewBRANCH( AST_OP_JMP, exitlabel ) )
-
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 function astGosubAddReturn _
@@ -285,12 +269,7 @@ function astGosubAddReturn _
 
 end function
 
-'':::::
-function astGosubAddExit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
+sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 	if( symbGetProcStatGosub( proc ) ) then
 		if( AsmBackend() = FALSE ) then
 			astAdd( rtlGosubExit( astNewAddrOf( astNewVar( symbGetProcGosubSym( proc ), _
@@ -298,7 +277,4 @@ function astGosubAddExit _
 				symbGetType( symbGetProcGosubSym( proc ) ) ) ) ) )
 		end if
 	end if
-
-	function = TRUE
-
-end function
+end sub

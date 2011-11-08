@@ -1307,18 +1307,18 @@ declare sub astGosubAddInit _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare function astGosubAddJmp _
+declare sub astGosubAddJmp _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval l as FBSYMBOL ptr _
-	) as integer
+	)
 
-declare function astGosubAddJumpPtr _
+declare sub astGosubAddJumpPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
 		byval exitlabel as FBSYMBOL ptr _
-	) as integer
+	)
 
 declare function astGosubAddReturn _
 	( _
@@ -1326,10 +1326,7 @@ declare function astGosubAddReturn _
 		byval l as FBSYMBOL ptr _
 	) as integer
 
-declare function astGosubAddExit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
+declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
 declare function astLoadIIF _
 	( _

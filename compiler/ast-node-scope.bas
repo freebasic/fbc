@@ -297,14 +297,13 @@ private function hFindCommonParent _
 
 end function
 
-'':::::
-private function hCheckCrossing _
+private sub hCheckCrossing _
 	( _
 		byval n as ASTNODE ptr, _
 		byval blk as FBSYMBOL ptr, _
 		byval top_stmt as integer, _
 		byval bot_stmt as integer _
-	) as integer
+	)
 
 	dim as FBSYMBOL ptr s = any
 	dim as integer stmt = any
@@ -345,17 +344,13 @@ private function hCheckCrossing _
 
     	s = s->next
     loop
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private function hCheckScopeLocals _
+private sub hCheckScopeLocals _
 	( _
 		byval n as ASTNODE ptr, _
 		byval top_parent as FBSYMBOL ptr = NULL _
-	) as integer
+	)
 
     dim as FBSYMBOL ptr label = any, blk = any
     dim as integer label_stmt = any, branch_stmt = any
@@ -371,34 +366,26 @@ private function hCheckScopeLocals _
 
     blk = symbGetLabelParent( label )
     do
-    	'' check for any var allocated between the block's
-    	'' beginning and the branch
-    	if( hCheckCrossing( n, blk, 0, label_stmt ) = FALSE ) then
-    		return FALSE
-    	end if
+		'' check for any var allocated between the block's
+		'' beginning and the branch
+		hCheckCrossing( n, blk, 0, label_stmt )
 
 		if( symbGetSymbtb( blk ) = NULL ) then
 			exit do
 		end if
 
-    	blk = symbGetParent( blk )
+		blk = symbGetParent( blk )
 
-    	'' same parent?
-    	if( blk = top_parent ) then
-    		'' forward?
+		'' same parent?
+		if( blk = top_parent ) then
+			'' forward?
 			if( label_stmt > branch_stmt ) then
-    			if( hCheckCrossing( n, blk, branch_stmt, label_stmt ) = FALSE ) then
-    				return FALSE
-    			end if
-    		end if
-
-    		exit do
-    	end if
-    loop
-
-	function = TRUE
-
-end function
+				hCheckCrossing( n, blk, branch_stmt, label_stmt )
+			end if
+			exit do
+		end if
+	loop
+end sub
 
 '':::::
 private sub hDestroyBlockLocals _
@@ -571,11 +558,7 @@ private function hCheckBranch _
     	'' jumping to a child block?
     	if( label_scope > branch_scope ) then
            	'' any locals?
-			if( hCheckScopeLocals( n ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-       		end if
+			hCheckScopeLocals( n )
 
     		'' backward?
     		if( label_stmt <= branch_stmt ) then
@@ -591,11 +574,7 @@ private function hCheckBranch _
     		'' forward..
     		else
     			'' crossing any declaration?
-    			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
-       				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       					exit function
-       				end if
-    			end if
+				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
     		end if
     	end if
 
@@ -614,12 +593,7 @@ private function hCheckBranch _
 		'' not a parent block?
         if( isparent = FALSE ) then
 			'' any locals?
-			if( hCheckScopeLocals( n, _
-								   hFindCommonParent( branch_parent, label_parent ) ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-       		end if
+			hCheckScopeLocals( n, hFindCommonParent( branch_parent, label_parent ) )
        	end if
 
    	'' proc level..
@@ -631,11 +605,7 @@ private function hCheckBranch _
    	   	'' forward?
    		if( label_stmt > branch_stmt ) then
    			'' crossing any declaration?
-   			if( hCheckCrossing( n, label_parent, branch_stmt, label_stmt ) = FALSE ) then
-       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-       				exit function
-       			end if
-   			end if
+				hCheckCrossing( n, label_parent, branch_stmt, label_stmt )
    		end if
    	end if
 

@@ -391,9 +391,6 @@ private function hProcSymbol _
 	if( do_call ) then
 		dim as ASTNODE ptr expr = any
 		expr = cProcCall( base_parent, sym, NULL, NULL )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
 		'' assignment of a function deref?
 		if( expr <> NULL ) then
@@ -631,9 +628,6 @@ private function hAssignOrCall _
 				if( do_call ) then
 					dim as ASTNODE ptr expr = any
 					expr = cProcCall( base_parent, sym, NULL, NULL )
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
 
 					'' assignment of a function deref?
 					if( expr <> NULL ) then
@@ -771,9 +765,6 @@ function cProcCallOrAssign _
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
 		return hAssignOrCall( base_parent, chain_, FALSE )
 
@@ -955,7 +946,7 @@ private function hCtorChain _
 
 	cProcCall( NULL, ctor_head, NULL, this_expr )
 
-	function = (errGetLast( ) = FB_ERRMSG_OK)
+	function = TRUE
 
 end function
 

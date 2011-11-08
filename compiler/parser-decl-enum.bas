@@ -142,15 +142,9 @@ end sub
 ''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? EXPLICIT? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
-function cEnumDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr parent = any, e = any
-
-	function = FALSE
 
 	'' ENUM
 	lexSkipToken( )
@@ -159,10 +153,6 @@ function cEnumDecl _
 	parent = cParentId( )
 	if( parent <> NULL ) then
 		hDeclCheckParent( parent )
-	else
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 	end if
 
 	'' ID?
@@ -250,8 +240,4 @@ function cEnumDecl _
 			end if
 		end if
 	end if
-
-    ''
-	function = TRUE
-
-end function
+end sub

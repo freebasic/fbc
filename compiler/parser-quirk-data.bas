@@ -34,9 +34,6 @@ function cDataStmt  _
 			dim as FBSYMBOL ptr base_parent = any
 
 			chain_ = cIdentifier( base_parent )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
 
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( sym = NULL ) then

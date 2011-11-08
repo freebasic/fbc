@@ -63,10 +63,6 @@ function cArrayStmt _
 					end if
 
 					astAdd( expr1 )
-
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
 				end if
 			end if
 

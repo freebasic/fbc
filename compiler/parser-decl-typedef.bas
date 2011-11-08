@@ -63,10 +63,6 @@ private function hReadType _
     function = NULL
 
     if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
-        if( errGetLast( ) <> FB_ERRMSG_OK ) then
-            exit function
-        end if
-
         '' Everything not recognized by cSymbolType() is either still undefined,
         '' so we'll make it a forward ref, or it's an existing forward ref, and
         '' we'll look it up.
@@ -204,16 +200,10 @@ private function hReadId( ) as zstring ptr
     static as zstring * FB_MAXNAMELEN+1 id
     dim as FBSYMBOL ptr parent = any
 
-    function = NULL
-
     '' don't allow explicit namespaces
     parent = cParentId( )
     if( parent <> NULL ) then
 		hDeclCheckParent( parent )
-    else
-        if( errGetLast( ) <> FB_ERRMSG_OK ) then
-            exit function
-        end if
     end if
 
     select case as const lexGetClass( )
@@ -244,15 +234,10 @@ end function
 '':::::
 '' MultipleTypedef = TYPE AS SymbolType symbol (',' symbol)*
 ''
-function cTypedefMultDecl _
-    ( _
-    ) as integer
-
+sub cTypedefMultDecl()
     dim as zstring ptr pfwdname = any, pid = any
     dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
-
-    function = FALSE
 
     '' AS
     lexSkipToken( )
@@ -263,9 +248,6 @@ function cTypedefMultDecl _
     do
         '' Parse the ID
         pid = hReadId( )
-        if( pid = NULL ) then
-            exit function
-        end if
 
         hAddTypedef( pid, pfwdname, dtype, subtype, lgt )
 
@@ -276,24 +258,17 @@ function cTypedefMultDecl _
 
     	lexSkipToken( )
     loop
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' SingleTypedef = TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
 ''
-function cTypedefSingleDecl _
-	( _
-		byval pid as zstring ptr _				'' note: it can be Ucase()'d
-	) as integer
+sub cTypedefSingleDecl(byval pid as zstring ptr)
+	'' note: given id can be Ucase()'d
 
     dim as zstring ptr pfwdname = any
     dim as integer dtype = any, lgt = any
     dim as FBSYMBOL ptr subtype = any
-
-    function = FALSE
 
     do
         '' AS?
@@ -317,11 +292,5 @@ function cTypedefSingleDecl _
 
         '' Parse the next ID
         pid = hReadId( )
-        if( pid = NULL ) then
-            exit function
-        end if
     loop
-
-	function = TRUE
-
-end function
+end sub

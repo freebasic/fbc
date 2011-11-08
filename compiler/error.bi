@@ -378,20 +378,8 @@ declare sub errReportNotAllowed _
 
 declare sub errHideFurtherErrors()
 
-''
-'' macros
-''
-#define errGetLast( ) iif( errctx.cnt >= env.clopt.maxerrors, _
-						   errctx.lastmsg, _
-						   cint(FB_ERRMSG_OK) )
-
 #define errGetCount( ) errctx.cnt
 
-
-''
-'' inter-module globals
-''
 extern errctx as FB_ERRCTX
-
 
 #endif ''__ERROR_BI__

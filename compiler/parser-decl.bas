@@ -124,7 +124,8 @@ function cDeclaration _
 		function = cTypeDecl( attrib )
 
 	case FB_TK_ENUM
-		function = cEnumDecl( attrib )
+		cEnumDecl( attrib )
+		function = TRUE
 
 	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN
 		function = cVariableDecl( attrib )

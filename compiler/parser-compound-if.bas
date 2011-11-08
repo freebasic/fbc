@@ -12,13 +12,7 @@
 ''SingleIfStatement=  !(COMMENT|NEWLINE|STATSEP) NUM_LIT | Statement*)
 ''                    (ELSE NUM_LIT | Statement*)?
 ''
-private function hIfSingleLine _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer
-
-	function = FALSE
-
+private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 		dim as FBSYMBOL ptr l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
@@ -33,11 +27,8 @@ private function hIfSingleLine _
 		lexSkipToken( )
 
 		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
-
-	elseif( cStatement( ) = FALSE ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
+	else
+		cStatement()
 	end if
 
 	'' (ELSE Statement*)?
@@ -64,19 +55,13 @@ private function hIfSingleLine _
 			lexSkipToken( )
 
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )
-
-		'' Statement
-		elseif( cStatement( ) = FALSE ) then
-			exit function
-		end if
-
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
+		else
+			'' Statement
+			cStatement()
 		end if
 
 		'' emit end label
 		astAdd( astNewLABEL( stk->if.endlabel ) )
-
 	else
 		'' emit next label
 		astAdd( astNewLABEL( stk->if.nxtlabel ) )
@@ -96,21 +81,16 @@ private function hIfSingleLine _
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''IfStmtBegin	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
 ''
-function cIfStmtBegin as integer
+sub cIfStmtBegin()
 	dim as ASTNODE ptr expr = any
 	dim as FBSYMBOL ptr nl = any, el = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 	dim as integer ismultiline = any
-
-	function = FALSE
 
 	'' IF
 	lexSkipToken( )
@@ -144,7 +124,8 @@ function cIfStmtBegin as integer
 
 	'' GOTO?
 	if( lexGetToken( ) = FB_TK_GOTO ) then
-		return hIfSingleLine( stk )
+		hIfSingleLine( stk )
+		return
 	end if
 
 	'' THEN?
@@ -171,19 +152,16 @@ function cIfStmtBegin as integer
 	case else
 		ismultiline = FALSE
 	end select
-	
+
 	if( ismultiline ) then
 		stk->if.issingle = FALSE
 		stk->scopenode = astScopeBegin( )
 	else
 		stk->if.issingle = TRUE
 		stk->scopenode = NULL
-		return hIfSingleLine( stk )
+		hIfSingleLine( stk )
 	end if
-	
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''IfStmtNext	=     ELSEIF Expression THEN

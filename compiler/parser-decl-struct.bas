@@ -144,13 +144,9 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( attrib, _
-						 is_nested, _
-						 FB_PROCOPT_ISPROTO or _
-						 FB_PROCOPT_HASPARENT or _
-						 FB_PROCOPT_ISSUB ) = NULL ) then
-			res = FALSE
-		end if
+		cProcHeader( attrib, is_nested, _
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT or _
+		             FB_PROCOPT_ISSUB )
 
 	case FB_TK_FUNCTION
 		lexSkipToken( )
@@ -159,12 +155,8 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( attrib, _
-						 is_nested, _
-						 FB_PROCOPT_ISPROTO or _
-						 FB_PROCOPT_HASPARENT ) = NULL ) then
-			res = FALSE
-		end if
+		cProcHeader( attrib, is_nested, _
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -207,7 +199,8 @@ private function hTypeEnumDecl _
 	if( is_const ) then
 		res = cConstDecl( attrib )
 	else
-		res = cEnumDecl( attrib )
+		cEnumDecl( attrib )
+		res = TRUE
 	end if
 
 	function = res
@@ -303,11 +296,7 @@ private function hFieldInit _
 	end if
 
 	initree = cInitializer( sym, FB_INIOPT_ISINI )
-	if( initree = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	else
+	if( initree ) then
 		'' don't allow references to local symbols
 		dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
 		if( s <> NULL ) then
@@ -332,19 +321,17 @@ end function
 ''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?
 ''							 (',' ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?)*
 ''
-private function hTypeMultElementDecl _
+private sub hTypeMultElementDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as integer _
-	) as integer static
+	) static
 
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
     dim as ASTNODE ptr initree
-
-    function = FALSE
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -380,10 +367,6 @@ private function hTypeMultElementDecl _
 
 		'' ArrayDecl?
 		if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
-
 			'' ':' NUMLIT?
 			if( lexGetToken( ) = FB_TK_STMTSEP ) then
 				if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
@@ -422,14 +405,10 @@ private function hTypeMultElementDecl _
 			symbGetAttrib( sym ) or= attrib
 
 			initree = hFieldInit( parent, sym )
-			if( initree = NULL ) then
-    			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    				exit function
-    			end if
-    		else
-    			symbSetTypeIniTree( sym, initree )
-    		end if
-    	end if
+			if( initree ) then
+				symbSetTypeIniTree( sym, initree )
+			end if
+		end if
 
 		'' ','?
 	    if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -438,27 +417,22 @@ private function hTypeMultElementDecl _
 
 	    lexSkipToken( )
 	loop
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType ('=' Expression)?
 ''
-private function hTypeElementDecl _
+private sub hTypeElementDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as integer _
-	) as integer static
+	) static
 
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
     dim as ASTNODE ptr initree
-
-	function = FALSE
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )
@@ -553,23 +527,16 @@ private function hTypeElementDecl _
 	if( sym = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: pretend the field was added
-		return TRUE
+		return
 	end if
 	sym->attrib or= attrib
 
 	'' initializer
 	initree = hFieldInit( parent, sym )
-	if( initree = NULL ) then
-    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
-    else
-    	symbSetTypeIniTree( sym, initree )
-    end if
-
-	function = TRUE
-
-end function
+	if( initree ) then
+		symbSetTypeIniTree( sym, initree )
+	end if
+end sub
 
 '':::::
 private function hTypeAdd _
@@ -614,10 +581,6 @@ private function hTypeAdd _
 
 	if( res = FALSE ) then
 		exit function
-	else
-		if( errGetLast() <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 	end if
 
 	'' finalize
@@ -706,9 +669,7 @@ private function hTypeBody _
 			'' isn't it a field called "end"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, FB_TK_STMTSEP
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			'' it's not a field, exit
 			case else
@@ -767,15 +728,11 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' bitfield..
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			'' it's a field, parse it
 			case else
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			end select
 
@@ -783,10 +740,7 @@ decl_inner:		'' it's an anonymous inner UDT
 		case FB_TK_AS
 			'' it's a multi-declaration
 			lexSkipToken( )
-
-			if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
-				exit function
-			end if
+			hTypeMultElementDecl( s, attrib )
 
 		case FB_TK_DECLARE
 			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
@@ -809,15 +763,9 @@ decl_inner:		'' it's an anonymous inner UDT
 			'' multi-decl?
 			if( lexGetToken( ) = FB_TK_AS ) then
 				lexSkipToken( )
-
-				if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
-
+				hTypeMultElementDecl( s, attrib )
 			else
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 			end if
 
 		case FB_TK_STATIC
@@ -827,9 +775,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		'' anything else, must be a field
 		case else
-			if( hTypeElementDecl( s, attrib ) = FALSE ) then
-				exit function
-			end if
+			hTypeElementDecl( s, attrib )
 
 		end select
 
@@ -844,7 +790,6 @@ decl_inner:		'' it's an anonymous inner UDT
 			'' error recovery: skip until next line or stmt
 			hSkipUntil( INVALID, TRUE )
 		end if
-
 	loop
 
 	'' nothing added?
@@ -906,8 +851,9 @@ function cTypeDecl _
     	if( isunion = FALSE ) then
     		'' AS?
     		if( lexGetToken( ) = FB_TK_AS ) then
-                '' (Note: the typedef parser will skip the AS)
-    			return cTypedefMultDecl( )
+				'' (Note: the typedef parser will skip the AS)
+				cTypedefMultDecl()
+				return TRUE
     		end if
     	end if
 
@@ -926,13 +872,9 @@ function cTypeDecl _
 	if( checkid ) then
 		'' don't allow explicit namespaces
 		dim as FBSYMBOL ptr parent = cParentId( )
-    	if( parent <> NULL ) then
+		if( parent <> NULL ) then
 			hDeclCheckParent( parent )
-    	else
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
-    	end if
+		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
@@ -955,7 +897,8 @@ function cTypeDecl _
 		end if
 
 		'' (Note: the typedef parser will skip the AS)
-		return cTypedefSingleDecl( id )
+		cTypedefSingleDecl( id )
+		return TRUE
 	end if
 
 	'' [ALIAS "id"]

@@ -29,20 +29,15 @@ function cOperatorNew _
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
-		
 		'' placement new
 		placement_expr = cExpression( )
 		if( placement_expr = NULL ) then
 			return NULL
 		end if
-		
 	end if
 
 	'' DataType
 	hSymbolType( dtype, subtype, lgt )
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-	end if
 
 	'' check for invalid types
 	select case as const typeGet( dtype )

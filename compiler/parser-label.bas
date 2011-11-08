@@ -46,13 +46,8 @@ function cLabel as integer
 		'' ':'
 		if( lexGetLookAhead( 1 ) = FB_TK_STMTSEP ) then
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-
 			'' no need to call Identifier(), ':' wouldn't follow 'ns.symbol' ids
 			chain_ = lexGetSymChain( )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
 			if( symbFindByClass( chain_, FB_SYMBCLASS_PROC ) <> NULL ) then
 				exit function
 			end if

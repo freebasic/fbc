@@ -473,8 +473,6 @@ function cProcHeader _
     dim as FBSYMBOL ptr proc = any, parent = any
     dim as integer is_extern = any
 
-	function = NULL
-
 	is_nested = FALSE
 	is_extern = FALSE
 
@@ -487,14 +485,9 @@ function cProcHeader _
 							FB_IDOPT_SHOWERROR or _
 							FB_IDOPT_ALLOWSTRUCT )
 		if( parent = NULL ) then
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-
 			if( symbGetCurrentNamespc( ) <> @symbGetGlobalNamespc( ) ) then
 				parent = symbGetCurrentNamespc( )
 			end if
-
 		else
 			'' ns used in a prototype?
 			if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
@@ -515,11 +508,6 @@ function cProcHeader _
 	dim as FB_SYMBSTATS stats = any
 
 	head_proc = hGetId( parent, @id, @dtype, (options and FB_PROCOPT_ISSUB) <> 0 )
-	if( head_proc = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-    end if
 
 	hCheckSuffix( dtype )
 
@@ -564,14 +552,7 @@ function cProcHeader _
 	symbGetAttrib( proc ) = attrib
 
 	'' Parameters?
-	if( cParameters( parent, _
-					 proc, _
-					 mode, _
-					 (options and FB_PROCOPT_ISPROTO) <> 0 ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( parent, proc, mode, (options and FB_PROCOPT_ISPROTO) <> 0 )
 
 	'' not vararg?
 	if( iif( symbGetProcParams( proc ) > 0, _
@@ -653,6 +634,8 @@ function cProcHeader _
     	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
     	if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
+			'' error recovery: create a fake symbol
+			return CREATEFAKEID( proc )
     	end if
 
     	return proc
@@ -725,12 +708,8 @@ function cProcHeader _
     		'' there's already a prototype for this proc, check for
     		'' declaration conflits and fix up the arguments
     		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			else
-    				'' error recovery: create a fake symbol
-    				return CREATEFAKEID( proc )
-    			end if
+				'' error recovery: create a fake symbol
+				return CREATEFAKEID( proc )
     		end if
 
     		'' check calling convention
@@ -741,14 +720,10 @@ function cProcHeader _
     		'' use the prototype
     		proc = head_proc
 
-    		'' check attribs
-    		if( hCheckAttribs( proc, attrib ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			end if
-    		else
-    		    symbGetAttrib( proc ) or= attrib
-    		end if
+			'' check attribs
+			if( hCheckAttribs( proc, attrib ) ) then
+				symbGetAttrib( proc ) or= attrib
+			end if
 
     		symbSetIsDeclared( proc )
     	end if
@@ -1196,8 +1171,6 @@ function cOperatorHeader _
     dim as integer is_extern = any, first_def = FALSE
     dim as FBSYMBOL ptr proc = any, parent = any
 
-	function = NULL
-
 	is_nested = FALSE
 	is_extern = FALSE
 
@@ -1217,15 +1190,9 @@ function cOperatorHeader _
 							FB_IDOPT_SHOWERROR or _
 							FB_IDOPT_ALLOWSTRUCT )
 
-		'' no explicit parent?
-		if( parent = NULL ) then
-			'' this is okay, as in globals; 'operator +', but
-			'' if there was a parsing error, we return
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
-		'' explicit parent
-		else
+		'' The parent id isn't used for globals like 'operator +'
+		if( parent ) then
+			'' Explicit parent id
 			'' namespace used in a prototype?
 			if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
@@ -1283,12 +1250,10 @@ function cOperatorHeader _
 			end if
 		
 		case else
-			
 			'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
 			if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
 				errReport( FB_ERRMSG_METHODINANONUDT, TRUE, " (TODO)" )
 			end if
-			
 	end select
 
     '' check if method should be static or not
@@ -1348,14 +1313,7 @@ function cOperatorHeader _
     symbGetAttrib( proc ) = attrib
 
 	'' Parameters?
-	if( cParameters( parent, _
-					 proc, _
-					 mode, _
-					 (options and FB_PROCOPT_ISPROTO) <> 0 ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( parent, proc, mode, (options and FB_PROCOPT_ISPROTO) <> 0 )
 
     '' special cases, '-' or '+' with just one param are actually unary ops
     select case op
@@ -1377,171 +1335,152 @@ function cOperatorHeader _
 
     end select
 
-    '' self? (but type casting)
-    if( astGetOpNoResult( op ) ) then
-    	dtype = FB_DATATYPE_VOID
-    	subtype = NULL
-
-    else
-    	'' AS SymbolType
-    	if( lexGetToken( ) <> FB_TK_AS ) then
+	'' self? (but type casting)
+	if( astGetOpNoResult( op ) ) then
+		dtype = FB_DATATYPE_VOID
+		subtype = NULL
+	else
+		'' AS SymbolType
+		if( lexGetToken( ) <> FB_TK_AS ) then
 			errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 			'' error recovery: fake a type
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL
 		else
 			lexSkipToken( )
-
-    		if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+			if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_INTEGER
 				subtype = NULL
-    		else
+			else
 				hCheckRetType( dtype, subtype )
-    		end if
+			end if
+			proc->proc.returnMethod = cProcReturnMethod( dtype )
+		end if
+	end if
 
-	proc->proc.returnMethod = cProcReturnMethod( dtype )
+	symbGetFullType( proc ) = dtype
+	symbGetSubtype( proc ) = subtype
 
-    	end if
-    end if
-
-    ''
-    symbGetFullType( proc ) = dtype
-    symbGetSubtype( proc ) = subtype
-
-    symbSetProcOpOvl( proc, op )
+	symbSetProcOpOvl( proc, op )
 
 	'' operator LET can't take a byval arg of its own type
 	if( op = AST_OP_ASSIGN ) then
-
 		if( hCheckIsSelfCloneByval( parent, proc, ( (options and FB_PROCOPT_ISPROTO) <> 0 ) ) ) then
 			errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE )
-			exit function
+			return CREATEFAKEID( proc )
 		end if
-
 	end if
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
 		'' check params
 		hCheckOpOvlParams( parent, op, proc, options )
-
-    	proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
-    	if( proc = NULL ) then
-    		errReport( FB_ERRMSG_DUPDEFINITION )
-    		return NULL
-    	end if
-
-    	return proc
+		proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
+		if( proc = NULL ) then
+			errReport( FB_ERRMSG_DUPDEFINITION )
+			proc = CREATEFAKEID( proc )
+		end if
+		return proc
 	end if
 
 	hParseAttributes( attrib, 0, 0 )
 
-    dim as FBSYMBOL ptr head_proc = any
+	dim as FBSYMBOL ptr head_proc = any
 
-    '' no preview proc or proto for this operator?
-    head_proc = symbGetCompOpOvlHead( parent, op )
-    if( head_proc = NULL ) then
-    	'' extern decl but no prototype?
-    	if( is_extern ) then
+	'' no preview proc or proto for this operator?
+	head_proc = symbGetCompOpOvlHead( parent, op )
+	if( head_proc = NULL ) then
+		'' extern decl but no prototype?
+		if( is_extern ) then
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
-    	end if
+		end if
 
 		'' check params
 		if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 			'' error recovery: skip the whole compound stmt
-    		hSkipCompound( FB_TK_OPERATOR )
-    		exit function
-    	end if
+			hSkipCompound( FB_TK_OPERATOR )
+			return CREATEFAKEID( proc )
+		end if
 
 		head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
 		                             attrib, mode, FB_SYMBOPT_DECLARING )
 
-    	if( head_proc = NULL ) then
+		if( head_proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 			'' error recovery: create a fake symbol
 			proc = CREATEFAKEID( proc )
-    	else
-    		proc = head_proc
-    	end if
+		else
+			proc = head_proc
+		end if
 
-    '' another proc or proto defined already..
-    else
+	'' another proc or proto defined already..
+	else
 		'' try to find a prototype with the same signature
-    	head_proc = symbFindOpOvlProc( op, head_proc, proc )
+		head_proc = symbFindOpOvlProc( op, head_proc, proc )
 
 		'' none found? then try to overload..
-    	if( head_proc = NULL ) then
-    		'' extern decl but no prototype?
-    		if( is_extern ) then
+		if( head_proc = NULL ) then
+			'' extern decl but no prototype?
+			if( is_extern ) then
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
-    		end if
+			end if
 
 			'' check params
 			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
-    			hSkipCompound( FB_TK_OPERATOR )
-    			exit function
-    		end if
+				hSkipCompound( FB_TK_OPERATOR )
+				return CREATEFAKEID( proc )
+			end if
 
 			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
 			                             attrib, mode, FB_SYMBOPT_DECLARING )
 
-    		'' dup def?
-    		if( head_proc = NULL ) then
+			'' dup def?
+			if( head_proc = NULL ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 				'' error recovery: create a fake symbol
 				return CREATEFAKEID( proc )
-    		end if
+			end if
 
-    		proc = head_proc
-
-    	else
-    		'' already parsed?
-    		if( symbGetIsDeclared( head_proc ) ) then
+			proc = head_proc
+		else
+			'' already parsed?
+			if( symbGetIsDeclared( head_proc ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 				'' error recovery: create a fake symbol
 				return CREATEFAKEID( proc )
-    		end if
+			end if
 
 			'' check params
 			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
-    			hSkipCompound( FB_TK_OPERATOR )
-    			exit function
-    		end if
+				hSkipCompound( FB_TK_OPERATOR )
+				return CREATEFAKEID( proc )
+			end if
 
-    		'' there's already a prototype for this operator, check for
-    		'' declaration conflits and fix up the arguments
-    		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			else
-    				'' error recovery: create a fake symbol
-    				return CREATEFAKEID( proc )
-    			end if
-    		end if
+			'' there's already a prototype for this operator, check for
+			'' declaration conflits and fix up the arguments
+			if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
+				'' error recovery: create a fake symbol
+				return CREATEFAKEID( proc )
+			end if
 
-    		'' check calling convention
-    		if( symbGetProcMode( head_proc ) <> mode ) then
+			'' check calling convention
+			if( symbGetProcMode( head_proc ) <> mode ) then
 				errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
-    		end if
+			end if
 
-    		'' use the prototype
-    		proc = head_proc
+			'' use the prototype
+			proc = head_proc
 
-    		'' check attribs
-    		if( hCheckAttribs( proc, attrib ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			end if
-    		else
-    			symbGetAttrib( proc ) or= attrib
-    		end if
+			'' check attribs
+			if( hCheckAttribs( proc, attrib ) ) then
+				symbGetAttrib( proc ) or= attrib
+			end if
 
-    		''
-    		symbSetIsDeclared( proc )
-    	end if
+			symbSetIsDeclared( proc )
+		end if
 	end if
 
     ''
@@ -1691,11 +1630,6 @@ function cPropertyHeader _
 	dim as FB_SYMBSTATS stats = any
 
 	head_proc = hGetId( parent, @id, @dtype, TRUE )
-	if( head_proc = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-    end if
 
 	hCheckSuffix( dtype )
 
@@ -1737,11 +1671,7 @@ function cPropertyHeader _
 	symbGetAttrib( proc ) = attrib
 
 	'' Parameters?
-	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( parent, proc, mode, is_prototype )
 
     '' (AS SymbolType)?
     dim as integer is_get = any
@@ -1878,12 +1808,8 @@ function cPropertyHeader _
     		'' there's already a prototype for this proc, check for
     		'' declaration conflits and fix up the arguments
     		if( hCheckPrototype( head_proc, proc, dtype, subtype ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			else
-    				'' error recovery: create a fake symbol
-    				return CREATEFAKEID( proc )
-    			end if
+				'' error recovery: create a fake symbol
+				return CREATEFAKEID( proc )
     		end if
 
     		'' check calling convention
@@ -1895,11 +1821,7 @@ function cPropertyHeader _
     		proc = head_proc
 
     		'' check attribs
-    		if( hCheckAttribs( proc, attrib ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			end if
-    		else
+    		if( hCheckAttribs( proc, attrib ) ) then
     			symbGetAttrib( proc ) or= attrib
     		end if
 
@@ -2009,11 +1931,7 @@ function cCtorHeader _
 	symbGetAttrib( proc ) = attrib
 
 	'' Parameters?
-	if( cParameters( parent, proc, mode, is_prototype ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( parent, proc, mode, is_prototype )
 
 	'' dtor?
 	if( is_ctor = FALSE ) then
@@ -2112,12 +2030,8 @@ function cCtorHeader _
     		'' there's already a prototype for this operator, check for
     		'' declaration conflits and fix up the arguments
     		if( hCheckPrototype( head_proc, proc, FB_DATATYPE_VOID, NULL ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			else
-    				'' error recovery: create a fake symbol
-    				return CREATEFAKE()
-    			end if
+				'' error recovery: create a fake symbol
+				return CREATEFAKE()
     		end if
 
     		'' check calling convention
@@ -2128,14 +2042,10 @@ function cCtorHeader _
     		'' use the prototype
     		proc = head_proc
 
-    		'' check attribs
-    		if( hCheckAttribs( proc, attrib ) = FALSE ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-    			end if
-    		else
-    			symbGetAttrib( proc ) or= attrib
-    		end if
+			'' check attribs
+			if( hCheckAttribs( proc, attrib ) ) then
+				symbGetAttrib( proc ) or= attrib
+			end if
 
     		''
     		symbSetIsDeclared( proc )
@@ -2241,11 +2151,9 @@ function cProcStmtBegin _
 	'' ProcHeader
 	select case as const tkn
 	case FB_TK_SUB, FB_TK_FUNCTION
-		proc = cProcHeader( attrib, _
-							is_nested, _
-						 	iif( tkn = FB_TK_SUB, _
-						 		 FB_PROCOPT_ISSUB, _
-						 		 FB_PROCOPT_NONE ) )
+		proc = cProcHeader( attrib, is_nested, iif( tkn = FB_TK_SUB, _
+		                                            FB_PROCOPT_ISSUB, _
+		                                            FB_PROCOPT_NONE ) )
 
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 		proc = cCtorHeader( attrib, is_nested, FALSE )

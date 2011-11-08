@@ -324,11 +324,6 @@ check_id:
     		end if
         end if
 
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			return NULL
-		end if
-
   		'' try to alloc an implicit variable..
     	if( env.clopt.lang <> FB_LANG_QB ) then
     		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then

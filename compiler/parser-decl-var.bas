@@ -908,10 +908,6 @@ private function hVarInit _
 
 	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
 	if( initree = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
 		'' fake an expression
 		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
@@ -1481,7 +1477,7 @@ function hVarDeclEx _
 			'' default initialization
 			case else
 
-				if hHasEllipsis( sym ) = TRUE then
+				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 					exit function
 				end if
@@ -1489,12 +1485,6 @@ function hVarDeclEx _
 				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
 
 			end select
-
-			if( initree = NULL ) then
-	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-	    			exit function
-	    		end if
-	    	end if
 
 			'' unscoped? then need a default initree, plus the assignment
 			if( doassign ) then

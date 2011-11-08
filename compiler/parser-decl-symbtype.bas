@@ -52,11 +52,7 @@ function cSymbolTypeFuncPtr _
 	proc = symbPreAddProc( NULL )
 
 	'' Parameters?
-	if( cParameters( NULL, proc, mode, TRUE ) = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-	end if
+	cParameters( NULL, proc, mode, TRUE )
 
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
@@ -384,15 +380,11 @@ function cSymbolType _
 				end if
 			end if
 
-			if( check_id = TRUE ) then
+			if( check_id ) then
 				chain_ = cIdentifier( base_parent, id_options )
 			end if
 
-			if( chain_ = NULL ) then
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-			else
+			if( chain_ ) then
 				do
 					dim as FBSYMBOL ptr sym = chain_->sym
 					do

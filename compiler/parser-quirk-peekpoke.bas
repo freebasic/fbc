@@ -168,7 +168,6 @@ function cPeekFunct _
 		funcexpr = astNewDEREF( expr, dtype, subtype )
     end if
 
-	''
-	function = (errGetLast() = FB_ERRMSG_OK)
+	function = TRUE
 
 end function

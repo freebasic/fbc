@@ -79,7 +79,8 @@ function cCompoundStmt as integer
 	select case as const lexGetToken( )
 	case FB_TK_IF
 		CHECK_CODEMASK( FB_TK_IF, FB_TK_IF )
-		function = cIfStmtBegin( )
+		cIfStmtBegin()
+		function = TRUE
 
 	case FB_TK_FOR
 		CHECK_CODEMASK( FB_TK_FOR, FB_TK_NEXT )

@@ -77,13 +77,9 @@ function cConstAssign _
 
 	'' don't allow explicit namespaces
 	parent = cParentId( )
-    if( parent <> NULL ) then
+	if( parent <> NULL ) then
 		hDeclCheckParent( parent )
-    else
-    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
-    end if
+	end if
 
 	dim as integer suffix = lexGetType( )
 	hCheckSuffix( suffix )

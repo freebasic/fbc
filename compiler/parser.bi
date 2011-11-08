@@ -257,11 +257,7 @@ declare function cComment _
 	) as integer
 
 declare sub cDirective()
-
-declare function cStatement _
-	( _
-		_
-	) as integer
+declare sub cStatement()
 
 declare function cStmtSeparator _
 	( _
@@ -290,19 +286,9 @@ declare function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare function cTypedefMultDecl _
-    ( _
-    ) as integer
-
-declare function cTypedefSingleDecl _
-	( _
-		byval pid as zstring ptr _
-	) as integer
-
-declare function cEnumDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
+declare sub cTypedefMultDecl()
+declare sub cTypedefSingleDecl(byval pid as zstring ptr)
+declare sub cEnumDecl(byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE)
 
 declare function cVariableDecl _
 	( _
@@ -450,10 +436,7 @@ declare function cCompStmtIsAllowed _
 		byval allowmask as FB_CMPSTMT_MASK _
 	) as integer
 
-declare function cIfStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cIfStmtBegin()
 
 declare function cIfStmtNext _
 	( _

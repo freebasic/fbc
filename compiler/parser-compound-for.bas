@@ -776,9 +776,6 @@ function cForStmtBegin _
 	dim as FBSYMBOL ptr base_parent = any
 
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		exit function
-	end if
 
     '' open outer scope
     dim as ASTNODE ptr outerscopenode = astScopeBegin( )
@@ -1110,16 +1107,10 @@ function cForStmtEnd _
 		'' ID
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
-
 		chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
-		dim as ASTNODE ptr idexpr = any
 
 		'' look up the variable
-		idexpr = cVariable( chain_ )
+		dim as ASTNODE ptr idexpr = cVariable( chain_ )
 
 		if( idexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDVAR )

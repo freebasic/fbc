@@ -49,9 +49,6 @@ function cGOTBStmt _
 		select case lexGetClass( )
 		case FB_TKCLASS_NUMLITERAL, FB_TKCLASS_IDENTIFIER
 			chain_ = cIdentifier( base_parent )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
 
 			'' Not not too many target labels yet?
 			if( l < FB_MAXGOTBITEMS ) then
@@ -230,9 +227,6 @@ function cOnStmt _
 		if( isrestore = FALSE ) then
 			'' Label
 			chain_ = cIdentifier( base_parent )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
 
 			label = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then

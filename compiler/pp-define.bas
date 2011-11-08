@@ -1028,9 +1028,6 @@ function ppDefine _
 
 	'' don't allow explicit namespaces
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		exit function
-	end if
 
     flags = LEX_FLAGS
     if( ismultiline ) then
@@ -1057,9 +1054,6 @@ function ppDefine _
 			defname = *hMakeTmpStr( )
 		end if
 	else
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 		sym = NULL
 	end if
 
