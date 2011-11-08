@@ -1,4 +1,4 @@
-' TEST_MODE : COMPILE_OK
+' TEST_MODE : COMPILE_ONLY_OK
 
 type foo
 	dummy as integer
