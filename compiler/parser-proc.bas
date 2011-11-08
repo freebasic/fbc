@@ -27,6 +27,19 @@ function cAliasAttribute() as zstring ptr
 	return NULL
 end function
 
+'' [LIB "string"]
+sub cLibAttribute()
+	if (lexGetToken() = FB_TK_LIB) then
+		lexSkipToken()
+		if (lexGetClass() <> FB_TKCLASS_STRLITERAL) then
+			errReport(FB_ERRMSG_SYNTAXERROR)
+		else
+			fbAddLib(lexGetText())
+			lexSkipToken()
+		end if
+	end if
+end sub
+
 '':::::
 private sub hParamError _
 	( _
@@ -531,16 +544,8 @@ function cProcHeader _
 	end if
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-		'' (LIB STR_LIT)?
-		if( lexGetToken( ) = FB_TK_LIB ) then
-			lexSkipToken( )
-			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-			else
-				fbAddLib(lexGetText())
-				lexSkipToken()
-			end if
-		end if
+		'' [LIB "string"]
+		cLibAttribute()
 	end if
 
 	'' [ALIAS "id"]
@@ -1323,16 +1328,8 @@ function cOperatorHeader _
 	end if
 
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-		'' (LIB STR_LIT)?
-		if( lexGetToken( ) = FB_TK_LIB ) then
-			lexSkipToken( )
-			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-			else
-				fbAddLib(lexGetText())
-				lexSkipToken()
-			end if
-		end if
+		'' [LIB "string"]
+		cLibAttribute()
 	end if
 
 	'' [ALIAS "id"]
@@ -1720,16 +1717,8 @@ function cPropertyHeader _
 	end if
 
 	if( is_prototype ) then
-		'' (LIB STR_LIT)?
-		if( lexGetToken( ) = FB_TK_LIB ) then
-			lexSkipToken( )
-			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-			else
-				fbAddLib(lexGetText())
-				lexSkipToken()
-			end if
-		end if
+		'' [LIB "string"]
+		cLibAttribute()
 	end if
 
 	'' [ALIAS "id"]
@@ -2000,16 +1989,8 @@ function cCtorHeader _
 	end if
 
 	if( is_prototype ) then
-		'' (LIB STR_LIT)?
-		if( lexGetToken( ) = FB_TK_LIB ) then
-			lexSkipToken( )
-			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-			else
-				fbAddLib(lexGetText())
-				lexSkipToken()
-			end if
-		end if
+		'' [LIB "string"]
+		cLibAttribute()
 	end if
 
 	'' [ALIAS "id"]

@@ -789,6 +789,7 @@ declare function cAsmBlock _
 	) as integer
 
 declare function cAliasAttribute() as zstring ptr
+declare sub cLibAttribute()
 
 declare function cProcReturnMethod _
 	( _

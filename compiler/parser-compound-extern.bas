@@ -70,15 +70,8 @@ function cExternStmtBegin _
 
 	end select
 
-	if( lexGetToken( ) = FB_TK_LIB ) then
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		else
-			fbAddLib(lexGetText())
-			lexSkipToken( )
-		end if
-	end if
+	'' [LIB "string"]
+	cLibAttribute()
 
 	''
 	stk = cCompStmtPush( FB_TK_EXTERN, _
