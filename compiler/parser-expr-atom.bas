@@ -57,13 +57,10 @@ function cParentExpression _
   			return NULL
   		end if
 
-  		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-  			return NULL
-  		else
-  			'' error recovery: skip until next ')', fake an expr
-  			hSkipUntil( CHAR_RPRNT, TRUE )
-  			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-  		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until next ')', fake an expr
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
   	'' ')'
@@ -75,12 +72,9 @@ function cParentExpression _
   	else
   		'' not calling a SUB or parent cnt = 0?
   		if( (is_opt = FALSE) or (parser.prntcnt = 0) ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-  				return NULL
-  			else
-  				'' error recovery: skip until next ')'
-  				hSkipUntil( CHAR_RPRNT, TRUE )
-  			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
   		end if
   	end if
 
@@ -249,9 +243,7 @@ private function hFindId _
     			'' check visibility
 				if( base_parent <> NULL ) then
 					if( symbCheckAccess( base_parent, sym ) = FALSE ) then
-						if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
-							return astNewCONSTi( 0 )
-						end if
+						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
 				end if
 

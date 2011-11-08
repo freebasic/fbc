@@ -479,10 +479,7 @@ declare sub astScopeEnd _
 		byval s as ASTNODE ptr _
 	)
 
-declare function astScopeBreak _
-	( _
-		byval tolabel as FBSYMBOL ptr _
-	) as integer
+declare sub astScopeBreak(byval tolabel as FBSYMBOL ptr)
 
 declare function astScopeUpdBreakList _
 	( _

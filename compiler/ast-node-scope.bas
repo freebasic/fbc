@@ -95,15 +95,8 @@ private sub hAddToBreakList _
 
 end sub
 
-'':::::
-function astScopeBreak _
-	( _
-		byval target as FBSYMBOL ptr _
-	) as integer
-
+sub astScopeBreak(byval target as FBSYMBOL ptr)
 	dim as ASTNODE ptr n = any
-
-	function = FALSE
 
 	n = astNewNode( AST_NODECLASS_SCOPE_BREAK, FB_DATATYPE_INVALID, NULL )
 
@@ -118,12 +111,8 @@ function astScopeBreak _
 	'' processing the proc's branch list
 	n->l = astAdd( astNewBRANCH( AST_OP_JMP, target ) )
 
-	''
 	hAddToBreakList( @ast.proc.curr->block.breaklist, n )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 sub astScopeEnd _
@@ -204,12 +193,12 @@ function astScopeUpdBreakList _
 end function
 
 '':::::
-private function hBranchError _
+private sub hBranchError _
 	( _
 		byval errnum as integer, _
 		byval n as ASTNODE ptr, _
 		byval s as FBSYMBOL ptr = NULL _
-	) as integer static
+	) static
 
 	dim as integer showerror
 	dim as string msg
@@ -237,11 +226,10 @@ private function hBranchError _
 		msg += *symbGetName( s )
 	end if
 
-	function = errReportEx( errnum, msg, n->break.linenum )
+	errReportEx( errnum, msg, n->break.linenum )
 
 	env.clopt.showerror = showerror
-
-end function
+end sub
 
 '':::::
 private sub hBranchWarning _
@@ -338,9 +326,7 @@ private function hCheckCrossing _
     		if( stmt > top_stmt ) then
     			if( stmt < bot_stmt ) then
     				if( symbGetVarHasCtor( s ) ) then
-    					if( hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s ) = FALSE ) then
-    						return FALSE
-    					end if
+						hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s )
 
     				else
     					'' not static, shared or temp?

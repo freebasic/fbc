@@ -1941,12 +1941,7 @@ private function getModuleAsmName(byval module as FBCIOFILE ptr) as string
 	function = asmfile
 end function
 
-private function compileBas _
-	( _
-		byval module as FBCIOFILE ptr, _
-		byval ismain as integer _
-	) as integer
-
+private sub compileBas(byval module as FBCIOFILE ptr, byval ismain as integer)
 	'' *.o name based on input file name unless given via -o <file>
 	if (len(module->objfile) = 0) then
 		module->objfile = hStripExt(module->srcfile) & ".o"
@@ -1968,51 +1963,45 @@ private function compileBas _
 
 	do
 		'' init the parser
-		if (fbInit(ismain, restarts) = FALSE) then
-			exit function
-		end if
+		fbInit(ismain, restarts)
 
 		'' add the libs and paths passed in the cmd-line, so the
 		'' compiler can add them to the module's objinfo section
 		fbSetLibs(@fbc.libs, @fbc.libpaths)
 
-		if (fbCompile(module->srcfile, asmfile, ismain) = FALSE) then
-			'' Restore original lang
-			fbSetOption(FB_COMPOPT_LANG, prevlangid)
-			exit function
-		end if
+		fbCompile(module->srcfile, asmfile, ismain)
 
-		if (fbCheckRestartCompile() = FALSE) then
-			exit do
-		end if
-
-		'' Errors? Don't bother restarting ...
+		'' If there were any errors during parsing, just exit without
+		'' doing anything else.
 		if (errGetCount() > 0) then
-			exit function
+			fbcEnd(1)
+		end if
+
+		'' Don't restart unless asked for
+		if (fbShouldRestart() = FALSE) then
+			exit do
 		end if
 
 		'' Restart
 		restarts += 1
+
+		'' Shutdown the parser before restarting
 		fbEnd()
 	loop
 
-	'' update the list of libs and paths, with the ones found when parsing
+	'' Update the list of libs and paths, with the ones found when parsing
 	fbGetLibs(@fbc.finallibs, @fbc.finallibpaths)
 
-	'' shutdown the parser
-	fbEnd( )
+	'' Shutdown the parser
+	fbEnd()
 
 	'' Restore original lang
 	fbSetOption( FB_COMPOPT_LANG, prevlangid )
+end sub
 
-	function = TRUE
-end function
-
-private function compileModules() as integer
+private sub compileModules()
 	dim as integer ismain = FALSE
 	dim as integer checkmain = any
-
-	function = FALSE
 
 	select case fbGetOption( FB_COMPOPT_OUTTYPE )
 	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
@@ -2027,9 +2016,7 @@ private function compileModules() as integer
 			ismain = (fbc.mainfile = hStripPath(hStripExt(module->srcfile)))
 		end if
 
-		if (compileBas(module, ismain) = FALSE) then
-			exit function
-		end if
+		compileBas(module, ismain)
 
 		module = listGetNext(module)
 	wend
@@ -2040,9 +2027,7 @@ private function compileModules() as integer
 		strsetCopy(@fbc.finallibs, @fbc.libs)
 		strsetCopy(@fbc.finallibpaths, @fbc.libpaths)
 	end if
-
-	return TRUE
-end function
+end sub
 
 private function parseXpm _
 	( _
@@ -2150,7 +2135,8 @@ private function compileXpm() as integer
 		fbcAddTemp(fbc.xpm.srcfile)
 	end if
 
-	function = compileBas(@fbc.xpm, FALSE)
+	compileBas(@fbc.xpm, FALSE)
+	function = TRUE
 end function
 
 dim shared as zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = _
@@ -2594,9 +2580,7 @@ end sub
 
 	'' Compile into temporary files
 
-	if (compileModules() = FALSE) then
-		fbcEnd( 1 )
-	end if
+	compileModules()
 
 	if (compileXpm() = FALSE) then
 		fbcEnd(1)

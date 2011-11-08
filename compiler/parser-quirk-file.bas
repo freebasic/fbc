@@ -28,9 +28,7 @@ function cPrintStmt  _
 
 	case FB_TK_LPRINT
 		if( fbLangOptIsSet( FB_LANG_OPT_OPTION ) = FALSE ) then
-			if( errReportNotAllowed( FB_LANG_OPT_OPTION ) = FALSE ) then
-				exit function
-			end if
+			errReportNotAllowed( FB_LANG_OPT_OPTION )
 		else
 			islprint = TRUE
 		end if
@@ -47,9 +45,7 @@ function cPrintStmt  _
 		'' ('#' Expression)?
 		if( hMatch( CHAR_SHARP ) ) then
 			hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
-
 			hMatchCOMMA( )
-
 		else
 			filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
@@ -84,9 +80,7 @@ function cPrintStmt  _
 			hMatchExpressionEx( usingexpr, FB_DATATYPE_STRING )
 
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDSEMICOLON ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDSEMICOLON )
 			end if
 
 			if( rtlPrintUsingInit( usingexpr, islprint ) = FALSE ) then
@@ -100,19 +94,13 @@ function cPrintStmt  _
 		if( hMatch( FB_TK_SPC ) ) then
 			isspc = TRUE
 			hMatchLPRNT( )
-
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
 			hMatchRPRNT( )
-
 		elseif( hMatch( FB_TK_TAB ) ) then
 			istab = TRUE
 			hMatchLPRNT( )
-
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
 			hMatchRPRNT( )
-
 		else
 			expr = cExpression( )
 		end if
@@ -129,7 +117,6 @@ function cPrintStmt  _
 		if( (iscomma = FALSE) and _
 			(issemicolon = FALSE) and _
 			(expr = NULL) ) then
-
 			exit do
 		end if
 
@@ -159,10 +146,7 @@ function cPrintStmt  _
 							  issemicolon, _
 							  expr, _
 							  islprint ) = FALSE ) then
-
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 
 			else
@@ -172,10 +156,7 @@ function cPrintStmt  _
 								   iscomma, _
 								   issemicolon, _
 								   islprint ) = FALSE ) then
-
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
 			end if
 		end if
@@ -212,11 +193,7 @@ end function
 '':::::
 '' WriteStmt	  =   WRITE ('#' Expression)? (Expression? "," )*
 ''
-function cWriteStmt _
-	( _
-		_
-	) as integer
-
+function cWriteStmt() as integer
     dim as ASTNODE ptr filexpr, filexprcopy, expr
     dim as integer expressions, iscomma
 
@@ -266,9 +243,7 @@ function cWriteStmt _
     	end if
 
     	if( rtlWrite( filexprcopy, iscomma, expr ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    			exit function
-    		end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
     	end if
 
     	expressions += 1
@@ -277,8 +252,7 @@ function cWriteStmt _
     ''
     astDelTree( filexpr )
 
-    function = TRUE
-
+	function = TRUE
 end function
 
 '':::::
@@ -303,11 +277,7 @@ function cLineInputStmt _
 	lexSkipToken( )
 
 	'' ';'?
-	if( hMatch( CHAR_SEMICOLON ) ) then
-		addnewline = FALSE
-	else
-		addnewline = TRUE
-	end if
+	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
 	isfile = FALSE
@@ -319,11 +289,8 @@ function cLineInputStmt _
 	expr = cExpression( )
 	if( expr = NULL ) then
 		if( isfile ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		else
 			expr = NULL
 		end if
@@ -335,9 +302,7 @@ function cLineInputStmt _
 		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
 			issep = FALSE
 			if( (expr = NULL) or (isfile) ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDCOMMA )
 			end if
         else
         	addquestion = TRUE
@@ -349,32 +314,25 @@ function cLineInputStmt _
     '' Variable?
 	dstexpr = cVarOrDeref( )
 	if( dstexpr = NULL ) then
-       	if( (expr = NULL) or (isfile) ) then
-       		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-       			exit function
-       		else
-       			hSkipStmt( )
-       			return TRUE
-       		end if
-       	else
-       		dstexpr = expr
-       		expr = NULL
-       	end if
-    else
-    	if( issep = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-				exit function
-			end if
-    	end if
-    end if
+		if( (expr = NULL) or (isfile) ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipStmt( )
+			return TRUE
+		else
+			dstexpr = expr
+			expr = NULL
+		end if
+	else
+		if( issep = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
+		end if
+	end if
 
 	'' dest can't be a top-level const
 	if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 	end if
-	
+
     select case astGetDataType( dstexpr )
     case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
     	function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
@@ -385,11 +343,8 @@ function cLineInputStmt _
     '' not a string?
     case else
 		astDelTree( dstexpr )
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		return TRUE
     end select
 
 end function
@@ -411,11 +366,7 @@ function cInputStmt _
 	lexSkipToken( )
 
 	'' ';'?
-	if( hMatch( CHAR_SEMICOLON ) ) then
-		addnewline = FALSE
-	else
-		addnewline = TRUE
-	end if
+	addnewline = (hMatch( CHAR_SEMICOLON ) = FALSE)
 
 	'' '#'?
 	addquestion = FALSE
@@ -442,9 +393,7 @@ function cInputStmt _
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( hMatch( CHAR_COMMA ) = FALSE ) then
 			if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDCOMMA )
 			else
 				addquestion = TRUE
 			end if
@@ -460,13 +409,10 @@ function cInputStmt _
     do
 		dstexpr = cVarOrDeref( )
 		if( dstexpr = NULL ) then
-       		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-       			exit function
-       		else
-       			dstexpr = NULL
-       			hSkipUntil( CHAR_COMMA )
-       		end if
-       	end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			dstexpr = NULL
+			hSkipUntil( CHAR_COMMA )
+		end if
 
 		if( hMatch( CHAR_COMMA ) ) then
 			islast = FALSE
@@ -475,18 +421,14 @@ function cInputStmt _
 		end if
 
 		if( dstexpr <> NULL ) then
-
 			'' dest can't be a top-level const
 			if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 			end if
 
 			if( rtlFileInputGet( dstexpr ) = FALSE ) then
 				exit function
 			end if
-
 		end if
 
     loop until( islast )
@@ -523,11 +465,8 @@ private function hFileClose _
 			if( cnt = 0 ) then
 				'' pass NULL to rtlFileClose to get close-all function
 			else
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 
@@ -591,16 +530,13 @@ private function hFilePut _
 	'' any" args work (ie, the VB-way: literals are passed by value)
 	if( astIsCONST( srcexpr ) or astIsOFFSET( srcexpr ) ) then
 		astDelTree( srcexpr )
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-			exit function
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
+		if( isfunc ) then
+			hSkipUntil( CHAR_RPRNT )
 		else
-			if( isfunc ) then
-				hSkipUntil( CHAR_RPRNT )
-			else
-				hSkipStmt( )
-			end if
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			hSkipStmt( )
 		end if
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	isarray = FALSE
@@ -615,16 +551,13 @@ private function hFilePut _
     				'' don't allow var-len strings
     				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
 						astDelTree( srcexpr )
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
+						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						if( isfunc ) then
+							hSkipUntil( CHAR_RPRNT )
 						else
-							if( isfunc ) then
-								hSkipUntil( CHAR_RPRNT )
-							else
-								hSkipStmt( )
-							end if
-							return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+							hSkipStmt( )
 						end if
+						return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     				end if
 
     				lexSkipToken( )
@@ -638,36 +571,28 @@ private function hFilePut _
 	'' (',' elements)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( isarray ) then
-			if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip elements
-				elmexpr = cExpression( )
-				if( elmexpr <> NULL ) then
-					astDelTree( elmexpr )
-				end if
+			errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY )
+			'' error recovery: skip elements
+			elmexpr = cExpression( )
+			if( elmexpr <> NULL ) then
+				astDelTree( elmexpr )
+				elmexpr = NULL
 			end if
 		else
 			'' don't allow elements if source is string type
 			select case astGetDataType( srcexpr )
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
-				if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip elements
-					elmexpr = cExpression( )
-					if( elmexpr <> NULL ) then
-						astDelTree( elmexpr )
-					end if
+				errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY )
+				'' error recovery: skip elements
+				elmexpr = cExpression( )
+				if( elmexpr <> NULL ) then
+					astDelTree( elmexpr )
+					elmexpr = NULL
 				end if
 			case else
 				elmexpr = cExpression( )
 				if( elmexpr = NULL ) then
-					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-						exit function
-					else
-						elmexpr = NULL
-					end if
+					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				end if
 			end select
 		end if
@@ -680,11 +605,7 @@ private function hFilePut _
 			if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
 				elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
 				if( elmexpr = NULL ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-						exit function
-					else
-						elmexpr = NULL
-					end if
+					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 				end if
 			end if
 		end if
@@ -726,25 +647,19 @@ private function hFileGet _
 	hMatchCOMMA( )
 
 	posexpr = cExpression( )
-	if( posexpr = NULL ) then
-		posexpr = NULL
-	end if
 
 	'' ',' destine
 	hMatchCOMMA( )
 
 	dstexpr = cVarOrDeref( )
 	if( dstexpr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			exit function
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		if( isfunc ) then
+			hSkipUntil( CHAR_RPRNT )
 		else
-			if( isfunc ) then
-				hSkipUntil( CHAR_RPRNT )
-			else
-				hSkipStmt( )
-			end if
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			hSkipStmt( )
 		end if
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	isarray = FALSE
@@ -756,16 +671,13 @@ private function hFileGet _
     			if( isarray ) then
     				'' don't allow var-len strings
     				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
+						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						if( isfunc ) then
+							hSkipUntil( CHAR_RPRNT )
 						else
-							if( isfunc ) then
-								hSkipUntil( CHAR_RPRNT )
-							else
-								hSkipStmt( )
-							end if
-							return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+							hSkipStmt( )
 						end if
+						return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     				end if
     				lexSkipToken( )
     				lexSkipToken( )
@@ -777,33 +689,23 @@ private function hFileGet _
 	'' (',' elements)?
 	if( hMatch( CHAR_COMMA ) ) then
 		elmexpr = cExpression( )
-
 		if( isarray ) then
 			'' elems must be NULL
 			if( elmexpr <> NULL ) then
-				if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY )
 				astDelTree( elmexpr )
 				elmexpr = NULL
 			end if
-
 		else
 			if( elmexpr ) then
-
 				'' don't allow elements if destine is string type
 				select case astGetDataType( dstexpr )
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
-					if( errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip elements
-						astDelTree( elmexpr )
-						elmexpr = NULL
-					end if
-			
+					errReport( FB_ERRMSG_ELEMENTSMUSTBEEMPTY )
+					'' error recovery: skip elements
+					astDelTree( elmexpr )
+					elmexpr = NULL
 				case else
-
 					'' elems has to be an integer or able to be converted
 					if( typeIsPtr( astGetDatatype( elmexpr ) ) ) then
 						errReportWarn( FB_WARNINGMSG_PASSINGPTRTOSCALAR )
@@ -811,15 +713,10 @@ private function hFileGet _
 					if( astGetDatatype( elmexpr ) <> FB_DATATYPE_INTEGER ) then
 						elmexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, elmexpr )
 						if( elmexpr = NULL ) then
-							if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
-								exit function
-							else
-								elmexpr = NULL
-							end if
+							errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 						end if
 					end if
 				end select
-
 			end if
 		end if
 	else
@@ -843,15 +740,11 @@ private function hFileGet _
 				end select
 
 				if( isint = FALSE ) then
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
 				end if
-			end if			
+			end if
 		else
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			end if			
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		end if
 	else
 		iobexpr = NULL
@@ -859,20 +752,16 @@ private function hFileGet _
 
 	'' dest can't be a top-level const
 	if( typeIsConst( astGetFullType( dstexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 	end if
 
 	'' iobytes can't be a top-level const
 	if( iobexpr ) then
 		if( typeIsConst( astGetFullType( iobexpr ) ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 		end if
 	end if
-		
+
 	if( isarray = FALSE ) then
 		function = rtlFileGet( fileexpr, posexpr, dstexpr, elmexpr, iobexpr, isfunc )
 	else
@@ -1158,9 +1047,7 @@ private function hFileOpen _
 
 	'' AS '#'? Expression
 	if( hMatch( FB_TK_AS ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTINGAS ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTINGAS )
 	end if
 
 	hMatch( CHAR_SHARP )
@@ -1175,16 +1062,11 @@ private function hFileOpen _
 	'' (LEN '=' Expression)?
 	if( hMatchText( "LEN" ) ) then
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-				exit function
-			else
-				flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDEQ )
+			flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		else
 			hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
 		end if
-
 	else
 		flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
@@ -1224,14 +1106,12 @@ private function hFileRename _
 	if( isfunc ) then
 		'' ','?
 		hMatchCOMMA( )
-    else
-        if( hMatch( FB_TK_AS ) = FALSE ) then
-        	if( hMatch( CHAR_COMMA ) = FALSE ) then
-                if( errReport( FB_ERRMSG_EXPECTINGAS ) = FALSE ) then
-                	exit function
-                end if
-            end if
-        end if
+	else
+		if( hMatch( FB_TK_AS ) = FALSE ) then
+			if( hMatch( CHAR_COMMA ) = FALSE ) then
+				errReport( FB_ERRMSG_EXPECTINGAS )
+			end if
+		end if
 	end if
 
 	hMatchExpressionEx( filename_new, FB_DATATYPE_STRING )
@@ -1438,4 +1318,3 @@ function cFileFunct _
 	end select
 
 end function
-

@@ -42,16 +42,9 @@ sub ppDefineEnd( )
 
 end sub
 
-'':::::
-private function hReportMacroError _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval errnum as integer _
-	) as integer
-
-	function = errReportEx( errnum, "expanding: " + *symbGetName( s ) )
-
-end function
+private sub hReportMacroError(byval s as FBSYMBOL ptr, byval errnum as integer)
+	errReportEx( errnum, "expanding: " + *symbGetName( s ) )
+end sub
 
 private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
 	'' The va_arg() and va_next() built in macros aren't supported with -gen gcc
@@ -59,7 +52,8 @@ private function isMacroAllowed(byval s as FBSYMBOL ptr) as integer
 	if (pp.skipping = FALSE) then
 		if (s->def.flags and FB_DEFINE_FLAGS_NOGCC) then
 			if (irGetOption(IR_OPT_HIGHLEVEL)) then
-				return errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
+				errReport(FB_ERRMSG_STMTUNSUPPORTEDINGCC)
+				return FALSE
 			end if
 		end if
 	end if
@@ -151,11 +145,8 @@ private function hLoadMacro _
 
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-					exit function
-				else
-					exit do
-				end if
+				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				exit do
 			end select
 
 			if( argtb <> NULL ) then
@@ -173,13 +164,10 @@ private function hLoadMacro _
 			with argtb->tb(num)
 
 				if( .text.data = NULL ) then
-                    '' Argument to '...' (variadic macros) can be empty
-                    if( reached_vararg = FALSE ) then
-                        if( hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-                            exit function
-                        end if
-                    end if
-
+					'' Argument to '...' (variadic macros) can be empty
+					if( reached_vararg = FALSE ) then
+						hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
+					end if
 				else
 					if( (.text.data[0][0] = CHAR_SPACE) or _
 						(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
@@ -201,13 +189,10 @@ private function hLoadMacro _
 
 		'' too many args?
 		if( param = NULL ) then
-			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
-				exit do
-			end if
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+			exit do
 		end if
 	loop
 
@@ -226,11 +211,8 @@ private function hLoadMacro _
                     DZstrReset( argtb->tb(num).text )
                 end if
             else
-                if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-                    exit function
-                else
-                    doskip = TRUE
-                end if
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			doskip = TRUE
             end if
         end if
     end if
@@ -355,14 +337,10 @@ private function hLoadDefine _
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						exit function
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDRPRNT )
 				else
 					lexEatChar( )
 				end if
-
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
@@ -482,11 +460,8 @@ private function hLoadMacroW _
 
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-					exit function
-				else
-					exit do
-				end if
+				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				exit do
 			end select
 
 			if( argtb <> NULL ) then
@@ -504,11 +479,8 @@ private function hLoadMacroW _
 				if( .textw.data = NULL ) then
                     '' Argument to '...' (variadic macros) can be empty
                     if( reached_vararg = FALSE ) then
-                        if( hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-                            exit function
-                        end if
+				hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
                     end if
-
 				else
 					if( (.textw.data[0][0] = CHAR_SPACE) or _
 						(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
@@ -529,13 +501,10 @@ private function hLoadMacroW _
 
 		'' too many args?
 		if( param = NULL ) then
-			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
-				exit do
-			end if
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+			exit do
 		end if
 	loop
 
@@ -554,11 +523,8 @@ private function hLoadMacroW _
                     DWstrReset( argtb->tb(num).textw )
                 end if
             else
-                if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-                    exit function
-                else
-                    doskip = TRUE
-                end if
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			doskip = TRUE
             end if
         end if
     end if
@@ -682,10 +648,7 @@ private function hLoadDefineW _
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						exit function
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDRPRNT )
 				else
 					lexEatChar( )
 				end if
@@ -729,13 +692,10 @@ function ppDefineLoad _
 
 	'' recursion?
 	if( s = lex.ctx->currmacro ) then
-		if( errReport( FB_ERRMSG_RECURSIVEMACRO ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip
-			hSkipUntil( INVALID, FALSE, LEX_FLAGS )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_RECURSIVEMACRO )
+		'' error recovery: skip
+		hSkipUntil( INVALID, FALSE, LEX_FLAGS )
+		return TRUE
 	end if
 
 	'' only one level
@@ -976,18 +936,16 @@ private function hReadMacroText _
 end function
 
 '':::::
-private function hReadDefineText _
+private sub hReadDefineText _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval defname as zstring ptr, _
 		byval isargless as integer, _
 		byval ismultiline as integer _
-	) as integer
+	)
 
 	dim as zstring ptr text = any
 	dim as wstring ptr textw = any
-
-	function = FALSE
 
     if( env.inf.format = FBFILE_FORMAT_ASCII ) then
     	'' LITERAL*
@@ -997,20 +955,12 @@ private function hReadDefineText _
     	if( sym <> NULL ) then
     		if( (symbGetDefineParams( sym ) > 0) or _
     			(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
-
-    			if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
-    				exit function
-    			end if
-
+				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		elseif( (*symbGetDefineText( sym ) <> *text) ) then
-    			if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
-    				exit function
-    			end if
+				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
-
     	else
     		symbAddDefine( defname, text, len( *text ), isargless )
-
     	end if
 
     '' unicode..
@@ -1022,27 +972,16 @@ private function hReadDefineText _
     	if( sym <> NULL ) then
     		if( (symbGetDefineParams( sym ) > 0) or _
     			(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
-
-    			if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
-    				exit function
-    			end if
-
+				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
-    			if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
-    				exit function
-    			end if
+				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
-
     	else
     		symbAddDefineW( defname, textw, len( *textw ), isargless )
-
     	end if
 
     end if
-
-    function = TRUE
-
-end function
+end sub
 
 private function hMatchParamEllipsis( ) as integer
 
@@ -1104,32 +1043,25 @@ function ppDefine _
     	exit function
     end if
 
-    '' contains a period? (with LEX_FLAGS it won't skip white spaces)
-    if( lexGetToken( flags ) = CHAR_DOT ) then
-    	if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    		exit function
-    	end if
-    end if
+	'' contains a period? (with LEX_FLAGS it won't skip white spaces)
+	if( lexGetToken( flags ) = CHAR_DOT ) then
+		errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+	end if
 
-    if( chain_ <> NULL ) then
-    	sym = chain_->sym
-    	if( symbIsDefine( sym ) = FALSE ) then
-    		'' defines have no dups or respect namespaces
-    		if( errReportEx( FB_ERRMSG_DUPDEFINITION, @defname ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake an id
-    			defname = *hMakeTmpStr( )
-    		end if
-    	end if
-
-    else
+	if( chain_ <> NULL ) then
+		sym = chain_->sym
+		if( symbIsDefine( sym ) = FALSE ) then
+			'' defines have no dups or respect namespaces
+			errReportEx( FB_ERRMSG_DUPDEFINITION, @defname )
+			'' error recovery: fake an id
+			defname = *hMakeTmpStr( )
+		end if
+	else
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
-
-    	sym = NULL
-    end if
+		sym = NULL
+	end if
 
     params = 0
     paramhead = NULL
@@ -1138,115 +1070,92 @@ function ppDefine _
 
     '' '('?
     if( lexGetToken( flags ) = CHAR_LPRNT ) then
-    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
+		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		'' not arg-less?
 		if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_RPRNT ) then
 			lastparam = NULL
 			do
-		    	select case as const lexGetClass( )
-		    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-                	lastparam = symbAddDefineParam( lastparam, lexGetText( ) )
+				select case as const lexGetClass( )
+				case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+					lastparam = symbAddDefineParam( lastparam, lexGetText( ) )
 
-		    	case else
-    				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    					exit function
-    				else
-    					'' error recovery: fake a param
-    					lastparam = symbAddDefineParam( lastparam, hMakeTmpStr( ) )
-    				end if
-		    	end select
+				case else
+					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+					'' error recovery: fake a param
+					lastparam = symbAddDefineParam( lastparam, hMakeTmpStr( ) )
+				end select
 
-		    	if( lastparam = NULL ) then
-    				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    					exit function
-    				end if
-		    	end if
-
-		    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
-
-		    	params += 1
-				if( params >= FB_MAXDEFINEARGS ) then
-					if( errReport( FB_ERRMSG_TOOMANYPARAMS ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT, TRUE )
-						return TRUE
-					end if
+				if( lastparam = NULL ) then
+					errReport( FB_ERRMSG_DUPDEFINITION )
 				end if
 
-		    	if( paramhead = NULL ) then
-		    		paramhead = lastparam
-		    	end if
+				lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
+
+				params += 1
+				if( params >= FB_MAXDEFINEARGS ) then
+					errReport( FB_ERRMSG_TOOMANYPARAMS )
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT, TRUE )
+					return TRUE
+				end if
+
+				if( paramhead = NULL ) then
+					paramhead = lastparam
+				end if
 
 				'' ','?
 				if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_COMMA ) then
 					exit do
 				end if
 
-		    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
+				lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 			loop
 
-            '' Check for ellipsis after the last parameter's name, before the ')'.
-            '' (variadic macros)
-            is_variadic = hMatchParamEllipsis( )
-
+			'' Check for ellipsis after the last parameter's name, before the ')'.
+			'' (variadic macros)
+			is_variadic = hMatchParamEllipsis( )
 		else
 			isargless = TRUE
 		end if
 
-    	'' ')'
-    	if( lexGetToken( LEX_FLAGS ) <> CHAR_RPRNT ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    			exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+		'' ')'
+		if( lexGetToken( LEX_FLAGS ) <> CHAR_RPRNT ) then
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+		else
+			lexSkipToken( LEX_FLAGS and (not LEXCHECK_NOWHITESPC) )
+		end if
+	else
+		if( ismultiline ) then
+			errReport( FB_ERRMSG_EXPECTEDLPRNT )
+		else
+			if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
+				'' skip white-spaces
+				lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
 			end if
+		end if
+	end if
 
-    	else
-    		lexSkipToken( LEX_FLAGS and (not LEXCHECK_NOWHITESPC) )
-    	end if
+	'' not a macro?
+	if( params = 0 ) then
+		hReadDefineText( sym, @defname, isargless, ismultiline )
+		return TRUE
+	end if
 
-    else
-    	if( ismultiline ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-    			exit function
-			end if
-
-    	else
-    		if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
-    			'' skip white-spaces
-    			lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
-    		end if
-    	end if
-    end if
-
-   	'' not a macro?
-   	if( params = 0 ) then
-    	return hReadDefineText( sym, @defname, isargless, ismultiline )
-    end if
-
-    '' macro..
-
-   	'' already defined? can't check..
-   	if( sym <> NULL ) then
-   		if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
-   			exit function
-   		end if
-
-   	else
+	'' macro..
+	'' already defined? can't check..
+	if( sym <> NULL ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
+	else
    		tokhead = hReadMacroText( params, paramhead, ismultiline )
    		symbAddDefineMacro( @defname, tokhead, params, paramhead, _
                             iif( is_variadic, _
                                  FB_DEFINE_FLAGS_VARIADIC, _
                                  FB_DEFINE_FLAGS_NONE ) )
-
-   	end if
+	end if
 
    	function = TRUE
 
 end function
-
-

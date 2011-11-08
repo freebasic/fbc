@@ -316,21 +316,21 @@ declare	sub errEnd _
 	( _
 	)
 
-declare function errReportEx _
+declare sub errReportEx _
 	( _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
 		byval customText as zstring ptr = 0 _
-	) as integer
+	)
 
-declare function errReport _
+declare sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
 		byval customText as zstring ptr = 0 _
-	) as integer
+	)
 
 declare sub errReportWarn _
 	( _
@@ -347,13 +347,13 @@ declare sub errReportWarnEx _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)
 
-declare function errReportParam _
+declare sub errReportParam _
 	( _
 		byval proc as FBSYMBOL_ ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
-	) as integer
+	)
 
 declare sub errReportParamWarn _
 	( _
@@ -363,23 +363,20 @@ declare sub errReportParamWarn _
 		byval msgnum as integer _
 	)
 
-declare function errReportUndef _
+declare sub errReportUndef _
 	( _
 		byval errnum as integer, _
 		byval id as zstring ptr _
-	) as integer
+	)
 
-declare function errReportNotAllowed _
+declare sub errReportNotAllowed _
 	( _
 		byval opt as FB_LANG_OPT, _
 		byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
 		byval msgex as zstring ptr = NULL _
-	) as integer
+	)
 
-declare function errFatal _
-	( _
-	) as integer
-
+declare sub errHideFurtherErrors()
 
 ''
 '' macros

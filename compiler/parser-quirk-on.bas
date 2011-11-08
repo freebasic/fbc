@@ -60,9 +60,7 @@ function cGOTBStmt _
 					labelTB(l) = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
 				end if
 			elseif( l = FB_MAXGOTBITEMS ) then '' (Only show the error once)
-				if( errReport( FB_ERRMSG_TOOMANYLABELS ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_TOOMANYLABELS )
 				'' Error recovery: continue parsing all labels, but don't add
 				'' them to the table anymore
 			end if
@@ -70,13 +68,10 @@ function cGOTBStmt _
 			lexSkipToken( )
 
 		case else
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				if( l < FB_MAXGOTBITEMS ) then
-					'' error recovery: fake an label
-					labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
-				end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			if( l < FB_MAXGOTBITEMS ) then
+				'' error recovery: fake an label
+				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
 			end if
 		end select
 
@@ -127,8 +122,7 @@ function cGOTBStmt _
 	astAdd( astNewJMPTB_Begin( tbsym ) )
 
 	''
-	dim as integer i = any
-	for i = 0 to l-1
+	for i as integer = 0 to l-1
 		astAdd( astNewJMPTB_Label( FB_DATATYPE_UINT, labelTB(i) ) )
 	next
 
@@ -193,47 +187,33 @@ function cOnStmt _
 	case FB_TK_GOSUB
 		'' can't do GOSUB with ON ERROR
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
+			errReportNotAllowed( FB_LANG_OPT_GOSUB )
+			hSkipStmt( )
+			return TRUE
 		end if
 
 		'' gosub allowed by OPTION GOSUB?
 		if( env.opt.gosub ) then
 			lexSkipToken( )
 			isgoto = FALSE
-
 		else
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
-
-		end if
-
-	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
+			errReport( FB_ERRMSG_SYNTAXERROR )
 			hSkipStmt( )
 			return TRUE
 		end if
+
+	case else
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
 	end select
 
 	'' on error?
@@ -275,4 +255,3 @@ function cOnStmt _
 	end if
 
 end function
-

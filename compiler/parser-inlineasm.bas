@@ -29,18 +29,13 @@ end sub
 '':::::
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
-function cAsmCode _
-	( _
-	) as integer
-
+sub cAsmCode()
 	static as zstring * FB_MAXLITLEN+1 text
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr expr = any
 	dim as FB_ASMTOK ptr head, tail = any, node = any
 	dim as integer doskip = any, thisTok = any
-
-	function = FALSE
 
 	head = NULL
 	tail = NULL
@@ -72,28 +67,16 @@ function cAsmCode _
 						'' text replacement
 					    text = str( symbGetConstValInt( expr ) )
 					else
-				        '' error limit?
-						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-							exit function
-						else
-							'' skip emission
-							doskip = TRUE
-						end if
-
-					end if
-
-					astDelNode( expr )
-
-				else
-
-					'' error limit?
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
+						errReport( FB_ERRMSG_EXPECTEDCONST )
 						'' skip emission
 						doskip = TRUE
 					end if
 
+					astDelNode( expr )
+				else
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' skip emission
+					doskip = TRUE
 				end if
 
 			elseif( irGetOption( IR_OPT_HIGHLEVEL ) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
@@ -170,12 +153,8 @@ function cAsmCode _
 			'' FUNCTION?
     			sym = symbGetProcResult( parser.currproc )
     			if( sym = NULL ) then
-    				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    					exit function
-    				else
-    					doskip = TRUE
-    				end if
-
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					doskip = TRUE
     			else
     				symbSetIsAccessed( sym )
     			end if
@@ -191,32 +170,18 @@ function cAsmCode _
 						'' text replacement
 					    text = str( symbGetConstValInt( expr ) )
 					else
-				        '' error limit?
-						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-							exit function
-						else
-							'' skip emission
-							doskip = TRUE
-						end if
-
-					end if
-
-					astDelNode( expr )
-
-				else
-
-					'' error limit?
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
+						errReport( FB_ERRMSG_EXPECTEDCONST )
 						'' skip emission
 						doskip = TRUE
 					end if
 
+					astDelNode( expr )
+				else
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' skip emission
+					doskip = TRUE
 				end if
-
 			end select
-
 		end select
 
 		''
@@ -247,10 +212,7 @@ function cAsmCode _
 	if( head <> NULL ) then
 		astAdd( astNewASM( head ) )
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''AsmBlock        =   ASM Comment? SttSeparator
@@ -281,12 +243,9 @@ function cAsmBlock as integer
 		hEmitCurrLine( )
 
 		if( cStmtSeparator( ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip until next line
-    			hSkipUntil( FB_TK_EOL, TRUE )
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEOL )
+			'' error recovery: skip until next line
+			hSkipUntil( FB_TK_EOL, TRUE )
 		end if
 	else
 		if( cStmtSeparator( ) = FALSE ) then
@@ -324,12 +283,9 @@ function cAsmBlock as integer
 			exit do
 
 		case else
-    		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: skip until next line
-    			hSkipUntil( FB_TK_EOL, TRUE )
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEOL )
+			'' error recovery: skip until next line
+			hSkipUntil( FB_TK_EOL, TRUE )
 		end select
 
 		if( issingleline = FALSE ) then
@@ -340,14 +296,9 @@ function cAsmBlock as integer
 	if( issingleline = FALSE ) then
 		'' END ASM
 		if( hMatch( FB_TK_END ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
-    			exit function
-    		end if
-
+			errReport( FB_ERRMSG_EXPECTEDENDASM )
 		elseif( hMatch( FB_TK_ASM ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
-    			exit function
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDENDASM )
 		end if
 	end if
 

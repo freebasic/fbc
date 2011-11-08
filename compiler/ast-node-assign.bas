@@ -222,11 +222,8 @@ private function hCheckConstAndPointerOps _
 
 	'' check constant
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
-		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-			exit function
-		else
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+		return TRUE
 	end if
 
 	if( typeIsPtr( ldtype ) ) then

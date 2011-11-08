@@ -39,14 +39,9 @@ function cProcDecl as integer
 		function = cOperatorHeader( 0, is_nested, FB_PROCOPT_ISPROTO ) <> NULL
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: try to parse the prototype
-			function = cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO ) <> NULL
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: try to parse the prototype
+		function = cProcHeader( 0, is_nested, FB_PROCOPT_ISPROTO ) <> NULL
 	end select
 
 end function
-
-

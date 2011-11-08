@@ -157,52 +157,31 @@ declare sub _flush _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-'':::::
-private function _init _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-	dim as integer i
-
-	''
+private sub _init(byval backend as FB_BACKEND)
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
 	ctx.tmpcnt = 0
 
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
-
-	''
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	''
 	emitInit( backend )
 
-	for i = 0 to EMIT_REGCLASSES-1
+	for i as integer = 0 to EMIT_REGCLASSES-1
 		regTB(i) = emitGetRegClass( i )
 	next
 
-	''
 	irSetOption( IR_OPT_NESTEDFIELDS )
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private sub _end
-
+private sub _end()
 	emitEnd( )
 
-	''
 	flistEnd( @ctx.vregTB )
-
-	''
 	flistEnd( @ctx.tacTB )
 
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
-
 end sub
 
 '':::::
@@ -2815,11 +2794,7 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function irTAC_ctor _
-	( _
-	) as integer
-
+sub irTAC_ctor()
 	static as IR_VTBL _vtbl = _
 	( _
 		@_init, _
@@ -2895,7 +2870,4 @@ function irTAC_ctor _
 	)
 
 	ir.vtbl = _vtbl
-
-	function = TRUE
-
-end function
+end sub

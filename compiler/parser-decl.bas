@@ -130,7 +130,8 @@ function cDeclaration _
 		function = cVariableDecl( attrib )
 
 	case FB_TK_VAR
-		function = cAutoVarDecl( attrib )
+		cAutoVarDecl( attrib )
+		function = TRUE
 
 	case else
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
@@ -142,34 +143,17 @@ function cDeclaration _
 
 end function
 
-'':::::
-function hDeclCheckParent _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-	function = FALSE
-
+sub hDeclCheckParent(byval s as FBSYMBOL ptr)
 	select case symbGetClass( s )
 	case FB_SYMBCLASS_NAMESPACE
 		if( s <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
 		end if
 
 	case FB_SYMBCLASS_CLASS
-    	if( s <> symbGetCurrentNamespc( ) ) then
-			if( errReport( FB_ERRMSG_DECLOUTSIDECLASS ) = FALSE ) then
-				exit function
-			end if
-    	end if
+		if( s <> symbGetCurrentNamespc( ) ) then
+			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+		end if
 
 	end select
-
-	function = TRUE
-
-end function
-
-
-
+end sub

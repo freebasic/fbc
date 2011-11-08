@@ -63,9 +63,7 @@ function cSelectStmtBegin as integer
 
 	'' CASE
 	if( hMatch( FB_TK_CASE ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDCASE )
 	end if
 
 	'' AS?
@@ -77,31 +75,23 @@ function cSelectStmtBegin as integer
 			return cSelConstStmtBegin( )
 		end if
 
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' can't be an UDT
 	if( astGetDataType( expr ) = FB_DATATYPE_STRUCT ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			astDelTree( expr )
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		astDelTree( expr )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' add exit label
@@ -181,24 +171,15 @@ end function
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-private function hCaseExpression _
-	( _
-		byval dtype as integer, _
-		byref casectx as FBCASECTX _
-	) as integer
-
-	function = FALSE
-
+private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
 	casectx.op = AST_OP_EQ
 
 	'' IS REL_OP Expression
 	if( lexGetToken( ) = FB_TK_IS ) then
 		lexSkipToken( )
-
 		casectx.op = hFBrelop2IRrelop( lexGetToken( ) )
 		lexSkipToken( )
 		casectx.typ = FB_CASETYPE_IS
-
 	else
 		casectx.typ = FB_CASETYPE_SINGLE
 	end if
@@ -206,12 +187,9 @@ private function hCaseExpression _
 	'' Expression
 	casectx.expr1 = cExpression( )
 	if( casectx.expr1 = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			casectx.expr1 = astNewCONSTz( dtype )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		casectx.expr1 = astNewCONSTz( dtype )
 	end if
 
 	'' TO Expression
@@ -219,34 +197,23 @@ private function hCaseExpression _
 		lexSkipToken( )
 
 		if( casectx.typ <> FB_CASETYPE_SINGLE ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip until next ',', assume single
+			hSkipUntil( CHAR_COMMA )
+			casectx.typ = FB_CASETYPE_SINGLE
+		else
+			casectx.typ = FB_CASETYPE_RANGE
+			casectx.expr2 = cExpression( )
+			if( casectx.expr2 = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				'' error recovery: skip until next ',', assume single
 				hSkipUntil( CHAR_COMMA )
 				casectx.typ = FB_CASETYPE_SINGLE
 			end if
-
-		else
-			casectx.typ = FB_CASETYPE_RANGE
-
-			casectx.expr2 = cExpression( )
-			if( casectx.expr2 = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next ',', assume single
-					hSkipUntil( CHAR_COMMA )
-					casectx.typ = FB_CASETYPE_SINGLE
-				end if
-			end if
 		end if
 
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' if it's a wstring, do "if *tmp op expr"
@@ -338,9 +305,7 @@ function cSelectStmtNext( ) as integer
 
 	'' ELSE already parsed?
 	if( stk->select.casecnt = -1 ) then
-		if( errReport( FB_ERRMSG_EXPECTEDENDSELECT ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDENDSELECT )
 	end if
 
     '' default mask now allowed
@@ -348,7 +313,8 @@ function cSelectStmtNext( ) as integer
 
     '' AS CONST?
     if( stk->select.isconst ) then
-    	return cSelConstStmtNext( stk )
+		cSelConstStmtNext( stk )
+		return TRUE
     end if
 
 	'' CASE
@@ -388,13 +354,8 @@ function cSelectStmtNext( ) as integer
 	dtype = stk->select.dtype
 
 	do
-		if( hCaseExpression( dtype, ctx.caseTB(cntbase + cnt) ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			end if
-		else
-			cnt += 1
-		end if
+		hCaseExpression( dtype, ctx.caseTB(cntbase + cnt) )
+		cnt += 1
 
 		if( lexGetToken( ) <> CHAR_COMMA ) then
 			exit do
@@ -423,9 +384,7 @@ function cSelectStmtNext( ) as integer
 								il, nl, _
 								i = cnt-1 ) = FALSE ) then
 
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 		end if
 
@@ -466,14 +425,13 @@ function cSelectStmtEnd as integer
 
     '' no CASE's?
     if( stk->select.casecnt = 0 ) then
-		if( errReport( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDCASE )
     end if
 
     '' AS CONST?
     if( stk->select.isconst ) then
-    	return cSelConstStmtEnd( stk )
+		cSelConstStmtEnd( stk )
+		return TRUE
     end if
 
 	'' END SELECT
@@ -508,5 +466,3 @@ function cSelectStmtEnd as integer
 	function = TRUE
 
 end function
-
-

@@ -93,14 +93,8 @@ end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
-	init as function _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-	end as sub _
-	( _
-	)
+	init as sub(byval backend as FB_BACKEND)
+	end as sub()
 
 	flush as sub _
 	( _
@@ -553,14 +547,10 @@ end type
 ''
 ''
 ''
-declare function irInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-declare sub irEnd _
-	( _
-	)
+declare sub irTAC_ctor()
+declare sub irHLC_ctor()
+declare sub irInit(byval backend as FB_BACKEND)
+declare sub irEnd()
 
 declare function irGetVRDataClass _
 	( _

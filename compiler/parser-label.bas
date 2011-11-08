@@ -23,23 +23,16 @@ function cLabel as integer
     case FB_TKCLASS_NUMLITERAL
 
     	if( fbLangOptIsSet( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
-	    	if( errReportNotAllowed( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip stmt
-				hSkipStmt( )
-		    end if
-
+			errReportNotAllowed( FB_LANG_OPT_NUMLABEL )
+			'' error recovery: skip stmt
+			hSkipStmt( )
 		else
 			l = symbAddLabel( lexGetText( ), _
 							  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
 			if( l = NULL ) then
-				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt
-					hSkipStmt( )
-				end if
+				errReport( FB_ERRMSG_DUPDEFINITION )
+				'' error recovery: skip stmt
+				hSkipStmt( )
 			else
 				lexSkipToken( )
 			end if
@@ -52,7 +45,6 @@ function cLabel as integer
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'
 		if( lexGetLookAhead( 1 ) = FB_TK_STMTSEP ) then
-
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
 
 			'' no need to call Identifier(), ':' wouldn't follow 'ns.symbol' ids
@@ -68,16 +60,13 @@ function cLabel as integer
 			l = symbAddLabel( lexGetText( ), _
 							  FB_SYMBOPT_DECLARING or FB_SYMBOPT_CREATEALIAS )
 			if( l = NULL ) then
-				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_DUPDEFINITION )
 			end if
 
 			lexSkipToken( )
 
 			'' skip ':'
 			lexSkipToken( )
-
 		end if
     end select
 
@@ -90,4 +79,3 @@ function cLabel as integer
     end if
 
 end function
-

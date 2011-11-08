@@ -188,13 +188,7 @@ private function hWStrLiteralCompare _
 
 end function
 
-'':::::
-private function hToStr _
-	( _
-		byref l as ASTNODE ptr, _
-		byref r as ASTNODE ptr _
-	) as integer
-
+private sub hToStr(byref l as ASTNODE ptr, byref r as ASTNODE ptr)
 	dim as integer ldtype = any, rdtype = any
 
 	ldtype = astGetDataType( l )
@@ -207,15 +201,12 @@ private function hToStr _
 
     '' not a string..
     case else
-    	l = rtlToStr( l, FALSE )
-   		if( l = NULL ) then
-   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   				return FALSE
-   			else
-   				'' error recovery: fake a new node
-   				l = astNewCONSTstr( NULL )
-   			end if
-    	end if
+		l = rtlToStr( l, FALSE )
+		if( l = NULL ) then
+				errReport( FB_ERRMSG_TYPEMISMATCH )
+				'' error recovery: fake a new node
+				l = astNewCONSTstr( NULL )
+		end if
     end select
 
 
@@ -234,18 +225,12 @@ private function hToStr _
    		end if
 
    		if( r = NULL ) then
-   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   				return FALSE
-   			else
-  				'' error recovery: fake a new node
-				r = astNewCONSTstr( NULL )
-			end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: fake a new node
+			r = astNewCONSTstr( NULL )
    		end if
    	end select
-
-   	function = TRUE
-
-end function
+end sub
 
 '':::::
 private sub hBOPConstFoldInt _
@@ -887,9 +872,7 @@ function astNewBOP _
 
 	'' special case..
 	if( op = AST_OP_CONCAT ) then
-		if( hToStr( l, r ) = FALSE ) then
-			exit function
-		end if
+		hToStr( l, r )
 		op = AST_OP_ADD
 	end if
 

@@ -65,17 +65,9 @@ declare function ppDefineLoad _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare sub ppPragmaInit _
-	( _
-	)
-
-declare sub ppPragmaEnd _
-	( _
-	)
-
-declare function ppPragma _
-	( _
-	) as integer
+declare sub ppPragmaInit()
+declare sub ppPragmaEnd()
+declare sub ppPragma()
 
 declare function ppTypeOf _
 	( _

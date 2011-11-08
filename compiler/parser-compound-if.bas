@@ -118,12 +118,9 @@ function cIfStmtBegin as integer
     '' Expression
     expr = cExpression( )
     if( expr = NULL ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    		exit function
-		else
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
 	'' add end label (at ENDIF)
@@ -134,10 +131,7 @@ function cIfStmtBegin as integer
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		end if
-
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
 		astAdd( expr )
 	end if
@@ -155,10 +149,7 @@ function cIfStmtBegin as integer
 
 	'' THEN?
 	if( lexGetToken( ) <> FB_TK_THEN ) then
-		if( errReport( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
-			cCompStmtPop( stk )
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDTHEN )
 	else
 		lexSkipToken( )
 	end if
@@ -221,9 +212,7 @@ function cIfStmtNext(  ) as integer
 
     '' ELSE already parsed?
     if( stk->if.elsecnt <> 0 ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
-    		exit function
-    	end if
+		errReport( FB_ERRMSG_EXPECTEDENDIF )
     end if
 
 	'' end scope
@@ -248,28 +237,20 @@ function cIfStmtNext(  ) as integer
 	    '' Expression
     	expr = cExpression( )
     	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     	end if
 
 		'' THEN
 		if( hMatch( FB_TK_THEN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDTHEN )
 		end if
 
 		'' branch
 		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			end if
-
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
 			astAdd( expr )
 		end if

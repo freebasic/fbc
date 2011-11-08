@@ -43,12 +43,9 @@ function cDataStmt  _
 				sym = symbAddLabel( lexGetText( ), _
 									FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_CREATEALIAS )
 				if( sym = NULL ) then
-					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-						exit function
-					else
-						hSkipStmt( )
-						return TRUE
-					end if
+					errReport( FB_ERRMSG_DUPDEFINITION )
+					hSkipStmt( )
+					return TRUE
 				end if
 			end if
 			lexSkipToken( )
@@ -62,20 +59,15 @@ function cDataStmt  _
 
 		dim as ASTNODE ptr expr = NULL
 		do
-		    expr = cVarOrDeref(  )
-		    if( expr = NULL ) then
-		    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-		    		exit function
-		    	else
-		    		hSkipUntil( CHAR_COMMA )
-		    	end if
-
-		    else
-            	if( rtlDataRead( expr ) = FALSE ) then
-            		exit function
-            	end if
-		    end if
-
+			expr = cVarOrDeref(  )
+			if( expr = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				hSkipUntil( CHAR_COMMA )
+			else
+				if( rtlDataRead( expr ) = FALSE ) then
+					exit function
+				end if
+			end if
 		loop while( hMatch( CHAR_COMMA ) )
 
 		function = TRUE
@@ -96,7 +88,6 @@ function cDataStmt  _
 				else
 					errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 				end if
-
 				hSkipStmt( )
 				return FALSE
 			end if
@@ -105,7 +96,6 @@ function cDataStmt  _
 			'' in QB, DATA can be declared inside compound stmts..
 			if( fbIsModLevel( ) = FALSE ) then
 				errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
-
 				hSkipStmt( )
 				return FALSE
 			end if
@@ -135,19 +125,14 @@ function cDataStmt  _
 					end if
 				end if
 
-            	if( isconst = FALSE ) then
-					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-						exit function
-					else
-						astDelTree( expr )
-					end if
-
+				if( isconst = FALSE ) then
+					errReport( FB_ERRMSG_EXPECTEDCONST )
+					astDelTree( expr )
 				else
-            		if( astDataStmtStore( tree, expr ) = NULL ) then
-	          			exit function
-    	      		end if
+					if( astDataStmtStore( tree, expr ) = NULL ) then
+						exit function
+					end if
 				end if
-
 			loop while( hMatch( CHAR_COMMA ) )
 
 		'' qb mode, read tokens as-is, no lookup, no expressions..

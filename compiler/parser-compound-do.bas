@@ -11,13 +11,11 @@
 '':::::
 '' DoStmtBegin     =   DO ((WHILE | UNTIL) Expression)? .
 ''
-function cDoStmtBegin as integer
+sub cDoStmtBegin()
     dim as ASTNODE ptr expr = any
 	dim as integer iswhile = any, isuntil = any, isinverse = any
     dim as FBSYMBOL ptr il = any, el = any, cl = any
     dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	'' DO
 	lexSkipToken( )
@@ -46,12 +44,9 @@ function cDoStmtBegin as integer
 		'' Expression
 		expr = cExpression( )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake a node
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' branch
@@ -63,12 +58,9 @@ function cDoStmtBegin as integer
 
 		expr = astUpdComp2Branch( expr, el, isinverse )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewNOP( )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a node
+			expr = astNewNOP( )
 		end if
 
 		astAdd( expr )
@@ -86,10 +78,7 @@ function cDoStmtBegin as integer
 	stk->do.inilabel = il
     stk->do.cmplabel = cl
     stk->do.endlabel = el
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' DoStmtEnd     =   LOOP ((WHILE | UNTIL) Expression)? .
@@ -121,9 +110,7 @@ function cDoStmtEnd as integer
 	end select
 
 	if( (iswhile or isuntil) and (stk->do.attop) ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
 	'' end scope
@@ -143,12 +130,9 @@ function cDoStmtEnd as integer
 		'' Expression
 		expr = cExpression( )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake a node
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' branch
@@ -160,12 +144,9 @@ function cDoStmtEnd as integer
 
 		expr = astUpdComp2Branch( expr, stk->do.inilabel, isinverse )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a node
-				expr = astNewNOP( )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a node
+			expr = astNewNOP( )
 		end if
 
 		astAdd( expr )

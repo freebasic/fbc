@@ -7,14 +7,7 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 
-'':::::
-private function hPtrDecl _
-	( _
-		byref dtype as integer _
-	) as integer
-
-    function = FALSE
-
+private sub hPtrDecl(byref dtype as integer)
 	dim as integer ptr_cnt = 0
 
 	'' (CONST (PTR|POINTER) | (PTR|POINTER))*
@@ -27,9 +20,7 @@ private function hPtrDecl _
 			select case lexGetToken( )
 			case FB_TK_PTR, FB_TK_POINTER
 				if( ptr_cnt >= FB_DT_PTRLEVELS ) then
-					if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
 				else
 					dtype = typeSetIsConst( typeAddrOf( dtype ) )
 					ptr_cnt += 1
@@ -38,19 +29,14 @@ private function hPtrDecl _
 				lexSkipToken( )
 
 			case else
-				if( errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER ) = FALSE ) then
-                    exit function
-				end if
-
+				errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER )
 				exit do
 			end select
 
 		'' PTR|POINTER?
 		case FB_TK_PTR, FB_TK_POINTER
 			if( ptr_cnt >= FB_DT_PTRLEVELS ) then
-				if( errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS ) = FALSE ) then
-                    exit function
-				end if
+				errReport( FB_ERRMSG_TOOMANYPTRINDIRECTIONS )
 			else
 				dtype = typeAddrOf( dtype )
 				ptr_cnt += 1
@@ -62,10 +48,7 @@ private function hPtrDecl _
 			exit do
 		end select
 	loop
-
-	function = TRUE
-
-end function
+end sub
 
 private function hReadType _
     ( _
@@ -95,27 +78,23 @@ private function hReadType _
 
         lexSkipToken( )
 
-        '' Parse any PTR's since cSymbolType() didn't handle it
-        '' dtype is modified as needed
-        if( hPtrDecl( dtype ) = FALSE ) then
-            exit function
-        end if
+		'' Parse any PTR's since cSymbolType() didn't handle it
+		'' dtype is modified as needed
+		hPtrDecl( dtype )
 
         function = pfwdname
     end if
 
 end function
 
-private function hAddForwardRef _
+private sub hAddForwardRef _
     ( _
         byval pid as zstring ptr, _
         byval pfwdname as zstring ptr, _
         byref dtype as integer, _
         byref subtype as FBSYMBOL ptr, _
         byref lgt as integer _
-    ) as integer
-
-    function = FALSE
+    )
 
     dim as integer ptrcount = typeGetPtrCnt( dtype )
     dim as integer constmask = typeGetConstMask( dtype )
@@ -169,39 +148,29 @@ private function hAddForwardRef _
                                                 FALSE )
 
             if( subtype = NULL ) then
-                if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-                    exit function
-                else
-                    '' error recovery: fake a symbol
-                    subtype = symbAddFwdRef( hMakeTmpStr( ) )
-                end if
+				errReport( FB_ERRMSG_DUPDEFINITION )
+				'' error recovery: fake a symbol
+				subtype = symbAddFwdRef( hMakeTmpStr( ) )
             end if
         end if
     end if
 
     '' Restore the PTR's & CONST's on the type
     dtype = typeMultAddrOf( dtype, ptrcount ) or constmask
+end sub
 
-    function = TRUE
-
-end function
-
-private function hAddTypedef _
+private sub hAddTypedef _
     ( _
         byval pid as zstring ptr, _
         byval pfwdname as zstring ptr, _
         byval dtype as integer, _
         byval subtype as FBSYMBOL ptr, _
         byval lgt as integer _
-    ) as integer
-
-    function = FALSE
+    )
 
     '' Forward ref? Note: may update dtype & co
     if( pfwdname <> NULL ) then
-        if( hAddForwardRef( pid, pfwdname, dtype, subtype, lgt ) = FALSE ) then
-            exit function
-        end if
+		hAddForwardRef( pid, pfwdname, dtype, subtype, lgt )
     end if
 
     dim as FBSYMBOL ptr typedef = symbAddTypedef( pid, dtype, subtype, lgt )
@@ -225,15 +194,10 @@ private function hAddTypedef _
         end if
 
         if( isdup ) then
-            if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
-                exit function
-            end if
+			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
         end if
     end if
-
-    function = TRUE
-
-end function
+end sub
 
 private function hReadId( ) as zstring ptr
 
@@ -245,9 +209,7 @@ private function hReadId( ) as zstring ptr
     '' don't allow explicit namespaces
     parent = cParentId( )
     if( parent <> NULL ) then
-        if( hDeclCheckParent( parent ) = FALSE ) then
-            exit function
-        end if
+		hDeclCheckParent( parent )
     else
         if( errGetLast( ) <> FB_ERRMSG_OK ) then
             exit function
@@ -261,9 +223,7 @@ private function hReadId( ) as zstring ptr
             '' if inside a namespace, symbols can't contain periods (.)'s
             if( symbIsGlobalNamespc( ) = FALSE ) then
                 if( lexGetPeriodPos( ) > 0 ) then
-                    if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-                        exit function
-                    end if
+                    errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
                 end if
             end if
         end if
@@ -272,12 +232,9 @@ private function hReadId( ) as zstring ptr
         lexSkipToken( )
 
     case else
-        if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-            exit function
-        else
-            '' error recovery: fake an id
-            id = *hMakeTmpStr( )
-        end if
+        errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+        '' error recovery: fake an id
+        id = *hMakeTmpStr( )
     end select
 
     function = @id
@@ -310,9 +267,7 @@ function cTypedefMultDecl _
             exit function
         end if
 
-        if( hAddTypedef( pid, pfwdname, dtype, subtype, lgt ) = FALSE ) then
-            exit function
-        end if
+        hAddTypedef( pid, pfwdname, dtype, subtype, lgt )
 
     	'' ','?
     	if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -343,9 +298,7 @@ function cTypedefSingleDecl _
     do
         '' AS?
         if( lexGetToken( ) <> FB_TK_AS ) then
-            if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-                exit function
-            end if
+            errReport( FB_ERRMSG_SYNTAXERROR )
         else
             lexSkipToken( )
         end if
@@ -353,9 +306,7 @@ function cTypedefSingleDecl _
         '' SymtolType
         pfwdname = hReadType( dtype, subtype, lgt )
 
-        if( hAddTypedef( pid, pfwdname, dtype, subtype, lgt ) = FALSE ) then
-            exit function
-        end if
+        hAddTypedef( pid, pfwdname, dtype, subtype, lgt )
 
     	'' ','?
     	if( lexGetToken( ) <> CHAR_COMMA ) then

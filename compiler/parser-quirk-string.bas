@@ -35,19 +35,14 @@ function cMidStmt _
 		select case as const astGetClass( expr1 )
 		case AST_NODECLASS_DEREF
 			sym = iif( astGetLeft( expr1 ), astGetSymbol( astGetLeft( expr1 ) ), NULL )
-			
 		end select
 	end if
-		
+
 	if( sym = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 	else
 		if( symbIsConstant( sym ) or typeIsConst( astGetFullType( expr1 ) ) ) then
-			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	 	end if
 	end if
 
@@ -64,9 +59,7 @@ function cMidStmt _
 	hMatchRPRNT( )
 
 	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEQ )
 	end if
 
 	hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
@@ -99,12 +92,9 @@ function cLRSetStmt _
 	'' Expression
 	dstexpr = cVarOrDeref( )
 	if( dstexpr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			dstexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake a var
+		dstexpr = CREATEFAKEID( )
 	end if
 
 	dtype1 = astGetDataType( dstexpr )
@@ -114,12 +104,9 @@ function cLRSetStmt _
 		 FB_DATATYPE_STRUCT
 
 		if( is_rset and (dtype1 = FB_DATATYPE_STRUCT) ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: do lset instead
-				is_rset = FALSE
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: do lset instead
+			is_rset = FALSE
 		end if
 
 		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
@@ -129,39 +116,29 @@ function cLRSetStmt _
 			select case as const astGetClass( dstexpr )
 			case AST_NODECLASS_DEREF
 				sym = iif( astGetLeft( dstexpr ), astGetSymbol( astGetLeft( dstexpr ) ), NULL )
-				
 			end select
 		end if
 
 		if( sym = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 		else
 			if( symbIsConstant( sym ) or typeIsConst( astGetFullType( dstexpr ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			end if
 		end if
 
 	case else
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			astDelTree( dstexpr )
-			dstexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a var
+		astDelTree( dstexpr )
+		dstexpr = CREATEFAKEID( )
 	end select
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
-        if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-				exit function
-			end if
-        end if
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDCOMMA )
+		end if
 	end if
 
 	'' Expression
@@ -174,40 +151,31 @@ function cLRSetStmt _
 		 FB_DATATYPE_STRUCT
 
 	case else
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake a var
-			astDelTree( srcexpr )
-			srcexpr = CREATEFAKEID( )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a var
+		astDelTree( srcexpr )
+		srcexpr = CREATEFAKEID( )
 	end select
 
 	if( (dtype1 = FB_DATATYPE_STRUCT) or _
 		(dtype2 = FB_DATATYPE_STRUCT) ) then
 
 		if( dtype1 <> dtype2 ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' no error recovery: stmt already parsed
-				astDelTree( srcexpr )
-				astDelTree( dstexpr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' no error recovery: stmt already parsed
+			astDelTree( srcexpr )
+			astDelTree( dstexpr )
+			return TRUE
 		end if
 
 		dst = astGetSymbol( dstexpr )
 		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' no error recovery: stmt already parsed
-				astDelTree( srcexpr )
-				astDelTree( dstexpr )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' no error recovery: stmt already parsed
+			astDelTree( srcexpr )
+			astDelTree( dstexpr )
+			return TRUE
 		end if
 
 		function = rtlMemCopyClear( dstexpr, symbGetUDTUnpadLen( dst->subtype ), _
@@ -683,11 +651,8 @@ function cStringFunct _
 		end if
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -715,11 +680,8 @@ function cStringFunct _
 		funcexpr = rtlStrMid( expr1, expr2, expr3 )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -746,11 +708,8 @@ function cStringFunct _
 		end if
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -800,11 +759,8 @@ function cStringFunct _
 		funcexpr = rtlStrInstr( expr1, expr2, expr3, is_any )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -833,11 +789,8 @@ function cStringFunct _
 		funcexpr = rtlStrInstrRev( expr3, expr1, expr2, is_any )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -862,11 +815,8 @@ function cStringFunct _
 		funcexpr = rtlStrTrim( expr1, expr2, is_any )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -891,11 +841,8 @@ function cStringFunct _
 		funcexpr = rtlStrRTrim( expr1, expr2, is_any )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -920,11 +867,8 @@ function cStringFunct _
 		funcexpr = rtlStrLTrim( expr1, expr2, is_any )
 
 		if( funcexpr = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-               	exit function
-			else
-				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE
@@ -932,4 +876,3 @@ function cStringFunct _
 	end select
 
 end function
-

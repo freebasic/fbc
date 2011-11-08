@@ -31,18 +31,14 @@ function cPokeStmt _
 		'' check for invalid types
 		select case poketype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a type
-				poketype = FB_DATATYPE_UBYTE
-				subtype = NULL
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			'' error recovery: fake a type
+			poketype = FB_DATATYPE_UBYTE
+			subtype = NULL
 		end select
 
 		'' ','
 		hMatchCOMMA( )
-
 	else
 		poketype = FB_DATATYPE_UBYTE
 		subtype  = NULL
@@ -78,9 +74,7 @@ function cPokeStmt _
 
     expr1 = astNewASSIGN( expr1, expr2 )
     if( expr1 = NULL ) then
-    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    		exit function
-    	end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
 		astAdd( expr1 )
 	end if
@@ -111,22 +105,17 @@ function cPeekFunct _
 
 	'' (SymbolType ',')?
 	if( cSymbolType( dtype, subtype, lgt ) ) then
-
 		'' check for invalid types
 		select case typeGet( dtype )
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a type
-				dtype = FB_DATATYPE_UBYTE
-				subtype = NULL
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_UBYTE
+			subtype = NULL
 		end select
 
 		'' ','
 		hMatchCOMMA( )
-
 	else
 		dtype = FB_DATATYPE_UBYTE
 		subtype = NULL
@@ -141,26 +130,20 @@ function cPeekFunct _
     ''
     select case astGetDataClass( expr )
     case FB_DATACLASS_STRING
-    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			astDelTree( expr )
-			expr = NULL
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake an expr
+		astDelTree( expr )
+		expr = NULL
 
 	case FB_DATACLASS_FPOINT
 		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 
 	case else
 		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
-        	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-        		exit function
-        	else
-				'' error recovery: fake an expr
-				astDelTree( expr )
-				expr = NULL
-        	end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake an expr
+			astDelTree( expr )
+			expr = NULL
 		end if
 	end select
 
@@ -174,10 +157,8 @@ function cPeekFunct _
 		case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
 
 		case else
-			if(	errReport( FB_ERRMSG_EXPECTEDUDT, TRUE ) = FALSE ) then
-				exit function
-			end	if
-		end	select
+			errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
+		end select
 
     	lexSkipToken( LEXCHECK_NOPERIOD )
 
@@ -191,4 +172,3 @@ function cPeekFunct _
 	function = (errGetLast() = FB_ERRMSG_OK)
 
 end function
-

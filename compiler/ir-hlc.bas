@@ -113,12 +113,7 @@ dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
     @"void *"     _ '' pointer
 }
 
-'':::::
-private function _init _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
+private sub _init(byval backend as FB_BACKEND)
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
@@ -133,18 +128,12 @@ private function _init _
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private sub _end
-
+private sub _end()
 	listEnd( @ctx.callargs )
 	flistEnd( @ctx.forwardlist )
 	flistEnd( @ctx.vregTB )
-
 end sub
 
 '':::::
@@ -2855,11 +2844,7 @@ private sub _xchgTOS _
 
 end sub
 
-'':::::
-function irHLC_ctor _
-	( _
-	) as integer
-
+sub irHLC_ctor()
 	static as IR_VTBL _vtbl = _
 	( _
 		@_init, _
@@ -2935,9 +2920,4 @@ function irHLC_ctor _
 	)
 
 	ir.vtbl = _vtbl
-
-	'errReportEx( FB_ERRMSG_INTERNAL, "the ir module for -gen gcc isn't implemented yet" )
-
-	function = TRUE
-
-end function
+end sub

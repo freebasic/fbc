@@ -36,20 +36,16 @@ function cViewStmt _
 
 	'' (Expression TO Expression)?
 	if( is_func = FALSE ) then
-    	expr1 = cExpression( )
-    	if( expr1 <> NULL ) then
-            if( hMatch( FB_TK_TO ) = FALSE ) then
-                if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-                	exit function
-                else
-                	expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
-                end if
-            end if
-
-            hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
-        else
-            default_view = TRUE
-        end if
+		expr1 = cExpression( )
+		if( expr1 <> NULL ) then
+			if( hMatch( FB_TK_TO ) = FALSE ) then
+				errReport( FB_ERRMSG_SYNTAXERROR )
+				expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
+		else
+			default_view = TRUE
+		end if
 	end if
 
     if( default_view ) then

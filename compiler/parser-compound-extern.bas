@@ -20,31 +20,27 @@ function cExternStmtBegin _
 
 	function = FALSE
 
-    if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
-    	errReportNotAllowed( FB_LANG_OPT_EXTERN )
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_EXTERN )
-    	exit function
-    end if
+	if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
+		errReportNotAllowed( FB_LANG_OPT_EXTERN )
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_EXTERN )
+		exit function
+	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_EXTERN ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_EXTERN )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_EXTERN ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_EXTERN )
+		exit function
+	end if
 
 	'' EXTERN
 	lexSkipToken( )
 
 	'' "mangling spec"
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: assume it's "C"
-			litstr = @"c"
-            
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: assume it's "C"
+		litstr = @"c"
 	else
 		litstr = lexGetText( )
 	end if
@@ -67,23 +63,17 @@ function cExternStmtBegin _
         lexSkipToken( )
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: assume it's "C"
-			mangling = FB_MANGLING_CDECL
-            lexSkipToken( )
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: assume it's "C"
+		mangling = FB_MANGLING_CDECL
+		lexSkipToken( )
+
 	end select
 
 	if( lexGetToken( ) = FB_TK_LIB ) then
 		lexSkipToken( )
-
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		else
 			fbAddLib(lexGetText())
 			lexSkipToken( )
@@ -126,5 +116,3 @@ function cExternStmtEnd as integer
 	function = TRUE
 
 end function
-
-

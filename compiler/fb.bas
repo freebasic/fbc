@@ -176,15 +176,7 @@ function fbGetLangName _
 
 end function
 
-'':::::
-function fbInit _
-	( _
-		byval ismain as integer, _
-		byval restarts as integer _
-	) as integer static
-
-	function = FALSE
-
+sub fbInit(byval ismain as integer, byval restarts as integer)
 	strsetInit(@env.libs, FB_INITLIBNODES\4)
 	strsetInit(@env.libpaths, FB_INITLIBNODES\4)
 
@@ -214,7 +206,6 @@ function fbInit _
 		env.lang.litremap.integer = FB_DATATYPE_INTEGER
 		env.lang.litremap.uint = FB_DATATYPE_UINT
 		env.lang.litremap.double = FB_DATATYPE_DOUBLE
-
 	else
 		env.lang.typeremap.integer = FB_DATATYPE_SHORT
 		env.lang.sizeremap.integer = 2
@@ -243,65 +234,39 @@ function fbInit _
 	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
 	parserSetCtx( )
-
 	symbInit( ismain )
-
 	hlpInit( )
-
 	errInit( )
-
 	astInit( )
-
-	if( irInit( env.clopt.backend ) = FALSE ) then
-		return FALSE
-	end if
+	irInit( env.clopt.backend )
 
 	hashInit( @env.incfilehash, FB_INITINCFILES )
 	hashInit( @env.inconcehash, FB_INITINCFILES )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-
 	lexInit( FALSE )
-
 	parserInit( )
-
 	rtlInit( )
+end sub
 
-	''
-	function = TRUE
-
-end function
-
-'':::::
-sub fbEnd
-
-	''
+sub fbEnd()
 	rtlEnd( )
-
 	parserEnd( )
-
 	lexEnd( )
-
 	stackFree( @parser.stmt.stk )
 
 	hashEnd( @env.inconcehash )
 	hashEnd( @env.incfilehash )
 
 	irEnd( )
-
 	astEnd( )
-
 	errEnd( )
-
 	hlpEnd( )
-
 	symbEnd( )
 
 	erase infileTb
-
 	strsetEnd(@env.libs)
 	strsetEnd(@env.libpaths)
-
 end sub
 
 private sub setLangOptions()
@@ -576,25 +541,14 @@ function fbGetOption _
 end function
 
 '':::::
-function fbChangeOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	) as integer
-
-	function = FALSE
-
+sub fbChangeOption(byval opt as integer, byval value as integer)
 	select case as const opt
 	case FB_COMPOPT_MSBITFIELDS
 		fbSetOption( opt, value )
-		function = TRUE
 
 	case FB_COMPOPT_LANG
-		'' do nothing if we are already in the desired mode
-		if( value = fbGetOption( opt ) ) then
-			function = TRUE
-		else
-
+		'' If not yet in the desired mode
+		if( value <> fbGetOption( opt ) ) then
 			'' Not module level? then error
 			if( parser.scope <> FB_MAINSCOPE ) then
 
@@ -611,16 +565,19 @@ function fbChangeOption _
 					errReportWarn( FB_WARNINGMSG_CMDLINEOVERRIDES )
 				else
 
-					'' First pass? Set the option and return FALSE to stop the parser
+					'' First pass?
 					if( env.restarts = 0 ) then
 						fbSetOption( opt, value )
+
+						'' Tell parser to restart as soon as possible
 						env.dorestart = TRUE
+
+						'' and don't show any more errors
+						errHideFurtherErrors()
 
 					'' Second pass? Show a warning and ignore
 					else
 						errReportWarn( FB_WARNINGMSG_DIRECTIVEIGNORED )
-						function = TRUE
-
 					end if
 
 				end if
@@ -633,8 +590,7 @@ function fbChangeOption _
 		errReport( FB_ERRMSG_INTERNAL )
 
 	end select
-
-end function
+end sub
 
 '':::::
 function fbIsCrossComp _
@@ -704,30 +660,23 @@ private sub fbParsePreDefines()
 	wend
 end sub
 
-private function fbParsePreIncludes() as integer
+private sub fbParsePreIncludes()
 	dim as string ptr file = listGetHead(@env.preincludes)
-	while (file)
-		if (fbIncludeFile(*file, TRUE) = FALSE) then
-			return FALSE
-		end if
+	while ((file <> NULL) and fbShouldContinue())
+		fbIncludeFile(*file, TRUE)
 		file = listGetNext(file)
 	wend
-	return TRUE
-end function
+end sub
 
-'':::::
-function fbCompile _
+sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
 		byval ismain as integer _
-	) as integer
+	)
 
 	dim as double tmr
 
-	function = FALSE
-
-	''
 	env.inf.name = *hRevertSlash( infname, FALSE, asc(FB_HOST_PATHDIV) )
 	env.inf.incfile	= NULL
 	env.inf.ismain = ismain
@@ -738,13 +687,13 @@ function fbCompile _
 	'' open source file
 	if( hFileExists( *infname ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, infname, -1 )
-		exit function
+		exit sub
 	end if
 
 	env.inf.num = freefile
 	if( open( *infname, for binary, access read, as #env.inf.num ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
-		exit function
+		exit sub
 	end if
 
 	env.inf.format = hCheckFileFormat( env.inf.num )
@@ -752,7 +701,7 @@ function fbCompile _
 	''
 	if( irEmitBegin( ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, env.outf.name, -1 )
-		exit function
+		exit sub
 	end if
 
 	if( fbGetOption( FB_COMPOPT_PPONLY ) ) then
@@ -760,7 +709,7 @@ function fbCompile _
 		dim as string ppfile = hStripExt( env.inf.name ) + ".pp.bas"
 		if( open( ppfile, for output, as #env.ppfile_num ) <> 0 ) then
 			errReportEx( FB_ERRMSG_FILEACCESSERROR, ppfile, -1 )
-			exit function
+			exit sub
 		end if
 	else
 		env.ppfile_num = 0
@@ -771,11 +720,9 @@ function fbCompile _
 	tmr = timer( )
 
 	fbParsePreDefines()
-
-	dim as integer ok = fbParsePreIncludes()
-	if (ok) then
-		'' parse
-		ok = cProgram( )
+	fbParsePreIncludes()
+	if (fbShouldContinue()) then
+		cProgram()
 	end if
 
 	tmr = timer( ) - tmr
@@ -789,28 +736,20 @@ function fbCompile _
 		close #env.ppfile_num
 	end if
 
-	'' close src
-	if( close( #env.inf.num ) <> 0 ) then
-		'' ...
-	end if
+	close #env.inf.num
 
 	'' check if any label undefined was used
-	if (ok) then
+	if (fbShouldContinue()) then
 		symbCheckLabels( )
-		function = (errGetCount( ) = 0)
-	else
-		function = FALSE
 	end if
+end sub
 
+function fbShouldRestart() as integer
+	return env.dorestart
 end function
 
-'':::::
-function fbCheckRestartCompile _
-	( _
-	) as integer
-
-	function = env.dorestart
-
+function fbShouldContinue() as integer
+	return ((env.dorestart = FALSE) and (errGetCount() = 0))
 end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
@@ -823,26 +762,16 @@ sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 	strsetCopy(libpaths, @env.libpaths)
 end sub
 
-''::::
-function fbPragmaOnce _
-	( _
-	) as integer
-
-    dim as zstring ptr fileidx
-
-	function = FALSE
-
+sub fbPragmaOnce()
 	if( env.inf.name > "" ) then
-       	if( hFindIncFile( @env.inconcehash, env.inf.name ) = NULL ) then
-			fileidx = hAddIncFile( @env.inconcehash, env.inf.name )
+		if( hFindIncFile( @env.inconcehash, env.inf.name ) = NULL ) then
+			hAddIncFile( @env.inconcehash, env.inf.name )
 		end if
- 		function = TRUE
 	end if
-
-end function
+end sub
 
 ''::::
-function is_rootpath( byref path as zstring ptr ) as integer
+private function is_rootpath( byref path as zstring ptr ) as integer
 
 	function = FALSE
 
@@ -870,7 +799,7 @@ function is_rootpath( byref path as zstring ptr ) as integer
 end function
 
 ''::::
-function get_rootpath_len( byval path as zstring ptr ) as integer
+private function get_rootpath_len( byval path as zstring ptr ) as integer
 
 	'' returns number of characters in the root_path
 	'' assuming that 'path' is already been made a
@@ -905,7 +834,7 @@ function get_rootpath_len( byval path as zstring ptr ) as integer
 end function
 
 ''::::
-function solve_path( byval path as zstring ptr ) as integer
+private function solve_path( byval path as zstring ptr ) as integer
 
 	'' solves a path to its lowest common denominator...
 	'' c:\foo\bar\..\baz => c:\foo\baz, etc
@@ -993,22 +922,14 @@ function solve_path( byval path as zstring ptr ) as integer
 
 end function
 
-''::::
-function fbIncludeFile _
-	( _
-		byval filename as zstring ptr, _
-		byval isonce as integer _
-	) as integer
-
+sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
     static as zstring * FB_MAXPATHLEN incfile
     dim as zstring ptr fileidx
-    dim as integer i
-
-	function = FALSE
 
 	if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
-		return errFatal( )
+		errHideFurtherErrors()
+		exit sub
 	end if
 
 	'' 1st) try finding it at same path as the current source-file
@@ -1033,7 +954,8 @@ function fbIncludeFile _
 			'' not found?
 			if (path = NULL) then
 				errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
-				return errFatal( )
+				errHideFurtherErrors()
+				exit sub
 			end if
 
 		else
@@ -1049,29 +971,31 @@ function fbIncludeFile _
 	'' now, if it isn't a root path(even possible?), we have a fatal.
 	if( is_rootpath( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
-		return errFatal( )
+		errHideFurtherErrors()
+		exit sub
 	end if
 
  	'' solve out the .. and .
 	if( solve_path( incfile ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + incfile + QUOTE )
-		return errFatal( )
+		errHideFurtherErrors()
+		exit sub
 	end if
 
 	hRevertSlash( incfile, FALSE, asc(FB_HOST_PATHDIV) )
 
 	'' #include ONCE
 	if( isonce ) then
-        '' we should respect the path
-       	if( hFindIncFile( @env.incfilehash, incfile ) <> NULL ) then
-       		return TRUE
-       	end if
+		'' we should respect the path
+		if( hFindIncFile( @env.incfilehash, incfile ) <> NULL ) then
+			exit sub
+		end if
 	end if
 
 	'' #pragma ONCE
-    if( hFindIncFile( @env.inconcehash, incfile ) <> NULL ) then
-       	return TRUE
-    end if
+	if( hFindIncFile( @env.inconcehash, incfile ) <> NULL ) then
+		exit sub
+	end if
 
     '' we should respect the path here too
 	fileidx = hAddIncFile( @env.incfilehash, incfile )
@@ -1087,7 +1011,8 @@ function fbIncludeFile _
 	env.inf.num = freefile
 	if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
-		return errFatal( )
+		errHideFurtherErrors()
+		exit sub
 	end if
 
 	env.inf.format = hCheckFileFormat( env.inf.num )
@@ -1097,20 +1022,16 @@ function fbIncludeFile _
 
 	lexInit( TRUE )
 
-	function = cProgram( )
+	cProgram()
 
 	lexPopCtx( )
 
-	'' close it
-	if( close( #env.inf.num ) <> 0 ) then
-		'' ...
-	end if
+	close #env.inf.num
 
 	'' pop context
 	env.includerec -= 1
 	env.inf = infileTb( env.includerec )
-
-end function
+end sub
 
 '':::::
 function fbGetLangId _

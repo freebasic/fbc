@@ -24,12 +24,9 @@ private function hFuncReturn _
 	end if
 
 	if( label = NULL ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC ) = FALSE ) then
-			exit function
-		else
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAPROC )
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	'' skip RETURN
@@ -38,7 +35,6 @@ private function hFuncReturn _
 	'' function?
 	if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
 		checkexpr = TRUE
-
 	else
 		'' Comment|StmtSep|EOF|ELSE|END IF|END IF? just exit
 		select case as const lexGetToken( )
@@ -57,7 +53,8 @@ private function hFuncReturn _
 	end if
 
 	'' do an implicit exit function
-	function = astScopeBreak( label )
+	astScopeBreak( label )
+	function = TRUE
 
 end function
 
@@ -88,10 +85,8 @@ private function hGetLabelId _
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 
 	case else
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) ) then
-			hSkipStmt( )
-		end if
-
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		hSkipStmt( )
 		return NULL
 	end select
 
@@ -175,7 +170,8 @@ function cGotoStmt _
 
 		l = hGetLabelId( )
 		if( l <> NULL ) then
-			function = astScopeBreak( l )
+			astScopeBreak( l )
+			function = TRUE
 		else
 			function = (errGetLast( ) = FB_ERRMSG_OK)
 		end if
@@ -184,32 +180,23 @@ function cGotoStmt _
 	case FB_TK_GOSUB
 
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
-			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
+			errReportNotAllowed( FB_LANG_OPT_GOSUB )
+			hSkipStmt( )
+			return TRUE
 		end if
 
 		'' gosub allowed by OPTION GOSUB?
 		if( env.opt.gosub ) then
 			return hGosubBranch( )
-
 		else
 			'' GOSUB is allowed, but hasn't been enabled with OPTION GOSUB
-			if( errReport( FB_ERRMSG_NOGOSUB ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
-
+			errReport( FB_ERRMSG_NOGOSUB )
+			hSkipStmt( )
+			return TRUE
 		end if
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB_TK_RETURN
-
 		'' gosub allowed by dialect?
 		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) ) then
 			'' gosub allowed by OPTION GOSUB?
@@ -223,14 +210,10 @@ function cGotoStmt _
 
 	'' RESUME NEXT?
 	case FB_TK_RESUME
-
 		if( fbLangOptIsSet( FB_LANG_OPT_ONERROR ) = FALSE ) then
-			if( errReportNotAllowed( FB_LANG_OPT_ONERROR ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
+			errReportNotAllowed( FB_LANG_OPT_ONERROR )
+			hSkipStmt( )
+			return TRUE
 		end if
 
 		lexSkipToken( )
@@ -241,4 +224,3 @@ function cGotoStmt _
 	end select
 
 end function
-

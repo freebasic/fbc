@@ -39,28 +39,19 @@ function cOperatorNew _
 	end if
 
 	'' DataType
-	if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
-		'' fake expr
-   		return NULL
-   	else
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+	hSymbolType( dtype, subtype, lgt )
+	if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' check for invalid types
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-    	if( errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE ) = FALSE ) then
-    		return NULL
-    	else
-    		'' error recovery: fake an expr
-    		hSkipStmt( )
-    		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    	end if
-
+	     FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		errReport( FB_ERRMSG_NEWCANTBEUSEDWITHSTRINGS, TRUE )
+		'' error recovery: fake an expr
+		hSkipStmt( )
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end select
 
 	dim as integer has_ctor = FALSE, has_defctor = FALSE
@@ -77,20 +68,15 @@ function cOperatorNew _
 
         elmts_expr = cExpression(  )
         if( elmts_expr = NULL ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        		return NULL
-        	end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
         else
         	op = AST_OP_NEW_VEC
         end if
 
         '' ']'
         if( lexGetToken( ) <> CHAR_RBRACKET ) then
-        	if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-        		return NULL
-        	else
-        		hSkipUntil( CHAR_RBRACKET )
-        	end if
+			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			hSkipUntil( CHAR_RBRACKET )
         else
         	lexSkipToken( )
         end if
@@ -101,32 +87,24 @@ function cOperatorNew _
 
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then
-
 				if( has_defctor ) then
 					errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
 				end if
-
 				lexSkipToken( )
 				do_clear = FALSE
 			else
-				if( errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED ) = FALSE ) then
-					return NULL
-				end if
+				errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED )
 			end if
 
 			'' '}'
 			if( lexGetToken( ) <> CHAR_RBRACE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-					return NULL
-				else
-					'' error recovery: skip until next '}'
-					hSkipUntil( CHAR_RBRACE, TRUE )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+				'' error recovery: skip until next '}'
+				hSkipUntil( CHAR_RBRACE, TRUE )
 			else
 				lexSkipToken( )
 			end if
 		end if
-
 	end if
 
 	'' not a vector?
@@ -161,23 +139,18 @@ function cOperatorNew _
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			'' ctor + vector? not allowed..
 			if( op = AST_OP_NEW_VEC ) then
-				if( errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE ) = FALSE ) then
-					return NULL
-				end if
-
+				errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE )
 			else
 				ctor_expr = cCtorCall( subtype )
 				if( ctor_expr = NULL ) then
 					return NULL
 				end if
 			end if
-
 		else
 			dim as FBSYMBOL ptr ctor = symbGetCompDefCtor( subtype )
 			'' no default ctor?
 			if( ctor = NULL ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-
 			else
 				'' only if not a vector
 				if( op <> AST_OP_NEW_VEC ) then
@@ -193,15 +166,12 @@ function cOperatorNew _
 				end if
 			end if
 		end if
-
 	else
 		'' '('?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			'' vector? not allowed..
 			if( op = AST_OP_NEW_VEC ) then
-				if( errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED, TRUE ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED, TRUE )
 			end if
 
 			'' ANY?
@@ -213,16 +183,12 @@ function cOperatorNew _
 
 				'' ')'
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
-					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next ')'
-						hSkipUntil( CHAR_RPRNT, TRUE )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDRPRNT )
+					'' error recovery: skip until next ')'
+					hSkipUntil( CHAR_RPRNT, TRUE )
 				else
 					lexSkipToken( )
 				end if
-
         	else
 				if( is_addr ) then
 					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
@@ -233,9 +199,7 @@ function cOperatorNew _
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 
         		if( ctor_expr = NULL ) then
-        			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-        				return NULL
-        			end if
+					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
         		end if
         	end if
         end if
@@ -258,9 +222,7 @@ function cOperatorNew _
 					  placement_expr )
 
 	if( expr = NULL ) then
-    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    		return NULL
-    	end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	end if
 
 	'' return the pointer
@@ -269,22 +231,12 @@ function cOperatorNew _
 	                                        typeAddrOf( dtype ), _
 	                                        subtype ), FALSE )
 
-	
 end function
 
-'':::::
-''cOperatorDelete =     DELETE expr
-''				  |		DELETE[] expr .
-''
-function cOperatorDelete _
-	( _
-		_
-	) as integer
-
+'' DELETE ['[]'] expr
+sub cOperatorDelete()
 	dim as AST_OP op = any
 	dim as ASTNODE ptr expr = any, ptr_expr = any
-
-	function = FALSE
 
 	'' DELETE
 	lexSkipToken( )
@@ -292,44 +244,32 @@ function cOperatorDelete _
 	op = AST_OP_DEL
 
 	'' '[' ']'?
-    if( lexGetToken( ) = CHAR_LBRACKET ) then
-        lexSkipToken( )
-
-        op = AST_OP_DEL_VEC
-
-        if( lexGetToken( ) <> CHAR_RBRACKET ) then
-       		if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-       			exit function
-       		else
-       			hSkipUntil( CHAR_RBRACKET )
-       			return TRUE
-       		end if
-        else
-        	lexSkipToken( )
-        end if
+	if( lexGetToken( ) = CHAR_LBRACKET ) then
+		lexSkipToken( )
+		op = AST_OP_DEL_VEC
+		if( lexGetToken( ) <> CHAR_RBRACKET ) then
+			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
+			hSkipUntil( CHAR_RBRACKET )
+			return
+		end if
+		lexSkipToken( )
 	end if
 
 	ptr_expr = cVarOrDeref( , , TRUE )
 	if( ptr_expr = NULL ) then
-       	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-       		exit function
-       	else
-       		hSkipStmt( )
-       		return TRUE
-       	end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		hSkipStmt( )
+		return
 	end if
 
 	dim as integer dtype = astGetFullType( ptr_expr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
 
-    '' not a ptr?
+	'' not a ptr?
 	if( typeGet( dtype ) = FALSE ) then
-       	if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
-       		exit function
-       	else
-       		hSkipStmt( )
-       		return TRUE
-       	end if
+		errReport( FB_ERRMSG_EXPECTEDPOINTER )
+		hSkipStmt( )
+		return
 	end if
 
 	dtype = typeDeref( dtype )
@@ -343,7 +283,6 @@ function cOperatorDelete _
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
-
 		if( dtor <> NULL ) then
 			if( symbCheckAccess( subtype, dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
@@ -360,14 +299,8 @@ function cOperatorDelete _
 					  FALSE )
 
 	if( expr = NULL ) then
-    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    		exit function
-    	end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	end if
 
 	astAdd( expr )
-
-	function = TRUE
-
-end function
-:
+end sub

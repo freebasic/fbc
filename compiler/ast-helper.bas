@@ -855,11 +855,8 @@ function astBuildMultiDeref _
 	do while( cnt > 0 )
 		if( typeIsPtr( dtype ) = FALSE ) then
 			if( symb.globOpOvlTb(AST_OP_DEREF).head = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					return NULL
-				else
-					exit do
-				end if
+				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				exit do
 			end if
 
 			'' check op overloading
@@ -878,26 +875,18 @@ function astBuildMultiDeref _
 				subtype = astGetSubType( expr )
 
 			else
-				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-					return NULL
-				else
-					exit do
-				end if
+				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				exit do
 			end if
-
-
 		else
 			dtype = typeDeref( dtype )
 
 			'' incomplete type?
 			select case typeGet( dtype )
 			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-					return NULL
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_BYTE
-				end if
+				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_BYTE
 			end select
 
 			'' null pointer checking
