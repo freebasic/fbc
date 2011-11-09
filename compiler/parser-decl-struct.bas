@@ -208,16 +208,7 @@ private function hTypeEnumDecl _
 end function
 
 '':::::
-private function hFieldInit _
-	( _
-        byval parent as FBSYMBOL ptr, _
-        byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr initree = any
-
-	function = NULL
-
+private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
@@ -236,14 +227,14 @@ private function hFieldInit _
     		end select
     	end if
 
-		exit function
+		exit sub
 	end select
 
 	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_INITIALIZER )
 		'' error recovery: skip
 		hSkipUntil( FB_TK_EOL )
-		exit function
+		exit sub
 	end if
 
 	if( sym <> NULL ) then
@@ -253,7 +244,7 @@ private function hFieldInit _
 			errReport( FB_ERRMSG_CTORINUNION )
 			'' error recovery: skip
 			hSkipUntil( FB_TK_EOL )
-			exit function
+			exit sub
 		end if
 	end if
 
@@ -262,7 +253,7 @@ private function hFieldInit _
 	if( sym = NULL ) then
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
     '' ANY?
@@ -283,10 +274,9 @@ private function hFieldInit _
 		end if
 
 		lexSkipToken( )
-		exit function
+		exit sub
 	end if
 
-	''
 	if( symbGetIsUnique( parent ) = FALSE ) then
 		'' must be unique
 		symbSetIsUnique( parent )
@@ -295,7 +285,7 @@ private function hFieldInit _
 		symbNestBegin( parent, FALSE )
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI )
+	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree ) then
 		'' don't allow references to local symbols
 		dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
@@ -313,9 +303,10 @@ private function hFieldInit _
 	'' make sure a default ctor is added
 	symbSetUDTHasCtorField( parent )
 
-	function = initree
-
-end function
+	if( initree ) then
+		symbSetTypeIniTree( sym, initree )
+	end if
+end sub
 
 '':::::
 ''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?
@@ -331,7 +322,6 @@ private sub hTypeMultElementDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
-    dim as ASTNODE ptr initree
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
@@ -403,11 +393,7 @@ private sub hTypeMultElementDecl _
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		else
 			symbGetAttrib( sym ) or= attrib
-
-			initree = hFieldInit( parent, sym )
-			if( initree ) then
-				symbSetTypeIniTree( sym, initree )
-			end if
+			hFieldInit( parent, sym )
 		end if
 
 		'' ','?
@@ -432,7 +418,6 @@ private sub hTypeElementDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
-    dim as ASTNODE ptr initree
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )
@@ -532,10 +517,7 @@ private sub hTypeElementDecl _
 	sym->attrib or= attrib
 
 	'' initializer
-	initree = hFieldInit( parent, sym )
-	if( initree ) then
-		symbSetTypeIniTree( sym, initree )
-	end if
+	hFieldInit( parent, sym )
 end sub
 
 '':::::
