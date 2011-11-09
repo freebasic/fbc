@@ -7,6 +7,15 @@
 #include once "ir.bi"
 #include once "lex.bi"
 #include once "parser.bi"
+#include once "hash.bi"
+
+type FB_ERRCTX
+	cnt				as integer
+	hide_further_messages		as integer
+	lastline		as integer
+	laststmt		as integer
+	undefhash		as THASH				'' undefined symbols
+end type
 
 type FBWARNING
 	level		as integer
@@ -299,9 +308,7 @@ end type
 	}
 
 
-'':::::
-sub errInit
-
+sub errInit()
 	errctx.cnt = 0
 	errctx.hide_further_messages = FALSE
 	errctx.lastline = -1
@@ -309,19 +316,19 @@ sub errInit
 
 	'' alloc the undefined symbols tb, used to not report them more than once
 	hashInit( @errctx.undefhash, 64, TRUE )
-
 end sub
 
-'':::::
-sub errEnd
-
+sub errEnd()
 	hashEnd( @errctx.undefhash )
-
 end sub
 
 sub errHideFurtherErrors()
 	errctx.hide_further_messages = TRUE
 end sub
+
+function errGetCount() as integer
+	return errctx.cnt
+end function
 
 '':::::
 private sub hPrintErrMsg _

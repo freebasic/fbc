@@ -1,6 +1,3 @@
-#ifndef __ERROR_BI__
-#define __ERROR_BI__
-
 type FBSYMBOL_ as FBSYMBOL
 
 '' errors
@@ -289,16 +286,6 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSGS
 end enum
 
-#include once "hash.bi"
-
-type FB_ERRCTX
-	cnt				as integer
-	hide_further_messages		as integer
-	lastline		as integer
-	laststmt		as integer
-	undefhash		as THASH				'' undefined symbols
-end type
-
 enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_NONE 		= &h00000000
 	FB_ERRMSGOPT_ADDCOMMA 	= &h00000001
@@ -308,13 +295,10 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
 end enum
 
-declare	sub errInit _
-	( _
-	)
-
-declare	sub errEnd _
-	( _
-	)
+declare sub errInit()
+declare sub errEnd()
+declare sub errHideFurtherErrors()
+declare function errGetCount() as integer
 
 declare sub errReportEx _
 	( _
@@ -375,11 +359,3 @@ declare sub errReportNotAllowed _
 		byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
 		byval msgex as zstring ptr = NULL _
 	)
-
-declare sub errHideFurtherErrors()
-
-#define errGetCount( ) errctx.cnt
-
-extern errctx as FB_ERRCTX
-
-#endif ''__ERROR_BI__
