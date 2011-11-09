@@ -1225,7 +1225,7 @@ help:
 	@echo "  TARGET   compile the runtime to run on TARGET (does not affect fbc)"
 	@echo "  SUFFIX   append a string (e.g. '-0.23') to fbc and FB directory names"
 	@echo "  SUFFIX2  append a second string (e.g. '-test') only to the fbc executable"
-	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)
+	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)"
 	@echo "  HOST_CC, TARGET_AR, TARGET_CC  specify the tools directly"
 	@echo "  V        to get to see verbose command lines used by make"
 	@echo "FreeBASIC configuration options, use them to..."
