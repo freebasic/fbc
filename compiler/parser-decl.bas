@@ -124,18 +124,3 @@ function cDeclaration _
 	end select
 
 end function
-
-sub hDeclCheckParent(byval s as FBSYMBOL ptr)
-	select case symbGetClass( s )
-	case FB_SYMBCLASS_NAMESPACE
-		if( s <> symbGetCurrentNamespc( ) ) then
-			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-		end if
-
-	case FB_SYMBCLASS_CLASS
-		if( s <> symbGetCurrentNamespc( ) ) then
-			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
-		end if
-
-	end select
-end sub

@@ -70,16 +70,13 @@ function cConstAssign _
     static as zstring * FB_MAXNAMELEN+1 id
     dim as integer doskip = any
     dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr parent = any, litsym = any
+    dim as FBSYMBOL ptr litsym = any
     dim as FBVALUE value = any
 
 	function = FALSE
 
-	'' don't allow explicit namespaces
-	parent = cParentId( )
-	if( parent <> NULL ) then
-		hDeclCheckParent( parent )
-	end if
+	'' Namespace identifier if it matches the current namespace
+	cCurrentParentId()
 
 	dim as integer suffix = lexGetType( )
 	hCheckSuffix( suffix )

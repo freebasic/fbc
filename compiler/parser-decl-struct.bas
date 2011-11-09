@@ -870,11 +870,8 @@ function cTypeDecl _
     end select
 
 	if( checkid ) then
-		'' don't allow explicit namespaces
-		dim as FBSYMBOL ptr parent = cParentId( )
-		if( parent <> NULL ) then
-			hDeclCheckParent( parent )
-		end if
+		'' Namespace identifier if it matches the current namespace
+		cCurrentParentId()
 
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s

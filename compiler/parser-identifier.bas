@@ -465,3 +465,28 @@ function cParentId _
 	function = sym
 
 end function
+
+sub cCurrentParentId()
+	'' Parse namespace prefix(es) on an identifier in a declaration,
+	'' then complain if it doesn't match the current namespace.
+	'' This is part of requiring declarations to be written inside a
+	'' namespace block in order to add them to a namespace.
+
+	dim as FBSYMBOL ptr s = cParentId()
+	if( s = NULL ) then
+		return
+	end if
+
+	select case symbGetClass( s )
+	case FB_SYMBCLASS_NAMESPACE
+		if( s <> symbGetCurrentNamespc( ) ) then
+			errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
+		end if
+
+	case FB_SYMBCLASS_CLASS
+		if( s <> symbGetCurrentNamespc( ) ) then
+			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
+		end if
+
+	end select
+end sub

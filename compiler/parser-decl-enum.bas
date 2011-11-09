@@ -144,16 +144,13 @@ end sub
 ''					  END ENUM .
 sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 	static as zstring * FB_MAXNAMELEN+1 id
-	dim as FBSYMBOL ptr parent = any, e = any
+	dim as FBSYMBOL ptr e = any
 
 	'' ENUM
 	lexSkipToken( )
 
-	'' don't allow explicit namespaces
-	parent = cParentId( )
-	if( parent <> NULL ) then
-		hDeclCheckParent( parent )
-	end if
+	'' Namespace identifier if it matches the current namespace
+	cCurrentParentId()
 
 	'' ID?
 	select case lexGetClass( )

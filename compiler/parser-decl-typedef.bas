@@ -198,13 +198,9 @@ end sub
 private function hReadId( ) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as FBSYMBOL ptr parent = any
 
-    '' don't allow explicit namespaces
-    parent = cParentId( )
-    if( parent <> NULL ) then
-		hDeclCheckParent( parent )
-    end if
+	'' Namespace identifier if it matches the current namespace
+	cCurrentParentId()
 
     select case as const lexGetClass( )
     case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD

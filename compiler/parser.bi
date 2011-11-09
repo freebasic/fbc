@@ -344,6 +344,8 @@ declare function cParentId _
 		byval options as FB_IDOPT = FB_IDOPT_NONE _
 	) as FBSYMBOL ptr
 
+declare sub cCurrentParentId()
+
 declare function cProcDecl _
 	( _
 		_
@@ -1034,8 +1036,6 @@ declare function hMatchExpr _
 	( _
 		byval dtype as integer _
 	) as ASTNODE ptr
-
-declare sub hDeclCheckParent(byval s as FBSYMBOL ptr)
 
 declare function hVarDeclEx _
 	( _
