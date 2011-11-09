@@ -293,7 +293,7 @@ end enum
 
 type FB_ERRCTX
 	cnt				as integer
-	lastmsg 		as integer
+	hide_further_messages		as integer
 	lastline		as integer
 	laststmt		as integer
 	undefhash		as THASH				'' undefined symbols

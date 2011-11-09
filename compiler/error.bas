@@ -303,7 +303,7 @@ end type
 sub errInit
 
 	errctx.cnt = 0
-	errctx.lastmsg = FB_ERRMSG_OK
+	errctx.hide_further_messages = FALSE
 	errctx.lastline = -1
 	errctx.laststmt = -1
 
@@ -320,7 +320,7 @@ sub errEnd
 end sub
 
 sub errHideFurtherErrors()
-	errctx.cnt = env.clopt.maxerrors
+	errctx.hide_further_messages = TRUE
 end sub
 
 '':::::
@@ -419,7 +419,8 @@ sub errReportEx _
 	)
 
 	'' Don't show if already too many errors displayed
-	if( errctx.cnt >= env.clopt.maxerrors ) then
+	if ((errctx.cnt >= env.clopt.maxerrors) or _
+	    errctx.hide_further_messages) then
 		exit sub
 	end if
 
@@ -433,7 +434,6 @@ sub errReportEx _
 			linenum = lexLineNum( )
 		end if
 
-		errctx.lastmsg = errnum
 		errctx.lastline = linenum
 		errctx.laststmt = parser.stmt.cnt
 	end if
