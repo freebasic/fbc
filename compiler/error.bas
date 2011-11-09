@@ -81,7 +81,6 @@ end type
 		@"Expected 'TO'", _
 		@"Expected 'NEXT'", _
 		@"Expected identifier", _
-		@"Internal: Tables Full!", _
 		@"Expected '-'", _
 		@"Expected ','", _
 		@"Syntax error", _
