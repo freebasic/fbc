@@ -39,23 +39,17 @@ sub hSymbolType _
 	end if
 end sub
 
-'':::::
-private function hCheckScope _
-	( _
-	) as integer
-
+function hCheckScope() as integer
 	if( parser.scope > FB_MAINSCOPE ) then
 		if( fbIsModLevel( ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
 		else
 			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 		end if
-
-		return FALSE
+		function = FALSE
+	else
+		function = TRUE
 	end if
-
-	function = TRUE
-
 end function
 
 '':::::

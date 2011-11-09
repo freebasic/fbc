@@ -289,6 +289,7 @@ declare function cTypeDecl _
 declare sub cTypedefMultDecl()
 declare sub cTypedefSingleDecl(byval pid as zstring ptr)
 declare sub cEnumDecl(byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE)
+declare function hCheckScope() as integer
 
 declare function cVariableDecl _
 	( _

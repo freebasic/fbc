@@ -8,25 +8,6 @@
 #include once "parser.bi"
 
 '':::::
-private function hCheckScope _
-	( _
-	) as integer
-
-	if( parser.scope = FB_MAINSCOPE ) then
-		return TRUE
-	end if
-
-	if( fbIsModLevel( ) = FALSE ) then
-		errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
-	else
-		errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
-	end if
-
-	function = FALSE
-
-end function
-
-'':::::
 ''Declaration     =   ConstDecl | TypeDecl | VariableDecl | ProcDecl | DefDecl | OptDecl.
 ''
 function cDeclaration _
