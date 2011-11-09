@@ -1196,11 +1196,11 @@ declare function symbAddParam _
 		byval param as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symAddProcInstancePtr _
+declare sub symbAddProcInstancePtr _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+	)
 
 declare function symbCalcProcParamLen _
 	( _

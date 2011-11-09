@@ -79,7 +79,7 @@ private function hProcBegin _
 	proc = symbPreAddProc( NULL )
 
 	'' add "this"
-	symAddProcInstancePtr( parent, proc )
+	symbAddProcInstancePtr( parent, proc )
 
 	'' add right-side hand param?
 	if( add_rhs ) then

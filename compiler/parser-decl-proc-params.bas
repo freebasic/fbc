@@ -23,27 +23,23 @@ declare function hParamDeclInstPtr _
 '':::::
 ''Parameters=   '(' ParamDecl (',' ParamDecl)* ')' .
 ''
-function cParameters _
+sub cParameters _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
 		byval isproto as integer _
-	) as FBSYMBOL ptr
+	)
 
-	dim as FBSYMBOL ptr param = any
-
-    '' method? add the instance pointer (must be done here
-    '' to check for dups)
-    if( symbIsMethod( proc ) ) then
-    	param = symAddProcInstancePtr( parent, proc )
-    else
-    	param = NULL
-    end if
+	'' method? add the instance pointer (must be done here
+	'' to check for dups)
+	if( symbIsMethod( proc ) ) then
+		symbAddProcInstancePtr( parent, proc )
+	end if
 
 	'' '('?
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		return param
+		return
 	end if
 
 	lexSkipToken( )
@@ -51,11 +47,11 @@ function cParameters _
 	'' ')'?
 	if( lexGetToken( ) = CHAR_RPRNT ) then
 		lexSkipToken( )
-		return param
+		return
 	end if
 
 	do
-		param = hParamDecl( proc, procmode, isproto )
+		dim as FBSYMBOL ptr param = hParamDecl(proc, procmode, isproto)
 		if( param = NULL ) then
 			exit do
 		end if
@@ -81,10 +77,7 @@ function cParameters _
 	else
 		lexSkipToken( )
 	end if
-
-	function = param
-
-end function
+end sub
 
 '':::::
 private sub hParamError _

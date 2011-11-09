@@ -1240,11 +1240,11 @@ function symbAddProcResult _
 end function
 
 '':::::
-function symAddProcInstancePtr _
+sub symbAddProcInstancePtr _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+	)
 
 	dim as integer dtype = any
 	select case symbGetClass( parent )
@@ -1258,11 +1258,10 @@ function symAddProcInstancePtr _
 		dtype = typeSetIsConst( dtype )
 	end if
 
-	function = symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
-	                             FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
-	                             FB_SYMBATTRIB_PARAMINSTANCE, NULL )
-
-end function
+	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, _
+	                  FB_POINTERSIZE, FB_PARAMMODE_BYREF, _
+	                  FB_SYMBATTRIB_PARAMINSTANCE, NULL )
+end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' lookup

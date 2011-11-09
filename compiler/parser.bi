@@ -376,13 +376,13 @@ declare function cPropertyHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-declare function cParameters _
+declare sub cParameters _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
 		byval isproto as integer _
-	) as FBSYMBOL ptr
+	)
 
 declare function cDefDecl _
 	( _
