@@ -1956,7 +1956,11 @@ private sub compileBas(byval module as FBCIOFILE ptr, byval ismain as integer)
 	end if
 
 	if (fbc.verbose) then
-		print "compiling: ", module->srcfile; " -o "; asmfile
+		print "compiling: ", module->srcfile; " -o "; asmfile;
+		if (ismain) then
+			print " (main module)";
+		end if
+		print
 	end if
 
 	'' preserve orginal lang id, we may have to restore it.
