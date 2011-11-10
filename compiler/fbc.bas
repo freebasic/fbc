@@ -340,23 +340,22 @@ function fbcRunBin _
 end function
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
-private function hCreateResFile( byval cline as zstring ptr ) as string
-	dim as integer f
-	dim as string resfile
+private function createArgsFile _
+	( _
+		byref argsfile as string, _
+		byref ln as string _
+	) as integer
 
-	resfile = fbc.mainpath + "temp.res"
-
-	f = freefile( )
-	if( open( resfile, for output, as #f ) <> 0 ) then
-		return ""
+	dim as integer f = freefile()
+	if (open(argsfile, for output, as #f)) then
+		return FALSE
 	end if
 
-	print #f, *cline
+	print #f, ln
 
 	close #f
 
-	function = resfile
-
+	return TRUE
 end function
 #endif
 
@@ -416,7 +415,7 @@ end function
 
 '':::::
 private function linkFiles() as integer
-	dim as string ldcline, dllname, deffile, resfile
+	dim as string ldcline, dllname, deffile
 
 	function = FALSE
 
@@ -680,15 +679,16 @@ private function linkFiles() as integer
 	'' When using the DOS DJGPP tools, the command line length might be
 	'' limited, and with our generally long ld command lines (especially
 	'' when linking fbc) the line must be passed to ld through an @file.
+	dim as string argsfile
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		resfile = hCreateResFile( ldcline )
-		if( len( resfile ) = 0 ) then
+		argsfile = hStripFilename(fbc.outname) + "temp.res"
+		if (createArgsFile(argsfile, ldcline) = FALSE) then
 			exit function
 		end if
 		if (fbc.verbose) then
-			print "ld options in '" & resfile & "': ", ldcline
+			print "ld options in '" & argsfile & "': ", ldcline
 		end if
-		ldcline = "@" + resfile
+		ldcline = "@" + argsfile
 	end if
 #endif
 
@@ -699,7 +699,7 @@ private function linkFiles() as integer
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		kill( resfile )
+		kill(argsfile)
 	end if
 #endif
 
