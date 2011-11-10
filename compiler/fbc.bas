@@ -60,10 +60,9 @@ type FBCCTX
 	finallibpaths			as TSTRSET
 
 	outname 			as zstring * FB_MAXPATHLEN+1
-	mainpath			as zstring * FB_MAXPATHLEN+1
-	mainfile			as zstring * FB_MAXNAMELEN+1
-	mapfile				as zstring * FB_MAXNAMELEN+1
+	mainname			as zstring * FB_MAXNAMELEN+1
 	mainset				as integer
+	mapfile				as zstring * FB_MAXNAMELEN+1
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
@@ -117,10 +116,9 @@ private sub fbcInit( )
 	fbc.preserveobj	= FALSE
 	fbc.verbose     = FALSE
 
-	fbc.mainfile	= ""
-	fbc.mainpath	= ""
-	fbc.mapfile     = ""
+	fbc.mainname	= ""
 	fbc.mainset     = FALSE
+	fbc.mapfile     = ""
 	fbc.outname     = ""
 
 	fbc.extopt.gas	= ""
@@ -1248,8 +1246,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_STATICLIB )
 
 	case OPT_M
-		fbc.mainfile = hStripPath( arg )
-		fbc.mainpath = hStripFilename( arg )
+		fbc.mainname = arg
 		fbc.mainset = TRUE
 
 	case OPT_MAP
@@ -1878,29 +1875,35 @@ private sub fbcInit2()
 	'' the command line ones, so those will be searched first)
 	fbAddIncludePath(fbc.incpath)
 
-	''
-	'' Determine the main module
-	''
-	if( len( fbc.mainfile ) = 0 ) then
+	'' Determine the main module path/name if not given via -m
+	if (len(fbc.mainname) = 0) then
+		'' 1) First input .bas module
 		dim as FBCIOFILE ptr m = listGetHead( @fbc.modules )
 		if( m ) then
-			fbc.mainfile = hStripPath( hStripExt( m->srcfile ) )
-			fbc.mainpath = hStripFilename( m->srcfile )
+			fbc.mainname = m->srcfile
 		else
+			'' 2) First input .o
 			dim as string ptr objf = listGetHead( @fbc.objlist )
 			if( objf <> NULL ) then
-				fbc.mainfile = hStripPath( hStripExt( *objf ) )
-				fbc.mainpath = hStripFilename( *objf )
+				fbc.mainname = *objf
 			else
-				fbc.mainfile = "undefined"
-				fbc.mainpath = ""
+				'' 3) Neither input .bas nor .o, that is rare,
+				'' but happens in this case:
+				''      $ fbc a.bas -lib -m a
+				''      $ fbc b.bas -lib
+				''      $ fbc -l a -l b
+				'' Usually -x is used too though, so this
+				'' fallback name won't be seen often.
+				fbc.mainname = "undefined"
 			end if
 		end if
+		fbc.mainname = hStripExt(fbc.mainname)
 	end if
 
 	'' if no executable name was defined, use the main module name
+	'' Determine the output file name, if not given via -x
 	if( len( fbc.outname ) = 0 ) then
-		fbc.outname = fbc.mainpath + fbc.mainfile
+		fbc.outname = fbc.mainname
 
 		select case fbGetOption( FB_COMPOPT_OUTTYPE )
 		case FB_OUTTYPE_EXECUTABLE
@@ -2010,10 +2013,20 @@ private sub compileModules()
 		checkmain = fbc.mainset
 	end select
 
+	dim as string mainfile
+	if (checkmain) then
+		'' Note: This causes the path given with -m to be ignored in
+		'' the ismain check below. This is good because -m is easier
+		'' to use that way (e.g. fbc ../../main.bas -m main), and bad
+		'' because then modules with the same name but in different
+		'' directories will both be seen as the main one.
+		mainfile = hStripPath(fbc.mainname)
+	end if
+
 	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
 	while (module)
 		if( checkmain ) then
-			ismain = (fbc.mainfile = hStripPath(hStripExt(module->srcfile)))
+			ismain = (mainfile = hStripPath(hStripExt(module->srcfile)))
 		end if
 
 		compileBas(module, ismain)
