@@ -9,9 +9,6 @@
 #include once "hash.bi"
 #include once "list.bi"
 
-const FBC_INITARGS	  = 64
-const FBC_INITFILES	  = 64
-
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
@@ -78,8 +75,6 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
-declare function fbcMakeLibFileName(byref libname as string) as string
-
 declare function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
@@ -97,9 +92,11 @@ declare function fbcFindBin(byval filename as zstring ptr) as string
 dim shared as FBCCTX fbc
 
 private sub fbcInit( )
+	const FBC_INITFILES = 64
+
 	listInit( @fbc.modules, FBC_INITFILES, sizeof(FBCIOFILE) )
 	listInit( @fbc.rcs, FBC_INITFILES\4, sizeof(FBCIOFILE) )
-	strlistInit( @fbc.temps, FBC_INITARGS\4 )
+	strlistInit( @fbc.temps, FBC_INITFILES\4 )
 	strlistInit( @fbc.objlist, FBC_INITFILES )
 	strlistInit( @fbc.libfiles, FBC_INITFILES\4 )
 	strsetInit( @fbc.libs, FBC_INITFILES\4 )
@@ -172,8 +169,11 @@ private function hAddInfoObject as integer
 end function
 
 private function archiveFiles() as integer
-	fbc.outname = hStripFilename(fbc.outname) + _
-	              fbcMakeLibFileName(hStripPath(fbc.outname))
+	'' Determine the output archive's name if not given via -x
+	if (len(fbc.outname) = 0) then
+		fbc.outname = hStripFilename(fbc.mainname) + _
+		              "lib" + hStripPath(fbc.mainname) + ".a"
+	end if
 
 	'' Remove lib*.a if it already exists, because ar doesn't overwrite
 	safeKill( fbc.outname )
@@ -253,18 +253,15 @@ function fbcFindGccLib(byref file as string) as string
 
 end function
 
-function fbcMakeLibFileName(byref libname as string) as string
-	return "lib" + libname + ".a"
-end function
-
 private sub fbcAddDefLibPath(byref path as string)
 	strsetAdd(@fbc.finallibpaths, path, TRUE)
 end sub
 
 sub fbcAddLibPathFor(byref libname as string)
-	dim as string path = pathStripDiv(hStripFilename( _
-	                           fbcFindGccLib(fbcMakeLibFileName(libname))))
-	if (len(path)> 0) then
+	dim as string path = _
+		pathStripDiv(hStripFilename( _
+			fbcFindGccLib("lib" + libname + ".a")))
+	if (len(path) > 0) then
 		fbcAddDefLibPath(path)
 	end if
 end sub
@@ -417,7 +414,38 @@ private function linkFiles() as integer
 
 	function = FALSE
 
-	'' set executable name
+	'' Determine the output binary's name if not given via -x
+	if (len(fbc.outname) = 0) then
+		fbc.outname = fbc.mainname
+
+		select case fbGetOption( FB_COMPOPT_OUTTYPE )
+		case FB_OUTTYPE_EXECUTABLE
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
+			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+				'' Note: XBox target creates an .exe first,
+				'' then uses cxbe to turn it into an .xbe later
+				fbc.outname += ".exe"
+
+			end select
+
+		case FB_OUTTYPE_DYNAMICLIB
+			select case as const fbGetOption( FB_COMPOPT_TARGET )
+			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
+				fbc.outname += ".dll"
+
+			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
+			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
+			     FB_COMPTARGET_OPENBSD
+				fbc.outname = hStripFilename(fbc.outname) + _
+					"lib" + hStripPath(fbc.outname) + ".so"
+
+			end select
+
+		end select
+	end if
+
+	'' Set executable name
 	ldcline = "-o " + QUOTE + fbc.outname + QUOTE
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -1899,37 +1927,6 @@ private sub fbcInit2()
 		end if
 		fbc.mainname = hStripExt(fbc.mainname)
 	end if
-
-	'' if no executable name was defined, use the main module name
-	'' Determine the output file name, if not given via -x
-	if( len( fbc.outname ) = 0 ) then
-		fbc.outname = fbc.mainname
-
-		select case fbGetOption( FB_COMPOPT_OUTTYPE )
-		case FB_OUTTYPE_EXECUTABLE
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32, _
-			     FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-				'' Note: XBox target creates an .exe first,
-				'' then uses cxbe to turn it into an .xbe later
-				fbc.outname += ".exe"
-
-			end select
-
-		case FB_OUTTYPE_DYNAMICLIB
-			select case as const fbGetOption( FB_COMPOPT_TARGET )
-			case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
-				fbc.outname += ".dll"
-
-			case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
-			     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-			     FB_COMPTARGET_OPENBSD
-				fbc.outname = hStripFilename( fbc.outname ) + "lib" + hStripPath( fbc.outname ) + ".so"
-
-			end select
-
-		end select
-	end if
 end sub
 
 '' Generate the .asm/.c file name for the given .bas module
@@ -2014,6 +2011,13 @@ private sub compileModules()
 	case FB_OUTTYPE_EXECUTABLE, FB_OUTTYPE_DYNAMICLIB
 		checkmain = TRUE
 	case else
+		'' When building an object or a library (-c/-r, -lib), nothing
+		'' is compiled with ismain = TRUE until -m was given for it.
+		'' This makes sense because -c is usually used to compile
+		'' single modules of which only a very specific one is the
+		'' main one (nobody would want -c to include main() everywhere),
+		'' and because -lib is for making libraries which generally
+		'' don't include a main module for programs to use.
 		checkmain = fbc.mainset
 	end select
 
@@ -2029,8 +2033,15 @@ private sub compileModules()
 
 	dim as FBCIOFILE ptr module = listGetHead(@fbc.modules)
 	while (module)
-		if( checkmain ) then
+		if (checkmain) then
 			ismain = (mainfile = hStripPath(hStripExt(module->srcfile)))
+			'' Note: checking continues for all modules, because
+			'' "the" main module could be passed multiple times,
+			'' and it makes sense to always treat it the same,
+			'' so that <fbc 1.bas 1.bas -c> generates the same 1.o
+			'' twice and <fbc 1.bas 1.bas> causes a duplicated
+			'' definition of main().
+			/'checkmain = not ismain'/
 		end if
 
 		compileBas(module, ismain)
