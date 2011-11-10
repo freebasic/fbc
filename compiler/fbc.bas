@@ -681,7 +681,7 @@ private function linkFiles() as integer
 	'' limited, and with our generally long ld command lines (especially
 	'' when linking fbc) the line must be passed to ld through an @file.
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		dim as string resfile = hCreateResFile( ldcline )
+		resfile = hCreateResFile( ldcline )
 		if( len( resfile ) = 0 ) then
 			exit function
 		end if
