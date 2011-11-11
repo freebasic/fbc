@@ -598,13 +598,13 @@ FBC_BAS := \
   parser-quirk-error parser-quirk-file parser-quirk-gfx \
   parser-quirk-goto-return parser-quirk-iif parser-quirk-math \
   parser-quirk-mem parser-quirk-on parser-quirk-peekpoke parser-quirk-string \
-  parser-quirk-vafirst parser-statement parser-toplevel \
+  parser-quirk-thread parser-quirk-vafirst parser-statement parser-toplevel \
   pool pp pp-cond pp-define pp-pragma reg \
   rtl rtl-array rtl-console rtl-data rtl-error rtl-file rtl-gfx rtl-gosub \
   rtl-macro rtl-math rtl-mem rtl-print rtl-profile rtl-string rtl-system \
-  stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
-  symb-enum symb-keyword symb-label symb-mangling symb-namespace \
-  symb-proc symb-scope symb-struct symb-typedef symb-var
+  rtl-system-thread stack symb symb-bitfield symb-comp symb-const symb-data \
+  symb-define symb-enum symb-keyword symb-label symb-mangling \
+  symb-namespace symb-proc symb-scope symb-struct symb-typedef symb-var
 
 ifndef DISABLE_OBJINFO
   FBC_BAS += fb-objinfo
@@ -742,7 +742,7 @@ LIBFB_C := \
   swap_mem swap_str swap_wstr \
   sys_beep sys_cdir sys_chain sys_chdir sys_cmd sys_environ sys_exec_core \
   sys_exepath sys_mkdir sys_rmdir sys_run \
-  thread_ctx \
+  thread_call thread_ctx \
   time_core time_dateadd time_date time_datediff time_datepart time_dateserial \
   time_dateset time_datevalue time_decodeserdate time_decodesertime \
   time_isdate time_monthname time_now time_parsedate time_parsedatetime \
