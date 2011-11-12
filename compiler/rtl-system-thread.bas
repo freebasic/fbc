@@ -327,5 +327,5 @@ function rtlThreadCall _
         param = symbGetProcPrevParam( proc, param )
     next i
     
-    function = ( errGetLast() = FB_ERRMSG_OK )
+    function = TRUE
 end function

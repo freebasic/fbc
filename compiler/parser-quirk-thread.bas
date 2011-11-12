@@ -49,7 +49,7 @@ function cThreadCallFunc _
     '' proc 
     dim class_ as integer
     chain_ = cIdentifier( NULL, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
-    if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    if( chain_ = NULL ) then
         exit function
     end if
 
@@ -100,6 +100,6 @@ function cThreadCallFunc _
         exit function
     end if
     
-    function = ( errGetLast() = FB_ERRMSG_OK )
+    function = TRUE
 end function
 
