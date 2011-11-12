@@ -77,7 +77,7 @@ ffi_type *fb_ThreadCall_GetType( va_list *args_list )
     ffi_arg->type = FFI_TYPE_STRUCT;
     ffi_arg->elements = 
         (ffi_type **)malloc( sizeof( ffi_type * ) * ( num_elems + 1 ) );
-    ffi_arg->elements[num_elems-1] = NULL;
+    ffi_arg->elements[num_elems] = NULL;
     
     /* scan elements */
     for( i=0; i<num_elems; i++ )
@@ -141,7 +141,6 @@ _cdecl FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_arg
     ffi_type     **ffi_args;
     void         **values;
     FBTHREADCALL  *param;
-    FBTHREAD      *thread;
     int i, j;
     
     /* initialize lists and arrays */
