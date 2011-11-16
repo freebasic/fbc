@@ -1,4 +1,23 @@
-/* Calls a thread */
+/**
+ * ThreadCall: Launches any procedure as new thread, based on libffi.
+ *
+ * For example:
+ *
+ * FB code:
+ *    declare sub MySub(x as integer, y as integer)
+ *    thread = threadcall MySub(2, 3)
+ *    threadwait thread
+ *
+ * Turned into this by fbc:
+ *    a = 2
+ *    b = 3
+ *    thread = fb_ThreadCall(@MySub, STDCALL, 2, INT, @a, INT, @b)
+ *    fb_ThreadWait(thread)
+ *
+ * fb_ThreadCall() packs the call and parameter data it's given into an array
+ * of pointers and then launches a thread. The new thread reconstructs the call
+ * using LibFFI and then calls the user's procedure.
+ */
 
 #include <stdio.h>
 #include <ffi.h>
