@@ -29,7 +29,6 @@ function cThreadCallFunc _
     lexSkipToken( )
     
     '' proc 
-    dim class_ as integer
     chain_ = cIdentifier( NULL, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
     if( chain_ = NULL ) then
         exit function
