@@ -799,10 +799,12 @@ private function hCheckUDTParam _
 				if( arg = NULL ) then
 					hParamError( parent )
 					return FALSE
-				End If
+				end if
 				n->l = arg
-			End If
-		
+			else
+				'' Found matching param.ctor to create param from arg
+				return TRUE
+			end if
 		'' cast to the base type
 		else
 			arg = astNewCONV( symbGetType( param ), symbGetSubtype( param ), arg )
