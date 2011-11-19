@@ -16,7 +16,7 @@ function cNamespaceStmtBegin _
 		_
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as zstring ptr palias = any
     dim as FBSYMBOL ptr sym = any
     dim as FBSYMCHAIN ptr chain_ = any
@@ -80,25 +80,18 @@ function cNamespaceStmtBegin _
 		case FB_TKCLASS_QUIRKWD
 			'' only if inside another ns
 			if( symbIsGlobalNamespc( ) ) then
-    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-    				exit function
-    			else
-					'' error recovery: fake a symbol
-					sym = symbAddNamespace( hMakeTmpStr( ), NULL )
-					id[0] = 0							'' id = ""
-					chain_ = NULL
-    			end if
-
-    		else
+				errReport( FB_ERRMSG_DUPDEFINITION )
+				'' error recovery: fake a symbol
+				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+				id[0] = 0							'' id = ""
+				chain_ = NULL
+			else
 				id = *lexGetText( )
 				chain_ = lexGetSymChain( )
-    		end if
-
-		case else
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
 			end if
 
+		case else
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: fake a symbol
 			sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 			id[0] = 0							'' id = ""
@@ -108,26 +101,19 @@ function cNamespaceStmtBegin _
 		'' already defined?
 		if( chain_ <> NULL ) then
 			sym = chain_->sym
-
 			'' not a namespace?
 			if( symbIsNamespace( sym ) = FALSE ) then
-				if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an id
-					id = *hMakeTmpStr( )
-					sym = NULL
-				end if
-
-            else
+				errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+				'' error recovery: fake an id
+				id = *hMakeTmpStr( )
+				sym = NULL
+			else
 				'' not the same hash tb?
 				if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
 					'' then it's an inner ns with the same name as an outer one..
 					sym = NULL
 				end if
 			end if
-
-
 		else
 			sym = NULL
 		end if
@@ -140,30 +126,15 @@ function cNamespaceStmtBegin _
 		'' create a new symbol?
 		if( sym = NULL ) then
 			if( levels = 1 )  then
-				'' (ALIAS LITSTR)?
-				if( lexGetToken( ) = FB_TK_ALIAS ) then
-    				lexSkipToken( )
-
-					if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-							exit function
-						end if
-
-					else
-						lexEatToken( @id_alias )
-						palias = @id_alias
-					end if
-				end if
+				'' [ALIAS "id"]
+				palias = cAliasAttribute()
 			end if
 
 			sym = symbAddNamespace( @id, palias )
 			if( sym = NULL ) then
-				if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an id
-					sym = symbAddNamespace( hMakeTmpStr( ), NULL )
-				end if
+				errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+				'' error recovery: fake an id
+				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 			end if
 		end if
 
@@ -259,14 +230,10 @@ function cUsingStmt as integer
     	'' ID
     	sym = cParentId( FB_IDOPT_DONTCHKPERIOD )
     	if( sym = NULL ) then
-    		if( lexGetToken( ) <> FB_TK_ID ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				end if
-    		else
-    			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
-    				exit function
-				end if
+			if( lexGetToken( ) <> FB_TK_ID ) then
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			else
+				errReport( FB_ERRMSG_UNDEFINEDSYMBOL )
 			end if
 
 			'' error recovery: skip until next ','
@@ -275,10 +242,7 @@ function cUsingStmt as integer
     	else
 			'' not a namespace?
 			if( symbIsNamespace( sym ) = FALSE ) then
-				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-					exit function
-				end if
-
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 			else
     			symbNamespaceImport( sym )
 			end if

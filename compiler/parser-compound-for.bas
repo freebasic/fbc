@@ -249,18 +249,11 @@ private function hStoreTemp _
 		select case as const typeGet( dtype )
 		'' TYPE or CLASS
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				return NULL
-			end if
-
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		case else
-			if( errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, _
-						   TRUE, _
-						   astGetOpId( AST_OP_ASSIGN ) ) = FALSE ) then
-				return NULL
-			end if
+			errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, _
+			           astGetOpId( AST_OP_ASSIGN ) )
 		end select
-
 	else
 		'' add to AST
 		astAdd( expr )
@@ -426,8 +419,7 @@ private function hCallCtor _
 
 end function
 
-'':::::
-private function hForAssign _
+private sub hForAssign _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr, _
 		byref isconst as integer, _
@@ -435,45 +427,35 @@ private function hForAssign _
 		byval subtype as FBSYMBOL ptr, _
 		byval flags as FOR_FLAGS, _
 		byval idexpr as ASTNODE ptr _
-	) as integer
+	)
 
-	function = FALSE
-
-    '' This function handles the '= InitialCondition'
-    '' expression of a FOR block.
+	'' This function handles the '= InitialCondition'
+	'' expression of a FOR block.
 
 	'' =
 	if( lexGetToken( ) <> FB_TK_ASSIGN) then
-		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEQ )
 	else
 		lexSkipToken( )
 	end if
 
-    '' Not a local UDT with a constructor?
+	'' Not a local UDT with a constructor?
 	if( ((flags and FOR_HASCTOR) = 0) or ((flags and FOR_ISLOCAL) = 0) ) then
-    	dim as ASTNODE ptr expr = cExpression( )
-    	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-    		else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-    	end if
+		dim as ASTNODE ptr expr = cExpression( )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 
 		'' initial condition is a non-UDT constant?
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
 			'' convert the constant to counter's type
 			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
 			'' take the constant value
@@ -486,13 +468,9 @@ private function hForAssign _
 		expr = astNewASSIGN( idexpr, expr )
 		if( expr = NULL ) then
 			if( (flags and FOR_ISUDT) <> 0 ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 			else
-				if( errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, @"let" ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_UDTINFORNEEDSOPERATORS, TRUE, @"let" )
 			end if
 		else
 			astAdd( expr )
@@ -500,16 +478,11 @@ private function hForAssign _
 
 	'' UDT has a constructor and is local..
 	else
-    	if( hCallCtor( stk->for.cnt.sym ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-			end if
-    	end if
+		if( hCallCtor( stk->for.cnt.sym ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		end if
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 private function hForTo _
@@ -528,9 +501,7 @@ private function hForTo _
 
 	'' TO
 	if( lexGetToken( ) <> FB_TK_TO ) then
-		if( errReport( FB_ERRMSG_EXPECTEDTO ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDTO )
 	else
 		lexSkipToken( )
 	end if
@@ -541,32 +512,26 @@ private function hForTo _
 	if( (flags and FOR_HASCTOR) = 0 ) then
 		dim as ASTNODE ptr expr = cExpression( )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' EndCondition is a non-UDT constant?
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
 			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
-            '' remove any symbol, and
+			'' remove any symbol, and
 			stk->for.end.sym = NULL
 			stk->for.end.dtype = dtype
 
-            '' insert constant value instead, deleting
-            '' source expression
+			'' insert constant value instead, deleting
+			'' source expression
 			astCONST2FBValue( @stk->for.end.value, expr )
 			astDelNode( expr )
 
@@ -586,16 +551,14 @@ private function hForTo _
 	'' UDT has a constructor..
 	else
 
-    	'' generate a symbol using the expression's type
-    	stk->for.end.sym = hAllocTemp( dtype, subtype )
-    	stk->for.end.dtype = symbGetType( stk->for.end.sym )
+		'' generate a symbol using the expression's type
+		stk->for.end.sym = hAllocTemp( dtype, subtype )
+		stk->for.end.dtype = symbGetType( stk->for.end.sym )
 
-        '' build constructor call
-    	if( hCallCtor( stk->for.end.sym ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-    			exit function
-			end if
-    	end if
+		'' build constructor call
+		if( hCallCtor( stk->for.end.sym ) = FALSE ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+		end if
 	end if
 
 	function = TRUE
@@ -656,14 +619,10 @@ private function hForStep _
 		if( stk->for.explicit_step ) then
 			expr = cExpression( )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
 			end if
-
 		else
 			'' no STEP was specified, so it's 1
 			'' (the step's type will be converted below)
@@ -679,12 +638,9 @@ private function hForStep _
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
 			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 
 			'' get step's positivity
@@ -698,7 +654,7 @@ private function hForStep _
 				stk->for.stp.dtype = dtype
 			end if
 
-            '' store expr into value, and del temp expression
+			'' store expr into value, and del temp expression
 			astCONST2FBValue( @stk->for.stp.value, expr )
 			astDelNode( expr )
 
@@ -707,8 +663,8 @@ private function hForStep _
 		else
 			iscomplex = TRUE
 
-            '' make a copy of type info, so we can hack
-            '' the pointer stuff if necessary
+			'' make a copy of type info, so we can hack
+			'' the pointer stuff if necessary
 			dim as integer tmp_dtype = dtype
 			dim as FBSYMBOL ptr tmp_subtype = subtype
 
@@ -718,7 +674,7 @@ private function hForStep _
 				tmp_subtype = NULL
 			end if
 
-            '' generate a symbol using the expression's type
+			'' generate a symbol using the expression's type
 			stk->for.stp.sym = hStoreTemp( tmp_dtype, tmp_subtype, expr )
 			if( stk->for.stp.sym = NULL ) then
 				'' fail
@@ -729,25 +685,23 @@ private function hForStep _
 
 	'' UDT has a constructor..
 	else
-    	iscomplex = TRUE
+		iscomplex = TRUE
 
 		dim as FBSYMBOL ptr ovl_list = any
 		dim as integer operator_args = any, step_ok = FALSE
 
 		if( stk->for.explicit_step = TRUE ) then
-	        '' generate a symbol using the expression's type
-	    	stk->for.stp.sym = hAllocTemp( dtype, subtype )
-	    	stk->for.stp.dtype = symbGetType( stk->for.end.sym )
+			'' generate a symbol using the expression's type
+			stk->for.stp.sym = hAllocTemp( dtype, subtype )
+			stk->for.stp.dtype = symbGetType( stk->for.end.sym )
 		end if
 
-        if( stk->for.explicit_step ) then
-	    	'' build constructor call
-	    	if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
-	    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-	    			exit function
-				end if
-	    	end if
-	    end if
+		if( stk->for.explicit_step ) then
+			'' build constructor call
+			if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+			end if
+		end if
 	end if
 
     '' if STEP's sign is unknown, we have to check for that
@@ -785,12 +739,9 @@ private function hForStep _
 
 		'' GE failed?
 		if( rhs = NULL ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				exit function
-			else
-				'' fake it
-				rhs = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' fake it
+			rhs = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' is_positive = rhs
@@ -825,16 +776,11 @@ function cForStmtBegin _
 	dim as FBSYMBOL ptr base_parent = any
 
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		exit function
-	end if
 
     '' open outer scope
     dim as ASTNODE ptr outerscopenode = astScopeBegin( )
 	if( outerscopenode = NULL ) then
-		if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_RECLEVELTOODEEP )
 	end if
 
     dim as ASTNODE ptr idexpr = any, expr = any
@@ -858,45 +804,32 @@ function cForStmtBegin _
 
 	'' tried array...
 	elseif( lexGetLookAhead( 1 ) = CHAR_LPRNT ) then
+		errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
+		'' error recovery: skip until next ')'
+		hSkipUntil( CHAR_RPRNT )
 
-		if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip until next ')'
-			hSkipUntil( CHAR_RPRNT )
-		end if
-
-    '' look up the variable
+	'' look up the variable
 	else
 		idexpr = cVariable( chain_ )
 		if( idexpr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a var
-				idexpr = CREATEFAKEID( )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDVAR )
+			'' error recovery: fake a var
+			idexpr = CREATEFAKEID( )
 		end if
 
 		if( astIsVAR( idexpr ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a var
-				astDelTree( idexpr )
-				idexpr = CREATEFAKEID( )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
+			'' error recovery: fake a var
+			astDelTree( idexpr )
+			idexpr = CREATEFAKEID( )
 		end if
-
 	end if
 
 	dim as integer dtype = astGetDataType( idexpr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
 	
 	if( typeIsConst( astGetFullType( idexpr ) ) ) then
-		if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 	end if
 
 	select case as const dtype
@@ -911,14 +844,11 @@ function cForStmtBegin _
 	case else
 		'' not a ptr?
 		if( typeIsPtr( dtype ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a var
-				astDelTree( idexpr )
-				idexpr = CREATEFAKEID( )
-				dtype = astGetDataType( idexpr )
-			end if
+			errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
+			'' error recovery: fake a var
+			astDelTree( idexpr )
+			idexpr = CREATEFAKEID( )
+			dtype = astGetDataType( idexpr )
 		end if
 	end select
 
@@ -931,11 +861,8 @@ function cForStmtBegin _
 
 	dim as integer isconst = 0
 
-    '' =
-	if( hForAssign( stk, isconst, dtype, subtype, flags, idexpr ) = FALSE ) then
-		cCompStmtPop( stk )
-		exit function
-	end if
+	'' =
+	hForAssign( stk, isconst, dtype, subtype, flags, idexpr )
 
     '' TO
 	if( hForTo( stk, isconst, dtype, subtype, flags ) = FALSE ) then
@@ -1104,12 +1031,7 @@ private function hUdtCallOpOvl _
 
 end function
 
-'':::::
-private function hForStmtClose _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer
-
+private sub hForStmtClose(byval stk as FB_CMPSTMTSTK ptr)
 	'' close the scope block
 	if( stk->scopenode <> NULL ) then
 		astScopeEnd( stk->scopenode )
@@ -1148,10 +1070,7 @@ private function hForStmtClose _
 	if( stk->for.outerscopenode <> NULL ) then
 		astScopeEnd( stk->for.outerscopenode )
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''ForStmtEnd      =   NEXT (ID (',' ID?))? .
@@ -1188,30 +1107,17 @@ function cForStmtEnd _
 		'' ID
 		dim as FBSYMCHAIN ptr chain_ = any
 		dim as FBSYMBOL ptr base_parent = any
-
 		chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
-		dim as ASTNODE ptr idexpr = any
 
 		'' look up the variable
-		idexpr = cVariable( chain_ )
+		dim as ASTNODE ptr idexpr = cVariable( chain_ )
 
 		if( idexpr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
-				exit function
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDVAR )
 		else
 			'' Same symbol?
 			if( idexpr->sym <> stk->for.cnt.sym ) then
-
-				if( errReport( FB_ERRMSG_FORNEXTVARIABLEMISMATCH ) = FALSE ) then
-					return FALSE
-				end if
-
+				errReport( FB_ERRMSG_FORNEXTVARIABLEMISMATCH )
 			end if
 
 			if( fbPdCheckIsSet( FB_PDCHECK_NEXTVAR ) ) then
@@ -1220,7 +1126,6 @@ function cForStmtEnd _
 
 			'' delete idexpr, we don't need it, for anything
 			astDelTree( idexpr )
-		
 		end if
 
 		'' pop from stmt stack

@@ -2,7 +2,7 @@
 BASSMOD is a MOD only (XM, IT, S3M, MOD, MTM, UMX) version of BASS - useful for demos, or anything else where you want to play some MOD music.
 
 Website: http://www.un4seen.com/bassmod.html
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: bassmod.bi
 
 {{fbdoc item="ex"}}

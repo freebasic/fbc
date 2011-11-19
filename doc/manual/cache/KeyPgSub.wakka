@@ -2,7 +2,7 @@
 Defines a procedure
 
 {{fbdoc item="syntax"}}##
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]]
+	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] **Sub** //identifier// [[[KeyPgCdecl CDecl]]|[[KeyPgPascal Pascal]]|[[KeyPgStdcall StdCall]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //external_identifier//] [( [//parameter_list//] )] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
 		//statements//
 		...
 		[[[KeyPgReturn Return]]]

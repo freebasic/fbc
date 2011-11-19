@@ -56,16 +56,13 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' high-level IR? va_* not supported
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		if( errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE )
 
 		'' error recovery: fake an expr
 		funcexpr = astNewCONSTi( 0 )
-
 	else
 		'' @param
-		expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
+		expr = astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubType( sym ) )
 		expr = astNewADDROF( expr )
 
         '' Convert to ANY PTR, to hide that it's based on the last param...
@@ -83,4 +80,3 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 	function = TRUE
 
 end function
-

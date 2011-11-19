@@ -109,6 +109,16 @@
 {{fbdoc item="section" value="FreeBASIC Internals"}}
 	{{fbdoc item="keyword" value="DevBuild|Compiling FreeBASIC itself"}}
 	{{fbdoc item="keyword" value="DevFbcTestSuite|Running the FreeBASIC test suite"}}
+	{{fbdoc item="keyword" value="FbGrammar|FreeBASIC Grammar"}}
+	
+	compiler
+		{{fbdoc item="keyword" value="DevCompilationProcess|General compilation process"}}
+		{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
+		{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
+	
+	gfxlib2
+		{{fbdoc item="keyword" value="GfxLib|Overview of drivers (backends)"}}
+		{{fbdoc item="keyword" value="GfxInternalFormats|Pixel formats"}}
 
 >>::c::
 

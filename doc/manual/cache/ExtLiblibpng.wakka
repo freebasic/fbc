@@ -2,7 +2,7 @@
 Allows reading and writing PNG images.
 
 Website: http://www.libpng.org/pub/png/libpng.html
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: png.bi
 
 

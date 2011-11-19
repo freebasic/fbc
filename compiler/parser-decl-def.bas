@@ -17,13 +17,10 @@ function cDefDecl as integer static
 	function = FALSE
 
     if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
-	    if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
-	    end if
+		errReportNotAllowed( FB_LANG_OPT_DEFTYPE )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
@@ -83,9 +80,7 @@ function cDefDecl as integer static
 			'' CHAR
 			char = ucase( *lexGetText( ) )
 			if( len( char ) <> 1 ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDCOMMA )
 			end if
 			ichar = asc( char )
 			lexSkipToken( )
@@ -97,9 +92,7 @@ function cDefDecl as integer static
 				'' CHAR
 				char = ucase( *lexGetText( ) )
 				if( len( char ) <> 1 ) then
-					if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_EXPECTEDCOMMA )
 				end if
 				echar = asc( char )
 				lexSkipToken( )
@@ -122,4 +115,3 @@ function cDefDecl as integer static
 	end if
 
 end function
-

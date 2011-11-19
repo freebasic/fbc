@@ -56,11 +56,8 @@ private sub hAddRhsParam _
 		'dtype = FB_DATATYPE_CLASS
 	end select
 
-	symbAddProcParam( proc, _
-					  "__FB_RHS__", NULL, _
-    				  dtype, parent, FB_POINTERSIZE, _
-    				  FB_PARAMMODE_BYREF, _
-    				  FB_SYMBATTRIB_NONE, NULL )
+	symbAddProcParam( proc, "__FB_RHS__", dtype, parent, FB_POINTERSIZE, _
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, NULL )
 
 end sub
 
@@ -81,7 +78,7 @@ private function hProcBegin _
 	proc = symbPreAddProc( NULL )
 
 	'' add "this"
-	symAddProcInstancePtr( parent, proc )
+	symbAddProcInstancePtr( parent, proc )
 
 	'' add right-side hand param?
 	if( add_rhs ) then
@@ -1226,39 +1223,36 @@ end sub
 '' RTTI
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-''::::
-sub symbCompRTTIInit
-	
+sub symbCompRTTIInit()
 	static as FBARRAYDIM dTB(0)
-	
+
     '' create the $fb_RTTI struct
     var rtti = symbStructBegin( NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0 )
 	symb.rtti.fb_rtti = rtti
-	
+
 	'' stdlibVT as any ptr
 	symbAddField( rtti, _
 				  "stdlibVT", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
 				  FB_POINTERSIZE, 0 )
-	 
-	
+
 	'' dim id as zstring ptr 
 	symbAddField( rtti, _
 				  "id", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_CHAR ), NULL, _
 				  FB_POINTERSIZE, 0 )
-	
+
 	'' dim pRTTIBase as $fb_RTTI ptr
 	symbAddField( rtti, _
 				  "pRTTIBase", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
 				  FB_POINTERSIZE, 0 )
-	
+
 	symbStructEnd( rtti )
-	
+
 	'' create the $fb_BaseVT struct
     var baseVT = symbStructBegin( NULL, "$fb_BaseVT", "$fb_BaseVT", FALSE, 0 )
 	symb.rtti.fb_baseVT = baseVT
@@ -1276,34 +1270,34 @@ sub symbCompRTTIInit
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_STRUCT ), rtti, _
 				  FB_POINTERSIZE, 0 )
-	
+
 	symbStructEnd( baseVT )
-	
+
 	'' create the $fb_ObjectVT struct (extends $fb_BaseVT)
 	var objVT = symbStructBegin( NULL, "$fb_ObjectVT", "$fb_ObjectVT", FALSE, 0, baseVT )
-		
+
 	symbStructEnd( objVT, TRUE )
-	
+
 	'' create the $fb_Object struct
 	var obj = symbStructBegin( NULL, "Object", "$fb_Object", FALSE, 0 )
     symb.rtti.fb_object = obj
-		
+
 	symbSetHasRTTI( obj )
 	symbSetIsUnique( obj )
 	symbNestBegin( obj, FALSE )
-	
+
 	'' dim pvt as as $fb_BaseVT ptr
 	symbAddField( obj, _
 				  "$fb_pvt", _
 				  0, dTB(), _
 				  typeAddrOf( FB_DATATYPE_STRUCT ), baseVT, _
 				  FB_POINTERSIZE, 0 )
-	
+
     '' declare constructor( )
 	var ctor = symbPreAddProc( NULL )    
-    
-    symAddProcInstancePtr( obj, ctor )
-    
+
+	symbAddProcInstancePtr( obj, ctor )
+
 	symbAddCtor( ctor, NULL, _
 	             FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
 	                                  or FB_SYMBATTRIB_OVERLOADED, _
@@ -1317,19 +1311,14 @@ sub symbCompRTTIInit
     							symbGetLen( symb.rtti.fb_rtti ), 0, dTB(), _
     							FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED, _ 
     							FB_SYMBOPT.FB_SYMBOPT_PRESERVECASE )
-    				
-	
+
 	'' update the obj struct RTTI (used to create the link with base classes)
 	if( obj->udt.ext = NULL ) then
 		obj->udt.ext = callocate( sizeof( FB_STRUCTEXT ) )
-	End If
-	
-	obj->udt.ext->rtti = objRTTI     
-				 
-		
-End Sub
+	end if
 
-''::::
-sub symbCompRTTIEnd
-	
-End Sub
+	obj->udt.ext->rtti = objRTTI     
+end sub
+
+sub symbCompRTTIEnd()
+end sub

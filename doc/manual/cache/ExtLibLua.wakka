@@ -2,7 +2,7 @@
 Lightweight, embeddable scripting engine using the Lua language.
 
 Website: http://www.lua.org/
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: Lua/lua.bi
 
 

@@ -244,15 +244,7 @@ enum FB_PROCOPT
 end enum
 
 
-declare function cProgram _
-	( _
-		_
-	) as integer
-
-declare function cLine _
-	( _
-		_
-	) as integer
+declare sub cProgram()
 
 declare function cLabel _
 	( _
@@ -264,15 +256,8 @@ declare function cComment _
 		byval lexflags as LEXCHECK = LEXCHECK_EVERYTHING _
 	) as integer
 
-declare function cDirective _
-	( _
-		_
-	) as integer
-
-declare function cStatement _
-	( _
-		_
-	) as integer
+declare sub cDirective()
+declare sub cStatement()
 
 declare function cStmtSeparator _
 	( _
@@ -301,29 +286,17 @@ declare function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare function cTypedefMultDecl _
-    ( _
-    ) as integer
-
-declare function cTypedefSingleDecl _
-	( _
-		byval pid as zstring ptr _
-	) as integer
-
-declare function cEnumDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
-	) as integer
+declare sub cTypedefMultDecl()
+declare sub cTypedefSingleDecl(byval pid as zstring ptr)
+declare sub cEnumDecl(byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE)
+declare function hCheckScope() as integer
 
 declare function cVariableDecl _
 	( _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as integer
 
-declare function cAutoVarDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
+declare sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 declare function cStaticArrayDecl _
 	( _
@@ -345,12 +318,12 @@ declare function cInitializer _
 		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
-declare function cTypeOf _
+declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer = NULL _
-	) as integer
+	)
 
 declare function cSymbolType _
 	( _
@@ -370,6 +343,8 @@ declare function cParentId _
 	( _
 		byval options as FB_IDOPT = FB_IDOPT_NONE _
 	) as FBSYMBOL ptr
+
+declare sub cCurrentParentId()
 
 declare function cProcDecl _
 	( _
@@ -404,13 +379,13 @@ declare function cPropertyHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-declare function cParameters _
+declare sub cParameters _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr, _
 		byval procmode as integer, _
 		byval isproto as integer _
-	) as FBSYMBOL ptr
+	)
 
 declare function cDefDecl _
 	( _
@@ -464,10 +439,7 @@ declare function cCompStmtIsAllowed _
 		byval allowmask as FB_CMPSTMT_MASK _
 	) as integer
 
-declare function cIfStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cIfStmtBegin()
 
 declare function cIfStmtNext _
 	( _
@@ -489,20 +461,14 @@ declare function cForStmtEnd _
 		_
 	) as integer
 
-declare function cDoStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cDoStmtBegin()
 
 declare function cDoStmtEnd _
 	( _
 		_
 	) as integer
 
-declare function cWhileStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cWhileStmtBegin()
 
 declare function cWhileStmtEnd _
 	( _
@@ -529,15 +495,8 @@ declare function cSelConstStmtBegin _
 		_
 	) as integer
 
-declare function cSelConstStmtNext _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer
-
-declare function cSelConstStmtEnd _
-	( _
-		byval stk as FB_CMPSTMTSTK ptr _
-	) as integer
+declare sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
+declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 
 declare function cProcStmtBegin _
 	( _
@@ -549,25 +508,15 @@ declare function cProcStmtEnd _
 		_
 	) as integer
 
-declare function cExitStatement _
-	( _
-		_
-	) as integer
+declare sub cExitStatement()
 
 declare function cEndStatement _
 	( _
 		_
 	) as integer
 
-declare function cContinueStatement _
-	( _
-		_
-	) as integer
-
-declare function cWithStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cContinueStatement()
+declare sub cWithStmtBegin()
 
 declare function cWithStmtEnd _
 	( _
@@ -826,6 +775,9 @@ declare function cAsmBlock _
 		_
 	) as integer
 
+declare function cAliasAttribute() as zstring ptr
+declare sub cLibAttribute()
+
 declare function cProcReturnMethod _
 	( _
 		byval dtype as FB_DATATYPE _
@@ -909,10 +861,7 @@ declare function cStrIdxOrMemberDeref _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function cAssignment _
-	( _
-		byval assgexpr as ASTNODE ptr _
-	) as integer
+declare sub cAssignment(byval assgexpr as ASTNODE ptr)
 
 declare function cAssignFunctResult _
 	( _
@@ -975,15 +924,9 @@ declare function cOnStmt _
 		_
 	) as integer
 
-declare function cWriteStmt _
-	( _
-		_
-	) as integer
-
-declare function cErrorStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
+declare function cWriteStmt() as integer
+declare function cErrorStmt() as integer
+declare function cErrSetStmt() as integer
 
 declare function cViewStmt _
 	( _
@@ -1053,10 +996,7 @@ declare function cFileFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-declare function cErrorFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
+declare sub cErrorFunct(byref funcexpr as ASTNODE ptr)
 
 declare function cIIFFunct _
 	( _
@@ -1078,20 +1018,14 @@ declare function cAnonUDT _
 		_
 	) as ASTNODE ptr
 
-declare function cConstExprValue _
-	( _
-		byref value as integer _
-	) as integer
+declare sub cConstExprValue(byref value as integer)
 
 declare function cOperatorNew _
 	( _
 		_
 	) as ASTNODE ptr
 
-declare function cOperatorDelete _
-	( _
-		_
-	) as integer
+declare sub cOperatorDelete()
 
 declare sub hSkipUntil _
 	( _
@@ -1112,12 +1046,6 @@ declare function hMatchExpr _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-
-declare function hDeclCheckParent _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
 declare function hVarDeclEx _
 	( _
 		byval attrib as integer, _
@@ -1126,12 +1054,12 @@ declare function hVarDeclEx _
         byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
-declare function hSymbolType _
+declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _
-	) as integer
+	)
 
 declare function hCheckForDefiniteTypes _
 	( _
@@ -1154,9 +1082,7 @@ declare function hCheckForDefiniteExprs _
 '':::::
 #macro hMatchLPRNT()
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	else
 		lexSkipToken( )
 	end if
@@ -1165,11 +1091,8 @@ declare function hCheckForDefiniteExprs _
 '':::::
 #macro hMatchRPRNT()
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			exit function
-		else
-			hSkipUntil( CHAR_RPRNT, TRUE )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		hSkipUntil( CHAR_RPRNT, TRUE )
 	else
 		lexSkipToken( )
 	end if
@@ -1178,9 +1101,7 @@ declare function hCheckForDefiniteExprs _
 '':::::
 #macro hMatchCOMMA()
 	if( lexGetToken( ) <> CHAR_COMMA ) then
-		if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_EXPECTEDCOMMA )
 	else
 		lexSkipToken( )
 	end if

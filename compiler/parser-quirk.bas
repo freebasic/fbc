@@ -91,11 +91,15 @@ function cQuirkStmt _
 
 	case FB_TK_WRITE
 		CHECK_CODEMASK( )
-		res = cWriteStmt( )
+		res = cWriteStmt()
 
-	case FB_TK_ERROR, FB_TK_ERR
+	case FB_TK_ERROR
 		CHECK_CODEMASK( )
-		res = cErrorStmt( tk )
+		res = cErrorStmt()
+
+	case FB_TK_ERR
+		CHECK_CODEMASK( )
+		res = cErrSetStmt()
 
 	case FB_TK_VIEW
 		CHECK_CODEMASK( )
@@ -128,9 +132,7 @@ function cQuirkStmt _
 	end select
 
 	if( res = FALSE ) then
-		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			res = cGfxStmt( tk )
-		end if
+		res = cGfxStmt( tk )
 	end if
 
 	function = res
@@ -185,7 +187,8 @@ function cQuirkFunction _
 		res = cFileFunct( tk, funcexpr )
 
 	case FB_TK_ERR
-		res = cErrorFunct( funcexpr )
+		cErrorFunct( funcexpr )
+		res = TRUE
 
 	case FB_TK_IIF
 		res = cIIFFunct( funcexpr )
@@ -220,9 +223,7 @@ function cQuirkFunction _
 	end select
 
 	if( res = FALSE ) then
-		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			funcexpr = cGfxFunct( tk )
-		end if
+		funcexpr = cGfxFunct( tk )
 	end if
 
 	function = funcexpr

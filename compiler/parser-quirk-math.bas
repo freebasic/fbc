@@ -28,11 +28,8 @@ private function hMathOp _
 
 	funcexpr = astNewUOP( op, expr )
 	if( funcexpr = NULL ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			return FALSE
-		else
-			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	function = TRUE
@@ -62,11 +59,8 @@ private function hAtan2 _
 
 	funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 	if( funcexpr = NULL ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		else
-			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	function = TRUE
@@ -74,12 +68,12 @@ private function hAtan2 _
 end function
 
 '':::::
-private function hLenSizeof _
+private sub hLenSizeof _
 	( _
 		byval is_len as integer, _
 		byref funcexpr as ASTNODE ptr, _
 		byval isasm as integer _
-	) as integer
+	)
 
 	dim as ASTNODE ptr expr = any, expr2 = any
 	dim as integer dtype = any, lgt = any, is_type = any
@@ -115,13 +109,9 @@ private function hLenSizeof _
 		expr = cExpression( )
 		if( expr = NULL ) then
 			fbSetCheckArray( TRUE )
-			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		else
 			'' ugly hack to deal with arrays w/o indexes
 			if( astIsNIDXARRAY( expr ) ) then
@@ -131,7 +121,6 @@ private function hLenSizeof _
 				expr = expr2
 			end if
 		end if
-
 		fbSetCheckArray( TRUE )
 	end if
 
@@ -140,24 +129,18 @@ private function hLenSizeof _
 		if( is_len = FALSE ) then
 			if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
 				if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
-					if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
+					'' error recovery: fake an expr
+					astDelTree( expr )
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				end if
 			end if
 		end if
 	end if
 
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-			exit function
-		else
-			hSkipUntil( CHAR_RPRNT, TRUE )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
+		hSkipUntil( CHAR_RPRNT, TRUE )
 	else
 		if( isasm = FALSE ) then
 			lexSkipToken( )
@@ -169,10 +152,7 @@ private function hLenSizeof _
 	else
 		funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' cMathFunct	=	ABS( Expression )
@@ -245,12 +225,13 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN
-		function = hLenSizeof( TRUE, funcexpr, isasm )
+		hLenSizeof( TRUE, funcexpr, isasm )
+		function = TRUE
 
 	case FB_TK_SIZEOF
-		function = hLenSizeof( FALSE, funcexpr, isasm )
+		hLenSizeof( FALSE, funcexpr, isasm )
+		function = TRUE
 
 	end select
 
 end function
-

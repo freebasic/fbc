@@ -2,7 +2,7 @@
 Cross-platform mulitmedia library
 
 Website: http://www.libsdl.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: SDL/SDL.bi
 Example Usage: yes, in examples/libraries/SDL/
 

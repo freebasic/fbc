@@ -161,9 +161,6 @@ function astNewUOP _
 	if( op = AST_OP_SWZ_REPEAT ) then
 		'' alloc new node
 		n = astNewNode( AST_NODECLASS_UOP, dtype, o->subtype )
-		if( n = NULL ) then
-			exit function
-		end if
 
 		n->l = o
 		n->r = NULL
@@ -362,9 +359,6 @@ chk_ulong:
 
 
 	n = astNewNode( AST_NODECLASS_UOP, dtype, subtype )
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->l = o
 	n->r = NULL

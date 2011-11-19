@@ -1,9 +1,9 @@
-
+# include "fbcu.bi"
 
 '' SCOPE...END SCOPE creates a new local scope
 '' implicit variable scope is inherited
 '':::::
-sub test_opt_imp_scope_imp_inherit
+private sub test_opt_imp_scope_imp_inherit cdecl()
   dim as integer x = 1
   assert( x = 1 )
   
@@ -30,7 +30,7 @@ end sub
 '' SCOPE...END SCOPE creates a new local scope
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_imp_scope_exp_shadow
+private sub test_opt_imp_scope_exp_shadow cdecl()
 
   dim as integer x = 1
   assert( x = 1 )
@@ -60,7 +60,7 @@ end sub
 '' IF...THEN creates a new local scope
 '' implicit variable scope is inherited
 '':::::
-sub test_opt_imp_if_imp_inherit
+private sub test_opt_imp_if_imp_inherit cdecl()
 
   dim as integer x = 1
   assert( x = 1 )
@@ -89,7 +89,7 @@ end sub
 '' IF...THEN creates a new local scope
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_imp_if_exp_shadow
+private sub test_opt_imp_if_exp_shadow cdecl()
 
   dim as integer x = 1
   assert( x = 1 )
@@ -122,7 +122,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_imp_do
+private sub test_opt_imp_do cdecl()
   
   dim as integer x = 1
   assert( x = 1 )
@@ -194,7 +194,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_imp_while
+private sub test_opt_imp_while cdecl()
   
   dim as integer x = 1
   assert( x = 1 )
@@ -265,7 +265,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_imp_for
+private sub test_opt_imp_for cdecl()
   
   dim as integer x = 1
   assert( x = 1 )
@@ -327,13 +327,10 @@ end sub
 '' and variable name shadowing.
 
 
-assert(__FB_OPTION_EXPLICIT__ <> 0)
-
-
 '' SCOPE...END SCOPE creates a new local scope
 '' implicit variable scope is inherited
 '':::::
-sub test_opt_exp_scope_imp_inherit
+private sub test_opt_exp_scope_imp_inherit cdecl()
   dim as integer x
 
   x = 1
@@ -361,7 +358,7 @@ end sub
 '' SCOPE...END SCOPE creates a new local scope
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_exp_scope_exp_shadow
+private sub test_opt_exp_scope_exp_shadow cdecl()
 
   dim as integer x
 
@@ -393,7 +390,7 @@ end sub
 '' IF...THEN creates a new local scope
 '' implicit variable scope is inherited
 '':::::
-sub test_opt_exp_if_imp_inherit
+private sub test_opt_exp_if_imp_inherit cdecl()
   dim as integer x
 
   x = 1
@@ -423,7 +420,7 @@ end sub
 '' IF...THEN creates a new local scope
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_exp_if_exp_shadow
+private sub test_opt_exp_if_exp_shadow cdecl()
 
   dim as integer x
 
@@ -457,7 +454,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_exp_do
+private sub test_opt_exp_do cdecl()
 
   dim as integer x, i
     
@@ -530,7 +527,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_exp_while
+private sub test_opt_exp_while cdecl()
 
   dim as integer x, i
   
@@ -602,7 +599,7 @@ end sub
 '' implicit variable scope is inherited
 '' DIM inside SCOPE shadows parent scope variable
 '':::::
-sub test_opt_exp_for
+private sub test_opt_exp_for cdecl()
 
   dim as integer x, i
 
@@ -657,24 +654,24 @@ sub test_opt_exp_for
   
 end sub
 
+sub ctor() constructor
+	fbcu.add_suite("fbc_tests.scopes.shadow_inherit")
 
-'' without 
+	'' without 
+	fbcu.add_test("1", @test_opt_imp_scope_imp_inherit)
+	fbcu.add_test("1", @test_opt_imp_scope_exp_shadow)
+	fbcu.add_test("1", @test_opt_imp_if_imp_inherit)
+	fbcu.add_test("1", @test_opt_imp_if_exp_shadow)
+	fbcu.add_test("1", @test_opt_imp_do)
+	fbcu.add_test("1", @test_opt_imp_while)
+	fbcu.add_test("1", @test_opt_imp_for)
 
-test_opt_imp_scope_imp_inherit
-test_opt_imp_scope_exp_shadow
-test_opt_imp_if_imp_inherit
-test_opt_imp_if_exp_shadow
-test_opt_imp_do
-test_opt_imp_while
-test_opt_imp_for
-
-
-'' with 
-
-test_opt_exp_scope_imp_inherit
-test_opt_exp_scope_exp_shadow
-test_opt_exp_if_imp_inherit
-test_opt_exp_if_exp_shadow
-test_opt_exp_do
-test_opt_exp_while
-test_opt_exp_for
+	'' with 
+	fbcu.add_test("1", @test_opt_exp_scope_imp_inherit)
+	fbcu.add_test("1", @test_opt_exp_scope_exp_shadow)
+	fbcu.add_test("1", @test_opt_exp_if_imp_inherit)
+	fbcu.add_test("1", @test_opt_exp_if_exp_shadow)
+	fbcu.add_test("1", @test_opt_exp_do)
+	fbcu.add_test("1", @test_opt_exp_while)
+	fbcu.add_test("1", @test_opt_exp_for)
+end sub

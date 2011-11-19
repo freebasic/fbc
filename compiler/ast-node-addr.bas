@@ -44,10 +44,6 @@ function astNewOFFSET _
 					typeAddrOf( astGetFullType( l ) ), _
 					l->subtype )
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
 	'' must preserve the node or optimizations at newDEREF() will fail
 	n->l = l
 	n->sym = l->sym
@@ -285,9 +281,6 @@ function astNewADDROF _
 	n = astNewNode( AST_NODECLASS_ADDROF, _
 					typeAddrOf( astGetFullType( l ) ), _
 					subtype )
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->op.op = AST_OP_ADDROF
 	n->l = l

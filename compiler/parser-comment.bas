@@ -20,15 +20,16 @@ function cComment _
 
 	select case lexGetToken( lexflags )
 	case FB_TK_COMMENT, FB_TK_REM
-    	lexSkipToken( LEX_FLAGS )
+		lexSkipToken( LEX_FLAGS )
 
-    	if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
-    		lexSkipToken( LEX_FLAGS )
-    		function = cDirective( )
-    	else
-    		lexSkipLine( )
-    		function = TRUE
-    	end if
+		if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
+			lexSkipToken( LEX_FLAGS )
+			cDirective( )
+		else
+			lexSkipLine( )
+		end if
+
+		function = TRUE
 
 	case else
 		function = FALSE
@@ -42,11 +43,9 @@ end function
 ''                |   STATIC .
 ''                |   LANG ':' '\"' STR_LIT '\"'
 ''
-function cDirective as integer static
+sub cDirective() static
     static as zstring * FB_MAXPATHLEN+1 incfile
     dim as integer isonce
-
-	function = FALSE
 
 	select case as const lexGetToken( )
 	case FB_TK_DYNAMIC
@@ -55,7 +54,6 @@ function cDirective as integer static
 		else
 			lexSkipToken( )
 			env.opt.dynamic = TRUE
-			function = TRUE
 		end if
 
 
@@ -65,7 +63,6 @@ function cDirective as integer static
 		else
 			lexSkipToken( )
 			env.opt.dynamic = FALSE
-			function = TRUE
 		end if
 
 	case FB_TK_INCLUDE
@@ -82,7 +79,7 @@ function cDirective as integer static
 
 			'' ':'
 			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
-				function = errReport( FB_ERRMSG_SYNTAXERROR )
+				errReport( FB_ERRMSG_SYNTAXERROR )
 				exit select
 			end if
 
@@ -93,7 +90,7 @@ function cDirective as integer static
 			else
 				'' '\''
 				if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> FB_TK_COMMENT ) then
-					function = errReport( FB_ERRMSG_SYNTAXERROR )
+					errReport( FB_ERRMSG_SYNTAXERROR )
 					exit select
 				else
 					lexSkipToken( LEX_FLAGS or LEXCHECK_NOWHITESPC )
@@ -103,19 +100,19 @@ function cDirective as integer static
 
 				'' '\''
 				if( hMatch( CHAR_APOST ) = FALSE ) then
-					function = errReport( FB_ERRMSG_SYNTAXERROR )
+					errReport( FB_ERRMSG_SYNTAXERROR )
 					exit select
 				end if
 			end if
 
-			function = fbIncludeFile( incfile, isonce )
+			fbIncludeFile( incfile, isonce )
 		end if
 
 	case else
 		select case lexGetClass( )
 		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 			if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) ) then
-				function = errReport( FB_ERRMSG_SYNTAXERROR )
+				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 		
 		case else
@@ -124,7 +121,7 @@ function cDirective as integer static
 
 				'' ':'
 				if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
-					function = errReport( FB_ERRMSG_EXPECTEDSTMTSEP, TRUE )
+					errReport( FB_ERRMSG_EXPECTEDSTMTSEP, TRUE )
 					exit select
 				end if
 
@@ -137,19 +134,12 @@ function cDirective as integer static
 					id = fbGetLangId( @incfile )
 
 					if( id = FB_LANG_INVALID ) then
-						function = errReport( FB_ERRMSG_INVALIDLANG )
-
+						errReport( FB_ERRMSG_INVALIDLANG )
 					else
-						'' fbChangeOption will return FALSE if we should stop 
-						'' parsing and TRUE if we should continue.
-
-						function = fbChangeOption( FB_COMPOPT_LANG, id )
-
+						fbChangeOption( FB_COMPOPT_LANG, id )
 					end if
-
 				else
-					function = errReport( FB_ERRMSG_SYNTAXERROR )
-
+					errReport( FB_ERRMSG_SYNTAXERROR )
 				end if
 			end if
 		end select
@@ -164,6 +154,4 @@ function cDirective as integer static
 
 		lexSkipToken( )
 	loop
-
-end function
-
+end sub

@@ -1,6 +1,3 @@
-#ifndef __ERROR_BI__
-#define __ERROR_BI__
-
 type FBSYMBOL_ as FBSYMBOL
 
 '' errors
@@ -21,7 +18,6 @@ enum FB_ERRMSG
 	FB_ERRMSG_EXPECTEDNEXT
 	FB_ERRMSG_EXPECTEDVAR
 	FB_ERRMSG_EXPECTEDIDENTIFIER		= FB_ERRMSG_EXPECTEDVAR
-	FB_ERRMSG_TABLESFULL
 	FB_ERRMSG_EXPECTEDMINUS
 	FB_ERRMSG_EXPECTEDCOMMA
 	FB_ERRMSG_SYNTAXERROR
@@ -296,16 +292,6 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSGS
 end enum
 
-#include once "hash.bi"
-
-type FB_ERRCTX
-	cnt				as integer
-	lastmsg 		as integer
-	lastline		as integer
-	laststmt		as integer
-	undefhash		as THASH				'' undefined symbols
-end type
-
 enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_NONE 		= &h00000000
 	FB_ERRMSGOPT_ADDCOMMA 	= &h00000001
@@ -315,29 +301,26 @@ enum FB_ERRMSGOPT
 	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
 end enum
 
-declare	sub errInit _
-	( _
-	)
+declare sub errInit()
+declare sub errEnd()
+declare sub errHideFurtherErrors()
+declare function errGetCount() as integer
 
-declare	sub errEnd _
-	( _
-	)
-
-declare function errReportEx _
+declare sub errReportEx _
 	( _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
 		byval customText as zstring ptr = 0 _
-	) as integer
+	)
 
-declare function errReport _
+declare sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
 		byval customText as zstring ptr = 0 _
-	) as integer
+	)
 
 declare sub errReportWarn _
 	( _
@@ -354,13 +337,13 @@ declare sub errReportWarnEx _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)
 
-declare function errReportParam _
+declare sub errReportParam _
 	( _
 		byval proc as FBSYMBOL_ ptr, _
 		byval pnum as integer, _
 		byval pid as zstring ptr, _
 		byval msgnum as integer _
-	) as integer
+	)
 
 declare sub errReportParamWarn _
 	( _
@@ -370,38 +353,15 @@ declare sub errReportParamWarn _
 		byval msgnum as integer _
 	)
 
-declare function errReportUndef _
+declare sub errReportUndef _
 	( _
 		byval errnum as integer, _
 		byval id as zstring ptr _
-	) as integer
+	)
 
-declare function errReportNotAllowed _
+declare sub errReportNotAllowed _
 	( _
 		byval opt as FB_LANG_OPT, _
 		byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
 		byval msgex as zstring ptr = NULL _
-	) as integer
-
-declare function errFatal _
-	( _
-	) as integer
-
-
-''
-'' macros
-''
-#define errGetLast( ) iif( errctx.cnt >= env.clopt.maxerrors, _
-						   errctx.lastmsg, _
-						   cint(FB_ERRMSG_OK) )
-
-#define errGetCount( ) errctx.cnt
-
-
-''
-'' inter-module globals
-''
-extern errctx as FB_ERRCTX
-
-
-#endif ''__ERROR_BI__
+	)

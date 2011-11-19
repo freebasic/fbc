@@ -122,8 +122,8 @@ function ppCondIf( ) as integer
 	pp.level += 1
 	if( pp.level > FB_PP_MAXRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
-		'' no error recovery: fatal
-		return errFatal( )
+		errHideFurtherErrors()
+		exit function
 	end if
 
 	pptb(pp.level).istrue = istrue
@@ -146,24 +146,18 @@ function ppCondElse( ) as integer
    	istrue = FALSE
 
 	if( pp.level = 0 ) then
-        if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-        	exit function
-        else
-        	'' error recovery: skip smtm
-        	hSkipStmt( )
-        	return TRUE
-        end if
+		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
+		'' error recovery: skip statement
+		hSkipStmt( )
+		return TRUE
 	end if
 
-    if( pptb(pp.level).elsecnt > 0 ) then
-	   	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-	   		exit function
-	   	else
-        	'' error recovery: skip smtm
-        	hSkipStmt( )
-        	return TRUE
-        end if
-    end if
+	if( pptb(pp.level).elsecnt > 0 ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip statement
+		hSkipStmt( )
+		return TRUE
+	end if
 
 	'' ELSEIF?
 	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
@@ -201,13 +195,10 @@ function ppCondEndIf( ) as integer
    	function = FALSE
 
 	if( pp.level = 0 ) then
-        if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip token
-			lexSkipToken( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
+		'' error recovery: skip token
+		lexSkipToken( )
+		return TRUE
 	end if
 
    	'' ENDIF
@@ -233,14 +224,9 @@ private function ppSkip( ) as integer
 
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-			pp.skipping = FALSE
-			exit function
-		else
-			'' error recovery: skip until next line
-			hSkipUntil( FB_TK_EOL, TRUE )
-		end if
-
+		errReport( FB_ERRMSG_EXPECTEDEOL )
+		'' error recovery: skip until next line
+		hSkipUntil( FB_TK_EOL, TRUE )
 	else
 		lexSkipToken( )
 	end if
@@ -248,62 +234,48 @@ private function ppSkip( ) as integer
 	iflevel = pp.level
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
-    do
+	do
 
 		select case lexGetToken( )
-        case CHAR_SHARP
-        	lexSkipToken( LEXCHECK_KWDNAMESPC )
+		case CHAR_SHARP
+			lexSkipToken( LEXCHECK_KWDNAMESPC )
 
-        	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
-        	case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
-        		iflevel += 1
+			select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
+			case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
+				iflevel += 1
 
-        	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
-        		if( iflevel = pp.level ) then
-        			pp.skipping = FALSE
-        			return ppCondElse( )
-
+			case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+				if( iflevel = pp.level ) then
+					pp.skipping = FALSE
+					return ppCondElse( )
 				elseif( iflevel = 0 ) then
-            		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-						pp.skipping = FALSE
-						exit function
-					end if
-        		end if
+					errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
+				end if
 
-        	case FB_TK_PP_ENDIF
-        		if( iflevel = pp.level ) then
-        			pp.skipping = FALSE
-        			return ppCondEndIf( )
-
+			case FB_TK_PP_ENDIF
+				if( iflevel = pp.level ) then
+					pp.skipping = FALSE
+					return ppCondEndIf( )
 				elseif( iflevel = 0 ) then
-	          		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
-						pp.skipping = FALSE
-						exit function
-					end if
+					errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP )
 				else
-        			iflevel -= 1
-        		end if
+					iflevel -= 1
+				end if
 
-    		case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
-    			 FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
-    			 FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE
+			case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
+			     FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
+			     FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE
 
-        	case else
-        		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-        			pp.skipping = FALSE
-        			exit function
-        		end if
-        	end select
+			case else
+				errReport( FB_ERRMSG_SYNTAXERROR )
+			end select
 
-       	case FB_TK_EOF
-        	if( errReport( FB_ERRMSG_EXPECTEDPPENDIF ) = FALSE ) then
-        		pp.skipping = FALSE
-        		exit function
-        	else
-       			function = TRUE
-       			exit do
-       		end if
-       	end select
+		case FB_TK_EOF
+			errReport( FB_ERRMSG_EXPECTEDPPENDIF )
+			function = TRUE
+			exit do
+
+		end select
 
 		lexSkipLine( )
 
@@ -813,39 +785,30 @@ private function ppLogExpression _
     	end select
 
     	if( logexpr.class <> PPEXPR_CLASS_NUM ) then
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-			else
-  				'' error recovery: convert expr
-  				logexpr.class = PPEXPR_CLASS_NUM
-  				logexpr.dtype = FB_DATATYPE_INTEGER
-  				logexpr.num.int = valint( logexpr.str )
-  				logexpr.str = ""
-    		end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: convert expr
+			logexpr.class = PPEXPR_CLASS_NUM
+			logexpr.dtype = FB_DATATYPE_INTEGER
+			logexpr.num.int = valint( logexpr.str )
+			logexpr.str = ""
     	end if
 
     	'' RelExpression
     	if( ppRelExpression( relexpr ) = FALSE ) then
-            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-           		exit function
-           	else
-  				'' error recovery: fake an expr
-  				relexpr.class = PPEXPR_CLASS_NUM
-  				relexpr.dtype = FB_DATATYPE_INTEGER
-  				relexpr.num.int = 0
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			relexpr.class = PPEXPR_CLASS_NUM
+			relexpr.dtype = FB_DATATYPE_INTEGER
+			relexpr.num.int = 0
     	end if
 
     	if( relexpr.class <> PPEXPR_CLASS_NUM ) then
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-			else
-  				'' error recovery: convert expr
-  				relexpr.class = PPEXPR_CLASS_NUM
-  				relexpr.dtype = FB_DATATYPE_INTEGER
-  				relexpr.num.int = valint( relexpr.str )
-  				relexpr.str = ""
-    		end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: convert expr
+			relexpr.class = PPEXPR_CLASS_NUM
+			relexpr.dtype = FB_DATATYPE_INTEGER
+			relexpr.num.int = valint( relexpr.str )
+			relexpr.str = ""
     	end if
 
     	'' do operation
@@ -887,56 +850,48 @@ private function ppRelExpression _
 
     	'' AddExpression
     	if( ppAddExpression( add_expr ) = FALSE ) then
-            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-           		exit function
-           	else
-  				'' error recovery: fake an expr
-  				add_expr.class = PPEXPR_CLASS_NUM
-  				add_expr.dtype = FB_DATATYPE_INTEGER
-  				add_expr.num.int = 0
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			add_expr.class = PPEXPR_CLASS_NUM
+			add_expr.dtype = FB_DATATYPE_INTEGER
+			add_expr.num.int = 0
     	end if
 
    		'' same type?
    		if( relexpr.class <> add_expr.class ) then
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-   			else
-   				'' error recovery: fake a type
-   				if( relexpr.class = PPEXPR_CLASS_NUM ) then
-   					add_expr.class = PPEXPR_CLASS_NUM
-   					add_expr.dtype = FB_DATATYPE_INTEGER
-   					add_expr.num.int = valint( add_expr.str )
-   					add_expr.str = ""
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' error recovery: fake a type
+				if( relexpr.class = PPEXPR_CLASS_NUM ) then
+					add_expr.class = PPEXPR_CLASS_NUM
+					add_expr.dtype = FB_DATATYPE_INTEGER
+					add_expr.num.int = valint( add_expr.str )
+					add_expr.str = ""
+				else
+					add_expr.class = PPEXPR_CLASS_STR
 
-   				else
-   					add_expr.class = PPEXPR_CLASS_STR
+					select case as const add_expr.dtype
+					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+						add_expr.str = str( add_expr.num.long )
 
-   					select case as const add_expr.dtype
-   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-   						add_expr.str = str( add_expr.num.long )
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+					    add_expr.str = str( add_expr.num.float )
 
-   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-   					    add_expr.str = str( add_expr.num.float )
+					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+						if( FB_LONGSIZE = len( integer ) ) then
+							add_expr.str = str( add_expr.num.int )
+						else
+							add_expr.str = str( add_expr.num.long )
+						end if
 
-   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-   						if( FB_LONGSIZE = len( integer ) ) then
-   							add_expr.str = str( add_expr.num.int )
-   						else
-   							add_expr.str = str( add_expr.num.long )
-   						end if
-
-   					case else
-   						add_expr.str = str( add_expr.num.int )
-   					end select
-   				end if
-   			end if
+					case else
+						add_expr.str = str( add_expr.num.int )
+					end select
+				end if
    		end if
 
    		'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
    		if( relexpr.class = PPEXPR_CLASS_NUM ) then
    			hNumRelBOP( op, relexpr, add_expr )
-
    		else
    			select case as const op
    			case FB_TK_EQ
@@ -997,66 +952,58 @@ private function ppAddExpression _
 
     	'' ParentExpr
     	if( ppMultExpression( mult_expr ) = FALSE ) then
-            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-           		exit function
-           	else
-  				'' error recovery: fake an expr
-  				mult_expr.class = PPEXPR_CLASS_NUM
-  				mult_expr.dtype = FB_DATATYPE_INTEGER
-  				mult_expr.num.int = 0
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			mult_expr.class = PPEXPR_CLASS_NUM
+			mult_expr.dtype = FB_DATATYPE_INTEGER
+			mult_expr.num.int = 0
     	end if
 
-   		'' same type?
-   		if( add_expr.class <> mult_expr.class ) then
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-   			else
-   				'' error recovery: fake a type
-   				if( add_expr.class = PPEXPR_CLASS_NUM ) then
-   					mult_expr.class = PPEXPR_CLASS_NUM
-   					mult_expr.dtype = FB_DATATYPE_INTEGER
-   					mult_expr.num.int = valint( mult_expr.str )
-   					mult_expr.str = ""
+		'' same type?
+		if( add_expr.class <> mult_expr.class ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a type
+			if( add_expr.class = PPEXPR_CLASS_NUM ) then
+				mult_expr.class = PPEXPR_CLASS_NUM
+				mult_expr.dtype = FB_DATATYPE_INTEGER
+				mult_expr.num.int = valint( mult_expr.str )
+				mult_expr.str = ""
 
-   				else
-   					mult_expr.class = PPEXPR_CLASS_STR
+			else
+				mult_expr.class = PPEXPR_CLASS_STR
 
-   					select case as const mult_expr.dtype
-   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-   						mult_expr.str = str( mult_expr.num.long )
+				select case as const mult_expr.dtype
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+					mult_expr.str = str( mult_expr.num.long )
 
-   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-   					    mult_expr.str = str( mult_expr.num.float )
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				    mult_expr.str = str( mult_expr.num.float )
 
-   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-   						if( FB_LONGSIZE = len( integer ) ) then
-   							mult_expr.str = str( mult_expr.num.int )
-   						else
-   							mult_expr.str = str( mult_expr.num.long )
-   						end if
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
+						mult_expr.str = str( mult_expr.num.int )
+					else
+						mult_expr.str = str( mult_expr.num.long )
+					end if
 
-   					case else
-   						mult_expr.str = str( mult_expr.num.int )
-   					end select
-   				end if
-   			end if
-   		end if
+				case else
+					mult_expr.str = str( mult_expr.num.int )
+				end select
+			end if
+		end if
 
-   		if( add_expr.class = PPEXPR_CLASS_NUM ) then
-   			hNumAddMulBOP( op, add_expr, mult_expr )
-   		else
-   			select case as const op
-   			case CHAR_PLUS
-   				add_expr.str = add_expr.str + mult_expr.str
-   			case CHAR_MINUS
-	   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-	   				exit function
-	   			end if
-   			end select
+		if( add_expr.class = PPEXPR_CLASS_NUM ) then
+			hNumAddMulBOP( op, add_expr, mult_expr )
+		else
+			select case as const op
+			case CHAR_PLUS
+				add_expr.str = add_expr.str + mult_expr.str
+			case CHAR_MINUS
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+			end select
 
-   			mult_expr.str = ""
-   		end if
+			mult_expr.str = ""
+		end if
 
     loop
 
@@ -1096,60 +1043,51 @@ private function ppMultExpression _
 
     	'' ParentExpr
     	if( ppParentExpr( parexpr ) = FALSE ) then
-            if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-           		exit function
-           	else
-  				'' error recovery: fake an expr
-  				parexpr.class = PPEXPR_CLASS_NUM
-  				parexpr.dtype = FB_DATATYPE_INTEGER
-  				parexpr.num.int = 0
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.dtype = FB_DATATYPE_INTEGER
+			parexpr.num.int = 0
     	end if
 
-   		'' same type?
-   		if( mul_expr.class <> parexpr.class ) then
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-   			else
-   				'' error recovery: fake a type
-   				if( mul_expr.class = PPEXPR_CLASS_NUM ) then
-   					parexpr.class = PPEXPR_CLASS_NUM
-   					parexpr.dtype = FB_DATATYPE_INTEGER
-   					parexpr.num.int = valint( parexpr.str )
-   					parexpr.str = ""
+		'' same type?
+		if( mul_expr.class <> parexpr.class ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake a type
+			if( mul_expr.class = PPEXPR_CLASS_NUM ) then
+				parexpr.class = PPEXPR_CLASS_NUM
+				parexpr.dtype = FB_DATATYPE_INTEGER
+				parexpr.num.int = valint( parexpr.str )
+				parexpr.str = ""
 
-   				else
-   					parexpr.class = PPEXPR_CLASS_STR
+			else
+				parexpr.class = PPEXPR_CLASS_STR
 
-   					select case as const parexpr.dtype
-   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-   						parexpr.str = str( parexpr.num.long )
+				select case as const parexpr.dtype
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+					parexpr.str = str( parexpr.num.long )
 
-   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-   					    parexpr.str = str( parexpr.num.float )
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				    parexpr.str = str( parexpr.num.float )
 
-   					case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-   						if( FB_LONGSIZE = len( integer ) ) then
-   							parexpr.str = str( parexpr.num.int )
-   						else
-   							parexpr.str = str( parexpr.num.long )
-   						end if
+				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+					if( FB_LONGSIZE = len( integer ) ) then
+						parexpr.str = str( parexpr.num.int )
+					else
+						parexpr.str = str( parexpr.num.long )
+					end if
 
-   					case else
-   						parexpr.str = str( parexpr.num.int )
-   					end select
-   				end if
-   			end if
-   		end if
+				case else
+					parexpr.str = str( parexpr.num.int )
+				end select
+			end if
+		end if
 
-   		if( mul_expr.class = PPEXPR_CLASS_NUM ) then
-   			hNumAddMulBOP( op, mul_expr, parexpr )
-   		else
-   			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-   				exit function
-   			end if
-   		end if
-
+		if( mul_expr.class = PPEXPR_CLASS_NUM ) then
+			hNumAddMulBOP( op, mul_expr, parexpr )
+		else
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+		end if
     loop
 
     function = TRUE
@@ -1186,36 +1124,28 @@ private function ppParentExpr _
   		lexSkipToken( )
 
   		if( ppLogExpression( parexpr ) = FALSE ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: fake an expr
-  				parexpr.class = PPEXPR_CLASS_NUM
-  				parexpr.dtype = FB_DATATYPE_INTEGER
-  				parexpr.num.int = FALSE
-  			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.dtype = FB_DATATYPE_INTEGER
+			parexpr.num.int = FALSE
   		end if
 
   		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: skip until ')'
-  				hSkipUntil( CHAR_RPRNT, TRUE )
-  			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
   		end if
 
   	'' DEFINED'(' ID ')'
   	case FB_TK_DEFINED
   		lexSkipToken( LEXCHECK_NODEFINE )
 
-    	if( lexGetToken( ) <> CHAR_LPRNT ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-    			exit function
-    		end if
-    	else
-    		lexSkipToken( LEXCHECK_NODEFINE )
-    	end if
+		if( lexGetToken( ) <> CHAR_LPRNT ) then
+			errReport( FB_ERRMSG_EXPECTEDLPRNT )
+		else
+			lexSkipToken( LEXCHECK_NODEFINE )
+		end if
 
 		parexpr.class = PPEXPR_CLASS_NUM
 		parexpr.dtype = FB_DATATYPE_INTEGER
@@ -1227,12 +1157,9 @@ private function ppParentExpr _
 		lexSkipToken( )
 
   		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: skip until ')'
-  				hSkipUntil( CHAR_RPRNT, TRUE )
-  			end if
+  			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
   		end if
 
   	'' '-'
@@ -1244,15 +1171,11 @@ private function ppParentExpr _
   		end if
 
   		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
-  			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: fake an expr
-  				parexpr.class = PPEXPR_CLASS_NUM
-  				parexpr.dtype = FB_DATATYPE_INTEGER
-  				parexpr.num.int = 0
-  			end if
-
+  			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake an expr
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.dtype = FB_DATATYPE_INTEGER
+			parexpr.num.int = 0
   		else
   			hNumNeg( parexpr )
   		end if
@@ -1262,26 +1185,19 @@ private function ppParentExpr _
 		lexSkipToken( )
 
   		if( ppRelExpression( parexpr ) = FALSE ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: fake an expr
-  				parexpr.class = PPEXPR_CLASS_NUM
-  				parexpr.dtype = FB_DATATYPE_INTEGER
-  				parexpr.num.int = 0
-  			end if
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.dtype = FB_DATATYPE_INTEGER
+			parexpr.num.int = 0
   		end if
 
   		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
-  			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-  				exit function
-  			else
-  				'' error recovery: fake an expr
-  				parexpr.class = PPEXPR_CLASS_NUM
-  				parexpr.dtype = FB_DATATYPE_INTEGER
-  				parexpr.num.int = 0
-  			end if
-
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			'' error recovery: fake an expr
+			parexpr.class = PPEXPR_CLASS_NUM
+			parexpr.dtype = FB_DATATYPE_INTEGER
+			parexpr.num.int = 0
   		else
   			hNumNot( parexpr )
   		end if

@@ -40,40 +40,30 @@ private function hTypeProtoDecl _
 
 #macro hCheckStatic( attrib )
 	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-		if( errReport( FB_ERRMSG_MEMBERCANTBESTATIC ) = FALSE ) then
-			exit function
-		else
-			attrib and= not FB_SYMBATTRIB_STATIC
-		end if
+		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
+		attrib and= not FB_SYMBATTRIB_STATIC
 	end if
 #endmacro
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
-		if( errReport( FB_ERRMSG_METHODINANONUDT ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_METHODINANONUDT )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
 	end if
 
-   	'' methods not allowed?
-   	if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
-    	if( errReportNotAllowed( FB_LANG_OPT_CLASS ) = FALSE ) then
-       		exit function
-       	end if
+	'' methods not allowed?
+	if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
+		errReportNotAllowed( FB_LANG_OPT_CLASS )
 	end if
 
-	''
 	if( symbGetIsUnique( parent ) = FALSE ) then
 		'' must be unique
 		symbSetIsUnique( parent )
 
 		'' start nesting
 		symbNestBegin( parent, FALSE )
-		
 	end if
 
 	'' DECLARE
@@ -84,21 +74,17 @@ private function hTypeProtoDecl _
 		lexSkipToken( )
 		attrib or= FB_SYMBATTRIB_STATIC
 	end if
-    
-    '' CONST?
+
+	'' CONST?
 	if( lexGetToken( ) = FB_TK_CONST ) then
 		'' STATIC + CONST makes no sense
 		if( attrib and FB_SYMBATTRIB_STATIC ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
 			lexSkipToken( )
 		else
 			lexSkipToken( )
 			if( lexGetToken( ) = FB_TK_STATIC ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR )
 				lexSkipToken( )
 			else
 				attrib or= FB_SYMBATTRIB_CONST
@@ -158,13 +144,9 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( attrib, _
-						 is_nested, _
-						 FB_PROCOPT_ISPROTO or _
-						 FB_PROCOPT_HASPARENT or _
-						 FB_PROCOPT_ISSUB ) = NULL ) then
-			res = FALSE
-		end if
+		cProcHeader( attrib, is_nested, _
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT or _
+		             FB_PROCOPT_ISSUB )
 
 	case FB_TK_FUNCTION
 		lexSkipToken( )
@@ -173,20 +155,13 @@ private function hTypeProtoDecl _
 			attrib or= FB_SYMBATTRIB_METHOD
 		end if
 
-		if( cProcHeader( attrib, _
-						 is_nested, _
-						 FB_PROCOPT_ISPROTO or _
-						 FB_PROCOPT_HASPARENT ) = NULL ) then
-			res = FALSE
-		end if
+		cProcHeader( attrib, is_nested, _
+		             FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT )
 
 	case else
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			res = FALSE
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-		end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip stmt
+		hSkipStmt( )
 	end select
 
 	function = res
@@ -207,16 +182,12 @@ private function hTypeEnumDecl _
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
-		if( errReport( FB_ERRMSG_METHODINANONUDT ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_METHODINANONUDT )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
 	end if
 
-	''
 	if( symbGetIsUnique( parent ) = FALSE ) then
 		'' must be unique
 		symbSetIsUnique( parent )
@@ -228,7 +199,8 @@ private function hTypeEnumDecl _
 	if( is_const ) then
 		res = cConstDecl( attrib )
 	else
-		res = cEnumDecl( attrib )
+		cEnumDecl( attrib )
+		res = TRUE
 	end if
 
 	function = res
@@ -236,16 +208,7 @@ private function hTypeEnumDecl _
 end function
 
 '':::::
-private function hFieldInit _
-	( _
-        byval parent as FBSYMBOL ptr, _
-        byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr initree = any
-
-	function = NULL
-
+private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
@@ -264,28 +227,24 @@ private function hFieldInit _
     		end select
     	end if
 
-		exit function
+		exit sub
 	end select
 
 	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
-		if( errReportNotAllowed( FB_LANG_OPT_INITIALIZER )  ) then
-			'' error recovery: skip
-			hSkipUntil( FB_TK_EOL )
-		end if
-		exit function
+		errReportNotAllowed( FB_LANG_OPT_INITIALIZER )
+		'' error recovery: skip
+		hSkipUntil( FB_TK_EOL )
+		exit sub
 	end if
 
 	if( sym <> NULL ) then
 		'' union or anon?
 		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
 									  FB_UDTOPT_ISANON)) <> 0 ) then
-
-		    if( errReport( FB_ERRMSG_CTORINUNION ) ) then
-				'' error recovery: skip
-				hSkipUntil( FB_TK_EOL )
-			end if
-
-			exit function
+			errReport( FB_ERRMSG_CTORINUNION )
+			'' error recovery: skip
+			hSkipUntil( FB_TK_EOL )
+			exit sub
 		end if
 	end if
 
@@ -294,16 +253,14 @@ private function hFieldInit _
 	if( sym = NULL ) then
 		'' error recovery: skip stmt
 		hSkipStmt( )
-		exit function
+		exit sub
 	end if
 
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
-
 		'' don't allow var-len strings
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-
 		else
    			select case symbGetType( sym )
    			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
@@ -317,11 +274,9 @@ private function hFieldInit _
 		end if
 
 		lexSkipToken( )
-
-		exit function
+		exit sub
 	end if
 
-	''
 	if( symbGetIsUnique( parent ) = FALSE ) then
 		'' must be unique
 		symbSetIsUnique( parent )
@@ -330,24 +285,16 @@ private function hFieldInit _
 		symbNestBegin( parent, FALSE )
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI )
-	if( initree = NULL ) then
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
+	dim as ASTNODE ptr initree = cInitializer( sym, FB_INIOPT_ISINI )
+	if( initree ) then
+		'' don't allow references to local symbols
+		dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
+		if( s <> NULL ) then
+			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE )
+			'' error recovery
+			astDelTree( initree )
+			initree = NULL
 		end if
-
-	else
-    	'' don't allow references to local symbols
-    	dim as FBSYMBOL ptr s = astFindLocalSymbol( initree )
-    	if( s <> NULL ) then
-    		if( errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery
-    			astDelTree( initree )
-    			initree = NULL
-    		end if
-    	end if
 	end if
 
 	'' remove the temps from the dtors list if any was added
@@ -356,57 +303,42 @@ private function hFieldInit _
 	'' make sure a default ctor is added
 	symbSetUDTHasCtorField( parent )
 
-	function = initree
-
-end function
+	if( initree ) then
+		symbSetTypeIniTree( sym, initree )
+	end if
+end sub
 
 '':::::
 ''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?
 ''							 (',' ID (ArrayDecl | ':' NUMLIT)? ('=' Expression)?)*
 ''
-private function hTypeMultElementDecl _
+private sub hTypeMultElementDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as integer _
-	) as integer static
+	) static
 
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
-    dim as ASTNODE ptr initree
 
-    function = FALSE
-
-    '' SymbolType
-    if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: create a fake type
-    		dtype = FB_DATATYPE_INTEGER
-    		subtype = NULL
-    		lgt = FB_INTEGERSIZE
-    	end if
-    end if
+	'' SymbolType
+	hSymbolType( dtype, subtype, lgt )
 
 	do
 		'' allow keywords as field names
 		select case as const lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-    		'' contains a period?
-    		if( lexGetPeriodPos( ) > 0 ) then
-    			if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
+			'' contains a period?
+			if( lexGetPeriodPos( ) > 0 ) then
+				errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
+			end if
 
     		'' but don't allow keywords if it's an object (because the implicit inst. ptr)
     		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
     			if( symbGetIsUnique( parent ) ) then
-    				if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
-    					exit function
-    				end if
+					errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
     			else
     				symbSetUDTHasKwdField( parent )
     			end if
@@ -416,23 +348,15 @@ private function hTypeMultElementDecl _
 			lexSkipToken( )
 
 		case else
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake an id
-    			id = *hMakeTmpStr( )
-    		end if
-    	end select
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' error recovery: fake an id
+			id = *hMakeTmpStr( )
+		end select
 
 	    bits = 0
 
 		'' ArrayDecl?
 		if( cStaticArrayDecl( dims, dTB(), , FALSE ) = FALSE ) then
-
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
-
 			'' ':' NUMLIT?
 			if( lexGetToken( ) = FB_TK_STMTSEP ) then
 				if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
@@ -441,30 +365,22 @@ private function hTypeMultElementDecl _
 					lexSkipToken( )
 
 					if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
-						if( errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: no bits
-							bits = 0
-						end if
+						errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
+						'' error recovery: no bits
+						bits = 0
 					end if
 				end if
-
 			end if
-
 		end if
 
 		'' ref to self?
 		if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( subtype = parent ) then
-				if( errReport( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
-					exit function
-				else
-    				'' error recovery: fake type
-					dtype = FB_DATATYPE_INTEGER
-					subtype = NULL
-					lgt = FB_INTEGERSIZE
-				end if
+				errReport( FB_ERRMSG_RECURSIVEUDT )
+				'' error recovery: fake type
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
+				lgt = FB_INTEGERSIZE
 			end if
 		end if
 
@@ -474,22 +390,11 @@ private function hTypeMultElementDecl _
 						  	dtype, subtype, _
 						  	lgt, bits )
 		if( sym = NULL ) then
-			if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-				exit function
-			end if
-
+			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		else
 			symbGetAttrib( sym ) or= attrib
-
-			initree = hFieldInit( parent, sym )
-			if( initree = NULL ) then
-    			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    				exit function
-    			end if
-    		else
-    			symbSetTypeIniTree( sym, initree )
-    		end if
-    	end if
+			hFieldInit( parent, sym )
+		end if
 
 		'' ','?
 	    if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -498,27 +403,21 @@ private function hTypeMultElementDecl _
 
 	    lexSkipToken( )
 	loop
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType ('=' Expression)?
 ''
-private function hTypeElementDecl _
+private sub hTypeElementDecl _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval attrib as integer _
-	) as integer static
+	) static
 
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype
     dim as integer dims, dtype, lgt, bits
-    dim as ASTNODE ptr initree
-
-	function = FALSE
 
 	'' allow keywords as field names
 	select case as const lexGetClass( )
@@ -528,24 +427,18 @@ private function hTypeElementDecl _
 		id = *lexGetText( )
 
     	if( lexGetType( ) <> FB_DATATYPE_INVALID ) then
-    		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    			exit function
-    		end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
     	end if
 
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
-    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
-    		end if
+			errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
     	end if
 
     	'' but don't allow keywords if it's an object (because the implicit inst. ptr)
     	if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
     		if( symbGetIsUnique( parent ) ) then
-    			if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
-    				exit function
-    			end if
+				errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
     		else
     			symbSetUDTHasKwdField( parent )
     		end if
@@ -554,13 +447,10 @@ private function hTypeElementDecl _
 		lexSkipToken( )
 
     case else
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: fake an id
-    		id = *hMakeTmpStr( )
-    		dtype = FB_DATATYPE_INVALID
-    	end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an id
+		id = *hMakeTmpStr( )
+		dtype = FB_DATATYPE_INVALID
     end select
 
 	subtype = NULL
@@ -575,62 +465,41 @@ private function hTypeElementDecl _
 				bits = valint( *lexGetText( ) )
 				lexSkipToken( )
 				if( bits <= 0 ) then
-    				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) ) then
-    					exit function
-    				else
-    					'' error recovery: no bits
-    					bits = 0
-    				end if
-    			end if
+					errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
+					'' error recovery: no bits
+					bits = 0
+				end if
 			end if
 		end if
 	end if
 
     '' AS
     if( lexGetToken( ) <> FB_TK_AS ) then
-    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    		exit function
-    	end if
-
+		errReport( FB_ERRMSG_SYNTAXERROR )
     else
     	lexSkipToken( )
     end if
 
-    '' SymbolType
-    if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
-		else
-			'' error recovery: create a fake type
-			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
-			lgt = FB_INTEGERSIZE
-		end if
-    end if
+	'' SymbolType
+	hSymbolType( dtype, subtype, lgt )
 
 	''
 	if( bits <> 0 ) then
 		if( symbCheckBitField( parent, dtype, lgt, bits ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: no bits
-    			bits = 0
-    		end if
+			errReport( FB_ERRMSG_INVALIDBITFIELD, TRUE )
+			'' error recovery: no bits
+			bits = 0
 		end if
 	end if
 
 	'' ref to self?
 	if( dtype = FB_DATATYPE_STRUCT ) then
 		if( subtype = parent ) then
-			if( errReport( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
-				exit function
-			else
-    			'' error recovery: fake type
-				dtype = FB_DATATYPE_INTEGER
-				subtype = NULL
-				lgt = FB_INTEGERSIZE
-			end if
+			errReport( FB_ERRMSG_RECURSIVEUDT )
+			'' error recovery: fake type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = FB_INTEGERSIZE
 		end if
 	end if
 
@@ -641,28 +510,15 @@ private function hTypeElementDecl _
 					  	lgt, bits )
 
 	if( sym = NULL ) then
-		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: pretend the field was added
-			return TRUE
-		end if
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: pretend the field was added
+		return
 	end if
 	sym->attrib or= attrib
 
 	'' initializer
-	initree = hFieldInit( parent, sym )
-	if( initree = NULL ) then
-    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
-    else
-    	symbSetTypeIniTree( sym, initree )
-    end if
-
-	function = TRUE
-
-end function
+	hFieldInit( parent, sym )
+end sub
 
 '':::::
 private function hTypeAdd _
@@ -681,12 +537,9 @@ private function hTypeAdd _
 
 	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
 	if( s = NULL ) then
-    	if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: create a fake symbol
-    		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
-    	end if
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' error recovery: create a fake symbol
+		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
 	end if
 
 	'' Comment? SttSeparator
@@ -696,12 +549,9 @@ private function hTypeAdd _
 	hEmitCurrLine( )
 
 	if( cStmtSeparator( ) = FALSE ) then
-    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip until next line or stmt
-    		hSkipUntil( INVALID, TRUE )
-    	end if
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip until next line or stmt
+		hSkipUntil( INVALID, TRUE )
 	end if
 	
 	'' TypeBody
@@ -709,10 +559,6 @@ private function hTypeAdd _
 
 	if( res = FALSE ) then
 		exit function
-	else
-		if( errGetLast() <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 	end if
 
 	'' finalize
@@ -720,24 +566,16 @@ private function hTypeAdd _
 
 	'' END TYPE|UNION
 	if( lexGetToken( ) <> FB_TK_END ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDENDTYPE ) = FALSE ) then
-    		exit function
-    	else
-    		'' error recovery: skip until next stmt
-    		hSkipStmt( )
-    	end if
-
+		errReport( FB_ERRMSG_EXPECTEDENDTYPE )
+		'' error recovery: skip until next stmt
+		hSkipStmt( )
 	else
 		lexSkipToken( )
 
 		if( lexGetToken( ) <> iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) then
-			if( errReport( FB_ERRMSG_EXPECTEDENDTYPE ) = FALSE ) then
-				exit function
-			else
-    			'' error recovery: skip until next stmt
-    			hSkipStmt( )
-    		end if
-
+			errReport( FB_ERRMSG_EXPECTEDENDTYPE )
+			'' error recovery: skip until next stmt
+			hSkipStmt( )
 		else
 			lexSkipToken( )
 		end if
@@ -770,9 +608,7 @@ private function hTypeBody _
         '' visibility?
 		case FB_TK_PRIVATE, FB_TK_PUBLIC, FB_TK_PROTECTED
 			if( symbGetUDTIsUnion( s ) ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
 
 			select case lexGetToken( )
@@ -788,9 +624,7 @@ private function hTypeBody _
 
 			'' ':'
 			if( lexGetToken( ) <> FB_TK_STMTSEP ) then
-				if( errReport( FB_ERRMSG_EXPECTEDSTMTSEP ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_EXPECTEDSTMTSEP )
 			end if
 
 			'' ':' will be skipped bellow to allow stmt separators
@@ -813,9 +647,7 @@ private function hTypeBody _
 			'' isn't it a field called "end"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, FB_TK_STMTSEP
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			'' it's not a field, exit
 			case else
@@ -833,21 +665,15 @@ decl_inner:		'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
 				if( isunion = FALSE ) then
 					if( symbGetUDTIsUnion( s ) = FALSE ) then
-						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake type
-							isunion = TRUE
-						end if
+						errReport( FB_ERRMSG_SYNTAXERROR )
+						'' error recovery: fake type
+						isunion = TRUE
 					end if
 				else
 					if( symbGetUDTIsUnion( s ) ) then
-						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake type
-							isunion = FALSE
-						end if
+						errReport( FB_ERRMSG_SYNTAXERROR )
+						'' error recovery: fake type
+						isunion = FALSE
 					end if
 				end if
 
@@ -880,15 +706,11 @@ decl_inner:		'' it's an anonymous inner UDT
 				end if
 
 				'' bitfield..
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			'' it's a field, parse it
 			case else
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 
 			end select
 
@@ -896,10 +718,7 @@ decl_inner:		'' it's an anonymous inner UDT
 		case FB_TK_AS
 			'' it's a multi-declaration
 			lexSkipToken( )
-
-			if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
-				exit function
-			end if
+			hTypeMultElementDecl( s, attrib )
 
 		case FB_TK_DECLARE
 			if( hTypeProtoDecl( s, attrib ) = FALSE ) then
@@ -922,15 +741,9 @@ decl_inner:		'' it's an anonymous inner UDT
 			'' multi-decl?
 			if( lexGetToken( ) = FB_TK_AS ) then
 				lexSkipToken( )
-
-				if( hTypeMultElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
-
+				hTypeMultElementDecl( s, attrib )
 			else
-				if( hTypeElementDecl( s, attrib ) = FALSE ) then
-					exit function
-				end if
+				hTypeElementDecl( s, attrib )
 			end if
 
 		case FB_TK_STATIC
@@ -940,9 +753,7 @@ decl_inner:		'' it's an anonymous inner UDT
 
 		'' anything else, must be a field
 		case else
-			if( hTypeElementDecl( s, attrib ) = FALSE ) then
-				exit function
-			end if
+			hTypeElementDecl( s, attrib )
 
 		end select
 
@@ -952,59 +763,40 @@ decl_inner:		'' it's an anonymous inner UDT
 		'' emit the current line in text form
 		hEmitCurrLine( )
 
-	    if( cStmtSeparator( ) = FALSE ) then
-	    	if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-	    		exit function
-    		else
-    			'' error recovery: skip until next line or stmt
-    			hSkipUntil( INVALID, TRUE )
-    		end if
+		if( cStmtSeparator( ) = FALSE ) then
+			errReport( FB_ERRMSG_EXPECTEDEOL )
+			'' error recovery: skip until next line or stmt
+			hSkipUntil( INVALID, TRUE )
 		end if
-
 	loop
 
 	'' nothing added?
 	if( symbGetUDTElements( s ) = 0 ) then
-		if( errReport( FB_ERRMSG_NOELEMENTSDEFINED ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_NOELEMENTSDEFINED )
 	end if
 
     function = TRUE
 
 end function
 
-function hCheckForCDtorOrMethods _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
 	'' inside a proc?
 	if( fbIsModLevel( ) = FALSE ) then
-
 		'' we can't allow objects (or their children) with c/dtor
 		if( symbGetUDTHasCtorField( sym ) ) then
-			if( errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) ) = FALSE ) then
-				exit function
-			end if
+			errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) )
 		end if
 
 		'' can't allow methods either...
 		dim as FBSYMBOL ptr walk = symbGetUDTFirstElm( sym )
 		do while( walk <> NULL )
 			if( symbIsMethod( walk ) ) then
-				if( errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( walk ) ) = FALSE ) then
-					exit function
-				end if
+				errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( walk ) )
 			end if
 			walk = walk->next
 		loop
-
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)? Comment? SttSeparator
@@ -1015,8 +807,7 @@ function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias = any
+    static as zstring * FB_MAXNAMELEN+1 id
     dim as ASTNODE ptr expr = any
     dim as integer align, isunion, checkid = any
     dim as FBSYMBOL ptr sym = any
@@ -1038,145 +829,93 @@ function cTypeDecl _
     	if( isunion = FALSE ) then
     		'' AS?
     		if( lexGetToken( ) = FB_TK_AS ) then
-                '' (Note: the typedef parser will skip the AS)
-    			return cTypedefMultDecl( )
+				'' (Note: the typedef parser will skip the AS)
+				cTypedefMultDecl()
+				return TRUE
     		end if
     	end if
 
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
-    	else
- 			'' error recovery: fake an ID
- 			checkid = FALSE
- 		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an ID
+		checkid = FALSE
 
 	case FB_TKCLASS_QUIRKWD
 
     case else
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		exit function
-    	else
- 			'' error recovery: fake an ID
- 			checkid = FALSE
- 		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an ID
+		checkid = FALSE
     end select
 
 	if( checkid ) then
-		'' don't allow explicit namespaces
-		dim as FBSYMBOL ptr parent = cParentId( )
-    	if( parent <> NULL ) then
-			if( hDeclCheckParent( parent ) = FALSE ) then
-				exit function
-    		end if
-    	else
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
-    	end if
+		'' Namespace identifier if it matches the current namespace
+		cCurrentParentId()
 
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
   				if( lexGetPeriodPos( ) > 0 ) then
-  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-	  					exit function
-					end if
+  					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
 
 		lexEatToken( @id )
-
 	else
 		id = *hMakeTmpStrNL( )
 	end if
 
-	palias = NULL
-
-	''
-	select case lexGetToken( )
 	'' AS?
-	case FB_TK_AS
+	if (lexGetToken() = FB_TK_AS) then
 		if( isunion ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 
-        '' (Note: the typedef parser will skip the AS)
-		return cTypedefSingleDecl( id )
+		'' (Note: the typedef parser will skip the AS)
+		cTypedefSingleDecl( id )
+		return TRUE
+	end if
 
-	'' (ALIAS LITSTR)?
-	case FB_TK_ALIAS
-    	lexSkipToken( )
+	'' [ALIAS "id"]
+	dim as zstring ptr palias = cAliasAttribute()
 
-		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-        else
-			lexEatToken( @id_alias )
-			palias = @id_alias
-		end if
-
-	end select
-
-	
-    '' (EXTENDS SymbolType)?
-    dim as FBSYMBOL ptr baseSubtype = NULL
+	'' (EXTENDS SymbolType)?
+	dim as FBSYMBOL ptr baseSubtype = NULL
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
-    	lexSkipToken( )
-    
-    	'' SymbolType
-    	dim as integer baseDtype, baseLgt
-    	if( hSymbolType( baseDtype, baseSubtype, baseLgt ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    			exit function
-			else
-				'' error recovery: skip
-				baseDtype = FB_DATATYPE_VOID
-			end if
-    	end if
-    	
-    	'' is the base type a struct?
-    	if( baseDType <> FB_DATATYPE_STRUCT ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDCLASSTYPE ) = FALSE ) then
-    			exit function
-			else
-				'' error recovery: skip
-				baseSubtype = NULL
-			end if
-    	end if
-   	end if
-	
+		lexSkipToken( )
+
+		'' SymbolType
+		dim as integer baseDtype, baseLgt
+		hSymbolType( baseDtype, baseSubtype, baseLgt )
+
+		'' is the base type a struct?
+		if( baseDType <> FB_DATATYPE_STRUCT ) then
+			errReport( FB_ERRMSG_EXPECTEDCLASSTYPE )
+			'' error recovery: skip
+			baseSubtype = NULL
+		end if
+	end if
+
 	'' (FIELD '=' Expression)?
-    if( lexGetToken( ) = FB_TK_FIELD ) then
+	if( lexGetToken( ) = FB_TK_FIELD ) then
 		lexSkipToken( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-    		else
-    			'' error recovery: fake an expr
-    			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
-    	end if
+		expr = cExpression( )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 
 		if( astIsCONST( expr ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-				exit function
-			else
-    			'' error recovery: fake an expr
-    			astDelTree( expr )
-    			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    		end if
+			errReport( FB_ERRMSG_EXPECTEDCONST )
+			'' error recovery: fake an expr
+			astDelTree( expr )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
   		'' follow the GCC 3.x ABI
@@ -1217,9 +956,7 @@ function cTypeDecl _
 	parser.currblock = currblocksym
 	parser.scope = scope_depth
 
-	if( hCheckForCDtorOrMethods( sym ) = FALSE ) then
-		exit function
-	end if
+	hCheckForCDtorOrMethods(sym)
 
 	'' end the compound
 	stk = cCompStmtGetTOS( FB_TK_TYPE )
@@ -1241,18 +978,14 @@ function cTypeDecl _
 		'' could be NULL, because error recovery
 		if( chain_ <> NULL ) then
 			if( chain_->sym <> sym ) then
-    			if( errReportEx( FB_ERRMSG_STRUCTISNOTUNIQUE, id ) = FALSE ) then
-	   				exit function
-    			end if
-    		end if
+				errReportEx( FB_ERRMSG_STRUCTISNOTUNIQUE, id )
+			end if
 		end if
 
-    	'' don't allow field named as keywords
-    	if( symbGetUDTHasKwdField( sym ) ) then
-    		if( errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
+		'' don't allow field named as keywords
+		if( symbGetUDTHasKwdField( sym ) ) then
+			errReport( FB_ERRMSG_KEYWORDFIELDSNOTALLOWEDINCLASSES )
+		end if
 	end if
 
 	'' byval params to self?

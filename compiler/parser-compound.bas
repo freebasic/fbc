@@ -79,7 +79,8 @@ function cCompoundStmt as integer
 	select case as const lexGetToken( )
 	case FB_TK_IF
 		CHECK_CODEMASK( FB_TK_IF, FB_TK_IF )
-		function = cIfStmtBegin( )
+		cIfStmtBegin()
+		function = TRUE
 
 	case FB_TK_FOR
 		CHECK_CODEMASK( FB_TK_FOR, FB_TK_NEXT )
@@ -87,11 +88,13 @@ function cCompoundStmt as integer
 
 	case FB_TK_DO
 		CHECK_CODEMASK( FB_TK_DO, FB_TK_LOOP )
-		function = cDoStmtBegin( )
+		cDoStmtBegin()
+		function = TRUE
 
 	case FB_TK_WHILE
 		CHECK_CODEMASK( FB_TK_WHILE, FB_TK_WEND )
-		function = cWhileStmtBegin( )
+		cWhileStmtBegin()
+		function = TRUE
 
 	case FB_TK_SELECT
 		CHECK_CODEMASK( FB_TK_SELECT, FB_TK_SELECT )
@@ -99,7 +102,8 @@ function cCompoundStmt as integer
 
 	case FB_TK_WITH
 		CHECK_CODEMASK( FB_TK_WITH, FB_TK_WITH )
-		function = cWithStmtBegin( )
+		cWithStmtBegin()
+		function = TRUE
 
 	case FB_TK_SCOPE
 		CHECK_CODEMASK( FB_TK_SCOPE, FB_TK_SCOPE )
@@ -127,10 +131,12 @@ function cCompoundStmt as integer
 		function = cWhileStmtEnd( )
 
 	case FB_TK_EXIT
-		function = cExitStatement( )
+		cExitStatement()
+		function = TRUE
 
 	case FB_TK_CONTINUE
-		function = cContinueStatement( )
+		cContinueStatement()
+		function = TRUE
 
 	case FB_TK_END
 		'' any compound END will be parsed by the compound stmt
@@ -181,25 +187,17 @@ end function
 
 '':::::
 #macro hExitError( errnum )
-	if( errReport( errnum ) = FALSE ) then
-		return FALSE
-	else
-		'' error recovery: skip stmt
-		hSkipStmt( )
-		return TRUE
-	end if
+	errReport( errnum )
+	'' error recovery: skip stmt
+	hSkipStmt( )
+	return
 #endmacro
 
 '':::::
 ''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 ''
-function cExitStatement _
-	( _
-	) as integer
-
-    dim as FBSYMBOL ptr label = NULL
-
-	function = FALSE
+sub cExitStatement()
+	dim as FBSYMBOL ptr label = NULL
 
 	'' EXIT
 	lexSkipToken( )
@@ -374,21 +372,14 @@ function cExitStatement _
 		hExitError( FB_ERRMSG_INVALIDEXITSTMT )
 	end select
 
-	''
-	function = astScopeBreak( label )
-
-end function
+	astScopeBreak( label )
+end sub
 
 '':::::
 ''ContinueStatement	  =	  CONTINUE (FOR | DO | WHILE)
 ''
-function cContinueStatement _
-	( _
-	) as integer
-
-    dim as FBSYMBOL ptr label = NULL
-
-	function = FALSE
+sub cContinueStatement()
+	dim as FBSYMBOL ptr label = NULL
 
 	'' CONTINUE
 	lexSkipToken( )
@@ -474,10 +465,8 @@ function cContinueStatement _
 		hExitError( FB_ERRMSG_INVALIDCONTINUESTMT )
 	end select
 
-	''
-	function = astScopeBreak( label )
-
-end function
+	astScopeBreak( label )
+end sub
 
 '':::::
 ''CompoundEnd	  =	  END (IF | SELECT | SUB | FUNCTION | SCOPE | WITH | NAMESPACE | EXTERN)
@@ -529,13 +518,10 @@ function cCompoundEnd( ) as integer
 		function = cEndStatement( )
 
 	case else
-		if( errReport( FB_ERRMSG_ILLEGALEND ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALEND )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return TRUE
 	end select
 
 end function

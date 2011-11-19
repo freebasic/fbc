@@ -82,128 +82,86 @@ sub	parserEnd( )
 
 end sub
 
-'':::::
-''Program         =   Line* EOF? .
-''
-function cProgram( ) as integer
-
+'' Program = (Label? Statement? Comment?)* EOF?
+sub cProgram()
 	dim as integer startlevel = pp.level
 
-    do
-    	if( cLine( ) = FALSE ) then
-    		exit do
-    	end if
-    loop
+	'' For each line...
+	do
+		parser.stmt.cnt += 1
 
-    if( errGetCount( ) = 0 ) then
-    	'' EOF?
-    	if( lexGetToken( ) = FB_TK_EOF ) then
+		'' line begin
+		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
-			parser.stmt.cnt += 1
+		dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
 
-			if( pp.level <> startlevel ) then '' inside #IF block?
-				errReport( FB_ERRMSG_EXPECTEDPPENDIF )
+		dim as integer eofnewline = (lexGetToken() = FB_TK_EOF)
+
+		'' Label?
+		cLabel( )
+
+		'' Statement?
+		cStatement( )
+
+		'' Comment?
+		cComment( )
+
+		if (fbShouldContinue() = FALSE) then
+			exit sub
+		end if
+
+		'' emit the current line in text form
+		if( env.clopt.debug ) then
+			if( env.includerec = 0 ) then
+				'' don't add if proc changed (from main() to proc block or the inverse)
+				if( proc = astGetProc( ) ) then
+					astAddAfter( astNewLIT( lexCurrLineGet( ) ), expr )
+				end if
+				lexCurrLineReset( )
+			end if
+		end if
+
+		select case lexGetToken( )
+		case FB_TK_EOL
+			lexSkipToken( )
+
+		case FB_TK_EOF
+			if( fbPdCheckIsSet( FB_PDCHECK_EOFNONEWLINE ) ) then
+				if( eofnewline = FALSE ) then
+					errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
+				end if
 			end if
 
-    		lexSkipToken( )
+		case else
+			errReport( FB_ERRMSG_EXPECTEDEOL )
+			'' error recovery: skip until EOL
+			hSkipUntil( FB_TK_EOL, TRUE )
+		end select
 
-    	end if
+		if (fbShouldContinue() = FALSE) then
+			exit sub
+		end if
 
-    	'' only check compound stmts if not parsing an include file
-    	if( env.includerec = 0 ) then
-    		cCompStmtCheck( )
-    		function = (errGetCount( ) = 0)
-    	else
-    		function = TRUE
-    	end if
+		'' line end
+		astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
+	loop while (lexGetToken() <> FB_TK_EOF)
 
-    else
-    	function = FALSE
-    end if
-
-end function
-
-'':::::
-''Line            =   Label? Statement? Comment? EOL .
-''
-function cLine as integer
+	'' EOF
+	assert(lexGetToken() = FB_TK_EOF)
 
 	parser.stmt.cnt += 1
 
-	'' line begin
-	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
-
-	dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
-
-	dim as integer eofnewline = FALSE
-
-	if( LexGetToken( ) = FB_TK_EOF ) then
-		eofnewline = TRUE
+	if (pp.level <> startlevel) then '' inside #IF block?
+		errReport( FB_ERRMSG_EXPECTEDPPENDIF )
 	end if
 
-    '' Label?
-    cLabel( )
+	lexSkipToken()
 
-    '' Statement?
-    cStatement( )
-
-	'' Restart?
-	if( fbCheckRestartCompile( ) ) then
-		exit function
+	'' only check compound stmts if not parsing an include file
+	if (env.includerec = 0) then
+		cCompStmtCheck()
 	end if
-
-    '' Comment?
-    cComment( )
-
-	'' Restart?
-	if( fbCheckRestartCompile( ) ) then
-		exit function
-	end if
-
-	if( errGetLast( ) <> FB_ERRMSG_OK ) then
-		exit function
-	end if
-
-	'' emit the current line in text form
-	if( env.clopt.debug ) then
-		if( env.includerec = 0 ) then
-			'' don't add if proc changed (from main() to proc block or the inverse)
-			if( proc = astGetProc( ) ) then
-				astAddAfter( astNewLIT( lexCurrLineGet( ) ), expr )
-			end if
-			lexCurrLineReset( )
-		end if
-	end if
-
-	''
-	select case lexGetToken( )
-	case FB_TK_EOL
-		lexSkipToken( )
-		function = TRUE
-
-	case FB_TK_EOF
-		if( fbPdCheckIsSet( FB_PDCHECK_EOFNONEWLINE ) ) then
-			if( eofnewline = FALSE ) then
-				errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
-			end if
-		end if
-		function = FALSE
-
-	case else
-		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip until EOL
-			hSkipUntil( FB_TK_EOL, TRUE )
-		end if
-
-		function = TRUE
-    end select
-
-	'' line end
-	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
-
-end function
+end sub
 
 ''::::
 sub hSkipUntil _
@@ -359,19 +317,15 @@ function hMatchExpr _
 
 	expr = cExpression( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		if( dtype = FB_DATATYPE_INVALID ) then
 			return NULL
-		else
-			'' error recovery: fake an expr
-			if( dtype = FB_DATATYPE_INVALID ) then
-				return NULL
-			end if
-
-			expr = astNewCONSTz( dtype )
 		end if
+
+		expr = astNewCONSTz( dtype )
 	end if
 
 	function = expr
 
 end function
-

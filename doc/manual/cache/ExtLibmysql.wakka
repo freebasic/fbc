@@ -2,7 +2,7 @@
 High-Quality, widely used database engine.
 
 Website: http://www.mysql.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: mysql/mysql.bi
 Example Usage: yes, in examples/libraries/DB/
 

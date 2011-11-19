@@ -64,13 +64,10 @@ function cParentExpression _
   			return NULL
   		end if
 
-  		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-  			return NULL
-  		else
-  			'' error recovery: skip until next ')', fake an expr
-  			hSkipUntil( CHAR_RPRNT, TRUE )
-  			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-  		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until next ')', fake an expr
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
   	'' ')'
@@ -82,12 +79,9 @@ function cParentExpression _
   	else
   		'' not calling a SUB or parent cnt = 0?
   		if( (is_opt = FALSE) or (parser.prntcnt = 0) ) then
-  			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-  				return NULL
-  			else
-  				'' error recovery: skip until next ')'
-  				hSkipUntil( CHAR_RPRNT, TRUE )
-  			end if
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
   		end if
   	end if
 
@@ -256,9 +250,7 @@ private function hFindId _
     			'' check visibility
 				if( base_parent <> NULL ) then
 					if( symbCheckAccess( base_parent, sym ) = FALSE ) then
-						if( errReport( FB_ERRMSG_ILLEGALMEMBERACCESS ) = FALSE ) then
-							return astNewCONSTi( 0 )
-						end if
+						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
 				end if
 
@@ -326,14 +318,11 @@ private function hBaseMemberAccess _
 
 	'' not inside a method?
 	if( symbIsMethod( proc ) = FALSE ) then
-		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD ) = FALSE ) then
-			return NULL
-		else
-			'' error recovery: skip stmt, return
-			hSkipStmt( )
-			return astNewCONSTi( 0 )  
-		end if
-	End If
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return astNewCONSTi( 0 )  
+	end if
 
 	var parent = symbGetNamespace( proc )
 	
@@ -342,44 +331,36 @@ private function hBaseMemberAccess _
 	
 	do
 		if( base_ = NULL ) then
-			if( errReport( FB_ERRMSG_CLASSNOTDERIVED ) = FALSE ) then
-				return NULL
-			else
-				'' error recovery: skip stmt, return
-				hSkipStmt( )
-				return astNewCONSTi( 0 )
-			end if
-		End If
-	
+			errReport( FB_ERRMSG_CLASSNOTDERIVED )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return astNewCONSTi( 0 )
+		end if
+
 		'' skip BASE
-	    lexSkipToken( LEXCHECK_NOPERIOD )
-	    
-	    '' skip '.'
-	    lexSkipToken()
-	    
-	    '' (BASE '.')?
-	    if( lexGetToken() <> FB_TK_BASE ) then
-	    	exit do
-	    EndIf
-	    
-	    '' '.'
-	    if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
-				return NULL
-			else
-				'' error recovery: skip stmt, return
-				hSkipStmt( )
-				return astNewCONSTi( 0 )
-			end if
-	    End If
-	    
-	    base_ = symbGetSubtype( base_ )->udt.base
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' skip '.'
+		lexSkipToken()
+
+		'' (BASE '.')?
+		if( lexGetToken() <> FB_TK_BASE ) then
+			exit do
+		end if
+
+		'' '.'
+		if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return astNewCONSTi( 0 )
+		end if
+
+		base_ = symbGetSubtype( base_ )->udt.base
 	loop
 
-    dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
-    
+	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
 	return hFindId( symbGetSubtype( base_ ), @chain_ ) 
-	
 end function
 
 '':::::
@@ -413,11 +394,6 @@ check_id:
     			return expr
     		end if
         end if
-
-		'' error?
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			return NULL
-		end if
 
   		'' try to alloc an implicit variable..
     	if( env.clopt.lang <> FB_LANG_QB ) then

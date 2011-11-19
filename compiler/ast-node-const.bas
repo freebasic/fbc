@@ -60,10 +60,6 @@ function astNewCONSTi _
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->con.val.int = value
 
 	if( hTruncateInt( dtype, @n->con.val.int ) <> FALSE ) then
@@ -87,10 +83,6 @@ function astNewCONSTf _
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->con.val.float = value
 	n->defined = TRUE
 
@@ -108,10 +100,6 @@ function astNewCONSTl _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->con.val.long  = value
 	n->defined = TRUE
@@ -131,10 +119,6 @@ function astNewCONST _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

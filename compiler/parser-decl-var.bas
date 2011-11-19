@@ -13,59 +13,43 @@
 #define hVarDecl( attrib, dopreserve, token ) _
 	(hVarDeclEx( attrib, dopreserve, token, FALSE ) <> NULL)
 
-'':::::
-function hSymbolType _
+sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer _
-	) as integer
-
-    function = TRUE
+	)
 
 	'' parse the symbol type (INTEGER, STRING, etc...)
 	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: fake a type
-			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
-			lgt = FB_INTEGERSIZE
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake a type
+		dtype = FB_DATATYPE_INTEGER
+		subtype = NULL
+		lgt = FB_INTEGERSIZE
 	end if
 
 	'' ANY?
 	if( dtype = FB_DATATYPE_VOID ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			return FALSE
-		else
-			'' error recovery: fake a type
-			dtype = typeAddrOf( dtype )
-			subtype = NULL
-			lgt = FB_POINTERSIZE
-		end if
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a type
+		dtype = typeAddrOf( dtype )
+		subtype = NULL
+		lgt = FB_POINTERSIZE
 	end if
+end sub
 
-end function
-
-'':::::
-private function hCheckScope _
-	( _
-	) as integer
-
+function hCheckScope() as integer
 	if( parser.scope > FB_MAINSCOPE ) then
 		if( fbIsModLevel( ) = FALSE ) then
 			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
 		else
 			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 		end if
-
-		return FALSE
+		function = FALSE
+	else
+		function = TRUE
 	end if
-
-	function = TRUE
-
 end function
 
 '':::::
@@ -83,13 +67,10 @@ function cVariableDecl _
 	function = FALSE
 
 #macro hCheckPrivPubAttrib( attrib )
-    if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) <> 0 ) then
-    	if( errReport( FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED ) = FALSE ) then
-    		exit function
-    	else
-    		attrib and= not FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE
-    	end if
-    end if
+	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE)) <> 0 ) then
+		errReport( FB_ERRMSG_PRIVORPUBTTRIBNOTALLOWED )
+		attrib and= not FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_PRIVATE
+	end if
 #endmacro
 
 	dopreserve = FALSE
@@ -117,14 +98,8 @@ function cVariableDecl _
 	case FB_TK_COMMON
 		'' can't use COMMON inside a proc or inside a scope block
 		if( hCheckScope( ) = FALSE ) then
-			if( errGetCount( ) >= env.clopt.maxerrors ) then
-				exit function
-			else
-				'' error recovery: don't share it
-				attrib = FB_SYMBATTRIB_STATIC or _
-						 FB_SYMBATTRIB_DYNAMIC
-			end if
-
+			'' error recovery: don't share it
+			attrib = FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_DYNAMIC
 		else
 			attrib or= FB_SYMBATTRIB_COMMON or _
 					   FB_SYMBATTRIB_STATIC or _
@@ -146,13 +121,8 @@ function cVariableDecl _
 
 		'' can't use EXTERN inside a proc
 		if( hCheckScope( ) = FALSE ) then
-			if( errGetCount( ) >= env.clopt.maxerrors ) then
-				exit function
-			else
-				'' error recovery: don't make it extern
-				attrib = FB_SYMBATTRIB_STATIC
-			end if
-
+			'' error recovery: don't make it extern
+			attrib = FB_SYMBATTRIB_STATIC
 		else
 			attrib or= FB_SYMBATTRIB_EXTERN or _
 					   FB_SYMBATTRIB_SHARED or _
@@ -171,7 +141,8 @@ function cVariableDecl _
 
 		'' VAR?
 		if( lexGetToken( ) = FB_TK_VAR ) then
-			return cAutoVarDecl( attrib )
+			cAutoVarDecl( attrib )
+			return TRUE
 		end if
 
 	case else
@@ -192,22 +163,14 @@ function cVariableDecl _
 		if( lexGetToken( ) = FB_TK_SHARED ) then
 			'' can't use SHARED inside a proc
 			if( hCheckScope( ) = FALSE ) then
-				if( errGetCount( ) >= env.clopt.maxerrors ) then
-					exit function
-				else
-					'' error recovery: don't make it shared
-					attrib or= FB_SYMBATTRIB_STATIC
-				end if
-
+				'' error recovery: don't make it shared
+				attrib or= FB_SYMBATTRIB_STATIC
 			else
 				attrib or= FB_SYMBATTRIB_SHARED or _
 						   FB_SYMBATTRIB_STATIC
 			end if
-
 			lexSkipToken( )
-
 		end if
-
 	else
 		'' IMPORT?
 		if( lexGetToken( ) = FB_TK_IMPORT ) then
@@ -218,7 +181,6 @@ function cVariableDecl _
 			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 				attrib or= FB_SYMBATTRIB_IMPORT
 			end select
-
 		end if
 	end if
 
@@ -313,9 +275,7 @@ private function hDeclExternVar _
     '' check type
 	if( (dtype <> symbGetFullType( sym )) or _
 		(subtype <> symbGetSubType( sym )) ) then
-    	if( errReportEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
-    		exit function
-    	end if
+		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
 	end if
 
 	dim as integer setattrib = TRUE
@@ -323,29 +283,21 @@ private function hDeclExternVar _
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-    		if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
-
-    '' static..
-    else
-		if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
-    		if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
-
-    	'' no extern static as local
-    	if( hCheckScope( ) = FALSE ) then
-			if( errGetCount( ) >= env.clopt.maxerrors ) then
-				exit function
-			else
-				'' error recovery: don't make it shared
-				setattrib = FALSE
-			end if
+			errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
 		end if
-    end if
+
+	'' static..
+	else
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
+			errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
+		end if
+
+		'' no extern static as local
+		if( hCheckScope( ) = FALSE ) then
+			'' error recovery: don't make it shared
+			setattrib = FALSE
+		end if
+	end if
 
     '' dup extern?
     if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
@@ -360,14 +312,11 @@ private function hDeclExternVar _
 	'' check dimensions
 	if( symbGetArrayDimensions( sym ) <> 0 ) then
 		if( dimensions <> symbGetArrayDimensions( sym ) ) then
-    		if( errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id ) = FALSE ) then
-    			exit function
-    		end if
-
-    	else
+			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+		else
 			'' set dims
 			symbSetArrayDimTb( sym, dimensions, dTB() )
-    	end if
+		end if
 	end if
 
     function = sym
@@ -423,10 +372,9 @@ private function hDeclStaticVar _
 	end if
 
 	if( sym = NULL ) then
-    	errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-    	'' no error recovery: already parsed
-    	return NULL
-    end if
+		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
+		'' no error recovery: already parsed
+	end if
 
 	function = sym
 
@@ -539,9 +487,7 @@ private function hDeclDynArray _
 	'' don't allow const dynamic arrays...
 	'' they can't be assigned even if resized...
 	if( typeIsConst( symbGetFullType( sym ) ) ) then
-		if( errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST ) = FALSE ) then
-			exit function
-		end if
+		errReport( FB_ERRMSG_DYNAMICARRAYSCANTBECONST )
 	end if
 
 	attrib = symbGetAttrib( sym )
@@ -627,9 +573,7 @@ private function hGetId _
 			'' if inside a namespace, symbols can't contain periods (.)'s
 			if( symbIsGlobalNamespc( ) = FALSE ) then
 				if( lexGetPeriodPos( ) > 0 ) then
-					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-						return NULL
-					end if
+					errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 				end if
 			end if
 		end if
@@ -641,14 +585,10 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			'' only if inside a ns and if not local
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
-				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-					return NULL
-				else
-					'' error recovery: fake an id
-					*id = *hMakeTmpStr( )
-					suffix = FB_DATATYPE_INVALID
-				end if
-
+				errReport( FB_ERRMSG_DUPDEFINITION )
+				'' error recovery: fake an id
+				*id = *hMakeTmpStr( )
+				suffix = FB_DATATYPE_INVALID
 			else
 				*id = *lexGetText( )
 				suffix = lexGetType( )
@@ -662,13 +602,10 @@ private function hGetId _
 
 	case FB_TKCLASS_KEYWORD, FB_TKCLASS_OPERATOR
 		if( env.clopt.lang <> FB_LANG_QB ) then
-			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-				return NULL
-			else
-				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
-				suffix = FB_DATATYPE_INVALID
-			end if
+			errReport( FB_ERRMSG_DUPDEFINITION )
+			'' error recovery: fake an id
+			*id = *hMakeTmpStr( )
+			suffix = FB_DATATYPE_INVALID
 
 		'' QB mode..
 		else
@@ -677,24 +614,18 @@ private function hGetId _
 
 			'' must have a suffix if it is a keyword
 			if( suffix = FB_DATATYPE_INVALID ) then
-				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-					return NULL
-				else
-					'' error recovery: fake an id
-					*id = *hMakeTmpStr( )
-					suffix = FB_DATATYPE_INVALID
-				end if
+				errReport( FB_ERRMSG_DUPDEFINITION )
+				'' error recovery: fake an id
+				*id = *hMakeTmpStr( )
+				suffix = FB_DATATYPE_INVALID
 			end if
 		end if
 
 	case else
-		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-			return NULL
-		else
-			'' error recovery: fake an id
-			*id = *hMakeTmpStr( )
-			suffix = FB_DATATYPE_INVALID
-		end if
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake an id
+		*id = *hMakeTmpStr( )
+		suffix = FB_DATATYPE_INVALID
 	end select
 
 	hCheckSuffix( suffix )
@@ -751,9 +682,7 @@ private function hLookupVar _
     		if( parent <> NULL ) then
     			'' not extern?
     			if( symbIsExtern( sym ) = FALSE ) then
-    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    					exit function
-    				end if
+					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
     			end if
 
     		'' allow dups..
@@ -838,12 +767,9 @@ private function hVarInitDefault _
 	if( typeIsConst( symbGetFullType( sym ) ) ) then
 		'' not extern?
 		if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
-			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				return astNewCONSTi( 0 )
-			end if
+			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
+			'' error recovery: fake an expr
+			return astNewCONSTi( 0 )
 		end if
 
 	end if
@@ -921,20 +847,16 @@ private function hVarInit _
 	'' already declared, extern or common?
 	if( isdecl or _
 		((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
-
-		if( errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON ) ) then
-			'' error recovery: skip
-			hSkipUntil( FB_TK_EOL )
-		end if
-
+		errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON )
+		'' error recovery: skip
+		hSkipUntil( FB_TK_EOL )
 		exit function
 	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
-		if( errReportNotAllowed( FB_LANG_OPT_INITIALIZER )  ) then
-			'' error recovery: skip
-			hSkipUntil( FB_TK_EOL )
-		end if
+		errReportNotAllowed( FB_LANG_OPT_INITIALIZER )
+		'' error recovery: skip
+		hSkipUntil( FB_TK_EOL )
 		exit function
 	end if
 
@@ -959,7 +881,6 @@ private function hVarInit _
 		'' don't allow var-len strings
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
-
 		else
 			if( has_defctor or has_dtor ) then
 				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
@@ -970,33 +891,23 @@ private function hVarInit _
 
 		'' ...or const-qualified vars
 		if( typeIsConst( symbGetFullType( sym ) ) ) then
-			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				return astNewCONSTi( 0 )
-			end if
+			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
+			'' error recovery: fake an expr
+			return astNewCONSTi( 0 )
 		end if
 
 		lexSkipToken( )
-
 		exit function
 	end if
 
 	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
 	if( initree = NULL ) then
-
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
 		'' fake an expression
 		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' static or shared?
-	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
 
     	dim as integer has_ctor = FALSE
 
@@ -1248,7 +1159,7 @@ function hVarDeclEx _
         byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id, idalias
+    static as zstring * FB_MAXNAMELEN+1 id
     static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype = any
@@ -1278,9 +1189,7 @@ function hVarDeclEx _
     	lexSkipToken( )
 
         '' parse the symbol type (INTEGER, STRING, etc...)
-        if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
-        	exit function
-        end if
+        hSymbolType( dtype, subtype, lgt )
 
     	addsuffix = FALSE
     	is_multdecl = TRUE
@@ -1311,13 +1220,10 @@ function hVarDeclEx _
     		''
     		'' DIM AS INTEGER x, y$
     		if( suffix <> FB_DATATYPE_INVALID ) then
-    			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: the symbol gets the
-    				'' type specified 'AS'
-    				suffix = FB_DATATYPE_INVALID
-    			end if
+				errReportEx( FB_ERRMSG_SYNTAXERROR, @id )
+				'' error recovery: the symbol gets the
+				'' type specified 'AS'
+				suffix = FB_DATATYPE_INVALID
     		end if
     	end if
 
@@ -1351,7 +1257,7 @@ function hVarDeclEx _
 							if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then
 								has_ellipsis = TRUE
 							end if
-						next i
+						next
 
     					is_dynamic = FALSE
 
@@ -1369,28 +1275,23 @@ function hVarDeclEx _
 							if( exprTB(i,1) = NULL ) then
 								has_ellipsis = TRUE
 							end if
-						next i
+						next
 
 					end if
 
     			'' COMMON.. no subscripts
     			else
     				if( lexGetToken( ) <> CHAR_RPRNT ) then
-    					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    						exit function
-    					else
-    						'' error recovery: skip until next ')'
-    						hSkipUntil( CHAR_RPRNT )
-    					end if
+						errReport( FB_ERRMSG_SYNTAXERROR )
+						'' error recovery: skip until next ')'
+						hSkipUntil( CHAR_RPRNT )
     				end if
     			end if
     		end if
 
 			'' ')'
     		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    				exit function
-    			end if
+				errReport( FB_ERRMSG_EXPECTEDRPRNT )
     		else
     			lexSkipToken( )
     		end if
@@ -1399,29 +1300,16 @@ function hVarDeclEx _
     	else
     		'' REDIM and scalar passed?
     		if( token = FB_TK_REDIM ) then
-    			if( errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id ) = FALSE ) then
-    				exit function
-    			end if
+				errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id )
     		end if
 
     		is_dynamic = FALSE
     	end if
 
-		'' ALIAS LIT_STR?
 		palias = NULL
 		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0 ) then
-			if( lexGetToken( ) = FB_TK_ALIAS ) then
-				lexSkipToken( )
-
-				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					end if
-				else
-					lexEatToken( idalias )
-					palias = @idalias
-				end if
-			end if
+			'' [ALIAS "id"]
+			palias = cAliasAttribute()
 		end if
 
     	if( is_multdecl = FALSE ) then
@@ -1429,36 +1317,27 @@ function hVarDeclEx _
     		if( lexGetToken( ) = FB_TK_AS ) then
 
     			if( dtype <> FB_DATATYPE_INVALID ) then
-    				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-    					exit function
-    				else
-    					dtype = FB_DATATYPE_INVALID
-    				end if
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					dtype = FB_DATATYPE_INVALID
     			end if
 
     			lexSkipToken( )
 
 		        '' parse the symbol type (INTEGER, STRING, etc...)
-		        if( hSymbolType( dtype, subtype, lgt ) = FALSE ) then
-		        	exit function
-		        end if
+		        hSymbolType( dtype, subtype, lgt )
 
     			addsuffix = FALSE
 
-    		'' no explicit type..
-    		else
-        		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
-        			'' it's not an error if REDIM'g an already declared array
-        			if( (chain_ = NULL) or (token <> FB_TK_REDIM) ) then
-        				if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE, _
-        							 		 	 FB_ERRMSG_DEFTYPEONLYVALIDINLANG ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake a type
-							dtype = FB_DATATYPE_INTEGER
-						end if
+			'' no explicit type..
+			else
+				if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+					'' it's not an error if REDIM'g an already declared array
+					if( (chain_ = NULL) or (token <> FB_TK_REDIM) ) then
+						errReportNotAllowed( FB_LANG_OPT_DEFTYPE, FB_ERRMSG_DEFTYPEONLYVALIDINLANG )
+						'' error recovery: fake a type
+						dtype = FB_DATATYPE_INTEGER
 					end if
-    			end if
+				end if
 
 				if( dtype = FB_DATATYPE_INVALID ) then
 					is_typeless = TRUE
@@ -1481,9 +1360,7 @@ function hVarDeclEx _
     		'' no symbol was found, check if an explicit namespace was given
     		if( parent <> NULL ) then
     			if( parent <> symbGetCurrentNamespc( ) ) then
-    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE ) = FALSE ) then
-    					exit function
-    				end if
+					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
     			end if
     		end if
     	end if
@@ -1526,14 +1403,12 @@ function hVarDeclEx _
 
 		'' don't allow COMMON object instances
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-   			select case as const typeGet( dtype )
-   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-        		if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
-    				if( errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE ) = FALSE ) then
-    					exit function
-    				end if
-        		end if
-        	end select
+			select case as const typeGet( dtype )
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
+					errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
+				end if
+			end select
 		end if
 
     	''
@@ -1550,12 +1425,7 @@ function hVarDeclEx _
 		end if
 
     	if( sym = NULL ) then
-    		if( errGetCount( ) >= env.clopt.maxerrors ) then
-    			exit function
-    		end if
-
     		is_decl = FALSE
-
     	else
     		is_decl = symbGetIsDeclared( sym )
     	end if
@@ -1601,7 +1471,7 @@ function hVarDeclEx _
 			'' default initialization
 			case else
 
-				if hHasEllipsis( sym ) = TRUE then
+				if( hHasEllipsis( sym ) ) then
 					errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 					exit function
 				end if
@@ -1609,12 +1479,6 @@ function hVarDeclEx _
 				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
 
 			end select
-
-			if( initree = NULL ) then
-	    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-	    			exit function
-	    		end if
-	    	end if
 
 			'' unscoped? then need a default initree, plus the assignment
 			if( doassign ) then
@@ -1861,24 +1725,18 @@ function cStaticArrayDecl _
 			'' Expression
 			expr = cExpression( )
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					if( lexGetToken( ) <> FB_TK_TO ) then
-						hSkipUntil( CHAR_COMMA )
-					end if
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				'' error recovery: fake an expr
+				if( lexGetToken( ) <> FB_TK_TO ) then
+					hSkipUntil( CHAR_COMMA )
 				end if
+				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 			else
 				if( astIsCONST( expr ) = FALSE ) then
-					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDCONST )
+					'' error recovery: fake an expr
+					astDelTree( expr )
+					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end if
 			end if
 
@@ -1902,22 +1760,16 @@ function cStaticArrayDecl _
 				'' Expression
 				expr = cExpression( )
 				if( expr = NULL ) then
-					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip to next ',' and fake an expr
-						hSkipUntil( CHAR_COMMA )
-						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-					end if
+					errReport( FB_ERRMSG_EXPECTEDCONST )
+					'' error recovery: skip to next ',' and fake an expr
+					hSkipUntil( CHAR_COMMA )
+					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
 				else
 					if( astIsCONST( expr ) = FALSE ) then
-						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake an expr
-							astDelTree( expr )
-							expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-						end if
+						errReport( FB_ERRMSG_EXPECTEDCONST )
+						'' error recovery: fake an expr
+						astDelTree( expr )
+						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
 					end if
 				end if
 
@@ -1935,9 +1787,7 @@ function cStaticArrayDecl _
 			'' Besides the upper < lower case, also complain about FB_ARRAYDIM_UNKNOWN being
 			'' specified, otherwise we'd think ellipsis was given...
 			if( (dTB(i).upper < dTB(i).lower) or (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
-				if( errReport( FB_ERRMSG_INVALIDSUBSCRIPT ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_INVALIDSUBSCRIPT )
 			end if
 		end if
 
@@ -1952,22 +1802,17 @@ function cStaticArrayDecl _
     	lexSkipToken( )
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			if( errReport( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip to next ')'
-				hSkipUntil( CHAR_RPRNT )
-				exit do
-			end if
+			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
+			'' error recovery: skip to next ')'
+			hSkipUntil( CHAR_RPRNT )
+			exit do
 		end if
 	loop
 
 	if( checkprnts ) then
 		'' ')'
     	if( lexGetToken( ) <> CHAR_RPRNT ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-    			exit function
-    		end if
+    		errReport( FB_ERRMSG_EXPECTEDRPRNT )
     	else
     		lexSkipToken( )
     	end if
@@ -2007,27 +1852,20 @@ function cArrayDecl _
 			expr = cExpression( )
 
 			if( expr = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					if( lexGetToken( ) <> FB_TK_TO ) then
-						hSkipUntil( CHAR_COMMA )
-					end if
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+				'' error recovery: fake an expr
+				if( lexGetToken( ) <> FB_TK_TO ) then
+					hSkipUntil( CHAR_COMMA )
 				end if
-
+				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 			else
 				'' check if non-numeric
 				select case as const astGetDataType( expr )
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					'' error recovery: fake an expr
+					astDelTree( expr )
+					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end select
 
 				'' make sure expr is integral
@@ -2036,15 +1874,11 @@ function cArrayDecl _
 				if( i_expr <> NULL ) then
 					expr = i_expr
 				else
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					'' error recovery: fake an expr
+					astDelTree( expr )
+					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 				end if
-
 			end if
 
 			exprTB(i,0) = expr
@@ -2065,26 +1899,18 @@ function cArrayDecl _
 			else
 				'' Expression
 				expr = cExpression( )
-
 				if( expr = NULL ) then
-					if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip to next ',' and fake an expr
-						hSkipUntil( CHAR_COMMA )
-						expr = astCloneTree( exprTB(i,0) )
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+					'' error recovery: skip to next ',' and fake an expr
+					hSkipUntil( CHAR_COMMA )
+					expr = astCloneTree( exprTB(i,0) )
 				else
 					'' check if non-numeric
 					select case as const astGetDataType( expr )
 					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake an expr
-							expr = astCloneTree( exprTB(i,0) )
-						end if
+						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						'' error recovery: fake an expr
+						expr = astCloneTree( exprTB(i,0) )
 					end select
 
 					'' make sure expr is integral
@@ -2093,20 +1919,15 @@ function cArrayDecl _
 					if( i_expr <> NULL ) then
 						expr = i_expr
 					else
-						if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: fake an expr
-							astDelTree( expr )
-							expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-						end if
+						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						'' error recovery: fake an expr
+						astDelTree( expr )
+						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 					end if
-
 				end if
 
 				exprTB(i,1) = expr
 			end if
-
 		else
 			exprTB(i,1) = exprTB(i,0)
 			exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
@@ -2123,13 +1944,10 @@ function cArrayDecl _
 		lexSkipToken( )
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			if( errReport( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip to next ')'
-				hSkipUntil( CHAR_RPRNT )
-				exit do
-			end if
+			errReport( FB_ERRMSG_TOOMANYDIMENSIONS )
+			'' error recovery: skip to next ')'
+			hSkipUntil( CHAR_RPRNT )
+			exit do
 		end if
 	loop
 
@@ -2141,27 +1959,17 @@ end function
 '':::::
 ''AutoVarDecl    =   VAR SHARED? SymbolDef '=' VarInitializer
 ''                   (',' SymbolDef)* .
-function cAutoVarDecl _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
-	function = FALSE
-
+sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1) '' needed for hDeclStaticVar()
 	static as zstring * FB_MAXNAMELEN+1 id
 
 	'' allowed?
 	if( fbLangOptIsSet( FB_LANG_OPT_AUTOVAR ) = FALSE ) then
-        if( errReportNotAllowed( FB_LANG_OPT_AUTOVAR, _
-        						 FB_ERRMSG_AUTOVARONLYVALIDINLANG ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
-    	end if
-    end if
+		errReportNotAllowed( FB_LANG_OPT_AUTOVAR, FB_ERRMSG_AUTOVARONLYVALIDINLANG )
+		'' error recovery: skip stmt
+		hSkipStmt( )
+		return
+	end if
 
 	'' VAR
 	lexSkipToken( )
@@ -2170,20 +1978,12 @@ function cAutoVarDecl _
 	if( lexGetToken( ) = FB_TK_SHARED ) then
 		'' can't use SHARED inside a proc
 		if( hCheckScope( ) = FALSE ) then
-			if( errGetCount( ) >= env.clopt.maxerrors ) then
-				exit function
-			else
-				'' error recovery: don't make it shared
-				attrib or= FB_SYMBATTRIB_STATIC
-			end if
-
+			'' error recovery: don't make it shared
+			attrib or= FB_SYMBATTRIB_STATIC
 		else
-			attrib or= FB_SYMBATTRIB_SHARED or _
-					   FB_SYMBATTRIB_STATIC
+			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
-
 		lexSkipToken( )
-
 	end if
 
 	'' this proc static?
@@ -2209,20 +2009,15 @@ function cAutoVarDecl _
 		dim as integer suffix = any
 		dim as FBSYMCHAIN ptr chain_ = hGetId( parent, @id, suffix, 0 )
 
-    	if( suffix <> FB_DATATYPE_INVALID ) then
-    		if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
+		if( suffix <> FB_DATATYPE_INVALID ) then
+			errReportEx( FB_ERRMSG_SYNTAXERROR, @id )
+		end if
 
 		'' array? rejected.
 		if( lexGetToken( ) = CHAR_LPRNT ) then
-			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
 		''
@@ -2239,9 +2034,7 @@ function cAutoVarDecl _
 			'' no symbol was found, check if an explicit namespace was given
 			if( parent <> NULL ) then
 				if( parent <> symbGetCurrentNamespc( ) ) then
-					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE ) = FALSE ) then
-						exit function
-					end if
+					errReport( FB_ERRMSG_DECLOUTSIDENAMESPC, TRUE )
 				end if
 			end if
 		end if
@@ -2252,20 +2045,15 @@ function cAutoVarDecl _
 			lexSkipToken( )
 
 		case else
-			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDEQ )
 		end select
 
     	'' parse expression
 		dim as ASTNODE ptr expr = cExpression( )
 		if( expr = NULL ) then
-			if( errReport( FB_ERRMSG_AUTONEEDSINITIALIZER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake an expr
-				expr = astNewCONSTi( 0 )
-			end if
+			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0 )
 		end if
 
 		dim as integer dtype = astGetFullType( expr )
@@ -2277,21 +2065,18 @@ function cAutoVarDecl _
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
 		case FB_DATATYPE_WCHAR
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
-    	    	exit function
-    	    else
-    	    	'' error recovery: create a fake expression
-    	    	astDelTree( expr )
-    	    	expr = astNewCONSTi( 0 )
-    	    	dtype = FB_DATATYPE_INTEGER
-    	    	subtype = NULL
-    	    end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			'' error recovery: create a fake expression
+			astDelTree( expr )
+			expr = astNewCONSTi( 0 )
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
 
 		'' zstring... convert to string
-    	case FB_DATATYPE_CHAR
-    		dtype = FB_DATATYPE_STRING
+		case FB_DATATYPE_CHAR
+			dtype = FB_DATATYPE_STRING
 
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has a default ctor?
 			has_defctor = symbGetCompDefCtor( subtype ) <> NULL
 			'' any ctor?
@@ -2299,13 +2084,13 @@ function cAutoVarDecl _
 			'' dtor?
 			has_dtor = symbGetCompDtor( subtype ) <> NULL
 
-    	'' if it's a function pointer and not a fun ptr prototype, create one
-    	case typeAddrOf( FB_DATATYPE_FUNCTION )
-            if( symbGetIsFuncPtr( subtype ) = FALSE ) then
-            	subtype = symbAddProcPtrFromFunction( subtype )
-            end if
+		'' if it's a function pointer and not a fun ptr prototype, create one
+		case typeAddrOf( FB_DATATYPE_FUNCTION )
+			if( symbGetIsFuncPtr( subtype ) = FALSE ) then
+				subtype = symbAddProcPtrFromFunction( subtype )
+			end if
 
-    	end select
+		end select
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hDeclStaticVar( sym, id, NULL, _
@@ -2396,9 +2181,4 @@ function cAutoVarDecl _
 
 		lexSkipToken( )
 	loop
-
-	function = TRUE
-
-end function
-
-
+end sub

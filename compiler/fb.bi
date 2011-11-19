@@ -63,7 +63,6 @@ enum FB_COMPOPT
 	FB_COMPOPT_RESUMEERROR
 	FB_COMPOPT_WARNINGLEVEL
 	FB_COMPOPT_EXPORT
-	FB_COMPOPT_NODEFLIBS
 	FB_COMPOPT_SHOWERROR
 	FB_COMPOPT_MULTITHREADED
 	FB_COMPOPT_PROFILE
@@ -213,7 +212,6 @@ type FBCMMLINEOPT
 	resumeerr 		as integer					'' add support for RESUME (def= false)
 	warninglevel	as integer					'' (def = 0)
 	export			as integer					'' export all symbols declared as EXPORT (def= true)
-	nodeflibs		as integer					'' don't include default libs (def= false)
 	showerror		as integer					'' show line giving error (def= true)
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 	profile			as integer					'' build profiling code (def= false)
@@ -322,26 +320,18 @@ end enum
 #include once "error.bi"
 #include once "fb-obj.bi"
 
-declare function fbInit _
-	( _
-		byval ismain as integer, _
-		byval restarts as integer _
-	) as integer
+declare sub fbInit(byval ismain as integer, byval restarts as integer)
+declare sub fbEnd()
 
-declare sub fbEnd _
-	( _
-	)
-
-declare function fbCompile _
+declare sub fbCompile _
 	( _
 		byval infname as zstring ptr, _
 		byval outfname as zstring ptr, _
 		byval ismain as integer _
-	) as integer
+	)
 
-declare function fbCheckRestartCompile _
-	( _
-	) as integer
+declare function fbShouldRestart() as integer
+declare function fbShouldContinue() as integer
 
 declare sub fbGlobalInit()
 declare sub fbAddIncludePath(byref path as string)
@@ -359,24 +349,11 @@ declare function fbGetOption _
 		byval opt as integer _
 	) as integer
 
-declare function fbChangeOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	) as integer
-
+declare sub fbChangeOption(byval opt as integer, byval value as integer)
 declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
-
-declare function fbPragmaOnce _
-	( _
-	) as integer
-
-declare function fbIncludeFile _
-	( _
-		byval filename as zstring ptr, _
-		byval isonce as integer _
-	) as integer
+declare sub fbPragmaOnce()
+declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 
 declare function fbGetEntryPoint _
 	( _
@@ -436,9 +413,5 @@ declare function fbGetLangId _
 
 #define fbPdCheckIsSet( op ) ((env.clopt.pdcheckopt and (op)) <> 0)
 
-
-''
-'' new implementation
-''
 
 #endif '' __FB_BI__

@@ -10,6 +10,7 @@ Used in place of procedure parameter to pass a variable number of arguments, or 
 ##
 {{fbdoc item="desc"}}
 	The ellipsis (three dots, ##**...**##) is used in procedure declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##. In the procedure body, ##[[KeyPgVaFirst va_first]]##, ##[[KeyPgVaArg va_arg]]## and ##[[KeyPgVaNext va_next]]## are used to handle the variable arguments.
+	Only numeric types and pointers are supported as parameters.  ##[[KeyPgString String]]##s can be passed, in which case a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## to the string data is taken.
 	
 	Using an ellipsis in place of the upper bound in an array declaration causes the upper bound to be set according to the data that appears in the ##//expression_list//##.  When the ellipsis is used in this manner, an initializer must appear, and cannot be ##[[KeyPgAny Any]]##.
 	

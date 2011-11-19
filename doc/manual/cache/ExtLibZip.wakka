@@ -2,7 +2,117 @@
 Easy-to-use library for creating, reading out or modifying .zip archives.
 
 Website: http://www.nih.at/libzip/
-Platforms supported: Win32, Linux, DOS
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: zip.bi
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/zip.bas"}}%%(freebasic)
+'' .zip unpacking using libzip
+#include once "zip.bi"
+
+sub create_parent_dirs(byval file as zstring ptr)
+	'' Given a path like this:
+	''	foo/bar/baz/file.ext
+	'' Do these mkdir()'s:
+	''	foo
+	''	foo/bar
+	''	foo/bar/baz
+	dim as ubyte ptr p = file
+	do
+		select case (*p)
+		case asc("/")
+			*p = 0
+			mkdir(*file)
+			*p = asc("/")
+		case 0
+			exit do
+		end select
+		p += 1
+	loop
+end sub
+
+'' Asks libzip for information on file number 'i' in the .zip file,
+'' and then extracts it, while creating directories as needed.
+private sub unpack_zip_file(byval zip as zip ptr, byval i as integer)
+	#define BUFFER_SIZE (1024 * 512)
+	static as ubyte chunk(0 to (BUFFER_SIZE - 1))
+	#define buffer (@chunk(0))
+
+	'' Retrieve the filename.
+	dim as string filename = *zip_get_name(zip, i, 0)
+	print "file: " & filename & ", ";
+
+	'' Retrieve the file size via a zip_stat().
+	dim as zip_stat stat
+	if (zip_stat_index(zip, i, 0, @stat)) then
+		print "zip_stat() failed"
+		return
+	end if
+
+	if ((stat.valid and ZIP_STAT_SIZE) = 0) then
+		print "could not retrieve file size from zip_stat()"
+		return
+	end if
+
+	print stat.size & " bytes"
+
+	'' Create directories if needed
+	create_parent_dirs(filename)
+
+	'' Write out the file
+	dim as integer fo = freefile()
+	if (open(filename, for binary, access write, as #fo)) then
+		print "could not open output file"
+		return
+	end if
+
+	'' Input for the file comes from libzip
+	dim as zip_file ptr fi = zip_fopen_index(zip, i, 0)
+	do
+		'' Write out the file content as returned by zip_fread(), which
+		'' also does the decoding and everything.
+		'' zip_fread() fills our buffer
+		dim as integer bytes = _
+			zip_fread(fi, buffer, BUFFER_SIZE)
+		if (bytes < 0) then
+			print "zip_fread() failed"
+			exit do
+		end if
+
+		'' EOF?
+		if (bytes = 0) then
+			exit do
+		end if
+
+		'' Write <bytes> amount of bytes of the file
+		if (put(#fo, , *buffer, bytes)) then
+			print "file output failed"
+			exit do
+		end if
+	loop
+
+	'' Done
+	zip_fclose(fi)
+	close #fo
+end sub
+
+sub unpack_zip(byref archive as string)
+	dim as zip ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
+	if (zip = NULL) then
+		print "could not open input file " & archive
+		return
+	end if
+
+	'' For each file in the .zip... (really nice API, thanks libzip)
+	for i as integer = 0 to (zip_get_num_entries(zip, 0) - 1)
+		unpack_zip_file(zip, i)
+	next
+
+	zip_close(zip)
+end sub
+
+
+	unpack_zip("test.zip")
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

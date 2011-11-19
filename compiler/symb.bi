@@ -1125,7 +1125,6 @@ declare function symbAddProcParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
@@ -1212,11 +1211,11 @@ declare function symbAddParam _
 		byval param as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symAddProcInstancePtr _
+declare sub symbAddProcInstancePtr _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+	)
 
 declare function symbCalcProcParamLen _
 	( _

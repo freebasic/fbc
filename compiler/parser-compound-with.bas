@@ -19,23 +19,16 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     
     '' Variable
 	expr = cVarOrDeref( , , TRUE )
-    if( expr = NULL ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-    		return NULL
-    	else
-    		'' error recovery: fake a var
-    		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), _
-    						  0, _
-    						  FB_DATATYPE_INTEGER )
-    	end if
-
-    else
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' error recovery: fake a var
+		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), _
+		                  0, FB_DATATYPE_INTEGER )
+	else
 		'' not an UDT?
 		dtype = astGetFullType( expr )
 		if( typeGet( dtype ) <> FB_DATATYPE_STRUCT ) then
-			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-				return NULL
-			end if
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		end if
     end if
 
@@ -49,7 +42,6 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), _
     			  		  astNewADDROF( expr ) ) )
 
-
 	function = sym
 
 end function
@@ -57,30 +49,22 @@ end function
 '':::::
 ''WithStmtBegin   =   WITH Variable .
 ''
-function cWithStmtBegin as integer
+sub cWithStmtBegin()
     dim as FBSYMBOL ptr sym = any
     dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	'' WITH
 	lexSkipToken( )
 
 	'' Variable
 	sym = hAllocWithVar( )
-	if( sym = NULL ) then
-		exit function
-	end if
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_WITH )
 
 	stk->with.last = parser.stmt.with.sym
 	parser.stmt.with.sym = sym
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''WithStmtEnd	  =   END WITH .

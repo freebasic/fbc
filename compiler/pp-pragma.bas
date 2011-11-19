@@ -46,77 +46,42 @@ end type
 		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
 	}
 
-
-''::::
-sub ppPragmaInit( )
-	dim as integer i
-
+sub ppPragmaInit()
 	'' reset stacks
-	for i = 0 to FB_COMPOPTIONS-1
+	for i as integer = 0 to FB_COMPOPTIONS-1
 		pragmaStk(i).tos = 0
 	next
-
 end sub
 
-''::::
-sub ppPragmaEnd( )
-
+sub ppPragmaEnd()
 end sub
 
-'':::::
-private function pragmaPush _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	) as integer
-
-	function = FALSE
-
+private sub pragmaPush(byval opt as integer, byval value as integer)
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
-			 if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
-				exit function
-			 else
-				'' error recovery: skip
-				return TRUE
-			 end if
+			errReport( FB_ERRMSG_RECLEVELTOODEEP )
+			'' error recovery: skip
+			exit sub
 		end if
 
 		.stk(.tos) = value
 		.tos += 1
 	end with
+end sub
 
-	function = TRUE
-
-end function
-
-'':::::
-private function pragmaPop _
-	( _
-		byval opt as integer, _
-		byref value as integer _
-	) as integer
-
-	function = FALSE
-
+private sub pragmaPop(byval opt as integer, byref value as integer)
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
-			 if( errReport( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
-				exit function
-			 else
-				'' error recovery: skip
-				value = FALSE
-				return TRUE
-			 end if
+			errReport( FB_ERRMSG_STACKUNDERFLOW )
+			'' error recovery: skip
+			value = FALSE
+			exit sub
 		end if
 
 		.tos -= 1
 		value = .stk(.tos)
 	end with
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 '' Pragma			=	PRAGMA
@@ -124,11 +89,9 @@ end function
 ''							| POP '(' symbol ')'
 ''							| symbol ('=' expression{int})?
 ''
-function ppPragma( ) as integer
+sub ppPragma()
 	dim as string tk
 	dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
-
-	function = FALSE
 
 	tk = lcase( *lexGetText( ) )
 	if( tk = "push" ) then
@@ -142,9 +105,7 @@ function ppPragma( ) as integer
 
 		'' '('
 		if( lexGetToken() <> CHAR_LPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
-				exit function
-			end if
+			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		else
 			lexSkipToken( )
 		end if
@@ -161,51 +122,39 @@ function ppPragma( ) as integer
 	next
 
 	if( p = -1 ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip line
+		if( ispop or ispush ) then
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		else
+			hSkipUntil( FB_TK_EOL )
+		end if
+		return
+	end if
+
+	if( ispush or ispop ) then
+		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_PUSHPOP) = 0 ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: skip line
 			if( ispop or ispush ) then
 				hSkipUntil( CHAR_RPRNT, TRUE )
 			else
 				hSkipUntil( FB_TK_EOL )
 			end if
-			return TRUE
-		end if
-	end if
-
-	if( ispush or ispop ) then
-		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_PUSHPOP) = 0 ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip line
-				if( ispop or ispush ) then
-					hSkipUntil( CHAR_RPRNT, TRUE )
-				else
-					hSkipUntil( FB_TK_EOL )
-				end if
-				return TRUE
-			end if
+			return
 		end if
 	end if
 
 	lexSkipToken( )
 
 	if( ispop ) then
-		if( pragmaPop( pragmaOpt(p).opt, value ) = FALSE ) then
-			exit function
-		end if
-
+		pragmaPop( pragmaOpt(p).opt, value )
 	else
 		'' assume value is FALSE/TRUE unless the #pragma explicitly uses other values
 		value = FALSE
 
 		if( ispush ) then
-			if( pragmaPush( pragmaOpt(p).opt, _
-							fbGetOption( pragmaOpt(p).opt ) ) = FALSE ) then
-				exit function
-			end if
+			pragmaPush( pragmaOpt(p).opt, fbGetOption( pragmaOpt(p).opt ) )
 
 			'' ','?
 			if( lexGetToken() = CHAR_COMMA ) then
@@ -213,34 +162,26 @@ function ppPragma( ) as integer
 			else
 				value = TRUE
 			end if
-
-
 		else
 			'' '='?
 			if( lexGetToken() = FB_TK_EQ ) then
 
 				if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_CAN_ASSIGN) = 0 ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip line
-						hSkipUntil( FB_TK_EOL )
-						return TRUE
-					end if
+					errReport( FB_ERRMSG_SYNTAXERROR )
+					'' error recovery: skip line
+					hSkipUntil( FB_TK_EOL )
+					return
 				end if
 
 				lexSkipToken( )
 			else
 				value = TRUE
 			end if
-
 		end if
 
 		if( value = FALSE ) then
 			'' expr
-			if( cConstExprValue( value ) = FALSE ) then
-				exit function
-			end if
+			cConstExprValue( value )
 		end if
 	end if
 
@@ -252,9 +193,7 @@ function ppPragma( ) as integer
 		end select
 	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then
-			if( fbChangeOption( pragmaOpt(p).opt, value ) = FALSE ) then
-				exit function
-			end if
+			fbChangeOption( pragmaOpt(p).opt, value )
 		end if
 	end if
 
@@ -262,20 +201,11 @@ function ppPragma( ) as integer
 	if( ispop or ispush ) then
 		'' ')'
 		if( lexGetToken() <> CHAR_RPRNT ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, TRUE )
-			end if
-
+			errReport( FB_ERRMSG_EXPECTEDRPRNT )
+			'' error recovery: skip until next ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		else
 			lexSkipToken( )
 		end if
 	end if
-
-	function = TRUE
-
-end function
-
-
+end sub

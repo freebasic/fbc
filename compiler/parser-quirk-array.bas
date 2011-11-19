@@ -30,12 +30,8 @@ function cArrayStmt _
 		do
 			expr1 = cVarOrDeref( FALSE )
 			if( expr1 = NULL ) then
-				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-					exit function
-				else
-					hSkipUntil( CHAR_COMMA )
-				end if
-
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				hSkipUntil( CHAR_COMMA )
 			else
 				'' ugly hack to deal with arrays w/o indexes
 				if( astIsNIDXARRAY( expr1 ) ) then
@@ -53,18 +49,11 @@ function cArrayStmt _
     			end if
 
 				if( s = NULL ) then
-					if( errReport( FB_ERRMSG_EXPECTEDARRAY ) = FALSE ) then
-						exit function
-					else
-						hSkipUntil( CHAR_COMMA )
-					end if
-
+					errReport( FB_ERRMSG_EXPECTEDARRAY )
+					hSkipUntil( CHAR_COMMA )
 				else
-					
 					if( typeIsConst( astGetFullType( expr1 ) ) ) then
-						if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-							exit function
-						end if
+						errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 					end if
 					
 					if( symbGetIsDynamic( s ) ) then
@@ -74,10 +63,6 @@ function cArrayStmt _
 					end if
 
 					astAdd( expr1 )
-
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
 				end if
 			end if
 
@@ -92,51 +77,36 @@ function cArrayStmt _
 
 		expr1 = cVarOrDeref(  )
 		if( expr1 = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				hSkipStmt( )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipStmt( )
+			return TRUE
 		end if
 
 		hMatchCOMMA( )
 
 		expr2 = cVarOrDeref(  )
 		if( expr2 = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				astDelTree( expr1 )
-				hSkipStmt( )
-				return true
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			astDelTree( expr1 )
+			hSkipStmt( )
+			return true
 		end if
 
 		select case as const astGetDataType( expr1 )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-
 			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					astDelTree( expr1 )
-					astDelTree( expr2 )
-				end if
-
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				astDelTree( expr1 )
+				astDelTree( expr2 )
 			else
 				function = rtlStrSwap( expr1, expr2 )
 			end if
 
 		case FB_DATATYPE_WCHAR
 			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					astDelTree( expr1 )
-					astDelTree( expr2 )
-				end if
-
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				astDelTree( expr1 )
+				astDelTree( expr2 )
 			else
 				function = rtlWstrSwap( expr1, expr2 )
 			end if
@@ -144,14 +114,11 @@ function cArrayStmt _
 		case else
 			'' don't allow any consts...
 			if( typeIsConst( astGetFullType( expr1 ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 			end if
+
 			if( typeIsConst( astGetFullType( expr2 ) ) ) then
-				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED ) = FALSE ) then
-					exit function
-				end if
+				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 			end if
 			
 			function = rtlMemSwap( expr1, expr2 )
@@ -193,14 +160,11 @@ function cArrayFunct _
 		'' ID
 		arrayexpr = cVarOrDeref( FALSE )
 		if( arrayexpr = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')' and fake an expr
-				hSkipUntil( CHAR_RPRNT, TRUE )
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' error recovery: skip until next ')' and fake an expr
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
 		end if
 
 		'' ugly hack to deal with arrays w/o indexes
@@ -219,14 +183,11 @@ function cArrayFunct _
 		end if
 
 		if( s = NULL ) then
-			if( errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ')' and fake an expr
-				hSkipUntil( CHAR_RPRNT, TRUE )
-				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				return TRUE
-			end if
+			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			'' error recovery: skip until next ')' and fake an expr
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
 		end if
 
 		'' (',' Expression)?
@@ -240,10 +201,8 @@ function cArrayFunct _
 		hMatchRPRNT( )
 
 		funcexpr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
-
 		function = funcexpr <> NULL
 
 	end select
 
 end function
-

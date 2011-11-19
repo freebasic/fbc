@@ -28,10 +28,6 @@ function astNewIDX _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_IDX, dtype, subtype )
 
-	if( n = NULL ) then
-		return NULL
-	end if
-
 	n->l = idx
 	n->r = var_
 	n->sym = var_->sym

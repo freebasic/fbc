@@ -56,10 +56,6 @@ function astNewBOUNDCHK _
 	n = astNewNode( AST_NODECLASS_BOUNDCHK, FB_DATATYPE_INTEGER, NULL )
 	function = n
 
-	if( n = NULL ) then
-		exit function
-	end if
-
 	n->l = l
 
 	n->sym = symbAddTempVar( astGetDataType( l ), l->subtype, FALSE, FALSE )
@@ -153,10 +149,6 @@ function astNewPTRCHK _
 	subtype = l->subtype
 	n = astNewNode( AST_NODECLASS_PTRCHK, dtype, subtype )
 	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
 
 	n->l = l
 

@@ -231,11 +231,8 @@ private function hCheckConstAndPointerOps _
 
 	'' check constant
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
-		if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-			exit function
-		else
-			return TRUE
-		end if
+		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+		return TRUE
 	end if
 
 	if( typeIsPtr( ldtype ) ) then
@@ -243,11 +240,8 @@ private function hCheckConstAndPointerOps _
 			'' if both are UDT, a derived lhs can't be assigned from a base rhs
 			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
 				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then
-					if( errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE ) = FALSE ) then
-						exit function
-					else
-						return TRUE
-					end if
+					errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+					return TRUE
 				else
 					errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 				end if
@@ -674,10 +668,6 @@ function astNewASSIGN _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldfull, lsubtype )
-
-	if( n = NULL ) then
-		return NULL
-	end if
 
 	n->l = l
 	n->r = r

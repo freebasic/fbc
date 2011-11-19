@@ -2,7 +2,7 @@
 Cross-platform 3D Graphics library
 
 Website: http://www.opengl.org
-Platforms supported: Win32, Linux
+Platforms supported: ""Win32"", Linux
 Headers to include: GL/gl.bi
 Example Usage: yes, in examples/libraries/GL/
 

@@ -11,12 +11,10 @@
 '':::::
 ''WhileStmtBegin  =   WHILE Expression .
 ''
-function cWhileStmtBegin as integer
+sub cWhileStmtBegin()
     dim as ASTNODE ptr expr = any
     dim as FBSYMBOL ptr il = any, el = any
     dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	'' WHILE
 	lexSkipToken( )
@@ -31,21 +29,15 @@ function cWhileStmtBegin as integer
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-			exit function
-		else
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	'' branch
 	expr = astUpdComp2Branch( expr, el, FALSE )
 	if( expr = NULL ) then
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-			exit function
-		end if
-
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
 		astAdd( expr )
 	end if
@@ -55,10 +47,7 @@ function cWhileStmtBegin as integer
 	stk->scopenode = astScopeBegin( )
 	stk->while.cmplabel = il
 	stk->while.endlabel = el
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''WhileStmtEnd  =   WEND

@@ -14,21 +14,15 @@ function astNewENUM _
 	( _
 		byval value as integer, _
 		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr static
-
-    dim as ASTNODE ptr n
+	) as ASTNODE ptr
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ENUM, FB_DATATYPE_ENUM, sym )
-	function = n
-
-	if( n = NULL ) then
-		exit function
-	end if
+	dim as ASTNODE ptr n = astNewNode( AST_NODECLASS_ENUM, FB_DATATYPE_ENUM, sym )
 
 	n->con.val.int = value
 	n->defined	= TRUE
 
+	function = n
 end function
 
 '':::::
