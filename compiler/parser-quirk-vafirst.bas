@@ -62,7 +62,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		funcexpr = astNewCONSTi( 0 )
 	else
 		'' @param
-		expr = astNewVAR( sym, 0, symbGetFullType( sym ), NULL )
+		expr = astNewVAR( sym, 0, symbGetFullType( sym ), symbGetSubType( sym ) )
 		expr = astNewADDROF( expr )
 
         '' Convert to ANY PTR, to hide that it's based on the last param...
