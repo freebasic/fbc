@@ -1351,49 +1351,6 @@ sub symbDelFromHash _
 end sub
 
 '':::::
-#macro doUnlink( s )
-
-    scope
-	    dim as FBSYMBOLTB ptr tb = any
-    	dim as FBSYMBOL ptr prv = any, nxt = any
-
-    	'' del from table
-    	tb = s->symtb
-
-    	prv = s->prev
-    	nxt = s->next
-    	if( prv <> NULL ) then
-    		prv->next = nxt
-    	else
-    		tb->head = nxt
-    	end if
-
-    	if( nxt <> NULL ) then
-    		nxt->prev = prv
-    	else
-    		tb->tail = prv
-    	end if
-
-    	s->prev = NULL
-    	s->next = NULL
-    end scope
-
-#endmacro
-
-'':::::
-#macro doRemove( s )
-
-    '' remove from symbol tb
-    poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
-
-    ZstrFree( s->id.alias )
-    ZstrFree( s->id.mangled )
-
-    listDelNode( @symb.symlist, s )
-
-#endmacro
-
-'':::::
 sub symbFreeSymbol _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -1414,9 +1371,8 @@ sub symbFreeSymbol _
 	'' revove from hash tb
 	symbDelFromHash( s )
 
-	doUnlink( s )
-
-    doRemove( s )
+	symbFreeSymbol_UnlinkOnly( s )
+	symbFreeSymbol_RemOnly( s )
 
 end sub
 
@@ -1426,7 +1382,13 @@ sub symbFreeSymbol_RemOnly _
 		byval s as FBSYMBOL ptr _
 	)
 
-    doRemove( s )
+	'' remove from symbol tb
+	poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+
+	ZstrFree( s->id.alias )
+	ZstrFree( s->id.mangled )
+
+	listDelNode( @symb.symlist, s )
 
 end sub
 
@@ -1436,7 +1398,28 @@ sub symbFreeSymbol_UnlinkOnly _
 		byval s as FBSYMBOL ptr _
 	)
 
-	doUnlink( s )
+	dim as FBSYMBOLTB ptr tb = any
+	dim as FBSYMBOL ptr prv = any, nxt = any
+
+	'' del from table
+	tb = s->symtb
+
+	prv = s->prev
+	nxt = s->next
+	if( prv <> NULL ) then
+		prv->next = nxt
+	else
+		tb->head = nxt
+	end if
+
+	if( nxt <> NULL ) then
+		nxt->prev = prv
+	else
+		tb->tail = prv
+	end if
+
+	s->prev = NULL
+	s->next = NULL
 
 end sub
 
