@@ -187,15 +187,13 @@ private function hCheckZstringOps _
 end function
 
 '':::::
-private function hCheckEnumOps _
+private sub hCheckEnumOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldclass as FB_DATACLASS, _
 		byval r as ASTNODE ptr, _
 		byval rdclass as FB_DATACLASS _
-	) as integer
-
-	function = FALSE
+	)
 
     '' not the same?
     if( astGetDataType( l ) <> astGetDataType( r ) ) then
@@ -205,25 +203,21 @@ private function hCheckEnumOps _
     	end if
     end if
 
-    function = TRUE
-
-end function
+end sub
 
 '':::::
-private function hCheckConstAndPointerOps _
+private sub hCheckConstAndPointerOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldtype as FB_DATATYPE, _
 		byval r as ASTNODE ptr, _
 		byval rdtype as FB_DATATYPE _
-	) as integer
-
-	function = FALSE
+	)
 
 	'' check constant
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
-		return TRUE
+		return
 	end if
 
 	if( typeIsPtr( ldtype ) ) then
@@ -235,9 +229,7 @@ private function hCheckConstAndPointerOps _
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 	end if
 
-    function = TRUE
-
-end function
+end sub
 
 '':::::
 function astCheckASSIGN _
@@ -314,17 +306,11 @@ function astCheckASSIGN _
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
     		(rdtype = FB_DATATYPE_ENUM) ) then
-
-		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
-			exit function
-		end if
-
+		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
     '' check pointers
-	if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
-		exit function
-	end if
+	hCheckConstAndPointerOps( l, ldfull, r, rdfull )
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
@@ -592,18 +578,12 @@ function astNewASSIGN _
     '' enums?
     elseif( (ldtype = FB_DATATYPE_ENUM) or _
     		(rdtype = FB_DATATYPE_ENUM) ) then
-
-		if( hCheckEnumOps( l, ldclass, r, rdclass ) = FALSE ) then
-			exit function
-		end if
-
+		hCheckEnumOps( l, ldclass, r, rdclass )
 	end if
 
     '' check pointers
     if( (options and AST_OPOPT_DONTCHKPTR) = 0 ) then
-		if( hCheckConstAndPointerOps( l, ldfull, r, rdfull ) = FALSE ) then
-			exit function
-		end if
+		hCheckConstAndPointerOps( l, ldfull, r, rdfull )
     end if
 
 	'' convert types if needed
