@@ -527,14 +527,15 @@ private function hTypeAdd _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
-		byval align as integer _
+		byval align as integer, _
+		byval baseSubtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
-	s = symbStructBegin( parent, id, id_alias, isunion, align )
+	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
@@ -552,21 +553,16 @@ private function hTypeAdd _
 		'' error recovery: skip until next line or stmt
 		hSkipUntil( INVALID, TRUE )
 	end if
-
+	
 	'' TypeBody
 	dim as integer res = hTypeBody( s )
-
-	'' end nesting
-	if( symbGetIsUnique( s ) ) then
-		symbNestEnd( FALSE )
-	end if
 
 	if( res = FALSE ) then
 		exit function
 	end if
 
 	'' finalize
-	symbStructEnd( s )
+	symbStructEnd( s, symbGetIsUnique( s ) )
 
 	'' END TYPE|UNION
 	if( lexGetToken( ) <> FB_TK_END ) then
@@ -803,7 +799,7 @@ private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
 end sub
 
 '':::::
-''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (FIELD '=' Expression)? Comment? SttSeparator
+''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)? Comment? SttSeparator
 ''						TypeLine+
 ''					  END (TYPE|UNION) .
 function cTypeDecl _
@@ -883,8 +879,25 @@ function cTypeDecl _
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
 
+	'' (EXTENDS SymbolType)?
+	dim as FBSYMBOL ptr baseSubtype = NULL
+	if( lexGetToken( ) = FB_TK_EXTENDS ) then
+		lexSkipToken( )
+
+		'' SymbolType
+		dim as integer baseDtype, baseLgt
+		hSymbolType( baseDtype, baseSubtype, baseLgt )
+
+		'' is the base type a struct?
+		if( baseDType <> FB_DATATYPE_STRUCT ) then
+			errReport( FB_ERRMSG_EXPECTEDCLASSTYPE )
+			'' error recovery: skip
+			baseSubtype = NULL
+		end if
+	end if
+
 	'' (FIELD '=' Expression)?
-    if( lexGetToken( ) = FB_TK_FIELD ) then
+	if( lexGetToken( ) = FB_TK_FIELD ) then
 		lexSkipToken( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
@@ -933,7 +946,7 @@ function cTypeDecl _
 	dim as FBSYMBOL ptr currprocsym = parser.currproc, currblocksym = parser.currblock
 	dim as integer scope_depth = parser.scope
 
-	sym = hTypeAdd( NULL, id, palias, isunion, align )
+	sym = hTypeAdd( NULL, id, palias, isunion, align, baseSubtype )
 
 	'' restore the context
 	ast.proc.curr = currproc

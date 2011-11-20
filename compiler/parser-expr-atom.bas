@@ -8,6 +8,13 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
+declare function hBaseMemberAccess _
+	( _
+		_
+	) as ASTNODE ptr
+
+
+'':::::
 function cEqInParentsOnlyExpr _
 	( _
 		_
@@ -256,11 +263,17 @@ private function hFindId _
 	      		return cVariableEx( chain_, fbGetCheckArray( ) )
 
        		case FB_SYMBCLASS_FIELD
-       			return cImplicitDataMember( chain_, fbGetCheckArray( ) )
+       			return cImplicitDataMember( base_parent, chain_, fbGetCheckArray( ) )
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD
-  				return cQuirkFunction( sym )
+  				
+  				'' BASE?
+  				if( lexGetToken() = FB_TK_BASE ) then
+  					return hBaseMemberAccess( )
+  				else
+  					return cQuirkFunction( sym )
+  				EndIf
 
 			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 				if( symbGetHasCtor( sym ) ) then
@@ -290,6 +303,64 @@ private function hFindId _
 
     function = NULL
 
+end function
+
+'':::::
+'' BaseMemberAccess	= (BASE '.')+ ID
+''
+''
+private function hBaseMemberAccess _
+	( _
+		_
+	) as ASTNODE ptr
+	
+	var proc = parser.currproc
+
+	'' not inside a method?
+	if( symbIsMethod( proc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return astNewCONSTi( 0 )  
+	end if
+
+	var parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+	
+	do
+		if( base_ = NULL ) then
+			errReport( FB_ERRMSG_CLASSNOTDERIVED )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return astNewCONSTi( 0 )
+		end if
+
+		'' skip BASE
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' skip '.'
+		lexSkipToken()
+
+		'' (BASE '.')?
+		if( lexGetToken() <> FB_TK_BASE ) then
+			exit do
+		end if
+
+		'' '.'
+		if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return astNewCONSTi( 0 )
+		end if
+
+		base_ = symbGetSubtype( base_ )->udt.base
+	loop
+
+	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
+	return hFindId( symbGetSubtype( base_ ), @chain_ ) 
 end function
 
 '':::::

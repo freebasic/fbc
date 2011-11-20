@@ -220,7 +220,7 @@ end type
 		@"Illegal outside a DESTRUCTOR block", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _
-		@"Call to another constructor must be the first statement", _
+		@"Call to another constructor or a base class constructor must be the first statement", _
 		@"The constructor or destructor calling convention must be CDECL", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
@@ -303,7 +303,14 @@ end type
 		@"Too many labels", _
 		@"Expected '#ENDIF'", _
 		@"Resource file given for target system that does not support them", _
-		@"-o <file> option without corresponding input file" _
+		@"-o <file> option without corresponding input file", _
+		@"TYPE can only extend other TYPE symbols", _
+		@"Illegal outside a CLASS, TYPE or UNION method", _
+		@"CLASS, TYPE or UNION not derived", _
+		@"CLASS, TYPE or UNION has no constructor", _
+		@"Symbol type has no Run-Time Type Info (RTTI)", _
+		@"Types have no hierarchical relation", _
+		@"Expected a CLASS, TYPE or UNION symbol type" _
 	}
 
 

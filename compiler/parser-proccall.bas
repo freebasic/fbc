@@ -14,6 +14,16 @@ declare function hCtorChain	_
 		_
 	) as integer
 
+declare function hBaseCtorCall _
+	( _
+		_
+	) as integer
+
+declare function hBaseMemberAccess _
+	( _
+		_
+	) as integer
+
 declare function hForwardCall _
 	( _
 		_
@@ -139,6 +149,39 @@ function cAssignFunctResult _
 
 end function
 
+sub hMethodCallAddInstPtrOvlArg _
+    ( _
+        byval proc as FBSYMBOL ptr, _
+        byval thisexpr as ASTNODE ptr, _
+        byval arg_list as FB_CALL_ARG_LIST ptr, _
+        byval options as FB_PARSEROPT ptr _
+    )
+
+    '' Only for method calls
+    if( thisexpr = NULL ) then
+        return
+    end if
+
+    '' The proc given here can be a method with THIS pointer or a static
+    '' member proc, depending on which was declared/found first, but it's
+    '' not known yet whether the exact overload that's going to be called
+    '' will be static or not. So the thisexpr needs to be preserved here,
+    '' the rest is done after the args were parsed.
+
+    dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+    
+    dim as FBSYMBOL ptr parent = symbGetParent( proc )
+    if( astGetSubtype( thisexpr ) <> parent ) then
+        thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
+    end if
+    
+    arg->expr = thisexpr
+    arg->mode = hGetInstPtrMode( thisexpr )
+
+    *options or= FB_PARSEROPT_HASINSTPTR
+
+end sub
+
 '':::::
 function cProcCall _
 	( _
@@ -158,13 +201,7 @@ function cProcCall _
 
 	dim as FB_PARSEROPT options = FB_PARSEROPT_NONE
 
-	'' method call?
-	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-		arg->expr = thisexpr
-		arg->mode = hGetInstPtrMode( thisexpr )
-		options or= FB_PARSEROPT_HASINSTPTR
-	end if
+    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -673,7 +710,7 @@ private function hAssignOrCall _
 	        			exit function
 	        		end if
 	        	else
-	        		expr = cImplicitDataMember( chain_, TRUE )
+	        		expr = cImplicitDataMember( base_parent, chain_, TRUE )
 	        		if( expr = NULL ) then
 	        			exit function
 	        		end if
@@ -845,6 +882,16 @@ function cProcCallOrAssign _
 
 			return hCtorChain( )
 
+		'' BASE?
+		case FB_TK_BASE
+
+			'' accessing a base member?
+			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+				return hBaseMemberAccess( )
+			else
+				return hBaseCtorCall( )
+			End If
+
 		'' CALL?
 		case FB_TK_CALL
 
@@ -930,7 +977,10 @@ private function hCtorChain _
 
 	ctor_head = symbGetCompCtorHead( parent )
 	if( ctor_head = NULL ) then
-		return FALSE
+		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
 	end if
 
 	'' this must be set before doing any AST call, or the ctor
@@ -950,12 +1000,117 @@ private function hCtorChain _
 
 end function
 
-'':::::
-function hForwardCall _
-	( _
-		_
-	) as integer
+private function hBaseCtorCall() as integer
+	dim as FBSYMBOL ptr proc = any, parent = any, ctor_head = any
 
+	proc = parser.currproc
+
+	'' not inside a ctor?
+	if( symbIsConstructor( proc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+	if( base_ = NULL ) then
+		errReport( FB_ERRMSG_CLASSNOTDERIVED )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+	
+	'' not the first stmt?
+	if( symbGetIsCtorInited( proc ) ) then
+		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	ctor_head = symbGetCompCtorHead( symbGetSubtype( base_ ) )
+	if( ctor_head = NULL ) then
+		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	'' BASE
+	lexSkipToken( )
+
+	'' this must be set before doing any AST call, or the ctor
+	'' initialization would be trigged
+	symbSetIsCtorInited( proc )
+
+	var this_ = symbGetProcHeadParam( proc )
+	if( this_ = NULL ) then
+		return FALSE
+	end if
+
+	var this_expr = astBuildInstPtr( symbGetParamVar( this_ ), base_ )
+
+	cProcCall( NULL, ctor_head, NULL, this_expr )
+
+	function = TRUE
+end function
+
+'' BaseMemberAccess  =  (BASE '.')+ ID
+private function hBaseMemberAccess() as integer
+	var proc = parser.currproc
+
+	'' not inside a method?
+	if( symbIsMethod( proc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEAMETHOD )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	var parent = symbGetNamespace( proc )
+	
+	'' is class derived?
+	var base_ = parent->udt.base
+
+	do
+		if( base_ = NULL ) then
+			errReport( FB_ERRMSG_CLASSNOTDERIVED )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+
+		'' skip BASE
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' skip '.'
+		lexSkipToken()
+	
+		'' (BASE '.')?
+		if( lexGetToken() <> FB_TK_BASE ) then
+			exit do
+		end if
+
+		'' '.'
+		if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+			errReport( FB_ERRMSG_EXPECTEDPERIOD )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+
+		base_ = symbGetSubtype( base_ )->udt.base
+	loop
+
+	dim as FBSYMCHAIN chain_ = (base_, NULL, FALSE)
+	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
+end function
+
+function hForwardCall() as integer
 	function = FALSE
 
 	select case lexGetClass( )

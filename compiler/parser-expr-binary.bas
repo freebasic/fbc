@@ -19,6 +19,11 @@ declare function cLogAndExpression _
 		_
 	) as ASTNODE ptr
 
+declare function cIsExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
 '':::::
 ''Expression      =   LogExpression .
 ''
@@ -241,7 +246,7 @@ function cLogAndExpression _
 end function
 
 '':::::
-''RelExpression   =   CatExpression ( (EQ | GT | LT | NE | LE | GE) CatExpression )* .
+''RelExpression   =   IsExpression ( (EQ | GT | LT | NE | LE | GE) IsExpression )* .
 ''
 function cRelExpression _
 	( _
@@ -251,8 +256,8 @@ function cRelExpression _
     dim as integer op = any
     dim as ASTNODE ptr expr = any, relexpr = any
 
-   	'' CatExpression
-   	relexpr = cCatExpression(  )
+   	'' IsExpression
+   	relexpr = cIsExpression(  )
    	if( relexpr = NULL ) then
    		return NULL
    	end if
@@ -285,8 +290,8 @@ function cRelExpression _
 
     	lexSkipToken( )
 
-    	'' CatExpression
-    	expr = cCatExpression(  )
+    	'' IsExpression
+    	expr = cIsExpression(  )
     	if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit do
@@ -303,6 +308,82 @@ function cRelExpression _
     loop
 
     function = relexpr
+
+end function
+
+'':::::
+''IsExpression   =   CatExpression IS SymbolType .
+''
+function cIsExpression _
+	( _
+		_
+	) as ASTNODE ptr
+
+   	'' CatExpression
+   	dim as ASTNODE ptr isexpr = cCatExpression(  )
+   	if( isexpr = NULL ) then
+   		return NULL
+   	end if
+
+    '' IS?
+    if( lexGetToken( ) <> FB_TK_IS ) then
+    	return isexpr
+	end if
+
+	'' must be a struct with RTTI info
+	if( astGetDataType( isexpr ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetHasRTTI( astGetSubtype( isexpr ) ) = FALSE ) then
+			errReport( FB_ERRMSG_TYPEHASNORTTI )
+			'' error recovery: fake a node
+			isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	else
+		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
+		'' error recovery: fake a node
+		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	lexSkipToken( )
+
+	'' SymbolType
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer lgt = any
+	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+		return NULL
+	end if
+
+	'' must be a struct type with RTTI info
+	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetHasRTTI( subtype ) = FALSE ) then
+			errReport( FB_ERRMSG_TYPEHASNORTTI )
+			'' error recovery: fake a node
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		
+		elseif( symbGetUDTBaseLevel( subtype, astGetSubtype( isexpr ) ) = 0 ) then
+			errReport( FB_ERRMSG_TYPESARENOTRELATED )
+			'' error recovery: fake a node
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+	else
+		errReport( FB_ERRMSG_TYPEMUSTBEAUDT )
+		'' error recovery: fake a node
+		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+	
+	'' point to the RTTI table
+	var expr = astNewVAR( subtype->udt.ext->rtti )
+	
+	'' do operation
+	isexpr = astNewBOP( AST_OP_IS, isexpr, expr )
+
+	if( isexpr = NULL ) Then
+		errReport( FB_ERRMSG_TYPEMISMATCH )
+		'' error recovery: fake a node
+		isexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+    function = isexpr
 
 end function
 

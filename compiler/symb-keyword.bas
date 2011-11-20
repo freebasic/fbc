@@ -146,6 +146,9 @@ end type
         ( @"OPERATOR"   , FB_TK_OPERATOR    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"PROPERTY"   , FB_TK_PROPERTY    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"CLASS"      , FB_TK_CLASS       , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"EXTENDS"    , FB_TK_EXTENDS     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+        ( @"IMPLEMENTS" , FB_TK_IMPLEMENTS  , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+		( @"BASE"    	, FB_TK_BASE     	, FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _        
         ( @"VAR"        , FB_TK_VAR         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"IIF"        , FB_TK_IIF         , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
         ( @"VA_FIRST"   , FB_TK_VA_FIRST    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _

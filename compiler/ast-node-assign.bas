@@ -63,8 +63,9 @@ private function hCheckUDTOps _
 	( _
 		byval l as ASTNODE ptr, _
 		byval ldclass as FB_DATACLASS, _
-		byval r as ASTNODE ptr, _
-		byval rdclass as FB_DATACLASS _
+		byref r as ASTNODE ptr, _
+		byval rdclass as FB_DATACLASS, _
+		byval checkOnly as integer = TRUE _ 
 	) as integer
 
 	dim as FBSYMBOL ptr proc = any
@@ -88,7 +89,15 @@ private function hCheckUDTOps _
 
    	'' different subtypes?
 	if( l->subtype <> r->subtype ) then
-		exit function
+		'' check if lhs is a base type of rhs
+		if( symbGetUDTBaseLevel( r->subtype, l->subtype ) = 0 ) then
+			exit function
+		End If
+		
+		'' cast to the base type
+		if( checkOnly = FALSE ) then
+			r = astNewCONV( astGetDataType( l ), l->subtype, r )
+		end if
 	end if
 
 	function = TRUE
@@ -222,8 +231,16 @@ private sub hCheckConstAndPointerOps _
 
 	if( typeIsPtr( ldtype ) ) then
 		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			'' if both are UDT, a derived lhs can't be assigned from a base rhs
+			if( typeGetDtOnly( ldtype ) = FB_DATATYPE_STRUCT and typeGetDtOnly( rdtype ) = FB_DATATYPE_STRUCT ) then
+				if( symbGetUDTBaseLevel( astGetSubType( l ), astGetSubType( r ) ) > 0 ) then
+					errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+					return
+				end if
+				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			end if
 		end if
+		
 	'' r-side expr is a ptr?
 	elseif( typeIsPtr( rdtype ) ) then
 		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -268,7 +285,7 @@ function astCheckASSIGN _
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
 			(rdtype = FB_DATATYPE_STRUCT) ) then
 
-		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
+		if( hCheckUDTOps( l, ldclass, r, rdclass, TRUE ) = FALSE ) then
 			exit function
 		end if
 
@@ -476,7 +493,7 @@ function astNewASSIGN _
 	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
 			(rdtype = FB_DATATYPE_STRUCT) ) then
 
-		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
+		if( hCheckUDTOps( l, ldclass, r, rdclass, FALSE ) = FALSE ) then
 			exit function
 		end if
 

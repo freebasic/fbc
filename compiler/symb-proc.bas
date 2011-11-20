@@ -1759,6 +1759,17 @@ private function hCheckOvlParam _
 			'' same subtype? full match..
 			if( param_subtype = arg_subtype ) then
 				return FB_OVLPROC_FULLMATCH
+			else
+				'' is param type a base type of the argument type?
+				if( param_subtype <> NULL ) then
+					select case symbGetType( param_subtype )
+					case FB_DATATYPE_STRUCT '' , FB_DATATYPE_CLASS
+						var level = symbGetUDTBaseLevel( arg_subtype, param_subtype )
+						if( level > 0 ) then
+							return FB_OVLPROC_FULLMATCH - level 
+						End If
+					End Select
+				end if
 			end if
 
 		elseif( typeGetConstMask( param_dtype ) ) then

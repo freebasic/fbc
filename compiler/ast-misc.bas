@@ -840,7 +840,7 @@ function astPtrCheck _
     end if
 
 	'' check sub types
-	function = symbIsEqual( psubtype, astGetSubType( expr ) )
+	function = symbIsEqual( astGetSubType( expr ), psubtype )
 
 end function
 

@@ -103,7 +103,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_HASCTOR      = &h00080000
     FB_SYMBSTATS_HASCOPYCTOR  = &h00100000
     FB_SYMBSTATS_HASDTOR      = &h00200000
-    FB_SYMBSTATS_HASVIRTUAL   = &h00400000
+    FB_SYMBSTATS_HASRTTI   	  = &h00400000
     FB_SYMBSTATS_CANTUNDEF    = &h00800000
     FB_SYMBSTATS_UNIONFIELD   = &h01000000
     FB_SYMBSTATS_RTL_CONST    = &h02000000
@@ -151,6 +151,8 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' /
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' /
 	FB_SYMBATTRIB_NAKED         = &h10000000
+	FB_SYMBATTRIB_ABSTRACT      = &h20000000
+	FB_SYMBATTRIB_VIRTUAL       = &h40000000
 
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 
@@ -411,12 +413,15 @@ type FB_STRUCTEXT
 	opovlTb ( _
 				0 to AST_OP_SELFOPS-1 _
 			) 		as FBSYMBOL_ ptr
+	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
+	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
 end type
 
 type FBS_STRUCT
 	'' extends FBNAMESCP
 	ns 				as FBNAMESPC
-
+	
+	base			as FBSYMBOL_ ptr			'' base class
 	anonparent		as FBSYMBOL_ ptr
 	elements		as integer
 	lfldlen			as integer					'' largest field len
@@ -669,8 +674,8 @@ type FBSYMBOL
 
 	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
 
-	parent          as FBSYMBOL ptr
-
+	parent          as FBSYMBOL Ptr
+	
 	prev			as FBSYMBOL ptr				'' next in symbol tb list
 	next			as FBSYMBOL ptr             '' prev /
 end type
@@ -709,6 +714,12 @@ type FB_GLOBCTORLIST
 	tail			as FB_GLOBCTORLIST_ITEM ptr
 	list			as TLIST
 end type
+
+type FB_RTTICTX
+	fb_rtti			as FBSYMBOL ptr
+	fb_baseVT		as FBSYMBOL ptr
+	fb_object		as FBSYMBOL ptr
+End Type
 
 const CHAINPOOL_SIZE = 32
 
@@ -754,6 +765,8 @@ type SYMBCTX
 				)	as SYMB_OVLOP				'' global operator overloading
 
 	arrdesctype		as FBSYMBOL ptr				'' array descriptor type
+	
+	rtti			as FB_RTTICTX 
 end type
 
 type SYMB_DATATYPE
@@ -1065,7 +1078,8 @@ declare function symbStructBegin _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
-		byval align as integer _
+		byval align as integer, _
+		byval baseStruct as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
 declare function symbAddField _
@@ -1088,7 +1102,8 @@ declare sub symbInsertInnerUDT _
 
 declare sub symbStructEnd _
 	( _
-		byval t as FBSYMBOL ptr _
+		byval t as FBSYMBOL ptr, _
+		byval isnested as integer = FALSE _ 
 	)
 
 declare function symbAddEnum _
@@ -1543,6 +1558,12 @@ declare function symbNamespaceImport _
 		byval ns as FBSYMBOL ptr _
 	) as integer
 
+declare function symbNamespaceImportEx _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval to_ns as FBSYMBOL ptr _
+	) as integer
+
 declare sub symbNamespaceRemove _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1838,6 +1859,18 @@ declare function symbIsUDTReturnedInRegs _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
+declare function symbGetUDTBaseLevel _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as integer
+
+declare function symbGetUDTBaseSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
 
 ''
 '' macros
@@ -1972,8 +2005,8 @@ declare function symbIsUDTReturnedInRegs _
 #define symbGetHasDtor(s) ((s->stats and FB_SYMBSTATS_HASDTOR) <> 0)
 #define symbSetHasDtor(s) s->stats or= FB_SYMBSTATS_HASDTOR
 
-#define symbGetHasVirtual(s) ((s->stats and FB_SYMBSTATS_HASVIRTUAL) <> 0)
-#define symbSetHasVirtual(s) s->stats or= FB_SYMBSTATS_HASVIRTUAL
+#define symbGetHasRTTI(s) ((s->stats and FB_SYMBSTATS_HASRTTI) <> 0)
+#define symbSetHasRTTI(s) s->stats or= FB_SYMBSTATS_HASRTTI
 
 #define symbGetIsGlobalCtor(s) ((s->stats and FB_SYMBSTATS_GLOBALCTOR) <> 0)
 #define symbSetIsGlobalCtor( s ) s->stats or= FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_CALLED
@@ -2394,11 +2427,15 @@ declare function symbIsUDTReturnedInRegs _
 
 #define symbIsVisProtected(s) ((s->attrib and FB_SYMBATTRIB_VIS_PROTECTED) <> 0)
 
+#define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
+
+#define symbIsVirtual(s) ((s->attrib and FB_SYMBATTRIB_VIRTUAL) <> 0)
+
 #define symbGetProcStaticLocals(s) ((s->attrib and FB_SYMBATTRIB_STATICLOCALS) <> 0)
 
 #define symbIsTrivial(s) ((s->stats and (FB_SYMBSTATS_HASCOPYCTOR or _
 										 FB_SYMBSTATS_HASDTOR or _
-										 FB_SYMBSTATS_HASVIRTUAL)) = 0)
+										 FB_SYMBSTATS_HASRTTI)) = 0)
 
 #define symbIsSuffixed(s) ((s->attrib and FB_SYMBATTRIB_SUFFIXED) <> 0)
 

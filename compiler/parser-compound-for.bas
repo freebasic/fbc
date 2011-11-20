@@ -448,7 +448,7 @@ private sub hForAssign _
 		'' initial condition is a non-UDT constant?
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
 			'' convert the constant to counter's type
-			expr = astNewCONV( dtype, NULL, expr )
+			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr
@@ -514,7 +514,7 @@ private sub hForTo _
 
 		'' EndCondition is a non-UDT constant?
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
-			expr = astNewCONV( dtype, NULL, expr )
+			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr
@@ -623,7 +623,7 @@ private sub hForStep _
 
 		'' non-UDT constant?
 		if( astIsCONST( expr ) and ((flags and FOR_ISUDT) = 0) ) then
-			expr = astNewCONV( dtype, NULL, expr )
+			expr = astNewCONV( dtype, subtype, expr )
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				'' error recovery: fake an expr

@@ -39,13 +39,7 @@ function cFunctionCall _
 
 	dim as FB_PARSEROPT options = FB_PARSEROPT_ISFUNC
 
-	'' method call?
-	if( thisexpr <> NULL ) then
-		dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, @arg_list, FALSE )
-		arg->expr = thisexpr
-		arg->mode = hGetInstPtrMode( thisexpr )
-		options or= FB_PARSEROPT_HASINSTPTR
-	end if
+    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then

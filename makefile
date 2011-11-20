@@ -601,7 +601,8 @@ FBC_BAS := \
   parser-quirk-vafirst parser-statement parser-toplevel \
   pool pp pp-cond pp-define pp-pragma reg \
   rtl rtl-array rtl-console rtl-data rtl-error rtl-file rtl-gfx rtl-gosub \
-  rtl-macro rtl-math rtl-mem rtl-print rtl-profile rtl-string rtl-system \
+  rtl-macro rtl-math rtl-mem rtl-oop rtl-print rtl-profile rtl-string \
+  rtl-system \
   stack symb symb-bitfield symb-comp symb-const symb-data symb-define \
   symb-enum symb-keyword symb-label symb-mangling symb-namespace \
   symb-proc symb-scope symb-struct symb-typedef symb-var
@@ -716,6 +717,7 @@ LIBFB_C := \
   list listdyn \
   math_fix math_frac math_rnd math_sgn \
   mem_copyclear \
+  oop_istypeof oop_object \
   qb_file_open qb_inkey qb_sleep qb_str_convto qb_str_convto_flt \
   qb_str_convto_lng \
   signals \

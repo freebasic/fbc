@@ -265,6 +265,7 @@ end sub
 private function hCheckPtr _
 	( _
 		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
 		byval expr_dtype as integer, _
 		byval expr as ASTNODE ptr _
 	) as integer
@@ -305,7 +306,45 @@ private function hCheckPtr _
 				exit function
 			end if
 		end select
+	
 	end if
+
+	'' if any of them is a derived class, only allow cast to a base or derived
+	if( typeGetDtOnly( to_dtype ) = FB_DATATYPE_STRUCT ) then
+		if( to_subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( expr_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else			
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
+
+	if( typeGetDtOnly( expr_dtype ) = FB_DATATYPE_STRUCT ) then		
+		if( expr->subtype->udt.base <> NULL ) then
+			if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_STRUCT ) then
+				if( typeGetDtOnly( to_dtype ) <> FB_DATATYPE_VOID ) then
+					exit function
+				end if
+			else
+				'' not a upcasting?
+				if( symbGetUDTBaseLevel( to_subtype, expr->subtype ) = 0 ) then
+					'' try downcasting..
+					if( symbGetUDTBaseLevel( expr->subtype, to_subtype ) = 0 ) then
+						exit function
+					End If
+				End If
+			end if
+		End If
+	End If
 
 	function = TRUE
 
@@ -323,9 +362,9 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? can't convert..
+	'' UDT? only upcasting supported by now
 	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		exit function
+		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
 	end if
 
 	ldtype = astGetFullType( l )
@@ -336,7 +375,7 @@ function astCheckCONV _
 	end if
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
@@ -405,9 +444,13 @@ function astNewCONV _
 	select case as const typeGet( to_dtype )
 	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
 	'' to cast to be most precise possible) and strings
-	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, _
-		 FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
 		exit function
+		 
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
+			exit function
+		End If
 
 	case else
 		select case typeGet( ldtype )
@@ -430,7 +473,7 @@ function astNewCONV _
 	end select
 
 	'' check pointers
-	if( hCheckPtr( to_dtype, ldtype, l ) = FALSE ) then
+	if( hCheckPtr( to_dtype, to_subtype, ldtype, l ) = FALSE ) then
 		exit function
 	end if
 
@@ -497,15 +540,27 @@ function astNewCONV _
 	    '' special case: if it's a float to int, use a builtin function
 	    if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
         	return rtlMathFTOI( l, to_dtype )
+        else			
+        	select case typeGetDtAndPtrOnly( to_dtype )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+				'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
+				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
+			end select
         end if
 
 	else
 		'' only convert if the classes are different (ie, floating<->integer) or
 		'' if sizes are different (ie, byte<->int)
 		if( ldclass = symbGetDataClass( to_dtype ) ) then
-			if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+			select case typeGet( to_dtype )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
+				'' do nothing
 				doconv = FALSE
-			end if
+			case else
+				if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+					doconv = FALSE
+				end if
+			End Select
 		end if
 
 		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then

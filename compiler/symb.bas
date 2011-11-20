@@ -40,6 +40,11 @@ declare sub 		symbCompInit		( )
 
 declare sub 		symbCompEnd			( )
 
+declare sub 		symbCompRTTIInit	( )
+
+declare sub 		symbCompRTTIEnd		( )
+
+
 ''globals
 	dim shared as SYMBCTX symb
 
@@ -149,6 +154,9 @@ sub symbInit _
 
 	''
 	hInitDefTypeTb( )
+	
+	''
+	symbCompRTTIInit( )
 
     ''
     symb.inited = TRUE
@@ -178,6 +186,9 @@ sub symbEnd
 
 	hashEnd( @symb.globnspc.nspc.ns.hashtb.tb )
 
+	''
+	symbCompRTTIEnd( )
+	
 	''
 	symbProcEnd( )
 
@@ -1638,8 +1649,12 @@ function symbIsEqual _
     end if
 
     select case sym1->class
-    '' UDT or enum?
-    case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM
+    '' UDT?
+    case FB_SYMBCLASS_STRUCT '', FB_SYMBCLASS_CLASS  
+    	return symbGetUDTBaseLevel( sym1, sym2 ) > 0
+    	
+    '' enum?
+    case FB_SYMBCLASS_ENUM
     	'' no check, they are pointing to different symbols
     	exit function
 
@@ -1893,12 +1908,37 @@ function symbCheckAccess _
 	) as integer
 
 	if( sym <> NULL ) then
-    	if( symbIsVisPrivate( sym ) or symbIsVisProtected( sym ) ) then
-    		return (parent = symbGetCurrentNamespc( ))
-    	end if
-    end if
+		'' private?
+		if( symbIsVisPrivate( sym ) ) then
+			return (parent = symbGetCurrentNamespc( ))
 
-    function = TRUE
+		'' protected?
+		elseif( symbIsVisProtected( sym ) ) then
+			var ns = symbGetCurrentNamespc( )
+
+			'' is symbol from a base class?
+			select case ns->typ
+			case FB_DATATYPE_STRUCT
+				If( parent = ns ) Then
+					Return TRUE
+				End If
+				
+				'' try until the last base class
+				var base_ = ns->udt.base
+				do while( base_ <> NULL )
+					if( symbGetSubType( base_ ) = parent ) then
+						return TRUE
+					End If
+					
+					base_ = symbGetSubtype( base_ )->udt.base 
+				loop
+			end select
+
+			return FALSE
+		end if
+	end if
+
+	function = TRUE
 
 end function
 

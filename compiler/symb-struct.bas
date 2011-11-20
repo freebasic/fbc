@@ -22,10 +22,9 @@ function symbStructBegin _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
-		byval align as integer _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr s
+		byval align as integer, _
+		byval base_ as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
 
     function = NULL
 
@@ -37,12 +36,12 @@ function symbStructBegin _
     	end if
     end if
 
-    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   NULL, _
-    				   NULL, NULL, _
-    				   FB_SYMBCLASS_STRUCT, _
-    				   id, id_alias, _
-    				   FB_DATATYPE_STRUCT, NULL )
+    var s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+    				   	   NULL, _
+    				   	   NULL, NULL, _
+    				   	   FB_SYMBCLASS_STRUCT, _
+    				   	   id, id_alias, _
+    				   	   FB_DATATYPE_STRUCT, NULL )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -80,6 +79,23 @@ function symbStructBegin _
 	s->udt.dbg.typenum = INVALID
 
 	s->udt.ext = NULL
+	
+	'' extending another UDT?
+	if( base_ <> NULL ) then
+		static as FBARRAYDIM dTB(0 to 0)
+		
+		s->udt.base = symbAddField( s, "$fb_base", 0, dTB(), FB_DATATYPE_STRUCT, base_, symbGetLen( base_ ), 0 )
+		
+		symbSetIsUnique( s )
+		symbNestBegin( s, FALSE )
+		symbNamespaceImportEx( base_, s )
+		
+		if( symbGetHasRTTI( base_ ) ) then
+			symbSetHasRTTI( s )
+		End If
+	else
+		s->udt.base = NULL
+	End If
 
 	function = s
 
@@ -652,10 +668,16 @@ end function
 '':::::
 sub symbStructEnd _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval isnested as integer _
 	) static
 
     dim as integer pad
+
+	'' end nesting?
+	if( isnested ) then
+		symbNestEnd( FALSE )
+	end if
 
 	'' save length without the tail padding added below
 	sym->udt.unpadlgt = sym->lgt
@@ -980,4 +1002,50 @@ function symbIsUDTReturnedInRegs _
 
 end function
 
+'':::::
+function symbGetUDTBaseLevel _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as integer
+	
+	if( s = NULL or baseSym = NULL ) then
+		return 0
+	end if
+	
+	var level = 1
+	do until( s->udt.base = NULL )
+		if( s->udt.base->subtype = baseSym ) then
+			return level
+		End If
+		
+		s = s->udt.base->subtype
+		level += 1 
+	Loop
+	
+	return 0
+	
+End Function
 
+'':::::
+function symbGetUDTBaseSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval baseSym as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+	
+	if( s = NULL or baseSym = NULL ) then
+		return NULL
+	end if
+	
+	do until( s->udt.base = NULL )
+		if( s->udt.base->subtype = baseSym ) then
+			return s->udt.base 
+		End If
+		
+		s = s->udt.base->subtype
+	Loop
+	
+	return NULL
+	
+End Function

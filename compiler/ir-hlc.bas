@@ -228,7 +228,11 @@ private function hGetUDTName _
     	ns = symbGetNamespace( ns )
     loop
 
-    sig += *symbGetName( s )
+    if( s->id.alias <> NULL ) then
+    	sig += *s->id.alias
+    else
+    	sig += *symbGetName( s )
+    EndIf
 
     if( need_original_name = FALSE ) then
         '' see the HACK in hEmitStruct()
@@ -1868,19 +1872,29 @@ private sub hEmitVregExpr _
 	( _
 		byval vr as IRVREG ptr, _
 		byref expr as string, _
-		byval is_call as integer = FALSE _
+		byval is_call as integer = FALSE, _
+		byval add_cast as integer = TRUE _
 	)
 
 	if( irIsREG( vr ) ) then
 		var ln = ""
-		var typ = *hDtypeToStr( vr->dtype, vr->subtype )
 		var id = hVregToStr( vr )
-
-		if( is_call ) then
-			ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
+		
+		if( add_cast = FALSE ) then
+			if( is_call ) then
+				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+			else
+				ln = "#define " & id & " ((" & expr & "))"
+			end if
 		else
-			ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
-		end if
+			var typ = *hDtypeToStr( vr->dtype, vr->subtype )
+			
+			if( is_call ) then
+				ln = typ & " " & id & " = (" & typ & ")(" & expr & ");"
+			else
+				ln = "#define " & id & " ((" & typ & ")(" & expr & "))"
+			end if
+		End If
 
 		hWriteLine( ln, FALSE, TRUE )
 	else
@@ -2112,7 +2126,9 @@ private sub _emitConvert _
 
     hEmitUDT( to_subtype, typeIsPtr( to_dtype ) )
 
-    hEmitVregExpr( v1, hVregToStr( v2 ) )
+	var add_cast = typeGet( to_dtype ) <> FB_DATATYPE_STRUCT
+	
+	hEmitVregExpr( v1, hVregToStr( v2, add_cast ), FALSE, add_cast )
 
 end sub
 

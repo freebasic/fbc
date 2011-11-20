@@ -145,19 +145,14 @@
       [ ] without ON ERROR, all stmts returning rt errors should be allowed to
           be used as functions too
 
-[ ] data/function members:
-    - add virtual (functions only)
-      - the vtable must be compatible with G++ 3.x (ie: compatible with
-        COM interfaces in Windows)
-
 [ ] ParamArray, but with this syntax: foo(...) as bar
 	- array must be built at compile-time and destroyed after the call
 	- take care with objects..
 
 [ ] PP:
-    - add #pragma cmdline="-foo bar -baz"
-	- painful to add
-	- don't allow it if any line was parsed already
+    [ ] add #pragma cmdline="-foo bar -baz"
+		- painful to add
+		- don't allow it if any line was parsed already
     - [macro expansion: won't work for inner macros
     - support default arguments?
 
@@ -264,17 +259,138 @@
 [ ] classes
     - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
     - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
-    - must support forward references for any kind of symbol, so classes can't be stored
-      directly to AST
-      - how to deal with "foo(expr)"? it could be an array or a function call..
-      - keeping everything in a parser/token tree will allow templates to be added later
-      - class shouldn't be emitted unless referenced
-        - function bodies defined outside classes follow the private/public proc rules
-    - single inheritance, plus interfaces
-    - exceptions - with stack unwind support
-    - pure virtual methods
-    - down casting
-    - some support for RTTI
+    [x] single inheritance (EXTENDS)
+	[ ] abstract classes and methods
+	[ ] interfaces (INTERFACE, IMPLEMENTS (or reuse EXTENDS?))
+    [ ] pure virtual methods
+    [ ] some support for RTTI
+		[ ] base IS some_derived 
+    [ ] down casting
+		[ ] static (base to derived)
+		[ ] dynamic (polymorphic) 
+    [ ] exceptions - with stack unwind support
 
+	
+---------------------------------------------------------------------------------
 
+G++ 4.x RTTI and VT formats in Win32:
 
+- dynamic_cast<toType>(ptr) is converted to: ptr = (ptr != NULL? __dynamic_cast(void *ptr, RTTI *fromType, RTTI *toType, void *nullPtr): NULL);
+
+- all structs are emited with: 
+	.globl [struct name]
+	.section rdata$[struct name],"dr" 
+	.linkonce same_size
+
+	struct RTTI {
+		void *stdlib_virtual_table;	-- __ZTVN10__cxxabiv117__class_type_infoE+8 if it's a base class; __ZTVN10__cxxabiv120__si_class_type_infoE+8 otherwise
+		char *mangled_class_name;
+		RTTI *base_class_RTTI;
+	};
+	
+	struct VT[mangled class name] {
+		void *null_pointer;
+		RTTI *rtti;
+		... virtual methods function pointers in the order they were found (including methods in the base classes first) ...
+	};
+
+- every class with virtual methods will have a hidden pointer to the VT, that is initialized by the constructor:
+
+	struct or class SomeBaseClass  {
+		
+		VT[mangled class name] *vtp;
+		
+		SomeBaseClass()
+		{
+			vtp = __ZTV13SomeBaseClass+8;		-- hidden assignment, +8 to skip the two pointers at the beginning
+		}
+		
+		virtual void PrintMe(int i)
+		{
+		};
+	};
+	
+- example:
+
+	struct VT13SomeBaseClass 
+	{
+		void *null_pointer;
+		RTTI *rtti;
+		void (PrintMe *)(int i);
+	};
+	
+	class SomeBaseClass
+	{
+		VT13SomeBaseClass *vtp;
+		
+		SomeBaseClass()
+		{
+			vtp = __ZTV13SomeBaseClass+8;
+		}
+		
+		virtual void PrintMe(int i)
+		{
+		};
+	};
+
+	RTTI __ZTI13SomeBaseClass = 
+	{
+		__ZTVN10__cxxabiv117__class_type_infoE+8,
+		"13SomeBaseClass",
+		NULL
+	};
+	
+	VT13SomeBaseClass __ZTV13SomeBaseClass =
+	{
+		NULL,
+		__ZTI13SomeBaseClass,
+		13SomeBaseClass7PrintMei
+	};
+	
+	struct VT12SomeExtClass {
+		void *null_pointer;
+		RTTI *rtti;
+		void (PrintMe *)(int i);
+		void (OnlyInExt *)();
+	};
+	
+	class SomeExtClass : SomeBaseClass 
+	{
+		SomeExtClass()
+		{
+			SomeBaseClass();
+			vtp = (void *)__ZTV12SomeExtClass+8;
+		}
+		
+		virtual void PrintMe(int i)
+		{
+		};
+
+		virtual void OnlyInExt()
+		{
+		};
+	};
+
+	RTTI __ZTI12SomeExtClass = 
+	{
+		__ZTVN10__cxxabiv120__class_type_infoE+8,
+		"12SomeExtClass",
+		NULL
+	};
+	
+	VT12SomeExtClass __ZTV12SomeExtClass =
+	{
+		NULL,
+		__ZTI12SomeExtClass,
+		12SomeExtClass7PrintMei,
+		9OnlyInExtv
+	};
+
+    int main()
+	{
+		SomeBaseClass *sbc = new SomeExtClass();
+	
+		sbc->PrintMe( 1234 ); ==> sbc->vtp->PrintMe( 1234 )
+	}
+	
+	

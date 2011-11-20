@@ -22,6 +22,7 @@ declare sub			rtlProfileModInit	( )
 declare sub			rtlStringModInit	( )
 declare sub			rtlSystemModInit	( )
 declare sub			rtlGosubModInit		( )
+declare sub			rtlOOPModInit		( )
 
 declare sub			rtlArrayModEnd		( )
 declare sub			rtlConsoleModEnd	( )
@@ -37,6 +38,7 @@ declare sub			rtlProfileModEnd	( )
 declare sub			rtlStringModEnd		( )
 declare sub			rtlSystemModEnd		( )
 declare sub			rtlGosubModEnd		( )
+declare sub			rtlOOPModEnd		( )
 
 
 type RTLCTX
@@ -67,12 +69,14 @@ sub rtlInit static
 	rtlStringModInit( )
 	rtlSystemModInit( )
 	rtlGosubModInit( )
+	rtlOOPModInit( )
 
 end sub
 
 '':::::
 sub rtlEnd
 
+	rtlOOPModEnd( )
 	rtlGosubModEnd( )
 	rtlSystemModEnd( )
 	rtlStringModEnd( )

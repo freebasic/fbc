@@ -141,6 +141,8 @@
 
 #define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
 
+#define FB_RTL_ISTYPEOF					"fb_IsTypeOf"
+
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
@@ -531,6 +533,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYBOUNDCHK
 
 	FB_RTL_IDX_NULLPTRCHK
+	
+	FB_RTL_IDX_ISTYPEOF
 
 	FB_RTL_IDX_CPUDETECT
 	FB_RTL_IDX_INIT
@@ -1256,6 +1260,12 @@ declare function rtlMemDeleteOp _
 		byval ptr_expr as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+declare function rtlOOPIsTypeOf _
+	( _
+		byval inst as ASTNODE ptr, _
+		byval rtti as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function rtlPrint _
