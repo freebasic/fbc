@@ -425,8 +425,7 @@ sub errReportEx _
 	)
 
 	'' Don't show if already too many errors displayed
-	if ((errctx.cnt >= env.clopt.maxerrors) or _
-	    errctx.hide_further_messages) then
+	if (errctx.hide_further_messages) then
 		exit sub
 	end if
 
@@ -450,6 +449,7 @@ sub errReportEx _
 
 	if( errctx.cnt >= env.clopt.maxerrors ) then
 		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, 0, linenum, FALSE )
+		errHideFurtherErrors()
 	end if
 end sub
 

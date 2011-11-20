@@ -749,7 +749,7 @@ function fbShouldRestart() as integer
 end function
 
 function fbShouldContinue() as integer
-	return ((env.dorestart = FALSE) and (errGetCount() = 0))
+	return ((env.dorestart = FALSE) and (errGetCount() < env.clopt.maxerrors))
 end function
 
 sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
