@@ -620,9 +620,8 @@ function symbAddTempVar _
 					  dtype, subtype, 0, _
 					  0, dTB(), _
 					  attrib, options )
-    if( s = NULL ) then
-    	return NULL
-    end if
+
+	assert(s)
 
 	'' alloc? (should be used by IR only)
 	if( doalloc ) then

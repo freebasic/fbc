@@ -32,10 +32,6 @@ function cGOTBStmt _
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	if( sym = NULL ) then
-		exit function
-	end if
-
 	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function

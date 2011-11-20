@@ -98,7 +98,8 @@ function cCompoundStmt as integer
 
 	case FB_TK_SELECT
 		CHECK_CODEMASK( FB_TK_SELECT, FB_TK_SELECT )
-		function = cSelectStmtBegin( )
+		cSelectStmtBegin()
+		function = TRUE
 
 	case FB_TK_WITH
 		CHECK_CODEMASK( FB_TK_WITH, FB_TK_WITH )

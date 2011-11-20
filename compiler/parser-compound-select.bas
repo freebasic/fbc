@@ -50,13 +50,11 @@ end sub
 '':::::
 ''SelectStatement =   SELECT CASE (AS CONST)? Expression .
 ''
-function cSelectStmtBegin as integer
+sub cSelectStmtBegin()
     dim as ASTNODE ptr expr = any
     dim as integer dtype = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
-
-	function = FALSE
 
 	'' SELECT
 	lexSkipToken( )
@@ -72,7 +70,8 @@ function cSelectStmtBegin as integer
 
 		'' CONST?
 		if( hMatch( FB_TK_CONST ) ) then
-			return cSelConstStmtBegin( )
+			cSelConstStmtBegin()
+			return
 		end if
 
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -110,24 +109,16 @@ function cSelectStmtBegin as integer
     '' not a wstring?
 	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
 		sym = symbAddTempVar( dtype, subtype )
-		if( sym = NULL ) then
-			exit function
-		end if
-
 		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
 		if( expr <> NULL ) then
 			astAdd( expr )
 		end if
-
 	else
 		'' the wstring must be allocated() but size
 		'' is unknown at compile-time, do:
 
 		''  dim wstring ptr tmp
 		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
-		if( sym = NULL ) then
-			exit function
-		end if
 
 		'' side-effect?
 		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
@@ -162,10 +153,7 @@ function cSelectStmtBegin as integer
 	stk->select.casecnt = 0
 	stk->select.cmplabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	stk->select.endlabel = el
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''CaseExpression  =   (Expression (TO Expression)?)?

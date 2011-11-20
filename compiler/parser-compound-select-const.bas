@@ -41,12 +41,10 @@ end sub
 '':::::
 ''SelConstStmtBegin =   SELECT CASE AS CONST Expression{int} .
 ''
-function cSelConstStmtBegin( ) as integer
+sub cSelConstStmtBegin()
     dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
-
-	function = FALSE
 
 	'' Expression
 	expr = cExpression( )
@@ -88,9 +86,6 @@ function cSelConstStmtBegin( ) as integer
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )
-	if( sym = NULL ) then
-		exit function
-	end if
 
 	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
 	if( expr <> NULL ) then
@@ -112,10 +107,7 @@ function cSelConstStmtBegin( ) as integer
 	stk->select.const_.maxval = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 private function hSelConstAddCase _

@@ -475,10 +475,7 @@ declare function cWhileStmtEnd _
 		_
 	) as integer
 
-declare function cSelectStmtBegin _
-	( _
-		_
-	) as integer
+declare sub cSelectStmtBegin()
 
 declare function cSelectStmtNext _
 	( _
@@ -490,11 +487,7 @@ declare function cSelectStmtEnd _
 		_
 	) as integer
 
-declare function cSelConstStmtBegin _
-	( _
-		_
-	) as integer
-
+declare sub cSelConstStmtBegin()
 declare sub cSelConstStmtNext(byval stk as FB_CMPSTMTSTK ptr)
 declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 

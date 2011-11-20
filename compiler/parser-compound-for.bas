@@ -211,9 +211,6 @@ private function hAllocTemp _
 
     '' make a temp symbol
 	dim as FBSYMBOL ptr s = symbAddTempVar( dtype, subtype )
-	if( s = NULL ) then
-		return NULL
-	end if
 
     '' lang QB doesn't allow UDT's anyway...
     if( env.clopt.lang <> FB_LANG_QB ) then
@@ -485,16 +482,14 @@ private sub hForAssign _
 end sub
 
 '':::::
-private function hForTo _
+private sub hForTo _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr, _
 		byref isconst as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval flags as FOR_FLAGS _
-	) as integer
-
-	function = FALSE
+	)
 
     '' This function handles the 'TO EndCondition'
     '' expression of a FOR block.
@@ -541,10 +536,6 @@ private function hForTo _
 		else
 			'' generate a symbol using the expression's type
 			stk->for.end.sym = hStoreTemp( dtype, subtype, expr )
-			if( stk->for.end.sym = NULL ) then
-				'' fail
-				exit function
-			end if
 			stk->for.end.dtype = symbGetType( stk->for.end.sym )
 		end if
 
@@ -561,9 +552,7 @@ private function hForTo _
 		end if
 	end if
 
-	function = TRUE
-
-end function
+end sub
 
 private function hStepIsPositive _
 	( _
@@ -592,16 +581,14 @@ private function hStepIsPositive _
 end function
 
 '':::::
-private function hForStep _
+private sub hForStep _
 	( _
 		byval stk as FB_CMPSTMTSTK ptr, _
 		byref isconst as integer, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval flags as FOR_FLAGS _
-	) as integer
-
-	function = FALSE
+	)
 
 	'' STEP
 	stk->for.explicit_step = FALSE
@@ -676,10 +663,6 @@ private function hForStep _
 
 			'' generate a symbol using the expression's type
 			stk->for.stp.sym = hStoreTemp( tmp_dtype, tmp_subtype, expr )
-			if( stk->for.stp.sym = NULL ) then
-				'' fail
-				exit function
-			end if
 			stk->for.stp.dtype = symbGetType( stk->for.stp.sym )
 		end if
 
@@ -751,10 +734,7 @@ private function hForStep _
 	else
 		stk->for.ispos.sym = NULL
 	end if
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 ''ForStmtBegin    =   FOR ID (AS DataType)? '=' Expression TO Expression (STEP Expression)? .
@@ -865,16 +845,10 @@ function cForStmtBegin _
 	hForAssign( stk, isconst, dtype, subtype, flags, idexpr )
 
     '' TO
-	if( hForTo( stk, isconst, dtype, subtype, flags ) = FALSE ) then
-		cCompStmtPop( stk )
-		exit function
-	end if
+	hForTo( stk, isconst, dtype, subtype, flags )
 
 	'' STEP
-	if( hForStep( stk, isconst, dtype, subtype, flags ) = FALSE ) then
-		cCompStmtPop( stk )
-		exit function
-	end if
+	hForStep( stk, isconst, dtype, subtype, flags )
 
 	'' labels
     dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
