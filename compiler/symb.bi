@@ -1282,20 +1282,17 @@ declare sub symbDelSymbol _
 
 declare function symbDelKeyword _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	) as integer
 
 declare function symbDelDefine _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	) as integer
 
 declare sub symbDelLabel _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare sub symbDelVar _
@@ -1306,38 +1303,32 @@ declare sub symbDelVar _
 
 declare sub symbDelPrototype _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare sub symbDelEnum _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare sub symbDelStruct _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare sub symbDelConst _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval s as FBSYMBOL ptr _
 	)
 
 declare sub symbDelScope _
 	( _
-		byval scp as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval scp as FBSYMBOL ptr _
 	)
 
 declare sub symbDelNamespace _
 	( _
-		byval ns as FBSYMBOL ptr, _
-		byval is_tbdel as integer = FALSE _
+		byval ns as FBSYMBOL ptr _
 	)
 
 declare function symbNewSymbol _
@@ -1555,8 +1546,7 @@ declare function symbNamespaceImport _
 declare sub symbNamespaceRemove _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval hashonly as integer, _
-		byval is_tbdel as integer = FALSE _
+		byval hashonly as integer _
 	)
 
 declare sub symbNamespaceReImport _

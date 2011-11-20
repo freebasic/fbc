@@ -1432,37 +1432,37 @@ sub symbDelSymbol _
 
 	select case as const s->class
     case FB_SYMBCLASS_VAR
-    	symbDelVar( s, is_tbdel )
+		symbDelVar( s, is_tbdel )
 
     case FB_SYMBCLASS_CONST
-		symbDelConst( s, is_tbdel )
+		symbDelConst( s )
 
     case FB_SYMBCLASS_PROC
-    	symbDelPrototype( s, is_tbdel )
+		symbDelPrototype( s )
 
 	case FB_SYMBCLASS_DEFINE
-		symbDelDefine( s, is_tbdel )
+		symbDelDefine( s )
 
 	case FB_SYMBCLASS_KEYWORD
-		symbDelKeyword( s, is_tbdel )
+		symbDelKeyword( s )
 
     case FB_SYMBCLASS_LABEL
-    	symbDelLabel( s, is_tbdel )
+		symbDelLabel( s )
 
     case FB_SYMBCLASS_ENUM
-		symbDelEnum( s, is_tbdel )
+		symbDelEnum( s )
 
     case FB_SYMBCLASS_STRUCT
-    	symbDelStruct( s, is_tbdel )
+		symbDelStruct( s )
 
     case FB_SYMBCLASS_SCOPE
-    	symbDelScope( s, is_tbdel )
+		symbDelScope( s )
 
     case FB_SYMBCLASS_NAMESPACE
-    	symbDelNamespace( s, is_tbdel )
+		symbDelNamespace( s )
 
 	case FB_SYMBCLASS_NSIMPORT
-		symbNamespaceRemove( s, FALSE, is_tbdel )
+		symbNamespaceRemove( s, FALSE )
 
 	case else
 		symbFreeSymbol( s )
@@ -1541,7 +1541,7 @@ sub symbDelSymbolTb _
     			symbDelFromHash( s )
 
     		case FB_SYMBCLASS_NSIMPORT
-    			symbNamespaceRemove( s, TRUE, FALSE )
+    			symbNamespaceRemove( s, TRUE )
 
     		case FB_SYMBCLASS_SCOPE
     			'' already removed..

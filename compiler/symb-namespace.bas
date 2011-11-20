@@ -69,8 +69,7 @@ end function
 '':::::
 sub symbDelNamespace _
 	( _
-		byval ns as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval ns as FBSYMBOL ptr _
 	)
 
     if( ns = NULL ) then
@@ -266,8 +265,7 @@ end function
 sub symbNamespaceRemove _
 	( _
 		byval imp_ as FBSYMBOL ptr, _
-		byval hashonly as integer, _
-		byval is_tbdel as integer _
+		byval hashonly as integer _
 	)
 
 	if( symbGetImportNamespc( imp_ ) <> NULL ) then

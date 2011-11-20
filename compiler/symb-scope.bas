@@ -35,8 +35,7 @@ end function
 '':::::
 sub symbDelScope _
 	( _
-		byval scp as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval scp as FBSYMBOL ptr _
 	)
 
     if( scp = NULL ) then
@@ -75,7 +74,7 @@ sub symbDelScopeTb _
     	if( s->class <> FB_SYMBCLASS_NSIMPORT ) then
     		symbDelFromHash( s )
     	else
-    		symbNamespaceRemove( s, TRUE, FALSE )
+    		symbNamespaceRemove( s, TRUE )
     	end if
 
     	s = s->prev

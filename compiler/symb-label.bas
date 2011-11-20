@@ -135,8 +135,7 @@ end function
 '':::::
 sub symbDelLabel _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_tbdel as integer _
+		byval s as FBSYMBOL ptr _
 	)
 
     if( s = NULL ) then
