@@ -16,6 +16,9 @@ Version 0.24.0:
 - fbc can now be built for installation into MinGW/DJGPP
 - Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
 - The .def file generated when building a DLL is now preserved if -R was given
+- Single inheritance for classes: TYPE Child EXTENDS Parent
+- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
+- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
