@@ -220,6 +220,9 @@ function cQuirkFunction _
 	case FB_TK_SCREEN, FB_TK_SCREENQB
 		res = cScreenFunct( funcexpr )
 
+    case FB_TK_THREADCALL
+        res = cThreadCallFunc( funcexpr )
+        
 	end select
 
 	if( res = FALSE ) then

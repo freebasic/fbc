@@ -1064,6 +1064,11 @@ declare function hCheckForDefiniteExprs _
 		_
 	) as integer
 
+declare function cThreadCallFunc _
+	( _
+        byref funcexpr as ASTNODE ptr _
+	) as integer
+    
 ''
 '' macros
 ''

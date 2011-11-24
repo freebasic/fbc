@@ -394,6 +394,9 @@
 #define FB_RTL_FTOUL                    "fb_ftoul"
 #define FB_RTL_DTOUL                    "fb_dtoul"
 
+#define FB_RTL_THREADCALL               "fb_ThreadCall"
+
+
 '' the order doesn't matter but it makes more sense to follow the same
 '' order as the FB_RTL_* defines above
 enum FB_RTL_IDX
@@ -783,6 +786,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
+    FB_RTL_IDX_THREADCALL
+
 	FB_RTL_INDEXES
 end enum
 
@@ -802,6 +807,23 @@ enum FB_RTL_OPT
  	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
+end enum
+
+enum FB_RTL_TCTYPES
+    FB_RTL_TCTYPES_STDCALL,
+    FB_RTL_TCTYPES_CDECL,
+    FB_RTL_TCTYPES_BYTE,
+    FB_RTL_TCTYPES_UBYTE,
+    FB_RTL_TCTYPES_SHORT,
+    FB_RTL_TCTYPES_USHORT,
+    FB_RTL_TCTYPES_INTEGER,
+    FB_RTL_TCTYPES_UINTEGER,
+    FB_RTL_TCTYPES_LONGINT,
+    FB_RTL_TCTYPES_ULONGINT,
+    FB_RTL_TCTYPES_SINGLE,
+    FB_RTL_TCTYPES_DOUBLE,
+    FB_RTL_TCTYPES_TYPE,
+    FB_RTL_TCTYPES_PTR
 end enum
 
 type FB_RTL_PARAMDEF
@@ -1794,6 +1816,12 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
+    
+declare function rtlThreadCall _
+    ( _
+        byval callexpr as ASTNODE ptr, _
+        byref expr as ASTNODE ptr _
+    ) as integer
 
 
 const FBGFX_PUTMODE_TRANS  = 0
