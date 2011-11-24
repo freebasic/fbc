@@ -2435,16 +2435,21 @@ private sub addDefaultLibs()
 		#endif
 
 	case FB_COMPTARGET_FREEBSD
+		fbcAddDefLib("pthread")
 		fbcAddDefLib("c")
 		fbcAddDefLib("m")
-		fbcAddDefLib("pthread")
 		fbcAddDefLib("ncurses")
 		fbcAddDefLib("supc++")
 
 	case FB_COMPTARGET_LINUX
+		'' Note: When linking statically, -lpthread apparently should
+		'' be linked before -lc. Otherwise there can be errors due to
+		'' -lpthread/-lc containing overlapping symbols (but the pthread
+		'' ones should be used). This is confirmed by minimal testing,
+		'' searching the web and 'gcc -pthread' behavior.
+		fbcAddDefLib("pthread")
 		fbcAddDefLib("c")
 		fbcAddDefLib("m")
-		fbcAddDefLib("pthread")
 		fbcAddDefLib("dl")
 		fbcAddDefLib("ncurses")
 		fbcAddDefLib("supc++")
@@ -2454,9 +2459,9 @@ private sub addDefaultLibs()
 		'' TODO
 
 	case FB_COMPTARGET_OPENBSD
+		fbcAddDefLib("pthread")
 		fbcAddDefLib("c")
 		fbcAddDefLib("m")
-		fbcAddDefLib("pthread")
 		fbcAddDefLib("ncurses")
 		fbcAddDefLib("supc++")
 
