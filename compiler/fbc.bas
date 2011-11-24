@@ -66,6 +66,7 @@ type FBCCTX
 	triplet 			as zstring * FB_MAXNAMELEN+1  '' GNU triplet to prefix in front of cross-compiling tool names
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
+	staticlink			as integer
 
 	'' Compiler paths
 	binpath				as zstring * FB_MAXPATHLEN+1
@@ -547,6 +548,10 @@ private function linkFiles() as integer
 		ldcline += " -e _WinMainCRTStartup"
 
 	end select
+
+	if (fbc.staticlink) then
+		ldcline += " -Bstatic"
+	end if
 
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
@@ -1047,6 +1052,7 @@ enum
 	OPT_R
 	OPT_RKEEPASM
 	OPT_S
+	OPT_STATIC
 	OPT_T
 	OPT_TARGET
 	OPT_TITLE
@@ -1101,6 +1107,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_R
 	FALSE, _ '' OPT_RKEEPASM
 	TRUE , _ '' OPT_S
+	FALSE, _ '' OPT_STATIC
 	TRUE , _ '' OPT_T
 	TRUE , _ '' OPT_TARGET
 	TRUE , _ '' OPT_TITLE
@@ -1362,6 +1369,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_S
 		fbc.subsystem = arg
 
+	case OPT_STATIC
+		fbc.staticlink = TRUE
+
 	case OPT_T
 		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
 
@@ -1559,6 +1569,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 
 	case asc("s")
 		ONECHAR(OPT_S)
+		CHECK("static", OPT_STATIC)
 
 	case asc("t")
 		ONECHAR(OPT_T)
