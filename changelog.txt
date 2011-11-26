@@ -32,6 +32,7 @@ Version 0.24.0:
 - #3422768: pp under -gen gcc complaining about va_arg/va_next tokens even if not used as the actual macros
 - #2188864: Compiler crash on out of memory
 - #3453953: GOTO/GOSUB allowed keywords as labels
+- The #LANG metacommand was not allowed in disabled preprocessor blocks
 
 
 Version 0.23.0:
