@@ -89,6 +89,9 @@ private function hGetLabelId _
 
 	if( sym = NULL ) then
 		sym = symbAddLabel( lexGetText( ), FB_SYMBOPT_CREATEALIAS )
+		if( sym = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		end if
 	end if
 
 	lexSkipToken( )
