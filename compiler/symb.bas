@@ -2044,42 +2044,37 @@ end function
 
 '' For debugging
 function symbDump( byval s as FBSYMBOL ptr ) as string
+	dim as string dump
 
-    dim as string dump
+	dim as zstring ptr id = s->id.name
+	if( id = NULL ) then
+		id = @"<unspecified>"
+	end if
 
-    dim as zstring ptr id = s->id.name
-    if( id = NULL ) then
-        id = @"<unspecified>"
-    end if
+	''dump += "[" + hex(s) + "] "
+	dump += *id
+	dump += " as "
 
-    dump += "[" + hex(s) + "] "
-    dump += *id
-    dump += " as "
+	if( s->typ and FB_DATATYPE_INVALID ) then
+		dump += "<invalid>"
+	else
+		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
+		'' so treat that as special case, so symbTypeToStr() doesn't crash.
+		if( s->subtype = NULL ) then
+			select case as const s->typ
+			case FB_DATATYPE_FWDREF
+				dump += "<fwdref>"
+			case FB_DATATYPE_STRUCT
+				dump += "<struct>"
+			case FB_DATATYPE_ENUM
+				dump += "<enum>"
+			case else
+				dump += *symbTypeToStr( s->typ, NULL, s->lgt )
+			end select
+		else
+			dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+		end if
+	end if
 
-    if( (s->typ >= lbound(symb_dtypeTB)) and (s->typ <= ubound(symb_dtypeTB)) ) then
-        '' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
-        '' so treat that as special case, so symbTypeToStr() doesn't crash.
-        if( s->subtype = NULL ) then
-            select case as const s->typ
-            case FB_DATATYPE_FWDREF
-                dump += "<fwdref"
-            case FB_DATATYPE_STRUCT
-                dump += "<struct>"
-            case FB_DATATYPE_ENUM
-                dump += "<enum>"
-            case else
-                dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
-            end select
-        else
-            dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
-        end if
-
-    elseif( s->typ = FB_DATATYPE_INVALID ) then
-        dump += "<invalid>"
-    else
-        dump += "<unspecified>"
-    end if
-
-    return dump
-
+	function = dump
 end function
