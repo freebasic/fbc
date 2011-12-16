@@ -1093,7 +1093,7 @@ function astUpdComp2Branch _
   	   			end if
 
 			case else
-				expr = astNewCONSTi( 0, dtype )
+				expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
 			end select
 
 			hDoBranch( )
@@ -1177,7 +1177,7 @@ function astUpdComp2Branch _
   	   	end if
 
 	case else
-		expr = astNewCONSTi( 0, dtype )
+		expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
 	end select
 
 	hDoBranch( )
