@@ -1011,10 +1011,10 @@ config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
 .PHONY: all
 all: compiler rtlib gfxlib2
 
-$(new) $(newcompiler) $(newbin) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
-$(new)/include $(newinclude) $(new)/lib $(newlib) \
-$(prefix) $(prefixbin) \
-$(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib):
+$(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
+       $(newbin) $(new)/include $(newinclude) $(new)/lib $(newlib) \
+       $(prefix) $(prefixbin) \
+       $(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib)):
 	mkdir $@
 
 .PHONY: compiler
@@ -1178,7 +1178,9 @@ uninstall-gfxlib2:
 
 .PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
 clean: clean-compiler clean-rtlib clean-gfxlib2
+  ifndef ENABLE_STANDALONE
 	-rmdir $(newbin)
+  endif
 	-rmdir $(newinclude)
   ifndef ENABLE_STANDALONE
 	-rmdir $(new)/include
