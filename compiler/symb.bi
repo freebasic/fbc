@@ -2521,11 +2521,13 @@ declare function symbGetUDTBaseSymbol _
 
 #define	typeSetIsRefAndArray( dt ) (dt or (FB_DATATYPE_REFERENCE or FB_DATATYPE_ARRAY))
 
+#if __FB_DEBUG__
 '' For debugging, use e.g. like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
 #define symbTrace( s ) print __FUNCTION__ + ": " + symbDump( s )
 declare function symbDump( byval s as FBSYMBOL ptr ) as string
+#endif
 
 ''
 '' inter-module globals

@@ -2042,6 +2042,7 @@ function symbCheckConstAssign _
 	
 end function
 
+#if __FB_DEBUG__
 '' For debugging
 function symbDump( byval s as FBSYMBOL ptr ) as string
 	dim as string dump
@@ -2078,3 +2079,4 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 
 	function = dump
 end function
+#endif
