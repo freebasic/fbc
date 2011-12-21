@@ -1,8 +1,6 @@
 #ifndef __FB_THREAD_H__
 #define __FB_THREAD_H__
 
-#include "ffi.h"
-
 typedef void (FBCALL *FB_THREADPROC)( void *param );
 
 typedef struct _FBTHREAD
@@ -62,38 +60,7 @@ FBCALL void 		fb_TlsFreeCtxTb		( void );
 /**************************************************************************************************
  * multiple-argument threads
  **************************************************************************************************/
-#define FB_THREADCALL_MAX_ELEMS 1024
- 
-typedef struct _FBTHREADCALL
-{
-	void         *proc;
-    int           abi;
-    int           num_args;
-	ffi_type    **ffi_arg_types;
-    void        **values;
-} FBTHREADCALL;
- 
-enum {
-    FB_THREADCALL_STDCALL,
-    FB_THREADCALL_CDECL,
-    FB_THREADCALL_BYTE,
-    FB_THREADCALL_UBYTE,
-    FB_THREADCALL_SHORT,
-    FB_THREADCALL_USHORT,
-    FB_THREADCALL_INTEGER,
-    FB_THREADCALL_UINTEGER,
-    FB_THREADCALL_LONGINT,
-    FB_THREADCALL_ULONGINT,
-    FB_THREADCALL_SINGLE,
-    FB_THREADCALL_DOUBLE,
-    FB_THREADCALL_TYPE,
-    FB_THREADCALL_PTR
-};
 
-
-ffi_type                *fb_ThreadCall_GetArgument( va_list *args_list );
-ffi_type                *fb_ThreadCall_GetType( va_list *args_list );
-FBCALL void              fb_ThreadCall_ThreadProc( void *param );
-       FBTHREAD         *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... );
+       FBTHREAD        *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... );
 
 #endif /* __FB_THREAD_H__ */
