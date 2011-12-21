@@ -119,7 +119,7 @@ ffi_type *fb_ThreadCall_GetArgument( va_list *args_list )
 }
 
 /*:::::*/
-_cdecl FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
 {
     ffi_type     **ffi_args;
     void         **values;

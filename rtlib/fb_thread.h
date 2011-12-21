@@ -90,14 +90,10 @@ enum {
     FB_THREADCALL_PTR
 };
 
-// Spotty Linux symbols
-#ifndef _cdecl
-#define _cdecl
-#endif
 
 ffi_type                *fb_ThreadCall_GetArgument( va_list *args_list );
 ffi_type                *fb_ThreadCall_GetType( va_list *args_list );
 FBCALL void              fb_ThreadCall_ThreadProc( void *param );
-_cdecl FBTHREAD         *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... );
+       FBTHREAD         *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... );
 
 #endif /* __FB_THREAD_H__ */
