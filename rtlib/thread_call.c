@@ -51,12 +51,8 @@ enum {
     FB_THREADCALL_PTR
 };
 
-ffi_type                *fb_ThreadCall_GetArgument( va_list *args_list );
-ffi_type                *fb_ThreadCall_GetType( va_list *args_list );
-FBCALL void              fb_ThreadCall_ThreadProc( void *param );
-
 /*:::::*/
-void fb_ThreadCall_FreeType( ffi_type *arg ) 
+static void freeType( ffi_type *arg )
 {
     int i = 0;
     ffi_type **elem = arg->elements;
@@ -69,7 +65,7 @@ void fb_ThreadCall_FreeType( ffi_type *arg )
         
         /* free embedded types */
         if( (*elem)->type == FFI_TYPE_STRUCT )
-            fb_ThreadCall_FreeType( *elem );
+            freeType( *elem );
             
         elem++;
         i++;
@@ -79,8 +75,10 @@ void fb_ThreadCall_FreeType( ffi_type *arg )
     free( arg );
 }
 
+static ffi_type *getArgument( va_list *args_list );
+
 /*:::::*/
-ffi_type *fb_ThreadCall_GetType( va_list *args_list )
+static ffi_type *getType( va_list *args_list )
 {
     int num_elems = va_arg( (*args_list), int );
     int i, j;
@@ -97,15 +95,15 @@ ffi_type *fb_ThreadCall_GetType( va_list *args_list )
     /* scan elements */
     for( i=0; i<num_elems; i++ )
     {
-        ffi_arg->elements[i] = fb_ThreadCall_GetArgument( args_list );
+        ffi_arg->elements[i] = getArgument( args_list );
         if( ffi_arg->elements[i] == NULL )
         {
             /* error, free memory and return NULL */
             for( j=0; j<i; j++ )
             {
                 if( ffi_arg->elements[j]->type == FFI_TYPE_STRUCT )
-                    fb_ThreadCall_FreeType( ffi_arg );
-            }       
+                    freeType( ffi_arg );
+            }
             free( ffi_arg->elements );
             free( ffi_arg );
             return NULL;
@@ -116,7 +114,7 @@ ffi_type *fb_ThreadCall_GetType( va_list *args_list )
 }
 
 /*:::::*/
-ffi_type *fb_ThreadCall_GetArgument( va_list *args_list )
+static ffi_type *getArgument( va_list *args_list )
 {
     int arg_type = va_arg( (*args_list), int );
     switch( arg_type )
@@ -142,13 +140,15 @@ ffi_type *fb_ThreadCall_GetArgument( va_list *args_list )
         case FB_THREADCALL_DOUBLE:
             return &ffi_type_double;
         case FB_THREADCALL_TYPE:
-            return fb_ThreadCall_GetType( args_list );
+            return getType( args_list );
         case FB_THREADCALL_PTR:
             return &ffi_type_pointer;
         default:
             return NULL;
     }
 }
+
+static FBCALL void threadproc( void *param );
 
 /*:::::*/
 FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
@@ -167,14 +167,14 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... 
     /* scan arguments and values from var_args */
     for( i=0; i<num_args; i++ )
     {
-        ffi_args[i] = fb_ThreadCall_GetArgument( &args_list );
+        ffi_args[i] = getArgument( &args_list );
         if( ffi_args[i] == NULL )
         {
             /* error, free all memory allocated up to this point */
             for( j=0; j<i; j++ )
             {
                 if( ffi_args[i]->type == FFI_TYPE_STRUCT )
-                    fb_ThreadCall_FreeType( ffi_args[i] );
+                    freeType( ffi_args[i] );
             }
             return NULL;
         }
@@ -191,11 +191,11 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... 
     param->values = values;
     
     /* actually start thread */
-    return fb_ThreadCreate( fb_ThreadCall_ThreadProc, (void *)param, stack_size );
+    return fb_ThreadCreate( threadproc, (void *)param, stack_size );
 }
 
 /*:::::*/
-FBCALL void fb_ThreadCall_ThreadProc( void *param )
+static FBCALL void threadproc( void *param )
 {
     FBTHREADCALL *info = ( FBTHREADCALL * )param;
     ffi_status status = FFI_OK;
@@ -232,7 +232,7 @@ FBCALL void fb_ThreadCall_ThreadProc( void *param )
     for( i=0; i<info->num_args; i++ )
     {
         if( info->ffi_arg_types[i]->type == FFI_TYPE_STRUCT )
-            fb_ThreadCall_FreeType( info->ffi_arg_types[i] );
+            freeType( info->ffi_arg_types[i] );
     }
     free( info->values );
     free( info->ffi_arg_types );
