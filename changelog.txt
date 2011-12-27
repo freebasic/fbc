@@ -34,6 +34,7 @@ Version 0.24.0:
 - #3453953: GOTO/GOSUB allowed keywords as labels
 - The #LANG metacommand was not allowed in disabled preprocessor blocks
 - -gen gcc crash on 'if funcptr then ...'
+- #3441855: SWAP allowed incompatible data types
 
 
 Version 0.23.0:

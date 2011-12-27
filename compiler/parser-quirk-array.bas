@@ -89,38 +89,41 @@ function cArrayStmt _
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			astDelTree( expr1 )
 			hSkipStmt( )
-			return true
+			return TRUE
 		end if
 
 		select case as const astGetDataType( expr1 )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				astDelTree( expr1 )
-				astDelTree( expr2 )
-			else
+			select case astGetDataType( expr2 )
+			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 				function = rtlStrSwap( expr1, expr2 )
-			end if
+			case else
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
+			end select
 
 		case FB_DATATYPE_WCHAR
 			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				astDelTree( expr1 )
-				astDelTree( expr2 )
 			else
 				function = rtlWstrSwap( expr1, expr2 )
 			end if
 
 		case else
 			'' don't allow any consts...
-			if( typeIsConst( astGetFullType( expr1 ) ) ) then
+			if( typeIsConst( astGetFullType( expr1 ) ) or _
+			    typeIsConst( astGetFullType( expr2 ) ) ) then
 				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 			end if
 
-			if( typeIsConst( astGetFullType( expr2 ) ) ) then
-				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+			'' Check for invalid types by checking whether a raw assignment
+			'' would work (raw because astCheckASSIGN() doesn't check
+			'' operator overloads)
+			dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( expr1 ), astGetSubtype( expr1 ) )
+			if( astCheckASSIGN( fakelhs, expr2 ) = FALSE ) then
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 			end if
-			
+			astDelTree( fakelhs )
+
 			function = rtlMemSwap( expr1, expr2 )
 		end select
 
