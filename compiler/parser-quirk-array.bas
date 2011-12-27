@@ -98,12 +98,12 @@ function cArrayStmt _
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 				function = rtlStrSwap( expr1, expr2 )
 			case else
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 			end select
 
 		case FB_DATATYPE_WCHAR
 			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 			else
 				function = rtlWstrSwap( expr1, expr2 )
 			end if
@@ -120,7 +120,7 @@ function cArrayStmt _
 			'' operator overloads)
 			dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( expr1 ), astGetSubtype( expr1 ) )
 			if( astCheckASSIGN( fakelhs, expr2 ) = FALSE ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 			end if
 			astDelTree( fakelhs )
 
