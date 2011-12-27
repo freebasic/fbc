@@ -116,7 +116,9 @@ namespace fbc_tests.threads.threadcall_tests
         dim as any ptr Namespace_Thread, ONamespace_Thread
 
         '' call threads
+#ifdef __FB_WIN32__
         SmallInt_Thread = threadcall SmallInt( 20, 1, 19, 2 )
+#endif
         BigInt_Thread = threadcall BigInt( i, ui, l, ul )
         FloatStr_Thread = threadcall FloatStr( 15.00, d, "fourteen", strref )
         TypeArray_Thread = threadcall TypeArray( su, cu, AnArray(), byval @bv )
@@ -127,7 +129,9 @@ namespace fbc_tests.threads.threadcall_tests
         Namespace_Thread = threadcall ThreadCallNS.ns
         ONamespace_Thread = threadcall ThreadCallONS.ns
 
+#ifdef __FB_WIN32__
         threadwait SmallInt_Thread
+#endif
         threadwait BigInt_Thread
         threadwait FloatStr_Thread
         threadwait TypeArray_Thread
