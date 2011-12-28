@@ -785,8 +785,9 @@ function cForStmtBegin _
 	'' tried array...
 	elseif( lexGetLookAhead( 1 ) = CHAR_LPRNT ) then
 		errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
-		'' error recovery: skip until next ')'
+		'' error recovery: skip until next ')' and fake a var
 		hSkipUntil( CHAR_RPRNT )
+		idexpr = CREATEFAKEID( )
 
 	'' look up the variable
 	else
