@@ -414,6 +414,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_NE"              , '/ @"<>"           /' , 0 '/ ), _
 	( /' @"AST_OP_GE"              , '/ @">="           /' , 0 '/ ), _
 	( /' @"AST_OP_LE"              , '/ @"<="           /' , 0 '/ ), _
+	( /' @"AST_OP_IS"              , '/ @"IS"           /' , 0 '/ ), _
 	( /' @"AST_OP_NOT"             , '/ @"NOT"          /' , 0 '/ ), _
 	( /' @"AST_OP_PLUS"            , '/ @"+"            /' , 0 '/ ), _
 	( /' @"AST_OP_NEG"             , '/ @"NEG"          /' , 0 '/ ), _
