@@ -691,7 +691,7 @@ function cGfxDrawString as integer
 
 		'' custom user font
 		if( hMatch( CHAR_COMMA ) ) then
-			target = hGetTarget( fexpr, fisptr )
+			target = hGetTarget( fexpr, fisptr, TRUE )
 
 			'' mode
 			if( hMatch( CHAR_COMMA ) ) then
@@ -965,7 +965,7 @@ function cGfxPut as integer
 	'' ',' Variable
 	hMatchCOMMA( )
 
-	s = hGetTarget( arrayexpr, isptr )
+	s = hGetTarget( arrayexpr, isptr, TRUE )
 	if( (s = NULL) and (isptr = FALSE) ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
@@ -1034,7 +1034,7 @@ function cGfxGet as integer
 	function = FALSE
 
 	'' ( Expr ',' )?
-	target = hGetTarget( texpr, tisptr )
+	target = hGetTarget( texpr, tisptr, TRUE )
 	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
@@ -1245,7 +1245,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchExpression( yexpr )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			target = hGetTarget( texpr, tisptr )
+			target = hGetTarget( texpr, tisptr, TRUE )
 			if( (target = NULL) and (tisptr = FALSE) ) then
 				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
