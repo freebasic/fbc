@@ -1401,8 +1401,13 @@ private function hOptNullOp _
 	dim as integer keep_l = any, keep_r = any
 
 	if( n = NULL ) then
-		return n
+		return NULL
 	end if
+
+	'' Eliminate nops in child nodes first, then perhaps we can eliminate
+	'' the current (parent) one too.
+	n->l = hOptNullOp( n->l )
+	n->r = hOptNullOp( n->r )
 
 	'' convert 'a * 0'    to '0'**
 	''         'a MOD 1'  to '0'*
@@ -1430,7 +1435,6 @@ private function hOptNullOp _
 	''** convert 'a * 0' to 'a AND 0' to optimize speed without changing side-effects
 
 	if( n->class = AST_NODECLASS_BOP ) then
-
 		op = n->op.op
 		l = n->l
 		r = n->r
@@ -1461,7 +1465,7 @@ private function hOptNullOp _
 					elseif( v = 1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_MOD
@@ -1479,7 +1483,7 @@ private function hOptNullOp _
 					if( v = 1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_ADD, AST_OP_SUB, _
@@ -1488,7 +1492,7 @@ private function hOptNullOp _
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					end if
 
 				case AST_OP_IMP
@@ -1504,7 +1508,7 @@ private function hOptNullOp _
 					if( v = 0 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					elseif( v = -1 ) then
 						if( keep_l = FALSE ) then
 							astDelTree( l )
@@ -1517,7 +1521,7 @@ private function hOptNullOp _
 					if( v = -1 ) then
 						astDelNode( r )
 						astDelNode( n )
-						return hOptNullOp( l )
+						return l
 					elseif( v = 0 ) then
 						if( keep_l = FALSE ) then
 							astDelTree( l )
@@ -1551,19 +1555,7 @@ private function hOptNullOp _
 		end if
 	end if
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptNullOp( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptNullOp( r )
-	end if
-
 	function = n
-
 end function
 
 ''::::

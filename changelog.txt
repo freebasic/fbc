@@ -36,6 +36,7 @@ Version 0.24.0:
 - -gen gcc crash on 'if funcptr then ...'
 - #3441855: SWAP allowed incompatible data types
 - #3465650: Compiler crash after showing error for using array element as FOR loop iterator
+- #3434928: Incomplete null op optimization breaking assumptions made for conditional jumps
 
 
 Version 0.23.0:

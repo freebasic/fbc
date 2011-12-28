@@ -943,7 +943,8 @@ function astUpdComp2Branch _
 		return NULL
 	end if
 
-	'' the expr must be already optimized because the x86 flag assumptions done below
+	'' Optimize here already to ensure the toplevel BOP is final and can be
+	'' relied upon for x86 flag assumptions below
 	n = astOptimizeTree( n )
 
 	dtype = astGetDataType( n )
@@ -1155,6 +1156,8 @@ function astUpdComp2Branch _
 
 			if( doopt ) then
 				'' check if zero (ie= FALSE)
+				'' (relying on the flags set by the BOP; so it must
+				'' not be removed by later astAdd() optimizations)
 				return astNewBRANCH( iif( isinverse, AST_OP_JNE, AST_OP_JEQ ), label, n )
 			end if
 		end if
