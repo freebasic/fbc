@@ -38,6 +38,7 @@ Version 0.24.0:
 - #3465650: Compiler crash after showing error for using array element as FOR loop iterator
 - #3434928: Incomplete null op optimization breaking assumptions made for conditional jumps
 - #3320650: gfx functions didn't accept CONST source images (DRAW STRING font, PUT/GET/POINT() source)
+- False positive syntax errors after '#ifdef namespaceid' (and also #ifndef, #undef and #if defined())
 
 
 Version 0.23.0:

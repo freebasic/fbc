@@ -220,11 +220,15 @@ function cIdentifier _
     	if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) <> CHAR_DOT ) then
     		'' if it's a namespace, the '.' is obligatory, the
     		'' namespace itself isn't a composite type
+			'' The only exception to that is namespaces appearing
+			'' in preprocessor expressions in #ifdef or #undef etc.
+			'' Those don't pass FB_IDOPT_SHOWERROR, and they skip
+			'' this last namespace id manually (like any other id),
+			'' because for them, this is not a syntax error.
     		if( symbGetClass( sym ) = FB_SYMBCLASS_NAMESPACE ) then
-    			'' skip id
-    			lexSkipToken( LEXCHECK_NOPERIOD )
-
     			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
+					'' skip id
+					lexSkipToken( LEXCHECK_NOPERIOD )
 					errReport( FB_ERRMSG_EXPECTEDPERIOD )
     			end if
     		end if
