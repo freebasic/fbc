@@ -823,6 +823,8 @@ function rtlExitApp _
 
     astAdd( proc )
 
+	function = TRUE
+
 end function
 
 '':::::
