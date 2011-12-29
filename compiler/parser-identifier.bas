@@ -129,6 +129,8 @@ function cIdentifier _
 		byval options as FB_IDOPT _
 	) as FBSYMCHAIN ptr
 
+	assert((options and FB_IDOPT_DONTCHKPERIOD) = 0)
+
     dim as FBSYMCHAIN ptr chain_ = any
     dim as FBSYMBOL ptr parent = any
 
@@ -221,10 +223,6 @@ function cIdentifier _
     		if( symbGetClass( sym ) = FB_SYMBCLASS_NAMESPACE ) then
     			'' skip id
     			lexSkipToken( LEXCHECK_NOPERIOD )
-
-    			if( (options and FB_IDOPT_DONTCHKPERIOD) <> 0 ) then
-    				exit do
-    			end if
 
     			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 					errReport( FB_ERRMSG_EXPECTEDPERIOD )
