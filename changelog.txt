@@ -39,6 +39,7 @@ Version 0.24.0:
 - #3434928: Incomplete null op optimization breaking assumptions made for conditional jumps
 - #3320650: gfx functions didn't accept CONST source images (DRAW STRING font, PUT/GET/POINT() source)
 - False positive syntax errors after '#ifdef namespaceid' (and also #ifndef, #undef and #if defined())
+- #3446210: SELECT CASE leaking its temporary (w)string if not reaching END SELECT (e.g. EXIT FUNCTION from inside a CASE block)
 
 
 Version 0.23.0:

@@ -87,6 +87,7 @@ type FB_CMPSTMT_SELECT
 	cmplabel		as FBSYMBOL ptr
 	endlabel		as FBSYMBOL ptr
 	last			as FB_CMPSTMTSTK_ ptr
+	outerscopenode		as ASTNODE ptr '' Big scope around the whole SELECT compound (to destroy its temp var)
 end type
 
 type FB_CMPSTMT_WITH

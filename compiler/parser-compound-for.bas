@@ -214,11 +214,7 @@ private function hAllocTemp _
 
     '' lang QB doesn't allow UDT's anyway...
     if( env.clopt.lang <> FB_LANG_QB ) then
-
-	    '' remove the temp flag or breakScope() won't call the dtors (and in
-	    '' this specific case, the temp vars are live for more than one stmt)
-	    symbGetAttrib( s ) and= not FB_SYMBATTRIB_TEMP
-
+		symbUnsetIsTemp(s)
 	end if
 
     function = s

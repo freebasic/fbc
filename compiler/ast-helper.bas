@@ -222,6 +222,13 @@ function astBuildVarDtorCall _
 		case FB_DATATYPE_STRING
 			function = rtlStrDelete( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 
+		'' wchar ptr marked as "dynamic wstring"?
+		case typeAddrOf( FB_DATATYPE_WCHAR )
+			assert(symbGetIsWstring(s)) '' This check should be done in symbGetVarHasDtor() already
+			'' It points to a dynamically allocated wchar buffer
+			'' that must be deallocated.
+			function = rtlStrDelete( astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) )
+
 		'' struct or class?
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has dtor?

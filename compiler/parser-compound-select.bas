@@ -77,6 +77,15 @@ sub cSelectStmtBegin()
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
+	'' Open outer scope
+	'' This is used to enclose the temporary created below, to make sure
+	'' it's destroyed at the END SELECT, not later. And scoping the temp
+	'' also frees up its stack space later.
+	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
+	if( outerscopenode = NULL ) then
+		errReport( FB_ERRMSG_RECLEVELTOODEEP )
+	end if
+
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
@@ -109,6 +118,11 @@ sub cSelectStmtBegin()
     '' not a wstring?
 	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
 		sym = symbAddTempVar( dtype, subtype )
+
+		'' Remove temp flag to have its dtor called at scope breaks/end
+		'' (needed at least in case the temporary is a string)
+		symbUnsetIsTemp( sym )
+
 		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
 		if( expr <> NULL ) then
 			astAdd( expr )
@@ -119,6 +133,13 @@ sub cSelectStmtBegin()
 
 		''  dim wstring ptr tmp
 		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+
+		'' Remove temp flag to have it considered for dtor calling
+		symbUnsetIsTemp( sym )
+
+		'' Mark it as "dynamic wstring" so it will be deallocated with
+		'' WstrFree() at scope breaks/end
+		symbSetIsWstring( sym )
 
 		'' side-effect?
 		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
@@ -153,6 +174,7 @@ sub cSelectStmtBegin()
 	stk->select.casecnt = 0
 	stk->select.cmplabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 	stk->select.endlabel = el
+	stk->select.outerscopenode = outerscopenode
 end sub
 
 '':::::
@@ -435,18 +457,10 @@ function cSelectStmtEnd as integer
     astAdd( astNewLABEL( stk->select.cmplabel ) )
     astAdd( astNewLABEL( stk->select.endlabel ) )
 
-	'' if a temp string was allocated, delete it
-	select case stk->select.dtype
-	case FB_DATATYPE_STRING
-		astAdd( rtlStrDelete( astNewVAR( stk->select.sym, _
-										 0, _
-										 FB_DATATYPE_STRING ) ) )
-
-	case FB_DATATYPE_WCHAR
-		astAdd( rtlStrDelete( astNewVAR( stk->select.sym, _
-										 0, _
-										 typeAddrOf( FB_DATATYPE_WCHAR ) ) ) )
-	end select
+	'' Close the outer scope block
+	if( stk->select.outerscopenode <> NULL ) then
+		astScopeEnd( stk->select.outerscopenode )
+	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

@@ -116,6 +116,11 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
     FB_SYMBSTATS_ISDUPDECL 		= FB_SYMBSTATS_CANTDUP
     FB_SYMBSTATS_GCCBUILTIN		= FB_SYMBSTATS_HASCTOR
+
+	'' A wchar ptr var that needs deallocating at scope breaks/end.
+	'' (Cheap dynamic wstring used by the 'SELECT CASE wstring' temporary,
+	'' there is no real FB_DATATYPE_WSTRING yet)
+	FB_SYMBSTATS_WSTRING = FB_SYMBSTATS_UNIONFIELD
 end enum
 
 '' symbol attributes mask
@@ -2042,6 +2047,9 @@ declare function symbGetUDTBaseSymbol _
 #define symbGetIsGccBuiltin(s) ((s->stats and FB_SYMBSTATS_GCCBUILTIN) <> 0)
 #define symbSetIsGccBuiltin(s) s->stats or= FB_SYMBSTATS_GCCBUILTIN
 
+#define symbGetIsWstring(s) (((s)->stats and FB_SYMBSTATS_WSTRING) <> 0)
+#define symbSetIsWstring(s) (s)->stats or= FB_SYMBSTATS_WSTRING
+
 #define symbGetStats(s) s->stats
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
@@ -2376,6 +2384,11 @@ declare function symbGetUDTBaseSymbol _
 #define symbIsCommon(s) ((s->attrib and FB_SYMBATTRIB_COMMON) <> 0)
 
 #define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
+
+'' Used to remove the temp flag when a "temp" var is needed to stay alive
+'' for more than one statement. This causes any dtor to be properly called
+'' at scope breaks and scope end. Used by FOR and SELECT CASE temporaries.
+#define symbUnsetIsTemp(s) (s)->attrib and= (not FB_SYMBATTRIB_TEMP)
 
 #define symbIsParamByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYDESC) <> 0)
 

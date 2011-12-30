@@ -46,6 +46,13 @@ sub cSelConstStmtBegin()
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
 
+	'' Open outer scope (perhaps not really needed, but done to match the
+	'' normal SELECT CASE, also the scope might help with stack usage)
+	dim as ASTNODE ptr outerscopenode = astScopeBegin( )
+	if( outerscopenode = NULL ) then
+		errReport( FB_ERRMSG_RECLEVELTOODEEP )
+	end if
+
 	'' Expression
 	expr = cExpression( )
 	if( expr = NULL ) then
@@ -107,6 +114,7 @@ sub cSelConstStmtBegin()
 	stk->select.const_.maxval = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
+	stk->select.outerscopenode = outerscopenode
 end sub
 
 '':::::
@@ -401,6 +409,11 @@ sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 
     '' emit exit label
     astAdd( astNewLABEL( stk->select.endlabel ) )
+
+	'' Close the outer scope block
+	if( stk->select.outerscopenode <> NULL ) then
+		astScopeEnd( stk->select.outerscopenode )
+	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
