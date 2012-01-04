@@ -95,8 +95,6 @@ sub cProgram()
 
 		dim as ASTNODE ptr proc = astGetProc( ), expr = astGetProcTailNode( )
 
-		dim as integer eofnewline = (lexGetToken() = FB_TK_EOF)
-
 		'' Label?
 		cLabel( )
 
@@ -121,22 +119,13 @@ sub cProgram()
 			end if
 		end if
 
-		select case lexGetToken( )
-		case FB_TK_EOL
+		if (lexGetToken() = FB_TK_EOL) then
 			lexSkipToken( )
-
-		case FB_TK_EOF
-			if( fbPdCheckIsSet( FB_PDCHECK_EOFNONEWLINE ) ) then
-				if( eofnewline = FALSE ) then
-					errReportWarn( FB_WARNINGMSG_NONEWLINEATENDOFFILE )
-				end if
-			end if
-
-		case else
+		else
 			errReport( FB_ERRMSG_EXPECTEDEOL )
 			'' error recovery: skip until EOL
 			hSkipUntil( FB_TK_EOL, TRUE )
-		end select
+		end if
 
 		if (fbShouldContinue() = FALSE) then
 			exit sub

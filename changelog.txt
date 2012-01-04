@@ -9,6 +9,7 @@ Version 0.24.0:
 - -o now also affects .rc and .xpm input files (useful to change the file names of the temporary objects)
 - -o must now clearly be specified in front or behind of the corresponding input file, for example: "fbc 1.bas 2.bas -o 1.o -o 2.o" no longer works, but "fbc -o 1.o 1.bas" is possible now
 - -x used with -lib now sets the library file name
+- "No newline at end of file" warning removed
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
