@@ -57,9 +57,9 @@ type FBCCTX
 	finallibpaths			as TSTRSET
 
 	outname 			as zstring * FB_MAXPATHLEN+1
-	mainname			as zstring * FB_MAXNAMELEN+1
+	mainname			as zstring * FB_MAXPATHLEN+1
 	mainset				as integer
-	mapfile				as zstring * FB_MAXNAMELEN+1
+	mapfile				as zstring * FB_MAXPATHLEN+1
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
