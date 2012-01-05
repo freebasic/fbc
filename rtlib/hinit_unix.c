@@ -209,9 +209,7 @@ int fb_hInitConsole ( )
 	return 0;
 }
 
-
-/*:::::*/
-void fb_unix_hInit ( void )
+static void hInit(void)
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 	char buffer[2048], *p, *term;
@@ -301,4 +299,14 @@ void fb_unix_hInit ( void )
 	__fb_con.fg_color = 7;
 	__fb_con.bg_color = 0;
 	console_resize(SIGWINCH);
+}
+
+void fb_hInit(void)
+{
+	hInit();
+
+#ifdef HOST_LINUX
+	/* Permissions for port I/O */
+	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
+#endif
 }

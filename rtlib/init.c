@@ -8,8 +8,7 @@ int __fb_is_inicnt = 0;
 
 FB_RTLIB_CTX __fb_ctx /* not initialized */;
 
-
-/*:::::*/
+/* Called from fbrt0 */
 void fb_hRtInit ( void )
 {
 #ifdef ENABLE_MT
@@ -35,11 +34,9 @@ void fb_hRtInit ( void )
 
 }
 
-/*:::::*/
+/* Called from FB program's main() */
 FBCALL void fb_Init ( int argc, char **argv, int lang )
 {
-	/* note: fb_RtInit() will be called from fbrt0 */
-
 	__fb_ctx.argc = argc;
 	__fb_ctx.argv = argv;
 	__fb_ctx.lang = lang;

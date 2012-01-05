@@ -140,8 +140,6 @@ typedef struct _FBMUTEX {
 extern int fb_hInitConsole(void);
 extern void fb_hExitConsole(void);
 
-extern void fb_unix_hInit ( void );
-
 #ifndef DISABLE_X
 typedef struct KeysymToScancode {
   KeySym keysym;
