@@ -49,7 +49,7 @@ void fb_hExitConsole( void )
 }
 
 /*:::::*/
-void fb_unix_hEnd ( int unused )
+void fb_hEnd ( int unused )
 {
 	fb_hExitConsole();
 	if (__fb_con.inited) {

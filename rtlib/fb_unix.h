@@ -141,7 +141,6 @@ extern int fb_hInitConsole(void);
 extern void fb_hExitConsole(void);
 
 extern void fb_unix_hInit ( void );
-extern void fb_unix_hEnd ( int unused );
 
 #ifndef DISABLE_X
 typedef struct KeysymToScancode {

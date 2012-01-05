@@ -783,7 +783,6 @@ endif
 
 ifeq ($(TARGET_OS),freebsd)
   LIBFB_C += \
-    hexit_freebsd \
     hinit_freebsd \
     io_mouse_freebsd io_multikey_freebsd \
     sys_fmem_freebsd sys_getexename_freebsd sys_getexepath_freebsd
@@ -792,7 +791,6 @@ endif
 ifeq ($(TARGET_OS),linux)
   LIBFB_H += rtlib/fb_linux.h
   LIBFB_C += \
-    hexit_linux \
     hinit_linux \
     io_mouse_linux io_multikey_linux io_serial_linux \
     sys_fmem_linux sys_getexename_linux sys_getexepath_linux sys_ports_linux
@@ -800,7 +798,6 @@ endif
 
 ifeq ($(TARGET_OS),netbsd)
   LIBFB_C += \
-    hexit_netbsd \
     hinit_netbsd \
     io_mouse_netbsd io_multikey_netbsd \
     sys_fmem_netbsd sys_getexename_netbsd sys_getexepath_netbsd
@@ -808,7 +805,6 @@ endif
 
 ifeq ($(TARGET_OS),openbsd)
   LIBFB_C += \
-    hexit_openbsd \
     hinit_openbsd \
     io_mouse_openbsd io_multikey_openbsd \
     sys_fmem_openbsd sys_getexename_openbsd sys_getexepath_openbsd \
