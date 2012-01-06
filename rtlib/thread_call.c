@@ -19,9 +19,19 @@
  * using LibFFI and then calls the user's procedure.
  */
 
+#include "fb.h"
+
+#ifdef HOST_DOS
+
+FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
+{
+	return NULL;
+}
+
+#else
+
 #include <stdio.h>
 #include <ffi.h>
-#include "fb.h"
 
 #define FB_THREADCALL_MAX_ELEMS 1024
 
@@ -238,3 +248,5 @@ static FBCALL void threadproc( void *param )
     free( info->ffi_arg_types );
     free( info );
 }
+
+#endif
