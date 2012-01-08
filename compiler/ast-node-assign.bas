@@ -341,7 +341,7 @@ function astCheckASSIGN _
 				end if
 			end if
 
-			if( astCheckCONV( ldtype, l->subtype, r ) = FALSE ) then
+			if( astCheckCONV( ldfull, l->subtype, r ) = FALSE ) then
 				exit function
 			end if
 		end if
