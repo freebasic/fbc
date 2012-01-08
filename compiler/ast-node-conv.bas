@@ -272,43 +272,47 @@ private function hCheckPtr _
 
 	function = FALSE
 
-	'' to pointer? only allow integers..
+	'' to pointer? only allow integers and pointers
 	if( typeIsPtr( to_dtype ) ) then
 		select case as const typeGet( expr_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			return TRUE
 
 		'' only allow other int dtypes if it's 0 (due QB's INTEGER = short)
 		case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
-			 FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-			 if( astIsCONST( expr ) ) then
-				if( astGetValueAsInt( expr ) <> 0 ) then
-					exit function
-				end if
-			 else
-				exit function
-			 end if
-
-		case else
-			if( typeIsPtr( expr_dtype ) = FALSE ) then
+		     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
+			if( astIsCONST( expr ) = FALSE ) then
 				exit function
 			end if
+			return (astGetValueAsInt( expr ) = 0)
+
+		case FB_DATATYPE_POINTER
+			'' Both are pointers, fall through to checks below
+
+		case else
+			exit function
 		end select
 
-	'' from pointer? only allow integers..
+	'' from pointer? only allow integers and pointers
 	elseif( typeIsPtr( expr_dtype ) ) then
 		select case as const typeGet( to_dtype )
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
-			 FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		     FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+			return TRUE
+
+		case FB_DATATYPE_POINTER
+			'' Both are pointers, fall through to checks below
 
 		case else
-			if( typeIsPtr( to_dtype ) = FALSE ) then
-				exit function
-			end if
+			exit function
 		end select
-	
+	else
+		'' No pointers at all, nothing to do
+		return TRUE
 	end if
 
+	'' Both are pointers
 	'' if any of them is a derived class, only allow cast to a base or derived
 	if( typeGetDtOnly( to_dtype ) = FB_DATATYPE_STRUCT ) then
 		if( to_subtype->udt.base <> NULL ) then
