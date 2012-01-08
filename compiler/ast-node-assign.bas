@@ -237,8 +237,8 @@ private sub hCheckConstAndPointerOps _
 					errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 					return
 				end if
-				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 			end if
+			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 		end if
 		
 	'' r-side expr is a ptr?
