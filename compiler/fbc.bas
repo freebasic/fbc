@@ -2565,7 +2565,7 @@ end sub
 private sub printVersion()
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
 		" (" + FB_BUILD_DATE + ") for " + FB_HOST
-	print "Copyright (C) 2004-2011 The FreeBASIC development team."
+	print "Copyright (C) 2004-2012 The FreeBASIC development team."
 
 	dim as string config
 	#ifdef ENABLE_STANDALONE
