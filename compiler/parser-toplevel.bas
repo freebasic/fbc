@@ -119,13 +119,17 @@ sub cProgram()
 			end if
 		end if
 
-		if (lexGetToken() = FB_TK_EOL) then
+		select case (lexGetToken())
+		case FB_TK_EOL
 			lexSkipToken( )
-		else
+
+		case FB_TK_EOF
+
+		case else
 			errReport( FB_ERRMSG_EXPECTEDEOL )
 			'' error recovery: skip until EOL
 			hSkipUntil( FB_TK_EOL, TRUE )
-		end if
+		end select
 
 		if (fbShouldContinue() = FALSE) then
 			exit sub
