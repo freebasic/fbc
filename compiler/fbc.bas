@@ -710,12 +710,12 @@ private function linkFiles() as integer
 	'' When using the DOS DJGPP tools, the command line length might be
 	'' limited, and with our generally long ld command lines (especially
 	'' when linking fbc) the line must be passed to ld through an @file.
-	dim as string argsfile
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		argsfile = hStripFilename(fbc.outname) + "temp.res"
+		dim as string argsfile = hStripFilename(fbc.outname) + "temp.res"
 		if (createArgsFile(argsfile, ldcline) = FALSE) then
 			exit function
 		end if
+		fbcAddTemp(argsfile)
 		if (fbc.verbose) then
 			print "ld options in '" & argsfile & "': ", ldcline
 		end if
@@ -727,12 +727,6 @@ private function linkFiles() as integer
 	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
 		exit function
 	end if
-
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
-		kill(argsfile)
-	end if
-#endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_DOS
