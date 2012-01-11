@@ -28,53 +28,9 @@
 #    - MinGW & MSYS
 #    - DirectX headers (for the graphics runtime)
 #
-# Cross-compiling the compiler to run on a specific HOST is possible by setting
-# HOST to a system triplet that will passed to the compiling fbc through the
-# -target option. Cross-compiling the runtime libraries for a specific TARGET
-# is possible by setting TARGET to the wanted system triplet, which will cause
-# the corresponding <target>-gcc to be used. Setting HOST will also cause
-# TARGET to default to it.
-#
-# Note: There is no <anything>-fbc; cross-compiling with fbc is done through
-# its -target option, fbc always has all targets enabled and always defaults
-# to building for the host. All in all, this means only one copy of fbc needs
-# to be installed, while the FB runtime development libraries can be installed
-# as needed for all wanted targets.
-# 
-# By default, HOST is guessed by using uname. In case that detection (or the
-# HOST/TARGET triplet parsing) fails, please fix it and make it work!
-#
-# Alternatively (instead of using a system triplet) you can set HOST_OS,
-# HOST_ARCH and/or TARGET_OS, TARGET_ARCH directly, which should allow
-# building a cross-compiler without the target triplet name prefix.
-# FB OS names:
-#    dos cygwin darwin freebsd linux netbsd openbsd solaris win32 xbox
-#    (where 'dos' should be 'djgpp', and 'win32' should be 'mingw')
-# FB architecture names:
-#    386 486 586 686 x86_64 sparc sparc64 powerpc64
-# Note: In the runtime, the win32 parts are used for both mingw and cygwin,
-# so there we have HOST_MINGW/CYGWIN and the HOST_WIN32 common to both.
-# In the makefile/compiler win32 means just mingw though.
-#
-# FB directory layout ('target-' is the cross-compiler name prefix,
-# '-suffix' is the optional name suffix that can be used to differentiate
-# parallel fbc installations):
-#    a) Default (for Unixy installations):
-#          bin/target-fbc-suffix
-#          include/target-freebasic-suffix/fbgfx.bi
-#          lib/target-freebasic-suffix/libfb.a
-#    b) Standalone (for self-contained DOS/Windows installations):
-#          target-fbc-suffix.exe
-#          target-include-suffix/fbgfx.bi
-#          target-lib-suffix/libfb.a
-#
 # libbfd tips:
-#    fbc uses libbfd to add and read out extra information to/from object files
-#    and static libraries, for example a list of library names from '-l somelib'
-#    command line options and #inclibs in FB source code, to allow users to
-#    compile and link in separate steps without having to explicitly specify
-#    all '-l somelib' options for the link step. 
-#    It's an optional but convenient feature. (see DISABLE_OBJINFO)
+#    fbc uses libbfd to add extra information to object files and then read it
+#    out at link time. It's convenient but optional (see DISABLE_OBJINFO).
 #    Read more here: <http://www.freebasic.net/wiki/wikka.php?wakka=DevObjinfo>
 #    For the releases made by the fbc project, fbc is linked against a static
 #    libbfd 2.17,
@@ -98,14 +54,12 @@
 #  - Build for or enable the "i386-pc-xbox" target.
 #
 # Rough overview of what this makefile does:
-#  - #include config.mk and new/config.mk,
-#  - Guess the OS/arch types, or parse the HOST/TARGET triplets to find out
-#  - Set TARGET_CC, prefix, EXEEXT, etc. based on that
-#  - Figure out the directory layout (normal vs. standalone), same for
-#    file names/locations of fbc/libfb etc., for both new/ and $prefix/
-#    directories.
-#  - Set FBCFLAGS, FBLFLAGS and ALLCFLAGS
-#  - Select compiler/runtime sources based on host/target systems
+#  - #include config.mk
+#  - Guess build system using uname
+#  - Parse TARGET variable if needed
+#  - Figure out the dir layout
+#  - Set compilers and flags
+#  - Select compiler/rtlib/gfxlib2 sources
 #  - Perform build/install rules
 #
 # Note: In order to be compatible to older makes, namely DJGPP's
@@ -121,12 +75,8 @@
 # their limitations (recursive directory creation, command line length limits,
 # missing commands, case-preservation in file names, different syntax for
 # quoting and escaping, file name restrictions, forward slashes vs.
-# backslashes). If FB had less build modes (standalone vs. normal directory
-# layout) and would just consist of fbc and one libfreebasic this all would
-# be easier. And then there's the problem of whether the test suite or fbdocs
-# (and other things in the FB source) will work without a Unixy shell, not to
-# mention building other projects such as binutils, for which a Unixy shell is
-# needed anyways.
+# backslashes), not to mention the FB test suite or building other projects
+# we need (e.g. binutils), which requires a Unixy shell anyways.
 #
 
 FBC := fbc
@@ -144,7 +94,82 @@ endif
 -include $(new)/config.mk
 
 #
-# Host/target system determination
+# Build system determination (guessed via uname unless given)
+# This is almost only needed to set the default values for TARGET_OS and
+# TARGET_ARCH, but as long as we have other things using BUILD_OS, this separate
+# set of variables must exist.
+#
+
+uname := $(shell uname)
+ifneq ($(findstring CYGWIN,$(uname)),)
+  BUILD_OS := cygwin
+endif
+ifeq ($(uname),Darwin)
+  BUILD_OS := darwin
+endif
+ifeq ($(uname),FreeBSD)
+  BUILD_OS := freebsd
+endif
+ifeq ($(uname),Linux)
+  BUILD_OS := linux
+endif
+ifneq ($(findstring MINGW,$(uname)),)
+  BUILD_OS := win32
+endif
+ifeq ($(uname),MS-DOS)
+  BUILD_OS := dos
+endif
+ifeq ($(uname),NetBSD)
+  BUILD_OS := netbsd
+endif
+ifeq ($(uname),OpenBSD)
+  BUILD_OS := openbsd
+endif
+ifndef BUILD_OS
+  $(error Sorry, the OS could not be identified automatically. \
+          Maybe this makefile should be fixed. 'uname' returned: '$(uname)')
+endif
+
+# Try to guess the BUILD_ARCH based on 'uname -m'
+ifeq ($(BUILD_OS),dos)
+  # For the DJGPP build however, just use i386, and don't bother calling
+  # 'uname -m', which only returns 'pc' anyways.
+  uname_m := i386
+else
+  uname_m := $(shell uname -m)
+endif
+ifeq ($(uname_m),i386)
+  BUILD_ARCH = 386
+endif
+ifeq ($(uname_m),i486)
+  BUILD_ARCH = 486
+endif
+ifeq ($(uname_m),i586)
+  BUILD_ARCH = 586
+endif
+ifeq ($(uname_m),i686)
+  BUILD_ARCH = 686
+endif
+ifeq ($(uname_m),x86_64)
+  BUILD_ARCH = x86_64
+endif
+ifeq ($(uname_m),sparc)
+  BUILD_ARCH = sparc
+endif
+ifeq ($(uname_m),sparc64)
+  BUILD_ARCH = sparc64
+endif
+ifeq ($(uname_m),powerpc64)
+  BUILD_ARCH = powerpc64
+endif
+ifndef BUILD_ARCH
+  $(error Sorry, the CPU architecture could not be identified automatically. \
+          Maybe this makefile should be fixed. \
+          'uname -m' returned: '$(uname_m)')
+endif
+
+#
+# Target system determination
 #
 
 # os = iif(has >= 3 words, words 3..EOL, last word)
@@ -162,168 +187,6 @@ extract-arch = $(if $(word 2,$(1)),$(firstword $(1)),unknown)
 # word/text processing functions to take it apart.
 extract-triplet-os = $(call extract-os,$(subst -, ,$(1)))
 extract-triplet-arch = $(call extract-arch,$(subst -, ,$(1)))
-
-ifdef HOST
-  # Parse the HOST triplet
-  HOST_PREFIX := $(HOST)-
-
-  ifndef HOST_OS
-    triplet_os := $(call extract-triplet-os,$(HOST))
-    ifneq ($(filter cygwin%,$(triplet_os)),)
-      HOST_OS := cygwin
-    endif
-    ifneq ($(filter darwin%,$(triplet_os)),)
-      HOST_OS := darwin
-    endif
-    ifneq ($(filter djgpp%,$(triplet_os)),)
-      HOST_OS := dos
-    endif
-    ifneq ($(filter freebsd%,$(triplet_os)),)
-      HOST_OS := freebsd
-    endif
-    ifneq ($(filter linux%,$(triplet_os)),)
-      HOST_OS := linux
-    endif
-    ifneq ($(filter mingw%,$(triplet_os)),)
-      HOST_OS := win32
-    endif
-    ifneq ($(filter netbsd%,$(triplet_os)),)
-      HOST_OS := netbsd
-    endif
-    ifneq ($(filter openbsd%,$(triplet_os)),)
-      HOST_OS := openbsd
-    endif
-    ifneq ($(filter solaris%,$(triplet_os)),)
-      HOST_OS := solaris
-    endif
-    ifneq ($(filter xbox%,$(triplet_os)),)
-      HOST_OS := xbox
-    endif
-  endif
-
-  ifndef HOST_ARCH
-    triplet_arch := $(call extract-triplet-arch,$(HOST))
-    ifeq ($(triplet_arch),i386)
-      HOST_ARCH := 386
-    endif
-    ifeq ($(triplet_arch),i486)
-      HOST_ARCH := 486
-    endif
-    ifeq ($(triplet_arch),i586)
-      HOST_ARCH := 586
-    endif
-    ifeq ($(triplet_arch),i686)
-      HOST_ARCH := 686
-    endif
-    ifeq ($(triplet_arch),x86_64)
-      HOST_ARCH := x86_64
-    endif
-    ifeq ($(triplet_arch),sparc)
-      HOST_ARCH := sparc
-    endif
-    ifeq ($(triplet_arch),sparc64)
-      HOST_ARCH := sparc64
-    endif
-    ifeq ($(triplet_arch),powerpc64)
-      HOST_ARCH := powerpc64
-    endif
-  endif
-
-  # For some triplets we can choose good default archs, e.g. i486 for 'mingw32'
-  ifndef HOST_ARCH
-    ifeq ($(HOST_OS),dos)
-      HOST_ARCH := 386
-    endif
-    ifeq ($(HOST_OS),win32)
-      HOST_ARCH := 486
-    endif
-  endif
-
-  ifndef HOST_OS
-    $(error Sorry, the OS part of HOST='$(HOST)' could not be identified. \
-            Maybe the makefile should be fixed.)
-  endif
-
-  ifndef HOST_ARCH
-    $(error Sorry, the CPU arch part of HOST='$(HOST)' could not be \
-            identified. Maybe the makefile should be fixed.)
-  endif
-else
-  # No HOST given, so try to guess it via uname.
-  ifndef HOST_OS
-    uname := $(shell uname)
-    ifneq ($(findstring CYGWIN,$(uname)),)
-      HOST_OS := cygwin
-    endif
-    ifeq ($(uname),Darwin)
-      HOST_OS := darwin
-    endif
-    ifeq ($(uname),FreeBSD)
-      HOST_OS := freebsd
-    endif
-    ifeq ($(uname),Linux)
-      HOST_OS := linux
-    endif
-    ifneq ($(findstring MINGW,$(uname)),)
-      HOST_OS := win32
-    endif
-    ifeq ($(uname),MS-DOS)
-      HOST_OS := dos
-    endif
-    ifeq ($(uname),NetBSD)
-      HOST_OS := netbsd
-    endif
-    ifeq ($(uname),OpenBSD)
-      HOST_OS := openbsd
-    endif
-    ifndef HOST_OS
-      $(error Sorry, your OS could not be identified automatically. \
-              Maybe the makefile should be fixed. 'uname' returned: '$(uname)')
-    endif
-  endif
-
-  # For the DJGPP build, just use i386, and don't bother calling 'uname -m',
-  # which only returns 'pc' anyways.
-  ifndef HOST_ARCH
-    ifeq ($(HOST_OS),dos)
-      HOST_ARCH := 386
-    endif
-  endif
-
-  # Otherwise try to guess the HOST_ARCH based on 'uname -m'
-  ifndef HOST_ARCH
-    uname_m := $(shell uname -m)
-    ifeq ($(uname_m),i386)
-      HOST_ARCH = 386
-    endif
-    ifeq ($(uname_m),i486)
-      HOST_ARCH = 486
-    endif
-    ifeq ($(uname_m),i586)
-      HOST_ARCH = 586
-    endif
-    ifeq ($(uname_m),i686)
-      HOST_ARCH = 686
-    endif
-    ifeq ($(uname_m),x86_64)
-      HOST_ARCH = x86_64
-    endif
-    ifeq ($(uname_m),sparc)
-      HOST_ARCH = sparc
-    endif
-    ifeq ($(uname_m),sparc64)
-      HOST_ARCH = sparc64
-    endif
-    ifeq ($(uname_m),powerpc64)
-      HOST_ARCH = powerpc64
-    endif
-    ifndef HOST_ARCH
-      $(error Sorry, your system's CPU arch could not be identified \
-              automatically. Maybe the makefile should be fixed. \
-              'uname -m' returned: '$(uname_m)')
-    endif
-  endif
-endif
 
 ifdef TARGET
   # TARGET given, so parse it
@@ -402,37 +265,22 @@ ifdef TARGET
   endif
 
   ifndef TARGET_OS
-    $(error Sorry, the OS part of TARGET='$(TARGET)' could not be \
-            identified. Maybe the makefile should be fixed.)
+    $(error Sorry, the OS part of TARGET='$(TARGET)' could not be identified. \
+            Maybe this makefile should be fixed.)
   endif
 
   ifndef TARGET_ARCH
-    $(error Sorry, the CPU arch part of TARGET='$(TARGET)' could not be \
-            identified. Maybe the makefile should be fixed.)
+    $(error Sorry, the CPU part of TARGET='$(TARGET)' could not be identified. \
+            Maybe this makefile should be fixed.)
   endif
 else
-  # No TARGET given, so use the same values as for HOST
-  ifdef HOST
-    TARGET := $(HOST)
-    TARGET_PREFIX := $(HOST_PREFIX)
-  endif
+  # No TARGET given, so default to the native system
   ifndef TARGET_OS
-    TARGET_OS := $(HOST_OS)
+    TARGET_OS := $(BUILD_OS)
   endif
   ifndef TARGET_ARCH
-    TARGET_ARCH := $(HOST_ARCH)
+    TARGET_ARCH := $(BUILD_ARCH)
   endif
-endif
-
-ifneq ($(filter cygwin dos win32,$(HOST_OS)),)
-  EXEEXT := .exe
-  INSTALL_PROGRAM := cp
-  INSTALL_FILE := cp
-else
-  # For copying fbc and the includes/libraries into $(prefix),
-  # should be better than plain cp at replacing fbc while fbc is running.
-  INSTALL_PROGRAM := install
-  INSTALL_FILE := install -m 644
 endif
 
 #
@@ -451,7 +299,7 @@ ifdef ENABLE_STANDALONE
   prefixinclude := $(prefix)/include
   prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
-  ifeq ($(HOST_OS),dos)
+  ifeq ($(TARGET_OS),dos)
     FB_NAME := freebas
   else
     FB_NAME := freebasic
@@ -464,6 +312,9 @@ else
   prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
+ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
+  EXEEXT := .exe
+endif
 FBC_EXE := fbc$(SUFFIX)$(SUFFIX2)$(EXEEXT)
 
 newcompiler := $(new)/compiler
@@ -489,9 +340,16 @@ endif
 # Compilers and flags
 #
 
-ifndef HOST_CC
-  HOST_CC := $(HOST_PREFIX)$(CC)
+ifneq ($(filter cygwin dos win32,$(BUILD_OS)),)
+  INSTALL_PROGRAM := cp
+  INSTALL_FILE := cp
+else
+  # For copying fbc and the includes/libraries into $(prefix),
+  # should be better than plain cp at replacing fbc while fbc is running.
+  INSTALL_PROGRAM := install
+  INSTALL_FILE := install -m 644
 endif
+
 ifndef TARGET_AR
   TARGET_AR := $(TARGET_PREFIX)$(AR)
 endif
@@ -503,31 +361,31 @@ FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(
 FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
 ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
 
-# If cross-compiling fbc, use -target
-ifneq ($(HOST),)
-  FBCFLAGS += -target $(HOST)
-  FBLFLAGS += -target $(HOST)
+# If cross-compiling, use -target
+ifneq ($(TARGET),)
+  FBCFLAGS += -target $(TARGET)
+  FBLFLAGS += -target $(TARGET)
 endif
 
-ifneq ($(filter cygwin win32,$(HOST_OS)),)
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   FBLFLAGS += -t 2048
 endif
 
 ifndef DISABLE_OBJINFO
   FBLFLAGS += -l bfd -l iberty
-  ifeq ($(HOST_OS),cygwin)
+  ifeq ($(TARGET_OS),cygwin)
     FBLFLAGS += -l intl
   endif
-  ifeq ($(HOST_OS),dos)
+  ifeq ($(TARGET_OS),dos)
     FBLFLAGS += -l intl -l z
   endif
-  ifeq ($(HOST_OS),freebsd)
+  ifeq ($(TARGET_OS),freebsd)
     FBLFLAGS += -l intl
   endif
-  ifeq ($(HOST_OS),openbsd)
+  ifeq ($(TARGET_OS),openbsd)
     FBLFLAGS += -l intl
   endif
-  ifeq ($(HOST_OS),win32)
+  ifeq ($(TARGET_OS),win32)
     FBLFLAGS += -l intl -l user32
   endif
 endif
@@ -1029,7 +887,7 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(FBCFLAGS) -c $< -o $@
 
 $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
-	$(QUIET_CC)$(HOST_CC) -Wfatal-errors -Wall -c $< -o $@
+	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
 
 $(newcompiler)/config.bi: compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
@@ -1217,12 +1075,11 @@ help:
 	@echo "  CFLAGS   override the default '-O2' (affects the runtime only)"
 	@echo "  new      use another build directory (default: 'new')"
 	@echo "  prefix   install in a specific place (default: '/usr/local')"
-	@echo "  HOST     compile fbc to run on HOST (will also be its default target)"
-	@echo "  TARGET   compile the runtime to run on TARGET (does not affect fbc)"
+	@echo "  TARGET   cross-compile compiler and runtime to run on TARGET"
 	@echo "  SUFFIX   append a string (e.g. '-0.23') to fbc and FB directory names"
 	@echo "  SUFFIX2  append a second string (e.g. '-test') only to the fbc executable"
 	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)"
-	@echo "  HOST_CC, TARGET_AR, TARGET_CC  specify the tools directly"
+	@echo "  TARGET_AR, TARGET_CC  specify the tools directly"
 	@echo "  V        to get to see verbose command lines used by make"
 	@echo "FreeBASIC configuration options, use them to..."
 	@echo "  ENABLE_STANDALONE  use a simpler directory layout with fbc at toplevel"
