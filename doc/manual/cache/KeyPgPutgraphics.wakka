@@ -2,18 +2,16 @@
 Copies an image on to another image or screen
 
 {{fbdoc item="syntax"}}##
-	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-[ STEP ]( //x2//,//y2// ) ] [ ,//method// [ ,( //alphaval//|//value//|//blender// [ ,//param//]) ] ]
+	**Put** [//target//, ] [ [STEP](//x//, //y//), //source// [, (//x1//, //y1//)-[STEP](//x2//, //y2//) ] [, //method// [, ( //alphaval//|//value//|//blender// [, //param//]) ] ]
 ##
 {{fbdoc item="param"}}
 	##//target//##
 		is the address of the buffer where the image is to be drawn. If it's omitted, the image gets blitted to screen. See below.
-	##STEP##
-		indicates that ##(//x//,  //y//)## offsets are relative to the current graphics cursor position.	
-	##(//x//,  //y//)##
-		specify offsets from the upper-left corner of the destination buffer, or screen, that the image gets drawn to. 
+	##[STEP](//x//, //y//)##
+		specify offsets from the upper-left corner of the destination buffer, or screen, that the image gets drawn to.  ##STEP## indicates that ##(//x//, //y//)## offsets are relative to the current graphics cursor position.
 	##//source//##
 		is the address of the buffer of the image to be drawn. See below.
-	##(//x1//, //y1//)-[ STEP ](//x2//, //y2//)##
+	##(//x1//, //y1//)-[STEP](//x2//, //y2//)##
 		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn. ##STEP## indicates that ##//x2//## and ##//y2//## are relative to ##//x1//## and ##//y1//##, respectively.
 	##//method//##
 		specifies the method used to draw the image to the destination buffer, and can be any one of the following (the default method is ##XOR##):
@@ -23,9 +21,9 @@ Copies an image on to another image or screen
 			##PRESET## : Source pixel values are 1's-complement negated before being copied.
 			##[[KeyPgTransGfx TRANS]]## : Source pixel values are copied without modification. Does not draw source pixels of mask color. See below.
 		Background-dependent methods
-			##[[KeyPgAndGfx AND]]## : Destination pixels are bitwise ANDed with source pixels. See below.
-			##[[KeyPgOrGfx OR]]## : Destination pixels are bitwise ORed with source pixels. See below.
-			##[[KeyPgXorGfx XOR]]## : Destination pixels are bitwise XORed with source pixels. See below.
+			##[[KeyPgAndGfx AND]]## : Destination pixels are bitwise ##[[KeyPgOpand AND]]##ed with source pixels. See below.
+			##[[KeyPgOrGfx OR]]## : Destination pixels are bitwise ##[[KeyPgOpor OR]]##ed with source pixels. See below.
+			##[[KeyPgXorGfx XOR]]## : Destination pixels are bitwise ##[[KeyPgOpxor XOR]]##ed with source pixels. See below.
 			##[[KeyPgAlphaGfx ALPHA]]## : Source is blended with a transparency factor specified either in the ##//value//## parameter, or in the image's individual pixels.  See below.
 			##[[KeyPgAddGfx ADD]]##: Source is multiplied by a value and added with saturation to the destination. See below.
 			##[[KeyPgCustomgfx CUSTOM]]## : Uses a user-defined function to perform blending the source with the destination. See below.

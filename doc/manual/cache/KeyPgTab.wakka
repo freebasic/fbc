@@ -5,7 +5,7 @@ Sets the column when writing to screen or file
 	**Tab**( //col_num// )
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgPrint Print]] **Tab**( //colunm// ) [(, | ;)] ...
+	[[KeyPgPrint Print]] **Tab**( //column// ) [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
 	##//column//##

@@ -13,7 +13,7 @@ An object contains both the data needed by the object, and the methods (subrouti
 
 Another beneficial consequence of encapsulation is information hiding. The data inside the object is shielded from the outside world so that unwanted changes to the data cannot occur. Instead of accessing a variable directly, the object has a public interface that the external program should use to access and change data members. By using an interface, you can control how the object behaves and ensure that its operation is consistent across many programs. 
 
-The interface also allows you to make internal changes to the code, without changing the way the object is accessed. As long as you don’t change the published interface, that is change any existing public methods, you can improve the object without breaking any existing code that relies on the object. In the cases where a program my need an improved method, you can leave the old method in place to maintain compatibility, and just add a new method with the improved functionality. New programs can use the new method, while old programs can still use the old method.
+The interface also allows you to make internal changes to the code, without changing the way the object is accessed. As long as you don't change the published interface, that is change any existing public methods, you can improve the object without breaking any existing code that relies on the object. In the cases where a program my need an improved method, you can leave the old method in place to maintain compatibility, and just add a new method with the improved functionality. New programs can use the new method, while old programs can still use the old method.
 
 Another advantage of using a public interface is so that other programmers can use your object without worrying about the internal details of the object. As long as the published interface is stable and well documented, anyone should be able to use your object, even beginners.
 
@@ -58,7 +58,7 @@ End Type
 %%
 As you can see, the extended Type looks much like a standard Type except for the Private: and Public: keywords and the sub declaration. The Private: keyword tells the compiler that the data members that follow are private to the type, that is cannot be accessed outside of the type. The private state extends to all object members until a new qualifier is encountered, which in this case is the Public: qualifier just above the Sub declaration. All of the data members are hidden from the outside world and cannot be changed from outside the scope of the Type, a process called information hiding. The underscore appended to the private variables is the common way to define private variables.
 
-Information hiding is a way to maintain the integrity of the object. You should never allow an outside process to directly access a data member. All data access should be through the use of Property members so that you can control what is being passed to your object. Strict control over your object’s data will help prevent many errors that may occur when a programmer uses your object.
+Information hiding is a way to maintain the integrity of the object. You should never allow an outside process to directly access a data member. All data access should be through the use of Property members so that you can control what is being passed to your object. Strict control over your object's data will help prevent many errors that may occur when a programmer uses your object.
 %%(freebasic)
 Type myRect
   Private:
@@ -128,11 +128,11 @@ Type myRect
 	                    
 End Type
 %%
-You will notice in the definition that we have two Constructors, one that takes a set of parameters and one that doesn’t. This is called overloading and can be used not only with Constructors but also with other subroutines and functions. Overloading is useful for situations where you need to handle different parameter types with a single method call. The compiler will determine which method to call based on the parameters passed to the method. You can overload as many methods as you want, as long as the number and type of parameters for each method is unique.
+You will notice in the definition that we have two Constructors, one that takes a set of parameters and one that doesn't. This is called overloading and can be used not only with Constructors but also with other subroutines and functions. Overloading is useful for situations where you need to handle different parameter types with a single method call. The compiler will determine which method to call based on the parameters passed to the method. You can overload as many methods as you want, as long as the number and type of parameters for each method is unique.
 
-In this instance, if the Constructor is not passed any parameter values, it will initialize the variables to a set of default values. If the Constructor is called with parameters, then it will use the passed values to initialize the object’s variables.
+In this instance, if the Constructor is not passed any parameter values, it will initialize the variables to a set of default values. If the Constructor is called with parameters, then it will use the passed values to initialize the object's variables.
 
-There is also a Destructor method that is called when the object is destroyed. You can use the Destructor to perform any cleanup tasks that must be carried out before the object is released from memory. If the object created any pointer references, or opened any files, then you would clean up those references in the Destructor. Since the Rectangle object doesn’t create any outside references, a Destructor is not needed.
+There is also a Destructor method that is called when the object is destroyed. You can use the Destructor to perform any cleanup tasks that must be carried out before the object is released from memory. If the object created any pointer references, or opened any files, then you would clean up those references in the Destructor. Since the Rectangle object doesn't create any outside references, a Destructor is not needed.
 
 
 === Filling in the Object Methods===
@@ -403,6 +403,6 @@ Sleep
 End
 %%
 
-To initialize the object using the default Constructor, you simply Dim the extended Type just as you would the standard type. If the Constructor only takes a single value then you can use the Dim var as Typename = value syntax. To initialize the object with a set of values, you Dim the type and then use the = typename(par1m parm1…) syntax. You can see that accessing the members of the object is just like accessing the member of a standard type.
+To initialize the object using the default Constructor, you simply Dim the extended Type just as you would the standard type. If the Constructor only takes a single value then you can use the Dim var as Typename = value syntax. To initialize the object with a set of values, you Dim the type and then use the = typename(par1m parm1...) syntax. You can see that accessing the members of the object is just like accessing the member of a standard type.
 
 Thanks to cha0s at the FreeBasic forums for the information regarding Properties.

@@ -87,6 +87,8 @@ Using the **fbc** command-line.
 		Link with thread-safe runtime library
 	=={{fbdoc item="keyword" value="CompilerOptnodeflibs|-nodeflibs"}}==
 		Do not include the default libraries
+	=={{fbdoc item="keyword" value="CompilerOptstatic|-static"}}==
+		Prefer static libraries over dynamic ones when linking
 	=={{fbdoc item="keyword" value="CompilerOptmap|-map < name >"}}==
 		Save the linking map to file name
 	=={{fbdoc item="keyword" value="CompilerOptWl|-Wl < opt >"}}==

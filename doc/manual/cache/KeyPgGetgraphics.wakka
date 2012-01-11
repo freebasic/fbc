@@ -2,22 +2,22 @@
 Gets a copy of a portion of the current work page or an image buffer
 
 {{fbdoc item="syntax"}}##
-	**Get** [//source//,] [Step] (//x1//, //y1//) - [STEP] (//x2//, //y2//), //dest//]
+	**Get** [//source//,] [STEP](//x1//, //y1//) - [STEP](//x2//, //y2//), //dest//
 ##
 {{fbdoc item="param"}}
 	##//source//##
 		the address of an image buffer.
-	##Step##
+	##STEP##
 		indicates that the following co-ordinates are not absolute co-ordinates.
-	##//x1//##,  ##//y1//##
-		co-ordinates of the upper-left corner of the sub-image to copy.
-	##//x2//##,  ##//y2//##
-		co-ordinates of the lower-right corner of the sub-image to copy.
+	##[STEP](//x1//, //y1//)##
+		co-ordinates of the upper-left corner of the sub-image to copy.  ##STEP## indicates that ##(//x1//, //y1//)## offsets are relative to the current graphics cursor position.
+	##[STEP](//x2//, //y2//)##
+		co-ordinates of the lower-right corner of the sub-image to copy.  ##STEP## indicates that ##//x2//## and ##//y2//## are relative to ##//x1//## and ##//y1//##, respectively.
 	##//dest//##
 		the address of a previously allocated buffer to store the image data.
 
 {{fbdoc item="desc"}}
-	##**Get**## copies a rectangular portion of the current work page specified by the co-ordinates (##//x1//##,  ##//y1//##) and (##//x2//##,  ##//y2//##), which represent the upper-left and lower-right corners of the rectangle, respectively. ##**Step**## specifies that the upper-left co-ordinates are relative to the current graphics pen location, and/or that the lower-right co-ordinates are relative to the upper-left co-ordinates. The new image buffer is formatted to match the current screen mode [[GfxInternalFormats pixel format]].
+	##**Get**## copies a rectangular portion of the current work page specified by the co-ordinates (##//x1//##,  ##//y1//##) and (##//x2//##,  ##//y2//##), which represent the upper-left and lower-right corners of the rectangle, respectively. ##STEP## specifies that the upper-left co-ordinates are relative to the current graphics pen location, and/or that the lower-right co-ordinates are relative to the upper-left co-ordinates. The new image buffer is formatted to match the current screen mode [[GfxInternalFormats pixel format]].
 
 	##//dest//## can be an address, an [[ProPgArrays array]], or a reference to the first element in an [[ProPgArrays array]] that will receive the new image buffer. This memory must be sufficiently allocated to hold the image buffer; the number of bytes required varies with the [[CompilerOptlang -lang dialect]] used to compile the program.
 

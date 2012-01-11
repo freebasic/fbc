@@ -16,7 +16,7 @@ Starts a user-defined procedure in a separate execution thread
 		Optional number of bytes to reserve for this thread's stack.
 
 {{fbdoc item="ret"}}
-	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (0) on failure.
+	**Threadcreate** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (##0##) on failure.
 
 {{fbdoc item="desc"}}
 	The user function is started as a thread executes in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or using the waiting times in the main program.
@@ -173,7 +173,7 @@ end sub
 %%
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in ##-lang qb##
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- **Threadcreate** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.

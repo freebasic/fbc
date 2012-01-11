@@ -75,7 +75,7 @@
 <td>198<td>C6<td><tt>&#9566;</tt>
 <td>230<td>E6<td>µ
 <tr>
-<td>007<td>07<td>•
+<td>007<td>07<td>&#149;
 <td>039<td>27<td>'
 <td>071<td>47<td>G
 <td>103<td>67<td>g
@@ -253,7 +253,7 @@
 <td>154<td>9A<td>Ü
 <td>186<td>BA<td><tt>&#9553;</tt>
 <td>218<td>DA<td><tt>&#9484;</tt>
-<td>250<td>FA<td>•
+<td>250<td>FA<td>&#149;
 <tr>
 <td>027<td>1B<td><tt>&#8592;</tt>
 <td>059<td>3B<td>;
@@ -295,7 +295,7 @@
 <td>063<td>3F<td>?
 <td>095<td>5F<td>_
 <td>127<td>7F<td><tt>&#8962;</tt>
-<td>159<td>9F<td>ƒ
+<td>159<td>9F<td>&#131;
 <td>191<td>BF<td><tt>&#9488;</tt>
 <td>223<td>DF<td><tt>&#9600;</tt>
 <td>255<td>FF<td>&nbsp;

@@ -26,7 +26,7 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file number.
 
 	The ##[For Input|Output]## ##//mode//## is allowed for compatibility, but is ignored.
-	
+
 **Runtime errors:**
 	    ##**Open Err**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 

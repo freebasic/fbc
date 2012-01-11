@@ -7,7 +7,7 @@ Metacommand to change the way arrays are allocated
 	[[KeyPgRem rem]] **$Static**
 ##
 {{fbdoc item="desc"}}
-	##**'$Static**## is a metacommand that overrides the behavior of ##[[KeyPgMetaDynamic $Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**'$Static**## is used, and can be overridden with ##[[KeyPgMetaDynamic $Dynamic]]##.
+	##**'$Static**## is a metacommand that overrides the behavior of ##[[KeyPgMetaDynamic $Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**'$Static**## is used, and can be overridden with ##[[KeyPgMetaDynamic $Dynamic]]##.  It is equivalent to the ##[[KeyPgOptionstatic Option Static]]## statement.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/meta/static.bas"}}%%(freebasic)
@@ -32,6 +32,7 @@ Dim b(100)   '<<this array will be fixed-length
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgErase Erase]]##
 	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgOptiondynamic Option Dynamic]]##
 	- ##[[KeyPgOptionstatic Option Static]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

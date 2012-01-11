@@ -480,6 +480,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgTan|TAN"}}
 	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgTime|TIME"}}

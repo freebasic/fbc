@@ -343,6 +343,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMutexDestroy|MUTEXDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexLock|MUTEXLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgMutexUnlock|MUTEXUNLOCK"}}
+	- {{fbdoc item="keyword" value="KeyPgThreadCall|THREADCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadCreate|THREADCREATE"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 

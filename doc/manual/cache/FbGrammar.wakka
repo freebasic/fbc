@@ -10,7 +10,7 @@ The right hand side of a production is terminated by a ;.
 A word in //italics// represent the name of a production (the left
 hand side of the production).
 
-Few operators are used to describe the FreeBASIC grammar.
+Few operators are used to describe the ""FreeBASIC"" grammar.
 
 {{table columns="2" cellpadding="5" cells="operator;meaning;.;any character;*;0 or more (repetition);+;1 or more (repetition);?;optional (choice);();grouping;|;separator (separates alternatives);semicolon;end of production"}}
 
@@ -23,10 +23,10 @@ Such references are in //italics//.
 For navigational purposes a reference is a link to the production 
 being referenced.
 
-When reading the grammar be aware that FreeBASIC is a case insensitive
+When reading the grammar be aware that ""FreeBASIC"" is a case insensitive
 language.
 
-The grammar presented is not an exact statement of the FreeBASIC language.
+The grammar presented is not an exact statement of the ""FreeBASIC"" language.
 
 Go straight to: 
 //{{anchor name="program|program"}}//

@@ -19,7 +19,7 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 **{{anchor name="PROBLEMS|Known problems"}}**
 
 
-{{anchor name="PREVIOUS"}}{{fbdoc item="section" value="Previous guides (for compiling FB 0.23 and earlier)"}}
+{{anchor name="PREVIOUS"}}{{fbdoc item="section" value="Previous guides (for compiling FB 0.23 [versions on or before September 20, 2011] and earlier)"}}
 
 	{{fbdoc item="keyword" value="SVNCygwin|Compiling from SVN for Cygwin"}}
 	{{fbdoc item="keyword" value="SVNWin32MSYS|Compiling from SVN for Win32, using MSYS on Win32"}}
@@ -30,7 +30,7 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 
 {{anchor name="SOURCE"}}{{fbdoc item="section" value="Getting the current source code"}}
 
-	The current source (""FreeBASIC"" 0.24) is available from these Git repositories:
+	The current source (""FreeBASIC"" 0.24 [versions after September 20, 2011]) is available from these Git repositories:
 	
 		Web view of main fbc/fbc repository: http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=summary
 		Git clone URL: ##""git://fbc.git.sourceforge.net/gitroot/fbc/fbc""##
@@ -39,6 +39,7 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 		Git clone URL: ##""https://github.com/freebasic/fbc.git""##
 	
 	If you need help with installing or using Git, search the web or check out the few [[Git Git tips here]].
+	(Typical usage after installation: "git clone git://...")
 
 
 {{anchor name="SETUP"}}{{fbdoc item="section" value="Setting up the environment"}}
@@ -56,9 +57,11 @@ On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users wil
 			- ##fileutils## (##fil*.zip##)
 			- ##gcc## (##gcc*b.zip##)
 			- ##gpp## (##gpp*b.zip##)
+			- ##gettext## (##gtxt*b.zip##) - //libintl, for libbfd//
 			- ##make## (##mak*b.zip##)
 			- ##shellutils## (##shl*b.zip##)
 			- ##textutils## (##txt*b.zip##)
+			- ##zlib## (##zlib*b.zip##) - //zlib, for libbfd, from the ##[[http://www.delorie.com/pub/djgpp/current/v2tk/ current/v2tk/]]## directory//
 		
 		For example when working in parallel with ""MinGW"", it can be useful to use a batch script to launch a terminal with the DJGPP tools in its PATH environment variable, instead of modifying your system's global PATH environment variable:
 		
@@ -86,6 +89,7 @@ cmd%%
 			- ##libxrender-dev## (##libXrender-devel##)
 			- ##libgpm-dev## (##gpm-devel##) - //General purpose mouse library headers for the rtlib//
 			- ##freeglut3-dev## (##freeglut-devel##) - //""OpenGL"" headers for gfxlib2//
+			- ##libffi-dev## (##ffi-devel##) - //foreign function interface for ##[[KeyPgThreadcall ThreadCall]]##//
 		
 		On 64bit Debian/Ubuntu, these packages should do the trick (To do: test and update):
 		
@@ -275,16 +279,16 @@ make FBFLAGS=-exx%%
 			Changes the /usr/local prefix to something else. Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
 		
 		- ##HOST=i686-pc-mingw32##
-			To cross-compile an fbc that will run on the specified host.
+			To cross-compile an fbc that will run on the specified host. fbc will default to compiling for its HOST. The FB runtime will also be cross-compiled to run on this host, unless TARGET is used to override that.
 		
 		- ##TARGET=i686-pc-mingw32##
-			Allows building a cross-fbc that defaults to compiling for the specified target. rtlib and gfxlib2 will be compiled to run on this target. The target will be prefixed to the fbc executable name and include/lib directories.
+			To cross-compile the FB runtime libraries to run on the specified target. The target name will be inserted into the lib/ or lib/freebasic/ directory name to allow installing multiple target-specific FB runtimes in parallel. Note: TARGET does not affect the compiler, which always has all targets enabled, and always defaults to compiling for its HOST.
 		
 		- ##SUFFIX=foo##
-			Append a suffix to the fbc executable's and include/ and lib/ directories' names. This allows installing multiple versions of FB in parallel.
+			Append a suffix to the fbc executable's and lib/ directories' names. This allows installing multiple versions of compiler and runtime in parallel. Note: The include/ directory name is not affected, and the FB headers are always shared by all installed FB versions (FB's headers and their directory layouts are designed to be able to do that).
 		
 		- ##SUFFIX2=foo##
-			Similar to ##SUFFIX##, except that this is a second suffix that will only be added to fbc executable's name, allowing to install multiple fbcs in parallel, but have them all use the same set of runtime libraries.
+			Similar to ##SUFFIX##, except that this is a second suffix that will only be added to fbc executable's name, allowing to install multiple fbcs in parallel, but have them all use the same set of runtime libraries. Useful to quickly test changes to the compiler, without overwriting the stable fbc or having to rebuilt the runtime libraries.
 		
 		- ##ENABLE_STANDALONE=1##
 			Intended for building self-contained installations (like the win32/dos FB releases), where fbc.exe is located in the toplevel directory, instead of bin/. This also changes some behavior in the compiler, and affects the include/ and lib/ directory layout.
@@ -293,7 +297,7 @@ make FBFLAGS=-exx%%
 			Allows hard-coding the ##prefix## into the compiler, instead of letting it use exepath() to be relocatable.
 		
 		- ##ENABLE_FBBFD=217##
-			Makes fbc use FB libbfd headers to use libbfd directly, instead of using a wrapper around the system's original ##bfd.h##. The specified version must match the version of the libbfd that this fbc will be linked with (because the libbfd ABI is very unstable).
+			Makes fbc use FB ##bfd.bi## headers to use libbfd directly, instead of using a wrapper around the system's original ##bfd.h##. The specified version must match the version of the libbfd that this fbc will be linked with (because the libbfd ABI is very unstable).
 		
 		- ##DISABLE_OBJINFO=1##
 			If specified fbc will not use libbfd at all, at the cost of the [[DevObjinfo objinfo feature]] being disabled. This is useful in environments (e.g. Debian unstable) where the shared libbfd is updated frequently, as fbc will no longer depend on a specific libbfd version/soname.

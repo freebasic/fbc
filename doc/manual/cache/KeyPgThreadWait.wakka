@@ -22,7 +22,7 @@ Waits until the designated thread has been completed before returning
 	See the ##[[KeyPgThreadCreate Threadcreate]]## examples.
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in ##-lang qb##
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- **Threadwait** is not available with the DOS version of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.

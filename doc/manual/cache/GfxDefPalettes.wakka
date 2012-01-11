@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Default Palettes"}}----
-Default color values for FreeBASIC graphics and text screen modes.
+Default color values for ""FreeBASIC"" graphics and text screen modes.
 
-	FreeBASIC initializes the palette indexes with the colors in the tables below. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. There is no portable way of changing the palette in console mode.
+	""FreeBASIC"" initializes the palette indexes with the colors in the tables below. The colors are the same as in QB. Colors in graphics mode can be changed using the ##[[KeyPgPalette Palette]]## statement. There is no portable way of changing the palette in console mode.
 
 **{{anchor name="SCRN1|Screen mode 1"}}**
 	4 colors: Black and white, and two others

@@ -74,7 +74,8 @@
 		Information and examples on third-party libraries.
 
 {{fbdoc item="section" value="Using the FreeBASIC compiler"}}
-	The ""FreeBASIC"" compiler is a command line tool that generates executables from ""FreeBASIC"" source code. It doesn't come with a source code editor. Still, IDEs specifically for ""FreeBASIC"" are available, aswell as ""FreeBASIC"" support in many other IDEs and code editors.
+	The ""FreeBASIC"" compiler is a command line tool that generates executables from ""FreeBASIC"" source code. It doesn't come with a source code editor.
+	Still, IDEs specifically for ""FreeBASIC"" are available, as well as ""FreeBASIC"" support in many other IDEs and code editors.
 	
 	{{fbdoc item="keyword" value="CompilerInstalling|Installing FreeBASIC"}} | {{fbdoc item="keyword" value="CompilerRequirements|Requirements"}}
 	{{fbdoc item="keyword" value="CompilerRunning|Running FreeBASIC"}}

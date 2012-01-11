@@ -1,0 +1,74 @@
+{{fbdoc item="title" value="THREADCALL"}}----
+Starts a user-defined procedure with parameters in a separate execution thread
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgFunction function]] **Threadcall** //subname//([//paramlist//]) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+##
+{{fbdoc item="usage"}}##
+	//threadid// = **Threadcall** //subname//([//paramlist//])
+##
+{{fbdoc item="param"}}
+	##//subname//##
+		The name of a subroutine
+	##//paramlist//##
+		A list of parameters to pass to the subroutine, as with a normal sub call.	
+
+{{fbdoc item="ret"}}
+	**Threadcall** returns an ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle to the thread created, or the null pointer (##0##) on failure.
+
+{{fbdoc item="desc"}}
+	Like ##[[KeyPgThreadCreate Threadcreate]]##, **Threadcall** creates a thread which runs at the same time as the code calling it.  By placing "**Threadcall**" before almost any normal call to sub, the sub is called inside of a new thread and returns a pointer to that thread.
+
+	Using **Threadcall** is simpler method of creating threads, and allows data to be passed to the thread without global variables or pointers which are not type safe.  However, ##[[KeyPgThreadCreate Threadcreate]]## is more efficient and should be used for programs creating a large number of threads.
+
+	While most subroutines are supported, the following types of subroutines may not be called:
+		- Subroutines using [[KeyPgVaArg variable arguments]]
+		- Subroutines with unions which are passed ##[[KeyPgByVal Byval]]##
+		- Subroutines with user types containing unions, arrays, strings, or bitfields which are passed ##[[KeyPgByVal Byval]]##
+
+	When using **Threadcall**, parenthesis around the parameter list are required unless the subroutine has no parameters.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/threads/threadcall.bas"}}%%(freebasic)
+'' Threading using "ThreadCall"
+
+Sub thread( id As String, tlock As Any Ptr, count As Integer )
+	For i As Integer = 1 To count
+		MutexLock tlock
+		Print "thread "; id;
+		Locate , 20
+		Print i & "/" & count
+		MutexUnlock tlock
+	Next
+End Sub
+
+Dim tlock As Any Ptr = MutexCreate()
+Dim a As Any Ptr = ThreadCall thread("A", tlock, 6)
+Dim b As Any Ptr = ThreadCall thread("B", tlock, 4)
+ThreadWait a
+ThreadWait b
+MutexDestroy tlock
+Print "All done (and without Dim Shared!)"
+%%
+
+{{fbdoc item="lang"}}
+	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+
+{{fbdoc item="target"}}
+	- **Threadcall** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
+	- In Linux the threads are always started in the order they are created, this can't be assumed in ""Win32"". It's an OS, not a ""FreeBASIC"" issue. 
+	- In Linux, the ##[[KeyPgStdCall Stdcall]]## and ##[[KeyPgPascal Pascal]]## calling conventions are not supported
+	- In Windows, the ##[[KeyPgPascal Pascal]]## calling convention is not supported.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgThreadWait Threadwait]]##
+	- ##[[KeyPgMutexCreate Mutexcreate]]##
+	- ##[[KeyPgMutexLock Mutexlock]]##
+	- ##[[KeyPgMutexUnlock Mutexunlock]]##
+	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+
+{{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

@@ -5,7 +5,7 @@ Reverts to default array declaration behavior
 	**Option Static**
 ##
 {{fbdoc item="desc"}}
-	##**Option Static**## is a statement that overrides the behavior of ##[[KeyPgOptiondynamic Option Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**Option Static**## is used, and can be overridden with ##[[KeyPgOptiondynamic Option Dynamic]]##.
+	##**Option Static**## is a statement that overrides the behavior of ##[[KeyPgOptiondynamic Option Dynamic]]##, that is, arrays declared with constant subscript ranges are fixed-length. This remains in effect for the rest of the module in which ##**Option Static**## is used, and can be overridden with ##[[KeyPgOptiondynamic Option Dynamic]]##.  It is equivalent to the ##[[KeyPgMetaStatic '$Static]]## metacommand.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-static.bas"}}%%(freebasic)
@@ -29,7 +29,8 @@ Dim bar(100) As Integer			' declares a fixed-length array
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMetaDynamic $Dynamic]]##
+	- ##[[KeyPgMetaDynamic '$Dynamic]]##
+	- ##[[KeyPgMetaStatic '$Static]]##
 	- ##[[KeyPgDim Dim]]##
 	- ##[[KeyPgErase Erase]]##
 	- ##[[KeyPgRedim Redim]]##

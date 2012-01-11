@@ -57,9 +57,9 @@ make
 make install
 cd ../../../..%%
 	
-	Now you can install the new fbc/libraries into /usr/local, overwriting the old installation (might require root privileges):
+	Now you can install the new fbc/libraries into /usr/local, overwriting the old installation:
 	
-	%%./install.sh -i%%
+	%%sudo ./install.sh -i%%
 	
 	Note: If the existing installation and the just-compiled ""FreeBASIC"" use different prefixes (or one is standalone, but not the other) then the install.sh or install-standalone.sh scripts won't replace the existing files. You will need to remove the previous installation first, either by running ##install.sh -u## or ##install-standalone -u## in the ""FreeBASIC"" directories you installed the existing ""FreeBASIC"" from, or by manually deleting the files.
 

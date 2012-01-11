@@ -10,7 +10,7 @@ Control flow statement for looping
 	##//iterator//##
 		a variable identifier that is used to iterate from an initial value to an end value
 	##//datatype//##
-		If specified, the variable ##//iterator//## will automatically be declared with the type ##//datatype//##.
+		If specified, the variable ##//iterator//## will automatically be declared with the type ##//datatype//##
 	##//startvalue//##
 		an expression that denotes the starting value of the iterator
 	##//endvalue//##
@@ -21,28 +21,26 @@ Control flow statement for looping
 {{fbdoc item="desc"}}
 	A ##**For...Next**## loop initializes ##//iterator//## to ##//startvalue//##, then executes the ##//statement block//##'s, incrementing ##//iterator//## by ##//stepvalue//## until it reaches ##//endvalue//##. If ##//stepvalue//## is not explicitly given it will set to 1.
 
-	The values of ##//stepvalue//## and ##//endvalue//## are stored internally immediately following execution of the ##**For**## statement and thus neither can be changed inside the ##**For**## loop. (the variables that define them can be changed, but changing those variables inside the ##**for**## loop will not affect its execution. See examples)
+	The values of ##//stepvalue//## and ##//endvalue//## are stored internally immediately following execution of the ##**For**## statement and thus neither can be changed inside the ##**For**## loop. (the variables that define them can be changed, but changing those variables inside the ##**For**## loop will not affect its execution. See examples)
 	
-	The ##//iterator//## may be defined having the same scope as the ##**For**## statement by using the ##[[KeyPgAs as]] [[DataType datatype]]## syntax.  With this syntax, //iterator// is created and destroyed within the ##**For...Next**## scope. See dialect differences below.
+	The iterator must be an intrinsic scalar: only ##[[KeyPgStatic Static]]##/##[[KeyPgShared Shared]]## variables and local variables can be used; no other kind can be used, including array elements, UDT members, ##[[KeyPgByref Byref]]## parameters or any kind of dereferenced address.
+	
+	The ##//iterator//## may be defined having the same scope as the ##**For**## statement by using the ##[[KeyPgAs as]] [[DataType datatype]]## syntax.  With this syntax, ##//iterator//## is created and destroyed within the ##**For...Next**## scope. See dialect differences below.
 
 	If ##//endvalue//## is less than ##//startvalue//## then a negative ##//stepvalue//## must be specified or the ##//statement block//## will not execute at all, since ##//startvalue//## compares greater than ##//endvalue//##.
 
 	The ##**For**## statement causes the execution of the statements in the ##//statement block//## until ##//iterator//## compares **greater than** ##//endvalue//## (or **less than** ##//endvalue//## if ##//stepvalue// < 0##). ##//iterator//## will be incremented the amount of ##//stepvalue//## following each execution of the ##//statement block//##. If an increment is not given, ##//iterator//## will be implicitly incremented by ##1##.
 
-	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the ##//statement block//##, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**## statement is encountered, the rest of the ##//statement block//## is skipped and execution resumes at the FOR statement.
+	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the ##//statement block//##, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**## statement is encountered, the rest of the ##//statement block//## is skipped until the block's corresponding ##**Next**## statement.  The counter's value is incremented and the loop restarted if it is still within the bounds given by ##//endvalue//##.
 
 	Like all control flow statements, the ##**For**## statement can be nested, that is, it can be used in a statement block of another ##**For**## statement.
-
-	**note**: When a negative ##//stepvalue//## is specified, the ##**For**## statement loops until ##//iterator//## compares //less than// ##//end_value//##.
 
 	##//For//##, ##//Next//##, and ##//Step//## are operators that can be overloaded inside user defined types. See [[KeyPgOpFor Operator For]], [[KeyPgOpNext Operator Next]], [[KeyPgOpStep Operator Step]]
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/for-next.bas"}}%%(freebasic)
-Dim i As Single
 Print "counting from 3 to 0, with a step of -0.5"
-dim i as single
-for i = 3 to 0 step -0.5
+for i as single = 3 to 0 step -0.5
 	print "i is " & i
 next i%%
 {{fbdoc item="filename" value="examples/manual/control/for-next2.bas"}}%%(freebasic)
@@ -71,8 +69,8 @@ loop
 print%%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a FOR..NEXT loop have a function-wide [[ProPgVariableScope scope]]  as in QB 
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a ##**For**##..##**Next**## block have a procedure-wide [[ProPgVariableScope scope]]  as in QB 
+	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and cannot be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- ##[[KeyPgByref Byref]]## arguments cannot be used as counters.
