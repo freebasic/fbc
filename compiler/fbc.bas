@@ -2466,7 +2466,10 @@ private sub addDefaultLibs()
 		fbcAddDefLib("mingwex")
 		fbcAddDefLib("moldname")
 		fbcAddDefLib("supc++")
-		fbcAddDefLib("gcc_eh")
+		#ifndef ENABLE_TDMGCC
+			'' Needed by mingw.org toolchain, but not TDM-GCC
+			fbcAddDefLib("gcc_eh")
+		#endif
 
 		'' profiling?
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then

@@ -4,55 +4,6 @@
 # libraries (rtlib -> libfb[mt] and fbrt0.o, gfxlib2 -> libfbgfx).
 # Try 'make help' for information on what you can configure.
 #
-# Requirements:
-#  - (GNU?) make to run this makefile
-#  - fbc (it compiles itself)
-#  - binutils' libbfd development files (for the compiler, optional)
-#  - Unixy shell environment
-#
-#  - DOS:
-#    - DJGPP 2.04
-#    - FB currently relies on a patched version of DJGPP's libc/crt0/_main.c,
-#      see contrib/djgpp/, it has to be used instead of DJGPP's own for any
-#      FB program that uses FB runtime functions from global ctors/dtors or
-#      has global UDTs/objects.
-#
-#  - Linux (and also *BSD etc.):
-#    - gcc & binutils
-#    - X11 development files (for the graphics runtime, can be disabled)
-#    - ncurses development files
-#    - gpm (general purpose mouse) headers
-#    - GL headers (typically from freeglut, can be disabled)
-#
-#  - Win32:
-#    - MinGW & MSYS
-#    - DirectX headers (for the graphics runtime)
-#
-# libbfd tips:
-#    fbc uses libbfd to add extra information to object files and then read it
-#    out at link time. It's convenient but optional (see DISABLE_OBJINFO).
-#    Read more here: <http://www.freebasic.net/wiki/wikka.php?wakka=DevObjinfo>
-#    For the releases made by the fbc project, fbc is linked against a static
-#    libbfd 2.17,
-#        a) to avoid dependencies on a shared libbfd, because many Linux
-#           distributions have different versions of it, and
-#        b) to avoid licensing related issues with fbc (GPLv2) and
-#           statically-linked libbfd > 2.17 (GPLv3).
-#
-# XBox/OpenXDK-related tips (TODO: Not tested in a long time, needs updating!)
-#  - Install OpenXDK as usual (preferably from SVN if there are no recent
-#    releases). Apply contrib/openxdk/configure.in-mingw.patch if necessary.
-#  - Replace $OPENXDK/bin/i386-pc-xbox-gcc with the one from
-#    contrib/openxdk/i386-pc-xbox-gcc - this avoids having to rebuild gcc while
-#    still getting the OpenXDK include and lib directories instead of the MinGW
-#    ones so that configure will work correctly. Modify this script if needed to
-#    run MinGW gcc (the current one should work in MSYS) or if OpenXDK is
-#    installed somewhere else.
-#  - !!!WRITEME!!! cp $MINGW/include/{x,y,z}.h $OPENXDK/i386-pc-xbox/include/
-#  - Make sure $OPENXDK/bin is in $PATH
-#      export PATH=$PATH:/usr/local/openxdk/bin
-#  - Build for or enable the "i386-pc-xbox" target.
-#
 # Rough overview of what this makefile does:
 #  - #include config.mk
 #  - Guess build system using uname
@@ -891,6 +842,7 @@ $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 
 $(newcompiler)/config.bi: compiler/config.bi.in
 	$(QUIET_GEN)cp $< $@
+	$(call config-ifdef,$(ENABLE_TDMGCC),ENABLE_TDMGCC)
 	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
 	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
 	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")
@@ -1088,6 +1040,7 @@ help:
 	@echo "  ENABLE_FBBFD=217  use the FB headers for this exact libbfd version,"
 	@echo "                    instead of using the system's bfd.h through a C wrapper"
 	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
+	@echo "  ENABLE_TDMGCC     Build FB to work with TDM-GCC (affects win32 target only)
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
 	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
