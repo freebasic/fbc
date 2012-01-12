@@ -1040,7 +1040,7 @@ help:
 	@echo "  ENABLE_FBBFD=217  use the FB headers for this exact libbfd version,"
 	@echo "                    instead of using the system's bfd.h through a C wrapper"
 	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
-	@echo "  ENABLE_TDMGCC     Build FB to work with TDM-GCC (affects win32 target only)
+	@echo "  ENABLE_TDMGCC     Build FB to work with TDM-GCC (affects win32 target only)"
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
 	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
