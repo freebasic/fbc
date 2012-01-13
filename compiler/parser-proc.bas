@@ -161,24 +161,22 @@ private function hCheckPrototype _
 
 end function
 
-'':::::
-private function hCheckAttribs _
+private sub hCheckAttribs _
 	( _
 		byval proto as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
-	) as integer
+	)
 
-    '' the body can only be static if the proto is too
-    if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
-    	if( symbIsStatic( proto ) = FALSE ) then
-    		errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
-    		return FALSE
-    	end if
-    end if
+	'' the body can only be static if the proto is too
+	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
+		if( symbIsStatic( proto ) = FALSE ) then
+			errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
+			return
+		end if
+	end if
 
-    function = TRUE
-
-end function
+	symbGetAttrib( proto ) or= attrib
+end sub
 
 '':::::
 private function hGetId _
@@ -725,10 +723,7 @@ function cProcHeader _
     		'' use the prototype
     		proc = head_proc
 
-			'' check attribs
-			if( hCheckAttribs( proc, attrib ) ) then
-				symbGetAttrib( proc ) or= attrib
-			end if
+			hCheckAttribs( proc, attrib )
 
     		symbSetIsDeclared( proc )
     	end if
@@ -1208,14 +1203,10 @@ function cOperatorHeader _
 
 	'' Operator
 	dim as integer op = cOperator( )
-	if( op = INVALID ) then
-		errReport( FB_ERRMSG_EXPECTEDOPERATOR )
-		'' error recovery: fake an op
-		op = AST_OP_ADD
-	end if
 
 	select case op
-	case AST_OP_ANDALSO, AST_OP_ANDALSO_SELF, _
+	case INVALID, _
+	     AST_OP_ANDALSO, AST_OP_ANDALSO_SELF, _
 	     AST_OP_ORELSE, AST_OP_ORELSE_SELF
 		errReport( FB_ERRMSG_EXPECTEDOPERATOR )
 		'' error recovery: fake an op
@@ -1478,10 +1469,7 @@ function cOperatorHeader _
 			'' use the prototype
 			proc = head_proc
 
-			'' check attribs
-			if( hCheckAttribs( proc, attrib ) ) then
-				symbGetAttrib( proc ) or= attrib
-			end if
+			hCheckAttribs( proc, attrib )
 
 			symbSetIsDeclared( proc )
 		end if
@@ -1823,10 +1811,7 @@ function cPropertyHeader _
     		'' use the prototype
     		proc = head_proc
 
-    		'' check attribs
-    		if( hCheckAttribs( proc, attrib ) ) then
-    			symbGetAttrib( proc ) or= attrib
-    		end if
+			hCheckAttribs( proc, attrib )
 
     		''
     		symbSetIsDeclared( proc )
@@ -2044,10 +2029,7 @@ function cCtorHeader _
     		'' use the prototype
     		proc = head_proc
 
-			'' check attribs
-			if( hCheckAttribs( proc, attrib ) ) then
-				symbGetAttrib( proc ) or= attrib
-			end if
+			hCheckAttribs( proc, attrib )
 
     		''
     		symbSetIsDeclared( proc )
