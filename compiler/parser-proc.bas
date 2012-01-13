@@ -1576,6 +1576,28 @@ private sub hCheckPropParams _
 	loop
 end sub
 
+private sub setUdtPropertyFlags _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval is_indexed as integer, _
+		byval is_get as integer _
+	)
+
+	if( is_indexed ) then
+		if( is_get = FALSE ) then
+			symbSetUDTHasIdxSetProp( parent )
+		else
+			symbSetUDTHasIdxGetProp( parent )
+		end if
+	else
+		if( is_get = FALSE ) then
+			symbSetUDTHasSetProp( parent )
+		else
+			symbSetUDTHasGetProp( parent )
+		end if
+	end if
+end sub
+
 '':::::
 ''PropHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? (AS SymbolType)? STATIC? EXPORT?
@@ -1716,19 +1738,7 @@ function cPropertyHeader _
 			errReport( FB_ERRMSG_DUPDEFINITION )
     	end if
 
-    	if( is_indexed ) then
-    		if( is_get = FALSE ) then
-    			symbSetUDTHasIdxSetProp( parent )
-    		else
-    			symbSetUDTHasIdxGetProp( parent )
-    		end if
-    	else
-    		if( is_get = FALSE ) then
-    			symbSetUDTHasSetProp( parent )
-    		else
-    			symbSetUDTHasGetProp( parent )
-    		end if
-    	end if
+		setUdtPropertyFlags(parent, is_indexed, is_get)
 
     	return proc
     end if
@@ -1821,19 +1831,7 @@ function cPropertyHeader _
     ''
     symbSetProcIncFile( proc, env.inf.incfile )
 
-    if( is_indexed ) then
-    	if( is_get = FALSE ) then
-    		symbSetUDTHasIdxSetProp( parent )
-    	else
-    		symbSetUDTHasIdxGetProp( parent )
-    	end if
-    else
-    	if( is_get = FALSE ) then
-    		symbSetUDTHasSetProp( parent )
-    	else
-    		symbSetUDTHasGetProp( parent )
-    	end if
-    end if
+	setUdtPropertyFlags(parent, is_indexed, is_get)
 
     function = proc
 
