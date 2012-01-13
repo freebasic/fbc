@@ -457,6 +457,12 @@ private function hDoNesting _
 
 end function
 
+private sub cNakedAttribute(byval pattrib as integer ptr)
+	if (hMatchText("NAKED")) then
+		*pattrib or= FB_SYMBATTRIB_NAKED
+	end if
+end sub
+
 '':::::
 ''ProcHeader   		=  ID CallConvention? OVERLOAD? (ALIAS LIT_STRING)?
 ''                     Parameters? ((AS SymbolType)? | CONSTRUCTOR|DESTRUCTOR)?
@@ -514,9 +520,8 @@ function cProcHeader _
 	subtype = NULL
 	stats = 0
 
-	if hMatchText( "NAKED" ) then
-		attrib or= FB_SYMBATTRIB_NAKED
-	end if
+	'' [NAKED]
+	cNakedAttribute(@attrib)
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1278,9 +1283,8 @@ function cOperatorHeader _
 
 	subtype = NULL
 
-	if hMatchText( "NAKED" ) then
-		attrib or= FB_SYMBATTRIB_NAKED
-	end if
+	'' [NAKED]
+	cNakedAttribute(@attrib)
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1636,9 +1640,8 @@ function cPropertyHeader _
 	subtype = NULL
 	stats = 0
 
-	if hMatchText( "NAKED" ) then
-		attrib or= FB_SYMBATTRIB_NAKED
-	end if
+	'' [NAKED]
+	cNakedAttribute(@attrib)
 
 	'' CallConvention?
 	dim as FB_FUNCMODE mode = cProcCallingConv( )
@@ -1895,9 +1898,8 @@ function cCtorHeader _
 		is_extern = TRUE
 	end if
 
-	if hMatchText( "NAKED" ) then
-		attrib or= FB_SYMBATTRIB_NAKED
-	end if
+	'' [NAKED]
+	cNakedAttribute(@attrib)
 
 	'' CallConvention?
 	'' ctors and dtors must be always CDECL if passed to REDIM
