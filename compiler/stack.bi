@@ -1,6 +1,8 @@
 #ifndef __STACK_BI__
 #define __STACK_BI__
 
+#include once "common.bi"
+
 type TSTACKNODE
 	prev	as TSTACKNODE ptr
 	next	as TSTACKNODE ptr

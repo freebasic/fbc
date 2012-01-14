@@ -1,6 +1,8 @@
 #ifndef __LIST_BI__
 #define __LIST_BI__
 
+#include once "common.bi"
+
 enum LIST_FLAGS
 	LIST_FLAGS_NONE				= &h00000000
 

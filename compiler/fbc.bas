@@ -1898,7 +1898,9 @@ private sub fbcInit2()
 		#endif
 	#endif
 
-	fbc.libpath += FB_SUFFIX
+	#ifdef ENABLE_SUFFIX
+		fbc.libpath += ENABLE_SUFFIX
+	#endif
 
 	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
 	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )

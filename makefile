@@ -273,16 +273,15 @@ newlibfb    := $(new)/libfb
 newlibfbmt  := $(new)/libfbmt
 newlibfbgfx := $(new)/libfbgfx
 
-# Unless objinfo is disabled, we use the fbextra.x supplemental ldscript to
-# drop objinfo sections when linking. This lets the system/linker's default
-# script still take effect, which is good e.g. to support extra library search
-# paths specified in the ldscript (e.g. multi-arch directory layout on Debian).
-# For DOS/DJGPP FB however we have modified ld's ldscript to fix the order of
-# ctors/dtors, so that's a special case.
 ifeq ($(TARGET_OS),dos)
+  # For DOS the ldscript is always needed, to fix the c/dtors otder
   FB_LDSCRIPT := i386go32.x
+  # Don't build libfbmt for DOS, and also no OpenGL support in libfbgfx
+  DISABLE_MT := YesPlease
+  DISABLE_OPENGL := YesPlease
 else
   ifndef DISABLE_OBJINFO
+    # The extra ldscript snippet for dropping .fbctinf
     FB_LDSCRIPT := fbextra.x
   endif
 endif
@@ -308,9 +307,9 @@ ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
-FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc -include $(newcompiler)/config.bi $(FBFLAGS)
+FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc $(FBFLAGS)
 FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
-ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall -include $(newlibfb)/config.h
+ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall
 
 # If cross-compiling, use -target
 ifneq ($(TARGET),)
@@ -319,46 +318,46 @@ ifneq ($(TARGET),)
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  # Increase compiler's available stack size, it uses lots of recursion
   FBLFLAGS += -t 2048
 endif
 
-ifndef DISABLE_OBJINFO
-  FBLFLAGS += -l bfd -l iberty
-  ifeq ($(TARGET_OS),cygwin)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),dos)
-    FBLFLAGS += -l intl -l z
-  endif
-  ifeq ($(TARGET_OS),freebsd)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),openbsd)
-    FBLFLAGS += -l intl
-  endif
-  ifeq ($(TARGET_OS),win32)
-    FBLFLAGS += -l intl -l user32
-  endif
+# Pass the configuration defines on to the compiler source code
+ifdef ENABLE_FBBFD
+  FBCFLAGS += -d ENABLE_FBBFD=$(ENABLE_FBBFD)
+endif
+ifdef DISABLE_OBJINFO
+  FBCFLAGS += -d DISABLE_OBJINFO
+endif
+ifdef ENABLE_PREFIX
+  FBCFLAGS += -d 'ENABLE_PREFIX="$(prefix)"'
+endif
+ifdef ENABLE_STANDALONE
+  FBCFLAGS += -d ENABLE_STANDALONE
+endif
+ifdef SUFFIX
+  FBCFLAGS += -d 'ENABLE_SUFFIX="$(SUFFIX)"'
+endif
+ifdef ENABLE_TDMGCC
+  FBCFLAGS += -d ENABLE_TDMGCC
 endif
 
-# Some special treatment for xbox. TODO: Test me, update me!
-ifeq ($(TARGET_OS),xbox)
-  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
-  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
-  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
-  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
-  ALLCFLAGS += -I$(OPENXDK)/include
-  ALLCFLAGS += -I$(OPENXDK)/include/SDL
+# Same for rtlib/gfxlib2
+ifdef DISABLE_OPENGL
+  ALLCFLAGS += -DDISABLE_OPENGL
+endif
+ifdef DISABLE_X
+  ALLCFLAGS += -DDISABLE_X
 endif
 
 #
 # Sources
 #
 
-FBC_BI := $(newcompiler)/config.bi
-FBC_BI += compiler/ast.bi
+FBC_BI := compiler/ast.bi
 FBC_BI += compiler/ast-op.bi
 FBC_BI += compiler/bfd-wrapper.bi
+FBC_BI += compiler/common.bi
 FBC_BI += compiler/dstr.bi
 FBC_BI += compiler/emit.bi
 FBC_BI += compiler/emitdbg.bi
@@ -416,25 +415,32 @@ FBC_BAS := \
   symb-enum symb-keyword symb-label symb-mangling symb-namespace \
   symb-proc symb-scope symb-struct symb-typedef symb-var
 
-ifndef DISABLE_OBJINFO
-  FBC_BAS += fb-objinfo
-endif
-
-FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
-
 FBC_BFDWRAPPER :=
 ifndef DISABLE_OBJINFO
+  FBC_BAS += fb-objinfo
   ifndef ENABLE_FBBFD
     FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
   endif
+
+  FBLFLAGS += -l bfd -l iberty
+  ifeq ($(TARGET_OS),cygwin)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(TARGET_OS),dos)
+    FBLFLAGS += -l intl -l z
+  endif
+  ifeq ($(TARGET_OS),freebsd)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(TARGET_OS),openbsd)
+    FBLFLAGS += -l intl
+  endif
+  ifeq ($(TARGET_OS),win32)
+    FBLFLAGS += -l intl -l user32
+  endif
 endif
 
-ifeq ($(TARGET_OS),dos)
-  # Don't build libfbmt for DOS
-  DISABLE_MT := YesPlease
-  # And also no OpenGL support
-  DISABLE_OPENGL := YesPlease
-endif
+FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
 
 # rtlib FB includes (gfxlib2's fbgfx.bi is handled separately)
 NEW_FB_INCLUDES := \
@@ -445,8 +451,7 @@ NEW_FB_INCLUDES := \
   $(newinclude)/utf_conv.bi \
   $(newinclude)/vbcompat.bi
 
-LIBFB_H := $(newlibfb)/config.h
-LIBFB_H += rtlib/fb.h
+LIBFB_H := rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
 LIBFB_H += rtlib/fb_colors.h
 LIBFB_H += rtlib/fb_config.h
@@ -565,7 +570,17 @@ LIBFB_C := \
 
 LIBFB_S :=
 
+ifeq ($(TARGET_OS),cygwin)
+  ALLCFLAGS += -DHOST_CYGWIN
+endif
+
+ifeq ($(TARGET_OS),darwin)
+  ALLCFLAGS += -DHOST_DARWIN
+endif
+
 ifeq ($(TARGET_OS),dos)
+  ALLCFLAGS += -DHOST_DOS
+
   LIBFB_H += rtlib/fb_dos.h
   LIBFB_H += rtlib/fb_unicode_dos.h
   LIBFB_C += \
@@ -591,12 +606,16 @@ ifeq ($(TARGET_OS),dos)
 endif
 
 ifeq ($(TARGET_OS),freebsd)
+  ALLCFLAGS += -DHOST_FREEBSD
+
   LIBFB_C += \
     io_mouse_freebsd io_multikey_freebsd \
     sys_fmem_freebsd sys_getexename_freebsd sys_getexepath_freebsd
 endif
 
 ifeq ($(TARGET_OS),linux)
+  ALLCFLAGS += -DHOST_LINUX
+
   LIBFB_H += rtlib/fb_linux.h
   LIBFB_C += \
     io_mouse_linux io_multikey_linux io_serial_linux \
@@ -604,19 +623,48 @@ ifeq ($(TARGET_OS),linux)
 endif
 
 ifeq ($(TARGET_OS),netbsd)
+  ALLCFLAGS += -DHOST_NETBSD
+
   LIBFB_C += \
     io_mouse_netbsd io_multikey_netbsd \
     sys_fmem_netbsd sys_getexename_netbsd sys_getexepath_netbsd
 endif
 
 ifeq ($(TARGET_OS),openbsd)
+  ALLCFLAGS += -DHOST_OPENBSD
+
   LIBFB_C += \
     io_mouse_openbsd io_multikey_openbsd \
     sys_fmem_openbsd sys_getexename_openbsd sys_getexepath_openbsd \
     swprintf_hack_openbsd
 endif
 
+ifeq ($(TARGET_OS),win32)
+  ALLCFLAGS += -DHOST_MINGW
+  # This #define causes some MinGW functions (including those from libmoldname)
+  # to be unavailable, effectively forcing the runtime to be coded using just
+  # msvcrt (or mostly anyways).
+  # For example, the native msvcrt provides _mkdir(), while mkdir() is an
+  # "oldname" wrapper around _mkdir() implemented by MinGW to provide some of
+  # the more Unixy functions.
+  ALLCFLAGS += -D_NO_OLDNAMES
+endif
+
+ifeq ($(TARGET_OS),solaris)
+  ALLCFLAGS += -DHOST_SOLARIS
+endif
+
 ifeq ($(TARGET_OS),xbox)
+  ALLCFLAGS += -DHOST_XBOX
+
+  # Some special treatment for xbox. TODO: Test me, update me!
+  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
+  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
+  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
+  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
+  ALLCFLAGS += -I$(OPENXDK)/include
+  ALLCFLAGS += -I$(OPENXDK)/include/SDL
+
   LIBFB_H += rtlib/fb_xbox.h
   LIBFB_C += \
     dev_pipe_close_xbox dev_pipe_open_xbox \
@@ -640,6 +688,11 @@ ifeq ($(TARGET_OS),xbox)
 endif
 
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ALLCFLAGS += -DHOST_UNIX
+
+  # This causes fopen/fseeko/... to be mapped to fopen64/fseeko64/
+  ALLCFLAGS += -D_FILE_OFFSET_BITS=64
+
   LIBFB_H += rtlib/fb_unix.h
   LIBFB_C += \
     dev_pipe_close_unix dev_pipe_open_unix \
@@ -663,6 +716,7 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  ALLCFLAGS += -DHOST_WIN32
   LIBFB_H += rtlib/fb_unicode_win32.h
   LIBFB_H += rtlib/fb_win32.h
   LIBFB_H += rtlib/fbportio/fbportio.h
@@ -696,8 +750,21 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
 endif
 
 ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
+  ALLCFLAGS += -DHOST_X86
   LIBFB_H += rtlib/fb_x86.h
   LIBFB_S += cpudetect_x86
+endif
+ifeq ($(TARGET_ARCH),x86_64)
+  ALLCFLAGS += -DHOST_X86_64
+endif
+ifeq ($(TARGET_ARCH),sparc)
+  ALLCFLAGS += -DHOST_SPARC
+endif
+ifeq ($(TARGET_ARCH),sparc64)
+  ALLCFLAGS += -DHOST_SPARC64
+endif
+ifeq ($(TARGET_ARCH),powerpc64)
+  ALLCFLAGS += -DHOST_POWERPC64
 endif
 
 LIBFB_C := $(patsubst %,$(newlibfb)/%.o,$(LIBFB_C))
@@ -805,10 +872,6 @@ ifndef V
   QUIET_AR    = @echo "AR $@";
 endif
 
-config-define = $(QUIET)echo '\#define $(1)' >> $@
-config-ifdef = $(if $(1),$(call config-define,$(2)))
-config-filter = $(call config-ifdef,$(filter $(2),$(1)),$(3))
-
 .PHONY: all
 all: compiler rtlib gfxlib2
 
@@ -839,15 +902,6 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 
 $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
-
-$(newcompiler)/config.bi: compiler/config.bi.in
-	$(QUIET_GEN)cp $< $@
-	$(call config-ifdef,$(ENABLE_TDMGCC),ENABLE_TDMGCC)
-	$(call config-ifdef,$(ENABLE_FBBFD),ENABLE_FBBFD $(ENABLE_FBBFD))
-	$(call config-ifdef,$(DISABLE_OBJINFO),DISABLE_OBJINFO)
-	$(call config-ifdef,$(ENABLE_PREFIX),ENABLE_PREFIX "$(prefix)")
-	$(call config-ifdef,$(ENABLE_STANDALONE),ENABLE_STANDALONE)
-	$(call config-define,FB_SUFFIX "$(SUFFIX)")
 
 .PHONY: rtlib
 rtlib: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
@@ -903,28 +957,6 @@ $(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
 
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
-
-$(newlibfb)/config.h: rtlib/config.h.in
-	$(QUIET_GEN)cp $< $@
-	$(call config-filter,$(TARGET_OS),cygwin,HOST_CYGWIN)
-	$(call config-filter,$(TARGET_OS),darwin,HOST_DARWIN)
-	$(call config-filter,$(TARGET_OS),dos,HOST_DOS)
-	$(call config-filter,$(TARGET_OS),freebsd,HOST_FREEBSD)
-	$(call config-filter,$(TARGET_OS),linux,HOST_LINUX)
-	$(call config-filter,$(TARGET_OS),netbsd,HOST_NETBSD)
-	$(call config-filter,$(TARGET_OS),openbsd,HOST_OPENBSD)
-	$(call config-filter,$(TARGET_OS),win32,HOST_MINGW)
-	$(call config-filter,$(TARGET_OS),solaris,HOST_SOLARIS)
-	$(call config-filter,$(TARGET_OS),xbox,HOST_XBOX)
-	$(call config-filter,$(TARGET_OS),darwin freebsd linux netbsd openbsd solaris,HOST_UNIX)
-	$(call config-filter,$(TARGET_OS),cygwin win32,HOST_WIN32)
-	$(call config-filter,$(TARGET_ARCH),386 486 586 686,HOST_X86)
-	$(call config-filter,$(TARGET_ARCH),x86_64,HOST_X86_64)
-	$(call config-filter,$(TARGET_ARCH),sparc,HOST_SPARC)
-	$(call config-filter,$(TARGET_ARCH),sparc64,HOST_SPARC64)
-	$(call config-filter,$(TARGET_ARCH),powerpc64,HOST_POWERPC64)
-	$(call config-ifdef,$(DISABLE_OPENGL),DISABLE_OPENGL)
-	$(call config-ifdef,$(DISABLE_X),DISABLE_X)
 
 .PHONY: install
 install: install-compiler install-rtlib install-gfxlib2
@@ -994,14 +1026,14 @@ clean: clean-compiler clean-rtlib clean-gfxlib2
 	-rmdir $(new)
 
 clean-compiler:
-	rm -f $(newcompiler)/config.bi $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
+	rm -f $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
   ifdef FB_LDSCRIPT
 	rm -f $(newlib)/$(FB_LDSCRIPT)
   endif
 	-rmdir $(newcompiler)
 
 clean-rtlib:
-	rm -f $(NEW_FB_INCLUDES) $(newlib)/fbrt0.o $(newlibfb)/config.h $(newlib)/libfb.a $(newlibfb)/*.o
+	rm -f $(NEW_FB_INCLUDES) $(newlib)/fbrt0.o $(newlib)/libfb.a $(newlibfb)/*.o
 	-rmdir $(newlibfb)
   ifndef DISABLE_MT
 	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
