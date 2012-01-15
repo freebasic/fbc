@@ -1,0 +1,222 @@
+LIBRARY     CGUI20.DLL
+EXPORTS
+    Activate @1
+    AddButton @2
+    AddCheck @3
+    AddClock @4
+    AddDropDown @5
+    AddDropDownS @6
+    AddEditBox @7
+    AddFlip @8
+    AddHandler @9
+    AddIcon @10
+    AddList @11
+    AddProgressBar @12
+    AddRadioButton @13
+    AddSlider @14
+    AddSliderFloat @15
+    AddStatusField @16
+    AddTab @17
+    AddTabRuler @18
+    AddTag @19
+    AddTextBox @20
+    Attend @21
+    AutoHotKeys @22
+    BrowseTo @23
+    BrowseToF @24
+    BrowseToL @25
+    CGUI_list_fixfont @26 DATA
+    CGUI_list_font @27 DATA
+    CGUI_list_row_b_color @28 DATA
+    CGUI_list_row_f_color @29 DATA
+    CGUI_list_row_font @30 DATA
+    CGUI_list_vspace @31 DATA
+    CguiEditBoxSetSelectionMode @32
+    CguiEventIterateFunction @33
+    CguiListBoxSetToolTip @34
+    CguiLoadImage @35
+    CguiParseLabels @36
+    CguiSetBaseLine @37
+    CguiSetColor @38
+    CguiSetMouseInput @39
+    CguiSetToolTipAnimation @40
+    CguiSetToolTipDelay @41
+    CguiUseIcons @42
+    CguiUseUTF8 @43
+    CguiYieldTimeslice @44
+    CheckDate @45
+    CheckWinClip @46
+    Click @47
+    CloseWin @48
+    ConditionalRefresh @49
+    CreateNewDataFile @50
+    CreateTabWindow @51
+    CurrentWindow @52
+    Date2String @53
+    DeActivate @54
+    DeInitCgui @55
+    DeleteTree @56
+    DesktopImage @57
+    Destroy @58
+    DestroyTexts @59
+    DisplayWin @60
+    Dos2Win @61
+    EmptyContainer @62
+    EndContainer @63
+    EndMenuBar @64
+    EndRadioContainer @65
+    FileManager @66
+    FileSelect @67
+    FlipRulerTab @68
+    FlushGenEvents @69
+    GenEvent @70
+    GetCguiFixFont @71
+    GetCguiFont @72
+    GetCurrentFocus @73
+    GetEditData @74
+    GetFromWinClip @75
+    GetListIndex @76
+    GetMarkedRows @77
+    GetObjectPosition @78
+    GetPressedButton @79
+    GetRegisteredImage @80
+    GetRulerTabList @81
+    GetSizeOffset @82
+    GetWinInfo @83
+    HidePointer @84
+    HookCguiDeInit @85
+    HookExit @86
+    HookLeaveTab @87
+    HookList @88
+    HookMenuClose @89
+    HookSpinButtons @90
+    InitCguiEx @91
+    InsertIntoWinClip @92
+    InsertPoint @93
+    InstallBelowListEndCallBack @94
+    InstallCursor @95
+    InstallKBHandler @96
+    Invite @97
+    IsHotKey @98
+    JoinTabChain @99
+    KillEvent @100
+    ListTreeSetNodeExpandedState @101
+    ListTreeSetNodesExpandedState @102
+    ListTreeView @103
+    LoadCompiledTexts @104
+    LoadTexts @105
+    LongHalf @106
+    MakeHalf @107
+    MakeMenuBar @108
+    MakeStretchable @109
+    MkCanvas @110
+    MkDialogue @111
+    MkDir @112
+    MkGroove @113
+    MkHorizontalBrowser @114
+    MkMenu @115
+    MkMenuBarItem @116
+    MkMenuCheck @117
+    MkMenuItem @118
+    MkMenuRadio @119
+    MkProgressWindow @120
+    MkRadioContainer @121
+    MkScratchMenu @122
+    MkSingleMenu @123
+    MkString @124
+    MkTextPointer @125
+    MkVerticalBrowser @126
+    ModifyHeader @127
+    NameCase @128
+    NotifyBrowser @129
+    NotifyFocusMove @130
+    ObjectApearance @131
+    OverlayPointer @132
+    PointerLocation @133
+    PointerOn @134
+    PrintFloatingConversion @135
+    ProcessEvents @136
+    ReBuildContainer @137
+    RedrawScreen @138
+    Refresh @139
+    RefreshListRow @140
+    RegisterConversionHandler @141
+    RegisterDragFlag @142
+    RegisterFileType @143
+    RegisterImage @144
+    RegisterRefresh @145
+    Release @146
+    Remove @147
+    RemoveOverlayPointer @148
+    Req @149
+    Request @150
+    SaveDatafileObject @151
+    ScrMode @152
+    SelectContainer @153
+    SelectCursor @154
+    SetBlitLimit @155
+    SetBrowserSize @156
+    SetCguiFont @157
+    SetDateForm @158
+    SetDeleteHandler @159
+    SetDistance @160
+    SetEditData @161
+    SetFocusOn @162
+    SetHotKey @163
+    SetIndexedList @164
+    SetInsertHandler @165
+    SetLinkedList @166
+    SetListColumns @167
+    SetListDoubleClick @168
+    SetListDroppable @169
+    SetListGrippable @170
+    SetMeasure @171
+    SetMouseButtons @172
+    SetMousePos @173
+    SetObjectDouble @174
+    SetObjectDroppable @175
+    SetObjectGrippable @176
+    SetObjectSlidable @177
+    SetOperatingWindow @178
+    SetSizeOffset @179
+    SetSpacing @180
+    SetView @181
+    SetWindowPosition @182
+    ShowPointer @183
+    SimulateHotKeys @184
+    Sound @185
+    StartContainer @186
+    StopProcessEvents @187
+    String2Date @188
+    TabOnCR @189
+    TextboxGetHighlightedText @190
+    TextboxHighlighting @191
+    TextboxScrollDownOneLine @192
+    ToUpper @193
+    ToolTipText @194
+    UnHookCguiDeInit @195
+    UnInstallKBHandler @196
+    UnPackSelection @197
+    UnRegisterDragFlag @198
+    UpdateProgressValue @199
+    UpdateTextBoxText @200
+    UseHotKeys @201
+    Win2Dos @202
+    cgui_calloc @203
+    cgui_colors @204 DATA
+    cgui_desktop_id @205 DATA
+    cgui_drop_down_list_row_spacing @206 DATA
+    cgui_list_fix_digits @207 DATA
+    cgui_list_no_multiple_row_selection @208 DATA
+    cgui_list_show_focused_row @209 DATA
+    cgui_malloc @210
+    cgui_minor_rev @211 DATA
+    cgui_mouse_draw_in_interrupt @212 DATA
+    cgui_realloc @213
+    cgui_release_date @214 DATA
+    cgui_rev @215 DATA
+    cgui_use_vsync @216 DATA
+    cgui_ver @217 DATA
+    continous_update_resize @218 DATA
+    event_message_buffer_size @219 DATA
+    msprintf @220

@@ -1,0 +1,87 @@
+OpenAL 	al/ 	1.13
+(ALUT) 	al/alut.bi 	1.1.0
+Allegro 	allegro.bi, allegro/ 	4.0.3 + 4.1 changes
+GNU Aspell 	aspell.bi 	0.50
+BASS 	bass.bi 	2.0
+BASSMOD 	bassmod.bi 	2.0
+big_int 	big_int/ 	from 2005
+libbzip2 	bzlib.bi 	1.0.6
+caca 	caca.bi 	0.99 beta17
+Cairo Graphics 	cairo/ 	1.2.6
+CGUI 	cgui.bi 	2.0.1
+Chipmunk Physics 	chipmunk/ 	4.1.0
+C runtime (glibc, msvcrt, djgpp) 	crt.bi, crt/ 	from 2005 with partial updates later
+cryptlib 	cryptlib.bi 	from 2005
+CUnit 	CUnit/ 	2.1-0
+libcurl 	curl.bi 	7.21.6
+Curses (ncurses, pdcurses) 	curses.bi, curses/ 	pdcurses is 3.4, curses from 2005
+DISLIN 	dislin.bi 	from 2005
+disphelper 	disphelper/ 	from 2005
+DOS/DJGPP 	dos/ 	from 2005 with partial updates later
+Expat 	expat.bi 	1.95.8
+FastCGI 	fastcgi/ 	from 2005
+libffi 	ffi.bi, ffi/ 	3.0.10
+flite 	flite/ 	1.4, machine-translated only
+FMOD 	fmod.bi 	3.74
+FreeImage? 	FreeImage.bi 	3.15.1
+FreeType? 	freetype2/ 	2.1.9
+GD library 	gd/ 	from 2005
+GDBM (GNU data base manager) 	gdbm.bi 	from 2010
+GDSL (Generic Data Structures Library) 	gdsl/ 	from 2005
+gettext 	gettext-po.bi 	0.17
+GIFLIB 	gif_lib.bi 	4.1
+OpenGL 	GL/ 	October 2011
+(GLUT) 	GL/glut.bi 	from 2006
+(FreeGLUT) 	GL/freeglut[_ext,_std].bi 	2.6.0
+(GLFW) 	GL/glfw.bi 	2.7.2
+gmplib (GNU Multiple Precision Arithmetic Library) 	gmp.bi 	4.1.4
+GRX 	grx/ 	2.4.6
+gsl (GNU Scientific Library) 	gsl/ 	1.6
+GTK+ (atk, gdk, glade, glib, gtk, libart, pango) 	gtk/ 	from 2005 with partial updates later
+	atk-1.0/ 	machine-translated only
+	gtk-2.0/ 	machine-translated only
+	glib-2.0/ 	machine-translated only
+	pango-1.0/ 	machine-translated only
+DevIL 	IL/ 	1.6.7
+IUP 	IUP/ 	2.3.0
+IUP 3.x 	IUP3/ 	3.5 (missing Lua part at the moment)
+Java API 	japi.bi 	from 2005
+libjit 	jit.bi, jit/ 	0.1.2
+Java Native Interface 	jni.bi 	from 2006
+jpeglib (ijg.org) 	jpeglib.bi 	6.2 (?)
+JPGalleg 	jpgalleg.bi 	2.5
+json-c 	json-c/ 	0.9 (?)
+libintl 	libintl.bi 	from 2010
+libxml2 	libxml/ 	2.6.17
+libxslt 	libxslt/ 	1.1.13
+Lua 	Lua/ 	5.1.1
+liblzma 	lzma.bi 	5.0.2
+LZO 	lzo/ 	2.02
+MediaInfo? 	MediaInfo.bi 	October 2011
+mpg123 	mpg123.bi 	from 2010, machine-translated only
+Mini-XML 	mxml.bi 	from 2005
+MySQL 	mysql/ 	4.0.17
+Newton Physics Engine 	Newton.bi 	from 2005
+ODE (Open Dynamics Engine) 	ode/ 	0.9
+libogg 	ogg/ 	from 2007
+PCRE (Perl Compatible Regular Expressions) 	pcre/ 	7.6
+PDFlib 	pdflib.bi 	4.0.2
+libpng 	png.bi 	1.2.16
+PortAudio? 	portaudio.bi 	from 2010, machine-translated only
+PostgreSQL 	postgresql/ 	from 2006
+QuickLZ 	quicklz.bi 	1.50
+TRE (regex matching library) 	regex.bi 	from 2006
+SDL 	SDL/ 	1.2.9
+libsndfile 	sndfile.bi 	1.0.X
+SpiderMonkey? 	spidermonkey/ 	from 2006
+SQLite 2.x 	sqlite2.bi 	2.8.17
+SQLite 3.x 	sqlite3.bi 	3.7.8
+UUID library (e2fsprogs) 	uuid.bi 	from 2010
+libVLC 	vlc/ 	1.1.x
+libvorbis 	vorbis/ 	from 2007
+Win32 API 	windows.bi, win/ 	from 2005 with partial updates later
+wx-c (wxWidgets) 	wx-c/ 	0.9.0.2
+X11 	X11/ 	from 2010, machine-translated only
+libzip 	zip.bi 	0.10
+zlib 	zlib.bi 	1.2.2
+ZeroMQ 	zmq/ 	2.1.10 
