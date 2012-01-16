@@ -10,24 +10,15 @@
 type TIMER_CALLBACK as sub( byval userdata as integer )
 
 type CTimer
-
 	declare constructor _
-		( byval interval as integer, _
-		  byval callback as TIMER_CALLBACK, _
-		  byval userdata as integer = 0 _
-		)
-	
-	declare sub on _
 		( _
+			byval interval as integer, _
+			byval callback as TIMER_CALLBACK, _
+			byval userdata as integer = 0 _
 		)
-	
-	declare sub off	_
-		( _
-		)
-	
-	declare destructor _
-		( _
-		)
+	declare sub on( )
+	declare sub off( )
+	declare destructor( )
 
 private:
 	enum TIMER_STATES
@@ -37,18 +28,16 @@ private:
 		TIMER_STATE_EXITING
 	end enum
 
-	declare static sub threadcb _
-		( byval ctx as CTimer ptr _
-		)
+	declare static sub threadcb( byval ctx as CTimer ptr )
 
-	state		as TIMER_STATES
-	interval	as integer
-	callback	as TIMER_CALLBACK
-	waiting     as integer
-	userdata	as integer
-	cond		as any ptr
-	cond_mutex  as any ptr
-	thread		as any ptr
+	as TIMER_STATES   state
+	as integer        interval
+	as TIMER_CALLBACK callback
+	as integer        waiting
+	as integer        userdata
+	as any ptr        cond
+	as any ptr        cond_mutex
+	as any ptr        thread
 end type
 
 

@@ -1,0 +1,8 @@
+main()
+{
+	foo = 1234
+
+	bar123 = 5678.9012 + 1.E-10
+
+	return foo * bar123
+}
