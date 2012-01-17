@@ -244,10 +244,8 @@ endif
 
 ifdef ENABLE_STANDALONE
   newbin     := $(new)
-  newinclude := $(new)/include
   newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
   prefixbin     := $(prefix)
-  prefixinclude := $(prefix)/include
   prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
   ifeq ($(TARGET_OS),dos)
@@ -256,10 +254,8 @@ else
     FB_NAME := freebasic
   endif
   newbin     := $(new)/bin
-  newinclude := $(new)/include/$(FB_NAME)
   newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
   prefixbin     := $(prefix)/bin
-  prefixinclude := $(prefix)/include/$(FB_NAME)
   prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
@@ -441,15 +437,6 @@ ifndef DISABLE_OBJINFO
 endif
 
 FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
-
-# rtlib FB includes (gfxlib2's fbgfx.bi is handled separately)
-NEW_FB_INCLUDES := \
-  $(newinclude)/datetime.bi \
-  $(newinclude)/dir.bi \
-  $(newinclude)/file.bi \
-  $(newinclude)/string.bi \
-  $(newinclude)/utf_conv.bi \
-  $(newinclude)/vbcompat.bi
 
 LIBFB_H := rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
@@ -876,9 +863,9 @@ endif
 all: compiler rtlib gfxlib2
 
 $(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
-       $(newbin) $(new)/include $(newinclude) $(new)/lib $(newlib) \
+       $(newbin) $(new)/lib $(newlib) \
        $(prefix) $(prefixbin) \
-       $(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib)):
+       $(prefix)/lib $(prefixlib)):
 	mkdir $@
 
 .PHONY: compiler
@@ -904,18 +891,12 @@ $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
 
 .PHONY: rtlib
-rtlib: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
-rtlib: $(NEW_FB_INCLUDES)
+rtlib: $(new) $(newlibfb) $(new)/lib $(newlib)
 rtlib: $(newlib)/fbrt0.o
 rtlib: $(newlib)/libfb.a
 ifndef DISABLE_MT
 rtlib: $(newlibfbmt) $(newlib)/libfbmt.a
 endif
-
-# Copy the headers into new/ too; that's only done to allow the new compiler
-# to be tested from the build directory.
-$(NEW_FB_INCLUDES): $(newinclude)/%.bi: rtlib/%.bi
-	$(QUIET_CP)cp $< $@
 
 $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
@@ -941,13 +922,9 @@ $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 .PHONY: gfxlib2
 gfxlib2:
 ifndef DISABLE_GFX
-gfxlib2: $(new) $(newlibfb) $(new)/include $(newinclude) $(new)/lib $(newlib)
-gfxlib2: $(newinclude)/fbgfx.bi
+gfxlib2: $(new) $(newlibfb) $(new)/lib $(newlib)
 gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 endif
-
-$(newinclude)/fbgfx.bi: gfxlib2/fbgfx.bi
-	$(QUIET_CP)cp $< $@
 
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
@@ -969,17 +946,15 @@ install-compiler: $(prefixbin) $(prefixlib)
   endif
 
 .PHONY: install-rtlib
-install-rtlib: $(prefixinclude) $(prefixlib)
-	$(INSTALL_FILE) $(NEW_FB_INCLUDES) $(prefixinclude)/
+install-rtlib: $(prefixlib)
 	$(INSTALL_FILE) $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(newlib)/libfbmt.a $(prefixlib)/
   endif
 
 .PHONY: install-gfxlib2
-install-gfxlib2: $(prefixinclude) $(prefixlib)
+install-gfxlib2: $(prefixlib)
   ifndef DISABLE_GFX
-	$(INSTALL_FILE) $(newinclude)/fbgfx.bi $(prefixinclude)/
 	$(INSTALL_FILE) $(newlib)/libfbgfx.a $(prefixlib)/
   endif
 
@@ -988,7 +963,6 @@ uninstall: uninstall-compiler uninstall-rtlib uninstall-gfxlib2
   # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
   # that we should remove if empty.
   ifndef ENABLE_STANDALONE
-	-rmdir $(prefixinclude)
 	-rmdir $(prefixlib)
   endif
 
@@ -999,7 +973,6 @@ uninstall-compiler:
   endif
 
 uninstall-rtlib:
-	rm -f $(patsubst $(newinclude)/%,$(prefixinclude)/%,$(NEW_FB_INCLUDES))
 	rm -f $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
   ifndef DISABLE_MT
 	rm -f $(prefixlib)/libfbmt.a
@@ -1007,17 +980,13 @@ uninstall-rtlib:
 
 uninstall-gfxlib2:
   ifndef DISABLE_GFX
-	rm -f $(prefixinclude)/fbgfx.bi $(prefixlib)/libfbgfx.a
+	rm -f $(prefixlib)/libfbgfx.a
   endif
 
 .PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
 clean: clean-compiler clean-rtlib clean-gfxlib2
   ifndef ENABLE_STANDALONE
 	-rmdir $(newbin)
-  endif
-	-rmdir $(newinclude)
-  ifndef ENABLE_STANDALONE
-	-rmdir $(new)/include
   endif
 	-rmdir $(newlib)
   ifndef ENABLE_STANDALONE
@@ -1033,7 +1002,7 @@ clean-compiler:
 	-rmdir $(newcompiler)
 
 clean-rtlib:
-	rm -f $(NEW_FB_INCLUDES) $(newlib)/fbrt0.o $(newlib)/libfb.a $(newlibfb)/*.o
+	rm -f $(newlib)/fbrt0.o $(newlib)/libfb.a $(newlibfb)/*.o
 	-rmdir $(newlibfb)
   ifndef DISABLE_MT
 	rm -f $(newlib)/libfbmt.a $(newlibfbmt)/*.o
@@ -1042,7 +1011,7 @@ clean-rtlib:
 
 clean-gfxlib2:
   ifndef DISABLE_GFX
-	rm -f $(newinclude)/fbgfx.bi $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
+	rm -f $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
 	-rmdir $(newlibfbgfx)
   endif
 
