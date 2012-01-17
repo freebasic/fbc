@@ -2073,7 +2073,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			subtype = NULL
 
 		'' zstring... convert to string
-		case FB_DATATYPE_CHAR
+		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 			dtype = FB_DATATYPE_STRING
 
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS

@@ -42,6 +42,7 @@ Version 0.24.0:
 - False positive syntax errors after '#ifdef namespaceid' (and also #ifndef, #undef and #if defined())
 - #3446210: SELECT CASE leaking its temporary (w)string if not reaching END SELECT (e.g. EXIT FUNCTION from inside a CASE block)
 - Temporarily reset console during Unix dylibload() and dylibfree(), to properly restore terminal state at exit
+- VAR initialized from a STRING * N variable created a STRING * 0 instead of a dynamic STRING
 
 
 Version 0.23.0:
