@@ -1,30 +1,30 @@
-''
-''
-'' bass -- BASS 2.0 Multimedia Library
-''		   (header translated with help of SWIG FB wrapper)
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
+/'
+    BASS 2.4 C/C++ header file
+    Copyright (c) 1999-2011 Un4seen Developments Ltd.
+
+    See the BASS.CHM file for more detailed documentation
+'/
+
 #ifndef __bass_bi__
 #define __bass_bi__
 
 #inclib "bass"
 
-#ifdef __FB_WIN32__
-# include once "win/wtypes.bi"
-#else
-type BYTE as ubyte
-type WORD as ushort
-type DWORD as uinteger
+Type WORD as UShort
+type DWORD as UInteger
+type QWORD as ULongInt
 type BOOL as integer
-# define TRUE 1
-# define FALSE 0
-#define MAKELONG(a,b) cint( cushort(a) or (cuint(cushort(b)) shl 16) )
-#endif '' __FB_WIN32__
 
-type QWORD as ulongint
+
+#Ifndef TRUE
+    #define TRUE 1
+    #define FALSE 0
+#EndIf
+#define MAKEWORD(a,b) Cast(WORD, ((a) And &hFF) Or ((b) Shl 8))
+#define MAKELONG(a,b) Cast(DWORD, ((a) And &hFFFF) Or ((b) Shl 16))
+
+#define BASSVERSION &h204
+#define BASSVERSIONTEXT "2.4"
 
 type HMUSIC as DWORD
 type HSAMPLE as DWORD
@@ -47,7 +47,6 @@ type HPLUGIN as DWORD
 #define BASS_ERROR_INIT 8
 #define BASS_ERROR_START 9
 #define BASS_ERROR_ALREADY 14
-#define BASS_ERROR_NOPAUSE 16
 #define BASS_ERROR_NOCHAN 18
 #define BASS_ERROR_ILLTYPE 19
 #define BASS_ERROR_ILLPARAM 20
@@ -62,37 +61,78 @@ type HPLUGIN as DWORD
 #define BASS_ERROR_NONET 32
 #define BASS_ERROR_CREATE 33
 #define BASS_ERROR_NOFX 34
-#define BASS_ERROR_PLAYING 35
 #define BASS_ERROR_NOTAVAIL 37
 #define BASS_ERROR_DECODE 38
 #define BASS_ERROR_DX 39
 #define BASS_ERROR_TIMEOUT 40
 #define BASS_ERROR_FILEFORM 41
 #define BASS_ERROR_SPEAKER 42
+#define BASS_ERROR_VERSION 43
+#define BASS_ERROR_CODEC 44
+#define BASS_ERROR_ENDED 45
+#define BASS_ERROR_BUSY 46
 #define BASS_ERROR_UNKNOWN -1
+#define BASS_CONFIG_BUFFER 0
+#define BASS_CONFIG_UPDATEPERIOD 1
+#define BASS_CONFIG_GVOL_SAMPLE 4
+#define BASS_CONFIG_GVOL_STREAM 5
+#define BASS_CONFIG_GVOL_MUSIC 6
+#define BASS_CONFIG_CURVE_VOL 7
+#define BASS_CONFIG_CURVE_PAN 8
+#define BASS_CONFIG_FLOATDSP 9
+#define BASS_CONFIG_3DALGORITHM 10
+#define BASS_CONFIG_NET_TIMEOUT 11
+#define BASS_CONFIG_NET_BUFFER 12
+#define BASS_CONFIG_PAUSE_NOPLAY 13
+#define BASS_CONFIG_NET_PREBUF 15
+#define BASS_CONFIG_NET_PASSIVE 18
+#define BASS_CONFIG_REC_BUFFER 19
+#define BASS_CONFIG_NET_PLAYLIST 21
+#define BASS_CONFIG_MUSIC_VIRTUAL 22
+#define BASS_CONFIG_VERIFY 23
+#define BASS_CONFIG_UPDATETHREADS 24
+#define BASS_CONFIG_DEV_BUFFER 27
+#define BASS_CONFIG_IOS_MIXAUDIO 34
+#define BASS_CONFIG_DEV_DEFAULT 36
+#define BASS_CONFIG_NET_READTIMEOUT 37
+#define BASS_CONFIG_IOS_SPEAKER 39
+#define BASS_CONFIG_NET_AGENT 16
+#define BASS_CONFIG_NET_PROXY 17
 #define BASS_DEVICE_8BITS 1
 #define BASS_DEVICE_MONO 2
 #define BASS_DEVICE_3D 4
 #define BASS_DEVICE_LATENCY 256
+#define BASS_DEVICE_CPSPEAKERS 1024
 #define BASS_DEVICE_SPEAKERS 2048
+#define BASS_DEVICE_NOSPEAKER 4096
 #define BASS_OBJECT_DS 1
 #define BASS_OBJECT_DS3DL 2
 
+type BASS_DEVICEINFO
+    name as zstring ptr
+    driver as zstring ptr
+    flags as DWORD
+end type
+
+#define BASS_DEVICE_ENABLED 1
+#define BASS_DEVICE_DEFAULT 2
+#define BASS_DEVICE_INIT 4
+
 type BASS_INFO
-	flags as DWORD
-	hwsize as DWORD
-	hwfree as DWORD
-	freesam as DWORD
-	free3d as DWORD
-	minrate as DWORD
-	maxrate as DWORD
-	eax as BOOL
-	minbuf as DWORD
-	dsver as DWORD
-	latency as DWORD
-	initflags as DWORD
-	speakers as DWORD
-	driver as zstring ptr
+    flags as DWORD
+    hwsize as DWORD
+    hwfree as DWORD
+    freesam as DWORD
+    free3d as DWORD
+    minrate as DWORD
+    maxrate as DWORD
+    eax as BOOL
+    minbuf as DWORD
+    dsver as DWORD
+    latency as DWORD
+    initflags as DWORD
+    speakers as DWORD
+    freq as DWORD
 end type
 
 #define DSCAPS_CONTINUOUSRATE &h00000010
@@ -104,11 +144,11 @@ end type
 #define DSCAPS_SECONDARY16BIT &h00000800
 
 type BASS_RECORDINFO
-	flags as DWORD
-	formats as DWORD
-	inputs as DWORD
-	singlein as BOOL
-	driver as zstring ptr
+    flags as DWORD
+    formats as DWORD
+    inputs as DWORD
+    singlein as BOOL
+    freq as DWORD
 end type
 
 #define DSCCAPS_EMULDRIVER &h00000020
@@ -127,22 +167,23 @@ end type
 #define WAVE_FORMAT_4S16 &h00000800
 
 type BASS_SAMPLE
-	freq as DWORD
-	volume as DWORD
-	pan as integer
-	flags as DWORD
-	length as DWORD
-	max_ as DWORD
-	origres as DWORD
-	chans as DWORD
-	mode3d as DWORD
-	mindist as single
-	maxdist as single
-	iangle as DWORD
-	oangle as DWORD
-	outvol as DWORD
-	vam as DWORD
-	priority as DWORD
+    freq as DWORD
+    volume as single
+    pan as single
+    flags as DWORD
+    length as DWORD
+    max as DWORD
+    origres as DWORD
+    chans as DWORD
+    mingap as DWORD
+    mode3d as DWORD
+    mindist as single
+    maxdist as single
+    iangle as DWORD
+    oangle as DWORD
+    outvol as single
+    vam as DWORD
+    priority as DWORD
 end type
 
 #define BASS_SAMPLE_8BITS 1
@@ -180,6 +221,7 @@ end type
 #define BASS_MUSIC_FT2MOD &h2000
 #define BASS_MUSIC_PT1MOD &h4000
 #define BASS_MUSIC_NONINTER &h10000
+#define BASS_MUSIC_SINCINTER &h800000
 #define BASS_MUSIC_POSRESET &h8000
 #define BASS_MUSIC_POSRESETEX &h400000
 #define BASS_MUSIC_STOPBACK &h80000
@@ -207,22 +249,29 @@ end type
 #define BASS_VAM_TERM_PRIO 16
 
 type BASS_CHANNELINFO
-	freq as DWORD
-	chans as DWORD
-	flags as DWORD
-	ctype as DWORD
-	origres as DWORD
+    freq as DWORD
+    chans as DWORD
+    flags as DWORD
+    ctype as DWORD
+    origres as DWORD
+    plugin as HPLUGIN
+    sample as HSAMPLE
+    filename as zstring ptr
 end type
 
 #define BASS_CTYPE_SAMPLE 1
 #define BASS_CTYPE_RECORD 2
 #define BASS_CTYPE_STREAM &h10000
-#define BASS_CTYPE_STREAM_WAV &h10001
 #define BASS_CTYPE_STREAM_OGG &h10002
 #define BASS_CTYPE_STREAM_MP1 &h10003
 #define BASS_CTYPE_STREAM_MP2 &h10004
 #define BASS_CTYPE_STREAM_MP3 &h10005
 #define BASS_CTYPE_STREAM_AIFF &h10006
+#define BASS_CTYPE_STREAM_CA &h10007
+#define BASS_CTYPE_STREAM_MF &h10008
+#define BASS_CTYPE_STREAM_WAV &h40000
+#define BASS_CTYPE_STREAM_WAV_PCM &h50001
+#define BASS_CTYPE_STREAM_WAV_FLOAT &h50003
 #define BASS_CTYPE_MUSIC_MOD &h20000
 #define BASS_CTYPE_MUSIC_MTM &h20001
 #define BASS_CTYPE_MUSIC_S3M &h20002
@@ -230,95 +279,125 @@ end type
 #define BASS_CTYPE_MUSIC_IT &h20004
 #define BASS_CTYPE_MUSIC_MO3 &h00100
 
-type BASS_3DVECTOR
-	x as single
-	y as single
-	z as single
+type BASS_PLUGINFORM
+    ctype as DWORD
+    name as zstring ptr
+    exts as zstring ptr
 end type
+
+type BASS_PLUGININFO
+    version as DWORD
+    formatc as DWORD
+    formats as BASS_PLUGINFORM ptr
+end type
+
+type BASS_3DVECTOR
+    x as single
+    y as single
+    z as single
+end type
+
+'type BASS_3DVECTOR as Any
 
 #define BASS_3DMODE_NORMAL 0
 #define BASS_3DMODE_RELATIVE 1
 #define BASS_3DMODE_OFF 2
-
-#ifdef __FB_WIN32__
-enum 
-	EAX_ENVIRONMENT_GENERIC
-	EAX_ENVIRONMENT_PADDEDCELL
-	EAX_ENVIRONMENT_ROOM
-	EAX_ENVIRONMENT_BATHROOM
-	EAX_ENVIRONMENT_LIVINGROOM
-	EAX_ENVIRONMENT_STONEROOM
-	EAX_ENVIRONMENT_AUDITORIUM
-	EAX_ENVIRONMENT_CONCERTHALL
-	EAX_ENVIRONMENT_CAVE
-	EAX_ENVIRONMENT_ARENA
-	EAX_ENVIRONMENT_HANGAR
-	EAX_ENVIRONMENT_CARPETEDHALLWAY
-	EAX_ENVIRONMENT_HALLWAY
-	EAX_ENVIRONMENT_STONECORRIDOR
-	EAX_ENVIRONMENT_ALLEY
-	EAX_ENVIRONMENT_FOREST
-	EAX_ENVIRONMENT_CITY
-	EAX_ENVIRONMENT_MOUNTAINS
-	EAX_ENVIRONMENT_QUARRY
-	EAX_ENVIRONMENT_PLAIN
-	EAX_ENVIRONMENT_PARKINGLOT
-	EAX_ENVIRONMENT_SEWERPIPE
-	EAX_ENVIRONMENT_UNDERWATER
-	EAX_ENVIRONMENT_DRUGGED
-	EAX_ENVIRONMENT_DIZZY
-	EAX_ENVIRONMENT_PSYCHOTIC
-	EAX_ENVIRONMENT_COUNT
-end enum
-
-#define EAX_PRESET_GENERIC         EAX_ENVIRONMENT_GENERIC,0.5,1.493,0.5
-#define EAX_PRESET_PADDEDCELL      EAX_ENVIRONMENT_PADDEDCELL,0.25,0.1,0.0
-#define EAX_PRESET_ROOM            EAX_ENVIRONMENT_ROOM,0.417,0.4,0.666
-#define EAX_PRESET_BATHROOM        EAX_ENVIRONMENT_BATHROOM,0.653,1.499,0.166
-#define EAX_PRESET_LIVINGROOM      EAX_ENVIRONMENT_LIVINGROOM,0.208,0.478,0.0
-#define EAX_PRESET_STONEROOM       EAX_ENVIRONMENT_STONEROOM,0.5,2.309,0.888
-#define EAX_PRESET_AUDITORIUM      EAX_ENVIRONMENT_AUDITORIUM,0.403,4.279,0.5
-#define EAX_PRESET_CONCERTHALL     EAX_ENVIRONMENT_CONCERTHALL,0.5,3.961,0.5
-#define EAX_PRESET_CAVE            EAX_ENVIRONMENT_CAVE,0.5,2.886,1.304
-#define EAX_PRESET_ARENA           EAX_ENVIRONMENT_ARENA,0.361,7.284,0.332
-#define EAX_PRESET_HANGAR          EAX_ENVIRONMENT_HANGAR,0.5,10.0,0.3
-#define EAX_PRESET_CARPETEDHALLWAY EAX_ENVIRONMENT_CARPETEDHALLWAY,0.153,0.259,2.0
-#define EAX_PRESET_HALLWAY         EAX_ENVIRONMENT_HALLWAY,0.361,1.493,0.0
-#define EAX_PRESET_STONECORRIDOR   EAX_ENVIRONMENT_STONECORRIDOR,0.444,2.697,0.638
-#define EAX_PRESET_ALLEY           EAX_ENVIRONMENT_ALLEY,0.25,1.752,0.776
-#define EAX_PRESET_FOREST          EAX_ENVIRONMENT_FOREST,0.111,3.145,0.472
-#define EAX_PRESET_CITY            EAX_ENVIRONMENT_CITY,0.111,2.767,0.224
-#define EAX_PRESET_MOUNTAINS       EAX_ENVIRONMENT_MOUNTAINS,0.194,7.841,0.472
-#define EAX_PRESET_QUARRY          EAX_ENVIRONMENT_QUARRY,1.0,1.499,0.5
-#define EAX_PRESET_PLAIN           EAX_ENVIRONMENT_PLAIN,0.097,2.767,0.224
-#define EAX_PRESET_PARKINGLOT      EAX_ENVIRONMENT_PARKINGLOT,0.208,1.652,1.5
-#define EAX_PRESET_SEWERPIPE       EAX_ENVIRONMENT_SEWERPIPE,0.652,2.886,0.25
-#define EAX_PRESET_UNDERWATER      EAX_ENVIRONMENT_UNDERWATER,1.0,1.499,0.0
-#define EAX_PRESET_DRUGGED         EAX_ENVIRONMENT_DRUGGED,0.875,8.392,1.388
-#define EAX_PRESET_DIZZY           EAX_ENVIRONMENT_DIZZY,0.139,17.234,0.666
-#define EAX_PRESET_PSYCHOTIC       EAX_ENVIRONMENT_PSYCHOTIC,0.486,7.563,0.806
-#endif '' __FB_WIN32__
-
 #define BASS_3DALG_DEFAULT 0
 #define BASS_3DALG_OFF 1
 #define BASS_3DALG_FULL 2
 #define BASS_3DALG_LIGHT 3
 
-type STREAMPROC as function (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as DWORD) as DWORD
+enum
+    EAX_ENVIRONMENT_GENERIC
+    EAX_ENVIRONMENT_PADDEDCELL
+    EAX_ENVIRONMENT_ROOM
+    EAX_ENVIRONMENT_BATHROOM
+    EAX_ENVIRONMENT_LIVINGROOM
+    EAX_ENVIRONMENT_STONEROOM
+    EAX_ENVIRONMENT_AUDITORIUM
+    EAX_ENVIRONMENT_CONCERTHALL
+    EAX_ENVIRONMENT_CAVE
+    EAX_ENVIRONMENT_ARENA
+    EAX_ENVIRONMENT_HANGAR
+    EAX_ENVIRONMENT_CARPETEDHALLWAY
+    EAX_ENVIRONMENT_HALLWAY
+    EAX_ENVIRONMENT_STONECORRIDOR
+    EAX_ENVIRONMENT_ALLEY
+    EAX_ENVIRONMENT_FOREST
+    EAX_ENVIRONMENT_CITY
+    EAX_ENVIRONMENT_MOUNTAINS
+    EAX_ENVIRONMENT_QUARRY
+    EAX_ENVIRONMENT_PLAIN
+    EAX_ENVIRONMENT_PARKINGLOT
+    EAX_ENVIRONMENT_SEWERPIPE
+    EAX_ENVIRONMENT_UNDERWATER
+    EAX_ENVIRONMENT_DRUGGED
+    EAX_ENVIRONMENT_DIZZY
+    EAX_ENVIRONMENT_PSYCHOTIC
+    EAX_ENVIRONMENT_COUNT
+end enum
+
+#define EAX_PRESET_GENERIC         EAX_ENVIRONMENT_GENERIC,0.5f,1.493f,0.5f
+#define EAX_PRESET_PADDEDCELL      EAX_ENVIRONMENT_PADDEDCELL,0.25f,0.1f,0.0f
+#define EAX_PRESET_ROOM            EAX_ENVIRONMENT_ROOM,0.417f,0.4f,0.666f
+#define EAX_PRESET_BATHROOM        EAX_ENVIRONMENT_BATHROOM,0.653f,1.499f,0.166f
+#define EAX_PRESET_LIVINGROOM      EAX_ENVIRONMENT_LIVINGROOM,0.208f,0.478f,0.0f
+#define EAX_PRESET_STONEROOM       EAX_ENVIRONMENT_STONEROOM,0.5f,2.309f,0.888f
+#define EAX_PRESET_AUDITORIUM      EAX_ENVIRONMENT_AUDITORIUM,0.403f,4.279f,0.5f
+#define EAX_PRESET_CONCERTHALL     EAX_ENVIRONMENT_CONCERTHALL,0.5f,3.961f,0.5f
+#define EAX_PRESET_CAVE            EAX_ENVIRONMENT_CAVE,0.5f,2.886f,1.304f
+#define EAX_PRESET_ARENA           EAX_ENVIRONMENT_ARENA,0.361f,7.284f,0.332f
+#define EAX_PRESET_HANGAR          EAX_ENVIRONMENT_HANGAR,0.5f,10.0f,0.3f
+#define EAX_PRESET_CARPETEDHALLWAY EAX_ENVIRONMENT_CARPETEDHALLWAY,0.153f,0.259f,2.0f
+#define EAX_PRESET_HALLWAY         EAX_ENVIRONMENT_HALLWAY,0.361f,1.493f,0.0f
+#define EAX_PRESET_STONECORRIDOR   EAX_ENVIRONMENT_STONECORRIDOR,0.444f,2.697f,0.638f
+#define EAX_PRESET_ALLEY           EAX_ENVIRONMENT_ALLEY,0.25f,1.752f,0.776f
+#define EAX_PRESET_FOREST          EAX_ENVIRONMENT_FOREST,0.111f,3.145f,0.472f
+#define EAX_PRESET_CITY            EAX_ENVIRONMENT_CITY,0.111f,2.767f,0.224f
+#define EAX_PRESET_MOUNTAINS       EAX_ENVIRONMENT_MOUNTAINS,0.194f,7.841f,0.472f
+#define EAX_PRESET_QUARRY          EAX_ENVIRONMENT_QUARRY,1.0f,1.499f,0.5f
+#define EAX_PRESET_PLAIN           EAX_ENVIRONMENT_PLAIN,0.097f,2.767f,0.224f
+#define EAX_PRESET_PARKINGLOT      EAX_ENVIRONMENT_PARKINGLOT,0.208f,1.652f,1.5f
+#define EAX_PRESET_SEWERPIPE       EAX_ENVIRONMENT_SEWERPIPE,0.652f,2.886f,0.25f
+#define EAX_PRESET_UNDERWATER      EAX_ENVIRONMENT_UNDERWATER,1.0f,1.499f,0.0f
+#define EAX_PRESET_DRUGGED         EAX_ENVIRONMENT_DRUGGED,0.875f,8.392f,1.388f
+#define EAX_PRESET_DIZZY           EAX_ENVIRONMENT_DIZZY,0.139f,17.234f,0.666f
+#define EAX_PRESET_PSYCHOTIC       EAX_ENVIRONMENT_PSYCHOTIC,0.486f,7.563f,0.806f
+
+type STREAMPROC as function cdecl (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
 
 #define BASS_STREAMPROC_END &h80000000
+
+#define STREAMPROC_DUMMY        Cast(STREAMPROC Ptr, 0)
+#define STREAMPROC_PUSH         Cast(STREAMPROC Ptr, -1)
+
+#define STREAMFILE_NOBUFFER 0
+#define STREAMFILE_BUFFER 1
+#define STREAMFILE_BUFFERPUSH 2
+
+type FILECLOSEPROC as sub cdecl (byval as any ptr)
+type FILELENPROC as function cdecl (byval as any ptr) as QWORD
+type FILEREADPROC as function cdecl (byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
+type FILESEEKPROC as function cdecl (byval as QWORD, byval as any ptr) as BOOL
+
+type BASS_FILEPROCS
+    close as FILECLOSEPROC ptr
+    length as FILELENPROC ptr
+    read as FILEREADPROC ptr
+    seek as FILESEEKPROC ptr
+end type
+
+#define BASS_FILEDATA_END 0
 #define BASS_FILEPOS_CURRENT 0
 #define BASS_FILEPOS_DECODE 0
 #define BASS_FILEPOS_DOWNLOAD 1
 #define BASS_FILEPOS_END 2
 #define BASS_FILEPOS_START 3
-#define BASS_FILE_CLOSE 0
-#define BASS_FILE_READ 1
-#define BASS_FILE_LEN 3
-#define BASS_FILE_SEEK 4
+#define BASS_FILEPOS_CONNECTED 4
+#define BASS_FILEPOS_BUFFER 5
+#define BASS_FILEPOS_SOCKET 6
 
-type STREAMFILEPROC as function (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
-type DOWNLOADPROC as sub (byval as any ptr, byval as DWORD, byval as DWORD)
+type DOWNLOADPROC as sub cdecl (byval as const any ptr, byval as DWORD, byval as any ptr)
 
 #define BASS_SYNC_POS 0
 #define BASS_SYNC_END 2
@@ -327,148 +406,141 @@ type DOWNLOADPROC as sub (byval as any ptr, byval as DWORD, byval as DWORD)
 #define BASS_SYNC_STALL 6
 #define BASS_SYNC_DOWNLOAD 7
 #define BASS_SYNC_FREE 8
+#define BASS_SYNC_SETPOS 11
 #define BASS_SYNC_MUSICPOS 10
 #define BASS_SYNC_MUSICINST 1
 #define BASS_SYNC_MUSICFX 3
-#define BASS_SYNC_MESSAGE &h20000000
+#define BASS_SYNC_OGG_CHANGE 12
 #define BASS_SYNC_MIXTIME &h40000000
 #define BASS_SYNC_ONETIME &h80000000
 
-type SYNCPROC as sub (byval as HSYNC, byval as DWORD, byval as DWORD, byval as DWORD)
-type DSPPROC as sub (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD)
-type RECORDPROC as function (byval as HRECORD, byval as any ptr, byval as DWORD, byval as DWORD) as BOOL
+type SYNCPROC as sub cdecl (byval as HSYNC, byval as DWORD, byval as DWORD, byval as any ptr)
+type DSPPROC as sub cdecl (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as any ptr)
+type RECORDPROC as cdecl function (byval as HRECORD, byval as const any ptr, byval as DWORD, byval as any ptr) as BOOL
 
+#define BASS_ACTIVE_STOPPED 0
+#define BASS_ACTIVE_PLAYING 1
+#define BASS_ACTIVE_STALLED 2
+#define BASS_ACTIVE_PAUSED 3
+#define BASS_ATTRIB_FREQ 1
+#define BASS_ATTRIB_VOL 2
+#define BASS_ATTRIB_PAN 3
+#define BASS_ATTRIB_EAXMIX 4
+#define BASS_ATTRIB_NOBUFFER 5
+#define BASS_ATTRIB_CPU 7
+#define BASS_ATTRIB_MUSIC_AMPLIFY &h100
+#define BASS_ATTRIB_MUSIC_PANSEP &h101
+#define BASS_ATTRIB_MUSIC_PSCALER &h102
+#define BASS_ATTRIB_MUSIC_BPM &h103
+#define BASS_ATTRIB_MUSIC_SPEED &h104
+#define BASS_ATTRIB_MUSIC_VOL_GLOBAL &h105
+#define BASS_ATTRIB_MUSIC_VOL_CHAN &h200
+#define BASS_ATTRIB_MUSIC_VOL_INST &h300
 #define BASS_DATA_AVAILABLE 0
 #define BASS_DATA_FLOAT &h40000000
-#define BASS_DATA_FFT512 &h80000000
-#define BASS_DATA_FFT1024 &h80000001
-#define BASS_DATA_FFT2048 &h80000002
-#define BASS_DATA_FFT4096 &h80000003
+#define BASS_DATA_FFT256 &h80000000
+#define BASS_DATA_FFT512 &h80000001
+#define BASS_DATA_FFT1024 &h80000002
+#define BASS_DATA_FFT2048 &h80000003
+#define BASS_DATA_FFT4096 &h80000004
+#define BASS_DATA_FFT8192 &h80000005
+#define BASS_DATA_FFT16384 &h80000006
 #define BASS_DATA_FFT_INDIVIDUAL &h10
 #define BASS_DATA_FFT_NOWINDOW &h20
+#define BASS_DATA_FFT_REMOVEDC &h40
 #define BASS_TAG_ID3 0
 #define BASS_TAG_ID3V2 1
 #define BASS_TAG_OGG 2
 #define BASS_TAG_HTTP 3
 #define BASS_TAG_ICY 4
 #define BASS_TAG_META 5
-#define BASS_MUSIC_ATTRIB_AMPLIFY 0
-#define BASS_MUSIC_ATTRIB_PANSEP 1
-#define BASS_MUSIC_ATTRIB_PSCALER 2
-#define BASS_MUSIC_ATTRIB_BPM 3
-#define BASS_MUSIC_ATTRIB_SPEED 4
-#define BASS_MUSIC_ATTRIB_VOL_GLOBAL 5
-#define BASS_MUSIC_ATTRIB_VOL_CHAN &h100
-#define BASS_MUSIC_ATTRIB_VOL_INST &h200
+#define BASS_TAG_APE 6
+#define BASS_TAG_MP4 7
+#define BASS_TAG_VENDOR 9
+#define BASS_TAG_LYRICS3 10
+#define BASS_TAG_CA_CODEC 11
+#define BASS_TAG_MF 13
+#define BASS_TAG_WAVEFORMAT 14
+#define BASS_TAG_RIFF_INFO &h100
+#define BASS_TAG_RIFF_BEXT &h101
+#define BASS_TAG_RIFF_CART &h102
+#define BASS_TAG_RIFF_DISP &h103
+#define BASS_TAG_APE_BINARY &h1000
+#define BASS_TAG_MUSIC_NAME &h10000
+#define BASS_TAG_MUSIC_MESSAGE &h10001
+#define BASS_TAG_MUSIC_ORDERS &h10002
+#define BASS_TAG_MUSIC_INST &h10100
+#define BASS_TAG_MUSIC_SAMPLE &h10300
 
-#ifdef __FB_WIN32__
-enum 
-	BASS_FX_CHORUS
-	BASS_FX_COMPRESSOR
-	BASS_FX_DISTORTION
-	BASS_FX_ECHO
-	BASS_FX_FLANGER
-	BASS_FX_GARGLE
-	BASS_FX_I3DL2REVERB
-	BASS_FX_PARAMEQ
-	BASS_FX_REVERB
-end enum
-
-type BASS_FXCHORUS
-	fWetDryMix as single
-	fDepth as single
-	fFeedback as single
-	fFrequency as single
-	lWaveform as DWORD
-	fDelay as single
-	lPhase as DWORD
+type TAG_ID3
+    id as zstring * 3
+    title as zstring * 30
+    artist as zstring * 30
+    album as zstring * 30
+    year as zstring * 4
+    comment as zstring * 30
+    genre as BYTE
 end type
 
-type BASS_FXCOMPRESSOR
-	fGain as single
-	fAttack as single
-	fRelease as single
-	fThreshold as single
-	fRatio as single
-	fPredelay as single
+type TAG_APE_BINARY
+    key as zstring ptr
+    data as any ptr
+    length as DWORD
 end type
 
-type BASS_FXDISTORTION
-	fGain as single
-	fEdge as single
-	fPostEQCenterFrequency as single
-	fPostEQBandwidth as single
-	fPreLowpassCutoff as single
+type TAG_BEXT
+    Description as zstring * 256
+    Originator as zstring * 32
+    OriginatorReference as zstring * 32
+    OriginationDate as zstring * 10
+    OriginationTime as zstring * 8
+    TimeReference as QWORD
+    Version as WORD
+    UMID(0 to 64-1) as BYTE
+    Reserved(0 to 190-1) as BYTE
+    CodingHistory as zstring * 1
 end type
 
-type BASS_FXECHO
-	fWetDryMix as single
-	fFeedback as single
-	fLeftDelay as single
-	fRightDelay as single
-	lPanDelay as BOOL
+type TAG_CART_TIMER
+    dwUsage as DWORD
+    dwValue as DWORD
 end type
 
-type BASS_FXFLANGER
-	fWetDryMix as single
-	fDepth as single
-	fFeedback as single
-	fFrequency as single
-	lWaveform as DWORD
-	fDelay as single
-	lPhase as DWORD
+type TAG_CART
+    Version as zstring * 4
+    Title as zstring * 64
+    Artist as zstring * 64
+    CutID as zstring * 64
+    ClientID as zstring * 64
+    Category as zstring * 64
+    Classification as zstring * 64
+    OutCue as zstring * 64
+    StartDate as zstring * 10
+    StartTime as zstring * 8
+    EndDate as zstring * 10
+    EndTime as zstring * 8
+    ProducerAppID as zstring * 64
+    ProducerAppVersion as zstring * 64
+    UserDef as zstring * 64
+    dwLevelReference as DWORD
+    PostTimer(0 to 8-1) as TAG_CART_TIMER
+    Reserved as zstring * 276
+    URL as zstring * 1024
+    TagText as zstring * 1
 end type
 
-type BASS_FXGARGLE
-	dwRateHz as DWORD
-	dwWaveShape as DWORD
+type TAG_CA_CODEC
+    ftype as DWORD
+    atype as DWORD
+    name as zstring ptr
 end type
 
-type BASS_FXI3DL2REVERB
-	lRoom as integer
-	lRoomHF as integer
-	flRoomRolloffFactor as single
-	flDecayTime as single
-	flDecayHFRatio as single
-	lReflections as integer
-	flReflectionsDelay as single
-	lReverb as integer
-	flReverbDelay as single
-	flDiffusion as single
-	flDensity as single
-	flHFReference as single
-end type
-
-type BASS_FXPARAMEQ
-	fCenter as single
-	fBandwidth as single
-	fGain as single
-end type
-
-type BASS_FXREVERB
-	fInGain as single
-	fReverbMix as single
-	fReverbTime as single
-	fHighFreqRTRatio as single
-end type
-
-#define BASS_FX_PHASE_NEG_180 0
-#define BASS_FX_PHASE_NEG_90 1
-#define BASS_FX_PHASE_ZERO 2
-#define BASS_FX_PHASE_90 3
-#define BASS_FX_PHASE_180 4
-#endif '' __FB_WIN32__
-
-#define BASS_ACTIVE_STOPPED 0
-#define BASS_ACTIVE_PLAYING 1
-#define BASS_ACTIVE_STALLED 2
-#define BASS_ACTIVE_PAUSED 3
-#define BASS_SLIDE_FREQ 1
-#define BASS_SLIDE_VOL 2
-#define BASS_SLIDE_PAN 4
+#define BASS_POS_BYTE 0
+#define BASS_POS_MUSIC_ORDER 1
+#define BASS_POS_DECODE &h10000000
+#define BASS_POS_DECODETO &h20000000
 #define BASS_INPUT_OFF &h10000
 #define BASS_INPUT_ON &h20000
-#define BASS_INPUT_LEVEL &h40000
 #define BASS_INPUT_TYPE_MASK &hff000000
 #define BASS_INPUT_TYPE_UNDEF &h00000000
 #define BASS_INPUT_TYPE_DIGITAL &h01000000
@@ -481,126 +553,200 @@ end type
 #define BASS_INPUT_TYPE_WAVE &h08000000
 #define BASS_INPUT_TYPE_AUX &h09000000
 #define BASS_INPUT_TYPE_ANALOG &h0a000000
-#define BASS_CONFIG_BUFFER 0
-#define BASS_CONFIG_UPDATEPERIOD 1
-#define BASS_CONFIG_MAXVOL 3
-#define BASS_CONFIG_GVOL_SAMPLE 4
-#define BASS_CONFIG_GVOL_STREAM 5
-#define BASS_CONFIG_GVOL_MUSIC 6
-#define BASS_CONFIG_CURVE_VOL 7
-#define BASS_CONFIG_CURVE_PAN 8
-#define BASS_CONFIG_FLOATDSP 9
-#define BASS_CONFIG_3DALGORITHM 10
-#define BASS_CONFIG_NET_TIMEOUT 11
-#define BASS_CONFIG_NET_BUFFER 12
-#define BASS_CONFIG_PAUSE_NOPLAY 13
-#define BASS_CONFIG_NET_NOPROXY 14
-#define BASS_CONFIG_NET_PREBUF 15
-#define BASS_CONFIG_NET_AGENT 16
 
-declare function BASS_SetConfig alias "BASS_SetConfig" (byval option as DWORD, byval value as DWORD) as DWORD
-declare function BASS_GetConfig alias "BASS_GetConfig" (byval option as DWORD) as DWORD
-declare function BASS_GetVersion alias "BASS_GetVersion" () as DWORD
-declare function BASS_GetDeviceDescription alias "BASS_GetDeviceDescription" (byval device as DWORD) as zstring ptr
-declare function BASS_ErrorGetCode alias "BASS_ErrorGetCode" () as integer
-#ifdef __FB_WIN32__
-declare function BASS_Init alias "BASS_Init" (byval device as integer, byval freq as DWORD, byval flags as DWORD, byval win as HWND, byval dsguid as GUID ptr) as BOOL
-#else
-declare function BASS_Init alias "BASS_Init" (byval device as integer, byval freq as DWORD, byval flags as DWORD, byval win as any ptr, byval dsguid as any ptr) as BOOL
-#endif
-declare function BASS_SetDevice alias "BASS_SetDevice" (byval device as DWORD) as BOOL
-declare function BASS_GetDevice alias "BASS_GetDevice" () as DWORD
-declare function BASS_Free alias "BASS_Free" () as BOOL
-#ifdef __FB_WIN32__
-declare function BASS_GetDSoundObject alias "BASS_GetDSoundObject" (byval object as DWORD) as any ptr
-#endif
-declare function BASS_GetInfo alias "BASS_GetInfo" (byval info as BASS_INFO ptr) as BOOL
-declare function BASS_Update alias "BASS_Update" () as BOOL
-declare function BASS_GetCPU alias "BASS_GetCPU" () as single
-declare function BASS_Start alias "BASS_Start" () as BOOL
-declare function BASS_Stop alias "BASS_Stop" () as BOOL
-declare function BASS_Pause alias "BASS_Pause" () as BOOL
-declare function BASS_SetVolume alias "BASS_SetVolume" (byval volume as DWORD) as BOOL
-declare function BASS_GetVolume alias "BASS_GetVolume" () as DWORD
-declare function BASS_PluginLoad alias "BASS_PluginLoad" (byval file as zstring ptr) as HPLUGIN
-declare function BASS_PluginFree alias "BASS_PluginFree" (byval handle as HPLUGIN) as BOOL
-declare function BASS_Set3DFactors alias "BASS_Set3DFactors" (byval distf as single, byval rollf as single, byval doppf as single) as BOOL
-declare function BASS_Get3DFactors alias "BASS_Get3DFactors" (byval distf as single ptr, byval rollf as single ptr, byval doppf as single ptr) as BOOL
-declare function BASS_Set3DPosition alias "BASS_Set3DPosition" (byval pos as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr, byval front as BASS_3DVECTOR ptr, byval top as BASS_3DVECTOR ptr) as BOOL
-declare function BASS_Get3DPosition alias "BASS_Get3DPosition" (byval pos as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr, byval front as BASS_3DVECTOR ptr, byval top as BASS_3DVECTOR ptr) as BOOL
-declare sub BASS_Apply3D alias "BASS_Apply3D" ()
-#ifdef __FB_WIN32__
-declare function BASS_SetEAXParameters alias "BASS_SetEAXParameters" (byval env as integer, byval vol as single, byval decay as single, byval damp as single) as BOOL
-declare function BASS_GetEAXParameters alias "BASS_GetEAXParameters" (byval env as DWORD ptr, byval vol as single ptr, byval decay as single ptr, byval damp as single ptr) as BOOL
-#endif
-declare function BASS_MusicLoad alias "BASS_MusicLoad" (byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD, byval freq as DWORD) as HMUSIC
-declare function BASS_MusicFree alias "BASS_MusicFree" (byval handle as HMUSIC) as BOOL
-declare function BASS_MusicSetAttribute alias "BASS_MusicSetAttribute" (byval handle as HMUSIC, byval attrib as DWORD, byval value as DWORD) as DWORD
-declare function BASS_MusicGetAttribute alias "BASS_MusicGetAttribute" (byval handle as HMUSIC, byval attrib as DWORD) as DWORD
-declare function BASS_MusicGetName alias "BASS_MusicGetName" (byval handle as HMUSIC) as zstring ptr
-declare function BASS_MusicGetOrders alias "BASS_MusicGetOrders" (byval handle as HMUSIC) as DWORD
-declare function BASS_MusicGetOrderPosition alias "BASS_MusicGetOrderPosition" (byval handle as HMUSIC) as DWORD
-declare function BASS_SampleLoad alias "BASS_SampleLoad" (byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval max_ as DWORD, byval flags as DWORD) as HSAMPLE
-declare function BASS_SampleCreate alias "BASS_SampleCreate" (byval length as DWORD, byval freq as DWORD, byval chans as DWORD, byval max_ as DWORD, byval flags as DWORD) as any ptr
-declare function BASS_SampleCreateDone alias "BASS_SampleCreateDone" () as HSAMPLE
-declare function BASS_SampleFree alias "BASS_SampleFree" (byval handle as HSAMPLE) as BOOL
-declare function BASS_SampleGetInfo alias "BASS_SampleGetInfo" (byval handle as HSAMPLE, byval info as BASS_SAMPLE ptr) as BOOL
-declare function BASS_SampleSetInfo alias "BASS_SampleSetInfo" (byval handle as HSAMPLE, byval info as BASS_SAMPLE ptr) as BOOL
-declare function BASS_SampleGetChannel alias "BASS_SampleGetChannel" (byval handle as HSAMPLE, byval onlynew as BOOL) as HCHANNEL
-declare function BASS_SampleStop alias "BASS_SampleStop" (byval handle as HSAMPLE) as BOOL
-declare function BASS_StreamCreate alias "BASS_StreamCreate" (byval freq as DWORD, byval chans as DWORD, byval flags as DWORD, byval proc as STREAMPROC ptr, byval user as DWORD) as HSTREAM
-declare function BASS_StreamCreateFile alias "BASS_StreamCreateFile" (byval mem as BOOL, byval file as zstring ptr, byval offset as DWORD, byval length as DWORD, byval flags as DWORD) as HSTREAM
-declare function BASS_StreamCreateURL alias "BASS_StreamCreateURL" (byval url as zstring ptr, byval offset as DWORD, byval flags as DWORD, byval proc as DOWNLOADPROC ptr, byval user as DWORD) as HSTREAM
-declare function BASS_StreamCreateFileUser alias "BASS_StreamCreateFileUser" (byval buffered as BOOL, byval flags as DWORD, byval proc as STREAMFILEPROC ptr, byval user as DWORD) as HSTREAM
-declare function BASS_StreamFree alias "BASS_StreamFree" (byval handle as HSTREAM) as BOOL
-declare function BASS_StreamGetTags alias "BASS_StreamGetTags" (byval handle as HSTREAM, byval tags as DWORD) as zstring ptr
-declare function BASS_StreamGetFilePosition alias "BASS_StreamGetFilePosition" (byval handle as HSTREAM, byval mode as DWORD) as DWORD
-declare function BASS_RecordGetDeviceDescription alias "BASS_RecordGetDeviceDescription" (byval device as DWORD) as zstring ptr
-declare function BASS_RecordInit alias "BASS_RecordInit" (byval device as integer) as BOOL
-declare function BASS_RecordSetDevice alias "BASS_RecordSetDevice" (byval device as DWORD) as BOOL
-declare function BASS_RecordGetDevice alias "BASS_RecordGetDevice" () as DWORD
-declare function BASS_RecordFree alias "BASS_RecordFree" () as BOOL
-declare function BASS_RecordGetInfo alias "BASS_RecordGetInfo" (byval info as BASS_RECORDINFO ptr) as BOOL
-declare function BASS_RecordGetInputName alias "BASS_RecordGetInputName" (byval input as integer) as zstring ptr
-declare function BASS_RecordSetInput alias "BASS_RecordSetInput" (byval input as integer, byval setting as DWORD) as BOOL
-declare function BASS_RecordGetInput alias "BASS_RecordGetInput" (byval input as integer) as DWORD
-declare function BASS_RecordStart alias "BASS_RecordStart" (byval freq as DWORD, byval chans as DWORD, byval flags as DWORD, byval proc as RECORDPROC ptr, byval user as DWORD) as HRECORD
-declare function BASS_ChannelBytes2Seconds alias "BASS_ChannelBytes2Seconds" (byval handle as DWORD, byval pos as QWORD) as single
-declare function BASS_ChannelSeconds2Bytes alias "BASS_ChannelSeconds2Bytes" (byval handle as DWORD, byval pos as single) as QWORD
-declare function BASS_ChannelGetDevice alias "BASS_ChannelGetDevice" (byval handle as DWORD) as DWORD
-declare function BASS_ChannelIsActive alias "BASS_ChannelIsActive" (byval handle as DWORD) as DWORD
-declare function BASS_ChannelGetInfo alias "BASS_ChannelGetInfo" (byval handle as DWORD, byval info as BASS_CHANNELINFO ptr) as BOOL
-declare function BASS_ChannelSetFlags alias "BASS_ChannelSetFlags" (byval handle as DWORD, byval flags as DWORD) as BOOL
-declare function BASS_ChannelPreBuf alias "BASS_ChannelPreBuf" (byval handle as DWORD, byval length as DWORD) as BOOL
-declare function BASS_ChannelPlay alias "BASS_ChannelPlay" (byval handle as DWORD, byval restart as BOOL) as BOOL
-declare function BASS_ChannelStop alias "BASS_ChannelStop" (byval handle as DWORD) as BOOL
-declare function BASS_ChannelPause alias "BASS_ChannelPause" (byval handle as DWORD) as BOOL
-declare function BASS_ChannelSetAttributes alias "BASS_ChannelSetAttributes" (byval handle as DWORD, byval freq as integer, byval volume as integer, byval pan as integer) as BOOL
-declare function BASS_ChannelGetAttributes alias "BASS_ChannelGetAttributes" (byval handle as DWORD, byval freq as DWORD ptr, byval volume as DWORD ptr, byval pan as integer ptr) as BOOL
-declare function BASS_ChannelSlideAttributes alias "BASS_ChannelSlideAttributes" (byval handle as DWORD, byval freq as integer, byval volume as integer, byval pan as integer, byval time as DWORD) as BOOL
-declare function BASS_ChannelIsSliding alias "BASS_ChannelIsSliding" (byval handle as DWORD) as DWORD
-declare function BASS_ChannelSet3DAttributes alias "BASS_ChannelSet3DAttributes" (byval handle as DWORD, byval mode as integer, byval min_ as single, byval max_ as single, byval iangle as integer, byval oangle as integer, byval outvol as integer) as BOOL
-declare function BASS_ChannelGet3DAttributes alias "BASS_ChannelGet3DAttributes" (byval handle as DWORD, byval mode as DWORD ptr, byval min_ as single ptr, byval max_ as single ptr, byval iangle as DWORD ptr, byval oangle as DWORD ptr, byval outvol as DWORD ptr) as BOOL
-declare function BASS_ChannelSet3DPosition alias "BASS_ChannelSet3DPosition" (byval handle as DWORD, byval pos as BASS_3DVECTOR ptr, byval orient as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr) as BOOL
-declare function BASS_ChannelGet3DPosition alias "BASS_ChannelGet3DPosition" (byval handle as DWORD, byval pos as BASS_3DVECTOR ptr, byval orient as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr) as BOOL
-declare function BASS_ChannelGetLength alias "BASS_ChannelGetLength" (byval handle as DWORD) as QWORD
-declare function BASS_ChannelSetPosition alias "BASS_ChannelSetPosition" (byval handle as DWORD, byval pos as QWORD) as BOOL
-declare function BASS_ChannelGetPosition alias "BASS_ChannelGetPosition" (byval handle as DWORD) as QWORD
-declare function BASS_ChannelGetLevel alias "BASS_ChannelGetLevel" (byval handle as DWORD) as DWORD
-declare function BASS_ChannelGetData alias "BASS_ChannelGetData" (byval handle as DWORD, byval buffer as any ptr, byval length as DWORD) as DWORD
-declare function BASS_ChannelSetSync alias "BASS_ChannelSetSync" (byval handle as DWORD, byval type as DWORD, byval param as QWORD, byval proc as SYNCPROC ptr, byval user as DWORD) as HSYNC
-declare function BASS_ChannelRemoveSync alias "BASS_ChannelRemoveSync" (byval handle as DWORD, byval sync as HSYNC) as BOOL
-declare function BASS_ChannelSetDSP alias "BASS_ChannelSetDSP" (byval handle as DWORD, byval proc as DSPPROC ptr, byval user as DWORD, byval priority as integer) as HDSP
-declare function BASS_ChannelRemoveDSP alias "BASS_ChannelRemoveDSP" (byval handle as DWORD, byval dsp as HDSP) as BOOL
-declare function BASS_ChannelSetLink alias "BASS_ChannelSetLink" (byval handle as DWORD, byval chan as DWORD) as BOOL
-declare function BASS_ChannelRemoveLink alias "BASS_ChannelRemoveLink" (byval handle as DWORD, byval chan as DWORD) as BOOL
-#ifdef __FB_WIN32__
-declare function BASS_ChannelSetEAXMix alias "BASS_ChannelSetEAXMix" (byval handle as DWORD, byval mix as single) as BOOL
-declare function BASS_ChannelGetEAXMix alias "BASS_ChannelGetEAXMix" (byval handle as DWORD, byval mix as single ptr) as BOOL
-declare function BASS_ChannelSetFX alias "BASS_ChannelSetFX" (byval handle as DWORD, byval type as DWORD, byval priority as DWORD) as HFX
-declare function BASS_ChannelRemoveFX alias "BASS_ChannelRemoveFX" (byval handle as DWORD, byval fx as HFX) as BOOL
-declare function BASS_FXSetParameters alias "BASS_FXSetParameters" (byval handle as HFX, byval par as any ptr) as BOOL
-declare function BASS_FXGetParameters alias "BASS_FXGetParameters" (byval handle as HFX, byval par as any ptr) as BOOL
-#endif
+enum
+    BASS_FX_DX8_CHORUS
+    BASS_FX_DX8_COMPRESSOR
+    BASS_FX_DX8_DISTORTION
+    BASS_FX_DX8_ECHO
+    BASS_FX_DX8_FLANGER
+    BASS_FX_DX8_GARGLE
+    BASS_FX_DX8_I3DL2REVERB
+    BASS_FX_DX8_PARAMEQ
+    BASS_FX_DX8_REVERB
+end enum
+
+type BASS_DX8_CHORUS
+    fWetDryMix as single
+    fDepth as single
+    fFeedback as single
+    fFrequency as single
+    lWaveform as DWORD
+    fDelay as single
+    lPhase as DWORD
+end type
+
+type BASS_DX8_COMPRESSOR
+    fGain as single
+    fAttack as single
+    fRelease as single
+    fThreshold as single
+    fRatio as single
+    fPredelay as single
+end type
+
+type BASS_DX8_DISTORTION
+    fGain as single
+    fEdge as single
+    fPostEQCenterFrequency as single
+    fPostEQBandwidth as single
+    fPreLowpassCutoff as single
+end type
+
+type BASS_DX8_ECHO
+    fWetDryMix as single
+    fFeedback as single
+    fLeftDelay as single
+    fRightDelay as single
+    lPanDelay as BOOL
+end type
+
+type BASS_DX8_FLANGER
+    fWetDryMix as single
+    fDepth as single
+    fFeedback as single
+    fFrequency as single
+    lWaveform as DWORD
+    fDelay as single
+    lPhase as DWORD
+end type
+
+type BASS_DX8_GARGLE
+    dwRateHz as DWORD
+    dwWaveShape as DWORD
+end type
+
+type BASS_DX8_I3DL2REVERB
+    lRoom as integer
+    lRoomHF as integer
+    flRoomRolloffFactor as single
+    flDecayTime as single
+    flDecayHFRatio as single
+    lReflections as integer
+    flReflectionsDelay as single
+    lReverb as integer
+    flReverbDelay as single
+    flDiffusion as single
+    flDensity as single
+    flHFReference as single
+end type
+
+type BASS_DX8_PARAMEQ
+    fCenter as single
+    fBandwidth as single
+    fGain as single
+end type
+
+type BASS_DX8_REVERB
+    fInGain as single
+    fReverbMix as single
+    fReverbTime as single
+    fHighFreqRTRatio as single
+end type
+
+#define BASS_DX8_PHASE_NEG_180 0
+#define BASS_DX8_PHASE_NEG_90 1
+#define BASS_DX8_PHASE_ZERO 2
+#define BASS_DX8_PHASE_90 3
+#define BASS_DX8_PHASE_180 4
+
+extern "C"
+
+declare function BASS_SetConfig (byval option as DWORD, byval value as DWORD) as BOOL
+declare function BASS_GetConfig (byval option as DWORD) as DWORD
+declare function BASS_SetConfigPtr (byval option as DWORD, byval value as any ptr) as BOOL
+declare function BASS_GetConfigPtr (byval option as DWORD) as any ptr
+declare function BASS_GetVersion () as DWORD
+declare function BASS_ErrorGetCode () as integer
+declare function BASS_GetDeviceInfo (byval device as DWORD, byval info as BASS_DEVICEINFO ptr) as BOOL
+declare function BASS_Init (byval device as integer, byval freq as DWORD, byval flags as DWORD, byval win as any ptr, byval dsguid as any ptr) as BOOL
+declare function BASS_SetDevice (byval device as DWORD) as BOOL
+declare function BASS_GetDevice () as DWORD
+declare function BASS_Free () as BOOL
+declare function BASS_GetInfo (byval info as BASS_INFO ptr) as BOOL
+declare function BASS_Update (byval length as DWORD) as BOOL
+declare function BASS_GetCPU () as single
+declare function BASS_Start () as BOOL
+declare function BASS_Stop () as BOOL
+declare function BASS_Pause () as BOOL
+declare function BASS_SetVolume (byval volume as single) as BOOL
+declare function BASS_GetVolume () as single
+declare function BASS_PluginLoad (byval file as zstring ptr, byval flags as DWORD) as HPLUGIN
+declare function BASS_PluginFree (byval handle as HPLUGIN) as BOOL
+declare function BASS_PluginGetInfo (byval handle as HPLUGIN) as BASS_PLUGININFO ptr
+declare function BASS_Set3DFactors (byval distf as single, byval rollf as single, byval doppf as single) as BOOL
+declare function BASS_Get3DFactors (byval distf as single ptr, byval rollf as single ptr, byval doppf as single ptr) as BOOL
+declare function BASS_Set3DPosition (byval pos as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr, byval front as BASS_3DVECTOR ptr, byval top as BASS_3DVECTOR ptr) as BOOL
+declare function BASS_Get3DPosition (byval pos as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr, byval front as BASS_3DVECTOR ptr, byval top as BASS_3DVECTOR ptr) as BOOL
+declare sub BASS_Apply3D ()
+declare function BASS_MusicLoad (byval mem as BOOL, byval file as any ptr, byval offset as QWORD, byval length as DWORD, byval flags as DWORD, byval freq as DWORD) as HMUSIC
+declare function BASS_MusicFree (byval handle as HMUSIC) as BOOL
+declare function BASS_SampleLoad (byval mem as BOOL, byval file as any ptr, byval offset as QWORD, byval length as DWORD, byval max as DWORD, byval flags as DWORD) as HSAMPLE
+declare function BASS_SampleCreate (byval length as DWORD, byval freq as DWORD, byval chans as DWORD, byval max as DWORD, byval flags as DWORD) as HSAMPLE
+declare function BASS_SampleFree (byval handle as HSAMPLE) as BOOL
+declare function BASS_SampleSetData (byval handle as HSAMPLE, byval buffer as any ptr) as BOOL
+declare function BASS_SampleGetData (byval handle as HSAMPLE, byval buffer as any ptr) as BOOL
+declare function BASS_SampleGetInfo (byval handle as HSAMPLE, byval info as BASS_SAMPLE ptr) as BOOL
+declare function BASS_SampleSetInfo (byval handle as HSAMPLE, byval info as BASS_SAMPLE ptr) as BOOL
+declare function BASS_SampleGetChannel (byval handle as HSAMPLE, byval onlynew as BOOL) as HCHANNEL
+declare function BASS_SampleGetChannels (byval handle as HSAMPLE, byval channels as HCHANNEL ptr) as DWORD
+declare function BASS_SampleStop (byval handle as HSAMPLE) as BOOL
+declare function BASS_StreamCreate (byval freq as DWORD, byval chans as DWORD, byval flags as DWORD, byval proc as STREAMPROC ptr, byval user as any ptr) as HSTREAM
+declare function BASS_StreamCreateFile (byval mem as BOOL, byval file as any ptr, byval offset as QWORD, byval length as QWORD, byval flags as DWORD) as HSTREAM
+declare function BASS_StreamCreateURL (byval url as zstring ptr, byval offset as DWORD, byval flags as DWORD, byval proc as DOWNLOADPROC ptr, byval user as any ptr) as HSTREAM
+declare function BASS_StreamCreateFileUser (byval system as DWORD, byval flags as DWORD, byval proc as BASS_FILEPROCS ptr, byval user as any ptr) as HSTREAM
+declare function BASS_StreamFree (byval handle as HSTREAM) as BOOL
+declare function BASS_StreamGetFilePosition (byval handle as HSTREAM, byval mode as DWORD) as QWORD
+declare function BASS_StreamPutData (byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD) as DWORD
+declare function BASS_StreamPutFileData (byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD) as DWORD
+declare function BASS_RecordGetDeviceInfo (byval device as DWORD, byval info as BASS_DEVICEINFO ptr) as BOOL
+declare function BASS_RecordInit (byval device as integer) as BOOL
+declare function BASS_RecordSetDevice (byval device as DWORD) as BOOL
+declare function BASS_RecordGetDevice () as DWORD
+declare function BASS_RecordFree () as BOOL
+declare function BASS_RecordGetInfo (byval info as BASS_RECORDINFO ptr) as BOOL
+declare function BASS_RecordGetInputName (byval input as integer) as zstring ptr
+declare function BASS_RecordSetInput (byval input as integer, byval flags as DWORD, byval volume as single) as BOOL
+declare function BASS_RecordGetInput (byval input as integer, byval volume as single ptr) as DWORD
+declare function BASS_RecordStart (byval freq as DWORD, byval chans as DWORD, byval flags as DWORD, byval proc as RECORDPROC ptr, byval user as any ptr) as HRECORD
+declare function BASS_ChannelBytes2Seconds (byval handle as DWORD, byval pos as QWORD) as double
+declare function BASS_ChannelSeconds2Bytes (byval handle as DWORD, byval pos as double) as QWORD
+declare function BASS_ChannelGetDevice (byval handle as DWORD) as DWORD
+declare function BASS_ChannelSetDevice (byval handle as DWORD, byval device as DWORD) as BOOL
+declare function BASS_ChannelIsActive (byval handle as DWORD) as DWORD
+declare function BASS_ChannelGetInfo (byval handle as DWORD, byval info as BASS_CHANNELINFO ptr) as BOOL
+declare function BASS_ChannelGetTags (byval handle as DWORD, byval tags as DWORD) as zstring ptr
+declare function BASS_ChannelFlags (byval handle as DWORD, byval flags as DWORD, byval mask as DWORD) as DWORD
+declare function BASS_ChannelUpdate (byval handle as DWORD, byval length as DWORD) as BOOL
+declare function BASS_ChannelLock (byval handle as DWORD, byval lock as BOOL) as BOOL
+declare function BASS_ChannelPlay (byval handle as DWORD, byval restart as BOOL) as BOOL
+declare function BASS_ChannelStop (byval handle as DWORD) as BOOL
+declare function BASS_ChannelPause (byval handle as DWORD) as BOOL
+declare function BASS_ChannelSetAttribute (byval handle as DWORD, byval attrib as DWORD, byval value as single) as BOOL
+declare function BASS_ChannelGetAttribute (byval handle as DWORD, byval attrib as DWORD, byval value as single ptr) as BOOL
+declare function BASS_ChannelSlideAttribute (byval handle as DWORD, byval attrib as DWORD, byval value as single, byval time as DWORD) as BOOL
+declare function BASS_ChannelIsSliding (byval handle as DWORD, byval attrib as DWORD) as BOOL
+declare function BASS_ChannelSet3DAttributes (byval handle as DWORD, byval mode as integer, byval min as single, byval max as single, byval iangle as integer, byval oangle as integer, byval outvol as single) as BOOL
+declare function BASS_ChannelGet3DAttributes (byval handle as DWORD, byval mode as DWORD ptr, byval min as single ptr, byval max as single ptr, byval iangle as DWORD ptr, byval oangle as DWORD ptr, byval outvol as single ptr) as BOOL
+declare function BASS_ChannelSet3DPosition (byval handle as DWORD, byval pos as BASS_3DVECTOR ptr, byval orient as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr) as BOOL
+declare function BASS_ChannelGet3DPosition (byval handle as DWORD, byval pos as BASS_3DVECTOR ptr, byval orient as BASS_3DVECTOR ptr, byval vel as BASS_3DVECTOR ptr) as BOOL
+declare function BASS_ChannelGetLength (byval handle as DWORD, byval mode as DWORD) as QWORD
+declare function BASS_ChannelSetPosition (byval handle as DWORD, byval pos as QWORD, byval mode as DWORD) as BOOL
+declare function BASS_ChannelGetPosition (byval handle as DWORD, byval mode as DWORD) as QWORD
+declare function BASS_ChannelGetLevel (byval handle as DWORD) as DWORD
+declare function BASS_ChannelGetData (byval handle as DWORD, byval buffer as any ptr, byval length as DWORD) as DWORD
+declare function BASS_ChannelSetSync (byval handle as DWORD, byval type as DWORD, byval param as QWORD, byval proc as SYNCPROC ptr, byval user as any ptr) as HSYNC
+declare function BASS_ChannelRemoveSync (byval handle as DWORD, byval sync as HSYNC) as BOOL
+declare function BASS_ChannelSetDSP (byval handle as DWORD, byval proc as DSPPROC ptr, byval user as any ptr, byval priority as integer) as HDSP
+declare function BASS_ChannelRemoveDSP (byval handle as DWORD, byval dsp as HDSP) as BOOL
+declare function BASS_ChannelSetLink (byval handle as DWORD, byval chan as DWORD) as BOOL
+declare function BASS_ChannelRemoveLink (byval handle as DWORD, byval chan as DWORD) as BOOL
+declare function BASS_ChannelSetFX (byval handle as DWORD, byval type as DWORD, byval priority as integer) as HFX
+declare function BASS_ChannelRemoveFX (byval handle as DWORD, byval fx as HFX) as BOOL
+declare function BASS_FXSetParameters (byval handle as HFX, byval params as any ptr) as BOOL
+declare function BASS_FXGetParameters (byval handle as HFX, byval params as any ptr) as BOOL
+declare function BASS_FXReset (byval handle as HFX) as BOOL
+
+end extern
 
 #endif
