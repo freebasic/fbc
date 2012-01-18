@@ -10,6 +10,7 @@ Version 0.24.0:
 - -o must now clearly be specified in front or behind of the corresponding input file, for example: "fbc 1.bas 2.bas -o 1.o -o 2.o" no longer works, but "fbc -o 1.o 1.bas" is possible now
 - -x used with -lib now sets the library file name
 - "No newline at end of file" warning removed
+- 'PALETTE index, r, g, b' now uses 8-bit precision on each color value
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
@@ -44,6 +45,7 @@ Version 0.24.0:
 - Temporarily reset console during Unix dylibload() and dylibfree(), to properly restore terminal state at exit
 - VAR initialized from a STRING * N variable created a STRING * 0 instead of a dynamic STRING
 - -gen gcc: abs(longint) was just abs(integer)
+- 'PALETTE index, r, g, b' wasn't behaving as expected on some obscure SCREEN modes
 
 
 Version 0.23.0:
