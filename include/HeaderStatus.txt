@@ -2,7 +2,7 @@ OpenAL 	al/ 	1.13
 (ALUT) 	al/alut.bi 	1.1.0
 Allegro 	allegro.bi, allegro/ 	4.0.3 + 4.1 changes
 GNU Aspell 	aspell.bi 	0.50
-BASS 	bass.bi 	2.0
+BASS 	bass.bi 	2.4
 BASSMOD 	bassmod.bi 	2.0
 big_int 	big_int/ 	from 2005
 libbzip2 	bzlib.bi 	1.0.6
