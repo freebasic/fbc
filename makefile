@@ -382,7 +382,7 @@ FBC_BAS := \
   ast-node-addr ast-node-arg ast-node-assign ast-node-bop ast-node-branch \
   ast-node-call ast-node-check ast-node-const ast-node-conv ast-node-data \
   ast-node-decl ast-node-enum ast-node-field ast-node-idx ast-node-iif \
-  ast-node-link ast-node-load ast-node-mem ast-node-misc ast-node-namespace \
+  ast-node-link ast-node-load ast-node-mem ast-node-misc \
   ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
   dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \

@@ -268,8 +268,7 @@ declare sub astDelCALL _
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEINI
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEEND
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SEPARATOR
-		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_PROC
-		( @astLoadNOP           , FALSE ) _     '' AST_NODECLASS_NAMESPC
+		( @astLoadNOP           , TRUE  )  _    '' AST_NODECLASS_PROC
 	}
 
 	'' same order as AST_OP
