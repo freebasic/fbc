@@ -308,8 +308,8 @@ function astLoadADDROF _
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
-			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
-			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
+			(typeGetSize(v1->dtype) <> FB_POINTERSIZE) ) then
 
 			vr = irAllocVREG( astGetDataType( n ), n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )

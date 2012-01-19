@@ -549,17 +549,6 @@ declare sub irHLC_ctor()
 declare sub irInit(byval backend as FB_BACKEND)
 declare sub irEnd()
 
-declare function irGetVRDataClass _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer
-
-declare function irGetVRDataSize _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer
-
-
 ''
 '' macros
 ''

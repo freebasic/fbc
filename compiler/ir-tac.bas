@@ -2602,7 +2602,7 @@ private sub hFreeREG _
 			end if
 		end if
 
-    	dclass = irGetVRDataClass( vreg )
+		dclass = typeGetClass(vreg->dtype)
 		regTB(dclass)->free( regTB(dclass), vreg->reg )
 		vreg->reg = INVALID
 	end if
