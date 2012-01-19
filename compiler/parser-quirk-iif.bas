@@ -11,14 +11,10 @@
 '':::::
 ''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
 ''
-function cIIFFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+function cIIFFunct() as ASTNODE ptr
 	dim as ASTNODE ptr condexpr = any, truexpr = any, falsexpr = any
 
-	function = FALSE
+	function = NULL
 
 	'' IIF
 	lexSkipToken( )
@@ -44,15 +40,12 @@ function cIIFFunct _
 	'' ')'
 	hMatchRPRNT( )
 
-	''
-	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
-
+	dim as ASTNODE ptr funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
 	if( funcexpr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		'' error recovery: fake an expr
 		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = TRUE
-
+	function = funcexpr
 end function

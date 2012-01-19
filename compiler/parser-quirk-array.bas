@@ -134,27 +134,18 @@ end function
 '':::::
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
-function cArrayFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr arrayexpr = any, dimexpr = any
 	dim as integer is_lbound = any
 	dim as FBSYMBOL ptr s = any
 
-	function = FALSE
+	function = NULL
 
 	select case tk
 
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		if( tk = FB_TK_LBOUND ) then
-			is_lbound = TRUE
-		else
-			is_lbound = FALSE
-		end if
+		is_lbound = (tk = FB_TK_LBOUND)
 		lexSkipToken( )
 
 		'' '('
@@ -166,8 +157,7 @@ function cArrayFunct _
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			return TRUE
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' ugly hack to deal with arrays w/o indexes
@@ -189,8 +179,7 @@ function cArrayFunct _
 			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			'' error recovery: skip until next ')' and fake an expr
 			hSkipUntil( CHAR_RPRNT, TRUE )
-			funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-			return TRUE
+			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' (',' Expression)?
@@ -203,9 +192,6 @@ function cArrayFunct _
 		'' ')'
 		hMatchRPRNT( )
 
-		funcexpr = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
-		function = funcexpr <> NULL
-
+		function = rtlArrayBound( arrayexpr, dimexpr, is_lbound )
 	end select
-
 end function

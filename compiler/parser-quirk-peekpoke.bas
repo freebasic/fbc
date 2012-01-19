@@ -86,16 +86,12 @@ end function
 '':::::
 '' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
-function cPeekFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+function cPeekFunct() as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
 
-	function = FALSE
+	function = NULL
 
 	'' PEEK
 	lexSkipToken( )
@@ -127,9 +123,8 @@ function cPeekFunct _
 	' ')'
 	hMatchRPRNT( )
 
-    ''
-    select case astGetDataClass( expr )
-    case FB_DATACLASS_STRING
+	select case astGetDataClass( expr )
+	case FB_DATACLASS_STRING
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		'' error recovery: fake an expr
 		astDelTree( expr )
@@ -147,27 +142,22 @@ function cPeekFunct _
 		end if
 	end select
 
-    if( expr = NULL ) then
-    	expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
+	if( expr = NULL ) then
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
 
-   	'' ('.' UdtMember)?
-   	if( lexGetToken( ) = CHAR_DOT ) then
-		select case	dtype
+	'' ('.' UdtMember)?
+	if( lexGetToken( ) = CHAR_DOT ) then
+		select case dtype
 		case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
 		end select
 
-    	lexSkipToken( LEXCHECK_NOPERIOD )
-
-    	funcexpr = cUdtMember( dtype, subtype, expr, TRUE )
-
-    else
-		funcexpr = astNewDEREF( expr, dtype, subtype )
-    end if
-
-	function = TRUE
-
+		lexSkipToken( LEXCHECK_NOPERIOD )
+		function = cUdtMember( dtype, subtype, expr, TRUE )
+	else
+		function = astNewDEREF( expr, dtype, subtype )
+	end if
 end function

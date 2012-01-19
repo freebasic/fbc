@@ -1227,94 +1227,61 @@ end function
 '' FileFunct =   SEEK '(' Expression ')' |
 ''				 INPUT '(' Expr, (',' '#'? Expr)? ')'.
 ''
-function cFileFunct _
-	( _
-	    byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	dim as ASTNODE ptr filenum, expr
 
-	function = FALSE
+	function = NULL
 
 	'' SEEK '(' Expression ')'
 	select case as const tk
 	case FB_TK_SEEK
 		lexSkipToken( )
-
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
-
 		hMatchRPRNT( )
-
-		funcexpr = rtlFileTell( filenum )
-
-		function = funcexpr <> NULL
+		function = rtlFileTell( filenum )
 
 	'' INPUT '(' Expr (',' '#'? Expr)? ')'
 	case FB_TK_INPUT
 		lexSkipToken( )
-
 		hMatchLPRNT( )
-
 		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatch( CHAR_SHARP )
-
 			hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 		else
 			filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
-
 		hMatchRPRNT( )
-
-		funcexpr = rtlFileStrInput( expr, filenum )
-
-		function = funcexpr <> NULL
+		function = rtlFileStrInput( expr, filenum )
 
 	'' OPEN '(' ... ')'
 	case FB_TK_OPEN
 		lexSkipToken( )
-
-		funcexpr = hFileOpen( TRUE )
-		function = funcexpr <> NULL
+		function = hFileOpen( TRUE )
 
 	'' CLOSE '(' '#'? Expr? ')'
 	case FB_TK_CLOSE
-		funcexpr = hFileClose( TRUE )
-		function = funcexpr <> NULL
+		function = hFileClose( TRUE )
 
 	'' PUT '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_PUT
 		lexSkipToken( )
-
 		hMatchLPRNT( )
-
-		funcexpr = hFilePut( TRUE )
-		function = funcexpr <> NULL
-
+		function = hFilePut( TRUE )
 		hMatchRPRNT( )
 
 	'' GET '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_GET
 		lexSkipToken( )
-
 		hMatchLPRNT( )
-
-		funcexpr = hFileGet( TRUE )
-		function = funcexpr <> NULL
-
+		function = hFileGet( TRUE )
 		hMatchRPRNT( )
 
-    '' NAME '(' oldfilespec$ ',' newfilespec$ ')'
-    case FB_TK_NAME
+	'' NAME '(' oldfilespec$ ',' newfilespec$ ')'
+	case FB_TK_NAME
 		lexSkipToken( )
-
-		funcexpr = hFileRename( TRUE )
-		function = funcexpr <> NULL
+		function = hFileRename( TRUE )
 
 	end select
-
 end function

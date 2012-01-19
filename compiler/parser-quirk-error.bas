@@ -45,7 +45,7 @@ function cErrSetStmt() as integer
 end function
 
 '' ERR()
-sub cErrorFunct(byref funcexpr as ASTNODE ptr)
+function cErrorFunct() as ASTNODE ptr
 	'' ERR
 	lexSkipToken( )
 
@@ -55,5 +55,5 @@ sub cErrorFunct(byref funcexpr as ASTNODE ptr)
 		hMatchRPRNT( )
 	end if
 
-	funcexpr = rtlErrorGetNum( )
-end sub
+	function = rtlErrorGetNum( )
+end function

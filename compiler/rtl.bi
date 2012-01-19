@@ -1812,11 +1812,7 @@ declare function rtlPrinter_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
     
-declare function rtlThreadCall _
-    ( _
-        byval callexpr as ASTNODE ptr, _
-        byref expr as ASTNODE ptr _
-    ) as integer
+declare function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
 
 const FBGFX_PUTMODE_TRANS  = 0

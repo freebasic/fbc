@@ -59,7 +59,7 @@ sub cAsmCode()
 			if thistok = FB_TK_SIZEOF then
 
                 '' SIZEOF( valid expression )?
-				cMathFunct( thisTok, expr, TRUE )
+				expr = cMathFunct(thisTok, TRUE)
 				if( expr <> NULL ) then
 
                     '' constant expression?

@@ -181,13 +181,9 @@ private function hGetExprAddrOf _
 end function
 
 '':::::
-function rtlThreadCall _
-    ( _
-        byval callexpr as ASTNODE ptr, _
-        byref expr as ASTNODE ptr _
-    ) as integer
-    
-    function = FALSE
+function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
+
+    function = NULL
 
     dim as FBSYMBOL ptr proc, param
     dim as ASTNODE ptr procvarexpr, procvarptrexpr, procmodeexpr
@@ -214,7 +210,7 @@ function rtlThreadCall _
     astDelTREE( callexpr )
     
     '' create new call
-    expr = astNewCall( PROCLOOKUP( THREADCALL ) )
+    dim as ASTNODE ptr expr = astNewCall( PROCLOOKUP( THREADCALL ) )
 
     '' push function argument
     procvarexpr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
@@ -307,7 +303,7 @@ function rtlThreadCall _
         end if
         
         param = symbGetProcPrevParam( proc, param )
-    next i
-    
-    function = TRUE
+    next
+
+	function = expr
 end function

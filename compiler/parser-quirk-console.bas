@@ -12,19 +12,14 @@
 '':::::
 '' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
 ''
-function cViewStmt _
-	( _
-		byval is_func as integer = FALSE, _
-        byref funcexpr as ASTNODE ptr = NULL _
-    ) as integer
+function cViewStmt(byval is_func as integer) as ASTNODE ptr
+	dim as ASTNODE ptr expr1, expr2
+	dim as integer default_view, default_view_value
 
-    dim as ASTNODE ptr expr1, expr2
-    dim as integer default_view, default_view_value
-
-	function = FALSE
+	function = NULL
 
 	default_view = is_func
-    default_view_value = iif(is_func,-1,0)
+	default_view_value = iif(is_func,-1,0)
 
 	'' PRINT
 	if( lexGetLookAhead( 1 ) <> FB_TK_PRINT ) then
@@ -48,32 +43,25 @@ function cViewStmt _
 		end if
 	end if
 
-    if( default_view ) then
-        if( is_func ) then
-            hMatchLPRNT( )
-            hMatchRPRNT( )
-        end if
-        expr1 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
-        expr2 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
+	if( default_view ) then
+		if( is_func ) then
+			hMatchLPRNT( )
+			hMatchRPRNT( )
+		end if
+		expr1 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
+		expr2 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
 	end if
 
-	funcexpr = rtlConsoleView( expr1, expr2 )
-    function = funcexpr <> NULL
+	expr1 = rtlConsoleView( expr1, expr2 )
+	if (is_func = FALSE) then
+		astAdd(expr1)
+	end if
 
-    if( is_func = FALSE ) then
-    	astAdd( funcexpr )
-    end if
-
+	function = expr1
 end function
 
-'':::::
-function cWidthStmt _
-	( _
-		byval isfunc as integer _
-	) as ASTNODE ptr
-
+function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 	dim as ASTNODE ptr fnum, width_arg, height_arg, dev_name
-    dim as ASTNODE ptr func
     dim as integer checkrprnt
 
 	function = NULL
@@ -157,14 +145,8 @@ function cWidthStmt _
 
 end function
 
-'':::::
-function cColorStmt _
-	( _
-		byval isfunc as integer _
-	) as ASTNODE ptr
-
+function cColorStmt(byval isfunc as integer) as ASTNODE ptr
 	dim as ASTNODE ptr fore_color, back_color = NULL
-    dim as integer checkrprnt
 
 	function = NULL
 
@@ -181,56 +163,39 @@ function cColorStmt _
 			hMatchRPRNT( )
 		end if
 	else
-
 		'' '('?
 		if( hMatch( CHAR_LPRNT ) = TRUE ) then
-
 			'' expr?
 			fore_color = cExpression(  )
-
 			if( hMatch( CHAR_COMMA ) = TRUE ) then
-
 				'' ',' expr ')'
 				hMatchExpression( back_color )
 				hMatchRPRNT( )
-
 			else
-
 				'' ')' (',' expr)?
 				hMatchRPRNT( )
 				if( hMatch( CHAR_COMMA ) = TRUE ) then
 					hMatchExpression( back_color )
 				end if
-
 			end if
-
 		else
-
 			'' expr? (',' expr)?
-
 			fore_color = cExpression(  )
 			if( hMatch( CHAR_COMMA ) = TRUE ) then
 				hMatchExpression( back_color )
 			end if
-
 		end if
-
 	end if
 
 	function = rtlColor( fore_color, back_color, isfunc )
-
 end function
 
 '':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''				 |   SCREEN ( '(' ')' )? -- returns the current active/visible pages
 ''
-function cScreenFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-	function = FALSE
+function cScreenFunct() as ASTNODE ptr
+	function = NULL
 
 	'' SCREEN
 	lexSkipToken( )
@@ -246,29 +211,20 @@ function cScreenFunct _
 
 	'' pageset?
 	if( yexpr = NULL ) then
-		funcexpr = rtlPageSet( NULL, NULL, TRUE )
-
-    '' readXY..
-    else
+		function = rtlPageSet( NULL, NULL, TRUE )
+	'' readXY..
+	else
 		dim as ASTNODE ptr xexpr, fexpr
-
 		hMatchCOMMA( )
-
 		hMatchExpressionEx( xexpr, FB_DATATYPE_INTEGER )
-
 		fexpr = NULL
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpressionEx( fexpr, FB_DATATYPE_INTEGER )
 		end if
-
-		funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
+		function = rtlConsoleReadXY( yexpr, xexpr, fexpr )
 	end if
 
 	if( match_paren ) then
 		hMatchRPRNT( )
 	end if
-
-	function = funcexpr <> NULL
-
 end function
-

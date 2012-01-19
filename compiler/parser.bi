@@ -921,97 +921,27 @@ declare function cOnStmt _
 declare function cWriteStmt() as integer
 declare function cErrorStmt() as integer
 declare function cErrSetStmt() as integer
-
-declare function cViewStmt _
-	( _
-		byval is_func as integer = FALSE, _
-		byref funcexpr as ASTNODE ptr = NULL _
-	) as integer
-
-declare function cMidStmt _
-	( _
-		_
-	) as integer
-
-declare function cLRSetStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
-
-declare function cWidthStmt _
-	( _
-		byval isfunc as integer _
-	) as ASTNODE ptr
-
-declare function cColorStmt _
-	( _
-		byval isfunc as integer _
-	) as ASTNODE ptr
-
-declare function cStringFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cCVXFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cMKXFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+declare function cViewStmt(byval is_func as integer) as ASTNODE ptr
+declare function cMidStmt() as integer
+declare function cLRSetStmt(byval tk as FB_TOKEN) as integer
+declare function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
+declare function cColorStmt(byval isfunc as integer) as ASTNODE ptr
+declare function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+declare function cCVXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+declare function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 declare function cMathFunct _
 	( _
 		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr, _
-		byval isasm as integer = FALSE _
-	) as integer
-
-declare function cPeekFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cArrayFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cFileFunct _
-	( _
-		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare sub cErrorFunct(byref funcexpr as ASTNODE ptr)
-
-declare function cIIFFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cVAFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cScreenFunct _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
-declare function cAnonUDT _
-	( _
-		_
+		byval isasm as integer _
 	) as ASTNODE ptr
-
+declare function cPeekFunct() as ASTNODE ptr
+declare function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+declare function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
+declare function cErrorFunct() as ASTNODE ptr
+declare function cIIFFunct() as ASTNODE ptr
+declare function cVAFunct() as ASTNODE ptr
+declare function cScreenFunct() as ASTNODE ptr
+declare function cAnonUDT() as ASTNODE ptr
 declare sub cConstExprValue(byref value as integer)
 
 declare function cOperatorNew _
@@ -1065,10 +995,7 @@ declare function hCheckForDefiniteExprs _
 		_
 	) as integer
 
-declare function cThreadCallFunc _
-	( _
-        byref funcexpr as ASTNODE ptr _
-	) as integer
+declare function cThreadCallFunc() as ASTNODE ptr
     
 ''
 '' macros

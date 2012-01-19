@@ -12,18 +12,14 @@
 '':::::
 '' ThreadCallFunc =   THREADCALL proc_call
 ''
-function cThreadCallFunc _
-	( _
-        byref funcexpr as ASTNODE ptr _
-	) as integer
-    
+function cThreadCallFunc() as ASTNODE ptr
     dim as FBSYMBOL ptr sym, result
     dim as FBSYMCHAIN ptr chain_
     dim as integer check_paren
     dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
     dim as ASTNODE ptr childcall 
     
-    function = FALSE
+    function = NULL
     
     '' THREADCALL
     lexSkipToken( )
@@ -77,10 +73,5 @@ function cThreadCallFunc _
     end if
 
     '' transform the call into a threadcall
-    if( rtlThreadCall( childcall, funcexpr ) = FALSE ) then
-        exit function
-    end if
-    
-    function = TRUE
+	function = rtlThreadCall( childcall )
 end function
-

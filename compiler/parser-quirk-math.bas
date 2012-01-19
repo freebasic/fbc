@@ -9,71 +9,47 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-private function hMathOp _
-	( _
-		byval op as AST_OP, _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+private function hMathOp(byval op as AST_OP) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
-
 	lexSkipToken( )
-
 	hMatchLPRNT( )
-
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
 	hMatchRPRNT( )
 
-	funcexpr = astNewUOP( op, expr )
-	if( funcexpr = NULL ) then
+	expr = astNewUOP( op, expr )
+	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = TRUE
-
+	function = expr
 end function
 
-'':::::
-private function hAtan2 _
-	( _
-		byref funcexpr as ASTNODE ptr _
-	) as integer
-
+private function hAtan2() as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, expr2 = any
 
 	'' ATAN2( Expression ',' Expression )
 	lexSkipToken( )
-
 	hMatchLPRNT( )
-
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
-
 	hMatchCOMMA( )
-
 	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
-
 	hMatchRPRNT( )
 
-	funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
-	if( funcexpr = NULL ) then
+	expr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
+	if( expr = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
-		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = TRUE
-
+	function = expr
 end function
 
-'':::::
-private sub hLenSizeof _
+private function hLenSizeof _
 	( _
 		byval is_len as integer, _
-		byref funcexpr as ASTNODE ptr, _
 		byval isasm as integer _
-	)
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any, expr2 = any
 	dim as integer dtype = any, lgt = any, is_type = any
@@ -148,11 +124,11 @@ private sub hLenSizeof _
 	end if
 
 	if( expr <> NULL ) then
-		funcexpr = rtlMathLen( expr, is_len )
+		function = rtlMathLen( expr, is_len )
 	else
-		funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
+		function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 	end if
-end sub
+end function
 
 '':::::
 '' cMathFunct	=	ABS( Expression )
@@ -164,73 +140,70 @@ end sub
 function cMathFunct _
 	( _
 		byval tk as FB_TOKEN, _
-		byref funcexpr as ASTNODE ptr, _
-		byval isasm as integer = FALSE _
-	) as integer
+		byval isasm as integer _
+	) as ASTNODE ptr
 
 	function = FALSE
 
 	select case as const tk
 	'' ABS( Expression )
 	case FB_TK_ABS
-		function = hMathOp( AST_OP_ABS, funcexpr )
+		function = hMathOp(AST_OP_ABS)
 
 	'' SGN( Expression )
 	case FB_TK_SGN
-		function = hMathOp( AST_OP_SGN, funcexpr )
+		function = hMathOp(AST_OP_SGN)
 
 	'' FIX( Expression )
 	case FB_TK_FIX
-		function = hMathOp( AST_OP_FIX, funcexpr )
+		function = hMathOp(AST_OP_FIX)
 
 	'' FRAC( Expression )
 	case FB_TK_FRAC
-		function = hMathOp( AST_OP_FRAC, funcexpr )
+		function = hMathOp(AST_OP_FRAC)
 
 	'' INT( Expression )
 	case FB_TK_INT
-		function = hMathOp( AST_OP_FLOOR, funcexpr )
+		function = hMathOp(AST_OP_FLOOR)
 
 	'' SIN/COS/...( Expression )
 	case FB_TK_SIN
-		function = hMathOp( AST_OP_SIN, funcexpr )
+		function = hMathOp(AST_OP_SIN)
 
 	case FB_TK_ASIN
-		function = hMathOp( AST_OP_ASIN, funcexpr )
+		function = hMathOp(AST_OP_ASIN)
 
 	case FB_TK_COS
-		function = hMathOp( AST_OP_COS, funcexpr )
+		function = hMathOp(AST_OP_COS)
 
 	case FB_TK_ACOS
-		function = hMathOp( AST_OP_ACOS, funcexpr )
+		function = hMathOp(AST_OP_ACOS)
 
 	case FB_TK_TAN
-		function = hMathOp( AST_OP_TAN, funcexpr )
+		function = hMathOp(AST_OP_TAN)
 
 	case FB_TK_ATN
-		function = hMathOp( AST_OP_ATAN, funcexpr )
+		function = hMathOp(AST_OP_ATAN)
 
 	case FB_TK_SQR
-		function = hMathOp( AST_OP_SQRT, funcexpr )
+		function = hMathOp(AST_OP_SQRT)
 
 	case FB_TK_LOG
-		function = hMathOp( AST_OP_LOG, funcexpr )
+		function = hMathOp(AST_OP_LOG)
 
 	case FB_TK_EXP
-		function = hMathOp( AST_OP_EXP, funcexpr )
+		function = hMathOp(AST_OP_EXP)
 
 	'' ATAN2( Expression ',' Expression )
 	case FB_TK_ATAN2
-		function = hAtan2( funcexpr )
+		function = hAtan2()
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN
-		hLenSizeof( TRUE, funcexpr, isasm )
-		function = TRUE
+		function = hLenSizeof(TRUE, isasm)
 
 	case FB_TK_SIZEOF
-		hLenSizeof( FALSE, funcexpr, isasm )
-		function = TRUE
+		function = hLenSizeof(FALSE, isasm)
 
 	end select
 
