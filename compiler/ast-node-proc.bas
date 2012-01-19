@@ -58,11 +58,6 @@ declare sub hCallDtors _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare sub hDestroyVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
 declare sub hGenStaticInstancesDtors _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -623,9 +618,7 @@ function astProcEnd _
 		'' if the function body is empty, no ctor initialization will be done
 		hCheckCtor( n )
 
-		'' del local dynamic arrays and var-len strings (see the note in
-		'' the top, procs don't create an implicit scope block)
-		hDestroyVars( sym )
+		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 
 		'' dtor?
 		if( symbIsDestructor( sym ) ) then
@@ -1276,30 +1269,6 @@ private sub hCallDtors _
 
 	'' 2nd) base dtors
 	hCallBaseDtors( parent, proc )
-
-end sub
-
-'':::::
-private sub hDestroyVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr s = any
-
-	'' for each var (in inverse order)
-	s = symbGetProcSymbTb( proc ).tail
-    do while( s <> NULL )
-    	'' variable?
-    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
-			'' has a dtor?
-			if( symbGetVarHasDtor( s ) ) then
-				astAdd( astBuildVarDtorCall( s, TRUE ) )
-			end if
-    	end if
-
-    	s = s->prev
-    loop
 
 end sub
 

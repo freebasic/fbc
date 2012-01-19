@@ -24,11 +24,6 @@ declare sub hDelLocals _
 		byval check_backward as integer _
 	)
 
-declare sub hDestroyVars _
-	( _
-		byval scp as FBSYMBOL ptr _
-	)
-
 '':::::
 function astScopeBegin _
 	( _
@@ -130,8 +125,7 @@ sub astScopeEnd _
 
 	n->block.endstmt = parser.stmt.cnt
 
-	'' free dynamic vars
-	hDestroyVars( s )
+	astScopeDestroyVars(symbGetScopeSymbTb(s).tail)
 
 	'' remove symbols from hash table
 	symbDelScopeTb( s )
@@ -617,28 +611,19 @@ private function hCheckBranch _
 
 end function
 
-'':::::
-private sub hDestroyVars _
-	( _
-		byval scp as FBSYMBOL ptr _
-	)
-
-    dim as FBSYMBOL ptr s = any
-
-	'' for each symbol declared inside the SCOPE block (in reverse order)..
-	s = symbGetScopeSymbTb( scp ).tail
-    do while( s <> NULL )
-    	'' variable?
-    	if( symbGetClass( s ) = FB_SYMBCLASS_VAR ) then
+sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
+	'' For each symbol declared inside the block (in reverse order)
+	dim as FBSYMBOL ptr s = symtbtail
+	while (s)
+		'' variable?
+		if (symbIsVar(s)) then
 			'' has a dtor?
 			if( symbGetVarHasDtor( s ) ) then
-    			astAdd( astBuildVarDtorCall( s, TRUE ) )
-    		end if
-    	end if
-
-    	s = s->prev
-    loop
-
+				astAdd( astBuildVarDtorCall( s, TRUE ) )
+			end if
+		end if
+		s = s->prev
+	wend
 end sub
 
 sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
