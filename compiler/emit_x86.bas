@@ -2057,13 +2057,12 @@ private sub _emitSTORI2F _
 	) static
 
     dim as string dst, src
-    dim as integer ddsize, sdsize
+    dim as integer sdsize
     dim as string ostr
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = typeGetSize( dvreg->dtype )
 	sdsize = typeGetSize( svreg->dtype )
 
 	'' byte source? damn..
@@ -3643,7 +3642,6 @@ private sub hSHIFTL _
 	dim as integer preserveeax, preserveecx, preserveebx, preserveedx
 	dim as string a, b
 	dim as IRVREG ptr av, bv
-	dim as integer eaxindest, edxindest, ebxindest
 
 	''
 	if( op = AST_OP_SHL ) then
@@ -3662,12 +3660,6 @@ private sub hSHIFTL _
 	''
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
-
-
-
-	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
-	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
-	ebxindest = hIsRegInVreg( dvreg, EMIT_REG_EBX )
 
 	if( op = AST_OP_SHL ) then
 		a = dst2

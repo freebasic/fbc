@@ -564,7 +564,6 @@ private sub hCheckVoidParam _
 	)
 
 	dim as ASTNODE ptr arg = n->l
-	dim as integer arg_dtype = astGetDatatype( arg )
 
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 		'' check strings passed BYVAL
@@ -1210,12 +1209,10 @@ function astReplaceARG _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr sym = any, param = any
-	dim as integer cnt = any, dtype = any
+	dim as integer cnt = any
 	dim as ASTNODE ptr n = any
 
 	sym = parent->sym
-
-	dtype = astGetDataType( expr )
 
 	'' find the argument (assuming argnum is valid)
 	cnt = parent->call.args

@@ -448,13 +448,12 @@ private sub hEmitStoreFreg2F_SSE _
 	) static
 
 	dim as string dst, src
-	dim as integer ddsize, sdsize
+	dim as integer ddsize
 
 	hPrepOperand( dvreg, dst, , , FALSE )
 	hPrepOperand( svreg, src, , , FALSE )
 
 	ddsize = typeGetSize( dvreg->dtype )
-	sdsize = typeGetSize( svreg->dtype )
 
 	if( ( svreg->vector = 2 ) and ( ddsize > 4 ) ) then
 		outp "movupd " + dst + COMMA + src
@@ -483,7 +482,7 @@ private sub _emitSTORF2F_SSE _
 	) static
 
 	dim as string dst, src
-	dim as integer ddsize, sdsize, src_vec, dst_vec
+	dim as integer ddsize, sdsize, src_vec
 	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
@@ -492,7 +491,6 @@ private sub _emitSTORF2F_SSE _
 	ddsize = typeGetSize( dvreg->dtype )
 	sdsize = typeGetSize( svreg->dtype )
 
-	dst_vec = ( dvreg->vector > 0 )
 	src_vec = ( svreg->vector > 0 )
 
 	if( svreg->typ = IR_VREGTYPE_REG ) then

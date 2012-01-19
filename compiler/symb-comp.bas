@@ -944,8 +944,6 @@ private sub hInsertImported _
 		dim as FBSYMBOL ptr ns = symbGetImportNamespc( imp_ )
 
 		if( ns <> NULL ) then
-			dim as FBHASHTB ptr hashtb = @symbGetCompHashTb( ns )
-
 			symbGetCompExt( ns )->cnt += 1
 			if( symbGetCompExt( ns )->cnt = 1 ) then
 	  			'' add to import hash tb list

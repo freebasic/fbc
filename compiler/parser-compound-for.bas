@@ -594,7 +594,6 @@ private sub hForStep _
 	end if
 
 	dim as integer iscomplex = FALSE
-	dim as ASTNODE ptr orig_expr = any
 
 	if( (flags and FOR_HASCTOR) = 0 ) then
 		dim as ASTNODE ptr expr = any
@@ -611,9 +610,6 @@ private sub hForStep _
 			'' (the step's type will be converted below)
 			expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
 		end if
-
-		'' keep the original expression
-		orig_expr = expr
 
 		'' store step into a temp var
 
@@ -665,9 +661,6 @@ private sub hForStep _
 	'' UDT has a constructor..
 	else
 		iscomplex = TRUE
-
-		dim as FBSYMBOL ptr ovl_list = any
-		dim as integer operator_args = any, step_ok = FALSE
 
 		if( stk->for.explicit_step = TRUE ) then
 			'' generate a symbol using the expression's type

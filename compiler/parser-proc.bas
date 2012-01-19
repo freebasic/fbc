@@ -1168,7 +1168,7 @@ function cOperatorHeader _
 		byval options as FB_PROCOPT _
 	) as FBSYMBOL ptr
 
-    dim as integer is_extern = any, first_def = FALSE
+    dim as integer is_extern = any
     dim as FBSYMBOL ptr proc = any, parent = any
 
 	is_nested = FALSE
@@ -1214,42 +1214,23 @@ function cOperatorHeader _
 	end select
 
 
-    select case as const op
-
-        '' self ops?
-		case AST_OP_ASSIGN to AST_OP_CAST
-
-			'' no parent?
-			if( parent = NULL ) then
-				'' fake it...
-				if astGetOpIsSelf( op ) then
-					if( parent = NULL ) then
-						errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
-						op = AST_OP_ADD
-					end if
-				end if
-
-			else
-				'' check if operator FOR or NEXT have been already defined
-			    select case as const op
-				case AST_OP_FOR
-
-				    '' check if op was overloaded already
-				    dim as FBSYMBOL ptr sym = any
-				    sym = symbGetCompOpOvlHead( parent, op )
-					if( sym = NULL ) then
-						first_def = TRUE
-					end if
-
-				end select
-
+	select case as const op
+	'' self ops?
+	case AST_OP_ASSIGN to AST_OP_CAST
+		'' no parent?
+		if( parent = NULL ) then
+			'' fake it...
+			if( astGetOpIsSelf( op ) ) then
+				errReport( FB_ERRMSG_OPMUSTBEAMETHOD, TRUE )
+				op = AST_OP_ADD
 			end if
-		
-		case else
-			'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
-			if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
-				errReport( FB_ERRMSG_METHODINANONUDT, TRUE, " (TODO)" )
-			end if
+		end if
+
+	case else
+		'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
+		if( (options and FB_PROCOPT_HASPARENT) <> 0 ) then
+			errReport( FB_ERRMSG_METHODINANONUDT, TRUE, " (TODO)" )
+		end if
 	end select
 
     '' check if method should be static or not

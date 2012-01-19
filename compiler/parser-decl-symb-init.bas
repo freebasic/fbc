@@ -34,10 +34,8 @@ private function hDoAssign _
 
     dim as ASTNODE lside = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr subtype = any
 
 	dtype = symbGetFullType( ctx.sym )
-	subtype = symbGetSubtype( ctx.sym )
 
 	if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 		dtype = typeDeref( dtype )
@@ -102,7 +100,6 @@ private function hElmInit _
 
 		'' generate an expression matching the symbol's type
 		dim as integer dtype = symbGetType( ctx.sym )
-		dim as FBSYMBOL ptr subtype = symbGetSubtype( ctx.sym )
 		if( (ctx.options and FB_INIOPT_DODEREF) <> 0 ) then
 			dtype = typeDeref( dtype )
 		end if
@@ -379,23 +376,14 @@ private function hUDTInit _
 
 	'' '('
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-
-		if( rec_cnt > 1 ) then
-			'' get lookahead
-			dim as integer lookie = lexGetLookAhead( 1 ), is_ok = TRUE
-
-			'' if it's a comma, set to leave one for the parent func
-			'' (see below)
-			if( lookie = CHAR_COMMA ) then
-				comma = TRUE
-			end if
-
-			parenth = FALSE
-		else
+		if( rec_cnt <= 1 ) then
 			rec_cnt -= 1
 			return hElmInit( ctx )
 		end if
 
+		'' ','? Leave one for the parent func (see below)
+		comma = (lexGetLookAhead(1) = CHAR_COMMA)
+		parenth = FALSE
 	else
 		astTypeIniScopeBegin( ctx.tree, ctx.sym )
 	end if

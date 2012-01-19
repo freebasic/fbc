@@ -2157,10 +2157,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
         	symbSetIsInitialized( sym )
 
 			'' add to AST
-			dim as FBSYMBOL ptr desc = NULL
-			dim as ASTNODE ptr var_decl = NULL
-
-			var_decl = astNewDECL( sym, initree )
+			dim as ASTNODE ptr var_decl = astNewDECL( sym, initree )
 
 			'' set as declared
 			symbSetIsDeclared( sym )

@@ -158,7 +158,6 @@ private function hFillSection _
 	static as integer buf_size = 0
 	static as byte ptr buf_ini = NULL
 	dim as integer header_emitted = FALSE
-	dim as integer buf_len = 0
 	dim as byte ptr buf_end = buf_ini + buf_size
 	dim as byte ptr buf_ptr = buf_ini
 
