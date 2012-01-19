@@ -704,11 +704,6 @@ declare function astNewIIF _
 		byval falsexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astNewOFFSET _
-	( _
-		byval v as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare function astNewLINK _
 	( _
 		byval l as ASTNODE ptr, _

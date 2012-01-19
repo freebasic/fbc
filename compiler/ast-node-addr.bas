@@ -28,7 +28,7 @@ function astGetOFFSETChildOfs _
 end function
 
 '':::::
-function astNewOFFSET _
+private function astNewOFFSET _
 	( _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr

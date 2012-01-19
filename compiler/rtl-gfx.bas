@@ -1673,7 +1673,7 @@ private function hGetPutter _
 	end select
 
 	''
-	n = astNewOFFSET( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
+	n = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
 
 	symbSetIsCalled( proc )
 
