@@ -32,15 +32,6 @@ function cOperator _
 
     function = INVALID
 
-    '' right class?
-    select case lexGetClass( )
-    case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
-
-    case else
-    	exit function
-	end select
-
-    ''
     select case as const lexGetToken( )
     case FB_TK_AND
     	op = AST_OP_AND
@@ -306,40 +297,37 @@ function cOperator _
     	lexSkipToken( )
     	return AST_OP_NEXT
 
+	case CHAR_PLUS
+		op = AST_OP_ADD
+
+	case CHAR_MINUS
+		op = AST_OP_SUB
+
+	case CHAR_RSLASH
+		op = AST_OP_INTDIV
+
+	case CHAR_CARET
+		op = AST_OP_MUL
+
+	case CHAR_SLASH
+		op = AST_OP_DIV
+
+	case CHAR_CART
+		op = AST_OP_POW
+
+	case CHAR_AMP
+		op = AST_OP_CONCAT
+
+	case FB_TK_ADDROFCHAR
+		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+			exit function
+		end if
+
+		lexSkipToken( )
+		return AST_OP_ADDROF
+
 	case else
-   		select case as const lexGetToken( )
-   		case CHAR_PLUS
-   			op = AST_OP_ADD
-
-		case CHAR_MINUS
-        	op = AST_OP_SUB
-
-        case CHAR_RSLASH
-        	op = AST_OP_INTDIV
-
-		case CHAR_CARET
-        	op = AST_OP_MUL
-
-        case CHAR_SLASH
-        	op = AST_OP_DIV
-
-        case CHAR_CART
-        	op = AST_OP_POW
-
-        case CHAR_AMP
-        	op = AST_OP_CONCAT
-
-        case FB_TK_ADDROFCHAR
-    		if( (options and FB_OPEROPTS_UNARY) = 0 ) then
-    			exit function
-    		end if
-
-    		lexSkipToken( )
-    		return AST_OP_ADDROF
-
-        case else
-        	exit function
-        end select
+		exit function
 	end select
 
     lexSkipToken( )
