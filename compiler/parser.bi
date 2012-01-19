@@ -95,8 +95,8 @@ type FB_CMPSTMT_WITH
 end type
 
 type FB_CMPSTMT_NAMESPACE
-	node			as ASTNODE ptr
-	levels			as integer					'' nesting level
+	as FBSYMBOL ptr sym '' Namespace symbol
+	as integer levels   '' a.b.c nesting level (multiple nested namespaces in this namespace compound block)
 end type
 
 type FB_CMPSTMT_EXTERN

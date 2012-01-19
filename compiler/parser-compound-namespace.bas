@@ -8,6 +8,23 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
+private sub namespaceBegin _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr, _
+		byval sym as FBSYMBOL ptr _
+	)
+
+	if (sym = NULL) then
+		'' Fake id for anonymous namespaces or error recovery
+		sym = symbAddNamespace(hMakeTmpStr(), NULL)
+	end if
+
+	stk->nspc.sym = sym
+	stk->nspc.levels = 1
+
+	symbNestBegin(sym, FALSE)
+end sub
+
 '':::::
 ''NamespaceStmtBegin  =   NAMESPACE (ID (ALIAS LITSTR)?)? .
 ''
@@ -47,18 +64,12 @@ function cNamespaceStmtBegin _
 	select case as const lexGetToken( )
 	'' COMMENT|NEWLINE?
 	case FB_TK_COMMENT, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STMTSEP
-
-		'' anonymous namespace..
-		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
-
-		stk = cCompStmtPush( FB_TK_NAMESPACE, _
-					 	 	 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-					 					 	 	 and (not FB_CMPSTMT_MASK_EXTERN) _
-					 					 	 	 and (not FB_CMPSTMT_MASK_DATA) )
-
-		stk->nspc.node = astNamespaceBegin( sym )
-		stk->nspc.levels = 1
-
+		'' Anonymous namespace
+		stk = cCompStmtPush(FB_TK_NAMESPACE, _
+		                    FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+		                                        and (not FB_CMPSTMT_MASK_EXTERN) _
+		                                        and (not FB_CMPSTMT_MASK_DATA))
+		namespaceBegin(stk, NULL)
 		return TRUE
 	end select
 
@@ -81,8 +92,6 @@ function cNamespaceStmtBegin _
 			'' only if inside another ns
 			if( symbIsGlobalNamespc( ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
-				'' error recovery: fake a symbol
-				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 				id[0] = 0							'' id = ""
 				chain_ = NULL
 			else
@@ -92,8 +101,6 @@ function cNamespaceStmtBegin _
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			'' error recovery: fake a symbol
-			sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 			id[0] = 0							'' id = ""
 			chain_ = NULL
 		end select
@@ -133,18 +140,13 @@ function cNamespaceStmtBegin _
 			sym = symbAddNamespace( @id, palias )
 			if( sym = NULL ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, id )
-				'' error recovery: fake an id
-				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 			end if
 		end if
 
-		''
-		stk = cCompStmtPush( FB_TK_NAMESPACE, _
-						 	 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-						 					 	 and (not FB_CMPSTMT_MASK_DATA) )
-
-		stk->nspc.node = astNamespaceBegin( sym )
-		stk->nspc.levels = 1
+		stk = cCompStmtPush(FB_TK_NAMESPACE, _
+		                    FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+		                                        and (not FB_CMPSTMT_MASK_DATA))
+		namespaceBegin(stk, sym)
 
 		'' ALIAS used?
 		if( palias <> NULL ) then
@@ -159,12 +161,14 @@ function cNamespaceStmtBegin _
 		lexSkipToken( LEXCHECK_NOPERIOD )
 	loop
 
+	'' The new top namespace entry on the stack is used to hold the number
+	'' of entries for nested namespaces (from <.nested1.nested2...>
+	'' following the "main" namespace block's id) that need to be popped
+	'' to reach the entry representing the actual namespace compound block.
 	stk->nspc.levels = levels
-
 	parser.nspcrec += levels
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -191,7 +195,15 @@ function cNamespaceStmtEnd as integer
 
 	do while( levels > 0 )
 		'' back to parent
-		astNamespaceEnd( stk->nspc.node )
+		symbNestEnd( FALSE )
+
+		'' reimplementation?
+		dim as FBSYMBOL ptr ns = stk->nspc.sym
+		symbGetNamespaceCnt( ns ) += 1
+		if( symbGetNamespaceCnt( ns ) > 1 ) then
+			symbNamespaceReImport( ns )
+		end if
+		symbGetNamespaceLastTail( ns ) = symbGetCompSymbTb( ns ).tail
 
 		'' pop from stmt stack
 		cCompStmtPop( stk )

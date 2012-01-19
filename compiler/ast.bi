@@ -486,16 +486,6 @@ declare function astScopeUpdBreakList _
 		byval proc as ASTNODE ptr _
 	) as integer
 
-declare function astNamespaceBegin _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare sub astNamespaceEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
 declare function astAdd _
 	( _
 		byval n as ASTNODE ptr _
