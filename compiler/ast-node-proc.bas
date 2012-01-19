@@ -189,7 +189,7 @@ private sub hProcFlush _
 		irEmitPROCBEGIN( sym, p->block.initlabel )
 
 		'' allocate the non-static local variables on stack
-		symbProcAllocLocalVars( sym )
+		astScopeAllocLocals(symbGetProcSymbTbHead(sym))
 	end if
 
 	'' flush nodes

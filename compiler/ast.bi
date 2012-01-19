@@ -482,6 +482,8 @@ declare function astScopeUpdBreakList _
 		byval proc as ASTNODE ptr _
 	) as integer
 
+declare sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
+
 declare function astAdd _
 	( _
 		byval n as ASTNODE ptr _

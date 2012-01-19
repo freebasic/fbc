@@ -2507,55 +2507,6 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbProcAllocLocalVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
-    dim as FBSYMBOL ptr s = any
-    dim as integer lgt = any
-    dim as integer mask = any
-
-    function = FALSE
-
-    '' prepare mask (if the IR is HL, pass the local static vars too)
-    if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-    	mask = FB_SYMBATTRIB_SHARED
-    else
-    	mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
-    end if
-
-    s = symbGetProcSymbTbHead( proc )
-    do while( s <> NULL )
-    	'' variable?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared or static?
-    		if( (s->attrib and mask) = 0 ) then
-
-				'' not a parameter?
-				if( symbIsParam(s) = FALSE ) then
-					lgt = s->lgt * symbGetArrayElements( s )
-					s->ofs = irProcAllocLocal( parser.currproc, s, lgt )
-				'' parameter..
-				else
-					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
-						   	   s->lgt, _
-						   	   FB_POINTERSIZE )
-					s->ofs = irProcAllocArg( parser.currproc, s, lgt )
-				end if
-
-				symbSetVarIsAllocated( s )
-			end if
-		end if
-
-    	s = s->next
-    loop
-
-    function = TRUE
-
-end function
-
-'':::::
 function symbGetProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _

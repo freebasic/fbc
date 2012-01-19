@@ -1527,16 +1527,6 @@ declare function typeRemap _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-declare function symbProcAllocLocalVars _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
-declare function symbScopeAllocLocals _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
 declare sub symbHashListAdd _
 	( _
 		byval hashtb as FBHASHTB ptr _
