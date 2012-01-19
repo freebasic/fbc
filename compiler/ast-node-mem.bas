@@ -259,14 +259,14 @@ private function hNewOp _
 		'' call default ctor?
 		if( init_expr = NULL ) then
 			init_expr = astBuildCtorCall( subtype, _
-								  		  astBuildVarDeref( ptr_expr ) )
+								  		  astNewDEREF( ptr_expr ) )
 
 		'' explicit ctor call, patch it..
 		else
             '' check if a ctor call (because error recovery)..
 			if( astIsCALLCTOR( init_expr ) ) then
                	init_expr = astPatchCtorCall( astCALLCTORToCALL( init_expr ), _
-               						  		  astBuildVarDeref( ptr_expr ) )
+               						  		  astNewDEREF( ptr_expr ) )
             end if
 		end if
 	end if
@@ -387,7 +387,7 @@ private function hDelOp _
 		else
 			tree = astNewLINK( tree, _
 							   astBuildDtorCall( subtype, _
-								  	astBuildVarDeref( astCloneTree( ptr_expr ) ) ) )
+								  	astNewDEREF( astCloneTree( ptr_expr ) ) ) )
 		end if
 
 	end if

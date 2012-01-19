@@ -151,16 +151,6 @@ function astBuildVarDeref _
 end function
 
 '':::::
-function astBuildVarDeref _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	function = astNewDEREF( expr )
-
-end function
-
-'':::::
 function astBuildVarAddrof _
 	( _
 		byval sym as FBSYMBOL ptr _

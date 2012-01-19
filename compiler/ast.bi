@@ -1011,11 +1011,6 @@ declare function astBuildVarAddrof _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildVarDeref overload _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
 declare function astBuildVarDeref _
 	( _
 		byval sym as FBSYMBOL ptr _
