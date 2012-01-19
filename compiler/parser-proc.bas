@@ -364,7 +364,7 @@ function cProcReturnMethod _
 	function = FB_RETURN_DEFAULT
 
 	'' not allowed for non floating-point types
-	if( symbGetDataClass( dtype ) <> FB_DATACLASS_FPOINT ) then exit function
+	if( typeGetClass( dtype ) <> FB_DATACLASS_FPOINT ) then exit function
 
 	if( lexGetToken( ) = FB_TK_OPTION ) then
 		lexSkipToken( )
@@ -899,7 +899,7 @@ private function hCheckOpOvlParams _
 			select case op
 			case AST_OP_NEW_SELF, AST_OP_NEW_VEC_SELF
 				'' must be an integer
-				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+				if( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 					dim as integer is_integer = TRUE
 					if( typeIsPtr( symbGetType( param ) ) ) then
 						is_integer = FALSE
@@ -919,7 +919,7 @@ private function hCheckOpOvlParams _
 
 			case else
 				'' must be a pointer
-				if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+				if( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 					if( typeIsPtr( symbGetType( param ) ) = FALSE ) then
 						hParamError( proc, 1, FB_ERRMSG_PARAMMUSTBEAPOINTER )
 						exit function
@@ -1138,7 +1138,7 @@ private function hCheckIsSelfCloneByval _
 	end if
 
 	'' pointer?
-	if( symbGetDataClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( symbGetType( param ) ) = FB_DATACLASS_INTEGER ) then
 		if( typeIsPtr( symbGetType( param ) ) ) then
 			exit function
 		end if

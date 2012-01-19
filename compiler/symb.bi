@@ -1505,23 +1505,23 @@ declare function symbGetVarHasDtor _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare function symbMaxDataType _
+declare function typeMax _
 	( _
 		byval dtype1 as integer, _
 		byval dtype2 as integer _
 	) as integer
 
-declare function symbGetSignedType _
+declare function typeToSigned _
 	( _
 		byval dtype as integer _
 	) as integer
 
-declare function symbGetUnsignedType _
+declare function typeToUnsigned _
 	( _
 		byval dtype as integer _
 	) as integer
 
-declare function symbRemapType _
+declare function typeRemap _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -2051,7 +2051,7 @@ declare function symbGetUDTBaseSymbol _
 
 #define symbGetStrLen(s) symbGetLen(s)
 
-#define symbGetWstrLen(s) (cunsg(s->lgt) \ symbGetDataSize( FB_DATATYPE_WCHAR ))
+#define symbGetWstrLen(s) (cunsg(s->lgt) \ typeGetSize( FB_DATATYPE_WCHAR ))
 
 #define symbGetFullType(s) s->typ
 #define symbGetType(s) typeGetDtAndPtrOnly( symbGetFullType( s ) )
@@ -2469,23 +2469,17 @@ declare function symbGetUDTBaseSymbol _
 
 #define symbLookupCompField( parent, id ) symbLookupAt( parent, id, FALSE, TRUE )
 
-
-#define symbGetDataClass( dt ) symb_dtypeTB(typeGet( dt )).class
-
-#define symbGetDataSize( dt ) symb_dtypeTB(typeGet( dt )).size
-
-#define symbGetDataBits( dt ) symb_dtypeTB(typeGet( dt )).bits
-
-#define symbIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
-
 '' datatype accessors
+
+#define typeGetClass( dt ) symb_dtypeTB(typeGet( dt )).class
+#define typeGetSize( dt ) symb_dtypeTB(typeGet( dt )).size
+#define typeGetBits( dt ) symb_dtypeTB(typeGet( dt )).bits
+#define typeIsSigned( dt ) symb_dtypeTB(typeGet( dt )).signed
 
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
 #define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
 #define typeJoin( dt, ndt ) ((dt and (not (FB_DT_TYPEMASK or FB_DT_PTRMASK))) or (ndt and (FB_DT_TYPEMASK or FB_DT_PTRMASK)))
-
-
 
 #define typeAddrOf( dt ) _
 	((dt and FB_DT_TYPEMASK) or _

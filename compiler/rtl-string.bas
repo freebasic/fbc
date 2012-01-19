@@ -3321,7 +3321,7 @@ function rtlToStr _
 	if( astIsCONST( expr ) ) then
 		dim s As String
 		if( pad ) then
-			if( symbIsSigned( astGetDataType( expr ) ) ) then
+			if( typeIsSigned( astGetDataType( expr ) ) ) then
 				if astGetValueAsDouble( expr ) >= 0 then
 					s = " "
 				end if

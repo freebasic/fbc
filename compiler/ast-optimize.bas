@@ -253,7 +253,7 @@ private function hPrepConst _
 	end if
 
     ''
-	dtype = symbMaxDataType( v->dtype, astGetDataType( r ) )
+	dtype = typeMax( v->dtype, astGetDataType( r ) )
 
 	'' same? don't convert..
 	if( dtype = FB_DATATYPE_INVALID ) then
@@ -556,7 +556,7 @@ private sub hOptConstAccum2 _
 			'' update the node data type
 			l = n->l
 			r = n->r
-			dtype = symbMaxDataType( astGetDataType( l ), astGetDataType( r ) )
+			dtype = typeMax( astGetDataType( l ), astGetDataType( r ) )
 			if( dtype <> FB_DATATYPE_INVALID ) then
 				if( typeGet( dtype ) <> typeGet( l->dtype ) ) then
 					n->l = astNewCONV( dtype, r->subtype, l )
@@ -883,8 +883,8 @@ private sub hOptConstIdxMult _
 	end if
 
 	'' convert to integer if needed
-	if( (symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
-	    (symbGetDataSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
+	if( (typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_INTEGER) or _
+	    (typeGetSize( astGetDataType( l ) ) <> FB_POINTERSIZE) ) then
 		n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 	end if
 
@@ -1263,10 +1263,10 @@ private sub hDivToShift_Signed _
 
 	dtype = astGetFullType( l )
 
-	bits = symbGetDataBits( dtype ) - 1
+	bits = typeGetBits( dtype ) - 1
 	'' bytes are converted to int's..
 	if( bits = 7 ) then
-		bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
+		bits = typeGetBits( FB_DATATYPE_INTEGER ) - 1
 	end if
 
 	l_cpy = astCloneTree( l )
@@ -1278,7 +1278,7 @@ private sub hDivToShift_Signed _
 						   astNewBOP( AST_OP_ADD, _
 									  l_cpy, _
 									  astNewBOP( AST_OP_SHR, _
-												 astNewCONV( symbGetUnsignedType( dtype ), _
+												 astNewCONV( typeToUnsigned( dtype ), _
 															 NULL, _
 															 l, _
 															 AST_OP_TOUNSIGNED _
@@ -1337,8 +1337,8 @@ private sub hOptToShift _
 		case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD
 			r = n->r
 			if( astIsCONST( r ) ) then
-				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
-					if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+					if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 						const_val = r->con.val.int
 						if( const_val > 0 ) then
 							const_val = hToPow2( const_val )
@@ -1353,7 +1353,7 @@ private sub hOptToShift _
 								case AST_OP_INTDIV
 									if( const_val <= 32 ) then
 										l = n->l
-										if( symbIsSigned( astGetDataType( l ) ) = FALSE ) then
+										if( typeIsSigned( astGetDataType( l ) ) = FALSE ) then
 											n->op.op = AST_OP_SHR
 											r->con.val.int = const_val
 										else
@@ -1363,7 +1363,7 @@ private sub hOptToShift _
 
 								case AST_OP_MOD
 									'' unsigned types only
-									if( symbIsSigned( astGetDataType( n->l ) ) = FALSE ) then
+									if( typeIsSigned( astGetDataType( n->l ) ) = FALSE ) then
 										n->op.op = AST_OP_AND
 										r->con.val.int -= 1
 									end if
@@ -1443,9 +1443,9 @@ private function hOptNullOp _
 		keep_l = ( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL )
 		keep_r = ( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL )
 
-		if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+		if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 			if( astIsCONST( r ) ) then
-				if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
 				else
 					v = r->con.val.long
@@ -1469,7 +1469,7 @@ private function hOptNullOp _
 					end if
 
 				case AST_OP_MOD
-					if( ( v = 1 ) or ( ( v = -1 ) and ( symbIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
+					if( ( v = 1 ) or ( ( v = -1 ) and ( typeIsSigned( astGetDataType( r ) ) <> FALSE ) ) ) then
 						if( keep_l = FALSE ) then
 							r->con.val.int = 0
 							astDelTree( l )
@@ -1533,7 +1533,7 @@ private function hOptNullOp _
 				end select
 
 			elseif( astIsCONST( l ) ) then
-				if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+				if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
 					v = l->con.val.int
 				else
 					v = l->con.val.long
@@ -1586,7 +1586,7 @@ private function hOptLogic _
 		r = n->r
 	end if
 
-	if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 
 		if( astIsUOP( n, AST_OP_NOT ) ) then
 			if( astIsUOP( l, AST_OP_NOT ) ) then
@@ -1599,12 +1599,12 @@ private function hOptLogic _
 				n = hOptLogic( m )
 
 			elseif( astIsBOP( l, AST_OP_XOR ) ) then
-				if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+				if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 					if( astIsCONST( l->l ) ) then
 						'' convert:
 						'' not (const xor x)    to    (not const) xor x
 
-						if( symbGetDataSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l->l ) ) <= FB_INTEGERSIZE ) then
 							v = l->l->con.val.int
 						else
 							v = l->l->con.val.long
@@ -1618,7 +1618,7 @@ private function hOptLogic _
 						'' convert:
 						'' not (x xor const)    to    x xor (not const)
 
-						if( symbGetDataSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l->r ) ) <= FB_INTEGERSIZE ) then
 							v = l->r->con.val.int
 						else
 							v = l->r->con.val.long
@@ -1634,7 +1634,7 @@ private function hOptLogic _
 
 		elseif( n->class = AST_NODECLASS_BOP ) then
 
-			if( symbGetDataClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
+			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_INTEGER ) then
 				op = n->op.op
 				select case op
 				case AST_OP_OR, AST_OP_AND, AST_OP_XOR
@@ -1686,7 +1686,7 @@ private function hOptLogic _
 						'' const or  (not x)    to    not ((not const) and x)
 						'' const xor (not x)    to    (not const) xor x
 
-						if( symbGetDataSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( l ) ) <= FB_INTEGERSIZE ) then
 							v = l->con.val.int
 						else
 							v = l->con.val.long
@@ -1710,7 +1710,7 @@ private function hOptLogic _
 						'' (not x) or  const    to    not (x and (not const))
 						'' (not x) xor const    to    x xor (not const)
 
-						if( symbGetDataSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
+						if( typeGetSize( astGetDataType( r ) ) <= FB_INTEGERSIZE ) then
 							v = r->con.val.int
 						else
 							v = r->con.val.long
@@ -1793,14 +1793,14 @@ private function hDoOptRemConv _
 						end if
 
 						'' can't be a longint
-						if( symbGetDataSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
+						if( typeGetSize( astGetDataType( t ) ) < FB_INTEGERSIZE*2 ) then
 							dorem = FALSE
 
 							select case as const t->class
 							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 								 AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
 								'' can't be unsigned either
-								if( symbIsSigned( astGetDataType( t ) ) ) then
+								if( typeIsSigned( astGetDataType( t ) ) ) then
 									dorem = TRUE
 								end if
 							end select
@@ -2122,7 +2122,7 @@ function astOptAssignment _
 		return hOptStrAssignment( n, l, r )
 	end select
 
-	dclass = symbGetDataClass( dtype )
+	dclass = typeGetClass( dtype )
 	if( dclass = FB_DATACLASS_INTEGER ) then
 		if( irGetOption( IR_OPT_CPU_BOPSELF ) = FALSE ) then
 			exit function
@@ -2133,7 +2133,7 @@ function astOptAssignment _
 			'' try to optimize if a constant is being assigned to a float var
   			if( astIsCONST( r ) ) then
   				if( dclass = FB_DATACLASS_FPOINT ) then
-					if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
+					if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_FPOINT ) then
 						n->r = astNewCONV( dtype, NULL, r )
 					end if
 				end if
@@ -2144,7 +2144,7 @@ function astOptAssignment _
 	end if
 
 	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
-	if( symbGetDataSize( dtype ) = 1 ) then
+	if( typeGetSize( dtype ) = 1 ) then
 		exit function
 	end if
 
@@ -2188,7 +2188,7 @@ function astOptAssignment _
 	end select
 
 	'' node result is an integer too?
-	if( symbGetDataClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
 		exit function
 	end if
 

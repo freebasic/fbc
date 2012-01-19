@@ -283,13 +283,13 @@ function symbAddField _
 						'' remap type
 						select case lgt
 						case 1
-							if( symbIsSigned( dtype ) ) then
+							if( typeIsSigned( dtype ) ) then
 								dtype = FB_DATATYPE_BYTE
 							else
 								dtype = FB_DATATYPE_UBYTE
 							end if
 						case 2
-							if( symbIsSigned( dtype ) ) then
+							if( typeIsSigned( dtype ) ) then
 								dtype = FB_DATATYPE_SHORT
 							else
 								dtype = FB_DATATYPE_USHORT
@@ -431,7 +431,7 @@ function symbAddField _
 		'' update the bit position, wrapping around
 		if( bits > 0 ) then
 			parent->udt.bitpos += bits
-			parent->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
+			parent->udt.bitpos and= (typeGetBits( dtype ) - 1)
 		end if
 
 	'' union..

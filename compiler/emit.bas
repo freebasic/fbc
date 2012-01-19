@@ -381,7 +381,7 @@ private function hNewVR _
 	n->vector = v->vector
 
 	if( v->typ = IR_VREGTYPE_REG ) then
-		dclass = symbGetDataClass( v->dtype )
+		dclass = typeGetClass( v->dtype )
 		n->reg = emit.regTB(dclass)->getRealReg( emit.regTB(dclass), v->reg )
 		assert( n->reg <> INVALID )
 		EMIT_REGSETUSED( dclass, n->reg )
@@ -839,7 +839,7 @@ function emitMUL _
 		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
-		if( symbIsSigned( dvreg->dtype ) ) then
+		if( typeIsSigned( dvreg->dtype ) ) then
 			function = hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
 		else
 			function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )

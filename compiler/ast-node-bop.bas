@@ -645,7 +645,7 @@ private function hDoPointerArith _
     edtype = astGetDataType( e )
 
     '' not integer class?
-    if( symbGetDataClass( edtype ) <> FB_DATACLASS_INTEGER ) then
+    if( typeGetClass( edtype ) <> FB_DATACLASS_INTEGER ) then
     	exit function
 
     '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
@@ -895,8 +895,8 @@ function astNewBOP _
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
-	ldclass = symbGetDataClass( ldtype )
-	rdclass = symbGetDataClass( rdtype )
+	ldclass = typeGetClass( ldtype )
+	rdclass = typeGetClass( rdtype )
 
 	'' UDT's? try auto-coercion
 	if( (typeGet( ldtype ) = FB_DATATYPE_STRUCT) or _
@@ -1159,9 +1159,9 @@ function astNewBOP _
     ''::::::
 
 	'' convert byte to int
-	if( symbGetDataSize( ldtype ) = 1 ) then
+	if( typeGetSize( ldtype ) = 1 ) then
 		if( is_str = FALSE ) then
-			if( symbIsSigned( ldtype ) ) then
+			if( typeIsSigned( ldtype ) ) then
 				ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
 			else
 				ldtype = typeJoin( ldtype, FB_DATATYPE_UINT )
@@ -1170,9 +1170,9 @@ function astNewBOP _
 		end if
 	end if
 
-	if( symbGetDataSize( rdtype ) = 1 ) then
+	if( typeGetSize( rdtype ) = 1 ) then
 		if( is_str = FALSE ) then
-			if( symbIsSigned( rdtype ) ) then
+			if( typeIsSigned( rdtype ) ) then
 				rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
 			else
 				rdtype = typeJoin( rdtype, FB_DATATYPE_UINT )
@@ -1245,7 +1245,7 @@ function astNewBOP _
     '' convert types to the most precise if needed
 	if( ldtype <> rdtype ) then
 
-		dtype = symbMaxDataType( ldtype, rdtype )
+		dtype = typeMax( ldtype, rdtype )
 
 		'' don't convert?
 		if( dtype = FB_DATATYPE_INVALID ) then
@@ -1327,7 +1327,7 @@ function astNewBOP _
 			'' warn if shift is greater than or equal to the number of bits in ldtype
 			'' !!!FIXME!!! prevent asm error when value is higher than 255
 			select case astGetValueAsULongint( r )
-				case is >= symbGetDataSize( ldtype ) * 8
+				case is >= typeGetSize( ldtype ) * 8
 					errReportWarn( FB_WARNINGMSG_SHIFTEXCEEDSBITSINDATATYPE )
 			end select
 		end if
@@ -1472,7 +1472,7 @@ function astNewBOP _
 					if( astIsClassOnTree( AST_NODECLASS_CALL, l ) = NULL ) then
 						' A pow should always promote l and r to
 						' float, and return a float
-						if( symbGetDataClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
+						if( typeGetClass( astGetDataType( l ) ) <> FB_DATACLASS_FPOINT ) then
 							l = astNewCONV( FB_DATATYPE_DOUBLE, NULL, l )
 						end if
 						astDelNode( r )

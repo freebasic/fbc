@@ -1713,7 +1713,7 @@ private sub _emitSTORI2L _
     dim as string dst1, dst2, src1, ext, ostr
     dim sdsize as integer
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
@@ -1724,7 +1724,7 @@ private sub _emitSTORI2L _
 		hMOV dst1, src1
 
 		'' negative?
-		if( symbIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1737,7 +1737,7 @@ private sub _emitSTORI2L _
 	if( sdsize < FB_INTEGERSIZE ) then
 		ext = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "movsx "
 		else
 			ostr = "movzx "
@@ -1752,7 +1752,7 @@ private sub _emitSTORI2L _
 	ostr = "mov " + dst1 + COMMA + ext
 	outp ostr
 
-	if( symbIsSigned( svreg->dtype ) ) then
+	if( typeIsSigned( svreg->dtype ) ) then
 
 		hPUSH ext
 
@@ -1785,7 +1785,7 @@ private sub _emitSTORF2L _
 	hPrepOperand( dvreg, dst )
 
 	'' signed?
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		ostr = "fistp " + dst
 		outp ostr
 
@@ -1808,7 +1808,7 @@ private sub _emitSTORI2I _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -1819,7 +1819,7 @@ private sub _emitSTORI2I _
 	'' dst size = src size
 	if( (svreg->typ = IR_VREGTYPE_IMM) or _
 		(dvreg->dtype = svreg->dtype) or _
-		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
+		(typeMax( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
@@ -1832,7 +1832,7 @@ private sub _emitSTORI2I _
 
 		'' dst size > src size
 		if( dvreg->dtype > svreg->dtype ) then
-			if( symbIsSigned( svreg->dtype ) ) then
+			if( typeIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
 				ostr = "movzx "
@@ -1915,7 +1915,7 @@ private sub _emitSTORF2I _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	'' byte destine? damn..
 	if( ddsize = 1 ) then
@@ -1959,7 +1959,7 @@ private sub _emitSTORF2I _
 
 	else
 		'' signed?
-		if( symbIsSigned( dvreg->dtype ) ) then
+		if( typeIsSigned( dvreg->dtype ) ) then
 			ostr = "fistp " + dst
 			outp ostr
 
@@ -2003,7 +2003,7 @@ private sub _emitSTORL2F _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -2029,7 +2029,7 @@ private sub _emitSTORL2F _
 	'' not a reg or imm
 	else
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2063,8 +2063,8 @@ private sub _emitSTORI2F _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
@@ -2081,7 +2081,7 @@ private sub _emitSTORI2F _
 			hPUSH aux
 		end if
 
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "movsx "
 		else
 			ostr = "movzx "
@@ -2107,7 +2107,7 @@ private sub _emitSTORI2F _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
 			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
@@ -2153,7 +2153,7 @@ private sub _emitSTORI2F _
 	else
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2198,8 +2198,8 @@ private sub _emitSTORF2F _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
-	sdsize = symbGetDataSize( svreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	'' on fpu stack?
 	if( svreg->typ = IR_VREGTYPE_REG ) then
@@ -2276,7 +2276,7 @@ private sub _emitLOADI2L _
     dim as integer sdsize
     dim as string ostr
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
@@ -2288,7 +2288,7 @@ private sub _emitLOADI2L _
         hMOV dst1, src1
 
 		'' negative?
-		if( symbIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
+		if( typeIsSigned( svreg->dtype ) and (svreg->value.int and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -2298,7 +2298,7 @@ private sub _emitLOADI2L _
 	end if
 
 	''
-	if( symbIsSigned( svreg->dtype ) ) then
+	if( typeIsSigned( svreg->dtype ) ) then
 
 		if( sdsize < FB_INTEGERSIZE ) then
 			ostr = "movsx " + dst1 + COMMA + src1
@@ -2351,7 +2351,7 @@ private sub _emitLOADF2L _
 
 	'' signed?
 	'' (handle ULONGINT here too - workaround for #2082801)
-	if( symbIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
+	if( typeIsSigned( dvreg->dtype ) orelse (dvreg->dtype = FB_DATATYPE_ULONGINT) ) then
 
 		outp "sub esp, 8"
 
@@ -2394,7 +2394,7 @@ private sub _emitLOADI2I _
 	hPrepOperand( svreg, src )
 
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -2404,7 +2404,7 @@ private sub _emitLOADI2I _
 
 	'' dst size = src size
 	if( (dvreg->dtype = svreg->dtype) or _
-		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
+		(typeMax( dvreg->dtype, svreg->dtype ) = FB_DATATYPE_INVALID) ) then
 
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
@@ -2414,7 +2414,7 @@ private sub _emitLOADI2I _
 	else
 		'' dst size > src size
 		if( dvreg->dtype > svreg->dtype ) then
-			if( symbIsSigned( svreg->dtype ) ) then
+			if( typeIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
 				ostr = "movzx "
@@ -2487,7 +2487,7 @@ private sub _emitLOADF2I _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = symbGetDataSize( dvreg->dtype )
+	ddsize = typeGetSize( dvreg->dtype )
 
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
 		ostr = "fld " + src
@@ -2536,7 +2536,7 @@ private sub _emitLOADF2I _
 	else
 
 		'' signed?
-		if( symbIsSigned( dvreg->dtype ) ) then
+		if( typeIsSigned( dvreg->dtype ) ) then
 
 			outp "sub esp, 4"
 
@@ -2591,7 +2591,7 @@ private sub _emitLOADL2F _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -2619,7 +2619,7 @@ private sub _emitLOADL2F _
 	else
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2651,7 +2651,7 @@ private sub _emitLOADI2F _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    sdsize = symbGetDataSize( svreg->dtype )
+    sdsize = typeGetSize( svreg->dtype )
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
@@ -2668,7 +2668,7 @@ private sub _emitLOADI2F _
 			hPUSH aux
 		end if
 
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "movsx " + aux + COMMA + src
 			outp ostr
 		else
@@ -2691,7 +2691,7 @@ private sub _emitLOADI2F _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
 			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
@@ -2737,7 +2737,7 @@ private sub _emitLOADI2F _
 	else
 
 		'' signed?
-		if( symbIsSigned( svreg->dtype ) ) then
+		if( typeIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2816,7 +2816,7 @@ private sub _emitMOVI _
     dim as string dst, src, ostr
 
 	'' byte? handle SI, DI used as bytes..
-	if( symbGetDataSize( dvreg->dtype ) = 1 ) then
+	if( typeGetSize( dvreg->dtype ) = 1 ) then
 		'' MOV is only used when both operands are registers
 		dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 		src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
@@ -2919,7 +2919,7 @@ private sub _emitADDF _
 		ostr = "faddp"
 		outp ostr
 	else
-		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fadd " + src
 			outp ostr
 		else
@@ -3007,7 +3007,7 @@ private sub _emitSUBF _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fsubrp"
 	else
-		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fsub " + src
 			outp ostr
 		else
@@ -3280,7 +3280,7 @@ private sub _emitMULF _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fmulp"
 	else
-		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fmul " + src
 			outp ostr
 		else
@@ -3308,7 +3308,7 @@ private sub _emitDIVF _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fdivrp"
 	else
-		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fdiv " + src
 			outp ostr
 		else
@@ -3403,7 +3403,7 @@ private sub _emitDIVI _
 		hPUSH "edx"
 	end if
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		if( dtypeTB(dvreg->dtype).size = 4 ) then
 			outp "cdq"
 		else
@@ -3557,7 +3557,7 @@ private sub _emitMODI _
 		hPUSH "edx"
 	end if
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		if( dtypeTB(dvreg->dtype).size = 4 ) then
 			outp "cdq"
 		else
@@ -3651,7 +3651,7 @@ private sub hSHIFTL _
 		mnemonic32 = "shl "
 		mnemonic64 = "shld "
 	else
-		if( symbIsSigned( dvreg->dtype ) ) then
+		if( typeIsSigned( dvreg->dtype ) ) then
 			mnemonic32 = "sar "
 		else
 			mnemonic32 = "shr "
@@ -3712,7 +3712,7 @@ private sub hSHIFTL _
 				outp "mov " + a + ", " + tmpregname
 			end if
 
-			if( (op = AST_OP_SHR) and symbIsSigned( dvreg->dtype ) ) then
+			if( (op = AST_OP_SHR) and typeIsSigned( dvreg->dtype ) ) then
 				outp "sar " + b +", 31"
 			elseif( bv->typ = IR_VREGTYPE_REG ) then
 				outp "xor " + b + ", " + b
@@ -3781,7 +3781,7 @@ private sub hSHIFTL _
 
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
-			if( symbGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+			if( typeGetSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
  				'' if it's not a reg, the right size was already set at the hPrepOperand() above
  				if( svreg->typ = IR_VREGTYPE_REG ) then
  					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
@@ -3850,7 +3850,7 @@ private sub hSHIFTL _
  			outp "xor eax, eax"
  		else
  			outp "mov eax, edx"
- 			if( symbIsSigned( dvreg->dtype ) ) then
+ 			if( typeIsSigned( dvreg->dtype ) ) then
  				outp "sar edx, 31"
  			else
  				outp "xor edx, edx"
@@ -3914,7 +3914,7 @@ private sub hSHIFTI _
     dim as string ostr, dst, src, tmp, mnemonic
 
 	''
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		if( op = AST_OP_SHL ) then
 			mnemonic = "sal"
 		else
@@ -4532,7 +4532,7 @@ private sub hCMPF _
 		outp "fcompp"
 	else
 		'' can it be optimized to ftst?
-		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fcomp " + src
 			outp ostr
 		else
@@ -4633,7 +4633,7 @@ private sub _emitCGTL _
 
 	dim jmp as string, rjmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 		rjmp = "l"
 	else
@@ -4656,7 +4656,7 @@ private sub _emitCGTI _
 
 	dim jmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 	else
 		jmp = "a"
@@ -4692,7 +4692,7 @@ private sub _emitCLTL _
 
 	dim jmp as string, rjmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 		rjmp = "g"
 	else
@@ -4715,7 +4715,7 @@ private sub _emitCLTI _
 
 	dim jmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 	else
 		jmp = "b"
@@ -4830,7 +4830,7 @@ private sub _emitCLEL _
 
 	dim jmp as string, rjmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 		rjmp = "g"
 	else
@@ -4853,7 +4853,7 @@ private sub _emitCLEI _
 
 	dim jmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "le"
 	else
 		jmp = "be"
@@ -4889,7 +4889,7 @@ private sub _emitCGEL _
 
 	dim jmp as string, rjmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 		rjmp = "l"
 	else
@@ -4912,7 +4912,7 @@ private sub _emitCGEI _
 
 	dim jmp as string
 
-	if( symbIsSigned( dvreg->dtype ) ) then
+	if( typeIsSigned( dvreg->dtype ) ) then
 		jmp = "ge"
 	else
 		jmp = "ae"
@@ -5518,7 +5518,7 @@ private sub _emitPUSHI _
 
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		if( sdsize < FB_INTEGERSIZE ) then
@@ -5549,7 +5549,7 @@ private sub _emitPUSHF _
 
 	hPrepOperand( svreg, src )
 
-	sdsize = symbGetDataSize( svreg->dtype )
+	sdsize = typeGetSize( svreg->dtype )
 
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
 		if( svreg->dtype = FB_DATATYPE_SINGLE ) then
@@ -5631,7 +5631,7 @@ private sub _emitPOPI _
 
 	hPrepOperand( dvreg, dst )
 
-	dsize = symbGetDataSize( dvreg->dtype )
+	dsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->typ = IR_VREGTYPE_IMM ) then
 		'' gosub quirk: return-to-label needs to pop return address from the stack
@@ -5690,7 +5690,7 @@ private sub _emitPOPF _
 
 	hPrepOperand( dvreg, dst )
 
-	dsize = symbGetDataSize( dvreg->dtype )
+	dsize = typeGetSize( dvreg->dtype )
 
 	if( dvreg->typ <> IR_VREGTYPE_REG ) then
 		if( dvreg->dtype = FB_DATATYPE_SINGLE ) then
@@ -6771,12 +6771,12 @@ private function _getFreePreservedReg _
 		function = EMIT_REG_EBX
 
 	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_ESI ) ) then
-		if( symbGetDataSize( dtype ) <> 1 ) then
+		if( typeGetSize( dtype ) <> 1 ) then
 			function = EMIT_REG_ESI
 		end if
 
 	elseif( emit.regTB(dclass)->isFree( emit.regTB(dclass), EMIT_REG_EDI ) ) then
-		if( symbGetDataSize( dtype ) <> 1 ) then
+		if( typeGetSize( dtype ) <> 1 ) then
 			function = EMIT_REG_EDI
 		end if
 	end if

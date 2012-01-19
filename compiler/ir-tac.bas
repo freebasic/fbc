@@ -245,7 +245,7 @@ private sub hLoadIDX _
 
 	regTB(FB_DATACLASS_INTEGER)->ensure( regTB(FB_DATACLASS_INTEGER), _
 										 vi, _
-										 symbGetDataSize( FB_DATATYPE_INTEGER ) )
+										 typeGetSize( FB_DATATYPE_INTEGER ) )
 
 end sub
 
@@ -938,7 +938,7 @@ private sub _emitVarIniWstr _
 	end if
 
 	''
-	wclen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wclen = typeGetSize( FB_DATATYPE_WCHAR )
 
 	emitVARINIWSTR( s )
 
@@ -1633,7 +1633,7 @@ private sub hFlushCALL _
 		if( vr_typ = IR_VREGTYPE_REG ) then
 			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 			                          v1, _
-			                          symbGetDataSize( vr_dtype ) )
+			                          typeGetSize( vr_dtype ) )
 		end if
 
 		'' CALLPTR
@@ -1699,7 +1699,7 @@ private sub hFlushSTACK _
 			va = v1->vaux
 			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -1707,7 +1707,7 @@ private sub hFlushSTACK _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 	end if
 
 	''
@@ -1755,7 +1755,7 @@ private sub hFlushUOP _
 				va = vr->vaux
 				regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				vr_dtype = FB_DATATYPE_INTEGER
@@ -1763,7 +1763,7 @@ private sub hFlushUOP _
 
 			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 									  vr, _
-									  symbGetDataSize( vr_dtype ) )
+									  typeGetSize( vr_dtype ) )
 		end if
 	end if
 
@@ -1774,7 +1774,7 @@ private sub hFlushUOP _
 			va = v1->vaux
 			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -1787,7 +1787,7 @@ private sub hFlushUOP _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 
 		if( op = AST_OP_SWZ_REPEAT ) then
 			v1->vector = v1vector
@@ -1888,7 +1888,7 @@ private sub hFlushBOP _
 				va = v2->vaux
 				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				v2_dtype = FB_DATATYPE_INTEGER
@@ -1896,7 +1896,7 @@ private sub hFlushBOP _
 
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 									  v2, _
-									  symbGetDataSize( v2_dtype ) )
+									  typeGetSize( v2_dtype ) )
 		end if
 
 	else
@@ -1906,7 +1906,7 @@ private sub hFlushBOP _
 				va = v2->vaux
 				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				v2_dtype = FB_DATATYPE_INTEGER
@@ -1914,7 +1914,7 @@ private sub hFlushBOP _
 
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 									  v2, _
-									  symbGetDataSize( v2_dtype ) )
+									  typeGetSize( v2_dtype ) )
 		end if
 
 		'' destine allocation comes *after* source, 'cause the x86 FPU stack
@@ -1923,7 +1923,7 @@ private sub hFlushBOP _
 			va = v1->vaux
 			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -1931,7 +1931,7 @@ private sub hFlushBOP _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 	end if
 
     ''
@@ -1980,7 +1980,7 @@ private sub hFlushBOP _
 				va = vr->vaux
 				regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				vr_dtype = FB_DATATYPE_INTEGER
@@ -1988,7 +1988,7 @@ private sub hFlushBOP _
 
 			regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 									  vr, _
-									  symbGetDataSize( vr_dtype ) )
+									  typeGetSize( vr_dtype ) )
 
 			emitMOV( vr, v1 )
 		end if
@@ -2045,7 +2045,7 @@ private sub hFlushCOMP _
 			va = v2->vaux
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v2_dtype = FB_DATATYPE_INTEGER
@@ -2053,7 +2053,7 @@ private sub hFlushCOMP _
 
 		regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 								  v2, _
-								  symbGetDataSize( v2_dtype ) )
+								  typeGetSize( v2_dtype ) )
 		v2_typ = IR_VREGTYPE_REG
 	end if
 
@@ -2077,7 +2077,7 @@ private sub hFlushCOMP _
 			va = v1->vaux
 			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -2085,7 +2085,7 @@ private sub hFlushCOMP _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 	end if
 
 	'' result not equal destine? (can happen with DAG optimizations and floats comparations)
@@ -2093,7 +2093,7 @@ private sub hFlushCOMP _
 		if( vr <> v1 ) then
 			vr->reg = regTB(vr_dclass)->_allocate( regTB(vr_dclass), _
 												  vr, _
-												  symbGetDataSize( vr_dtype ) )
+												  typeGetSize( vr_dtype ) )
 			vr->typ = IR_VREGTYPE_REG
 		end if
 	end if
@@ -2190,7 +2190,7 @@ private sub hFlushSTORE _
 			va = v2->vaux
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v2_dtype = FB_DATATYPE_INTEGER
@@ -2198,7 +2198,7 @@ private sub hFlushSTORE _
 
 		regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 								  v2, _
-								  symbGetDataSize( v2_dtype ) )
+								  typeGetSize( v2_dtype ) )
 	end if
 
 	''
@@ -2234,7 +2234,7 @@ private sub hFlushLOAD _
 			va = v1->vaux
 			regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 									  va, _
-									  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+									  typeGetSize( FB_DATATYPE_INTEGER ), _
 									  FALSE )
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -2242,7 +2242,7 @@ private sub hFlushLOAD _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 
 	case AST_OP_LOADRES
 		if( v1_typ = IR_VREGTYPE_REG ) then
@@ -2251,18 +2251,18 @@ private sub hFlushLOAD _
 				va = v1->vaux
 				regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				'' can't change v1_dtype
 				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 												   v1, _
-												   symbGetDataSize( FB_DATATYPE_INTEGER ) )
+												   typeGetSize( FB_DATATYPE_INTEGER ) )
 
 			else
 				v1_reg = regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 												   v1, _
-												   symbGetDataSize( v1_dtype ) )
+												   typeGetSize( v1_dtype ) )
 			end if
 
 
@@ -2347,11 +2347,11 @@ private sub hFlushCONVERT _
 		'' it's an integer, check if used again
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if any operand is a byte (because [E]SI/[E]DI) or longint
-			select case symbGetDataSize( v1_dtype )
+			select case typeGetSize( v1_dtype )
 			case 1, FB_INTEGERSIZE*2
 
 			case else
-				select case symbGetDataSize( v2_dtype )
+				select case typeGetSize( v2_dtype )
 				case 1, FB_INTEGERSIZE*2
 
 				case else
@@ -2373,7 +2373,7 @@ private sub hFlushCONVERT _
 				va = v2->vaux
 				regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 										  va, _
-										  symbGetDataSize( FB_DATATYPE_INTEGER ), _
+										  typeGetSize( FB_DATATYPE_INTEGER ), _
 										  FALSE )
 
 				v2_dtype = FB_DATATYPE_INTEGER
@@ -2381,7 +2381,7 @@ private sub hFlushCONVERT _
 
 			regTB(v2_dclass)->ensure( regTB(v2_dclass), _
 									  v2, _
-									  symbGetDataSize( v2_dtype ) )
+									  typeGetSize( v2_dtype ) )
 		end if
 
 		'' handle longint
@@ -2389,7 +2389,7 @@ private sub hFlushCONVERT _
 			va = v1->vaux
 			va->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
 												  va, _
-												  symbGetDataSize( FB_DATATYPE_INTEGER ) )
+												  typeGetSize( FB_DATATYPE_INTEGER ) )
 			va->typ = IR_VREGTYPE_REG
 
 			v1_dtype = FB_DATATYPE_INTEGER
@@ -2397,7 +2397,7 @@ private sub hFlushCONVERT _
 
 		v1->reg = regTB(v1_dclass)->_allocate( regTB(v1_dclass), _
 											  v1, _
-											  symbGetDataSize( v1_dtype ) )
+											  typeGetSize( v1_dtype ) )
 		v1->typ = IR_VREGTYPE_REG
 	end if
 
@@ -2438,13 +2438,13 @@ private sub hFlushADDR _
 	if( v1_typ = IR_VREGTYPE_REG ) then				'' x86 assumption
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), _
 								  v1, _
-								  symbGetDataSize( v1_dtype ) )
+								  typeGetSize( v1_dtype ) )
 	end if
 
 	if( vr_typ = IR_VREGTYPE_REG ) then             '' x86 assumption
 		regTB(vr_dclass)->ensure( regTB(vr_dclass), _
 								  vr, _
-								  symbGetDataSize( vr_dtype ) )
+								  typeGetSize( vr_dtype ) )
 	end if
 
 	''
@@ -2773,7 +2773,7 @@ private sub hDump _
 	if( v <> NULL ) then
 		print " " id ":" & hex( v ) & "(" & irGetVRType( v ) & ";";
 		print using "##"; irGetVRDataType( v );
-		print "," & symbGetDataClass( irGetVRDataType( v ) ) & ")";
+		print "," & typeGetClass( irGetVRDataType( v ) ) & ")";
 	end if
 #endmacro
 

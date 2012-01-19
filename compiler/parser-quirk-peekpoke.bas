@@ -62,7 +62,7 @@ function cPokeStmt _
     	expr1 = astNewCONV( FB_DATATYPE_UINT, NULL, expr1 )
 
 	case else
-        if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
+		if( typeGetSize( astGetDataType( expr1 ) ) <> FB_POINTERSIZE ) then
         	errReport( FB_ERRMSG_INVALIDDATATYPES )
         	'' no error recovery: ditto
         	astDelTree( expr1 )
@@ -139,7 +139,7 @@ function cPeekFunct _
 		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 
 	case else
-		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
+		if( typeGetSize( astGetDataType( expr ) ) <> FB_POINTERSIZE ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake an expr
 			astDelTree( expr )

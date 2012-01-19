@@ -521,7 +521,7 @@ private function hStrIndexing _
 		'' times sizeof( wchar ) if it's wstring
 		idxexpr = astNewBOP( AST_OP_SHL, _
 				   			 idxexpr, _
-				   			 astNewCONSTi( hToPow2( symbGetDataSize( FB_DATATYPE_WCHAR ) ), _
+				   			 astNewCONSTi( hToPow2( typeGetSize( FB_DATATYPE_WCHAR ) ), _
 				   				 		   FB_DATATYPE_INTEGER ) )
 	end if
 

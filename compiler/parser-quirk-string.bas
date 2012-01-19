@@ -453,7 +453,7 @@ function cCVXFunct _
 			zslen = 0
 		end if
 
-		if( zslen >= symbGetDataSize( functype ) ) then
+		if( zslen >= typeGetSize( functype ) ) then
 
 			select case as const functype
 			case FB_DATATYPE_DOUBLE

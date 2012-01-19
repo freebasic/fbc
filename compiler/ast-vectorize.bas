@@ -32,7 +32,7 @@ private function hNodesMatch _
 			return FALSE
 		end if
 
-		select case symbGetDataClass( astGetDataType( vn ) )
+		select case typeGetClass( astGetDataType( vn ) )
 			case FB_DATACLASS_INTEGER
 				if( vn->con.val.int <> n->con.val.int ) then
 					return FALSE
@@ -340,9 +340,9 @@ private function hCheckMemOffset _
 	'' calc required distance of memory offsets
 	if( vectorNode->vector ) then
 		if( vectorNode->vector > vectorWidth ) then vectorWidth = vectorNode->vector
-		needOffset = ( vectorWidth * symbGetDataSize( dtype ) )
+		needOffset = ( vectorWidth * typeGetSize( dtype ) )
 	else
-		needOffset = symbGetDataSize( dtype )
+		needOffset = typeGetSize( dtype )
 	end if
 
 	function = TRUE
@@ -428,9 +428,9 @@ private function hMergeNode _
 
 		if( vectorNode->vector ) then
 			if( vectorNode->vector > vectorWidth ) then vectorWidth = vectorNode->vector
-			needOffset = ( vectorWidth * symbGetDataSize( dtype ) )
+			needOffset = ( vectorWidth * typeGetSize( dtype ) )
 		else
-			needOffset = symbGetDataSize( dtype )
+			needOffset = typeGetSize( dtype )
 		end if
 
 		if( offset <> needOffset ) then

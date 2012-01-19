@@ -156,7 +156,7 @@ function astNewUOP _
 
     dim as integer dclass = any, dtype = any
 	dtype = astGetFullType( o )
-    dclass = symbGetDataClass( dtype )
+    dclass = typeGetClass( dtype )
 
 	if( op = AST_OP_SWZ_REPEAT ) then
 		'' alloc new node
@@ -191,7 +191,7 @@ function astNewUOP _
 		end if
 
 		dtype = typeJoin( dtype, astGetFullType( o ) )
-    	dclass = symbGetDataClass( dtype )
+    	dclass = typeGetClass( dtype )
 
 	'' pointer?
 	case else
@@ -206,10 +206,9 @@ function astNewUOP _
 	dim as FBSYMBOL ptr subtype = o->subtype
 
 	'' convert byte to integer
-	if( symbGetDataSize( dtype ) = 1 ) then
-
+	if( typeGetSize( dtype ) = 1 ) then
 		dim as integer nd = any
-		if( symbIsSigned( dtype ) ) then
+		if( typeIsSigned( dtype ) ) then
 			nd = FB_DATATYPE_INTEGER
 		else
 			nd = FB_DATATYPE_UINT
@@ -234,7 +233,7 @@ function astNewUOP _
 	'' with SGN(int) the result is always a signed integer
 	case AST_OP_SGN
 		if( dclass = FB_DATACLASS_INTEGER ) then
-			dtype = typeJoin( dtype, symbGetSignedType( dtype ) )
+			dtype = typeJoin( dtype, typeToSigned( dtype ) )
 			subtype = NULL
 		end if
 
@@ -278,7 +277,7 @@ function astNewUOP _
 
 		if( op = AST_OP_NEG ) then
 			if( astGetDataClass( o ) = FB_DATACLASS_INTEGER ) then
-				if( symbIsSigned( dtype ) = FALSE ) then
+				if( typeIsSigned( dtype ) = FALSE ) then
 					'' test overflow
 					select case typeGet( dtype )
 					case FB_DATATYPE_UINT
@@ -310,7 +309,7 @@ chk_ulong:
 						end if
 					end select
 
-					dtype = typeJoin( dtype, symbGetSignedType( dtype ) )
+					dtype = typeJoin( dtype, typeToSigned( dtype ) )
 				end if
 			end if
 		end if

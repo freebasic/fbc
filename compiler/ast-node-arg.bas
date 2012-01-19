@@ -309,7 +309,7 @@ private function hStrArgToStrPtrParam _
 	end if
 
 	'' var- or fixed-len string param?
-	if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_STRING ) then
+	if( typeGetClass( arg_dtype ) = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc being called return
@@ -455,8 +455,8 @@ private function hCheckByDescParam _
 
 	'' same type? (don't check if it's a rtl proc, or a forward call)
 	if( (parent->call.isrtl = FALSE) and (sym_dtype <> FB_DATATYPE_VOID) ) then
-		if( (symbGetDataClass( arg_dtype ) <> symbGetDataClass( sym_dtype )) or _
-			(symbGetDataSize( arg_dtype ) <> symbGetDataSize( sym_dtype )) ) then
+		if( (typeGetClass( arg_dtype ) <> typeGetClass( sym_dtype )) or _
+			(typeGetSize( arg_dtype ) <> typeGetSize( sym_dtype )) ) then
 			hParamError( parent )
 			return FALSE
 		end if
@@ -527,7 +527,7 @@ private function hCheckVarargParam _
     dim as ASTNODE ptr arg = n->l
     dim as integer arg_dtype = astGetDatatype( arg )
 
-	select case as const symbGetDataClass( arg_dtype )
+	select case as const typeGetClass( arg_dtype )
 	'' var-len string? check..
 	case FB_DATACLASS_STRING
 		return hStrArgToStrPtrParam( parent, n, FALSE )
@@ -540,8 +540,8 @@ private function hCheckVarargParam _
 
 		case else
 			'' if < len(integer), convert to int (C ABI)
-			if( symbGetDataSize( arg_dtype ) < FB_INTEGERSIZE ) then
-				n->l = astNewCONV( iif( symbIsSigned( arg_dtype ), _
+			if( typeGetSize( arg_dtype ) < FB_INTEGERSIZE ) then
+				n->l = astNewCONV( iif( typeIsSigned( arg_dtype ), _
 									   	FB_DATATYPE_INTEGER, _
 									   	FB_DATATYPE_UINT ), _
 								   NULL, _
@@ -889,8 +889,8 @@ private function hCheckParam _
 
 		'' passing a BYVAL ptr to an BYREF arg?
 		if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
-			if( (symbGetDataClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
+				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
 				hParamError( parent )
 				exit function
 			end if
@@ -992,17 +992,17 @@ private function hCheckParam _
 	'' different types? convert..
 	dim as integer do_conv = any
 
-	do_conv = symbGetDataSize( param_dtype ) <> symbGetDataSize( arg_dtype )
+	do_conv = typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )
 	if( do_conv = FALSE ) then
-		do_conv = symbGetDataClass( param_dtype ) <> symbGetDataClass( arg_dtype )
+		do_conv = typeGetClass( param_dtype ) <> typeGetClass( arg_dtype )
 	end if
 
 	if( do_conv ) then
 		'' enum args are only allowed to be passed enum or int params
 		if( (param_dtype = FB_DATATYPE_ENUM) or _
 			(arg_dtype = FB_DATATYPE_ENUM) ) then
-			if( symbGetDataClass( param_dtype ) <> _
-				symbGetDataClass( arg_dtype ) ) then
+			if( typeGetClass( param_dtype ) <> _
+				typeGetClass( arg_dtype ) ) then
 				hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
@@ -1045,7 +1045,7 @@ private function hCheckParam _
 
 	else
 		'' check for overflows
-		if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( arg ) ) then
 				arg = astCheckConst( symbGetType( param ), arg )
 				if( arg = NULL ) then

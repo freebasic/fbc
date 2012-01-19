@@ -52,8 +52,7 @@ sub symbDataEnd( )
 
 end sub
 
-'':::::
-function symbMaxDataType _
+function typeMax _
 	( _
 		byval ldtype as integer, _
 		byval rdtype as integer _
@@ -165,7 +164,7 @@ function symbMaxDataType _
 end function
 
 '':::::
-function symbRemapType _
+function typeRemap _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -187,7 +186,7 @@ function symbRemapType _
 end function
 
 '':::::
-function symbGetSignedType _
+function typeToSigned _
 	( _
 		byval dtype as integer _
 	) as integer
@@ -233,7 +232,7 @@ function symbGetSignedType _
 end function
 
 '':::::
-function symbGetUnsignedType _
+function typeToUnsigned _
 	( _
 		byval dtype as integer _
 	) as integer

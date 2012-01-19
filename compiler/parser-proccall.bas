@@ -345,7 +345,7 @@ function cProcCall _
 
 	'' can proc's result be skipped?
 	if( dtype <> FB_DATATYPE_VOID ) then
-		if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
+		if( typeGetClass( dtype ) <> FB_DATACLASS_INTEGER ) then
 			errReport( FB_ERRMSG_VARIABLEREQUIRED )
 			'' error recovery: skip
 			astDelTree( procexpr )

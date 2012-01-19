@@ -264,7 +264,7 @@ function symbAllocWStrConst _
 		lgt = strlen
 	end if
 
-	wcharlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wcharlen = typeGetSize( FB_DATATYPE_WCHAR )
 	'' hEscapeW() can use up to (4 * wcharlen) ascii chars per unicode char
 	'' (up to one '\ooo' per byte of wchar)
 	if( strlen * ((1+3) * wcharlen) <= FB_MAXNAMELEN-6 ) then

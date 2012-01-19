@@ -487,7 +487,7 @@ function cAssignmentOrPtrCallEx _
 	'' calling a function ptr..
 
 	'' can the result be skipped?
-	if( symbGetDataClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( t ) ) <> FB_DATACLASS_INTEGER ) then
 		errReport( FB_ERRMSG_VARIABLEREQUIRED )
 		'' error recovery: skip call
 		astDelTree( expr )

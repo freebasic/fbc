@@ -1374,9 +1374,7 @@ declare function hTruncateInt _
 
 #define astGetSubtype(n) n->subtype
 
-#define astGetDataClass(n) symbGetDataClass( astGetDataType( n ) )
-
-#define astGetDataSize(n) symbGetDataSize( astGetDataType( n ) )
+#define astGetDataClass(n) typeGetClass( astGetDataType( n ) )
 
 #define astGetSymbol(n)	n->sym
 

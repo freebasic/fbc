@@ -545,7 +545,7 @@ function astGetValueAsLongInt _
   	    end if
 
   	case else
-  		if( symbIsSigned( astGetDataType( n ) ) ) then
+  		if( typeIsSigned( astGetDataType( n ) ) ) then
   			function = clngint( astGetValInt( n ) )
   		else
   			function = clngint( cuint( astGetValInt( n ) ) )
@@ -691,7 +691,7 @@ function astCheckConst _
 
 chk_long:
 		'' unsigned constant?
-		if( symbIsSigned( astGetDataType( n ) ) = FALSE ) then
+		if( typeIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( dtype, NULL, n )
@@ -703,7 +703,7 @@ chk_long:
 
 chk_ulong:
 		'' signed constant?
-		if( symbIsSigned( astGetDataType( n ) ) ) then
+		if( typeIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( dtype, NULL, n )
@@ -815,8 +815,8 @@ function astPtrCheck _
     	'' 4th) same size and class?
     	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
     		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
-    		if( symbGetDataSize( pdtype_np ) = symbGetDataSize( edtype_np ) ) then
-    			if( symbGetDataClass( pdtype_np ) = symbGetDataClass( edtype_np ) ) then
+    		if( typeGetSize( pdtype_np ) = typeGetSize( edtype_np ) ) then
+    			if( typeGetClass( pdtype_np ) = typeGetClass( edtype_np ) ) then
     				return TRUE
     			end if
     		end if
@@ -936,7 +936,7 @@ function astUpdComp2Branch _
 	dtype = astGetDataType( n )
 
 	'' string? invalid..
-	if( symbGetDataClass( dtype ) = FB_DATACLASS_STRING ) then
+	if( typeGetClass( dtype ) = FB_DATACLASS_STRING ) then
 		return NULL
 	end if
 
@@ -1125,7 +1125,7 @@ function astUpdComp2Branch _
 		if( call_dtors = FALSE ) then
 			dim as integer doopt = any
 
-			if( symbGetDataClass( dtype ) = FB_DATACLASS_INTEGER ) then
+			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
 				doopt = irGetOption( IR_OPT_CPU_BOPSETFLAGS )
 
 				if( doopt ) then

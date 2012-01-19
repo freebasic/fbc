@@ -2622,7 +2622,7 @@ private sub _emitVarIniPad _
 	end if
 
 	if( ctx.ini_iswstr ) then
-		bytes \= symbGetDataSize( FB_DATATYPE_WCHAR )
+		bytes \= typeGetSize( FB_DATATYPE_WCHAR )
 	end if
 
 	if( bytes <= 0 ) then

@@ -1492,10 +1492,10 @@ private function hCalcTypesDiff _
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
     arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
 
-	arg_dclass = symbGetDataClass( arg_dtype )
+	arg_dclass = typeGetClass( arg_dtype )
 
 	'' check classes
-	select case as const symbGetDataClass( param_dtype )
+	select case as const typeGetClass( param_dtype )
 	'' integer?
 	case FB_DATACLASS_INTEGER
 
@@ -1523,7 +1523,7 @@ private function hCalcTypesDiff _
 
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
 				'' enum args can be passed to integer params (as in C++)
-				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
+				arg_dtype = typeRemap( arg_dtype, arg_subtype )
 
 			end select
 
@@ -1553,7 +1553,7 @@ private function hCalcTypesDiff _
 					end if
 
 					'' not native pointer width?
-					if( symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE ) then
+					if( typeGetSize( arg_dtype ) <> FB_POINTERSIZE ) then
 						return 0
 					end if
 
@@ -1633,7 +1633,7 @@ private function hCalcTypesDiff _
 			select case arg_dtype
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
 				'' enum args can be passed to fpoint params (as in C++)
-				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
+				arg_dtype = typeRemap( arg_dtype, arg_subtype )
 			end select
 
 			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
@@ -1733,8 +1733,8 @@ private function hCheckOvlParam _
 		'' arg being passed by value?
 		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' invalid type? refuse..
-			if( (symbGetDataClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
-				(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
+				(typeGetSize( arg_dtype ) <> FB_POINTERSIZE) ) then
                	return 0
 			end if
 

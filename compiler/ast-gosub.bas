@@ -201,7 +201,7 @@ function astGosubAddReturn _
 			'' pop return address from the stack.  Uses "POP immed" which will be
 			'' handled specially in emit_x86.bas::_emitPOPI()
 			astAdd( astNewSTACK( AST_OP_POP, _
-				astNewCONSTi( symbGetDataSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
+				astNewCONSTi( typeGetSize( FB_DATATYPE_POINTER ), FB_DATATYPE_INTEGER ) ) )
 
 			'' GOTO label
 			astAdd( astNewBRANCH( AST_OP_JMP, l ) )

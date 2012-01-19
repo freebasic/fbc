@@ -244,13 +244,13 @@ private sub hCONVConstEval64 _
 		'' when expanding to 64bit, we must take care of signedness of source operand
 
 		if( to_dtype = FB_DATATYPE_LONGINT ) then
-			if( symbIsSigned( v->dtype ) ) then
+			if( typeIsSigned( v->dtype ) ) then
 				v->con.val.long = clngint( v->con.val.int )
 			else
 				v->con.val.long = clngint( cuint( v->con.val.int ) )
 			end if
 		else
-			if( symbIsSigned( v->dtype ) ) then
+			if( typeIsSigned( v->dtype ) ) then
 				v->con.val.long = culngint( v->con.val.int )
 			else
 				v->con.val.long = culngint( cuint( v->con.val.int ) )
@@ -374,7 +374,7 @@ function astCheckCONV _
 	ldtype = astGetFullType( l )
 
 	'' string? neither
-	if( symbGetDataClass( ldtype ) = FB_DATACLASS_STRING ) then
+	if( typeGetClass( ldtype ) = FB_DATACLASS_STRING ) then
 		exit function
 	end if
 
@@ -465,7 +465,7 @@ function astNewCONV _
 
 	end select
 
-	ldclass = symbGetDataClass( ldtype )
+	ldclass = typeGetClass( ldtype )
 
 	select case op
 	'' sign conversion?
@@ -537,7 +537,7 @@ function astNewCONV _
 	'' high-level IR? always convert..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 	    '' special case: if it's a float to int, use a builtin function
-	    if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
+	    if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER ) then
         	return rtlMathFTOI( l, to_dtype )
         else			
         	select case typeGetDtAndPtrOnly( to_dtype )
@@ -550,21 +550,21 @@ function astNewCONV _
 	else
 		'' only convert if the classes are different (ie, floating<->integer) or
 		'' if sizes are different (ie, byte<->int)
-		if( ldclass = symbGetDataClass( to_dtype ) ) then
+		if( ldclass = typeGetClass( to_dtype ) ) then
 			select case typeGet( to_dtype )
 			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
 				'' do nothing
 				doconv = FALSE
 			case else
-				if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
 					doconv = FALSE
 				end if
 			End Select
 		end if
 
 		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
-			if (ldclass = FB_DATACLASS_FPOINT) and ( symbGetDataClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
-				if( symbGetDataSize( ldtype ) <> symbGetDataSize( to_dtype ) ) then
+			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
 					doConv = TRUE
 				end if
 			end if

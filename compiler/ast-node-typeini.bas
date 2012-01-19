@@ -874,8 +874,8 @@ private function hExprIsConst _
 		if( astIsOFFSET( expr ) ) then
 
 			'' different types?
-			if( (symbGetDataClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
-				(symbGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
+			if( (typeGetClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
+				(typeGetSize( sdtype ) <> FB_POINTERSIZE) ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if

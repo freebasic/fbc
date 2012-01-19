@@ -492,7 +492,7 @@ function cSymbolType _
 			''		 always use symbGetWstrLen( ) to retrieve the
 			''		 len in characters, not the bytes
 			if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
-				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
+				lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 			end if
 
 		case else
@@ -573,7 +573,7 @@ function cSymbolType _
 					dtype = typeAddrOf( dtype )
 					lgt = FB_POINTERSIZE
 				else
-					lgt = symbGetDataSize( dtype )
+					lgt = typeGetSize( dtype )
 				end if
 			end select
 		end if

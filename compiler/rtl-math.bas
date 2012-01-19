@@ -897,7 +897,7 @@ type_size:
 		'' wstring? multiply by sizeof(wchar) to get the
 		'' number of bytes, not of chars
 		if( dtype = FB_DATATYPE_WCHAR ) then
-			lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
+			lgt *= typeGetSize( FB_DATATYPE_WCHAR )
 		end if
 
 	end if

@@ -265,8 +265,8 @@ function astCheckASSIGN _
 	rdfull = astGetFullType( r )
 	ldtype = typeGet( ldfull )
 	rdtype = typeGet( rdfull )
-	ldclass = symbGetDataClass( ldtype )
-	rdclass = symbGetDataClass( rdtype )
+	ldclass = typeGetClass( ldtype )
+	rdclass = typeGetClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -347,7 +347,7 @@ function astCheckASSIGN _
 		end if
 	else
 		'' check for overflows
-		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
 				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
@@ -383,12 +383,12 @@ function astNewASSIGN _
 
 	ldfull = astGetFullType( l )
 	ldtype = typeGet( ldfull )
-	ldclass = symbGetDataClass( ldtype )
+	ldclass = typeGetClass( ldtype )
 	lsubtype = l->subtype
 
 	rdfull = astGetFullType( r )
 	rdtype = typeGet( rdfull )
-	rdclass = symbGetDataClass( rdtype )
+	rdclass = typeGetClass( rdtype )
 
 	'' 1st) check assign op overloading (unless the types are the same and
 	''      there's no clone function: just do a shallow copy)
@@ -468,7 +468,7 @@ function astNewASSIGN _
 
 	rdfull = astGetFullType( r )
 	rdtype = typeGet( rdfull )
-	rdclass = symbGetDataClass( rdtype )
+	rdclass = typeGetClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -546,7 +546,7 @@ function astNewASSIGN _
             ldfull = symbGetUDTRetType( r->subtype )
             ldtype = typeGet( ldfull )
             lsubtype = NULL
-            ldclass = symbGetDataClass( ldtype )
+            ldclass = typeGetClass( ldtype )
             astSetType( l, ldfull, NULL )
 
             rdfull = ldfull
@@ -635,7 +635,7 @@ function astNewASSIGN _
 		end if
 	else
 		'' check for overflows
-		if( symbGetDataClass( rdtype ) = FB_DATACLASS_FPOINT ) then
+		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
 			if( astIsCONST( r ) ) then
 				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then

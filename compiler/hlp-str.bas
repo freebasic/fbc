@@ -1013,7 +1013,7 @@ function hEscapeW _
 
 	'' convert the internal escape sequences to GAS format
 
-	wcharlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wcharlen = typeGetSize( FB_DATATYPE_WCHAR )
 
 	'' up to (4 * wcharlen) ascii chars can be used per unicode char
 	'' (up to one '\ooo' per byte of wchar)
@@ -1118,7 +1118,7 @@ function hEscapeUCN _
 
 	'' convert the internal escape sequences to GCC format
 
-	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
+	wstrlen = typeGetSize( FB_DATATYPE_WCHAR )
 	var u_char = iif( wstrlen = len( FB_INTEGERSIZE ), asc( "U" ), asc( "u" ) )
 
 	'' up to 6 ascii chars can be used p/ unicode char (\uxxxx) -- or \Uxxxxxxxx
@@ -1368,7 +1368,7 @@ function hGetWstrNull( ) as zstring ptr
     if( isset = FALSE ) then
     	isset = TRUE
     	nullseq = ""
-    	for i = 1 to symbGetDataSize( FB_DATATYPE_WCHAR )
+    	for i = 1 to typeGetSize( FB_DATATYPE_WCHAR )
     		nullseq += RSLASH + "0"
     	next
 	end if
