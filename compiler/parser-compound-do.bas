@@ -13,7 +13,7 @@
 ''
 sub cDoStmtBegin()
     dim as ASTNODE ptr expr = any
-	dim as integer iswhile = any, isuntil = any, isinverse = any
+	dim as integer iswhile = any, isuntil = any
     dim as FBSYMBOL ptr il = any, el = any, cl = any
     dim as FB_CMPSTMTSTK ptr stk = any
 
@@ -50,13 +50,7 @@ sub cDoStmtBegin()
 		end if
 
 		'' branch
-		if( iswhile ) then
-			isinverse = FALSE
-		else
-			isinverse = TRUE
-		end if
-
-		expr = astUpdComp2Branch( expr, el, isinverse )
+		expr = astUpdComp2Branch( expr, el, (not iswhile) )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
@@ -85,7 +79,7 @@ end sub
 ''
 function cDoStmtEnd as integer
     dim as ASTNODE ptr expr = any
-	dim as integer iswhile = any, isuntil = any, isinverse = any
+	dim as integer iswhile = any, isuntil = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
@@ -136,13 +130,7 @@ function cDoStmtEnd as integer
 		end if
 
 		'' branch
-		if( iswhile ) then
-			isinverse = TRUE
-		else
-			isinverse = FALSE
-		end if
-
-		expr = astUpdComp2Branch( expr, stk->do.inilabel, isinverse )
+		expr = astUpdComp2Branch( expr, stk->do.inilabel, iswhile )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
