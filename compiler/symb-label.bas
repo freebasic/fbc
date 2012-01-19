@@ -146,60 +146,26 @@ sub symbDelLabel _
 
 end sub
 
-'':::::
 function symbCheckLabels _
 	( _
+		byval symtbhead as FBSYMBOL ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr s = any
-    dim as integer cnt = any
+	dim as integer count = 0
 
-	cnt = 0
+	'' Check for any undeclared labels
+	dim as FBSYMBOL ptr s = symtbhead
+	while (s)
+		if (s->class = FB_SYMBCLASS_LABEL) then
+			if (s->lbl.declared = FALSE) then
+				if (symbGetName(s)) then
+					errReportEx(FB_ERRMSG_UNDEFINEDLABEL, *symbGetName(s), -1)
+					count += 1
+				end if
+			end if
+		end if
+		s = s->next
+	wend
 
-    s = symbGetGlobalTb( ).head
-    do while( s <> NULL )
-    	if( s->class = FB_SYMBCLASS_LABEL ) then
-    		if( s->lbl.declared = FALSE ) then
-    			if( symbGetName( s ) <> NULL ) then
-    				errReportEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetName( s ), -1 )
-    				cnt += 1
-    			end if
-    		end if
-    	end if
-
-    	s = s->next
-    loop
-
-	function = cnt
-
+	return count
 end function
-
-'':::::
-function symbCheckLocalLabels _
-	( _
-	) as integer
-
-    dim as FBSYMBOL ptr s = any
-    dim as integer cnt = any
-
-    cnt = 0
-
-    s = parser.currproc->proc.symtb.head
-    do while( s <> NULL )
-
-    	if( s->class = FB_SYMBCLASS_LABEL ) then
-    		if( s->lbl.declared = FALSE ) then
-    			if( symbGetName( s ) <> NULL ) then
-    				errReportEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetName( s ), -1 )
-    				cnt += 1
-    			end if
-    		end if
-    	end if
-
-    	s = s->next
-    loop
-
-	function = cnt
-
-end function
-

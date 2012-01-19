@@ -637,8 +637,8 @@ function astProcEnd _
    	''
    	astAdd( astNewLABEL( n->block.exitlabel ) )
 
-	'' check undefined local labels
-	res = (symbCheckLocalLabels( ) = 0)
+	'' Check for any undefined labels (labels can be forward references)
+	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res = TRUE ) then
 		'' update proc's breaks list, adding calls to destructors when needed

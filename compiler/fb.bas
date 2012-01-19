@@ -740,7 +740,7 @@ sub fbCompile _
 
 	'' check if any label undefined was used
 	if (fbShouldContinue()) then
-		symbCheckLabels( )
+		symbCheckLabels(symbGetGlobalTbHead())
 	end if
 end sub
 

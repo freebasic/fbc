@@ -1457,12 +1457,7 @@ declare function symbCalcArrayDiff _
 
 declare function symbCheckLabels _
 	( _
-		_
-	) as integer
-
-declare function symbCheckLocalLabels _
-	( _
-		_
+		byval symtbhead as FBSYMBOL ptr _
 	) as integer
 
 declare function symbCheckBitField _
