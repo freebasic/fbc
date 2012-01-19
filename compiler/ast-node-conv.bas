@@ -522,16 +522,11 @@ function astNewCONV _
 			end if
 
 		case else
-			'' byte's, short's, int's and enum's
+			'' bytes/shorts/integers/enum
 			hCONVConstEvalInt( to_dtype, l )
 		end select
 
-		if( to_dtype <> FB_DATATYPE_ENUM ) then
-			l->class = AST_NODECLASS_CONST
-		else
-			l->class = AST_NODECLASS_ENUM
-		end if
-
+		l->class = AST_NODECLASS_CONST
 		astGetFullType( l ) = to_dtype
 		l->subtype = to_subtype
 		return l

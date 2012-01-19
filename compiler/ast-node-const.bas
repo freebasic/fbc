@@ -66,8 +66,6 @@ function astNewCONSTi _
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
 
-	n->defined = TRUE
-
 end function
 
 '':::::
@@ -84,7 +82,6 @@ function astNewCONSTf _
 	function = n
 
 	n->con.val.float = value
-	n->defined = TRUE
 
 end function
 
@@ -102,7 +99,6 @@ function astNewCONSTl _
 	function = n
 
 	n->con.val.long  = value
-	n->defined = TRUE
 
 end function
 
@@ -157,8 +153,6 @@ function astNewCONST _
 			n->con.val.int = 0
 		end if
 	end select
-
-	n->defined = TRUE
 
 end function
 
@@ -219,8 +213,8 @@ function astLoadCONST _
 				errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 			end if
 
-		''
 		case else
+			'' bytes/shorts/integers/enums
 			return irAllocVRIMM( dtype, astGetSubtype( n ), n->con.val.int )
 		end select
 	end if

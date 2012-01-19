@@ -29,7 +29,6 @@ enum AST_NODECLASS
 	AST_NODECLASS_VAR
 	AST_NODECLASS_IDX
 	AST_NODECLASS_FIELD
-	AST_NODECLASS_ENUM
 	AST_NODECLASS_DEREF
 	AST_NODECLASS_LABEL
 	AST_NODECLASS_ARG
@@ -233,8 +232,6 @@ type ASTNODE
 
 	dtype			as integer
 	subtype			as FBSYMBOL ptr
-
-	defined 		as integer						'' only true for constants
 
 	sym				as FBSYMBOL ptr					'' attached symbol
 
@@ -723,12 +720,6 @@ declare function astNewSTACK _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function astNewENUM _
-	( _
-		byval value as integer, _
-		byval enum as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
 declare function astNewLABEL _
@@ -1335,7 +1326,6 @@ declare function hTruncateInt _
 	    n->class            = class_           :_
 	    astGetFullType( n ) = dtype            :_
 	    n->subtype          = subtype          :_
-	    n->defined          = FALSE            :_
 	    n->l                = NULL             :_
 	    n->r                = NULL             :_
 	    n->sym              = NULL             :_
@@ -1355,7 +1345,7 @@ declare function hTruncateInt _
 
 #define astGetNext( n ) n->next
 
-#define astIsCONST(n) n->defined
+#define astIsCONST(n) (n->class = AST_NODECLASS_CONST)
 
 #define astIsVAR(n) (n->class = AST_NODECLASS_VAR)
 

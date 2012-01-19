@@ -135,11 +135,6 @@ declare function astLoadSTACK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astLoadENUM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
 declare function astLoadLABEL _
 	( _
 		byval n as ASTNODE ptr _
@@ -242,7 +237,6 @@ declare sub astDelCALL _
 		( @astLoadVAR           , TRUE  ), _    '' AST_NODECLASS_VAR
 		( @astLoadIDX           , TRUE  ), _    '' AST_NODECLASS_IDX
 		( @astLoadFIELD         , TRUE  ), _    '' AST_NODECLASS_FIELD
-		( @astLoadENUM          , FALSE ), _    '' AST_NODECLASS_ENUM
 		( @astLoadDEREF         , TRUE  ), _    '' AST_NODECLASS_DEREF
 		( @astLoadLABEL         , FALSE ), _    '' AST_NODECLASS_LABEL
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_ARG

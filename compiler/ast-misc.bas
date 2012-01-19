@@ -149,15 +149,11 @@ function astIsTreeEqual _
   	    	end if
 
 		case else
+			'' bytes/shorts/integers/enums
 			if( l->con.val.int <> r->con.val.int ) then
 				exit function
 			end if
 		end select
-
-	case AST_NODECLASS_ENUM
-		if( l->con.val.int <> r->con.val.int ) then
-			exit function
-		end if
 
 	case AST_NODECLASS_DEREF
 		if( l->ptr.ofs <> r->ptr.ofs ) then
@@ -779,24 +775,14 @@ function astPtrCheck _
 
 	edtype = astGetFullType( expr )
 
-	select case astGetClass( expr )
-	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
-    	'' expr not a pointer?
-    	if( typeIsPtr( edtype ) = FALSE ) then
-    		'' not NULL?
-    		if( astGetValInt( expr ) <> NULL ) then
-    			exit function
-    		else
-    			return TRUE
-    		end if
-    	end if
-
-	case else
-    	'' expr not a pointer?
-    	if( typeIsPtr( edtype ) = FALSE ) then
-    		exit function
-    	end if
-	end select
+	'' expr not a pointer?
+	if (typeIsPtr(edtype) = FALSE) then
+		'' Only ok if it's a 0 constant
+		if (astIsCONST(expr) = FALSE) then
+			exit function
+		end if
+		return (astGetValInt(expr) = 0)
+	end if
 
 	'' different constant masks?
 	if( strictcheck ) then
