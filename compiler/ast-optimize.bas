@@ -2352,7 +2352,6 @@ function astOptimizeTree _
 	end if
 
 	'' calls must be done in the order below
-	ast.isopt = TRUE
 
 	/'
 	if( irGetOption( IR_OPT_REMCASTING ) ) then
@@ -2393,8 +2392,6 @@ function astOptimizeTree _
 	if( env.clopt.fpmode = FB_FPMODE_FAST ) then
 		n = hOptReciprocal( n )
 	end if
-
-	ast.isopt = FALSE
 
 	function = n
 

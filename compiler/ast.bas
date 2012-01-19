@@ -987,7 +987,6 @@ sub astInit static
 
     ''
     ast.doemit = TRUE
-    ast.isopt = FALSE
     ast.typeinicnt = 0
     ast.currblock = NULL
 
@@ -1183,21 +1182,6 @@ sub astDelNode _
 	listDelNode( @ast.astTB, n )
 
 end sub
-
-'':::::
-function astIsADDR _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer static
-
-	select case n->class
-	case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-		return TRUE
-	case else
-		return FALSE
-	end select
-
-end function
 
 '':::::
 function astGetInverseLogOp _

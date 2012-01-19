@@ -313,7 +313,6 @@ type ASTCTX
 	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
 
 	doemit			as integer
-	isopt			as integer
 
 	typeinicnt		as integer
 
@@ -341,13 +340,6 @@ type AST_LOADCB as function _
 	( _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
-
-type AST_SETTYPECB as sub _
-	( _
-		byval n as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	)
 
 type AST_CLASSINFO
 	loadcb			as AST_LOADCB
@@ -393,11 +385,6 @@ declare function astIsTreeEqual _
 	( _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr _
-	) as integer
-
-declare function astIsADDR _
-	( _
-		byval n as ASTNODE ptr _
 	) as integer
 
 declare sub astCONST2FBValue _
