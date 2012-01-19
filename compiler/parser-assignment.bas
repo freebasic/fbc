@@ -347,98 +347,80 @@ function cOperator _
 
 end function
 
-private sub hDoAssignment _
-	( _
-		byval op as integer, _
-		byval lhs as ASTNODE ptr, _
-		byval rhs as ASTNODE ptr _
-	)
-
-	'' const?
-	if( typeIsConst( astGetFullType( lhs ) ) ) then
-		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-		return
-	end if
-
-	'' BOP?
-	if( op <> INVALID ) then
-		'' do lvalue op= expr
-		lhs = astNewSelfBOP( op, lhs, rhs, NULL, AST_OPOPT_LPTRARITH )
-
-		if( lhs = NULL ) then
-			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-		else
-			astAdd( lhs )
-		end if
-	else
-		'' do lvalue = expr
-		lhs = astNewASSIGN( lhs, rhs )
-
-		if( lhs = NULL ) then
-			errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
-		else
-			astAdd( lhs )
-		end if
-	end if
-end sub
-
-sub cAssignment(byval assgexpr as ASTNODE ptr)
-	dim as ASTNODE ptr expr = any
-	dim as integer op = any, dtype = any
-
+sub cAssignment(byval l as ASTNODE ptr)
 	'' constant?
-	dim as FBSYMBOL ptr sym = astGetSymbol( assgexpr )
-	if( sym <> NULL ) then
-		if( symbIsConstant( sym ) ) then
+	if (l->sym) then
+		if( symbIsConstant(l->sym) ) then
 			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 		end if
 	else
 		'' type variable?
-		if( astIsConst( assgexpr ) ) then
+		if( astIsConst( l ) ) then
 			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 		end if
 	end if
 
+	'' const?
+	if( typeIsConst( astGetFullType( l ) ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+	end if
+
 	'' '='?
-    op = INVALID
-    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	'' BOP?
-    	op = cOperator( FB_OPEROPTS_NONE )
+	dim as integer op = INVALID
+	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		'' BOP?
+		op = cOperator( FB_OPEROPTS_NONE )
 
 		'' '='?
-    	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+		if( lexGetToken( ) <> FB_TK_ASSIGN ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			'' error recovery: skip stmt
 			hSkipStmt( )
 			return
-    	end if
+		end if
 
-    	lexSkipToken( )
+		'' get the self version
+		op = astGetOpSelfVer( op )
+	end if
 
-    	'' get the self version
-    	op = astGetOpSelfVer( op )
-	else
-    	lexSkipToken( )
-    end if
+	'' '='
+	lexSkipToken( )
 
-    '' set the context symbol to allow taking the address of overloaded
-    '' procs and also to allow anonymous UDT's
-    parser.ctxsym    = astGetSubType( assgexpr )
-    parser.ctx_dtype = astGetDataType( assgexpr )
+	'' set the context symbol to allow taking the address of overloaded
+	'' procs and also to allow anonymous UDT's
+	parser.ctxsym    = astGetSubType( l )
+	parser.ctx_dtype = astGetDataType( l )
 
-    '' Expression
-    expr = cExpression( )
-    if( expr = NULL ) then
+	'' Expression
+	dim as ASTNODE ptr r = cExpression( )
+	if( r = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: skip until next stmt
 		hSkipStmt( )
 		return
-    end if
+	end if
 
-    parser.ctxsym    = NULL
-    parser.ctx_dtype = FB_DATATYPE_INVALID
+	parser.ctxsym    = NULL
+	parser.ctx_dtype = FB_DATATYPE_INVALID
 
-	hDoAssignment( op, assgexpr, expr )
+	'' BOP?
+	if( op <> INVALID ) then
+		'' l op= r
+		l = astNewSelfBOP( op, l, r, NULL, AST_OPOPT_LPTRARITH )
+		if (l) then
+			astAdd(l)
+		else
+			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		end if
+	else
+		'' l = r
+		l = astNewASSIGN( l, r )
+		if (l) then
+			astAdd(l)
+		else
+			errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
+		end if
+	end if
 end sub
 
 '':::::
