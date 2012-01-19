@@ -193,7 +193,6 @@ function cProcCall _
 	) as ASTNODE ptr
 
 	dim as integer dtype = any, is_propset = FALSE
-	dim as FBSYMBOL ptr reslabel = any
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
@@ -368,14 +367,7 @@ function cProcCall _
 	sym = astGetSymbol( procexpr )
 	if( sym <> NULL ) then
 		if( symbGetIsThrowable( sym ) ) then
-    		if( env.clopt.resumeerr ) then
-				reslabel = symbAddLabel( NULL )
-    			astAdd( astNewLABEL( reslabel ) )
-    		else
-    			reslabel = NULL
-    		end if
-
-			rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
+			rtlErrorCheck( procexpr )
 			exit function
 		end if
 	end if

@@ -2135,7 +2135,6 @@ function rtlGfxDrawString _
 
     dim as ASTNODE ptr proc = any, putter = any
     dim as integer targetmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2227,15 +2226,7 @@ function rtlGfxDrawString _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2504,7 +2495,6 @@ function rtlGfxPut _
 
     dim as ASTNODE ptr proc = any
     dim as integer targetmode = any, argmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2604,15 +2594,7 @@ function rtlGfxPut _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2633,7 +2615,6 @@ function rtlGfxGet _
 
     dim as ASTNODE ptr proc = any, descexpr = any
     dim as integer targetmode = any, argmode = any
-    dim as FBSYMBOL ptr reslabel = any
 
     function = FALSE
 
@@ -2709,15 +2690,7 @@ function rtlGfxGet _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2733,7 +2706,7 @@ function rtlGfxScreenSet _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -2787,15 +2760,7 @@ function rtlGfxScreenSet _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 
@@ -2808,7 +2773,6 @@ function rtlGfxScreenSetQB _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any
 
 	function = FALSE
 
@@ -2835,15 +2799,7 @@ function rtlGfxScreenSetQB _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 

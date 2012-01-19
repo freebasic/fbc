@@ -1318,7 +1318,7 @@ function rtlFileOpen _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
     dim as integer doencoding = any
 
 	function = NULL
@@ -1406,21 +1406,11 @@ function rtlFileOpen _
 		end if
 	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1436,7 +1426,7 @@ function rtlFileOpenShort _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
 
 	function = NULL
 
@@ -1473,21 +1463,11 @@ function rtlFileOpenShort _
 		exit function
 	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1498,7 +1478,6 @@ function rtlFileClose _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any
 
 	function = NULL
 
@@ -1514,21 +1493,11 @@ function rtlFileClose _
 		proc = astNewCALL( PROCLOOKUP( FILECLOSEALL) )
 	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1539,7 +1508,7 @@ function rtlFileSeek _
 	) as integer
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as FBSYMBOL ptr f = any
     dim as integer pos_dtype = any
 
 	function = FALSE
@@ -1574,16 +1543,7 @@ function rtlFileSeek _
  		exit function
  	end if
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-    ''
-    function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+    function = rtlErrorCheck( proc )
 
 end function
 
@@ -1622,7 +1582,7 @@ function rtlFilePut _
 
     dim as ASTNODE ptr proc = any, bytes = any
     dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
 
     function = NULL
 
@@ -1706,21 +1666,11 @@ function rtlFilePut _
 		exit function
 	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1733,7 +1683,7 @@ function rtlFilePutArray _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as FBSYMBOL ptr f = any
     dim as integer o_dtype = any, islarge = any
 
     function = NULL
@@ -1787,21 +1737,11 @@ function rtlFilePutArray _
     	exit function
     end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-	    	reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1817,7 +1757,7 @@ function rtlFileGet _
 
     dim as ASTNODE ptr proc = any, bytes = any
     dim as integer dtype = any, o_dtype = any, lgt = any, isstring = any, islarge = any
-    dim as FBSYMBOL ptr f = any, reslabel = any
+    dim as FBSYMBOL ptr f = any
 
     function = NULL
 
@@ -1923,21 +1863,11 @@ function rtlFileGet _
  		end if
 	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -1951,7 +1881,7 @@ function rtlFileGetArray _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any, f = any
+    dim as FBSYMBOL ptr f = any
     dim as integer o_dtype = any, islarge = any
 
 	function = NULL
@@ -2013,21 +1943,11 @@ function rtlFileGetArray _
     	exit function
     end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -2444,7 +2364,6 @@ function rtlFileRename _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr reslabel = any
 
 	function = NULL
 
@@ -2460,21 +2379,11 @@ function rtlFileRename _
  		exit function
  	end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::
@@ -2502,22 +2411,9 @@ function rtlWidthFile _
     	exit function
     end if
 
-    if( isfunc = FALSE ) then
-    	dim reslabel as FBSYMBOL ptr
-
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
-
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
-
-

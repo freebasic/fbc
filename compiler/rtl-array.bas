@@ -337,7 +337,7 @@ function rtlArrayRedim _
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, reslabel = any, ctor = any, dtor = any
+    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any
     dim as integer dtype = any
 
     function = FALSE
@@ -457,16 +457,7 @@ function rtlArrayRedim _
     	end if
 	next
 
-    ''
-    if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( NULL )
-    	astAdd( astNewLABEL( reslabel ) )
-    else
-    	reslabel = NULL
-    end if
-
-    ''
-	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
+	function = rtlErrorCheck( proc )
 
 end function
 

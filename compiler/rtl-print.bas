@@ -1506,22 +1506,11 @@ function rtlWidthDev _
     	exit function
     end if
 
-    ''
-    if( isfunc = FALSE ) then
-    	dim reslabel as FBSYMBOL ptr
-
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
+	if( isfunc = FALSE ) then
+		function = iif( rtlErrorCheck( proc ), proc, NULL )
+	else
+		function = proc
+	end if
 end function
 
 '':::::

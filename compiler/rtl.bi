@@ -1505,12 +1505,7 @@ declare function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-declare function rtlErrorCheck _
-	( _
-		byval resexpr as ASTNODE ptr, _
-		byval reslabel as FBSYMBOL ptr, _
-		byval linenum as integer _
-	) as integer
+declare function rtlErrorCheck(byval resexpr as ASTNODE ptr) as integer
 
 declare sub rtlErrorThrow _
 	( _
