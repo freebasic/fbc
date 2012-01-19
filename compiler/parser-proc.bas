@@ -637,8 +637,6 @@ function cProcHeader _
     	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
     	if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-			'' error recovery: create a fake symbol
-			return CREATEFAKEID( proc )
     	end if
 
     	return proc
@@ -1345,7 +1343,7 @@ function cOperatorHeader _
 	if( op = AST_OP_ASSIGN ) then
 		if( hCheckIsSelfCloneByval( parent, proc, ( (options and FB_PROCOPT_ISPROTO) <> 0 ) ) ) then
 			errReport( FB_ERRMSG_CLONECANTTAKESELFBYVAL, TRUE )
-			return CREATEFAKEID( proc )
+			exit function
 		end if
 	end if
 
@@ -1355,7 +1353,6 @@ function cOperatorHeader _
 		proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
 		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-			proc = CREATEFAKEID( proc )
 		end if
 		return proc
 	end if
@@ -1376,7 +1373,7 @@ function cOperatorHeader _
 		if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 			'' error recovery: skip the whole compound stmt
 			hSkipCompound( FB_TK_OPERATOR )
-			return CREATEFAKEID( proc )
+			exit function
 		end if
 
 		head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
@@ -1406,7 +1403,7 @@ function cOperatorHeader _
 			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
 				hSkipCompound( FB_TK_OPERATOR )
-				return CREATEFAKEID( proc )
+				exit function
 			end if
 
 			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
@@ -1432,7 +1429,7 @@ function cOperatorHeader _
 			if( hCheckOpOvlParams( parent, op, proc, options ) = FALSE ) then
 				'' error recovery: skip the whole compound stmt
 				hSkipCompound( FB_TK_OPERATOR )
-				return CREATEFAKEID( proc )
+				exit function
 			end if
 
 			'' there's already a prototype for this operator, check for
