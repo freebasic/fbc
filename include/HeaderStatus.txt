@@ -4,6 +4,7 @@ Allegro 	allegro.bi, allegro/ 	4.0.3 + 4.1 changes
 GNU Aspell 	aspell.bi 	0.50
 BASS 	bass.bi 	2.4
 BASSMOD 	bassmod.bi 	2.0
+libbfd 	bfd.bi, bfd/ 	2.16, 2.17, 2.18
 big_int 	big_int/ 	from 2005
 libbzip2 	bzlib.bi 	1.0.6
 caca 	caca.bi 	0.99 beta17
