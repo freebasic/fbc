@@ -307,20 +307,11 @@ sub rtlArrayModEnd( )
 
 end sub
 
-'':::::
-private function hBuildProcPtr _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
+private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	if( proc = NULL ) then
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
-
-	function = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc ) )
-
-	symbSetIsCalled( proc )
-
+	function = astBuildProcAddrof(proc)
 end function
 
 '':::::

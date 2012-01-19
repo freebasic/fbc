@@ -1635,8 +1635,7 @@ private function hGetPutter _
 		byval mode as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any
 
 	select case as const mode
 
@@ -1672,13 +1671,7 @@ private function hGetPutter _
 
 	end select
 
-	''
-	n = astNewADDROF( astNewVAR( proc, 0, FB_DATATYPE_FUNCTION ) )
-
-	symbSetIsCalled( proc )
-
-
-	function = n
+	function = astBuildProcAddrof(proc)
 
 end function
 

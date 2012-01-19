@@ -1148,10 +1148,7 @@ declare function astBuildTypeIniCtorList _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function astBuildProcAddrof _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 
 declare function astBuildProcBegin _
 	( _
