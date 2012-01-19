@@ -344,10 +344,7 @@ type EMIT_VTBL
 		byval lgt as integer _
 	) as integer
 
-	procAllocStaticVars as function _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
+	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
 
 	scopeBegin as sub _
 	( _

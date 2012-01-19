@@ -152,10 +152,7 @@ type IR_VTBL
 		byval s as FBSYMBOL ptr _
 	)
 
-	procAllocStaticVars as function _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
+	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
 
 	emit as sub _
 	( _

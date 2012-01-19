@@ -1215,17 +1215,9 @@ private sub _scopeEnd _
 
 end sub
 
-'':::::
-private function _procAllocStaticVars _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
-
+private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
 	/' do nothing '/
-
-	function = 0
-
-end function
+end sub
 
 '':::::
 private function _makeTmpStr _

@@ -421,15 +421,9 @@ private sub _scopeEnd _
 
 end sub
 
-'':::::
-private function _procAllocStaticVars _
-	( _
-		byval head_sym as FBSYMBOL ptr _
-	) as integer
-
-	function = emitProcAllocStaticVars( head_sym )
-
-end function
+private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
+	emitProcAllocStaticVars(head_sym)
+end sub
 
 '':::::
 private function _makeTmpStr _

@@ -6793,11 +6793,7 @@ private function _isKeyword _
 		hInitKeywordsTB( )
 	end if
 
-	if( hashLookup( @emit.keyhash, text ) <> NULL ) then
-		function = TRUE
-	else
-		function = FALSE
-	end if
+	function = (hashLookup( @emit.keyhash, text ) <> NULL)
 
 end function
 
@@ -6825,14 +6821,7 @@ private sub _procEnd _
 
 end sub
 
-'':::::
-private function _procAllocStaticVars _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-    function = FALSE
-
+private sub _procAllocStaticVars(byval s as FBSYMBOL ptr)
     do while( s <> NULL )
 
     	select case s->class
@@ -6850,10 +6839,7 @@ private function _procAllocStaticVars _
 
     	s = s->next
     loop
-
-    function = TRUE
-
-end function
+end sub
 
 '':::::
 private function _procAllocLocal _
