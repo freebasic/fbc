@@ -292,8 +292,7 @@ function astIsSymbolOnTree _
 
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
-			if( (s->attrib and _
-				(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) > 0 ) then
+			if (symbIsParamBydescOrByref(s)) then
 				return TRUE
 			end if
 		end if

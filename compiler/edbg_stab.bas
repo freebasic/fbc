@@ -491,30 +491,17 @@ sub edbgProcEmitBegin _
 
 end sub
 
-'':::::
-private sub hDeclArgs _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr s
-
-	s = symbGetProcSymbTbHead( proc )
-	do while( s <> NULL )
-
-    	if( symbIsVar( s ) ) then
-			'' an argument?
-    		if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    			  				FB_SYMBATTRIB_PARAMBYVAL or _
-    			  				FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
-
-				edbgEmitProcArg( s )
+private sub hDeclArgs(byval proc as FBSYMBOL ptr)
+	dim as FBSYMBOL ptr s = symbGetProcSymbTbHead( proc )
+	while (s)
+		if (symbIsVar(s)) then
+			'' Parameter?
+			if (symbIsParam(s)) then
+				edbgEmitProcArg(s)
 			end if
 		end if
-
 		s = s->next
-	loop
-
+	wend
 end sub
 
 '':::::

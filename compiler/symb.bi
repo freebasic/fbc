@@ -2395,6 +2395,8 @@ declare function symbGetUDTBaseSymbol _
 
 #define symbIsParam(s) ((s->attrib and (FB_SYMBATTRIB_PARAMBYREF or FB_SYMBATTRIB_PARAMBYVAL or FB_SYMBATTRIB_PARAMBYDESC)) <> 0)
 
+#define symbIsParamBydescOrByref(s) (((s)->attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) <> 0)
+
 #define symbIsLocal(s) ((s->attrib and FB_SYMBATTRIB_LOCAL) <> 0)
 
 #define symbIsPublic(s) ((s->attrib and FB_SYMBATTRIB_PUBLIC) <> 0)

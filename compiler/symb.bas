@@ -1591,7 +1591,7 @@ function symbIsArray _
 
 	select case sym->class
 	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
-		if( (sym->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 ) then
+		if (symbGetIsDynamic(sym)) then
 			return TRUE
 		else
 			return symbGetArrayDimensions( sym ) <> 0

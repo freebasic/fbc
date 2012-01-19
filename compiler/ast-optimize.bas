@@ -1955,11 +1955,8 @@ private function hIsMultStrConcat _
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
-				if( (sym->attrib and _
-					(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
-
+				if (symbIsParamBydescOrByref(sym) = FALSE) then
 					function = (astIsSymbolOnTree( sym, r ) = FALSE)
-
 				end if
 			end if
 
@@ -2003,9 +2000,7 @@ private function hOptStrAssignment _
 			if( astIsTreeEqual( l, r->l ) ) then
 				sym = astGetSymbol( l )
 				if( sym <> NULL ) then
-					if( (sym->attrib and _
-						(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
-
+					if (symbIsParamBydescOrByref(sym) = FALSE) then
 						optimize = astIsSymbolOnTree( sym, r->r ) = FALSE
 					end if
 				end if

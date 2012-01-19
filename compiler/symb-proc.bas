@@ -2533,26 +2533,19 @@ function symbProcAllocLocalVars _
     		if( (s->attrib and mask) = 0 ) then
 
 				'' not a parameter?
-    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    						   	    FB_SYMBATTRIB_PARAMBYVAL or _
-    			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
-
+				if( symbIsParam(s) = FALSE ) then
 					lgt = s->lgt * symbGetArrayElements( s )
 					s->ofs = irProcAllocLocal( parser.currproc, s, lgt )
-
 				'' parameter..
 				else
 					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
 						   	   s->lgt, _
 						   	   FB_POINTERSIZE )
 					s->ofs = irProcAllocArg( parser.currproc, s, lgt )
-
 				end if
 
 				symbSetVarIsAllocated( s )
-
 			end if
-
 		end if
 
     	s = s->next
