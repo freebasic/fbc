@@ -482,58 +482,20 @@ sub astReplaceSymbolOnCALL _
 end sub
 
 '':::::
-function astGetCALLResUDT _
-	( _
-		byval expr as ASTNODE ptr,  _
-		byval onlyvars as integer _
-	) as ASTNODE ptr
-
+function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	var subtype = astGetSubtype( expr )
 
-	'' returning an UDT in registers?
-	if( symbIsUDTReturnedInRegs( subtype ) ) then
-
+	'' returning an UDT in registers or as-is, i.e. not as a hidden arg?
+	'' (the latter is an exception made for the C emitter)
+	if( symbIsUDTReturnedInRegs( subtype ) or _
+	    (typeIsPtr( symbGetUDTRetType( subtype ) ) = FALSE) ) then
 		'' move to a temp var
 		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-				  	  	  	  					  subtype, _
-				  	  	  	  					  FALSE, _
-				  	  	  	  					  FALSE )
-
-		expr = astNewASSIGN( astBuildVarField( tmp ), _
-				  	  	 	 expr, _
-				  	  	 	 AST_OPOPT_DONTCHKOPOVL )
-
-    	function = astNewLINK( astBuildVarField( tmp ), expr )
-
-    '' not in res..
-    else
-    	'' returning result in a hidden arg?
-    	if( typeIsPtr( symbGetUDTRetType( subtype ) ) ) then
-    		function = astBuildCallHiddenResVar( expr )
-
-    	'' it's the whole udt (high-level emitter)
-    	else
-    		'' can the result node be a call?
-    		if( onlyvars = FALSE ) then
-    			function = expr
-
-    		'' make a copy to a temp var..
-    		else
-				dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-				  	  	  	  					  		  subtype, _
-				  	  	  	  					  		  FALSE, _
-				  	  	  	  					  		  FALSE )
-
-				expr = astNewASSIGN( astBuildVarField( tmp ), _
-				  	  	 	 		 expr, _
-				  	  	 	 		 AST_OPOPT_DONTCHKOPOVL )
-
-    			function = astNewLINK( astBuildVarField( tmp ), expr )
-    		end if
-    	end if
-    end if
-
+		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
+		function = astNewLINK( astBuildVarField( tmp ), expr )
+	else
+		'' returning result in a hidden arg
+		function = astBuildCallHiddenResVar( expr )
+	end if
 end function
-
-

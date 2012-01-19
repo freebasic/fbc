@@ -1231,7 +1231,7 @@ function symbAddProcResult _
 	proc->proc.ext->res = res
 
 	'' clear up the result
-	astAdd( astNewDECL( FB_SYMBCLASS_VAR, res, NULL ) )
+	astAdd( astNewDECL( res, NULL ) )
 
 	symbSetIsDeclared( res )
 

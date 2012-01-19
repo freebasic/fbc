@@ -990,7 +990,7 @@ private function hCallStaticCtor _
 					     FB_SYMBATTRIB_STATIC )
 
 	tree = astNewLINK( tree, _
-					   astNewDECL( FB_SYMBCLASS_VAR, flag, NULL ) )
+					   astNewDECL( flag, NULL ) )
 
 	'' if flag = 0 then
 	label = symbAddLabel( NULL )
@@ -1513,15 +1513,12 @@ function hVarDeclEx _
                 '' to the default constructor. (Other non-UDT temporary FOR variables
                 '' and also UDTs without default constructor will avoid initialization
                 '' due to the symbSetDontInit() above)
-				var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree, is_fordecl )
+				var_decl = astNewDECL( sym, initree, is_fordecl )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					var_decl = astNewLINK( var_decl, _
-										   astNewDECL( FB_SYMBCLASS_VAR, _
-									  	   			   desc, _
-									  	   			   symbGetTypeIniTree( desc ) ) )
+					var_decl = astNewLINK( var_decl, astNewDECL( desc, symbGetTypeIniTree( desc ) ) )
 				end if
 
     		end if
@@ -1623,7 +1620,7 @@ function hVarDeclEx _
 								astAdd( astBuildVarDtorCall( sym, TRUE ) )
 							end if
 
-							assign_vardecl = astNewDECL( FB_SYMBCLASS_VAR, sym, assign_initree )
+							assign_vardecl = astNewDECL( sym, assign_initree )
 							assign_vardecl = hFlushDecl( assign_vardecl )
 
 							'' use the initializer as an assignment
@@ -2163,7 +2160,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			dim as FBSYMBOL ptr desc = NULL
 			dim as ASTNODE ptr var_decl = NULL
 
-			var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
+			var_decl = astNewDECL( sym, initree )
 
 			'' set as declared
 			symbSetIsDeclared( sym )

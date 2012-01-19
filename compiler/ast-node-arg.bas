@@ -54,9 +54,7 @@ private function hAllocTmpArrayDesc _
 
 
 	'' declare
-	tree = astNewDECL( FB_SYMBCLASS_VAR, _
-					   desc, _
-					   symbGetTypeIniTree( desc ) )
+	tree = astNewDECL( desc, symbGetTypeIniTree( desc ) )
 
 	'' flush (see symbAddArrayDesc(), the desc can't never be static)
 	tree = astNewLINK( tree, _
@@ -291,12 +289,12 @@ private function hCheckStringArg _
 end function
 
 '':::::
-private function hStrArgToStrPtrParam _
+private sub hStrArgToStrPtrParam _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval checkrtl as integer _
-	) as integer
+	)
 
 	dim as ASTNODE ptr arg = n->l
 	dim as integer arg_dtype = astGetDatatype( arg )
@@ -304,7 +302,7 @@ private function hStrArgToStrPtrParam _
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
 		if( parent->call.isrtl ) then
-			return TRUE
+			return
 		end if
 	end if
 
@@ -357,14 +355,10 @@ private function hStrArgToStrPtrParam _
 			end if
 
 			astGetFullType( n ) = astGetFullType( astGetLeft( n ) )
-
 		end select
-
 	end if
+end sub
 
-	function = TRUE
-
-end function
 
 '':::::
 #macro hBuildByrefArg( n_, arg_ )
@@ -375,12 +369,12 @@ end function
 #endmacro
 
 '':::::
-private function hCheckByRefArg _
+private sub hCheckByRefArg _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
-	) as integer
+	)
 
     dim as ASTNODE ptr arg = n->l
 
@@ -402,7 +396,7 @@ private function hCheckByRefArg _
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return TRUE
+			return
 
 		'' UDT? do nothing, just take the address of
 		case FB_DATATYPE_STRUCT
@@ -421,10 +415,7 @@ private function hCheckByRefArg _
 
 	'' take the address of
     hBuildByrefArg( n, arg )
-
-	function = TRUE
-
-end function
+end sub
 
 '':::::
 private function hCheckByDescParam _
@@ -530,13 +521,13 @@ private function hCheckVarargParam _
 	select case as const typeGetClass( arg_dtype )
 	'' var-len string? check..
 	case FB_DATACLASS_STRING
-		return hStrArgToStrPtrParam( parent, n, FALSE )
+		hStrArgToStrPtrParam( parent, n, FALSE )
 
 	case FB_DATACLASS_INTEGER
 		select case arg_dtype
 		'' w|zstring? ditto..
 		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return hStrArgToStrPtrParam( parent, n, FALSE )
+			hStrArgToStrPtrParam( parent, n, FALSE )
 
 		case else
 			'' if < len(integer), convert to int (C ABI)
@@ -565,33 +556,33 @@ private function hCheckVarargParam _
 end function
 
 '':::::
-private function hCheckVoidParam _
+private sub hCheckVoidParam _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval param as FBSYMBOL ptr, _
 		byval n as ASTNODE ptr _
-	) as integer
+	)
 
 	dim as ASTNODE ptr arg = n->l
 	dim as integer arg_dtype = astGetDatatype( arg )
 
 	if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
 		'' check strings passed BYVAL
-		return hStrArgToStrPtrParam( parent, n, FALSE )
+		hStrArgToStrPtrParam( parent, n, FALSE )
+		return
 	end if
 
 	'' another quirk: constants, pass byval even if BYVAL wasn't given
 	if( env.clopt.lang <> FB_LANG_QB ) then
 		if( astIsCONST( arg ) or astIsOFFSET( arg ) ) then
-			return TRUE
+			return
 		end if
 	end if
 
 	'' pass BYREF, check if a temp param isn't needed
 	'' use the arg type, not the param one (as it's VOID)
-	function = hCheckByRefArg( astGetFullType( arg ), arg->subtype, n ) <> NULL
-
-end function
+	hCheckByRefArg( astGetFullType( arg ), arg->subtype, n )
+end sub
 
 '':::::
 private function hCheckStrParam _
@@ -883,9 +874,10 @@ private function hCheckParam _
 
 	case FB_PARAMMODE_BYREF
 		'' as any?
-    	if( param_dtype = FB_DATATYPE_VOID ) then
-    		return hCheckVoidParam( parent, param, n )
-    	end if
+		if( param_dtype = FB_DATATYPE_VOID ) then
+			hCheckVoidParam( parent, param, n )
+			return TRUE
+		end if
 
 		'' passing a BYVAL ptr to an BYREF arg?
 		if( n->arg.mode = FB_PARAMMODE_BYVAL ) then
@@ -1084,7 +1076,7 @@ private function hCheckParam _
 
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-		return hCheckByRefArg( symbGetFullType( param ), symbGetSubtype( param ), n )
+		hCheckByRefArg( symbGetFullType( param ), symbGetSubtype( param ), n )
         '' it's an implicit pointer
 	end if
 
@@ -1214,20 +1206,16 @@ function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval mode as integer = INVALID _
+		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr sym = any, param = any
-	dim as integer cnt = any
+	dim as integer cnt = any, dtype = any
 	dim as ASTNODE ptr n = any
 
 	sym = parent->sym
 
-	if( dtype = FB_DATATYPE_INVALID ) then
-		dtype = astGetDataType( expr )
-	end if
+	dtype = astGetDataType( expr )
 
 	'' find the argument (assuming argnum is valid)
 	cnt = parent->call.args
@@ -1251,7 +1239,7 @@ function astReplaceARG _
 	astDelTree( n->l )
 
 	n->l = expr
-	n->arg.mode = mode
+	n->arg.mode = INVALID
 	n->arg.lgt = 0
 
 	if( hCheckParam( parent, param, n ) = FALSE ) then

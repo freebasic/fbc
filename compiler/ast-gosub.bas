@@ -69,7 +69,7 @@ sub astGosubAddInit _
 						 0, dTB(), _
 						 FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
 
-	var_decl = astNewDECL( FB_SYMBCLASS_VAR, sym, NULL )
+	var_decl = astNewDECL( sym, NULL )
 
 	symbSetIsDeclared( sym )
 	

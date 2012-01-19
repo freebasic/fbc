@@ -676,9 +676,7 @@ declare function astReplaceARG _
 	( _
 		byval parent as ASTNODE ptr, _
 		byval argnum as integer, _
-		byval expr as ASTNODE ptr, _
-		byval dtype as integer = FB_DATATYPE_INVALID, _
-		byval mode as integer = INVALID _
+		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewADDROF _
@@ -794,7 +792,6 @@ declare function astNewPTRCHK _
 
 declare function astNewDECL _
 	( _
-		byval symclass as FB_SYMBCLASS, _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
 		byval no_ctorcall as integer = FALSE _
@@ -1261,11 +1258,7 @@ declare function astGetOFFSETChildOfs _
 		byval l as ASTNODE ptr _
 	) as integer
 
-declare function astGetCALLResUDT _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval onlyvars as integer = FALSE _
-	) as ASTNODE ptr
+declare function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 
 declare function astFindLocalSymbol _
 	( _

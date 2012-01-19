@@ -747,7 +747,7 @@ function cAssignmentOrPtrCall _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr, TRUE )
+		expr = astGetCALLResUDT( expr )
 	end if
 
 	dim as FBSYMBOL ptr tmp = NULL

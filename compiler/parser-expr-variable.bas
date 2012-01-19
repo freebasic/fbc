@@ -483,7 +483,7 @@ function cMemberAccess _
 
 	'' proc call?
 	if( astIsCALL( expr ) ) then
-		expr = astGetCALLResUDT( expr, TRUE )
+		expr = astGetCALLResUDT( expr )
 	end if
 
  	'' build: cast( udt ptr, (cast( byte ptr, @udt) + fldexpr))->field
@@ -1184,7 +1184,7 @@ private function hVarAddUndecl _
 		'' error recovery: fake an id
 		s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, dTB(), attrib )
 	else
-		var_ = astNewDECL( FB_SYMBCLASS_VAR, s, NULL )
+		var_ = astNewDECL( s, NULL )
 
 		'' move to function scope?
 		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
