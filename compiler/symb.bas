@@ -912,7 +912,7 @@ private function hLookupImportHash _
     	return NULL
     end if
 
-	dim as FBSYMCHAIN ptr head = NULL, tail = any
+	dim as FBSYMCHAIN ptr head = NULL, tail = NULL
 
 	'' for each namespace found..
 	dim as FBSYMCHAIN ptr chain_ = chain_head
@@ -956,7 +956,7 @@ private function hLookupImportList _
 		byval index as uinteger _
 	) as FBSYMCHAIN ptr
 
-	dim as FBSYMCHAIN ptr head = NULL, tail = any
+	dim as FBSYMCHAIN ptr head = NULL, tail = NULL
 
 	'' for each namespace imported by this ns..
 	dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )

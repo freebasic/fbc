@@ -314,7 +314,7 @@ sub symbDefineInit _
 		byval ismain as integer _
 	)
 
-	static as string value
+	dim as string value
 	dim as zstring ptr def = any
 
 	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
@@ -355,7 +355,8 @@ sub symbDefineInit _
 		def = @"__FB_OPENBSD__"
 	case FB_COMPTARGET_WIN32
 		def = @"__FB_WIN32__"
-	case FB_COMPTARGET_XBOX
+	case else
+		assert(fbGetOption(FB_COMPOPT_TARGET) = FB_COMPTARGET_XBOX)
 		def = @"__FB_XBOX__"
 	end select
 

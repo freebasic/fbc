@@ -368,17 +368,13 @@ function rtlMemSwap _
 	if( (dst_dtype <> FB_DATATYPE_STRUCT) and (astIsVAR( dst ) or (l_bf or r_bf)) ) then
 
 		dim as ASTNODE ptr d = any, s = any
-		dim as FBSYMBOL ptr l_sym = any, r_sym = any, tmpvar = any
 
 		'' left-side is bitfield...
 		if( l_bf ) then
-
-			'' allocate temp var
 			dst_dtype = symbGetFullType( astGetSubtype( astGetLeft( dst ) ) )
-			l_sym = symbAddTempVar( dst_dtype )
 
 			'' left-side references temp var
-			d = astNewVAR( l_sym )
+			d = astNewVAR( symbAddTempVar( dst_dtype ) )
 
 			'' assign bitfield to temp var
 			astAdd( astNewASSIGN( d, astCloneTree( dst ) ) )
@@ -389,6 +385,7 @@ function rtlMemSwap _
 		end if
 
 		'' high-level IR? use a temp var...
+		dim as FBSYMBOL ptr tmpvar = NULL
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		    tmpvar = symbAddTempVar( dst_dtype, astGetSubType( d ) )
 			astAdd( astNewASSIGN( astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ), _
@@ -399,8 +396,8 @@ function rtlMemSwap _
 		end if
 
 		'' right-side is bitfield...
+		dim as FBSYMBOL ptr r_sym = any
 		if( r_bf ) then
-
 			'' allocate temp var
 			r_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( src ) ) ) )
 
@@ -409,7 +406,6 @@ function rtlMemSwap _
 
 			'' assign bitfield to temp var
 			astAdd( astNewASSIGN( s, astCloneTree( src ) ) )
-
 		else
 			'' right-side references tree
 			s = src
@@ -420,23 +416,19 @@ function rtlMemSwap _
 
 		'' right-side is bitfield...
 		if( r_bf ) then
-
 			'' pop to temp var
 			s = astNewVAR( r_sym )
 			astAdd( astNewSTACK( AST_OP_POP, s ) )
 
 			'' assign to right-side from temp var
 			astAdd( astNewASSIGN( src, astCloneTree( s ) ) )
-
+		elseif( tmpvar ) then
+			'' high-level IR, uses a temp var
+			astAdd( astNewASSIGN( src, _
+			      astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ) ) )
 		else
-			'' high-level IR? use a temp var...
-			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-				astAdd( astNewASSIGN( src, _
-                                      astNewVAR( tmpvar, , dst_dtype, astGetSubType( d ) ) ) )
-			else
-				'' pop to right-side
-				astAdd( astNewSTACK( AST_OP_POP, src ) )
-			end if
+			'' pop to right-side
+			astAdd( astNewSTACK( AST_OP_POP, src ) )
 		end if
 
 		exit function

@@ -26,8 +26,6 @@ function cQuirkStmt _
 		byval tk as FB_TOKEN = INVALID _
 	) as integer
 
-	dim as integer res = any
-
 	function = FALSE
 
 	if( tk = INVALID ) then
@@ -50,6 +48,8 @@ function cQuirkStmt _
 			exit function
 		end select
 	end if
+
+	dim as integer res = FALSE
 
 	select case as const tk
 	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
@@ -127,8 +127,6 @@ function cQuirkStmt _
 			res = cComment( )
 		end if
 
-	case else
-		res = FALSE
 	end select
 
 	if( res = FALSE ) then

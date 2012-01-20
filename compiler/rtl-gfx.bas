@@ -1638,41 +1638,30 @@ private function hGetPutter _
 	dim as FBSYMBOL ptr proc = any
 
 	select case as const mode
-
 	case FBGFX_PUTMODE_TRANS
 		proc = PROCLOOKUP( GFXPUTTRANS )
-
 	case FBGFX_PUTMODE_PSET
 		proc = PROCLOOKUP( GFXPUTPSET )
-
 	case FBGFX_PUTMODE_PRESET
 		proc = PROCLOOKUP( GFXPUTPRESET )
-
 	case FBGFX_PUTMODE_AND
 		proc = PROCLOOKUP( GFXPUTAND )
-
 	case FBGFX_PUTMODE_OR
 		proc = PROCLOOKUP( GFXPUTOR )
-
 	case FBGFX_PUTMODE_XOR
 		proc = PROCLOOKUP( GFXPUTXOR )
-
 	case FBGFX_PUTMODE_ALPHA
 		proc = PROCLOOKUP( GFXPUTALPHA )
-
 	case FBGFX_PUTMODE_BLEND
 		proc = PROCLOOKUP( GFXPUTBLEND )
-
 	case FBGFX_PUTMODE_ADD
 		proc = PROCLOOKUP( GFXPUTADD )
-
-	case FBGFX_PUTMODE_CUSTOM
+	case else
+		assert(mode = FBGFX_PUTMODE_CUSTOM)
 		proc = PROCLOOKUP( GFXPUTCUSTOM )
-
 	end select
 
 	function = astBuildProcAddrof(proc)
-
 end function
 
 '':::::

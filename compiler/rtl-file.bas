@@ -1353,7 +1353,8 @@ function rtlFileOpen _
     case FB_FILE_TYPE_COM
 		f = PROCLOOKUP( FILEOPEN_COM )
 
-    case FB_FILE_TYPE_QB
+    case else
+		assert(openkind = FB_FILE_TYPE_QB)
 		f = PROCLOOKUP( FILEOPEN_QB )
 		doencoding = FALSE
 		select case env.clopt.target

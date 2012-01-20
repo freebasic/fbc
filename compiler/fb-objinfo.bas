@@ -407,8 +407,6 @@ function hProcessCmdList _
 	) as integer
 
 	dim as byte ptr p = buf_ini
-	dim as zstring ptr value = any
-	dim as FB_COMPOPT opt = any
 
 	'' for each entry..
 	do while( p < buf_end )
@@ -421,16 +419,13 @@ function hProcessCmdList _
 
 		select case *cast( zstring ptr, p )
 		case "-mt"
-			opt = FB_COMPOPT_MULTITHREADED
-			value = NULL
+			addOption( FB_COMPOPT_MULTITHREADED, NULL, objName )
 
 		case "-lang"
-			opt = FB_COMPOPT_LANG
-			value = p + len( "-lang" ) + 1
+			dim as zstring ptr value = p + len( "-lang" ) + 1
 			lgt += len( *value ) + 1
+			addOption( FB_COMPOPT_LANG, value, objName )
 		end select
-
-		addOption( opt, value, objName )
 
 	  	p += lgt + 1
 	loop
