@@ -378,9 +378,9 @@
 		), _
 		/' abs CDECL overload ( byval x as longint ) as longint '/ _
 		( _
-			@FB_RTL_abs, @"abs", _
+			@FB_RTL_abs, @"llabs", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_GCCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
