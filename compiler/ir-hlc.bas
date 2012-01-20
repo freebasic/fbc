@@ -1019,13 +1019,6 @@ private sub hEmitFTOIBuiltins( )
 end sub
 
 '':::::
-private sub hEmitBuiltins( )
-
-	hEmitFTOIBuiltins( )
-
-end sub
-
-'':::::
 private function _emitBegin _
 	( _
 	) as integer
@@ -1075,7 +1068,7 @@ private sub _emitEnd _
 	' Add the decls on the end of the header
 	ctx.section = SECTION_HEAD
 
-	hEmitBuiltins( )
+	hEmitFTOIBuiltins( )
 
 	hEmitDataStmt( )
 
@@ -1524,47 +1517,42 @@ private function hDtypeToStr _
 
 end function
 
-'':::::
 private function hEmitInt( byval value as integer ) as string
+	dim as string s = str(value)
 
-    if( value < 0 ) then
-        '' Convert -5 to '((-4)-1)', to prevent GCC warnings for INT_MIN
-        return "((-" & (abs(value) - 1) & ") - 1)"
-    end if
+	if( value = -2147483648u ) then
+		'' Prevent GCC warnings for INT_MIN:
+		'' The '-' minus sign doesn't count as part of the number
+		'' literal, and 2147483648 is too big for an integer, so it
+		'' must be marked as unsigned.
+		s += "u"
+	end if
 
-    return str( value )
-
+	return s
 end function
 
-'':::::
 private function hEmitUint( byval value as uinteger ) as string
-
-    return str( value ) + "u"
-
+	return str(value) + "u"
 end function
 
-'':::::
 private function hEmitLong( byval value as longint ) as string
+	dim as string s = str(value)
 
-    if( value < 0 ) then
-        '' Ditto, prevent warnings for LLONG_MIN
-        return "((-" & (abs(value) - 1) & "ll) - 1)"
-    end if
+	if( value = -9223372036854775808ull ) then
+		'' Ditto, prevent warnings for LLONG_MIN
+		s += "u"
+	end if
 
-    return str( value ) + "ll"
+	s += "ll"
 
+	return s
 end function
 
-'':::::
 private function hEmitUlong( byval value as ulongint ) as string
-
-    return str( value ) + "ull"
-
+	return str(value) + "ull"
 end function
 
-'':::::
 private function hEmitSingle( byval value as single ) as string
-
 	dim as string s = str( value )
 
 	'' Same considerations as for doubles (see below), and besides,
@@ -1576,12 +1564,9 @@ private function hEmitSingle( byval value as single ) as string
 	end if
 
 	return s & "f"
-
 end function
 
-'':::::
 private function hEmitDouble( byval value as double ) as string
-
 	dim as string s = str( value )
 
 	'' This can be something like '1', '0.1, or '1e-100'.
@@ -1595,10 +1580,8 @@ private function hEmitDouble( byval value as double ) as string
 	end if
 
 	return s
-
 end function
 
-'':::::
 private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
 
 	dim as string expr
@@ -1805,16 +1788,6 @@ end function
 
 '':::::
 private sub _emitLabel _
-	( _
-		byval label as FBSYMBOL ptr _
-	)
-
-	hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
-
-end sub
-
-'':::::
-private sub _emitLabelNF _
 	( _
 		byval label as FBSYMBOL ptr _
 	)
@@ -2872,7 +2845,7 @@ sub irHLC_ctor()
 		@_emit, _
 		@_emitConvert, _
 		@_emitLabel, _
-		@_emitLabelNF, _
+		@_emitLabel, _
 		@_emitReturn, _
 		@_emitProcBegin, _
 		@_emitProcEnd, _
