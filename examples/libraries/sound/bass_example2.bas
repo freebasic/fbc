@@ -8,7 +8,7 @@ BASS_Init(-1, 44100, 0, 0, 0)
 ' Load soundeffects and example music
 Dim As String musicname = "data/example1.ogg"
 Dim As HSTREAM music = BASS_StreamCreateFile(0, StrPtr(musicname), 0, 0, 0)
-Dim As String soundname = "example2.ogg"
+Dim As String soundname = "data/example2.ogg"
 Dim As HSAMPLE sound = BASS_SampleLoad(0, StrPtr(soundname), 0, 0, 16, 0)
 Dim soundchannel As HCHANNEL = BASS_SampleGetChannel(sound, 0)
 BASS_ChannelPlay(music, 0)				' Play music

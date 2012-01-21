@@ -10,6 +10,12 @@
 
 #inclib "bass"
 
+#ifdef __FB_WIN32__
+extern "Windows-MS"
+#else
+extern "C"
+#endif
+
 Type WORD as UShort
 type DWORD as UInteger
 type QWORD as ULongInt
@@ -414,9 +420,9 @@ type DOWNLOADPROC as sub stdcall (byval as const any ptr, byval as DWORD, byval 
 #define BASS_SYNC_MIXTIME &h40000000
 #define BASS_SYNC_ONETIME &h80000000
 
-type SYNCPROC as sub stdcall (byval as HSYNC, byval as DWORD, byval as DWORD, byval as any ptr)
-type DSPPROC as sub stdcall (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as any ptr)
-type RECORDPROC as stdcall function (byval as HRECORD, byval as const any ptr, byval as DWORD, byval as any ptr) as BOOL
+type SYNCPROC as sub (byval as HSYNC, byval as DWORD, byval as DWORD, byval as any ptr)
+type DSPPROC as sub (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as any ptr)
+type RECORDPROC as function (byval as HRECORD, byval as const any ptr, byval as DWORD, byval as any ptr) as BOOL
 
 #define BASS_ACTIVE_STOPPED 0
 #define BASS_ACTIVE_PLAYING 1
@@ -649,8 +655,6 @@ end type
 #define BASS_DX8_PHASE_ZERO 2
 #define BASS_DX8_PHASE_90 3
 #define BASS_DX8_PHASE_180 4
-
-extern "Windows-MS"
 
 declare function BASS_SetConfig (byval option as DWORD, byval value as DWORD) as BOOL
 declare function BASS_GetConfig (byval option as DWORD) as DWORD
