@@ -21,11 +21,30 @@
  * LICENSE.TXT and LICENSE-BSD.TXT for more details.                     *
  *                                                                       *
  ************************************************************************'/
-#ifndef __ode_compatibility_bi__
-#define __ode_compatibility_bi__
+#ifndef _ODE_ODEINIT_BI_
+#define _ODE_ODEINIT_BI_
 
-#define dQtoR(q,R) dRfromQ((R),(q))
-#define dRtoQ(R,q) dQfromR((q),(R))
-#define dWtoDQ(w,q,dq) dDQfromW((dq),(w),(q))
+#include "common.bi"
 
-#endif '__ode_compatibility_bi__
+enum dInitODEFlags 
+  dInitFlagManualThreadCleanup = &H00000001
+end enum
+
+
+declare sub      dInitODE  cdecl alias "dInitODE" ()
+declare function dInitODE2 cdecl alias "dInitODE2" (byval flag as dInitODEFlags) as integer
+
+enum dAllocateODEDataFlags
+  dAllocateFlagBasicData     = 0
+  dAllocateFlagCollisionData = 1
+  dAllocateMaskAll           = &HFFFFFFFF
+end enum
+
+
+declare function dAllocateODEDataForThread   cdecl alias "dAllocateODEDataForThread" (flag as dAllocateODEDataFlags) as integer
+declare sub      dCleanupODEAllDataForThread cdecl alias "dCleanupODEAllDataForThread" ()
+declare sub      dCloseODE                   cdecl alias "dCloseODE" ()
+
+
+
+#endif ' _ODE_ODEINIT_BI_

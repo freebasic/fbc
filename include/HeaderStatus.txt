@@ -63,7 +63,7 @@ mpg123 	mpg123.bi 	from 2010, machine-translated only
 Mini-XML 	mxml.bi 	from 2005
 MySQL 	mysql/ 	4.0.17
 Newton Physics Engine 	Newton.bi 	from 2005
-ODE (Open Dynamics Engine) 	ode/ 	0.9
+ODE (Open Dynamics Engine) 	ode/ 	0.11.1
 libogg 	ogg/ 	from 2007
 PCRE (Perl Compatible Regular Expressions) 	pcre/ 	7.6
 PDFlib 	pdflib.bi 	4.0.2

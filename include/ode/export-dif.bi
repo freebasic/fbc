@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy)                             *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *

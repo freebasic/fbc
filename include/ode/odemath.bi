@@ -34,7 +34,7 @@ declare sub dPlaneSpace cdecl alias "dPlaneSpace" ( n as dVector3 ptr, _
 
 #define dLENGTHSQUARED(a) (((a)[0])*((a)[0]) + ((a)[1])*((a)[1]) + ((a)[2])*((a)[2]))
 
-#define dLENGTH(a) ( Sqr( ((a)[0])*((a)[0]) + ((a)[1])*((a)[1]) + ((a)[2])*((a)[2]) ) )
+#define dLENGTH(a) ( dSqrt( ((a)[0])*((a)[0]) + ((a)[1])*((a)[1]) + ((a)[2])*((a)[2]) ) )
 
 #define dDOTpq(a,b,p,q) ((a)[0]*(b)[0] + (a)[p]*(b)[q] + (a)[2*(p)]*(b)[2*(q)])
 
@@ -65,8 +65,8 @@ declare sub dPlaneSpace cdecl alias "dPlaneSpace" ( n as dVector3 ptr, _
 #define dCROSS441(a,op,b,c) dCROSSpqr(a,op,b,c,4,4,1)
 #define dCROSS444(a,op,b,c) dCROSSpqr(a,op,b,c,4,4,4)
 
-#macro dDISTANCE(a,b)
-   Sqr( ((a)[0]-(b)[0])*((a)[0]-(b)[0]) _
+#macro dDISTANCE(a,b) \
+	dSqrt( ((a)[0]-(b)[0])*((a)[0]-(b)[0]) _
       + ((a)[1]-(b)[1])*((a)[1]-(b)[1]) _
       + ((a)[2]-(b)[2])*((a)[2]-(b)[2]) )
 #endmacro

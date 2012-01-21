@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy)                             *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -81,14 +81,14 @@ type dJointID as dxJoint ptr
 type dJointGroupID as dxJointGroup ptr
 type dHeightfieldDataID as dxHeightfieldData ptr
 
-enum 
+enum dErrors
   d_ERR_UNKNOWN = 0
   d_ERR_IASSERT
   d_ERR_UASSERT
   d_ERR_LCP
 end enum
 
-enum 
+enum dJointType
   dJointTypeNone = 0
   dJointTypeBall
   dJointTypeHinge
@@ -102,6 +102,8 @@ enum
   dJointTypeLMotor
   dJointTypePlane2D
   dJointTypePR
+  dJointTypePU
+  dJointTypePiston
 end enum
 
 enum 
@@ -117,6 +119,20 @@ enum
   dParamSuspensionERP
   dParamSuspensionCFM
   dParamERP
+  dParamsInGroup
+
+  dParamLoStop1 = 0
+  dParamHiStop1
+  dParamVel1
+  dParamFMax1
+  dParamFudgeFactor1
+  dParamBounce1
+  dParamCFM1
+  dParamStopERP1
+  dParamStopCFM1
+  dParamSuspensionERP1
+  dParamSuspensionCFM1
+  dParamERP1
 
   dParamLoStop2 = &h100
   dParamHiStop2
@@ -129,7 +145,6 @@ enum
   dParamStopCFM2
   dParamSuspensionERP2
   dParamSuspensionCFM2
-  dParamERP2
 
   dParamLoStop3 = &h200
   dParamHiStop3
@@ -142,7 +157,6 @@ enum
   dParamStopCFM3
   dParamSuspensionERP3
   dParamSuspensionCFM3
-  dParamERP3
 
   dParamGroup = &h100
 end enum
@@ -152,17 +166,17 @@ enum
  dAMotorEuler = 1
 end enum
 
-' joint force feedback information
 type dJointFeedback
-  f1 as dVector3 ' force  applied to body 1
-  t1 as dVector3 ' torque applied to body 1
-  f2 as dVector3 ' force  applied to body 2
-  t2 as dVector3 ' torque applied to body 2
+ f1 as dVector3
+ t1 as dVector3
+ f2 as dVector3
+ t2 as dVector3
 end type
 
-extern "C"
-declare sub      dGeomMoved       (byval as dGeomID)
-declare function dGeomGetBodyNext (byval as dGeomID) as dGeomID
-end extern
+declare sub      dGeomMoved       cdecl alias "dGeomMoved"       (byval as dGeomID)
+declare function dGeomGetBodyNext cdecl alias "dGeomGetBodyNext" (byval as dGeomID) as dGeomID
+
+declare function dGetConfiguration   cdecl alias "dGetConfiguration" () as zstring ptr
+declare function dCheckConfiguration cdecl alias "dCheckConfiguration" (byval token as zstring ptr) as integer
 
 #endif __ode_common_bi__

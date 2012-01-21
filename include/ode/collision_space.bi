@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy)                             *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -26,30 +26,44 @@
 
 #include "common.bi"
 
+type dNearCallback as any
 
-type dNearCallback as sub cdecl (lpData as any ptr, _
-                                 o1 as dGeomID, _
-                                 o2 as dGeomID) ptr
+declare function dSimpleSpaceCreate   cdecl alias "dSimpleSpaceCreate"   (byval s as dSpaceID) as dSpaceID
+declare function dHashSpaceCreate     cdecl alias "dHashSpaceCreate"     (byval s as dSpaceID) as dSpaceID
+declare function dQuadTreeSpaceCreate cdecl alias "dQuadTreeSpaceCreate" (byval s as dSpaceID, byval Center as dVector3, byval Extents as dVector3, byval Depth as integer) as dSpaceID
+declare sub      dSpaceDestroy        cdecl alias "dSpaceDestroy"       (byval s as dSpaceID)
 
-extern "C"
 
-declare function dSimpleSpaceCreate   (byval s as dSpaceID) as dSpaceID
-declare function dHashSpaceCreate     (byval s as dSpaceID) as dSpaceID
-declare function dQuadTreeSpaceCreate (byval s as dSpaceID, byval Center as dVector3, byval Extents as dVector3, byval Depth as integer) as dSpaceID
-declare sub      dSpaceDestroy        (byval s as dSpaceID)
+' SAP
+' Order XZY or ZXY usually works best, if your Y is up.
+#define dSAP_AXES_XYZ  ((0) or (1 shl 2) or (2 shl 4))
+#define dSAP_AXES_XZY  ((0) or (2 shl 2) or (1 shl 4))
+#define dSAP_AXES_YXZ  ((1) or (0 shl 2) or (2 shl 4))
+#define dSAP_AXES_YZX  ((1) or (2 shl 2) or (0 shl 4))
+#define dSAP_AXES_ZXY  ((2) or (0 shl 2) or (1 shl 4))
+#define dSAP_AXES_ZYX  ((2) or (1 shl 2) or (0 shl 4))
 
-declare sub      dHashSpaceSetLevels  (byval s as dSpaceID, byval minlevel as integer    , byval maxlevel as integer)
-declare sub      dHashSpaceGetLevels  (byval s as dSpaceID, byval minlevel as integer ptr, byval maxlevel as integer ptr)
+declare function dSweepAndPruneSpaceCreate cdecl alias "dSweepAndPruneSpaceCreate" (byval s as dSpaceID,byval axisorder as integer) as dSpaceID
 
-declare sub      dSpaceSetCleanup     (byval s as dSpaceID, byval mode     as integer)
-declare function dSpaceGetCleanup     (byval s as dSpaceID) as integer
+declare sub      dHashSpaceSetLevels  cdecl alias "dHashSpaceSetLevels" (byval s as dSpaceID, byval minlevel as integer    , byval maxlevel as integer)
+declare sub      dHashSpaceGetLevels  cdecl alias "dHashSpaceGetLevels" (byval s as dSpaceID, byval minlevel as integer ptr, byval maxlevel as integer ptr)
 
-declare sub      dSpaceAdd            (byval s as dSpaceID, byval as dGeomID)
-declare sub      dSpaceRemove         (byval s as dSpaceID, byval as dGeomID)
-declare function dSpaceQuery          (byval s as dSpaceID, byval as dGeomID) as integer
-declare sub      dSpaceClean          (byval s as dSpaceID)
-declare function dSpaceGetNumGeoms    (byval s as dSpaceID) as integer
-declare function dSpaceGetGeom        (byval s as dSpaceID, byval i as integer) as dGeomID
+declare sub      dSpaceSetCleanup     cdecl alias "dSpaceSetCleanup"    (byval s as dSpaceID, byval mode     as integer)
+declare function dSpaceGetCleanup     cdecl alias "dSpaceGetCleanup"    (byval s as dSpaceID) as integer
 
-end extern
+declare sub      dSpaceSetSublevel    cdecl alias "dSpaceSetSublevel"   (byval s as dSpaceID,byval sublevel as integer)
+declare function dSpaceGetSublevel    cdecl alias "dSpaceGetSublevel"   (byval s as dSpaceID) as integer
+
+declare sub      dSpaceSetManualCleanup cdecl alias "dSpaceSetManualCleanup" (byval s as dSpaceID, mode as integer)
+declare function dSpaceGetManualCleanup cdecl alias "dSpaceGetManualCleanup" (byval s as dSpaceID) as integer
+
+declare sub      dSpaceAdd            cdecl alias "dSpaceAdd"           (byval s as dSpaceID, byval as dGeomID)
+declare sub      dSpaceRemove         cdecl alias "dSpaceRemove"        (byval s as dSpaceID, byval as dGeomID)
+declare function dSpaceQuery          cdecl alias "dSpaceQuery"         (byval s as dSpaceID, byval as dGeomID) as integer
+declare sub      dSpaceClean          cdecl alias "dSpaceClean"         (byval s as dSpaceID)
+declare function dSpaceGetNumGeoms    cdecl alias "dSpaceGetNumGeoms"   (byval s as dSpaceID) as integer
+declare function dSpaceGetGeom        cdecl alias "dSpaceGetGeom"       (byval s as dSpaceID, byval i as integer) as dGeomID
+
+declare function dSpaceGetClass       cdecl alias "dSpaceGetClass"      (byval a as dSpaceID) as integer
+
 #endif ' __ode_collision_space_bi__

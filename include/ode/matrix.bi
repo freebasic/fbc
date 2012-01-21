@@ -3,7 +3,7 @@
  * Open Dynamics Engine, Copyright (C) 2001-2003 Russell L. Smith.       *
  * All rights reserved.  Email: russ@q12.org   Web: www.q12.org          *
  *                                                                       *
- * Ported to FreeBASIC by D.J.Peters (Joshy) http://fsr.sf.net/forum     *
+ * Ported to FreeBASIC by D.J.Peters (Joshy)                             *
  *                                                                       *
  * This library is free software; you can redistribute it and/or         *
  * modify it under the terms of EITHER:                                  *
@@ -26,11 +26,11 @@
 
 #include "common.bi"
 
-declare sub dSetZero  cdecl alias "dSetZero"  (byval A as dReal ptr, byval n as integer)
-declare sub dSetValue cdecl alias "dSetValue" (byval A as dReal ptr, byval n as integer, byval value as dReal)
+declare sub      dSetZero            cdecl alias "dSetZero"            (byval A as dReal ptr, byval n as integer)
+declare sub      dSetValue           cdecl alias "dSetValue"           (byval A as dReal ptr, byval n as integer, byval value as dReal)
 /' get the dot product of two n*1 vectors. if n <= 0 then
  * zero will be returned (in which case a and b need not be valid).'/
-declare function dMDot cdecl alias "dDot"                (byval A as dReal ptr, byval b as dReal ptr, byval n as integer) as dReal
+declare function dMDot               cdecl alias "dDot"                (byval A as dReal ptr, byval b as dReal ptr, byval n as integer) as dReal
 
 /' matrix multiplication. all matrices are stored in standard row format.
  * the digit refers to the argument that is transposed:
