@@ -122,8 +122,8 @@ sub rtlAddIntrinsicProcs _
         end if
 
 		dim as integer doadd = TRUE
-		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
-			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
+		if( procdef->options and FB_RTL_OPT_MT ) then
+			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
 		end if
 
 		if( doadd ) then

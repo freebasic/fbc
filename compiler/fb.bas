@@ -97,7 +97,6 @@ declare sub	parserSetCtx ( )
             FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
     		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_SHAREDLOCAL or _
     		FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}

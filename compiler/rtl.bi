@@ -796,7 +796,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_OVER		  = &h00000001					'' overloaded
 	FB_RTL_OPT_ERROR	  = &h00000002					'' returns an error
 	FB_RTL_OPT_MT		  = &h00000004					'' needs the multithreaded rtlib
-	FB_RTL_OPT_VBSYMB	  = &h00000008                  '' vb-only
+
 	FB_RTL_OPT_DBGONLY	  = &h00000010                  '' -g only
 	FB_RTL_OPT_OPERATOR	  = &h00000020
 	FB_RTL_OPT_STRSUFFIX  = &h00000040                  '' has a $ suffix (-lang qb only)
