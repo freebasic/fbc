@@ -364,7 +364,7 @@ end enum
 #define EAX_PRESET_DIZZY           EAX_ENVIRONMENT_DIZZY,0.139f,17.234f,0.666f
 #define EAX_PRESET_PSYCHOTIC       EAX_ENVIRONMENT_PSYCHOTIC,0.486f,7.563f,0.806f
 
-type STREAMPROC as function cdecl (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
+type STREAMPROC as function stdcall (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
 
 #define BASS_STREAMPROC_END &h80000000
 
@@ -375,10 +375,10 @@ type STREAMPROC as function cdecl (byval as HSTREAM, byval as any ptr, byval as 
 #define STREAMFILE_BUFFER 1
 #define STREAMFILE_BUFFERPUSH 2
 
-type FILECLOSEPROC as sub cdecl (byval as any ptr)
-type FILELENPROC as function cdecl (byval as any ptr) as QWORD
-type FILEREADPROC as function cdecl (byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
-type FILESEEKPROC as function cdecl (byval as QWORD, byval as any ptr) as BOOL
+type FILECLOSEPROC as sub stdcall (byval as any ptr)
+type FILELENPROC as function stdcall (byval as any ptr) as QWORD
+type FILEREADPROC as function stdcall (byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
+type FILESEEKPROC as function stdcall (byval as QWORD, byval as any ptr) as BOOL
 
 type BASS_FILEPROCS
     close as FILECLOSEPROC ptr
@@ -397,7 +397,7 @@ end type
 #define BASS_FILEPOS_BUFFER 5
 #define BASS_FILEPOS_SOCKET 6
 
-type DOWNLOADPROC as sub cdecl (byval as const any ptr, byval as DWORD, byval as any ptr)
+type DOWNLOADPROC as sub stdcall (byval as const any ptr, byval as DWORD, byval as any ptr)
 
 #define BASS_SYNC_POS 0
 #define BASS_SYNC_END 2
@@ -414,9 +414,9 @@ type DOWNLOADPROC as sub cdecl (byval as const any ptr, byval as DWORD, byval as
 #define BASS_SYNC_MIXTIME &h40000000
 #define BASS_SYNC_ONETIME &h80000000
 
-type SYNCPROC as sub cdecl (byval as HSYNC, byval as DWORD, byval as DWORD, byval as any ptr)
-type DSPPROC as sub cdecl (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as any ptr)
-type RECORDPROC as cdecl function (byval as HRECORD, byval as const any ptr, byval as DWORD, byval as any ptr) as BOOL
+type SYNCPROC as sub stdcall (byval as HSYNC, byval as DWORD, byval as DWORD, byval as any ptr)
+type DSPPROC as sub stdcall (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as any ptr)
+type RECORDPROC as stdcall function (byval as HRECORD, byval as const any ptr, byval as DWORD, byval as any ptr) as BOOL
 
 #define BASS_ACTIVE_STOPPED 0
 #define BASS_ACTIVE_PLAYING 1
@@ -650,7 +650,7 @@ end type
 #define BASS_DX8_PHASE_90 3
 #define BASS_DX8_PHASE_180 4
 
-extern "C"
+extern "Windows-MS"
 
 declare function BASS_SetConfig (byval option as DWORD, byval value as DWORD) as BOOL
 declare function BASS_GetConfig (byval option as DWORD) as DWORD
