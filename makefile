@@ -841,6 +841,8 @@ endif
 LIBFBGFX_C := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_C))
 LIBFBGFX_S := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_S))
 
+-include includes.mk
+
 #
 # Build rules
 #

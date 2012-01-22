@@ -2,3 +2,5 @@
 *.a
 new*/
 config.mk
+geninc.exe
+geninc
