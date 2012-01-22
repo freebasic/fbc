@@ -370,7 +370,7 @@ end enum
 #define EAX_PRESET_DIZZY           EAX_ENVIRONMENT_DIZZY,0.139f,17.234f,0.666f
 #define EAX_PRESET_PSYCHOTIC       EAX_ENVIRONMENT_PSYCHOTIC,0.486f,7.563f,0.806f
 
-type STREAMPROC as function stdcall (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
+type STREAMPROC as function (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
 
 #define BASS_STREAMPROC_END &h80000000
 
@@ -381,10 +381,10 @@ type STREAMPROC as function stdcall (byval as HSTREAM, byval as any ptr, byval a
 #define STREAMFILE_BUFFER 1
 #define STREAMFILE_BUFFERPUSH 2
 
-type FILECLOSEPROC as sub stdcall (byval as any ptr)
-type FILELENPROC as function stdcall (byval as any ptr) as QWORD
-type FILEREADPROC as function stdcall (byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
-type FILESEEKPROC as function stdcall (byval as QWORD, byval as any ptr) as BOOL
+type FILECLOSEPROC as sub (byval as any ptr)
+type FILELENPROC as function (byval as any ptr) as QWORD
+type FILEREADPROC as function (byval as any ptr, byval as DWORD, byval as any ptr) as DWORD
+type FILESEEKPROC as function (byval as QWORD, byval as any ptr) as BOOL
 
 type BASS_FILEPROCS
     close as FILECLOSEPROC ptr
@@ -403,7 +403,7 @@ end type
 #define BASS_FILEPOS_BUFFER 5
 #define BASS_FILEPOS_SOCKET 6
 
-type DOWNLOADPROC as sub stdcall (byval as const any ptr, byval as DWORD, byval as any ptr)
+type DOWNLOADPROC as sub (byval as const any ptr, byval as DWORD, byval as any ptr)
 
 #define BASS_SYNC_POS 0
 #define BASS_SYNC_END 2
