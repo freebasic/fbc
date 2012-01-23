@@ -407,7 +407,7 @@ end type
 		), _
 		/' #define __FB_MIN_VERSION__(major, minor, patch_level) ((__FB_VER_MAJOR__ > (major)) or ((__FB_VER_MAJOR__ = (major)) and ((__FB_VER_MINOR__ > (minor)) or (__FB_VER_MINOR__ = (minor) and __FB_VER_PATCH__ >= (patch_level))))) '/ _
 		( _
-			@"____FB_MIN_VERSION__", FB_RTL_OPT_NONE, _
+			@"__FB_MIN_VERSION__", FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				@"MAJOR", @"MINOR", @"PATCH_LEVEL" _

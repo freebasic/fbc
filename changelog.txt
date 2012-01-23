@@ -11,6 +11,7 @@ Version 0.24.0:
 - -x used with -lib now sets the library file name
 - "No newline at end of file" warning removed
 - 'PALETTE index, r, g, b' now uses 8-bit precision on each color value
+- The __FB_MIN_VERSION__() macro is no longer changed to ____FB_MIN_VERSION__() for -lang qb
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
