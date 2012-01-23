@@ -46,6 +46,7 @@ Version 0.24.0:
 - VAR initialized from a STRING * N variable created a STRING * 0 instead of a dynamic STRING
 - -gen gcc: abs(longint) was just abs(integer)
 - 'PALETTE index, r, g, b' wasn't behaving as expected on some obscure SCREEN modes
+- Built-in macros are now working in -lang qb (__RGB(), __BIT(), __ASSERT(), ...)
 
 
 Version 0.23.0:

@@ -845,19 +845,6 @@ type FB_RTL_PROCDEF
 	paramTb(0 to 15) as FB_RTL_PARAMDEF
 end type
 
-type FB_RTL_MACROTOKEN
-	type		as FB_DEFTOK_TYPE
-	data		as any ptr
-end type
-
-type FB_RTL_MACRODEF
-	name		as zstring ptr
-	options		as FB_RTL_OPT
-	params		as integer
-	paramTb(0 to 3) as zstring ptr
-	tokenTb(0 to 11) as FB_RTL_MACROTOKEN
-end type
-
 declare sub rtlInit _
 	( _
 	)
@@ -869,11 +856,6 @@ declare sub rtlEnd _
 declare sub rtlAddIntrinsicProcs _
 	( _
 		byval procdef as FB_RTL_PROCDEF ptr _
-	)
-
-declare sub rtlAddIntrinsicMacros _
-	( _
-		byval macdef as FB_RTL_MACRODEF ptr _
 	)
 
 declare function rtlProcLookup _
