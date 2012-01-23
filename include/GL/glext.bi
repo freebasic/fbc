@@ -7527,7 +7527,7 @@ Type PFNGLGETDOUBLEI_VPROC As Sub(ByVal target As GLenum, ByVal index As GLuint,
 #Ifndef GL_ARB_cl_event
 #define GL_ARB_cl_event 1
 #Ifdef GL_GLEXT_PROTOTYPES
-Declare Function glCreateSyncFromCLeventARB(ByVal context As struct_cl_context Ptr, ByVal event As struct_cl_event Ptr, ByVal flags As GLbitfield) As GLsync
+Declare Function glCreateSyncFromCLeventARB(ByVal context As _cl_context Ptr, ByVal event As _cl_event Ptr, ByVal flags As GLbitfield) As GLsync
 #EndIf /' GL_GLEXT_PROTOTYPES '/
 Type PFNGLCREATESYNCFROMCLEVENTARBPROC As Function(ByVal context As _cl_context Ptr, ByVal event As _cl_event Ptr, ByVal flags As GLbitfield) As GLsync
 #EndIf
@@ -7600,8 +7600,8 @@ Type PFNGLGETNUNIFORMDVARBPROC As Sub(ByVal program As GLuint, ByVal location As
 #define GL_ARB_base_instance 1
 #Ifdef GL_GLEXT_PROTOTYPES
 Declare Sub glDrawArraysInstancedBaseInstance(ByVal mode As GLenum, ByVal first As GLint, ByVal count As GLsizei, ByVal primcount As GLsizei, ByVal baseinstance As GLuint)
-Declare Sub glDrawElementsInstancedBaseInstance(ByVal mode As GLenum, ByVal count As GLsizei, ByVal Type As GLenum, ByVal indices As void Ptr, ByVal primcount As GLsizei, ByVal baseinstance As GLuint)
-Declare Sub glDrawElementsInstancedBaseVertexBaseInstance(ByVal mode As GLenum, ByVal count As GLsizei, ByVal Type As GLenum, ByVal indices As void Ptr, ByVal primcount As GLsizei, ByVal basevertex As GLint, ByVal baseinstance As GLuint)
+Declare Sub glDrawElementsInstancedBaseInstance(ByVal mode As GLenum, ByVal count As GLsizei, ByVal Type As GLenum, ByVal indices As GLvoid Ptr, ByVal primcount As GLsizei, ByVal baseinstance As GLuint)
+Declare Sub glDrawElementsInstancedBaseVertexBaseInstance(ByVal mode As GLenum, ByVal count As GLsizei, ByVal Type As GLenum, ByVal indices As GLvoid Ptr, ByVal primcount As GLsizei, ByVal basevertex As GLint, ByVal baseinstance As GLuint)
 #EndIf /' GL_GLEXT_PROTOTYPES '/
 Type PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC As Sub(ByVal mode As GLenum, ByVal first As GLint, ByVal count As GLsizei, ByVal primcount As GLsizei, ByVal baseinstance As GLuint)
 Type PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC As Sub(ByVal mode As GLenum, ByVal count As GLsizei, ByVal Type As GLenum, ByVal indices As Any Ptr, ByVal primcount As GLsizei, ByVal baseinstance As GLuint)
