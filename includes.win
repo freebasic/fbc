@@ -10,6 +10,7 @@ include/crt/win32/stdlib.bi \
 include/crt/win32/time.bi \
 include/crt/win32/unistd.bi \
 include/crt/win32/wchar.bi \
+include/curses/pdcurses.bi \
 include/win/accctrl.bi \
 include/win/aclapi.bi \
 include/win/aclui.bi \

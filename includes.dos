@@ -7,6 +7,7 @@ include/crt/dos/unistd.bi \
 include/crt/dos/wchar.bi \
 include/crt/sys/dos/time.bi \
 include/crt/sys/dos/types.bi \
+include/curses/pdcurses.bi \
 include/dos/ar.bi \
 include/dos/bios.bi \
 include/dos/conio.bi \

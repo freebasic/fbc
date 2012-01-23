@@ -1165,10 +1165,10 @@ examples/unicode/hello_UTF32LE.bas
 examples/unicode/hello_UTF8.bas
 fbc
 fblogo.xpm
-inc/al/al.bi
-inc/al/alc.bi
-inc/al/alext.bi
-inc/al/alut.bi
+inc/AL/al.bi
+inc/AL/alc.bi
+inc/AL/alext.bi
+inc/AL/alut.bi
 inc/allegro/3d.bi
 inc/allegro/3dmaths.bi
 inc/allegro/alcompat.bi
@@ -1246,7 +1246,6 @@ inc/cairo/cairo-pdf.bi
 inc/cairo/cairo-ps.bi
 inc/cairo/cairo-svg.bi
 inc/cairo/cairo-win32.bi
-inc/cgi-util.bi
 inc/cgui.bi
 inc/crt/arpa/inet.bi
 inc/crt.bi
@@ -1302,7 +1301,6 @@ inc/CUnit/TestRun.bi
 inc/curl.bi
 inc/curses.bi
 inc/curses/ncurses.bi
-inc/curses/pdcurses.bi
 inc/datetime.bi
 inc/dir.bi
 inc/dislin.bi
