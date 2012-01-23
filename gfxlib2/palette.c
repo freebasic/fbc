@@ -50,6 +50,18 @@ void fb_hRestorePalette(void)
 
 
 /*:::::*/
+static void set_color_rgb(int index, int r, int g, int b)
+{
+	index &= (__fb_gfx->default_palette->colors - 1);
+
+	__fb_gfx->device_palette[index] = r | (g << 8) | (b << 16);
+	
+	if (__fb_gfx->driver->set_palette)
+		__fb_gfx->driver->set_palette(index, r, g, b);
+}
+
+
+/*:::::*/
 static void set_color(int index, unsigned int color)
 {
 	int r, g, b;
@@ -68,9 +80,8 @@ static void set_color(int index, unsigned int color)
 		b = (__fb_gfx->palette[color] >> 16) & 0xFF;
 		__fb_gfx->color_association[index] = color;
 	}
-	__fb_gfx->device_palette[index] = r | (g << 8) | (b << 16);
-	if (__fb_gfx->driver->set_palette)
-		__fb_gfx->driver->set_palette(index, r, g, b);
+
+	set_color_rgb(index, r, g, b);
 }
 
 
@@ -78,7 +89,6 @@ static void set_color(int index, unsigned int color)
 FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 {
 	int i, r, g, b;
-	unsigned int color;
 	const PALETTE *palette;
 	const unsigned char *mode_association;
 	
@@ -128,10 +138,9 @@ FBCALL void fb_GfxPalette(int index, int red, int green, int blue)
 	}
 	else {
 		if ((green < 0) || (blue < 0))
-			color = (unsigned int)red;
+			set_color(index, (unsigned int)red);
 		else
-			color = (red >> 2) | ((green >> 2) << 8) | ((blue >> 2) << 16);
-		set_color(index, color);
+			set_color_rgb(index, red, green, blue);
 	}
 	
 	fb_hMemSet(__fb_gfx->dirty, TRUE, __fb_gfx->h);
