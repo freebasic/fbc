@@ -867,8 +867,16 @@ all: compiler rtlib gfxlib2
 $(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
        $(newbin) $(new)/lib $(newlib) \
        $(prefix) $(prefixbin) \
-       $(prefix)/lib $(prefixlib)):
+       $(prefix)/lib $(prefixlib) ):
 	mkdir $@
+
+.PHONY: includes
+includes:
+	mkdir -p $(new)/include
+	for file in $(INCLUDES); do \
+		mkdir -p $(new)/`dirname $$file | sed 's|include|$(INCDIR)|'`; \
+		cp -u $$file $(new)/`dirname $$file | sed 's|include|$(INCDIR)|'`;  \
+	done
 
 .PHONY: compiler
 compiler: $(new) $(newcompiler) $(newbin) $(new)/lib $(newlib)

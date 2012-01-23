@@ -46,11 +46,13 @@ merge2arrays( win_incs(), nix_incs(), comm_mod_incs() )
 remove_common( win_incs() )
 remove_common( nix_incs() )
 
-? using "#### DOS #### -> &"; before_dos, ubound(dos_incs), OUT_DOS
-? using "#### WIN #### -> &"; before_win, ubound(win_incs), OUT_WIN
-? using "#### NIX #### -> &"; before_nix, ubound(nix_incs), OUT_NIX
-? using "COM #### -> &"; ubound(comm_incs), OUT_COMMON
-? using "COM MODERN #### -> &"; ubound(comm_mod_incs), OUT_COMMON_MOD
+if command() <> "-q" or command() <> "--quiet" then
+    ? using "#### DOS #### -> &"; before_dos, ubound(dos_incs), OUT_DOS
+    ? using "#### WIN #### -> &"; before_win, ubound(win_incs), OUT_WIN
+    ? using "#### NIX #### -> &"; before_nix, ubound(nix_incs), OUT_NIX
+    ? using "COM #### -> &"; ubound(comm_incs), OUT_COMMON
+    ? using "COM MODERN #### -> &"; ubound(comm_mod_incs), OUT_COMMON_MOD
+end if
 
 write_file( OUT_DOS, dos_incs() )
 write_file( OUT_WIN, win_incs() )
@@ -240,8 +242,8 @@ end sub
 sub write_file( byref fn as const string, arr1() as string )
 
     var prefix = "inc"
-    if environ("TARGET_OS") <> "dos" then
-        prefix = "include/freebasic"
+    if environ("TARGET_OS") <> "dos" or fn <> OUT_DOS then
+        prefix = "include"
     end if
 
 
@@ -256,7 +258,11 @@ sub write_file( byref fn as const string, arr1() as string )
     end select
 
     for n as integer = lbound(arr1) to ubound(arr1)
-        print #ff, prefix & right(arr1(n),len(arr1(n))-3) & " \"
+        if arr1(n) <> "" then
+            var suffix = " \"
+            if n = ubound(arr1) -1 then suffix = ""
+            print #ff, prefix & right(arr1(n),len(arr1(n))-3) & suffix
+        end if
     next n
 
     print #ff, !"\n"

@@ -25,3 +25,10 @@ else
 		endif
 	endif
 endif
+
+ifeq ($(TARGET_OS),dos)
+	INCDIR := inc
+else
+	INCDIR := include/freebasic
+endif
+

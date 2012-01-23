@@ -1,0 +1,26 @@
+INCLUDES += \
+include/crt/dos/dir.bi \
+include/crt/dos/fcntl.bi \
+include/crt/dos/stdio.bi \
+include/crt/dos/time.bi \
+include/crt/dos/unistd.bi \
+include/crt/dos/wchar.bi \
+include/crt/sys/dos/time.bi \
+include/crt/sys/dos/types.bi \
+include/dos/ar.bi \
+include/dos/bios.bi \
+include/dos/conio.bi \
+include/dos/dir.bi \
+include/dos/dos.bi \
+include/dos/dpmi.bi \
+include/dos/go32.bi \
+include/dos/inlines/pc.bi \
+include/dos/pc.bi \
+include/dos/sys/djtypes.bi \
+include/dos/sys/exceptn.bi \
+include/dos/sys/farptr.bi \
+include/dos/sys/movedata.bi \
+include/dos/sys/segments.bi \
+include/dos/sys/version.bi
+
+
