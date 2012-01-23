@@ -161,7 +161,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 	), _
 		/' run ( byref exename as string, byref arguments as string = "" ) as integer '/ _
 		( _
-			@"run", @"fb_RunEx", _
+			@"run", @"fb_Run", _
 	 		FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
