@@ -29,52 +29,45 @@
  '/
 
 #If Defined(__FB_WIN32__) Or Defined(__FB_CYGWIN__)
-#Ifdef FREEGLUT_STATIC
-Extern "C"
-#Else
-Extern "Windows"
-#EndIf
+	#Ifdef FREEGLUT_STATIC
+		Extern "C"
+	#Else
+		Extern "Windows"
+	#EndIf
 #ElseIf Defined(__FB_UNIX__)
-Extern "C"
+	Extern "C"
 #Else
-Extern "C"
+	Extern "C"
 #EndIf
 
 /'
  * Under windows, we have to differentiate between static and dynamic libraries
  '/
 #Ifdef __FB_WIN32__
-
-#Inclib "glu32"
-#Inclib "opengl32"
-#Inclib "gdi32"
-#Inclib "winmm"
-#Inclib "user32"
-
-/' Windows static library '/
-#Ifdef FREEGLUT_STATIC
-#Inclib "freeglut_static"
-#Inclib "advapi32"
-#Define GLUTCALL Cdecl
-
-/' Windows shared library (DLL) '/
-#Else
-#Inclib "freeglut"
-#Define GLUTCALL StdCall
-#EndIf
-
-' Unix
+	#Inclib "glu32"
+	#Inclib "opengl32"
+	#Inclib "gdi32"
+	#Inclib "winmm"
+	#Inclib "user32"
+	#Ifdef FREEGLUT_STATIC
+		/' Windows static library '/
+		#Inclib "freeglut_static"
+		#Inclib "advapi32"
+		#Define GLUTCALL Cdecl
+	#Else
+		/' Windows shared library (DLL) '/
+		#Inclib "freeglut"
+		#Define GLUTCALL StdCall
+	#EndIf
 #ElseIf Defined(__FB_UNIX__)
-#Inclib "glut"
-#Define GLUTCALL Cdecl
-#EndIf
-
-' Other
+	' Unix
+	#Inclib "glut"
+	#Define GLUTCALL Cdecl
 #Else
-#Inclib "freeglut"
-#Define GLUTCALL Cdecl
+	' Other
+	#Inclib "freeglut"
+	#Define GLUTCALL Cdecl
 #EndIf
-
 
 /'
  * The freeglut and GLUT API versions
