@@ -1276,8 +1276,15 @@ sub symbCompRTTIInit()
 
 	symbStructEnd( objVT, TRUE )
 
-	'' create the $fb_Object struct
-	var obj = symbStructBegin( NULL, "Object", "$fb_Object", FALSE, 0 )
+	'' create the $fb_Object struct (the built-in type called [__]OBJECT)
+	dim as zstring ptr ptypename = any
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		ptypename = @"__OBJECT"
+	else
+		ptypename = @"OBJECT"
+	end if
+
+	var obj = symbStructBegin( NULL, ptypename, "$fb_Object", FALSE, 0 )
     symb.rtti.fb_object = obj
 
 	symbSetHasRTTI( obj )
