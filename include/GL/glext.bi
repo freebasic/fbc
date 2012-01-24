@@ -5343,23 +5343,15 @@ Type As UShort GLhalfARB
 Type As UShort GLhalfNV
 #EndIf
 
-#Ifndef GLEXT_64_TYPES_DEFINED
-#Define GLEXT_64_TYPES_DEFINED
-/' This code block is duplicated in glxext.h, so must be protected '/
-Type As Integer int32_t
-Type As LongInt int64_t
-Type As ULongInt uint64_t
-#EndIf
-
 #Ifndef GL_EXT_timer_query
-Type As int64_t GLint64EXT
-Type As uint64_t GLuint64EXT
+Type As LongInt GLint64EXT
+Type As ULongInt GLuint64EXT
 #EndIf
 
 #Ifndef GL_ARB_sync
-Type As int64_t GLint64
-Type As uint64_t GLuint64
-Type As __GLsync Ptr GLsync
+Type As LongInt GLint64
+Type As ULongInt GLuint64
+Type As Any Ptr GLsync
 #EndIf
 
 #Ifndef GL_ARB_cl_event
