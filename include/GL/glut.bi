@@ -289,7 +289,7 @@ declare sub glutReportErrors alias "glutReportErrors" ()
 #define GLUT_JOYSTICK_BUTTON_C 4
 #define GLUT_JOYSTICK_BUTTON_D 8
 
-declare sub glutIgnoreKeyRepeat alias "glutIgnoreKeyRepeat" (byval ignore as integer)
+declare sub glutIgnoreKeyRepeat alias "glutIgnoreKeyRepeat" (byval __ignore as integer)
 declare sub glutSetKeyRepeat alias "glutSetKeyRepeat" (byval repeatMode as integer)
 declare sub glutForceJoystickFunc alias "glutForceJoystickFunc" ()
 
@@ -301,7 +301,7 @@ declare sub glutForceJoystickFunc alias "glutForceJoystickFunc" ()
 #define GLUT_GAME_MODE_REFRESH_RATE 5
 #define GLUT_GAME_MODE_DISPLAY_CHANGED 6
 
-declare sub glutGameModeString alias "glutGameModeString" (byval string as zstring ptr)
+declare sub glutGameModeString alias "glutGameModeString" (byval __string as zstring ptr)
 declare function glutEnterGameMode alias "glutEnterGameMode" () as integer
 declare sub glutLeaveGameMode alias "glutLeaveGameMode" ()
 declare function glutGameModeGet alias "glutGameModeGet" (byval mode as GLenum) as integer
