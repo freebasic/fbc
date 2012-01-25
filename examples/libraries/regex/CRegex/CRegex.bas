@@ -6,13 +6,12 @@
 
 #include once "CRegex.bi"
 
-'':::::
 constructor CRegex _
 	( _
 		byval pattern as zstring ptr, _
 		byval opt as options _
 	) 
-	
+
 	dim as zstring ptr err_msg = any
 	dim as integer err_ofs = any
 	
@@ -25,59 +24,39 @@ constructor CRegex _
 	pcre_fullinfo( reg, extra, PCRE_INFO_CAPTURECOUNT, @substrcnt )
 	substrcnt += 1
 	vectb = allocate( len( integer ) * (3 * substrcnt) )
-    substrlist = NULL
-    
+	substrlist = NULL
 end constructor
 
-'':::::
-sub CRegex.clearSubstrlist _
-	( _
-		_
-	)
-	
+sub CRegex.clearSubstrlist()
 	if( substrlist <> NULL ) then
 		pcre_free_substring_list( substrlist )
 		substrlist = NULL
 	end if
-
 end sub
 
-'':::::
-destructor CRegex _
-	( _
-		_
-	)
-	
+destructor CRegex()
 	clearSubstrlist( )
-	
+
 	if( vectb <> NULL ) then
 		deallocate( vectb )
 		vectb = NULL
 	end if
-	
+
 	if( extra <> NULL ) then
 		pcre_free( extra )
 		extra = NULL
-	end if		
-	
+	end if
+
 	if( reg <> NULL ) then
 		pcre_free( reg )
 		reg = NULL
-	end if		
-	
+	end if
 end destructor
 
-'':::::
-function CRegex.getMaxMatches _
-	( _
-		_
-	) as integer
-
+function CRegex.getMaxMatches() as integer
 	function = substrcnt - 1
-	
 end function
 
-'':::::
 function CRegex.search _
 	( _
 		byval subject as zstring ptr, _
@@ -86,46 +65,28 @@ function CRegex.search _
 	) as integer
 	
 	clearsubstrlist( )
-	
+
 	this.subject = subject
 	sublen = iif( lgt >= 0, lgt, len( *subject ) )
-	
-	function = ( pcre_exec( reg, _
-							extra, _
-							subject, _
-							sublen, _
-							0, _
-							opt, _
-							vectb, _
-							3 * substrcnt ) > 0 )
-	
+
+	function = ( pcre_exec( reg, extra, subject, sublen, 0, opt, vectb, 3 * substrcnt ) > 0 )
 end function
 
-'':::::
 function CRegex.searchNext _
 	( _
 		byval opt as options _
 	) as integer
 
 	clearsubstrlist( )
-         
-	function = ( pcre_exec( reg, _
-							extra, _
-							subject, _
-							sublen, _
-							vectb[1], _
-							opt, _
-							vectb, _
-							3 * substrcnt ) > 0 )
 
+	function = ( pcre_exec( reg, extra, subject, sublen, vectb[1], opt, vectb, 3 * substrcnt ) > 0 )
 end function
 
-'':::::
 function CRegex.getStr _
 	( _
 		byval i as integer _
 	) as zstring ptr
-         
+
 	if( i < 0 ) then
 		return subject
 	end if
@@ -133,21 +94,19 @@ function CRegex.getStr _
 	if( i >= substrcnt ) then
 		return NULL
 	end if
-         
+
 	if( substrlist = NULL ) then
 		pcre_get_substring_list( subject, vectb, substrcnt, @substrlist )
 	end if
-    
-    function = substrlist[i]
-    
+
+	function = substrlist[i]
 end function
 
-'':::::
 function CRegex.getOfs _
 	( _
 		byval i as integer _
 	) as integer
-         
+
 	if( i < 0 ) then
 		return 0
 	end if
@@ -155,17 +114,15 @@ function CRegex.getOfs _
 	if( i >= substrcnt ) then
 		return -1
 	end if
-	
+
 	function = vectb[i * 2 + 0]
-	
 end function
 
-'':::::
 function CRegex.getLen _
 	( _
 		byval i as integer _
 	) as integer
-         
+
 	if( i < 0 ) then
 		return 0
 	end if
@@ -173,7 +130,6 @@ function CRegex.getLen _
 	if( i >= substrcnt ) then
 		return -1
 	end if
-	
+
 	function = vectb[i * 2 + 1] - vectb[i * 2 + 0]
-	
 end function

@@ -1,18 +1,6 @@
-#ifndef __CREGEX_BI__
-#define __CREGEX_BI__
-
 #inclib "CRegex"
 
 #include once "pcre/pcre.bi"
-
-#ifndef NULL
-#define NULL 0
-#endif
-
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
 
 type CRegex
 	enum options
@@ -35,63 +23,51 @@ type CRegex
 		PARTIAL			= &h8000
 	end enum
 
-	declare constructor	_
+	declare constructor _
 		( _
 			byval pattern as zstring ptr, _
 			byval opt as options = NONE _
-		) 
-	
-	declare destructor _
-		( _
-			_
 		)
-	
-	declare function getMaxMatches _
-		( _
-			_
-			) as integer
-	
+
+	declare function getMaxMatches() as integer
+
 	declare function search _
 		( _
 			byval subject as zstring ptr, _
 			byval lgt as integer = -1, _
 			byval opt as options = NONE _
 		) as integer
-	
-	declare function searchNext	_
+
+	declare function searchNext _
 		( _
 			byval opt as options = NONE _
 		) as integer
-	
-	
+
 	declare function getStr _
 		( _
 			byval i as integer = 1 _
 		) as zstring ptr
-	
+
 	declare function getOfs _
 		( _
 			byval i as integer = 1 _
 		) as integer
-	
+
 	declare function getLen _
 		( _
 			byval i as integer = 1 _
 		) as integer
 
+	declare destructor()
+
 private:
-	declare sub clearSubstrlist _
-		( _
-			_
-		)
+	declare sub clearSubstrlist()
 
-	dim as pcre ptr reg = any
-	dim as pcre_extra ptr extra = any
-    dim as integer ptr vectb = any
-    dim as zstring ptr subject = any
-	dim as integer sublen = any
-	dim as integer substrcnt = any
-	dim as zstring ptr ptr substrlist = any
+	as pcre ptr reg
+	as pcre_extra_ ptr extra
+	as integer ptr vectb
+	as zstring ptr subject
+	as integer sublen
+	as integer substrcnt
+	as zstring ptr ptr substrlist
 end type
-
-#endif
