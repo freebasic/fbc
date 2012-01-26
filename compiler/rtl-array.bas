@@ -554,15 +554,15 @@ function rtlArrayClear _
     	exit function
     end if
 
-	if( dtor = NULL ) then
+	if( (ctor = NULL) and (dtor = NULL) ) then
 		'' byval isvarlen as integer
 		if( astNewARG( proc, _
 					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
 					   				 FB_DATATYPE_INTEGER ), _
 					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    else
+			exit function
+		end if
+	else
 		if( check_access ) then
 			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
