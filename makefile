@@ -243,20 +243,24 @@ ifndef prefix
 endif
 
 ifdef ENABLE_STANDALONE
-  newbin     := $(new)
-  newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
-  prefixbin     := $(prefix)
-  prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
+  override newbin     := $(new)
+  override newinclude := $(new)/include
+  override newlib     := $(new)/$(TARGET_PREFIX)lib$(SUFFIX)
+  override prefixbin     := $(prefix)
+  override prefixinclude := $(prefix)/include
+  override prefixlib     := $(prefix)/$(TARGET_PREFIX)lib$(SUFFIX)
 else
   ifeq ($(TARGET_OS),dos)
     FB_NAME := freebas
   else
     FB_NAME := freebasic
   endif
-  newbin     := $(new)/bin
-  newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
-  prefixbin     := $(prefix)/bin
-  prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  override newbin     := $(new)/bin
+  override newinclude := $(new)/include/$(FB_NAME)
+  override newlib     := $(new)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
+  override prefixbin     := $(prefix)/bin
+  override prefixinclude := $(prefix)/include/$(FB_NAME)
+  override prefixlib     := $(prefix)/lib/$(TARGET_PREFIX)$(FB_NAME)$(SUFFIX)
 endif
 
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
@@ -347,7 +351,7 @@ ifdef DISABLE_X
 endif
 
 #
-# Sources
+# Compiler sources
 #
 
 FBC_BI := compiler/ast.bi
@@ -437,6 +441,241 @@ ifndef DISABLE_OBJINFO
 endif
 
 FBC_BAS := $(patsubst %,$(newcompiler)/%.o,$(FBC_BAS))
+
+#
+# Header files
+# (Any listed directory will be run through $(wildcard x/*.bi) as a shortcut)
+#
+
+ifneq ($(TARGET_OS),dos)
+  headers += include/AL/
+endif
+  headers += include/allegro.bi
+  headers += include/allegro/
+  headers += include/allegro/inline/
+  headers += include/allegro/internal/
+  headers += include/allegro/platform/
+  headers += include/aspell.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/bass.bi
+  headers += include/bassmod.bi
+endif
+  headers += include/bfd.bi
+  headers += include/bfd/
+  headers += include/big_int/
+  headers += include/bzlib.bi
+  headers += include/caca.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/cairo/
+endif
+  headers += include/cgui.bi
+  headers += include/chipmunk/
+  headers += include/chipmunk/constraints/
+  headers += include/crt.bi
+  headers += include/crt/arpa/
+  headers += include/crt/bits/
+  headers += include/crt/ctype.bi
+  headers += include/crt/dir.bi
+ifeq ($(TARGET_OS),dos)
+  headers += include/crt/dos/
+endif
+  headers += include/crt/errno.bi
+  headers += include/crt/fcntl.bi
+  headers += include/crt/io.bi
+  headers += include/crt/limits.bi
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  headers += include/crt/linux/
+endif
+  headers += include/crt/malloc.bi
+  headers += include/crt/math.bi
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  headers += include/crt/netdb.bi
+  headers += include/crt/netinet/in.bi
+  headers += include/crt/netinet/linux/in.bi
+endif
+  headers += include/crt/process.bi
+  headers += include/crt/setjmp.bi
+  headers += include/crt/stdarg.bi
+  headers += include/crt/stddef.bi
+  headers += include/crt/stdint.bi
+  headers += include/crt/stdio.bi
+  headers += include/crt/stdlib.bi
+  headers += include/crt/string.bi
+ifeq ($(TARGET_OS),dos)
+  headers += include/crt/sys/dos/
+endif
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  headers += include/crt/sys/linux/
+endif
+  headers += include/crt/sys/select.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/crt/sys/socket.bi
+endif
+  headers += include/crt/sys/stat.bi
+  headers += include/crt/sys/time.bi
+  headers += include/crt/sys/types.bi
+  headers += include/crt/sys/uio.bi
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  headers += include/crt/sys/win32/
+endif
+  headers += include/crt/time.bi
+  headers += include/crt/unistd.bi
+  headers += include/crt/wchar.bi
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  headers += include/crt/win32/
+endif
+  headers += include/cryptlib.bi
+  headers += include/CUnit/
+  headers += include/curl.bi
+  headers += include/curses.bi
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  headers += include/curses/ncurses.bi
+endif
+ifneq ($(filter dos cygwin win32,$(TARGET_OS)),)
+  headers += include/curses/pdcurses.bi
+endif
+  headers += include/datetime.bi
+  headers += include/dir.bi
+  headers += include/dislin.bi
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  headers += include/disphelper/
+endif
+ifeq ($(TARGET_OS),dos)
+  headers += include/dos/
+  headers += include/dos/inlines/
+  headers += include/dos/sys/
+endif
+ifneq ($(TARGET_OS),dos)
+  headers += include/expat.bi
+  headers += include/fastcgi/
+endif
+  headers += include/fbgfx.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/ffi.bi
+endif
+  headers += include/file.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/flite/
+  headers += include/fmod.bi
+  headers += include/FreeImage.bi
+  headers += include/freetype2/
+  headers += include/freetype2/config/
+  headers += include/gd/
+endif
+  headers += include/gdbm.bi
+  headers += include/gdsl/
+  headers += include/gettext-po.bi
+  headers += include/gif_lib.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/GL/
+  headers += include/gmp.bi
+endif
+  headers += include/grx/
+ifneq ($(TARGET_OS),dos)
+  headers += include/gsl/
+  headers += include/gtk/
+  headers += include/gtk/atk/
+  headers += include/gtk/gdk-pixbuf/
+  headers += include/gtk/gdk/
+  headers += include/gtk/gdkgl/
+  headers += include/gtk/glib/
+  headers += include/gtk/gobject/
+  headers += include/gtk/gtk/
+  headers += include/gtk/gtkgl/
+  headers += include/gtk/libart/
+  headers += include/gtk/libglade/
+  headers += include/gtk/pango/
+  headers += include/IL/
+  headers += include/IUP/
+  headers += include/japi.bi
+  headers += include/jit.bi
+  headers += include/jit/
+  headers += include/jni.bi
+endif
+  headers += include/jpeglib.bi
+  headers += include/jpgalleg.bi
+  headers += include/libintl.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/libxml/
+  headers += include/libxslt/
+  headers += include/Lua/
+endif
+  headers += include/lzma.bi
+  headers += include/lzo/
+ifneq ($(TARGET_OS),dos)
+  headers += include/MediaInfo.bi
+  headers += include/mpg123.bi
+  headers += include/mxml.bi
+  headers += include/mysql/
+  headers += include/Newton.bi
+  headers += include/ode/
+  headers += include/ogg/ogg.bi
+endif
+  headers += include/pcre/
+ifneq ($(TARGET_OS),dos)
+  headers += include/pdflib.bi
+endif
+  headers += include/png.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/portaudio.bi
+  headers += include/postgresql/
+endif
+  headers += include/quicklz.bi
+  headers += include/regex.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/SDL/
+endif
+ifneq ($(TARGET_OS),dos)
+  headers += include/sndfile.bi
+  headers += include/spidermonkey/
+endif
+  headers += include/sqlite2.bi
+  headers += include/sqlite3.bi
+  headers += include/string.bi
+  headers += include/tinyptc.bi
+  headers += include/utf_conv.bi
+  headers += include/uuid.bi
+  headers += include/vbcompat.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/vlc/
+  headers += include/vorbis/
+endif
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  headers += include/win/
+  headers += include/win/ddk/
+  headers += $(wildcard include/win/rc/*.h)
+  headers += include/windows.bi
+endif
+ifneq ($(TARGET_OS),dos)
+  headers += include/wx-c/
+endif
+ifeq ($(TARGET_OS),linux)
+  headers += include/X11/
+  headers += include/X11/extensions/
+  headers += include/X11/ICE/
+  headers += include/X11/SM/
+  headers += include/X11/Xcursor/
+  headers += include/X11/Xft/
+  headers += include/X11/Xmu/
+  headers += include/X11/Xtrans/
+endif
+  headers += include/zip.bi
+  headers += include/zlib.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/zmq/
+endif
+
+# All *.bi files given directly
+HEADER_FILES := $(filter %.bi,$(headers))
+# Plus all *.bi files from listed directories
+HEADER_FILES += $(foreach i,$(filter %/,$(headers)),$(wildcard $(i)*.bi))
+
+HEADER_FILES := $(patsubst include/%,$(newinclude)/%,$(HEADER_FILES))
+HEADER_DIRS := $(patsubst %/,%,$(sort $(dir $(HEADER_FILES))))
+
+#
+# rtlib sources
+#
 
 LIBFB_H := rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
@@ -762,6 +1001,10 @@ ifndef DISABLE_MT
   LIBFBMT_S := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_S))
 endif
 
+#
+# gfxlib sources
+#
+
 ifndef DISABLE_GFX
   LIBFBGFX_H := $(LIBFB_H)
   LIBFBGFX_H += gfxlib2/fb_gfx_data.h
@@ -841,8 +1084,6 @@ endif
 LIBFBGFX_C := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_C))
 LIBFBGFX_S := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_S))
 
--include includes.mk
-
 #
 # Build rules
 #
@@ -862,12 +1103,13 @@ ifndef V
 endif
 
 .PHONY: all
-all: compiler rtlib gfxlib2
+all: compiler headers rtlib gfxlib2
 
 $(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
-       $(newbin) $(new)/lib $(newlib) \
+       $(newbin) $(new)/include $(newinclude) $(HEADER_DIRS) \
+       $(new)/lib $(newlib) \
        $(prefix) $(prefixbin) \
-       $(prefix)/lib $(prefixlib) ):
+       $(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib) ):
 	mkdir $@
 
 .PHONY: includes
@@ -902,6 +1144,12 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 
 $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
+
+.PHONY: headers
+headers: $(new)/include $(newinclude)
+headers: $(HEADER_DIRS) $(HEADER_FILES)
+$(HEADER_FILES): $(newinclude)/%.bi: include/%.bi
+	$(QUIET_CP) cp $< $@
 
 .PHONY: rtlib
 rtlib: $(new) $(newlibfb) $(new)/lib $(newlib)
@@ -948,31 +1196,36 @@ $(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-.PHONY: install
-install: install-compiler install-rtlib install-gfxlib2
+.PHONY: install install-compiler install-headers install-rtlib install-gfxlib2
+install: install-compiler install-headers install-rtlib install-gfxlib2
 
-.PHONY: install-compiler
 install-compiler: $(prefixbin) $(prefixlib)
 	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
   ifdef FB_LDSCRIPT
 	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
   endif
 
-.PHONY: install-rtlib
+ifdef ENABLE_STANDALONE
+install-headers: $(prefixinclude)
+	cp -r $(newinclude) $(prefixinclude)
+else
+install-headers:
+	cp -r $(newinclude) $(prefix)/include
+endif
+
 install-rtlib: $(prefixlib)
 	$(INSTALL_FILE) $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(newlib)/libfbmt.a $(prefixlib)/
   endif
 
-.PHONY: install-gfxlib2
 install-gfxlib2: $(prefixlib)
   ifndef DISABLE_GFX
 	$(INSTALL_FILE) $(newlib)/libfbgfx.a $(prefixlib)/
   endif
 
-.PHONY: uninstall uninstall-compiler uninstall-rtlib uninstall-gfxlib2
-uninstall: uninstall-compiler uninstall-rtlib uninstall-gfxlib2
+.PHONY: uninstall uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib2
+uninstall: uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib2
   # The non-standalone build uses freebasic subdirs, e.g. /usr/lib/freebasic,
   # that we should remove if empty.
   ifndef ENABLE_STANDALONE
@@ -983,6 +1236,13 @@ uninstall-compiler:
 	rm -f $(prefixbin)/$(FBC_EXE)
   ifdef FB_LDSCRIPT
 	rm -f $(prefixlib)/$(FB_LDSCRIPT)
+  endif
+
+uninstall-headers:
+  ifdef ENABLE_STANDALONE
+	rm -rf $(prefixinclude)/*
+  else
+	rm -rf $(prefixinclude)
   endif
 
 uninstall-rtlib:
@@ -996,8 +1256,8 @@ uninstall-gfxlib2:
 	rm -f $(prefixlib)/libfbgfx.a
   endif
 
-.PHONY: clean clean-compiler clean-rtlib clean-gfxlib2
-clean: clean-compiler clean-rtlib clean-gfxlib2
+.PHONY: clean clean-compiler clean-headers clean-rtlib clean-gfxlib2
+clean: clean-compiler clean-headers clean-rtlib clean-gfxlib2
   ifndef ENABLE_STANDALONE
 	-rmdir $(newbin)
   endif
@@ -1013,6 +1273,12 @@ clean-compiler:
 	rm -f $(newlib)/$(FB_LDSCRIPT)
   endif
 	-rmdir $(newcompiler)
+
+clean-headers:
+	rm -rf $(newinclude)
+  ifndef ENABLE_STANDALONE
+	-rmdir $(new)/include
+  endif
 
 clean-rtlib:
 	rm -f $(newlib)/fbrt0.o $(newlib)/libfb.a $(newlibfb)/*.o
@@ -1031,8 +1297,8 @@ clean-gfxlib2:
 .PHONY: help
 help:
 	@echo "Available commands, use them to..."
-	@echo "  <none>|all                 build compiler and runtime libraries"
-	@echo "  compiler|rtlib|gfxlib2     (specific component only)"
+	@echo "  <none>|all                 build everything"
+	@echo "  compiler|headers|rtlib|gfxlib2     (specific component only)"
 	@echo "  clean[-<component>]        remove built files"
 	@echo "  install[-<component>]      install into prefix"
 	@echo "  uninstall[-<component>]    remove from prefix"
