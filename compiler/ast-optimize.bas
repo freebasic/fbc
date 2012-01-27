@@ -890,52 +890,82 @@ private sub hOptConstIdxMult _
 
 end sub
 
-'':::::
-private function hOptDerefAddr _
+private function astIncOffset _
 	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval ofs as integer _
+	) as integer
 
+	select case as const n->class
+	case AST_NODECLASS_VAR
+		n->var_.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_IDX
+		n->idx.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_DEREF
+		n->ptr.ofs += ofs
+		function = TRUE
+
+	case AST_NODECLASS_LINK
+		if( n->link.ret_left ) then
+			function = astIncOffset( n->l, ofs )
+		else
+			function = astIncOffset( n->r, ofs )
+		end if
+
+	case AST_NODECLASS_FIELD
+		function = astIncOffset( n->l, ofs )
+
+	case else
+		function = FALSE
+	end select
+
+end function
+
+private function hOptDerefAddr( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr l = n->l
+	dim as integer ofs = 0
 
 	select case l->class
 	case AST_NODECLASS_OFFSET
-		dim as integer dtype = astGetFullType( n )
-		dim as FBSYMBOL ptr subtype = n->subtype
-
 		'' newBOP() will optimize ofs + const nodes, but we can't use the full
 		'' ofs.ofs value because it has computed already the child's (var/idx) ofs
-		dim as integer ofs = n->ptr.ofs + _
-							 l->ofs.ofs - astGetOFFSETChildOfs( l->l )
+		ofs = l->ofs.ofs - astGetOFFSETChildOfs( l->l )
 
-		astDelNode( n )
-		n = l->l
-		astDelNode( l )
-
-		astSetType( n, dtype, subtype )
-		if( ofs <> 0 ) then
-			astIncOffset( n, ofs )
-		end if
-
-	'' convert *@expr to expr
 	case AST_NODECLASS_ADDROF
-		dim as integer dtype = astGetFullType( n )
-		dim as FBSYMBOL ptr subtype = n->subtype
-		dim as integer ofs = n->ptr.ofs
 
-		astDelNode( n )
-		n = l->l
-		astDelNode( l )
-
-		astSetType( n, dtype, subtype )
-		if( ofs <> 0 ) then
-			astIncOffset( n, ofs )
-		end if
-
+	case else
+		return n
 	end select
 
-	function = n
+	assert( astIsDEREF(n) )
+	ofs += n->ptr.ofs
 
+	'' *(@[expr] +   0)    ->    [expr]
+	'' *(@[expr] + ofs)    ->    [expr+ofs]
+
+	'' If the deref uses an <> 0 offset then try to include that into
+	'' any child var/idx/deref nodes. If that's not possible, then this
+	'' optimization can't be done.
+	if( ofs <> 0 ) then
+		if( astIncOffset( l->l, ofs ) = FALSE ) then
+			return n
+		end if
+	end if
+
+	dim as integer dtype = astGetFullType( n )
+	dim as FBSYMBOL ptr subtype = n->subtype
+
+	astDelNode( n )
+	n = l->l
+	astDelNode( l )
+
+	astSetType( n, dtype, subtype )
+
+	function = n
 end function
 
 '':::::

@@ -49,6 +49,7 @@ Version 0.24.0:
 - 'PALETTE index, r, g, b' wasn't behaving as expected on some obscure SCREEN modes
 - Built-in macros are now working in -lang qb (__RGB(), __BIT(), __ASSERT(), ...)
 - ERASE crashed on arrays of UDTs with constructor but no destructor
+- Internal compiler error in cases like: '*(@cast(ubyte, byte_var_or_array_element) + 1)'
 
 
 Version 0.23.0:

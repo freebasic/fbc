@@ -1227,12 +1227,6 @@ declare sub astDtorListClear _
 	( _
 	)
 
-declare sub astIncOffset _
-	( _
-		byval n as ASTNODE ptr, _
-		byval ofs as integer _
-	)
-
 declare sub astSetType _
 	( _
 		byval n as ASTNODE ptr, _
