@@ -919,6 +919,26 @@ private function astIncOffset _
 	case AST_NODECLASS_FIELD
 		function = astIncOffset( n->l, ofs )
 
+	case AST_NODECLASS_CONV
+		'' There can be CONV nodes here, in cases like:
+		''      dim as integer i(0 to 1)
+		''      print *(@cast(long, i(0)) + offset)
+		''
+		'' (when 1. the cast() is added because it's a different dtype,
+		'' and 2. the @ accepts the cast() because it's doconv = FALSE
+		'' because the dtypes are similar enough/have the same size,
+		'' and 3. the offset is <> 0)
+		''
+		'' but also field access after upcasting of derived UDTs:
+		''      print cast(BaseUDT, udt).foo
+		'' if foo's offset is <> 0.
+
+		if (n->cast.doconv = FALSE) then
+			function = astIncOffset( n->l, ofs )
+		else
+			function = FALSE
+		end if
+
 	case else
 		function = FALSE
 	end select
