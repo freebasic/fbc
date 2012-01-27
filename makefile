@@ -1294,14 +1294,86 @@ clean-gfxlib2:
 	-rmdir $(newlibfbgfx)
   endif
 
+################################################################################
+# 'make release'
+#
+# TODO:
+#   - man page
+#   - DJGPP/MinGW libs (FB's patched DJGPP libc: require user to copy into new/lib/, e.g. from prev FB release..)
+#   - win32 import libs
+#   - NSIS installer + start-shell.exe
+#   - wget https://raw.github.com/atgreen/libffi/master/LICENSE
+#     then move to doc/LICENSE.libffi
+#   - install.sh script for Linux
+#   - .tar.gz instead of .zip for Linux
+
+ifdef ENABLE_STANDALONE
+  DIST_TARGET := $(TARGET_OS)-standalone
+else
+  DIST_TARGET := $(TARGET_OS)
+endif
+
+DIST_MANIFEST := contrib/manifest/$(DIST_TARGET).lst
+
+DIST_STUFF := bin/ doc/ include/ lib/
+ifdef ENABLE_STANDALONE
+  DIST_STUFF += $(FBC_EXE) examples/
+endif
+
+DIST_VERSION := 0.24.0
+DIST_TITLE := FreeBASIC-$(DIST_VERSION)-$(DIST_TARGET)
+DIST_ZIP := $(DIST_TITLE).zip
+
+.PHONY: manifest
+manifest:
+	cd $(new) && find $(sort $(DIST_STUFF)) -type f | sort > ../$(DIST_MANIFEST)
+
+$(new)/doc:
+	mkdir $@
+
+$(new)/examples:
+	cp -r examples/ $(new)
+
+# 1) zip everything into a temp.zip
+# 2) mkdir FreeBASIC-X.XX.X-target
+# 3) unzip everything into that new dir
+# 4) rezip that dir
+$(DIST_ZIP):
+	cd $(new) && zip -@ -q temp.zip < ../$(DIST_MANIFEST)
+	mkdir $(new)/$(DIST_TITLE)
+	mv $(new)/temp.zip $(new)/$(DIST_TITLE)
+	cd $(new)/$(DIST_TITLE) && unzip -q temp.zip
+	rm $(new)/$(DIST_TITLE)/temp.zip
+	rm -f $(new)/$@
+	cd $(new) && zip -r -q $@ $(DIST_TITLE)
+	rm -rf $(new)/$(DIST_TITLE)
+
+.PHONY: release
+
+# Build/copy in all files
+release: all
+release: $(new)/doc
+ifdef ENABLE_STANDALONE
+release: $(new)/examples
+endif
+
+# Create the manifest
+release: manifest
+
+# Packaging
+release: $(DIST_ZIP)
+
+################################################################################
+
 .PHONY: help
 help:
 	@echo "Available commands, use them to..."
 	@echo "  <none>|all                 build everything"
-	@echo "  compiler|headers|rtlib|gfxlib2     (specific component only)"
-	@echo "  clean[-<component>]        remove built files"
-	@echo "  install[-<component>]      install into prefix"
-	@echo "  uninstall[-<component>]    remove from prefix"
+	@echo "  compiler|headers|rtlib|gfxlib2   (specific component only)"
+	@echo "  clean[-component]          remove built files"
+	@echo "  install[-component]        install into prefix"
+	@echo "  uninstall[-component]      remove from prefix"
+	@echo "  release                    build a release package"
 	@echo "Variables, use them to..."
 	@echo "  FBFLAGS  add '-exx' or similar (affects the compiler only)"
 	@echo "  CFLAGS   override the default '-O2' (affects the runtime only)"
