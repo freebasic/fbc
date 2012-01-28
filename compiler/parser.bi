@@ -156,7 +156,7 @@ end type
 enum FB_PARSEROPT
 	FB_PARSEROPT_NONE			= &h00000000
 	FB_PARSEROPT_PRNTOPT		= &h00000001
-	FB_PARSEROPT_CHKARRAY		= &h00000002	'' used by LEN() to handle expr's and ()-less arrays
+	FB_PARSEROPT_CHKARRAY		= &h00000002	'' used by LEN() to handle expr's and ()-less arrays (while set, there will be "array access, index expected" errors, unsetting allows to have no-index arrays, e.g. as bydesc arguments, or in l/ubound())
 	FB_PARSEROPT_ISEXPR			= &h00000004	'' parsing an expression?
 	FB_PARSEROPT_ISSCOPE		= &h00000008
 	FB_PARSEROPT_ISFUNC			= &h00000010
@@ -250,6 +250,7 @@ enum FB_VAREXPROPT
 	FB_VAREXPROPT_NOARRAYCHECK = &h00000001
 	FB_VAREXPROPT_ALLOWADDROF  = &h00000002
 	FB_VAREXPROPT_ISEXPR       = &h00000004
+	FB_VAREXPROPT_ISASSIGN     = &h00000010  '' Used by SWAP to disallow CALLs etc.
 end enum
 
 declare sub cProgram()

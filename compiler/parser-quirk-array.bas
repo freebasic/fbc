@@ -75,7 +75,7 @@ function cArrayStmt _
 	case FB_TK_SWAP
 		lexSkipToken( )
 
-		expr1 = cVarOrDeref( )
+		expr1 = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
@@ -84,7 +84,7 @@ function cArrayStmt _
 
 		hMatchCOMMA( )
 
-		expr2 = cVarOrDeref( )
+		expr2 = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
 		if( expr2 = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			astDelTree( expr1 )

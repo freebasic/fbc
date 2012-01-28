@@ -347,21 +347,6 @@ function rtlMemSwap _
 	src_dtype = astGetDataType( src )
 	dst_dtype = astGetDataType( dst )
 
-	select case src_dtype
-	case FB_DATATYPE_STRUCT
-		'' returned in registers?
-		if( astIsCALL( src ) ) then
-			dim as FBSYMBOL ptr subtype = src->subtype
-			'' patch type
-			if( symbIsUDTReturnedInRegs( subtype ) ) then
-				astSetType( src, symbGetUDTRetType( subtype ), NULL )
-			end if
-		end if
-
-	'case FB_DATATYPE_CLASS
-		' ...
-	end select
-
 	'' simple type?
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
 	dim as integer l_bf = astIsBITFIELD( dst ), r_bf = astIsBITFIELD( src )
