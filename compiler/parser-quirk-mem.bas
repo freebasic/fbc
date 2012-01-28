@@ -250,7 +250,7 @@ sub cOperatorDelete()
 		lexSkipToken( )
 	end if
 
-	ptr_expr = cVarOrDeref( , , TRUE )
+	ptr_expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
 	if( ptr_expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		hSkipStmt( )

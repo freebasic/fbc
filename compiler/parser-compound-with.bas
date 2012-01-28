@@ -18,7 +18,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     dtype = FB_DATATYPE_VOID
     
     '' Variable
-	expr = cVarOrDeref( , , TRUE )
+	expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a var

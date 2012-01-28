@@ -244,6 +244,13 @@ enum FB_PROCOPT
 	FB_PROCOPT_HASPARENT		= &h00000004
 end enum
 
+'' cVarOrDeref flags
+enum FB_VAREXPROPT
+	FB_VAREXPROPT_NONE         = &h00000000
+	FB_VAREXPROPT_NOARRAYCHECK = &h00000001
+	FB_VAREXPROPT_ALLOWADDROF  = &h00000002
+	FB_VAREXPROPT_ISEXPR       = &h00000004
+end enum
 
 declare sub cProgram()
 
@@ -701,17 +708,9 @@ declare function cImplicitDataMember _
 		byval checkarray as integer _
 	) as ASTNODE ptr
 
-declare function cVarOrDerefEx _
-	( _
-		byval checkarray as integer = TRUE, _
-		byval checkaddrof as integer = FALSE _
-	) as ASTNODE ptr
-
 declare function cVarOrDeref _
 	( _
-		byval checkarray as integer = TRUE, _
-		byval checkaddrof as integer = FALSE, _
-		byval force_expr as integer = FALSE _
+		byval options as FB_VAREXPROPT = FB_VAREXPROPT_NONE _
 	) as ASTNODE ptr
 
 declare function cFunctionEx _

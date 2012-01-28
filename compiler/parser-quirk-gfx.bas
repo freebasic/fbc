@@ -130,7 +130,7 @@ private function hGetTarget _
 
     '' flag it as an expression so
     '' properties don't get confused
-	expr = cVarOrDeref( FALSE, TRUE, TRUE )
+	expr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK or FB_VAREXPROPT_ALLOWADDROF or FB_VAREXPROPT_ISEXPR )
 	if( expr = NULL ) then
 		exit function
 	end if

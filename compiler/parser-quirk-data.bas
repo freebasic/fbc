@@ -56,7 +56,7 @@ function cDataStmt  _
 
 		dim as ASTNODE ptr expr = NULL
 		do
-			expr = cVarOrDeref(  )
+			expr = cVarOrDeref( )
 			if( expr = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				hSkipUntil( CHAR_COMMA )

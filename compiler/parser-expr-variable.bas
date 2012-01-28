@@ -1596,29 +1596,22 @@ function cImplicitDataMember _
 
 end function
 
-'':::::
-function cVarOrDerefEx _
+'' cVarOrDeref = Deref | PtrTypeCasting | AddrOf | Variable
+function cVarOrDeref _
 	( _
-		byval check_array as integer, _
-		byval allow_addrof as integer _
+		byval options as FB_VAREXPROPT _
 	) as ASTNODE ptr
 
-'':::
-#macro hInvalidType( )
-	astDelTree( expr )
-	errReport( FB_ERRMSG_INVALIDDATATYPES )
-#endmacro
+	dim as integer last_isexpr = any
+	if( options and FB_VAREXPROPT_ISEXPR ) then
+		last_isexpr = fbGetIsExpression( )
+		fbSetIsExpression( TRUE )
+	end if
 
-	dim as integer res = any
-	dim as FB_PARSEROPT options = any
-	dim as ASTNODE ptr expr = any
-
-	options = parser.options
-	fbSetCheckArray( check_array )
-
-	expr = cHighestPrecExpr( NULL, NULL )
-
-	parser.options = options
+	dim as FB_PARSEROPT parseroptions = parser.options
+	fbSetCheckArray( ((options and FB_VAREXPROPT_NOARRAYCHECK) = 0) )
+	dim as ASTNODE ptr expr = cHighestPrecExpr( NULL, NULL )
+	parser.options = parseroptions
 
 	if( expr <> NULL ) then
 		'' skip any casting if they won't do any conversion
@@ -1629,59 +1622,36 @@ function cVarOrDerefEx _
 			end if
 		end if
 
+		dim as integer complain = TRUE
+
 		select case as const astGetClass( t )
 		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
 			 AST_NODECLASS_DEREF, AST_NODECLASS_CALL, AST_NODECLASS_NIDXARRAY
+			complain = FALSE
+
 
 		case AST_NODECLASS_ADDROF, AST_NODECLASS_OFFSET
-			if( allow_addrof = FALSE ) then
-				hInvalidType( )
-				'' no error recovery: caller will take care
-				return NULL
-			end if
+			complain = ((options and FB_VAREXPROPT_ALLOWADDROF) = 0)
 
 		case AST_NODECLASS_BOP
 			'' allow addresses?
-			if( allow_addrof ) then
+			if( options and FB_VAREXPROPT_ALLOWADDROF ) then
 				'' not a pointer? (@foo[bar] will be converted to foo + bar)
-				if( typeIsPtr( astGetDataType( expr ) ) = FALSE ) then
-					hInvalidType( )
-					return NULL
-				end if
-			else
-				hInvalidType( )
-				return NULL
+				complain = not typeIsPtr( astGetDataType( expr ) )
 			end if
-
-		case else
-			hInvalidType( )
-			return NULL
 		end select
+
+		if( complain ) then
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+			astDelTree( expr )
+			expr = NULL
+			'' no error recovery: caller will take care
+		end if
 	end if
 
 	function = expr
 
-end function
-
-'':::::
-''cVarOrDeref		= 	Deref | PtrTypeCasting | AddrOf | Variable
-''
-function cVarOrDeref _
-	( _
-		byval check_array as integer, _
-		byval allow_addrof as integer, _
-		byval force_expr as integer _
-	) as ASTNODE ptr
-
-	dim as integer last_isexpr = any
-	if( force_expr ) then
-		last_isexpr = fbGetIsExpression( )
-		fbSetIsExpression( TRUE )
-	end if
-
-	function = cVarOrDerefEx( check_array, allow_addrof )
-
-	if( force_expr ) then
+	if( options and FB_VAREXPROPT_ISEXPR ) then
 		fbSetIsExpression( last_isexpr )
 	end if
 

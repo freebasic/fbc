@@ -28,7 +28,7 @@ function cArrayStmt _
 		lexSkipToken( )
 
 		do
-			expr1 = cVarOrDeref( FALSE )
+			expr1 = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
 			if( expr1 = NULL ) then
 				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				hSkipUntil( CHAR_COMMA )
@@ -75,7 +75,7 @@ function cArrayStmt _
 	case FB_TK_SWAP
 		lexSkipToken( )
 
-		expr1 = cVarOrDeref(  )
+		expr1 = cVarOrDeref( )
 		if( expr1 = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			hSkipStmt( )
@@ -84,7 +84,7 @@ function cArrayStmt _
 
 		hMatchCOMMA( )
 
-		expr2 = cVarOrDeref(  )
+		expr2 = cVarOrDeref( )
 		if( expr2 = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			astDelTree( expr1 )
@@ -152,7 +152,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		hMatchLPRNT( )
 
 		'' ID
-		arrayexpr = cVarOrDeref( FALSE )
+		arrayexpr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
 		if( arrayexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: skip until next ')' and fake an expr
