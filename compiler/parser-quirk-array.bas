@@ -92,6 +92,12 @@ function cArrayStmt _
 			return TRUE
 		end if
 
+		'' don't allow any consts...
+		if( typeIsConst( astGetFullType( expr1 ) ) or _
+		    typeIsConst( astGetFullType( expr2 ) ) ) then
+			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+		end if
+
 		select case as const astGetDataType( expr1 )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 			select case astGetDataType( expr2 )
@@ -109,12 +115,6 @@ function cArrayStmt _
 			end if
 
 		case else
-			'' don't allow any consts...
-			if( typeIsConst( astGetFullType( expr1 ) ) or _
-			    typeIsConst( astGetFullType( expr2 ) ) ) then
-				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-			end if
-
 			'' Check for invalid types by checking whether a raw assignment
 			'' would work (raw because astCheckASSIGN() doesn't check
 			'' operator overloads)
