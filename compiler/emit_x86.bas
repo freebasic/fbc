@@ -5641,6 +5641,7 @@ private sub _emitPOPI _
 		end if
 
 	elseif( dsize = FB_INTEGERSIZE ) then
+		'' POP 4 bytes directly, no need for intermediate code
 		ostr = "pop " + dst
 		outp ostr
 
@@ -5650,18 +5651,44 @@ private sub _emitPOPI _
 			ostr = "pop " + dst
 			outp ostr
 		else
-			outp "xchg eax, [esp]"
+			dim as integer reg, isfree
+			dim as string aux8, aux16, aux32
 
-			if( dsize = 1 ) then
-				hMOV dst, "al"
+			assert( (dsize = 1) or (dsize = 2) )
+
+			reg = hFindRegNotInVreg( dvreg )
+			assert( reg <> INVALID )
+
+			aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
+			aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
+			aux32 = *hGetRegName( FB_DATATYPE_INTEGER, reg )
+
+			isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+			if( isfree ) then
+				'' reg is free, overwrite with value from stack
+				hMOV aux32, "dword ptr [esp]"
 			else
-				hMOV dst, "ax"
+				'' reg is used, swap it with value from stack,
+				'' so the reg can be used with the new value,
+				'' while its old value is preserved and
+				'' restored later during the pop.
+				hXCHG aux32, "dword ptr [esp]"
 			end if
 
-			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) = FALSE ) then
-				hPOP "eax"
+			'' Extract the wanted byte/short and store it
+			if( dsize = 1 ) then
+				hMOV dst, aux8
 			else
+				hMOV dst, aux16
+			end if
+
+			if( isfree ) then
+				'' pop
 				outp "add esp, 4"
+			else
+				'' pop and restore the preserved reg value
+				hPOP aux32
 			end if
 		end if
 

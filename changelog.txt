@@ -52,6 +52,7 @@ Version 0.24.0:
 - ERASE crashed on arrays of UDTs with constructor but no destructor
 - Internal compiler error in cases like: '*(@cast(ubyte, byte_var_or_array_element) + 1)'
 - SWAP allowed [z|w]strings marked as CONST
+- #3215431: SWAP on byte/short array elements could generate bad code
 
 
 Version 0.23.0:
