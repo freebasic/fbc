@@ -888,10 +888,8 @@ declare function cDataStmt _
 		byval tk as FB_TOKEN _
 	) as integer
 
-declare function cArrayStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
+declare function cEraseStmt() as integer
+declare function cSwapStmt() as integer
 
 declare function cLineInputStmt _
 	( _

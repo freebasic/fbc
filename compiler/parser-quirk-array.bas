@@ -9,126 +9,117 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-'':::::
-''ArrayStmt   	  =   ERASE ID (',' ID)*;
-''				  |   SWAP Variable, Variable .
-''
-function cArrayStmt _
-	( _
-		byval tk as FB_TOKEN _
-	) as integer
+'' EraseStmt = ERASE ID (',' ID)*
+function cEraseStmt() as integer
+	lexSkipToken( )
 
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr1, expr2
+	do
+		var expr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipUntil( CHAR_COMMA )
+		else
+			'' ugly hack to deal with arrays w/o indexes
+			if( astIsNIDXARRAY( expr ) ) then
+				var expr2 = astGetLeft( expr )
+				astDelNode( expr )
+				expr = expr2
+			end if
 
-	function = FALSE
+			'' array?
+			var s = astGetSymbol( expr )
+			if( s <> NULL ) then
+				if( symbIsArray( s ) = FALSE ) then
+					s = NULL
+				end if
+			end if
 
-	select case tk
-	case FB_TK_ERASE
-		lexSkipToken( )
-
-		do
-			expr1 = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
-			if( expr1 = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			if( s = NULL ) then
+				errReport( FB_ERRMSG_EXPECTEDARRAY )
 				hSkipUntil( CHAR_COMMA )
 			else
-				'' ugly hack to deal with arrays w/o indexes
-				if( astIsNIDXARRAY( expr1 ) ) then
-					expr2 = astGetLeft( expr1 )
-					astDelNode( expr1 )
-					expr1 = expr2
+				if( typeIsConst( astGetFullType( expr ) ) ) then
+					errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 				end if
 
-				'' array?
-    			s = astGetSymbol( expr1 )
-    			if( s <> NULL ) then
-    				if( symbIsArray( s ) = FALSE ) then
-    					s = NULL
-    				end if
-    			end if
-
-				if( s = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDARRAY )
-					hSkipUntil( CHAR_COMMA )
+				if( symbGetIsDynamic( s ) ) then
+					expr = rtlArrayErase( expr )
 				else
-					if( typeIsConst( astGetFullType( expr1 ) ) ) then
-						errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-					end if
-					
-					if( symbGetIsDynamic( s ) ) then
-						expr1 = rtlArrayErase( expr1 )
-					else
-						expr1 = rtlArrayClear( expr1, TRUE )
-					end if
-
-					astAdd( expr1 )
+					expr = rtlArrayClear( expr, TRUE )
 				end if
+
+				astAdd( expr )
 			end if
-
-		'' ','?
-		loop while( hMatch( CHAR_COMMA ) )
-
-		function = TRUE
-
-	'' SWAP Variable, Variable
-	case FB_TK_SWAP
-		lexSkipToken( )
-
-		expr1 = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
-		if( expr1 = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			hSkipStmt( )
-			return TRUE
 		end if
 
-		hMatchCOMMA( )
+	'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
 
-		expr2 = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
-		if( expr2 = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			astDelTree( expr1 )
-			hSkipStmt( )
-			return TRUE
-		end if
+	function = TRUE
+end function
 
-		'' don't allow any consts...
-		if( typeIsConst( astGetFullType( expr1 ) ) or _
-		    typeIsConst( astGetFullType( expr2 ) ) ) then
-			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-		end if
+'' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
+function cSwapStmt() as integer
+	lexSkipToken( )
 
-		select case as const astGetDataType( expr1 )
+	var l = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
+	if( l = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	hMatchCOMMA( )
+
+	var r = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
+	if( r = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		astDelTree( l )
+		hSkipStmt( )
+		return TRUE
+	end if
+
+	'' don't allow any consts...
+	if( typeIsConst( astGetFullType( l ) ) or _
+	    typeIsConst( astGetFullType( r ) ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+	end if
+
+	dim as integer ldtype = astGetDataType( l )
+	dim as integer rdtype = astGetDataType( r )
+
+	select case ldtype
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		select case rdtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-			select case astGetDataType( expr2 )
-			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-				function = rtlStrSwap( expr1, expr2 )
-			case else
-				errReport( FB_ERRMSG_TYPEMISMATCH )
-			end select
-
-		case FB_DATATYPE_WCHAR
-			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				errReport( FB_ERRMSG_TYPEMISMATCH )
-			else
-				function = rtlWstrSwap( expr1, expr2 )
-			end if
-
+			function = rtlStrSwap( l, r )
 		case else
-			'' Check for invalid types by checking whether a raw assignment
-			'' would work (raw because astCheckASSIGN() doesn't check
-			'' operator overloads)
-			dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( expr1 ), astGetSubtype( expr1 ) )
-			if( astCheckASSIGN( fakelhs, expr2 ) = FALSE ) then
-				errReport( FB_ERRMSG_TYPEMISMATCH )
-			end if
-			astDelTree( fakelhs )
-
-			function = rtlMemSwap( expr1, expr2 )
+			errReport( FB_ERRMSG_TYPEMISMATCH )
 		end select
-
+		exit function
 	end select
 
+	if( ldtype = FB_DATATYPE_WCHAR ) then
+		if( rdtype = FB_DATATYPE_WCHAR ) then
+			function = rtlWstrSwap( l, r )
+		else
+			errReport( FB_ERRMSG_TYPEMISMATCH )
+		end if
+		exit function
+	end if
+
+	'' Check for invalid types by checking whether a raw assignment
+	'' would work (raw because astCheckASSIGN() doesn't check
+	'' operator overloads)
+	dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( l ), astGetSubtype( l ) )
+	dim as integer ok = astCheckASSIGN( fakelhs, r )
+	astDelTree( fakelhs )
+	if( ok = FALSE ) then
+		errReport( FB_ERRMSG_TYPEMISMATCH )
+		exit function
+	end if
+
+	return rtlMemSwap( l, r )
 end function
 
 '':::::

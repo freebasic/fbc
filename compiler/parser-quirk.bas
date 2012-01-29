@@ -64,9 +64,13 @@ function cQuirkStmt _
 		CHECK_CODEMASK( )
 		res = cDataStmt( tk )
 
-	case FB_TK_ERASE, FB_TK_SWAP
+	case FB_TK_ERASE
 		CHECK_CODEMASK( )
-		res = cArrayStmt( tk )
+		res = cEraseStmt()
+
+	case FB_TK_SWAP
+		CHECK_CODEMASK( )
+		res = cSwapStmt()
 
 	case FB_TK_LINE
 		CHECK_CODEMASK( )
