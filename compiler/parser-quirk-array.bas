@@ -119,6 +119,75 @@ function cSwapStmt() as integer
 		exit function
 	end if
 
+	'' simple type?
+	'' !!!FIXME!!! other classes should be allowed too, but pointers??
+	dim as integer l_bf = astIsBITFIELD( l ), r_bf = astIsBITFIELD( r )
+	if( (ldtype <> FB_DATATYPE_STRUCT) and (astIsVAR( l ) or (l_bf or r_bf)) ) then
+
+		dim as ASTNODE ptr d = any, s = any
+
+		'' left-side is bitfield...
+		if( l_bf ) then
+			ldtype = symbGetFullType( astGetSubtype( astGetLeft( l ) ) )
+
+			'' left-side references temp var
+			d = astNewVAR( symbAddTempVar( ldtype ) )
+
+			'' assign bitfield to temp var
+			astAdd( astNewASSIGN( d, astCloneTree( l ) ) )
+
+		else
+			'' left-side references tree
+			d = l
+		end if
+
+		'' high-level IR? use a temp var...
+		dim as FBSYMBOL ptr tmpvar = NULL
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		    tmpvar = symbAddTempVar( ldtype, astGetSubType( d ) )
+			astAdd( astNewASSIGN( astNewVAR( tmpvar, , ldtype, astGetSubType( d ) ), astCloneTree( d ) ) )
+		else
+			'' push left-side
+			astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( d ) ) )
+		end if
+
+		'' right-side is bitfield...
+		dim as FBSYMBOL ptr r_sym = any
+		if( r_bf ) then
+			'' allocate temp var
+			r_sym = symbAddTempVar( symbGetFullType( astGetSubtype( astGetLeft( r ) ) ) )
+
+			'' right-side references temp var
+			s = astNewVAR( r_sym )
+
+			'' assign bitfield to temp var
+			astAdd( astNewASSIGN( s, astCloneTree( r ) ) )
+		else
+			'' right-side references tree
+			s = r
+		end if
+
+		'' left-side = right-side
+		astAdd( astNewASSIGN( l, astCloneTree( s ) ) )
+
+		'' right-side is bitfield...
+		if( r_bf ) then
+			'' pop to temp var
+			astAdd( astNewSTACK( AST_OP_POP, astNewVAR( r_sym ) ) )
+
+			'' assign to right-side from temp var
+			astAdd( astNewASSIGN( r, astNewVAR( r_sym ) ) )
+		elseif( tmpvar ) then
+			'' high-level IR, uses a temp var
+			astAdd( astNewASSIGN( r, astNewVAR( tmpvar, , ldtype, astGetSubType( d ) ) ) )
+		else
+			'' pop to right-side
+			astAdd( astNewSTACK( AST_OP_POP, r ) )
+		end if
+
+		exit function
+	end if
+
 	return rtlMemSwap( l, r )
 end function
 
