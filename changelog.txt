@@ -56,6 +56,7 @@ Version 0.24.0:
 - SWAP on bitfields now works with -gen gcc (caused internal compiler error), and won't use extra temp vars anymore
 - 'SWAP a, b' could produce different results than 'SWAP b, a'
 - SWAP on operands with different sizes could generate bad code
+- #2824381: UDTs with methods inside module-level scope blocks caused compiler crash instead of error message
 
 
 Version 0.23.0:

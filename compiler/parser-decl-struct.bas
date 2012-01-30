@@ -780,8 +780,8 @@ decl_inner:		'' it's an anonymous inner UDT
 end function
 
 private sub hCheckForCDtorOrMethods(byval sym as FBSYMBOL ptr)
-	'' inside a proc?
-	if( fbIsModLevel( ) = FALSE ) then
+	'' Not at module level?
+	if( parser.scope > FB_MAINSCOPE ) then
 		'' we can't allow objects (or their children) with c/dtor
 		if( symbGetUDTHasCtorField( sym ) ) then
 			errReportEx( FB_ERRMSG_NOOOPINFUNCTIONS, symbGetName( sym ) )
