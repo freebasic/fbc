@@ -53,6 +53,7 @@ Version 0.24.0:
 - Internal compiler error in cases like: '*(@cast(ubyte, byte_var_or_array_element) + 1)'
 - SWAP allowed [z|w]strings marked as CONST
 - #3215431: SWAP on byte/short array elements could generate bad code
+- SWAP on bitfields now works with -gen gcc (caused internal compiler error), and won't use extra temp vars anymore
 
 
 Version 0.23.0:
