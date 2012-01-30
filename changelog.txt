@@ -54,6 +54,8 @@ Version 0.24.0:
 - SWAP allowed [z|w]strings marked as CONST
 - #3215431: SWAP on byte/short array elements could generate bad code
 - SWAP on bitfields now works with -gen gcc (caused internal compiler error), and won't use extra temp vars anymore
+- 'SWAP a, b' could produce different results than 'SWAP b, a'
+- SWAP on operands with different sizes could generate bad code
 
 
 Version 0.23.0:

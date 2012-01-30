@@ -58,6 +58,36 @@ function cEraseStmt() as integer
 	function = TRUE
 end function
 
+private function hMakeRef _
+	( _
+		byval t as ASTNODE ptr, _
+		byval pexpr as ASTNODE ptr ptr _
+	) as ASTNODE ptr
+
+	'' This is similar to astRemSideFx(), it creates a temp var, assigns the
+	'' expression with side-effects to that, and replaces the expression
+	'' with an access to that temp var. Effectively this causes the
+	'' expression with side-effects to be used only once.
+	''
+	'' However, here we're taking a reference to the expression instead of
+	'' storing its result, otherwise SWAP would overwrite the temp var,
+	'' not the actual data. This also means LINK nodes must be used,
+	'' because we don't support references across statements...
+
+	var dtype = typeAddrof( astGetFullType( (*pexpr) ) )
+	var subtype = astGetSubType( (*pexpr) )
+
+	'' var ref
+	var ref = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+
+	'' ref = @expr
+	function = astNewLINK( t, astNewASSIGN( astNewVAR( ref, , dtype, subtype ), astNewADDROF( *pexpr ) ) )
+
+	'' Use *ref instead of the original expr
+	*pexpr = astNewDEREF( astNewVAR( ref, , dtype, subtype ) )
+
+end function
+
 '' SwapStmt = SWAP VarOrDeref ',' VarOrDeref
 function cSwapStmt() as integer
 	lexSkipToken( )
@@ -119,41 +149,76 @@ function cSwapStmt() as integer
 		exit function
 	end if
 
-	'' simple type?
-	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	dim as integer l_bf = astIsBITFIELD( l ), r_bf = astIsBITFIELD( r )
-	if( (ldtype <> FB_DATATYPE_STRUCT) and (astIsVAR( l ) or (l_bf or r_bf)) ) then
-		dim as FBSYMBOL ptr temp = NULL
-
-		'' Use a temp var for...
-		''   - the C backend, it doesn't support push/pop
-		''   - for bitfields, which need special code to be accessed
-		if( irGetOption( IR_OPT_HIGHLEVEL ) or l_bf or r_bf ) then
-			'' dim temp
-			temp = symbAddTempVar( ldtype, astGetSubType( l ) )
-
-			'' temp = clone( l )
-			astAdd( astNewASSIGN( astNewVAR( temp, , ldtype, astGetSubType( l ) ), astCloneTree( l ) ) )
-		else
-			'' push clone( l )
-			astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( l ) ) )
-		end if
-
-		'' l = clone( r )
-		astAdd( astNewASSIGN( l, astCloneTree( r ) ) )
-
-		if( temp ) then
-			'' r = temp
-			astAdd( astNewASSIGN( r, astNewVAR( temp, , ldtype, astGetSubType( l ) ) ) )
-		else
-			'' pop r
-			astAdd( astNewSTACK( AST_OP_POP, r ) )
-		end if
-
-		return TRUE
+	if( (ldtype = FB_DATATYPE_STRUCT) or (rdtype = FB_DATATYPE_STRUCT) ) then
+		assert( ldtype = FB_DATATYPE_STRUCT )
+		assert( rdtype = FB_DATATYPE_STRUCT )
+		assert( astGetSubtype( l ) = astGetSubtype( r ) )
+		return rtlMemSwap( l, r )
 	end if
 
-	return rtlMemSwap( l, r )
+	''
+	'' For the ASM backend SWAP can be done with PUSH/POP, if...
+	''
+	'' - it's on integers or floats (structs handled above)
+	''
+	'' - neither side is a bitfield (for those we always have to use a
+	''   temp var, to get the bitfield accesses built properly)
+	''
+	'' - both side's types have the same size, otherwise we may push 4
+	''   bytes and pop 8, or similar.
+	''
+	'' - it's either both integer or both float, so we don't swap between
+	''   integer and float this way. The ASSIGN converts differently than
+	''   the POP, so you'd get different results depending on whether it's
+	''   <SWAP i, f> or <SWAP f, i>.
+	''
+	dim as integer use_pushpop = TRUE
+	use_pushpop and= (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE)
+	use_pushpop and= (typeGetSize( ldtype ) = typeGetSize( rdtype ))
+	use_pushpop and= (typeGetClass( ldtype ) = typeGetClass( rdtype ))
+	use_pushpop and= (astIsBITFIELD( l ) = FALSE)
+	use_pushpop and= (astIsBITFIELD( r ) = FALSE)
+
+	'' A scope to enclose the temp vars
+	dim as ASTNODE ptr scopenode = astScopeBegin( )
+	dim as ASTNODE ptr t = NULL
+
+	'' Side effects? Then use references to be able to read/write...
+	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) <> NULL ) then
+		t = hMakeRef( t, @l )
+	end if
+
+	if( astIsClassOnTree( AST_NODECLASS_CALL, r ) <> NULL ) then
+		t = hMakeRef( t, @r )
+	end if
+
+	if( use_pushpop ) then
+		'' push clone( l )
+		t = astNewLINK( t, astNewSTACK( AST_OP_PUSH, astCloneTree( l ) ) )
+
+		'' l = clone( r )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+
+		'' pop r
+		t = astNewLINK( t, astNewSTACK( AST_OP_POP, r ) )
+	else
+		var lfulldtype = astGetFullType( l )
+		var lsubtype = astGetSubType( l )
+
+		'' var temp = clone( l )
+		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE, FALSE )
+		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp, , lfulldtype, lsubtype ), astCloneTree( l ) ) )
+
+		'' l = clone( r )
+		t = astNewLINK( t, astNewASSIGN( l, astCloneTree( r ) ) )
+
+		'' r = temp
+		t = astNewLINK( t, astNewASSIGN( r, astNewVAR( temp, , lfulldtype, lsubtype ) ) )
+	end if
+
+	astAdd( t )
+	astScopeEnd( scopenode )
+	function = TRUE
 end function
 
 '':::::
