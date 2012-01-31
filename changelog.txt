@@ -58,6 +58,7 @@ Version 0.24.0:
 - SWAP on operands with different sizes could generate bad code
 - #2824381: UDTs with methods inside module-level scope blocks caused compiler crash instead of error message
 - EDI/ESI registers could be used without being preserved, when clearing local UDTs/strings/arrays > 16 bytes or copying UDTs > 16 bytes. The bug showed up when other parts of the function used EDI/ESI too (for example "plongint[indexvar] = longintvar").
+- Procedure pointers could be dereferenced using the '*' operator
 
 
 Version 0.23.0:

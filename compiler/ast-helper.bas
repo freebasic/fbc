@@ -849,12 +849,12 @@ function astBuildMultiDeref _
 			end if
 
 			'' check op overloading
-    		dim as FBSYMBOL ptr proc = any
-    		dim as FB_ERRMSG err_num = any
+			dim as FBSYMBOL ptr proc = any
+			dim as FB_ERRMSG err_num = any
 
 			proc = symbFindUopOvlProc( AST_OP_DEREF, expr, @err_num )
 			if( proc <> NULL ) then
-    			'' build a proc call
+				'' build a proc call
 				expr = astBuildCall( proc, expr, NULL )
 				if( expr = NULL ) then
 					return NULL
@@ -862,7 +862,6 @@ function astBuildMultiDeref _
 
 				dtype = astGetFullType( expr )
 				subtype = astGetSubType( expr )
-
 			else
 				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 				exit do
@@ -876,6 +875,15 @@ function astBuildMultiDeref _
 				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_BYTE
+
+			'' Function pointer?
+			case FB_DATATYPE_FUNCTION
+				'' Disallow dereferencing them with '*', because that would only access
+				'' the function's code, that's not a good idea.
+				'' (This is only a parser check though, using cast() it's still possible)
+				errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+				dtype = FB_DATATYPE_BYTE
+
 			end select
 
 			'' null pointer checking
