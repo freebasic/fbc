@@ -5795,8 +5795,8 @@ private sub hMemMoveRep _
 	hPrepOperand( svreg, src )
 
 	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
-	esifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDI )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDI )
+	esifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
 
 	ediinsrc = hIsRegInVreg( svreg, EMIT_REG_EDI )
 	ecxinsrc = hIsRegInVreg( svreg, EMIT_REG_ECX )
@@ -6000,7 +6000,7 @@ private sub hMemClearRepIMM _
 
 	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDI )
 
 	if( eaxfree = FALSE ) then
 		hPUSH( "eax" )
@@ -6110,7 +6110,7 @@ private sub hMemClear _
 
 	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDI )
 
 	if( eaxfree = FALSE ) then
 		hPUSH( "eax" )
