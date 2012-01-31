@@ -99,6 +99,10 @@ function cSwapStmt() as integer
 		return TRUE
 	end if
 
+	if( astIsConstant( l ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+	end if
+
 	hMatchCOMMA( )
 
 	var r = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
@@ -109,10 +113,8 @@ function cSwapStmt() as integer
 		return TRUE
 	end if
 
-	'' don't allow any consts...
-	if( typeIsConst( astGetFullType( l ) ) or _
-	    typeIsConst( astGetFullType( r ) ) ) then
-		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+	if( astIsConstant( r ) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
 	dim as integer ldtype = astGetDataType( l )

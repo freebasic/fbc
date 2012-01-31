@@ -405,6 +405,21 @@ end function
 '' const helpers
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function astIsConstant( byval expr as ASTNODE ptr ) as integer
+	'' Checks whether an expression is a CONST node (number literals,
+	'' numeric constants), an access to a constant symbol (string literals
+	'' and string constants are accessed through VAR nodes), or whether it
+	'' has CONST on its data type.
+
+	if( expr->sym ) then
+		if( symbIsConstant( expr->sym ) ) then
+			return TRUE
+		end if
+	end if
+
+	return (astIsCONST( expr ) or typeIsConst( astGetFullType( expr ) ))
+end function
+
 '':::::
 function astGetValueAsInt _
 	( _

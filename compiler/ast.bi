@@ -393,6 +393,8 @@ declare sub astCONST2FBValue _
 		byval expr as ASTNODE ptr _
 	)
 
+declare function astIsConstant( byval expr as ASTNODE ptr ) as integer
+
 declare function astGetValueAsInt _
 	( _
 		byval n as ASTNODE ptr _

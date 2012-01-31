@@ -347,21 +347,8 @@ function cOperator _
 
 end function
 
-sub cAssignment(byval l as ASTNODE ptr)
-	'' constant?
-	if (l->sym) then
-		if( symbIsConstant(l->sym) ) then
-			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-		end if
-	else
-		'' type variable?
-		if( astIsConst( l ) ) then
-			errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-		end if
-	end if
-
-	'' const?
-	if( typeIsConst( astGetFullType( l ) ) ) then
+sub cAssignment( byval l as ASTNODE ptr )
+	if( astIsConstant( l ) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
@@ -634,9 +621,8 @@ function cAssignmentOrPtrCall _
         node->expr = cVarOrDeref( )
         if( node->expr <> NULL ) then
 			'' const?
-			if( typeIsConst( astGetFullType( node->expr ) ) ) then
+			if( astIsConstant( node->expr ) ) then
 				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-				return TRUE
 			end if
 
         	exprcnt += 1
