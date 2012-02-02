@@ -4,75 +4,75 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_WstrSwap( FB_WCHAR *str1, int str1_size, FB_WCHAR *str2, int str2_size )
+FBCALL void fb_WstrSwap( FB_WCHAR *str1, int size1, FB_WCHAR *str2, int size2 )
 {
 	if( (str1 == NULL) || (str2 == NULL) )
 		return;
 
 	/* Retrieve lengths */
-	int str1_len, str2_len;
+	int len1, len2;
 
 	/* user-allocated wstring? */
-	if( str1_size <= 0 )
-		str1_len = fb_wstr_Len( str1 );
+	if( size1 <= 0 )
+		len1 = fb_wstr_Len( str1 );
 	else
-		str1_len = str1_size - 1;
+		len1 = size1 - 1;
 
-	if( str2_size <= 0 )
-		str2_len = fb_wstr_Len( str2 );
+	if( size2 <= 0 )
+		len2 = fb_wstr_Len( str2 );
 	else
-		str2_len = str2_size - 1;
+		len2 = size2 - 1;
 
 	/* Same length? Only need to do an fb_MemSwap() */
-	if( str1_len == str2_len ) {
-		if( str1_len > 0 ) {
+	if( len1 == len2 ) {
+		if( len1 > 0 ) {
 			fb_MemSwap( (unsigned char *)str1,
 			            (unsigned char *)str2,
-			            str1_len * sizeof( FB_WCHAR ) );
+			            len1 * sizeof( FB_WCHAR ) );
 			/* null terminators don't need to change */
 		}
 		return;
 	}
 
 	/* Make str1/str2 be the smaller/larger string respectively */
-	if( str1_len > str2_len ) {
+	if( len1 > len2 ) {
 		{
-			FB_WCHAR *tempstr = str1;
+			FB_WCHAR *str = str1;
 			str1 = str2;
-			str2 = tempstr;
+			str2 = str;
 		}
 
 		{
-			int templen = str1_len;
-			str1_len = str2_len;
-			str2_len = templen;
+			int len = len1;
+			len1 = len2;
+			len2 = len;
 		}
 
 		{
-			int templen = str1_size;
-			str1_size = str2_size;
-			str2_size = templen;
+			int size = size1;
+			size1 = size2;
+			size2 = size;
 		}
 	}
 
 	/* MemSwap as much as possible (i.e. the smaller length) */
-	if( str1_len > 0 ) {
+	if( len1 > 0 ) {
 		fb_MemSwap( (unsigned char *)str1,
 			    (unsigned char *)str2,
-			    str1_len * sizeof( FB_WCHAR ) );
+			    len1 * sizeof( FB_WCHAR ) );
 	}
 
 	/* and copy over the remainder from larger to smaller, unless it's
 	   a fixed-size wstring that doesn't have enough room left */
-	if( (str1_size > 0) && (str2_len >= str1_size) ) {
-		str2_len = str1_len;
-	} else if( str2_len > str1_len ) {
-		fb_wstr_Move( (str1 + str1_len),
-		              (str2 + str1_len),
-		              str2_len - str1_len );
+	if( (size1 > 0) && (len2 >= size1) ) {
+		len2 = len1;
+	} else if( len2 > len1 ) {
+		fb_wstr_Move( (str1 + len1),
+		              (str2 + len1),
+		              len2 - len1 );
 	}
 
 	/* set null terminators */
-	str1[str2_len] = L'\0';
-	str2[str1_len] = L'\0';
+	str1[len2] = L'\0';
+	str2[len1] = L'\0';
 }

@@ -4,16 +4,17 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
+FBCALL void fb_StrSwap( void *str1, int size1, int fillrem1,
+                        void *str2, int size2, int fillrem2 )
 {
-	char *str1_ptr, *str2_ptr;
-	int str1_len, str2_len;
+	char *p1, *p2;
+	int len1, len2;
 
 	if( (str1 == NULL) || (str2 == NULL) )
 		return;
 
 	/* both var-len? */
-	if( (str1_size == -1) && (str2_size == -1) )
+	if( (size1 == -1) && (size2 == -1) )
 	{
 		FBSTRING td;
 
@@ -33,15 +34,15 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 		return;
 	}
 
-	FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
-	FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
+	FB_STRSETUP_FIX( str1, size1, p1, len1 );
+	FB_STRSETUP_FIX( str2, size2, p2, len2 );
 
 	/* Same length? Only need to do an fb_MemSwap() */
-	if( str1_len == str2_len ) {
-		if( str1_len > 0 ) {
-			fb_MemSwap( (unsigned char *)str1_ptr,
-			            (unsigned char *)str2_ptr,
-			            str1_len );
+	if( len1 == len2 ) {
+		if( len1 > 0 ) {
+			fb_MemSwap( (unsigned char *)p1,
+			            (unsigned char *)p2,
+			            len1 );
 			/* null terminators don't need to change */
 		}
 		return;
@@ -49,59 +50,78 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 
 	/* Note: user-allocated zstrings are assumed to be large enough */
 
-	/* Only one of them var-len? It may need to be (re)allocated,
-	   a temp string must be used */
-	if( (str1_size == -1) || (str2_size == -1) )
+	/* Is one of them a var-len string? Might need to be (re)allocated */
+	if( (size1 == -1) || (size2 == -1) )
 	{
 		FBSTRING td = { 0 };
-		fb_StrAssign( &td, -1, str1, str1_size, FALSE );
-		fb_StrAssign( str1, str1_size, str2, str2_size, FALSE );
-		fb_StrAssign( str2, str2_size, &td, -1, FALSE );
+		fb_StrAssign( &td, -1, str1, size1, FALSE );
+		fb_StrAssign( str1, size1, str2, size2, fillrem1 );
+		fb_StrAssign( str2, size2, &td, -1, fillrem2 );
 		fb_StrDelete( &td );
 		return;
 	}
 
-	/* Both are fixed-size/user-allocated zstrings */
+	/* Both are fixed-size/user-allocated [z]strings */
 
 	/* Make str1/str2 be the smaller/larger string respectively */
-	if( str1_len > str2_len ) {
+	if( len1 > len2 ) {
 		{
-			char* tempstr = str1_ptr;
-			str1_ptr = str2_ptr;
-			str2_ptr = tempstr;
+			char* p = p1;
+			p1 = p2;
+			p2 = p;
 		}
 
 		{
-			int templen = str1_len;
-			str1_len = str2_len;
-			str2_len = templen;
+			int len = len1;
+			len1 = len2;
+			len2 = len;
 		}
 
 		{
-			int templen = str1_size;
-			str1_size = str2_size;
-			str2_size = templen;
+			int size = size1;
+			size1 = size2;
+			size2 = size;
+		}
+
+		{
+			int fillrem = fillrem1;
+			fillrem1 = fillrem2;
+			fillrem2 = fillrem;
 		}
 	}
 
 	/* MemSwap as much as possible (i.e. the smaller length) */
-	if( str1_len > 0 ) {
-		fb_MemSwap( (unsigned char *)str1_ptr,
-			    (unsigned char *)str2_ptr,
-			    str1_len );
+	if( len1 > 0 ) {
+		fb_MemSwap( (unsigned char *)p1,
+			    (unsigned char *)p2,
+			    len1 );
 	}
 
 	/* and copy over the remainder from larger to smaller, unless it's
-	   a fixed-size zstring that doesn't have enough room left */
-	if( (str1_size > 0) && (str2_len >= str1_size) ) {
-		str2_len = str1_len;
-	} else if( str2_len > str1_len ) {
-		FB_MEMCPYX( (unsigned char *)(str1_ptr + str1_len),
-		            (unsigned char *)(str2_ptr + str1_len),
-		            str2_len - str1_len );
+	   a fixed-size [z]string that doesn't have enough room left (not even
+	   for the null terminator) */
+	if( (size1 > 0) && (len2 >= size1) ) {
+		len2 = len1;
+	} else if( len2 > len1 ) {
+		FB_MEMCPYX( (unsigned char *)(p1 + len1),
+		            (unsigned char *)(p2 + len1),
+		            len2 - len1 );
 	}
 
 	/* set null terminators */
-	str1_ptr[str2_len] = '\0';
-	str2_ptr[str1_len] = '\0';
+	p1[len2] = '\0';
+	p2[len1] = '\0';
+
+	/* Clear remainder of the larger (now smaller) string with nulls if
+	   requested (see also fb_StrAssign()). We can assume that the strings
+	   were originally cleared properly, because uninitialized strings
+	   mustn't be used in rvalues, FB_STRSETUP_FIX() doesn't handle that.
+	   The smaller (now larger) string doesn't need to be touched, as it's
+	   remainder didn't increase */
+	if( fillrem2 ) {
+		int used2 = len1 + 1;
+		if( size2 > used2 ) {
+			memset( p2 + used2, 0, size2 - used2 );
+		}
+	}
 }

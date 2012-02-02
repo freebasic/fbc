@@ -1353,30 +1353,36 @@
 				) _
 			} _
  		), _
-		/' fb_StrSwap ( byref str1 as any, byval str1len as integer, _
-						byref str2 as any, byval str2len as integer ) as void '/ _
+		/' fb_StrSwap ( byref str1 as any, byval len1 as integer, byval fillrem1 as integer, _
+		                byref str2 as any, byval len2 as integer, byval fillrem2 as integer ) as void '/ _
 		( _
 			@FB_RTL_STRSWAP, NULL, _
 			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			4, _
+			6, _
 			{ _
 				( _
 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+				), _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
- 		), _
-		/' fb_WstrSwap ( byval str1 as wstring ptr, byval str1len as integer, _
-								byval str2 as wstring ptr, byval str2len as integer ) as void '/ _
+		), _
+		/' fb_WstrSwap ( byval str1 as wstring ptr, byval len1 as integer, _
+		                 byval str2 as wstring ptr, byval len2 as integer ) as void '/ _
 		( _
 			@FB_RTL_WSTRSWAP, NULL, _
 			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
@@ -1387,16 +1393,16 @@
 					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
- 		), _
+		), _
 		/' fb_VAL overload ( byref str as string ) as double '/ _
 		( _
 			@FB_RTL_STR2DBL, @"fb_VAL", _
@@ -4209,51 +4215,51 @@ function rtlStrSwap _
 		byval str2 as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as integer lgt = any, dtype = any
-
 	function = FALSE
 
-	''
-    proc = astNewCALL( PROCLOOKUP( STRSWAP ) )
+	var proc = astNewCALL( PROCLOOKUP( STRSWAP ) )
 
 	'' always calc len before pushing the param
-	dtype = astGetDataType( str1 )
-	lgt = rtlCalcStrLen( str1, dtype )
-
-    '' str1 as any
-    if( astNewARG( proc, str1, FB_DATATYPE_STRING ) = NULL ) then
-    	exit function
-    end if
-
-    '' byval str1len as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	var dtype1 = astGetDataType( str1 )
+	var length1 = rtlCalcStrLen( str1, dtype1 )
 
 	'' always calc len before pushing the param
-	dtype = astGetDataType( str2 )
-	lgt = rtlCalcStrLen( str2, dtype )
+	var dtype2 = astGetDataType( str2 )
+	var length2 = rtlCalcStrLen( str2, dtype2 )
 
-    '' str2 as any
-    if( astNewARG( proc, str2, FB_DATATYPE_STRING ) = NULL ) then
-    	exit function
-    end if
+	'' byref str1 as any
+	if( astNewARG( proc, str1, FB_DATATYPE_STRING ) = NULL ) then
+		exit function
+	end if
 
-    '' byval str2len as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval len1 as integer
+	if( astNewARG( proc, astNewCONSTi( length1 ) ) = NULL ) then
+		exit function
+	end if
 
-    ''
-    astAdd( proc )
+	'' byval fillrem1 as integer = 1
+	if( astNewARG( proc, astNewCONSTi( (dtype1 = FB_DATATYPE_FIXSTR) ) ) = NULL ) then
+		exit function
+	end if
 
-    function = TRUE
+	'' byref str2 as any
+	if( astNewARG( proc, str2, FB_DATATYPE_STRING ) = NULL ) then
+		exit function
+	end if
 
+	'' byval len2 as integer
+	if( astNewARG( proc, astNewCONSTi( length2 ) ) = NULL ) then
+		exit function
+	end if
+
+	'' byval fillrem2 as integer = 1
+	if( astNewARG( proc, astNewCONSTi( (dtype2 = FB_DATATYPE_FIXSTR) ) ) = NULL ) then
+		exit function
+	end if
+
+	astAdd( proc )
+
+	function = TRUE
 end function
 
 '':::::
@@ -4263,48 +4269,37 @@ function rtlWstrSwap _
 		byval str2 as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as integer lgt = any
-
 	function = FALSE
 
-	''
-    proc = astNewCALL( PROCLOOKUP( WSTRSWAP ) )
+	var proc = astNewCALL( PROCLOOKUP( WSTRSWAP ) )
 
 	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( str1, astGetDataType( str1 ) )
+	var length = rtlCalcStrLen( str1, astGetDataType( str1 ) )
 
-    '' byval str1 as wstring ptr
-    if( astNewARG( proc, str1 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1 as wstring ptr
+	if( astNewARG( proc, str1 ) = NULL ) then
+		exit function
+	end if
 
-    '' byval str1len as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval len1 as integer
+	if( astNewARG( proc, astNewCONSTi( length ) ) = NULL ) then
+		exit function
+	end if
 
 	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( str2, astGetDataType( str2 ) )
+	length = rtlCalcStrLen( str2, astGetDataType( str2 ) )
 
-    '' byval str2 as wstring ptr
-    if( astNewARG( proc, str2 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2 as wstring ptr
+	if( astNewARG( proc, str2 ) = NULL ) then
+		exit function
+	end if
 
-    '' byval str2len as integer
-	if( astNewARG( proc, _
-					 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), _
-					 FB_DATATYPE_INTEGER ) = NULL ) then
-    	exit function
-    end if
+	'' byval len2 as integer
+	if( astNewARG( proc, astNewCONSTi( length ) ) = NULL ) then
+		exit function
+	end if
 
-    ''
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
-
+	function = TRUE
 end function
-

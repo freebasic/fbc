@@ -8,8 +8,8 @@ FBCALL void 		fb_RtInit 			( void );
 FBCALL void         fb_InitSignals      ( void );
 
 FBCALL void         fb_MemSwap          ( unsigned char *dst, unsigned char *src, int bytes );
-FBCALL void         fb_StrSwap          ( void *str1, int str1_size,
-										  void *str2, int str2_size );
+FBCALL void         fb_StrSwap          ( void *str1, int size1, int fillrem1,
+                                          void *str2, int size2, int fillrem2 );
 
        void         fb_hInit            ( void );
        void         fb_hEnd             ( int errlevel );

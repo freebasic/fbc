@@ -1083,6 +1083,63 @@ sub testDifferentLengths cdecl( )
 	end scope
 end sub
 
+sub testClearRemainders cdecl( )
+	scope
+		dim as string s
+		dim as string * 5 f
+
+		s = "12"
+		f = "abcd"
+
+		swap s, f
+
+		CU_ASSERT( s = "abcd" )
+		CU_ASSERT( f = "12" )
+		CU_ASSERT( f[2] = 0 ) '' null terminator
+		CU_ASSERT( f[3] = 0 ) '' remainder
+		CU_ASSERT( f[4] = 0 )
+	end scope
+
+	scope
+		dim as string * 5 a
+		dim as string * 10 b
+
+		a = "abcde"
+		b = "12"
+
+		swap a, b
+
+		CU_ASSERT( a = "12" )
+		CU_ASSERT( a[2] = 0 )
+		CU_ASSERT( a[3] = 0 )
+		CU_ASSERT( a[4] = 0 )
+
+		CU_ASSERT( b = "abcde" )
+		CU_ASSERT( b[5] = 0 )
+		CU_ASSERT( b[6] = 0 )
+		CU_ASSERT( b[7] = 0 )
+		CU_ASSERT( b[8] = 0 )
+		CU_ASSERT( b[9] = 0 )
+
+		a = "abcde"
+		b = "12"
+
+		swap b, a
+
+		CU_ASSERT( a = "12" )
+		CU_ASSERT( a[2] = 0 )
+		CU_ASSERT( a[3] = 0 )
+		CU_ASSERT( a[4] = 0 )
+
+		CU_ASSERT( b = "abcde" )
+		CU_ASSERT( b[5] = 0 )
+		CU_ASSERT( b[6] = 0 )
+		CU_ASSERT( b[7] = 0 )
+		CU_ASSERT( b[8] = 0 )
+		CU_ASSERT( b[9] = 0 )
+	end scope
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "fb_tests.swap.strings" )
 	fbcu.add_test( "SWAP on local vars", @testLocalVars )
@@ -1097,6 +1154,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "SWAP deref, arrayelement", @testDerefsAndArrays )
 	fbcu.add_test( "SWAP on string fields", @testFields )
 	fbcu.add_test( "SWAP on strings of different lengths", @testDifferentLengths )
+	fbcu.add_test( "SWAP should clear fixstr remainders", @testClearRemainders )
 end sub
 
 end namespace
