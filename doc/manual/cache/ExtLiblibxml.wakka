@@ -1,9 +1,10 @@
-{{fbdoc item="title" value="libxml"}}----
+{{fbdoc item="title" value="libxml2"}}----
 De-facto standard library for accessing xml files.
 
 Website: http://xmlsoft.org/
 Platforms supported: ""Win32"", Linux
-Headers to include: libxml/
+Headers to include: libxml/*.bi
+Header version: 2.6.17
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)

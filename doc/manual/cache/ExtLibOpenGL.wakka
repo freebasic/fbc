@@ -1,11 +1,18 @@
 {{fbdoc item="title" value="OpenGL, The Open Graphics Language"}}----
-Cross-platform 3D Graphics library
+OpenGL is a standardized and widely used cross-platform 3D graphics library.
 
-Website: http://www.opengl.org
+Usually ""OpenGL"" support comes as part of the system and the graphics drivers. There are many different projects providing a library that implements the main ""OpenGL"" API, and which one is used depends on the platform and system setup. For example, on Windows, the client API is implemented in Microsoft's opengl32.dll, while on Linux, there is for example the free ""Mesa3D"" project, which provides a libGL implementation. It depends on the used library or system setup which way the ""OpenGL"" API does its rendering, typically it uses ""OpenGL"" hardware drivers and is hardware-accelerated, but there also is software-rendered ""OpenGL"" (e.g. standalone ""Mesa3D""). The system's graphics hardware drivers may provide additional ""OpenGL"" extensions, access to which is again system dependant.
+
+Besides plain ""OpenGL"", there are several utility, helper and wrapper libraries, such as [[ExtLibGLUT GLUT]], [[ExtLibFreeGLUT freeglut]] and [[ExtLibGLFW GLFW]], and even ""FreeBASIC""'s built-in graphics library has an ""OpenGL"" mode, see [[KeyPgScreengraphics Screen and fb.GFX_OPENGL]].
+
+Websites:
+""OpenGL"" standard: http://www.opengl.org
+""Mesa3D"": http://mesa3d.org/
+Windows ""OpenGL"": http://msdn.microsoft.com/en-us/library/dd374278.aspx
+
 Platforms supported: ""Win32"", Linux
 Headers to include: GL/gl.bi
+Header version: from January 2012
 Example Usage: yes, in examples/libraries/GL/
 
-
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

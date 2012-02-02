@@ -4,6 +4,7 @@
 Website: [[http://www.dotgnu.org/libjit-doc/libjit.html]], [[http://freshmeat.net/projects/libjit]]
 Platforms supported: Windows, Linux, DOS
 Headers to include: jit.bi
+Header version: 0.1.2
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/jit/mul_add.bas"}}%%(freebasic)

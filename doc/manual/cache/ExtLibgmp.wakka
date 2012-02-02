@@ -4,6 +4,7 @@ Free library for arbitrary precision arithmetic, operating on signed integers, r
 Website: http://www.gmplib.org
 Platforms supported: ""Win32"", Linux
 Headers to include: gmp.bi
+Header version: 4.1.4
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/gmp.bas"}}%%(freebasic)

@@ -117,6 +117,7 @@ print $"C:\temp"
 	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgTypeof Typeof]]##
 	- ##[[KeyPgPpdefine #define]]##
 	- ##[[KeyPgConst Const]]## 
 	- [[CatPgStdDataTypes Standard Data Types]]

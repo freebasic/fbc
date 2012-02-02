@@ -1,8 +1,10 @@
-{{fbdoc item="title" value="CRT, The C Runtime Library"}}----
-Common C Language Functions
+{{fbdoc item="title" value="CRT, the C Runtime Library"}}----
+Standard C language functions. On Windows, this is implemented in msvcrt.dll (however, there also are version-specific msvcrXX.dlls, the ""Microsoft Visual C++"" runtimes). On Linux, the C runtime is typically implemented by glibc. For DOS, ""FreeBASIC"" uses DJGPP, which provides a libc library.
 
+Websites: http://msdn.microsoft.com/en-us/library/59ey50w6.aspx, http://www.gnu.org/software/libc/, http://www.delorie.com/djgpp/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: crt.bi
-Function Reference: [[ProPgCruntime C Runtime Functions]]
+Function reference: [[ProPgCruntime C Runtime Functions]]
+MSDN function reference: http://msdn.microsoft.com/en-us/library/634ca0c2.aspx
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

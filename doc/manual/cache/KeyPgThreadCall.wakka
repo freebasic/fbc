@@ -1,6 +1,8 @@
 {{fbdoc item="title" value="THREADCALL"}}----
 Starts a user-defined procedure with parameters in a separate execution thread
 
+~&//**Threadcall** uses [[ExtLibFfi LibFFI]] internally: people who write programs using this functionality should be careful to follow ""LibFFI""'s license, which can be found at [[http://github.com/atgreen/libffi/blob/master/LICENSE]].//
+
 {{fbdoc item="syntax"}}##
 	[[KeyPgFunction function]] **Threadcall** //subname//([//paramlist//]) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
 ##
@@ -35,7 +37,7 @@ Starts a user-defined procedure with parameters in a separate execution thread
 Sub thread( id As String, tlock As Any Ptr, count As Integer )
 	For i As Integer = 1 To count
 		MutexLock tlock
-		Print "thread "; id;
+		Print "thread " & id;
 		Locate , 20
 		Print i & "/" & count
 		MutexUnlock tlock

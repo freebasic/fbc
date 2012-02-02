@@ -25,7 +25,9 @@ Converts numeric or string expression to 64-bit integer (##[[KeyPgLongint Longin
 	A ##[[KeyPgLongint Longint]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Clngint**## function rounds off the decimal part and returns a 64 bit ##[[KeyPgLongint Longint]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger than -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807. The name can be explained as 'Convert to ""LoNG INTeger""'.
+	The ##**Clngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgLongint Longint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-9## ##223## ##372## ##036## ##854## ##775## ##808## or larger than ##223## ##372## ##036## ##854## ##775## ##807#.
+
+	The name can be explained as 'Convert to ""LoNG INTeger""'.
 
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgVallng Vallng]]##.
 

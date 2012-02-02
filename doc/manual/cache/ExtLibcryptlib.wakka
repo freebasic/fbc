@@ -4,6 +4,7 @@ A powerful security toolkit which allows even inexperienced crypto programmers t
 Website: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
 Platforms supported: ""Win32"", Linux
 Headers to include: cryptlib.bi
+Header version: from 2005
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/cryptlib.bas"}}%%(freebasic)

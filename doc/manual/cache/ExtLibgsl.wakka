@@ -4,6 +4,7 @@ Provides a wide range of mathematical routines such as random number generators,
 Website: http://www.gnu.org/software/gsl/, Windows port: http://gnuwin32.sourceforge.net/packages/gsl.htm 
 Platforms supported: ""Win32"", Linux
 Headers to include: gsl/*.bi
+Header version: 1.6
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/gsl1.bas"}}%%(freebasic)

@@ -21,7 +21,7 @@ Standard data type: 32 bit signed
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Integer**## data type is 16-bit.
 
 {{fbdoc item="diff"}}
-	- The INTEGER type is 16-bit wide in QB.
+	- The INTEGER type is 16 bits wide in QB.
 	- None, if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
 
 {{fbdoc item="see"}}

@@ -4,6 +4,7 @@ Game programming library
 Website: http://www.talula.demon.co.uk/allegro/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: allegro.bi
+Header version: 4.0.3 + 4.1 changes
 Example Usage: yes, in examples/libraries/Allegro/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

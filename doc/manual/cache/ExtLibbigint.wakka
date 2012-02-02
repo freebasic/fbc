@@ -1,9 +1,10 @@
 {{fbdoc item="title" value="big_int"}}----
-Library for using arbitrarily large integers.
+Library for using arbitrarily large integers. Note: This library seems to be dead, a possible alternative is [[ExtLibgmp gmp]].
 
-Website: http://valyala.narod.ru/big_int/ (Russian)
+Website: http://valyala.narod.ru/big_int/ (Russian) [the site apparently is gone]
 Platforms supported: ""Win32"", Linux
 Headers to include: big_int/big_int.bi
+Header version: from 2005
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/"}}%%(freebasic)

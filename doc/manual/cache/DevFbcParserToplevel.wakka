@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="Top level parsing process"}}----
+
+''##fb.bas:fbCompile()##'' is called from the fbc frontend for every input file. Parsing (and compiling) of the file begins here.
+
+''##fb.bas:fbCompile()##''
+	- Open the input .bas
+	- Start the emitter (''##ir##'') (Open the output .asm)
+	- fbMainBegin() (Build the AST for the implicit main() or static constructor for module-level code)
+	- fbPreIncludes()
+		- fbIncludeFile() for every preinclude (found on the fbc command line)
+	- cProgram()
+	- fbMainEnd() (Close the implicit main())
+	- Finish emitting (''##ir##'') (Finish generating the .asm and close it)
+	- Close the input .bas
+
+''##fb.bas:fbIncludeFile()##''
+	- Include file search
+	- lexPush() (Push a new lexer context to parse this #include file without disturbing the lexer's state in the parent file)
+	- Open the include file
+	- cProgram()
+	- Close the include file
+	- lexPop() (Restore the lexer state to the parent file)
+
+''##parser-toplevel.bas:cProgram()##'' is the root of the [[FbGrammar FB grammar]], and parses a file. Here's a short & quick run down of what is done:
+	- cLine() repeatedly until EOF
+		- cLabel()
+		- cStatement()
+			- Declarations
+				- UDT declarations, typedefs
+				- Variables (DIM, VAR, ...)
+				- Procedure declarations (DECLARE)
+				- Procedure bodies (SUB, FUNCTION, ...)
+					(Procs temporarily replace the implicit module level procedure, so any AST nodes go into them instead of the implicit main())
+			- Compounds statements (IF/ELSE, DO/LOOP, EXIT/CONTINUE DO, ...)
+			- Procedure calls
+			- Function result assignments
+			- Quirk statements (special QB rtlib/gfxlib statements)
+			- ASM blocks
+			- Assignments
+			- Procedure pointer calls
+
+	and most of them use cExpression() at some point.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

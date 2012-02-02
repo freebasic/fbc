@@ -55,7 +55,17 @@
 ''hlp'', ''hlp-str''
 	Helper functions for all parts of the compiler, plus another implementation of dynamic z/wstrings.
 
-''list'', ''flist'', ''pool'', ''stack''
-	Generic linked list + memory pool, foundation of all other data structures.
+''list''
+	Generic linked list with built-in memory pool, used a lot. This is often used as pure pooled allocator, for example for AST nodes or symbols.
 
+''flist''
+	''list''-based  without deletions.
+
+''pool''
+	''list''-based allocator using multiple lists with node sizes ranging from small to large, allowing it to store away strings into the next best fitting chunk to waste as less memory as possible. Used to store away symbol identifiers.
+
+''stack''
+	Generic ''list''-based stack.
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

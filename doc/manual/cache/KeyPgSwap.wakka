@@ -6,9 +6,9 @@ Exchanges the values of two variables
 ##
 {{fbdoc item="param"}}
 	##//a//##
-		A value to swap.
+		A variable to swap.
 	##//b//##
-		A value to swap.
+		A variable to swap.
 
 {{fbdoc item="desc"}}
 	Swaps the value of two variables.

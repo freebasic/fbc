@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="WBIN"}}----
-Returns the binary wstring (Unicode) representation of a number
+Returns the binary ##[[KeyPgWstring wstring]]## (Unicode) representation of a number
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
@@ -24,14 +24,14 @@ Returns the binary wstring (Unicode) representation of a number
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Returns a binary [[KeyPgString string]] representation of //number//.
+	Returns a binary ##[[KeyPgWstring wstring]]## representation of ##//number//##, truncated or padded with zeros (##"0"##) to fit the number of digits, if specified.
 
 {{fbdoc item="desc"}}
-	Returns a ##[[KeyPgWstring wstring]}## (Unicode) representing the binary value of the integer ##//expression//##. Binary digits range from 0 to 1.
+	Returns a ##[[KeyPgWstring wstring]]## (Unicode) representing the binary value of the integer ##//number//##. Binary digits range from ##0## to ##1##.
 
-	If you specify ##//digits//## > 0, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
+	If you specify ##//digits//## > ##0##, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the ##[[KeyPgWstring wstring]}## will not go longer than the maximum number of digits required for the type of ##//expression//## (32 for an integer, 64 for floating point or longint)
+	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//expression//## (32 for an ##[[KeyPgInteger integer]]##, 64 for floating point or ##[[KeyPgLongint longint]]##)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/wbin.bas"}}%%(freebasic)
@@ -46,7 +46,7 @@ PRINT WBIN(54321, 20)
 00001101010000110001
 %%
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not supported in the DOS port of FreeBASIC.
+	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
 
 
 {{fbdoc item="lang"}}

@@ -1,0 +1,14 @@
+{{fbdoc item="title" value="Memory management"}}----
+
+	fbc tries to avoid memory allocations as much as possible, since they are pretty slow generally. The linked list implemented in list.bas comes with a builtin memory pool, so pretty much every list is pooled. The memory pool pre-allocates large chunks and can then quickly hand out many small nodes. Those lists are used for simple things like the list of libraries to link into an executable, but also for heavier things like AST nodes. The memory pool is supposed to speed things up (no idea if this was ever verified though).
+	
+	In many places the compiler simply uses global/static variables, for example fixed-length strings, in order to avoid memory allocations. Tokens are a nice example: lex.bas parses input characters into tokens, and stores the token text in static buffers. Token text, that could be: variable names, string literals, and so on. All tokens are stored here though, so the preprocessor can correctly record macros. Now take into account the huge number of tokens the parser has to deal with: For example, FB's current Windows headers result in ~100k tokens. Dynamically allocating a buffer for every token would quickly become inefficient.
+	
+	Of course the token length is limited by using a static buffer, but fbc's default of 1024 bytes should be enough for everyone. Similar length limitations apply to many things in the compiler because of the use of fixed-length buffers. In most situations, the buffers in the compiler are not used to their full potential, i.e. they are bigger than they need to be.
+	
+	All that does not mean the compiler does not use dynamic memory allocations at all. It does, in situations when allocating is easier than using a list/pool and speed is not critical. FB's builtin string type is used in many places too. As long as the string's are kept allocated, they are very efficient. Expansion of macro parameter stringifying in the pre-processor uses a strReplace() based on string's, and it is fast (enough). Besides that, dynamic strings, which are basically the same as string's, are used everywhere in the pre-processor, from macro recording to macro expansion.
+	
+	Out-of-memory situations/allocation failures are not seriously handled. There are NULL checks in some places where allocate() is called, but these checks are pointless, since the rest of fbc does not check for NULL. NULL is sometimes used to indicate an error, for example by some astNew*() functions. Also, the compiler does not deallocate() everything, but lets the OS do the cleanup. 
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

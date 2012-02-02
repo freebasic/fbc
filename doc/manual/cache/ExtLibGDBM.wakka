@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="GDBM, the GNU Database manager"}}----
+Provides database functions using extensible hashing, primarily for storing key/data pairs to data files
+
+Website: http://www.gnu.org.ua/software/gdbm/
+Platforms supported: ""Win32"", Linux
+Headers to include: gdbm.bi
+Header version: from 2010
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

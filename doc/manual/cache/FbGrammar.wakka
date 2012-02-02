@@ -576,4 +576,5 @@ Go straight to:
 ~| **screenres** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// (((**,** //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//)?
 ~;
 
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

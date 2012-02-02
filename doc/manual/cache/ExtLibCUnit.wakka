@@ -4,7 +4,7 @@ Lightweight system for writing, administering, and running unit tests in C.
 Website: http://cunit.sourceforge.net/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: CUnit/CUnit.bi
-Version: 2.1-0
+Header version: 2.1-0
 Example Usage: yes, in examples/libraries/CUnit/
 
 

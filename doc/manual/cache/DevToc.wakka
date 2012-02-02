@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="Information for hacking on FreeBASIC"}}----
+
+This area of the Wiki is for documenting everything about the compiler and the runtime libraries. It is, however, incomplete. If you find that information provided here does not match what the source is doing then please update the relevant pages here. New pages and articles may be added freely, provided they help understanding what's going on inside FB.
+
+<<{{fbdoc item="section" value="Developing FreeBASIC Itself"}}
+
+	{{fbdoc item="keyword" value="DevBuild|Compiling a Development Version of FreeBASIC"}}
+	{{fbdoc item="keyword" value="DevFbcTestSuite|Running the FreeBASIC test suite"}}
+	{{fbdoc item="keyword" value="DevTranslateHeader|C Header Translation Tutorial"}}
+	{{fbdoc item="keyword" value="DevHeaderStyleGuide|Header Style Guidelines"}}
+	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index (header status)"}}
+
+{{fbdoc item="section" value="Compiler internals"}}
+
+	{{fbdoc item="keyword" value="DevDirTree|Installation directory tree"}}
+	{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
+	{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
+	{{fbdoc item="keyword" value="DevFbcMem|Memory management"}}
+	{{fbdoc item="keyword" value="FbGrammar|FreeBASIC Grammar"}}
+	{{fbdoc item="keyword" value="DevFbcLexer|Lexer & preprocessor"}}
+		
+	{{fbdoc item="subsect" value="Parser & compiler (fb, parser, symb, rtl)"}}
+		{{fbdoc item="keyword" value="DevFbcParser|Purpose"}}
+		{{fbdoc item="keyword" value="DevFbcParserToplevel|Top level parsing process"}}
+		{{fbdoc item="keyword" value="DevFbcParserSymbols|Symbols"}}
+		{{fbdoc item="keyword" value="DevFbcTypes|Representation of data types"}}
+
+{{fbdoc item="section" value="Graphics Library"}}
+
+	{{fbdoc item="keyword" value="GfxLib|Overview of drivers (backends)"}}
+	{{fbdoc item="keyword" value="GfxInternalFormats|Pixel formats"}}
+
+>>::c::
+
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

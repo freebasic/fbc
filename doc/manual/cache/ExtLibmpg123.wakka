@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="mpg123"}}----
+libmpg123 is the decoder library used by the mpg123 MPEG player.
+
+Website: http://mpg123.org/
+Platforms supported: ""Win32"", Linux
+Headers to include: mpg123.bi
+Header version: from 2010, machine-translated only
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

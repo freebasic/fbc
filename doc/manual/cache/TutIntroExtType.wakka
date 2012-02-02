@@ -3,7 +3,7 @@
 
 === Introduction===
 
-FreeBasic is moving towards implementing Object Oriented programming. While classes have not yet been added to the language, the Type definition has been extended to include some Object Oriented constructs as a first step towards full class support. This article introduces some of the concepts of Object Oriented design and explains some of the extended type constructs.
+""FreeBASIC"" is moving towards implementing Object Oriented programming. While classes have not yet been added to the language, the Type definition has been extended to include some Object Oriented constructs as a first step towards full class support. This article introduces some of the concepts of Object Oriented design and explains some of the extended type constructs.
 
 === Object Oriented Programming===
 
@@ -35,9 +35,9 @@ So our rectangle object has the following preliminary properties and methods:
 ~- Property: filled
 ~- Property: outline color
 ~- Property: fill color
-~- Method: DrawRectangle
+~- Method: ""DrawRect""
 
-This list is called the object definition. In FreeBasic you define an object using the extended Type definition. The extended Type is similar to the standard Type, with some added language constructs that implements a subset of OOP features.
+This list is called the object definition. In ""FreeBASIC"" you define an object using the extended Type definition. The extended Type is similar to the standard Type, with some added language constructs that implements a subset of OOP features.
 
 === A Rectangle Type Definition===
 
@@ -121,7 +121,8 @@ Type myRect
 	Declare Property Otlncolor(Byval oc_ As Integer)
 	Declare Property Otlncolor() As Integer
 	Declare Property FillColor(Byval fc_ As Integer)
-	Declare Property FillColor() As Integer    Declare Constructor()
+	Declare Property FillColor() As Integer
+	Declare Constructor()
 	Declare Constructor(xx_ As Integer, yy_ As Integer, w_ As Integer, _
 	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
 	                    fc_ As Integer)
@@ -405,4 +406,4 @@ End
 
 To initialize the object using the default Constructor, you simply Dim the extended Type just as you would the standard type. If the Constructor only takes a single value then you can use the Dim var as Typename = value syntax. To initialize the object with a set of values, you Dim the type and then use the = typename(par1m parm1...) syntax. You can see that accessing the members of the object is just like accessing the member of a standard type.
 
-Thanks to cha0s at the FreeBasic forums for the information regarding Properties.
+Thanks to cha0s at the ""FreeBASIC"" forums for the information regarding Properties.

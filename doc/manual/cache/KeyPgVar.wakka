@@ -5,9 +5,11 @@ Declares a variable whose type is implied from the initializer expression
 	**Var** [[[KeyPgShared shared]]] //symbolname// = //expression//[, //symbolname// = //expression//]
 ##
 {{fbdoc item="desc"}}
-	##**Var**## declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a ##**Var**## declaration. The initializer expression does not have to be a constant, it can be, or, it can be any variable of any type. Note: ##[[KeyPgWstring Wstring]]## is not supported with ##**Var**##, due to the fact that there is no var-len ##[[KeyPgWstring Wstring]]## type. This isn't likely to change, due to the complexities involved with handling Unicode.
+	##**Var**## declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a ##**Var**## declaration. The initializer expression can be either a constant or any variable of any type.
 
-	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble Double]]##.
+	Note: ##[[KeyPgWstring Wstring]]## is not supported with ##**Var**##, due to the fact that there is no var-len ##[[KeyPgWstring Wstring]]## type. This isn't likely to change, due to the complexities involved with handling Unicode.
+
+	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble Double]]##.  See [[ProPgLiterals]] for further information.
 
 	All ##[[KeyPgZstring Zstring]]## expressions, including string literals and dereferenced ##[[KeyPgZstring Zstring]]## ##[[KeyPgPtr Ptr]]##s, will be given the ##[[KeyPgString String]]## variable type.
 

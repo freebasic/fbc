@@ -1,0 +1,8 @@
+{{fbdoc item="title" value="X11"}}----
+The X Windowing System is widely used on Linux as the layer that coordinates drawing to the screen by providing windows. It also delivers events such as mouse and keyboard input from the kernel to applications. It is designed to run as a server that can be contacted through a specific protocol. The client's side of the protocol is implemented by libraries such as the old Xlib or the more modern XCB. Applications can use these to create windows and draw to them. However, typically most developers will choose to use a GUI library such as GTK+ (which has an X11 backend) instead.
+
+Website: http://www.x.org/, http://xcb.freedesktop.org/
+Platforms supported: Linux
+Headers to include: X11/*.bi
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

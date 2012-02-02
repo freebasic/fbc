@@ -106,7 +106,7 @@ The DOS target is fairly well working and supported by ""FreeBASIC"", and up-to-
 {{anchor name="item12"}}==12. DEF SEG is missing in FB! How can I workaround this in my code?==
 	DEF SEG is related to 16-bit RM addressing and was removed because of this. "direct" access to VGA or other low memory areas is not possible, because ""FreeBASIC""'s memory model (same as DJGPP's) is not zero-based. For accessing low DOS memory, use DOSMEMGET and DOSMEMPUT , see "vga13h.bas" example, or "_dos_ds" selector for inline ASM, see example:
 
-{{fbdoc item="filename" value="examples/manual/faq/dos/lowmemas.bas"}}%%(""FreeBASIC"")
+{{fbdoc item="filename" value="examples/manual/faq/dos/lowmemas.bas"}}%%(freebasic)
 '' DOS only example of inline ASM accessing low memory 
 '' Run in text mode 80x25 only
 
@@ -161,7 +161,7 @@ End
  
 	Use DJGPP's DPMI wrapper:
 
-{{fbdoc item="filename" value="examples/manual/faq/dos/call-int.bas"}}%%(""FreeBASIC"")
+{{fbdoc item="filename" value="examples/manual/faq/dos/call-int.bas"}}%%(freebasic)
 #include "dos/dpmi.bi"
 
 type RegTypeX as __dpmi_regs

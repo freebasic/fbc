@@ -31,9 +31,6 @@ Macro function to test minimum compiler version
 #endif
 %%
 
-{{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
-
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

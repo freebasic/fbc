@@ -31,7 +31,7 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 	    ##**Open Err**## throws one of the following [[ProPgErrorHandling runtime errors]]:
 
 	//(##1##) Illegal function call//
-		- Filenumber was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that filenumber is free.
+		- ##//Filenumber//## was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that ##//filenumber//## is free.
 
 		
 {{fbdoc item="ex"}}

@@ -3,9 +3,8 @@ Small C library that implements a self-contained, embeddable, zero-configuration
 
 Website: http://sqlite.org
 Platforms supported: ""Win32"", Linux, DOS
-Headers to include: sqlite2.bi or sqlite3.bi depending on version of library used.
+Headers to include: sqlite2.bi or sqlite3.bi
+Header versions: 2.8.17, 3.7.8
 Example Usage: yes, in examples/libraries/DB/
 
-
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

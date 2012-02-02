@@ -8,7 +8,7 @@ Returns the ascii code of the first key in the keyboard buffer
 	//result// = **Getkey**
 ##
 {{fbdoc item="ret"}}
-	The [[KeyPgInteger integer]] value of the ascii code returned.
+	The ##[[KeyPgInteger Integer]]## value of the ascii code returned.
 
 {{fbdoc item="desc"}}
 	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it. For extended keys (returning two characters), the extended code is returned in the first byte, and the regular code is returned in the second byte. (see example below)

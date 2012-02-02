@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="MKL"}}----
-Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes
+Does a binary copy from a ##[[KeyPgLong long]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkl** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
@@ -9,13 +9,13 @@ Does a binary copy from a ##[[KeyPgInteger long]]## variable to a ##[[KeyPgStrin
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgInteger integer]]## variable to binary copy to a ##[[KeyPgString string]]##.
+		A ##[[KeyPgLong long]]## variable to binary copy to a ##[[KeyPgString string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgInteger long]]##.
+	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgLong long]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a long variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to a ##[[KeyPgLong Long]]## by ##[[KeyPgCvl Cvl]]##.
+	Does a binary copy from a ##[[KeyPgLong Long]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to a ##[[KeyPgLong Long]]## by ##[[KeyPgCvl Cvl]]##.
 
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 

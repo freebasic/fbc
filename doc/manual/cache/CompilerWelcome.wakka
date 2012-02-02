@@ -14,10 +14,10 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 	""FreeBASIC"" is a compiler and as such is not packaged with an IDE (Integrated Development Editor), although there are a few IDE's available. For information on using ""FreeBASIC"" without an IDE, see //[[CompilerRunning Running]]//.
 
 {{fbdoc item="section" value="Compatibility with QuickBASIC"}}
-	""FreeBASIC"" is designed to be syntax compatible with QuickBASIC.  For best code-compatibility with ""QuickBASIC"", the //[[CompilerDialects QB dialect]]// can be used when compiling source code. See //[[CompilerDialects FreeBASIC Dialects]]// and //[[LangQB Differences from QB]]//.
+	""FreeBASIC"" is designed to be syntax compatible with [[QuickBASIC]].  For best code-compatibility with ""QuickBASIC"", the //[[CompilerDialects QB dialect]]// can be used when compiling source code. See //[[CompilerDialects FreeBASIC Dialects]]// and //[[LangQB Differences from QB]]//.
 
 {{fbdoc item="section" value="Documentation"}}
-	All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  The online documentation is the most up-to-date resource available.  In all cases it can be regarded as the correct version.  The downloadable versions of the manual are snapshots of the documentation available at a particular time and should be mostly correct for a specific released version of the compiler.  However, we do not maintain multiple versions of the documentation so there may be some discrepancies.
+	All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki]].  The online documentation is the most up-to-date resource available.  In all cases it can be regarded as the correct version.  The downloadable versions of the manual are snapshots of the documentation available at a particular time and should be mostly correct for a specific released version of the compiler.  However, we do not maintain multiple versions of the documentation so there may be some discrepancies.
 
 {{fbdoc item="section" value="Starting points in the Manual"}}
 	- [[DocToc Table of Contents]]

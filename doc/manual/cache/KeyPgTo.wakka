@@ -20,7 +20,7 @@ Statement modifier to specify a range.
 
 	In the second syntax, the ##**To**## keyword defines lower and upper bounds for ##[[KeyPgCase Case]]## comparisons.
 
-	In the third syntax, the ##**To**## keyword defines the array bounds in a ##[[KeyPgDim DIM]]## statement
+	In the third syntax, the ##**To**## keyword defines the array bounds in a ##[[KeyPgDim Dim]]## statement
 
 	For more information, see ##[[KeyPgFornext For...Next]]##, ##[[KeyPgDim Dim]]## and ##[[KeyPgSelectcase Select Case]]##.
 

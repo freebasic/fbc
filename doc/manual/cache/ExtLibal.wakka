@@ -1,16 +1,17 @@
 {{fbdoc item="title" value="OpenAL"}}----
-OpenAL is a cross-platform 3D audio API appropriate for use with gaming applications and many other types of audio applications.
+OpenAL is a cross-platform 3D audio API appropriate for use with gaming applications and many other types of audio applications. ALUT is the OpenAL utility toolkit, a library providing additional functions to work with OpenAL.
 
 Website: http://www.openal.org
 Platforms supported: ""Win32"", Linux
-Headers to include: al/al.bi
+Headers to include: AL/al.bi, AL/alut.bi
+Header version: OpenAL 1.13, ALUT 1.1.0
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/openal.bas"}}%%(freebasic)
 '' OpenAL-based .wav player example
 
-#include "al/al.bi"
-#include "al/alut.bi"
+#include "AL/al.bi"
+#include "AL/alut.bi"
 
 const SOUND_FILE = "test.wav"
 

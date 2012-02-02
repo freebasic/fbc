@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Standard Data Types"}}----
-Built-in numerical and string types.
+Built-in data types
 
 **{{anchor name="INTEGER|Integer types"}}**
 	Types that store integer values, whose range is determined by the size of the data type and its signedness.
@@ -9,6 +9,8 @@ Built-in numerical and string types.
 	Specifies additional characteristics of a standard or user-defined data type.
 **{{anchor name="STRING|String types"}}**
 	Types that store or point to an array of characters.
+**{{anchor name="CLASS|Class types"}}**
+	Types that provide special capabilities to be used directly or to be extended by user-defined types
 
 <<{{anchor name="INTEGER"}}{{fbdoc item="section" value="Integer types"}}
 	=={{fbdoc item="keyword" value="KeyPgByte|BYTE"}} and {{fbdoc item="keyword" value="KeyPgUbyte|UBYTE"}}==
@@ -42,7 +44,10 @@ Built-in numerical and string types.
 		Fixed-length and variable-length null-terminated strings.
 	=={{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}==
 		Fixed-length and variable-length null-terminated strings of wide characters.
-	
+
+{{anchor name="CLASS"}}{{fbdoc item="section" value="Class types"}}
+	=={{fbdoc item="keyword" value="KeyPgObject|OBJECT"}}==
+		Super class providing run-time type information
 >>::c::
 
 {{fbdoc item="see"}}

@@ -15,7 +15,7 @@ Control flow statement.
 	**Wend**
 ##
 {{fbdoc item="desc"}}
-	While specifies that a loop block will continue if the ##//condition//## following it evaluates as true. This ##//condition//## is checked during each loop iteration.
+	##**While**## specifies that a loop block will continue if the ##//condition//## following it evaluates as true. This ##//condition//## is checked during each loop iteration.
 
 {{fbdoc item="diff"}}
 	- None

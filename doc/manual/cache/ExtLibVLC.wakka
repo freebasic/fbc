@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="libVLC"}}----
+Audio/video playback library from the VLC media player.
+
+Website: http://www.videolan.org/, http://wiki.videolan.org/Libvlc
+Platforms supported: ""Win32"", Linux
+Headers to include: vlc/*.bi
+Header version: 1.1.x
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

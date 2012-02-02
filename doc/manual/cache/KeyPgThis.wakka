@@ -46,6 +46,7 @@ END SUB
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgBase Base]]##
 	- ##[[KeyPgClass Class]]##
 	- ##[[KeyPgType Type]]##
 

@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="Free alternative to the OpenGL Utility Toolkit"}}----
+Just like [[ExtLibGLUT GLUT]], freeglut is a helper library that can be used to create ""OpenGL"" applications. It allows easy creation of windows with ""OpenGL"" drawing contexts and callback-based input event handling.
+
+Website: http://freeglut.sourceforge.net/
+Platforms supported: ""Win32"", Linux
+Headers to include: GL/freeglut.bi
+Header version: 2.6.0
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

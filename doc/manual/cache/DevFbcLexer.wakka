@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="Lexer & preprocessor"}}----
+
+''##lex*.bas##'': File input, tokenization, macro expansion buffer, token queue, #include contexts.
+''##pp*.bas##'': Preprocessor directive parsing, macro expansion text construction.
+
+	The lexer reads the source code from the .bas files and translates it into a series of tokens, so the FB parser sees this:
+	
+	%%dim as integer i = 5
+print i%%
+	
+	as:
+	
+	%%(Top-level parser retrieves the first token:)
+DIM     keyword         (Go to variable declaration parser)
+AS      keyword         (Go to datatype parser)
+INTEGER keyword         (Data type)
+"i"     symbol          (Back to variable declaration, variable identifier)
+"="     operator        (Go to initializer parser)
+"5"     number literal  (Expression)
+EOL     statement end   (Variable declaration parser is done, 
+	                         the variable is added to the AST, 
+	                         back to toplevel parser)
+(Next line, next statement)
+PRINT   keyword         (Go to QB print quirk function call parser)
+"i"     symbol          (Expression, lookup "i" symbol, it's an integer variable,
+	                      create a CALL to fb_PrintInt(), the expression is the argument)
+EOL                     (Print parser is done, back to toplevel)
+EOF                     (Top-level parser is done)%%
+	
+	The lexer is an abstraction hiding the ugly details of user input (indentation, comments, keyword capitalization, #includes) from the parser. Additionally it does preprocessing, consisting of macro expansion and preprocessor directive parsing. The general idea is to handle all preprocessing in the lexer, so the parser does not get to see it. The parser never calls preprocessor functions, the lexer functions do that.
+	
+	{{fbdoc item="keyword" value="DevFbcLexerTokens|Tokens"}}
+	{{fbdoc item="keyword" value="DevFbcLexerMacros|Macro storage and expansion"}}
+	{{fbdoc item="keyword" value="DevFbcLexerDirectives|Preprocessor directive parsing"}}
+	{{fbdoc item="keyword" value="DevFbcLexerFiles|File contexts"}}
+	{{fbdoc item="keyword" value="DevFbcLexerCallGraph|Quick overview of the call graph"}}
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

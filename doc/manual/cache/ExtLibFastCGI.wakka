@@ -4,6 +4,7 @@ Open extension to CGI that provides high performance without the limitations of 
 Website: http://www.fastcgi.com
 Platforms supported: ""Win32"", Linux
 Headers to include: fastcgi/fastcgi.bi
+Header version: from 2005
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/fastcgi.bas"}}%%(freebasic)

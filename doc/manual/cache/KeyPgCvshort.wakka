@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVSHORT"}}----
-Converts an two byte string to a short variable
+Converts an two byte string to a ##[[KeyPgShort Short]]## variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvshort** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgShort short]]
@@ -9,7 +9,7 @@ Converts an two byte string to a short variable
 ##
 {{fbdoc item="param"}}
 	##//str//##
-		A ##[[KeyPgString String]]## exactly two bytes in length with a binary copy of a short variable stored in it.
+		A ##[[KeyPgString String]]## exactly two bytes in length with a binary copy of a ##[[KeyPgShort Short]]## variable stored in it.
 
 {{fbdoc item="ret"}}
 	Returns a ##[[KeyPgShort Short]]## variable to copy the binary copy of a short to.
@@ -31,12 +31,10 @@ sleep
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cvshort""**##.
 
 {{fbdoc item="diff"}}
-	- New to ""FreeBASIC""
-
-{{fbdoc item="diff"}}
 	- In QBasic this function is called CVI
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgCvi Cvi]]##
 	- ##[[KeyPgMkshort Mkshort]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

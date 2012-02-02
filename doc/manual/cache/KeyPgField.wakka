@@ -2,9 +2,9 @@
 Specifies alignment.
 
 {{fbdoc item="syntax"}}##
-[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
-	...
-End [[KeyPgType Type]]
+	[[KeyPgType Type]] //typename// **Field** = { 1 | 2 | 4 }
+		...
+	End [[KeyPgType Type]]
 ##
 {{fbdoc item="desc"}}
 ~&//Note: The following information is likely incorrect, FB follows the GCC padding rules, which these next sentences do not describe.  The source file symb-struct.bas of the compiler shows the exact method.//

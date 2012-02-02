@@ -4,5 +4,6 @@ Configurable compression library based around the LZMA algorithm with zlib-like 
 Website: http://tukaani.org/xz/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: lzma.bi
+Header version: 5.0.2
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

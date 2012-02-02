@@ -11,4 +11,5 @@ Take care when linking to the BFD library. Newer versions are licensed under GNU
 
 To avoid all difficulties, the objinfo feature can be disabled with the DISABLE_OBJINFO option when [[DevBuild compiling fbc]]. This is useful when porting fbc to a new platform, when building an independent/standalone/bootstrap fbc, or when running into any libbfd related problems.
 
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

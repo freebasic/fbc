@@ -205,7 +205,7 @@ By just adding a simple function to the program, you have made the program easie
 
 === Bit Fields ===
 
-There is yet another data type that can be used in type definitions, the bit field. Bit fields are defined as ##//variable_name//: bits As //""DataType""//##. The variable name must be followed with a colon, the number of bits, followed by the data type. Only integer data types are allowed within a bit field. Bit fields are useful when you need to keep track of boolean type information. A bit can be either ##0## or ##1##, which may represent Yes or No, On or Off or even Black and White.
+There is yet another data type that can be used in type definitions, the bit field. Bit fields are defined as ##//variable_name//: bits As //""DataType""//##. The variable name must be followed with a colon, the number of bits, followed by the data type. Only integer types (all numeric types excluding the two floating-point types 'single' and 'double' and excluding also the 64-bit types) are allowed within a bit field. Bit fields are useful when you need to keep track of boolean type information. A bit can be either ##0## or ##1##, which may represent Yes or No, On or Off or even Black and White.
 
 The following code snippet illustrates a bit field definition.
 

@@ -1,0 +1,11 @@
+{{fbdoc item="title" value="File contexts"}}----
+
+Because #includes can occur in the middle of input files, the lexer needs to push file contexts to a stack. File input buffer, macro expansion buffer and the token queue form a so-called "context". It is file specific and thus it must be pushed onto a stack, so that the lexer can return to the parent (after parsing an #include), without losing any tokens or macro text.  Note that macros can contain #includes too. 
+
+''##fb.bas:fbIncludeFile()##'' basically just consists of:
+	''##lexPush()##''
+	''##cProgram()##''
+	''##lexPop()##''
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

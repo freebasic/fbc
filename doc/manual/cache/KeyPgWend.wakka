@@ -7,7 +7,7 @@ Control flow statement.
 	**Wend**
 ##
 {{fbdoc item="desc"}}
-	Wend specifies the end of a ##[[KeyPgWhilewend While...Wend]]## loop block.
+	##**Wend**## specifies the end of a ##[[KeyPgWhilewend While...Wend]]## loop block.
 
 {{fbdoc item="diff"}}
 	- None

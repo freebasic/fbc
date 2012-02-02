@@ -1,9 +1,10 @@
 {{fbdoc item="title" value="JNI, The Java Native Interface"}}----
-Standard programming interface for writing Java native methods and embedding the Java virtual machine* into native applications.
+Standard programming interface for writing Java native methods and embedding the Java virtual machine into native applications.
 
 Website: [[http://download.oracle.com/javase/6/docs/technotes/guides/jni/index.html]], [[http://java.sun.com/docs/books/jni/]]
 Platforms supported: ""Win32"", Linux
 Headers to include: jni.bi
+Header version: from 2006
 
 {{fbdoc item="ex"}}
 

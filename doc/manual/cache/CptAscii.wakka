@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Table of ASCII Characters"}}----
-""FreeBASIC"" supports in all versions the same "ASCII extended" character set the old DOS (and QBasic) supported. It is also called CP437 or Code page 437.  Each character is represented with one (1) byte of data.  Here is a table.  Each entry has decimal code, hex code, and printed representation.
+""FreeBASIC"" graphics programs support in all versions the same "ASCII extended" USA character set the old DOS (and QBasic) supported. It is also called CP437 or Code page 437.  Each character is represented with one (1) byte of data.  Here is a table.  Each entry has decimal code, hex code, and printed representation.
 
 ""<!-- MetaCommand Begin_HTML -->""
 	##""<table cols=24 RULES=GROUPS CELLSPACING=1 CELLPADDING=2>
@@ -301,8 +301,11 @@
 <td>255<td>FF<td>&nbsp;
 </table>""## ""<!-- MetaCommand End_HTML -->"" ""<!-- MetaCommand Begin_ASCII -->"" ""<!-- MetaCommand Insert_ASCII_table -->"" ""<!-- MetaCommand End_ASCII -->""
 
-Many of the standard ASCII characters cannot be PRINTed in ""FreeBASIC"", because the console interprets some characters as controls: 7 is bell, 8 is backspace, 9 is tab, 10 is line feed, 13 is carriage return, and others.  There are symbols associated with these characters also, but there is no way in ""FreeBASIC"" to output them to the screen. The acronym ASCII stands for American Standard Code for Information Interchange. For more information, see [[http://en.wikipedia.org/wiki/Ascii]].  The symbols for codes 32 through 127 are the same as the standard [[http://en.wikipedia.org/wiki/ISO_8859-1 Latin ISO-8859-1]] char set most Windows fonts use. Others are often very different.
+Many of the standard ASCII characters cannot be ##[[KeyPgPrint Print]]##ed in ""FreeBASIC"", because the console interprets some characters as controls: ##7## is bell, ##8## is backspace, ##9## is tab, ##10## is line feed, ##13## is carriage return, and others.  There are symbols associated with these characters also, but there is no way in ""FreeBASIC"" to output them to the screen. 
 
+The acronym ASCII stands for American Standard Code for Information Interchange. For more information, see [[http://en.wikipedia.org/wiki/Ascii]].  The symbols for codes ##32## through ##127## are the same as the standard [[http://en.wikipedia.org/wiki/ISO_8859-1 Latin ISO-8859-1]] char set most Windows fonts use. Others are often very different.
+
+In console mode (i.e. ##[[KeyPgScreengraphics Screen]] 0##/ non-graphics mode) the characters less than ##32## or greater than ##127## may display using different characters, depending on the operating system and code page of the screen / console in use.
 UNICODE is a newer standard of character sets involving two or more bytes per character, and may be used to print other characters to a Unicode-enabled console.
 
 In graphics modes, ##[[KeyPgDrawString Draw String]]## does not give special meaning to control characters allowing an alternative to display all characters in the set. 

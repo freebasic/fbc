@@ -11,20 +11,20 @@ Code block that allows the use of architecture-specific instructions.
 	**Asm** //architecture-dependent instructions//
 ##
 {{fbdoc item="desc"}}
-	The ##Asm## block is used to insert specific machine-code instructions in a program in order to perform operations that cannot be carried out using the features of the language or to hand-optimize performance-sensitive sections of code.
+	The ##**Asm**## block is used to insert specific machine-code instructions in a program in order to perform operations that cannot be carried out using the features of the language or to hand-optimize performance-sensitive sections of code.
 
-	The current ""FreeBASIC"" compiler currently only produces code for Intel [[x86 80x86]]-based machines; however, in the future, the compiler might be ported to a platform which does not support the same instruction set.  Therefore, ##Asm## blocks should only be used when necessary, and a ""FreeBASIC""-only alternative should be provided if possible.
+	The current ""FreeBASIC"" compiler currently only produces code for Intel [[x86 80x86]]-based machines; however, in the future, the compiler might be ported to a platform which does not support the same instruction set.  Therefore, ##**Asm**## blocks should only be used when necessary, and a ""FreeBASIC""-only alternative should be provided if possible.
 
 	The return value of a function may be set by using the ##[[KeyPgFunction Function]]## keyword within brackets as shown in the example below.
 
-	##Asm## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem comments]]  - use ""FreeBASIC""-like " ##'## " comments, not " ##;## " as usual in ASM. 
+	##**Asm**## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem comments]]  - use ""FreeBASIC""-like " ##'## " comments, not " ##;## " as usual in assembly code. 
 
 	==x86 Specific:==
 
 		==Syntax==
-			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an Asm block.  The assembler used by ""FreeBASIC"" is GAS, using the ##.intel_syntax noprefix## directive, and ASM blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal.
+			The syntax of the inline assembler is a simplified form of Intel syntax.  Intel syntax is used by the majority of x86 assemblers, such as MASM, TASM, NASM, YASM and FASM. In general, the destination of an instruction is placed first, followed by the source. Variables and functions defined by a program may be referenced in an ##**Asm**## block.  The assembler used by ""FreeBASIC"" is GAS, using the ##.intel_syntax noprefix## directive, and ##**Asm**## blocks are passed through unmodified, except for the substitution of local variable names for stack frame references, and commenting removal.
 
-			Instruction syntax is mostly the same as FASM uses, one important difference is that GAS requires size settings to be followed by the word "ptr".
+			Instruction syntax is mostly the same as FASM uses, one important difference is that GAS requires size settings to be followed by the word "##ptr##".
 			
 			%%(freebasic)
 ' Assuming "blah" is a FB global or local UINTEGER variable
@@ -34,10 +34,10 @@ inc  dword [blah]       ' Not OK: size given, but still not accepted by GAS
 inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here%%
 
 		==Register Preservation==
-			When an ASM block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
+			When an ##**Asm**## block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
 
 		==Register Names==
-		~The names of the registers for the x86 architecture are written as follows in an ##Asm## block:
+		~The names of the registers for the x86 architecture are written as follows in an ##**Asm**## block:
 		~- 4-byte integer registers: ##eax##, ##ebx##, ##ecx##, ##edx,## ##ebp##, ##esp##, ##edi##, ##esi##
 		~- 2-byte integer registers: ##ax##, ##bx##, ##cx##, ##dx##, ##bp##, ##sp##, ##di##, ##si## (low words of 4-byte ##e##- registers)
 		~- 1-byte integer registers: ##al##, ##ah##, ##bl##, ##bh##, ##cl##, ##ch##, ##dl##, ##dh## (low and high bytes of 2-byte -##x## registers)
@@ -85,8 +85,11 @@ inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here%%
 		~ *2: sensitive to permission bits in CR4, see below
 		
 	The privileged instructions will work "correctly" in DOS when running on a Ring 0 DPMI kernel, like the (non-default) Ring 0 version of CWSDPMI, WDOSX or D3X, nevertheless most of them are not really useful and dangerous when executed from DPMI code. RDTSC (Read Time Stamp Counter) has been shown to be allowed by most, or all OS'es.
+
 	However the usefulness of RDTSC has been diminished with the advent of multi-core and hibernating CPUs. SSE2 and higher instructions are disabled "by default" after CPU initialization, Windows and Linux usually do enable them, in DOS it is business of the DPMI host: HDPMI32 will enable them, CWSDPMI won't. The INT instruction is usable in the DOS version/target only, note that it works slightly differently from real mode DOS, see also [[FaqDOS]].
-	The segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be changed from an ##Asm## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS, see also [[FaqDOS]]). The operating system or DPMI host is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
+
+	The segment registers (##cs##, ##ds##, ##es##, ##fs##, ##gs##) should not be changed from an ##**Asm**## block, except in certain cases with the DOS port (note that they do NOT work the same way as in real-mode DOS, see also [[FaqDOS]]). The operating system or DPMI host is responsible for memory management; the meaning of segments (selectors) in protected mode is very different from real-mode memory addressing.
+
 	Note that those "unsafe" instructions are not guaranteed to raise a "visible" crash even when ran with insufficient privilege - the OS or DPMI host can decide to "emulate" them, either functionally (reading from some CRx works under HDPMI32), or "dummy" (nothing happens, instruction will pass silently, like a NOP).
 
 {{fbdoc item="ex"}}
@@ -108,8 +111,8 @@ Print "4 + 5 ="; AddFive(i)
 ##%%4 + 5 = 9%%##
 
 	""FreeBASIC""'s Assembler is AS / GAS, the assembler of GCC, so an external program. Some quirks apply:
-		- The error lines  returned by FBC for ASM blocks are not related the FB source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make ""FreeBASIC"" preserve them, the compiler must be invoked with the //[[CompilerOptrupp -R]]// option ("don't delete ASM files").
-		- The label names are case sensitive inside ASM blocks.
+		- The error lines  returned by FBC for ##**Asm**## blocks are not related the FB source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make ""FreeBASIC"" preserve them, the compiler must be invoked with the //[[CompilerOptrupp -R]]// option ("don't delete ASM files").
+		- The label names are case sensitive inside ##**Asm**## blocks.
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Asm""**##.

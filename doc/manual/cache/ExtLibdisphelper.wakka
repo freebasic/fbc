@@ -4,6 +4,7 @@ Disphelper is a COM helper library that can be used in plain C. No MFC or ATL is
 Website: http://disphelper.sourceforge.net/
 Platforms supported: ""Win32"", Linux (using WINE)
 Headers to include: disphelper/disphelper.bi
+Header version: from 2005
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/disphelper1.bas"}}%%(freebasic)

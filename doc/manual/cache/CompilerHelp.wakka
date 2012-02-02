@@ -4,7 +4,7 @@ There are several options available for getting help with ""FreeBASIC"".
 {{fbdoc item="section" value="The Manual"}}
 	This huge user's manual is full of information that can help you learn to write programs using ""FreeBASIC"".  
 
-	The manual is available online at [[http://www.freebasic.net/wiki http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
+	The manual is available online at [[http://www.freebasic.net/wiki]].  There is a search box at the bottom of every page to help you find what you're looking for.
 
 	If you are unfamiliar with ""FreeBASIC"" or the documentation, you may find these pages a good place to start:
 		- [[DocToc Table of Contents]]
@@ -25,7 +25,7 @@ There are several options available for getting help with ""FreeBASIC"".
 	""FreeBASIC""'s official code archive is located at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]].  This archive hosts user contributed libraries and tools and has links to source code located on other websites.
 
 {{fbdoc item="section" value="Tutorials"}}
-	Community created tutorials about ""FreeBASIC"" can be found at [[http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials http://www.freebasic.net/wiki/wikka.php?wakka=CommunityTutorials]].  Some selected tutorials are included in this manual.
+	Community created tutorials about ""FreeBASIC"" can be found at [[CommunityTutorials]].  Some selected tutorials are included in this manual.
 
 {{fbdoc item="section" value="FreeBASIC Forum"}}
 	An active community forum can be found at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]] with several sub-forums.  The forum has a search feature that can help you find answers to questions or problems that may have already been asked and solved.  First do a search for your problem, if you can't find the answer then post a message in one of the sub-forums.

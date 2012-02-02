@@ -105,6 +105,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}
 	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}}
 {{fbdoc item="section" value="B"}}
+	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 	- {{fbdoc item="keyword" value="KeyPgBin|BIN"}}
 	- {{fbdoc item="keyword" value="KeyPgBinary|BINARY"}}
@@ -229,6 +230,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgExit|EXIT"}}
 	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
+	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
 {{fbdoc item="section" value="F"}}
@@ -269,6 +271,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgImageDestroy|IMAGEDESTROY"}}
 	- {{fbdoc item="keyword" value="KeyPgImageInfo|IMAGEINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgOpImp|IMP"}}
+	- {{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}
 	- {{fbdoc item="keyword" value="KeyPgImport|IMPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgInkey|INKEY"}}
 	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
@@ -280,7 +283,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgInstrrev|INSTRREV"}}
 	- {{fbdoc item="keyword" value="KeyPgInt|INT"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
-	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
+	- {{fbdoc item="keyword" value="KeyPgIs|IS (SELECT CASE)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpIs|IS (Run-time type information operator)"}}
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
 <<>>
 {{fbdoc item="section" value="K"}}
@@ -340,6 +344,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOpNot|NOT"}}
 	- {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
 {{fbdoc item="section" value="O"}}
+	- {{fbdoc item="keyword" value="KeyPgObject|OBJECT"}}
 	- {{fbdoc item="keyword" value="KeyPgOct|OCT"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgOnerror|ON ERROR"}}

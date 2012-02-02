@@ -25,7 +25,9 @@ Converts numeric or string expression to an integer (##[[KeyPgShort Short]]##)
 	A ##[[KeyPgShort Short]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Cshort**## function rounds off the decimal part and returns a 16 bit ##[[KeyPgShort Short]]## value. The function does not check for an overflow, so be sure not to pas a value thats less/larger then -32768 to 32767. The name can be explained as 'Convert to Short'.
+	The ##**Cshort**## function rounds off the decimal part and returns a 16-bit ##[[KeyPgShort Short]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-32## ##768## or larger than ##32## ##767##.
+
+	The name can be explained as 'Convert to Short'.
 
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
 

@@ -89,7 +89,7 @@ END SUB
 %%
 
 You can compile this code, but nothing will happen as the ""'ReadHighScore'"" subroutine is empty. Let's fill it up!
-We need to start it by opening the 'high_scores.dat' file and reading the needed data from it. Please refer to FreeBASIC's OPEN statement for info on file opening in FreeBASIC if not familiar with it.
+We need to start it by opening the 'high_scores.dat' file and reading the needed data from it. Please refer to ""FreeBASIC""'s OPEN statement for info on file opening in ""FreeBASIC"" if not familiar with it.
 
 As we want to open the file using a FREE file handle, we need to dimension a variable that will hold this information and pass it into it. Use this code:
 
@@ -161,9 +161,7 @@ Now when we are done with the easy part of the problem, let's move onto writing 
 I constructed the ""'WriteHighScore'"" subroutine like this:
 
 %%(freebasic)
-
 SUB WriteHighScore (highscore_file AS STRING, users_score AS INTEGER)
-
 %%
 
 Which means it will be called with a high scores table file and a score we want to input. If this score evaluates to be lower that the lowest in the high score table, no code will be executed.
@@ -234,7 +232,7 @@ If this is NOT the case, a FOR loop is executed which loops from the lowest high
 
 For example, if our high score table has 10 entries and the new entry needs to be placed on position 5, the loop goes from 9 to 5. When "write_pos" is 9, values from 'hscore(9)' and 'hname(9)' are passed to 'hscore(9+1)' and 'hname(9+1)'. When 'write_pos' is 8, values from 'hscore(8)' and 'hname(8)' are passed to 'hscore(8+1)' and 'hname(8+1)'. And so on.
 
-After the FOR loop we need to input the new entry on its appropriate position (flagged with 'startwrite'), new entry being set with 'users_score' and 'playername', where 'playername' will be inputted inside the 'InputName' sub.
+After the FOR loop we need to input the new entry on its appropriate position (flagged with 'startwrite'), new entry being set with 'users_score' and 'playername', where 'playername' will be inputted inside the '""InputName""' sub.
 
 The last thing in the ""'WriteHighScore'"" sub we need to do is to store the new high score entries back to file:
 

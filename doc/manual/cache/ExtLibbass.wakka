@@ -4,6 +4,7 @@ Audio library for use in Windows with a Beta Version for Linux.
 Website: http://www.un4seen.com/bass.html
 Platforms supported: ""Win32"", Linux (beta)
 Headers to include: bass.bi
+Header version: 2.4.8
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/bass.bas"}}%%(freebasic)

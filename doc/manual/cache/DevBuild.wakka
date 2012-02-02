@@ -102,7 +102,7 @@ cmd%%
 	
 	==Windows==
 	
-		To install [[http://www.mingw.org MinGW/MSYS]], download the latest version of the [[https://sourceforge.net/projects/mingw/files/Automated%20MinGW%20Installer/mingw-get/ mingw-get program]] and extract it into ##""C:\MinGW""##. After that open a command prompt (cmd.exe) and run:
+		To install [[http://www.mingw.org MinGW/MSYS]], download the latest version of the [[http://sourceforge.net/projects/mingw/files/Installer/mingw-get/ mingw-get program]] and extract it into ##""C:\MinGW""##. After that open a command prompt (cmd.exe) and run:
 		
 			%%cd C:\MinGW\bin
 mingw-get update
@@ -112,17 +112,17 @@ mingw-get install <package-name>
 		
 		The following packages are needed:
 		
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GCC/Version4/ gcc-core]]##
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GCC/Version4/ gcc-g++]]## (only needed to get ""libsupc++.a"")
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GNU-Binutils/ binutils]]## (binutils, and binutils-dev for libbfd)
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/ mingwrt]]##
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/Win32-API/ w32api]]##
-			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/gettext/ gettext-dev]]## (libintl for libbfd)
-			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/msys-core/ msys-core]]##
-			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/bash/ bash]]## (terminal/shell)
-			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/BaseSystem/coreutils/ msys-coreutils]]##
-			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/findutils/ msys-findutils]]## (xargs for running the test suite)
-			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/make/ msys-make]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-core]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gcc/Version4/ gcc-g++]]## (only needed to get ""libsupc++.a"")
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/binutils/ binutils]]## (binutils, and binutils-dev for libbfd)
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/mingw-rt/ mingwrt]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/w32api/ w32api]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MinGW/Base/gettext/ gettext-dev]]## (libintl for libbfd)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/ msys-core]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/bash/ bash]]## (terminal/shell)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/coreutils/ msys-coreutils]]##
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/findutils/ msys-findutils]]## (xargs for running the test suite)
+			- ##[[http://sourceforge.net/projects/mingw/files/MSYS/Base/make/ msys-make]]##
 		
 		After installing, you can open a ""MinGW"" shell (MSYS bash) by running ##""C:\MinGW\msys\1.0\msys.bat""## (you can create a shortcut to it too).
 		
@@ -138,7 +138,7 @@ mingw-get upgrade <package-name>
 		
 		In order to compile ""FreeBASIC""'s gfxlib2, ""DirectX"" headers are needed in ##C:\""MinGW""\include##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
 		
-		Note: It is most likely also possible to use other GCC-for-""Win32"" ports like [[http://tdm-gcc.tdragon.net/ TDM-GCC]] or [[http://mingw-w64.sourceforge.net/ MinGW-w64]], since they usually are almost identical. Things like different exception handling or 64bit support currently do not matter for ""FreeBASIC"". TDM-GCC was successfully used for the ""FreeBASIC"" 0.21 - 0.23 releases.
+		Note: It is most likely also possible to use other GCC-for-""Win32"" ports like [[http://tdm-gcc.tdragon.net/ TDM-GCC]] or [[http://mingw-w64.sourceforge.net/ MinGW-w64]], since they usually are almost identical. Things like different exception handling or 64bit support currently do not matter for ""FreeBASIC"". TDM-GCC was successfully used for the ""FreeBASIC"" 0.21 - 0.23 releases, and is currently preferred because it's configured for setjump/longjump exception handling rather than dwarf2, making its libraries and thus FB programs smaller. To use FB with TDM-GCC, compile with the ENABLE_TDMGCC makefile option.
 
 
 {{anchor name="COMPILE"}}{{fbdoc item="section" value="Compiling FreeBASIC"}}
@@ -190,9 +190,6 @@ make
 			- ##C:\DJGPP\lib\lib{bfd,iberty,intl,z}.a## //(For recompiling ""FreeBASIC"" using this tree)//
 			- The modified ##libc.a## from the latest ""FreeBASIC"" release //(Note: To use the libc.a from DJGPP, the _main.o it contains needs to be replaced with the one compiled from ##contrib/djgpp/libc/crt0/_main.c## from the fbc source code, to fix a bug in the original version from DJGPP)//
 			- and any additional libraries you want to use
-		
-		1) Copy to ##""C:\fbc\new\include""##:
-			- any headers you want to use, from [[http://code.google.com/p/freebasic-headers/ freebasic-headers]] or the previous ""FreeBASIC"" release, etc.
 	
 	After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
 
@@ -223,9 +220,6 @@ make
 			- ##""C:\MinGW\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(Rename to ##lib*.dll.a## if preferred)//
 			- ##""C:\MinGW\lib\lib{bfd,iberty,intl}.a""## //(For recompiling ""FreeBASIC"" using this tree)//
 			- and any additional libraries you want to use
-		
-		1) Copy to ##""C:\fbc\new\include""##:
-			- any headers you want to use, from [[http://code.google.com/p/freebasic-headers/ freebasic-headers]] or the previous ""FreeBASIC"" release, etc.
 	
 	After this, ##C:\fbc\new## should be ready to compile your programs, and you can also copy it to another directory or share it if you want.
 
@@ -278,11 +272,20 @@ make FBFLAGS=-exx%%
 		- ##prefix=c:/mingw##
 			Changes the /usr/local prefix to something else. Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
 		
-		- ##HOST=i686-pc-mingw32##
-			To cross-compile an fbc that will run on the specified host. fbc will default to compiling for its HOST. The FB runtime will also be cross-compiled to run on this host, unless TARGET is used to override that.
-		
 		- ##TARGET=i686-pc-mingw32##
-			To cross-compile the FB runtime libraries to run on the specified target. The target name will be inserted into the lib/ or lib/freebasic/ directory name to allow installing multiple target-specific FB runtimes in parallel. Note: TARGET does not affect the compiler, which always has all targets enabled, and always defaults to compiling for its HOST.
+			To cross-compile the compiler and/or the runtime libraries to run on the specified host system. The system name will be inserted into the lib/ or lib/freebasic/ directory name to allow installing multiple target-specific FB runtimes in parallel.
+			
+			For example, on a Debian GNU/Linux system with the i586-mingw32msvc-gcc cross-compiler installed, it's possible to cross-compile a win32 FB like this:
+			%%# Build the win32 runtime (gfxlib2 is not needed for the compiler, but for other FB programs)
+make rtlib TARGET=i586-mingw32msvc
+make gfxlib2 TARGET=i586-mingw32msvc
+
+# Install it
+make install TARGET=i586-mingw32msvc
+
+# Then the win32 fbc (linking against the just built win32 runtime)
+make compiler TARGET=i586-mingw32msvc
+%%
 		
 		- ##SUFFIX=foo##
 			Append a suffix to the fbc executable's and lib/ directories' names. This allows installing multiple versions of compiler and runtime in parallel. Note: The include/ directory name is not affected, and the FB headers are always shared by all installed FB versions (FB's headers and their directory layouts are designed to be able to do that).
@@ -301,6 +304,9 @@ make FBFLAGS=-exx%%
 		
 		- ##DISABLE_OBJINFO=1##
 			If specified fbc will not use libbfd at all, at the cost of the [[DevObjinfo objinfo feature]] being disabled. This is useful in environments (e.g. Debian unstable) where the shared libbfd is updated frequently, as fbc will no longer depend on a specific libbfd version/soname.
+		
+		- ##ENABLE_TDMGCC=1## (win32 only)
+			This causes FB to be built for TDM-GCC rather than the mingw.org GCC. Currently the only difference this makes is that when built for TDM-GCC, fbc doesn't try to link in libgcc_eh into FB programs.
 
 
 {{anchor name="PROBLEMS"}}{{fbdoc item="section" value="Known problems"}}
@@ -350,6 +356,6 @@ Warning: .drectve `-aligncomm:"_FB_bfd_architecture",2' unrecognized
 	{{fbdoc item="subsect" value="MinGW binutils ld versions 2.18 to 2.21"}}
 	
 		fbc triggers a bug in the mentioned linker versions causing it to produce broken binaries. It's fixed in binutils 2.21.1 and up.
-
-
+		
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -15,7 +15,7 @@ Does a binary copy from a ##[[KeyPgSingle single]]## variable to a ##[[KeyPgStri
 	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgSingle single]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a ##[[KeyPgSingle Single]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to a single by ##[[KeyPgCvs Cvs]]##.
+	Does a binary copy  from a ##[[KeyPgSingle Single]]## variable to a ##[[KeyPgString string]]##, setting its length to 4 bytes. The resulting string can be read back to a ##[[KeyPgSingle single]]## by ##[[KeyPgCvs Cvs]]##.
 
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
 

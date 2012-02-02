@@ -4,6 +4,7 @@ Library of subroutines and functions that display data graphically.
 Website: http://www.mps.mpg.de/dislin/
 Platforms supported: ""Win32"", Linux
 Headers to include: dislin.bi
+Header version: from 2005
 
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

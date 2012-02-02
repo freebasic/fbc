@@ -4,8 +4,7 @@ High-Quality, widely used database engine.
 Website: http://www.mysql.org
 Platforms supported: ""Win32"", Linux
 Headers to include: mysql/mysql.bi
-Example Usage: yes, in examples/libraries/DB/
-
+Header version: 4.0.17
+Examples: in examples/libraries/DB/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

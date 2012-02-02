@@ -13,7 +13,7 @@ Called automatically when a class or user defined type is created
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
 
 {{fbdoc item="desc"}}
 	##**Constructor**## methods are called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable is created.

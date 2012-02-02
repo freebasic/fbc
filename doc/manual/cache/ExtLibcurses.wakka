@@ -2,8 +2,9 @@
 Standardized console user interface library
 
 Website: http://pdcurses.sourceforge.net/ and http://www.gnu.org/software/ncurses/
-Platforms supported: ""Win32"", Linux
+Platforms supported: DOS, ""Win32"", Linux
 Headers to include: curses.bi
+Header versions: pdcurses 3.4, curses from 2005
 Note: On ""Win32"" systems pdcurses is used, on Linux it uses the standard ncurses library.
 
 {{fbdoc item="ex"}}

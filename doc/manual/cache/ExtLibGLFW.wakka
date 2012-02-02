@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="GLFW, an OpenGL library"}}----
+GLFW is a helper library that can be used to create OpenGL applications. It allows the creation of a window with an OpenGL drawing context and input handling while still allowing the program to have its own main loop.
+
+Website: http://www.glfw.org/
+Platforms supported: ""Win32"", Linux
+Headers to include: GL/glfw.bi
+Header version: 2.7.2
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

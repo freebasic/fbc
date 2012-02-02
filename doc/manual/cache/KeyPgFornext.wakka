@@ -19,7 +19,7 @@ Control flow statement for looping
 		an expression that is added to the iterator after every iteration
 
 {{fbdoc item="desc"}}
-	A ##**For...Next**## loop initializes ##//iterator//## to ##//startvalue//##, then executes the ##//statement block//##'s, incrementing ##//iterator//## by ##//stepvalue//## until it reaches ##//endvalue//##. If ##//stepvalue//## is not explicitly given it will set to 1.
+	A ##**For...Next**## loop initializes ##//iterator//## to ##//startvalue//##, then executes the ##//statement block//##, incrementing ##//iterator//## by ##//stepvalue//## until it exceeds ##//endvalue//##. If ##//stepvalue//## is not explicitly given it will set to ##1##.
 
 	The values of ##//stepvalue//## and ##//endvalue//## are stored internally immediately following execution of the ##**For**## statement and thus neither can be changed inside the ##**For**## loop. (the variables that define them can be changed, but changing those variables inside the ##**For**## loop will not affect its execution. See examples)
 	
@@ -33,9 +33,11 @@ Control flow statement for looping
 
 	If an ##[[KeyPgExit Exit]]## ##**For**## statement is encountered inside the ##//statement block//##, the loop is terminated, and execution resumes immediately following the enclosing ##**Next**## statement. If a ##[[KeyPgContinue Continue]]## ##**For**## statement is encountered, the rest of the ##//statement block//## is skipped until the block's corresponding ##**Next**## statement.  The counter's value is incremented and the loop restarted if it is still within the bounds given by ##//endvalue//##.
 
+	**Note**: for integer data types, it is not possible to loop up to the highest possible value (or down to the lowest possible value) that can be stored in the variable type, because the loop only breaks when the incremented variable exceeds ##//endvalue//##, which can never happen.  For example, if you try to iterate an variable from ##0## to ##255##, the loop will only break once the variable reaches ##256## or more.  Using a ##[[KeyPgUbyte UByte]]## variable for the counter wouldn't work, because although it can hold the numbers ##0## to ##255##, it cannot hold ##256##.  See [[TblVarTypes]] to find the upper and lower limits for the standard data types.
+
 	Like all control flow statements, the ##**For**## statement can be nested, that is, it can be used in a statement block of another ##**For**## statement.
 
-	##//For//##, ##//Next//##, and ##//Step//## are operators that can be overloaded inside user defined types. See [[KeyPgOpFor Operator For]], [[KeyPgOpNext Operator Next]], [[KeyPgOpStep Operator Step]]
+	##//For//##, ##//Next//##, and ##//Step//## are operators that can be overloaded inside user defined types. See ##[[KeyPgOpFor Operator For]]##, ##[[KeyPgOpNext Operator Next]]##, ##[[KeyPgOpStep Operator Step]]##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/for-next.bas"}}%%(freebasic)

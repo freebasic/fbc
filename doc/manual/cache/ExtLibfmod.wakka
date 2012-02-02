@@ -4,6 +4,7 @@ Auido library supporting just about any format.
 Website: http://www.fmod.org/index.php/products#FMOD3ProgrammersAPI
 Platforms supported: ""Win32"", Linux
 Headers to include: fmod.bi
+Header version: 3.74
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/fmod1.bas"}}%%(freebasic)

@@ -12,7 +12,7 @@ Creates a ##[[KeyPgWstring Wstring]]## of a given length filled with spaces (##"
 		An integer type specifying the length of the string to be created.
 
 {{fbdoc item="ret"}}
-	The created ##[[KeyPgWstring Wstring]]##. An empty string will be returned if ##//count//## <= 0.
+	The created ##[[KeyPgWstring Wstring]]##. An empty string will be returned if ##//count// <= 0##.
 
 {{fbdoc item="desc"}}
 	##**Wspace**## creates a wstring (wide character string- Unicode) with the specified number of spaces.
@@ -25,7 +25,7 @@ print a ' prints: x   x
 %%
 
 {{fbdoc item="target"}}
-	- Unicode (w)strings are not supported in the DOS port of ""FreeBASIC"".
+	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wspace""**##.

@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="Flite"}}----
+Flite is a run-time speech synthesis engine.
+
+Website: http://www.speech.cs.cmu.edu/flite/
+Platforms supported: ""Win32"", Linux
+Headers to include: flite/flite.bi
+Header version: 1.4, machine-translated only
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

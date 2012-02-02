@@ -25,7 +25,7 @@ Converts numeric or string expression to an ##[[KeyPgInteger Integer]]##
 	An ##[[KeyPgInteger Integer]]## value.
 
 {{fbdoc item="desc"}}
-	If ##**Cint**## is passed a ##//numeric expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns a 32-bit ##[[KeyPgInteger Integer]]##. The function does not check for an overflow, and results are undefined for values which are less than ##-2##&nbsp;##147##&nbsp;##483##&nbsp;##648## or larger than ##2##&nbsp;##147##&nbsp;##483##&nbsp;##647##. 
+	If ##**Cint**## is passed a ##//numeric expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns a 32-bit ##[[KeyPgInteger Integer]]##. The function does not check for an overflow, and results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##647##.
 
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
 

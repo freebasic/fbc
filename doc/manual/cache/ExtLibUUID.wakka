@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="UUID library"}}----
+The UUID library can be used to generate universally unique identifiers. It's part of the e2fsprogs utilities.
+
+Website: http://e2fsprogs.sourceforge.net/
+Platforms supported: ""Win32"", Linux
+Headers to include: uuid.bi
+Header version: from 2010
+
+{{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

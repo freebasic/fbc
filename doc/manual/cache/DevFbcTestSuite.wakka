@@ -72,4 +72,5 @@ So if you get these failures, everything is normal. No other tests should ever f
 
 Thank you for running the tests and contributing to make ""FreeBASIC"" a healthy compiler! Please report any other failures to http://www.freebasic.net/forum so we can investigate.
 
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

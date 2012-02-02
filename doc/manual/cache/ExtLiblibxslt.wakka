@@ -4,6 +4,6 @@ XSLT itself is a an XML language to define transformation for XML.
 Website: http://xmlsoft.org/XSLT/
 Platforms supported: ""Win32"", Linux
 Headers to include: libxslt/libxslt.bi
-
+Header version: 1.1.13
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

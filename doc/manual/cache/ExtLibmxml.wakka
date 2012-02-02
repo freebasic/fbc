@@ -1,9 +1,9 @@
-{{fbdoc item="title" value="mxml"}}----
+{{fbdoc item="title" value="mxml, Mini-XML"}}----
 Mini-XML is a small XML parsing library that you can use to read XML and XML-like data files in your application without requiring large non-standard libraries.
 
-Website: http://www.easysw.com/~mike/mxml/
+Website: http://www.minixml.org/
 Platforms supported: ""Win32"", Linux
 Headers to include: mxml.bi
-
+Header version: from 2005
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

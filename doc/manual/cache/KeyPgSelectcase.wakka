@@ -38,7 +38,7 @@ Conditional statement block
 	example of expression lists:
 	{{table columns="2" cellpadding="1" cells="Case 1 ;constant;Case 5.4 To 10.1;range;Case Is > 3;bigger than-smaller than;Case 1, 3, 5, 7 to 9;match against a set of values;Case x ;value of a variable"}}
 
-	If ##**As Const**## is used, only ##[[KeyPgInteger Integer]]## constants can be evaluated and the expression list supports single constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
+	If ##**As Const**## is used, only integer constants (all numeric constants excluding the two floating-point constants: single and double) can be evaluated and the expression list supports simple constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
 
 	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.  However, the size of the range of values is limited, and the largest value in the range may be no higher than the smallest value + 4096.
 

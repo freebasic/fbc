@@ -27,6 +27,8 @@ Defines variables, objects and arrays having static storage
 
 	When used with module-level and member procedure declarations, ##**Static**## specifies [[ProPgStorageClasses static storage]] for all local variables, objects and arrays.
 
+	At module-level variable declaration only, the modifier ##[[KeyPgShared Shared]]## may be used with the keyword ##**Static**## to make module-level static variables visible inside procedures.
+
 	##[[KeyPgStaticMember Static (Member)]]## is also used in member procedure declarations to specify static member procedures.
 
 {{fbdoc item="ex"}}
@@ -58,6 +60,7 @@ Number of times called: 2
 {{fbdoc item="see"}}
 	- ##[[KeyPgStaticMember Static (Member)]]##
 	- ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgShared Shared]]##
 	- ##[[KeyPgSub Sub (Module)]]##, ##[[KeyPgFunction Function (Module)]]##
 	- ##[[KeyPgMemberSub Sub (Member)]]##, ##[[KeyPgMemberFunction Function (Member)]]##
 	- ##[[KeyPgOptionstatic Option Static]]##
