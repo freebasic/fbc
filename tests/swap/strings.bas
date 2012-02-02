@@ -427,6 +427,662 @@ sub testFields cdecl( )
 	CU_ASSERT( x.b = "1" )
 end sub
 
+sub testDifferentLengths cdecl( )
+	'' Strings
+
+	scope
+		dim as string a, b
+		swap a, b
+		CU_ASSERT( len(a) = 0 )
+		CU_ASSERT( len(b) = 0 )
+		CU_ASSERT( a = "" )
+		CU_ASSERT( b = "" )
+	end scope
+
+	scope
+		dim as string a, b
+
+		a = "a"
+		swap a, b
+		CU_ASSERT( len(a) = 0 )
+		CU_ASSERT( len(b) = 1 )
+		CU_ASSERT( a = "" )
+		CU_ASSERT( b = "a" )
+
+		swap a, b
+		CU_ASSERT( len(a) = 1 )
+		CU_ASSERT( len(b) = 0 )
+		CU_ASSERT( a = "a" )
+		CU_ASSERT( b = "" )
+	end scope
+
+	scope
+		dim as string a, b
+		a = "foobarbaz"
+		b = "test"
+		swap a, b
+		CU_ASSERT( len(a) = 4 )
+		CU_ASSERT( len(b) = 9 )
+		CU_ASSERT( a = "test" )
+		CU_ASSERT( b = "foobarbaz" )
+
+		swap a, b
+		CU_ASSERT( len(a) = 9 )
+		CU_ASSERT( len(b) = 4 )
+		CU_ASSERT( a = "foobarbaz" )
+		CU_ASSERT( b = "test" )
+	end scope
+
+	'' Fixed-size strings
+
+	scope
+		dim as string s
+		dim as string * 1 f
+		CU_ASSERT( sizeof(f) = 2 )
+
+		s = "foobarbaz"
+		swap s, f
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( f = "f" )
+		CU_ASSERT( f[1] = 0 )
+
+		swap s, f
+		CU_ASSERT( len(s) = 1 )
+		CU_ASSERT( s = "f" )
+		CU_ASSERT( f = "" )
+		CU_ASSERT( f[0] = 0 )
+
+		s = "foobarbaz"
+		swap f, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( f = "f" )
+		CU_ASSERT( f[1] = 0 )
+
+		swap f, s
+		CU_ASSERT( len(s) = 1 )
+		CU_ASSERT( s = "f" )
+		CU_ASSERT( f = "" )
+		CU_ASSERT( f[0] = 0 )
+	end scope
+
+	scope
+		dim as string s
+		dim as string * 9 f
+
+		s = "foobarbaz"
+		swap s, f
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( f = "foobarbaz" )
+		CU_ASSERT( f[9] = 0 )
+
+		swap s, f
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( f = "" )
+		CU_ASSERT( f[0] = 0 )
+
+		swap f, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( f = "foobarbaz" )
+		CU_ASSERT( f[9] = 0 )
+
+		swap f, s
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( f = "" )
+		CU_ASSERT( f[0] = 0 )
+	end scope
+
+	scope
+		dim as string * 9 a
+		dim as string * 4 b
+
+		a = "foobarbaz"
+		b = "test"
+		swap a, b
+		CU_ASSERT( a = "test" )
+		CU_ASSERT( b = "foob" )
+		CU_ASSERT( a[4] = 0 )
+		CU_ASSERT( b[4] = 0 )
+
+		a = "foobarbaz"
+		b = "test"
+		swap b, a
+		CU_ASSERT( a = "test" )
+		CU_ASSERT( b = "foob" )
+		CU_ASSERT( a[4] = 0 )
+		CU_ASSERT( b[4] = 0 )
+	end scope
+
+	'' Fixed-size zstrings
+
+	scope
+		dim as string s
+		dim as zstring * 1 z
+
+		swap s, z
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+
+		swap z, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+
+		s = "foobarbaz"
+		swap s, z
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+
+		s = "foobarbaz"
+		swap z, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+	end scope
+
+	scope
+		dim as string s
+		dim as zstring * 2 z
+
+		s = "foobarbaz"
+		swap s, z
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 1 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "f" )
+		CU_ASSERT( z[1] = 0 )
+
+		swap s, z
+		CU_ASSERT( len(s) = 1 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "f" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+
+		s = "foobarbaz"
+		swap z, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 1 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "f" )
+		CU_ASSERT( z[1] = 0 )
+
+		swap z, s
+		CU_ASSERT( len(s) = 1 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "f" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+	end scope
+
+	scope
+		dim as string s
+		dim as zstring * 10 z
+
+		s = "foobarbaz"
+		swap s, z
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 9 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "foobarbaz" )
+		CU_ASSERT( z[9] = 0 )
+
+		swap s, z
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+
+		swap z, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(z) = 9 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( z = "foobarbaz" )
+		CU_ASSERT( z[9] = 0 )
+
+		swap z, s
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( z[0] = 0 )
+	end scope
+
+	scope
+		dim as zstring * 10 a
+		dim as zstring * 1 b
+
+		a = "foobarbaz"
+		b = ""
+		swap a, b
+		CU_ASSERT( len(a) = 0 )
+		CU_ASSERT( len(b) = 0 )
+		CU_ASSERT( a = "" )
+		CU_ASSERT( b = "" )
+		CU_ASSERT( a[0] = 0 )
+		CU_ASSERT( b[0] = 0 )
+
+		a = "foobarbaz"
+		b = ""
+		swap b, a
+		CU_ASSERT( len(a) = 0 )
+		CU_ASSERT( len(b) = 0 )
+		CU_ASSERT( a = "" )
+		CU_ASSERT( b = "" )
+		CU_ASSERT( a[0] = 0 )
+		CU_ASSERT( b[0] = 0 )
+	end scope
+
+	scope
+		dim as zstring * 5 a
+		dim as zstring * 10 b
+
+		a = "test"
+		b = "foobarbaz"
+		swap a, b
+		CU_ASSERT( len(a) = 4 )
+		CU_ASSERT( len(b) = 4 )
+		CU_ASSERT( a = "foob" )
+		CU_ASSERT( b = "test" )
+		CU_ASSERT( a[4] = 0 )
+		CU_ASSERT( b[4] = 0 )
+
+		a = "test"
+		b = "foobarbaz"
+		swap b, a
+		CU_ASSERT( len(a) = 4 )
+		CU_ASSERT( len(b) = 4 )
+		CU_ASSERT( a = "foob" )
+		CU_ASSERT( b = "test" )
+		CU_ASSERT( a[4] = 0 )
+		CU_ASSERT( b[4] = 0 )
+	end scope
+
+	'' User-allocated zstrings (assumed to be large enough)
+
+	scope
+		dim as string s
+		dim as zstring ptr pz = callocate( sizeof(zstring) * 1 )
+
+		swap s, *pz
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		swap *pz, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		deallocate( pz )
+	end scope
+
+	scope
+		dim as string s
+		dim as zstring ptr pz = callocate( sizeof(zstring) * 10 )
+
+		s = "foobarbaz"
+		*pz = ""
+		swap s, *pz
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(*pz) = 9 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( *pz = "foobarbaz" )
+		CU_ASSERT( (*pz)[9] = 0 )
+
+		s = "foobarbaz"
+		*pz = ""
+		swap *pz, s
+		CU_ASSERT( len(s) = 0 )
+		CU_ASSERT( len(*pz) = 9 )
+		CU_ASSERT( s = "" )
+		CU_ASSERT( *pz = "foobarbaz" )
+		CU_ASSERT( (*pz)[9] = 0 )
+
+		s = ""
+		*pz = "foobarbaz"
+		swap s, *pz
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		s = ""
+		*pz = "foobarbaz"
+		swap *pz, s
+		CU_ASSERT( len(s) = 9 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( s = "foobarbaz" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		deallocate( pz )
+	end scope
+
+	scope
+		dim as zstring * 1 z
+		dim as zstring ptr pz = callocate( sizeof(zstring) * 1 )
+
+		swap z, *pz
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		swap *pz, z
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		deallocate( pz )
+	end scope
+
+	scope
+		dim as zstring * 10 z
+		dim as zstring ptr pz = callocate( sizeof(zstring) * 10 )
+
+		z = "foobarbaz"
+		*pz = ""
+		swap z, *pz
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 9 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "foobarbaz" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[9] = 0 )
+
+		z = "foobarbaz"
+		*pz = ""
+		swap *pz, z
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 9 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "foobarbaz" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[9] = 0 )
+
+		z = ""
+		*pz = "foobarbaz"
+		swap z, *pz
+		CU_ASSERT( len(z) = 9 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "foobarbaz" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[9] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		z = ""
+		*pz = "foobarbaz"
+		swap *pz, z
+		CU_ASSERT( len(z) = 9 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "foobarbaz" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[9] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		deallocate( pz )
+	end scope
+
+	scope
+		dim as zstring * 1 z
+		dim as zstring ptr pz = callocate( sizeof(zstring) * 10 )
+
+		*pz = "foobarbaz"
+		swap z, *pz
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		*pz = "foobarbaz"
+		swap *pz, z
+		CU_ASSERT( len(z) = 0 )
+		CU_ASSERT( len(*pz) = 0 )
+		CU_ASSERT( z = "" )
+		CU_ASSERT( *pz = "" )
+		CU_ASSERT( z[0] = 0 )
+		CU_ASSERT( (*pz)[0] = 0 )
+
+		deallocate( pz )
+	end scope
+
+	scope
+		dim as zstring ptr a = callocate( sizeof(zstring) * 10 )
+		dim as zstring ptr b = callocate( sizeof(zstring) * 10 )
+
+		*a = "foobarbaz"
+		*b = "test"
+		swap *a, *b
+		CU_ASSERT( len(*a) = 4 )
+		CU_ASSERT( len(*b) = 9 )
+		CU_ASSERT( *a = "test" )
+		CU_ASSERT( *b = "foobarbaz" )
+		CU_ASSERT( (*a)[4] = 0 )
+		CU_ASSERT( (*b)[9] = 0 )
+
+		swap *a, *b
+		CU_ASSERT( len(*a) = 9 )
+		CU_ASSERT( len(*b) = 4 )
+		CU_ASSERT( *a = "foobarbaz" )
+		CU_ASSERT( *b = "test" )
+		CU_ASSERT( (*a)[9] = 0 )
+		CU_ASSERT( (*b)[4] = 0 )
+
+		deallocate( b )
+		deallocate( a )
+	end scope
+
+	'' Fixed-size wstrings
+
+	scope
+		dim as wstring * 10 w1
+		dim as wstring * 1 w2
+		w1 = wstr("foobarbaz")
+		w2 = wstr("")
+		swap w1, w2
+		CU_ASSERT( len(w1) = 0 )
+		CU_ASSERT( len(w2) = 0 )
+		CU_ASSERT( w1 = wstr("") )
+		CU_ASSERT( w2 = wstr("") )
+		CU_ASSERT( w1[0] = 0 )
+		CU_ASSERT( w2[0] = 0 )
+	end scope
+
+	scope
+		dim as wstring * 1 w1
+		dim as wstring * 10 w2
+		w1 = wstr("")
+		w2 = wstr("foobarbaz")
+		swap w1, w2
+		CU_ASSERT( len(w1) = 0 )
+		CU_ASSERT( len(w2) = 0 )
+		CU_ASSERT( w1 = wstr("") )
+		CU_ASSERT( w2 = wstr("") )
+		CU_ASSERT( w1[0] = 0 )
+		CU_ASSERT( w2[0] = 0 )
+	end scope
+
+	scope
+		dim as wstring * 10 w1
+		dim as wstring * 5 w2
+		w1 = wstr("foobarbaz")
+		w2 = wstr("test")
+		swap w1, w2
+		CU_ASSERT( len(w1) = 4 )
+		CU_ASSERT( len(w2) = 4 )
+		CU_ASSERT( w1 = wstr("test") )
+		CU_ASSERT( w2 = wstr("foob") )
+		CU_ASSERT( w1[4] = 0 )
+		CU_ASSERT( w2[4] = 0 )
+	end scope
+
+	scope
+		dim as wstring * 5 w1
+		dim as wstring * 10 w2
+		w1 = wstr("test")
+		w2 = wstr("foobarbaz")
+		swap w1, w2
+		CU_ASSERT( len(w1) = 4 )
+		CU_ASSERT( len(w2) = 4 )
+		CU_ASSERT( w1 = wstr("foob") )
+		CU_ASSERT( w2 = wstr("test") )
+		CU_ASSERT( w1[4] = 0 )
+		CU_ASSERT( w2[4] = 0 )
+	end scope
+
+	'' User-allocated wstrings (assumed to be large enough)
+
+	scope
+		dim as wstring * 1 w
+		dim as wstring ptr pw = callocate( sizeof(zstring) * 1 )
+
+		swap w, *pw
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		swap *pw, w
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		deallocate( pw )
+	end scope
+
+	scope
+		dim as wstring * 10 w
+		dim as wstring ptr pw = callocate( sizeof(wstring) * 10 )
+
+		w = wstr("foobarbaz")
+		*pw = wstr("")
+		swap w, *pw
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 9 )
+		CU_ASSERT( w = wstr("" ))
+		CU_ASSERT( *pw = wstr("foobarbaz") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[9] = 0 )
+
+		w = wstr("foobarbaz")
+		*pw = wstr("")
+		swap *pw, w
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 9 )
+		CU_ASSERT( w = wstr("") )
+		CU_ASSERT( *pw = wstr("foobarbaz") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[9] = 0 )
+
+		w = wstr("")
+		*pw = wstr("foobarbaz")
+		swap w, *pw
+		CU_ASSERT( len(w) = 9 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("foobarbaz") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[9] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		w = wstr("")
+		*pw = wstr("foobarbaz")
+		swap *pw, w
+		CU_ASSERT( len(w) = 9 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("foobarbaz") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[9] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		deallocate( pw )
+	end scope
+
+	scope
+		dim as wstring * 1 w
+		dim as wstring ptr pw = callocate( sizeof(wstring) * 10 )
+
+		*pw = wstr("foobarbaz")
+		swap w, *pw
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		*pw = wstr("foobarbaz")
+		swap *pw, w
+		CU_ASSERT( len(w) = 0 )
+		CU_ASSERT( len(*pw) = 0 )
+		CU_ASSERT( w = wstr("") )
+		CU_ASSERT( *pw = wstr("") )
+		CU_ASSERT( w[0] = 0 )
+		CU_ASSERT( (*pw)[0] = 0 )
+
+		deallocate( pw )
+	end scope
+
+	scope
+		dim as wstring ptr a = callocate( sizeof(wstring) * 10 )
+		dim as wstring ptr b = callocate( sizeof(wstring) * 10 )
+
+		*a = wstr("foobarbaz")
+		*b = wstr("test")
+		swap *a, *b
+		CU_ASSERT( len(*a) = 4 )
+		CU_ASSERT( len(*b) = 9 )
+		CU_ASSERT( *a = wstr("test") )
+		CU_ASSERT( *b = wstr("foobarbaz") )
+		CU_ASSERT( (*a)[4] = 0 )
+		CU_ASSERT( (*b)[9] = 0 )
+
+		swap *a, *b
+		CU_ASSERT( len(*a) = 9 )
+		CU_ASSERT( len(*b) = 4 )
+		CU_ASSERT( *a = wstr("foobarbaz") )
+		CU_ASSERT( *b = wstr("test") )
+		CU_ASSERT( (*a)[9] = 0 )
+		CU_ASSERT( (*b)[4] = 0 )
+
+		deallocate( b )
+		deallocate( a )
+	end scope
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "fb_tests.swap.strings" )
 	fbcu.add_test( "SWAP on local vars", @testLocalVars )
@@ -440,6 +1096,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "SWAP deref, var", @testDerefsAndVars )
 	fbcu.add_test( "SWAP deref, arrayelement", @testDerefsAndArrays )
 	fbcu.add_test( "SWAP on string fields", @testFields )
+	fbcu.add_test( "SWAP on strings of different lengths", @testDifferentLengths )
 end sub
 
 end namespace
