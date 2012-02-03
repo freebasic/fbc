@@ -1929,7 +1929,8 @@ private sub fbcInit2()
 				''      $ fbc -l a -l b
 				'' Usually -x is used too though, so this
 				'' fallback name won't be seen often.
-				fbc.mainname = "undefined"
+				'' This name should be 8.3 compatible (for DOS)
+				fbc.mainname = "unnamed"
 			end if
 		end if
 		fbc.mainname = hStripExt(fbc.mainname)
