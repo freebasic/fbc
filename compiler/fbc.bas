@@ -2358,7 +2358,6 @@ private function assembleRcs() as integer
 end function
 
 private sub setDefaultLibPaths()
-
 	'' compiler's lib/
 	fbcAddDefLibPath(fbc.libpath)
 
@@ -2368,25 +2367,30 @@ private sub setDefaultLibPaths()
 #ifndef ENABLE_STANDALONE
 	'' Add gcc's private lib directory, to find libgcc and libsupc++
 	'' This is for installing into Unix-like systems, and not for
-	'' standalone, which has libgcc/libsupc++ in its own lib/.
+	'' standalone, which has libgcc/libsupc++ in the main lib/.
 	fbcAddLibPathFor("gcc")
 
-	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 		'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
 		'' But this is for installing into DJGPP, where apparently supcxx is working fine.
 		fbcAddLibPathFor("supcxx")
-
-		'' Help out the DJGPP linker. It doesn't seem to add
-		'' the main DJGPP lib path by default like on other
-		'' systems.
-		'' Note: Shouldn't look for libc here -- we're supposed
-		'' to have the fixed version of it in our lib/freebas/.
-		fbcAddLibPathFor("m")
 	else
 		fbcAddLibPathFor("supc++")
 	end if
-#endif
 
+	select case fbGetOption( FB_COMPOPT_TARGET )
+	case FB_COMPTARGET_DOS
+		'' Help out the DJGPP linker to find DJGPP's lib/ dir.
+		'' It doesn't seem to add it by default like on other systems.
+		'' Note: Can't use libc here, we have a fixed copy of that in
+		'' the compiler's lib/ dir.
+		fbcAddLibPathFor("m")
+	case FB_COMPTARGET_WIN32
+		'' Help the MinGW linker to find MinGW's lib/ dir, allowing
+		'' the C:\MinGW dir to be renamed and linking to still work.
+		fbcAddLibPathFor("mingw32")
+	end select
+#endif
 end sub
 
 private sub fbcAddDefLib(byval libname as zstring ptr)
