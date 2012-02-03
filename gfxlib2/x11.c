@@ -797,7 +797,6 @@ int fb_hX11SetWindowPos(int x, int y)
 {
 	Window window, root, parent, *children;
 	XWindowAttributes attribs = { 0 };
-	XSetWindowAttributes set_attribs;
 	XEvent event;
 	unsigned int num_children;
 	int dx = 0, dy = 0;
@@ -822,19 +821,19 @@ int fb_hX11SetWindowPos(int x, int y)
 		y = attribs.y;
 	else
 		y -= dy;
-	
-	set_attribs.override_redirect = True;
-	XChangeWindowAttributes(fb_x11.display, window, CWOverrideRedirect, &set_attribs);
-	XMoveWindow(fb_x11.display, window, x, y);
-	set_attribs.override_redirect = False;
-	XChangeWindowAttributes(fb_x11.display, window, CWOverrideRedirect, &set_attribs);
+
+	if (fb_x11.flags & DRIVER_NO_FRAME)
+		XMoveWindow(fb_x11.display, fb_x11.window, x, y);
+	else
+		XMoveWindow(fb_x11.display, fb_x11.wmwindow, x, y);
+
 	XClearWindow(fb_x11.display, fb_x11.wmwindow);
-	
+
 	/* remove any mouse motion events */
 	while (XCheckWindowEvent(fb_x11.display, fb_x11.window, PointerMotionMask, &event))
 		;
 	fb_hX11Unlock();
-	
+
 	return ((attribs.x + dx) & 0xFFFF) | ((attribs.y + dy) << 16);
 }
 

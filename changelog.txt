@@ -62,6 +62,7 @@ Version 0.24.0:
 - #3476028: SWAP/LET() assignments allowed modification of string literals/constants
 - SWAP on strings failed/produced bad results when strings had different lengths
 - #3476021: SWAP didn't clear fixed-length string remainders
+- GFX_SHAPED_WINDOW didn't work properly on some modern Linux systems (thanks Sisophon2001 for the fix)
 
 
 Version 0.23.0:
