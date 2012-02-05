@@ -1,5 +1,7 @@
 '' translated from an "C" example written by Vijay Kumar B.
-
+'
+' Reviewed by TJF (2011)
+' Details: http://developer.gnome.org/gtk/
 
 
 #include once "gtk/gtk.bi"
@@ -25,7 +27,7 @@ sub on_button_clicked cdecl (byval button as GtkWidget ptr, byval buffer as GtkT
   text = gtk_text_buffer_get_text( buffer, @start, @end_, FALSE )
 
   '' Print the text
-  g_print( !"%s\n", text )
+  g_print( "%s", text )
 
   g_free( text )
 

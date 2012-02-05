@@ -1,7 +1,7 @@
  
 
-#include "gtk/gtk.bi" 
-#include "gtk/libglade/glade-xml.bi" 
+#include "gtk/gtk.bi"
+#include "glade/glade-xml.bi"
 
 #define NULL 0 
 

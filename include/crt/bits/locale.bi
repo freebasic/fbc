@@ -17,8 +17,8 @@
 '   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 '   02111-1307 USA.  */
 
-#ifndef __locale_bi__
-#define __locale_bi__ 1
+#ifndef _BITS_LOCALE_H
+#define _BITS_LOCALE_H 1
 
 enum
 	__LC_CTYPE = 0

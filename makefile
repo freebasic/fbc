@@ -457,6 +457,7 @@ endif
   headers += include/allegro/platform/
   headers += include/aspell.bi
 ifneq ($(TARGET_OS),dos)
+  headers += include/atk/
   headers += include/bass.bi
   headers += include/bassmod.bi
 endif
@@ -486,6 +487,7 @@ endif
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   headers += include/crt/linux/
 endif
+  headers += include/crt/locale.bi
   headers += include/crt/malloc.bi
   headers += include/crt/math.bi
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
@@ -563,28 +565,28 @@ ifneq ($(TARGET_OS),dos)
   headers += include/gd/
 endif
   headers += include/gdbm.bi
+ifneq ($(TARGET_OS),dos)
+  headers += include/gdk-pixbuf/
+  headers += include/gdk/
+endif
   headers += include/gdsl/
   headers += include/gettext-po.bi
   headers += include/gif_lib.bi
 ifneq ($(TARGET_OS),dos)
+  headers += include/gio/
   headers += include/GL/
+  headers += include/glade/
+  headers += include/glib-object.bi
+  headers += include/glib.bi
+  headers += include/gmodule.bi
   headers += include/gmp.bi
+  headers += include/goocanvas.bi
 endif
   headers += include/grx/
 ifneq ($(TARGET_OS),dos)
   headers += include/gsl/
   headers += include/gtk/
-  headers += include/gtk/atk/
-  headers += include/gtk/gdk-pixbuf/
-  headers += include/gtk/gdk/
-  headers += include/gtk/gdkgl/
-  headers += include/gtk/glib/
-  headers += include/gtk/gobject/
-  headers += include/gtk/gtk/
-  headers += include/gtk/gtkgl/
-  headers += include/gtk/libart/
-  headers += include/gtk/libglade/
-  headers += include/gtk/pango/
+  headers += include/gtkgl/
   headers += include/IL/
   headers += include/IUP/
   headers += include/japi.bi
@@ -596,6 +598,7 @@ endif
   headers += include/jpgalleg.bi
   headers += include/libintl.bi
 ifneq ($(TARGET_OS),dos)
+  headers += include/libart_lgpl/
   headers += include/libxml/
   headers += include/libxslt/
   headers += include/Lua/
@@ -610,6 +613,7 @@ ifneq ($(TARGET_OS),dos)
   headers += include/Newton.bi
   headers += include/ode/
   headers += include/ogg/ogg.bi
+  headers += include/pango/
 endif
   headers += include/pcre/
 ifneq ($(TARGET_OS),dos)

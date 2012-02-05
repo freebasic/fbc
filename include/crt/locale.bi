@@ -15,8 +15,10 @@
 '   License along with the GNU C Library; if not, write to the Free
 '   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 '   02111-1307 USA.  */
-#ifndef __locale_bi__
-#define __locale_bi__ 1
+
+#ifndef _LOCALE_H
+#define _LOCALE_H 1
+
 #include once "crt/bits/locale.bi"
 
 '   These are the possibilities for the first argument to setlocale.
@@ -28,12 +30,12 @@
 #define LC_COLLATE        __LC_COLLATE
 #define LC_MONETARY       __LC_MONETARY
 #define LC_MESSAGES       __LC_MESSAGES
-#define	LC_ALL		  __LC_ALL
-#define LC_PAPER	  __LC_PAPER
-#define LC_NAME		  __LC_NAME
-#define LC_ADDRESS	  __LC_ADDRESS
-#define LC_TELEPHONE	  __LC_TELEPHONE
-#define LC_MEASUREMENT	  __LC_MEASUREMENT
+#define LC_ALL            __LC_ALL
+#define LC_PAPER          __LC_PAPER
+#define LC_NAME           __LC_NAME
+#define LC_ADDRESS        __LC_ADDRESS
+#define LC_TELEPHONE      __LC_TELEPHONE
+#define LC_MEASUREMENT    __LC_MEASUREMENT
 #define LC_IDENTIFICATION __LC_IDENTIFICATION
 
 '/* Structure giving information about numeric and monetary notation.  */
@@ -97,10 +99,13 @@ type lconv
 end type
 
 extern "C"
+
 'Sets and/or returns the current locale
 declare function setlocale ( byval __category as integer, byval __locale as const zstring ptr ) as zstring ptr
 
 'Return the numeric/monetary information for the current locale.
 declare function localeconv () as lconv ptr
+
 end extern
-#endif
+
+#endif '' _LOCALE_H

@@ -182,6 +182,8 @@
         Ex-project-member, author of FB's initial QB-like graphics library
     - TeeEmCee
         gfxlib2 fixes
+    - TJF (Thomas.Freiherr[at]gmx.net)
+        GTK+, glib, Cairo, Pango headers & examples
     - zydon
         Win32 API examples
 
