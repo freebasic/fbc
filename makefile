@@ -635,6 +635,7 @@ ifneq ($(TARGET_OS),dos)
 endif
   headers += include/sqlite2.bi
   headers += include/sqlite3.bi
+  headers += include/sqlite3ext.bi
   headers += include/string.bi
   headers += include/tinyptc.bi
   headers += include/utf_conv.bi

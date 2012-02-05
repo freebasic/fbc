@@ -183,7 +183,7 @@
     - TeeEmCee
         gfxlib2 fixes
     - TJF (Thomas.Freiherr[at]gmx.net)
-        GTK+, glib, Cairo, Pango headers & examples
+        GTK+, glib, Cairo, Pango headers & examples, SQLiteExtensions headers
     - zydon
         Win32 API examples
 
