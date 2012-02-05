@@ -17,14 +17,17 @@
 '   License along with the GNU C Library; if not, write to the Free
 '   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 '   02111-1307 USA.  */
-#ifndef __libintl_bi__
-#define __libintl_bi__ 1
 
-#inclib "intl"
+'' libintl doesn't always exist, e.g. on Linux systems it's integrated in glibc
+''#inclib "intl"
+
+#ifndef _LIBINTL_H
+#define _LIBINTL_H 1
 
 #include once "crt/locale.bi"
 
 #define __USE_GNU_GETTEXT 1
+#DEFINE __GNU_GETTEXT_SUPPORTED_REVISION(major) iif((major) = 0, 1, -1)
 
 ' Look up MSGID in the current default message catalog for the current
 '   LC_MESSAGES locale.  If not found, returns MSGID itself (the default
@@ -53,7 +56,7 @@ declare function dcgettext ( byval __domainname as const zstring ptr, _
 ' Similar to `dcgettext' but select the plural form corresponding to the
 '   number N.
 declare function dcngettext ( byval __domainname as const zstring ptr, byval __msgid1 as const zstring ptr, _
-			 byval __msgid2 as const zstring ptr, byval __n as uinteger, _
+			 byval __msgid2 as const zstring ptr, byval __n as ulong, _
 			 byval __category as integer) as zstring ptr
 
 ' Set the current default message catalog to DOMAINNAME.
@@ -70,6 +73,7 @@ declare function bindtextdomain ( byval __domainname as const zstring ptr, _
 '   DOMAINNAME message catalog will be returned.
 declare function bind_textdomain_codeset ( byval __domainname as const zstring ptr, _
 				      byval __codeset as const zstring ptr) as zstring ptr
+
 end extern
 
-#endif
+#endif '' _LIBINTL_H
