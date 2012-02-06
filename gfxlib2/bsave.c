@@ -154,7 +154,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size, void *p
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
-	fb_hConvertPath(buffer, strlen(buffer));
+	fb_hConvertPath(buffer);
 
 	f = fopen(buffer, "wb");
 	if (!f) {

@@ -134,7 +134,7 @@ int fb_DevFileOpenEncod
     fname[fname_len] = 0;
 
     /* Convert directory separators to whatever the current platform supports */
-    fb_hConvertPath( fname, fname_len );
+    fb_hConvertPath( fname );
 
     handle->hooks = &hooks_dev_file;
 

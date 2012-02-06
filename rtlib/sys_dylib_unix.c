@@ -28,7 +28,7 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 	if( (library) && (library->data) ) {
 		for( i = 0; libnameformat[i]; i++ ) {
 			snprintf( libname, MAX_PATH-1, libnameformat[i], library->data );
-			fb_hConvertPath( libname, MAX_PATH-1 );
+			fb_hConvertPath( libname );
 			res = dlopen( libname, RTLD_LAZY );
 			if( res )
 				break;

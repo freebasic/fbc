@@ -33,7 +33,7 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 		application[len_program] = 0;
 	}
 
-	fb_hConvertPath( application, strlen( application ) );
+	fb_hConvertPath( application );
 
 	if( args==NULL ) 
 	{

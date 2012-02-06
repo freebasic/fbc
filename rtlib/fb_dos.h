@@ -3,22 +3,16 @@
 #ifndef __FB_DOS_H__
 #define __FB_DOS_H__
 
-#define FB_DOS_USE_CONIO
-
 #include <dpmi.h>
 #include <dos.h>
 #include <go32.h>
 #include <pc.h>
 #include <sys/farptr.h>
 #include <dir.h>
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdint.h>
-
-#ifdef FB_DOS_USE_CONIO
-# include <conio.h>
-#endif
+#include <conio.h>
 
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")

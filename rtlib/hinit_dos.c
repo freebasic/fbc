@@ -3,7 +3,6 @@
 #include "fb.h"
 
 #include <float.h>
-#include <conio.h>
 #include <unistd.h>
 #include <sys/farptr.h>
 
@@ -23,8 +22,7 @@ void fb_hInit ( void )
 	intensevideo();
 
 	memset( &__fb_con, 0, sizeof( FB_CONSOLE_CTX ) );
-	
+
 	__fb_startup_cwd = getcwd(NULL, 1024);
-	
-	fb_hConvertPath( __fb_startup_cwd, strlen( __fb_startup_cwd ) );
+	fb_hConvertPath( __fb_startup_cwd );
 }

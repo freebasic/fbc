@@ -1,7 +1,6 @@
 /* Linux console mouse functions implementation */
 
 #include "fb.h"
-#include "fb_linux.h"
 #include <gpm.h>
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);

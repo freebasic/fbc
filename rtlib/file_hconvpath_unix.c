@@ -4,20 +4,18 @@
 #include "fb.h"
 
 /*:::::*/
-char *fb_hConvertPath( char *path, int len )
+void fb_hConvertPath( char *path )
 {
     int i;
 
-    if( path == NULL )
-    	return NULL;
+	if( path == NULL )
+		return;
 
-    len = strlen( path );
+	int len = strlen( path );
 	for (i = 0; i < len; i++)
 	{
 		if ( path[i] == '\\' )
 			path[i] = '/';
 	}
-
-	return path;
 }
 

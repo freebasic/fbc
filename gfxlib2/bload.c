@@ -457,7 +457,7 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 
 	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
 	buffer[MAX_PATH-1] = '\0';
-	fb_hConvertPath(buffer, strlen(buffer));
+	fb_hConvertPath(buffer);
 
 	f = fopen(buffer, "rb");
 

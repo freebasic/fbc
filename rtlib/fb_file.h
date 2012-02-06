@@ -269,7 +269,7 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
 
        int          fb_hFileLock        ( FILE *f, fb_off_t inipos, fb_off_t size );
        int          fb_hFileUnlock      ( FILE *f, fb_off_t inipos, fb_off_t size );
-       char        *fb_hConvertPath     ( char *path, int len );
+       void         fb_hConvertPath     ( char *path );
 
        FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding );
 
