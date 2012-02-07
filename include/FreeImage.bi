@@ -26,6 +26,12 @@
 #ifndef __FreeImage_bi__
 #define __FreeImage_bi__
 
+#ifdef __FB_WIN32__
+	#inclib "FreeImage"
+#else
+	#inclib "freeimage"
+#endif
+
 #define FREEIMAGE_MAJOR_VERSION 3
 #define FREEIMAGE_MINOR_VERSION 15
 #define FREEIMAGE_RELEASE_SERIAL 1
@@ -33,6 +39,14 @@
 #define FREEIMAGE_COLORORDER_BGR 0
 #define FREEIMAGE_COLORORDER_RGB 1
 #define FREEIMAGE_COLORORDER 0
+
+#if defined(__FB_WIN32__) and (not defined(FREEIMAGE_LIB))
+	'' The FreeImage Windows DLL uses stdcall@N
+	extern "Windows"
+#else
+	'' Everything else (FreeImage on Linux, Windows static library)
+	extern "C"
+#endif
 
 type FIBITMAP
 	data as any ptr
@@ -42,18 +56,28 @@ type FIMULTIBITMAP
 	data as any ptr
 end type
 
+#ifndef FALSE
 #define FALSE 0
+#endif
+#ifndef TRUE
 #define TRUE 1
+#endif
+#ifndef NULL
 #define NULL 0
+#endif
+
+#ifndef SEEK_SET
 #define SEEK_SET 0
 #define SEEK_CUR 1
 #define SEEK_END 2
+#endif
 
-type BOOL as int32_t
-type BYTE as uint8_t
-type WORD as uint16_t
-type DWORD as uint32_t
-type LONG as int32_t
+#ifndef BITMAPINFO
+'' These are normally defined by the Windows headers
+
+type BOOL as integer
+type WORD as ushort
+type DWORD as uinteger
 
 type RGBQUAD
 	rgbBlue as BYTE
@@ -90,6 +114,7 @@ type BITMAPINFO
 end type
 
 type PBITMAPINFO as BITMAPINFO ptr
+#endif
 
 type FIRGB16
 	red as WORD
@@ -318,11 +343,10 @@ type FITAG
 end type
 
 type fi_handle as any ptr
-type FI_ReadProc as function cdecl(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
-type FI_WriteProc as function cdecl(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
-type FI_SeekProc as function cdecl(byval as fi_handle, byval as integer, byval as integer) as integer
-type FI_TellProc as function cdecl(byval as fi_handle) as integer
-type FreeImageIO as any
+type FI_ReadProc as function(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
+type FI_WriteProc as function(byval as any ptr, byval as uinteger, byval as uinteger, byval as fi_handle) as uinteger
+type FI_SeekProc as function(byval as fi_handle, byval as integer, byval as integer) as integer
+type FI_TellProc as function(byval as fi_handle) as integer
 
 type FreeImageIO
 	read_proc as FI_ReadProc
@@ -335,23 +359,22 @@ type FIMEMORY
 	data as any ptr
 end type
 
-type FI_FormatProc as function cdecl() as byte ptr
-type FI_DescriptionProc as function cdecl() as byte ptr
-type FI_ExtensionListProc as function cdecl() as byte ptr
-type FI_RegExprProc as function cdecl() as byte ptr
-type FI_OpenProc as sub cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as BOOL)
-type FI_CloseProc as sub cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr)
-type FI_PageCountProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
-type FI_PageCapabilityProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
-type FI_LoadProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as FIBITMAP ptr
-type FI_SaveProc as function cdecl(byval as FreeImageIO ptr, byval as FIBITMAP ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as BOOL
-type FI_ValidateProc as function cdecl(byval as FreeImageIO ptr, byval as fi_handle) as BOOL
-type FI_MimeProc as function cdecl() as byte ptr
-type FI_SupportsExportBPPProc as function cdecl(byval as integer) as BOOL
-type FI_SupportsExportTypeProc as function cdecl(byval as FREE_IMAGE_TYPE) as BOOL
-type FI_SupportsICCProfilesProc as function cdecl() as BOOL
-type FI_SupportsNoPixelsProc as function cdecl() as BOOL
-type Plugin as any
+type FI_FormatProc as function() as byte ptr
+type FI_DescriptionProc as function() as byte ptr
+type FI_ExtensionListProc as function() as byte ptr
+type FI_RegExprProc as function() as byte ptr
+type FI_OpenProc as sub(byval as FreeImageIO ptr, byval as fi_handle, byval as BOOL)
+type FI_CloseProc as sub(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr)
+type FI_PageCountProc as function(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
+type FI_PageCapabilityProc as function(byval as FreeImageIO ptr, byval as fi_handle, byval as any ptr) as integer
+type FI_LoadProc as function(byval as FreeImageIO ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as FIBITMAP ptr
+type FI_SaveProc as function(byval as FreeImageIO ptr, byval as FIBITMAP ptr, byval as fi_handle, byval as integer, byval as integer, byval as any ptr) as BOOL
+type FI_ValidateProc as function(byval as FreeImageIO ptr, byval as fi_handle) as BOOL
+type FI_MimeProc as function() as byte ptr
+type FI_SupportsExportBPPProc as function(byval as integer) as BOOL
+type FI_SupportsExportTypeProc as function(byval as FREE_IMAGE_TYPE) as BOOL
+type FI_SupportsICCProfilesProc as function() as BOOL
+type FI_SupportsNoPixelsProc as function() as BOOL
 
 type Plugin
 	format_proc as FI_FormatProc
@@ -372,7 +395,7 @@ type Plugin
 	supports_no_pixels_proc as FI_SupportsNoPixelsProc
 end type
 
-type FI_InitProc as sub cdecl(byval as Plugin ptr, byval as integer)
+type FI_InitProc as sub(byval as Plugin ptr, byval as integer)
 
 #define FIF_LOAD_NOPIXELS &h8000
 #define BMP_DEFAULT 0
@@ -466,47 +489,43 @@ type FI_InitProc as sub cdecl(byval as Plugin ptr, byval as integer)
 #define FI_COLOR_ALPHA_IS_INDEX &h04
 #define FI_COLOR_PALETTE_SEARCH_MASK (&h02 or &h04)
 
-extern "C"
-
-declare sub FreeImage_Initialise (byval load_local_plugins_only as BOOL)
+declare sub FreeImage_Initialise (byval load_local_plugins_only as BOOL = 0)
 declare sub FreeImage_DeInitialise ()
 declare function FreeImage_GetVersion () as zstring ptr
 declare function FreeImage_GetCopyrightMessage () as zstring ptr
 
-end extern
-
+'' FreeImage_OutputMessageFunction() always uses cdecl
 type FreeImage_OutputMessageFunction as sub cdecl(byval as FREE_IMAGE_FORMAT, byval as zstring ptr)
-type FreeImage_OutputMessageFunctionStdCall as sub cdecl(byval as FREE_IMAGE_FORMAT, byval as zstring ptr)
-
-extern "C"
+type FreeImage_OutputMessageFunctionStdCall as sub(byval as FREE_IMAGE_FORMAT, byval as zstring ptr)
 
 declare sub FreeImage_SetOutputMessageStdCall (byval omf as FreeImage_OutputMessageFunctionStdCall)
 declare sub FreeImage_SetOutputMessage (byval omf as FreeImage_OutputMessageFunction)
-declare sub FreeImage_OutputMessageProc (byval fif as integer, byval fmt as zstring ptr, ...)
-declare function FreeImage_Allocate (byval width as integer, byval height as integer, byval bpp as integer, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger) as FIBITMAP ptr
-declare function FreeImage_AllocateT (byval type as FREE_IMAGE_TYPE, byval width as integer, byval height as integer, byval bpp as integer, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger) as FIBITMAP ptr
+'' FreeImage_OutputMessageProc() always uses cdecl (due to the '...'), even though the C headers specify __stdcall for the Windows DLL, the C compiler ignores it
+declare sub FreeImage_OutputMessageProc cdecl(byval fif as integer, byval fmt as zstring ptr, ...)
+declare function FreeImage_Allocate (byval width as integer, byval height as integer, byval bpp as integer, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
+declare function FreeImage_AllocateT (byval type as FREE_IMAGE_TYPE, byval width as integer, byval height as integer, byval bpp as integer = 8, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
 declare function FreeImage_Clone (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare sub FreeImage_Unload (byval dib as FIBITMAP ptr)
 declare function FreeImage_HasPixels (byval dib as FIBITMAP ptr) as BOOL
-declare function FreeImage_Load (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval flags as integer) as FIBITMAP ptr
-declare function FreeImage_LoadU (byval fif as FREE_IMAGE_FORMAT, byval filename as wchar_t ptr, byval flags as integer) as FIBITMAP ptr
-declare function FreeImage_LoadFromHandle (byval fif as FREE_IMAGE_FORMAT, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer) as FIBITMAP ptr
-declare function FreeImage_Save (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as zstring ptr, byval flags as integer) as BOOL
-declare function FreeImage_SaveU (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as wchar_t ptr, byval flags as integer) as BOOL
-declare function FreeImage_SaveToHandle (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer) as BOOL
-declare function FreeImage_OpenMemory (byval data as BYTE ptr, byval size_in_bytes as DWORD) as FIMEMORY ptr
+declare function FreeImage_Load (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_LoadU (byval fif as FREE_IMAGE_FORMAT, byval filename as wstring ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_LoadFromHandle (byval fif as FREE_IMAGE_FORMAT, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_Save (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as zstring ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_SaveU (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval filename as wstring ptr, byval flags as integer = 0) as BOOL
+declare function FreeImage_SaveToHandle (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as BOOL
+declare function FreeImage_OpenMemory (byval data as BYTE ptr = 0, byval size_in_bytes as DWORD = 0) as FIMEMORY ptr
 declare sub FreeImage_CloseMemory (byval stream as FIMEMORY ptr)
-declare function FreeImage_LoadFromMemory (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer) as FIBITMAP ptr
-declare function FreeImage_SaveToMemory (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval stream as FIMEMORY ptr, byval flags as integer) as BOOL
+declare function FreeImage_LoadFromMemory (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer = 0) as FIBITMAP ptr
+declare function FreeImage_SaveToMemory (byval fif as FREE_IMAGE_FORMAT, byval dib as FIBITMAP ptr, byval stream as FIMEMORY ptr, byval flags as integer = 0) as BOOL
 declare function FreeImage_TellMemory (byval stream as FIMEMORY ptr) as integer
 declare function FreeImage_SeekMemory (byval stream as FIMEMORY ptr, byval offset as integer, byval origin as integer) as BOOL
 declare function FreeImage_AcquireMemory (byval stream as FIMEMORY ptr, byval data as BYTE ptr ptr, byval size_in_bytes as DWORD ptr) as BOOL
 declare function FreeImage_ReadMemory (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval stream as FIMEMORY ptr) as uinteger
 declare function FreeImage_WriteMemory (byval buffer as any ptr, byval size as uinteger, byval count as uinteger, byval stream as FIMEMORY ptr) as uinteger
-declare function FreeImage_LoadMultiBitmapFromMemory (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer) as FIMULTIBITMAP ptr
+declare function FreeImage_LoadMultiBitmapFromMemory (byval fif as FREE_IMAGE_FORMAT, byval stream as FIMEMORY ptr, byval flags as integer = 0) as FIMULTIBITMAP ptr
 declare function FreeImage_SaveMultiBitmapToMemory (byval fif as FREE_IMAGE_FORMAT, byval bitmap as FIMULTIBITMAP ptr, byval stream as FIMEMORY ptr, byval flags as integer) as BOOL
-declare function FreeImage_RegisterLocalPlugin (byval proc_address as FI_InitProc, byval format as zstring ptr, byval description as zstring ptr, byval extension as zstring ptr, byval regexpr as zstring ptr) as FREE_IMAGE_FORMAT
-declare function FreeImage_RegisterExternalPlugin (byval path as zstring ptr, byval format as zstring ptr, byval description as zstring ptr, byval extension as zstring ptr, byval regexpr as zstring ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_RegisterLocalPlugin (byval proc_address as FI_InitProc, byval format as zstring ptr = 0, byval description as zstring ptr = 0, byval extension as zstring ptr = 0, byval regexpr as zstring ptr = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_RegisterExternalPlugin (byval path as zstring ptr, byval format as zstring ptr = 0, byval description as zstring ptr = 0, byval extension as zstring ptr = 0, byval regexpr as zstring ptr = 0) as FREE_IMAGE_FORMAT
 declare function FreeImage_GetFIFCount () as integer
 declare function FreeImage_SetPluginEnabled (byval fif as FREE_IMAGE_FORMAT, byval enable as BOOL) as integer
 declare function FreeImage_IsPluginEnabled (byval fif as FREE_IMAGE_FORMAT) as integer
@@ -518,17 +537,17 @@ declare function FreeImage_GetFIFDescription (byval fif as FREE_IMAGE_FORMAT) as
 declare function FreeImage_GetFIFRegExpr (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
 declare function FreeImage_GetFIFMimeType (byval fif as FREE_IMAGE_FORMAT) as zstring ptr
 declare function FreeImage_GetFIFFromFilename (byval filename as zstring ptr) as FREE_IMAGE_FORMAT
-declare function FreeImage_GetFIFFromFilenameU (byval filename as wchar_t ptr) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFIFFromFilenameU (byval filename as wstring ptr) as FREE_IMAGE_FORMAT
 declare function FreeImage_FIFSupportsReading (byval fif as FREE_IMAGE_FORMAT) as BOOL
 declare function FreeImage_FIFSupportsWriting (byval fif as FREE_IMAGE_FORMAT) as BOOL
 declare function FreeImage_FIFSupportsExportBPP (byval fif as FREE_IMAGE_FORMAT, byval bpp as integer) as BOOL
 declare function FreeImage_FIFSupportsExportType (byval fif as FREE_IMAGE_FORMAT, byval type as FREE_IMAGE_TYPE) as BOOL
 declare function FreeImage_FIFSupportsICCProfiles (byval fif as FREE_IMAGE_FORMAT) as BOOL
 declare function FreeImage_FIFSupportsNoPixels (byval fif as FREE_IMAGE_FORMAT) as BOOL
-declare function FreeImage_OpenMultiBitmap (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval create_new as BOOL, byval read_only as BOOL, byval keep_cache_in_memory as BOOL, byval flags as integer) as FIMULTIBITMAP ptr
-declare function FreeImage_OpenMultiBitmapFromHandle (byval fif as FREE_IMAGE_FORMAT, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer) as FIMULTIBITMAP ptr
-declare function FreeImage_SaveMultiBitmapToHandle (byval fif as FREE_IMAGE_FORMAT, byval bitmap as FIMULTIBITMAP ptr, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer) as BOOL
-declare function FreeImage_CloseMultiBitmap (byval bitmap as FIMULTIBITMAP ptr, byval flags as integer) as BOOL
+declare function FreeImage_OpenMultiBitmap (byval fif as FREE_IMAGE_FORMAT, byval filename as zstring ptr, byval create_new_ as BOOL, byval read_only as BOOL, byval keep_cache_in_memory as BOOL = 0, byval flags as integer = 0) as FIMULTIBITMAP ptr
+declare function FreeImage_OpenMultiBitmapFromHandle (byval fif as FREE_IMAGE_FORMAT, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as FIMULTIBITMAP ptr
+declare function FreeImage_SaveMultiBitmapToHandle (byval fif as FREE_IMAGE_FORMAT, byval bitmap as FIMULTIBITMAP ptr, byval io as FreeImageIO ptr, byval handle as fi_handle, byval flags as integer = 0) as BOOL
+declare function FreeImage_CloseMultiBitmap (byval bitmap as FIMULTIBITMAP ptr, byval flags as integer = 0) as BOOL
 declare function FreeImage_GetPageCount (byval bitmap as FIMULTIBITMAP ptr) as integer
 declare sub FreeImage_AppendPage (byval bitmap as FIMULTIBITMAP ptr, byval data as FIBITMAP ptr)
 declare sub FreeImage_InsertPage (byval bitmap as FIMULTIBITMAP ptr, byval page as integer, byval data as FIBITMAP ptr)
@@ -537,10 +556,10 @@ declare function FreeImage_LockPage (byval bitmap as FIMULTIBITMAP ptr, byval pa
 declare sub FreeImage_UnlockPage (byval bitmap as FIMULTIBITMAP ptr, byval data as FIBITMAP ptr, byval changed as BOOL)
 declare function FreeImage_MovePage (byval bitmap as FIMULTIBITMAP ptr, byval target as integer, byval source as integer) as BOOL
 declare function FreeImage_GetLockedPageNumbers (byval bitmap as FIMULTIBITMAP ptr, byval pages as integer ptr, byval count as integer ptr) as BOOL
-declare function FreeImage_GetFileType (byval filename as zstring ptr, byval size as integer) as FREE_IMAGE_FORMAT
-declare function FreeImage_GetFileTypeU (byval filename as wchar_t ptr, byval size as integer) as FREE_IMAGE_FORMAT
-declare function FreeImage_GetFileTypeFromHandle (byval io as FreeImageIO ptr, byval handle as fi_handle, byval size as integer) as FREE_IMAGE_FORMAT
-declare function FreeImage_GetFileTypeFromMemory (byval stream as FIMEMORY ptr, byval size as integer) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileType (byval filename as zstring ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeU (byval filename as wstring ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeFromHandle (byval io as FreeImageIO ptr, byval handle as fi_handle, byval size as integer = 0) as FREE_IMAGE_FORMAT
+declare function FreeImage_GetFileTypeFromMemory (byval stream as FIMEMORY ptr, byval size as integer = 0) as FREE_IMAGE_FORMAT
 declare function FreeImage_GetImageType (byval dib as FIBITMAP ptr) as FREE_IMAGE_TYPE
 declare function FreeImage_IsLittleEndian () as BOOL
 declare function FreeImage_LookupX11Color (byval szColor as zstring ptr, byval nRed as BYTE ptr, byval nGreen as BYTE ptr, byval nBlue as BYTE ptr) as BOOL
@@ -628,22 +647,22 @@ declare function FreeImage_ConvertTo16Bits565 (byval dib as FIBITMAP ptr) as FIB
 declare function FreeImage_ConvertTo24Bits (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare function FreeImage_ConvertTo32Bits (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare function FreeImage_ColorQuantize (byval dib as FIBITMAP ptr, byval quantize as FREE_IMAGE_QUANTIZE) as FIBITMAP ptr
-declare function FreeImage_ColorQuantizeEx (byval dib as FIBITMAP ptr, byval quantize as FREE_IMAGE_QUANTIZE, byval PaletteSize as integer, byval ReserveSize as integer, byval ReservePalette as RGBQUAD ptr) as FIBITMAP ptr
+declare function FreeImage_ColorQuantizeEx (byval dib as FIBITMAP ptr, byval quantize as FREE_IMAGE_QUANTIZE = FIQ_WUQUANT, byval PaletteSize as integer = 256, byval ReserveSize as integer = 0, byval ReservePalette as RGBQUAD ptr = 0) as FIBITMAP ptr
 declare function FreeImage_Threshold (byval dib as FIBITMAP ptr, byval T as BYTE) as FIBITMAP ptr
 declare function FreeImage_Dither (byval dib as FIBITMAP ptr, byval algorithm as FREE_IMAGE_DITHER) as FIBITMAP ptr
-declare function FreeImage_ConvertFromRawBits (byval bits as BYTE ptr, byval width as integer, byval height as integer, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL) as FIBITMAP ptr
-declare sub FreeImage_ConvertToRawBits (byval bits as BYTE ptr, byval dib as FIBITMAP ptr, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL)
+declare function FreeImage_ConvertFromRawBits (byval bits as BYTE ptr, byval width as integer, byval height as integer, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL = 0) as FIBITMAP ptr
+declare sub FreeImage_ConvertToRawBits (byval bits as BYTE ptr, byval dib as FIBITMAP ptr, byval pitch as integer, byval bpp as uinteger, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger, byval topdown as BOOL = 0)
 declare function FreeImage_ConvertToFloat (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare function FreeImage_ConvertToRGBF (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare function FreeImage_ConvertToUINT16 (byval dib as FIBITMAP ptr) as FIBITMAP ptr
 declare function FreeImage_ConvertToRGB16 (byval dib as FIBITMAP ptr) as FIBITMAP ptr
-declare function FreeImage_ConvertToStandardType (byval src as FIBITMAP ptr, byval scale_linear as BOOL) as FIBITMAP ptr
-declare function FreeImage_ConvertToType (byval src as FIBITMAP ptr, byval dst_type as FREE_IMAGE_TYPE, byval scale_linear as BOOL) as FIBITMAP ptr
-declare function FreeImage_ToneMapping (byval dib as FIBITMAP ptr, byval tmo as FREE_IMAGE_TMO, byval first_param as double, byval second_param as double) as FIBITMAP ptr
-declare function FreeImage_TmoDrago03 (byval src as FIBITMAP ptr, byval gamma as double, byval exposure as double) as FIBITMAP ptr
-declare function FreeImage_TmoReinhard05 (byval src as FIBITMAP ptr, byval intensity as double, byval contrast as double) as FIBITMAP ptr
-declare function FreeImage_TmoReinhard05Ex (byval src as FIBITMAP ptr, byval intensity as double, byval contrast as double, byval adaptation as double, byval color_correction as double) as FIBITMAP ptr
-declare function FreeImage_TmoFattal02 (byval src as FIBITMAP ptr, byval color_saturation as double, byval attenuation as double) as FIBITMAP ptr
+declare function FreeImage_ConvertToStandardType (byval src as FIBITMAP ptr, byval scale_linear as BOOL = 1) as FIBITMAP ptr
+declare function FreeImage_ConvertToType (byval src as FIBITMAP ptr, byval dst_type as FREE_IMAGE_TYPE, byval scale_linear as BOOL = 1) as FIBITMAP ptr
+declare function FreeImage_ToneMapping (byval dib as FIBITMAP ptr, byval tmo as FREE_IMAGE_TMO, byval first_param as double = 0, byval second_param as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoDrago03 (byval src as FIBITMAP ptr, byval gamma as double = 0, byval exposure as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoReinhard05 (byval src as FIBITMAP ptr, byval intensity as double = 0, byval contrast as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoReinhard05Ex (byval src as FIBITMAP ptr, byval intensity as double = 0, byval contrast as double = 0, byval adaptation as double = 1, byval color_correction as double = 0) as FIBITMAP ptr
+declare function FreeImage_TmoFattal02 (byval src as FIBITMAP ptr, byval color_saturation as double = 0.5, byval attenuation as double = 0.85) as FIBITMAP ptr
 declare function FreeImage_ZLibCompress (byval target as BYTE ptr, byval target_size as DWORD, byval source as BYTE ptr, byval source_size as DWORD) as DWORD
 declare function FreeImage_ZLibUncompress (byval target as BYTE ptr, byval target_size as DWORD, byval source as BYTE ptr, byval source_size as DWORD) as DWORD
 declare function FreeImage_ZLibGZip (byval target as BYTE ptr, byval target_size as DWORD, byval source as BYTE ptr, byval source_size as DWORD) as DWORD
@@ -673,24 +692,24 @@ declare function FreeImage_SetMetadata (byval model as FREE_IMAGE_MDMODEL, byval
 declare function FreeImage_GetMetadata (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr, byval key as zstring ptr, byval tag as FITAG ptr ptr) as BOOL
 declare function FreeImage_GetMetadataCount (byval model as FREE_IMAGE_MDMODEL, byval dib as FIBITMAP ptr) as uinteger
 declare function FreeImage_CloneMetadata (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr) as BOOL
-declare function FreeImage_TagToString (byval model as FREE_IMAGE_MDMODEL, byval tag as FITAG ptr, byval Make as zstring ptr) as zstring ptr
+declare function FreeImage_TagToString (byval model as FREE_IMAGE_MDMODEL, byval tag as FITAG ptr, byval Make as zstring ptr = 0) as zstring ptr
 declare function FreeImage_RotateClassic (byval dib as FIBITMAP ptr, byval angle as double) as FIBITMAP ptr
-declare function FreeImage_Rotate (byval dib as FIBITMAP ptr, byval angle as double, byval bkcolor as any ptr) as FIBITMAP ptr
+declare function FreeImage_Rotate (byval dib as FIBITMAP ptr, byval angle as double, byval bkcolor as any ptr = 0) as FIBITMAP ptr
 declare function FreeImage_RotateEx (byval dib as FIBITMAP ptr, byval angle as double, byval x_shift as double, byval y_shift as double, byval x_origin as double, byval y_origin as double, byval use_mask as BOOL) as FIBITMAP ptr
 declare function FreeImage_FlipHorizontal (byval dib as FIBITMAP ptr) as BOOL
 declare function FreeImage_FlipVertical (byval dib as FIBITMAP ptr) as BOOL
-declare function FreeImage_JPEGTransform (byval src_file as zstring ptr, byval dst_file as zstring ptr, byval operation as FREE_IMAGE_JPEG_OPERATION, byval perfect as BOOL) as BOOL
-declare function FreeImage_JPEGTransformU (byval src_file as wchar_t ptr, byval dst_file as wchar_t ptr, byval operation as FREE_IMAGE_JPEG_OPERATION, byval perfect as BOOL) as BOOL
+declare function FreeImage_JPEGTransform (byval src_file as zstring ptr, byval dst_file as zstring ptr, byval operation as FREE_IMAGE_JPEG_OPERATION, byval perfect as BOOL = 0) as BOOL
+declare function FreeImage_JPEGTransformU (byval src_file as wstring ptr, byval dst_file as wstring ptr, byval operation as FREE_IMAGE_JPEG_OPERATION, byval perfect as BOOL = 0) as BOOL
 declare function FreeImage_Rescale (byval dib as FIBITMAP ptr, byval dst_width as integer, byval dst_height as integer, byval filter as FREE_IMAGE_FILTER) as FIBITMAP ptr
-declare function FreeImage_MakeThumbnail (byval dib as FIBITMAP ptr, byval max_pixel_size as integer, byval convert as BOOL) as FIBITMAP ptr
+declare function FreeImage_MakeThumbnail (byval dib as FIBITMAP ptr, byval max_pixel_size as integer, byval convert as BOOL = 1) as FIBITMAP ptr
 declare function FreeImage_AdjustCurve (byval dib as FIBITMAP ptr, byval LUT as BYTE ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
 declare function FreeImage_AdjustGamma (byval dib as FIBITMAP ptr, byval gamma as double) as BOOL
 declare function FreeImage_AdjustBrightness (byval dib as FIBITMAP ptr, byval percentage as double) as BOOL
 declare function FreeImage_AdjustContrast (byval dib as FIBITMAP ptr, byval percentage as double) as BOOL
 declare function FreeImage_Invert (byval dib as FIBITMAP ptr) as BOOL
-declare function FreeImage_GetHistogram (byval dib as FIBITMAP ptr, byval histo as DWORD ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
+declare function FreeImage_GetHistogram (byval dib as FIBITMAP ptr, byval histo as DWORD ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL = FICC_BLACK) as BOOL
 declare function FreeImage_GetAdjustColorsLookupTable (byval LUT as BYTE ptr, byval brightness as double, byval contrast as double, byval gamma as double, byval invert as BOOL) as integer
-declare function FreeImage_AdjustColors (byval dib as FIBITMAP ptr, byval brightness as double, byval contrast as double, byval gamma as double, byval invert as BOOL) as BOOL
+declare function FreeImage_AdjustColors (byval dib as FIBITMAP ptr, byval brightness as double, byval contrast as double, byval gamma as double, byval invert as BOOL = 0) as BOOL
 declare function FreeImage_ApplyColorMapping (byval dib as FIBITMAP ptr, byval srccolors as RGBQUAD ptr, byval dstcolors as RGBQUAD ptr, byval count as uinteger, byval ignore_alpha as BOOL, byval swap as BOOL) as uinteger
 declare function FreeImage_SwapColors (byval dib as FIBITMAP ptr, byval color_a as RGBQUAD ptr, byval color_b as RGBQUAD ptr, byval ignore_alpha as BOOL) as uinteger
 declare function FreeImage_ApplyPaletteIndexMapping (byval dib as FIBITMAP ptr, byval srcindices as BYTE ptr, byval dstindices as BYTE ptr, byval count as uinteger, byval swap as BOOL) as uinteger
@@ -701,15 +720,15 @@ declare function FreeImage_GetComplexChannel (byval src as FIBITMAP ptr, byval c
 declare function FreeImage_SetComplexChannel (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr, byval channel as FREE_IMAGE_COLOR_CHANNEL) as BOOL
 declare function FreeImage_Copy (byval dib as FIBITMAP ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as FIBITMAP ptr
 declare function FreeImage_Paste (byval dst as FIBITMAP ptr, byval src as FIBITMAP ptr, byval left as integer, byval top as integer, byval alpha as integer) as BOOL
-declare function FreeImage_Composite (byval fg as FIBITMAP ptr, byval useFileBkg as BOOL, byval appBkColor as RGBQUAD ptr, byval bg as FIBITMAP ptr) as FIBITMAP ptr
+declare function FreeImage_Composite (byval fg as FIBITMAP ptr, byval useFileBkg as BOOL = 0, byval appBkColor as RGBQUAD ptr = 0, byval bg as FIBITMAP ptr = 0) as FIBITMAP ptr
 declare function FreeImage_JPEGCrop (byval src_file as zstring ptr, byval dst_file as zstring ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as BOOL
-declare function FreeImage_JPEGCropU (byval src_file as wchar_t ptr, byval dst_file as wchar_t ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as BOOL
+declare function FreeImage_JPEGCropU (byval src_file as wstring ptr, byval dst_file as wstring ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer) as BOOL
 declare function FreeImage_PreMultiplyWithAlpha (byval dib as FIBITMAP ptr) as BOOL
-declare function FreeImage_FillBackground (byval dib as FIBITMAP ptr, byval color as any ptr, byval options as integer) as BOOL
-declare function FreeImage_EnlargeCanvas (byval src as FIBITMAP ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer, byval color as any ptr, byval options as integer) as FIBITMAP ptr
-declare function FreeImage_AllocateEx (byval width as integer, byval height as integer, byval bpp as integer, byval color as RGBQUAD ptr, byval options as integer, byval palette as RGBQUAD ptr, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger) as FIBITMAP ptr
-declare function FreeImage_AllocateExT (byval type as FREE_IMAGE_TYPE, byval width as integer, byval height as integer, byval bpp as integer, byval color as any ptr, byval options as integer, byval palette as RGBQUAD ptr, byval red_mask as uinteger, byval green_mask as uinteger, byval blue_mask as uinteger) as FIBITMAP ptr
-declare function FreeImage_MultigridPoissonSolver (byval Laplacian as FIBITMAP ptr, byval ncycle as integer) as FIBITMAP ptr
+declare function FreeImage_FillBackground (byval dib as FIBITMAP ptr, byval color as any ptr, byval options as integer = 0) as BOOL
+declare function FreeImage_EnlargeCanvas (byval src as FIBITMAP ptr, byval left as integer, byval top as integer, byval right as integer, byval bottom as integer, byval color as any ptr, byval options as integer = 0) as FIBITMAP ptr
+declare function FreeImage_AllocateEx (byval width as integer, byval height as integer, byval bpp as integer, byval color as RGBQUAD ptr, byval options as integer = 0, byval palette as RGBQUAD ptr = 0, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
+declare function FreeImage_AllocateExT (byval type as FREE_IMAGE_TYPE, byval width as integer, byval height as integer, byval bpp as integer, byval color as any ptr, byval options as integer = 0, byval palette as RGBQUAD ptr = 0, byval red_mask as uinteger = 0, byval green_mask as uinteger = 0, byval blue_mask as uinteger = 0) as FIBITMAP ptr
+declare function FreeImage_MultigridPoissonSolver (byval Laplacian as FIBITMAP ptr, byval ncycle as integer = 3) as FIBITMAP ptr
 
 end extern
 
