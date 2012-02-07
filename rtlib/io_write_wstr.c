@@ -1,6 +1,5 @@
 /* write [#] wstring functions */
 
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

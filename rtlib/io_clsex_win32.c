@@ -1,8 +1,6 @@
 /* cls (console, no gfx) function for Windows */
 
-#include <stdio.h>
 #include "fb.h"
-
 
 /*:::::*/
 void fb_ConsoleClearViewRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2 )
@@ -25,4 +23,3 @@ void fb_ConsoleClearViewRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2 )
 
     fb_ConsoleLocateRawEx( hConsole, y1, x1, -1 );
 }
-

@@ -27,5 +27,3 @@ int fb_ConsolePageSet ( int active, int visible )
 
 	return res;
 }
-
-

@@ -3,10 +3,6 @@
 
 #include "fb.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
     typedef struct _fb_Rect {
         int Left, Top, Right, Bottom;
     } fb_Rect;
@@ -59,9 +55,5 @@ extern "C" {
                          			  size_t TextLength, int is_text_mode );
     void fb_ConPrintTTYWstr			( fb_ConHooks *handle, const FB_WCHAR *pachText,
                          			  size_t TextLength, int is_text_mode );
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

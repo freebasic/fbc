@@ -1,9 +1,6 @@
 /* ucase$ function */
 
-#include <stdlib.h>
-#include <ctype.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )

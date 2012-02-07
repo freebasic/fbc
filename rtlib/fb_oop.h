@@ -1,6 +1,3 @@
-#ifndef __FB_OOP__
-#define __FB_OOP__
-
 typedef struct _FB_RTTI {
 	void				*stdlistVT;
 	char				*id;
@@ -17,6 +14,4 @@ typedef struct _FB_OBJECT {
 } FB_OBJECT;
 
 /* Object class constructor */
-void _ZN10$fb_ObjectC1Ev( FB_OBJECT *THIS );
-
-#endif /* __FB_OOP__ */
+void _ZN10$fb_ObjectC1Ev( FB_OBJECT* );

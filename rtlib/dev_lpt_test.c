@@ -1,9 +1,5 @@
 /* LPTx device */
 
-#include <stdio.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /** Tests for the right file name for LPT access.
@@ -155,4 +151,3 @@ int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t
 	return ret;
 
 }
-

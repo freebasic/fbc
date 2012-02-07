@@ -1,8 +1,5 @@
 /* UTF-encoded file devices open */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars );

@@ -1,21 +1,28 @@
 #ifndef __FB_H__
 #define __FB_H__
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ctype.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <stddef.h>
+#include <math.h>
+#include <signal.h>
 
 #define FB_TRUE (-1)
 #define FB_FALSE 0
+
 #ifndef FALSE
-#define FALSE    0
+#define FALSE 0
 #endif
 #ifndef TRUE
-#define TRUE    1
+#define TRUE 1
 #endif
 #ifndef NULL
-#define NULL     0
+#define NULL 0
 #endif
 
 /* Defines the ASCII code that indicates a two-byte key code.
@@ -76,92 +83,57 @@ extern "C" {
 	((int) (((((unsigned) (k)) & 0xFF) == FB_EXT_CHAR) && \
 	        (((k) & 0xFF00) != 0)))
 
-#if defined(HOST_WIN32)
-	#include "fb_win32.h"
-#elif defined(HOST_LINUX)
-	#include "fb_unix.h"
-	#include "fb_linux.h"
-#elif defined(HOST_DOS)
-	#include "fb_dos.h"
-#elif defined(HOST_XBOX)
+#if defined( HOST_DOS )
+#	include "fb_dos.h"
+#elif defined( HOST_WIN32 )
+#	include "fb_win32.h"
+#elif defined( HOST_DARWIN ) || defined( HOST_FREEBSD ) || defined( HOST_LINUX ) || \
+      defined( HOST_NETBSD ) || defined( HOST_OPENBSD ) || defined( HOST_SOLARIS )
+#	include "fb_unix.h"
+#elif defined( HOST_XBOX )
 	#include "fb_xbox.h"
-#elif defined(HOST_FREEBSD)
-	#include "fb_unix.h"
-#elif defined(HOST_SOLARIS)
-	#include "fb_unix.h"
-#elif defined(HOST_DARWIN)
-	#include "fb_unix.h"
-#elif defined(HOST_OPENBSD)
-	#include "fb_unix.h"
-#elif defined(HOST_NETBSD)
-	#include "fb_unix.h"
 #else
 	#error Unexpected target
 #endif
 
-/* Implementation of the missing lib C functions */
-#include "fb_config.h"
+#if defined( HOST_MINGW )
+	/* MinGW doesn't recognize _FILE_OFFSET_BITS, so we this manually */
+	#define fseeko fseeko64
+	#define ftello ftello64
+
+	/* We want to use the native msvcrt _mkdir() instead of MinGW's
+	   "oldname" wrapper mkdir(), that's also why we're compiling with
+	   -D_NO_OLDNAMES. */
+	#define chdir _chdir
+	/* Note the special case for mkdir: the second parameter will be
+	   ignored, since the Windows function doesn't have it */
+	#define mkdir(x, y) _mkdir(x)
+	#define pclose _pclose
+	#define popen _popen
+	#define putenv _putenv
+	#define rmdir _rmdir
+	#define snprintf _snprintf
+	#define strdup _strdup
+	#define strcasecmp _stricmp
+	#define strncasecmp _strnicmp
+	#define get_osfhandle _get_osfhandle
+	#define fileno _fileno
+#elif defined( HOST_DOS )
+	/* In DJGPP we didn't use fseeko() at all (the DJGPP semi-2.04 setup
+	   used for FB doesn't seem to have it) */
+	#define fseeko(x, y, z) fseek(x, y, z)
+	#define ftello(x)       ftell(x)
+#endif
 
 /* CPU-dependent macros and inline functions */
 #ifdef HOST_X86
-	#include "fb_x86.h"
+	#include "fb_arch_x86.h"
 #else
-	#include "fb_port.h"
+	#include "fb_arch_any.h"
 #endif
 
 /* Unicode definitions */
 #include "fb_unicode.h"
-
-#ifndef FBCALL
-	#define FBCALL
-#endif
-
-#ifndef FB_LOCK
-	#define FB_LOCK()
-#endif
-#ifndef FB_UNLOCK
-	#define FB_UNLOCK()
-#endif
-
-#ifndef FB_TLSENTRY
-	/* A thread local storage slot */
-	#define FB_TLSENTRY uintptr_t
-#endif
-#ifndef FB_TLSALLOC
-	#define FB_TLSALLOC(key) key = NULL
-#endif
-#ifndef FB_TLSFREE
-	#define FB_TLSFREE(key) key = NULL
-#endif
-#ifndef FB_TLSSET
-	#define FB_TLSSET(key,value) key = (FB_TLSENTRY)value
-#endif
-#ifndef FB_TLSGET
-	#define FB_TLSGET(key) key
-#endif
-#ifndef FB_THREADID
-	#define FB_THREADID int
-#endif
-
-#ifndef FB_BINARY_NEWLINE
-	/* The "NEW LINE" string required for printer I/O.
-	   The printer always requires both CR and LF. */
-	#define FB_BINARY_NEWLINE "\r\n"
-	#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
-#endif
-
-#ifndef FB_NEWLINE
-	/* The "NEW LINE" character used for all I/O.
-	   This is LF here because FB relies on the C RTL which only knows
-	   LF as line-end character. */
-	#define FB_NEWLINE "\n"
-	#define FB_NEWLINE_WSTR _LC("\n")
-#endif
-
-#ifndef FB_LL_FMTMOD
-	/* LONG LONG format modifier for the *printf functions. */
-	#define FB_LL_FMTMOD "ll"
-#endif
 
 #ifdef DEBUG
 	#include <assert.h>
@@ -170,7 +142,28 @@ extern "C" {
 	#define DBG_ASSERT(e) ((void)0)
 #endif
 
-#include "fb_intern.h"
+#define fb_hSign( x ) (((x) < 0) ? -1 : 1)
+
+/* internal lists */
+typedef struct _FB_LISTELEM {
+    struct _FB_LISTELEM    *prev;
+    struct _FB_LISTELEM    *next;
+} FB_LISTELEM;
+
+typedef struct _FB_LIST {
+    int                cnt;      /* Number of used elements */
+    FB_LISTELEM        *head;    /* First used element */
+    FB_LISTELEM        *tail;    /* Last used element */
+    FB_LISTELEM        *fhead;   /* First free element */
+} FB_LIST;
+
+void                fb_hListInit            ( FB_LIST *list, void *table, int elem_size, int size );
+FB_LISTELEM        *fb_hListAllocElem       ( FB_LIST *list );
+void                fb_hListFreeElem        ( FB_LIST *list, FB_LISTELEM *elem );
+void                fb_hListDynInit         ( FB_LIST *list );
+void                fb_hListDynElemAdd      ( FB_LIST *list, FB_LISTELEM *elem );
+void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem );
+
 #include "fb_error.h"
 #include "fb_string.h"
 #include "fb_array.h"
@@ -185,6 +178,96 @@ extern "C" {
 #include "fb_datetime.h"
 #include "fb_thread.h"
 #include "fb_hook.h"
+#include "fb_oop.h"
+
+/* DOS keyboard scancodes */
+#define SC_ESCAPE	0x01
+#define SC_1		0x02
+#define SC_2		0x03
+#define SC_3		0x04
+#define SC_4		0x05
+#define SC_5		0x06
+#define SC_6		0x07
+#define SC_7		0x08
+#define SC_8		0x09
+#define SC_9		0x0A
+#define SC_0		0x0B
+#define SC_MINUS	0x0C
+#define SC_EQUALS	0x0D
+#define SC_BACKSPACE	0x0E
+#define SC_TAB		0x0F
+#define SC_Q		0x10
+#define SC_W		0x11
+#define SC_E		0x12
+#define SC_R		0x13
+#define SC_T		0x14
+#define SC_Y		0x15
+#define SC_U		0x16
+#define SC_I		0x17
+#define SC_O		0x18
+#define SC_P		0x19
+#define SC_LEFTBRACKET	0x1A
+#define SC_RIGHTBRACKET	0x1B
+#define SC_ENTER	0x1C
+#define SC_CONTROL	0x1D
+#define SC_A		0x1E
+#define SC_S		0x1F
+#define SC_D		0x20
+#define SC_F		0x21
+#define SC_G		0x22
+#define SC_H		0x23
+#define SC_J		0x24
+#define SC_K		0x25
+#define SC_L		0x26
+#define SC_SEMICOLON	0x27
+#define SC_QUOTE	0x28
+#define SC_TILDE	0x29
+#define SC_LSHIFT	0x2A
+#define SC_BACKSLASH	0x2B
+#define SC_Z		0x2C
+#define SC_X		0x2D
+#define SC_C		0x2E
+#define SC_V		0x2F
+#define SC_B		0x30
+#define SC_N		0x31
+#define SC_M		0x32
+#define SC_COMMA	0x33
+#define SC_PERIOD	0x34
+#define SC_SLASH	0x35
+#define SC_RSHIFT	0x36
+#define SC_MULTIPLY	0x37
+#define SC_ALT		0x38
+#define SC_SPACE	0x39
+#define SC_CAPSLOCK	0x3A
+#define SC_F1		0x3B
+#define SC_F2		0x3C
+#define SC_F3		0x3D
+#define SC_F4		0x3E
+#define SC_F5		0x3F
+#define SC_F6		0x40
+#define SC_F7		0x41
+#define SC_F8		0x42
+#define SC_F9		0x43
+#define SC_F10		0x44
+#define SC_NUMLOCK	0x45
+#define SC_SCROLLLOCK	0x46
+#define SC_HOME		0x47
+#define SC_UP		0x48
+#define SC_PAGEUP	0x49
+#define SC_LEFT		0x4B
+#define SC_RIGHT	0x4D
+#define SC_PLUS		0x4E
+#define SC_END		0x4F
+#define SC_DOWN		0x50
+#define SC_PAGEDOWN	0x51
+#define SC_INSERT	0x52
+#define SC_DELETE	0x53
+#define SC_F11		0x57
+#define SC_F12		0x58
+#define SC_LWIN		0x5B
+#define SC_RWIN		0x5C
+#define SC_MENU		0x5D
+#define SC_ALTGR	0x64
 
 /* This should match fbc's lang enum */
 enum FB_LANG {
@@ -209,9 +292,5 @@ typedef struct FB_RTLIB_CTX_ {
 } FB_RTLIB_CTX;
 
 extern FB_RTLIB_CTX __fb_ctx;
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /*__FB_H__*/

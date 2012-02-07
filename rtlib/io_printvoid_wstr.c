@@ -1,9 +1,6 @@
 /* print functions */
 
-#include <stdio.h>
 #include "fb.h"
-
-#include <stdlib.h>
 
 /*:::::*/
 void fb_PrintVoidWstrEx
@@ -40,4 +37,3 @@ FBCALL void fb_PrintVoidWstr
 {
     fb_PrintVoidWstrEx( FB_FILE_TO_HANDLE(fnum), mask );
 }
-

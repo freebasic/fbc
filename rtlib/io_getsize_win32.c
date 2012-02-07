@@ -1,6 +1,5 @@
 /* get size (console, no gfx) function for Windows */
 
-#include <stdio.h>
 #include "fb.h"
 
 void fb_InitConsoleWindow( void );

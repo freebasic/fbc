@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_ConsolePageCopy	( int src, int dst )
+int fb_ConsolePageCopy( int src, int dst )
 {
 	/* use current? */
 	if( src < 0 )
@@ -26,5 +25,3 @@ int fb_ConsolePageCopy	( int src, int dst )
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-
-

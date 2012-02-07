@@ -1,8 +1,3 @@
-#ifndef __FB_DEVICE_H__
-#define __FB_DEVICE_H__
-
-#include "fb_file.h"
-
        /* CONS */
        int          fb_DevConsOpen          ( struct _FB_FILE *handle, const char *filename,
                                               size_t filename_len );
@@ -96,5 +91,3 @@ typedef struct _DEV_SCRN_INFO {
        /* COM */
        int          fb_DevComOpen           ( struct _FB_FILE *handle, const char *filename,
                                               size_t filename_len );
-
-#endif /* __FB_DEVICE_H__ */

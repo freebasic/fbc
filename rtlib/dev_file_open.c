@@ -1,8 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 int fb_hDevFileSeekStart

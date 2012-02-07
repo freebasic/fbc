@@ -1,8 +1,3 @@
-#ifndef __FB_SERIAL_H__
-#define __FB_SERIAL_H__
-
-#include "fb_file.h"
-
 typedef enum _FB_SERIAL_PARITY {
     FB_SERIAL_PARITY_NONE,
     FB_SERIAL_PARITY_EVEN,
@@ -57,5 +52,3 @@ typedef struct _FB_SERIAL_OPTIONS {
                                           void *pvHandle, FB_WCHAR *data, size_t *pLength );
        int          fb_SerialClose      ( struct _FB_FILE *handle,
                                           void *pvHandle );
-
-#endif /* __FB_SERIAL_H__ */

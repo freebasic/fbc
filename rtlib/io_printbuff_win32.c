@@ -1,8 +1,5 @@
 /* low-level print to console function for Windows */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb_con.h"
 
 typedef struct _fb_PrintInfo {

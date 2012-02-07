@@ -1,9 +1,6 @@
 /* get # function for arrays */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL int fb_FileGetArray( int fnum, long pos, FBARRAY *dst )

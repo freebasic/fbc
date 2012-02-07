@@ -1,23 +1,4 @@
-#ifndef __FB_STRING_H__
-#define __FB_STRING_H__
-
-#ifndef FB_STRLOCK
-    /** Acquire a semaphore (recursive mutex) especially for STRING functions.
-     */
-# define FB_STRLOCK()
-#endif
-#ifndef FB_STRUNLOCK
-    /** Release a semaphore (recursive mutex) especially for STRING functions.
-     */
-# define FB_STRUNLOCK()
-#endif
-
-/**************************************************************************************************
- * strings
- **************************************************************************************************/
-
-#include <string.h>
-#include <stdio.h>
+/* strings */
 
 /** Flag to identify a string as a temporary string.
  *
@@ -282,5 +263,3 @@ FBCALL FBSTRING *   fb_StrFormat        ( double value, FBSTRING *mask );
 
 FBCALL FBSTRING *   fb_hStrFormat       ( double value, const char *mask,
                                           size_t mask_length );
-
-#endif /* __FB_STRING_H__ */

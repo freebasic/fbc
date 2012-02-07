@@ -1,14 +1,9 @@
 /* input function core */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
-static FB_WCHAR hReadChar
-	(
-		FB_INPUTCTX *ctx
-	)
+static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -200,4 +195,3 @@ exit:
 	if( skipdelim )
 		hSkipDelimiter( ctx, c );
 }
-

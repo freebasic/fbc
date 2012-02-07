@@ -1,7 +1,6 @@
 /* DRAW command */
 
 #include "fb_gfx.h"
-#include <ctype.h>
 
 #ifdef NAN
 #undef NAN
@@ -10,9 +9,7 @@
 
 #define SQRT_2		1.4142135623730950488016
 
-
 static float base_scale = 1.0, base_angle = 0.0;
-
 
 /*:::::*/
 static intptr_t parse_number(char **str)

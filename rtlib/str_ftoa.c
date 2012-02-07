@@ -1,7 +1,5 @@
 /* float to string, internal usage */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

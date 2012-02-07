@@ -1,7 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
@@ -16,4 +14,3 @@ int fb_DevScrnClose( struct _FB_FILE *handle )
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
-

@@ -46,7 +46,7 @@ FBCALL int fb_FileAttr
 			{
 				if( file->opaque )
 				{
-#if defined(HOST_WIN32)
+#if defined( HOST_WIN32 )
 					if( *((int*)file->opaque) ) /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
 					{
 					  ret = **((int**)file->opaque); /* WARNING: unsafe when sizeof(void *) > sizeof(int) */

@@ -1,7 +1,6 @@
 /* color (console, no gfx) function for Windows */
 
 #include "fb.h"
-#include "fb_colors.h"
 
 /*:::::*/
 int fb_ConsoleGetColorAttEx( HANDLE hConsole )

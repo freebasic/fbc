@@ -1,12 +1,6 @@
 /* Linux multikey function implementation */
 
 #include "fb.h"
-#include "fb_scancodes.h"
-
-#ifndef DISABLE_X
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#endif
 
 #include <linux/kd.h>
 #include <linux/keyboard.h>

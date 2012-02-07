@@ -1,14 +1,8 @@
 /* printer access for Windows */
 
-#include <windows.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 #include "fb_con.h"
-#include "fb_printer.h"
+#include <winspool.h>
 
 typedef BOOL (WINAPI *FnGetDefaultPrinter)(LPTSTR pszBuffer, LPDWORD pcchBuffer);
 

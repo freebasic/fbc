@@ -1,6 +1,3 @@
-#ifndef __FB_SYS_H__
-#define __FB_SYS_H__
-
 FBCALL void         fb_Init             ( int argc, char **argv, int lang );
 FBCALL void         fb_End              ( int errlevel );
 FBCALL void 		fb_RtInit 			( void );
@@ -13,7 +10,6 @@ FBCALL void         fb_StrSwap          ( void *str1, int size1, int fillrem1,
 
        void         fb_hInit            ( void );
        void         fb_hEnd             ( int errlevel );
-       void         fb_hInitSignals     ( void );
 
 FBCALL void         fb_Beep             ( void );
 
@@ -46,5 +42,3 @@ FBCALL void         fb_DylibFree        ( void *library );
        int          fb_hIn              ( unsigned short port );
        int          fb_hOut             ( unsigned short port, unsigned char value );
 FBCALL int          fb_Wait             ( unsigned short port, int and, int xor);
-
-#endif /* __FB_SYS_H__ */

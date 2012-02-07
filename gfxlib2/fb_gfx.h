@@ -3,23 +3,15 @@
 #ifndef __FB_GFX_H__
 #define __FB_GFX_H__
 
+#include "../rtlib/fb.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
 #ifndef DISABLE_OPENGL
 #include "fb_gfx_gl.h"
 #endif
-
-#include "../rtlib/fb.h"
-#include "../rtlib/fb_error.h"
-#include "../rtlib/fb_scancodes.h"
 
 #ifdef PI
 #undef PI
@@ -281,7 +273,6 @@ typedef struct FB_GFXCTX {
     int flags;
 } FB_GFXCTX;
 
-
 typedef struct FBGFX
 {
 	int id;									/**< Mode id number for contexts identification */
@@ -311,11 +302,10 @@ typedef struct FBGFX
 	GFX_CHAR_CELL **con_pages;				/**< Character information for all pages */
     EVENT *event_queue;						/**< The OS events queue array */
     int event_head, event_tail;				/**< Indices for the head and tail event in the array */
-    struct _FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
+	FBMUTEX *event_mutex;			/**< Mutex lock for accessing the events queue */
 	volatile int flags;						/**< Status flags */
 	int lock_count;							/**<Reference count for SCREENLOCK/UNLOCK */
 } FBGFX;
-
 
 typedef struct GFXDRIVER
 {

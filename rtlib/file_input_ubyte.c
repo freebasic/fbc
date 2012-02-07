@@ -1,8 +1,5 @@
 /* input function for unsigned bytes */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 #include "fb.h"
 
 /*:::::*/

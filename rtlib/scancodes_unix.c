@@ -1,10 +1,6 @@
-#ifndef DISABLE_X
-
 #include "fb.h"
-#include "fb_scancodes.h"
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
 
+#ifndef DISABLE_X
 const KeysymToScancode fb_keysym_to_scancode[] = {
 	{ XK_Escape,		0x01 },	{ XK_F1,			0x3B }, { XK_F2,			0x3C },
 	{ XK_F3,			0x3D }, { XK_F4,			0x3E }, { XK_F5,			0x3F },
@@ -42,6 +38,4 @@ const KeysymToScancode fb_keysym_to_scancode[] = {
 	{ XK_KP_Down,		0x50 }, { XK_KP_Next,		0x51 }, { XK_KP_Enter,		0x1C },
 	{ XK_KP_Insert,		0x52 }, { XK_KP_Delete,		0x53 }, { NoSymbol,			0x00 }
 };
-
 #endif
-

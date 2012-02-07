@@ -1,8 +1,5 @@
 /* set the with for devices */
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "fb.h"
 
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );

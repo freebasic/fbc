@@ -1,9 +1,6 @@
 /* print functions */
 
-#include <stdio.h>
 #include "fb.h"
-
-#include <stdlib.h>
 
 /*:::::*/
 FBCALL void fb_LPrintVoid ( int fnum, int mask )
@@ -12,4 +9,3 @@ FBCALL void fb_LPrintVoid ( int fnum, int mask )
     fb_PrintVoidEx( FB_FILE_TO_HANDLE(fnum),
                     FB_PRINT_CONVERT_BIN_NEWLINE(mask) );
 }
-

@@ -1,7 +1,5 @@
 /* put # function for strings */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

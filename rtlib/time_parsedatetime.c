@@ -1,6 +1,5 @@
 /* parse a string containing a date and/or time */
 
-#include <ctype.h>
 #include "fb.h"
 
 /*:::::*/

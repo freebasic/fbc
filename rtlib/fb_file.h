@@ -1,6 +1,3 @@
-#ifndef __FB_FILE_H__
-#define __FB_FILE_H__
-
 #define FB_FILE_MODE_BINARY             0
 #define FB_FILE_MODE_RANDOM             1
 #define FB_FILE_MODE_INPUT              2
@@ -51,9 +48,6 @@ typedef enum _FB_FILE_ENCOD {
 
 #define FB_HANDLE_SCREEN    __fb_ctx.fileTB
 #define FB_HANDLE_PRINTER   (__fb_ctx.fileTB+1)
-
-#include <stdio.h>
-
 
 struct _FB_FILE;
 
@@ -362,5 +356,3 @@ int fb_hFileRead_UTFToWchar
 
 FBCALL int          fb_FileCopy         ( const char *source, const char *destination );
        int          fb_DrvFileCopy      ( const char *source, const char *destination );
-
-#endif /* __FB_FILE_H__ */

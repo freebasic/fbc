@@ -1,7 +1,5 @@
 /* parse a string time */
 
-#include <ctype.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

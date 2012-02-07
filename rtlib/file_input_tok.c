@@ -1,7 +1,5 @@
 /* input function core */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

@@ -1,8 +1,3 @@
-#ifndef __FB_PRINTER_H__
-#define __FB_PRINTER_H__
-
-#include "fb_file.h"
-
 typedef struct _DEV_LPT_PROTOCOL 
 {
 	char * proto;
@@ -39,5 +34,3 @@ int fb_DevLptParseProtocol(
        int          fb_PrinterWrite     ( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length );
        int          fb_PrinterWriteWstr ( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data,size_t length );
        int          fb_PrinterClose     ( struct _DEV_LPT_INFO *devInfo );
-
-#endif /*__FB_PRINTER_H__*/

@@ -1,9 +1,6 @@
 /* get # function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 int fb_FileGetDataEx( FB_FILE *handle, fb_off_t pos, void *dst, size_t length,

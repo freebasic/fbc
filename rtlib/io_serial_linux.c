@@ -1,12 +1,6 @@
 /* serial port access for Linux */
 
-#include <termios.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/select.h>
+#include "fb.h"
 
 /* Uncomment HAS_LOCKDEV to active lock file funcionality, not forget
  * compile whith -llockdev
@@ -15,8 +9,6 @@
 #ifdef HAS_LOCKDEV
 #include <lockdev.h>
 #endif
-
-#include "fb.h"
 
 #define BUFFERSIZE	BUFSIZ*16
 #define ENDSPD		111111

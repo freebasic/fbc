@@ -1,8 +1,6 @@
 /* print [#] function (longint) */
 
-#include <stdio.h>
 #include "fb.h"
-
 
 /*:::::*/
 FBCALL void fb_LPrintLongint ( int fnum, long long val, int mask )

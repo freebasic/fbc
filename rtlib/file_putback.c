@@ -1,8 +1,5 @@
 /* some kind of ungetc function */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/
@@ -62,4 +59,3 @@ FBCALL int fb_FilePutBack( int fnum, const void *data, size_t length)
 {
     return fb_FilePutBackEx( FB_FILE_TO_HANDLE(fnum), data, length );
 }
-

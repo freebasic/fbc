@@ -3,7 +3,6 @@
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 #include <process.h>
-#include <stdio.h>
 
 WIN32DRIVER fb_win32;
 

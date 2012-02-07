@@ -1,9 +1,5 @@
 /* dos printer driver */
 
-#include <stdio.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /* _DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */

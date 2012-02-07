@@ -1,6 +1,5 @@
 /* Dynamic library loading and symbols retrieving */
 
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

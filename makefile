@@ -684,8 +684,6 @@ HEADER_DIRS := $(patsubst %/,%,$(sort $(dir $(HEADER_FILES))))
 
 LIBFB_H := rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
-LIBFB_H += rtlib/fb_colors.h
-LIBFB_H += rtlib/fb_config.h
 LIBFB_H += rtlib/fb_con.h
 LIBFB_H += rtlib/fb_console.h
 LIBFB_H += rtlib/fb_data.h
@@ -694,11 +692,8 @@ LIBFB_H += rtlib/fb_device.h
 LIBFB_H += rtlib/fb_error.h
 LIBFB_H += rtlib/fb_file.h
 LIBFB_H += rtlib/fb_hook.h
-LIBFB_H += rtlib/fb_intern.h
 LIBFB_H += rtlib/fb_math.h
-LIBFB_H += rtlib/fb_port.h
 LIBFB_H += rtlib/fb_printer.h
-LIBFB_H += rtlib/fb_scancodes.h
 LIBFB_H += rtlib/fb_serial.h
 LIBFB_H += rtlib/fb_string.h
 LIBFB_H += rtlib/fb_system.h
@@ -726,13 +721,21 @@ LIBFB_C := \
   dev_file_readline dev_file_readline_wstr dev_file_read_wstr dev_file_seek \
   dev_file_size dev_file_tell dev_file_unlock dev_file_write \
   dev_file_write_wstr dev_lpt dev_lpt_close dev_lpt_test dev_lpt_write \
-  dev_lpt_write_wstr dev_scrn dev_scrn_close dev_scrn_eof dev_scrn_init \
+  dev_lpt_write_wstr dev_pipe_close dev_pipe_open dev_scrn dev_scrn_close dev_scrn_eof dev_scrn_init \
   dev_scrn_read dev_scrn_readline dev_scrn_readline_wstr dev_scrn_read_wstr \
   dev_scrn_write dev_scrn_write_wstr dev_stdio_close \
+  drv_file_copy \
+  drv_intl_get \
+  drv_intl_getdateformat \
+  drv_intl_getmonthname \
+  drv_intl_gettimeformat \
+  drv_intl_getweekdayname \
   error error_getset error_ptrchk \
   exit \
   file_attr file_close file_copy file_datetime file_encod file_eof \
   file_exists file_free file_getarray file_get file_getstr file_get_wstr \
+  file_hconvpath \
+  file_hlock \
   file_input_byte file_input_con file_input_file file_input_float \
   file_input_int file_input_longint file_input_short file_input_str \
   file_inputstr file_input_tok file_input_tok_wstr file_input_ubyte \
@@ -741,7 +744,7 @@ LIBFB_C := \
   file_open file_opencom file_opencons file_openencod file_openerr \
   file_openlpt file_openpipe file_openscrn file_openshort file_print \
   file_print_wstr file_putarray file_putback file_putback_wstr file_put \
-  file_putstr file_put_wstr file_reset file_seek file_size file_tell \
+  file_putstr file_put_wstr file_reset file_resetex file_seek file_size file_tell \
   file_winputstr \
   gosub \
   hook_cls hook_color hook_getsize hook_getx hook_getxy hook_gety hook_inkey \
@@ -752,12 +755,13 @@ LIBFB_C := \
   init \
   intl_get intl_getdateformat intl_getmonthname intl_getset intl_gettimeformat \
   intl_getweekdayname \
+  io_isredir \
   io_lpos io_lprint_byte io_lprint_fix io_lprint_fp io_lprint_int \
   io_lprint_longint io_lprint_short io_lprint_str io_lprintusg io_lprintvoid \
-  io_lprint_wstr io_print_byte io_print io_print_fix io_print_fp io_print_int \
+  io_lprint_wstr io_maxrow io_print_byte io_print io_print_fix io_print_fp io_print_int \
   io_print_longint io_printpad io_printpad_wstr io_print_short io_printusg \
-  io_printvoid io_printvoid_wstr io_print_wstr io_setpos io_spc io_view \
-  io_viewhlp io_widthdev io_widthfile io_writebyte io_writefloat io_writeint \
+  io_printvoid io_printvoid_wstr io_print_wstr io_readstr io_setpos io_spc io_view \
+  io_viewhlp io_viewupdate io_widthdev io_widthfile io_writebyte io_writefloat io_writeint \
   io_writelongint io_writeshort io_writestr io_writevoid io_write_wstr \
   list listdyn \
   math_fix math_frac math_rnd math_sgn \
@@ -787,13 +791,15 @@ LIBFB_C := \
   strw_rtrimany strw_rtrim strw_rtrimex strw_set strw_space strw_trimany \
   strw_trim strw_trimex strw_ucase \
   swap_mem swap_str swap_wstr \
-  sys_beep sys_cdir sys_chain sys_chdir sys_cmd sys_environ sys_exec_core \
-  sys_exepath sys_mkdir sys_rmdir sys_run \
-  thread_call thread_ctx \
+  sys_beep sys_cdir sys_chain sys_chdir sys_cmd sys_delay sys_environ sys_exec_core \
+  sys_exepath sys_fmem sys_getcwd sys_getexename sys_getexepath sys_getshortpath \
+  sys_mkdir sys_rmdir sys_run sys_shell \
+  thread_call thread_ctx thread_mutex \
   time_core time_dateadd time_date time_datediff time_datepart time_dateserial \
   time_dateset time_datevalue time_decodeserdate time_decodesertime \
   time_isdate time_monthname time_now time_parsedate time_parsedatetime \
-  time_parsetime time_sleepex time_time time_timeserial time_timeset \
+  time_parsetime time_setdate time_settime time_sleep time_sleepex \
+  time_time time_timer time_timeserial time_timeset \
   time_timevalue time_week time_weekdayname \
   utf_convfrom_char utf_convfrom_wchar utf_convto_char utf_convto_wchar \
   utf_core \
@@ -807,32 +813,26 @@ endif
 
 ifeq ($(TARGET_OS),darwin)
   ALLCFLAGS += -DHOST_DARWIN
+  LIBFB_C += io_mouse_stub
 endif
 
 ifeq ($(TARGET_OS),dos)
   ALLCFLAGS += -DHOST_DOS
 
   LIBFB_H += rtlib/fb_dos.h
-  LIBFB_H += rtlib/fb_unicode_dos.h
   LIBFB_C += \
-    dev_pipe_close_dos dev_pipe_open_dos \
-    drv_file_copy_dos drv_intl_dos drv_intl_data_dos drv_intl_get_dos \
-    drv_intl_getdateformat_dos drv_intl_getmonthname_dos \
-    drv_intl_gettimeformat_dos drv_intl_getweekdayname_dos \
+    drv_intl_dos drv_intl_data_dos \
     farmemset_dos \
-    file_dir_dos file_hconvpath_dos file_hlock_dos file_resetex_dos \
+    file_dir_dos \
     hexit_dos \
     hinit_dos \
-    hsignals_dos \
-    io_cls_dos io_color_dos io_getsize_dos io_inkey_dos io_isredir_dos \
-    io_locate_dos io_maxrow_dos io_mouse_dos io_multikey_dos io_pageset_dos \
+    io_cls_dos io_color_dos io_getsize_dos io_inkey_dos io_input_dos \
+    io_locate_dos io_mouse_dos io_multikey_dos io_pageset_dos \
     io_pcopy_dos io_printbuff_dos io_printbuff_wstr_dos io_printer_dos \
-    io_readstr_dos io_scroll_dos io_serial_dos io_viewupdate_dos io_width_dos \
-    sys_exec_dos sys_fmem_dos sys_getcwd_dos sys_getexename_dos \
-    sys_getexepath_dos sys_getshortpath_dos sys_isr_dos sys_ports_dos \
-    sys_shell_dos sys_sleep_dos \
-    thread_cond_dos thread_core_dos thread_mutex_dos \
-    time_setdate_dos time_settime_dos time_sleep_dos time_tmr_dos
+    io_scroll_dos io_serial_dos io_width_dos \
+    sys_exec_dos \
+    sys_isr_dos sys_ports_dos \
+    thread_cond_stub thread_core_stub
   LIBFB_S += drv_isr
 endif
 
@@ -840,33 +840,29 @@ ifeq ($(TARGET_OS),freebsd)
   ALLCFLAGS += -DHOST_FREEBSD
 
   LIBFB_C += \
-    io_mouse_freebsd io_multikey_freebsd \
-    sys_fmem_freebsd sys_getexename_freebsd sys_getexepath_freebsd
+    io_mouse_stub io_multikey_stub
 endif
 
 ifeq ($(TARGET_OS),linux)
   ALLCFLAGS += -DHOST_LINUX
 
-  LIBFB_H += rtlib/fb_linux.h
   LIBFB_C += \
     io_mouse_linux io_multikey_linux io_serial_linux \
-    sys_fmem_linux sys_getexename_linux sys_getexepath_linux sys_ports_linux
+    sys_ports_linux
 endif
 
 ifeq ($(TARGET_OS),netbsd)
   ALLCFLAGS += -DHOST_NETBSD
 
   LIBFB_C += \
-    io_mouse_netbsd io_multikey_netbsd \
-    sys_fmem_netbsd sys_getexename_netbsd sys_getexepath_netbsd
+    io_mouse_stub io_multikey_stub
 endif
 
 ifeq ($(TARGET_OS),openbsd)
   ALLCFLAGS += -DHOST_OPENBSD
 
   LIBFB_C += \
-    io_mouse_openbsd io_multikey_openbsd \
-    sys_fmem_openbsd sys_getexename_openbsd sys_getexepath_openbsd \
+    io_mouse_stub io_multikey_stub \
     swprintf_hack_openbsd
 endif
 
@@ -875,9 +871,6 @@ ifeq ($(TARGET_OS),win32)
   # This #define causes some MinGW functions (including those from libmoldname)
   # to be unavailable, effectively forcing the runtime to be coded using just
   # msvcrt (or mostly anyways).
-  # For example, the native msvcrt provides _mkdir(), while mkdir() is an
-  # "oldname" wrapper around _mkdir() implemented by MinGW to provide some of
-  # the more Unixy functions.
   ALLCFLAGS += -D_NO_OLDNAMES
 endif
 
@@ -898,23 +891,16 @@ ifeq ($(TARGET_OS),xbox)
 
   LIBFB_H += rtlib/fb_xbox.h
   LIBFB_C += \
-    dev_pipe_close_xbox dev_pipe_open_xbox \
-    drv_file_copy_xbox drv_intl_get_xbox drv_intl_getdateformat_xbox \
-    drv_intl_getmonthname_xbox drv_intl_gettimeformat_xbox \
-    drv_intl_getweekdayname_xbox \
-    file_dir_xbox file_hconvpath_xbox file_hlock_xbox \
+    file_dir_xbox \
     hexit_xbox \
     hinit_xbox \
-    io_cls_xbox io_color_xbox io_getsize_xbox io_inkey_xbox io_isredir_xbox \
-    io_locate_xbox io_maxrow_xbox io_mouse_xbox io_multikey_xbox \
-    io_pageset_xbox io_pcopy_xbox io_printbuff_xbox io_printbuff_wstr_xbox \
-    io_printer_xbox io_readstr_xbox io_scroll_xbox io_serial_xbox \
-    io_viewupdate_xbox io_width_xbox \
-    sys_dylib_xbox sys_exec_xbox sys_fmem_xbox sys_getcwd_xbox \
-    sys_getexename_xbox sys_getexepath_xbox sys_getshortpath_xbox \
-    sys_shell_xbox sys_sleep_xbox \
-    thread_cond_xbox thread_core_xbox thread_mutex_xbox \
-    time_setdate_xbox time_settime_xbox time_sleep_xbox time_tmr_xbox
+    io_cls_stub io_color_stub io_getsize_stub io_inkey_stub \
+    io_locate_stub io_mouse_stub io_multikey_stub \
+    io_pageset_stub io_pcopy_stub io_printbuff_stub io_printbuff_wstr_stub \
+    io_printer_stub io_scroll_stub io_serial_stub \
+    io_width_stub \
+    sys_dylib_stub sys_exec_xbox \
+    thread_cond_stub thread_core_xbox
   LIBFB_S += alloca
 endif
 
@@ -926,76 +912,65 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
 
   LIBFB_H += rtlib/fb_unix.h
   LIBFB_C += \
-    dev_pipe_close_unix dev_pipe_open_unix \
-    drv_file_copy_unix drv_intl_get_unix drv_intl_getdateformat_unix \
-    drv_intl_getmonthname_unix drv_intl_gettimeformat_unix \
-    drv_intl_getweekdayname_unix \
-    file_dir_unix file_hconvpath_unix file_hlock_unix file_resetex_unix \
-    hdynload_unix \
+    file_dir_unix \
+    hdynload \
     hexit_unix \
     hinit_unix \
-    hsignals_unix \
-    io_cls_unix io_color_unix io_getsize_unix io_inkey_unix io_isredir_unix \
-    io_locate_unix io_maxrow_unix io_pageset_unix io_pcopy_unix \
-    io_printbuff_unix io_printbuff_wstr_unix io_printer_unix io_readstr_unix \
-    io_scroll_unix io_viewupdate_unix io_width_unix io_xfocus_unix \
+    io_cls_unix io_color_unix io_getsize_unix io_inkey_unix io_input_unix \
+    io_locate_unix io_pageset_stub io_pcopy_stub \
+    io_printbuff_unix io_printbuff_wstr_unix io_printer_unix \
+    io_scroll_unix io_width_unix io_xfocus_unix \
     scancodes_unix \
-    sys_delay_unix sys_dylib_unix sys_exec_unix sys_getcwd_unix \
-    sys_getshortpath_unix sys_shell_unix \
-    thread_cond_unix thread_core_unix thread_mutex_unix \
-    time_setdate_unix time_settime_unix time_sleep_unix time_tmr_unix
+    sys_dylib_unix sys_exec_unix \
+    thread_cond_unix thread_core_unix
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   ALLCFLAGS += -DHOST_WIN32
-  LIBFB_H += rtlib/fb_unicode_win32.h
   LIBFB_H += rtlib/fb_win32.h
   LIBFB_H += rtlib/fbportio/fbportio.h
   LIBFB_H += rtlib/fbportio/inline.h
   LIBFB_C += \
-    dev_pipe_close_win32 dev_pipe_open_win32 \
-    drv_file_copy_win32 drv_intl_get_win32 drv_intl_getdateformat_win32 \
-    drv_intl_getmonthname_win32 drv_intl_gettimeformat_win32 \
-    drv_intl_getweekdayname_win32 \
-    file_dir_win32 file_hconvpath_win32 file_hlock_win32 file_resetex_win32 \
-    hdynload_win32 \
+    file_dir_win32 \
+    hdynload \
     hexit_win32 \
     hinit_win32 \
-    hsignals_win32 \
     intl_conv_win32 intl_win32 \
     io_cls_win32 io_clsex_win32 io_color_win32 io_colorget_win32 \
     io_gethnd_win32 io_getsize_win32 io_getwindow_win32 io_getwindowex_win32 \
     io_getx_win32 io_getxy_win32 io_gety_win32 io_inkey_win32 io_input_win32 \
-    io_isredir_win32 io_locate_win32 io_locateex_win32 io_maxrow_win32 \
+    io_locate_win32 io_locateex_win32 \
     io_mouse_win32 io_multikey_win32 io_pageset_win32 io_pcopy_win32 \
     io_printbuff_win32 io_printbuff_wstr_win32 io_printer_win32 \
-    io_readstr_win32 io_readxy_win32 io_screensize_win32 io_scroll_win32 \
-    io_scrollex_win32 io_serial_win32 io_viewupdate_win32 io_width_win32 \
+    io_readxy_win32 io_screensize_win32 io_scroll_win32 \
+    io_scrollex_win32 io_serial_win32 io_width_win32 \
     io_window_win32 \
-    sys_dylib_win32 sys_exec_win32 sys_fmem_win32 sys_getcwd_win32 \
-    sys_getexename_win32 sys_getexepath_win32 sys_getshortpath_win32 \
-    sys_ports_win32 sys_shell_win32 sys_sleep_win32 \
-    thread_cond_win32 thread_core_win32 thread_mutex_win32 \
-    time_setdate_win32 time_settime_win32 time_sleep_win32 time_tmr_win32
+    sys_dylib_win32 sys_exec_win32 \
+    sys_ports_win32 \
+    thread_cond_win32 thread_core_win32
   LIBFB_S += alloca
 endif
 
 ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
   ALLCFLAGS += -DHOST_X86
-  LIBFB_H += rtlib/fb_x86.h
+  LIBFB_H += rtlib/fb_arch_x86.h
   LIBFB_S += cpudetect_x86
 endif
 ifeq ($(TARGET_ARCH),x86_64)
   ALLCFLAGS += -DHOST_X86_64
+  LIBFB_H += rtlib/fb_arch_any.h
 endif
 ifeq ($(TARGET_ARCH),sparc)
   ALLCFLAGS += -DHOST_SPARC
+  LIBFB_H += rtlib/fb_arch_any.h
 endif
 ifeq ($(TARGET_ARCH),sparc64)
   ALLCFLAGS += -DHOST_SPARC64
+  LIBFB_H += rtlib/fb_arch_any.h
 endif
 ifeq ($(TARGET_ARCH),powerpc64)
   ALLCFLAGS += -DHOST_POWERPC64
+  LIBFB_H += rtlib/fb_arch_any.h
 endif
 
 LIBFB_C := $(patsubst %,$(newlibfb)/%.o,$(LIBFB_C))

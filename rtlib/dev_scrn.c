@@ -1,7 +1,5 @@
 /* file device */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 void fb_DevScrnInit_Screen( void );

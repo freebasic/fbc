@@ -1,6 +1,5 @@
 /* print [#] function (byte) */
 
-#include <stdio.h>
 #include "fb.h"
 
 /*:::::*/

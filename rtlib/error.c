@@ -1,7 +1,5 @@
 /* runtime error handling */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 static char error_buffer[FB_ERROR_MESSAGE_SIZE];

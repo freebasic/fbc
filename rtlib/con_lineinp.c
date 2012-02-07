@@ -1,12 +1,10 @@
 /* console line input function */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 
 static const char *pszDefaultQuestion = "? ";
 
-#if defined(HOST_WIN32) || defined(HOST_DOS) || defined(HOST_LINUX)
+#if defined( HOST_WIN32 ) || defined( HOST_DOS ) || defined( HOST_LINUX )
 
 int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 						 int addquestion, int addnewline )

@@ -1,6 +1,3 @@
-#ifndef __FB_DATETIME_H__
-#define __FB_DATETIME_H__
-
 FBCALL double       fb_Timer            ( void );
 FBCALL FBSTRING    *fb_Time             ( void );
 FBCALL int          fb_SetTime          ( FBSTRING *time );
@@ -129,5 +126,3 @@ FBCALL int          fb_I18nGet          ( void );
        int          fb_DrvIntlGetTimeFormat ( char *buffer, size_t len );
        FBSTRING   * fb_DrvIntlGetMonthName  ( int month, int short_name );
        FBSTRING   * fb_DrvIntlGetWeekdayName( int weekday, int short_names );
-
-#endif /* __FB_DATETIME_H__ */

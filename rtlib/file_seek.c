@@ -1,9 +1,6 @@
 /* SEEK() and SEEK */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-
 
 /*:::::*/
 int fb_FileSeekEx( FB_FILE *handle, fb_off_t newpos )

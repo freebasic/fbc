@@ -1,10 +1,5 @@
 /* common Win32 definitions. */
 
-#ifndef __FB_WIN32_H__
-#define __FB_WIN32_H__
-
-#define FBCALL __stdcall
-
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <io.h>
@@ -14,8 +9,15 @@
 #define alloca(x) _alloca(x)
 #endif
 
+#define FBCALL __stdcall
+
+/* newline for console/file I/O */
 #define FB_NEWLINE "\r\n"
 #define FB_NEWLINE_WSTR _LC("\r\n")
+
+/* newline for printer I/O */
+#define FB_BINARY_NEWLINE "\r\n"
+#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
 
 #ifdef HOST_CYGWIN
 #define FB_LL_FMTMOD "ll"
@@ -26,15 +28,55 @@
 typedef struct _FB_DIRCTX
 {
 	int in_use;
-    int attrib;
+	int attrib;
 #ifdef HOST_CYGWIN
-    WIN32_FIND_DATA data;
-    HANDLE handle;
+	WIN32_FIND_DATA data;
+	HANDLE handle;
 #else
 	struct _finddata_t data;
-    long handle;
+	long handle;
 #endif
 } FB_DIRCTX;
+
+#ifdef ENABLE_MT
+	extern CRITICAL_SECTION __fb_global_mutex;
+	extern CRITICAL_SECTION __fb_string_mutex;
+	extern CRITICAL_SECTION __fb_mtcore_mutex;
+#	define FB_LOCK()             EnterCriticalSection(&__fb_global_mutex)
+#	define FB_UNLOCK()           LeaveCriticalSection(&__fb_global_mutex)
+#	define FB_STRLOCK()          EnterCriticalSection(&__fb_string_mutex)
+#	define FB_STRUNLOCK()        LeaveCriticalSection(&__fb_string_mutex)
+#	define FB_MTLOCK()           EnterCriticalSection(&__fb_mtcore_mutex)
+#	define FB_MTUNLOCK()         LeaveCriticalSection(&__fb_mtcore_mutex)
+#	define FB_TLSENTRY           DWORD
+#	define FB_TLSALLOC(key)      key = TlsAlloc( )
+#	define FB_TLSFREE(key)       TlsFree( (key) )
+#	define FB_TLSSET(key,value)  TlsSetValue( (key), (LPVOID)(value))
+#	define FB_TLSGET(key)        TlsGetValue( (key))
+#else
+#	define FB_LOCK()
+#	define FB_UNLOCK()
+#	define FB_STRLOCK()
+#	define FB_STRUNLOCK()
+#	define FB_MTLOCK()
+#	define FB_MTUNLOCK()
+#	define FB_TLSENTRY           uintptr_t
+#	define FB_TLSALLOC(key)      key = NULL
+#	define FB_TLSFREE(key)       key = NULL
+#	define FB_TLSSET(key,value)  key = (FB_TLSENTRY)value
+#	define FB_TLSGET(key)        key
+#endif
+
+#define FB_THREADID HANDLE
+#define FB_DYLIB HMODULE
+
+typedef struct {
+	HANDLE id;
+} FBMUTEX;
+
+/* Forward-declared FBCOND type */
+struct _FBCOND;
+typedef struct _FBCOND FBCOND;
 
 #ifdef HOST_CYGWIN
 typedef _off64_t fb_off_t;
@@ -42,33 +84,22 @@ typedef _off64_t fb_off_t;
 typedef off64_t fb_off_t;
 #endif
 
-#ifdef ENABLE_MT
-extern CRITICAL_SECTION __fb_global_mutex;
-extern CRITICAL_SECTION __fb_string_mutex;
-extern CRITICAL_SECTION __fb_mtcore_mutex;
-# define FB_LOCK()					EnterCriticalSection(&__fb_global_mutex)
-# define FB_UNLOCK()				LeaveCriticalSection(&__fb_global_mutex)
-# define FB_STRLOCK()				EnterCriticalSection(&__fb_string_mutex)
-# define FB_STRUNLOCK()				LeaveCriticalSection(&__fb_string_mutex)
-# define FB_MTLOCK()				EnterCriticalSection(&__fb_mtcore_mutex)
-# define FB_MTUNLOCK()				LeaveCriticalSection(&__fb_mtcore_mutex)
-# define FB_TLSENTRY				DWORD
-# define FB_TLSALLOC(key) 			key = TlsAlloc( )
-# define FB_TLSFREE(key)			TlsFree( (key) )
-# define FB_TLSSET(key,value)		TlsSetValue( (key), (LPVOID)(value))
-# define FB_TLSGET(key)				TlsGetValue( (key))
-#else
-# define FB_MTLOCK()
-# define FB_MTUNLOCK()
-#endif
-
-#define FB_THREADID HANDLE
-
-#define FB_DYLIB HMODULE
-
-typedef struct _FBMUTEX {
-	HANDLE id;
-} FBMUTEX;
+#define FB_COLOR_BLACK 		(0)
+#define FB_COLOR_BLUE   	(FOREGROUND_BLUE)
+#define FB_COLOR_GREEN     	(FOREGROUND_GREEN)
+#define FB_COLOR_CYAN   	(FOREGROUND_GREEN|FOREGROUND_BLUE)
+#define FB_COLOR_RED       	(FOREGROUND_RED)
+#define FB_COLOR_MAGENTA   	(FOREGROUND_RED|FOREGROUND_BLUE)
+#define FB_COLOR_BROWN     	(FOREGROUND_RED|FOREGROUND_GREEN)
+#define FB_COLOR_WHITE     	(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE)
+#define FB_COLOR_GREY   	(FOREGROUND_INTENSITY)
+#define FB_COLOR_LBLUE     	(FOREGROUND_BLUE|FOREGROUND_INTENSITY)
+#define FB_COLOR_LGREEN    	(FOREGROUND_GREEN|FOREGROUND_INTENSITY)
+#define FB_COLOR_LCYAN     	(FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY)
+#define FB_COLOR_LRED   	(FOREGROUND_RED|FOREGROUND_INTENSITY)
+#define FB_COLOR_LMAGENTA  	(FOREGROUND_RED|FOREGROUND_BLUE|FOREGROUND_INTENSITY)
+#define FB_COLOR_YELLOW    	(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_INTENSITY)
+#define FB_COLOR_BWHITE    	(FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE|FOREGROUND_INTENSITY)
 
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
@@ -141,5 +172,3 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
                                           char *pszBuffer, size_t uiSize );
        struct _FBSTRING *fb_hIntlConvertString  ( struct _FBSTRING *source,
                                           int source_cp, int dest_cp );
-
-#endif

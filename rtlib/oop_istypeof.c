@@ -1,7 +1,6 @@
 /* is operator */
 
 #include "fb.h"
-#include "fb_oop.h"
 
 FBCALL int fb_IsTypeOf( FB_OBJECT *obj, FB_RTTI *typeRTTI )
 {

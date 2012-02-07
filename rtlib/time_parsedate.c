@@ -1,7 +1,5 @@
 /* parse a string date */
 
-#include <ctype.h>
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

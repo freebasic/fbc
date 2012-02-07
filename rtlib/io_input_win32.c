@@ -1,7 +1,6 @@
 /* console input functions for Windows console mode apps */
 
 #include "fb.h"
-#include <ctype.h>
 
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];

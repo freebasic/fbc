@@ -1,6 +1,3 @@
-#ifndef __FB_CONSOLE_H__
-#define __FB_CONSOLE_H__
-
 #if FB_TAB_WIDTH == 8
 #define FB_NATIVE_TAB 1
 #endif
@@ -212,4 +209,4 @@ FBCALL void         fb_WriteString      ( int fnum, FBSTRING *s, int mask );
 FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
 FBCALL void 		fb_WriteWstr 		( int fnum, FB_WCHAR *s, int mask );
 
-#endif /* __FB_CONSOLE_H__ */
+       int          fb_hConsoleInputBufferChanged( void );

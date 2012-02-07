@@ -1,11 +1,6 @@
 /* setdate function */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "fb.h"
-
 
 /** Sets the date to the specified value.
  *

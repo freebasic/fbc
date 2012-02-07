@@ -1,14 +1,7 @@
 /* unix base target-specific header */
 
-#ifndef __FB_UNIX_H__
-#define __FB_UNIX_H__
-
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
-#include <stdarg.h>
-#include <signal.h>
 #include <termios.h>
 #include <dirent.h>
 #include <dlfcn.h>
@@ -23,6 +16,71 @@
 
 #include <sys/io.h>
 #include <sys/ioctl.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#ifdef HOST_LINUX
+#include <sys/mman.h>
+#endif
+#include <sys/wait.h>
+#include <sys/select.h>
+
+#define FBCALL
+
+/* newline for console/file I/O */
+#define FB_NEWLINE "\n"
+#define FB_NEWLINE_WSTR _LC("\n")
+
+/* newline for printer I/O */
+#define FB_BINARY_NEWLINE "\r\n"
+#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
+
+#define FB_LL_FMTMOD "ll"
+
+typedef struct _FB_DIRCTX
+{
+	int in_use;
+	int attrib;
+	DIR *dir;
+	char filespec[MAX_PATH];
+	char dirname[MAX_PATH];
+} FB_DIRCTX;
+
+#ifdef ENABLE_MT
+	extern pthread_mutex_t __fb_global_mutex;
+	extern pthread_mutex_t __fb_string_mutex;
+#	define FB_LOCK()             pthread_mutex_lock(&__fb_global_mutex)
+#	define FB_UNLOCK()           pthread_mutex_unlock(&__fb_global_mutex)
+#	define FB_STRLOCK()          pthread_mutex_lock(&__fb_string_mutex)
+#	define FB_STRUNLOCK()        pthread_mutex_unlock(&__fb_string_mutex)
+#	define FB_TLSENTRY           pthread_key_t
+#	define FB_TLSALLOC(key)      pthread_key_create( &(key), NULL )
+#	define FB_TLSFREE(key)       pthread_key_delete( (key) )
+#	define FB_TLSSET(key,value)  pthread_setspecific((key), (const void *)(value))
+#	define FB_TLSGET(key)        pthread_getspecific((key))
+#else
+#	define FB_LOCK()
+#	define FB_UNLOCK()
+#	define FB_STRLOCK()
+#	define FB_STRUNLOCK()
+#	define FB_TLSENTRY           uintptr_t
+#	define FB_TLSALLOC(key)      key = NULL
+#	define FB_TLSFREE(key)       key = NULL
+#	define FB_TLSSET(key,value)  key = (FB_TLSENTRY)value
+#	define FB_TLSGET(key)        key
+#endif
+
+#define FB_THREADID pthread_t
+#define FB_DYLIB void*
+
+typedef struct {
+	pthread_mutex_t id;
+} FBMUTEX;
+
+/* Forward-declared FBCOND type */
+struct _FBCOND;
+typedef struct _FBCOND FBCOND;
+
+typedef off_t fb_off_t;
 
 #define INIT_CONSOLE		1
 #define INIT_X11			2
@@ -30,7 +88,6 @@
 #define TERM_GENERIC		0
 #define TERM_XTERM			1
 #define TERM_ETERM			2
-
 
 #define BG_LOCK()			pthread_mutex_lock(&__fb_con.bg_mutex);
 #define BG_UNLOCK()			pthread_mutex_unlock(&__fb_con.bg_mutex);
@@ -96,57 +153,19 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE __fb_con;
 
-extern int fb_hTermOut( int code, int param1, int param2);
-extern int fb_hGetCh(int remove);
-extern int fb_hXTermInitFocus(void);
-extern void fb_hXTermExitFocus(void);
-extern int fb_hXTermHasFocus(void);
-extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
-
-
-#ifdef ENABLE_MT
-extern pthread_mutex_t __fb_global_mutex;
-extern pthread_mutex_t __fb_string_mutex;
-# define FB_LOCK()					pthread_mutex_lock(&__fb_global_mutex)
-# define FB_UNLOCK()				pthread_mutex_unlock(&__fb_global_mutex)
-# define FB_STRLOCK()				pthread_mutex_lock(&__fb_string_mutex)
-# define FB_STRUNLOCK()				pthread_mutex_unlock(&__fb_string_mutex)
-# define FB_TLSENTRY				pthread_key_t
-# define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
-# define FB_TLSFREE(key)			pthread_key_delete( (key) )
-# define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
-# define FB_TLSGET(key)				pthread_getspecific((key))
-#endif
-
-#define FB_THREADID pthread_t
-
-#define FB_DYLIB void*
-
-typedef struct _FB_DIRCTX
-{
-	int in_use;
-	int attrib;
-	DIR *dir;
-	char filespec[MAX_PATH];
-	char dirname[MAX_PATH];
-} FB_DIRCTX;
-
-typedef off_t fb_off_t;
-
-typedef struct _FBMUTEX {
-	pthread_mutex_t id;
-} FBMUTEX;
-
-extern int fb_hInitConsole(void);
-extern void fb_hExitConsole(void);
+int fb_hTermOut( int code, int param1, int param2);
+int fb_hGetCh(int remove);
+int fb_hXTermInitFocus(void);
+void fb_hXTermExitFocus(void);
+int fb_hXTermHasFocus(void);
+int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
+int fb_hInitConsole(void);
+void fb_hExitConsole(void);
 
 #ifndef DISABLE_X
 typedef struct KeysymToScancode {
-  KeySym keysym;
-  int scancode;
+	KeySym keysym;
+	int scancode;
 } KeysymToScancode;
-
 extern const KeysymToScancode fb_keysym_to_scancode[];
-#endif
-
 #endif

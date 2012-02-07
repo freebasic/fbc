@@ -1,6 +1,5 @@
 /* ERASE function for static arrays */
 
-#include <stddef.h>
 #include "fb.h"
 
 /*:::::*/

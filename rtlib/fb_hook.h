@@ -1,6 +1,3 @@
-#ifndef __FB_HOOK_H__
-#define __FB_HOOK_H__
-
 typedef FBSTRING   *(*FB_INKEYPROC)     ( void );
 typedef int         (*FB_GETKEYPROC)    ( void );
 typedef int         (*FB_KEYHITPROC)    ( void );
@@ -119,5 +116,3 @@ typedef struct FB_HOOKSTB {
     FB_PAGECOPYPROC			pagecopyproc;
     FB_PAGESETPROC			pagesetproc;
 } FB_HOOKSTB;
-
-#endif /* __FB_HOOK_H__ */
