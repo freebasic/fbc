@@ -3,10 +3,10 @@
 ' Reviewed by TJF (2011)
 ' Details: http://developer.gnome.org/gtk/
 
-'#DEFINE __FB_GTK3__
+'#DEFINE __USE_GTK3__
 #include once "gtk/gtk.bi"
 
-sub undo_redo cdecl(byval widget as GtkWidget ptr,  byval item as gpointer)
+sub undo_redo cdecl(byval widget as GtkWidget ptr, byval item as gpointer)
 
   static count as integer = 0
   VAR name1 = *gtk_widget_get_name(widget)
@@ -54,8 +54,8 @@ gtk_init(@__FB_ARGC__, @__FB_ARGV__)
   gtk_toolbar_insert(GTK_TOOLBAR(toolbar), undo1, -1)
 
   redo1 = gtk_tool_button_new_from_stock(GTK_STOCK_REDO)
+  gtk_widget_set_name(GTK_WIDGET(redo1), "redo1")
   gtk_toolbar_insert(GTK_TOOLBAR(toolbar), redo1, -1)
-  'gtk_widget_set_sensitive(GTK_WIDGET(redo1), FALSE)
 
   sep = gtk_separator_tool_item_new()
   gtk_toolbar_insert(GTK_TOOLBAR(toolbar), sep, -1)

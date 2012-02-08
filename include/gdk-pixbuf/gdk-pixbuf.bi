@@ -1,11 +1,12 @@
 ' This is file gdk-pixbuf.bi
-' (FreeBasic binding for gdk-pixbuf library version 2.28.0)
+' (FreeBasic binding for gdk-pixbuf library version 2.25.0)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -20,30 +21,30 @@
 '
 ' Original license text:
 '
-'/* GdkPixbuf library - Main header file
- '*
- '* Copyright (C) 1999 The Free Software Foundation
- '*
- '* Authors: Mark Crichton <crichton@gimp.org>
- '*          Miguel de Icaza <miguel@gnu.org>
- '*          Federico Mena-Quintero <federico@gimp.org>
- '*          Havoc Pennington <hp@redhat.com>
- '*
- '* This library is free software; you can redistribute it and/or
- '* modify it under the terms of the GNU Lesser General Public
- '* License as published by the Free Software Foundation; either
- '* version 2 of the License, or (at your option) any later version.
- '*
- '* This library is distributed in the hope that it will be useful,
- '* but WITHOUT ANY WARRANTY; without even the implied warranty of
- '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- '* Lesser General Public License for more details.
- '*
- '* You should have received a copy of the GNU Lesser General Public
- '* License along with this library; if not, write to the
- '* Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- '* Boston, MA 02111-1307, USA.
- '*/
+'  * GdkPixbuf library - Main header file
+'  *
+'  * Copyright (C) 1999 The Free Software Foundation
+'  *
+'  * Authors: Mark Crichton <crichton@gimp.org>
+'  *          Miguel de Icaza <miguel@gnu.org>
+'  *          Federico Mena-Quintero <federico@gimp.org>
+'  *          Havoc Pennington <hp@redhat.com>
+'  *
+'  * This library is free software; you can redistribute it and/or
+'  * modify it under the terms of the GNU Lesser General Public
+'  * License as published by the Free Software Foundation; either
+'  * version 2 of the License, or (at your option) any later version.
+'  *
+'  * This library is distributed in the hope that it will be useful,
+'  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+'  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+'  * Lesser General Public License for more details.
+'  *
+'  * You should have received a copy of the GNU Lesser General Public
+'  * License along with this library; if not, write to the
+'  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+'  * Boston, MA 02111-1307, USA.
+'  *
 
 #IFDEF __FB_WIN32__
 #PRAGMA push(msbitfields)
@@ -60,15 +61,16 @@ EXTERN "C"
 
 #IFNDEF GDK_PIXBUF_FEATURES_H
 #DEFINE GDK_PIXBUF_FEATURES_H 1
+
 #DEFINE GDK_PIXBUF_MAJOR (2)
-#DEFINE GDK_PIXBUF_MINOR (22)
-#DEFINE GDK_PIXBUF_MICRO (1)
-#DEFINE GDK_PIXBUF_VERSION !"2.22.1"
+#DEFINE GDK_PIXBUF_MINOR (25)
+#DEFINE GDK_PIXBUF_MICRO (0)
+#DEFINE GDK_PIXBUF_VERSION_ !"2.25.0"
 
 EXTERN AS CONST guint gdk_pixbuf_major_version
 EXTERN AS CONST guint gdk_pixbuf_minor_version
 EXTERN AS CONST guint gdk_pixbuf_micro_version
-EXTERN AS CONST ZSTRING PTR gdk_pixbuf_version_FB ALIAS "gdk_pixbuf_version"
+EXTERN AS CONST ZSTRING PTR gdk_pixbuf_version
 
 #ENDIF ' GDK_PIXBUF_FEATURES_H
 
@@ -77,7 +79,9 @@ EXTERN AS CONST ZSTRING PTR gdk_pixbuf_version_FB ALIAS "gdk_pixbuf_version"
 #IFNDEF GDK_PIXBUF_CORE_H
 #DEFINE GDK_PIXBUF_CORE_H
 
+#IFNDEF __USE_GTK_OLD__
 #INCLUDE ONCE "gio/gio.bi"
+#ENDIF
 
 ENUM GdkPixbufAlphaMode
   GDK_PIXBUF_ALPHA_BILEVEL
@@ -125,15 +129,19 @@ DECLARE FUNCTION gdk_pixbuf_get_pixels(BYVAL AS CONST GdkPixbuf PTR) AS guchar P
 DECLARE FUNCTION gdk_pixbuf_get_width(BYVAL AS CONST GdkPixbuf PTR) AS INTEGER
 DECLARE FUNCTION gdk_pixbuf_get_height(BYVAL AS CONST GdkPixbuf PTR) AS INTEGER
 DECLARE FUNCTION gdk_pixbuf_get_rowstride(BYVAL AS CONST GdkPixbuf PTR) AS INTEGER
+DECLARE FUNCTION gdk_pixbuf_get_byte_length(BYVAL AS CONST GdkPixbuf PTR) AS gsize
+DECLARE FUNCTION gdk_pixbuf_get_pixels_with_length(BYVAL AS CONST GdkPixbuf PTR, BYVAL AS guint PTR) AS guchar PTR
 DECLARE FUNCTION gdk_pixbuf_new(BYVAL AS GdkColorspace, BYVAL AS gboolean, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_copy(BYVAL AS CONST GdkPixbuf PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_subpixbuf(BYVAL AS GdkPixbuf PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS GdkPixbuf PTR
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE gdk_pixbuf_new_from_file gdk_pixbuf_new_from_file_utf8
 #DEFINE gdk_pixbuf_new_from_file_at_size gdk_pixbuf_new_from_file_at_size_utf8
 #DEFINE gdk_pixbuf_new_from_file_at_scale gdk_pixbuf_new_from_file_at_scale_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION gdk_pixbuf_new_from_file(BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_file_at_size(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
@@ -143,10 +151,12 @@ DECLARE FUNCTION gdk_pixbuf_new_from_xpm_data(BYVAL AS CONST ZSTRING PTR PTR) AS
 DECLARE FUNCTION gdk_pixbuf_new_from_inline(BYVAL AS gint, BYVAL AS CONST guint8 PTR, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE SUB gdk_pixbuf_fill(BYVAL AS GdkPixbuf PTR, BYVAL AS guint32)
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE gdk_pixbuf_save gdk_pixbuf_save_utf8
 #DEFINE gdk_pixbuf_savev gdk_pixbuf_savev_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION gdk_pixbuf_save(BYVAL AS GdkPixbuf PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR, ...) AS gboolean
 DECLARE FUNCTION gdk_pixbuf_savev(BYVAL AS GdkPixbuf PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS GError PTR PTR) AS gboolean
@@ -158,13 +168,18 @@ DECLARE FUNCTION gdk_pixbuf_save_to_callbackv(BYVAL AS GdkPixbuf PTR, BYVAL AS G
 DECLARE FUNCTION gdk_pixbuf_save_to_buffer(BYVAL AS GdkPixbuf PTR, BYVAL AS gchar PTR PTR, BYVAL AS gsize PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR, ...) AS gboolean
 DECLARE FUNCTION gdk_pixbuf_save_to_bufferv(BYVAL AS GdkPixbuf PTR, BYVAL AS gchar PTR PTR, BYVAL AS gsize PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gdk_pixbuf_new_from_stream(BYVAL AS GInputStream PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
+DECLARE SUB gdk_pixbuf_new_from_stream_async(BYVAL AS GInputStream PTR, BYVAL AS GCancellable PTR, BYVAL AS GAsyncReadyCallback, BYVAL AS gpointer)
+DECLARE FUNCTION gdk_pixbuf_new_from_stream_finish(BYVAL AS GAsyncResult PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gdk_pixbuf_new_from_stream_at_scale(BYVAL AS GInputStream PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gboolean, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
+DECLARE SUB gdk_pixbuf_new_from_stream_at_scale_async(BYVAL AS GInputStream PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gboolean, BYVAL AS GCancellable PTR, BYVAL AS GAsyncReadyCallback, BYVAL AS gpointer)
 DECLARE FUNCTION gdk_pixbuf_save_to_stream(BYVAL AS GdkPixbuf PTR, BYVAL AS GOutputStream PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GCancellable PTR, BYVAL AS GError PTR PTR, ...) AS gboolean
+DECLARE SUB gdk_pixbuf_save_to_stream_async(BYVAL AS GdkPixbuf PTR, BYVAL AS GOutputStream PTR, BYVAL AS CONST gchar PTR, BYVAL AS GCancellable PTR, BYVAL AS GAsyncReadyCallback, BYVAL AS gpointer, ...)
+DECLARE FUNCTION gdk_pixbuf_save_to_stream_finish(BYVAL AS GAsyncResult PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gdk_pixbuf_add_alpha(BYVAL AS CONST GdkPixbuf PTR, BYVAL AS gboolean, BYVAL AS guchar, BYVAL AS guchar, BYVAL AS guchar) AS GdkPixbuf PTR
 DECLARE SUB gdk_pixbuf_copy_area(BYVAL AS CONST GdkPixbuf PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS GdkPixbuf PTR, BYVAL AS INTEGER, BYVAL AS INTEGER)
 DECLARE SUB gdk_pixbuf_saturate_and_pixelate(BYVAL AS CONST GdkPixbuf PTR, BYVAL AS GdkPixbuf PTR, BYVAL AS gfloat, BYVAL AS gboolean)
 DECLARE FUNCTION gdk_pixbuf_apply_embedded_orientation(BYVAL AS GdkPixbuf PTR) AS GdkPixbuf PTR
-DECLARE FUNCTION gdk_pixbuf_get_option(BYVAL AS GdkPixbuf PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gdk_pixbuf_get_option(BYVAL AS GdkPixbuf PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 
 #ENDIF ' GDK_PIXBUF_CORE_H
 
@@ -210,9 +225,11 @@ TYPE GdkPixbufAnimationIter AS _GdkPixbufAnimationIter
 
 DECLARE FUNCTION gdk_pixbuf_animation_get_type() AS GType
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE gdk_pixbuf_animation_new_from_file gdk_pixbuf_animation_new_from_file_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION gdk_pixbuf_animation_new_from_file(BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR) AS GdkPixbufAnimation PTR
 
@@ -303,7 +320,6 @@ DECLARE FUNCTION gdk_pixbuf_simple_anim_get_loop(BYVAL AS GdkPixbufSimpleAnim PT
 #IFNDEF GDK_PIXBUF_IO_H
 #DEFINE GDK_PIXBUF_IO_H
 #INCLUDE ONCE "crt/stdio.bi"
-
 #INCLUDE ONCE "gmodule.bi"
 
 TYPE GdkPixbufFormat AS _GdkPixbufFormat

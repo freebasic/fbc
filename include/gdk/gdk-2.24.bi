@@ -385,7 +385,7 @@ DECLARE SUB gdk_drag_context_unref(BYVAL AS GdkDragContext PTR)
 
 #ENDIF ' GDK_DISABLE_DEPRECATED
 
-DECLARE SUB gdk_drag_status_FB ALIAS "gdk_drag_status"(BYVAL AS GdkDragContext PTR, BYVAL AS GdkDragAction, BYVAL AS guint32)
+DECLARE SUB gdk_drag_status_ ALIAS "gdk_drag_status"(BYVAL AS GdkDragContext PTR, BYVAL AS GdkDragAction, BYVAL AS guint32)
 DECLARE SUB gdk_drop_reply(BYVAL AS GdkDragContext PTR, BYVAL AS gboolean, BYVAL AS guint32)
 DECLARE SUB gdk_drop_finish(BYVAL AS GdkDragContext PTR, BYVAL AS gboolean, BYVAL AS guint32)
 DECLARE FUNCTION gdk_drag_get_selection(BYVAL AS GdkDragContext PTR) AS GdkAtom
@@ -402,7 +402,7 @@ DECLARE SUB gdk_drag_find_window(BYVAL AS GdkDragContext PTR, BYVAL AS GdkWindow
 #ENDIF ' GDK_DISABLE_DEPRECATED
 #ENDIF ' GDK_MULTIHEAD_SAFE
 
-DECLARE FUNCTION gdk_drag_motion_FB ALIAS "gdk_drag_motion"(BYVAL AS GdkDragContext PTR, BYVAL AS GdkWindow PTR, BYVAL AS GdkDragProtocol, BYVAL AS gint, BYVAL AS gint, BYVAL AS GdkDragAction, BYVAL AS GdkDragAction, BYVAL AS guint32) AS gboolean
+DECLARE FUNCTION gdk_drag_motion_ ALIAS "gdk_drag_motion"(BYVAL AS GdkDragContext PTR, BYVAL AS GdkWindow PTR, BYVAL AS GdkDragProtocol, BYVAL AS gint, BYVAL AS gint, BYVAL AS GdkDragAction, BYVAL AS GdkDragAction, BYVAL AS guint32) AS gboolean
 DECLARE SUB gdk_drag_drop(BYVAL AS GdkDragContext PTR, BYVAL AS guint32)
 DECLARE SUB gdk_drag_abort(BYVAL AS GdkDragContext PTR, BYVAL AS guint32)
 DECLARE FUNCTION gdk_drag_drop_succeeded(BYVAL AS GdkDragContext PTR) AS gboolean
@@ -2114,7 +2114,7 @@ DECLARE FUNCTION gdk_atom_intern_static_string(BYVAL AS CONST gchar PTR) AS GdkA
 DECLARE FUNCTION gdk_atom_name(BYVAL AS GdkAtom) AS gchar PTR
 DECLARE FUNCTION gdk_property_get(BYVAL AS GdkWindow PTR, BYVAL AS GdkAtom, BYVAL AS GdkAtom, BYVAL AS gulong, BYVAL AS gulong, BYVAL AS gint, BYVAL AS GdkAtom PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS guchar PTR PTR) AS gboolean
 DECLARE SUB gdk_property_change(BYVAL AS GdkWindow PTR, BYVAL AS GdkAtom, BYVAL AS GdkAtom, BYVAL AS gint, BYVAL AS GdkPropMode, BYVAL AS CONST guchar PTR, BYVAL AS gint)
-DECLARE SUB gdk_property_delete_FB ALIAS "gdk_property_delete"(BYVAL AS GdkWindow PTR, BYVAL AS GdkAtom)
+DECLARE SUB gdk_property_delete_ ALIAS "gdk_property_delete"(BYVAL AS GdkWindow PTR, BYVAL AS GdkAtom)
 
 #IFNDEF GDK_MULTIHEAD_SAFE
 #IFNDEF GDK_DISABLE_DEPRECATED
@@ -2851,8 +2851,8 @@ EXTERN AS GMutex PTR gdk_threads_mutex
 EXTERN AS GCallback gdk_threads_lock
 EXTERN AS GCallback gdk_threads_unlock
 
-DECLARE SUB gdk_threads_enter_FB ALIAS "gdk_threads_enter"()
-DECLARE SUB gdk_threads_leave_FB ALIAS "gdk_threads_leave"()
+DECLARE SUB gdk_threads_enter_ ALIAS "gdk_threads_enter"()
+DECLARE SUB gdk_threads_leave_ ALIAS "gdk_threads_leave"()
 DECLARE SUB gdk_threads_init()
 DECLARE SUB gdk_threads_set_lock_functions(BYVAL AS GCallback, BYVAL AS GCallback)
 DECLARE FUNCTION gdk_threads_add_idle_full(BYVAL AS gint, BYVAL AS GSourceFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify) AS guint

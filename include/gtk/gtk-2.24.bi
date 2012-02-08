@@ -1662,7 +1662,7 @@ ENUM GtkWidgetFlags
   GTK_CAN_DEFAULT = 1 SHL 13
   GTK_HAS_DEFAULT = 1 SHL 14
   GTK_HAS_GRAB = 1 SHL 15
-  GTK_RC_STYLE_fb = 1 SHL 16
+  GTK_RC_STYLE_ = 1 SHL 16
   GTK_COMPOSITE_CHILD = 1 SHL 17
 #IFNDEF GTK_DISABLE_DEPRECATED
   GTK_NO_REPARENT = 1 SHL 18
@@ -1757,7 +1757,7 @@ END ENUM
 #ENDIF ' GTK_DISABLE_DEPRECATED
 
 #IFNDEF GTK_DISABLE_DEPRECATED
-#DEFINE GTK_WIDGET_RC_STYLE(wid) ((GTK_WIDGET_FLAGS (wid) AND GTK_RC_STYLE_fb) <> 0)
+#DEFINE GTK_WIDGET_RC_STYLE(wid) ((GTK_WIDGET_FLAGS (wid) AND GTK_RC_STYLE_) <> 0)
 #ENDIF ' GTK_DISABLE_DEPRECATED
 
 #IFNDEF GTK_DISABLE_DEPRECATED
@@ -1974,16 +1974,16 @@ DECLARE SUB gtk_widget_child_notify(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar
 DECLARE SUB gtk_widget_thaw_child_notify(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_set_can_focus(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_can_focus(BYVAL AS GtkWidget PTR) AS gboolean
-DECLARE FUNCTION gtk_widget_has_focus_FB ALIAS "gtk_widget_has_focus"(BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE FUNCTION gtk_widget_has_focus_ ALIAS "gtk_widget_has_focus"(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_is_focus(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_grab_focus(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_set_can_default(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_can_default(BYVAL AS GtkWidget PTR) AS gboolean
-DECLARE FUNCTION gtk_widget_has_default_FB ALIAS "gtk_widget_has_default"(BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE FUNCTION gtk_widget_has_default_ ALIAS "gtk_widget_has_default"(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_grab_default(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_set_receives_default(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_receives_default(BYVAL AS GtkWidget PTR) AS gboolean
-DECLARE FUNCTION gtk_widget_has_grab_FB ALIAS "gtk_widget_has_grab"(BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE FUNCTION gtk_widget_has_grab_ ALIAS "gtk_widget_has_grab"(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_set_name(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
 
 DECLARE FUNCTION gtk_widget_get_name(BYVAL AS GtkWidget PTR) AS CONST gchar PTR
@@ -1992,7 +1992,7 @@ DECLARE SUB gtk_widget_set_state(BYVAL AS GtkWidget PTR, BYVAL AS GtkStateType)
 DECLARE FUNCTION gtk_widget_get_state(BYVAL AS GtkWidget PTR) AS GtkStateType
 DECLARE SUB gtk_widget_set_sensitive(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_sensitive(BYVAL AS GtkWidget PTR) AS gboolean
-DECLARE FUNCTION gtk_widget_is_sensitive_FB ALIAS "gtk_widget_is_sensitive"(BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE FUNCTION gtk_widget_is_sensitive_ ALIAS "gtk_widget_is_sensitive"(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_set_visible(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_visible(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_set_has_window(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
@@ -8745,10 +8745,6 @@ DECLARE SUB gtk_link_button_set_visited(BYVAL AS GtkLinkButton PTR, BYVAL AS gbo
 #IFNDEF __GTK_MAIN_H__
 #DEFINE __GTK_MAIN_H__
 
-#IFDEF G_PLATFORM_WIN32
-
-#ENDIF ' G_PLATFORM_WIN32
-
 #DEFINE GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
 
 #IFNDEF GTK_DISABLE_DEPRECATED
@@ -8761,13 +8757,14 @@ DECLARE SUB gtk_link_button_set_visited(BYVAL AS GtkLinkButton PTR, BYVAL AS gbo
 
 TYPE GtkKeySnoopFunc AS FUNCTION(BYVAL AS GtkWidget PTR, BYVAL AS GdkEventKey PTR, BYVAL AS gpointer) AS gint
 
-EXTERN AS CONST guint gtk_major_version_FB ALIAS "gtk_major_version"
-EXTERN AS CONST guint gtk_minor_version_FB ALIAS "gtk_minor_version"
-EXTERN AS CONST guint gtk_micro_version_FB ALIAS "gtk_micro_version"
-EXTERN AS CONST guint gtk_binary_age_FB ALIAS "gtk_binary_age"
-EXTERN AS CONST guint gtk_interface_age_FB ALIAS "gtk_interface_age"
 
-DECLARE FUNCTION gtk_check_version_FB ALIAS "gtk_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
+EXTERN AS CONST guint gtk_major_version_ ALIAS "gtk_major_version"
+EXTERN AS CONST guint gtk_minor_version_ ALIAS "gtk_minor_version"
+EXTERN AS CONST guint gtk_micro_version_ ALIAS "gtk_micro_version"
+EXTERN AS CONST guint gtk_binary_age_ ALIAS "gtk_binary_age"
+EXTERN AS CONST guint gtk_interface_age_ ALIAS "gtk_interface_age"
+
+DECLARE FUNCTION gtk_check_version_ ALIAS "gtk_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
 
 DECLARE FUNCTION gtk_parse_args(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_init_with_args(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GOptionEntry PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS GError PTR PTR) AS gboolean
@@ -11220,7 +11217,7 @@ TYPE _GtkStockItem
   AS gchar PTR translation_domain
 END TYPE
 
-DECLARE SUB gtk_stock_add_FB ALIAS "gtk_stock_add"(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
+DECLARE SUB gtk_stock_add_ ALIAS "gtk_stock_add"(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
 DECLARE SUB gtk_stock_add_static(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
 DECLARE FUNCTION gtk_stock_lookup(BYVAL AS CONST gchar PTR, BYVAL AS GtkStockItem PTR) AS gboolean
 DECLARE FUNCTION gtk_stock_list_ids() AS GSList PTR
@@ -11880,7 +11877,6 @@ DECLARE SUB gtk_pixmap_set_build_insensitive(BYVAL AS GtkPixmap PTR, BYVAL AS gb
 
 #ENDIF ' __GTK_PIXMAP_H__
 #ENDIF ' NOT DEFINED (GT...
-
 #ENDIF ' GTK_DISABLE_DEPRECATED
 
 #DEFINE GTK_TYPE_TOOLBAR (gtk_toolbar_get_type ())
@@ -12500,7 +12496,7 @@ DECLARE FUNCTION _gtk_vbutton_box_get_layout_default() AS GtkButtonBoxStyle
 #DEFINE GTK_BINARY_AGE (2406)
 #DEFINE GTK_INTERFACE_AGE (6)
 #DEFINE GTK_CHECK_VERSION(major,minor,micro) _
-    (GTK_MAJOR_VERSION > (major) ORELSE _
+     (GTK_MAJOR_VERSION > (major) ORELSE _
      (GTK_MAJOR_VERSION = (major) ANDALSO GTK_MINOR_VERSION > (minor)) ORELSE _
      (GTK_MAJOR_VERSION = (major) ANDALSO GTK_MINOR_VERSION = (minor) ANDALSO _
       GTK_MICRO_VERSION > = (micro)))
@@ -12912,25 +12908,25 @@ DECLARE SUB gtk_tree_item_collapse(BYVAL AS GtkTreeItem PTR)
 #DEFINE __GTK_CLIST_H__
 
 ENUM
-  GTK_CLIST_IN_DRAG_fb = 1 SHL 0
-  GTK_CLIST_ROW_HEIGHT_SET_fb = 1 SHL 1
-  GTK_CLIST_SHOW_TITLES_fb = 1 SHL 2
-  GTK_CLIST_ADD_MODE_fb = 1 SHL 4
-  GTK_CLIST_AUTO_SORT_fb = 1 SHL 5
-  GTK_CLIST_AUTO_RESIZE_BLOCKED_fb = 1 SHL 6
-  GTK_CLIST_REORDERABLE_fb = 1 SHL 7
-  GTK_CLIST_USE_DRAG_ICONS_fb = 1 SHL 8
-  GTK_CLIST_DRAW_DRAG_LINE_fb = 1 SHL 9
-  GTK_CLIST_DRAW_DRAG_RECT_fb = 1 SHL 10
+  GTK_CLIST_IN_DRAG_ = 1 SHL 0
+  GTK_CLIST_ROW_HEIGHT_SET_ = 1 SHL 1
+  GTK_CLIST_SHOW_TITLES_ = 1 SHL 2
+  GTK_CLIST_ADD_MODE_ = 1 SHL 4
+  GTK_CLIST_AUTO_SORT_ = 1 SHL 5
+  GTK_CLIST_AUTO_RESIZE_BLOCKED_ = 1 SHL 6
+  GTK_CLIST_REORDERABLE_ = 1 SHL 7
+  GTK_CLIST_USE_DRAG_ICONS_ = 1 SHL 8
+  GTK_CLIST_DRAW_DRAG_LINE_ = 1 SHL 9
+  GTK_CLIST_DRAW_DRAG_RECT_ = 1 SHL 10
 END ENUM
 
 'ENUM GtkCellType EXPLICIT
 ENUM GtkCellType
-  GTK_CELL_EMPTY_fb
-  GTK_CELL_TEXT_fb
-  GTK_CELL_PIXMAP_fb
-  GTK_CELL_PIXTEXT_fb
-  GTK_CELL_WIDGET_fb
+  GTK_CELL_EMPTY_
+  GTK_CELL_TEXT_
+  GTK_CELL_PIXMAP_
+  GTK_CELL_PIXTEXT_
+  GTK_CELL_WIDGET_
 END ENUM
 
 ENUM GtkCListDragPos

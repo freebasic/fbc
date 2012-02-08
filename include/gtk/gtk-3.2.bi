@@ -1,11 +1,12 @@
 ' This is file gtk.bi
-' (FreeBasic binding for GTK - The GIMP Toolkit version 3.0.0)
+' (FreeBasic binding for GTK - The GIMP Toolkit version 3.2.2)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -52,10 +53,8 @@
 
 #IFDEF __FB_WIN32__
  #PRAGMA push(msbitfields)
-#ELSEIF NOT DEFINED(__FB_LINUX__)
+#ELSEIF NOT DEFINED(__FB_UNIX__)
  #ERROR "Platform not supported!"
-#ELSE
- #DEFINE G_OS_UNIX
 #ENDIF
 #INCLIB "gtk-3"
 
@@ -446,6 +445,7 @@ END ENUM
 ENUM GtkSizeRequestMode
   GTK_SIZE_REQUEST_HEIGHT_FOR_WIDTH = 0
   GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT
+  GTK_SIZE_REQUEST_CONSTANT_SIZE
 END ENUM
 
 ENUM GtkScrollablePolicy
@@ -615,6 +615,7 @@ DECLARE SUB gtk_adjustment_set_page_increment(BYVAL AS GtkAdjustment PTR, BYVAL 
 DECLARE FUNCTION gtk_adjustment_get_page_size(BYVAL AS GtkAdjustment PTR) AS gdouble
 DECLARE SUB gtk_adjustment_set_page_size(BYVAL AS GtkAdjustment PTR, BYVAL AS gdouble)
 DECLARE SUB gtk_adjustment_configure(BYVAL AS GtkAdjustment PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble)
+DECLARE FUNCTION gtk_adjustment_get_minimum_increment(BYVAL AS GtkAdjustment PTR) AS gdouble
 
 #ENDIF ' __GTK_ADJUSTMENT_H__
 
@@ -625,19 +626,27 @@ DECLARE SUB gtk_adjustment_configure(BYVAL AS GtkAdjustment PTR, BYVAL AS gdoubl
 #DEFINE __GTK_WIDGET_PATH_H__
 
 TYPE GtkWidgetPath AS _GtkWidgetPath
+TYPE GtkWidget AS _GtkWidget
 
 #DEFINE GTK_TYPE_WIDGET_PATH (gtk_widget_path_get_type ())
 
 DECLARE FUNCTION gtk_widget_path_get_type() AS GType
 DECLARE FUNCTION gtk_widget_path_new() AS GtkWidgetPath PTR
 DECLARE FUNCTION gtk_widget_path_copy(BYVAL AS CONST GtkWidgetPath PTR) AS GtkWidgetPath PTR
+DECLARE FUNCTION gtk_widget_path_ref(BYVAL AS GtkWidgetPath PTR) AS GtkWidgetPath PTR
+DECLARE SUB gtk_widget_path_unref(BYVAL AS GtkWidgetPath PTR)
 DECLARE SUB gtk_widget_path_free(BYVAL AS GtkWidgetPath PTR)
+DECLARE FUNCTION gtk_widget_path_to_string(BYVAL AS CONST GtkWidgetPath PTR) AS ZSTRING PTR
 DECLARE FUNCTION gtk_widget_path_length(BYVAL AS CONST GtkWidgetPath PTR) AS gint
 DECLARE FUNCTION gtk_widget_path_append_type(BYVAL AS GtkWidgetPath PTR, BYVAL AS GType) AS gint
 DECLARE SUB gtk_widget_path_prepend_type(BYVAL AS GtkWidgetPath PTR, BYVAL AS GType)
+DECLARE FUNCTION gtk_widget_path_append_with_siblings(BYVAL AS GtkWidgetPath PTR, BYVAL AS GtkWidgetPath PTR, BYVAL AS guint) AS gint
+DECLARE FUNCTION gtk_widget_path_append_for_widget(BYVAL AS GtkWidgetPath PTR, BYVAL AS GtkWidget PTR) AS gint
 DECLARE FUNCTION gtk_widget_path_iter_get_object_type(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint) AS GType
 DECLARE SUB gtk_widget_path_iter_set_object_type(BYVAL AS GtkWidgetPath PTR, BYVAL AS gint, BYVAL AS GType)
-DECLARE FUNCTION gtk_widget_path_iter_get_name(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_widget_path_iter_get_siblings(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint) AS CONST GtkWidgetPath PTR
+DECLARE FUNCTION gtk_widget_path_iter_get_sibling_index(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint) AS guint
+DECLARE FUNCTION gtk_widget_path_iter_get_name(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint) AS CONST gchar PTR
 DECLARE SUB gtk_widget_path_iter_set_name(BYVAL AS GtkWidgetPath PTR, BYVAL AS gint, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_widget_path_iter_has_name(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint, BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_path_iter_has_qname(BYVAL AS CONST GtkWidgetPath PTR, BYVAL AS gint, BYVAL AS GQuark) AS gboolean
@@ -675,9 +684,8 @@ TYPE GtkIconSource AS _GtkIconSource
 TYPE GtkRcProperty AS _GtkRcProperty
 TYPE GtkSettings AS _GtkSettings
 TYPE GtkRcPropertyParser AS FUNCTION(BYVAL AS CONST GParamSpec PTR, BYVAL AS CONST GString PTR, BYVAL AS GValue PTR) AS gboolean
-TYPE GtkWidget AS _GtkWidget
 
-#DEFINE GTK_STYLE_ATTACHED(style) (GTK_STYLE (style)->attach_count > 0)
+#DEFINE GTK_STYLE_ATTACHED(style) (GTK_STYLE (style)- >attach_count > 0)
 
 TYPE _GtkStyle
   AS GObject parent_instance
@@ -1056,7 +1064,7 @@ DECLARE FUNCTION gtk_icon_size_lookup_for_settings(BYVAL AS GtkSettings PTR, BYV
 DECLARE FUNCTION gtk_icon_size_register(BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint) AS GtkIconSize
 DECLARE SUB gtk_icon_size_register_alias(BYVAL AS CONST gchar PTR, BYVAL AS GtkIconSize)
 DECLARE FUNCTION gtk_icon_size_from_name(BYVAL AS CONST gchar PTR) AS GtkIconSize
-DECLARE FUNCTION gtk_icon_size_get_name(BYVAL AS GtkIconSize) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_icon_size_get_name(BYVAL AS GtkIconSize) AS CONST gchar PTR
 DECLARE FUNCTION gtk_icon_set_get_type() AS GType
 DECLARE FUNCTION gtk_icon_set_new() AS GtkIconSet PTR
 DECLARE FUNCTION gtk_icon_set_new_from_pixbuf(BYVAL AS GdkPixbuf PTR) AS GtkIconSet PTR
@@ -1079,8 +1087,8 @@ DECLARE SUB gtk_icon_source_free(BYVAL AS GtkIconSource PTR)
 DECLARE SUB gtk_icon_source_set_filename(BYVAL AS GtkIconSource PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_icon_source_set_icon_name(BYVAL AS GtkIconSource PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_icon_source_set_pixbuf(BYVAL AS GtkIconSource PTR, BYVAL AS GdkPixbuf PTR)
-DECLARE FUNCTION gtk_icon_source_get_filename(BYVAL AS CONST GtkIconSource PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_icon_source_get_icon_name(BYVAL AS CONST GtkIconSource PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_icon_source_get_filename(BYVAL AS CONST GtkIconSource PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_icon_source_get_icon_name(BYVAL AS CONST GtkIconSource PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_icon_source_get_pixbuf(BYVAL AS CONST GtkIconSource PTR) AS GdkPixbuf PTR
 DECLARE SUB gtk_icon_source_set_direction_wildcarded(BYVAL AS GtkIconSource PTR, BYVAL AS gboolean)
 DECLARE SUB gtk_icon_source_set_state_wildcarded(BYVAL AS GtkIconSource PTR, BYVAL AS gboolean)
@@ -1131,7 +1139,6 @@ END TYPE
 TYPE GtkStylePropertyParser AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS GValue PTR, BYVAL AS GError PTR PTR) AS gboolean
 
 DECLARE FUNCTION gtk_style_properties_get_type() AS GType
-DECLARE FUNCTION _gtk_style_properties_peek_property(BYVAL AS GtkStyleProperties PTR, BYVAL AS CONST gchar PTR, BYVAL AS GtkStateFlags) AS CONST GValue PTR
 DECLARE SUB gtk_style_properties_register_property(BYVAL AS GtkStylePropertyParser, BYVAL AS GParamSpec PTR)
 DECLARE FUNCTION gtk_style_properties_lookup_property(BYVAL AS CONST gchar PTR, BYVAL AS GtkStylePropertyParser, BYVAL AS GParamSpec PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_style_properties_new() AS GtkStyleProperties PTR
@@ -1176,6 +1183,7 @@ DECLARE FUNCTION gtk_style_provider_get_icon_factory(BYVAL AS GtkStyleProvider P
 
 #ENDIF ' __GTK_STYLE_PROVIDER_H__
 
+#INCLUDE ONCE "atk/atk.bi"
 #DEFINE GTK_TYPE_STYLE_CONTEXT (gtk_style_context_get_type ())
 #DEFINE GTK_STYLE_CONTEXT(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_STYLE_CONTEXT, GtkStyleContext))
 #DEFINE GTK_STYLE_CONTEXT_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), GTK_TYPE_STYLE_CONTEXT, GtkStyleContextClass))
@@ -1185,10 +1193,11 @@ DECLARE FUNCTION gtk_style_provider_get_icon_factory(BYVAL AS GtkStyleProvider P
 
 TYPE GtkStyleContext AS _GtkStyleContext
 TYPE GtkStyleContextClass AS _GtkStyleContextClass
+TYPE GtkStyleContextPrivate AS _GtkStyleContextPrivate
 
 TYPE _GtkStyleContext
   AS GObject parent_object
-  AS gpointer priv
+  AS GtkStyleContextPrivate PTR priv
 END TYPE
 
 TYPE _GtkStyleContextClass
@@ -1212,6 +1221,7 @@ END TYPE
 #DEFINE GTK_STYLE_PROPERTY_BACKGROUND_IMAGE !"background-image"
 #DEFINE GTK_STYLE_CLASS_CELL !"cell"
 #DEFINE GTK_STYLE_CLASS_ENTRY !"entry"
+#DEFINE GTK_STYLE_CLASS_COMBOBOX_ENTRY !"combobox-entry"
 #DEFINE GTK_STYLE_CLASS_BUTTON !"button"
 #DEFINE GTK_STYLE_CLASS_CALENDAR !"calendar"
 #DEFINE GTK_STYLE_CLASS_SLIDER !"slider"
@@ -1222,14 +1232,19 @@ END TYPE
 #DEFINE GTK_STYLE_CLASS_MENUBAR !"menubar"
 #DEFINE GTK_STYLE_CLASS_MENUITEM !"menuitem"
 #DEFINE GTK_STYLE_CLASS_TOOLBAR !"toolbar"
+#DEFINE GTK_STYLE_CLASS_PRIMARY_TOOLBAR !"primary-toolbar"
+#DEFINE GTK_STYLE_CLASS_INLINE_TOOLBAR !"inline-toolbar"
 #DEFINE GTK_STYLE_CLASS_RADIO !"radio"
 #DEFINE GTK_STYLE_CLASS_CHECK !"check"
 #DEFINE GTK_STYLE_CLASS_DEFAULT !"default"
 #DEFINE GTK_STYLE_CLASS_TROUGH !"trough"
 #DEFINE GTK_STYLE_CLASS_SCROLLBAR !"scrollbar"
 #DEFINE GTK_STYLE_CLASS_SCALE !"scale"
+#DEFINE GTK_STYLE_CLASS_SCALE_HAS_MARKS_ABOVE !"scale-has-marks-above"
+#DEFINE GTK_STYLE_CLASS_SCALE_HAS_MARKS_BELOW !"scale-has-marks-below"
 #DEFINE GTK_STYLE_CLASS_HEADER !"header"
 #DEFINE GTK_STYLE_CLASS_ACCELERATOR !"accelerator"
+#DEFINE GTK_STYLE_CLASS_RAISED !"raised"
 #DEFINE GTK_STYLE_CLASS_GRIP !"grip"
 #DEFINE GTK_STYLE_CLASS_DOCK !"dock"
 #DEFINE GTK_STYLE_CLASS_PROGRESSBAR !"progressbar"
@@ -1239,10 +1254,13 @@ END TYPE
 #DEFINE GTK_STYLE_CLASS_SPINBUTTON !"spinbutton"
 #DEFINE GTK_STYLE_CLASS_NOTEBOOK !"notebook"
 #DEFINE GTK_STYLE_CLASS_VIEW !"view"
+#DEFINE GTK_STYLE_CLASS_SIDEBAR !"sidebar"
+#DEFINE GTK_STYLE_CLASS_IMAGE !"image"
 #DEFINE GTK_STYLE_CLASS_HIGHLIGHT !"highlight"
 #DEFINE GTK_STYLE_CLASS_FRAME !"frame"
 #DEFINE GTK_STYLE_CLASS_DND !"dnd"
 #DEFINE GTK_STYLE_CLASS_PANE_SEPARATOR !"pane-separator"
+#DEFINE GTK_STYLE_CLASS_SEPARATOR !"separator"
 #DEFINE GTK_STYLE_CLASS_INFO !"info"
 #DEFINE GTK_STYLE_CLASS_WARNING !"warning"
 #DEFINE GTK_STYLE_CLASS_QUESTION !"question"
@@ -1269,7 +1287,7 @@ DECLARE SUB gtk_style_context_set_state(BYVAL AS GtkStyleContext PTR, BYVAL AS G
 DECLARE FUNCTION gtk_style_context_get_state(BYVAL AS GtkStyleContext PTR) AS GtkStateFlags
 DECLARE FUNCTION gtk_style_context_state_is_running(BYVAL AS GtkStyleContext PTR, BYVAL AS GtkStateType, BYVAL AS gdouble PTR) AS gboolean
 DECLARE SUB gtk_style_context_set_path(BYVAL AS GtkStyleContext PTR, BYVAL AS GtkWidgetPath PTR)
-DECLARE FUNCTION gtk_style_context_get_path(BYVAL AS GtkStyleContext PTR) AS G_CONST_RETURN GtkWidgetPath PTR
+DECLARE FUNCTION gtk_style_context_get_path(BYVAL AS GtkStyleContext PTR) AS CONST GtkWidgetPath PTR
 DECLARE FUNCTION gtk_style_context_list_classes(BYVAL AS GtkStyleContext PTR) AS GList PTR
 DECLARE SUB gtk_style_context_add_class(BYVAL AS GtkStyleContext PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_style_context_remove_class(BYVAL AS GtkStyleContext PTR, BYVAL AS CONST gchar PTR)
@@ -1320,10 +1338,10 @@ DECLARE SUB gtk_render_extension(BYVAL AS GtkStyleContext PTR, BYVAL AS cairo_t 
 DECLARE SUB gtk_render_handle(BYVAL AS GtkStyleContext PTR, BYVAL AS cairo_t PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble)
 DECLARE SUB gtk_render_activity(BYVAL AS GtkStyleContext PTR, BYVAL AS cairo_t PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble)
 DECLARE FUNCTION gtk_render_icon_pixbuf(BYVAL AS GtkStyleContext PTR, BYVAL AS CONST GtkIconSource PTR, BYVAL AS GtkIconSize) AS GdkPixbuf PTR
+DECLARE SUB gtk_render_icon(BYVAL AS GtkStyleContext PTR, BYVAL AS cairo_t PTR, BYVAL AS GdkPixbuf PTR, BYVAL AS gdouble, BYVAL AS gdouble)
+DECLARE FUNCTION _gtk_style_context_get_attributes(BYVAL AS AtkAttributeSet PTR, BYVAL AS GtkStyleContext PTR, BYVAL AS GtkStateFlags) AS AtkAttributeSet PTR
 
 #ENDIF ' __GTK_STYLE_CONTEXT_H__
-
-#INCLUDE ONCE "atk/atk.bi"
 
 ENUM GtkWidgetHelpType
   GTK_WIDGET_HELP_TOOLTIP
@@ -1342,6 +1360,7 @@ TYPE GtkRequisition AS _GtkRequisition
 TYPE GtkSelectionData AS _GtkSelectionData
 TYPE GtkWidgetPrivate AS _GtkWidgetPrivate
 TYPE GtkWidgetClass AS _GtkWidgetClass
+TYPE GtkWidgetClassPrivate AS _GtkWidgetClassPrivate
 TYPE GtkWidgetAuxInfo AS _GtkWidgetAuxInfo
 TYPE GtkClipboard AS _GtkClipboard
 TYPE GtkTooltip AS _GtkTooltip
@@ -1380,7 +1399,7 @@ TYPE _GtkWidgetClass
   direction_changed AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS GtkTextDirection)
   grab_notify AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
   child_notify AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS GParamSpec PTR)
-  draw AS FUNCTION(BYVAL AS GtkWidget PTR, BYVAL AS cairo_t PTR) AS gboolean
+  draw_ AS FUNCTION(BYVAL AS GtkWidget PTR, BYVAL AS cairo_t PTR) AS gboolean
   get_request_mode AS FUNCTION(BYVAL AS GtkWidget PTR) AS GtkSizeRequestMode
   get_preferred_height AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
   get_preferred_width_for_height AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint PTR, BYVAL AS gint PTR)
@@ -1439,7 +1458,7 @@ TYPE _GtkWidgetClass
   adjust_size_request AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS GtkOrientation, BYVAL AS gint PTR, BYVAL AS gint PTR)
   adjust_size_allocation AS SUB(BYVAL AS GtkWidget PTR, BYVAL AS GtkOrientation, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
   style_updated AS SUB(BYVAL AS GtkWidget PTR)
-  _gtk_reserved1 AS SUB()
+  AS GtkWidgetClassPrivate PTR priv
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
   _gtk_reserved4 AS SUB()
@@ -1475,7 +1494,7 @@ DECLARE SUB gtk_widget_unrealize(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_draw(BYVAL AS GtkWidget PTR, BYVAL AS cairo_t PTR)
 DECLARE SUB gtk_widget_queue_draw(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_queue_draw_area(BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint)
-DECLARE SUB gtk_widget_queue_draw_region(BYVAL AS GtkWidget PTR, BYVAL AS cairo_region_t PTR)
+DECLARE SUB gtk_widget_queue_draw_region(BYVAL AS GtkWidget PTR, BYVAL AS CONST cairo_region_t PTR)
 DECLARE SUB gtk_widget_queue_resize(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_queue_resize_no_redraw(BYVAL AS GtkWidget PTR)
 
@@ -1502,7 +1521,6 @@ DECLARE SUB gtk_widget_get_child_requisition(BYVAL AS GtkWidget PTR, BYVAL AS Gt
 DECLARE SUB gtk_widget_add_accelerator(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR, BYVAL AS GtkAccelGroup PTR, BYVAL AS guint, BYVAL AS GdkModifierType, BYVAL AS GtkAccelFlags)
 DECLARE FUNCTION gtk_widget_remove_accelerator(BYVAL AS GtkWidget PTR, BYVAL AS GtkAccelGroup PTR, BYVAL AS guint, BYVAL AS GdkModifierType) AS gboolean
 DECLARE SUB gtk_widget_set_accel_path(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR, BYVAL AS GtkAccelGroup PTR)
-DECLARE FUNCTION _gtk_widget_get_accel_path(BYVAL AS GtkWidget PTR, BYVAL AS gboolean PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_widget_list_accel_closures(BYVAL AS GtkWidget PTR) AS GList PTR
 DECLARE FUNCTION gtk_widget_can_activate_accel(BYVAL AS GtkWidget PTR, BYVAL AS guint) AS gboolean
 DECLARE FUNCTION gtk_widget_mnemonic_activate(BYVAL AS GtkWidget PTR, BYVAL AS gboolean) AS gboolean
@@ -1520,6 +1538,7 @@ DECLARE SUB gtk_widget_set_can_focus(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_can_focus(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_has_focus(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_is_focus(BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE FUNCTION gtk_widget_has_visible_focus(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_grab_focus(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_widget_set_can_default(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_widget_get_can_default(BYVAL AS GtkWidget PTR) AS gboolean
@@ -1530,7 +1549,7 @@ DECLARE FUNCTION gtk_widget_get_receives_default(BYVAL AS GtkWidget PTR) AS gboo
 DECLARE FUNCTION gtk_widget_has_grab(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_device_is_shadowed(BYVAL AS GtkWidget PTR, BYVAL AS GdkDevice PTR) AS gboolean
 DECLARE SUB gtk_widget_set_name(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_widget_get_name(BYVAL AS GtkWidget PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_widget_get_name(BYVAL AS GtkWidget PTR) AS CONST gchar PTR
 DECLARE SUB gtk_widget_set_state(BYVAL AS GtkWidget PTR, BYVAL AS GtkStateType)
 DECLARE FUNCTION gtk_widget_get_state(BYVAL AS GtkWidget PTR) AS GtkStateType
 DECLARE SUB gtk_widget_set_state_flags(BYVAL AS GtkWidget PTR, BYVAL AS GtkStateFlags, BYVAL AS gboolean)
@@ -1600,6 +1619,8 @@ DECLARE SUB gtk_widget_queue_compute_expand(BYVAL AS GtkWidget PTR)
 DECLARE FUNCTION gtk_widget_compute_expand(BYVAL AS GtkWidget PTR, BYVAL AS GtkOrientation) AS gboolean
 DECLARE FUNCTION gtk_widget_get_support_multidevice(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_widget_set_support_multidevice(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
+DECLARE SUB gtk_widget_class_set_accessible_type(BYVAL AS GtkWidgetClass PTR, BYVAL AS GType)
+DECLARE SUB gtk_widget_class_set_accessible_role(BYVAL AS GtkWidgetClass PTR, BYVAL AS AtkRole)
 DECLARE FUNCTION gtk_widget_get_accessible(BYVAL AS GtkWidget PTR) AS AtkObject PTR
 DECLARE FUNCTION gtk_widget_get_halign(BYVAL AS GtkWidget PTR) AS GtkAlign
 DECLARE SUB gtk_widget_set_halign(BYVAL AS GtkWidget PTR, BYVAL AS GtkAlign)
@@ -1689,22 +1710,6 @@ DECLARE FUNCTION gtk_requisition_get_type() AS GType
 DECLARE FUNCTION gtk_requisition_new() AS GtkRequisition PTR
 DECLARE FUNCTION gtk_requisition_copy(BYVAL AS CONST GtkRequisition PTR) AS GtkRequisition PTR
 DECLARE SUB gtk_requisition_free(BYVAL AS GtkRequisition PTR)
-DECLARE FUNCTION _gtk_cairo_get_event(BYVAL AS cairo_t PTR) AS GdkEventExpose PTR
-DECLARE SUB _gtk_widget_draw_internal(BYVAL AS GtkWidget PTR, BYVAL AS cairo_t PTR, BYVAL AS gboolean)
-DECLARE SUB _gtk_widget_set_has_default(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
-DECLARE SUB _gtk_widget_set_has_grab(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
-DECLARE SUB _gtk_widget_set_is_toplevel(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
-DECLARE SUB _gtk_widget_grab_notify(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
-DECLARE FUNCTION _gtk_widget_get_aux_info(BYVAL AS GtkWidget PTR, BYVAL AS gboolean) AS GtkWidgetAuxInfo PTR
-DECLARE SUB _gtk_widget_propagate_hierarchy_changed(BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR)
-DECLARE SUB _gtk_widget_propagate_screen_changed(BYVAL AS GtkWidget PTR, BYVAL AS GdkScreen PTR)
-DECLARE SUB _gtk_widget_propagate_composited_changed(BYVAL AS GtkWidget PTR)
-DECLARE SUB _gtk_widget_set_device_window(BYVAL AS GtkWidget PTR, BYVAL AS GdkDevice PTR, BYVAL AS GdkWindow PTR)
-DECLARE FUNCTION _gtk_widget_get_device_window(BYVAL AS GtkWidget PTR, BYVAL AS GdkDevice PTR) AS GdkWindow PTR
-DECLARE FUNCTION _gtk_widget_list_devices(BYVAL AS GtkWidget PTR) AS GList PTR
-DECLARE SUB _gtk_widget_synthesize_crossing(BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR, BYVAL AS GdkDevice PTR, BYVAL AS GdkCrossingMode)
-DECLARE FUNCTION _gtk_widget_peek_request_cache(BYVAL AS GtkWidget PTR) AS gpointer
-DECLARE SUB _gtk_widget_buildable_finish_accelerator(BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR, BYVAL AS gpointer)
 DECLARE FUNCTION gtk_widget_in_destruction(BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE FUNCTION gtk_widget_get_style_context(BYVAL AS GtkWidget PTR) AS GtkStyleContext PTR
 DECLARE FUNCTION gtk_widget_get_path(BYVAL AS GtkWidget PTR) AS GtkWidgetPath PTR
@@ -1745,7 +1750,7 @@ END TYPE
 
 DECLARE FUNCTION gtk_action_get_type() AS GType
 DECLARE FUNCTION gtk_action_new(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS GtkAction PTR
-DECLARE FUNCTION gtk_action_get_name(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_name(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_action_is_sensitive(BYVAL AS GtkAction PTR) AS gboolean
 DECLARE FUNCTION gtk_action_get_sensitive(BYVAL AS GtkAction PTR) AS gboolean
 DECLARE SUB gtk_action_set_sensitive(BYVAL AS GtkAction PTR, BYVAL AS gboolean)
@@ -1760,7 +1765,7 @@ DECLARE FUNCTION gtk_action_create_menu(BYVAL AS GtkAction PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_action_get_proxies(BYVAL AS GtkAction PTR) AS GSList PTR
 DECLARE SUB gtk_action_connect_accelerator(BYVAL AS GtkAction PTR)
 DECLARE SUB gtk_action_disconnect_accelerator(BYVAL AS GtkAction PTR)
-DECLARE FUNCTION gtk_action_get_accel_path(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_accel_path(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_action_get_accel_closure(BYVAL AS GtkAction PTR) AS GClosure PTR
 DECLARE SUB gtk_action_block_activate(BYVAL AS GtkAction PTR)
 DECLARE SUB gtk_action_unblock_activate(BYVAL AS GtkAction PTR)
@@ -1771,17 +1776,17 @@ DECLARE SUB gtk_action_set_accel_path(BYVAL AS GtkAction PTR, BYVAL AS CONST gch
 DECLARE SUB gtk_action_set_accel_group(BYVAL AS GtkAction PTR, BYVAL AS GtkAccelGroup PTR)
 DECLARE SUB _gtk_action_sync_menu_visible(BYVAL AS GtkAction PTR, BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE SUB gtk_action_set_label(BYVAL AS GtkAction PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_get_label(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_label(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE SUB gtk_action_set_short_label(BYVAL AS GtkAction PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_get_short_label(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_short_label(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE SUB gtk_action_set_tooltip(BYVAL AS GtkAction PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_get_tooltip(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_tooltip(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE SUB gtk_action_set_stock_id(BYVAL AS GtkAction PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_get_stock_id(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_stock_id(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE SUB gtk_action_set_gicon(BYVAL AS GtkAction PTR, BYVAL AS GIcon PTR)
 DECLARE FUNCTION gtk_action_get_gicon(BYVAL AS GtkAction PTR) AS GIcon PTR
 DECLARE SUB gtk_action_set_icon_name(BYVAL AS GtkAction PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_get_icon_name(BYVAL AS GtkAction PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_get_icon_name(BYVAL AS GtkAction PTR) AS CONST gchar PTR
 DECLARE SUB gtk_action_set_visible_horizontal(BYVAL AS GtkAction PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_action_get_visible_horizontal(BYVAL AS GtkAction PTR) AS gboolean
 DECLARE SUB gtk_action_set_visible_vertical(BYVAL AS GtkAction PTR, BYVAL AS gboolean)
@@ -1807,7 +1812,7 @@ TYPE _GtkStockItem
   AS gchar PTR translation_domain
 END TYPE
 
-DECLARE SUB gtk_stock_add_FB ALIAS "gtk_stock_add"(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
+DECLARE SUB gtk_stock_add_ ALIAS "gtk_stock_add"(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
 DECLARE SUB gtk_stock_add_static(BYVAL AS CONST GtkStockItem PTR, BYVAL AS guint)
 DECLARE FUNCTION gtk_stock_lookup(BYVAL AS CONST gchar PTR, BYVAL AS GtkStockItem PTR) AS gboolean
 DECLARE FUNCTION gtk_stock_list_ids() AS GSList PTR
@@ -1980,7 +1985,7 @@ END TYPE
 
 DECLARE FUNCTION gtk_action_group_get_type() AS GType
 DECLARE FUNCTION gtk_action_group_new(BYVAL AS CONST gchar PTR) AS GtkActionGroup PTR
-DECLARE FUNCTION gtk_action_group_get_name(BYVAL AS GtkActionGroup PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_group_get_name(BYVAL AS GtkActionGroup PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_action_group_get_sensitive(BYVAL AS GtkActionGroup PTR) AS gboolean
 DECLARE SUB gtk_action_group_set_sensitive(BYVAL AS GtkActionGroup PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_action_group_get_visible(BYVAL AS GtkActionGroup PTR) AS gboolean
@@ -1998,7 +2003,7 @@ DECLARE SUB gtk_action_group_add_toggle_actions_full(BYVAL AS GtkActionGroup PTR
 DECLARE SUB gtk_action_group_add_radio_actions_full(BYVAL AS GtkActionGroup PTR, BYVAL AS CONST GtkRadioActionEntry PTR, BYVAL AS guint, BYVAL AS gint, BYVAL AS GCallback, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB gtk_action_group_set_translate_func(BYVAL AS GtkActionGroup PTR, BYVAL AS GtkTranslateFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB gtk_action_group_set_translation_domain(BYVAL AS GtkActionGroup PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_action_group_translate_string(BYVAL AS GtkActionGroup PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_action_group_translate_string(BYVAL AS GtkActionGroup PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 DECLARE SUB _gtk_action_group_emit_connect_proxy(BYVAL AS GtkActionGroup PTR, BYVAL AS GtkAction PTR, BYVAL AS GtkWidget PTR)
 DECLARE SUB _gtk_action_group_emit_disconnect_proxy(BYVAL AS GtkActionGroup PTR, BYVAL AS GtkAction PTR, BYVAL AS GtkWidget PTR)
 DECLARE SUB _gtk_action_group_emit_pre_activate(BYVAL AS GtkActionGroup PTR, BYVAL AS GtkAction PTR)
@@ -2025,7 +2030,9 @@ END TYPE
 
 TYPE _GtkApplicationClass
   AS GApplicationClass parent_class
-  AS gpointer padding(15)
+  window_added AS SUB(BYVAL AS GtkApplication PTR, BYVAL AS GtkWindow PTR)
+  window_removed AS SUB(BYVAL AS GtkApplication PTR, BYVAL AS GtkWindow PTR)
+  AS gpointer padding(13)
 END TYPE
 
 DECLARE FUNCTION gtk_application_get_type() AS GType
@@ -2060,7 +2067,7 @@ END TYPE
 
 TYPE _GtkContainerClass
   AS GtkWidgetClass parent_class
-  add AS SUB(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR)
+  add_ AS SUB(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR)
   remove AS SUB(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR)
   check_resize AS SUB(BYVAL AS GtkContainer PTR)
   forall AS SUB(BYVAL AS GtkContainer PTR, BYVAL AS gboolean, BYVAL AS GtkCallback, BYVAL AS gpointer)
@@ -2118,21 +2125,13 @@ DECLARE SUB gtk_container_child_set_valist(BYVAL AS GtkContainer PTR, BYVAL AS G
 DECLARE SUB gtk_container_child_get_valist(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR, BYVAL AS va_list)
 DECLARE SUB gtk_container_child_set_property(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST GValue PTR)
 DECLARE SUB gtk_container_child_get_property(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR, BYVAL AS GValue PTR)
+DECLARE SUB gtk_container_child_notify(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
 
 #DEFINE GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID(object, property_id, pspec) _
     G_OBJECT_WARN_INVALID_PSPEC ((object), !"child property id", (property_id), (pspec))
 
 DECLARE SUB gtk_container_forall(BYVAL AS GtkContainer PTR, BYVAL AS GtkCallback, BYVAL AS gpointer)
 DECLARE SUB gtk_container_class_handle_border_width(BYVAL AS GtkContainerClass PTR)
-DECLARE SUB _gtk_container_queue_resize(BYVAL AS GtkContainer PTR)
-DECLARE SUB _gtk_container_resize_invalidate(BYVAL AS GtkContainer PTR)
-DECLARE SUB _gtk_container_clear_resize_widgets(BYVAL AS GtkContainer PTR)
-DECLARE FUNCTION _gtk_container_child_composite_name(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR) AS gchar PTR
-DECLARE SUB _gtk_container_dequeue_resize_handler(BYVAL AS GtkContainer PTR)
-DECLARE FUNCTION _gtk_container_focus_sort(BYVAL AS GtkContainer PTR, BYVAL AS GList PTR, BYVAL AS GtkDirectionType, BYVAL AS GtkWidget PTR) AS GList PTR
-DECLARE FUNCTION _gtk_container_get_need_resize(BYVAL AS GtkContainer PTR) AS gboolean
-DECLARE SUB _gtk_container_set_need_resize(BYVAL AS GtkContainer PTR, BYVAL AS gboolean)
-DECLARE FUNCTION _gtk_container_get_reallocate_redraws(BYVAL AS GtkContainer PTR) AS gboolean
 DECLARE FUNCTION gtk_container_get_path_for_child(BYVAL AS GtkContainer PTR, BYVAL AS GtkWidget PTR) AS GtkWidgetPath PTR
 
 #ENDIF ' __GTK_CONTAINER_H__
@@ -2221,11 +2220,11 @@ END TYPE
 DECLARE FUNCTION gtk_window_get_type() AS GType
 DECLARE FUNCTION gtk_window_new(BYVAL AS GtkWindowType) AS GtkWidget PTR
 DECLARE SUB gtk_window_set_title(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_window_get_title(BYVAL AS GtkWindow PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_window_get_title(BYVAL AS GtkWindow PTR) AS CONST gchar PTR
 DECLARE SUB gtk_window_set_wmclass(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_window_set_role(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_window_set_startup_id(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_window_get_role(BYVAL AS GtkWindow PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_window_get_role(BYVAL AS GtkWindow PTR) AS CONST gchar PTR
 DECLARE SUB gtk_window_add_accel_group(BYVAL AS GtkWindow PTR, BYVAL AS GtkAccelGroup PTR)
 DECLARE SUB gtk_window_remove_accel_group(BYVAL AS GtkWindow PTR, BYVAL AS GtkAccelGroup PTR)
 DECLARE SUB gtk_window_set_position(BYVAL AS GtkWindow PTR, BYVAL AS GtkWindowPosition)
@@ -2255,6 +2254,8 @@ DECLARE SUB gtk_window_set_destroy_with_parent(BYVAL AS GtkWindow PTR, BYVAL AS 
 DECLARE FUNCTION gtk_window_get_destroy_with_parent(BYVAL AS GtkWindow PTR) AS gboolean
 DECLARE SUB gtk_window_set_mnemonics_visible(BYVAL AS GtkWindow PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_window_get_mnemonics_visible(BYVAL AS GtkWindow PTR) AS gboolean
+DECLARE SUB gtk_window_set_focus_visible(BYVAL AS GtkWindow PTR, BYVAL AS gboolean)
+DECLARE FUNCTION gtk_window_get_focus_visible(BYVAL AS GtkWindow PTR) AS gboolean
 DECLARE SUB gtk_window_set_resizable(BYVAL AS GtkWindow PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_window_get_resizable(BYVAL AS GtkWindow PTR) AS gboolean
 DECLARE SUB gtk_window_set_gravity(BYVAL AS GtkWindow PTR, BYVAL AS GdkGravity)
@@ -2274,12 +2275,12 @@ DECLARE SUB gtk_window_set_icon(BYVAL AS GtkWindow PTR, BYVAL AS GdkPixbuf PTR)
 DECLARE SUB gtk_window_set_icon_name(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_window_set_icon_from_file(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_window_get_icon(BYVAL AS GtkWindow PTR) AS GdkPixbuf PTR
-DECLARE FUNCTION gtk_window_get_icon_name(BYVAL AS GtkWindow PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_window_get_icon_name(BYVAL AS GtkWindow PTR) AS CONST gchar PTR
 DECLARE SUB gtk_window_set_default_icon_list(BYVAL AS GList PTR)
 DECLARE FUNCTION gtk_window_get_default_icon_list() AS GList PTR
 DECLARE SUB gtk_window_set_default_icon(BYVAL AS GdkPixbuf PTR)
 DECLARE SUB gtk_window_set_default_icon_name(BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_window_get_default_icon_name() AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_window_get_default_icon_name() AS CONST gchar PTR
 DECLARE FUNCTION gtk_window_set_default_icon_from_file(BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE SUB gtk_window_set_auto_startup_notification(BYVAL AS gboolean)
 DECLARE SUB gtk_window_set_modal(BYVAL AS GtkWindow PTR, BYVAL AS gboolean)
@@ -2374,7 +2375,7 @@ END TYPE
 TYPE _GtkDialogClass
   AS GtkWindowClass parent_class
   response AS SUB(BYVAL AS GtkDialog PTR, BYVAL AS gint)
-  close AS SUB(BYVAL AS GtkDialog PTR)
+  close_ AS SUB(BYVAL AS GtkDialog PTR)
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
@@ -2441,35 +2442,35 @@ END TYPE
 DECLARE FUNCTION gtk_about_dialog_get_type() AS GType
 DECLARE FUNCTION gtk_about_dialog_new() AS GtkWidget PTR
 DECLARE SUB gtk_show_about_dialog(BYVAL AS GtkWindow PTR, BYVAL AS CONST gchar PTR, ...)
-DECLARE FUNCTION gtk_about_dialog_get_program_name(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_program_name(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_program_name(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_version(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_version(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_version(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_copyright(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_copyright(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_copyright(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_comments(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_comments(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_comments(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_license(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_license(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_license(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_about_dialog_set_license_type(BYVAL AS GtkAboutDialog PTR, BYVAL AS GtkLicense)
 DECLARE FUNCTION gtk_about_dialog_get_license_type(BYVAL AS GtkAboutDialog PTR) AS GtkLicense
 DECLARE FUNCTION gtk_about_dialog_get_wrap_license(BYVAL AS GtkAboutDialog PTR) AS gboolean
 DECLARE SUB gtk_about_dialog_set_wrap_license(BYVAL AS GtkAboutDialog PTR, BYVAL AS gboolean)
-DECLARE FUNCTION gtk_about_dialog_get_website(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_website(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_website(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_website_label(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_website_label(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_website_label(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_about_dialog_get_authors(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar G_CONST_RETURN PTR PTR
+DECLARE FUNCTION gtk_about_dialog_get_authors(BYVAL AS GtkAboutDialog PTR) AS CONST gchar CONST PTR PTR
 DECLARE SUB gtk_about_dialog_set_authors(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR PTR)
-DECLARE FUNCTION gtk_about_dialog_get_documenters(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar G_CONST_RETURN PTR PTR
+DECLARE FUNCTION gtk_about_dialog_get_documenters(BYVAL AS GtkAboutDialog PTR) AS CONST gchar CONST PTR PTR
 DECLARE SUB gtk_about_dialog_set_documenters(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR PTR)
-DECLARE FUNCTION gtk_about_dialog_get_artists(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar G_CONST_RETURN PTR PTR
+DECLARE FUNCTION gtk_about_dialog_get_artists(BYVAL AS GtkAboutDialog PTR) AS CONST gchar CONST PTR PTR
 DECLARE SUB gtk_about_dialog_set_artists(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR PTR)
-DECLARE FUNCTION gtk_about_dialog_get_translator_credits(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_translator_credits(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_translator_credits(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_about_dialog_get_logo(BYVAL AS GtkAboutDialog PTR) AS GdkPixbuf PTR
 DECLARE SUB gtk_about_dialog_set_logo(BYVAL AS GtkAboutDialog PTR, BYVAL AS GdkPixbuf PTR)
-DECLARE FUNCTION gtk_about_dialog_get_logo_icon_name(BYVAL AS GtkAboutDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_about_dialog_get_logo_icon_name(BYVAL AS GtkAboutDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_about_dialog_set_logo_icon_name(BYVAL AS GtkAboutDialog PTR, BYVAL AS CONST gchar PTR)
 
 #ENDIF ' __GTK_ABOUT_DIALOG_H__
@@ -2616,7 +2617,7 @@ DECLARE FUNCTION gtk_menu_get_attach_widget(BYVAL AS GtkMenu PTR) AS GtkWidget P
 DECLARE SUB gtk_menu_set_tearoff_state(BYVAL AS GtkMenu PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_menu_get_tearoff_state(BYVAL AS GtkMenu PTR) AS gboolean
 DECLARE SUB gtk_menu_set_title(BYVAL AS GtkMenu PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_menu_get_title(BYVAL AS GtkMenu PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_menu_get_title(BYVAL AS GtkMenu PTR) AS CONST gchar PTR
 DECLARE SUB gtk_menu_reorder_child(BYVAL AS GtkMenu PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint)
 DECLARE SUB gtk_menu_set_screen(BYVAL AS GtkMenu PTR, BYVAL AS GdkScreen PTR)
 DECLARE SUB gtk_menu_attach(BYVAL AS GtkMenu PTR, BYVAL AS GtkWidget PTR, BYVAL AS guint, BYVAL AS guint, BYVAL AS guint, BYVAL AS guint)
@@ -2665,11 +2666,11 @@ DECLARE FUNCTION gtk_label_get_type() AS GType
 DECLARE FUNCTION gtk_label_new(BYVAL AS CONST gchar PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_label_new_with_mnemonic(BYVAL AS CONST gchar PTR) AS GtkWidget PTR
 DECLARE SUB gtk_label_set_text(BYVAL AS GtkLabel PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_label_get_text(BYVAL AS GtkLabel PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_label_get_text(BYVAL AS GtkLabel PTR) AS CONST gchar PTR
 DECLARE SUB gtk_label_set_attributes(BYVAL AS GtkLabel PTR, BYVAL AS PangoAttrList PTR)
 DECLARE FUNCTION gtk_label_get_attributes(BYVAL AS GtkLabel PTR) AS PangoAttrList PTR
 DECLARE SUB gtk_label_set_label(BYVAL AS GtkLabel PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_label_get_label(BYVAL AS GtkLabel PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_label_get_label(BYVAL AS GtkLabel PTR) AS CONST gchar PTR
 DECLARE SUB gtk_label_set_markup(BYVAL AS GtkLabel PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_label_set_use_markup(BYVAL AS GtkLabel PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_label_get_use_markup(BYVAL AS GtkLabel PTR) AS gboolean
@@ -2703,10 +2704,12 @@ DECLARE FUNCTION gtk_label_get_layout(BYVAL AS GtkLabel PTR) AS PangoLayout PTR
 DECLARE SUB gtk_label_get_layout_offsets(BYVAL AS GtkLabel PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_label_set_single_line_mode(BYVAL AS GtkLabel PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_label_get_single_line_mode(BYVAL AS GtkLabel PTR) AS gboolean
-DECLARE FUNCTION gtk_label_get_current_uri(BYVAL AS GtkLabel PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_label_get_current_uri(BYVAL AS GtkLabel PTR) AS CONST gchar PTR
 DECLARE SUB gtk_label_set_track_visited_links(BYVAL AS GtkLabel PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_label_get_track_visited_links(BYVAL AS GtkLabel PTR) AS gboolean
 DECLARE SUB _gtk_label_mnemonics_visible_apply_recursively(BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
+DECLARE FUNCTION _gtk_label_get_cursor_position(BYVAL AS GtkLabel PTR) AS gint
+DECLARE FUNCTION _gtk_label_get_selection_bound(BYVAL AS GtkLabel PTR) AS gint
 
 #ENDIF ' __GTK_LABEL_H__
 
@@ -3334,7 +3337,7 @@ END TYPE
 
 TYPE _GtkCellAreaClass
   AS GInitiallyUnownedClass parent_class
-  add AS SUB(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR)
+  add_ AS SUB(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR)
   remove AS SUB(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR)
   foreach AS SUB(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellCallback, BYVAL AS gpointer)
   foreach_alloc AS SUB(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellAreaContext PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST GdkRectangle PTR, BYVAL AS CONST GdkRectangle PTR, BYVAL AS GtkCellAllocCallback, BYVAL AS gpointer)
@@ -3380,7 +3383,7 @@ DECLARE SUB gtk_cell_area_get_preferred_width(BYVAL AS GtkCellArea PTR, BYVAL AS
 DECLARE SUB gtk_cell_area_get_preferred_height_for_width(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellAreaContext PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_cell_area_get_preferred_height(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellAreaContext PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_cell_area_get_preferred_width_for_height(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellAreaContext PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint PTR, BYVAL AS gint PTR)
-DECLARE FUNCTION gtk_cell_area_get_current_path_string(BYVAL AS GtkCellArea PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_cell_area_get_current_path_string(BYVAL AS GtkCellArea PTR) AS CONST gchar PTR
 DECLARE SUB gtk_cell_area_apply_attributes(BYVAL AS GtkCellArea PTR, BYVAL AS GtkTreeModel PTR, BYVAL AS GtkTreeIter PTR, BYVAL AS gboolean, BYVAL AS gboolean)
 DECLARE SUB gtk_cell_area_attribute_connect(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint)
 DECLARE SUB gtk_cell_area_attribute_disconnect(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS CONST gchar PTR)
@@ -3402,7 +3405,7 @@ DECLARE FUNCTION gtk_cell_area_get_focus_cell(BYVAL AS GtkCellArea PTR) AS GtkCe
 DECLARE SUB gtk_cell_area_add_focus_sibling(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS GtkCellRenderer PTR)
 DECLARE SUB gtk_cell_area_remove_focus_sibling(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS GtkCellRenderer PTR)
 DECLARE FUNCTION gtk_cell_area_is_focus_sibling(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS GtkCellRenderer PTR) AS gboolean
-DECLARE FUNCTION gtk_cell_area_get_focus_siblings(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR) AS G_CONST_RETURN GList PTR
+DECLARE FUNCTION gtk_cell_area_get_focus_siblings(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR) AS CONST GList PTR
 DECLARE FUNCTION gtk_cell_area_get_focus_from_sibling(BYVAL AS GtkCellArea PTR, BYVAL AS GtkCellRenderer PTR) AS GtkCellRenderer PTR
 DECLARE FUNCTION gtk_cell_area_get_edited_cell(BYVAL AS GtkCellArea PTR) AS GtkCellRenderer PTR
 DECLARE FUNCTION gtk_cell_area_get_edit_widget(BYVAL AS GtkCellArea PTR) AS GtkCellEditable PTR
@@ -3466,6 +3469,7 @@ DECLARE SUB gtk_tree_view_column_set_resizable(BYVAL AS GtkTreeViewColumn PTR, B
 DECLARE FUNCTION gtk_tree_view_column_get_resizable(BYVAL AS GtkTreeViewColumn PTR) AS gboolean
 DECLARE SUB gtk_tree_view_column_set_sizing(BYVAL AS GtkTreeViewColumn PTR, BYVAL AS GtkTreeViewColumnSizing)
 DECLARE FUNCTION gtk_tree_view_column_get_sizing(BYVAL AS GtkTreeViewColumn PTR) AS GtkTreeViewColumnSizing
+DECLARE FUNCTION gtk_tree_view_column_get_x_offset(BYVAL AS GtkTreeViewColumn PTR) AS gint
 DECLARE FUNCTION gtk_tree_view_column_get_width(BYVAL AS GtkTreeViewColumn PTR) AS gint
 DECLARE FUNCTION gtk_tree_view_column_get_fixed_width(BYVAL AS GtkTreeViewColumn PTR) AS gint
 DECLARE SUB gtk_tree_view_column_set_fixed_width(BYVAL AS GtkTreeViewColumn PTR, BYVAL AS gint)
@@ -3475,7 +3479,7 @@ DECLARE SUB gtk_tree_view_column_set_max_width(BYVAL AS GtkTreeViewColumn PTR, B
 DECLARE FUNCTION gtk_tree_view_column_get_max_width(BYVAL AS GtkTreeViewColumn PTR) AS gint
 DECLARE SUB gtk_tree_view_column_clicked(BYVAL AS GtkTreeViewColumn PTR)
 DECLARE SUB gtk_tree_view_column_set_title(BYVAL AS GtkTreeViewColumn PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_tree_view_column_get_title(BYVAL AS GtkTreeViewColumn PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_tree_view_column_get_title(BYVAL AS GtkTreeViewColumn PTR) AS CONST gchar PTR
 DECLARE SUB gtk_tree_view_column_set_expand(BYVAL AS GtkTreeViewColumn PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_tree_view_column_get_expand(BYVAL AS GtkTreeViewColumn PTR) AS gboolean
 DECLARE SUB gtk_tree_view_column_set_clickable(BYVAL AS GtkTreeViewColumn PTR, BYVAL AS gboolean)
@@ -3530,7 +3534,10 @@ TYPE _GtkTextAppearance
   AS guint draw_bg : 1
   AS guint inside_selection : 1
   AS guint is_text : 1
-  AS guint padding(3)
+  AS GdkRGBA PTR rgba_(1)
+#IF __SIZEOF_INT__ = __SIZEOF_POINTER__
+  AS guint padding(1)
+#ENDIF ' __SIZEOF_INT__ ...
 END TYPE
 
 TYPE _GtkTextAttributes
@@ -3553,7 +3560,8 @@ TYPE _GtkTextAttributes
   AS guint invisible : 1
   AS guint bg_full_height : 1
   AS guint editable : 1
-  AS guint padding(3)
+  AS GdkRGBA PTR pg_bg_rgba
+  AS guint padding(2)
 END TYPE
 
 DECLARE FUNCTION gtk_text_attributes_new() AS GtkTextAttributes PTR
@@ -3667,6 +3675,7 @@ END TYPE
 DECLARE FUNCTION gtk_text_iter_get_buffer(BYVAL AS CONST GtkTextIter PTR) AS GtkTextBuffer PTR
 DECLARE FUNCTION gtk_text_iter_copy(BYVAL AS CONST GtkTextIter PTR) AS GtkTextIter PTR
 DECLARE SUB gtk_text_iter_free(BYVAL AS GtkTextIter PTR)
+DECLARE SUB gtk_text_iter_assign(BYVAL AS GtkTextIter PTR, BYVAL AS CONST GtkTextIter PTR)
 DECLARE FUNCTION gtk_text_iter_get_type() AS GType
 DECLARE FUNCTION gtk_text_iter_get_offset(BYVAL AS CONST GtkTextIter PTR) AS gint
 DECLARE FUNCTION gtk_text_iter_get_line(BYVAL AS CONST GtkTextIter PTR) AS gint
@@ -3868,12 +3877,14 @@ DECLARE SUB gtk_drag_source_add_uri_targets(BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_drag_source_set_icon_pixbuf(BYVAL AS GtkWidget PTR, BYVAL AS GdkPixbuf PTR)
 DECLARE SUB gtk_drag_source_set_icon_stock(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_drag_source_set_icon_name(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
+DECLARE SUB gtk_drag_source_set_icon_gicon(BYVAL AS GtkWidget PTR, BYVAL AS GIcon PTR)
 DECLARE FUNCTION gtk_drag_begin(BYVAL AS GtkWidget PTR, BYVAL AS GtkTargetList PTR, BYVAL AS GdkDragAction, BYVAL AS gint, BYVAL AS GdkEvent PTR) AS GdkDragContext PTR
 DECLARE SUB gtk_drag_set_icon_widget(BYVAL AS GdkDragContext PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint)
 DECLARE SUB gtk_drag_set_icon_pixbuf(BYVAL AS GdkDragContext PTR, BYVAL AS GdkPixbuf PTR, BYVAL AS gint, BYVAL AS gint)
 DECLARE SUB gtk_drag_set_icon_stock(BYVAL AS GdkDragContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint)
 DECLARE SUB gtk_drag_set_icon_surface(BYVAL AS GdkDragContext PTR, BYVAL AS cairo_surface_t PTR)
 DECLARE SUB gtk_drag_set_icon_name(BYVAL AS GdkDragContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint)
+DECLARE SUB gtk_drag_set_icon_gicon(BYVAL AS GdkDragContext PTR, BYVAL AS GIcon PTR, BYVAL AS gint, BYVAL AS gint)
 DECLARE SUB gtk_drag_set_icon_default(BYVAL AS GdkDragContext PTR)
 DECLARE FUNCTION gtk_drag_check_threshold(BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint) AS gboolean
 DECLARE SUB _gtk_drag_source_handle_event(BYVAL AS GtkWidget PTR, BYVAL AS GdkEvent PTR)
@@ -3956,7 +3967,7 @@ TYPE _GtkIMContextClass
   filter_keypress AS FUNCTION(BYVAL AS GtkIMContext PTR, BYVAL AS GdkEventKey PTR) AS gboolean
   focus_in AS SUB(BYVAL AS GtkIMContext PTR)
   focus_out AS SUB(BYVAL AS GtkIMContext PTR)
-  reset AS SUB(BYVAL AS GtkIMContext PTR)
+  reset_ AS SUB(BYVAL AS GtkIMContext PTR)
   set_cursor_location AS SUB(BYVAL AS GtkIMContext PTR, BYVAL AS GdkRectangle PTR)
   set_use_preedit AS SUB(BYVAL AS GtkIMContext PTR, BYVAL AS gboolean)
   set_surrounding AS SUB(BYVAL AS GtkIMContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint)
@@ -4026,7 +4037,7 @@ DECLARE FUNCTION gtk_entry_buffer_get_type() AS GType
 DECLARE FUNCTION gtk_entry_buffer_new(BYVAL AS CONST gchar PTR, BYVAL AS gint) AS GtkEntryBuffer PTR
 DECLARE FUNCTION gtk_entry_buffer_get_bytes(BYVAL AS GtkEntryBuffer PTR) AS gsize
 DECLARE FUNCTION gtk_entry_buffer_get_length(BYVAL AS GtkEntryBuffer PTR) AS guint
-DECLARE FUNCTION gtk_entry_buffer_get_text(BYVAL AS GtkEntryBuffer PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_entry_buffer_get_text(BYVAL AS GtkEntryBuffer PTR) AS CONST gchar PTR
 DECLARE SUB gtk_entry_buffer_set_text(BYVAL AS GtkEntryBuffer PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint)
 DECLARE SUB gtk_entry_buffer_set_max_length(BYVAL AS GtkEntryBuffer PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_entry_buffer_get_max_length(BYVAL AS GtkEntryBuffer PTR) AS gint
@@ -4257,7 +4268,7 @@ DECLARE FUNCTION gtk_image_get_pixbuf(BYVAL AS GtkImage PTR) AS GdkPixbuf PTR
 DECLARE SUB gtk_image_get_stock(BYVAL AS GtkImage PTR, BYVAL AS gchar PTR PTR, BYVAL AS GtkIconSize PTR)
 DECLARE SUB gtk_image_get_icon_set(BYVAL AS GtkImage PTR, BYVAL AS GtkIconSet PTR PTR, BYVAL AS GtkIconSize PTR)
 DECLARE FUNCTION gtk_image_get_animation(BYVAL AS GtkImage PTR) AS GdkPixbufAnimation PTR
-DECLARE SUB gtk_image_get_icon_name(BYVAL AS GtkImage PTR, BYVAL AS G_CONST_RETURN gchar PTR PTR, BYVAL AS GtkIconSize PTR)
+DECLARE SUB gtk_image_get_icon_name(BYVAL AS GtkImage PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS GtkIconSize PTR)
 DECLARE SUB gtk_image_get_gicon(BYVAL AS GtkImage PTR, BYVAL AS GIcon PTR PTR, BYVAL AS GtkIconSize PTR)
 DECLARE FUNCTION gtk_image_get_pixel_size(BYVAL AS GtkImage PTR) AS gint
 
@@ -4321,7 +4332,7 @@ DECLARE SUB gtk_entry_unset_invisible_char(BYVAL AS GtkEntry PTR)
 DECLARE SUB gtk_entry_set_has_frame(BYVAL AS GtkEntry PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_entry_get_has_frame(BYVAL AS GtkEntry PTR) AS gboolean
 DECLARE SUB gtk_entry_set_inner_border(BYVAL AS GtkEntry PTR, BYVAL AS CONST GtkBorder PTR)
-DECLARE FUNCTION gtk_entry_get_inner_border(BYVAL AS GtkEntry PTR) AS G_CONST_RETURN GtkBorder PTR
+DECLARE FUNCTION gtk_entry_get_inner_border(BYVAL AS GtkEntry PTR) AS CONST GtkBorder PTR
 DECLARE SUB gtk_entry_set_overwrite_mode(BYVAL AS GtkEntry PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_entry_get_overwrite_mode(BYVAL AS GtkEntry PTR) AS gboolean
 DECLARE SUB gtk_entry_set_max_length(BYVAL AS GtkEntry PTR, BYVAL AS gint)
@@ -4332,7 +4343,7 @@ DECLARE FUNCTION gtk_entry_get_activates_default(BYVAL AS GtkEntry PTR) AS gbool
 DECLARE SUB gtk_entry_set_width_chars(BYVAL AS GtkEntry PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_entry_get_width_chars(BYVAL AS GtkEntry PTR) AS gint
 DECLARE SUB gtk_entry_set_text(BYVAL AS GtkEntry PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_entry_get_text(BYVAL AS GtkEntry PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_entry_get_text(BYVAL AS GtkEntry PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_entry_get_layout(BYVAL AS GtkEntry PTR) AS PangoLayout PTR
 DECLARE SUB gtk_entry_get_layout_offsets(BYVAL AS GtkEntry PTR, BYVAL AS gint PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_entry_set_alignment(BYVAL AS GtkEntry PTR, BYVAL AS gfloat)
@@ -4348,6 +4359,8 @@ DECLARE FUNCTION gtk_entry_get_progress_fraction(BYVAL AS GtkEntry PTR) AS gdoub
 DECLARE SUB gtk_entry_set_progress_pulse_step(BYVAL AS GtkEntry PTR, BYVAL AS gdouble)
 DECLARE FUNCTION gtk_entry_get_progress_pulse_step(BYVAL AS GtkEntry PTR) AS gdouble
 DECLARE SUB gtk_entry_progress_pulse(BYVAL AS GtkEntry PTR)
+DECLARE FUNCTION gtk_entry_get_placeholder_text(BYVAL AS GtkEntry PTR) AS CONST gchar PTR
+DECLARE SUB gtk_entry_set_placeholder_text(BYVAL AS GtkEntry PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_entry_set_icon_from_pixbuf(BYVAL AS GtkEntry PTR, BYVAL AS GtkEntryIconPosition, BYVAL AS GdkPixbuf PTR)
 DECLARE SUB gtk_entry_set_icon_from_stock(BYVAL AS GtkEntry PTR, BYVAL AS GtkEntryIconPosition, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_entry_set_icon_from_icon_name(BYVAL AS GtkEntry PTR, BYVAL AS GtkEntryIconPosition, BYVAL AS CONST gchar PTR)
@@ -4583,7 +4596,7 @@ DECLARE FUNCTION gtk_combo_box_get_column_span_column(BYVAL AS GtkComboBox PTR) 
 DECLARE SUB gtk_combo_box_set_column_span_column(BYVAL AS GtkComboBox PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_combo_box_get_add_tearoffs(BYVAL AS GtkComboBox PTR) AS gboolean
 DECLARE SUB gtk_combo_box_set_add_tearoffs(BYVAL AS GtkComboBox PTR, BYVAL AS gboolean)
-DECLARE FUNCTION gtk_combo_box_get_title(BYVAL AS GtkComboBox PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_combo_box_get_title(BYVAL AS GtkComboBox PTR) AS CONST gchar PTR
 DECLARE SUB gtk_combo_box_set_title(BYVAL AS GtkComboBox PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_combo_box_get_focus_on_click(BYVAL AS GtkComboBox PTR) AS gboolean
 DECLARE SUB gtk_combo_box_set_focus_on_click(BYVAL AS GtkComboBox PTR, BYVAL AS gboolean)
@@ -4609,7 +4622,7 @@ DECLARE FUNCTION gtk_combo_box_get_popup_accessible(BYVAL AS GtkComboBox PTR) AS
 DECLARE FUNCTION gtk_combo_box_get_id_column(BYVAL AS GtkComboBox PTR) AS gint
 DECLARE SUB gtk_combo_box_set_id_column(BYVAL AS GtkComboBox PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_combo_box_get_active_id(BYVAL AS GtkComboBox PTR) AS CONST gchar PTR
-DECLARE SUB gtk_combo_box_set_active_id(BYVAL AS GtkComboBox PTR, BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION gtk_combo_box_set_active_id(BYVAL AS GtkComboBox PTR, BYVAL AS CONST gchar PTR) AS gboolean
 
 #ENDIF ' __GTK_COMBO_BOX_H__
 
@@ -4644,6 +4657,8 @@ DECLARE SUB gtk_app_chooser_button_set_show_dialog_item(BYVAL AS GtkAppChooserBu
 DECLARE FUNCTION gtk_app_chooser_button_get_show_dialog_item(BYVAL AS GtkAppChooserButton PTR) AS gboolean
 DECLARE SUB gtk_app_chooser_button_set_heading(BYVAL AS GtkAppChooserButton PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_app_chooser_button_get_heading(BYVAL AS GtkAppChooserButton PTR) AS CONST gchar PTR
+DECLARE SUB gtk_app_chooser_button_set_show_default_item(BYVAL AS GtkAppChooserButton PTR, BYVAL AS gboolean)
+DECLARE FUNCTION gtk_app_chooser_button_get_show_default_item(BYVAL AS GtkAppChooserButton PTR) AS gboolean
 
 #ENDIF ' __GTK_APP_CHOOSER_BUTTON_H__
 
@@ -4714,7 +4729,7 @@ END TYPE
 DECLARE FUNCTION gtk_frame_get_type() AS GType
 DECLARE FUNCTION gtk_frame_new(BYVAL AS CONST gchar PTR) AS GtkWidget PTR
 DECLARE SUB gtk_frame_set_label(BYVAL AS GtkFrame PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_frame_get_label(BYVAL AS GtkFrame PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_frame_get_label(BYVAL AS GtkFrame PTR) AS CONST gchar PTR
 DECLARE SUB gtk_frame_set_label_widget(BYVAL AS GtkFrame PTR, BYVAL AS GtkWidget PTR)
 DECLARE FUNCTION gtk_frame_get_label_widget(BYVAL AS GtkFrame PTR) AS GtkWidget PTR
 DECLARE SUB gtk_frame_set_label_align(BYVAL AS GtkFrame PTR, BYVAL AS gfloat, BYVAL AS gfloat)
@@ -4786,7 +4801,7 @@ TYPE _GtkAssistantClass
   AS GtkWindowClass parent_class
   prepare AS SUB(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR)
   apply AS SUB(BYVAL AS GtkAssistant PTR)
-  close AS SUB(BYVAL AS GtkAssistant PTR)
+  close_ AS SUB(BYVAL AS GtkAssistant PTR)
   cancel AS SUB(BYVAL AS GtkAssistant PTR)
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
@@ -4808,15 +4823,22 @@ DECLARE FUNCTION gtk_assistant_get_nth_page(BYVAL AS GtkAssistant PTR, BYVAL AS 
 DECLARE FUNCTION gtk_assistant_prepend_page(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS gint
 DECLARE FUNCTION gtk_assistant_append_page(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS gint
 DECLARE FUNCTION gtk_assistant_insert_page(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint) AS gint
+DECLARE SUB gtk_assistant_remove_page(BYVAL AS GtkAssistant PTR, BYVAL AS gint)
 DECLARE SUB gtk_assistant_set_forward_page_func(BYVAL AS GtkAssistant PTR, BYVAL AS GtkAssistantPageFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB gtk_assistant_set_page_type(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkAssistantPageType)
 DECLARE FUNCTION gtk_assistant_get_page_type(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS GtkAssistantPageType
 DECLARE SUB gtk_assistant_set_page_title(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_assistant_get_page_title(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_assistant_get_page_title(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS CONST gchar PTR
+
+#IF NOT DEFINED (GTK_DISABLE_DEPRECATED) OR DEFINED (GTK_COMPILATION)
+
 DECLARE SUB gtk_assistant_set_page_header_image(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS GdkPixbuf PTR)
 DECLARE FUNCTION gtk_assistant_get_page_header_image(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS GdkPixbuf PTR
 DECLARE SUB gtk_assistant_set_page_side_image(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS GdkPixbuf PTR)
 DECLARE FUNCTION gtk_assistant_get_page_side_image(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS GdkPixbuf PTR
+
+#ENDIF ' NOT DEFINED (GT...
+
 DECLARE SUB gtk_assistant_set_page_complete(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_assistant_get_page_complete(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_assistant_add_action_widget(BYVAL AS GtkAssistant PTR, BYVAL AS GtkWidget PTR)
@@ -4859,6 +4881,8 @@ DECLARE FUNCTION gtk_button_box_get_layout(BYVAL AS GtkButtonBox PTR) AS GtkButt
 DECLARE SUB gtk_button_box_set_layout(BYVAL AS GtkButtonBox PTR, BYVAL AS GtkButtonBoxStyle)
 DECLARE FUNCTION gtk_button_box_get_child_secondary(BYVAL AS GtkButtonBox PTR, BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_button_box_set_child_secondary(BYVAL AS GtkButtonBox PTR, BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
+DECLARE FUNCTION gtk_button_box_get_child_non_homogeneous(BYVAL AS GtkButtonBox PTR, BYVAL AS GtkWidget PTR) AS gboolean
+DECLARE SUB gtk_button_box_set_child_non_homogeneous(BYVAL AS GtkButtonBox PTR, BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
 
 #ENDIF ' __GTK_BUTTON_BOX_H__
 
@@ -5097,7 +5121,7 @@ DECLARE SUB gtk_button_leave(BYVAL AS GtkButton PTR)
 DECLARE SUB gtk_button_set_relief(BYVAL AS GtkButton PTR, BYVAL AS GtkReliefStyle)
 DECLARE FUNCTION gtk_button_get_relief(BYVAL AS GtkButton PTR) AS GtkReliefStyle
 DECLARE SUB gtk_button_set_label(BYVAL AS GtkButton PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_button_get_label(BYVAL AS GtkButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_button_get_label(BYVAL AS GtkButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_button_set_use_underline(BYVAL AS GtkButton PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_button_get_use_underline(BYVAL AS GtkButton PTR) AS gboolean
 DECLARE SUB gtk_button_set_use_stock(BYVAL AS GtkButton PTR, BYVAL AS gboolean)
@@ -5111,8 +5135,6 @@ DECLARE FUNCTION gtk_button_get_image(BYVAL AS GtkButton PTR) AS GtkWidget PTR
 DECLARE SUB gtk_button_set_image_position(BYVAL AS GtkButton PTR, BYVAL AS GtkPositionType)
 DECLARE FUNCTION gtk_button_get_image_position(BYVAL AS GtkButton PTR) AS GtkPositionType
 DECLARE FUNCTION gtk_button_get_event_window(BYVAL AS GtkButton PTR) AS GdkWindow PTR
-DECLARE SUB _gtk_button_set_depressed(BYVAL AS GtkButton PTR, BYVAL AS gboolean)
-DECLARE SUB _gtk_button_paint(BYVAL AS GtkButton PTR, BYVAL AS cairo_t PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS GtkStateFlags)
 
 #ENDIF ' __GTK_BUTTON_H__
 
@@ -5236,8 +5258,8 @@ END TYPE
 
 TYPE _GtkCellAreaContextClass
   AS GObjectClass parent_class
-  allocate AS SUB(BYVAL AS GtkCellAreaContext PTR, BYVAL AS gint, BYVAL AS gint)
-  reset AS SUB(BYVAL AS GtkCellAreaContext PTR)
+  allocate_ AS SUB(BYVAL AS GtkCellAreaContext PTR, BYVAL AS gint, BYVAL AS gint)
+  reset_ AS SUB(BYVAL AS GtkCellAreaContext PTR)
   get_preferred_height_for_width AS SUB(BYVAL AS GtkCellAreaContext PTR, BYVAL AS gint, BYVAL AS gint PTR, BYVAL AS gint PTR)
   get_preferred_width_for_height AS SUB(BYVAL AS GtkCellAreaContext PTR, BYVAL AS gint, BYVAL AS gint PTR, BYVAL AS gint PTR)
   _gtk_reserved1 AS SUB()
@@ -5278,7 +5300,7 @@ TYPE _GtkCellLayoutIface
   AS GTypeInterface g_iface
   pack_start AS SUB(BYVAL AS GtkCellLayout PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS gboolean)
   pack_end AS SUB(BYVAL AS GtkCellLayout PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS gboolean)
-  clear AS SUB(BYVAL AS GtkCellLayout PTR)
+  clear_ AS SUB(BYVAL AS GtkCellLayout PTR)
   add_attribute AS SUB(BYVAL AS GtkCellLayout PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint)
   set_cell_data_func AS SUB(BYVAL AS GtkCellLayout PTR, BYVAL AS GtkCellRenderer PTR, BYVAL AS GtkCellLayoutDataFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
   clear_attributes AS SUB(BYVAL AS GtkCellLayout PTR, BYVAL AS GtkCellRenderer PTR)
@@ -5735,8 +5757,8 @@ TYPE _GtkMenuItemClass
   toggle_size_request AS SUB(BYVAL AS GtkMenuItem PTR, BYVAL AS gint PTR)
   toggle_size_allocate AS SUB(BYVAL AS GtkMenuItem PTR, BYVAL AS gint)
   set_label AS SUB(BYVAL AS GtkMenuItem PTR, BYVAL AS CONST gchar PTR)
-  get_label AS FUNCTION(BYVAL AS GtkMenuItem PTR) AS G_CONST_RETURN gchar PTR
-  select AS SUB(BYVAL AS GtkMenuItem PTR)
+  get_label AS FUNCTION(BYVAL AS GtkMenuItem PTR) AS CONST gchar PTR
+  select_ AS SUB(BYVAL AS GtkMenuItem PTR)
   deselect AS SUB(BYVAL AS GtkMenuItem PTR)
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
@@ -5755,12 +5777,18 @@ DECLARE SUB gtk_menu_item_deselect(BYVAL AS GtkMenuItem PTR)
 DECLARE SUB gtk_menu_item_activate(BYVAL AS GtkMenuItem PTR)
 DECLARE SUB gtk_menu_item_toggle_size_request(BYVAL AS GtkMenuItem PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_menu_item_toggle_size_allocate(BYVAL AS GtkMenuItem PTR, BYVAL AS gint)
+
+#IFNDEF GTK_DISABLE_DEPRECATED
+
 DECLARE SUB gtk_menu_item_set_right_justified(BYVAL AS GtkMenuItem PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_menu_item_get_right_justified(BYVAL AS GtkMenuItem PTR) AS gboolean
+
+#ENDIF ' GTK_DISABLE_DEPRECATED
+
 DECLARE SUB gtk_menu_item_set_accel_path(BYVAL AS GtkMenuItem PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_menu_item_get_accel_path(BYVAL AS GtkMenuItem PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_menu_item_get_accel_path(BYVAL AS GtkMenuItem PTR) AS CONST gchar PTR
 DECLARE SUB gtk_menu_item_set_label(BYVAL AS GtkMenuItem PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_menu_item_get_label(BYVAL AS GtkMenuItem PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_menu_item_get_label(BYVAL AS GtkMenuItem PTR) AS CONST gchar PTR
 DECLARE SUB gtk_menu_item_set_use_underline(BYVAL AS GtkMenuItem PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_menu_item_get_use_underline(BYVAL AS GtkMenuItem PTR) AS gboolean
 DECLARE SUB gtk_menu_item_set_reserve_indicator(BYVAL AS GtkMenuItem PTR, BYVAL AS gboolean)
@@ -5906,38 +5934,12 @@ DECLARE FUNCTION gtk_color_button_get_use_alpha(BYVAL AS GtkColorButton PTR) AS 
 DECLARE SUB gtk_color_button_set_rgba(BYVAL AS GtkColorButton PTR, BYVAL AS CONST GdkRGBA PTR)
 DECLARE SUB gtk_color_button_get_rgba(BYVAL AS GtkColorButton PTR, BYVAL AS GdkRGBA PTR)
 DECLARE SUB gtk_color_button_set_title(BYVAL AS GtkColorButton PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_color_button_get_title(BYVAL AS GtkColorButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_color_button_get_title(BYVAL AS GtkColorButton PTR) AS CONST gchar PTR
 
 #ENDIF ' __GTK_COLOR_BUTTON_H__
 
 #IFNDEF __GTK_COLOR_SELECTION_H__
 #DEFINE __GTK_COLOR_SELECTION_H__
-
-#IFNDEF __GTK_VBOX_H__
-#DEFINE __GTK_VBOX_H__
-
-#DEFINE GTK_TYPE_VBOX (gtk_vbox_get_type ())
-#DEFINE GTK_VBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VBOX, GtkVBox))
-#DEFINE GTK_VBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VBOX, GtkVBoxClass))
-#DEFINE GTK_IS_VBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VBOX))
-#DEFINE GTK_IS_VBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VBOX))
-#DEFINE GTK_VBOX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VBOX, GtkVBoxClass))
-
-TYPE GtkVBox AS _GtkVBox
-TYPE GtkVBoxClass AS _GtkVBoxClass
-
-TYPE _GtkVBox
-  AS GtkBox box
-END TYPE
-
-TYPE _GtkVBoxClass
-  AS GtkBoxClass parent_class
-END TYPE
-
-DECLARE FUNCTION gtk_vbox_get_type() AS GType
-DECLARE FUNCTION gtk_vbox_new(BYVAL AS gboolean, BYVAL AS gint) AS GtkWidget PTR
-
-#ENDIF ' __GTK_VBOX_H__
 
 #DEFINE GTK_TYPE_COLOR_SELECTION (gtk_color_selection_get_type ())
 #DEFINE GTK_COLOR_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COLOR_SELECTION, GtkColorSelection))
@@ -5953,12 +5955,12 @@ TYPE GtkColorSelectionChangePaletteFunc AS SUB(BYVAL AS CONST GdkColor PTR, BYVA
 TYPE GtkColorSelectionChangePaletteWithScreenFunc AS SUB(BYVAL AS GdkScreen PTR, BYVAL AS CONST GdkColor PTR, BYVAL AS gint)
 
 TYPE _GtkColorSelection
-  AS GtkVBox parent_instance
+  AS GtkBox parent_instance
   AS GtkColorSelectionPrivate PTR private_data
 END TYPE
 
 TYPE _GtkColorSelectionClass
-  AS GtkVBoxClass parent_class
+  AS GtkBoxClass parent_class
   color_changed AS SUB(BYVAL AS GtkColorSelection PTR)
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
@@ -6069,6 +6071,37 @@ DECLARE SUB gtk_combo_box_text_prepend(BYVAL AS GtkComboBoxText PTR, BYVAL AS CO
 #IFNDEF __GTK_CSS_PROVIDER_H__
 #DEFINE __GTK_CSS_PROVIDER_H__
 
+#IFNDEF __GTK_CSS_SECTION_H__
+#DEFINE __GTK_CSS_SECTION_H__
+
+#DEFINE GTK_TYPE_CSS_SECTION (gtk_css_section_get_type ())
+
+ENUM GtkCssSectionType
+  GTK_CSS_SECTION_DOCUMENT
+  GTK_CSS_SECTION_IMPORT
+  GTK_CSS_SECTION_COLOR_DEFINITION
+  GTK_CSS_SECTION_BINDING_SET
+  GTK_CSS_SECTION_RULESET
+  GTK_CSS_SECTION_SELECTOR
+  GTK_CSS_SECTION_DECLARATION
+  GTK_CSS_SECTION_VALUE
+END ENUM
+
+TYPE GtkCssSection AS _GtkCssSection
+
+DECLARE FUNCTION gtk_css_section_get_type() AS GType
+DECLARE FUNCTION gtk_css_section_ref(BYVAL AS GtkCssSection PTR) AS GtkCssSection PTR
+DECLARE SUB gtk_css_section_unref(BYVAL AS GtkCssSection PTR)
+DECLARE FUNCTION gtk_css_section_get_section_type(BYVAL AS CONST GtkCssSection PTR) AS GtkCssSectionType
+DECLARE FUNCTION gtk_css_section_get_parent(BYVAL AS CONST GtkCssSection PTR) AS GtkCssSection PTR
+DECLARE FUNCTION gtk_css_section_get_file(BYVAL AS CONST GtkCssSection PTR) AS GFile PTR
+DECLARE FUNCTION gtk_css_section_get_start_line(BYVAL AS CONST GtkCssSection PTR) AS guint
+DECLARE FUNCTION gtk_css_section_get_start_position(BYVAL AS CONST GtkCssSection PTR) AS guint
+DECLARE FUNCTION gtk_css_section_get_end_line(BYVAL AS CONST GtkCssSection PTR) AS guint
+DECLARE FUNCTION gtk_css_section_get_end_position(BYVAL AS CONST GtkCssSection PTR) AS guint
+
+#ENDIF ' __GTK_CSS_SECTION_H__
+
 #DEFINE GTK_TYPE_CSS_PROVIDER (gtk_css_provider_get_type ())
 #DEFINE GTK_CSS_PROVIDER(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_CSS_PROVIDER, GtkCssProvider))
 #DEFINE GTK_CSS_PROVIDER_CLASS(c) (G_TYPE_CHECK_CLASS_CAST ((c), GTK_TYPE_CSS_PROVIDER, GtkCssProviderClass))
@@ -6079,21 +6112,27 @@ DECLARE SUB gtk_combo_box_text_prepend(BYVAL AS GtkComboBoxText PTR, BYVAL AS CO
 
 ENUM GtkCssProviderError
   GTK_CSS_PROVIDER_ERROR_FAILED
+  GTK_CSS_PROVIDER_ERROR_SYNTAX
+  GTK_CSS_PROVIDER_ERROR_IMPORT
+  GTK_CSS_PROVIDER_ERROR_NAME
+  GTK_CSS_PROVIDER_ERROR_DEPRECATED
+  GTK_CSS_PROVIDER_ERROR_UNKNOWN_VALUE
 END ENUM
 
 DECLARE FUNCTION gtk_css_provider_error_quark() AS GQuark
 
 TYPE GtkCssProvider AS _GtkCssProvider
 TYPE GtkCssProviderClass AS _GtkCssProviderClass
+TYPE GtkCssProviderPrivate AS _GtkCssProviderPrivate
 
 TYPE _GtkCssProvider
   AS GObject parent_instance
-  AS gpointer priv
+  AS GtkCssProviderPrivate PTR priv
 END TYPE
 
 TYPE _GtkCssProviderClass
   AS GObjectClass parent_class
-  _gtk_reserved1 AS SUB()
+  parsing_error AS SUB(BYVAL AS GtkCssProvider PTR, BYVAL AS GtkCssSection PTR, BYVAL AS CONST GError PTR)
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
   _gtk_reserved4 AS SUB()
@@ -6101,6 +6140,7 @@ END TYPE
 
 DECLARE FUNCTION gtk_css_provider_get_type() AS GType
 DECLARE FUNCTION gtk_css_provider_new() AS GtkCssProvider PTR
+DECLARE FUNCTION gtk_css_provider_to_string(BYVAL AS GtkCssProvider PTR) AS ZSTRING PTR
 DECLARE FUNCTION gtk_css_provider_load_from_data(BYVAL AS GtkCssProvider PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_css_provider_load_from_file(BYVAL AS GtkCssProvider PTR, BYVAL AS GFile PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_css_provider_load_from_path(BYVAL AS GtkCssProvider PTR, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
@@ -6130,11 +6170,8 @@ END ENUM
 
 #IFDEF G_ENABLE_DEBUG
 
-#MACRO GTK_NOTE(type,action) G_STMT_START { _
-  IF (gtk_get_debug_flags () AND GTK_DEBUG_##type) THEN
-    action
-  END IF
-#ENDMACRO
+#DEFINE GTK_NOTE(type,action) _
+    IF (gtk_get_debug_flags () AND GTK_DEBUG_##type) THEN action
 
 #ELSE ' G_ENABLE_DEBUG
 #DEFINE GTK_NOTE(type, action)
@@ -6248,7 +6285,7 @@ DECLARE FUNCTION gtk_expander_get_expanded(BYVAL AS GtkExpander PTR) AS gboolean
 DECLARE SUB gtk_expander_set_spacing(BYVAL AS GtkExpander PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_expander_get_spacing(BYVAL AS GtkExpander PTR) AS gint
 DECLARE SUB gtk_expander_set_label(BYVAL AS GtkExpander PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_expander_get_label(BYVAL AS GtkExpander PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_expander_get_label(BYVAL AS GtkExpander PTR) AS CONST gchar PTR
 DECLARE SUB gtk_expander_set_use_underline(BYVAL AS GtkExpander PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_expander_get_use_underline(BYVAL AS GtkExpander PTR) AS gboolean
 DECLARE SUB gtk_expander_set_use_markup(BYVAL AS GtkExpander PTR, BYVAL AS gboolean)
@@ -6257,6 +6294,8 @@ DECLARE SUB gtk_expander_set_label_widget(BYVAL AS GtkExpander PTR, BYVAL AS Gtk
 DECLARE FUNCTION gtk_expander_get_label_widget(BYVAL AS GtkExpander PTR) AS GtkWidget PTR
 DECLARE SUB gtk_expander_set_label_fill(BYVAL AS GtkExpander PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_expander_get_label_fill(BYVAL AS GtkExpander PTR) AS gboolean
+DECLARE SUB gtk_expander_set_resize_toplevel(BYVAL AS GtkExpander PTR, BYVAL AS gboolean)
+DECLARE FUNCTION gtk_expander_get_resize_toplevel(BYVAL AS GtkExpander PTR) AS gboolean
 
 #ENDIF ' __GTK_EXPANDER_H__
 
@@ -6334,7 +6373,7 @@ END TYPE
 DECLARE FUNCTION gtk_file_filter_get_type() AS GType
 DECLARE FUNCTION gtk_file_filter_new() AS GtkFileFilter PTR
 DECLARE SUB gtk_file_filter_set_name(BYVAL AS GtkFileFilter PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_file_filter_get_name(BYVAL AS GtkFileFilter PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_file_filter_get_name(BYVAL AS GtkFileFilter PTR) AS CONST gchar PTR
 DECLARE SUB gtk_file_filter_add_mime_type(BYVAL AS GtkFileFilter PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_file_filter_add_pattern(BYVAL AS GtkFileFilter PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_file_filter_add_pixbuf_formats(BYVAL AS GtkFileFilter PTR)
@@ -6439,32 +6478,6 @@ DECLARE FUNCTION gtk_file_chooser_list_shortcut_folder_uris(BYVAL AS GtkFileChoo
 #IFNDEF __GTK_FILE_CHOOSER_BUTTON_H__
 #DEFINE __GTK_FILE_CHOOSER_BUTTON_H__
 
-#IFNDEF __GTK_HBOX_H__
-#DEFINE __GTK_HBOX_H__
-
-#DEFINE GTK_TYPE_HBOX (gtk_hbox_get_type ())
-#DEFINE GTK_HBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HBOX, GtkHBox))
-#DEFINE GTK_HBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_HBOX, GtkHBoxClass))
-#DEFINE GTK_IS_HBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_HBOX))
-#DEFINE GTK_IS_HBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_HBOX))
-#DEFINE GTK_HBOX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_HBOX, GtkHBoxClass))
-
-TYPE GtkHBox AS _GtkHBox
-TYPE GtkHBoxClass AS _GtkHBoxClass
-
-TYPE _GtkHBox
-  AS GtkBox box
-END TYPE
-
-TYPE _GtkHBoxClass
-  AS GtkBoxClass parent_class
-END TYPE
-
-DECLARE FUNCTION gtk_hbox_get_type() AS GType
-DECLARE FUNCTION gtk_hbox_new(BYVAL AS gboolean, BYVAL AS gint) AS GtkWidget PTR
-
-#ENDIF ' __GTK_HBOX_H__
-
 #DEFINE GTK_TYPE_FILE_CHOOSER_BUTTON (gtk_file_chooser_button_get_type ())
 #DEFINE GTK_FILE_CHOOSER_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_CHOOSER_BUTTON, GtkFileChooserButton))
 #DEFINE GTK_FILE_CHOOSER_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FILE_CHOOSER_BUTTON, GtkFileChooserButtonClass))
@@ -6477,12 +6490,12 @@ TYPE GtkFileChooserButtonPrivate AS _GtkFileChooserButtonPrivate
 TYPE GtkFileChooserButtonClass AS _GtkFileChooserButtonClass
 
 TYPE _GtkFileChooserButton
-  AS GtkHBox parent
+  AS GtkBox parent
   AS GtkFileChooserButtonPrivate PTR priv
 END TYPE
 
 TYPE _GtkFileChooserButtonClass
-  AS GtkHBoxClass parent_class
+  AS GtkBoxClass parent_class
   file_set AS SUB(BYVAL AS GtkFileChooserButton PTR)
   __gtk_reserved1 AS SUB()
   __gtk_reserved2 AS SUB()
@@ -6493,7 +6506,7 @@ END TYPE
 DECLARE FUNCTION gtk_file_chooser_button_get_type() AS GType
 DECLARE FUNCTION gtk_file_chooser_button_new(BYVAL AS CONST gchar PTR, BYVAL AS GtkFileChooserAction) AS GtkWidget PTR
 DECLARE FUNCTION gtk_file_chooser_button_new_with_dialog(BYVAL AS GtkWidget PTR) AS GtkWidget PTR
-DECLARE FUNCTION gtk_file_chooser_button_get_title(BYVAL AS GtkFileChooserButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_file_chooser_button_get_title(BYVAL AS GtkFileChooserButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_file_chooser_button_set_title(BYVAL AS GtkFileChooserButton PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_file_chooser_button_get_width_chars(BYVAL AS GtkFileChooserButton PTR) AS gint
 DECLARE SUB gtk_file_chooser_button_set_width_chars(BYVAL AS GtkFileChooserButton PTR, BYVAL AS gint)
@@ -6549,12 +6562,12 @@ TYPE GtkFileChooserWidgetPrivate AS _GtkFileChooserWidgetPrivate
 TYPE GtkFileChooserWidgetClass AS _GtkFileChooserWidgetClass
 
 TYPE _GtkFileChooserWidget
-  AS GtkVBox parent_instance
+  AS GtkBox parent_instance
   AS GtkFileChooserWidgetPrivate PTR priv
 END TYPE
 
 TYPE _GtkFileChooserWidgetClass
-  AS GtkVBoxClass parent_class
+  AS GtkBoxClass parent_class
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
@@ -6597,13 +6610,13 @@ END TYPE
 DECLARE FUNCTION gtk_font_button_get_type() AS GType
 DECLARE FUNCTION gtk_font_button_new() AS GtkWidget PTR
 DECLARE FUNCTION gtk_font_button_new_with_font(BYVAL AS CONST gchar PTR) AS GtkWidget PTR
-DECLARE FUNCTION gtk_font_button_get_title(BYVAL AS GtkFontButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_font_button_get_title(BYVAL AS GtkFontButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_font_button_set_title(BYVAL AS GtkFontButton PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_font_button_get_use_font(BYVAL AS GtkFontButton PTR) AS gboolean
 DECLARE SUB gtk_font_button_set_use_font(BYVAL AS GtkFontButton PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_font_button_get_use_size(BYVAL AS GtkFontButton PTR) AS gboolean
 DECLARE SUB gtk_font_button_set_use_size(BYVAL AS GtkFontButton PTR, BYVAL AS gboolean)
-DECLARE FUNCTION gtk_font_button_get_font_name(BYVAL AS GtkFontButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_font_button_get_font_name(BYVAL AS GtkFontButton PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_font_button_set_font_name(BYVAL AS GtkFontButton PTR, BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE FUNCTION gtk_font_button_get_show_style(BYVAL AS GtkFontButton PTR) AS gboolean
 DECLARE SUB gtk_font_button_set_show_style(BYVAL AS GtkFontButton PTR, BYVAL AS gboolean)
@@ -6615,6 +6628,7 @@ DECLARE SUB gtk_font_button_set_show_size(BYVAL AS GtkFontButton PTR, BYVAL AS g
 #IFNDEF __GTK_FONTSEL_H__
 #DEFINE __GTK_FONTSEL_H__
 
+#IFNDEF GTK_DISABLE_DEPRECATED
 #DEFINE GTK_TYPE_FONT_SELECTION (gtk_font_selection_get_type ())
 #DEFINE GTK_FONT_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelection))
 #DEFINE GTK_FONT_SELECTION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_SELECTION, GtkFontSelectionClass))
@@ -6636,12 +6650,12 @@ TYPE GtkFontSelectionDialogPrivate AS _GtkFontSelectionDialogPrivate
 TYPE GtkFontSelectionDialogClass AS _GtkFontSelectionDialogClass
 
 TYPE _GtkFontSelection
-  AS GtkVBox parent_instance
+  AS GtkBox parent_instance
   AS GtkFontSelectionPrivate PTR priv
 END TYPE
 
 TYPE _GtkFontSelectionClass
-  AS GtkVBoxClass parent_class
+  AS GtkBoxClass parent_class
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
@@ -6682,10 +6696,117 @@ DECLARE FUNCTION gtk_font_selection_dialog_get_cancel_button(BYVAL AS GtkFontSel
 DECLARE FUNCTION gtk_font_selection_dialog_get_font_selection(BYVAL AS GtkFontSelectionDialog PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_font_selection_dialog_get_font_name(BYVAL AS GtkFontSelectionDialog PTR) AS gchar PTR
 DECLARE FUNCTION gtk_font_selection_dialog_set_font_name(BYVAL AS GtkFontSelectionDialog PTR, BYVAL AS CONST gchar PTR) AS gboolean
-DECLARE FUNCTION gtk_font_selection_dialog_get_preview_text(BYVAL AS GtkFontSelectionDialog PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_font_selection_dialog_get_preview_text(BYVAL AS GtkFontSelectionDialog PTR) AS CONST gchar PTR
 DECLARE SUB gtk_font_selection_dialog_set_preview_text(BYVAL AS GtkFontSelectionDialog PTR, BYVAL AS CONST gchar PTR)
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_FONTSEL_H__
+
+#IFNDEF __GTK_FONT_CHOOSER_H__
+#DEFINE __GTK_FONT_CHOOSER_H__
+
+TYPE GtkFontFilterFunc AS FUNCTION(BYVAL AS CONST PangoFontFamily PTR, BYVAL AS CONST PangoFontFace PTR, BYVAL AS gpointer) AS gboolean
+
+#DEFINE GTK_TYPE_FONT_CHOOSER (gtk_font_chooser_get_type ())
+#DEFINE GTK_FONT_CHOOSER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_CHOOSER, GtkFontChooser))
+#DEFINE GTK_IS_FONT_CHOOSER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_CHOOSER))
+#DEFINE GTK_FONT_CHOOSER_GET_IFACE(inst) (G_TYPE_INSTANCE_GET_INTERFACE ((inst), GTK_TYPE_FONT_CHOOSER, GtkFontChooserIface))
+
+TYPE GtkFontChooser AS _GtkFontChooser
+TYPE GtkFontChooserIface AS _GtkFontChooserIface
+
+TYPE _GtkFontChooserIface
+  AS GTypeInterface base_iface
+  get_font_family AS FUNCTION(BYVAL AS GtkFontChooser PTR) AS PangoFontFamily PTR
+  get_font_face AS FUNCTION(BYVAL AS GtkFontChooser PTR) AS PangoFontFace PTR
+  get_font_size AS FUNCTION(BYVAL AS GtkFontChooser PTR) AS gint
+  set_filter_func AS SUB(BYVAL AS GtkFontChooser PTR, BYVAL AS GtkFontFilterFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
+  font_activated AS SUB(BYVAL AS GtkFontChooser PTR, BYVAL AS CONST gchar PTR)
+  AS gpointer padding(11)
+END TYPE
+
+DECLARE FUNCTION gtk_font_chooser_get_type() AS GType
+DECLARE FUNCTION gtk_font_chooser_get_font_family(BYVAL AS GtkFontChooser PTR) AS PangoFontFamily PTR
+DECLARE FUNCTION gtk_font_chooser_get_font_face(BYVAL AS GtkFontChooser PTR) AS PangoFontFace PTR
+DECLARE FUNCTION gtk_font_chooser_get_font_size(BYVAL AS GtkFontChooser PTR) AS gint
+DECLARE FUNCTION gtk_font_chooser_get_font_desc(BYVAL AS GtkFontChooser PTR) AS PangoFontDescription PTR
+DECLARE SUB gtk_font_chooser_set_font_desc(BYVAL AS GtkFontChooser PTR, BYVAL AS CONST PangoFontDescription PTR)
+DECLARE FUNCTION gtk_font_chooser_get_font(BYVAL AS GtkFontChooser PTR) AS gchar PTR
+DECLARE SUB gtk_font_chooser_set_font(BYVAL AS GtkFontChooser PTR, BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION gtk_font_chooser_get_preview_text(BYVAL AS GtkFontChooser PTR) AS gchar PTR
+DECLARE SUB gtk_font_chooser_set_preview_text(BYVAL AS GtkFontChooser PTR, BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION gtk_font_chooser_get_show_preview_entry(BYVAL AS GtkFontChooser PTR) AS gboolean
+DECLARE SUB gtk_font_chooser_set_show_preview_entry(BYVAL AS GtkFontChooser PTR, BYVAL AS gboolean)
+DECLARE SUB gtk_font_chooser_set_filter_func(BYVAL AS GtkFontChooser PTR, BYVAL AS GtkFontFilterFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
+
+#ENDIF ' __GTK_FONT_CHOOSER_H__
+
+#IFNDEF __GTK_FONT_CHOOSER_DIALOG_H__
+#DEFINE __GTK_FONT_CHOOSER_DIALOG_H__
+
+#DEFINE GTK_TYPE_FONT_CHOOSER_DIALOG (gtk_font_chooser_dialog_get_type ())
+#DEFINE GTK_FONT_CHOOSER_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_CHOOSER_DIALOG, GtkFontChooserDialog))
+#DEFINE GTK_FONT_CHOOSER_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_CHOOSER_DIALOG, GtkFontChooserDialogClass))
+#DEFINE GTK_IS_FONT_CHOOSER_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_CHOOSER_DIALOG))
+#DEFINE GTK_IS_FONT_CHOOSER_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_CHOOSER_DIALOG))
+#DEFINE GTK_FONT_CHOOSER_DIALOG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_CHOOSER_DIALOG, GtkFontChooserDialogClass))
+
+TYPE GtkFontChooserDialog AS _GtkFontChooserDialog
+TYPE GtkFontChooserDialogPrivate AS _GtkFontChooserDialogPrivate
+TYPE GtkFontChooserDialogClass AS _GtkFontChooserDialogClass
+
+TYPE _GtkFontChooserDialog
+  AS GtkDialog parent_instance
+  AS GtkFontChooserDialogPrivate PTR priv
+END TYPE
+
+TYPE _GtkFontChooserDialogClass
+  AS GtkDialogClass parent_class
+  _gtk_reserved1 AS SUB()
+  _gtk_reserved2 AS SUB()
+  _gtk_reserved3 AS SUB()
+  _gtk_reserved4 AS SUB()
+END TYPE
+
+DECLARE FUNCTION gtk_font_chooser_dialog_get_type() AS GType
+DECLARE FUNCTION gtk_font_chooser_dialog_new(BYVAL AS CONST gchar PTR, BYVAL AS GtkWindow PTR) AS GtkWidget PTR
+
+#ENDIF ' __GTK_FONT_CHOOSER_DIALOG_H__
+#IFNDEF __GTK_FONT_CHOOSER_WIDGET_H__
+#DEFINE __GTK_FONT_CHOOSER_WIDGET_H__
+
+#DEFINE GTK_TYPE_FONT_CHOOSER_WIDGET (gtk_font_chooser_widget_get_type ())
+#DEFINE GTK_FONT_CHOOSER_WIDGET(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_CHOOSER_WIDGET, GtkFontChooserWidget))
+#DEFINE GTK_FONT_CHOOSER_WIDGET_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_CHOOSER_WIDGET, GtkFontChooserWidgetClass))
+#DEFINE GTK_IS_FONT_CHOOSER_WIDGET(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_CHOOSER_WIDGET))
+#DEFINE GTK_IS_FONT_CHOOSER_WIDGET_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_CHOOSER_WIDGET))
+#DEFINE GTK_FONT_CHOOSER_WIDGET_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_CHOOSER_WIDGET, GtkFontChooserWidgetClass))
+
+TYPE GtkFontChooserWidget AS _GtkFontChooserWidget
+TYPE GtkFontChooserWidgetPrivate AS _GtkFontChooserWidgetPrivate
+TYPE GtkFontChooserWidgetClass AS _GtkFontChooserWidgetClass
+
+TYPE _GtkFontChooserWidget
+  AS GtkBox parent_instance
+  AS GtkFontChooserWidgetPrivate PTR priv
+END TYPE
+
+TYPE _GtkFontChooserWidgetClass
+  AS GtkBoxClass parent_class
+  _gtk_reserved1 AS SUB()
+  _gtk_reserved2 AS SUB()
+  _gtk_reserved3 AS SUB()
+  _gtk_reserved4 AS SUB()
+  _gtk_reserved5 AS SUB()
+  _gtk_reserved6 AS SUB()
+  _gtk_reserved7 AS SUB()
+  _gtk_reserved8 AS SUB()
+END TYPE
+
+DECLARE FUNCTION gtk_font_chooser_widget_get_type() AS GType
+DECLARE FUNCTION gtk_font_chooser_widget_new() AS GtkWidget PTR
+
+#ENDIF ' __GTK_FONT_CHOOSER_WIDGET_H__
 
 #IFNDEF __GTK_GRADIENT_H__
 #DEFINE __GTK_GRADIENT_H__
@@ -6703,6 +6824,7 @@ DECLARE FUNCTION gtk_symbolic_color_new_alpha(BYVAL AS GtkSymbolicColor PTR, BYV
 DECLARE FUNCTION gtk_symbolic_color_new_mix(BYVAL AS GtkSymbolicColor PTR, BYVAL AS GtkSymbolicColor PTR, BYVAL AS gdouble) AS GtkSymbolicColor PTR
 DECLARE FUNCTION gtk_symbolic_color_ref(BYVAL AS GtkSymbolicColor PTR) AS GtkSymbolicColor PTR
 DECLARE SUB gtk_symbolic_color_unref(BYVAL AS GtkSymbolicColor PTR)
+DECLARE FUNCTION gtk_symbolic_color_to_string(BYVAL AS GtkSymbolicColor PTR) AS ZSTRING PTR
 DECLARE FUNCTION gtk_symbolic_color_resolve(BYVAL AS GtkSymbolicColor PTR, BYVAL AS GtkStyleProperties PTR, BYVAL AS GdkRGBA PTR) AS gboolean
 
 #ENDIF ' __GTK_SYMBOLIC_COLOR_H__
@@ -6716,6 +6838,7 @@ DECLARE SUB gtk_gradient_add_color_stop(BYVAL AS GtkGradient PTR, BYVAL AS gdoub
 DECLARE FUNCTION gtk_gradient_ref(BYVAL AS GtkGradient PTR) AS GtkGradient PTR
 DECLARE SUB gtk_gradient_unref(BYVAL AS GtkGradient PTR)
 DECLARE FUNCTION gtk_gradient_resolve(BYVAL AS GtkGradient PTR, BYVAL AS GtkStyleProperties PTR, BYVAL AS cairo_pattern_t PTR PTR) AS gboolean
+DECLARE FUNCTION gtk_gradient_to_string(BYVAL AS GtkGradient PTR) AS ZSTRING PTR
 
 #ENDIF ' __GTK_GRADIENT_H__
 
@@ -6754,6 +6877,10 @@ DECLARE FUNCTION gtk_grid_get_type() AS GType
 DECLARE FUNCTION gtk_grid_new() AS GtkWidget PTR
 DECLARE SUB gtk_grid_attach(BYVAL AS GtkGrid PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint)
 DECLARE SUB gtk_grid_attach_next_to(BYVAL AS GtkGrid PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkPositionType, BYVAL AS gint, BYVAL AS gint)
+DECLARE FUNCTION gtk_grid_get_child_at(BYVAL AS GtkGrid PTR, BYVAL AS gint, BYVAL AS gint) AS GtkWidget PTR
+DECLARE SUB gtk_grid_insert_row(BYVAL AS GtkGrid PTR, BYVAL AS gint)
+DECLARE SUB gtk_grid_insert_column(BYVAL AS GtkGrid PTR, BYVAL AS gint)
+DECLARE SUB gtk_grid_insert_next_to(BYVAL AS GtkGrid PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkPositionType)
 DECLARE SUB gtk_grid_set_row_homogeneous(BYVAL AS GtkGrid PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_grid_get_row_homogeneous(BYVAL AS GtkGrid PTR) AS gboolean
 DECLARE SUB gtk_grid_set_row_spacing(BYVAL AS GtkGrid PTR, BYVAL AS guint)
@@ -6809,6 +6936,8 @@ DECLARE FUNCTION gtk_handle_box_get_child_detached(BYVAL AS GtkHandleBox PTR) AS
 #IFNDEF __GTK_HBUTTON_BOX_H__
 #DEFINE __GTK_HBUTTON_BOX_H__
 
+#IFNDEF GTK_DISABLE_DEPRECATED
+
 #DEFINE GTK_TYPE_HBUTTON_BOX (gtk_hbutton_box_get_type ())
 #DEFINE GTK_HBUTTON_BOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HBUTTON_BOX, GtkHButtonBox))
 #DEFINE GTK_HBUTTON_BOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_HBUTTON_BOX, GtkHButtonBoxClass))
@@ -6830,10 +6959,41 @@ END TYPE
 DECLARE FUNCTION gtk_hbutton_box_get_type() AS GType
 DECLARE FUNCTION gtk_hbutton_box_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_HBUTTON_BOX_H__
+
+#IFNDEF __GTK_HBOX_H__
+#DEFINE __GTK_HBOX_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
+#DEFINE GTK_TYPE_HBOX (gtk_hbox_get_type ())
+#DEFINE GTK_HBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HBOX, GtkHBox))
+#DEFINE GTK_HBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_HBOX, GtkHBoxClass))
+#DEFINE GTK_IS_HBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_HBOX))
+#DEFINE GTK_IS_HBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_HBOX))
+#DEFINE GTK_HBOX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_HBOX, GtkHBoxClass))
+
+TYPE GtkHBox AS _GtkHBox
+TYPE GtkHBoxClass AS _GtkHBoxClass
+
+TYPE _GtkHBox
+  AS GtkBox box
+END TYPE
+
+TYPE _GtkHBoxClass
+  AS GtkBoxClass parent_class
+END TYPE
+
+DECLARE FUNCTION gtk_hbox_get_type() AS GType
+DECLARE FUNCTION gtk_hbox_new(BYVAL AS gboolean, BYVAL AS gint) AS GtkWidget PTR
+
+#ENDIF ' GTK_DISABLE_DEPRECATED
+#ENDIF ' __GTK_HBOX_H__
 
 #IFNDEF __GTK_HPANED_H__
 #DEFINE __GTK_HPANED_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #IFNDEF __GTK_PANED_H__
 #DEFINE __GTK_PANED_H__
@@ -6903,10 +7063,13 @@ END TYPE
 DECLARE FUNCTION gtk_hpaned_get_type() AS GType
 DECLARE FUNCTION gtk_hpaned_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_HPANED_H__
 
 #IFNDEF __GTK_HSCALE_H__
 #DEFINE __GTK_HSCALE_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #IFNDEF __GTK_SCALE_H__
 #DEFINE __GTK_SCALE_H__
@@ -7046,10 +7209,13 @@ DECLARE FUNCTION gtk_hscale_get_type() AS GType
 DECLARE FUNCTION gtk_hscale_new(BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_hscale_new_with_range(BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble) AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_HSCALE_H__
 
 #IFNDEF __GTK_HSCROLLBAR_H__
 #DEFINE __GTK_HSCROLLBAR_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #IFNDEF __GTK_SCROLLBAR_H__
 #DEFINE __GTK_SCROLLBAR_H__
@@ -7102,10 +7268,13 @@ END TYPE
 DECLARE FUNCTION gtk_hscrollbar_get_type() AS GType
 DECLARE FUNCTION gtk_hscrollbar_new(BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_HSCROLLBAR_H__
 
 #IFNDEF __GTK_HSEPARATOR_H__
 #DEFINE __GTK_HSEPARATOR_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #IFNDEF __GTK_SEPARATOR_H__
 #DEFINE __GTK_SEPARATOR_H__
@@ -7160,6 +7329,7 @@ END TYPE
 DECLARE FUNCTION gtk_hseparator_get_type() AS GType
 DECLARE FUNCTION gtk_hseparator_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_HSEPARATOR_H__
 
 #IFNDEF __GTK_HSV_H__
@@ -7276,10 +7446,10 @@ DECLARE FUNCTION gtk_icon_info_copy(BYVAL AS GtkIconInfo PTR) AS GtkIconInfo PTR
 DECLARE SUB gtk_icon_info_free(BYVAL AS GtkIconInfo PTR)
 DECLARE FUNCTION gtk_icon_info_new_for_pixbuf(BYVAL AS GtkIconTheme PTR, BYVAL AS GdkPixbuf PTR) AS GtkIconInfo PTR
 DECLARE FUNCTION gtk_icon_info_get_base_size(BYVAL AS GtkIconInfo PTR) AS gint
-DECLARE FUNCTION gtk_icon_info_get_filename(BYVAL AS GtkIconInfo PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_icon_info_get_filename(BYVAL AS GtkIconInfo PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_icon_info_get_builtin_pixbuf(BYVAL AS GtkIconInfo PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gtk_icon_info_load_icon(BYVAL AS GtkIconInfo PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
-DECLARE FUNCTION gtk_icon_info_load_symbolic(BYVAL AS GtkIconInfo PTR, BYVAL AS GdkRGBA PTR, BYVAL AS GdkRGBA PTR, BYVAL AS GdkRGBA PTR, BYVAL AS GdkRGBA PTR, BYVAL AS gboolean PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
+DECLARE FUNCTION gtk_icon_info_load_symbolic(BYVAL AS GtkIconInfo PTR, BYVAL AS CONST GdkRGBA PTR, BYVAL AS CONST GdkRGBA PTR, BYVAL AS CONST GdkRGBA PTR, BYVAL AS CONST GdkRGBA PTR, BYVAL AS gboolean PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gtk_icon_info_load_symbolic_for_context(BYVAL AS GtkIconInfo PTR, BYVAL AS GtkStyleContext PTR, BYVAL AS gboolean PTR, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 
 #IFNDEF GTK_DISABLE_DEPRECATED
@@ -7291,7 +7461,7 @@ DECLARE FUNCTION gtk_icon_info_load_symbolic_for_style(BYVAL AS GtkIconInfo PTR,
 DECLARE SUB gtk_icon_info_set_raw_coordinates(BYVAL AS GtkIconInfo PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_icon_info_get_embedded_rect(BYVAL AS GtkIconInfo PTR, BYVAL AS GdkRectangle PTR) AS gboolean
 DECLARE FUNCTION gtk_icon_info_get_attach_points(BYVAL AS GtkIconInfo PTR, BYVAL AS GdkPoint PTR PTR, BYVAL AS gint PTR) AS gboolean
-DECLARE FUNCTION gtk_icon_info_get_display_name(BYVAL AS GtkIconInfo PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_icon_info_get_display_name(BYVAL AS GtkIconInfo PTR) AS CONST gchar PTR
 DECLARE SUB _gtk_icon_theme_check_reload(BYVAL AS GdkDisplay PTR)
 DECLARE SUB _gtk_icon_theme_ensure_builtin_cache()
 
@@ -7555,14 +7725,14 @@ TYPE GtkInfoBarClass AS _GtkInfoBarClass
 TYPE GtkInfoBar AS _GtkInfoBar
 
 TYPE _GtkInfoBar
-  AS GtkHBox parent
+  AS GtkBox parent
   AS GtkInfoBarPrivate PTR priv
 END TYPE
 
 TYPE _GtkInfoBarClass
-  AS GtkHBoxClass parent_class
+  AS GtkBoxClass parent_class
   response AS SUB(BYVAL AS GtkInfoBar PTR, BYVAL AS gint)
-  close AS SUB(BYVAL AS GtkInfoBar PTR)
+  close_ AS SUB(BYVAL AS GtkInfoBar PTR)
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
@@ -7696,19 +7866,53 @@ END TYPE
 DECLARE FUNCTION gtk_link_button_get_type() AS GType
 DECLARE FUNCTION gtk_link_button_new(BYVAL AS CONST gchar PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_link_button_new_with_label(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS GtkWidget PTR
-DECLARE FUNCTION gtk_link_button_get_uri(BYVAL AS GtkLinkButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_link_button_get_uri(BYVAL AS GtkLinkButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_link_button_set_uri(BYVAL AS GtkLinkButton PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_link_button_get_visited(BYVAL AS GtkLinkButton PTR) AS gboolean
 DECLARE SUB gtk_link_button_set_visited(BYVAL AS GtkLinkButton PTR, BYVAL AS gboolean)
 
 #ENDIF ' __GTK_LINK_BUTTON_H__
 
+#IFNDEF __GTK_LOCK_BUTTON_H__
+#DEFINE __GTK_LOCK_BUTTON_H__
+
+#DEFINE GTK_TYPE_LOCK_BUTTON (gtk_lock_button_get_type ())
+#DEFINE GTK_LOCK_BUTTON(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_LOCK_BUTTON, GtkLockButton))
+#DEFINE GTK_LOCK_BUTTON_CLASS(k) (G_TYPE_CHECK_CLASS_CAST ((k), GTK_LOCK_BUTTON, GtkLockButtonClass))
+#DEFINE GTK_IS_LOCK_BUTTON(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_LOCK_BUTTON))
+#DEFINE GTK_IS_LOCK_BUTTON_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), GTK_TYPE_LOCK_BUTTON))
+#DEFINE GTK_LOCK_BUTTON_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GTK_TYPE_LOCK_BUTTON, GtkLockButtonClass))
+
+TYPE GtkLockButton AS _GtkLockButton
+TYPE GtkLockButtonClass AS _GtkLockButtonClass
+TYPE GtkLockButtonPrivate AS _GtkLockButtonPrivate
+
+TYPE _GtkLockButton
+  AS GtkButton parent
+  AS GtkLockButtonPrivate PTR priv
+END TYPE
+
+TYPE _GtkLockButtonClass
+  AS GtkButtonClass parent_class
+  reserved0 AS SUB()
+  reserved1 AS SUB()
+  reserved2 AS SUB()
+  reserved3 AS SUB()
+  reserved4 AS SUB()
+  reserved5 AS SUB()
+  reserved6 AS SUB()
+  reserved7 AS SUB()
+END TYPE
+
+DECLARE FUNCTION gtk_lock_button_get_type() AS GType
+DECLARE FUNCTION gtk_lock_button_new(BYVAL AS GPermission PTR) AS GtkWidget PTR
+DECLARE FUNCTION gtk_lock_button_get_permission(BYVAL AS GtkLockButton PTR) AS GPermission PTR
+DECLARE SUB gtk_lock_button_set_permission(BYVAL AS GtkLockButton PTR, BYVAL AS GPermission PTR)
+
+#ENDIF ' __GTK_LOCK_BUTTON_H__
+
 #IFNDEF __GTK_MAIN_H__
 #DEFINE __GTK_MAIN_H__
-
-#IFDEF G_PLATFORM_WIN32
-
-#ENDIF ' G_PLATFORM_WIN32
 
 #DEFINE GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
 
@@ -7720,8 +7924,16 @@ DECLARE FUNCTION gtk_get_micro_version() AS guint
 DECLARE FUNCTION gtk_get_binary_age() AS guint
 DECLARE FUNCTION gtk_get_interface_age() AS guint
 
-DECLARE FUNCTION gtk_check_version_FB ALIAS "gtk_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
+#DEFINE gtk_major_version_ gtk_get_major_version ()
+#DEFINE gtk_minor_version_ gtk_get_minor_version ()
+#DEFINE gtk_micro_version_ gtk_get_micro_version ()
+#DEFINE gtk_binary_age_ gtk_get_binary_age ()
+#DEFINE gtk_interface_age_ gtk_get_interface_age ()
+
+DECLARE FUNCTION gtk_check_version_ ALIAS "gtk_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
 DECLARE FUNCTION gtk_parse_args(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR) AS gboolean
+DECLARE SUB gtk_init(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR)
+DECLARE FUNCTION gtk_init_check(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_init_with_args(BYVAL AS gint PTR, BYVAL AS gchar PTR PTR PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST GOptionEntry PTR, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION gtk_get_option_group(BYVAL AS gboolean) AS GOptionGroup PTR
 
@@ -7730,11 +7942,10 @@ DECLARE FUNCTION gtk_get_option_group(BYVAL AS gboolean) AS GOptionGroup PTR
 DECLARE SUB gtk_init_abi_check(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR, BYVAL AS INTEGER, BYVAL AS size_t, BYVAL AS size_t)
 DECLARE FUNCTION gtk_init_check_abi_check(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR, BYVAL AS INTEGER, BYVAL AS size_t, BYVAL AS size_t) AS gboolean
 
+#UNDEF gtk_init
 #DEFINE gtk_init(argc, argv) gtk_init_abi_check (argc, argv, 2, SIZEOF (GtkWindow), SIZEOF (GtkBox))
+#UNDEF gtk_init_check
 #DEFINE gtk_init_check(argc, argv) gtk_init_check_abi_check (argc, argv, 2, SIZEOF (GtkWindow), SIZEOF (GtkBox))
-#ELSE ' G_OS_WIN32
- DECLARE SUB gtk_init(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR)
- DECLARE FUNCTION gtk_init_check(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR) AS gboolean
 #ENDIF ' G_OS_WIN32
 
 DECLARE SUB gtk_disable_setlocale()
@@ -7945,13 +8156,13 @@ DECLARE FUNCTION gtk_tool_button_get_type() AS GType
 DECLARE FUNCTION gtk_tool_button_new(BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR) AS GtkToolItem PTR
 DECLARE FUNCTION gtk_tool_button_new_from_stock(BYVAL AS CONST gchar PTR) AS GtkToolItem PTR
 DECLARE SUB gtk_tool_button_set_label(BYVAL AS GtkToolButton PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_tool_button_get_label(BYVAL AS GtkToolButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_tool_button_get_label(BYVAL AS GtkToolButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_tool_button_set_use_underline(BYVAL AS GtkToolButton PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_tool_button_get_use_underline(BYVAL AS GtkToolButton PTR) AS gboolean
 DECLARE SUB gtk_tool_button_set_stock_id(BYVAL AS GtkToolButton PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_tool_button_get_stock_id(BYVAL AS GtkToolButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_tool_button_get_stock_id(BYVAL AS GtkToolButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_tool_button_set_icon_name(BYVAL AS GtkToolButton PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_tool_button_get_icon_name(BYVAL AS GtkToolButton PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_tool_button_get_icon_name(BYVAL AS GtkToolButton PTR) AS CONST gchar PTR
 DECLARE SUB gtk_tool_button_set_icon_widget(BYVAL AS GtkToolButton PTR, BYVAL AS GtkWidget PTR)
 DECLARE FUNCTION gtk_tool_button_get_icon_widget(BYVAL AS GtkToolButton PTR) AS GtkWidget PTR
 DECLARE SUB gtk_tool_button_set_label_widget(BYVAL AS GtkToolButton PTR, BYVAL AS GtkWidget PTR)
@@ -8167,11 +8378,11 @@ DECLARE SUB gtk_notebook_popup_disable(BYVAL AS GtkNotebook PTR)
 DECLARE FUNCTION gtk_notebook_get_tab_label(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS GtkWidget PTR
 DECLARE SUB gtk_notebook_set_tab_label(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_notebook_set_tab_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_notebook_get_tab_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_notebook_get_tab_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_notebook_get_menu_label(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS GtkWidget PTR
 DECLARE SUB gtk_notebook_set_menu_label(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkWidget PTR)
 DECLARE SUB gtk_notebook_set_menu_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_notebook_get_menu_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_notebook_get_menu_label_text(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS CONST gchar PTR
 DECLARE SUB gtk_notebook_reorder_child(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_notebook_get_tab_reorderable(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR) AS gboolean
 DECLARE SUB gtk_notebook_set_tab_reorderable(BYVAL AS GtkNotebook PTR, BYVAL AS GtkWidget PTR, BYVAL AS gboolean)
@@ -8277,6 +8488,44 @@ DECLARE FUNCTION gtk_orientable_get_orientation(BYVAL AS GtkOrientable PTR) AS G
 
 #ENDIF ' __GTK_ORIENTABLE_H__
 
+#IFNDEF __GTK_OVERLAY_H__
+#DEFINE __GTK_OVERLAY_H__
+
+#DEFINE GTK_TYPE_OVERLAY (gtk_overlay_get_type ())
+#DEFINE GTK_OVERLAY(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_OVERLAY, GtkOverlay))
+#DEFINE GTK_OVERLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_OVERLAY, GtkOverlayClass))
+#DEFINE GTK_IS_OVERLAY(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_OVERLAY))
+#DEFINE GTK_IS_OVERLAY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OVERLAY))
+#DEFINE GTK_OVERLAY_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_OVERLAY, GtkOverlayClass))
+
+TYPE GtkOverlay AS _GtkOverlay
+TYPE GtkOverlayClass AS _GtkOverlayClass
+TYPE GtkOverlayPrivate AS _GtkOverlayPrivate
+
+TYPE _GtkOverlay
+  AS GtkBin parent
+  AS GtkOverlayPrivate PTR priv
+END TYPE
+
+TYPE _GtkOverlayClass
+  AS GtkBinClass parent_class
+  get_child_position AS FUNCTION(BYVAL AS GtkOverlay PTR, BYVAL AS GtkWidget PTR, BYVAL AS GtkAllocation PTR) AS gboolean
+  _gtk_reserved1 AS SUB()
+  _gtk_reserved2 AS SUB()
+  _gtk_reserved3 AS SUB()
+  _gtk_reserved4 AS SUB()
+  _gtk_reserved5 AS SUB()
+  _gtk_reserved6 AS SUB()
+  _gtk_reserved7 AS SUB()
+  _gtk_reserved8 AS SUB()
+END TYPE
+
+DECLARE FUNCTION gtk_overlay_get_type() AS GType
+DECLARE FUNCTION gtk_overlay_new() AS GtkWidget PTR
+DECLARE SUB gtk_overlay_add_overlay(BYVAL AS GtkOverlay PTR, BYVAL AS GtkWidget PTR)
+
+#ENDIF ' __GTK_OVERLAY_H__
+
 #IFNDEF __GTK_PAGE_SETUP_H__
 #DEFINE __GTK_PAGE_SETUP_H__
 
@@ -8302,9 +8551,9 @@ DECLARE FUNCTION gtk_paper_size_copy(BYVAL AS GtkPaperSize PTR) AS GtkPaperSize 
 DECLARE SUB gtk_paper_size_free(BYVAL AS GtkPaperSize PTR)
 DECLARE FUNCTION gtk_paper_size_is_equal(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkPaperSize PTR) AS gboolean
 DECLARE FUNCTION gtk_paper_size_get_paper_sizes(BYVAL AS gboolean) AS GList PTR
-DECLARE FUNCTION gtk_paper_size_get_name(BYVAL AS GtkPaperSize PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_paper_size_get_display_name(BYVAL AS GtkPaperSize PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_paper_size_get_ppd_name(BYVAL AS GtkPaperSize PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_paper_size_get_name(BYVAL AS GtkPaperSize PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_paper_size_get_display_name(BYVAL AS GtkPaperSize PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_paper_size_get_ppd_name(BYVAL AS GtkPaperSize PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_paper_size_get_width(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkUnit) AS gdouble
 DECLARE FUNCTION gtk_paper_size_get_height(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkUnit) AS gdouble
 DECLARE FUNCTION gtk_paper_size_is_custom(BYVAL AS GtkPaperSize PTR) AS gboolean
@@ -8313,7 +8562,7 @@ DECLARE FUNCTION gtk_paper_size_get_default_top_margin(BYVAL AS GtkPaperSize PTR
 DECLARE FUNCTION gtk_paper_size_get_default_bottom_margin(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkUnit) AS gdouble
 DECLARE FUNCTION gtk_paper_size_get_default_left_margin(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkUnit) AS gdouble
 DECLARE FUNCTION gtk_paper_size_get_default_right_margin(BYVAL AS GtkPaperSize PTR, BYVAL AS GtkUnit) AS gdouble
-DECLARE FUNCTION gtk_paper_size_get_default() AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_paper_size_get_default() AS CONST gchar PTR
 DECLARE FUNCTION gtk_paper_size_new_from_key_file(BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS GtkPaperSize PTR
 DECLARE SUB gtk_paper_size_to_key_file(BYVAL AS GtkPaperSize PTR, BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR)
 
@@ -8410,7 +8659,7 @@ DECLARE FUNCTION gtk_print_settings_new_from_key_file(BYVAL AS GKeyFile PTR, BYV
 DECLARE FUNCTION gtk_print_settings_load_key_file(BYVAL AS GtkPrintSettings PTR, BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE SUB gtk_print_settings_to_key_file(BYVAL AS GtkPrintSettings PTR, BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_print_settings_has_key(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR) AS gboolean
-DECLARE FUNCTION gtk_print_settings_get(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_print_settings_unset(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_print_settings_foreach(BYVAL AS GtkPrintSettings PTR, BYVAL AS GtkPrintSettingsFunc, BYVAL AS gpointer)
@@ -8456,7 +8705,7 @@ DECLARE SUB gtk_print_settings_set_int(BYVAL AS GtkPrintSettings PTR, BYVAL AS C
 #DEFINE GTK_PRINT_SETTINGS_WIN32_DRIVER_VERSION !"win32-driver-version"
 #DEFINE GTK_PRINT_SETTINGS_WIN32_DRIVER_EXTRA !"win32-driver-extra"
 
-DECLARE FUNCTION gtk_print_settings_get_printer(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_printer(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_printer(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_print_settings_get_orientation(BYVAL AS GtkPrintSettings PTR) AS GtkPageOrientation
 DECLARE SUB gtk_print_settings_set_orientation(BYVAL AS GtkPrintSettings PTR, BYVAL AS GtkPageOrientation)
@@ -8497,15 +8746,15 @@ DECLARE FUNCTION gtk_print_settings_get_page_ranges(BYVAL AS GtkPrintSettings PT
 DECLARE SUB gtk_print_settings_set_page_ranges(BYVAL AS GtkPrintSettings PTR, BYVAL AS GtkPageRange PTR, BYVAL AS gint)
 DECLARE FUNCTION gtk_print_settings_get_page_set(BYVAL AS GtkPrintSettings PTR) AS GtkPageSet
 DECLARE SUB gtk_print_settings_set_page_set(BYVAL AS GtkPrintSettings PTR, BYVAL AS GtkPageSet)
-DECLARE FUNCTION gtk_print_settings_get_default_source(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_default_source(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_default_source(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_print_settings_get_media_type(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_media_type(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_media_type(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_print_settings_get_dither(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_dither(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_dither(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_print_settings_get_finishings(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_finishings(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_finishings(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_print_settings_get_output_bin(BYVAL AS GtkPrintSettings PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_settings_get_output_bin(BYVAL AS GtkPrintSettings PTR) AS CONST gchar PTR
 DECLARE SUB gtk_print_settings_set_output_bin(BYVAL AS GtkPrintSettings PTR, BYVAL AS CONST gchar PTR)
 
 #ENDIF ' __GTK_PRINT_SETTINGS_H__
@@ -8639,7 +8888,7 @@ DECLARE SUB gtk_print_operation_set_custom_tab_label(BYVAL AS GtkPrintOperation 
 DECLARE FUNCTION gtk_print_operation_run(BYVAL AS GtkPrintOperation PTR, BYVAL AS GtkPrintOperationAction, BYVAL AS GtkWindow PTR, BYVAL AS GError PTR PTR) AS GtkPrintOperationResult
 DECLARE SUB gtk_print_operation_get_error(BYVAL AS GtkPrintOperation PTR, BYVAL AS GError PTR PTR)
 DECLARE FUNCTION gtk_print_operation_get_status(BYVAL AS GtkPrintOperation PTR) AS GtkPrintStatus
-DECLARE FUNCTION gtk_print_operation_get_status_string(BYVAL AS GtkPrintOperation PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_print_operation_get_status_string(BYVAL AS GtkPrintOperation PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_print_operation_is_finished(BYVAL AS GtkPrintOperation PTR) AS gboolean
 DECLARE SUB gtk_print_operation_cancel(BYVAL AS GtkPrintOperation PTR)
 DECLARE SUB gtk_print_operation_draw_page_finish(BYVAL AS GtkPrintOperation PTR)
@@ -8693,7 +8942,7 @@ DECLARE SUB gtk_progress_bar_set_text(BYVAL AS GtkProgressBar PTR, BYVAL AS CONS
 DECLARE SUB gtk_progress_bar_set_fraction(BYVAL AS GtkProgressBar PTR, BYVAL AS gdouble)
 DECLARE SUB gtk_progress_bar_set_pulse_step(BYVAL AS GtkProgressBar PTR, BYVAL AS gdouble)
 DECLARE SUB gtk_progress_bar_set_inverted(BYVAL AS GtkProgressBar PTR, BYVAL AS gboolean)
-DECLARE FUNCTION gtk_progress_bar_get_text(BYVAL AS GtkProgressBar PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_progress_bar_get_text(BYVAL AS GtkProgressBar PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_progress_bar_get_fraction(BYVAL AS GtkProgressBar PTR) AS gdouble
 DECLARE FUNCTION gtk_progress_bar_get_pulse_step(BYVAL AS GtkProgressBar PTR) AS gdouble
 DECLARE FUNCTION gtk_progress_bar_get_inverted(BYVAL AS GtkProgressBar PTR) AS gboolean
@@ -9005,10 +9254,10 @@ DECLARE FUNCTION gtk_recent_manager_purge_items(BYVAL AS GtkRecentManager PTR, B
 DECLARE FUNCTION gtk_recent_info_get_type() AS GType
 DECLARE FUNCTION gtk_recent_info_ref(BYVAL AS GtkRecentInfo PTR) AS GtkRecentInfo PTR
 DECLARE SUB gtk_recent_info_unref(BYVAL AS GtkRecentInfo PTR)
-DECLARE FUNCTION gtk_recent_info_get_uri(BYVAL AS GtkRecentInfo PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_recent_info_get_display_name(BYVAL AS GtkRecentInfo PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_recent_info_get_description(BYVAL AS GtkRecentInfo PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_recent_info_get_mime_type(BYVAL AS GtkRecentInfo PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_recent_info_get_uri(BYVAL AS GtkRecentInfo PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_recent_info_get_display_name(BYVAL AS GtkRecentInfo PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_recent_info_get_description(BYVAL AS GtkRecentInfo PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_recent_info_get_mime_type(BYVAL AS GtkRecentInfo PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_recent_info_get_added(BYVAL AS GtkRecentInfo PTR) AS time_t
 DECLARE FUNCTION gtk_recent_info_get_modified(BYVAL AS GtkRecentInfo PTR) AS time_t
 DECLARE FUNCTION gtk_recent_info_get_visited(BYVAL AS GtkRecentInfo PTR) AS time_t
@@ -9101,7 +9350,7 @@ END TYPE
 DECLARE FUNCTION gtk_recent_filter_get_type() AS GType
 DECLARE FUNCTION gtk_recent_filter_new() AS GtkRecentFilter PTR
 DECLARE SUB gtk_recent_filter_set_name(BYVAL AS GtkRecentFilter PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_recent_filter_get_name(BYVAL AS GtkRecentFilter PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_recent_filter_get_name(BYVAL AS GtkRecentFilter PTR) AS CONST gchar PTR
 DECLARE SUB gtk_recent_filter_add_mime_type(BYVAL AS GtkRecentFilter PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_recent_filter_add_pattern(BYVAL AS GtkRecentFilter PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_recent_filter_add_pixbuf_formats(BYVAL AS GtkRecentFilter PTR)
@@ -9275,12 +9524,12 @@ TYPE GtkRecentChooserWidgetClass AS _GtkRecentChooserWidgetClass
 TYPE GtkRecentChooserWidgetPrivate AS _GtkRecentChooserWidgetPrivate
 
 TYPE _GtkRecentChooserWidget
-  AS GtkVBox parent_instance
+  AS GtkBox parent_instance
   AS GtkRecentChooserWidgetPrivate PTR priv
 END TYPE
 
 TYPE _GtkRecentChooserWidgetClass
-  AS GtkVBoxClass parent_class
+  AS GtkBoxClass parent_class
   _gtk_reserved1 AS SUB()
   _gtk_reserved2 AS SUB()
   _gtk_reserved3 AS SUB()
@@ -9363,78 +9612,6 @@ DECLARE SUB gtk_scrollable_set_vscroll_policy(BYVAL AS GtkScrollable PTR, BYVAL 
 
 #IFNDEF __GTK_SCROLLED_WINDOW_H__
 #DEFINE __GTK_SCROLLED_WINDOW_H__
-
-#IFNDEF __GTK_VSCROLLBAR_H__
-#DEFINE __GTK_VSCROLLBAR_H__
-
-#DEFINE GTK_TYPE_VSCROLLBAR (gtk_vscrollbar_get_type ())
-#DEFINE GTK_VSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCROLLBAR, GtkVScrollbar))
-#DEFINE GTK_VSCROLLBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VSCROLLBAR, GtkVScrollbarClass))
-#DEFINE GTK_IS_VSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VSCROLLBAR))
-#DEFINE GTK_IS_VSCROLLBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VSCROLLBAR))
-#DEFINE GTK_VSCROLLBAR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VSCROLLBAR, GtkVScrollbarClass))
-
-TYPE GtkVScrollbar AS _GtkVScrollbar
-TYPE GtkVScrollbarClass AS _GtkVScrollbarClass
-
-TYPE _GtkVScrollbar
-  AS GtkScrollbar scrollbar
-END TYPE
-
-TYPE _GtkVScrollbarClass
-  AS GtkScrollbarClass parent_class
-END TYPE
-
-DECLARE FUNCTION gtk_vscrollbar_get_type() AS GType
-DECLARE FUNCTION gtk_vscrollbar_new(BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
-
-#ENDIF ' __GTK_VSCROLLBAR_H__
-
-#IFNDEF __GTK_VIEWPORT_H__
-#DEFINE __GTK_VIEWPORT_H__
-
-#DEFINE GTK_TYPE_VIEWPORT (gtk_viewport_get_type ())
-#DEFINE GTK_VIEWPORT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VIEWPORT, GtkViewport))
-#DEFINE GTK_VIEWPORT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VIEWPORT, GtkViewportClass))
-#DEFINE GTK_IS_VIEWPORT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VIEWPORT))
-#DEFINE GTK_IS_VIEWPORT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VIEWPORT))
-#DEFINE GTK_VIEWPORT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VIEWPORT, GtkViewportClass))
-
-TYPE GtkViewport AS _GtkViewport
-TYPE GtkViewportPrivate AS _GtkViewportPrivate
-TYPE GtkViewportClass AS _GtkViewportClass
-
-TYPE _GtkViewport
-  AS GtkBin bin
-  AS GtkViewportPrivate PTR priv
-END TYPE
-
-TYPE _GtkViewportClass
-  AS GtkBinClass parent_class
-  _gtk_reserved1 AS SUB()
-  _gtk_reserved2 AS SUB()
-  _gtk_reserved3 AS SUB()
-  _gtk_reserved4 AS SUB()
-END TYPE
-
-DECLARE FUNCTION gtk_viewport_get_type() AS GType
-DECLARE FUNCTION gtk_viewport_new(BYVAL AS GtkAdjustment PTR, BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
-
-#IF NOT DEFINED (GTK_DISABLE_DEPRECATED) OR DEFINED (GTK_COMPILATION)
-
-DECLARE FUNCTION gtk_viewport_get_hadjustment(BYVAL AS GtkViewport PTR) AS GtkAdjustment PTR
-DECLARE FUNCTION gtk_viewport_get_vadjustment(BYVAL AS GtkViewport PTR) AS GtkAdjustment PTR
-DECLARE SUB gtk_viewport_set_hadjustment(BYVAL AS GtkViewport PTR, BYVAL AS GtkAdjustment PTR)
-DECLARE SUB gtk_viewport_set_vadjustment(BYVAL AS GtkViewport PTR, BYVAL AS GtkAdjustment PTR)
-
-#ENDIF ' NOT DEFINED (GT...
-
-DECLARE SUB gtk_viewport_set_shadow_type(BYVAL AS GtkViewport PTR, BYVAL AS GtkShadowType)
-DECLARE FUNCTION gtk_viewport_get_shadow_type(BYVAL AS GtkViewport PTR) AS GtkShadowType
-DECLARE FUNCTION gtk_viewport_get_bin_window(BYVAL AS GtkViewport PTR) AS GdkWindow PTR
-DECLARE FUNCTION gtk_viewport_get_view_window(BYVAL AS GtkViewport PTR) AS GdkWindow PTR
-
-#ENDIF ' __GTK_VIEWPORT_H__
 
 #DEFINE GTK_TYPE_SCROLLED_WINDOW (gtk_scrolled_window_get_type ())
 #DEFINE GTK_SCROLLED_WINDOW(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SCROLLED_WINDOW, GtkScrolledWindow))
@@ -9610,8 +9787,8 @@ END TYPE
 
 TYPE _GtkSpinButtonClass
   AS GtkEntryClass parent_class
-  input AS FUNCTION(BYVAL AS GtkSpinButton PTR, BYVAL AS gdouble PTR) AS gint
-  output AS FUNCTION(BYVAL AS GtkSpinButton PTR) AS gint
+  input_ AS FUNCTION(BYVAL AS GtkSpinButton PTR, BYVAL AS gdouble PTR) AS gint
+  output_ AS FUNCTION(BYVAL AS GtkSpinButton PTR) AS gint
   value_changed AS SUB(BYVAL AS GtkSpinButton PTR)
   change_value AS SUB(BYVAL AS GtkSpinButton PTR, BYVAL AS GtkScrollType)
   wrapped AS SUB(BYVAL AS GtkSpinButton PTR)
@@ -9699,12 +9876,12 @@ TYPE GtkStatusbarPrivate AS _GtkStatusbarPrivate
 TYPE GtkStatusbarClass AS _GtkStatusbarClass
 
 TYPE _GtkStatusbar
-  AS GtkHBox parent_widget
+  AS GtkBox parent_widget
   AS GtkStatusbarPrivate PTR priv
 END TYPE
 
 TYPE _GtkStatusbarClass
-  AS GtkHBoxClass parent_class
+  AS GtkBoxClass parent_class
   AS gpointer reserved
   text_pushed AS SUB(BYVAL AS GtkStatusbar PTR, BYVAL AS guint, BYVAL AS CONST gchar PTR)
   text_popped AS SUB(BYVAL AS GtkStatusbar PTR, BYVAL AS guint, BYVAL AS CONST gchar PTR)
@@ -9773,8 +9950,8 @@ DECLARE SUB gtk_status_icon_set_from_icon_name(BYVAL AS GtkStatusIcon PTR, BYVAL
 DECLARE SUB gtk_status_icon_set_from_gicon(BYVAL AS GtkStatusIcon PTR, BYVAL AS GIcon PTR)
 DECLARE FUNCTION gtk_status_icon_get_storage_type(BYVAL AS GtkStatusIcon PTR) AS GtkImageType
 DECLARE FUNCTION gtk_status_icon_get_pixbuf(BYVAL AS GtkStatusIcon PTR) AS GdkPixbuf PTR
-DECLARE FUNCTION gtk_status_icon_get_stock(BYVAL AS GtkStatusIcon PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION gtk_status_icon_get_icon_name(BYVAL AS GtkStatusIcon PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_status_icon_get_stock(BYVAL AS GtkStatusIcon PTR) AS CONST gchar PTR
+DECLARE FUNCTION gtk_status_icon_get_icon_name(BYVAL AS GtkStatusIcon PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_status_icon_get_gicon(BYVAL AS GtkStatusIcon PTR) AS GIcon PTR
 DECLARE FUNCTION gtk_status_icon_get_size(BYVAL AS GtkStatusIcon PTR) AS gint
 DECLARE SUB gtk_status_icon_set_screen(BYVAL AS GtkStatusIcon PTR, BYVAL AS GdkScreen PTR)
@@ -9783,7 +9960,7 @@ DECLARE SUB gtk_status_icon_set_has_tooltip(BYVAL AS GtkStatusIcon PTR, BYVAL AS
 DECLARE SUB gtk_status_icon_set_tooltip_text(BYVAL AS GtkStatusIcon PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_status_icon_set_tooltip_markup(BYVAL AS GtkStatusIcon PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_status_icon_set_title(BYVAL AS GtkStatusIcon PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION gtk_status_icon_get_title(BYVAL AS GtkStatusIcon PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_status_icon_get_title(BYVAL AS GtkStatusIcon PTR) AS CONST gchar PTR
 DECLARE SUB gtk_status_icon_set_name(BYVAL AS GtkStatusIcon PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_status_icon_set_visible(BYVAL AS GtkStatusIcon PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_status_icon_get_visible(BYVAL AS GtkStatusIcon PTR) AS gboolean
@@ -9818,13 +9995,13 @@ END TYPE
 
 TYPE _GtkSwitchClass
   AS GtkWidgetClass parent_class
+  activate AS SUB(BYVAL AS GtkSwitch PTR)
   _switch_padding_1 AS SUB()
   _switch_padding_2 AS SUB()
   _switch_padding_3 AS SUB()
   _switch_padding_4 AS SUB()
   _switch_padding_5 AS SUB()
   _switch_padding_6 AS SUB()
-  _switch_padding_7 AS SUB()
 END TYPE
 
 DECLARE FUNCTION gtk_switch_get_type() AS GType
@@ -10017,7 +10194,7 @@ DECLARE FUNCTION gtk_text_mark_get_type() AS GType
 DECLARE FUNCTION gtk_text_mark_new(BYVAL AS CONST gchar PTR, BYVAL AS gboolean) AS GtkTextMark PTR
 DECLARE SUB gtk_text_mark_set_visible(BYVAL AS GtkTextMark PTR, BYVAL AS gboolean)
 DECLARE FUNCTION gtk_text_mark_get_visible(BYVAL AS GtkTextMark PTR) AS gboolean
-DECLARE FUNCTION gtk_text_mark_get_name(BYVAL AS GtkTextMark PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_text_mark_get_name(BYVAL AS GtkTextMark PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_text_mark_get_deleted(BYVAL AS GtkTextMark PTR) AS gboolean
 DECLARE FUNCTION gtk_text_mark_get_buffer(BYVAL AS GtkTextMark PTR) AS GtkTextBuffer PTR
 DECLARE FUNCTION gtk_text_mark_get_left_gravity(BYVAL AS GtkTextMark PTR) AS gboolean
@@ -10134,6 +10311,9 @@ DECLARE SUB _gtk_text_buffer_spew(BYVAL AS GtkTextBuffer PTR)
 DECLARE FUNCTION _gtk_text_buffer_get_btree(BYVAL AS GtkTextBuffer PTR) AS GtkTextBTree PTR
 DECLARE FUNCTION _gtk_text_buffer_get_line_log_attrs(BYVAL AS GtkTextBuffer PTR, BYVAL AS CONST GtkTextIter PTR, BYVAL AS gint PTR) AS CONST PangoLogAttr PTR
 DECLARE SUB _gtk_text_buffer_notify_will_remove_tag(BYVAL AS GtkTextBuffer PTR, BYVAL AS GtkTextTag PTR)
+DECLARE SUB _gtk_text_buffer_get_text_before(BYVAL AS GtkTextBuffer PTR, BYVAL AS AtkTextBoundary, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR)
+DECLARE SUB _gtk_text_buffer_get_text_at(BYVAL AS GtkTextBuffer PTR, BYVAL AS AtkTextBoundary, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR)
+DECLARE SUB _gtk_text_buffer_get_text_after(BYVAL AS GtkTextBuffer PTR, BYVAL AS AtkTextBoundary, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR, BYVAL AS GtkTextIter PTR)
 
 #ENDIF ' __GTK_TEXT_BUFFER_H__
 
@@ -10294,11 +10474,12 @@ DECLARE FUNCTION gtk_text_view_get_default_attributes(BYVAL AS GtkTextView PTR) 
 #DEFINE GTK_THEMING_ENGINE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), GTK_TYPE_THEMING_ENGINE, GtkThemingEngineClass))
 
 TYPE GtkThemingEngine AS _GtkThemingEngine
+TYPE GtkThemingEnginePrivate AS GtkThemingEnginePrivate_
 TYPE GtkThemingEngineClass AS _GtkThemingEngineClass
 
 TYPE _GtkThemingEngine
   AS GObject parent_object
-  AS gpointer priv
+  AS GtkThemingEnginePrivate PTR priv
 END TYPE
 
 TYPE _GtkThemingEngineClass
@@ -10318,7 +10499,8 @@ TYPE _GtkThemingEngineClass
   render_handle AS SUB(BYVAL AS GtkThemingEngine PTR, BYVAL AS cairo_t PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble)
   render_activity AS SUB(BYVAL AS GtkThemingEngine PTR, BYVAL AS cairo_t PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble)
   render_icon_pixbuf AS FUNCTION(BYVAL AS GtkThemingEngine PTR, BYVAL AS CONST GtkIconSource PTR, BYVAL AS GtkIconSize) AS GdkPixbuf PTR
-  AS gpointer padding(15)
+  render_icon AS SUB(BYVAL AS GtkThemingEngine PTR, BYVAL AS cairo_t PTR, BYVAL AS GdkPixbuf PTR, BYVAL AS gdouble, BYVAL AS gdouble)
+  AS gpointer padding(14)
 END TYPE
 
 DECLARE FUNCTION gtk_theming_engine_get_type() AS GType
@@ -10331,7 +10513,7 @@ DECLARE SUB gtk_theming_engine_get_style_property(BYVAL AS GtkThemingEngine PTR,
 DECLARE SUB gtk_theming_engine_get_style_valist(BYVAL AS GtkThemingEngine PTR, BYVAL AS va_list)
 DECLARE SUB gtk_theming_engine_get_style(BYVAL AS GtkThemingEngine PTR, ...)
 DECLARE FUNCTION gtk_theming_engine_lookup_color(BYVAL AS GtkThemingEngine PTR, BYVAL AS CONST gchar PTR, BYVAL AS GdkRGBA PTR) AS gboolean
-DECLARE FUNCTION gtk_theming_engine_get_path(BYVAL AS GtkThemingEngine PTR) AS G_CONST_RETURN GtkWidgetPath PTR
+DECLARE FUNCTION gtk_theming_engine_get_path(BYVAL AS GtkThemingEngine PTR) AS CONST GtkWidgetPath PTR
 DECLARE FUNCTION gtk_theming_engine_has_class(BYVAL AS GtkThemingEngine PTR, BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE FUNCTION gtk_theming_engine_has_region(BYVAL AS GtkThemingEngine PTR, BYVAL AS CONST gchar PTR, BYVAL AS GtkRegionFlags PTR) AS gboolean
 DECLARE FUNCTION gtk_theming_engine_get_state(BYVAL AS GtkThemingEngine PTR) AS GtkStateFlags
@@ -10442,7 +10624,7 @@ DECLARE SUB gtk_tool_item_group_set_label_widget(BYVAL AS GtkToolItemGroup PTR, 
 DECLARE SUB gtk_tool_item_group_set_collapsed(BYVAL AS GtkToolItemGroup PTR, BYVAL AS gboolean)
 DECLARE SUB gtk_tool_item_group_set_ellipsize(BYVAL AS GtkToolItemGroup PTR, BYVAL AS PangoEllipsizeMode)
 DECLARE SUB gtk_tool_item_group_set_header_relief(BYVAL AS GtkToolItemGroup PTR, BYVAL AS GtkReliefStyle)
-DECLARE FUNCTION gtk_tool_item_group_get_label(BYVAL AS GtkToolItemGroup PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION gtk_tool_item_group_get_label(BYVAL AS GtkToolItemGroup PTR) AS CONST gchar PTR
 DECLARE FUNCTION gtk_tool_item_group_get_label_widget(BYVAL AS GtkToolItemGroup PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_tool_item_group_get_collapsed(BYVAL AS GtkToolItemGroup PTR) AS gboolean
 DECLARE FUNCTION gtk_tool_item_group_get_ellipsize(BYVAL AS GtkToolItemGroup PTR) AS PangoEllipsizeMode
@@ -10515,8 +10697,8 @@ DECLARE FUNCTION gtk_tool_palette_get_vadjustment(BYVAL AS GtkToolPalette PTR) A
 
 #ENDIF ' GTK_DISABLE_DEPRECATED
 
-DECLARE FUNCTION gtk_tool_palette_get_drag_target_item() AS G_CONST_RETURN GtkTargetEntry PTR
-DECLARE FUNCTION gtk_tool_palette_get_drag_target_group() AS G_CONST_RETURN GtkTargetEntry PTR
+DECLARE FUNCTION gtk_tool_palette_get_drag_target_item() AS CONST GtkTargetEntry PTR
+DECLARE FUNCTION gtk_tool_palette_get_drag_target_group() AS CONST GtkTargetEntry PTR
 
 #ENDIF ' __GTK_TOOL_PALETTE_H__
 
@@ -10792,6 +10974,8 @@ DECLARE FUNCTION gtk_cell_renderer_accel_mode_get_type() AS GType
 #DEFINE GTK_TYPE_CELL_RENDERER_ACCEL_MODE (gtk_cell_renderer_accel_mode_get_type ())
 DECLARE FUNCTION gtk_css_provider_error_get_type() AS GType
 #DEFINE GTK_TYPE_CSS_PROVIDER_ERROR (gtk_css_provider_error_get_type ())
+DECLARE FUNCTION gtk_css_section_type_get_type() AS GType
+#DEFINE GTK_TYPE_CSS_SECTION_TYPE (gtk_css_section_type_get_type ())
 DECLARE FUNCTION gtk_debug_flag_get_type() AS GType
 #DEFINE GTK_TYPE_DEBUG_FLAG (gtk_debug_flag_get_type ())
 DECLARE FUNCTION gtk_dialog_flags_get_type() AS GType
@@ -11050,6 +11234,8 @@ DECLARE FUNCTION gtk_ui_manager_new_merge_id(BYVAL AS GtkUIManager PTR) AS guint
 #IFNDEF __GTK_VBBOX_H__
 #DEFINE __GTK_VBBOX_H__
 
+#IFNDEF GTK_DISABLE_DEPRECATED
+
 #DEFINE GTK_TYPE_VBUTTON_BOX (gtk_vbutton_box_get_type ())
 #DEFINE GTK_VBUTTON_BOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VBUTTON_BOX, GtkVButtonBox))
 #DEFINE GTK_VBUTTON_BOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VBUTTON_BOX, GtkVButtonBoxClass))
@@ -11071,21 +11257,96 @@ END TYPE
 DECLARE FUNCTION gtk_vbutton_box_get_type() AS GType
 DECLARE FUNCTION gtk_vbutton_box_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_VBBOX_H__
+
+#IFNDEF __GTK_VBOX_H__
+#DEFINE __GTK_VBOX_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
+#DEFINE GTK_TYPE_VBOX (gtk_vbox_get_type ())
+#DEFINE GTK_VBOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VBOX, GtkVBox))
+#DEFINE GTK_VBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VBOX, GtkVBoxClass))
+#DEFINE GTK_IS_VBOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VBOX))
+#DEFINE GTK_IS_VBOX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VBOX))
+#DEFINE GTK_VBOX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VBOX, GtkVBoxClass))
+
+TYPE GtkVBox AS _GtkVBox
+TYPE GtkVBoxClass AS _GtkVBoxClass
+
+TYPE _GtkVBox
+  AS GtkBox box
+END TYPE
+
+TYPE _GtkVBoxClass
+  AS GtkBoxClass parent_class
+END TYPE
+
+DECLARE FUNCTION gtk_vbox_get_type() AS GType
+DECLARE FUNCTION gtk_vbox_new(BYVAL AS gboolean, BYVAL AS gint) AS GtkWidget PTR
+
+#ENDIF ' GTK_DISABLE_DEPRECATED
+#ENDIF ' __GTK_VBOX_H__
 
 #IFNDEF __GTK_VERSION_H__
 #DEFINE __GTK_VERSION_H__
 #DEFINE GTK_MAJOR_VERSION (3)
-#DEFINE GTK_MINOR_VERSION (0)
-#DEFINE GTK_MICRO_VERSION (0)
-#DEFINE GTK_BINARY_AGE    (0)
-#DEFINE GTK_INTERFACE_AGE (0)
+#DEFINE GTK_MINOR_VERSION (2)
+#DEFINE GTK_MICRO_VERSION (2)
+#DEFINE GTK_BINARY_AGE (202)
+#DEFINE GTK_INTERFACE_AGE (2)
 #DEFINE GTK_CHECK_VERSION(major,minor,micro) _
      (GTK_MAJOR_VERSION > (major) ORELSE _
      (GTK_MAJOR_VERSION = (major) ANDALSO GTK_MINOR_VERSION > (minor)) ORELSE _
      (GTK_MAJOR_VERSION = (major) ANDALSO GTK_MINOR_VERSION = (minor) ANDALSO _
-      GTK_MICRO_VERSION > = (micro)))
+      GTK_MICRO_VERSION >= (micro)))
 #ENDIF ' __GTK_VERSION_H__
+
+#IFNDEF __GTK_VIEWPORT_H__
+#DEFINE __GTK_VIEWPORT_H__
+
+#DEFINE GTK_TYPE_VIEWPORT (gtk_viewport_get_type ())
+#DEFINE GTK_VIEWPORT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VIEWPORT, GtkViewport))
+#DEFINE GTK_VIEWPORT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VIEWPORT, GtkViewportClass))
+#DEFINE GTK_IS_VIEWPORT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VIEWPORT))
+#DEFINE GTK_IS_VIEWPORT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VIEWPORT))
+#DEFINE GTK_VIEWPORT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VIEWPORT, GtkViewportClass))
+
+TYPE GtkViewport AS _GtkViewport
+TYPE GtkViewportPrivate AS _GtkViewportPrivate
+TYPE GtkViewportClass AS _GtkViewportClass
+
+TYPE _GtkViewport
+  AS GtkBin bin
+  AS GtkViewportPrivate PTR priv
+END TYPE
+
+TYPE _GtkViewportClass
+  AS GtkBinClass parent_class
+  _gtk_reserved1 AS SUB()
+  _gtk_reserved2 AS SUB()
+  _gtk_reserved3 AS SUB()
+  _gtk_reserved4 AS SUB()
+END TYPE
+
+DECLARE FUNCTION gtk_viewport_get_type() AS GType
+DECLARE FUNCTION gtk_viewport_new(BYVAL AS GtkAdjustment PTR, BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
+
+#IF NOT DEFINED (GTK_DISABLE_DEPRECATED) OR DEFINED (GTK_COMPILATION)
+
+DECLARE FUNCTION gtk_viewport_get_hadjustment(BYVAL AS GtkViewport PTR) AS GtkAdjustment PTR
+DECLARE FUNCTION gtk_viewport_get_vadjustment(BYVAL AS GtkViewport PTR) AS GtkAdjustment PTR
+DECLARE SUB gtk_viewport_set_hadjustment(BYVAL AS GtkViewport PTR, BYVAL AS GtkAdjustment PTR)
+DECLARE SUB gtk_viewport_set_vadjustment(BYVAL AS GtkViewport PTR, BYVAL AS GtkAdjustment PTR)
+
+#ENDIF ' NOT DEFINED (GT...
+
+DECLARE SUB gtk_viewport_set_shadow_type(BYVAL AS GtkViewport PTR, BYVAL AS GtkShadowType)
+DECLARE FUNCTION gtk_viewport_get_shadow_type(BYVAL AS GtkViewport PTR) AS GtkShadowType
+DECLARE FUNCTION gtk_viewport_get_bin_window(BYVAL AS GtkViewport PTR) AS GdkWindow PTR
+DECLARE FUNCTION gtk_viewport_get_view_window(BYVAL AS GtkViewport PTR) AS GdkWindow PTR
+
+#ENDIF ' __GTK_VIEWPORT_H__
 
 #IFNDEF __GTK_VOLUME_BUTTON_H__
 #DEFINE __GTK_VOLUME_BUTTON_H__
@@ -11120,6 +11381,8 @@ DECLARE FUNCTION gtk_volume_button_new() AS GtkWidget PTR
 #IFNDEF __GTK_VPANED_H__
 #DEFINE __GTK_VPANED_H__
 
+#IFNDEF GTK_DISABLE_DEPRECATED
+
 #DEFINE GTK_TYPE_VPANED (gtk_vpaned_get_type ())
 #DEFINE GTK_VPANED(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VPANED, GtkVPaned))
 #DEFINE GTK_VPANED_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VPANED, GtkVPanedClass))
@@ -11141,10 +11404,13 @@ END TYPE
 DECLARE FUNCTION gtk_vpaned_get_type() AS GType
 DECLARE FUNCTION gtk_vpaned_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_VPANED_H__
 
 #IFNDEF __GTK_VSCALE_H__
 #DEFINE __GTK_VSCALE_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #DEFINE GTK_TYPE_VSCALE (gtk_vscale_get_type ())
 #DEFINE GTK_VSCALE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCALE, GtkVScale))
@@ -11168,10 +11434,42 @@ DECLARE FUNCTION gtk_vscale_get_type() AS GType
 DECLARE FUNCTION gtk_vscale_new(BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
 DECLARE FUNCTION gtk_vscale_new_with_range(BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble) AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_VSCALE_H__
+
+#IFNDEF __GTK_VSCROLLBAR_H__
+#DEFINE __GTK_VSCROLLBAR_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
+
+#DEFINE GTK_TYPE_VSCROLLBAR (gtk_vscrollbar_get_type ())
+#DEFINE GTK_VSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSCROLLBAR, GtkVScrollbar))
+#DEFINE GTK_VSCROLLBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_VSCROLLBAR, GtkVScrollbarClass))
+#DEFINE GTK_IS_VSCROLLBAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_VSCROLLBAR))
+#DEFINE GTK_IS_VSCROLLBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_VSCROLLBAR))
+#DEFINE GTK_VSCROLLBAR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_VSCROLLBAR, GtkVScrollbarClass))
+
+TYPE GtkVScrollbar AS _GtkVScrollbar
+TYPE GtkVScrollbarClass AS _GtkVScrollbarClass
+
+TYPE _GtkVScrollbar
+  AS GtkScrollbar scrollbar
+END TYPE
+
+TYPE _GtkVScrollbarClass
+  AS GtkScrollbarClass parent_class
+END TYPE
+
+DECLARE FUNCTION gtk_vscrollbar_get_type() AS GType
+DECLARE FUNCTION gtk_vscrollbar_new(BYVAL AS GtkAdjustment PTR) AS GtkWidget PTR
+
+#ENDIF ' GTK_DISABLE_DEPRECATED
+#ENDIF ' __GTK_VSCROLLBAR_H__
 
 #IFNDEF __GTK_VSEPARATOR_H__
 #DEFINE __GTK_VSEPARATOR_H__
+
+#IFNDEF GTK_DISABLE_DEPRECATED
 
 #DEFINE GTK_TYPE_VSEPARATOR (gtk_vseparator_get_type ())
 #DEFINE GTK_VSEPARATOR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_VSEPARATOR, GtkVSeparator))
@@ -11194,6 +11492,7 @@ END TYPE
 DECLARE FUNCTION gtk_vseparator_get_type() AS GType
 DECLARE FUNCTION gtk_vseparator_new() AS GtkWidget PTR
 
+#ENDIF ' GTK_DISABLE_DEPRECATED
 #ENDIF ' __GTK_VSEPARATOR_H__
 
 #UNDEF __GTK_H_INSIDE__

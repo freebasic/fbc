@@ -8,6 +8,7 @@
 ' FB translation by TJF, 2011
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
+'#DEFINE __USE_GTK3__
 #INCLUDE "gtk/goocanvas.bi"
 
 STATIC SHARED AS GooCanvasItem PTR ellipse1, ellipse2, rect1, rect2, rect3, rect4

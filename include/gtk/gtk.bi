@@ -18,10 +18,15 @@
 ' http://www.gnu.org/licenses/lgpl.html
 '
 '
-' See files for original license text
-'
-#IFDEF __FB_GTK3__
-#INCLUDE ONCE "gtk-3.0.bi"
+' See #INCLUDE files for original license text.
+
+' GTK installations:
+' Defaults to compiling against GTK 2.24. Prepend your code by
+'#DEFINE __USE_GTK_OLD__ 'for compiling against versions < 2.16 (and >= 2.0),
+'#DEFINE __USE_GTK3__ 'for compiling against versions >= 3.0
+
+#IFDEF __USE_GTK3__
+#INCLUDE ONCE "gtk-3.2.bi"
 #ELSE
 #INCLUDE ONCE "gtk-2.24.bi"
 #ENDIF

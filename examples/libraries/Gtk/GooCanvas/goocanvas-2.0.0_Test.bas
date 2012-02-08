@@ -8,6 +8,7 @@
 ' FB translation by TJF, 2011
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
+'#DEFINE __USE_GTK3__
 #INCLUDE "gtk/goocanvas.bi"
 
 'This handles button presses in item views. We simply output a message to

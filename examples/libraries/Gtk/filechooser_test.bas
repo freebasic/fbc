@@ -4,6 +4,7 @@
 ' Reviewed by TJF (2011)
 ' Details: http://developer.gnome.org/gtk/
 
+#DEFINE __USE_GTK3__
 #include once "gtk/gtk.bi"
 
     dim as GtkWidget ptr dialog

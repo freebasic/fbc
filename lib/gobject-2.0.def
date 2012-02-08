@@ -33,6 +33,7 @@ EXPORTS
 	g_cclosure_marshal_VOID__ULONG
 	g_cclosure_marshal_VOID__VARIANT
 	g_cclosure_marshal_VOID__VOID
+	g_cclosure_marshal_generic
 	g_cclosure_new
 	g_cclosure_new_object
 	g_cclosure_new_object_swap
@@ -72,6 +73,9 @@ EXPORTS
 	g_initially_unowned_get_type
 	g_io_channel_get_type
 	g_io_condition_get_type
+	g_main_context_get_type
+	g_main_loop_get_type
+	g_match_info_get_type
 	g_object_add_toggle_ref
 	g_object_add_weak_pointer
 	g_object_bind_property
@@ -213,6 +217,7 @@ EXPORTS
 	g_signal_stop_emission_by_name
 	g_signal_type_cclosure_new
 	g_slist_remove_all PRIVATE
+	g_source_get_type
 	g_source_set_closure
 	g_source_set_dummy_callback
 	g_strdup_value_contents
@@ -369,5 +374,6 @@ EXPORTS
 	g_value_type_compatible
 	g_value_type_transformable
 	g_value_unset
+	g_variant_builder_get_type
 	g_variant_get_gtype
 	g_variant_type_get_gtype

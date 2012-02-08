@@ -1,5 +1,6 @@
 ' FB example (deprecated)
 '
+' Reviewed by TJF (2011), gdk_draw_rgb_image is deprecated -> use cairo instead
 ' Details: http://developer.gnome.org/gtk/
 
 #include once "gtk/gtk.bi"

@@ -1,12 +1,12 @@
-' This is file pangocairo.bi
-' (FreeBasic binding for pangocairo library versions:
-'   pango 1.28.3, cairo 1.10.2)
+' This is file glib.bi
+' (FreeBasic binding for GLib library version 2.31.4)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -46,9 +46,10 @@
 #PRAGMA push(msbitfields)
 #ENDIF
 
-#IFNDEF __FB_GTK_OLD__
+#IFNDEF __USE_GTK_OLD__
 #INCLIB "pangocairo-1.0"
-#ENDIF ' __FB_GTK_OLD__
+#ENDIF
+
 
 EXTERN "C"
 

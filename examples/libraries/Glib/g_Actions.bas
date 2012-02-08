@@ -26,11 +26,14 @@ SUB activate_toggle_action CDECL(BYVAL action AS GAction PTR, _
                                  BYVAL dat_ AS gpointer)
   g_print (!"action %s activated\n", g_action_get_name (action))
 
-  VAR state = g_action_get_state (action)
+  VAR application = G_APPLICATION (dat_)
+  g_application_hold (application)
+  VAR state = g_action_get_state (G_ACTION (action))
   VAR b = g_variant_get_boolean (state)
   g_variant_unref (state)
-  g_action_set_state (action, g_variant_new_boolean (NOT b))
-  g_print (!"state change %d -> %d\n", b, IIF(b, 0, 1))
+  g_simple_action_set_state (action, g_variant_new_boolean (0 = b))
+  g_print (!"state change %d -> %d\n", b, 0 = b)
+  g_application_release (application)
 END SUB
 
 SUB add_actions (BYVAL app AS GApplication PTR)

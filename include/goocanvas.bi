@@ -36,8 +36,8 @@ EXTERN "C"
 #IFNDEF __GOO_CANVAS_H__
 #DEFINE __GOO_CANVAS_H__
 
-#IFNDEF(__GTK_H__)
-#INCLUDE ONCE "gtk/gtk-2.24.bi"
+#IF NOT DEFINED(__GTK_H__)
+#INCLUDE ONCE "gtk/gtk.bi"
 #ENDIF
 
 #IFNDEF __GOO_CANVAS_ENUM_TYPES_H__
@@ -462,31 +462,18 @@ DECLARE FUNCTION goo_cairo_matrix_copy(BYVAL AS CONST cairo_matrix_t PTR) AS cai
 DECLARE SUB goo_cairo_matrix_free(BYVAL AS cairo_matrix_t PTR)
 
 #DEFINE GOO_TYPE_CAIRO_PATTERN (goo_cairo_pattern_get_type ())
-
 DECLARE FUNCTION goo_cairo_pattern_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_FILL_RULE (goo_cairo_fill_rule_get_type ())
-
 DECLARE FUNCTION goo_cairo_fill_rule_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_OPERATOR (goo_cairo_operator_get_type())
-
 DECLARE FUNCTION goo_cairo_operator_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_ANTIALIAS (goo_cairo_antialias_get_type())
-
 DECLARE FUNCTION goo_cairo_antialias_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_LINE_CAP (goo_cairo_line_cap_get_type ())
-
 DECLARE FUNCTION goo_cairo_line_cap_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_LINE_JOIN (goo_cairo_line_join_get_type ())
-
 DECLARE FUNCTION goo_cairo_line_join_get_type() AS GType
-
 #DEFINE GOO_TYPE_CAIRO_HINT_METRICS (goo_cairo_hint_metrics_get_type ())
-
 DECLARE FUNCTION goo_cairo_hint_metrics_get_type() AS GType
 
 #ENDIF ' __GOO_CANVAS_UTILS_H__

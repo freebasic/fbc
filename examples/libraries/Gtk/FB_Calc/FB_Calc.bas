@@ -40,7 +40,7 @@ CONST PROJ_LICE = "GNU General Public License v3" '                            >
 '< Mehr Informationen finden Sie unter:                     http://www.fsf.org >
 ' -----------------------------------------------------------------------------
 '<  GTK+tobac:                     general init / Allgemeine Initialisierungen >
-    #DEFINE __FB_GTK3__ '                                GTK-3 / GTK-3 Version >
+    #DEFINE __USE_GTK3__ '                               GTK-3 / GTK-3 Version >
     #INCLUDE "gtk/gtk.bi" '                      GTK+library / GTK+ Bibliothek >
     gtk_init(@__FB_ARGC__, @__FB_ARGV__) '             start GKT / GTK starten >
     #INCLUDE "libintl.bi" '                           load lib / Lib laden >

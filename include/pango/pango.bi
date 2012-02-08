@@ -1,11 +1,12 @@
-' This is file pango.bi
-' (FreeBasic binding for pango library version 1.28.3)
+' This is file glib.bi
+' (FreeBasic binding for GLib library version 2.31.4)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -97,11 +98,11 @@ TYPE PangoRectangle AS _PangoRectangle
 TYPE PangoGlyph AS guint32
 
 #DEFINE PANGO_SCALE 1024
-#DEFINE PANGO_PIXELS(d) ((CAST(INTEGER, d) + 512) SHR 10)
+#DEFINE PANGO_PIXELS(d) (CAST(INTEGER, (d) + 512) SHR 10)
 #DEFINE PANGO_PIXELS_FLOOR(d) ((CAST(INTEGER, (d))) SHR 10)
-#DEFINE PANGO_PIXELS_CEIL(d) ((CAST(INTEGER, d) + 1023) SHR 10)
+#DEFINE PANGO_PIXELS_CEIL(d) (CAST(INTEGER, (d) + 1023) SHR 10)
 #DEFINE PANGO_UNITS_ROUND(d) _
-  (((d) + (PANGO_SCALE SHR 1))) AND NOT (PANGO_SCALE - 1))
+  (((d) + (PANGO_SCALE SHR 1)) AND NOT (PANGO_SCALE - 1))
 
 DECLARE FUNCTION pango_units_from_double(BYVAL AS DOUBLE) AS INTEGER
 DECLARE FUNCTION pango_units_to_double(BYVAL AS INTEGER) AS DOUBLE
@@ -138,7 +139,7 @@ ENUM PangoGravityHint
 END ENUM
 
 #DEFINE PANGO_GRAVITY_IS_VERTICAL(gravity) _
- ((gravity)= PANGO_GRAVITY_EAST ORELSE (gravity)= PANGO_GRAVITY_WEST)
+ ((gravity) = PANGO_GRAVITY_EAST ORELSE (gravity) = PANGO_GRAVITY_WEST)
 
 #IFNDEF __PANGO_MATRIX_H__
 #DEFINE __PANGO_MATRIX_H__
@@ -155,7 +156,7 @@ TYPE _PangoMatrix
 END TYPE
 
 #DEFINE PANGO_TYPE_MATRIX (pango_matrix_get_type ())
-#DEFINE PANGO_MATRIX_INIT { 1., 0., 0., 1., 0., 0. }
+#DEFINE PANGO_MATRIX_INIT TYPE<PangoMatrix>( 1., 0., 0., 1., 0., 0. )
 
 DECLARE FUNCTION pango_matrix_get_type() AS GType
 DECLARE FUNCTION pango_matrix_copy(BYVAL AS CONST PangoMatrix PTR) AS PangoMatrix PTR
@@ -261,7 +262,7 @@ END ENUM
 
 DECLARE FUNCTION pango_script_for_unichar(BYVAL AS gunichar) AS PangoScript
 DECLARE FUNCTION pango_script_iter_new(BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER) AS PangoScriptIter PTR
-DECLARE SUB pango_script_iter_get_range(BYVAL AS PangoScriptIter PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS ZSTRING PTR PTR, BYVAL AS PangoScript PTR)
+DECLARE SUB pango_script_iter_get_range(BYVAL AS PangoScriptIter PTR, BYVAL AS CONST ZSTRING PTR PTR, BYVAL AS CONST ZSTRING PTR PTR, BYVAL AS PangoScript PTR)
 DECLARE FUNCTION pango_script_iter_next(BYVAL AS PangoScriptIter PTR) AS gboolean
 DECLARE SUB pango_script_iter_free(BYVAL AS PangoScriptIter PTR)
 
@@ -274,14 +275,16 @@ TYPE PangoLanguage AS _PangoLanguage
 
 DECLARE FUNCTION pango_language_get_type() AS GType
 DECLARE FUNCTION pango_language_from_string(BYVAL AS CONST ZSTRING PTR) AS PangoLanguage PTR
-DECLARE FUNCTION pango_language_to_string(BYVAL AS PangoLanguage PTR) AS ZSTRING PTR
+DECLARE FUNCTION pango_language_to_string(BYVAL AS PangoLanguage PTR) AS CONST ZSTRING PTR
 
-DECLARE FUNCTION pango_language_get_sample_string(BYVAL AS PangoLanguage PTR) AS ZSTRING PTR
+'#DEFINE pango_language_to_string(language) (CAST(CONST ZSTRING PTR, language))
+
+DECLARE FUNCTION pango_language_get_sample_string(BYVAL AS PangoLanguage PTR) AS CONST ZSTRING PTR
 DECLARE FUNCTION pango_language_get_default() AS PangoLanguage PTR
 DECLARE FUNCTION pango_language_matches(BYVAL AS PangoLanguage PTR, BYVAL AS CONST ZSTRING PTR) AS gboolean
 
 DECLARE FUNCTION pango_language_includes_script(BYVAL AS PangoLanguage PTR, BYVAL AS PangoScript) AS gboolean
-DECLARE FUNCTION pango_language_get_scripts(BYVAL AS PangoLanguage PTR, BYVAL AS INTEGER PTR) AS PangoScript PTR
+DECLARE FUNCTION pango_language_get_scripts(BYVAL AS PangoLanguage PTR, BYVAL AS INTEGER PTR) AS CONST PangoScript PTR
 
 #ENDIF ' __PANGO_LANGUAGE_H__
 
@@ -414,7 +417,7 @@ DECLARE SUB pango_font_description_free(BYVAL AS PangoFontDescription PTR)
 DECLARE SUB pango_font_descriptions_free(BYVAL AS PangoFontDescription PTR PTR, BYVAL AS INTEGER)
 DECLARE SUB pango_font_description_set_family(BYVAL AS PangoFontDescription PTR, BYVAL AS CONST ZSTRING PTR)
 DECLARE SUB pango_font_description_set_family_static(BYVAL AS PangoFontDescription PTR, BYVAL AS CONST ZSTRING PTR)
-DECLARE FUNCTION pango_font_description_get_family(BYVAL AS CONST PangoFontDescription PTR) AS ZSTRING PTR
+DECLARE FUNCTION pango_font_description_get_family(BYVAL AS CONST PangoFontDescription PTR) AS CONST ZSTRING PTR
 DECLARE SUB pango_font_description_set_style(BYVAL AS PangoFontDescription PTR, BYVAL AS PangoStyle)
 DECLARE FUNCTION pango_font_description_get_style(BYVAL AS CONST PangoFontDescription PTR) AS PangoStyle
 DECLARE SUB pango_font_description_set_variant(BYVAL AS PangoFontDescription PTR, BYVAL AS PangoVariant)
@@ -479,7 +482,7 @@ TYPE PangoFontFace AS _PangoFontFace
 
 DECLARE FUNCTION pango_font_family_get_type() AS GType
 DECLARE SUB pango_font_family_list_faces(BYVAL AS PangoFontFamily PTR, BYVAL AS PangoFontFace PTR PTR PTR, BYVAL AS INTEGER PTR)
-DECLARE FUNCTION pango_font_family_get_name(BYVAL AS PangoFontFamily PTR) AS ZSTRING PTR
+DECLARE FUNCTION pango_font_family_get_name(BYVAL AS PangoFontFamily PTR) AS CONST ZSTRING PTR
 DECLARE FUNCTION pango_font_family_is_monospace(BYVAL AS PangoFontFamily PTR) AS gboolean
 
 #IFDEF PANGO_ENABLE_BACKEND
@@ -511,7 +514,7 @@ END TYPE
 
 DECLARE FUNCTION pango_font_face_get_type() AS GType
 DECLARE FUNCTION pango_font_face_describe(BYVAL AS PangoFontFace PTR) AS PangoFontDescription PTR
-DECLARE FUNCTION pango_font_face_get_face_name(BYVAL AS PangoFontFace PTR) AS ZSTRING PTR
+DECLARE FUNCTION pango_font_face_get_face_name(BYVAL AS PangoFontFace PTR) AS CONST ZSTRING PTR
 DECLARE SUB pango_font_face_list_sizes(BYVAL AS PangoFontFace PTR, BYVAL AS INTEGER PTR PTR, BYVAL AS INTEGER PTR)
 DECLARE FUNCTION pango_font_face_is_synthesized(BYVAL AS PangoFontFace PTR) AS gboolean
 
@@ -582,7 +585,7 @@ END TYPE
 #DEFINE PANGO_GLYPH_EMPTY (CAST(PangoGlyph, &h0FFFFFFF))
 #DEFINE PANGO_GLYPH_INVALID_INPUT (CAST(PangoGlyph, &hFFFFFFFF))
 #DEFINE PANGO_GLYPH_UNKNOWN_FLAG (CAST(PangoGlyph, &h10000000))
-#DEFINE PANGO_GET_UNKNOWN_GLYPH(wc) (CAST(PangoGlyph, (wc))OR PANGO_GLYPH_UNKNOWN_FLAG)
+#DEFINE PANGO_GET_UNKNOWN_GLYPH(wc) (CAST(PangoGlyph, (wc)) ORPANGO_GLYPH_UNKNOWN_FLAG)
 #ENDIF ' __PANGO_FONT_H__
 
 TYPE PangoColor AS _PangoColor
@@ -716,7 +719,7 @@ TYPE _PangoAttrFontDesc
 END TYPE
 
 DECLARE FUNCTION pango_attr_type_register(BYVAL AS CONST gchar PTR) AS PangoAttrType
-DECLARE FUNCTION pango_attr_type_get_name(BYVAL AS PangoAttrType) AS ZSTRING PTR
+DECLARE FUNCTION pango_attr_type_get_name(BYVAL AS PangoAttrType) AS CONST ZSTRING PTR
 DECLARE SUB pango_attribute_init(BYVAL AS PangoAttribute PTR, BYVAL AS CONST PangoAttrClass PTR)
 DECLARE FUNCTION pango_attribute_copy(BYVAL AS CONST PangoAttribute PTR) AS PangoAttribute PTR
 DECLARE SUB pango_attribute_destroy(BYVAL AS PangoAttribute PTR)
@@ -963,7 +966,7 @@ DECLARE FUNCTION pango_context_get_gravity(BYVAL AS PangoContext PTR) AS PangoGr
 DECLARE SUB pango_context_set_gravity_hint(BYVAL AS PangoContext PTR, BYVAL AS PangoGravityHint)
 DECLARE FUNCTION pango_context_get_gravity_hint(BYVAL AS PangoContext PTR) AS PangoGravityHint
 DECLARE SUB pango_context_set_matrix(BYVAL AS PangoContext PTR, BYVAL AS CONST PangoMatrix PTR)
-DECLARE FUNCTION pango_context_get_matrix(BYVAL AS PangoContext PTR) AS PangoMatrix PTR
+DECLARE FUNCTION pango_context_get_matrix(BYVAL AS PangoContext PTR) AS CONST PangoMatrix PTR
 DECLARE FUNCTION pango_itemize(BYVAL AS PangoContext PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS PangoAttrList PTR, BYVAL AS PangoAttrIterator PTR) AS GList PTR
 DECLARE FUNCTION pango_itemize_with_base_dir(BYVAL AS PangoContext PTR, BYVAL AS PangoDirection, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS PangoAttrList PTR, BYVAL AS PangoAttrIterator PTR) AS GList PTR
 
@@ -1110,22 +1113,22 @@ DECLARE SUB script_engine_exit()
 DECLARE FUNCTION script_engine_create(BYVAL AS CONST ZSTRING PTR) AS PangoEngine PTR
 
 #MACRO PANGO_ENGINE_DEFINE_TYPE(name, prefix, class_init, instance_init, parent_type)
-STATIC SHARED AS GType prefix##_type
-SUB prefix##_register_type(BYVAL module AS GTypeModule PTR)
-  DIM AS CONST GTypeInfo object_info = TYPE<GTypeInfo>( _
-     SIZEOF (name##Class), _
-     CAST(GBaseInitFunc, NULL), _
-     CAST(GBaseFinalizeFunc, NULL), _
-     CAST(GClassInitFunc, @class_init), _
-     CAST(GClassFinalizeFunc, NULL), _
-     NULL, _
-     SIZEOF (name), _
-     0, _
-     CAST(GInstanceInitFunc, @instance_init), _
-     NULL _
-     )
-  prefix##_type = g_type_module_register_type (module, parent_type, #name, @object_info, 0)
-END SUB
+ STATIC SHARED AS GType prefix##_type
+ SUB prefix##_register_type(BYVAL module AS GTypeModule PTR)
+   DIM AS CONST GTypeInfo object_info = TYPE<GTypeInfo>( _
+      SIZEOF (name##Class), _
+      CAST(GBaseInitFunc, NULL), _
+      CAST(GBaseFinalizeFunc, NULL), _
+      CAST(GClassInitFunc, @class_init), _
+      CAST(GClassFinalizeFunc, NULL), _
+      NULL, _
+      SIZEOF (name), _
+      0, _
+      CAST(GInstanceInitFunc, @instance_init), _
+      NULL _
+      )
+   prefix##_type = g_type_module_register_type (module, parent_type, #name, @object_info, 0)
+ END SUB
 #ENDMACRO
 
 #DEFINE PANGO_ENGINE_LANG_DEFINE_TYPE(name, prefix, class_init, instance_init) _
@@ -1191,9 +1194,9 @@ DECLARE FUNCTION pango_tab_align_get_type() AS GType
 #IFNDEF PANGO_FEATURES_H
 #DEFINE PANGO_FEATURES_H
 #DEFINE PANGO_VERSION_MAJOR 1
-#DEFINE PANGO_VERSION_MINOR 28
-#DEFINE PANGO_VERSION_MICRO 3
-#DEFINE PANGO_VERSION_STRING !"1.28.3"
+#DEFINE PANGO_VERSION_MINOR 29
+#DEFINE PANGO_VERSION_MICRO 5
+#DEFINE PANGO_VERSION_STRING !"1.29.5"
 #ENDIF ' PANGO_FEATURES_H
 
 #IFNDEF __PANGO_GLYPH_ITEM_H__
@@ -1248,7 +1251,10 @@ DECLARE FUNCTION pango_glyph_item_iter_prev_cluster(BYVAL AS PangoGlyphItemIter 
 #DEFINE __PANGO_TABS_H__
 
 TYPE PangoTabArray AS _PangoTabArray
-TYPE PangoTabAlign AS ANY PTR
+
+ENUM PangoTabAlign
+  PANGO_TAB_LEFT
+END ENUM
 
 #DEFINE PANGO_TYPE_TAB_ARRAY (pango_tab_array_get_type ())
 
@@ -1314,10 +1320,11 @@ DECLARE SUB pango_layout_set_attributes(BYVAL AS PangoLayout PTR, BYVAL AS Pango
 DECLARE FUNCTION pango_layout_get_attributes(BYVAL AS PangoLayout PTR) AS PangoAttrList PTR
 DECLARE SUB pango_layout_set_text(BYVAL AS PangoLayout PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER)
 DECLARE FUNCTION pango_layout_get_text(BYVAL AS PangoLayout PTR) AS CONST ZSTRING PTR
+DECLARE FUNCTION pango_layout_get_character_count(BYVAL AS PangoLayout PTR) AS gint
 DECLARE SUB pango_layout_set_markup(BYVAL AS PangoLayout PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER)
 DECLARE SUB pango_layout_set_markup_with_accel(BYVAL AS PangoLayout PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS gunichar, BYVAL AS gunichar PTR)
 DECLARE SUB pango_layout_set_font_description(BYVAL AS PangoLayout PTR, BYVAL AS CONST PangoFontDescription PTR)
-DECLARE FUNCTION pango_layout_get_font_description(BYVAL AS PangoLayout PTR) AS PangoFontDescription PTR
+DECLARE FUNCTION pango_layout_get_font_description(BYVAL AS PangoLayout PTR) AS CONST PangoFontDescription PTR
 DECLARE SUB pango_layout_set_width(BYVAL AS PangoLayout PTR, BYVAL AS INTEGER)
 DECLARE FUNCTION pango_layout_get_width(BYVAL AS PangoLayout PTR) AS INTEGER
 DECLARE SUB pango_layout_set_height(BYVAL AS PangoLayout PTR, BYVAL AS INTEGER)
@@ -1345,6 +1352,7 @@ DECLARE FUNCTION pango_layout_is_ellipsized(BYVAL AS PangoLayout PTR) AS gboolea
 DECLARE FUNCTION pango_layout_get_unknown_glyphs_count(BYVAL AS PangoLayout PTR) AS INTEGER
 DECLARE SUB pango_layout_context_changed(BYVAL AS PangoLayout PTR)
 DECLARE SUB pango_layout_get_log_attrs(BYVAL AS PangoLayout PTR, BYVAL AS PangoLogAttr PTR PTR, BYVAL AS gint PTR)
+DECLARE FUNCTION pango_layout_get_log_attrs_readonly(BYVAL AS PangoLayout PTR, BYVAL AS gint PTR) AS CONST PangoLogAttr PTR
 DECLARE SUB pango_layout_index_to_pos(BYVAL AS PangoLayout PTR, BYVAL AS INTEGER, BYVAL AS PangoRectangle PTR)
 DECLARE SUB pango_layout_index_to_line_x(BYVAL AS PangoLayout PTR, BYVAL AS INTEGER, BYVAL AS gboolean, BYVAL AS INTEGER PTR, BYVAL AS INTEGER PTR)
 DECLARE SUB pango_layout_get_cursor_pos(BYVAL AS PangoLayout PTR, BYVAL AS INTEGER, BYVAL AS PangoRectangle PTR, BYVAL AS PangoRectangle PTR)
@@ -1441,7 +1449,7 @@ TYPE _PangoRendererClass
   draw_glyph AS SUB(BYVAL AS PangoRenderer PTR, BYVAL AS PangoFont PTR, BYVAL AS PangoGlyph, BYVAL AS DOUBLE, BYVAL AS DOUBLE)
   part_changed AS SUB(BYVAL AS PangoRenderer PTR, BYVAL AS PangoRenderPart)
   begin AS SUB(BYVAL AS PangoRenderer PTR)
-  end AS SUB(BYVAL AS PangoRenderer PTR)
+  end_ AS SUB(BYVAL AS PangoRenderer PTR)
   prepare_run AS SUB(BYVAL AS PangoRenderer PTR, BYVAL AS PangoLayoutRun PTR)
   draw_glyph_item AS SUB(BYVAL AS PangoRenderer PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS PangoGlyphItem PTR, BYVAL AS INTEGER, BYVAL AS INTEGER)
   _pango_reserved2 AS SUB()
@@ -1464,7 +1472,7 @@ DECLARE SUB pango_renderer_part_changed(BYVAL AS PangoRenderer PTR, BYVAL AS Pan
 DECLARE SUB pango_renderer_set_color(BYVAL AS PangoRenderer PTR, BYVAL AS PangoRenderPart, BYVAL AS CONST PangoColor PTR)
 DECLARE FUNCTION pango_renderer_get_color(BYVAL AS PangoRenderer PTR, BYVAL AS PangoRenderPart) AS PangoColor PTR
 DECLARE SUB pango_renderer_set_matrix(BYVAL AS PangoRenderer PTR, BYVAL AS CONST PangoMatrix PTR)
-DECLARE FUNCTION pango_renderer_get_matrix(BYVAL AS PangoRenderer PTR) AS PangoMatrix PTR
+DECLARE FUNCTION pango_renderer_get_matrix(BYVAL AS PangoRenderer PTR) AS CONST PangoMatrix PTR
 DECLARE FUNCTION pango_renderer_get_layout(BYVAL AS PangoRenderer PTR) AS PangoLayout PTR
 DECLARE FUNCTION pango_renderer_get_layout_line(BYVAL AS PangoRenderer PTR) AS PangoLayoutLine PTR
 
@@ -1497,8 +1505,8 @@ DECLARE FUNCTION pango_parse_stretch(BYVAL AS CONST ZSTRING PTR, BYVAL AS PangoS
 
 #IFDEF PANGO_ENABLE_BACKEND
 
-DECLARE FUNCTION pango_get_sysconf_subdirectory() AS ZSTRING PTR
-DECLARE FUNCTION pango_get_lib_subdirectory() AS ZSTRING PTR
+DECLARE FUNCTION pango_get_sysconf_subdirectory() AS CONST ZSTRING PTR
+DECLARE FUNCTION pango_get_lib_subdirectory() AS CONST ZSTRING PTR
 
 #ENDIF ' PANGO_ENABLE_BACKEND
 
@@ -1507,9 +1515,9 @@ DECLARE FUNCTION pango_log2vis_get_embedding_levels(BYVAL AS CONST gchar PTR, BY
 DECLARE FUNCTION pango_is_zero_width(BYVAL AS gunichar) AS gboolean
 
 #DEFINE PANGO_VERSION_ENCODE(major, minor, micro) ( _
-   ((major) * 10000)) _
- + ((minor) * 100)) _
- + ((micro) * 1)))
+   ((major) * 10000) _
+ + ((minor) * 100) _
+ + ((micro) * 1))
 #DEFINE PANGO_VERSION PANGO_VERSION_ENCODE( _
  PANGO_VERSION_MAJOR, _
  PANGO_VERSION_MINOR, _
@@ -1517,9 +1525,9 @@ DECLARE FUNCTION pango_is_zero_width(BYVAL AS gunichar) AS gboolean
 #DEFINE PANGO_VERSION_CHECK(major,minor,micro) _
  (PANGO_VERSION >= PANGO_VERSION_ENCODE(major,minor,micro))
 
-DECLARE FUNCTION pango_version_FB ALIAS "pango_version"() AS INTEGER
-DECLARE FUNCTION pango_version_string_FB ALIAS "pango_version_string"() AS ZSTRING PTR
-DECLARE FUNCTION pango_version_check_FB ALIAS "pango_version_check"(BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS ZSTRING PTR
+DECLARE FUNCTION pango_version_ ALIAS "pango_version"() AS INTEGER
+DECLARE FUNCTION pango_version_string_ ALIAS "pango_version_string"() AS CONST ZSTRING PTR
+DECLARE FUNCTION pango_version_check_ ALIAS "pango_version_check"(BYVAL AS INTEGER, BYVAL AS INTEGER, BYVAL AS INTEGER) AS CONST ZSTRING PTR
 
 #ENDIF ' __PANGO_UTILS_H__
 

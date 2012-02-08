@@ -4,7 +4,7 @@
 ' Reviewed by TJF (2011)
 ' Details: http://developer.gnome.org/gtk/
 
-'#DEFINE __FB_GTK3__
+'#DEFINE __USE_GTK3__
 #include once "gtk/gtk.bi"
 
 ' This is a callback function. The data arguments are ignored

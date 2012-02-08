@@ -1,11 +1,12 @@
-' This is file gmodule.bi
-' (FreeBasic binding for gmodule library version 2.28.0)
+' This is file glib.bi
+' (FreeBasic binding for GLib library version 2.31.4)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -77,9 +78,9 @@ DECLARE FUNCTION g_module_supported() AS gboolean
 DECLARE FUNCTION g_module_open(BYVAL AS CONST gchar PTR, BYVAL AS GModuleFlags) AS GModule PTR
 DECLARE FUNCTION g_module_close(BYVAL AS GModule PTR) AS gboolean
 DECLARE SUB g_module_make_resident(BYVAL AS GModule PTR)
-DECLARE FUNCTION g_module_error() AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_module_error() AS CONST gchar PTR
 DECLARE FUNCTION g_module_symbol(BYVAL AS GModule PTR, BYVAL AS CONST gchar PTR, BYVAL AS gpointer PTR) AS gboolean
-DECLARE FUNCTION g_module_name(BYVAL AS GModule PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_module_name(BYVAL AS GModule PTR) AS CONST gchar PTR
 DECLARE FUNCTION g_module_build_path(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
 
 #ENDIF ' __GMODULE_H__

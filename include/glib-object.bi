@@ -1,11 +1,12 @@
-' This is file glib-object.bi
-' (FreeBasic binding for glib-object library version 2.28.0)
+' This is file glib.bi
+' (FreeBasic binding for GLib library version 2.31.4)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -18,10 +19,8 @@
 ' http://www.gnu.org/licenses/lgpl.html
 '
 '
-' Original license text:
-'
 '/* GObject - GLib Type, Object, Parameter and Signal Library
- '* Copyright (C) 1998, 1999, 2000 Tim Janik and Red Hat, Inc.
+ '* Copyright (C) 1998-1999, 2000-2001 Tim Janik and Red Hat, Inc.
  '*
  '* This library is free software; you can redistribute it and/or
  '* modify it under the terms of the GNU Lesser General Public
@@ -30,7 +29,7 @@
  '*
  '* This library is distributed in the hope that it will be useful,
  '* but WITHOUT ANY WARRANTY; without even the implied warranty of
- '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
+ '* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  '* Lesser General Public License for more details.
  '*
  '* You should have received a copy of the GNU Lesser General
@@ -61,7 +60,7 @@ EXTERN "C"
 #IFNDEF __G_TYPE_H__
 #DEFINE __G_TYPE_H__
 
-#DEFINE G_TYPE_FUNDAMENTAL(type) (g_type_fundamental_FB (type))
+#DEFINE G_TYPE_FUNDAMENTAL(type) (g_type_fundamental_(type))
 #DEFINE G_TYPE_FUNDAMENTAL_MAX (255 SHL G_TYPE_FUNDAMENTAL_SHIFT)
 #DEFINE G_TYPE_INVALID G_TYPE_MAKE_FUNDAMENTAL (0)
 #DEFINE G_TYPE_NONE G_TYPE_MAKE_FUNDAMENTAL (1)
@@ -94,7 +93,7 @@ EXTERN "C"
 #DEFINE G_TYPE_RESERVED_USER_FIRST (49)
 #DEFINE G_TYPE_IS_FUNDAMENTAL(type) ((type) <= G_TYPE_FUNDAMENTAL_MAX)
 #DEFINE G_TYPE_IS_DERIVED(type) ((type) > G_TYPE_FUNDAMENTAL_MAX)
-#DEFINE G_TYPE_IS_INTERFACE(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_INTERFACE)
+#DEFINE G_TYPE_IS_INTERFACE(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_INTERFACE)
 #DEFINE G_TYPE_IS_CLASSED(type) (g_type_test_flags ((type), G_TYPE_FLAG_CLASSED))
 #DEFINE G_TYPE_IS_INSTANTIATABLE(type) (g_type_test_flags ((type), G_TYPE_FLAG_INSTANTIATABLE))
 #DEFINE G_TYPE_IS_DERIVABLE(type) (g_type_test_flags ((type), G_TYPE_FLAG_DERIVABLE))
@@ -104,15 +103,7 @@ EXTERN "C"
 #DEFINE G_TYPE_IS_VALUE_TYPE(type) (g_type_check_is_value_type (type))
 #DEFINE G_TYPE_HAS_VALUE_TABLE(type) (g_type_value_table_peek (type) <> NULL)
 
-#IF GLIB_SIZEOF_SIZE_T <> GLIB_SIZEOF_LONG OR NOT DEFINED (__cplusplus)
-
 TYPE GType AS gsize
-
-#ELSE ' GLIB_SIZEOF_SIZE_T
-
-TYPE GType AS gulong
-
-#ENDIF ' GLIB_SIZEOF_SIZE_T
 
 TYPE GValue AS _GValue
 TYPE GTypeCValue AS _GTypeCValue
@@ -158,8 +149,8 @@ END TYPE
 #DEFINE G_TYPE_FROM_INSTANCE(instance) (G_TYPE_FROM_CLASS ((CAST(GTypeInstance PTR, (instance)))->g_class))
 #DEFINE G_TYPE_FROM_CLASS(g_class) ((CAST(GTypeClass PTR, (g_class)))->g_type)
 #DEFINE G_TYPE_FROM_INTERFACE(g_iface) ((CAST(GTypeInterface PTR, (g_iface)))->g_type)
-#DEFINE G_TYPE_INSTANCE_GET_PRIVATE(instance, g_type, c_type) (CAST(c_type PTR, g_type_instance_get_private_FB (CAST(GTypeInstance PTR, (instance)), (g_type))))
-#DEFINE G_TYPE_CLASS_GET_PRIVATE(klass, g_type, c_type) (CAST(c_type PTR, g_type_class_get_private_FB (CAST(GTypeClass PTR, (klass)), (g_type))))
+#DEFINE G_TYPE_INSTANCE_GET_PRIVATE(instance, g_type, c_type) (CAST(c_type PTR, g_type_instance_get_private_(CAST(GTypeInstance PTR, (instance)), (g_type))))
+#DEFINE G_TYPE_CLASS_GET_PRIVATE(klass, g_type, c_type) (CAST(c_type PTR, g_type_class_get_private_(CAST(GTypeClass PTR, (klass)), (g_type))))
 
 ENUM GTypeDebugFlags
   G_TYPE_DEBUG_NONE = 0
@@ -170,7 +161,7 @@ END ENUM
 
 DECLARE SUB g_type_init()
 DECLARE SUB g_type_init_with_debug_flags(BYVAL AS GTypeDebugFlags)
-DECLARE FUNCTION g_type_name(BYVAL AS GType) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_type_name(BYVAL AS GType) AS CONST gchar PTR
 DECLARE FUNCTION g_type_qname(BYVAL AS GType) AS GQuark
 DECLARE FUNCTION g_type_from_name(BYVAL AS CONST gchar PTR) AS GType
 DECLARE FUNCTION g_type_parent(BYVAL AS GType) AS GType
@@ -258,55 +249,9 @@ DECLARE SUB g_type_add_interface_dynamic(BYVAL AS GType, BYVAL AS GType, BYVAL A
 DECLARE SUB g_type_interface_add_prerequisite(BYVAL AS GType, BYVAL AS GType)
 DECLARE FUNCTION g_type_interface_prerequisites(BYVAL AS GType, BYVAL AS guint PTR) AS GType PTR
 DECLARE SUB g_type_class_add_private(BYVAL AS gpointer, BYVAL AS gsize)
-DECLARE FUNCTION g_type_instance_get_private_FB ALIAS "g_type_instance_get_private"(BYVAL AS GTypeInstance PTR, BYVAL AS GType) AS gpointer
+DECLARE FUNCTION g_type_instance_get_private_ ALIAS "g_type_instance_get_private"(BYVAL AS GTypeInstance PTR, BYVAL AS GType) AS gpointer
 DECLARE SUB g_type_add_class_private(BYVAL AS GType, BYVAL AS gsize)
-DECLARE FUNCTION g_type_class_get_private_FB ALIAS "g_type_class_get_private"(BYVAL AS GTypeClass PTR, BYVAL AS GType) AS gpointer
-
-#MACRO _G_DEFINE_TYPE_EXTENDED_BEGIN(TypeName, type_name, TYPE_PARENT, flags)
- DECLARE SUB type_name##_init CDECL(BYVAL AS TypeName PTR)
- DECLARE SUB type_name##_class_init CDECL(BYVAL AS TypeName##Class PTR)
-
- STATIC SHARED AS gpointer type_name##_parent_class = NULL
-
- SUB type_name##_class_intern_init CDECL(BYVAL klass AS gpointer) STATIC
-   type_name##_parent_class = g_type_class_peek_parent (klass)
-   type_name##_class_init (CAST(TypeName##Class PTR, klass))
- END SUB
-
- FUNCTION type_name##_get_type CDECL() AS GType
-   STATIC AS gsize g_define_type_id__volatile = 0
-   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
-     VAR g_define_type_id = _
-         g_type_register_static_simple(TYPE_PARENT, _
-                                       g_intern_static_string (#TypeName), _
-                                       SIZEOF (TypeName##Class), _
-                                       CAST(GClassInitFunc, @type_name##_class_intern_init), _
-                                       SIZEOF (TypeName), _
-                                       CAST(GInstanceInitFunc, @type_name##_init), _
-                                       CAST(GTypeFlags, flags))
-#ENDMACRO
-
-#MACRO _G_DEFINE_BOXED_TYPE_BEGIN(TypeName, type_name, copy_func, free_func)
- FUNCTION type_name##_get_type CDECL() AS GType
-   STATIC AS gsize g_define_type_id__volatile = 0
-   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
-     VAR g_define_type_id = _
-         g_boxed_type_register_static(g_intern_static_string (#TypeName), CAST(GBoxedCopyFunc, @copy_func), CAST(GBoxedFreeFunc, @free_func))
-#ENDMACRO
-
-#MACRO _G_DEFINE_POINTER_TYPE_BEGIN(TypeName, type_name)
- FUNCTION type_name##_get_type CDECL() AS GType
-   STATIC AS gsize g_define_type_id__volatile = 0
-   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
-     VAR g_define_type_id = _
-         g_pointer_type_register_static (g_intern_static_string (#TypeName))
-#ENDMACRO
-
-#MACRO _G_DEFINE_TYPE_EXTENDED_END()
-     g_once_init_leave (@g_define_type_id__volatile, g_define_type_id)
-   END IF : RETURN g_define_type_id__volatile
- END FUNCTION
-#ENDMACRO
+DECLARE FUNCTION g_type_class_get_private_ ALIAS "g_type_class_get_private"(BYVAL AS GTypeClass PTR, BYVAL AS GType) AS gpointer
 
 #DEFINE G_DEFINE_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, )
 #MACRO G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)
@@ -337,24 +282,89 @@ DECLARE FUNCTION g_type_class_get_private_FB ALIAS "g_type_class_get_private"(BY
 
 #DEFINE G_IMPLEMENT_INTERFACE(TYPE_IFACE, iface_init) g_type_add_interface_static (g_define_type_id, TYPE_IFACE, @TYPE( CAST(GInterfaceInitFunc, @iface_init), NULL, NULL ))
 
+#MACRO _G_DEFINE_TYPE_EXTENDED_BEGIN(TypeName, type_name, TYPE_PARENT, flags)
+ DECLARE SUB type_name##_init CDECL(BYVAL AS TypeName PTR)
+ DECLARE SUB type_name##_class_init CDECL(BYVAL AS TypeName##Class PTR)
+
+ STATIC SHARED AS gpointer type_name##_parent_class = NULL
+
+ SUB type_name##_class_intern_init CDECL(BYVAL klass AS gpointer) STATIC
+   type_name##_parent_class = g_type_class_peek_parent (klass)
+   type_name##_class_init (CAST(TypeName##Class PTR, klass))
+ END SUB
+
+ FUNCTION type_name##_get_type CDECL() AS GType
+   STATIC AS gsize g_define_type_id__volatile = 0
+   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
+     VAR g_define_type_id = _
+         g_type_register_static_simple(TYPE_PARENT, _
+                                       g_intern_static_string (@#TypeName), _
+                                       SIZEOF (TypeName##Class), _
+                                       CAST(GClassInitFunc, @type_name##_class_intern_init), _
+                                       SIZEOF (TypeName), _
+                                       CAST(GInstanceInitFunc, @type_name##_init), _
+                                       CAST(GTypeFlags, flags))
+#ENDMACRO
+
+#MACRO _G_DEFINE_TYPE_EXTENDED_END()
+     g_once_init_leave (@g_define_type_id__volatile, g_define_type_id)
+   END IF : RETURN g_define_type_id__volatile
+ END FUNCTION
+#ENDMACRO
+
+#MACRO _G_DEFINE_INTERFACE_EXTENDED_BEGIN(TypeName, type_name)
+ DECLARE SUB type_name##_default_init CDECL(BYVAL AS TypeName##Interface PTR)
+ FUNCTION type_name##_get_type CDECL() AS GType
+   STATIC AS gsize g_define_type_id__volatile = 0
+   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
+     VAR g_define_type_id = _
+         g_type_register_static_simple (G_TYPE_INTERFACE, _
+                                        g_intern_static_string (@#TypeName), _
+                                        SIZEOF (TypeName##Interface), _
+                                        CAST(GClassInitFunc, @type_name##_default_init), _
+                                        0, _
+                                        CAST(GInstanceInitFunc, NULL), _
+                                        CAST(GTypeFlags, 0))
+     IF TYPE_PREREQ THEN _
+       g_type_interface_add_prerequisite (g_define_type_id, TYPE_PREREQ)
+#ENDMACRO
+
 #DEFINE G_DEFINE_BOXED_TYPE(TypeName, type_name, copy_func, free_func) G_DEFINE_BOXED_TYPE_WITH_CODE (TypeName, type_name, copy_func, free_func, )
+
 #MACRO G_DEFINE_BOXED_TYPE_WITH_CODE(TypeName, type_name, copy_func, free_func, _C_)
  _G_DEFINE_BOXED_TYPE_BEGIN (TypeName, type_name, copy_func, free_func)
  _C_
  _G_DEFINE_TYPE_EXTENDED_END()
 #ENDMACRO
 
+#MACRO _G_DEFINE_BOXED_TYPE_BEGIN(TypeName, type_name, copy_func, free_func)
+ FUNCTION type_name##_get_type CDECL() AS GType
+   STATIC AS gsize g_define_type_id__volatile = 0
+   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
+     VAR g_define_type_id = _
+         g_boxed_type_register_static(g_intern_static_string (@#TypeName), CAST(GBoxedCopyFunc, @copy_func), CAST(GBoxedFreeFunc, @free_func))
+#ENDMACRO
+
 #DEFINE G_DEFINE_POINTER_TYPE(TypeName, type_name) G_DEFINE_POINTER_TYPE_WITH_CODE (TypeName, type_name, )
+
 #MACRO G_DEFINE_POINTER_TYPE_WITH_CODE(TypeName, type_name, _C_)
  _G_DEFINE_POINTER_TYPE_BEGIN (TypeName, type_name)
  _C_
  _G_DEFINE_TYPE_EXTENDED_END()
 #ENDMACRO
 
+#MACRO _G_DEFINE_POINTER_TYPE_BEGIN(TypeName, type_name)
+ FUNCTION type_name##_get_type CDECL() AS GType
+   STATIC AS gsize g_define_type_id__volatile = 0
+   IF (g_once_init_enter (@g_define_type_id__volatile)) THEN
+     VAR g_define_type_id = _
+         g_pointer_type_register_static (g_intern_static_string (@#TypeName))
+#ENDMACRO
+
 DECLARE FUNCTION g_type_get_plugin(BYVAL AS GType) AS GTypePlugin PTR
 DECLARE FUNCTION g_type_interface_get_plugin(BYVAL AS GType, BYVAL AS GType) AS GTypePlugin PTR
 DECLARE FUNCTION g_type_fundamental_next() AS GType
-DECLARE FUNCTION g_type_fundamental_FB ALIAS "g_type_fundamental"(BYVAL AS GType) AS GType
+DECLARE FUNCTION g_type_fundamental_ ALIAS "g_type_fundamental"(BYVAL AS GType) AS GType
 DECLARE FUNCTION g_type_create_instance(BYVAL AS GType) AS GTypeInstance PTR
 DECLARE SUB g_type_free_instance(BYVAL AS GTypeInstance PTR)
 DECLARE SUB g_type_add_class_cache_func(BYVAL AS gpointer, BYVAL AS GTypeClassCacheFunc)
@@ -363,45 +373,53 @@ DECLARE SUB g_type_class_unref_uncached(BYVAL AS gpointer)
 DECLARE SUB g_type_add_interface_check(BYVAL AS gpointer, BYVAL AS GTypeInterfaceCheckFunc)
 DECLARE SUB g_type_remove_interface_check(BYVAL AS gpointer, BYVAL AS GTypeInterfaceCheckFunc)
 DECLARE FUNCTION g_type_value_table_peek(BYVAL AS GType) AS GTypeValueTable PTR
-DECLARE FUNCTION g_type_check_instance_FB ALIAS "g_type_check_instance"(BYVAL AS GTypeInstance PTR) AS gboolean
-DECLARE FUNCTION g_type_check_instance_cast_FB ALIAS "g_type_check_instance_cast"(BYVAL AS GTypeInstance PTR, BYVAL AS GType) AS GTypeInstance PTR
+DECLARE FUNCTION g_type_check_instance_ ALIAS "g_type_check_instance"(BYVAL AS GTypeInstance PTR) AS gboolean
+DECLARE FUNCTION g_type_check_instance_cast_ ALIAS "g_type_check_instance_cast"(BYVAL AS GTypeInstance PTR, BYVAL AS GType) AS GTypeInstance PTR
 DECLARE FUNCTION g_type_check_instance_is_a(BYVAL AS GTypeInstance PTR, BYVAL AS GType) AS gboolean
-DECLARE FUNCTION g_type_check_class_cast_FB ALIAS "g_type_check_class_cast"(BYVAL AS GTypeClass PTR, BYVAL AS GType) AS GTypeClass PTR
+DECLARE FUNCTION g_type_check_class_cast_ ALIAS "g_type_check_class_cast"(BYVAL AS GTypeClass PTR, BYVAL AS GType) AS GTypeClass PTR
 DECLARE FUNCTION g_type_check_class_is_a(BYVAL AS GTypeClass PTR, BYVAL AS GType) AS gboolean
 DECLARE FUNCTION g_type_check_is_value_type(BYVAL AS GType) AS gboolean
-DECLARE FUNCTION g_type_check_value_FB ALIAS "g_type_check_value"(BYVAL AS GValue PTR) AS gboolean
+DECLARE FUNCTION g_type_check_value_ ALIAS "g_type_check_value"(BYVAL AS GValue PTR) AS gboolean
 DECLARE FUNCTION g_type_check_value_holds(BYVAL AS GValue PTR, BYVAL AS GType) AS gboolean
 DECLARE FUNCTION g_type_test_flags(BYVAL AS GType, BYVAL AS guint) AS gboolean
-DECLARE FUNCTION g_type_name_from_instance(BYVAL AS GTypeInstance PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION g_type_name_from_class(BYVAL AS GTypeClass PTR) AS G_CONST_RETURN gchar PTR
-DECLARE SUB g_value_c_init()
-DECLARE SUB g_value_types_init()
-DECLARE SUB g_enum_types_init()
-DECLARE SUB g_param_type_init()
-DECLARE SUB g_boxed_type_init()
-DECLARE SUB g_object_type_init()
-DECLARE SUB g_param_spec_types_init()
-DECLARE SUB g_value_transforms_init()
-DECLARE SUB g_signal_init()
+DECLARE FUNCTION g_type_name_from_instance(BYVAL AS GTypeInstance PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_type_name_from_class(BYVAL AS GTypeClass PTR) AS CONST gchar PTR
 
 #IFNDEF G_DISABLE_CAST_CHECKS
 #DEFINE _G_TYPE_CIC(ip, gt, ct) _
-    (CAST(ct PTR, g_type_check_instance_cast_FB (CAST(GTypeInstance PTR, ip), gt)))
+    (CAST(ct PTR, g_type_check_instance_cast_(CAST(GTypeInstance PTR, ip), gt)))
 #DEFINE _G_TYPE_CCC(cp, gt, ct) _
-    (CAST(ct PTR, g_type_check_class_cast_FB (CAST(GTypeClass PTR, cp), gt)))
+    (CAST(ct PTR, g_type_check_class_cast_(CAST(GTypeClass PTR, cp), gt)))
 #ELSE ' G_DISABLE_CAST_CHECKS
 #DEFINE _G_TYPE_CIC(ip, gt, ct) (CAST(ct PTR, ip))
 #DEFINE _G_TYPE_CCC(cp, gt, ct) (CAST(ct PTR, cp))
 #ENDIF ' G_DISABLE_CAST_CHECKS
 
-#DEFINE _G_TYPE_CHI(ip) (g_type_check_instance_FB (CAST(GTypeInstance PTR, ip)))
-#DEFINE _G_TYPE_CHV(vl) (g_type_check_value_FB (CAST(GValue PTR, vl)))
+#DEFINE _G_TYPE_CHI(ip) (g_type_check_instance_ ALIAS "g_type_check_instance" (CAST(GTypeInstance PTR, ip)))
+#DEFINE _G_TYPE_CHV(vl) (g_type_check_value_ ALIAS "g_type_check_value" (CAST(GValue PTR, vl)))
 #DEFINE _G_TYPE_IGC(ip, gt, ct) (CAST(ct PTR, ((CAST(GTypeInstance PTR, ip))->g_class)))
 #DEFINE _G_TYPE_IGI(ip, gt, ct) (CAST(ct PTR, g_type_interface_peek ((CAST(GTypeInstance PTR, ip))->g_class, gt)))
 
+#IFDEF __GNUC__
+
+#DEFINE _G_TYPE_CIT(ip, gt) _
+  IIF(0 = CAST(GTypeInstance PTR, ip), FALSE, _
+      IIF(CAST(GTypeInstance PTR, ip)->g_class ANDALSO CAST(GTypeInstance PTR, ip)->g_class->g_type = gt, TRUE, _
+          g_type_check_instance_is_a(CAST(GTypeInstance PTR, ip), gt)))
+#DEFINE _G_TYPE_CCT(cp, gt) _
+  IIF(0 = CAST(GTypeClass PTR, cp), FALSE, _
+      IIF(CAST(GTypeClass PTR, cp)->g_type = gt, TRUE, _
+          g_type_check_class_is_a(CAST(GTypeClass PTR, cp), gt)))
+#DEFINE _G_TYPE_CVH(vl, gt) _
+  IIF(0 = CAST(GValue PTR, vl), FALSE, _
+      IIF(CAST(GValue PTR, vl)->g_type = gt, TRUE, _
+          g_type_check_value_holds (CAST(GValue PTR, vl), gt)))
+
+#ELSE ' __GNUC__
 #DEFINE _G_TYPE_CIT(ip, gt) (g_type_check_instance_is_a (CAST(GTypeInstance PTR, ip), gt))
 #DEFINE _G_TYPE_CCT(cp, gt) (g_type_check_class_is_a (CAST(GTypeClass PTR, cp), gt))
 #DEFINE _G_TYPE_CVH(vl, gt) (g_type_check_value_holds (CAST(GValue PTR, vl), gt))
+#ENDIF ' __GNUC__
 
 #DEFINE G_TYPE_FLAG_RESERVED_ID_BIT (CAST(GType, (1 SHL 0)))
 
@@ -420,7 +438,7 @@ EXTERN AS GTypeDebugFlags _g_type_debug_flags
 
 TYPE GValueTransform AS SUB(BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR)
 
-UNION _GValue_data
+UNION _GValue_data_
   AS gint v_int
   AS guint v_uint
   AS glong v_long
@@ -434,10 +452,10 @@ END UNION
 
 TYPE _GValue
   AS GType g_type
-  AS _GValue_data data(1)
+  AS _GValue_data_ data(1)
 END TYPE
 
-DECLARE FUNCTION g_value_init(BYVAL AS GValue PTR, BYVAL AS GType) AS GValue PTR
+DECLARE FUNCTION g_value_init_ ALIAS "g_value_init"(BYVAL AS GValue PTR, BYVAL AS GType) AS GValue PTR
 DECLARE SUB g_value_copy(BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR)
 DECLARE FUNCTION g_value_reset(BYVAL AS GValue PTR) AS GValue PTR
 DECLARE SUB g_value_unset(BYVAL AS GValue PTR)
@@ -450,12 +468,13 @@ DECLARE FUNCTION g_value_transform(BYVAL AS CONST GValue PTR, BYVAL AS GValue PT
 DECLARE SUB g_value_register_transform_func(BYVAL AS GType, BYVAL AS GType, BYVAL AS GValueTransform)
 
 #DEFINE G_VALUE_NOCOPY_CONTENTS (1 SHL 27)
+#DEFINE G_VALUE_INIT TYPE<GValue>( 0, { 0, 0 } )
 #ENDIF ' __G_VALUE_H__
 
 #IFNDEF __G_PARAM_H__
 #DEFINE __G_PARAM_H__
 
-#DEFINE G_TYPE_IS_PARAM(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_PARAM)
+#DEFINE G_TYPE_IS_PARAM(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_PARAM)
 #DEFINE G_PARAM_SPEC(pspec) (G_TYPE_CHECK_INSTANCE_CAST ((pspec), G_TYPE_PARAM, GParamSpec))
 #DEFINE G_IS_PARAM_SPEC(pspec) (G_TYPE_CHECK_INSTANCE_TYPE ((pspec), G_TYPE_PARAM))
 #DEFINE G_PARAM_SPEC_CLASS(pclass) (G_TYPE_CHECK_CLASS_CAST ((pclass), G_TYPE_PARAM, GParamSpecClass))
@@ -493,7 +512,7 @@ TYPE GParamSpecPool AS _GParamSpecPool
 
 TYPE _GParamSpec
   AS GTypeInstance g_type_instance
-  AS gchar PTR name
+  AS CONST gchar PTR name
   AS GParamFlags flags
   AS GType value_type
   AS GType owner_type
@@ -533,19 +552,14 @@ DECLARE FUNCTION g_param_value_defaults(BYVAL AS GParamSpec PTR, BYVAL AS GValue
 DECLARE FUNCTION g_param_value_validate(BYVAL AS GParamSpec PTR, BYVAL AS GValue PTR) AS gboolean
 DECLARE FUNCTION g_param_value_convert(BYVAL AS GParamSpec PTR, BYVAL AS CONST GValue PTR, BYVAL AS GValue PTR, BYVAL AS gboolean) AS gboolean
 DECLARE FUNCTION g_param_values_cmp(BYVAL AS GParamSpec PTR, BYVAL AS CONST GValue PTR, BYVAL AS CONST GValue PTR) AS gint
-DECLARE FUNCTION g_param_spec_get_name(BYVAL AS GParamSpec PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION g_param_spec_get_nick(BYVAL AS GParamSpec PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION g_param_spec_get_blurb(BYVAL AS GParamSpec PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_param_spec_get_name(BYVAL AS GParamSpec PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_param_spec_get_nick(BYVAL AS GParamSpec PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_param_spec_get_blurb(BYVAL AS GParamSpec PTR) AS CONST gchar PTR
 DECLARE SUB g_value_set_param(BYVAL AS GValue PTR, BYVAL AS GParamSpec PTR)
 DECLARE FUNCTION g_value_get_param(BYVAL AS CONST GValue PTR) AS GParamSpec PTR
 DECLARE FUNCTION g_value_dup_param(BYVAL AS CONST GValue PTR) AS GParamSpec PTR
 DECLARE SUB g_value_take_param(BYVAL AS GValue PTR, BYVAL AS GParamSpec PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_value_set_param_take_ownership(BYVAL AS GValue PTR, BYVAL AS GParamSpec PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
 
 TYPE GParamSpecTypeInfo AS _GParamSpecTypeInfo
 
@@ -630,6 +644,7 @@ DECLARE SUB g_closure_set_marshal(BYVAL AS GClosure PTR, BYVAL AS GClosureMarsha
 DECLARE SUB g_closure_set_meta_marshal(BYVAL AS GClosure PTR, BYVAL AS gpointer, BYVAL AS GClosureMarshal)
 DECLARE SUB g_closure_invalidate(BYVAL AS GClosure PTR)
 DECLARE SUB g_closure_invoke(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer)
+DECLARE SUB g_cclosure_marshal_generic(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
 
 #ENDIF ' __G_CLOSURE_H__
 
@@ -639,31 +654,31 @@ DECLARE SUB g_closure_invoke(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL A
 #IFNDEF __G_MARSHAL_H__
 #DEFINE __G_MARSHAL_H__
 
-DECLARE SUB g_cclosure_marshal_VOID__VOID(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__BOOLEAN(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__CHAR(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__UCHAR(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__INT(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__UINT(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__LONG(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__ULONG(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__ENUM(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__FLAGS(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__FLOAT(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__DOUBLE(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__STRING(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__PARAM(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__BOXED(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__POINTER(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__OBJECT(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__VARIANT(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_VOID__UINT_POINTER(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_BOOLEAN__FLAGS(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__VOID AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__BOOLEAN AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__CHAR AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UCHAR AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__INT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UINT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__LONG AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__ULONG AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__ENUM AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__FLAGS AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__FLOAT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__DOUBLE AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__STRING AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__PARAM AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__BOXED AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__OBJECT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__VARIANT AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_VOID__UINT_POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_BOOLEAN__FLAGS AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
 
 #DEFINE g_cclosure_marshal_BOOL__FLAGS g_cclosure_marshal_BOOLEAN__FLAGS
 
-DECLARE SUB g_cclosure_marshal_STRING__OBJECT_POINTER(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
-DECLARE SUB g_cclosure_marshal_BOOLEAN__BOXED_BOXED(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_STRING__OBJECT_POINTER AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
+EXTERN g_cclosure_marshal_BOOLEAN__BOXED_BOXED AS SUB(BYVAL AS GClosure PTR, BYVAL AS GValue PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS gpointer, BYVAL AS gpointer)
 
 #DEFINE g_cclosure_marshal_BOOL__BOXED_BOXED g_cclosure_marshal_BOOLEAN__BOXED_BOXED
 #ENDIF ' __G_MARSHAL_H__
@@ -682,9 +697,11 @@ ENUM GSignalFlags
   G_SIGNAL_DETAILED = 1 SHL 4
   G_SIGNAL_ACTION = 1 SHL 5
   G_SIGNAL_NO_HOOKS = 1 SHL 6
+  G_SIGNAL_MUST_COLLECT = 1 SHL 7
+  G_SIGNAL_DEPRECATED = 1 SHL 8
 END ENUM
 
-#DEFINE G_SIGNAL_FLAGS_MASK &h7F
+#DEFINE G_SIGNAL_FLAGS_MASK &h1FF
 
 ENUM GConnectFlags
   G_CONNECT_AFTER = 1 SHL 0
@@ -728,7 +745,7 @@ DECLARE SUB g_signal_emit_valist(BYVAL AS gpointer, BYVAL AS guint, BYVAL AS GQu
 DECLARE SUB g_signal_emit(BYVAL AS gpointer, BYVAL AS guint, BYVAL AS GQuark, ...)
 DECLARE SUB g_signal_emit_by_name(BYVAL AS gpointer, BYVAL AS CONST gchar PTR, ...)
 DECLARE FUNCTION g_signal_lookup(BYVAL AS CONST gchar PTR, BYVAL AS GType) AS guint
-DECLARE FUNCTION g_signal_name(BYVAL AS guint) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_signal_name(BYVAL AS guint) AS CONST gchar PTR
 DECLARE SUB g_signal_query(BYVAL AS guint, BYVAL AS GSignalQuery PTR)
 DECLARE FUNCTION g_signal_list_ids(BYVAL AS GType, BYVAL AS guint PTR) AS guint PTR
 DECLARE FUNCTION g_signal_parse_name(BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS guint PTR, BYVAL AS GQuark PTR, BYVAL AS gboolean) AS gboolean
@@ -780,7 +797,7 @@ DECLARE SUB _g_signals_destroy(BYVAL AS GType)
 
 #ENDIF ' __G_SIGNAL_H__
 
-#DEFINE G_TYPE_IS_OBJECT(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_OBJECT)
+#DEFINE G_TYPE_IS_OBJECT(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_OBJECT)
 #DEFINE G_OBJECT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_OBJECT, GObject))
 #DEFINE G_OBJECT_CLASS(class) (G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_OBJECT, GObjectClass))
 #DEFINE G_IS_OBJECT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), G_TYPE_OBJECT))
@@ -817,7 +834,7 @@ END TYPE
 TYPE _GObjectClass
   AS GTypeClass g_type_class
   AS GSList PTR construct_properties
-  constructor AS FUNCTION(BYVAL AS GType, BYVAL AS guint, BYVAL AS GObjectConstructParam PTR) AS GObject PTR
+  constructor_ AS FUNCTION(BYVAL AS GType, BYVAL AS guint, BYVAL AS GObjectConstructParam PTR) AS GObject PTR
   set_property AS SUB(BYVAL AS GObject PTR, BYVAL AS guint, BYVAL AS CONST GValue PTR, BYVAL AS GParamSpec PTR)
   get_property AS SUB(BYVAL AS GObject PTR, BYVAL AS guint, BYVAL AS GValue PTR, BYVAL AS GParamSpec PTR)
   dispose AS SUB(BYVAL AS GObject PTR)
@@ -891,18 +908,8 @@ DECLARE FUNCTION g_signal_connect_object(BYVAL AS gpointer, BYVAL AS CONST gchar
 DECLARE SUB g_object_force_floating(BYVAL AS GObject PTR)
 DECLARE SUB g_object_run_dispose(BYVAL AS GObject PTR)
 DECLARE SUB g_value_take_object(BYVAL AS GValue PTR, BYVAL AS gpointer)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_value_set_object_take_ownership(BYVAL AS GValue PTR, BYVAL AS gpointer)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
-#IF NOT DEFINED(G_DISABLE_DEPRECATED) OR DEFINED(GTK_COMPILATION)
-
 DECLARE FUNCTION g_object_compat_control(BYVAL AS gsize, BYVAL AS gpointer) AS gsize
-
-#ENDIF ' NOT DEFINED(G_DISABLE_DEPRECATED)
 
 #DEFINE G_OBJECT_WARN_INVALID_PSPEC(object, pname, property_id, pspec) _
    g_warning (!"%s: invalid %s id %u for \"%s\" of type `%s' in `%s'", _
@@ -916,16 +923,17 @@ DECLARE FUNCTION g_object_compat_control(BYVAL AS gsize, BYVAL AS gpointer) AS g
 #DEFINE G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) _
     G_OBJECT_WARN_INVALID_PSPEC ((object), !"property", (property_id), (pspec))
 
-'DECLARE SUB g_clear_object(BYVAL AS GObject PTR PTR)
-#MACRO g_clear_object(object_ptr) _
- SCOPE
-  VAR _p = CAST(gpointer PTR, (object_ptr))
-  VAR _o = g_atomic_pointer_get (_p)
-  WHILE (0 = g_atomic_pointer_compare_and_exchange (_p, _o, NULL))
-   _o = g_atomic_pointer_get (_p)
-  WEND : IF (_o) THEN g_object_unref (_o)
- END SCOPE
-#ENDMACRO
+DECLARE SUB g_clear_object(BYVAL AS GObject PTR PTR)
+'#MACRO g_clear_object(object_ptr) _
+ 'SCOPE
+  'VAR _p = CAST(gpointer PTR, (object_ptr))
+  'VAR _o = g_atomic_pointer_get (_p)
+  'DO
+   '_o = g_atomic_pointer_get (_p)
+  'LOOP WHILE G_UNLIKELY(0 = g_atomic_pointer_compare_and_exchange (_p, _o, NULL))
+  'IF (_o) THEN g_object_unref (_o)
+ 'END SCOPE
+'#ENDMACRO
 
 #ENDIF ' __G_OBJECT_H__
 
@@ -949,8 +957,8 @@ DECLARE FUNCTION g_binding_get_type() AS GType
 DECLARE FUNCTION g_binding_get_flags(BYVAL AS GBinding PTR) AS GBindingFlags
 DECLARE FUNCTION g_binding_get_source(BYVAL AS GBinding PTR) AS GObject PTR
 DECLARE FUNCTION g_binding_get_target(BYVAL AS GBinding PTR) AS GObject PTR
-DECLARE FUNCTION g_binding_get_source_property(BYVAL AS GBinding PTR) AS G_CONST_RETURN gchar PTR
-DECLARE FUNCTION g_binding_get_target_property(BYVAL AS GBinding PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_binding_get_source_property(BYVAL AS GBinding PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_binding_get_target_property(BYVAL AS GBinding PTR) AS CONST gchar PTR
 DECLARE FUNCTION g_object_bind_property(BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS GBindingFlags) AS GBinding PTR
 DECLARE FUNCTION g_object_bind_property_full(BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS GBindingFlags, BYVAL AS GBindingTransformFunc, BYVAL AS GBindingTransformFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify) AS GBinding PTR
 DECLARE FUNCTION g_object_bind_property_with_closures(BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS CONST gchar PTR, BYVAL AS GBindingFlags, BYVAL AS GClosure PTR, BYVAL AS GClosure PTR) AS GBinding PTR
@@ -960,7 +968,67 @@ DECLARE FUNCTION g_object_bind_property_with_closures(BYVAL AS gpointer, BYVAL A
 #IFNDEF __G_BOXED_H__
 #DEFINE __G_BOXED_H__
 
-#DEFINE G_TYPE_IS_BOXED(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_BOXED)
+#IFNDEF __GI_SCANNER__
+
+
+#IFNDEF __GLIB_TYPES_H__
+#DEFINE __GLIB_TYPES_H__
+
+#IFDEF __GI_SCANNER__
+
+TYPE GType AS gsize
+
+#ENDIF ' __GI_SCANNER__
+
+#DEFINE G_TYPE_DATE (g_date_get_type ())
+#DEFINE G_TYPE_STRV (g_strv_get_type ())
+#DEFINE G_TYPE_GSTRING (g_gstring_get_type ())
+#DEFINE G_TYPE_HASH_TABLE (g_hash_table_get_type ())
+#DEFINE G_TYPE_REGEX (g_regex_get_type ())
+#DEFINE G_TYPE_MATCH_INFO (g_match_info_get_type ())
+#DEFINE G_TYPE_ARRAY (g_array_get_type ())
+#DEFINE G_TYPE_BYTE_ARRAY (g_byte_array_get_type ())
+#DEFINE G_TYPE_PTR_ARRAY (g_ptr_array_get_type ())
+#DEFINE G_TYPE_BYTES (g_bytes_get_type ())
+#DEFINE G_TYPE_VARIANT_TYPE (g_variant_type_get_gtype ())
+#DEFINE G_TYPE_ERROR (g_error_get_type ())
+#DEFINE G_TYPE_DATE_TIME (g_date_time_get_type ())
+#DEFINE G_TYPE_IO_CHANNEL (g_io_channel_get_type ())
+#DEFINE G_TYPE_IO_CONDITION (g_io_condition_get_type ())
+#DEFINE G_TYPE_VARIANT_BUILDER (g_variant_builder_get_type ())
+#DEFINE G_TYPE_MAIN_LOOP (g_main_loop_get_type ())
+#DEFINE G_TYPE_MAIN_CONTEXT (g_main_context_get_type ())
+#DEFINE G_TYPE_SOURCE (g_source_get_type ())
+#DEFINE G_TYPE_KEY_FILE (g_key_file_get_type ())
+
+DECLARE FUNCTION g_date_get_type() AS GType
+DECLARE FUNCTION g_strv_get_type() AS GType
+DECLARE FUNCTION g_gstring_get_type() AS GType
+DECLARE FUNCTION g_hash_table_get_type() AS GType
+DECLARE FUNCTION g_array_get_type() AS GType
+DECLARE FUNCTION g_byte_array_get_type() AS GType
+DECLARE FUNCTION g_ptr_array_get_type() AS GType
+DECLARE FUNCTION g_bytes_get_type() AS GType
+DECLARE FUNCTION g_variant_type_get_gtype() AS GType
+DECLARE FUNCTION g_regex_get_type() AS GType
+DECLARE FUNCTION g_match_info_get_type() AS GType
+DECLARE FUNCTION g_error_get_type() AS GType
+DECLARE FUNCTION g_date_time_get_type() AS GType
+DECLARE FUNCTION g_io_channel_get_type() AS GType
+DECLARE FUNCTION g_io_condition_get_type() AS GType
+DECLARE FUNCTION g_variant_builder_get_type() AS GType
+DECLARE FUNCTION g_key_file_get_type() AS GType
+DECLARE FUNCTION g_main_loop_get_type() AS GType
+DECLARE FUNCTION g_main_context_get_type() AS GType
+DECLARE FUNCTION g_source_get_type() AS GType
+DECLARE FUNCTION g_variant_get_gtype() AS GType
+
+TYPE GStrv AS gchar PTR PTR
+
+#ENDIF ' __GLIB_TYPES_H__
+#ENDIF ' __GI_SCANNER__
+
+#DEFINE G_TYPE_IS_BOXED(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_BOXED)
 #DEFINE G_VALUE_HOLDS_BOXED(value) (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_BOXED))
 
 TYPE GBoxedCopyFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
@@ -970,6 +1038,8 @@ DECLARE FUNCTION g_boxed_copy(BYVAL AS GType, BYVAL AS gconstpointer) AS gpointe
 DECLARE SUB g_boxed_free(BYVAL AS GType, BYVAL AS gpointer)
 DECLARE SUB g_value_set_boxed(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
 DECLARE SUB g_value_set_static_boxed(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
+DECLARE SUB g_value_take_boxed(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
+DECLARE SUB g_value_set_boxed_take_ownership(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
 DECLARE FUNCTION g_value_get_boxed(BYVAL AS CONST GValue PTR) AS gpointer
 DECLARE FUNCTION g_value_dup_boxed(BYVAL AS CONST GValue PTR) AS gpointer
 DECLARE FUNCTION g_boxed_type_register_static(BYVAL AS CONST gchar PTR, BYVAL AS GBoxedCopyFunc, BYVAL AS GBoxedFreeFunc) AS GType
@@ -977,60 +1047,22 @@ DECLARE FUNCTION g_boxed_type_register_static(BYVAL AS CONST gchar PTR, BYVAL AS
 #DEFINE G_TYPE_CLOSURE (g_closure_get_type ())
 #DEFINE G_TYPE_VALUE (g_value_get_type ())
 #DEFINE G_TYPE_VALUE_ARRAY (g_value_array_get_type ())
-#DEFINE G_TYPE_DATE (g_date_get_type ())
-#DEFINE G_TYPE_STRV (g_strv_get_type ())
-#DEFINE G_TYPE_GSTRING (g_gstring_get_type ())
-#DEFINE G_TYPE_HASH_TABLE (g_hash_table_get_type ())
-#DEFINE G_TYPE_REGEX (g_regex_get_type ())
-#DEFINE G_TYPE_ARRAY (g_array_get_type ())
-#DEFINE G_TYPE_BYTE_ARRAY (g_byte_array_get_type ())
-#DEFINE G_TYPE_PTR_ARRAY (g_ptr_array_get_type ())
-#DEFINE G_TYPE_VARIANT_TYPE (g_variant_type_get_gtype ())
-#DEFINE G_TYPE_ERROR (g_error_get_type ())
-#DEFINE G_TYPE_DATE_TIME (g_date_time_get_type ())
-
-DECLARE SUB g_value_take_boxed(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE SUB g_value_set_boxed_take_ownership(BYVAL AS GValue PTR, BYVAL AS gconstpointer)
-
-#ENDIF ' G_DISABLE_DEPRECATED
 
 DECLARE FUNCTION g_closure_get_type() AS GType
 DECLARE FUNCTION g_value_get_type() AS GType
 DECLARE FUNCTION g_value_array_get_type() AS GType
-DECLARE FUNCTION g_date_get_type() AS GType
-DECLARE FUNCTION g_strv_get_type() AS GType
-DECLARE FUNCTION g_gstring_get_type() AS GType
-DECLARE FUNCTION g_hash_table_get_type() AS GType
-DECLARE FUNCTION g_array_get_type() AS GType
-DECLARE FUNCTION g_byte_array_get_type() AS GType
-DECLARE FUNCTION g_ptr_array_get_type() AS GType
-DECLARE FUNCTION g_variant_type_get_gtype() AS GType
-DECLARE FUNCTION g_regex_get_type() AS GType
-DECLARE FUNCTION g_error_get_type() AS GType
-DECLARE FUNCTION g_date_time_get_type() AS GType
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE FUNCTION g_variant_get_gtype() AS GType
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
-TYPE GStrv AS gchar PTR PTR
 
 #ENDIF ' __G_BOXED_H__
 
 #IFNDEF __G_ENUMS_H__
 #DEFINE __G_ENUMS_H__
 
-#DEFINE G_TYPE_IS_ENUM(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_ENUM)
+#DEFINE G_TYPE_IS_ENUM(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_ENUM)
 #DEFINE G_ENUM_CLASS(class) (G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_ENUM, GEnumClass))
 #DEFINE G_IS_ENUM_CLASS(class) (G_TYPE_CHECK_CLASS_TYPE ((class), G_TYPE_ENUM))
 #DEFINE G_ENUM_CLASS_TYPE(class) (G_TYPE_FROM_CLASS (class))
 #DEFINE G_ENUM_CLASS_TYPE_NAME(class) (g_type_name (G_ENUM_CLASS_TYPE (class)))
-#DEFINE G_TYPE_IS_FLAGS(type) (G_TYPE_FUNDAMENTAL (type)= G_TYPE_FLAGS)
+#DEFINE G_TYPE_IS_FLAGS(type) (G_TYPE_FUNDAMENTAL (type) = G_TYPE_FLAGS)
 #DEFINE G_FLAGS_CLASS(class) (G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_FLAGS, GFlagsClass))
 #DEFINE G_IS_FLAGS_CLASS(class) (G_TYPE_CHECK_CLASS_TYPE ((class), G_TYPE_FLAGS))
 #DEFINE G_FLAGS_CLASS_TYPE(class) (G_TYPE_FROM_CLASS (class))
@@ -1327,31 +1359,31 @@ TYPE _GParamSpecVariant
   AS gpointer padding(3)
 END TYPE
 
-DECLARE FUNCTION g_param_spec_char_FB ALIAS "g_param_spec_char"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint8, BYVAL AS gint8, BYVAL AS gint8, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_uchar_FB ALIAS "g_param_spec_uchar"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint8, BYVAL AS guint8, BYVAL AS guint8, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_boolean_FB ALIAS "g_param_spec_boolean"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_int_FB ALIAS "g_param_spec_int"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_uint_FB ALIAS "g_param_spec_uint"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint, BYVAL AS guint, BYVAL AS guint, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_long_FB ALIAS "g_param_spec_long"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS glong, BYVAL AS glong, BYVAL AS glong, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_ulong_FB ALIAS "g_param_spec_ulong"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gulong, BYVAL AS gulong, BYVAL AS gulong, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_int64_FB ALIAS "g_param_spec_int64"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint64, BYVAL AS gint64, BYVAL AS gint64, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_uint64_FB ALIAS "g_param_spec_uint64"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint64, BYVAL AS guint64, BYVAL AS guint64, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_unichar_FB ALIAS "g_param_spec_unichar"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gunichar, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_enum_FB ALIAS "g_param_spec_enum"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS gint, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_flags_FB ALIAS "g_param_spec_flags"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS guint, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_float_FB ALIAS "g_param_spec_float"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gfloat, BYVAL AS gfloat, BYVAL AS gfloat, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_double_FB ALIAS "g_param_spec_double"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_string_FB ALIAS "g_param_spec_string"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_param_FB ALIAS "g_param_spec_param"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_boxed_FB ALIAS "g_param_spec_boxed"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_pointer_FB ALIAS "g_param_spec_pointer"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_value_array_FB ALIAS "g_param_spec_value_array"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamSpec PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_object_FB ALIAS "g_param_spec_object"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_override_FB ALIAS "g_param_spec_override"(BYVAL AS CONST gchar PTR, BYVAL AS GParamSpec PTR) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_gtype_FB ALIAS "g_param_spec_gtype"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
-DECLARE FUNCTION g_param_spec_variant_FB ALIAS "g_param_spec_variant"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST GVariantType PTR, BYVAL AS GVariant PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_char_ ALIAS "g_param_spec_char"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint8, BYVAL AS gint8, BYVAL AS gint8, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_uchar_ ALIAS "g_param_spec_uchar"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint8, BYVAL AS guint8, BYVAL AS guint8, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_boolean_ ALIAS "g_param_spec_boolean"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_int_ ALIAS "g_param_spec_int"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gint, BYVAL AS gint, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_uint_ ALIAS "g_param_spec_uint"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint, BYVAL AS guint, BYVAL AS guint, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_long_ ALIAS "g_param_spec_long"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS glong, BYVAL AS glong, BYVAL AS glong, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_ulong_ ALIAS "g_param_spec_ulong"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gulong, BYVAL AS gulong, BYVAL AS gulong, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_int64_ ALIAS "g_param_spec_int64"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint64, BYVAL AS gint64, BYVAL AS gint64, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_uint64_ ALIAS "g_param_spec_uint64"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint64, BYVAL AS guint64, BYVAL AS guint64, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_unichar_ ALIAS "g_param_spec_unichar"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gunichar, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_enum_ ALIAS "g_param_spec_enum"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS gint, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_flags_ ALIAS "g_param_spec_flags"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS guint, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_float_ ALIAS "g_param_spec_float"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gfloat, BYVAL AS gfloat, BYVAL AS gfloat, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_double_ ALIAS "g_param_spec_double"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS gdouble, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_string_ ALIAS "g_param_spec_string"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_param_ ALIAS "g_param_spec_param"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_boxed_ ALIAS "g_param_spec_boxed"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_pointer_ ALIAS "g_param_spec_pointer"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_value_array_ ALIAS "g_param_spec_value_array"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GParamSpec PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_object_ ALIAS "g_param_spec_object"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_override_ ALIAS "g_param_spec_override"(BYVAL AS CONST gchar PTR, BYVAL AS GParamSpec PTR) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_gtype_ ALIAS "g_param_spec_gtype"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GType, BYVAL AS GParamFlags) AS GParamSpec PTR
+DECLARE FUNCTION g_param_spec_variant_ ALIAS "g_param_spec_variant"(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST GVariantType PTR, BYVAL AS GVariant PTR, BYVAL AS GParamFlags) AS GParamSpec PTR
 
-DIM AS GType PTR g_param_spec_types
+EXTERN AS GType PTR g_param_spec_types
 
 #ENDIF ' __G_PARAMSPECS_H__
 
@@ -1360,11 +1392,7 @@ DIM AS GType PTR g_param_spec_types
 
 DECLARE SUB g_source_set_closure(BYVAL AS GSource PTR, BYVAL AS GClosure PTR)
 DECLARE SUB g_source_set_dummy_callback(BYVAL AS GSource PTR)
-DECLARE FUNCTION g_io_channel_get_type() AS GType
-DECLARE FUNCTION g_io_condition_get_type() AS GType
 
-#DEFINE G_TYPE_IO_CHANNEL (g_io_channel_get_type ())
-#DEFINE G_TYPE_IO_CONDITION (g_io_condition_get_type ())
 #ENDIF ' __G_SOURCECLOSURE_H__
 
 #IFNDEF __G_TYPE_MODULE_H__
@@ -1427,10 +1455,11 @@ END TYPE
      SIZEOF (TypeName), _
      0, _
      CAST(GInstanceInitFunc, @type_name##_init), _
-     NULL _
-     )
+     NULL )
    type_name##_type_id = g_type_module_register_type (type_module, TYPE_PARENT, #TypeName, @g_define_type_info, CAST(GTypeFlags, flags))
    g_define_type_id = type_name##_type_id
+   CODE
+ END SUB
 #ENDMACRO
 
 #MACRO G_IMPLEMENT_INTERFACE_DYNAMIC(TYPE_IFACE, iface_init)
@@ -1529,6 +1558,8 @@ DECLARE FUNCTION g_value_array_sort_with_data(BYVAL AS GValueArray PTR, BYVAL AS
 
 DECLARE SUB g_value_set_char(BYVAL AS GValue PTR, BYVAL AS UBYTE)
 DECLARE FUNCTION g_value_get_char(BYVAL AS CONST GValue PTR) AS UBYTE
+DECLARE SUB g_value_set_schar(BYVAL AS GValue PTR, BYVAL AS gint8)
+DECLARE FUNCTION g_value_get_schar(BYVAL AS CONST GValue PTR) AS gint8
 DECLARE SUB g_value_set_uchar(BYVAL AS GValue PTR, BYVAL AS guchar)
 DECLARE FUNCTION g_value_get_uchar(BYVAL AS CONST GValue PTR) AS guchar
 DECLARE SUB g_value_set_boolean(BYVAL AS GValue PTR, BYVAL AS gboolean)
@@ -1551,7 +1582,7 @@ DECLARE SUB g_value_set_double(BYVAL AS GValue PTR, BYVAL AS gdouble)
 DECLARE FUNCTION g_value_get_double(BYVAL AS CONST GValue PTR) AS gdouble
 DECLARE SUB g_value_set_string(BYVAL AS GValue PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB g_value_set_static_string(BYVAL AS GValue PTR, BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION g_value_get_string(BYVAL AS CONST GValue PTR) AS G_CONST_RETURN gchar PTR
+DECLARE FUNCTION g_value_get_string(BYVAL AS CONST GValue PTR) AS CONST gchar PTR
 DECLARE FUNCTION g_value_dup_string(BYVAL AS CONST GValue PTR) AS gchar PTR
 DECLARE SUB g_value_set_pointer(BYVAL AS GValue PTR, BYVAL AS gpointer)
 DECLARE FUNCTION g_value_get_pointer(BYVAL AS CONST GValue PTR) AS gpointer
@@ -1565,12 +1596,7 @@ DECLARE FUNCTION g_value_dup_variant(BYVAL AS CONST GValue PTR) AS GVariant PTR
 DECLARE FUNCTION g_pointer_type_register_static(BYVAL AS CONST gchar PTR) AS GType
 DECLARE FUNCTION g_strdup_value_contents(BYVAL AS CONST GValue PTR) AS gchar PTR
 DECLARE SUB g_value_take_string(BYVAL AS GValue PTR, BYVAL AS gchar PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_value_set_string_take_ownership(BYVAL AS GValue PTR, BYVAL AS gchar PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
 
 TYPE gchararray AS gchar PTR
 

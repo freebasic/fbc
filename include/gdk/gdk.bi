@@ -20,8 +20,8 @@
 '
 ' See files for original license text
 '
-#IFDEF __FB_GTK3__
-#INCLUDE ONCE "gdk-3.0.bi"
+#IFDEF __USE_GTK3__
+#INCLUDE ONCE "gdk-3.2.bi"
 #ELSE
 #INCLUDE ONCE "gdk-2.24.bi"
 #ENDIF

@@ -4,6 +4,7 @@
 ' Details: http://developer.gnome.org/gtk/
 
 
+'#DEFINE __USE_GTK3__
 #include once "gtk/gtk.bi"
 
 #define NULL 0

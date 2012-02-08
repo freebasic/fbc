@@ -1,23 +1,26 @@
 ' GtkTest.bas
 ' GPLv3: Copyright by TJF, 2010 - 2011
 ' Details: http://developer.gnome.org/gtk/
-' Note: mind the name mangling 'gtk_check_version_FB'
+' Note: mind the name mangling 'gtk_check_version_'
 
-#DEFINE __FB_GTK_OLD__
-'#DEFINE __FB_GTK3__
+'#DEFINE __USE_GTK_OLD__
+'#DEFINE __USE_GTK3__
 #INCLUDE ONCE "gtk/gtk.bi"
 
 #DEFINE NULL 0
 
 DIM AS GtkWidget PTR win, frame, label
-DIM AS       INTEGER v1, v2, v3
+DIM AS         guint v1, v2, v3
 DIM AS        STRING GtkVersion
+
+?"This code is compiled using headers for GTK ";
+?GTK_MAJOR_VERSION & "." & GTK_MINOR_VERSION & "." &  GTK_MICRO_VERSION
 
 ' Initialise GTK
 IF gtk_init_check (@__FB_ARGC__, @__FB_ARGV__) THEN
-  v1 =  4 : WHILE gtk_check_version_FB(v1, v2, v3) : v1 -= 1 : WEND
-  v2 = 99 : WHILE gtk_check_version_FB(v1, v2, v3) : v2 -= 1 : WEND
-  v3 = 44 : WHILE gtk_check_version_FB(v1, v2, v3) : v3 -= 1 : WEND
+  v1 =  4 : WHILE gtk_check_version_(v1, v2, v3) : v1 -= 1 : WEND
+  v2 = 99 : WHILE gtk_check_version_(v1, v2, v3) : v2 -= 1 : WEND
+  v3 = 44 : WHILE gtk_check_version_(v1, v2, v3) : v3 -= 1 : WEND
   GtkVersion = !"\n" & v1 & "." & v2 & "." & v3 & !"\n"
 ELSE
   SCREENRES 300, 70

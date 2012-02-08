@@ -4,13 +4,13 @@
 ' Reviewed by TJF (2011)
 ' Details: http://developer.gnome.org/gtk/
 
-'#DEFINE __FB_GTK3__
+'#DEFINE __USE_GTK3__
 #Include once "gtk/gtk.bi"
 
 Type ProgressData
   As GtkWidget Ptr win
   As GtkWidget Ptr pbar
-#IfDef __FB_GTK3__
+#IfDef __USE_GTK3__
   As GtkWidget Ptr perbut
 #EndIf
   As GtkWidget Ptr infbut
@@ -47,36 +47,36 @@ Sub toggle_show_text Cdecl( Byval widget As GtkWidget  Ptr, Byval pdata As Progr
 
   Var pbar = GTK_PROGRESS_BAR (pdata->pbar)
 
-#IfDef __FB_GTK3__
-  Var show = IIF(gtk_progress_bar_get_show_text (pbar), 0, 1)
+#IFDEF __USE_GTK3__
+  VAR show = IIF(gtk_progress_bar_get_show_text (pbar), 0, 1)
   gtk_progress_bar_set_show_text (pbar, show)
   gtk_widget_set_sensitive(pdata->perbut, show)
-#Else
+#ELSE
   Var text = gtk_progress_bar_get_text (pbar)
   If text Then
     gtk_progress_bar_set_text (pbar, NULL)
   Else
     gtk_progress_bar_set_text (pbar, "some text")
   End If
-#EndIf
+#ENDIF
 
 End Sub
 
-#IfDef __FB_GTK3__
+#IFDEF __USE_GTK3__
 ' Callback that toggles the text display within the progress bar trough
-Sub toggle_show_percentage Cdecl( Byval widget As GtkWidget  Ptr, Byval pdata As ProgressData Ptr)
+SUB toggle_show_percentage CDECL( BYVAL widget AS GtkWidget  PTR, BYVAL pdata AS ProgressData PTR)
 
-  Var pbar = GTK_PROGRESS_BAR (pdata->pbar)
+  VAR pbar = GTK_PROGRESS_BAR (pdata->pbar)
 
-  Var text = gtk_progress_bar_get_text (pbar)
-  If text Then
+  VAR text = gtk_progress_bar_get_text (pbar)
+  IF text THEN
     gtk_progress_bar_set_text (pbar, NULL)
-  Else
+  ELSE
     gtk_progress_bar_set_text (pbar, "some text")
-  End If
+  END IF
 
-End Sub
-#EndIf
+END SUB
+#ENDIF
 
 ' Callback that toggles the activity mode of the progress bar
 Sub toggle_activity_mode Cdecl( Byval widget As GtkWidget Ptr, Byval pdata As ProgressData Ptr )
@@ -97,10 +97,10 @@ Sub toggle_orientation Cdecl( Byval widget As GtkWidget Ptr, Byval pdata As Prog
 
   Var pbar = GTK_PROGRESS_BAR (pdata->pbar)
 
-#IfDef __FB_GTK3__
-  Var ori = IIf(gtk_progress_bar_get_inverted (pbar), 0, 1)
+#IFDEF __USE_GTK3__
+  VAR ori = IIF(gtk_progress_bar_get_inverted (pbar), 0, 1)
   gtk_progress_bar_set_inverted (pbar, ori)
-#Else
+#ELSE
   Select Case As Const gtk_progress_bar_get_orientation (pbar)
   Case GTK_PROGRESS_LEFT_TO_RIGHT:
     gtk_progress_bar_set_orientation (pbar,  GTK_PROGRESS_RIGHT_TO_LEFT)
@@ -108,7 +108,7 @@ Sub toggle_orientation Cdecl( Byval widget As GtkWidget Ptr, Byval pdata As Prog
     gtk_progress_bar_set_orientation (pbar, GTK_PROGRESS_LEFT_TO_RIGHT)
   Case Else
   End Select
-#EndIf
+#ENDIF
 
 End Sub
 
@@ -144,11 +144,11 @@ End Sub
   ' Create the GtkProgressBar
   pdata->pbar = gtk_progress_bar_new ()
   gtk_container_add (GTK_CONTAINER (align), pdata->pbar)
-#IfDef __FB_GTK3__
+#IFDEF __USE_GTK3__
   gtk_progress_bar_set_show_text(GTK_PROGRESS_BAR(pdata->pbar), TRUE)
   gtk_progress_bar_set_text (GTK_PROGRESS_BAR(pdata->pbar), "some text")
   gtk_progress_bar_set_show_text (GTK_PROGRESS_BAR(pdata->pbar), FALSE)
-#EndIf
+#ENDIF
   gtk_widget_show (pdata->pbar)
 
   ' Add a timer callback to update the value of the progress bar
@@ -164,7 +164,7 @@ End Sub
   g_signal_connect (G_OBJECT (check), "clicked", G_CALLBACK (@toggle_show_text), pdata)
   gtk_widget_show (check)
 
-#IfDef __FB_GTK3__
+#IFDEF __USE_GTK3__
   ' Add a check button to select displaying of the percentage
   pdata->perbut = gtk_check_button_new_with_label ("Percentage")
   gtk_widget_set_sensitive(pdata->perbut, FALSE)
@@ -172,7 +172,7 @@ End Sub
   g_signal_connect (G_OBJECT (pdata->perbut), "clicked", _
                     G_CALLBACK (@toggle_show_percentage), pdata)
   gtk_widget_show (pdata->perbut)
-#EndIf
+#ENDIF
 
   ' Add a check button to toggle activity mode
   check = gtk_check_button_new_with_label ("Activity mode")

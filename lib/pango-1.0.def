@@ -232,6 +232,7 @@ EXPORTS
 	pango_layout_get_attributes
 	pango_layout_get_auto_dir
 	pango_layout_get_baseline
+	pango_layout_get_character_count
 	pango_layout_get_context
 	pango_layout_get_cursor_pos
 	pango_layout_get_ellipsize
@@ -247,6 +248,7 @@ EXPORTS
 	pango_layout_get_lines
 	pango_layout_get_lines_readonly
 	pango_layout_get_log_attrs
+	pango_layout_get_log_attrs_readonly
 	pango_layout_get_pixel_extents
 	pango_layout_get_pixel_size
 	pango_layout_get_single_paragraph_mode

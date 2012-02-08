@@ -7,14 +7,14 @@
 '
 ' Note: This example doesn't execute on windows XP or below.
 
-#DEFINE __FB_GTK3__
+#DEFINE __USE_GTK3__
 #INCLUDE ONCE "gtk/gtk.bi"
 
 SUB new_window (BYVAL app AS GApplication PTR, _
                 BYVAL file AS GFile PTR)
   VAR win = gtk_window_new (GTK_WINDOW_TOPLEVEL)
   gtk_window_set_application (GTK_WINDOW (win), GTK_APPLICATION (app))
-  gtk_window_set_title (GTK_WINDOW (win), "Bloatpad")
+  gtk_window_set_title (GTK_WINDOW (win), @"Bloatpad")
   VAR scrolled = gtk_scrolled_window_new (NULL, NULL)
   VAR vie = gtk_text_view_new ()
   gtk_container_add (GTK_CONTAINER (scrolled), vie)
@@ -63,14 +63,14 @@ SUB bloat_pad_class_init CDECL(BYVAL clas AS BloatPadClass PTR)
   G_OBJECT_CLASS(clas)->finalize = @bloat_pad_finalize
 
   G_APPLICATION_CLASS(clas)->activate = @bloat_pad_activate
-  G_APPLICATION_CLASS(clas)->open = @bloat_pad_open
+  G_APPLICATION_CLASS(clas)->open_ = @bloat_pad_open
 END SUB
 
 FUNCTION bloat_pad_new () AS BloatPad PTR
   g_type_init ()
 
   RETURN g_object_new (bloat_pad_get_type (), _
-                       "application-id", "org.gtk.Test.bloatpad", _
+                       @"application-id", @"org.gtk.Test.bloatpad", _
                        "flags", G_APPLICATION_HANDLES_OPEN, _
                        NULL)
 END FUNCTION

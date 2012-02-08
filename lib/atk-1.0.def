@@ -239,3 +239,4 @@ EXPORTS
 	 atk_value_get_minimum_value
 	 atk_value_get_type
 	 atk_value_set_current_value
+	 atk_window_get_type

@@ -5,14 +5,14 @@
 ' Details: http://developer.gnome.org/gtk/
 ' Note: spits an error on GTK-2 due to a deprecated signal (but works)
 
-'#DEFINE __FB_GTK3__
+'#DEFINE __USE_GTK3__
 #include once "gtk/gtk.bi"
 
 '':::::
 sub act cdecl (byval widget as GtkWidget ptr, byval _data as gpointer)
    '' Print the selected combo item to console
 
-#IFDEF __FB_GTK3__
+#IFDEF __USE_GTK3__
    g_print( !"%s\n", gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT(_data)) )
 #ELSE
    g_print( !"%s\n", gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(_data)->entry) ) )
@@ -35,7 +35,7 @@ end sub
    VAR box = gtk_hbox_new( 1, 0 )
    gtk_container_add( GTK_CONTAINER(win), box )
 
-#IFDEF __FB_GTK3__
+#IFDEF __USE_GTK3__
    '' Creates a combo box with entry
    VAR combo = gtk_combo_box_text_new_with_entry ( )
 

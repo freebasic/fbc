@@ -10,11 +10,11 @@
 
 #include "glib-object.bi"
 
-'var t = "1"
+'var t = "3"
 'g_assert_cmpstr(t,<=,"2")
 
-var x = 6.5
-g_assert_cmpint(x, <, 6)
+'var x = 6.5
+'g_assert_cmpint(x, <, 6)
 
 'g_assert_cmpuint(9, >, 9)
 

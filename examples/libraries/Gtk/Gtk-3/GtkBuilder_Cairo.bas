@@ -40,7 +40,7 @@ CONST PROJ_LICE = "GNU General Public License v3" '                            >
 '< Mehr Informationen finden Sie unter:                     http://www.fsf.org >
 ' -----------------------------------------------------------------------------
 '<  GTK+tobac:                     general init / Allgemeine Initialisierungen >
-    #DEFINE __FB_GTK3__ '          choose GTK version / GTK-version auswaehlen >
+    #DEFINE __USE_GTK3__ '         choose GTK version / GTK-version auswaehlen >
     #INCLUDE "gtk/gtk.bi" '                    GTK3+library / GTK3+ Bibliothek >
     gtk_init(@__FB_ARGC__, @__FB_ARGV__) '             start GKT / GTK starten >
 '<  GTK+tobac:                                           end block / Blockende >
@@ -113,7 +113,7 @@ SCOPE
   END IF
 END SCOPE
 
-window1 = gtk_builder_get_object(XML, "window1")
+window1 = gtk_builder_get_object(XML, @"window1")
 
 FUNCTION on_area_draw CDECL ALIAS "on_area_draw" ( _
   BYVAL widget AS GtkWidget PTR, _

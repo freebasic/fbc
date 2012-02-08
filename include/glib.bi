@@ -1,11 +1,12 @@
 ' This is file glib.bi
-' (FreeBasic binding for glib library version 2.28.0)
+' (FreeBasic binding for GLib library version 2.31.4)
 '
-' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
-' translated with help of h_2_bi.bas
-' (http://www.freebasic-portal.de/downloads/ressourcencompiler/h2bi-bas-134.html)
+' translated with help of h_2_bi.bas by
+' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.
 '
 ' Licence:
+' (C) 2011 Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net
+'
 ' This library binding is free software; you can redistribute it
 ' and/or modify it under the terms of the GNU Lesser General Public
 ' License as published by the Free Software Foundation; either
@@ -47,20 +48,11 @@
  '*/
 
 #IFDEF __FB_WIN32__
- #PRAGMA push(msbitfields)
- #DEFINE G_OS_WIN32
- #DEFINE G_PLATFORM_WIN32
-#ELSEIF DEFINED(__FB_UNIX__)
- #DEFINE G_OS_UNIX
-#ELSE
- #ERROR platform not supported
+#PRAGMA push(msbitfields)
 #ENDIF
 
 #INCLIB "glib-2.0"
 
-#IFNDEF __G_LIB_H__
-TYPE AS ANY PTR _GMutex
-#ENDIF
 
 EXTERN "C"
 
@@ -74,78 +66,25 @@ EXTERN "C"
 #IFNDEF __G_TYPES_H__
 #DEFINE __G_TYPES_H__
 
+#IFNDEF __GLIB_H_INSIDE__
+#ERROR "Only <glib.bi> can be included directly."
+#ENDIF ' __GLIB_H_INSIDE__
+
 #IFNDEF __G_LIBCONFIG_H__
 #DEFINE __G_LIBCONFIG_H__
 
-#IFNDEF __G_MACROS_H__
-#DEFINE __G_MACROS_H__
-#INCLUDE ONCE "crt/stddef.bi"
+#INCLUDE ONCE "crt/limits.bi" '__HEADERS__: limits.h
 
-#IFNDEF G_DISABLE_DEPRECATED
-#DEFINE G_GNUC_FUNCTION __FUNCTION__
-#DEFINE G_GNUC_PRETTY_FUNCTION __FUNCTION__
-#ENDIF ' G_DISABLE_DEPRECATED
-
-#DEFINE G_STRINGIFY(macro_or_string) G_STRINGIFY_ARG (macro_or_string)
-#DEFINE G_STRINGIFY_ARG(contents) #contents
-#DEFINE G_PASTE_ARGS(identifier1,identifier2) identifier1 ## identifier2
-#DEFINE G_PASTE(identifier1,identifier2) G_PASTE_ARGS (identifier1, identifier2)
-
-#MACRO G_STATIC_ASSERT(expr)
- TYPE G_PASTE (_GStaticAssert_, __LINE__)
-  AS ZSTRING*(IIF((expr) , 1 , -1)) Compile_Time_Assertion
- END TYPE
-#ENDMACRO
-
-#DEFINE G_STRLOC __FILE__ !":" G_STRINGIFY (__LINE__) !":" __FUNCTION__ !"()"
-#DEFINE G_STRFUNC CAST(CONST ZSTRING PTR, @__FUNCTION__)
-
-#IFNDEF NULL
-#DEFINE NULL (CAST(ANY PTR, 0))
-#ENDIF ' NULL
-
-#IFNDEF FALSE
-#DEFINE FALSE (0)
-#ENDIF ' FALSE
-
-#IFNDEF TRUE
-#DEFINE TRUE (1) '(0 = FALSE) is 1 in C, -1 in FB!
-#ENDIF ' TRUE
-#UNDEF MAX
-#DEFINE MAX(a, b) IIF(((a) > (b)) , (a) , (b))
-#UNDEF MIN
-#DEFINE MIN(a, b) IIF(((a) < (b)) , (a) , (b))
-#UNDEF CLAMP
-#DEFINE CLAMP(x, low, high) IIF(((x) > (high)) , (high) , IIF(((x) < (low)) , (low) , (x)))
-#DEFINE G_N_ELEMENTS(arr) (sizeof (arr) / sizeof ((arr)[0]))
-#DEFINE GPOINTER_TO_SIZE(p) (CAST(gsize, (p)))
-#DEFINE GSIZE_TO_POINTER(s) (CAST(gpointer, CAST(gsize, (s))))
-
-' #  define G_STRUCT_OFFSET(struct_type, member) ((glong) ((guint8*) &((struct_type*) 0)->member))
-#DEFINE G_STRUCT_OFFSET(struct_type, member) CAST(glong, OFFSETOF (struct_type, member))
-#DEFINE G_STRUCT_MEMBER_P(struct_p, struct_offset) CAST(gpointer, CAST(guint8 PTR, (struct_p) + CAST(glong, (struct_offset))))
-#DEFINE G_STRUCT_MEMBER(member_type, struct_p, struct_offset) (*CAST(member_type PTR, G_STRUCT_MEMBER_P ((struct_p), (struct_offset))))
-
-#IFDEF G_DISABLE_CONST_RETURNS
-#DEFINE G_CONST_RETURN
-#ELSE ' G_DISABLE_CONST_RETURNS
-#DEFINE G_CONST_RETURN CONST
-#ENDIF ' G_DISABLE_CONST_RETURNS
-
-#DEFINE G_LIKELY(expr) (expr)
-#DEFINE G_UNLIKELY(expr) (expr)
-
-#ENDIF ' __G_MACROS_H__
-
-#INCLUDE ONCE "crt/limits.bi"
-
-'#DEFINE GLIB_HAVE_ALLOCA_H
+#IF DEFINED(__FB_UNIX__)
+#DEFINE GLIB_HAVE_ALLOCA_H
 #DEFINE GLIB_HAVE_SYS_POLL_H
 #DEFINE GLIB_USING_SYSTEM_PRINTF
-#DEFINE G_MINFLOAT CVS(MKI(&b1))
-#DEFINE G_MAXFLOAT CVS(MKI(&b01111111011111111111111111111111))
-#DEFINE G_MINDOUBLE CVD(MKLONGINT(&b1))
-#DEFINE G_MAXDOUBLE CVD(MKLONGINT(&b0111111111101111111111111111111111111111111111111111111111111111))
+#ENDIF
+
+#DEFINE G_MINFLOAT FLT_MIN
+#DEFINE G_MAXFLOAT FLT_MAX
+#DEFINE G_MINDOUBLE DBL_MIN
+#DEFINE G_MAXDOUBLE DBL_MAX
 #DEFINE G_MINSHORT SHRT_MIN
 #DEFINE G_MAXSHORT SHRT_MAX
 #DEFINE G_MAXUSHORT USHRT_MAX
@@ -176,8 +115,8 @@ TYPE guint32 AS UINTEGER
 TYPE gint64 AS LONGINT
 TYPE guint64 AS ULONGINT
 
-#DEFINE G_GINT64_CONSTANT(val) (val##LL)
-#DEFINE G_GUINT64_CONSTANT(val) (val##ULL)
+#DEFINE G_GINT64_CONSTANT(val) (G_GNUC_EXTENSION (val##LL))
+#DEFINE G_GUINT64_CONSTANT(val) (G_GNUC_EXTENSION (val##ULL))
 #DEFINE G_GINT64_MODIFIER !"ll"
 #DEFINE G_GINT64_FORMAT !"lli"
 #DEFINE G_GUINT64_FORMAT !"llu"
@@ -202,10 +141,10 @@ TYPE goffset AS gint64
 #DEFINE G_GOFFSET_MODIFIER G_GINT64_MODIFIER
 #DEFINE G_GOFFSET_FORMAT G_GINT64_FORMAT
 #DEFINE G_GOFFSET_CONSTANT(val) G_GINT64_CONSTANT(val)
-#DEFINE GPOINTER_TO_INT(p) (CAST(gint, (p)))
-#DEFINE GPOINTER_TO_UINT(p) (CAST(guint, (p)))
-#DEFINE GINT_TO_POINTER(i) (CAST(gpointer, (i)))
-#DEFINE GUINT_TO_POINTER(u) (CAST(gpointer, (u)))
+#DEFINE GPOINTER_TO_INT(p) CAST(gint, p)
+#DEFINE GPOINTER_TO_UINT(p) CAST(guint, p)
+#DEFINE GINT_TO_POINTER(i) CAST(gpointer, CAST(gint, i))
+#DEFINE GUINT_TO_POINTER(u) CAST(gpointer, CAST(guint, u))
 
 TYPE gintptr AS INTEGER
 TYPE guintptr AS UINTEGER
@@ -214,98 +153,178 @@ TYPE guintptr AS UINTEGER
 #DEFINE G_GINTPTR_FORMAT !"i"
 #DEFINE G_GUINTPTR_FORMAT !"u"
 
-#INCLUDE "crt/string.bi"
+#DEFINE g_ATEXIT(proc) (atexit (proc))
+
 #DEFINE g_memmove(dest,src,len) memmove ((dest), (src), (len))
 
-#DEFINE GLIB_MAJOR_VERSION (2)
-#DEFINE GLIB_MINOR_VERSION (28)
-#DEFINE GLIB_MICRO_VERSION (0)
-'#DEFINE G_VA_COPY va_copy
+#DEFINE GLIB_MAJOR_VERSION 2
+#DEFINE GLIB_MINOR_VERSION 31
+#DEFINE GLIB_MICRO_VERSION 4
 
-#UNDEF G_CAN_INLINE
-#UNDEF G_HAVE_ISO_VARARGS
+#IF DEFINED(__FB_UNIX__)
+ #DEFINE G_OS_UNIX
+#ELSE
+ #DEFINE G_OS_WIN32
+ #DEFINE G_PLATFORM_WIN32
+#ENDIF
 
-#IF __FB_VERSION__ >= "0.21"
+#DEFINE G_VA_COPY va_copy
+
+#IF __FB_VERSION__ >= "0.22"
 #DEFINE G_HAVE_GNUC_VARARGS 1
 #ENDIF
 
-'#DEFINE G_HAVE_GROWING_STACK 0
-'#DEFINE G_HAVE_GNUC_VISIBILITY 1
+#DEFINE G_GNUC_INTERNAL
+#DEFINE G_THREADS_ENABLED
 
-'#DEFINE G_THREADS_ENABLED
-'#DEFINE G_THREADS_IMPL_POSIX
+#IF DEFINED(__FB_UNIX__)
+ #DEFINE G_THREADS_IMPL_POSIX
+ #DEFINE G_HAVE_GROWING_STACK 1
+#ELSE
+ #DEFINE G_THREADS_IMPL_WIN32
+#ENDIF
 
-TYPE GStaticMutex AS _GStaticMutex
-
-UNION _GStaticMutex_static_mutex
-  AS ZSTRING*24 pad
-  AS DOUBLE dummy_double
-  AS ANY PTR dummy_pointer
-  AS INTEGER dummy_long
-END UNION
-
-TYPE _GStaticMutex
-  AS _GMutex PTR runtime_mutex
-  AS _GStaticMutex_static_mutex static_mutex
-END TYPE
-
-#DEFINE G_STATIC_MUTEX_INIT TYPE<GStaticMutex>( NULL, CHR(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0) )
-#DEFINE g_static_mutex_get_mutex(mutex) _
-  IIF(g_thread_use_default_impl , (CAST(GMutex PTR, CAST(gpointer, ((mutex)->static_mutex.pad)))) , _
-   g_static_mutex_get_mutex_impl_shortcut (@((mutex)->runtime_mutex)))
-
-TYPE GSystemThread AS _GSystemThread
-
-UNION _GSystemThread
-  AS ZSTRING*4 data
-  AS DOUBLE dummy_double
-  AS ANY PTR dummy_pointer
-  AS INTEGER dummy_long
-END UNION
-
-#DEFINE G_ATOMIC_OP_MEMORY_BARRIER_NEEDED 1
-#DEFINE GINT16_TO_LE(val) (CAST(gint16, (val)))
-#DEFINE GUINT16_TO_LE(val) (CAST(guint16, (val)))
-#DEFINE GINT16_TO_BE(val) (CAST(gint16, GUINT16_SWAP_LE_BE (val)))
+#DEFINE G_ATOMIC_LOCK_FREE
+#DEFINE GINT16_TO_LE(val) CAST(gint16, (val))
+#DEFINE GUINT16_TO_LE(val) CAST(guint16, (val))
+#DEFINE GINT16_TO_BE(val) CAST(gint16, GUINT16_SWAP_LE_BE (val))
 #DEFINE GUINT16_TO_BE(val) (GUINT16_SWAP_LE_BE (val))
-#DEFINE GINT32_TO_LE(val) (CAST(gint32, (val)))
-#DEFINE GUINT32_TO_LE(val) (CAST(guint32, (val)))
-#DEFINE GINT32_TO_BE(val) (CAST(gint32, GUINT32_SWAP_LE_BE (val)))
+#DEFINE GINT32_TO_LE(val) CAST(gint32, (val))
+#DEFINE GUINT32_TO_LE(val) CAST(guint32, (val))
+#DEFINE GINT32_TO_BE(val) CAST(gint32, GUINT32_SWAP_LE_BE (val))
 #DEFINE GUINT32_TO_BE(val) (GUINT32_SWAP_LE_BE (val))
-#DEFINE GINT64_TO_LE(val) (CAST(gint64, (val)))
-#DEFINE GUINT64_TO_LE(val) (CAST(guint64, (val)))
-#DEFINE GINT64_TO_BE(val) (CAST(gint64, GUINT64_SWAP_LE_BE (val)))
+#DEFINE GINT64_TO_LE(val) CAST(gint64, (val))
+#DEFINE GUINT64_TO_LE(val) CAST(guint64, (val))
+#DEFINE GINT64_TO_BE(val) CAST(gint64, GUINT64_SWAP_LE_BE (val))
 #DEFINE GUINT64_TO_BE(val) (GUINT64_SWAP_LE_BE (val))
-#DEFINE GLONG_TO_LE(val) (CAST(glong, GINT32_TO_LE (val)))
-#DEFINE GULONG_TO_LE(val) (CAST(gulong, GUINT32_TO_LE (val)))
-#DEFINE GLONG_TO_BE(val) (CAST(glong, GINT32_TO_BE (val)))
-#DEFINE GULONG_TO_BE(val) (CAST(gulong, GUINT32_TO_BE (val)))
-#DEFINE GINT_TO_LE(val) (CAST(gint, GINT32_TO_LE (val)))
-#DEFINE GUINT_TO_LE(val) (CAST(guint, GUINT32_TO_LE (val)))
-#DEFINE GINT_TO_BE(val) (CAST(gint, GINT32_TO_BE (val)))
-#DEFINE GUINT_TO_BE(val) (CAST(guint, GUINT32_TO_BE (val)))
-#DEFINE GSIZE_TO_LE(val) (CAST(gsize, GUINT32_TO_LE (val)))
-#DEFINE GSSIZE_TO_LE(val) (CAST(gssize, GINT32_TO_LE (val)))
-#DEFINE GSIZE_TO_BE(val) (CAST(gsize, GUINT32_TO_BE (val)))
-#DEFINE GSSIZE_TO_BE(val) (CAST(gssize, GINT32_TO_BE (val)))
+#DEFINE GLONG_TO_LE(val) CAST(glong, GINT32_TO_LE (val))
+#DEFINE GULONG_TO_LE(val) CAST(gulong, GUINT32_TO_LE (val))
+#DEFINE GLONG_TO_BE(val) CAST(glong, GINT32_TO_BE (val))
+#DEFINE GULONG_TO_BE(val) CAST(gulong, GUINT32_TO_BE (val))
+#DEFINE GINT_TO_LE(val) CAST(gint, GINT32_TO_LE (val))
+#DEFINE GUINT_TO_LE(val) CAST(guint, GUINT32_TO_LE (val))
+#DEFINE GINT_TO_BE(val) CAST(gint, GINT32_TO_BE (val))
+#DEFINE GUINT_TO_BE(val) CAST(guint, GUINT32_TO_BE (val))
+#DEFINE GSIZE_TO_LE(val) CAST(gsize, GUINT32_TO_LE (val))
+#DEFINE GSSIZE_TO_LE(val) CAST(gssize, GINT32_TO_LE (val))
+#DEFINE GSIZE_TO_BE(val) CAST(gsize, GUINT32_TO_BE (val))
+#DEFINE GSSIZE_TO_BE(val) CAST(gssize, GINT32_TO_BE (val))
 #DEFINE G_BYTE_ORDER G_LITTLE_ENDIAN
-#DEFINE GLIB_SYSDEF_POLLIN=1
-#DEFINE GLIB_SYSDEF_POLLOUT=4
-#DEFINE GLIB_SYSDEF_POLLPRI=2
-#DEFINE GLIB_SYSDEF_POLLHUP=16
-#DEFINE GLIB_SYSDEF_POLLERR=8
-#DEFINE GLIB_SYSDEF_POLLNVAL=32
-#DEFINE G_MODULE_SUFFIX !"so"
+#DEFINE GLIB_SYSDEF_POLLIN =1
+#DEFINE GLIB_SYSDEF_POLLOUT =4
+#DEFINE GLIB_SYSDEF_POLLPRI =2
+#DEFINE GLIB_SYSDEF_POLLHUP =16
+#DEFINE GLIB_SYSDEF_POLLERR =8
+#DEFINE GLIB_SYSDEF_POLLNVAL =32
+
+#IF DEFINED(__FB_UNIX__)
+ #DEFINE G_MODULE_SUFFIX !"so"
+ #DEFINE GLIB_SYSDEF_AF_INET6 10
+#ELSE
+ #DEFINE G_MODULE_SUFFIX !"dll"
+ #DEFINE GLIB_SYSDEF_AF_INET6 23
+#ENDIF
 
 TYPE GPid AS INTEGER
 
 #DEFINE GLIB_SYSDEF_AF_UNIX 1
 #DEFINE GLIB_SYSDEF_AF_INET 2
-#DEFINE GLIB_SYSDEF_AF_INET6 10
 #DEFINE GLIB_SYSDEF_MSG_OOB 1
 #DEFINE GLIB_SYSDEF_MSG_PEEK 2
 #DEFINE GLIB_SYSDEF_MSG_DONTROUTE 4
+
 #ENDIF ' __G_LIBCONFIG_H__
+
+#IFNDEF __G_MACROS_H__
+#DEFINE __G_MACROS_H__
+#INCLUDE ONCE "crt/stddef.bi"
+
+#IFNDEF G_DISABLE_DEPRECATED
+#DEFINE G_GNUC_FUNCTION __FUNCTION__
+#DEFINE G_GNUC_PRETTY_FUNCTION __FUNCTION__
+#ENDIF ' G_DISABLE_DEPRECATED
+
+#DEFINE G_STRINGIFY(macro_or_string) G_STRINGIFY_ARG (macro_or_string)
+#DEFINE G_STRINGIFY_ARG(contents) #contents
+
+#IFNDEF __GI_SCANNER__
+#DEFINE G_PASTE_ARGS(identifier1,identifier2) identifier1 ## identifier2
+#DEFINE G_PASTE(identifier1,identifier2) G_PASTE_ARGS (identifier1, identifier2)
+
+#MACRO G_STATIC_ASSERT(expr)
+ #IFDEF __COUNTER__
+  TYPE G_PASTE (_GStaticAssert_, __COUNTER__)
+ #ELSE
+  TYPE G_PASTE (_GStaticAssert_, __LINE__)
+ #ENDIF ' __COUNTER__
+  AS ZSTRING*(IIF((expr) , 1 , -1)) Compile_Time_Assertion
+ END TYPE
+#ENDMACRO
+
+#DEFINE G_STATIC_ASSERT_EXPR(expr) (CAST(ANY, SIZEOF (charIIF[(expr) , 1 , -1])))
+#ENDIF ' __GI_SCANNER__
+
+#DEFINE G_STRLOC __FILE__ !":" G_STRINGIFY (__LINE__) & ":" & __FUNCTION__ & "()"
+
+#DEFINE G_STRFUNC (CAST(CONST ZSTRING PTR, (@__FUNCTION__)))
+
+#IFNDEF NULL
+#DEFINE NULL (CAST(ANY PTR, 0))
+#ENDIF ' NULL
+
+#IFNDEF FALSE
+#DEFINE FALSE (0)
+#ENDIF ' FALSE
+
+#IFNDEF TRUE
+#DEFINE TRUE (1)
+#ENDIF ' TRUE
+#UNDEF MAX
+#DEFINE MAX(a, b) IIF(((a) > (b)) , (a) , (b))
+#UNDEF MIN
+#DEFINE MIN(a, b) IIF(((a) < (b)) , (a) , (b))
+'#UNDEF ABS
+'#DEFINE ABS_(a) IIF(((a) < 0) , -(a) , (a))
+#UNDEF CLAMP
+#DEFINE CLAMP(x, low, high) IIF(((x) > (high)) , (high) , IIF(((x) < (low)) , (low) , (x)))
+#DEFINE G_N_ELEMENTS(arr) (SIZEOF (arr) / SIZEOF ((arr)[0]))
+#DEFINE GPOINTER_TO_SIZE(p) (CAST(gsize, (p)))
+#DEFINE GSIZE_TO_POINTER(s) (CAST(gpointer, CAST(gsize, (s))))
+
+#DEFINE G_STRUCT_OFFSET(struct_type, member) _
+      (CAST(glong, OFFSETOF (struct_type, member)))
+#DEFINE G_STRUCT_MEMBER_P(struct_p, struct_offset) _
+    (CAST(gpointer, (CAST(guint8 PTR, struct_p, + CAST(glong, struct_offset)))))
+#DEFINE G_STRUCT_MEMBER(member_type, struct_p, struct_offset) _
+    (*CAST(member_type PTR, G_STRUCT_MEMBER_P ((struct_p), (struct_offset))))
+
+#IF NOT (DEFINED (G_STMT_START) AND DEFINED (G_STMT_END))
+#DEFINE G_STMT_START do
+#DEFINE G_STMT_END while (0)
+#ENDIF ' NOT (DEFINED (G...
+
+#IFNDEF G_DISABLE_DEPRECATED
+#IFDEF G_DISABLE_CONST_RETURNS
+#DEFINE G_CONST_RETURN
+#ELSE ' G_DISABLE_CONST_RETURNS
+#DEFINE G_CONST_RETURN const
+#ENDIF ' G_DISABLE_CONST_RETURNS
+#ENDIF ' G_DISABLE_DEPRECATED
+
+#DEFINE G_LIKELY(expr) (expr)
+#DEFINE G_UNLIKELY(expr) (expr)
+
+#DEFINE G_DEPRECATED #PRINT __FUNCTION__ is deprecated
+#DEFINE G_DEPRECATED_FOR(f) #PRINT __FUNCTION__ is deprecated. Use #f instead
+
+#IFDEF GLIB_DISABLE_DEPRECATION_WARNINGS
+#DEFINE GLIB_DEPRECATED
+#DEFINE GLIB_DEPRECATED_FOR(f)
+#ELSE ' GLIB_DISABLE_DEPRECATION_WARNINGS
+#DEFINE GLIB_DEPRECATED G_DEPRECATED
+#DEFINE GLIB_DEPRECATED_FOR(f) G_DEPRECATED_FOR(f)
+#ENDIF ' GLIB_DISABLE_DEPRECATION_WARNINGS
+#ENDIF ' __G_MACROS_H__
 
 #INCLUDE ONCE "crt/time.bi"
 
@@ -356,16 +375,15 @@ TYPE GTranslateFunc AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS gpointer) AS 
 #DEFINE G_LITTLE_ENDIAN 1234
 #DEFINE G_BIG_ENDIAN 4321
 #DEFINE G_PDP_ENDIAN 3412
+
 #DEFINE GUINT16_SWAP_LE_BE_CONSTANT(val) (CAST(guint16, ( _
     CAST(guint16, (CAST(guint16, val) SHR 8)) OR _
     CAST(guint16, (CAST(guint16, val) SHL 8)))))
-
 #DEFINE GUINT32_SWAP_LE_BE_CONSTANT(val) (CAST(guint32, ( _
     ((CAST(guint32, val) AND CAST(guint32, &h000000FFU)) SHL 24) OR _
     ((CAST(guint32, val) AND CAST(guint32, &h0000FF00U)) SHL 8) OR _
     ((CAST(guint32, val) AND CAST(guint32, &h00FF0000U)) SHR 8) OR _
     ((CAST(guint32, val) AND CAST(guint32, &hFF000000U)) SHR 24))))
-
 #DEFINE GUINT64_SWAP_LE_BE_CONSTANT(val) (CAST(guint64, ( _
       ((CAST(guint64, val) AND CAST(guint64, G_GINT64_CONSTANT (&h00000000000000FFU))) SHL 56) OR _
       ((CAST(guint64, val) AND CAST(guint64, G_GINT64_CONSTANT (&h000000000000FF00U))) SHL 40) OR _
@@ -375,12 +393,11 @@ TYPE GTranslateFunc AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS gpointer) AS 
       ((CAST(guint64, val) AND CAST(guint64, G_GINT64_CONSTANT (&h0000FF0000000000U))) SHR 24) OR _
       ((CAST(guint64, val) AND CAST(guint64, G_GINT64_CONSTANT (&h00FF000000000000U))) SHR 40) OR _
       ((CAST(guint64, val) AND CAST(guint64, G_GINT64_CONSTANT (&hFF00000000000000U))) SHR 56))))
-
 #DEFINE GUINT16_SWAP_LE_BE(val) (GUINT16_SWAP_LE_BE_CONSTANT (val))
 #DEFINE GUINT32_SWAP_LE_BE(val) (GUINT32_SWAP_LE_BE_CONSTANT (val))
 #DEFINE GUINT64_SWAP_LE_BE(val) (GUINT64_SWAP_LE_BE_CONSTANT (val))
 
-#DEFINE GUINT16_SWAP_LE_PDP(val) CAST(guint16, val)
+#DEFINE GUINT16_SWAP_LE_PDP(val) (CAST(guint16, (val)))
 #DEFINE GUINT16_SWAP_BE_PDP(val) (GUINT16_SWAP_LE_BE (val))
 #DEFINE GUINT32_SWAP_LE_PDP(val) (CAST(guint32, ( _
     ((CAST(guint32, val) AND CAST(guint32, &h0000FFFFU)) SHL 16) OR _
@@ -388,7 +405,6 @@ TYPE GTranslateFunc AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS gpointer) AS 
 #DEFINE GUINT32_SWAP_BE_PDP(val) (CAST(guint32, ( _
     ((CAST(guint32, val) AND CAST(guint32, &h00FF00FFU)) SHL 8) OR _
     ((CAST(guint32, val) AND CAST(guint32, &hFF00FF00U)) SHR 8))))
-
 #DEFINE GINT16_FROM_LE(val) (GINT16_TO_LE (val))
 #DEFINE GUINT16_FROM_LE(val) (GUINT16_TO_LE (val))
 #DEFINE GINT16_FROM_BE(val) (GINT16_TO_BE (val))
@@ -486,9 +502,6 @@ TYPE _GTimeVal
   AS glong tv_usec
 END TYPE
 
-#IFNDEF GLIB_VAR
-#DEFINE GLIB_VAR EXTERN AS
-#ENDIF ' GLIB_VAR
 #ENDIF ' __G_TYPES_H__
 
 #INCLUDE ONCE "crt/malloc.bi"
@@ -502,6 +515,7 @@ END TYPE
 #IFNDEF __G_ARRAY_H__
 #DEFINE __G_ARRAY_H__
 
+TYPE GBytes AS _GBytes
 TYPE GArray AS _GArray
 TYPE GByteArray AS _GByteArray
 TYPE GPtrArray AS _GPtrArray
@@ -547,6 +561,7 @@ DECLARE SUB g_array_sort_with_data(BYVAL AS GArray PTR, BYVAL AS GCompareDataFun
 DECLARE FUNCTION g_ptr_array_new() AS GPtrArray PTR
 DECLARE FUNCTION g_ptr_array_new_with_free_func(BYVAL AS GDestroyNotify) AS GPtrArray PTR
 DECLARE FUNCTION g_ptr_array_sized_new(BYVAL AS guint) AS GPtrArray PTR
+DECLARE FUNCTION g_ptr_array_new_full(BYVAL AS guint, BYVAL AS GDestroyNotify) AS GPtrArray PTR
 DECLARE FUNCTION g_ptr_array_free(BYVAL AS GPtrArray PTR, BYVAL AS gboolean) AS gpointer PTR
 DECLARE FUNCTION g_ptr_array_ref(BYVAL AS GPtrArray PTR) AS GPtrArray PTR
 DECLARE SUB g_ptr_array_unref(BYVAL AS GPtrArray PTR)
@@ -562,8 +577,10 @@ DECLARE SUB g_ptr_array_sort(BYVAL AS GPtrArray PTR, BYVAL AS GCompareFunc)
 DECLARE SUB g_ptr_array_sort_with_data(BYVAL AS GPtrArray PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
 DECLARE SUB g_ptr_array_foreach(BYVAL AS GPtrArray PTR, BYVAL AS GFunc, BYVAL AS gpointer)
 DECLARE FUNCTION g_byte_array_new() AS GByteArray PTR
+DECLARE FUNCTION g_byte_array_new_take(BYVAL AS guint8 PTR, BYVAL AS gsize) AS GByteArray PTR
 DECLARE FUNCTION g_byte_array_sized_new(BYVAL AS guint) AS GByteArray PTR
 DECLARE FUNCTION g_byte_array_free(BYVAL AS GByteArray PTR, BYVAL AS gboolean) AS guint8 PTR
+DECLARE FUNCTION g_byte_array_free_to_bytes(BYVAL AS GByteArray PTR) AS GBytes PTR
 DECLARE FUNCTION g_byte_array_ref(BYVAL AS GByteArray PTR) AS GByteArray PTR
 DECLARE SUB g_byte_array_unref(BYVAL AS GByteArray PTR)
 DECLARE FUNCTION g_byte_array_append(BYVAL AS GByteArray PTR, BYVAL AS CONST guint8 PTR, BYVAL AS guint) AS GByteArray PTR
@@ -582,6 +599,61 @@ DECLARE SUB g_byte_array_sort_with_data(BYVAL AS GByteArray PTR, BYVAL AS GCompa
 
 #IFNDEF __G_THREAD_H__
 #DEFINE __G_THREAD_H__
+
+#IFNDEF __G_ATOMIC_H__
+#DEFINE __G_ATOMIC_H__
+
+DECLARE FUNCTION g_atomic_int_get_ ALIAS "g_atomic_int_get"(BYVAL AS gint PTR) AS gint
+DECLARE SUB g_atomic_int_set_ ALIAS "g_atomic_int_set"(BYVAL AS gint PTR, BYVAL AS gint)
+DECLARE SUB g_atomic_int_inc_ ALIAS "g_atomic_int_inc"(BYVAL AS gint PTR)
+DECLARE FUNCTION g_atomic_int_dec_and_test_ ALIAS "g_atomic_int_dec_and_test"(BYVAL AS gint PTR) AS gboolean
+DECLARE FUNCTION g_atomic_int_compare_and_exchange_ ALIAS "g_atomic_int_compare_and_exchange"(BYVAL AS gint PTR, BYVAL AS gint, BYVAL AS gint) AS gboolean
+DECLARE FUNCTION g_atomic_int_add_ ALIAS "g_atomic_int_add"(BYVAL AS gint PTR, BYVAL AS gint) AS gint
+DECLARE FUNCTION g_atomic_int_and_ ALIAS "g_atomic_int_and"(BYVAL AS guint PTR, BYVAL AS guint) AS guint
+DECLARE FUNCTION g_atomic_int_or_ ALIAS "g_atomic_int_or"(BYVAL AS guint PTR, BYVAL AS guint) AS guint
+DECLARE FUNCTION g_atomic_int_xor_ ALIAS "g_atomic_int_xor"(BYVAL AS guint PTR, BYVAL AS guint) AS guint
+DECLARE FUNCTION g_atomic_pointer_get_ ALIAS "g_atomic_pointer_get"(BYVAL AS ANY PTR) AS gpointer
+DECLARE SUB g_atomic_pointer_set_ ALIAS "g_atomic_pointer_set"(BYVAL AS ANY PTR, BYVAL AS gpointer)
+DECLARE FUNCTION g_atomic_pointer_compare_and_exchange_ ALIAS "g_atomic_pointer_compare_and_exchange"(BYVAL AS ANY PTR, BYVAL AS gpointer, BYVAL AS gpointer) AS gboolean
+DECLARE FUNCTION g_atomic_pointer_add_ ALIAS "g_atomic_pointer_add"(BYVAL AS ANY PTR, BYVAL AS gssize) AS gssize
+DECLARE FUNCTION g_atomic_pointer_and_ ALIAS "g_atomic_pointer_and"(BYVAL AS ANY PTR, BYVAL AS gsize) AS gsize
+DECLARE FUNCTION g_atomic_pointer_or_ ALIAS "g_atomic_pointer_or"(BYVAL AS ANY PTR, BYVAL AS gsize) AS gsize
+DECLARE FUNCTION g_atomic_pointer_xor_ ALIAS "g_atomic_pointer_xor"(BYVAL AS ANY PTR, BYVAL AS gsize) AS gsize
+DECLARE FUNCTION g_atomic_int_exchange_and_add(BYVAL AS gint PTR, BYVAL AS gint) AS gint
+
+#DEFINE g_atomic_int_get(atomic) _
+  (g_atomic_int_get_ (CAST(gint PTR, (atomic))))
+#DEFINE g_atomic_int_set(atomic, newval) _
+  (g_atomic_int_set_ (CAST(gint PTR, (atomic)), CAST(gint, (newval))))
+#DEFINE g_atomic_int_compare_and_exchange(atomic, oldval, newval) _
+  (g_atomic_int_compare_and_exchange_ (CAST(gint PTR, (atomic)), (oldval), (newval)))
+#DEFINE g_atomic_int_add(atomic, val) _
+  (g_atomic_int_add_ (CAST(gint PTR, (atomic)), (val)))
+#DEFINE g_atomic_int_and(atomic, val) _
+  (g_atomic_int_and_ (CAST(guint PTR, (atomic)), (val)))
+#DEFINE g_atomic_int_or(atomic, val) _
+  (g_atomic_int_or_ (CAST(guint PTR, (atomic)), (val)))
+#DEFINE g_atomic_int_xor(atomic, val) _
+  (g_atomic_int_xor_ (CAST(guint PTR, (atomic)), (val)))
+#DEFINE g_atomic_int_inc(atomic) _
+  (g_atomic_int_inc_ (CAST(gint PTR, (atomic))))
+#DEFINE g_atomic_int_dec_and_test(atomic) _
+  (g_atomic_int_dec_and_test_ (CAST(gint PTR, (atomic))))
+#DEFINE g_atomic_pointer_get(atomic) _
+  (g_atomic_pointer_get_ (atomic))
+#DEFINE g_atomic_pointer_set(atomic, newval) _
+  (g_atomic_pointer_set_ ((atomic), CAST(gpointer, (newval))))
+#DEFINE g_atomic_pointer_compare_and_exchange(atomic, oldval, newval) _
+  (g_atomic_pointer_compare_and_exchange_ ((atomic), CAST(gpointer, (oldval)), CAST(gpointer, (newval))))
+#DEFINE g_atomic_pointer_add(atomic, val) _
+  (g_atomic_pointer_add_ ((atomic), CAST(gssize, (val))))
+#DEFINE g_atomic_pointer_and(atomic, val) _
+  (g_atomic_pointer_and_ ((atomic), CAST(gsize, (val))))
+#DEFINE g_atomic_pointer_or(atomic, val) _
+  (g_atomic_pointer_or_ ((atomic), CAST(gsize, (val))))
+#DEFINE g_atomic_pointer_xor(atomic, val) _
+  (g_atomic_pointer_xor_ ((atomic), CAST(gsize, (val))))
+#ENDIF ' DEFINED(G_ATOMI...
 
 #IFNDEF __G_ERROR_H__
 #DEFINE __G_ERROR_H__
@@ -624,429 +696,50 @@ DECLARE SUB g_propagate_prefixed_error(BYVAL AS GError PTR PTR, BYVAL AS GError 
 
 #ENDIF ' __G_ERROR_H__
 
-#IFNDEF __G_UTILS_H__
-#DEFINE __G_UTILS_H__
-
-#INCLUDE ONCE "crt/stdarg.bi"
-#IFDEF G_OS_WIN32
-#DEFINE G_DIR_SEPARATOR ASC(!"\\")
-#DEFINE G_DIR_SEPARATOR_S !"\\"
-#DEFINE G_IS_DIR_SEPARATOR(c) ((c)= G_DIR_SEPARATOR ORELSE (c)= ASC(!"/"))
-#DEFINE G_SEARCHPATH_SEPARATOR ASC(!";")
-#DEFINE G_SEARCHPATH_SEPARATOR_S !";"
-#ELSE ' G_OS_WIN32
-#DEFINE G_DIR_SEPARATOR ASC(!"/")
-#DEFINE G_DIR_SEPARATOR_S !"/"
-#DEFINE G_IS_DIR_SEPARATOR(c) ((c)= G_DIR_SEPARATOR)
-#DEFINE G_SEARCHPATH_SEPARATOR ASC(!":")
-#DEFINE G_SEARCHPATH_SEPARATOR_S !":"
-#ENDIF ' G_OS_WIN32
-
-#DEFINE G_VA_COPY(ap1, ap2) #ERROR G_VA_COPY not implemented in this header!
-
-#IFDEF G_OS_WIN32
-#DEFINE g_get_user_name g_get_user_name_utf8
-#DEFINE g_get_real_name g_get_real_name_utf8
-#DEFINE g_get_home_dir g_get_home_dir_utf8
-#DEFINE g_get_tmp_dir g_get_tmp_dir_utf8
-#ENDIF ' G_OS_WIN32
-
-DECLARE FUNCTION g_get_user_name() AS CONST gchar PTR
-DECLARE FUNCTION g_get_real_name() AS CONST gchar PTR
-DECLARE FUNCTION g_get_home_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_tmp_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_host_name() AS CONST gchar PTR
-DECLARE FUNCTION g_get_prgname() AS gchar PTR
-DECLARE SUB g_set_prgname(BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION g_get_application_name() AS CONST gchar PTR
-DECLARE SUB g_set_application_name(BYVAL AS CONST gchar PTR)
-DECLARE SUB g_reload_user_special_dirs_cache()
-DECLARE FUNCTION g_get_user_data_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_user_config_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_user_cache_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_system_data_dirs() AS CONST gchar CONST PTR PTR
-
-#IFDEF G_OS_WIN32
-
-DECLARE FUNCTION g_win32_get_system_data_dirs_for_module(BYVAL AS SUB()) AS CONST gchar CONST PTR PTR
-
-#ENDIF ' G_OS_WIN32
-
-DECLARE FUNCTION g_get_system_config_dirs() AS CONST gchar CONST PTR PTR
-DECLARE FUNCTION g_get_user_runtime_dir() AS CONST gchar PTR
-DECLARE FUNCTION g_get_language_names() AS CONST gchar CONST PTR PTR
-DECLARE FUNCTION g_get_locale_variants(BYVAL AS CONST gchar PTR) AS gchar PTR PTR
-
-ENUM GUserDirectory
-  G_USER_DIRECTORY_DESKTOP
-  G_USER_DIRECTORY_DOCUMENTS
-  G_USER_DIRECTORY_DOWNLOAD
-  G_USER_DIRECTORY_MUSIC
-  G_USER_DIRECTORY_PICTURES
-  G_USER_DIRECTORY_PUBLIC_SHARE
-  G_USER_DIRECTORY_TEMPLATES
-  G_USER_DIRECTORY_VIDEOS
-  G_USER_N_DIRECTORIES
-END ENUM
-
-DECLARE FUNCTION g_get_user_special_dir(BYVAL AS GUserDirectory) AS CONST gchar PTR
-
-TYPE GDebugKey AS _GDebugKey
-
-TYPE _GDebugKey
-  AS CONST gchar PTR key
-  AS guint value
-END TYPE
-
-DECLARE FUNCTION g_parse_debug_string(BYVAL AS CONST gchar PTR, BYVAL AS CONST GDebugKey PTR, BYVAL AS guint) AS guint
-DECLARE FUNCTION g_snprintf(BYVAL AS gchar PTR, BYVAL AS gulong, BYVAL AS gchar CONST PTR, ...) AS gint
-DECLARE FUNCTION g_vsnprintf(BYVAL AS gchar PTR, BYVAL AS gulong, BYVAL AS gchar CONST PTR, BYVAL AS va_list) AS gint
-DECLARE FUNCTION g_path_is_absolute(BYVAL AS CONST gchar PTR) AS gboolean
-DECLARE FUNCTION g_path_skip_root(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE FUNCTION g_basename(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
-
-#DEFINE g_dirname g_path_get_dirname
-#ENDIF ' G_DISABLE_DEPRECATED
-
-#IFDEF G_OS_WIN32
-#DEFINE g_get_current_dir g_get_current_dir_utf8
-#ENDIF ' G_OS_WIN32
-
-DECLARE FUNCTION g_get_current_dir() AS gchar PTR
-DECLARE FUNCTION g_path_get_basename(BYVAL AS CONST gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_path_get_dirname(BYVAL AS CONST gchar PTR) AS gchar PTR
-DECLARE SUB g_nullify_pointer(BYVAL AS gpointer PTR)
-
-#IFDEF G_OS_WIN32
-#DEFINE g_getenv g_getenv_utf8
-#DEFINE g_setenv g_setenv_utf8
-#DEFINE g_unsetenv g_unsetenv_utf8
-#DEFINE g_find_program_in_path g_find_program_in_path_utf8
-#ENDIF ' G_OS_WIN32
-
-DECLARE FUNCTION g_getenv(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
-DECLARE FUNCTION g_setenv(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean) AS gboolean
-DECLARE SUB g_unsetenv(BYVAL AS CONST gchar PTR)
-DECLARE FUNCTION g_listenv() AS gchar PTR PTR
-DECLARE FUNCTION g_get_environ() AS gchar PTR PTR
-DECLARE FUNCTION _g_getenv_nomalloc(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR) AS CONST gchar PTR
-
-TYPE GVoidFunc AS SUB()
-
-#IFDEF G_OS_WIN32
-#IFNDEF ATEXIT
-#INCLUDE ONCE "crt/stdlib.bi"
-#DEFINE G_NATIVE_ATEXIT
-#ENDIF ' ATEXIT
-#DEFINE g_atexit(func) atexit(func)
-#ELSE
-DECLARE SUB g_atexit(BYVAL AS GVoidFunc)
-#ENDIF ' G_OS_WIN32
-
-DECLARE FUNCTION g_find_program_in_path(BYVAL AS CONST gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_bit_nth_lsf(BYVAL AS gulong, BYVAL AS gint) AS gint
-DECLARE FUNCTION g_bit_nth_msf(BYVAL AS gulong, BYVAL AS gint) AS gint
-DECLARE FUNCTION g_bit_storage(BYVAL AS gulong) AS guint
-
-TYPE GTrashStack AS _GTrashStack
-
-TYPE _GTrashStack
-  AS GTrashStack PTR next
-END TYPE
-
-DECLARE SUB g_trash_stack_push(BYVAL AS GTrashStack PTR PTR, BYVAL AS gpointer)
-DECLARE FUNCTION g_trash_stack_pop(BYVAL AS GTrashStack PTR PTR) AS gpointer
-DECLARE FUNCTION g_trash_stack_peek(BYVAL AS GTrashStack PTR PTR) AS gpointer
-DECLARE FUNCTION g_trash_stack_height(BYVAL AS GTrashStack PTR PTR) AS guint
-
-GLIB_VAR CONST guint glib_major_version_FB ALIAS "glib_major_version"
-GLIB_VAR CONST guint glib_minor_version_FB ALIAS "glib_minor_version"
-GLIB_VAR CONST guint glib_micro_version_FB ALIAS "glib_micro_version"
-GLIB_VAR CONST guint glib_interface_age
-GLIB_VAR CONST guint glib_binary_age
-
-DECLARE FUNCTION glib_check_version_FB ALIAS "glib_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
-
-#DEFINE GLIB_CHECK_VERSION(major,minor,micro) _
-    (GLIB_MAJOR_VERSION > (major) ORELSE _
-    (GLIB_MAJOR_VERSION = (major) ANDALSO GLIB_MINOR_VERSION > (minor)) ORELSE _
-    (GLIB_MAJOR_VERSION = (major) ANDALSO GLIB_MINOR_VERSION = (minor) ANDALSO _
-     GLIB_MICRO_VERSION >= (micro)))
-
-#IFNDEF G_DISABLE_DEPRECATED
-#IFNDEF G_PLATFORM_WIN32
-#DEFINE G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-#ELSE ' G_PLATFORM_WIN32
-#MACRO G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
- STATIC SHARED AS ZSTRING PTR dll_name
- FUNCTION DllMain stdcall alias "DllMain"(BYVAL hinstDLL AS HINSTANCE, BYVAL fdwReason AS DWORD, BYVAL lpvReserved AS LPVOID) AS BOOL
-   DIM AS wchar_t wcbfr(999)
-   SELECT CASE fdwReason
-   CASE DLL_PROCESS_ATTACH
-     GetModuleFileNameW (CAST(HMODULE, hinstDLL), wcbfr, G_N_ELEMENTS (wcbfr))
-     VAR tem = g_utf16_to_utf8 (wcbfr, -1, NULL, NULL, NULL)
-     dll_name = g_path_get_basename (tem)
-     g_free (tem)
-   END SELECT : RETURN TRUE
- END FUNCTION
-#ENDMACRO
-
-#ENDIF ' G_PLATFORM_WIN32
-#ENDIF ' G_DISABLE_DEPRECATED
-#ENDIF ' __G_UTILS_H__
-
-#IFNDEF __G_ATOMIC_H__
-#DEFINE __G_ATOMIC_H__
-
-DECLARE FUNCTION g_atomic_int_exchange_and_add(BYVAL AS gint PTR, BYVAL AS gint) AS gint
-DECLARE SUB g_atomic_int_add(BYVAL AS gint PTR, BYVAL AS gint)
-DECLARE FUNCTION g_atomic_int_compare_and_exchange(BYVAL AS gint PTR, BYVAL AS gint, BYVAL AS gint) AS gboolean
-DECLARE FUNCTION g_atomic_pointer_compare_and_exchange(BYVAL AS gpointer PTR, BYVAL AS gpointer, BYVAL AS gpointer) AS gboolean
-DECLARE FUNCTION g_atomic_int_get(BYVAL AS gint PTR) AS gint
-DECLARE SUB g_atomic_int_set(BYVAL AS gint PTR, BYVAL AS gint)
-DECLARE FUNCTION g_atomic_pointer_get(BYVAL AS gpointer PTR) AS gpointer
-DECLARE SUB g_atomic_pointer_set(BYVAL AS gpointer PTR, BYVAL AS gpointer)
-
-#IFNDEF G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
-
-#UNDEF g_atomic_int_get
-#DEFINE g_atomic_int_get(atomic) CAST(gint, *(atomic))
-#UNDEF g_atomic_int_set
-#DEFINE g_atomic_int_set(atomic, newval) (*(atomic) = CAST(gint, newval))
-#UNDEF g_atomic_pointer_get
-#DEFINE g_atomic_pointer_get(atomic) CAST(gpointer, *(atomic))
-#UNDEF g_atomic_pointer_set
-#DEFINE g_atomic_pointer_set(atomic, newval) (*(atomic) = CAST(gpointer, newval))
-
-#ENDIF ' G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
-
-#DEFINE g_atomic_int_inc(atomic) (g_atomic_int_add ((atomic), 1))
-#DEFINE g_atomic_int_dec_and_test(atomic) (g_atomic_int_exchange_and_add ((atomic), -1) = 1)
-#ENDIF ' __G_ATOMIC_H__
+#DEFINE G_THREAD_ERROR g_thread_error_quark ()
 
 DECLARE FUNCTION g_thread_error_quark() AS GQuark
-
-#DEFINE G_THREAD_ERROR g_thread_error_quark ()
 
 ENUM GThreadError
   G_THREAD_ERROR_AGAIN
 END ENUM
 
 TYPE GThreadFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
-
-ENUM GThreadPriority
-  G_THREAD_PRIORITY_LOW
-  G_THREAD_PRIORITY_NORMAL
-  G_THREAD_PRIORITY_HIGH
-  G_THREAD_PRIORITY_URGENT
-END ENUM
-
 TYPE GThread AS _GThread
-
-TYPE _GThread
-  AS GThreadFunc func
-  AS gpointer data
-  AS gboolean joinable
-  AS GThreadPriority priority
-END TYPE
-
 TYPE GMutex AS _GMutex
+TYPE GRecMutex AS _GRecMutex
+TYPE GRWLock AS _GRWLock
 TYPE GCond AS _GCond
 TYPE GPrivate AS _GPrivate
-TYPE GStaticPrivate AS _GStaticPrivate
-TYPE GThreadFunctions AS _GThreadFunctions
+TYPE GOnce AS _GOnce
 
-TYPE _GThreadFunctions
-  mutex_new AS FUNCTION() AS GMutex PTR
-  mutex_lock AS SUB(BYVAL AS GMutex PTR)
-  mutex_trylock AS FUNCTION(BYVAL AS GMutex PTR) AS gboolean
-  mutex_unlock AS SUB(BYVAL AS GMutex PTR)
-  mutex_free AS SUB(BYVAL AS GMutex PTR)
-  cond_new AS FUNCTION() AS GCond PTR
-  cond_signal AS SUB(BYVAL AS GCond PTR)
-  cond_broadcast AS SUB(BYVAL AS GCond PTR)
-  cond_wait AS SUB(BYVAL AS GCond PTR, BYVAL AS GMutex PTR)
-  cond_timed_wait AS FUNCTION(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS GTimeVal PTR) AS gboolean
-  cond_free AS SUB(BYVAL AS GCond PTR)
-  private_new AS FUNCTION(BYVAL AS GDestroyNotify) AS GPrivate PTR
-  private_get AS FUNCTION(BYVAL AS GPrivate PTR) AS gpointer
-  private_set AS SUB(BYVAL AS GPrivate PTR, BYVAL AS gpointer)
-  thread_create AS SUB(BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS gulong, BYVAL AS gboolean, BYVAL AS gboolean, BYVAL AS GThreadPriority, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
-  thread_yield AS SUB()
-  thread_join AS SUB(BYVAL AS gpointer)
-  thread_exit AS SUB()
-  thread_set_priority AS SUB(BYVAL AS gpointer, BYVAL AS GThreadPriority)
-  thread_self AS SUB(BYVAL AS gpointer)
-  thread_equal AS FUNCTION(BYVAL AS gpointer, BYVAL AS gpointer) AS gboolean
+UNION _GMutex
+  AS gpointer p
+  AS guint i(1)
+END UNION
+
+TYPE _GRWLock
+  AS gpointer p
+  AS guint i(1)
 END TYPE
 
-GLIB_VAR GThreadFunctions g_thread_functions_for_glib_use
-GLIB_VAR gboolean g_thread_use_default_impl
-GLIB_VAR gboolean g_threads_got_initialized
-
-DECLARE FUNCTION g_thread_gettime() AS guint64
-DECLARE SUB g_thread_init(BYVAL AS GThreadFunctions PTR)
-DECLARE SUB g_thread_init_with_errorcheck_mutexes(BYVAL AS GThreadFunctions PTR)
-DECLARE FUNCTION g_thread_get_initialized() AS gboolean
-
-#DEFINE G_MUTEX_DEBUG_MAGIC &hF8E18AD7
-
-#IFDEF G_ERRORCHECK_MUTEXES
-#DEFINE g_thread_init(vtable) g_thread_init_with_errorcheck_mutexes (vtable)
-#ENDIF ' G_ERRORCHECK_MUTEXES
-
-DECLARE FUNCTION g_static_mutex_get_mutex_impl(BYVAL AS GMutex PTR PTR) AS GMutex PTR
-
-#DEFINE g_static_mutex_get_mutex_impl_shortcut(mutex) _
-  IIF(g_atomic_pointer_get (mutex), *(mutex), _
-      g_static_mutex_get_mutex_impl (mutex))
-#DEFINE G_THREAD_UF(op, arglist) _
-      g_thread_functions_for_glib_use.##op arglist
-#DEFINE G_THREAD_CF(op, fail, arg) _
-    IIF(g_thread_supported () , G_THREAD_UF (op, arg) , (fail))
-#DEFINE G_THREAD_ECF(op, fail, mutex, type) _
-    IIF(g_thread_supported (), _
-        CAST(FUNCTION CDECL(BYVAL AS GMutex PTR, BYVAL AS CONST gulong, BYVAL AS gchar CONST PTR) AS type, _
-        g_thread_functions_for_glib_use.##op(mutex, G_MUTEX_DEBUG_MAGIC, G_STRLOC)), _
-        (fail))
-
-' This one is added since FB cannot call a SUB like a FUNCTION
-#DEFINE G_THREAD_ECF_void(op, fail, mutex) _
-    IIF(g_thread_supported () , _
-        CAST(SUB CDECL(BYVAL AS GMutex PTR, BYVAL AS CONST gulong, BYVAL AS gchar CONST PTR), _
-        g_thread_functions_for_glib_use.##op(mutex, G_MUTEX_DEBUG_MAGIC, G_STRLOC)), _
-        (fail))
-
-#IFNDEF G_ERRORCHECK_MUTEXES
-#DEFINE g_mutex_lock(mutex) _
-    G_THREAD_CF (mutex_lock, CAST(ANY, 0), (mutex))
-#DEFINE g_mutex_trylock(mutex) _
-    G_THREAD_CF (mutex_trylock, TRUE, (mutex))
-#DEFINE g_mutex_unlock(mutex) _
-    G_THREAD_CF (mutex_unlock, CAST(ANY, 0), (mutex))
-#DEFINE g_mutex_free(mutex) _
-    G_THREAD_CF (mutex_free, CAST(ANY, 0), (mutex))
-#DEFINE g_cond_wait(cond, mutex) _
-    G_THREAD_CF (cond_wait, CAST(ANY, 0), (cond, mutex))
-#DEFINE g_cond_timed_wait(cond, mutex, abs_time) _
-    G_THREAD_CF (cond_timed_wait, TRUE, (cond, mutex, abs_time))
-#ELSE ' G_ERRORCHECK_MUTEXES
-#DEFINE g_mutex_lock(mutex) _
-    G_THREAD_ECF_void (mutex_lock, CAST(ANY, 0), (mutex))
-#DEFINE g_mutex_trylock(mutex) _
-    G_THREAD_ECF (mutex_trylock, TRUE, (mutex), gboolean)
-#DEFINE g_mutex_unlock(mutex) _
-    G_THREAD_ECF_void (mutex_unlock, CAST(ANY, 0), (mutex))
-#DEFINE g_mutex_free(mutex) _
-    G_THREAD_ECF_void (mutex_free, CAST(ANY, 0), (mutex))
-#DEFINE g_cond_wait(cond, mutex) _
-    IIF(g_thread_supported (), _
-        CAST(SUB CDECL(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS gulong, BYVAL AS gchar PTR), _
-        g_thread_functions_for_glib_use.cond_wait(cond, mutex, G_MUTEX_DEBUG_MAGIC, G_STRLOC)), _
-        CAST(ANY, 0))
-#DEFINE g_cond_timed_wait(cond, mutex, abs_time) _
-    IIF(g_thread_supported (), _
-        CAST(FUNCTION CDECL(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS GTimeVal PTR, BYVAL AS gulong, BYVAL AS gchar PTR) AS gboolean, _
-        g_thread_functions_for_glib_use.cond_timed_wait(cond, mutex, abs_time, G_MUTEX_DEBUG_MAGIC, G_STRLOC)), _
-        TRUE)
-#ENDIF ' G_ERRORCHECK_MUTEXES
-
-#IF DEFINED(G_THREADS_ENABLED) AND DEFINED(G_THREADS_MANDATORY)
-#DEFINE g_thread_supported() TRUE
-#ELSE ' DEFINED(G_THREA...
-#DEFINE g_thread_supported() (g_threads_got_initialized)
-#ENDIF ' DEFINED(G_THREA...
-
-#DEFINE g_mutex_new() G_THREAD_UF (mutex_new, ())
-#DEFINE g_cond_new() G_THREAD_UF (cond_new, ())
-#DEFINE g_cond_signal(cond) G_THREAD_CF (cond_signal, CAST(ANY, 0), (cond))
-#DEFINE g_cond_broadcast(cond) G_THREAD_CF (cond_broadcast, CAST(ANY, 0), (cond))
-#DEFINE g_cond_free(cond) G_THREAD_CF (cond_free, CAST(ANY, 0), (cond))
-#DEFINE g_private_new(destructor) G_THREAD_UF (private_new, (destructor))
-#DEFINE g_private_get(private_key) _
-          G_THREAD_CF (private_get, _
-                       (CAST(gpointer, private_key)), _
-                       (private_key))
-#DEFINE g_private_set(private_key, value) _
-          G_THREAD_CF (private_set, _
-                       CAST(ANY, (private_key = CAST(GPrivate PTR, (value)))), _
-                       (private_key, value))
-#DEFINE g_thread_yield() G_THREAD_CF (thread_yield, CAST(ANY, 0), ())
-#DEFINE g_thread_create(func, data, joinable, error) _
-          (g_thread_create_full (func, data, 0, joinable, FALSE, _
-                                 G_THREAD_PRIORITY_NORMAL, error))
-
-DECLARE FUNCTION g_thread_create_full(BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS gulong, BYVAL AS gboolean, BYVAL AS gboolean, BYVAL AS GThreadPriority, BYVAL AS GError PTR PTR) AS GThread PTR
-DECLARE FUNCTION g_thread_self() AS GThread PTR
-DECLARE SUB g_thread_exit(BYVAL AS gpointer)
-DECLARE FUNCTION g_thread_join(BYVAL AS GThread PTR) AS gpointer
-DECLARE SUB g_thread_set_priority(BYVAL AS GThread PTR, BYVAL AS GThreadPriority)
-
-#DEFINE g_static_mutex_lock(mutex) _
-    g_mutex_lock (g_static_mutex_get_mutex (mutex))
-#DEFINE g_static_mutex_trylock(mutex) _
-    g_mutex_trylock (g_static_mutex_get_mutex (mutex))
-#DEFINE g_static_mutex_unlock(mutex) _
-    g_mutex_unlock (g_static_mutex_get_mutex (mutex))
-
-DECLARE SUB g_static_mutex_init_FB ALIAS "g_static_mutex_init"(BYVAL AS GStaticMutex PTR)
-DECLARE SUB g_static_mutex_free(BYVAL AS GStaticMutex PTR)
-
-TYPE _GStaticPrivate
-  AS guint index
+TYPE _GCond
+  AS gpointer p
+  AS guint i(1)
 END TYPE
 
-#DEFINE G_STATIC_PRIVATE_INIT TYPE<GStaticPrivate>(0)
-
-DECLARE SUB g_static_private_init_FB ALIAS "g_static_private_init"(BYVAL AS GStaticPrivate PTR)
-DECLARE FUNCTION g_static_private_get(BYVAL AS GStaticPrivate PTR) AS gpointer
-DECLARE SUB g_static_private_set(BYVAL AS GStaticPrivate PTR, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
-DECLARE SUB g_static_private_free(BYVAL AS GStaticPrivate PTR)
-
-TYPE GStaticRecMutex AS _GStaticRecMutex
-
-TYPE _GStaticRecMutex
-  AS GStaticMutex mutex
-  AS guint depth
-  AS GSystemThread owner
+TYPE _GRecMutex
+  AS gpointer p
+  AS guint i(1)
 END TYPE
 
-#DEFINE G_STATIC_REC_MUTEX_INIT TYPE<GStaticRecMutex>( G_STATIC_MUTEX_INIT )
+#DEFINE G_PRIVATE_INIT(notify) TYPE<GPrivate>( NULL, (notify), { NULL, NULL } )
 
-DECLARE SUB g_static_rec_mutex_init_FB ALIAS "g_static_rec_mutex_init"(BYVAL AS GStaticRecMutex PTR)
-DECLARE SUB g_static_rec_mutex_lock(BYVAL AS GStaticRecMutex PTR)
-DECLARE FUNCTION g_static_rec_mutex_trylock(BYVAL AS GStaticRecMutex PTR) AS gboolean
-DECLARE SUB g_static_rec_mutex_unlock(BYVAL AS GStaticRecMutex PTR)
-DECLARE SUB g_static_rec_mutex_lock_full(BYVAL AS GStaticRecMutex PTR, BYVAL AS guint)
-DECLARE FUNCTION g_static_rec_mutex_unlock_full(BYVAL AS GStaticRecMutex PTR) AS guint
-DECLARE SUB g_static_rec_mutex_free(BYVAL AS GStaticRecMutex PTR)
-
-TYPE GStaticRWLock AS _GStaticRWLock
-
-TYPE _GStaticRWLock
-  AS GStaticMutex mutex
-  AS GCond PTR read_cond
-  AS GCond PTR write_cond
-  AS guint read_counter
-  AS gboolean have_writer
-  AS guint want_to_read
-  AS guint want_to_write
+TYPE _GPrivate
+  AS gpointer p
+  AS GDestroyNotify notify
+  AS gpointer future(1)
 END TYPE
-
-#DEFINE G_STATIC_RW_LOCK_INIT TYPE<GStaticRWLock>( G_STATIC_MUTEX_INIT, NULL, NULL, 0, FALSE, 0, 0 )
-
-DECLARE SUB g_static_rw_lock_init_FB ALIAS "g_static_rw_lock_init"(BYVAL AS GStaticRWLock PTR)
-DECLARE SUB g_static_rw_lock_reader_lock(BYVAL AS GStaticRWLock PTR)
-DECLARE FUNCTION g_static_rw_lock_reader_trylock(BYVAL AS GStaticRWLock PTR) AS gboolean
-DECLARE SUB g_static_rw_lock_reader_unlock(BYVAL AS GStaticRWLock PTR)
-DECLARE SUB g_static_rw_lock_writer_lock(BYVAL AS GStaticRWLock PTR)
-DECLARE FUNCTION g_static_rw_lock_writer_trylock(BYVAL AS GStaticRWLock PTR) AS gboolean
-DECLARE SUB g_static_rw_lock_writer_unlock(BYVAL AS GStaticRWLock PTR)
-DECLARE SUB g_static_rw_lock_free(BYVAL AS GStaticRWLock PTR)
-DECLARE SUB g_thread_foreach(BYVAL AS GFunc, BYVAL AS gpointer)
 
 ENUM GOnceStatus
   G_ONCE_STATUS_NOTCALLED
@@ -1054,34 +747,17 @@ ENUM GOnceStatus
   G_ONCE_STATUS_READY
 END ENUM
 
-TYPE GOnce AS _GOnce
+#DEFINE G_ONCE_INIT TYPE<GOnce>( G_ONCE_STATUS_NOTCALLED, NULL )
 
 TYPE _GOnce
   AS GOnceStatus status
   AS gpointer retval
 END TYPE
 
-#DEFINE G_ONCE_INIT { G_ONCE_STATUS_NOTCALLED, NULL }
-
-DECLARE FUNCTION g_once_impl(BYVAL AS GOnce PTR, BYVAL AS GThreadFunc, BYVAL AS gpointer) AS gpointer
-
-#IFDEF G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
-#DEFINE g_once(once, func, arg) g_once_impl ((once), (func), (arg))
-#ELSE ' G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
-#DEFINE g_once(once, func, arg) IIF((once)->status = G_ONCE_STATUS_READY, (once)->retval, g_once_impl ((once), (func), (arg)))
-#ENDIF ' G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
-
-DECLARE FUNCTION g_once_init_enter(BYVAL AS gsize PTR) AS gboolean
-DECLARE FUNCTION g_once_init_enter_impl(BYVAL AS gsize PTR) AS gboolean
-DECLARE SUB g_once_init_leave(BYVAL AS gsize PTR, BYVAL AS gsize)
-DECLARE SUB glib_dummy_decl()
-
 #DEFINE G_LOCK_NAME(name) g__ ## name ## _lock
-
-#IFDEF G_THREADS_ENABLED
-#DEFINE G_LOCK_DEFINE_STATIC(name) STATIC AS GStaticMutex G_LOCK_NAME (name) = G_STATIC_MUTEX_INIT
-#DEFINE G_LOCK_DEFINE(name) DIM AS GStaticMutex G_LOCK_NAME (name) = G_STATIC_MUTEX_INIT
-#DEFINE G_LOCK_EXTERN(name) EXTERN AS GStaticMutex G_LOCK_NAME (name)
+#DEFINE G_LOCK_DEFINE_STATIC(name) static G_LOCK_DEFINE (name)
+#DEFINE G_LOCK_DEFINE(name) GMutex G_LOCK_NAME (name)
+#DEFINE G_LOCK_EXTERN(name) extern GMutex G_LOCK_NAME (name)
 
 #IFDEF G_DEBUG_LOCKS
 
@@ -1103,14 +779,55 @@ DECLARE SUB glib_dummy_decl()
 
 #ENDIF ' G_DEBUG_LOCKS
 
-#ELSE ' G_THREADS_ENABLED
-#DEFINE G_LOCK_DEFINE_STATIC(name) glib_dummy_decl ()
-#DEFINE G_LOCK_DEFINE(name) glib_dummy_decl ()
-#DEFINE G_LOCK_EXTERN(name) glib_dummy_decl ()
-#DEFINE G_LOCK(name)
-#DEFINE G_UNLOCK(name)
-#DEFINE G_TRYLOCK(name) (TRUE)
-#ENDIF ' G_THREADS_ENABLED
+DECLARE FUNCTION g_thread_ref(BYVAL AS GThread PTR) AS GThread PTR
+DECLARE SUB g_thread_unref(BYVAL AS GThread PTR)
+DECLARE FUNCTION g_thread_new(BYVAL AS CONST gchar PTR, BYVAL AS GThreadFunc, BYVAL AS gpointer) AS GThread PTR
+DECLARE FUNCTION g_thread_try_new(BYVAL AS CONST gchar PTR, BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS GError PTR PTR) AS GThread PTR
+DECLARE FUNCTION g_thread_self() AS GThread PTR
+DECLARE SUB g_thread_exit(BYVAL AS gpointer)
+DECLARE FUNCTION g_thread_join(BYVAL AS GThread PTR) AS gpointer
+DECLARE SUB g_thread_yield()
+DECLARE SUB g_mutex_init(BYVAL AS GMutex PTR)
+DECLARE SUB g_mutex_clear(BYVAL AS GMutex PTR)
+DECLARE SUB g_mutex_lock(BYVAL AS GMutex PTR)
+DECLARE FUNCTION g_mutex_trylock(BYVAL AS GMutex PTR) AS gboolean
+DECLARE SUB g_mutex_unlock(BYVAL AS GMutex PTR)
+DECLARE SUB g_rw_lock_init(BYVAL AS GRWLock PTR)
+DECLARE SUB g_rw_lock_clear(BYVAL AS GRWLock PTR)
+DECLARE SUB g_rw_lock_writer_lock(BYVAL AS GRWLock PTR)
+DECLARE FUNCTION g_rw_lock_writer_trylock(BYVAL AS GRWLock PTR) AS gboolean
+DECLARE SUB g_rw_lock_writer_unlock(BYVAL AS GRWLock PTR)
+DECLARE SUB g_rw_lock_reader_lock(BYVAL AS GRWLock PTR)
+DECLARE FUNCTION g_rw_lock_reader_trylock(BYVAL AS GRWLock PTR) AS gboolean
+DECLARE SUB g_rw_lock_reader_unlock(BYVAL AS GRWLock PTR)
+DECLARE SUB g_rec_mutex_init(BYVAL AS GRecMutex PTR)
+DECLARE SUB g_rec_mutex_clear(BYVAL AS GRecMutex PTR)
+DECLARE SUB g_rec_mutex_lock(BYVAL AS GRecMutex PTR)
+DECLARE FUNCTION g_rec_mutex_trylock(BYVAL AS GRecMutex PTR) AS gboolean
+DECLARE SUB g_rec_mutex_unlock(BYVAL AS GRecMutex PTR)
+DECLARE SUB g_cond_init(BYVAL AS GCond PTR)
+DECLARE SUB g_cond_clear(BYVAL AS GCond PTR)
+DECLARE SUB g_cond_wait(BYVAL AS GCond PTR, BYVAL AS GMutex PTR)
+DECLARE SUB g_cond_signal(BYVAL AS GCond PTR)
+DECLARE SUB g_cond_broadcast(BYVAL AS GCond PTR)
+DECLARE FUNCTION g_cond_wait_until(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS gint64) AS gboolean
+DECLARE FUNCTION g_private_get(BYVAL AS GPrivate PTR) AS gpointer
+DECLARE SUB g_private_set(BYVAL AS GPrivate PTR, BYVAL AS gpointer)
+DECLARE SUB g_private_replace(BYVAL AS GPrivate PTR, BYVAL AS gpointer)
+DECLARE FUNCTION g_once_impl(BYVAL AS GOnce PTR, BYVAL AS GThreadFunc, BYVAL AS gpointer) AS gpointer
+DECLARE FUNCTION g_once_init_enter(BYVAL AS ANY PTR) AS gboolean
+DECLARE SUB g_once_init_leave_ ALIAS "g_once_init_leave"(BYVAL AS ANY PTR, BYVAL AS gsize)
+
+#IFDEF G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
+#DEFINE g_once(once, func, arg) g_once_impl ((once), (func), (arg))
+#ELSE ' G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
+#DEFINE g_once(once, func, arg) _
+  IIF(((once)->status = G_ONCE_STATUS_READY) , _
+   (once)->retval , _
+   g_once_impl ((once), (func), (arg)))
+#ENDIF ' G_ATOMIC_OP_MEMORY_BARRIER_NEEDED
+
+#DEFINE g_once_init_leave(location, result) g_once_init_leave_((location), CAST(gsize, (result)))
 #ENDIF ' __G_THREAD_H__
 
 TYPE GAsyncQueue AS _GAsyncQueue
@@ -1121,14 +838,8 @@ DECLARE SUB g_async_queue_lock(BYVAL AS GAsyncQueue PTR)
 DECLARE SUB g_async_queue_unlock(BYVAL AS GAsyncQueue PTR)
 DECLARE FUNCTION g_async_queue_ref(BYVAL AS GAsyncQueue PTR) AS GAsyncQueue PTR
 DECLARE SUB g_async_queue_unref(BYVAL AS GAsyncQueue PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_async_queue_ref_unlocked(BYVAL AS GAsyncQueue PTR)
 DECLARE SUB g_async_queue_unref_and_unlock(BYVAL AS GAsyncQueue PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
 DECLARE SUB g_async_queue_push(BYVAL AS GAsyncQueue PTR, BYVAL AS gpointer)
 DECLARE SUB g_async_queue_push_unlocked(BYVAL AS GAsyncQueue PTR, BYVAL AS gpointer)
 DECLARE SUB g_async_queue_push_sorted(BYVAL AS GAsyncQueue PTR, BYVAL AS gpointer, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
@@ -1143,7 +854,6 @@ DECLARE FUNCTION g_async_queue_length(BYVAL AS GAsyncQueue PTR) AS gint
 DECLARE FUNCTION g_async_queue_length_unlocked(BYVAL AS GAsyncQueue PTR) AS gint
 DECLARE SUB g_async_queue_sort(BYVAL AS GAsyncQueue PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
 DECLARE SUB g_async_queue_sort_unlocked(BYVAL AS GAsyncQueue PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
-DECLARE FUNCTION _g_async_queue_get_mutex(BYVAL AS GAsyncQueue PTR) AS GMutex PTR
 
 #ENDIF ' __G_ASYNCQUEUE_H__
 
@@ -1174,13 +884,15 @@ DECLARE FUNCTION g_base64_decode_inplace(BYVAL AS gchar PTR, BYVAL AS gsize PTR)
 DECLARE SUB g_bit_lock(BYVAL AS gint PTR, BYVAL AS gint)
 DECLARE FUNCTION g_bit_trylock(BYVAL AS gint PTR, BYVAL AS gint) AS gboolean
 DECLARE SUB g_bit_unlock(BYVAL AS gint PTR, BYVAL AS gint)
+DECLARE SUB g_pointer_bit_lock(BYVAL AS ANY PTR, BYVAL AS gint)
+DECLARE FUNCTION g_pointer_bit_trylock(BYVAL AS ANY PTR, BYVAL AS gint) AS gboolean
+DECLARE SUB g_pointer_bit_unlock(BYVAL AS ANY PTR, BYVAL AS gint)
 
 #ENDIF ' __G_BITLOCK_H__
 
 #IFNDEF __G_BOOKMARK_FILE_H__
 #DEFINE __G_BOOKMARK_FILE_H__
 
-#INCLUDE ONCE "crt/time.bi"
 #DEFINE G_BOOKMARK_FILE_ERROR (g_bookmark_file_error_quark ())
 
 ENUM GBookmarkFileError
@@ -1240,205 +952,38 @@ DECLARE FUNCTION g_bookmark_file_move_item(BYVAL AS GBookmarkFile PTR, BYVAL AS 
 
 #ENDIF ' __G_BOOKMARK_FILE_H__
 
-#IFNDEF __G_CACHE_H__
-#DEFINE __G_CACHE_H__
 
-#IFNDEF __G_LIST_H__
-#DEFINE __G_LIST_H__
+#IFNDEF __G_BYTES_H__
+#DEFINE __G_BYTES_H__
 
-#IFNDEF __G_MEM_H__
-#DEFINE __G_MEM_H__
+DECLARE FUNCTION g_bytes_new(BYVAL AS gconstpointer, BYVAL AS gsize) AS GBytes PTR
+DECLARE FUNCTION g_bytes_new_take(BYVAL AS gpointer, BYVAL AS gsize) AS GBytes PTR
+DECLARE FUNCTION g_bytes_new_static(BYVAL AS gconstpointer, BYVAL AS gsize) AS GBytes PTR
+DECLARE FUNCTION g_bytes_new_with_free_func(BYVAL AS gconstpointer, BYVAL AS gsize, BYVAL AS GDestroyNotify, BYVAL AS gpointer) AS GBytes PTR
+DECLARE FUNCTION g_bytes_new_from_bytes(BYVAL AS GBytes PTR, BYVAL AS gsize, BYVAL AS gsize) AS GBytes PTR
+DECLARE FUNCTION g_bytes_get_data(BYVAL AS GBytes PTR) AS gconstpointer
+DECLARE FUNCTION g_bytes_get_size(BYVAL AS GBytes PTR) AS gsize
+DECLARE FUNCTION g_bytes_ref(BYVAL AS GBytes PTR) AS GBytes PTR
+DECLARE SUB g_bytes_unref(BYVAL AS GBytes PTR)
+DECLARE FUNCTION g_bytes_unref_to_data(BYVAL AS GBytes PTR, BYVAL AS gsize PTR) AS gpointer
+DECLARE FUNCTION g_bytes_unref_to_array(BYVAL AS GBytes PTR) AS GByteArray PTR
+DECLARE FUNCTION g_bytes_hash(BYVAL AS gconstpointer) AS guint
+DECLARE FUNCTION g_bytes_equal(BYVAL AS gconstpointer, BYVAL AS gconstpointer) AS gboolean
+DECLARE FUNCTION g_bytes_compare(BYVAL AS gconstpointer, BYVAL AS gconstpointer) AS gint
 
-#IFNDEF __G_SLICE_H__
-#DEFINE __G_SLICE_H__
+#ENDIF ' __G_BYTES_H__
 
-DECLARE FUNCTION g_slice_alloc(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_slice_alloc0(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_slice_copy(BYVAL AS gsize, BYVAL AS gconstpointer) AS gpointer
-DECLARE SUB g_slice_free1(BYVAL AS gsize, BYVAL AS gpointer)
-DECLARE SUB g_slice_free_chain_with_offset(BYVAL AS gsize, BYVAL AS gpointer, BYVAL AS gsize)
 
-#DEFINE g_slice_new(type) (CAST(type PTR, g_slice_alloc (sizeof (type))))
-#DEFINE g_slice_new0(type) (CAST(type PTR, g_slice_alloc0 (sizeof (type))))
-#DEFINE g_slice_dup(type, mem) _
-  IIF(1 , CAST(type PTR, g_slice_copy (sizeof (type), (mem))) _
-       , (CAST(ANY, (CAST(type PTR, 0)= (mem))), CAST(type PTR, 0)))
+#IFNDEF __G_CHARSET_H__
+#DEFINE __G_CHARSET_H__
 
-#DEFINE g_slice_free(type, mem) g_slice_free1 (SIZEOF (type), (mem))
-#DEFINE g_slice_free_chain(type, mem_chain, next) g_slice_free_chain_with_offset (SIZEOF (type), (mem_chain), G_STRUCT_OFFSET (type, next))
+DECLARE FUNCTION g_get_charset(BYVAL AS CONST ZSTRING PTR PTR) AS gboolean
+DECLARE FUNCTION g_get_codeset() AS gchar PTR
+DECLARE FUNCTION g_get_language_names() AS CONST gchar CONST PTR PTR
+DECLARE FUNCTION g_get_locale_variants(BYVAL AS CONST gchar PTR) AS gchar PTR PTR
 
-ENUM GSliceConfig
-  G_SLICE_CONFIG_ALWAYS_MALLOC = 1
-  G_SLICE_CONFIG_BYPASS_MAGAZINES
-  G_SLICE_CONFIG_WORKING_SET_MSECS
-  G_SLICE_CONFIG_COLOR_INCREMENT
-  G_SLICE_CONFIG_CHUNK_SIZES
-  G_SLICE_CONFIG_CONTENTION_COUNTER
-END ENUM
+#ENDIF ' __G_CHARSET_H__
 
-DECLARE SUB g_slice_set_config(BYVAL AS GSliceConfig, BYVAL AS gint64)
-DECLARE FUNCTION g_slice_get_config(BYVAL AS GSliceConfig) AS gint64
-DECLARE FUNCTION g_slice_get_config_state(BYVAL AS GSliceConfig, BYVAL AS gint64, BYVAL AS guint PTR) AS gint64 PTR
-
-#ENDIF ' __G_SLICE_H__
-
-TYPE GMemVTable AS _GMemVTable
-
-#IF GLIB_SIZEOF_VOID_P > GLIB_SIZEOF_LONG
-#DEFINE G_MEM_ALIGN GLIB_SIZEOF_VOID_P
-#ELSE ' GLIB_SIZEOF_VOI...
-#DEFINE G_MEM_ALIGN GLIB_SIZEOF_LONG
-#ENDIF ' GLIB_SIZEOF_VOI...
-
-DECLARE SUB g_free(BYVAL AS gpointer)
-DECLARE FUNCTION g_malloc(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_malloc0(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_realloc(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_malloc(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_malloc0(BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_realloc(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_malloc_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_malloc0_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_realloc_n(BYVAL AS gpointer, BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_malloc_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_malloc0_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-DECLARE FUNCTION g_try_realloc_n(BYVAL AS gpointer, BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-
-#DEFINE _G_NEW(struct_type, n_structs, func) _
-        (CAST(struct_type PTR, g_##func##_n ((n_structs), SIZEOF (struct_type))))
-#DEFINE _G_RENEW(struct_type, mem, n_structs, func) _
-        (CAST(struct_type PTR, g_##func##_n (mem, (n_structs), SIZEOF (struct_type))))
-
-#DEFINE g_new(struct_type, n_structs) _G_NEW (struct_type, n_structs, malloc)
-#DEFINE g_new0(struct_type, n_structs) _G_NEW (struct_type, n_structs, malloc0)
-#DEFINE g_renew(struct_type, mem, n_structs) _G_RENEW (struct_type, mem, n_structs, realloc)
-#DEFINE g_try_new(struct_type, n_structs) _G_NEW (struct_type, n_structs, try_malloc)
-#DEFINE g_try_new0(struct_type, n_structs) _G_NEW (struct_type, n_structs, try_malloc0)
-#DEFINE g_try_renew(struct_type, mem, n_structs) _G_RENEW (struct_type, mem, n_structs, try_realloc)
-
-TYPE _GMemVTable
-  malloc AS FUNCTION(BYVAL AS gsize) AS gpointer
-  realloc AS FUNCTION(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
-  free AS SUB(BYVAL AS gpointer)
-  calloc AS FUNCTION(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
-  try_malloc AS FUNCTION(BYVAL AS gsize) AS gpointer
-  try_realloc AS FUNCTION(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
-END TYPE
-
-DECLARE SUB g_mem_set_vtable(BYVAL AS GMemVTable PTR)
-DECLARE FUNCTION g_mem_is_system_malloc() AS gboolean
-
-GLIB_VAR gboolean g_mem_gc_friendly
-GLIB_VAR GMemVTable PTR glib_mem_profiler_table
-
-DECLARE SUB g_mem_profile()
-
-#IF NOT DEFINED (G_DISABLE_DEPRECATED) OR DEFINED (GTK_COMPILATION) OR DEFINED (GDK_COMPILATION)
-
-TYPE GAllocator AS _GAllocator
-TYPE GMemChunk AS _GMemChunk
-
-#DEFINE g_mem_chunk_create(type, pre_alloc, alloc_type) ( _
-  g_mem_chunk_new (#type !" mem chunks (" #pre_alloc !")", _
-     SIZEOF (type), _
-     SIZEOF (type) * (pre_alloc), _
-     (alloc_type)))
-#DEFINE g_chunk_new(type, chunk) CAST(type PTR, g_mem_chunk_alloc (chunk))
-#DEFINE g_chunk_new0(type, chunk) CAST(type PTR, g_mem_chunk_alloc0 (chunk))
-#DEFINE g_chunk_free(mem, mem_chunk) g_mem_chunk_free ((mem_chunk), (mem))
-
-#DEFINE G_ALLOC_ONLY 1
-#DEFINE G_ALLOC_AND_FREE 2
-
-DECLARE FUNCTION g_mem_chunk_new(BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gsize, BYVAL AS gint) AS GMemChunk PTR
-DECLARE SUB g_mem_chunk_destroy(BYVAL AS GMemChunk PTR)
-DECLARE FUNCTION g_mem_chunk_alloc(BYVAL AS GMemChunk PTR) AS gpointer
-DECLARE FUNCTION g_mem_chunk_alloc0(BYVAL AS GMemChunk PTR) AS gpointer
-DECLARE SUB g_mem_chunk_free(BYVAL AS GMemChunk PTR, BYVAL AS gpointer)
-DECLARE SUB g_mem_chunk_clean(BYVAL AS GMemChunk PTR)
-DECLARE SUB g_mem_chunk_reset(BYVAL AS GMemChunk PTR)
-DECLARE SUB g_mem_chunk_print(BYVAL AS GMemChunk PTR)
-DECLARE SUB g_mem_chunk_info()
-DECLARE SUB g_blow_chunks()
-DECLARE FUNCTION g_allocator_new(BYVAL AS CONST gchar PTR, BYVAL AS guint) AS GAllocator PTR
-DECLARE SUB g_allocator_free(BYVAL AS GAllocator PTR)
-
-#DEFINE G_ALLOCATOR_LIST (1)
-#DEFINE G_ALLOCATOR_SLIST (2)
-#DEFINE G_ALLOCATOR_NODE (3)
-#ENDIF ' NOT DEFINED (G_...
-#ENDIF ' __G_MEM_H__
-
-TYPE GList AS _GList
-
-TYPE _GList
-  AS gpointer data
-  AS GList PTR next
-  AS GList PTR prev
-END TYPE
-
-DECLARE FUNCTION g_list_alloc() AS GList PTR
-DECLARE SUB g_list_free(BYVAL AS GList PTR)
-DECLARE SUB g_list_free_1(BYVAL AS GList PTR)
-
-#DEFINE g_list_free1 g_list_free_1
-
-DECLARE SUB g_list_free_full(BYVAL AS GList PTR, BYVAL AS GDestroyNotify)
-DECLARE FUNCTION g_list_append(BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
-DECLARE FUNCTION g_list_prepend(BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
-DECLARE FUNCTION g_list_insert(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS gint) AS GList PTR
-DECLARE FUNCTION g_list_insert_sorted(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS GCompareFunc) AS GList PTR
-DECLARE FUNCTION g_list_insert_sorted_with_data(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS GCompareDataFunc, BYVAL AS gpointer) AS GList PTR
-DECLARE FUNCTION g_list_insert_before(BYVAL AS GList PTR, BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
-DECLARE FUNCTION g_list_concat(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_remove(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
-DECLARE FUNCTION g_list_remove_all(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
-DECLARE FUNCTION g_list_remove_link(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_delete_link(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_reverse(BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_copy(BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_nth(BYVAL AS GList PTR, BYVAL AS guint) AS GList PTR
-DECLARE FUNCTION g_list_nth_prev(BYVAL AS GList PTR, BYVAL AS guint) AS GList PTR
-DECLARE FUNCTION g_list_find(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
-DECLARE FUNCTION g_list_find_custom(BYVAL AS GList PTR, BYVAL AS gconstpointer, BYVAL AS GCompareFunc) AS GList PTR
-DECLARE FUNCTION g_list_position(BYVAL AS GList PTR, BYVAL AS GList PTR) AS gint
-DECLARE FUNCTION g_list_index(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS gint
-DECLARE FUNCTION g_list_last(BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_first(BYVAL AS GList PTR) AS GList PTR
-DECLARE FUNCTION g_list_length(BYVAL AS GList PTR) AS guint
-DECLARE SUB g_list_foreach(BYVAL AS GList PTR, BYVAL AS GFunc, BYVAL AS gpointer)
-DECLARE FUNCTION g_list_sort(BYVAL AS GList PTR, BYVAL AS GCompareFunc) AS GList PTR
-DECLARE FUNCTION g_list_sort_with_data(BYVAL AS GList PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer) AS GList PTR
-DECLARE FUNCTION g_list_nth_data(BYVAL AS GList PTR, BYVAL AS guint) AS gpointer
-
-#DEFINE g_list_previous(list) IIF((list) , ((CAST(GList PTR, (list)))->prev) , NULL)
-#DEFINE g_list_next(list) IIF((list) , ((CAST(GList PTR, (list)))->next) , NULL)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE SUB g_list_push_allocator(BYVAL AS gpointer)
-DECLARE SUB g_list_pop_allocator()
-
-#ENDIF ' G_DISABLE_DEPRECATED
-#ENDIF ' __G_LIST_H__
-
-TYPE GCache AS _GCache
-TYPE GCacheNewFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
-TYPE GCacheDupFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
-TYPE GCacheDestroyFunc AS SUB(BYVAL AS gpointer)
-
-DECLARE FUNCTION g_cache_new(BYVAL AS GCacheNewFunc, BYVAL AS GCacheDestroyFunc, BYVAL AS GCacheDupFunc, BYVAL AS GCacheDestroyFunc, BYVAL AS GHashFunc, BYVAL AS GHashFunc, BYVAL AS GEqualFunc) AS GCache PTR
-DECLARE SUB g_cache_destroy(BYVAL AS GCache PTR)
-DECLARE FUNCTION g_cache_insert(BYVAL AS GCache PTR, BYVAL AS gpointer) AS gpointer
-DECLARE SUB g_cache_remove(BYVAL AS GCache PTR, BYVAL AS gconstpointer)
-DECLARE SUB g_cache_key_foreach(BYVAL AS GCache PTR, BYVAL AS GHFunc, BYVAL AS gpointer)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE SUB g_cache_value_foreach(BYVAL AS GCache PTR, BYVAL AS GHFunc, BYVAL AS gpointer)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-#ENDIF ' __G_CACHE_H__
 
 #IFNDEF __G_CHECKSUM_H__
 #DEFINE __G_CHECKSUM_H__
@@ -1464,34 +1009,6 @@ DECLARE FUNCTION g_compute_checksum_for_string(BYVAL AS GChecksumType, BYVAL AS 
 
 #ENDIF ' __G_CHECKSUM_H__
 
-#IFNDEF __G_COMPLETION_H__
-#DEFINE __G_COMPLETION_H__
-
-TYPE GCompletion AS _GCompletion
-TYPE GCompletionFunc AS FUNCTION(BYVAL AS gpointer) AS gchar PTR
-TYPE GCompletionStrncmpFunc AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS gint
-
-TYPE _GCompletion
-  AS GList PTR items
-  AS GCompletionFunc func
-  AS gchar PTR prefix
-  AS GList PTR cache
-  AS GCompletionStrncmpFunc strncmp_func
-END TYPE
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE FUNCTION g_completion_new(BYVAL AS GCompletionFunc) AS GCompletion PTR
-DECLARE SUB g_completion_add_items(BYVAL AS GCompletion PTR, BYVAL AS GList PTR)
-DECLARE SUB g_completion_remove_items(BYVAL AS GCompletion PTR, BYVAL AS GList PTR)
-DECLARE SUB g_completion_clear_items(BYVAL AS GCompletion PTR)
-DECLARE FUNCTION g_completion_complete(BYVAL AS GCompletion PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR) AS GList PTR
-DECLARE FUNCTION g_completion_complete_utf8(BYVAL AS GCompletion PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR) AS GList PTR
-DECLARE SUB g_completion_set_compare(BYVAL AS GCompletion PTR, BYVAL AS GCompletionStrncmpFunc)
-DECLARE SUB g_completion_free(BYVAL AS GCompletion PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-#ENDIF ' __G_COMPLETION_H__
 
 #IFNDEF __G_CONVERT_H__
 #DEFINE __G_CONVERT_H__
@@ -1520,12 +1037,14 @@ DECLARE FUNCTION g_convert_with_fallback(BYVAL AS CONST gchar PTR, BYVAL AS gssi
 DECLARE FUNCTION g_locale_to_utf8(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gsize PTR, BYVAL AS gsize PTR, BYVAL AS GError PTR PTR) AS gchar PTR
 DECLARE FUNCTION g_locale_from_utf8(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gsize PTR, BYVAL AS gsize PTR, BYVAL AS GError PTR PTR) AS gchar PTR
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE g_filename_to_utf8 g_filename_to_utf8_utf8
 #DEFINE g_filename_from_utf8 g_filename_from_utf8_utf8
 #DEFINE g_filename_from_uri g_filename_from_uri_utf8
 #DEFINE g_filename_to_uri g_filename_to_uri_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION g_filename_to_utf8(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gsize PTR, BYVAL AS gsize PTR, BYVAL AS GError PTR PTR) AS gchar PTR
 DECLARE FUNCTION g_filename_from_utf8(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gsize PTR, BYVAL AS gsize PTR, BYVAL AS GError PTR PTR) AS gchar PTR
@@ -1561,8 +1080,6 @@ DECLARE FUNCTION g_datalist_get_flags(BYVAL AS GData PTR PTR) AS guint
      g_datalist_id_set_data_full ((dl), (q), (d), NULL)
 #DEFINE g_datalist_id_remove_data(dl, q) _
      g_datalist_id_set_data ((dl), (q), NULL)
-#DEFINE g_datalist_get_data(dl, k) _
-     (g_datalist_id_get_data ((dl), g_quark_try_string (k)))
 #DEFINE g_datalist_set_data_full(dl, k, d, f) _
      g_datalist_id_set_data_full ((dl), g_quark_from_string (k), (d), (f))
 #DEFINE g_datalist_remove_no_notify(dl, k) _
@@ -1574,6 +1091,7 @@ DECLARE FUNCTION g_datalist_get_flags(BYVAL AS GData PTR PTR) AS guint
 
 DECLARE SUB g_dataset_destroy(BYVAL AS gconstpointer)
 DECLARE FUNCTION g_dataset_id_get_data(BYVAL AS gconstpointer, BYVAL AS GQuark) AS gpointer
+DECLARE FUNCTION g_datalist_get_data(BYVAL AS GData PTR PTR, BYVAL AS CONST gchar PTR) AS gpointer
 DECLARE SUB g_dataset_id_set_data_full(BYVAL AS gconstpointer, BYVAL AS GQuark, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE FUNCTION g_dataset_id_remove_no_notify(BYVAL AS gconstpointer, BYVAL AS GQuark) AS gpointer
 DECLARE SUB g_dataset_foreach(BYVAL AS gconstpointer, BYVAL AS GDataForeachFunc, BYVAL AS gpointer)
@@ -1596,17 +1114,16 @@ DECLARE SUB g_dataset_foreach(BYVAL AS gconstpointer, BYVAL AS GDataForeachFunc,
 
 #IFNDEF __G_DATE_H__
 #DEFINE __G_DATE_H__
-#INCLUDE ONCE "crt/time.bi"
 
 TYPE GTime AS gint32
 TYPE GDateYear AS guint16
 TYPE GDateDay AS guint8
 TYPE GDate AS _GDate
 
-ENUM GDateDMY
-  G_DATE_DAY = 0
-  G_DATE_MONTH = 1
-  G_DATE_YEAR = 2
+ENUM GDateDMY_
+  G_DATE_DAY_ = 0
+  G_DATE_MONTH_ = 1
+  G_DATE_YEAR_ = 2
 END ENUM
 
 ENUM GDateWeekday
@@ -1706,9 +1223,9 @@ DECLARE FUNCTION g_date_strftime(BYVAL AS gchar PTR, BYVAL AS gsize, BYVAL AS CO
 
 #IFNDEF G_DISABLE_DEPRECATED
 #DEFINE g_date_weekday g_date_get_weekday
-#DEFINE g_date_month_FB g_date_get_month
-#DEFINE g_date_year_FB g_date_get_year
-#DEFINE g_date_day_FB g_date_get_day
+#DEFINE g_date_month g_date_get_month
+#DEFINE g_date_year g_date_get_year
+#DEFINE g_date_day g_date_get_day
 #DEFINE g_date_julian g_date_get_julian
 #DEFINE g_date_day_of_year g_date_get_day_of_year
 #DEFINE g_date_monday_week_of_year g_date_get_monday_week_of_year
@@ -1810,10 +1327,12 @@ DECLARE FUNCTION g_date_time_format(BYVAL AS GDateTime PTR, BYVAL AS CONST gchar
 
 TYPE GDir AS _GDir
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE g_dir_open g_dir_open_utf8
 #DEFINE g_dir_read_name g_dir_read_name_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION g_dir_open(BYVAL AS CONST gchar PTR, BYVAL AS guint, BYVAL AS GError PTR PTR) AS GDir PTR
 DECLARE FUNCTION g_dir_read_name(BYVAL AS GDir PTR) AS CONST gchar PTR
@@ -1821,6 +1340,28 @@ DECLARE SUB g_dir_rewind(BYVAL AS GDir PTR)
 DECLARE SUB g_dir_close(BYVAL AS GDir PTR)
 
 #ENDIF ' __G_DIR_H__
+
+#IFNDEF __G_ENVIRON_H__
+#DEFINE __G_ENVIRON_H__
+
+#IFNDEF __GTK_DOC_IGNORE__
+#IFDEF G_OS_WIN32
+#DEFINE g_getenv g_getenv_utf8
+#DEFINE g_setenv g_setenv_utf8
+#DEFINE g_unsetenv g_unsetenv_utf8
+#ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
+
+DECLARE FUNCTION g_getenv(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_setenv(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean) AS gboolean
+DECLARE SUB g_unsetenv(BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION g_listenv() AS gchar PTR PTR
+DECLARE FUNCTION g_get_environ() AS gchar PTR PTR
+DECLARE FUNCTION g_environ_getenv(BYVAL AS gchar PTR PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_environ_setenv(BYVAL AS gchar PTR PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean) AS gchar PTR PTR
+DECLARE FUNCTION g_environ_unsetenv(BYVAL AS gchar PTR PTR, BYVAL AS CONST gchar PTR) AS gchar PTR PTR
+
+#ENDIF ' __G_ENVIRON_H__
 
 #IFNDEF __G_FILEUTILS_H__
 #DEFINE __G_FILEUTILS_H__
@@ -1866,31 +1407,184 @@ END ENUM
 DECLARE FUNCTION g_file_error_quark() AS GQuark
 DECLARE FUNCTION g_file_error_from_errno(BYVAL AS gint) AS GFileError
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE g_file_test g_file_test_utf8
 #DEFINE g_file_get_contents g_file_get_contents_utf8
 #DEFINE g_mkstemp g_mkstemp_utf8
 #DEFINE g_file_open_tmp g_file_open_tmp_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION g_file_test(BYVAL AS CONST gchar PTR, BYVAL AS GFileTest) AS gboolean
 DECLARE FUNCTION g_file_get_contents(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR, BYVAL AS gsize PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_file_set_contents(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_file_read_link(BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gchar PTR
+DECLARE FUNCTION g_mkdtemp(BYVAL AS gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_mkdtemp_full(BYVAL AS gchar PTR, BYVAL AS gint) AS gchar PTR
 DECLARE FUNCTION g_mkstemp(BYVAL AS gchar PTR) AS gint
-DECLARE FUNCTION g_mkstemp_full(BYVAL AS gchar PTR, BYVAL AS INTEGER, BYVAL AS INTEGER) AS gint
+DECLARE FUNCTION g_mkstemp_full(BYVAL AS gchar PTR, BYVAL AS gint, BYVAL AS gint) AS gint
 DECLARE FUNCTION g_file_open_tmp(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR, BYVAL AS GError PTR PTR) AS gint
-DECLARE FUNCTION g_format_size_for_display(BYVAL AS goffset) AS ZSTRING PTR
+DECLARE FUNCTION g_dir_make_tmp(BYVAL AS CONST gchar PTR, BYVAL AS GError PTR PTR) AS gchar PTR
 DECLARE FUNCTION g_build_path(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, ...) AS gchar PTR
 DECLARE FUNCTION g_build_pathv(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR) AS gchar PTR
 DECLARE FUNCTION g_build_filename(BYVAL AS CONST gchar PTR, ...) AS gchar PTR
 DECLARE FUNCTION g_build_filenamev(BYVAL AS gchar PTR PTR) AS gchar PTR
-DECLARE FUNCTION g_mkdir_with_parents(BYVAL AS CONST gchar PTR, BYVAL AS INTEGER) AS INTEGER
+DECLARE FUNCTION g_mkdir_with_parents(BYVAL AS CONST gchar PTR, BYVAL AS gint) AS gint
+
+#IFDEF G_OS_WIN32
+#DEFINE G_DIR_SEPARATOR ASC(!"\\")
+#DEFINE G_DIR_SEPARATOR_S !"\\"
+#DEFINE G_IS_DIR_SEPARATOR(c) ((c) = G_DIR_SEPARATOR ORELSE (c) = ASC(!"/"))
+#DEFINE G_SEARCHPATH_SEPARATOR ASC(!";")
+#DEFINE G_SEARCHPATH_SEPARATOR_S !";"
+#ELSE ' G_OS_WIN32
+#DEFINE G_DIR_SEPARATOR ASC(!"/")
+#DEFINE G_DIR_SEPARATOR_S !"/"
+#DEFINE G_IS_DIR_SEPARATOR(c) ((c) = G_DIR_SEPARATOR)
+#DEFINE G_SEARCHPATH_SEPARATOR ASC(!":")
+#DEFINE G_SEARCHPATH_SEPARATOR_S !":"
+#ENDIF ' G_OS_WIN32
+
+DECLARE FUNCTION g_path_is_absolute(BYVAL AS CONST gchar PTR) AS gboolean
+DECLARE FUNCTION g_path_skip_root(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_basename(BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+
+#IFNDEF G_DISABLE_DEPRECATED
+#DEFINE g_dirname g_path_get_dirname
+#ENDIF ' G_DISABLE_DEPRECATED
+
+#IFNDEF __GTK_DOC_IGNORE__
+#IFDEF G_OS_WIN32
+#DEFINE g_get_current_dir g_get_current_dir_utf8
+#ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
+
+DECLARE FUNCTION g_get_current_dir() AS gchar PTR
+DECLARE FUNCTION g_path_get_basename(BYVAL AS CONST gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_path_get_dirname(BYVAL AS CONST gchar PTR) AS gchar PTR
 
 #ENDIF ' __G_FILEUTILS_H__
 
+#IFNDEF __G_GETTEXT_H__
+#DEFINE __G_GETTEXT_H__
+
+DECLARE FUNCTION g_strip_context(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_dgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_dcgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint) AS CONST gchar PTR
+DECLARE FUNCTION g_dngettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gulong) AS CONST gchar PTR
+DECLARE FUNCTION g_dpgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS CONST gchar PTR
+DECLARE FUNCTION g_dpgettext2(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
+
+#ENDIF ' __G_GETTEXT_H__
+
 #IFNDEF __G_HASH_H__
 #DEFINE __G_HASH_H__
+
+#IFNDEF __G_LIST_H__
+#DEFINE __G_LIST_H__
+
+#IFNDEF __G_MEM_H__
+#DEFINE __G_MEM_H__
+
+TYPE GMemVTable AS _GMemVTable
+
+#IF GLIB_SIZEOF_VOID_P > GLIB_SIZEOF_LONG
+#DEFINE G_MEM_ALIGN GLIB_SIZEOF_VOID_P
+#ELSE ' GLIB_SIZEOF_VOI...
+#DEFINE G_MEM_ALIGN GLIB_SIZEOF_LONG
+#ENDIF ' GLIB_SIZEOF_VOI...
+
+DECLARE SUB g_free(BYVAL AS gpointer)
+DECLARE FUNCTION g_malloc(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_malloc0(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_realloc(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_malloc(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_malloc0(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_realloc(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_malloc_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_malloc0_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_realloc_n(BYVAL AS gpointer, BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_malloc_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_malloc0_n(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_try_realloc_n(BYVAL AS gpointer, BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+
+#DEFINE _G_NEW(struct_type, n_structs, func) _
+        (CAST(struct_type PTR, g_##func##_n ((n_structs), SIZEOF (struct_type))))
+#DEFINE _G_RENEW(struct_type, mem, n_structs, func) _
+        (CAST(struct_type PTR, g_##func##_n (mem, (n_structs), SIZEOF (struct_type))))
+
+#DEFINE g_new(struct_type, n_structs) _G_NEW (struct_type, n_structs, malloc)
+#DEFINE g_new0(struct_type, n_structs) _G_NEW (struct_type, n_structs, malloc0)
+#DEFINE g_renew(struct_type, mem, n_structs) _G_RENEW (struct_type, mem, n_structs, realloc)
+#DEFINE g_try_new(struct_type, n_structs) _G_NEW (struct_type, n_structs, try_malloc)
+#DEFINE g_try_new0(struct_type, n_structs) _G_NEW (struct_type, n_structs, try_malloc0)
+#DEFINE g_try_renew(struct_type, mem, n_structs) _G_RENEW (struct_type, mem, n_structs, try_realloc)
+
+TYPE _GMemVTable
+  malloc AS FUNCTION(BYVAL AS gsize) AS gpointer
+  realloc AS FUNCTION(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
+  free AS SUB(BYVAL AS gpointer)
+  calloc AS FUNCTION(BYVAL AS gsize, BYVAL AS gsize) AS gpointer
+  try_malloc AS FUNCTION(BYVAL AS gsize) AS gpointer
+  try_realloc AS FUNCTION(BYVAL AS gpointer, BYVAL AS gsize) AS gpointer
+END TYPE
+
+DECLARE SUB g_mem_set_vtable(BYVAL AS GMemVTable PTR)
+DECLARE FUNCTION g_mem_is_system_malloc() AS gboolean
+
+EXTERN AS gboolean g_mem_gc_friendly
+EXTERN AS GMemVTable PTR glib_mem_profiler_table
+
+DECLARE SUB g_mem_profile()
+
+#ENDIF ' __G_MEM_H__
+
+TYPE GList AS _GList
+
+TYPE _GList
+  AS gpointer data
+  AS GList PTR next
+  AS GList PTR prev
+END TYPE
+
+DECLARE FUNCTION g_list_alloc() AS GList PTR
+DECLARE SUB g_list_free(BYVAL AS GList PTR)
+DECLARE SUB g_list_free_1(BYVAL AS GList PTR)
+
+#DEFINE g_list_free1 g_list_free_1
+
+DECLARE SUB g_list_free_full(BYVAL AS GList PTR, BYVAL AS GDestroyNotify)
+DECLARE FUNCTION g_list_append(BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
+DECLARE FUNCTION g_list_prepend(BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
+DECLARE FUNCTION g_list_insert(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS gint) AS GList PTR
+DECLARE FUNCTION g_list_insert_sorted(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS GCompareFunc) AS GList PTR
+DECLARE FUNCTION g_list_insert_sorted_with_data(BYVAL AS GList PTR, BYVAL AS gpointer, BYVAL AS GCompareDataFunc, BYVAL AS gpointer) AS GList PTR
+DECLARE FUNCTION g_list_insert_before(BYVAL AS GList PTR, BYVAL AS GList PTR, BYVAL AS gpointer) AS GList PTR
+DECLARE FUNCTION g_list_concat(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_remove(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
+DECLARE FUNCTION g_list_remove_all(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
+DECLARE FUNCTION g_list_remove_link(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_delete_link(BYVAL AS GList PTR, BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_reverse(BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_copy(BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_nth(BYVAL AS GList PTR, BYVAL AS guint) AS GList PTR
+DECLARE FUNCTION g_list_nth_prev(BYVAL AS GList PTR, BYVAL AS guint) AS GList PTR
+DECLARE FUNCTION g_list_find(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS GList PTR
+DECLARE FUNCTION g_list_find_custom(BYVAL AS GList PTR, BYVAL AS gconstpointer, BYVAL AS GCompareFunc) AS GList PTR
+DECLARE FUNCTION g_list_position(BYVAL AS GList PTR, BYVAL AS GList PTR) AS gint
+DECLARE FUNCTION g_list_index(BYVAL AS GList PTR, BYVAL AS gconstpointer) AS gint
+DECLARE FUNCTION g_list_last(BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_first(BYVAL AS GList PTR) AS GList PTR
+DECLARE FUNCTION g_list_length(BYVAL AS GList PTR) AS guint
+DECLARE SUB g_list_foreach(BYVAL AS GList PTR, BYVAL AS GFunc, BYVAL AS gpointer)
+DECLARE FUNCTION g_list_sort(BYVAL AS GList PTR, BYVAL AS GCompareFunc) AS GList PTR
+DECLARE FUNCTION g_list_sort_with_data(BYVAL AS GList PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer) AS GList PTR
+DECLARE FUNCTION g_list_nth_data(BYVAL AS GList PTR, BYVAL AS guint) AS gpointer
+
+#DEFINE g_list_previous(list) IIF((list) , ((CAST(GList PTR, (list)))->prev) , NULL)
+#DEFINE g_list_next(list) IIF((list) , ((CAST(GList PTR, (list)))->next) , NULL)
+#ENDIF ' __G_LIST_H__
 
 TYPE GHashTable AS _GHashTable
 TYPE GHRFunc AS FUNCTION(BYVAL AS gpointer, BYVAL AS gpointer, BYVAL AS gpointer) AS gboolean
@@ -1927,6 +1621,7 @@ DECLARE SUB g_hash_table_iter_init(BYVAL AS GHashTableIter PTR, BYVAL AS GHashTa
 DECLARE FUNCTION g_hash_table_iter_next(BYVAL AS GHashTableIter PTR, BYVAL AS gpointer PTR, BYVAL AS gpointer PTR) AS gboolean
 DECLARE FUNCTION g_hash_table_iter_get_hash_table(BYVAL AS GHashTableIter PTR) AS GHashTable PTR
 DECLARE SUB g_hash_table_iter_remove(BYVAL AS GHashTableIter PTR)
+DECLARE SUB g_hash_table_iter_replace(BYVAL AS GHashTableIter PTR, BYVAL AS gpointer)
 DECLARE SUB g_hash_table_iter_steal(BYVAL AS GHashTableIter PTR)
 DECLARE FUNCTION g_hash_table_ref(BYVAL AS GHashTable PTR) AS GHashTable PTR
 DECLARE SUB g_hash_table_unref(BYVAL AS GHashTable PTR)
@@ -1948,6 +1643,23 @@ DECLARE FUNCTION g_direct_hash(BYVAL AS gconstpointer) AS guint
 DECLARE FUNCTION g_direct_equal(BYVAL AS gconstpointer, BYVAL AS gconstpointer) AS gboolean
 
 #ENDIF ' __G_HASH_H__
+
+#IFNDEF __G_HMAC_H__
+#DEFINE __G_HMAC_H__
+
+TYPE GHmac AS _GHmac
+
+DECLARE FUNCTION g_hmac_new(BYVAL AS GChecksumType, BYVAL AS CONST guchar PTR, BYVAL AS gsize) AS GHmac PTR
+DECLARE FUNCTION g_hmac_copy(BYVAL AS CONST GHmac PTR) AS GHmac PTR
+DECLARE FUNCTION g_hmac_ref(BYVAL AS GHmac PTR) AS GHmac PTR
+DECLARE SUB g_hmac_unref(BYVAL AS GHmac PTR)
+DECLARE SUB g_hmac_update(BYVAL AS GHmac PTR, BYVAL AS CONST guchar PTR, BYVAL AS gssize)
+DECLARE FUNCTION g_hmac_get_string(BYVAL AS GHmac PTR) AS CONST gchar PTR
+DECLARE SUB g_hmac_get_digest(BYVAL AS GHmac PTR, BYVAL AS guint8 PTR, BYVAL AS gsize PTR)
+DECLARE FUNCTION g_compute_hmac_for_data(BYVAL AS GChecksumType, BYVAL AS CONST guchar PTR, BYVAL AS gsize, BYVAL AS CONST guchar PTR, BYVAL AS gsize) AS gchar PTR
+DECLARE FUNCTION g_compute_hmac_for_string(BYVAL AS GChecksumType, BYVAL AS CONST guchar PTR, BYVAL AS gsize, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
+
+#ENDIF ' __G_HMAC_H__
 
 #IFNDEF __G_HOOK_H__
 #DEFINE __G_HOOK_H__
@@ -1993,13 +1705,10 @@ END TYPE
 
 #DEFINE G_HOOK(hook) (CAST(GHook PTR, (hook)))
 #DEFINE G_HOOK_FLAGS(hook) (G_HOOK (hook)->flags)
-
 #DEFINE G_HOOK_ACTIVE(hook) ((G_HOOK_FLAGS (hook) AND _
        G_HOOK_FLAG_ACTIVE) <> 0)
-
 #DEFINE G_HOOK_IN_CALL(hook) ((G_HOOK_FLAGS (hook) AND _
        G_HOOK_FLAG_IN_CALL) <> 0)
-
 #DEFINE G_HOOK_IS_VALID(hook) (G_HOOK (hook)->hook_id <> 0 ANDALSO _
       (G_HOOK_FLAGS (hook) AND G_HOOK_FLAG_ACTIVE))
 #DEFINE G_HOOK_IS_UNLINKED(hook) (G_HOOK (hook)->next = NULL ANDALSO _
@@ -2127,13 +1836,6 @@ DECLARE FUNCTION g_slist_sort_with_data(BYVAL AS GSList PTR, BYVAL AS GCompareDa
 DECLARE FUNCTION g_slist_nth_data(BYVAL AS GSList PTR, BYVAL AS guint) AS gpointer
 
 #DEFINE g_slist_next(slist) IIF((slist) , ((CAST(GSList PTR, (slist)))->next) , NULL)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE SUB g_slist_push_allocator(BYVAL AS gpointer)
-DECLARE SUB g_slist_pop_allocator()
-
-#ENDIF ' G_DISABLE_DEPRECATED
 #ENDIF ' __G_SLIST_H__
 
 TYPE GMainContext AS _GMainContext
@@ -2164,7 +1866,7 @@ END TYPE
 TYPE _GSourceCallbackFuncs
   ref AS SUB(BYVAL AS gpointer)
   unref AS SUB(BYVAL AS gpointer)
-  get AS SUB(BYVAL AS gpointer, BYVAL AS GSource PTR, BYVAL AS GSourceFunc, BYVAL AS gpointer PTR)
+  get_ AS SUB(BYVAL AS gpointer, BYVAL AS GSource PTR, BYVAL AS GSourceFunc, BYVAL AS gpointer PTR)
 END TYPE
 
 TYPE GSourceDummyMarshal AS SUB()
@@ -2183,6 +1885,8 @@ END TYPE
 #DEFINE G_PRIORITY_HIGH_IDLE 100
 #DEFINE G_PRIORITY_DEFAULT_IDLE 200
 #DEFINE G_PRIORITY_LOW 300
+#DEFINE G_SOURCE_REMOVE FALSE
+#DEFINE G_SOURCE_CONTINUE TRUE
 
 DECLARE FUNCTION g_main_context_new() AS GMainContext PTR
 DECLARE FUNCTION g_main_context_ref(BYVAL AS GMainContext PTR) AS GMainContext PTR
@@ -2211,6 +1915,7 @@ DECLARE FUNCTION g_main_current_source() AS GSource PTR
 DECLARE SUB g_main_context_push_thread_default(BYVAL AS GMainContext PTR)
 DECLARE SUB g_main_context_pop_thread_default(BYVAL AS GMainContext PTR)
 DECLARE FUNCTION g_main_context_get_thread_default() AS GMainContext PTR
+DECLARE FUNCTION g_main_context_ref_thread_default() AS GMainContext PTR
 DECLARE FUNCTION g_main_loop_new(BYVAL AS GMainContext PTR, BYVAL AS gboolean) AS GMainLoop PTR
 DECLARE SUB g_main_loop_run(BYVAL AS GMainLoop PTR)
 DECLARE SUB g_main_loop_quit(BYVAL AS GMainLoop PTR)
@@ -2240,13 +1945,7 @@ DECLARE SUB g_source_add_poll(BYVAL AS GSource PTR, BYVAL AS GPollFD PTR)
 DECLARE SUB g_source_remove_poll(BYVAL AS GSource PTR, BYVAL AS GPollFD PTR)
 DECLARE SUB g_source_add_child_source(BYVAL AS GSource PTR, BYVAL AS GSource PTR)
 DECLARE SUB g_source_remove_child_source(BYVAL AS GSource PTR, BYVAL AS GSource PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_source_get_current_time(BYVAL AS GSource PTR, BYVAL AS GTimeVal PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_source_get_time(BYVAL AS GSource PTR) AS gint64
 DECLARE FUNCTION g_idle_source_new() AS GSource PTR
 DECLARE FUNCTION g_child_watch_source_new(BYVAL AS GPid) AS GSource PTR
@@ -2255,19 +1954,7 @@ DECLARE FUNCTION g_timeout_source_new_seconds(BYVAL AS guint) AS GSource PTR
 DECLARE SUB g_get_current_time(BYVAL AS GTimeVal PTR)
 DECLARE FUNCTION g_get_monotonic_time() AS gint64
 DECLARE FUNCTION g_get_real_time() AS gint64
-
-#IFNDEF G_DISABLE_DEPRECATED
-#DEFINE g_main_new(is_running) g_main_loop_new (NULL, is_running)
-#DEFINE g_main_run(loop) g_main_loop_run(loop)
-#DEFINE g_main_quit(loop) g_main_loop_quit(loop)
-#DEFINE g_main_destroy(loop) g_main_loop_unref(loop)
-#DEFINE g_main_is_running(loop) g_main_loop_is_running(loop)
-#DEFINE g_main_iteration(may_block) g_main_context_iteration (NULL, may_block)
-#DEFINE g_main_pending() g_main_context_pending (NULL)
-#DEFINE g_main_set_poll_func(func) g_main_context_set_poll_func (NULL, func)
-#ENDIF ' G_DISABLE_DEPRECATED
-
-DECLARE FUNCTION g_source_remove(BYVAL AS guint) AS gboolean
+DECLARE FUNCTION g_source_remove_ ALIAS "g_source_remove"(BYVAL AS guint) AS gboolean
 DECLARE FUNCTION g_source_remove_by_user_data(BYVAL AS gpointer) AS gboolean
 DECLARE FUNCTION g_source_remove_by_funcs_user_data(BYVAL AS GSourceFuncs PTR, BYVAL AS gpointer) AS gboolean
 DECLARE FUNCTION g_timeout_add_full(BYVAL AS gint, BYVAL AS guint, BYVAL AS GSourceFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify) AS guint
@@ -2282,9 +1969,9 @@ DECLARE FUNCTION g_idle_remove_by_data(BYVAL AS gpointer) AS gboolean
 DECLARE SUB g_main_context_invoke_full(BYVAL AS GMainContext PTR, BYVAL AS gint, BYVAL AS GSourceFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
 DECLARE SUB g_main_context_invoke(BYVAL AS GMainContext PTR, BYVAL AS GSourceFunc, BYVAL AS gpointer)
 
-GLIB_VAR GSourceFuncs g_timeout_funcs
-GLIB_VAR GSourceFuncs g_child_watch_funcs
-GLIB_VAR GSourceFuncs g_idle_funcs
+EXTERN AS GSourceFuncs g_timeout_funcs
+EXTERN AS GSourceFuncs g_child_watch_funcs
+EXTERN AS GSourceFuncs g_idle_funcs
 
 #ENDIF ' __G_MAIN_H__
 
@@ -2308,7 +1995,7 @@ ENUM GUnicodeType
   G_UNICODE_OTHER_LETTER
   G_UNICODE_TITLECASE_LETTER
   G_UNICODE_UPPERCASE_LETTER
-  G_UNICODE_COMBINING_MARK
+  G_UNICODE_SPACING_MARK
   G_UNICODE_ENCLOSING_MARK
   G_UNICODE_NON_SPACING_MARK
   G_UNICODE_DECIMAL_NUMBER
@@ -2329,6 +2016,10 @@ ENUM GUnicodeType
   G_UNICODE_PARAGRAPH_SEPARATOR
   G_UNICODE_SPACE_SEPARATOR
 END ENUM
+
+#IFNDEF G_DISABLE_DEPRECATED
+#DEFINE G_UNICODE_COMBINING_MARK G_UNICODE_SPACING_MARK
+#ENDIF ' G_DISABLE_DEPRECATED
 
 ENUM GUnicodeBreakType
   G_UNICODE_BREAK_MANDATORY
@@ -2470,7 +2161,8 @@ ENUM GUnicodeScript
   G_UNICODE_SCRIPT_MANDAIC
 END ENUM
 
-DECLARE FUNCTION g_get_charset(BYVAL AS CONST ZSTRING PTR PTR) AS gboolean
+DECLARE FUNCTION g_unicode_script_to_iso15924(BYVAL AS GUnicodeScript) AS guint32
+DECLARE FUNCTION g_unicode_script_from_iso15924(BYVAL AS guint32) AS GUnicodeScript
 DECLARE FUNCTION g_unichar_isalnum(BYVAL AS gunichar) AS gboolean
 DECLARE FUNCTION g_unichar_isalpha(BYVAL AS gunichar) AS gboolean
 DECLARE FUNCTION g_unichar_iscntrl(BYVAL AS gunichar) AS gboolean
@@ -2496,12 +2188,20 @@ DECLARE FUNCTION g_unichar_xdigit_value(BYVAL AS gunichar) AS gint
 DECLARE FUNCTION g_unichar_type(BYVAL AS gunichar) AS GUnicodeType
 DECLARE FUNCTION g_unichar_break_type(BYVAL AS gunichar) AS GUnicodeBreakType
 DECLARE FUNCTION g_unichar_combining_class(BYVAL AS gunichar) AS gint
+DECLARE FUNCTION g_unichar_get_mirror_char(BYVAL AS gunichar, BYVAL AS gunichar PTR) AS gboolean
+DECLARE FUNCTION g_unichar_get_script(BYVAL AS gunichar) AS GUnicodeScript
+DECLARE FUNCTION g_unichar_validate(BYVAL AS gunichar) AS gboolean
+DECLARE FUNCTION g_unichar_compose(BYVAL AS gunichar, BYVAL AS gunichar, BYVAL AS gunichar PTR) AS gboolean
+DECLARE FUNCTION g_unichar_decompose(BYVAL AS gunichar, BYVAL AS gunichar PTR, BYVAL AS gunichar PTR) AS gboolean
+DECLARE FUNCTION g_unichar_fully_decompose(BYVAL AS gunichar, BYVAL AS gboolean, BYVAL AS gunichar PTR, BYVAL AS gsize) AS gsize
+
+#DEFINE G_UNICHAR_MAX_DECOMPOSITION_LENGTH 18
+
 DECLARE SUB g_unicode_canonical_ordering(BYVAL AS gunichar PTR, BYVAL AS gsize)
 DECLARE FUNCTION g_unicode_canonical_decomposition(BYVAL AS gunichar, BYVAL AS gsize PTR) AS gunichar PTR
 
-GLIB_VAR CONST gchar CONST PTR g_utf8_skip
+EXTERN AS CONST gchar CONST PTR g_utf8_skip
 
-' #define g_utf8_next_char(p) (char *)((p) + g_utf8_skip[*(const guchar *)(p)])
 #DEFINE g_utf8_next_char(p) CAST(ZSTRING PTR, (p) + g_utf8_skip[*CAST(CONST guchar PTR, (p))])
 
 DECLARE FUNCTION g_utf8_get_char(BYVAL AS CONST gchar PTR) AS gunichar
@@ -2512,6 +2212,7 @@ DECLARE FUNCTION g_utf8_prev_char(BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_utf8_find_next_char(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_utf8_find_prev_char(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_utf8_strlen(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS glong
+DECLARE FUNCTION g_utf8_substring(BYVAL AS CONST gchar PTR, BYVAL AS glong, BYVAL AS glong) AS gchar PTR
 DECLARE FUNCTION g_utf8_strncpy(BYVAL AS gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS gchar PTR
 DECLARE FUNCTION g_utf8_strchr(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gunichar) AS gchar PTR
 DECLARE FUNCTION g_utf8_strrchr(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS gunichar) AS gchar PTR
@@ -2525,7 +2226,6 @@ DECLARE FUNCTION g_ucs4_to_utf16(BYVAL AS CONST gunichar PTR, BYVAL AS glong, BY
 DECLARE FUNCTION g_ucs4_to_utf8(BYVAL AS CONST gunichar PTR, BYVAL AS glong, BYVAL AS glong PTR, BYVAL AS glong PTR, BYVAL AS GError PTR PTR) AS gchar PTR
 DECLARE FUNCTION g_unichar_to_utf8(BYVAL AS gunichar, BYVAL AS gchar PTR) AS gint
 DECLARE FUNCTION g_utf8_validate(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYVAL AS CONST gchar PTR PTR) AS gboolean
-DECLARE FUNCTION g_unichar_validate(BYVAL AS gunichar) AS gboolean
 DECLARE FUNCTION g_utf8_strup(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
 DECLARE FUNCTION g_utf8_strdown(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
 DECLARE FUNCTION g_utf8_casefold(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
@@ -2545,14 +2245,184 @@ DECLARE FUNCTION g_utf8_normalize(BYVAL AS CONST gchar PTR, BYVAL AS gssize, BYV
 DECLARE FUNCTION g_utf8_collate(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gint
 DECLARE FUNCTION g_utf8_collate_key(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
 DECLARE FUNCTION g_utf8_collate_key_for_filename(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
-DECLARE FUNCTION g_unichar_get_mirror_char(BYVAL AS gunichar, BYVAL AS gunichar PTR) AS gboolean
-DECLARE FUNCTION g_unichar_get_script(BYVAL AS gunichar) AS GUnicodeScript
 DECLARE FUNCTION _g_utf8_make_valid(BYVAL AS CONST gchar PTR) AS gchar PTR
 
 #ENDIF ' __G_UNICODE_H__
 
+#IFNDEF __G_UTILS_H__
+#DEFINE __G_UTILS_H__
+
+#IF NOT DEFINED (G_VA_COPY)
+#IF DEFINED (__GNUC__) AND DEFINED (__PPC__) AND (DEFINED (_CALL_SYSV) OR DEFINED (_WIN32))
+#DEFINE G_VA_COPY(ap1, ap2) (*(ap1) = *(ap2))
+#ELSEIF DEFINED (G_VA_COPY_AS_ARRAY)
+#DEFINE G_VA_COPY(ap1, ap2) g_memmove ((ap1), (ap2), SIZEOF (va_list))
+#ELSE ' DEFINED (__GNUC...
+#DEFINE G_VA_COPY(ap1, ap2) ((ap1) = (ap2))
+#ENDIF ' DEFINED (__GNUC...
+#ENDIF ' NOT DEFINED (G_...
+
+#IF DEFINED (G_HAVE_INLINE) AND DEFINED (__GNUC__) AND DEFINED (__STRICT_ANSI__)
+#UNDEF inline
+#DEFINE inline __inline__
+#ELSEIF NOT DEFINED (G_HAVE_INLINE)
+#UNDEF inline
+#IF DEFINED (G_HAVE___INLINE__)
+#DEFINE inline __inline__
+#ELSEIF DEFINED (G_HAVE___INLINE)
+#DEFINE inline __inline
+#ELSE ' DEFINED (G_HAVE...
+#DEFINE inline
+#ENDIF ' DEFINED (G_HAVE...
+#ENDIF ' DEFINED (G_HAVE...
+
+#IFDEF G_IMPLEMENT_INLINES
+#DEFINE G_INLINE_FUNC
+#UNDEF G_CAN_INLINE
+#ELSEIF DEFINED (__GNUC__)
+#DEFINE G_INLINE_FUNC static __inline __attribute__ ((unused))
+#ELSEIF DEFINED (G_CAN_INLINE)
+#DEFINE G_INLINE_FUNC static inline
+#ELSE ' G_IMPLEMENT_INLINES
+#DEFINE G_INLINE_FUNC
+#ENDIF ' G_IMPLEMENT_INLINES
+
+#IFNDEF __GTK_DOC_IGNORE__
+#IFDEF G_OS_WIN32
+#DEFINE g_get_user_name g_get_user_name_utf8
+#DEFINE g_get_real_name g_get_real_name_utf8
+#DEFINE g_get_home_dir g_get_home_dir_utf8
+#DEFINE g_get_tmp_dir g_get_tmp_dir_utf8
+#ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
+
+DECLARE FUNCTION g_get_user_name() AS CONST gchar PTR
+DECLARE FUNCTION g_get_real_name() AS CONST gchar PTR
+DECLARE FUNCTION g_get_home_dir() AS CONST gchar PTR
+DECLARE FUNCTION g_get_tmp_dir() AS CONST gchar PTR
+DECLARE FUNCTION g_get_host_name() AS CONST gchar PTR
+DECLARE FUNCTION g_get_prgname() AS gchar PTR
+DECLARE SUB g_set_prgname(BYVAL AS CONST gchar PTR)
+DECLARE FUNCTION g_get_application_name() AS CONST gchar PTR
+DECLARE SUB g_set_application_name(BYVAL AS CONST gchar PTR)
+DECLARE SUB g_reload_user_special_dirs_cache()
+DECLARE FUNCTION g_get_user_data_dir() AS CONST gchar PTR
+DECLARE FUNCTION g_get_user_config_dir() AS CONST gchar PTR
+DECLARE FUNCTION g_get_user_cache_dir() AS CONST gchar PTR
+DECLARE FUNCTION g_get_system_data_dirs() AS CONST gchar CONST PTR PTR
+
+#IFDEF G_OS_WIN32
+
+DECLARE FUNCTION g_win32_get_system_data_dirs_for_module(BYVAL AS SUB()) AS CONST gchar CONST PTR PTR
+
+#ENDIF ' G_OS_WIN32
+
+#IF DEFINED (G_OS_WIN32) AND DEFINED (G_CAN_INLINE) AND NOT DEFINED (__cplusplus)
+#DEFINE g_get_system_data_dirs _g_win32_get_system_data_dirs
+#ENDIF ' DEFINED (G_OS_W...
+
+DECLARE FUNCTION g_get_system_config_dirs() AS CONST gchar CONST PTR PTR
+DECLARE FUNCTION g_get_user_runtime_dir() AS CONST gchar PTR
+
+ENUM GUserDirectory
+  G_USER_DIRECTORY_DESKTOP
+  G_USER_DIRECTORY_DOCUMENTS
+  G_USER_DIRECTORY_DOWNLOAD
+  G_USER_DIRECTORY_MUSIC
+  G_USER_DIRECTORY_PICTURES
+  G_USER_DIRECTORY_PUBLIC_SHARE
+  G_USER_DIRECTORY_TEMPLATES
+  G_USER_DIRECTORY_VIDEOS
+  G_USER_N_DIRECTORIES
+END ENUM
+
+DECLARE FUNCTION g_get_user_special_dir(BYVAL AS GUserDirectory) AS CONST gchar PTR
+
+TYPE GDebugKey AS _GDebugKey
+
+TYPE _GDebugKey
+  AS CONST gchar PTR key
+  AS guint value
+END TYPE
+
+DECLARE FUNCTION g_parse_debug_string(BYVAL AS CONST gchar PTR, BYVAL AS CONST GDebugKey PTR, BYVAL AS guint) AS guint
+DECLARE FUNCTION g_snprintf(BYVAL AS gchar PTR, BYVAL AS gulong, BYVAL AS gchar CONST PTR, ...) AS gint
+DECLARE FUNCTION g_vsnprintf(BYVAL AS gchar PTR, BYVAL AS gulong, BYVAL AS gchar CONST PTR, BYVAL AS va_list) AS gint
+DECLARE SUB g_nullify_pointer(BYVAL AS gpointer PTR)
+
+ENUM GFormatSizeFlags
+  G_FORMAT_SIZE_DEFAULT = 0
+  G_FORMAT_SIZE_LONG_FORMAT = 1 SHL 0
+  G_FORMAT_SIZE_IEC_UNITS = 1 SHL 1
+END ENUM
+
+DECLARE FUNCTION g_format_size_full(BYVAL AS guint64, BYVAL AS GFormatSizeFlags) AS gchar PTR
+DECLARE FUNCTION g_format_size(BYVAL AS guint64) AS gchar PTR
+DECLARE FUNCTION g_format_size_for_display(BYVAL AS goffset) AS gchar PTR
+
+#IFNDEF G_DISABLE_DEPRECATED
+
+TYPE GVoidFunc AS SUB()
+
+#IFNDEF ATEXIT
+#DEFINE ATEXIT(proc) g_ATEXIT(proc)
+#ELSE ' ATEXIT
+#DEFINE G_NATIVE_ATEXIT
+#ENDIF ' ATEXIT
+
+DECLARE SUB g_atexit_ ALIAS "g_atexit"(BYVAL AS GVoidFunc)
+
+'früher (2.28): ???
+'#IFDEF G_OS_WIN32
+'#IFNDEF ATEXIT
+'#INCLUDE ONCE "crt/stdlib.bi"
+'#DEFINE G_NATIVE_ATEXIT
+'#ENDIF ' ATEXIT
+'#DEFINE g_atexit(func) atexit(func)
+'#ELSE
+'DECLARE SUB g_atexit(BYVAL AS GVoidFunc)
+'#ENDIF ' G_OS_WIN32
+
+#IFDEF G_OS_WIN32
+#UNDEF g_atexit
+#DEFINE g_atexit(func) atexit(func)
+#ENDIF ' G_OS_WIN32
+#ENDIF ' G_DISABLE_DEPRECATED
+
+#IFNDEF __GTK_DOC_IGNORE__
+#IFDEF G_OS_WIN32
+#DEFINE g_find_program_in_path g_find_program_in_path_utf8
+#ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
+
+DECLARE FUNCTION g_find_program_in_path(BYVAL AS CONST gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_bit_nth_lsf(BYVAL AS gulong, BYVAL AS gint) AS gint
+DECLARE FUNCTION g_bit_nth_msf(BYVAL AS gulong, BYVAL AS gint) AS gint
+DECLARE FUNCTION g_bit_storage(BYVAL AS gulong) AS guint
+
+#IFNDEF G_DISABLE_DEPRECATED
+#IFNDEF G_PLATFORM_WIN32
+#DEFINE G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+#ELSE ' G_PLATFORM_WIN32
+#MACRO G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+ STATIC SHARED AS ZSTRING PTR dll_name
+ FUNCTION DllMain STDCALL ALIAS "DllMain" (BYVAL hinstDLL AS HINSTANCE, BYVAL fdwReason AS DWORD, BYVAL lpvReserved AS LPVOID) AS BOOL ' WINAPI
+   DIM AS wchar_t wcbfr(999)
+   SELECT CASE fdwReason
+   CASE DLL_PROCESS_ATTACH
+     GetModuleFileNameW (CAST(HMODULE, hinstDLL), wcbfr, G_N_ELEMENTS (wcbfr))
+     VAR tem = g_utf16_to_utf8 (wcbfr, -1, NULL, NULL, NULL)
+     dll_name = g_path_get_basename (tem)
+     g_free (tem)
+   END SELECT : RETURN TRUE
+ END FUNCTION
+#ENDMACRO
+
+#ENDIF ' G_PLATFORM_WIN32
+#ENDIF ' G_DISABLE_DEPRECATED
+#ENDIF ' __G_UTILS_H__
+
 TYPE GString AS _GString
-TYPE GStringChunk AS _GStringChunk
 
 TYPE _GString
   AS gchar PTR str
@@ -2560,12 +2430,6 @@ TYPE _GString
   AS gsize allocated_len
 END TYPE
 
-DECLARE FUNCTION g_string_chunk_new(BYVAL AS gsize) AS GStringChunk PTR
-DECLARE SUB g_string_chunk_free(BYVAL AS GStringChunk PTR)
-DECLARE SUB g_string_chunk_clear(BYVAL AS GStringChunk PTR)
-DECLARE FUNCTION g_string_chunk_insert(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_string_chunk_insert_len(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
-DECLARE FUNCTION g_string_chunk_insert_const(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_string_new(BYVAL AS CONST gchar PTR) AS GString PTR
 DECLARE FUNCTION g_string_new_len(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS GString PTR
 DECLARE FUNCTION g_string_sized_new(BYVAL AS gsize) AS GString PTR
@@ -2578,14 +2442,14 @@ DECLARE FUNCTION g_string_set_size(BYVAL AS GString PTR, BYVAL AS gsize) AS GStr
 DECLARE FUNCTION g_string_insert_len(BYVAL AS GString PTR, BYVAL AS gssize, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS GString PTR
 DECLARE FUNCTION g_string_append(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR) AS GString PTR
 DECLARE FUNCTION g_string_append_len(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS GString PTR
-DECLARE FUNCTION g_string_append_c(BYVAL AS GString PTR, BYVAL AS gchar PTR) AS GString PTR
+DECLARE FUNCTION g_string_append_c(BYVAL AS GString PTR, BYVAL AS UBYTE) AS GString PTR
 DECLARE FUNCTION g_string_append_unichar(BYVAL AS GString PTR, BYVAL AS gunichar) AS GString PTR
 DECLARE FUNCTION g_string_prepend(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR) AS GString PTR
-DECLARE FUNCTION g_string_prepend_c(BYVAL AS GString PTR, BYVAL AS gchar PTR) AS GString PTR
+DECLARE FUNCTION g_string_prepend_c(BYVAL AS GString PTR, BYVAL AS UBYTE) AS GString PTR
 DECLARE FUNCTION g_string_prepend_unichar(BYVAL AS GString PTR, BYVAL AS gunichar) AS GString PTR
 DECLARE FUNCTION g_string_prepend_len(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS GString PTR
 DECLARE FUNCTION g_string_insert(BYVAL AS GString PTR, BYVAL AS gssize, BYVAL AS CONST gchar PTR) AS GString PTR
-DECLARE FUNCTION g_string_insert_c(BYVAL AS GString PTR, BYVAL AS gssize, BYVAL AS gchar PTR) AS GString PTR
+DECLARE FUNCTION g_string_insert_c(BYVAL AS GString PTR, BYVAL AS gssize, BYVAL AS UBYTE) AS GString PTR
 DECLARE FUNCTION g_string_insert_unichar(BYVAL AS GString PTR, BYVAL AS gssize, BYVAL AS gunichar) AS GString PTR
 DECLARE FUNCTION g_string_overwrite(BYVAL AS GString PTR, BYVAL AS gsize, BYVAL AS CONST gchar PTR) AS GString PTR
 DECLARE FUNCTION g_string_overwrite_len(BYVAL AS GString PTR, BYVAL AS gsize, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS GString PTR
@@ -2596,13 +2460,16 @@ DECLARE SUB g_string_vprintf(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, BYV
 DECLARE SUB g_string_printf(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, ...)
 DECLARE SUB g_string_append_vprintf(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, BYVAL AS va_list)
 DECLARE SUB g_string_append_printf(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, ...)
-DECLARE FUNCTION g_string_append_uri_escaped(BYVAL AS GString PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS gboolean) AS GString PTR
+DECLARE FUNCTION g_string_append_uri_escaped(BYVAL AS GString PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gboolean) AS GString PTR
 
-#IFNDEF G_DISABLE_DEPRECATED
+#IFDEF G_CAN_INLINE
+#DEFINE g_string_append_c(gstr,c) g_string_append_c_inline (gstr, c)
+#ENDIF ' G_CAN_INLINE
 
 DECLARE FUNCTION g_string_down(BYVAL AS GString PTR) AS GString PTR
 DECLARE FUNCTION g_string_up(BYVAL AS GString PTR) AS GString PTR
 
+#IFNDEF G_DISABLE_DEPRECATED
 #DEFINE g_string_sprintf g_string_printf
 #DEFINE g_string_sprintfa g_string_append_printf
 #ENDIF ' G_DISABLE_DEPRECATED
@@ -2658,12 +2525,14 @@ ENUM GIOFlags
   G_IO_FLAG_APPEND = 1 SHL 0
   G_IO_FLAG_NONBLOCK = 1 SHL 1
   G_IO_FLAG_IS_READABLE = 1 SHL 2
-  G_IO_FLAG_IS_WRITEABLE = 1 SHL 3
+  G_IO_FLAG_IS_WRITABLE = 1 SHL 3
   G_IO_FLAG_IS_SEEKABLE = 1 SHL 4
   G_IO_FLAG_MASK = (1 SHL 5) - 1
   G_IO_FLAG_GET_MASK = G_IO_FLAG_MASK
   G_IO_FLAG_SET_MASK = G_IO_FLAG_APPEND OR G_IO_FLAG_NONBLOCK
 END ENUM
+
+#DEFINE G_IO_FLAG_IS_WRITEABLE (G_IO_FLAG_IS_WRITABLE)
 
 TYPE _GIOChannel
   AS gint ref_count
@@ -2704,16 +2573,10 @@ END TYPE
 DECLARE SUB g_io_channel_init(BYVAL AS GIOChannel PTR)
 DECLARE FUNCTION g_io_channel_ref(BYVAL AS GIOChannel PTR) AS GIOChannel PTR
 DECLARE SUB g_io_channel_unref(BYVAL AS GIOChannel PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_io_channel_read(BYVAL AS GIOChannel PTR, BYVAL AS gchar PTR, BYVAL AS gsize, BYVAL AS gsize PTR) AS GIOError
 DECLARE FUNCTION g_io_channel_write(BYVAL AS GIOChannel PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize, BYVAL AS gsize PTR) AS GIOError
 DECLARE FUNCTION g_io_channel_seek(BYVAL AS GIOChannel PTR, BYVAL AS gint64, BYVAL AS GSeekType) AS GIOError
 DECLARE SUB g_io_channel_close(BYVAL AS GIOChannel PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_io_channel_shutdown(BYVAL AS GIOChannel PTR, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GIOStatus
 DECLARE FUNCTION g_io_add_watch_full(BYVAL AS GIOChannel PTR, BYVAL AS gint, BYVAL AS GIOCondition, BYVAL AS GIOFunc, BYVAL AS gpointer, BYVAL AS GDestroyNotify) AS guint
 DECLARE FUNCTION g_io_create_watch(BYVAL AS GIOChannel PTR, BYVAL AS GIOCondition) AS GSource PTR
@@ -2751,7 +2614,7 @@ DECLARE FUNCTION g_io_channel_error_from_errno(BYVAL AS gint) AS GIOChannelError
 DECLARE FUNCTION g_io_channel_unix_new(BYVAL AS INTEGER) AS GIOChannel PTR
 DECLARE FUNCTION g_io_channel_unix_get_fd(BYVAL AS GIOChannel PTR) AS gint
 
-GLIB_VAR GSourceFuncs g_io_watch_funcs
+EXTERN AS GSourceFuncs g_io_watch_funcs
 
 #IFDEF G_OS_WIN32
 #DEFINE G_WIN32_MSG_HANDLE 19981206
@@ -2801,8 +2664,10 @@ ENUM GKeyFileFlags
 END ENUM
 
 DECLARE FUNCTION g_key_file_new() AS GKeyFile PTR
+DECLARE FUNCTION g_key_file_ref(BYVAL AS GKeyFile PTR) AS GKeyFile PTR
+DECLARE SUB g_key_file_unref(BYVAL AS GKeyFile PTR)
 DECLARE SUB g_key_file_free(BYVAL AS GKeyFile PTR)
-DECLARE SUB g_key_file_set_list_separator(BYVAL AS GKeyFile PTR, BYVAL AS gchar PTR)
+DECLARE SUB g_key_file_set_list_separator(BYVAL AS GKeyFile PTR, BYVAL AS UBYTE)
 DECLARE FUNCTION g_key_file_load_from_file(BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR, BYVAL AS GKeyFileFlags, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_key_file_load_from_data(BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize, BYVAL AS GKeyFileFlags, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_key_file_load_from_dirs(BYVAL AS GKeyFile PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS gchar PTR PTR, BYVAL AS GKeyFileFlags, BYVAL AS GError PTR PTR) AS gboolean
@@ -2876,21 +2741,17 @@ DECLARE FUNCTION g_key_file_remove_group(BYVAL AS GKeyFile PTR, BYVAL AS CONST g
 TYPE GMappedFile AS _GMappedFile
 
 DECLARE FUNCTION g_mapped_file_new(BYVAL AS CONST gchar PTR, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GMappedFile PTR
+DECLARE FUNCTION g_mapped_file_new_from_fd(BYVAL AS gint, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GMappedFile PTR
 DECLARE FUNCTION g_mapped_file_get_length(BYVAL AS GMappedFile PTR) AS gsize
 DECLARE FUNCTION g_mapped_file_get_contents(BYVAL AS GMappedFile PTR) AS gchar PTR
 DECLARE FUNCTION g_mapped_file_ref(BYVAL AS GMappedFile PTR) AS GMappedFile PTR
 DECLARE SUB g_mapped_file_unref(BYVAL AS GMappedFile PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_mapped_file_free(BYVAL AS GMappedFile PTR)
 
-#ENDIF ' G_DISABLE_DEPRECATED
 #ENDIF ' __G_MAPPED_FILE_H__
 
 #IFNDEF __G_MARKUP_H__
 #DEFINE __G_MARKUP_H__
-#INCLUDE ONCE "crt/stdarg.bi"
 
 ENUM GMarkupError
   G_MARKUP_ERROR_BAD_UTF8
@@ -2920,7 +2781,7 @@ TYPE _GMarkupParser
   end_element AS SUB(BYVAL AS GMarkupParseContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
   text AS SUB(BYVAL AS GMarkupParseContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
   passthrough AS SUB(BYVAL AS GMarkupParseContext PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
-  error AS SUB(BYVAL AS GMarkupParseContext PTR, BYVAL AS GError PTR, BYVAL AS gpointer)
+  error_ AS SUB(BYVAL AS GMarkupParseContext PTR, BYVAL AS GError PTR, BYVAL AS gpointer)
 END TYPE
 
 DECLARE FUNCTION g_markup_parse_context_new(BYVAL AS CONST GMarkupParser PTR, BYVAL AS GMarkupParseFlags, BYVAL AS gpointer, BYVAL AS GDestroyNotify) AS GMarkupParseContext PTR
@@ -2952,7 +2813,6 @@ DECLARE FUNCTION g_markup_collect_attributes(BYVAL AS CONST gchar PTR, BYVAL AS 
 
 #IFNDEF __G_MESSAGES_H__
 #DEFINE __G_MESSAGES_H__
-#INCLUDE ONCE "crt/stdarg.bi"
 
 DECLARE FUNCTION g_printf_string_upper_bound(BYVAL AS CONST gchar PTR, BYVAL AS va_list) AS gsize
 
@@ -2985,29 +2845,28 @@ DECLARE FUNCTION g_log_set_always_fatal(BYVAL AS GLogLevelFlags) AS GLogLevelFla
 DECLARE SUB _g_log_fallback_handler(BYVAL AS CONST gchar PTR, BYVAL AS GLogLevelFlags, BYVAL AS CONST gchar PTR, BYVAL AS gpointer)
 DECLARE SUB g_return_if_fail_warning(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR)
 DECLARE SUB g_warn_message(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_assert_warning(BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST INTEGER, BYVAL AS CONST ZSTRING PTR, BYVAL AS CONST ZSTRING PTR)
-
-#ENDIF ' G_DISABLE_DEPRECATED
 
 #IFNDEF G_LOG_DOMAIN
 #DEFINE G_LOG_DOMAIN (CAST(gchar PTR, 0))
 #ENDIF ' G_LOG_DOMAIN
 
 #IFNDEF G_HAVE_GNUC_VARARGS
+
 #DEFINE g_error(format) #ERROR g_error NOT defined (update fbc)
 #DEFINE g_message(format)  #ERROR g_message NOT defined (update fbc)
 #DEFINE g_critical(format)  #ERROR g_critical NOT defined (update fbc)
 #DEFINE g_warning(format)  #ERROR g_warning NOT defined (update fbc)
 #DEFINE g_debug(format)  #ERROR g_debug NOT defined (update fbc)
+
 #ELSE ' G_HAVE_GNUC_VARARGS
+
 #DEFINE g_error(__VA_ARGS__...) g_log (G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, __VA_ARGS__)
 #DEFINE g_message(__VA_ARGS__...) g_log (G_LOG_DOMAIN, G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
 #DEFINE g_critical(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, __VA_ARGS__)
 #DEFINE g_warning(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, __VA_ARGS__)
 #DEFINE g_debug(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, __VA_ARGS__)
+
 #ENDIF ' G_HAVE_GNUC_VARARGS
 
 TYPE GPrintFunc AS SUB(BYVAL AS CONST gchar PTR)
@@ -3124,13 +2983,6 @@ DECLARE FUNCTION g_node_last_sibling(BYVAL AS GNode PTR) AS GNode PTR
       (CAST(GNode PTR, (node)))->next , NULL)
 #DEFINE g_node_first_child(node) IIF((node) , _
       (CAST(GNode PTR, (node)))->children , NULL)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE SUB g_node_push_allocator(BYVAL AS gpointer)
-DECLARE SUB g_node_pop_allocator()
-
-#ENDIF ' G_DISABLE_DEPRECATED
 #ENDIF ' __G_NODE_H__
 
 #IFNDEF __G_OPTION_H__
@@ -3255,11 +3107,11 @@ TYPE _GQueue
   AS guint length
 END TYPE
 
-#DEFINE G_QUEUE_INIT TYPE<GQueue>( NULL, NULL, 0 )
+#DEFINE G_QUEUE_INIT_ TYPE<GQueue>( NULL, NULL, 0 )
 
 DECLARE FUNCTION g_queue_new() AS GQueue PTR
 DECLARE SUB g_queue_free(BYVAL AS GQueue PTR)
-DECLARE SUB g_queue_init_FB ALIAS "g_queue_init"(BYVAL AS GQueue PTR)
+DECLARE SUB g_queue_init(BYVAL AS GQueue PTR)
 DECLARE SUB g_queue_clear(BYVAL AS GQueue PTR)
 DECLARE FUNCTION g_queue_is_empty(BYVAL AS GQueue PTR) AS gboolean
 DECLARE FUNCTION g_queue_get_length(BYVAL AS GQueue PTR) AS guint
@@ -3279,8 +3131,8 @@ DECLARE FUNCTION g_queue_peek_head(BYVAL AS GQueue PTR) AS gpointer
 DECLARE FUNCTION g_queue_peek_tail(BYVAL AS GQueue PTR) AS gpointer
 DECLARE FUNCTION g_queue_peek_nth(BYVAL AS GQueue PTR, BYVAL AS guint) AS gpointer
 DECLARE FUNCTION g_queue_index(BYVAL AS GQueue PTR, BYVAL AS gconstpointer) AS gint
-DECLARE SUB g_queue_remove(BYVAL AS GQueue PTR, BYVAL AS gconstpointer)
-DECLARE SUB g_queue_remove_all(BYVAL AS GQueue PTR, BYVAL AS gconstpointer)
+DECLARE FUNCTION g_queue_remove(BYVAL AS GQueue PTR, BYVAL AS gconstpointer) AS gboolean
+DECLARE FUNCTION g_queue_remove_all(BYVAL AS GQueue PTR, BYVAL AS gconstpointer) AS guint
 DECLARE SUB g_queue_insert_before(BYVAL AS GQueue PTR, BYVAL AS GList PTR, BYVAL AS gpointer)
 DECLARE SUB g_queue_insert_after(BYVAL AS GQueue PTR, BYVAL AS GList PTR, BYVAL AS gpointer)
 DECLARE SUB g_queue_insert_sorted(BYVAL AS GQueue PTR, BYVAL AS gpointer, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
@@ -3312,7 +3164,7 @@ DECLARE FUNCTION g_rand_copy(BYVAL AS GRand PTR) AS GRand PTR
 DECLARE SUB g_rand_set_seed(BYVAL AS GRand PTR, BYVAL AS guint32)
 DECLARE SUB g_rand_set_seed_array(BYVAL AS GRand PTR, BYVAL AS CONST guint32 PTR, BYVAL AS guint)
 
-#DEFINE g_rand_boolean(rand_) ((g_rand_int (rand_) AND (1 SHL 15)) <> 0)
+#DEFINE g_rand_boolean(rand_) ((g_rand_int (rand) AND (1 SHL 15)) <> 0)
 
 DECLARE FUNCTION g_rand_int(BYVAL AS GRand PTR) AS guint32
 DECLARE FUNCTION g_rand_int_range(BYVAL AS GRand PTR, BYVAL AS gint32, BYVAL AS gint32) AS gint32
@@ -3329,32 +3181,6 @@ DECLARE FUNCTION g_random_double_range(BYVAL AS gdouble, BYVAL AS gdouble) AS gd
 
 #ENDIF ' __G_RAND_H__
 
-#IFNDEF __G_REL_H__
-#DEFINE __G_REL_H__
-
-TYPE GRelation AS _GRelation
-TYPE GTuples AS _GTuples
-
-TYPE _GTuples
-  AS guint len
-END TYPE
-
-#IFNDEF G_DISABLE_DEPRECATED
-
-DECLARE FUNCTION g_relation_new(BYVAL AS gint) AS GRelation PTR
-DECLARE SUB g_relation_destroy(BYVAL AS GRelation PTR)
-DECLARE SUB g_relation_index(BYVAL AS GRelation PTR, BYVAL AS gint, BYVAL AS GHashFunc, BYVAL AS GEqualFunc)
-DECLARE SUB g_relation_insert(BYVAL AS GRelation PTR, ...)
-DECLARE FUNCTION g_relation_delete(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS gint
-DECLARE FUNCTION g_relation_select(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS GTuples PTR
-DECLARE FUNCTION g_relation_count(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS gint
-DECLARE FUNCTION g_relation_exists(BYVAL AS GRelation PTR, ...) AS gboolean
-DECLARE SUB g_relation_print(BYVAL AS GRelation PTR)
-DECLARE SUB g_tuples_destroy(BYVAL AS GTuples PTR)
-DECLARE FUNCTION g_tuples_index(BYVAL AS GTuples PTR, BYVAL AS gint, BYVAL AS gint) AS gpointer
-
-#ENDIF ' G_DISABLE_DEPRECATED
-#ENDIF ' __G_REL_H__
 
 #IFNDEF __G_REGEX_H__
 #DEFINE __G_REGEX_H__
@@ -3449,6 +3275,7 @@ DECLARE FUNCTION g_regex_get_max_backref(BYVAL AS CONST GRegex PTR) AS gint
 DECLARE FUNCTION g_regex_get_capture_count(BYVAL AS CONST GRegex PTR) AS gint
 DECLARE FUNCTION g_regex_get_string_number(BYVAL AS CONST GRegex PTR, BYVAL AS CONST gchar PTR) AS gint
 DECLARE FUNCTION g_regex_escape_string(BYVAL AS CONST gchar PTR, BYVAL AS gint) AS gchar PTR
+DECLARE FUNCTION g_regex_escape_nul(BYVAL AS CONST gchar PTR, BYVAL AS gint) AS gchar PTR
 DECLARE FUNCTION g_regex_get_compile_flags(BYVAL AS CONST GRegex PTR) AS GRegexCompileFlags
 DECLARE FUNCTION g_regex_get_match_flags(BYVAL AS CONST GRegex PTR) AS GRegexMatchFlags
 DECLARE FUNCTION g_regex_match_simple(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS GRegexCompileFlags, BYVAL AS GRegexMatchFlags) AS gboolean
@@ -3465,6 +3292,8 @@ DECLARE FUNCTION g_regex_replace_eval(BYVAL AS CONST GRegex PTR, BYVAL AS CONST 
 DECLARE FUNCTION g_regex_check_replacement(BYVAL AS CONST gchar PTR, BYVAL AS gboolean PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_match_info_get_regex(BYVAL AS CONST GMatchInfo PTR) AS GRegex PTR
 DECLARE FUNCTION g_match_info_get_string(BYVAL AS CONST GMatchInfo PTR) AS CONST gchar PTR
+DECLARE FUNCTION g_match_info_ref(BYVAL AS GMatchInfo PTR) AS GMatchInfo PTR
+DECLARE SUB g_match_info_unref(BYVAL AS GMatchInfo PTR)
 DECLARE SUB g_match_info_free(BYVAL AS GMatchInfo PTR)
 DECLARE FUNCTION g_match_info_next(BYVAL AS GMatchInfo PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_match_info_matches(BYVAL AS CONST GMatchInfo PTR) AS gboolean
@@ -3487,17 +3316,17 @@ TYPE GScannerConfig AS _GScannerConfig
 TYPE GTokenValue AS _GTokenValue
 TYPE GScannerMsgFunc AS SUB(BYVAL AS GScanner PTR, BYVAL AS gchar PTR, BYVAL AS gboolean)
 
-#DEFINE G_CSET_A_2_Z_BIG !"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#DEFINE G_CSET_A_2_Z_ !"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #DEFINE G_CSET_a_2_z !"abcdefghijklmnopqrstuvwxyz"
 #DEFINE G_CSET_DIGITS !"0123456789"
-#DEFINE G_CSET_LATINC !"\&o300\&o301\&o302\&o303\&o304\&o305\&o306"_
-   !"\&o307\&o310\&o311\&o312\&o313\&o314\&o315\&o316\&o317\&o320"_
-   !"\&o321\&o322\&o323\&o324\&o325\&o326"_
-   !"\&o330\&o331\&o332\&o333\&o334\&o335\&o336"
-#DEFINE G_CSET_LATINS !"\&o337\&o340\&o341\&o342\&o343\&o344\&o345\&o346"_
-   !"\&o347\&o350\&o351\&o352\&o353\&o354\&o355\&o356\&o357\&o360"_
-   !"\&o361\&o362\&o363\&o364\&o365\&o366"_
-   !"\&o370\&o371\&o372\&o373\&o374\&o375\&o376\&o377"
+#DEFINE G_CSET_LATINC !"\300\301\302\303\304\305\306"_
+   !"\307\310\311\312\313\314\315\316\317\320"_
+   !"\321\322\323\324\325\326"_
+   !"\330\331\332\333\334\335\336"
+#DEFINE G_CSET_LATINS !"\337\340\341\342\343\344\345\346"_
+   !"\347\350\351\352\353\354\355\356\357\360"_
+   !"\361\362\363\364\365\366"_
+   !"\370\371\372\373\374\375\376\377"
 
 ENUM GErrorType
   G_ERR_UNKNOWN
@@ -3633,8 +3462,8 @@ DECLARE SUB g_scanner_warn(BYVAL AS GScanner PTR, BYVAL AS CONST gchar PTR, ...)
 #DEFINE g_scanner_add_symbol( scanner, symbol, value ) g_scanner_scope_add_symbol ((scanner), 0, (symbol), (value))
 #DEFINE g_scanner_remove_symbol( scanner, symbol ) g_scanner_scope_remove_symbol ((scanner), 0, (symbol))
 #DEFINE g_scanner_foreach_symbol( scanner, func, data ) g_scanner_scope_foreach_symbol ((scanner), 0, (func), (data))
-#DEFINE g_scanner_freeze_symbol_table(scanner)
-#DEFINE g_scanner_thaw_symbol_table(scanner)
+#DEFINE g_scanner_freeze_symbol_table(scanner) CAST(ANY, 0)
+#DEFINE g_scanner_thaw_symbol_table(scanner) CAST(ANY, 0)
 
 #ENDIF ' G_DISABLE_DEPRECATED
 #ENDIF ' __G_SCANNER_H__
@@ -3704,6 +3533,39 @@ DECLARE FUNCTION g_shell_parse_argv(BYVAL AS CONST gchar PTR, BYVAL AS gint PTR,
 
 #ENDIF ' __G_SHELL_H__
 
+#IFNDEF __G_SLICE_H__
+#DEFINE __G_SLICE_H__
+
+DECLARE FUNCTION g_slice_alloc(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_slice_alloc0(BYVAL AS gsize) AS gpointer
+DECLARE FUNCTION g_slice_copy(BYVAL AS gsize, BYVAL AS gconstpointer) AS gpointer
+DECLARE SUB g_slice_free1(BYVAL AS gsize, BYVAL AS gpointer)
+DECLARE SUB g_slice_free_chain_with_offset(BYVAL AS gsize, BYVAL AS gpointer, BYVAL AS gsize)
+
+#DEFINE g_slice_new(type) (CAST(type PTR, g_slice_alloc (SIZEOF (type))))
+#DEFINE g_slice_new0(type) (CAST(type PTR, g_slice_alloc0 (SIZEOF (type))))
+#DEFINE g_slice_dup(type, mem) _
+  IIF(1 , CAST(type PTR, g_slice_copy (SIZEOF (type), (mem))) _
+     , (CAST(ANY, (CAST(type PTR, 0) = (mem))), CAST(type PTR, 0)))
+
+#DEFINE g_slice_free(type, mem) g_slice_free1 (SIZEOF (type), (mem))
+#DEFINE g_slice_free_chain(type, mem_chain, next) g_slice_free_chain_with_offset (SIZEOF (type), (mem_chain), G_STRUCT_OFFSET (type, next))
+
+ENUM GSliceConfig
+  G_SLICE_CONFIG_ALWAYS_MALLOC = 1
+  G_SLICE_CONFIG_BYPASS_MAGAZINES
+  G_SLICE_CONFIG_WORKING_SET_MSECS
+  G_SLICE_CONFIG_COLOR_INCREMENT
+  G_SLICE_CONFIG_CHUNK_SIZES
+  G_SLICE_CONFIG_CONTENTION_COUNTER
+END ENUM
+
+DECLARE SUB g_slice_set_config(BYVAL AS GSliceConfig, BYVAL AS gint64)
+DECLARE FUNCTION g_slice_get_config(BYVAL AS GSliceConfig) AS gint64
+DECLARE FUNCTION g_slice_get_config_state(BYVAL AS GSliceConfig, BYVAL AS gint64, BYVAL AS guint PTR) AS gint64 PTR
+
+#ENDIF ' __G_SLICE_H__
+
 #IFNDEF __G_SPAWN_H__
 #DEFINE __G_SPAWN_H__
 
@@ -3746,6 +3608,7 @@ END ENUM
 
 DECLARE FUNCTION g_spawn_error_quark() AS GQuark
 
+#IFNDEF __GTK_DOC_IGNORE__
 #IFDEF G_OS_WIN32
 #DEFINE g_spawn_async g_spawn_async_utf8
 #DEFINE g_spawn_async_with_pipes g_spawn_async_with_pipes_utf8
@@ -3753,6 +3616,7 @@ DECLARE FUNCTION g_spawn_error_quark() AS GQuark
 #DEFINE g_spawn_command_line_sync g_spawn_command_line_sync_utf8
 #DEFINE g_spawn_command_line_async g_spawn_command_line_async_utf8
 #ENDIF ' G_OS_WIN32
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION g_spawn_async(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR, BYVAL AS gchar PTR PTR, BYVAL AS GSpawnFlags, BYVAL AS GSpawnChildSetupFunc, BYVAL AS gpointer, BYVAL AS GPid PTR, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_spawn_async_with_pipes(BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR, BYVAL AS gchar PTR PTR, BYVAL AS GSpawnFlags, BYVAL AS GSpawnChildSetupFunc, BYVAL AS gpointer, BYVAL AS GPid PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS gint PTR, BYVAL AS GError PTR PTR) AS gboolean
@@ -3765,7 +3629,6 @@ DECLARE SUB g_spawn_close_pid(BYVAL AS GPid)
 
 #IFNDEF __G_STRFUNCS_H__
 #DEFINE __G_STRFUNCS_H__
-#INCLUDE ONCE "crt/stdarg.bi"
 
 ENUM GAsciiType
   G_ASCII_ALNUM = 1 SHL 0
@@ -3781,7 +3644,7 @@ ENUM GAsciiType
   G_ASCII_XDIGIT = 1 SHL 10
 END ENUM
 
-GLIB_VAR CONST guint16 CONST PTR g_ascii_table
+EXTERN AS CONST guint16 CONST PTR g_ascii_table
 
 #DEFINE g_ascii_isalnum(c) _
   ((g_ascii_table[CAST(guchar, (c))] AND G_ASCII_ALNUM) <> 0)
@@ -3806,15 +3669,15 @@ GLIB_VAR CONST guint16 CONST PTR g_ascii_table
 #DEFINE g_ascii_isxdigit(c) _
   ((g_ascii_table[CAST(guchar, (c))] AND G_ASCII_XDIGIT) <> 0)
 
-DECLARE FUNCTION g_ascii_tolower(BYVAL AS gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_ascii_toupper(BYVAL AS gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_ascii_digit_value(BYVAL AS gchar PTR) AS gint PTR
-DECLARE FUNCTION g_ascii_xdigit_value(BYVAL AS gchar PTR) AS gint PTR
+DECLARE FUNCTION g_ascii_tolower(BYVAL AS UBYTE) AS UBYTE
+DECLARE FUNCTION g_ascii_toupper(BYVAL AS UBYTE) AS UBYTE
+DECLARE FUNCTION g_ascii_digit_value(BYVAL AS UBYTE) AS gint
+DECLARE FUNCTION g_ascii_xdigit_value(BYVAL AS UBYTE) AS gint
 
 #DEFINE G_STR_DELIMITERS !"_-|> <."
 
-DECLARE FUNCTION g_strdelimit(BYVAL AS gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR) AS gchar PTR
-DECLARE FUNCTION g_strcanon(BYVAL AS gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_strdelimit(BYVAL AS gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS UBYTE) AS gchar PTR
+DECLARE FUNCTION g_strcanon(BYVAL AS gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS UBYTE) AS gchar PTR
 DECLARE FUNCTION g_strerror(BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION g_strsignal(BYVAL AS gint) AS CONST gchar PTR
 DECLARE FUNCTION g_strreverse(BYVAL AS gchar PTR) AS gchar PTR
@@ -3843,21 +3706,15 @@ DECLARE FUNCTION g_ascii_strcasecmp(BYVAL AS CONST gchar PTR, BYVAL AS CONST gch
 DECLARE FUNCTION g_ascii_strncasecmp(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS gint
 DECLARE FUNCTION g_ascii_strdown(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
 DECLARE FUNCTION g_ascii_strup(BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_strcasecmp(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gint
 DECLARE FUNCTION g_strncasecmp(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS guint) AS gint
 DECLARE FUNCTION g_strdown(BYVAL AS gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_strup(BYVAL AS gchar PTR) AS gchar PTR
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_strdup(BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_strdup_printf(BYVAL AS CONST gchar PTR, ...) AS gchar PTR
 DECLARE FUNCTION g_strdup_vprintf(BYVAL AS CONST gchar PTR, BYVAL AS va_list) AS gchar PTR
 DECLARE FUNCTION g_strndup(BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS gchar PTR
-DECLARE FUNCTION g_strnfill(BYVAL AS gsize, BYVAL AS gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_strnfill(BYVAL AS gsize, BYVAL AS UBYTE) AS gchar PTR
 DECLARE FUNCTION g_strconcat(BYVAL AS CONST gchar PTR, ...) AS gchar PTR
 DECLARE FUNCTION g_strjoin(BYVAL AS CONST gchar PTR, ...) AS gchar PTR
 DECLARE FUNCTION g_strcompress(BYVAL AS CONST gchar PTR) AS gchar PTR
@@ -3870,20 +3727,28 @@ DECLARE SUB g_strfreev(BYVAL AS gchar PTR PTR)
 DECLARE FUNCTION g_strdupv(BYVAL AS gchar PTR PTR) AS gchar PTR PTR
 DECLARE FUNCTION g_strv_length(BYVAL AS gchar PTR PTR) AS guint
 DECLARE FUNCTION g_stpcpy(BYVAL AS gchar PTR, BYVAL AS CONST ZSTRING PTR) AS gchar PTR
-DECLARE FUNCTION g_strip_context(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
-DECLARE FUNCTION g_dgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
-DECLARE FUNCTION g_dcgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS INTEGER) AS CONST gchar PTR
-DECLARE FUNCTION g_dngettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gulong) AS CONST gchar PTR
-DECLARE FUNCTION g_dpgettext(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS CONST gchar PTR
-DECLARE FUNCTION g_dpgettext2(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS CONST gchar PTR
 
 #ENDIF ' __G_STRFUNCS_H__
+
+#IFNDEF __G_STRINGCHUNK_H__
+#DEFINE __G_STRINGCHUNK_H__
+
+TYPE GStringChunk AS _GStringChunk
+
+DECLARE FUNCTION g_string_chunk_new(BYVAL AS gsize) AS GStringChunk PTR
+DECLARE SUB g_string_chunk_free(BYVAL AS GStringChunk PTR)
+DECLARE SUB g_string_chunk_clear(BYVAL AS GStringChunk PTR)
+DECLARE FUNCTION g_string_chunk_insert(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
+DECLARE FUNCTION g_string_chunk_insert_len(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR, BYVAL AS gssize) AS gchar PTR
+DECLARE FUNCTION g_string_chunk_insert_const(BYVAL AS GStringChunk PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
+
+#ENDIF ' __G_STRINGCHUNK_H__
 
 #IFNDEF __G_TEST_UTILS_H__
 #DEFINE __G_TEST_UTILS_H__
 
-TYPE GTestCase AS _GTestCase
-TYPE GTestSuite AS _GTestSuite
+TYPE GTestCase AS GTestCase_
+TYPE GTestSuite AS GTestSuite_
 TYPE GTestFunc AS SUB()
 TYPE GTestDataFunc AS SUB(BYVAL AS gconstpointer)
 TYPE GTestFixtureFunc AS SUB(BYVAL AS gpointer, BYVAL AS gconstpointer)
@@ -3935,8 +3800,8 @@ DECLARE SUB g_test_maximized_result(BYVAL AS DOUBLE, BYVAL AS CONST ZSTRING PTR,
 DECLARE SUB g_test_init(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR, ...)
 
 #DEFINE g_test_quick() (g_test_config_vars->test_quick)
-#DEFINE g_test_slow() (0 = g_test_config_vars->test_quick)
-#DEFINE g_test_thorough() (0 = g_test_config_vars->test_quick)
+#DEFINE g_test_slow() ( 0 = g_test_config_vars->test_quick)
+#DEFINE g_test_thorough() ( 0 = g_test_config_vars->test_quick)
 #DEFINE g_test_perf() (g_test_config_vars->test_perf)
 #DEFINE g_test_verbose() (g_test_config_vars->test_verbose)
 #DEFINE g_test_quiet() (g_test_config_vars->test_quiet)
@@ -3944,6 +3809,7 @@ DECLARE SUB g_test_init(BYVAL AS INTEGER PTR, BYVAL AS ZSTRING PTR PTR PTR, ...)
 DECLARE FUNCTION g_test_run() AS INTEGER
 DECLARE SUB g_test_add_func(BYVAL AS CONST ZSTRING PTR, BYVAL AS GTestFunc)
 DECLARE SUB g_test_add_data_func(BYVAL AS CONST ZSTRING PTR, BYVAL AS gconstpointer, BYVAL AS GTestDataFunc)
+DECLARE SUB g_test_fail()
 
 #MACRO g_test_add(testpath, Fixture, tdata, fsetup, ftest, fteardown)
  DIM add_vtable AS SUB CDECL(BYVAL AS CONST ZSTRING PTR, _
@@ -4017,7 +3883,7 @@ TYPE GTestConfig
   AS gboolean test_quiet
 END TYPE
 
-GLIB_VAR CONST GTestConfig CONST PTR g_test_config_vars
+EXTERN AS CONST GTestConfig CONST PTR g_test_config_vars
 
 ENUM GTestLogType
   G_TEST_LOG_NONE
@@ -4070,17 +3936,17 @@ TYPE _GThreadPool
 END TYPE
 
 DECLARE FUNCTION g_thread_pool_new(BYVAL AS GFunc, BYVAL AS gpointer, BYVAL AS gint, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GThreadPool PTR
-DECLARE SUB g_thread_pool_push(BYVAL AS GThreadPool PTR, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
-DECLARE SUB g_thread_pool_set_max_threads(BYVAL AS GThreadPool PTR, BYVAL AS gint, BYVAL AS GError PTR PTR)
+DECLARE SUB g_thread_pool_free(BYVAL AS GThreadPool PTR, BYVAL AS gboolean, BYVAL AS gboolean)
+DECLARE FUNCTION g_thread_pool_push(BYVAL AS GThreadPool PTR, BYVAL AS gpointer, BYVAL AS GError PTR PTR) AS gboolean
+DECLARE FUNCTION g_thread_pool_unprocessed(BYVAL AS GThreadPool PTR) AS guint
+DECLARE SUB g_thread_pool_set_sort_function(BYVAL AS GThreadPool PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
+DECLARE FUNCTION g_thread_pool_set_max_threads(BYVAL AS GThreadPool PTR, BYVAL AS gint, BYVAL AS GError PTR PTR) AS gboolean
 DECLARE FUNCTION g_thread_pool_get_max_threads(BYVAL AS GThreadPool PTR) AS gint
 DECLARE FUNCTION g_thread_pool_get_num_threads(BYVAL AS GThreadPool PTR) AS guint
-DECLARE FUNCTION g_thread_pool_unprocessed(BYVAL AS GThreadPool PTR) AS guint
-DECLARE SUB g_thread_pool_free(BYVAL AS GThreadPool PTR, BYVAL AS gboolean, BYVAL AS gboolean)
 DECLARE SUB g_thread_pool_set_max_unused_threads(BYVAL AS gint)
 DECLARE FUNCTION g_thread_pool_get_max_unused_threads() AS gint
 DECLARE FUNCTION g_thread_pool_get_num_unused_threads() AS guint
 DECLARE SUB g_thread_pool_stop_unused_threads()
-DECLARE SUB g_thread_pool_set_sort_function(BYVAL AS GThreadPool PTR, BYVAL AS GCompareDataFunc, BYVAL AS gpointer)
 DECLARE SUB g_thread_pool_set_max_idle_time(BYVAL AS guint)
 DECLARE FUNCTION g_thread_pool_get_max_idle_time() AS guint
 
@@ -4107,6 +3973,22 @@ DECLARE FUNCTION g_time_val_to_iso8601(BYVAL AS GTimeVal PTR) AS gchar PTR
 
 #ENDIF ' __G_TIMER_H__
 
+#IFNDEF __G_TRASH_STACK_H__
+#DEFINE __G_TRASH_STACK_H__
+
+TYPE GTrashStack AS _GTrashStack
+
+TYPE _GTrashStack
+  AS GTrashStack PTR next
+END TYPE
+
+DECLARE SUB g_trash_stack_push(BYVAL AS GTrashStack PTR PTR, BYVAL AS gpointer)
+DECLARE FUNCTION g_trash_stack_pop(BYVAL AS GTrashStack PTR PTR) AS gpointer
+DECLARE FUNCTION g_trash_stack_peek(BYVAL AS GTrashStack PTR PTR) AS gpointer
+DECLARE FUNCTION g_trash_stack_height(BYVAL AS GTrashStack PTR PTR) AS guint
+
+#ENDIF ' __G_TRASH_STACK_H__
+
 #IFNDEF __G_TREE_H__
 #DEFINE __G_TREE_H__
 
@@ -4126,13 +4008,7 @@ DECLARE FUNCTION g_tree_steal(BYVAL AS GTree PTR, BYVAL AS gconstpointer) AS gbo
 DECLARE FUNCTION g_tree_lookup(BYVAL AS GTree PTR, BYVAL AS gconstpointer) AS gpointer
 DECLARE FUNCTION g_tree_lookup_extended(BYVAL AS GTree PTR, BYVAL AS gconstpointer, BYVAL AS gpointer PTR, BYVAL AS gpointer PTR) AS gboolean
 DECLARE SUB g_tree_foreach(BYVAL AS GTree PTR, BYVAL AS GTraverseFunc, BYVAL AS gpointer)
-
-#IFNDEF G_DISABLE_DEPRECATED
-
 DECLARE SUB g_tree_traverse(BYVAL AS GTree PTR, BYVAL AS GTraverseFunc, BYVAL AS GTraverseType, BYVAL AS gpointer)
-
-#ENDIF ' G_DISABLE_DEPRECATED
-
 DECLARE FUNCTION g_tree_search(BYVAL AS GTree PTR, BYVAL AS GCompareFunc, BYVAL AS gconstpointer) AS gpointer
 DECLARE FUNCTION g_tree_height(BYVAL AS GTree PTR) AS gint
 DECLARE FUNCTION g_tree_nnodes(BYVAL AS GTree PTR) AS gint
@@ -4183,8 +4059,10 @@ TYPE GVariantType AS _GVariantType
 #DEFINE G_VARIANT_TYPE_DICT_ENTRY (CAST(CONST GVariantType PTR, @!"{?*}"))
 #DEFINE G_VARIANT_TYPE_DICTIONARY (CAST(CONST GVariantType PTR, @!"a{?*}"))
 #DEFINE G_VARIANT_TYPE_STRING_ARRAY (CAST(CONST GVariantType PTR, @!"as"))
+#DEFINE G_VARIANT_TYPE_OBJECT_PATH_ARRAY (CAST(CONST GVariantType PTR, @!"ao"))
 #DEFINE G_VARIANT_TYPE_BYTESTRING (CAST(CONST GVariantType PTR, @!"ay"))
 #DEFINE G_VARIANT_TYPE_BYTESTRING_ARRAY (CAST(CONST GVariantType PTR, @!"aay"))
+#DEFINE G_VARIANT_TYPE_VARDICT (CAST(CONST GVariantType PTR, @!"a{sv}"))
 
 #IFNDEF G_DISABLE_CHECKS
 #DEFINE G_VARIANT_TYPE(type_string) (g_variant_type_checked_ ((type_string)))
@@ -4255,6 +4133,7 @@ DECLARE SUB g_variant_unref(BYVAL AS GVariant PTR)
 DECLARE FUNCTION g_variant_ref(BYVAL AS GVariant PTR) AS GVariant PTR
 DECLARE FUNCTION g_variant_ref_sink(BYVAL AS GVariant PTR) AS GVariant PTR
 DECLARE FUNCTION g_variant_is_floating(BYVAL AS GVariant PTR) AS gboolean
+DECLARE FUNCTION g_variant_take_ref(BYVAL AS GVariant PTR) AS GVariant PTR
 DECLARE FUNCTION g_variant_get_type(BYVAL AS GVariant PTR) AS CONST GVariantType PTR
 DECLARE FUNCTION g_variant_get_type_string(BYVAL AS GVariant PTR) AS CONST gchar PTR
 DECLARE FUNCTION g_variant_is_of_type(BYVAL AS GVariant PTR, BYVAL AS CONST GVariantType PTR) AS gboolean
@@ -4277,8 +4156,10 @@ DECLARE FUNCTION g_variant_new_signature(BYVAL AS CONST gchar PTR) AS GVariant P
 DECLARE FUNCTION g_variant_is_signature(BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE FUNCTION g_variant_new_variant(BYVAL AS GVariant PTR) AS GVariant PTR
 DECLARE FUNCTION g_variant_new_strv(BYVAL AS CONST gchar CONST PTR PTR, BYVAL AS gssize) AS GVariant PTR
+DECLARE FUNCTION g_variant_new_objv(BYVAL AS CONST gchar CONST PTR PTR, BYVAL AS gssize) AS GVariant PTR
 DECLARE FUNCTION g_variant_new_bytestring(BYVAL AS CONST gchar PTR) AS GVariant PTR
 DECLARE FUNCTION g_variant_new_bytestring_array(BYVAL AS CONST gchar CONST PTR PTR, BYVAL AS gssize) AS GVariant PTR
+DECLARE FUNCTION g_variant_new_fixed_array(BYVAL AS CONST GVariantType PTR, BYVAL AS gconstpointer, BYVAL AS gsize, BYVAL AS gsize) AS GVariant PTR
 DECLARE FUNCTION g_variant_get_boolean(BYVAL AS GVariant PTR) AS gboolean
 DECLARE FUNCTION g_variant_get_byte(BYVAL AS GVariant PTR) AS guchar
 DECLARE FUNCTION g_variant_get_int16(BYVAL AS GVariant PTR) AS gint16
@@ -4294,6 +4175,8 @@ DECLARE FUNCTION g_variant_get_string(BYVAL AS GVariant PTR, BYVAL AS gsize PTR)
 DECLARE FUNCTION g_variant_dup_string(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS gchar PTR
 DECLARE FUNCTION g_variant_get_strv(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS CONST gchar PTR PTR
 DECLARE FUNCTION g_variant_dup_strv(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS gchar PTR PTR
+DECLARE FUNCTION g_variant_get_objv(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS CONST gchar PTR PTR
+DECLARE FUNCTION g_variant_dup_objv(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS gchar PTR PTR
 DECLARE FUNCTION g_variant_get_bytestring(BYVAL AS GVariant PTR) AS CONST gchar PTR
 DECLARE FUNCTION g_variant_dup_bytestring(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS gchar PTR
 DECLARE FUNCTION g_variant_get_bytestring_array(BYVAL AS GVariant PTR, BYVAL AS gsize PTR) AS CONST gchar PTR PTR
@@ -4388,6 +4271,24 @@ DECLARE FUNCTION g_variant_compare(BYVAL AS gconstpointer, BYVAL AS gconstpointe
 
 #ENDIF ' __G_VARIANT_H__
 
+#IFNDEF __G_VERSION_H__
+#DEFINE __G_VERSION_H__
+
+EXTERN AS CONST guint glib_major_version_ ALIAS "glib_major_version"
+EXTERN AS CONST guint glib_minor_version_ ALIAS "glib_minor_version"
+EXTERN AS CONST guint glib_micro_version_ ALIAS "glib_micro_version"
+EXTERN AS CONST guint glib_interface_age
+EXTERN AS CONST guint glib_binary_age
+
+DECLARE FUNCTION glib_check_version_ ALIAS "glib_check_version"(BYVAL AS guint, BYVAL AS guint, BYVAL AS guint) AS CONST gchar PTR
+
+#DEFINE GLIB_CHECK_VERSION(major,minor,micro) _
+    (GLIB_MAJOR_VERSION > (major) ORELSE _
+     (GLIB_MAJOR_VERSION = (major) ANDALSO GLIB_MINOR_VERSION > (minor)) ORELSE _
+     (GLIB_MAJOR_VERSION = (major) ANDALSO GLIB_MINOR_VERSION = (minor) ANDALSO _
+      GLIB_MICRO_VERSION > = (micro)))
+#ENDIF ' __G_VERSION_H__
+
 #IFDEF G_PLATFORM_WIN32
 
 #IFNDEF __G_WIN32_H__
@@ -4408,8 +4309,12 @@ DECLARE FUNCTION g_win32_getlocale() AS gchar PTR
 DECLARE FUNCTION g_win32_error_message(BYVAL AS gint) AS gchar PTR
 
 #IFNDEF G_DISABLE_DEPRECATED
+#IFNDEF __GTK_DOC_IGNORE__
+#IFDEF _WIN64
 #DEFINE g_win32_get_package_installation_directory g_win32_get_package_installation_directory_utf8
 #DEFINE g_win32_get_package_installation_subdirectory g_win32_get_package_installation_subdirectory_utf8
+#ENDIF ' _WIN64
+#ENDIF ' __GTK_DOC_IGNORE__
 
 DECLARE FUNCTION g_win32_get_package_installation_directory(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
 DECLARE FUNCTION g_win32_get_package_installation_subdirectory(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR) AS gchar PTR
@@ -4426,6 +4331,282 @@ DECLARE FUNCTION g_win32_locale_filename_from_utf8(BYVAL AS CONST gchar PTR) AS 
 #ENDIF ' __G_WIN32_H__
 
 #ENDIF ' G_PLATFORM_WIN32
+#IFNDEF __G_ALLOCATOR_H__
+#DEFINE __G_ALLOCATOR_H__
+
+TYPE GAllocator AS _GAllocator
+TYPE GMemChunk AS _GMemChunk
+
+#DEFINE G_ALLOC_ONLY 1
+#DEFINE G_ALLOC_AND_FREE 2
+#DEFINE G_ALLOCATOR_LIST 1
+#DEFINE G_ALLOCATOR_SLIST 2
+#DEFINE G_ALLOCATOR_NODE 3
+#DEFINE g_chunk_new(type, chunk) (CAST(type PTR, g_mem_chunk_alloc (chunk)))
+#DEFINE g_chunk_new0(type, chunk) (CAST(type PTR, g_mem_chunk_alloc0 (chunk)))
+#DEFINE g_chunk_free(mem, mem_chunk) (g_mem_chunk_free (mem_chunk, mem))
+#DEFINE g_mem_chunk_create(type, x, y) (g_mem_chunk_new (NULL, SIZEOF (type), 0, 0))
+
+DECLARE FUNCTION g_mem_chunk_new(BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS gsize, BYVAL AS gint) AS GMemChunk PTR
+DECLARE SUB g_mem_chunk_destroy(BYVAL AS GMemChunk PTR)
+DECLARE FUNCTION g_mem_chunk_alloc(BYVAL AS GMemChunk PTR) AS gpointer
+DECLARE FUNCTION g_mem_chunk_alloc0(BYVAL AS GMemChunk PTR) AS gpointer
+DECLARE SUB g_mem_chunk_free(BYVAL AS GMemChunk PTR, BYVAL AS gpointer)
+DECLARE SUB g_mem_chunk_clean(BYVAL AS GMemChunk PTR)
+DECLARE SUB g_mem_chunk_reset(BYVAL AS GMemChunk PTR)
+DECLARE SUB g_mem_chunk_print(BYVAL AS GMemChunk PTR)
+DECLARE SUB g_mem_chunk_info()
+DECLARE SUB g_blow_chunks()
+DECLARE FUNCTION g_allocator_new(BYVAL AS CONST gchar PTR, BYVAL AS guint) AS GAllocator PTR
+DECLARE SUB g_allocator_free(BYVAL AS GAllocator PTR)
+DECLARE SUB g_list_push_allocator(BYVAL AS GAllocator PTR)
+DECLARE SUB g_list_pop_allocator()
+DECLARE SUB g_slist_push_allocator(BYVAL AS GAllocator PTR)
+DECLARE SUB g_slist_pop_allocator()
+DECLARE SUB g_node_push_allocator(BYVAL AS GAllocator PTR)
+DECLARE SUB g_node_pop_allocator()
+
+#ENDIF ' __G_ALLOCATOR_H__
+
+#IFNDEF __G_CACHE_H__
+#DEFINE __G_CACHE_H__
+
+TYPE GCache AS _GCache
+TYPE GCacheNewFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
+TYPE GCacheDupFunc AS FUNCTION(BYVAL AS gpointer) AS gpointer
+TYPE GCacheDestroyFunc AS SUB(BYVAL AS gpointer)
+
+DECLARE FUNCTION g_cache_new(BYVAL AS GCacheNewFunc, BYVAL AS GCacheDestroyFunc, BYVAL AS GCacheDupFunc, BYVAL AS GCacheDestroyFunc, BYVAL AS GHashFunc, BYVAL AS GHashFunc, BYVAL AS GEqualFunc) AS GCache PTR
+DECLARE SUB g_cache_destroy(BYVAL AS GCache PTR)
+DECLARE FUNCTION g_cache_insert(BYVAL AS GCache PTR, BYVAL AS gpointer) AS gpointer
+DECLARE SUB g_cache_remove(BYVAL AS GCache PTR, BYVAL AS gconstpointer)
+DECLARE SUB g_cache_key_foreach(BYVAL AS GCache PTR, BYVAL AS GHFunc, BYVAL AS gpointer)
+DECLARE SUB g_cache_value_foreach(BYVAL AS GCache PTR, BYVAL AS GHFunc, BYVAL AS gpointer)
+
+#ENDIF ' __G_CACHE_H__
+
+#IFNDEF __G_COMPLETION_H__
+#DEFINE __G_COMPLETION_H__
+
+TYPE GCompletion AS _GCompletion
+TYPE GCompletionFunc AS FUNCTION(BYVAL AS gpointer) AS gchar PTR
+TYPE GCompletionStrncmpFunc AS FUNCTION(BYVAL AS CONST gchar PTR, BYVAL AS CONST gchar PTR, BYVAL AS gsize) AS gint
+
+TYPE _GCompletion
+  AS GList PTR items
+  AS GCompletionFunc func
+  AS gchar PTR prefix
+  AS GList PTR cache
+  AS GCompletionStrncmpFunc strncmp_func
+END TYPE
+
+DECLARE FUNCTION g_completion_new(BYVAL AS GCompletionFunc) AS GCompletion PTR
+DECLARE SUB g_completion_add_items(BYVAL AS GCompletion PTR, BYVAL AS GList PTR)
+DECLARE SUB g_completion_remove_items(BYVAL AS GCompletion PTR, BYVAL AS GList PTR)
+DECLARE SUB g_completion_clear_items(BYVAL AS GCompletion PTR)
+DECLARE FUNCTION g_completion_complete(BYVAL AS GCompletion PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR) AS GList PTR
+DECLARE FUNCTION g_completion_complete_utf8(BYVAL AS GCompletion PTR, BYVAL AS CONST gchar PTR, BYVAL AS gchar PTR PTR) AS GList PTR
+DECLARE SUB g_completion_set_compare(BYVAL AS GCompletion PTR, BYVAL AS GCompletionStrncmpFunc)
+DECLARE SUB g_completion_free(BYVAL AS GCompletion PTR)
+
+#ENDIF ' __G_COMPLETION_H__
+
+#IFNDEF __G_DEPRECATED_MAIN_H__
+#DEFINE __G_DEPRECATED_MAIN_H__
+
+#DEFINE g_main_new(is_running) g_main_loop_new (NULL, is_running)
+#DEFINE g_main_run(loop) g_main_loop_run(loop)
+#DEFINE g_main_quit(loop) g_main_loop_quit(loop)
+#DEFINE g_main_destroy(loop) g_main_loop_unref(loop)
+#DEFINE g_main_is_running(loop) g_main_loop_is_running(loop)
+#DEFINE g_main_iteration(may_block) g_main_context_iteration (NULL, may_block)
+#DEFINE g_main_pending() g_main_context_pending (NULL)
+#DEFINE g_main_set_poll_func(func) g_main_context_set_poll_func (NULL, func)
+#ENDIF ' __G_DEPRECATED_MAIN_H__
+
+#IFNDEF __G_REL_H__
+#DEFINE __G_REL_H__
+
+TYPE GRelation AS _GRelation
+TYPE GTuples AS _GTuples
+
+TYPE _GTuples
+  AS guint len
+END TYPE
+
+DECLARE FUNCTION g_relation_new(BYVAL AS gint) AS GRelation PTR
+DECLARE SUB g_relation_destroy(BYVAL AS GRelation PTR)
+DECLARE SUB g_relation_index(BYVAL AS GRelation PTR, BYVAL AS gint, BYVAL AS GHashFunc, BYVAL AS GEqualFunc)
+DECLARE SUB g_relation_insert(BYVAL AS GRelation PTR, ...)
+DECLARE FUNCTION g_relation_delete(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS gint
+DECLARE FUNCTION g_relation_select(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS GTuples PTR
+DECLARE FUNCTION g_relation_count(BYVAL AS GRelation PTR, BYVAL AS gconstpointer, BYVAL AS gint) AS gint
+DECLARE FUNCTION g_relation_exists(BYVAL AS GRelation PTR, ...) AS gboolean
+DECLARE SUB g_relation_print(BYVAL AS GRelation PTR)
+DECLARE SUB g_tuples_destroy(BYVAL AS GTuples PTR)
+DECLARE FUNCTION g_tuples_index(BYVAL AS GTuples PTR, BYVAL AS gint, BYVAL AS gint) AS gpointer
+
+#ENDIF ' __G_REL_H__
+
+#IFNDEF __G_DEPRECATED_THREAD_H__
+#DEFINE __G_DEPRECATED_THREAD_H__
+
+ENUM GThreadPriority
+  G_THREAD_PRIORITY_LOW
+  G_THREAD_PRIORITY_NORMAL
+  G_THREAD_PRIORITY_HIGH
+  G_THREAD_PRIORITY_URGENT
+END ENUM
+
+TYPE _GThread
+  AS GThreadFunc func
+  AS gpointer data
+  AS gboolean joinable
+  AS GThreadPriority priority
+END TYPE
+
+TYPE GThreadFunctions AS _GThreadFunctions
+
+TYPE _GThreadFunctions
+  mutex_new AS FUNCTION() AS GMutex PTR
+  mutex_lock AS SUB(BYVAL AS GMutex PTR)
+  mutex_trylock AS FUNCTION(BYVAL AS GMutex PTR) AS gboolean
+  mutex_unlock AS SUB(BYVAL AS GMutex PTR)
+  mutex_free AS SUB(BYVAL AS GMutex PTR)
+  cond_new AS FUNCTION() AS GCond PTR
+  cond_signal AS SUB(BYVAL AS GCond PTR)
+  cond_broadcast AS SUB(BYVAL AS GCond PTR)
+  cond_wait AS SUB(BYVAL AS GCond PTR, BYVAL AS GMutex PTR)
+  cond_timed_wait AS FUNCTION(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS GTimeVal PTR) AS gboolean
+  cond_free AS SUB(BYVAL AS GCond PTR)
+  private_new AS FUNCTION(BYVAL AS GDestroyNotify) AS GPrivate PTR
+  private_get AS FUNCTION(BYVAL AS GPrivate PTR) AS gpointer
+  private_set AS SUB(BYVAL AS GPrivate PTR, BYVAL AS gpointer)
+  thread_create AS SUB(BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS gulong, BYVAL AS gboolean, BYVAL AS gboolean, BYVAL AS GThreadPriority, BYVAL AS gpointer, BYVAL AS GError PTR PTR)
+  thread_yield AS SUB()
+  thread_join AS SUB(BYVAL AS gpointer)
+  thread_exit AS SUB()
+  thread_set_priority AS SUB(BYVAL AS gpointer, BYVAL AS GThreadPriority)
+  thread_self AS SUB(BYVAL AS gpointer)
+  thread_equal AS FUNCTION(BYVAL AS gpointer, BYVAL AS gpointer) AS gboolean
+END TYPE
+
+EXTERN AS GThreadFunctions g_thread_functions_for_glib_use
+EXTERN AS gboolean g_thread_use_default_impl
+EXTERN g_thread_gettime AS FUNCTION() AS guint64
+
+DECLARE FUNCTION g_thread_create(BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS gboolean, BYVAL AS GError PTR PTR) AS GThread PTR
+DECLARE FUNCTION g_thread_create_full(BYVAL AS GThreadFunc, BYVAL AS gpointer, BYVAL AS gulong, BYVAL AS gboolean, BYVAL AS gboolean, BYVAL AS GThreadPriority, BYVAL AS GError PTR PTR) AS GThread PTR
+DECLARE SUB g_thread_set_priority(BYVAL AS GThread PTR, BYVAL AS GThreadPriority)
+DECLARE SUB g_thread_foreach(BYVAL AS GFunc, BYVAL AS gpointer)
+
+#IFNDEF G_OS_WIN32
+
+#INCLUDE ONCE "crt/bits/pthreadtypes.bi"
+
+#ENDIF ' G_OS_WIN32
+
+#DEFINE g_static_mutex_get_mutex g_static_mutex_get_mutex_impl
+#DEFINE G_STATIC_MUTEX_INIT_ TYPE<GStaticMutex>( NULL )
+
+TYPE GStaticMutex
+  AS GMutex PTR mutex
+#IFNDEF G_OS_WIN32
+  AS pthread_mutex_t unused
+#ENDIF ' G_OS_WIN32
+END TYPE
+
+#DEFINE g_static_mutex_lock(mutex) _
+    g_mutex_lock (g_static_mutex_get_mutex (mutex))
+#DEFINE g_static_mutex_trylock(mutex) _
+    g_mutex_trylock (g_static_mutex_get_mutex (mutex))
+#DEFINE g_static_mutex_unlock(mutex) _
+    g_mutex_unlock (g_static_mutex_get_mutex (mutex))
+
+DECLARE SUB g_static_mutex_init(BYVAL AS GStaticMutex PTR)
+DECLARE SUB g_static_mutex_free(BYVAL AS GStaticMutex PTR)
+DECLARE FUNCTION g_static_mutex_get_mutex_impl(BYVAL AS GStaticMutex PTR) AS GMutex PTR
+
+TYPE GStaticRecMutex AS _GStaticRecMutex
+
+UNION _GStaticRecMutex__
+#IFDEF G_OS_WIN32
+  AS ANY PTR owner
+#ELSE ' G_OS_WIN32
+  AS pthread_t owner
+#ENDIF ' G_OS_WIN32
+  AS gdouble dummy
+END UNION
+
+TYPE _GStaticRecMutex
+  AS GStaticMutex mutex
+  AS guint depth
+  AS _GStaticRecMutex__ unknown
+END TYPE
+
+#DEFINE G_STATIC_REC_MUTEX_INIT_ TYPE<GStaticRecMutex>( G_STATIC_MUTEX_INIT_ )
+
+DECLARE SUB g_static_rec_mutex_init(BYVAL AS GStaticRecMutex PTR)
+DECLARE SUB g_static_rec_mutex_lock(BYVAL AS GStaticRecMutex PTR)
+DECLARE FUNCTION g_static_rec_mutex_trylock(BYVAL AS GStaticRecMutex PTR) AS gboolean
+DECLARE SUB g_static_rec_mutex_unlock(BYVAL AS GStaticRecMutex PTR)
+DECLARE SUB g_static_rec_mutex_lock_full(BYVAL AS GStaticRecMutex PTR, BYVAL AS guint)
+DECLARE FUNCTION g_static_rec_mutex_unlock_full(BYVAL AS GStaticRecMutex PTR) AS guint
+DECLARE SUB g_static_rec_mutex_free(BYVAL AS GStaticRecMutex PTR)
+
+TYPE GStaticRWLock AS _GStaticRWLock
+
+TYPE _GStaticRWLock
+  AS GStaticMutex mutex
+  AS GCond PTR read_cond
+  AS GCond PTR write_cond
+  AS guint read_counter
+  AS gboolean have_writer
+  AS guint want_to_read
+  AS guint want_to_write
+END TYPE
+
+#DEFINE G_STATIC_RW_LOCK_INIT_ TYPE<GStaticRWLock>( G_STATIC_MUTEX_INIT_, NULL, NULL, 0, FALSE, 0, 0 )
+
+DECLARE SUB g_static_rw_lock_init(BYVAL AS GStaticRWLock PTR)
+DECLARE SUB g_static_rw_lock_reader_lock(BYVAL AS GStaticRWLock PTR)
+DECLARE FUNCTION g_static_rw_lock_reader_trylock(BYVAL AS GStaticRWLock PTR) AS gboolean
+DECLARE SUB g_static_rw_lock_reader_unlock(BYVAL AS GStaticRWLock PTR)
+DECLARE SUB g_static_rw_lock_writer_lock(BYVAL AS GStaticRWLock PTR)
+DECLARE FUNCTION g_static_rw_lock_writer_trylock(BYVAL AS GStaticRWLock PTR) AS gboolean
+DECLARE SUB g_static_rw_lock_writer_unlock(BYVAL AS GStaticRWLock PTR)
+DECLARE SUB g_static_rw_lock_free(BYVAL AS GStaticRWLock PTR)
+DECLARE FUNCTION g_private_new(BYVAL AS GDestroyNotify) AS GPrivate PTR
+
+TYPE GStaticPrivate AS _GStaticPrivate
+
+TYPE _GStaticPrivate
+  AS guint index
+END TYPE
+
+#DEFINE G_STATIC_PRIVATE_INIT_ TYPE<GStaticPrivate>( 0 )
+
+DECLARE SUB g_static_private_init(BYVAL AS GStaticPrivate PTR)
+DECLARE FUNCTION g_static_private_get(BYVAL AS GStaticPrivate PTR) AS gpointer
+DECLARE SUB g_static_private_set(BYVAL AS GStaticPrivate PTR, BYVAL AS gpointer, BYVAL AS GDestroyNotify)
+DECLARE SUB g_static_private_free(BYVAL AS GStaticPrivate PTR)
+DECLARE FUNCTION g_once_init_enter_impl(BYVAL AS gsize PTR) AS gboolean
+DECLARE SUB g_thread_init(BYVAL AS gpointer)
+DECLARE SUB g_thread_init_with_errorcheck_mutexes(BYVAL AS gpointer)
+DECLARE FUNCTION g_thread_get_initialized() AS gboolean
+
+EXTERN AS gboolean g_threads_got_initialized
+
+#DEFINE g_thread_supported() (1)
+
+DECLARE FUNCTION g_mutex_new() AS GMutex PTR
+DECLARE SUB g_mutex_free(BYVAL AS GMutex PTR)
+DECLARE FUNCTION g_cond_new() AS GCond PTR
+DECLARE SUB g_cond_free(BYVAL AS GCond PTR)
+DECLARE FUNCTION g_cond_timed_wait(BYVAL AS GCond PTR, BYVAL AS GMutex PTR, BYVAL AS GTimeVal PTR) AS gboolean
+
+#ENDIF ' __G_DEPRECATED_THREAD_H__
+
 #UNDEF __GLIB_H_INSIDE__
 #ENDIF ' __G_LIB_H__
 

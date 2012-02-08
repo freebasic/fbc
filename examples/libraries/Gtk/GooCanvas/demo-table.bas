@@ -8,6 +8,7 @@
 ' FB translation by TJF, 2011
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
+'#DEFINE __USE_GTK3__
 #INCLUDE "gtk/goocanvas.bi"
 
 #DEFINE DEMO_RECT_ITEM 0
@@ -50,7 +51,7 @@ SUB create_demo_item (BYVAL table AS GooCanvasItem PTR, _
     item = goo_canvas_widget_new (table, widget, 0, 0, -1, -1, NULL)
   END SELECT
 
-  g_value_init (@value, G_TYPE_UINT)
+  g_value_init_ (@value, G_TYPE_UINT) ' Note: name-mangling!
   g_value_set_uint (@value, row)
   goo_canvas_item_set_child_property (table, item, "row", @value)
   g_value_set_uint (@value, column)

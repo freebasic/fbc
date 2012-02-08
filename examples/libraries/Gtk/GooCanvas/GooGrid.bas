@@ -3,6 +3,7 @@
 ' (en) http://www.freebasic.net/forum/viewtopic.php?t=18535
 ' (de) http://www.freebasic-portal.de/code-beispiele/grafik-und-fonts/zeichnen-mit-goocanval-ein-graph-226.html
 
+'#DEFINE __USE_GTK3__
 #INCLUDE ONCE "gtk/goocanvas.bi"
 
 ' Some globals

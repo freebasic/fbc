@@ -33,6 +33,7 @@ EXPORTS
 	g_ptr_array_unref
 	g_ptr_array_ref
 	g_ptr_array_new
+	g_ptr_array_new_full
 	g_ptr_array_new_with_free_func
 	g_ptr_array_set_free_func
 	g_ptr_array_remove
@@ -67,20 +68,29 @@ EXPORTS
 	g_async_queue_ref_unlocked
 	g_async_queue_unref_and_unlock
 	g_atomic_int_add
+	g_atomic_int_and
 	g_atomic_int_compare_and_exchange
+	g_atomic_int_dec_and_test
 	g_atomic_int_exchange_and_add
-	g_atomic_pointer_compare_and_exchange
 	g_atomic_int_get
-	g_atomic_pointer_get
+	g_atomic_int_inc
+	g_atomic_int_or
 	g_atomic_int_set
+	g_atomic_int_xor
+	g_atomic_pointer_add
+	g_atomic_pointer_and
+	g_atomic_pointer_compare_and_exchange
+	g_atomic_pointer_get
+	g_atomic_pointer_or
 	g_atomic_pointer_set
+	g_atomic_pointer_xor
 	g_on_error_query
 	g_on_error_stack_trace
 	g_base64_encode_step
 	g_base64_encode_close
-	g_base64_encode 
+	g_base64_encode
 	g_base64_decode_step
-	g_base64_decode 
+	g_base64_decode
 	g_base64_decode_inplace
 	g_bookmark_file_error_quark
 	g_bookmark_file_new
@@ -91,18 +101,18 @@ EXPORTS
 	g_bookmark_file_to_data
 	g_bookmark_file_to_file
 	g_bookmark_file_set_title
-	g_bookmark_file_get_title 
+	g_bookmark_file_get_title
 	g_bookmark_file_set_description
-	g_bookmark_file_get_description 
+	g_bookmark_file_get_description
 	g_bookmark_file_set_mime_type
-	g_bookmark_file_get_mime_type 
+	g_bookmark_file_get_mime_type
 	g_bookmark_file_set_groups
 	g_bookmark_file_add_group
 	g_bookmark_file_has_group
-	g_bookmark_file_get_groups 
+	g_bookmark_file_get_groups
 	g_bookmark_file_add_application
 	g_bookmark_file_has_application
-	g_bookmark_file_get_applications 
+	g_bookmark_file_get_applications
 	g_bookmark_file_set_app_info
 	g_bookmark_file_get_app_info
 	g_bookmark_file_set_is_private
@@ -117,7 +127,7 @@ EXPORTS
 	g_bookmark_file_get_visited
 	g_bookmark_file_has_item
 	g_bookmark_file_get_size
-	g_bookmark_file_get_uris 
+	g_bookmark_file_get_uris
 	g_bookmark_file_remove_group
 	g_bookmark_file_remove_application
 	g_bookmark_file_remove_item
@@ -147,28 +157,29 @@ EXPORTS
 	g_completion_remove_items
 	g_completion_set_compare
 	g_get_filename_charsets
-	g_convert 
+	g_convert
 	g_convert_error_quark
-	g_convert_with_fallback 
-	g_convert_with_iconv 
+	g_convert_with_fallback
+	g_convert_with_iconv
 	g_iconv
 	g_iconv_close
 	g_iconv_open
-	g_locale_from_utf8 
-	g_locale_to_utf8 
-	g_filename_display_name 
-	g_filename_display_basename 
-	g_filename_from_uri PRIVATE 
-	g_filename_from_utf8 PRIVATE 
-	g_filename_to_uri PRIVATE 
-	g_filename_to_utf8 PRIVATE 
-	g_filename_from_uri_utf8 
+	g_locale_from_utf8
+	g_locale_to_utf8
+	g_filename_display_name
+	g_filename_display_basename
+	g_filename_from_uri PRIVATE
+	g_filename_from_utf8 PRIVATE
+	g_filename_to_uri PRIVATE
+	g_filename_to_utf8 PRIVATE
+	g_filename_from_uri_utf8
 	g_filename_from_utf8_utf8
-	g_filename_to_uri_utf8 
+	g_filename_to_uri_utf8
 	g_filename_to_utf8_utf8
-	g_uri_list_extract_uris 
+	g_uri_list_extract_uris
 	g_datalist_clear
 	g_datalist_foreach
+	g_datalist_get_data
 	g_datalist_get_flags
 	g_datalist_id_get_data
 	g_datalist_id_remove_no_notify
@@ -183,7 +194,7 @@ EXPORTS
 	g_dataset_id_set_data_full
 	g_quark_from_static_string
 	g_quark_from_string
-	g_quark_to_string 
+	g_quark_to_string
 	g_quark_try_string
 	g_intern_string
 	g_intern_static_string
@@ -201,15 +212,15 @@ EXPORTS
 	g_date_get_iso8601_week_of_year
 	g_date_get_julian
 	g_date_get_monday_week_of_year
-	g_date_get_monday_weeks_in_year 
+	g_date_get_monday_weeks_in_year
 	g_date_get_month
 	g_date_get_sunday_week_of_year
-	g_date_get_sunday_weeks_in_year 
+	g_date_get_sunday_weeks_in_year
 	g_date_get_weekday
 	g_date_get_year
 	g_date_is_first_of_month
 	g_date_is_last_of_month
-	g_date_is_leap_year 
+	g_date_is_leap_year
 	g_date_new
 	g_date_new_dmy
 	g_date_new_julian
@@ -229,12 +240,12 @@ EXPORTS
 	g_date_subtract_years
 	g_date_to_struct_tm
 	g_date_valid
-	g_date_valid_day 
+	g_date_valid_day
 	g_date_valid_dmy
-	g_date_valid_julian 
-	g_date_valid_month 
-	g_date_valid_weekday 
-	g_date_valid_year 
+	g_date_valid_julian
+	g_date_valid_month
+	g_date_valid_weekday
+	g_date_valid_year
 	g_date_time_add
 	g_date_time_add_days
 	g_date_time_add_full
@@ -247,7 +258,7 @@ EXPORTS
 	g_date_time_compare
 	g_date_time_difference
 	g_date_time_equal
-	g_date_time_format 
+	g_date_time_format
 	g_date_time_get_day_of_month
 	g_date_time_get_day_of_week
 	g_date_time_get_day_of_year
@@ -302,27 +313,32 @@ EXPORTS
 	g_error_copy
 	g_error_free
 	g_error_matches
-	g_error_new 
+	g_error_new
 	g_error_new_literal
 	g_error_new_valist
 	g_propagate_error
-	g_set_error 
+	g_set_error
 	g_set_error_literal
-	g_prefix_error 
-	g_propagate_prefixed_error 
-	g_build_filename  
-	g_build_filenamev 
-	g_build_path  
-	g_build_pathv 
+	g_prefix_error
+	g_propagate_prefixed_error
+	g_build_filename
+	g_build_filenamev
+	g_build_path
+	g_build_pathv
 	g_file_error_from_errno
 	g_file_error_quark
 	g_file_get_contents PRIVATE
 	g_file_set_contents
+	g_dir_make_tmp
 	g_file_open_tmp PRIVATE
 	g_file_test PRIVATE
 	g_file_read_link
+	g_format_size
+	g_format_size_full
 	g_format_size_for_display
 	g_mkstemp PRIVATE
+	g_mkdtemp
+	g_mkdtemp_full
 	g_mkstemp_full
 	g_mkdir_with_parents
 	g_file_get_contents_utf8
@@ -353,7 +369,17 @@ EXPORTS
 	g_hash_table_iter_next
 	g_hash_table_iter_get_hash_table
 	g_hash_table_iter_remove
+	g_hash_table_iter_replace
 	g_hash_table_iter_steal
+	g_hmac_new
+	g_hmac_copy
+	g_hmac_ref
+	g_hmac_unref
+	g_hmac_update
+	g_hmac_get_string
+	g_hmac_get_digest
+	g_compute_hmac_for_data
+	g_compute_hmac_for_string
 	g_hook_alloc
 	g_hook_compare_ids
 	g_hook_destroy
@@ -427,22 +453,22 @@ EXPORTS
 	g_key_file_error_quark
 	g_key_file_free
 	g_key_file_get_boolean
-	g_key_file_get_boolean_list 
-	g_key_file_get_comment 
-	g_key_file_get_groups 
+	g_key_file_get_boolean_list
+	g_key_file_get_comment
+	g_key_file_get_groups
 	g_key_file_get_double
-	g_key_file_get_double_list 
+	g_key_file_get_double_list
 	g_key_file_get_integer
 	g_key_file_get_int64
 	g_key_file_get_uint64
-	g_key_file_get_integer_list 
-	g_key_file_get_keys 
-	g_key_file_get_locale_string 
-	g_key_file_get_locale_string_list 
-	g_key_file_get_start_group 
-	g_key_file_get_string 
-	g_key_file_get_string_list 
-	g_key_file_get_value 
+	g_key_file_get_integer_list
+	g_key_file_get_keys
+	g_key_file_get_locale_string
+	g_key_file_get_locale_string_list
+	g_key_file_get_start_group
+	g_key_file_get_string
+	g_key_file_get_string_list
+	g_key_file_get_value
 	g_key_file_has_group
 	g_key_file_has_key
 	g_key_file_load_from_dirs
@@ -468,7 +494,7 @@ EXPORTS
 	g_key_file_set_string
 	g_key_file_set_string_list
 	g_key_file_set_value
-	g_key_file_to_data 
+	g_key_file_to_data
 	g_list_alloc
 	g_list_append
 	g_list_concat
@@ -580,7 +606,7 @@ EXPORTS
 	g_timeout_add_seconds_full
 	g_timeout_source_new
 	g_timeout_source_new_seconds
-	g_mapped_file_new 
+	g_mapped_file_new
 	g_mapped_file_get_length
 	g_mapped_file_get_contents
 	g_mapped_file_ref
@@ -598,23 +624,23 @@ EXPORTS
 	g_markup_parse_context_parse
 	g_markup_parse_context_push
 	g_markup_parse_context_pop
-	g_markup_printf_escaped 
+	g_markup_printf_escaped
 	g_markup_vprintf_escaped
 	g_markup_collect_attributes
 	g_free
-	g_malloc 
-	g_malloc0 
-	g_malloc_n 
-	g_malloc0_n 
+	g_malloc
+	g_malloc0
+	g_malloc_n
+	g_malloc0_n
 	g_mem_is_system_malloc
 	g_mem_profile
 	g_mem_set_vtable
 	g_realloc
 	g_realloc_n
-	g_try_malloc 
-	g_try_malloc0 
-	g_try_malloc_n 
-	g_try_malloc0_n 
+	g_try_malloc
+	g_try_malloc0
+	g_try_malloc_n
+	g_try_malloc0_n
 	g_try_realloc
 	g_try_realloc_n
 	g_allocator_free
@@ -629,16 +655,16 @@ EXPORTS
 	g_mem_chunk_print
 	g_mem_chunk_reset
 	g_blow_chunks
-	g_slice_alloc 
-	g_slice_alloc0 
-	g_slice_copy 
+	g_slice_alloc
+	g_slice_alloc0
+	g_slice_copy
 	g_slice_free1
 	g_slice_free_chain_with_offset
 	g_slice_set_config
 	g_slice_get_config
 	g_slice_get_config_state
 	g_printf_string_upper_bound
-	g_log 
+	g_log
 	g_log_default_handler
 	g_log_remove_handler
 	g_log_set_always_fatal
@@ -648,9 +674,9 @@ EXPORTS
 	g_logv
 	g_return_if_fail_warning
 	g_warn_message
-	g_assert_warning 
-	g_print 
-	g_printerr 
+	g_assert_warning
+	g_print
+	g_printerr
 	g_set_printerr_handler
 	g_set_print_handler
 	g_node_child_index
@@ -685,6 +711,7 @@ EXPORTS
 	g_option_context_add_main_entries
 	g_option_error_quark
 	g_option_context_free
+	g_option_context_get_delocalize
 	g_option_context_get_description
 	g_option_context_get_help_enabled
 	g_option_context_get_ignore_unknown_options
@@ -692,6 +719,7 @@ EXPORTS
 	g_option_context_get_summary
 	g_option_context_new
 	g_option_context_parse
+	g_option_context_set_delocalize
 	g_option_context_set_description
 	g_option_context_set_help_enabled
 	g_option_context_set_ignore_unknown_options
@@ -714,15 +742,15 @@ EXPORTS
 	g_pattern_spec_free
 	g_pattern_spec_new
 	g_poll
-	g_spaced_primes_closest 
-	g_fprintf 
-	g_printf 
-	g_sprintf 
+	g_spaced_primes_closest
+	g_fprintf
+	g_printf
+	g_sprintf
 	g_vasprintf
 	g_vfprintf
 	g_vprintf
 	g_vsprintf
-	g_snprintf 
+	g_snprintf
 	g_vsnprintf
 	g_qsort_with_data
 	g_queue_clear
@@ -797,7 +825,7 @@ EXPORTS
 	g_scanner_cur_value
 	g_scanner_destroy
 	g_scanner_eof
-	g_scanner_error 
+	g_scanner_error
 	g_scanner_get_next_token
 	g_scanner_input_file
 	g_scanner_input_text
@@ -811,7 +839,7 @@ EXPORTS
 	g_scanner_set_scope
 	g_scanner_sync_file_offset
 	g_scanner_unexp_token
-	g_scanner_warn 
+	g_scanner_warn
 	g_sequence_new
 	g_sequence_free
 	g_sequence_get_length
@@ -910,48 +938,48 @@ EXPORTS
 	g_chdir
 	g_unlink
 	g_rmdir
-	g_ascii_digit_value 
+	g_ascii_digit_value
 	g_ascii_dtostr
 	g_ascii_formatd
-	g_ascii_strdown 
+	g_ascii_strdown
 	g_ascii_strtod
 	g_ascii_strtoull
 	g_ascii_strtoll
-	g_ascii_strup 
-	g_ascii_tolower 
-	g_ascii_toupper 
-	g_ascii_xdigit_value 
+	g_ascii_strup
+	g_ascii_tolower
+	g_ascii_toupper
+	g_ascii_xdigit_value
 	g_ascii_strcasecmp
 	g_ascii_strncasecmp
-	g_memdup 
+	g_memdup
 	g_stpcpy
 	g_strcanon
 	g_strchomp
 	g_strchug
-	g_strcompress 
-	g_strconcat  
+	g_strcompress
+	g_strconcat
 	g_strdelimit
-	g_strdup 
-	g_strdup_printf  
-	g_strdupv 
-	g_strdup_vprintf 
-	g_strerror 
-	g_strescape 
+	g_strdup
+	g_strdup_printf
+	g_strdupv
+	g_strdup_vprintf
+	g_strerror
+	g_strescape
 	g_strfreev
 	g_str_has_prefix
 	g_str_has_suffix
-	g_strjoin  
-	g_strjoinv 
+	g_strjoin
+	g_strjoinv
 	g_strlcat
 	g_strlcpy
-	g_strndup 
-	g_strnfill 
+	g_strndup
+	g_strnfill
 	g_strreverse
 	g_strrstr
 	g_strrstr_len
-	g_strsignal 
-	g_strsplit 
-	g_strsplit_set 
+	g_strsignal
+	g_strsplit
+	g_strsplit_set
 	g_strstr_len
 	g_strtod
 	g_strcasecmp
@@ -959,19 +987,19 @@ EXPORTS
 	g_strup
 	g_strdown
 	g_strv_length
-	g_strip_context 
-	g_dgettext 
-	g_dcgettext 
-	g_dngettext 
-	g_dpgettext 
-	g_dpgettext2 
+	g_strip_context
+	g_dgettext
+	g_dcgettext
+	g_dngettext
+	g_dpgettext
+	g_dpgettext2
 	g_uri_unescape_string
 	g_uri_unescape_segment
 	g_uri_parse_scheme
 	g_uri_escape_string
 	g_string_append
 	g_string_append_len
-	g_string_append_printf 
+	g_string_append_printf
 	g_string_append_unichar
 	g_string_append_vprintf
 	g_string_ascii_down
@@ -999,7 +1027,7 @@ EXPORTS
 	g_string_prepend_c
 	g_string_prepend_len
 	g_string_prepend_unichar
-	g_string_printf 
+	g_string_printf
 	g_string_set_size
 	g_string_sized_new
 	g_string_truncate
@@ -1011,6 +1039,9 @@ EXPORTS
 	g_bit_lock
 	g_bit_trylock
 	g_bit_unlock
+	g_pointer_bit_lock
+	g_pointer_bit_trylock
+	g_pointer_bit_unlock
 	g_once_impl
 	g_once_init_enter_impl
 	g_once_init_leave
@@ -1065,11 +1096,11 @@ EXPORTS
 	g_thread_pool_unprocessed
 	g_thread_pool_set_sort_function
 	g_test_log_set_fatal_handler
-	g_assertion_message 
-	g_assertion_message_cmpnum 
-	g_assertion_message_cmpstr 
-	g_assertion_message_expr 
-	g_assertion_message_error 
+	g_assertion_message
+	g_assertion_message_cmpnum
+	g_assertion_message_cmpstr
+	g_assertion_message_expr
+	g_assertion_message_error
 	g_strcmp0
 	g_test_add_data_func
 	g_test_add_func
@@ -1079,6 +1110,7 @@ EXPORTS
 	g_test_config_vars
 	g_test_create_case
 	g_test_create_suite
+	g_test_fail
 	g_test_get_root
 	g_test_init
 	g_test_log_buffer_free
@@ -1116,7 +1148,7 @@ EXPORTS
 	g_timer_stop
 	g_time_val_add
 	g_time_val_from_iso8601
-	g_time_val_to_iso8601 
+	g_time_val_to_iso8601
 	g_usleep
 	g_tree_destroy
 	g_tree_foreach
@@ -1135,74 +1167,82 @@ EXPORTS
 	g_tree_search
 	g_tree_steal
 	g_tree_traverse
-	g_unichar_break_type 
-	g_utf8_collate
-	g_utf8_collate_key 
-	g_utf8_collate_key_for_filename 
-	g_unicode_canonical_decomposition 
-	g_unicode_canonical_ordering
-	g_unichar_combining_class 
-	g_utf8_normalize
-	g_unichar_isalnum 
-	g_unichar_isalpha 
-	g_unichar_iscntrl 
-	g_unichar_isdefined 
-	g_unichar_isdigit 
-	g_unichar_isgraph 
-	g_unichar_islower 
-	g_unichar_isprint 
-	g_unichar_ispunct 
-	g_unichar_isspace 
-	g_unichar_istitle 
-	g_unichar_isupper 
-	g_unichar_iswide 
-	g_unichar_iswide_cjk 
-	g_unichar_isxdigit 
-	g_unichar_iszerowidth 
-	g_unichar_tolower 
-	g_unichar_totitle 
-	g_unichar_toupper 
-	g_unichar_ismark 
+	g_unichar_break_type
+	g_unichar_combining_class
+	g_unichar_compose
+	g_unichar_decompose
+	g_unichar_isalnum
+	g_unichar_isalpha
+	g_unichar_iscntrl
+	g_unichar_isdefined
+	g_unichar_isdigit
+	g_unichar_isgraph
+	g_unichar_islower
+	g_unichar_isprint
+	g_unichar_ispunct
+	g_unichar_isspace
+	g_unichar_istitle
+	g_unichar_isupper
+	g_unichar_iswide
+	g_unichar_iswide_cjk
+	g_unichar_isxdigit
+	g_unichar_iszerowidth
+	g_unichar_fully_decompose
+	g_unichar_tolower
+	g_unichar_totitle
+	g_unichar_toupper
+	g_unichar_ismark
 	g_unichar_get_mirror_char
 	g_unichar_get_script
-	g_unichar_digit_value 
-	g_unichar_xdigit_value 
-	g_unichar_type 
-	g_utf8_casefold 
-	g_utf8_strup 
-	g_utf8_strdown 
-	g_get_charset
-	g_ucs4_to_utf16 
-	g_ucs4_to_utf8 
-	g_utf16_to_ucs4 
-	g_utf16_to_utf8 
+	g_unichar_digit_value
+	g_unichar_xdigit_value
+	g_unichar_type
+	g_unicode_canonical_decomposition
+	g_unicode_canonical_ordering
+	g_unicode_script_from_iso15924
+	g_unicode_script_to_iso15924
+	g_utf8_casefold
+	g_utf8_collate
+	g_utf8_collate_key
+	g_utf8_collate_key_for_filename
 	g_utf8_find_next_char
 	g_utf8_find_prev_char
 	g_utf8_get_char
 	g_utf8_get_char_validated
+	g_utf8_normalize
 	g_utf8_offset_to_pointer
 	g_utf8_pointer_to_offset
 	g_utf8_prev_char
+	g_utf8_strup
+	g_utf8_strdown
 	g_utf8_strchr
 	g_utf8_strlen
 	g_utf8_strncpy
 	g_utf8_strrchr
 	g_utf8_strreverse
-	g_utf8_to_ucs4 
-	g_utf8_to_ucs4_fast 
-	g_utf8_to_utf16 
+	g_utf8_substring
+	g_utf8_to_ucs4
+	g_utf8_to_ucs4_fast
+	g_utf8_to_utf16
 	g_utf8_validate
+	g_get_charset
+	g_ucs4_to_utf16
+	g_ucs4_to_utf8
+	g_utf16_to_ucs4
+	g_utf16_to_utf8
 	g_unichar_to_utf8
 	g_unichar_validate
-	glib_gettext 
+	glib_pgettext
+	glib_gettext
+	_glib_get_locale_dir
 	g_int_equal
 	g_int_hash
 	g_int64_equal
 	g_int64_hash
 	g_double_equal
 	g_double_hash
-	g_direct_equal 
-	g_direct_hash 
+	g_direct_equal
+	g_direct_hash
 	g_str_equal
 	g_str_hash
 	g_atexit
@@ -1213,8 +1253,8 @@ EXPORTS
 	g_getenv PRIVATE
 	g_unsetenv PRIVATE
 	g_get_home_dir PRIVATE
-	g_get_host_name
 	g_setenv PRIVATE
+	g_get_host_name
 	g_listenv
 	g_get_environ
 	g_find_program_in_path_utf8
@@ -1244,8 +1284,8 @@ EXPORTS
 	glib_check_version
 	g_nullify_pointer
 	g_parse_debug_string
-	g_path_get_basename 
-	g_path_get_dirname 
+	g_path_get_basename
+	g_path_get_dirname
 	g_path_is_absolute
 	g_path_skip_root
 	g_set_application_name
@@ -1269,6 +1309,7 @@ EXPORTS
 	g_regex_get_compile_flags
 	g_regex_get_match_flags
 	g_regex_escape_string
+	g_regex_escape_nul
 	g_regex_match_simple
 	g_regex_match
 	g_regex_match_full
@@ -1283,6 +1324,8 @@ EXPORTS
 	g_regex_check_replacement
 	g_match_info_get_regex
 	g_match_info_get_string
+	g_match_info_ref
+	g_match_info_unref
 	g_match_info_free
 	g_match_info_next
 	g_match_info_matches
@@ -1328,6 +1371,7 @@ EXPORTS
 	g_variant_ref
 	g_variant_ref_sink
 	g_variant_is_floating
+	g_variant_take_ref
 	g_variant_n_children
 	g_variant_get_child_value
 	g_variant_get_size
@@ -1357,6 +1401,7 @@ EXPORTS
 	g_variant_is_signature
 	g_variant_new_variant
 	g_variant_new_strv
+	g_variant_new_objv
 	g_variant_new_bytestring
 	g_variant_new_bytestring_array
 	g_variant_get_boolean
@@ -1374,6 +1419,8 @@ EXPORTS
 	g_variant_get_variant
 	g_variant_get_strv
 	g_variant_dup_strv
+	g_variant_get_objv
+	g_variant_dup_objv
 	g_variant_get_bytestring
 	g_variant_dup_bytestring
 	g_variant_get_bytestring_array

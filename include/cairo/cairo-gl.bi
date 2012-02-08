@@ -17,40 +17,41 @@
 ' Lesser General Public License for more details, refer to:
 ' http://www.gnu.org/licenses/lgpl.html
 '
+'
 ' Original license text:
-
-/' Cairo - a vector graphics library with display and print output
- *
- * Copyright © 2009 Eric Anholt
- * Copyright © 2009 Chris Wilson
- *
- * This library is free software; you can redistribute it and/or
- * modify it either under the terms of the GNU Lesser General Public
- * License version 2.1 as published by the Free Software Foundation
- * (the "LGPL") or, at your option, under the terms of the Mozilla
- * Public License Version 1.1 (the "MPL"). If you do not alter this
- * notice, a recipient may use your version of this file under either
- * the MPL or the LGPL.
- *
- * You should have received a copy of the LGPL along with this library
- * in the file COPYING-LGPL-2.1; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
- * You should have received a copy of the MPL along with this library
- * in the file COPYING-MPL-1.1
- *
- * The contents of this file are subject to the Mozilla Public License
- * Version 1.1 (the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY
- * OF ANY KIND, either express or implied. See the LGPL or the MPL for
- * the specific language governing rights and limitations.
- *
- * The Original Code is the cairo graphics library.
- *
- * The Initial Developer of the Original Code is Eric Anholt.
- '/
+'
+'/* Cairo - a vector graphics library with display and print output
+ '*
+ '* Copyright © 2009 Eric Anholt
+ '* Copyright © 2009 Chris Wilson
+ '*
+ '* This library is free software; you can redistribute it and/or
+ '* modify it either under the terms of the GNU Lesser General Public
+ '* License version 2.1 as published by the Free Software Foundation
+ '* (the "LGPL") or, at your option, under the terms of the Mozilla
+ '* Public License Version 1.1 (the "MPL"). If you do not alter this
+ '* notice, a recipient may use your version of this file under either
+ '* the MPL or the LGPL.
+ '*
+ '* You should have received a copy of the LGPL along with this library
+ '* in the file COPYING-LGPL-2.1; if not, write to the Free Software
+ '* Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
+ '* You should have received a copy of the MPL along with this library
+ '* in the file COPYING-MPL-1.1
+ '*
+ '* The contents of this file are subject to the Mozilla Public License
+ '* Version 1.1 (the "License"); you may not use this file except in
+ '* compliance with the License. You may obtain a copy of the License at
+ '* http://www.mozilla.org/MPL/
+ '*
+ '* This software is distributed on an "AS IS" basis, WITHOUT WARRANTY
+ '* OF ANY KIND, either express or implied. See the LGPL or the MPL for
+ '* the specific language governing rights and limitations.
+ '*
+ '* The Original Code is the cairo graphics library.
+ '*
+ '* The Initial Developer of the Original Code is Eric Anholt.
+ '*/
 
 #IFNDEF CAIRO_GL_H
 #DEFINE CAIRO_GL_H
@@ -70,7 +71,7 @@ DECLARE SUB cairo_gl_surface_swapbuffers CDECL(BYVAL AS cairo_surface_t PTR)
 
 #IF CAIRO_HAS_GLX_FUNCTIONS
 
-#INCLUDE ONCE "GL/glx.bi"
+#INCLUDE ONCE "GL/glx.bi" ' !!!
 
 DECLARE FUNCTION cairo_glx_device_create CDECL(BYVAL AS Display PTR, BYVAL AS GLXContext) AS cairo_device_t PTR
 DECLARE FUNCTION cairo_glx_device_get_display CDECL(BYVAL AS cairo_device_t PTR) AS Display PTR
@@ -79,7 +80,6 @@ DECLARE FUNCTION cairo_gl_surface_create_for_window CDECL(BYVAL AS cairo_device_
 
 #ENDIF ' CAIRO_HAS_GLX_FUNCTIONS
 
-' #if CAIRO_HAS_WGL_FUNCTIONS
 #IFDEF __FB_WIN32__
 
 #INCLUDE ONCE "windows.bi"
