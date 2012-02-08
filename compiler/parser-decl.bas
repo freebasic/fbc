@@ -99,7 +99,14 @@ function cDeclaration _
 		end if
 
 	case FB_TK_CONST
-		function = cConstDecl( attrib )
+		select case as const lexGetLookAhead( 1 )
+		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
+		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
+			function = cProcStmtBegin( attrib )
+
+		case else
+			function = cConstDecl( attrib )
+		end select
 
 	case FB_TK_TYPE, FB_TK_UNION
 		function = cTypeDecl( attrib )

@@ -40,6 +40,19 @@ sub cLibAttribute()
 	end if
 end sub
 
+sub cConstOrStaticAttribute( byval pattrib as integer ptr )
+	select case( lexGetToken( ) )
+	'' STATIC?
+	case FB_TK_STATIC
+		lexSkipToken( )
+		*pattrib or= FB_SYMBATTRIB_STATIC
+	'' CONST?
+	case FB_TK_CONST
+		lexSkipToken( )
+		*pattrib or= FB_SYMBATTRIB_CONST
+	end select
+end sub
+
 '':::::
 private sub hParamError _
 	( _
@@ -167,10 +180,18 @@ private sub hCheckAttribs _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-	'' the body can only be static if the proto is too
+	'' the body can only be STATIC if the proto is too
 	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
 		if( symbIsStatic( proto ) = FALSE ) then
 			errReport( FB_ERRMSG_PROCPROTOTYPENOTSTATIC )
+			return
+		end if
+	end if
+
+	'' same for CONST
+	if( (attrib and FB_SYMBATTRIB_CONST) <> 0 ) then
+		if( symbIsConstant( proto ) = FALSE ) then
+			errReport( FB_ERRMSG_PROCPROTOTYPENOTCONST )
 			return
 		end if
 	end if
@@ -2050,11 +2071,7 @@ function cProcStmtBegin _
 		end if
 	end if
 
-	'' STATIC?
-	if( lexGetToken( ) = FB_TK_STATIC ) then
-		lexSkipToken( )
-		attrib or= FB_SYMBATTRIB_STATIC
-	end if
+	cConstOrStaticAttribute( @attrib )
 
 	'' SUB | FUNCTION
 	tkn = lexGetToken( )

@@ -771,6 +771,7 @@ declare function cAsmBlock _
 
 declare function cAliasAttribute() as zstring ptr
 declare sub cLibAttribute()
+declare sub cConstOrStaticAttribute( byval pattrib as integer ptr )
 
 declare function cProcReturnMethod _
 	( _

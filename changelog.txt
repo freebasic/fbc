@@ -25,6 +25,7 @@ Version 0.24.0:
 - BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
 - Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
 - 'fbc -static' option to tell the linker to link against static libraries if installed
+- CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
