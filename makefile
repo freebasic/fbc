@@ -1104,19 +1104,12 @@ $(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
        $(prefix)/include $(prefixinclude) $(prefix)/lib $(prefixlib) ):
 	mkdir $@
 
-.PHONY: includes
-includes:
-	mkdir -p $(new)/$(INCDIR)
-	for file in $(INCLUDES); do \
-		mkdir -p $(new)/`dirname $$file | sed 's|include|$(INCDIR)|'`; \
-		cp -u $$file $(new)/`dirname $$file | sed 's|include|$(INCDIR)|'`;  \
-	done
-
-clean-includes:
-	rm -r $(new)/$(INCDIR)
-
 .PHONY: compiler
-compiler: $(new) $(newcompiler) $(newbin) $(new)/lib $(newlib)
+compiler: $(new) $(newcompiler) $(newbin)
+ifndef ENABLE_STANDALONE
+compiler: $(new)/lib
+endif
+compiler: $(newlib)
 compiler: $(newbin)/$(FBC_EXE)
 ifdef FB_LDSCRIPT
 compiler: $(newlib)/$(FB_LDSCRIPT)
@@ -1138,13 +1131,20 @@ $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 .PHONY: headers
-headers: $(new)/include $(newinclude)
+ifndef ENABLE_STANDALONE
+headers: $(new)/include
+endif
+headers: $(newinclude)
 headers: $(HEADER_DIRS) $(HEADER_FILES)
 $(HEADER_FILES): $(newinclude)/%.bi: include/%.bi
 	$(QUIET_CP) cp $< $@
 
 .PHONY: rtlib
-rtlib: $(new) $(newlibfb) $(new)/lib $(newlib)
+rtlib: $(new) $(newlibfb)
+ifndef ENABLE_STANDALONE
+rtlib: $(new)/lib
+endif
+rtlib: $(newlib)
 rtlib: $(newlib)/fbrt0.o
 rtlib: $(newlib)/libfb.a
 ifndef DISABLE_MT
@@ -1175,7 +1175,11 @@ $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 .PHONY: gfxlib2
 gfxlib2:
 ifndef DISABLE_GFX
-gfxlib2: $(new) $(newlibfb) $(new)/lib $(newlib)
+gfxlib2: $(new) $(newlibfb)
+ifndef ENABLE_STANDALONE
+gfxlib2: $(new)/lib
+endif
+gfxlib2: $(newlib)
 gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 endif
 
