@@ -2147,11 +2147,14 @@ function cProcStmtBegin _
 		exit function
 	end if
 
-	'' STATIC can only be used with member functions
-	if( symbIsStatic( proc ) ) then
-		if( symbGetClass( symbGetNamespace( proc ) ) = FB_SYMBCLASS_NAMESPACE ) then
+	'' STATIC or CONST can only be used with member functions
+	if( symbGetClass( symbGetNamespace( proc ) ) = FB_SYMBCLASS_NAMESPACE ) then
+		if( symbIsStatic( proc ) ) then
 			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBESTATIC, TRUE )
 			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_STATIC
+		elseif( symbIsConstant( proc ) ) then
+			errReport( FB_ERRMSG_ONLYMEMBERFUNCTIONSCANBECONST, TRUE )
+			symbGetAttrib( proc ) and= not FB_SYMBATTRIB_CONST
 		end if
 	end if
 

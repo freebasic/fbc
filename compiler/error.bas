@@ -276,6 +276,7 @@ end type
 		@"An ENUM, TYPE or UNION cannot be empty", _
 		@"ENUM's declared inside EXTERN .. END EXTERN blocks don't open new scopes", _
 		@"Only member functions can be static", _
+		@"Only member functions can be const", _
 		@"Invalid initializer", _
 		@"Objects with default [con|de]structors or methods are only allowed in the module level", _
 		@"Symbol not a CLASS, ENUM, TYPE or UNION type", _
