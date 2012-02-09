@@ -32,8 +32,9 @@
 
 FBC := fbc
 CC := gcc
-CFLAGS := -O2
 AR := ar
+CFLAGS := -Wfatal-errors -O2
+FBFLAGS := -maxerr 1
 
 -include config.mk
 
@@ -268,21 +269,21 @@ ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
 endif
 FBC_EXE := fbc$(SUFFIX)$(SUFFIX2)$(EXEEXT)
 
-newcompiler := $(new)/compiler
-newlibfb    := $(new)/libfb
-newlibfbmt  := $(new)/libfbmt
-newlibfbgfx := $(new)/libfbgfx
+override newcompiler := $(new)/compiler
+override newlibfb    := $(new)/libfb
+override newlibfbmt  := $(new)/libfbmt
+override newlibfbgfx := $(new)/libfbgfx
 
 ifeq ($(TARGET_OS),dos)
   # For DOS the ldscript is always needed, to fix the c/dtors otder
-  FB_LDSCRIPT := i386go32.x
+  override FB_LDSCRIPT := i386go32.x
   # Don't build libfbmt for DOS, and also no OpenGL support in libfbgfx
   DISABLE_MT := YesPlease
   DISABLE_OPENGL := YesPlease
 else
   ifndef DISABLE_OBJINFO
     # The extra ldscript snippet for dropping .fbctinf
-    FB_LDSCRIPT := fbextra.x
+    override FB_LDSCRIPT := fbextra.x
   endif
 endif
 
@@ -307,39 +308,39 @@ ifndef TARGET_CC
   TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
-FBCFLAGS := -maxerr 1 -w pedantic -e -m fbc $(FBFLAGS)
-FBLFLAGS := -maxerr 1 -w pedantic $(FBFLAGS)
-ALLCFLAGS := -Wfatal-errors $(CFLAGS) -Wall
+ALLFBCFLAGS := -e -m fbc -w pedantic
+ALLFBLFLAGS := -e -m fbc -w pedantic
+ALLCFLAGS := -Wall
 
 # If cross-compiling, use -target
-ifneq ($(TARGET),)
-  FBCFLAGS += -target $(TARGET)
-  FBLFLAGS += -target $(TARGET)
+ifdef TARGET
+  ALLFBCFLAGS += -target $(TARGET)
+  ALLFBLFLAGS += -target $(TARGET)
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   # Increase compiler's available stack size, it uses lots of recursion
-  FBLFLAGS += -t 2048
+  ALLFBLFLAGS += -t 2048
 endif
 
 # Pass the configuration defines on to the compiler source code
 ifdef ENABLE_FBBFD
-  FBCFLAGS += -d ENABLE_FBBFD=$(ENABLE_FBBFD)
+  ALLFBCFLAGS += -d ENABLE_FBBFD=$(ENABLE_FBBFD)
 endif
 ifdef DISABLE_OBJINFO
-  FBCFLAGS += -d DISABLE_OBJINFO
+  ALLFBCFLAGS += -d DISABLE_OBJINFO
 endif
 ifdef ENABLE_PREFIX
-  FBCFLAGS += -d 'ENABLE_PREFIX="$(prefix)"'
+  ALLFBCFLAGS += -d 'ENABLE_PREFIX="$(prefix)"'
 endif
 ifdef ENABLE_STANDALONE
-  FBCFLAGS += -d ENABLE_STANDALONE
+  ALLFBCFLAGS += -d ENABLE_STANDALONE
 endif
 ifdef SUFFIX
-  FBCFLAGS += -d 'ENABLE_SUFFIX="$(SUFFIX)"'
+  ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(SUFFIX)"'
 endif
 ifdef ENABLE_TDMGCC
-  FBCFLAGS += -d ENABLE_TDMGCC
+  ALLFBCFLAGS += -d ENABLE_TDMGCC
 endif
 
 # Same for rtlib/gfxlib2
@@ -348,6 +349,23 @@ ifdef DISABLE_OPENGL
 endif
 ifdef DISABLE_X
   ALLCFLAGS += -DDISABLE_X
+endif
+
+ifdef FBCFLAGS
+  ALLFBCFLAGS += $(FBCFLAGS)
+endif
+
+ifdef FBLFLAGS
+  ALLFBLFLAGS += $(FBLFLAGS)
+endif
+
+ifdef FBFLAGS
+  ALLFBCFLAGS += $(FBFLAGS)
+  ALLFBLFLAGS += $(FBFLAGS)
+endif
+
+ifdef CFLAGS
+  ALLCFLAGS += $(CFLAGS)
 endif
 
 #
@@ -422,21 +440,21 @@ ifndef DISABLE_OBJINFO
     FBC_BFDWRAPPER := $(newcompiler)/bfd-wrapper.o
   endif
 
-  FBLFLAGS += -l bfd -l iberty
+  ALLFBLFLAGS += -l bfd -l iberty
   ifeq ($(TARGET_OS),cygwin)
-    FBLFLAGS += -l intl
+    ALLFBLFLAGS += -l intl
   endif
   ifeq ($(TARGET_OS),dos)
-    FBLFLAGS += -l intl -l z
+    ALLFBLFLAGS += -l intl -l z
   endif
   ifeq ($(TARGET_OS),freebsd)
-    FBLFLAGS += -l intl
+    ALLFBLFLAGS += -l intl
   endif
   ifeq ($(TARGET_OS),openbsd)
-    FBLFLAGS += -l intl
+    ALLFBLFLAGS += -l intl
   endif
   ifeq ($(TARGET_OS),win32)
-    FBLFLAGS += -l intl -l user32
+    ALLFBLFLAGS += -l intl -l user32
   endif
 endif
 
@@ -1117,10 +1135,10 @@ $(newlib)/i386go32.x: contrib/djgpp/i386go32.x
 	$(QUIET_CP)cp $< $@
 
 $(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
-	$(QUIET_LINK)$(FBC) $(FBLFLAGS) -x $@ $^
+	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
-	$(QUIET_FBC)$(FBC) $(FBCFLAGS) -c $< -o $@
+	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
 $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
 	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
@@ -1355,7 +1373,7 @@ help:
 	@echo "  uninstall[-component]      remove from prefix"
 	@echo "  release                    build a release package"
 	@echo "Variables, use them to..."
-	@echo "  FBFLAGS  add '-exx' or similar (affects the compiler only)"
+	@echo "  FB[C|L]FLAGS  add '-exx' or similar (affects the compiler only)"
 	@echo "  CFLAGS   override the default '-O2' (affects the runtime only)"
 	@echo "  new      use another build directory (default: 'new')"
 	@echo "  prefix   install in a specific place (default: '/usr/local')"
