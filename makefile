@@ -31,10 +31,11 @@
 #
 
 FBC := fbc
-CC := gcc
-AR := ar
 CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
+
+AR = $(TARGET_PREFIX)ar
+CC = $(TARGET_PREFIX)gcc
 
 -include config.mk
 
@@ -299,13 +300,6 @@ else
   # should be better than plain cp at replacing fbc while fbc is running.
   INSTALL_PROGRAM := install
   INSTALL_FILE := install -m 644
-endif
-
-ifndef TARGET_AR
-  TARGET_AR := $(TARGET_PREFIX)$(AR)
-endif
-ifndef TARGET_CC
-  TARGET_CC := $(TARGET_PREFIX)$(CC)
 endif
 
 ALLFBCFLAGS := -e -m fbc -w pedantic
@@ -1141,7 +1135,7 @@ $(FBC_BAS): $(newcompiler)/%.o: compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
 $(FBC_BFDWRAPPER): $(newcompiler)/%.o: compiler/%.c
-	$(QUIET_CC)$(TARGET_CC) -Wfatal-errors -Wall -c $< -o $@
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 .PHONY: headers
 headers: $(new)/include $(newinclude)
@@ -1158,25 +1152,25 @@ rtlib: $(newlibfbmt) $(newlib)/libfbmt.a
 endif
 
 $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(newlib)/libfb.a: $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)$(AR) rcs $@ $^
 
 $(LIBFB_C): $(newlibfb)/%.o: rtlib/%.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFB_S): $(newlibfb)/%.o: rtlib/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(newlib)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)$(AR) rcs $@ $^
 
 $(LIBFBMT_C): $(newlibfbmt)/%.o: rtlib/%.c $(LIBFB_H)
-	$(QUIET_CC)$(TARGET_CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
 .PHONY: gfxlib2
 gfxlib2:
@@ -1186,13 +1180,13 @@ gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 endif
 
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)$(TARGET_AR) rcs $@ $^
+	$(QUIET_AR)$(AR) rcs $@ $^
 
 $(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
-	$(QUIET_CC)$(TARGET_CC) $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
-	$(QUIET_CPPAS)$(TARGET_CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
+	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 .PHONY: install install-compiler install-headers install-rtlib install-gfxlib2
 install: install-compiler install-headers install-rtlib install-gfxlib2
@@ -1381,7 +1375,6 @@ help:
 	@echo "  SUFFIX   append a string (e.g. '-0.23') to fbc and FB directory names"
 	@echo "  SUFFIX2  append a second string (e.g. '-test') only to the fbc executable"
 	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)"
-	@echo "  TARGET_AR, TARGET_CC  specify the tools directly"
 	@echo "  V        to get to see verbose command lines used by make"
 	@echo "FreeBASIC configuration options, use them to..."
 	@echo "  ENABLE_STANDALONE  use a simpler directory layout with fbc at toplevel"
