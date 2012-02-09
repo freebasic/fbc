@@ -1142,19 +1142,17 @@ function astNewARG _
 		dtype = astGetFullType( arg )
 	end if
 
-    '' check const arg to non-const non-byval param (if not rtl)
-    if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
-
-    	if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
-    		if( symbIsParamInstance( param ) ) then
-    			errReport( FB_ERRMSG_NONCONSTUDTTOCONSTMETHOD, TRUE )
-    		else
+	'' check const arg to non-const non-byval param (if not rtl)
+	if( (symbGetIsRTL( sym ) = FALSE) or (symbGetIsRTLConst( param )) ) then
+		if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
+			if( symbIsParamInstance( param ) ) then
+				errReport( FB_ERRMSG_CONSTUDTTONONCONSTMETHOD, TRUE )
+			else
 				hParamError( parent, FB_ERRMSG_ILLEGALASSIGNMENT )
 			end if
 			exit function
 		end if
-
-    end if
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ARG, FB_DATATYPE_INVALID )

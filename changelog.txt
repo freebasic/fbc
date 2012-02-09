@@ -65,6 +65,7 @@ Version 0.24.0:
 - SWAP on strings failed/produced bad results when strings had different lengths
 - #3476021: SWAP didn't clear fixed-length string remainders
 - GFX_SHAPED_WINDOW didn't work properly on some modern Linux systems (thanks Sisophon2001 for the fix)
+- Wrong error message when calling non-const method on const UDT
 
 
 Version 0.23.0:
