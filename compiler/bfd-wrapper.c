@@ -28,7 +28,7 @@ enum fb_bfd_format {
 	fb_bfd_archive,
 	fb_bfd_core,
 	fb_bfd_type_end
-} fb_bfd_format;
+};
 
 bfd_format hMapFormat(enum fb_bfd_format format) {
 	switch (format) {
@@ -48,7 +48,7 @@ bfd_format hMapFormat(enum fb_bfd_format format) {
 enum fb_bfd_architecture {
 	fb_bfd_arch_unknown = 0,
 	fb_bfd_arch_i386
-} fb_bfd_architecture;
+};
 
 enum bfd_architecture hMapArch(enum fb_bfd_architecture arch) {
 	switch (arch) {
