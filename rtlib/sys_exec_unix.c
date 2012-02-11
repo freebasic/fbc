@@ -13,7 +13,7 @@
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
 	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
-	int i, argc = 0, res = 0, status, len_program, len_arguments;
+	int i, argc = 0, res = -1, status, len_program, len_arguments;
 	pid_t pid;
 
 	if( (program == NULL) || (program->data == NULL) ) 
@@ -69,8 +69,7 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 
 	/* scan the processed args and set pointers */
 	p = arguments;
-	for( i=1 ; i<argc; i++)
-	{
+	for( i=1 ; i<argc; i++) {
 		argv[i] = p;	/* set pointer to current argument */
 		while( *p++ );	/* skip to 1 char past next null char */
 	}
@@ -80,38 +79,26 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 	/* Launch */
 	fb_hExitConsole();
 
-	if( do_fork )
-	{
+	if( do_fork ) {
 		pid = fork();
-		if( pid != -1 )
-		{
-			if (pid == 0)
-			{
-				exit( execvp( application, argv ) );
-			}
-			else
-			{
-				if( waitpid(pid, &status, 0) > 0 )
-				{
-					if (WIFEXITED(status))
-					{
-						/* only the LSB is returned */
-						res = WEXITSTATUS(status);
-						if( res == 255 )
-							res = -1;
-					}
-					else
-						res = -1;
-				}
-				else
+		if( pid != -1 ) {
+			if (pid == 0) {
+				/* execvp() only returns if it failed */
+				execvp( application, argv );
+				/* HACK: execvp() failed, this must be communiated to the parent process *somehow*,
+				   so fb_ExecEx() can return -1 there */
+				exit( 255 );
+				/* FIXME: won't be able to tell the difference if the exec'ed program returned 255.
+				   Maybe a pipe could be used instead of the 255 exit code? Unless that's too slow/has side-effects */
+			} else if( (waitpid(pid, &status, 0) > 0) && WIFEXITED(status) ) {
+				res = WEXITSTATUS(status);
+				if( res == 255 ) {
+					/* See the HACK above */
 					res = -1;
+				}
 			}
 		}
-		else
-			res = -1;
-	}
-	else
-	{
+	} else {
 		res = execvp( application, argv );
 	}
 

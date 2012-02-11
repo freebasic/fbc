@@ -66,6 +66,7 @@ Version 0.24.0:
 - #3476021: SWAP didn't clear fixed-length string remainders
 - GFX_SHAPED_WINDOW didn't work properly on some modern Linux systems (thanks Sisophon2001 for the fix)
 - Wrong error message when calling non-const method on const UDT
+- Shell() on Unix didn't return the proper shell exit code
 
 
 Version 0.23.0:
