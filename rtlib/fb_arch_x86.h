@@ -118,5 +118,3 @@
         return len;
     }
 
-
-int fb_CpuDetect( void );

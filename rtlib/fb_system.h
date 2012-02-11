@@ -1,3 +1,4 @@
+       unsigned int fb_CpuDetect        ( void );
 FBCALL void         fb_Init             ( int argc, char **argv, int lang );
 FBCALL void         fb_End              ( int errlevel );
 FBCALL void 		fb_RtInit 			( void );

@@ -971,18 +971,22 @@ endif
 ifeq ($(TARGET_ARCH),x86_64)
   ALLCFLAGS += -DHOST_X86_64
   LIBFB_H += rtlib/fb_arch_any.h
+  LIBFB_C += cpudetect_any
 endif
 ifeq ($(TARGET_ARCH),sparc)
   ALLCFLAGS += -DHOST_SPARC
   LIBFB_H += rtlib/fb_arch_any.h
+  LIBFB_C += cpudetect_any
 endif
 ifeq ($(TARGET_ARCH),sparc64)
   ALLCFLAGS += -DHOST_SPARC64
   LIBFB_H += rtlib/fb_arch_any.h
+  LIBFB_C += cpudetect_any
 endif
 ifeq ($(TARGET_ARCH),powerpc64)
   ALLCFLAGS += -DHOST_POWERPC64
   LIBFB_H += rtlib/fb_arch_any.h
+  LIBFB_C += cpudetect_any
 endif
 
 LIBFB_C := $(patsubst %,$(newlibfb)/%.o,$(LIBFB_C))

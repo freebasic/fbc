@@ -23,8 +23,3 @@ static __inline__ size_t FB_MEMLEN( const void *s, int c, size_t n )
 	}
 	return 0;
 }
-
-static __inline__ int fb_CpuDetect( void )
-{
-	return 0;
-}
