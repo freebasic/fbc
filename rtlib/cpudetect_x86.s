@@ -7,26 +7,29 @@ detected_cpu: .long 0  /* bits  0-27: low 24 bits of feature flags (CPUID eax = 
                        /* bits 28-31: cpu family (3 = 386, 4 = 486, 5 = 586, 6 = 686) */
 
 .text
-/*:::::*/
-/* int fb_CpuDetect(void); */
+
+/* unsigned int fb_CpuDetect(void); */
+#if defined( HOST_DOS ) || defined( HOST_WIN32 ) || defined( HOST_XBOX )
 .globl _fb_CpuDetect
-.globl fb_CpuDetect
 _fb_CpuDetect:
+#else
+.globl fb_CpuDetect
 fb_CpuDetect:
+#endif
 
 	mov eax, [detected_cpu]
 	or eax, eax
 	jz detect
-	
+
 	ret /* already detected (return detected_cpu) */
-	
-detect:	
+
+detect:
 	push ebp
 	mov ebp, esp
 	push ebx
 	push edi
 	push esi
-	
+
 	/* check for CPUID availability (try toggling bit 21 of EFLAGS) */
 	pushfd
 	pop eax
@@ -62,18 +65,18 @@ cpu486_not_found:
 	popf
 	mov eax, ebx
 	jmp cpudetect_exit
-	
+
 cpuid_ok:
 	mov eax, 1
 	cpuid
 	shl eax, 20
 	and edx, 0x0FFFFFFF /* low 28 bits of feature flags */
 	or eax, edx
-	
+
 cpudetect_exit:
-	
+
 	mov [detected_cpu], eax
-	
+
 	pop	esi
 	pop	edi
 	pop	ebx
