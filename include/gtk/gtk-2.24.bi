@@ -8275,15 +8275,15 @@ DECLARE FUNCTION gtk_icon_theme_new() AS GtkIconTheme PTR
 DECLARE FUNCTION gtk_icon_theme_get_default() AS GtkIconTheme PTR
 DECLARE FUNCTION gtk_icon_theme_get_for_screen(BYVAL AS GdkScreen PTR) AS GtkIconTheme PTR
 DECLARE SUB gtk_icon_theme_set_screen(BYVAL AS GtkIconTheme PTR, BYVAL AS GdkScreen PTR)
-DECLARE SUB gtk_icon_theme_set_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS gint PTR)
-DECLARE SUB gtk_icon_theme_get_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS gchar PTR PTR PTR, BYVAL AS gint PTR PTR)
+DECLARE SUB gtk_icon_theme_set_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS gint)
+DECLARE SUB gtk_icon_theme_get_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS gchar PTR PTR PTR, BYVAL AS gint PTR)
 DECLARE SUB gtk_icon_theme_append_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_icon_theme_prepend_search_path(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR)
 DECLARE SUB gtk_icon_theme_set_custom_theme(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR)
 DECLARE FUNCTION gtk_icon_theme_has_icon(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR) AS gboolean
 DECLARE FUNCTION gtk_icon_theme_get_icon_sizes(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR) AS gint PTR
 DECLARE FUNCTION gtk_icon_theme_lookup_icon(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS GtkIconLookupFlags) AS GtkIconInfo PTR
-DECLARE FUNCTION gtk_icon_theme_choose_icon(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS gint PTR, BYVAL AS GtkIconLookupFlags PTR) AS GtkIconInfo PTR
+DECLARE FUNCTION gtk_icon_theme_choose_icon(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR PTR, BYVAL AS gint, BYVAL AS GtkIconLookupFlags) AS GtkIconInfo PTR
 DECLARE FUNCTION gtk_icon_theme_load_icon(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR, BYVAL AS gint, BYVAL AS GtkIconLookupFlags, BYVAL AS GError PTR PTR) AS GdkPixbuf PTR
 DECLARE FUNCTION gtk_icon_theme_lookup_by_gicon(BYVAL AS GtkIconTheme PTR, BYVAL AS GIcon PTR, BYVAL AS gint, BYVAL AS GtkIconLookupFlags) AS GtkIconInfo PTR
 DECLARE FUNCTION gtk_icon_theme_list_icons(BYVAL AS GtkIconTheme PTR, BYVAL AS CONST gchar PTR) AS GList PTR
