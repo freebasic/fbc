@@ -4,6 +4,7 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
+#include "../rtlib/fb_scancodes_x11.h"
 #include <unistd.h>
 
 /* Horizontal scroll wheel (6 == left, 7 == right)

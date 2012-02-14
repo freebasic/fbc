@@ -706,6 +706,9 @@ LIBFB_H += rtlib/fb_file.h
 LIBFB_H += rtlib/fb_hook.h
 LIBFB_H += rtlib/fb_math.h
 LIBFB_H += rtlib/fb_printer.h
+ifndef DISABLE_X
+  LIBFB_H += rtlib/fb_scancodes_x11.h
+endif
 LIBFB_H += rtlib/fb_serial.h
 LIBFB_H += rtlib/fb_string.h
 LIBFB_H += rtlib/fb_system.h
@@ -932,9 +935,12 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
     io_locate_unix io_pageset_stub io_pcopy_stub \
     io_printbuff_unix io_printbuff_wstr_unix io_printer_unix \
     io_scroll_unix io_width_unix io_xfocus_unix \
-    scancodes_unix \
     sys_dylib_unix sys_exec_unix \
     thread_cond_unix thread_core_unix
+
+  ifndef DISABLE_X
+    LIBFB_C += scancodes_x11
+  endif
 endif
 
 ifneq ($(filter cygwin win32,$(TARGET_OS)),)

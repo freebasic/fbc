@@ -13,6 +13,8 @@ static int keyboard_init(void);
 static void keyboard_exit(void);
 
 #ifndef DISABLE_X
+#include "fb_scancodes_x11.h"
+
 typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
 typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);

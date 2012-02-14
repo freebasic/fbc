@@ -7,11 +7,6 @@
 #include <dlfcn.h>
 #include <pthread.h>
 
-#ifndef DISABLE_X
-#include <X11/Xlib.h>
-#include <X11/keysym.h>
-#endif
-
 #include <termcap.h>
 
 #include <sys/io.h>
@@ -161,11 +156,3 @@ int fb_hXTermHasFocus(void);
 int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
 int fb_hInitConsole(void);
 void fb_hExitConsole(void);
-
-#ifndef DISABLE_X
-typedef struct KeysymToScancode {
-	KeySym keysym;
-	int scancode;
-} KeysymToScancode;
-extern const KeysymToScancode fb_keysym_to_scancode[];
-#endif
