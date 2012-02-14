@@ -2,10 +2,12 @@
 
 #include "fb_gfx.h"
 
+#ifndef BI_RGB
 #define BI_RGB          0
 #define BI_RLE8         1
 #define BI_RLE4         2
 #define BI_BITFIELDS    3
+#endif
 
 static inline int fread_16_le(uint16_t *buf, FILE *f)
 {
@@ -155,8 +157,6 @@ static void convert_bf_32to32(const unsigned char *src, unsigned char *dest, int
 	}
 }
 
-
-/*:::::*/
 static int load_bmp(FB_GFXCTX *ctx, FILE *f, void *dest, void *pal, int usenewheader)
 {
 	uint16_t bfType;
@@ -441,8 +441,6 @@ exit_error:
 	return result;
 }
 
-
-/*:::::*/
 static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader)
 {
 	FILE *f;
@@ -529,13 +527,11 @@ static int gfx_bload(FBSTRING *filename, void *dest, void *pal, int usenewheader
 	return fb_ErrorSetNum( result );
 }
 
-/*:::::*/
 FBCALL int fb_GfxBload(FBSTRING *filename, void *dest, void *pal)
 {
 	return gfx_bload( filename, dest, pal, TRUE );
 }
 
-/*:::::*/
 FBCALL int fb_GfxBloadQB(FBSTRING *filename, void *dest, void *pal)
 {
 	return gfx_bload( filename, dest, pal, FALSE );
