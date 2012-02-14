@@ -32,18 +32,23 @@
 #define MONITOR_DEFAULTTONEAREST 0x00000002
 #endif
 
-typedef struct FLASHWINFO {
+/* This must match the original FLASHWINFO from the Win32 headers.
+   MinGW-w64 declares it *all* the time, while MinGW does it only if the
+   proper _WIN32_WINNT was set, but we do not want to do that. And since we
+   cannot check for a struct using #ifdef, we have to use our own renamed
+   version of it. */
+typedef struct {
 	UINT cbSize;
 	HWND hwnd;
 	DWORD dwFlags;
 	UINT uCount;
 	DWORD dwTimeout;
-} FLASHWINFO, *PFLASHWINFO;
+} FB_FLASHWINFO, *PFB_FLASHWINFO;
 
 typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 typedef HMONITOR (WINAPI *MONITORFROMWINDOW)(HWND hwnd, DWORD dwFlags);
 typedef HMONITOR (WINAPI *MONITORFROMPOINT)(POINT pt, DWORD dwFlags);
-typedef BOOL (WINAPI *FLASHWINDOWEX)(PFLASHWINFO pwfi);
+typedef BOOL (WINAPI *FLASHWINDOWEX)(PFB_FLASHWINFO pwfi);
 typedef BOOL (WINAPI *_TRACKMOUSEEVENT)(TRACKMOUSEEVENT *);
 typedef BOOL (WINAPI *GETMONITORINFO)(HMONITOR hMonitor, LPMONITORINFO lpmi);
 typedef LONG (WINAPI *CHANGEDISPLAYSETTINGSEX)(LPCTSTR lpszDeviceName, LPDEVMODE lpDevMode, HWND hwnd, DWORD dwflags, LPVOID lParam);
@@ -77,14 +82,12 @@ typedef struct WIN32DRIVER
 	CHANGEDISPLAYSETTINGSEX ChangeDisplaySettingsEx;
 } WIN32DRIVER;
 
-
 extern WIN32DRIVER fb_win32;
 #ifndef HOST_CYGWIN
 extern GFXDRIVER fb_gfxDriverDirectDraw;
 #endif
 extern GFXDRIVER fb_gfxDriverGDI;
 extern GFXDRIVER fb_gfxDriverOpenGL;
-
 
 extern LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 extern void fb_hHandleMessages(void);

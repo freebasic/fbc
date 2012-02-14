@@ -75,7 +75,7 @@ static HANDLE vsync_event = NULL;
 static void restore_surfaces(void)
 {
 	HRESULT result;
-	FLASHWINFO fwinfo;
+	FB_FLASHWINFO fwinfo;
 
 	result = IDirectDrawSurface_IsLost(lpDDS);
 	while (result == DDERR_SURFACELOST) {
