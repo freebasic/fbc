@@ -1109,21 +1109,7 @@ $(sort $(new) $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) \
 	mkdir $@
 
 .PHONY: compiler
-compiler: $(new) $(newcompiler) $(newbin)
-ifndef ENABLE_STANDALONE
-compiler: $(new)/lib
-endif
-compiler: $(newlib)
-compiler: $(newbin)/$(FBC_EXE)
-ifdef FB_LDSCRIPT
-compiler: $(newlib)/$(FB_LDSCRIPT)
-endif
-
-$(newlib)/fbextra.x: compiler/fbextra.x
-	$(QUIET_CP)cp $< $@
-
-$(newlib)/i386go32.x: contrib/djgpp/i386go32.x
-	$(QUIET_CP)cp $< $@
+compiler: $(new) $(newcompiler) $(newbin) $(newbin)/$(FBC_EXE)
 
 $(newbin)/$(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
@@ -1149,11 +1135,20 @@ ifndef ENABLE_STANDALONE
 rtlib: $(new)/lib
 endif
 rtlib: $(newlib)
+ifdef FB_LDSCRIPT
+rtlib: $(newlib)/$(FB_LDSCRIPT)
+endif
 rtlib: $(newlib)/fbrt0.o
 rtlib: $(newlib)/libfb.a
 ifndef DISABLE_MT
 rtlib: $(newlibfbmt) $(newlib)/libfbmt.a
 endif
+
+$(newlib)/fbextra.x: rtlib/fbextra.x
+	$(QUIET_CP)cp $< $@
+
+$(newlib)/i386go32.x: contrib/djgpp/i386go32.x
+	$(QUIET_CP)cp $< $@
 
 $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
@@ -1199,11 +1194,8 @@ $(LIBFBGFX_S): $(newlibfbgfx)/%.o: gfxlib2/%.s $(LIBFBGFX_H)
 .PHONY: install install-compiler install-headers install-rtlib install-gfxlib2
 install: install-compiler install-headers install-rtlib install-gfxlib2
 
-install-compiler: $(prefixbin) $(prefixlib)
+install-compiler: $(prefixbin)
 	$(INSTALL_PROGRAM) $(newbin)/$(FBC_EXE) $(prefixbin)/
-  ifdef FB_LDSCRIPT
-	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
-  endif
 
 ifdef ENABLE_STANDALONE
 install-headers: $(prefixinclude)
@@ -1214,6 +1206,9 @@ install-headers:
 endif
 
 install-rtlib: $(prefixlib)
+  ifdef FB_LDSCRIPT
+	$(INSTALL_FILE) $(newlib)/$(FB_LDSCRIPT) $(prefixlib)/
+  endif
 	$(INSTALL_FILE) $(newlib)/fbrt0.o $(newlib)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(newlib)/libfbmt.a $(prefixlib)/
@@ -1234,9 +1229,6 @@ uninstall: uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib
 
 uninstall-compiler:
 	rm -f $(prefixbin)/$(FBC_EXE)
-  ifdef FB_LDSCRIPT
-	rm -f $(prefixlib)/$(FB_LDSCRIPT)
-  endif
 
 uninstall-headers:
   ifdef ENABLE_STANDALONE
@@ -1246,6 +1238,9 @@ uninstall-headers:
   endif
 
 uninstall-rtlib:
+  ifdef FB_LDSCRIPT
+	rm -f $(prefixlib)/$(FB_LDSCRIPT)
+  endif
 	rm -f $(prefixlib)/fbrt0.o $(prefixlib)/libfb.a
   ifndef DISABLE_MT
 	rm -f $(prefixlib)/libfbmt.a
@@ -1269,9 +1264,6 @@ clean: clean-compiler clean-headers clean-rtlib clean-gfxlib2
 
 clean-compiler:
 	rm -f $(newbin)/$(FBC_EXE) $(newcompiler)/*.o
-  ifdef FB_LDSCRIPT
-	rm -f $(newlib)/$(FB_LDSCRIPT)
-  endif
 	-rmdir $(newcompiler)
 
 clean-headers:
@@ -1281,6 +1273,9 @@ clean-headers:
   endif
 
 clean-rtlib:
+  ifdef FB_LDSCRIPT
+	rm -f $(newlib)/$(FB_LDSCRIPT)
+  endif
 	rm -f $(newlib)/fbrt0.o $(newlib)/libfb.a $(newlibfb)/*.o
 	-rmdir $(newlibfb)
   ifndef DISABLE_MT
