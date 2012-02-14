@@ -3,9 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
+typedef struct {
+	int in_use;
+	int attrib;
+#ifdef HOST_CYGWIN
+	WIN32_FIND_DATA data;
+	HANDLE handle;
+#else
+	struct _finddata_t data;
+	long handle;
+#endif
+} FB_DIRCTX;
 
-
-/*:::::*/
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
@@ -17,8 +26,6 @@ static void close_dir ( void )
 	ctx->in_use = FALSE;
 }
 
-
-/*:::::*/
 static char *find_next ( int *attrib )
 {
 	char *name = NULL;
@@ -55,8 +62,6 @@ static char *find_next ( int *attrib )
 	return name;
 }
 
-
-/*:::::*/
 FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 {
 	FB_DIRCTX *ctx;
@@ -150,7 +155,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 	return res;
 }
 
-/*:::::*/
 FBCALL FBSTRING *fb_DirNext ( int *attrib )
 {
 	static FBSTRING fname = { 0 };

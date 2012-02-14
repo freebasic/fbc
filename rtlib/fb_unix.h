@@ -31,15 +31,6 @@
 
 #define FB_LL_FMTMOD "ll"
 
-typedef struct _FB_DIRCTX
-{
-	int in_use;
-	int attrib;
-	DIR *dir;
-	char filespec[MAX_PATH];
-	char dirname[MAX_PATH];
-} FB_DIRCTX;
-
 #ifdef ENABLE_MT
 	extern pthread_mutex_t __fb_global_mutex;
 	extern pthread_mutex_t __fb_string_mutex;

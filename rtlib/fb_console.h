@@ -19,12 +19,6 @@
 #define FB_PRINT_APPEND_SPACE 0x00000010
 #define FB_PRINT_ISLAST       0x80000000     /* only for USING */
 
-typedef struct _FB_PRINTUSGCTX {
-    int     		chars;
-    char 			*ptr;
-    FBSTRING		fmtstr;
-} FB_PRINTUSGCTX;
-
 /** Small helper function that converts a TEXT new-line to a BINARY new-line.
  *
  * This is required for all the LPRINT functions.

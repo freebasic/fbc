@@ -15,7 +15,6 @@
 
 #define FB_LL_FMTMOD "ll"
 
-typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 #define FB_LOCK()
 #define FB_UNLOCK()
 #define FB_STRLOCK()

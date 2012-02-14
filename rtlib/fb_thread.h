@@ -1,7 +1,6 @@
 typedef void (FBCALL *FB_THREADPROC)( void *param );
 
-typedef struct
-{
+typedef struct {
 	FB_THREADID   id;
 	FB_THREADPROC proc;
 	void         *param;
@@ -33,21 +32,12 @@ enum {
 	FB_TLSKEY_DIR,
 	FB_TLSKEY_INPUT,
 	FB_TLSKEY_PRINTUSG,
-
 	FB_TLSKEY_GFX,
-	
 	FB_TLSKEYS
 };
 
-enum {
-	FB_TLSLEN_ERROR 	= sizeof( FB_ERRORCTX ),
-	FB_TLSLEN_DIR		= sizeof( FB_DIRCTX ),
-	FB_TLSLEN_INPUT		= sizeof( FB_INPUTCTX ),
-	FB_TLSLEN_PRINTUSG  = sizeof( FB_PRINTUSGCTX ),
-};
+FBCALL void             *fb_TlsGetCtx   ( int index, int len );
+FBCALL void              fb_TlsDelCtx   ( int index );
+FBCALL void              fb_TlsFreeCtxTb( void );
 
-FBCALL void		   *fb_TlsGetCtx		( int index, int len );
-FBCALL void			fb_TlsDelCtx		( int index );
-FBCALL void 		fb_TlsFreeCtxTb		( void );
-
-#define FB_TLSGETCTX(id) (FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, FB_TLSLEN_##id );
+#define FB_TLSGETCTX(id) (FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, sizeof( FB_##id##CTX ) );

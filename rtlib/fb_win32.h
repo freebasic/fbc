@@ -25,19 +25,6 @@
 #define FB_LL_FMTMOD "I64"
 #endif
 
-typedef struct _FB_DIRCTX
-{
-	int in_use;
-	int attrib;
-#ifdef HOST_CYGWIN
-	WIN32_FIND_DATA data;
-	HANDLE handle;
-#else
-	struct _finddata_t data;
-	long handle;
-#endif
-} FB_DIRCTX;
-
 #ifdef ENABLE_MT
 	extern CRITICAL_SECTION __fb_global_mutex;
 	extern CRITICAL_SECTION __fb_string_mutex;

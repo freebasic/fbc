@@ -20,13 +20,6 @@
 
 #define FB_LL_FMTMOD "ll"
 
-typedef struct _FB_DIRCTX
-{
-	int in_use;
-	int attrib;
-	struct ffblk f;
-} FB_DIRCTX;
-
 #define FB_LOCK()
 #define FB_UNLOCK()
 #define FB_STRLOCK()
