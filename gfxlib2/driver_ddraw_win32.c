@@ -9,18 +9,9 @@
 #include <ddraw.h>
 #include <dinput.h>
 
-#define DX_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) const GUID n GUID_SECT = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
-
-/* These are taken off the DirectX headers */
-DX_GUID( IID_IDirectDraw2, 0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
-DX_GUID( GUID_Key,         0x55728220,0xD33C,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-DX_GUID( GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
-
-
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_wait_vsync(void);
 static int *driver_fetch_modes(int depth, int *size);
-
 
 GFXDRIVER fb_gfxDriverDirectDraw =
 {
@@ -40,7 +31,6 @@ GFXDRIVER fb_gfxDriverDirectDraw =
 	NULL			/* void (*poll_events)(void); */
 };
 
-
 typedef struct MODESLIST {
 	int depth;
 	int size;
@@ -54,7 +44,6 @@ typedef struct DEVENUMDATA {
 
 static int directx_init(void);
 static void directx_exit(void);
-
 
 /* We don't want to directly link with DDRAW.DLL and DINPUT.DLL,
  * as this way generated exes will not depend on them to run.
@@ -83,13 +72,11 @@ static RECT rect;
 static int win_x, win_y, display_offset, wait_vsync = FALSE;
 static HANDLE vsync_event = NULL;
 
-
-/*:::::*/
 static void restore_surfaces(void)
 {
 	HRESULT result;
 	FLASHWINFO fwinfo;
-	
+
 	result = IDirectDrawSurface_IsLost(lpDDS);
 	while (result == DDERR_SURFACELOST) {
 		if (lpDDS_back != lpDDS)
@@ -115,8 +102,6 @@ static void restore_surfaces(void)
 	}
 }
 
-
-/*:::::*/
 static void directx_paint(void)
 {
 	RECT src, dest;
@@ -142,8 +127,6 @@ static void directx_paint(void)
 	} while (result == DDERR_SURFACELOST);
 }
 
-
-/*:::::*/
 static int calc_comp_height( int h )
 {
 	if( h < 240 )
@@ -160,7 +143,6 @@ static int calc_comp_height( int h )
 		return 0;
 }
 
-/*:::::*/
 static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, LPSTR lpDriverName, LPVOID lpContext, HMONITOR hm)
 {
 	if (hm == fb_win32.monitor && lpGUID) {
@@ -171,7 +153,6 @@ static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, 
 		return 1;
 }
 
-/*:::::*/
 static int directx_init(void)
 {
 	LPDIRECTDRAW lpDD1 = NULL;
@@ -355,8 +336,6 @@ static int directx_init(void)
 	return 0;
 }
 
-
-/*:::::*/
 static void directx_exit(void)
 {
 	DDBLTFX bltfx;
@@ -420,8 +399,6 @@ static void directx_exit(void)
 	}
 }
 
-
-/*:::::*/
 static void directx_thread(HANDLE running_event)
 {
 	DDSURFACEDESC desc;
@@ -481,8 +458,6 @@ static void directx_thread(HANDLE running_event)
 	}
 }
 
-
-/*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
@@ -500,8 +475,6 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }
 
-
-/*:::::*/
 static void driver_wait_vsync(void)
 {
 	ResetEvent(vsync_event);
@@ -513,8 +486,6 @@ static void driver_wait_vsync(void)
 	SetEvent(vsync_event);
 }
 
-
-/*:::::*/
 static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 {
 	MODESLIST *modes = (MODESLIST *)data;
@@ -531,8 +502,6 @@ static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 	return DDENUMRET_OK;
 }
 
-
-/*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
 	MODESLIST modes = { depth, 0, NULL };
