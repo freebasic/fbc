@@ -11,13 +11,6 @@ extern "C" {
 
 #define FBGL_EXTENSIONS_STRING_SIZE		16384
 
-#define FBGL_TEXTURE					0x1
-#define FBGL_BLEND						0x2
-
-#ifndef GL_BGRA
-#define GL_BGRA   0x80E1
-#endif
-
 #ifndef GL_ARB_multisample
 #define GL_ARB_multisample
 #define GL_MULTISAMPLE_ARB              0x809D
@@ -77,6 +70,8 @@ typedef struct FB_GL_PARAMS {
 	int num_samples;
 } FB_GL_PARAMS;
 
+extern FB_GL __fb_gl;
+extern FB_GL_PARAMS __fb_gl_params;
 
 #ifdef __cplusplus
 }

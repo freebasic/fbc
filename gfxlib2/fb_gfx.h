@@ -9,10 +9,6 @@
 extern "C" {
 #endif
 
-#ifndef DISABLE_OPENGL
-#include "fb_gfx_gl.h"
-#endif
-
 #ifdef PI
 #undef PI
 #endif
@@ -489,11 +485,7 @@ struct _PUT_HEADER {
 	unsigned int width;
 	unsigned int height;
 	unsigned int pitch;
-#ifndef DISABLE_OPENGL
-	GLuint tex;
-#else
-	unsigned int no_tex;
-#endif
+	unsigned int tex;
 	char _reserved[8];
 	unsigned char data[0];
 } __attribute__((__packed__));
@@ -511,10 +503,6 @@ extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *__fb_color_conv_16to32;
 extern char *__fb_window_title;
-#ifndef DISABLE_OPENGL
-extern FB_GL __fb_gl;
-extern FB_GL_PARAMS __fb_gl_params;
-#endif
 #include "fb_gfx_data.h"
 
 /* Internal functions */

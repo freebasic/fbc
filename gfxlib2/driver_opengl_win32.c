@@ -2,7 +2,7 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
-#include <GL/GL.h>
+#include "fb_gfx_gl.h"
 
 #ifndef WGL_ARB_pixel_format
 #define WGL_ARB_pixel_format

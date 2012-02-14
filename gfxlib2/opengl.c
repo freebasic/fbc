@@ -1,8 +1,14 @@
 /* OpenGL core support functions */
 
 #include "fb_gfx.h"
-#include <GL/gl.h>
+#include "fb_gfx_gl.h"
 
+#define FBGL_TEXTURE 0x1
+#define FBGL_BLEND   0x2
+
+#ifndef GL_BGRA
+#define GL_BGRA   0x80E1
+#endif
 
 FB_GL __fb_gl;
 FB_GL_PARAMS __fb_gl_params = { 0 };

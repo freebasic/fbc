@@ -4,6 +4,7 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
+#include "fb_gfx_gl.h"
 #include <GL/glx.h>
 
 /* For compatibility with old Mesa headers */

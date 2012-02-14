@@ -1,6 +1,9 @@
 /* Screen states getter/setter routines. */
 
 #include "fb_gfx.h"
+#ifndef DISABLE_OPENGL
+#include "fb_gfx_gl.h"
+#endif
 
 
 /*:::::*/
