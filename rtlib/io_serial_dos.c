@@ -125,7 +125,7 @@ static int UART_set_data_format( unsigned int baseaddr,
 	int parity, int data, int stop );
 static int comm_isr( unsigned irq );
 static int comm_init( int com_num, unsigned int baseaddr, int irq );
-static int comm_exit( int com_num );
+static void comm_exit( int com_num );
 
 #ifndef FB_MANAGED_IRQ	
 
@@ -710,14 +710,13 @@ static int comm_init( int com_num, unsigned int baseaddr, int irq )
 	return TRUE;
 }
 
-static int comm_exit( int com_num )
+static void comm_exit( int com_num )
 {
 	comm_props_t *cp;
 	irq_props_t *ip;
 	int tmp, i;
 
-	if( com_num < 1 || com_num > MAX_COMM )
-		return FALSE;
+	DBG_ASSERT( com_num >= 1 && com_num < MAX_COMM );
 
 	cp = COMM_PROPS(com_num);
 
@@ -776,8 +775,6 @@ static int comm_exit( int com_num )
 		ip->usecount--;
 
 	comm_init_release();
-
-	return TRUE;
 }
 
 
@@ -851,7 +848,6 @@ int comm_open( int com_num,
 int comm_close( int com_num )
 {
 	comm_props_t *cp;
-	int ret;
 
 	if( com_num < 1 || com_num > MAX_COMM )
 		return FALSE;
@@ -861,7 +857,7 @@ int comm_close( int com_num )
 	if( cp->inuse == FALSE )
 		return FALSE;
 
-	ret = comm_exit( com_num );
+	comm_exit( com_num );
 
 	cp->inuse = FALSE;
 
