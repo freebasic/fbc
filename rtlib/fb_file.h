@@ -123,13 +123,6 @@ typedef struct _FB_INPUTCTX {
 } FB_INPUTCTX;
 
 
-typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
-                                     unsigned open_mode,
-                                     unsigned access_mode,
-                                     unsigned lock_mode,
-                                     int rec_len,
-                                     FnFileOpen *pfnFileOpen );
-
 #define FB_FILE_TO_HANDLE_VALID( index ) \
 	((struct _FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES))
 

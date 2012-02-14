@@ -283,7 +283,6 @@ typedef struct FB_RTLIB_CTX_ {
 	char          **argv;
 	FBSTRING        null_desc;
 	char           *error_msg;
-	FnDevOpenHook   pfnDevOpenHook;
 	FB_HOOKSTB      hooks;
 	FB_TLSENTRY     tls_ctxtb[FB_TLSKEYS];
 	FB_FILE         fileTB[FB_MAX_FILES];
