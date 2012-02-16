@@ -101,9 +101,6 @@
 	#define fseeko fseeko64
 	#define ftello ftello64
 
-	/* We want to use the native msvcrt _mkdir() instead of MinGW's
-	   "oldname" wrapper mkdir(), that's also why we're compiling with
-	   -D_NO_OLDNAMES. */
 	#define chdir _chdir
 	/* Note the special case for mkdir: the second parameter will be
 	   ignored, since the Windows function doesn't have it */

@@ -883,10 +883,8 @@ endif
 
 ifeq ($(TARGET_OS),win32)
   ALLCFLAGS += -DHOST_MINGW
-  # This #define causes some MinGW functions (including those from libmoldname)
-  # to be unavailable, effectively forcing the runtime to be coded using just
-  # msvcrt (or mostly anyways).
-  ALLCFLAGS += -D_NO_OLDNAMES
+  # We prefer using non-oldnames functions, see also rtlib/fb_win32.h
+  ALLCFLAGS += -DNO_OLDNAMES -D_NO_OLDNAMES
 endif
 
 ifeq ($(TARGET_OS),solaris)
