@@ -1,6 +1,5 @@
 /* common Win32 definitions. */
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <io.h>
 

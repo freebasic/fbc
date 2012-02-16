@@ -885,6 +885,8 @@ ifeq ($(TARGET_OS),win32)
   ALLCFLAGS += -DHOST_MINGW
   # We prefer using non-oldnames functions, see also rtlib/fb_win32.h
   ALLCFLAGS += -DNO_OLDNAMES -D_NO_OLDNAMES
+  # Include some less Windows headers
+  ALLCFLAGS += -DWIN32_LEAN_AND_MEAN
 endif
 
 ifeq ($(TARGET_OS),solaris)

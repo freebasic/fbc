@@ -3,7 +3,6 @@
 #ifndef __FB_GFX_WIN32_H__
 #define __FB_GFX_WIN32_H__
 
-#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
 #ifndef WM_XBUTTONDOWN
