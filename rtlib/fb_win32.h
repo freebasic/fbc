@@ -65,11 +65,7 @@ typedef struct {
 struct _FBCOND;
 typedef struct _FBCOND FBCOND;
 
-#ifdef HOST_CYGWIN
-typedef _off64_t fb_off_t;
-#else
-typedef off64_t fb_off_t;
-#endif
+typedef long long fb_off_t;
 
 #define FB_COLOR_BLACK 		(0)
 #define FB_COLOR_BLUE   	(FOREGROUND_BLUE)
