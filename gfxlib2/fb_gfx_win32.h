@@ -6,14 +6,13 @@
 #include <windows.h>
 
 #ifndef WM_XBUTTONDOWN
-#ifdef WM_MOUSELAST
-#undef WM_MOUSELAST
-#endif
 #define WM_XBUTTONDOWN 523
 #define WM_XBUTTONUP 524
 #define WM_XBUTTONDBLCLK 525
+#endif
+
+#ifndef WM_MOUSEHWHEEL
 #define WM_MOUSEHWHEEL 526
-#define WM_MOUSELAST 527
 #endif
 
 #ifndef MK_XBUTTON1
