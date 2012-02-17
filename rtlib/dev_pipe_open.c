@@ -71,7 +71,11 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     if( res == FB_RTERROR_OK ) 
     {
         /* try to open/create pipe */
+#ifdef HOST_MINGW
+        if( (fp = _popen( fname, openmask )) == NULL )
+#else
         if( (fp = popen( fname, openmask )) == NULL )
+#endif
         {
             res = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }

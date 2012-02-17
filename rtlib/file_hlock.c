@@ -2,6 +2,11 @@
 
 #include "fb.h"
 
+#if defined HOST_MINGW
+	#define fileno _fileno
+	#define get_osfhandle _get_osfhandle
+#endif
+
 #if defined( HOST_UNIX )
 static int do_lock(FILE *f, int lock, fb_off_t inipos, fb_off_t size)
 {

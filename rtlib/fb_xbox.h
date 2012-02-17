@@ -28,6 +28,8 @@ typedef struct _FBMUTEX FBMUTEX;
 struct _FBCOND;
 typedef struct _FBCOND FBCOND;
 typedef long fb_off_t;
+#define fseeko(stream, offset, whence) fseek(stream, offset, whence)
+#define ftello(stream)                 ftell(stream)
 
 /* WinNT constants - !!!FIXME!!! these belong in openxdk headers */
 #define Executive 0

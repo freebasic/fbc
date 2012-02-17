@@ -37,7 +37,12 @@ typedef struct _FBMUTEX FBMUTEX;
 /* Fake unimplemented FBCOND type */
 struct _FBCOND;
 typedef struct _FBCOND FBCOND;
+
+/* In DJGPP we don't use fseeko() at all, the DJGPP semi-2.04 setup used for
+   FB doesn't even seem to have it. */
 typedef long fb_off_t;
+#define fseeko(stream, offset, whence) fseek(stream, offset, whence)
+#define ftello(stream)                 ftell(stream)
 
 #define FB_COLOR_BLACK 		(0)
 #define FB_COLOR_BLUE   	(1)

@@ -47,7 +47,11 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 
 	if( (str != NULL) && (str->data != NULL) )
 	{
+#ifdef HOST_MINGW
+		res = _putenv( str->data );
+#else
 		res = putenv( str->data );
+#endif
 	}
 
 	/* del if temp */

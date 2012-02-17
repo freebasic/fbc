@@ -96,31 +96,6 @@
 	#error Unexpected target
 #endif
 
-#if defined( HOST_MINGW )
-	/* MinGW doesn't recognize _FILE_OFFSET_BITS, so we this manually */
-	#define fseeko fseeko64
-	#define ftello ftello64
-
-	#define chdir _chdir
-	/* Note the special case for mkdir: the second parameter will be
-	   ignored, since the Windows function doesn't have it */
-	#define mkdir(x, y) _mkdir(x)
-	#define pclose _pclose
-	#define popen _popen
-	#define putenv _putenv
-	#define rmdir _rmdir
-	#define snprintf _snprintf
-	#define strdup _strdup
-	#define strcasecmp _stricmp
-	#define strncasecmp _strnicmp
-	#define get_osfhandle _get_osfhandle
-	#define fileno _fileno
-#elif defined( HOST_DOS )
-	/* In DJGPP we didn't use fseeko() at all (the DJGPP semi-2.04 setup
-	   used for FB doesn't seem to have it) */
-	#define fseeko(x, y, z) fseek(x, y, z)
-	#define ftello(x)       ftell(x)
-#endif
 
 /* CPU-dependent macros and inline functions */
 #ifdef HOST_X86

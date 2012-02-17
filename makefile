@@ -922,7 +922,7 @@ endif
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   ALLCFLAGS += -DHOST_UNIX
 
-  # This causes fopen/fseeko/... to be mapped to fopen64/fseeko64/
+  # This causes off_t/fopen/fseeko/... to be mapped to their 64bit versions
   ALLCFLAGS += -D_FILE_OFFSET_BITS=64
 
   LIBFB_H += rtlib/fb_unix.h

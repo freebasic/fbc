@@ -11,7 +11,11 @@ int fb_DevPipeClose( struct _FB_FILE *handle )
 
 	fp = (FILE*) handle->opaque;
 	if( fp != NULL ) {
+#ifdef HOST_MINGW
+		_pclose( fp );
+#else
 		pclose( fp );
+#endif
 	}
 
 	handle->opaque = NULL;

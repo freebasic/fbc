@@ -66,6 +66,10 @@ typedef struct {
 struct _FBCOND;
 typedef struct _FBCOND FBCOND;
 
+/* Relying on -D_FILE_OFFSET_BITS=64 to transparently remap to off64_t */
+#if !defined _FILE_OFFSET_BITS || _FILE_OFFSET_BITS != 64
+#error Expected _FILE_OFFSET_BITS=64
+#endif
 typedef off_t fb_off_t;
 
 #define INIT_CONSOLE		1
