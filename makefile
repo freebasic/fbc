@@ -156,6 +156,9 @@ ifdef TARGET
     ifneq ($(filter djgpp%,$(triplet_os)),)
       TARGET_OS := dos
     endif
+    ifneq ($(filter msdos%,$(triplet_os)),)
+      TARGET_OS := dos
+    endif
     ifneq ($(filter freebsd%,$(triplet_os)),)
       TARGET_OS := freebsd
     endif
