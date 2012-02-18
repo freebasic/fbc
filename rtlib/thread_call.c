@@ -21,7 +21,8 @@
 
 #include "fb.h"
 
-#ifdef HOST_DOS
+/* TODO: Add support for non-x86 */
+#if defined HOST_DOS || !defined HOST_X86
 
 FBTHREAD *fb_ThreadCall( void *proc, int abi, int stack_size, int num_args, ... )
 {
