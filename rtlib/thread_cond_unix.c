@@ -3,10 +3,9 @@
 #include <pthread.h>
 #include "fb.h"
 
-typedef struct _FBCOND
-{
+struct _FBCOND {
 	pthread_cond_t id;
-} FBCOND;
+};
 
 
 /*:::::*/

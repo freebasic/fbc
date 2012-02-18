@@ -7,7 +7,7 @@
 #define SIGNAL		0
 #define BROADCAST	1
 
-typedef struct _FBCOND {
+struct _FBCOND {
 	/* data common to both implementations */
 	int waiters_count;
 	CRITICAL_SECTION waiters_count_lock;
@@ -23,7 +23,7 @@ typedef struct _FBCOND {
 			BOOL was_broadcast;
 		} nt;
 	};
-} FBCOND;
+};
 
 typedef struct _FBCONDOPS
 {
