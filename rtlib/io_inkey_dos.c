@@ -1,6 +1,7 @@
 /* inkey$ function for DOS console mode apps */
 
 #include "fb.h"
+#include <conio.h>
 
 /*:::::*/
 FBSTRING *fb_ConsoleInkey( void )

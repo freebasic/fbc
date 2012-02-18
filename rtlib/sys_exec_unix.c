@@ -1,13 +1,8 @@
 /* exec function for Linux */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-
 #include "fb.h"
+#include "fb_private_console.h"
+#include <sys/wait.h>
 
 /*:::::*/
 FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )

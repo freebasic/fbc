@@ -1,6 +1,7 @@
 /* settime function */
 
 #include "fb.h"
+#include <ctype.h>
 
 /*:::::*/
 FBCALL int fb_SetTime( FBSTRING *time )

@@ -3,6 +3,7 @@
  */
 
 #include "fb.h"
+#include "fb_private_thread.h"
 
 #define SIGNAL		0
 #define BROADCAST	1

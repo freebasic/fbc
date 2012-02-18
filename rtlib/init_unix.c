@@ -1,12 +1,13 @@
 /* libfb initialization for Unix */
 
 #include "fb.h"
-
-#ifdef ENABLE_MT
-pthread_mutex_t __fb_global_mutex;
-pthread_mutex_t __fb_string_mutex;
-extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
-#endif
+#include "fb_private_console.h"
+#include "fb_private_thread.h"
+#include <signal.h>
+#include <termcap.h>
+#include <sys/io.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
 
 FBCONSOLE __fb_con;
 
@@ -15,8 +16,22 @@ static SIGHANDLER old_sighandler[NSIG];
 static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB",
 							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
 
+static pthread_t __fb_bg_thread;
+static pthread_mutex_t __fb_bg_mutex;
+FBCALL void fb_BgLock   ( void ) { pthread_mutex_lock  ( &__fb_bg_mutex     ); }
+FBCALL void fb_BgUnlock ( void ) { pthread_mutex_unlock( &__fb_bg_mutex     ); }
 
-/*:::::*/
+#ifdef ENABLE_MT
+extern int pthread_mutexattr_settype(pthread_mutexattr_t *attr, int kind);
+
+static pthread_mutex_t __fb_global_mutex;
+static pthread_mutex_t __fb_string_mutex;
+FBCALL void fb_Lock     ( void ) { pthread_mutex_lock  ( &__fb_global_mutex ); }
+FBCALL void fb_Unlock   ( void ) { pthread_mutex_unlock( &__fb_global_mutex ); }
+FBCALL void fb_StrLock  ( void ) { pthread_mutex_lock  ( &__fb_string_mutex ); }
+FBCALL void fb_StrUnlock( void ) { pthread_mutex_unlock( &__fb_string_mutex ); }
+#endif
+
 static void *bg_thread(void *arg)
 {
 	while (__fb_con.inited) {
@@ -33,26 +48,18 @@ static void *bg_thread(void *arg)
 	return NULL;
 }
 
-
-/*:::::*/
 static int default_getch(void)
 {
 	return fgetc(__fb_con.f_in);
 }
 
-
-/*:::::*/
 static void signal_handler(int sig)
 {
 	signal(sig, old_sighandler[sig]);
-
 	fb_hEnd(1);
-
 	raise(sig);
 }
 
-
-/*:::::*/
 static void console_resize(int sig)
 {
 	unsigned char *char_buffer, *attr_buffer;
@@ -106,8 +113,6 @@ static void console_resize(int sig)
 	signal(SIGWINCH, console_resize);
 }
 
-
-/*:::::*/
 int fb_hTermOut( int code, int param1, int param2 )
 {
 	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
@@ -140,9 +145,7 @@ int fb_hTermOut( int code, int param1, int param2 )
 	return 0;
 }
 
-
-/*:::::*/
-int fb_hInitConsole ( )
+int fb_hInitConsole( )
 {
 	struct termios term_out, term_in;
 
@@ -209,7 +212,52 @@ int fb_hInitConsole ( )
 	return 0;
 }
 
-static void hInit(void)
+void fb_hExitConsole( void )
+{
+	int bottom;
+
+	if (__fb_con.inited) {
+		
+		if (__fb_con.gfx_exit)
+			__fb_con.gfx_exit();
+		
+		BG_LOCK();
+		if (__fb_con.keyboard_exit)
+			__fb_con.keyboard_exit();
+		if (__fb_con.mouse_exit)
+			__fb_con.mouse_exit();
+		BG_UNLOCK();
+
+		bottom = fb_ConsoleGetMaxRow();
+		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
+			/* Restore scrolling region to whole screen and clear */
+			fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
+			fb_hTermOut(SEQ_CLS, 0, 0);
+			fb_hTermOut(SEQ_HOME, 0, 0);
+		}
+		
+		/* Cleanup terminal */
+#ifdef HOST_LINUX
+		if (__fb_con.inited == INIT_CONSOLE)
+			fb_hTermOut(SEQ_EXIT_CHARSET, 0, 0);
+#endif
+		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
+		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
+		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
+		tcsetattr(__fb_con.h_out, TCSANOW, &__fb_con.old_term_out);
+
+		/* Restore old console keyboard state */
+		fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);
+		tcsetattr(__fb_con.h_in, TCSANOW, &__fb_con.old_term_in);
+
+		if (__fb_con.f_in) {
+			fclose(__fb_con.f_in);
+			__fb_con.f_in = NULL;
+		}
+	}
+}
+
+static void hInit( void )
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 	char buffer[2048], *p, *term;
@@ -251,7 +299,7 @@ static void hInit(void)
 	pthread_mutex_init(&__fb_string_mutex, &attr);
 #endif
 
-	pthread_mutex_init( &__fb_con.bg_mutex, NULL );
+	pthread_mutex_init( &__fb_bg_mutex, NULL );
 
 	memset(&__fb_con, 0, sizeof(__fb_con));
 
@@ -289,7 +337,7 @@ static void hInit(void)
 	}
 	__fb_con.keyboard_getch = default_getch;
 
-	pthread_create( &__fb_con.bg_thread, NULL, bg_thread, NULL );
+	pthread_create( &__fb_bg_thread, NULL, bg_thread, NULL );
 
 	/* Install signal handlers to quietly shut down */
 	for (i = 0; sigs[i] >= 0; i++)
@@ -301,12 +349,28 @@ static void hInit(void)
 	console_resize(SIGWINCH);
 }
 
-void fb_hInit(void)
+void fb_hInit( void )
 {
-	hInit();
+	hInit( );
 
 #ifdef HOST_LINUX
 	/* Permissions for port I/O */
 	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
+#endif
+}
+
+void fb_hEnd( int unused )
+{
+	fb_hExitConsole();
+	if (__fb_con.inited) {
+		__fb_con.inited = FALSE;
+		pthread_join(__fb_bg_thread, NULL);
+	}
+	pthread_mutex_destroy(&__fb_bg_mutex);
+
+#ifdef ENABLE_MT
+	/* Release multithreading support resources */
+	pthread_mutex_destroy(&__fb_global_mutex);
+	pthread_mutex_destroy(&__fb_string_mutex);
 #endif
 }

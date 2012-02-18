@@ -1,8 +1,9 @@
 /* curdir$ */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
+#ifdef HOST_WIN32
+#include <windows.h>
+#endif
 
 /*:::::*/
 FBCALL FBSTRING *fb_CurDir ( void )

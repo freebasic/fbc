@@ -1,7 +1,5 @@
 /* string concat and assigning (s = s + expr) function */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

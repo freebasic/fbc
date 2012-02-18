@@ -1,6 +1,5 @@
 /* path conversion */
 
-#include <string.h>
 #include "fb.h"
 
 void fb_hConvertPath( char *path )

@@ -8,10 +8,8 @@
  *      destine string size can't be 0, as it is always known
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
 #include "fb.h"
+#include <stddef.h>
 
 /**********
  * temp string descriptors (string lock is assumed to be held in the thread-safe rlib version)

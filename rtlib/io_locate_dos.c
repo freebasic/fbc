@@ -1,8 +1,8 @@
 /* locate (console, no gfx) function for DOS */
 
 #include "fb.h"
+#include "fb_private_console.h"
 #include <go32.h>
-#include <pc.h>
 #include <dpmi.h>
 #include <sys/farptr.h>
 

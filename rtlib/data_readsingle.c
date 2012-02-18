@@ -1,6 +1,5 @@
 /* read stmt for single's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

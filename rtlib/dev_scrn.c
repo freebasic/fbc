@@ -19,7 +19,7 @@ static FB_FILE_HOOKS hooks_dev_scrn = {
     fb_DevScrnReadLineWstr
 };
 
-int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevScrnOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
     FB_LOCK();
 

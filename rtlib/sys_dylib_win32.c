@@ -1,6 +1,7 @@
 /* Dynamic library loading and symbols retrieving */
 
 #include "fb.h"
+#include <windows.h>
 
 /*:::::*/
 FBCALL void *fb_DylibLoad( FBSTRING *library )

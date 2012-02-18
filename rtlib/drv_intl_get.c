@@ -1,6 +1,7 @@
 /* get i18n data */
 
 #include "fb.h"
+#include "fb_private_intl.h"
 
 #if defined( HOST_DOS )
 const char *fb_DrvIntlGet( eFbIntlIndex Index )
@@ -24,7 +25,6 @@ const char *fb_DrvIntlGet( eFbIntlIndex Index )
 }
 
 #elif defined( HOST_UNIX )
-#include <langinfo.h>
 const char *fb_DrvIntlGet( eFbIntlIndex Index )
 {
 	switch( Index ) {

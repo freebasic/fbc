@@ -1,7 +1,7 @@
 /* xbox thread creation and destruction */
 
 #include "fb.h"
-
+#include "fb_private_thread.h"
 #include <xboxkrnl/xboxkrnl.h>
 
 /*:::::*/

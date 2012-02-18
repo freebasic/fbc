@@ -1,8 +1,5 @@
 /* print text data - using TTY (teletype) interpretation */
 
-#include <string.h>
-#include "fb_con.h"
-
 #ifndef OUTPUT_BUFFER_SIZE
 #define OUTPUT_BUFFER_SIZE 1024
 #endif

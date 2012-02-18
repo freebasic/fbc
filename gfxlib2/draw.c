@@ -1,6 +1,8 @@
 /* DRAW command */
 
 #include "fb_gfx.h"
+#include <math.h>
+#include <ctype.h>
 
 #define FB_NAN		0x80000000
 #define SQRT_2		1.4142135623730950488016

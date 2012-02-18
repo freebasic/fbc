@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-int fb_DevPipeClose( struct _FB_FILE *handle )
+int fb_DevPipeClose( FB_FILE *handle )
 {
 #if defined( HOST_DOS ) || defined( HOST_UNIX ) || defined( HOST_WIN32 )
 	FILE *fp;

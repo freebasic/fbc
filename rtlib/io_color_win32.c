@@ -1,6 +1,7 @@
 /* color (console, no gfx) function for Windows */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 static int colorlut[16] = { FB_COLOR_BLACK, FB_COLOR_BLUE,
 					 		FB_COLOR_GREEN, FB_COLOR_CYAN,

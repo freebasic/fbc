@@ -1,3 +1,5 @@
+/* Unicode definitions */
+
 typedef uint32_t UTF_32;
 typedef uint16_t UTF_16;
 typedef uint8_t  UTF_8;
@@ -15,6 +17,7 @@ typedef uint8_t  UTF_8;
 #define UTF16_HALFMASK           (UTF_32)0x3FFUL
 
 #if defined( HOST_DOS ) || defined( HOST_CYGWIN )
+#	include <ctype.h>
 #	define FB_WCHAR char
 #	define _LC(c) c
 #	define WEOF EOF

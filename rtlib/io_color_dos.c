@@ -1,6 +1,7 @@
 /* color (console, no gfx) function for DOS */
 
 #include "fb.h"
+#include <pc.h>
 
 static int last_bc = FB_COLOR_BLACK,
 		   last_fc = FB_COLOR_WHITE;

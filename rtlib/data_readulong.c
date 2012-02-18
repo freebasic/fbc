@@ -1,6 +1,5 @@
 /* read stmt for ulong integer's */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

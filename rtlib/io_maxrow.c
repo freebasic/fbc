@@ -1,9 +1,10 @@
 /* get max row (console, no gfx) */
 
 #include "fb.h"
-
-#if defined( HOST_DOS )
-#include <conio.h>
+#if defined HOST_DOS
+	#include <conio.h>
+#else
+	#include "fb_private_console.h"
 #endif
 
 int fb_ConsoleGetMaxRow( void )

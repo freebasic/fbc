@@ -1,6 +1,11 @@
 /* get the executable's name */
 
 #include "fb.h"
+#if defined HOST_LINUX
+	#include <sys/stat.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 char *fb_hGetExeName( char *dst, int maxlen )
 {

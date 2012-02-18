@@ -1,6 +1,10 @@
 /* linear VESA gfx driver */
 
+#include "fb_gfx.h"
 #include "fb_gfx_dos.h"
+#include <pc.h>
+#include <go32.h>
+#include <sys/nearptr.h>
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);

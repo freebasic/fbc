@@ -1,7 +1,5 @@
 /* lset and rset functions */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 

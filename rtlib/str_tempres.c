@@ -1,7 +1,5 @@
 /* temp result string allocation */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

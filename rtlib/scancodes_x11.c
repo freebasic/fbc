@@ -1,5 +1,5 @@
 #include "fb.h"
-#include "fb_scancodes_x11.h"
+#include "fb_private_scancodes_x11.h"
 
 const KeysymToScancode fb_keysym_to_scancode[] = {
 	{ XK_Escape,		0x01 },	{ XK_F1,			0x3B }, { XK_F2,			0x3C },

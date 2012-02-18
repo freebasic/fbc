@@ -1,13 +1,14 @@
 /* Framebuffer device gfx driver */
 
 #include "fb_gfx.h"
-
 #include "fb_gfx_linux.h"
-#include <time.h>
-#include <linux/fb.h>
+#include "../rtlib/fb_private_console.h"
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <linux/fb.h>
+#include <pthread.h>
 
 #ifndef FB_AUX_VGA_PLANES_VGA4
 #define FB_AUX_VGA_PLANES_VGA4	0

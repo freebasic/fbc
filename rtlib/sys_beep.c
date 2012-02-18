@@ -1,7 +1,11 @@
 /* beep function */
 
 #include "fb.h"
-#include <stdlib.h>
+#if defined HOST_UNIX
+	#include "fb_private_console.h"
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 FBCALL void fb_Beep( void )
 {

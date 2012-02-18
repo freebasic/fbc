@@ -2,6 +2,7 @@
 
 #include "fb.h"
 #include "fbportio/fbportio.h"
+#include <windows.h>
 #include <winioctl.h>
 
 // Pull in the auto-generated data...

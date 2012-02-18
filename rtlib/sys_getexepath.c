@@ -1,6 +1,11 @@
 /* get the executable path */
 
 #include "fb.h"
+#if defined HOST_LINUX
+	#include <sys/stat.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 char *fb_hGetExePath( char *dst, int maxlen )
 {

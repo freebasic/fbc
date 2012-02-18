@@ -1,6 +1,11 @@
 /* console redirection check */
 
 #include "fb.h"
+#if defined HOST_DOS
+	#include <unistd.h>
+#elif defined HOST_WIN32
+	#include "fb_private_console.h"
+#endif
 
 int fb_ConsoleIsRedirected( int is_input )
 {

@@ -1,9 +1,7 @@
 /* get localized weekday name */
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
 #include "fb.h"
+#include "fb_private_intl.h"
 
 #if defined( HOST_DOS )
 FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
@@ -28,7 +26,6 @@ FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 }
 
 #elif defined( HOST_UNIX )
-#include <langinfo.h>
 FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 {
     const char *pszName;

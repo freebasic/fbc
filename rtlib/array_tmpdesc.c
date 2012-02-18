@@ -2,6 +2,7 @@
 /* temp descriptor core, for array fields passed by descriptor */
 
 #include "fb.h"
+#include <stddef.h>
 
 /**********
  * temp array descriptors

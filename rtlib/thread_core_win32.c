@@ -1,7 +1,8 @@
 /* Windows thread creation and destruction */
 
-#include <process.h>
 #include "fb.h"
+#include "fb_private_thread.h"
+#include <process.h>
 
 /* thread proxy to user's thread proc */
 #ifdef HOST_MINGW

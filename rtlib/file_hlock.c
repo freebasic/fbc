@@ -2,7 +2,13 @@
 
 #include "fb.h"
 
-#if defined HOST_MINGW
+#if defined HOST_DOS
+	#include <io.h>
+#elif defined HOST_UNIX
+	#include <fcntl.h>
+#elif defined HOST_MINGW
+	#include <windows.h>
+	#include <io.h>
 	#define fileno _fileno
 	#define get_osfhandle _get_osfhandle
 #endif

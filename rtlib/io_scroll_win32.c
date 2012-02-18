@@ -1,6 +1,7 @@
 /* console scrolling for when VIEW is used for Windows */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleScroll( int nrows )

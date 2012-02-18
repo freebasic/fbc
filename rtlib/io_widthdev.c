@@ -1,9 +1,7 @@
 /* set the with for devices */
 
 #include "fb.h"
-
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
-int fb_DevComTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+#include <ctype.h>
 
 typedef struct _DEV_INFO_WIDTH {
     FB_LISTELEM     elem;

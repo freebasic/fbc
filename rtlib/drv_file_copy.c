@@ -3,6 +3,7 @@
 #include "fb.h"
 
 #if defined( HOST_WIN32 )
+#include <windows.h>
 
 /* win32 file copy */
 int fb_DrvFileCopy( const char *source, const char *destination )

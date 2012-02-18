@@ -1,6 +1,7 @@
 /* input function for signed integers */
 
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputInt( int *dst )

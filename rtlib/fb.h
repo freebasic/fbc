@@ -1,16 +1,13 @@
 #ifndef __FB_H__
 #define __FB_H__
 
-#include <ctype.h>
-#include <stdarg.h>
+/* Minimum headers needed for fb.h alone, more in system-specific sections
+   below. These can be relied upon and don't need to be #included again. */
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <stddef.h>
-#include <math.h>
-#include <signal.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 #define FB_TRUE (-1)
 #define FB_FALSE 0
@@ -41,10 +38,18 @@
 /* The padding width (for PRINT ,). */
 #define FB_TAB_WIDTH          14
 
+#if FB_TAB_WIDTH == 8
+#define FB_NATIVE_TAB 1
+#endif
+
 /* Screen width/height returned by default when native console function failed.
    This is required when an applications output is redirected. */
 #define FB_SCRN_DEFAULT_WIDTH  80
 #define FB_SCRN_DEFAULT_HEIGHT 25
+
+/* Default colors for console color() function */
+#define FB_COLOR_FG_DEFAULT   0x1
+#define FB_COLOR_BG_DEFAULT   0x2
 
 /* Number of reserved file handles. 0: SCRN, 1: LPT1 */
 #define FB_RESERVED_FILES     2
@@ -83,19 +88,52 @@
 	((int) (((((unsigned) (k)) & 0xFF) == FB_EXT_CHAR) && \
 	        (((k) & 0xFF00) != 0)))
 
+#define MIN(a,b)		((a) < (b) ? (a) : (b))
+#define MAX(a,b)		((a) > (b) ? (a) : (b))
+#define MID(a,b,c)		MIN(MAX((a), (b)), (c))
+
+#define SWAP(a,b)		((a) ^= (b), (b) ^= (a), (a) ^= (b))
+
 #if defined( HOST_DOS )
-#	include "fb_dos.h"
+	#include "fb_dos.h"
+#elif defined( HOST_UNIX )
+	#include "fb_unix.h"
+	FBCALL void fb_BgLock( void );
+	FBCALL void fb_BgUnlock( void );
+	#define BG_LOCK()   fb_BgLock()
+	#define BG_UNLOCK() fb_BgUnlock()
 #elif defined( HOST_WIN32 )
-#	include "fb_win32.h"
-#elif defined( HOST_DARWIN ) || defined( HOST_FREEBSD ) || defined( HOST_LINUX ) || \
-      defined( HOST_NETBSD ) || defined( HOST_OPENBSD ) || defined( HOST_SOLARIS )
-#	include "fb_unix.h"
+	#include "fb_win32.h"
+	#ifdef ENABLE_MT
+		FBCALL void fb_MtLock( void );
+		FBCALL void fb_MtUnlock( void );
+		#define FB_MTLOCK()   fb_MtLock()
+		#define FB_MTUNLOCK() fb_MtUnlock()
+	#else
+		#define FB_MTLOCK()
+		#define FB_MTUNLOCK()
+	#endif
 #elif defined( HOST_XBOX )
 	#include "fb_xbox.h"
 #else
 	#error Unexpected target
 #endif
 
+#if defined ENABLE_MT && !defined HOST_DOS && !defined HOST_XBOX
+	FBCALL void fb_Lock( void );
+	FBCALL void fb_Unlock( void );
+	FBCALL void fb_StrLock( void );
+	FBCALL void fb_StrUnlock( void );
+	#define FB_LOCK()      fb_Lock()
+	#define FB_UNLOCK()    fb_Unlock()
+	#define FB_STRLOCK()   fb_StrLock()
+	#define FB_STRUNLOCK() fb_StrUnlock()
+#else
+	#define FB_LOCK()
+	#define FB_UNLOCK()
+	#define FB_STRLOCK()
+	#define FB_STRUNLOCK()
+#endif
 
 /* CPU-dependent macros and inline functions */
 #ifdef HOST_X86
@@ -103,9 +141,6 @@
 #else
 	#include "fb_arch_any.h"
 #endif
-
-/* Unicode definitions */
-#include "fb_unicode.h"
 
 #ifdef DEBUG
 	#include <assert.h>
@@ -136,6 +171,7 @@ void                fb_hListDynInit         ( FB_LIST *list );
 void                fb_hListDynElemAdd      ( FB_LIST *list, FB_LISTELEM *elem );
 void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem );
 
+#include "fb_unicode.h"
 #include "fb_error.h"
 #include "fb_string.h"
 #include "fb_array.h"
@@ -144,6 +180,7 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #include "fb_data.h"
 #include "fb_console.h"
 #include "fb_file.h"
+#include "fb_print.h"
 #include "fb_device.h"
 #include "fb_serial.h"
 #include "fb_printer.h"
@@ -256,7 +293,6 @@ typedef struct FB_RTLIB_CTX_ {
 	FBSTRING        null_desc;
 	char           *error_msg;
 	FB_HOOKSTB      hooks;
-	FB_TLSENTRY     tls_ctxtb[FB_TLSKEYS];
 	FB_FILE         fileTB[FB_MAX_FILES];
 	int             do_file_reset;
 	int             lang;

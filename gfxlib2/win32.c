@@ -2,7 +2,29 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
+#include "../rtlib/fb_private_console.h"
 #include <process.h>
+
+#define WM_MOUSEENTER WM_USER
+
+#ifndef WM_XBUTTONDOWN
+#define WM_XBUTTONDOWN 523
+#define WM_XBUTTONUP 524
+#define WM_XBUTTONDBLCLK 525
+#endif
+
+#ifndef WM_MOUSEHWHEEL
+#define WM_MOUSEHWHEEL 526
+#endif
+
+#ifndef MK_XBUTTON1
+#define MK_XBUTTON1	32
+#define MK_XBUTTON2	64
+#endif
+
+#ifndef MONITOR_DEFAULTTONEAREST
+#define MONITOR_DEFAULTTONEAREST 0x00000002
+#endif
 
 WIN32DRIVER fb_win32;
 
@@ -31,8 +53,6 @@ static BOOL screensaver_active, cursor_shown, has_focus = FALSE;
 static int last_mouse_buttons, mouse_buttons;
 static int mouse_wheel, mouse_hwheel, mouse_x, mouse_y, mouse_on;
 static POINT last_mouse_pos;
-
-#define WM_MOUSEENTER WM_USER
 
 /*:::::*/
 struct keyconvinfo {

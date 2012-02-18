@@ -1,8 +1,7 @@
 /* get localized short TIME format */
 
-#include <string.h>
-#include <stdlib.h>
 #include "fb.h"
+#include "fb_private_intl.h"
 
 #if defined( HOST_DOS )
 int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
@@ -30,7 +29,6 @@ int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
 }
 
 #elif defined( HOST_UNIX )
-#include <langinfo.h>
 int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
 {
     int do_esc = FALSE, do_fmt = FALSE;

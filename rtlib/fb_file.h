@@ -115,7 +115,7 @@ typedef struct _FB_FILE {
     struct _FB_FILE *redirection_to;
 } FB_FILE;
 
-typedef struct _FB_INPUTCTX {
+typedef struct {
     FB_FILE			*handle;
     int      		status;
     FBSTRING 		str;
@@ -124,21 +124,21 @@ typedef struct _FB_INPUTCTX {
 
 
 #define FB_FILE_TO_HANDLE_VALID( index ) \
-	((struct _FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES))
+	((FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES))
 
-#define FB_FILE_TO_HANDLE( index )															\
-	( (index) == 0? 																		\
-	  ((struct _FB_FILE *)FB_HANDLE_SCREEN) : 												\
-	  ( (index) == -1? 																		\
-	  	((struct _FB_FILE *)FB_HANDLE_PRINTER) : 											\
-	  	( FB_FILE_INDEX_VALID( (index) )?													\
-		  FB_FILE_TO_HANDLE_VALID( (index) ) :												\
-		  ((struct _FB_FILE *)(NULL))														\
-		)																					\
-	  )																						\
+#define FB_FILE_TO_HANDLE( index )                      \
+	( (index) == 0?                                 \
+	  ((FB_FILE *)FB_HANDLE_SCREEN) :               \
+	  ( (index) == -1?                              \
+	        ((FB_FILE *)FB_HANDLE_PRINTER) :        \
+	        ( FB_FILE_INDEX_VALID( (index) )?       \
+	          FB_FILE_TO_HANDLE_VALID( (index) ) :  \
+	          ((FB_FILE *)(NULL))                   \
+	        )                                       \
+	  )                                             \
 	)
 
-static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
+static __inline__ FB_FILE *FB_HANDLE_DEREF( FB_FILE *handle )
 {
 	if( handle != NULL ) {
 		FB_LOCK();
@@ -184,7 +184,6 @@ FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int m
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );
 
-       int          fb_LPrintInit       (void);
 FBCALL int          fb_FileOpenLpt      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );
@@ -207,18 +206,14 @@ FBCALL int          fb_FileOpenShort    ( FBSTRING *str_file_mode, int fnum,
 FBCALL int          fb_FileClose        ( int fnum );
        int          fb_FileCloseEx      ( FB_FILE *handle );
 
-FBCALL int          fb_FilePut          ( int fnum, long pos, void* value,
-                                          unsigned int valuelen );
-       int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value,
-                                          unsigned int valuelen );
+FBCALL int          fb_FilePut          ( int fnum, long pos, void* value, unsigned int valuelen );
+       int          fb_FilePutEx        ( FB_FILE *handle, fb_off_t pos, void* value, unsigned int valuelen );
 FBCALL int          fb_FilePutStr       ( int fnum, long pos, void *str, int str_len );
        int          fb_FilePutStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len );
 FBCALL int          fb_FilePutArray     ( int fnum, long pos, FBARRAY *src );
 
-FBCALL int          fb_FileGet          ( int fnum, long pos, void* value,
-                                          unsigned int valuelen );
-       int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value,
-                                          unsigned int valuelen );
+FBCALL int          fb_FileGet          ( int fnum, long pos, void* value, unsigned int valuelen );
+       int          fb_FileGetEx        ( FB_FILE *handle, fb_off_t pos, void* value, unsigned int valuelen );
 FBCALL int          fb_FileGetStr       ( int fnum, long pos, void *str, int str_len );
        int          fb_FileGetStrEx     ( FB_FILE *handle, fb_off_t pos, void *str, int str_len, size_t *bytesread );
 FBCALL int          fb_FileGetArray     ( int fnum, long pos, FBARRAY *dst );
@@ -238,21 +233,16 @@ FBCALL long long    fb_FileSize         ( int fnum );
        fb_off_t     fb_FileSizeEx       ( FB_FILE *handle );
 FBCALL int          fb_FilePutBack      ( int fnum, const void *data, size_t length );
 FBCALL int          fb_FilePutBackWstr  ( int fnum, const FB_WCHAR *src, size_t chars );
-       int          fb_FilePutBackEx    ( FB_FILE *handle, const void *data,
-                                          size_t length );
-       int          fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src,
-                                          size_t chars );
-
+       int          fb_FilePutBackEx    ( FB_FILE *handle, const void *data, size_t length );
+       int          fb_FilePutBackWstrEx( FB_FILE *handle, const FB_WCHAR *src, size_t chars );
 
 FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
-
 FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int fillrem );
 
        int          fb_hFilePrintBuffer ( int fnum, const char *buffer );
        int          fb_hFilePrintBufferWstr ( int fnum, const FB_WCHAR *buffer );
        int          fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len );
-       int          fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer,
-                                               size_t len );
+       int          fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer, size_t len );
 
        int          fb_hFileLock        ( FILE *f, fb_off_t inipos, fb_off_t size );
        int          fb_hFileUnlock      ( FILE *f, fb_off_t inipos, fb_off_t size );
@@ -291,47 +281,11 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
 extern const UTF_8 __fb_utf8_bmarkTb[7];
 
-void fb_hCharToUTF8 
-	( 
-		const char *src, 
-		int chars,
-		char *dst, 
-		int *bytes 
-	);
-
-char *fb_CharToUTF 
-	( 
-		FB_FILE_ENCOD encod, 
-		const char *src,
-		int chars, 
-		char *dst, 
-		int *bytes 
-	);
-	
-char *fb_WCharToUTF	
-	( 
-		FB_FILE_ENCOD encod, 
-		const FB_WCHAR *src,
-		int chars, 
-		char *dst, 
-		int *bytes 
-	);
-
-int fb_hFileRead_UTFToChar 
-	( 
-		FILE *fp, 
-		FB_FILE_ENCOD encod, 
-		char *dst,
-		int max_chars 
-	);
-	
-int fb_hFileRead_UTFToWchar	
-	( 
-		FILE *fp, 
-		FB_FILE_ENCOD encod,
-		FB_WCHAR *dst, 
-		int max_chars 
-	);
+       void         fb_hCharToUTF8      ( const char *src, int chars, char *dst, int *bytes );
+       char        *fb_CharToUTF        ( FB_FILE_ENCOD encod, const char *src, int chars, char *dst, int *bytes );
+       char        *fb_WCharToUTF       ( FB_FILE_ENCOD encod, const FB_WCHAR *src, int chars, char *dst, int *bytes );
+       int          fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, int max_chars );
+       int          fb_hFileRead_UTFToWchar( FILE *fp, FB_FILE_ENCOD encod, FB_WCHAR *dst, int max_chars );
 
 /**************************************************************************************************
  * VB-compatible functions

@@ -1,6 +1,5 @@
 /* open LPTx */
 
-#include <stdlib.h>
 #include "fb.h"
 
 static void close_printer_handle(void)

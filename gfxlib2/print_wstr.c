@@ -1,8 +1,7 @@
 /* graphical mode wstring text output */
 
 #include "fb_gfx.h"
-#include "../rtlib/fb_con.h"
-#include <stdlib.h>
+#include "../rtlib/fb_private_console.h"
 
 /*:::::*/
 void fb_GfxPrintBufferWstrEx(const FB_WCHAR *buffer, size_t len, int mask)

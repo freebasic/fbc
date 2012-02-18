@@ -1,7 +1,5 @@
 /* instrrev function */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 #if 0 /* FIXME: implementation is bugged somewhere, missing some matches */

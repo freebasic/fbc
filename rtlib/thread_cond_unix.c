@@ -1,7 +1,7 @@
 /* Linux (pthreads) condition variables handling routines */
 
-#include <pthread.h>
 #include "fb.h"
+#include "fb_private_thread.h"
 
 struct _FBCOND {
 	pthread_cond_t id;

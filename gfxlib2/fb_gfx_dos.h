@@ -5,10 +5,7 @@
 
 #include "fb_gfx.h"
 
-#include <sys/farptr.h>
-#include <sys/nearptr.h>
-#include <sys/movedata.h>
-#include "vga.h"
+#include <dpmi.h>
 #include "vesa.h"
 
 /* macros */

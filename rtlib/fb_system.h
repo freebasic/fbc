@@ -30,10 +30,6 @@ FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );
 FBCALL void 	   *fb_DylibSymbolByOrd ( void *library, short int symbol );
 FBCALL void         fb_DylibFree        ( void *library );
 
-       FB_DYLIB     fb_hDynLoad         (const char *libname, const char **funcname, void **funcptr);
-       int          fb_hDynLoadAlso     (FB_DYLIB lib, const char **funcname, void **funcptr, int count);
-       void         fb_hDynUnload       (FB_DYLIB *lib);
-
        char        *fb_hGetShortPath    ( char *src, char *dst, int maxlen );
 
        int          fb_hGetCurrentDir   ( char *dst, int maxlen );

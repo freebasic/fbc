@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+int fb_DevFileWrite( FB_FILE *handle, const void* value, size_t valuelen )
 {
     FILE *fp;
 

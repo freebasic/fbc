@@ -2,11 +2,6 @@
 
 #include "fb.h"
 
-int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
-                             const char *filename,
-                             size_t filename_len,
-                             size_t *pPort );
-
 typedef struct _DEV_COM_INFO {
     void                     *hSerial;  /* This memmber must be first */
     char                     *pszDevice;
@@ -14,8 +9,7 @@ typedef struct _DEV_COM_INFO {
     FB_SERIAL_OPTIONS         Options;
 } DEV_COM_INFO;
 
-/*:::::*/
-static int fb_DevComClose( struct _FB_FILE *handle )
+static int fb_DevComClose( FB_FILE *handle )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -34,8 +28,7 @@ static int fb_DevComClose( struct _FB_FILE *handle )
 	return res;
 }
 
-/*:::::*/
-static int fb_DevComWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+static int fb_DevComWrite( FB_FILE *handle, const void* value, size_t valuelen )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -50,14 +43,12 @@ static int fb_DevComWrite( struct _FB_FILE *handle, const void* value, size_t va
 	return res;
 }
 
-/*:::::*/
-static int fb_DevComWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
+static int fb_DevComWriteWstr( FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {
 	return fb_DevComWrite( handle, (void*)value, valuelen * sizeof( FB_WCHAR ) );
 }
 
-/*:::::*/
-static int fb_DevComRead( struct _FB_FILE *handle, void* value, size_t *pValuelen )
+static int fb_DevComRead( FB_FILE *handle, void* value, size_t *pValuelen )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -72,14 +63,13 @@ static int fb_DevComRead( struct _FB_FILE *handle, void* value, size_t *pValuele
 	return res;
 }
 
-/*:::::*/
-static int fb_DevComReadWstr( struct _FB_FILE *handle, FB_WCHAR *value, size_t *pValuelen )
+static int fb_DevComReadWstr( FB_FILE *handle, FB_WCHAR *value, size_t *pValuelen )
 {
 	size_t len = *pValuelen * sizeof( FB_WCHAR );
 	return fb_DevComRead( handle, (void *)value, &len );
 }
 
-static int fb_DevComTell( struct _FB_FILE *handle, fb_off_t *pOffset )
+static int fb_DevComTell( FB_FILE *handle, fb_off_t *pOffset )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -96,7 +86,7 @@ static int fb_DevComTell( struct _FB_FILE *handle, fb_off_t *pOffset )
 	return res;
 }
 
-static int fb_DevComEof( struct _FB_FILE *handle )
+static int fb_DevComEof( FB_FILE *handle )
 {
     int res;
     fb_off_t offset;
@@ -133,8 +123,7 @@ static FB_FILE_HOOKS hooks_dev_com = {
     NULL
 };
 
-/*:::::*/
-int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevComOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
     DEV_COM_INFO *info;
     char achDev[128];

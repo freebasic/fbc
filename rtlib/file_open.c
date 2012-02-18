@@ -1,6 +1,5 @@
 /* open and core file functions */
 
-#include <stdlib.h>
 #include "fb.h"
 
 int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str, unsigned int mode,

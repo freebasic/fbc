@@ -1,6 +1,7 @@
 /* mouse functions for Windows console mode apps */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 static int inited = -1;
 static int last_x = 0, last_y = 0, last_z = 0, last_buttons = 0;

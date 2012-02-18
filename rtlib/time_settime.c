@@ -1,6 +1,13 @@
 /* set time function */
 
 #include "fb.h"
+#if defined HOST_DOS
+	#include <dos.h>
+#elif defined HOST_UNIX
+	#include <sys/time.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 int fb_hSetTime( int h, int m, int s )
 {

@@ -1,6 +1,7 @@
 /* input function for unsigned bytes */
 
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputUbyte( unsigned char *dst )

@@ -1,6 +1,5 @@
 /* print [#] functions */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

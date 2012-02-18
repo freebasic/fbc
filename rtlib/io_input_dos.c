@@ -1,4 +1,7 @@
 #include "fb.h"
+#include "fb_private_console.h"
+#include <sys/farptr.h>
+#include <go32.h>
 
 static int iCircBufferStatusInited = FALSE;
 static unsigned short usCircBufferStatus = 0;

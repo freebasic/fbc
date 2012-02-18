@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevScrnClose( struct _FB_FILE *handle )
+int fb_DevScrnClose( FB_FILE *handle )
 {
     FB_LOCK();
 

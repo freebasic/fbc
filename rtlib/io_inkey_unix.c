@@ -1,6 +1,8 @@
 /* inkey$ function for Linux console mode apps */
 
 #include "fb.h"
+#include "fb_private_console.h"
+#include <termcap.h>
 
 #define MAX_BUFFER_LEN	256
 

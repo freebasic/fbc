@@ -1,10 +1,8 @@
 /* dir$ implementation */
 
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include "fb.h"
+#include <sys/stat.h>
+#include <dirent.h>
 
 typedef struct _FB_DIRCTX {
 	int in_use;

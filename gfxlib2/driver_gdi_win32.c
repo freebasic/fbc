@@ -4,6 +4,9 @@
 #include "fb_gfx_win32.h"
 
 #define SCREENLIST(w, h) ((h) | (w) << 16)
+#ifndef LWA_COLORKEY
+#define LWA_COLORKEY	0x00000001
+#endif
 
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);

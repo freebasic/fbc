@@ -1,7 +1,6 @@
 /* environ$ function and setenviron stmt */
 
 #include "fb.h"
-#include <stdlib.h>
 
 /*:::::*/
 FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )

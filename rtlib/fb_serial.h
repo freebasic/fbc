@@ -32,23 +32,11 @@ typedef struct _FB_SERIAL_OPTIONS {
     unsigned           ReceiveBuffer;      /* RBn - a value 0 means: default value */
 } FB_SERIAL_OPTIONS;
 
-       int          fb_DevSerialSetWidth( const char *pszDevice, int width,
-       									  int default_width );
-       int          fb_SerialOpen       ( struct _FB_FILE *handle,
-                                          int iPort,
-                                          FB_SERIAL_OPTIONS *options,
-                                          const char *pszDevice,
-                                          void **ppvHandle );
-       int          fb_SerialGetRemaining( struct _FB_FILE *handle,
-                                           void *pvHandle, fb_off_t *pLength );
-       int          fb_SerialWrite      ( struct _FB_FILE *handle,
-                                          void *pvHandle, const void *data, size_t length );
-       int          fb_SerialWriteWstr  ( struct _FB_FILE *handle,
-                                          void *pvHandle, const FB_WCHAR *data,
-                                          size_t length );
-       int          fb_SerialRead       ( struct _FB_FILE *handle,
-                                          void *pvHandle, void *data, size_t *pLength );
-       int          fb_SerialReadWstr   ( struct _FB_FILE *handle,
-                                          void *pvHandle, FB_WCHAR *data, size_t *pLength );
-       int          fb_SerialClose      ( struct _FB_FILE *handle,
-                                          void *pvHandle );
+       int          fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width );
+       int          fb_SerialOpen       ( FB_FILE *handle, int iPort, FB_SERIAL_OPTIONS *options, const char *pszDevice, void **ppvHandle );
+       int          fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength );
+       int          fb_SerialWrite      ( FB_FILE *handle, void *pvHandle, const void *data, size_t length );
+       int          fb_SerialWriteWstr  ( FB_FILE *handle, void *pvHandle, const FB_WCHAR *data, size_t length );
+       int          fb_SerialRead       ( FB_FILE *handle, void *pvHandle, void *data, size_t *pLength );
+       int          fb_SerialReadWstr   ( FB_FILE *handle, void *pvHandle, FB_WCHAR *data, size_t *pLength );
+       int          fb_SerialClose      ( FB_FILE *handle, void *pvHandle );

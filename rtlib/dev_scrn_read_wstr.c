@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-int fb_DevScrnReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
+int fb_DevScrnReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
     size_t chars;
     DEV_SCRN_INFO *info;
@@ -56,13 +56,11 @@ int fb_DevScrnReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
-static int hReadFromStdin( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
+static int hReadFromStdin( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
     return fb_DevFileReadWstr( NULL, dst, pchars );
 }
 
-/*:::::*/
 void fb_DevScrnInit_ReadWstr( void )
 {
 	fb_DevScrnInit_NoOpen( );

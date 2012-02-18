@@ -28,13 +28,7 @@ static FB_FILE_HOOKS hooks_dev_file = {
 };
 
 
-/*:::::*/
-int fb_DevFileOpen
-	(
-		struct _FB_FILE *handle,
-		const char *filename,
-		size_t fname_len
-	)
+int fb_DevFileOpen( FB_FILE *handle, const char *filename, size_t fname_len )
 {
     FILE *fp = NULL;
     char *openmask;

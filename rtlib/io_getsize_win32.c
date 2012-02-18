@@ -1,8 +1,7 @@
 /* get size (console, no gfx) function for Windows */
 
 #include "fb.h"
-
-void fb_InitConsoleWindow( void );
+#include "fb_private_console.h"
 
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )

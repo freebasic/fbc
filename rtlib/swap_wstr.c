@@ -1,6 +1,5 @@
 /* swap for wstrings */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

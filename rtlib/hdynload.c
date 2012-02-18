@@ -1,6 +1,7 @@
 /* Dynamic library functions loading */
 
 #include "fb.h"
+#include "fb_private_hdynload.h"
 
 #if defined( HOST_UNIX )
 #	include <dlfcn.h>

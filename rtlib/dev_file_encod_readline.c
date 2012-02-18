@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst )
+int fb_DevFileReadLineEncod( FB_FILE *handle, FBSTRING *dst )
 {
     int res;
     FILE *fp;

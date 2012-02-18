@@ -15,18 +15,8 @@
 
 #define FB_LL_FMTMOD "ll"
 
-#define FB_LOCK()
-#define FB_UNLOCK()
-#define FB_STRLOCK()
-#define FB_STRUNLOCK()
-#define FB_THREADID HANDLE
 #define FB_DYLIB HANDLE
-/* Fake unimplemented FBMUTEX type */
-struct _FBMUTEX;
-typedef struct _FBMUTEX FBMUTEX;
-/* Fake unimplemented FBCOND type */
-struct _FBCOND;
-typedef struct _FBCOND FBCOND;
+
 typedef long fb_off_t;
 #define fseeko(stream, offset, whence) fseek(stream, offset, whence)
 #define ftello(stream)                 ftell(stream)
@@ -35,5 +25,3 @@ typedef long fb_off_t;
 #define Executive 0
 #define KernelMode 0
 #define UserMode 1
-
-extern HANDLE __fb_in_handle, __fb_out_handle;

@@ -1,6 +1,9 @@
 /* SHELL command */
 
 #include "fb.h"
+#if defined HOST_UNIX
+	#include "fb_private_console.h"
+#endif
 
 FBCALL int fb_Shell( FBSTRING *program )
 {

@@ -4,10 +4,7 @@
 #define __FB_GFX_GL_H__
 
 #include <GL/gl.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "../rtlib/fb_private_hdynload.h"
 
 #define FBGL_EXTENSIONS_STRING_SIZE		16384
 
@@ -53,7 +50,6 @@ typedef struct FB_GL {
     char						extensions[FBGL_EXTENSIONS_STRING_SIZE];
 } FB_GL;
 
-
 typedef struct FB_GL_PARAMS {
 	int color_bits;
 	int color_red_bits;
@@ -73,8 +69,9 @@ typedef struct FB_GL_PARAMS {
 extern FB_GL __fb_gl;
 extern FB_GL_PARAMS __fb_gl_params;
 
-#ifdef __cplusplus
-}
-#endif
+extern void fb_hGL_NormalizeParameters(int gl_options);
+extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
+extern int fb_hGL_ExtensionSupported(const char *extension);
+extern void *fb_hGL_GetProcAddress(const char *proc);
 
 #endif

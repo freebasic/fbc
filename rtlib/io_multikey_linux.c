@@ -1,7 +1,9 @@
 /* Linux multikey function implementation */
 
 #include "fb.h"
-
+#include "fb_private_console.h"
+#include <sys/ioctl.h>
+#include <signal.h>
 #include <linux/kd.h>
 #include <linux/keyboard.h>
 #include <linux/vt.h>
@@ -13,7 +15,8 @@ static int keyboard_init(void);
 static void keyboard_exit(void);
 
 #ifndef DISABLE_X
-#include "fb_scancodes_x11.h"
+#include "fb_private_hdynload.h"
+#include "fb_private_scancodes_x11.h"
 
 typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
@@ -34,7 +37,7 @@ static pid_t main_pid;
 
 #ifndef DISABLE_X
 static Display *display;
-static void *xlib = NULL;
+static FB_DYLIB xlib = NULL;
 static X_FUNCS X = { NULL };
 #endif
 
@@ -361,18 +364,18 @@ int fb_ConsoleMultikey(int scancode)
 	if (!__fb_con.inited)
 		return FB_FALSE;
 
-	pthread_mutex_lock(&__fb_con.bg_mutex);
+	BG_LOCK();
 
 	if ((!__fb_con.keyboard_handler) && (!keyboard_init())) {
 		/* Let the handler execute at least once to fill in states */
-		pthread_mutex_unlock(&__fb_con.bg_mutex);
+		BG_UNLOCK();
 		usleep(50000);
-		pthread_mutex_lock(&__fb_con.bg_mutex);
+		BG_LOCK();
 	}
 
 	res = key_state[scancode & 0x7F] ? FB_TRUE : FB_FALSE;
 
-	pthread_mutex_unlock(&__fb_con.bg_mutex);
+	BG_UNLOCK();
 
 	return res;
 }

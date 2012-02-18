@@ -1,6 +1,7 @@
 /* serial port access for Windows */
 
 #include "fb.h"
+#include <windows.h>
 
 #define GET_MSEC_TIME() ((DWORD) (fb_Timer() * 1000.0))
 
@@ -47,7 +48,7 @@ int fb_hSerialCheckLines( HANDLE hDevice, FB_SERIAL_OPTIONS *pOptions )
     return TRUE;
 }
 
-int fb_SerialOpen( struct _FB_FILE *handle,
+int fb_SerialOpen( FB_FILE *handle,
                    int iPort, FB_SERIAL_OPTIONS *options,
                    const char *pszDevice, void **ppvHandle )
 {
@@ -268,7 +269,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
     return res;
 }
 
-int fb_SerialGetRemaining( struct _FB_FILE *handle,
+int fb_SerialGetRemaining( FB_FILE *handle,
                            void *pvHandle, fb_off_t *pLength )
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
@@ -281,7 +282,7 @@ int fb_SerialGetRemaining( struct _FB_FILE *handle,
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_SerialWrite( struct _FB_FILE *handle,
+int fb_SerialWrite( FB_FILE *handle,
                     void *pvHandle, const void *data, size_t length )
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
@@ -304,7 +305,7 @@ int fb_SerialWrite( struct _FB_FILE *handle,
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_SerialRead( struct _FB_FILE *handle,
+int fb_SerialRead( FB_FILE *handle,
                    void *pvHandle, void *data, size_t *pLength )
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
@@ -327,8 +328,7 @@ int fb_SerialRead( struct _FB_FILE *handle,
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_SerialClose( struct _FB_FILE *handle,
-                    void *pvHandle )
+int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
     CloseHandle( pInfo->hDevice );

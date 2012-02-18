@@ -3,8 +3,7 @@
  */
 
 #include "fb.h"
-
-void fb_InitConsoleWindow( void );
+#include "fb_private_console.h"
 
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )

@@ -1,6 +1,5 @@
 /* ltrimw$ ANY function */
 
-#include <stdlib.h>
 #include "fb.h"
 
 

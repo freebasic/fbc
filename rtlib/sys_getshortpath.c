@@ -1,6 +1,9 @@
 /* get short path */
 
 #include "fb.h"
+#ifdef HOST_WIN32
+	#include <windows.h>
+#endif
 
 char *fb_hGetShortPath( char *src, char *dst, int maxlen )
 {

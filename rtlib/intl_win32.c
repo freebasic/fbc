@@ -1,8 +1,7 @@
 /* Core Win32 i18n functions */
 
 #include "fb.h"
-#include <stddef.h>
-#include <stdlib.h>
+#include "fb_private_intl.h"
 
 char *fb_hGetLocaleInfo( LCID Locale,
                          LCTYPE LCType,

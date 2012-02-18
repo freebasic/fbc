@@ -1,19 +1,15 @@
 /* libfb initialization for DOS */
 
 #include "fb.h"
-
+#include "fb_private_console.h"
 #include <float.h>
 #include <unistd.h>
-#include <sys/farptr.h>
+#include <conio.h>
 
-/* globals */
 FB_CONSOLE_CTX __fb_con;
-
 char *__fb_startup_cwd;
 
-
-/*:::::*/
-void fb_hInit ( void )
+void fb_hInit( void )
 {
 	/* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
@@ -25,4 +21,9 @@ void fb_hInit ( void )
 
 	__fb_startup_cwd = getcwd(NULL, 1024);
 	fb_hConvertPath( __fb_startup_cwd );
+}
+
+void fb_hEnd( int unused )
+{
+	/* nothing to do */
 }

@@ -2,12 +2,16 @@
 
 #include "fb.h"
 
-#if defined( HOST_FREEBSD )
-#include <sys/sysctl.h>
-#include <sys/vmmeter.h>
-#include <vm/vm_param.h>
-#elif defined( HOST_LINUX )
-#include <sys/sysinfo.h>
+#if defined HOST_DOS
+	#include <dpmi.h>
+#elif defined HOST_FREEBSD
+	#include <sys/sysctl.h>
+	#include <sys/vmmeter.h>
+	#include <vm/vm_param.h>
+#elif defined HOST_LINUX
+	#include <sys/sysinfo.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
 #endif
 
 FBCALL unsigned int fb_GetMemAvail( int mode )

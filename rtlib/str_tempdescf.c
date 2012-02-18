@@ -1,7 +1,5 @@
 /* temp string descriptor allocation for fixed-len strings */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

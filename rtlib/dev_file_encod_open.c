@@ -2,13 +2,6 @@
 
 #include "fb.h"
 
-int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars );
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len );
-int fb_DevFileReadEncod( struct _FB_FILE *handle, void *dst, size_t *max_chars );
-int fb_DevFileReadEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars );
-int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst );
-int fb_DevFileReadLineEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int max_chars );
-
 static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
@@ -26,11 +19,7 @@ static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileFlush
 };
 
-/*:::::*/
-static int hCheckBOM
-	(
-		struct _FB_FILE *handle
-	)
+static int hCheckBOM( FB_FILE *handle )
 {
     int res, bom = 0;
     FILE *fp = (FILE *)handle->opaque;
@@ -74,11 +63,7 @@ static int hCheckBOM
 	return res;
 }
 
-/*:::::*/
-static int hWriteBOM
-	(
-		struct _FB_FILE *handle
-	)
+static int hWriteBOM( FB_FILE *handle )
 {
     int bom;
     FILE *fp = (FILE *)handle->opaque;
@@ -112,10 +97,9 @@ static int hWriteBOM
 	return 1;
 }
 
-/*:::::*/
 int fb_DevFileOpenEncod
 	(
-		struct _FB_FILE *handle,
+		FB_FILE *handle,
 		const char *filename,
 		size_t fname_len
 	)

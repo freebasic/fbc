@@ -1,6 +1,7 @@
 /* SCREEN() function for Windows */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )

@@ -1,6 +1,7 @@
 /* low-level print to console function for Linux */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 #define CTRL_ALWAYS 0x0800D101
 #define ENTER_UTF8  "\e%G"

@@ -1,6 +1,7 @@
 /* input function for signed bytes */
 
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputByte( char *dst )

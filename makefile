@@ -694,9 +694,10 @@ HEADER_DIRS := $(patsubst %/,%,$(sort $(dir $(HEADER_FILES))))
 # rtlib sources
 #
 
-LIBFB_H := rtlib/fb.h
+LIBFB_H += rtlib/con_print_raw_uni.h
+LIBFB_H += rtlib/con_print_tty_uni.h
+LIBFB_H += rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
-LIBFB_H += rtlib/fb_con.h
 LIBFB_H += rtlib/fb_console.h
 LIBFB_H += rtlib/fb_data.h
 LIBFB_H += rtlib/fb_datetime.h
@@ -705,17 +706,17 @@ LIBFB_H += rtlib/fb_error.h
 LIBFB_H += rtlib/fb_file.h
 LIBFB_H += rtlib/fb_hook.h
 LIBFB_H += rtlib/fb_math.h
+LIBFB_H += rtlib/fb_print.h
 LIBFB_H += rtlib/fb_printer.h
-ifndef DISABLE_X
-  LIBFB_H += rtlib/fb_scancodes_x11.h
-endif
+LIBFB_H := rtlib/fb_private_console.h
+LIBFB_H += rtlib/fb_private_hdynload.h
+LIBFB_H += rtlib/fb_private_intl.h
+LIBFB_H += rtlib/fb_private_thread.h
 LIBFB_H += rtlib/fb_serial.h
 LIBFB_H += rtlib/fb_string.h
 LIBFB_H += rtlib/fb_system.h
 LIBFB_H += rtlib/fb_thread.h
 LIBFB_H += rtlib/fb_unicode.h
-LIBFB_H += rtlib/con_print_raw_uni.h
-LIBFB_H += rtlib/con_print_tty_uni.h
 
 LIBFB_C := \
   array_boundchk array_clear array_clear_obj array_core array_erase \
@@ -746,7 +747,6 @@ LIBFB_C := \
   drv_intl_gettimeformat \
   drv_intl_getweekdayname \
   error error_getset error_ptrchk \
-  exit \
   file_attr file_close file_copy file_datetime file_encod file_eof \
   file_exists file_free file_getarray file_get file_getstr file_get_wstr \
   file_hconvpath \
@@ -839,8 +839,7 @@ ifeq ($(TARGET_OS),dos)
     drv_intl_dos drv_intl_data_dos \
     farmemset_dos \
     file_dir_dos \
-    hexit_dos \
-    hinit_dos \
+    init_dos \
     io_cls_dos io_color_dos io_getsize_dos io_inkey_dos io_input_dos \
     io_locate_dos io_mouse_dos io_multikey_dos io_pageset_dos \
     io_pcopy_dos io_printbuff_dos io_printbuff_wstr_dos io_printer_dos \
@@ -907,8 +906,7 @@ ifeq ($(TARGET_OS),xbox)
   LIBFB_H += rtlib/fb_xbox.h
   LIBFB_C += \
     file_dir_xbox \
-    hexit_xbox \
-    hinit_xbox \
+    init_xbox \
     io_cls_stub io_color_stub io_getsize_stub io_inkey_stub \
     io_locate_stub io_mouse_stub io_multikey_stub \
     io_pageset_stub io_pcopy_stub io_printbuff_stub io_printbuff_wstr_stub \
@@ -928,9 +926,8 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   LIBFB_H += rtlib/fb_unix.h
   LIBFB_C += \
     file_dir_unix \
+    init_unix \
     hdynload \
-    hexit_unix \
-    hinit_unix \
     io_cls_unix io_color_unix io_getsize_unix io_inkey_unix io_input_unix \
     io_locate_unix io_pageset_stub io_pcopy_stub \
     io_printbuff_unix io_printbuff_wstr_unix io_printer_unix \
@@ -939,6 +936,7 @@ ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
     thread_cond_unix thread_core_unix
 
   ifndef DISABLE_X
+    LIBFB_H += rtlib/fb_private_scancodes_x11.h
     LIBFB_C += scancodes_x11
   endif
 endif
@@ -950,9 +948,8 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   LIBFB_H += rtlib/fbportio/inline.h
   LIBFB_C += \
     file_dir_win32 \
+    init_win32 \
     hdynload \
-    hexit_win32 \
-    hinit_win32 \
     intl_conv_win32 intl_win32 \
     io_cls_win32 io_clsex_win32 io_color_win32 io_colorget_win32 \
     io_gethnd_win32 io_getsize_win32 io_getwindow_win32 io_getwindowex_win32 \
@@ -1009,7 +1006,6 @@ endif
 
 ifndef DISABLE_GFX
   LIBFBGFX_H := $(LIBFB_H)
-  LIBFBGFX_H += gfxlib2/fb_gfx_data.h
   LIBFBGFX_H += gfxlib2/fb_gfx_gl.h
   LIBFBGFX_H += gfxlib2/fb_gfx.h
   LIBFBGFX_H += gfxlib2/fb_gfx_lzw.h

@@ -1,6 +1,5 @@
 /* command$ */
 
-#include <string.h>
 #include "fb.h"
 
 /*:::::*/

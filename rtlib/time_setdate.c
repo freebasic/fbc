@@ -1,6 +1,13 @@
 /* set date function */
 
 #include "fb.h"
+#if defined HOST_DOS
+	#include <dos.h>
+#elif defined HOST_UNIX
+	#include <sys/time.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 int fb_hSetDate( int y, int m, int d )
 {

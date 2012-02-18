@@ -1,6 +1,5 @@
 /* LSET for non-strings */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/

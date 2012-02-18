@@ -1,6 +1,7 @@
 /* GetXY function for Windows */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_ConsoleGetRawXYEx( HANDLE hConsole, int *col, int *row )

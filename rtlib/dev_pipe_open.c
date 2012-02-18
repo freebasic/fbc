@@ -19,7 +19,7 @@ static FB_FILE_HOOKS hooks_dev_pipe = {
     fb_DevFileReadLineWstr
 };
 
-int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     FILE *fp = NULL;
@@ -90,7 +90,7 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
 
 #else
 
-int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
 	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }

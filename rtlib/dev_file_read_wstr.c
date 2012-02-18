@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
+int fb_DevFileReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
     FILE *fp;
     size_t chars;

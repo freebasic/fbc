@@ -1,6 +1,7 @@
 /* dos dir$ implementation */
 
 #include "fb.h"
+#include <dir.h>
 
 #define FB_ATTRIB_MASK ~0xFFFFFF00
 

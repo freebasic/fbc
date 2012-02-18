@@ -1,20 +1,10 @@
 /* dir$ implementation */
 
-#include <string.h>
+#include "fb.h"
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
-#define MAX_PATH	1024
-#ifndef FALSE
-#define FALSE	0
-#endif
-#ifndef TRUE
-#define TRUE	1
-#endif
-
-#include "fb.h"
-
 
 typedef struct DIR_DATA
 {

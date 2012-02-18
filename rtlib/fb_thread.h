@@ -1,11 +1,13 @@
 typedef void (FBCALL *FB_THREADPROC)( void *param );
 
-typedef struct {
-	FB_THREADID   id;
-	FB_THREADPROC proc;
-	void         *param;
-	void         *opaque;
-} FBTHREAD;
+struct _FBTHREAD;
+typedef struct _FBTHREAD FBTHREAD;
+
+struct _FBMUTEX;
+typedef struct _FBMUTEX FBMUTEX;
+
+struct _FBCOND;
+typedef struct _FBCOND FBCOND;
 
 FBCALL FBTHREAD         *fb_ThreadCreate( FB_THREADPROC proc, void *param, int stack_size );
 FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
@@ -39,5 +41,9 @@ enum {
 FBCALL void             *fb_TlsGetCtx   ( int index, int len );
 FBCALL void              fb_TlsDelCtx   ( int index );
 FBCALL void              fb_TlsFreeCtxTb( void );
+#ifdef ENABLE_MT
+       void              fb_TlsInit     ( void );
+       void              fb_TlsExit     ( void );
+#endif
 
 #define FB_TLSGETCTX(id) (FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, sizeof( FB_##id##CTX ) );

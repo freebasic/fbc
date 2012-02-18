@@ -1,6 +1,10 @@
 /* console input functions for Windows console mode apps */
 
 #include "fb.h"
+#include "fb_private_console.h"
+#include <ctype.h>
+
+fb_FnProcessMouseEvent mouseEventHook = 0;
 
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];

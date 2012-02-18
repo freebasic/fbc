@@ -1,9 +1,7 @@
 /* size of the console window */
 
-#include <stdlib.h>
 #include "fb.h"
-
-void fb_InitConsoleWindow( void );
+#include "fb_private_console.h"
 
 /*:::::*/
 void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
@@ -33,5 +31,3 @@ void fb_hConsoleGetWindow( int *left, int *top, int *cols, int *rows )
             *rows = __fb_con.window.Bottom - __fb_con.window.Top + 1;
     }
 }
-
-

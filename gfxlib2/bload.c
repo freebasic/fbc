@@ -1,6 +1,9 @@
 /* BLOAD support. */
 
 #include "fb_gfx.h"
+#ifdef HOST_WIN32
+	#include <windows.h>
+#endif
 
 #ifndef BI_RGB
 #define BI_RGB          0

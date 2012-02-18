@@ -1,7 +1,5 @@
 /* rnd# function */
 
-#include <stdlib.h>
-#include <stdlib.h>
 #include "fb.h"
 
 

@@ -1,6 +1,11 @@
 /* get current dir */
 
 #include "fb.h"
+#if defined HOST_DOS
+	#include <unistd.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+#endif
 
 int fb_hGetCurrentDir( char *dst, int maxlen )
 {

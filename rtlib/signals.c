@@ -1,8 +1,11 @@
 /* signal handlers */
 
 #include "fb.h"
+#include <signal.h>
 
 #if defined( HOST_WIN32 )
+#include <windows.h>
+
 static LPTOP_LEVEL_EXCEPTION_FILTER old_excpfilter;
 
 /* low-level signal handler for Windows */

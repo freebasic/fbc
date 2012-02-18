@@ -5,9 +5,6 @@
 #ifndef __FB_GFX_X11_H__
 #define __FB_GFX_X11_H__
 
-#include <pthread.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/xpm.h>

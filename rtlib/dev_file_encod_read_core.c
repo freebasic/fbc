@@ -2,8 +2,6 @@
  * (based on ConvertUTF.c free implementation from Unicode, Inc)
  */
 
-#include <stdlib.h>
-
 #include "fb.h"
 
 extern const char __fb_utf8_trailingTb[256];

@@ -1,6 +1,7 @@
 /* farptr memset routines for DOS */
 
 #include "fb.h"
+#include <sys/farptr.h>
 
 /*:::::*/
 void fb_hFarMemSet(unsigned short selector, unsigned long dest, unsigned char char_to_set, size_t bytes)

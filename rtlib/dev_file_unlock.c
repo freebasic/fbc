@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileUnlock( struct _FB_FILE *handle, fb_off_t position, fb_off_t size )
+int fb_DevFileUnlock( FB_FILE *handle, fb_off_t position, fb_off_t size )
 {
 	int 	res;
 	FILE 	*fp;

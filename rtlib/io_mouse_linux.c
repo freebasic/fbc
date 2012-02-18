@@ -1,6 +1,8 @@
 /* Linux console mouse functions implementation */
 
 #include "fb.h"
+#include "fb_private_console.h"
+#include "fb_private_hdynload.h"
 #include <gpm.h>
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);
@@ -14,7 +16,7 @@ typedef struct {
 	int *fd;
 } GPM_FUNCS;
 
-static void *gpm_lib = NULL;
+static FB_DYLIB gpm_lib = NULL;
 static GPM_FUNCS gpm = { NULL };
 static Gpm_Connect conn;
 static int has_focus = TRUE;

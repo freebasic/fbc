@@ -1,6 +1,9 @@
 /* recover stdio after redirection */
 
 #include "fb.h"
+#ifdef HOST_WIN32
+	#include "fb_private_console.h"
+#endif
 
 FBCALL void fb_FileResetEx( int streamno )
 {

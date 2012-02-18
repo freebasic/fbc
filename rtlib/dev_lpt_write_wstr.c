@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
+int fb_DevLptWriteWstr( FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {
     int res;
 
@@ -15,4 +14,3 @@ int fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t v
 
 	return res;
 }
-

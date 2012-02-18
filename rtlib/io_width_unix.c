@@ -1,6 +1,7 @@
 /* width (console, no gfx) for Linux */
 
 #include "fb.h"
+#include "fb_private_console.h"
 
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )

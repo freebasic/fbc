@@ -1,6 +1,7 @@
 /* mutex handling routines */
 
 #include "fb.h"
+#include "fb_private_thread.h"
 
 FBCALL FBMUTEX *fb_MutexCreate( void )
 {

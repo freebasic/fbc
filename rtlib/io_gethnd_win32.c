@@ -1,6 +1,7 @@
 /* console handle getter */
 
-#include "fb_con.h"
+#include "fb.h"
+#include "fb_private_console.h"
 
 static int is_init = FALSE;
 

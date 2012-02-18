@@ -1,7 +1,8 @@
 /* printer access for Windows */
 
 #include "fb.h"
-#include "fb_con.h"
+#include <ctype.h>
+#include <windows.h>
 #include <winspool.h>
 
 typedef BOOL (WINAPI *FnGetDefaultPrinter)(LPTSTR pszBuffer, LPDWORD pcchBuffer);
@@ -11,7 +12,7 @@ struct _W32_PRINTER_INFO;
 typedef void (*FnEmuPrint)(struct _W32_PRINTER_INFO *pInfo,
                            const void *pText,
                            size_t uiLength,
-													 int isunicode );
+                           int isunicode );
 
 /* Win32-specific printer information */
 typedef struct _W32_PRINTER_INFO {
@@ -152,7 +153,7 @@ fb_hListDevFindName  ( FB_LIST *list, const char *pszPrinterName )
     return NULL;
 }
 
-static PRINTER_INFO_5 *GetDefaultPrinters(size_t *pCount)
+static PRINTER_INFO_5 *GetDefaultPrinters( int *pCount )
 {
     DWORD dwNeeded = 0, dwReturned = 0;
     PRINTER_INFO_5 *result = NULL;
@@ -187,12 +188,12 @@ static PRINTER_INFO_5 *GetDefaultPrinters(size_t *pCount)
                                &dwReturned);
     }
 
-    *pCount = (size_t) dwReturned;
+    *pCount = dwReturned;
 
     return result;
 }
 
-static PRINTER_INFO_2 *GetPrinters(size_t *pCount)
+static PRINTER_INFO_2 *GetPrinters( int *pCount )
 {
     DWORD dwNeeded = 0, dwReturned = 0;
     PRINTER_INFO_2 *result = NULL;
@@ -227,7 +228,7 @@ static PRINTER_INFO_2 *GetPrinters(size_t *pCount)
                                &dwReturned);
     }
 
-    *pCount = (size_t) dwReturned;
+    *pCount = dwReturned;
 
     return result;
 }
@@ -235,7 +236,7 @@ static PRINTER_INFO_2 *GetPrinters(size_t *pCount)
 static char *GetDefaultPrinterName(void)
 {
     char *result = NULL;
-    size_t count;
+    int count;
     PRINTER_INFO_5 *printers = GetDefaultPrinters(&count);
     if( count==0 ) {
         HMODULE hMod = LoadLibrary(TEXT("winspool.drv"));
@@ -274,7 +275,7 @@ static char *GetDefaultPrinterName(void)
 static void
 fb_hPrinterBuildListLocal( FB_LIST *list )
 {
-    size_t i, count;
+    int i, count;
     PRINTER_INFO_2 *printers = GetPrinters(&count);
     for( i=0; i!=count; ++i ) {
         PRINTER_INFO_2 *printer = printers + i;
@@ -315,7 +316,7 @@ static int
 fb_hPrinterBuildListDefault( FB_LIST *list, int iStartPort )
 {
     char Buffer[32];
-    size_t iPort = iStartPort - 1;
+    int iPort = iStartPort - 1;
     char *printer_name = GetDefaultPrinterName( );
 
     if( printer_name!=NULL ) {
@@ -340,7 +341,7 @@ static int
 fb_hPrinterBuildListOther( FB_LIST *list, int iStartPort )
 {
     char Buffer[32];
-    size_t i, count, iPort = iStartPort - 1;
+    int i, count, iPort = iStartPort - 1;
     PRINTER_INFO_2 *printers = GetPrinters(&count);
 
     for( i=0; i!=count; ++i ) {
@@ -375,7 +376,7 @@ fb_hPrinterBuildList( FB_LIST *list )
     fb_hPrinterBuildListOther( list, 128 );
 }
 
-int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
+int fb_PrinterOpen( DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
 {
     int result = fb_ErrorSetNum( FB_RTERROR_OK );
     const DEV_PRINTER_EMU_MODE *pFoundEmu = NULL;
@@ -397,7 +398,7 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 
     /* Allow only valid emulation modes */
     if( *lpt_proto->emu!=0 ) {
-        size_t i;
+        int i;
         for( i=0;
              i!=sizeof(aEmulationModes)/sizeof(aEmulationModes[0]);
              ++i )
@@ -620,7 +621,7 @@ static void EmuPageStart( W32_PRINTER_INFO *pInfo )
 static void EmuPrint_RAW( W32_PRINTER_INFO *pInfo,
                           const void *pText,
                           size_t uiLength,
-													int isunicode )
+                          int isunicode )
 {
     while( uiLength-- ) {
 				if( !isunicode )
@@ -666,7 +667,7 @@ void fb_hHookConPrinterScroll(struct _fb_ConHooks *handle,
                               int rows)
 {
     W32_PRINTER_INFO *pInfo = handle->Opaque;
-    size_t page_rows = (pInfo->Emu.dwSizeY + pInfo->Emu.dwFontSizeY - 1)
+    int page_rows = (pInfo->Emu.dwSizeY + pInfo->Emu.dwFontSizeY - 1)
         / pInfo->Emu.dwFontSizeY;
     if( !pInfo->Emu.iPageStarted ) {
         StartPage( pInfo->hDc );
@@ -821,7 +822,7 @@ static void EmuPrint_TTY( W32_PRINTER_INFO *pInfo,
 }
 
 #if 0
-static void EmuPrint_ESC_P2( struct _DEV_LPT_INFO *devInfo,
+static void EmuPrint_ESC_P2( DEV_LPT_INFO *devInfo,
                              const char *pachText,
                              size_t uiLength )
 {
@@ -829,7 +830,7 @@ static void EmuPrint_ESC_P2( struct _DEV_LPT_INFO *devInfo,
 }
 #endif
 
-int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length )
+int fb_PrinterWrite( DEV_LPT_INFO *devInfo, const void *data, size_t length )
 {
 		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
     DWORD dwWritten;
@@ -852,7 +853,7 @@ int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t len
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
+int fb_PrinterWriteWstr( DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
 {
 		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
     DWORD dwWritten;
@@ -874,7 +875,7 @@ int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, si
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
+int fb_PrinterClose( DEV_LPT_INFO *devInfo )
 {
 		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
 

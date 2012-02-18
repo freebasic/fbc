@@ -1,6 +1,8 @@
 /* width (console, no gfx) for DOS */
 
 #include "fb.h"
+#include <conio.h>
+#include <pc.h>
 
 /*:::::*/
 int fb_ConsoleWidth( int cols, int rows )

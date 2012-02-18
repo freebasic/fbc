@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileClose( struct _FB_FILE *handle )
+int fb_DevFileClose( FB_FILE *handle )
 {
     FILE *fp;
 

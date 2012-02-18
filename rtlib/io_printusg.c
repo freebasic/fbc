@@ -1,9 +1,7 @@
 /* print using function */
 
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
 #include "fb.h"
+#include <math.h>
 
 typedef struct {
 	int       chars;

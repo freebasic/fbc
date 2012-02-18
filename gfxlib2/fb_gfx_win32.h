@@ -5,30 +5,7 @@
 
 #include <windows.h>
 
-#ifndef WM_XBUTTONDOWN
-#define WM_XBUTTONDOWN 523
-#define WM_XBUTTONUP 524
-#define WM_XBUTTONDBLCLK 525
-#endif
-
-#ifndef WM_MOUSEHWHEEL
-#define WM_MOUSEHWHEEL 526
-#endif
-
-#ifndef MK_XBUTTON1
-#define MK_XBUTTON1	32
-#define MK_XBUTTON2	64
-#endif
-
 #define WINDOW_CLASS_PREFIX "fbgfxclass_"
-
-#ifndef LWA_COLORKEY
-#define LWA_COLORKEY	0x00000001
-#endif
-
-#ifndef MONITOR_DEFAULTTONEAREST
-#define MONITOR_DEFAULTTONEAREST 0x00000002
-#endif
 
 /* This must match the original FLASHWINFO from the Win32 headers.
    MinGW-w64 declares it *all* the time, while MinGW does it only if the

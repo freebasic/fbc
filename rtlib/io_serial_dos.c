@@ -1,6 +1,10 @@
 /* serial port driver for Dos */
 
 #include "fb.h"
+#include <dos.h>
+#include <pc.h>
+#include <go32.h>
+#include <dpmi.h>
 
 /* PIC port addresses. */
 #define ICU_BASE	0x20
@@ -912,9 +916,14 @@ int comm_bytes_remaining( int com_num )
 }
 
 /*:::::*/
-int fb_SerialOpen( struct _FB_FILE *handle,
-				   int iPort, FB_SERIAL_OPTIONS *options,
-				   const char *pszDevice, void **ppvHandle )
+int fb_SerialOpen
+	(
+		FB_FILE *handle,
+		int iPort,
+		FB_SERIAL_OPTIONS *options,
+		const char *pszDevice,
+		void **ppvHandle
+	)
 {
 	int ret, flags = 0;
 
@@ -981,8 +990,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialGetRemaining( struct _FB_FILE *handle, 
-						   void *pvHandle, long *pLength )
+int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, long *pLength )
 {
 	int bytes;
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
@@ -998,8 +1006,13 @@ int fb_SerialGetRemaining( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialWrite( struct _FB_FILE *handle, 
-					void *pvHandle, const void *data, size_t length )
+int fb_SerialWrite
+	(
+		FB_FILE *handle,
+		void *pvHandle,
+		const void *data,
+		size_t length
+	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	unsigned char * p = (unsigned char *)data;
@@ -1017,8 +1030,13 @@ int fb_SerialWrite( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialRead( struct _FB_FILE *handle, 
-				   void *pvHandle, void *data, size_t *pLength )
+int fb_SerialRead
+	(
+		FB_FILE *handle,
+		void *pvHandle,
+		void *data,
+		size_t *pLength
+	)
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	int n = *pLength, ch, i, count = 0;
@@ -1043,8 +1061,7 @@ int fb_SerialRead( struct _FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_SerialClose( struct _FB_FILE *handle, 
-					void *pvHandle )
+int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 {
 	DOS_SERIAL_INFO *pInfo = (DOS_SERIAL_INFO *) pvHandle;
 	comm_close( pInfo->com_num );

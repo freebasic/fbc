@@ -1,6 +1,7 @@
 /* lcase$ function */
 
 #include "fb.h"
+#include <ctype.h>
 
 /*:::::*/
 FBCALL FBSTRING *fb_LCASE ( FBSTRING *src )

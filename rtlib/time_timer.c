@@ -3,10 +3,13 @@
 #include "fb.h"
 #include <time.h>
 
-#if defined( HOST_WIN32 )
-#	define TIMER_NONE    0
-#	define TIMER_NORMAL  1
-#	define TIMER_HIGHRES 2
+#if defined HOST_UNIX
+	#include <sys/time.h>
+#elif defined HOST_WIN32
+	#include <windows.h>
+	#define TIMER_NONE    0
+	#define TIMER_NORMAL  1
+	#define TIMER_HIGHRES 2
 	static int timer = TIMER_NONE;
 	static double frequency;
 #endif

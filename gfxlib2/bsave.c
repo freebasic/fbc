@@ -1,6 +1,9 @@
 /* BSAVE support. */
 
 #include "fb_gfx.h"
+#ifdef HOST_WIN32
+	#include <windows.h>
+#endif
 
 typedef struct BMP_HEADER
 {

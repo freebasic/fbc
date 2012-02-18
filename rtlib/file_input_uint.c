@@ -1,6 +1,7 @@
 /* input function for unsigned integers */
 
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputUint( unsigned int *dst )

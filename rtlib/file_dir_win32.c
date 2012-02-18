@@ -1,8 +1,9 @@
 /* dir$ implementation */
 
-#include <stdlib.h>
-#include <string.h>
 #include "fb.h"
+#include <direct.h>
+#include <windows.h>
+
 typedef struct {
 	int in_use;
 	int attrib;

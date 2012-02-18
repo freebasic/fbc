@@ -23,3 +23,6 @@ static __inline__ size_t FB_MEMLEN( const void *s, int c, size_t n )
 	}
 	return 0;
 }
+
+#define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
+#define RORW1(num)      RORW(num, 1)

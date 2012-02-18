@@ -1,7 +1,7 @@
 /* get localized month name */
 
-#include <string.h>
 #include "fb.h"
+#include "fb_private_intl.h"
 
 #if defined( HOST_DOS )
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
@@ -26,7 +26,6 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 }
 
 #elif defined( HOST_UNIX )
-#include <langinfo.h>
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
     const char *pszName;

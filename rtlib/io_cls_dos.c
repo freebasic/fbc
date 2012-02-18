@@ -1,8 +1,8 @@
 /* cls (console, no gfx) function for DOS */
 
 #include "fb.h"
+#include "fb_private_console.h"
 #include <pc.h>
-
 
 /*:::::*/
 void fb_ConsoleClear( int mode )
@@ -24,5 +24,3 @@ void fb_ConsoleClear( int mode )
     fb_ConsoleScroll_BIOS( 0, toprow, ScreenCols()-1, botrow, 0 );
 	fb_ConsoleLocate_BIOS( toprow, 0, -1 );
 }
-
-

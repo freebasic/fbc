@@ -4,8 +4,8 @@
 
 #include "fb_gfx.h"
 #include "fb_gfx_x11.h"
-#include "../rtlib/fb_scancodes_x11.h"
-#include <unistd.h>
+#include "../rtlib/fb_private_scancodes_x11.h"
+#include <pthread.h>
 
 /* Horizontal scroll wheel (6 == left, 7 == right)
    X headers do not define these, as X was not designed for this,

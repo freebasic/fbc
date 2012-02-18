@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileReadEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars )
+int fb_DevFileReadEncodWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars )
 {
     FILE *fp;
     size_t chars;

@@ -1,6 +1,7 @@
 /* input function for usigned shorts */
 
 #include "fb.h"
+#include <math.h>
 
 /*:::::*/
 FBCALL int fb_InputUshort( unsigned short *dst )

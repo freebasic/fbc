@@ -1,6 +1,7 @@
 /* parse a string containing a date and/or time */
 
 #include "fb.h"
+#include <ctype.h>
 
 /*:::::*/
 FBCALL int fb_DateTimeParse( FBSTRING *s,

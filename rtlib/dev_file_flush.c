@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileFlush( struct _FB_FILE *handle )
+int fb_DevFileFlush( FB_FILE *handle )
 {
     FILE *fp;
 

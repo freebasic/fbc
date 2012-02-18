@@ -2,6 +2,8 @@
 
 #include "fb.h"
 
+#define FB_ERROR_MESSAGE_SIZE		1024
+
 static char error_buffer[FB_ERROR_MESSAGE_SIZE];
 static const char *error_msg[] = {
 	"",                                     /* FB_RTERROR_OK */

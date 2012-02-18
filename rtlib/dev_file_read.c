@@ -2,8 +2,7 @@
 
 #include "fb.h"
 
-/*:::::*/
-int fb_DevFileRead( struct _FB_FILE *handle, void *dst, size_t *pLength )
+int fb_DevFileRead( FB_FILE *handle, void *dst, size_t *pLength )
 {
     FILE *fp;
     size_t rlen, length;

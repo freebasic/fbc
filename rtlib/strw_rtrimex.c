@@ -1,6 +1,5 @@
 /* enhanced rtrimw$ function */
 
-#include <stdlib.h>
 #include "fb.h"
 
 

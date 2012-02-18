@@ -32,7 +32,7 @@ void fb_hPostKey(int key)
     key_buffer_changed = TRUE;
 }
 
-#ifdef __DJGPP__
+#ifdef HOST_DOS
 void fb_hPostKey_End(void)
 { /* this function is here to get the length of the fb_hPostKey function so
      the DOS gfxlib driver can lock it into physical memory for use in an

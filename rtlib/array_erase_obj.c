@@ -1,6 +1,5 @@
 /* ERASE function for dynamic arrays of objects */
 
-#include <stdlib.h>
 #include "fb.h"
 
 /*:::::*/
