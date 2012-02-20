@@ -792,7 +792,7 @@ LIBFB_C := \
   str_concatassign str_concat str_convfrom str_convfrom_int str_convfrom_lng \
   str_convfrom_rad str_convfrom_radlng str_convfrom_uint str_convfrom_ulng \
   str_convto str_convto_flt str_convto_lng str_core str_cvmk str_del str_fill \
-  str_format str_ftoa str_hex str_hex_lng str_instrany str_instr \
+  str_format str_ftoa str_hex str_hex_lng str_hskip str_instrany str_instr \
   str_instrrevany str_instrrev str_lcase str_left str_len str_ltrimany \
   str_ltrim str_ltrimex str_midassign str_mid str_misc str_oct str_oct_lng \
   str_right str_rtrimany str_rtrim str_rtrimex str_set str_tempdescf \
