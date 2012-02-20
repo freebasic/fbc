@@ -176,20 +176,22 @@ FBSTRING *fb_ConsoleInkey( void )
 		return &__fb_ctx.null_desc;
 
 	if ((ch = fb_hGetCh(TRUE)) >= 0) {
-        if (ch & 0x100) {
-            res = (FBSTRING *)fb_hStrAllocTmpDesc();
-            fb_hStrAllocTemp(res, 2);
-            res->data[0] = FB_EXT_CHAR;
-            res->data[1] = (unsigned char)(ch & 0xFF);
-			res->data[2] = '\0';
-
-			return res;
-		}
-		else
+		if (ch & 0x100) {
+			res = fb_hStrAllocTemp( NULL, 2 );
+			if( res ) {
+				res->data[0] = FB_EXT_CHAR;
+				res->data[1] = (unsigned char)(ch & 0xFF);
+				res->data[2] = '\0';
+				return res;
+			} else {
+				res = &__fb_ctx.null_desc;
+			}
+		} else {
 			return fb_CHR( 1, ch );
-	}
-	else
+		}
+	} else {
 		res = &__fb_ctx.null_desc;
+	}
 
 	return res;
 }

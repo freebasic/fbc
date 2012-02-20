@@ -20,20 +20,23 @@ FBSTRING *fb_ConsoleInkey( void )
 			chars = 2;
 		}
 
-        res = fb_hStrAllocTemp( NULL, chars );
-        DBG_ASSERT( res!=NULL );
-        if( chars > 1 )
-            res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
+		res = fb_hStrAllocTemp( NULL, chars );
+		if( res ) {
+			if( chars > 1 )
+				res->data[0] = FB_EXT_CHAR; /* note: can't use '\0' here as in qb */
 
-        res->data[chars-1] = (unsigned char)k;
-        res->data[chars-0] = '\0';
+			res->data[chars-1] = (unsigned char)k;
+			res->data[chars-0] = '\0';
 
-        /* Reset the status for "key buffer changed" when a key
-         * was removed from the input queue. */
-        fb_hConsoleInputBufferChanged();
-    }
-	else
+			/* Reset the status for "key buffer changed" when a key
+			 * was removed from the input queue. */
+			fb_hConsoleInputBufferChanged();
+		} else {
+			res = &__fb_ctx.null_desc;
+		}
+	} else {
 		res = &__fb_ctx.null_desc;
+	}
 
 	return res;
 }
