@@ -195,10 +195,8 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 
         if( delete_char_count ) {
             FBSTRING *str_fill;
-            FBSTRING *str_tmp1 = fb_StrAllocTempDescV( &result );
-            FBSTRING *str_tmp2 = fb_StrAllocTempDescV( &result );
-            FBSTRING *str_left = fb_StrMid( str_tmp1, 1, pos );
-            FBSTRING *str_right = fb_StrMid( str_tmp2,
+            FBSTRING *str_left = fb_StrMid( &result, 1, pos );
+            FBSTRING *str_right = fb_StrMid( &result,
                                              pos + 1 + delete_char_count,
                                              len - pos - delete_char_count);
             fb_StrAssign( &result, -1, str_left, -1, FALSE );
@@ -226,10 +224,8 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
         if( add_char ) {
             int old_x = current_x, old_y = current_y;
             FBSTRING *str_add = fb_StrAllocTempDescF( tmp_buffer, tmp_buffer_len + 1 );
-            FBSTRING *str_tmp1 = fb_StrAllocTempDescV( &result );
-            FBSTRING *str_tmp2 = fb_StrAllocTempDescV( &result );
-            FBSTRING *str_left = fb_StrMid( str_tmp1, 1, pos );
-            FBSTRING *str_right = fb_StrMid( str_tmp2, pos + 1, len - pos);
+            FBSTRING *str_left = fb_StrMid( &result, 1, pos );
+            FBSTRING *str_right = fb_StrMid( &result, pos + 1, len - pos);
             fb_StrAssign( &result, -1, str_left, -1, FALSE );
             fb_StrConcatAssign( &result, -1, str_add, -1, FALSE );
             fb_StrConcatAssign( &result, -1, str_right, -1, FALSE );
