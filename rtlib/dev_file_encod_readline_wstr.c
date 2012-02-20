@@ -4,49 +4,56 @@
 
 int fb_DevFileReadLineEncodWstr( FB_FILE *handle, FB_WCHAR *dst, int max_chars )
 {
-    int res;
-    FILE *fp;
-    FB_WCHAR c[2] = { 0 };
+	int res;
 
 	FB_LOCK();
 
-    fp = (FILE *)handle->opaque;
-    if( fp == stdout || fp == stderr )
-        fp = stdin;
+	FILE* fp = (FILE *)handle->opaque;
+	if( fp == stdout || fp == stderr )
+		fp = stdin;
 
-	if( fp == NULL )
-	{
+	if( fp == NULL ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-    *dst = _LC('\0');
+	/* Clear string first, we're only using += concat assign below... */
+	dst[0] = _LC('\0');
 
-    while( TRUE )
-    {
-    	size_t len;
-    	res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
-    	if( (res != FB_RTERROR_OK) || (len == 0) )
-    		break;
+	/* Read one byte at a time until CR and/or LF is found.
+	   The fb_FileGetDataEx() will handle the decoding. The length to read
+	   is specified in wchars, not bytes, because we're passing TRUE for
+	   is_unicode. */
+	while( TRUE ) {
+		FB_WCHAR c[2];
+		size_t len;
 
-    	if( c[0] == _LC('\r') )
-    	{
-    		res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
-    		if( (res != FB_RTERROR_OK) || (len == 0) )
-    			break;
+		res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
+		if( (res != FB_RTERROR_OK) || (len == 0) )
+			break;
 
-    		if( c[0] != _LC('\n') )
-    			fb_FilePutBackEx( handle, c, 1 );
+		/* CR? Check for following LF too, and skip it if it's there */
+		if( c[0] == _LC('\r') ) {
+			res = fb_FileGetDataEx( handle, 0, c, 1, &len, FALSE, TRUE );
+			if( (res != FB_RTERROR_OK) || (len == 0) )
+				break;
 
-    		break;
-    	}
-    	else if( c[0] == _LC('\n') )
-    	{
-    			break;
-    	}
+			/* No LF? Ok then, don't skip it yet */
+			if( c[0] != _LC('\n') )
+				fb_FilePutBackEx( handle, c, 1 );
 
-    	fb_WstrConcatAssign( dst, max_chars, c );
-    }
+			break;
+		}
+
+		/* LF? */
+		if( c[0] == _LC('\n') ) {
+			break;
+		}
+
+		/* Any other char? Append to string, and continue... */
+		c[1] = _LC('\0');
+		fb_WstrConcatAssign( dst, max_chars, c );
+	}
 
 	FB_UNLOCK();
 

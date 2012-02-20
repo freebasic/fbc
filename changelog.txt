@@ -68,6 +68,7 @@ Version 0.24.0:
 - Wrong error message when calling non-const method on const UDT
 - Shell() on Unix didn't return the proper shell exit code
 - Memory leak and possible race condition in console Line Input function
+- Infinite loop in Line Input on files opened with Encoding when reaching EOF without newline
 
 
 Version 0.23.0:
