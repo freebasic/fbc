@@ -93,7 +93,6 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
        int          fb_ConsolePageCopy  ( int src, int dst );
        int          fb_ConsolePageSet   ( int active, int visible );
 
-       void         fb_ConReadLineEx    ( FBSTRING *dst, int soft_cursor );
 FBCALL FBSTRING    *fb_ConReadLine      ( int soft_cursor );
 
        int          fb_ConsoleLineInput ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );

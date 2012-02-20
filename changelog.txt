@@ -67,6 +67,7 @@ Version 0.24.0:
 - GFX_SHAPED_WINDOW didn't work properly on some modern Linux systems (thanks Sisophon2001 for the fix)
 - Wrong error message when calling non-const method on const UDT
 - Shell() on Unix didn't return the proper shell exit code
+- Memory leak and possible race condition in console Line Input function
 
 
 Version 0.23.0:
