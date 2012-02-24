@@ -13,7 +13,7 @@ Version 0.24.0:
 - 'PALETTE index, r, g, b' now uses 8-bit precision on each color value
 - The __FB_MIN_VERSION__() macro is no longer changed to ____FB_MIN_VERSION__() for -lang qb
 - SWAP no longer accepts function calls
-- ImageCreate() will now set an runtime error code on failure ("illegal function call" or "out of memory"), which can be retrieved with Err()
+- ImageCreate() and Reset(streamno) now set the runtime error code, which can be retrieved with Err()
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11

@@ -2,8 +2,6 @@
 
 #include "fb_gfx.h"
 
-
-/*:::::*/
 static void *gfx_imagecreate(int width, int height, unsigned int color, int depth, int flags, int usenewheader)
 {
 	FB_GFXCTX *context = fb_hGetContext();
@@ -74,22 +72,20 @@ static void *gfx_imagecreate(int width, int height, unsigned int color, int dept
 	fb_hSetPixelTransfer(context, MASK_A_32);
 	context->pixel_set((unsigned char *)image + header_size, color, (pitch * height) / bpp);
 
+	fb_ErrorSetNum( FB_RTERROR_OK );
 	return image;
 }
 
-/*:::::*/
 FBCALL void *fb_GfxImageCreate(int width, int height, unsigned int color, int depth, int flags)
 {
 	return gfx_imagecreate( width, height, color, depth, flags, TRUE );
 }
 
-/*:::::*/
 FBCALL void *fb_GfxImageCreateQB(int width, int height, unsigned int color, int depth, int flags)
 {
 	return gfx_imagecreate( width, height, color, depth, flags, FALSE );
 }
 
-/*:::::*/
 FBCALL void fb_GfxImageDestroy(void *image)
 {
 	free(((void **)image)[-1]);
