@@ -605,7 +605,7 @@ declare function hPorts_cb _
 	 			) _
 	 		} _
 		), _
-		/' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer, byval pal as any ptr = NULL ) as integer '/ _
+		/' fb_GfxBsave( byref filename as string, byval src as any ptr, byval length as uinteger = 0, byval pal as any ptr = NULL ) as integer '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
 			FB_DATATYPE_INTEGER, FB_USE_FUNCMODE_FBCALL, _
@@ -619,7 +619,7 @@ declare function hPorts_cb _
  					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+ 					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, TRUE, 0 _
 	 			), _
 				( _
  					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL _
