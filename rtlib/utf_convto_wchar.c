@@ -308,24 +308,20 @@ static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, int *chars )
 static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, int *chars )
 {
 	FB_WCHAR *res = NULL;
-	
-	/* same size? */
-	if( sizeof( FB_WCHAR ) == sizeof( UTF_16 ) )
-	{
-		if( dst == NULL )
-			return (FB_WCHAR *)src;
-		else
-		{
-			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
-			return dst;
-		}
-	}
 
-	/* convert.. */
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( char ):
 		res = (FB_WCHAR *)fb_hUTF16ToChar( src, (char *)dst, chars );
+		break;
+
+	case sizeof( UTF_16 ):
+		if( dst == NULL ) {
+			res = (FB_WCHAR *)src;
+		} else {
+			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
+			res = dst;
+		}
 		break;
 
 	case sizeof( UTF_32 ):
@@ -413,19 +409,6 @@ static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, int *chars )
 {
 	FB_WCHAR *res = NULL;
 
-	/* same size? */
-	if( sizeof( FB_WCHAR ) == sizeof( UTF_32 ) )
-	{
-		if( dst == NULL )
-			return (FB_WCHAR *)src;
-		else
-		{
-			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
-			return dst;
-		}
-	}
-
-	/* convert.. */
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( char ):
@@ -434,6 +417,15 @@ static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, int *chars )
 
 	case sizeof( UTF_16 ):
 		res = hUTF32ToUTF16( src, dst, chars );
+		break;
+
+	case sizeof( UTF_32 ):
+		if( dst == NULL ) {
+			res = (FB_WCHAR *)src;
+		} else {
+			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
+			res = dst;
+		}
 		break;
 	}
 

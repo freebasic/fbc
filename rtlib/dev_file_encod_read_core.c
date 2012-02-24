@@ -368,11 +368,6 @@ static int hReadUTF32ToWchar( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
 	int res = 0;
 
-	/* same size? */
-	if( sizeof( FB_WCHAR ) == sizeof( UTF_32 ) )
-		return fread( (char *)dst, sizeof( UTF_32 ), max_chars, fp );
-
-	/* convert.. */
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( char ):
@@ -381,6 +376,10 @@ static int hReadUTF32ToWchar( FILE *fp, FB_WCHAR *dst, int max_chars )
 
 	case sizeof( UTF_16 ):
 		res = hUTF32ToUTF16( fp, dst, max_chars );
+		break;
+
+	case sizeof( UTF_32 ):
+		res = fread( (char *)dst, sizeof( UTF_32 ), max_chars, fp );
 		break;
 	}
 

@@ -436,7 +436,7 @@ int fb_SerialRead( FB_FILE *handle, void *pvHandle, void *data, size_t *pLength 
 {
     LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
     int SerialFD;
-    size_t count = 0;
+    ssize_t count = 0;
     fd_set rfds;
     struct timeval tmout;
 
