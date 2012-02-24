@@ -104,7 +104,9 @@ static void console_resize(int sig)
 #ifdef HOST_LINUX
 	fflush(stdin);
 	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
-	fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x);
+	if( fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x) != 2 ) {
+		__fb_con.cur_y = __fb_con.cur_x = 1;
+	}
 #else
 	/* !!!TODO!!! reset cursor to known position? */
 	__fb_con.cur_y = __fb_con.cur_x = 1;

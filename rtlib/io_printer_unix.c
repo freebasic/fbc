@@ -9,38 +9,26 @@ static char lp_buf[256];
 static int exec_lp_cmd( const char *cmd, int test_default )
 {
 	int have_default = TRUE; // Assume a default printer
-	int result = 0;
-	FILE *fp;
+	int result = -1;
 
-	fp = popen( cmd, "r" );
-	if(fp == NULL )
-		return -1;
-
-	if( !test_default )
-	{
-		while( !feof( fp ) )
-			fgets( lp_buf, 256, fp );
-		return pclose( fp ) >> 8;
-	}
-
-	while( !feof( fp ) )
-	{
-		if( !fgets( lp_buf, 256, fp ) )
-		{
-			if( have_default && (strlen( lp_buf) > 2) )
-				if( (lp_buf[0] == 'n' || lp_buf[0] == 'N') 
-							&& (lp_buf[1] == 'o' || lp_buf[1] == 'O') )
-					have_default = FALSE;
+	FILE *fp = popen( cmd, "r" );
+	if( fp ) {
+		while( !feof( fp ) ) {
+			if( !fgets( lp_buf, 256, fp ) ) {
+				if( test_default && have_default && (strlen( lp_buf ) > 2) )
+					if( (lp_buf[0] == 'n' || lp_buf[0] == 'N') &&
+					    (lp_buf[1] == 'o' || lp_buf[1] == 'O') )
+						have_default = FALSE;
+			}
 		}
+
+		result = pclose( fp ) >> 8;
+
+		if( test_default && !have_default )
+			result = -1;
 	}
-
-	result = pclose( fp ) >> 8;
-
-	if( have_default == FALSE )
-		return -1;
 
 	return result;
-
 }
 
 int fb_PrinterOpen( DEV_LPT_INFO *devInfo, int iPort, const char *pszDeviceRaw )
