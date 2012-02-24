@@ -112,12 +112,12 @@ static char *find_next ( int *attrib )
 		}
 		name = entry->d_name;
 		strcpy( buffer, ctx->dirname );
-		strncat( buffer, name, MAX_PATH );
+		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
-		
+
 		if( stat( buffer, &info ) )
 			continue;
-		
+
 		*attrib = get_attrib( name, &info );
 	}
 	while( ( *attrib & ~ctx->attrib ) || !match_spec( name ) );

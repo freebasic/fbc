@@ -112,7 +112,7 @@ static char *find_next ( void )
 		}
 		name = entry->d_name;
 		strcpy( buffer, dir_data.dirname );
-		strncat( buffer, name, MAX_PATH );
+		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
 	}
 	while( ( stat( buffer, &info ) ) || ( get_attrib( name, &info ) & ~dir_data.attrib ) || ( !match_spec( name ) ) );
