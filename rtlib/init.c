@@ -46,7 +46,7 @@ void fb_hRtExit( void )
 
 	/* if an error has to be displayed, do it now */
 	if( __fb_ctx.error_msg )
-		fprintf( stderr, "%s", __fb_ctx.error_msg );
+		fputs( __fb_ctx.error_msg, stderr );
 }
 
 /* called by FB program */
