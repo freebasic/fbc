@@ -9,6 +9,16 @@
 #include <ddraw.h>
 #include <dinput.h>
 
+/* Normally these globals are found in -ldxguid, but we don't link that into
+   FB programs because MinGW's libdxguid.a contains lots of other such globals
+   and all of them in one object resulting in lots of unnecessary bloat.
+   So we declare these manually here. They must be renamed from the originals
+   too to prevent collisions with the DirectX/MinGW[-w64] headers. */
+#define DX_GUID(id,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) static const GUID id = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
+DX_GUID( __fb_IID_IDirectDraw2, 0xB3A6F3E0,0x2B43,0x11CF,0xA2,0xDE,0x00,0xAA,0x00,0xB9,0x33,0x56 );
+DX_GUID( __fb_GUID_Key,         0x55728220,0xD33C,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
+DX_GUID( __fb_GUID_SysKeyboard, 0x6F1D2B61,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00 );
+
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_wait_vsync(void);
 static int *driver_fetch_modes(int depth, int *size);
@@ -199,7 +209,7 @@ static int directx_init(void)
 	
 	if ((!DirectDrawCreate) || (DirectDrawCreate(ddGUID, &lpDD1, NULL) != DD_OK))
 		return -1;
-	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
+	res = IDirectDraw_QueryInterface(lpDD1, &__fb_IID_IDirectDraw2, (LPVOID)&lpDD);
 	IDirectDraw_Release(lpDD1);
 	if (res != DD_OK)
 		return -1;
@@ -317,12 +327,12 @@ static int directx_init(void)
 	vsync_event = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	for (i = 0; i < 256; i++) {
-		__c_rgodfDIKeyboard[i].pguid = &GUID_Key;
+		__c_rgodfDIKeyboard[i].pguid = &__fb_GUID_Key;
 		__c_rgodfDIKeyboard[i].dwOfs = i;
 		__c_rgodfDIKeyboard[i].dwType = 0x8000000C | (i << 8);
 		__c_rgodfDIKeyboard[i].dwFlags = 0;
 	}
-	if (IDirectInput_CreateDevice(lpDI, &GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
+	if (IDirectInput_CreateDevice(lpDI, &__fb_GUID_SysKeyboard, &lpDID, NULL) != DI_OK)
 		return -1;
 	if (IDirectInputDevice_SetDataFormat(lpDID, &__c_dfDIKeyboard) != DI_OK)
 		return -1;
@@ -523,7 +533,7 @@ static int *driver_fetch_modes(int depth, int *size)
 			FreeLibrary(library);
 			return NULL;
 		}
-		res = IDirectDraw_QueryInterface(dd1, &IID_IDirectDraw2, (LPVOID)&dd2);
+		res = IDirectDraw_QueryInterface(dd1, &__fb_IID_IDirectDraw2, (LPVOID)&dd2);
 		IDirectDraw_Release(dd1);
 		if (res != DD_OK) {
 			FreeLibrary(library);
