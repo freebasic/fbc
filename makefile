@@ -1159,7 +1159,7 @@ $(newlib)/fbrt0.o: rtlib/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(newlib)/libfb.a: $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)$(AR) rcs $@ $^
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFB_C): $(newlibfb)/%.o: rtlib/%.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
@@ -1168,7 +1168,7 @@ $(LIBFB_S): $(newlibfb)/%.o: rtlib/%.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(newlib)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)$(AR) rcs $@ $^
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBMT_C): $(newlibfbmt)/%.o: rtlib/%.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
@@ -1188,7 +1188,7 @@ gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
 endif
 
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)$(AR) rcs $@ $^
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBGFX_C): $(newlibfbgfx)/%.o: gfxlib2/%.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
