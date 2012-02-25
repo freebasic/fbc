@@ -8,10 +8,8 @@
 #define LWA_COLORKEY	0x00000001
 #endif
 
-
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static int *driver_fetch_modes(int depth, int *size);
-
 
 GFXDRIVER fb_gfxDriverGDI =
 {
@@ -31,13 +29,10 @@ GFXDRIVER fb_gfxDriverGDI =
 	NULL			/* void (*poll_events)(void); */
 };
 
-
 static BITMAPINFO *bitmap_info;
 static HPALETTE palette;
 static unsigned char *buffer;
 
-
-/*:::::*/
 static void alpha_remover_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int *d, *s;
@@ -45,7 +40,7 @@ static void alpha_remover_blitter(unsigned char *dest, int pitch)
 	unsigned int c;
 	char *dirty = __fb_gfx->dirty;
 	int x, y;
-	
+
 	for (y = __fb_gfx->h * __fb_gfx->scanline_size; y; y--) {
 		if (*dirty) {
 			s = (unsigned int *)src;
@@ -60,18 +55,16 @@ static void alpha_remover_blitter(unsigned char *dest, int pitch)
 	}
 }
 
-
-/*:::::*/
 static void gdi_paint(void)
 {
 	unsigned char *source;
 	HDC hdc;
-	
+
 	if (fb_win32.blitter)
 		source = buffer;
 	else
 		source = __fb_gfx->framebuffer;
-	
+
 	hdc = GetDC(fb_win32.wnd);
 	SelectPalette(hdc, palette, FALSE);
 	RealizePalette(hdc);
@@ -80,8 +73,6 @@ static void gdi_paint(void)
 	ReleaseDC(fb_win32.wnd, hdc);
 }
 
-
-/*:::::*/
 static int gdi_init(void)
 {
 	DEVMODE mode;
@@ -96,14 +87,14 @@ static int gdi_init(void)
 	bitmap_info = NULL;
 	buffer = NULL;
 	palette = NULL;
-	
+
 	monitor_info.cbSize = sizeof(MONITORINFOEX);
 	monitor_info.szDevice[0] = '\0';
-	
+
 	if (fb_win32.GetMonitorInfo && fb_win32.monitor && fb_win32.GetMonitorInfo(fb_win32.monitor, (LPMONITORINFO)&monitor_info)) {
 		devname = monitor_info.szDevice;
 	}
-	
+
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
@@ -121,8 +112,7 @@ static int gdi_init(void)
 		}
 		
 		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-	}
-	else {
+	} else {
 		style = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
 		if (fb_win32.flags & DRIVER_NO_SWITCH)
 			style &= ~WS_MAXIMIZEBOX;
@@ -134,7 +124,7 @@ static int gdi_init(void)
 			ex_style = WS_EX_LAYERED;
 		}
 	}
-	
+
 	rect.left = rect.top = x = y = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
@@ -155,7 +145,7 @@ static int gdi_init(void)
 		x = monitor_info.rcMonitor.left;
 		y = monitor_info.rcMonitor.top;
 	}
-	
+
 	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
@@ -163,7 +153,7 @@ static int gdi_init(void)
 			return -1;
 		fb_win32.SetLayeredWindowAttributes(fb_win32.wnd, (fb_win32.depth > 8) ? RGB(255, 0, 255) : 0, 0, LWA_COLORKEY);
 	}
-	
+
 	bitmap_info = (BITMAPINFO *)calloc(1, sizeof(BITMAPINFO) + (sizeof(RGBQUAD) * 256));
 	if (!bitmap_info)
 		return -1;
@@ -198,21 +188,19 @@ static int gdi_init(void)
 
 	hdc = GetDC(fb_win32.wnd);
 	__fb_gfx->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
-	
+
 	lp = (LOGPALETTE *)malloc(sizeof(LOGPALETTE) + (sizeof(PALETTEENTRY) * 256));
 	lp->palNumEntries = 256;
 	lp->palVersion = 0x300;
 	fb_hMemCpy(lp->palPalEntry, fb_win32.palette, sizeof(PALETTEENTRY) * 256);
 	palette = CreatePalette(lp);
 	free(lp);
-	
+
 	ReleaseDC(fb_win32.wnd, hdc);
 
 	return 0;
 }
 
-
-/*:::::*/
 static void gdi_exit(void)
 {
 	if (buffer)
@@ -228,16 +216,19 @@ static void gdi_exit(void)
 		DeleteObject(palette);
 }
 
-
-/*:::::*/
-static void gdi_thread(HANDLE running_event)
+#ifdef HOST_MINGW
+static unsigned int WINAPI gdi_thread( void *param )
+#else
+static DWORD WINAPI gdi_thread( LPVOID param )
+#endif
 {
+	HANDLE running_event = param;
 	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
 	HDC hdc;
 	RECT rect;
 
-	if (gdi_init()) return;
+	if (gdi_init()) return 1;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
@@ -311,10 +302,9 @@ static void gdi_thread(HANDLE running_event)
 		Sleep(10);
 	}
 
+	return 1;
 }
 
-
-/*:::::*/
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
@@ -329,14 +319,13 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }
 
-/*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
 	int *data = NULL, *newdata;
 	int mode = 0;
 	int count = 0;
 	DEVMODE dm;
-	
+
 	while (EnumDisplaySettings(NULL, mode, &dm)) {
 		if ((dm.dmBitsPerPel == depth) ||
 		    (dm.dmBitsPerPel == 15 && depth == 16) ||
@@ -354,7 +343,7 @@ static int *driver_fetch_modes(int depth, int *size)
 		}
 		++mode;
 	}
-	
+
 	*size = count;
 	return data;
 }

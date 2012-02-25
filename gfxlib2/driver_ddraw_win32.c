@@ -89,7 +89,7 @@ static void restore_surfaces(void)
 				directx_exit();
 				Sleep(300);
 			}
-			
+
 			if (fb_win32.FlashWindowEx) {
 				/* stop our window to flash */
 				fwinfo.cbSize = sizeof(fwinfo);
@@ -149,8 +149,9 @@ static BOOL WINAPI ddenum_callback(GUID FAR *lpGUID, LPSTR lpDriverDescription, 
 		((DEVENUMDATA *)lpContext)->guid = *lpGUID;
 		((DEVENUMDATA *)lpContext)->success = TRUE;
 		return 0;
-	} else
+	} else {
 		return 1;
+	}
 }
 
 static int directx_init(void)
@@ -190,12 +191,9 @@ static int directx_init(void)
 	
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN) || (fb_win32.monitor == NULL) || !DirectDrawEnumerateEx ||
 	    (DirectDrawEnumerateEx(ddenum_callback, &dev_enum_data, DDENUM_ATTACHEDSECONDARYDEVICES) != DD_OK) ||
-	    !dev_enum_data.success )
-	{
+	    !dev_enum_data.success ) {
 		ddGUID = NULL;
-	}
-	else
-	{
+	} else {
 		ddGUID = &dev_enum_data.guid;
 	}
 	
@@ -240,17 +238,15 @@ static int directx_init(void)
 				height = calc_comp_height( height );
 				if( height == 0 )
 					return -1;
-			}
-			else
+			} else {
 				break;
+			}
 		}
 		display_offset = ((height - fb_win32.h) >> 1);
-	}
-	else {
+	} else {
 		if (fb_win32.flags & DRIVER_NO_FRAME) {
 			style = WS_POPUP | WS_VISIBLE;
-		}
-		else {
+		} else {
 			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
@@ -287,9 +283,9 @@ static int directx_init(void)
 		desc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_VIDEOMEMORY;
 		if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS_back, 0) != DD_OK)
 			return -1;
-	}
-	else
+	} else {
 		lpDDS_back = lpDDS;
+	}
 
 	format.dwSize = sizeof(format);
 	if (IDirectDrawSurface_GetPixelFormat(lpDDS, &format) != DD_OK)
@@ -399,14 +395,19 @@ static void directx_exit(void)
 	}
 }
 
-static void directx_thread(HANDLE running_event)
+#ifdef HOST_MINGW
+static unsigned int WINAPI directx_thread( void *param )
+#else
+static DWORD WINAPI directx_thread( LPVOID param )
+#endif
 {
+	HANDLE running_event = param;
 	DDSURFACEDESC desc;
 	HRESULT result;
 	unsigned char keystate[256];
 	int i;
 
-	if (directx_init()) return;
+	if (directx_init()) return 1;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
@@ -456,6 +457,8 @@ static void directx_thread(HANDLE running_event)
 
 		fb_hWin32Unlock();
 	}
+
+	return 1;
 }
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
@@ -471,7 +474,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 
 	win_x = (GetSystemMetrics(SM_CXSCREEN) - w) >> 1;
 	win_y = (GetSystemMetrics(SM_CYSCREEN) - h) >> 1;
-	
+
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }
 
@@ -526,8 +529,7 @@ static int *driver_fetch_modes(int depth, int *size)
 			FreeLibrary(library);
 			return NULL;
 		}
-	}
-	else {
+	} else {
 		dd2 = lpDD;
 	}
 	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)

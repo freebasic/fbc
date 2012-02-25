@@ -28,8 +28,7 @@ typedef BOOL (WINAPI *_TRACKMOUSEEVENT)(TRACKMOUSEEVENT *);
 typedef BOOL (WINAPI *GETMONITORINFO)(HMONITOR hMonitor, LPMONITORINFO lpmi);
 typedef LONG (WINAPI *CHANGEDISPLAYSETTINGSEX)(LPCTSTR lpszDeviceName, LPDEVMODE lpDevMode, HWND hwnd, DWORD dwflags, LPVOID lParam);
 
-typedef struct WIN32DRIVER
-{
+typedef struct {
 	int version;
 	HINSTANCE hinstance;
 	WNDCLASS wndclass;
@@ -44,9 +43,13 @@ typedef struct WIN32DRIVER
 	int (*init)(void);
 	void (*exit)(void);
 	void (*paint)(void);
-	void (*thread)(HANDLE running_event);
+#ifdef HOST_MINGW
+	unsigned int WINAPI (*thread)( void *param );
+#else
+	DWORD WINAPI (*thread)( LPVOID param );
+#endif
 	int mouse_clip;
-	
+
 	/* user32 procs */
 	SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 	MONITORFROMWINDOW MonitorFromWindow;
