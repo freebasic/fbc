@@ -167,7 +167,8 @@
         SDL headers, SDL_bassgl, SDL_opengl and SDL_key examples
         First file routines for FB's rtlib
     - MOD
-        wx-c, BASS headers; -lang qb support for built-in macros
+        wx-c, BASS headers; -lang qb support for built-in macros,
+        "real" Rnd() algorithm
     - Nek (dave[at]nodtveidt.net)
         Win32 API headers
     - Plasma

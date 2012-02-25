@@ -8,6 +8,8 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
+declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
+
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
 		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
@@ -116,7 +118,7 @@
 		( _
 			@"rnd", @"fb_Rnd", _
 			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			@hRndREAL_cb, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
@@ -1177,3 +1179,16 @@ function rtlMathFTOI _
 
 end function
 
+private function hRndREAL_cb( byval sym as FBSYMBOL ptr ) as integer
+	static as integer added = FALSE
+
+	if( added = FALSE ) then
+		added = TRUE
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			fbAddLib( "advapi32" )
+		end select
+	end if
+
+        return TRUE
+end function

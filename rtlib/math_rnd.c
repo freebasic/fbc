@@ -2,60 +2,53 @@
 
 #include "fb.h"
 
+#if defined HOST_WIN32
+	#include <windows.h>
+	#include <wincrypt.h>
+#elif defined HOST_LINUX
+	#include <fcntl.h>
+#endif
 
 #define RND_AUTO		0
 #define RND_CRT			1
 #define RND_FAST		2
 #define RND_MTWIST		3
 #define RND_QB			4
+#define RND_REAL		5
 
 #define INITIAL_SEED	327680
 
 #define MAX_STATE		624
 #define PERIOD			397
 
-
 static double hRnd_Startup( float n );
-
 static double hRnd_CRT ( float n );
-static double hRnd_FAST ( float n );
-static double hRnd_MTWIST ( float n );
 static double hRnd_QB ( float n );
-
 static double ( *rnd_func )( float ) = hRnd_Startup;
 static uint32_t iseed = INITIAL_SEED;
 static uint32_t state[MAX_STATE], *p = NULL;
-
 static double last_num = 0.0;
 
-/*:::::*/
 static double hRnd_Startup( float n )
 {
-
 	switch( __fb_ctx.lang ) {
 	case FB_LANG_QB:
 		rnd_func = hRnd_QB;
 		iseed = INITIAL_SEED;
 		break;
-
 	case FB_LANG_FB_FBLITE:
 	case FB_LANG_FB_DEPRECATED:
 		rnd_func = hRnd_CRT;
 		break;
-
 	default:
 		fb_Randomize( 0.0, 0 );
 		break;
-
 	}
 	return fb_Rnd( n );
 }
 
-
-/*:::::*/
 static double hRnd_CRT ( float n )
 {
-
 	if( n == 0.0 )
 		return last_num;
 
@@ -63,11 +56,8 @@ static double hRnd_CRT ( float n )
 	return (double)rand( ) * ( 1.0 / ( (double)RAND_MAX + 1.0 ) );
 }
 
-
-/*:::::*/
 static double hRnd_FAST ( float n )
 {
-
 	/* return between 0 and 1 (but never 1) */
 	/* Constants from 'Numerical recipes in C' chapter 7.1 */
 	if( n != 0.0 )
@@ -76,21 +66,18 @@ static double hRnd_FAST ( float n )
 	return (double)iseed / (double)4294967296ULL;
 }
 
-
-/*:::::*/
 static double hRnd_MTWIST ( float n )
 {
-
 	if( n == 0.0 )
 		return last_num;
 
 	uint32_t i, v, xor_mask[2] = { 0, 0x9908B0DF };
-	
+
 	if( !p ) {
 		/* initialize state starting with an initial seed */
 		fb_Randomize( INITIAL_SEED, RND_MTWIST );
 	}
-	
+
 	if( p >= state + MAX_STATE ) {
 		/* generate another array of 624 numbers */
 		for( i = 0; i < MAX_STATE - PERIOD; i++ ) {
@@ -105,7 +92,7 @@ static double hRnd_MTWIST ( float n )
 		state[MAX_STATE - 1] = state[PERIOD - 1] ^ ( v >> 1 ) ^ xor_mask[v & 0x1];
 		p = state;
 	}
-	
+
 	v = *p++;
 	v ^= ( v >> 11 );
 	v ^= ( ( v << 7 ) & 0x9D2C5680 );
@@ -115,8 +102,6 @@ static double hRnd_MTWIST ( float n )
 	return (double)v / (double)4294967296ULL;
 }
 
-
-/*:::::*/
 static double hRnd_QB ( float n )
 {
 	union {
@@ -135,26 +120,81 @@ static double hRnd_QB ( float n )
 	return (double)iseed / (double)0x1000000;
 }
 
+#if defined HOST_WIN32 || defined HOST_LINUX
+static unsigned int hGetRealRndNumber( )
+{
+	union {
+		unsigned int i;
+		unsigned char b[sizeof(unsigned int)];
+	} number = { 0 };
 
-/*:::::*/
+#if defined HOST_WIN32
+	HCRYPTPROV provider = 0;
+	if( CryptAcquireContext( &provider, NULL, 0, PROV_RSA_FULL, 0 ) == TRUE ) {
+		if( CryptGenRandom( provider, sizeof(number), &number.b[0] ) == FALSE ) {
+			number.i = 0;
+		}
+		CryptReleaseContext( provider, 0 );
+	}
+
+#elif defined HOST_LINUX
+	int urandom = open( "/dev/urandom", O_RDONLY );
+	if( urandom != -1 ) {
+		if( read( urandom, &number.b[0], sizeof(number) ) != sizeof(number) ) {
+			number.i = 0;
+		}
+		close( urandom );
+	}
+#endif
+
+	return number.i;
+}
+
+static double hRnd_REAL( float n )
+{
+	static unsigned int count = 0;
+	static unsigned int v;
+	double mtwist;
+
+	mtwist = hRnd_MTWIST(n);
+	if( (count % 256) == 0 ) {
+		count = 1;
+
+		/* get new random number */
+		v = hGetRealRndNumber( );
+	} else {
+		count++;
+	}
+
+	if( v == 0 ) {
+		return mtwist;
+	}
+	v *= mtwist;
+
+	v ^= (v >> 11);
+	v ^= ((v << 7) & 0x9D2C5680);
+	v ^= ((v << 15) & 0xEFC60000);
+	v ^= (v >> 18);
+
+	return (double)v / (double)4294967296ULL;
+}
+#endif
+
 FBCALL double fb_Rnd ( float n )
 {
 	last_num = rnd_func( n );
-	
 	return last_num;
 }
 
-
-/*:::::*/
 FBCALL void fb_Randomize ( double seed, int algorithm )
 {
 	int i;
-	
+
 	union {
 		double d;
 		uint32_t i[2];
 	} dtoi;
-	
+
 	if( algorithm == RND_AUTO ) {
 		switch( __fb_ctx.lang ) {
 		case FB_LANG_QB:			algorithm = RND_QB;		break;
@@ -164,7 +204,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		case FB_LANG_FB:			algorithm = RND_MTWIST; break;
 		}
 	}
-	
+
 	if( seed == -1.0 )
 	{
 		/* Take value of Timer to ensure a non-constant seed.  The seeding
@@ -181,12 +221,12 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		srand( (int)seed );
 		rand( );
 		break;
-		
+
 	case RND_FAST:
 		rnd_func = hRnd_FAST;
 		iseed = (uint32_t)seed;
 		break;
-		
+
 	case RND_QB:
 		rnd_func = hRnd_QB;
 		dtoi.d = seed;
@@ -195,7 +235,17 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		s = ( ( s & 0xFFFF ) << 8 ) | ( iseed & 0xFF );
 		iseed = s;
 		break;
-		
+
+#if defined HOST_WIN32 || defined HOST_LINUX
+	case RND_REAL:
+		rnd_func = hRnd_REAL;
+		state[0] = (unsigned int)seed;
+		for( i = 1; i < MAX_STATE; i++ )
+			state[i] = ( state[i - 1] * 1664525 ) + 1013904223;
+		p = state + MAX_STATE;
+		break;
+#endif
+
 	default:
 	case RND_MTWIST:
 		rnd_func = hRnd_MTWIST;

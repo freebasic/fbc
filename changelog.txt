@@ -26,6 +26,7 @@ Version 0.24.0:
 - Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
 - 'fbc -static' option to tell the linker to link against static libraries if installed
 - CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
+- "Real" Rnd() algorithm (activate via 'Randomize(, 5)') using Win32 Crypto APIs or Linux /dev/urandom
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
