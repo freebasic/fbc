@@ -71,6 +71,7 @@ Version 0.24.0:
 - Memory leak and possible race condition in console Line Input function
 - Infinite loop in Line Input on files opened with Encoding when reaching EOF without newline
 - Bsave()'s length parameter wasn't unsigned like in the gfxlib
+- Win32 ScreenControl GET_WINDOW_POS with minimized window could cause it to be locked up that way
 
 
 Version 0.23.0:

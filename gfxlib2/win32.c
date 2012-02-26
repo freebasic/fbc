@@ -704,20 +704,24 @@ void fb_hWin32SetWindowTitle(char *title)
 
 int fb_hWin32SetWindowPos(int x, int y)
 {
-	RECT rect;
-
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return 0;
 
-	GetWindowRect(fb_win32.wnd, &rect);
-	if (x == 0x80000000)
-		x = rect.left;
-	if (y == 0x80000000)
-		y = rect.top;
-	SetWindowPos(fb_win32.wnd, HWND_TOP, x, y, rect.right - rect.left, rect.bottom - rect.top,
-		SWP_ASYNCWINDOWPOS | SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER);
+	if( (x == 0x80000000) && (y == 0x80000000) ) {
+		/* Querying window position */
+		RECT rc;
+		if( GetWindowRect( fb_win32.wnd, &rc ) ) {
+			x = rc.left;
+			y = rc.top;
+			return (x & 0xFFFF) | (y << 16);
+		}
+	} else {
+		/* Setting window position */
+		SetWindowPos( fb_win32.wnd, HWND_TOP, x, y, 0, 0,
+			SWP_ASYNCWINDOWPOS | SWP_NOOWNERZORDER | SWP_NOSIZE | SWP_NOZORDER );
+	}
 
-	return (rect.left & 0xFFFF) | (rect.top << 16);
+	return 0;
 }
 
 void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
