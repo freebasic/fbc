@@ -3,6 +3,16 @@
 #include "fb.h"
 #include "fb_private_console.h"
 #include "fb_private_hdynload.h"
+
+#ifdef DISABLE_GPM
+
+int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
+{
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+}
+
+#else
+
 #include <gpm.h>
 
 typedef int (*GPM_OPEN)(Gpm_Connect *, int);
@@ -176,6 +186,8 @@ int fb_ConsoleGetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 
 	return FB_RTERROR_OK;
 }
+
+#endif
 
 int fb_ConsoleSetMouse( int x, int y, int cursor, int clip )
 {

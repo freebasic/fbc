@@ -347,6 +347,12 @@ endif
 ifdef DISABLE_X
   ALLCFLAGS += -DDISABLE_X
 endif
+ifdef DISABLE_GPM
+  ALLCFLAGS += -DDISABLE_GPM
+endif
+ifdef DISABLE_FFI
+  ALLCFLAGS += -DDISABLE_FFI
+endif
 
 ifdef FBCFLAGS
   ALLFBCFLAGS += $(FBCFLAGS)
@@ -1375,27 +1381,25 @@ help:
 	@echo "  uninstall[-component]      remove from prefix"
 	@echo "  release                    build a release package"
 	@echo "Variables, use them to..."
-	@echo "  FB[C|L]FLAGS  add '-exx' or similar (affects the compiler only)"
-	@echo "  CFLAGS   override the default '-O2' (affects the runtime only)"
-	@echo "  new      use another build directory (default: 'new')"
-	@echo "  prefix   install in a specific place (default: '/usr/local')"
-	@echo "  TARGET   cross-compile compiler and runtime to run on TARGET"
-	@echo "  SUFFIX   append a string (e.g. '-0.23') to fbc and FB directory names"
-	@echo "  SUFFIX2  append a second string (e.g. '-test') only to the fbc executable"
-	@echo "  FBC, CC, AR  use specific tools (system triplets may be prefixed to CC/AR)"
-	@echo "  V        to get to see verbose command lines used by make"
-	@echo "FreeBASIC configuration options, use them to..."
-	@echo "  ENABLE_STANDALONE  use a simpler directory layout with fbc at toplevel"
-	@echo "                     (for self-contained installations)"
+	@echo "  FB[C|L]FLAGS, CFLAGS  set -g, -exx, etc."
+	@echo "  new      specify a build directory other than 'new'"
+	@echo "  prefix   set the installation directory, default: /usr/local"
+	@echo "  TARGET   cross-compile for this target"
+	@echo "  SUFFIX   append a string like '-0.23' to fbc and FB directory names"
+	@echo "  SUFFIX2  append a second string like '-test' only to the fbc executable"
+	@echo "  FBC, CC, AR  set specific tools (TARGET may be prefixed to CC/AR)"
+	@echo "  V        to see command lines"
+	@echo "Configuration options, use them to..."
+	@echo "  ENABLE_STANDALONE build FB for a self-contained installation"
 	@echo "  ENABLE_PREFIX     hard-code the prefix into fbc (no longer relocatable)"
-	@echo "  ENABLE_FBBFD=217  use the FB headers for this exact libbfd version,"
-	@echo "                    instead of using the system's bfd.h through a C wrapper"
-	@echo "  DISABLE_OBJINFO   Leave out fbc's objinfo feature and don't use libbfd at all"
-	@echo "  ENABLE_TDMGCC     Build FB to work with TDM-GCC (affects win32 target only)"
 	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
 	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
 	@echo "                    or when the target system isn't yet supported by libfbgfx)"
-	@echo "  DISABLE_OPENGL    Don't use OpenGL in libfbgfx (Unix/Windows versions)"
-	@echo "  DISABLE_X         Don't use X in libfbgfx (Unix version)"
-	@echo "This makefile #includes config.mk and new/config.mk, allowing you to use them"
-	@echo "to set variables in a more permanent and even build-directory specific way."
+	@echo "  ENABLE_FBBFD=217  use bfd.bi instead of bfd.h wrapper (version must match)"
+	@echo "  DISABLE_OBJINFO   build without libbfd (disables fbc's objinfo feature)"
+	@echo "  ENABLE_TDMGCC     build fbc for TDM-GCC (affects win32 target only)"
+	@echo "  DISABLE_OPENGL    build without GL headers (disables GL gfx driver)"
+	@echo "  DISABLE_X         build without X11 headers (disables X11 gfx driver)"
+	@echo "  DISABLE_GPM       build without gpm.h (disables Linux GetMouse)"
+	@echo "  DISABLE_FFI       build without ffi.h (disables ThreadCall)"
+	@echo "Options can also be set in a 'config.mk' and/or 'new/config.mk' file."
