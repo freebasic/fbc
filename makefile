@@ -1013,79 +1013,77 @@ endif
 # gfxlib sources
 #
 
-ifndef DISABLE_GFX
-  LIBFBGFX_H := $(LIBFB_H)
-  LIBFBGFX_H += gfxlib2/fb_gfx_gl.h
-  LIBFBGFX_H += gfxlib2/fb_gfx.h
-  LIBFBGFX_H += gfxlib2/fb_gfx_lzw.h
-  LIBFBGFX_H += gfxlib2/gfxdata/inline.h
+LIBFBGFX_H := $(LIBFB_H)
+LIBFBGFX_H += gfxlib2/fb_gfx_gl.h
+LIBFBGFX_H += gfxlib2/fb_gfx.h
+LIBFBGFX_H += gfxlib2/fb_gfx_lzw.h
+LIBFBGFX_H += gfxlib2/gfxdata/inline.h
 
+LIBFBGFX_C += \
+  access blitter bload box bsave circle cls color control core data draw \
+  drawstring driver_null event get getmouse image image_convert image_info \
+  inkey line lineinp lineinp_wstr lzw lzw_enc multikey page paint palette \
+  paletteget pmap point print print_wstr pset put_add put_alpha put_and \
+  put_blend put put_custom put_or put_preset put_pset put_trans put_xor \
+  readstr readxy screen screeninfo screenlist setmouse sleep softcursor \
+  stick vars vgaemu view vsync width window
+
+ifndef DISABLE_OPENGL
+  LIBFBGFX_C += opengl
+endif
+
+LIBFBGFX_S :=
+
+ifeq ($(TARGET_OS),dos)
+  LIBFBGFX_H += gfxlib2/fb_gfx_dos.h
+  LIBFBGFX_H += gfxlib2/vesa.h
+  LIBFBGFX_H += gfxlib2/vga.h
   LIBFBGFX_C += \
-    access blitter bload box bsave circle cls color control core data draw \
-    drawstring driver_null event get getmouse image image_convert image_info \
-    inkey line lineinp lineinp_wstr lzw lzw_enc multikey page paint palette \
-    paletteget pmap point print print_wstr pset put_add put_alpha put_and \
-    put_blend put put_custom put_or put_preset put_pset put_trans put_xor \
-    readstr readxy screen screeninfo screenlist setmouse sleep softcursor \
-    stick vars vgaemu view vsync width window
+    dos driver_bios_dos driver_modex_dos driver_vesa_bnk_dos \
+    driver_vesa_lin_dos driver_vga_dos joystick_dos vesa_core_dos
+  LIBFBGFX_S += mouse_dos vesa_dos
+endif
 
-  ifndef DISABLE_OPENGL
-    LIBFBGFX_C += opengl
-  endif
+ifeq ($(TARGET_OS),freebsd)
+  LIBFBGFX_C += freebsd joystick_freebsd
+endif
 
-  LIBFBGFX_S :=
+ifeq ($(TARGET_OS),linux)
+  LIBFBGFX_H += gfxlib2/fb_gfx_linux.h
+  LIBFBGFX_C += driver_fbdev_linux joystick_linux linux
+endif
 
-  ifeq ($(TARGET_OS),dos)
-    LIBFBGFX_H += gfxlib2/fb_gfx_dos.h
-    LIBFBGFX_H += gfxlib2/vesa.h
-    LIBFBGFX_H += gfxlib2/vga.h
-    LIBFBGFX_C += \
-      dos driver_bios_dos driver_modex_dos driver_vesa_bnk_dos \
-      driver_vesa_lin_dos driver_vga_dos joystick_dos vesa_core_dos
-    LIBFBGFX_S += mouse_dos vesa_dos
-  endif
+ifeq ($(TARGET_OS),openbsd)
+  LIBFBGFX_C += joystick_openbsd openbsd
+endif
 
-  ifeq ($(TARGET_OS),freebsd)
-    LIBFBGFX_C += freebsd joystick_freebsd
-  endif
+ifeq ($(TARGET_OS),xbox)
+  LIBFBGFX_C += driver_xbox
+endif
 
-  ifeq ($(TARGET_OS),linux)
-    LIBFBGFX_H += gfxlib2/fb_gfx_linux.h
-    LIBFBGFX_C += driver_fbdev_linux joystick_linux linux
-  endif
-
-  ifeq ($(TARGET_OS),openbsd)
-    LIBFBGFX_C += joystick_openbsd openbsd
-  endif
-
-  ifeq ($(TARGET_OS),xbox)
-    LIBFBGFX_C += driver_xbox
-  endif
-
-  ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
-    ifndef DISABLE_X
-      LIBFBGFX_H += gfxlib2/fb_gfx_x11.h
-      LIBFBGFX_C += driver_x11 x11 x11_icon_stub
-      ifndef DISABLE_OPENGL
-        LIBFBGFX_C += driver_opengl_x11
-      endif
-    endif
-  endif
-
-  ifneq ($(filter cygwin win32,$(TARGET_OS)),)
-    LIBFBGFX_H += gfxlib2/fb_gfx_win32.h
-    LIBFBGFX_C += driver_ddraw_win32 driver_gdi_win32 joystick_win32 win32
+ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ifndef DISABLE_X
+    LIBFBGFX_H += gfxlib2/fb_gfx_x11.h
+    LIBFBGFX_C += driver_x11 x11 x11_icon_stub
     ifndef DISABLE_OPENGL
-      LIBFBGFX_C += driver_opengl_win32
+      LIBFBGFX_C += driver_opengl_x11
     endif
   endif
+endif
 
-  ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
-    LIBFBGFX_H += gfxlib2/fb_gfx_mmx.h
-    LIBFBGFX_S += \
-      blitter_mmx mmx put_add_mmx put_alpha_mmx put_and_mmx put_blend_mmx \
-      put_or_mmx put_preset_mmx put_pset_mmx put_trans_mmx put_xor_mmx
+ifneq ($(filter cygwin win32,$(TARGET_OS)),)
+  LIBFBGFX_H += gfxlib2/fb_gfx_win32.h
+  LIBFBGFX_C += driver_ddraw_win32 driver_gdi_win32 joystick_win32 win32
+  ifndef DISABLE_OPENGL
+    LIBFBGFX_C += driver_opengl_win32
   endif
+endif
+
+ifneq ($(filter 386 486 586 686,$(TARGET_ARCH)),)
+  LIBFBGFX_H += gfxlib2/fb_gfx_mmx.h
+  LIBFBGFX_S += \
+    blitter_mmx mmx put_add_mmx put_alpha_mmx put_and_mmx put_blend_mmx \
+    put_or_mmx put_preset_mmx put_pset_mmx put_trans_mmx put_xor_mmx
 endif
 
 LIBFBGFX_C := $(patsubst %,$(newlibfbgfx)/%.o,$(LIBFBGFX_C))
@@ -1184,14 +1182,12 @@ $(LIBFBMT_S): $(newlibfbmt)/%.o: rtlib/%.s $(LIBFB_H)
 
 .PHONY: gfxlib2
 gfxlib2:
-ifndef DISABLE_GFX
 gfxlib2: $(new) $(newlibfb)
 ifndef ENABLE_STANDALONE
 gfxlib2: $(new)/lib
 endif
 gfxlib2: $(newlib)
 gfxlib2: $(newlibfbgfx) $(newlib)/libfbgfx.a
-endif
 
 $(newlib)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
@@ -1226,9 +1222,7 @@ install-rtlib: $(prefixlib)
   endif
 
 install-gfxlib2: $(prefixlib)
-  ifndef DISABLE_GFX
 	$(INSTALL_FILE) $(newlib)/libfbgfx.a $(prefixlib)/
-  endif
 
 .PHONY: uninstall uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib2
 uninstall: uninstall-compiler uninstall-headers uninstall-rtlib uninstall-gfxlib2
@@ -1258,9 +1252,7 @@ uninstall-rtlib:
   endif
 
 uninstall-gfxlib2:
-  ifndef DISABLE_GFX
 	rm -f $(prefixlib)/libfbgfx.a
-  endif
 
 .PHONY: clean clean-compiler clean-headers clean-rtlib clean-gfxlib2
 clean: clean-compiler clean-headers clean-rtlib clean-gfxlib2
@@ -1295,10 +1287,8 @@ clean-rtlib:
   endif
 
 clean-gfxlib2:
-  ifndef DISABLE_GFX
 	rm -f $(newlib)/libfbgfx.a $(newlibfbgfx)/*.o
 	-rmdir $(newlibfbgfx)
-  endif
 
 ################################################################################
 # 'make release'
@@ -1392,9 +1382,6 @@ help:
 	@echo "Configuration options, use them to..."
 	@echo "  ENABLE_STANDALONE build FB for a self-contained installation"
 	@echo "  ENABLE_PREFIX     hard-code the prefix into fbc (no longer relocatable)"
-	@echo "  DISABLE_MT        Don't build libfbmt (auto-defined for DOS runtime)"
-	@echo "  DISABLE_GFX       Don't build libfbgfx (useful when cross-compiling,"
-	@echo "                    or when the target system isn't yet supported by libfbgfx)"
 	@echo "  ENABLE_FBBFD=217  use bfd.bi instead of bfd.h wrapper (version must match)"
 	@echo "  DISABLE_OBJINFO   build without libbfd (disables fbc's objinfo feature)"
 	@echo "  ENABLE_TDMGCC     build fbc for TDM-GCC (affects win32 target only)"
