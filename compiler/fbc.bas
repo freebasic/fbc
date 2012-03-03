@@ -1885,17 +1885,17 @@ private sub fbcInit2()
 		'' lib/[triplet-]freebasic[-suffix]/
 		fbc.incpath += "include" + FB_HOST_PATHDIV
 		fbc.libpath += "lib"     + FB_HOST_PATHDIV + fbc.triplet
-		#ifdef __FB_DOS__
+		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 			'' Our subdirectory in include/ and lib/ is usually called
 			'' freebasic/, but on DOS that's too long... of course almost
 			'' no target triplet or suffix can be used either.
 			'' (Note: When changing, update the makefile too)
 			fbc.incpath += "freebas"
 			fbc.libpath += "freebas"
-		#else
+		else
 			fbc.incpath += "freebasic"
 			fbc.libpath += "freebasic"
-		#endif
+		end if
 	#endif
 
 	#ifdef ENABLE_SUFFIX
