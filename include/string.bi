@@ -3,6 +3,6 @@
 
 declare function format    alias "fb_StrFormat" _
           ( byval value as double, _
-            byref mask as string="" ) as string
+            byref mask as const string="" ) as string
 
 #endif
