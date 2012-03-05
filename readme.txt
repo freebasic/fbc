@@ -128,7 +128,7 @@
     - Abdullah Ali (voodooattack[at]hotmail.com)
         Windows NT DDK headers & examples
     - AGS
-        gdbm, zlib headers
+        gdbm, zlib, Mini-XML headers
     - Claudio Tinivella (tinycla[at]yahoo.it)
         Gtk tutorials
     - Chris Davies (c.g.davies[at]gmail.com)
