@@ -90,11 +90,10 @@ sub testAnonPadding cdecl()
 end sub
 
 private sub ctor () constructor
-
 	fbcu.add_suite("tests/structs/anon_align")
 	fbcu.add_test("size", @test_size)
 	fbcu.add_test("offset", @test_ofs)
-
+	fbcu.add_test("padding", @testAnonPadding)
 end sub
 
 end namespace
