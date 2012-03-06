@@ -1,7 +1,6 @@
 # include "fbcu.bi"
 
-
-
+#if __FB_BACKEND__ = "gas"
 
 namespace fbc_tests.functions.var_args
 
@@ -17,26 +16,24 @@ const TEST_F as single = 1.234567
 const TEST_D as double = 1.23456789012345
 const TEST_Z as string = "FoO BaR!"
 
-'':::::	
 sub test cdecl (fmtstr as string, ...)
 	dim as any ptr arg
 	dim as zstring ptr p
 	dim as integer i, char
-	
+
 	arg = va_first()
-	
 	p = strptr( fmtstr )
 	i = len( fmtstr )
 	do while( i > 0 ) 
 		char = *p
 		p += 1
 		i -= 1
-		
+
 		if( char = asc( "%" ) ) then
 			char = *p
 			p += 1
 			i -= 1
-			
+
 			select case as const char
 			case asc( "b" )
 				CU_ASSERT( va_arg( arg, byte ) = TEST_B )
@@ -77,20 +74,16 @@ sub test cdecl (fmtstr as string, ...)
 			case asc( "d" )
 				CU_ASSERT( va_arg( arg, double ) = TEST_D )
 				arg = va_next( arg, double )
-			
+
 			case asc( "z" )
 				CU_ASSERT( *va_arg( arg, zstring ptr ) = TEST_Z )
 				arg = va_next( arg, zstring ptr )
 			end select
-			
 		end if
-		
 	loop
-
 end sub
 
 sub test_1 cdecl ()
-
 	dim as byte b = TEST_B
 	dim as ubyte ub = TEST_UB
 	dim as short s = TEST_S
@@ -106,9 +99,7 @@ sub test_1 cdecl ()
 
 	test( "%b %c %s %r %i %j %l %m %f %d %z %z", _
 		   b, ub, s, us, i, ui, l, ul, f, d, vs, z )
-
 end sub
-
 
 sub testVaFirstBehindByte cdecl(byval n as byte, ...)
     '' va_first() was returning @n + 1, but it should do @n + 4 in this case,
@@ -141,7 +132,6 @@ sub testVaFirstBehindAlignedParams cdecl ()
 end sub
 
 sub testVaNext cdecl(byval n as integer, ...)
-
 	#macro case_T(T) _
 	case sizeof(T)
 		CU_ASSERT_EQUAL(*cptr(T ptr, p), i)
@@ -162,11 +152,9 @@ sub testVaNext cdecl(byval n as integer, ...)
 			CU_FAIL( "Unexpected argument size" )
 		end select
 	next
-
 end sub
 
 sub testVaNextArgs cdecl ()
-
 	testVaNext( 4, _
 		sizeof(byte), cbyte(1), _
 		sizeof(short), cshort(2), _
@@ -178,17 +166,15 @@ sub testVaNextArgs cdecl ()
 		sizeof(uinteger), cuint(2), _
 		sizeof(ushort), cushort(3), _
 		sizeof(ubyte), cubyte(4) )
-
 end sub
 
-
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.functions.var_args")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("testVaFirstBehindAlignedParams", @testVaFirstBehindAlignedParams)
 	fbcu.add_test("testVaNextArgs", @testVaNextArgs)
-
 end sub
 
 end namespace
+
+#endif

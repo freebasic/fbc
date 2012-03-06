@@ -1,5 +1,7 @@
 # include "fbcu.bi"
 
+#if __FB_BACKEND__ = "gas"
+
 namespace fbc_tests.functions.naked
 
 	function add_cdecl naked cdecl _
@@ -17,16 +19,14 @@ namespace fbc_tests.functions.naked
 	end function
 
 	sub test cdecl ( )
-
 		CU_ASSERT_EQUAL( add_cdecl( 3, 7 ), 10 )
-
 	end sub
 
 	private sub ctor () constructor
-	
 		fbcu.add_suite("fbc_tests.functions.naked")
 		fbcu.add_test("test", @test)
-	
 	end sub
-	
+
 end namespace
+
+#endif
