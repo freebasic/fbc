@@ -1391,8 +1391,8 @@ function hVarDeclEx _
 				end if
 			end if
 
-			'' "array too big for stack" check
-			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
+			'' "array too big for stack" check for static local arrays
+			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
 				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > env.clopt.stacksize ) then
 					if( is_dynamic = FALSE ) then
 						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )

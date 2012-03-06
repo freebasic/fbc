@@ -72,6 +72,7 @@ Version 0.24.0:
 - Infinite loop in Line Input on files opened with Encoding when reaching EOF without newline
 - Bsave()'s length parameter wasn't unsigned like in the gfxlib
 - Win32 ScreenControl GET_WINDOW_POS with minimized window could cause it to be locked up that way
+- "array too big for stack" warning was shown for static arrays
 
 
 Version 0.23.0:
