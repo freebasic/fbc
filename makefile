@@ -703,7 +703,7 @@ HEADER_DIRS := $(patsubst %/,%,$(sort $(dir $(HEADER_FILES))))
 # rtlib sources
 #
 
-LIBFB_H += rtlib/con_print_raw_uni.h
+LIBFB_H := rtlib/con_print_raw_uni.h
 LIBFB_H += rtlib/con_print_tty_uni.h
 LIBFB_H += rtlib/fb.h
 LIBFB_H += rtlib/fb_array.h
@@ -717,7 +717,7 @@ LIBFB_H += rtlib/fb_hook.h
 LIBFB_H += rtlib/fb_math.h
 LIBFB_H += rtlib/fb_print.h
 LIBFB_H += rtlib/fb_printer.h
-LIBFB_H := rtlib/fb_private_console.h
+LIBFB_H += rtlib/fb_private_console.h
 LIBFB_H += rtlib/fb_private_hdynload.h
 LIBFB_H += rtlib/fb_private_intl.h
 LIBFB_H += rtlib/fb_private_thread.h
