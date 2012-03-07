@@ -22,26 +22,26 @@ typedef struct MODEINFO
 
 
 static const MODEINFO mode_info[NUM_MODES] = {
- { 320, 200, 2, 1, 8, &fb_palette_16,  &fb_font_8x8,   40, 25, 0.0 },		/* CGA mode 1 */
- { 640, 200, 1, 2, 1, &fb_palette_16,  &fb_font_8x8,   80, 25, 0.0 },		/* CGA mode 2 */
+ { 320, 200, 2, 1, 8, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* CGA mode 1 */
+ { 640, 200, 1, 2, 1, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   80, 25, 0.0 },		/* CGA mode 2 */
  { 0 }, { 0 }, { 0 }, { 0 },						/* Unsupported modes (3, 4, 5, 6) */
- { 320, 200, 4, 1, 8, &fb_palette_16,  &fb_font_8x8,   40, 25, 0.0 },		/* EGA mode 7 */
- { 640, 200, 4, 2, 4, &fb_palette_16,  &fb_font_8x8,   80, 25, 0.0 },		/* EGA mode 8 */
- { 640, 350, 4, 1, 2, &fb_palette_64,  &fb_font_8x14,  80, 25, 0.0 },		/* EGA mode 9 */
- { 640, 350, 1, 1, 2, &fb_palette_2,   &fb_font_8x14,  80, 25, 0.0 },		/* EGA mode 10 */
- { 640, 480, 1, 1, 1, &fb_palette_2,   &fb_font_8x16,  80, 30, 0.0 },		/* VGA mode 11 */
- { 640, 480, 4, 1, 1, &fb_palette_256, &fb_font_8x16,  80, 30, 0.0 },		/* VGA mode 12 */
- { 320, 200, 8, 1, 1, &fb_palette_256, &fb_font_8x8,   40, 25, 0.0 },		/* VGA mode 13 */
+ { 320, 200, 4, 1, 8, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* EGA mode 7 */
+ { 640, 200, 4, 2, 4, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   80, 25, 0.0 },		/* EGA mode 8 */
+ { 640, 350, 4, 1, 2, &__fb_palette[FB_PALETTE_64],  &__fb_font[FB_FONT_14],  80, 25, 0.0 },		/* EGA mode 9 */
+ { 640, 350, 1, 1, 2, &__fb_palette[FB_PALETTE_2],   &__fb_font[FB_FONT_14],  80, 25, 0.0 },		/* EGA mode 10 */
+ { 640, 480, 1, 1, 1, &__fb_palette[FB_PALETTE_2],   &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* VGA mode 11 */
+ { 640, 480, 4, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* VGA mode 12 */
+ { 320, 200, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* VGA mode 13 */
 
 									/* New modes */
- { 320, 240, 8, 1, 1, &fb_palette_256, &fb_font_8x8,   40, 30, 0.0 },		/* 14: 320x240 */
- { 400, 300, 8, 1, 1, &fb_palette_256, &fb_font_8x8,   50, 37, 0.0 },		/* 15: 400x300 */
- { 512, 384, 8, 1, 1, &fb_palette_256, &fb_font_8x16,  64, 24, 0.0 },		/* 16: 512x384 */
- { 640, 400, 8, 1, 1, &fb_palette_256, &fb_font_8x16,  80, 25, 0.0 },		/* 17: 640x400 */
- { 640, 480, 8, 1, 1, &fb_palette_256, &fb_font_8x16,  80, 30, 0.0 },		/* 18: 640x480 */
- { 800, 600, 8, 1, 1, &fb_palette_256, &fb_font_8x16, 100, 37, 0.0 },		/* 19: 800x600 */
- {1024, 768, 8, 1, 1, &fb_palette_256, &fb_font_8x16, 128, 48, 0.0 },		/* 20: 1024x768 */
- {1280,1024, 8, 1, 1, &fb_palette_256, &fb_font_8x16, 160, 64, 0.0 },		/* 21: 1280x1024 */
+ { 320, 240, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   40, 30, 0.0 },		/* 14: 320x240 */
+ { 400, 300, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   50, 37, 0.0 },		/* 15: 400x300 */
+ { 512, 384, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  64, 24, 0.0 },		/* 16: 512x384 */
+ { 640, 400, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 25, 0.0 },		/* 17: 640x400 */
+ { 640, 480, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* 18: 640x480 */
+ { 800, 600, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 100, 37, 0.0 },		/* 19: 800x600 */
+ {1024, 768, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 128, 48, 0.0 },		/* 20: 1024x768 */
+ {1280,1024, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 160, 64, 0.0 },		/* 21: 1280x1024 */
 };
 
 static int  screen_id = 1;
@@ -427,8 +427,8 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.depth = depth;
 	info.scanline_size = 1;
 	info.num_pages = 1;
-	info.palette = &fb_palette_256;
-	info.font = &fb_font_8x8;
+	info.palette = &__fb_palette[FB_PALETTE_256];
+	info.font = &__fb_font[FB_FONT_8];
 	info.text_w = w / info.font->w;
 	info.text_h = h / info.font->h;
 	info.aspect = 1.0;

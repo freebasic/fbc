@@ -460,13 +460,26 @@ extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *__fb_color_conv_16to32;
 extern char *__fb_window_title;
-extern const PALETTE fb_palette_2;
-extern const PALETTE fb_palette_16;
-extern const PALETTE fb_palette_64;
-extern const PALETTE fb_palette_256;
-extern const FONT fb_font_8x8;
-extern const FONT fb_font_8x14;
-extern const FONT fb_font_8x16;
+
+/* must match data.c */
+enum {
+	FB_FONT_8 = 0,
+	FB_FONT_14,
+	FB_FONT_16,
+	FB_FONT_COUNT
+};
+
+/* must match data.c */
+enum {
+	FB_PALETTE_2 = 0,
+	FB_PALETTE_16,
+	FB_PALETTE_64,
+	FB_PALETTE_256,
+	FB_PALETTE_COUNT
+};
+
+extern const FONT __fb_font[FB_FONT_COUNT];
+extern const PALETTE __fb_palette[FB_PALETTE_COUNT];
 
 /* Internal functions */
 extern FB_GFXCTX *fb_hGetContext(void);

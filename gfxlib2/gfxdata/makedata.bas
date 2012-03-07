@@ -21,11 +21,7 @@ declare function fb_hEncode lib "fbgfx" alias "fb_hEncode" _
 	) as integer
 
 type Entry
-	as zstring * 16 typename
-	as zstring * 16 varname
-	as integer num1
-	as integer num2
-	as zstring * 16 defname
+	as zstring * 16 name
 	as zstring * 16 file
 	as ubyte ptr p
 	as integer size
@@ -33,13 +29,13 @@ end type
 
 dim shared as Entry entries(0 to ...) = _
 { _
-	( "FONT"   , "fb_font_8x8"   ,   8,  8, "FONT_8" , "fnt08x08.fnt" ), _
-	( "FONT"   , "fb_font_8x14"  ,   8, 14, "FONT_14", "fnt08x14.fnt" ), _
-	( "FONT"   , "fb_font_8x16"  ,   8, 16, "FONT_16", "fnt08x16.fnt" ), _
-	( "PALETTE", "fb_palette_2"  ,   2,  0, "PAL_2"  , "pal002.pal"   ), _
-	( "PALETTE", "fb_palette_16" ,  16,  0, "PAL_16" , "pal016.pal"   ), _
-	( "PALETTE", "fb_palette_64" ,  64,  0, "PAL_64" , "pal064.pal"   ), _
-	( "PALETTE", "fb_palette_256", 256,  0, "PAL_256", "pal256.pal"   )  _
+	( "FONT_8" , "fnt08x08.fnt" ), _
+	( "FONT_14", "fnt08x14.fnt" ), _
+	( "FONT_16", "fnt08x16.fnt" ), _
+	( "PAL_2"  , "pal002.pal"   ), _
+	( "PAL_16" , "pal016.pal"   ), _
+	( "PAL_64" , "pal064.pal"   ), _
+	( "PAL_256", "pal256.pal"   )  _
 }
 
 '' Load data files
@@ -101,26 +97,19 @@ ccode += !"/* Automatically created by makedata, to be used by data.c */\n"
 ccode += !"/* Compressed internal font/palette data for FB graphics */\n"
 ccode += !"\n"
 
-'' Emit #define and declaration for each entry
+'' Emit all the offset #defines
 scope
 	dim as integer offset = 0
 	for i as integer = 0 to ubound( entries )
 		with( entries(i) )
-			ccode += "#define DATA_" + .defname + " 0x" + hex( offset, 8 ) + !"\n"
-
-			ccode += "const " + .typename + " " + .varname + " = {" + str( .num1 ) + ", "
-			if( .typename = "FONT" ) then
-				ccode += str( .num2 ) + ", "
-			end if
-			ccode += "&internal_data[DATA_" + .defname + !"]};\n\n"
-
+			ccode += "#define DATA_" + .name + " 0x" + hex( offset, 8 ) + !"\n"
 			offset += .size
 		end with
 	next
 end scope
 
 '' Emit the compressed data
-ccode += !"static const unsigned char compressed_data[] = {\n"
+ccode += !"\nstatic const unsigned char compressed_data[] = {\n"
 
 for i as integer = 0 to compressedsize - 1
 	if( (i mod 16) = 0 ) then
