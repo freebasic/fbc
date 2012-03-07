@@ -7,15 +7,15 @@
 
 typedef struct MODEINFO
 {
-	unsigned short w;
-	unsigned short h;
+	unsigned int w;
+	unsigned int h;
 	unsigned char depth;
 	unsigned char scanline_size;
 	unsigned char num_pages;
 	const PALETTE *palette;
 	const FONT *font;
-	unsigned char text_w;
-	unsigned char text_h;
+	unsigned int text_w; /* must be big enough to work with big ScreenRes */
+	unsigned int text_h;
 	float aspect;
 } MODEINFO;
 

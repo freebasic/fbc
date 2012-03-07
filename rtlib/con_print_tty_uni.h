@@ -23,6 +23,8 @@ void FB_CONPRINTTTY
     int fGotNewCoordinate = FALSE;
     int BorderWidth = pBorder->Right - pBorder->Left + 1;
 
+    DBG_ASSERT( BorderWidth != 0 );
+
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 
     fb_Coord dwMoveCoord = { 0 };
