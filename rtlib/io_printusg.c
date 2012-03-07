@@ -497,7 +497,7 @@ static int hPrintNumber
 			/* if first two characters, change padding to asterisks, else exit */
 			if( (intdigs == 0 && decdigs == -1) )
 			{
-				DBG_ASSERT( nc == '*' );
+				DBG_ASSERT( c == '*' );
 				padchar = CHAR_STAR;
 				++intdigs;
 			}
@@ -522,7 +522,7 @@ static int hPrintNumber
 			{
 				if( !adddollar )
 				{	/* first one */
-					DBG_ASSERT( nc == '$' ); /* otherwise, shouldn't have been brought here */
+					DBG_ASSERT( c == '$' ); /* otherwise, shouldn't have been brought here */
 					adddollar = 1;
 				}
 				else
