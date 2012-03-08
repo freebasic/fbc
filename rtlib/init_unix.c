@@ -5,7 +5,9 @@
 #include "fb_private_thread.h"
 #include <signal.h>
 #include <termcap.h>
+#ifdef HOST_LINUX
 #include <sys/io.h>
+#endif
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
