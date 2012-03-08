@@ -2,54 +2,61 @@
 
 #include "fb_gfx.h"
 
-#define NUM_MODES		21
+#define NUM_MODES 22
 
-
-typedef struct MODEINFO
-{
-	unsigned int w;
-	unsigned int h;
+typedef struct {
+	unsigned short w;
+	unsigned short h;
 	unsigned char depth;
 	unsigned char scanline_size;
 	unsigned char num_pages;
-	const PALETTE *palette;
-	const FONT *font;
-	unsigned int text_w; /* must be big enough to work with big ScreenRes */
-	unsigned int text_h;
-	float aspect;
+	signed char palette;
+	signed char font;
+	unsigned char text_w;
+	unsigned char text_h;
 } MODEINFO;
 
-
-
 static const MODEINFO mode_info[NUM_MODES] = {
- { 320, 200, 2, 1, 8, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* CGA mode 1 */
- { 640, 200, 1, 2, 1, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   80, 25, 0.0 },		/* CGA mode 2 */
- { 0 }, { 0 }, { 0 }, { 0 },						/* Unsupported modes (3, 4, 5, 6) */
- { 320, 200, 4, 1, 8, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* EGA mode 7 */
- { 640, 200, 4, 2, 4, &__fb_palette[FB_PALETTE_16],  &__fb_font[FB_FONT_8],   80, 25, 0.0 },		/* EGA mode 8 */
- { 640, 350, 4, 1, 2, &__fb_palette[FB_PALETTE_64],  &__fb_font[FB_FONT_14],  80, 25, 0.0 },		/* EGA mode 9 */
- { 640, 350, 1, 1, 2, &__fb_palette[FB_PALETTE_2],   &__fb_font[FB_FONT_14],  80, 25, 0.0 },		/* EGA mode 10 */
- { 640, 480, 1, 1, 1, &__fb_palette[FB_PALETTE_2],   &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* VGA mode 11 */
- { 640, 480, 4, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* VGA mode 12 */
- { 320, 200, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   40, 25, 0.0 },		/* VGA mode 13 */
-
-									/* New modes */
- { 320, 240, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   40, 30, 0.0 },		/* 14: 320x240 */
- { 400, 300, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_8],   50, 37, 0.0 },		/* 15: 400x300 */
- { 512, 384, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  64, 24, 0.0 },		/* 16: 512x384 */
- { 640, 400, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 25, 0.0 },		/* 17: 640x400 */
- { 640, 480, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16],  80, 30, 0.0 },		/* 18: 640x480 */
- { 800, 600, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 100, 37, 0.0 },		/* 19: 800x600 */
- {1024, 768, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 128, 48, 0.0 },		/* 20: 1024x768 */
- {1280,1024, 8, 1, 1, &__fb_palette[FB_PALETTE_256], &__fb_font[FB_FONT_16], 160, 64, 0.0 },		/* 21: 1280x1024 */
+	{    0,    0, 0, 0, 1, -1            , -1        ,    0,  0 }, /* NULL mode */
+	{  320,  200, 2, 1, 8, FB_PALETTE_16 ,  FB_FONT_8,   40, 25 }, /* CGA mode 1 */
+	{  640,  200, 1, 2, 1, FB_PALETTE_16 ,  FB_FONT_8,   80, 25 }, /* CGA mode 2 */
+	                                                              /* Unsupported modes (3, 4, 5, 6): */
+	{    0,    0, 0, 0, 1, -1            , -1        ,   0,  0 },
+	{    0,    0, 0, 0, 1, -1            , -1        ,   0,  0 },
+	{    0,    0, 0, 0, 1, -1            , -1        ,   0,  0 },
+	{    0,    0, 0, 0, 1, -1            , -1        ,   0,  0 },
+	{  320,  200, 4, 1, 8, FB_PALETTE_16 , FB_FONT_8 ,  40, 25 }, /* EGA mode 7 */
+	{  640,  200, 4, 2, 4, FB_PALETTE_16 , FB_FONT_8 ,  80, 25 }, /* EGA mode 8 */
+	{  640,  350, 4, 1, 2, FB_PALETTE_64 , FB_FONT_14,  80, 25 }, /* EGA mode 9 */
+	{  640,  350, 1, 1, 2, FB_PALETTE_2  , FB_FONT_14,  80, 25 }, /* EGA mode 10 */
+	{  640,  480, 1, 1, 1, FB_PALETTE_2  , FB_FONT_16,  80, 30 }, /* VGA mode 11 */
+	{  640,  480, 4, 1, 1, FB_PALETTE_256, FB_FONT_16,  80, 30 }, /* VGA mode 12 */
+	{  320,  200, 8, 1, 1, FB_PALETTE_256, FB_FONT_8 ,  40, 25 }, /* VGA mode 13 */
+	                                                              /* New modes: */
+	{  320,  240, 8, 1, 1, FB_PALETTE_256, FB_FONT_8 ,  40, 30 }, /* 14: 320x240 */
+	{  400,  300, 8, 1, 1, FB_PALETTE_256, FB_FONT_8 ,  50, 37 }, /* 15: 400x300 */
+	{  512,  384, 8, 1, 1, FB_PALETTE_256, FB_FONT_16,  64, 24 }, /* 16: 512x384 */
+	{  640,  400, 8, 1, 1, FB_PALETTE_256, FB_FONT_16,  80, 25 }, /* 17: 640x400 */
+	{  640,  480, 8, 1, 1, FB_PALETTE_256, FB_FONT_16,  80, 30 }, /* 18: 640x480 */
+	{  800,  600, 8, 1, 1, FB_PALETTE_256, FB_FONT_16, 100, 37 }, /* 19: 800x600 */
+	{ 1024,  768, 8, 1, 1, FB_PALETTE_256, FB_FONT_16, 128, 48 }, /* 20: 1024x768 */
+	{ 1280, 1024, 8, 1, 1, FB_PALETTE_256, FB_FONT_16, 160, 64 }  /* 21: 1280x1024 */
 };
 
 static int  screen_id = 1;
 static char window_title_buff[WINDOW_TITLE_SIZE] = { 0 };
 static int  exit_proc_set = FALSE;
 
-static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags);
-
+static int set_mode
+	(
+		int mode,
+		int w, int h,
+		int depth, int scanline_size,
+		int num_pages, int refresh_rate,
+		int palette, int font,
+		int flags, float aspect,
+		int text_w, int text_h
+	);
 
 static void release_gfx_mem(void)
 {
@@ -87,11 +94,10 @@ static void release_gfx_mem(void)
     }
 }
 
-/*:::::*/
 static void exit_proc(void)
 {
-    if( __fb_gfx )
-        set_mode(NULL, 0, 0, 0, 0, SCREEN_EXIT);
+	if( __fb_gfx )
+		set_mode( 0, 0, 0, 0, 0, 1, 0, 0, 0, SCREEN_EXIT, 0.0, 0, 0 );
 }
 
 /* Dummy function to ensure that the CONSOLE "update" hook for a VIEW PRINT
@@ -157,8 +163,16 @@ void fb_hClearCharCells( int x1, int y1, int x2, int y2,
     }
 }
 
-/*:::::*/
-static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
+static int set_mode
+	(
+		int mode,
+		int w, int h,
+		int depth, int scanline_size,
+		int num_pages, int refresh_rate,
+		int palette, int font,
+		int flags, float aspect,
+		int text_w, int text_h
+	)
 {
     const GFXDRIVER *driver = NULL;
     FB_GFXCTX *context;
@@ -166,21 +180,13 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     char *c, *driver_name;
     unsigned char *dest;
 
-	if (num_pages <= 0) {
-		if (info != NULL) {
-			num_pages = info->num_pages;
-		} else {
-			num_pages = 1;
-		}
-	}
-
 	/* normalize flags */
 	if ((flags >= 0) && (flags & DRIVER_SHAPED_WINDOW))
 		flags |= DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
 
     release_gfx_mem();
 
-	if ((mode == 0) || (info->w == 0)) {
+	if( (mode == 0) || (w == 0) ) {
         memset(&__fb_ctx.hooks, 0, sizeof(__fb_ctx.hooks));
 
         if (flags != SCREEN_EXIT) {
@@ -190,8 +196,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         }
         /* reset viewport to console dimensions */
         fb_ConsoleSetTopBotRows(-1, -1);
-	}
-	else {
+	} else {
         __fb_ctx.hooks.inkeyproc = fb_GfxInkey;
         __fb_ctx.hooks.getkeyproc = fb_GfxGetkey;
         __fb_ctx.hooks.keyhitproc = fb_GfxKeyHit;
@@ -225,19 +230,17 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     if (__fb_gfx) {
     	__fb_gfx->id = screen_id++;
         __fb_gfx->mode_num = mode;
-        __fb_gfx->w = info->w;
-        __fb_gfx->h = info->h;
-        __fb_gfx->depth = info->depth;
-        if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
-            __fb_gfx->depth = depth;
+        __fb_gfx->w = w;
+        __fb_gfx->h = h;
+        __fb_gfx->depth = depth;
         if ((flags >= 0) && (flags & DRIVER_OPENGL))
             __fb_gfx->depth = MAX(16, __fb_gfx->depth);
-        __fb_gfx->default_palette = info->palette;
-        __fb_gfx->scanline_size = info->scanline_size;
-        __fb_gfx->font = (FONT *)info->font;
+        __fb_gfx->default_palette = (palette >= 0) ? &__fb_palette[palette] : NULL;
+        __fb_gfx->scanline_size = scanline_size;
+        __fb_gfx->font = (font >= 0) ? &__fb_font[font] : NULL;
 
-		if(info->aspect)
-			__fb_gfx->aspect = info->aspect;
+		if( aspect != 0.0f )
+			__fb_gfx->aspect = aspect;
 		else
 			__fb_gfx->aspect = (4.0 / 3.0) * ((float)__fb_gfx->h / (float)__fb_gfx->w);
 
@@ -328,8 +331,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 
         fb_GfxPalette(-1, 0, 0, 0);
 
-        __fb_gfx->text_w = info->text_w;
-        __fb_gfx->text_h = info->text_h;
+        __fb_gfx->text_w = text_w;
+        __fb_gfx->text_h = text_h;
 
         context = fb_hGetContext();
 
@@ -363,30 +366,56 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
-/*:::::*/
-FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate)
+FBCALL int fb_GfxScreen
+	(
+		int mode, int depth, int num_pages,
+		int flags, int refresh_rate
+	)
 {
-    const MODEINFO *info = NULL;
-    int res;
-
-	if ((mode < 0) || (mode > NUM_MODES))
+	if( (mode < 0) || (mode >= NUM_MODES) )
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 
-	if (mode > 0) {
-		info = &mode_info[mode - 1];
-		if (info->w == 0)
-			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	}
-    res = set_mode(info, mode, depth, num_pages, refresh_rate, flags);
-    if (res == FB_RTERROR_OK)
-        FB_HANDLE_SCREEN->line_length = 0;
+	const MODEINFO *info = &mode_info[mode];
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	/* One of the unsupported modes? */
+	if( (mode > 0) && (info->w == 0) )
+		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+
+	switch( depth ) {
+	case 8:
+	case 15:
+	case 16:
+	case 24:
+	case 32:
+		/* user's depth overrides default for mode > 13 */
+		if( mode <= 13 ) {
+			depth = info->depth;
+		}
+		break;
+	default:
+		depth = info->depth;
+		break;
+	}
+
+	if( num_pages <= 0 ) {
+		num_pages = info->num_pages;
+	}
+
+	int res = set_mode( mode,
+	                    info->w, info->h,
+	                    depth, info->scanline_size,
+	                    num_pages, refresh_rate,
+	                    info->palette, info->font,
+	                    flags, 0.0,
+	                    info->text_w, info->text_h );
+
+	if( res == FB_RTERROR_OK )
+		FB_HANDLE_SCREEN->line_length = 0;
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-/*:::::*/
-FBCALL int fb_GfxScreenQB(int mode, int visible, int active)
+FBCALL int fb_GfxScreenQB( int mode, int visible, int active )
 {
 
 	int res = fb_GfxScreen( mode, 0, 0, 0, 0 );
@@ -399,49 +428,48 @@ FBCALL int fb_GfxScreenQB(int mode, int visible, int active)
 		return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-
-/*:::::*/
-FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, int refresh_rate)
+FBCALL int fb_GfxScreenRes
+	(
+		int w, int h,
+		int depth, int num_pages,
+		int flags, int refresh_rate
+	)
 {
-    MODEINFO info;
-    int res;
-
 	if ((w <= 0) || (h <= 0))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+
 	switch (depth) {
-		case 1:
-		case 2:
-		case 4:
-		case 8:
-		case 15:
-		case 16:
-		case 24:
-		case 32:
-			break;
-		default:
-			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+	case 1:
+	case 2:
+	case 4:
+	case 8:
+	case 15:
+	case 16:
+	case 24:
+	case 32:
+		break;
+	default:
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	info.w = w;
-	info.h = h;
-	info.depth = depth;
-	info.scanline_size = 1;
-	info.num_pages = 1;
-	info.palette = &__fb_palette[FB_PALETTE_256];
-	info.font = &__fb_font[FB_FONT_8];
-	info.text_w = w / info.font->w;
-	info.text_h = h / info.font->h;
-	info.aspect = 1.0;
+	if( num_pages <= 0 ) {
+		num_pages = 1;
+	}
 
-    res = set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
-    if (res==FB_RTERROR_OK)
-        FB_HANDLE_SCREEN->line_length = 0;
+	int res = set_mode( -1,
+	                    w, h,
+	                    depth, 1,
+	                    num_pages, refresh_rate,
+	                    FB_PALETTE_256, FB_FONT_8,
+	                    flags, 1.0,
+	                    w / __fb_font[FB_FONT_8].w, h / __fb_font[FB_FONT_8].h );
 
-    return res;
+	if( res == FB_RTERROR_OK )
+		FB_HANDLE_SCREEN->line_length = 0;
+
+	return res;
 }
 
-
-/*:::::*/
 FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
 	fb_hMemSet(window_title_buff, 0, WINDOW_TITLE_SIZE);
@@ -455,8 +483,6 @@ FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 	fb_hStrDelTemp( title );
 }
 
-
-/*:::::*/
 #ifdef DISABLE_OPENGL
 FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 {
