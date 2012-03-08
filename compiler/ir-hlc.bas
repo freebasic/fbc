@@ -1916,57 +1916,58 @@ private function hBOPToStr _
 end function
 
 '':::::
-private function hEmitBOP _
-    ( _
-		byval op as integer, _
-		byref l as string, _
-		byref r as string _
-    ) as string
-
-    dim as string bop = l + hBOPToStr( op ) + r
-
-    select case as const op
-    case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_GE, AST_OP_LE
-        '' Add a negation in order to convert the "boolean" 1 to -1 (0 stays 0)
-        bop = "(-(" + bop + "))"
-    end select
-
-    return bop
-
-end function
-
-'':::::
 private sub hWriteBOP _
 	( _
 		byval op as integer, _
 		byval vr as IRVREG ptr, _
 		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
+		byval v2 as IRVREG ptr, _
+		byval is_comparison as integer _
 	)
 
-	dim as string lcast, rcast
+	dim as string bop
 
 	if( vr = NULL ) then
 		vr = v1
 	end if
 
-	' look for pointer artithmatic, as FB expects it all to be 1 based
-	if typeGetPtrCnt( v1->dtype ) > 0 then
-		lcast += "(ubyte *)"
-	end if
-	if typeGetPtrCnt( v2->dtype ) > 0 then
-		rcast += "(ubyte *)"
+	'' Must work-around C's boolean logic values and convert the "boolean"
+	'' 1 to -1 while 0 stays 0 to match FB.
+	if( is_comparison ) then
+		bop += "(-("
 	end if
 
-	'' look for /, floating point divide
+	'' Left operand:
+	'' Cast to byte ptr to work around C's pointer arithmetic
+	if( typeGetPtrCnt( v1->dtype ) > 0 ) then
+		bop += "(ubyte *)"
+	end if
+	'' Ensure '/' means floating point divide by casting to float
+	'' For AST_OP_INTDIV this is not needed, since the AST will already
+	'' cast both operands to integer before doing the intdiv.
 	if( op = AST_OP_DIV ) then
-		lcast += "(double)"
-		rcast += "(double)"
+		bop += "(double)"
+	end if
+	bop += hVregToStr( v1 )
+
+	'' Operation
+	bop += hBOPToStr( op )
+
+	'' Right operand - same checks as for left one above
+	if typeGetPtrCnt( v2->dtype ) > 0 then
+		bop += "(ubyte *)"
+	end if
+	if( op = AST_OP_DIV ) then
+		bop += "(double)"
+	end if
+	bop += hVregToStr( v2 )
+
+	'' Close parentheses from above
+	if( is_comparison ) then
+		bop += "))"
 	end if
 
-	hEmitVregExpr( vr, hEmitBOP( op, _
-                                 lcast + hVregToStr( v1 ), _
-                                 rcast + hVregToStr( v2 ) ) )
+	hEmitVregExpr( vr, bop )
 
 end sub
 
@@ -1988,7 +1989,7 @@ private sub _emitBop _
 	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
 		AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
 		AST_OP_XOR
-		hWriteBOP( op, vr, v1, v2 )
+		hWriteBOP( op, vr, v1, v2, FALSE )
 
 	case AST_OP_EQV
 		if( vr = NULL ) then
@@ -2008,14 +2009,18 @@ private sub _emitBop _
 
 	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 		if( vr <> NULL ) then
-			hWriteBOP( op, vr, v1, v2 )
+			'' Comparison expression
+			hWriteBOP( op, vr, v1, v2, TRUE )
 		else
-			hWriteLine( "if (" + hEmitBOP( op, _
-                                           hVregToStr( v1 ), _
-                                           hVregToStr( v2 ) ) + _
-                        ") goto " + _
-						*symbGetMangledName( ex ) _
-					)
+			'' Conditional branch
+			dim as string ln
+			ln += "if ("
+			ln += hVregToStr( v1 )
+			ln += hBOPToStr( op )
+			ln += hVregToStr( v2 )
+			ln += ") goto "
+			ln += *symbGetMangledName( ex )
+			hWriteLine( ln )
 		end if
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
