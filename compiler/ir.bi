@@ -229,14 +229,6 @@ type IR_VTBL
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
-	emitBopEx as sub _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval ex as FBSYMBOL ptr _
 	)
@@ -650,9 +642,7 @@ declare sub irEnd()
 
 #define irXchgTOS(reg) ir.vtbl.xchgTOS( reg )
 
-#define irEmitBOP(op, v1, v2, vr) ir.vtbl.emitBop( op, v1, v2, vr )
-
-#define irEmitBOPEx(op, v1, v2, vr, ex) ir.vtbl.emitBopEx( op, v1, v2, vr, ex )
+#define irEmitBOP( op, v1, v2, vr, ex ) ir.vtbl.emitBop( op, v1, v2, vr, ex )
 
 #define irEmitUOP(op, v1, vr) ir.vtbl.emitUop( op, v1, vr )
 

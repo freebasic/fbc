@@ -1697,9 +1697,9 @@ function astLoadBOP _
 		'' execute the operation
 		if( n->op.ex <> NULL ) then
 			'' hack! ex=label, vr being NULL 'll gen better code at IR..
-			irEmitBOPEx( op, v1, v2, NULL, n->op.ex )
+			irEmitBOP( op, v1, v2, NULL, n->op.ex )
 		else
-			irEmitBOPEx( op, v1, v2, vr, NULL )
+			irEmitBOP( op, v1, v2, vr, NULL )
 		end if
 
 		'' "var op= expr" optimizations

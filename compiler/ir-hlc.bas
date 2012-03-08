@@ -1971,7 +1971,7 @@ private sub hWriteBOP _
 end sub
 
 '':::::
-private sub _emitBopEx _
+private sub _emitBop _
 	( _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
@@ -2020,19 +2020,6 @@ private sub _emitBopEx _
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, "Unhandled bop." )
 	end select
-
-end sub
-
-'':::::
-private sub _emitBop _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
-	_emitBopEx( op, v1, v2, vr, NULL )
 
 end sub
 
@@ -2854,7 +2841,6 @@ sub irHLC_ctor()
 		@_emitComment, _
 		@_emitJmpTb, _
 		@_emitBop, _
-		@_emitBopEx, _
 		@_emitUop, _
 		@_emitStore, _
 		@_emitSpillRegs, _

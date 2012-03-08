@@ -107,7 +107,7 @@ function astLoadBOUNDCHK _
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, _
+    	irEmitBOP( AST_OP_EQ, _
     				 vr, _
     				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
     				 NULL, _
@@ -195,7 +195,7 @@ function astLoadPTRCHK _
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( AST_OP_EQ, _
+    	irEmitBOP( AST_OP_EQ, _
     				 vr, _
     				 irAllocVRIMM( FB_DATATYPE_INTEGER, NULL, 0 ), _
     				 NULL, _

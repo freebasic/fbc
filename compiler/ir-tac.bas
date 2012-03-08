@@ -551,19 +551,6 @@ private sub _emitBop _
 		byval op as integer, _
 		byval v1 as IRVREG ptr, _
 		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr _
-	)
-
-	_emit( op, v1, v2, vr )
-
-end sub
-
-'':::::
-private sub _emitBopEx _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval ex as FBSYMBOL ptr _
 	)
@@ -2817,7 +2804,6 @@ sub irTAC_ctor()
 		@_emitComment, _
 		@_emitJmpTb, _
 		@_emitBop, _
-		@_emitBopEx, _
 		@_emitUop, _
 		@_emitStore, _
 		@_emitSpillRegs, _
