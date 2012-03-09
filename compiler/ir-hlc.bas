@@ -1507,11 +1507,9 @@ private function hDtypeToStr _
 		res = *dtypeName(dtype)
 	end select
 
-	if( ptrcnt > 0 ) then
-		for i as integer = 0 to ptrcnt - 1
-			res += "*"
-		next
-	end if
+	for i as integer = 0 to ptrcnt - 1
+		res += "*"
+	next
 
 	function = strptr( res )
 
@@ -1660,8 +1658,10 @@ private function hVregToStr _
 				if( is_ptr = FALSE ) then
 					operand += "*)("
 
-					'' offset or idx? pointer arith is done at the ast..
+					'' offset or idx?
 					if( vreg->ofs <> 0 or vreg->vidx <> NULL ) then
+						'' Cast to byte ptr to work around C's pointer arithmetic
+						'' (this handles constant offsets)
 						operand += "(ubyte *)"
 					end if
 
@@ -1680,19 +1680,24 @@ private function hVregToStr _
 				end if
 
 				do_deref = TRUE
-
 			else
 				do_deref = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
 
 				var deref = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + " *)"
 
-				'' No addrof (&) for array access
 				if( symbGetArrayDimensions( vreg->sym ) ) then
 					do_deref = TRUE
 					operand += deref
+					'' Same cast to byte ptr for array access as below,
+					'' but no addrof (&), because doing &array would give
+					'' a pointer to the array, not to the first element,
+					'' which is a different data type, which would cause
+					'' unnecessary warnings...
 					operand += "((ubyte *)"
 				elseif( do_deref ) then
 					operand += deref
+					'' Cast to byte ptr to work around C's pointer arithmetic
+					'' (this handles constant offsets)
 					operand += "((ubyte *)&"
 				end if
 			end if
@@ -1705,7 +1710,6 @@ private function hVregToStr _
 			operand = "*(" + *hDtypeToStr( vreg->dtype, vreg->subtype ) + "*)((ubyte *)"
 			do_deref = TRUE
 			add_plus = FALSE
-
 		end if
 
 		if( vreg->vidx <> NULL ) then
@@ -1931,15 +1935,24 @@ private sub hWriteBOP _
 		vr = v1
 	end if
 
+	dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
+	dim as integer lptr = (is_ptr_arith and typeIsPtr( v1->dtype ))
+	dim as integer rptr = (is_ptr_arith and typeIsPtr( v2->dtype ))
+
 	'' Must work-around C's boolean logic values and convert the "boolean"
 	'' 1 to -1 while 0 stays 0 to match FB.
 	if( is_comparison ) then
 		bop += "(-("
 	end if
 
+	'' After casting to ubyte ptr for the BOP, cast back to original type
+	if( lptr or rptr ) then
+		bop += "(" & *hDtypeToStr( vr->dtype, vr->subtype ) & ")("
+	end if
+
 	'' Left operand:
 	'' Cast to byte ptr to work around C's pointer arithmetic
-	if( typeGetPtrCnt( v1->dtype ) > 0 ) then
+	if( lptr ) then
 		bop += "(ubyte *)"
 	end if
 	'' Ensure '/' means floating point divide by casting to float
@@ -1954,7 +1967,7 @@ private sub hWriteBOP _
 	bop += hBOPToStr( op )
 
 	'' Right operand - same checks as for left one above
-	if typeGetPtrCnt( v2->dtype ) > 0 then
+	if( rptr ) then
 		bop += "(ubyte *)"
 	end if
 	if( op = AST_OP_DIV ) then
@@ -1963,6 +1976,9 @@ private sub hWriteBOP _
 	bop += hVregToStr( v2 )
 
 	'' Close parentheses from above
+	if( lptr or rptr ) then
+		bop += ")"
+	end if
 	if( is_comparison ) then
 		bop += "))"
 	end if
