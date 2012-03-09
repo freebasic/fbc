@@ -3,7 +3,13 @@
 #ifndef __FB_GFX_GL_H__
 #define __FB_GFX_GL_H__
 
-#include <GL/gl.h>
+#if defined HOST_DARWIN && (defined(__APPLE__) || defined(MACOSX))
+	#include <OpenGL/gl.h>
+	/* Mac GL headers don't define APIENTRY, so we do it manually */
+	#define APIENTRY
+#else
+	#include <GL/gl.h>
+#endif
 #include "../rtlib/fb_private_hdynload.h"
 
 #define FBGL_EXTENSIONS_STRING_SIZE		16384
