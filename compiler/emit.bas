@@ -69,7 +69,7 @@ end sub
 '':::::
 sub emitWriteStr _
 	( _
-		byval s as zstring ptr, _
+		byval s as const zstring ptr, _
 		byval addtab as integer _
 	)
 
@@ -267,7 +267,7 @@ sub emitWriteInfoSection _
 
 #macro hEmitInfoHeader( )
 	scope
-		dim as zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
+		dim as const zstring ptr sec = emit.vtbl.getSectionString( IR_SECTION_INFO, 0 )
 		if( sec <> NULL ) then
 			emitWriteStr( *sec )
 		end if
@@ -312,7 +312,7 @@ sub emitWriteInfoSection _
 		do
 			'' Not default?
 			if (i->userdata = FALSE) then
-				dim as zstring ptr txt = hEscape(i->s)
+				dim as const zstring ptr txt = hEscape(i->s)
 				hWriteByte(len(i->s)) '' TODO: shouldn't this be len(*txt)?
 				hWriteStr(*txt)
 			end if

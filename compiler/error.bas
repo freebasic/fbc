@@ -19,7 +19,7 @@ end type
 
 type FBWARNING
 	level		as integer
-	text		as zstring ptr
+	text		as const zstring ptr
 end type
 
 
@@ -64,7 +64,7 @@ end type
 		( 0, @"'BYVAL AS STRING' actually behaves like 'BYREF AS ZSTRING' (this is hoped to change in future releases)" ) _
 	}
 
-	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
+	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
 	{ _
 		@"Argument count mismatch", _
 		@"Expected End-of-File", _
@@ -343,14 +343,14 @@ end function
 private sub hPrintErrMsg _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval options as FB_ERRMSGOPT, _
 		byval linenum as integer, _
 		byval showerror as integer = TRUE, _
-		byval customText as zstring ptr = 0 _
+		byval customText as const zstring ptr = 0 _
 	) static
 
-    dim as zstring ptr msg
+    dim as const zstring ptr msg
     dim as string token_pos
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
@@ -428,10 +428,10 @@ end sub
 sub errReportEx _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
 		byval options as FB_ERRMSGOPT, _
-		byval customText as zstring ptr _
+		byval customText as const zstring ptr _
 	)
 
 	'' Don't show if already too many errors displayed
@@ -510,7 +510,7 @@ sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
-		byval customText as zstring ptr _
+		byval customText as const zstring ptr _
 	)
 
 	errReportEx( errnum, hAddToken( isbefore, FALSE ), , , customText )
@@ -521,7 +521,7 @@ end sub
 sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer, _
 		byval options as FB_ERRMSGOPT _
 	)
@@ -580,7 +580,7 @@ end sub
 sub errReportWarn _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval options as FB_ERRMSGOPT _
 	)
 

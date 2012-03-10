@@ -12,7 +12,7 @@
 #include once "ir.bi"
 
 type FB_LANG_INFO
-	name		as zstring ptr
+	name		as const zstring ptr
 	options		as FB_LANG_OPT
 end type
 

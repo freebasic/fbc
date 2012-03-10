@@ -283,8 +283,8 @@ private function hAddOvlProc _
 		byval ovl_head_proc as FBSYMBOL ptr, _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB, _
@@ -497,7 +497,7 @@ private function hAddOpOvlProc _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
 		byval op as AST_OP, _
-		byval id_alias as zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
@@ -556,8 +556,8 @@ end function
 private function hSetupProc _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -856,8 +856,8 @@ end function
 function symbAddPrototype _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -1213,7 +1213,7 @@ function symbAddProcResult _
 		end if
 	end if
 
-	dim as zstring ptr id = NULL
+	dim as const zstring ptr id = NULL
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		id = @"fb$result"
 	end if
@@ -2631,7 +2631,7 @@ private function hDemangleParams _
 	static as string res
 	dim as FBSYMBOL ptr param = any
 
-	static as zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
+	static as const zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
 	{ _
 		@"byval", _
 		@"byref", _

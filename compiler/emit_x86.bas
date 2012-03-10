@@ -66,7 +66,7 @@ declare function _getSectionString _
 	( _
 		byval section as integer, _
 		byval priority as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 declare sub _setSection _
 	( _
@@ -77,7 +77,7 @@ declare sub _setSection _
 declare function _getTypeString _
 	( _
 		byval dtype as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 
 '' from emit_SSE.bas
@@ -133,7 +133,7 @@ declare function _init_opFnTB_SSE _
 
 const EMIT_MAXKEYWORDS = 600
 
-	dim shared keywordTb(0 to EMIT_MAXKEYWORDS-1) as zstring ptr => _
+	dim shared keywordTb(0 to EMIT_MAXKEYWORDS-1) as const zstring ptr => _
 	{ _
 		@"st", @"cs", @"ds", @"es", @"fs", @"gs", @"ss", _
 		@"mm0", @"mm1", @"mm2", @"mm3", @"mm4", @"mm5", @"mm6", @"mm7", _
@@ -6368,7 +6368,7 @@ end sub
 '':::::
 sub emitVARINISTR _
 	( _
-		byval s as zstring ptr _
+		byval s as const zstring ptr _
 	) static
 
     dim ostr as string
@@ -6719,7 +6719,7 @@ end function
 '':::::
 private function _procGetFrameRegName _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	static as zstring * 3+1 sname = "ebp"
 
@@ -6986,7 +6986,7 @@ private sub _setSection _
 		byval priority as integer _
 	)
 
-	dim as zstring ptr sec = _getSectionString( section, priority )
+	dim as const zstring ptr sec = _getSectionString( section, priority )
 	if( sec = NULL ) then
 		exit sub
 	end if
@@ -7004,7 +7004,7 @@ end sub
 private function _getTypeString _
 	( _
 		byval dtype as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	select case as const typeGet( dtype )
     case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
@@ -7050,7 +7050,7 @@ private function _getSectionString _
 	( _
 		byval section as integer, _
 		byval priority as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	static as string ostr
 

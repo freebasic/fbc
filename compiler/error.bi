@@ -312,30 +312,30 @@ declare function errGetCount() as integer
 declare sub errReportEx _
 	( _
 		byval errnum as integer, _
-		byval msgex as zstring ptr, _
+		byval msgex as const zstring ptr, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
-		byval customText as zstring ptr = 0 _
+		byval customText as const zstring ptr = 0 _
 	)
 
 declare sub errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE, _
-		byval customText as zstring ptr = 0 _
+		byval customText as const zstring ptr = 0 _
 	)
 
 declare sub errReportWarn _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr = NULL, _
+		byval msgex as const zstring ptr = NULL, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)
 
 declare sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr = NULL, _
+		byval msgex as const zstring ptr = NULL, _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 	)

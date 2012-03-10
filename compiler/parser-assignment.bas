@@ -474,7 +474,7 @@ end function
 private function hCard2Ord _
 	( _
 		byval num as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	select case num
 	case 1

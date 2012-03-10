@@ -10,14 +10,14 @@
 
 type FB_RTL_MACROTOKEN
 	type		as FB_DEFTOK_TYPE
-	data		as any ptr
+	data		as const any ptr
 end type
 
 type FB_RTL_MACRODEF
-	name		as zstring ptr
+	name		as const zstring ptr
 	options		as FB_RTL_OPT
 	params		as integer
-	paramTb(0 to 3) as zstring ptr
+	paramTb(0 to 3) as const zstring ptr
 	tokenTb(0 to 11) as FB_RTL_MACROTOKEN
 end type
 

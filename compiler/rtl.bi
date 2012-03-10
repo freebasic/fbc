@@ -835,8 +835,8 @@ type FB_RTL_PARAMDEF
 end type
 
 type FB_RTL_PROCDEF
-	name		as zstring ptr
-	alias		as zstring ptr
+	name		as const zstring ptr
+	alias		as const zstring ptr
 	dtype		as FB_DATATYPE
 	callconv	as FB_FUNCMODE
 	callback	as FBRTLCALLBACK
@@ -860,7 +860,7 @@ declare sub rtlAddIntrinsicProcs _
 
 declare function rtlProcLookup _
 	( _
-		byval pname as zstring ptr, _
+		byval pname as const zstring ptr, _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 

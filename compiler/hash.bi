@@ -4,7 +4,7 @@
 #include once "list.bi"
 
 type HASHITEM
-	name		as zstring ptr			'' shared
+	name		as const zstring ptr			'' shared
 	data		as any ptr				'' user data
 	prev		as HASHITEM ptr
 	next		as HASHITEM ptr
@@ -32,7 +32,7 @@ declare sub hashEnd(byval hash as THASH ptr)
 
 declare function hashHash _
 	( _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as uinteger
 
 declare function hashLookup _
@@ -44,14 +44,14 @@ declare function hashLookup _
 declare function hashLookupEx _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval index as uinteger _
 	) as any ptr
 
 declare function hashAdd _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval userdata as any ptr, _
 		byval index as uinteger _
 	) as HASHITEM ptr
@@ -76,7 +76,7 @@ end type
 declare sub strsetAdd _
 	( _
 		byval set as TSTRSET ptr, _
-		byref s as string, _
+		byref s as const string, _
 		byval userdata as integer _
 	)
 declare sub strsetCopy(byval target as TSTRSET ptr, byval source as TSTRSET ptr)

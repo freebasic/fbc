@@ -17,7 +17,7 @@ enum KWD_OPTION
 end enum
 
 type SYMBKWD
-	name			as zstring ptr
+	name			as const zstring ptr
 	id				as integer
     class			as integer
     opt             as KWD_OPTION
@@ -272,7 +272,7 @@ sub symbKeywordInit( )
 	do until( kwdTb(i).name = NULL )
 
 		'' add the '__' prefix if the kwd wasn't present in QB and we are in '-lang qb' mode
-		dim as zstring ptr kname = kwdTb(i).name
+		dim as const zstring ptr kname = kwdTb(i).name
 		if( (kwdTb(i).opt and KWD_OPTION_NO_QB) <> 0 ) then
 			if( fbLangIsSet( FB_LANG_QB ) ) then
 				static as string tmp
@@ -309,7 +309,7 @@ end sub
 '':::::
 function symbAddKeyword _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval id as integer, _
 		byval class_ as integer, _
 		byval hashtb as FBHASHTB ptr, _

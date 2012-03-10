@@ -780,7 +780,7 @@ type SYMB_DATATYPE
 	bits			as integer					'' number of bits
 	signed			as integer					'' TRUE or FALSE
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
-	name			as zstring ptr
+	name			as const zstring ptr
 end type
 
 
@@ -817,7 +817,7 @@ declare function symbLookup _
 declare function symbLookupAt _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 		byval preserve_case as integer = FALSE, _
 		byval search_imports as integer = TRUE _
 	) as FBSYMCHAIN ptr
@@ -849,7 +849,7 @@ declare function symbFindVarByType _
 declare function symbLookupByNameAndClass _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval class as integer, _
 		byval preservecase as integer = FALSE, _
 		byval search_imports as integer = TRUE _
@@ -958,7 +958,7 @@ declare function symbCalcParamLen _
 
 declare function symbAddKeyword _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval id as integer, _
 		byval class as integer, _
 		byval hashtb as FBHASHTB ptr = NULL, _
@@ -968,7 +968,7 @@ declare function symbAddKeyword _
 
 declare function symbAddDefine _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
@@ -988,7 +988,7 @@ declare function symbAddDefineW _
 
 declare function symbAddDefineMacro _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr, _
@@ -998,7 +998,7 @@ declare function symbAddDefineMacro _
 declare function symbAddDefineParam _
 	( _
 		byval lastparam as FB_DEFPARAM ptr, _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as FB_DEFPARAM ptr
 
 declare function symbAddDefineTok _
@@ -1043,8 +1043,8 @@ declare function symbAddVar _
 
 declare function symbAddVarEx _
 	( _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
+		byval symbol as const zstring ptr, _
+		byval aliasname as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as integer, _
@@ -1080,8 +1080,8 @@ declare function symbAddConst _
 declare function symbStructBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval baseStruct as FBSYMBOL ptr = NULL _
@@ -1146,8 +1146,8 @@ declare function symbAddProcResultParam _
 declare function symbAddPrototype _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
+		byval symbol as const zstring ptr, _
+		byval aliasname as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
@@ -1358,8 +1358,8 @@ declare function symbNewSymbol _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
 		byval class as FB_SYMBCLASS, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
@@ -1637,7 +1637,7 @@ declare function symbTypeToStr _
 
 declare function symbGetDefType _
 	( _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as integer
 
 declare sub symbSetDefType _

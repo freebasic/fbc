@@ -395,7 +395,7 @@ end function
 '':::::
 private function _procGetFrameRegName _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	function = emitProcGetFrameRegName( )
 
@@ -866,7 +866,7 @@ private sub _emitVarIniStr _
 		byval litlgt as integer _
 	) static
 
-	dim as zstring ptr s
+	dim as const zstring ptr s
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then

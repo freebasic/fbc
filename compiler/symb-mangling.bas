@@ -585,7 +585,7 @@ private function hGetVarPrefix _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval docpp as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	static as integer isimport = FALSE
 
@@ -635,7 +635,7 @@ end function
 private function hGetVarIdentifier _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 		byref id_len as integer, _
 		byval suffix_len as integer _
 	) as zstring ptr static
@@ -656,7 +656,7 @@ private function hMangleVariable  _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr static
 
-    static as zstring ptr prefix_str, nspc_str, id_str, suffix_str
+    static as const zstring ptr prefix_str, nspc_str, id_str, suffix_str
     static as integer prefix_len, nspc_len, id_len, suffix_len, docpp, isglobal
 
 	'' local? no mangling
@@ -813,7 +813,7 @@ end function
 private function hGetProcIdentifier _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval id as zstring ptr _
+		byval id as const zstring ptr _
 	) as zstring ptr static
 
     static as string res
@@ -845,7 +845,7 @@ private function hGetProcPrefix _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval docpp as integer _
-	) as zstring ptr static
+	) as const zstring ptr static
 
 	'' no C++? do nothing..
 	if( docpp = FALSE ) then
@@ -952,7 +952,7 @@ end function
 private function hGetOperatorName _
 	( _
 		byval proc as FBSYMBOL ptr _
-	) as zstring ptr static
+	) as const zstring ptr static
 
 	select case as const symbGetProcOpOvl( proc )
 	case AST_OP_ASSIGN
@@ -1174,7 +1174,7 @@ end function
 private function hGetCtorName _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) as zstring ptr static
+	) as const zstring ptr static
 
 	'' !!!FIXME!!! g++ will emit two ctors/dtors if the base
 	'' class is virtual
@@ -1196,7 +1196,7 @@ private function hMangleProc  _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr
 
-    dim as zstring ptr prefix_str = any, nspc_str = any, id_str = any, param_str = any, suffix_str = any
+    dim as const zstring ptr prefix_str = any, nspc_str = any, id_str = any, param_str = any, suffix_str = any
     dim as integer prefix_len = any, nspc_len = any, id_len = any, param_len = any, suffix_len = any, add_len = any
     dim as integer docpp = any
 

@@ -266,7 +266,7 @@ sub rtlAddIntrinsicProcs _
 			end if
 
 			''
-			dim as zstring ptr pname = procdef->name
+			dim as const zstring ptr pname = procdef->name
 
 			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
 			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
@@ -336,7 +336,7 @@ end sub
 '':::::
 function rtlProcLookup _
 	( _
-		byval pname as zstring ptr, _
+		byval pname as const zstring ptr, _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 

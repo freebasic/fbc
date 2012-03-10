@@ -85,7 +85,7 @@ declare sub _emitDBG _
 dim shared as IRHLCCTX ctx
 
 '' same order as FB_DATATYPE
-dim shared as zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
     @"void"     , _ '' void
     @"byte"     , _ '' byte
@@ -1184,7 +1184,7 @@ end function
 '':::::
 private function _procGetFrameRegName _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 

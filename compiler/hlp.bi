@@ -48,7 +48,7 @@ declare sub hClearName _
 
 declare sub hUcase _
 	( _
-		byval src as zstring ptr, _
+		byval src as const zstring ptr, _
 		byval dst as zstring ptr _
 	)
 

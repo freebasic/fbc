@@ -105,7 +105,7 @@ sub hashEnd(byval hash as THASH ptr)
 
 end sub
 
-function hashHash(byval s as zstring ptr) as uinteger
+function hashHash(byval s as const zstring ptr) as uinteger
 	dim as uinteger index = 0
 	while (s[0])
 		index = s[0] + (index shl 5) - index
@@ -118,7 +118,7 @@ end function
 function hashLookupEx _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval index as uinteger _
 	) as any ptr
 
@@ -222,7 +222,7 @@ end sub
 function hashAdd _
 	( _
 		byval hash as THASH ptr, _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval userdata as any ptr, _
 		byval index as uinteger _
 	) as HASHITEM ptr
@@ -284,7 +284,7 @@ end sub
 sub strsetAdd _
 	( _
 		byval set as TSTRSET ptr, _
-		byref s as string, _
+		byref s as const string, _
 		byval userdata as integer _
 	)
 

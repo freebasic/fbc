@@ -303,7 +303,7 @@ type EMIT_VTBL
 
 	procGetFrameRegName as function _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 
 	procBegin as sub _
@@ -365,13 +365,13 @@ type EMIT_VTBL
 	getTypeString as function _
 	( _
 		byval dtype as integer _
-	) as zstring ptr
+	) as const zstring ptr
 
 	getSectionString as function _
 	( _
 		byval section as integer, _
 		byval priority as integer _
-	) as zstring ptr
+	) as const zstring ptr
 end type
 
 type EMITCTX
@@ -866,7 +866,7 @@ declare sub emitVARINIOFS _
 
 declare sub emitVARINISTR _
 	( _
-		byval s as zstring ptr _
+		byval s as const zstring ptr _
 	)
 
 declare sub emitVARINIWSTR _
@@ -896,7 +896,7 @@ declare sub emitVARINISEPARATOR _
 
 declare sub emitWriteStr _
 	( _
-		byval s as zstring ptr, _
+		byval s as const zstring ptr, _
 		byval addtab as integer = FALSE _
 	)
 

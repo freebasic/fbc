@@ -215,12 +215,13 @@ end function
 '':::::
 sub hUcase _
 	( _
-		byval src as zstring ptr, _
+		byval src as const zstring ptr, _
 		byval dst as zstring ptr _
 	) static
 
     dim as integer c
-    dim as zstring ptr s, d
+    dim as const zstring ptr s
+    dim as zstring ptr d
 
 	s = src
 	d = dst

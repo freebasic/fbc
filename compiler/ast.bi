@@ -332,7 +332,7 @@ end enum
 type AST_OPINFO
 	class			as AST_NODECLASS
 	flags 			as AST_OPFLAGS
-	id				as zstring ptr
+	id				as const zstring ptr
 	selfop			as AST_OP						'' self version
 end type
 

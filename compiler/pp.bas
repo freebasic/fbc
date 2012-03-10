@@ -16,7 +16,7 @@
 				   LEXCHECK_NOSYMBOL)
 
 type SYMBKWD
-	name			as zstring ptr
+	name			as const zstring ptr
 	id				as integer
 	sym				as FBSYMBOL ptr
 end type

@@ -759,12 +759,13 @@ end function
 '':::::
 function hEscape _
 	( _
-		byval text as zstring ptr _
-	) as zstring ptr static
+		byval text as const zstring ptr _
+	) as const zstring ptr static
 
     static as DZSTRING res
     dim as integer c, octlen, lgt
-    dim as zstring ptr src, dst, src_end
+    dim as const zstring ptr src, /'dst,'/ src_end
+    dim as zstring ptr dst
 
     '' convert the internal escape sequences to GAS format
 

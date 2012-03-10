@@ -140,7 +140,7 @@ type IR_VTBL
 
 	procGetFrameRegName as function _
 	( _
-	) as zstring ptr
+	) as const zstring ptr
 
 	scopeBegin as sub _
 	( _

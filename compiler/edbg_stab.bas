@@ -74,7 +74,7 @@ declare function hGetDataType _
 		14  _                                   '' fix-len string
 	}
 
-	dim shared stabsTB(0 to 15) as zstring ptr = _
+	dim shared stabsTB(0 to 15) as const zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
@@ -121,10 +121,10 @@ end sub
 private sub hEmitSTABS _
 	( _
 		byval _type as integer, _
-		byval _string as zstring ptr, _
+		byval _string as const zstring ptr, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr = @"0" _
+		byval _value as const zstring ptr = @"0" _
 	) static
 
 	dim as string ostr
@@ -150,7 +150,7 @@ private function hMakeSTABN _
 		byval _type as integer, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr _
+		byval _value as const zstring ptr _
 	) as zstring ptr static
 
 	static as string ostr
@@ -174,7 +174,7 @@ private sub hEmitSTABN _
 		byval _type as integer, _
 		byval _other as integer = 0, _
 		byval _desc as integer = 0, _
-		byval _value as zstring ptr = @"0" _
+		byval _value as const zstring ptr = @"0" _
 	) static
 
 

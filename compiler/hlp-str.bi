@@ -75,8 +75,8 @@ declare function hReEscapeW _
 
 declare function hEscape _
 	( _
-		byval text as zstring ptr _
-	) as zstring ptr
+		byval text as const zstring ptr _
+	) as const zstring ptr
 
 declare function hEscapeW _
 	( _

@@ -18,7 +18,7 @@
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
-	name			as zstring ptr
+	name			as const zstring ptr
 	value			as zstring ptr
 	flags			as integer
 	proc			as DEFCALLBACK
@@ -315,7 +315,7 @@ sub symbDefineInit _
 	)
 
 	dim as string value
-	dim as zstring ptr def = any
+	dim as const zstring ptr def = any
 
 	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
 	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
@@ -421,7 +421,7 @@ end sub
 '':::::
 function symbAddDefine _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
@@ -499,7 +499,7 @@ end function
 '':::::
 function symbAddDefineMacro _
 	( _
-		byval symbol as zstring ptr, _
+		byval symbol as const zstring ptr, _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr, _
@@ -548,7 +548,7 @@ end sub
 function symbAddDefineParam _
 	( _
 		byval lastparam as FB_DEFPARAM ptr, _
-		byval id as zstring ptr _
+		byval id as const zstring ptr _
 	) as FB_DEFPARAM ptr static
 
     dim as FB_DEFPARAM ptr param

@@ -281,7 +281,7 @@ end function
 
 type NameInfo
 	'' fullname as zstring ptr
-	name as zstring ptr
+	name as const zstring ptr
 	'' value as integer
 end type
 

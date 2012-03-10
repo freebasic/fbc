@@ -450,8 +450,8 @@ function symbNewSymbol _
 		byval symtb as FBSYMBOLTB ptr, _
 		byval hashtb as FBHASHTB ptr, _
 		byval class_ as FB_SYMBCLASS, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as FB_SYMBATTRIB _
@@ -903,7 +903,7 @@ end function
 private function hLookupImportHash _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 		byval index as uinteger _
 	) as FBSYMCHAIN ptr
 
@@ -952,7 +952,7 @@ end function
 private function hLookupImportList _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 		byval index as uinteger _
 	) as FBSYMCHAIN ptr
 
@@ -995,7 +995,7 @@ end function
 function symbLookupAt _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 		byval preserve_case as integer, _
 		byval search_imports as integer _
 	) as FBSYMCHAIN ptr
@@ -1048,7 +1048,7 @@ end function
 function symbLookupByNameAndClass _
 	( _
 		byval ns as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
+		byval id as const zstring ptr, _
 	  	byval class_ as integer, _
 	  	byval preserve_case as integer, _
 	  	byval search_imports as integer _
@@ -1777,7 +1777,7 @@ end function
 '':::::
 function symbGetDefType _
 	( _
-		byval symbol as zstring ptr _
+		byval symbol as const zstring ptr _
 	) as integer
 
     dim as integer c = any
