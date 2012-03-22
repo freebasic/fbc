@@ -517,11 +517,11 @@ private function hEmitFuncParams _
 
             hEmitUDT( subtype, typeIsPtr( symbGetType( pvar ) ) or is_byref )
 
-			params += *hDtypeToStr( dtype, subtype )
-
 			if( is_byref ) then
-				params += " *"
+				dtype = typeAddrOf( dtype )
 			end if
+
+			params += *hDtypeToStr( dtype, subtype )
 
 			if( isproto = FALSE ) then
 				if( is_byref = FALSE ) then

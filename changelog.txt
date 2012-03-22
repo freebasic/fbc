@@ -76,6 +76,7 @@ Version 0.24.0:
 - "array too big for stack" warning was shown for static arrays
 - ScreenRes was truncating the screen's text width/height (columns/rows) to 0..255, causing incorrect Print'ing or even a division-by-zero crash during Print
 - C backend: gcc warnings about pointer assignments from BOPs
+- C backend: compiler crash on circular dependency between UDT and function pointer typedef
 
 
 Version 0.23.0:
