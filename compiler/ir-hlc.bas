@@ -44,7 +44,7 @@ type IRHLCCTX
 	foot_txt			as string      ' buffer for footer text
 end type
 
-enum EMITTYPE_OPTION
+enum EMITTYPE_OPTIONS
 	'' Used to turn string into string* on function results
 	EMITTYPE_ISRESULT = &h00000001
 
@@ -58,7 +58,7 @@ declare function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTION = 0 _
+		byval options as EMITTYPE_OPTIONS = 0 _
 	) as string
 
 declare function hVregToStr _
@@ -73,18 +73,12 @@ declare sub hEmitStruct _
         byval is_ptr as integer _
 	)
 
-declare sub hEmitFuncPtrProto _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
 declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
 		byval ex as integer _
 	)
-
 
 '' globals
 dim shared as IRHLCCTX ctx
@@ -204,18 +198,117 @@ private sub hWriteLine _
 
 end sub
 
-private function hCallConvToStr _
+enum EMITPROC_OPTIONS
+	EMITPROC_ISPROTO   = &h1
+	EMITPROC_ISPROCPTR = &h2
+end enum
+
+private function hEmitProcHeader _
 	( _
-		byval proc as FBSYMBOL ptr _
+		byval proc as FBSYMBOL ptr, _
+		byval options as EMITPROC_OPTIONS _
 	) as string
 
-	function = " "
+	dim as string ln
 
-	select case as const symbGetProcMode( proc )
+	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
+		if( symbIsPrivate( proc ) ) then
+			ln += "static "
+		end if
+	end if
+
+	'' Function result type (is 'void' for subs)
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
+
+	'' Calling convention if needed (for function pointers it's usually not
+	'' put in this place, but should work nonetheless)
+	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-		function = " __attribute__((__stdcall__)) "
+		ln += " __attribute__((__stdcall__))"
 	end select
 
+	ln += " "
+
+	'' Identifier
+	if( options and EMITPROC_ISPROCPTR ) then
+		ln += "(*"
+	end if
+	ln += *symbGetMangledName( proc )
+	if( options and EMITPROC_ISPROCPTR ) then
+		ln += ")"
+	end if
+
+	'' Parameter list
+	ln += "( "
+
+	'' If returning a struct, there's an extra parameter
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
+		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
+			if( options and EMITPROC_ISPROTO ) then
+				var hidden = symbGetSubType( proc )
+				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
+			else
+				var hidden = proc->proc.ext->res
+				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
+				ln += " " + *symbGetMangledName( hidden )
+			end if
+
+			if( symbGetProcParams( proc ) > 0 ) then
+				ln += ", "
+			end if
+		end if
+	end if
+
+	var param = symbGetProcLastParam( proc )
+	while( param )
+		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
+			ln += "..."
+		else
+			var pvar = iif( options and EMITPROC_ISPROTO, param, symbGetParamVar( param ) )
+			var dtype = symbGetType( pvar )
+			var subtype = symbGetSubType( pvar )
+			dim as EMITTYPE_OPTIONS type_options = 0
+
+			select case( param->param.mode )
+			case FB_PARAMMODE_BYVAL
+				select case( symbGetType( param ) )
+				'' byval string? it's actually an pointer to a zstring
+				case FB_DATATYPE_STRING
+					type_options = EMITTYPE_ADDPTR
+					dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+
+				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+					'' has a dtor, copy ctor or virtual methods? it's a copy..
+					if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+						type_options = EMITTYPE_ADDPTR
+					end if
+				end select
+
+			case FB_PARAMMODE_BYREF
+				type_options = EMITTYPE_ADDPTR
+
+			case FB_PARAMMODE_BYDESC
+				type_options = EMITTYPE_ADDPTR
+				dtype = FB_DATATYPE_STRUCT
+				subtype = symb.arrdesctype
+			end select
+
+			ln += hEmitType( dtype, subtype, type_options )
+
+			if( (options and EMITPROC_ISPROTO) = 0 ) then
+				ln += " " + *symbGetMangledName( pvar )
+			end if
+		end if
+
+		param = symbGetProcPrevParam( proc, param )
+		if( param ) then
+			ln += ", "
+		end if
+	wend
+
+	ln += " )"
+
+	function = ln
 end function
 
 private function hGetUDTName _
@@ -254,12 +347,12 @@ end function
 private sub hEmitUDT _
 	( _
 		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
+		byval is_ptr as integer _
 	)
 
-    if( s = NULL ) then
-        return
-    end if
+	if( s = NULL ) then
+		return
+	end if
 
 	if( symbGetIsEmitted( s ) ) then
 		return
@@ -270,22 +363,23 @@ private sub hEmitUDT _
 		ctx.section = SECTION_HEAD
 	end if
 
- 	select case as const symbGetClass( s )
- 	case FB_SYMBCLASS_ENUM
-        symbSetIsEmitted( s )
- 		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
+	select case as const symbGetClass( s )
+	case FB_SYMBCLASS_ENUM
+		symbSetIsEmitted( s )
+		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
 
- 	case FB_SYMBCLASS_STRUCT
- 		hEmitStruct( s, is_ptr )
+	case FB_SYMBCLASS_STRUCT
+		hEmitStruct( s, is_ptr )
 
- 	case FB_SYMBCLASS_PROC
- 		if( symbGetIsFuncPtr( s ) ) then
- 			hEmitFuncPtrProto( s )
- 		end if
+	case FB_SYMBCLASS_PROC
+		if( symbGetIsFuncPtr( s ) ) then
+			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ), TRUE )
+			symbSetIsEmitted( s )
+		end if
 
- 	end select
+	end select
 
- 	ctx.section = oldsection
+	ctx.section = oldsection
 end sub
 
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
@@ -439,101 +533,6 @@ private sub hEmitVariable _
 
 end sub
 
-''::::
-private function hEmitFuncParams _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval isproto as integer = TRUE _
-	) as string
-
-	''
-	dim as FBSYMBOL ptr hidden_param = NULL
-	select case symbGetType( proc )
-	case FB_DATATYPE_STRUCT
-		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
-        	if( isproto = FALSE ) then
-        		hidden_param = proc->proc.ext->res
-        	else
-        		hidden_param = symbGetSubType( proc )
-        	end if
-		end if
-	end select
-
-	''
-	if( symbGetProcParams( proc ) = 0 and hidden_param = NULL ) then
-		return "( void )"
-	end if
-
-	var params = "( "
-
-	if( hidden_param ) then
-		params += hEmitType( symbGetType( hidden_param ), _
-		                     iif( isproto = FALSE, symbGetSubtype( hidden_param ), hidden_param ), _
-		                     EMITTYPE_ADDPTR )
-
-		if( isproto = FALSE ) then
-			params += " " & *symbGetMangledName( hidden_param )
-		end if
-
-		if( proc->proc.params > 0 ) then
-			params += ", "
-		end if
-	end if
-
-	var param = symbGetProcLastParam( proc )
-	do while( param )
-		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-			params += "..."
-		else
-			var pvar = iif( isproto, param, symbGetParamVar( param ) )
-			var dtype = symbGetType( pvar )
-			var subtype = symbGetSubType( pvar )
-			dim as EMITTYPE_OPTION options = 0
-
-			select case param->param.mode
-			case FB_PARAMMODE_BYVAL
-				select case symbGetType( param )
-				'' byval string? it's actually an pointer to a zstring
-				case FB_DATATYPE_STRING
-					options = EMITTYPE_ADDPTR
-					dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
-
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					'' has a dtor, copy ctor or virtual methods? it's a copy..
-					if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-						options = EMITTYPE_ADDPTR
-					end if
-				end select
-
-			case FB_PARAMMODE_BYREF
-				options = EMITTYPE_ADDPTR
-
-			case FB_PARAMMODE_BYDESC
-				options = EMITTYPE_ADDPTR
-				dtype = FB_DATATYPE_STRUCT
-				subtype = symb.arrdesctype
-			end select
-
-			params += hEmitType( dtype, subtype, options )
-
-			if( isproto = FALSE ) then
-				params += " " + *symbGetMangledName( pvar )
-			end if
-		end if
-
-		param = symbGetProcPrevParam( proc, param )
-		if( param ) then
-			params += ", "
-		end if
-	loop
-
-	params += " )"
-
-	function = params
-
-end function
-
-''::::
 private sub hEmitFuncProto _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -575,16 +574,7 @@ private sub hEmitFuncProto _
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
 					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE, TRUE )
 	else
-		var str_static = ""
-
-		if( symbIsPrivate( s ) ) then
-			str_static = "static "
-		end if
-
-		var ln = str_static
-		ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), symbGetSubType( s ), EMITTYPE_ISRESULT )
-		ln += hCallConvToStr( s ) + *symbGetMangledName( s )
-		ln += hEmitFuncParams( s )
+		dim as string ln = hEmitProcHeader( s, EMITPROC_ISPROTO )
 
 		if( symbGetIsGlobalCtor( s ) ) then
 			ln += " __attribute__ ((constructor)) "
@@ -599,28 +589,6 @@ private sub hEmitFuncProto _
 
 end sub
 
-''::::
-private sub hEmitFuncPtrProto _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-    '' Emitted in the meantime?
-    if( symbGetIsEmitted( s ) ) then
-        return
-    end if
-
-	dim as string ln = "typedef "
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( s ) ), symbGetSubType( s ), EMITTYPE_ISRESULT )
-	ln += hCallConvToStr( s ) + "(*" + *symbGetMangledName( s ) + ") "
-	ln += hEmitFuncParams( s )
-	hWriteLine( ln, TRUE )
-
-    symbSetIsEmitted( s )
-
-end sub
-
-''::::
 private sub hEmitStruct _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -1394,7 +1362,7 @@ private function hEmitType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval options as EMITTYPE_OPTION = 0 _
+		byval options as EMITTYPE_OPTIONS = 0 _
 	) as string
 
 	dim as string s
@@ -2616,8 +2584,6 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	dim as string ln
-
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
@@ -2625,24 +2591,16 @@ private sub _emitProcBegin _
 		ctx.linenum = 0
 	end if
 
+	dim as string ln
 	if( symbIsExport( proc ) ) then
 		ln += "__declspec(dllexport) "
 	end if
-
-	if( symbIsPublic( proc ) = FALSE ) then
-		ln += "static "
-	end if
-
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
-	ln += hCallConvToStr( proc )
 
 	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
 		ln += "__attribute__ ((naked)) "
 	end if
 
-	ln += *symbGetMangledName( proc )
-
-	ln += hEmitFuncParams( proc, FALSE )
+	ln += hEmitProcHeader( proc, 0 )
 
 	hWriteLine( ln, FALSE, TRUE )
 
