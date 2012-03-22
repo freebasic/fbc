@@ -46,7 +46,6 @@ end type
 
 enum DT2STR_OPTION
 	DT2STR_OPTION_STRINGRETFIX			= &h00000001
-	DT2STR_OPTION_VOIDPARAMFIX			= &h00000002
 end enum
 
 declare function hDtypeToStr _
@@ -874,24 +873,6 @@ private sub hEmitTypedefs( )
 
 end sub
 
-'':::::
-private function hProcIsUsed _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)  as integer
-
-	do while( proc <> NULL )
-		if( symbGetIsCalled( proc ) ) then
-			return TRUE
-		end if
-
-		proc = symbGetProcOvlNext( proc )
-	loop
-
-	return FALSE
-
-end function
-
 private sub hWriteFTOI _
 	( _
 		byref fname as string, _
@@ -1483,14 +1464,6 @@ private function hDtypeToStr _
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 		res = *dtypeName(dtype)
 		if( (options and DT2STR_OPTION_STRINGRETFIX) <> 0 ) then
-			if( ptrcnt = 0 ) then
-				ptrcnt = 1
-			end if
-		end if
-
-	case FB_DATATYPE_VOID
-		res = *dtypeName(dtype)
-		if( (options and DT2STR_OPTION_VOIDPARAMFIX) <> 0 ) then
 			if( ptrcnt = 0 ) then
 				ptrcnt = 1
 			end if
