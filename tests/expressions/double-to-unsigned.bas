@@ -31,6 +31,12 @@ sub test cdecl ()
 	i = 4.2e9
 	CU_ASSERT_EQUAL( i, 4.2e9 )
 
+	'' -gen gcc regression tests
+	d = 4294967295u
+	CU_ASSERT( cuint( d ) = 4294967295u )
+	CU_ASSERT( cuint( cdbl( 4294967295u ) ) = 4294967295u )
+	d = -1
+	CU_ASSERT( cint( d ) = -1 )
 end sub
 
 sub ctor () constructor

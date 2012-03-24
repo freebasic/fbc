@@ -77,6 +77,7 @@ Version 0.24.0:
 - ScreenRes was truncating the screen's text width/height (columns/rows) to 0..255, causing incorrect Print'ing or even a division-by-zero crash during Print
 - C backend: gcc warnings about pointer assignments from BOPs
 - C backend: compiler crash on circular dependency between UDT and function pointer typedef
+- C backend: Wrong float-to-int conversions (for example, the result of double-to-uinteger was truncated to integer)
 
 
 Version 0.23.0:

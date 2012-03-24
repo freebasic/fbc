@@ -377,23 +377,6 @@
 #define FB_RTL_FRAC                    	"{frac}"
 #define FB_RTL_ATAN2                    "{atan2}"
 
-#define FB_RTL_FTOSB                    "fb_ftosb"
-#define FB_RTL_DTOSB                    "fb_dtosb"
-#define FB_RTL_FTOSS                    "fb_ftoss"
-#define FB_RTL_DTOSS                    "fb_dtoss"
-#define FB_RTL_FTOSI                    "fb_ftosi"
-#define FB_RTL_DTOSI                    "fb_dtosi"
-#define FB_RTL_FTOSL                    "fb_ftosl"
-#define FB_RTL_DTOSL                    "fb_dtosl"
-#define FB_RTL_FTOUB                    "fb_ftoub"
-#define FB_RTL_DTOUB                    "fb_dtoub"
-#define FB_RTL_FTOUS                    "fb_ftous"
-#define FB_RTL_DTOUS                    "fb_dtous"
-#define FB_RTL_FTOUI                    "fb_ftoui"
-#define FB_RTL_DTOUI                    "fb_dtoui"
-#define FB_RTL_FTOUL                    "fb_ftoul"
-#define FB_RTL_DTOUL                    "fb_dtoul"
-
 #define FB_RTL_THREADCALL               "fb_ThreadCall"
 
 
@@ -768,23 +751,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FIX
 	FB_RTL_IDX_FRAC
 	FB_RTL_IDX_ATAN2
-
-	FB_RTL_IDX_FTOSB
-	FB_RTL_IDX_DTOSB
-	FB_RTL_IDX_FTOSS
-	FB_RTL_IDX_DTOSS
-	FB_RTL_IDX_FTOSI
-	FB_RTL_IDX_DTOSI
-	FB_RTL_IDX_FTOSL
-	FB_RTL_IDX_DTOSL
-	FB_RTL_IDX_FTOUB
-	FB_RTL_IDX_DTOUB
-	FB_RTL_IDX_FTOUS
-	FB_RTL_IDX_DTOUS
-	FB_RTL_IDX_FTOUI
-	FB_RTL_IDX_DTOUI
-	FB_RTL_IDX_FTOUL
-	FB_RTL_IDX_DTOUL
 
     FB_RTL_IDX_THREADCALL
 
@@ -1192,12 +1158,6 @@ declare function rtlMathBop _
 		byval op as integer, _
 		byval lexpr as ASTNODE ptr, _
 		byval rexpr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-declare function rtlMathFTOI _
-	( _
-		byval expr as ASTNODE ptr, _
-		byval to_dtype as integer _
 	) as ASTNODE ptr
 
 declare function rtlInitMain _
