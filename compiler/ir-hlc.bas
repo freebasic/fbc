@@ -242,13 +242,14 @@ private function hEmitProcHeader _
 	ln += "( "
 
 	'' If returning a struct, there's an extra parameter
+	dim as FBSYMBOL ptr hidden = NULL
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
 			if( options and EMITPROC_ISPROTO ) then
-				var hidden = symbGetSubType( proc )
+				hidden = symbGetSubType( proc )
 				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
 			else
-				var hidden = proc->proc.ext->res
+				hidden = proc->proc.ext->res
 				ln += hEmitType( symbGetType( hidden ), symbGetSubtype( hidden ), EMITTYPE_ADDPTR )
 				ln += " " + *symbGetMangledName( hidden )
 			end if
@@ -260,6 +261,11 @@ private function hEmitProcHeader _
 	end if
 
 	var param = symbGetProcLastParam( proc )
+
+	if( (hidden = NULL) and (param = NULL) ) then
+		ln += "void"
+	end if
+
 	while( param )
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
