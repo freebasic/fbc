@@ -1,4 +1,3 @@
-
 #ifndef __crt_stdint_bi__
 #define __crt_stdint_bi__
 
@@ -8,11 +7,7 @@
 type int8_t as byte
 type int16_t as short
 type int32_t as integer
-#ifdef __FB_64BIT__
-type int64_t as long
-#else
 type int64_t as longint
-#endif
 #endif
 
 type uint8_t as ubyte
@@ -20,29 +15,17 @@ type uint16_t as ushort
 #ifndef uint32_t
 type uint32_t as uinteger
 #endif
-#ifdef __FB_64BIT__
-type uint64_t as ulong
-#else
 type uint64_t as ulongint
-#endif
 
 type int_least8_t as byte
 type int_least16_t as short
 type int_least32_t as integer
-#ifdef __FB_64BIT__
-type int_least64_t as long
-#else
 type int_least64_t as longint
-#endif
 
 type uint_least8_t as ubyte
 type uint_least16_t as ushort
 type uint_least32_t as uinteger
-#ifdef __FB_64BIT__
-type uint_least64_t as ulong
-#else
 type uint_least64_t as ulongint
-#endif
 
 type int_fast8_t as byte
 #ifdef __FB_64BIT__
@@ -67,32 +50,22 @@ type uint_fast64_t as ulongint
 #endif
 
 #ifdef __FB_64BIT__
-#ifndef intptr_t
-type intptr_t as long
-#endif
-type uintptr_t as ulong
+	#ifndef intptr_t
+	type intptr_t as longint
+	#endif
+	type uintptr_t as ulongint
 #else
-#ifndef intptr_t
-type intptr_t as integer
-#endif
-type uintptr_t as uinteger
+	#ifndef intptr_t
+	type intptr_t as integer
+	#endif
+	type uintptr_t as uinteger
 #endif
 
-#ifdef __FB_64BIT__
-type intmax_t as long
-type uintmax_t as ulong
-#else
 type intmax_t as longint
 type uintmax_t as ulongint
-#endif
 
-#ifdef __FB_64BIT__
-# define __INT64_C(c) c##L
-# define __UINT64_C(c) c##UL
-#else
-# define __INT64_C(c) c##LL
-# define __UINT64_C(c) c##ULL
-#endif
+#define __INT64_C(c) c##LL
+#define __UINT64_C(c) c##ULL
 
 #define INT8_MIN (-128)
 #define INT16_MIN (-32767-1)
@@ -144,7 +117,6 @@ type uintmax_t as ulongint
 #endif
 #define INT_FAST64_MAX (__INT64_C(9223372036854775807))
 
-
 #define UINT_FAST8_MAX (255)
 #ifdef __FB_64BIT__
 #  define UINT_FAST16_MAX (18446744073709551615UL)
@@ -166,9 +138,7 @@ type uintmax_t as ulongint
 #endif
 
 #define INTMAX_MIN (-__INT64_C(9223372036854775807)-1)
-
 #define INTMAX_MAX (__INT64_C(9223372036854775807))
-
 #define UINTMAX_MAX (__UINT64_C(18446744073709551615))
 
 #ifdef __FB_64BIT__
@@ -199,27 +169,14 @@ type uintmax_t as ulongint
 #define INT8_C(c) c
 #define INT16_C(c) c
 #define INT32_C(c) c
-#ifdef __FB_64BIT__
-# define INT64_C(c) c##L
-#else
-# define INT64_C(c) c##LL
-#endif
+#define INT64_C(c) c##LL
 
 #define UINT8_C(c) c##U
 #define UINT16_C(c) c##U
 #define UINT32_C(c) c##U
-#ifdef __FB_64BIT__
-# define UINT64_C(c) c##UL
-#else
-# define UINT64_C(c) c##ULL
-#endif
+#define UINT64_C(c) c##ULL
 
-#ifdef __FB_64BIT__
-# define INTMAX_C(c) c##L
-# define UINTMAX_C(c) c##UL
-#else
-# define INTMAX_C(c) c##LL
-# define UINTMAX_C(c) c##ULL
-#endif
+#define INTMAX_C(c) c##LL
+#define UINTMAX_C(c) c##ULL
 
 #endif
