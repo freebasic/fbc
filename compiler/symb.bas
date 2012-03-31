@@ -2049,11 +2049,23 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 
 	dim as zstring ptr id = s->id.name
 	if( id = NULL ) then
-		id = @"<unspecified>"
+		id = @"<unnamed>"
 	end if
 
-	''dump += "[" + hex(s) + "] "
+#if 0
+	dump += "[" + hex(s) + "] "
+#endif
 	dump += *id
+
+#if 1
+	dim as zstring ptr mangled = symbGetMangledName( s )
+	dump += " alias """
+	if( mangled ) then
+		dump += *mangled
+	end if
+	dump += """"
+#endif
+
 	dump += " as "
 
 	if( s->typ and FB_DATATYPE_INVALID ) then

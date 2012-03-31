@@ -81,6 +81,7 @@ Version 0.24.0:
 - C backend: Wrong float-to-int conversions (for example, the result of double-to-uinteger was truncated to integer)
 - Buffer overflow in wstring Input
 - Input to dereferenced wstring ptr wasn't reading in anything
+- Array descriptors for arrays declared inside Extern blocks weren't always given an alias name, causing the mangled name for emitting to be wrong (under C++ mangling) or empty (under all other non-default manglings)
 
 
 Version 0.23.0:
