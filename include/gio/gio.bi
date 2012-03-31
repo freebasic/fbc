@@ -1,4 +1,4 @@
-' This is file glib.bi
+' This is file gio.bi
 ' (FreeBasic binding for GLib library version 2.31.4)
 '
 ' translated with help of h_2_bi.bas by

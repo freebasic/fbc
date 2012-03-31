@@ -1,5 +1,5 @@
-' This is file glib.bi
-' (FreeBasic binding for GLib library version 2.31.4)
+' This is file pangocairo.bi
+' (FreeBasic binding for Pango library version 1.29.5)
 '
 ' translated with help of h_2_bi.bas by
 ' Thomas[ dot ]Freiherr[ at ]gmx[ dot ]net.

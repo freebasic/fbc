@@ -1,4 +1,4 @@
-' This is file gtk.bi
+' This is file gtk-3.2.bi
 ' (FreeBasic binding for GTK - The GIMP Toolkit version 3.2.2)
 '
 ' translated with help of h_2_bi.bas by
