@@ -15,6 +15,7 @@ Version 0.24.0:
 - SWAP no longer accepts function calls
 - ImageCreate() and Reset(streamno) now set the runtime error code, which can be retrieved with Err()
 - Allow CONST STRING parameters in string.bi/datetime.bi functions
+- wstring Input is now subject to the same 4096 characters length limit like the normal [z]string Input
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
@@ -78,6 +79,8 @@ Version 0.24.0:
 - C backend: gcc warnings about pointer assignments from BOPs
 - C backend: compiler crash on circular dependency between UDT and function pointer typedef
 - C backend: Wrong float-to-int conversions (for example, the result of double-to-uinteger was truncated to integer)
+- Buffer overflow in wstring Input
+- Input to dereferenced wstring ptr wasn't reading in anything
 
 
 Version 0.23.0:

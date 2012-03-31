@@ -113,6 +113,9 @@ void fb_FileInputNextTokenWstr
 		int is_string
 	)
 {
+	/* max_chars does not include the null terminator, the buffer is
+	   assumed to be big enough to hold at least the null terminator */
+
     int len, isquote, skipdelim;
     FB_WCHAR c;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );

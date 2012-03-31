@@ -66,12 +66,99 @@ private function init cdecl () as integer
 	return 0
 end function
 
-private sub ctor () constructor
+sub fixlenZstring cdecl( )
+	dim as zstring * 32 z
 
-	fbcu.add_suite("fbc_tests.file.input", @init)
-	fbcu.add_test("integerTest", @integerTest)
-	fbcu.add_test("doubleTest", @doubleTest)
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
 
+	input #1, z
+
+	close #1
+
+	CU_ASSERT( z = "bb" )
+end sub
+
+sub fixlenWstring cdecl( )
+	dim as wstring * 32 w
+
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+
+	input #1, w
+
+	close #1
+
+	CU_ASSERT( w = wstr( "bb" ) )
+end sub
+
+sub derefZstring cdecl( )
+	dim as zstring * 32 z
+	dim as zstring ptr pz = @z
+
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+
+	'' Note: this is dangerous, since the buffer length isn't being checked
+	'' and will be overflown if the data in the file is long enough.
+	input #1, *pz
+
+	close #1
+
+	CU_ASSERT( z = "bb" )
+end sub
+
+sub derefWstring cdecl( )
+	dim as wstring * 32 w
+	dim as wstring ptr pw = @w
+
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+
+	'' Note: this is dangerous, since the buffer length isn't being checked
+	'' and will be overflown if the data in the file is long enough.
+	input #1, *pw
+
+	close #1
+
+	CU_ASSERT( w = wstr( "bb" ) )
+end sub
+
+sub wstringOverflow cdecl( )
+	type T field = 1
+		as wstring * 2 w
+		as integer i
+	end type
+
+	dim as T x
+	x.w = wstr( "a" )
+	x.i = -1
+
+	CU_ASSERT( x.i = -1 )
+
+	if( open( "file/2bytes.txt", for input, as #1 ) ) then
+		CU_FAIL( )
+	end if
+	input #1, x.w
+	close #1
+
+	CU_ASSERT( x.w = wstr( "b" ) )
+	CU_ASSERT( x.i = -1 )
+end sub
+
+private sub ctor( ) constructor
+	fbcu.add_suite( "fbc_tests.file.input", @init )
+	fbcu.add_test( "integerTest", @integerTest )
+	fbcu.add_test( "doubleTest", @doubleTest )
+	fbcu.add_test( "Input to user-allocated zstring", @derefZstring )
+	fbcu.add_test( "Input to user-allocated wstring", @derefWstring )
+	fbcu.add_test( "Input to fixed-length zstring", @fixlenZstring )
+	fbcu.add_test( "Input to fixed-length wstring", @fixlenWstring )
+	fbcu.add_test( "wstring buffer overflow regression test", @wstringOverflow )
 end sub
 
 end namespace
