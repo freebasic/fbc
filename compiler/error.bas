@@ -38,7 +38,6 @@ end type
 		( 1, @"Literal number too big, truncated" ), _
 		( 1, @"Literal string too big, truncated" ), _
 		( 0, @"UDT with pointer or var-len string fields" ), _
-		( 0, @"UDT with var-len string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
 		( 0, @"Function result was not explicitly set" ), _
