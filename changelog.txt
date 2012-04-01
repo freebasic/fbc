@@ -29,6 +29,35 @@ Version 0.24.0:
 - 'fbc -static' option to tell the linker to link against static libraries if installed
 - CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
 - "Real" Rnd() algorithm (activate via 'Randomize(, 5)') using Win32 Crypto APIs or Linux /dev/urandom
+- New headers for many audio-related libraries (some experimental): libsndfile 1.0.X, libVLC 1.1.x, mpg123 library, MediaInfo, PortAudio, Flite 1.4, libmodplug 0.8.8.4
+- New experimental X11 headers
+- Updated headers for GNU gettext/libintl 0.17
+- New algif and alpng headers for Allegro
+- New header for the UUID library from e2fsprogs
+- New headers for json-c
+- New headers for the GNU dbm library
+- acmStreamOpen() declaration to win/msacm.bi
+- New header file: win/ddk/mmddk.bi
+- New headers for compression and archive handling libraries: libzip 0.10, libbzip2 1.0.6, liblzma 5.0.2, zlib 1.2.6
+- Updated headers for wx-c 0.9.2
+- New headers for libjit 1.0.0 and libffi 3.0.10
+- New headers for the Chipmunk 4.1.0 physics library
+- Updated headers for CGUI 2.0.1
+- New headers for IUP 3.5
+- Updated header for SQLite3 3.7.8
+- Updated headers for OpenAL 1.13 and ALUT 1.1.0
+- Updated header for FreeImage 3.15.1
+- Updated header for QuickLZ 1.50
+- Updated header for PDcurses 3.4
+- Updated header for libcaca 0.99 beta17
+- Updated headers for OpenGL, including new freeglut headers
+- Updated header for BASS 2.4
+- Updated header for ODE 0.11.1
+- Updated header for libcurl 7.24.0
+- New header for SQLiteExtensions 3.6.23.1
+- Updated headers for GTK+ 2.24 and 3.2.2, including gdk-pixbuf 2.25.0, gtkglext 1.2.0, ATK 1.33.6, Cairo 1.10.2, Pango 1.29.5, glib 2.31.4
+- Updated header for Mini-XML 2.7 header update
+- New header for ZeroMQ 2.1.10
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
@@ -84,6 +113,9 @@ Version 0.24.0:
 - #3510684: Array descriptors for arrays declared inside Extern blocks weren't always given an alias name, causing the mangled name for emitting to be wrong (under C++ mangling) or empty (under all other non-default manglings)
 - #3496522: crt/sys/linux/types.bi contained wrong typedefs (int64_t being just integer etc.)
 - Missing GET/PUT "UDT with var-len fields" warning when nested UDT fields had var-len fields
+- GLUT/Windows headers compatibility issues
+- win/commctrl.bi: TabCtrl_AdjustRect() and TabCtrl_SetImageList()
+- win/winsock[2].bi: FD_CLR() macros were broken
 
 
 Version 0.23.0:
