@@ -381,7 +381,7 @@ function symbAddField _
 
 	select case as const typeGet( dtype )
 	'' var-len string fields? must add a ctor, copyctor and dtor
-    case FB_DATATYPE_STRING
+	case FB_DATATYPE_STRING
 		'' if it's an anon udt, it or parent is an UNION
 		if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
 									  FB_UDTOPT_ISANON)) <> 0 ) then
@@ -392,8 +392,14 @@ function symbAddField _
 			symbSetUDTHasPtrField( parent )
 		end if
 
-    '' struct with a ctor or dtor? must add a ctor or dtor too
-    case FB_DATATYPE_STRUCT
+	'' struct with a ctor or dtor? must add a ctor or dtor too
+	case FB_DATATYPE_STRUCT
+		'' Let the FB_UDTOPT_HASPTRFIELD flag propagate up to the
+		'' parent if this field has it.
+		if( symbGetUDTHasPtrField( subtype ) ) then
+			symbSetUDTHasPtrField( base_parent )
+		end if
+
 		if( symbGetCompDefCtor( subtype ) <> NULL ) then
 			'' if it's an anon udt, it or parent is an UNION
 			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
@@ -402,7 +408,7 @@ function symbAddField _
 			else
 				symbSetUDTHasCtorField( parent )
 			end if
-    	end if
+		end if
 
 		if( symbGetHasDtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
@@ -412,13 +418,13 @@ function symbAddField _
 			else
 				symbSetUDTHasDtorField( parent )
 			end if
-    	end if
+		end if
 
 	end select
 
 	'' check pointers
 	if( typeIsPtr( dtype ) ) then
-		base_parent->udt.options or= FB_UDTOPT_HASPTRFIELD
+		symbSetUDTHasPtrField( base_parent )
 	end if
 
 	'' struct?

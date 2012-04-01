@@ -83,6 +83,7 @@ Version 0.24.0:
 - Input to dereferenced wstring ptr wasn't reading in anything
 - #3510684: Array descriptors for arrays declared inside Extern blocks weren't always given an alias name, causing the mangled name for emitting to be wrong (under C++ mangling) or empty (under all other non-default manglings)
 - #3496522: crt/sys/linux/types.bi contained wrong typedefs (int64_t being just integer etc.)
+- Missing GET/PUT "UDT with var-len fields" warning when nested UDT fields had var-len fields
 
 
 Version 0.23.0:
