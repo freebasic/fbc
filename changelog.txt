@@ -58,6 +58,7 @@ Version 0.24.0:
 - Updated headers for GTK+ 2.24 and 3.2.2, including gdk-pixbuf 2.25.0, gtkglext 1.2.0, ATK 1.33.6, Cairo 1.10.2, Pango 1.29.5, glib 2.31.4
 - Updated header for Mini-XML 2.7 header update
 - New header for ZeroMQ 2.1.10
+- Updated header for cryptlib 3.4.1
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)

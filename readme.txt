@@ -160,7 +160,7 @@
     - Laanan Fisher (laananfisher[at]gmail.com)
         FB test suite using CUnit
     - Matthew Riley (pestery)
-        OpenGL, GLFW, glext, FreeGLUT headers
+        OpenGL, GLFW, glext, FreeGLUT, cryptlib headers
     - Matthias Faust (matthias_faust[at]web.de)
         SDL_ttf headers & examples
     - Marzec
