@@ -108,7 +108,7 @@ Version 0.24.0:
 - ScreenRes was truncating the screen's text width/height (columns/rows) to 0..255, causing incorrect Print'ing or even a division-by-zero crash during Print
 - C backend: gcc warnings about pointer assignments from BOPs
 - C backend: compiler crash on circular dependency between UDT and function pointer typedef
-- C backend: Wrong float-to-int conversions (for example, the result of double-to-uinteger was truncated to integer)
+- C backend: Wrong float-to-int conversions (double-to-uinteger was truncated to integer, or #3310595: clng(single|double) didn't compile)
 - Buffer overflow in wstring Input
 - Input to dereferenced wstring ptr wasn't reading in anything
 - #3510684: Array descriptors for arrays declared inside Extern blocks weren't always given an alias name, causing the mangled name for emitting to be wrong (under C++ mangling) or empty (under all other non-default manglings)
