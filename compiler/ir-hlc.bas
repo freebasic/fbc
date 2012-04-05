@@ -220,11 +220,20 @@ private function hEmitProcHeader _
 	'' Function result type (is 'void' for subs)
 	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
 
+	''
 	'' Calling convention if needed (for function pointers it's usually not
 	'' put in this place, but should work nonetheless)
+	''
+	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
+	'' arguments are pushed left-to-right (same order as written in code,
+	'' not reversed like Cdecl/Stdcall).
+	'' The symbGetProc*Param() macros take care of changing the order when
+	'' cycling through parameters of Pascal functions. Together with Stdcall
+	'' this results in a double-reverse resulting in the proper ABI.
+	''
 	select case as const( symbGetProcMode( proc ) )
-	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS
-		ln += " __attribute__((__stdcall__))"
+	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		ln += " __attribute__((stdcall))"
 	end select
 
 	ln += " "

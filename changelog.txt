@@ -117,6 +117,7 @@ Version 0.24.0:
 - GLUT/Windows headers compatibility issues
 - win/commctrl.bi: TabCtrl_AdjustRect() and TabCtrl_SetImageList()
 - win/winsock[2].bi: FD_CLR() macros were broken
+- C backend: procedures using Pascal were treated as Cdecl
 
 
 Version 0.23.0:

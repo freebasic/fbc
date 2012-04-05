@@ -1,4 +1,8 @@
 [ ] add a C backend
+	- MinGW gcc will always add the @N suffix on Stdcall procedures,
+	  thus STDCALL_MS and PASCAL procs will be mangled wrong on Win32.
+	  gcc doesn't seem to have any way to change this, only ld has
+	  --enable-stdcall-fixup (dangerous) and --kill-at (global, not per-function)
 	[x] address of labels (used by the error trapping) must be emitted with 2 "&"'s
 	[x] the forward typedefs can't have a temp name or the g++ mangling will be wrong
 	[x] functions that return structs -- ABI-dependent, because the non-trivial UDT must be handled by FB
