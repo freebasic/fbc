@@ -164,7 +164,6 @@ sub astDataStmtEnd _
 							 astNewCONSTi( id, FB_DATATYPE_SHORT ), _
 							 elm )
 
-    	astTypeIniSeparator( initree, NULL )
     	elm = symbGetNext( elm )
 
         '' .node = expr
@@ -176,10 +175,6 @@ sub astDataStmtEnd _
 		dim as ASTNODE ptr nxt = n->r
 		astDelNode( n )
 		n = nxt
-
-		if( n ) then
-			astTypeIniSeparator( initree, NULL )
-		end if
 	next
 
     ''

@@ -337,39 +337,12 @@ type IR_VTBL
 		byval ex as integer _
 	)
 
-	emitVarIniBegin as sub _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	emitVarIniEnd as sub _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	emitVarIniI as sub _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	)
-
-	emitVarIniF as sub _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	)
-
-	emitVarIniI64 as sub _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	)
-
-	emitVarIniOfs as sub _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
-	)
+	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
+	emitVarIniEnd as sub( byval sym as FBSYMBOL ptr )
+	emitVarIniI as sub( byval dtype as integer, byval value as integer )
+	emitVarIniF as sub( byval dtype as integer, byval value as double )
+	emitVarIniI64 as sub( byval dtype as integer, byval value as longint )
+	emitVarIniOfs as sub( byval sym as FBSYMBOL ptr, byval ofs as integer )
 
 	emitVarIniStr as sub _
 	( _
@@ -385,28 +358,9 @@ type IR_VTBL
 		byval litlgt as integer _
 	)
 
-	emitVarIniPad as sub _
-	( _
-		byval bytes as integer _
-	)
-
-	emitVarIniScopeBegin as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
-
-	emitVarIniScopeEnd as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
-
-	emitVarIniSeparator as sub _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval ym as FBSYMBOL ptr _
-	)
+	emitVarIniPad as sub( byval bytes as integer )
+	emitVarIniScopeBegin as sub( )
+	emitVarIniScopeEnd as sub( )
 
 	allocVreg as function _
 	( _
@@ -612,11 +566,9 @@ declare sub irEnd()
 
 #define irEmitVARINIPAD(bytes) ir.vtbl.emitVarIniPad( bytes )
 
-#define irEmitVARINISCOPEINI(basesym, s) ir.vtbl.emitVarIniScopeBegin( basesym, s )
+#define irEmitVARINISCOPEBEGIN( ) ir.vtbl.emitVarIniScopeBegin( )
 
-#define irEmitVARINISCOPEEND(basesym, s) ir.vtbl.emitVarIniScopeEnd( basesym, s )
-
-#define irEmitVARINISEPARATOR(basesym, s) ir.vtbl.emitVarIniSeparator( basesym, s )
+#define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
 #define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
 

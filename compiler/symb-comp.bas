@@ -222,12 +222,10 @@ private sub hAddRTTI _
 			
 			'' id = @"mangled name"
 			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniSeparator( initree, rtti )			 
 			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbAllocStrConst( mname, len( mname ) ), 0, FB_DATATYPE_CHAR ) ), elm )
 			
 			'' pRTTIBase = @base's RTTI struct
 			elm = symbGetUDTNextElm( elm, FALSE )
-			astTypeIniSeparator( initree, rtti )
 			astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( symbGetSubtype( sym->udt.base )->udt.ext->rtti, 0 ) ), elm )
 	
 		astTypeIniScopeEnd( initree, rtti )
@@ -260,7 +258,6 @@ private sub hAddRTTI _
 			
 				'' base.pRTTI = @rtti
 				elm = symbGetUDTNextElm( elm, FALSE )
-				astTypeIniSeparator( initree, vtable )
 				astTypeIniAddAssign( initree, astNewADDROF( astNewVAR( rtti, 0 ) ), elm )
 
 			astTypeIniScopeEnd( initree, vtable )

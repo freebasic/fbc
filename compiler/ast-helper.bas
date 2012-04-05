@@ -958,13 +958,11 @@ function astBuildArrayDescIniTree _
 					   			  				  FB_DATATYPE_INTEGER ) ), _
 					   	 elm )
 
-	astTypeIniSeparator( tree, NULL )
 	elm = symbGetNext( elm )
 
 	'' .ptr	= @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .size = len( array ) * elements( array )
@@ -973,7 +971,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .element_len	= len( array )
@@ -982,7 +979,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' .dimensions = dims( array )
@@ -991,7 +987,6 @@ function astBuildArrayDescIniTree _
     				   				   FB_DATATYPE_INTEGER ), _
     				   	 elm )
 
-    astTypeIniSeparator( tree, NULL )
     elm = symbGetNext( elm )
 
     '' setup dimTB
@@ -1015,7 +1010,6 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .lbound = lbound( array, d )
@@ -1024,7 +1018,6 @@ function astBuildArrayDescIniTree _
     				   				 		   FB_DATATYPE_INTEGER ), _
     				   		     elm )
 
-			astTypeIniSeparator( tree, NULL )
 			elm = symbGetNext( elm )
 
 			'' .ubound = ubound( array, d )
@@ -1036,10 +1029,6 @@ function astBuildArrayDescIniTree _
 			astTypeIniScopeEnd( tree, NULL )
 
 			d = d->next
-
-			if( d ) then
-				astTypeIniSeparator( tree, NULL )
-			end if
     	loop
 
     '' dynamic..

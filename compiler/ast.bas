@@ -259,7 +259,6 @@ dim shared as ASTCTX ast
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_CTORLIST
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEINI
 		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SCOPEEND
-		( @astLoadNOP           , TRUE  ), _    '' AST_NODECLASS_TYPEINI_SEPARATOR
 		( @astLoadNOP           , TRUE  )  _    '' AST_NODECLASS_PROC
 	}
 

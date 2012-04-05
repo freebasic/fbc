@@ -118,6 +118,7 @@ Version 0.24.0:
 - win/commctrl.bi: TabCtrl_AdjustRect() and TabCtrl_SetImageList()
 - win/winsock[2].bi: FD_CLR() macros were broken
 - C backend: procedures using Pascal were treated as Cdecl
+- C backend: Missing padding elements in multi-dimensional global array initializers
 
 
 Version 0.23.0:

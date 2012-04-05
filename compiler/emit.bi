@@ -830,69 +830,14 @@ declare function emitDBGScopeEnd _
 		byval sym as FBSYMBOL ptr _
 	) as EMIT_NODE ptr
 
-declare sub emitVARINIBEGIN _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-declare sub emitVARINIEND _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-declare sub emitVARINIi _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	)
-
-declare sub emitVARINIf _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	)
-
-declare sub emitVARINI64 _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	)
-
-declare sub emitVARINIOFS _
-	( _
-		byval sname as zstring ptr, _
-		byval ofs as integer _
-	)
-
-declare sub emitVARINISTR _
-	( _
-		byval s as const zstring ptr _
-	)
-
-declare sub emitVARINIWSTR _
-	( _
-		byval s as zstring ptr _
-	)
-
-declare sub emitVARINIPAD _
-	( _
-		byval bytes as integer _
-	)
-
-declare sub emitVARINISCOPEINI _
-	( _
-		_
-	)
-
-declare sub emitVARINISCOPEEND _
-	( _
-		_
-	)
-
-declare sub emitVARINISEPARATOR _
-	( _
-		_
-	)
+declare sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
+declare sub emitVARINIi( byval dtype as integer, byval value as integer )
+declare sub emitVARINIf( byval dtype as integer, byval value as double )
+declare sub emitVARINI64( byval dtype as integer, byval value as longint )
+declare sub emitVARINIOFS( byval sname as zstring ptr, byval ofs as integer )
+declare sub emitVARINISTR( byval s as const zstring ptr )
+declare sub emitVARINIWSTR( byval s as zstring ptr )
+declare sub emitVARINIPAD( byval bytes as integer )
 
 declare sub emitWriteStr _
 	( _

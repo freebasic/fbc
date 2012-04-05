@@ -296,26 +296,6 @@ function astTypeIniScopeEnd _
 end function
 
 '':::::
-function astTypeIniSeparator _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr n = any
-
-	n = hAddNode( tree, _
-				  AST_NODECLASS_TYPEINI_SEPARATOR, _
-				  FB_DATATYPE_INVALID, _
-				  NULL )
-
-	n->sym = sym
-
-	function = n
-
-end function
-
-'':::::
 private function hCallCtor _
 	( _
 		byval flush_tree as ASTNODE ptr, _
@@ -685,13 +665,10 @@ private function hFlushTreeStatic _
     		irEmitVARINIPAD( n->typeini.bytes )
 
     	case AST_NODECLASS_TYPEINI_SCOPEINI
-    		irEmitVARINISCOPEINI( basesym, n->sym )
+			irEmitVARINISCOPEBEGIN( )
 
     	case AST_NODECLASS_TYPEINI_SCOPEEND
-    		irEmitVARINISCOPEEND( basesym, n->sym )
-
-    	case AST_NODECLASS_TYPEINI_SEPARATOR
-    		irEmitVARINISEPARATOR( basesym, n->sym )
+			irEmitVARINISCOPEEND( )
 
     	case else
 			hFlushExprStatic( n, basesym )

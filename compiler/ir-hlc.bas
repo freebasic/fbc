@@ -34,9 +34,8 @@ type IRHLCCTX
 	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
 
-	ini_isfixstrarray	as integer
-	ini_strdata			as string
-	ini_iswstr			as integer
+	varini				as string
+	variniscopelevel		as integer
 
 	section				as section_e   ' current section to write to
 	head_txt			as string      ' buffer for header text
@@ -398,94 +397,76 @@ private sub hEmitUDT _
 end sub
 
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
-private function hEmitArrayDecl( byval s as FBSYMBOL ptr ) as string
+private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
+	dim as string s
 
-    dim as integer n = 0
+	'' Emit all array dimensions individually
+	'' (This lets array initializers rely on gcc to fill uninitialized
+	'' elements with zeroes)
+	select case( symbGetClass( sym ) )
+	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+		if( (symbGetIsDynamic( sym ) = FALSE) and _
+		    (symbGetArrayDimensions( sym ) <> 0) ) then
+			dim as FBVARDIM ptr d = symbGetArrayFirstDim( sym )
+			while( d )
+				'' elements = ubound( array, d ) - lbound( array, d ) + 1
+				s += "[" + str( d->upper - d->lower + 1 ) + "]"
+				d = d->next
+			wend
+		end if
+	end select
 
-    if( symbIsArray( s ) ) then
-        '' Count of *all* elements in the whole array (not just one dimension)
-        n = symbGetArrayElements( s )
-        assert( n > 0 )
-    end if
+	'' If it's a fixed-length string, add an extra array dimension
+	'' (zstring * 5 becomes char[5])
+	dim as integer length = 0
+	select case( symbGetType( sym ) )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		length = symbGetStrLen( sym )
+	case FB_DATATYPE_WCHAR
+		length = symbGetWstrLen( sym )
+	end select
+	if( length > 0 ) then
+		s += "[" + str( length ) + "]"
+	end if
 
-    '' Emit fixlen strings as arrays
-    '' Note: these may or may not be arrays of fixlen strings
-    select case as const symbGetType( s )
-    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-        if( n > 0 ) then
-            n *= symbGetStrLen( s )
-        else
-            n = symbGetStrLen( s )
-        end if
-
-    case FB_DATATYPE_WCHAR
-        if( n > 0 ) then
-            n *= symbGetWstrLen( s )
-        else
-            n = symbGetWstrLen( s )
-        end if
-
-    end select
-
-    if( n > 0 ) then
-        return "[" & n & "]"
-    end if
-
-    return ""
-
+	function = s
 end function
 
-'':::::
-private sub hEmitVar _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval isInit as integer = FALSE _
-	)
+private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
+	dim as string ln
 
-	var attrib = symbGetAttrib( s )
+	'' Shared (not Local) or Static, but not Common/Public/Extern?
+	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
+	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
+		ln += "static "
+	end if
 
-    var is_extern = (attrib and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
+	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	ln += " " + *symbGetMangledName( sym )
+	ln += hEmitArrayDecl( sym )
 
-    var sign = ""
-    if( is_extern = FALSE ) then
-    	if( symbIsLocal( s ) = FALSE or symbIsStatic( s ) ) then
-    		sign = "static "
-    	end if
-    end if
+	if( symbIsImport( sym ) ) then
+		ln += " __attribute__((dllimport))"
+	end if
 
-	sign += hEmitType( symbGetType( s ), symbGetSubType( s ) )
-	sign += " " + *symbGetMangledName( s )
+	'' allocation modifier
+	if( symbIsCommon( sym ) ) then
+		hWriteLine( "extern " + ln, TRUE )
+		ln += " __attribute__((common))"
+	elseif( symbGetAttrib( sym ) and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
+		hWriteLine( "extern " + ln, TRUE )
 
-    sign += hEmitArrayDecl( s )
-
-    ''
-    if( symbIsImport( s ) ) then
-    	sign += " __attribute__((dllimport))"
-    end if
-
-    '' allocation modifier
-    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-      	if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0 ) then
-       		hWriteLine( "extern " & sign, TRUE )
-
-			'' just an extern that was never allocated? exit..
-			if( symbIsExtern( s ) ) then
-				return
-			end if
-
+		'' just an extern that was never allocated? exit..
+		if( symbIsExtern( sym ) ) then
+			return
 		end if
-	else
-       	hWriteLine( "extern " & sign, TRUE )
-    	sign += " __attribute__((common))"
-    end if
+	end if
 
-	'' emit
-    if( not isInit ) then
-    	hWriteLine( sign, TRUE )
-    else
-    	hWriteLine( sign & " = ", FALSE )
-    end if
+	if( varini ) then
+		ln += " = " + *varini
+	end if
 
+	hWriteLine( ln )
 end sub
 
 '':::::
@@ -544,7 +525,7 @@ private sub hEmitVariable _
 		return
 	end if
 
-	hEmitVar( s )
+	hEmitVar( s, NULL )
 
 end sub
 
@@ -851,8 +832,6 @@ private function _emitBegin _
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
 	ctx.linenum = 0
-	ctx.ini_isfixstrarray = FALSE
-	ctx.ini_iswstr = FALSE
 
 	ctx.section = SECTION_HEAD
 
@@ -2176,292 +2155,117 @@ private sub _emitASM _
 
 end sub
 
-'':::::
-private sub _emitVarIniBegin _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	hEmitVar( sym, TRUE )
-
-	ctx.identcnt += 1
-
+private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
+	ctx.varini = ""
+	ctx.variniscopelevel = 0
 end sub
 
-'':::::
-private sub _emitVarIniEnd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	ctx.identcnt -= 1
-
-	hWriteLine( "", TRUE, TRUE )
-
+private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
+	hEmitVar( sym, ctx.varini )
+	ctx.varini = ""
 end sub
 
-'':::::
-private sub _emitVarIniI _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_UINT, FB_DATATYPE_ULONG
-        '' Treat as unsigned
-        s = hEmitUint( value )
-
-    case else
-        s = hEmitInt( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub hVarIniSeparator( )
+	if( ctx.variniscopelevel > 0 ) then
+		ctx.varini += ", "
+	end if
 end sub
 
-'':::::
-private sub _emitVarIniF _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_SINGLE
-        s = hEmitSingle( value )
-
-    case else
-        s = hEmitDouble( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub _emitVarIniI( byval dtype as integer, byval value as integer )
+	if( typeIsSigned( dtype ) ) then
+		ctx.varini += hEmitInt( value )
+	else
+		ctx.varini += hEmitUint( value )
+	end if
+	hVarIniSeparator( )
 end sub
 
-'':::::
-private sub _emitVarIniI64 _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	)
-
-    dim as string s
-
-    select case as const dtype
-    case FB_DATATYPE_ULONGINT, FB_DATATYPE_ULONG
-        '' Treat as unsigned
-        s = hEmitUlong( value )
-
-    case else
-        s = hEmitLong( value )
-
-    end select
-
-	hWriteLine( s, FALSE, TRUE )
-
+private sub _emitVarIniF( byval dtype as integer, byval value as double )
+	if( dtype = FB_DATATYPE_SINGLE ) then
+		ctx.varini += hEmitSingle( value )
+	else
+		ctx.varini += hEmitDouble( value )
+	end if
+	hVarIniSeparator( )
 end sub
 
-'':::::
-private sub _emitVarIniOfs _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
-	)
+private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
+	if( typeIsSigned( dtype ) ) then
+		ctx.varini += hEmitLong( value )
+	else
+		ctx.varini += hEmitUlong( value )
+	end if
+	hVarIniSeparator( )
+end sub
 
-	hWriteLine( hEmitOffset( sym, ofs ), FALSE, TRUE )
-
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
+	ctx.varini += "(void*)" + hEmitOffset( sym, ofs )
+	hVarIniSeparator( )
 end sub
 
 private sub hEmitVarIniStr _
 	( _
 		byval totlgt as integer, _
-		byref s as string, _
-		byval litlgt as integer, _
-        byval is_wstr as integer _
+		byref litstr as const zstring ptr, _
+		byval litlgt as integer _
 	)
 
-    '' String literal too long? (GCC would show a warning)
-    if( totlgt < litlgt ) then
-        '' Cut off; may be empty afterwards
-        s = left( s, totlgt )
-    ''elseif( totlgt > litlgt ) then
-        '' Too short, remaining space will be filled with 0's by GCC
-    end if
+	dim as string s = *litstr
 
-	if( ctx.ini_isfixstrarray ) then
-        '' Fixed-length string arrays are just emitted as a simple [w]char array,
-        '' not as a 2D array, so the whole initializer needs to be merged into
-        '' one string, which then has to contain terminating/padding \0's.
-
-        s = """" + s
-        if( is_wstr ) then
-            s = "L" + s
-        end if
-
-        '' NULL terminator
-        s += $"\0"
-
-        '' If too short, add padding 0's, to fill this one element of the
-        '' fixed-length string array.
-        for i as integer = litlgt to totlgt - 1
-            s += $"\0"
-        next
-
-        s += """"
-
-		ctx.ini_strdata += s
-    else
-        '' Simple fixed-length string initialized from string literal
-        s = """" + s + """"
-        if( is_wstr ) then
-            s = "L" + s
-        end if
-
-		hWriteLine( s, FALSE, TRUE )
+	'' String literal too long? (GCC would show a warning)
+	if( totlgt < litlgt ) then
+		'' Cut off; may be empty afterwards
+		s = left( s, totlgt )
+	''elseif( totlgt > litlgt ) then
+		'' Too short, remaining space will be filled with 0's by GCC
 	end if
+
+	'' Simple fixed-length string initialized from string literal
+	ctx.varini += """" + s + """"
+	hVarIniSeparator( )
 
 end sub
 
-'':::::
 private sub _emitVarIniStr _
 	( _
 		byval totlgt as integer, _
 		byval litstr as zstring ptr, _
 		byval litlgt as integer _
 	)
-
-    static as string s
-
-    s = *hEscape( litstr )
-
-    hEmitVarIniStr( totlgt, s, litlgt, FALSE )
-
+	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
 end sub
 
-'':::::
 private sub _emitVarIniWstr _
 	( _
 		byval totlgt as integer, _
 		byval litstr as wstring ptr, _
 		byval litlgt as integer _
 	)
-
-    static as string s
-
-    s = *hEscapeUCN( litstr )
-
-    hEmitVarIniStr( totlgt, s, litlgt, TRUE )
-
+	ctx.varini += "L"
+	hEmitVarIniStr( totlgt, hEscapeUCN( litstr ), litlgt )
 end sub
 
-'':::::
-private sub _emitVarIniPad _
-	( _
-		byval bytes as integer _
-	)
-
-	if( ctx.ini_isfixstrarray = FALSE ) then
-		return
-	end if
-
-	if( ctx.ini_iswstr ) then
-		bytes \= typeGetSize( FB_DATATYPE_WCHAR )
-	end if
-
-	if( bytes <= 0 ) then
-		return
-	end if
-
-    static as string pad
-
-    pad = """"
-
-	do while( bytes > 0 )
-		pad += $"\0"
-		bytes -= 1
-	loop
-
-    pad += """"
-
-	ctx.ini_strdata += pad
-
+private sub _emitVarIniPad( byval bytes as integer )
+	'' Nothing to do -- we're using {...} for structs and each array
+	'' dimension, and gcc will zero-initialize any uninitialized elements,
+	'' aswell as add padding between fields etc. where needed.
 end sub
 
-'':::::
-private function hIsFixStrArray _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-	if( sym <> NULL andalso symbGetArrayDimensions( sym ) > 0 ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return TRUE
-		end select
-	end if
-
-	return FALSE
-
-end function
-
-'':::::
-private sub _emitVarIniScopeBegin _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	ctx.ini_isfixstrarray = hIsFixStrArray( sym )
-
-	if( ctx.ini_isfixstrarray ) then
-		ctx.ini_iswstr = (symbGetType( sym ) = FB_DATATYPE_WCHAR)
-		ctx.ini_strdata = ""
-    else
-		hWriteLine( "{", FALSE )
-	end if
-
+private sub _emitVarIniScopeBegin( )
+	ctx.variniscopelevel += 1
+	ctx.varini += "{ "
 end sub
 
-'':::::
-private sub _emitVarIniScopeEnd _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	if( ctx.ini_isfixstrarray ) then
-		ctx.ini_isfixstrarray = FALSE
-
-        '' Cut off last \0, since there is an implicit NULL already...
-		if( len( ctx.ini_strdata ) >= 4 ) then
-			ctx.ini_strdata = left( ctx.ini_strdata, len( ctx.ini_strdata ) - 3 ) + """"
-		end if
-
-		hWriteLine( ctx.ini_strdata )
-    else
-		hWriteLine( "}", FALSE )
+private sub _emitVarIniScopeEnd( )
+	'' Trim separator at the end, to make the output look a bit more clean
+	'' (this isn't needed though, since the extra comma is allowed in C)
+	if( right( ctx.varini, 2 ) = ", " ) then
+		ctx.varini = left( ctx.varini, len( ctx.varini ) - 2 )
 	end if
 
-end sub
-
-'':::::
-private sub _emitVarIniSeparator _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	)
-
-	if( hIsFixStrArray( sym ) = FALSE ) then
-		hWriteLine( ", ", FALSE, TRUE )
-	end if
-
+	ctx.varini += " }"
+	ctx.variniscopelevel -= 1
+	hVarIniSeparator( )
 end sub
 
 '':::::
@@ -2652,7 +2456,6 @@ sub irHLC_ctor()
 		@_emitVarIniPad, _
 		@_emitVarIniScopeBegin, _
 		@_emitVarIniScopeEnd, _
-		@_emitVarIniSeparator, _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _

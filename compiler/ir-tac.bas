@@ -792,79 +792,36 @@ private sub _emitASM _
 
 end sub
 
-'':::::
-private sub _emitVarIniBegin _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
+private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
 	'' no flush, all var-ini go to data sections
-
 	emitVARINIBEGIN( sym )
-
 end sub
 
-'':::::
-private sub _emitVarIniEnd _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	emitVARINIEND( sym )
-
+private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
-'':::::
-private sub _emitVarIniI _
-	( _
-		byval dtype as integer, _
-		byval value as integer _
-	) static
-
+private sub _emitVarIniI( byval dtype as integer, byval value as integer )
 	emitVARINIi( dtype, value )
-
 end sub
 
-'':::::
-private sub _emitVarIniF _
-	( _
-		byval dtype as integer, _
-		byval value as double _
-	) static
-
+private sub _emitVarIniF( byval dtype as integer, byval value as double )
 	emitVARINIf( dtype, value )
-
 end sub
 
-'':::::
-private sub _emitVarIniI64 _
-	( _
-		byval dtype as integer, _
-		byval value as longint _
-	) static
-
+private sub _emitVarIniI64( byval dtype as integer, byval value as longint )
 	emitVARINI64( dtype, value )
-
 end sub
 
-'':::::
-private sub _emitVarIniOfs _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
-	) static
-
+private sub _emitVarIniOfs( byval sym as FBSYMBOL ptr, byval ofs as integer )
 	emitVARINIOFS( symbGetMangledName( sym ), ofs )
-
 end sub
 
-'':::::
 private sub _emitVarIniStr _
 	( _
 		byval totlgt as integer, _
 		byval litstr as zstring ptr, _
 		byval litlgt as integer _
-	) static
+	)
 
 	dim as const zstring ptr s
 
@@ -898,7 +855,7 @@ private sub _emitVarIniWstr _
 		byval totlgt as integer, _
 		byval litstr as wstring ptr, _
 		byval litlgt as integer _
-	) static
+	)
 
 	dim as zstring ptr s
 	dim as integer wclen
@@ -929,47 +886,16 @@ private sub _emitVarIniWstr _
 
 end sub
 
-'':::::
-private sub _emitVarIniPad _
-	( _
-		byval bytes as integer _
-	) static
-
+private sub _emitVarIniPad( byval bytes as integer )
 	emitVARINIPAD( bytes )
-
 end sub
 
-'':::::
-private sub _emitVarIniScopeBegin _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	emitVARINISCOPEINI( )
-
+private sub _emitVarIniScopeBegin( )
+	'' Used by C-emitter only
 end sub
 
-'':::::
-private sub _emitVarIniScopeEnd _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	emitVARINISCOPEEND( )
-
-end sub
-
-'':::::
-private sub _emitVarIniSeparator _
-	( _
-		byval basesym as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	emitVARINISEPARATOR( )
-
+private sub _emitVarIniScopeEnd( )
+	'' Used by C-emitter only
 end sub
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2832,7 +2758,6 @@ sub irTAC_ctor()
 		@_emitVarIniPad, _
 		@_emitVarIniScopeBegin, _
 		@_emitVarIniScopeEnd, _
-		@_emitVarIniSeparator, _
 		@_allocVreg, _
 		@_allocVrImm, _
 		@_allocVrImm64, _

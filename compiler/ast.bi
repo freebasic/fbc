@@ -58,7 +58,6 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_CTORLIST
 	AST_NODECLASS_TYPEINI_SCOPEINI
 	AST_NODECLASS_TYPEINI_SCOPEEND
-	AST_NODECLASS_TYPEINI_SEPARATOR
 
 	AST_NODECLASS_PROC
 
@@ -886,12 +885,6 @@ declare function astTypeIniScopeBegin _
 	) as ASTNODE ptr
 
 declare function astTypeIniScopeEnd _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare function astTypeIniSeparator _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
