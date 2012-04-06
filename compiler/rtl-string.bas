@@ -1561,7 +1561,7 @@
  		), _
 		/' hex( byval number as any ptr ) as string '/ _
 		( _
-			@"hex", @"fb_HEX_i", _
+			@"hex", @"fb_HEX_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
@@ -1588,7 +1588,7 @@
  		), _
 		/' hex( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
-			@"hex", @"fb_HEXEx_i", _
+			@"hex", @"fb_HEXEx_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
@@ -1666,7 +1666,7 @@
  		), _
 		/' whex( byval number as any ptr ) as wstring '/ _
 		( _
-			@"whex", @"fb_WstrHex_i", _
+			@"whex", @"fb_WstrHex_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
@@ -1693,7 +1693,7 @@
  		), _
 		/' whex( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
-			@"whex", @"fb_WstrHexEx_i", _
+			@"whex", @"fb_WstrHexEx_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
@@ -1801,7 +1801,7 @@
  		), _
 		/' oct( byval number as any ptr ) as string '/ _
 		( _
-			@"oct", @"fb_OCT_i", _
+			@"oct", @"fb_OCT_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
@@ -1828,7 +1828,7 @@
  		), _
 		/' oct( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
-			@"oct", @"fb_OCTEx_i", _
+			@"oct", @"fb_OCTEx_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
@@ -1936,7 +1936,7 @@
  		), _
 		/' woct( byval number as any ptr ) as wstring '/ _
 		( _
-			@"woct", @"fb_WstrOct_i", _
+			@"woct", @"fb_WstrOct_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
@@ -1963,7 +1963,7 @@
  		), _
 		/' woct( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
-			@"woct", @"fb_WstrOctEx_i", _
+			@"woct", @"fb_WstrOctEx_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
@@ -2041,7 +2041,7 @@
  		), _
 		/' bin( byval number as any ptr ) as string '/ _
 		( _
-			@"bin", @"fb_BIN_i", _
+			@"bin", @"fb_BIN_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
@@ -2068,7 +2068,7 @@
  		), _
 		/' bin( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
-			@"bin", @"fb_BINEx_i", _
+			@"bin", @"fb_BINEx_p", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
@@ -2146,7 +2146,7 @@
  		), _
 		/' wbin( byval number as any ptr ) as wstring '/ _
 		( _
-			@"wbin", @"fb_WstrBin_i", _
+			@"wbin", @"fb_WstrBin_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
@@ -2173,7 +2173,7 @@
  		), _
 		/' wbin( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
-			@"wbin", @"fb_WstrBinEx_i", _
+			@"wbin", @"fb_WstrBinEx_p", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _

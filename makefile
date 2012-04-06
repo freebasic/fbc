@@ -794,24 +794,34 @@ LIBFB_C := \
   qb_file_open qb_inkey qb_sleep qb_str_convto qb_str_convto_flt \
   qb_str_convto_lng \
   signals \
-  str_asc str_assign str_base str_bin str_bin_lng str_chr str_comp \
+  str_asc str_assign str_base \
+  str_bin str_bin_lng str_bin_ptr \
+  str_chr str_comp \
   str_concatassign str_concat str_convfrom str_convfrom_int str_convfrom_lng \
   str_convfrom_rad str_convfrom_radlng str_convfrom_uint str_convfrom_ulng \
   str_convto str_convto_flt str_convto_lng str_core str_cvmk str_del str_fill \
-  str_format str_ftoa str_hex str_hex_lng str_hskip str_instrany str_instr \
+  str_format str_ftoa \
+  str_hex str_hex_lng str_hex_ptr \
+  str_hskip str_instrany str_instr \
   str_instrrevany str_instrrev str_lcase str_left str_len str_ltrimany \
-  str_ltrim str_ltrimex str_midassign str_mid str_misc str_oct str_oct_lng \
+  str_ltrim str_ltrimex str_midassign str_mid str_misc \
+  str_oct str_oct_lng str_oct_ptr \
   str_right str_rtrimany str_rtrim str_rtrimex str_set str_tempdescf \
   str_tempdescv str_tempdescz str_tempres str_trimany str_trim str_trimex \
   str_ucase \
-  strw_alloc strw_asc strw_assign strw_bin strw_bin_lng strw_chr strw_comp \
+  strw_alloc strw_asc strw_assign \
+  strw_bin strw_bin_lng strw_bin_ptr \
+  strw_chr strw_comp \
   strw_concatassign strw_concat strw_convassign strw_convconcat strw_convfrom \
   strw_convfrom_int strw_convfrom_lng strw_convfrom_rad strw_convfrom_radlng \
   strw_convfrom_str strw_convfrom_uint strw_convfrom_ulng strw_convto \
   strw_convto_flt strw_convto_lng strw_convto_str strw_del strw_fill strw_ftoa \
-  strw_hex strw_hex_lng strw_instrany strw_instr strw_instrrevany \
+  strw_hex strw_hex_lng strw_hex_ptr \
+  strw_instrany strw_instr strw_instrrevany \
   strw_instrrev strw_lcase strw_left strw_len strw_ltrimany strw_ltrim \
-  strw_ltrimex strw_midassign strw_mid strw_oct strw_oct_lng strw_right \
+  strw_ltrimex strw_midassign strw_mid \
+  strw_oct strw_oct_lng strw_oct_ptr \
+  strw_right \
   strw_rtrimany strw_rtrim strw_rtrimex strw_set strw_space strw_trimany \
   strw_trim strw_trimex strw_ucase \
   swap_mem swap_str swap_wstr \
