@@ -120,6 +120,7 @@ Version 0.24.0:
 - C backend: Missing padding elements in multi-dimensional global array initializers
 - C backend: didn't allow float-to-Long/Ulong casts
 - C backend: float to uinteger conversions truncated to integer
+- C backend: The 'as any ptr' overloads of bin/oct/hex didn't work unless the 'as integer' versions were used in the same module
 
 
 Version 0.23.0:

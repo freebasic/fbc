@@ -543,8 +543,9 @@ private sub hEmitFuncProto _
 		return
 	end if
 
-	'' overloaded procs pointing to the same symbol (used by the RTL)?
-	if( symbGetIsDupDecl( s ) ) then
+	'' One of our built-in FTOI routines? Those are declared by
+	'' hEmitFTOIBuiltins(), not here.
+	if( symbGetIsIrHlcBuiltin( s ) ) then
 		return
 	end if
 

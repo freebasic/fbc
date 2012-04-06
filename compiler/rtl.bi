@@ -804,7 +804,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
- 	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
+	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 end enum

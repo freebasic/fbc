@@ -114,7 +114,7 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
     FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED
     FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
-    FB_SYMBSTATS_ISDUPDECL 		= FB_SYMBSTATS_CANTDUP
+    FB_SYMBSTATS_IRHLCBUILTIN   = FB_SYMBSTATS_CANTDUP
     FB_SYMBSTATS_GCCBUILTIN		= FB_SYMBSTATS_HASCTOR
 
 	'' A wchar ptr var that needs deallocating at scope breaks/end.
@@ -2026,8 +2026,8 @@ declare function symbGetUDTBaseSymbol _
 #define symbGetProcIsEmitted(s) ((s->stats and FB_SYMBSTATS_PROCEMITTED) <> 0)
 #define symbSetProcIsEmitted(s) s->stats or= FB_SYMBSTATS_PROCEMITTED
 
-#define symbGetIsDupDecl(s) ((s->stats and FB_SYMBSTATS_ISDUPDECL) <> 0)
-#define symbSetIsDupDecl(s) s->stats or= FB_SYMBSTATS_ISDUPDECL
+#define symbGetIsIrHlcBuiltin(s) ((s->stats and FB_SYMBSTATS_IRHLCBUILTIN) <> 0)
+#define symbSetIsIrHlcBuiltin(s) s->stats or= FB_SYMBSTATS_IRHLCBUILTIN
 
 #define symbGetIsGccBuiltin(s) ((s->stats and FB_SYMBSTATS_GCCBUILTIN) <> 0)
 #define symbSetIsGccBuiltin(s) s->stats or= FB_SYMBSTATS_GCCBUILTIN

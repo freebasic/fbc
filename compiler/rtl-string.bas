@@ -1563,7 +1563,7 @@
 		( _
 			@"hex", @"fb_HEX_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
 				( _
@@ -1590,7 +1590,7 @@
 		( _
 			@"hex", @"fb_HEXEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
 				( _
@@ -1668,7 +1668,7 @@
 		( _
 			@"whex", @"fb_WstrHex_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -1695,7 +1695,7 @@
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -1803,7 +1803,7 @@
 		( _
 			@"oct", @"fb_OCT_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			1, _
 			{ _
 				( _
@@ -1830,7 +1830,7 @@
 		( _
 			@"oct", @"fb_OCTEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_STRSUFFIX, _
 			2, _
 			{ _
 				( _
@@ -1938,7 +1938,7 @@
 		( _
 			@"woct", @"fb_WstrOct_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -1965,7 +1965,7 @@
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -2043,7 +2043,7 @@
 		( _
 			@"bin", @"fb_BIN_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -2070,7 +2070,7 @@
 		( _
 			@"bin", @"fb_BINEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
@@ -2148,7 +2148,7 @@
 		( _
 			@"wbin", @"fb_WstrBin_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( _
@@ -2175,7 +2175,7 @@
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB or FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
 				( _
