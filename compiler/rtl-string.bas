@@ -404,7 +404,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrAlloc ( byval len as integer ) as WSTRING ptr '/ _
+		/' fb_WstrAlloc ( byval len as integer ) as wstring ptr '/ _
 		( _
 			@FB_RTL_WSTRALLOC, NULL, _
 			typeAddrOf( FB_DATATYPE_WCHAR ), FB_USE_FUNCMODE_FBCALL, _
@@ -1523,7 +1523,7 @@
 				) _
 			} _
  		), _
-		/' fb_HEX_b ( byval number as byte ) as string '/ _
+		/' hex( byval number as ubyte ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_b", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1531,11 +1531,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_HEX_s ( byval number as short ) as string '/ _
+		/' hex( byval number as ushort ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_s", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1543,11 +1543,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_HEX_i ( byval number as integer ) as string '/ _
+		/' hex( byval number as uinteger ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1555,11 +1555,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_HEX_i ( byval number as any ptr ) as string '/ _
+		/' hex( byval number as any ptr ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1571,7 +1571,7 @@
 				) _
 			} _
  		), _
-		/' fb_HEXEx_i ( byval number as integer, byval digits as integer ) as string '/ _
+		/' hex( byval number as uinteger, byval digits as integer ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1579,14 +1579,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_HEXEx_i ( byval number as any ptr, byval digits as integer ) as string '/ _
+		/' hex( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1601,7 +1601,7 @@
 				) _
 			} _
  		), _
-		/' fb_HEX_l ( byval number as longint ) as string '/ _
+		/' hex( byval number as ulongint ) as string '/ _
 		( _
 			@"hex", @"fb_HEX_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1609,11 +1609,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_HEXEx_l ( byval number as longint, byval digits as integer ) as string '/ _
+		/' hex( byval number as ulongint, byval digits as integer ) as string '/ _
 		( _
 			@"hex", @"fb_HEXEx_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1621,14 +1621,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHex_b ( byval number as byte ) as wstring '/ _
+		/' whex( byval number as ubyte ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_b", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1636,11 +1636,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHex_s ( byval number as short ) as wstring '/ _
+		/' whex( byval number as ushort ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_s", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1648,11 +1648,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHex_i ( byval number as integer ) as wstring '/ _
+		/' whex( byval number as uinteger ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1660,11 +1660,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHex_i ( byval number as any ptr ) as wstring '/ _
+		/' whex( byval number as any ptr ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1676,7 +1676,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrHexEx_i ( byval number as integer, byval digits as integer ) as wstring '/ _
+		/' whex( byval number as uinteger, byval digits as integer ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1684,14 +1684,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHexEx_i ( byval number as any ptr, byval digits as integer ) as wstring '/ _
+		/' whex( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1706,7 +1706,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrHex_l ( byval number as longint ) as wstring '/ _
+		/' whex( byval number as ulongint ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHex_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1714,11 +1714,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrHexEx_l ( byval number as longint, byval digits as integer ) as wstring '/ _
+		/' whex( byval number as ulongint, byval digits as integer ) as wstring '/ _
 		( _
 			@"whex", @"fb_WstrHexEx_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1726,14 +1726,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_OCT_b ( byval number as byte ) as string '/ _
+		/' oct( byval number as ubyte ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_b", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1745,7 +1745,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCTEx_b ( byval number as byte, byval digits as integer ) as string '/ _
+		/' oct( byval number as ubyte, byval digits as integer ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_b", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1760,7 +1760,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCT_s ( byval number as short ) as string '/ _
+		/' oct( byval number as ushort ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_s", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1772,7 +1772,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCTEx_s ( byval number as short, byval digits as integer ) as string '/ _
+		/' oct( byval number as ushort, byval digits as integer ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_s", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1787,7 +1787,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCT_i ( byval number as integer ) as string '/ _
+		/' oct( byval number as uinteger ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1799,7 +1799,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCT_i ( byval number as any ptr ) as string '/ _
+		/' oct( byval number as any ptr ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1811,7 +1811,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCTEx_i ( byval number as integer, byval digits as integer ) as string '/ _
+		/' oct( byval number as uinteger, byval digits as integer ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1826,7 +1826,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCTEx_i ( byval number as any ptr, byval digits as integer ) as string '/ _
+		/' oct( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1841,7 +1841,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCT_l ( byval number as longint ) as string '/ _
+		/' oct( byval number as ulongint ) as string '/ _
 		( _
 			@"oct", @"fb_OCT_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1853,7 +1853,7 @@
 				) _
 			} _
  		), _
-		/' fb_OCTEx_l ( byval number as longint, byval digits as integer ) as string '/ _
+		/' oct( byval number as ulongint, byval digits as integer ) as string '/ _
 		( _
 			@"oct", @"fb_OCTEx_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -1868,7 +1868,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOct_b ( byval number as byte ) as wstring '/ _
+		/' woct( byval number as ubyte ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_b", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1880,7 +1880,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOctEx_b ( byval number as byte, byval digits as integer ) as wstring '/ _
+		/' woct( byval number as ubyte, byval digits as integer ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_b", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1895,7 +1895,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOct_s ( byval number as short ) as wstring '/ _
+		/' woct( byval number as ushort ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_s", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1907,7 +1907,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOctEx_s ( byval number as short, byval digits as integer ) as wstring '/ _
+		/' woct( byval number as ushort, byval digits as integer ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_s", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1922,7 +1922,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOct_i ( byval number as integer ) as wstring '/ _
+		/' woct( byval number as uinteger ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1934,7 +1934,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOct_i ( byval number as any ptr ) as wstring '/ _
+		/' woct( byval number as any ptr ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1946,7 +1946,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOctEx_i ( byval number as integer, byval digits as integer ) as wstring '/ _
+		/' woct( byval number as uinteger, byval digits as integer ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1961,7 +1961,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOctEx_i ( byval number as any ptr, byval digits as integer ) as wstring '/ _
+		/' woct( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1969,14 +1969,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrOct_l ( byval number as longint ) as wstring '/ _
+		/' woct( byval number as ulongint ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOct_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -1988,7 +1988,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrOctEx_l ( byval number as longint, byval digits as integer ) as wstring '/ _
+		/' woct( byval number as ulongint, byval digits as integer ) as wstring '/ _
 		( _
 			@"woct", @"fb_WstrOctEx_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2003,7 +2003,7 @@
 				) _
 			} _
  		), _
-		/' fb_BIN_b ( byval number as byte ) as string '/ _
+		/' bin( byval number as ubyte ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_b", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2011,11 +2011,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BIN_s ( byval number as short ) as string '/ _
+		/' bin( byval number as ushort ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_s", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2023,11 +2023,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BIN_i ( byval number as integer ) as string '/ _
+		/' bin( byval number as uinteger ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2035,11 +2035,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BIN_i ( byval number as any ptr ) as string '/ _
+		/' bin( byval number as any ptr ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2051,7 +2051,7 @@
 				) _
 			} _
  		), _
-		/' fb_BINEx_i ( byval number as integer, byval digits as integer ) as string '/ _
+		/' bin( byval number as uinteger, byval digits as integer ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2059,14 +2059,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BINEx_i ( byval number as any ptr, byval digits as integer ) as string '/ _
+		/' bin( byval number as any ptr, byval digits as integer ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_i", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2074,14 +2074,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BIN_l ( byval number as longint ) as string '/ _
+		/' bin( byval number as ulongint ) as string '/ _
 		( _
 			@"bin", @"fb_BIN_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2089,11 +2089,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_BINEx_l ( byval number as longint, byval digits as integer ) as string '/ _
+		/' bin( byval number as ulongint, byval digits as integer ) as string '/ _
 		( _
 			@"bin", @"fb_BINEx_l", _
 			FB_DATATYPE_STRING, FB_USE_FUNCMODE_FBCALL, _
@@ -2101,14 +2101,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBin_b ( byval number as byte ) as wstring '/ _
+		/' wbin( byval number as ubyte ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_b", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2116,11 +2116,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_BYTE, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBin_s ( byval number as short ) as wstring '/ _
+		/' wbin( byval number as ushort ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_s", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2128,11 +2128,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBin_i ( byval number as integer ) as wstring '/ _
+		/' wbin( byval number as uinteger ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2140,11 +2140,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBin_i ( byval number as any ptr ) as wstring '/ _
+		/' wbin( byval number as any ptr ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2156,7 +2156,7 @@
 				) _
 			} _
  		), _
-		/' fb_WstrBinEx_i ( byval number as integer, byval digits as integer ) as wstring '/ _
+		/' wbin( byval number as uinteger, byval digits as integer ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2164,14 +2164,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBinEx_i ( byval number as any ptr, byval digits as integer ) as wstring '/ _
+		/' wbin( byval number as any ptr, byval digits as integer ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_i", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2179,14 +2179,14 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+ 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
- 					typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBin_l ( byval number as longint ) as wstring '/ _
+		/' wbin( byval number as ulongint ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBin_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2194,11 +2194,11 @@
 			1, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				) _
 			} _
  		), _
-		/' fb_WstrBinEx_l ( byval number as longint, byval digits as integer ) as wstring '/ _
+		/' wbin( byval number as ulongint, byval digits as integer ) as wstring '/ _
 		( _
 			@"wbin", @"fb_WstrBinEx_l", _
 			FB_DATATYPE_WCHAR, FB_USE_FUNCMODE_FBCALL, _
@@ -2206,7 +2206,7 @@
 			2, _
 			{ _
 				( _
-					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
 				), _
 				( _
  					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
