@@ -119,6 +119,7 @@ Version 0.24.0:
 - C backend: procedures using Pascal were treated as Cdecl
 - C backend: Missing padding elements in multi-dimensional global array initializers
 - C backend: didn't allow float-to-Long/Ulong casts
+- C backend: float to uinteger conversions truncated to integer
 
 
 Version 0.23.0:

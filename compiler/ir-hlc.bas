@@ -820,25 +820,24 @@ private sub hWriteFTOI _
 	dim as string rtype_str, rtype_suffix
 	select case rtype
 	case FB_DATATYPE_INTEGER
-		rtype_str = "int"
+		rtype_str = "integer"
 		rtype_suffix = "l"
 
 	case FB_DATATYPE_LONGINT
-		rtype_str = "long long int"
+		rtype_str = "longint"
 		rtype_suffix = "q"
 	end select
 
 	dim as string ptype_str, ptype_suffix
 	select case ptype
 	case FB_DATATYPE_SINGLE
-		ptype_str = "float"
+		ptype_str = "single"
 		ptype_suffix = "s"
 
 	case FB_DATATYPE_DOUBLE
 		ptype_str = "double"
 		ptype_suffix = "l"
 	end select
-
 
 	'' TODO: x86 specific
 	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
@@ -855,28 +854,47 @@ private sub hWriteFTOI _
 end sub
 
 private sub hEmitFTOIBuiltins( )
+	'' Special conversion routines for:
+	''    single/double -> [unsigned] byte/short/integer/longint
+	'' (which one will be used where is determined at AST/RTL)
+	''
+	'' Simple C casting as in '(int)floatvar' cannot be used because it
+	'' just truncates instead of rounding to nearest.
+	''
+	'' There are at max 4 routines generated:
+	''    single -> int
+	''    single -> longint
+	''    double -> int
+	''    double -> longint
+	'' and all other cases reuse those.
+	''
+	'' A special case to watch out for: float -> unsigned int conversions.
+	'' When converting to unsigned integer, it has to be converted to
+	'' longint first, to avoid truncating to signed integer. That's a
+	'' limitation of the ASM routines, and the ASM emitter is having the
+	'' same problem, see emit_x86.bas:_emitLOADF2I() & co.
 
 	'' single
 	if( symbGetIsCalled( PROCLOOKUP( FTOSL ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
+	    symbGetIsCalled( PROCLOOKUP( FTOUL ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
 		hWriteFTOI( "ftosl", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (unsigned long long int)fb_ftosl( v )", FALSE, TRUE )
-	end if
-
-	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
-		symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
+		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (unsigned int)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", FALSE, TRUE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOSS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOSB ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
+		hWriteFTOI( "ftosi", FB_DATATYPE_INTEGER, FB_DATATYPE_SINGLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
@@ -884,38 +902,38 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (unsigned short)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (char)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (unsigned char)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", FALSE, TRUE )
 	end if
 
 	'' double
 	if( symbGetIsCalled( PROCLOOKUP( DTOSL ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
+	    symbGetIsCalled( PROCLOOKUP( DTOUL ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
 		hWriteFTOI( "dtosl", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (unsigned long long int)fb_dtosl( v )", FALSE, TRUE )
-	end if
-
-	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUI ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
-		symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
+		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (unsigned int)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", FALSE, TRUE )
+	end if
+
+	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOSS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUS ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOSB ) ) or _
+	    symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
+		hWriteFTOI( "dtosi", FB_DATATYPE_INTEGER, FB_DATATYPE_DOUBLE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
@@ -923,15 +941,15 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (unsigned short)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (char)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (unsigned char)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", FALSE, TRUE )
 	end if
 
 end sub
