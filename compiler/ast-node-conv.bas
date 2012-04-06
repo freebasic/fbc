@@ -536,11 +536,16 @@ function astNewCONV _
 
 	'' high-level IR? always convert..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		select case typeGetDtAndPtrOnly( to_dtype )
-		case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
-			'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
-			return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
-		end select
+		'' special case: if it's a float to int, use a builtin function
+		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
+			return rtlMathFTOI( l, to_dtype )
+		else
+			select case( typeGetDtAndPtrOnly( to_dtype ) )
+			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+				'' C (not C++) doesn't support casting from a UDT to another, so do this instead: lhs = *((typeof(lhs)*)&rhs)
+				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
+			end select
+		end if
 	else
 		'' only convert if the classes are different (ie, floating<->integer) or
 		'' if sizes are different (ie, byte<->int)
