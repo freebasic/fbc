@@ -1150,6 +1150,22 @@ function rtlMathFTOI _
 			sym = PROCLOOKUP( DTOUI )
 		end if
 
+	case FB_DATATYPE_LONG
+		'' TODO: Use longint versions when compiling for 64bit
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOSI )
+		else
+			sym = PROCLOOKUP( DTOSI )
+		end if
+
+	case FB_DATATYPE_ULONG
+		'' TODO: Use longint versions when compiling for 64bit
+		if( from_dtype = FB_DATATYPE_SINGLE ) then
+			sym = PROCLOOKUP( FTOUI )
+		else
+			sym = PROCLOOKUP( DTOUI )
+		end if
+
 	case FB_DATATYPE_LONGINT
 		if( from_dtype = FB_DATATYPE_SINGLE ) then
 			sym = PROCLOOKUP( FTOSL )
