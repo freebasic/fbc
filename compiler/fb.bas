@@ -237,7 +237,7 @@ sub fbInit(byval ismain as integer, byval restarts as integer)
 	hlpInit( )
 	errInit( )
 	astInit( )
-	irInit( env.clopt.backend )
+	irInit( )
 
 	hashInit( @env.incfilehash, FB_INITINCFILES )
 	hashInit( @env.inconcehash, FB_INITINCFILES )

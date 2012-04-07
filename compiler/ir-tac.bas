@@ -157,7 +157,7 @@ declare sub _flush _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-private sub _init(byval backend as FB_BACKEND)
+private sub _init( )
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
 	ctx.tmpcnt = 0
@@ -165,7 +165,7 @@ private sub _init(byval backend as FB_BACKEND)
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	emitInit( backend )
+	emitInit( )
 
 	for i as integer = 0 to EMIT_REGCLASSES-1
 		regTB(i) = emitGetRegClass( i )
@@ -174,7 +174,7 @@ private sub _init(byval backend as FB_BACKEND)
 	irSetOption( IR_OPT_NESTEDFIELDS )
 end sub
 
-private sub _end()
+private sub _end( )
 	emitEnd( )
 
 	flistEnd( @ctx.vregTB )
@@ -2701,78 +2701,74 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-sub irTAC_ctor()
-	static as IR_VTBL _vtbl = _
-	( _
-		@_init, _
-		@_end, _
-		@_flush, _
-		@_emitBegin, _
-		@_emitEnd, _
-		@_getOptionValue, _
-		@_procBegin, _
-		@_procEnd, _
-		@_procAllocArg, _
-		@_procAllocLocal, _
-		@_procGetFrameRegName, _
-		@_scopeBegin, _
-		@_scopeEnd, _
-		@_procAllocStaticVars, _
-		@_emit, _
-		@_emitConvert, _
-		@_emitLabel, _
-		@_emitLabelNF, _
-		@_emitReturn, _
-		@_emitProcBegin, _
-		@_emitProcEnd, _
-		@_emitPushArg, _
-		@_emitASM, _
-		@_emitComment, _
-		@_emitJmpTb, _
-		@_emitBop, _
-		@_emitUop, _
-		@_emitStore, _
-		@_emitSpillRegs, _
-		@_emitLoad, _
-		@_emitLoadRes, _
-		@_emitStack, _
-		@_emitPushUDT, _
-		@_emitAddr, _
-		@_emitCall, _
-		@_emitCallPtr, _
-		@_emitStackAlign, _
-		@_emitJumpPtr, _
-		@_emitBranch, _
-		@_emitMem, _
-		@_emitScopeBegin, _
-		@_emitScopeEnd, _
-		@_emitDBG, _
-		@_emitVarIniBegin, _
-		@_emitVarIniEnd, _
-		@_emitVarIniI, _
-		@_emitVarIniF, _
-		@_emitVarIniI64, _
-		@_emitVarIniOfs, _
-		@_emitVarIniStr, _
-		@_emitVarIniWstr, _
-		@_emitVarIniPad, _
-		@_emitVarIniScopeBegin, _
-		@_emitVarIniScopeEnd, _
-		@_allocVreg, _
-		@_allocVrImm, _
-		@_allocVrImm64, _
-		@_allocVrImmF, _
-		@_allocVrVar, _
-		@_allocVrIdx, _
-		@_allocVrPtr, _
-		@_allocVrOfs, _
-		@_setVregDataType, _
-		@_getDistance, _
-		@_loadVr, _
-		@_storeVr, _
-		@_xchgTOS, _
-		@_makeTmpStr _
-	)
-
-	ir.vtbl = _vtbl
-end sub
+dim shared as IR_VTBL irtac_vtbl = _
+( _
+	@_init, _
+	@_end, _
+	@_flush, _
+	@_emitBegin, _
+	@_emitEnd, _
+	@_getOptionValue, _
+	@_procBegin, _
+	@_procEnd, _
+	@_procAllocArg, _
+	@_procAllocLocal, _
+	@_procGetFrameRegName, _
+	@_scopeBegin, _
+	@_scopeEnd, _
+	@_procAllocStaticVars, _
+	@_emit, _
+	@_emitConvert, _
+	@_emitLabel, _
+	@_emitLabelNF, _
+	@_emitReturn, _
+	@_emitProcBegin, _
+	@_emitProcEnd, _
+	@_emitPushArg, _
+	@_emitASM, _
+	@_emitComment, _
+	@_emitJmpTb, _
+	@_emitBop, _
+	@_emitUop, _
+	@_emitStore, _
+	@_emitSpillRegs, _
+	@_emitLoad, _
+	@_emitLoadRes, _
+	@_emitStack, _
+	@_emitPushUDT, _
+	@_emitAddr, _
+	@_emitCall, _
+	@_emitCallPtr, _
+	@_emitStackAlign, _
+	@_emitJumpPtr, _
+	@_emitBranch, _
+	@_emitMem, _
+	@_emitScopeBegin, _
+	@_emitScopeEnd, _
+	@_emitDBG, _
+	@_emitVarIniBegin, _
+	@_emitVarIniEnd, _
+	@_emitVarIniI, _
+	@_emitVarIniF, _
+	@_emitVarIniI64, _
+	@_emitVarIniOfs, _
+	@_emitVarIniStr, _
+	@_emitVarIniWstr, _
+	@_emitVarIniPad, _
+	@_emitVarIniScopeBegin, _
+	@_emitVarIniScopeEnd, _
+	@_allocVreg, _
+	@_allocVrImm, _
+	@_allocVrImm64, _
+	@_allocVrImmF, _
+	@_allocVrVar, _
+	@_allocVrIdx, _
+	@_allocVrPtr, _
+	@_allocVrOfs, _
+	@_setVregDataType, _
+	@_getDistance, _
+	@_loadVr, _
+	@_storeVr, _
+	@_xchgTOS, _
+	@_makeTmpStr _
+)

@@ -8,17 +8,19 @@
 
 dim shared ir as IRCTX
 
-sub irInit(byval backend as FB_BACKEND)
-	if (backend = FB_BACKEND_GCC) then
-		irHLC_ctor()
-	else
-		assert(backend = FB_BACKEND_GAS)
-		irTAC_ctor()
-	end if
-
-	ir.vtbl.init(backend)
+sub irInit( )
+	select case( env.clopt.backend )
+	case FB_BACKEND_GCC
+		ir.vtbl = irhlc_vtbl
+	case FB_BACKEND_LLVM
+		ir.vtbl = irllvm_vtbl
+	case else
+		assert( env.clopt.backend = FB_BACKEND_GAS )
+		ir.vtbl = irtac_vtbl
+	end select
+	ir.vtbl.init( )
 end sub
 
-sub irEnd()
+sub irEnd( )
 	ir.vtbl.end( )
 end sub

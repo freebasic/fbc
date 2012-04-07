@@ -18,52 +18,29 @@ declare function emitGasX86_ctor	_
 '' globals
 	dim shared emit as EMITCTX
 
-'':::::
-#macro hCallCtor( backend )
-	select case backend
-	case FB_BACKEND_GAS
-		emitGasX86_ctor( )
-	end select
-#endmacro
-
-'':::::
-function emitInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
+function emitInit( ) as integer
 	if( emit.inited ) then
 		return TRUE
 	end if
 
-	''
-	hCallCtor( backend )
+	emitGasX86_ctor( )
 
-	''
 	flistInit( @emit.nodeTB, EMIT_INITNODES, len( EMIT_NODE ) )
-
 	flistInit( @emit.vregTB, EMIT_INITVREGNODES, len( IRVREG ) )
 
-	''
 	emit.inited = TRUE
 	emit.pos = 0
 
-	''
 	function = emit.vtbl.init( )
-
 end function
 
-'':::::
-sub emitEnd static
-
+sub emitEnd( )
 	if( emit.inited = FALSE ) then
 		exit sub
 	end if
 
 	emit.vtbl.end( )
-
 	emit.inited = FALSE
-
 end sub
 
 '':::::

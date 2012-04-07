@@ -93,8 +93,8 @@ end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
 type IR_VTBL
-	init as sub(byval backend as FB_BACKEND)
-	end as sub()
+	init as sub( )
+	end as sub( )
 
 	flush as sub _
 	( _
@@ -490,10 +490,11 @@ end type
 ''
 ''
 ''
-declare sub irTAC_ctor()
-declare sub irHLC_ctor()
-declare sub irInit(byval backend as FB_BACKEND)
-declare sub irEnd()
+extern as IR_VTBL irtac_vtbl
+extern as IR_VTBL irhlc_vtbl
+extern as IR_VTBL irllvm_vtbl
+declare sub irInit( )
+declare sub irEnd( )
 
 ''
 '' macros

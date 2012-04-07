@@ -1245,6 +1245,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = FB_BACKEND_GAS
 		case "gcc"
 			value = FB_BACKEND_GCC
+		case "llvm"
+			value = FB_BACKEND_LLVM
 		case else
 			fbcErrorInvalidOption(arg)
 			return
@@ -1938,14 +1940,19 @@ private sub fbcInit2()
 end sub
 
 '' Generate the .asm/.c file name for the given .bas module
-private function getModuleAsmName(byval module as FBCIOFILE ptr) as string
+private function getModuleAsmName( byval module as FBCIOFILE ptr ) as string
 	'' Based on the objfile name so it's also affected by -o
-	dim as string asmfile = hStripExt(module->objfile)
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
-		asmfile &= ".c"
-	else
-		asmfile &= ".asm"
-	end if
+	dim as string asmfile = hStripExt( module->objfile )
+
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_GCC
+		asmfile += ".c"
+	case FB_BACKEND_LLVM
+		asmfile += ".ll"
+	case else
+		asmfile += ".asm"
+	end select
+
 	function = asmfile
 end function
 
@@ -2193,23 +2200,28 @@ dim shared as const zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = 
 	@"native" _
 }
 
-private function assembleBas(byval module as FBCIOFILE ptr) as integer
-	static as string assembler
+private function assembleBas( byval module as FBCIOFILE ptr ) as integer
+	static as string assembler, llc
 
 	function = FALSE
 
-	if (len(assembler) = 0) then
-		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+	if( len( assembler ) = 0 ) then
+		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+		case FB_BACKEND_GCC
 			assembler = "gcc"
-		else
+		case FB_BACKEND_LLVM
+			llc = fbcFindBin( "llc" )
 			assembler = "as"
-		end if
-		assembler = fbcFindBin(assembler)
+		case else
+			assembler = "as"
+		end select
+		assembler = fbcFindBin( assembler )
 	end if
 
 	dim as string ln
 
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
+	case FB_BACKEND_GCC
 		ln += "-c -nostdlib -nostdinc " & _
 		      "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
 		      "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
@@ -2224,14 +2236,24 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 		if (fbGetOption(FB_COMPOPT_FPUTYPE) = FB_FPUTYPE_SSE) then
 			ln += "-mfpmath=sse -msse2 "
 		end if
-	else
+
+	case FB_BACKEND_LLVM
+		'' TODO: Use llc to compile .ll to .asm
+		'' then assemble as usual
+		'' both files need to be cleaned up (fbcAddTemp())
+		''ln = 
+		'if( fbcRunBin( "compiling LLVM IR", llc, ln ) = FALSE ) then
+		'	return FALSE
+		'end if
+
+	case else
 		'' --32 because we only compile for 32bit right now
 		ln = "--32 "
 
 		if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 			ln += "--strip-local-absolute "
 		end if
-	end if
+	end select
 
 	ln += """" + getModuleAsmName(module) + """ "
 	ln += "-o """ + module->objfile + """"
@@ -2531,7 +2553,7 @@ private sub printOptions( )
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
 	print "  -g               Add debug info"
-	print "  -gen gas|gcc     Select code generation backend"
+	print "  -gen gas|gcc|llvm  Select code generation backend"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
 	print "  -l <name>        Link in a library"

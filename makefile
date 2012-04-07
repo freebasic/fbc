@@ -411,7 +411,8 @@ FBC_BAS := \
   ast-node-proc ast-node-ptr ast-node-scope ast-node-stack ast-node-typeini \
   ast-node-uop ast-node-var ast-optimize ast-vectorize \
   dstr edbg_stab emit emit_SSE emit_x86 error fb fb-main \
-  fbc flist hash hlp hlp-str ir ir-hlc ir-tac lex lex-utf list \
+  fbc flist hash hlp hlp-str \
+  ir ir-hlc ir-llvm ir-tac lex lex-utf list \
   parser-assignment parser-comment parser-compound parser-compound-do \
   parser-compound-extern parser-compound-for parser-compound-if \
   parser-compound-namespace parser-compound-scope parser-compound-select \

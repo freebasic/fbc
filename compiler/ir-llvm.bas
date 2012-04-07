@@ -2545,7 +2545,7 @@ private sub _xchgTOS _
 
 end sub
 
-dim shared as IR_VTBL irhlc_vtbl = _
+static as IR_VTBL irllvm_vtbl = _
 ( _
 	@_init, _
 	@_end, _

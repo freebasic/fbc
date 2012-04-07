@@ -403,15 +403,8 @@ end type
 ''
 ''
 ''
-declare function emitInit _
-	( _
-		byval backend as FB_BACKEND _
-	) as integer
-
-declare sub emitEnd _
-	( _
-		_
-	)
+declare function emitInit( ) as integer
+declare sub emitEnd( )
 
 declare function emitGetRegClass _
 	( _
