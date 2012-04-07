@@ -122,6 +122,7 @@ Version 0.24.0:
 - C backend: float to uinteger conversions truncated to integer
 - C backend: The 'as any ptr' overloads of bin/oct/hex didn't work unless the 'as integer' versions were used in the same module
 - Wrong declarations of some the built-in wbin(), bin(), woct() overloads
+- Buffer overflow in wbin()
 
 
 Version 0.23.0:
