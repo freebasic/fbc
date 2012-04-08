@@ -123,6 +123,7 @@ Version 0.24.0:
 - C backend: The 'as any ptr' overloads of bin/oct/hex didn't work unless the 'as integer' versions were used in the same module
 - Wrong declarations of some the built-in wbin(), bin(), woct() overloads
 - Buffer overflow in wbin()
+- C backend: Pointer fields pointing to the parent UDT itself were always emitted as having a single PTR only, even if it was a PTR PTR etc.
 
 
 Version 0.23.0:

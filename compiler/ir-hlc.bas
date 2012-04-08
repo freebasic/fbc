@@ -66,11 +66,7 @@ declare function hVregToStr _
 		byval addcast as integer = TRUE _
 	) as string
 
-declare sub hEmitStruct _
-	( _
-		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
-	)
+declare sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 declare sub _emitDBG _
 	( _
@@ -661,34 +657,17 @@ private sub hEmitStruct _
 
 	'' Write out the elements
 	ctx.identcnt += 1
-
 	e = symbGetUDTFirstElm( s )
+	dim as string ln
 	do while( e <> NULL )
-        var subtype = symbGetSubtype( e )
-
-        var ln = ""
-        if( subtype <> s ) then
-			ln = hEmitType( symbGetType( e ), subtype ) + " "
-        else
-        	ln = tname + " _" + id + " *"
-        end if
-
-        ln += *symbGetName( e )
-        ln += hEmitArrayDecl( e )
-
-        /' the bitfield calcs are done by FB
-        if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-        	ln += " :" & subtype->bitfld.bits
-        end if
-        '/
-
-        ln += attrib
-
-        hWriteLine( ln, TRUE )
-
+		ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+		ln += " "
+		ln += *symbGetName( e )
+		ln += hEmitArrayDecl( e )
+		ln += attrib
+		hWriteLine( ln, TRUE )
 		e = symbGetUDTNextElm( e )
 	loop
-
 	ctx.identcnt -= 1
 
     '' Close UDT body
