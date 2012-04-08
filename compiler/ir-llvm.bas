@@ -1,7 +1,10 @@
-'' intermediate representation - high-level, direct to "C" output
+'' IR backend emitting LLVM IR to output file
 ''
-'' chng: dec/2006 written [v1ctor]
-'' chng: apr/2008 function calling implemented / most operators implemented [sir_mud - sir_mud(at)users(dot)sourceforge(dot)net]
+'' For comparison, see
+''    - LLVM IR language reference: http://llvm.org/docs/LangRef.html
+''    - clang output:   $ clang -Wall -emit-llvm -S test.c -o test.ll
+''    - llc compiler:   $ llc -O2 test.ll -o test.asm
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -81,35 +84,6 @@ declare sub _emitDBG _
 
 '' globals
 dim shared as IRHLCCTX ctx
-
-'' same order as FB_DATATYPE
-dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-{ _
-    @"void"     , _ '' void
-    @"byte"     , _ '' byte
-    @"ubyte"    , _ '' ubyte
-    @"char"     , _ '' char
-    @"short"    , _ '' short
-    @"ushort"   , _ '' ushort
-    @"wchar"    , _ '' wchar
-    @"integer"  , _ '' int
-    @"uinteger" , _ '' uint
-    @"integer"  , _ '' enum
-    @"integer"  , _ '' bitfield
-    @"long"     , _ '' long
-    @"ulong"    , _ '' ulong
-    @"longint"  , _ '' longint
-    @"ulongint" , _ '' ulongint
-    @"single"   , _ '' single
-    @"double"   , _ '' double
-    @"string"   , _ '' string
-    @"fixstr"   , _ '' fix-len string
-    @""         , _ '' struct
-    @""         , _ '' namespace
-    @""         , _ '' function
-    @"void"     , _ '' fwd-ref
-    @"void *"     _ '' pointer
-}
 
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
@@ -701,36 +675,17 @@ private sub hEmitForwardDecls( )
 end sub
 
 private sub hEmitTypedefs( )
-
-	'' typedef's for debugging
-	hWriteLine( "typedef char byte" )
-	hWriteLine( "typedef unsigned char ubyte" )
-	hWriteLine( "typedef unsigned short ushort" )
-	hWriteLine( "typedef int integer" )
-	hWriteLine( "typedef unsigned int uinteger" )
-	hWriteLine( "typedef unsigned long ulong" )
-	hWriteLine( "typedef long long longint" )
-	hWriteLine( "typedef unsigned long long ulongint" )
-	hWriteLine( "typedef float single" )
-	hWriteLine( "typedef struct _string { char *data; int len; int size; } string" )
-	hWriteLine( "typedef char fixstr" )
-
-    '' Target-dependant wchar type
-    dim as string wchartype
-
-    select case as const env.target.wchar.type
-    case FB_DATATYPE_UBYTE      '' DOS
-        wchartype = "ubyte"
-    case FB_DATATYPE_USHORT     '' Windows, cygwin
-        wchartype = "ushort"
-    case FB_DATATYPE_UINT       '' Linux & co
-        wchartype = "uinteger"
-    case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    hWriteLine( "typedef " + wchartype + " wchar" )
-
+	'' Some named types we use to make the output more readable
+	hWriteLine( "%byte = type i8" )
+	hWriteLine( "%short = type i16" )
+	hWriteLine( "%integer = type i32" )
+	hWriteLine( "%long = type i32" ) '' TODO: 64-bit
+	hWriteLine( "%longint = type i64" )
+	hWriteLine( "%single = type float" )
+	hWriteLine( "%double = type double" )
+	hWriteLine( "%string = type { i8*, i32, i32 }" )
+	hWriteLine( "%fixstr = type i8" )
+	hWriteLine( "%wchar = type i" + str( typeGetBits( env.target.wchar.type ) ) )
 end sub
 
 private sub hWriteFTOI _
@@ -1224,6 +1179,35 @@ private function hEmitType _
 		byval options as EMITTYPE_OPTIONS = 0 _
 	) as string
 
+	'' same order as FB_DATATYPE
+	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+	{ _
+		@"void"     , _ '' void
+		@"%byte"    , _ '' byte
+		@"%byte"    , _ '' ubyte
+		@"%char"    , _ '' char
+		@"%short"   , _ '' short
+		@"%short"   , _ '' ushort
+		@"%wchar"   , _ '' wchar
+		@"%integer" , _ '' int
+		@"%integer" , _ '' uint
+		NULL        , _ '' enum
+		NULL        , _ '' bitfield
+		@"%long"    , _ '' long
+		@"%long"    , _ '' ulong
+		@"%longint" , _ '' longint
+		@"%longint" , _ '' ulongint
+		@"%single"  , _ '' single
+		@"%double"   , _ '' double
+		@"%string"  , _ '' string
+		@"%fixstr"  , _ '' fix-len string
+		NULL        , _ '' struct
+		NULL        , _ '' namespace
+		NULL        , _ '' function
+		NULL        , _ '' fwd-ref
+		NULL          _ '' pointer
+	}
+
 	dim as string s
 	dim as integer ptrcount_fb = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
@@ -1241,7 +1225,7 @@ private function hEmitType _
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
 		else
-			s = "void"
+			s = *dtypeName(FB_DATATYPE_VOID)
 		end if
 
 	case FB_DATATYPE_FUNCTION
@@ -1352,7 +1336,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 		case FB_DATATYPE_WCHAR
             '' wstr("a") becomes (wchar *)"\141\0\0"
             '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
+			expr += "(wchar*)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
 		case else
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 		end select

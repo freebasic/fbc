@@ -82,35 +82,6 @@ declare sub _emitDBG _
 '' globals
 dim shared as IRHLCCTX ctx
 
-'' same order as FB_DATATYPE
-dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
-{ _
-    @"void"     , _ '' void
-    @"byte"     , _ '' byte
-    @"ubyte"    , _ '' ubyte
-    @"char"     , _ '' char
-    @"short"    , _ '' short
-    @"ushort"   , _ '' ushort
-    @"wchar"    , _ '' wchar
-    @"integer"  , _ '' int
-    @"uinteger" , _ '' uint
-    @"integer"  , _ '' enum
-    @"integer"  , _ '' bitfield
-    @"long"     , _ '' long
-    @"ulong"    , _ '' ulong
-    @"longint"  , _ '' longint
-    @"ulongint" , _ '' ulongint
-    @"single"   , _ '' single
-    @"double"   , _ '' double
-    @"string"   , _ '' string
-    @"fixstr"   , _ '' fix-len string
-    @""         , _ '' struct
-    @""         , _ '' namespace
-    @""         , _ '' function
-    @"void"     , _ '' fwd-ref
-    @"void *"     _ '' pointer
-}
-
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
@@ -1377,6 +1348,35 @@ private function hEmitType _
 		byval options as EMITTYPE_OPTIONS = 0 _
 	) as string
 
+	'' same order as FB_DATATYPE
+	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
+	{ _
+		@"void"     , _ '' void
+		@"byte"     , _ '' byte
+		@"ubyte"    , _ '' ubyte
+		@"char"     , _ '' char
+		@"short"    , _ '' short
+		@"ushort"   , _ '' ushort
+		@"wchar"    , _ '' wchar
+		@"integer"  , _ '' int
+		@"uinteger" , _ '' uint
+		NULL        , _ '' enum
+		NULL        , _ '' bitfield
+		@"long"     , _ '' long
+		@"ulong"    , _ '' ulong
+		@"longint"  , _ '' longint
+		@"ulongint" , _ '' ulongint
+		@"single"   , _ '' single
+		@"double"   , _ '' double
+		@"string"   , _ '' string
+		@"fixstr"   , _ '' fix-len string
+		NULL        , _ '' struct
+		NULL        , _ '' namespace
+		NULL        , _ '' function
+		NULL        , _ '' fwd-ref
+		NULL          _ '' pointer
+	}
+
 	dim as string s
 	dim as integer ptrcount_fb = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
@@ -1394,7 +1394,7 @@ private function hEmitType _
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
 		else
-			s = "void"
+			s = *dtypeName(FB_DATATYPE_VOID)
 		end if
 
 	case FB_DATATYPE_FUNCTION
@@ -1505,7 +1505,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 		case FB_DATATYPE_WCHAR
             '' wstr("a") becomes (wchar *)"\141\0\0"
             '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
+			expr += "(wchar*)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
 		case else
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 		end select
