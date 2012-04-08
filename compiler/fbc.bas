@@ -1940,7 +1940,12 @@ private sub fbcInit2()
 end sub
 
 '' Generate the .asm/.c file name for the given .bas module
-private function getModuleAsmName( byval module as FBCIOFILE ptr ) as string
+private function getModuleAsmName _
+	( _
+		byval module as FBCIOFILE ptr, _
+		byval first_step as integer _
+	) as string
+
 	'' Based on the objfile name so it's also affected by -o
 	dim as string asmfile = hStripExt( module->objfile )
 
@@ -1948,7 +1953,11 @@ private function getModuleAsmName( byval module as FBCIOFILE ptr ) as string
 	case FB_BACKEND_GCC
 		asmfile += ".c"
 	case FB_BACKEND_LLVM
-		asmfile += ".ll"
+		if( first_step ) then
+			asmfile += ".ll"
+		else
+			asmfile += ".asm"
+		end if
 	case else
 		asmfile += ".asm"
 	end select
@@ -1962,9 +1971,9 @@ private sub compileBas(byval module as FBCIOFILE ptr, byval ismain as integer)
 		module->objfile = hStripExt(module->srcfile) & ".o"
 	end if
 
-	dim as string asmfile = getModuleAsmName(module)
-	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(asmfile)
+	dim as string asmfile = getModuleAsmName( module, TRUE )
+	if( fbc.preserveasm = FALSE ) then
+		fbcAddTemp( asmfile )
 	end if
 
 	if (fbc.verbose) then
@@ -2219,6 +2228,7 @@ private function assembleBas( byval module as FBCIOFILE ptr ) as integer
 	end if
 
 	dim as string ln
+	dim as string asmfile = getModuleAsmName( module, FALSE )
 
 	select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 	case FB_BACKEND_GCC
@@ -2238,13 +2248,23 @@ private function assembleBas( byval module as FBCIOFILE ptr ) as integer
 		end if
 
 	case FB_BACKEND_LLVM
-		'' TODO: Use llc to compile .ll to .asm
-		'' then assemble as usual
-		'' both files need to be cleaned up (fbcAddTemp())
-		''ln = 
-		'if( fbcRunBin( "compiling LLVM IR", llc, ln ) = FALSE ) then
-		'	return FALSE
-		'end if
+		'' Invoke llc to compile .ll to .asm, then assemble as usual.
+		'' Both files need to be cleaned up (fbcAddTemp())
+
+		ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+
+		ln += """" + getModuleAsmName( module, TRUE ) + """ "
+		ln += "-o """ + asmfile + """"
+
+		if( fbcRunBin( "compiling LLVM IR", llc, ln ) = FALSE ) then
+			return FALSE
+		end if
+
+		if( fbc.preserveasm = FALSE ) then
+			fbcAddTemp( asmfile )
+		end if
+
+		ln = ""
 
 	case else
 		'' --32 because we only compile for 32bit right now
@@ -2255,7 +2275,7 @@ private function assembleBas( byval module as FBCIOFILE ptr ) as integer
 		end if
 	end select
 
-	ln += """" + getModuleAsmName(module) + """ "
+	ln += """" + asmfile + """ "
 	ln += "-o """ + module->objfile + """"
 
 	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
