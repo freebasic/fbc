@@ -2256,6 +2256,8 @@ private function assembleBas( byval module as FBCIOFILE ptr ) as integer
 		ln += """" + getModuleAsmName( module, TRUE ) + """ "
 		ln += "-o """ + asmfile + """"
 
+		ln += fbc.extopt.gcc
+
 		if( fbcRunBin( "compiling LLVM IR", llc, ln ) = FALSE ) then
 			return FALSE
 		end if
@@ -2278,7 +2280,7 @@ private function assembleBas( byval module as FBCIOFILE ptr ) as integer
 	ln += """" + asmfile + """ "
 	ln += "-o """ + module->objfile + """"
 
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC ) then
 		ln += fbc.extopt.gcc
 	else
 		ln += fbc.extopt.gas
@@ -2602,9 +2604,9 @@ private sub printOptions( )
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
 	print "  -version         Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
-	print "  -Wa <a,b,c>      Pass options to GAS"
-	print "  -Wc <a,b,c>      Pass options to GCC (with -gen gcc)"
-	print "  -Wl <a,b,c>      Pass options to LD"
+	print "  -Wa <a,b,c>      Pass options to 'as' (-gen gas or -gen llvm)"
+	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
+	print "  -Wl <a,b,c>      Pass options to 'ld'"
 	print "  -x <file>        Set output executable/library file name"
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 end sub
