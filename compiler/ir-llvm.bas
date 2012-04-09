@@ -69,11 +69,7 @@ declare function hVregToStr _
 		byval addcast as integer = TRUE _
 	) as string
 
-declare sub hEmitStruct _
-	( _
-		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
-	)
+declare sub hEmitStruct( byval s as FBSYMBOL ptr )
 
 declare sub _emitDBG _
 	( _
@@ -254,39 +250,26 @@ private function hEmitProcHeader _
 	function = ln
 end function
 
-private function hGetUDTName _
-	( _
-        byval s as FBSYMBOL ptr, _
-        byval need_original_name as integer = FALSE _
-    ) as string
+private function hGetUDTName( byval sym as FBSYMBOL ptr ) as string
+	dim as FBSYMBOL ptr ns = symbGetNamespace( sym )
 
-    dim as FBSYMBOL ptr ns = symbGetNamespace( s )
+	var s = "%"
+	do until( ns = @symbGetGlobalNamespc( ) )
+		s += *symbGetName( ns )
+		s += "."
+		ns = symbGetNamespace( ns )
+	loop
 
-    var sig = ""
-    do until( ns = @symbGetGlobalNamespc( ) )
-    	sig += *symbGetName( ns )
-    	sig += "$"
-    	ns = symbGetNamespace( ns )
-    loop
+	if( sym->id.alias <> NULL ) then
+		s += *sym->id.alias
+	else
+		s += *symbGetName( sym )
+	end if
 
-    if( s->id.alias <> NULL ) then
-    	sig += *s->id.alias
-    else
-    	sig += *symbGetName( s )
-    EndIf
-
-    if( need_original_name = FALSE ) then
-        '' see the HACK in hEmitStruct()
-        if( symbGetIsAccessed( s ) ) then
-            sig += "$type"
-        end if
-    end if
-
-    function = sig
-
+	function = s
 end function
 
-private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
+private sub hEmitUDT( byval s as FBSYMBOL ptr )
 	if( s = NULL ) then
 		return
 	end if
@@ -296,17 +279,17 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	end if
 
 	var oldsection = ctx.section
-	if( symbIsLocal( s ) = false ) then
+	if( symbIsLocal( s ) = FALSE ) then
 		ctx.section = SECTION_HEAD
 	end if
 
-	select case as const symbGetClass( s )
+	select case as const( symbGetClass( s ) )
 	case FB_SYMBCLASS_ENUM
 		symbSetIsEmitted( s )
-		hWriteLine( "typedef int " & hGetUDTName( s ) & ";" )
+		hWriteLine( hGetUDTName( s ) + " = type %integer" )
 
 	case FB_SYMBCLASS_STRUCT
-		hEmitStruct( s, is_ptr )
+		hEmitStruct( s )
 
 	case FB_SYMBCLASS_PROC
 		if( symbGetIsFuncPtr( s ) ) then
@@ -504,63 +487,58 @@ private sub hEmitFuncProto _
 
 end sub
 
-private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
-	var tname = "struct"
-	if( symbGetUDTIsUnion( s ) ) then
-		tname = "union"
+private sub hEmitStruct( byval s as FBSYMBOL ptr )
+	''
+	'' Already emitting this UDT currently? This means there is a circular
+	'' dependency between this UDT and one (or multiple) other UDT(s).
+	'' Note: LLVM IR doesn't seem to require explicit declaration of
+	'' forward references, clang for example generates code like:
+	''
+	''    %struct.T = type { %struct.T* }
+	''    %struct.XX = type { %struct.YY* }
+	''    %struct.YY = type { %struct.XX }
+	''
+	'' On top of that, it seems to be possible to forward reference
+	'' structures even directly and not by pointer:
+	''
+	''    %struct.XX = type { %struct.T }
+	''    %struct.T = type { %struct.T* }
+	''
+	'' ... as long as the type will be fully declared before its first use
+	'' in a function/variable declaration etc. This makes UDT emitting
+	'' pretty easy when compared with the C backend.
+	''
+	if( symbGetIsBeingEmitted( s ) ) then
+		return
 	end if
 
-    '' Already emitting this UDT currently? This means there is a circular
-    '' dependency between this UDT and one (or multiple) other UDT(s).
-    if( symbGetIsBeingEmitted( s ) ) then
-        '' Is this struct referenced through only a pointer? Then we can create a
-        '' forward reference.
-        if( is_ptr ) then
+	symbSetIsBeingEmitted( s )
 
-            '' Emit a forward reference to this struct (if not yet done),
-            '' and remember it for emitting later.
-            '' HACK: reusing the accessed flag (that's used by variables only)
-            if( symbGetIsAccessed( s ) = FALSE ) then
-                symbSetIsAccessed( s )
-                hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ) )
-                *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
-            end if
-
-            return
-        end if
-
-        '' No forward reference can be created, because the struct is used
-        '' directly (not through a pointer). It must be declared before its
-        '' parent is.
-    end if
-
-    symbSetIsBeingEmitted( s )
-
-	'' check every field, for non-emitted subtypes
+	'' Check every field for non-emitted subtypes
 	var e = symbGetUDTFirstElm( s )
-	do while( e <> NULL )
-		hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
+	while( e )
+		hEmitUDT( symbGetSubtype( e ) )
 		e = symbGetUDTNextElm( e )
-	loop
+	wend
 
-    '' Has this UDT been emitted in the mean time? (maybe one of the fields
-    '' did that)
-    if( symbGetIsEmitted( s ) ) then
-        return
-    end if
+	'' Was it emitted in the mean time? (maybe one of the fields did that)
+	if( symbGetIsEmitted( s ) ) then
+		return
+	end if
 
-    '' We'll emit it now.
-    symbSetIsEmitted( s )
+	'' We'll emit it now.
+	symbSetIsEmitted( s )
+
+	dim as string ln
 
 	'' UDT name
-	dim as string id
-	if( symbGetName( s ) = NULL ) then
-		id = *hMakeTmpStrNL( )
+	if( symbGetName( s ) ) then
+		ln += hGetUDTName( s )
 	else
-		id = hGetUDTName( s, TRUE )
+		ln += "%" + *hMakeTmpStrNL( )
 	end if
 
-	hWriteLine( "typedef " + tname + " _" + id + " {" )
+	ln += " = type { "
 
 	'' Alignment (field = N)
 	var attrib = ""
@@ -573,44 +551,27 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 	end if
 
 	'' Write out the elements
-	ctx.identcnt += 1
-
 	e = symbGetUDTFirstElm( s )
-	do while( e <> NULL )
-        var subtype = symbGetSubtype( e )
-
-        var ln = ""
-        if( subtype <> s ) then
-			ln = hEmitType( symbGetType( e ), subtype ) + " "
-        else
-        	ln = tname + " _" + id + " *"
-        end if
-
-        ln += *symbGetName( e )
-        ln += hEmitArrayDecl( e )
-
-        /' the bitfield calcs are done by FB
-        if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-        	ln += " :" & subtype->bitfld.bits
-        end if
-        '/
-
-        ln += attrib
-
-		hWriteLine( ln )
+	while( e )
+		ln += hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+		ln += hEmitArrayDecl( e )
+		ln += attrib
 
 		e = symbGetUDTNextElm( e )
-	loop
+		if( e ) then
+			ln += ", "
+		end if
+	wend
 
-	ctx.identcnt -= 1
+	'' Close UDT body
+	ln += " }"
 
-    '' Close UDT body
-	hWriteLine( "} " & id )
+	hWriteLine( ln )
 
 	symbResetIsBeingEmitted( s )
 
 	'' Emit methods (not part of the struct anymore, but they will include
-    '' references to self (this))
+	'' references to self (this))
 	e = symbGetCompSymbTb( s ).head
 	do while( e <> NULL )
 		'' method?
@@ -619,8 +580,8 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 				hEmitFuncProto( e, FALSE )
 			end if
 		end if
-    	e = e->next
-    loop
+		e = e->next
+	loop
 
 end sub
 
@@ -667,25 +628,11 @@ private sub hEmitForwardDecls( )
 
 	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
 	do while( s <> NULL )
-		hEmitUDT( s, FALSE )
+		hEmitUDT( s )
 		s = flistGetNext( s )
 	loop
 
 	flistReset( @ctx.forwardlist )
-end sub
-
-private sub hEmitTypedefs( )
-	'' Some named types we use to make the output more readable
-	hWriteLine( "%byte = type i8" )
-	hWriteLine( "%short = type i16" )
-	hWriteLine( "%integer = type i32" )
-	hWriteLine( "%long = type i32" ) '' TODO: 64-bit
-	hWriteLine( "%longint = type i64" )
-	hWriteLine( "%single = type float" )
-	hWriteLine( "%double = type double" )
-	hWriteLine( "%string = type { i8*, i32, i32 }" )
-	hWriteLine( "%fixstr = type i8" )
-	hWriteLine( "%wchar = type i" + str( typeGetBits( env.target.wchar.type ) ) )
 end sub
 
 private sub hWriteFTOI _
@@ -859,7 +806,18 @@ private function _emitBegin( ) as integer
 
 	hWriteLine( "; Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ) )
 
-	hEmitTypedefs( )
+	'' Some named types we use to make the output more readable
+	hWriteLine( "" )
+	hWriteLine( "%byte = type i8" )
+	hWriteLine( "%short = type i16" )
+	hWriteLine( "%integer = type i32" )
+	hWriteLine( "%long = type i32" ) '' TODO: 64-bit
+	hWriteLine( "%longint = type i64" )
+	hWriteLine( "%single = type float" )
+	hWriteLine( "%double = type double" )
+	hWriteLine( "%string = type { i8*, i32, i32 }" )
+	hWriteLine( "%fixstr = type i8" )
+	hWriteLine( "%wchar = type i" + str( typeGetBits( env.target.wchar.type ) ) )
 
 	ctx.section = SECTION_BODY
 
@@ -875,15 +833,18 @@ private sub _emitEnd( byval tottime as double )
 	hEmitDataStmt( )
 
 	'' Emit proc decls first (because of function pointer initializers referencing procs)
+	hWriteLine( "" )
 	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
 
 	'' Then the variables
+	hWriteLine( "" )
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
 
 	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
+	hWriteLine( "" )
 	hWriteLine( "; Total compilation time: " & tottime & " seconds. " )
 
 	' flush all sections to file
@@ -1220,7 +1181,7 @@ private function hEmitType _
 	select case as const( dtype )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		if( subtype ) then
-			hEmitUDT( subtype, (ptrcount_c > 0) )
+			hEmitUDT( subtype )
 			s = hGetUDTName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
 			s = *dtypeName(FB_DATATYPE_INTEGER)
@@ -1230,7 +1191,7 @@ private function hEmitType _
 
 	case FB_DATATYPE_FUNCTION
 		ptrcount_c -= 1
-		hEmitUDT( subtype, (ptrcount_c > 0) )
+		hEmitUDT( subtype )
 		s = *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR

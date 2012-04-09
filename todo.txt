@@ -1,3 +1,19 @@
+  o LLVM backend
+    - Unions: LLVM IR doesn't have Unions, so a struct containing the biggest
+      member needs to be emitted instead
+    - Procedures
+    - Local/global variables (looks like scopes won't need to be preserved)
+    - Expressions
+    - Branches, calls, returns, jump tables
+    - Debugging metadata
+    - Special mangling ($ etc.) isn't needed, LLVM IR has id prefixes:
+      @globals, %locals (should be fully handled in ir-llvm, if possible)
+    - Check IR options, especially irGetOption( IR_OPT_HIGHLEVEL ),
+      may need to be changed to mean ir-hlc only
+    - Inline ASM = inline LLVM IR? It'd be possible to allow x86 asm though,
+      llc even has -x86-asm-syntax=intel (should find out how well it works)
+    - va_arg: Same issue as with C backend
+
 [ ] add a C backend
 	- MinGW gcc will always add the @N suffix on Stdcall procedures,
 	  thus STDCALL_MS and PASCAL procs will be mangled wrong on Win32.
