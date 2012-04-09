@@ -808,6 +808,7 @@ private function _emitBegin( ) as integer
 
 	'' Some named types we use to make the output more readable
 	hWriteLine( "" )
+	hWriteLine( "%any = type i8" )
 	hWriteLine( "%byte = type i8" )
 	hWriteLine( "%short = type i16" )
 	hWriteLine( "%integer = type i32" )
@@ -1143,7 +1144,7 @@ private function hEmitType _
 	'' same order as FB_DATATYPE
 	static as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	{ _
-		@"void"     , _ '' void
+		@"%any"     , _ '' void
 		@"%byte"    , _ '' byte
 		@"%byte"    , _ '' ubyte
 		@"%char"    , _ '' char
@@ -1184,9 +1185,9 @@ private function hEmitType _
 			hEmitUDT( subtype )
 			s = hGetUDTName( subtype )
 		elseif( dtype = FB_DATATYPE_ENUM ) then
-			s = *dtypeName(FB_DATATYPE_INTEGER)
+			dtype = FB_DATATYPE_INTEGER
 		else
-			s = *dtypeName(FB_DATATYPE_VOID)
+			dtype = FB_DATATYPE_VOID
 		end if
 
 	case FB_DATATYPE_FUNCTION
@@ -1195,7 +1196,6 @@ private function hEmitType _
 		s = *symbGetMangledName( subtype )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-		s = *dtypeName(dtype)
 		if( options and EMITTYPE_ISRESULT ) then
 			if( ptrcount_fb = 0 ) then
 				ptrcount_c += 1
@@ -1204,14 +1204,24 @@ private function hEmitType _
 
 	case FB_DATATYPE_BITFIELD
 		if( subtype ) then
-			s = *dtypeName(symbGetType( subtype ))
+			dtype = symbGetType( subtype )
 		else
-			s = *dtypeName(FB_DATATYPE_INTEGER)
+			dtype = FB_DATATYPE_INTEGER
 		end if
 
-	case else
-		s = *dtypeName(dtype)
+	case FB_DATATYPE_VOID
+		'' void* isn't allowed in LLVM IR, i8* can be used instead,
+		'' that's why %any is aliased to i8. "void" will almost never
+		'' be used, except for subs.
+		if( ptrcount_c = 0 ) then
+			s = "void"
+		end if
+
 	end select
+
+	if( len( s ) = 0 ) then
+		s = *dtypeName(dtype)
+	end if
 
 	if( ptrcount_c > 0 ) then
 		s += string( ptrcount_c, "*" )
