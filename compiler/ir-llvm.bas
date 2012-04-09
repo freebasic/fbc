@@ -122,31 +122,19 @@ private sub hWriteLine( byref ln as string )
 	end select
 end sub
 
-enum EMITPROC_OPTIONS
-	EMITPROC_ISPROTO   = &h1
-	EMITPROC_ISPROCPTR = &h2
-end enum
-
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval options as EMITPROC_OPTIONS _
+		byval is_proto as integer _
 	) as string
 
 	dim as string ln
-
-	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
-		if( symbIsPrivate( proc ) ) then
-			ln += "static "
-		end if
-	end if
 
 	'' Function result type (is 'void' for subs)
 	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
 
 	''
-	'' Calling convention if needed (for function pointers it's usually not
-	'' put in this place, but should work nonetheless)
+	'' Calling convention (default if none specified is Cdecl as in C)
 	''
 	'' Note: Pascal is like Stdcall (callee cleans up stack), except that
 	'' arguments are pushed left-to-right (same order as written in code,
@@ -157,19 +145,13 @@ private function hEmitProcHeader _
 	''
 	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		ln += " __attribute__((stdcall))"
+		ln += " x86_stdcallcc"
 	end select
 
 	ln += " "
 
 	'' Identifier
-	if( options and EMITPROC_ISPROCPTR ) then
-		ln += "(*"
-	end if
-	ln += *symbGetMangledName( proc )
-	if( options and EMITPROC_ISPROCPTR ) then
-		ln += ")"
-	end if
+	ln += "@" + *symbGetMangledName( proc )
 
 	'' Parameter list
 	ln += "( "
@@ -178,7 +160,7 @@ private function hEmitProcHeader _
 	dim as FBSYMBOL ptr hidden = NULL
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( symbGetType( proc ) ) ) then
-			if( options and EMITPROC_ISPROTO ) then
+			if( is_proto ) then
 				hidden = symbGetSubType( proc )
 				ln += hEmitType( symbGetType( hidden ), hidden, EMITTYPE_ADDPTR )
 			else
@@ -194,16 +176,11 @@ private function hEmitProcHeader _
 	end if
 
 	var param = symbGetProcLastParam( proc )
-
-	if( (hidden = NULL) and (param = NULL) ) then
-		ln += "void"
-	end if
-
 	while( param )
 		if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 			ln += "..."
 		else
-			var pvar = iif( options and EMITPROC_ISPROTO, param, symbGetParamVar( param ) )
+			var pvar = iif( is_proto, param, symbGetParamVar( param ) )
 			var dtype = symbGetType( pvar )
 			var subtype = symbGetSubType( pvar )
 			dim as EMITTYPE_OPTIONS type_options = 0
@@ -234,8 +211,8 @@ private function hEmitProcHeader _
 
 			ln += hEmitType( dtype, subtype, type_options )
 
-			if( (options and EMITPROC_ISPROTO) = 0 ) then
-				ln += " " + *symbGetMangledName( pvar )
+			if( is_proto = FALSE ) then
+				ln += " %" + *symbGetMangledName( pvar )
 			end if
 		end if
 
@@ -246,6 +223,15 @@ private function hEmitProcHeader _
 	wend
 
 	ln += " )"
+
+	'' Function attributes
+	'' TODO: clang emits this for C code, seems good for us too, but if
+	'' there will be exceptions, this must be removed...
+	ln += " nounwind"
+
+	if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
+		ln += " naked"
+	end if
 
 	function = ln
 end function
@@ -293,7 +279,7 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr )
 
 	case FB_SYMBCLASS_PROC
 		if( symbGetIsFuncPtr( s ) ) then
-			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ) )
+			hWriteLine( "typedef " + hEmitProcHeader( s, TRUE ) + "*" )
 			symbSetIsEmitted( s )
 		end if
 
@@ -478,7 +464,8 @@ private sub hEmitFuncProto _
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
 					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )" )
 	else
-		dim as string ln = hEmitProcHeader( s, EMITPROC_ISPROTO )
+		dim as string ln = "declare "
+		ln += hEmitProcHeader( s, TRUE )
 
 		if( symbGetIsGlobalCtor( s ) ) then
 			ln += " __attribute__ ((constructor)) "
@@ -592,39 +579,38 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 end sub
 
 private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer = FALSE )
-	do while( s <> NULL )
-
- 		select case as const symbGetClass( s )
- 		case FB_SYMBCLASS_NAMESPACE
+	while( s )
+		select case as const( symbGetClass( s ) )
+		case FB_SYMBCLASS_NAMESPACE
 			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
 
- 		case FB_SYMBCLASS_SCOPE
+		case FB_SYMBCLASS_SCOPE
 			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
 
- 		case FB_SYMBCLASS_VAR
+		case FB_SYMBCLASS_VAR
 			if( procs = FALSE ) then
 				hEmitVariable( s )
 			end if
 
- 		case FB_SYMBCLASS_PROC
+		case FB_SYMBCLASS_PROC
 			if( procs ) then
 				if( symbGetIsFuncPtr( s ) = FALSE ) then
 					hEmitFuncProto( s )
 				end if
 			end if
 
- 		end select
+		end select
 
 		s = s->next
-	loop
+	wend
 end sub
 
 private sub hEmitDataStmt( )
 	var s = astGetLastDataStmtSymbol( )
-	do while( s <> NULL )
+	while( s )
  		hEmitVariable( s )
 		s = s->var_.data.prev
-	loop
+	wend
 end sub
 
 private sub hEmitForwardDecls( )
@@ -633,10 +619,10 @@ private sub hEmitForwardDecls( )
 	end if
 
 	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
-	do while( s <> NULL )
+	while( s )
 		hEmitUDT( s )
 		s = flistGetNext( s )
-	loop
+	wend
 
 	flistReset( @ctx.forwardlist )
 end sub
@@ -2115,15 +2101,15 @@ private sub _emitProcBegin _
 	hWriteLine( "" )
 
 	dim as string ln
+
+	ln += "define "
 	if( symbIsExport( proc ) ) then
-		ln += "__declspec(dllexport) "
+		ln += "dllexport "
+	elseif( symbIsPrivate( proc ) ) then
+		ln += "private "
+		''ln += "internal "
 	end if
-
-	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
-		ln += "__attribute__ ((naked)) "
-	end if
-
-	ln += hEmitProcHeader( proc, 0 )
+	ln += hEmitProcHeader( proc, FALSE )
 
 	hWriteLine( ln )
 

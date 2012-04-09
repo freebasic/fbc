@@ -1,7 +1,6 @@
   o LLVM backend
     - Unions: LLVM IR doesn't have Unions, so a struct containing the biggest
       member needs to be emitted instead
-    - Procedures
     - Local/global variables (looks like scopes won't need to be preserved)
     - Expressions
     - Branches, calls, returns, jump tables
