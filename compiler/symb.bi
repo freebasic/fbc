@@ -59,6 +59,7 @@ const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
 
 '' symbol classes
+'' When changing, update symb.bas:symbDump():classnames
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
 	FB_SYMBCLASS_CONST
@@ -2519,8 +2520,9 @@ declare function symbGetUDTBaseSymbol _
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
-#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): " + symbDump( s )
-declare function symbDump( byval s as FBSYMBOL ptr ) as string
+#define symbDump( s ) symbDump_( s ) : print
+#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; : symbDump( s )
+declare sub symbDump_( byval s as FBSYMBOL ptr )
 #endif
 
 ''

@@ -2044,51 +2044,139 @@ end function
 
 #if __FB_DEBUG__
 '' For debugging
-function symbDump( byval s as FBSYMBOL ptr ) as string
-	dim as string dump
+sub symbDump_( byval s as FBSYMBOL ptr )
+	dim as integer oldcolor
+
+#if 1
+	oldcolor = color( 2 )
+
+	static as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPORT) = _
+	{ _
+		@"var"      , _
+		@"const"    , _
+		@"proc"     , _
+		@"param"    , _
+		@"define"   , _
+		@"keyword"  , _
+		@"label"    , _
+		@"namespace", _
+		@"enum"     , _
+		@"struct"   , _
+		@"class"    , _
+		@"field"    , _
+		@"bitfield" , _
+		@"typedef"  , _
+		@"fwdref"   , _
+		@"scope"    , _
+		@"nsimport"   _
+	}
+
+	print *classnames(s->class);" ";
+
+	color oldcolor
+#endif
+
+#if 1
+	oldcolor = color( 1 )
+
+	#macro checkAttrib( ID )
+		if( s->attrib and FB_SYMBATTRIB_##ID ) then
+			print lcase( #ID );" ";
+		end if
+	#endmacro
+
+	checkAttrib( SHARED )
+	checkAttrib( STATIC )
+	checkAttrib( DYNAMIC )
+	checkAttrib( COMMON )
+	checkAttrib( EXTERN )
+	checkAttrib( PUBLIC )
+	checkAttrib( PRIVATE )
+	checkAttrib( LOCAL )
+	checkAttrib( EXPORT )
+	checkAttrib( IMPORT )
+	checkAttrib( OVERLOADED )
+	if( symbIsProc( s ) ) then
+		checkAttrib( METHOD )
+	else
+		checkAttrib( PARAMINSTANCE )
+	end if
+	checkAttrib( CONSTRUCTOR )
+	checkAttrib( DESTRUCTOR )
+	checkAttrib( OPERATOR )
+	checkAttrib( PROPERTY )
+	checkAttrib( PARAMBYDESC )
+	checkAttrib( PARAMBYVAL )
+	checkAttrib( PARAMBYREF )
+	checkAttrib( LITERAL )
+	checkAttrib( CONST )
+	if( symbIsProc( s ) ) then
+		checkAttrib( STATICLOCALS )
+	else
+		checkAttrib( OPTIONAL )
+	end if
+	checkAttrib( TEMP )
+	checkAttrib( DESCRIPTOR )
+	checkAttrib( FUNCRESULT )
+	checkAttrib( VIS_PUBLIC )
+	checkAttrib( VIS_PRIVATE )
+	checkAttrib( VIS_PROTECTED )
+	if( symbIsProc( s ) ) then
+		checkAttrib( NAKED )
+	else
+		checkAttrib( SUFFIXED )
+	end if
+	checkAttrib( ABSTRACT )
+	checkAttrib( VIRTUAL )
+
+	color oldcolor
+#endif
 
 	dim as zstring ptr id = s->id.name
 	if( id = NULL ) then
 		id = @"<unnamed>"
 	end if
-
-#if 0
-	dump += "[" + hex(s) + "] "
-#endif
-	dump += *id
+	print *id;
 
 #if 1
-	dim as zstring ptr mangled = symbGetMangledName( s )
-	dump += " alias """
-	if( mangled ) then
-		dump += *mangled
+	if( s->stats and FB_SYMBSTATS_HASALIAS ) then
+		oldcolor = color( 1 )
+		print " alias ";
+		color oldcolor
+		print """";*s->id.alias;"""";
 	end if
-	dump += """"
 #endif
 
-	dump += " as "
+#if 0
+	oldcolor = color( 1 )
+	print " mangled ";
+	color oldcolor
+	print """";*symbGetMangledName( s );"""";
+#endif
+
+	oldcolor = color( 1 )
+	print " as ";
+	color oldcolor
 
 	if( s->typ and FB_DATATYPE_INVALID ) then
-		dump += "<invalid>"
+		print "<invalid>";
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.
 		if( s->subtype = NULL ) then
 			select case as const s->typ
 			case FB_DATATYPE_FWDREF
-				dump += "<fwdref>"
+				print "<fwdref>";
 			case FB_DATATYPE_STRUCT
-				dump += "<struct>"
+				print "<struct>";
 			case FB_DATATYPE_ENUM
-				dump += "<enum>"
+				print "<enum>";
 			case else
-				dump += *symbTypeToStr( s->typ, NULL, s->lgt )
+				print *symbTypeToStr( s->typ, NULL, s->lgt );
 			end select
 		else
-			dump += *symbTypeToStr( s->typ, s->subtype, s->lgt )
+			print *symbTypeToStr( s->typ, s->subtype, s->lgt );
 		end if
 	end if
-
-	function = dump
-end function
+end sub
 #endif
