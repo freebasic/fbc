@@ -341,6 +341,14 @@ end function
 private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	dim as string ln
 
+	'' Never used?
+	if( symbGetIsAccessed( sym ) = FALSE ) then
+		'' Extern?
+		if( symbIsExtern( sym ) ) then
+			return
+		end if
+	end if
+
 	'' Shared (not Local) or Static, but not Common/Public/Extern?
 	if( ((symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) = 0) and _
 	    ((not symbIsLocal( sym )) or symbIsStatic( sym )) ) then
@@ -356,14 +364,12 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	end if
 
 	'' allocation modifier
-	if( symbIsCommon( sym ) ) then
+	if( symbGetAttrib( sym ) and (FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
 		hWriteLine( "extern " + ln )
-		ln += " __attribute__((common))"
-	elseif( symbGetAttrib( sym ) and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
-		hWriteLine( "extern " + ln )
-
-		'' just an extern that was never allocated? exit..
-		if( symbIsExtern( sym ) ) then
+		if( symbIsCommon( sym ) ) then
+			ln += " __attribute__((common))"
+		elseif( symbIsExtern( sym ) ) then
+			'' Just an Extern that's used but not allocated in this module
 			return
 		end if
 	end if
