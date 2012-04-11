@@ -1473,6 +1473,14 @@ private function hEmitDouble( byval value as double ) as string
 	return s
 end function
 
+private sub hAddrOfSymbol( byval sym as FBSYMBOL ptr, byref s as string )
+	s += "&"
+	'' Use && to get the address of labels (used by error handling code)
+	if( symbIsLabel( sym ) ) then
+		s += "&"
+	end if
+end sub
+
 private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
 
 	dim as string expr
@@ -1490,8 +1498,8 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 		end select
 	else
-        expr += "&"
-        '' Name of the array that's being accessed, or the function in @func, etc
+		hAddrOfSymbol( sym, expr )
+		'' Name of the array that's being accessed, or the function in @func, etc
 		expr += *symbGetMangledName( sym )
 	end if
 
@@ -1548,12 +1556,7 @@ private function hVregToStr _
 						operand += "(ubyte *)"
 					end if
 
-                    '' Emit && to get the address value of labels (used by -exx code)
-                    if( symbIsLabel( vreg->sym ) ) then
-                        operand += "&"
-                    end if
-
-                    operand += "&"
+					hAddrOfSymbol( vreg->sym, operand )
 				else
 					if( addcast ) then
 						operand += "("

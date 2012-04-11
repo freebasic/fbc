@@ -124,6 +124,7 @@ Version 0.24.0:
 - Wrong declarations of some the built-in wbin(), bin(), woct() overloads
 - Buffer overflow in wbin()
 - C backend: Pointer fields pointing to the parent UDT itself were always emitted as having a single PTR only, even if it was a PTR PTR etc.
+- C backend: Taking address of module-level labels was broken (used by module-level error handling code)
 
 
 Version 0.23.0:
