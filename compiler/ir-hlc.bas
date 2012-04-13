@@ -1487,16 +1487,13 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 
 	'' For literal strings, just print the text, not the label
 	if( symbGetIsLiteral( sym ) ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_CHAR
+		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+			expr += "L"""
+			expr += *hEscapeUCN( symbGetVarLitTextW( sym ) )
+			expr += """"
+		else
 			expr += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
-		case FB_DATATYPE_WCHAR
-            '' wstr("a") becomes (wchar *)"\141\0\0"
-            '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(" + *dtypeName(FB_DATATYPE_WCHAR) + " *)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
-		case else
-			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-		end select
+		end if
 	else
 		hAddrOfSymbol( sym, expr )
 		'' Name of the array that's being accessed, or the function in @func, etc

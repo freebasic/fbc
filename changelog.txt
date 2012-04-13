@@ -125,6 +125,7 @@ Version 0.24.0:
 - Buffer overflow in wbin()
 - C backend: Pointer fields pointing to the parent UDT itself were always emitted as having a single PTR only, even if it was a PTR PTR etc.
 - C backend: Taking address of module-level labels was broken (used by module-level error handling code)
+- C backend: Wstring literals outside variable initializers were emitted assuming sizeof(wstring) = 2, causing buffer overflows on Linux (where sizeof(wstring) = 4)
 
 
 Version 0.23.0:
