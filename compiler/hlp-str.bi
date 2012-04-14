@@ -83,10 +83,7 @@ declare function hEscapeW _
 		byval text as wstring ptr _
 	) as zstring ptr
 
-declare function hEscapeUCN _
-	( _
-		byval text as wstring ptr _
-	) as zstring ptr
+declare function hEscapeToHexW( byval text as wstring ptr ) as string
 
 declare function hUnescape _
 	( _

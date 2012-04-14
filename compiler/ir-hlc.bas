@@ -1490,7 +1490,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 	if( symbGetIsLiteral( sym ) ) then
 		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
 			expr += "L"""
-			expr += *hEscapeUCN( symbGetVarLitTextW( sym ) )
+			expr += hEscapeToHexW( symbGetVarLitTextW( sym ) )
 			expr += """"
 		else
 			expr += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
@@ -2371,7 +2371,7 @@ private sub _emitVarIniWstr _
 	)
 	'' L"..."
 	ctx.varini += "L"
-	hEmitVarIniStr( totlgt, hEscapeUCN( litstr ), litlgt )
+	hEmitVarIniStr( totlgt, hEscapeToHexW( litstr ), litlgt )
 end sub
 
 private sub _emitVarIniPad( byval bytes as integer )
