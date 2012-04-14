@@ -772,21 +772,22 @@ private sub hEmitTypedefs( )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
 	hWriteLine( "typedef char fixstr", TRUE )
 
-    '' Target-dependant wchar type
-    dim as string wchartype
-
-    select case as const env.target.wchar.type
-    case FB_DATATYPE_UBYTE      '' DOS
-        wchartype = "ubyte"
-    case FB_DATATYPE_USHORT     '' Windows, cygwin
-        wchartype = "ushort"
-    case FB_DATATYPE_UINT       '' Linux & co
-        wchartype = "uinteger"
-    case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    hWriteLine( "typedef " + wchartype + " wchar", TRUE )
+	'' Target-dependant wchar type
+	dim as string wchartype
+	select case as const( env.target.wchar.type )
+	case FB_DATATYPE_UBYTE      '' DOS
+		wchartype = "ubyte"
+	case FB_DATATYPE_USHORT     '' Windows, cygwin
+		wchartype = "ushort"
+	case else                   '' Linux & co
+		'' Normally our wstring type is unsigned, but gcc's wchar_t
+		'' is signed, and we must the exact same or else fixed-length
+		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
+		'' (If this is a problem, then VarIniWstr must be changed to
+		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
+		wchartype = "integer"
+	end select
+	hWriteLine( "typedef " + wchartype + " wchar", TRUE )
 
 end sub
 
@@ -2358,6 +2359,7 @@ private sub _emitVarIniStr _
 		byval litstr as zstring ptr, _
 		byval litlgt as integer _
 	)
+	'' "..."
 	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
 end sub
 
@@ -2367,6 +2369,7 @@ private sub _emitVarIniWstr _
 		byval litstr as wstring ptr, _
 		byval litlgt as integer _
 	)
+	'' L"..."
 	ctx.varini += "L"
 	hEmitVarIniStr( totlgt, hEscapeUCN( litstr ), litlgt )
 end sub
