@@ -29,7 +29,6 @@ type IRHLCCTX
 	lblcnt				as integer
 	tmpcnt				as integer
 	vregTB				as TFLIST
-	forwardlist			as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
@@ -109,7 +108,6 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 
 private sub _init(byval backend as FB_BACKEND)
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
@@ -126,7 +124,6 @@ end sub
 
 private sub _end()
 	listEnd( @ctx.callargs )
-	flistEnd( @ctx.forwardlist )
 	flistEnd( @ctx.vregTB )
 end sub
 
@@ -606,7 +603,6 @@ private sub hEmitStruct _
             if( symbGetIsAccessed( s ) = FALSE ) then
                 symbSetIsAccessed( s )
                 hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ), TRUE )
-                *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
             end if
 
             return
@@ -736,23 +732,6 @@ private sub hEmitDataStmt _
  		hEmitVariable( s )
 		s = s->var_.data.prev
 	loop
-
-end sub
-
-'':::::
-private sub hEmitForwardDecls( )
-
-	if( ctx.forwardlist.lastitem = NULL ) then
-		return
-	end if
-
-	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
-	do while( s <> NULL )
-		hEmitUDT( s, FALSE )
-		s = flistGetNext( s )
-	loop
-
-	flistReset( @ctx.forwardlist )
 
 end sub
 
@@ -992,8 +971,6 @@ private sub _emitEnd _
 
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
-
-	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
