@@ -215,6 +215,33 @@ function symbCheckBitField _
 
 end function
 
+private function symbAddBitField _
+	( _
+		byval bitpos as integer, _
+		byval bits as integer, _
+		byval dtype as integer, _
+		byval lgt as integer _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr sym = any
+
+	'' table must be the global one, if the UDT is been defined
+	'' at main(), it will be deleted before some private function
+	'' accessing the bitfield
+
+	sym = symbNewSymbol( FB_SYMBOPT_NONE, NULL, NULL, NULL, _
+	                     FB_SYMBCLASS_BITFIELD, NULL, NULL, dtype, NULL )
+	if( sym = NULL ) then
+		return NULL
+	end if
+
+	sym->bitfld.bitpos = bitpos
+	sym->bitfld.bits = bits
+	sym->lgt = lgt
+
+	function = sym
+end function
+
 '':::::
 function symbAddField _
 	( _
