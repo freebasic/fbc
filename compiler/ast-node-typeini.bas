@@ -399,7 +399,8 @@ private function hFlushTree _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
-	dim as FBSYMBOL ptr last_bitfield = NULL
+	dim as FBSYMBOL ptr bitfield = any
+	dim as integer is_bitfield = any
 
 	function = NULL
 
@@ -411,72 +412,48 @@ private function hFlushTree _
 
 		select case as const n->class
 		case AST_NODECLASS_TYPEINI_ASSIGN
+			is_bitfield = FALSE
 
 			if( symbIsParamInstance( basesym ) ) then
-
-				lside = astBuildInstPtrAtOffset( basesym, _
-									 n->sym, _
-									 n->typeini.ofs )
-
+				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
-
-				'' var?
-				if( do_deref = FALSE ) then
-					lside = astNewVAR( basesym, _
-									   n->typeini.ofs, _
-									   astGetFullType( n ), _
-									   n->subtype )
-
-				'' deref..
+				if( do_deref ) then
+					lside = astNewDEREF( astNewVAR( basesym, 0, symbGetFullType( basesym ), symbGetSubtype( basesym ) ), _
+					                     astGetFullType( n ), n->subtype, n->typeini.ofs )
 				else
-					lside = astNewDEREF( astNewVAR( basesym, _
-													0, _
-													symbGetFullType( basesym ), _
-													symbGetSubtype( basesym ) ), _
-										 astGetFullType( n ), _
-										 n->subtype, _
-										 n->typeini.ofs )
+					lside = astNewVAR( basesym, n->typeini.ofs, astGetFullType( n ), n->subtype )
 				end if
 
+				'' Field?
 				if( n->sym <> NULL ) then
-					'' field?
 					if( symbIsField( n->sym ) ) then
+						'' If it's a bitfield, clear the whole field containing this bitfield,
+						'' otherwise the bitfield assignment(s) would leave unused bits
+						'' uninitialized.
 
-						lside = astNewFIELD( lside, _
-											 n->sym, _
-											 astGetFullType( n ), _
-											 n->subtype )
-					end if
-				end if
-			end if
+						'' Bitfield?
+						if( astGetDataType( lside ) = FB_DATATYPE_BITFIELD ) then
+							is_bitfield = TRUE
 
-			dim as integer is_bitfield = FALSE
+							bitfield = astGetSubType( lside )
+							assert( symbGetClass( bitfield ) = FB_SYMBCLASS_BITFIELD )
+							assert( typeGetClass( symbGetType( bitfield ) ) = FB_DATACLASS_INTEGER )
 
-			'' not a ctor?
-			if( symbIsParamInstance( basesym ) = FALSE ) then
-				if( lside->class = AST_NODECLASS_FIELD ) then
-					if( astGetDataType( astGetLeft( lside ) ) = FB_DATATYPE_BITFIELD ) then
-						is_bitfield = TRUE
-
-						'' new bitfield? 0 it before any bits are set
-						if( last_bitfield <> n->sym->parent ) then
-
-							lside = astNewASSIGN( lside, _
-												  astNewCONSTi( 0, astGetDataType( lside ) ), _
-												  AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-
-							last_bitfield = n->sym->parent
-
+							'' Beginning of a field containing one or more bitfields?
+							if( bitfield->bitfld.bitpos = 0 ) then
+								flush_tree = astNewLINK( flush_tree, _
+									astNewMEM( AST_OP_MEMCLEAR, _
+										astCloneTree( lside ), _
+										astNewCONSTi( typeGetSize( symbGetType( bitfield ) ) ) ) )
+							end if
 						end if
+
+						lside = astNewFIELD( lside, n->sym, astGetFullType( n ), n->subtype )
 					end if
 				end if
 			end if
 
-
-			dim as ASTNODE ptr a = astNewASSIGN( lside, _
-												 n->l, _
-												 AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-
+			dim as ASTNODE ptr a = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			flush_tree = astNewLINK( flush_tree, a )
 
 			'' bitfields have to be updated (but i dunno if this is the best place)
