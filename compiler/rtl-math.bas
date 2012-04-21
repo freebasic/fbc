@@ -8,7 +8,7 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
+declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 
 	dim shared as FB_RTL_PROCDEF funcdata( 0 to ... ) = _
 	{ _
@@ -103,7 +103,7 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"randomize", @"fb_Randomize", _
 			FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			@hRndCallback, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
 	 			( _
@@ -118,7 +118,7 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		( _
 			@"rnd", @"fb_Rnd", _
 			FB_DATATYPE_DOUBLE, FB_USE_FUNCMODE_FBCALL, _
-			@hRndREAL_cb, FB_RTL_OPT_NONE, _
+			@hRndCallback, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 	 			( _
@@ -1195,7 +1195,7 @@ function rtlMathFTOI _
 
 end function
 
-private function hRndREAL_cb( byval sym as FBSYMBOL ptr ) as integer
+private function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	static as integer added = FALSE
 
 	if( added = FALSE ) then
