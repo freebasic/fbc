@@ -48,10 +48,7 @@ declare function hUpdScopeBreakList	_
 		byval n as ASTNODE ptr _
 	) as integer
 
-declare sub	hCallCtors _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
+declare sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 
 declare sub hCallDtors _
 	( _
@@ -266,31 +263,7 @@ private sub hProcFlushAll _
 
 end sub
 
-'':::::
-#macro hCheckCtor( n )
-	'' ctor?
-	if( symbIsConstructor( ast.proc.curr->sym ) ) then
-		'' not initialized yet?
-		if( symbGetIsCtorInited( ast.proc.curr->sym ) = FALSE ) then
-			'' does the node being added result in executable code?
-			if( astGetClassIsCode( n->class ) ) then
-				'' must be set first, because recursion
-				symbSetIsCtorInited( ast.proc.curr->sym )
-				'' call ctors
-				hCallCtors( ast.proc.curr->sym )
-			end if
-		end if
-	end if
-#endmacro
-
-''::::
-function astAdd _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	static as integer reclevel = 0
-
+function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -304,41 +277,36 @@ function astAdd _
 		end if
 	end if
 
-	'' typeIniUpdate() and hCallCtors() will recurse in this function
-	if( reclevel = 0 ) then
-		reclevel += 1
+	'' Turn TYPEINI trees into real assignments
+	'' Note: This can allocate temporary variables, so it must be done
+	'' while in the proper scope context!
+	n = astTypeIniUpdate( n )
 
-		''
-		hCheckCtor( n )
+	'' Tree optimizations, including FIELD removal and bitfield updating
+	n = astOptimizeTree( n )
 
-		'' do updates and optimizations now as they can
-		'' allocate new vars and create/delete nodes
-		n = astTypeIniUpdate( n )
-		n = astOptimizeTree( n )
-		n = astOptAssignment( n )
-		n = astUpdStrConcat( n )
+	'' Assignment optimizations
+	n = astOptAssignment( n )
 
-		'' del temp instances
-		if( ast.flushdtorlist ) then
-			n = astDTorListFlush( n, TRUE )
-		end if
+	'' Update string '+' BOPs to 'fb_StrConcat' CALLs
+	n = astUpdStrConcat( n )
 
-		reclevel -= 1
+	'' Destroy temporaries if needed
+	if( ast.flushdtorlist ) then
+		n = astDtorListFlush( n, TRUE )
 	end if
 
-	''
+	'' Link the tree into the procedure's statement list
 	if( ast.proc.curr->r <> NULL ) then
 		ast.proc.curr->r->next = n
 	else
 		ast.proc.curr->l = n
 	end if
-
 	n->prev = ast.proc.curr->r
 	n->next = NULL
 	ast.proc.curr->r = n
 
 	function = n
-
 end function
 
 ''::::
@@ -615,12 +583,19 @@ function astProcEnd _
 	n->block.endstmt = parser.stmt.cnt
 
 	if( errGetCount( ) = 0 ) then
-		'' if the function body is empty, no ctor initialization will be done
-		hCheckCtor( n )
+		'' Constructor?
+		if( symbIsConstructor( sym ) ) then
+			'' No constructor initialization code yet? (constructor chaining)
+			if( symbGetIsCtorInited( sym ) = FALSE ) then
+				symbSetIsCtorInited( sym )
+				'' Add constructor initialization code
+				hCallCtors( n, sym )
+			end if
+		end if
 
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 
-		'' dtor?
+		'' Destructor?
 		if( symbIsDestructor( sym ) ) then
 			'' call dtors
 			hCallDtors( sym )
@@ -857,16 +832,15 @@ private function hModLevelIsEmpty _
 
 end function
 
-'':::::
-private sub hCallCtorList _
+private function hCallCtorList _
 	( _
 		byval is_ctor as integer, _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr cnt = any, label = any, iter = any, subtype = any
-	dim as ASTNODE ptr fldexpr = any
+	dim as ASTNODE ptr fldexpr = any, tree = any
 	dim as integer dtype = any, elements = any
 
 	'' instance? (this function is also used by the static dtor wrapper)
@@ -880,130 +854,104 @@ private sub hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
+	label = symbAddLabel( NULL )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
+	'' Instance?
 	if( fld <> NULL ) then
-    	if( is_ctor ) then
-    		'' iter = @this.field(0)
-    		fldexpr = astBuildInstPtr( this_, fld )
-    	else
-    		'' iter = @this.field(elements-1)
-    		fldexpr = astBuildInstPtr( this_, _
-    							   	   fld, _
-    							   	   astNewCONSTi( elements - 1, _
-    							   				 	 FB_DATATYPE_INTEGER ) )
-    	end if
+		if( is_ctor ) then
+			'' iter = @this.field(0)
+			fldexpr = astBuildInstPtr( this_, fld )
+		else
+			'' iter = @this.field(elements-1)
+			fldexpr = astBuildInstPtr( this_, fld, astNewCONSTi( elements - 1 ) )
+		end if
+	else
+		if( is_ctor ) then
+			'' iter = @symbol(0)
+			fldexpr = astBuildVarField( this_, NULL, 0 )
+		else
+			'' iter = @symbol(0) + (elements - 1)
+			fldexpr = astBuildVarField( this_, NULL, (elements - 1) * symbGetLen( subtype ) )
+		end if
+	end if
 
-    '' not an instance..
-    else
-    	if( is_ctor ) then
-    		'' iter = @symbol(0)
-    		fldexpr = astBuildVarField( this_, NULL, 0 )
-    	else
-    		'' iter = @symbol(0) + (elements - 1)
-    		fldexpr = astBuildVarField( this_, _
-    									NULL, _
-    									(elements - 1) * symbGetLen( subtype ) )
-    	end if
-    end if
-
-    astAdd( astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
+	tree = astBuildVarAssign( iter, astNewADDROF( fldexpr ) )
 
 	'' for cnt = 0 to symbGetArrayElements( fld )-1
-	astBuildForBegin( cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	if( is_ctor ) then
 		'' ctor( *iter )
-    	astAdd( astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+		tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
 	else
 		'' dtor( *iter )
-    	astAdd( astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
-    end if
+		tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+	end if
 
 	'' iter += 1
-    astAdd( astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, iif( is_ctor, 1, -1 ) ) )
 
-    '' next
-    astBuildForEnd( cnt, label, 1, elements )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( elements ) )
 
-end sub
+	function = tree
+end function
 
-'':::::
-private sub hCallFieldCtor _
+private function hCallFieldCtor _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr subtype = any
 
-	subtype = symbGetSubtype( fld )
-
 	select case symbGetType( fld )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		subtype = symbGetSubtype( fld )
 
-       	'' has a default ctor too?
-       	if( symbGetCompDefCtor( subtype ) <> NULL ) then
-
+		'' has a default ctor too?
+		if( symbGetCompDefCtor( subtype ) <> NULL ) then
 			'' !!!FIXME!!! assuming only static arrays will be allowed in fields
 
-      		'' not an array?
-       		if( (symbGetArrayDimensions( fld ) = 0) or _
-       			(symbGetArrayElements( fld ) = 1) ) then
+			'' not an array?
+			if( (symbGetArrayDimensions( fld ) = 0) or _
+			    (symbGetArrayElements( fld ) = 1) ) then
 
-       			'' ctor( this.field )
-       			astAdd( astBuildCtorCall( subtype, _
-     									  astBuildInstPtr( this_, fld ) ) )
+				'' ctor( this.field )
+				function = astBuildCtorCall( subtype, astBuildInstPtr( this_, fld ) )
+			'' array..
+			else
+				function = hCallCtorList( TRUE, this_, fld )
+			end if
 
-       		'' array..
-       		else
-       			hCallCtorList( TRUE, this_, fld )
-       		end if
-
-       		exit sub
-       	end if
+			exit function
+		end if
 	end select
 
-   	'' do not clear?
-   	if( symbGetDontInit( fld ) ) then
-   		exit sub
-   	end if
+	'' do not clear?
+	if( symbGetDontInit( fld ) ) then
+		exit function
+	end if
 
 	'' bitfield?
 	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
-	    astAdd( astNewASSIGN( astBuildInstPtr( this_, fld ), _
-	    					  astNewCONSTi( 0, FB_DATATYPE_UINT ) ) )
+		function = astNewASSIGN( astBuildInstPtr( this_, fld ), _
+		                         astNewCONSTi( 0, FB_DATATYPE_UINT ) )
 	else
-		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-    	  	  		   	   astBuildInstPtr( this_, fld ), _
-    	  	  		   	   astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) ) )
+		function = astNewMEM( AST_OP_MEMCLEAR, _
+		                      astBuildInstPtr( this_, fld ), _
+		                      astNewCONSTi( symbGetLen( fld ) * symbGetArrayElements( fld ) ) )
 	end if
+end function
 
-end sub
-
-'':::::
-private sub hFlushFieldInitTree _
-	( _
-		byval this_ as FBSYMBOL ptr, _
-		byval fld as FBSYMBOL ptr _
-	)
-
-	dim as ASTNODE ptr initree = any
-
-	initree = astTypeIniClone( symbGetTypeIniTree( fld ) )
-
-	astAdd( astTypeIniFlush( initree, this_, AST_INIOPT_ISINI ) )
-
-end sub
-
-'':::::
 private function hClearUnionFields _
 	( _
 		byval this_ as FBSYMBOL ptr, _
-		byval base_fld as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+		byval base_fld as FBSYMBOL ptr, _
+		byval pfinalfield as FBSYMBOL ptr ptr _
+	) as ASTNODE ptr
 
 	dim as FBSYMBOL ptr fld = any
 	dim as integer bytes = any, lgt = any, base_ofs = any
@@ -1026,180 +974,177 @@ private function hClearUnionFields _
 		end if
 	loop while( symbGetIsUnionField( fld ) )
 
-    '' clear all them at once
-	astAdd( astNewMEM( AST_OP_MEMCLEAR, _
-    	  	  		   astBuildInstPtr( this_, base_fld ), _
-    	  	  		   astNewCONSTi( bytes ) ) )
+	*pfinalfield = fld
 
-	function = fld
-
+	'' clear all them at once
+	function = astNewMEM( AST_OP_MEMCLEAR, _
+	                      astBuildInstPtr( this_, base_fld ), _
+	                      astNewCONSTi( bytes ) )
 end function
 
-'':::::
-private sub hCallFieldCtors _
+private function hCallFieldCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr fld = any, this_ = any, subtype = any
+	dim as FBSYMBOL ptr fld = any, this_ = any
+	dim as ASTNODE ptr tree = NULL
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 
-    '' for each field..
-    fld = symbGetCompSymbTb( parent ).head
-    do while( fld <> NULL )
+	'' for each field..
+	fld = symbGetCompSymbTb( parent ).head
+	do while( fld <> NULL )
 
 		if( symbIsField( fld ) ) then
-			
 			'' super class 'base' field? skip.. ctor must be called from derived class' ctor
-			If( fld <> parent->udt.base ) Then
-			
+			if( fld <> parent->udt.base ) then
 				'' part of an union?
 				if( symbGetIsUnionField( fld ) ) then
-					fld = hClearUnionFields( this_, fld )
-	
+					tree = astNewLINK( tree, hClearUnionFields( this_, fld, @fld ) )
 					'' skip next
 					continue do
-	
 				else
 					'' not initialized?
 					if( symbGetTypeIniTree( fld ) = NULL ) then
-						hCallFieldCtor( this_, fld )
-	
+						tree = astNewLINK( tree, hCallFieldCtor( this_, fld ) )
 					'' flush the tree..
 					else
-						hFlushFieldInitTree( this_, fld )
+						tree = astNewLINK( tree, _
+							astTypeIniFlush( astTypeIniClone( symbGetTypeIniTree( fld ) ), _
+							                 this_, AST_INIOPT_ISINI ) )
 					end if
-				end If
-			
-			End If
+				end if
+			end if
 		end if
 
 		fld = fld->next
 	loop
 
-end sub
+	function = tree
+end function
 
-'':::::
-private sub hCallBaseCtors _
+private function hCallBaseCtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _		
-	)
-	
-	if( parent->udt.base = NULL ) then
-		exit sub
-	End If
-	
-	var ctor = symbGetCompDefCtor( symbGetSubtype( parent->udt.base ) )
-	
-	if( ctor = NULL ) then
-		exit sub
-	End If
-	
-	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-	
-	hCallFieldCtor( this_, parent->udt.base )
-
-End Sub
-
-'':::::
-private sub hInitVtable _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _		
-	)
-	
-	if( symbGetHasRTTI( parent ) = FALSE ) then
-		exit sub
-	End If
-	
-	if( parent->udt.ext = NULL ) then
-		exit sub
-	End If
-	
-	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-	
-    '' this.pvt = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) ) 
-    astAdd( _ 
-    	astNewASSIGN( _ 
-    		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
-    		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-    				astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) ) )
-
-End Sub
-
-'':::::
-private sub hCallCtors _
-	( _
 		byval proc as FBSYMBOL ptr _
-	)
+	) as ASTNODE ptr
 
+	if( parent->udt.base = NULL ) then
+		exit function
+	end if
+
+	var ctor = symbGetCompDefCtor( symbGetSubtype( parent->udt.base ) )
+	if( ctor = NULL ) then
+		exit function
+	end if
+
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+
+	function = hCallFieldCtor( this_, parent->udt.base )
+end function
+
+private function hInitVtable _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	if( symbGetHasRTTI( parent ) = FALSE ) then
+		exit function
+	end if
+
+	if( parent->udt.ext = NULL ) then
+		exit function
+	end if
+
+	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+
+	'' this.pvt = cast( any ptr, (cast(byte ptr, @vtable) + sizeof(void *) * 2) ) 
+	function = astNewASSIGN( _ 
+		astBuildInstPtr( this_, symbGetUDTFirstElm( symb.rtti.fb_object ) ), _
+		astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+			astNewADDROF( astNewVAR( parent->udt.ext->vtable, FB_POINTERSIZE*2 ) ) ) )
+end function
+
+private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
+	dim as ASTNODE ptr i = any, tree = any
 	dim as FBSYMBOL ptr parent = any
 
-	parent = symbGetNamespace( proc )
+	'' Find the first statement that is executable code,
+	'' and insert the constructor calls above it.
+	i = n->l
+	while( i )
+		'' Skip over non-executable nodes
+		select case( i->class )
+		case AST_NODECLASS_NOP, AST_NODECLASS_LABEL, _
+		     AST_NODECLASS_DECL, AST_NODECLASS_LIT, _
+		     AST_NODECLASS_DATASTMT, AST_NODECLASS_DBG _
+
+		case else
+			i = i->prev
+			exit while
+		end select
+
+		i = i->next
+	wend
+
+	parent = symbGetNamespace( sym )
 
 	'' 1st) base ctors
-    hCallBaseCtors( parent, proc ) 
+	tree = hCallBaseCtors( parent, sym )
 
 	'' 2nd) field ctors
-    hCallFieldCtors( parent, proc )
-    
-    '' 3rd) setup de vtable ptr
-    hInitVtable( parent, proc )
+	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
 
+	'' 3rd) setup the vtable ptr
+	tree = astNewLINK( tree, hInitVtable( parent, sym ) )
+
+	if( i ) then
+		astAddAfter( tree, i )
+	else
+		astAdd( tree )
+	end if
 end sub
 
-'':::::
 private sub hCallFieldDtor _
 	( _
 		byval this_ as FBSYMBOL ptr, _
 		byval fld as FBSYMBOL ptr _
-	)		
+	)
 
 	select case symbGetType( fld )
 	case FB_DATATYPE_STRING
-
 		var fldexpr = astBuildInstPtr( this_, fld )
 
-    	'' not an array?
-    	if( (symbGetArrayDimensions( fld ) = 0) or _
-    		(symbGetArrayElements( fld ) = 1) ) then
-
-    		astAdd( rtlStrDelete( fldexpr ) )
-
-		'' array..
+		'' not an array?
+		if( (symbGetArrayDimensions( fld ) = 0) or _
+		    (symbGetArrayElements( fld ) = 1) ) then
+			astAdd( rtlStrDelete( fldexpr ) )
 		else
-	    	astAdd( rtlArrayStrErase( fldexpr ) )
+			astAdd( rtlArrayStrErase( fldexpr ) )
 		end if
 
 	case FB_DATATYPE_STRUCT
-    	var subtype = symbGetSubtype( fld )
+		var subtype = symbGetSubtype( fld )
 
-    	'' has a dtor too?
-    	if( symbGetHasDtor( subtype ) ) then
+		'' has a dtor too?
+		if( symbGetHasDtor( subtype ) ) then
+			'' not an array?
+			if( (symbGetArrayDimensions( fld ) = 0) or _
+			    (symbGetArrayElements( fld ) = 1) ) then
 
-    		'' not an array?
-    		if( (symbGetArrayDimensions( fld ) = 0) or _
-    			(symbGetArrayElements( fld ) = 1) ) then
-
-    			'' dtor( this.field )
-    			astAdd( astBuildDtorCall( subtype, _
-    									  astBuildInstPtr( this_, fld ) ) )
-
-    		'' array..
-    		else
-    			hCallCtorList( FALSE, this_, fld )
-    		end if
-
-    	end if
+				'' dtor( this.field )
+				astAdd( astBuildDtorCall( subtype, astBuildInstPtr( this_, fld ) ) )
+			else
+				astAdd( hCallCtorList( FALSE, this_, fld ) )
+			end if
+		end if
 
 	end Select
+end sub
 
-End Sub
-
-'':::::
 private sub hCallFieldDtors _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -1213,17 +1158,13 @@ private sub hCallFieldDtors _
     '' for each field (in inverse order)..
     fld = symbGetCompSymbTb( parent ).tail
     do while( fld <> NULL )
-
 		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
 
 		if( symbIsField( fld ) ) then
-
 			'' super class 'base' field? skip.. dtor must be called from derived class' dtor
-			If( fld <> parent->udt.base ) Then
-
+			if( fld <> parent->udt.base ) Then
 				hCallFieldDtor( this_, fld )
-				
-			End if
+			end if
 		end if
 
 		fld = fld->prev
@@ -1281,29 +1222,22 @@ private sub hCallStaticCtor _
 
 	'' ctor?
 	if( initree <> NULL ) then
-        astAdd( astTypeIniFlush( initree, _
-        						 sym, _
-        						 AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
+		astAdd( astTypeIniFlush( initree, sym, AST_INIOPT_ISINI or AST_INIOPT_RELINK ) )
 		exit sub
 	end if
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
-       	'' call ERASE..
-       	astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ) ) )
-
-    else
-    	'' not an array?
-    	if( (symbGetArrayDimensions( sym ) = 0) or _
-    		(symbGetArrayElements( sym ) = 1) ) then
-
-        	'' dtor( var )
-        	astAdd( astBuildDtorCall( symbGetSubtype( sym ), _
-            				  	  	  astBuildVarField( sym, NULL, 0 ) ) )
-
-		'' array..
-    	else
-    		hCallCtorList( FALSE, sym, NULL )
+		'' call ERASE..
+		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ) ) )
+	else
+		'' not an array?
+		if( (symbGetArrayDimensions( sym ) = 0) or _
+		    (symbGetArrayElements( sym ) = 1) ) then
+			'' dtor( var )
+			astAdd( astBuildDtorCall( symbGetSubtype( sym ), astBuildVarField( sym, NULL, 0 ) ) )
+		else
+			astAdd( hCallCtorList( FALSE, sym, NULL ) )
 		end if
 	end if
 

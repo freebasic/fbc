@@ -362,29 +362,23 @@ private function hCallCtorList _
     	label = symbAddLabel( NULL )
     	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
 
-		flush_tree = astNewLINK( flush_tree, _
-								 astBuildVarAssign( iter, _
-								 					astNewADDROF( fldexpr ) ) )
+		flush_tree = astNewLINK( flush_tree, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
 		'' for cnt = 0 to elements-1
-		flush_tree = astBuildForBeginEx( flush_tree, cnt, label, 0 )
+		flush_tree = astBuildForBegin( flush_tree, cnt, label, 0 )
 
 		'' ctor( *iter )
-		flush_tree = astNewLINK( flush_tree, _
-								 astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 		'' iter += 1
-    	flush_tree = astNewLINK( flush_tree, _
-    							 astBuildVarInc( iter, 1 ) )
+		flush_tree = astNewLINK( flush_tree, astBuildVarInc( iter, 1 ) )
 
-    	'' next
-    	flush_tree = astBuildForEndEx( flush_tree, cnt, label, 1, elements )
-
-    else
-    	'' ctor( this )
-    	flush_tree = astNewLINK( flush_tree, _
-    							 astBuildCtorCall( subtype, fldexpr ) )
-    end if
+		'' next
+		flush_tree = astBuildForEnd( flush_tree, cnt, label, 1, astNewCONSTi( elements ) )
+	else
+		'' ctor( this )
+		flush_tree = astNewLINK( flush_tree, astBuildCtorCall( subtype, fldexpr ) )
+	end if
 
 	function = flush_tree
 
@@ -943,73 +937,51 @@ function astTypeIniCheckScope _
 
 end function
 
-'':::::
-private sub hWalk _
+private function hWalk _
 	( _
-		byval node as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
 		byval parent as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr sym = any
-
-	if( node->class = AST_NODECLASS_TYPEINI ) then
-		sym = symbAddTempVar( astGetFullType( node ), _
-							  node->subtype, _
-							  FALSE, _
-							  FALSE )
-
-		expr = astNewVAR( sym, 0, astGetFullType( node ), node->subtype )
-		if( parent->l = node ) then
-			parent->l = expr
-		else
-			parent->r = expr
-		end if
-
-		astAdd( astTypeIniFlush( node, _
-								 sym, _
-								 AST_INIOPT_NONE ) )
-    	exit sub
-    end if
-
-	'' walk
-	expr = node->l
-	if( expr <> NULL ) then
-		hWalk( expr, node )
-	end if
-
-	expr = node->r
-	if( expr <> NULL ) then
-		hWalk( expr, node )
-	end if
-
-end sub
-
-'':::::
-function astTypeIniUpdate _
-	( _
-		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr sym = any
 
-	function = tree
+	if( n = NULL ) then
+		return NULL
+	end if
 
-    if( ast.typeinicnt <= 0 ) then
-    	exit function
-    end if
+	if( n->class = AST_NODECLASS_TYPEINI ) then
+		'' Create a temporary variable which is initialized by the
+		'' astTypeIniFlush() below.
+		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE, FALSE )
+
+		'' Update the parent node in the original tree to access the
+		'' temporary variable, instead of the TYPEINI. (it could be an
+		'' ASSIGN, ADDROF, ARG, etc...)
+		if( parent ) then
+			expr = astNewVAR( sym, 0, astGetFullType( n ), n->subtype )
+			if( parent->l = n ) then
+				parent->l = expr
+			else
+				parent->r = expr
+			end if
+		end if
+
+		return astTypeIniFlush( n, sym, AST_INIOPT_NONE )
+	end if
 
 	'' walk
-	expr = tree->l
-	if( expr <> NULL ) then
-		hWalk( expr, tree )
+	return astNewLINK( hWalk( n->l, n ), hWalk( n->r, n ) )
+end function
+
+function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
+	if( ast.typeinicnt <= 0 ) then
+		return tree
 	end if
 
-	expr = tree->r
-	if( expr <> NULL ) then
-		hWalk( expr, tree )
-	end if
-
+	'' Walk to expand any TYPEINIs. Note that the original tree will be
+	'' updated too, and both are needed.
+	return astNewLINK( hWalk( tree, NULL ), tree )
 end function
 
 '':::::

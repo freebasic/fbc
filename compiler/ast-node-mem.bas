@@ -74,18 +74,16 @@ private function hCallCtorList _
 	tree = astBuildVarAssign( iter, ptr_expr )
 
 	'' for cnt = 0 to elements-1
-	tree = astBuildForBeginEx( tree, cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	'' ctor( *iter )
-	tree = astNewLINK( tree, _
-					   astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
 
 	'' iter += 1
-    tree = astNewLINK( tree, _
-    				   astBuildVarInc( iter, 1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
-    '' next
-    tree = astBuildForEndEx( tree, cnt, label, 1, elmts_expr )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, elmts_expr )
 
 	function = tree
 
@@ -316,22 +314,16 @@ private function hCallDtorList _
 	tree = astNewLINK( tree, astBuildVarAssign( iter, ptr_expr ) )
 
 	'' for cnt = 0 to elmts-1
-	tree = astBuildForBeginEx( tree, cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
 	'' iter -= 1
-    tree = astNewLINK( tree, _
-    				   astBuildVarInc( iter, -1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
 
 	'' dtor( *iter )
-	tree = astNewLINK( tree, _
-					   astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
+	tree = astNewLINK( tree, astBuildDtorCall( subtype, astBuildVarDeref( iter ) ) )
 
-    '' next
-    tree = astBuildForEndEx( tree, _
-    						 cnt, _
-    						 label, _
-    						 1, _
-    						 astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ) )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, astNewVAR( elmts, 0, FB_DATATYPE_INTEGER, NULL ) )
 
 	function = tree
 

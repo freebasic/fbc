@@ -22,7 +22,9 @@ enum AST_NODECLASS
 	AST_NODECLASS_CALLCTOR
 	AST_NODECLASS_STACK
 	AST_NODECLASS_MEM
-	AST_NODECLASS_COMP							'' used by IR only
+
+	'' Only used to classify comparison operators, there are no COMP nodes.
+	AST_NODECLASS_COMP
 
 	AST_NODECLASS_LINK
 	AST_NODECLASS_CONST
@@ -333,16 +335,6 @@ type AST_OPINFO
 	flags 			as AST_OPFLAGS
 	id				as const zstring ptr
 	selfop			as AST_OP						'' self version
-end type
-
-type AST_LOADCB as function _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-type AST_CLASSINFO
-	loadcb			as AST_LOADCB
-	iscode			as integer
 end type
 
 '' astTypeIniFlush flags
@@ -1045,7 +1037,7 @@ declare function astBuildCopyCtorCall _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astBuildForBeginEx _
+declare function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
@@ -1053,14 +1045,7 @@ declare function astBuildForBeginEx _
 		byval inivalue as integer _
 	) as ASTNODE ptr
 
-declare sub astBuildForBegin _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
-	)
-
-declare function astBuildForEndEx overload _
+declare function astBuildForEnd _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
@@ -1068,32 +1053,6 @@ declare function astBuildForEndEx overload _
 		byval stepvalue as integer, _
 		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
-
-
-declare function astBuildForEndEx _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as integer _
-	) as ASTNODE ptr
-
-declare sub astBuildForEnd overload _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as ASTNODE ptr _
-	)
-
-declare sub astBuildForEnd _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as integer _
-	)
 
 declare function astBuildInstPtr _
 	( _
@@ -1367,10 +1326,6 @@ declare function hTruncateInt _
 
 #define astGetOpId( op ) ast_opTB(op).id
 
-#define astGetClassLoadCB( cl ) ast_classTB(cl).loadcb
-
-#define astGetClassIsCode( cl ) ast_classTB(cl).iscode
-
 #define astGetFirstDataStmtSymbol( ) ast.data.firstsym
 
 #define astGetLastDataStmtSymbol( ) ast.data.lastsym
@@ -1378,7 +1333,6 @@ declare function hTruncateInt _
 #define astDTorListIsEmpty( ) (listGetHead( @ast.dtorlist ) = NULL)
 
 #define astGetCastDoConv( n ) n->cast.doconv
-
 
 #define astIsUOP( n, uop ) ( ((n)->class = AST_NODECLASS_UOP) andalso ((n)->op.op = (uop)) )
 
@@ -1394,8 +1348,6 @@ extern ast_bitmaskTB( 0 to 32 ) as uinteger
 extern ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as ulongint
 
 extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
-
-extern ast_classTB( 0 to AST_CLASSES-1 ) as AST_CLASSINFO
 
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 

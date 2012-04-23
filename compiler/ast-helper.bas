@@ -287,8 +287,7 @@ end function
 '' loops
 ''
 
-'':::::
-function astBuildForBeginEx _
+function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
@@ -297,99 +296,38 @@ function astBuildForBeginEx _
 	) as ASTNODE ptr
 
 	'' cnt = 0
-    tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
+	tree = astNewLINK( tree, astBuildVarAssign( cnt, inivalue ) )
 
-    '' do
-    tree = astNewLINK( tree, astNewLABEL( label ) )
-
-    function = tree
-
-end function
-
-'':::::
-sub astBuildForBegin _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval inivalue as integer _
-	)
-
-    astAdd( astBuildForBeginEx( NULL, cnt, label, inivalue ) )
-
-end sub
-
-'':::::
-function astBuildForEndEx _
-	( _
-		byval tree as ASTNODE ptr, _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	'' next
-    tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
-
-    '' next
-    tree = astNewLINK( tree, astUpdComp2Branch( astNewBOP( AST_OP_EQ, _
-    									  				   astNewVAR( cnt, _
-            										 	   			  0, _
-            										 	   			  FB_DATATYPE_INTEGER ), _
-            							  				   endvalue ), _
-            				   					label, _
-            				   					FALSE ) )
+	'' do
+	tree = astNewLINK( tree, astNewLABEL( label ) )
 
 	function = tree
-
 end function
 
-'':::::
-function astBuildForEndEx _
+function astBuildForEnd _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval cnt as FBSYMBOL ptr, _
 		byval label as FBSYMBOL ptr, _
 		byval stepvalue as integer, _
-		byval endvalue as integer _
+		byval endvalue as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	function = astBuildForEndEx( tree, _
-								 cnt, _
-								 label, _
-								 stepvalue, _
-								 astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
+	'' counter += stepvalue
+	tree = astNewLINK( tree, astBuildVarInc( cnt, stepvalue ) )
 
+	'' if( counter = endvalue ) then
+	''     goto label
+	'' end if
+	tree = astNewLINK( tree, _
+		astUpdComp2Branch( _
+			astNewBOP( AST_OP_EQ, _
+				astNewVAR( cnt, 0, FB_DATATYPE_INTEGER ), _
+				endvalue ), _
+			label, FALSE ) )
+
+	function = tree
 end function
-
-'':::::
-sub astBuildForEnd _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as ASTNODE ptr _
-	)
-
-    astAdd( astBuildForEndEx( NULL, cnt, label, stepvalue, endvalue ) )
-
-end sub
-
-'':::::
-sub astBuildForEnd _
-	( _
-		byval cnt as FBSYMBOL ptr, _
-		byval label as FBSYMBOL ptr, _
-		byval stepvalue as integer, _
-		byval endvalue as integer _
-	)
-
-    astBuildForEnd( cnt, _
-    				label, _
-    				stepvalue, _
-    				astNewCONSTi( endvalue, FB_DATATYPE_INTEGER ) )
-
-end sub
 
 ''
 '' calls

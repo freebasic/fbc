@@ -292,7 +292,7 @@ private sub hAssignList _
     astAdd( astBuildVarAssign( src, astNewADDROF( srcexpr ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
-	astBuildForBegin( cnt, label, 0 )
+	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )
 
     '' *dst = *src
     astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
@@ -302,8 +302,8 @@ private sub hAssignList _
 	'' src += 1
     astAdd( astBuildVarInc( src, 1 ) )
 
-    '' next
-    astBuildForEnd( cnt, label, 1, symbGetArrayElements( fld ) )
+	'' next
+	astAdd( astBuildForEnd( NULL, cnt, label, 1, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
 
 end sub
 

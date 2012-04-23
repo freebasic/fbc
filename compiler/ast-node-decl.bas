@@ -26,27 +26,22 @@ private function hCtorList _
     					    FALSE, _
     					    FALSE )
 
-    '' fld = @sym(0)
-    tree = astNewLINK( tree, _
-    				   astBuildVarAssign( this_, _
-    						   			  astNewADDROF( astNewVAR( sym, _
-   											 		  		       0, _
-   											 		  			   symbGetFullType( sym ), _
-   											 		  			   subtype ) ) ) )
+	'' fld = @sym(0)
+	tree = astNewLINK( tree, _
+		astBuildVarAssign( this_, _
+			astNewADDROF( astNewVAR( sym, 0, symbGetFullType( sym ), subtype ) ) ) )
 
 	'' for cnt = 0 to symbGetArrayElements( sym )-1
-	tree = astBuildForBeginEx( tree, cnt, label, 0 )
+	tree = astBuildForBegin( tree, cnt, label, 0 )
 
-    '' sym.constructor( )
-	tree = astNewLINK( tree, _
-					   astBuildCtorCall( symbGetSubtype( sym ), _
-					   					  astBuildVarDeref( this_ ) ) )
+	'' sym.constructor( )
+	tree = astNewLINK( tree, astBuildCtorCall( symbGetSubtype( sym ), astBuildVarDeref( this_ ) ) )
 
 	'' this_ += 1
-    tree = astNewLINK( tree, astBuildVarInc( this_, 1 ) )
+	tree = astNewLINK( tree, astBuildVarInc( this_, 1 ) )
 
-    '' next
-    tree = astBuildForEndEx( tree, cnt, label, 1, symbGetArrayElements( sym ) )
+	'' next
+	tree = astBuildForEnd( tree, cnt, label, 1, astNewCONSTi( symbGetArrayElements( sym ) ) )
 
 	function = tree
 
