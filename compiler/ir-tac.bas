@@ -170,8 +170,6 @@ private sub _init(byval backend as FB_BACKEND)
 	for i as integer = 0 to EMIT_REGCLASSES-1
 		regTB(i) = emitGetRegClass( i )
 	next
-
-	irSetOption( IR_OPT_NESTEDFIELDS )
 end sub
 
 private sub _end()

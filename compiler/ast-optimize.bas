@@ -2396,6 +2396,9 @@ function astOptimizeTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	'' Remove nested FIELDs, update bitfield access/assignment
+	n = hOptFieldsCalc( n, NULL )
+
 	'' high-level IR? don't do anything..
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		return hOptConstIDX( n )
@@ -2408,10 +2411,6 @@ function astOptimizeTree _
 		n = hOptRemCasting( n )
 	end if
 	'/
-
-	if( irGetOption( IR_OPT_NESTEDFIELDS ) ) then
-		n = hOptFieldsCalc( n, NULL )
-	end if
 
 	n = hOptAssocADD( n )
 
