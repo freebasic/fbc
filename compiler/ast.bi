@@ -347,15 +347,15 @@ enum AST_INIOPT
 end enum
 
 
-declare sub astInit _
-	( _
-		_
-	)
-
-declare sub astEnd _
-	( _
-		_
-	)
+declare sub astInit( )
+declare sub astEnd( )
+declare sub astProcListInit( )
+declare sub astProcListEnd( )
+declare sub astCallInit( )
+declare sub astCallEnd( )
+declare sub astMiscInit( )
+declare sub astMiscEnd( )
+declare sub astDataStmtInit( )
 
 declare sub astDelNode _
 	( _
@@ -643,6 +643,17 @@ declare function astNewCALLCTOR _
 		byval procexpr as ASTNODE ptr, _
 		byval instptr as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare sub astCloneCALL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval c as ASTNODE ptr _
+	)
+
+declare sub astDelCALL _
+	( _
+		byval n as ASTNODE ptr _
+	)
 
 declare function astNewARG _
 	( _
@@ -1215,16 +1226,42 @@ declare function astGosubAddReturn _
 
 declare sub astGosubAddExit(byval proc as FBSYMBOL ptr)
 
-declare function astLoadIIF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
 declare function hTruncateInt _
 	( _
 		byval dtype as integer, _
 		byval value as integer ptr _
 	) as integer
+
+declare function astLoadNOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadCALLCTOR( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 ''
 '' macros

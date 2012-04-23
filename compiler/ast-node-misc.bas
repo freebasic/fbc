@@ -11,20 +11,15 @@
 #include once "ast.bi"
 #include once "emit.bi"
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' labels (l = NULL; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
+'' Labels (l = NULL; r = NULL)
 function astNewLABEL _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval doflush as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LABEL, FB_DATATYPE_INVALID )
 
 	n->sym = sym
@@ -39,15 +34,9 @@ function astNewLABEL _
 	end if
 
 	function = n
-
 end function
 
-'':::::
-function astLoadLABEL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
 		if( n->lbl.flush ) then
 			irEmitLABEL( n->sym )
@@ -57,37 +46,21 @@ function astLoadLABEL _
 	end if
 
 	function = NULL
-
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' lit (l = NULL; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' Literals (l = NULL; r = NULL)
+function astNewLIT( byval text as zstring ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr n = any
 
-'':::::
-function astNewLIT _
-	( _
-		byval text as zstring ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr n = any
-
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_LIT, FB_DATATYPE_INVALID )
 
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
 
 	function = n
-
 end function
 
-'':::::
-function astLoadLIT _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
 		irEmitCOMMENT( n->lit.text )
 	end if
@@ -95,36 +68,20 @@ function astLoadLIT _
 	ZstrFree( n->lit.text )
 
 	function = NULL
-
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' ASM (l = NULL; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr n = any
 
-'':::::
-function astNewASM _
-	( _
-		byval listhead as FB_ASMTOK_ ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr n = any
-
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
 
 	n->asm.head = listhead
 
 	function = n
-
 end function
 
-'':::::
-function astLoadASM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as FB_ASMTOK ptr node = any, nxt = any
     dim as string asmline
 
@@ -162,112 +119,224 @@ function astLoadASM _
 	end if
 
 	function = NULL
-
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' DBG (l = NULL; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
+'' Debug (l = NULL; r = NULL)
 function astNewDBG _
 	( _
 		byval op as integer, _
 		byval ex as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	if( env.clopt.debug = FALSE ) then
 		return NULL
 	end if
 
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DBG, FB_DATATYPE_INVALID )
 
 	n->dbg.op = op
 	n->dbg.ex = ex
 
 	function = n
-
 end function
 
-'':::::
-function astLoadDBG _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
 		irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex )
 	end if
 
 	function = NULL
-
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' No Operation (l = NULL; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+function astNewNOP( ) as ASTNODE ptr
+	dim as ASTNODE ptr n = any
 
-'':::::
-function astNewNOP _
-	( _
-		_
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr n = any
-
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NOP, FB_DATATYPE_INVALID )
 
 	function = n
-
 end function
 
-'':::::
-function astLoadNOP	_
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadNOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' do nothing
-
 	function = NULL
-
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' Non-Indexed Array (l = expr; r = NULL)
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+function astNewNIDXARRAY( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr n = any
 
-'':::::
-function astNewNIDXARRAY _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
-    dim as ASTNODE ptr n = any
-
-	'' alloc new node
 	n = astNewNode( AST_NODECLASS_NIDXARRAY, FB_DATATYPE_INVALID )
 
 	n->l = expr
 
 	function = n
-
 end function
 
-'':::::
-function astLoadNIDXARRAY	_
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
+function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 	astDelTree( n->l )
-
 	function = NULL
+end function
 
+'' Links (l = statement 1; r = statement 2)
+function astNewLINK _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ret_left as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	if( l = NULL ) then
+		return r
+	end if
+
+	if( r = NULL ) then
+		return l
+	end if
+
+	if( ret_left ) then
+		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( l ), l->subtype )
+	else
+		n = astNewNode( AST_NODECLASS_LINK, astGetFullType( r ), r->subtype )
+	end if
+
+	n->link.ret_left = ret_left
+	n->l = l
+	n->r = r
+
+	function = n
+end function
+
+function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+	dim as IRVREG ptr vrl = any, vrr = any
+
+	vrl = astLoad( n->l )
+	astDelNode( n->l )
+
+	vrr = astLoad( n->r )
+	astDelNode( n->r )
+
+	if( n->link.ret_left ) then
+		function = vrl
+	else
+		function = vrr
+	end if
+end function
+
+'' Explicit loads (l = expression to load to a register; r = NULL)
+function astNewLOAD _
+	( _
+		byval l as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval isresult as integer _
+	) as ASTNODE ptr
+
+	'' alloc new node
+	dim as ASTNODE ptr n = astNewNode( AST_NODECLASS_LOAD, dtype )
+
+	n->l  = l
+	n->lod.isres = isresult
+
+	function = n
+end function
+
+function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
+	dim as ASTNODE ptr l = any
+	dim as IRVREG ptr v1 = any, vr = any
+
+	l = n->l
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	v1 = astLoad( l )
+
+	if( ast.doemit ) then
+		if( n->lod.isres ) then
+			vr = irAllocVREG( irGetVRDataType( v1 ), irGetVRSubType( v1 ) )
+			irEmitLOADRES( v1, vr )
+		else
+			irEmitLOAD( v1 )
+		end if
+	end if
+
+	astDelNode( l )
+
+	function = v1
+end function
+
+'' Field accesses - used only temporarily in expression trees, to be able to
+'' check for bitfield assignment/access and opimizations. FIELDs are pruned
+'' during astOptimizeTree().
+'' l = field access; r = NULL
+function astNewFIELD _
+	( _
+		byval p as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	if( dtype = FB_DATATYPE_BITFIELD ) then
+		'' final type is always an unsigned int
+		dtype = typeJoin( dtype, FB_DATATYPE_UINT )
+		subtype = NULL
+	end if
+
+	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
+
+	n->sym = sym
+	n->l = p
+
+	function = n
+end function
+
+'' Stack operations (l = expression; r = NULL)
+
+function astNewSTACK _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr n = any
+
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	n = astNewNode( AST_NODECLASS_STACK, astGetFullType( l ), NULL )
+
+	n->stack.op = op
+	n->l = l
+
+	function = n
+end function
+
+function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
+	dim as ASTNODE ptr l = any
+	dim as IRVREG ptr vr = any
+
+	l  = n->l
+	if( l = NULL ) then
+		return NULL
+	end if
+
+	vr = astLoad( l )
+
+	if( ast.doemit ) then
+		irEmitSTACK( n->stack.op, vr )
+	end if
+
+	astDelNode( l )
+
+	function = vr
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

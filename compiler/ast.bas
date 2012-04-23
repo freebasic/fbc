@@ -15,198 +15,6 @@
 #include once "ir.bi"
 #include once "ast.bi"
 
-declare sub astProcListInit _
-	( _
-	)
-
-declare sub astProcListEnd _
-	( _
-	)
-
-declare sub astCallInit _
-	( _
-	)
-
-declare sub astCallEnd _
-	( _
-	)
-
-declare sub astMiscInit _
-	( _
-	)
-
-declare sub astMiscEnd _
-	( _
-	)
-
-declare sub astDataStmtInit _
-	( _
-	)
-
-declare function astLoadNOP _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadASSIGN _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadCONV _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadBOP _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadUOP _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadCONST _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadVAR _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadIDX _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadDEREF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadCALL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadCALLCTOR _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadADDROF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadLOAD _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadBRANCH _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-/'
-declare function astLoadIIF _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-'/
-
-declare function astLoadOFFSET _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadLINK _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadSTACK _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadLABEL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadLIT _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadASM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadJMPTB _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadDBG _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadMEM _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadBOUNDCHK _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadPTRCHK _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadSCOPEBEGIN _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadSCOPEEND _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadDECL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare function astLoadNIDXARRAY _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-declare sub astCloneCALL _
-	( _
-		byval n as ASTNODE ptr, _
-		byval c as ASTNODE ptr _
-	)
-
-declare sub astDelCALL _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
-
 dim shared as ASTCTX ast
 
 type AST_LOADCALLBACK as function( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -384,41 +192,25 @@ dim shared as uinteger ast_bitmaskTB( 0 to ... ) = _
 	33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
 }
 
-'':::::
-sub astInit static
-
-	''
+sub astInit( )
     listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
-    ''
     ast.doemit = TRUE
     ast.typeinicnt = 0
     ast.currblock = NULL
 
-    ''
     astCallInit( )
-
     astProcListInit( )
-
     astDataStmtInit( )
-
     astMiscInit( )
-
 end sub
 
-'':::::
-sub astEnd static
-
-	''
+sub astEnd( )
 	astMiscEnd( )
-
 	astProcListEnd( )
-
     astCallEnd( )
 
-	''
 	listEnd( @ast.astTB )
-
 end sub
 
 '':::::
