@@ -1140,18 +1140,18 @@ function astUpdComp2Branch _
 			dim as integer doopt = any
 
 			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
-				doopt = irGetOption( IR_OPT_CPU_BOPSETFLAGS )
+				doopt = irGetOption( IR_OPT_CPUBOPFLAGS )
 
 				if( doopt ) then
 					select case as const dtype
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						'' can't be done with longints either, as flag is set twice
-						doopt = irGetOption( IR_OPT_CPU_64BITREGS )
+						doopt = irGetOption( IR_OPT_64BITCPUREGS )
 					end select
 				end if
 
 			else
-				doopt = irGetOption( IR_OPT_FPU_BOPSETFLAGS )
+				doopt = irGetOption( IR_OPT_FPUBOPFLAGS )
 			end if
 
 			if( doopt ) then

@@ -460,24 +460,18 @@ type IR_VTBL
 end type
 
 enum IR_OPT
-	IR_OPT_FPU_CONVERTOPER	= &h00000001			'' always convert operands
-	IR_OPT_FPU_LOADOPER		= &h00000001			'' always load operands
-	IR_OPT_FPU_IMMOPER		= &h00000002			'' allow floating-point immediates
-	IR_OPT_FPU_STACK		= &h00000004			'' stacked
-	IR_OPT_FPU_BOPSETFLAGS	= &h00000008			'' allow op vr1, vr2 : j## label
-	IR_OPT_FPU_BOPSELF		= &h00000010			'' allow op= vr
+	IR_OPT_FPUCONV       = &h00000001  '' Should float operands always be converted?
+	IR_OPT_FPUIMMEDIATES = &h00000002  '' Floating-point immediates allowed?
+	IR_OPT_FPUBOPFLAGS   = &h00000004  '' Do float BOPs set flags for conditional jumps (x86)?
+	IR_OPT_FPUSELFBOPS   = &h00000008  '' Are float self-BOPs available?
 
-	IR_OPT_CPU_LOADOPER		= &h00001000
-	IR_OPT_CPU_BOPSELF		= &h00002000
-	IR_OPT_CPU_BOPSETFLAGS	= &h00004000
-	IR_OPT_CPU_64BITREGS	= &h00008000			'' 64-bit wide registers
+	IR_OPT_CPUBOPFLAGS   = &h00000100  '' Integer BOPs set flags for conditional jumps (x86)?
+	IR_OPT_CPUSELFBOPS   = &h00000200  '' Integer self-BOPs available?
+	IR_OPT_64BITCPUREGS  = &h00000400  '' 64-bit wide registers?
 
-	IR_OPT_ADDRCISC			= &h00100000			'' complex addressing modes (base+idx*disp)
-	IR_OPT_REUSEOPER        = &h00200000			'' reuse destine operand
-	IR_OPT_IMMOPER          = &h00400000			'' allow immediate operands
-	IR_OPT_NOINLINEOPS		= &h01000000			'' don't pass down to IR the complex operators
-
-	IR_OPT_HIGHLEVEL		= &h10000000			'' high-level, preserve the HL constructions
+	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
+	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
+	IR_OPT_HIGHLEVEL     = &h00040000  '' Preserve the high level constructions?
 end enum
 
 type IRCTX

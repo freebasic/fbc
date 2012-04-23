@@ -1185,7 +1185,7 @@ private sub _emitADDF_SSE _
 			outp ostr + "s " + dst + COMMA + src
 		end if
 	else
-		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
+		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'add integer to float'"
 	end if
 end sub
@@ -1265,7 +1265,7 @@ private sub _emitSUBF_SSE _
 			outp ostr + "s " + dst + COMMA + src
 		end if
 	else
-		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
+		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'subtract integer from float'"
 	end if
 end sub
@@ -1344,7 +1344,7 @@ private sub _emitMULF_SSE _
 			outp ostr + "s " + dst + COMMA + src
 		end if
 	else
-		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
+		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'multiply float by integer'"
 	end if
 
@@ -1424,7 +1424,7 @@ private sub _emitDIVF_SSE _
 			outp ostr + "s " + dst + COMMA + src
 		end if
 	else
-		'' This should never happen due to IR_OPT_FPU_CONVERTOPER
+		'' This should never happen due to IR_OPT_FPUCONV
 		outp " implement 'divide float by integer'"
 	end if
 

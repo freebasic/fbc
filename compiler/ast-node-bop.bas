@@ -1195,7 +1195,7 @@ function astNewBOP _
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
 			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
 
-			if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+			if( irGetOption( IR_OPT_FPUCONV ) ) then
 				r = astNewCONV( rdtype, NULL, r )
 			else
 				'' if it's an int var, let the FPU do it
@@ -1254,7 +1254,7 @@ function astNewBOP _
 			'' the result type will be always a double
 			if( ldclass = FB_DATACLASS_FPOINT ) then
 
-				if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+				if( irGetOption( IR_OPT_FPUCONV ) ) then
 					dtype   = ldtype
 					subtype = l->subtype
 				else

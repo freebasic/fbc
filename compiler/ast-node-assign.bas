@@ -621,7 +621,7 @@ function astNewASSIGN _
 			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
 				if( (ldclass = FB_DATACLASS_FPOINT) or (rdclass = FB_DATACLASS_FPOINT) ) then
 					if( ldtype <> FB_DATATYPE_ULONGINT ) then
-						doconv = irGetOption( IR_OPT_FPU_CONVERTOPER )
+						doconv = irGetOption( IR_OPT_FPUCONV )
 					end if
 				end if
 			end if

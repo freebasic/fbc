@@ -110,13 +110,8 @@ private sub _init(byval backend as FB_BACKEND)
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
-	irSetOption( IR_OPT_HIGHLEVEL or _
-				 IR_OPT_CPU_BOPSELF or _
-				 IR_OPT_REUSEOPER or _
-				 IR_OPT_IMMOPER or _
-				 IR_OPT_FPU_IMMOPER or _
-				 IR_OPT_NOINLINEOPS _
-			)
+	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_FPUIMMEDIATES or _
+	             IR_OPT_NOINLINEOPS )
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD

@@ -6456,24 +6456,16 @@ private function _init _
 	emit.lastsection = INVALID
 	emit.lastpriority = INVALID
 
-	if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-		irSetOption( IR_OPT_CPU_BOPSELF or _
-					IR_OPT_FPU_CONVERTOPER or _
-					IR_OPT_CPU_BOPSETFLAGS or _
-					IR_OPT_ADDRCISC or _
-				 	IR_OPT_REUSEOPER or _
-					IR_OPT_IMMOPER )
-	else
-		irSetOption( IR_OPT_FPU_STACK or _
-					IR_OPT_CPU_BOPSELF or _
-					IR_OPT_CPU_BOPSETFLAGS or _
-					IR_OPT_ADDRCISC or _
-					IR_OPT_REUSEOPER or _
-					IR_OPT_IMMOPER )
+	dim as uinteger iroptions = _
+		IR_OPT_CPUSELFBOPS or IR_OPT_CPUBOPFLAGS or _
+		IR_OPT_ADDRCISC
 
+	if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+		iroptions or= IR_OPT_FPUCONV
 	end if
 
-    ''
+	irSetOption( iroptions )
+
 	edbgInit( )
 
 	function = TRUE

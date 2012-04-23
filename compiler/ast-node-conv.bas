@@ -561,7 +561,7 @@ function astNewCONV _
 			End Select
 		end if
 
-		if( irGetOption( IR_OPT_FPU_CONVERTOPER ) ) then
+		if( irGetOption( IR_OPT_FPUCONV ) ) then
 			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
 				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
 					doConv = TRUE
