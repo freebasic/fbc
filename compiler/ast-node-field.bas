@@ -38,27 +38,3 @@ function astNewFIELD _
 	function = n
 
 end function
-
-function astLoadFIELD _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
-    dim as ASTNODE ptr l = any
-	dim as IRVREG ptr vr = any
-
-	l = n->l
-
-	vr = astLoad( l )
-
-	if( ast.doemit ) then
-		vr->vector = n->vector
-	end if
-
-	function = vr
-
-	astDelNode( l )
-
-end function
-
-

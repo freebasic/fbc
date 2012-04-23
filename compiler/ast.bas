@@ -175,11 +175,6 @@ declare function astLoadPTRCHK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-declare function astLoadFIELD _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
-
 declare function astLoadSCOPEBEGIN _
 	( _
 		byval n as ASTNODE ptr _
@@ -236,7 +231,7 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	@astLoadCONST         , _    '' AST_NODECLASS_CONST
 	@astLoadVAR           , _    '' AST_NODECLASS_VAR
 	@astLoadIDX           , _    '' AST_NODECLASS_IDX
-	@astLoadFIELD         , _    '' AST_NODECLASS_FIELD
+	@astLoadNOP           , _    '' AST_NODECLASS_FIELD
 	@astLoadDEREF         , _    '' AST_NODECLASS_DEREF
 	@astLoadLABEL         , _    '' AST_NODECLASS_LABEL
 	@astLoadNOP           , _    '' AST_NODECLASS_ARG
