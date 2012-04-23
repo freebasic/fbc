@@ -14,62 +14,6 @@
 '' vars
 ''
 
-
-'':::::
-private function astSetBitField _
-	( _
-		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-
-	dim as FBSYMBOL ptr s = any
-
-	s = l->subtype
-
-	'' remap type
-	astGetFullType( l ) = symbGetFullType( s )
-	l->subtype = NULL
-
-	l = astNewBOP( AST_OP_AND, astCloneTree( l ), _
-				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 FB_DATATYPE_UINT ) )
-
-	'' make sure result will fit in destination...
-	r = astNewBOP( AST_OP_AND, r, _
-				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
-
-	if( s->bitfld.bitpos > 0 ) then
-		r = astNewBOP( AST_OP_SHL, r, _
-				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
-	end if
-
-	function = astNewBOP( AST_OP_OR, l, r )
-
-end function
-
-'':::::
-sub astUpdateBitfieldAssignment _
-	( _
-		byref l as ASTNODE ptr, _
-		byref r as ASTNODE ptr _
-	)
-
-    dim as ASTNODE ptr lchild = any
-
-	'' handle bitfields..
-	if( l->class = AST_NODECLASS_FIELD ) then
-        lchild = astGetLeft( l )
-		if( astGetDataType( lchild ) = FB_DATATYPE_BITFIELD ) then
-			'' l is a field node, use its left child instead
-			r = astSetBitField( lchild, r )
-			'' the field node can be removed
-			astDelNode( l )
-			l = lchild
-		end if
-	end if
-
-end sub
-
 '':::::
 function astBuildVarAssign _
 	( _

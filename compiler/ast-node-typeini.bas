@@ -394,7 +394,6 @@ private function hFlushTree _
 
 	dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
 	dim as FBSYMBOL ptr bitfield = any
-	dim as integer is_bitfield = any
 
 	function = NULL
 
@@ -406,8 +405,6 @@ private function hFlushTree _
 
 		select case as const n->class
 		case AST_NODECLASS_TYPEINI_ASSIGN
-			is_bitfield = FALSE
-
 			if( symbIsParamInstance( basesym ) ) then
 				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
@@ -427,8 +424,6 @@ private function hFlushTree _
 
 						'' Bitfield?
 						if( astGetDataType( lside ) = FB_DATATYPE_BITFIELD ) then
-							is_bitfield = TRUE
-
 							bitfield = astGetSubType( lside )
 							assert( symbGetClass( bitfield ) = FB_SYMBCLASS_BITFIELD )
 							assert( typeGetClass( symbGetType( bitfield ) ) = FB_DATACLASS_INTEGER )
@@ -447,13 +442,9 @@ private function hFlushTree _
 				end if
 			end if
 
-			dim as ASTNODE ptr a = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
-			flush_tree = astNewLINK( flush_tree, a )
-
-			'' bitfields have to be updated (but i dunno if this is the best place)
-			if( is_bitfield ) then
-				astUpdateBitfieldAssignment( a->l, a->r )
-			end if
+			flush_tree = astNewLINK( flush_tree, _
+				astNewASSIGN( lside, n->l, _
+					AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR ) )
 
 		case AST_NODECLASS_TYPEINI_PAD
 			if( symbIsParamInstance( basesym ) ) then

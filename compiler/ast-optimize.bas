@@ -1096,77 +1096,227 @@ private function hOptConstIDX _
 
 end function
 
-'':::::
-private function hOptFieldsCalc _
+private function astSetBitfield _
 	( _
-		byval n as ASTNODE ptr, _
-		byval parent as ASTNODE ptr _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l = any, r = any
+	dim as FBSYMBOL ptr s = any
 
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptFieldsCalc( l, n )
+	''
+	''    l<bitfield> = r
+	'' becomes:
+	''    l<int> = (l<int> and mask) or ((r and bits) shl bitpos)
+	''
+
+	s = l->subtype
+	assert( symbGetClass( s ) = FB_SYMBCLASS_BITFIELD )
+
+	'' Remap type from bitfield to short/integer/etc., whichever was given
+	'' on the bitfield, to do a "full" field access.
+	astGetFullType( l ) = symbGetFullType( s )
+	l->subtype = s->subtype
+
+	'' l is reused on the rhs and thus must be duplicated
+	l = astCloneTree( l )
+
+	'' Apply a mask to retrieve all bits but the bitfield's ones
+	l = astNewBOP( AST_OP_AND, l, _
+	               astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
+	                             FB_DATATYPE_UINT ) )
+
+	'' This ensures the bitfield is zeroed & clean before the new value
+	'' is ORed in below. Since the new value may contain zeroes while the
+	'' old values may have one-bits, the OR alone wouldn't necessarily
+	'' overwrite the old value.
+
+	'' Truncate r if it's too big, ensuring the OR below won't touch any
+	'' other bits outside the target bitfield.
+	r = astNewBOP( AST_OP_AND, r, _
+	               astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+
+	'' Move r into position if the bitfield doesn't lie at the beginning of
+	'' the accessed field.
+	if( s->bitfld.bitpos > 0 ) then
+		r = astNewBOP( AST_OP_SHL, r, _
+		               astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
 	end if
 
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptFieldsCalc( r, n )
+	'' OR in the new bitfield value r
+	function = astNewBOP( AST_OP_OR, l, r )
+end function
+
+private function astAccessBitfield( byval l as ASTNODE ptr ) as ASTNODE ptr
+	dim as integer dtype = l->dtype
+	dim as FBSYMBOL ptr s = l->subtype
+
+	'' Remap type from bitfield to short/integer/etc, while keeping in
+	'' mind that the bitfield may have been casted, so the FIELD's type
+	'' can't just be discarded.
+	l->dtype = typeJoin( dtype, s->typ )
+	l->subtype = s->subtype
+
+	'' Shift into position, other bits to the right are shifted out
+	if( s->bitfld.bitpos > 0 ) then
+		l = astNewBOP( AST_OP_SHR, l, astNewCONSTi( s->bitfld.bitpos, dtype ) )
 	end if
 
-	'' (@((@foo + offsetof(bar))->bar) + offsetof(baz)))->baz to
-	if( n->class = AST_NODECLASS_FIELD ) then
+	'' Mask out other bits to the left
+	return astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
+end function
+
+private function hRemoveFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	'' Remove FIELD nodes and add code for bitfield accesses/assignments
+	'' where needed. FIELD nodes aren't doing anything during emitting,
+	'' but are just needed for the handling of bitfields.
+
+	select case( n->class )
+	case AST_NODECLASS_ASSIGN
+		'' Assigning to a bitfield?
+		if( n->l->class = AST_NODECLASS_FIELD ) then
+			if( astGetDataType( n->l->l ) = FB_DATATYPE_BITFIELD ) then
+				'' Delete and link out the FIELD
+				astDelNode( n->l )
+				n->l = n->l->l
+
+				'' The lhs' type is adjusted, and the new rhs
+				'' is returned.
+				n->r = astSetBitfield( n->l, n->r )
+			end if
+		end if
+
+		n->l = hRemoveFIELDs( n->l )
+		n->r = hRemoveFIELDs( n->r )
+
+	case AST_NODECLASS_FIELD
+		l = n->l
+		if( astGetDataType( l ) = FB_DATATYPE_BITFIELD ) then
+			l = astAccessBitfield( l )
+		end if
+
+		'' Delete and link out the FIELD
+		astDelNode( n )
+		n = l
+
+		n = hRemoveFIELDs( n )
+
+	case else
+		n->l = hRemoveFIELDs( n->l )
+		n->r = hRemoveFIELDs( n->r )
+	end select
+
+	function = n
+end function
+
+private function hMergeNestedFIELDs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr l = any
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->l = hMergeNestedFIELDs( n->l )
+	n->r = hMergeNestedFIELDs( n->r )
+
+	if( astIsFIELD( n ) ) then
 		l = n->l
 
-		if( l->class = AST_NODECLASS_DEREF ) then
-			dim as ASTNODE ptr ll = l->l
-			'' Note: DEREF->l can be NULL in case it was dereferencing a constant
-			if (ll) then
-				if( ll->class = AST_NODECLASS_BOP ) then
-					dim as ASTNODE ptr lll = ll->l
-					if( lll->class = AST_NODECLASS_ADDROF ) then
-						dim as ASTNODE ptr llll = lll->l
-						if( llll->class = AST_NODECLASS_FIELD ) then
-							dim as ASTNODE ptr lllll = llll->l
-							if( lllll->class = AST_NODECLASS_DEREF ) then
-								dim as ASTNODE ptr llllll = lllll->l
-								if (llllll) then
-									l->l = astNewBOP( AST_OP_ADD, llllll, ll->r )
-									astDelNode( ll )
-									astDelNode( lll )
-									astDelNode( llll )
-									astDelNode( lllll )
-								end if
-							end if
+		'' This is the pattern for field accesses:
+		''
+		''    udt.field
+		''
+		'' =  *(@udt + offsetof(field))
+		''
+		'' =  FIELD( DEREF( BOP( +, ADDROF( udt ), offsetof(field) ) ) )
+		''
+		''
+		'' Nested field accesses will look like:
+		''
+		''    udt.a.b
+		''
+		'' =  *(@udt.a + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''                 ADDROF  offsetof(b)
+		''                    /
+		''                udt.a
+		''
+		'' =  *(@*(@udt + offsetof(a)) + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''                 ADDROF  offsetof(b)    *2*
+		''                    /
+		''                 FIELD
+		''                   |
+		''                 DEREF
+		''                   |
+		''          *1*    + BOP
+		''                  / \
+		''             ADDROF  offsetof(a)
+		''                /
+		''              udt
+		''
+		'' The extra ADDROF/DEREF cancel each other out, and by
+		'' removing the ADDROF/FIELD/DEREF combo, the whole tree
+		'' can be optimized to:
+		''
+		'' =  *(@udt + offsetof(a) + offsetof(b))
+		''
+		''                     FIELD
+		''                       |
+		''                     DEREF
+		''                       |
+		''                     + BOP
+		''                      / \
+		''          *1*    + BOP   offsetof(b)    *2*
+		''                   / \
+		''              ADDROF  offsetof(a)
+		''                 /
+		''               udt
+		''
+
+		dim as ASTNODE ptr ll = l->l
+		'' Note: DEREF.l can be NULL in case it was dereferencing a constant
+		if( astIsDEREF( l ) and (ll <> NULL) ) then
+			if( ll->class = AST_NODECLASS_BOP ) then
+				assert( astIsBOP( ll, AST_OP_ADD ) )
+				dim as ASTNODE ptr lll = ll->l
+				if( lll->class = AST_NODECLASS_ADDROF ) then
+					dim as ASTNODE ptr llll = lll->l
+					if( astIsFIELD( llll ) ) then
+						dim as ASTNODE ptr lllll = llll->l
+						dim as ASTNODE ptr llllll = lllll->l
+						if( astIsDEREF( lllll ) and (llllll <> NULL) ) then
+							l->l = astNewBOP( AST_OP_ADD, llllll, ll->r )
+							astDelNode( ll )
+							astDelNode( lll )
+							astDelNode( llll )
+							astDelNode( lllll )
 						end if
 					end if
 				end if
 			end if
-		else
-
-			'' resolve bitfields before deleting the field, because
-			'' otherwise that'd only happen in LoadFIELD/LoadASSIGN,
-			'' which won't get called since the field node is destroyed.
-			if( parent ) then
-				if( parent->class = AST_NODECLASS_ASSIGN ) then
-					astUpdateBitfieldAssignment( n, parent->r )
-				else
-					astUpdateBitfieldAccess( l )
-					astDelNode( n )
-					n = l
-				end if
-			else
-				astDelNode( n )
-				n = l
-			end if
-
 		end if
 	end if
 
 	function = n
-
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2390,27 +2540,19 @@ private function hOptReciprocal _
 
 end function
 
-''::::
-function astOptimizeTree _
-	( _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
+	'' The order of calls below matters!
 
-	'' Remove nested FIELDs, update bitfield access/assignment
-	n = hOptFieldsCalc( n, NULL )
+	'' Optimize nested field accesses
+	n = hMergeNestedFIELDs( n )
 
-	'' high-level IR? don't do anything..
+	'' Remove FIELD nodes and expand them to bitfield access/assignment
+	'' code where needed
+	n = hRemoveFIELDs( n )
+
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		return hOptConstIDX( n )
 	end if
-
-	'' calls must be done in the order below
-
-	/'
-	if( irGetOption( IR_OPT_REMCASTING ) ) then
-		n = hOptRemCasting( n )
-	end if
-	'/
 
 	n = hOptAssocADD( n )
 
@@ -2443,7 +2585,4 @@ function astOptimizeTree _
 	end if
 
 	function = n
-
 end function
-
-
