@@ -107,7 +107,7 @@ function cOperatorNew _
 		elmts_expr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	else
 		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
-		i_expr = astNewCONV( FB_DATATYPE_UINT, elmts_expr->subtype, elmts_expr )
+		i_expr = astNewCONV( FB_DATATYPE_UINT, NULL, elmts_expr )
 		if( i_expr <> NULL ) Then
 			elmts_expr = i_expr
 		else

@@ -129,6 +129,7 @@ Version 0.24.0:
 - C backend: wchar type didn't match gcc's, breaking global fixed-length wstring initializers
 - Unused bits (padding) in UDTs with bitfields could be left uninitialized by type initializers
 - C backend #3421351: Wrong code for bitfield assignment when the target bitfield expression had nested field accesses
+- #3509495: Delete[] on derived UDTs with destructors caused a compiler crash
 
 
 Version 0.23.0:

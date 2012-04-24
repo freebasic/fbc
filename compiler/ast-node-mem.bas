@@ -293,14 +293,15 @@ private function hCallDtorList _
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
-	'' elmts = cast(integer ptr, vector)[-1]
-	expr = astNewDEREF( astNewBOP( AST_OP_ADD, _
-					  			   astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), _
-							 			 	   NULL, _
-							 			 	   astCloneTree( ptr_expr ) ), _
-					  			   astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ), _
-					    FB_DATATYPE_INTEGER, _
-					    NULL )
+	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
+	'' (casting to ANY PTR first to support derived UDT pointers)
+	expr = astNewDEREF( _
+		astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
+			astNewBOP( AST_OP_ADD, _
+				astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, _
+					astCloneTree( ptr_expr ) ), _
+				astNewCONSTi( -FB_INTEGERSIZE, FB_DATATYPE_INTEGER ) ) ), _
+		FB_DATATYPE_INTEGER, NULL )
 
 	tree = astBuildVarAssign( elmts, expr )
 
