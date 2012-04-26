@@ -1560,37 +1560,27 @@ private function hCalcTypesDiff _
 					return FB_OVLPROC_HALFMATCH
 				end if
 
-				'' param is an any ptr?
-				if( param_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+				'' Both are pointers (but they're different,
+				'' full match is already handled)
+				assert( arg_dtype <> param_dtype )
 
-					'' we return a full match only if they're both any
-					if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-						return FB_OVLPROC_FULLMATCH
-
-					'' other wise, it's a half match
-					'' the arg indirection level shouldn't matter (as in g++)
-					else
-						return FB_OVLPROC_HALFMATCH
-					end if
+				'' Any Ptr parameters can accept all pointer arguments, as in C++.
+				'' Additionally we also allow Any Ptr arguments to match all
+				'' pointer parameters, because we also allow such assignments,
+				'' unlike C++.
+				if( (param_dtype = typeAddrOf( FB_DATATYPE_VOID )) or _
+				    (arg_dtype = typeAddrOf( FB_DATATYPE_VOID )) ) then
+					return FB_OVLPROC_HALFMATCH
 				end if
 
-				'' arg is an any ptr?
-				if( arg_dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
-					'' not the same level of indirection?
-					if( param_ptrcnt > 1 ) then
-						return 0
-					end if
-
-					return FB_OVLPROC_FULLMATCH
-				end if
-
-				'' no match
+				'' Different pointer types aren't compatible at all though,
+				'' that would be dangerous.
 				return 0
 
-			'' param not a pointer, but is arg?
 			elseif( typeIsPtr( arg_dtype ) ) then
-				'' use an UINT instead or LONGINT will match if any..
-				arg_dtype = FB_DATATYPE_UINT
+				'' Param isn't a pointer, but arg is:
+				'' no match -- pointers don't match integers
+				return 0
 			end if
 
 			return FB_OVLPROC_HALFMATCH - abs( typeGet( param_dtype ) - typeGet( arg_dtype ) )
@@ -1753,9 +1743,7 @@ private function hCheckOvlParam _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( param_dtype ) = typeGetDtAndPtrOnly( arg_dtype ) ) then
-
 		if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-
 			'' same subtype? full match..
 			if( param_subtype = arg_subtype ) then
 				return FB_OVLPROC_FULLMATCH
@@ -1771,19 +1759,14 @@ private function hCheckOvlParam _
 					End Select
 				end if
 			end if
-
 		elseif( typeGetConstMask( param_dtype ) ) then
-
 			'' same subtype? ..
 			if( param_subtype = arg_subtype ) then
-
 				'' param is const but arg isn't?
 				if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype ) ) then
 					return FB_OVLPROC_HALFMATCH
 				end if
-
 			end if
-
 		end if
 
 		'' if it's rtl, only if explicitly set

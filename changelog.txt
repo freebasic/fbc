@@ -131,6 +131,8 @@ Version 0.24.0:
 - Unused bits (padding) in UDTs with bitfields could be left uninitialized by type initializers
 - C backend #3421351: Wrong code for bitfield assignment when the target bitfield expression had nested field accesses
 - #3509495: Delete[] on derived UDTs with destructors caused a compiler crash
+- Overload resolution treated pointer arguments as uintegers, allowing them to match integer parameters
+- Any Ptr arguments were seen as ambiguous even if there was a fully matching overload
 
 
 Version 0.23.0:
