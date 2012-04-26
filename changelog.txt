@@ -59,6 +59,7 @@ Version 0.24.0:
 - Updated header for Mini-XML 2.7 header update
 - New header for ZeroMQ 2.1.10
 - Updated header for cryptlib 3.4.1
+- Wstrings are now allowed in Print Using
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)

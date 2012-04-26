@@ -415,6 +415,115 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
+{
+	FB_PRINTUSGCTX *ctx;
+	FB_WCHAR buffer[BUFFERLEN+1];
+	int c, nc, strchars, doexit, i, length;
+
+	ctx = FB_TLSGETCTX( PRINTUSG );
+
+	/* restart if needed */
+	if( ctx->chars == 0 ) {
+		ctx->ptr = ctx->fmtstr.data;
+		ctx->chars = FB_STRSIZE( &ctx->fmtstr );
+	}
+
+	/* any text first */
+	fb_PrintUsingFmtStr( fnum );
+
+	strchars = -1;
+	length = fb_wstr_Len( s );
+
+	if( ctx->ptr == NULL )
+		ctx->chars = 0;
+
+	while( ctx->chars > 0 ) {
+		c = *ctx->ptr;
+		nc = ctx->chars > 1 ? ctx->ptr[1] : -1;
+
+		doexit = 1;
+		switch( c ) {
+		case '!':
+			if( length >= 1 )
+				buffer[0] = s[0];
+			else
+				buffer[0] = L' ';
+
+			buffer[1] = L'\0';
+			fb_PrintWstr( fnum, buffer, 0 );
+
+			++ctx->ptr;
+			--ctx->chars;
+			break;
+
+		case '&':
+			fb_PrintWstr( fnum, s, 0 );
+
+			++ctx->ptr;
+			--ctx->chars;
+			break;
+
+		case '\\':
+			if( (strchars != -1) || (nc == ' ') || (nc == '\\') ) {
+				if( strchars > 0 ) {
+					++strchars;
+
+					if( length < strchars ) {
+						fb_PrintWstr( fnum, s, 0 );
+
+						strchars -= length;
+						for( i = 0; i < strchars; i++ )
+							buffer[i] = L' ';
+						buffer[i] = L'\0';
+					} else {
+						fb_wstr_Copy( buffer, s, strchars );
+					}
+
+					/* replace null-terminators by spaces */
+					for( i = 0; i < strchars; i++ )
+						if( buffer[i] == '\0' )
+							buffer[i] = ' ';
+
+					fb_PrintWstr( fnum, buffer, 0 );
+
+					++ctx->ptr;
+					--ctx->chars;
+				} else {
+					strchars = 1;
+					doexit = 0;
+				}
+			}
+			break;
+
+		case ' ':
+			if( strchars > -1 ) {
+				++strchars;
+				doexit = 0;
+			}
+			break;
+		}
+
+		if( doexit )
+			break;
+
+		++ctx->ptr;
+		--ctx->chars;
+	}
+
+	/* any text */
+	fb_PrintUsingFmtStr( fnum );
+
+	/**/
+	if( mask & FB_PRINT_ISLAST ) {
+		if( mask & FB_PRINT_NEWLINE )
+			fb_PrintVoid( fnum, FB_PRINT_NEWLINE );
+		fb_StrDelete( &ctx->fmtstr );
+	}
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
 static int hPrintNumber
 	(
 		int fnum,
