@@ -1,8 +1,8 @@
-' TEST_MODE : COMPILE_ONLY_OK
+' TEST_MODE : COMPILE_ONLY_FAIL
 
 type Parent
 	as integer i
-	protected:
+	private:
 	declare destructor cdecl( )
 end type
 
@@ -15,13 +15,4 @@ end type
 
 sub Child.test( x() as Parent )
 	erase x
-
-	static as Parent staticx
-
-	dim as Parent x1
-	dim as Parent x2(0 to 1)
-
-	dim as Parent ptr p
-	delete p
-	delete[] p
 end sub

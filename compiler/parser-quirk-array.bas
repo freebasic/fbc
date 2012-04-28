@@ -43,9 +43,9 @@ function cEraseStmt() as integer
 				end if
 
 				if( symbGetIsDynamic( s ) ) then
-					expr = rtlArrayErase( expr )
+					expr = rtlArrayErase( expr, TRUE )
 				else
-					expr = rtlArrayClear( expr, TRUE )
+					expr = rtlArrayClear( expr, TRUE, TRUE )
 				end if
 
 				astAdd( expr )

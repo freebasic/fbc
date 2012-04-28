@@ -563,19 +563,23 @@ function rtlArrayClear _
 			exit function
 		end if
 	else
-		if( check_access ) then
-			if( symbCheckAccess( dtor ) = FALSE ) then
-				errReport( FB_ERRMSG_NOACCESSTODTOR )
-			end if
-		end if
-
 		if( ctor <> NULL ) then
+			if( check_access ) then
+				if( symbCheckAccess( ctor ) = FALSE ) then
+					errReport( FB_ERRMSG_NOACCESSTODTOR )
+				end if
+			end if
 			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
 				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
 			end if
 		end if
 
 		if( dtor <> NULL ) then
+			if( check_access ) then
+				if( symbCheckAccess( dtor ) = FALSE ) then
+					errReport( FB_ERRMSG_NOACCESSTODTOR )
+				end if
+			end if
 			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
 				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
 			end if
@@ -583,19 +587,19 @@ function rtlArrayClear _
 
 		'' byval ctor as sub()
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
 		'' byval dtor as sub()
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
 		'' byval dofill as integer
 		if( astNewARG( proc, astNewCONSTi( dofill, FB_DATATYPE_INTEGER ) ) = NULL ) then
-    		exit function
-    	end if
-    end if
+			exit function
+		end if
+	end if
 
     function = proc
 

@@ -141,6 +141,7 @@ Version 0.24.0:
 - Local arrays in methods didn't have access to private/protected destructors
 - 'LET(fields...) = UDT' in methods didn't have access to private/protected fields
 - Access to member constants wasn't always checking visibility
+- ERASE didn't check c/dtor visibility
 
 
 Version 0.23.0:

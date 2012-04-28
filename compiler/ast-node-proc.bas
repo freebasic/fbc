@@ -1222,7 +1222,7 @@ private sub hCallStaticCtor _
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
 		'' call ERASE..
-		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ) ) )
+		astAdd( rtlArrayErase( astBuildVarField( sym, NULL, 0 ), FALSE ) )
 	else
 		'' not an array?
 		if( (symbGetArrayDimensions( sym ) = 0) or _

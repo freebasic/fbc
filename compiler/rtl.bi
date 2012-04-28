@@ -1075,14 +1075,14 @@ declare function rtlArrayRedim _
 declare function rtlArrayErase _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval check_access as integer = FALSE _
+		byval check_access as integer _
 	) as ASTNODE ptr
 
 declare function rtlArrayClear _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
 		byval dofill as integer, _
-		byval check_access as integer = FALSE _
+		byval check_access as integer _
 	) as ASTNODE ptr
 
 declare function rtlArrayBound _

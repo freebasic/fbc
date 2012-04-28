@@ -2,15 +2,17 @@
 
 type T
 	as integer i
-	declare sub test( )
+	declare sub test( x() as T )
 	protected:
-	declare destructor( )
+	declare destructor cdecl( )
 end type
 
-destructor T( )
+destructor T cdecl( )
 end destructor
 
-sub T.test( )
+sub T.test( x() as T )
+	erase x
+
 	static as T staticx
 
 	dim as T x1
