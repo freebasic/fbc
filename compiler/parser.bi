@@ -325,11 +325,19 @@ declare function cInitializer _
 		byval options as FB_INIOPT _
 	) as ASTNODE ptr
 
+declare function cTypeOrExpression _
+	( _
+		byval is_len as integer, _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	) as ASTNODE ptr
+
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as integer = NULL _
+		byref lgt as integer _
 	)
 
 declare function cSymbolType _

@@ -58,53 +58,26 @@ private function hLenSizeof _
 	'' LEN | SIZEOF
 	lexSkipToken( )
 
+	'' '('
 	hMatchLPRNT( )
 
-	'' token after next is operator or '['? 
-	if( (lexGetLookAheadClass( 1 ) = FB_TKCLASS_OPERATOR andalso lexGetLookAhead( 1 ) <> CHAR_TIMES) _
-		orelse lexGetLookAhead( 1 ) = CHAR_LBRACKET ) then
-		'' disambiguation: types can't be followed by an operator
-		'' (note: can't check periods here, because it could be a namespace resolution, or '*' because it could be STRING * n)
-		is_type = FALSE
-	elseif( fbLangIsSet( FB_LANG_QB ) ) then
-		'' QB quirk: LEN() only takes expressions
-		if( is_len ) then
-			is_type = FALSE
-		else
-			'' SIZEOF()
-			is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
-		end if
-	else
-		is_type = cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE )
-	end if
+	'' Type or an Expression
+	expr = cTypeOrExpression( is_len, dtype, subtype, lgt )
 
-	''
-	expr = NULL
-	if( is_type = FALSE ) then
-		fbSetCheckArray( FALSE )
-		expr = cExpression( )
-		if( expr = NULL ) then
-			fbSetCheckArray( TRUE )
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		else
-			'' ugly hack to deal with arrays w/o indexes
-			if( astIsNIDXARRAY( expr ) ) then
-				is_len = FALSE
-				expr2 = astGetLeft( expr )
-				astDelNode( expr )
-				expr = expr2
-			end if
+	'' Was it an expression?
+	if( expr ) then
+		'' Array without index makes this a SIZEOF()
+		if( astIsNIDXARRAY( expr ) ) then
+			is_len = FALSE
+			expr2 = astGetLeft( expr )
+			astDelNode( expr )
+			expr = expr2
 		end if
-		fbSetCheckArray( TRUE )
-	end if
 
-	'' string expressions with SIZEOF() are not allowed
-	if( expr <> NULL ) then
+		'' Disallow string expressions in SIZEOF()
 		if( is_len = FALSE ) then
 			if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
-				if( (astGetSymbol( expr ) = NULL) or (astIsCALL( expr )) ) then
+				if( (astGetSymbol( expr ) = NULL) or astIsCALL( expr ) ) then
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 					'' error recovery: fake an expr
 					astDelTree( expr )
@@ -114,6 +87,7 @@ private function hLenSizeof _
 		end if
 	end if
 
+	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
 		errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		hSkipUntil( CHAR_RPRNT, TRUE )
