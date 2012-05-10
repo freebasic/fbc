@@ -1196,12 +1196,7 @@ function symbAddProcResultParam _
 
 end function
 
-'':::::
-function symbAddProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 
@@ -1236,7 +1231,6 @@ function symbAddProcResult _
 	symbSetIsDeclared( res )
 
 	function = res
-
 end function
 
 '':::::
@@ -2461,50 +2455,24 @@ private function hAddToGlobCtorList _
 
 end function
 
-'':::::
-function symbAddGlobalCtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-    symbSetIsGlobalCtor( proc )
-
+function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+	symbSetIsGlobalCtor( proc )
 	function = hAddToGlobCtorList( @symb.globctorlist, proc )
-
 end function
 
-'':::::
-function symbAddGlobalDtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-    symbSetIsGlobalDtor( proc )
-
+function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+	symbSetIsGlobalDtor( proc )
 	function = hAddToGlobCtorList( @symb.globdtorlist, proc )
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function symbGetProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-	if( proc = NULL ) then
-		return NULL
+function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( proc->proc.ext ) then
+		function = proc->proc.ext->res
 	end if
-
-	if( proc->proc.ext = NULL ) then
-		return NULL
-	end if
-
-	function = proc->proc.ext->res
-
 end function
 
 '':::::

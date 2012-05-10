@@ -939,10 +939,7 @@ declare function symbFindCtorProc _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbGetProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbGetProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr _
 	( _
@@ -1205,10 +1202,7 @@ declare function symbPreAddProc _
 		byval symbol as zstring ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddProcResult _
-	( _
-		byval f as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbAddParam _
 	( _
@@ -1709,15 +1703,8 @@ declare sub symbCompAddDefMembers _
 		byval sym as FBSYMBOL ptr _
 	)
 
-declare function symbAddGlobalCtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
-
-declare function symbAddGlobalDtor _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FB_GLOBCTORLIST_ITEM ptr
+declare function symbAddGlobalCtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
+declare function symbAddGlobalDtor( byval proc as FBSYMBOL ptr ) as FB_GLOBCTORLIST_ITEM ptr
 
 declare function symbCloneSymbol _
 	( _
