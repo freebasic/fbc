@@ -846,12 +846,7 @@ declare function cStrIdxOrMemberDeref _
 	) as ASTNODE ptr
 
 declare sub cAssignment(byval assgexpr as ASTNODE ptr)
-
-declare function cAssignFunctResult _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval is_return as integer _
-	) as integer
+declare function cAssignFunctResult( byval is_return as integer ) as integer
 
 declare function cGfxStmt _
 	( _

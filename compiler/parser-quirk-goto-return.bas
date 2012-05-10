@@ -47,7 +47,7 @@ private function hFuncReturn _
 	end if
 
 	if( checkexpr ) then
-		if( cAssignFunctResult( parser.currproc, TRUE ) = FALSE ) then
+		if( cAssignFunctResult( TRUE ) = FALSE ) then
 			exit function
 		end if
 	end if

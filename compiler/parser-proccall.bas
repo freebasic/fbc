@@ -29,18 +29,14 @@ declare function hForwardCall _
 		_
 	) as integer
 
-'':::::
-function cAssignFunctResult _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval is_return as integer _
-	) as integer
-
-    dim as FBSYMBOL ptr res = any, subtype = any
+function cAssignFunctResult( byval is_return as integer ) as integer
+	dim as FBSYMBOL ptr res = any, subtype = any, proc = any
     dim as ASTNODE ptr rhs = any
     dim as integer has_ctor = any, has_defctor = any
 
     function = FALSE
+
+	proc = parser.currproc
 
     res = symbGetProcResult( proc )
     if( res = NULL ) then
@@ -450,7 +446,7 @@ private function hProcSymbol _
 	'' skip the '='
 	lexSkipToken( )
 
-	function = cAssignFunctResult( parser.currproc, FALSE )
+	function = cAssignFunctResult( FALSE )
 
 end function
 
@@ -686,7 +682,7 @@ private function hAssignOrCall _
 	       			'' skip the '='
 	       			lexSkipToken( )
 
-	       			return cAssignFunctResult( parser.currproc, FALSE )
+					return cAssignFunctResult( FALSE )
 				end if
 
 	    	'' variable or field?
@@ -822,7 +818,7 @@ function cProcCallOrAssign _
 			lexSkipToken( )
 			lexSkipToken( )
 
-    	    return cAssignFunctResult( parser.currproc, FALSE )
+			return cAssignFunctResult( FALSE )
 
 		'' OPERATOR?
 		case FB_TK_OPERATOR
@@ -838,7 +834,7 @@ function cProcCallOrAssign _
 			lexSkipToken( )
 			lexSkipToken( )
 
-	        return cAssignFunctResult( parser.currproc, FALSE )
+			return cAssignFunctResult( FALSE )
 
 		'' PROPERTY?
 		case FB_TK_PROPERTY
@@ -859,7 +855,7 @@ function cProcCallOrAssign _
 			lexSkipToken( )
 			lexSkipToken( )
 
-    	    return cAssignFunctResult( parser.currproc, FALSE )
+			return cAssignFunctResult( FALSE )
 
 		'' CONSTRUCTOR?
 		case FB_TK_CONSTRUCTOR
