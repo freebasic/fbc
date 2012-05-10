@@ -16,6 +16,7 @@ Version 0.24.0:
 - ImageCreate() and Reset(streamno) now set the runtime error code, which can be retrieved with Err()
 - Allow CONST STRING parameters in string.bi/datetime.bi functions
 - wstring Input is now subject to the same 4096 characters length limit like the normal [z]string Input
+- #3492598: FB-only overloaded operators now use Itanium C++ ABI-compatible name mangling
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11
