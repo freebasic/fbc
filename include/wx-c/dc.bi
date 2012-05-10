@@ -6,7 +6,7 @@
 ' class wxDC
 Declare Sub wxDC_dtor WXCALL Alias "wxDC_dtor" (self As wxDC Ptr)
 Declare Function wxDC_Ok WXCALL Alias "wxDC_Ok" (self As wxDC Ptr) As wxBool
-Declare Sub wxDC_DrawBitmap WXCALL Alias "wxDC_DrawBitmap" (self As wxDC Ptr, bitmap As wxBitmap Ptr, x As wxCoord, y As wxCoord, transparent As wxBool)
+Declare Sub wxDC_DrawBitmap WXCALL Alias "wxDC_DrawBitmap" (self As wxDC Ptr, bitmap As wxBitmap Ptr, x As wxCoord, y As wxCoord, transp As wxBool)
 Declare Sub wxDC_DrawPolygon WXCALL Alias "wxDC_DrawPolygon" (self As wxDC Ptr, n As wxInt, pPonts As wxPoint Ptr, xoffset As wxCoord, yoffset As wxCoord, fill_style As wxPolygonFillStyle)
 Declare Sub wxDC_DrawLine WXCALL Alias "wxDC_DrawLine" (self As wxDC Ptr, x1 As wxCoord, y1 As wxCoord, x2 As wxCoord, y2 As wxCoord)
 Declare Sub wxDC_DrawRectangle WXCALL Alias "wxDC_DrawRectangle" (self As wxDC Ptr, x1 As wxCoord, y1 As wxCoord, x2 As wxCoord, y2 As wxCoord)

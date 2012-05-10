@@ -1,86 +1,82 @@
 ''
 '' wx-c MDI example, by dumbledore
 ''
- 
 
-#include once "wx-c/wx.bi" 
-#define wxCLOSE_BOX &h1000 
+#Include "wx-c/wx.bi"
 
-const FALSE = 0 
-const TRUE = NOT FALSE
-const CHILDREN = 4
+Const CHILDREN = 4
 
 '' globals
-	dim shared as wxApp ptr app 
-	dim shared as _MDIParentFrame ptr mdiparent
+	Dim Shared As wxApp Ptr app
+	Dim Shared As wxMDIParentFrame Ptr mdiparent
 
 
 '' obligatory callback when creating parent MDI frames
-function mdiparent_OnCreateClient(  ) as wxMDIClientWindow ptr 
-    
-    function = wxMDIParentFrame_OnCreateClient( mdiparent ) 
+Function mdiparent_OnCreateClient(  ) As wxMDIClientWindow Ptr
 
-end function
+    Function = wxMDIParentFrame_OnCreateClient( mdiparent )
+
+End Function
 
 ''
-sub init_frames( )
+Sub init_frames( )
 
     '' create the parent MDI frame
-    mdiparent = wxMDIParentFrame( ) 
+    mdiparent = wxMDIParentFrame_ctor( )
     wxMDIParentFrame_RegisterVirtual( mdiparent, @mdiparent_OnCreateClient )
-    wxMDIParentFrame_Create( mdiparent, 0, -1, "parent", wxSize( -1, -1 ), wxSize( 500, 500 ), _
-    						 wxDEFAULT_FRAME_STYLE or wxCLOSE_BOX or wxVSCROLL or wxHSCROLL, 0 ) 
-    
-    '' now the child ones
-    dim as wxMDIChildFrame ptr childframe
-    dim as integer i
-    for i = 1 to CHILDREN
-    	childframe = wxMDIChildFrame( ) 
-    	wxMDIChildFrame_Create( childframe, mdiparent, -1, "child_" + str(i), _
-    							wxSize( 10*i, 10*i ), wxSize( 120, 100 ), _
-    							wxDEFAULT_FRAME_STYLE or wxCLOSE_BOX, 0 ) 
-	next
+    wxMDIParentFrame_Create( mdiparent, 0, -1, wxString_ctorUTF8("parent"), -1, -1, 500, 500, _
+                             wxFRAME_DEFAULT_STYLE Or wxCLOSE_BOX Or wxVSCROLL Or wxHSCROLL, 0 )
 
-end sub
+    '' now the child ones
+    Dim As wxMDIChildFrame Ptr childframe
+    Dim As Integer i
+    For i = 1 To CHILDREN
+        childframe = wxMDIChildFrame_ctor( )
+        wxMDIChildFrame_Create( childframe, mdiparent, -1, wxString_ctorUTF8("child_" + Str(i)), _
+                                10*i, 10*i, 120, 100, _
+                                wxFRAME_DEFAULT_STYLE Or wxCLOSE_BOX, 0 )
+    Next
+
+End Sub
 
 ''
-sub init_menus( )
+Sub init_menus( )
 
     '' add a menu bar
-    dim as wxmenubar ptr mbar = wxMenuBar( ) 
-    
-    '' and the menus
-    dim as wxMenu ptr menu = wxMenu( 0, 0 ) 
-    wxMenuBase_Append( menu, -1, "&Nothing", "This does squat.", 0 ) 
-    wxMenuBar_Append( mbar, menu, "&File" ) 
-    wxFrame_SetMenuBar( mdiparent, mbar ) 
+    Dim As wxMenuBar Ptr mbar = wxMenuBar_ctor( )
 
-end sub
+    '' and the menus
+    Dim As wxMenu Ptr menu = wxMenu_ctor( wxString_ctorUTF8(""), 0 )
+    wxMenuBase_Append( menu, -1, wxString_ctorUTF8("&Nothing"), wxString_ctorUTF8("This does squat."), 0 )
+    wxMenuBar_Append( mbar, menu, wxString_ctorUTF8("&File") )
+    wxFrame_SetMenuBar( mdiparent, mbar )
+
+End Sub
 
 ''
-function App_OnInit( ) as integer
+Function App_OnInit WXCALL ( ) As wxBool
 
     ''
     init_frames( )
-    
+
     ''
     init_menus( )
-    
-    ''
-    wxWindow_Show( mdiparent, TRUE ) 
-    
-    function = wxApp_OnInit( app )
 
-end function
+    ''
+    wxWindow_Show( mdiparent, WX_TRUE )
+
+    Function = wxApp_OnInit( app )
+
+End Function
 
 ''
-function App_OnExit( ) as integer
+Function App_OnExit WXCALL ( ) As wxInt
 
-    function = wxApp_OnExit( app ) 
+    Function = wxApp_OnExit( app )
 
-end function
+End Function
 
-'' main	
-	app = wxApp( ) 
-	wxApp_RegisterVirtual( app, @App_OnInit, @App_OnExit ) 
-	wxApp_Run( 0, 0 ) 
+'' main
+	app = wxApp_ctor( )
+	wxApp_RegisterVirtual( app, @App_OnInit, @App_OnExit )
+	wxApp_Run( 0, 0 )
