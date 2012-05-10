@@ -11,11 +11,25 @@
 #include once "rtl.bi"
 #include once "symb.bi"
 
+private sub hCallMain( )
+	dim as ASTNODE ptr main = any
+
+	'' main( 0, NULL )
+	main = astNewCALL( env.main.proc )
+	astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+	astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
+
+	'' tell the emitter to not allocate a result
+	astSetType( main, FB_DATATYPE_VOID, NULL )
+
+	astAdd( main )
+end sub
+
 ':::::
 private sub hDllMainBegin_Win32 ( )
+	dim as ASTNODE ptr reason
 
     dim as FBSYMBOL ptr proc, label, param
-	dim as ASTNODE ptr reason, main
     dim as integer argn
 
 const fbdllreason = "__FB_DLLREASON__"
@@ -61,15 +75,8 @@ const fbdllreason = "__FB_DLLREASON__"
 					   label, _
 					   AST_OPOPT_NONE ) )
 
-	''	main( 0, NULL )
-    main = astNewCALL( env.main.proc )
-    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
-
-	'' tell the emitter to not allocate a result
-	astSetType( main, FB_DATATYPE_VOID, NULL )
-
-    astAdd( main )
+	'' main( ... )
+	hCallMain( )
 
 	'' end if
     astAdd( astNewLABEL( label ) )
@@ -80,8 +87,7 @@ end sub
 
 ':::::
 private sub hDllMainBegin_GlobCtor ( )
-    dim as FBSYMBOL ptr proc, label
-   	dim as ASTNODE ptr main
+	dim as FBSYMBOL ptr proc = any
 
 	'' sub ctor cdecl( )
 	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
@@ -94,15 +100,8 @@ private sub hDllMainBegin_GlobCtor ( )
 
    	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
-	'' main( 0, NULL )
-    main = astNewCALL( env.main.proc )
-    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewARG( main, astNewCONSTi( NULL, typeAddrOf( FB_DATATYPE_VOID ) ) )
-
-	'' tell the emitter to not allocate a result
-	astSetType( main, FB_DATATYPE_VOID, NULL )
-
-    astAdd( main )
+	'' main( ... )
+	hCallMain( )
 
 	astProcEnd( FALSE )
 
