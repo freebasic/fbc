@@ -473,13 +473,15 @@ declare function astAdd _
 declare function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
-		byval after_node as ASTNODE ptr _
+		byval ref as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare sub astAddUnscoped _
 	( _
 		byval n as ASTNODE ptr _
 	)
+
+declare function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astUpdComp2Branch _
 	( _

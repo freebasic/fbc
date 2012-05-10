@@ -263,7 +263,7 @@ private sub hProcFlushAll _
 
 end sub
 
-function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function astUpdate( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -296,6 +296,15 @@ function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
 		n = astDtorListFlush( n, TRUE )
 	end if
 
+	function = n
+end function
+
+function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
+	n = astUpdate( n )
+	if( n = NULL ) then
+		return NULL
+	end if
+
 	'' Link the tree into the procedure's statement list
 	if( ast.proc.curr->r <> NULL ) then
 		ast.proc.curr->r->next = n
@@ -309,43 +318,63 @@ function astAdd( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 end function
 
-''::::
+#if __FB_DEBUG__
+private function hNodeIsFromCurrentProc( byval n as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr i = any
+
+	i = ast.proc.curr->l
+	while( i )
+
+		if( i = n ) then
+			function = TRUE
+			exit while
+		end if
+
+		i = i->next
+	wend
+end function
+#endif
+
 function astAddAfter _
 	( _
 		byval n as ASTNODE ptr, _
-		byval after_node as ASTNODE ptr _
+		byval ref as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr tail_ = any, next_ = any
-
-	if( (after_node = NULL) or (n = NULL) ) then
+	n = astUpdate( n )
+	if( n = NULL ) then
 		return NULL
 	end if
 
-	tail_ = ast.proc.curr->r
+	if( ref ) then
+		assert( hNodeIsFromCurrentProc( ref ) )
 
-	'' tail? no relink needed..
-	if( tail_ = after_node ) then
-		return astAdd( n )
+		'' Insert behind this reference node in the current procedure
+		n->prev = ref
+		n->next = ref->next
+		if( ref->next ) then
+			if( ref->next->prev ) then
+				ref->next->prev = n
+			end if
+		else
+			assert( ast.proc.curr->r = ref )
+			ast.proc.curr->r = n
+		end if
+		ref->next = n
+	else
+		'' Insert at the top of the current procedure
+		n->prev = NULL
+		n->next = ast.proc.curr->l
+		if( ast.proc.curr->l ) then
+			ast.proc.curr->l->prev = n
+		else
+			assert( ast.proc.curr->r = NULL )
+			ast.proc.curr->r = n
+		end if
+		ast.proc.curr->l = n
 	end if
 
-	ast.proc.curr->r = after_node
-
-	next_ = after_node->next
-	after_node->next = NULL
-
-	n = astAdd( n )
-
-    if( next_ = NULL ) then
-    	return NULL
-    end if
-
-	next_->prev = n
-	n->next = next_
-	ast.proc.curr->r = tail_
-
 	function = n
-
 end function
 
 ''::::
@@ -378,6 +407,29 @@ sub astAddUnscoped _
 	ast.proc.curr->block.proc.decl_last = n
 
 end sub
+
+function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr i = any
+
+	assert( proc->class = AST_NODECLASS_PROC )
+
+	i = proc->l
+	while( i )
+		'' Skip over nodes that don't represent executable code
+		select case( i->class )
+		case AST_NODECLASS_NOP, AST_NODECLASS_LABEL, _
+		     AST_NODECLASS_DECL, AST_NODECLASS_LIT, _
+		     AST_NODECLASS_DATASTMT, AST_NODECLASS_DBG _
+
+		case else
+			exit while
+		end select
+
+		i = i->next
+	wend
+
+	function = i
+end function
 
 '':::::
 function astProcBegin _
@@ -1069,26 +1121,8 @@ private function hInitVtable _
 end function
 
 private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
-	dim as ASTNODE ptr i = any, tree = any
+	dim as ASTNODE ptr tree = any
 	dim as FBSYMBOL ptr parent = any
-
-	'' Find the first statement that is executable code,
-	'' and insert the constructor calls above it.
-	i = n->l
-	while( i )
-		'' Skip over non-executable nodes
-		select case( i->class )
-		case AST_NODECLASS_NOP, AST_NODECLASS_LABEL, _
-		     AST_NODECLASS_DECL, AST_NODECLASS_LIT, _
-		     AST_NODECLASS_DATASTMT, AST_NODECLASS_DBG _
-
-		case else
-			i = i->prev
-			exit while
-		end select
-
-		i = i->next
-	wend
 
 	parent = symbGetNamespace( sym )
 
@@ -1101,11 +1135,13 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 	'' 3rd) setup the vtable ptr
 	tree = astNewLINK( tree, hInitVtable( parent, sym ) )
 
-	if( i ) then
-		astAddAfter( tree, i )
-	else
-		astAdd( tree )
+	'' Find the first statement that is executable code,
+	'' and insert the constructor calls above it.
+	n = astFindFirstCode( n )
+	if( n ) then
+		n = n->prev
 	end if
+	astAddAfter( tree, n )
 end sub
 
 private sub hCallFieldDtor _

@@ -960,7 +960,7 @@ private function hCtorChain _
 	parent = symbGetNamespace( proc )
 
 	'' not the first stmt?
-	if( symbGetIsCtorInited( proc ) ) then
+	if( astFindFirstCode( ast.proc.curr ) ) then
 		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
 	end if
 
@@ -1016,7 +1016,7 @@ private function hBaseCtorCall() as integer
 	end if
 	
 	'' not the first stmt?
-	if( symbGetIsCtorInited( proc ) ) then
+	if( astFindFirstCode( ast.proc.curr ) ) then
 		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
