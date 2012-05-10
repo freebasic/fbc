@@ -64,9 +64,7 @@ end type
 
 type FB_CMPSTMT_PROC
 	tkn				as FB_TOKEN
-	node			as ASTNODE ptr
 	is_nested		as integer
-	cmplabel		as FBSYMBOL ptr
 	endlabel		as FBSYMBOL ptr
 	last			as FB_CMPSTMTSTK_ ptr
 end type

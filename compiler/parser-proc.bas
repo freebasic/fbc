@@ -2157,10 +2157,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_FUNCTION, FB_CMPSTMT_MASK_DEFAULT or FB_CMPSTMT_MASK_DATA )
 	stk->proc.tkn = tkn
-	stk->proc.node = ast.proc.curr
 	stk->proc.is_nested = is_nested
-
-	stk->proc.cmplabel = NULL
 	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
 
 	'' init
