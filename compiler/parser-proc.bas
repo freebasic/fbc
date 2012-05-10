@@ -759,9 +759,6 @@ function cProcHeader _
 
     end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
     function = proc
 
 end function
@@ -1474,9 +1471,6 @@ function cOperatorHeader _
 		end if
 	end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
     function = proc
 
 end function
@@ -1827,9 +1821,6 @@ function cPropertyHeader _
     	end if
     end if
 
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
-
 	setUdtPropertyFlags(parent, is_indexed, is_get)
 
     function = proc
@@ -2032,9 +2023,6 @@ function cCtorHeader _
     		symbSetIsDeclared( proc )
     	end if
 	end if
-
-    ''
-    symbSetProcIncFile( proc, env.inf.incfile )
 
     function = proc
 

@@ -2533,21 +2533,6 @@ function symbCalcParamLen _
 end function
 
 '':::::
-sub symbSetProcIncFile _
-	( _
-		byval p as FBSYMBOL ptr, _
-		byval incf as zstring ptr _
-	)
-
-	if( p->proc.ext = NULL ) then
-		p->proc.ext = symbAllocProcExt( )
-	end if
-
-	p->proc.ext->dbg.incfile = incf
-
-end sub
-
-'':::::
 private function hMangleFunctionPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _

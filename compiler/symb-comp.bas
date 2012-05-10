@@ -101,7 +101,6 @@ private function hProcBegin _
 	end if
 
 	astProcBegin( proc, FALSE )
-    symbSetProcIncFile( proc, env.inf.incfile )
 	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 	function = proc

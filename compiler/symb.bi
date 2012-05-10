@@ -1269,12 +1269,6 @@ declare sub symbSetArrayDimTb _
 		dTB() as FBARRAYDIM _
 	)
 
-declare sub symbSetProcIncFile _
-	( _
-		byval p as FBSYMBOL ptr, _
-		byval incf as zstring ptr _
-	)
-
 declare sub symbDelSymbolTb _
 	( _
 		byval tb as FBSYMBOLTB ptr, _

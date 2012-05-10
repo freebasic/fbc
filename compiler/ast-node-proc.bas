@@ -420,7 +420,8 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 		sym->proc.ext = symbAllocProcExt( )
 	end if
 
-	''
+	sym->proc.ext->dbg.incfile = env.inf.incfile
+
 	ast.proc.curr = n
 	ast.currblock = n
 

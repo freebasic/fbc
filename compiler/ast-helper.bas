@@ -516,7 +516,6 @@ end function
 
 sub astBuildProcBegin( byval proc as FBSYMBOL ptr )
 	astProcBegin( proc, FALSE )
-    symbSetProcIncFile( proc, env.inf.incfile )
 	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 end sub
 

@@ -43,9 +43,6 @@ const fbdllreason = "__FB_DLLREASON__"
 						env.target.stdcall )
 
 	astProcBegin( proc, FALSE )
-
-    symbSetProcIncFile( proc, NULL )
-
 	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
    	'' function = TRUE
@@ -93,8 +90,6 @@ private sub hDllMainBegin_GlobCtor ( )
 						FB_FUNCMODE_CDECL )
 
 	astProcBegin( proc, FALSE )
-
-    symbSetProcIncFile( proc, NULL )
 	symbAddGlobalCtor( proc )
 
    	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
@@ -169,8 +164,6 @@ const fbargv = "__FB_ARGV__"
 
 	astProcBegin( env.main.proc, TRUE )
 
-    symbSetProcIncFile( env.main.proc, NULL )
-
 	env.main.argc = symbGetParamVar( env.main.argc )
 	env.main.argv = symbGetParamVar( env.main.argv )
 
@@ -203,10 +196,7 @@ private sub hModLevelBegin( )
     symbAddGlobalCtor( env.main.proc )
 
 	astProcBegin( env.main.proc, TRUE )
-
-    symbSetProcIncFile( env.main.proc, NULL )
     symbSetIsCalled( env.main.proc )
-
 	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 end sub
