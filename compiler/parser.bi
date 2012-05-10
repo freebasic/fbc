@@ -500,11 +500,7 @@ declare sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
 declare function cProcStmtBegin( byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE ) as integer
 declare function cProcStmtEnd( ) as integer
 declare sub cExitStatement()
-
-declare function cEndStatement _
-	( _
-		_
-	) as integer
+declare function cEndStatement( ) as integer
 
 declare sub cContinueStatement()
 declare sub cWithStmtBegin()
