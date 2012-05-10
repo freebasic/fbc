@@ -2148,11 +2148,7 @@ function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	stk->proc.is_nested = is_nested
 	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
 
-	'' init
-	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
-
 	function = TRUE
-
 end function
 
 '' ProcStmtEnd  =  END (SUB | FUNCTION) .

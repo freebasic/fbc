@@ -1206,14 +1206,10 @@ declare function rtlInitMain _
 declare function rtlInitApp _
 	( _
 		byval argc as ASTNODE ptr, _
-		byval argv as ASTNODE ptr, _
-		byval isdllmain as integer _
+		byval argv as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function rtlExitApp _
-	( _
-		byval errlevel as ASTNODE ptr _
-	) as integer
+declare function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer
 
 declare function rtlMemCopy _
 	( _
@@ -1747,15 +1743,8 @@ declare function rtlGfxEvent _
 		byval is_func as integer _
 	) as ASTNODE ptr
 
-declare function rtlProfileCall_mcount _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function rtlProfileCall_monstartup _
-	( _
-		_
-	) as ASTNODE ptr
+declare function rtlProfileCall_mcount( ) as ASTNODE ptr
+declare sub rtlProfileCall_monstartup( )
 
 declare function rtlGosubPush _
 	( _

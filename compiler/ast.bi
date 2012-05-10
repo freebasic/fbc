@@ -1079,8 +1079,6 @@ declare function astBuildTypeIniCtorList _
 
 declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 
-declare sub astBuildProcBegin( byval proc as FBSYMBOL ptr )
-
 declare function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1314,8 +1312,6 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 #define astGetDataClass(n) typeGetClass( astGetDataType( n ) )
 
 #define astGetSymbol(n)	n->sym
-
-#define astGetProcInitlabel(n) n->block.initlabel
 
 #define astGetProcExitlabel(n) n->block.exitlabel
 

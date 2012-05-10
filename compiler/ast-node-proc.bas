@@ -420,6 +420,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 		sym->proc.ext = symbAllocProcExt( )
 	end if
 
+	'' File name where the procedure body was found
 	sym->proc.ext->dbg.incfile = env.inf.incfile
 
 	ast.proc.curr = n
@@ -466,6 +467,24 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 	end with
 
 	sym->proc.ext->stmtnum = parser.stmt.cnt
+
+	'' main()?
+	if( symbGetIsMainProc( sym ) ) then
+		dim as FBSYMBOL ptr argc = any, argv = any
+
+		assert( symbGetProcParams( sym ) = 2 )
+		argc = symbGetProcHeadParam( sym )
+		argv = symbGetProcTailParam( sym )
+
+		'' fb_Init( argc, argv )
+		'' (plus some other calls depending on -exx etc.)
+		env.main.initnode = rtlInitApp( _
+			astNewVAR( symbGetParamVar( argc ), 0, symbGetFullType( argc ) ), _
+			astNewVAR( symbGetParamVar( argv ), 0, symbGetFullType( argv ) ) )
+	end if
+
+	'' Label at beginning of lexical block, used by debug stabs output
+	astAdd( astNewLABEL( n->block.initlabel ) )
 end sub
 
 '':::::
@@ -1236,7 +1255,7 @@ private sub hGenStaticInstancesDtors _
     '' for each node..
     wrap = listGetHead( dtorlist )
     do while( wrap <> NULL )
-		astBuildProcBegin( wrap->proc )
+		astProcBegin( wrap->proc, FALSE )
 		n = ast.proc.curr
 
         '' call the dtor
@@ -1330,12 +1349,12 @@ end sub
 private sub hGlobCtorBegin( byval is_ctor as integer )
 	dim as FBSYMBOL ptr proc = any
 
+	'' sub ctorname|dtorname cdecl( ) constructor|destructor
 	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
 						FB_DATATYPE_VOID, NULL, _
 						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
 						FB_FUNCMODE_CDECL )
-
 	if( is_ctor ) then
 		symbAddGlobalCtor( proc )
 	else
@@ -1344,7 +1363,7 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 	symbSetIsCalled( proc )
 	symbSetIsParsed( proc )
 
-	astBuildProcBegin( proc )
+	astProcBegin( proc, FALSE )
 end sub
 
 private sub hGenGlobalInstancesCtor( )
@@ -1353,6 +1372,7 @@ private sub hGenGlobalInstancesCtor( )
 
     '' any global instance with ctors?
     if( ast.globinst.ctorcnt > 0 ) then
+		'' sub ctor cdecl( ) constructor
 		hGlobCtorBegin( TRUE )
 
     	'' for each node..
@@ -1368,11 +1388,13 @@ private sub hGenGlobalInstancesCtor( )
     		inst = listGetNext( inst )
     	loop
 
+		'' end sub
 		astProcEnd( FALSE )
     end if
 
     '' any global instance with dtors?
     if( ast.globinst.dtorcnt > 0 ) then
+		'' sub dtor cdecl( ) destructor
 		hGlobCtorBegin( FALSE )
 
     	'' for each node (in inverse order)..
@@ -1388,11 +1410,9 @@ private sub hGenGlobalInstancesCtor( )
     		inst = listGetPrev( inst )
     	loop
 
+		'' end sub
 		astProcEnd( FALSE )
     end if
 
     '' list will be deleted by astProcListEnd( )
-
 end sub
-
-

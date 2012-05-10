@@ -514,11 +514,6 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
-sub astBuildProcBegin( byval proc as FBSYMBOL ptr )
-	astProcBegin( proc, FALSE )
-	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
-end sub
-
 '':::::
 function astBuildProcResultVar _
 	( _

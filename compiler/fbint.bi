@@ -632,8 +632,6 @@ end type
 
 type FBMAIN
 	proc			as FBSYMBOL ptr
-	argc			as FBSYMBOL ptr
-	argv			as FBSYMBOL ptr
 	initnode		as ASTNODE ptr
 end type
 

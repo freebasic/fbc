@@ -101,7 +101,6 @@ private function hProcBegin _
 	end if
 
 	astProcBegin( proc, FALSE )
-	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 	function = proc
 end function
@@ -112,21 +111,14 @@ private sub hProcEnd( )
 	symbNestEnd( TRUE )
 end sub
 
-':::::
-private sub hCopyCtorBody _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-	dim as FBSYMBOL ptr this_, src
+private sub hCopyCtorBody( byval proc as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr this_ = any, src = any
 
 	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
 	src = symbGetParamVar( symbGetProcTailParam( proc ) )
 
-    '' assign op overload will do the rest
-
+	'' assign op overload will do the rest
     astAdd( astNewASSIGN( astBuildInstPtr( this_ ), astBuildInstPtr( src ) ) )
-
 end sub
 
 '':::::
