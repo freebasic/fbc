@@ -1092,7 +1092,7 @@ private function hGetOperatorName _
 		function = @"le"
 
 	case AST_OP_NOT
-		function = @"nt"
+		function = @"co"
 
 	case AST_OP_NEG
 		function = @"ng"
