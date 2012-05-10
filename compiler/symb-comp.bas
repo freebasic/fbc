@@ -61,17 +61,15 @@ private sub hAddRhsParam _
 
 end sub
 
-'':::::
 private function hProcBegin _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval op as AST_OP, _
-		byval attrib as FB_SYMBATTRIB, _
 		byval add_rhs as integer, _
-		byref proc as FBSYMBOL ptr _
-	) as ASTNODE ptr static
+		byval attrib as FB_SYMBATTRIB _
+	) as FBSYMBOL ptr
 
-	dim as ASTNODE ptr node
+	dim as FBSYMBOL ptr proc = any
 
 	symbNestBegin( parent, TRUE )
 
@@ -102,29 +100,17 @@ private function hProcBegin _
 		                        FB_SYMBOPT_DECLARING )
 	end if
 
-    ''
-	node = astProcBegin( proc, FALSE )
-
+	astProcBegin( proc, FALSE )
     symbSetProcIncFile( proc, env.inf.incfile )
+	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
-   	astAdd( astNewLABEL( astGetProcInitlabel( node ) ) )
-
-	function = node
-
+	function = proc
 end function
 
-'':::::
-private sub hProcEnd _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval node as ASTNODE ptr _
-	)
-
+private sub hProcEnd( )
 	'' end cons|destructor
-	astProcEnd( node, FALSE )
-
+	astProcEnd( FALSE )
 	symbNestEnd( TRUE )
-
 end sub
 
 ':::::
@@ -150,19 +136,13 @@ private sub hAddCtor _
 		byval sym as FBSYMBOL ptr, _
 		byval is_ctor as integer, _
 		byval is_copyctor as integer _
-	) static
+	)
 
-	dim as ASTNODE ptr proc_node
-	dim as FBSYMBOL ptr proc
+	dim as FBSYMBOL ptr proc = any
 
-    proc_node = hProcBegin( sym, _
-    						INVALID, _
-    						iif( is_ctor, _
-    							 FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR, _
-    							 FB_SYMBATTRIB_DESTRUCTOR ), _
-    						is_copyctor, _
-    						proc )
-
+	proc = hProcBegin( sym, INVALID, is_copyctor, _
+	                   iif( is_ctor, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR, _
+	                                 FB_SYMBATTRIB_DESTRUCTOR ) )
 
 	'' call to the static ctor will be added by the ast
 
@@ -172,7 +152,7 @@ private sub hAddCtor _
 
 	'' ditto for the dtor's
 
-	hProcEnd( sym, proc_node )
+	hProcEnd( )
 
 	'' hasC|Dtor flags will be set by symbAddCtor()
 
@@ -393,63 +373,32 @@ private sub hCloneBody _
 
 end sub
 
-'':::::
-private sub hAddClone _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-	dim as ASTNODE ptr proc_node
-	dim as FBSYMBOL ptr proc
-
-    proc_node = hProcBegin( sym, _
-    						AST_OP_ASSIGN, _
-    						FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR, _
-    						TRUE, _
-    						proc )
-
+private sub hAddClone( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr proc = any
+	proc = hProcBegin( sym, AST_OP_ASSIGN, TRUE, _
+	                   FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
 	hCloneBody( sym, proc )
-
-	hProcEnd( sym, proc_node )
-
+	hProcEnd( )
 	symbSetCantUndef( sym )
-
 end sub
 
-'':::::
-sub symbCompAddDefDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) 
-	
+sub symbCompAddDefDtor( byval sym as FBSYMBOL ptr )
 	hAddCtor( sym, FALSE, FALSE )
-	
 end sub
 
-'':::::
-sub symbCompAddDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) 
-	
+sub symbCompAddDefCtor( byval sym as FBSYMBOL ptr )
 	hAddCtor( sym, TRUE, FALSE )
-	
 end sub
 
-'':::::
-sub symbCompAddDefMembers _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
+sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 	'' RTTI?
 	if( symbGetHasRTTI( sym ) ) then
 		'' only if it isn't FB's own Object base super class
 		if( sym <> symb.rtti.fb_object ) then
 			hAddRTTI( sym )
 		end if
-	End if
-	
+	end if
+
 	'' has fields with ctors?
 	if( symbGetUDTHasCtorField( sym ) ) then
 		'' any ctor explicitly defined?
@@ -468,7 +417,6 @@ sub symbCompAddDefMembers _
 		if( symbGetCompCopyCtor( sym ) = NULL ) then
 			hAddCtor( sym, TRUE, TRUE )
 		end if
-
 	end if
 
 	'' has fields with dtors?
@@ -478,7 +426,6 @@ sub symbCompAddDefMembers _
 			hAddCtor( sym, FALSE, FALSE )
 		end if
 	end if
-	
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

@@ -416,17 +416,8 @@ declare function astGetValueAsWstr _
 		byval n as ASTNODE ptr _
 	) as wstring ptr
 
-declare function astProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval ismain as integer = FALSE _
-	) as ASTNODE ptr
-
-declare function astProcEnd _
-	( _
-		byval p as ASTNODE ptr, _
-		byval callrtexit as integer = FALSE _
-	) as integer
+declare sub astProcBegin( byval proc as FBSYMBOL ptr, byval ismain as integer )
+declare function astProcEnd( byval callrtexit as integer ) as integer
 
 declare sub astProcVectorize _
 	( _
@@ -1088,15 +1079,7 @@ declare function astBuildTypeIniCtorList _
 
 declare function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 
-declare function astBuildProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-declare sub astBuildProcEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
+declare sub astBuildProcBegin( byval proc as FBSYMBOL ptr )
 
 declare function astBuildProcResultVar _
 	( _
@@ -1380,6 +1363,12 @@ extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
 declare sub astDumpTree _
+	( _
+		byval n as ASTNODE ptr, _
+		byval col as integer = 0 _
+	)
+
+declare sub astDumpList _
 	( _
 		byval n as ASTNODE ptr, _
 		byval col as integer = 0 _

@@ -514,32 +514,10 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
-'':::::
-function astBuildProcBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr n = any
-
-	n = astProcBegin( proc, FALSE )
-
+sub astBuildProcBegin( byval proc as FBSYMBOL ptr )
+	astProcBegin( proc, FALSE )
     symbSetProcIncFile( proc, env.inf.incfile )
-
-   	astAdd( astNewLABEL( astGetProcInitlabel( n ) ) )
-
-   	function = n
-
-end function
-
-'':::::
-sub astBuildProcEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
-	astProcEnd( n, FALSE )
-
+	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 end sub
 
 '':::::

@@ -15,7 +15,7 @@
 private sub hDllMainBegin_Win32 ( )
 
     dim as FBSYMBOL ptr proc, label, param
-   	dim as ASTNODE ptr reason, main, procnode
+	dim as ASTNODE ptr reason, main
     dim as integer argn
 
 const fbdllreason = "__FB_DLLREASON__"
@@ -42,13 +42,11 @@ const fbdllreason = "__FB_DLLREASON__"
 						FB_SYMBATTRIB_PUBLIC, _
 						env.target.stdcall )
 
-    ''
-	procnode = astProcBegin( proc, FALSE )
+	astProcBegin( proc, FALSE )
 
     symbSetProcIncFile( proc, NULL )
 
-	''
-   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
    	'' function = TRUE
    	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), _
@@ -79,15 +77,14 @@ const fbdllreason = "__FB_DLLREASON__"
 	'' end if
     astAdd( astNewLABEL( label ) )
 
-   	''
-   	astProcEnd( procnode, FALSE )
+	astProcEnd( FALSE )
 
 end sub
 
 ':::::
 private sub hDllMainBegin_GlobCtor ( )
     dim as FBSYMBOL ptr proc, label
-   	dim as ASTNODE ptr main, procnode
+   	dim as ASTNODE ptr main
 
 	'' sub ctor cdecl( )
 	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", _
@@ -95,12 +92,12 @@ private sub hDllMainBegin_GlobCtor ( )
 						FB_SYMBATTRIB_PRIVATE, _
 						FB_FUNCMODE_CDECL )
 
-	procnode = astProcBegin( proc, FALSE )
+	astProcBegin( proc, FALSE )
 
     symbSetProcIncFile( proc, NULL )
 	symbAddGlobalCtor( proc )
 
-   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+   	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 	'' main( 0, NULL )
     main = astNewCALL( env.main.proc )
@@ -112,7 +109,7 @@ private sub hDllMainBegin_GlobCtor ( )
 
     astAdd( main )
 
-   	astProcEnd( procnode, FALSE )
+	astProcEnd( FALSE )
 
 end sub
 
@@ -170,8 +167,7 @@ const fbargv = "__FB_ARGV__"
 
     symbSetIsMainProc( env.main.proc )
 
-    ''
-	env.main.node = astProcBegin( env.main.proc, TRUE )
+	astProcBegin( env.main.proc, TRUE )
 
     symbSetProcIncFile( env.main.proc, NULL )
 
@@ -188,7 +184,7 @@ const fbargv = "__FB_ARGV__"
     '' init( argc, argv )
     env.main.initnode = rtlInitApp( argc, argv, isdllmain )
 
-   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
+   	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 end sub
 
@@ -206,13 +202,12 @@ private sub hModLevelBegin( )
 
     symbAddGlobalCtor( env.main.proc )
 
-    ''
-	env.main.node = astProcBegin( env.main.proc, TRUE )
+	astProcBegin( env.main.proc, TRUE )
 
     symbSetProcIncFile( env.main.proc, NULL )
     symbSetIsCalled( env.main.proc )
 
-   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
+	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 end sub
 
@@ -244,17 +239,14 @@ private sub hMainEnd _
     end if
 
 	'' if main(), 0 will be returned to crt
-	astProcEnd( env.main.node, isdllmain = FALSE )
+	astProcEnd( isdllmain = FALSE )
 
 end sub
 
 
 '':::::
 private sub hModLevelEnd( )
-
-	''
-	astProcEnd( env.main.node, FALSE )
-
+	astProcEnd( FALSE )
 end sub
 
 '':::::

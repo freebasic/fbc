@@ -23,11 +23,6 @@ type FB_GLOBINSTANCE
 	has_dtor		as integer
 end type
 
-declare function hNewProcNode _
-	( _
-		_
-	) as ASTNODE ptr
-
 declare function hModLevelIsEmpty _
 	( _
 		byval p as ASTNODE ptr _
@@ -38,10 +33,7 @@ declare sub hLoadProcResult _
 		byval proc as FBSYMBOL ptr _
 	)
 
-declare function hDeclProcParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
+declare function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 
 declare function hUpdScopeBreakList	_
 	( _
@@ -93,12 +85,7 @@ sub astProcListEnd( )
 
 end sub
 
-'':::::
-private function hNewProcNode _
-	(  _
-		_
-	) as ASTNODE ptr
-
+private function hNewProcNode( ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_PROC, FB_DATATYPE_INVALID, NULL )
@@ -115,15 +102,9 @@ private function hNewProcNode _
 	ast.proc.tail = n
 
 	function = n
-
 end function
 
-'':::::
-private sub hDelProcNode _
-	( _
-		byval n as ASTNODE ptr _
-	) static
-
+private sub hDelProcNode( byval n as ASTNODE ptr )
 	n->l = NULL
 	n->r = NULL
 
@@ -141,7 +122,6 @@ private sub hDelProcNode _
 	end If
 
 	astDelNode( n )
-
 end sub
 
 ''::::
@@ -207,10 +187,8 @@ private sub hProcFlush _
     ''
     symbNestEnd( FALSE )
 
-	''
 	hDelProcNode( p )
 
-	''
 	ast.doemit = TRUE
 
 end sub
@@ -431,27 +409,13 @@ function astFindFirstCode( byval proc as ASTNODE ptr ) as ASTNODE ptr
 	function = i
 end function
 
-'':::::
-function astProcBegin _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval ismain as integer _
-	) as ASTNODE ptr
+sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
+	dim as ASTNODE ptr n = any
 
-    dim as ASTNODE ptr n = any
-
-	function = NULL
-
-	'' alloc new node
 	n = hNewProcNode( )
-	if( n = NULL ) then
-		exit function
-	end if
 
-	''
 	symbSymbTbInit( sym->proc.symtb, sym )
 
-	''
 	if( sym->proc.ext = NULL ) then
 		sym->proc.ext = symbAllocProcExt( )
 	end if
@@ -471,39 +435,26 @@ function astProcBegin _
 	n->block.initlabel = symbAddLabel( NULL )
 	n->block.exitlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	''
 	n->sym = sym
-
 	n->block.proc.ismain = ismain
 	n->block.parent = NULL
 	n->block.inistmt = parser.stmt.cnt
-
-	'' break list
 	n->block.breaklist.head = NULL
 	n->block.breaklist.tail = NULL
-
-	''
 	n->block.proc.decl_last = NULL
 
-	''
 	irProcBegin( sym )
 
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
 	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
-
-    	'' alloc parameters
-    	if( hDeclProcParams( sym ) = FALSE ) then
-    		exit function
-    	end if
+		'' alloc parameters
+		hDeclProcParams( sym )
 
 		'' alloc result local var
 		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-			if( symbAddProcResult( sym ) = NULL ) then
-				exit function
-			end if
+			symbAddProcResult( sym )
 		end if
-
 	end if
 
 	'' local error handler
@@ -514,10 +465,7 @@ function astProcBegin _
 	end with
 
 	sym->proc.ext->stmtnum = parser.stmt.cnt
-
-	function = n
-
-end function
+end sub
 
 '':::::
 private function hCheckErrHnd _
@@ -615,16 +563,13 @@ private function hCallProfiler _
 
 end function
 
-'':::::
-function astProcEnd _
-	( _
-		byval n as ASTNODE ptr, _
-		byval callrtexit as integer _
-	) as integer
-
+function astProcEnd( byval callrtexit as integer ) as integer
     static as integer rec_cnt = 0
     dim as integer res = any, do_flush = any
     dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr n = any
+
+	n = ast.proc.curr
 
 	''
 	rec_cnt += 1
@@ -660,7 +605,7 @@ function astProcEnd _
 	'' Check for any undefined labels (labels can be forward references)
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
-	if( res = TRUE ) then
+	if( res ) then
 		'' update proc's breaks list, adding calls to destructors when needed
 		if( n->block.breaklist.head <> NULL ) then
 			res = astScopeUpdBreakList( n )
@@ -706,7 +651,7 @@ function astProcEnd _
 	irProcEnd( sym )
 
 	do_flush = FALSE
-	if( (res = TRUE) and (errGetCount( ) = 0) ) then
+	if( res and (errGetCount( ) = 0) ) then
 		symbSetIsParsed( sym )
 
 		'' not into a recursion?
@@ -763,12 +708,7 @@ function astProcEnd _
 
 end function
 
-'':::::
-private function hDeclProcParams _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer
-
+private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
     dim as integer i = any
     dim as FBSYMBOL ptr p = any
 
@@ -780,11 +720,9 @@ private function hDeclProcParams _
 		symbAddProcResultParam( proc )
 	end if
 
-	''
 	i = 1
 	p = symbGetProcLastParam( proc )
 	do while( p <> NULL )
-
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
 			p->param.var = symbAddParam( symbGetName( p ), p )
 			if( p->param.var = NULL ) then
@@ -798,7 +736,6 @@ private function hDeclProcParams _
 	loop
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -1298,12 +1235,13 @@ private sub hGenStaticInstancesDtors _
     '' for each node..
     wrap = listGetHead( dtorlist )
     do while( wrap <> NULL )
-    	n = astBuildProcBegin( wrap->proc )
+		astBuildProcBegin( wrap->proc )
+		n = ast.proc.curr
 
         '' call the dtor
         hCallStaticCtor( wrap->sym, NULL )
 
-		astBuildProcEnd( n )
+		astProcEnd( FALSE )
 
 		'' must be flushed before the proc that has the static vars, because
 		'' they will be removed from hash and symbols table right-after that
@@ -1388,14 +1326,8 @@ sub astProcAddGlobalInstance _
 
 end sub
 
-'':::::
-private function hGlobCtorBegin _
-	( _
-		byval is_ctor as integer _
-	) as ASTNODE ptr
-
-    dim as FBSYMBOL ptr proc = any
-    dim as ASTNODE ptr n = any
+private sub hGlobCtorBegin( byval is_ctor as integer )
+	dim as FBSYMBOL ptr proc = any
 
 	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
 						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
@@ -1405,42 +1337,22 @@ private function hGlobCtorBegin _
 
 	if( is_ctor ) then
 		symbAddGlobalCtor( proc )
-    else
-    	symbAddGlobalDtor( proc )
-    end if
+	else
+		symbAddGlobalDtor( proc )
+	end if
+	symbSetIsCalled( proc )
+	symbSetIsParsed( proc )
 
-    n = astBuildProcBegin( proc )
-
-    function = n
-
-end function
-
-'':::::
-private sub hCtorEnd _
-	( _
-		byval n as ASTNODE ptr _
-	)
-
-	astBuildProcEnd( n )
-
-	symbSetIsCalled( n->sym )
-	symbSetIsParsed( n->sym )
-
+	astBuildProcBegin( proc )
 end sub
 
-'':::::
-private sub hGenGlobalInstancesCtor _
-	( _
-		_
-	)
-
+private sub hGenGlobalInstancesCtor( )
 	dim as FB_GLOBINSTANCE ptr inst = any
-	dim as ASTNODE ptr n = any
 	dim as FBSYMBOL ptr sym = any
 
     '' any global instance with ctors?
     if( ast.globinst.ctorcnt > 0 ) then
-		n = hGlobCtorBegin( TRUE )
+		hGlobCtorBegin( TRUE )
 
     	'' for each node..
     	inst = listGetHead( @ast.globinst.list )
@@ -1455,12 +1367,12 @@ private sub hGenGlobalInstancesCtor _
     		inst = listGetNext( inst )
     	loop
 
-    	hCtorEnd( n )
+		astProcEnd( FALSE )
     end if
 
     '' any global instance with dtors?
     if( ast.globinst.dtorcnt > 0 ) then
-		n = hGlobCtorBegin( FALSE )
+		hGlobCtorBegin( FALSE )
 
     	'' for each node (in inverse order)..
     	inst = listGetTail( @ast.globinst.list )
@@ -1475,7 +1387,7 @@ private sub hGenGlobalInstancesCtor _
     		inst = listGetPrev( inst )
     	loop
 
-    	hCtorEnd( n )
+		astProcEnd( FALSE )
     end if
 
     '' list will be deleted by astProcListEnd( )

@@ -2040,18 +2040,11 @@ function cCtorHeader _
 
 end function
 
-'':::::
-''ProcStmtBegin	  =	  (PRIVATE|PUBLIC)? STATIC?
-''						(SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
-''
-function cProcStmtBegin _
-	( _
-		byval attrib as FB_SYMBATTRIB _
-	) as integer
-
+'' ProcStmtBegin  =  (PRIVATE|PUBLIC)? STATIC?
+''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
+function cProcStmtBegin( byval attrib as FB_SYMBATTRIB ) as integer
 	dim as integer tkn = any, is_nested = any
     dim as FBSYMBOL ptr proc = any
-    dim as ASTNODE ptr procnode = any
     dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
@@ -2159,38 +2152,27 @@ function cProcStmtBegin _
 	end if
 
 	'' emit proc setup
-	procnode = astProcBegin( proc, FALSE )
-	if( procnode = NULL ) then
-		exit function
-	end if
+	astProcBegin( proc, FALSE )
 
 	'' push to stmt stack
-	stk = cCompStmtPush( FB_TK_FUNCTION, _
-						 FB_CMPSTMT_MASK_DEFAULT or FB_CMPSTMT_MASK_DATA )
-
+	stk = cCompStmtPush( FB_TK_FUNCTION, FB_CMPSTMT_MASK_DEFAULT or FB_CMPSTMT_MASK_DATA )
 	stk->proc.tkn = tkn
-	stk->proc.node = procnode
+	stk->proc.node = ast.proc.curr
 	stk->proc.is_nested = is_nested
 
 	stk->proc.cmplabel = NULL
-	stk->proc.endlabel = astGetProcExitlabel( procnode )
+	stk->proc.endlabel = astGetProcExitlabel( ast.proc.curr )
 
 	'' init
-	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
+	astAdd( astNewLABEL( astGetProcInitlabel( ast.proc.curr ) ) )
 
 	function = TRUE
 
 end function
 
-'':::::
-''ProcStmtEnd	  =	  END (SUB | FUNCTION) .
-''
-function cProcStmtEnd _
-	( _
-		_
-	) as integer static
-
-	dim as FB_CMPSTMTSTK ptr stk
+'' ProcStmtEnd  =  END (SUB | FUNCTION) .
+function cProcStmtEnd( ) as integer
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -2235,7 +2217,7 @@ function cProcStmtEnd _
 	end if
 
     '' always finish
-	function = astProcEnd( stk->proc.node, FALSE )
+	function = astProcEnd( FALSE )
 
 	'' was the namespace changed?
 	if( stk->proc.is_nested ) then
