@@ -8,14 +8,54 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-''PokeStmt =   POKE Expression, Expression .
 ''
-function cPokeStmt _
+'' (SymbolType ',')? Expression
+''
+private function hOptionalTypeAndFirstExpr _
 	( _
-		_
-	) as integer
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer _
+	) as ASTNODE ptr
 
+	dim as ASTNODE ptr expr = any
+
+	expr = cTypeOrExpression( FALSE, dtype, subtype, lgt )
+	if( expr = NULL ) then
+		'' SymbolType
+
+		'' check for types invalid for PEEK/POKE
+		select case( dtype )
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			'' error recovery: fake a type
+			dtype = FB_DATATYPE_UBYTE
+			subtype = NULL
+		end select
+
+		'' ','
+		hMatchCOMMA( )
+
+		'' Expression
+		expr = cExpression( )
+		if( expr = NULL ) then
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0 )
+		end if
+	else
+		'' Expression (without a SymbolType in front of it)
+		dtype = FB_DATATYPE_UBYTE
+		subtype  = NULL
+	end if
+
+	function = expr
+end function
+
+''
+'' PokeStmt  =  POKE (SymbolType ',')? Expression ',' Expression .
+''
+function cPokeStmt( ) as integer
 	dim as ASTNODE ptr expr1 = any, expr2 = any
 	dim as integer poketype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
@@ -25,28 +65,10 @@ function cPokeStmt _
 	'' POKE
 	lexSkipToken( )
 
-	'' (SymbolType ',')?
-	if( cSymbolType( poketype, subtype, lgt ) ) then
+	'' (SymbolType ',')? Expression
+	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype, lgt )
 
-		'' check for invalid types
-		select case poketype
-		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			'' error recovery: fake a type
-			poketype = FB_DATATYPE_UBYTE
-			subtype = NULL
-		end select
-
-		'' ','
-		hMatchCOMMA( )
-	else
-		poketype = FB_DATATYPE_UBYTE
-		subtype  = NULL
-	end if
-
-	'' Expression, Expression
-	hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
-
+	'' ','
 	hMatchCOMMA( )
 
 	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
@@ -83,10 +105,10 @@ function cPokeStmt _
 
 end function
 
-'':::::
-'' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
-function cPeekFunct() as ASTNODE ptr
+'' PeekFunct  =  PEEK '(' (SymbolType ',')? Expression ')' .
+''
+function cPeekFunct( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any
@@ -99,26 +121,8 @@ function cPeekFunct() as ASTNODE ptr
 	'' '('
 	hMatchLPRNT( )
 
-	'' (SymbolType ',')?
-	if( cSymbolType( dtype, subtype, lgt ) ) then
-		'' check for invalid types
-		select case typeGet( dtype )
-		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			'' error recovery: fake a type
-			dtype = FB_DATATYPE_UBYTE
-			subtype = NULL
-		end select
-
-		'' ','
-		hMatchCOMMA( )
-	else
-		dtype = FB_DATATYPE_UBYTE
-		subtype = NULL
-	end if
-
-	'' Expression
-	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+	'' (SymbolType ',')? Expression
+	expr = hOptionalTypeAndFirstExpr( dtype, subtype, lgt )
 
 	' ')'
 	hMatchRPRNT( )

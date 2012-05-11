@@ -63,6 +63,7 @@ Version 0.24.0:
 - Updated header for cryptlib 3.4.1
 - Wstrings are now allowed in Print Using
 - Len(), Sizeof() and Typeof() can now be used on function calls and array accesses even if they have the same identifier as a type
+- Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
