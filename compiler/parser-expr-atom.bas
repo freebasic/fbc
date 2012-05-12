@@ -130,7 +130,7 @@ private function hFindId_QB _
 				if( is_match ) then
     				select case as const symbGetClass( sym )
 					case FB_SYMBCLASS_CONST
-						return cConstantEx( sym )
+						return cConstant( sym )
 
 					case FB_SYMBCLASS_PROC
   						'' if it's a RTL func, the suffix is obligatory
@@ -181,7 +181,7 @@ private function hFindId_QB _
     			if( is_match ) then
     				select case as const symbGetClass( sym )
 					case FB_SYMBCLASS_CONST
-						return cConstantEx( sym )
+						return cConstant( sym )
 
 					case FB_SYMBCLASS_PROC
 						return cFunctionEx( base_parent, sym )
@@ -254,7 +254,7 @@ private function hFindId _
 					end if
 				end if
 
-				return cConstantEx( sym )
+				return cConstant( sym )
 
 			case FB_SYMBCLASS_PROC
 				return cFunctionEx( base_parent, sym )

@@ -718,15 +718,7 @@ declare function cQuirkFunction _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-declare function cConstant _
-	( _
-		byval chain as FBSYMCHAIN ptr _
-	) as ASTNODE ptr
-
-declare function cConstantEx _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function cEnumConstant _
 	( _
