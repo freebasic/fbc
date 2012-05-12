@@ -592,7 +592,7 @@ private function hTypeBody _
 
 			select case lexGetToken( )
 			case FB_TK_PUBLIC
-				attrib = FB_SYMBATTRIB_VIS_PUBLIC
+				attrib = FB_SYMBATTRIB_NONE
 			case FB_TK_PRIVATE
 				attrib = FB_SYMBATTRIB_VIS_PRIVATE
 			case FB_TK_PROTECTED
