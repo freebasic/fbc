@@ -12,6 +12,11 @@ function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
 
+	'' check visibility
+	if( symbCheckAccess( sym ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
+	end if
+
   	'' ID
   	lexSkipToken( )
 
