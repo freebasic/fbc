@@ -1,13 +1,11 @@
 ' TEST_MODE : COMPILE_ONLY_FAIL
 
-type foo
+type T
 	protected:
-	__ as integer
-	
+	as integer i
 end type
 
-dim as const foo baz2 = (3)
+dim as T x
 dim as integer n
 
-n = baz2.__
-
+let( n ) = x

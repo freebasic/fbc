@@ -460,7 +460,7 @@ private function hProcPtrBody _
 		return NULL
 	end if
 
-	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, symbGetFullProcName( proc ) )
 	end if
 

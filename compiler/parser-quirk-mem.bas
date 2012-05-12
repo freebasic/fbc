@@ -155,7 +155,7 @@ function cOperatorNew _
 					end if
 				else
 					'' check visibility
-					if( symbCheckAccess( subtype, ctor ) = FALSE ) then
+					if( symbCheckAccess( ctor ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 					end if
 				end if
@@ -279,7 +279,7 @@ sub cOperatorDelete()
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
 		if( dtor <> NULL ) then
-			if( symbCheckAccess( subtype, dtor ) = FALSE ) then
+			if( symbCheckAccess( dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
 			end if
 		end if

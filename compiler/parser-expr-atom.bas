@@ -247,9 +247,9 @@ private function hFindId _
     	do
     		select case as const symbGetClass( sym )
 			case FB_SYMBCLASS_CONST
-    			'' check visibility
+				'' check visibility
 				if( base_parent <> NULL ) then
-					if( symbCheckAccess( base_parent, sym ) = FALSE ) then
+					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
 				end if

@@ -1196,6 +1196,7 @@ function hForwardCall() as integer
 
     if( proc = NULL ) then
 		errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
+		exit function
     end if
 
     ''

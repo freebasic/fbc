@@ -492,11 +492,11 @@ function rtlArrayErase _
 					   astNewCONSTi( dtype = FB_DATATYPE_STRING, _
 					   				 FB_DATATYPE_INTEGER ), _
 					   FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    else
+			exit function
+		end if
+	else
 		if( check_access ) then
-			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
+			if( symbCheckAccess( dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
 			end if
 		end if
@@ -564,11 +564,11 @@ function rtlArrayClear _
 		end if
 	else
 		if( check_access ) then
-			if( symbCheckAccess( astGetSubtype( arrayexpr ), dtor ) = FALSE ) then
+			if( symbCheckAccess( dtor ) = FALSE ) then
 				errReport( FB_ERRMSG_NOACCESSTODTOR )
 			end if
 		end if
-		
+
 		if( ctor <> NULL ) then
 			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
 				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )

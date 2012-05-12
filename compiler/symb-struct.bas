@@ -1045,7 +1045,10 @@ function symbGetUDTBaseLevel _
 	if( s = NULL or baseSym = NULL ) then
 		return 0
 	end if
-	
+
+	assert( symbIsStruct( s ) )
+	assert( symbIsStruct( baseSym ) )
+
 	var level = 1
 	do until( s->udt.base = NULL )
 		if( s->udt.base->subtype = baseSym ) then

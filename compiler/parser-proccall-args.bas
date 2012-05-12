@@ -282,7 +282,7 @@ private function hOvlProcArgList _
 	proc = ovlproc
 
 	'' check visibility
-	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _
 		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
@@ -387,7 +387,7 @@ function cProcArgList _
 	function = NULL
 
 	'' check visibility
-	if( symbCheckAccess( symbGetNamespace( proc ), proc ) = FALSE ) then
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReportEx( iif( symbIsConstructor( proc ), _
 		                  FB_ERRMSG_NOACCESSTOCTOR, _
 		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _

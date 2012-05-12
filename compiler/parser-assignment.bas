@@ -512,8 +512,8 @@ private function hAssignFromField _
 		return astNewNOP( )
 	end if
 
-    '' check visibility
-	if( symbCheckAccess( symbGetSubtype( fld ), fld ) = FALSE ) then
+	'' check visibility
+	if( symbCheckAccess( fld ) = FALSE ) then
 		hReportLetError( FB_ERRMSG_ILLEGALMEMBERACCESS, num )
 		'' error recovery
 		astDelTree( lhs )

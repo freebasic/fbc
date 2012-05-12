@@ -1731,11 +1731,7 @@ declare function symbCloneLabel _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCheckAccess _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as integer
+declare function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbGetFullProcName _
 	( _
@@ -2389,10 +2385,6 @@ declare function symbGetUDTBaseLevel _
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
 
 #define symbIsVisPublic(s) ((s->attrib and FB_SYMBATTRIB_VIS_PUBLIC) <> 0)
-
-#define symbIsVisPrivate(s) ((s->attrib and FB_SYMBATTRIB_VIS_PRIVATE) <> 0)
-
-#define symbIsVisProtected(s) ((s->attrib and FB_SYMBATTRIB_VIS_PROTECTED) <> 0)
 
 #define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
 

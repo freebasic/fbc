@@ -167,23 +167,16 @@ function astBuildVarDtorCall _
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has dtor?
 			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-                dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
+				dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
 
-                if( check_access ) then
-					if( symbCheckAccess( subtype, _
-										 symbGetCompDtor( subtype ) ) = FALSE ) then
+				if( check_access ) then
+					if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
-                	end if
-                end if
+					end if
+				end if
 
-                function = astBuildDtorCall( subtype, _
-                							 astNewVAR( s, _
-                							 			0, _
-                							 			symbGetFullType( s ), _
-                							 			subtype ) )
-
+				function = astBuildDtorCall( subtype, astNewVAR( s, 0, symbGetFullType( s ), subtype ) )
 			end if
-
 		end select
 	end if
 
@@ -453,8 +446,8 @@ function astBuildImplicitCtorCall _
         return expr
 	end if
 
-    '' check visibility
-	if( symbCheckAccess( subtype, proc ) = FALSE ) then
+	'' check visibility
+	if( symbCheckAccess( proc ) = FALSE ) then
 		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if
 

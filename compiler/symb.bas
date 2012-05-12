@@ -1900,46 +1900,80 @@ function symbCalcLen _
 
 end function
 
-'':::::
-function symbCheckAccess _
-	( _
-		byval parent as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
-	if( sym <> NULL ) then
-		'' private?
-		if( symbIsVisPrivate( sym ) ) then
-			return (parent = symbGetCurrentNamespc( ))
-
-		'' protected?
-		elseif( symbIsVisProtected( sym ) ) then
-			var ns = symbGetCurrentNamespc( )
-
-			'' is symbol from a base class?
-			select case ns->typ
-			case FB_DATATYPE_STRUCT
-				If( parent = ns ) Then
-					Return TRUE
-				End If
-				
-				'' try until the last base class
-				var base_ = ns->udt.base
-				do while( base_ <> NULL )
-					if( symbGetSubType( base_ ) = parent ) then
-						return TRUE
-					End If
-					
-					base_ = symbGetSubtype( base_ )->udt.base 
-				loop
-			end select
-
-			return FALSE
-		end if
+function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
+	'' Neither private nor protected? Always ok.
+	if( (sym->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED)) = 0 ) then
+		return TRUE
 	end if
 
-	function = TRUE
+	''
+	'' Notes:
+	''  - Only UDT members will have visibility flags
+	''  - Private/protected members can *only* be accessed from inside
+	''    member procedures or the UDT body
+	''  - There may be nested namespaces inside those procedures,
+	''    from which accesses are possible
+	''      (e.g. enum constant initializers)
+	''  - UDTs may contain nested namespaces whose members should be
+	''    affected by visibility too (e.g. named enums)
+	''  - There are no nested procedures
+	''
 
+	''
+	'' Find the symbol's real parent UDT
+	''
+	'' 1) Get the real parent where the symbol was declared
+	''    (could be the UDT already, or an enum inside one)
+	''    Using the symbol's namespace is not enough, because that
+	''    would falsely match
+	''
+	'' 2) Walk upwards if it's not the UDT yet
+	''    (an UDT must be there, or else the visibility flags
+	''     wouldn't be set)
+	''
+	dim as FBSYMBOL ptr parent = symbGetParent( sym )
+	while( not symbIsStruct( parent ) )
+		assert( parent <> @symbGetGlobalNamespc( ) )
+		parent = symbGetNamespace( parent )
+	wend
+
+	''
+	'' Check it against the current context:
+	''
+	'' To allow Private access, we must be inside the symbol's
+	'' real parent namespace, i.e. the UDT body, a method, or a namespace
+	'' nested inside one of those.
+	''
+	'' To allow Protected access, we must be inside the namespace
+	'' of an UDT that was derived from the symbol's real parent UDT.
+	''
+
+	'' For all nested namespaces in the current parsing context,
+	'' from the current namespace up to the toplevel one...
+	dim as FBSYMBOL ptr context = symbGetCurrentNamespc( )
+	while( context <> @symbGetGlobalNamespc( ) )
+
+		'' Is it an UDT namespace? (i.e. a method or UDT body?)
+		if( symbIsStruct( context ) ) then
+			'' Ok if same namespace for private/protected
+			if( context = parent ) then
+				'' We're inside the parent
+				return TRUE
+			end if
+
+			'' Protected additionally allows derived UDTs
+			if( sym->attrib and FB_SYMBATTRIB_VIS_PROTECTED ) then
+				if( symbGetUDTBaseLevel( context, parent ) > 0 ) then
+					'' We're inside an UDT derived from the parent
+					return TRUE
+				end if
+			end if
+		end if
+
+		context = symbGetNamespace( context )
+	wend
+
+	function = FALSE
 end function
 
 function symbCheckConstAssign _

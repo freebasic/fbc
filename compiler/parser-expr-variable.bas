@@ -293,19 +293,12 @@ private function hMemberId _
 	do
 		dim as FBSYMBOL ptr sym = chain_->sym
 		do
-    		if( symbGetScope( sym ) = symbGetScope( parent ) ) then
+			if( symbGetScope( sym ) = symbGetScope( parent ) ) then
 				select case as const symbGetClass( sym )
-				'' const? (enum elmts too)
-				case FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
-    				'' check visibility					
-					if( symbCheckAccess( parent, sym ) = FALSE ) then
-						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
-					end if
-
-				'' field?
-				case FB_SYMBCLASS_FIELD
-    				'' check visibility
-					if( symbCheckAccess( parent, sym ) = FALSE ) then
+				'' field? or const or enum elements?
+				case FB_SYMBCLASS_FIELD, FB_SYMBCLASS_CONST, FB_SYMBCLASS_ENUM
+					'' check visibility
+					if( symbCheckAccess( sym ) = FALSE ) then
 						errReport( FB_ERRMSG_ILLEGALMEMBERACCESS )
 					end if
 
@@ -322,7 +315,7 @@ private function hMemberId _
 				end select
 
 				return sym
-    		end if
+			end if
 
 			sym = sym->hash.next
 		loop while( sym <> NULL )

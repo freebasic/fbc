@@ -781,12 +781,8 @@ private function hVarInitDefault _
 			if( ((attrib and (FB_SYMBATTRIB_EXTERN or _
 							  FB_SYMBATTRIB_COMMON or _
 							  FB_SYMBATTRIB_DYNAMIC)) = 0) ) then
-
-    			'' check visibility
-	    		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
-	    		if( symbCheckAccess( subtype, _
-	    							 symbGetCompDefCtor( subtype ) ) = FALSE ) then
-
+				'' check visibility
+				if( symbCheckAccess( symbGetCompDefCtor( symbGetSubtype( sym ) ) ) = FALSE ) then
 					errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
 				end if
 
@@ -1069,12 +1065,10 @@ private function hFlushInitializer _
 	'' has_defctor is unused -cha0s
 
 	'' object?
-    if( has_dtor ) then
-    	'' check visibility
-		dim as FBSYMBOL ptr subtype = symbGetSubtype( sym )
-		if( symbCheckAccess( subtype, _
-							 symbGetCompDtor( subtype ) ) = FALSE ) then
-       		errReport( FB_ERRMSG_NOACCESSTODTOR )
+	if( has_dtor ) then
+		'' check visibility
+		if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( sym ) ) ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
 	end if
 

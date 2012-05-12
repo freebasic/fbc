@@ -137,6 +137,9 @@ Version 0.24.0:
 - #3509495: Delete[] on derived UDTs with destructors caused a compiler crash
 - Overload resolution treated pointer arguments as uintegers, allowing them to match integer parameters
 - Any Ptr arguments were seen as ambiguous even if there was a fully matching overload
+- #3479361: Derived UDTs were allowed to access their base UDT's private fields
+- Local arrays in methods didn't have access to private/protected destructors
+- 'LET(fields...) = UDT' in methods didn't have access to private/protected fields
 
 
 Version 0.23.0:
