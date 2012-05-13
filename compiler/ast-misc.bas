@@ -1016,58 +1016,20 @@ function astUpdComp2Branch _
 
 		'' CONST?
 		if( astIsCONST( n ) ) then
+			istrue = astCONSTIsTrue( n )
+
+			'' If inversed, branch if true.
+			'' If not inversed, branch if false.
+			'' (always the opposite, to branch over the if body)
 			if( isinverse = FALSE ) then
-				'' branch if false
-				select case as const dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					istrue = n->con.val.long = 0
-
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					istrue = n->con.val.float = 0
-
-  				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	   				if( FB_LONGSIZE = len( integer ) ) then
-  	   					istrue = n->con.val.int = 0
-  	   				else
-  	   					istrue = n->con.val.long = 0
-  	   				end if
-
-				case else
-					istrue = n->con.val.int = 0
-				end select
-
-				if( istrue ) then
-					astDelNode( n )
-					n = astNewLINK( astDTorListFlush( NULL, FALSE ), _
-									astNewBRANCH( AST_OP_JMP, label, NULL ) )
-				end if
-			else
-				'' branch if true
-				select case as const dtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					istrue = n->con.val.long <> 0
-
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					istrue = n->con.val.float <> 0
-
-  				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	   				if( FB_LONGSIZE = len( integer ) ) then
-  	   					istrue = n->con.val.int <> 0
-  	   				else
-  	   					istrue = n->con.val.long <> 0
-  	   				end if
-
-				case else
-					istrue = n->con.val.int <> 0
-				end select
-
-				if( istrue ) then
-					astDelNode( n )
-					n = astNewLINK( astDTorListFlush( NULL, FALSE ), _
-									astNewBRANCH( AST_OP_JMP, label, NULL ) )
-				end if
+				istrue = not istrue
 			end if
 
+			if( istrue ) then
+				astDelNode( n )
+				n = astNewLINK( astDTorListFlush( NULL, FALSE ), _
+				                astNewBRANCH( AST_OP_JMP, label, NULL ) )
+			end if
 		else
 			'' otherwise, check if zero (ie= FALSE)
 
@@ -1079,23 +1041,8 @@ function astUpdComp2Branch _
 				dtype = env.target.wchar.type
 			end select
 
-			select case as const dtype
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				expr = astNewCONSTl( 0, dtype )
-
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				expr = astNewCONSTf( 0.0, dtype )
-
-  			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	   			if( FB_LONGSIZE = len( integer ) ) then
-  	   				expr = astNewCONSTi( 0, dtype )
-  	   			else
-  	   				expr = astNewCONSTl( 0, dtype )
-  	   			end if
-
-			case else
-				expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
-			end select
+			'' Constant 0 of matching type
+			expr = astNewCONST( NULL, dtype, astGetSubtype( n ) )
 
 			hDoBranch( )
 		end if
@@ -1165,23 +1112,9 @@ function astUpdComp2Branch _
 	end select
 
 	'' if no optimization could be done, check if zero (ie= FALSE)
-	select case as const dtype
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		expr = astNewCONSTl( 0, dtype )
 
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		expr = astNewCONSTf( 0.0, dtype )
-
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	   	if( FB_LONGSIZE = len( integer ) ) then
-  	   		expr = astNewCONSTi( 0, dtype )
-  	   	else
-  	   		expr = astNewCONSTl( 0, dtype )
-  	   	end if
-
-	case else
-		expr = astNewCONSTi( 0, dtype, astGetSubtype( n ) )
-	end select
+	'' Constant 0 of matching type
+	expr = astNewCONST( NULL, dtype, astGetSubtype( n ) )
 
 	hDoBranch( )
 

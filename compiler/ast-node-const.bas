@@ -9,6 +9,28 @@
 #include once "ir.bi"
 #include once "ast.bi"
 
+function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
+	assert( astIsCONST( n ) )
+
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+		function = (n->con.val.long <> 0ll)
+
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		function = (n->con.val.float <> 0.0)
+
+	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = (n->con.val.int <> 0)
+		else
+			function = (n->con.val.long <> 0ll)
+		end if
+
+	case else
+		function = (n->con.val.int <> 0)
+	end select
+end function
+
 '':::::
 function astNewCONSTstr _
 	( _

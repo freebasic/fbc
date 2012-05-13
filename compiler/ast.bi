@@ -541,6 +541,8 @@ declare function astNewUOP _
 		byval o as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare function astCONSTIsTrue( byval n as ASTNODE ptr ) as integer
+
 declare function astNewCONST _
 	( _
 		byval v as FBVALUE ptr, _
