@@ -74,6 +74,7 @@ namespace fbc_tests.optimizations.logic1
 		fbcu.add_test("3", @test3)
 		fbcu.add_test("4", @test4)
 		fbcu.add_test("5", @test5)
+		fbcu.add_test("6", @test6)
 	
 	end sub
 	
