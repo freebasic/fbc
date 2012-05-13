@@ -144,6 +144,7 @@ Version 0.24.0:
 - ERASE didn't check c/dtor visibility
 - #3490779: -exx and -profile broke Naked procedures due to implicit RTL calls; now no more implicit code will be added (this change affects error handling/profiling calls for naked procedures, and member constructor/destructor calls in naked constructors/destructors)
 - Compiler crash on naked constructors/destructors
+- Early return from an UDT destructor prevented destruction of the UDT's fields
 
 
 Version 0.23.0:

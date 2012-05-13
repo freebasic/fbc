@@ -614,12 +614,6 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		end if
 
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
-
-		'' Destructor?
-		if( symbIsDestructor( sym ) and enable_implicit_code ) then
-			'' call dtors
-			hCallDtors( sym )
-		end if
 	end if
 
    	''
@@ -629,6 +623,13 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	res = (symbCheckLabels(symbGetProcSymbTbHead(parser.currproc)) = 0)
 
 	if( res ) then
+		'' Destructor?
+		if( symbIsDestructor( sym ) and enable_implicit_code ) then
+			'' Call destructors, behind the exit label, so they'll
+			'' always be called, even with early returns.
+			hCallDtors( sym )
+		end if
+
 		'' update proc's breaks list, adding calls to destructors when needed
 		if( n->block.breaklist.head <> NULL ) then
 			res = astScopeUpdBreakList( n )
