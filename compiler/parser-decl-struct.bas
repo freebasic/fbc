@@ -564,6 +564,49 @@ private function hTypeAdd _
 
 end function
 
+'' [FIELD '=' ConstExpression]
+private function cFieldAlignmentAttribute( ) as integer
+	'' FIELD
+	if( lexGetToken( ) <> FB_TK_FIELD ) then
+		return 0
+	end if
+
+	lexSkipToken( )
+
+	'' '='
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	end if
+
+	'' ConstExpression
+	dim as ASTNODE ptr expr = cExpression( )
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	if( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		'' error recovery: fake an expr
+		astDelTree( expr )
+		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	end if
+
+	'' follow the GCC 3.x ABI
+	dim as integer align = astGetValueAsInt( expr )
+	astDelNode( expr )
+	if( align < 0 ) then
+		align = 0
+	elseif( align > FB_INTEGERSIZE ) then
+		align = 0
+	elseif( align = 3 ) then
+		align = 2
+	end if
+
+	return align
+end function
+
 '':::::
 ''TypeBody      =   ( (UNION|TYPE Comment? SttSeparator
 ''					   ElementDecl
@@ -638,7 +681,8 @@ private function hTypeBody _
 		case FB_TK_TYPE, FB_TK_UNION
 			'' isn't it a field called TYPE|UNION?
 			select case as const lexGetLookAhead( 1 )
-			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM
+			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENT, FB_TK_REM, _
+			     FB_TK_FIELD
 
 decl_inner:		'' it's an anonymous inner UDT
 				isunion = lexGetToken( ) = FB_TK_UNION
@@ -658,8 +702,14 @@ decl_inner:		'' it's an anonymous inner UDT
 
 				lexSkipToken( )
 
+				'' [FIELD '=' ConstExpression]
+				dim as integer align = cFieldAlignmentAttribute( )
+				if( align = 0 ) then
+					align = symbGetUDTAlign( s )
+				end if
+
 				'' create a "temp" one
-				inner = hTypeAdd( s, NULL, NULL, isunion, symbGetUDTAlign( s ) )
+				inner = hTypeAdd( s, NULL, NULL, isunion, align )
 				if( inner = NULL ) then
 					exit function
 				end if
@@ -786,11 +836,10 @@ function cTypeDecl _
 		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
-    static as zstring * FB_MAXNAMELEN+1 id
-    dim as ASTNODE ptr expr = any
-    dim as integer align, isunion, checkid = any
-    dim as FBSYMBOL ptr sym = any
-   	dim as FB_CMPSTMTSTK ptr stk = any
+	static as zstring * FB_MAXNAMELEN+1 id
+	dim as integer isunion = any, checkid = any
+	dim as FBSYMBOL ptr sym = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -875,42 +924,8 @@ function cTypeDecl _
 		end if
 	end if
 
-	'' (FIELD '=' Expression)?
-	if( lexGetToken( ) = FB_TK_FIELD ) then
-		lexSkipToken( )
-
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-		end if
-
-		expr = cExpression( )
-		if( expr = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-
-		if( astIsCONST( expr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDCONST )
-			'' error recovery: fake an expr
-			astDelTree( expr )
-			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-		end if
-
-  		'' follow the GCC 3.x ABI
-  		align = astGetValueAsInt( expr )
-  		astDelNode( expr )
-  		if( align < 0 ) then
-  			align = 0
-  		elseif( align > FB_INTEGERSIZE ) then
-  			align = 0
-  		elseif( align = 3 ) then
-  			align = 2
-  		end if
-
-	else
-		align = 0
-	end if
+	'' [FIELD '=' ConstExpression]
+	dim as integer align = cFieldAlignmentAttribute( )
 
 	'' start a new compound, or any EXTERN..END EXTERN used around this struct
 	'' would turn-off function mangling depending on the mode passed
