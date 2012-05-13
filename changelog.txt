@@ -65,6 +65,7 @@ Version 0.24.0:
 - Len(), Sizeof() and Typeof() can now be used on function calls and array accesses even if they have the same identifier as a type
 - Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
 - FIELD = N can now be used on nested anonymous TYPEs/UNIONs
+- IIF()'s with constant conditions are now evaluated at compile-time
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
