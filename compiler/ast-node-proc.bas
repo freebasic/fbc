@@ -585,23 +585,26 @@ end function
 
 function astProcEnd( byval callrtexit as integer ) as integer
     static as integer rec_cnt = 0
-    dim as integer res = any, do_flush = any
+	dim as integer res = any, do_flush = any, enable_implicit_code = any
     dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr n = any
 
 	n = ast.proc.curr
-
-	''
 	rec_cnt += 1
-
-	''
 	sym = n->sym
-
 	n->block.endstmt = parser.stmt.cnt
+
+	'' No implicit code should be added for naked functions -- i.e. no stack
+	'' frame setup, no function result, no error checking, no profiling.
+	'' (Any calls would "trash" the stack)
+	'' No need to worry about any "explicit" code though (any statements),
+	'' including local variables and possibly resulting destructor calls;
+	'' they are "the coders fault", not ours.
+	enable_implicit_code = ((sym->attrib and FB_SYMBATTRIB_NAKED) = 0)
 
 	if( errGetCount( ) = 0 ) then
 		'' Constructor?
-		if( symbIsConstructor( sym ) ) then
+		if( symbIsConstructor( sym ) and enable_implicit_code ) then
 			'' No constructor initialization code yet? (constructor chaining)
 			if( symbGetIsCtorInited( sym ) = FALSE ) then
 				symbSetIsCtorInited( sym )
@@ -613,7 +616,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		astScopeDestroyVars(symbGetProcSymbTb(sym).tail)
 
 		'' Destructor?
-		if( symbIsDestructor( sym ) ) then
+		if( symbIsDestructor( sym ) and enable_implicit_code ) then
 			'' call dtors
 			hCallDtors( sym )
 		end if
@@ -636,11 +639,10 @@ function astProcEnd( byval callrtexit as integer ) as integer
 
 		dim as ASTNODE ptr head_node = n->l
 
-		''
-		head_node = hCallProfiler( head_node )
-
-		''
-		head_node = hCheckErrHnd( head_node, sym )
+		if( enable_implicit_code ) then
+			head_node = hCallProfiler( head_node )
+			head_node = hCheckErrHnd( head_node, sym )
+		end if
 
 		'' if main(), END 0 must be called because it's not safe to return to crt if
 		'' an ON ERROR module-level handler was called while inside some proc
@@ -650,8 +652,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 			end if
 		end if
 
-		' Don't load the result for naked functions
-		if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
+		if( irGetOption( IR_OPT_HIGHLEVEL ) or enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 

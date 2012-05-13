@@ -142,6 +142,8 @@ Version 0.24.0:
 - 'LET(fields...) = UDT' in methods didn't have access to private/protected fields
 - Access to member constants wasn't always checking visibility
 - ERASE didn't check c/dtor visibility
+- #3490779: -exx and -profile broke Naked procedures due to implicit RTL calls; now no more implicit code will be added (this change affects error handling/profiling calls for naked procedures, and member constructor/destructor calls in naked constructors/destructors)
+- Compiler crash on naked constructors/destructors
 
 
 Version 0.23.0:
