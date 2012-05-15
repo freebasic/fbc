@@ -747,9 +747,7 @@ private function hVarInitDefault _
 	( _
         byval sym as FBSYMBOL ptr, _
         byval isdecl as integer, _
-        byval has_defctor as integer, _
-        byval has_dtor as integer,  _
-        byval opt as integer = FB_INIOPT_NONE _
+        byval has_defctor as integer _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -771,7 +769,6 @@ private function hVarInitDefault _
 			'' error recovery: fake an expr
 			return astNewCONSTi( 0 )
 		end if
-
 	end if
 
     '' ctor?
@@ -789,7 +786,6 @@ private function hVarInitDefault _
 				function = astBuildTypeIniCtorList( sym )
 			end if
 		end if
-
     else
     	'' no default ctor but other ctors defined?
     	select case symbGetType( sym )
@@ -823,10 +819,7 @@ end function
 private function hVarInit _
 	( _
         byval sym as FBSYMBOL ptr, _
-        byval isdecl as integer, _
-        byval has_defctor as integer, _
-        byval has_dtor as integer,  _
-        byval opt as integer = FB_INIOPT_NONE _
+        byval isdecl as integer _
 	) as ASTNODE ptr
 
     dim as integer attrib = any
@@ -878,11 +871,7 @@ private function hVarInit _
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
-			if( has_defctor or has_dtor ) then
-				errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
-			else
-				symbSetDontInit( sym )
-			end if
+			symbSetDontInit( sym )
 		end if
 
 		'' ...or const-qualified vars
@@ -896,7 +885,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI or opt )
+	initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		'' fake an expression
 		initree = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -1058,11 +1047,8 @@ private function hFlushInitializer _
 		byval sym as FBSYMBOL ptr, _
 		byval var_decl as ASTNODE ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_defctor as integer, _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
-
-	'' has_defctor is unused -cha0s
 
 	'' object?
 	if( has_dtor ) then
@@ -1451,7 +1437,7 @@ function hVarDeclEx _
 			'' '=' | '=>' ?
 			select case lexGetToken( )
 			case FB_TK_DBLEQ, FB_TK_EQ
-				initree = hVarInit( sym, is_decl, has_defctor, has_dtor )
+				initree = hVarInit( sym, is_decl )
 
 				if( ( initree <> NULL ) and ( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) ) then
 					'' local?
@@ -1470,14 +1456,14 @@ function hVarDeclEx _
 					exit function
 				end if
 
-				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
+				initree = hVarInitDefault( sym, is_decl, has_defctor )
 
 			end select
 
 			'' unscoped? then need a default initree, plus the assignment
 			if( doassign ) then
 				assign_initree = initree
-				initree = hVarInitDefault( sym, is_decl, has_defctor, has_dtor )
+				initree = hVarInitDefault( sym, is_decl, has_defctor )
 			end if
 
 	    else
@@ -1502,12 +1488,7 @@ function hVarDeclEx _
    					symbSetDontInit( sym )
     			end if
 
-                '' Note: temporary (local) UDT FOR iterators will be constructed with
-                '' the FOR start value already, so tell astNewDECL() to omit the call
-                '' to the default constructor. (Other non-UDT temporary FOR variables
-                '' and also UDTs without default constructor will avoid initialization
-                '' due to the symbSetDontInit() above)
-				var_decl = astNewDECL( sym, initree, is_fordecl )
+				var_decl = astNewDECL( sym, initree )
 
 				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
@@ -1588,21 +1569,13 @@ function hVarDeclEx _
 					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
 
             			'' flush the init tree (must be done after adding the decl node)
-						astAdd( hFlushInitializer( sym, _
-									   			   var_decl, _
-									   			   initree, _
-									   			   has_defctor, _
-									   			   has_dtor ) )
+						astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 					'' unscoped
 					else
 
 						'' flush the init tree (must be done after adding the decl node)
-						astAddUnscoped( hFlushInitializer( sym, _
-									   			   var_decl, _
-									   			   initree, _
-									   			   has_defctor, _
-									   			   has_dtor ) )
+						astAddUnscoped( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 						'' initializer as assignment?
 						if( doassign ) then
@@ -2051,7 +2024,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-   		dim as integer has_defctor = FALSE, has_ctor = FALSE, has_dtor = FALSE
+		dim as integer has_ctor = FALSE, has_dtor = FALSE
 
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
@@ -2068,8 +2041,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			dtype = FB_DATATYPE_STRING
 
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has a default ctor?
-			has_defctor = symbGetCompDefCtor( subtype ) <> NULL
 			'' any ctor?
 			has_ctor = symbGetHasCtor( subtype )
 			'' dtor?
@@ -2139,7 +2110,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 						expr = astNewCONSTi( 0 )
 		    	    	dtype = FB_DATATYPE_INTEGER
 		    	    	subtype = NULL
-						has_defctor = FALSE
 						has_dtor = FALSE
 					end if
 				end if
@@ -2157,8 +2127,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 			symbSetIsDeclared( sym )
 
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, var_decl, initree, _
-			                           has_defctor, has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
 
 		end if
 

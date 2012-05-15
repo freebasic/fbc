@@ -918,6 +918,11 @@ private function hCallFieldCtor _
 
 	dim as FBSYMBOL ptr subtype = any
 
+	'' Do not initialize?
+	if( symbGetDontInit( fld ) ) then
+		exit function
+	end if
+
 	select case symbGetType( fld )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		subtype = symbGetSubtype( fld )
@@ -940,11 +945,6 @@ private function hCallFieldCtor _
 			exit function
 		end if
 	end select
-
-	'' do not clear?
-	if( symbGetDontInit( fld ) ) then
-		exit function
-	end if
 
 	'' bitfield?
 	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then

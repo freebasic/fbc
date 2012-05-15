@@ -241,14 +241,6 @@ private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 		else
-   			select case symbGetType( sym )
-   			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				'' has a default ctor?
-				if( symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL ) then
-					errReportWarn( FB_WARNINGMSG_ANYINITHASNOEFFECT )
-				end if
-			end select
-
 			symbSetDontInit( sym )
 		end if
 

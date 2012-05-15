@@ -779,8 +779,7 @@ declare function astNewPTRCHK _
 declare function astNewDECL _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval initree as ASTNODE ptr, _
-		byval no_ctorcall as integer = FALSE _
+		byval initree as ASTNODE ptr _
 	) as ASTNODE ptr
 
 declare function astNewNIDXARRAY _
