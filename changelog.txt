@@ -148,6 +148,9 @@ Version 0.24.0:
 - #3490779: -exx and -profile broke Naked procedures due to implicit RTL calls; now no more implicit code will be added (this change affects error handling/profiling calls for naked procedures, and member constructor/destructor calls in naked constructors/destructors)
 - Compiler crash on naked constructors/destructors
 - Early return from an UDT destructor prevented destruction of the UDT's fields
+- #3489950: BASE() disabled implicit field construction and vtbl pointer setup in constructors
+- #3479349: No error was shown when a constructor couldn't initialize the base UDT (i.e. when the base UDT didn't have a default constructor and there was no BASE() used either)
+- #3479355: POD base UDTs weren't cleared by constructors
 
 
 Version 0.23.0:

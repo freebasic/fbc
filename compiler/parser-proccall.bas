@@ -995,33 +995,31 @@ private sub hBaseInit( )
 	'' BASE
 	lexSkipToken( )
 
-	'' Has a ctor?
 	subtype = symbGetSubtype( base_ )
+	initree = NULL
+
+	'' Has a ctor?
 	if( symbGetHasCtor( subtype ) ) then
 		'' CtorCall
-		'' TODO: check whether visibility is checked!
 		ctorcall = cCtorCall( subtype )
-		assert( ctorcall )
+		if( ctorcall ) then
+			'' Will be a CTORCALL except in case of error recovery
+			if( astIsCALLCTOR( ctorcall ) ) then
+				'' cCtorCall() created a temporary object to
+				'' call the constructor on, we delete it though:
+				ctorcall = astCALLCTORToCALL( ctorcall )
 
-		'' Will be a CTORCALL except in case of error recovery
-		if( astIsCALLCTOR( ctorcall ) ) then
-			'' cCtorCall() created a temporary object to
-			'' call the constructor on, we delete it though:
-			ctorcall = astCALLCTORToCALL( ctorcall )
-
-			'' Turn the ctorcall into an initree
-			initree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
-			astTypeIniAddCtorCall( initree, base_, ctorcall )
-			astTypeIniEnd( initree, TRUE )
-		else
-			astDelTree( ctorcall )
-			ctorcall = NULL
-			initree = NULL
+				'' Turn the ctorcall into an initree
+				initree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
+				astTypeIniAddCtorCall( initree, base_, ctorcall )
+				astTypeIniEnd( initree, TRUE )
+			else
+				astDelTree( ctorcall )
+				ctorcall = NULL
+			end if
 		end if
 	else
 		'' Initializer
-		'' TODO: will this modify the base_ symbol (e.g. setting "inited" flag?)
-		'' it shouldn't since this is the field, while base() should be ctor body specific...
 		initree = cInitializer( base_, FB_INIOPT_ISINI )
 	end if
 

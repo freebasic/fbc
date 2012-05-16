@@ -182,6 +182,93 @@ namespace podBase
 	end sub
 end namespace
 
+namespace baseinitIsCtorSpecific1
+	dim shared as integer defctor_count, intctor_count
+	type Parent
+		as integer i
+		declare constructor( )
+		declare constructor( byval as integer )
+	end type
+
+	constructor Parent( )
+		defctor_count += 1
+		this.i = 123
+	end constructor
+
+	constructor Parent( byval i as integer )
+		intctor_count += 1
+		this.i = i
+	end constructor
+
+	type Child extends Parent
+		declare constructor( )
+		declare constructor( byval as integer )
+	end type
+
+	constructor Child( )
+	end constructor
+
+	constructor Child( byval i as integer )
+		base( i )
+	end constructor
+
+	private sub test cdecl( )
+		dim as Child c1
+		CU_ASSERT( c1.i = 123 )
+		CU_ASSERT( defctor_count = 1 )
+		CU_ASSERT( intctor_count = 0 )
+
+		dim as Child c2 = Child( 456 )
+		CU_ASSERT( c2.i = 456 )
+		CU_ASSERT( defctor_count = 1 )
+		CU_ASSERT( intctor_count = 1 )
+	end sub
+end namespace
+
+namespace baseinitIsCtorSpecific2
+	dim shared as integer defctor_count, intctor_count
+	type Parent
+		as integer i
+		declare constructor( )
+		declare constructor( byval as integer )
+	end type
+
+	constructor Parent( )
+		defctor_count += 1
+		this.i = 123
+	end constructor
+
+	constructor Parent( byval i as integer )
+		intctor_count += 1
+		this.i = i
+	end constructor
+
+	type Child extends Parent
+		declare constructor( byval as integer )
+		declare constructor( )
+	end type
+
+	'' Ctor order swapped
+	constructor Child( byval i as integer )
+		base( i )
+	end constructor
+
+	constructor Child( )
+	end constructor
+
+	private sub test cdecl( )
+		dim as Child c1
+		CU_ASSERT( c1.i = 123 )
+		CU_ASSERT( defctor_count = 1 )
+		CU_ASSERT( intctor_count = 0 )
+
+		dim as Child c2 = Child( 456 )
+		CU_ASSERT( c2.i = 456 )
+		CU_ASSERT( defctor_count = 1 )
+		CU_ASSERT( intctor_count = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/based-init" )
 	fbcu.add_test( "Implicit base default ctor call", @implicitBaseDefCtor.test )
@@ -191,6 +278,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "BASE() as partial initializer", @explicitBasePartialInit.test )
 	fbcu.add_test( "BASE() shouldn't overwrite RTTI", @rttiPreserved.test )
 	fbcu.add_test( "POD base UDTs must be cleared", @podBase.test )
+	fbcu.add_test( "BASE() affects a single ctor only 1", @baseinitIsCtorSpecific1.test )
+	fbcu.add_test( "BASE() affects a single ctor only 2", @baseinitIsCtorSpecific2.test )
 end sub
 
 end namespace
