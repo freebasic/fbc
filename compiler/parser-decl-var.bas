@@ -450,22 +450,18 @@ private function hDeclDynArray _
    			'' could be an external..
    			sym = hDeclExternVar( sym, id, dtype, subtype, attrib, addsuffix, _
    								  dimensions, dTB() )
-
 		else
 			'' var already exists; dup checks
 
 			'' EXTERNal?
 			if( symbIsExtern( sym ) ) then
-
 				'' another EXTERN? (declared twice)
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
    					sym = NULL
-
 				else
 	   				'' define it...
 					hVarExtToPub( sym, attrib )
 				end if
-
 			'' [re]dim ()?
 			elseif( dimensions = -1 ) then
 				sym = NULL
@@ -497,48 +493,33 @@ private function hDeclDynArray _
 		return sym
 	end if
 
-	'' not an argument passed by descriptor or a common array?
+	if( (dtype <> symbGetFullType( sym )) or _
+	    (subtype <> symbGetSubType( sym )) ) then
+		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
+		'' no error recovery, caller will take care of that
+		exit function
+	end if
+
+	'' Check dimensions, unless it's a bydesc param or a common array,
+	'' then we don't know the dimensions at compile-time.
 	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
-
-		if( (dtype <> symbGetFullType( sym )) or _
-			(subtype <> symbGetSubType( sym )) ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, caller will take care of that
-    		exit function
-		end if
-
 		if( symbGetArrayDimensions( sym ) > 0 ) then
 			if( dimensions <> symbGetArrayDimensions( sym ) ) then
-    			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
-    			'' no error recovery, ditto
-    			exit function
-    		end if
-		end if
-
-	'' else, can't check it's dimensions at compile-time
-	else
-		if( (dtype <> symbGetFullType( sym )) or _
-			(subtype <> symbGetSubType( sym )) ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, ditto
-    		exit function
+				errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+				'' no error recovery, ditto
+				exit function
+			end if
 		end if
 	end if
 
 	'' if COMMON, check for max dimensions used
 	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-		if( symbGetArrayDimensions( sym ) > -1 ) then
-    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
-    		'' no error recovery, caller will take care of that
-    		exit function
-    	else
+		if( dimensions > symbGetArrayDimensions( sym ) ) then
 			symbSetArrayDimensions( sym, dimensions )
 		end if
-
 	'' or if dims = -1 (cause of "DIM|REDIM array()")
 	elseif( symbGetArrayDimensions( sym ) = -1 ) then
 		symbSetArrayDimensions( sym, dimensions )
-
 	end if
 
     function = sym
