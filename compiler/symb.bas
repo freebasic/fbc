@@ -2081,6 +2081,10 @@ end function
 function symbDump( byval s as FBSYMBOL ptr ) as string
 	dim as string dump
 
+	if( s = NULL ) then
+		return "<NULL>"
+	end if
+
 	dim as zstring ptr id = s->id.name
 	if( id = NULL ) then
 		id = @"<unnamed>"
@@ -2092,8 +2096,17 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 	dump += *id
 
 #if 1
+	if( s->id.alias ) then
+		dump += " alias """ + *s->id.alias + """"
+	end if
+#endif
+
+#if 0
+	'' Note: symbGetMangledName() will mangle the proc and set the
+	'' "mangled" flag. If this is done too early though, before the proc is
+	'' setup properly, then the mangled name will be empty or wrong.
 	dim as zstring ptr mangled = symbGetMangledName( s )
-	dump += " alias """
+	dump += " mangled """
 	if( mangled ) then
 		dump += *mangled
 	end if

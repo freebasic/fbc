@@ -9,25 +9,10 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-declare function hCtorChain	_
-	( _
-		_
-	) as integer
-
-declare function hBaseCtorCall _
-	( _
-		_
-	) as integer
-
-declare function hBaseMemberAccess _
-	( _
-		_
-	) as integer
-
-declare function hForwardCall _
-	( _
-		_
-	) as integer
+declare sub hCtorChain( )
+declare sub hBaseInit( )
+declare function hBaseMemberAccess( ) as integer
+declare function hForwardCall( ) as integer
 
 function cAssignFunctResult( byval is_return as integer ) as integer
 	dim as FBSYMBOL ptr res = any, subtype = any, proc = any
@@ -859,16 +844,8 @@ function cProcCallOrAssign _
 
 		'' CONSTRUCTOR?
 		case FB_TK_CONSTRUCTOR
-
-			'' not inside a ctor?
-			if( symbIsConstructor( parser.currproc ) = FALSE ) then
-				errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
-				'' error recovery: skip stmt, return
-				hSkipStmt( )
-				return TRUE
-			end if
-
-			return hCtorChain( )
+			hCtorChain( )
+			return TRUE
 
 		'' BASE?
 		case FB_TK_BASE
@@ -877,8 +854,9 @@ function cProcCallOrAssign _
 			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
 				return hBaseMemberAccess( )
 			else
-				return hBaseCtorCall( )
-			End If
+				hBaseInit( )
+				return TRUE
+			end if
 
 		'' CALL?
 		case FB_TK_CALL
@@ -942,111 +920,116 @@ function cProcCallOrAssign _
 
 end function
 
-'':::::
-private function hCtorChain _
-	( _
-		_
-	) as integer
-
+private sub hCtorChain( )
 	dim as FBSYMBOL ptr proc = any, parent = any, this_ = any, ctor_head = any
 	dim as ASTNODE ptr this_expr = any
 
-	proc = parser.currproc
-
-	parent = symbGetNamespace( proc )
-
-	'' not the first stmt?
-	if( astFindFirstCode( ast.proc.curr ) ) then
-		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
+	'' CONSTRUCTOR() chaining is only allowed inside constructors.
+	if( symbIsConstructor( parser.currproc ) = FALSE ) then
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
+		'' error recovery: skip stmt, return
+		hSkipStmt( )
+		exit sub
 	end if
+
+	parent = symbGetNamespace( parser.currproc )
+
+	'' A CONSTRUCTOR() chain call replaces a constructor's initialization
+	'' code, so it's only allowed at the top. Is there already another
+	'' statement (including CONSTRUCTOR()), or maybe a BASE() initializer?
+	'' (BASE() is pointless combined with CONSTRUCTOR() chaining, since
+	'' it will be unused)
+	if( (astFindFirstCode( ast.proc.curr ) <> NULL) or _
+	    (parser.currproc->proc.ext->base_initree <> NULL) ) then
+		errReport( FB_ERRMSG_CTORCHAINMUSTBEFIRST )
+	end if
+
+	'' Tell astProcEnd() to omit the default init code at the top of ctors
+	symbSetIsCtorInited( parser.currproc )
 
 	'' CONSTRUCTOR
 	lexSkipToken( )
 
-	ctor_head = symbGetCompCtorHead( parent )
-	if( ctor_head = NULL ) then
-		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
-		'' error recovery: skip stmt, return
-		hSkipStmt( )
-		return TRUE
-	end if
+	cProcCall( NULL, symbGetCompCtorHead( parent ), NULL, _
+	           astBuildInstPtr( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
+end sub
 
-	'' Tell astProcEnd() to omit the default init code at the top of ctors
-	symbSetIsCtorInited( proc )
+''  BaseInit  =  BASE (CtorCall | Initializer)
+private sub hBaseInit( )
+	dim as FBSYMBOL ptr parent = any, base_ = any, subtype = any
+	dim as ASTNODE ptr initree = any, ctorcall = any
 
-	this_ = symbGetProcHeadParam( proc )
-	if( this_ = NULL ) then
-		return FALSE
-	end if
-
-	this_expr = astBuildInstPtr( symbGetParamVar( this_ ) )
-
-	cProcCall( NULL, ctor_head, NULL, this_expr )
-
-	function = TRUE
-
-end function
-
-private function hBaseCtorCall() as integer
-	dim as FBSYMBOL ptr proc = any, parent = any, ctor_head = any
-
-	proc = parser.currproc
-
-	'' not inside a ctor?
-	if( symbIsConstructor( proc ) = FALSE ) then
+	'' BASE() is only allowed inside constructors...
+	if( symbIsConstructor( parser.currproc ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALOUTSIDEACTOR )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
-	parent = symbGetNamespace( proc )
-	
-	'' is class derived?
-	var base_ = parent->udt.base
+	'' ...and only if there even is a base UDT.
+	base_ = symbGetNamespace( parser.currproc )->udt.base
 	if( base_ = NULL ) then
 		errReport( FB_ERRMSG_CLASSNOTDERIVED )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
-		return TRUE
-	end if
-	
-	'' not the first stmt?
-	if( astFindFirstCode( ast.proc.curr ) ) then
-		errReport( FB_ERRMSG_CALLTOCTORMUSTBETHEFIRSTSTMT )
-		'' error recovery: skip stmt, return
-		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
-	ctor_head = symbGetCompCtorHead( symbGetSubtype( base_ ) )
-	if( ctor_head = NULL ) then
-		errReport( FB_ERRMSG_CLASSWITHOUTCTOR )
+	'' We expect BASE() to appear as the first statement. The base ctor
+	'' cannot be called in the same place where BASE() was given, anyways --
+	'' it must be inserted above the other implicit ctorinit code at the
+	'' top of the constructor, to ensure the vtbl pointer is initialized in
+	'' the proper order.
+
+	'' Is there another statement already (including CONSTRUCTOR()), or
+	'' another BASE()?
+	if( (astFindFirstCode( ast.proc.curr ) <> NULL) or _
+	    (parser.currproc->proc.ext->base_initree <> NULL) ) then
+		errReport( FB_ERRMSG_BASEINITMUSTBEFIRST )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
-		return TRUE
+		exit sub
 	end if
 
 	'' BASE
 	lexSkipToken( )
 
-	'' Tell astProcEnd() to omit the default init code at the top of ctors
-	symbSetIsCtorInited( proc )
+	'' Has a ctor?
+	subtype = symbGetSubtype( base_ )
+	if( symbGetHasCtor( subtype ) ) then
+		'' CtorCall
+		'' TODO: check whether visibility is checked!
+		ctorcall = cCtorCall( subtype )
+		assert( ctorcall )
 
-	var this_ = symbGetProcHeadParam( proc )
-	if( this_ = NULL ) then
-		return FALSE
+		'' Will be a CTORCALL except in case of error recovery
+		if( astIsCALLCTOR( ctorcall ) ) then
+			'' cCtorCall() created a temporary object to
+			'' call the constructor on, we delete it though:
+			ctorcall = astCALLCTORToCALL( ctorcall )
+
+			'' Turn the ctorcall into an initree
+			initree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
+			astTypeIniAddCtorCall( initree, base_, ctorcall )
+			astTypeIniEnd( initree, TRUE )
+		else
+			astDelTree( ctorcall )
+			ctorcall = NULL
+			initree = NULL
+		end if
+	else
+		'' Initializer
+		'' TODO: will this modify the base_ symbol (e.g. setting "inited" flag?)
+		'' it shouldn't since this is the field, while base() should be ctor body specific...
+		initree = cInitializer( base_, FB_INIOPT_ISINI )
 	end if
 
-	var this_expr = astBuildInstPtr( symbGetParamVar( this_ ), base_ )
-
-	cProcCall( NULL, ctor_head, NULL, this_expr )
-
-	function = TRUE
-end function
+	parser.currproc->proc.ext->base_initree = initree
+end sub
 
 '' BaseMemberAccess  =  (BASE '.')+ ID
-private function hBaseMemberAccess() as integer
+private function hBaseMemberAccess( ) as integer
 	var proc = parser.currproc
 
 	'' not inside a method?
@@ -1096,7 +1079,7 @@ private function hBaseMemberAccess() as integer
 	return hAssignOrCall( symbGetSubType( base_ ), @chain_, FALSE )
 end function
 
-function hForwardCall() as integer
+function hForwardCall( ) as integer
 	function = FALSE
 
 	select case lexGetClass( )

@@ -535,6 +535,7 @@ type FB_PROCEXT
 	stmtnum			as integer
 	priority		as integer
 	gosub			as FB_PROCGSB
+	base_initree		as ASTNODE_ ptr  '' base() ctorcall/initializer given in constructor bodies
 end type
 
 type FB_PROCRTL

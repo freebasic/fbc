@@ -218,7 +218,8 @@ end type
 		@"Illegal outside a DESTRUCTOR block", _
 		@"UDT's with methods must have unique names", _
 		@"Parent is not a class or UDT", _
-		@"Call to another constructor or a base class constructor must be the first statement", _
+		@"CONSTRUCTOR() chain call not at top of constructor", _
+		@"BASE() initializer not at top of constructor", _
 		@"The constructor or destructor calling convention must be CDECL", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _

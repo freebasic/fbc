@@ -1036,24 +1036,37 @@ private function hCallFieldCtors _
 	function = tree
 end function
 
-private function hCallBaseCtors _
+private function hCallBaseCtor _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	if( parent->udt.base = NULL ) then
+	dim as ASTNODE ptr initree = any
+	dim as FBSYMBOL ptr base_ = any, this_ = any, subtype = any
+
+	base_ = parent->udt.base
+
+	'' No base UDT? Then there's nothing to do.
+	if( base_ = NULL ) then
 		exit function
 	end if
 
-	var ctor = symbGetCompDefCtor( symbGetSubtype( parent->udt.base ) )
-	if( ctor = NULL ) then
-		exit function
+	this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+
+	'' Do we have a BASE() ctorcall/initializer?
+	initree = proc->proc.ext->base_initree
+	if( initree ) then
+		proc->proc.ext->base_initree = NULL
+		return astTypeIniFlush( initree, this_, AST_INIOPT_ISINI )
 	end if
 
-	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
+	'' Otherwise, try to call a default ctor, if any
+	subtype = symbGetSubtype( base_ )
+	if( symbGetCompDefCtor( subtype ) ) then
+		return hCallFieldCtor( this_, base_ )
+	end if
 
-	function = hCallFieldCtor( this_, parent->udt.base )
 end function
 
 private function hInitVtable _
@@ -1085,8 +1098,8 @@ private sub hCallCtors( byval n as ASTNODE ptr, byval sym as FBSYMBOL ptr )
 
 	parent = symbGetNamespace( sym )
 
-	'' 1st) base ctors
-	tree = hCallBaseCtors( parent, sym )
+	'' 1st) base ctor
+	tree = hCallBaseCtor( parent, sym )
 
 	'' 2nd) field ctors
 	tree = astNewLINK( tree, hCallFieldCtors( parent, sym ) )
@@ -1167,27 +1180,25 @@ private sub hCallFieldDtors _
 
 end sub
 
-'':::::
-private sub hCallBaseDtors _
+private sub hCallBaseDtor _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	)
-	
-	if( parent->udt.base = NULL ) then
-		exit sub
-	End If
-	
-	var dtor = symbGetCompDtor( symbGetSubtype( parent->udt.base ) )
-	
-	if( dtor = NULL ) then
-		exit sub
-	End If
-	
-	var this_ = symbGetParamVar( symbGetProcHeadParam( proc ) )
-	
-	hCallFieldDtor( this_, parent->udt.base )
 
+	dim as FBSYMBOL ptr base_ = any
+
+	base_ = parent->udt.base
+
+	'' No base UDT? Then there's nothing to do.
+	if( base_ = NULL ) then
+		exit sub
+	end if
+
+	'' Call its dtor, if there is any.
+	if( symbGetCompDtor( symbGetSubtype( base_ ) ) ) then
+		hCallFieldDtor( symbGetParamVar( symbGetProcHeadParam( proc ) ), base_ )
+	end if
 end sub
 
 '':::::
@@ -1204,7 +1215,7 @@ private sub hCallDtors _
     hCallFieldDtors( parent, proc )
 
 	'' 2nd) base dtors
-	hCallBaseDtors( parent, proc )
+	hCallBaseDtor( parent, proc )
 
 end sub
 
