@@ -1072,6 +1072,11 @@ private function hCallBaseCtor _
 	if( symbGetHasCtor( subtype ) ) then
 		errReport( FB_ERRMSG_NOBASEINIT )
 	end if
+
+	'' POD base UDT, just clear it
+	function = astNewMEM( AST_OP_MEMCLEAR, _
+	                      astBuildInstPtr( this_, base_ ), _
+	                      astNewCONSTi( symbGetLen( base_ ) ) )
 end function
 
 private function hInitVtable _

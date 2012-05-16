@@ -153,6 +153,35 @@ namespace rttiPreserved
 	end sub
 end namespace
 
+namespace podBase
+	type Parent
+		as integer a
+	end type
+
+	type Child extends Parent
+		as integer b
+		declare constructor( )
+	end type
+
+	constructor Child( )
+		'' A POD base UDT should be cleared, just like any fields
+	end constructor
+
+	private sub test cdecl( )
+		scope
+			'' Try to trash the stack a little
+			dim as integer a = 123, b = 456
+			CU_ASSERT( a = 123 )
+			CU_ASSERT( b = 456 )
+		end scope
+		scope
+			dim as Child c
+			CU_ASSERT( c.a = 0 )
+			CU_ASSERT( c.b = 0 )
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/based-init" )
 	fbcu.add_test( "Implicit base default ctor call", @implicitBaseDefCtor.test )
@@ -161,6 +190,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "BASE() as initializer", @explicitBaseInit.test )
 	fbcu.add_test( "BASE() as partial initializer", @explicitBasePartialInit.test )
 	fbcu.add_test( "BASE() shouldn't overwrite RTTI", @rttiPreserved.test )
+	fbcu.add_test( "POD base UDTs must be cleared", @podBase.test )
 end sub
 
 end namespace
