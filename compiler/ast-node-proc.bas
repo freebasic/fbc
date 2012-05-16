@@ -1067,6 +1067,11 @@ private function hCallBaseCtor _
 		return hCallFieldCtor( this_, base_ )
 	end if
 
+	'' No default ctor, but others? Then BASE() should have been used,
+	'' since a ctor must be called, but we cannot do it automatically.
+	if( symbGetHasCtor( subtype ) ) then
+		errReport( FB_ERRMSG_NOBASEINIT )
+	end if
 end function
 
 private function hInitVtable _

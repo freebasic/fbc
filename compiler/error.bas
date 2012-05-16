@@ -226,6 +226,7 @@ end type
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
+		@"Base UDT without default constructor and no BASE() initializer specified", _
 		@"Invalid priority attribute", _
 		@"PROPERTY GET should have no parameter, or just one if indexed", _
 		@"PROPERTY SET should have one parameter, or just two if indexed", _
