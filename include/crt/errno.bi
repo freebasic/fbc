@@ -50,12 +50,18 @@
 #define ENOTEMPTY 41
 #define EILSEQ 42
 
-#ifdef __FB_WIN32__
-declare function _errno cdecl alias "_errno" () as integer ptr
-#define	errno (*_errno)
+extern "C"
 
+#ifdef __FB_WIN32__
+	declare function _errno( ) as integer ptr
+	#define errno (*_errno)
+#elseif defined( __FB_LINUX__ )
+	declare function __errno_location( ) as integer ptr
+	#define errno (*__errno_location( ))
 #else
-	extern errno alias "errno" as integer
+	extern errno as integer
 #endif
+
+end extern
 
 #endif
