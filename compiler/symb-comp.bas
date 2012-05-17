@@ -161,7 +161,7 @@ private sub hAddRTTI _
 	var mname = *symbGetMangledName( sym )
 	
 	if( sym->udt.ext = NULL ) then
-		sym->udt.ext = callocate( len( FB_STRUCTEXT ) )
+		sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
 	end if
 
 	'' create a virtual-table struct (extends $fb_BaseVT)
@@ -1268,7 +1268,7 @@ sub symbCompRTTIInit()
 
 	'' update the obj struct RTTI (used to create the link with base classes)
 	if( obj->udt.ext = NULL ) then
-		obj->udt.ext = callocate( sizeof( FB_STRUCTEXT ) )
+		obj->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
 	end if
 
 	obj->udt.ext->rtti = objRTTI     
