@@ -271,8 +271,10 @@ private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
 	'' remove the temps from the dtors list if any was added
 	astDtorListClear( )
 
-	'' make sure a default ctor is added
-	symbSetUDTHasCtorField( parent )
+	'' Field initializers are only used in constructors (replacing the
+	'' implicit default initialization), so we make sure to add a default
+	'' constructor, if no constructor was specified.
+	symbSetUDTHasInitedField( parent )
 
 	if( initree ) then
 		symbSetTypeIniTree( sym, initree )

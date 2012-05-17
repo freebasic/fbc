@@ -390,21 +390,34 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 		end if
 	end if
 
-	'' has fields with ctors?
-	if( symbGetUDTHasCtorField( sym ) ) then
-		'' any ctor explicitly defined?
-		if( symbGetHasCtor( sym ) = FALSE ) then
-			'' no default ctor?
-			if( symbGetCompDefCtor( sym ) = NULL ) then
-				hAddCtor( sym, TRUE, FALSE )
-			end if
-		end if
+	''
+	'' If this UDT has fields with ctors, we have to make sure to add
+	'' default and copy ctors aswell as a dtor and a Let operator to the
+	'' parent, if the user didn't do that yet. This ensures the fields'
+	'' ctors/dtors will be called and also that they will be copied
+	'' correctly: In case they have Let overloads themselves, we can't just
+	'' do the default memcpy(). (If the parent already has a Let overload,
+	'' we can assume it's correct already)
+	''
+	'' Besides that, in case there were any field initializers specified,
+	'' we want to add a default constructor if there isn't any constructor
+	'' yet, to ensure the field initializers are getting used.
+	''
 
-		'' must be defined before the copy ctor
+	'' Ctor/inited fields and no ctor yet?
+	if( (symbGetUDTHasCtorField( sym ) or symbGetUDTHasInitedField( sym )) and _
+	    (not symbGetHasCtor( sym )) ) then
+		'' Add default ctor
+		hAddCtor( sym, TRUE, FALSE )
+	end if
+
+	if( symbGetUDTHasCtorField( sym ) ) then
+		'' Let operator (must be defined before the copy ctor)
 		if( symbGetCompCloneProc( sym ) = NULL ) then
 			hAddClone( sym )
 		end if
 
+		'' Copy ctor
 		if( symbGetCompCopyCtor( sym ) = NULL ) then
 			hAddCtor( sym, TRUE, TRUE )
 		end if
@@ -414,6 +427,7 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 	if( symbGetUDTHasDtorField( sym ) ) then
 		'' no default dtor explicitly defined?
 		if( symbGetCompDtor( sym ) = NULL ) then
+			'' Dtor
 			hAddCtor( sym, FALSE, FALSE )
 		end if
 	end if

@@ -399,6 +399,7 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASIDXGETPROPERTY	= &h0200
 	FB_UDTOPT_HASIDXSETPROPERTY	= &h0400
 	FB_UDTOPT_HASKWDFIELD		= &h0800
+	FB_UDTOPT_HASINITEDFIELD        = &h1000
 end enum
 
 type FB_STRUCT_DBG
@@ -2179,6 +2180,9 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetUDTHasKwdField(s) ((s->udt.options and FB_UDTOPT_HASKWDFIELD) <> 0)
 #define symbSetUDTHasKwdField(s) s->udt.options or= FB_UDTOPT_HASKWDFIELD
+
+#define symbSetUDTHasInitedField( s ) (s)->udt.options or= FB_UDTOPT_HASINITEDFIELD
+#define symbGetUDTHasInitedField( s ) (((s)->udt.options and FB_UDTOPT_HASINITEDFIELD) <> 0)
 
 #define symbGetUDTAlign(s) s->udt.align
 

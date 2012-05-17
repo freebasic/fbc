@@ -153,6 +153,7 @@ Version 0.24.0:
 - #3479349: No error was shown when a constructor couldn't initialize the base UDT (i.e. when the base UDT didn't have a default constructor and there was no BASE() used either)
 - #3479355: POD base UDTs weren't cleared by constructors
 - #3474348: Multiple REDIMs on COMMON array were disallowed
+- #3344224: Copy constructor, Let operator and destructor were added to UDTs having field initializers but no complex fields
 
 
 Version 0.23.0:
