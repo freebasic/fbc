@@ -187,24 +187,46 @@ private function hTypeEnumDecl _
 end function
 
 '':::::
-private sub hFieldInit(byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr)
+private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr defctor = any, subtype = any
+
 	'' '=' | '=>' ?
 	select case lexGetToken( )
 	case FB_TK_DBLEQ, FB_TK_EQ
 
 	case else
-    	if( sym <> NULL ) then
-    		select case symbGetType( sym )
-    		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    			'' has ctors?
-    			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-    				'' but no default ctor defined?
-    				if( symbGetCompDefCtor( symbGetSubtype( sym ) ) = NULL ) then
-    					errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-    				end if
-    			end if
-    		end select
-    	end if
+		'' No initializer
+
+		'' Check ctors/dtors
+		if( sym ) then
+			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
+				subtype = symbGetSubtype( sym )
+
+				'' Does it have any constructors? (Then we must call one to initialize this field)
+				if( symbGetHasCtor( subtype ) ) then
+					'' Does it have a default constructor?
+					defctor = symbGetCompDefCtor( subtype )
+					if( defctor ) then
+						'' Check whether we have access
+						if( symbCheckAccess( defctor ) = FALSE ) then
+							errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+						end if
+					else
+						'' It has constructors, but no default one -- we cannot initialize it
+						errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+					end if
+				end if
+
+				'' Does it have a destructor?
+				defctor = symbGetCompDtor( subtype )
+				if( defctor ) then
+					'' Check whether we have access
+					if( symbCheckAccess( defctor ) = FALSE ) then
+						errReport( FB_ERRMSG_NOACCESSTODTOR )
+					end if
+				end if
+			end if
+		end if
 
 		exit sub
 	end select
