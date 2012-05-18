@@ -83,19 +83,19 @@ function symbStructBegin _
 	'' extending another UDT?
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
-		
+
 		s->udt.base = symbAddField( s, "$fb_base", 0, dTB(), FB_DATATYPE_STRUCT, base_, symbGetLen( base_ ), 0 )
-		
+
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
 		symbNamespaceImportEx( base_, s )
-		
+
 		if( symbGetHasRTTI( base_ ) ) then
 			symbSetHasRTTI( s )
-		End If
+		end if
 	else
 		s->udt.base = NULL
-	End If
+	end if
 
 	function = s
 
@@ -427,7 +427,7 @@ function symbAddField _
 			symbSetUDTHasPtrField( base_parent )
 		end if
 
-		if( symbGetCompDefCtor( subtype ) <> NULL ) then
+		if( symbGetHasCtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
 			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
 										  FB_UDTOPT_ISANON)) <> 0 ) then
