@@ -140,10 +140,15 @@ namespace rttiPreserved
 
 	type Child extends Parent
 		declare constructor( )
+		declare constructor( byref as Child )
 	end type
 
 	constructor Child( )
 		base( 123 )
+	end constructor
+
+	constructor Child( byref rhs as Child )
+		base( 456 )
 	end constructor
 
 	private sub test cdecl( )

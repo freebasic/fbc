@@ -10,12 +10,9 @@ constructor Parent( byval i as integer )
 end constructor
 
 type Child extends Parent
-	declare constructor( )
+	'' Since the base UDT has a constructor, and none was implemented for
+	'' the derived UDT, the compiler should generate one automatically,
+	'' but it cannot because the base UDT doesn't have a default ctor.
 end type
-
-constructor Child( )
-	print "foo"
-	base( 5 )
-end constructor
 
 dim as Child x

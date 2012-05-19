@@ -11,15 +11,16 @@ end constructor
 
 type Child extends Parent
 	declare constructor( )
-	declare constructor( byval as integer )
+	declare constructor( byref as Child )
 end type
 
 constructor Child( )
-	constructor( 5 )
-	base( 5 )
+	'' The base UDT only has a non-default constructor -- the compiler must
+	'' show an error if BASE() wasn't used.
 end constructor
 
-constructor Child( byval i as integer )
+constructor Child( byref rhs as Child )
+	base( 123 )
 end constructor
 
 dim as Child x

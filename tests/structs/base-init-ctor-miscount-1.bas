@@ -10,9 +10,16 @@ constructor Parent( byval i as integer )
 end constructor
 
 type Child extends Parent
-	'' Since the base UDT has a constructor, the derived UDT must get one
-	'' automatically generated, but here an error must be shown if the
-	'' base UDT ctor isn't a default one and cannot be called automatically.
+	declare constructor( )
+	declare constructor( byref as Child )
 end type
+
+constructor Child( )
+	base( )
+end constructor
+
+constructor Child( byref rhs as Child )
+	base( 123 )
+end constructor
 
 dim as Child x

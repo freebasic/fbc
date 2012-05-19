@@ -14,7 +14,7 @@ type Child extends Parent
 end type
 
 constructor Child( )
-	base( 1, 2, 3 )
+	'base( 123 )
 end constructor
 
 dim as Child x

@@ -11,12 +11,16 @@ end constructor
 
 type Child extends Parent
 	declare constructor( )
+	declare constructor( byref as Child )
 	declare constructor( byval as integer )
 end type
 
 constructor Child( )
 	base( 5 )
 	constructor( 5 )
+end constructor
+
+constructor Child( byref rhs as Child )
 end constructor
 
 constructor Child( byval i as integer )
