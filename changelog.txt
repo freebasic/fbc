@@ -154,7 +154,7 @@ Version 0.24.0:
 - #3479355: POD base UDTs weren't cleared by constructors
 - #3474348: Multiple REDIMs on COMMON array were disallowed
 - #3344224: Copy constructor, Let operator and destructor were added to UDTs having field initializers but no complex fields
-- A default constructor wasn't added to derived UDTs with POD fields only and without constructor if their base UDT had only a non-default constructor
+- Implicit default and copy constructors (and also a Let overload and a destructor, if needed) will now be generated for derived UDTs which don't have either of them yet, if their base has a default constructor. If it has only non-default constructors, an error will be shown.
 
 
 Version 0.23.0:

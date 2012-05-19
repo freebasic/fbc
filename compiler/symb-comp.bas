@@ -382,6 +382,8 @@ sub symbCompAddDefCtor( byval sym as FBSYMBOL ptr )
 end sub
 
 sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
+	dim as integer base_without_defaultctor = any
+
 	'' RTTI?
 	if( symbGetHasRTTI( sym ) ) then
 		'' only if it isn't FB's own Object base super class
@@ -404,11 +406,30 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 	'' yet, to ensure the field initializers are getting used.
 	''
 
+	'' Derived?
+	if( sym->udt.base ) then
+		assert( symbIsField( sym->udt.base ) )
+		assert( symbGetType( sym->udt.base ) = FB_DATATYPE_STRUCT )
+		assert( symbIsStruct( sym->udt.base->subtype ) )
+		'' No default ctor?
+		base_without_defaultctor = (symbGetCompDefCtor( sym->udt.base->subtype ) = NULL)
+	else
+		base_without_defaultctor = FALSE
+	end if
+
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( sym ) or symbGetUDTHasInitedField( sym )) and _
 	    (not symbGetHasCtor( sym )) ) then
-		'' Add default ctor
-		hAddCtor( sym, TRUE, FALSE )
+		if( base_without_defaultctor ) then
+			'' Cannot implicitly generate a default ctor,
+			'' show a nicer error message than astProcEnd() would.
+			'' It would report the missing BASE() initializer,
+			'' but from here we can show a more useful error.
+			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
+		else
+			'' Add default ctor
+			hAddCtor( sym, TRUE, FALSE )
+		end if
 	end if
 
 	if( symbGetUDTHasCtorField( sym ) ) then
@@ -419,7 +440,13 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 
 		'' Copy ctor
 		if( symbGetCompCopyCtor( sym ) = NULL ) then
-			hAddCtor( sym, TRUE, TRUE )
+			if( base_without_defaultctor ) then
+				'' Cannot implicitly generate a copy ctor,
+				'' same as with default ctor above.
+				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
+			else
+				hAddCtor( sym, TRUE, TRUE )
+			end if
 		end if
 	end if
 
