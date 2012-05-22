@@ -1043,7 +1043,7 @@ private function hCallBaseCtor _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr initree = any
-	dim as FBSYMBOL ptr base_ = any, this_ = any, subtype = any
+	dim as FBSYMBOL ptr base_ = any, this_ = any, subtype = any, defctor = any
 
 	base_ = parent->udt.base
 
@@ -1061,22 +1061,23 @@ private function hCallBaseCtor _
 		return astTypeIniFlush( initree, this_, AST_INIOPT_ISINI )
 	end if
 
-	'' Otherwise, try to call a default ctor, if any
 	subtype = symbGetSubtype( base_ )
-	if( symbGetCompDefCtor( subtype ) ) then
-		return hCallFieldCtor( this_, base_ )
-	end if
+	defctor = symbGetCompDefCtor( subtype )
 
+	'' Otherwise, try to call a default ctor, if any
+	if( defctor ) then
+		'' Check access here, because (unlike fields) it's not done
+		'' during the TYPE compound parsing
+		if( symbCheckAccess( defctor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTOBASEDEFCTOR )
+		end if
 	'' No default ctor, but others? Then BASE() should have been used,
 	'' since a ctor must be called, but we cannot do it automatically.
-	if( symbGetHasCtor( subtype ) ) then
+	elseif( symbGetHasCtor( subtype ) ) then
 		errReport( FB_ERRMSG_NOBASEINIT )
 	end if
 
-	'' POD base UDT, just clear it
-	function = astNewMEM( AST_OP_MEMCLEAR, _
-	                      astBuildInstPtr( this_, base_ ), _
-	                      astNewCONSTi( symbGetLen( base_ ) ) )
+	function = hCallFieldCtor( this_, base_ )
 end function
 
 private function hInitVtable _
@@ -1196,7 +1197,7 @@ private sub hCallBaseDtor _
 		byval proc as FBSYMBOL ptr _
 	)
 
-	dim as FBSYMBOL ptr base_ = any
+	dim as FBSYMBOL ptr base_ = any, dtor = any
 
 	base_ = parent->udt.base
 
@@ -1206,7 +1207,13 @@ private sub hCallBaseDtor _
 	end if
 
 	'' Call its dtor, if there is any.
-	if( symbGetCompDtor( symbGetSubtype( base_ ) ) ) then
+	dtor = symbGetCompDtor( symbGetSubtype( base_ ) )
+	if( dtor ) then
+		'' Check access here, because (unlike fields) it's not done
+		'' during the TYPE compound parsing
+		if( symbCheckAccess( dtor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTOBASEDTOR )
+		end if
 		hCallFieldDtor( symbGetParamVar( symbGetProcHeadParam( proc ) ), base_ )
 	end if
 end sub

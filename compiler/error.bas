@@ -247,6 +247,8 @@ end type
 		@"The default constructor has no public access", _
 		@"Constructor has no public access", _
 		@"Destructor has no public access", _
+		@"Accessing base UDT's private default constructor", _
+		@"Accessing base UDT's private destructor", _
 		@"Illegal non-static member access", _
 		@"Member cannot be static", _
 		@"Member isn't static", _
