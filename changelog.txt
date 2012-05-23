@@ -158,6 +158,7 @@ Version 0.24.0:
 - Derived UDT constructors could implicitly use their base UDT's private default constructor
 - #3372520, C backend: Buggy type initialization through pointers (i.e. NEW)
 - #2855461: REDIM/ERASE on an array of UDT objects with non-parameterless default constructor was allowed, causing junk to be passed to the constructor parameters as the rtlib's REDIM implementation doesn't expect having to pass arguments
+- ERASE could be used on an array of UDT objects with only non-default constructor
 
 
 Version 0.23.0:

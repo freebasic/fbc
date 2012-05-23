@@ -386,7 +386,7 @@ function rtlArrayRedim _
 	'' no const filtering needed... dynamic arrays can't be const
 	
     dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any
+    dim as FBSYMBOL ptr f = any, ctor = any, dtor = any, subtype = any
     dim as integer dtype = any
 
     function = FALSE
@@ -396,8 +396,14 @@ function rtlArrayRedim _
 	'' only objects get instantiated
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		ctor = symbGetCompDefCtor( symbGetSubtype( s ) )
-		dtor = symbGetCompDtor( symbGetSubtype( s ) )
+		subtype = symbGetSubtype( s )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' Assuming there aren't any other ctors if there is no default one,
+		'' because if it were possible to declare such a dynamic array,
+		'' the rtlib couldn't REDIM it.
+		assert( iif( ctor = NULL, (symbGetHasCtor( subtype ) = FALSE) or (errGetCount( ) > 0), TRUE ) )
 	case else
 		ctor = NULL
 		dtor = NULL
@@ -568,7 +574,7 @@ function rtlArrayClear _
 	
     dim as ASTNODE ptr proc = any
     dim as integer dtype = any
-    dim as FBSYMBOL ptr ctor = any, dtor = any
+    dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
 
     function = NULL
 
@@ -577,8 +583,15 @@ function rtlArrayClear _
 	''
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		ctor = symbGetCompDefCtor( astGetSubtype( arrayexpr ) )
-		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+		subtype = astGetSubtype( arrayexpr )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' No default ctor, but others? Then the rtlib cannot just clear
+		'' that array of objects.
+		if( (ctor = NULL) and symbGetHasCtor( subtype ) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+		end if
 	case else
 		ctor = NULL
 		dtor = NULL
