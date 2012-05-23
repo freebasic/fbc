@@ -314,6 +314,64 @@ private function hBuildProcPtr(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astBuildProcAddrof(proc)
 end function
 
+private sub hCheckDefCtor _
+	( _
+		byval ctor as FBSYMBOL ptr, _
+		byval check_access as integer, _
+		byval is_erase as integer _
+	)
+
+	if( ctor = NULL ) then exit sub
+
+	assert( symbIsConstructor( ctor ) )
+
+	if( check_access ) then
+		if( symbCheckAccess( ctor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODEFAULTCTOR )
+		end if
+	end if
+
+	'' Check whether the given default ctor matches the rtlib's FB_DEFCTOR
+	if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASECTORMUSTBECDEL, _
+		                          FB_ERRMSG_REDIMCTORMUSTBECDEL ) )
+	end if
+
+	'' Must have only the THIS ptr parameter
+	if( symbGetProcParams( ctor ) <> 1 ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASECTORMUSTHAVEONEPARAM, _
+		                          FB_ERRMSG_REDIMCTORMUSTHAVEONEPARAM ) )
+	end if
+
+end sub
+
+private sub hCheckDtor _
+	( _
+		byval dtor as FBSYMBOL ptr, _
+		byval check_access as integer, _
+		byval is_erase as integer _
+	)
+
+	if( dtor = NULL ) then exit sub
+
+	assert( symbIsDestructor( dtor ) )
+
+	if( check_access ) then
+		if( symbCheckAccess( dtor ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR )
+		end if
+	end if
+
+	'' Check whether the given dtor matches the rtlib's FB_DEFCTOR
+	if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
+		errReport( iif( is_erase, FB_ERRMSG_ERASEDTORMUSTBECDEL, _
+		                          FB_ERRMSG_REDIMDTORMUSTBECDEL ) )
+	end if
+
+	assert( symbGetProcParams( dtor ) = 1 )
+
+end sub
+
 '':::::
 function rtlArrayRedim _
 	( _
@@ -390,27 +448,18 @@ function rtlArrayRedim _
     	end if
 
     else
-		if( ctor <> NULL ) then
-			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
+		hCheckDefCtor( ctor, FALSE, FALSE )
+		hCheckDtor( dtor, FALSE, FALSE )
 
-		if( dtor <> NULL ) then
-			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
-
-		'' byval ctor as sub()
+		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
 
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
     end if
 
 	'' byval dimensions as integer
@@ -495,20 +544,12 @@ function rtlArrayErase _
 			exit function
 		end if
 	else
-		if( check_access ) then
-			if( symbCheckAccess( dtor ) = FALSE ) then
-				errReport( FB_ERRMSG_NOACCESSTODTOR )
-			end if
-		end if
+		hCheckDtor( dtor, check_access, TRUE )
 
-		if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-			errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-		end if
-
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
-    		exit function
-    	end if
+			exit function
+		end if
     end if
 
 	function = proc
@@ -563,34 +604,15 @@ function rtlArrayClear _
 			exit function
 		end if
 	else
-		if( ctor <> NULL ) then
-			if( check_access ) then
-				if( symbCheckAccess( ctor ) = FALSE ) then
-					errReport( FB_ERRMSG_NOACCESSTODTOR )
-				end if
-			end if
-			if( symbGetProcMode( ctor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
+		hCheckDefCtor( ctor, check_access, TRUE )
+		hCheckDtor( dtor, check_access, TRUE )
 
-		if( dtor <> NULL ) then
-			if( check_access ) then
-				if( symbCheckAccess( dtor ) = FALSE ) then
-					errReport( FB_ERRMSG_NOACCESSTODTOR )
-				end if
-			end if
-			if( symbGetProcMode( dtor ) <> FB_FUNCMODE_CDECL ) then
-				errReport( FB_ERRMSG_REDIMCTORMUSTBECDEL )
-			end if
-		end if
-
-		'' byval ctor as sub()
+		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
 			exit function
 		end if
 
-		'' byval dtor as sub()
+		'' byval dtor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( dtor ) ) = NULL ) then
 			exit function
 		end if
@@ -719,4 +741,3 @@ function rtlArrayBoundsCheck _
     function = proc
 
 end function
-

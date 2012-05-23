@@ -220,7 +220,12 @@ end type
 		@"Parent is not a class or UDT", _
 		@"CONSTRUCTOR() chain call not at top of constructor", _
 		@"BASE() initializer not at top of constructor", _
-		@"The constructor or destructor calling convention must be CDECL", _
+		@"REDIM on UDT with non-CDECL constructor", _
+		@"REDIM on UDT with non-CDECL destructor", _
+		@"REDIM on UDT with non-parameterless default constructor", _
+		@"ERASE on UDT with non-CDECL constructor", _
+		@"ERASE on UDT with non-CDECL destructor", _
+		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
 		@"Invalid assignment/conversion", _
