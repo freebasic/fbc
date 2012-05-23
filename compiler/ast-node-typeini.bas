@@ -392,31 +392,63 @@ private function hFlushTree _
 		byval do_deref as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr n = any, nxt = any, flush_tree = NULL
+	dim as ASTNODE ptr n = any, nxt = any, flush_tree = any, lside = any
 	dim as FBSYMBOL ptr bitfield = any
+	dim as integer dtype = any
 
-	function = NULL
-
+	flush_tree = NULL
 	n = tree->l
 	do while( n <> NULL )
 		nxt = n->r
 
-		dim as ASTNODE ptr lside = any
-
 		select case as const n->class
 		case AST_NODECLASS_TYPEINI_ASSIGN
+			''
+			'' basesym is the initialization target,
+			'' either the object itself or a pointer to the target.
+			''
+			'' n->sym (symbol associated with the TYPEINI_ASSIGN) is
+			'' the symbol that's directly initialized by this
+			'' TYPEINI_ASSIGN.
+			'' It can be the same as basesym, e.g. when initializing
+			'' a simple integer, or it can be a field while basesym
+			'' is the UDT or a pointer to it, and it can be NULL too,
+			'' at least with some parameter initializers.
+			''
+
 			if( symbIsParamInstance( basesym ) ) then
+				'' Assigning to object through THIS pointer, a DEREF is done.
 				lside = astBuildInstPtrAtOffset( basesym, n->sym, n->typeini.ofs )
 			else
 				if( do_deref ) then
+					'' Assigning to object through pointer, a DEREF is done.
+					assert( n->sym )
+
+					''
+					'' Must make sure to have the proper type on the DEREF,
+					'' otherwise the ASSIGN to it will fail or be wrong and
+					'' possibly cause trouble with the backends.
+					''
+					'' We need to do a typeDeref() if it's the basesym pointer,
+					'' but not if it's something else (e.g. a field).
+					'' TODO: is this check correct/enough?
+					''
+					dtype = n->dtype
+					if( n->sym = basesym ) then
+						assert( typeIsPtr( dtype ) )
+						dtype = typeDeref( dtype )
+					end if
+
 					lside = astNewDEREF( astNewVAR( basesym, 0, symbGetFullType( basesym ), symbGetSubtype( basesym ) ), _
-					                     astGetFullType( n ), n->subtype, n->typeini.ofs )
+					                     dtype, n->subtype, n->typeini.ofs )
 				else
+					'' Assigning to object directly
+					'' Note: n->sym may be NULL (from a astReplaceSymbolOnTree(), so n's dtype/subtype are used instead.
 					lside = astNewVAR( basesym, n->typeini.ofs, astGetFullType( n ), n->subtype )
 				end if
 
-				'' Field?
-				if( n->sym <> NULL ) then
+				if( n->sym ) then
+					'' Field?
 					if( symbIsField( n->sym ) ) then
 						'' If it's a bitfield, clear the whole field containing this bitfield,
 						'' otherwise the bitfield assignment(s) would leave unused bits
@@ -442,40 +474,32 @@ private function hFlushTree _
 				end if
 			end if
 
-			flush_tree = astNewLINK( flush_tree, _
-				astNewASSIGN( lside, n->l, _
-					AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR ) )
+			assert( astCheckASSIGN( lside, n->l ) )
+			lside = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
+			assert( lside <> NULL )
+			flush_tree = astNewLINK( flush_tree, lside )
 
 		case AST_NODECLASS_TYPEINI_PAD
+			'' Clear some padding bytes...
 			if( symbIsParamInstance( basesym ) ) then
-				lside = astBuildInstPtrAtOffset( basesym, _
-										 NULL, _
-										 n->typeini.ofs )
+				'' through THIS pointer
+				lside = astBuildInstPtrAtOffset( basesym, NULL, n->typeini.ofs )
 			else
-				dim as integer dtype = symbGetFullType( basesym )
-				dim as FBSYMBOL ptr subtype = symbGetSubtype( basesym )
+				dtype = symbGetFullType( basesym )
 
-				if( do_deref = FALSE ) then
-					lside = astNewVAR( basesym, _
-									   n->typeini.ofs, _
-									   dtype, _
-									   subtype )
-
+				if( do_deref ) then
+					'' through a pointer
+					assert( typeIsPtr( dtype ) )
+					lside = astNewDEREF( astNewVAR( basesym, 0, dtype, symbGetSubtype( basesym ) ), _
+					                     typeDeref( dtype ), symbGetSubtype( basesym ), n->typeini.ofs )
 				else
-					lside = astNewDEREF( astNewVAR( basesym, _
-													0, _
-													dtype, _
-													subtype ), _
-										 typeDeref( dtype ), _
-										 subtype, _
-										 n->typeini.ofs )
+					'' directly
+					lside = astNewVAR( basesym, n->typeini.ofs, dtype, symbGetSubtype( basesym ) )
 				end if
 			end if
 
 			flush_tree = astNewLINK( flush_tree, _
-									 astNewMEM( AST_OP_MEMCLEAR, _
-												lside, _
-												astNewCONSTi( n->typeini.bytes ) ) )
+				astNewMEM( AST_OP_MEMCLEAR, lside, astNewCONSTi( n->typeini.bytes ) ) )
 
 		case AST_NODECLASS_TYPEINI_CTORCALL
 			flush_tree = hCallCtor( flush_tree, n, basesym )
@@ -490,7 +514,6 @@ private function hFlushTree _
 	loop
 
 	function = flush_tree
-
 end function
 
 '':::::
@@ -748,9 +771,7 @@ function astTypeIniFlush _
 		hFlushTreeStatic( tree, basesym )
 		function = NULL
 	else
-		function = hFlushTree( tree, _
-							   basesym, _
-							   (options and AST_INIOPT_DODEREF) <> 0 )
+		function = hFlushTree( tree, basesym, ((options and AST_INIOPT_DODEREF) <> 0) )
 	end if
 
 	if( (options and AST_INIOPT_RELINK) <> 0 ) then

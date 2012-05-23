@@ -156,6 +156,7 @@ Version 0.24.0:
 - #3344224: Copy constructor, Let operator and destructor were added to UDTs having field initializers but no complex fields
 - Implicit default and copy constructors (and also a Let overload and a destructor, if needed) will now be generated for derived UDTs which don't have either of them yet, if their base has a default constructor. If it has only non-default constructors, an error will be shown.
 - Derived UDT constructors could implicitly use their base UDT's private default constructor
+- #3372520, C backend: Buggy type initialization through pointers (i.e. NEW)
 
 
 Version 0.23.0:

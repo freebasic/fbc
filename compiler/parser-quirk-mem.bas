@@ -116,15 +116,8 @@ function cOperatorNew _
 		end if
 	end if
 
-	dim as integer is_addr
-
-	if( dtype = FB_DATATYPE_STRUCT ) then
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
-		is_addr = TRUE
-	else
-		'' temp pointer
-		tmp = symbAddTempVar( dtype, subtype, , FALSE )
-	end if
+	'' temp pointer
+	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
@@ -184,12 +177,8 @@ function cOperatorNew _
 				else
 					lexSkipToken( )
 				end if
-        	else
-				if( is_addr ) then
-					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
-				else
-					ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI )
-				end if
+			else
+				ctor_expr = cInitializer( tmp, FB_INIOPT_ISINI or FB_INIOPT_DODEREF )
 
         		symbGetStats( tmp ) and= not FB_SYMBSTATS_INITIALIZED
 

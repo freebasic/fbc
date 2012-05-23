@@ -621,7 +621,8 @@ function astBuildInstPtrAtOffset _
 	dtype = symbGetFullType( sym )
 	subtype = symbGetSubtype( sym )
 
-	'' it's always a param
+	'' THIS is a BYREF AS UDT parameter, the typeAddrOf() is needed to
+	'' make the expression be an UDT PTR.
 	expr = astNewVAR( sym, 0, typeAddrOf( dtype ), subtype )
 
 	if( fld <> NULL ) then
