@@ -196,9 +196,26 @@ private function hEmitProcHeader _
 		byval options as EMITPROC_OPTIONS _
 	) as string
 
-	dim as string ln
+	dim as string ln, mangled
+
+	if( options = 0 ) then
+		'' ctor/dtor flags on bodies
+		if( symbGetIsGlobalCtor( proc ) ) then
+			ln += "__attribute__((constructor)) "
+		elseif( symbGetIsGlobalDtor( proc ) ) then
+			ln += "__attribute__((destructor)) "
+		end if
+
+		if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
+			ln += "__attribute__((naked)) "
+		end if
+	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
+		if( symbIsExport( proc ) ) then
+			ln += "__declspec(dllexport) "
+		end if
+
 		if( symbIsPrivate( proc ) ) then
 			ln += "static "
 		end if
@@ -218,20 +235,22 @@ private function hEmitProcHeader _
 	'' cycling through parameters of Pascal functions. Together with Stdcall
 	'' this results in a double-reverse resulting in the proper ABI.
 	''
-	select case as const( symbGetProcMode( proc ) )
+	select case( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
 		ln += " __attribute__((stdcall))"
 	end select
 
 	ln += " "
 
+	mangled = *symbGetMangledName( proc )
+
 	'' Identifier
 	if( options and EMITPROC_ISPROCPTR ) then
 		ln += "(*"
-	end if
-	ln += *symbGetMangledName( proc )
-	if( options and EMITPROC_ISPROCPTR ) then
+		ln += mangled
 		ln += ")"
+	else
+		ln += mangled
 	end if
 
 	'' Parameter list
@@ -309,6 +328,31 @@ private function hEmitProcHeader _
 	wend
 
 	ln += " )"
+
+	if( ((options and EMITPROC_ISPROCPTR) = 0) and _
+	    ((options and EMITPROC_ISPROTO) <> 0)        ) then
+#if 0
+		'' Add an extra <asm("mangledname")> to prevent gcc
+		'' from adding the stdcall @N suffix. asm() can only
+		'' be used on prototypes.
+		select case( symbGetProcMode( proc ) )
+		case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+			'' Must manually add an underscore prefix if the
+			'' target requires it, because symb-mangling
+			'' won't do that for -gen gcc.
+			if( env.target.underprefix ) then
+				mangled  = "_" + mangled
+			end if
+			ln += " asm(""" + mangled + """)"
+		end select
+#endif
+		'' ctor/dtor flags on prototypes
+		if( symbGetIsGlobalCtor( proc ) ) then
+			ln += " __attribute__((constructor))"
+		elseif( symbGetIsGlobalDtor( proc ) ) then
+			ln += " __attribute__((destructor))"
+		end if
+	end if
 
 	function = ln
 end function
@@ -559,15 +603,7 @@ private sub hEmitFuncProto _
 		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
 					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE, TRUE )
 	else
-		dim as string ln = hEmitProcHeader( s, EMITPROC_ISPROTO )
-
-		if( symbGetIsGlobalCtor( s ) ) then
-			ln += " __attribute__ ((constructor)) "
-		elseif( symbGetIsGlobalDtor( s ) ) then
-			ln += " __attribute__ ((destructor)) "
-		end if
-
-		hWriteLine( ln, TRUE )
+		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) )
 	end if
 
 	ctx.section = oldsection
@@ -2383,18 +2419,18 @@ private sub _emitProcBegin _
 		ctx.linenum = 0
 	end if
 
-	dim as string ln
-	if( symbIsExport( proc ) ) then
-		ln += "__declspec(dllexport) "
-	end if
+#if 0
+	'' If the asm("mangledname") work-around is needed to tell gcc to not
+	'' add the @N suffix for stdcall  procedures, emit an extra prototype
+	'' right above the procedure body, because asm() is only allowed on
+	'' prototypes.
+	select case( symbGetProcMode( proc ) )
+	case FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
+		hWriteLine( hEmitProcHeader( proc, EMITPROC_ISPROTO ) )
+	end select
+#endif
 
-	if( (proc->attrib and FB_SYMBATTRIB_NAKED) <> 0 ) then
-		ln += "__attribute__ ((naked)) "
-	end if
-
-	ln += hEmitProcHeader( proc, 0 )
-
-	hWriteLine( ln, FALSE, TRUE )
+	hWriteLine( hEmitProcHeader( proc, 0 ), FALSE, TRUE )
 
 	hWriteLine( "{", FALSE, TRUE )
 	ctx.identcnt += 1
