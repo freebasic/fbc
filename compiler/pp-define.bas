@@ -185,20 +185,18 @@ private function hLoadMacro _
 				'' Too few args specified. This is an error, unless it's
 				'' only the "..." vararg param that wasn't given any arg.
 
-				'' Last param reached, and is it "..."?
-				if( (symbGetDefParamNext( nextparam ) = NULL) and is_variadic ) then
-					'' Nothing was passed for the "..." param, so it'll just be empty.
-					assert( num = (symbGetDefineParams( s ) - 1) )
-				else
+				'' Not the last param, or not variadic?
+				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
 					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 				end if
 
 				'' Clear any missing args
-				for i as integer = 1 to symbGetDefineParams( s )
+				assert( num < (symbGetDefineParams( s ) - 1) )
+				do
 					num += 1
 					'' argtb entries must be cleared! (it's a NOCLEAR list)
 					DZstrZero( argtb->tb(num).text )
-				next
+				loop while( num < (symbGetDefineParams( s ) - 1) )
 			end if
 
 			exit do
@@ -496,20 +494,18 @@ private function hLoadMacroW _
 				'' Too few args specified. This is an error, unless it's
 				'' only the "..." vararg param that wasn't given any arg.
 
-				'' Last param reached, and is it "..."?
-				if( (symbGetDefParamNext( nextparam ) = NULL) and is_variadic ) then
-					'' Nothing was passed for the "..." param, so it'll just be empty.
-					assert( num = (symbGetDefineParams( s ) - 1) )
-				else
+				'' Not the last param, or not variadic?
+				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
 					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 				end if
 
 				'' Clear any missing args
-				for i as integer = 1 to symbGetDefineParams( s )
+				assert( num < (symbGetDefineParams( s ) - 1) )
+				do
 					num += 1
 					'' argtb entries must be cleared! (it's a NOCLEAR list)
 					DWstrZero( argtb->tb(num).textw )
-				next
+				loop while( num < (symbGetDefineParams( s ) - 1) )
 			end if
 
 			exit do

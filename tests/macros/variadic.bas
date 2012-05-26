@@ -10,6 +10,8 @@ namespace fbc_tests.macros.variadic
 #define add(a, b) (a + b)
 #define add2(operands...) add(operands)
 
+#define f1(a, b...) a b
+
 sub expansion cdecl ()
 	CU_ASSERT_EQUAL( identity( 5 ), 5 )
 	CU_ASSERT_EQUAL( stringify( identity( 5 ) ), "5" )
@@ -19,6 +21,10 @@ sub expansion cdecl ()
 
 	identity()
 	nothing()
+
+	f1()  '' Ok -- param 'a' is empty, and vararg param 'b...' not specified, so empty aswell (only ok because it's vararg)
+	f1(:)
+	f1(:,:)
 end sub
 
 private sub ctor () constructor
