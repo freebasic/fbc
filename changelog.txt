@@ -161,6 +161,7 @@ Version 0.24.0:
 - ERASE could be used on an array of UDT objects with only non-default constructor
 - EXTERN declarations of UDT variables with only non-default constructor caused an error
 - Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
+- Macro arguments can now be completely empty (no space required anymore to get it to work)
 
 
 Version 0.23.0:

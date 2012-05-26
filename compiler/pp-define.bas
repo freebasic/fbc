@@ -165,23 +165,16 @@ private function hLoadMacro _
 	    	end if
 		loop
 
-		''
-		if( argtb <> NULL ) then
-			'' trim
-			with argtb->tb(num)
-
-				if( .text.data = NULL ) then
-					'' Argument to '...' (variadic macros) can be empty
-					if( reached_vararg = FALSE ) then
-						hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-					end if
-				else
+		if( argtb ) then
+			with( argtb->tb(num) )
+				'' Arguments are allowed to be empty, so must check for NULL
+				if( .text.data ) then
+					'' Trim space
 					if( (.text.data[0][0] = CHAR_SPACE) or _
 						(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
 						DZstrAssign( .text, trim( *.text.data ) )
 					end if
 				end if
-
 			end with
 		end if
 
@@ -483,15 +476,11 @@ private function hLoadMacroW _
     		end if
 		loop
 
-		if( argtb <> NULL ) then
-			'' trim
-			with argtb->tb(num)
-				if( .textw.data = NULL ) then
-                    '' Argument to '...' (variadic macros) can be empty
-                    if( reached_vararg = FALSE ) then
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-                    end if
-				else
+		if( argtb ) then
+			with( argtb->tb(num) )
+				'' Arguments are allowed to be empty, so must check for NULL
+				if( .textw.data ) then
+					'' Trim space
 					if( (.textw.data[0][0] = CHAR_SPACE) or _
 						(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
 						DWstrAssign( .textw, trim( *.textw.data ) )
