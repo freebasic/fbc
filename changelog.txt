@@ -164,6 +164,7 @@ Version 0.24.0:
 - Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
 - Macro arguments can now be completely empty (no space required anymore to get it to work)
 - C backend: Matching procedure pointers declarations in multiple different scopes caused errors
+- C backend: global constructor/destructor priorities were not emitted
 
 
 Version 0.23.0:

@@ -190,6 +190,26 @@ enum EMITPROC_OPTIONS
 	EMITPROC_ISPROCPTR = &h2
 end enum
 
+private sub hAppendCtorAttrib( byref ln as string, byval proc as FBSYMBOL ptr )
+	dim as integer priority = any
+
+	if( proc->stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR) ) then
+		ln += "__attribute__(( "
+		if( proc->stats and FB_SYMBSTATS_GLOBALCTOR ) then
+			ln += "constructor"
+		else
+			ln += "destructor"
+		end if
+
+		priority = symbGetProcPriority( proc )
+		if( priority <> 0 ) then
+			ln += "( " + str( priority ) + " )"
+		end if
+
+		ln += " )) "
+	end if
+end sub
+
 private function hEmitProcHeader _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -200,11 +220,7 @@ private function hEmitProcHeader _
 
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
-		if( symbGetIsGlobalCtor( proc ) ) then
-			ln += "__attribute__((constructor)) "
-		elseif( symbGetIsGlobalDtor( proc ) ) then
-			ln += "__attribute__((destructor)) "
-		end if
+		hAppendCtorAttrib( ln, proc )
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
@@ -343,11 +359,7 @@ private function hEmitProcHeader _
 		end select
 #endif
 		'' ctor/dtor flags on prototypes
-		if( symbGetIsGlobalCtor( proc ) ) then
-			ln += " __attribute__((constructor))"
-		elseif( symbGetIsGlobalDtor( proc ) ) then
-			ln += " __attribute__((destructor))"
-		end if
+		hAppendCtorAttrib( ln, proc )
 	end if
 
 	function = ln
