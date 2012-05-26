@@ -476,8 +476,14 @@ private function hDoNesting _
 
 end function
 
-private sub cNakedAttribute(byval pattrib as integer ptr)
-	if (hMatchText("NAKED")) then
+private sub cNakedAttribute( byval pattrib as integer ptr )
+	if( ucase( *lexGetText( ) ) = "NAKED" ) then
+		'' Naked isn't supported by the C backend, because gcc doesn't
+		'' support __attribute__((naked)) on x86.
+		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC )
+		end if
+		lexSkipToken( )
 		*pattrib or= FB_SYMBATTRIB_NAKED
 	end if
 end sub

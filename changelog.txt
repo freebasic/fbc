@@ -20,6 +20,7 @@ Version 0.24.0:
 - The bitwise NOT operator is now mangled as bitwise not ('~' in C++) instead of logical negation ('!' in C++)
 - The '= ANY' intializer on variables or fields will now prevent the default constructor call (if any), instead of generating a warning message, requiring the variable or field to be initialized with an explicit constructor call. It still won't affect destructor calls though.
 - #3051592: crt/errno.bi now uses __errno_location() to access errno on Linux
+- The NAKED keyword is now disallowed under -gen gcc because gcc doesn't support naked functions on x86
 
 [added]
 - EVENT_MOUSE_HWHEEL for X11

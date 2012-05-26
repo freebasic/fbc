@@ -205,10 +205,6 @@ private function hEmitProcHeader _
 		elseif( symbGetIsGlobalDtor( proc ) ) then
 			ln += "__attribute__((destructor)) "
 		end if
-
-		if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
-			ln += "__attribute__((naked)) "
-		end if
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
