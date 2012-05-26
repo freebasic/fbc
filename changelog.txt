@@ -160,6 +160,7 @@ Version 0.24.0:
 - #2855461: REDIM/ERASE on an array of UDT objects with non-parameterless default constructor was allowed, causing junk to be passed to the constructor parameters as the rtlib's REDIM implementation doesn't expect having to pass arguments
 - ERASE could be used on an array of UDT objects with only non-default constructor
 - EXTERN declarations of UDT variables with only non-default constructor caused an error
+- Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
 
 
 Version 0.23.0:
