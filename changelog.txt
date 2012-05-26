@@ -162,6 +162,7 @@ Version 0.24.0:
 - EXTERN declarations of UDT variables with only non-default constructor caused an error
 - Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
 - Macro arguments can now be completely empty (no space required anymore to get it to work)
+- C backend: Matching procedure pointers declarations in multiple different scopes caused errors
 
 
 Version 0.23.0:

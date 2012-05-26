@@ -11,14 +11,6 @@
 #include once "list.bi"
 #include once "ast.bi"
 
-declare function hMangleFunctionPtr	_
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval mode as integer _
-	) as zstring ptr
-
 declare function hDemangleParams _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -595,16 +587,9 @@ private function hSetupProc _
     	stats = FB_SYMBSTATS_HASALIAS
     end if
 
-	'' move to global ns? (needed for function ptr protos)
-	if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
-		parent = @symbGetGlobalNamespc( )
-		symbtb = @symbGetGlobalTb( )
-		hashtb = @symbGetGlobalHashTb( )
-	else
-		parent = symbGetCurrentNamespc( )
-    	symbtb = @symbGetCompSymbTb( parent )
-    	hashtb = @symbGetCompHashTb( parent )
-	end if
+	parent = symbGetCurrentNamespc( )
+	symbtb = @symbGetCompSymbTb( parent )
+	hashtb = @symbGetCompHashTb( parent )
 
 	head_proc = NULL
 
@@ -984,40 +969,15 @@ function symbAddProcPtr _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
-	dim as zstring ptr id = any
-	dim as FBSYMCHAIN ptr chain_ = any
-	dim as FBSYMBOL ptr sym = any, parent = any
-	dim as FB_SYMBOPT options = any
-
-	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
-
-    '' if in main (or inside a NS), add the func ptr to the main table
-    if( parser.scope = FB_MAINSCOPE ) then
-		parent = @symbGetGlobalNamespc( )
-		options = FB_SYMBOPT_MOVETOGLOB
-    else
-    	parent = symbGetCurrentNamespc( )
-    	options = 0
-	end if
-
-	'' already exists? (it's ok to use LookupAt, literal str's are always
-	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
-    chain_ = symbLookupAt( parent, id, TRUE, FALSE )
-	if( chain_ <> NULL ) then
-		return chain_->sym
-	end if
+	dim as FBSYMBOL ptr sym = any
 
 	'' create a new prototype
-	sym = symbAddPrototype( proc, id, hMakeTmpStrNL(), dtype, subtype, _
-	                        0, mode, options or FB_SYMBOPT_DECLARING or _
-	                                 FB_SYMBOPT_PRESERVECASE )
-
+	sym = symbAddPrototype( proc, NULL, hMakeTmpStrNL( ), dtype, subtype, 0, mode, FB_SYMBOPT_DECLARING )
 	if( sym <> NULL ) then
 		symbSetIsFuncPtr( sym )
 	end if
 
 	function = sym
-
 end function
 
 '':::::
@@ -2493,65 +2453,6 @@ function symbCalcParamLen _
 	end select
 
 	function = lgt
-
-end function
-
-'':::::
-private function hMangleFunctionPtr _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval mode as integer _
-	) as zstring ptr
-
-    static as string id
-    dim as integer i = any
-    dim as FBSYMBOL ptr param = any
-
-    '' cheapo and fast internal mangling..
-    id = "{fbfp}("
-
-    symbMangleInitAbbrev( )
-
-    '' for each param..
-    param = symbGetProcHeadParam( proc )
-    for i = 0 to symbGetProcParams( proc )-1
-    	if( i > 0 ) then
-    		id += ","
-    	end if
-
-    	'' not an UDT?
-    	if( param->subtype = NULL ) then
-    		id += hex( param->typ ) + "M" + hex( cint(param->param.mode) )
-    	else
-    		'' notes:
-    		'' - can't use hex( param->subtype ), because slots can be
-    		''   reused if fwd types were resolved and removed
-    		'' - can't use only the param->id.name because UDT's with the same
-    		''   name declared inside different namespaces
-    		id += symbMangleParam( param )
-    	end if
-
-    	param = symbGetParamNext( param )
-    next
-
-    '' return type
-    id += ")"
-	if( subtype = NULL ) then
-		id += hex( dtype )
-	else
-		'' see the notes above
-		id += symbMangleType( dtype, subtype )
-	end if
-
-    symbMangleEndAbbrev( )
-
-    '' calling convention
-    id += "$"
-    id += hex( mode )
-
-	function = strptr( id )
 
 end function
 

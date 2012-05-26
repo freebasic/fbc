@@ -204,19 +204,12 @@ sub rtlAddIntrinsicProcs _
 
 							i += 1
 							with procdef->paramTb(i)
-
 								'' add it
 								'' Note: using FBCALL for the function pointer.
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddPrototype( inner_proc, NULL, hMakeTmpStrNL( ), _
-								                           .dtype, NULL, 0, env.target.fbcall, _
-								                           FB_SYMBOPT_DECLARING )
-
-								if( subtype <> NULL ) then
-									symbSetIsFuncPtr( subtype )
-								end if
+								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, env.target.fbcall )
 
 								'' due to the ambiguity (need to say it's optional to
 								'' even get to this point), the symbol's return type will
@@ -224,7 +217,6 @@ sub rtlAddIntrinsicProcs _
                                 if( .isopt = FALSE ) then
                                 	attrib = 0
                                 end if
-
 							end with
 
 							param_optval = NULL
