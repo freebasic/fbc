@@ -1,4 +1,3 @@
-
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
 const foo.bar.abc = 1
