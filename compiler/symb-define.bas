@@ -425,7 +425,7 @@ function symbAddDefine _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
-		byval proc as function( ) as string, _
+		byval proc as FBS_DEFINE_PROC, _
         byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
@@ -464,7 +464,7 @@ function symbAddDefineW _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
-		byval proc as function( ) as string, _
+		byval proc as FBS_DEFINE_PROC, _
         byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 

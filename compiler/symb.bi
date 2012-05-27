@@ -353,6 +353,8 @@ enum FB_DEFINE_FLAGS
 	FB_DEFINE_FLAGS_VARIADIC	= &h00000004
 end enum
 
+type FBS_DEFINE_PROC as function( ) as string
+
 type FBS_DEFINE
 	params			as integer
 	paramhead 		as FB_DEFPARAM ptr
@@ -365,7 +367,7 @@ type FBS_DEFINE
 
 	isargless		as integer
     flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
-	proc			as function( ) as string
+	proc			as FBS_DEFINE_PROC
 end type
 
 '' forward definition
@@ -971,7 +973,7 @@ declare function symbAddDefine _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as function() as string = NULL, _
+		byval proc as FBS_DEFINE_PROC = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
@@ -981,7 +983,7 @@ declare function symbAddDefineW _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as function() as string = NULL, _
+		byval proc as FBS_DEFINE_PROC = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
