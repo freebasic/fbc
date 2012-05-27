@@ -39,14 +39,6 @@ sub test cdecl ()
 
 end sub
 
-'' -gen gcc regression test
-sub sub1( )
-	dim p1 as sub( )
-end sub
-sub sub2( )
-	dim p2 as sub( )
-end sub
-
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.pointers.funcptr_mangling")
