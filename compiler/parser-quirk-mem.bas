@@ -250,7 +250,7 @@ sub cOperatorDelete()
 	dim as FBSYMBOL ptr subtype = astGetSubType( ptr_expr )
 
 	'' not a ptr?
-	if( typeGet( dtype ) = FALSE ) then
+	if( typeIsPtr( dtype ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDPOINTER )
 		hSkipStmt( )
 		return
