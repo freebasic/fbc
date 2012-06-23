@@ -1473,40 +1473,24 @@ private sub hDivToShift_Signed _
 
 	if( const_val = 1 ) then
 		'' n + ( cunsg(n) shr bits )
-		n->l = astNewCONV( dtype, _
-						   NULL, _
-						   astNewBOP( AST_OP_ADD, _
-									  l_cpy, _
-									  astNewBOP( AST_OP_SHR, _
-												 astNewCONV( typeToUnsigned( dtype ), _
-															 NULL, _
-															 l, _
-															 AST_OP_TOUNSIGNED _
-														   ), _
-												 astNewCONSTi( bits, _
-															   FB_DATATYPE_INTEGER ), _
-											   ), _
-									), _
-						   AST_OP_TOSIGNED _
-						 )
+		n->l = astNewCONV( dtype, NULL, _
+				astNewBOP( AST_OP_ADD, _
+					l_cpy, _
+					astNewBOP( AST_OP_SHR, _
+						astNewCONV( typeToUnsigned( dtype ), NULL, l, AST_CONVOPT_SIGNCONV ), _
+						astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_SIGNCONV )
 	else
 		'' n + ( (n shr bits) and (1 shl const_val - 1) )
-		n->l = astNewCONV( dtype, _
-						   NULL, _
-						   astNewBOP( AST_OP_ADD, _
-									  l_cpy, _
-									  astNewBOP( AST_OP_AND, _
-												 astNewBOP( AST_OP_SHR, _
-															l, _
-															astNewCONSTi( bits, _
-																		  FB_DATATYPE_INTEGER ) _
-														  ), _
-												 astNewCONSTi( 1 shl const_val - 1, _
-															   FB_DATATYPE_INTEGER ), _
-											   ), _
-									), _
-						   AST_OP_TOSIGNED _
-						 )
+		n->l = astNewCONV( dtype, NULL, _
+				astNewBOP( AST_OP_ADD, _
+					l_cpy, _
+					astNewBOP( AST_OP_AND, _
+						astNewBOP( AST_OP_SHR, _
+							l, _
+							astNewCONSTi( bits, FB_DATATYPE_INTEGER ) ), _
+						astNewCONSTi( 1 shl const_val - 1, FB_DATATYPE_INTEGER ) ) ), _
+				AST_CONVOPT_SIGNCONV )
 	end if
 
 	n->op.op = AST_OP_SHR

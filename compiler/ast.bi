@@ -501,13 +501,19 @@ declare function astNewASSIGN _
 		byval options as AST_OPOPT = AST_OPOPT_NONE _
 	) as ASTNODE ptr
 
+enum AST_CONVOPT
+	AST_CONVOPT_SIGNCONV = &h1
+	AST_CONVOPT_CHECKSTR = &h2
+	AST_CONVOPT_PTRONLY  = &h4
+end enum
+
 declare function astNewCONV _
 	( _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
-		byval op as AST_OP = INVALID, _
-		byval check_str as integer = FALSE _
+		byval options as AST_CONVOPT = 0, _
+		byval perrmsg as integer ptr = NULL _
 	) as ASTNODE ptr
 
 declare function astNewOvlCONV _

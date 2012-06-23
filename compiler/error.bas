@@ -323,7 +323,11 @@ end type
 		@"CLASS, TYPE or UNION has no constructor", _
 		@"Symbol type has no Run-Time Type Info (RTTI)", _
 		@"Types have no hierarchical relation", _
-		@"Expected a CLASS, TYPE or UNION symbol type" _
+		@"Expected a CLASS, TYPE or UNION symbol type", _
+		@"Casting derived UDT pointer from incompatible pointer type", _
+		@"Casting derived UDT pointer from unrelated UDT pointer type", _
+		@"Casting derived UDT pointer to incompatible pointer type", _
+		@"Casting derived UDT pointer to unrelated UDT pointer type" _
 	}
 
 

@@ -17,8 +17,8 @@ function cTypeConvExpr _
 		byval isASM as integer = FALSE _
 	) as ASTNODE ptr
 
-    dim as integer dtype = any, op = any
-    dim as ASTNODE ptr expr = any
+	dim as integer dtype = any, op = any, errmsg = any
+	dim as ASTNODE ptr expr = any
 
 	dtype = FB_DATATYPE_INVALID
 	op = INVALID
@@ -94,9 +94,13 @@ function cTypeConvExpr _
 	    dtype = typeToUnsigned( astGetFullType( expr ) )
 	end select
 
-	expr = astNewCONV( dtype, NULL, expr, INVALID, TRUE )
-	if( expr = NULL ) Then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+	expr = astNewCONV( dtype, NULL, expr, AST_CONVOPT_CHECKSTR, @errmsg )
+	if( expr = NULL ) then
+		if( errmsg = FB_ERRMSG_OK ) then
+			errmsg = FB_ERRMSG_TYPEMISMATCH
+		end if
+		errReport( errmsg, TRUE )
+
 		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
