@@ -963,7 +963,7 @@ private function parseTargetTriplet(byref triplet as string) as integer
 	''    [arch-][vendor-]os[-...]
 
 	'' Cut off up to two leading components to get to the OS
-	dim as string os = triplet
+	dim as string os = lcase( triplet )
 	for i as integer = 0 to 1
 		dim as integer j = instr(1, os, "-")
 		if (j = 0) then

@@ -22,6 +22,7 @@ Version 0.24.0:
 - #3051592: crt/errno.bi now uses __errno_location() to access errno on Linux
 - The NAKED keyword is now disallowed under -gen gcc because gcc doesn't support naked functions on x86
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
+- The -target option is no longer case-sensitive
 
 [added]
 - Single inheritance for classes: TYPE Child EXTENDS Parent
