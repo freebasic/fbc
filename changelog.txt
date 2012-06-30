@@ -1,7 +1,7 @@
 Version 0.24.0:
 
 [changed]
-- -target option now accepts system triplets (known from gcc/binutils), note: -target win32 will now look for bin/win32-ld[.exe] instead of bin/win32/ld[.exe]
+- -target option now accepts system triplets (known from gcc/binutils)
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
 - fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
 - __FB_UNIX__ and __FB_PCOS__ now work like the other target defines (check via #ifdef)
