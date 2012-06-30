@@ -1399,16 +1399,20 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		''    fbc -target i686-pc-mingw32
 		'' looks for:
 		''    bin/i686-pc-mingw32-ld[.exe]
-		fbc.triplet = arg + "-"
+		dim as string id = lcase( arg )
 
-		'' Identify the target
-		dim as integer comptarget = parseTargetTriplet(arg)
-		if (comptarget < 0) then
-			fbcErrorInvalidOption(arg)
-			return
+		'' Ignore it if it matches the host id; this adds backwards-
+		'' compatibility with fbc 0.23
+		if( id <> FB_HOST ) then
+			'' Identify the target
+			dim as integer comptarget = parseTargetTriplet( id )
+			if( comptarget >= 0 ) then
+				fbSetOption( FB_COMPOPT_TARGET, comptarget )
+				fbc.triplet = id + "-"
+			else
+				fbcErrorInvalidOption( arg )
+			end if
 		end if
-
-		fbSetOption( FB_COMPOPT_TARGET, comptarget )
 
 	case OPT_TITLE
 		fbc.xbe_title = arg
