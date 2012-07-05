@@ -953,14 +953,14 @@ function astNewBOP _
     if( (typeGet( ldtype ) = FB_DATATYPE_WCHAR) or _
     	(typeGet( rdtype ) = FB_DATATYPE_WCHAR) ) then
 
-		'' aren't both wstrings?
+		'' not both wstrings?
 		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			if( ldtype = FB_DATATYPE_WCHAR ) then
+			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
 				'' is right a string?
-				is_str = (rdclass = FB_DATACLASS_STRING) or (rdtype = FB_DATATYPE_CHAR)
+				is_str = (rdclass = FB_DATACLASS_STRING) or (typeGet( rdtype ) = FB_DATATYPE_CHAR)
 			else
 				'' is left a string?
-				is_str = (ldclass = FB_DATACLASS_STRING) or (ldtype = FB_DATATYPE_CHAR)
+				is_str = (ldclass = FB_DATACLASS_STRING) or (typeGet( ldtype ) = FB_DATATYPE_CHAR)
 			end if
 		else
 			is_str = TRUE
@@ -996,13 +996,13 @@ function astNewBOP _
 					end if
 				end if
 
-				'' both aren't wstrings?
+				'' not both wstrings?
 				if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
 					return rtlWstrConcat( l, ldtype, r, rdtype )
 				end if
 
 				'' result will be always a wstring
-				ldtype = typeJoin( ldtype, FB_DATATYPE_WCHAR )
+				ldtype = typeUnsetIsConst( typeJoin( ldtype, FB_DATATYPE_WCHAR ) )
 				ldclass = FB_DATACLASS_INTEGER
 				rdtype = typeJoin( rdtype, ldtype )
 				rdclass = ldclass
@@ -1011,7 +1011,7 @@ function astNewBOP _
 				'' concatenation will only be done when loading,
 				'' to allow optimizations..
 
-			'' comparation?
+			'' comparison?
 			case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 				'' both literals?
 				if( litsym <> NULL ) then
@@ -1056,7 +1056,7 @@ function astNewBOP _
     elseif( (typeGet( ldclass ) = FB_DATACLASS_STRING) or _
     		(typeGet( rdclass ) = FB_DATACLASS_STRING) ) then
 
-		'' aren't both strings?
+		'' not both strings?
 		if( typeGetDtAndPtrOnly( ldclass ) <> typeGetDtAndPtrOnly( rdclass ) ) then
 			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a zstring?
@@ -1091,7 +1091,7 @@ function astNewBOP _
 			end if
 
 			'' result will be always an var-len string
-			ldtype = typeJoin( ldtype, FB_DATATYPE_STRING )
+			ldtype = typeUnsetIsConst( typeJoin( ldtype, FB_DATATYPE_STRING ) )
 			ldclass = FB_DATACLASS_STRING
 			rdtype = typeJoin( rdtype, ldtype )
 			rdclass = ldclass
@@ -1100,7 +1100,7 @@ function astNewBOP _
 			'' concatenation will only be done when loading,
 			'' to allow optimizations..
 
-		'' comparation?
+		'' comparison?
 		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 			'' both literals?
 			if( litsym <> NULL ) then

@@ -167,6 +167,8 @@ Version 0.24.0:
 - C backend: global constructor/destructor priorities were not emitted
 - Win32: incorrect Inkey() values for Alt-7/Alt-8 (Thanks to DodgeRules for find/fix) 
 - Mismatched parentheses in various translated headers
+- Concatenations could fail on some combinations of const/non-const and string/wstring operands
+- Concatenations involving const strings could return const results, which could prevent them being passed to functions
 
 
 Version 0.23.0:
