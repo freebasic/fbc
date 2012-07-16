@@ -162,30 +162,6 @@ private sub fbcAddObj(byref file as string)
 	strlistAppend(@fbc.objlist, file)
 end sub
 
-private function hAddInfoObject as integer
-
-    if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
-    	safeKill( FB_INFOSEC_OBJNAME )
-    end if
-
-#ifndef DISABLE_OBJINFO
-    if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
-    	function = TRUE
-
-    '' and error occurred or there's no need for an info object, delete it
-    else
-		if( hFileExists( FB_INFOSEC_OBJNAME ) ) then
-    		safeKill( FB_INFOSEC_OBJNAME )
-    	end if
-
-    	function = FALSE
-    end if
-#else
-	function = FALSE
-#endif
-
-end function
-
 private function archiveFiles() as integer
 	'' Determine the output archive's name if not given via -x
 	if (len(fbc.outname) = 0) then
@@ -199,12 +175,14 @@ private function archiveFiles() as integer
 	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
 
 #ifndef DISABLE_OBJINFO
-	'' the first object must be the info one
 	if( fbIsCrossComp( ) = FALSE ) then
-		if( hAddInfoObject( ) ) then
+		if( fbObjInfoWriteObj( @fbc.finallibs.list, @fbc.finallibpaths.list ) ) then
+			'' The objinfo reader expects the fbctinf object to be
+			'' the first object file in libraries, so it must be
+			'' specified first on the archiver command line:
 			ln += QUOTE + FB_INFOSEC_OBJNAME + QUOTE + " "
-			fbcAddTemp(FB_INFOSEC_OBJNAME)
 		end if
+		fbcAddTemp( FB_INFOSEC_OBJNAME )
 	end if
 #endif
 
@@ -819,6 +797,8 @@ private function linkFiles() as integer
 
 end function
 
+#ifndef DISABLE_OBJINFO
+
 '':::::
 private sub objinf_addLibCb _
 	( _
@@ -882,17 +862,7 @@ private sub objinf_addOption _
 
 end sub
 
-'':::::
-private function collectObjInfo _
-	( _
-	) as integer
-
-	'' cross-compiling? BFD can't be used..
-	if( fbIsCrossComp( ) ) then
-		return FALSE
-    end if
-
-#ifndef DISABLE_OBJINFO
+private sub collectObjInfo( )
 	scope
 		'' for each object passed in the cmd-line
 		dim as string ptr obj = listGetHead( @fbc.objlist )
@@ -919,13 +889,9 @@ private function collectObjInfo _
 			i = listGetNext(i)
 		wend
 	end scope
+end sub
 
-	function = TRUE
-#else
-	function = FALSE
-#endif
-
-end function
+#endif ''ndef DISABLE_OBJINFO
 
 private sub fbcErrorInvalidOption(byref arg as string)
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
@@ -2674,10 +2640,14 @@ end sub
 	'' Set the default lib paths before scanning for other libs
 	setDefaultLibPaths()
 
+#ifndef DISABLE_OBJINFO
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
-	collectObjInfo()
+	if( fbIsCrossComp( ) = FALSE ) then
+		collectObjInfo( )
+	end if
+#endif
 
 	if (fbGetOption(FB_COMPOPT_OUTTYPE) = FB_OUTTYPE_STATICLIB) then
 		if (archiveFiles() = FALSE) then
