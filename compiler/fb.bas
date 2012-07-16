@@ -649,7 +649,8 @@ sub fbCompile _
 
 	dim as double tmr
 
-	env.inf.name = *hRevertSlash( infname, FALSE, asc(FB_HOST_PATHDIV) )
+	env.inf.name = *infname
+	hReplaceSlash( env.inf.name, asc( FB_HOST_PATHDIV ) )
 	env.inf.incfile	= NULL
 	env.inf.ismain = ismain
 
@@ -954,7 +955,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
-	hRevertSlash( incfile, FALSE, asc(FB_HOST_PATHDIV) )
+	hReplaceSlash( incfile, asc( FB_HOST_PATHDIV ) )
 
 	'' #include ONCE
 	if( isonce ) then

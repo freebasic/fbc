@@ -1364,6 +1364,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_PREFIX
 		fbc.prefix = pathStripDiv(arg)
+		hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
 
 	case OPT_PROFILE
 		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
@@ -1881,6 +1882,7 @@ private sub fbcInit2()
 		'' that if desired.
 		#ifdef ENABLE_PREFIX
 			fbc.prefix = ENABLE_PREFIX
+			hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
 		#else
 			fbc.prefix = exepath()
 			#ifndef ENABLE_STANDALONE
@@ -1924,9 +1926,6 @@ private sub fbcInit2()
 		fbc.libpath += ENABLE_SUFFIX
 	#endif
 
-	hRevertSlash( fbc.binpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.incpath, FALSE, asc(FB_HOST_PATHDIV) )
-	hRevertSlash( fbc.libpath, FALSE, asc(FB_HOST_PATHDIV) )
 
 	'' Tell the compiler about the default include path (it's added after
 	'' the command line ones, so those will be searched first)

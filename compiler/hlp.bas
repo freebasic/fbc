@@ -397,44 +397,13 @@ function hGetFileExt _
 
 end function
 
-'':::::
-function hRevertSlash _
-	( _
-		byval src as zstring ptr, _
-		byval allocnew as integer, _
-		byval repchar as integer _
-	) as zstring ptr static
-
-    dim as zstring ptr res
-    dim as integer i, c
-
-	if( allocnew ) then
-		res = xallocate( len( *src ) + 1 )
-
-		for i = 0 to len( *src )-1
-			c = src[i]
-			if( (c = CHAR_RSLASH) or (c = CHAR_SLASH) ) then
-				c = repchar
-			end if
-			res[i] = c
-		next
-
-		res[i] = 0
-
-		function = res
-
-	else
-		for i = 0 to len( *src )-1
-			if( (src[i] = CHAR_RSLASH) or (src[i] = CHAR_SLASH) ) then
-				src[i] = repchar
-			end if
-		next
-
-		function = src
-
-	end if
-
-end function
+sub hReplaceSlash( byval s as zstring ptr, byval char as integer )
+	for i as integer = 0 to len( *s ) - 1
+		if( (s[i] = CHAR_RSLASH) or (s[i] = CHAR_SLASH) ) then
+			s[i] = char
+		end if
+	next
+end sub
 
 function pathStripDiv( byref path as string ) as string
 	dim as integer length = len( path )
