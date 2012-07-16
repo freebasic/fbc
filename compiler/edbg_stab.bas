@@ -222,16 +222,16 @@ sub edbgEmitHeader _
 
 	ctx.incfile 	= NULL
 
-	'' emit source file
+	'' emit source file name
     lname = *hMakeTmpStr( )
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
+
+	'' directory
     if( instr( *filename, "/" ) = 0 ) then
-    	dim as zstring ptr dirpath
-		dirpath = hRevertSlash( hCurDir( ) + "/", TRUE, asc(FB_HOST_PATHDIV) )
-    	hEmitSTABS( STAB_TYPE_SO, dirpath, 0, 0, lname )
-    	deallocate( dirpath )
+		hEmitSTABS( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
     end if
 
+	'' file name
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
