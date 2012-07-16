@@ -634,28 +634,16 @@ function hCheckFileFormat _
 
 end function
 
-'' :::::
-function hCurDir( ) as string static
-
-#if defined(__FB_WIN32__) or defined(__FB_DOS__)
-		dim as string cwd
-
-		cwd = curdir( )
-
-		'' check for root directory case (C:\)
-		if( right(cwd, 1) = RSLASH ) then
-			cwd = left(cwd, len( cwd ) - 1 )
-		end if
-
-		function = cwd
-#else
-		function = curdir( )
-#endif
-
+function hCurDir( ) as string
+	'' curdir() usually won't be terminated with a path separator,
+	'' except when it points to the file system root, instead of
+	'' some directory (e.g. C:\ on Win32 or / on Unix).
+	function = pathStripDiv( curdir( ) )
 end function
 
-'' :::::
-function hEnvDir( ) as string static
+function hEnvDir( ) as string
+	dim as string s
+
 #if defined(__FB_WIN32__) Or defined(__FB_DOS__)
   #define hIsAbsolutePath( path ) path[1] = asc(":")
 #else
@@ -664,17 +652,18 @@ function hEnvDir( ) as string static
 
 	'' absolute path given?
 	if( hIsAbsolutePath( env.inf.name ) ) then
-		function = pathStripDiv(hStripFilename(env.inf.name))
+		s = hStripFilename( env.inf.name )
 	else
 		'' relative path
+		s = hCurDir( )
+
 		'' not in the original directory?
 		if( instr( env.inf.name, "/" ) > 0 ) then
-			function = hCurDir() + FB_HOST_PATHDIV + _
-			           pathStripDiv(hStripFilename(env.inf.name))
-		else
-			function = hCurDir()
+			s += FB_HOST_PATHDIV + pathStripDiv( hStripFilename( env.inf.name ) )
 		end if
 	end if
+
+	function = pathStripDiv( s )
 end function
 
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer

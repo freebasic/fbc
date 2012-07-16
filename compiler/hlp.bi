@@ -106,13 +106,8 @@ declare function hCheckFileFormat _
 		byval f as integer _
 	) as integer
 
-declare function hCurDir _
-	( _
-	) as string
-
-declare function hEnvDir _
-	( _
-	) as string
+declare function hCurDir( ) as string
+declare function hEnvDir( ) as string
 
 declare function hHexUInt _
 	( _
