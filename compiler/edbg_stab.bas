@@ -227,7 +227,7 @@ sub edbgEmitHeader _
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
     if( instr( *filename, "/" ) = 0 ) then
     	dim as zstring ptr dirpath
-		dirpath = hRevertSlash( curdir() + "/", TRUE, asc(FB_HOST_PATHDIV) )
+		dirpath = hRevertSlash( hCurDir( ) + "/", TRUE, asc(FB_HOST_PATHDIV) )
     	hEmitSTABS( STAB_TYPE_SO, dirpath, 0, 0, lname )
     	deallocate( dirpath )
     end if
