@@ -182,7 +182,7 @@ end type
 #define bfd_get_section_flags(bfd, ptr_) ((ptr_)->flags + 0)
 #define bfd_get_section_userdata(bfd, ptr_) ((ptr_)->userdata)
 #define bfd_is_com_section(ptr_) (((ptr_)->flags and SEC_IS_COMMON) <> 0)
-#define bfd_set_section_vma(bfd, ptr_, val) (ptr_)->vma = (ptr_)->lma = (val): (ptr_)->user_set_vma = TRUE
+#define bfd_set_section_vma(bfd, ptr_, val) (ptr_)->lma = (val): (ptr_)->vma = (ptr_)->lma: (ptr_)->user_set_vma = TRUE
 #define bfd_set_section_alignment(bfd, ptr_, val) (ptr_)->alignment_power = (val)
 #define bfd_set_section_userdata(bfd, ptr_, val) (ptr_)->userdata = (val)
 #define bfd_get_section_limit(bfd, sec) (iif((sec)->rawsize, (sec)->rawsize, (sec)->size) \ bfd_octets_per_byte (bfd))
