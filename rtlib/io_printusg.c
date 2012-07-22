@@ -538,6 +538,9 @@ static int hPrintNumber
 	int val_digs0, val_exp0;
 	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
 	int c, lc;
+#ifdef DEBUG
+	int nc; /* used for sanity checks */
+#endif
 	int doexit, padchar, intdigs, decdigs, expdigs;
 	int adddollar, addcommas, signatend, signatstart, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
@@ -580,7 +583,9 @@ static int hPrintNumber
 		if( signatend || isamp ) break;
 
 		c = *ctx->ptr;
-
+#ifdef DEBUG
+		nc = ( ctx->chars > 1? *(ctx->ptr+1): -1 );
+#endif
 		doexit = FALSE;
 		switch( c )
 		{
@@ -605,13 +610,13 @@ static int hPrintNumber
 		case '*':
 			/* if first two characters, change padding to asterisks, else exit */
 			if( (intdigs == 0 && decdigs == -1) )
-			{
-				DBG_ASSERT( c == '*' );
+			{	/* first asterisk */
+				DBG_ASSERT( nc == '*' ); /* must be two at start, otherwise we're not parsing a format string and shouldn't have been brought here! */
 				padchar = CHAR_STAR;
 				++intdigs;
 			}
 			else if( intdigs == 1 && lc == '*' )
-			{
+			{	/* second asterisk */
 				++intdigs;
 			}
 			else
@@ -619,23 +624,23 @@ static int hPrintNumber
 			break;
 
 		case '$':
-			/* at beginning or after two '*'s: prepend a dollar sign to number */
+			/* at beginning ("$..."), or after two '*'s ("**$..."): prepend a dollar sign to number */
 
 			/* did it follow a '*'? (Will have been the two at the start, else would have exited by now */
 			if( lc == '*' )
 			{
 				adddollar = TRUE;
 			}
-			/* at start of number, before integer part? */
+			/* two at start of number, before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
 			{
 				if( !adddollar )
-				{	/* first one */
-					DBG_ASSERT( c == '$' ); /* otherwise, shouldn't have been brought here */
+				{	/* first dollar */
+					DBG_ASSERT( nc == '$' ); /* otherwise we're not parsing a format string and shouldn't have been brought here! */
 					adddollar = TRUE;
 				}
 				else
-				{	/* second one */
+				{	/* second dollar */
 					DBG_ASSERT( lc == '$' );
 					++intdigs;
 				}
