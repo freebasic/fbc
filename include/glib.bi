@@ -1,4 +1,4 @@
-' This is file glib.bi
+﻿' This is file glib.bi
 ' (FreeBasic binding for GLib library version 2.31.4)
 '
 ' translated with help of h_2_bi.bas by
@@ -769,7 +769,7 @@ END TYPE
   g_static_mutex_unlock (@G_LOCK_NAME (name))
 #DEFINE G_TRYLOCK(name) _
   g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, !"file %s: line %d (%s): try locking: %s ", __FILE__, __LINE__, G_STRFUNC, #name) : _
-  g_static_mutex_trylock (@G_LOCK_NAME (name)))
+  g_static_mutex_trylock (@G_LOCK_NAME (name))
 
 #ELSE ' G_DEBUG_LOCKS
 

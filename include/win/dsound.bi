@@ -789,7 +789,7 @@ end type
 #define IDirectSoundCaptureBuffer8_Initialize(p,a,b)                IDirectSoundCaptureBuffer_Initialize(p,a,b)
 #define IDirectSoundCaptureBuffer8_Lock(p,a,b,c,d,e,f,g)            IDirectSoundCaptureBuffer_Lock(p,a,b,c,d,e,f,g)
 #define IDirectSoundCaptureBuffer8_Start(p,a)                       IDirectSoundCaptureBuffer_Start(p,a)
-#define IDirectSoundCaptureBuffer8_Stop(p)                          IDirectSoundCaptureBuffer_Stop(p))
+#define IDirectSoundCaptureBuffer8_Stop(p)                          IDirectSoundCaptureBuffer_Stop(p)
 #define IDirectSoundCaptureBuffer8_Unlock(p,a,b,c,d)                IDirectSoundCaptureBuffer_Unlock(p,a,b,c,d)
 #define IDirectSoundCaptureBuffer8_GetObjectInPath(p,a,b,c,d)       (p)->lpVtbl->GetObjectInPath(p,a,b,c,d)
 #define IDirectSoundCaptureBuffer8_GetFXStatus(p,a,b)               (p)->lpVtbl->GetFXStatus(p,a,b)

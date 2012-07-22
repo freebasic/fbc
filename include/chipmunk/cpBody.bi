@@ -101,7 +101,7 @@ declare sub cpBodyUpdatePosition( byval body as cpbody ptr, byval dt as cpFloat 
 '// Apply an impulse (in world coordinates) to the body.
 #macro cpBodyApplyImpulse(body,j,r)
 (body)->v = cpvadd((body)->v, cpvmult((j), (body)->m_inv))
-(body)->w += (body)->i_inv * cpvcross((r),(j)
+(body)->w += (body)->i_inv * cpvcross((r),(j))
 #endmacro
 
 '// Not intended for external use. Used by cpArbiter.c and cpConstraint.c.

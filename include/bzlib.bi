@@ -156,12 +156,12 @@ declare sub BZ2_bzWriteClose( _
    )
 
 declare sub BZ2_bzWriteClose64( _
-      byval bzerror as integer ptr,    
+      byval bzerror as integer ptr, _
       byval b as bzfile ptr, _ 
       byval abandon as integer, _ 
       byval nbytes_in_lo32 as uinteger ptr, _
-      byval nbytes_in_hi32 as uinteger ptr _
-	  byval nbytes_out_lo32 as uinteger ptr, _
+      byval nbytes_in_hi32 as uinteger ptr, _
+      byval nbytes_out_lo32 as uinteger ptr, _
       byval nbytes_out_hi32 as uinteger ptr _
    )
 #endif
@@ -169,7 +169,7 @@ declare sub BZ2_bzWriteClose64( _
 
 '/*-- Utility functions --*/
 
-declare function BZ2_bzBuffToBuffCompress( 
+declare function BZ2_bzBuffToBuffCompress( _
       byval dest as ubyte ptr, _
       byval destLen as uinteger ptr, _
       byval source as ubyte ptr, _
@@ -179,7 +179,7 @@ declare function BZ2_bzBuffToBuffCompress(
       byval workFactor as integer _
    ) as integer
 
-declare function BZ2_bzBuffToBuffDecompress( 
+declare function BZ2_bzBuffToBuffDecompress( _
       byval dest as ubyte ptr, _
       byval destLen as uinteger ptr, _
       byval source as ubyte ptr, _

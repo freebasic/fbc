@@ -147,7 +147,7 @@
 #define ICMF_CHOOSE_DATARATE &h02
 #define ICMF_CHOOSE_PREVIEW &h04
 #define ICMF_CHOOSE_ALLCOMPRESSORS &h08
-#define ICTYPE_VIDEO	mmioFOURCC(asc("v",asc("i"),asc("d"),asc("c"))
+#define ICTYPE_VIDEO	mmioFOURCC(asc("v"),asc("i"),asc("d"),asc("c"))
 #define ICTYPE_AUDIO	mmioFOURCC(asc("a"),asc("u"),asc("d"),asc("c"))
 #define formtypeAVI	mmioFOURCC(asc("A"),asc("V"),asc("I"),asc(" "))
 #define listtypeAVIHEADER	mmioFOURCC(asc("h"),asc("d"),asc("r"),asc("l"))
@@ -173,7 +173,7 @@
 #define FromHex(n) (((n)>='A')?((n)+10-'A'):((n)-'0'))
 #define StreamFromFOURCC(fcc) (cushort((FromHex(LOBYTE(LOWORD(fcc))) shl 4)+(FromHex(HIBYTE(LOWORD(fcc))))))
 #define TWOCCFromFOURCC(fcc) HIWORD(fcc)
-#define ToHex(n) cubyte(iif((n)>9), ((n)-10+asc("A")), ((n)+asc("0"))))
+#define ToHex(n) cubyte(iif(((n)>9), ((n)-10+asc("A")), ((n)+asc("0"))))
 #define MAKEAVICKID(tcc, stream) MAKELONG((ToHex((stream) and &h0f) shl 8) or (ToHex(((stream) and &hf0) shr 4)),tcc)
 #define AVIF_HASINDEX &h10
 #define AVIF_MUSTUSEINDEX &h20

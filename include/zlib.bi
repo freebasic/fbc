@@ -1639,7 +1639,7 @@ declare function inflateBackInit_ (byval strm as z_streamp, byval windowBits as 
 #define deflateInit2(strm, level, method, windowBits, memLevel, strategy) :_
         deflateInit2_((strm),(level),(method),(windowBits),(memLevel),(strategy), ZLIB_VERSION,cast(integer,sizeof(z_stream)))
 #define inflateInit2(strm, windowBits) inflateInit2_((strm), (windowBits), ZLIB_VERSION,(int)sizeof(z_stream))
-#define inflateBackInit(strm, windowBits, window) inflateBackInit_((strm), (windowBits), (window),ZLIB_VERSION,cast(integer,)sizeof(z_stream)))
+#define inflateBackInit(strm, windowBits, window) inflateBackInit_((strm), (windowBits), (window),ZLIB_VERSION,cast(integer,sizeof(z_stream)))
 
 /' undocumented functions '/
 declare function zError (byval as integer) as const zstring ptr

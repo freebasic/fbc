@@ -94,10 +94,10 @@
 #endif
 
 #ifndef bmp_write8
- #define bmp_write8(addr, c) *cast(unsigned byte,addr)) = (c)
- #define bmp_write15(addr, c) *cast(unsigned short,addr)) = (c)
- #define bmp_write16(addr, c) *cast(unsigned short,addr)) = (c)
- #define bmp_write32(addr, c) *cast(unsigned integer,addr)) = (c)
+ #define bmp_write8(addr, c) *cast(unsigned byte,addr) = (c)
+ #define bmp_write15(addr, c) *cast(unsigned short,addr) = (c)
+ #define bmp_write16(addr, c) *cast(unsigned short,addr) = (c)
+ #define bmp_write32(addr, c) *cast(unsigned integer,addr) = (c)
  #define bmp_read8(addr) (*cast(unsigned byte,addr))
  #define bmp_read15(addr) (*cast(unsigned short ,addr))
  #define bmp_read16(addr) (*cast(unsigned short ,addr))

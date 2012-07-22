@@ -518,7 +518,7 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define getbegy(win) iif(win,cint((win)->_begy),NCURSES_ERR)
 #define getmaxx(win) iif(win,cint((win)->_maxx + 1),NCURSES_ERR)
 #define getmaxy(win) iif(win,cint((win)->_maxy + 1),NCURSES_ERR)
-#define getparx(win) iif(win,cint((win)->_parx,NCURSES_ERR)
+#define getparx(win) iif(win,cint((win)->_parx),NCURSES_ERR)
 #define getpary(win) iif(win,cint((win)->_pary),NCURSES_ERR)
 
 #define wstandout(win) wattrset(win,A_STANDOUT)
@@ -638,11 +638,11 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 
 #define getbkgd(win) ((win)->_bkgd)
 
-#define slk_attr_off(a,v) iif(v),NCURSES_ERR,slk_attroff(a))
+#define slk_attr_off(a,v) iif(v,NCURSES_ERR,slk_attroff(a))
 #define slk_attr_on(a,v) iif(v,NCURSES_ERR,slk_attron(a))
 
 #define wattr_set(win,a,p,opts)	(win)->_attrs = (((a) and not A_COLOR) or COLOR_PAIR(p))
-#define wattr_get(win,a,p,opts)	if (a) <> 0 then : (*(a) = (win)->_attrs)) : end if : if (p) <> 0 then : (*(p) = PAIR_NUMBER((win)->_attrs)) : end if
+#define wattr_get(win,a,p,opts)	if (a) <> 0 then : *(a) = (win)->_attrs : end if : if (p) <> 0 then : *(p) = PAIR_NUMBER((win)->_attrs) : end if
 #define vw_printw vwprintw
 #define vw_scanw vwscanw
 #endif

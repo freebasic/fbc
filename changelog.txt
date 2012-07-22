@@ -166,6 +166,7 @@ Version 0.24.0:
 - Macro arguments can now be completely empty (no space required anymore to get it to work)
 - C backend: global constructor/destructor priorities were not emitted
 - Win32: incorrect Inkey() values for Alt-7/Alt-8 (Thanks to DodgeRules for find/fix) 
+- Mismatched parentheses in various translated headers
 
 
 Version 0.23.0:

@@ -52,7 +52,7 @@
 #define JSVAL_INT_POW2(n) (cast(jsval,1) shl (n))
 #define JSVAL_INT_MIN (cast(jsval,1 - JSVAL_INT_POW2(30))
 #define JSVAL_INT_MAX (JSVAL_INT_POW2(30) - 1)
-#define INT_FITS_IN_JSVAL(i) (cast(jsuint,(i)+JSVAL_INT_MAX) <= 2*JSVAL_INT_MAX))
+#define INT_FITS_IN_JSVAL(i) (cast(jsuint,(i)+JSVAL_INT_MAX) <= 2*JSVAL_INT_MAX)
 #define JSVAL_TO_INT(v) (cast(jsint,v) shr 1)
 #define INT_TO_JSVAL(i) ((cast(jsval,i) shl 1) or JSVAL_INT)
 #define JSVAL_TO_BOOLEAN(v) (cast(JSBool, (v) >> JSVAL_TAGBITS))
@@ -97,7 +97,7 @@
 #ifdef NAME_ALL_GC_ROOTS
 # define JS_DEFINE_TO_TOKEN(def) #def
 # define JS_DEFINE_TO_STRING(def) JS_DEFINE_TO_TOKEN(def)
-# define JS_AddRoot(cx,rp) JS_AddNamedRoot((cx), (rp), (__FILE__ ":" JS_TOKEN_TO_STRING(__LINE__))
+# define JS_AddRoot(cx,rp) JS_AddNamedRoot((cx), (rp), (__FILE__ ":" JS_TOKEN_TO_STRING(__LINE__)))
 #else
 # define JS_AddRoot(cx,rp) JS_AddRoot_(cx,rp)
 #endif
