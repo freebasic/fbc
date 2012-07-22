@@ -41,10 +41,10 @@ typedef struct {
 #define DBL_AUTODIGS 15
 #define DBL_MAXDIGS 16
 
-#define STR_NAN "NAN"
-#define STR_INF "INF"
-#define STR_IND "IND"
-#define STR_NAN "NAN"
+#define CHARS_NAN  ('#' << 24 | 'N' << 16 | 'A' << 8 | 'N')
+#define CHARS_INF  ('#' << 24 | 'I' << 16 | 'N' << 8 | 'F')
+#define CHARS_IND  ('#' << 24 | 'I' << 16 | 'N' << 8 | 'D')
+#define CHARS_TRUNC ('$' << 24 | '0' << 16 | '0' << 8 | '0') /* QB glitch: truncation "rounds up" the text chars */
 
 #define ADD_CHAR( c )              \
     do {                           \
@@ -549,7 +549,7 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isind, val_isnan, val_isfloat, val_issng;
+	int val_isneg, val_isfloat, val_issng;
 	int c, lc;
 #ifdef DEBUG
 	int nc; /* used for sanity checks */
@@ -559,6 +559,7 @@ static int hPrintNumber
 	int intdigs2, expsignchar, totdigs, decpoint;
 	int isamp;
 	int i;
+	uint32_t chars = 0;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -746,28 +747,23 @@ static int hPrintNumber
 	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
 	val_issng = ( (flags & VAL_ISSNG) != 0 );
 
-	if( flags & (VAL_ISINF | VAL_ISIND | VAL_ISNAN) )
+	if( (flags & (VAL_ISINF | VAL_ISIND | VAL_ISNAN)) != 0)
 	{
-		val_isinf = ( (flags & VAL_ISINF) != 0 );
-		val_isind = ( (flags & VAL_ISIND) != 0 );
-		val_isnan = ( (flags & VAL_ISNAN) != 0 );
+		if( (flags & VAL_ISINF) != 0 )
+			chars = CHARS_INF;
+		else if( (flags & VAL_ISIND) != 0 )
+			chars = CHARS_IND;
+		else if( (flags & VAL_ISNAN) != 0 )
+			chars = CHARS_NAN;
+		else
+			DBG_ASSERT( 0 );
 
-		intdigs += (decdigs + 1);
-		decdigs = -1;
-		if( expdigs >= MIN_EXPDIGS )
-		{
-			intdigs += expdigs;
-			expdigs = 0;
-		}
-	}
-	else
-	{
-		val_isinf = 0;
-		val_isind = 0;
-		val_isnan = 0;
+		/* Set value to 1.1234 (placeholder for "1.#XYZ") */
+		val = 11234;
+		val_exp = -4;
 	}
 
-	if( val != 0 && !(val_isinf || val_isind || val_isnan) )
+	if( val != 0 )
 		val_digs = hNumDigits( val );
 	else
 		val_digs = 0;
@@ -776,78 +772,57 @@ static int hPrintNumber
 	/* Special '&' format? */
 	if( isamp )
 	{
-		if( val_isinf )
-		{
-			intdigs = strlen(STR_INF);
-			decdigs = 0;
-			decpoint = 0;
+		if( val_issng )
+		{	/* crop to 7-digit precision */
+			if( val_digs > SNG_AUTODIGS )
+				val = hDivPow10_ULL( val, val_digs - SNG_AUTODIGS );
+				val_exp += val_digs - SNG_AUTODIGS;
+				val_digs = SNG_AUTODIGS;
+
+			if( val == 0 )
+			{	/* val has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
+			}
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_exp += val_digs;
+				val_digs = 1;
+			}
 		}
-		else if( val_isind )
-		{
-			intdigs = strlen(STR_IND);
-			decdigs = 0;
-			decpoint = 0;
+
+		if( val_isfloat )
+		{	/* remove trailing zeroes in float digits */
+			while( val_digs > 1 && (val % 10) == 0 )
+			{
+				val /= 10;
+				--val_digs;
+				++val_exp;
+			}
 		}
-		else if( val_isnan )
-		{
-			intdigs = strlen(STR_NAN);
-			decdigs = 0;
-			decpoint = 0;
-		}
+
+		/* set digits for fixed-point */
+		if( val_digs + val_exp > 0 )
+			intdigs = val_digs + val_exp;
 		else
-		{
-			if( val_issng )
-			{	/* crop to 7-digit precision */
-				if( val_digs > SNG_AUTODIGS )
-					val = hDivPow10_ULL( val, val_digs - SNG_AUTODIGS );
-					val_exp += val_digs - SNG_AUTODIGS;
-					val_digs = SNG_AUTODIGS;
+			intdigs = 1;
 
-				if( val == 0 )
-				{	/* val has been scaled down to zero */
-					val_digs = 0;
-					val_exp = -decdigs;
-				}
-				else if( val == hPow10_ULL( val_digs ) )
-				{	/* rounding up took val to next power of 10:
-					   set value to 1, put val_digs zeroes onto val_exp */
-					val = 1;
-					val_exp += val_digs;
-					val_digs = 1;
-				}
-			}
+		if( val_exp < 0 )
+			decdigs = -val_exp;
 
-			if( val_isfloat )
-			{	/* remove trailing zeroes in float digits */
-				while( val_digs > 1 && (val % 10) == 0 )
-				{
-					val /= 10;
-					--val_digs;
-					++val_exp;
-				}
-			}
-
-			/* set digits for fixed-point */
-			if( val_digs + val_exp > 0 )
-				intdigs = val_digs + val_exp;
-			else
+		if( val_isfloat )
+		{	/* scientific notation? e.g. 3.1E+42 */
+			if( intdigs > 16 || (val_issng && intdigs > 7) ||
+			    val_digs + val_exp - 1 < -MIN_EXPDIGS )
+			{
 				intdigs = 1;
+				decdigs = val_digs - 1;
 
-			if( val_exp < 0 )
-				decdigs = -val_exp;
-
-			if( val_isfloat )
-			{	/* scientific notation? e.g. 3.1E+42 */
-				if( intdigs > 16 || (val_issng && intdigs > 7) ||
-				    val_digs + val_exp - 1 < -MIN_EXPDIGS )
-				{
-					intdigs = 1;
-					decdigs = val_digs - 1;
-
-					expdigs = 2 + hNumDigits( abs(val_digs + val_exp - 1) );
-					if( expdigs < MIN_EXPDIGS + 1 )
-						expdigs = MIN_EXPDIGS;
-				}
+				expdigs = 2 + hNumDigits( abs(val_digs + val_exp - 1) );
+				if( expdigs < MIN_EXPDIGS + 1 )
+					expdigs = MIN_EXPDIGS;
 			}
 		}
 
@@ -874,6 +849,7 @@ static int hPrintNumber
 	}
 	else
 		decpoint = TRUE;
+	}
 
 	/* ------------------------------------------------------ */
 
@@ -900,104 +876,67 @@ static int hPrintNumber
 		for( ; expdigs > 0; --expdigs )
 			ADD_CHAR( '^' );
 
-		if( !(val_isinf || val_isind || val_isnan) )
-		{
-			/* backup unscaled value */
-			val0 = val;
-			val_digs0 = val_digs;
-			val_exp0 = val_exp;
+		/* backup unscaled value */
+		val0 = val;
+		val_digs0 = val_digs;
+		val_exp0 = val_exp;
 
-			/* check range */
-			if( val_exp < -decdigs )
-			{	/* scale and round integer value to get val_exp equal to -decdigs */
-				val_exp += (-decdigs - val_exp0);
-				val_digs -= (-decdigs - val_exp0);
-				val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+		/* check range */
+		if( val_exp < -decdigs )
+		{	/* scale and round integer value to get val_exp equal to -decdigs */
+			val_exp += (-decdigs - val_exp0);
+			val_digs -= (-decdigs - val_exp0);
+			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
 
-				if( val == 0 )
-				{	/* val is/has been scaled down to zero */
-					val_digs = 0;
-					val_exp = -decdigs;
-				}
-				else if( val == hPow10_ULL( val_digs ) )
-				{	/* rounding up took val to next power of 10:
-					   set value to 1, put val_digs zeroes onto val_exp */
-					val = 1;
-					val_exp += val_digs;
-					val_digs = 1;
-				}
+			if( val == 0 )
+			{	/* val is/has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
 			}
-
-			intdigs2 = val_digs + val_exp;
-			if( intdigs2 < 0 ) intdigs2 = 0;
-			if( addcommas )
-				intdigs2 += (intdigs2 - 1) / 3;
-
-			/* compare fixed/floating point representations,
-			   and use the one that needs fewest digits */
-			if( intdigs2 > intdigs + MIN_EXPDIGS )
-			{	/* too many digits in number for fixed point:
-				   switch to floating-point */
-
-				expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
-				toobig = 1;  /* add '%' sign */
-
-				/* restore unscaled value */
-				val = val0;
-				val_digs = val_digs0;
-				val_exp = val_exp0;
-
-				val_zdigs = 0;
-			}
-			else
-			{	/* keep fixed point */
-
-				if( intdigs2 > intdigs )
-				{	/* slightly too many digits in number */
-					intdigs = intdigs2; /* extend intdigs */
-					toobig = 1;         /* add '%' sign */
-				}
-
-				if( val_exp > -decdigs)
-				{	/* put excess trailing zeroes from val_exp into val_zdigs */
-					val_zdigs = val_exp - -decdigs;
-					val_exp = -decdigs;
-				}
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_exp += val_digs;
+				val_digs = 1;
 			}
 		}
-		else
-		{
-			if( val_isinf )
-			{
-				if( intdigs < strlen(STR_INF) )
-				{
-					intdigs = strlen(STR_INF);
-					toobig = 1;
-				}
-			}
-			else if( val_isind )
-			{
-				if( intdigs < strlen(STR_IND) )
-				{
-					intdigs = strlen(STR_IND);
-					toobig = 1;
-				}
-			}
-			else if( val_isnan )
-			{
-				if( intdigs < strlen(STR_NAN) )
-				{
-					intdigs = strlen(STR_NAN);
-					toobig = 1;
-				}
-			}
-			else
-				DBG_ASSERT( 0 );
 
-			val = 0;
-			val_exp = 0;
-			val_digs = 0;
+		intdigs2 = val_digs + val_exp;
+		if( intdigs2 < 0 ) intdigs2 = 0;
+		if( addcommas )
+			intdigs2 += (intdigs2 - 1) / 3;
+
+		/* compare fixed/floating point representations,
+		   and use the one that needs fewest digits */
+		if( intdigs2 > intdigs + MIN_EXPDIGS )
+		{	/* too many digits in number for fixed point:
+			   switch to floating-point */
+
+			expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
+			toobig = 1;  /* add '%' sign */
+
+			/* restore unscaled value */
+			val = val0;
+			val_digs = val_digs0;
+			val_exp = val_exp0;
+
 			val_zdigs = 0;
+		}
+		else
+		{	/* keep fixed point */
+
+			if( intdigs2 > intdigs )
+			{	/* slightly too many digits in number */
+				intdigs = intdigs2; /* extend intdigs */
+				toobig = 1;         /* add '%' sign */
+			}
+
+			if( val_exp > -decdigs)
+			{	/* put excess trailing zeroes from val_exp into val_zdigs */
+				val_zdigs = val_exp - -decdigs;
+				val_exp = -decdigs;
+			}
 		}
 	}
 
@@ -1098,6 +1037,21 @@ static int hPrintNumber
 	}
 
 
+	/* INF/IND/NAN: characters truncated? */
+	if( chars != 0 && val_digs < 5 )
+	{
+		/* QB wouldn't add the '%'.  But otherwise "#" will result in
+		   an innocent-looking "1".  Also, QB corrupts the string data
+		   when truncated, so some deviation is desirable anyway) */
+		toobig = 1;
+
+		if ( val_digs > 1 )
+			chars = CHARS_TRUNC >> (8 * (5 - val_digs));
+		else
+			chars = 0;
+	}
+
+
 	/* output dec part */
 	if( decpoint )
 	{
@@ -1111,7 +1065,15 @@ static int hPrintNumber
 			else if( val_digs > 0 )
 			{
 				DBG_ASSERT( val > 0 );
-				ADD_CHAR( CHAR_ZERO + (val % 10) );
+				if( chars != 0 )
+				{
+					ADD_CHAR( chars & 0xff );
+					chars >>= 8;
+				}
+				else
+				{
+					ADD_CHAR( CHAR_ZERO + (val % 10) );
+				}
 				val /= 10;
 				--val_digs;
 			}
@@ -1122,73 +1084,44 @@ static int hPrintNumber
 	}
 
 
-	if( !(val_isinf || val_isind || val_isnan) )
-	{	/* output int part */
-		i = 0;
-		for( ;; )
+	/* output int part */
+	i = 0;
+	for( ;; )
+	{
+		if( addcommas && (i & 3) == 3 && val_digs > 0 )
+		{	/* insert comma */
+			ADD_CHAR( CHAR_COMMA );
+		}
+		else if( val_zdigs > 0 )
 		{
-			if( addcommas && (i & 3) == 3 && val_digs > 0 )
-			{	/* insert comma */
-				ADD_CHAR( CHAR_COMMA );
+			ADD_CHAR( CHAR_ZERO );
+			--val_zdigs;
+		}
+		else if( val_digs > 0 )
+		{
+			DBG_ASSERT( val > 0 );
+			if( chars != 0 )
+			{
+				ADD_CHAR( chars & 0xff );
+				chars >>= 8;
 			}
 			else
 			{
-				if( val_zdigs > 0 )
-				{
-					ADD_CHAR( CHAR_ZERO );
-					--val_zdigs;
-				}
-				else if( val_digs > 0 )
-				{
-					DBG_ASSERT( val > 0 );
-					ADD_CHAR( CHAR_ZERO + (val % 10) );
-					val /= 10;
-					--val_digs;
-				}
-				else
-				{
-					if( i == 0 && intdigs > 0 )
-						ADD_CHAR( CHAR_ZERO );
-					else
-						break;
-				}
+				ADD_CHAR( CHAR_ZERO + (val % 10) );
 			}
-			DBG_ASSERT( intdigs > 0 );
-			++i;
-			--intdigs;
-		}
-	}
-	else
-	{	/* output INF/IND/NAN string */
-		if( val_isinf )
-		{
-			DBG_ASSERT( intdigs >= strlen(STR_INF) );
-			for( i = strlen(STR_INF)-1; i >= 0; --i )
-			{
-				ADD_CHAR( STR_INF[i] );
-				--intdigs;
-			}
-		}
-		else if( val_isind )
-		{
-			DBG_ASSERT( intdigs >= strlen(STR_IND) );
-			for( i = strlen(STR_IND)-1; i >= 0; --i )
-			{
-				ADD_CHAR( STR_IND[i] );
-				--intdigs;
-			}
-		}
-		else if( val_isnan )
-		{
-			DBG_ASSERT( intdigs >= strlen(STR_NAN) );
-			for( i = strlen(STR_NAN)-1; i >= 0; --i )
-			{
-				ADD_CHAR( STR_NAN[i] );
-				--intdigs;
-			}
+			val /= 10;
+			--val_digs;
 		}
 		else
-			DBG_ASSERT( 0 );
+		{
+			if( i == 0 && intdigs > 0 )
+				ADD_CHAR( CHAR_ZERO );
+			else
+				break;
+		}
+		DBG_ASSERT( intdigs > 0 );
+		++i;
+		--intdigs;
 	}
 
 	DBG_ASSERT( val == 0 );
