@@ -58,7 +58,7 @@ typedef struct {
 
 /*-------------------------------------------------------------*/
 /* Checks for Infinity/NaN                                     *
- * (assumes x86 endian, IEEE-754 floating-point format)        *
+ * (assumes IEEE-754 floating-point format)                    *
  * TODO: use a proper implementation: most/all platforms       *
  * have specific functions built-in for this                   */
 
@@ -100,50 +100,6 @@ static int hIsNan(double d)
 }
 
 
-
-#define LO32( x ) (((uint32_t *)&(x))[0])
-#define HI32( x ) (((uint32_t *)&(x))[1])
-
-#define IS_NEG( x ) (                           \
-    (HI32(x) & 0x80000000) != 0  )
-
-#define IS_ZERO( x ) (                          \
-    ((HI32(x) & 0x7fffffff) | LO32(x)) == 0  )
-
-#define IS_FINITE( x ) (                        \
-    (HI32(x) & 0x7ff00000) != 0x7ff00000  )
-
-#define IS_INFINITE( x ) (                      \
-    LO32(x) == 0 &&                             \
-    (HI32(x) & 0x7fffffff) == 0x7ff00000  )
-
-#define IS_NAN( x ) (                           \
-    (HI32(x) & 0x7ff00000) == 0x7ff00000 &&     \
-    ((HI32(x) & 0x000fffff) | LO32(x)) != 0   )
-
-#define IS_IND( x ) (                           \
-    (HI32(x) == 0xfff80000) && LO32(x) == 0   )
-
-
-
-#define IS_NEG_F( x ) (                         \
-    (LO32(x) & 0x80000000) != 0  )
-
-#define IS_ZERO_F( x ) (                        \
-    (LO32(x) & 0x7fffffff) == 0  )
-
-#define IS_FINITE_F( x ) (                      \
-    (LO32(x) & 0x7f800000) != 0x7f800000  )
-
-#define IS_INFINITE_F( x ) (                    \
-    (LO32(x) & 0x7fffffff) == 0x7f800000  )
-
-#define IS_NAN_F( x ) (                         \
-    (LO32(x) & 0x7f800000) == 0x7f800000 &&     \
-    (LO32(x) & 0x007fffff) != 0              )
-
-#define IS_IND_F( x ) (                         \
-    (LO32(x) == 0x7f800000 == 0xffc00000     )
 
 /*-------------------------------------------------------------*/
 
