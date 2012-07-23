@@ -218,20 +218,20 @@ static int fb_PrintUsingFmtStr( int fnum )
 		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 		nnc = ( ctx->chars > 2? ctx->ptr[2] : -1 );
 
-		doexit = 0;
+		doexit = FALSE;
 		switch( c )
 		{
 		case '*':
 			/* "**..." number format (includes "**$...") */
 			if( nc == '*' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
 		case '$':
 			/* "$$..." number format */
 			if( nc == '$' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
@@ -242,7 +242,7 @@ static int fb_PrintUsingFmtStr( int fnum )
 			    ((nc == '*') && (nnc == '*')) ||
 			    ((nc == '.') && (nnc == '#')) )
 
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '!':
@@ -250,13 +250,13 @@ static int fb_PrintUsingFmtStr( int fnum )
 		case '&':
 		case '#':
 			/* "!", "\ ... \", "&" string formats, "#..." number format */
-			doexit = 1;
+			doexit = TRUE;
 			break;
 
 		case '.':
 			/* ".#[...]" number format */
 			if( nc == '#' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
@@ -317,7 +317,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		c = *ctx->ptr;
         nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
-		doexit = 1;
+		doexit = TRUE;
 		switch( c )
 		{
 		case '!':
@@ -375,7 +375,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 				else
 				{
 					strchars = 1;
-					doexit = 0;
+					doexit = FALSE;
 				}
 			}
 			break;
@@ -384,7 +384,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 			if( strchars > -1 )
 			{
 				++strchars;
-				doexit = 0;
+				doexit = FALSE;
 			}
 			break;
 		}
@@ -442,7 +442,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 		c = *ctx->ptr;
 		nc = ctx->chars > 1 ? ctx->ptr[1] : -1;
 
-		doexit = 1;
+		doexit = TRUE;
 		switch( c ) {
 		case '!':
 			if( length >= 1 )
@@ -491,7 +491,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 					--ctx->chars;
 				} else {
 					strchars = 1;
-					doexit = 0;
+					doexit = FALSE;
 				}
 			}
 			break;
@@ -499,7 +499,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 		case ' ':
 			if( strchars > -1 ) {
 				++strchars;
-				doexit = 0;
+				doexit = FALSE;
 			}
 			break;
 		}
@@ -539,7 +539,7 @@ static int hPrintNumber
 	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
 	int c, lc;
 	int doexit, padchar, intdigs, decdigs, expdigs;
-	int adddollar, addcommas, signatend, signatini, plussign, toobig;
+	int adddollar, addcommas, signatend, signatstart, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
 	int isamp;
 	int i;
@@ -557,17 +557,17 @@ static int hPrintNumber
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
-	padchar    = CHAR_SPACE;
-	intdigs    = 0;
-	decdigs    = -1;
-	expdigs    = 0;
-	adddollar  = 0;
-	addcommas  = 0;
-	signatend  = 0;
-	signatini  = 0;
-	plussign   = 0;
-	toobig     = 0;
-	isamp      = 0;
+	padchar     = CHAR_SPACE;
+	intdigs     = 0;
+	decdigs     = -1;
+	expdigs     = 0;
+	adddollar   = FALSE;
+	addcommas   = FALSE;
+	signatend   = FALSE;
+	signatstart = FALSE;
+	plussign    = FALSE;
+	toobig      = 0;
+	isamp       = FALSE;
 
 	lc = -1;
 
@@ -581,13 +581,13 @@ static int hPrintNumber
 
 		c = *ctx->ptr;
 
-		doexit = 0;
+		doexit = FALSE;
 		switch( c )
 		{
 		case '#':
 			/* increment intdigs or decdigs if in int/dec part, else exit */
 			if( expdigs != 0 )
-				doexit = 1;
+				doexit = TRUE;
 			else if( decdigs != -1 )
 				++decdigs;
 			else
@@ -597,7 +597,7 @@ static int hPrintNumber
 		case '.':
 			/* add decimal point if still in integer part, else exit */
 			if( decdigs != -1 || expdigs != 0 )
-				doexit = 1;
+				doexit = TRUE;
 			else
 				decdigs = 0;
 			break;
@@ -615,7 +615,7 @@ static int hPrintNumber
 				++intdigs;
 			}
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '$':
@@ -624,7 +624,7 @@ static int hPrintNumber
 			/* did it follow a '*'? (Will have been the two at the start, else would have exited by now */
 			if( lc == '*' )
 			{
-				adddollar = 1;
+				adddollar = TRUE;
 			}
 			/* at start of number, before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
@@ -632,7 +632,7 @@ static int hPrintNumber
 				if( !adddollar )
 				{	/* first one */
 					DBG_ASSERT( c == '$' ); /* otherwise, shouldn't have been brought here */
-					adddollar = 1;
+					adddollar = TRUE;
 				}
 				else
 				{	/* second one */
@@ -641,16 +641,16 @@ static int hPrintNumber
 				}
 			}
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case ',':
 			/* if parsing integer part, enable commas and increment intdigs */
 			if( decdigs != -1 || expdigs != 0 )
-				doexit = 1;
+				doexit = TRUE;
 			else
 			{
-				addcommas = 1;
+				addcommas = TRUE;
 				++intdigs;
 			}
 			break;
@@ -661,28 +661,28 @@ static int hPrintNumber
 			   '-' at end:  explicit '-' sign, if negative */
 
 			/* one already at start? */
-			if( signatini )
+			if( signatstart )
 			{
-				doexit = 1;
+				doexit = TRUE;
 			}
 			/* found one before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
 			{
 				DBG_ASSERT( c != '-' ); /* explicit '-' sign isn't checked for at start */
 				if( c == '+' )
-					plussign = 1;
-				signatini = 1;
+					plussign = TRUE;
+				signatstart = TRUE;
 			}
 			/* otherwise it's at the end, as long as there are enough expdigs for an
 			   exponent (or none at all), otherwise they are all normal printable characters */
 			else if( expdigs == 0 || expdigs >= MIN_EXPDIGS )
 			{
 				if( c == '+' )
-					plussign = 1;
-				signatend = 1;
+					plussign = TRUE;
+				signatend = TRUE;
 			}
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '^':
@@ -693,23 +693,23 @@ static int hPrintNumber
 			if( expdigs < MAX_EXPDIGS )
 				++expdigs;
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '&':
 			/* string format '&'
 			   print number in most natural form - similar to STR */
-			if( intdigs == 0 && decdigs == -1 && !signatini )
+			if( intdigs == 0 && decdigs == -1 && !signatstart )
 			{
 				DBG_ASSERT( expdigs == 0 );
-				isamp = 1;
+				isamp = TRUE;
 			}
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		default:
-			doexit = 1;
+			doexit = TRUE;
 		}
 
 		if( doexit )
@@ -732,7 +732,7 @@ static int hPrintNumber
 	{
 		val_isinf = ( (flags & VAL_ISINF) != 0 );
 		val_isnan = ( (flags & VAL_ISNAN) != 0 );
-		
+
 		intdigs += (decdigs + 1);
 		decdigs = -1;
 		if( expdigs >= MIN_EXPDIGS )
@@ -826,7 +826,7 @@ static int hPrintNumber
 		}
 
 		if( val_isneg )
-			signatini = 1;
+			signatstart = TRUE;
 	}
 
 	/* crop number of digits */
@@ -843,11 +843,11 @@ static int hPrintNumber
 	/* decimal point if decdigs >= 0 */
 	if( decdigs <= -1 )
 	{
-		decpoint = 0;
+		decpoint = FALSE;
 		decdigs = 0;
 	}
 	else
-		decpoint = 1;
+		decpoint = TRUE;
 
 	/* ------------------------------------------------------ */
 
@@ -861,9 +861,9 @@ static int hPrintNumber
 		else
 			ADD_CHAR( plussign? CHAR_PLUS : CHAR_SPACE );
 	}
-	else if( val_isneg && !signatini )
+	else if( val_isneg && !signatstart )
 	{	/* implicit negative sign at start */
-		signatini = 1;
+		signatstart = TRUE;
 		--intdigs;
 	}
 
@@ -907,7 +907,7 @@ static int hPrintNumber
 			if( addcommas )
 				intdigs2 += (intdigs2 - 1) / 3;
 
-			/* compare fixed/floating point representations, 
+			/* compare fixed/floating point representations,
 			   and use the one that needs fewest digits */
 			if( intdigs2 > intdigs + MIN_EXPDIGS )
 			{	/* too many digits in number for fixed point:
@@ -971,7 +971,7 @@ static int hPrintNumber
 	/* floating-point format */
 	if( expdigs > 0 )
 	{
-		addcommas = 0; /* commas unused in f-p format */
+		addcommas = FALSE; /* commas unused in f-p format */
 
 		if( intdigs == -1 || (intdigs == 0 && decdigs == 0) )
 		{	/* add [another] '%' sign */
@@ -989,7 +989,7 @@ static int hPrintNumber
 		/* blank first digit if positive and no explicit sign
 		   (pos/neg numbers should be formatted the same where
 		   possible, as in QB) */
-		if( !isamp && !val_isneg && !(signatini || signatend) )
+		if( !isamp && !val_isneg && !(signatstart || signatend) )
 			if( intdigs >= 1 && totdigs > 1 )
 				--totdigs;
 
@@ -1038,7 +1038,7 @@ static int hPrintNumber
 			ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 			val_exp /= 10;
 		}
-		
+
 		/* expdigs == 3 */
 		if( val_exp > 9 ) /* too many exp digits? */
 		{
@@ -1161,7 +1161,7 @@ static int hPrintNumber
 		ADD_CHAR( CHAR_DOLLAR );
 
 	/* output sign? */
-	if( signatini )
+	if( signatstart )
 	{
 		if( val_isneg )
 			ADD_CHAR( CHAR_MINUS );
@@ -1256,7 +1256,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 		pow2 += 1;
 	}
 	pow2 -= 52; /* 52 (+1?) integer bits in val_ull */
-	
+
 	pow10 = 0;
 
 	while( pow2 > 0 )
