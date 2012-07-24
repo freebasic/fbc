@@ -893,8 +893,9 @@ end sub
 
 #endif ''ndef DISABLE_OBJINFO
 
-private sub fbcErrorInvalidOption(byref arg as string)
+private sub hFatalInvalidOption( byref arg as string )
 	errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + arg + QUOTE, -1 )
+	fbcEnd( 1 )
 end sub
 
 private sub checkWaitingObjfile()
@@ -1138,8 +1139,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "native"
 			value = FB_CPUTYPE_NATIVE
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_CPUTYPE, value )
@@ -1180,8 +1180,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_FORCELANG
 		dim as integer value = fbGetLangId(strptr(arg))
 		if( value = FB_LANG_INVALID ) then
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1197,8 +1196,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "FAST"
 			value = FB_FPMODE_FAST
 		case else
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPMODE, value )
@@ -1212,8 +1210,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "SSE"
 			value = FB_FPUTYPE_SSE
 		case else
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_FPUTYPE, value )
@@ -1230,8 +1227,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "gcc"
 			value = FB_BACKEND_GCC
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_BACKEND, value )
@@ -1248,8 +1244,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_LANG
 		dim as integer value = fbGetLangId( strptr(arg) )
 		if( value = FB_LANG_INVALID ) then
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end if
 
 		fbSetOption( FB_COMPOPT_LANG, value )
@@ -1273,8 +1268,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		else
 			value = valint( arg )
 			if( value <= 0 ) then
-				value = 1
-				fbcErrorInvalidOption(arg)
+				hFatalInvalidOption( arg )
 			end if
 		end if
 
@@ -1311,7 +1305,6 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			value = valint(arg)
 			if (value < 0) then
 				value = 0
-				fbcErrorInvalidOption(arg)
 			elseif (value > 3) then
 				value = 3
 			end if
@@ -1373,12 +1366,11 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		if( id <> FB_HOST ) then
 			'' Identify the target
 			dim as integer comptarget = parseTargetTriplet( id )
-			if( comptarget >= 0 ) then
-				fbSetOption( FB_COMPOPT_TARGET, comptarget )
-				fbc.triplet = id + "-"
-			else
-				fbcErrorInvalidOption( arg )
+			if( comptarget < 0 ) then
+				hFatalInvalidOption( arg )
 			end if
+			fbSetOption( FB_COMPOPT_TARGET, comptarget )
+			fbc.triplet = id + "-"
 		end if
 
 	case OPT_TITLE
@@ -1398,8 +1390,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "2"
 			value = FB_VECTORIZE_INTRATREE
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_VECTORIZE, value )
@@ -1457,8 +1448,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "gosub-setjmp"
 			value or= FB_EXTRAOPT_GOSUB_SETJMP
 		case else
-			fbcErrorInvalidOption(arg)
-			return
+			hFatalInvalidOption( arg )
 		end select
 
 		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
@@ -1592,8 +1582,7 @@ private sub handleArg(byref arg as string)
 	if (fbc.optid >= 0) then
 		'' Complain about empty next argument
 		if (len(arg) = 0) then
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		handleOpt(fbc.optid, arg)
@@ -1613,16 +1602,14 @@ private sub handleArg(byref arg as string)
 		'' Complain about '-' only
 		if (cptr(ubyte ptr, opt)[0] = 0) then
 			'' Incomplete command line option
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Parse the option after the '-'
 		dim as integer optid = parseOption(opt)
 		if (optid < 0) then
 			'' Unrecognized command line option
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Does this option take a parameter?
@@ -1651,8 +1638,7 @@ private sub handleArg(byref arg as string)
 		'' Complain about '@' only
 		if (len(arg) = 0) then
 			'' Missing file name after '@'
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 		end if
 
 		'' Recursively read in the additional options from the file
@@ -1688,16 +1674,14 @@ private sub handleArg(byref arg as string)
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
 			if (len(fbc.xpm.srcfile) > 0) then
-				fbcErrorInvalidOption(arg)
-				fbcEnd(1)
+				hFatalInvalidOption( arg )
 			end if
 
 			setIofile(@fbc.xpm, arg)
 
 		case else
 			'' Input file without or with unknown extension
-			fbcErrorInvalidOption(arg)
-			fbcEnd(1)
+			hFatalInvalidOption( arg )
 
 		end select
 	end select
@@ -1783,8 +1767,7 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 	'' 'fbc foo.bas -o' this shows the error.
 	if (fbc.optid >= 0) then
 		'' Missing argument for command line option
-		fbcErrorInvalidOption(*argv[argc - 1])
-		fbcEnd(1)
+		hFatalInvalidOption( *argv[argc - 1] )
 	end if
 
 	'' In case there was an '-o <file>', but no corresponding input file,
