@@ -169,6 +169,7 @@ Version 0.24.0:
 - Mismatched parentheses in various translated headers
 - Concatenations could fail on some combinations of const/non-const and string/wstring operands
 - Concatenations involving const strings could return const results, which could prevent them being passed to functions
+- Some incorrect definitions/constants in commctrl.bi (thanks to VANYA for fix)
 
 
 Version 0.23.0:
