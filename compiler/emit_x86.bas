@@ -1119,7 +1119,7 @@ private sub hEmitExport( byval s as FBSYMBOL ptr )
         hEmitExportHeader( )
 
         dim as zstring ptr sname = symbGetMangledName( s )
-        if( env.target.underprefix ) then
+        if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
             sname += 1
         end if
 
@@ -6446,8 +6446,8 @@ private function _init _
 	''
 	hInitRegTB( )
 
-	'' wchar len depends on the target platform
-	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
+	'' Remap wchar to target-specific type
+	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar)
 
 	''
 	emit.keyinited 	= FALSE
@@ -6474,8 +6474,6 @@ end function
 
 '':::::
 private sub _end
-
-	edbgEnd( )
 
 	''
 	emit.lastsection = INVALID

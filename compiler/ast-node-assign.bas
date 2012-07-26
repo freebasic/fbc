@@ -147,7 +147,7 @@ private function hCheckWstringOps _
 
 		'' remap the type or the optimizer will
 		'' assume it's a string assignment
-		ldtype = typeJoin( ldtype, env.target.wchar.type )
+		ldtype = typeJoin( ldtype, env.target.wchar )
 
 	else
 		'' same as above..
@@ -155,7 +155,7 @@ private function hCheckWstringOps _
 			exit function
 		end if
 
-		rdtype = typeJoin( rdtype, env.target.wchar.type )
+		rdtype = typeJoin( rdtype, env.target.wchar )
 	end if
 
 	function = TRUE

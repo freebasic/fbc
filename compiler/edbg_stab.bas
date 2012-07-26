@@ -94,27 +94,11 @@ declare function hGetDataType _
 		NULL _
 	}
 
-'':::::
-sub	edbgInit( )
-
-    if( env.clopt.debug = FALSE ) then
-    	exit sub
-    end if
-
-	'' wchar len depends on the target platform
-	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar.type)
+sub edbgInit( )
+	'' Remap wchar to target-specific type
+	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar)
 
 	'' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
-
-end sub
-
-'':::::
-sub	edbgEnd( )
-
-    if( env.clopt.debug = FALSE ) then
-    	exit sub
-    end if
-
 end sub
 
 '':::::

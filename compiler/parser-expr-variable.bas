@@ -525,11 +525,11 @@ private function hStrIndexing _
 
 	varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 
-	'' not a wstring?
-	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
-		dtype = typeJoin( dtype, FB_DATATYPE_UBYTE )
+	'' wstring?
+	if( typeGet( dtype ) = FB_DATATYPE_WCHAR ) then
+		dtype = typeJoin( dtype, env.target.wchar )
 	else
-		dtype = typeJoin( dtype, env.target.wchar.type )
+		dtype = typeJoin( dtype, FB_DATATYPE_UBYTE )
 	end if
 
 	'' make a pointer

@@ -338,51 +338,14 @@ sub symbDefineInit _
 	next
 
 	'' Add __FB_<target>__ define
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case FB_COMPTARGET_CYGWIN
-		def = @"__FB_CYGWIN__"
-	case FB_COMPTARGET_DARWIN
-		def = @"__FB_DARWIN__"
-	case FB_COMPTARGET_DOS
-		def = @"__FB_DOS__"
-	case FB_COMPTARGET_FREEBSD
-		def = @"__FB_FREEBSD__"
-	case FB_COMPTARGET_LINUX
-		def = @"__FB_LINUX__"
-	case FB_COMPTARGET_NETBSD
-		def = @"__FB_NETBSD__"
-	case FB_COMPTARGET_OPENBSD
-		def = @"__FB_OPENBSD__"
-	case FB_COMPTARGET_WIN32
-		def = @"__FB_WIN32__"
-	case else
-		assert(fbGetOption(FB_COMPOPT_TARGET) = FB_COMPTARGET_XBOX)
-		def = @"__FB_XBOX__"
-	end select
-
-	symbAddDefine( def, NULL, 0 )
+	symbAddDefine( "__FB_" + ucase( *env.target.id ) + "__", NULL, 0 )
 
 	'' add __FB_UNIX__ / __FB_PCOS__ defines, as necessary
-	select case as const fbGetOption( FB_COMPOPT_TARGET )
-	case /'FB_COMPTARGET_BEOS,'/ _
-	     FB_COMPTARGET_CYGWIN, _
-	     FB_COMPTARGET_DARWIN, _
-	     FB_COMPTARGET_FREEBSD, _
-	     /'FB_COMPTARGET_INTERIX,'/ _
-	     FB_COMPTARGET_LINUX, _
-	     FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
-
+	if( env.target.options and FB_TARGETOPT_UNIX ) then
 		symbAddDefine( @"__FB_UNIX__", NULL, 0 )
-
-	case FB_COMPTARGET_DOS, _
-	     /'FB_COMPTARGET_OS2,'/ _
-	     /'FB_COMPTARGET_SYMBIAN,'/ _
-	     FB_COMPTARGET_WIN32
-
+	else
 		symbAddDefine( @"__FB_PCOS__", NULL, 0 )
-
-	end select
+	end if
 
 	'' add "main" define
 	if( ismain ) then

@@ -1,10 +1,4 @@
-declare sub edbgInit _
-	( _
-	)
-
-declare sub edbgEnd _
-	( _
-	)
+declare sub edbgInit( )
 
 declare sub edbgEmitHeader _
 	( _

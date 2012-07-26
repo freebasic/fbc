@@ -178,9 +178,6 @@ sub symbEnd
 	symb.symtb = NULL
 
 	''
-	symbDataEnd( )
-
-	''
 	listEnd( @symb.imphashlist )
 	hashEnd( @symb.imphashtb )
 
@@ -1846,39 +1843,11 @@ function symbCalcLen _
 		byval unpadlen as integer _
 	) as integer
 
-	select case as const typeGet( dtype )
-	case FB_DATATYPE_FWDREF
-		function = 0
+	dtype = typeGet( dtype )
 
-	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
-		function = 1
-
-	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
-		function = 2
-
-	case FB_DATATYPE_WCHAR
-		function = env.target.wchar.size
-
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
-		function = FB_INTEGERSIZE
-
-	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-		function = FB_LONGSIZE
-
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = FB_INTEGERSIZE*2
-
-	case FB_DATATYPE_SINGLE
-		function = 4
-
-	case FB_DATATYPE_DOUBLE
-    	function = 8
-
+	select case as const( dtype )
 	case FB_DATATYPE_FIXSTR
-		function = 0									'' 0-len literal-strings
-
-	case FB_DATATYPE_STRING
-		function = FB_STRDESCLEN
+		function = 0  '' zero-length literal-strings
 
 	case FB_DATATYPE_STRUCT
 		if( unpadlen ) then
@@ -1890,11 +1859,8 @@ function symbCalcLen _
 	case FB_DATATYPE_BITFIELD
 		function = subtype->lgt
 
-	case FB_DATATYPE_POINTER
-		function = FB_POINTERSIZE
-
 	case else
-		function = 0
+		function = typeGetSize( dtype )
 
 	end select
 

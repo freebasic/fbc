@@ -800,15 +800,7 @@ declare sub symbEnd _
 		_
 	)
 
-declare sub symbDataInit _
-	( _
-		_
-	)
-
-declare sub symbDataEnd _
-	( _
-		_
-	)
+declare sub symbDataInit( )
 
 declare function symbLookup _
 	( _

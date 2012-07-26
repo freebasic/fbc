@@ -860,7 +860,7 @@ private sub _emitVarIniWstr _
 
 	'' wstring * 1?
 	if( totlgt = 0 ) then
-		emitVARINIi( env.target.wchar.type, 0 )
+		emitVARINIi( env.target.wchar, 0 )
 		exit sub
 	end if
 

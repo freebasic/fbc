@@ -62,9 +62,9 @@ sub astMiscInit
 
 	ast.flushdtorlist = TRUE
 
-	'' wchar len depends on the target platform
-	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
-	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
+	'' Remap wchar to target-specific type
+	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar)
+	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar)
 
     '' !!!FIXME!!! remap [u]long to [u]longint if target = 64-bit
 
@@ -1038,7 +1038,7 @@ function astUpdComp2Branch _
 			case FB_DATATYPE_CHAR
 				dtype = FB_DATATYPE_UINT
 			case FB_DATATYPE_WCHAR
-				dtype = env.target.wchar.type
+				dtype = env.target.wchar
 			end select
 
 			'' Constant 0 of matching type

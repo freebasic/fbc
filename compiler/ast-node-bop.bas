@@ -991,7 +991,7 @@ function astNewBOP _
 				if( litsym <> NULL ) then
 					'' ok to convert at compile-time?
 					if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) or _
-						(env.target.wchar.doconv) ) then
+					    env.wchar_doconv ) then
 						return hWstrLiteralConcat( l, r )
 					end if
 				end if
@@ -1041,14 +1041,14 @@ function astNewBOP _
 				end if
 				'' remap the type or the optimizer can
 				'' make a wrong assumption
-				ldtype = typeJoin( ldtype, env.target.wchar.type )
+				ldtype = typeJoin( ldtype, env.target.wchar )
 
 			else
 				'' same as above..
 				if( r->class <> AST_NODECLASS_DEREF ) then
 					exit function
 				end if
-				rdtype = typeJoin( rdtype, env.target.wchar.type )
+				rdtype = typeJoin( rdtype, env.target.wchar )
 			end if
 		end if
 

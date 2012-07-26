@@ -164,6 +164,7 @@ enum FB_COMPTARGET
 	FB_COMPTARGET_OPENBSD
 	FB_COMPTARGET_DARWIN
 	FB_COMPTARGET_NETBSD
+	FB_COMPTARGETS
 end enum
 
 '' languages (update the fb.bas::langTb() array when changing this list)
@@ -353,6 +354,8 @@ declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
+
+declare function fbGetTargetId( ) as zstring ptr
 
 declare function fbGetEntryPoint _
 	( _

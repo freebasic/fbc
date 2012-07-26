@@ -487,7 +487,7 @@ private function hAddUnderscore _
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 			res = FALSE
 		else
-			res = env.target.underprefix
+			res = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
 		end if
 	end if
 

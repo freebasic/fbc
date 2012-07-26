@@ -352,7 +352,7 @@ private function hEmitProcHeader _
 			'' Must manually add an underscore prefix if the
 			'' target requires it, because symb-mangling
 			'' won't do that for -gen gcc.
-			if( env.target.underprefix ) then
+			if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
 				mangled  = "_" + mangled
 			end if
 			ln += " asm(""" + mangled + """)"
@@ -792,14 +792,14 @@ private sub hEmitTypedefs( )
 
 	'' Target-dependant wchar type
 	dim as string wchartype
-	select case as const( env.target.wchar.type )
+	select case as const( env.target.wchar )
 	case FB_DATATYPE_UBYTE      '' DOS
 		wchartype = "ubyte"
 	case FB_DATATYPE_USHORT     '' Windows, cygwin
 		wchartype = "ushort"
 	case else                   '' Linux & co
 		'' Normally our wstring type is unsigned, but gcc's wchar_t
-		'' is signed, and we must the exact same or else fixed-length
+		'' is signed, and we must use the exact same or else fixed-length
 		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
 		'' (If this is a problem, then VarIniWstr must be changed to
 		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)

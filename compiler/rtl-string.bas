@@ -3343,7 +3343,7 @@ function rtlToStr _
     if( dtype = FB_DATATYPE_WCHAR ) then
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
-			if( env.target.wchar.doconv ) then
+			if( env.wchar_doconv ) then
 				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
 							   	   	   		symbGetWstrLen( litsym ) - 1 )
 
@@ -3481,7 +3481,7 @@ function rtlToWstr _
     if( dtype = FB_DATATYPE_CHAR ) then
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
-			if( env.target.wchar.doconv ) then
+			if( env.wchar_doconv ) then
 				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
 							 			     symbGetStrLen( litsym ) - 1 )
     			return astNewVAR( litsym, 0, FB_DATATYPE_WCHAR )
