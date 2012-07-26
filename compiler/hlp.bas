@@ -436,19 +436,20 @@ function hRevertSlash _
 
 end function
 
-function pathStripDiv(byref path as string) as string
-	dim as integer length = len(path)
-	if (length > 0) then
-		select case (path[length])
+function pathStripDiv( byref path as string ) as string
+	dim as integer length = len( path )
+	if( length > 0 ) then
+		length -= 1
+		select case( path[length] )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
 		case asc("/"), asc("\")
 #else
 		case asc("/")
 #endif
-			return left(path, length - 1)
+			return left( path, length )
 		end select
 	end if
-	return path
+	function = path
 end function
 
 '':::::
