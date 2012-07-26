@@ -76,14 +76,31 @@ type FBCCTX
 	objinf				as FBC_OBJINF
 end type
 
+enum
+	FBCTOOL_AS = 0
+	FBCTOOL_AR
+	FBCTOOL_LD
+	FBCTOOL_GCC
+	FBCTOOL_DLLTOOL
+	FBCTOOL_GORC
+	FBCTOOL_WINDRES
+	FBCTOOL_CXBE
+	FBCTOOL__COUNT
+end enum
+
+static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
+{ _
+	"as", "ar", "ld", "gcc", "dlltool", "GoRC", "windres", "cxbe" _
+}
+
+declare function fbcFindBin( byval tool as integer, byref path as string ) as integer
+
 declare function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
-		byref tool as string, _
+		byval tool as integer, _
 		byref ln as string _
 	) as integer
-
-declare function fbcFindBin(byval filename as zstring ptr) as string
 
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
@@ -198,41 +215,32 @@ private function archiveFiles() as integer
 	wend
 
 	'' invoke ar
-	return fbcRunBin("archiving", fbcFindBin("ar"), ln)
+	return fbcRunBin( "archiving", FBCTOOL_AR, ln )
 end function
 
-function fbcFindGccLib(byref file as string) as string
+function fbcFindGccLib( byref file as string ) as string
 	dim as string found
 
-	'' Files in our lib/ directory have precedence, and are in fact
-	'' required for standalone builds.
+	'' The standalone build has all needed files in its own lib/, but
+	'' normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o are inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
+	'' find them via 'gcc -print-file-name=foo' (besides hard-coding
+	'' against a specific gcc target/version).
+
 	found = fbc.libpath + FB_HOST_PATHDIV + file
 
 #ifndef ENABLE_STANDALONE
+	'' The file in our lib/ has precedence
 	if( hFileExists( found ) ) then
 		return found
 	end if
 
-	'' Normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
-	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
-	'' find them via 'gcc -print-file-name=foo' (or by hard-coding against
-	'' a specific gcc target/version).
-	'' The normal build needs to ask gcc to find out where those files are,
-	'' while the standalone build is supposed to be standalone and have
-	'' everything in its own lib/ directory.
-	''
-	'' (Note: If we're cross-compiling, the cross-gcc will be queried,
-	'' not the host gcc.)
-
-	dim as integer ff = any
-
-	function = ""
-
-	dim as string path = fbcFindBin("gcc")
-
+	'' Query the target-specific gcc
+	dim as string path
+	fbcFindBin( FBCTOOL_GCC, path )
 	path += " -m32 -print-file-name=" + file
 
-	ff = freefile()
+	dim as integer ff = freefile( )
 	if( open pipe( path, for input, as ff ) <> 0 ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
@@ -242,16 +250,13 @@ function fbcFindGccLib(byref file as string) as string
 
 	close ff
 
-	dim as string fileonly = hStripPath( found )
-
-	if( found = fileonly ) then
+	if( found = hStripPath( found ) ) then
 		errReportEx( FB_ERRMSG_FILENOTFOUND, file, -1 )
 		exit function
 	end if
 #endif
 
 	function = found
-
 end function
 
 private sub fbcAddDefLibPath(byref path as string)
@@ -267,72 +272,80 @@ sub fbcAddLibPathFor(byref libname as string)
 	end if
 end sub
 
-function fbcFindBin(byval filename as zstring ptr) as string
-	'' Check for an environment variable.
-	'' (e.g. fbcFindBin("ld") will check the LD environment variable)
-	dim as string path = environ(ucase(*filename))
-	if (len(path) > 0) then
-		'' The environment variable is set, this should be it.
-		'' If this path doesn't work, then why did someone set the
-		'' variable that way?
-		return path
+function fbcFindBin( byval tool as integer, byref path as string ) as integer
+	static as integer lasttool = -1
+	static as string lastpath
+
+	function = TRUE
+
+	'' Re-use path from last time if possible
+	if( lasttool = tool ) then
+		path = lastpath
+		exit function
 	end if
 
-	'' Build the path to the program in our bin/ directory
-	path = fbc.binpath + FB_HOST_PATHDIV
-	path += fbc.triplet + *filename + FB_HOST_EXEEXT
+	'' a) Use the path from the corresponding environment variable if it's set
+	path = environ( ucase( toolnames(tool) ) )
+	if( len( path ) = 0 ) then
+		'' b) Try the path to the tool in our bin/ directory
+		path = fbc.binpath + FB_HOST_PATHDIV + fbc.triplet + toolnames(tool) + FB_HOST_EXEEXT
 
-#ifdef __FB_UNIX__
-	'' On *nix/*BSD, check whether the program exists in bin/, and fallback
-	'' to the system default otherwise, i.e. tools installed in the same
-	'' location are preferred, but not required.
-	if (hFileExists(path)) then
-		return path
+		#if defined( __FB_UNIX__ ) or (not defined( ENABLE_STANDALONE ))
+			'' c) If missing in bin/, try to invoke it without path
+			'' (relying on PATH)
+			if( hFileExists( path ) = FALSE ) then
+				function = FALSE
+				path = fbc.triplet + toolnames(tool) + FB_HOST_EXEEXT
+			end if
+		#endif
 	end if
 
-	'' Use the system default, it works with exec() on these systems.
-	return fbc.triplet + *filename + FB_HOST_EXEEXT
-#else
-	'' The programs must be reachable via relative or absolute path,
-	'' otherwise the CreateProcess() in exec() will fail.
-	return path
-#endif
+	lasttool = tool
+	lastpath = path
 end function
 
 function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
-		byref tool as string, _
+		byval tool as integer, _
 		byref ln as string _
 	) as integer
 
-	'' Note: We have to use exec(). shell() would require special care
-	'' with shell syntax (we'd have to quote escape chars in filenames
-	'' and such), and it's slower too.
+	dim as integer result = any
+	dim as string path
 
-	if (fbc.verbose) then
-		print *action & ": ", tool & " " & ln
+	result = fbcFindBin( tool, path )
+
+	if( fbc.verbose ) then
+		print *action + ": ", path + " " + ln
 	end if
 
-	dim as integer result = exec(tool, ln)
-	if (result = 0) then
-		return TRUE
-	end if
+	'' Always use exec() on Unix or for standalone because
+	'' - Unix exec() already searches the PATH, so shell() isn't needed,
+	'' - standalone doesn't use system-wide tools
+	#if defined( __FB_UNIX__ ) or defined( ENABLE_STANDALONE )
+		result = exec( path, ln )
+	#else
+		'' Found at bin/?
+		if( result ) then
+			result = exec( path, ln )
+		else
+			result = shell( path + " " + ln )
+		end if
+	#endif
 
-	'' A rather vague assumption on exec() return value:
-	''    -1 should be "not found"
-	if (result < 0) then
-		errReportEx(FB_ERRMSG_EXEMISSING, tool, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES)
+	if( result = 0 ) then
+		function = TRUE
+	elseif( result < 0 ) then
+		errReportEx( FB_ERRMSG_EXEMISSING, path, -1, FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
 	else
 		'' Report bad exit codes only in verbose mode; normally the
 		'' program should already have shown an error message, and the
 		'' exit code is only interesting for debugging purposes.
-		if (fbc.verbose) then
-			print *action & " failed: '" & tool & "' terminated with exit code " & result
+		if( fbc.verbose ) then
+			print *action + " failed: '" + path + "' terminated with exit code " + str( result )
 		end if
 	end if
-
-	return FALSE
 end function
 
 #if defined(__FB_WIN32__) or defined(__FB_DOS__)
@@ -386,27 +399,32 @@ private function clearDefList(byref deffile as string) as integer
 	return (name(cleaned, deffile) = 0)
 end function
 
-private function makeImpLib(byref dllname as string, byref deffile as string) as integer
+private function makeImpLib _
+	( _
+		byref dllname as string, _
+		byref deffile as string _
+	) as integer
+
 	'' for some weird reason, LD will declare all functions exported as if they were
 	'' from DATA segment, causing an exception (UPPERCASE'd symbols assumption??)
-	if (clearDefList(deffile) = FALSE) then
-		return FALSE
+	if( clearDefList( deffile ) = FALSE ) then
+		exit function
 	end if
 
 	dim as string ln
-	ln += "--def " + QUOTE + deffile + QUOTE
-	ln += " --dllname " + QUOTE + hStripPath(fbc.outname) + QUOTE
-	ln += " --output-lib " + QUOTE + hStripFilename(fbc.outname) + "lib" + dllname + (".dll.a" + QUOTE)
+	ln += "--def """ + deffile + """"
+	ln += " --dllname """ + hStripPath( fbc.outname ) + """"
+	ln += " --output-lib """ + hStripFilename( fbc.outname ) + "lib" + dllname + ".dll.a"""
 
-	if (fbcRunBin("creating import library", fbcFindBin("dlltool"), ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "creating import library", FBCTOOL_DLLTOOL, ln ) = FALSE ) then
+		exit function
 	end if
 
-	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(deffile)
+	if( fbc.preserveasm = FALSE ) then
+		fbcAddTemp( deffile )
 	end if
 
-	return TRUE
+	function = TRUE
 end function
 
 '':::::
@@ -724,7 +742,7 @@ private function linkFiles() as integer
 #endif
 
 	'' invoke ld
-	if (fbcRunBin("linking", fbcFindBin("ld"), ldcline) = FALSE) then
+	if( fbcRunBin( "linking", FBCTOOL_LD, ldcline ) = FALSE ) then
 		exit function
 	end if
 
@@ -781,7 +799,7 @@ private function linkFiles() as integer
 			print "cxbe: ", cxbecline
 		end if
 
-		cxbepath = fbcFindBin("cxbe")
+		fbcFindBin( FBCTOOL_CXBE, cxbepath )
 
 		'' have to use shell instead of exec in order to use >nul
 		res = shell(cxbepath + " " + cxbecline)
@@ -2194,22 +2212,14 @@ dim shared as const zstring ptr gcc_architectures(0 to (FB_CPUTYPECOUNT - 1)) = 
 }
 
 private function assembleBas(byval module as FBCIOFILE ptr) as integer
-	static as string assembler
+	dim as integer tool = any
+	dim as string ln
 
 	function = FALSE
 
-	if (len(assembler) = 0) then
-		if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
-			assembler = "gcc"
-		else
-			assembler = "as"
-		end if
-		assembler = fbcFindBin(assembler)
-	end if
+	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC ) then
+		tool = FBCTOOL_GCC
 
-	dim as string ln
-
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
 		ln += "-c -nostdlib -nostdinc " & _
 		      "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " & _
 		      "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing " & _
@@ -2225,6 +2235,8 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 			ln += "-mfpmath=sse -msse2 "
 		end if
 	else
+		tool = FBCTOOL_AS
+
 		'' --32 because we only compile for 32bit right now
 		ln = "--32 "
 
@@ -2236,22 +2248,22 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 	ln += """" + getModuleAsmName(module) + """ "
 	ln += "-o """ + module->objfile + """"
 
-	if (fbGetOption(FB_COMPOPT_BACKEND) = FB_BACKEND_GCC) then
+	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GCC ) then
 		ln += fbc.extopt.gcc
 	else
 		ln += fbc.extopt.gas
 	end if
 
-	if (fbcRunBin("assembling", assembler, ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "assembling", tool, ln ) = FALSE ) then
+		exit function
 	end if
 
-	fbcAddObj(module->objfile)
-	if (fbc.preserveobj = FALSE) then
-		fbcAddTemp(module->objfile)
+	fbcAddObj( module->objfile )
+	if( fbc.preserveobj = FALSE ) then
+		fbcAddTemp( module->objfile )
 	end if
 
-	return TRUE
+	function = TRUE
 end function
 
 private function assembleModules() as integer
@@ -2302,8 +2314,8 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	ln &= "/fo """ & rc->objfile & """"
 	ln &= " """ & rc->srcfile & """"
 
-	if (fbcRunBin("compiling rc", fbcFindBin("GoRC"), ln) = FALSE) then
-		return FALSE
+	if( fbcRunBin( "compiling rc", FBCTOOL_GORC, ln ) = FALSE ) then
+		exit function
 	end if
 
 	'' restore the include env var
@@ -2323,11 +2335,10 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	'' Using binutils' windres for all other setups (e.g. cross-compiling
 	'' linux -> win32)
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
-	'' and that's not 100% compatible to GoRC (e.g. backslashes in
-	'' paths/filenames are seen as escape sequences by gcc, but not GoRC)
+	'' that may not be 100% compatible to GoRC.
 
 	'' *.o name based on input file name unless given via -o <file>
-	if (len(rc->objfile) = 0) then
+	if( len( rc->objfile ) = 0 ) then
 		'' Note: Appending instead of replacing, to avoid overwriting
 		'' an existing object file.
 		rc->objfile = rc->srcfile & ".o"
@@ -2337,7 +2348,7 @@ private function assembleRc(byval rc as FBCIOFILE ptr) as integer
 	ln &= " """ & rc->srcfile & """"
 	ln &= " """ & rc->objfile & """"
 
-	function = fbcRunBin("compiling rc", fbcFindBin("windres"), ln)
+	function = fbcRunBin( "compiling rc", FBCTOOL_WINDRES, ln )
 #endif
 
 	fbcAddObj(rc->objfile)
