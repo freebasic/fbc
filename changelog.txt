@@ -24,14 +24,15 @@ Version 0.24.0:
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
 
 [added]
+- Single inheritance for classes: TYPE Child EXTENDS Parent
+- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
+- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
+- THREADCALL keyword for starting functions in a new thread with parameters passed to them (requires libFFI)
 - EVENT_MOUSE_HWHEEL for X11
 - __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
 - fbc can now be built for installation into MinGW/DJGPP
 - Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
 - The .def file generated when building a DLL is now preserved if -R was given
-- Single inheritance for classes: TYPE Child EXTENDS Parent
-- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
-- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
 - 'fbc -static' option to tell the linker to link against static libraries if installed
 - CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
 - "Real" Rnd() algorithm (activate via 'Randomize(, 5)') using Win32 Crypto APIs or Linux /dev/urandom
