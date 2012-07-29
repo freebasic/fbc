@@ -181,27 +181,34 @@ private function archiveFiles() as integer
 	return fbcRunBin( "archiving", FBCTOOL_AR, ln )
 end function
 
-function fbcFindGccLib( byref file as string ) as string
+'' Find a file in our lib/ or in the system somewhere
+private function fbcFindLibFile( byval file as zstring ptr ) as string
 	dim as string found
 
-	'' The standalone build has all needed files in its own lib/, but
-	'' normally libgcc.a, libsupc++.a, crtbegin.o, crtend.o are inside
-	'' gcc's sub-directory in lib/gcc/target/version, i.e. we can only
-	'' find them via 'gcc -print-file-name=foo' (besides hard-coding
-	'' against a specific gcc target/version).
+	''
+	'' The Standalone build expects to have all needed files in its lib/,
+	'' so it needs to do nothing but build up the path and use that.
+	''
+	'' Normal however wants to use the "system's" files (and only has few
+	'' files in its own lib/).
+	''
+	'' Typically libgcc.a, libsupc++.a, crtbegin.o, crtend.o will be inside
+	'' gcc's sub-directory in lib/gcc/target/version, i.e. Normal can only
+	'' find them via 'gcc -print-file-name=foo' (except for hard-coding
+	'' against a specific gcc target/version, but that's not a good option).
+	''
 
-	found = fbc.libpath + FB_HOST_PATHDIV + file
+	found = fbc.libpath + FB_HOST_PATHDIV + *file
 
 #ifndef ENABLE_STANDALONE
-	'' The file in our lib/ has precedence
 	if( hFileExists( found ) ) then
 		return found
 	end if
 
-	'' Query the target-specific gcc
+	'' Not found in our lib/, query the target-specific gcc
 	dim as string path
 	fbcFindBin( FBCTOOL_GCC, path )
-	path += " -m32 -print-file-name=" + file
+	path += " -m32 -print-file-name=" + *file
 
 	dim as integer ff = freefile( )
 	if( open pipe( path, for input, as ff ) <> 0 ) then
@@ -226,12 +233,12 @@ private sub fbcAddDefLibPath(byref path as string)
 	strsetAdd(@fbc.finallibpaths, path, TRUE)
 end sub
 
-sub fbcAddLibPathFor(byref libname as string)
-	dim as string path = _
-		pathStripDiv(hStripFilename( _
-			fbcFindGccLib("lib" + libname + ".a")))
-	if (len(path) > 0) then
-		fbcAddDefLibPath(path)
+private sub fbcAddLibPathFor( byval libname as zstring ptr )
+	dim as string path
+	path = hStripFilename( fbcFindLibFile( libname ) )
+	path = pathStripDiv( path )
+	if( len( path ) > 0 ) then
+		fbcAddDefLibPath( path )
 	end if
 end sub
 
@@ -390,7 +397,10 @@ private function makeImpLib _
 	function = TRUE
 end function
 
-'':::::
+private function hFindLib( byval file as zstring ptr ) as string
+	function = " """ + fbcFindLibFile( file ) + """"
+end function
+
 private function linkFiles() as integer
 	dim as string ldcline, dllname, deffile
 
@@ -492,13 +502,11 @@ private function linkFiles() as integer
 		'' fbrt0's c/dtor be the first/last respectively.
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
-
 #ifndef DISABLE_OBJINFO
 	else
 		'' Supplementary ld script to drop the fbctinf objinfo section
 		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 #endif
-
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -557,34 +565,34 @@ private function linkFiles() as integer
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+			ldcline += hFindLib( "crt0.o" )
 		else
 			'' TODO
-			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+			ldcline += hFindLib( "crt0.o" )
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-				ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+				ldcline += hFindLib( "gcrt0.o" )
 			end if
 		end if
 
 	case FB_COMPTARGET_WIN32
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
-			ldcline += " """ + fbcFindGccLib("dllcrt2.o") + """"
+			ldcline += hFindLib( "dllcrt2.o" )
 		else
-			ldcline += " """ + fbcFindGccLib("crt2.o") + """"
+			ldcline += hFindLib( "crt2.o" )
 			'' additional support for gmon
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-				ldcline += " """ + fbcFindGccLib("gcrt2.o") + """"
+				ldcline += hFindLib( "gcrt2.o" )
 			end if
 		end if
 
-		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
+		ldcline += hFindLib( "crtbegin.o" )
 
 	case FB_COMPTARGET_DOS
 		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
-			ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+			ldcline += hFindLib( "gcrt0.o" )
 		else
-			ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+			ldcline += hFindLib( "crt0.o" )
 		end if
 
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
@@ -595,34 +603,34 @@ private function linkFiles() as integer
 			if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
-					ldcline += " """ + fbcFindGccLib("gcrt0.o") + """"
+					ldcline += hFindLib( "gcrt0.o" )
 				case else
-					ldcline += " """ + fbcFindGccLib("gcrt1.o") + """"
+					ldcline += hFindLib( "gcrt1.o" )
 				end select
 			else
 				select case as const fbGetOption( FB_COMPOPT_TARGET )
 				case FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD
-					ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+					ldcline += hFindLib( "crt0.o" )
 				case else
-					ldcline += " """ + fbcFindGccLib("crt1.o") + """"
+					ldcline += hFindLib( "crt1.o" )
 				end select
 			end if
 		end if
 
 		'' All have crti.o, except OpenBSD
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
-			ldcline += " """ + fbcFindGccLib("crti.o") + """"
+			ldcline += hFindLib( "crti.o" )
 		end if
 
-		ldcline += " """ + fbcFindGccLib("crtbegin.o") + """"
+		ldcline += hFindLib( "crtbegin.o" )
 
 	case FB_COMPTARGET_XBOX
 		'' link with crt0.o (C runtime init)
-		ldcline += " """ + fbcFindGccLib("crt0.o") + """"
+		ldcline += hFindLib( "crt0.o" )
 
 	end select
 
-	if (fbc.nodeflibs = FALSE) then
+	if( fbc.nodeflibs = FALSE ) then
 		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbrt0.o""")
 	end if
 
@@ -674,13 +682,13 @@ private function linkFiles() as integer
 	case FB_COMPTARGET_FREEBSD, FB_COMPTARGET_DARWIN, _
 	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
 	     FB_COMPTARGET_OPENBSD
-		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
+		ldcline += hFindLib( "crtend.o" )
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
-			ldcline += " " + QUOTE + fbcFindGccLib("crtn.o") + QUOTE
+			ldcline += hFindLib( "crtn.o" )
 		end if
 
 	case FB_COMPTARGET_WIN32
-		ldcline += " """ + fbcFindGccLib("crtend.o") + """"
+		ldcline += hFindLib( "crtend.o" )
 
 	end select
 
@@ -2328,36 +2336,36 @@ end function
 
 private sub setDefaultLibPaths()
 	'' compiler's lib/
-	fbcAddDefLibPath(fbc.libpath)
+	fbcAddDefLibPath( fbc.libpath )
 
 	'' and the current path
-	fbcAddDefLibPath(".")
+	fbcAddDefLibPath( "." )
 
 #ifndef ENABLE_STANDALONE
 	'' Add gcc's private lib directory, to find libgcc and libsupc++
 	'' This is for installing into Unix-like systems, and not for
 	'' standalone, which has libgcc/libsupc++ in the main lib/.
-	fbcAddLibPathFor("gcc")
+	fbcAddLibPathFor( "libgcc.a" )
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
 		'' Note: The standalone DOS FB uses the renamed 8.3 filename version: supcx
 		'' But this is for installing into DJGPP, where apparently supcxx is working fine.
-		fbcAddLibPathFor("supcxx")
+		fbcAddLibPathFor( "libsupcxx.a" )
 	else
-		fbcAddLibPathFor("supc++")
+		fbcAddLibPathFor( "libsupc++.a" )
 	end if
 
-	select case fbGetOption( FB_COMPOPT_TARGET )
+	select case( fbGetOption( FB_COMPOPT_TARGET ) )
 	case FB_COMPTARGET_DOS
 		'' Help out the DJGPP linker to find DJGPP's lib/ dir.
 		'' It doesn't seem to add it by default like on other systems.
 		'' Note: Can't use libc here, we have a fixed copy of that in
 		'' the compiler's lib/ dir.
-		fbcAddLibPathFor("m")
+		fbcAddLibPathFor( "libm.a" )
 	case FB_COMPTARGET_WIN32
 		'' Help the MinGW linker to find MinGW's lib/ dir, allowing
 		'' the C:\MinGW dir to be renamed and linking to still work.
-		fbcAddLibPathFor("mingw32")
+		fbcAddLibPathFor( "libmingw32.a" )
 	end select
 #endif
 end sub
