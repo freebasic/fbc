@@ -23,6 +23,7 @@ Version 0.24.0:
 - The NAKED keyword is now disallowed under -gen gcc because gcc doesn't support naked functions on x86
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
 - The -target option is no longer case-sensitive
+- Linux standalone fbc won't try to use tools from PATH anymore
 
 [added]
 - Single inheritance for classes: TYPE Child EXTENDS Parent

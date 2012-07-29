@@ -253,7 +253,7 @@ function fbcFindBin( byval tool as integer, byref path as string ) as integer
 		'' b) Try the path to the tool in our bin/ directory
 		path = fbc.binpath + FB_HOST_PATHDIV + fbc.targetid + toolnames(tool) + FB_HOST_EXEEXT
 
-		#if defined( __FB_UNIX__ ) or (not defined( ENABLE_STANDALONE ))
+		#ifndef ENABLE_STANDALONE
 			'' c) If missing in bin/, try to invoke it without path
 			'' (relying on PATH)
 			if( hFileExists( path ) = FALSE ) then
