@@ -62,13 +62,15 @@ type FBCCTX
 	mapfile				as zstring * FB_MAXPATHLEN+1
 	subsystem			as zstring * FB_MAXNAMELEN+1
 	extopt				as FBC_EXTOPT
-	prefix				as zstring * FB_MAXPATHLEN+1  '' Prefix path, either the default exepath() or hard-coded $prefix, or from -prefix
-	targetid 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
+#ifndef ENABLE_STANDALONE
+	targetprefix 			as zstring * FB_MAXNAMELEN+1  '' Target system identifier (e.g. a name like "win32", or a GNU triplet) to prefix in front of cross-compiling tool names
+#endif
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
 	staticlink			as integer
 
 	'' Compiler paths
+	prefix				as zstring * FB_MAXPATHLEN+1  '' Path from -prefix or empty
 	binpath				as zstring * FB_MAXPATHLEN+1
 	incpath				as zstring * FB_MAXPATHLEN+1
 	libpath				as zstring * FB_MAXPATHLEN+1
@@ -257,15 +259,14 @@ function fbcFindBin( byval tool as integer, byref path as string ) as integer
 	'' a) Use the path from the corresponding environment variable if it's set
 	path = environ( ucase( toolnames(tool) ) )
 	if( len( path ) = 0 ) then
-		'' b) Try the path to the tool in our bin/ directory
-		path = fbc.binpath + FB_HOST_PATHDIV + fbc.targetid + toolnames(tool) + FB_HOST_EXEEXT
+		'' b) Try bin/ directory
+		path = fbc.binpath + toolnames(tool) + FB_HOST_EXEEXT
 
 		#ifndef ENABLE_STANDALONE
-			'' c) If missing in bin/, try to invoke it without path
-			'' (relying on PATH)
 			if( hFileExists( path ) = FALSE ) then
+				'' c) Rely on PATH
+				path = fbc.targetprefix + toolnames(tool) + FB_HOST_EXEEXT
 				function = FALSE
-				path = fbc.targetid + toolnames(tool) + FB_HOST_EXEEXT
 			end if
 		#endif
 	end if
@@ -914,42 +915,57 @@ private sub addBas(byref basfile as string)
 end sub
 
 '' -target <id> parser
-private function parseTargetId( byref id as string ) as integer
+'' Normal: recognizes FB's target names and GNU triplets
+'' Standalone: FB names only
+private function hParseTargetId( byref id as string ) as integer
+#ifdef ENABLE_STANDALONE
+	#macro MAYBE( target, comptarget )
+		if( id = target ) then
+			return comptarget
+		end if
+	#endmacro
+
+	select case as const( id[0] )
+#else
+	dim as string os = id
+
 	'' To support GNU triplets, we need to parse them,
 	'' to identify which target of ours it could mean.
 	'' A triplet is made up of these components:
 	''    [arch-][vendor-]os[-...]
 
 	'' Cut off up to two leading components to get to the OS
-	dim as string os = id
 	for i as integer = 0 to 1
-		dim as integer j = instr(1, os, "-")
-		if (j = 0) then
+		dim as integer j = instr( 1, os, "-" )
+		if( j = 0 ) then
 			exit for
 		end if
-		os = right(os, len(os) - j)
+		os = right( os, len( os ) - j )
 	next
 
-	if (len(os) = 0) then
+	if( len( os ) = 0 ) then
 		return -1
 	end if
 
-	#macro MAYBE(target, comptarget)
+	#macro MAYBE( target, comptarget )
 		'' Allow incomplete matches, e.g.:
 		'' 'linux' matches 'linux-gnu',
 		'' 'mingw' matches 'mingw32msvc', etc.
-		if (left(os, len(target)) = target) then
+		if( left( os, len( target ) ) = target ) then
 			return comptarget
 		end if
 	#endmacro
 
-	select case as const (os[0])
+	select case as const( os[0] )
+#endif
 	case asc("c")
 		MAYBE("cygwin", FB_COMPTARGET_CYGWIN)
 
 	case asc("d")
 		MAYBE("darwin", FB_COMPTARGET_DARWIN)
+#ifndef ENABLE_STANDALONE
 		MAYBE("djgpp", FB_COMPTARGET_DOS)
+#endif
 		MAYBE("dos", FB_COMPTARGET_DOS)
 
 	case asc("f")
@@ -958,9 +974,11 @@ private function parseTargetId( byref id as string ) as integer
 	case asc("l")
 		MAYBE("linux", FB_COMPTARGET_LINUX)
 
+#ifndef ENABLE_STANDALONE
 	case asc("m")
 		MAYBE("mingw", FB_COMPTARGET_WIN32)
 		MAYBE("msdos", FB_COMPTARGET_DOS)
+#endif
 
 	case asc("n")
 		MAYBE("netbsd", FB_COMPTARGET_NETBSD)
@@ -974,14 +992,16 @@ private function parseTargetId( byref id as string ) as integer
 
 	case asc("w")
 		MAYBE("win32", FB_COMPTARGET_WIN32)
+#ifndef ENABLE_STANDALONE
 		MAYBE("windows", FB_COMPTARGET_WIN32)
+#endif
 
 	case asc("x")
 		MAYBE("xbox", FB_COMPTARGET_XBOX)
 
 	end select
 
-	return -1
+	function = -1
 end function
 
 enum
@@ -1339,29 +1359,30 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption(FB_COMPOPT_STACKSIZE, valint(arg) * 1024)
 
 	case OPT_TARGET
-		'' The argument given to -target is what will be prepended to
-		'' the executable names of cross-tools, for example:
+		'' For Standalone, the argument given to -target is used just
+		'' to identify the compilation target. For Normal, it's used as
+		'' a prefix for the executable names of cross-compilation tools,
+		'' for example:
 		''    fbc -target dos
 		'' will try to use:
-		''    bin/dos-ld[.exe]
-		''
-		'' It allows fbc to work together with cross-gcc/binutils
-		'' using system triplets:
-		''    fbc -target i686-pc-mingw32
-		'' looks for:
-		''    bin/i686-pc-mingw32-ld[.exe]
+		''    bin/dos-ld[.exe]  (normal build)
+		''    bin/dos/ld[.exe]  (standalone build)
+		'' This allows fbc to work well with gcc/binutils
+		'' cross-toolchains via e.g. "fbc -target i686-pc-mingw32".
 		dim as string id = lcase( arg )
 
 		'' Ignore it if it matches the host id; this adds backwards-
 		'' compatibility with fbc 0.23
 		if( id <> FB_HOST ) then
 			'' Identify the target
-			dim as integer comptarget = parseTargetId( id )
+			dim as integer comptarget = hParseTargetId( id )
 			if( comptarget < 0 ) then
 				hFatalInvalidOption( arg )
 			end if
 			fbSetOption( FB_COMPOPT_TARGET, comptarget )
-			fbc.targetid = id + "-"
+#ifndef ENABLE_STANDALONE
+			fbc.targetprefix = id + "-"
+#endif
 		end if
 
 	case OPT_TITLE
@@ -1808,90 +1829,104 @@ private sub parseArgs(byval argc as integer, byval argv as zstring ptr ptr)
 end sub
 
 '' After command line parsing
-private sub fbcInit2()
+private sub fbcInit2( )
+
+	dim as string targetid
+
+#ifdef ENABLE_SUFFIX
+	const FB_SUFFIX = ENABLE_SUFFIX
+#else
+	const FB_SUFFIX = ""
+#endif
+
+	''
 	'' Determine base/prefix path
+	''
 
 	'' Not already set from -prefix command line option?
-	if (len(fbc.prefix) = 0) then
-		'' Then default to exepath() or the hard-coded prefix.
-		'' Normally fbc is relocatable, i.e. no fixed prefix is
-		'' compiled in, but there still is ENABLE_PREFIX to do just
-		'' that if desired.
+	if( len( fbc.prefix ) = 0 ) then
+		'' Then default to exepath() or the hard-coded prefix
 		#ifdef ENABLE_PREFIX
-			fbc.prefix = ENABLE_PREFIX
-			hReplaceSlash( fbc.prefix, asc( FB_HOST_PATHDIV ) )
+			fbc.prefix = ENABLE_PREFIX + FB_HOST_PATHDIV
 		#else
-			fbc.prefix = exepath()
+			fbc.prefix = pathStripDiv( exepath( ) ) + FB_HOST_PATHDIV
 			#ifndef ENABLE_STANDALONE
 				'' Non-standalone fbc is in prefix/bin,
-				'' it can add '..' to get to prefix.
-				fbc.prefix += FB_HOST_PATHDIV + ".."
+				'' just add '..' to get to prefix
+				fbc.prefix += ".." + FB_HOST_PATHDIV
 			#endif
 		#endif
+	else
+		fbc.prefix += FB_HOST_PATHDIV
 	end if
 
-	fbc.prefix += FB_HOST_PATHDIV
-
-	'' Setup/calculate the paths to bin/ (needed when invoking helper
-	'' tools), include/ (needed when searching headers), and lib/ (needed
-	'' to find libraries when linking).
 	''
-	'' Standalone:
+	'' Setup compiler paths
 	''
-	'' bin/targetid/
-	'' inc/
-	'' lib/targetid[suffix]/
+	'' Standalone (classic FB):
 	''
-	'' Normal:
+	''    bin/targetid/
+	''    inc/
+	''    lib/targetid[suffix]/
 	''
-	'' bin/[targetid-]
-	'' include/freebasic/
-	'' lib/[targetid-]freebasic[suffix]/
+	'' Normal (unix-style):
+	''
+	''    bin/[targetid-]
+	''    include/freebasic/
+	''    lib/[targetid-]freebasic[suffix]/
+	''
+	'' - Standalone always uses target-specific sub-directories in bin/
+	''   and lib/, Normal uses target-specific names only for
+	''   cross-compiling (matching the behaviour of binutils/gcc).
+	''
+	'' - Normal uses include/freebasic/ to hold FB includes, to stay out
+	''   of the way of the C ones in include/ and to conform to Linux
+	''   distro packaging standards.
+	''
+	'' - The paths are not terminated with [back]slashes here,
+	''   except for the bin/ path. fbcFindBin() expects to only have to
+	''   append the file name, for example:
+	''     "prefix/bin/win32/" + "as.exe"
+	''     "prefix/bin/win32-" + "as.exe"
+	''
+	'' - The Normal layout can use GNU triplets as targetid, while the
+	''   standalone layout only uses the FB target names
+	''
 
-	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV
-	fbc.incpath = fbc.prefix
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV
+#ifdef ENABLE_STANDALONE
+	'' Use default target name
+	targetid = *fbGetTargetId( )
 
-	#ifdef ENABLE_STANDALONE
-		'' Standalone always uses a target id in the bin/lib paths.
-		'' If none was given via -target then we have to choose a default one.
-		if( len( fbc.targetid ) > 0 ) then
-			fbc.binpath += fbc.targetid
-			fbc.libpath += fbc.targetid
-		else
-			fbc.binpath += *fbGetTargetId( )
-			fbc.libpath += *fbGetTargetId( )
-		end if
-		fbc.binpath += FB_HOST_PATHDIV
-		fbc.incpath += "inc"
-	#else
-		if( len( fbc.targetid ) > 0 ) then
-			'' Separator between targetid and program filename
-			fbc.binpath += fbc.targetid + "-"
-			fbc.libpath += fbc.targetid + "-"
-		end if
-		fbc.incpath += "include" + FB_HOST_PATHDIV
-		if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
-			'' Our subdirectory in include/ and lib/ is usually called
-			'' freebasic/, but on DOS that's too long... of course almost
-			'' no targetid or suffix can be used either.
-			'' (Note: When changing, update the makefile too)
-			fbc.incpath += "freebas"
-			fbc.libpath += "freebas"
-		else
-			fbc.incpath += "freebasic"
-			fbc.libpath += "freebasic"
-		end if
-	#endif
+	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + targetid + FB_HOST_PATHDIV
+	fbc.incpath = fbc.prefix + "inc"
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid + FB_SUFFIX
+#else
+	if( len( fbc.targetprefix ) > 0 ) then
+		'' Prefix tools with the id from -target
+		targetid = fbc.targetprefix
+	else
+		'' No -target used, using "native" tools without prefix
+		targetid = ""
+	end if
 
-	#ifdef ENABLE_SUFFIX
-		fbc.libpath += ENABLE_SUFFIX
-	#endif
+	dim as zstring ptr fbname = any
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS ) then
+		'' Our subdirectory in include/ and lib/ is usually called
+		'' freebasic/, but on DOS that's too long... of course almost
+		'' no targetid or suffix can be used either.
+		fbname = @"freebas"
+	else
+		fbname = @"freebasic"
+	end if
 
+	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + targetid
+	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + *fbname
+	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + targetid + *fbname + FB_SUFFIX
+#endif
 
-	'' Tell the compiler about the default include path (it's added after
+	'' Tell the compiler about the default include path (added after
 	'' the command line ones, so those will be searched first)
-	fbAddIncludePath(fbc.incpath)
+	fbAddIncludePath( fbc.incpath )
 
 	'' Determine the main module path/name if not given via -m
 	if (len(fbc.mainname) = 0) then
@@ -1918,6 +1953,7 @@ private sub fbcInit2()
 		end if
 		fbc.mainname = hStripExt(fbc.mainname)
 	end if
+
 end sub
 
 '' Generate the .asm/.c file name for the given .bas module
