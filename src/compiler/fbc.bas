@@ -2535,37 +2535,41 @@ private sub printOptions( )
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
 end sub
 
+private sub hAppendConfigInfo( byref config as string, byval info as zstring ptr )
+	if( len( config ) > 0 ) then
+		config += ", "
+	end if
+	config += *info
+end sub
+
 private sub printVersion()
+	dim as string config
+
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
 		" (" + FB_BUILD_DATE + ") for " + FB_HOST
 	print "Copyright (C) 2004-2012 The FreeBASIC development team."
 
-	dim as string config
 	#ifdef ENABLE_STANDALONE
-		config += "standalone, "
+		hAppendConfigInfo( config, "standalone" )
 	#endif
 
 	#ifdef ENABLE_PREFIX
-		config += "prefix: '" + ENABLE_PREFIX + "', "
+		hAppendConfigInfo( config, "prefix: '" + ENABLE_PREFIX + "'" )
 	#endif
 
-	config += "objinfo: "
 	#ifndef DISABLE_OBJINFO
-		config += "enabled ("
 		#ifdef ENABLE_FBBFD
-			config += "FB header " & ENABLE_FBBFD
+			hAppendConfigInfo( config, "objinfo (libbfd " + str( ENABLE_FBBFD ) + ")" )
 		#else
-			config += "C wrapper"
+			hAppendConfigInfo( config, "objinfo (system's libbfd)" )
 		#endif
-		config += "), "
 	#else
-		config += "disabled, "
+		hAppendConfigInfo( config, "objinfo disabled" )
 	#endif
 
-	'' Trim ', ' at the end
-	config = left(config, len(config) - 2)
-
-	print config
+	if( len( config ) > 0 ) then
+		print config
+	end if
 end sub
 
 	fbcInit()
