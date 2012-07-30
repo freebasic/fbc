@@ -37,8 +37,14 @@ typedef struct {
 #define CHAR_EXP_DOUBLE  'D'
 #endif
 
-#define STR_NAN "NAN"
-#define STR_INF "INF"
+#define SNG_AUTODIGS 7
+#define DBL_AUTODIGS 15
+#define DBL_MAXDIGS 16
+
+#define CHARS_NAN  ('#' << 24 | 'N' << 16 | 'A' << 8 | 'N')
+#define CHARS_INF  ('#' << 24 | 'I' << 16 | 'N' << 8 | 'F')
+#define CHARS_IND  ('#' << 24 | 'I' << 16 | 'N' << 8 | 'D')
+#define CHARS_TRUNC ('$' << 24 | '0' << 16 | '0' << 8 | '0') /* QB glitch: truncation "rounds up" the text chars */
 
 #define ADD_CHAR( c )              \
     do {                           \
@@ -52,56 +58,58 @@ typedef struct {
 
 /*-------------------------------------------------------------*/
 /* Checks for Infinity/NaN                                     *
- * (assumes x86 endian, IEEE-754 floating-point format)        *
+ * (assumes IEEE-754 floating-point format)                    *
  * TODO: use a proper implementation: most/all platforms       *
  * have specific functions built-in for this                   */
 
-#define LO32( x ) (((uint32_t *)&(x))[0])
-#define HI32( x ) (((uint32_t *)&(x))[1])
+static long long hDoubleToLongBits(double d)
+{
+	union{ double d; unsigned long long ll; } dtoll;
+	dtoll.d = d;
+	return dtoll.ll;
+}
 
-#define IS_NEG( x ) (                           \
-    (HI32(x) & 0x80000000) != 0  )
+static int hIsNeg(double d)
+{
+	return hDoubleToLongBits(d) < 0ll;
+}
 
-#define IS_ZERO( x ) (                          \
-    ((HI32(x) & 0x7fffffff) | LO32(x)) == 0  )
+static int hIsZero(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7fffffffffffffffll) == 0ll;
+}
 
-#define IS_FINITE( x ) (                        \
-    (HI32(x) & 0x7ff00000) != 0x7ff00000  )
+static int hIsFinite(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7ff0000000000000ll) < 0x7ff0000000000000ll;
+}
 
-#define IS_INFINITE( x ) (                      \
-    LO32(x) == 0 &&                             \
-    (HI32(x) & 0x7fffffff) == 0x7ff00000  )
+static int hIsInf(double d)
+{
+	return (hDoubleToLongBits(d) & 0x7fffffffffffffffll) == 0x7ff0000000000000ll;
+}
 
-#define IS_NAN( x ) (                           \
-    (HI32(x) & 0x7ff00000) == 0x7ff00000 &&     \
-    ((HI32(x) & 0x000fffff) | LO32(x)) != 0   )
+static int hIsInd(double d)
+{
+	return hDoubleToLongBits(d) == 0xfff8000000000000ll;
+}
+
+static int hIsNan(double d)
+{
+	return !(hIsFinite(d) || hIsInf(d) || hIsInd(d));
+}
 
 
-
-#define IS_NEG_F( x ) (                         \
-    (LO32(x) & 0x80000000) != 0  )
-
-#define IS_ZERO_F( x ) (                        \
-    (LO32(x) & 0x7fffffff) == 0  )
-
-#define IS_FINITE_F( x ) (                      \
-    (LO32(x) & 0x7f800000) != 0x7f800000  )
-
-#define IS_INFINITE_F( x ) (                    \
-    (LO32(x) & 0x7fffffff) == 0x7f800000  )
-
-#define IS_NAN_F( x ) (                         \
-    (LO32(x) & 0x7f800000) == 0x7f800000 &&     \
-    (LO32(x) & 0x007fffff) != 0              )
 
 /*-------------------------------------------------------------*/
 
 #define VAL_ISNEG 0x1
 #define VAL_ISINF 0x2
-#define VAL_ISNAN 0x4
+#define VAL_ISIND 0x4
+#define VAL_ISNAN 0x8
 
-#define VAL_ISFLOAT 0x8
-#define VAL_ISSNG 0x10
+#define VAL_ISFLOAT 0x10
+#define VAL_ISSNG 0x20
 
 
 static int fb_PrintUsingFmtStr( int fnum );
@@ -183,6 +191,11 @@ static int hLog10_ULL( unsigned long long a )
 	return ret;
 }
 
+static int hNumDigits( unsigned long long a )
+{
+	 return hLog10_ULL( a ) + 1;
+}
+
 static unsigned long long hDivPow10_ULL( unsigned long long a, int n )
 {
 	unsigned long long b, ret;
@@ -218,20 +231,20 @@ static int fb_PrintUsingFmtStr( int fnum )
 		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 		nnc = ( ctx->chars > 2? ctx->ptr[2] : -1 );
 
-		doexit = 0;
+		doexit = FALSE;
 		switch( c )
 		{
 		case '*':
 			/* "**..." number format (includes "**$...") */
 			if( nc == '*' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
 		case '$':
 			/* "$$..." number format */
 			if( nc == '$' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
@@ -242,7 +255,7 @@ static int fb_PrintUsingFmtStr( int fnum )
 			    ((nc == '*') && (nnc == '*')) ||
 			    ((nc == '.') && (nnc == '#')) )
 
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '!':
@@ -250,13 +263,13 @@ static int fb_PrintUsingFmtStr( int fnum )
 		case '&':
 		case '#':
 			/* "!", "\ ... \", "&" string formats, "#..." number format */
-			doexit = 1;
+			doexit = TRUE;
 			break;
 
 		case '.':
 			/* ".#[...]" number format */
 			if( nc == '#' )
-				doexit = 1;
+				doexit = TRUE;
 
 			break;
 
@@ -317,7 +330,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		c = *ctx->ptr;
         nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
-		doexit = 1;
+		doexit = TRUE;
 		switch( c )
 		{
 		case '!':
@@ -375,7 +388,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 				else
 				{
 					strchars = 1;
-					doexit = 0;
+					doexit = FALSE;
 				}
 			}
 			break;
@@ -384,7 +397,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 			if( strchars > -1 )
 			{
 				++strchars;
-				doexit = 0;
+				doexit = FALSE;
 			}
 			break;
 		}
@@ -442,7 +455,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 		c = *ctx->ptr;
 		nc = ctx->chars > 1 ? ctx->ptr[1] : -1;
 
-		doexit = 1;
+		doexit = TRUE;
 		switch( c ) {
 		case '!':
 			if( length >= 1 )
@@ -491,7 +504,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 					--ctx->chars;
 				} else {
 					strchars = 1;
-					doexit = 0;
+					doexit = FALSE;
 				}
 			}
 			break;
@@ -499,7 +512,7 @@ FBCALL int fb_PrintUsingWstr( int fnum, FB_WCHAR *s, int mask )
 		case ' ':
 			if( strchars > -1 ) {
 				++strchars;
-				doexit = 0;
+				doexit = FALSE;
 			}
 			break;
 		}
@@ -536,13 +549,17 @@ static int hPrintNumber
 	int val_digs, val_zdigs;
 	unsigned long long val0;
 	int val_digs0, val_exp0;
-	int val_isneg, val_isinf, val_isnan, val_isfloat, val_issng;
+	int val_isneg, val_isfloat, val_issng;
 	int c, lc;
+#ifdef DEBUG
+	int nc; /* used for sanity checks */
+#endif
 	int doexit, padchar, intdigs, decdigs, expdigs;
-	int adddollar, addcommas, signatend, signatini, plussign, toobig;
+	int adddollar, addcommas, signatend, signatstart, plussign, toobig;
 	int intdigs2, expsignchar, totdigs, decpoint;
 	int isamp;
 	int i;
+	uint32_t chars = 0;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -557,100 +574,121 @@ static int hPrintNumber
 	fb_PrintUsingFmtStr( fnum );
 
 	/**/
-	padchar    = CHAR_SPACE;
-	intdigs    = 0;
-	decdigs    = -1;
-	expdigs    = 0;
-	adddollar  = 0;
-	addcommas  = 0;
-	signatend  = 0;
-	signatini  = 0;
-	plussign   = 0;
-	toobig     = 0;
-	isamp      = 0;
+	padchar     = CHAR_SPACE;
+	intdigs     = 0;
+	decdigs     = -1;
+	expdigs     = 0;
+	adddollar   = FALSE;
+	addcommas   = FALSE;
+	signatend   = FALSE;
+	signatstart = FALSE;
+	plussign    = FALSE;
+	toobig      = 0;
+	isamp       = FALSE;
 
 	lc = -1;
 
 	if( ctx->ptr == NULL )
+	{
 		ctx->chars = 0;
+	}
 
 	while( ctx->chars > 0 )
 	{
 		/* exit if just parsed end '+'/'-' sign, or '&' sign */
-		if( signatend || isamp ) break;
+		if( signatend || isamp )
+		{
+			break;
+		}
 
 		c = *ctx->ptr;
-
-		doexit = 0;
+#ifdef DEBUG
+		nc = ( ctx->chars > 1? *(ctx->ptr+1): -1 );
+#endif
+		doexit = FALSE;
 		switch( c )
 		{
 		case '#':
 			/* increment intdigs or decdigs if in int/dec part, else exit */
 			if( expdigs != 0 )
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			else if( decdigs != -1 )
+			{
 				++decdigs;
+			}
 			else
+			{
 				++intdigs;
+			}
 			break;
 
 		case '.':
 			/* add decimal point if still in integer part, else exit */
 			if( decdigs != -1 || expdigs != 0 )
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			else
+			{
 				decdigs = 0;
+			}
 			break;
 
 		case '*':
 			/* if first two characters, change padding to asterisks, else exit */
 			if( (intdigs == 0 && decdigs == -1) )
-			{
-				DBG_ASSERT( c == '*' );
+			{	/* first asterisk */
+				DBG_ASSERT( nc == '*' ); /* must be two at start, otherwise we're not parsing a format string and shouldn't have been brought here! */
 				padchar = CHAR_STAR;
 				++intdigs;
 			}
 			else if( intdigs == 1 && lc == '*' )
-			{
+			{	/* second asterisk */
 				++intdigs;
 			}
 			else
-				doexit = 1;
+				doexit = TRUE;
 			break;
 
 		case '$':
-			/* at beginning or after two '*'s: prepend a dollar sign to number */
+			/* at beginning ("$..."), or after two '*'s ("**$..."): prepend a dollar sign to number */
 
 			/* did it follow a '*'? (Will have been the two at the start, else would have exited by now */
 			if( lc == '*' )
 			{
-				adddollar = 1;
+				adddollar = TRUE;
 			}
-			/* at start of number, before integer part? */
+			/* two at start of number, before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
 			{
 				if( !adddollar )
-				{	/* first one */
-					DBG_ASSERT( c == '$' ); /* otherwise, shouldn't have been brought here */
-					adddollar = 1;
+				{	/* first dollar */
+					DBG_ASSERT( nc == '$' ); /* otherwise we're not parsing a format string and shouldn't have been brought here! */
+					adddollar = TRUE;
 				}
 				else
-				{	/* second one */
+				{	/* second dollar */
 					DBG_ASSERT( lc == '$' );
 					++intdigs;
 				}
 			}
 			else
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			break;
 
 		case ',':
 			/* if parsing integer part, enable commas and increment intdigs */
 			if( decdigs != -1 || expdigs != 0 )
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			else
 			{
-				addcommas = 1;
+				addcommas = TRUE;
 				++intdigs;
 			}
 			break;
@@ -661,28 +699,34 @@ static int hPrintNumber
 			   '-' at end:  explicit '-' sign, if negative */
 
 			/* one already at start? */
-			if( signatini )
+			if( signatstart )
 			{
-				doexit = 1;
+				doexit = TRUE;
 			}
 			/* found one before integer part? */
 			else if( intdigs == 0 && decdigs == -1 )
 			{
 				DBG_ASSERT( c != '-' ); /* explicit '-' sign isn't checked for at start */
 				if( c == '+' )
-					plussign = 1;
-				signatini = 1;
+				{
+					plussign = TRUE;
+				}
+				signatstart = TRUE;
 			}
 			/* otherwise it's at the end, as long as there are enough expdigs for an
 			   exponent (or none at all), otherwise they are all normal printable characters */
 			else if( expdigs == 0 || expdigs >= MIN_EXPDIGS )
 			{
 				if( c == '+' )
-					plussign = 1;
-				signatend = 1;
+				{
+					plussign = TRUE;
+				}
+				signatend = TRUE;
 			}
 			else
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			break;
 
 		case '^':
@@ -691,29 +735,37 @@ static int hPrintNumber
 
 			/* Too many? Leave the rest as printable chars */
 			if( expdigs < MAX_EXPDIGS )
+			{
 				++expdigs;
+			}
 			else
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			break;
 
 		case '&':
 			/* string format '&'
 			   print number in most natural form - similar to STR */
-			if( intdigs == 0 && decdigs == -1 && !signatini )
+			if( intdigs == 0 && decdigs == -1 && !signatstart )
 			{
 				DBG_ASSERT( expdigs == 0 );
-				isamp = 1;
+				isamp = TRUE;
 			}
 			else
-				doexit = 1;
+			{
+				doexit = TRUE;
+			}
 			break;
 
 		default:
-			doexit = 1;
+			doexit = TRUE;
 		}
 
 		if( doexit )
+		{
 			break;
+		}
 
 		++ctx->ptr;
 		--ctx->chars;
@@ -728,105 +780,109 @@ static int hPrintNumber
 	val_isfloat = ( (flags & VAL_ISFLOAT) != 0 );
 	val_issng = ( (flags & VAL_ISSNG) != 0 );
 
-	if( flags & (VAL_ISINF | VAL_ISNAN) )
+	if( (flags & (VAL_ISINF | VAL_ISIND | VAL_ISNAN)) != 0)
 	{
-		val_isinf = ( (flags & VAL_ISINF) != 0 );
-		val_isnan = ( (flags & VAL_ISNAN) != 0 );
-		
-		intdigs += (decdigs + 1);
-		decdigs = -1;
-		if( expdigs >= MIN_EXPDIGS )
+		if( (flags & VAL_ISINF) != 0 )
 		{
-			intdigs += expdigs;
-			expdigs = 0;
+			chars = CHARS_INF;
 		}
-	}
-	else
-	{
-		val_isinf = 0;
-		val_isnan = 0;
+		else if( (flags & VAL_ISIND) != 0 )
+		{
+			chars = CHARS_IND;
+		}
+		else if( (flags & VAL_ISNAN) != 0 )
+		{
+			chars = CHARS_NAN;
+		}
+		else
+		{
+			DBG_ASSERT( 0 );
+		}
+
+		/* Set value to 1.1234 (placeholder for "1.#XYZ") */
+		val = 11234;
+		val_exp = -4;
 	}
 
-	if( val != 0 && !(val_isinf || val_isnan) )
-		val_digs = hLog10_ULL( val ) + 1;
+	if( val != 0 )
+	{
+		val_digs = hNumDigits( val );
+	}
 	else
+	{
 		val_digs = 0;
+	}
 	val_zdigs = 0;
 
 	/* Special '&' format? */
 	if( isamp )
 	{
-		if( val_isinf )
-		{
-			intdigs = strlen(STR_INF);
-			decdigs = 0;
-			decpoint = 0;
+		if( val_issng )
+		{	/* crop to 7-digit precision */
+			if( val_digs > SNG_AUTODIGS )
+			{
+				val = hDivPow10_ULL( val, val_digs - SNG_AUTODIGS );
+				val_exp += val_digs - SNG_AUTODIGS;
+				val_digs = SNG_AUTODIGS;
+			}
+
+			if( val == 0 )
+			{	/* val has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
+			}
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_exp += val_digs;
+				val_digs = 1;
+			}
 		}
-		else if( val_isnan )
+
+		if( val_isfloat )
+		{	/* remove trailing zeroes in float digits */
+			while( val_digs > 1 && (val % 10) == 0 )
+			{
+				val /= 10;
+				--val_digs;
+				++val_exp;
+			}
+		}
+
+		/* set digits for fixed-point */
+		if( val_digs + val_exp > 0 )
 		{
-			intdigs = strlen(STR_NAN);
-			decdigs = 0;
-			decpoint = 0;
+			intdigs = val_digs + val_exp;
 		}
 		else
 		{
-			if( val_issng )
-			{	/* crop to 7-digit precision */
-				if( val_digs > 7 )
-					val = hDivPow10_ULL( val, val_digs - 7 );
-					val_exp += val_digs - 7;
-					val_digs = 7;
+			intdigs = 1;
+		}
 
-				if( val == 0 )
-				{	/* val has been scaled down to zero */
-					val_digs = 0;
-					val_exp = -decdigs;
-				}
-				else if( val == hPow10_ULL( val_digs ) )
-				{	/* rounding up took val to next power of 10:
-					   set value to 1, put val_digs zeroes onto val_exp */
-					val = 1;
-					val_exp += val_digs;
-					val_digs = 1;
-				}
-			}
+		if( val_exp < 0 )
+		{
+			decdigs = -val_exp;
+		}
 
-			if( val_isfloat )
-			{	/* remove trailing zeroes in float digits */
-				while( val_digs > 1 && (val % 10) == 0 )
-				{
-					val /= 10;
-					--val_digs;
-					++val_exp;
-				}
-			}
-
-			/* set digits for fixed-point */
-			if( val_digs + val_exp > 0 )
-				intdigs = val_digs + val_exp;
-			else
+		if( val_isfloat )
+		{	/* scientific notation? e.g. 3.1E+42 */
+			if( intdigs > 16 || (val_issng && intdigs > 7) ||
+			    val_digs + val_exp - 1 < -MIN_EXPDIGS )
+			{
 				intdigs = 1;
+				decdigs = val_digs - 1;
 
-			if( val_exp < 0 )
-				decdigs = -val_exp;
-
-			if( val_isfloat )
-			{	/* scientific notation? e.g. 3.1E+42 */
-				if( intdigs > 16 || (val_issng && intdigs > 7) ||
-				    val_digs + val_exp - 1 < -MIN_EXPDIGS )
-				{
-					intdigs = 1;
-					decdigs = val_digs - 1;
-
-					expdigs = 2 + hLog10_ULL( abs(val_digs + val_exp - 1) ) + 1;
-					if( expdigs < MIN_EXPDIGS + 1 )
-						expdigs = MIN_EXPDIGS;
-				}
+				expdigs = 2 + hNumDigits( abs(val_digs + val_exp - 1) );
+				if( expdigs < MIN_EXPDIGS + 1 )
+					expdigs = MIN_EXPDIGS;
 			}
 		}
 
 		if( val_isneg )
-			signatini = 1;
+		{
+			signatstart = TRUE;
+		}
 	}
 
 	/* crop number of digits */
@@ -843,11 +899,13 @@ static int hPrintNumber
 	/* decimal point if decdigs >= 0 */
 	if( decdigs <= -1 )
 	{
-		decpoint = 0;
+		decpoint = FALSE;
 		decdigs = 0;
 	}
 	else
-		decpoint = 1;
+	{
+		decpoint = TRUE;
+	}
 
 	/* ------------------------------------------------------ */
 
@@ -857,13 +915,17 @@ static int hPrintNumber
 	if( signatend )
 	{	/* put sign at end */
 		if( val_isneg )
+		{
 			ADD_CHAR( CHAR_MINUS );
+		}
 		else
+		{
 			ADD_CHAR( plussign? CHAR_PLUS : CHAR_SPACE );
+		}
 	}
-	else if( val_isneg && !signatini )
+	else if( val_isneg && !signatstart )
 	{	/* implicit negative sign at start */
-		signatini = 1;
+		signatstart = TRUE;
 		--intdigs;
 	}
 
@@ -872,98 +934,73 @@ static int hPrintNumber
 	{
 		/* append any trailing carets */
 		for( ; expdigs > 0; --expdigs )
-			ADD_CHAR( '^' );
-
-		if( !(val_isinf || val_isnan) )
 		{
-			/* backup unscaled value */
-			val0 = val;
-			val_digs0 = val_digs;
-			val_exp0 = val_exp;
+			ADD_CHAR( '^' );
+		}
 
-			/* check range */
-			if( val_exp < -decdigs )
-			{	/* scale and round integer value to get val_exp equal to -decdigs */
-				val_exp += (-decdigs - val_exp0);
-				val_digs -= (-decdigs - val_exp0);
-				val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+		/* backup unscaled value */
+		val0 = val;
+		val_digs0 = val_digs;
+		val_exp0 = val_exp;
 
-				if( val == 0 )
-				{	/* val is/has been scaled down to zero */
-					val_digs = 0;
-					val_exp = -decdigs;
-				}
-				else if( val == hPow10_ULL( val_digs ) )
-				{	/* rounding up took val to next power of 10:
-					   set value to 1, put val_digs zeroes onto val_exp */
-					val = 1;
-					val_exp += val_digs;
-					val_digs = 1;
-				}
+		/* check range */
+		if( val_exp < -decdigs )
+		{	/* scale and round integer value to get val_exp equal to -decdigs */
+			val_exp += (-decdigs - val_exp0);
+			val_digs -= (-decdigs - val_exp0);
+			val = hDivPow10_ULL( val, -decdigs - val_exp0 );
+
+			if( val == 0 )
+			{	/* val is/has been scaled down to zero */
+				val_digs = 0;
+				val_exp = -decdigs;
 			}
-
-			intdigs2 = val_digs + val_exp;
-			if( intdigs2 < 0 ) intdigs2 = 0;
-			if( addcommas )
-				intdigs2 += (intdigs2 - 1) / 3;
-
-			/* compare fixed/floating point representations, 
-			   and use the one that needs fewest digits */
-			if( intdigs2 > intdigs + MIN_EXPDIGS )
-			{	/* too many digits in number for fixed point:
-				   switch to floating-point */
-
-				expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
-				toobig = 1;  /* add '%' sign */
-
-				/* restore unscaled value */
-				val = val0;
-				val_digs = val_digs0;
-				val_exp = val_exp0;
-
-				val_zdigs = 0;
-			}
-			else
-			{	/* keep fixed point */
-
-				if( intdigs2 > intdigs )
-				{	/* slightly too many digits in number */
-					intdigs = intdigs2; /* extend intdigs */
-					toobig = 1;         /* add '%' sign */
-				}
-
-				if( val_exp > -decdigs)
-				{	/* put excess trailing zeroes from val_exp into val_zdigs */
-					val_zdigs = val_exp - -decdigs;
-					val_exp = -decdigs;
-				}
+			else if( val == hPow10_ULL( val_digs ) )
+			{	/* rounding up took val to next power of 10:
+				   set value to 1, put val_digs zeroes onto val_exp */
+				val = 1;
+				val_exp += val_digs;
+				val_digs = 1;
 			}
 		}
-		else
-		{
-			if( val_isinf )
-			{
-				if( intdigs < strlen(STR_INF) )
-				{
-					intdigs = strlen(STR_INF);
-					toobig = 1;
-				}
-			}
-			else if( val_isnan )
-			{
-				if( intdigs < strlen(STR_NAN) )
-				{
-					intdigs = strlen(STR_NAN);
-					toobig = 1;
-				}
-			}
-			else
-				DBG_ASSERT( 0 );
 
-			val = 0;
-			val_exp = 0;
-			val_digs = 0;
+		intdigs2 = val_digs + val_exp;
+		if( intdigs2 < 0 ) intdigs2 = 0;
+		if( addcommas )
+		{
+			intdigs2 += (intdigs2 - 1) / 3;
+		}
+
+		/* compare fixed/floating point representations,
+		   and use the one that needs fewest digits */
+		if( intdigs2 > intdigs + MIN_EXPDIGS )
+		{	/* too many digits in number for fixed point:
+			   switch to floating-point */
+
+			expdigs = MIN_EXPDIGS; /* add three digits for exp notation (was four in QB) */
+			toobig = 1;  /* add '%' sign */
+
+			/* restore unscaled value */
+			val = val0;
+			val_digs = val_digs0;
+			val_exp = val_exp0;
+
 			val_zdigs = 0;
+		}
+		else
+		{	/* keep fixed point */
+
+			if( intdigs2 > intdigs )
+			{	/* slightly too many digits in number */
+				intdigs = intdigs2; /* extend intdigs */
+				toobig = 1;         /* add '%' sign */
+			}
+
+			if( val_exp > -decdigs)
+			{	/* put excess trailing zeroes from val_exp into val_zdigs */
+				val_zdigs = val_exp - -decdigs;
+				val_exp = -decdigs;
+			}
 		}
 	}
 
@@ -971,7 +1008,7 @@ static int hPrintNumber
 	/* floating-point format */
 	if( expdigs > 0 )
 	{
-		addcommas = 0; /* commas unused in f-p format */
+		addcommas = FALSE; /* commas unused in f-p format */
 
 		if( intdigs == -1 || (intdigs == 0 && decdigs == 0) )
 		{	/* add [another] '%' sign */
@@ -989,9 +1026,13 @@ static int hPrintNumber
 		/* blank first digit if positive and no explicit sign
 		   (pos/neg numbers should be formatted the same where
 		   possible, as in QB) */
-		if( !isamp && !val_isneg && !(signatini || signatend) )
+		if( !isamp && !val_isneg && !(signatstart || signatend) )
+		{
 			if( intdigs >= 1 && totdigs > 1 )
+			{
 				--totdigs;
+			}
+		}
 
 		if( val == 0 )
 		{
@@ -1019,7 +1060,9 @@ static int hPrintNumber
 			}
 		}
 		else
+		{
 			val_zdigs = 0;
+		}
 
 
 		/* output exp part */
@@ -1030,7 +1073,9 @@ static int hPrintNumber
 			val_exp = -val_exp;
 		}
 		else
+		{
 			expsignchar = CHAR_PLUS;
+		}
 
 		/* expdigs > 3 */
 		for( ; expdigs > 3; --expdigs )
@@ -1038,7 +1083,7 @@ static int hPrintNumber
 			ADD_CHAR( CHAR_ZERO + (val_exp % 10) );
 			val_exp /= 10;
 		}
-		
+
 		/* expdigs == 3 */
 		if( val_exp > 9 ) /* too many exp digits? */
 		{
@@ -1052,7 +1097,9 @@ static int hPrintNumber
 			ADD_CHAR( CHAR_TOOBIG ); /* add a '%' sign */
 		}
 		else
+		{
 			ADD_CHAR( CHAR_ZERO + val_exp );
+		}
 
 		expdigs -= 1;
 
@@ -1061,6 +1108,25 @@ static int hPrintNumber
 		ADD_CHAR( CHAR_EXP_SINGLE ); /* QB would use 'D' for doubles */
 
 		expdigs -= 2;
+	}
+
+
+	/* INF/IND/NAN: characters truncated? */
+	if( chars != 0 && val_digs < 5 )
+	{
+		/* QB wouldn't add the '%'.  But otherwise "#" will result in
+		   an innocent-looking "1".  Also, QB corrupts the string data
+		   when truncated, so some deviation is desirable anyway) */
+		toobig = 1;
+
+		if ( val_digs > 1 )
+		{
+			chars = CHARS_TRUNC >> (8 * (5 - val_digs));
+		}
+		else
+		{
+			chars = 0;
+		}
 	}
 
 
@@ -1077,75 +1143,69 @@ static int hPrintNumber
 			else if( val_digs > 0 )
 			{
 				DBG_ASSERT( val > 0 );
-				ADD_CHAR( CHAR_ZERO + (val % 10) );
+				if( chars != 0 )
+				{
+					ADD_CHAR( chars & 0xff );
+					chars >>= 8;
+				}
+				else
+				{
+					ADD_CHAR( CHAR_ZERO + (val % 10) );
+				}
 				val /= 10;
 				--val_digs;
 			}
 			else
+			{
 				ADD_CHAR( CHAR_ZERO );
+			}
 		}
 		ADD_CHAR( CHAR_DOT );
 	}
 
 
-	if( !(val_isinf || val_isnan) )
-	{	/* output int part */
-		i = 0;
-		for( ;; )
+	/* output int part */
+	i = 0;
+	for( ;; )
+	{
+		if( addcommas && (i & 3) == 3 && val_digs > 0 )
+		{	/* insert comma */
+			ADD_CHAR( CHAR_COMMA );
+		}
+		else if( val_zdigs > 0 )
 		{
-			if( addcommas && (i & 3) == 3 && val_digs > 0 )
-			{	/* insert comma */
-				ADD_CHAR( CHAR_COMMA );
+			ADD_CHAR( CHAR_ZERO );
+			--val_zdigs;
+		}
+		else if( val_digs > 0 )
+		{
+			DBG_ASSERT( val > 0 );
+			if( chars != 0 )
+			{
+				ADD_CHAR( chars & 0xff );
+				chars >>= 8;
 			}
 			else
 			{
-				if( val_zdigs > 0 )
-				{
-					ADD_CHAR( CHAR_ZERO );
-					--val_zdigs;
-				}
-				else if( val_digs > 0 )
-				{
-					DBG_ASSERT( val > 0 );
-					ADD_CHAR( CHAR_ZERO + (val % 10) );
-					val /= 10;
-					--val_digs;
-				}
-				else
-				{
-					if( i == 0 && intdigs > 0 )
-						ADD_CHAR( CHAR_ZERO );
-					else
-						break;
-				}
+				ADD_CHAR( CHAR_ZERO + (val % 10) );
 			}
-			DBG_ASSERT( intdigs > 0 );
-			++i;
-			--intdigs;
-		}
-	}
-	else
-	{	/* output INF/NAN string */
-		if( val_isinf )
-		{
-			DBG_ASSERT( intdigs >= strlen(STR_INF) );
-			for( i = strlen(STR_INF)-1; i >= 0; --i )
-			{
-				ADD_CHAR( STR_INF[i] );
-				--intdigs;
-			}
-		}
-		else if( val_isnan )
-		{
-			DBG_ASSERT( intdigs >= strlen(STR_NAN) );
-			for( i = strlen(STR_NAN)-1; i >= 0; --i )
-			{
-				ADD_CHAR( STR_NAN[i] );
-				--intdigs;
-			}
+			val /= 10;
+			--val_digs;
 		}
 		else
-			DBG_ASSERT( 0 );
+		{
+			if( i == 0 && intdigs > 0 )
+			{
+				ADD_CHAR( CHAR_ZERO );
+			}
+			else
+			{
+				break;
+			}
+		}
+		DBG_ASSERT( intdigs > 0 );
+		++i;
+		--intdigs;
 	}
 
 	DBG_ASSERT( val == 0 );
@@ -1158,24 +1218,34 @@ static int hPrintNumber
 
 	/* output dollar sign? */
 	if( adddollar )
+	{
 		ADD_CHAR( CHAR_DOLLAR );
+	}
 
 	/* output sign? */
-	if( signatini )
+	if( signatstart )
 	{
 		if( val_isneg )
+		{
 			ADD_CHAR( CHAR_MINUS );
+		}
 		else
+		{
 			ADD_CHAR( plussign? CHAR_PLUS : padchar );
+		}
 	}
 
 	/* output padding for any remaining intdigs */
 	for( ; intdigs > 0; --intdigs )
+	{
 		ADD_CHAR( padchar );
+	}
 
 	/* output '%' sign(s)? */
 	for( ; toobig > 0; --toobig )
+	{
 		ADD_CHAR( CHAR_TOOBIG );
+	}
 
 
 	/**/
@@ -1189,7 +1259,9 @@ static int hPrintNumber
 
 	/**/
 	if( mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) )
+	{
 		fb_PrintVoid( fnum, mask & (FB_PRINT_NEWLINE | FB_PRINT_PAD) );
+	}
 
 	if( mask & FB_PRINT_ISLAST )
 	{
@@ -1243,7 +1315,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 	int digs;
 	int pow2, pow10;
 
-	val_ull = *(unsigned long long *)&value;
+	val_ull = hDoubleToLongBits( value );
 	pow2 = (val_ull >> 52) - 1023;
 	val_ull &= (1ull << 52)-1;
 
@@ -1256,7 +1328,7 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 		pow2 += 1;
 	}
 	pow2 -= 52; /* 52 (+1?) integer bits in val_ull */
-	
+
 	pow10 = 0;
 
 	while( pow2 > 0 )
@@ -1295,15 +1367,15 @@ static unsigned long long hScaleDoubleToULL( double value, int *pval_exp )
 		}
 	}
 
-	digs = hLog10_ULL( val_ull ) + 1;
-	if( digs > 16 )
+	digs = hNumDigits( val_ull );
+	if( digs > DBL_MAXDIGS )
 	{	/* scale to 16 digits */
 
-		int scale = digs - 16;
+		int scale = digs - DBL_MAXDIGS;
 		val_ull = hDivPow10_ULL( val_ull, scale );
 		pow10 += scale;
 
-		DBG_ASSERT( val_ull <= hPow10_ULL( 16 ) );
+		DBG_ASSERT( val_ull <= hPow10_ULL( DBL_MAXDIGS ) );
 	}
 
 	*pval_exp = pow10;
@@ -1320,24 +1392,26 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 
 	flags = VAL_ISFLOAT;
 
-	if( IS_NEG( value ) )
+	if( hIsNeg( value ) )
 		flags |= VAL_ISNEG;
 
-	if( IS_ZERO( value ) )
+	if( hIsZero( value ) )
 	{
 		val_ull = 0;
 		val_exp = 0;
 	}
-	else if( IS_FINITE( value ) )
+	else if( hIsFinite( value ) )
 	{
 		value = fabs( value );
 		val_ull = hScaleDoubleToULL( value, &val_exp );
 	}
 	else
 	{
-		if( IS_INFINITE( value ) )
+		if( hIsInf( value ) )
 			flags |= VAL_ISINF;
-		else if( IS_NAN( value ) )
+		else if( hIsInd( value ) )
+			flags |= VAL_ISIND;
+		else if( hIsNan( value ) )
 			flags |= VAL_ISNAN;
 		else
 			DBG_ASSERT( 0 );
@@ -1354,24 +1428,26 @@ FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 
 	flags = VAL_ISFLOAT | VAL_ISSNG;
 
-	if( IS_NEG_F( value_f ) )
+	if( hIsNeg( value_f ) )
 		flags |= VAL_ISNEG;
 
-	if( IS_ZERO_F( value_f ) )
+	if( hIsZero( value_f ) )
 	{
 		val_ull = 0;
 		val_exp = 0;
 	}
-	else if( IS_FINITE_F( value_f ) )
+	else if( hIsFinite( value_f ) )
 	{
 		value_f = fabs( value_f );
 		val_ull = hScaleDoubleToULL( value_f, &val_exp );
 	}
 	else
 	{
-		if( IS_INFINITE_F( value_f ) )
+		if( hIsInf( value_f ) )
 			flags |= VAL_ISINF;
-		else if( IS_NAN_F( value_f ) )
+		else if( hIsInd( value_f ) )
+			flags |= VAL_ISIND;
+		else if( hIsNan( value_f ) )
 			flags |= VAL_ISNAN;
 		else
 			DBG_ASSERT( 0 );
