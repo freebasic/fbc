@@ -1833,12 +1833,6 @@ private sub fbcInit2( )
 
 	dim as string targetid
 
-#ifdef ENABLE_SUFFIX
-	const FB_SUFFIX = ENABLE_SUFFIX
-#else
-	const FB_SUFFIX = ""
-#endif
-
 	''
 	'' Determine base/prefix path
 	''
@@ -1899,7 +1893,7 @@ private sub fbcInit2( )
 
 	fbc.binpath = fbc.prefix + "bin" + FB_HOST_PATHDIV + targetid + FB_HOST_PATHDIV
 	fbc.incpath = fbc.prefix + "inc"
-	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid + FB_SUFFIX
+	fbc.libpath = fbc.prefix + "lib" + FB_HOST_PATHDIV + targetid
 #else
 	if( len( fbc.targetprefix ) > 0 ) then
 		'' Prefix tools with the id from -target
@@ -1921,7 +1915,11 @@ private sub fbcInit2( )
 
 	fbc.binpath = fbc.prefix + "bin"     + FB_HOST_PATHDIV + targetid
 	fbc.incpath = fbc.prefix + "include" + FB_HOST_PATHDIV + *fbname
-	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + targetid + *fbname + FB_SUFFIX
+	fbc.libpath = fbc.prefix + "lib"     + FB_HOST_PATHDIV + targetid + *fbname
+
+	#ifdef ENABLE_SUFFIX
+		fbc.libpath += ENABLE_SUFFIX
+	#endif
 #endif
 
 	'' Tell the compiler about the default include path (added after

@@ -55,17 +55,17 @@
 #   V=1              to see full command lines
 #   ENABLE_STANDALONE=1    build source tree into self-contained FB installation
 #   DISABLE_OBJINFO=1      use "-d DISABLE_OBJINFO" and don't compile in bfd-wrapper.c
-#   ENABLE_FBBFD=217       use "-d ENABLE_FBBFD=217" and don't compile in bfd-wrapper.c
+#   ENABLE_FBBFD=217       use "-d ENABLE_FBBFD=$(ENABLE_FBBFD)" and don't compile in bfd-wrapper.c
 #   ENABLE_PREFIX=1        use "-d ENABLE_PREFIX=$(prefix)"
-#   ENABLE_SUFFIX=-0.23    append a string like "-0.23" to fbc/FB dir names,
-#                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)"
+#   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
+#                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #
 # compiler source code configuration (FBCFLAGS):
 #   -d ENABLE_STANDALONE     build for a self-contained installation
 #   -d DISABLE_OBJINFO       do not use libbfd at all
 #   -d ENABLE_FBBFD=217      use specific bfd.bi instead of bfd.h wrapper
 #   -d ENABLE_TDMGCC         build for TDM-GCC instead of MinGW.org setup
-#   -d ENABLE_SUFFIX=-0.23   assume FB's lib dir uses the given suffix
+#   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
@@ -280,14 +280,14 @@ endif
 
 newcompiler := src/compiler/obj
 ifdef ENABLE_STANDALONE
-  FBC_EXE     := fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
+  FBC_EXE     := fbc-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_OS)-obj
   newlibfbmt  := src/rtlib/$(TARGET_OS)-objmt
   newlibfbgfx := src/gfxlib2/$(TARGET_OS)-obj
-  libdir      := lib/$(TARGET_OS)$(ENABLE_SUFFIX)
-  PREFIX_FBC_EXE := $(prefix)/fbc$(ENABLE_SUFFIX)$(EXEEXT)
+  libdir      := lib/$(TARGET_OS)
+  PREFIX_FBC_EXE := $(prefix)/fbc$(EXEEXT)
   prefixinclude  := $(prefix)/inc
-  prefixlib      := $(prefix)/lib/$(TARGET_OS)$(ENABLE_SUFFIX)
+  prefixlib      := $(prefix)/lib/$(TARGET_OS)
 else
   FBC_EXE     := bin/fbc$(ENABLE_SUFFIX)-new$(EXEEXT)
   newlibfb    := src/rtlib/$(TARGET_PREFIX)obj
