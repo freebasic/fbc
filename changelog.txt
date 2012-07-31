@@ -74,6 +74,7 @@ Version 0.24.0:
 - Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
 - FIELD = N can now be used on nested anonymous TYPEs/UNIONs
 - IIF()'s with constant conditions are now evaluated at compile-time
+- Updated headers for PCRE library 8.31
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
