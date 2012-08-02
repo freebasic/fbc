@@ -40,9 +40,10 @@
 
     The FreeBASIC compiler (fbc) is licensed under the GNU GPLv2 or later.
 
-    The FreeBASIC runtime library, in both normal (libfb) and thread-safe
-    (libfbmt) versions, is licensed under the GNU LGPLv2 or later, with this
-    extension to allow linking to it statically:
+    The FreeBASIC runtime library (in both normal (libfb) and thread-safe
+    (libfbmt) versions) and the FreeBASIC graphics library (libfbgfx) are
+    licensed under the GNU LGPLv2 or later, with this exception to allow
+    linking to it statically:
         As a special exception, the copyright holders of this library give
         you permission to link this library with independent modules to
         produce an executable, regardless of the license terms of these
@@ -55,8 +56,6 @@
         you are not obligated to do so. If you do not wish to do so, delete
         this exception statement from your version.
 
-    The FreeBASIC graphics library (libfbgfx) is licensed under the GNU LGPLv2
-    or later.
 
     The FreeBASIC documentation is licensed under the GNU FDL.
 
