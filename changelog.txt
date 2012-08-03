@@ -24,7 +24,8 @@ Version 0.24.0:
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
 - The -target option is no longer case-sensitive
 - Linux standalone fbc won't try to use tools from PATH anymore
-- PRINT USING now prints Inf/Nan/Ind values the same way, e.g. "1.#INF"
+- PRINT USING now prints Inf/Nan/Ind values in the same style as QB, e.g. "1.#INF"
+- PRINT USING now disallows commas between expressions (they had the same effect as semi-colons)
 
 [added]
 - Single inheritance for classes: TYPE Child EXTENDS Parent

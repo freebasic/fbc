@@ -108,6 +108,10 @@ function cPrintStmt  _
 		iscomma = FALSE
 		issemicolon = FALSE
 		if( hMatch( CHAR_COMMA ) ) then
+            if( usingexpr <> NULL ) then
+				'' QB automatically converted them to semi-colons in the editor.
+                errReport( FB_ERRMSG_EXPECTEDSEMICOLON )
+            end if
 			iscomma = TRUE
 		elseif( hMatch( CHAR_SEMICOLON ) ) then
 			issemicolon = TRUE
@@ -622,7 +626,7 @@ private function hFilePut _
 end function
 
 '':::::
-'' Get			= GET '#' Expression ',' Expression? ',' Variable{str|int|float|array} 
+'' Get			= GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 ''                (',' Expression)? (',' variable)?
 ''
 private function hFileGet _
