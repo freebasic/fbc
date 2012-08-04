@@ -1,5 +1,8 @@
 /* libfb initialization for Unix */
 
+/* for getpgid() */
+#define _GNU_SOURCE
+
 #include "../fb.h"
 #include "fb_private_console.h"
 #include "../fb_private_thread.h"
