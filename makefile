@@ -72,6 +72,7 @@
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
 #   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
+#   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file.
