@@ -2,6 +2,7 @@
 
 #include "../fb.h"
 #include "fb_private_console.h"
+#include <sys/wait.h>
 
 int fb_hShell( char *program )
 {
