@@ -23,7 +23,7 @@
 ''
 
 #include once "CRegex.bi"
-#include once "pcre/pcre.bi" 
+#include once "pcre.bi"
 
 ''#print __FB_VER_MAJOR__
 ''#print __FB_VER_MINOR__
