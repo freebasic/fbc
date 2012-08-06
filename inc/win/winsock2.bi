@@ -51,7 +51,7 @@ declare function __WSAFDIsSet alias "__WSAFDIsSet" (byval as SOCKET, byval as fd
         i += 1 :_
       loop :_
       cptr(fd_set ptr, set)->fd_count -= 1 :_
-      exit for
+      exit for :_
     end if :_
   next :_
   end scope
