@@ -423,7 +423,7 @@ all: compiler rtlib gfxlib2
 
 src src/compiler src/rtlib src/gfxlib2 bin lib \
 $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
-$(prefix)/inc $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
+$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
 	mkdir $@
 
 .PHONY: compiler
@@ -492,19 +492,27 @@ $(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
+ifdef ENABLE_STANDALONE
+install-compiler:
+else
 install-compiler: $(prefix)/bin
+endif
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
+ifdef ENABLE_STANDALONE
 install-includes: $(prefixinclude)
-	cp -r $(rootdir)inc/* $<
+else
+install-includes: $(prefix)/include $(prefixinclude)
+endif
+	cp -r $(rootdir)inc/* $(prefixinclude)
 
-install-rtlib: $(prefixlib)
+install-rtlib: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
   endif
 
-install-gfxlib2: $(prefixlib)
+install-gfxlib2: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
