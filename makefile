@@ -104,8 +104,6 @@ CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
-INSTALL_PROGRAM := install
-INSTALL_FILE := install -m 644
 prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
@@ -277,6 +275,11 @@ endif
 
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
   EXEEXT := .exe
+  INSTALL_PROGRAM := cp
+  INSTALL_FILE := cp
+else
+  INSTALL_PROGRAM := install
+  INSTALL_FILE := install -m 644
 endif
 
 newcompiler := src/compiler/obj
