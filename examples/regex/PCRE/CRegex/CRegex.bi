@@ -1,6 +1,6 @@
 #inclib "CRegex"
 
-#include once "pcre/pcre.bi"
+#include once "pcre.bi"
 
 type CRegex
 	enum options

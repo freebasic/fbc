@@ -2,7 +2,7 @@
 '' PCRE example, translated by jofers (spam[at]betterwebber.com)
 ''
 
-#include once "pcre/pcre.bi" 
+#include once "pcre.bi"
 
 dim OVECCOUNT as const uinteger = 30    '' should be a multiple of 3
 
