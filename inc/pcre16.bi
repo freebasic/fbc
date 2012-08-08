@@ -342,6 +342,7 @@ declare function pcre16_compile(byval pattern as PCRE_SPTR16, _
 
 declare function pcre16_compile2(byval pattern as PCRE_SPTR16, _
                                  byval options as integer,_
+                                 byval errorcodeptr as integer ptr, _
                                  byval errorptr as const zstring ptr ptr,_
                                  byval errorofset as integer ptr,_
                                  byval tables as const ubyte ptr) as pcre16 ptr

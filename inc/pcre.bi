@@ -347,6 +347,7 @@ declare function pcre_compile(byval pattern as const zstring ptr, _
 
 declare function pcre_compile2(byval pattern as const zstring ptr, _
                                byval options as integer,_
+                               byval errorcodeptr as integer ptr, _
                                byval errorptr as zstring ptr ptr,_
                                byval erroroffset as integer ptr,_
                                byval tables as ubyte ptr) as pcre ptr
