@@ -3,28 +3,19 @@
 #include "AL/al.bi"
 #include "AL/alut.bi"
 
-Const SOUND_FILE = "test.wav"
-
 '' Initialize OpenAL
 alutInit(0, 0)
 
 ''
-'' Load the .wav into an OpenAL buffer
+'' Load a .wav into an OpenAL buffer
 ''
+dim as string sound_file = exepath( ) + "/../data/prodigy.wav"
+
 Dim As ALuint buffer
-alGenBuffers(1, @buffer)
+buffer = alutCreateBufferFromFile( SOUND_FILE )
 
-Dim As ALenum wavFormat
-Dim As ALsizei wavSize
-Dim As ALsizei wavFreq
-Dim As Any Ptr wavData
-Dim As ALboolean wavLoop
-alutLoadWAVFile(SOUND_FILE, @wavFormat, @wavData, @wavSize, @wavFreq, @wavLoop)
-alBufferData(buffer, wavFormat, wavData, wavSize, wavFreq)
-alutUnloadWAV(wavFormat, wavData, wavSize, wavFreq)
-
-If (alGetError() <> AL_NO_ERROR) Then
-    Print "Error: Loading the .wav failed!"
+If( alutGetError( ) <> ALUT_ERROR_NO_ERROR ) Then
+    Print "Error: Loading the .wav failed!" : Sleep : End 1
 End If
 
 ''
