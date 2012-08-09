@@ -152,6 +152,41 @@ if [ ! -d binutils-2.17-prefix ]; then
   cd ..
 fi
 
+
+################################################################################
+# Build libcunit using the i486-linux-musl toolchain
+
+CUNIT_NAME=CUnit-2.1-2
+CUNIT_PACKAGE=$CUNIT_NAME-src.tar.bz2
+
+# download
+if [ ! -f $CUNIT_PACKAGE ]; then
+  wget http://downloads.sourceforge.net/cunit/$CUNIT_PACKAGE?download -O $CUNIT_PACKAGE
+fi
+
+# unpack & build
+if [ ! -d $CUNIT_NAME ]; then
+  tar jxf $CUNIT_PACKAGE
+  cd $CUNIT_NAME
+  CC=$BASEDIR/i486-linux-musl/bin/i486-linux-musl-gcc \
+    AR=$BASEDIR/i486-linux-musl/bin/i486-linux-musl-ar \
+    CFLAGS=-O2 \
+    ./configure \
+        --disable-shared --enable-static \
+        --build=i686-pc-linux-gnu --host=i486-pc-linux-gnu \
+        --prefix=$BASEDIR/libcunit-prefix
+  make
+  cd ..
+fi
+
+# install
+if [ ! -d libcunit-prefix ]; then
+  cd $CUNIT_NAME
+  make install
+  cd ..
+fi
+
+
 ################################################################################
 # Build a set of binutils, statically linked against musl libc, using the
 # i486-linux-musl toolchain
@@ -245,6 +280,7 @@ cp ncurses-prefix/lib/libtinfo.a                             fbc-native/lib/linu
 cp libffi-prefix/lib/libffi.a                                fbc-native/lib/linux
 cp binutils-2.17-prefix/lib/libbfd.a                         fbc-native/lib/linux
 cp binutils-2.17-prefix/lib/libiberty.a                      fbc-native/lib/linux
+cp libcunit-prefix/lib/libcunit.a                            fbc-native/lib/linux
 
 ################################################################################
 # Build another standalone fbc, using the fbc-native setup from above. This fbc
@@ -283,6 +319,7 @@ cp fbc-native/lib/linux/libtinfo.a   fbc-static/lib/linux
 cp fbc-native/lib/linux/libffi.a     fbc-static/lib/linux
 cp fbc-native/lib/linux/libbfd.a     fbc-static/lib/linux
 cp fbc-native/lib/linux/libiberty.a  fbc-static/lib/linux
+cp fbc-native/lib/linux/libcunit.a   fbc-static/lib/linux
 
 # copy in the static binutils
 mkdir -p fbc-static/bin/linux
