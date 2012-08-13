@@ -37,15 +37,15 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 				/* This character can't be printed, we must use unicode
 				 * Enter UTF-8 and start constructing 0xF000 code
 				 */
-				fputs(ENTER_UTF8 "\xEF\x80", __fb_con.f_out);
+				fputs( ENTER_UTF8 "\xEF\x80", stdout );
 				/* Set the last 6 bits */
-				fputc(c | 0x80, __fb_con.f_out);
+				fputc( c | 0x80, stdout );
 				/* Escape UTF-8 */
-				fputs(EXIT_UTF8, __fb_con.f_out);
+				fputs( EXIT_UTF8, stdout );
 			} else
-				fputc( c, __fb_con.f_out);
+				fputc( c, stdout );
 		} else
-			fputc(c, __fb_con.f_out);
+			fputc( c, stdout );
 
 		__fb_con.cur_x++;
 		if ((c == 10) || (__fb_con.cur_x >= __fb_con.w)) {
@@ -56,7 +56,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 		}
 	}
 
-	fflush(__fb_con.f_out);
+	fflush( stdout );
 }
 
 void fb_ConsolePrintBuffer( const char *buffer, int mask )

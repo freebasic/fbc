@@ -133,11 +133,11 @@ int fb_hTermOut( int code, int param1, int param2 )
 	if (code > SEQ_MAX) {
 		switch (code) {
 			case SEQ_SET_COLOR_EX:
-				fprintf(__fb_con.f_out, "\e[%dm", param1);
+				fprintf( stdout, "\e[%dm", param1 );
 				break;
 			
 			default:
-				fputs(extra_seq[code - SEQ_EXTRA], __fb_con.f_out);
+				fputs( extra_seq[code - SEQ_EXTRA], stdout );
 				break;
 		}
 	}
@@ -160,7 +160,6 @@ int fb_hInitConsole( )
 		return -1;
 
 	/* Init terminal I/O */
-	__fb_con.f_out = stdout;
 	__fb_con.h_out = fileno(stdout);
 	if (!isatty(__fb_con.h_out) || !isatty(fileno(stdin)))
 		return -1;
