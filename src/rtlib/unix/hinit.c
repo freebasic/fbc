@@ -65,6 +65,22 @@ static void signal_handler(int sig)
 	raise(sig);
 }
 
+int fb_hTermQuery( int code, int *val1, int *val2 )
+{
+	fflush( stdin );
+
+	fb_hTermOut( code, 0, 0 );
+
+	switch( code ) {
+	case SEQ_QUERY_WINDOW:
+		return (fscanf( stdin, "\e[8;%d;%dt", val1, val2 ) == 2);
+	case SEQ_QUERY_CURSOR:
+		return (fscanf( stdin, "\e[%d;%dR", val1, val2 ) == 2);
+	}
+
+	return FALSE;
+}
+
 static void console_resize(int sig)
 {
 	unsigned char *char_buffer, *attr_buffer;
@@ -78,8 +94,7 @@ static void console_resize(int sig)
 	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
 	if (win.ws_row == 0xFFFF) {
 #ifdef HOST_LINUX
-		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
-		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
+		if( fb_hTermQuery( SEQ_QUERY_WINDOW, &r, &c ) ) {
 			win.ws_row = r;
 			win.ws_col = c;
 		}
@@ -107,15 +122,11 @@ static void console_resize(int sig)
 	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
 #ifdef HOST_LINUX
-	fflush(stdin);
-	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
-	if( fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x) != 2 ) {
+	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &__fb_con.cur_y, &__fb_con.cur_x ) == FALSE )
+#endif
+	{
 		__fb_con.cur_y = __fb_con.cur_x = 1;
 	}
-#else
-	/* !!!TODO!!! reset cursor to known position? */
-	__fb_con.cur_y = __fb_con.cur_x = 1;
-#endif
 
 	signal(SIGWINCH, console_resize);
 }
