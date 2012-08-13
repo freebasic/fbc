@@ -178,7 +178,7 @@ int fb_hInitConsole( )
 	term_out.c_oflag |= OPOST;
 	if( tcsetattr( STDOUT_FILENO, TCSANOW, &term_out ) )
 		return -1;
-	
+
 	/* Input setup */
 	if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
 		return -1;
@@ -192,13 +192,12 @@ int fb_hInitConsole( )
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
-
 	if (tcsetattr(__fb_con.h_in, TCSANOW, &term_in))
 		return -1;
+
 	/* Don't block */
 	__fb_con.old_in_flags = fcntl(__fb_con.h_in, F_GETFL, 0);
-	__fb_con.in_flags = __fb_con.old_in_flags | O_NONBLOCK;
-	fcntl(__fb_con.h_in, F_SETFL, __fb_con.in_flags);
+	fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags | O_NONBLOCK);
 
 #ifdef HOST_LINUX
 	if (__fb_con.inited == INIT_CONSOLE)

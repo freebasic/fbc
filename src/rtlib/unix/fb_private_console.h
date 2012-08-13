@@ -42,7 +42,7 @@ typedef struct FBCONSOLE
 	int h_in;
 	FILE *f_in;
 	struct termios old_term_out, old_term_in;
-	int in_flags, old_in_flags;
+	int old_in_flags;
 	int fg_color, bg_color;
 	int cur_x, cur_y;
 	int w, h;
