@@ -69,7 +69,8 @@ int fb_hTermQuery( int code, int *val1, int *val2 )
 {
 	fflush( stdin );
 
-	fb_hTermOut( code, 0, 0 );
+	if( fb_hTermOut( code, 0, 0 ) == FALSE )
+		return FALSE;
 
 	switch( code ) {
 	case SEQ_QUERY_WINDOW:
@@ -138,29 +139,31 @@ int fb_hTermOut( int code, int param1, int param2 )
 	char *str;
 
 	if (!__fb_con.inited)
-		return -1;
+		return FALSE;
 
 	fflush(stdout);
+
 	if (code > SEQ_MAX) {
 		switch (code) {
-			case SEQ_SET_COLOR_EX:
-				fprintf( stdout, "\e[%dm", param1 );
-				break;
-			
-			default:
-				fputs( extra_seq[code - SEQ_EXTRA], stdout );
-				break;
+		case SEQ_SET_COLOR_EX:
+			if( fprintf( stdout, "\e[%dm", param1 ) < 4 )
+				return FALSE;
+			break;
+		default:
+			if( fputs( extra_seq[code - SEQ_EXTRA], stdout ) == EOF )
+				return FALSE;
+			break;
 		}
-	}
-	else {
+	} else {
 		if (!__fb_con.seq[code])
-			return -1;
+			return FALSE;
 		str = tgoto(__fb_con.seq[code], param1, param2);
 		if (!str)
-			return -1;
+			return FALSE;
 		tputs(str, 1, putchar);
 	}
-	return 0;
+
+	return TRUE;
 }
 
 int fb_hInitConsole( )
