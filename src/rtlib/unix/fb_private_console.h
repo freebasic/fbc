@@ -39,7 +39,7 @@ typedef struct FBCONSOLE
 {
 	int inited;
 	int term_type;
-	int h_out, h_in;
+	int h_in;
 	FILE *f_in;
 	struct termios old_term_out, old_term_in;
 	int in_flags, old_in_flags;

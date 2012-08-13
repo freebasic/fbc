@@ -75,7 +75,7 @@ static void console_resize(int sig)
 		return;
 
 	win.ws_row = 0xFFFF;
-	ioctl(__fb_con.h_out, TIOCGWINSZ, &win);
+	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
 	if (win.ws_row == 0xFFFF) {
 #ifdef HOST_LINUX
 		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
@@ -160,8 +160,7 @@ int fb_hInitConsole( )
 		return -1;
 
 	/* Init terminal I/O */
-	__fb_con.h_out = fileno(stdout);
-	if (!isatty(__fb_con.h_out) || !isatty(fileno(stdin)))
+	if( !isatty( STDOUT_FILENO ) || !isatty( STDIN_FILENO ) )
 		return -1;
 	__fb_con.f_in = fopen("/dev/tty", "r+b");
 	if (!__fb_con.f_in)
@@ -169,15 +168,15 @@ int fb_hInitConsole( )
 	__fb_con.h_in = fileno(__fb_con.f_in);
 	
 	/* Cannot control console if process was started in background */
-	if (tcgetpgrp(__fb_con.h_out) != getpgid(0))
+	if( tcgetpgrp( STDOUT_FILENO ) != getpgid( 0 ) )
 		return -1;
 
 	/* Output setup */
-	if (tcgetattr(__fb_con.h_out, &__fb_con.old_term_out))
+	if( tcgetattr( STDOUT_FILENO, &__fb_con.old_term_out ) )
 		return -1;
 	memcpy(&term_out, &__fb_con.old_term_out, sizeof(term_out));
 	term_out.c_oflag |= OPOST;
-	if (tcsetattr(__fb_con.h_out, TCSANOW, &term_out))
+	if( tcsetattr( STDOUT_FILENO, TCSANOW, &term_out ) )
 		return -1;
 	
 	/* Input setup */
@@ -250,7 +249,7 @@ void fb_hExitConsole( void )
 		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
 		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
-		tcsetattr(__fb_con.h_out, TCSANOW, &__fb_con.old_term_out);
+		tcsetattr( STDOUT_FILENO, TCSANOW, &__fb_con.old_term_out );
 
 		/* Restore old console keyboard state */
 		fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);
