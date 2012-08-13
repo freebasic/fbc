@@ -176,6 +176,7 @@ Version 0.24.0:
 - Concatenations could fail on some combinations of const/non-const and string/wstring operands
 - Concatenations involving const strings could return const results, which could prevent them being passed to functions
 - Some incorrect definitions/constants in commctrl.bi (thanks to VANYA for fix)
+- The Unix rtlib initialization code could start waiting for a response from the terminal without ensuring to have sent the escape sequence first (missing fflush(stdout)), thus blocking on the stdin read until some other input arrived (e.g. pressing ENTER)
 
 
 Version 0.23.0:

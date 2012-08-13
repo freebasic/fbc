@@ -141,8 +141,6 @@ int fb_hTermOut( int code, int param1, int param2 )
 	if (!__fb_con.inited)
 		return FALSE;
 
-	fflush(stdout);
-
 	if (code > SEQ_MAX) {
 		switch (code) {
 		case SEQ_SET_COLOR_EX:
@@ -162,6 +160,8 @@ int fb_hTermOut( int code, int param1, int param2 )
 			return FALSE;
 		tputs(str, 1, putchar);
 	}
+
+	fflush( stdout );
 
 	return TRUE;
 }
