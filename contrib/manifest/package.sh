@@ -7,9 +7,8 @@ if [ -z "$1" ] || [ -z "$2" ]; then
   exit 1
 fi
 
-# Put all the files listed in the manifest into release/<package-name>/
-tar -c -z -f contrib/manifest/temp.tar.gz -T contrib/manifest/$1.lst
-cd contrib/manifest
+# Copy all the files listed in the manifest into a directory named <release-name>
+tar -c -z -f temp.tar.gz -T contrib/manifest/$1.lst
 mkdir $2
 cd $2
 tar -x -z -f ../temp.tar.gz
@@ -20,4 +19,3 @@ rm temp.tar.gz
 tar -c -z -f $2.tar.gz $2
 
 rm -rf $2
-cd ..
