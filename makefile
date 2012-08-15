@@ -342,7 +342,7 @@ ALLCFLAGS += $(CFLAGS)
 # compiler headers and modules
 FBC_BI  := $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(wildcard $(srcdir)/compiler/*.bas)
-FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
+FBC_BAS := $(sort $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS)))
 
 ifndef DISABLE_OBJINFO
   ifndef ENABLE_FBBFD
