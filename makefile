@@ -434,7 +434,7 @@ endif
 compiler: $(newcompiler) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
-	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $(newcompiler)/*.o
+	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: %.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
@@ -459,7 +459,13 @@ $(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfb)/*.o
+ifeq ($(TARGET_OS),dos)
+  # Avoid hitting the command line length limit (the libfb.a ar command line
+  # is very long...)
+	$(QUIET_AR)$(AR) rcs $@ $(newlibfb)/*.o
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 
 $(LIBFB_C): $(newlibfb)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
@@ -468,7 +474,7 @@ $(LIBFB_S): $(newlibfb)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfbmt)/*.o
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
@@ -481,7 +487,7 @@ gfxlib2: lib $(libdir) src src/gfxlib2
 gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfbgfx)/*.o
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
