@@ -21,17 +21,22 @@
 {{fbdoc item="section" value="Win32"}}
 
 	- win32 standalone uses TDM-GCC
-	- TDM-GCC vs. MinGW.org: TDM-GCC has smaller libgcc binaries than MinGW.org, resulting in smaller FB programs. The difference is (presumably) due to TDM-GCC being configured for SJLJ exception rather than DW2. Since FB doesn't support exceptions yet, the exception handling method of the GCC toolchain doesn't really matter for plain FB programs; this may be different when third-party libraries are involved though. In programs using the GCC support libraries from the MinGW.org toolchain you can observe huge .eh_frame sections via "##objdump -h##". The presence of libgcc_eh is related to that aswell (TDM-GCC doesn't have it, but MinGW.org does and in fact it must be linked in there to satisfy dependencies).
+	- TDM-GCC vs. ""MinGW.org"": TDM-GCC has smaller libgcc binaries than ""MinGW.org"", resulting in smaller FB programs. The difference is (presumably) due to TDM-GCC being configured for SJLJ exception rather than DW2. Since FB doesn't support exceptions yet, the exception handling method of the GCC toolchain doesn't really matter for plain FB programs; this may be different when third-party libraries are involved though. In programs using the GCC support libraries from the ""MinGW.org"" toolchain you can observe huge .eh_frame sections via "##objdump -h##". The presence of libgcc_eh is related to that aswell (TDM-GCC doesn't have it, but ""MinGW.org"" does and in fact it must be linked in there to satisfy dependencies).
 
 {{fbdoc item="subsect" value="FreeBASIC-x.xx.x-win32"}}
-	- get the TDM-GCC/MSYS setup, plus DirectX headers for gfxlib2
-	- build libffi
+
+	- get the TDM-GCC/MSYS setup, plus ""DirectX"" headers for gfxlib2
+	- build libffi.a
+		##../libffi-3.0.11/configure --disable-shared --prefix=C:/TDM-GCC##
+		##make install##
 	- build binutils 2.17 to get libbfd 2.17 and matching libiberty
 		##../binutils-2.17/configure --disable-shared --disable-nls --disable-werror##
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
 	- build the new FB release with something like the following config.mk:
+	
+	
 		%%ENABLE_STANDALONE := YesPlease
 ENABLE_FBBFD := 217
 FBCFLAGS := -d ENABLE_TDMGCC
@@ -41,30 +46,37 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 	- copy binutils/gdb from TDM-GCC setup into bin/win32/:
 		- as.exe, ar.exe, ld.exe, dlltool.exe, gprof.exe, gdb.exe
 		- plus any needed DLLs (such as libintl, libiconv, libexpat...)
-	- copy GoRC.exe (e.g. from previous FB release) into bin/win32/
+	- copy ""GoRC.exe"" (e.g. from previous FB release) into bin/win32/
 	- copy libs from TDM-GCC setup into lib/win32/:
-		- libgcc.a, libsupc++.a, crtbegin.o, crtend.o
+		- libgcc.a, ""libsupc++.a"", crtbegin.o, crtend.o
 		- crt2.o, dllcrt2.o, gcrt2.o, libmsvcrt.a -> libmsvcrt.dll.a
 		- libmingw32.a, libmingwex.a, libmoldname.a, libgmon.a
-		- all the Win32 API import libraries from the w32api package, renamed from *.a to *.dll.a
+		- all the ""Win32"" API import libraries from the w32api package, renamed from *.a to *.dll.a
 			##cd .../w32api/lib##
 			##for i in *.a; do mv $i `echo $i | sed -e 's/\.a/.dll.a/g'`; done##
 			##mv * .../fbc-standalone-release/lib/win32##
 	- copy in libbfd.a 2.17 (and libiberty.a) too
+	- copy in libffi.a into lib/win32/ too
+	- copy libffi's LICENSE file to doc/libffi-license.txt
 	- regenerate & check the manifest:
 		##contrib/manifest/update.sh win32##
 	- package:
-		##contrib/manifest/package.sh win32 FreeBASIC-x.xx.x-win32 zip##
+		##""contrib/manifest/package.sh win32 FreeBASIC-x.xx.x-win32 zip""##
 
 {{fbdoc item="subsect" value="fbc-x.xx.x-mingw32"}}
-	- get the MinGW.org/MSYS setup, plus DirectX headers for gfxlib2
-	- build libffi
+
+	- get the ""MinGW.org""/MSYS setup, plus ""DirectX"" headers for gfxlib2
+	- build libffi.a
+		##../libffi-3.0.11/configure --disable-shared --prefix=C:/MinGW##
+		##make install##
 	- build binutils 2.17 to get libbfd 2.17 and matching libiberty
 		##../binutils-2.17/configure --disable-shared --disable-nls --disable-werror##
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
 	- build the new FB release with something like the following config.mk:
+	
+	
 		%%FBLFLAGS := -p c:/path/to/libbfd217/
 ENABLE_FBBFD := 217
 %%
@@ -76,18 +88,18 @@ ENABLE_FBBFD := 217
 
 {{fbdoc item="section" value="Linux"}}
 
-Building binaries that work on most of the available GNU/Linux distributions is hard because even though they are often similar in general, they differ differ in detail just as often. The most common problem is mismatching glibc versions, i.e. the fbc binary is run on a system with older glibc than the one it was built on, and an "glibc too old" error is encountered. The ncurses library is not always exactly the same either, as shown by the "`ospeed' has different size, consider re-linking" warnings when running fbc. That's why the Linux releases have usually been built in some GNU/Linux system old enough to let the fbc binary work on Debian 4 and 5, the current supported Ubuntu versions (especially LTSs), Fedora and OpenSUSE.
+Building binaries that work on most of the available GNU/Linux distributions is hard because even though they are often similar in general, they differ differ in detail just as often. The most common problem is mismatching glibc versions, i.e. the fbc binary is run on a system with older glibc than the one it was built on, and an "glibc too old" error is encountered. The ncurses library is not always exactly the same either, as shown by the "`ospeed' has different size, consider re-linking" warnings when running fbc. That's why the Linux releases have usually been built in some GNU/Linux system old enough to let the fbc binary work on Debian 4 and 5, the current supported Ubuntu versions (especially LTSs), Fedora and ""OpenSUSE"".
 
 As of FB 0.24 it's possible to create static ELF binaries using [[http://www.etalabs.net/musl/ musl libc]] instead of glibc, which should prevent the problems mentioned above. Other alternative libc's might work too, though I (dkl) tested only musl libc and dietlibc, and musl worked almost without problems, while compiling the rtlib with dietlibc required more adjustments. Besides getting the rtlib to build, the other big issue is getting the proper target libraries.
 
-libc & co (including crt{1,i,n}.o) are easy to build from the musl sources, but properly compiling GCC to get libgcc, libsupc++ and crtbegin.o/crtend.o requires some experience. Luckily there is a script to create a musl libc GCC cross-compiling toolchains available at [[https://github.com/GregorR/musl-cross]].
+libc & co (including crt{1,i,n}.o) are easy to build from the musl sources, but properly compiling GCC to get libgcc, ""libsupc++"" and crtbegin.o/crtend.o requires some experience. Luckily there is a script to create a musl libc GCC cross-compiling toolchains available at [[https://github.com/GregorR/musl-cross]].
 
 The contrib/build-musl-fbc.sh script uses that to build a whole "musl-fbc" setup, including the CRT/GCC/ncurses/bfd/CUnit target libraries needed to build a static fbc binary with it.
 
 	- lib{c,dl,m,pthread}, crt{1,i,n}.o from musl libc
-	- lib{gcc,gcc_eh,supc++}, crt{begin,end}.o from GCC, built against musl
+	- lib{gcc,gcc_eh,""supc++""}, crt{begin,end}.o from GCC, built against musl
 	- libncurses, libffi and libbfd 2.17 built against musl
-	- FB rtlib (without X11/gpm/OpenGL support)
+	- FB rtlib (without X11/gpm/""OpenGL"" support)
 
 This should be enough for an fbc linked against musl libc, although it won't be enough for many other FB programs (e.g. graphics). The script builds a standalone FB setup, which is the native-to-musl cross-compiler with the binutils/libraries in order to compile static linux-musl FB programs. This setup can be used to create static FB programs, by doing:
 	##.../fbc/fbc-new -static -l tinfo ...##
@@ -95,8 +107,9 @@ This should be enough for an fbc linked against musl libc, although it won't be 
 {{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux-musl"}}
 
 	- Use the build-musl-fbc.sh script to build the musl-fbc setup. Best copy the script in a new empty directory called "musl-fbc" and run it from there. It'll hg clone musl-cross and git clone fbc, and download lots of source packages (musl libc, Linux headers, gcc, binutils, ncurses, libffi, CUnit), unless those directories or packages already exist.
-	
 	- setup a config.mk like this:
+	
+	
 		%%FBC := .../musl-fbc/fbc/fbc-new
 FBLFLAGS := -static -l tinfo
 ENABLE_FBBFD := 217
@@ -109,12 +122,14 @@ ENABLE_STANDALONE := YesPlease
 	- regenerate & check the manifest:
 		##contrib/manifest/update.sh linux-musl##
 	- package:
-		##contrib/manifest/package.sh linux-musl FreeBASIC-x.xx.x-linux-musl targz##
+		##""contrib/manifest/package.sh linux-musl FreeBASIC-x.xx.x-linux-musl targz""##
 
 {{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux"}}
 
-	- Get the FreeBASIC-x.xx.x-linux-musl release first
+	- Get the ""FreeBASIC-x.xx.x-linux-musl"" release first
 	- build FB with a config.mk like this:
+	
+	
 		%%FBC := .../fbc-musl-release/fbc
 FBLFLAGS := -static -l tinfo
 ENABLE_FBBFD := 217
@@ -124,7 +139,7 @@ ENABLE_FBBFD := 217
 	- regenerate & check the manifest:
 		##contrib/manifest/update.sh linux##
 	- package:
-		##contrib/manifest/package.sh linux FreeBASIC-x.xx.x-linux targz##
+		##""contrib/manifest/package.sh linux FreeBASIC-x.xx.x-linux targz""##
 
 
 {{fbdoc item="section" value="DOS"}}
@@ -135,14 +150,16 @@ ENABLE_FBBFD := 217
 
 	- Get the DJGPP setup, see also the DOS section on [[DevBuild]]
 	- increase the maximum number of available file handles [if needed; it seems to be needed on Windows XP in order to build binutils 2.17 under DJGPP]
-		- Use 'msconfig' to add PerVMFiles=255 to the [386Enh] section of SYSTEM.INI
-		- Edit setting in C:\WINDOWS\system32\CONFIG.NT: files=255
+		- Use 'msconfig' to add ""PerVMFiles=255"" to the ""[386Enh]"" section of ""SYSTEM.INI""
+		- Edit setting in ""C:\WINDOWS\system32\CONFIG.NT"": ""files=255""
 	- build binutils 2.17 to get libbfd 2.17 and matching libiberty
 		##../binutils-2.17/configure --disable-shared --disable-nls --disable-werror##
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
 	- build the new FB release with something like the following config.mk:
+	
+	
 		%%ENABLE_STANDALONE := YesPlease
 ENABLE_FBBFD := 217
 FBLFLAGS := -p c:/path/to/libbfd217/
@@ -158,11 +175,13 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 	- regenerate & check the manifest:
 		##contrib/manifest/update.sh dos##
 	- package:
-		##contrib/manifest/package.sh dos FreeBASIC-x.xx.x-dos zip##
+		##""contrib/manifest/package.sh dos FreeBASIC-x.xx.x-dos zip""##
 
 {{fbdoc item="subsect" value="fbcxxxxb.zip"}}
 
-	- exactly like the FreeBASIC-x.xx.x-dos release, but build with a config.mk like:
+	- exactly like the ""FreeBASIC-x.xx.x-dos"" release, but build with a config.mk like:
+	
+	
 		%%ENABLE_FBBFD := 217
 FBLFLAGS := -p c:/path/to/libbfd217/
 %%
@@ -175,7 +194,7 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 {{fbdoc item="section" value="FB manual/documentation"}}
 
 	- See also doc/fbchkdoc/readme.txt and doc/manual/readme.txt
-	- Get MySQL, libcurl, libaspell, libpcre
+	- Get ""MySQL"", libcurl, libaspell, libpcre
 	- Build the wiki tools:
 		##cd doc/libfbdoc##
 		##make##
@@ -197,11 +216,11 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 		##./mkerrlst##
 		##fbc mkerrtxt.bas -exx##
 		##./mkerrtxt > errors.wakka##
-		Then copy the error list from errors.wakka into doc/manual/cache/CompilerErrMsg.wakka, and update the online wiki too.
+		Then copy the error list from errors.wakka into ""doc/manual/cache/CompilerErrMsg.wakka"", and update the online wiki too.
 	- Update the wiki samples in examples/manual/ (may want to clear out the old ones first, to delete those removed from the wiki)
 		##cd doc/fbchkdoc##
 		##./getindex -web##
-		##./samps extract @PageIndex.txt##
+		##""./samps extract @PageIndex.txt""##
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
