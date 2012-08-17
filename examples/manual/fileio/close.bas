@@ -23,5 +23,4 @@ Open "file.ext" For Binary As #f
 ' Close the file.  We could also do 'Close #f', but it's only necessary if more than one number is open.
 Close
 
-' End the program. (Check the file "file.ext" upon running to see the output.)
-End
+' End of program. (Check the file "file.ext" upon running to see the output.)

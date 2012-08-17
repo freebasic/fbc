@@ -18,8 +18,8 @@ Do
 	Line (x, 80)-(x + 39, 119), 4, BF
 	x = x + 1
 	If (x > 319) Then x = -40
-	' Wait for vertical sync
-	Wait &h3DA, 8
+	' Wait for vertical sync: only used as synchronous temporizing in that case (can be put anywhere in the Do Loop)
+	ScreenSync
 	' Copy work page to visible page
 	ScreenCopy
 Loop While Inkey = ""

@@ -9,4 +9,4 @@
 Dim As Integer foo
 Dim As TypeOf(67.2) bar '' '67.2' is a literal double
 Dim As TypeOf( foo + bar ) teh_double '' double + integer results in double
-Print Len(teh_double)
+Print SizeOf(teh_double)

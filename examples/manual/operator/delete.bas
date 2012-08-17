@@ -12,7 +12,7 @@ End Type
 
 Scope
 
-	' Create and initialize a Rational, and store it's address.
+	' Create and initialize a Rational, and store its address.
 	Dim p As Rational Ptr = New Rational(3, 4)
 
 	Print p->numerator & "/" & p->denominator

@@ -8,10 +8,10 @@
 
 '' macro as multiple statements
 #macro Print2( a, b )
-  Print a;
-  Print " ";
-  Print b;
-  Print "!"
+	Print a;
+	Print " ";
+	Print b;
+	Print "!"
 #endmacro
 
 Print2( "Hello", "World" )

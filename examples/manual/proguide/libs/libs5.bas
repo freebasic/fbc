@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrebuiltLibraries
 '' --------
 
-'' located in ./inc/
+'' located at inc/curl.bi
 #include once "curl.bi"
 
-'' located in ./inc/GL
+'' located at inc/GL/gl.bi
 #include once "GL/gl.bi"

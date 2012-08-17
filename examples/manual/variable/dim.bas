@@ -23,7 +23,7 @@ Dim s2 As String        '' variable length string
 Dim s3 As ZString Ptr   '' zstring
 
 s1 = "Hello World!"
-s2 = "Hello World from FreeBasic!"
+s2 = "Hello World from FreeBASIC!"
 s3 = Allocate( Len( s2 ) + 1 )
 *s3 = s2
 

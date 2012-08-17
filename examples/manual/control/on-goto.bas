@@ -6,7 +6,7 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOngoto
 '' --------
 
-Dim choice as integer
+Dim choice As Integer
 
 Input "Enter a number: ", choice
 

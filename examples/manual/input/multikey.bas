@@ -32,6 +32,8 @@ Do
 	    Circle(x, y), 30, , , , ,F
 	ScreenUnlock
 	
+	Sleep 15, 1
+	
 	' Run loop until user presses Escape
 Loop Until MultiKey(SC_ESCAPE)
 
