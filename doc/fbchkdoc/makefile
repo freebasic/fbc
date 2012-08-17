@@ -7,11 +7,6 @@ endif
 
 FBC := fbc
 
-LIBFBDOC_DIR := ../libfbdoc
-LIBFBDOC := $(LIBFBDOC_DIR)/libfbdoc.a
-
-################################################################################
-
 LIBFUNCS_SRC := \
     funcs.bas \
     funcsdir.bas \
@@ -56,14 +51,17 @@ TEMP_FILES := \
     imagepages.txt
 
 HEADERS := $(wildcard *.bi)
-DEPS = $(LIBFBDOC) $(HEADERS)
+DEPS = ../libfbdoc/libfbdoc.a $(HEADERS)
 
-FBCFLAGS += -exx -g -i $(LIBFBDOC_DIR)
-FBLFLAGS += -exx -g -p $(LIBFBDOC_DIR) -l fbdoc 
+FBCFLAGS += -exx -g -i ../libfbdoc
+FBLFLAGS += -exx -g -p ../libfbdoc -l fbdoc
 
-################################################################################
+ifeq ($(EXEEXT),.exe)
+  FBLFLAGS += -l ws2_32
+endif
 
-all: $(APPS) $(LIBFBDOC)
+.PHONY: all
+all: $(APPS) ../libfbdoc/libfbdoc.a
 
 getindex$(EXEEXT): getindex.bas $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
@@ -110,14 +108,11 @@ samps$(EXEEXT): $(SAMPS_SRCS) $(LIBFUNCS) $(DEPS)
 $(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
 	$(FBC) -lib -x $@ $(LIBFUNCS_SRC) $(FBCFLAGS)
 
-$(LIBFBDOC):
-	cd $(LIBFBDOC_DIR) && make
+../libfbdoc/libfbdoc.a:
+	cd ../libfbdoc && make
 
-################################################################################
-
+.PHONY: clean
 clean:
 	-rm -f $(APPS)
 	-rm -f $(LIBFUNCS)
 	-rm -f $(TEMP_FILES)
-
-.PHONY: clean
