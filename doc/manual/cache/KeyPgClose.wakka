@@ -39,12 +39,12 @@ Open "file.ext" For Binary As #f
 ' Close the file.  We could also do 'Close #f', but it's only necessary if more than one number is open.
 Close
 
-' End the program. (Check the file "file.ext" upon running to see the output.)
-End
+' End of program. (Check the file "file.ext" upon running to see the output.)
 %%
 
 {{fbdoc item="diff"}}
-	- None 
+	- ##**Close**## can be called as a function that returns an error code.
+	- FB throws an error on trying to close an unused file number, if compiled with error checking and if not used with the function-style syntax
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen Open]]##

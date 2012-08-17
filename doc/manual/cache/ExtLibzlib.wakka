@@ -2,9 +2,9 @@
 Loss-less data compression library using the Deflate algorithm unencumbered by patents.
 
 Website: http://www.zlib.net
-Platforms supported: Win32, Linux, DOS
+Platforms supported: ""Win32"", Linux, DOS
 Headers to include: zlib.bi
-Header version: 1.2.2
+Header version: 1.2.6
 
 {{fbdoc item="ex"}}
 	zlib-based PNG save & load code: http://www.freebasic.net/forum/viewtopic.php?t=3936

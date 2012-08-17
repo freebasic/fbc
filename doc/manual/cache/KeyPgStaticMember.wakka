@@ -17,6 +17,8 @@ Declaration specifier for a static member procedure.
 {{fbdoc item="desc"}}
 	When declaring a member procedure, ##**Static**## specifies that the member procedure not have an implicit instance argument passed to it, and thus can only access values passed to it. Static member procedures may access Private or Protected members in their type, but to call procedures you must pass the Object as an additional first parameter. You may call a static member procedure anywhere in your code just like any other procedure in a type, i.e. //variable of the type//.//static procedure name//(//arguments//). The address of a static member function can also be assigned to a function pointer using the standard [[KeyPgOpProcptr ProcPtr()]] or the [[KeyPgOpAt @ Operator]] usage. 
 
+	##**Static**## is allowed in front of member procedure bodies, not just in the declaration (the coherence with declaration is checked by compiler). When the procedure body is far from the declaration, it may be suitable to have here the information.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/static.bas"}}%%(freebasic)
 '' Example showing how the actual procedure invoked by a member can be set at runtime.

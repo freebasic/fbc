@@ -4,8 +4,8 @@ Sets or gets the number of rows and columns of the display
 {{fbdoc item="syntax"}}##
 	**Width** [//columns//] [, //rows//]
 	**Width** **Lprint** //columns//
-	**Width** {#//filenum// | //devicename// }, //columns//
-	//result// = **Width** ( )
+	**Width** { #//filenum// | //devicename// }, //columns//
+	//result// = **Width**( )
 ##
 {{fbdoc item="param"}}
 	##//columns//##

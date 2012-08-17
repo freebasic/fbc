@@ -1,7 +1,7 @@
  ""FreeBASIC"" Code, Games, and Libraries.  Written in ""FreeBASIC"", by ""FreeBASIC"" Community Members.
 
 <<{{anchor name="EDITOR"}}{{fbdoc item="section" value="Code Editors & IDEs "}}
-	[[http://www.freebasic.net/forum/viewtopic.php?t=6715 FBEdit, an IDE for FB by KetilO (Win32)]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=13932 FBEdit, an IDE for FB by KetilO (Win32)]]
 	[[http://www.planetsquires.com/jellyfishpro_freebasic.htm JellyFish Pro, an IDE for FB by Paul Squires (Win32)]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9035 VISG GUI Builder (WIN) by mrhx]]
 	[[http://www.freewebs.com/fielden/ EzeeGui GUI builder (WIN) by Jerry Fielden]]	         
@@ -29,7 +29,7 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8764 HSV Color Space by Antoni]]
 
 	==Formats==
-	[[http://www.freebasic.net/forum/viewtopic.php?t=8024 PNG_LOAD by yetifoot]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8024 fbpng library by yetifoot]]
 	[[http://www.freebasic.net/___old_site/arch/category.php?id=6 JPEG image loader by Antoni]]
 
 	==3D==
@@ -66,7 +66,7 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=14579 Irrlicht wrapper + Newton Intergrated by SiskinEDGE]]
 
 {{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
-	[[http://hmcsoft.org/p/libini.php Cross Platform INI library by SirMud]]
+	[[http://www.freebasic.net/___old_site/arch/file.php?id=8 Cross Platform INI library by SirMud]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7437 XML Parser by Pritchard]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8680 Turing Machine by Zamaster]]
@@ -91,9 +91,9 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3931 Kingdoms by Piptol]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=5068 Lynn's Legacy by cha0s and Josiah Tobin]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7796 Nanohost by Several]]
-	[[http://lithium.zext.net/ Several Games by Lithium]]
+	[[http://cs.smu.ca/~c_adams1/relativity/ Relativity by Lithium]]
 	[[http://lachie.phatcode.net/starcage.php Star Cage by Lachie Dazdarian]]
-	[[http://syn9.thingie.net/?table=griffonlegend The Griffon Legend by syn9]]
+	[[http://syn9.thehideoutgames.com/ syn9's games]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9065 100 Line Tetris by Deleter]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9738 Any PNG or JPEG as a Jigsaw Puzzle by Mysoft]]
 
@@ -101,7 +101,7 @@
 	[[http://www.execulink.com/~coder/freebasic/jmgui.html In Game GUI by coderJeff]]
 	[[http://sourceforge.net/projects/zine/ Zine GUI by VonGodric]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=76965#76965 WX GUI example by ciw1973]]
-	[[http://www.imakegames.com/?q=node/23 KwikGUI (WIN/LIN/DOS) by Vincent DeCampo]]
+	[[http://sourceforge.net/projects/kwikgui/ KwikGUI (WIN/LIN/DOS) by Vincent DeCampo]]
 	[[http://sites.google.com/site/freebasicgui/Home FB_GUI by BasicScience]]
 
 {{anchor name="WEB"}}{{fbdoc item="section" value="Networking- Web Code"}}
@@ -119,7 +119,7 @@
 	==Serial Port==
 	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 Drive a Parallax servo controller by phishguy]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=34643 Modbus device finder by Antoni]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=3132 Serial port terminal program by Antoni]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=31325#p31325 Serial port terminal program by Antoni]]
 
 {{anchor name="OSSPEC"}}{{fbdoc item="section" value="OS Specific Code"}}
 	
@@ -166,9 +166,9 @@
 	[[http://fbstd.sourceforge.net/ FBstd C++ Lib Port (W.I.P.) by stylin]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6859 Testly by zerospeed]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8504 Portable way to add a resource to a program  by voodooattack]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=66616 CPU Identification by MichaelW]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=4613 CPU Identification by MichaelW]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=4221 Cpu Cycle counter for benchmarking of code by MichaelW]]
-	[[http://www.freebasic.net/forum/viewtopic.php?p=84902&highlight=#84902 Use of the FBGfx built-in LZW routines by Lillo]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=84902#p84902 Use of the FBGfx built-in LZW routines by Lillo]]
 	[[http://rapidq.phatcode.net/tutorial/Freebasic_DLL_tutorial.html Using FB dll's in RapidQ programs by JohnK]]
 
 {{anchor name="SITES"}}{{fbdoc item="section" value="Community Websites/Links"}}
@@ -178,6 +178,6 @@
 	[[http://games.freebasic.net/ FreeBASIC Games Directory]]
 
 <<::c::
-This is a place to post worthy projects/code snippets for ""FreeBASIC"", in their relative categories.  To add a page, link to either it's wiki page, website, or thread on the ""FreeBASIC"" Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of ""FreeBASIC"".
+This is a place to post worthy projects/code snippets for ""FreeBASIC"", in their relative categories.  To add a page, link to either its wiki page, website, or thread on the ""FreeBASIC"" Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of ""FreeBASIC"".
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

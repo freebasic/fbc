@@ -25,6 +25,7 @@ Print "Program is "; a
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
+
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpdefine #define]]##
 	- ##[[KeyPgPpmacro #macro]]##

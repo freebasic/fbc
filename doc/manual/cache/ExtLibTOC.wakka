@@ -1,10 +1,11 @@
 {{fbdoc item="title" value="External Libraries Index"}}----
-This is a list of some of the external libraries that can be used from ""FreeBASIC"". The header files to many of them are distributed with ""FreeBASIC"" by default. Visit the link shown for each individual library below to see more information, including examples. To obtain a needed external library or DLL, please visit the library's homepage.
+This is the list of external library bindings currently included in ""FreeBASIC"". Visit the link shown for each individual library below to see more information. To obtain a needed external library or DLL, please visit the library's homepage. If you translated additional headers, or updated existing ones, please post them on the [[http://www.freebasic.net/forum/ FreeBASIC forum]] or submit them to the [[http://sourceforge.net/projects/fbc/ fbc project's patch tracker]]!
 
 {{fbdoc item="section" value="Graphical/test-based user interfaces"}}
 	{{fbdoc item="keyword" value="ExtLibcgui|CGUI"}} - Library for making GUIs in a simple way.
 	{{fbdoc item="keyword" value="ExtLibcurses|Curses"}} - Standardized console user interface library.
 	{{fbdoc item="keyword" value="ExtLibgtk|GTK+"}} - Cross-platform Graphical User Interface Library.
+	{{fbdoc item="keyword" value="ExtLibIUP|IUP"}} - Portable toolkit for building graphical user interfaces.
 	{{fbdoc item="keyword" value="ExtLibwxc|wxC"}} - Cross-platform Graphical User Interface Library.
 	{{fbdoc item="keyword" value="ExtLibwindows|Windows API"}} - Windows GUIs and more
 	{{fbdoc item="keyword" value="ExtLibX11|X11"}} - Windowing system commonly used on Linux systems
@@ -24,7 +25,6 @@ This is a list of some of the external libraries that can be used from ""FreeBAS
 	{{fbdoc item="keyword" value="ExtLibGLFW|GLFW"}} - An ""OpenGL"" library for creating an ""OpenGL"" window and handling input from the user's main loop
 	{{fbdoc item="keyword" value="ExtLibgrx|GRX"}} - 2D graphics library.
 	{{fbdoc item="keyword" value="ExtLibIL|IL (DevIL)"}} - A full featured cross-platform image library.
-	{{fbdoc item="keyword" value="ExtLibIUP|IUP"}} - Portable toolkit for building graphical user interfaces.
 	{{fbdoc item="keyword" value="ExtLibjapi|japi"}} - Open source free software GUI toolkit using Java's AWT Toolkit.
 	{{fbdoc item="keyword" value="ExtLibjpeglib|jpeglib"}} - Cross-platform library for reading/writing jpeg images.
 	{{fbdoc item="keyword" value="ExtLibjpgalleg|JPGalleg"}} - A small add-on for Allegro that adds JPG images handling capabilities to the library.

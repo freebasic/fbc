@@ -80,6 +80,7 @@ List of operators used in FreeBASIC.
 {{fbdoc item="section" value="Type or Class Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpMemberAccess|. (Member access)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPtrMemberAccess|-> (Pointer to member access)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpIs|IS (Run-time type information operator)"}}
 
 {{fbdoc item="section" value="Memory Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNew|New"}}

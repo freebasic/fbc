@@ -61,9 +61,9 @@ Dim d as ulongint = &b1010101ULL
 {{fbdoc item="section" value="Floating Point Literals"}}
 	Floating point numbers are specified in decimal digits, may be positive or negative, have a fractional portion, and optionally an exponent.  The format of a floating point literal is as follows:
 
-	##""number[.[fraction]][[D|E][[+|-]exponent]][suffix]""##
+	##""number[.[fraction]][((D|E) [+|-] exponent)|(D|E)|][suffix]""##
 	//or//
-	##"".fraction[[D|E][[+|-]exponent]][suffix]""##
+	##"".fraction[((D|E) [+|-] exponent)|(D|E)|][suffix]""##
 	
 	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value, except in the //[[CompilerOptlang -lang qb]]// dialect, where numbers of 7 digits or fewer are considered to be single precision.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/floats.bas"}}%%(freebasic)
@@ -72,7 +72,7 @@ Dim b as double = -123.0
 %%
 
 	The letter "##D##" or "##E##", placed after the number/fraction part, allows the number to be given an exponent.  The exponent may be specified as either positive or negative with a plus ("##+##") or minus ("##-##") sign.  Exponents that do not have a sign are positive.
-	An exponent is not required after the letter, so the letter can be used on its own just to specify the type.  "##D##" specifies a double-precision floating-point number.  "##E##" specifies a floating-point number using the default precision.
+	An exponent is not required after the letter, so the letter can be used on its own just to specify the type.  "##D##" specifies a double-precision floating-point number.  "##E##" specifies a floating-point number using the default precision. When the letter is used on its own in combination with a suffix (see below) the type denoted by the suffix overrules the type specified by the letter.
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/dblsuff.bas"}}%%(freebasic)
 Dim a as double = -123.0d
@@ -80,6 +80,7 @@ Dim b as double = -123e
 Dim c as double = 743.1e+13
 Dim d as double = 743.1D-13
 Dim e as double = 743.1E13
+Dim f as single = 743D! 
 %%
 
 	A suffix of "##!##" or "##F##" on a number specifies a single precision (32 bit total) floating point value.  A suffix of "##""#""##" specifies a double precision float.

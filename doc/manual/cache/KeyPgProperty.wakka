@@ -157,7 +157,7 @@ FOO Number's Value: 2147483648
 FOO 31st Bit Set? -1
 %%
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Class]]##
+	- ##[[KeyPgClass Class]]##
 	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

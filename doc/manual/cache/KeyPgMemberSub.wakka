@@ -3,7 +3,7 @@ Declares or defines a member procedure.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] ] **Sub** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [ [[KeyPgStatic Static]] ]
+		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] | [[KeyPgConstMember const]] ] **Sub** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [ [[KeyPgStatic Static]] ]
 	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
 
 	**Sub** //typename//.//fieldname// ( [ //parameters// ] )

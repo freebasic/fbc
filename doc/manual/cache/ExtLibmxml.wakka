@@ -4,6 +4,6 @@ Mini-XML is a small XML parsing library that you can use to read XML and XML-lik
 Website: http://www.minixml.org/
 Platforms supported: ""Win32"", Linux
 Headers to include: mxml.bi
-Header version: from 2005
+Header version: 2.7
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

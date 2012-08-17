@@ -14,7 +14,7 @@ Specifies a default data type for a range of variable names
 	##**Defulongint**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgUlongint Ulongint]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##lNumber## a ##[[KeyPgUlongint Ulongint]]## number since it's first letter starts with l.
+	This will make ##lNumber## a ##[[KeyPgUlongint Ulongint]]## number since its first letter starts with ##l##.
 {{fbdoc item="filename" value="examples/manual/switches/defulongint.bas"}}%%(freebasic)
 '' Compile with -lang fblite
 
@@ -38,3 +38,4 @@ Dim lNumber
 	- ##[[KeyPgUlongint Ulongint]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}
+   

@@ -22,7 +22,7 @@ Control flow statement for looping
 	//##condition##// may be any valid expression that evaluates to False (zero) or True (non-zero).
 
 {{fbdoc item="ex"}}
-	In this example, a ##**Do**## loop is used to count the total number of odd numbers from 1 to 10. It will repeat //until// it's //n > 10// condition is met:
+	In this example, a ##**Do**## loop is used to count the total number of odd numbers from 1 to 10. It will repeat ##//until//## its ##//n > 10//## condition is met:
 {{fbdoc item="filename" value="examples/manual/control/do-loop.bas"}}%%(freebasic)
 dim as integer n = 1                            '' number to check
 dim as integer total_odd = 0                    '' running total of odd numbers

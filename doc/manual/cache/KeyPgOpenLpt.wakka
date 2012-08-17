@@ -108,6 +108,7 @@ Print "Printing Completed!"
 	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgLprint Lprint]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

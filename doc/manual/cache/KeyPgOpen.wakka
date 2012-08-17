@@ -42,7 +42,7 @@ Opens a disk file for reading or writing using file operations
 	##//filenum//##
 		An available file number to bind to the disk file, which can be found with ##[[KeyPgFreefile Freefile]]##.
 	##//record_length//##
-		The size, in bytes, of each record read from or written to the disk file. The default is 128.
+		The size, in bytes, of each record read from or written to the disk file. The default is ##128##.
 
 {{fbdoc item="ret"}}
 	In the first usage, ##**Open**## returns zero (##0##) on success and a non-zero error code otherwise.
@@ -60,7 +60,7 @@ Opens a disk file for reading or writing using file operations
 
 	For any file mode, access to the opened disk file can be restricted or granted to other threads or programs by specifying a lock type (see the description for the ##//lock_type//## parameter above). If no lock type is specified, other threads of the current program can freely open the disk file (##Shared##), while other programs cannot (##Lock Read Write##). ##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to temporarily restrict access to parts of a file.
 
-	The error code returned by ##**Open**##  can be checked using ##[[KeyPgErr Err]]## in the next line. The function version of  ##**Open**## returns directly the error code as an integer. 
+	The error code returned by ##**Open**##  can be checked using ##[[KeyPgErr Err]]## in the next line. The function version of  ##**Open**## returns directly the error code as an integer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/open.bas"}}%%(freebasic)
@@ -110,13 +110,14 @@ End If
 %%
 
 {{fbdoc item="target"}}
-	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive. 
-	- Path separators in Linux are forward slashes ##/##. Windows uses backward slashes ##\## but it allows for forward slashes .  DOS uses backward slashes ##\##. 
+	- Linux requires the ##//filename//## case matches the real name of the file. Windows and DOS are case insensitive.
+	- Path separators in Linux are forward slashes ##/##. Windows uses backward slashes ##\## but it allows for forward slashes ##/##.  DOS uses backward slashes ##\##.
 	- On Windows, a file number used in a dynamic link library is not the same as an identical file number used in the main program.  File numbers can not be passed or returned and then used between a DLL and an executable.
+	- If you try to open a directory on Linux, the ##**Open**## command will succeed.
 
 {{fbdoc item="diff"}}
-	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is  supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes ""FreeBASIC's"" new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
-	- ##**Open**## can be called as a procedure that returns an error code.
+	- Using MS-DOS device names to open streams or hardware devices (##"LPT:"##, ##"SCR:"##, etc.) is supported only in the //[[CompilerOptlang -lang qb]]// dialect; for other modes ""FreeBASIC's"" new composite keywords must be used: see ##[[KeyPgOpenCom Open Com]]##,  ##[[KeyPgOpenCons Open Cons]]##,  ##[[KeyPgOpenErr Open Err]]##,  ##[[KeyPgOpenPipe Open Pipe]]##,  ##[[KeyPgOpenLpt Open Lpt]]##,  ##[[KeyPgOpenScrn Open Scrn]]##.
+	- ##**Open**## can be called as a function that returns an error code.
 
 {{fbdoc item="lang"}}
 	- The //[[CompilerOptlang -lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being ##"I"## for input, ##"O"## for output, ##"A"## for append, ##"R"## for random, ##"B"## for binary. 

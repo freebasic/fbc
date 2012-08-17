@@ -55,6 +55,7 @@ sleep
 	- QB used OPEN "SCRN:" ...
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgOpenCons Open Cons]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

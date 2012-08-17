@@ -16,6 +16,8 @@ Returns the amount of time that has passed since a static reference point.
 
 	On some platforms, the value of ##**Timer**## resets to zero at midnight (see below), so if the start and end time are on either side of the reset point, the difference will be negative.  This could cause unexpected behavior in some programs.  In those cases, adding ##86400## (the number of seconds in 24 hours) to the difference should return the correct result.  If the time taken is longer than a day, then it will be also be necessary to check the number of days that have elapsed.
 
+	The value returned by ##**Timer**## is NOT affected by the automatic changing of the system clock, in Spring and Autumn, for DST (Daylight Savings Time).
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/dates/timer.bas"}}%%(freebasic)
 '' Example of using TIMER function 
@@ -40,7 +42,7 @@ Print "Done."
 	- Usage of TIMER can cause disk accesses in DOS, see [[http://www.freebasic.net/forum/viewtopic.php?t=12985 forum]] for analysis and solutions
 
 {{fbdoc item="diff"}}
-	- In QB TIMER returned the number of seconds from last midnight, and its accuracy was 1/18 secs
+	- In QB, TIMER returned the number of seconds from last midnight, and its accuracy was 1/18 secs
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTime Time]]##
