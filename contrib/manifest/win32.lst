@@ -12,6 +12,7 @@ changelog.txt
 doc/GoRC.txt
 doc/gpl.txt
 doc/lgpl.txt
+doc/libffi-license.txt
 examples/allocate.bas
 examples/arrays.bas
 examples/bitfield.bas
@@ -2611,6 +2612,7 @@ lib/win32/libfb.a
 lib/win32/libfbgfx.a
 lib/win32/libfbmt.a
 lib/win32/libfcgi.dll.a
+lib/win32/libffi.a
 lib/win32/libfmod.dll.a
 lib/win32/libfontconfig.dll.a
 lib/win32/libFreeImage.dll.a
