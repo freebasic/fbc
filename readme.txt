@@ -18,23 +18,74 @@
     Features:           http://www.freebasic.net/wiki/CompilerFeatures
     Requirements:       http://www.freebasic.net/wiki/CompilerRequirements
 
-  o Installation & usage
+  o Installation & Usage
 
-    The fbc project provides installers and/or archives for multiple operating
-    systems. After installing or extracting FreeBASIC, fbc[.exe] is ready for
-    use.
+    FreeBASIC gives you the FreeBASIC compiler program, called fbc or fbc.exe,
+    plus the compiler tools and run-time libraries used by fbc. It is a
+    command line program that takes FreeBASIC source code files (*.bas) and
+    compiles them into executables. fbc is typically invoked by Integrated
+    Development Environments (IDEs) or text editors, from a terminal or command
+    prompt, or through build-systems such as makefiles.
 
-    fbc is typically used from the command line, via build-systems such as
-    makefiles, or through IDEs. When run from a command prompt, without command
-    line arguments, it shows a list of options. In order to compile a .bas
-    program into an executable, the file name must be passed on fbc's command
-    line:
-                fbc example.bas
-    this should create the output executable next to the .bas file.
+    - Win32
+      - Download the latest FreeBASIC-x.xx.x-win32.exe installer
+      - Run it and click through it
+      - Use fbc.exe from the install directory to compile FB code, for example:
+        - Click Start -> FreeBASIC -> Open console
+        - In the opened prompt, type in the following command and press ENTER:
+            > fbc.exe examples\hello.bas
+          This should have created examples\hello.exe, which can be executed
+          right away:
+            > examples\hello.exe
+      - Optionally: install an IDE for FB, for example:
+            FBIDE (http://fbide.freebasic.net/)
+            FBEdit (http://radasm.cherrytree.at/fbedit/)
 
-    If you are using an IDE or text editor, it is usually possible to configure
-    it to use fbc[.exe] to compile FB programs. Please look at the IDE's
-    configuration options or documentation.
+    - Linux
+      - Download the latest FreeBASIC-x.xx.x-linux.tar.gz
+      - Extract it
+      - Open a terminal
+      - cd into the extracted FreeBASIC-x.xx.x-linux directory
+      - run "sudo ./install.sh -i"
+      - Install the following packages (names vary depending on distribution):
+          Debian/Ubuntu:
+            x86:               amd64 old:           amd64 new:
+              gcc                gcc-multilib         gcc-multilib
+              g++                g++-multilib         g++-multilib
+              libncurses5-dev    lib32ncurses5-dev    lib32ncurses5-dev
+              libx11-dev         ia32-libs            libx11-dev:i386
+              libxext-dev        lib32ffi-dev         libxext-dev:i386
+              libxrender-dev                          libxrender-dev:i386
+              libxrandr-dev                           libxrandr-dev:i386
+              libxpm-dev                              libxpm-dev:i386
+              libffi-dev
+          OpenSUSE:
+            x86:               x86_64:
+              gcc                gcc-32bit
+              gcc-c++            gcc-c++-32bit
+              ncurses-devel      ncurses-devel-32bit
+              xorg-x11-devel     xorg-x11-devel-32bit
+              libffi46-devel     xorg-x11-libX11-devel-32bit
+                                 xorg-x11-libXext-devel-32bit
+                                 xorg-x11-libXrender-devel-32bit
+                                 xorg-x11-libXpm-devel-32bit
+                                 libffi46-devel-32bit
+      - Use the installed fbc program to compile FB code, for example:
+          $ fbc examples/hello.bas
+        This should have created the examples/hello program, which can be
+        executed right away:
+          $ examples/hello
+      - Optionally: install an IDE for FB, for example: Geany (www.geany.org)
+
+    - DOS
+      - Download the latest FreeBASIC-x.xx.x-dos.zip
+      - Extract it
+      - Use fbc.exe from the extracted directory to compile FB code,
+        for example:
+          > fbc.exe examples\hello.bas
+        This should have created examples\hello.exe, which can be executed
+        right away:
+          > examples\hello.exe
 
   o Licensing
 
