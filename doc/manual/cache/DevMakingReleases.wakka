@@ -34,7 +34,7 @@
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
-	- build the new FB release with something like the following config.mk:
+	- config.mk:
 	
 	
 		%%ENABLE_STANDALONE := YesPlease
@@ -74,7 +74,7 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
-	- build the new FB release with something like the following config.mk:
+	- config.mk:
 	
 	
 		%%FBLFLAGS := -p c:/path/to/libbfd217/
@@ -104,10 +104,10 @@ The contrib/build-musl-fbc.sh script uses that to build a whole "musl-fbc" setup
 This should be enough for an fbc linked against musl libc, although it won't be enough for many other FB programs (e.g. graphics). The script builds a standalone FB setup, which is the native-to-musl cross-compiler with the binutils/libraries in order to compile static linux-musl FB programs. This setup can be used to create static FB programs, by doing:
 	##.../fbc/fbc-new -static -l tinfo ...##
 
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux-musl"}}
+{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux-musl with fbc linked against musllibc"}}
 
 	- Use the build-musl-fbc.sh script to build the musl-fbc setup. Best copy the script in a new empty directory called "musl-fbc" and run it from there. It'll hg clone musl-cross and git clone fbc, and download lots of source packages (musl libc, Linux headers, gcc, binutils, ncurses, libffi, CUnit), unless those directories or packages already exist.
-	- setup a config.mk like this:
+	- config.mk:
 	
 	
 		%%FBC := .../musl-fbc/fbc/fbc-new
@@ -124,10 +124,10 @@ ENABLE_STANDALONE := YesPlease
 	- package:
 		##""contrib/manifest/package.sh linux-musl FreeBASIC-x.xx.x-linux-musl targz""##
 
-{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux"}}
+{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux with fbc linked against musllibc"}}
 
 	- Get the ""FreeBASIC-x.xx.x-linux-musl"" release first
-	- build FB with a config.mk like this:
+	- config.mk:
 	
 	
 		%%FBC := .../fbc-musl-release/fbc
@@ -141,6 +141,90 @@ ENABLE_FBBFD := 217
 	- package:
 		##""contrib/manifest/package.sh linux FreeBASIC-x.xx.x-linux targz""##
 
+{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux with normally linked fbc"}}
+
+	- fbc binaries created by the musl-fbc setup currently have a problem compiling float constants, causing test suite failures; until the issue is found and fixed, it does not seem like a good idea to use fbc binaries linked against musl libc.
+	
+	- build binutils 2.17 to get libbfd 2.17 and matching libiberty
+		##../binutils-2.17/configure --disable-shared --disable-nls --disable-werror##
+		(this requires automake, autoconf, bison, flex, etc. to be installed)
+	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
+	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p /path/to/libbfd217/ when linking the new fbc
+	- config.mk:
+	
+	
+		%%ENABLE_FBBFD := 217
+FBLFLAGS := -p /path/to/libbfd217/
+%%
+	
+	- regenerate & check the manifest:
+		##contrib/manifest/update.sh linux##
+	- package:
+		##""contrib/manifest/package.sh linux FreeBASIC-x.xx.x-linux targz""##
+
+{{fbdoc item="subsect" value="staticglibc-fbc (native -> staticglibc cross)"}}
+
+	- Note that this all was built on ""OpenSUSE"" 12.1 i686 with gcc 4.6.1 and glibc 2.14.1
+	- libbfd 2.17
+		##../binutils-2.17/configure --disable-nls --disable-shared --disable-werror##
+		##make CFLAGS=-O2##
+		(doesn't need to complete, only libiberty/libbfd is needed)
+		copy libbfd.a, libiberty.a into lib/linux/
+	- libffi
+		##./configure --disable-shared##
+		##make CFLAGS=-O2##
+		copy libffi.a into lib/linux/
+		copy libffi's LICENSE file to doc/libffi-license.txt
+	- CUnit
+		##./configure --disable-shared##
+		##make##
+		copy libcunit.a into lib/linux/
+	- binutils
+		##../binutils-2.22/configure --disable-nls --disable-shared##
+		##make CFLAGS=-O2##
+		copy as/ar/ld/gprof into bin/linux/
+	- gcc
+		##""BOOT_CFLAGS=-O2 CFLAGS=-O2 ../gcc-4.7.1/configure --disable-bootstrap --enable-languages=c,c++ --disable-nls""##
+		##make##
+		copy libgcc.a, libgcc_eh.a, libgcov.a, crtbegin.o, crtend.o, ""libsupc++.a"" into lib/linux/
+	- glibc
+		##CFLAGS=-O2 ../glibc-2.14.1/configure --without-cvs --prefix=/opt/glibc##
+		make
+		copy into lib/linux/:
+			crt1.o, crti.o, crtn.o
+			libc.a, libpthread.a, libdl.a, libm.a
+	- ncurses
+		##../ncurses-5.9/configure --without-debug --without-profile --without-cxx --without-cxx-binding --without-ada --without-manpages --without-progs --without-tests --without-pkg-config --without-shared --without-libtool --with-termlib --without-gpm --without-dlsym --without-sysmouse --enable-termcap --without-develop --enable-const --prefix=/usr##
+		##make##
+		copy libncurses.a and libtinfo.a into lib/linux/
+	- config.mk:
+	
+	
+		%%ENABLE_STANDALONE := YesPlease
+FBLFLAGS := -p /path/to/libbfd217
+ENABLE_FBBFD := 217
+%%
+	
+	- regenerate & check the manifest:
+		##contrib/manifest/update.sh staticglibc-fbc##
+	- package:
+		##""contrib/manifest/package.sh staticglibc-fbc staticglibc-fbc-x.xx.x targz""##
+
+{{fbdoc item="subsect" value="FreeBASIC-x.xx.x-linux-staticbin"}}
+
+	- exact same as FreeBASIC-x.xx.x-linux, except that the fbc binary is built using the staticglibc-fbc setup
+	- config.mk:
+	
+	
+		%%FBC := /path/to/staticglibc-fbc/fbc-new
+FBLFLAGS := -static -l tinfo
+ENABLE_FBBFD := 217
+%%
+	
+	- regenerate & check the manifest:
+		##contrib/manifest/update.sh linux##
+	- package:
+		##""contrib/manifest/package.sh linux FreeBASIC-x.xx.x-linux-staticbin targz""##
 
 {{fbdoc item="section" value="DOS"}}
 
@@ -157,7 +241,7 @@ ENABLE_FBBFD := 217
 		(this requires automake, autoconf, bison, flex, etc. to be installed)
 	- get an FB setup to compile the new fbc binary (usually the latest development version, or at least the previous release)
 	- ensure the FB setup will link the new compiler against the libbfd.a 2.17 built before, e.g. by copying the libbfd.a into the FB setup's lib/ dir, or by using -p c:/path/to/libbfd217/ when linking the new fbc
-	- build the new FB release with something like the following config.mk:
+	- config.mk:
 	
 	
 		%%ENABLE_STANDALONE := YesPlease
@@ -179,7 +263,8 @@ FBLFLAGS := -p c:/path/to/libbfd217/
 
 {{fbdoc item="subsect" value="fbcxxxxb.zip"}}
 
-	- exactly like the ""FreeBASIC-x.xx.x-dos"" release, but build with a config.mk like:
+	- exactly like the ""FreeBASIC-x.xx.x-dos"" release
+	- config.mk:
 	
 	
 		%%ENABLE_FBBFD := 217
