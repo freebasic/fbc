@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 const FB_VER_MAJOR          = 0
-const FB_VER_MINOR          = 24
+const FB_VER_MINOR          = 25
 const FB_VER_PATCH          = 0
 
 
