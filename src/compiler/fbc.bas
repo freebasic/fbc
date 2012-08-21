@@ -2630,7 +2630,8 @@ end sub
 
 	if( (listGetHead(@fbc.modules) = NULL) and _
 	    (listGetHead(@fbc.objlist) = NULL) and _
-	    (listGetHead(@fbc.libs.list) = NULL)) then
+	    (listGetHead(@fbc.libs.list) = NULL) and _
+	    (listGetHead(@fbc.libfiles) = NULL) ) then
 		printOptions()
 		fbcEnd( 1 )
 	end if

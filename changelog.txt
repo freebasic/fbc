@@ -9,6 +9,7 @@ Version 0.25.0:
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
 - QuickLZ 1.5.0 header & example
+- "fbc libfoo.a" showed usage notes, instead of compiling like "fbc -l foo"
 
 
 Version 0.24.0:
