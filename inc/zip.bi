@@ -212,7 +212,7 @@ end enum
 #define ZIP_STAT_ENCRYPTION_METHOD  &h0080
 #define ZIP_STAT_FLAGS          &h0100
 
-type zip_stat_
+type zip_stat
     as zip_uint64_t valid             '' which fields have valid values
     as const zstring ptr name         '' name of the file
     as zip_uint64_t index             '' index within archive
@@ -277,9 +277,9 @@ declare function zip_source_filep(byval as zip ptr, byval as FILE ptr, byval as 
 declare sub zip_source_free(byval as zip_source ptr)
 declare function zip_source_function(byval as zip ptr, byval as zip_source_callback, byval as any ptr) as zip_source ptr
 declare function zip_source_zip(byval as zip ptr, byval as zip ptr, byval as zip_uint64_t, byval as integer, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
-declare function zip_stat(byval as zip ptr, byval as const zstring ptr, byval as integer, byval as zip_stat_ ptr) as integer
-declare function zip_stat_index(byval as zip ptr, byval as zip_uint64_t, byval as integer, byval as zip_stat_ ptr) as integer
-declare sub zip_stat_init(byval as zip_stat_ ptr)
+declare function zip_stat(byval as zip ptr, byval as const zstring ptr, byval as integer, byval as zip_stat ptr) as integer
+declare function zip_stat_index(byval as zip ptr, byval as zip_uint64_t, byval as integer, byval as zip_stat ptr) as integer
+declare sub zip_stat_init(byval as zip_stat ptr)
 declare function zip_strerror(byval as zip ptr) as const zstring ptr
 declare function zip_unchange(byval as zip ptr, byval as zip_uint64_t) as integer
 declare function zip_unchange_all(byval as zip ptr) as integer
