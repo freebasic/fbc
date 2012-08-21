@@ -28,7 +28,7 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#include "caca.bi"
+#include "caca0.bi"
 
 ' Virtual buffer size
 #define XSIZ 256
@@ -109,7 +109,7 @@ do until caca_get_event(CACA_EVENT_KEY_PRESS)
 
 	caca_draw_bitmap( 0, 0, caca_get_width() - 1, caca_get_height() - 1, _
 	                  bitmap, @screen(0) )
-	caca_refresh
+	caca_refresh()
 
 	frame += 1
 loop
