@@ -2,7 +2,7 @@
 #define _HAD_ZIP_BI
 
 /'
-  This is a FB translation of:
+  This is an FB translation of:
 
   zip.h -- exported declarations.
   Copyright (C) 1999-2011 Dieter Baron and Thomas Klausner
@@ -44,7 +44,7 @@
 extern "c"
 
 '' <zipconf.bi>
-#define LIBZIP_VERSION "0.10"
+#define LIBZIP_VERSION "0.10.1"
 #define LIBZIP_VERSION_MAJOR 0
 #define LIBZIP_VERSION_MINOR 10
 #define LIBZIP_VERSION_MICRO 0
@@ -164,17 +164,17 @@ type zip_uint64_t as uint64_t
 '' 11 - Reserved by PKWARE
 #define ZIP_CM_BZIP2          12  '' compressed using BZIP2 algorithm
 '' 13 - Reserved by PKWARE
-#define ZIP_CM_LZMA       14  '' LZMA (EFS)
+#define ZIP_CM_LZMA           14  '' LZMA (EFS)
 '' 15-17 - Reserved by PKWARE
 #define ZIP_CM_TERSE          18  '' compressed using IBM TERSE (new)
 #define ZIP_CM_LZ77           19  '' IBM LZ77 z Architecture (PFS)
 #define ZIP_CM_WAVPACK        97  '' WavPack compressed data
-#define ZIP_CM_PPMD       98  '' PPMd version I, Rev 1
+#define ZIP_CM_PPMD           98  '' PPMd version I, Rev 1
 
 
 '' encryption methods
 
-#define ZIP_EM_NONE        0 '' not encrypted
+#define ZIP_EM_NONE            0 '' not encrypted
 #define ZIP_EM_TRAD_PKWARE     1 '' traditional PKWARE encryption
 #if 0 '' Strong Encryption Header not parsed yet
 #define ZIP_EM_DES        &h6601 '' strong encryption: DES
@@ -244,7 +244,7 @@ declare function zip_delete(byval as zip ptr, byval as zip_uint64_t) as integer
 declare sub zip_error_clear(byval as zip ptr)
 declare sub zip_error_get(byval as zip ptr, byval as integer ptr, byval as integer ptr)
 declare function zip_error_get_sys_type(byval as integer) as integer
-declare function zip_error_to_str(byval as ubyte ptr, byval as zip_uint64_t, byval as integer, byval as integer) as integer
+declare function zip_error_to_str(byval as zstring ptr, byval as zip_uint64_t, byval as integer, byval as integer) as integer
 declare function zip_fclose(byval as zip_file ptr) as integer
 declare function zip_fdopen(byval as integer, byval as integer, byval as integer ptr) as zip ptr
 declare sub zip_file_error_clear(byval as zip_file ptr)
@@ -266,11 +266,11 @@ declare function zip_name_locate(byval as zip ptr, byval as const zstring ptr, b
 declare function zip_open(byval as const zstring ptr, byval as integer, byval as integer ptr) as zip ptr
 declare function zip_rename(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr) as integer
 declare function zip_replace(byval as zip ptr, byval as zip_uint64_t, byval as zip_source ptr) as integer
-declare function zip_set_archive_comment(byval as zip ptr, byval as const ubyte ptr, byval as integer) as integer
+declare function zip_set_archive_comment(byval as zip ptr, byval as const zstring ptr, byval as integer) as integer
 declare function zip_set_archive_flag(byval as zip ptr, byval as integer, byval as integer) as integer
 declare function zip_set_default_password(byval as zip ptr, byval as const zstring ptr) as integer
-declare function zip_set_file_comment(byval as zip ptr, byval as zip_uint64_t, byval as const ubyte ptr, byval as integer) as integer
-declare function zip_set_file_extra(byval as zip ptr, byval as zip_uint64_t, byval as const ubyte ptr, byval as integer) as integer
+declare function zip_set_file_comment(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as integer) as integer
+declare function zip_set_file_extra(byval as zip ptr, byval as zip_uint64_t, byval as const zstring ptr, byval as integer) as integer
 declare function zip_source_buffer(byval as zip ptr, byval as const any ptr, byval as zip_uint64_t, byval as integer) as zip_source ptr
 declare function zip_source_file(byval as zip ptr, byval as const zstring ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
 declare function zip_source_filep(byval as zip ptr, byval as FILE ptr, byval as zip_uint64_t, byval as zip_int64_t) as zip_source ptr
