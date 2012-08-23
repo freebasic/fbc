@@ -4,8 +4,6 @@
 #include "fb_private_console.h"
 #include <ctype.h>
 
-fb_FnProcessMouseEvent mouseEventHook = 0;
-
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];
 static size_t key_head = 0, key_tail = 0;
