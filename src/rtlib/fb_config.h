@@ -16,6 +16,7 @@
 #elif defined __CYGWIN__
 	#define HOST_CYGWIN
 	#define HOST_WIN32
+	#define WIN32_LEAN_AND_MEAN
 #elif defined __linux__
 	#define HOST_LINUX
 	#define HOST_UNIX

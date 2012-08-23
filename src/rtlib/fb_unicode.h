@@ -16,11 +16,11 @@ typedef uint8_t  UTF_8;
 #define UTF16_HALFBASE           (UTF_32)0x0010000UL
 #define UTF16_HALFMASK           (UTF_32)0x3FFUL
 
-#if defined( HOST_DOS ) || defined( HOST_CYGWIN )
+#if defined HOST_DOS
 #	include <ctype.h>
 #	define FB_WCHAR char
 #	define _LC(c) c
-#	define WEOF EOF
+#	define FB_WEOF EOF
 #	define wcslen(s) strlen(s)
 #	define iswlower(c) islower(c)
 #	define iswupper(c) isupper(c)
@@ -61,18 +61,23 @@ typedef uint8_t  UTF_8;
 		va_end(ap);
 		return result;
 	}
-#elif defined( HOST_MINGW )
+#elif defined HOST_MINGW || defined HOST_CYGWIN
 #	include <wchar.h>
 #	include <wctype.h>
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
-#	define swprintf _snwprintf
-#	define FB_WSTR_FROM_INT( buffer, num )        _itow( num, buffer, 10 )
-#	define FB_WSTR_FROM_UINT( buffer, num )       _ultow( (unsigned long) num, buffer, 10 )
-#	define FB_WSTR_FROM_UINT_OCT( buffer, num )   _itow( num, buffer, 8 )
-#	define FB_WSTR_FROM_INT64( buffer, num )      _i64tow( num, buffer, 10 )
-#	define FB_WSTR_FROM_UINT64( buffer, num )     _ui64tow( num, buffer, 10 )
-#	define FB_WSTR_FROM_UINT64_OCT( buffer, num ) _ui64tow( num, buffer, 8 )
+#	if defined HOST_MINGW
+#		define FB_WEOF WEOF
+#		define swprintf _snwprintf
+#		define FB_WSTR_FROM_INT( buffer, num )        _itow( num, buffer, 10 )
+#		define FB_WSTR_FROM_UINT( buffer, num )       _ultow( (unsigned long) num, buffer, 10 )
+#		define FB_WSTR_FROM_UINT_OCT( buffer, num )   _itow( num, buffer, 8 )
+#		define FB_WSTR_FROM_INT64( buffer, num )      _i64tow( num, buffer, 10 )
+#		define FB_WSTR_FROM_UINT64( buffer, num )     _ui64tow( num, buffer, 10 )
+#		define FB_WSTR_FROM_UINT64_OCT( buffer, num ) _ui64tow( num, buffer, 8 )
+#	else
+#		define FB_WEOF ((FB_WCHAR)-1)
+#	endif
 #	define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
 	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
 	{
@@ -93,6 +98,7 @@ typedef uint8_t  UTF_8;
 #	include <wctype.h>
 #	define FB_WCHAR wchar_t
 #	define _LC(c) L ## c
+#	define FB_WEOF WEOF
 #endif
 
 #ifndef FB_WSTR_FROM_INT
