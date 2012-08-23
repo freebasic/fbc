@@ -1,7 +1,8 @@
 #ifndef __FB_CONFIG_H__
 #define __FB_CONFIG_H__
 
-#ifdef __DJGPP__
+#if defined HOST_XBOX
+#elif defined __DJGPP__
 	#define HOST_DOS
 	#define HOST_DJGPP
 #elif defined __MINGW32__ /* MinGW, MinGW-w64, TDM-GCC */

@@ -307,6 +307,28 @@ ALLFBCFLAGS := -e -m fbc -w pedantic
 ALLFBLFLAGS := -e -m fbc -w pedantic
 ALLCFLAGS := -Wall
 
+ifeq ($(TARGET_OS),xbox)
+  ifeq ($(OPENXDK),)
+    $(error Please set OPENXDK=<OpenXDK directory>)
+  endif
+
+  MINGWGCCLIBDIR := $(dir $(shell $(CC) -print-file-name=libgcc.a))
+
+  ALLCFLAGS += -ffreestanding -nostdinc -fno-exceptions -march=i386 \
+    -I$(OPENXDK)/i386-pc-xbox/include \
+    -I$(OPENXDK)/include \
+    -I$(MINGWGCCLIBDIR)/include
+
+  # src/rtlib/fb_config.h cannot auto-detect this
+  ALLCFLAGS += -DHOST_XBOX
+
+  # Assume no libffi for now (does it work on Xbox?)
+  ALLCFLAGS += -DDISABLE_FFI
+
+  # -DENABLE_MT parts of rtlib XBox code aren't finished
+  DISABLE_MT := YesPlease
+endif
+
 # If cross-compiling, use -target
 ifdef TARGET
   ALLFBCFLAGS += -target $(TARGET)
@@ -388,18 +410,6 @@ LIBFBMT_S := $(patsubst $(newlibfb)/%,$(newlibfbmt)/%,$(LIBFB_S))
 LIBFBGFX_H := $(sort $(foreach i,$(GFXLIB2_DIRS),$(wildcard $(i)/*.h)) $(LIBFB_H))
 LIBFBGFX_C := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.c,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.c))))
 LIBFBGFX_S := $(sort $(foreach i,$(GFXLIB2_DIRS),$(patsubst $(i)/%.s,$(newlibfbgfx)/%.o,$(wildcard $(i)/*.s))))
-
-ifeq ($(TARGET_OS),xbox)
-  ALLCFLAGS += -DHOST_XBOX
-
-  # Some special treatment for xbox. TODO: Test me, update me!
-  ALLCFLAGS += -DENABLE_XBOX -DDISABLE_CDROM
-  ALLCFLAGS += -std=gnu99 -mno-cygwin -nostdlib -nostdinc
-  ALLCFLAGS += -ffreestanding -fno-builtin -fno-exceptions
-  ALLCFLAGS += -I$(OPENXDK)/i386-pc-xbox/include
-  ALLCFLAGS += -I$(OPENXDK)/include
-  ALLCFLAGS += -I$(OPENXDK)/include/SDL
-endif
 
 #
 # Build rules
