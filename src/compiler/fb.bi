@@ -49,35 +49,45 @@ const FB_VER_STR_MAJOR    	= str( FB_VER_MAJOR )
 const FB_VER_STR_MINOR    	= str( FB_VER_MINOR )
 const FB_VER_STR_PATCH    	= str( FB_VER_PATCH )
 
-'' compiler options
+'' compiler options corresponding to the FBCMMLINEOPT struct
+'' (for use with the public fbSet/GetOption() interface)
 enum FB_COMPOPT
-	FB_COMPOPT_DEBUG
-	FB_COMPOPT_CPUTYPE
-	FB_COMPOPT_FPUTYPE
-	FB_COMPOPT_FPMODE
-	FB_COMPOPT_VECTORIZE
-	FB_COMPOPT_NOSTDCALL
-	FB_COMPOPT_NOUNDERPREFIX
-	FB_COMPOPT_ERRORCHECK
-	FB_COMPOPT_OUTTYPE
-	FB_COMPOPT_RESUMEERROR
-	FB_COMPOPT_WARNINGLEVEL
-	FB_COMPOPT_EXPORT
-	FB_COMPOPT_SHOWERROR
-	FB_COMPOPT_MULTITHREADED
-	FB_COMPOPT_PROFILE
-	FB_COMPOPT_TARGET
-	FB_COMPOPT_EXTRAERRCHECK
-	FB_COMPOPT_MSBITFIELDS
-	FB_COMPOPT_MAXERRORS
-	FB_COMPOPT_LANG
-	FB_COMPOPT_FORCELANG
-	FB_COMPOPT_PEDANTICCHK
-	FB_COMPOPT_BACKEND
+	'' compiler output file type
+	FB_COMPOPT_OUTTYPE              '' FB_OUTTYPE_*
+	FB_COMPOPT_PPONLY               '' boolean: TRUE for preprocessor-only mode
+
+	'' backend, target, code generation
+	FB_COMPOPT_BACKEND              '' FB_BACKEND_*
+	FB_COMPOPT_TARGET               '' FB_COMPTARGET_*
+	FB_COMPOPT_CPUTYPE              '' FB_CPUTYPE_*
+	FB_COMPOPT_FPUTYPE              '' FB_FPUTYPE_*
+	FB_COMPOPT_FPMODE               '' FB_FPMODE_*
+	FB_COMPOPT_VECTORIZE            '' FB_VECTORIZELEVEL_*
+	FB_COMPOPT_OPTIMIZELEVEL        '' integer, for -gen gcc's gcc -O<N>
+
+	'' parser -lang mode
+	FB_COMPOPT_LANG                 '' FB_LANG_*: lang compatibility
+	FB_COMPOPT_FORCELANG            '' boolean: TRUE if -forcelang was specified
+
+	'' debugging/error checking
+	FB_COMPOPT_DEBUG                '' boolean: -g
+	FB_COMPOPT_ERRORCHECK           '' boolean: runtime error checks
+	FB_COMPOPT_RESUMEERROR          '' boolean: RESUME support
+	FB_COMPOPT_EXTRAERRCHECK        '' boolean: NULL pointer/array bounds checks
+	FB_COMPOPT_PROFILE              '' boolean: -profile
+
+	'' error/warning reporting behaviour
+	FB_COMPOPT_WARNINGLEVEL         '' integer
+	FB_COMPOPT_SHOWERROR            '' boolean: show source code line containing error?
+	FB_COMPOPT_MAXERRORS            '' -maxerr integer
+	FB_COMPOPT_PEDANTICCHK          '' FB_PDCHECK_* flags
+
+	'' the rest
 	FB_COMPOPT_EXTRAOPT
-	FB_COMPOPT_OPTIMIZELEVEL
-	FB_COMPOPT_PPONLY
-	FB_COMPOPT_STACKSIZE
+	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
+	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
+	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
+	FB_COMPOPT_STACKSIZE            '' integer
 
 	FB_COMPOPTIONS
 end enum
@@ -200,35 +210,45 @@ enum FB_EXTRAOPT
 	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
 end enum
 
-''
+'' Compiler internal settings, same order as FB_COMPOPT_*
 type FBCMMLINEOPT
-	debug			as integer					'' true=add debug info (def= false)
-	cputype			as FB_CPUTYPE
-	fputype			as FB_FPUTYPE
-	fpmode			as FB_FPMODE				'' precise or fast fp mode (SSE+ only)
-	vectorize		as FB_VECTORIZELEVEL		'' enable automatic vectorization
-	errorcheck		as integer					'' runtime error check (def= false)
-	outtype			as FB_OUTTYPE
-	resumeerr 		as integer					'' add support for RESUME (def= false)
-	warninglevel	as integer					'' (def = 0)
-	export			as integer					'' export all symbols declared as EXPORT (def= true)
-	showerror		as integer					'' show line giving error (def= true)
-	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
-	profile			as integer					'' build profiling code (def= false)
-	target			as FB_COMPTARGET            '' target platform
-	extraerrchk		as integer					'' add bounds plus null pointer checking
-	msbitfields		as integer					'' use M$'s bitfields packing
-	maxerrors		as integer					'' max number errors until the parser quit
-	lang			as FB_LANG					'' lang compatibility
-	forcelang		as integer					'' TRUE if -forcelang was specified
-	pdcheckopt		as FB_PDCHECK				'' pedantic checks
-	backend			as FB_BACKEND				'' backend
-	extraopt		as FB_EXTRAOPT				'' Extra (misc) options
-	optlevel		as integer					'' optimize level (for gcc)
-	pponly			as integer
-	stacksize		as integer
-end type
+	'' compiler output file type
+	outtype         as FB_OUTTYPE
+	pponly          as integer              '' TRUE for preprocessor-only mode
 
+	'' backend, target, code generation
+	backend         as FB_BACKEND           '' backend (-gen gas/gcc)
+	target          as FB_COMPTARGET        '' target platform
+	cputype         as FB_CPUTYPE           '' target CPU architecture
+	fputype         as FB_FPUTYPE           '' target FPU
+	fpmode          as FB_FPMODE            '' precise or fast fp mode (SSE+ only)
+	vectorize       as FB_VECTORIZELEVEL    '' enable automatic vectorization
+	optlevel        as integer              '' -gen gcc optimization level (gcc -O<N>)
+
+	'' parser -lang mode
+	lang            as FB_LANG              '' lang compatibility
+	forcelang       as integer              '' TRUE if -forcelang was specified
+
+	'' debugging/error checking
+	debug           as integer              '' true = add debug info (default = false)
+	errorcheck      as integer              '' enable runtime error checks?
+	resumeerr       as integer              '' enable RESUME support?
+	extraerrchk     as integer              '' enable NULL pointer/array bounds checks?
+	profile         as integer              '' build profiling code (default = false)
+
+	'' error/warning reporting behaviour
+	warninglevel    as integer              '' (default = 0)
+	showerror       as integer              '' show line giving error (default = true)
+	maxerrors       as integer              '' max number errors the parser will show
+	pdcheckopt      as FB_PDCHECK           '' pedantic checks
+
+	'' the rest
+	extraopt        as FB_EXTRAOPT
+	export          as integer              '' export all symbols declared as EXPORT (default = true)
+	msbitfields     as integer              '' use M$'s bitfields packing
+	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
+	stacksize       as integer
+end type
 
 '' features allowed in the selected language
 enum FB_LANG_OPT
