@@ -745,6 +745,12 @@ function symbGetVarHasCtor _
 	case FB_DATATYPE_STRING
 		return TRUE
 
+	'' wchar ptr marked as "dynamic wstring"?
+	case typeAddrOf( FB_DATATYPE_WCHAR )
+		if( symbGetIsWstring( s ) ) then
+			return TRUE
+		end if
+
    	'' has a default ctor?
    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
    		if( symbGetCompDefCtor( symbGetSubtype( s ) ) <> NULL ) then
