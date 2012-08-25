@@ -2242,6 +2242,10 @@ private function assembleBas(byval module as FBCIOFILE ptr) as integer
 		if (fbGetOption(FB_COMPOPT_FPUTYPE) = FB_FPUTYPE_SSE) then
 			ln += "-mfpmath=sse -msse2 "
 		end if
+
+		if( fbGetOption( FB_COMPOPT_ASMSYNTAX ) = FB_ASMSYNTAX_INTEL ) then
+			ln += "-masm=intel "
+		end if
 	else
 		tool = FBCTOOL_AS
 
@@ -2536,7 +2540,7 @@ private sub printOptions( )
 	print "  @<file>          Read more command line arguments from a file"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
-	print "  -asm att|intel   Set asm format (no effect yet)"
+	print "  -asm att|intel   Set asm format (-gen gcc)"
 	print "  -b <file>        Treat file as .bas input file"
 	print "  -c               Compile only, do not link"
 	print "  -C               Preserve temporary .o files"
