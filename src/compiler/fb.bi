@@ -64,6 +64,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_FPMODE               '' FB_FPMODE_*
 	FB_COMPOPT_VECTORIZE            '' FB_VECTORIZELEVEL_*
 	FB_COMPOPT_OPTIMIZELEVEL        '' integer, for -gen gcc's gcc -O<N>
+	FB_COMPOPT_ASMSYNTAX            '' FB_ASMSYNTAX_*, for -gen gcc
 
 	'' parser -lang mode
 	FB_COMPOPT_LANG                 '' FB_LANG_*: lang compatibility
@@ -201,6 +202,10 @@ end enum
 
 const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
+enum FB_ASMSYNTAX
+	FB_ASMSYNTAX_INTEL = 0
+	FB_ASMSYNTAX_ATT
+end enum
 
 '' Compiler internal settings, same order as FB_COMPOPT_*
 type FBCMMLINEOPT
@@ -216,6 +221,7 @@ type FBCMMLINEOPT
 	fpmode          as FB_FPMODE            '' precise or fast fp mode (SSE+ only)
 	vectorize       as FB_VECTORIZELEVEL    '' enable automatic vectorization
 	optlevel        as integer              '' -gen gcc optimization level (gcc -O<N>)
+	asmsyntax       as FB_ASMSYNTAX         '' asm syntax mode for -gen gcc
 
 	'' parser -lang mode
 	lang            as FB_LANG              '' lang compatibility

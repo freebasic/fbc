@@ -5,6 +5,7 @@ Version 0.25.0:
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
 - Updated header for libzip 0.10.1
+- fbc -asm att|intel option
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example

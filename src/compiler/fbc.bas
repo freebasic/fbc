@@ -1007,6 +1007,7 @@ end function
 enum
 	OPT_A = 0
 	OPT_ARCH
+	OPT_ASM
 	OPT_B
 	OPT_C
 	OPT_CKEEPOBJ
@@ -1062,6 +1063,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 { _
 	TRUE , _ '' OPT_A
 	TRUE , _ '' OPT_ARCH
+	TRUE , _ '' OPT_ASM
 	TRUE , _ '' OPT_B
 	FALSE, _ '' OPT_C
 	FALSE, _ '' OPT_CKEEPOBJ
@@ -1154,6 +1156,16 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		end select
 
 		fbSetOption( FB_COMPOPT_CPUTYPE, value )
+
+	case OPT_ASM
+		select case( arg )
+		case "att"
+			fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_ATT )
+		case "intel"
+			fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_INTEL )
+		case else
+			hFatalInvalidOption( arg )
+		end select
 
 	case OPT_B
 		addBas(arg)
@@ -1481,6 +1493,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("a")
 		ONECHAR(OPT_A)
 		CHECK("arch", OPT_ARCH)
+		CHECK("asm", OPT_ASM)
 
 	case asc("b")
 		ONECHAR(OPT_B)
@@ -2523,6 +2536,7 @@ private sub printOptions( )
 	print "  @<file>          Read more command line arguments from a file"
 	print "  -a <file>        Treat file as .o/.a input file"
 	print "  -arch <type>     Set target architecture (default: 486)"
+	print "  -asm att|intel   Set asm format (no effect yet)"
 	print "  -b <file>        Treat file as .bas input file"
 	print "  -c               Compile only, do not link"
 	print "  -C               Preserve temporary .o files"
