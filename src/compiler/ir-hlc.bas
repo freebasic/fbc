@@ -838,17 +838,26 @@ private sub hWriteFTOI _
 		ptype_suffix = "l"
 	end select
 
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		rtype_suffix = ""
+		ptype_suffix = ""
+	end if
+
 	'' TODO: x86 specific
-	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
-				!"\tvolatile " & rtype_str & !" result;\n" & _
-				!"\t__asm__ (\n" & _
-				!"\t\t\"fld" & ptype_suffix & !" %1;\"\n" & _
-				!"\t\t\"fistp" & rtype_suffix & !" %0;\"\n" & _
-				!"\t\t:\"=m\" (result)\n" & _
-				!"\t\t:\"m\" (value)\n" & _
-				!"\t);\n" & _
-				!"\treturn result;\n" & _
-				!"}", FALSE )
+	hWriteLine( "static inline " + rtype_str + " fb_" + fname +  " ( " + ptype_str + " value ) {", FALSE )
+	ctx.identcnt += 1
+		hWriteLine( "volatile " + rtype_str + " result" )
+		hWriteLine( "__asm__(", FALSE, TRUE )
+		ctx.identcnt += 1
+			hWriteLine( """fld" + ptype_suffix + " %1;"""  , FALSE, TRUE )
+			hWriteLine( """fistp" + rtype_suffix + " %0;""", FALSE, TRUE )
+			hWriteLine( ":""=m"" (result)", FALSE, TRUE )
+			hWriteLine( ":""m"" (value)"  , FALSE, TRUE )
+		ctx.identcnt -= 1
+		hWriteLine( ")", TRUE, TRUE )
+		hWriteLine( "return result" )
+	ctx.identcnt -= 1
+	hWriteLine( "}", FALSE )
 
 end sub
 
