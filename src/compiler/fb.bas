@@ -310,7 +310,8 @@ sub fbGlobalInit()
 	env.clopt.showerror     = TRUE
 	env.clopt.maxerrors     = FB_DEFAULT_MAXERRORS
 	env.clopt.pdcheckopt    = FB_PDCHECK_NONE
-	env.clopt.extraopt      = FB_EXTRAOPT_NONE
+
+	env.clopt.gosubsetjmp   = FALSE
 	env.clopt.export        = FALSE
 	env.clopt.multithreaded = FALSE
 	env.clopt.msbitfields   = FALSE
@@ -381,8 +382,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 	case FB_COMPOPT_PEDANTICCHK
 		env.clopt.pdcheckopt = value
 
-	case FB_COMPOPT_EXTRAOPT
-		env.clopt.extraopt = value
+	case FB_COMPOPT_GOSUBSETJMP
+		env.clopt.gosubsetjmp = value
 	case FB_COMPOPT_EXPORT
 		env.clopt.export = value
 	case FB_COMPOPT_MSBITFIELDS
@@ -444,8 +445,8 @@ function fbGetOption( byval opt as integer ) as integer
 	case FB_COMPOPT_PEDANTICCHK
 		function = env.clopt.pdcheckopt
 
-	case FB_COMPOPT_EXTRAOPT
-		function = env.clopt.extraopt
+	case FB_COMPOPT_GOSUBSETJMP
+		function = env.clopt.gosubsetjmp
 	case FB_COMPOPT_EXPORT
 		function = env.clopt.export
 	case FB_COMPOPT_MSBITFIELDS

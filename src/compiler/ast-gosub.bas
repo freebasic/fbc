@@ -21,11 +21,8 @@
 '' on the command line (jeffm)
 ''
 #define AsmBackend() _
-	( _
-	( FB_BACKEND_GAS = fbGetOption( FB_COMPOPT_BACKEND )) _
-	and _
-	( 0 = (FB_EXTRAOPT_GOSUB_SETJMP and fbGetOption( FB_COMPOPT_EXTRAOPT )) ) _
-	)
+	( (env.clopt.backend = FB_BACKEND_GAS) and _
+	  (env.clopt.gosubsetjmp = FALSE) )
 
 '':::::
 sub astGosubAddInit _

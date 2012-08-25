@@ -1454,16 +1454,12 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.outname = arg
 
 	case OPT_Z
-		dim as integer value = fbGetOption( FB_COMPOPT_EXTRAOPT )
-
-		select case (lcase(arg))
+		select case( lcase( arg ) )
 		case "gosub-setjmp"
-			value or= FB_EXTRAOPT_GOSUB_SETJMP
+			fbSetOption( FB_COMPOPT_GOSUBSETJMP, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select
-
-		fbSetOption( FB_COMPOPT_EXTRAOPT, value )
 
 	end select
 end sub

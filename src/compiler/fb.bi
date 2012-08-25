@@ -83,7 +83,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_PEDANTICCHK          '' FB_PDCHECK_* flags
 
 	'' the rest
-	FB_COMPOPT_EXTRAOPT
+	FB_COMPOPT_GOSUBSETJMP          '' boolean: implement GOSUB using setjmp/longjump?
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
 	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
@@ -201,14 +201,6 @@ end enum
 
 const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 
-'' Extra options
-enum FB_EXTRAOPT
-	FB_EXTRAOPT_NONE              = &h00000000
-
-	FB_EXTRAOPT_GOSUB_SETJMP = &h00000001
-
-	FB_EXTRAOPT_DEFAULT           = FB_EXTRAOPT_NONE
-end enum
 
 '' Compiler internal settings, same order as FB_COMPOPT_*
 type FBCMMLINEOPT
@@ -243,7 +235,7 @@ type FBCMMLINEOPT
 	pdcheckopt      as FB_PDCHECK           '' pedantic checks
 
 	'' the rest
-	extraopt        as FB_EXTRAOPT
+	gosubsetjmp     as integer              '' implement GOSUB using setjmp/longjump? (default = false)
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing
 	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
