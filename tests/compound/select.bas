@@ -1,8 +1,5 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.compound.select_
 
 const FALSE = 0
@@ -242,8 +239,20 @@ const TEST = -100
 
 end sub
 
-sub ctor () constructor
+private sub testStringConcat cdecl( )
+	dim as string s = "a"
 
+	select case( s + "b" )
+	case "ab"
+
+	case "b"
+		CU_FAIL( )
+	case else
+		CU_FAIL( )
+	end select
+end sub
+
+sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests-compound:select")
 	fbcu.add_test("test single1", @test_single_1)
 	fbcu.add_test("test single2", @test_single_2)
@@ -251,7 +260,7 @@ sub ctor () constructor
 	fbcu.add_test("test range2", @test_range_2)
 	fbcu.add_test("test is1", @test_is_1)
 	fbcu.add_test("test is2", @test_is_2)
-
+	fbcu.add_test("SELECT CASE s + s", @testStringConcat)
 end sub
 
 end namespace

@@ -12,6 +12,7 @@ Version 0.25.0:
 - "fbc libfoo.a" showed usage notes, instead of compiling like "fbc -l foo"
 - GOTO jumping over the implicit wstring variable initialization of a SELECT CASE wstring into one of its CASE blocks will now show an error instead of only a warning
 - GOTO jumping over the implicit variable initialization of a SELECT CASE (on anything except strings) into one of its CASE blocks will no longer show a false-positive "branch crossing ..." warning
+- 'SELECT CASE str1 + str2' was broken and behaved like 'SELECT CASE str2'
 
 
 Version 0.24.0:

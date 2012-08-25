@@ -117,29 +117,28 @@ sub cSelectStmtBegin()
 
     '' not a wstring?
 	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
+		'' dim temp as dtype
 		sym = symbAddTempVar( dtype, subtype )
 
 		'' Remove temp flag to have its dtor called at scope breaks/end
 		'' (needed at least in case the temporary is a string)
 		symbUnsetIsTemp( sym )
 
-		'' Treat as if '= ANY' was used unless it's a dynamic string,
-		'' this silences "branch crossing ..." warnings when jumping
-		'' over the SELECT CASE into a CASE block.
+		'' Anything besides FBSTRINGs doesn't need to be cleared
+		'' (this also silences "branch crossing ..." warnings when
+		'' jumping over a SELECT CASE integer into a CASE block)
 		if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
 			symbSetDontInit( sym )
 		end if
 
-		'' This astNewVAR() will clear the temp var if it's a string
-		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
-		if( expr <> NULL ) then
-			astAdd( expr )
-		end if
+		astAdd( astNewDECL( sym, NULL ) )
+
+		astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), expr ) )
 	else
 		'' the wstring must be allocated() but size
 		'' is unknown at compile-time, do:
 
-		''  dim wstring ptr tmp
+		'' dim temp as wstring ptr
 		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
 
 		'' Remove temp flag to have it considered for dtor calling
@@ -149,28 +148,25 @@ sub cSelectStmtBegin()
 		'' WstrFree() at scope breaks/end
 		symbSetIsWstring( sym )
 
+		'' Pretent "= ANY" was used - even though the fake wstring
+		'' is pretended to have a constructor, we don't need the
+		'' default clear done by astNewDECL()
+		symbSetDontInit( sym )
+
+		astAdd( astNewDECL( sym, NULL ) )
+
 		'' side-effect?
 		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
 			astAdd( astRemSideFx( expr ) )
 		end if
 
 		'' tmp = WstrAlloc( len( expr ) )
-		astAdd( astNewASSIGN( astNewVAR( sym, _
-										 0, _
-										 typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+		astAdd( astNewASSIGN( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+		                      rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
-		expr = astNewASSIGN( astNewDEREF( astNewVAR( sym, _
-								  		 		     0, _
-								  		 		     typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-								  	      FB_DATATYPE_WCHAR, _
-								  	      NULL ), _
-				      		 expr )
-
-		if( expr <> NULL ) then
-			astAdd( expr )
-		end if
+		astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+		                      expr ) )
 	end if
 
 	'' push to stmt stack
