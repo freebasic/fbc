@@ -123,6 +123,14 @@ sub cSelectStmtBegin()
 		'' (needed at least in case the temporary is a string)
 		symbUnsetIsTemp( sym )
 
+		'' Treat as if '= ANY' was used unless it's a dynamic string,
+		'' this silences "branch crossing ..." warnings when jumping
+		'' over the SELECT CASE into a CASE block.
+		if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
+			symbSetDontInit( sym )
+		end if
+
+		'' This astNewVAR() will clear the temp var if it's a string
 		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
 		if( expr <> NULL ) then
 			astAdd( expr )
