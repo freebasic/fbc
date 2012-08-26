@@ -795,7 +795,10 @@ function astPtrCheck _
 		if (astIsCONST(expr) = FALSE) then
 			exit function
 		end if
-		return (astGetValInt(expr) = 0)
+		if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
+			return (astGetValueAsLongint( expr ) = 0)
+		end if
+		return FALSE
 	end if
 
 	'' different constant masks?
