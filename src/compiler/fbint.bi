@@ -567,23 +567,6 @@ end enum
 #include once "symb.bi"
 
 ''
-enum FB_ASMTOK_TYPE
-	FB_ASMTOK_SYMB
-	FB_ASMTOK_TEXT
-end enum
-
-type FB_ASMTOK
-	type			as FB_ASMTOK_TYPE
-
-	union
-		sym			as FBSYMBOL ptr
-		text		as zstring ptr
-	end union
-
-	next			as FB_ASMTOK ptr
-end type
-
-''
 enum FBFILE_FORMAT
 	FBFILE_FORMAT_ASCII
 	FBFILE_FORMAT_UTF8

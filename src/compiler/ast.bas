@@ -203,9 +203,13 @@ sub astInit( )
     astProcListInit( )
     astDataStmtInit( )
     astMiscInit( )
+
+	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
 
 sub astEnd( )
+	listEnd( @ast.asmtoklist )
+
 	astMiscEnd( )
 	astProcListEnd( )
     astCallEnd( )

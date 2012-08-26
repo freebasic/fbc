@@ -136,10 +136,22 @@ type AST_NODE_LIT
 	text			as zstring ptr
 end type
 
-type FB_ASMTOK_ as FB_ASMTOK
+enum AST_ASMTOKTYPE
+	AST_ASMTOK_TEXT
+	AST_ASMTOK_SYMB
+end enum
+
+type ASTASMTOK
+	type		as AST_ASMTOKTYPE
+	union
+		sym	as FBSYMBOL ptr
+		text	as zstring ptr
+	end union
+	next		as ASTASMTOK ptr
+end type
 
 type AST_NODE_ASM
-	head			as FB_ASMTOK_ ptr
+	tokhead as ASTASMTOK ptr
 end type
 
 type AST_NODE_OP                                  	'' used by: bop, uop, conv & addr
@@ -319,6 +331,8 @@ type ASTCTX
 
 	dtorlist		as TLIST						'' temp dtors list
 	flushdtorlist	as integer
+
+	asmtoklist		as TLIST  '' inline ASM token nodes
 end Type
 
 #include once "ir.bi"
@@ -721,10 +735,19 @@ declare function astNewLIT _
 		byval text as zstring ptr _
 	) as ASTNODE ptr
 
-declare function astNewASM _
+declare function astAsmAppendText _
 	( _
-		byval listhead as FB_ASMTOK_ ptr _
-	) as ASTNODE ptr
+		byval tail as ASTASMTOK ptr, _
+		byval text as zstring ptr _
+	) as ASTASMTOK ptr
+
+declare function astAsmAppendSymb _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTASMTOK ptr
+
+declare function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 
 declare function astNewJMPTB_Label _
 	( _

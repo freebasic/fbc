@@ -177,8 +177,6 @@ type PARSERCTX
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
 
-	asmtoklist		as TLIST					'' inline ASM list
-
 	ovlarglist		as TLIST					'' used to resolve calls to overloaded functions
 
 	'' hacks

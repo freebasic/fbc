@@ -70,45 +70,91 @@ function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = NULL
 end function
 
+private function astAsmAppend _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval typ as integer _
+	) as ASTASMTOK ptr
+
+	dim as ASTASMTOK ptr asmtok = any
+
+	asmtok = listNewNode( @ast.asmtoklist )
+
+	if( tail ) then
+		tail->next = asmtok
+	end if
+	asmtok->type = typ
+	asmtok->next = NULL
+
+	function = asmtok
+end function
+
+function astAsmAppendText _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval text as zstring ptr _
+	) as ASTASMTOK ptr
+
+	tail = astAsmAppend( tail, AST_ASMTOK_TEXT )
+
+	tail->text = ZstrAllocate( len( *text ) )
+	*tail->text = *text
+
+	function = tail
+end function
+
+function astAsmAppendSymb _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTASMTOK ptr
+
+	tail = astAsmAppend( tail, AST_ASMTOK_SYMB )
+
+	tail->sym = sym
+
+	function = tail
+end function
+
 '' ASM (l = NULL; r = NULL)
-function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr
+function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
 
-	n->asm.head = listhead
+	n->asm.tokhead = asmtokhead
 
 	function = n
 end function
 
 function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as FB_ASMTOK ptr node = any, nxt = any
+	dim as ASTASMTOK ptr node = any, nxt = any
     dim as string asmline
 
 	asmline = ""
 
-	node = n->asm.head
+	node = n->asm.tokhead
 	do while( node <> NULL )
 		nxt = node->next
 
 		if( ast.doemit ) then
 			select case node->type
-			case FB_ASMTOK_SYMB
+			case AST_ASMTOK_SYMB
 				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 					asmline += *symbGetMangledName( node->sym )
 				else
 					asmline += emitGetVarName( node->sym )
 				end if
-			case FB_ASMTOK_TEXT
+			case AST_ASMTOK_TEXT
 				asmline += *node->text
 			end select
 		end if
 
-		if( node->type = FB_ASMTOK_TEXT ) then
+		if( node->type = AST_ASMTOK_TEXT ) then
 			ZstrFree( node->text )
 		end if
 
-		listDelNode( @parser.asmtoklist, node )
+		listDelNode( @ast.asmtoklist, node )
 		node = nxt
 	loop
 

@@ -21,10 +21,6 @@ declare sub	parserProcCallInit ( )
 
 declare sub	parserProcCallEnd ( )
 
-declare sub	parserAsmInit ( )
-
-declare sub	parserAsmEnd ( )
-
 declare sub	parserLetInit( )
 
 declare sub parserLetEnd( )
@@ -59,8 +55,6 @@ end sub
 '':::::
 sub	parserInit( )
 
-	parserAsmInit( )
-
 	parserCompoundStmtInit( )
 
 	parserProcCallInit( )
@@ -77,8 +71,6 @@ sub	parserEnd( )
 	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
-
-	parserAsmEnd( )
 
 end sub
 
