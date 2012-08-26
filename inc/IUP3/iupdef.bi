@@ -416,7 +416,7 @@
 #define IUP_K_mZ "K_mZ"
 #define IUP_K_BS "K_BS"
 #define IUP_K_TAB "K_TAB"
-#define IUP_K_CR "K_CR"
+#define IUP_K_CR_ "K_CR"
 #define IUP_K_SP "K_SP"
 #define IUP_K_ESC "K_ESC"
 #define IUP_K_sCR "K_sCR"

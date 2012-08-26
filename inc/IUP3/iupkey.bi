@@ -113,7 +113,7 @@
 #define K_BS 8
 #define K_TAB 9
 #define K_LF asc(!"\n")
-#define K_CR asc(!"\r")
+#define K_CR_ asc(!"\r")
 
 '/* backward compatible definitions */
 #define K_quoteleft asc("`")
@@ -151,7 +151,7 @@
 #define K_DEL ((11) +128)
 #define K_PAUSE ((12) +128)
 #define K_ESC ((13) +128)
-#define K_ccedilla ((14) +128)
+#define K_c_cedilla ((14) +128)
 #define K_F1 ((15) +128)
 #define K_F2 ((16) +128)
 #define K_F3 ((17) +128)

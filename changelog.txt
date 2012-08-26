@@ -14,6 +14,7 @@ Version 0.25.0:
 - GOTO jumping over the implicit variable initialization of a SELECT CASE (on anything except strings) into one of its CASE blocks will no longer show a false-positive "branch crossing ..." warning
 - 'SELECT CASE str1 + str2' was broken and behaved like 'SELECT CASE str2'
 - Inconsistent warning message on implicit number to ptr conversions
+- Rename case-insensitive naming clashes in IUP3 header defines
 
 
 Version 0.24.0:
