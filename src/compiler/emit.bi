@@ -418,20 +418,8 @@ declare function emitGetRegClass _
 		byval dclass as integer _
 	) as REGCLASS ptr
 
-declare function emitASM _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitCOMMENT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitLIT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
+declare sub emitCOMMENT( byval text as zstring ptr )
+declare sub emitASM( byval text as zstring ptr )
 
 declare function emitJMPTB _
 	( _

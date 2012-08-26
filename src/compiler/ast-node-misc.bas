@@ -129,39 +129,33 @@ end function
 
 function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
 	dim as ASTASMTOK ptr node = any, nxt = any
-    dim as string asmline
 
-	asmline = ""
+	if( ast.doemit ) then
+		irEmitAsmBegin( )
+	end if
 
 	node = n->asm.tokhead
-	do while( node <> NULL )
+	while( node )
 		nxt = node->next
 
-		if( ast.doemit ) then
-			select case node->type
-			case AST_ASMTOK_SYMB
-				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-					asmline += *symbGetMangledName( node->sym )
-				else
-					asmline += emitGetVarName( node->sym )
-				end if
-			case AST_ASMTOK_TEXT
-				asmline += *node->text
-			end select
-		end if
-
-		if( node->type = AST_ASMTOK_TEXT ) then
+		select case( node->type )
+		case AST_ASMTOK_TEXT
+			if( ast.doemit ) then
+				irEmitAsmText( node->text )
+			end if
 			ZstrFree( node->text )
-		end if
+		case AST_ASMTOK_SYMB
+			if( ast.doemit ) then
+				irEmitAsmSymb( node->sym )
+			end if
+		end select
 
 		listDelNode( @ast.asmtoklist, node )
 		node = nxt
-	loop
+	wend
 
 	if( ast.doemit ) then
-		if( len( asmline ) > 0 ) then
-			irEmitASM( asmline )
-		end if
+		irEmitAsmEnd( )
 	end if
 
 	function = NULL

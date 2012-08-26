@@ -1431,15 +1431,10 @@ end sub
 '' implementation
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub _emitLIT _
-	( _
-		byval s as zstring ptr )
-    dim ostr as string
-
-    ostr = *s + NEWLINE
+private sub _emitLIT( byval s as zstring ptr )
+	dim ostr as string
+	ostr = *s + NEWLINE
 	outEX( ostr )
-
 end sub
 
 '':::::
