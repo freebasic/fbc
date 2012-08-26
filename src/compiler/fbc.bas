@@ -32,7 +32,6 @@ type FBCCTX
 	objfile				as string '' -o filename waiting for next input file
 
 	emitonly			as integer
-	compileonly			as integer
 	preserveasm			as integer
 	preserveobj			as integer
 	verbose				as integer
@@ -1159,9 +1158,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		addBas(arg)
 
 	case OPT_C
+		'' -c changes the output type to from exe/lib/dll to object,
+		'' overwriting previous -dll, -lib or the default exe.
 		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-		fbc.compileonly = TRUE
-		fbc.emitonly = FALSE
 		fbc.preserveobj = TRUE
 
 	case OPT_CKEEPOBJ
@@ -1327,10 +1326,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		strsetAdd(@fbc.libpaths, pathStripDiv(arg), FALSE)
 
 	case OPT_PP
+		'' -pp doesn't change the output type, but like -r we want to
+		'' stop fbc very early.
 		fbSetOption( FB_COMPOPT_PPONLY, TRUE )
-		fbc.compileonly = TRUE
 		fbc.emitonly = TRUE
-		fbc.preserveasm = FALSE
 
 	case OPT_PREFIX
 		fbc.prefix = pathStripDiv(arg)
@@ -1340,10 +1339,11 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
 	case OPT_R
-		if( fbc.compileonly = FALSE )then
-			fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
-			fbc.emitonly = TRUE
-		end if
+		'' -r changes the output type to .o, like -c, i.e. -m may have
+		'' to be used to mark the main module, just like -c.
+		fbSetOption( FB_COMPOPT_OUTTYPE, FB_OUTTYPE_OBJECT )
+		'' -r will stop fbc earlier than -c though.
+		fbc.emitonly = TRUE
 		fbc.preserveasm = TRUE
 
 	case OPT_RKEEPASM
@@ -2664,7 +2664,7 @@ end sub
 		fbcEnd(1)
 	end if
 
-	if (fbc.compileonly) then
+	if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_OBJECT ) then
 		fbcEnd( 0 )
 	end if
 

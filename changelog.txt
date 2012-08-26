@@ -1,6 +1,7 @@
 Version 0.25.0:
 
 [changed]
+- -c, -r and -pp options will now complement each-other when used together, instead of partially overwriting each-other and thus causing weird behaviour
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
