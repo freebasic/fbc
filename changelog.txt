@@ -17,6 +17,7 @@ Version 0.25.0:
 - 'SELECT CASE str1 + str2' was broken and behaved like 'SELECT CASE str2'
 - Inconsistent warning message on implicit number to ptr conversions
 - Rename case-insensitive naming clashes in IUP3 header defines
+- Compiler crash on UDT/enum comparisons (0.24 inheritance regression)
 
 
 Version 0.24.0:

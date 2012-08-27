@@ -388,12 +388,17 @@ function astCheckCONV _
 
 	function = FALSE
 
-	'' UDT? only upcasting supported by now
-	if( typeGet( to_dtype ) = FB_DATATYPE_STRUCT ) then
-		return symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0
-	end if
-
 	ldtype = astGetFullType( l )
+
+	'' to or from UDT? only upcasting supported by now
+	if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) or _
+	    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+		if( (typeGet( to_dtype ) = FB_DATATYPE_STRUCT) and _
+		    (typeGet( ldtype   ) = FB_DATATYPE_STRUCT)      ) then
+			function = (symbGetUDTBaseLevel( l->subtype, to_subtype ) > 0)
+		end if
+		exit function
+	end if
 
 	'' string? neither
 	if( typeGetClass( ldtype ) = FB_DATACLASS_STRING ) then
@@ -413,9 +418,6 @@ function astCheckCONV _
 			exit function
 		end if
 
-	'' UDT's? ditto
-	case FB_DATATYPE_STRUCT
-		exit function
 	end select
 
 	function = TRUE
@@ -470,22 +472,28 @@ function astNewCONV _
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
 	select case as const typeGet( to_dtype )
-	'' to UDT? as op overloading failed, refuse.. ditto with void (used by uop/bop
-	'' to cast to be most precise possible) and strings
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING
+		'' refuse void (used by uop/bop to cast to be most precise
+		'' possible) and strings, as op overloading already failed
 		exit function
-		 
+
+	'' to UDT?
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' not from UDT? op overloading already failed, refuse.
+		if( typeGet( ldtype ) <> FB_DATATYPE_STRUCT ) then
+			exit function
+		end if
+
 		if( symbGetUDTBaseLevel( l->subtype, to_subtype ) = 0 ) then
 			exit function
-		End If
+		end if
 
+	'' to anything else (integers/floats)
 	case else
-		select case typeGet( ldtype )
-		'' from UDT? ditto..
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		'' from UDT? refuse, since op overloading already failed
+		if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
 			exit function
-		end select
+		end if
 
 	end select
 
