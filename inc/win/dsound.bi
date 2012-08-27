@@ -16,7 +16,7 @@
 #inclib "uuid"
 
 #ifndef DIRECTSOUND_VERSION
-#define DIRECTSOUND_VERSION &h0900 
+#define DIRECTSOUND_VERSION &h0900
 #endif
 
 #ifndef D3DVALUE
@@ -209,7 +209,7 @@ type LPCDSEFFECTDESC as DSEFFECTDESC ptr
 #define DSFX_LOCHARDWARE &h00000001
 #define DSFX_LOCSOFTWARE &h00000002
 
-enum 
+enum
 	DSFXR_PRESENT
 	DSFXR_LOCHARDWARE
 	DSFXR_LOCSOFTWARE
@@ -347,7 +347,7 @@ type LPDSENUMCALLBACKA as function (byval as LPGUID, byval as LPCSTR, byval as L
 declare function DirectSoundEnumerate alias "DirectSoundEnumerateA" (byval pDSEnumCallback as LPDSENUMCALLBACKA, byval pContext as LPVOID) as HRESULT
 declare function DirectSoundCaptureEnumerate alias "DirectSoundCaptureEnumerateA" (byval pDSEnumCallback as LPDSENUMCALLBACKA, byval pContext as LPVOID) as HRESULT
 #else
-type LPDSENUMCALLBACK as function (byval as LPGUID, byval as LPCWSTR, byval as LPCWSTR, byval as LPVOID) as BOOL
+type LPDSENUMCALLBACKW as function (byval as LPGUID, byval as LPCWSTR, byval as LPCWSTR, byval as LPVOID) as BOOL
 declare function DirectSoundCaptureEnumerate alias "DirectSoundCaptureEnumerateW" (byval pDSEnumCallback as LPDSENUMCALLBACKW, byval pContext as LPVOID) as HRESULT
 declare function DirectSoundEnumerate alias "DirectSoundEnumerateW" (byval pDSEnumCallback as LPDSENUMCALLBACKW, byval pContext as LPVOID) as HRESULT
 #endif
@@ -475,7 +475,7 @@ end type
 
 extern IID_IDirectSoundBuffer alias "IID_IDirectSoundBuffer" as GUID
 
-type IDirectSoundBufferVtbl_ as IDirectSoundBufferVtbl 
+type IDirectSoundBufferVtbl_ as IDirectSoundBufferVtbl
 
 type IDirectSoundBuffer
 	lpVtbl as IDirectSoundBufferVtbl_ ptr
@@ -1527,7 +1527,7 @@ end type
 #define DS_CERTIFIED &h00000000
 #define DS_UNCERTIFIED &h00000001
 
-enum 
+enum
 	DSFX_I3DL2_MATERIAL_PRESET_SINGLEWINDOW
 	DSFX_I3DL2_MATERIAL_PRESET_DOUBLEWINDOW
 	DSFX_I3DL2_MATERIAL_PRESET_THINDOOR
@@ -1547,7 +1547,7 @@ end enum
 #define I3DL2_MATERIAL_PRESET_STONEWALL       -6000,0.68f
 #define I3DL2_MATERIAL_PRESET_CURTAIN         -1200,0.15f
 
-enum 
+enum
 	DSFX_I3DL2_ENVIRONMENT_PRESET_DEFAULT
 	DSFX_I3DL2_ENVIRONMENT_PRESET_GENERIC
 	DSFX_I3DL2_ENVIRONMENT_PRESET_PADDEDCELL

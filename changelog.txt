@@ -18,6 +18,7 @@ Version 0.25.0:
 - Inconsistent warning message on implicit number to ptr conversions
 - Rename case-insensitive naming clashes in IUP3 header defines
 - Compiler crash on UDT/enum comparisons (0.24 inheritance regression)
+- win/dsound.bi - LPDSENUMCALLBACKW was missing the closing 'W' (thanks to VANYA for find/fix)
 
 
 Version 0.24.0:
