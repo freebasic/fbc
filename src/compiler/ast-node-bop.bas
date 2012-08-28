@@ -837,18 +837,37 @@ end function
 
 #endmacro
 
-'':::::
-private function hCmpDynType _
+private function hCheckDerefWcharPtr _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-	
-	'' all checks already done at parser level
-	
-	return rtlOOPIsTypeOf( l, r )
-	
-End Function
+		byval pldtype as integer ptr, _
+		byval r as ASTNODE ptr, _
+		byval rdtype as integer _
+	) as integer
+
+	dim as ASTNODE ptr ll = any
+
+	'' Disallow if it's not a DEREF'ed wcharptr
+	if( l->class <> AST_NODECLASS_DEREF ) then
+		exit function
+	end if
+
+	'' Disallow if it's a fake dynamic string
+	ll = l->l
+	if( ll ) then
+		if( ll->class = AST_NODECLASS_VAR ) then
+			if( symbGetIsWstring( ll->sym ) ) then
+				exit function
+			end if
+		end if
+	end if
+
+	'' remap the type or the optimizer can
+	'' make a wrong assumption
+	*pldtype = typeJoin( *pldtype, env.target.wchar )
+
+	function = TRUE
+end function
 
 '':::::
 function astNewBOP _
@@ -878,10 +897,9 @@ function astNewBOP _
 	case AST_OP_CONCAT
 		hToStr( l, r )
 		op = AST_OP_ADD
-
 	case AST_OP_IS
-		return hCmpDynType( l, r )
-	End Select
+		return rtlOOPIsTypeOf( l, r )
+	end select
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
@@ -1032,23 +1050,19 @@ function astNewBOP _
 				exit function
 			end select
 
-		'' one is not a string..
+		'' One is not a string, but e.g. an integer. Disallow if the
+		'' other is not a DEREF'ed wchar ptr - this allows comparisons
+		'' such as "wstringptr[index] = someinteger", i.e. a simplified
+		'' form of string indexing when dealing with a DEREF'ed ptr.
 		else
 			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
-				'' don't allow, unless it's a deref pointer
-				if( l->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( l, @ldtype, r, rdtype ) = FALSE ) then
 					exit function
 				end if
-				'' remap the type or the optimizer can
-				'' make a wrong assumption
-				ldtype = typeJoin( ldtype, env.target.wchar )
-
 			else
-				'' same as above..
-				if( r->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( r, @rdtype, l, ldtype ) = FALSE ) then
 					exit function
 				end if
-				rdtype = typeJoin( rdtype, env.target.wchar )
 			end if
 		end if
 
