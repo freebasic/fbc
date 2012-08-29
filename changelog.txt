@@ -21,6 +21,7 @@ Version 0.25.0:
 - Compiler crash on UDT/enum comparisons (0.24 inheritance regression)
 - win/dsound.bi - LPDSENUMCALLBACKW was missing the closing 'W' (thanks to VANYA for find/fix)
 - #2131139: "SELECT CASE wstring" allowed integer expressions in "CASE"
+- #3549349: The namespace prefix of constants on the left hand-side of assignments was being ignored by the parser, allowing the constant's identifier to match other symbols
 
 
 Version 0.24.0:

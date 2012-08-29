@@ -592,6 +592,31 @@ private function hAssignOrCall_QB _
 
 end function
 
+private function hAssignOrPtrCall _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval iscall as integer _
+	) as integer
+
+	if( expr = NULL ) then
+		exit function
+	end if
+
+	'' CALL?
+	if( iscall ) then
+		'' not a ptr call?
+		if( astIsCALL( expr ) = FALSE ) then
+			astDelTree( expr )
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip stmt, return
+			hSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+	function = cAssignmentOrPtrCallEx( expr )
+end function
+
 ''::::
 private function hAssignOrCall _
 	( _
@@ -670,38 +695,23 @@ private function hAssignOrCall _
 					return cAssignFunctResult( FALSE )
 				end if
 
-	    	'' variable or field?
-	    	case FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
+			case FB_SYMBCLASS_VAR
+				'' must process variables here, multiple calls to
+				'' cIdentifier() will fail if a namespace was explicitly
+				'' given, because the next call will return an inner symbol
+				return hAssignOrPtrCall( cVariableEx( chain_, TRUE ), iscall )
 
-	        	dim as ASTNODE ptr expr = any
-	        	if( symbIsVar( sym ) ) then
-	        		'' must process variables here, multiple calls to
-	        		'' Identifier() will fail if a namespace was explicitly
-	    	    	'' given, because the next call will return an inner symbol
-	        		expr = cVariableEx( chain_, TRUE )
-	        		if( expr = NULL ) then
-	        			exit function
-	        		end if
-	        	else
-	        		expr = cImplicitDataMember( base_parent, chain_, TRUE )
-	        		if( expr = NULL ) then
-	        			exit function
-	        		end if
-	        	end if
+			case FB_SYMBCLASS_FIELD
+				return hAssignOrPtrCall( cImplicitDataMember( base_parent, chain_, TRUE ), iscall )
 
-	    		'' CALL?
-	    		if( iscall ) then
-	    			'' not a ptr call?
-	    			if( astIsCALL( expr ) = FALSE ) then
-	    				astDelTree( expr )
-						errReport( FB_ERRMSG_SYNTAXERROR )
-						'' error recovery: skip stmt, return
-						hSkipStmt( )
-						return TRUE
-	    			end if
-	    		end if
-
-	        	return cAssignmentOrPtrCallEx( expr )
+			case FB_SYMBCLASS_CONST
+				'' This covers misuse of constants as "statements",
+				'' or on the lhs of assignments:
+				''     ns.someconst
+				''     ns.someconst = 123
+				'' both isn't allowed; so we finish parsing the constant,
+				'' then let cAssignment() show & handle the error.
+				return hAssignOrPtrCall( cConstant( sym ), iscall )
 
 	  		'' quirk-keyword?
 	  		case FB_SYMBCLASS_KEYWORD
@@ -712,8 +722,8 @@ private function hAssignOrCall _
 			sym = sym->hash.next
 		loop while( sym <> NULL )
 
-    	chain_ = symbChainGetNext( chain_ )
-    loop
+		chain_ = symbChainGetNext( chain_ )
+	loop
 
 end function
 
