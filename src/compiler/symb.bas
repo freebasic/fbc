@@ -2082,7 +2082,11 @@ function symbDump( byval s as FBSYMBOL ptr ) as string
 	dump += " as "
 
 	if( s->typ and FB_DATATYPE_INVALID ) then
-		dump += "<invalid>"
+		if( s->class = FB_SYMBCLASS_KEYWORD ) then
+			dump += "<keyword>"
+		else
+			dump += "<invalid>"
+		end if
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.
