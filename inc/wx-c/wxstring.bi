@@ -3,7 +3,7 @@
 
 #Include Once "common.bi"
 
-Enum Encoding
+Enum wxString_Encoding
   Encoding_UTF8
   Encoding_Local
 End Enum
