@@ -9,6 +9,10 @@
 #include once "hash.bi"
 #include once "list.bi"
 
+#if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
+	#define ENABLE_GORC
+#endif
+
 type FBC_EXTOPT
 	gas			as zstring * 128
 	ld			as zstring * 128
@@ -16,8 +20,8 @@ type FBC_EXTOPT
 end type
 
 type FBCIOFILE
-	as string srcfile '' input file
-	as string objfile '' output .o file
+	srcfile		as string     '' input file
+	objfile		as string ptr '' output .o file (points to node from fbc.objlist)
 end type
 
 type FBC_OBJINF
@@ -27,8 +31,8 @@ end type
 
 type FBCCTX
 	'' For command line parsing
-	optid				as integer       '' Current option
-	lastiofile			as FBCIOFILE ptr '' Input file that receives the next -o filename
+	optid				as integer    '' Current option
+	lastmoduleobj			as string ptr '' fbc.objlist node of last input file, so the default .o name can be overwritten with a following -o filename
 	objfile				as string '' -o filename waiting for next input file
 
 	emitonly			as integer  '' write out FB backend output file only (.asm/.c)
@@ -146,9 +150,14 @@ private sub fbcAddTemp(byref file as string)
 	strlistAppend(@fbc.temps, file)
 end sub
 
-private sub fbcAddObj(byref file as string)
-	strlistAppend(@fbc.objlist, file)
-end sub
+private function fbcAddObj( byref file as string ) as string ptr
+	'' .o's should be linked/archived in the order they were found on
+	'' command line, so callers of this function must take care to preserve
+	'' the order...
+	dim as string ptr s = listNewNode( @fbc.objlist )
+	*s = file
+	function = s
+end function
 
 private function hArchiveFiles( ) as integer
 	'' Determine the output archive's name if not given via -x
@@ -174,10 +183,10 @@ private function hArchiveFiles( ) as integer
 	end if
 #endif
 
-	dim as string ptr objfile = listGetHead(@fbc.objlist)
-	while (objfile)
-		ln += QUOTE + *objfile + (QUOTE + " ")
-		objfile = listGetNext(objfile)
+	dim as string ptr objfile = listGetHead( @fbc.objlist )
+	while( objfile )
+		ln += """" + *objfile + """ "
+		objfile = listGetNext( objfile )
 	wend
 
 	'' invoke ar
@@ -637,10 +646,10 @@ private function hLinkFiles( ) as integer
 	end if
 
 	scope
-		dim as string ptr objfile = listGetHead(@fbc.objlist)
-		while (objfile)
+		dim as string ptr objfile = listGetHead( @fbc.objlist )
+		while( objfile )
 			ldcline += " """ + *objfile + """"
-			objfile = listGetNext(objfile)
+			objfile = listGetNext( objfile )
 		wend
 	end scope
 
@@ -893,26 +902,55 @@ private sub hFatalInvalidOption( byref arg as string )
 	fbcEnd( 1 )
 end sub
 
-private sub checkWaitingObjfile()
-	if (len(fbc.objfile) > 0) then
+private sub hCheckWaitingObjfile( )
+	if( len( fbc.objfile ) > 0 ) then
 		errReportEx( FB_ERRMSG_OBJFILEWITHOUTINPUTFILE, "-o " & fbc.objfile, -1 )
 		fbc.objfile = ""
 	end if
 end sub
 
-private sub setIofile(byval iofile as FBCIOFILE ptr, byref file as string)
-	iofile->srcfile = file
-	fbc.lastiofile = iofile
+private sub hSetIofile _
+	( _
+		byval module as FBCIOFILE ptr, _
+		byref srcfile as string, _
+		byval is_rc as integer _
+	)
 
-	'' Got a waiting -o <file>? This module takes it.
-	if (len(fbc.objfile) > 0) then
-		iofile->objfile = fbc.objfile
-		fbc.objfile = ""
+	dim as integer o_option_not_used_yet = (len( fbc.objfile ) = 0)
+
+	'' No objfile name set yet (from the -o <file> option)?
+	if( o_option_not_used_yet ) then
+		'' Choose default *.o name based on input file name
+		if( is_rc ) then
+#if ENABLE_GORC
+			'' GoRC only accepts *.obj
+			'' foo.rc -> foo.obj, so there is no collision with foo.bas' foo.o
+			fbc.objfile += hStripExt( srcfile ) + ".obj"
+#else
+			'' windres doesn't care, so we use the default *.o
+			'' foo.rc -> foo.rc.o to avoid collision with foo.bas' foo.o
+			fbc.objfile += srcfile + ".o"
+#endif
+		else
+			'' foo.bas -> foo.o
+			fbc.objfile += hStripExt( srcfile ) + ".o"
+		end if
 	end if
+
+	module->srcfile = srcfile
+	module->objfile = fbcAddObj( fbc.objfile )
+
+	fbc.objfile = ""
+
+	if( o_option_not_used_yet ) then
+		'' Allow overwriting by a following -o <file> later
+		fbc.lastmoduleobj = module->objfile
+	end if
+
 end sub
 
-private sub addBas(byref basfile as string)
-	setIofile(listNewNode(@fbc.modules), basfile)
+private sub hAddBas( byref basfile as string )
+	hSetIofile( listNewNode( @fbc.modules ), basfile, FALSE )
 end sub
 
 '' -target <id> parser
@@ -1120,12 +1158,12 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 private sub handleOpt(byval optid as integer, byref arg as string)
 	select case as const (optid)
 	case OPT_A
-		fbcAddObj(arg)
+		fbcAddObj( arg )
 
 	case OPT_ARCH
 		dim as integer value = any
 
-		select case (arg)
+		select case( arg )
 		case "386"
 			value = FB_CPUTYPE_386
 		case "486"
@@ -1161,7 +1199,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_CPUTYPE, value )
 
 	case OPT_B
-		addBas(arg)
+		hAddBas( arg )
 
 	case OPT_C
 		'' -c changes the output type to from exe/lib/dll to object,
@@ -1302,12 +1340,12 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_O
 		'' Error if there already is an -o waiting to be assigned
-		checkWaitingObjfile()
+		hCheckWaitingObjfile( )
 
-		'' Assign it to the last module, if it doesn't have an -o filename yet,
-		'' or store it for later otherwise.
-		if (fbc.lastiofile andalso (len(fbc.lastiofile->objfile) = 0)) then
-			fbc.lastiofile->objfile = arg
+		'' Assign it to the last module, if it doesn't have an
+		'' -o filename yet, or store it for later otherwise.
+		if( fbc.lastmoduleobj ) then
+			*fbc.lastmoduleobj = arg
 		else
 			fbc.objfile = arg
 		end if
@@ -1683,25 +1721,25 @@ private sub handleArg(byref arg as string)
 
 		select case (ext)
 		case "bas"
-			addBas(arg)
+			hAddBas( arg )
 
 		case "o"
-			fbcAddObj(arg)
+			fbcAddObj( arg )
 
 		case "a"
-			strlistAppend(@fbc.libfiles, arg)
+			strlistAppend( @fbc.libfiles, arg )
 
 		case "rc", "res"
-			setIofile(listNewNode(@fbc.rcs), arg)
+			hSetIofile( listNewNode( @fbc.rcs ), arg, TRUE )
 
 		case "xpm"
 			'' Can have only one .xpm, or the fb_program_icon
 			'' symbol will be duplicated
-			if (len(fbc.xpm.srcfile) > 0) then
+			if( len( fbc.xpm.srcfile ) > 0 ) then
 				hFatalInvalidOption( arg )
 			end if
 
-			setIofile(@fbc.xpm, arg)
+			hSetIofile( @fbc.xpm, arg, TRUE )
 
 		case else
 			'' Input file without or with unknown extension
@@ -1796,7 +1834,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' In case there was an '-o <file>', but no corresponding input file,
 	'' this will report the error.
-	checkWaitingObjfile()
+	hCheckWaitingObjfile( )
 
 	''
 	'' Check for incompatible options etc.
@@ -1973,7 +2011,7 @@ private function hGetAsmName _
 	) as string
 
 	'' Based on the objfile name so it's also affected by -o
-	dim as string asmfile = hStripExt( module->objfile )
+	dim as string asmfile = hStripExt( *module->objfile )
 
 	if( fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS ) then
 		asmfile += ".asm"
@@ -1994,17 +2032,12 @@ private sub hCompileBas _
 		byval ismain as integer _
 	)
 
-	'' *.o name based on input file name unless given via -o <file>
-	if (len(module->objfile) = 0) then
-		module->objfile = hStripExt(module->srcfile) & ".o"
-	end if
-
 	dim as string asmfile = hGetAsmName( module, 1 )
-	if (fbc.preserveasm = FALSE) then
-		fbcAddTemp(asmfile)
+	if( fbc.preserveasm = FALSE ) then
+		fbcAddTemp( asmfile )
 	end if
 
-	if (fbc.verbose) then
+	if( fbc.verbose ) then
 		print "compiling: ", module->srcfile; " -o "; asmfile;
 		if (ismain) then
 			print " (main module)";
@@ -2182,34 +2215,37 @@ private function hParseXpm _
 	function = TRUE
 end function
 
+'' Turns the .xpm icon resource into a .bas file,
+'' then compiles that using the normal FB compilation process.
 private function hCompileXpm( ) as integer
-	'' Turn the .xpm icon resource into a .bas file, then compile that
-	'' using the normal fb compilation process.
-	dim as string xpmfile = fbc.xpm.srcfile
+	dim as string xpmfile, code
+	dim as integer fo = any
 
-	if( len( xpmfile ) = 0 ) then
+	if( len( fbc.xpm.srcfile ) = 0 ) then
 		return TRUE
 	end if
 
-	'' *.bas name based on input file name or -o <file>
-	'' Note: When naming after the input file, append .bas instead of
-	'' replacing the extension, to avoid overwriting an existing .bas.
-	if( len( fbc.xpm.objfile ) > 0 ) then
-		fbc.xpm.srcfile = hStripExt( fbc.xpm.objfile )
+	'' Remember *.xpm file name
+	xpmfile = fbc.xpm.srcfile
+
+	'' Set *.bas name based on input file name or -o <file>:
+	if( len( *fbc.xpm.objfile ) > 0 ) then
+		fbc.xpm.srcfile = hStripExt( *fbc.xpm.objfile )
 	end if
+
+	'' foo.xpm -> foo.xpm.bas to avoid collision with foo.bas
 	fbc.xpm.srcfile &= ".bas"
 
 	if( fbc.verbose ) then
 		print "compiling xpm: ", xpmfile & " -o " & fbc.xpm.srcfile
 	end if
 
-	dim as string code
 	if( hParseXpm( xpmfile, code ) = FALSE ) then
 		'' TODO: show error message
 		exit function
 	end if
 
-	dim as integer fo = freefile( )
+	fo = freefile( )
 	if( open( fbc.xpm.srcfile, for output, as #fo ) ) then
 		'' TODO: show error message
 		exit function
@@ -2293,16 +2329,15 @@ private function hAssembleBas( byval module as FBCIOFILE ptr ) as integer
 		ln += "--strip-local-absolute "
 	end if
 	ln += """" + hGetAsmName( module, 2 ) + """ "
-	ln += "-o """ + module->objfile + """"
+	ln += "-o """ + *module->objfile + """"
 	ln += fbc.extopt.gas
 
 	if( fbcRunBin( "assembling", FBCTOOL_AS, ln ) = FALSE ) then
 		exit function
 	end if
 
-	fbcAddObj( module->objfile )
 	if( fbc.preserveobj = FALSE ) then
-		fbcAddTemp( module->objfile )
+		fbcAddTemp( *module->objfile )
 	end if
 
 	function = TRUE
@@ -2319,22 +2354,17 @@ private sub hAssembleModules( )
 end sub
 
 private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
-#if defined( ENABLE_STANDALONE ) and defined( __FB_WIN32__ )
+#if ENABLE_GORC
 	'' Using GoRC for the classical native win32 standalone build
 	'' Note: GoRC /fo doesn't accept anything except *.obj, not even *.o,
 	'' so we need to make it *.obj and then rename it afterwards.
 
-	'' *.obj name based on input file name unless given via -o <file>
 	dim as integer need_rename = FALSE
-	if( len( rc->objfile ) = 0 ) then
-		'' Note: no need to worry about overwriting; nothing else uses
-		'' the .obj extension.
-		rc->objfile = hStripExt( rc->srcfile ) & ".obj"
-	else
-		if( hGetFileExt( rc->objfile ) <> "obj" ) then
-			need_rename = TRUE
-			rc->objfile &= ".obj"
-		end if
+
+	'' Ensure to use *.obj so GoRC accepts it
+	if( hGetFileExt( *rc->objfile ) <> "obj" ) then
+		need_rename = TRUE
+		*rc->objfile += ".obj"
 	end if
 
 	'' Change the include env var to point to the (hopefully present)
@@ -2344,7 +2374,7 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	           (FB_HOST_PATHDIV + "win" + FB_HOST_PATHDIV + "rc")
 
 	dim as string ln = "/ni /nw /o "
-	ln &= "/fo """ & rc->objfile & """"
+	ln &= "/fo """ & *rc->objfile & """"
 	ln &= " """ & rc->srcfile & """"
 
 	if( fbcRunBin( "compiling rc", FBCTOOL_GORC, ln ) = FALSE ) then
@@ -2357,10 +2387,10 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	end if
 
 	if( need_rename ) then
-		dim as string badname = rc->objfile
-		rc->objfile = hStripExt( rc->objfile )
+		dim as string badname = *rc->objfile
+		*rc->objfile = hStripExt( *rc->objfile )
 		'' Rename back so it will be found by ld/the user
-		function = (name( badname, rc->objfile ) = 0)
+		function = (name( badname, *rc->objfile ) = 0)
 	else
 		function = TRUE
 	end if
@@ -2370,23 +2400,15 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
 	'' that may not be 100% compatible to GoRC.
 
-	'' *.o name based on input file name unless given via -o <file>
-	if( len( rc->objfile ) = 0 ) then
-		'' Note: Appending instead of replacing, to avoid overwriting
-		'' an existing object file.
-		rc->objfile = rc->srcfile & ".o"
-	end if
-
 	dim as string ln = "--output-format=coff "
-	ln &= " """ & rc->srcfile & """"
-	ln &= " """ & rc->objfile & """"
+	ln += " """ + rc->srcfile + """"
+	ln += " """ + *rc->objfile + """"
 
 	function = fbcRunBin( "compiling rc", FBCTOOL_WINDRES, ln )
 #endif
 
-	fbcAddObj( rc->objfile )
 	if( fbc.preserveobj = FALSE ) then
-		fbcAddTemp( rc->objfile )
+		fbcAddTemp( *rc->objfile )
 	end if
 end function
 
