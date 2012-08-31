@@ -224,7 +224,9 @@ static void keyboard_console_handler(void)
 				gfx_key_handler((repeated ? 0x100 : 0) | (pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
 		}
 	}
-	if (key_state[0x1D] & key_state[0x2E])
+
+	/* CTRL + C */
+	if( key_state[SC_CONTROL] && key_state[SC_C] )
 		kill(main_pid, SIGINT);
 }
 
