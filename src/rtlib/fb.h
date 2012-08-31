@@ -85,12 +85,6 @@
 	((int) ((((unsigned) (unsigned char) (ch)) << 8) + \
 	        (unsigned) (unsigned char) (FB_EXT_CHAR)))
 
-/* Check for extended key codes; true for every value created with
-   FB_MAKE_EXT_KEY(ch). */
-#define FB_IS_EXT_KEY(k) \
-	((int) (((((unsigned) (k)) & 0xFF) == FB_EXT_CHAR) && \
-	        (((k) & 0xFF00) != 0)))
-
 #define MIN(a,b)		((a) < (b) ? (a) : (b))
 #define MAX(a,b)		((a) > (b) ? (a) : (b))
 #define MID(a,b,c)		MIN(MAX((a), (b)), (c))
