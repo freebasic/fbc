@@ -97,21 +97,30 @@
 #define PUT_MODE_BLEND		9
 #define PUT_MODES			10
 
+#define KEY_QUIT        FB_MAKE_EXT_KEY( 'k' )
+#define KEY_UP          FB_MAKE_EXT_KEY( 'H' )
+#define KEY_DOWN        FB_MAKE_EXT_KEY( 'P' )
+#define KEY_LEFT        FB_MAKE_EXT_KEY( 'K' )
+#define KEY_RIGHT       FB_MAKE_EXT_KEY( 'M' )
+#define KEY_INS         FB_MAKE_EXT_KEY( 'R' )
+#define KEY_DEL         FB_MAKE_EXT_KEY( 'S' )
+#define KEY_HOME        FB_MAKE_EXT_KEY( 'G' )
+#define KEY_END         FB_MAKE_EXT_KEY( 'O' )
+#define KEY_PAGE_UP     FB_MAKE_EXT_KEY( 'I' )
+#define KEY_PAGE_DOWN   FB_MAKE_EXT_KEY( 'Q' )
+#define KEY_F1          FB_MAKE_EXT_KEY( ';' )
+#define KEY_F2          FB_MAKE_EXT_KEY( '<' )
+#define KEY_F3          FB_MAKE_EXT_KEY( '=' )
+#define KEY_F4          FB_MAKE_EXT_KEY( '>' )
+#define KEY_F5          FB_MAKE_EXT_KEY( '?' )
+#define KEY_F6          FB_MAKE_EXT_KEY( '@' )
+#define KEY_F7          FB_MAKE_EXT_KEY( 'A' )
+#define KEY_F8          FB_MAKE_EXT_KEY( 'B' )
+#define KEY_F9          FB_MAKE_EXT_KEY( 'C' )
+#define KEY_F10         FB_MAKE_EXT_KEY( 'D' )
+#define KEY_TAB         '\t'
+#define KEY_BACKSPACE   8
 #define KEY_BUFFER_LEN		16
-
-#define KEY_QUIT		0x100
-#define KEY_UP			0x101
-#define KEY_DOWN		0x102
-#define KEY_LEFT		0x103
-#define KEY_RIGHT		0x104
-#define KEY_INS			0x105
-#define KEY_DEL			0x106
-#define KEY_HOME		0x107
-#define KEY_END			0x108
-#define KEY_PAGE_UP		0x109
-#define KEY_PAGE_DOWN		0x10A
-#define KEY_F(n)		(0x10A + (n))
-#define KEY_MAX_SPECIALS	(KEY_F(10) - 0x100 + 1)
 
 #define WINDOW_TITLE_SIZE	128
 

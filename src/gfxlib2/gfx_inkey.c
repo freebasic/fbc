@@ -2,7 +2,6 @@
 
 #include "fb_gfx.h"
 
-
 static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
 static int key_buffer_changed = FALSE;
 
@@ -90,6 +89,8 @@ int fb_GfxKeyHit(void)
 
 	return res;
 }
+
+#define KEY_MAX_SPECIALS 21
 
 /*:::::*/
 FBSTRING *fb_GfxInkey(void)

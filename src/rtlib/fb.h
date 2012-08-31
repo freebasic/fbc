@@ -404,6 +404,7 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #define SC_MENU		0x5D
 #define SC_ALTGR	0x64
 
+
 /* This should match fbc's lang enum */
 enum FB_LANG {
 	FB_LANG_FB,
