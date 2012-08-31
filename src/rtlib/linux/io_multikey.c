@@ -18,12 +18,6 @@ static void keyboard_exit(void);
 #include "../fb_private_hdynload.h"
 #include "../unix/fb_private_scancodes_x11.h"
 
-typedef Display *(*XOPENDISPLAY)(char *);
-typedef int (*XCLOSEDISPLAY)(Display *);
-typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);
-typedef int (*XDISPLAYKEYCODES)(Display *, int *, int *);
-typedef KeySym (*XKEYCODETOKEYSYM)(Display *, KeyCode, int);
-
 typedef struct {
     XOPENDISPLAY OpenDisplay;
     XCLOSEDISPLAY CloseDisplay;
@@ -31,19 +25,15 @@ typedef struct {
     XDISPLAYKEYCODES DisplayKeycodes;
     XKEYCODETOKEYSYM KeycodeToKeysym;
 } X_FUNCS;
-#endif
 
-static pid_t main_pid;
-
-#ifndef DISABLE_X11
 static Display *display;
 static FB_DYLIB xlib = NULL;
 static X_FUNCS X = { NULL };
 #endif
 
+static pid_t main_pid;
 static int key_fd, key_old_mode, key_leds;
-
-static unsigned char key_state[128], scancode[256];
+static unsigned char key_state[128];
 static unsigned short key_buffer[KEY_BUFFER_SIZE], key_head, key_tail;
 static int (*old_getch)(void);
 static void (*gfx_save)(void);
@@ -250,7 +240,7 @@ static void keyboard_x11_handler(void)
 	memset(key_state, FALSE, 128);
 	for (i = 0; i < 256; i++) {
 		if (keymap[i / 8] & (1 << (i & 0x7)))
-			key_state[scancode[i]] = TRUE;
+			key_state[fb_x11keycode_to_scancode[i]] = TRUE;
 	}
 }
 #endif
@@ -261,9 +251,7 @@ static int keyboard_init(void)
 	const char *funcs[] = {
 		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
 	};
-	KeySym keysym;
 #endif
-	int keycode_min, keycode_max, i, j;
 	struct termios term;
 
 	main_pid = getpid();
@@ -300,18 +288,7 @@ static int keyboard_init(void)
 		if (!display)
 			return -1;
 
-		X.DisplayKeycodes(display, &keycode_min, &keycode_max);
-		if (keycode_min < 0) keycode_min = 0;
-		if (keycode_max > 255) keycode_max = 255;
-
-		for (i = keycode_min; i <= keycode_max; i++) {
-			keysym = X.KeycodeToKeysym(display, i, 0);
-			if (keysym != NoSymbol) {
-				for (j = 0; (fb_keysym_to_scancode[j].scancode) && (fb_keysym_to_scancode[j].keysym != keysym); j++)
-					;
-				scancode[i] = fb_keysym_to_scancode[j].scancode;
-			}
-		}
+		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.KeycodeToKeysym );
 
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
@@ -320,7 +297,7 @@ static int keyboard_init(void)
 
 	__fb_con.keyboard_init = keyboard_init;
 	__fb_con.keyboard_exit = keyboard_exit;
-	
+
 	return 0;
 }
 
@@ -384,8 +361,7 @@ int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restor
 			return -1;
 		}
 		ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
-	}
-	else {
+	} else {
 		if (key_fd >= 0) {
 			ioctl(key_fd, KDSETMODE, KD_TEXT);
 			keyboard_exit();

@@ -112,4 +112,33 @@ const KeysymToScancode fb_keysym_to_scancode[] =
 	{ NoSymbol       , 0               }
 };
 
+unsigned char fb_x11keycode_to_scancode[256];
+
+void fb_hInitX11KeycodeToScancodeTb
+	(
+		Display *display,
+		XDISPLAYKEYCODES DisplayKeycodes,
+		XKEYCODETOKEYSYM KeycodeToKeysym
+	)
+{
+	int keycode_min, keycode_max, i, j;
+	KeySym keysym;
+
+	DisplayKeycodes( display, &keycode_min, &keycode_max );
+	if( keycode_min < 0   ) keycode_min = 0;
+	if( keycode_max > 255 ) keycode_max = 255;
+
+	for( i = keycode_min; i <= keycode_max; i++ ) {
+		keysym = KeycodeToKeysym( display, i, 0 );
+		if( keysym != NoSymbol ) {
+			for( j = 0;
+			     fb_keysym_to_scancode[j].scancode &&
+			         (fb_keysym_to_scancode[j].keysym != keysym);
+			     j++ )
+				;
+			fb_x11keycode_to_scancode[i] = fb_keysym_to_scancode[j].scancode;
+		}
+	}
+}
+
 #endif

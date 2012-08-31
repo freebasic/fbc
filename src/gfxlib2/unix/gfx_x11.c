@@ -38,8 +38,6 @@ static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_hwheel, mouse_buttons, mouse_on;
 static int mouse_x_root, mouse_y_root;
 
-
-/*:::::*/
 static int calc_comp_height( int h )
 {
 	if( h < 240 )
@@ -56,8 +54,6 @@ static int calc_comp_height( int h )
 		return h;
 }
 
-
-/*:::::*/
 static int key_repeated(XEvent *event)
 {
 	/* this function is shamelessly copied from SDL, which
@@ -76,8 +72,6 @@ static int key_repeated(XEvent *event)
 	return FALSE;
 }
 
-
-/*:::::*/
 static int translate_key(XEvent *event)
 {
 	unsigned char key[8];
@@ -85,8 +79,7 @@ static int translate_key(XEvent *event)
 
 	if (XLookupString(&(event->xkey), (char *)key, 8, NULL, NULL) == 1) {
 		return key[0];
-	}
-	else {
+	} else {
 		switch (XKeycodeToKeysym(fb_x11.display, event->xkey.keycode, 0)) {
 			case XK_Up:			k = KEY_UP;			break;
 			case XK_Down:		k = KEY_DOWN; 		break;
@@ -110,35 +103,32 @@ static int translate_key(XEvent *event)
 			case XK_F10:		k = KEY_F(10);		break;
 		}
 	}
-	
+
 	return k;
 }
 
-
-/*:::::*/
 static void *window_thread(void *arg)
 {
 	XEvent event;
 	EVENT e;
-	
+
 	(void)arg;
-	
+
 	is_running = TRUE;
 	if (fb_x11.init())
 		is_running = FALSE;
 	cursor_shown = TRUE;
 	mouse_x_root = -1;
-	
+
 	pthread_mutex_lock(&mutex);
 	pthread_cond_signal(&cond);
 	pthread_mutex_unlock(&mutex);
-	
-	while (is_running)
-	{
+
+	while (is_running) {
 		fb_hX11Lock();
-		
+
 		fb_x11.update();
-		
+
 		/* This line is causing fbgfx OpenGL code to freeze. - GOK
 		 * XSync(fb_x11.display, False);
 		 */
@@ -146,7 +136,6 @@ static void *window_thread(void *arg)
 			e.type = 0;
 			XNextEvent(fb_x11.display, &event);
 			switch (event.type) {
-				
 				case FocusIn:
 				case MapNotify:
 					if (!has_focus) {
@@ -253,7 +242,7 @@ static void *window_thread(void *arg)
 				case KeyPress:
 					if (has_focus) {
 						if (event.type == KeyPress) {
-							e.scancode = fb_x11.keymap[event.xkey.keycode];
+							e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
 							e.ascii = 0;
 							__fb_gfx->key[e.scancode] = TRUE;
 						}
@@ -280,7 +269,7 @@ static void *window_thread(void *arg)
 				
 				case KeyRelease:
 					if (has_focus) {
-						e.scancode = fb_x11.keymap[event.xkey.keycode];
+						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
 						e.ascii = translate_key(&event);
 						if (key_repeated(&event)) {
 							if (e.ascii)
@@ -317,23 +306,20 @@ static void *window_thread(void *arg)
 	return NULL;
 }
 
-
-/*:::::*/
 int fb_hX11EnterFullscreen(int *h)
 {
 	if ((!fb_x11.config) || (target_size < 0))
 		return -1;
-	
+
 	if (target_rate < 0) {
 		if (XRRSetScreenConfig(fb_x11.display, fb_x11.config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
 			return -1;
-	}
-	else {
+	} else {
 		if (XRRSetScreenConfigAndRate(fb_x11.display, fb_x11.config, root_window, target_size, orig_rotation, target_rate, CurrentTime) == BadValue)
 			return -1;
 		__fb_gfx->refresh_rate = fb_x11.refresh_rate = target_rate;
 	}
-	
+
 	XWarpPointer(fb_x11.display, None, fb_x11.window, 0, 0, 0, 0, fb_x11.w >> 1, real_h >> 1);
 	XSync(fb_x11.display, False);
 	while (XGrabPointer(fb_x11.display, fb_x11.window, True, 0,
@@ -349,8 +335,6 @@ int fb_hX11EnterFullscreen(int *h)
 	return 0;
 }
 
-
-/*:::::*/
 void fb_hX11LeaveFullscreen(void)
 {
 	if ((!fb_x11.config) || (target_size < 0))
@@ -366,7 +350,6 @@ void fb_hX11LeaveFullscreen(void)
 	}
 }
 
-/*:::::*/
 void WaitMapped(Window w)
 {
 	XEvent e;
@@ -375,16 +358,15 @@ void WaitMapped(Window w)
 	} while ((e.type != MapNotify) || (e.xmap.event != w));
 }
 
-/*:::::*/
 void fb_hX11InitWindow(int x, int y)
 {
 	XEvent event;
-	
+
 	if (!(fb_x11.flags & DRIVER_FULLSCREEN)){
 		/* windowed */
 		XResizeWindow(fb_x11.display, fb_x11.wmwindow, fb_x11.w, fb_x11.h);
 		XResizeWindow(fb_x11.display, fb_x11.window, fb_x11.w, fb_x11.h);
-	
+
 		if (!(fb_x11.flags & DRIVER_NO_FRAME)) {
 			XReparentWindow(fb_x11.display, fb_x11.window, fb_x11.wmwindow, 0, 0);
 			XMapRaised(fb_x11.display,fb_x11.wmwindow);
@@ -407,7 +389,7 @@ void fb_hX11InitWindow(int x, int y)
 		XSync(fb_x11.display, False);
 		XRaiseWindow(fb_x11.display, fb_x11.window);
 	}
-	
+
 	if (fb_x11.flags & DRIVER_ALWAYS_ON_TOP) {
 		fb_hMemSet(&event, 0, sizeof(event));
 		event.xclient.type = ClientMessage;
@@ -421,8 +403,6 @@ void fb_hX11InitWindow(int x, int y)
 	}
 }
 
-
-/*:::::*/
 void fb_hXlibInit(void)
 {
 	if (!xlib_inited) {
@@ -431,8 +411,6 @@ void fb_hXlibInit(void)
 	}
 }
 
-
-/*:::::*/
 int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	XPixmapFormatValues *format;
@@ -446,33 +424,31 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XRRScreenSize *sizes;
 	short *rates;
 	int version, dummy;
-	int i, j, num_formats, num_sizes, num_rates, supersized_h;
-	int gc_mask, keycode_min, keycode_max;
-	KeySym keysym;
+	int i, num_formats, num_sizes, num_rates, supersized_h;
+	int gc_mask;
 	const char *intern_atoms[] = { "_MOTIF_WM_HINTS", "KWM_WIN_DECORATION", "_WIN_HINTS" };
 	int intern_hints[] = { 0x2, 0, 0, 0, 0 };
-	
+
 	is_running = FALSE;
 	fb_hXlibInit();
-	
+
 	fb_x11.w = w;
 	fb_x11.h = h;
 	fb_x11.flags = flags;
 	fb_x11.refresh_rate = refresh_rate;
-	
+
 	target_size = -1;
 	target_rate = -1;
 	current_size = -1;
 	supersized_h = calc_comp_height(fb_x11.h);
-	
+
 	color_map = None;
 	arrow_cursor = None;
 	wm_intern_hints = None;
-	
+
 	if (fb_x11.visual) {
 		fb_x11.depth = depth;
-	}
-	else {
+	} else {
 		fb_x11.display = XOpenDisplay(NULL);
 		if (!fb_x11.display)
 			return -1;
@@ -492,7 +468,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		XFree(format);
 	}
 	root_window = XDefaultRootWindow(fb_x11.display);
-	
+
 	attribs.border_pixel = attribs.background_pixel = XBlackPixel(fb_x11.display, fb_x11.screen);
 	attribs.event_mask = KeyPressMask | KeyReleaseMask | ButtonPressMask | ButtonReleaseMask |
 			     PointerMotionMask | FocusChangeMask | EnterWindowMask | LeaveWindowMask | ExposureMask | StructureNotifyMask;
@@ -508,7 +484,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_x11.fswindow = XCreateWindow(fb_x11.display, root_window, 0, 0, fb_x11.w, fb_x11.h,
 					0, fb_x11.depth, InputOutput, fb_x11.visual,
 					CWOverrideRedirect | CWBackPixel | CWBorderPixel | CWEventMask | CWBackingStore | CWColormap, &attribs);
-					
+
 	if (!fb_x11.window)
 		return -1;
 	XStoreName(fb_x11.display, fb_x11.window, title);
@@ -518,7 +494,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		XpmCreatePixmapFromData(fb_x11.display, fb_x11.window, fb_program_icon, &hints.icon_pixmap, &hints.icon_mask, &xpm_attribs);
 		XSetWMHints(fb_x11.display, fb_x11.wmwindow, &hints);
 	}
-	
+
 	size = XAllocSizeHints();
 	size->flags = PBaseSize | PMinSize | PMaxSize | PResizeInc;
 	size->min_width = size->base_width = fb_x11.w;
@@ -526,8 +502,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	if (flags & DRIVER_NO_SWITCH) {
 		size->max_width = size->min_width;
 		size->max_height = size->min_height;
-	}
-	else {
+	} else {
 		size->max_width = XDisplayWidth(fb_x11.display, fb_x11.screen);
 		size->max_height = XDisplayHeight(fb_x11.display, fb_x11.screen);
 	}
@@ -539,7 +514,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	size->max_height = size->min_height;
 	XSetWMNormalHints(fb_x11.display, fb_x11.wmwindow, size);
 	XFree(size);
-	
+
 	if (flags & DRIVER_NO_FRAME) {
 		for (i = 0; i < 3; i++) {
 			wm_intern_hints = XInternAtom(fb_x11.display, intern_atoms[i], True);
@@ -552,16 +527,16 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		if (wm_intern_hints == None)
 			return -1;
 	}
-	
+
 	wm_delete_window = XInternAtom(fb_x11.display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(fb_x11.display, fb_x11.wmwindow, &wm_delete_window, 1);
-	
+
 	if (fb_x11.visual->class == PseudoColor) {
 		color_map = XCreateColormap(fb_x11.display, root_window, fb_x11.visual, AllocAll);
 		XSetWindowColormap(fb_x11.display, fb_x11.window, color_map);
 	}
 	XClearWindow(fb_x11.display, fb_x11.window);
-	
+
 	pixmap = XCreatePixmap(fb_x11.display, fb_x11.window, 1, 1, 1);
 	gc_mask = GCFunction | GCForeground | GCBackground;
 	gc_values.function = GXcopy;
@@ -576,7 +551,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	XFreePixmap(fb_x11.display, pixmap);
 	fb_x11.gc = DefaultGC(fb_x11.display, fb_x11.screen);
 	XSync(fb_x11.display, False);
-	
+
 	if (XRRQueryExtension(fb_x11.display, &dummy, &dummy) &&
 	    XRRQueryVersion(fb_x11.display, &version, &dummy) && (version >= 1)) {
 		fb_x11.config = XRRGetScreenInfo(fb_x11.display, root_window);
@@ -605,30 +580,21 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 					break;
 				}
 			}
-		}
-		else
+		} else {
 			fb_x11.refresh_rate = orig_rate;
+		}
 		__fb_gfx->refresh_rate = fb_x11.refresh_rate;
 	}
-	
-	XDisplayKeycodes(fb_x11.display, &keycode_min, &keycode_max);
-	keycode_min = MAX(keycode_min, 0);
-	keycode_max = MIN(keycode_max, 255);
-	for (i = keycode_min; i <= keycode_max; i++) {
-		keysym = XKeycodeToKeysym(fb_x11.display, i, 0);
-		if (keysym != NoSymbol) {
-			for (j = 0; (fb_keysym_to_scancode[j].scancode) && (fb_keysym_to_scancode[j].keysym != keysym); j++)
-				;
-			fb_x11.keymap[i] = fb_keysym_to_scancode[j].scancode;
-		}
-	}
+
+	fb_hInitX11KeycodeToScancodeTb( fb_x11.display, XDisplayKeycodes, XKeycodeToKeysym );
+
 	if (flags & DRIVER_FULLSCREEN) {
 		mouse_on = TRUE;
 		mouse_x = fb_x11.w >> 1;
 		mouse_y = fb_x11.h >> 1;
-	}
-	else
+	} else {
 		mouse_on = FALSE;
+	}
 	mouse_buttons = mouse_wheel = 0;
 
 	pthread_mutex_init(&mutex, NULL);
@@ -643,12 +609,10 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	}
 	pthread_cond_destroy(&cond);
 	pthread_mutex_destroy(&mutex);
-	
+
 	return -1;
 }
 
-
-/*:::::*/
 void fb_hX11Exit(void)
 {
 	if (is_running) {
@@ -681,28 +645,22 @@ void fb_hX11Exit(void)
 	}
 }
 
-
-/*:::::*/
 void fb_hX11Lock(void)
 {
 	pthread_mutex_lock(&mutex);
 	XLockDisplay(fb_x11.display);
 }
 
-
-/*:::::*/
 void fb_hX11Unlock(void)
 {
 	XUnlockDisplay(fb_x11.display);
 	pthread_mutex_unlock(&mutex);
 }
 
-
-/*:::::*/
 void fb_hX11SetPalette(int index, int r, int g, int b)
 {
 	XColor color;
-	
+
 	if (fb_x11.visual->class == PseudoColor) {
 		color.pixel = index;
 		color.red = (r << 8) | r;
@@ -713,24 +671,20 @@ void fb_hX11SetPalette(int index, int r, int g, int b)
 	}
 }
 
-
-/*:::::*/
 void fb_hX11WaitVSync(void)
 {
 	usleep(1000000 / ((fb_x11.refresh_rate > 0) ? fb_x11.refresh_rate : 60));
 }
 
-
-/*:::::*/
 int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
 	Window root, child;
 	int root_x, root_y, win_x, win_y;
 	unsigned int buttons_mask;
-	
+
 	if ((!mouse_on) || (!has_focus))
 		return -1;
-	
+
 	/* prefer XQueryPointer to have a more responsive mouse position retrieval */
 	*z = mouse_wheel;
 	if (XQueryPointer(fb_x11.display, fb_x11.window, &root, &child, &root_x, &root_y, &win_x, &win_y, &buttons_mask)) {
@@ -739,20 +693,16 @@ int fb_hX11GetMouse(int *x, int *y, int *z, int *buttons, int *clip)
 		*buttons = (buttons_mask & Button1Mask ? 0x1 : 0) |
 				   (buttons_mask & Button3Mask ? 0x2 : 0) |
 				   (buttons_mask & Button2Mask ? 0x4 : 0);
-	}
-	else {
+	} else {
 		*x = mouse_x;
 		*y = mouse_y;
 		*buttons = mouse_buttons;
 	}
-	
+
 	*clip = fb_x11.mouse_clip;
-	
 	return 0;
 }
 
-
-/*:::::*/
 void fb_hX11SetMouse(int x, int y, int show, int clip)
 {
 	if ((x >= 0) && (has_focus)) {
@@ -785,15 +735,11 @@ void fb_hX11SetMouse(int x, int y, int show, int clip)
 	}
 }
 
-
-/*:::::*/
 void fb_hX11SetWindowTitle(char *title)
 {
 	XStoreName(fb_x11.display, fb_x11.wmwindow, title);
 }
 
-
-/*:::::*/
 int fb_hX11SetWindowPos(int x, int y)
 {
 	Window window, root, parent, *children;
@@ -801,7 +747,7 @@ int fb_hX11SetWindowPos(int x, int y)
 	XEvent event;
 	unsigned int num_children;
 	int dx = 0, dy = 0;
-	
+
 	if (fb_x11.flags & DRIVER_FULLSCREEN)
 		return 0;
 	fb_hX11Lock();
@@ -838,8 +784,6 @@ int fb_hX11SetWindowPos(int x, int y)
 	return ((attribs.x + dx) & 0xFFFF) | ((attribs.y + dy) << 16);
 }
 
-
-/*:::::*/
 int *fb_hX11FetchModes(int depth, int *size)
 {
 	Display *dpy;
@@ -856,36 +800,34 @@ int *fb_hX11FetchModes(int depth, int *size)
 		dpy = XOpenDisplay(NULL);
 	if (!dpy)
 		return NULL;
-	
+
 	if (fb_x11.config)
 		cfg = fb_x11.config;
 	else
 		cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
 	if (!cfg)
 		return NULL;
-	
+
 	rr_sizes = XRRConfigSizes(cfg, size);
 	if ((rr_sizes) && (*size > 0)) {
 		sizes = (int *)malloc(*size * sizeof(int));
 		for (i = 0; i < *size; i++)
 			sizes[i] = (rr_sizes[i].width << 16) | (rr_sizes[i].height);
-	}	
+	}
 	if (!fb_x11.config)
 		XRRFreeScreenConfigInfo(cfg);
 	if (!fb_x11.display)
 		XCloseDisplay(dpy);
-	
+
 	return sizes;
 }
 
-
-/*:::::*/
 int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	XRRScreenConfiguration *cfg;
 	Display *dpy;
 	int dummy, version;
-	
+
 	dpy = XOpenDisplay(NULL);
 	if (!dpy)
 		return -1;
@@ -898,17 +840,15 @@ int fb_hX11ScreenInfo(int *width, int *height, int *depth, int *refresh)
 	    cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
 		*refresh = XRRConfigCurrentRate(cfg);
 		XRRFreeScreenConfigInfo(cfg);
-	}
-	else
+	} else {
 		*refresh = 0;
-	
+	}
+
 	XCloseDisplay(dpy);
 
 	return 0;
 }
 
-
-/*:::::*/
 int fb_hGetWindowHandle(void)
 {
 	return (fb_x11.display ? (int)fb_x11.window : 0);
@@ -916,11 +856,9 @@ int fb_hGetWindowHandle(void)
 
 #else
 
-/*:::::*/
 int fb_hGetWindowHandle(void)
 {
 	return 0;
 }
 
 #endif
-
