@@ -53,7 +53,7 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
     size_t pos, len, tmp_buffer_len = 0;
     int cursor_visible;
     int k;
-    char ch, tmp_buffer[12];
+    char tmp_buffer[12];
 
     fb_GetSize(&cols, &rows);
 
@@ -89,11 +89,10 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
         	if( FB_STRSIZE(sTmp) == 2 )
         	{
             	k = FB_MAKE_EXT_KEY(sTmp->data[1]);
-            	ch = 0;
         	}
         	else
         	{
-            	k = FB_MAKE_KEY(ch = sTmp->data[0]);
+            	k = FB_MAKE_KEY(sTmp->data[0]);
         	}
 
         	fb_hStrDelTemp( sTmp );
