@@ -79,6 +79,12 @@ static int translate_key(XEvent *event)
 
 	if( XLookupString( &event->xkey, (char *)key, 8, NULL, NULL ) == 1 ) {
 		k = key[0];
+
+		/* Remap ASCII DEL to FB's extended keycode for DELETE,
+		   to match behaviour of console mode and other platforms */
+		if( k == 0x7F ) {
+			k = KEY_DEL;
+		}
 	} else {
 		switch( XKeycodeToKeysym( fb_x11.display, event->xkey.keycode, 0 ) ) {
 		case XK_Up:        k = KEY_UP;        break;

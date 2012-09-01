@@ -2,6 +2,7 @@ Version 0.25.0:
 
 [changed]
 - -c, -r and -pp options will now complement each-other when used together, instead of partially overwriting each-other and thus causing weird behaviour
+- getkey()/inkey() under Linux X11 graphics mode will now return the FB extended keycode for DELETE (&h53FF or &hFF &h53) instead of ASCII DEL (&h7F), for consistency with console-mode and other platforms
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
