@@ -75,9 +75,6 @@
 /* Convert char to int without sign-extension. */
 #define FB_CHAR_TO_INT(ch)  ((int) ((unsigned) (unsigned char) (ch)))
 
-/* Key code from char */
-#define FB_MAKE_KEY(ch)     ((int) ((unsigned) (unsigned char) (ch)))
-
 /* Build an extended 2 byte key code like those returned by getkey()
    (inkey() returns a string like &hFF &h49 [page up key code],
     getkey() returns the same but in a little-endian integer: &h49FF

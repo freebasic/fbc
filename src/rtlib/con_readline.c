@@ -92,7 +92,7 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
         	}
         	else
         	{
-            	k = FB_MAKE_KEY(sTmp->data[0]);
+			k = FB_CHAR_TO_INT(sTmp->data[0]);
         	}
 
         	fb_hStrDelTemp( sTmp );
