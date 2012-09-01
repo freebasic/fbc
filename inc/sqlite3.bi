@@ -11,6 +11,8 @@
 
 #inclib "sqlite3"
 
+#include once "crt/stdarg.bi"
+
 #define SQLITE_VERSION "3.7.8"
 #define SQLITE_VERSION_NUMBER 3007008
 #define SQLITE_SOURCE_ID "2011-09-19 14:49:19 3e0da808d2f5b4d12046e05980ca04578f581177"
@@ -32,9 +34,9 @@ type sqlite3_uint64 as sqlite_uint64
 
 declare function sqlite3_close (byval as sqlite3 ptr) as integer
 
-type sqlite3_callback as function cdecl(byval as any ptr, byval as integer, byval as byte ptr ptr, byval as byte ptr ptr) as integer
+type sqlite3_callback as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr ptr, byval as zstring ptr ptr) as integer
 
-declare function sqlite3_exec (byval as sqlite3 ptr, byval sql as zstring ptr, byval callback as function cdecl(byval as any ptr, byval as integer, byval as byte ptr ptr, byval as byte ptr ptr) as integer, byval as any ptr, byval errmsg as byte ptr ptr) as integer
+declare function sqlite3_exec (byval as sqlite3 ptr, byval sql as zstring ptr, byval callback as sqlite3_callback, byval as any ptr, byval errmsg as zstring ptr ptr) as integer
 
 #define SQLITE_OK 0
 #define SQLITE_ERROR 1
@@ -133,11 +135,13 @@ declare function sqlite3_exec (byval as sqlite3 ptr, byval sql as zstring ptr, b
 #define SQLITE_SYNC_FULL &h00003
 #define SQLITE_SYNC_DATAONLY &h00010
 
+type sqlite3_io_methods as sqlite3_io_methods_
+
 type sqlite3_file
     pMethods as sqlite3_io_methods ptr
 end type
 
-type sqlite3_io_methods
+type sqlite3_io_methods_
     iVersion as integer
     xClose as function cdecl(byval as sqlite3_file ptr) as integer
     xRead as function cdecl(byval as sqlite3_file ptr, byval as any ptr, byval as integer, byval as sqlite3_int64) as integer
@@ -252,8 +256,8 @@ declare function sqlite3_complete (byval sql as zstring ptr) as integer
 declare function sqlite3_complete16 (byval sql as any ptr) as integer
 declare function sqlite3_busy_handler (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr, byval as integer) as integer, byval as any ptr) as integer
 declare function sqlite3_busy_timeout (byval as sqlite3 ptr, byval ms as integer) as integer
-declare function sqlite3_get_table (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval pazResult as byte ptr ptr ptr, byval pnRow as integer ptr, byval pnColumn as integer ptr, byval pzErrmsg as byte ptr ptr) as integer
-declare sub sqlite3_free_table (byval result as byte ptr ptr)
+declare function sqlite3_get_table (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval pazResult as zstring ptr ptr ptr, byval pnRow as integer ptr, byval pnColumn as integer ptr, byval pzErrmsg as zstring ptr ptr) as integer
+declare sub sqlite3_free_table (byval result as zstring ptr ptr)
 declare function sqlite3_mprintf (byval as zstring ptr, ...) as zstring ptr
 declare function sqlite3_vmprintf (byval as zstring ptr, byval as va_list) as zstring ptr
 declare function sqlite3_snprintf (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as zstring ptr
@@ -330,8 +334,8 @@ declare function sqlite3_limit (byval as sqlite3 ptr, byval id as integer, byval
 #define SQLITE_LIMIT_VARIABLE_NUMBER 9
 #define SQLITE_LIMIT_TRIGGER_DEPTH 10
 
-declare function sqlite3_prepare (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as byte ptr ptr) as integer
-declare function sqlite3_prepare_v2 (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as byte ptr ptr) as integer
+declare function sqlite3_prepare (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as zstring ptr ptr) as integer
+declare function sqlite3_prepare_v2 (byval db as sqlite3 ptr, byval zSql as zstring ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as zstring ptr ptr) as integer
 declare function sqlite3_prepare16 (byval db as sqlite3 ptr, byval zSql as any ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as any ptr ptr) as integer
 declare function sqlite3_prepare16_v2 (byval db as sqlite3 ptr, byval zSql as any ptr, byval nByte as integer, byval ppStmt as sqlite3_stmt ptr ptr, byval pzTail as any ptr ptr) as integer
 declare function sqlite3_sql (byval pStmt as sqlite3_stmt ptr) as zstring ptr
@@ -456,21 +460,20 @@ declare function sqlite3_enable_shared_cache (byval as integer) as integer
 declare function sqlite3_release_memory (byval as integer) as integer
 declare function sqlite3_soft_heap_limit64 (byval N as sqlite3_int64) as sqlite3_int64
 declare sub sqlite3_soft_heap_limit (byval N as integer)
-declare function sqlite3_table_column_metadata (byval db as sqlite3 ptr, byval zDbName as zstring ptr, byval zTableName as zstring ptr, byval zColumnName as zstring ptr, byval pzDataType as byte ptr ptr, byval pzCollSeq as byte ptr ptr, byval pNotNull as integer ptr, byval pPrimaryKey as integer ptr, byval pAutoinc as integer ptr) as integer
-declare function sqlite3_load_extension (byval db as sqlite3 ptr, byval zFile as zstring ptr, byval zProc as zstring ptr, byval pzErrMsg as byte ptr ptr) as integer
+declare function sqlite3_table_column_metadata (byval db as sqlite3 ptr, byval zDbName as zstring ptr, byval zTableName as zstring ptr, byval zColumnName as zstring ptr, byval pzDataType as zstring ptr ptr, byval pzCollSeq as zstring ptr ptr, byval pNotNull as integer ptr, byval pPrimaryKey as integer ptr, byval pAutoinc as integer ptr) as integer
+declare function sqlite3_load_extension (byval db as sqlite3 ptr, byval zFile as zstring ptr, byval zProc as zstring ptr, byval pzErrMsg as zstring ptr ptr) as integer
 declare function sqlite3_enable_load_extension (byval db as sqlite3 ptr, byval onoff as integer) as integer
 declare function sqlite3_auto_extension (byval xEntryPoint as sub cdecl()) as integer
 declare sub sqlite3_reset_auto_extension ()
 
-type sqlite3_vtab as any
-type sqlite3_index_info as any
-type sqlite3_vtab_cursor as any
-type sqlite3_module as any
+type sqlite3_vtab as sqlite3_vtab_
+type sqlite3_index_info as sqlite3_index_info_
+type sqlite3_vtab_cursor as sqlite3_vtab_cursor_
 
 type sqlite3_module
     iVersion as integer
-    xCreate as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as byte ptr ptr, byval as sqlite3_vtab ptr ptr, byval as byte ptr ptr) as integer
-    xConnect as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as byte ptr ptr, byval as sqlite3_vtab ptr ptr, byval as byte ptr ptr) as integer
+    xCreate as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as zstring ptr ptr, byval as sqlite3_vtab ptr ptr, byval as zstring ptr ptr) as integer
+    xConnect as function cdecl(byval as sqlite3 ptr, byval as any ptr, byval as integer, byval as zstring ptr ptr, byval as sqlite3_vtab ptr ptr, byval as zstring ptr ptr) as integer
     xBestIndex as function cdecl(byval as sqlite3_vtab ptr, byval as sqlite3_index_info ptr) as integer
     xDisconnect as function cdecl(byval as sqlite3_vtab ptr) as integer
     xDestroy as function cdecl(byval as sqlite3_vtab ptr) as integer
@@ -510,7 +513,7 @@ type sqlite3_index_info_aConstraint
     iTermOffset as integer
 end type
 
-type sqlite3_index_info
+type sqlite3_index_info_
     nConstraint as integer
     nOrderBy as integer
     idxNum as integer
@@ -533,13 +536,13 @@ end type
 declare function sqlite3_create_module (byval db as sqlite3 ptr, byval zName as zstring ptr, byval p as sqlite3_module ptr, byval pClientData as any ptr) as integer
 declare function sqlite3_create_module_v2 (byval db as sqlite3 ptr, byval zName as zstring ptr, byval p as sqlite3_module ptr, byval pClientData as any ptr, byval xDestroy as sub cdecl(byval as any ptr)) as integer
 
-type sqlite3_vtab
+type sqlite3_vtab_
     pModule as sqlite3_module ptr
     nRef as integer
     zErrMsg as zstring ptr
 end type
 
-type sqlite3_vtab_cursor
+type sqlite3_vtab_cursor_
     pVtab as sqlite3_vtab ptr
 end type
 
@@ -686,9 +689,11 @@ declare function sqlite3_vtab_on_conflict (byval as sqlite3 ptr) as integer
 #define SQLITE_FAIL 3
 #define SQLITE_REPLACE 5
 
+type sqlite3_rtree_geometry as sqlite3_rtree_geometry_
+
 declare function sqlite3_rtree_geometry_callback (byval db as sqlite3 ptr, byval zGeom as zstring ptr, byval xGeom as function cdecl(byval as sqlite3_rtree_geometry ptr, byval as integer, byval as double ptr, byval as integer ptr) as integer, byval pContext as any ptr) as integer
 
-type sqlite3_rtree_geometry
+type sqlite3_rtree_geometry_
     pContext as any ptr
     nParam as integer
     aParam as double ptr
