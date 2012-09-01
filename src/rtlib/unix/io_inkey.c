@@ -4,30 +4,8 @@
 #include "fb_private_console.h"
 #include <termcap.h>
 
-#define MAX_BUFFER_LEN	256
+#define KEY_BUFFER_LEN 256
 
-#define KEY_UP			(0x100 | 'H')
-#define KEY_DOWN		(0x100 | 'P')
-#define KEY_LEFT		(0x100 | 'K')
-#define KEY_RIGHT		(0x100 | 'M')
-#define KEY_INS			(0x100 | 'R')
-#define KEY_DEL			(0x100 | 'S')
-#define KEY_HOME		(0x100 | 'G')
-#define KEY_END			(0x100 | 'O')
-#define KEY_PAGE_UP		(0x100 | 'I')
-#define KEY_PAGE_DOWN	(0x100 | 'Q')
-#define KEY_F1			(0x100 | ';')
-#define KEY_F2			(0x100 | '<')
-#define KEY_F3			(0x100 | '=')
-#define KEY_F4			(0x100 | '>')
-#define KEY_F5			(0x100 | '?')
-#define KEY_F6			(0x100 | '@')
-#define KEY_F7			(0x100 | 'A')
-#define KEY_F8			(0x100 | 'B')
-#define KEY_F9			(0x100 | 'C')
-#define KEY_F10			(0x100 | 'D')
-#define KEY_TAB			'\t'
-#define KEY_BACKSPACE	8
 #define KEY_MOUSE		0x200
 
 typedef struct NODE
@@ -51,13 +29,13 @@ static const KEY_DATA key_data[] = {
 	{ "kT", KEY_TAB }, { "kb", KEY_BACKSPACE }, { NULL, 0 }
 };
 
-static int key_buffer[MAX_BUFFER_LEN], key_head = 0, key_tail = 0;
+static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
 static NODE *root_node = NULL;
 
 static void add_key(NODE **node, char *key, short code)
 {
 	NODE *n;
-	
+
 	for (n = *node; n; n = n->next) {
 		if (n->key == *key) {
 			add_key(&n->child, key + 1, code);
@@ -70,7 +48,7 @@ static void add_key(NODE **node, char *key, short code)
 	n->key = *key;
 	n->code = 0;
 	*node = n;
-	
+
 	if (*(key + 1))
 		add_key(&n->child, key + 1, code);
 	else
@@ -81,7 +59,7 @@ static void init_keys()
 {
 	KEY_DATA *data;
 	char *key;
-	
+
 	for (data = (KEY_DATA *)key_data; data->cap; data++) {
 		key = tgetstr(data->cap, NULL);
 		if (key) {
@@ -143,14 +121,14 @@ int fb_hGetCh(int remove)
 	k = get_input();
 	if (k >= 0) {
 		key_buffer[key_tail] = k;
-		if (((key_tail + 1) & (MAX_BUFFER_LEN - 1)) == key_head)
-			key_head = (key_head + 1) & (MAX_BUFFER_LEN - 1);
-		key_tail = (key_tail + 1) & (MAX_BUFFER_LEN - 1);
+		if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
+			key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+		key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
 	}
 	if (key_head != key_tail) {
 		k = key_buffer[key_head];
 		if (remove)
-			key_head = (key_head + 1) & (MAX_BUFFER_LEN - 1);
+			key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
 	return k;
 }
@@ -164,19 +142,7 @@ FBSTRING *fb_ConsoleInkey( void )
 		return &__fb_ctx.null_desc;
 
 	if ((ch = fb_hGetCh(TRUE)) >= 0) {
-		if (ch & 0x100) {
-			res = fb_hStrAllocTemp( NULL, 2 );
-			if( res ) {
-				res->data[0] = FB_EXT_CHAR;
-				res->data[1] = (unsigned char)(ch & 0xFF);
-				res->data[2] = '\0';
-				return res;
-			} else {
-				res = &__fb_ctx.null_desc;
-			}
-		} else {
-			return fb_CHR( 1, ch );
-		}
+		res = fb_hMakeInkeyStr( ch );
 	} else {
 		res = &__fb_ctx.null_desc;
 	}
@@ -186,18 +152,15 @@ FBSTRING *fb_ConsoleInkey( void )
 
 int fb_ConsoleGetkey( void )
 {
-	int k = 0;
+	int key;
 
 	if (!__fb_con.inited)
 		return fgetc(stdin);
-	
-	while ((k = fb_hGetCh(TRUE)) < 0)
-        fb_Sleep( -1 );
 
-    if( k & 0x100 )
-        return FB_MAKE_EXT_KEY( k & 0xFF );
+	while ((key = fb_hGetCh(TRUE)) < 0)
+		fb_Sleep( -1 );
 
-	return k & 0xFF;
+	return key;
 }
 
 int fb_ConsoleKeyHit( void )

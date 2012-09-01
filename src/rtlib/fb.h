@@ -78,9 +78,10 @@
 /* Key code from char */
 #define FB_MAKE_KEY(ch)     ((int) ((unsigned) (unsigned char) (ch)))
 
-/* Macro to calculate an extended key code for a character.
-   This macro is used to build the integer value of a two-byte key code
-   returned by SCRN: (and INKEY$). */
+/* Build an extended 2 byte key code like those returned by getkey()
+   (inkey() returns a string like &hFF &h49 [page up key code],
+    getkey() returns the same but in a little-endian integer: &h49FF
+    where &hFF is the FB_EXT_CHAR  */
 #define FB_MAKE_EXT_KEY(ch) \
 	((int) ((((unsigned) (unsigned char) (ch)) << 8) + \
 	        (unsigned) (unsigned char) (FB_EXT_CHAR)))
@@ -404,6 +405,31 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #define SC_MENU		0x5D
 #define SC_ALTGR	0x64
 
+#define KEY_QUIT        FB_MAKE_EXT_KEY( 'k' )
+#define KEY_UP          FB_MAKE_EXT_KEY( 'H' )
+#define KEY_DOWN        FB_MAKE_EXT_KEY( 'P' )
+#define KEY_LEFT        FB_MAKE_EXT_KEY( 'K' )
+#define KEY_RIGHT       FB_MAKE_EXT_KEY( 'M' )
+#define KEY_INS         FB_MAKE_EXT_KEY( 'R' )
+#define KEY_DEL         FB_MAKE_EXT_KEY( 'S' )
+#define KEY_HOME        FB_MAKE_EXT_KEY( 'G' )
+#define KEY_END         FB_MAKE_EXT_KEY( 'O' )
+#define KEY_PAGE_UP     FB_MAKE_EXT_KEY( 'I' )
+#define KEY_PAGE_DOWN   FB_MAKE_EXT_KEY( 'Q' )
+#define KEY_F1          FB_MAKE_EXT_KEY( ';' )
+#define KEY_F2          FB_MAKE_EXT_KEY( '<' )
+#define KEY_F3          FB_MAKE_EXT_KEY( '=' )
+#define KEY_F4          FB_MAKE_EXT_KEY( '>' )
+#define KEY_F5          FB_MAKE_EXT_KEY( '?' )
+#define KEY_F6          FB_MAKE_EXT_KEY( '@' )
+#define KEY_F7          FB_MAKE_EXT_KEY( 'A' )
+#define KEY_F8          FB_MAKE_EXT_KEY( 'B' )
+#define KEY_F9          FB_MAKE_EXT_KEY( 'C' )
+#define KEY_F10         FB_MAKE_EXT_KEY( 'D' )
+#define KEY_TAB         '\t'
+#define KEY_BACKSPACE   8
+
+FBSTRING *fb_hMakeInkeyStr( int ch );
 
 /* This should match fbc's lang enum */
 enum FB_LANG {

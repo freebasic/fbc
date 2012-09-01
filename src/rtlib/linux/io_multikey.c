@@ -210,9 +210,10 @@ static void keyboard_console_handler(void)
 						break;
 				}
 			}
-			
-			if (extended)
-				ascii = 0x100 | extended;
+
+			if( extended )
+				ascii = FB_MAKE_EXT_KEY( extended );
+
 			if ((pressed) && (ascii)) {
 				key_buffer[key_tail] = ascii;
 				if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)

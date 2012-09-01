@@ -5,35 +5,16 @@
 
 FBSTRING *fb_ConsoleInkey( void )
 {
-	FBSTRING 	 *res;
-    int  key = fb_hConsoleGetKey( TRUE );
+	FBSTRING *res;
+	int key;
 
-    if( key==-1 )
-    {
-        res = &__fb_ctx.null_desc;
-    }
-    else if( key > 255 )
-    {
-        res = fb_hStrAllocTemp( NULL, 2 );
-        if( res!=NULL )
-        {
-            res->data[0] = FB_EXT_CHAR;
-            res->data[1] = (key >> 8) & 0xFF;
-            res->data[2] = 0;
-        }
-    }
-    else
-    {
-        res = fb_hStrAllocTemp( NULL, 1 );
-        if( res!=NULL )
-        {
-            res->data[0] = key & 0xFF;
-            res->data[1] = 0;
-        }
-    }
+	key = fb_hConsoleGetKey( TRUE );
 
-    if( res==NULL )
-        res = &__fb_ctx.null_desc;
+	if( key == -1 ) {
+		res = &__fb_ctx.null_desc;
+	} else {
+		res = fb_hMakeInkeyStr( key );
+	}
 
 	return res;
 }
