@@ -144,10 +144,10 @@ Declare Sub wxGrid_ProcessRowLabelMouseEvent WXCALL Alias "wxGrid_ProcessRowLabe
 Declare Sub wxGrid_ProcessColLabelMouseEvent WXCALL Alias "wxGrid_ProcessColLabelMouseEvent" (self As wxGrid Ptr, evn As wxMouseEvent Ptr)
 Declare Sub wxGrid_ProcessCornerLabelMouseEvent WXCALL Alias "wxGrid_ProcessCornerLabelMouseEvent" (self As wxGrid Ptr, evn As wxMouseEvent Ptr)
 Declare Sub wxGrid_ProcessGridCellMouseEvent WXCALL Alias "wxGrid_ProcessGridCellMouseEvent" (self As wxGrid Ptr, evn As wxMouseEvent Ptr)
-Declare Function  wxGrid_ProcessTableMessage WXCALL Alias " wxGrid_ProcessTableMessage" (self As wxGrid Ptr, msg As wxGridTableMessage Ptr) As wxBool
+Declare Function wxGrid_ProcessTableMessage WXCALL Alias "wxGrid_ProcessTableMessage" (self As wxGrid Ptr, msg As wxGridTableMessage Ptr) As wxBool
 Declare Function wxGridTableMessage_ctor1 WXCALL Alias "wxGridTableMessage_ctor1" () As wxGridTableMessage Ptr
 Declare Function wxGridTableMessage_ctor2 WXCALL Alias "wxGridTableMessage_ctor2" (table As wxGridTableBase Ptr, id As wxInt, comInt1 As wxInt, comInt2 As wxInt) As wxGridTableMessage Ptr
-Declare Sub  wxGridTableMessage_SetTableObject WXCALL Alias " wxGridTableMessage_SetTableObject" (self As wxGridTableMessage Ptr, table As wxGridTableBase Ptr)
+Declare Sub wxGridTableMessage_SetTableObject WXCALL Alias "wxGridTableMessage_SetTableObject" (self As wxGridTableMessage Ptr, table As wxGridTableBase Ptr)
 Declare Function wxGridTableMessage_GetTableObject WXCALL Alias "wxGridTableMessage_GetTableObject" (self As wxGridTableMessage Ptr) As wxGridTableBase Ptr
 Declare Sub wxGridTableMessage_SetId WXCALL Alias "wxGridTableMessage_SetId" (self As wxGridTableMessage Ptr, id As wxInt)
 Declare Function wxGridTableMessage_GetId WXCALL Alias "wxGridTableMessage_GetId" (self As wxGridTableMessage Ptr) As wxInt
@@ -671,7 +671,7 @@ Declare Sub wxGridCellBoolRenderer_dtor WXCALL Alias "wxGridCellBoolRenderer_dto
 Declare Sub wxGridCellBoolRenderer_RegisterDisposable WXCALL Alias "wxGridCellBoolRenderer_RegisterDisposable" (self As wxGridCellBoolRenderer Ptr, on_dispose As Virtual_Dispose)
 Declare Sub wxGridCellBoolRenderer_Draw WXCALL Alias "wxGridCellBoolRenderer_Draw" (self As wxGridCellBoolRenderer Ptr, grid As wxGrid Ptr, attr As wxGridCellAttr Ptr, dc As wxDC Ptr, r As wxRect Ptr, row As wxInt, col As wxInt, IsSelected As wxBool)
 Declare Sub wxGridCellBoolRenderer_GetBestSize WXCALL Alias "wxGridCellBoolRenderer_GetBestSize" (self As wxGridCellBoolRenderer Ptr, grid As wxGrid Ptr, attrr As wxGridCellAttr Ptr, dc As wxDC Ptr, row As wxInt, col As wxInt, size As wxSize Ptr)
-Declare Function  wxGridCellBoolRenderer_Clone WXCALL Alias " wxGridCellBoolRenderer_Clone" (self As wxGridCellBoolRenderer Ptr) As wxGridCellRenderer Ptr
+Declare Function wxGridCellBoolRenderer_Clone WXCALL Alias "wxGridCellBoolRenderer_Clone" (self As wxGridCellBoolRenderer Ptr) As wxGridCellRenderer Ptr
 
 ' class wxGridCellRenderer
 Declare Function wxGridCellRenderer_ctor WXCALL Alias "wxGridCellRenderer_ctor" () As wxGridCellRenderer Ptr
