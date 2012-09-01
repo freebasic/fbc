@@ -3,7 +3,12 @@
 
 #ifndef DISABLE_X11
 
-const KeysymToScancode fb_keysym_to_scancode[] =
+typedef struct KeysymToScancode {
+	KeySym keysym;
+	int scancode;
+} KeysymToScancode;
+
+static const KeysymToScancode keysym_to_scancode[] =
 {
 	{ XK_Escape      , SC_ESCAPE       },
 	{ XK_F1          , SC_F1           },
@@ -132,11 +137,11 @@ void fb_hInitX11KeycodeToScancodeTb
 		keysym = KeycodeToKeysym( display, i, 0 );
 		if( keysym != NoSymbol ) {
 			for( j = 0;
-			     fb_keysym_to_scancode[j].scancode &&
-			         (fb_keysym_to_scancode[j].keysym != keysym);
+			     keysym_to_scancode[j].scancode &&
+			         (keysym_to_scancode[j].keysym != keysym);
 			     j++ )
 				;
-			fb_x11keycode_to_scancode[i] = fb_keysym_to_scancode[j].scancode;
+			fb_x11keycode_to_scancode[i] = keysym_to_scancode[j].scancode;
 		}
 	}
 }
