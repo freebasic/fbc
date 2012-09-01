@@ -43,15 +43,15 @@ FBSTRING *fb_ConsoleInkey( void )
 
 int fb_ConsoleGetkey( void )
 {
-	int k = 0;
+	unsigned int k;
 
-	k = getch( );
+	k = (unsigned int)getch( );
 	if( k == 0x00 || k == 0xE0 )
-		k = getch( );
+		k = FB_MAKE_EXT_KEY( (unsigned int)getch( ) );
 
-    /* Reset the status for "key buffer changed" when a key
-     * was removed from the input queue. */
-    fb_hConsoleInputBufferChanged();
+	/* Reset the status for "key buffer changed" when a key
+	 * was removed from the input queue. */
+	fb_hConsoleInputBufferChanged( );
 
 	return k;
 }

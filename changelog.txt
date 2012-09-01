@@ -24,6 +24,7 @@ Version 0.25.0:
 - #3549349: The namespace prefix of constants on the left hand-side of assignments was being ignored by the parser, allowing the constant's identifier to match other symbols
 - .o files are now linked in the exact order indicated by given .bas modules, .o files, .a files, or -a options on the fbc command line
 - getkey() under X11 graphics mode on Linux didn't return proper extended key codes like in console-mode
+- getkey() under DOS console-mode didn't encode extended key codes as a 2-byte code using &hFF, causing them to collide with normal key codes
 
 
 Version 0.24.0:
