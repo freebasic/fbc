@@ -38,7 +38,7 @@ static unsigned short key_buffer[KEY_BUFFER_SIZE], key_head, key_tail;
 static int (*old_getch)(void);
 static void (*gfx_save)(void);
 static void (*gfx_restore)(void);
-static void (*gfx_key_handler)(int);
+static void (*gfx_key_handler)(int, int, int, int);
 
 static const char pad_numlock_ascii[NUM_PAD_KEYS] = "0123456789+-*/\r,.";
 static const char pad_ascii[NUM_PAD_KEYS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '+', '-', '*', '/', '\r', 0, 0 };
@@ -107,7 +107,7 @@ static void keyboard_console_handler(void)
 		for (i = 0; i < num_bytes; i++) {
 			scancode = kernel_to_scancode[buffer[i] & 0x7F];
 			pressed = (buffer[i] & 0x80) ^ 0x80;
-			repeated = ((key_state[scancode]) && (pressed));
+			repeated = pressed && key_state[scancode];
 			key_state[scancode] = pressed;
 
 			/* Since we took over keyboard control, we have to map our keypresses to ascii
@@ -140,7 +140,8 @@ static void keyboard_console_handler(void)
 			case SC_F10:        extended = KEY_F10;       break;
 			}
 
-			entry.kb_table = 0;
+			/* Fill in kbentry struct for KDGKBENT query */
+			entry.kb_table = 0; /* modifier table */
 			if (key_state[SC_LSHIFT] || key_state[SC_RSHIFT])
 				entry.kb_table |= 0x1;
 			if (key_state[SC_ALTGR])
@@ -149,9 +150,9 @@ static void keyboard_console_handler(void)
 				entry.kb_table |= 0x4;
 			if (key_state[SC_ALT])
 				entry.kb_table |= 0x8;
-
-			entry.kb_index = scancode;
+			entry.kb_index = scancode; /* keycode */
 			ioctl(key_fd, KDGKBENT, &entry);
+
 			if (scancode == SC_BACKSPACE)
 				ascii = 8;
 			else if (entry.kb_value == K_NOSUCHMAP)
@@ -182,7 +183,7 @@ static void keyboard_console_handler(void)
 						break;
 					case KT_CONS:
 						vt = ascii + 1;
-						if ((pressed) && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0)) {
+						if( pressed && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) ) {
 							orig_vt = vt_state.v_active;
 							if (vt != orig_vt) {
 								if (__fb_con.gfx_exit) {
@@ -198,9 +199,9 @@ static void keyboard_console_handler(void)
 									gfx_restore();
 								}
 								memset(key_state, FALSE, 128);
+							} else {
+								key_state[scancode] = FALSE;
 							}
-							else
-								key_state[scancode] = 0;
 							extended = 0;
 						}
 
@@ -214,15 +215,15 @@ static void keyboard_console_handler(void)
 			if( extended )
 				ascii = extended;
 
-			if ((pressed) && (ascii)) {
+			if( pressed && ascii ) {
 				key_buffer[key_tail] = ascii;
 				if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)
 					key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
 				key_tail = (key_tail + 1) & (KEY_BUFFER_SIZE - 1);
 			}
-			
-			if (gfx_key_handler)
-				gfx_key_handler((repeated ? 0x100 : 0) | (pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
+
+			if( gfx_key_handler )
+				gfx_key_handler( pressed, repeated, scancode, ascii );
 		}
 	}
 
@@ -346,7 +347,13 @@ int fb_ConsoleMultikey(int scancode)
 	return res;
 }
 
-int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int))
+int fb_hConsoleGfxMode
+	(
+		void (*gfx_exit)(void),
+		void (*save)(void),
+		void (*restore)(void),
+		void (*key_handler)(int, int, int, int)
+	)
 {
 	BG_LOCK();
 	__fb_con.gfx_exit = gfx_exit;
