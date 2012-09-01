@@ -400,6 +400,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				else
 					e.type = EVENT_KEY_RELEASE;
 				e.scancode = fb_hVirtualToScancode(wVkCode);
+
+				/* Don't return extended keycodes in the ascii field */
 				e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
 				/* We don't want to enter the menu ... */

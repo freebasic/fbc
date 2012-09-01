@@ -118,6 +118,7 @@ static void *window_thread(void *arg)
 {
 	XEvent event;
 	EVENT e;
+	int key;
 
 	(void)arg;
 
@@ -264,9 +265,12 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(__fb_gfx->key, FALSE, 128);
 						} else {
-							e.ascii = translate_key(&event);
-							if (e.ascii)
-								fb_hPostKey(e.ascii);
+							key = translate_key( &event );
+							if( key ) {
+								fb_hPostKey( key );
+								/* Don't return extended keycodes in the ascii field */
+								e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
+							}
 						}
 						if (event.type == KeyPress)
 							e.type = EVENT_KEY_PRESS;
@@ -276,13 +280,19 @@ static void *window_thread(void *arg)
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
-						e.ascii = translate_key(&event);
+
+						key = translate_key( &event );
+						if( key )
+							fb_hPostKey( key );
+
+						/* Don't return extended keycodes in the ascii field */
+						e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
+
 						if (key_repeated(&event)) {
-							if (e.ascii)
-								fb_hPostKey(e.ascii);
+							if( key )
+								fb_hPostKey( key );
 							e.type = EVENT_KEY_REPEAT;
-						}
-						else {
+						} else {
 							__fb_gfx->key[e.scancode] = FALSE;
 							e.type = EVENT_KEY_RELEASE;
 						}

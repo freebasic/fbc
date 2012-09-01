@@ -285,7 +285,7 @@ static void driver_restore_screen(void)
 	fb_hPostEvent(&e);
 }
 
-static void driver_key_handler( int pressed, int repeated, int scancode, int ascii )
+static void driver_key_handler( int pressed, int repeated, int scancode, int key )
 {
 	EVENT e;
 
@@ -300,7 +300,9 @@ static void driver_key_handler( int pressed, int repeated, int scancode, int asc
 	}
 
 	e.scancode = scancode;
-	e.ascii = ascii;
+
+	/* Don't return extended keycodes in the ascii field */
+	e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
 	fb_hPostEvent( &e );
 }

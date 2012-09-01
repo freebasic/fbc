@@ -97,7 +97,7 @@ static int keyboard_console_getch(void)
 static void keyboard_console_handler(void)
 {
 	unsigned char buffer[128], scancode;
-	int pressed, repeated, num_bytes, i, ascii, extended;
+	int pressed, repeated, num_bytes, i, key, extended;
 	int vt, orig_vt;
 	struct kbentry entry;
 	struct vt_stat vt_state;
@@ -154,35 +154,35 @@ static void keyboard_console_handler(void)
 			ioctl(key_fd, KDGKBENT, &entry);
 
 			if (scancode == SC_BACKSPACE)
-				ascii = 8;
+				key = 8;
 			else if (entry.kb_value == K_NOSUCHMAP)
-				ascii = 0;
+				key = 0;
 			else {
-				ascii = KVAL(entry.kb_value);
+				key = KVAL(entry.kb_value);
 				switch (KTYP(entry.kb_value)) {
 					case KT_LETTER:
 						if (key_leds & LED_CAP)
-							ascii ^= 0x20;
+							key ^= 0x20;
 						break;
 					case KT_LATIN:
 					case KT_ASCII:
 						break;
 					case KT_PAD:
-						if (ascii < NUM_PAD_KEYS) {
+						if (key < NUM_PAD_KEYS) {
 							if (key_leds & LED_NUM)
-								ascii = pad_numlock_ascii[ascii];
+								key = pad_numlock_ascii[key];
 							else
-								ascii = pad_ascii[ascii];
+								key = pad_ascii[key];
 						}
 						else
-							ascii = 0;
+							key = 0;
 						break;
 					case KT_SPEC:
 						if (scancode == SC_ENTER)
-							ascii = '\r';
+							key = '\r';
 						break;
 					case KT_CONS:
-						vt = ascii + 1;
+						vt = key + 1;
 						if( pressed && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) ) {
 							orig_vt = vt_state.v_active;
 							if (vt != orig_vt) {
@@ -207,23 +207,23 @@ static void keyboard_console_handler(void)
 
 					/* fallthrough */
 					default:
-						ascii = 0;
+						key = 0;
 						break;
 				}
 			}
 
 			if( extended )
-				ascii = extended;
+				key = extended;
 
-			if( pressed && ascii ) {
-				key_buffer[key_tail] = ascii;
+			if( pressed && key ) {
+				key_buffer[key_tail] = key;
 				if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)
 					key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
 				key_tail = (key_tail + 1) & (KEY_BUFFER_SIZE - 1);
 			}
 
 			if( gfx_key_handler )
-				gfx_key_handler( pressed, repeated, scancode, ascii );
+				gfx_key_handler( pressed, repeated, scancode, key );
 		}
 	}
 
