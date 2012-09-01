@@ -234,7 +234,7 @@ static void *window_thread(void *arg)
 					if ((event.xconfigure.width != fb_x11.w) || ((event.xconfigure.height != fb_x11.h) &&
 																   (event.xconfigure.height != real_h))) {
 						/* Window has been maximized: simulate ALT-Enter */
-						__fb_gfx->key[0x1C] = __fb_gfx->key[0x38] = TRUE;
+						__fb_gfx->key[SC_ENTER] = __fb_gfx->key[SC_ALT] = TRUE;
 					}
 					else
 						break;
@@ -247,7 +247,7 @@ static void *window_thread(void *arg)
 							e.ascii = 0;
 							__fb_gfx->key[e.scancode] = TRUE;
 						}
-						if ((__fb_gfx->key[0x1C]) && (__fb_gfx->key[0x38]) && (!(fb_x11.flags & DRIVER_NO_SWITCH))) {
+						if ((__fb_gfx->key[SC_ENTER]) && (__fb_gfx->key[SC_ALT]) && (!(fb_x11.flags & DRIVER_NO_SWITCH))) {
 							fb_x11.exit();
 							fb_x11.flags ^= DRIVER_FULLSCREEN;
 							if (fb_x11.init()) {
@@ -285,7 +285,7 @@ static void *window_thread(void *arg)
 				
 				case ClientMessage:
 					if ((Atom)event.xclient.data.l[0] == wm_delete_window) {
-						fb_hPostKey(KEY_QUIT);
+						fb_hPostKey( KEY_QUIT );
 						e.type = EVENT_WINDOW_CLOSE;
 					}
 					break;

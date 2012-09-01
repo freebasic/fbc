@@ -356,7 +356,7 @@ static BOOL WINAPI fb_hConsoleHandlerRoutine( DWORD dwCtrlType )
             rec.wVirtualKeyCode = VK_F4;
             rec.dwControlKeyState = LEFT_ALT_PRESSED;
             rec.wVirtualScanCode = MapVirtualKey( rec.wVirtualKeyCode, 0 );
-            fb_hConsolePostKey( FB_MAKE_EXT_KEY(0x6B), &rec );
+            fb_hConsolePostKey( KEY_QUIT, &rec );
         }
         return TRUE;
     }
