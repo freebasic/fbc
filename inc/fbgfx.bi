@@ -261,7 +261,8 @@ namespace FB
         SC_HOME
         SC_UP         
         SC_PAGEUP
-        SC_LEFT
+        '' &h4A unused (?)
+        SC_LEFT = &h4B
         SC_CLEAR
         SC_RIGHT
         SC_PLUS
@@ -270,11 +271,22 @@ namespace FB
         SC_PAGEDOWN
         SC_INSERT
         SC_DELETE
+        '' &h54
+        '' &h55
+        '' &h56
         SC_F11        = &h57
         SC_F12
+        '' &h59
+        '' &h5A
         SC_LWIN       = &h5B
         SC_RWIN
         SC_MENU
+        '' &h5E
+        '' &h5F
+        '' &h60
+        '' &h61
+        '' &h62
+        '' &h63
     end enum
 
 # if __FB_LANG__ = "fb"
