@@ -261,8 +261,9 @@ namespace FB
         SC_HOME
         SC_UP         
         SC_PAGEUP
-        SC_LEFT       = &h4B
-        SC_RIGHT      = &h4D
+        SC_LEFT
+        SC_CLEAR
+        SC_RIGHT
         SC_PLUS
         SC_END
         SC_DOWN

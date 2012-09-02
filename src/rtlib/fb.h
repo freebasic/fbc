@@ -388,6 +388,7 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #define SC_UP		0x48
 #define SC_PAGEUP	0x49
 #define SC_LEFT		0x4B
+#define SC_CLEAR	0x4C
 #define SC_RIGHT	0x4D
 #define SC_PLUS		0x4E
 #define SC_END		0x4F

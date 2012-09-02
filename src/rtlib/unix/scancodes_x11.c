@@ -106,7 +106,7 @@ static const KeysymToScancode keysym_to_scancode[] =
 	{ XK_KP_Prior    , SC_PAGEUP       },
 	{ XK_KP_Add      , SC_PLUS         },
 	{ XK_KP_Left     , SC_LEFT         },
-	{ XK_KP_Begin    , 0x4C            },
+	{ XK_KP_Begin    , SC_CLEAR        },
 	{ XK_KP_Right    , SC_RIGHT        },
 	{ XK_KP_End      , SC_END          },
 	{ XK_KP_Down     , SC_DOWN         },
