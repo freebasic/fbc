@@ -114,6 +114,19 @@ static int translate_key(XEvent *event)
 	return k;
 }
 
+static void hOnAltEnter( )
+{
+	fb_x11.exit();
+	fb_x11.flags ^= DRIVER_FULLSCREEN;
+	if (fb_x11.init()) {
+		fb_x11.exit();
+		fb_x11.flags ^= DRIVER_FULLSCREEN;
+		fb_x11.init();
+	}
+	fb_hRestorePalette();
+	fb_hMemSet(__fb_gfx->key, FALSE, 128);
+}
+
 static void *window_thread(void *arg)
 {
 	XEvent event;
@@ -238,32 +251,23 @@ static void *window_thread(void *arg)
 					break;
 				
 				case ConfigureNotify:
-					if ((event.xconfigure.width != fb_x11.w) || ((event.xconfigure.height != fb_x11.h) &&
-																   (event.xconfigure.height != real_h))) {
+					if( (event.xconfigure.width != fb_x11.w) ||
+					    ((event.xconfigure.height != fb_x11.h) &&
+					     (event.xconfigure.height != real_h)) ) {
 						/* Window has been maximized: simulate ALT-Enter */
 						__fb_gfx->key[SC_ENTER] = __fb_gfx->key[SC_ALT] = TRUE;
+						hOnAltEnter( );
 					}
-					else
-						break;
-					/* fallthrough */
+					break;
 
 				case KeyPress:
 					if (has_focus) {
-						if (event.type == KeyPress) {
-							e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
-							e.ascii = 0;
-							__fb_gfx->key[e.scancode] = TRUE;
-						}
-						if ((__fb_gfx->key[SC_ENTER]) && (__fb_gfx->key[SC_ALT]) && (!(fb_x11.flags & DRIVER_NO_SWITCH))) {
-							fb_x11.exit();
-							fb_x11.flags ^= DRIVER_FULLSCREEN;
-							if (fb_x11.init()) {
-								fb_x11.exit();
-								fb_x11.flags ^= DRIVER_FULLSCREEN;
-								fb_x11.init();
-							}
-							fb_hRestorePalette();
-							fb_hMemSet(__fb_gfx->key, FALSE, 128);
+						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
+						e.ascii = 0;
+						__fb_gfx->key[e.scancode] = TRUE;
+
+						if( __fb_gfx->key[SC_ENTER] && __fb_gfx->key[SC_ALT] && !(fb_x11.flags & DRIVER_NO_SWITCH) ) {
+							hOnAltEnter( );
 						} else {
 							key = translate_key( &event );
 							if( key ) {
@@ -272,8 +276,8 @@ static void *window_thread(void *arg)
 								e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 							}
 						}
-						if (event.type == KeyPress)
-							e.type = EVENT_KEY_PRESS;
+
+						e.type = EVENT_KEY_PRESS;
 					}
 					break;
 				

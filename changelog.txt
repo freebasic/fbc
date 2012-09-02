@@ -30,6 +30,7 @@ Version 0.25.0:
 - getkey() under DOS console-mode didn't encode extended key codes as a 2-byte code using &hFF, causing them to collide with normal key codes
 - GooCanvas examples were #including gtk/goocanvas.bi instead of goocanvas.bi
 - SQLite 3 header didn't compile due to missing forward declarations and a missing #include "crt/stdarg.bi"
+- Potential X11 gfxlib2 driver crash on window maximization despite GFX_NO_SWITCH
 
 
 Version 0.24.0:
