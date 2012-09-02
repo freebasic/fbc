@@ -287,6 +287,7 @@ namespace FB
         '' &h61
         '' &h62
         '' &h63
+        SC_ALTGR      = &h64
     end enum
 
 # if __FB_LANG__ = "fb"

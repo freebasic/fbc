@@ -11,6 +11,7 @@ Version 0.25.0:
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
+- SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
