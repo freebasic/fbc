@@ -4,6 +4,11 @@
 #include "fb_private_console.h"
 #include <termcap.h>
 
+/*#define DEBUG_TGETSTR*/
+#ifdef DEBUG_TGETSTR
+#include <ctype.h>
+#endif
+
 #define KEY_BUFFER_LEN 256
 
 #define KEY_MOUSE		0x200
@@ -21,12 +26,31 @@ typedef struct KEY_DATA
 	int code;
 } KEY_DATA;
 
+/* see also termcap(5) man page */
 static const KEY_DATA key_data[] = {
-	{ "ku", KEY_UP }, { "kd", KEY_DOWN }, { "kl", KEY_LEFT }, { "kr", KEY_RIGHT }, { "kI", KEY_INS },
-	{ "kD", KEY_DEL }, { "kh", KEY_HOME }, { "@7", KEY_END }, { "kP", KEY_PAGE_UP }, { "kN", KEY_PAGE_DOWN },
-	{ "k1", KEY_F1 }, { "k2", KEY_F2 }, { "k3", KEY_F3 }, { "k4", KEY_F4 }, { "k5", KEY_F5 },
-	{ "k6", KEY_F6 }, { "k7", KEY_F7 }, { "k8", KEY_F8 }, { "k9", KEY_F9 }, { "k;", KEY_F10 },
-	{ "kT", KEY_TAB }, { "kb", KEY_BACKSPACE }, { NULL, 0 }
+	{ "kb", KEY_BACKSPACE },
+	{ "kT", KEY_TAB       },
+	{ "k1", KEY_F1        },
+	{ "k2", KEY_F2        },
+	{ "k3", KEY_F3        },
+	{ "k4", KEY_F4        },
+	{ "k5", KEY_F5        },
+	{ "k6", KEY_F6        },
+	{ "k7", KEY_F7        },
+	{ "k8", KEY_F8        },
+	{ "k9", KEY_F9        },
+	{ "k;", KEY_F10       },
+	{ "kh", KEY_HOME      },
+	{ "ku", KEY_UP        },
+	{ "kP", KEY_PAGE_UP   },
+	{ "kl", KEY_LEFT      },
+	{ "kr", KEY_RIGHT     },
+	{ "@7", KEY_END       },
+	{ "kd", KEY_DOWN      },
+	{ "kN", KEY_PAGE_DOWN },
+	{ "kI", KEY_INS       },
+	{ "kD", KEY_DEL       },
+	{ NULL, 0 }
 };
 
 static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
@@ -35,6 +59,23 @@ static NODE *root_node = NULL;
 static void add_key(NODE **node, char *key, short code)
 {
 	NODE *n;
+
+	/**
+	 * This builds a simple tree that allows fairly easy lookup of the
+	 * terminal escape sequences (keys) that were added. For example:
+	 *
+	 *     after adding these key sequences:
+	 *
+	 *         [a1, [a2, [b1, [b2
+	 *
+	 *     the tree looks like:  (| = child, - = sibling)
+	 *
+	 *         root -> <[>
+	 *                  |
+	 *                 <b>-----------<a>
+	 *                  |             |
+	 *                 <2>----<1>    <2>----<1>
+	 */
 
 	for (n = *node; n; n = n->next) {
 		if (n->key == *key) {
@@ -61,9 +102,41 @@ static void init_keys()
 	char *key;
 
 	for (data = (KEY_DATA *)key_data; data->cap; data++) {
+		/**
+		 * Lookup the terminal escape sequences (termcap database
+		 * entries) corresponding to the id strings defined in the
+		 * key_data table above (only key presses here).
+		 *
+		 * For example, the id string "kh" corresponds to the HOME key,
+		 * and tgetstr("kh", NULL) returns the escape sequence that the
+		 * terminal will send when the HOME key was pressed.
+		 *
+		 * These typically vary from terminal to terminal (for example
+		 * TERM=xterm vs. TERM=linux) and perhaps depend on other
+		 * factors aswell.
+		 */
 		key = tgetstr(data->cap, NULL);
+
+#ifdef DEBUG_TGETSTR
+		fprintf(stderr, "tgetstr( %s ) =", data->cap);
+		if( key ) {
+			int i;
+			for( i = 0; i < strlen( key ); i++ ) {
+				if( isprint( key[i] ) ) {
+					fprintf(stderr, " %c", key[i]);
+				} else {
+					fprintf(stderr, " 0x%2x", key[i]);
+				}
+			}
+		} else {
+			fprintf(stderr, " (null)");
+		}
+		fprintf(stderr, "\n");
+#endif
+
 		if (key) {
-			add_key(&root_node, key + 1, data->code); }
+			add_key(&root_node, key + 1, data->code);
+		}
 	}
 	add_key(&root_node, "[M", KEY_MOUSE);
 }
@@ -82,8 +155,12 @@ static int get_input()
 		k = __fb_con.keyboard_getch();
 		if (k == EOF)
 			return 27;
+
+		/* init the tree (on the first received escape sequence) */
 		if (!root_node)
 			init_keys();
+
+		/* look up the escape sequence in the tree */
 		node = root_node;
 		while (node) {
 			if (k == node->key) {
@@ -106,8 +183,11 @@ static int get_input()
 			}
 			node = node->next;
 		}
+
+		/* not found yet, skip rest and ignore */
 		while(__fb_con.keyboard_getch() >= 0)
 			;
+
 		return -1;
 	}
 
