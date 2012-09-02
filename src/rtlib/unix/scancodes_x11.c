@@ -100,7 +100,7 @@ static const KeysymToScancode keysym_to_scancode[] =
 	{ XK_Num_Lock    , SC_NUMLOCK      },
 	{ XK_KP_Divide   , SC_SLASH        },
 	{ XK_KP_Multiply , SC_MULTIPLY     },
-	{ XK_KP_Subtract , 0x4A            },
+	{ XK_KP_Subtract , SC_MINUS        },
 	{ XK_KP_Home     , SC_HOME         },
 	{ XK_KP_Up       , SC_UP           },
 	{ XK_KP_Prior    , SC_PAGEUP       },
