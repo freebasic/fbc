@@ -31,6 +31,7 @@ Version 0.25.0:
 - GooCanvas examples were #including gtk/goocanvas.bi instead of goocanvas.bi
 - SQLite 3 header didn't compile due to missing forward declarations and a missing #include "crt/stdarg.bi"
 - Potential X11 gfxlib2 driver crash on window maximization despite GFX_NO_SWITCH
+- gfxlib2 X11 driver didn't recognize the numpad keys with numlock off
 
 
 Version 0.24.0:

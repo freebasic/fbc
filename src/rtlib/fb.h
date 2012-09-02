@@ -429,6 +429,7 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #define KEY_QUIT        FB_MAKE_EXT_KEY( 'k' )
 
 FBSTRING *fb_hMakeInkeyStr( int ch );
+int fb_hScancodeToExtendedKey( int scancode );
 
 /* This should match fbc's lang enum */
 enum FB_LANG {

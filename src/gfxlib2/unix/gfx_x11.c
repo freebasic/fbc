@@ -72,7 +72,7 @@ static int key_repeated(XEvent *event)
 	return FALSE;
 }
 
-static int translate_key(XEvent *event)
+static int translate_key(XEvent *event, int scancode)
 {
 	unsigned char key[8];
 	int k;
@@ -86,29 +86,7 @@ static int translate_key(XEvent *event)
 			k = KEY_DEL;
 		}
 	} else {
-		switch( XKeycodeToKeysym( fb_x11.display, event->xkey.keycode, 0 ) ) {
-		case XK_Up:        k = KEY_UP;        break;
-		case XK_Down:      k = KEY_DOWN;      break;
-		case XK_Left:      k = KEY_LEFT;      break;
-		case XK_Right:     k = KEY_RIGHT;     break;
-		case XK_Insert:    k = KEY_INS;       break;
-		case XK_Delete:    k = KEY_DEL;       break;
-		case XK_Home:      k = KEY_HOME;      break;
-		case XK_End:       k = KEY_END;       break;
-		case XK_Page_Up:   k = KEY_PAGE_UP;   break;
-		case XK_Page_Down: k = KEY_PAGE_DOWN; break;
-		case XK_F1:        k = KEY_F1;        break;
-		case XK_F2:        k = KEY_F2;        break;
-		case XK_F3:        k = KEY_F3;        break;
-		case XK_F4:        k = KEY_F4;        break;
-		case XK_F5:        k = KEY_F5;        break;
-		case XK_F6:        k = KEY_F6;        break;
-		case XK_F7:        k = KEY_F7;        break;
-		case XK_F8:        k = KEY_F8;        break;
-		case XK_F9:        k = KEY_F9;        break;
-		case XK_F10:       k = KEY_F10;       break;
-		default:           k = 0;             break;
-		}
+		k = fb_hScancodeToExtendedKey( scancode );
 	}
 
 	return k;
@@ -256,6 +234,7 @@ static void *window_thread(void *arg)
 					     (event.xconfigure.height != real_h)) ) {
 						/* Window has been maximized: simulate ALT-Enter */
 						__fb_gfx->key[SC_ENTER] = __fb_gfx->key[SC_ALT] = TRUE;
+						printf("%x\n", event.xkey.keycode);
 						hOnAltEnter( );
 					}
 					break;
@@ -269,7 +248,7 @@ static void *window_thread(void *arg)
 						if( __fb_gfx->key[SC_ENTER] && __fb_gfx->key[SC_ALT] && !(fb_x11.flags & DRIVER_NO_SWITCH) ) {
 							hOnAltEnter( );
 						} else {
-							key = translate_key( &event );
+							key = translate_key( &event, e.scancode );
 							if( key ) {
 								fb_hPostKey( key );
 								/* Don't return extended keycodes in the ascii field */
@@ -284,7 +263,7 @@ static void *window_thread(void *arg)
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
-						key = translate_key( &event );
+						key = translate_key( &event, e.scancode );
 						/* Don't return extended keycodes in the ascii field */
 						e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 						if (key_repeated(&event)) {

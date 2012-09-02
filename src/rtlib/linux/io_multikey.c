@@ -118,26 +118,9 @@ static void keyboard_console_handler(void)
 			case SC_CAPSLOCK:   if (pressed) key_leds ^= LED_CAP; break;
 			case SC_NUMLOCK:    if (pressed) key_leds ^= LED_NUM; break;
 			case SC_SCROLLLOCK: if (pressed) key_leds ^= LED_SCR; break;
-			case SC_UP:         extended = KEY_UP;        break;
-			case SC_DOWN:       extended = KEY_DOWN;      break;
-			case SC_LEFT:       extended = KEY_LEFT;      break;
-			case SC_RIGHT:      extended = KEY_RIGHT;     break;
-			case SC_INSERT:     extended = KEY_INS;       break;
-			case SC_DELETE:     extended = KEY_DEL;       break;
-			case SC_HOME:       extended = KEY_HOME;      break;
-			case SC_END:        extended = KEY_END;       break;
-			case SC_PAGEUP:     extended = KEY_PAGE_UP;   break;
-			case SC_PAGEDOWN:   extended = KEY_PAGE_DOWN; break;
-			case SC_F1:         extended = KEY_F1;        break;
-			case SC_F2:         extended = KEY_F2;        break;
-			case SC_F3:         extended = KEY_F3;        break;
-			case SC_F4:         extended = KEY_F4;        break;
-			case SC_F5:         extended = KEY_F5;        break;
-			case SC_F6:         extended = KEY_F6;        break;
-			case SC_F7:         extended = KEY_F7;        break;
-			case SC_F8:         extended = KEY_F8;        break;
-			case SC_F9:         extended = KEY_F9;        break;
-			case SC_F10:        extended = KEY_F10;       break;
+			default:
+				extended = fb_hScancodeToExtendedKey( scancode );
+				break;
 			}
 
 			/* Fill in kbentry struct for KDGKBENT query */
