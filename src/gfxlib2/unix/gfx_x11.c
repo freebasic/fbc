@@ -280,14 +280,9 @@ static void *window_thread(void *arg)
 				case KeyRelease:
 					if (has_focus) {
 						e.scancode = fb_x11keycode_to_scancode[event.xkey.keycode];
-
 						key = translate_key( &event );
-						if( key )
-							fb_hPostKey( key );
-
 						/* Don't return extended keycodes in the ascii field */
 						e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
-
 						if (key_repeated(&event)) {
 							if( key )
 								fb_hPostKey( key );
