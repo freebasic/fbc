@@ -18,8 +18,9 @@ int fb_hScancodeToExtendedKey( int scancode ) {
 	case SC_F10:        key = KEY_F10;       break;
 	case SC_HOME:       key = KEY_HOME;      break;
 	case SC_UP:         key = KEY_UP;        break;
-	case SC_LEFT:       key = KEY_LEFT;      break;
 	case SC_PAGEUP:     key = KEY_PAGE_UP;   break;
+	case SC_LEFT:       key = KEY_LEFT;      break;
+	case SC_CLEAR:      key = KEY_CLEAR;     break;
 	case SC_RIGHT:      key = KEY_RIGHT;     break;
 	case SC_END:        key = KEY_END;       break;
 	case SC_DOWN:       key = KEY_DOWN;      break;

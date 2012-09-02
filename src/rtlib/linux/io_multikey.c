@@ -63,7 +63,7 @@ static const unsigned char kernel_to_scancode[] = {
 	SC_F6,			SC_F7,			SC_F8,			SC_F9,
 	SC_F10,			SC_NUMLOCK,		SC_SCROLLLOCK,	SC_HOME,
 	SC_UP,			SC_PAGEUP,		SC_MINUS,		SC_LEFT,
-	0,				SC_RIGHT,		SC_PLUS,		SC_END,
+	SC_CLEAR,		SC_RIGHT,		SC_PLUS,		SC_END,
 	SC_DOWN,		SC_PAGEDOWN,	SC_0,			SC_DELETE,
 	0,				0,				SC_BACKSLASH,	SC_F11,
 	SC_F12,			0,				0,				0,

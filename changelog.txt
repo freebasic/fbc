@@ -33,6 +33,7 @@ Version 0.25.0:
 - SQLite 3 header didn't compile due to missing forward declarations and a missing #include "crt/stdarg.bi"
 - Potential X11 gfxlib2 driver crash on window maximization despite GFX_NO_SWITCH
 - gfxlib2 X11 driver didn't recognize the numpad keys with numlock off
+- Linux multikey() will now recognize the CLEAR key (both under linux and xterm terminals)
 
 
 Version 0.24.0:
