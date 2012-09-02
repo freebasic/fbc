@@ -421,6 +421,26 @@ function pathStripDiv( byref path as string ) as string
 	function = path
 end function
 
+function pathIsAbsolute( byval path as zstring ptr ) as integer
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	if( (*path)[0] <> 0 ) then
+		select case( (*path)[1] )
+		case asc( ":" )
+			'' C:...
+			function = TRUE
+#ifdef __FB_WIN32__
+		case asc( "\" )
+			'' \\... UNC path
+			function = ((*path)[0] = asc( "\" ))
+#endif
+		end select
+	end if
+#else
+	'' /...
+	function = ((*path)[0] = asc( "/" ))
+#endif
+end function
+
 '':::::
 function hToPow2 _
 	( _
@@ -608,31 +628,6 @@ function hCurDir( ) as string
 	'' except when it points to the file system root, instead of
 	'' some directory (e.g. C:\ on Win32 or / on Unix).
 	function = pathStripDiv( curdir( ) )
-end function
-
-function hEnvDir( ) as string
-	dim as string s
-
-#if defined(__FB_WIN32__) Or defined(__FB_DOS__)
-  #define hIsAbsolutePath( path ) path[1] = asc(":")
-#else
-  #define hIsAbsolutePath( path ) path[0] = asc("/")
-#endif
-
-	'' absolute path given?
-	if( hIsAbsolutePath( env.inf.name ) ) then
-		s = hStripFilename( env.inf.name )
-	else
-		'' relative path
-		s = hCurDir( )
-
-		'' not in the original directory?
-		if( instr( env.inf.name, "/" ) > 0 ) then
-			s += FB_HOST_PATHDIV + pathStripDiv( hStripFilename( env.inf.name ) )
-		end if
-	end if
-
-	function = pathStripDiv( s )
 end function
 
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer

@@ -35,6 +35,7 @@ Version 0.25.0:
 - gfxlib2 X11 driver didn't recognize the numpad keys with numlock off
 - Linux multikey() will now recognize the CLEAR key (both under linux and xterm terminals)
 - gfxlib2 X11 driver returned &h4A instead of SC_MINUS (&h0C) for the "subtract" key on the numpad with numlock off, now it matches win32; the other "add/divide/multiply" keys are remapped this way aswell.
+- On Win32 or DOS, __PATH__ could return the current working directory of the compiler instead of the source file's parent directory
 
 
 Version 0.24.0:

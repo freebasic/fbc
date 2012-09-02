@@ -676,6 +676,7 @@ end type
 
 #include once "hlp.bi"
 
+declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 

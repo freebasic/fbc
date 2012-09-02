@@ -550,6 +550,18 @@ function fbGetModuleEntry( ) as string static
 
 end function
 
+function fbGetInputFileParentDir( ) as string
+	dim as string s
+
+	'' Input file name is using a relative path?
+	if( pathIsAbsolute( env.inf.name ) = FALSE ) then
+		'' Then build the absolute path based on curdir()
+		s = hCurDir( ) + FB_HOST_PATHDIV
+	end if
+
+	function = pathStripDiv( hStripFilename( s + env.inf.name ) )
+end function
+
 '' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
 sub fbAddLib(byval libname as zstring ptr)
 	strsetAdd(@env.libs, *libname, FALSE)
@@ -715,7 +727,7 @@ private function is_rootpath( byref path as zstring ptr ) as integer
 			function = TRUE
 		else
 			'' quirky drive letters...
-			*path = left( hEnvDir( ), 1 ) + ":" + *path
+			*path = left( fbGetInputFileParentDir( ), 1 ) + ":" + *path
 			function = TRUE
 		end if
 	end if
