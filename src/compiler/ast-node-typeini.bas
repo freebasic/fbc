@@ -474,7 +474,6 @@ private function hFlushTree _
 				end if
 			end if
 
-			assert( astCheckASSIGN( lside, n->l ) )
 			lside = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			assert( lside <> NULL )
 			flush_tree = astNewLINK( flush_tree, lside )
