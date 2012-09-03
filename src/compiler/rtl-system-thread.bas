@@ -149,35 +149,27 @@ private function hThreadCallPushType _
     function = true
 end function
 
-'':::::
-private function hGetExprAddrOf _
-    ( _
-        byval expr as ASTNODE ptr, _
-        byref ptrexpr as ASTNODE ptr _
-    ) as integer
-    
-    function = FALSE
-    
-    if( astGetClass( expr ) <> AST_NODECLASS_VAR ) then
-        '' copy expression to a variable, and get the address
-        dim dtype as FB_DATATYPE = astGetDataType( expr )
-        dim stype as FBSYMBOL ptr = astGetSubType( expr )
-        dim tmpvar as FBSYMBOL ptr
-        dim as ASTNODE ptr tmpvarexpr, asgnexpr
-        tmpvar = symbAddTempVar( dtype, stype, FALSE, FALSE )
-        tmpvarexpr = astNewVAR( tmpvar, 0, dtype, stype )
-        asgnexpr = astNewASSIGN( tmpvarexpr, expr, AST_OPOPT_DONTCHKPTR )
-        if( astAdd( asgnexpr ) = FALSE ) then
-            exit function
-        end if
-        ptrexpr = astNewADDROF( tmpvarexpr )
-    else
-        '' already a variable? just get the address
-        ptrexpr = astNewADDROF( expr )
-    end if
+private function hGetExprRef( byval expr as ASTNODE ptr ) as ASTNODE ptr
+	dim as FBSYMBOL ptr tmpvar = any, subtype = any
+	dim as integer dtype = any
 
-    function = TRUE
-    
+	if( astIsVAR( expr ) ) then
+		'' already a variable? just get the address
+		'' @expr
+		function = astNewADDROF( expr )
+	else
+		'' copy expression to a variable, and get the address
+		dtype = astGetDataType( expr )
+		subtype = astGetSubType( expr )
+		tmpvar = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+
+		'' tmpvar = expr
+		astAdd( astNewASSIGN( astNewVAR( tmpvar, 0, dtype, subtype ), _
+		                      expr, AST_OPOPT_DONTCHKPTR ) )
+
+		'' @tmpvar
+		function = astNewADDROF( astNewVAR( tmpvar, 0, dtype, subtype ) )
+	end if
 end function
 
 '':::::
@@ -278,19 +270,15 @@ function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
         end if
 
         '' get pointer to argument
-        if( hGetExprAddrOf( argexpr( i ), ptrexpr ) ) = FALSE then
-            exit function
-        end if
-        
+        ptrexpr = hGetExprRef( argexpr( i ) )
+
         ''byref
         dim isstring as integer
         isstring = typeGetDtOnly( astGetDataType( argexpr( i ) ) )
         if( mode = FB_PARAMMODE_BYREF and _
             argmode( i ) <> FB_PARAMMODE_BYVAL and _
             isstring = FALSE ) then
-            if( hGetExprAddrOf( ptrexpr, ptrexpr ) ) = FALSE then
-                exit function
-            end if
+            ptrexpr = hGetExprRef( ptrexpr )
         end if
         
         if( ptrexpr = NULL ) then
