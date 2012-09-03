@@ -37,6 +37,7 @@ Version 0.25.0:
 - gfxlib2 X11 driver returned &h4A instead of SC_MINUS (&h0C) for the "subtract" key on the numpad with numlock off, now it matches win32; the other "add/divide/multiply" keys are remapped this way aswell.
 - On Win32 or DOS, __PATH__ could return the current working directory of the compiler instead of the source file's parent directory
 - .stabs output could omit the source file's path, preventing gdb from finding the correct file
+- Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
 
 
 Version 0.24.0:
