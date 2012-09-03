@@ -39,6 +39,7 @@ Version 0.25.0:
 - .stabs output could omit the source file's path, preventing gdb from finding the correct file
 - Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
 - internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
+- Warnings could still be shown even after the "Too many errors, exiting" message
 
 
 Version 0.24.0:

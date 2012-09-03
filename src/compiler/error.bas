@@ -548,6 +548,10 @@ sub errReportWarnEx _
 		exit sub
 	end if
 
+	if( errctx.hide_further_messages ) then
+		exit sub
+	end if
+
 	if( len( env.inf.name ) > 0 ) then
 		print env.inf.name;
 	else
