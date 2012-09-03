@@ -227,9 +227,9 @@ sub edbgEmitHeader _
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
 
 	'' directory
-    if( instr( *filename, "/" ) = 0 ) then
+	if( pathIsAbsolute( filename ) = FALSE ) then
 		hEmitSTABS( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
-    end if
+	end if
 
 	'' file name
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
