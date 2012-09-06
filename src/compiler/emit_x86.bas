@@ -3017,18 +3017,31 @@ private sub _emitSUBF _
 
 end sub
 
-'':::::
-private sub _emitMULI _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
+private sub _emitMULI( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	dim as integer eaxfree = any, edxfree = any, eaxinsource = any
+	dim as integer eaxindest = any, edxindest = any, edxtrashed = any
+	dim as string eax, edx, dst, src, ostr
 
-    dim eaxfree as integer, edxfree as integer
-    dim edxtrashed as integer
-    dim eaxinsource as integer, eaxindest as integer, edxindest as integer
-    dim eax as string, edx as string
-    dim dst as string, src as string
+	#if __FB_DEBUG__
+		dim as integer backupcount = 0
+		#define BACKUPS( x ) backupcount = backupcount x
+	#else
+		#define BACKUPS( x )
+	#endif
+
+	'' This essentially does:
+	''    dvreg = dvreg * svreg
+	'' Unsigned integer multiplication:
+	''    MUL src<byte>   -  AX      = AL * src
+	''    MUL src<word>   -  DX:AX   = AX * src
+	''    MUL src<dword>  -  EDX:EAX = EAX * src
+	'' i.e. eax/edx are overwritten with the result, which means care must
+	'' taken to preserve & restore them if they're already used.
+	''
+	'' src is one operand, dst in eax the other, + dst recieves the result:
+	''    mov eax, dst
+	''    mul src
+	''    mov dst, eax
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3048,65 +3061,126 @@ private sub _emitMULI _
     	edx = "dx"
     end if
 
+	'' src uses eax or is an immediate?
 	if( eaxinsource or (svreg->typ = IR_VREGTYPE_IMM) ) then
+		'' Store src somewhere else a) to free up eax for the other
+		'' operand, or b) because MUL doesn't take immediates
 		edxtrashed = TRUE
-		if( edxindest ) then
+		if( edxfree = FALSE ) then
 			hPUSH( "edx" )
-			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+			BACKUPS( +1 )
+			'' edx will be overwritten -- if dst uses edx but isn't stored
+			'' in edx, it's value must be backed up in addition to edx.
+			if( edxindest and (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				'' Using dst as dword instead of plain dst
 				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH( ostr )
+				BACKUPS( +1 )
 			end if
-		elseif( edxfree = FALSE ) then
-			hPUSH( "edx" )
 		end if
-
 		hMOV( edx, src )
 		src = edx
 	else
 		edxtrashed = FALSE
+		'' since edx isn't getting trashed by us before the MUL,
+		'' an edx backup is only needed if edx is used and dst <> edx.
+		'' (MUL will trash edx, but at that point we don't need edx's
+		'' value anymore if dst = edx, because it was just MUL input)
+		if( edxfree = FALSE ) then
+			if( (edxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				hPUSH( "edx" )
+				BACKUPS( +1 )
+			end if
+		end if
 	end if
 
+	'' dst <> eax?
 	if( (eaxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+		'' dst access no longer possible?
 		if( edxindest and edxtrashed ) then
+			''  a) backup1 = edx    b) backup1 = edx = dst
+			''     backup2 = dst
+			'' After storing dst into eax, the dst backup has
+			'' served its purpose and is popped/overwritten.
 			if( eaxfree = FALSE ) then
+				'' overwrite dst backup with eax backup
 				outp( "xchg eax, [esp]" )
 			else
+				'' pop dst into eax
 				hPOP( "eax" )
+				BACKUPS( -1 )
 			end if
 		else
+			''  a) backup1 = edx    b) no backups yet
 			if( eaxfree = FALSE ) then
+				'' add eax backup
 				hPUSH( "eax" )
+				BACKUPS( +1 )
 			end if
+
+			'' can use dst directly (can be "mov eax, [eax+...]")
 			hMOV( eax, dst )
 		end if
 	end if
 
 	outp( "mul " + src )
 
+	'' store result from eax into dst if dst <> eax
+	'' dst access may depend on edx or eax, they must be restored
+	'' from stack first, without losing the MUL result in eax.
+
 	if( eaxindest = FALSE ) then
 		if( edxindest and (dvreg->typ <> IR_VREGTYPE_REG) ) then
-			hPOP( "edx" )					'' edx= tos (eax)
-			outp( "xchg edx, [esp]" )			'' tos= edx; edx= dst
-		end if
+			'' dst uses edx but dst <> edx
+			'' 1st backup = edx
+			if( eaxfree = FALSE ) then
+				'' 2nd backup = eax
+				hMOV( "edx", "[esp+4]" )  '' restore edx for dst access
+				hMOV( dst, eax )          '' store result from eax/ax
+				hMOV( "eax", "[esp]" )    '' restore eax, now that the result was read
+				outp( "add esp, 8" )      '' remove both backups from stack
+				BACKUPS( -2 )
+			else
+				hPOP( "edx" )     '' restore edx for dst access
+				hMOV( dst, eax )  '' store result from eax/ax
+				BACKUPS( -1 )
+			end if
+		else
+			'' a) dst = edx    no edx backup, but perhaps eax
+			'' b) dst <> edx   edx & eax backups if they were used
 
-		hMOV( dst, eax )
+			'' can access dst freely (uses neither edx nor eax)
+			hMOV( dst, eax )  '' store result from eax/ax
+			if( eaxfree = FALSE ) then
+				hPOP( "eax" )
+				BACKUPS( -1 )
+			end if
 
-		if( eaxfree = FALSE ) then
-			hPOP( "eax" )
+			'' dst <> edx? (edx was only preserved until after the MUL if dst <> edx)
+			if( (edxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				if( edxfree = FALSE ) then
+					hPOP( "edx" )
+					BACKUPS( -1 )
+				end if
+			end if
 		end if
 	else
+		'' a) dst = eax
+		'' b) dst = [eax+...]
+		'' dst <> eax?
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			hMOV( "edx", "eax" )			'' edx= eax
-			hPOP( "eax" )				'' restore eax
-			hMOV( dst, edx )			'' [eax+...] = edx
+			hMOV( "edx", "eax" )  '' move result out of the way
+			hPOP( "eax" )         '' restore eax to access dst
+			hMOV( dst, edx )      '' store result from edx/dx (well, actually eax/ax)
+			BACKUPS( -1 )
+		end if
+		if( edxfree = FALSE ) then
+			hPOP( "edx" )
+			BACKUPS( -1 )
 		end if
 	end if
 
-	if( edxtrashed ) then
-		if( (edxfree = FALSE) and (edxindest = FALSE) ) then
-			hPOP( "edx" )
-		end if
-	end if
+	assert( backupcount = 0 )
 
 end sub
 

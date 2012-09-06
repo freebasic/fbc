@@ -40,6 +40,7 @@ Version 0.25.0:
 - Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
 - internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
 - Warnings could still be shown even after the "Too many errors, exiting" message
+- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
 
 
 Version 0.24.0:
