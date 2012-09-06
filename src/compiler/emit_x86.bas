@@ -3028,7 +3028,6 @@ private sub _emitMULI _
     dim edxtrashed as integer
     dim eaxinsource as integer, eaxindest as integer, edxindest as integer
     dim eax as string, edx as string
-    dim ostr as string
     dim dst as string, src as string
 
 	hPrepOperand( dvreg, dst )
@@ -3049,7 +3048,7 @@ private sub _emitMULI _
     	edx = "dx"
     end if
 
-	if( (eaxinsource) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+	if( eaxinsource or (svreg->typ = IR_VREGTYPE_IMM) ) then
 		edxtrashed = TRUE
 		if( edxindest ) then
 			hPUSH( "edx" )
@@ -3068,45 +3067,44 @@ private sub _emitMULI _
 	end if
 
 	if( (eaxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
-		if( (edxindest) and (edxtrashed) ) then
+		if( edxindest and edxtrashed ) then
 			if( eaxfree = FALSE ) then
-				outp "xchg eax, [esp]"
+				outp( "xchg eax, [esp]" )
 			else
-				hPOP "eax"
+				hPOP( "eax" )
 			end if
 		else
 			if( eaxfree = FALSE ) then
-				hPUSH "eax"
+				hPUSH( "eax" )
 			end if
-			hMOV eax, dst
+			hMOV( eax, dst )
 		end if
 	end if
 
-	ostr = "mul " + src
-	outp ostr
+	outp( "mul " + src )
 
 	if( eaxindest = FALSE ) then
-		if( edxindest and dvreg->typ <> IR_VREGTYPE_REG ) then
-			hPOP "edx"					'' edx= tos (eax)
-			outp "xchg edx, [esp]"			'' tos= edx; edx= dst
+		if( edxindest and (dvreg->typ <> IR_VREGTYPE_REG) ) then
+			hPOP( "edx" )					'' edx= tos (eax)
+			outp( "xchg edx, [esp]" )			'' tos= edx; edx= dst
 		end if
 
-		hMOV dst, eax
+		hMOV( dst, eax )
 
 		if( eaxfree = FALSE ) then
-			hPOP "eax"
+			hPOP( "eax" )
 		end if
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			hMOV "edx", "eax"			'' edx= eax
-			hPOP "eax"					'' restore eax
-			hMOV dst, edx				'' [eax+...] = edx
+			hMOV( "edx", "eax" )			'' edx= eax
+			hPOP( "eax" )				'' restore eax
+			hMOV( dst, edx )			'' [eax+...] = edx
 		end if
 	end if
 
 	if( edxtrashed ) then
 		if( (edxfree = FALSE) and (edxindest = FALSE) ) then
-			hPOP "edx"
+			hPOP( "edx" )
 		end if
 	end if
 
