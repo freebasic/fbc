@@ -5403,132 +5403,75 @@ private sub _emitEXP _
 	outp "fstp st(1)"
 end sub
 
-
-
-''::::
-#macro hFpuChangeRC( cw_reg, mode )
-	scope
-		static as string ostr
-		outp "sub esp, 4"
-		outp "fnstcw [esp]"
-		hMOV cw_reg, "[esp]"
-		if( mode <> "11" ) then
-			ostr = "and " + cw_reg + ", 0b1111001111111111"
-			outp ostr
-		end if
-		ostr = "or " + cw_reg +  (", 0b0000" + mode + "0000000000")
-		outp ostr
-		hPUSH cw_reg
-		outp "fldcw [esp]"
-		outp "add esp, 4"
-	end scope
-#endmacro
-
-''::::
-#macro hFpuRoundRestore( )
-	outp "fldcw [esp]"
-	outp "add esp, 4"
-#endmacro
-
-'':::::
-private sub _emitFLOOR _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
+private sub hFpuChangeRC( byref regname as string, byval mode as zstring ptr )
+	outp( "sub esp, 4" )
+	outp( "fnstcw [esp]" )
+	hMOV( regname, "[esp]" )
+	if( *mode <> "11" ) then
+		outp( "and " + regname + ", 0b1111001111111111" )
 	end if
-
-	'' round down toward -infinity
-	hFpuChangeRC( cw_regname, "01" )
-
-	outp "frndint"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
-	end if
-
+	outp( "or " + regname +  (", 0b0000" + *mode + "0000000000") )
+	hPUSH( regname )
+	outp( "fldcw [esp]" )
+	outp( "add esp, 4" )
 end sub
 
-'':::::
-private sub _emitFIX _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
+private sub hEmitFloatFunc( byval func as integer )
+	dim as integer reg, preservereg
+	dim as string regname
 
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	'' dst = floor( abs( dst ) ) * sng( dst )
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
+	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	if( reg = INVALID ) then
+		reg = EMIT_REG_EAX
+		preservereg = TRUE
 	end if
 
-	'' chop truncating toward 0
-	hFpuChangeRC( cw_regname, "11" )
+	regname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	outp "frndint"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
+	if( preservereg ) then
+		hPUSH( regname )
 	end if
 
+	select case( func )
+	case 1
+		'' st(0) = floor( st(0) )
+		'' round down toward -infinity
+		hFpuChangeRC( regname, "01" )
+		outp( "frndint" )
+	case 2
+		'' st(0) = floor( abs( st(0) ) ) * sng( st(0) )
+		'' chop truncating toward 0
+		hFpuChangeRC( regname, "11" )
+		outp( "frndint" )
+	case 3
+		'' st(0) = st(0) - floor( st(0) )
+		'' chop truncating toward 0
+		hFpuChangeRC( regname, "11" )
+		outp( "fld st(0)" )
+		outp( "frndint" )
+		outp( "fsubp" )
+	end select
+
+	'' restore FPU rounding
+	outp( "fldcw [esp]" )
+	outp( "add esp, 4" )
+
+	if( preservereg ) then
+		hPOP( regname )
+	end if
 end sub
 
-'':::::
-private sub _emitFRAC _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	'' dst = dst - floor( dst )
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
-	end if
-
-	'' chop truncating toward 0
-	hFpuChangeRC( cw_regname, "11" )
-
-	outp "fld st(0)"
-	outp "frndint"
-	outp "fsubp"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
-	end if
-
+private sub _emitFLOOR( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 1 )
 end sub
 
+private sub _emitFIX( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 2 )
+end sub
+
+private sub _emitFRAC( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 3 )
+end sub
 
 '':::::
 private sub _emitXchgTOS _
