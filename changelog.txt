@@ -8,6 +8,7 @@ Version 0.25.0:
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
 - Updated header for libzip 0.10.1
+- fbc -asm att|intel option (affects -gen gcc only)
 - fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
 - SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
 - SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi

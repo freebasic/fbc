@@ -36,6 +36,11 @@ type IRHLCCTX
 	varini				as string
 	variniscopelevel		as integer
 
+	asm_line			as string  '' line of inline asm built up by _emitAsm*()
+	asm_i				as integer '' next operand/symbol index
+	asm_output			as string  '' output constraints in gcc's syntax
+	asm_input			as string  '' input constraints in gcc's syntax
+
 	section				as section_e   ' current section to write to
 	head_txt			as string      ' buffer for header text
 	body_txt			as string      ' buffer for body text
@@ -838,17 +843,26 @@ private sub hWriteFTOI _
 		ptype_suffix = "l"
 	end select
 
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		rtype_suffix = ""
+		ptype_suffix = ""
+	end if
+
 	'' TODO: x86 specific
-	hWriteLine( "static inline " & rtype_str & " fb_" & fname &  " ( " & ptype_str & !" value ) {\n" & _
-				!"\tvolatile " & rtype_str & !" result;\n" & _
-				!"\t__asm__ (\n" & _
-				!"\t\t\"fld" & ptype_suffix & !" %1;\"\n" & _
-				!"\t\t\"fistp" & rtype_suffix & !" %0;\"\n" & _
-				!"\t\t:\"=m\" (result)\n" & _
-				!"\t\t:\"m\" (value)\n" & _
-				!"\t);\n" & _
-				!"\treturn result;\n" & _
-				!"}", FALSE )
+	hWriteLine( "static inline " + rtype_str + " fb_" + fname +  " ( " + ptype_str + " value ) {", FALSE )
+	ctx.identcnt += 1
+		hWriteLine( "volatile " + rtype_str + " result" )
+		hWriteLine( "__asm__(", FALSE, TRUE )
+		ctx.identcnt += 1
+			hWriteLine( """fld" + ptype_suffix + " %1;"""  , FALSE, TRUE )
+			hWriteLine( """fistp" + rtype_suffix + " %0;""", FALSE, TRUE )
+			hWriteLine( ":""=m"" (result)", FALSE, TRUE )
+			hWriteLine( ":""m"" (value)"  , FALSE, TRUE )
+		ctx.identcnt -= 1
+		hWriteLine( ")", TRUE, TRUE )
+		hWriteLine( "return result" )
+	ctx.identcnt -= 1
+	hWriteLine( "}", FALSE )
 
 end sub
 
@@ -2288,14 +2302,70 @@ private sub _emitComment _
 
 end sub
 
-'':::::
-private sub _emitASM _
-	( _
-		byval text as zstring ptr _
-	)
+private sub _emitAsmBegin( )
+	'' -asm intel: FB asm blocks are expected to be in Intel format as
+	''             usual; we have to convert them to the GCC format here.
+	'' -asm att: FB asm blocks are expected to be in the GCC format,
+	''           i.e. quoted and including constraints if needed.
+	ctx.asm_line = "__asm__ __volatile__( "
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		ctx.asm_line += $"""\t"
+		ctx.asm_i = 0
+		ctx.asm_output = ""
+		ctx.asm_input = ""
+	end if
+end sub
 
-	hWriteLine( "__asm__ ( " + *text + " )" )
+private sub _emitAsmText( byval text as zstring ptr )
+	ctx.asm_line += *text
+end sub
 
+private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
+	dim as string id
+
+	id = *symbGetMangledName( sym )
+
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		'' Insert %0 -%9 place holders, gcc will fill in the proper
+		'' DWORD PTR [ebp+N] for them based on input/output operands.
+		'  - unfortunately we don't know whether this symbol is used
+		''   as input, output or both, so we enlist as operand for both,
+		''   and use the %i for the output operand.
+		ctx.asm_line += "%" + str( ctx.asm_i )
+		ctx.asm_i += 1
+
+		'' output operand constraint: "=m" (symbol)
+		'' input operand constraint:   "m" (symbol)
+		if( len( ctx.asm_output ) > 0 ) then
+			ctx.asm_output += ", "
+			ctx.asm_input  += ", "
+		end if
+		ctx.asm_output += """=m"" (" + id + ")"
+		ctx.asm_input  +=  """m"" (" + id + ")"
+	else
+		ctx.asm_line += id
+	end if
+end sub
+
+private sub _emitAsmEnd( )
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		ctx.asm_line += $"\n"""
+		ctx.asm_line += " : " + ctx.asm_output
+		ctx.asm_line += " : " + ctx.asm_input
+
+		'' We don't know what registers etc. will be trashed,
+		'' so assume everything...
+		ctx.asm_line += " : ""cc"", ""memory"""
+		ctx.asm_line += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+		if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+			ctx.asm_line += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
+			ctx.asm_line += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+		end if
+	end if
+
+	ctx.asm_line += " )"
+
+	hWriteLine( ctx.asm_line )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2569,7 +2639,10 @@ sub irHLC_ctor()
 		@_emitProcBegin, _
 		@_emitProcEnd, _
 		@_emitPushArg, _
-		@_emitASM, _
+		@_emitAsmBegin, _
+		@_emitAsmText, _
+		@_emitAsmSymb, _
+		@_emitAsmEnd, _
 		@_emitComment, _
 		@_emitJmpTb, _
 		@_emitBop, _

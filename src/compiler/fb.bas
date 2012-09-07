@@ -297,6 +297,8 @@ sub fbGlobalInit()
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
 	env.clopt.optlevel      = 0
+	env.clopt.asmsyntax     = FB_ASMSYNTAX_ATT '' Note: does not affect -gen gas
+
 	env.clopt.lang          = FB_DEFAULT_LANG
 	env.clopt.forcelang     = FALSE
 
@@ -355,6 +357,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.vectorize = value
 	case FB_COMPOPT_OPTIMIZELEVEL
 		env.clopt.optlevel = value
+	case FB_COMPOPT_ASMSYNTAX
+		env.clopt.asmsyntax = value
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
@@ -419,6 +423,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.vectorize
 	case FB_COMPOPT_OPTIMIZELEVEL
 		function = env.clopt.optlevel
+	case FB_COMPOPT_ASMSYNTAX
+		function = env.clopt.asmsyntax
 
 	case FB_COMPOPT_LANG
 		function = env.clopt.lang

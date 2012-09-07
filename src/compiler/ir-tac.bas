@@ -19,6 +19,8 @@ type IRTAC_CTX
 	vregTB			as TFLIST
 
 	tmpcnt		as uinteger
+
+	asm_line		as string
 end type
 
 declare sub hFlushUOP _
@@ -111,11 +113,7 @@ declare sub hFlushDBG _
 		byval ex as integer _
 	)
 
-declare sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
+declare sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 
 declare sub hFreeIDX _
 	( _
@@ -770,24 +768,24 @@ private sub _emitDBG _
 
 end sub
 
-'':::::
-private sub _emitComment _
-	( _
-		byval text as zstring ptr _
-	) static
-
+private sub _emitComment( byval text as zstring ptr )
 	_emit( AST_OP_LIT_COMMENT, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
-
 end sub
 
-'':::::
-private sub _emitASM _
-	( _
-		byval text as zstring ptr _
-	) static
+private sub _emitAsmBegin( )
+	ctx.asm_line = ""
+end sub
 
-	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
+private sub _emitAsmText( byval text as zstring ptr )
+	ctx.asm_line += *text
+end sub
 
+private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
+	ctx.asm_line += emitGetVarName( sym )
+end sub
+
+private sub _emitAsmEnd( )
+	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ctx.asm_line ) ) ) )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2425,26 +2423,15 @@ private sub hFlushDBG _
 
 end sub
 
-'':::::
-private sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
-
-	dim as zstring ptr text = cast( zstring ptr, ex )
-
+private sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 	select case op
 	case AST_OP_LIT_COMMENT
 		emitComment( text )
-
 	case AST_OP_LIT_ASM
 		emitASM( text )
-
 	end select
 
 	ZstrFree( text )
-
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2724,7 +2711,10 @@ sub irTAC_ctor()
 		@_emitProcBegin, _
 		@_emitProcEnd, _
 		@_emitPushArg, _
-		@_emitASM, _
+		@_emitAsmBegin, _
+		@_emitAsmText, _
+		@_emitAsmSymb, _
+		@_emitAsmEnd, _
 		@_emitComment, _
 		@_emitJmpTb, _
 		@_emitBop, _

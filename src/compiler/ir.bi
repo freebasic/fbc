@@ -207,10 +207,10 @@ type IR_VTBL
 		byval level as integer _
 	)
 
-	emitASM as sub _
-	( _
-		byval text as zstring ptr _
-	)
+	emitAsmBegin as sub( )
+	emitAsmText as sub( byval text as zstring ptr )
+	emitAsmSymb as sub( byval sym as FBSYMBOL ptr )
+	emitAsmEnd as sub( )
 
 	emitComment as sub _
 	( _
@@ -571,7 +571,10 @@ declare sub irEnd()
 
 #define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
 
-#define irEmitASM(text) ir.vtbl.emitASM( text )
+#define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
+#define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )
+#define irEmitAsmSymb( sym )  ir.vtbl.emitAsmSymb( sym )
+#define irEmitAsmEnd( )       ir.vtbl.emitAsmEnd( )
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
