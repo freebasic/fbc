@@ -297,7 +297,7 @@ sub fbGlobalInit()
 	env.clopt.fpmode        = FB_DEFAULT_FPMODE
 	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
 	env.clopt.optlevel      = 0
-	env.clopt.asmsyntax     = FB_ASMSYNTAX_INTEL
+	env.clopt.asmsyntax     = FB_ASMSYNTAX_ATT '' Note: does not affect -gen gas
 
 	env.clopt.lang          = FB_DEFAULT_LANG
 	env.clopt.forcelang     = FALSE

@@ -18,7 +18,6 @@ Version 0.25.0:
 - 'SELECT CASE str1 + str2' was broken and behaved like 'SELECT CASE str2'
 - Inconsistent warning message on implicit number to ptr conversions
 - Rename case-insensitive naming clashes in IUP3 header defines
-- C backend: defaults to using Intel syntax asm now (gcc -masm=intel) to be compatible with FB inline asm blocks
 
 
 Version 0.24.0:
