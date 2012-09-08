@@ -146,7 +146,6 @@ end type
 		@"Executable not found", _
 		@"Array out-of-bounds", _
 		@"Missing command-line option for", _
-		@"Math overflow", _
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _
 		@"Illegal inside a compound statement or scoped block", _

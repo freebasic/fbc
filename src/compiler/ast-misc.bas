@@ -682,23 +682,23 @@ function astCheckConst _
 	'' x86/32-bit assumptions
 	'' assuming dtype has been stripped of const info
 
-    select case as const dtype
-    case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	select case as const( dtype )
+	''case FB_DATATYPE_DOUBLE
+		'' DOUBLE can hold all the other dtype's values,
+		'' no checks are needed
+
+	case FB_DATATYPE_SINGLE
 		dim as double dval = any, dmin = any, dmax = any
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
-			dmin = 1.175494351e-38
-			dmax = 3.402823466e+38
-		else
-			dmin = 2.2250738585072014e-308
-			dmax = 1.7976931348623147e+308
-		end if
+		'' anything to SINGLE: show warning when out of SINGLE limits
+		dmin = 1.401298e-45
+		dmax = 3.402823e+38
 
+		'' using abs() because limits apply regardless of sign
 		dval = abs( astGetValueAsDouble( n ) )
-    	if( dval <> 0 ) then
-    		if( (dval < dmin) or (dval > dmax) ) then
-    			errReport( FB_ERRMSG_MATHOVERFLOW, TRUE )
-			end if
+		if( (dval < dmin) or (dval > dmax) ) then
+			n = astNewCONV( dtype, NULL, n )
+			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 		end if
 
 	case FB_DATATYPE_LONGINT

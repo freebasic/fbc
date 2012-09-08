@@ -5,6 +5,9 @@ Version 0.25.0:
 - getkey()/inkey() under Linux X11 graphics mode will now return the FB extended keycode for DELETE (&h53FF or &hFF &h53) instead of ASCII DEL (&h7F), for consistency with console-mode and other platforms
 - ScreenEvent() won't return extended keycodes anymore in the EVENT.ascii field under the Linux X11 graphics driver
 - Removed compile-time errors for float division by constant zero; it will result in INF again, for consistency with the evaluation at run-time
+- Overflows when converting constants to SINGLE/DOUBLE won't cause "math overflow" errors anymore
+- Overflows in constant conversions to SINGLE will now trigger "overflow in constant conversion" warnings, like conversions to integer types do
+- Constant conversions to DOUBLE are not checked for overflows anymore, since DOUBLE can hold all SINGLE/INTEGER/LONGINT values (although, with varying precision)
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
