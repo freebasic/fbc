@@ -981,16 +981,17 @@ private function hCheckParam _
 	end select
 
 	'' different types? convert..
-	dim as integer do_conv = any
+	dim as integer do_conv = any, diff_sign_only = any
 
 	do_conv = typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )
+	diff_sign_only = FALSE
 	if( do_conv = FALSE ) then
 		'' same size, different data class?
 		do_conv = typeGetClass( param_dtype ) <> typeGetClass( arg_dtype )
 		if( do_conv = FALSE ) then
 			'' same class, same size
 			if( typeGetClass( arg_dtype ) = FB_DATACLASS_INTEGER ) then
-				do_conv = (typeIsSigned( param_dtype ) <> typeIsSigned( arg_dtype ))
+				diff_sign_only = (typeIsSigned( param_dtype ) <> typeIsSigned( arg_dtype ))
 			end if
 		end if
 	end if
@@ -1022,7 +1023,9 @@ private function hCheckParam _
 				exit function
 			end select
 		end if
+	end if
 
+	if( do_conv or diff_sign_only ) then
 		'' const?
 		if( astIsCONST( arg ) ) then
 			'' show "overflow in constant conversion" warnings
