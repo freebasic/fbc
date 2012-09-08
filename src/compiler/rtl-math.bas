@@ -14,7 +14,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 	{ _
 		/' fb_LongintDIV cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
-			@FB_RTL_LONGINTDIV, NULL, _
+			@FB_RTL_LONGINTDIV, @"__divdi3", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -29,7 +29,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_ULongintDIV cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
-			@FB_RTL_ULONGINTDIV, NULL, _
+			@FB_RTL_ULONGINTDIV, @"__udivdi3", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -44,7 +44,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_LongintMOD cdecl ( byval x as longint, byval y as longint ) as longint '/ _
 		( _
-			@FB_RTL_LONGINTMOD, NULL, _
+			@FB_RTL_LONGINTMOD, @"__moddi3", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -59,7 +59,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_ULongintMOD cdecl ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
 		( _
-			@FB_RTL_ULONGINTMOD, NULL, _
+			@FB_RTL_ULONGINTMOD, @"__umoddi3", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -74,7 +74,7 @@ declare function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_Dbl2ULongint cdecl ( byval x as double ) as ulongint '/ _
 		( _
-			@FB_RTL_DBL2ULONGINT, NULL, _
+			@FB_RTL_DBL2ULONGINT, @"__fixunsdfdi", _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _

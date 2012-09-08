@@ -119,11 +119,11 @@
 #define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
 #define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
 
-#define FB_RTL_LONGINTDIV				"__divdi3"
-#define FB_RTL_ULONGINTDIV				"__udivdi3"
-#define FB_RTL_LONGINTMOD				"__moddi3"
-#define FB_RTL_ULONGINTMOD				"__umoddi3"
-#define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
+#define FB_RTL_LONGINTDIV				"fb___divdi3"
+#define FB_RTL_ULONGINTDIV				"fb___udivdi3"
+#define FB_RTL_LONGINTMOD				"fb___moddi3"
+#define FB_RTL_ULONGINTMOD				"fb___umoddi3"
+#define FB_RTL_DBL2ULONGINT				"fb___fixunsdfdi"
 
 #define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
 #define FB_RTL_ARRAYREDIM_OBJ			"fb_ArrayRedimObj"
@@ -146,9 +146,9 @@
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
-#define FB_RTL_INITCRTCTOR 				"__main"
+#define FB_RTL_INITCRTCTOR 				"fb___main"
 #define FB_RTL_END 						"fb_End"
-#define FB_RTL_ATEXIT					"{atexit}"
+#define FB_RTL_ATEXIT					"fb_atexit"
 
 #define FB_RTL_DATARESTORE 				"fb_DataRestore"
 #define FB_RTL_DATAREADSTR 				"fb_DataReadStr"
@@ -351,8 +351,8 @@
 #define FB_RTL_GFXPUTADD				"fb_hPutAdd"
 #define FB_RTL_GFXPUTCUSTOM				"fb_hPutCustom"
 
-#define FB_RTL_PROFILEMCOUNT            "mcount"
-#define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
+#define FB_RTL_PROFILEMCOUNT            "fb_mcount"
+#define FB_RTL_PROFILEMONSTARTUP        "fb__monstartup"
 
 #define FB_RTL_GOSUBPUSH                "fb_GosubPush"
 #define FB_RTL_GOSUBPOP                 "fb_GosubPop"

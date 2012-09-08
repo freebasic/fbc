@@ -48,6 +48,7 @@ Version 0.25.0:
 - ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
 - ASM backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
 - "Overflow in constant conversion" warning wasn't shown for function arguments which only differed from the parameter in signedness
+- Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
 
 
 Version 0.24.0:

@@ -1166,9 +1166,9 @@
 	 			) _
 	 		} _
 		), _
-		/' rename cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
+		/' fb_rename alias "rename" cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
 		( _
-			@FB_RTL_FILERENAME, NULL, _
+			@"fb_rename", @FB_RTL_FILERENAME, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _

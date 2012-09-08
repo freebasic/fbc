@@ -47,7 +47,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 	), _
 		/' __main CDECL ( ) as void '/ _
 		( _
-			@FB_RTL_INITCRTCTOR, NULL, _
+			@FB_RTL_INITCRTCTOR, @"__main", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
