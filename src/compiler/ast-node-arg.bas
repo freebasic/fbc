@@ -985,7 +985,14 @@ private function hCheckParam _
 
 	do_conv = typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )
 	if( do_conv = FALSE ) then
+		'' same size, different data class?
 		do_conv = typeGetClass( param_dtype ) <> typeGetClass( arg_dtype )
+		if( do_conv = FALSE ) then
+			'' same class, same size
+			if( typeGetClass( arg_dtype ) = FB_DATACLASS_INTEGER ) then
+				do_conv = (typeIsSigned( param_dtype ) <> typeIsSigned( arg_dtype ))
+			end if
+		end if
 	end if
 
 	if( do_conv ) then

@@ -47,6 +47,7 @@ Version 0.25.0:
 - Warnings could still be shown even after the "Too many errors, exiting" message
 - ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
 - ASM backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
+- "Overflow in constant conversion" warning wasn't shown for function arguments which only differed from the parameter in signedness
 
 
 Version 0.24.0:
