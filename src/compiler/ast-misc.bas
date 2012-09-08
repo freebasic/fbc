@@ -672,12 +672,16 @@ end sub
 '' checks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval show_warn as integer _
+	) as integer
+
+	dim as integer result = any
+
+	result = TRUE
 
 	'' x86/32-bit assumptions
 	'' assuming dtype has been stripped of const info
@@ -697,8 +701,7 @@ function astCheckConst _
 		'' using abs() because limits apply regardless of sign
 		dval = abs( astGetValueAsDouble( n ) )
 		if( (dval < dmin) or (dval > dmax) ) then
-			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+			result = FALSE
 		end if
 
 	case FB_DATATYPE_LONGINT
@@ -708,8 +711,7 @@ chk_long:
 		if( typeIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
-				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+				result = FALSE
 			end if
 		end if
 
@@ -720,8 +722,7 @@ chk_ulong:
 		if( typeIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
-				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+				result = FALSE
 			end if
 		end if
 
@@ -734,8 +735,7 @@ chk_int:
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
-			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+			result = FALSE
 		end if
 
     case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
@@ -748,8 +748,7 @@ chk_uint:
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
-			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+			result = FALSE
 		end if
 
 	case FB_DATATYPE_LONG
@@ -770,8 +769,11 @@ chk_uint:
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 
-	function = n
+	if( show_warn and (result = FALSE) ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
 
+	function = result
 end function
 
 '':::::

@@ -144,7 +144,7 @@ function cSwapStmt() as integer
 	'' would work (raw because astCheckASSIGN() doesn't check
 	'' operator overloads)
 	dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( l ), astGetSubtype( l ) )
-	dim as integer ok = astCheckASSIGN( fakelhs, r )
+	dim as integer ok = astCheckASSIGN( fakelhs, r, FALSE )
 	astDelTree( fakelhs )
 	if( ok = FALSE ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )

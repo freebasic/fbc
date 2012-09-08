@@ -41,15 +41,15 @@ private function hDoAssign _
 		dtype = typeDeref( dtype )
 	end if
 
-    astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
+	astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
 
-    '' don't build a FIELD node if it's an UDTElm symbol,
-    '' that doesn't matter with checkASSIGN
-    if( astCheckASSIGN( @lside, expr ) = FALSE ) then
+	'' don't build a FIELD node if it's an UDTElm symbol,
+	'' that doesn't matter with checkASSIGN
+	if( astCheckASSIGN( @lside, expr, FALSE ) = FALSE ) then
 
-    	'' check if it's a cast
-    	expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
-    	if( expr = NULL ) then
+		'' check if it's a cast
+		expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
+		if( expr = NULL ) then
 			'' hand it back...
 			if( no_fake ) then
 				exit function

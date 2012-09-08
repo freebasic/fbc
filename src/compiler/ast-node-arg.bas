@@ -1018,11 +1018,8 @@ private function hCheckParam _
 
 		'' const?
 		if( astIsCONST( arg ) ) then
-			arg = astCheckConst( symbGetType( param ), arg )
-			if( arg = NULL ) then
-				exit function
-			end if
-			arg_dtype = astGetDatatype( arg )
+			'' show "overflow in constant conversion" warnings
+			astCheckConst( symbGetType( param ), arg, TRUE )
 		end if
 
 		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
@@ -1033,18 +1030,6 @@ private function hCheckParam _
 		arg_dtype = astGetDatatype( arg )
 
 		n->l = arg
-
-	else
-		'' check for overflows
-		if( typeGetClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( arg ) ) then
-				arg = astCheckConst( symbGetType( param ), arg )
-				if( arg = NULL ) then
-					exit function
-				end if
-				arg_dtype = astGetDatatype( arg )
-			end if
-		end if
 	end if
 
 	'' pointer checking

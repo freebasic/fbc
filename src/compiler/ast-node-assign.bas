@@ -252,7 +252,8 @@ end sub
 function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval show_warn as integer _
 	) as integer
 
     dim as ASTNODE ptr n = any
@@ -335,24 +336,16 @@ function astCheckASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
+				if( astCheckConst( ldtype, r, show_warn ) = FALSE ) then
+					r = astNewCONV( ldtype, NULL, r )
+					if( r = NULL ) then
+						exit function
+					end if
 				end if
 			end if
 
 			if( astCheckCONV( ldfull, l->subtype, r ) = FALSE ) then
 				exit function
-			end if
-		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
 			end if
 		end if
 	end if
@@ -609,9 +602,11 @@ function astNewASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
+				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
+					r = astNewCONV( ldtype, NULL, r )
+					if( r = NULL ) then
+						exit function
+					end if
 				end if
 			end if
 
@@ -628,16 +623,6 @@ function astNewASSIGN _
 
 			if( doconv ) then
 				r = astNewCONV( ldfull, l->subtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
-			end if
-		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if

@@ -151,8 +151,8 @@ private function hOptionalExpr _
 
     	astBuildVAR( @lside, NULL, 0, dtype, subtype )
 
-    	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-        	exit function
+		if( astCheckASSIGN( @lside, expr, TRUE ) = FALSE ) then
+			exit function
 		end if
 
     end select

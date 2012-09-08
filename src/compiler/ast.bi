@@ -841,13 +841,15 @@ declare function astOptAssignment _
 declare function astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval show_warn as integer _
+	) as integer
 
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
+		byval r as ASTNODE ptr, _
+		byval show_warn as integer _
 	) as integer
 
 declare function astCheckCONV _
