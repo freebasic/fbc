@@ -1311,6 +1311,10 @@ function emitFRAC _
 
 end function
 
+function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
+	function = hNewUOP( EMIT_OP_CONVFD2FS, dvreg )
+end function
+
 '':::::
 function emitSIN _
 	( _

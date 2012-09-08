@@ -128,11 +128,18 @@ private sub hCONVConstEvalFlt _
 	to_dtype = typeGet( to_dtype )
 
 	select case as const vdtype
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		'' do nothing..
+	case FB_DATATYPE_SINGLE
+		'' SINGLE to SINGLE|DOUBLE
+		'' Nothing to do, since float constants are stored as DOUBLE
+
+	case FB_DATATYPE_DOUBLE
+		'' DOUBLE to SINGLE|DOUBLE
+		if( to_dtype = FB_DATATYPE_SINGLE ) then
+			'' Truncate DOUBLE to SINGLE
+			v->con.val.float = csng( v->con.val.float )
+		end if
 
 	case FB_DATATYPE_LONGINT
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.long )
 		else
@@ -140,7 +147,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_ULONGINT
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.long ) )
 		else
@@ -148,7 +154,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.int ) )
 		else
@@ -156,7 +161,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_LONG
-
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_SINGLE ) then
 				v->con.val.float = csng( v->con.val.int )
@@ -172,7 +176,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case FB_DATATYPE_ULONG
-
 		if( FB_LONGSIZE = len( integer ) ) then
 			if( to_dtype = FB_DATATYPE_SINGLE ) then
 				v->con.val.float = csng( cunsg( v->con.val.int ) )
@@ -188,7 +191,6 @@ private sub hCONVConstEvalFlt _
 		end if
 
 	case else
-
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.int )
 		else
@@ -621,6 +623,16 @@ function astNewCONV _
 
 	n->l = l
 	n->cast.doconv = doconv
+	n->cast.do_convfd2fs = FALSE
+
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
+		if( doconv ) then
+			'' converting DOUBLE to SINGLE?
+			if( typeGet( ldtype ) = FB_DATATYPE_DOUBLE ) then
+				n->cast.do_convfd2fs = (typeGet( to_dtype ) = FB_DATATYPE_SINGLE)
+			end if
+		end if
+	end if
 
 	function = n
 
@@ -641,6 +653,47 @@ function astNewOvlCONV _
 	function = l
 
 end function
+
+sub astUpdateCONVFD2FS _
+	( _
+		byval n as ASTNODE ptr, _
+		byval to_dtype as integer, _
+		byval is_expr as integer _
+	)
+
+	assert( n->class = AST_NODECLASS_CONV )
+
+	'' only when converting DOUBLE to SINGLE
+	if( n->cast.do_convfd2fs = FALSE ) then
+		exit sub
+	end if
+
+	assert( env.clopt.backend = FB_BACKEND_GAS )
+
+	''
+	'' x86 assumptions
+	''
+	'' Don't do the DOUBLE to SINGLE truncation unless needed.
+	''
+	'' If the target dtype cannot hold bigger values than SINGLE
+	'' anyways, then we don't need to do the additional truncation,
+	'' that will happen automatically when storing into the target.
+	''
+	'' This applies to stores (ASSIGN, ARG), and to expressions
+	'' that do not use the FPU stack (ST(N) registers).
+	''
+
+	'' everything >= 4 bytes, assuming that 4 byte integers can hold values
+	'' that still are too big for SINGLE
+	n->cast.do_convfd2fs = (typeGetSize( to_dtype ) >= 4)
+
+	'' to SINGLE itself? no need to do anything then, except if it's on
+	'' the FPU stack, and won't be automatically truncated because of that.
+	if( typeGet( to_dtype ) = FB_DATATYPE_SINGLE ) then
+		n->cast.do_convfd2fs = is_expr
+	end if
+
+end sub
 
 '':::::
 function astLoadCONV _
@@ -665,6 +718,18 @@ function astLoadCONV _
 			vr = irAllocVreg( astGetDataType( n ), n->subtype )
 			vr->vector = n->vector
 			irEmitConvert( astGetDataType( n ), n->subtype, vr, vs )
+
+			if( n->cast.do_convfd2fs ) then
+				'' converting DOUBLE to SINGLE?
+				if( vs->dtype = FB_DATATYPE_DOUBLE ) then
+					if( vr->dtype = FB_DATATYPE_SINGLE ) then
+						if( vr->regFamily = IR_REG_FPU_STACK ) then
+							'' Do additional conversion to truncate to SINGLE
+							irEmitUOP( AST_OP_CONVFD2FS, vr, NULL )
+						end if
+					end if
+				end if
+			end if
 		else
 			vr = vs
 			irSetVregDataType( vr, astGetDataType( n ), n->subtype )

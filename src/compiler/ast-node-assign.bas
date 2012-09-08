@@ -610,7 +610,7 @@ function astNewASSIGN _
 				end if
 			end if
 
-			'' let the fpu do the convertion if any operand
+			'' let the fpu do the conversion if any operand
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
 			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
@@ -648,6 +648,10 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	r = n->r
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
+	end if
+
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, l->dtype, FALSE )
 	end if
 
 	vs = astLoad( r )

@@ -1674,6 +1674,13 @@ function astLoadBOP _
 		return NULL
 	end if
 
+	if( l->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( l, n->dtype, TRUE )
+	end if
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, n->dtype, TRUE )
+	end if
+
 	'' need some other algo here to select which operand is better to evaluate
 	'' first - pay attention to logical ops, "func1(bar) OR func1(foo)" isn't
 	'' the same as the inverse if func1 depends on the order..

@@ -340,6 +340,10 @@ function astLoadCALL _
 			end if
 		end if
 
+		if( l->class = AST_NODECLASS_CONV ) then
+			astUpdateCONVFD2FS( l, arg->dtype, FALSE )
+		end if
+
 		'' flush the arg expression
 		vr = astLoad( l )
 		astDelNode( l )

@@ -66,6 +66,7 @@ enum EMIT_NODEOP
 
 	EMIT_OP_FIX
 	EMIT_OP_FRAC
+	EMIT_OP_CONVFD2FS
 
 	EMIT_OP_SWZREP
 
@@ -688,6 +689,8 @@ declare function emitFRAC _
 	( _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
+
+declare function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
 
 declare function emitSWZREP _
 	( _

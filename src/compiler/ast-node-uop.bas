@@ -384,6 +384,10 @@ function astLoadUOP _
 		return NULL
 	end if
 
+	if( o->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( o, n->dtype, TRUE )
+	end if
+
 	v1 = astLoad( o )
 
 	if( ast.doemit ) then

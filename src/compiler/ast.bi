@@ -154,7 +154,7 @@ type AST_NODE_ASM
 	tokhead as ASTASMTOK ptr
 end type
 
-type AST_NODE_OP                                  	'' used by: bop, uop, conv & addr
+type AST_NODE_OP  '' used by: bop, uop, addr
 	op				as integer
 	options 		as AST_OPOPT
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
@@ -237,6 +237,7 @@ end type
 
 type AST_NODE_CAST
 	doconv 			as integer						'' do conversion (TRUE or FALSE)
+	do_convfd2fs		as integer  '' whether or not to ensure truncation in double2single conversions
 end type
 
 ''
@@ -536,6 +537,13 @@ declare function astNewOvlCONV _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
+
+declare sub astUpdateCONVFD2FS _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval is_expr as integer _
+	)
 
 declare function astNewBOP _
 	( _

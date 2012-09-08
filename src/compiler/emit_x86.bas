@@ -5468,6 +5468,19 @@ private sub _emitFRAC( byval dvreg as IRVREG ptr )
 	hEmitFloatFunc( 3 )
 end sub
 
+private sub _emitCONVFD2FS( byval dvreg as IRVREG ptr )
+	assert( dvreg->typ = IR_VREGTYPE_REG )
+	assert( dvreg->regFamily = IR_REG_FPU_STACK )
+
+	'' fld stores into st(0) but doesn't convert from
+	'' qword to dword, a dword temp var must be used,
+	'' in order to get the truncation
+	outp( "sub esp, 4" )
+	outp( "fstp dword ptr [esp]" )
+	outp( "fld dword ptr [esp]" )
+	outp( "add esp, 4" )
+end sub
+
 '':::::
 private sub _emitXchgTOS _
 	( _
@@ -6396,6 +6409,7 @@ end sub
         _
 		EMIT_CBENTRY(FIX), _
 		EMIT_CBENTRY(FRAC), _
+		EMIT_CBENTRY(CONVFD2FS), _
 	   _
 		NULL, _
 	   _

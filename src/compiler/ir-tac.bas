@@ -1716,6 +1716,8 @@ private sub hFlushUOP _
 		emitFIX( v1 )
 	case AST_OP_FRAC
 		emitFRAC( v1 )
+	case AST_OP_CONVFD2FS
+		emitCONVFD2FS( v1 )
 
 	case AST_OP_SIN
 		emitSIN( v1 )
