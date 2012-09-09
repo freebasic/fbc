@@ -299,7 +299,7 @@
 #define FB_RTL_FILELOCKLARGE 			"fb_FileLockLarge"
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
 #define FB_RTL_FILEUNLOCKLARGE 			"fb_FileUnlockLarge"
-#define FB_RTL_FILERENAME 				"rename"
+#define FB_RTL_FILERENAME 				"fb_rename"
 
 #define FB_RTL_WIDTH 					"fb_Width"
 #define FB_RTL_WIDTHDEV 				"fb_WidthDev"
