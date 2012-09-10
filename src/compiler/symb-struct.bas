@@ -129,7 +129,7 @@ private function hGetRealLen _
 end function
 
 '':::::
-private function hCalcALign _
+private function hCalcAlign _
 	( _
 		byval lgt as integer, _
 		byval ofs as integer, _
@@ -312,7 +312,7 @@ function symbAddField _
 
 	''
 	if( updateudt ) then
-		pad = hCalcALign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
+		pad = hCalcAlign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -523,11 +523,7 @@ sub symbInsertInnerUDT _
 
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		'' calc padding (should be aligned like if an UDT field was being added)
-		pad = hCalcALign( 0, _
-						  parent->ofs, _
-						  parent->udt.align, _
-						  FB_DATATYPE_STRUCT, _
-						  inner )
+		pad = hCalcAlign( 0, parent->ofs, parent->udt.align, FB_DATATYPE_STRUCT, inner )
 		if( hCheckUDTSize( parent->ofs, 0, pad ) ) then
 			parent->ofs += pad
 		end if
@@ -741,7 +737,7 @@ sub symbStructEnd _
 	'' do round?
 	if( sym->udt.align <> 1 ) then
 		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcALign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
+		pad = hCalcAlign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
 		if( hCheckUDTSize( sym->lgt, 0, pad ) ) then
 			sym->lgt += pad
 		end if
