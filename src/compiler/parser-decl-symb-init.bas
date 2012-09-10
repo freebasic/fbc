@@ -132,6 +132,38 @@ private function hArrayInit _
 
 	function = FALSE
 
+	''
+	'' Nested "{ a, b, c }" array initializer parser
+	''
+	'' For arrays with well-known boundaries only matching initializers
+	'' are allowed:
+	''
+	''    array(0 to 3)          =  { 1, 1, 1, 1 }
+	''    array(0 to 1, 0 to 1)  =  { { 1, 1 }, { 2, 2 } }
+	''    array(1 to 3, 0 to 1)  =  { { 1, 1 }, { 2, 2 }, { 3, 3 } }
+	''
+	'' For arrays declared using "..." ellipsis as the upper bound of
+	'' some dimension(s), the array initializer determines the upper bound,
+	'' and the array symbol is updated accordingly:
+	''
+	''    array(0 to ...)  =  { 1, 1 }        = array(0 to 1)
+	''    array(5 to ...)  =  { 1, 1, 1, 1 }  = array(5 to 8)
+	''
+	''    array(0 to ..., 0 to 0)    =  { { 1 }, { 2 }, { 3 } }  =
+	''    array(0 to 2, 0 to 0)
+	''
+	''    array(0 to ..., 0 to ...)  =  { { 1, 1 } ......        =
+	''    array(0 to ..., 0 to 1)    =  { { 1, 1 }, { 2, 2 } }   =
+	''    array(0 to 1, 0 to 1)
+	''
+	'' The parsing starts with the first (outer-most) dimension,
+	'' and recursively descends into the next (inner) dimension.
+	'' The first '}' seen is that of the first group of elements in the
+	'' inner-most dimension, corresponding to the last dimension listed in
+	'' the array declaration and the dTB(). Thus, the dimension's sizes are
+	'' filled in "backwards" - inner-most first, outer-most last.
+	''
+
 	dimensions = symbGetArrayDimensions( ctx.sym )
 	old_dim = ctx.dim_
 
