@@ -1431,6 +1431,15 @@ declare function symbCalcArrayDiff _
 		byval lgt as integer _
 	) as integer
 
+declare function symbCheckArraySize _
+	( _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval lgt as integer, _
+		byval is_on_stack as integer, _
+		byval allow_ellipsis as integer _
+	) as integer
+
 declare function symbCheckLabels _
 	( _
 		byval symtbhead as FBSYMBOL ptr _

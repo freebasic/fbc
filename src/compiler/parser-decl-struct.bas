@@ -368,6 +368,18 @@ private sub hTypeMultElementDecl _
 			end if
 		end if
 
+		'' array?
+		if( dims > 0 ) then
+			'' "array too big" check
+			if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+				errReport( FB_ERRMSG_ARRAYTOOBIG )
+				'' error recovery: use small array
+				dims = 1
+				dTB(0).lower = 0
+				dTB(0).upper = 0
+			end if
+		end if
+
 		'' ref to self?
 		if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( subtype = parent ) then
@@ -477,6 +489,18 @@ private sub hTypeElementDecl _
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
+
+	'' array?
+	if( dims > 0 ) then
+		'' "array too big" check
+		if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+			errReport( FB_ERRMSG_ARRAYTOOBIG )
+			'' error recovery: use small array
+			dims = 1
+			dTB(0).lower = 0
+			dTB(0).upper = 0
+		end if
+	end if
 
 	''
 	if( bits <> 0 ) then

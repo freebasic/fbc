@@ -721,6 +721,68 @@ function symbCalcArrayElements _
 
 end function
 
+function symbCheckArraySize _
+	( _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval lgt as integer, _
+		byval is_on_stack as integer, _
+		byval allow_ellipsis as integer _
+	) as integer
+
+	dim as ulongint allelements = any
+	dim as uinteger elements = any
+	dim as integer found_too_big = any
+
+	found_too_big = FALSE
+	allelements = 1
+
+	for i as integer = 0 to dimensions-1
+		'' ellipsis upper bound?
+		if( allow_ellipsis and (dTB(i).upper = FB_ARRAYDIM_UNKNOWN) ) then
+			'' Each dimension using ellipsis will have at least 1 element,
+			'' this is what can be assumed for now. (The check will need
+			'' to be repeated later when the real size is known)
+			elements = 1
+		else
+			'' elements for this array dimension
+			elements = (dTB(i).upper - dTB(i).lower) + 1
+		end if
+
+		'' Too many elements in this dimension?
+		if( elements > &h7FFFFFFFu ) then
+			found_too_big = TRUE
+			exit for
+		end if
+
+		allelements *= elements
+
+		'' Too many elements overall after adding this dimension?
+		if( allelements > &h7FFFFFFFull ) then
+			found_too_big = TRUE
+			exit for
+		end if
+	next
+
+	if( found_too_big = FALSE ) then
+		'' Apply data type size
+		allelements *= lgt
+		if( allelements > &h7FFFFFFFull ) then
+			found_too_big = TRUE
+		end if
+	end if
+
+	if( found_too_big ) then
+		function = FALSE
+	else
+		if( is_on_stack and (allelements > env.clopt.stacksize) ) then
+			errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
+		end if
+		function = TRUE
+	end if
+
+end function
+
 '':::::
 function symbGetVarHasCtor _
 	( _

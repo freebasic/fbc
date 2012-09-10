@@ -223,9 +223,25 @@ private function hArrayInit _
 		if( elements = -1 ) then
 			'' ellipsis elements...
 			if( lexGetToken( ) <> CHAR_COMMA ) then
+				'' Fill in this dimension's upper bound
 				elements = elm_cnt
 				ctx.dim_->upper = ctx.dim_->lower + elm_cnt - 1
 				dTB(ctx.dimcnt - 1).upper = ctx.dim_->upper
+
+				'' "array too big" check
+				'' Note: the dTB() was initialized by now by the recursive parsing,
+				'' but there can still be ellipsis upper bounds if some of the other
+				'' dimensions used them, because their respective initializers haven't
+				'' been fully parsed yet, unless this is the outer-most dimension.
+				if( symbCheckArraySize( dimensions, dTB(), ctx.sym->lgt, _
+				                        ((ctx.sym->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
+				                        (ctx.dimcnt > 1) ) = FALSE ) then
+					errReport( FB_ERRMSG_ARRAYTOOBIG )
+					'' error recovery: set this dimension to 1 element
+					dTB(ctx.dimcnt - 1).lower = 0
+					dTB(ctx.dimcnt - 1).upper = 0
+				end if
+
 				symbSetArrayDimTb( ctx.sym, dimensions, dTB() )
 				exit do
 			end if
@@ -234,7 +250,6 @@ private function hArrayInit _
 				exit do
 			end if
 		end if
-
 
 		'' ','
 		if( hMatch( CHAR_COMMA ) = FALSE ) then

@@ -184,6 +184,27 @@ private function hCalcALign _
 
 end function
 
+private function hCheckUDTSize _
+	( _
+		byval udtlen as uinteger, _
+		byval fieldlen as uinteger, _
+		byval fieldpad as uinteger _
+	) as integer
+
+	dim as ulongint n = any
+
+	n = udtlen
+	n += fieldlen
+	n += fieldpad
+
+	if( n > &h7FFFFFFFull ) then
+		function = FALSE
+		errReport( FB_ERRMSG_UDTTOOBIG )
+	else
+		function = TRUE
+	end if
+end function
+
 '':::::
 function symbCheckBitField _
 	( _
@@ -326,8 +347,14 @@ function symbAddField _
 
 				end if
 			end if
+		end if
 
+		'' Check whether adding this field would make the UDT be too big
+		if( hCheckUDTSize( parent->ofs, lgt, pad ) ) then
 			parent->ofs += pad
+		else
+			'' error recovery: don't add this field
+			updateudt = FALSE
 		end if
 
 		'' update largest field len
@@ -501,7 +528,7 @@ sub symbInsertInnerUDT _
 						  parent->udt.align, _
 						  FB_DATATYPE_STRUCT, _
 						  inner )
-		if( pad > 0 ) then
+		if( hCheckUDTSize( parent->ofs, 0, pad ) ) then
 			parent->ofs += pad
 		end if
 	end if
@@ -715,7 +742,7 @@ sub symbStructEnd _
 	if( sym->udt.align <> 1 ) then
 		'' plus the largest scalar field size (GCC 3.x ABI)
 		pad = hCalcALign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
-		if( pad > 0 ) then
+		if( hCheckUDTSize( sym->lgt, 0, pad ) ) then
 			sym->lgt += pad
 		end if
 	end if

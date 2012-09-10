@@ -112,6 +112,8 @@ end type
 		@"Expected ';'", _
 		@"Undefined label", _
 		@"Too many array dimensions", _
+		@"Array too big", _
+		@"User Defined Type too big", _
 		@"Expected scalar counter", _
 		@"Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block", _
 		@"Expected var-len array", _
