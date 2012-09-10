@@ -417,10 +417,8 @@ function symbAddField _
 
 	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then
-		dim as integer i
-		for i = 0 to dimensions-1
-			if( symbNewArrayDim( sym, dTB(i).lower, dTB(i).upper ) = NULL ) then
-			end if
+		for i as integer = 0 to dimensions-1
+			symbAddArrayDim( sym, dTB(i).lower, dTB(i).upper )
 		next
 	end if
 

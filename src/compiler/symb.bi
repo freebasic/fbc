@@ -1366,12 +1366,12 @@ declare sub symbDelFromChainList _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare function symbNewArrayDim _
+declare sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval lower as integer, _
 		byval upper as integer _
-	) as FBVARDIM ptr
+	)
 
 declare function symbCalcLen _
 	( _

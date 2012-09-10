@@ -335,17 +335,14 @@ function symbAddArrayDesc _
 
 end function
 
-'':::::
-function symbNewArrayDim _
+sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval lower as integer, _
 		byval upper as integer _
-	) as FBVARDIM ptr
+	)
 
     dim as FBVARDIM ptr d = any, n = any
-
-    function = NULL
 
     d = listNewNode( @symb.dimlist )
 
@@ -362,9 +359,7 @@ function symbNewArrayDim _
 	d->next = NULL
 	s->var_.array.dimtail = d
 
-    function = d
-
-end function
+end sub
 
 '':::::
 sub symbSetArrayDimTb _
@@ -387,13 +382,12 @@ sub symbSetArrayDimTb _
             hDelVarDims( s )
 
 			for i = 0 to dimensions-1
-				if( symbNewArrayDim( s, dTB(i).lower, dTB(i).upper ) = NULL ) then
-				end if
+				symbAddArrayDim( s, dTB(i).lower, dTB(i).upper )
+
 				'' If any dimension size is unknown yet (ellipsis), hold off on the actual build
 				'' until called later when it's known.
 				if( dTB(i).upper = FB_ARRAYDIM_UNKNOWN ) then do_build = FALSE
 			next
-
 		else
 			d = s->var_.array.dimhead
 			for i = 0 to dimensions-1
@@ -407,7 +401,6 @@ sub symbSetArrayDimTb _
 		end if
 
 		s->var_.array.elms = symbCalcArrayElements( s )
-
 	else
 		s->var_.array.dif = 0
 		s->var_.array.elms = 1
@@ -420,10 +413,8 @@ sub symbSetArrayDimTb _
 		if( do_build ) then
 			if( s->var_.array.desc = NULL ) then
 				s->var_.array.desc = symbAddArrayDesc( s, dimensions )
-
 				s->var_.array.desc->var_.initree = _
 					astBuildArrayDescIniTree( s->var_.array.desc, s, NULL )
-
 			end if
 		end if
 	else
