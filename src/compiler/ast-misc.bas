@@ -688,8 +688,12 @@ function astCheckConst _
 
 	select case as const( dtype )
 	''case FB_DATATYPE_DOUBLE
-		'' DOUBLE can hold all the other dtype's values,
-		'' no checks are needed
+		'' DOUBLE can hold all the other dtype's values;
+		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
+		'' lose some least-significant digits), but the DOUBLE doesn't
+		'' overflow to INF (the same can be seen with SINGLEs, but at
+		'' least those can be overflown with really huge DOUBLEs).
+		'' Thus, no checks are needed for DOUBLE.
 
 	case FB_DATATYPE_SINGLE
 		dim as double dval = any, dmin = any, dmax = any
@@ -700,8 +704,14 @@ function astCheckConst _
 
 		'' using abs() because limits apply regardless of sign
 		dval = abs( astGetValueAsDouble( n ) )
-		if( (dval < dmin) or (dval > dmax) ) then
-			result = FALSE
+
+		'' checking against zero because it's the only integral number
+		'' that is < dmin after abs(), and it shouldn't cause an
+		'' overflow warning.
+		if( dval <> 0 ) then
+			if( (dval < dmin) or (dval > dmax) ) then
+				result = FALSE
+			end if
 		end if
 
 	case FB_DATATYPE_LONGINT
