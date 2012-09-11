@@ -1617,6 +1617,38 @@ function hMatchEllipsis _
 
 end function
 
+private function hIntConstExprValue( byval defaultvalue as integer ) as integer
+	dim as ASTNODE ptr expr = any
+
+	expr = cExpression( )
+
+	if( expr ) then
+		if( astIsCONST( expr ) ) then
+			'' Array bounds are integers, show "overflow in constant conversion" warnings
+			'' when given bigger constants (uinteger, longint, ...)
+			if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
+				expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+			end if
+		else
+			astDelTree( expr )
+			expr = NULL
+		end if
+	end if
+
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		'' error recovery: fake an expr
+		if( lexGetToken( ) <> FB_TK_TO ) then
+			hSkipUntil( CHAR_COMMA )
+		end if
+		expr = astNewCONSTi( defaultvalue )
+	end if
+
+	function = astGetValueAsInt( expr )
+
+	astDelTree( expr )
+end function
+
 '':::::
 ''ArrayDecl       =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1631,7 +1663,6 @@ function cStaticArrayDecl _
 	) as integer
 
     dim as integer i = any
-    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -1650,6 +1681,7 @@ function cStaticArrayDecl _
     do
 		dim as integer dimension_has_ellipsis = FALSE
 
+		'' First value - lower bound or upper bound
 		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 			dimension_has_ellipsis = TRUE
 			'' This is for the case of '( ... )' with the lower bound being
@@ -1657,65 +1689,32 @@ function cStaticArrayDecl _
 			'' to dTB(i).upper below.
 			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
-			'' Expression
-			expr = cExpression( )
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				if( astIsCONST( expr ) = FALSE ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			dTB(i).lower = astGetValueAsInt( expr )
-			astDelNode( expr )
+			'' Expression (integer constant)
+			dTB(i).lower = hIntConstExprValue( env.opt.base )
 		end if
 
-        '' TO
-    	if( lexGetToken( ) = FB_TK_TO ) then
-    		lexSkipToken( )
+		'' TO
+		if( lexGetToken( ) = FB_TK_TO ) then
+			lexSkipToken( )
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
 				exit function
 			end if
 
+			'' Second value - upper bound
 			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 				dimension_has_ellipsis = TRUE
 				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
-				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-				else
-					if( astIsCONST( expr ) = FALSE ) then
-						errReport( FB_ERRMSG_EXPECTEDCONST )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				dTB(i).upper = astGetValueAsInt( expr )
-				astDelNode( expr )
+				'' Expression (integer constant)
+				dTB(i).upper = hIntConstExprValue( dTB(i).lower )
 			end if
-
-    	else
-    	    dTB(i).upper = dTB(i).lower
-    		dTB(i).lower = env.opt.base
-    	end if
+		else
+			'' First value was upper bound, not lower, use default for lower
+			dTB(i).upper = dTB(i).lower
+			dTB(i).lower = env.opt.base
+		end if
 
 		'' Don't check when we have ellipsis, as upper will be set to FB_ARRAYDIM_UNKNOWN
 		if( dimension_has_ellipsis = FALSE ) then
@@ -1757,6 +1756,46 @@ function cStaticArrayDecl _
 
 end function
 
+private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr expr = any, intexpr = any
+
+	expr = cExpression( )
+
+	if( expr ) then
+		if( astIsCONST( expr ) ) then
+			'' Array bounds are integers, show "overflow in constant conversion" warnings
+			'' when given bigger constants (uinteger, longint, ...)
+			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
+		end if
+
+		'' expression must be integral (no strings, etc.)
+		intexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		if( intexpr ) then
+			expr = intexpr
+		else
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			astDelTree( expr )
+			expr = NULL
+		end if
+	else
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		if( lexGetToken( ) <> FB_TK_TO ) then
+			hSkipUntil( CHAR_COMMA )
+		end if
+	end if
+
+	if( expr = NULL ) then
+		if( defaultexpr ) then
+			expr = astCloneTree( defaultexpr )
+		else
+			expr = astNewCONSTi( env.opt.base )
+		end if
+	end if
+
+	function = expr
+end function
+
 '':::::
 ''ArrayDecl    	  =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1769,7 +1808,6 @@ function cArrayDecl _
 	) as integer
 
 	dim as integer i = any
-	dim as ASTNODE ptr expr = any, i_expr = any
 
 	function = FALSE
 
@@ -1784,39 +1822,7 @@ function cArrayDecl _
 			exprTB(i,0) = NULL
 		else
 			'' Expression
-			expr = cExpression( )
-
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				'' check if non-numeric
-				select case as const astGetDataType( expr )
-				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end select
-
-				'' make sure expr is integral
-				i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-				if( i_expr <> NULL ) then
-					expr = i_expr
-				else
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			exprTB(i,0) = expr
+			exprTB(i,0) = hIntExpr( NULL )
 		end if
 
 		'' TO
@@ -1833,35 +1839,7 @@ function cArrayDecl _
 				exprTB(i,1) = NULL
 			else
 				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astCloneTree( exprTB(i,0) )
-				else
-					'' check if non-numeric
-					select case as const astGetDataType( expr )
-					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						expr = astCloneTree( exprTB(i,0) )
-					end select
-
-					'' make sure expr is integral
-					i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-					if( i_expr <> NULL ) then
-						expr = i_expr
-					else
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				exprTB(i,1) = expr
+				exprTB(i,1) = hIntExpr( exprTB(i,0) )
 			end if
 		else
 			exprTB(i,1) = exprTB(i,0)

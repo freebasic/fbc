@@ -25,6 +25,11 @@ private function hCheckIndex _
 		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
 	case else
+		'' Show overflow warning for big constant -> integer conversion
+		if( astIsCONST( expr ) ) then
+			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
+		end if
+
 		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
