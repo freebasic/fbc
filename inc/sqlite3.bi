@@ -197,7 +197,7 @@ type sqlite3_vfs
     xCurrentTimeInt64 as function cdecl(byval as sqlite3_vfs ptr, byval as sqlite3_int64 ptr) as integer
     xSetSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr, byval as sqlite3_syscall_ptr) as integer
     xGetSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr) as sqlite3_syscall_ptr
-    xNextSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr) as byte ptr
+    xNextSystemCall as function cdecl(byval as sqlite3_vfs ptr, byval as zstring ptr) as zstring ptr
 end type
 
 #define SQLITE_ACCESS_EXISTS 0
@@ -384,7 +384,7 @@ declare function sqlite3_column_bytes16 (byval as sqlite3_stmt ptr, byval iCol a
 declare function sqlite3_column_double (byval as sqlite3_stmt ptr, byval iCol as integer) as double
 declare function sqlite3_column_int (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
 declare function sqlite3_column_int64 (byval as sqlite3_stmt ptr, byval iCol as integer) as sqlite3_int64
-declare function sqlite3_column_text (byval as sqlite3_stmt ptr, byval iCol as integer) as ubyte ptr
+declare function sqlite3_column_text (byval as sqlite3_stmt ptr, byval iCol as integer) as zstring ptr
 declare function sqlite3_column_text16 (byval as sqlite3_stmt ptr, byval iCol as integer) as any ptr
 declare function sqlite3_column_type (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
 declare function sqlite3_column_value (byval as sqlite3_stmt ptr, byval iCol as integer) as sqlite3_value ptr
@@ -413,7 +413,7 @@ declare function sqlite3_value_bytes16 (byval as sqlite3_value ptr) as integer
 declare function sqlite3_value_double (byval as sqlite3_value ptr) as double
 declare function sqlite3_value_int (byval as sqlite3_value ptr) as integer
 declare function sqlite3_value_int64 (byval as sqlite3_value ptr) as sqlite3_int64
-declare function sqlite3_value_text (byval as sqlite3_value ptr) as ubyte ptr
+declare function sqlite3_value_text (byval as sqlite3_value ptr) as zstring ptr
 declare function sqlite3_value_text16 (byval as sqlite3_value ptr) as any ptr
 declare function sqlite3_value_text16le (byval as sqlite3_value ptr) as any ptr
 declare function sqlite3_value_text16be (byval as sqlite3_value ptr) as any ptr
