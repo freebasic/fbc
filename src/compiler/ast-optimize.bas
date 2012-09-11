@@ -821,10 +821,19 @@ private sub hOptConstIdxMult _
 
 	dim as ASTNODE ptr l = n->l
 
-	'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete the * node
+	''
+	'' If top of tree = idx * lgt, and lgt is in the 1..9 range,
+	'' then the length multiplier can be put into ASTNODE.idx.mult,
+	'' allowing the x86 ASM emitter to generate better code.
+	''
+	'' This only works if the multiplier is 1..9 and neither 6 nor 7,
+	'' see also hPrepOperand() and hGetIdxName().
+	''
+
 	if( astIsBOP(l, AST_OP_MUL ) ) then
 		dim as ASTNODE ptr lr = l->r
 		if( astIsCONST( lr ) ) then
+			'' ASM backend?
 			if( irGetOption( IR_OPT_ADDRCISC ) ) then
 				dim as integer c = any
 				select case as const astGetDataType( lr )
@@ -845,12 +854,18 @@ private sub hOptConstIdxMult _
 					c = cint( lr->con.val.int )
 				end select
 
-				if( c < 10 ) then
+				if( (c >= 1) and (c <= 9) ) then
 					dim as integer delnode = any
+
 					select case as const c
 					case 6, 7
+						'' Not supported by ASM backend
+						'' (C backend could probably handle it, but there's no point)
 						delnode = FALSE
+
 					case 3, 5, 9
+						'' The x86 ASM backend supports 3, 5, 9 as a special case,
+						'' but it's only possible if there isn't already an offset
 						delnode = TRUE
 						'' x86 assumption: not possible if there's already an index (EBP)
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )

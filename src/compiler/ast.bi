@@ -114,6 +114,8 @@ end type
 type AST_NODE_IDX
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
+	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
+	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
