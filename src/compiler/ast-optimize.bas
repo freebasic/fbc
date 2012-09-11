@@ -663,19 +663,83 @@ private function hOptConstDistMUL _
 		return NULL
 	end if
 
-	'' check any MUL BOP node with a constant at the right leaf and then scan
-	'' the left leaf for ADD BOP nodes, applying the distributive, deleting those
-	'' nodes and adding the result of all sums to a new node
-	'' (this will handle for ex. 2 * (3 + a * 2) that will become 6 + a * 4 (with Accum2's help))
+	'' walk, bottom-up, to optimize children first, potentially making the
+	'' transformation possible here.
+	l = n->l
+	if( l <> NULL ) then
+		n->l = hOptConstDistMUL( l )
+	end if
+
+	r = n->r
+	if( r <> NULL ) then
+		n->r = hOptConstDistMUL( r )
+	end if
+
+	''
+	'' Multiplication is distributive, i.e.
+	''
+	''      (a + b) * c
+	''    = a * c + b * c
+	''
+	'' This optimization does exactly that transformation,
+	'' but only for constant summands:
+	''
+	''      (a + 3 + b) * 2
+	''    = (a + b) * 2 + 3 * 2
+	''    = (a + b) * 2 + 6
+	''
+	''      (1 + a + 2 + b) * 3
+	''    = (a + b) * 3 + (1 + 2) * 3
+	''    = (a + b) * 3 + 3 * 3
+	''    = (a + b) * 3 + 9
+	''
+	'' i.e. constant summands are pulled out of the inner expression,
+	'' then multiplicated with the constant factor of the MUL, and then
+	'' that value is ADDed back on top. The MUL is left in to handle the
+	'' part of the expression with non-constant summands.
+	'' (We know there are non-constant summands, because any fully constant
+	'' ADD BOPs were precalculated by astNewBOP()'s constant folding)
+	''
+	'' This transformation can open up further optimization possibilities,
+	'' for example, this:
+	''      (a * 2 + 3) * 2
+	''    = a * 2 * 2 + 3 * 2
+	''    = a * 2 * 2 + 6
+	'' will be turned into
+	''    = a * 4 + 6
+	'' by the constant accumulation optimizations.
+	''
+	'' Or, as another example, this:
+	''      ((a + 1) * 2) * 3
+	''    = (a * 2 + 1 * 2) * 3
+	''    = (a * 2 + 2) * 3
+	'' allows for the same transformation to be applied again, as a result
+	'' of applying it the first time, to get:
+	''    = a * 2 * 3 + 2 * 3
+	''    = a * 2 * 3 + 6
+	'' which will be turned into
+	''    = a * 6 + 6
+	'' by the constant accumulation optimizations.
+	'' Applying this transformation repeatedly on the same tree however
+	'' can only work when walking the tree bottom-up.
+	''
+
+	'' 1. Check for a MUL BOP node with a CONST rhs (assuming astNewBOP()
+	''    swapped lhs/rhs if the CONST was on lhs, so only one thing has
+	''    to be checked here)
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
 		if( astIsCONST( r ) ) then
 			if( n->op.op = AST_OP_MUL ) then
 
+				'' 2. Scan the lhs for ADD BOPs with CONST rhs (hConstDistMUL())
+				''  - Sums up the CONST summands of all such ADDs
+				''  - Removes these ADDs (possibly leaving in other non-const summands)
 				v.dtype = FB_DATATYPE_INVALID
 				n->l = hConstDistMUL( n->l, @v )
 
 				if( v.dtype <> FB_DATATYPE_INVALID ) then
+					'' 3. Multiplicate the sum with the MUL's CONST rhs
 					select case as const v.dtype
 					case FB_DATATYPE_LONGINT
 
@@ -792,22 +856,12 @@ mul_int:				select case as const astGetDataType( r )
 						r = astNewCONSTi( v.val.int, v.dtype )
 					end select
 
+					'' 4. Use an ADD BOP to add the result on top
 					n = astNewBOP( AST_OP_ADD, n, r )
 				end if
 
 			end if
 		end if
-	end if
-
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptConstDistMUL( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptConstDistMUL( r )
 	end if
 
 	function = n
@@ -2531,7 +2585,7 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	hOptConstAccum2( n )
 
-	hOptConstRemNeg( n, NULL )
+	hOptConstRemNeg( n )
 
 	n = hOptConstIDX( n )
 
