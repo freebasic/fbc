@@ -594,30 +594,39 @@ function astGetValueAsULongInt _
 
 end function
 
-'':::::
-function astGetValueAsDouble _
-	( _
-		byval n as ASTNODE ptr _
-	) as double
+function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_ULONGINT
+		'' without cunsg(), &hFFFFFFFFFFFFFFFFull would be seen as -1,
+		'' causing the double to be -1 instead of the huge value...
+		function = cdbl( cunsg( astGetValLong( n ) ) )
 
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = cdbl( astGetValLong( n ) )
+	case FB_DATATYPE_LONGINT
+		function = cdbl( astGetValLong( n ) )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = astGetValFloat( n )
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		function = astGetValFloat( n )
 
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = cdbl( astGetValLong( n ) )
-  	    else
-  	    	function = cdbl( astGetValInt( n ) )
-  	    end if
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = cdbl( cunsg( astGetValLong( n ) ) )
+		else
+			function = cdbl( cunsg( astGetValInt( n ) ) )
+		end if
 
-  	case else
-  		function = cdbl( astGetValInt( n ) )
-  	end select
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = cdbl( astGetValLong( n ) )
+		else
+			function = cdbl( astGetValInt( n ) )
+		end if
 
+	case FB_DATATYPE_UINT
+		function = cdbl( cunsg( astGetValInt( n ) ) )
+
+	case else
+		function = cdbl( astGetValInt( n ) )
+	end select
 end function
 
 '':::::
