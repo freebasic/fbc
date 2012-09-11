@@ -51,6 +51,7 @@ Version 0.25.0:
 - "Overflow in constant conversion" warning wasn't shown for function arguments which only differed from the parameter in signedness
 - Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
 - Fixed-size arrays/UDTs > 2 GiB will now result in a compile-time error, instead of causing internal integer overflows
+- SSE emitter: float2int conversions using movss/movlpd could generate illegal ASM
 
 
 Version 0.24.0:
