@@ -426,6 +426,8 @@ declare function sqlite3_get_auxdata (byval as sqlite3_context ptr, byval N as i
 declare sub sqlite3_set_auxdata (byval as sqlite3_context ptr, byval N as integer, byval as any ptr, byval as sub cdecl(byval as any ptr))
 
 type sqlite3_destructor_type as sub cdecl(byval as any ptr)
+#define SQLITE_STATIC      cast(sqlite3_destructor_type, 0)
+#define SQLITE_TRANSIENT   cast(sqlite3_destructor_type, -1)
 
 declare sub sqlite3_result_blob (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
 declare sub sqlite3_result_double (byval as sqlite3_context ptr, byval as double)
