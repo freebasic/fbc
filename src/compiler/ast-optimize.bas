@@ -14,43 +14,44 @@
 '' constant folding optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub hOptConstRemNeg _
-	( _
-		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
-	)
+private sub hOptConstRemNeg( byval n as ASTNODE ptr )
 
-	dim as ASTNODE ptr l = any, r = any
-
-	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
-	if( p <> NULL ) then
-		if( astIsUOP( n, AST_OP_NEG ) ) then
-			l = n->l
-			if( l->class = AST_NODECLASS_VAR ) then
-				if( astIsBOP( p, AST_OP_ADD ) ) then
-					r = p->r
-					if( astIsCONST( r ) ) then
-						p->op.op = AST_OP_SUB
-						p->l = p->r
-						p->r = n->l
-						astDelNode( n )
-						exit sub
-					end if
-				end if
-			end if
-		end if
-	end if
+	dim as ASTNODE ptr l = any, r = any, ll = any
 
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptConstRemNeg( l, n )
+		hOptConstRemNeg( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptConstRemNeg( r, n )
+		hOptConstRemNeg( r )
+	end if
+
+	''
+	''    -var + const        ->     const - var
+	''
+	''         BOP(+)                  BOP(-)
+	''         /     \                 /   \
+	''     UOP(-)    CONST    ->    CONST  VAR
+	''      /
+	''    VAR
+	''
+
+	if( astIsBOP( n, AST_OP_ADD ) ) then
+		l = n->l
+		r = n->r
+		if( astIsUOP( l, AST_OP_NEG ) and astIsCONST( r ) ) then
+			ll = n->l->l
+			if( astIsVAR( ll ) ) then
+				'' BOP(+) -> BOP(-)
+				n->op.op = AST_OP_SUB
+				n->l = r
+				n->r = ll
+				astDelNode( l )
+			end if
+		end if
 	end if
 
 end sub
