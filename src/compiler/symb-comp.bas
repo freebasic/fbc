@@ -373,14 +373,6 @@ private sub hAddClone( byval sym as FBSYMBOL ptr )
 	symbSetCantUndef( sym )
 end sub
 
-sub symbCompAddDefDtor( byval sym as FBSYMBOL ptr )
-	hAddCtor( sym, FALSE, FALSE )
-end sub
-
-sub symbCompAddDefCtor( byval sym as FBSYMBOL ptr )
-	hAddCtor( sym, TRUE, FALSE )
-end sub
-
 sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 	dim as integer base_without_defaultctor = any
 

@@ -241,10 +241,8 @@ end function
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
-private function hMemberId _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr res = any
 
 	if( parent = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
@@ -262,28 +260,18 @@ private function hMemberId _
 		return NULL
 	end select
 
-    dim as FBSYMBOL ptr res = NULL
-    select case as const lexGetToken( )
+	res = NULL
 
+	select case( lexGetToken( ) )
 	case FB_TK_CONSTRUCTOR
 		res = symbGetCompCtorHead( parent )
-		if( res = NULL ) then
-			symbCompAddDefCtor( parent )
-			res = symbGetCompCtorHead( parent )
-		end if
-
 	case FB_TK_DESTRUCTOR
 		res = symbGetCompDtor( parent )
-		if( res = NULL ) then
-			symbCompAddDefDtor( parent )
-			res = symbGetCompDtor( parent )
-		end if
-
-    end select
+	end select
 
 	if( res ) then
 		return res
-    end if
+	end if
 
     dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
     if( chain_ = NULL ) then

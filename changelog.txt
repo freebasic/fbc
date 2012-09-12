@@ -8,6 +8,7 @@ Version 0.25.0:
 - Overflows when converting constants to SINGLE/DOUBLE won't cause "math overflow" errors anymore
 - Overflows in constant conversions to SINGLE will now trigger "overflow in constant conversion" warnings, like conversions to integer types do
 - Constant conversions to DOUBLE are not checked for overflows anymore, since DOUBLE can hold all SINGLE/INTEGER/LONGINT values (although, with varying precision)
+- Doing "udtvar.constructor( ... )" or "udtvar.destructor( )" won't automatically add a constructor/destructor anymore, but instead show an error
 
 [added]
 - Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
