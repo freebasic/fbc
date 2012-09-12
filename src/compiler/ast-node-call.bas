@@ -45,7 +45,7 @@ private sub hAllocTempStruct _
 									     FALSE, _
 									     FALSE )
 
-		if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+		if( symbGetCompDtor( symbGetSubtype( sym ) ) ) then
 			astDtorListAdd( n->call.tmpres )
 		end if
 
@@ -463,7 +463,7 @@ sub astReplaceSymbolOnCALL _
 		n->call.tmpres = new_sym
 
 		'' add to temp dtor list?
-		if( symbGetHasDtor( symbGetSubtype( new_sym ) ) ) then
+		if( symbGetCompDtor( symbGetSubtype( new_sym ) ) ) then
 			astDtorListAdd( new_sym )
 		end if
 	end if

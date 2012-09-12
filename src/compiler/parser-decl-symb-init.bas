@@ -484,7 +484,7 @@ private function hUDTInit _
 		ctx.options and= not FB_INIOPT_ISOBJ
 		select case symbGetType( elm )
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( symbGetHasCtor( symbGetSubtype( elm ) ) ) then
+			if( symbGetCompCtorHead( symbGetSubtype( elm ) ) ) then
 				ctx.options or= FB_INIOPT_ISOBJ
 			end if
 		end select
@@ -646,7 +646,7 @@ function cInitializer _
 	'' has ctor?
 	select case as const dtype
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetHasCtor( subtype ) ) then
+		if( symbGetCompCtorHead( subtype ) ) then
 			ctx.options or= FB_INIOPT_ISOBJ
 		end if
 	end select

@@ -9,6 +9,8 @@
 #include once "list.bi"
 #include once "ir.bi"
 
+declare sub symbUdtAllocExt( byval sym as FBSYMBOL ptr )
+
 type FB_SYMBNEST
 	sym				as FBSYMBOL ptr
 	symtb			as FBSYMBOLTB ptr			'' prev symbol tb
@@ -157,12 +159,10 @@ private sub hAddRTTI _
 	)
 	
 	static as FBARRAYDIM dTB(0)
-	
+
 	var mname = *symbGetMangledName( sym )
-	
-	if( sym->udt.ext = NULL ) then
-		sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
-	end if
+
+	symbUdtAllocExt( sym )
 
 	'' create a virtual-table struct (extends $fb_BaseVT)
 	var sname = "_ZTV" + mname + "_type"
@@ -411,7 +411,7 @@ sub symbCompAddDefMembers( byval sym as FBSYMBOL ptr )
 
 	'' Ctor/inited fields and no ctor yet?
 	if( (symbGetUDTHasCtorField( sym ) or symbGetUDTHasInitedField( sym )) and _
-	    (not symbGetHasCtor( sym )) ) then
+	    (symbGetCompCtorHead( sym ) = NULL) ) then
 		if( base_without_defaultctor ) then
 			'' Cannot implicitly generate a default ctor,
 			'' show a nicer error message than astProcEnd() would.
@@ -501,225 +501,130 @@ private function hIsLhsEqRhs _
 
 end function
 
-'':::::
-function symbGetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.ctor_head
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
+'' Check whether an UDT has a dtor, copy ctor or virtual methods?
+'' (in that case, such variables behave differently in some cases; e.g. they
+'' will be passed byval instead of byref)
+function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
+	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
+	            (symbGetCompDtor( sym ) = NULL) and _
+	            (not symbGetHasRTTI( sym )))
 end function
 
-'':::::
-sub symbSetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
-		end if
-
-		sym->udt.ext->anon.ctor_head = proc
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+private sub symbUdtAllocExt( byval sym as FBSYMBOL ptr )
+	assert( symbIsStruct( sym ) )
+	if( sym->udt.ext = NULL ) then
+		sym->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
+	end if
 end sub
 
-'':::::
-sub symbCheckCompCtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
+sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		assert( symbIsConstructor( proc ) )
 
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		select case symbGetProcParams( proc )
+		symbUdtAllocExt( sym )
+		if( sym->udt.ext->ctorhead = NULL ) then
+			'' Add ctor head (first overload)
+			sym->udt.ext->ctorhead = proc
+		end if
+	end if
+end sub
+
+sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		select case( symbGetProcParams( proc ) )
 		'' default?
 		case 1
-			sym->udt.ext->anon.defctor = proc
-
+			'' only the THIS param  - it's a default ctor
+			'' (this takes precedence over other ctors with all optional params)
+			sym->udt.ext->defctor = proc
 		'' copy?
 		case 2
-			if( sym->udt.ext->anon.copyctor = NULL ) then
+			'' 2 params - it could be a copy ctor
+			if( sym->udt.ext->copyctor = NULL ) then
 				if( hIsLhsEqRhs( sym, proc ) ) then
-					sym->udt.ext->anon.copyctor = proc
+					sym->udt.ext->copyctor = proc
 				end if
 			end if
 		end select
 
-		'' if all params are default/optional, it's a default ctor
-		if( sym->udt.ext->anon.defctor = NULL ) then
-           	if( symbGetProcOptParams( proc ) = _
-           		symbGetProcParams( proc ) - 1 ) then
-           		sym->udt.ext->anon.defctor = proc
-           	end if
+		'' all params optional? then it can be used as default ctor
+		if( sym->udt.ext->defctor = NULL ) then
+			if( symbGetProcOptParams( proc ) = symbGetProcParams( proc ) - 1 ) then
+				sym->udt.ext->defctor = proc
+			end if
 		end if
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+	end if
 end sub
 
-'':::::
-function symbGetCompDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr proc
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.defctor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-function symbGetCompCopyCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr proc
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.copyctor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-function symbGetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-    if( sym = NULL ) then
-    	return NULL
-    end if
-
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-    	if( sym->udt.ext = NULL ) then
-    		return NULL
-    	else
-    		return sym->udt.ext->anon.dtor
-    	end if
-
-    case FB_SYMBCLASS_CLASS
-    	'return ...
-
-    case else
-    	return NULL
-    end select
-
-end function
-
-'':::::
-sub symbSetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	select case symbGetClass( sym )
-   	case FB_SYMBCLASS_STRUCT
-		if( sym->udt.ext = NULL ) then
-			sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
+sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		assert( symbIsDestructor( proc ) )
+		symbUdtAllocExt( sym )
+		if( sym->udt.ext->dtor = NULL ) then
+			'' Add dtor
+			sym->udt.ext->dtor = proc
 		end if
-
-		sym->udt.ext->anon.dtor = proc
-
-   	case FB_SYMBCLASS_CLASS
-    	'' ...
-
-   	end select
-
+	end if
 end sub
 
-'':::::
-function symbGetCompCloneProc _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
+function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->ctorhead
+			end if
+		end if
+	end if
+end function
 
-    if( sym = NULL ) then
-    	return NULL
-    end if
+function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->defctor
+			end if
+		end if
+	end if
+end function
 
-    select case symbGetClass( sym )
-    case FB_SYMBCLASS_STRUCT
-   		if( sym->udt.ext = NULL ) then
-   			return NULL
-   		end if
+function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->copyctor
+			end if
+		end if
+	end if
+end function
 
-    	return sym->udt.ext->anon.clone
+function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->dtor
+			end if
+		end if
+	end if
+end function
 
-    case FB_SYMBCLASS_CLASS
-    	'return ...
+sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+	if( symbIsStruct( sym ) ) then
+		'' clone?
+		if( hIsLhsEqRhs( sym, proc ) ) then
+			symbUdtAllocExt( sym )
+			sym->udt.ext->clone = proc
+		end if
+	end if
+end sub
 
-    case else
-    	return NULL
-    end select
-
+function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+	if( sym ) then
+		if( symbIsStruct( sym ) ) then
+			if( sym->udt.ext ) then
+				function = sym->udt.ext->clone
+			end if
+		end if
+	end if
 end function
 
 '':::::
@@ -755,27 +660,6 @@ function symbGetCompOpOvlHead _
 end function
 
 '':::::
-sub symbCheckCompClone _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	) static
-
-  	'' clone?
-  	if( hIsLhsEqRhs( sym, proc ) ) then
-  		select case symbGetClass( sym )
-   		case FB_SYMBCLASS_STRUCT
-   			sym->udt.ext->anon.clone = proc
-
-   		case FB_SYMBCLASS_CLASS
-   	 		'' ...
-
-   		end select
-   	end if
-
-end sub
-
-'':::::
 sub symbSetCompOpOvlHead _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -784,32 +668,21 @@ sub symbSetCompOpOvlHead _
 
 	dim as AST_OP op = symbGetProcOpOvl( proc )
 
-   	'' self?
-   	if( astGetOpIsSelf( op ) ) then
-  		select case symbGetClass( sym )
-   		case FB_SYMBCLASS_STRUCT
-			if( sym->udt.ext = NULL ) then
-				sym->udt.ext = xcallocate( len( FB_STRUCTEXT ) )
-			end if
-
+	'' self?
+	if( astGetOpIsSelf( op ) ) then
+		if( symbIsStruct( sym ) ) then
+			symbUdtAllocExt( sym )
 			symbGetUDTOpOvlTb(sym)(op - AST_OP_SELFBASE) = proc
+		end if
 
-   		case FB_SYMBCLASS_ENUM
-
-		case FB_SYMBCLASS_CLASS
-   			'' ...
-
-   		end select
-
-    	'' assign?
-    	if( op = AST_OP_ASSIGN ) then
-    		symbCheckCompClone( sym, proc )
-    	end if
-
-    '' not self..
-    else
-   		symb.globOpOvlTb(op).head = proc
-   	end if
+		'' assign?
+		if( op = AST_OP_ASSIGN ) then
+			symbCheckCompClone( sym, proc )
+		end if
+	'' not self..
+	else
+		symb.globOpOvlTb(op).head = proc
+	end if
 
 end sub
 
@@ -1286,10 +1159,7 @@ sub symbCompRTTIInit()
     							FB_SYMBOPT.FB_SYMBOPT_PRESERVECASE )
 
 	'' update the obj struct RTTI (used to create the link with base classes)
-	if( obj->udt.ext = NULL ) then
-		obj->udt.ext = xcallocate( sizeof( FB_STRUCTEXT ) )
-	end if
-
+	symbUdtAllocExt( obj )
 	obj->udt.ext->rtti = objRTTI     
 end sub
 

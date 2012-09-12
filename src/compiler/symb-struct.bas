@@ -448,20 +448,18 @@ function symbAddField _
 			symbSetUDTHasPtrField( base_parent )
 		end if
 
-		if( symbGetHasCtor( subtype ) ) then
+		if( symbGetCompCtorHead( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-										  FB_UDTOPT_ISANON)) <> 0 ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_CTORINUNION )
 			else
 				symbSetUDTHasCtorField( parent )
 			end if
 		end if
 
-		if( symbGetHasDtor( subtype ) ) then
+		if( symbGetCompDtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-										  FB_UDTOPT_ISANON)) <> 0 ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_DTORINUNION )
 			else
 				symbSetUDTHasDtorField( parent )
@@ -614,7 +612,7 @@ private function hGetReturnType _
 
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
-	if( symbIsTrivial( sym ) = FALSE ) then
+	if( symbCompIsTrivial( sym ) = FALSE ) then
 		return typeAddrOf( dtype )
 	end if
 

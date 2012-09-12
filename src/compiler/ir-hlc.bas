@@ -317,7 +317,7 @@ private function hEmitProcHeader _
 
 				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 					'' has a dtor, copy ctor or virtual methods? it's a copy..
-					if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+					if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
 						type_options = EMITTYPE_ADDPTR
 					end if
 				end select

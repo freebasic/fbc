@@ -107,7 +107,7 @@ private function hNewOp _
 	'' check ctor or initialization
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = symbGetHasCtor( subtype )
+		has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
 	end select
 
 	if( has_ctor ) then
@@ -129,7 +129,7 @@ private function hNewOp _
 		if( op = AST_OP_NEW_VEC ) then
 			select case typeGet( dtype )
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				save_elmts = symbGetHasDtor( subtype )
+				save_elmts = (symbGetCompDtor( subtype ) <> NULL)
 			end select
 		end if
 

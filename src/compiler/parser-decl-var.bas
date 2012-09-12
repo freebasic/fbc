@@ -764,7 +764,7 @@ private function hVarInitDefault _
 	else
 		'' Complain about lack of default ctor if there are others
 		if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
+			if( symbGetCompCtorHead( symbGetSubtype( sym ) ) ) then
 				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 			end if
 		end if
@@ -867,13 +867,12 @@ private function hVarInit _
 
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		dim as integer has_ctor = FALSE
 
-    	dim as integer has_ctor = FALSE
-
-    	select case symbGetType( sym )
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    	end select
+		select case symbGetType( sym )
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			has_ctor = (symbGetCompCtorHead( symbGetSubtype( sym ) ) <> NULL)
+		end select
 
 		'' only if it's not an object, static or global instances are allowed
 		if( has_ctor = FALSE ) then
@@ -1065,11 +1064,11 @@ private function hFlushInitializer _
 						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
-    dim as integer has_ctor = FALSE
-    select case symbGetType( sym )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    end select
+	dim as integer has_ctor = FALSE
+	select case symbGetType( sym )
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		has_ctor = (symbGetCompCtorHead( symbGetSubtype( sym ) ) <> NULL)
+	end select
 
 	'' not an object?
     if( has_ctor = FALSE ) then
@@ -1355,7 +1354,8 @@ function hVarDeclEx _
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
 			select case as const typeGet( dtype )
 			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
+				if( (symbGetCompCtorHead( subtype ) <> NULL) or _
+				    (symbGetCompDtor( subtype ) <> NULL)          ) then
 					errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
 				end if
 			end select
@@ -1991,7 +1991,7 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' any ctor?
-			has_ctor = symbGetHasCtor( subtype )
+			has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
 			'' dtor?
 			has_dtor = symbGetCompDtor( subtype ) <> NULL
 

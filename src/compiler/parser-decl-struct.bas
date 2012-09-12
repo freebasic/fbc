@@ -203,7 +203,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 				subtype = symbGetSubtype( sym )
 
 				'' Does it have any constructors? (Then we must call one to initialize this field)
-				if( symbGetHasCtor( subtype ) ) then
+				if( symbGetCompCtorHead( subtype ) ) then
 					'' Does it have a default constructor?
 					defctor = symbGetCompDefCtor( subtype )
 					if( defctor ) then
@@ -1024,7 +1024,7 @@ function cTypeDecl _
 
 	'' byval params to self?
 	if( symbGetUdtHasRecByvalParam( sym ) ) then
-		if( symbIsTrivial( sym ) = FALSE ) then
+		if( symbCompIsTrivial( sym ) = FALSE ) then
 			hPatchByvalParamsToSelf( sym )
 		end if
 	end if

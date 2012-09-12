@@ -127,13 +127,12 @@ function astBuildVarDtorCall _
 		'' dynamic?
 		if( symbIsDynamic( s ) ) then
 			do_free = TRUE
-
 		else
-		     '' has dtor?
-		     select case symbGetType( s )
-		     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			 	do_free = symbGetHasDtor( symbGetSubtype( s ) )
-			 end select
+			'' has dtor?
+			select case symbGetType( s )
+			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				do_free = (symbGetCompDtor( symbGetSubtype( s ) ) <> NULL)
+			end select
 		end if
 
 		if( do_free ) then
@@ -166,7 +165,7 @@ function astBuildVarDtorCall _
 		'' struct or class?
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			'' has dtor?
-			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
+			if( symbGetCompDtor( symbGetSubtype( s ) ) ) then
 				dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
 
 				if( check_access ) then
@@ -406,7 +405,7 @@ function astCALLCTORToCALL _
 	astDelTree( n->r )
 
 	'' remove anon symbol
-	if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+	if( symbGetCompDtor( symbGetSubtype( sym ) ) ) then
 		'' if the temp has a dtor it was added to the dtor list,
 		'' remove it too
 		astDtorListDel( sym )

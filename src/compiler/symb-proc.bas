@@ -63,28 +63,28 @@ function symbCalcProcParamLen _
 
 	'' assumes dtype has const info stripped
 
-    select case as const mode
-    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-    	function = FB_POINTERSIZE
+	select case as const( mode )
+	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+		function = FB_POINTERSIZE
 
-    case FB_PARAMMODE_BYVAL
-    	select case as const dtype
-    	case FB_DATATYPE_STRING
-    		return FB_POINTERSIZE
+	case FB_PARAMMODE_BYVAL
+		select case( dtype )
+		case FB_DATATYPE_STRING
+			return FB_POINTERSIZE
 
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		'' has a dtor, copy ctor or virtual methods? pass a copy..
-    		if( symbIsTrivial( subtype ) = FALSE ) then
-    			return FB_POINTERSIZE
-    		end if
-    	end select
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' has a dtor, copy ctor or virtual methods? pass a copy..
+			if( symbCompIsTrivial( subtype ) = FALSE ) then
+				return FB_POINTERSIZE
+			end if
+		end select
 
-    	function = symbCalcLen( dtype, subtype )
+		function = symbCalcLen( dtype, subtype )
 
-    case else
-    	function = 0
+	case else
+		function = 0
 
-    end select
+	end select
 
 end function
 
@@ -614,13 +614,13 @@ private function hSetupProc _
 
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
-        	head_proc = symbGetCompCtorHead( parent )
-        else
-        	head_proc = symbGetCompDtor( parent )
-        end if
+			head_proc = symbGetCompCtorHead( parent )
+		else
+			head_proc = symbGetCompDtor( parent )
+		end if
 
-        '' not overloaded yet? just add it
-        if( head_proc = NULL ) then
+		'' not overloaded yet? just add it
+		if( head_proc = NULL ) then
 			if( symbIsLocal( parent ) ) then
 				attrib or= FB_SYMBATTRIB_LOCAL
 			end if
@@ -635,13 +635,12 @@ private function hSetupProc _
 
 			'' ctor?
 			if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
-        		symbSetCompCtorHead( parent, proc )
-        	else
-        		symbSetCompDtor( parent, proc )
-        	end if
-
-        '' otherwise, try to overload
-        else
+				symbSetCompCtorHead( parent, proc )
+			else
+				symbSetCompDtor( parent, proc )
+			end if
+		'' otherwise, try to overload
+		else
 			'' dtor?
 			if( (attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0 ) then
 				'' can't overload
@@ -657,7 +656,7 @@ private function hSetupProc _
 			if( proc = NULL ) then
 				exit function
 			end if
-        end if
+		end if
 
 		'' ctor? check for special ctors..
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
@@ -959,18 +958,6 @@ function symbAddCtor _
 
 	parent = symbGetNamespace( sym )
 
-	'' check if it's copy constructor
-	if( symbIsConstructor( sym ) ) then
-		if( symbGetCompCopyCtor( parent ) = sym ) then
-			symbSetHasCopyCtor( parent )
-		end if
-
-		symbSetHasCtor( parent )
-
-	else
-		symbSetHasDtor( parent )
-	end if
-
 	function = sym
 
 end function
@@ -1100,30 +1087,30 @@ function symbAddParam _
 	dtype = symbGetFullType( param )
 
 	select case as const param->param.mode
-    case FB_PARAMMODE_BYVAL
-    	attrib = FB_SYMBATTRIB_PARAMBYVAL
+	case FB_PARAMMODE_BYVAL
+		attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-    	select case symbGetType( param )
-    	'' byval string? it's actually an pointer to a zstring
-    	case FB_DATATYPE_STRING
-    		attrib = FB_SYMBATTRIB_PARAMBYREF
-    		dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+		select case( symbGetType( param ) )
+		'' byval string? it's actually an pointer to a zstring
+		case FB_DATATYPE_STRING
+			attrib = FB_SYMBATTRIB_PARAMBYREF
+			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
 
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		'' has a dtor, copy ctor or virtual methods? it's a copy..
-    		if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-    			attrib = FB_SYMBATTRIB_PARAMBYREF
-    		end if
-    	end select
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' has a dtor, copy ctor or virtual methods? it's a copy..
+			if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+				attrib = FB_SYMBATTRIB_PARAMBYREF
+			end if
+		end select
 
 	case FB_PARAMMODE_BYREF
-	    attrib = FB_SYMBATTRIB_PARAMBYREF
+		attrib = FB_SYMBATTRIB_PARAMBYREF
 
 	case FB_PARAMMODE_BYDESC
-    	attrib = FB_SYMBATTRIB_PARAMBYDESC
+		attrib = FB_SYMBATTRIB_PARAMBYDESC
 
 	case else
-    	exit function
+		exit function
 	end select
 
 	'' "this"?
@@ -1136,14 +1123,10 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-    s = symbAddVarEx( symbol, NULL, _
-    				  dtype, param->subtype, 0, _
-    				  0, dTB(), _
-    				  attrib )
-
-    if( s = NULL ) then
-    	return NULL
-    end if
+	s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	if( s = NULL ) then
+		return NULL
+	end if
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
     symbSetIsDeclared( s )

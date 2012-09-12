@@ -655,7 +655,7 @@ private sub hUDTPassByval _
 	dim as ASTNODE ptr arg = n->l
 
 	'' no dtor, copy-ctor or virtual members?
-	if( symbIsTrivial( symbGetSubtype( param ) ) ) then
+	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
 		dim as FBSYMBOL ptr subtype = arg->subtype
 
 		'' not returned in registers?
@@ -693,7 +693,7 @@ private sub hUDTPassByval _
 
 	hBuildByrefArg( n, arg )
 
-	if( symbGetHasDtor( symbGetSubtype( param ) ) ) then
+	if( symbGetCompDtor( symbGetSubtype( param ) ) ) then
 		astDtorListAdd( tmp )
 	end if
 
@@ -712,9 +712,9 @@ private function hImplicitCtor _
    	dim as FBSYMBOL ptr subtype = symbGetSubtype( param )
    	dim as integer param_dtype = symbGetType( param )
 
-   	if( symbGetHasCtor( subtype ) = FALSE ) then
-   		return FALSE
-   	end if
+	if( symbGetCompCtorHead( subtype ) = NULL ) then
+		return FALSE
+	end if
 
     '' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
     if( rec_cnt <> 0 ) then
@@ -750,7 +750,7 @@ private function hImplicitCtor _
 		hBuildByrefArg( n, n->l )
 	end if
 
-	if( symbGetHasDtor( subtype ) ) then
+	if( symbGetCompDtor( subtype ) ) then
 		astDtorListAdd( tmp )
 	end if
 

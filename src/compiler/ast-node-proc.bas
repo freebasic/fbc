@@ -1073,7 +1073,7 @@ private function hCallBaseCtor _
 		end if
 	'' No default ctor, but others? Then BASE() should have been used,
 	'' since a ctor must be called, but we cannot do it automatically.
-	elseif( symbGetHasCtor( subtype ) ) then
+	elseif( symbGetCompCtorHead( subtype ) ) then
 		errReport( FB_ERRMSG_NOBASEINIT )
 	end if
 
@@ -1149,7 +1149,7 @@ private sub hCallFieldDtor _
 		var subtype = symbGetSubtype( fld )
 
 		'' has a dtor too?
-		if( symbGetHasDtor( subtype ) ) then
+		if( symbGetCompDtor( subtype ) ) then
 			'' not an array?
 			if( (symbGetArrayDimensions( fld ) = 0) or _
 			    (symbGetArrayElements( fld ) = 1) ) then

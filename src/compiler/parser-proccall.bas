@@ -35,8 +35,8 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
     select case symbGetType( proc )
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-        has_ctor = symbGetHasCtor( subtype )
-        has_defctor = symbGetCompDefCtor( subtype ) <> NULL
+		has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
+		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
 
     case else
     	has_ctor = FALSE
@@ -1009,7 +1009,7 @@ private sub hBaseInit( )
 	initree = NULL
 
 	'' Has a ctor?
-	if( symbGetHasCtor( subtype ) ) then
+	if( symbGetCompCtorHead( subtype ) ) then
 		'' CtorCall
 		ctorcall = cCtorCall( subtype )
 		if( ctorcall ) then

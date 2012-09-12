@@ -774,26 +774,20 @@ function symbCheckArraySize _
 
 end function
 
-'':::::
-function symbGetVarHasCtor _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
-    '' shared, static, param or temp?
-    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    					FB_SYMBATTRIB_STATIC or _
-    					FB_SYMBATTRIB_COMMON or _
-    					FB_SYMBATTRIB_PARAMBYDESC or _
-    		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF or _
-    		  			FB_SYMBATTRIB_TEMP or _
-    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
-
+function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
+	'' shared, static, param or temp?
+	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+	                    FB_SYMBATTRIB_STATIC or _
+	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_PARAMBYDESC or _
+	                    FB_SYMBATTRIB_PARAMBYVAL or _
+	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_TEMP or _
+	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
 	end if
 
-   	select case symbGetType( s )
+	select case( symbGetType( s ) )
 	'' var-len string?
 	case FB_DATATYPE_STRING
 		return TRUE
@@ -804,13 +798,13 @@ function symbGetVarHasCtor _
 			return TRUE
 		end if
 
-   	'' has a default ctor?
-   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-   		if( symbGetCompDefCtor( symbGetSubtype( s ) ) <> NULL ) then
-   			return TRUE
-   		end if
+	'' has a default ctor?
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbGetCompDefCtor( symbGetSubtype( s ) ) <> NULL ) then
+			return TRUE
+		end if
 
-   	end select
+	end select
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
@@ -824,28 +818,23 @@ function symbGetVarHasCtor _
 
 end function
 
-'':::::
-function symbGetVarHasDtor _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer
-
-    '' shared, static, param or temporary?
-    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    					FB_SYMBATTRIB_STATIC or _
-    					FB_SYMBATTRIB_COMMON or _
-    					FB_SYMBATTRIB_PARAMBYDESC or _
-    		  			FB_SYMBATTRIB_PARAMBYVAL or _
-    		  			FB_SYMBATTRIB_PARAMBYREF or _
-    		  			FB_SYMBATTRIB_TEMP or _
-    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
+function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
+	'' shared, static, param or temporary?
+	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+	                    FB_SYMBATTRIB_STATIC or _
+	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_PARAMBYDESC or _
+	                    FB_SYMBATTRIB_PARAMBYVAL or _
+	                    FB_SYMBATTRIB_PARAMBYREF or _
+	                    FB_SYMBATTRIB_TEMP or _
+	                    FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
 		return FALSE
 	end if
 
-   	select case symbGetType( s )
+	select case( symbGetType( s ) )
 	'' var-len string?
 	case FB_DATATYPE_STRING
-    	return TRUE
+		return TRUE
 
 	'' wchar ptr marked as "dynamic wstring"?
 	case typeAddrOf( FB_DATATYPE_WCHAR )
@@ -853,13 +842,13 @@ function symbGetVarHasDtor _
 			return TRUE
 		end if
 
-   	'' has dtor?
-   	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-   		if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-   			return TRUE
-   		end if
+	'' has dtor?
+	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+		if( symbGetCompDtor( symbGetSubtype( s ) ) ) then
+			return TRUE
+		end if
 
-   	end select
+	end select
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then

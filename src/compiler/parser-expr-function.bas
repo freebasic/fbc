@@ -222,7 +222,7 @@ function cCtorCall _
 
 	'' check if it's a call (because error recovery)..
 	if( astIsCALL( procexpr ) ) then
-		if( symbGetHasDtor( sym ) ) then
+		if( symbGetCompDtor( sym ) ) then
 			astDtorListAdd( tmp )
 		end if
 

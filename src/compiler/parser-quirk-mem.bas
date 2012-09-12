@@ -53,7 +53,7 @@ function cOperatorNew _
 
 	select case typeGet( dtype )
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = symbGetHasCtor( subtype )
+		has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
 		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
 	end select
 
