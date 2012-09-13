@@ -808,8 +808,8 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 		return TRUE
 	end if
 
-	'' UDT var with default ctor?
-	function = symbHasDefCtor( s )
+	'' UDT var with ctor?
+	function = symbHasCtor( s )
 end function
 
 function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer

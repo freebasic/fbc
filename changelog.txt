@@ -55,6 +55,7 @@ Version 0.25.0:
 - SSE emitter: float2int conversions using movss/movlpd could generate illegal ASM
 - ASM backend: A faulty optimization could cause array accesses to be mis-compiled
 - More consistent optimization of (foo + constant1) * constant2 (using distribution)
+- GOTO jumping over variable declarations of UDTs with non-default constructors only was not an error like in case of UDTs with default constructors
 
 
 Version 0.24.0:
