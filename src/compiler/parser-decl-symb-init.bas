@@ -482,12 +482,9 @@ private function hUDTInit _
 
 		'' has ctor?
 		ctx.options and= not FB_INIOPT_ISOBJ
-		select case symbGetType( elm )
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			if( symbGetCompCtorHead( symbGetSubtype( elm ) ) ) then
-				ctx.options or= FB_INIOPT_ISOBJ
-			end if
-		end select
+		if( symbHasCtor( elm ) ) then
+			ctx.options or= FB_INIOPT_ISOBJ
+		end if
 
 		'' element assignment failed?
         if( hArrayInit( ctx, TRUE ) = FALSE ) then
@@ -644,12 +641,9 @@ function cInitializer _
 	ctx.tree = astTypeIniBegin( symbGetFullType( sym ), subtype, is_local, symbGetOfs( sym ) )
 
 	'' has ctor?
-	select case as const dtype
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetCompCtorHead( subtype ) ) then
-			ctx.options or= FB_INIOPT_ISOBJ
-		end if
-	end select
+	if( typeHasCtor( dtype, subtype ) ) then
+		ctx.options or= FB_INIOPT_ISOBJ
+	end if
 
 	dim as integer res = hArrayInit( ctx )
 

@@ -276,14 +276,11 @@ private function hFindId _
 
 			case FB_SYMBCLASS_TYPEDEF
 				'' typedef of a TYPE/CLASS?
-				select case symbGetType( sym )
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					if( symbGetCompCtorHead( symbGetSubtype( sym ) ) ) then
-						'' skip ID, ctorCall() is also used by type<>(...)
-						lexSkipToken( )
-						return cCtorCall( symbGetSubtype( sym ) )
-					end if
-				end select
+				if( symbHasCtor( sym ) ) then
+					'' skip ID, ctorCall() is also used by type<>(...)
+					lexSkipToken( )
+					return cCtorCall( symbGetSubtype( sym ) )
+				end if
 
 			end select
 

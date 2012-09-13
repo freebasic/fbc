@@ -693,7 +693,7 @@ private sub hUDTPassByval _
 
 	hBuildByrefArg( n, arg )
 
-	if( symbGetCompDtor( symbGetSubtype( param ) ) ) then
+	if( symbHasDtor( param ) ) then
 		astDtorListAdd( tmp )
 	end if
 
@@ -707,42 +707,32 @@ private function hImplicitCtor _
 		byval n as ASTNODE ptr _
 	) as integer
 
-   	static as integer rec_cnt = 0
+	static as integer rec_cnt = 0
+	dim as ASTNODE ptr arg = any
+	dim as FBSYMBOL ptr tmp = any
+	dim as integer is_ctorcall = any
 
-   	dim as FBSYMBOL ptr subtype = symbGetSubtype( param )
-   	dim as integer param_dtype = symbGetType( param )
-
-	if( symbGetCompCtorHead( subtype ) = NULL ) then
-		return FALSE
+	if( symbHasCtor( param ) = FALSE ) then
+		exit function
 	end if
 
-    '' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
-    if( rec_cnt <> 0 ) then
-    	return FALSE
-    end if
+	'' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
+	if( rec_cnt <> 0 ) then
+		exit function
+	end if
 
-    dim as integer is_ctorcall = any
+	'' try calling any ctor with the expression
+	rec_cnt += 1
+	arg = astBuildImplicitCtorCall( symbGetSubtype( param ), n->l, n->arg.mode, is_ctorcall )
+	rec_cnt -= 1
 
-    '' try calling any ctor with the expression
-    rec_cnt += 1
-    dim as ASTNODE ptr arg = astBuildImplicitCtorCall( subtype, _
-    												   n->l, _
-    												   n->arg.mode, _
-    												   is_ctorcall )
-    rec_cnt -= 1
+	if( is_ctorcall = FALSE ) then
+		exit function
+	end if
 
-    if( is_ctorcall = FALSE ) then
-    	return NULL
-    end if
+	tmp = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE, FALSE )
 
-    dim as FBSYMBOL ptr tmp = symbAddTempVar( param_dtype, _
-    				  						  subtype, _
-    				  						  FALSE, _
-    				  						  FALSE )
-
-    n->l = astNewCALLCTOR( astPatchCtorCall( arg, _
-    										 astBuildVarField( tmp ) ), _
-    					   astBuildVarField( tmp ) )
+	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 		hUDTPassByval( parent, param, n )
@@ -750,12 +740,11 @@ private function hImplicitCtor _
 		hBuildByrefArg( n, n->l )
 	end if
 
-	if( symbGetCompDtor( subtype ) ) then
+	if( symbHasDtor( param ) ) then
 		astDtorListAdd( tmp )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -1085,7 +1074,6 @@ private function hCreateOptArg _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
-	dim as integer param_dtype = symbGetType( param )
 
 	if( tree = NULL ) then
 		return NULL
@@ -1099,7 +1087,7 @@ private function hCreateOptArg _
 	end if
 
 	'' UDT?
-	if( param_dtype = FB_DATATYPE_STRUCT ) then
+	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
 		'' update the counters
 		astTypeIniUpdCnt( tree )
 	end if

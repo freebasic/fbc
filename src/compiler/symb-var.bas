@@ -798,12 +798,6 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 			return TRUE
 		end if
 
-	'' has a default ctor?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetCompDefCtor( symbGetSubtype( s ) ) <> NULL ) then
-			return TRUE
-		end if
-
 	end select
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
@@ -814,8 +808,8 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 		return TRUE
 	end if
 
-	function = FALSE
-
+	'' UDT var with default ctor?
+	function = symbHasDefCtor( s )
 end function
 
 function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
@@ -842,12 +836,6 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 			return TRUE
 		end if
 
-	'' has dtor?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		if( symbGetCompDtor( symbGetSubtype( s ) ) ) then
-			return TRUE
-		end if
-
 	end select
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
@@ -858,8 +846,8 @@ function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
 		end if
 	end if
 
-	function = FALSE
-
+	'' UDT var with dtor?
+	function = symbHasDtor( s )
 end function
 
 '':::::

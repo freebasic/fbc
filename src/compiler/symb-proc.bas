@@ -846,7 +846,6 @@ add_proc:
 	'proc->proc.returnMethod = returnMethod
 #endif
 
-
 	function = proc
 
 end function

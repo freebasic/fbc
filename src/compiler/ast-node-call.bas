@@ -27,28 +27,22 @@ sub astCallEnd
 
 end sub
 
-'':::::
 private sub hAllocTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
 	n->call.tmpres = NULL
 
 	'' follow GCC 3.x's ABI
 	if( symbGetUDTInRegister( sym ) = FALSE ) then
-
 		'' create a temp struct (can't be static, could be an object)
-		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
-									     symbGetSubtype( sym ), _
-									     FALSE, _
-									     FALSE )
+		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE, FALSE )
 
-		if( symbGetCompDtor( symbGetSubtype( sym ) ) ) then
+		if( symbHasDtor( sym ) ) then
 			astDtorListAdd( n->call.tmpres )
 		end if
-
 	end if
 
 end sub
@@ -463,14 +457,14 @@ sub astReplaceSymbolOnCALL _
 		n->call.tmpres = new_sym
 
 		'' add to temp dtor list?
-		if( symbGetCompDtor( symbGetSubtype( new_sym ) ) ) then
+		if( symbHasDtor( new_sym ) ) then
 			astDtorListAdd( new_sym )
 		end if
 	end if
 
-    '' temp strings list
-    scope
-	    dim as AST_TMPSTRLIST_ITEM ptr s = any
+	'' temp strings list
+	scope
+		dim as AST_TMPSTRLIST_ITEM ptr s = any
 		s = n->call.strtail
 		do while( s <> NULL )
 			if( s->sym = old_sym ) then
@@ -480,8 +474,8 @@ sub astReplaceSymbolOnCALL _
 			astReplaceSymbolOnTree( s->srctree, old_sym, new_sym )
 
 			s = s->prev
-    	loop
-    end scope
+		loop
+	end scope
 
 end sub
 

@@ -807,7 +807,7 @@ function cForStmtBegin _
 
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		flags or= FOR_ISUDT
-		if( symbGetCompCtorHead( symbGetSubtype( astGetSymbol( idexpr ) ) ) ) then
+		if( symbHasCtor( astGetSymbol( idexpr ) ) ) then
 			flags or= FOR_HASCTOR
 		end if
 

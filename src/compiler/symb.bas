@@ -1580,6 +1580,23 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
+	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
+	assert( symbIsStruct( sym ) = FALSE )
+	'' Handle vars, params, function results, etc.
+	function = typeHasCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDefCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDtor( sym->typ, sym->subtype )
+end function
+
 '':::::
 function symbIsArray _
 	( _

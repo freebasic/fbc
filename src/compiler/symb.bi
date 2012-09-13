@@ -1462,6 +1462,10 @@ declare function symbIsProcOverloadOf _
 		byval parent as FBSYMBOL ptr _
 	) as integer
 
+declare function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
+declare function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
+declare function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
+
 declare function symbIsArray _
 	( _
 		byval sym as FBSYMBOL ptr _
@@ -1499,6 +1503,24 @@ declare function typeToUnsigned _
 	) as integer
 
 declare function typeRemap _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasDefCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasDtor _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _

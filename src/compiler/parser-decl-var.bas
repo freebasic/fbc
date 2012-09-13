@@ -763,10 +763,8 @@ private function hVarInitDefault _
 		end if
 	else
 		'' Complain about lack of default ctor if there are others
-		if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-			if( symbGetCompCtorHead( symbGetSubtype( sym ) ) ) then
-				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-			end if
+		if( symbHasCtor( sym ) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
 	end if
 
@@ -867,16 +865,8 @@ private function hVarInit _
 
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-		dim as integer has_ctor = FALSE
-
-		select case symbGetType( sym )
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			has_ctor = (symbGetCompCtorHead( symbGetSubtype( sym ) ) <> NULL)
-		end select
-
 		'' only if it's not an object, static or global instances are allowed
-		if( has_ctor = FALSE ) then
-
+		if( symbHasCtor( sym ) = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
@@ -884,10 +874,8 @@ private function hVarInit _
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		'' if it is an object, don't allow local references
 		else
-
 			if( astTypeIniCheckScope( initree ) = TRUE ) then
 				errReport( FB_ERRMSG_INVALIDINITIALIZER )
 				'' error recovery: discard the tree
@@ -895,9 +883,7 @@ private function hVarInit _
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		end if
-
 	end if
 
 	function = initree
@@ -1064,25 +1050,19 @@ private function hFlushInitializer _
 						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
-	dim as integer has_ctor = FALSE
-	select case symbGetType( sym )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = (symbGetCompCtorHead( symbGetSubtype( sym ) ) <> NULL)
-	end select
-
 	'' not an object?
-    if( has_ctor = FALSE ) then
-    	'' let emit flush it..
-    	symbSetTypeIniTree( sym, initree )
+	if( symbHasCtor( sym ) = FALSE ) then
+		'' let emit flush it..
+		symbSetTypeIniTree( sym, initree )
 
-    	'' no dtor?
-    	if( has_dtor = FALSE ) then
-    		return hFlushDecl( var_decl )
-    	end if
+		'' no dtor?
+		if( has_dtor = FALSE ) then
+			return hFlushDecl( var_decl )
+		end if
 
-    	'' must be added to the dtor list..
-    	initree = NULL
-    end if
+		'' must be added to the dtor list..
+		initree = NULL
+	end if
 
     '' don't let emit handle this global/static symbol
     symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
@@ -1352,13 +1332,9 @@ function hVarDeclEx _
 
 		'' don't allow COMMON object instances
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( (symbGetCompCtorHead( subtype ) <> NULL) or _
-				    (symbGetCompDtor( subtype ) <> NULL)          ) then
-					errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
-				end if
-			end select
+			if( typeHasCtor( dtype, subtype ) or typeHasDtor( dtype, subtype ) ) then
+				errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
+			end if
 		end if
 
     	if( is_dynamic ) then
@@ -1377,12 +1353,8 @@ function hVarDeclEx _
 
 		if( sym <> NULL ) then
 			is_decl = symbGetIsDeclared( sym )
-			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-				'' has a default ctor?
-				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
-				'' dtor?
-				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
-			end if
+			has_defctor = symbHasDefCtor( sym )
+			has_dtor = symbHasDtor( sym )
 			if( has_ellipsis ) then
 				sym->var_.array.has_ellipsis = TRUE
 			end if
@@ -1973,7 +1945,10 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-		dim as integer has_ctor = FALSE, has_dtor = FALSE
+		dim as integer has_ctor = any, has_dtor = any
+
+		has_ctor = typeHasCtor( dtype, subtype )
+		has_dtor = typeHasDtor( dtype, subtype )
 
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
@@ -1988,12 +1963,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		'' zstring... convert to string
 		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 			dtype = FB_DATATYPE_STRING
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' any ctor?
-			has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
-			'' dtor?
-			has_dtor = symbGetCompDtor( subtype ) <> NULL
 
 		'' if it's a function pointer and not a fun ptr prototype, create one
 		case typeAddrOf( FB_DATATYPE_FUNCTION )

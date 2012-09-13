@@ -916,35 +916,27 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr subtype = any
-
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
 		exit function
 	end if
 
-	select case symbGetType( fld )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = symbGetSubtype( fld )
+	'' has a default ctor too?
+	if( symbHasDefCtor( fld ) ) then
+		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
 
-		'' has a default ctor too?
-		if( symbGetCompDefCtor( subtype ) <> NULL ) then
-			'' !!!FIXME!!! assuming only static arrays will be allowed in fields
-
-			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
-
-				'' ctor( this.field )
-				function = astBuildCtorCall( subtype, astBuildInstPtr( this_, fld ) )
-			'' array..
-			else
-				function = hCallCtorList( TRUE, this_, fld )
-			end if
-
-			exit function
+		'' not an array?
+		if( (symbGetArrayDimensions( fld ) = 0) or _
+		    (symbGetArrayElements( fld ) = 1) ) then
+			'' ctor( this.field )
+			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
+		'' array..
+		else
+			function = hCallCtorList( TRUE, this_, fld )
 		end if
-	end select
+
+		exit function
+	end if
 
 	'' bitfield?
 	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
@@ -1133,8 +1125,7 @@ private sub hCallFieldDtor _
 		byval fld as FBSYMBOL ptr _
 	)
 
-	select case symbGetType( fld )
-	case FB_DATATYPE_STRING
+	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 		var fldexpr = astBuildInstPtr( this_, fld )
 
 		'' not an array?
@@ -1144,24 +1135,20 @@ private sub hCallFieldDtor _
 		else
 			astAdd( rtlArrayStrErase( fldexpr ) )
 		end if
-
-	case FB_DATATYPE_STRUCT
-		var subtype = symbGetSubtype( fld )
-
-		'' has a dtor too?
-		if( symbGetCompDtor( subtype ) ) then
+	else
+		'' UDT field with dtor?
+		if( symbHasDtor( fld ) ) then
 			'' not an array?
 			if( (symbGetArrayDimensions( fld ) = 0) or _
 			    (symbGetArrayElements( fld ) = 1) ) then
-
 				'' dtor( this.field )
-				astAdd( astBuildDtorCall( subtype, astBuildInstPtr( this_, fld ) ) )
+				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
 			else
 				astAdd( hCallCtorList( FALSE, this_, fld ) )
 			end if
 		end if
+	end if
 
-	end Select
 end sub
 
 private sub hCallFieldDtors _

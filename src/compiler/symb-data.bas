@@ -248,3 +248,42 @@ function typeToUnsigned _
 	function = typeJoin( dtype, nd )
 
 end function
+
+function typeHasCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	select case( typeGet( dtype ) )
+	case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+		function = (symbGetCompCtorHead( subtype ) <> NULL)
+	end select
+
+end function
+
+function typeHasDefCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	select case( typeGet( dtype ) )
+	case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+		function = (symbGetCompDefCtor( subtype ) <> NULL)
+	end select
+
+end function
+
+function typeHasDtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	select case( typeGet( dtype ) )
+	case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+		function = (symbGetCompDtor( subtype ) <> NULL)
+	end select
+
+end function

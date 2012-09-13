@@ -408,9 +408,7 @@ function astNewASSIGN _
 
 		if( check_letop ) then
 			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-
 			if( proc <> NULL ) then
-
 				dim as ASTNODE ptr result = any
 
 				'' if this is a variable initialization, we have to
@@ -430,10 +428,10 @@ function astNewASSIGN _
 
 				'' build a proc call
 				return astNewLINK( result, astBuildCall( proc, l, r ) )
-			else
-				if( err_num <> FB_ERRMSG_OK ) then
-					return NULL
-				end if
+			end if
+
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
 			end if
 		end if
 	end if

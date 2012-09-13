@@ -15,58 +15,46 @@ declare function hBaseMemberAccess( ) as integer
 declare function hForwardCall( ) as integer
 
 function cAssignFunctResult( byval is_return as integer ) as integer
-	dim as FBSYMBOL ptr res = any, subtype = any, proc = any
-    dim as ASTNODE ptr rhs = any
-    dim as integer has_ctor = any, has_defctor = any
+	dim as FBSYMBOL ptr res = any, subtype = any
+	dim as ASTNODE ptr rhs = any, expr = any
+	dim as integer has_ctor = any, has_defctor = any
 
-    function = FALSE
+	function = FALSE
 
-	proc = parser.currproc
-
-    res = symbGetProcResult( proc )
-    if( res = NULL ) then
+	res = symbGetProcResult( parser.currproc )
+	if( res = NULL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip stmt, return
 		hSkipStmt( )
 		return TRUE
-    end if
+	end if
 
-    subtype = symbGetSubType( proc )
-
-    select case symbGetType( proc )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = (symbGetCompCtorHead( subtype ) <> NULL)
-		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
-
-    case else
-    	has_ctor = FALSE
-    	has_defctor = FALSE
-    end select
+	has_ctor = symbHasCtor( parser.currproc )
+	has_defctor = symbHasDefCtor( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then
-		if( symbGetProcStatAssignUsed( proc ) ) then
+		if( symbGetProcStatAssignUsed( parser.currproc ) ) then
 			if( has_defctor ) then
 				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
 			end if
 		end if
 
-		symbSetProcStatReturnUsed( proc )
-
+		symbSetProcStatReturnUsed( parser.currproc )
 	else
-		if( symbGetProcStatReturnUsed( proc ) ) then
+		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
 			if( has_defctor ) then
 				errReport( FB_ERRMSG_RETURNANDFUNCTIONCANTBEUSED )
 			end if
 		end if
 
-		symbSetProcStatAssignUsed( proc )
+		symbSetProcStatAssignUsed( parser.currproc )
 	end if
 
-    '' set the context symbol to allow taking the address of overloaded
-    '' procs and also to allow anonymous UDT's
-    parser.ctxsym    = subtype
-    parser.ctx_dtype = symbGetType( proc )
+	'' set the context symbol to allow taking the address of overloaded
+	'' procs and also to allow anonymous UDT's
+	parser.ctxsym    = symbGetSubType( parser.currproc )
+	parser.ctx_dtype = symbGetType( parser.currproc )
 
 	'' Expression
 	rhs = cExpression( )
@@ -82,11 +70,11 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 	parser.ctxsym    = NULL
 	parser.ctx_dtype = FB_DATATYPE_INVALID
 
-    '' set accessed flag here, as proc will be ended before AST is flushed
-    symbSetIsAccessed( res )
+	'' set accessed flag here, as proc will be ended before AST is flushed
+	symbSetIsAccessed( res )
 
-    '' RETURN and has ctor? try to initialize..
-    if( is_return and has_ctor ) then
+	'' RETURN and has ctor? try to initialize..
+	if( is_return and has_ctor ) then
 		'' array passed by descriptor?
 		dim as FB_PARAMMODE arg_mode = INVALID
 		if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -99,26 +87,22 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 					end if
 				end if
 			end if
-    	end if
+		end if
 
-    	dim as integer is_ctorcall = any
-    	rhs = astBuildImplicitCtorCallEx( res, rhs, arg_mode, is_ctorcall )
-    	if( rhs = NULL ) then
-    		exit function
-    	end if
+		dim as integer is_ctorcall = any
+		rhs = astBuildImplicitCtorCallEx( res, rhs, arg_mode, is_ctorcall )
+		if( rhs = NULL ) then
+			exit function
+		end if
 
-    	if( is_ctorcall ) then
-    		astAdd( astPatchCtorCall( rhs, _
-    								  astBuildProcResultVar( proc, res ) ) )
-
-    		return TRUE
-    	end if
-    end if
-
-    dim as ASTNODE ptr expr = any
+		if( is_ctorcall ) then
+			astAdd( astPatchCtorCall( rhs, astBuildProcResultVar( parser.currproc, res ) ) )
+			return TRUE
+		end if
+	end if
 
 	'' do the assignment
-	expr = astNewASSIGN( astBuildProcResultVar( proc, res ), rhs )
+	expr = astNewASSIGN( astBuildProcResultVar( parser.currproc, res ), rhs )
 	if( expr = NULL ) then
 		astDelTree( rhs )
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT )
@@ -126,8 +110,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 		astAdd( expr )
 	end if
 
-    function = TRUE
-
+	function = TRUE
 end function
 
 sub hMethodCallAddInstPtrOvlArg _
