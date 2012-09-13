@@ -656,10 +656,17 @@ function astProcEnd( byval callrtexit as integer ) as integer
 		if( irGetOption( IR_OPT_HIGHLEVEL ) or enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-
 				select case symbGetType( sym )
 				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					if( symbGetProcStatAssignUsed( sym ) ) then
+					'' Add result ctor call to the top of the function,
+					'' a) if FUNCTION= (and/or EXIT FUNCTION) was used,
+					'' b) or if neither FUNCTION= nor RETURN was used,
+					'' but not if RETURN was used, because that already
+					'' calls the copy ctor at every RETURN.
+					'' This way the result will be constructed properly,
+					'' even if nothing was explicitly returned.
+					if( symbGetProcStatAssignUsed( sym ) or _
+					    (not symbGetProcStatReturnUsed( sym )) ) then
 						head_node = hCallResultCtor( head_node, sym )
 					end if
 				end select
