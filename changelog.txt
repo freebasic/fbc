@@ -56,6 +56,7 @@ Version 0.25.0:
 - ASM backend: A faulty optimization could cause array accesses to be mis-compiled
 - More consistent optimization of (foo + constant1) * constant2 (using distribution)
 - GOTO jumping over variable declarations of UDTs with non-default constructors only was not an error like in case of UDTs with default constructors
+- EXIT FUNCTION in combination with RETURN with complex function result UDT was accepted, leaving the result UDT unconstructed
 
 
 Version 0.24.0:

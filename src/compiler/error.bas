@@ -229,6 +229,7 @@ end type
 		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
+		@"Missing RETURN to copy-construct function result", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
