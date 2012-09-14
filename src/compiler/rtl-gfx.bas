@@ -2812,9 +2812,9 @@ function rtlGfxImageCreate _
  		exit function
  	end if
 
-	'' byval c as uinteger
+	'' byval c as integer
 	if( cexpr = NULL ) then
-		cexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		cexpr = astNewCONSTi( 0 )
 	end if
  	if( astNewARG( proc, cexpr ) = NULL ) then
  		exit function
@@ -2822,14 +2822,14 @@ function rtlGfxImageCreate _
 
 	'' byval d as integer
 	if( dexpr = NULL ) then
-		dexpr = astNewCONSTi( 0, FB_DATATYPE_UINT )
+		dexpr = astNewCONSTi( 0 )
 	end if
  	if( astNewARG( proc, dexpr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval flags as integer
- 	if( astNewARG( proc, astNewCONSTi( flags, FB_DATATYPE_UINT ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( flags ) ) = NULL ) then
  		exit function
  	end if
 
