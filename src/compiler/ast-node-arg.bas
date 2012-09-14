@@ -969,66 +969,11 @@ private function hCheckParam _
 		exit function
 	end select
 
-	'' different types? convert..
-	dim as integer do_conv = any, diff_sign_only = any
-
-	do_conv = typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )
-	diff_sign_only = FALSE
-	if( do_conv = FALSE ) then
-		'' same size, different data class?
-		do_conv = typeGetClass( param_dtype ) <> typeGetClass( arg_dtype )
-		if( do_conv = FALSE ) then
-			'' same class, same size
-			if( typeGetClass( arg_dtype ) = FB_DATACLASS_INTEGER ) then
-				diff_sign_only = (typeIsSigned( param_dtype ) <> typeIsSigned( arg_dtype ))
-			end if
+	'' enum args are only allowed to be passed enum or int params
+	if( (param_dtype = FB_DATATYPE_ENUM) or (arg_dtype = FB_DATATYPE_ENUM) ) then
+		if( typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ) ) then
+			hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
-	end if
-
-	if( do_conv ) then
-		'' enum args are only allowed to be passed enum or int params
-		if( (param_dtype = FB_DATATYPE_ENUM) or _
-			(arg_dtype = FB_DATATYPE_ENUM) ) then
-			if( typeGetClass( param_dtype ) <> _
-				typeGetClass( arg_dtype ) ) then
-				hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
-			end if
-		end if
-
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = arg
-			if( arg->class = AST_NODECLASS_CONV ) then
-				if( arg->cast.doconv = FALSE ) then
-					t = arg->l
-				end if
-			end if
-
-			'' param diff than arg can't passed by ref if it's a var/array/ptr
-			select case as const t->class
-			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
-				hParamError( parent )
-				exit function
-			end select
-		end if
-	end if
-
-	if( do_conv or diff_sign_only ) then
-		'' const?
-		if( astIsCONST( arg ) ) then
-			'' show "overflow in constant conversion" warnings
-			astCheckConst( symbGetType( param ), arg, TRUE )
-		end if
-
-		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
-		if( arg = NULL ) then
-			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
-			exit function
-		end if
-		arg_dtype = astGetDatatype( arg )
-
-		n->l = arg
 	end if
 
 	'' pointer checking
@@ -1044,17 +989,64 @@ private function hCheckParam _
 						exit function
 					else
 						hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
-					End If
-					  
+					end if
 				else
 					hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 				end if
-				
+			end if
+		end if
+	elseif( typeIsPtr( arg_dtype ) ) then
+		hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+	end if
+
+	'' const?
+	if( astIsCONST( arg ) ) then
+		'' show "overflow in constant conversion" warnings
+		if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
+			hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
+		end if
+	end if
+
+	'' different types? convert..
+	if( param_dtype <> arg_dtype ) then
+		'' Cannot pass BYREF if different size/class, but we do allow
+		'' passing INTEGER vars to BYREF AS UINTEGER params etc.
+		if( (typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )) or _
+		    (typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+				'' skip any casting if they won't do any conversion
+				dim as ASTNODE ptr t = arg
+				if( arg->class = AST_NODECLASS_CONV ) then
+					if( arg->cast.doconv = FALSE ) then
+						t = arg->l
+					end if
+				end if
+
+				'' param diff than arg can't passed by ref if it's a var/array/ptr
+				'' (cannot pass a bytevar (1 byte) to BYREF INTEGER (4 bytes) param,
+				''  that could cause a segfault)
+				select case as const t->class
+				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
+					hParamError( parent )
+					exit function
+				end select
+
+				'' If it's an rvalue expression though then it's ok,
+				'' because it will be stored into a temp var of the
+				'' same type as the BYREF param. Then that temp var
+				'' is given to the BYREF param, and then it's safe.
 			end if
 		end if
 
-    elseif( typeIsPtr( arg_dtype ) ) then
-    	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
+		if( arg = NULL ) then
+			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
+		arg_dtype = astGetDatatype( arg )
+
+		n->l = arg
 	end if
 
 	'' byref arg? check if a temp param isn't needed
