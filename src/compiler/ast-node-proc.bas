@@ -537,33 +537,36 @@ private function hCheckErrHnd _
 
 end function
 
-'':::::
 private function hCallResultCtor _
 	( _
 		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr res = any, subtype = any
+	dim as FBSYMBOL ptr res = any, defctor = any
 
-    subtype = symbGetSubtype( sym )
+	'' UDT with default ctor? (if there is none, nothing needs to be done)
+	defctor = symbGetCompDefCtor( symbGetSubtype( sym ) )
+	if( defctor = NULL ) then
+		'' No default ctor, but others? Must show an error, because we
+		'' cannot leave the result unconstructed. It would be nicer to
+		'' detect & show this error at the top of the function already,
+		'' but that's not possible because of RETURN which doesn't
+		'' require a defctor...
+		if( symbHasCtor( sym ) ) then
+			errReport( FB_ERRMSG_RESULTHASNODEFCTOR )
+		end if
+		return head_node
+	end if
 
-    if( symbGetCompDefCtor( subtype ) = NULL ) then
-    	return head_node
-    end if
+	res = symbGetProcResult( sym )
+	if( res = NULL ) then
+		return head_node
+	end if
 
-    res = symbGetProcResult( sym )
-    if( res = NULL ) then
-    	return head_node
-    end if
-
-    head_node = astAddAfter( _
-    				astBuildCtorCall( subtype, _
-    							   	  astBuildProcResultVar( sym, res ) ), _
-    			 	head_node )
-
-	function = head_node
-
+	function = astAddAfter( astBuildCtorCall( symbGetSubtype( sym ), _
+	                                          astBuildProcResultVar( sym, res ) ), _
+	                        head_node )
 end function
 
 '':::::

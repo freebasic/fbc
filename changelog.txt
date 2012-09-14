@@ -58,6 +58,7 @@ Version 0.25.0:
 - GOTO jumping over variable declarations of UDTs with non-default constructors only was not an error like in case of UDTs with default constructors
 - EXIT FUNCTION in combination with RETURN with complex function result UDT was accepted, leaving the result UDT unconstructed
 - Complex function result UDTs were not constructed if neither FUNCTION= nor RETURN were used
+- No error was shown when complex function result UDTs were left unconstructed when using FUNCTION= because the UDT had no default constructor
 
 
 Version 0.24.0:

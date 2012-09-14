@@ -233,6 +233,7 @@ end type
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
+		@"Function result TYPE has no default constructor", _
 		@"Base UDT without default constructor; missing BASE() initializer", _
 		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
 		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
