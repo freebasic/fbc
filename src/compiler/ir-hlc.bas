@@ -2309,6 +2309,9 @@ private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
 	'' Must manually add an underscore prefix if the target requires it,
 	'' because symb-mangling won't do that for -gen gcc.
 	''
+	'' (assuming this function will only be used by NAKED procedures,
+	''  which cannot have local variables or parameters)
+	''
 	if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
 		mangled  = "_" + mangled
 	end if
@@ -2348,6 +2351,12 @@ end sub
 
 private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
 	dim as string id
+
+	'' In NAKED procedure?
+	if( ctx.identcnt = 0 ) then
+		ctx.asm_line += hGetMangledNameForASM( sym )
+		exit sub
+	end if
 
 	id = *symbGetMangledName( sym )
 
