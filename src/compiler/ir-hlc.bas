@@ -2300,6 +2300,22 @@ private sub _emitComment _
 
 end sub
 
+private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
+	dim as string mangled
+
+	mangled = *symbGetMangledName( sym )
+
+	''
+	'' Must manually add an underscore prefix if the target requires it,
+	'' because symb-mangling won't do that for -gen gcc.
+	''
+	if( env.target.options and FB_TARGETOPT_UNDERSCORE ) then
+		mangled  = "_" + mangled
+	end if
+
+	function = mangled
+end function
+
 private sub _emitAsmBegin( )
 	'' -asm intel: FB asm blocks are expected to be in Intel format as
 	''             usual; we have to convert them to the GCC format here.
@@ -2521,7 +2537,7 @@ private sub _emitProcBegin _
 	'' NAKED procedure? Use inline asm, since gcc doesn't support
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
-		mangled = *symbGetMangledName( proc )
+		mangled = hGetMangledNameForASM( proc )
 		hWriteLine( "__asm__( "".globl " + mangled + """ )", TRUE, TRUE )
 		hWriteLine( "__asm__( """ + mangled + ":"" )", TRUE, TRUE )
 		exit sub
@@ -2560,7 +2576,7 @@ private sub _emitProcEnd _
 	if( symbIsNaked( proc ) ) then
 		'' Emit .size like ASM backend, for Linux
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			mangled = *symbGetMangledName( proc )
+			mangled = hGetMangledNameForASM( proc )
 			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ )", TRUE, TRUE )
 		end if
 		exit sub
