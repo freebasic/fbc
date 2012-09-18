@@ -1705,14 +1705,12 @@ end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub _emitLabel _
-	( _
-		byval label as FBSYMBOL ptr _
-	)
-
-	hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
-
+private sub _emitLabel( byval label as FBSYMBOL ptr )
+	'' Only when inside normal procedures
+	'' (NAKED procedures don't increase the indentation)
+	if( ctx.identcnt > 0 ) then
+		hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
+	end if
 end sub
 
 '':::::
@@ -2307,9 +2305,21 @@ private sub _emitAsmBegin( )
 	''             usual; we have to convert them to the GCC format here.
 	'' -asm att: FB asm blocks are expected to be in the GCC format,
 	''           i.e. quoted and including constraints if needed.
-	ctx.asm_line = "__asm__ __volatile__( "
+	ctx.asm_line = "__asm__"
+
+	'' Only when inside normal procedures
+	'' (NAKED procedures don't increase the indentation)
+	if( ctx.identcnt > 0 ) then
+		ctx.asm_line += " __volatile__"
+	end if
+
+	ctx.asm_line += "( "
+
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		ctx.asm_line += $"""\t"
+		ctx.asm_line += """"
+		if( ctx.identcnt > 0 ) then
+			ctx.asm_line += $"\t"
+		end if
 		ctx.asm_i = 0
 		ctx.asm_output = ""
 		ctx.asm_input = ""
@@ -2349,17 +2359,26 @@ end sub
 
 private sub _emitAsmEnd( )
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		ctx.asm_line += $"\n"""
-		ctx.asm_line += " : " + ctx.asm_output
-		ctx.asm_line += " : " + ctx.asm_input
+		if( ctx.identcnt > 0 ) then
+			ctx.asm_line += $"\n"
+		end if
 
-		'' We don't know what registers etc. will be trashed,
-		'' so assume everything...
-		ctx.asm_line += " : ""cc"", ""memory"""
-		ctx.asm_line += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
-		if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-			ctx.asm_line += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
-			ctx.asm_line += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+		ctx.asm_line += """"
+
+		'' Only when inside normal procedures
+		'' (NAKED procedures don't increase the indentation)
+		if( ctx.identcnt > 0 ) then
+			ctx.asm_line += " : " + ctx.asm_output
+			ctx.asm_line += " : " + ctx.asm_input
+
+			'' We don't know what registers etc. will be trashed,
+			'' so assume everything...
+			ctx.asm_line += " : ""cc"", ""memory"""
+			ctx.asm_line += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+			if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+				ctx.asm_line += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
+				ctx.asm_line += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+			end if
 		end if
 	end if
 
@@ -2490,11 +2509,22 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
+	dim as string mangled
+
 	hWriteLine( )
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
 		ctx.linenum = 0
+	end if
+
+	'' NAKED procedure? Use inline asm, since gcc doesn't support
+	'' __attribute__((naked)) on x86
+	if( symbIsNaked( proc ) ) then
+		mangled = *symbGetMangledName( proc )
+		hWriteLine( "__asm__( "".globl " + mangled + """ )", TRUE, TRUE )
+		hWriteLine( "__asm__( """ + mangled + ":"" )", TRUE, TRUE )
+		exit sub
 	end if
 
 #if 0
@@ -2522,6 +2552,19 @@ private sub _emitProcEnd _
 		byval initlabel as FBSYMBOL ptr, _
 		byval exitlabel as FBSYMBOL ptr _
 	)
+
+	dim as string mangled
+
+	'' NAKED procedure? Use inline asm, since gcc doesn't support
+	'' __attribute__((naked)) on x86
+	if( symbIsNaked( proc ) ) then
+		'' Emit .size like ASM backend, for Linux
+		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+			mangled = *symbGetMangledName( proc )
+			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ )", TRUE, TRUE )
+		end if
+		exit sub
+	end if
 
 	ctx.identcnt -= 1
 	hWriteLine( "}", FALSE, TRUE )

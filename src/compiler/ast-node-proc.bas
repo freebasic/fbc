@@ -449,7 +449,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse symbIsNaked( sym ) = FALSE ) then
+	if( symbIsNaked( sym ) = FALSE ) then
 		'' alloc parameters
 		hDeclProcParams( sym )
 
@@ -656,7 +656,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 			end if
 		end if
 
-		if( irGetOption( IR_OPT_HIGHLEVEL ) or enable_implicit_code ) then
+		if( enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
 				select case symbGetType( sym )
