@@ -1358,7 +1358,7 @@ private sub hCreateFrame _
 	dim as zstring ptr lprof
 
 	' No frame for naked functions
-	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	if( symbIsNaked( proc ) = FALSE ) then
 
     	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
@@ -1423,7 +1423,7 @@ private sub hDestroyFrame _
 	) static
 
 	' don't do anything for naked functions, except the .size at the end
-	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	if( symbIsNaked( proc ) = FALSE ) then
 
     	dim as integer bytestoalloc
 

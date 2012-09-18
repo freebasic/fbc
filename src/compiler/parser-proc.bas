@@ -2197,7 +2197,7 @@ function cProcStmtEnd( ) as integer
 	proc_res = symbGetProcResult( parser.currproc )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
-			if (parser.currproc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+			if( symbIsNaked( parser.currproc ) = FALSE ) then
 				errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
 			end if
 		end if

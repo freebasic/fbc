@@ -153,7 +153,7 @@ enum FB_SYMBATTRIB
 					''= &h02000000
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
-	FB_SYMBATTRIB_NAKED         = &h10000000
+	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
 	FB_SYMBATTRIB_ABSTRACT      = &h20000000
 	FB_SYMBATTRIB_VIRTUAL       = &h40000000
 
@@ -2348,6 +2348,8 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
+
+#define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
 
 #define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
 

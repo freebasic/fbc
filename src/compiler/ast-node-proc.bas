@@ -449,7 +449,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
+	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse symbIsNaked( sym ) = FALSE ) then
 		'' alloc parameters
 		hDeclProcParams( sym )
 
@@ -603,7 +603,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	'' No need to worry about any "explicit" code though (any statements),
 	'' including local variables and possibly resulting destructor calls;
 	'' they are "the coders fault", not ours.
-	enable_implicit_code = ((sym->attrib and FB_SYMBATTRIB_NAKED) = 0)
+	enable_implicit_code = not symbIsNaked( sym )
 
 	if( errGetCount( ) = 0 ) then
 		'' Constructor?
