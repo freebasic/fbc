@@ -2316,6 +2316,14 @@ private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
 		mangled  = "_" + mangled
 	end if
 
+	if( symbIsProc( sym ) ) then
+		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
+			'' Add the @N suffix for STDCALL
+			mangled += "@"
+			mangled += str( symbGetProcParamsLen( sym ) )
+		end if
+	end if
+
 	function = mangled
 end function
 
