@@ -781,7 +781,12 @@ private sub _emitAsmText( byval text as zstring ptr )
 end sub
 
 private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	ctx.asm_line += emitGetVarName( sym )
+	ctx.asm_line += *symbGetMangledName( sym )
+	if( symbGetOfs( sym ) > 0 ) then
+		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
+	elseif( symbGetOfs( sym ) < 0 ) then
+		ctx.asm_line += str( symbGetOfs( sym ) )
+	end if
 end sub
 
 private sub _emitAsmEnd( )

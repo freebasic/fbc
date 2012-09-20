@@ -6633,32 +6633,6 @@ private sub _close _
 end sub
 
 '':::::
-private function _getVarName _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string static
-
-	dim as string sname
-
-	if( s <> NULL ) then
-		sname = *symbGetMangledName( s )
-
-		if( symbGetOfs( s ) > 0 ) then
-			sname += "+" + str( symbGetOfs( s ) )
-
-		elseif( symbGetOfs( s ) < 0 ) then
-			sname += str( symbGetOfs( s ) )
-		end if
-
-		function = sname
-
-	else
-		function = ""
-	end if
-
-end function
-
-'':::::
 private function _procGetFrameRegName _
 	( _
 	) as const zstring ptr
@@ -7087,7 +7061,6 @@ function emitGasX86_ctor _
 		@_isRegPreserved, _
 		@_getFreePreservedReg, _
 		@_getResultReg, _
-		@_getVarName, _
 		@_procGetFrameRegName, _
 		@_procBegin, _
 		@_procEnd, _

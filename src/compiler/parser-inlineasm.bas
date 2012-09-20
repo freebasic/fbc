@@ -73,19 +73,13 @@ sub cAsmCode()
 					dim as FBSYMBOL ptr s = chain_->sym
 					do
 						select case symbGetClass( s )
-						'' function?
-						case FB_SYMBCLASS_PROC
-							text = *symbGetMangledName( s )
+						case FB_SYMBCLASS_PROC, FB_SYMBCLASS_LABEL
+							sym = s
 							exit do, do
 
 						'' const?
 						case FB_SYMBCLASS_CONST
 							text = symbGetConstValueAsStr( s )
-							exit do, do
-
-						'' label?
-						case FB_SYMBCLASS_LABEL
-							text = *symbGetMangledName( s )
 							exit do, do
 
 						case FB_SYMBCLASS_VAR
