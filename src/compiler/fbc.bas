@@ -165,7 +165,7 @@ private function hCanDeleteAsm( byval stage as integer ) as integer
 		'' be the final asm for -gen gas) can be preserved by -R,
 		'' or with -RR under -gen gas.
 		function = ((not fbc.keepasm) and _
-		            ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+		            ((fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) or _
 		             (not fbc.keepfinalasm)))
 	else
 		'' Stage 2 output (the final .asm for -gen gcc) can be
