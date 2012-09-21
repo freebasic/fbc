@@ -501,9 +501,11 @@ private function hIsLhsEqRhs _
 
 end function
 
-'' Check whether an UDT has a dtor, copy ctor or virtual methods?
-'' (in that case, such variables behave differently in some cases; e.g. they
-'' will be passed byval instead of byref)
+'' Check whether UDT doesn't have either of dtor/copy ctor/virtual methods
+'' (UDTs that have any of these are handled specially by BYVAL params and
+'' function results. For example, BYVAL params do copy construction, and use
+'' this function to check whether there is a copyctor and whether a temp copy
+'' to be passed byref must be used or not)
 function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
 	function = ((symbGetCompCopyCtor( sym ) = NULL) and _
 	            (symbGetCompDtor( sym ) = NULL) and _
