@@ -35,6 +35,11 @@
 		private sub f( byref x as T = N )
 		end sub
 	end namespace
+
+	#print "7:"
+	scope
+		const x as T = N
+	end scope
 #endmacro
 
 #macro check( T, N )
@@ -294,6 +299,8 @@ check( single, - 1.797693134862316e+308 )
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '' cases that shouldn't generate a warning
 
+#print
+#print
 #print "---------- no warnings should be shown below ----------"
 
 #undef check

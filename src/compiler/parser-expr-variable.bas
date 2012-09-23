@@ -9,17 +9,14 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-private function hCheckIndex _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	'' if index isn't an integer, convert
-	select case as const typeGet( astGetDataType( expr ) )
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	select case( typeGet( astGetDataType( expr ) ) )
+	case FB_DATATYPE_INTEGER
 
 	case FB_DATATYPE_POINTER
+		'' Disallow pointers explicitly, because they can be converted
+		'' to integer fine, but we don't want to allow pointers as indices.
 		errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
@@ -39,7 +36,6 @@ private function hCheckIndex _
 	end select
 
 	function = expr
-
 end function
 
 '':::::

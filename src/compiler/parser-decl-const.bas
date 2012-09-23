@@ -156,10 +156,6 @@ function cConstAssign _
 	if( expr = NULL ) then
 		errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
 		doskip = TRUE
-		expr = NULL
-	end if
-
-	if( expr = NULL ) then
 		'' error recovery: create a fake node
 		expr = astNewCONSTz( dtype )
 	end if
@@ -174,7 +170,6 @@ function cConstAssign _
 
 	'' string?
 	if( litsym <> NULL ) then
-
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' not a string?
 			if( dtype <> FB_DATATYPE_STRING ) then
@@ -187,10 +182,8 @@ function cConstAssign _
 		if( symbAddConst( @id, exprdtype, NULL, @value, attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
-
 	'' anything else..
 	else
-
 		'' not a constant?
 		if( astIsCONST( expr ) = FALSE ) then
 			errReportEx( FB_ERRMSG_EXPECTEDCONST, id )
@@ -200,6 +193,7 @@ function cConstAssign _
 			exprdtype = FB_DATATYPE_INTEGER
 		end if
 
+		'' Type explicitly specified?
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			'' string?
 			if( typeGet( dtype ) = FB_DATATYPE_STRING ) then
@@ -211,7 +205,9 @@ function cConstAssign _
 				expr = astNewCONSTstr( NULL )
 			end if
 
-			'' convert if needed
+			astCheckConst( dtype, expr, TRUE )
+
+			'' Convert expression to given type if needed
 			if( (dtype <> exprdtype) or _
 				(subtype <> astGetSubtype( expr )) ) then
 
@@ -224,8 +220,10 @@ function cConstAssign _
 					subtype = NULL
 				end if
 			end if
-
 		else
+			'' Use expression's type
+			'' (no need to check for conversion overflow,
+			''  since it's the same type)
 			dtype = exprdtype
 			subtype = astGetSubtype( expr )
 		end if
@@ -238,7 +236,6 @@ function cConstAssign _
 						  attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
-
     end if
 
 	''
