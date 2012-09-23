@@ -61,6 +61,7 @@ Version 0.25.0:
 - No error was shown when complex function result UDTs were left unconstructed when using FUNCTION= because the UDT had no default constructor
 - #3554189: "SWAP parent, child" was allowed (where child is an UDT derived from the parent UDT) even though "child = parent" assignments are not allowed
 - #3544952: Static arrays of forward-referenced derived UDT pointers failed to compile
+- #3538470: Expressions such as "(Type<MyUDT>( )).myfield" could crash the compiler or be miscompiled
 
 
 Version 0.24.0:

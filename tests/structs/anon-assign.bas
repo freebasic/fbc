@@ -1,8 +1,6 @@
 # include "fbcu.bi"
 
-
-
-namespace fbc_tests.structs.assign_anon
+namespace fbc_tests.structs.anon_assign
 
 type t
 	a as short
@@ -55,14 +53,12 @@ sub test_4  cdecl ()
 	CU_ASSERT_EQUAL( udt.d, -5 )	
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.assign_anon")
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/structs/anon-assign" )
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("test_2", @test_2)
 	fbcu.add_test("test_3", @test_3)
 	fbcu.add_test("test_4", @test_4)
-
 end sub
 
 end namespace

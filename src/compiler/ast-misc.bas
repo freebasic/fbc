@@ -1231,6 +1231,16 @@ sub astSetType _
 	case AST_NODECLASS_FIELD
 		astSetType( n->l, dtype, subtype )
 
+	case AST_NODECLASS_CALLCTOR
+		'' Propagate type change up to the temp VAR access, since that's
+		'' what will be returned by astLoadCALLCTOR().
+		astSetType( n->r, dtype, subtype )
+
+		'' This happens with field accesses on a CALLCTOR expression
+		'' such as (UDT( )).field. The access to offset 0 of the temp
+		'' UDT var is optimized out, causing the CALLCTOR expression to
+		'' be changed over to the field's dtype for a "direct" access.
+
 	end select
 
 end sub

@@ -177,8 +177,8 @@ sub testAnonPadding cdecl()
 	CU_ASSERT( offsetof( I, i2 ) = 4 )
 end sub
 
-private sub ctor () constructor
-	fbcu.add_suite("tests/structs/anon_align")
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/structs/anon-align" )
 	fbcu.add_test("size", @test_size)
 	fbcu.add_test("offset", @test_ofs)
 	fbcu.add_test("padding", @testAnonPadding)

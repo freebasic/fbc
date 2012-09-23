@@ -383,10 +383,11 @@ function astLoadCALLCTOR _
 		return NULL
 	end if
 
+	'' flush the ctor CALL to initialize the temp var
 	astLoad( n->l )
 	astDelNode( n->l )
 
-	'' return the anon var
+	'' return the VAR access to the temp var
 	vr = astLoad( n->r )
 	astDelNode( n->r )
 
