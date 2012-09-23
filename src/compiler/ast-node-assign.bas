@@ -252,8 +252,7 @@ end sub
 function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval show_warn as integer _
+		byval r as ASTNODE ptr _
 	) as integer
 
     dim as ASTNODE ptr n = any
@@ -336,7 +335,7 @@ function astCheckASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				if( astCheckConst( ldtype, r, show_warn ) = FALSE ) then
+				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
 					r = astNewCONV( ldtype, NULL, r )
 					if( r = NULL ) then
 						exit function

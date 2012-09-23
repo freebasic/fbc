@@ -45,8 +45,7 @@ private function hDoAssign _
 
 	'' don't build a FIELD node if it's an UDTElm symbol,
 	'' that doesn't matter with checkASSIGN
-	if( astCheckASSIGN( @lside, expr, FALSE ) = FALSE ) then
-
+	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
 		'' check if it's a cast
 		expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
 		if( expr = NULL ) then

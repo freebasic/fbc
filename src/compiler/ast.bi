@@ -858,8 +858,7 @@ declare function astCheckConst _
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr, _
-		byval show_warn as integer _
+		byval r as ASTNODE ptr _
 	) as integer
 
 declare function astCheckCONV _
