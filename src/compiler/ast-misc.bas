@@ -689,11 +689,24 @@ function astCheckConst _
 	) as integer
 
 	dim as integer result = any
+	dim as double dval = any, dmin = any, dmax = any
+	dim as longint lval = any
 
 	result = TRUE
 
+	''
 	'' x86/32-bit assumptions
 	'' assuming dtype has been stripped of const info
+	''
+	'' We don't want to show overflow warnings for conversions where only
+	'' the sign differs, such as integer <-> uinteger, because in that case
+	'' there is no data/precision loss. Technically speaking there can be
+	'' overflows in such a conversion, but it's trivial to convert back
+	'' and nothing is lost. It would probably be rather annoying to have
+	'' warnings about it in many cases, such as:
+	''    dim a as uinteger = -1
+	''    dim b as uinteger = 1 shl 31
+	''
 
 	select case as const( dtype )
 	''case FB_DATATYPE_DOUBLE
@@ -705,8 +718,6 @@ function astCheckConst _
 		'' Thus, no checks are needed for DOUBLE.
 
 	case FB_DATATYPE_SINGLE
-		dim as double dval = any, dmin = any, dmax = any
-
 		'' anything to SINGLE: show warning when out of SINGLE limits
 		dmin = 1.401298e-45
 		dmax = 3.402823e+38
@@ -718,71 +729,34 @@ function astCheckConst _
 		'' that is < dmin after abs(), and it shouldn't cause an
 		'' overflow warning.
 		if( dval <> 0 ) then
-			if( (dval < dmin) or (dval > dmax) ) then
-				result = FALSE
+			result = ((dval >= dmin) and (dval <= dmax))
+		end if
+
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
+	     FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
+
+		select case as const( typeGetSize( dtype ) )
+		case 1
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -128) and (lval <= 255))
+		case 2
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -32768) and (lval <= 65535))
+		case 4
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -2147483648u) and (lval <= 4294967295u))
+		case 8
+			'' longints can hold most other type's values, except floats
+			'' float?
+			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_FPOINT ) then
+				dval = astGetValueAsDouble( n )
+				result = ((dval >= -9223372036854775808ull) and _
+					  (dval <= 18446744073709551615ull))
 			end if
-		end if
-
-	case FB_DATATYPE_LONGINT
-
-chk_long:
-		'' unsigned constant?
-		if( typeIsSigned( astGetDataType( n ) ) = FALSE ) then
-			'' too big?
-			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
-				result = FALSE
-			end if
-		end if
-
-	case FB_DATATYPE_ULONGINT
-
-chk_ulong:
-		'' signed constant?
-		if( typeIsSigned( astGetDataType( n ) ) ) then
-			'' too big?
-			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
-				result = FALSE
-			end if
-		end if
-
-    case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, _
-    	 FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-
-chk_int:
-		dim as longint lval = any
-
-		lval = astGetValueAsLongInt( n )
-		if( (lval < ast_minlimitTB( dtype )) or _
-			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
-			result = FALSE
-		end if
-
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
-    	 FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
-    	 FB_DATATYPE_UINT
-
-chk_uint:
-		dim as ulongint ulval = any
-
-		ulval = astGetValueAsULongInt( n )
-		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
-			(ulval > ast_maxlimitTB( dtype )) ) then
-			result = FALSE
-		end if
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			goto chk_int
-		else
-			goto chk_long
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			goto chk_uint
-		else
-			goto chk_ulong
-		end if
+		end select
 
 	case FB_DATATYPE_BITFIELD
 		'' !!!WRITEME!!! use ->subtype's

@@ -999,14 +999,6 @@ private function hCheckParam _
 		hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
-	'' const?
-	if( astIsCONST( arg ) ) then
-		'' show "overflow in constant conversion" warnings
-		if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
-			hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-	end if
-
 	'' different types? convert..
 	if( param_dtype <> arg_dtype ) then
 		'' Cannot pass BYREF if different size/class, but we do allow
@@ -1036,6 +1028,14 @@ private function hCheckParam _
 				'' because it will be stored into a temp var of the
 				'' same type as the BYREF param. Then that temp var
 				'' is given to the BYREF param, and then it's safe.
+			end if
+		end if
+
+		'' const?
+		if( astIsCONST( arg ) ) then
+			'' show "overflow in constant conversion" warnings
+			if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
+				hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
 			end if
 		end if
 
