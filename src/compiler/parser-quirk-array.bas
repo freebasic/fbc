@@ -140,15 +140,18 @@ function cSwapStmt() as integer
 		exit function
 	end if
 
-	'' Check for invalid types by checking whether a raw assignment
-	'' would work (raw because astCheckASSIGN() doesn't check
-	'' operator overloads)
-	if( astCheckASSIGN( l, r ) = FALSE ) then
+	'' Check whether a "raw" assignment (no operator overloads) would work.
+	'' Must check both l = r and r = l due to inheritance with UDTs which
+	'' can allow one but not the other (and perhaps there even are other
+	'' cases with similar effect).
+	if( (astCheckASSIGN( l, r ) = FALSE) or _
+	    (astCheckASSIGN( r, l ) = FALSE) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		exit function
 	end if
 
 	if( (ldtype = FB_DATATYPE_STRUCT) or (rdtype = FB_DATATYPE_STRUCT) ) then
+		'' This should all be guaranteed by the assignment check above
 		assert( ldtype = FB_DATATYPE_STRUCT )
 		assert( rdtype = FB_DATATYPE_STRUCT )
 		assert( astGetSubtype( l ) = astGetSubtype( r ) )

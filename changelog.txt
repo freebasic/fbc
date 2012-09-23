@@ -59,6 +59,7 @@ Version 0.25.0:
 - EXIT FUNCTION in combination with RETURN with complex function result UDT was accepted, leaving the result UDT unconstructed
 - Complex function result UDTs were not constructed if neither FUNCTION= nor RETURN were used
 - No error was shown when complex function result UDTs were left unconstructed when using FUNCTION= because the UDT had no default constructor
+- "SWAP parent, child" was allowed (where child is an UDT derived from the parent UDT) even though "child = parent" assignments are not allowed
 
 
 Version 0.24.0:
