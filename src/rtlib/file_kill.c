@@ -1,7 +1,7 @@
 /* kill function */
 
-#include <errno.h>
 #include "fb.h"
+#include <errno.h>
 
 /*:::::*/
 FBCALL int fb_FileKill( FBSTRING *str )
