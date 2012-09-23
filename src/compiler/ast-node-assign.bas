@@ -223,7 +223,7 @@ private sub hCheckConstAndPointerOps _
 		byval rdtype as FB_DATATYPE _
 	)
 
-	'' check constant
+	'' lhs marked CONST? disallow the assignment then.
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 		return
@@ -350,7 +350,22 @@ function astCheckASSIGN _
 	end if
 
 	function = TRUE
+end function
 
+function astCheckASSIGNToType _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr l = any
+
+	l = astNewVAR( NULL, 0, ldtype, lsubtype )
+
+	function = astCheckASSIGN( l, r )
+
+	astDelTree( l )
 end function
 
 '':::::

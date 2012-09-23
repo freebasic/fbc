@@ -141,17 +141,13 @@ private function hOptionalExpr _
 
     '' anything else..
 	case else
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
+		expr = cExpression( )
+		if( expr = NULL ) then
+			exit function
+		end if
 
-    	'' check for invalid types..
-    	static as ASTNODE lside
-
-    	astBuildVAR( @lside, NULL, 0, dtype, subtype )
-
-		if( astCheckASSIGN( @lside, expr ) = FALSE ) then
+		'' check for invalid types
+		if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
 			exit function
 		end if
 

@@ -32,7 +32,6 @@ private function hDoAssign _
 		byval no_fake as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE lside = any
 	dim as integer dtype = any
 
 	dtype = symbGetFullType( ctx.sym )
@@ -41,15 +40,14 @@ private function hDoAssign _
 		dtype = typeDeref( dtype )
 	end if
 
-	astBuildVAR( @lside, NULL, 0, dtype, symbGetSubtype( ctx.sym ) )
-
-	'' don't build a FIELD node if it's an UDTElm symbol,
-	'' that doesn't matter with checkASSIGN
-	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
+	if( astCheckASSIGNToType( dtype, symbGetSubtype( ctx.sym ), expr ) = FALSE ) then
 		'' check if it's a cast
 		expr = astNewCONV( dtype, symbGetSubtype( ctx.sym ), expr )
 		if( expr = NULL ) then
 			'' hand it back...
+			'' (used with UDTs; if an UDT var is given in an UDT initializer,
+			'' but the assignment to the UDT's first field fails here,
+			'' then it will be assigned to the UDT itself instead)
 			if( no_fake ) then
 				exit function
 			end if
@@ -61,11 +59,9 @@ private function hDoAssign _
 		end if
 	end if
 
-	''
 	astTypeIniAddAssign( ctx.tree, expr, ctx.sym )
 
 	function = TRUE
-
 end function
 
 '':::::

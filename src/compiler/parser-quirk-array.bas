@@ -143,10 +143,7 @@ function cSwapStmt() as integer
 	'' Check for invalid types by checking whether a raw assignment
 	'' would work (raw because astCheckASSIGN() doesn't check
 	'' operator overloads)
-	dim as ASTNODE ptr fakelhs = astNewVAR( NULL, 0, astGetFullType( l ), astGetSubtype( l ) )
-	dim as integer ok = astCheckASSIGN( fakelhs, r )
-	astDelTree( fakelhs )
-	if( ok = FALSE ) then
+	if( astCheckASSIGN( l, r ) = FALSE ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH )
 		exit function
 	end if
