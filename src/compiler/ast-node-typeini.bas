@@ -550,35 +550,41 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( symbGetFullType( sym ), _
-								   symbGetSubtype( sym ), _
-								   expr )
+				if( typeIsPtr( symbGetFullType( sym ) ) ) then
+					'' Cast pointers to ANY PTR first to prevent issues with derived UDT ptrs,
+					'' which astNewCONV() currently doesn't allow to be casted to/from other ptr
+					'' types directly. Used at least by array descriptor initialization.
+					'' Pointer is pointer anyways, it shouldn't make a difference to the backend.
+					expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
+				end if
 
-                '' shouldn't happen, but..
+				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr )
+				assert( expr <> NULL )
+
+				'' shouldn't happen, but..
 				if( expr = NULL ) then
-			   		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					expr = astNewCONSTi( 0 )
 				end if
 			end if
 
-			if( expr <> NULL ) then
-				select case as const sdtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+			select case as const( sdtype )
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				irEmitVARINI64( sdtype, astGetValLong( expr ) )
 
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
 
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						irEmitVARINIi( sdtype, astGetValInt( expr ) )
-					else
-						irEmitVARINI64( sdtype, astGetValLong( expr ) )
-					end if
-
-				case else
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
 					irEmitVARINIi( sdtype, astGetValInt( expr ) )
-				end select
-			end if
+				else
+					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+				end if
+
+			case else
+				irEmitVARINIi( sdtype, astGetValInt( expr ) )
+			end select
 		end if
 
 	'' literal string..
