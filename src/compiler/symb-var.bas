@@ -424,48 +424,6 @@ sub symbSetArrayDimTb _
 end sub
 
 '':::::
-private sub hSetupVar _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval id as const zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval lgt as integer, _
-		byval dimensions as integer, _
-		dTB() as FBARRAYDIM, _
-		byval stats as integer _
-	)
-
-	''
-	s->stats or= stats
-
-	s->lgt = lgt
-	s->ofs = 0
-
-	'' array fields
-	s->var_.array.dimhead = NULL
-	s->var_.array.dimtail = NULL
-	s->var_.array.desc = NULL
-
-	if( dimensions <> 0 ) then
-		symbSetArrayDimTb( s, dimensions, dTB() )
-	else
-		symbSetArrayDimensions( s, 0 )
-		s->var_.array.dif = 0
-		s->var_.array.elms = 1
-	end if
-
-	s->var_.array.has_ellipsis = FALSE
-
-	s->var_.initree = NULL
-
-	s->var_.align = 0	'' default alignment
-
-	s->var_.stmtnum = parser.stmt.cnt
-
-end sub
-
-'':::::
 function symbAddVarEx _
 	( _
 		byval id as const zstring ptr, _
@@ -553,8 +511,24 @@ function symbAddVarEx _
 		exit function
 	end if
 
-	''
-	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), stats )
+	s->stats or= stats
+	s->lgt = lgt
+	s->ofs = 0
+	'' array fields
+	s->var_.array.dimhead = NULL
+	s->var_.array.dimtail = NULL
+	s->var_.array.desc = NULL
+	if( dimensions <> 0 ) then
+		symbSetArrayDimTb( s, dimensions, dTB() )
+	else
+		symbSetArrayDimensions( s, 0 )
+		s->var_.array.dif = 0
+		s->var_.array.elms = 1
+	end if
+	s->var_.array.has_ellipsis = FALSE
+	s->var_.initree = NULL
+	s->var_.align = 0	'' default alignment
+	s->var_.stmtnum = parser.stmt.cnt
 
 	'' QB quirk: see above
 	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
