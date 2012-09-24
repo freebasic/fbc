@@ -591,16 +591,15 @@ function symbAddTempVar _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval doalloc as integer, _
 		byval checkstatic as integer _
 	) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 id
-    static as FBARRAYDIM dTB(0)
+	static as FBARRAYDIM dTB(0)
 	dim as integer attrib = any
-    dim as FBSYMBOL ptr s = any
 	dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
+	'' With the unique id, creating the var should always succeed
 	id = *hMakeTmpStrNL( )
 
 	attrib = FB_SYMBATTRIB_TEMP
@@ -616,25 +615,25 @@ function symbAddTempVar _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-	s = symbAddVarEx( id, NULL, _
-					  dtype, subtype, 0, _
-					  0, dTB(), _
-					  attrib, options )
+	function = symbAddVarEx( id, NULL, dtype, subtype, 0, 0, _
+	                         dTB(), attrib, options )
+end function
 
-	assert(s)
+function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr s = any
 
-	'' alloc? (should be used by IR only)
-	if( doalloc ) then
-    	'' not static?
-    	if( (s->attrib and FB_SYMBATTRIB_STATIC) = 0 or irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	s = symbAddTempVar( dtype )
 
-			s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
-
-		end if
+	'' Allocate as local unless it's static
+	'' (ASM backend assumption, under C backend statics are also allocated
+	''  locally, see also astScopeAllocLocals(), but the C backend doesn't
+	''  use this in the first place)
+	assert( env.clopt.backend = FB_BACKEND_GAS )
+	if( symbIsStatic( s ) = FALSE ) then
+		s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt )
 	end if
 
-    function = s
-
+	function = s
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -866,10 +865,7 @@ function symbCloneVar _
 		'' should be fixed up with the new symbol in TypeIniFlush()
 
 	else
-		function = symbAddTempVar( symbGetType( sym ), _
-					    	   	   symbGetSubType( sym ), _
-					   		   	   FALSE, _
-					   		   	   FALSE )
+		function = symbAddTempVar( symbGetType( sym ), symbGetSubType( sym ), FALSE )
 	end if
 
 end function

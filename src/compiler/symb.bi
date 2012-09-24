@@ -1043,9 +1043,10 @@ declare function symbAddTempVar _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr = NULL, _
-		byval doalloc as integer = FALSE, _
 		byval checkstatic as integer = TRUE _
 	) as FBSYMBOL ptr
+
+declare function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 declare function symbAddArrayDesc _
 	( _

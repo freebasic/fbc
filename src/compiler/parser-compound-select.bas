@@ -141,7 +141,7 @@ sub cSelectStmtBegin()
 			'' is unknown at compile-time, do:
 
 			'' dim temp as wstring ptr
-			sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+			sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
 
 			'' Remove temp flag to have it considered for dtor calling
 			symbUnsetIsTemp( sym )

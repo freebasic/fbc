@@ -66,9 +66,9 @@ private function hCallCtorList _
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any
     dim as ASTNODE ptr tree = any
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+	label = symbAddLabel( NULL )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 	'' iter = @vector[0]
 	tree = astBuildVarAssign( iter, ptr_expr )
@@ -263,10 +263,10 @@ private function hCallDtorList _
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
-    elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+	label = symbAddLabel( NULL )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+	elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 

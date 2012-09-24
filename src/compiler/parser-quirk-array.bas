@@ -78,7 +78,7 @@ private function hMakeRef _
 	var subtype = astGetSubType( (*pexpr) )
 
 	'' var ref
-	var ref = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+	var ref = symbAddTempVar( dtype, subtype, FALSE )
 
 	'' ref = @expr
 	function = astNewLINK( t, astNewASSIGN( astNewVAR( ref, , dtype, subtype ), astNewADDROF( *pexpr ) ) )
@@ -208,7 +208,7 @@ function cSwapStmt() as integer
 		var lsubtype = astGetSubType( l )
 
 		'' var temp = clone( l )
-		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE, FALSE )
+		var temp = symbAddTempVar( lfulldtype, lsubtype, FALSE )
 		t = astNewLINK( t, astNewASSIGN( astNewVAR( temp, , lfulldtype, lsubtype ), astCloneTree( l ) ) )
 
 		'' l = clone( r )

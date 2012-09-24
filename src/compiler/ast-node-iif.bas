@@ -98,10 +98,7 @@ function astNewIIF _
 	n = astNewNode( AST_NODECLASS_IIF, true_dtype, truexpr->subtype )
 	function = n
 
-	n->sym = symbAddTempVar( true_dtype, _
-							 truexpr->subtype, _
-							 FALSE, _
-							 FALSE )
+	n->sym = symbAddTempVar( true_dtype, truexpr->subtype, FALSE )
 	n->l = condexpr
 
 	'' assign true to temp

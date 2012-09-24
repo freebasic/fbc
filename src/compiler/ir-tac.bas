@@ -127,11 +127,6 @@ declare sub hFreeREG _
 		byval force as integer = FALSE _
 	)
 
-declare sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	)
-
 declare sub hFreePreservedRegs _
 	( _
  		_
@@ -2583,22 +2578,15 @@ private sub _loadVR _
 		vreg->regFamily = IR_REG_SSE
 	end if
 
-
 end sub
 
-'':::::
-private sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
+private sub hCreateTMPVAR( byval vreg as IRVREG ptr )
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
-		vreg->sym = symbAddTempVar( vreg->dtype, NULL, TRUE )
+		vreg->sym = symbAddAndAllocateTempVar( vreg->dtype )
 		vreg->ofs = symbGetOfs( vreg->sym )
 		vreg->reg = INVALID
 	end if
-
 end sub
 
 '':::::

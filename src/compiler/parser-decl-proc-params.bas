@@ -128,7 +128,7 @@ private function hOptionalExpr _
     select case as const typeGet( dtype )
     '' UDT? let SymbolInit() build a tree..
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+		sym = symbAddTempVar( dtype, subtype, FALSE )
 
     	expr = cInitializer( sym, FB_INIOPT_ISINI )
     	if( expr = NULL ) then

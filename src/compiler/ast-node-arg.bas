@@ -86,7 +86,7 @@ private function hTmpStrListAdd _
 	t->prev = parent->call.strtail
 	parent->call.strtail = t
 
-	s = symbAddTempVar( dtype, NULL, FALSE, FALSE )
+	s = symbAddTempVar( dtype, NULL, FALSE )
 
 	t->sym = s
 	if( copyback ) then
@@ -403,12 +403,7 @@ private sub hCheckByRefArg _
 
 		case else
 			'' scalars: store param to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE, FALSE ), _
-									 	   0, _
-									 	   dtype, _
-									 	   subtype ), _
-							    arg, _
-							    AST_OPOPT_DONTCHKPTR )
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE ), 0, dtype, subtype ), arg, AST_OPOPT_DONTCHKPTR )
 		end select
 
 	end select
@@ -683,10 +678,7 @@ private sub hUDTPassByval _
 
 	'' non-trivial type, pass a pointer to a temp copy
 	dim as FBSYMBOL ptr tmp = any
-	tmp = symbAddTempVar( symbGetFullType( param ), _
-						  symbGetSubtype( param ), _
-						  FALSE, _
-						  FALSE )
+	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ), FALSE )
 
 	arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
 						  astBuildVarField( tmp ) )
@@ -730,7 +722,7 @@ private function hImplicitCtor _
 		exit function
 	end if
 
-	tmp = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE, FALSE )
+	tmp = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE )
 
 	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
 
@@ -802,10 +794,7 @@ private function hCheckUDTParam _
 				dim as FBSYMBOL ptr tmp = any
 
 				'' (note: if it's being returned in regs, there's no DTOR)
-				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-									  arg->subtype, _
-									  FALSE, _
-									  FALSE )
+				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, arg->subtype, FALSE )
 
 				n->l = astNewLink( astNewADDROF( astBuildVarField( tmp ) ), _
 								   astNewASSIGN( astBuildVarField( tmp ), _

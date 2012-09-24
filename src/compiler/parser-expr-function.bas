@@ -176,12 +176,8 @@ function cCtorCall _
 	dim as ASTNODE ptr procexpr = any
 	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
-    '' alloc temp var
-    tmp = symbAddTempVar( symbGetType( sym ), _
-    					  sym, _
-    					  FALSE, _
-    					  FALSE )
-
+	'' alloc temp var
+	tmp = symbAddTempVar( symbGetType( sym ), sym, FALSE )
 
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then

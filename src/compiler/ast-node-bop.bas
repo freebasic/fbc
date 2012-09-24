@@ -1608,7 +1608,7 @@ function astNewSelfBOP _
 
 		dtype = astGetFullType( l )
 		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		'' tmp = @lvalue
 		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
