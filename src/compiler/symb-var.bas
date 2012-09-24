@@ -441,6 +441,9 @@ function symbAddVarEx _
     dim as FBSYMBOLTB ptr symtb = any
     dim as FBHASHTB ptr hashtb = any
     dim as integer isglobal = any, stats = any
+#if 0
+	static as zstring * FB_MAXNAMELEN+1 new_alias
+#endif
 
     function = NULL
 
@@ -449,6 +452,29 @@ function symbAddVarEx _
 			 				FB_SYMBATTRIB_EXTERN or _
 			 				FB_SYMBATTRIB_SHARED or _
 			 				FB_SYMBATTRIB_COMMON)) <> 0
+
+	'' Currently we rely on irEmitDECL() from astLoadDECL() instead of this
+#if 0
+	'' Give local variables an alias that's unique enough to prevent the
+	'' C backend from running into issues with variable shadowing.
+	'' Temporaries can be excluded since they already have a unique name.
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		'' No alias specified yet? (The parser doesn't allow ALIAS on
+		'' locals, but the symb module generally doesn't disallow that)
+		if( id_alias = NULL ) then
+			'' Local and not temp?
+			'' Note: FB_SYMBATTRIB_LOCAL isn't set yet, that's done below
+			if( (isglobal = FALSE) and _
+			    ((attrib and FB_SYMBATTRIB_TEMP) = 0) ) then
+				'' Append the scope level to the id. The '$' is
+				'' needed to prevent collision with other ids
+				'' ('$' isn't allowed as part of FB ids).
+				new_alias = *id + "$" + str( parser.scope )
+				id_alias = @new_alias
+			end if
+		end if
+	end if
+#endif
 
     ''
     if( lgt <= 0 ) then

@@ -927,9 +927,7 @@ function astTypeIniCheckScope _
 				 						   FB_SYMBATTRIB_STATIC or _
 										   FB_SYMBATTRIB_DESCRIPTOR or _
 				 						   FB_SYMBATTRIB_TEMP)) = 0) ) then
-
-					function = TRUE
-					exit function
+					return TRUE
 				end if
 
 			end if
@@ -938,15 +936,13 @@ function astTypeIniCheckScope _
 
 		if( n->l <> NULL ) then
 			if( astTypeIniCheckScope( n->l ) ) then
-				function = TRUE
-				exit function
+				return TRUE
 			end if
 		end if
 
 		if( n->r <> NULL ) then
 			if( astTypeIniCheckScope( n->r ) ) then
-				function = TRUE
-				exit function
+				return TRUE
 			end if
 		end if
 

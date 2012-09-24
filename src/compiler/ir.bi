@@ -148,7 +148,7 @@ type IR_VTBL
 		byval s as FBSYMBOL ptr _
 	)
 
-	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
+	procAllocStaticVars as sub( byval head_sym as FBSYMBOL ptr )
 
 	emitConvert as sub _
 	( _
@@ -315,6 +315,8 @@ type IR_VTBL
 	( _
 		byval s as FBSYMBOL ptr _
 	)
+
+	emitDECL as sub( byval sym as FBSYMBOL ptr )
 
 	emitDBG as sub _
 	( _
@@ -613,6 +615,8 @@ declare sub irEnd()
 #define irEmitSCOPEEND(s) ir.vtbl.emitScopeEnd( s )
 
 #define irEmitDBG(op, proc, ex) ir.vtbl.emitDBG( op, proc, ex )
+
+#define irEmitDECL( sym ) ir.vtbl.emitDECL( sym )
 
 
 #define irIsREG(v) (v->typ = IR_VREGTYPE_REG)

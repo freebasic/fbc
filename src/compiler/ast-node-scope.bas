@@ -631,35 +631,41 @@ sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
 	wend
 end sub
 
-sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
+sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr s = any
+
 	'' Used for both scope and proc locals/statics
 
-	'' For the C emitter, let static vars be allocated here too, so they're
-	'' emitted inside the procedure. The irProcAllocStaticVars() later does
-	'' nothing.
-	'' Otherwise for the ASM emitter, ignore static vars here via the
-	'' filter mask; irProcAllocStaticVars() will handle them later.
-	dim as integer mask = any
-	if (irGetOption(IR_OPT_HIGHLEVEL)) then
-		mask = FB_SYMBATTRIB_SHARED
-	else
-		mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
-	end if
-
-	dim as FBSYMBOL ptr s = symtbhead
-	while (s)
-		'' non-shared/static variable?
-		if (symbIsVar(s) andalso ((s->attrib and mask) = 0)) then
-			'' Procedure parameter?
-			if (symbIsParam(s)) then
-				s->ofs = irProcAllocArg(parser.currproc, s, iif(symbIsParamByVal(s), s->lgt, FB_POINTERSIZE))
-			else
-				s->ofs = irProcAllocLocal(parser.currproc, s, s->lgt * symbGetArrayElements(s))
+	s = symtbhead
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		'' For the C backend, emit static vars from here too, since in
+		'' C static vars can be declared inside scopes as in FB.
+		'' The irProcAllocStaticVars() later does nothing.
+		while( s )
+			'' temp var? (all other locals/statics are emitted
+			'' from astLoadDECL(), assuming they have DECL nodes)
+			if( symbIsVar( s ) and (not symbIsParam( s )) and symbIsTemp( s ) ) then
+				irEmitDECL( s )
 			end if
-			symbSetVarIsAllocated(s)
-		end if
-		s = s->next
-	wend
+			s = s->next
+		wend
+	else
+		'' For the ASM backend, ignore static vars here,
+		'' irProcAllocStaticVars() will handle them later.
+		while( s )
+			'' non-shared/static variable?
+			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
+				'' Procedure parameter?
+				if( symbIsParam( s ) ) then
+					s->ofs = irProcAllocArg( parser.currproc, s, iif( symbIsParamByVal( s ), s->lgt, FB_POINTERSIZE ) )
+				else
+					s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt * symbGetArrayElements( s ) )
+				end if
+				symbSetVarIsAllocated( s )
+			end if
+			s = s->next
+		wend
+	end if
 end sub
 
 '':::::

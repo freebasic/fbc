@@ -1083,34 +1083,6 @@ private sub _procEnd _
 
 end sub
 
-''::::
-private function _procAllocArg _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
-
-	/' do nothing '/
-
-	function = 0
-
-end function
-
-'':::::
-private function _procAllocLocal _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval lgt as integer _
-	) as integer
-
-	hEmitVariable( sym )
-
-	function = 0
-
-end function
-
 '':::::
 private sub _scopeBegin _
 	( _
@@ -1125,10 +1097,6 @@ private sub _scopeEnd _
 		byval s as FBSYMBOL ptr _
 	)
 
-end sub
-
-private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
-	/' do nothing '/
 end sub
 
 '':::::
@@ -2226,17 +2194,17 @@ private sub _emitMem _
 		byval bytes as integer _
 	)
 
-
 	select case op
 	case AST_OP_MEMCLEAR
 		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )", TRUE )
-
 	case AST_OP_MEMMOVE
 		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )", TRUE )
-
 	end select
 
+end sub
 
+private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	hEmitVariable( sym )
 end sub
 
 '':::::
@@ -2612,12 +2580,12 @@ sub irHLC_ctor()
 		@_getOptionValue, _
 		@_procBegin, _
 		@_procEnd, _
-		@_procAllocArg, _
-		@_procAllocLocal, _
+		NULL, _
+		NULL, _
 		NULL, _
 		@_scopeBegin, _
 		@_scopeEnd, _
-		@_procAllocStaticVars, _
+		NULL, _
 		@_emitConvert, _
 		@_emitLabel, _
 		@_emitLabel, _
@@ -2648,6 +2616,7 @@ sub irHLC_ctor()
 		@_emitMem, _
 		@_emitScopeBegin, _
 		@_emitScopeEnd, _
+		@_emitDECL, _
 		@_emitDBG, _
 		@_emitVarIniBegin, _
 		@_emitVarIniEnd, _

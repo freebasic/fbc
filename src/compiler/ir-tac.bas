@@ -425,10 +425,12 @@ private function _makeTmpStr _
 	static as zstring * 4 + 8 + 1 res
 
 	if( islabel ) then
-		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
+		res = ".Lt_"
 	else
-		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
+		res = "Lt_"
 	end if
+
+	res += *hHexUInt( ctx.tmpcnt )
 
 	ctx.tmpcnt += 1
 
@@ -749,6 +751,10 @@ private sub _emitMem _
 
 	_emit( op, v1, v2, NULL, 0, bytes )
 
+end sub
+
+private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	'' Nothing to do - used by C backend
 end sub
 
 '':::::
@@ -2727,6 +2733,7 @@ sub irTAC_ctor()
 		@_emitMem, _
 		@_emitScopeBegin, _
 		@_emitScopeEnd, _
+		@_emitDECL, _
 		@_emitDBG, _
 		@_emitVarIniBegin, _
 		@_emitVarIniEnd, _

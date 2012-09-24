@@ -108,17 +108,19 @@ function astNewDECL _
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_DECL, FB_DATATYPE_INVALID )
 
+	n->sym = sym
 	n->l = hCallCtor( sym, initree )
 
 	function = n
 
 end function
 
-'':::::
-function astLoadDECL _
-	( _
-		byval n as ASTNODE ptr _
-	) as IRVREG ptr
+function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
+	if( ast.doemit ) then
+		if( symbIsLocal( n->sym ) ) then
+			irEmitDECL( n->sym )
+		end if
+	end if
 
 	'' call ctor?
 	if( n->l <> NULL ) then
@@ -127,7 +129,4 @@ function astLoadDECL _
 	end if
 
 	function = NULL
-
 end function
-
-
