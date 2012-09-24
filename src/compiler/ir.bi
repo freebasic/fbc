@@ -96,10 +96,6 @@ type IR_VTBL
 	init as sub(byval backend as FB_BACKEND)
 	end as sub()
 
-	flush as sub _
-	( _
-	)
-
 	emitBegin as function _
 	( _
 	) as integer
@@ -153,16 +149,6 @@ type IR_VTBL
 	)
 
 	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
-
-	emit as sub _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
 
 	emitConvert as sub _
 	( _
@@ -535,8 +521,6 @@ declare sub irEnd()
 
 #define irEmitEnd(tottime) ir.vtbl.emitEnd( tottime )
 
-#define irEmit(op, v1, v2, vr, ex1, ex2) ir.vtbl.emit( op, v1, v2, vr, ex1, ex2 )
-
 #define irEmitPROCBEGIN(proc, initlabel) ir.vtbl.emitProcBegin( proc, initlabel )
 
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
@@ -579,8 +563,6 @@ declare sub irEnd()
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
 #define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
-
-#define irFlush() ir.vtbl.flush( )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 

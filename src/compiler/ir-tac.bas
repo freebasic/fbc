@@ -2686,7 +2686,6 @@ sub irTAC_ctor()
 	( _
 		@_init, _
 		@_end, _
-		@_flush, _
 		@_emitBegin, _
 		@_emitEnd, _
 		@_getOptionValue, _
@@ -2698,7 +2697,6 @@ sub irTAC_ctor()
 		@_scopeBegin, _
 		@_scopeEnd, _
 		@_procAllocStaticVars, _
-		@_emit, _
 		@_emitConvert, _
 		@_emitLabel, _
 		@_emitLabelNF, _

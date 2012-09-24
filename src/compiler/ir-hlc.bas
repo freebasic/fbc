@@ -1064,21 +1064,6 @@ private function _getOptionValue _
 end function
 
 '':::::
-private sub _emit _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
 private sub _procBegin _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -1123,17 +1108,6 @@ private function _procAllocLocal _
 	hEmitVariable( sym )
 
 	function = 0
-
-end function
-
-'':::::
-private function _procGetFrameRegName _
-	( _
-	) as const zstring ptr
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-	function = NULL
 
 end function
 
@@ -2628,74 +2602,11 @@ end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub _flush
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
-private function _GetDistance _
-	( _
-		byval vreg as IRVREG ptr _
-	) as uinteger
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-	function = 0
-
-end function
-
-'':::::
-private sub _loadVR _
-	( _
-		byval reg as integer, _
-		byval vreg as IRVREG ptr, _
-		byval doload as integer _
-	)
-
-/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
-private sub _storeVR _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval reg as integer _
-	)
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
-private sub _xchgTOS _
-	( _
-		byval reg as integer _
-	)
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
 sub irHLC_ctor()
 	static as IR_VTBL _vtbl = _
 	( _
 		@_init, _
 		@_end, _
-		@_flush, _
 		@_emitBegin, _
 		@_emitEnd, _
 		@_getOptionValue, _
@@ -2703,11 +2614,10 @@ sub irHLC_ctor()
 		@_procEnd, _
 		@_procAllocArg, _
 		@_procAllocLocal, _
-		@_procGetFrameRegName, _
+		NULL, _
 		@_scopeBegin, _
 		@_scopeEnd, _
 		@_procAllocStaticVars, _
-		@_emit, _
 		@_emitConvert, _
 		@_emitLabel, _
 		@_emitLabel, _
@@ -2759,10 +2669,10 @@ sub irHLC_ctor()
 		@_allocVrPtr, _
 		@_allocVrOfs, _
 		@_setVregDataType, _
-		@_getDistance, _
-		@_loadVr, _
-		@_storeVr, _
-		@_xchgTOS, _
+		NULL, _
+		NULL, _
+		NULL, _
+		NULL, _
 		@_makeTmpStr _
 	)
 
