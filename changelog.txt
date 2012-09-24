@@ -63,6 +63,7 @@ Version 0.25.0:
 - #3544952: Static arrays of forward-referenced derived UDT pointers failed to compile
 - #3538470: Expressions such as "(Type<MyUDT>( )).myfield" could crash the compiler or be miscompiled
 - C backend: A variable in a nested scope could shadow other locals even above its DIM statement
+- C backend: Bitfields were emitted as plain fields, making such structures unnecessarily big
 
 
 Version 0.24.0:

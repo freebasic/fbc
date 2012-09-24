@@ -629,6 +629,9 @@ private sub hEmitStruct _
 		byval is_ptr as integer _
 	)
 
+	dim as string ln
+	dim as integer skip = any
+
 	var tname = "struct"
 	if( symbGetUDTIsUnion( s ) ) then
 		tname = "union"
@@ -698,16 +701,34 @@ private sub hEmitStruct _
 	'' Write out the elements
 	ctx.identcnt += 1
 	e = symbGetUDTFirstElm( s )
-	dim as string ln
-	do while( e <> NULL )
-		ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
-		ln += " "
-		ln += *symbGetName( e )
-		ln += hEmitArrayDecl( e )
-		ln += attrib
-		hWriteLine( ln, TRUE )
+	while( e )
+		''
+		'' For bitfields, emit only the container field, not the
+		'' individual bitfields (bitfields are merged into a "container"
+		'' given by the type of the first bitfield; if further bitfields
+		'' don't fit a new container is started, etc.)
+		''
+		'' Alternatively we could emit bitfields explicitly via ": N",
+		'' but that would depend on gcc's ABI and we'd have to emit
+		'' things like __attribute__((ms_struct)) too for msbitfields...
+		''
+		if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
+			skip = (symbGetSubtype( e )->bitfld.bitpos <> 0)
+		else
+			skip = FALSE
+		end if
+
+		if( skip = FALSE ) then
+			ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+			ln += " "
+			ln += *symbGetName( e )
+			ln += hEmitArrayDecl( e )
+			ln += attrib
+			hWriteLine( ln, TRUE )
+		end if
+
 		e = symbGetUDTNextElm( e )
-	loop
+	wend
 	ctx.identcnt -= 1
 
     '' Close UDT body
