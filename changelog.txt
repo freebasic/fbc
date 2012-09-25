@@ -66,6 +66,7 @@ Version 0.25.0:
 - C backend: A variable in a nested scope could shadow other locals even above its DIM statement
 - C backend: Bitfields were emitted as plain fields, making such structures unnecessarily big
 - #3571432: LIB "" crashed the compiler
+- ASM backend: -NaN float constants were emitted as +NaN
 
 
 Version 0.24.0:

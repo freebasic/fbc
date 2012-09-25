@@ -133,17 +133,17 @@ function hFloatToStr _
 	case &h7FF00000UL, &hFFF00000UL
 		if( typ = FB_DATATYPE_DOUBLE ) then
 			typ = FB_DATATYPE_LONGINT
-			if( expval >= 0 ) then
-				function = "0x7FF0000000000000"
-			else
+			if( expval and &h80000000 ) then
 				function = "0xFFF0000000000000"
+			else
+				function = "0x7FF0000000000000"
 			end if
 		else
 			typ = FB_DATATYPE_INTEGER
-			if( expval >= 0 ) then
-				function = "0x7F800000"
-			else
+			if( expval and &h80000000 ) then
 				function = "0xFF800000"
+			else
+				function = "0x7F800000"
 			end if
 		end if
 
@@ -151,10 +151,18 @@ function hFloatToStr _
 	case &h7FF80000UL, &hFFF80000UL
 		if( typ = FB_DATATYPE_DOUBLE ) then
 			typ = FB_DATATYPE_LONGINT
-			function = "0x7FF8000000000000"
+			if( expval and &h80000000 ) then
+				function = "0xFFF8000000000000"
+			else
+				function = "0x7FF8000000000000"
+			end if
 		else
 			typ = FB_DATATYPE_INTEGER
-			function = "0x7FF00000"
+			if( expval and &h80000000 ) then
+				function = "0xFFC00000"
+			else
+				function = "0x7FC00000"
+			end if
 		end if
 
 	case else
