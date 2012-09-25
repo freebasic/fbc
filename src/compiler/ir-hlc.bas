@@ -1540,34 +1540,69 @@ private function hEmitUlong( byval value as ulongint ) as string
 	return str(value) + "ull"
 end function
 
-private function hEmitSingle( byval value as single ) as string
-	dim as string s = str( value )
+private function hEmitFloat _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	) as string
 
-	'' Same considerations as for doubles (see below), and besides,
-	'' apparently the 'f' suffix cannot be used unless the literal
-	'' really looks like a float, i.e. has a dot or exponent.
+	dim as string s
+	dim as integer expval = any
 
-	if( instr( s, any "e." ) = 0 ) then
-		s += ".0"
-	end if
+	'' x86 little-endian assumption
+	expval = cast( integer ptr, @value )[1]
 
-	return s & "f"
-end function
+	select case( expval )
+	'' +/- infinity?
+	case &h7FF00000UL, &hFFF00000UL
+		if( dtype = FB_DATATYPE_DOUBLE ) then
+			if( expval and &h80000000 ) then
+				s += "(-__builtin_inf())"
+			else
+				s += "__builtin_inf()"
+			end if
+		else
+			if( expval and &h80000000 ) then
+				s += "(-__builtin_inff())"
+			else
+				s += "__builtin_inff()"
+			end if
+		end if
 
-private function hEmitDouble( byval value as double ) as string
-	dim as string s = str( value )
+	'' +/- NaN? Quiet-NaN's only
+	case &h7FF80000UL, &hFFF80000UL
+		if( dtype = FB_DATATYPE_DOUBLE ) then
+			if( expval and &h80000000 ) then
+				s += "(-__builtin_nan( """" ))"
+			else
+				s += "__builtin_nan( """" )"
+			end if
+		else
+			if( expval and &h80000000 ) then
+				s += "(-__builtin_nanf( """" ))"
+			else
+				s += "__builtin_nanf( """" )"
+			end if
+		end if
 
-	'' This can be something like '1', '0.1, or '1e-100'.
-	'' We want to make sure gcc always treats it as a double;
-	'' unfortunately there is no double type suffix, so we add '.0'
-	'' to prevent it from being treated as integer (that would cause
-	'' problems with doubles bigger than the int range allows).
+	case else
+		s = str( value )
 
-	if( instr( s, any "e." ) = 0 ) then
-		s += ".0"
-	end if
+		'' Append .0 if there is no dot or exponent yet,
+		'' to prevent gcc from treating it as int
+		'' (e.g. 1 -> 1.0, but 0.1 or 1e-100 can stay as-is)
+		if( instr( s, any "e." ) = 0 ) then
+			s += ".0"
+		end if
 
-	return s
+		'' float type suffix
+		if( dtype = FB_DATATYPE_SINGLE ) then
+			s += "f"
+		end if
+
+	end select
+
+	function = s
 end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
@@ -1828,10 +1863,8 @@ private function hEmitVreg _
 			s += hEmitLong( vreg->value.long )
 		case FB_DATATYPE_ULONGINT
 			s += hEmitUlong( vreg->value.long )
-		case FB_DATATYPE_SINGLE
-			s += hEmitSingle( vreg->value.float )
-		case FB_DATATYPE_DOUBLE
-			s += hEmitDouble( vreg->value.float )
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			s += hEmitFloat( vreg->dtype, vreg->value.float )
 		case FB_DATATYPE_LONG
 			if( FB_LONGSIZE = len( integer ) ) then
 				s += hEmitInt( vreg->value.int )
@@ -2530,11 +2563,7 @@ private sub _emitVarIniI( byval dtype as integer, byval value as integer )
 end sub
 
 private sub _emitVarIniF( byval dtype as integer, byval value as double )
-	if( dtype = FB_DATATYPE_SINGLE ) then
-		ctx.varini += hEmitSingle( value )
-	else
-		ctx.varini += hEmitDouble( value )
-	end if
+	ctx.varini += hEmitFloat( dtype, value )
 	hVarIniSeparator( )
 end sub
 
