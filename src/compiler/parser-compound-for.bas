@@ -217,6 +217,11 @@ private function hAllocTemp _
 		symbUnsetIsTemp(s)
 	end if
 
+	'' Add DECL node for it, so the C backend can emit it correctly
+	'' (vars not marked as temp must have DECL nodes instead)
+	symbSetDontInit( s )
+	astAdd( astNewDECL( s, NULL ) )
+
     function = s
 
 end function
@@ -638,7 +643,6 @@ private sub hForStep _
 			astDelNode( expr )
 
 			isconst += 1
-
 		else
 			iscomplex = TRUE
 
@@ -662,13 +666,11 @@ private sub hForStep _
 	else
 		iscomplex = TRUE
 
-		if( stk->for.explicit_step = TRUE ) then
+		if( stk->for.explicit_step ) then
 			'' generate a symbol using the expression's type
 			stk->for.stp.sym = hAllocTemp( dtype, subtype )
 			stk->for.stp.dtype = symbGetType( stk->for.end.sym )
-		end if
 
-		if( stk->for.explicit_step ) then
 			'' build constructor call
 			if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
