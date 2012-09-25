@@ -10,32 +10,46 @@
 #include once "ast.bi"
 
 '' [ALIAS "id"]
-function cAliasAttribute() as zstring ptr
-	static as zstring * (FB_MAXNAMELEN+1) aliasid
+function cAliasAttribute( ) as zstring ptr
+	static as zstring * FB_MAXNAMELEN+1 aliasid
 
-	if (lexGetToken() = FB_TK_ALIAS) then
-		lexSkipToken()
+	if( lexGetToken( ) = FB_TK_ALIAS ) then
+		lexSkipToken( )
 
-		if (lexGetClass() = FB_TKCLASS_STRLITERAL) then
-			lexEatToken(aliasid)
-			return @aliasid
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			aliasid = *lexGetText( )
+			lexSkipToken( )
+
+			if( len( aliasid ) > 0 ) then
+				function = @aliasid
+			else
+				errReport( FB_ERRMSG_EMPTYALIASSTRING )
+			end if
+		else
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
-
-		errReport(FB_ERRMSG_SYNTAXERROR)
 	end if
-
-	return NULL
 end function
 
 '' [LIB "string"]
-sub cLibAttribute()
-	if (lexGetToken() = FB_TK_LIB) then
-		lexSkipToken()
-		if (lexGetClass() <> FB_TKCLASS_STRLITERAL) then
-			errReport(FB_ERRMSG_SYNTAXERROR)
+sub cLibAttribute( )
+	dim as zstring ptr libname = any
+
+	if( lexGetToken( ) = FB_TK_LIB ) then
+		lexSkipToken( )
+
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			libname = lexGetText( )
+
+			if( len( *libname ) > 0 ) then
+				fbAddLib( libname )
+			else
+				errReport( FB_ERRMSG_EMPTYLIBSTRING )
+			end if
+
+			lexSkipToken( )
 		else
-			fbAddLib(lexGetText())
-			lexSkipToken()
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 	end if
 end sub

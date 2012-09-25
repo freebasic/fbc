@@ -20,6 +20,7 @@ Version 0.25.0:
 - SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
 - Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations
 - NAKED support for the C backend, using GCC inline asm
+- ALIAS "" or LIB "" will now result in a compiler error
 
 [fixed]
 - libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
