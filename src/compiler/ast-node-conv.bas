@@ -455,7 +455,7 @@ function astNewCONV _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-	dim as integer ldclass = any, ldtype = any, errmsg = any
+	dim as integer ldclass = any, ldtype = any, errmsg = any, doconv = any
 
 	if( perrmsg ) then
 		*perrmsg = FB_ERRMSG_OK
@@ -567,9 +567,7 @@ function astNewCONV _
 		return l
 	end if
 
-	dim as integer doconv = TRUE
-
-	'' high-level IR? always convert..
+	'' high-level IR?
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
 		'' special case: if it's a float to int, use a builtin function
 		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
@@ -581,39 +579,41 @@ function astNewCONV _
 				return astNewDEREF( astNewCONV( typeAddrOf( to_dtype ), to_subtype, astNewADDROF( l ) ) )   
 			end select
 		end if
-	else
-		'' only convert if the classes are different (ie, floating<->integer) or
-		'' if sizes are different (ie, byte<->int)
-		if( ldclass = typeGetClass( to_dtype ) ) then
-			select case typeGet( to_dtype )
-			case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS   
-				'' do nothing
-				doconv = FALSE
-			case else
-				if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
-					doconv = FALSE
-				end if
-			End Select
-		end if
+	end if
 
-		if( irGetOption( IR_OPT_FPUCONV ) ) then
-			if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
-				if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
-					doConv = TRUE
-				end if
+	doconv = TRUE
+
+	'' only convert if the classes are different (ie, floating<->integer) or
+	'' if sizes are different (ie, byte<->int)
+	if( ldclass = typeGetClass( to_dtype ) ) then
+		select case( typeGet( to_dtype ) )
+		case FB_DATATYPE_STRUCT '', FB_DATATYPE_CLASS
+			'' do nothing
+			doconv = FALSE
+		case else
+			if( typeGetSize( ldtype ) = typeGetSize( to_dtype ) ) then
+				doconv = FALSE
+			end if
+		end select
+	end if
+
+	if( irGetOption( IR_OPT_FPUCONV ) ) then
+		if (ldclass = FB_DATACLASS_FPOINT) and ( typeGetClass( to_dtype ) = FB_DATACLASS_FPOINT ) then
+			if( typeGetSize( ldtype ) <> typeGetSize( to_dtype ) ) then
+				doconv = TRUE
 			end if
 		end if
+	end if
 
-		'' casting another cast?
-		if( l->class = AST_NODECLASS_CONV ) then
-			'' no conversion in both?
-			if( l->cast.doconv = FALSE ) then
-				if( doconv = FALSE ) then
-					'' just replace the bottom cast()'s type
-					astGetFullType( l ) = to_dtype
-					l->subtype = to_subtype
-					return l
-				end if
+	'' casting another cast?
+	if( l->class = AST_NODECLASS_CONV ) then
+		'' no conversion in both?
+		if( l->cast.doconv = FALSE ) then
+			if( doconv = FALSE ) then
+				'' just replace the bottom cast()'s type
+				astGetFullType( l ) = to_dtype
+				l->subtype = to_subtype
+				return l
 			end if
 		end if
 	end if
@@ -717,7 +717,7 @@ function astLoadCONV _
 		if( n->cast.doconv ) then
 			vr = irAllocVreg( astGetDataType( n ), n->subtype )
 			vr->vector = n->vector
-			irEmitConvert( astGetDataType( n ), n->subtype, vr, vs )
+			irEmitConvert( vr, vs )
 
 			if( n->cast.do_convfd2fs ) then
 				'' converting DOUBLE to SINGLE?

@@ -150,13 +150,7 @@ type IR_VTBL
 
 	procAllocStaticVars as sub( byval head_sym as FBSYMBOL ptr )
 
-	emitConvert as sub _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitConvert as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitLabel as sub _
 	( _
@@ -226,11 +220,7 @@ type IR_VTBL
 		byval vr as IRVREG ptr _
 	)
 
-	emitStore as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitStore as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitSpillRegs as sub _
 	( _
@@ -549,7 +539,7 @@ declare sub irEnd()
 
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
-#define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
+#define irEmitCONVERT( v1, v2 ) ir.vtbl.emitConvert( v1, v2 )
 
 #define irEmitLABEL(label) ir.vtbl.emitLabel( label )
 

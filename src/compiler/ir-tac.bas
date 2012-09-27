@@ -564,33 +564,17 @@ private sub _emitUop _
 
 end sub
 
-'':::::
-private sub _emitConvert _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	) static
-
-	select case symb_dtypeTB(typeGet( dtype )).class
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
 		_emit( AST_OP_TOFLT, v1, v2, NULL )
 	end select
-
 end sub
 
-'':::::
-private sub _emitStore _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
-
+private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	_emit( AST_OP_ASSIGN, v1, v2, NULL )
-
 end sub
 
 '':::::
