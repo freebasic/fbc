@@ -1130,13 +1130,14 @@ private sub _emitEnd( byval tottime as double )
 	'' Append global declarations to the header of the toplevel section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
 	'' _emitBegin() is called even before any input code is parsed.
-	hEmitDataStmt( )
 
 	'' Emit proc decls first (because of function pointer initializers referencing procs)
 	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
 
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
+
+	hEmitDataStmt( )
 
 	hEmitFTOIBuiltins( )
 
