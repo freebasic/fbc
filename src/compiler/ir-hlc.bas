@@ -51,7 +51,6 @@ type IRHLCCTX
 	sections(0 to MAX_SECTIONS-1)	as SECTIONENTRY
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
-	origsection			as integer
 
 	regcnt				as integer     ' temporary labels counter
 	lblcnt				as integer
@@ -226,26 +225,18 @@ private sub sectionEnd( )
 end sub
 
 '' "Gosub" for temporarily writing to another section than the current one
-private sub sectionGosub( byval section as integer )
-	'' One "jump" to a previous section is allowed, but only one since
-	'' we don't use a stack to backtrack. It's possible though that
-	'' sectionGosub/Return() are used recursively.
-	if( ctx.sectiongosublevel = 0 ) then
-		ctx.origsection = ctx.section
-		ctx.section = section
-	else
-		assert( ctx.section = section )
-	end if
+private function sectionGosub( byval section as integer ) as integer
+	assert( (section >= 0) and (section <= ctx.section) )
+	function = ctx.section
+	ctx.section = section
 	ctx.sectiongosublevel += 1
-end sub
+end function
 
 '' "Return" to restore the previous current section
-private sub sectionReturn( )
+private sub sectionReturn( byval section as integer )
 	assert( ctx.sectiongosublevel > 0 )
 	ctx.sectiongosublevel -= 1
-	if( ctx.sectiongosublevel = 0 ) then
-		ctx.section = ctx.origsection
-	end if
+	ctx.section = section
 end sub
 
 '' Main emitting function
@@ -502,12 +493,15 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 		if( symbGetScope( s ) = FB_MAINSCOPE ) then
 			section += 1
 		end if
+
+		'' assuming it's the same or a parent scope
+		assert( section <= ctx.section )
 	else
 		'' Write to toplevel
 		section = 0
 	end if
 
-	sectionGosub( section )
+	section = sectionGosub( section )
 
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
@@ -525,7 +519,7 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 	end select
 
-	sectionReturn( )
+	sectionReturn( section )
 end sub
 
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
@@ -686,6 +680,8 @@ private sub hEmitFuncProto _
 		byval checkcalled as integer = TRUE _
 	)
 
+	dim as integer section = any
+
 	if( checkcalled and not symbGetIsCalled( s ) ) then
 		return
 	end if
@@ -701,7 +697,7 @@ private sub hEmitFuncProto _
 	end if
 
 	'' All procedure declarations go into the toplevel header
-	sectionGosub( 0 )
+	section = sectionGosub( 0 )
 
 	'' gcc builtin? gen a wrapper..
 	if( symbGetIsGccBuiltin( s ) ) then
@@ -710,7 +706,7 @@ private sub hEmitFuncProto _
 		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) + ";" )
 	end if
 
-	sectionReturn( )
+	sectionReturn( section )
 
 end sub
 
@@ -1113,8 +1109,10 @@ private function _emitBegin( ) as integer
 end function
 
 private sub _emitEnd( byval tottime as double )
+	dim as integer section = any
+
 	'' Switch to header section temporarily
-	sectionGosub( 0 )
+	section = sectionGosub( 0 )
 
 	'' Append global declarations to the header of the toplevel section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
@@ -1136,7 +1134,7 @@ private sub _emitEnd( byval tottime as double )
 
 	hEmitFTOIBuiltins( )
 
-	sectionReturn( )
+	sectionReturn( section )
 
 	'' body (is appended to header section)
 	sectionEnd( )
