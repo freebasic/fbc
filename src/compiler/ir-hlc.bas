@@ -1875,18 +1875,6 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	end if
 end sub
 
-'':::::
-private sub _emitReturn _
-	( _
-		byval bytestopop as integer _
-	)
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
 ''::::
 private sub _emitJmpTb _
 	( _
@@ -2205,28 +2193,6 @@ private sub _emitLoadRes _
 end sub
 
 '':::::
-private sub _emitStack _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
-private sub _emitPushUDT _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval lgt as integer _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
-'':::::
 private sub _emitPushArg _
     ( _
         byval vr as IRVREG ptr, _
@@ -2339,18 +2305,6 @@ private sub _emitCallPtr _
 	)
 
 	hDoCall( "(" + hEmitVreg( v1 ) + ")", bytestopop, vr, level )
-
-end sub
-
-'':::::
-private sub _emitStackAlign _
-	( _
-		byval bytes as integer _
-	)
-
-	/' do nothing '/
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 
 end sub
 
@@ -2769,7 +2723,7 @@ sub irHLC_ctor()
 		@_emitStore, _
 		@_emitLabel, _
 		@_emitLabel, _
-		@_emitReturn, _
+		NULL, _
 		@_emitProcBegin, _
 		@_emitProcEnd, _
 		@_emitPushArg, _
@@ -2785,12 +2739,12 @@ sub irHLC_ctor()
 		@_emitSpillRegs, _
 		@_emitLoad, _
 		@_emitLoadRes, _
-		@_emitStack, _
-		@_emitPushUDT, _
+		NULL, _
+		NULL, _
 		@_emitAddr, _
 		@_emitCall, _
 		@_emitCallPtr, _
-		@_emitStackAlign, _
+		NULL, _
 		@_emitJumpPtr, _
 		@_emitBranch, _
 		@_emitMem, _
