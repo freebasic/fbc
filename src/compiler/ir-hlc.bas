@@ -605,12 +605,7 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 	hWriteLine( ln + ";" )
 end sub
 
-'':::::
-private sub hEmitVariable _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
+private sub hEmitVariable( byval s as FBSYMBOL ptr )
     '' already allocated?
 	if( symbGetVarIsAllocated( s ) ) then
 		return
@@ -848,53 +843,51 @@ private sub hEmitStruct _
 
 end sub
 
-'':::::
-private sub hEmitDecls _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval procs as integer = FALSE _
-	)
-
-	do while( s <> NULL )
-
- 		select case as const symbGetClass( s )
- 		case FB_SYMBCLASS_NAMESPACE
+private sub hEmitDecls( byval s as FBSYMBOL ptr, byval procs as integer )
+	while( s )
+		select case as const( symbGetClass( s ) )
+		case FB_SYMBCLASS_NAMESPACE
 			hEmitDecls( symbGetNamespaceTbHead( s ), procs )
 
- 		case FB_SYMBCLASS_SCOPE
+		case FB_SYMBCLASS_SCOPE
 			hEmitDecls( symbGetScopeSymbTbHead( s ), procs )
 
- 		case FB_SYMBCLASS_VAR
-			if( procs = FALSE ) then
-				hEmitVariable( s )
+		case FB_SYMBCLASS_VAR
+			if( procs ) then
+				exit select
 			end if
 
- 		case FB_SYMBCLASS_PROC
-			if( procs ) then
-				if( symbGetIsFuncPtr( s ) = FALSE ) then
-					hEmitFuncProto( s )
+			'' Skip DATA descriptor arrays here,
+			'' they're handled by hEmitDataStmt()
+			if( symbGetType( s ) = FB_DATATYPE_STRUCT ) then
+				if( symbGetSubtype( s ) = ast.data.desc ) then
+					exit select
 				end if
 			end if
 
- 		end select
+			hEmitVariable( s )
+
+		case FB_SYMBCLASS_PROC
+			if( procs = FALSE ) then
+				exit select
+			end if
+
+			if( symbGetIsFuncPtr( s ) = FALSE ) then
+				hEmitFuncProto( s )
+			end if
+
+		end select
 
 		s = s->next
-	loop
-
+	wend
 end sub
 
-'':::::
-private sub hEmitDataStmt _
-	( _
-		_
-	)
-
+private sub hEmitDataStmt( )
 	var s = astGetLastDataStmtSymbol( )
 	do while( s <> NULL )
  		hEmitVariable( s )
 		s = s->var_.data.prev
 	loop
-
 end sub
 
 '':::::
@@ -1131,12 +1124,18 @@ private sub _emitEnd( byval tottime as double )
 	'' This must be done during _emitEnd() instead of _emitBegin() because
 	'' _emitBegin() is called even before any input code is parsed.
 
-	'' Emit proc decls first (because of function pointer initializers referencing procs)
+	'' Emit proc decls first (because of function pointer initializers
+	'' taking the address of procedures)
 	hEmitDecls( symbGetGlobalTbHead( ), TRUE )
 
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
 
+	'' DATA descriptor arrays must be emitted based on the order indicated
+	'' by the FBSYMBOL.var_.data.prev linked list, and not in the symtb
+	'' order as done by hEmitDecls().
+	'' Also, DATA array initializers can reference globals by taking their
+	'' address, so they must be emitted after the other global declarations.
 	hEmitDataStmt( )
 
 	hEmitFTOIBuiltins( )

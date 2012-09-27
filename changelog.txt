@@ -68,7 +68,7 @@ Version 0.25.0:
 - #3571432: LIB "" crashed the compiler
 - ASM backend: -NaN float constants were emitted as +NaN
 - C backend: Local UDT declarations were emitted in the scope they were first used, not where they were declared
-- C backend: DATA statements taking the addresses of global/static variables didn't work because they were emitted above the globals' declarations
+- C backend: DATA statement declarations could be emitted in the wrong order, causing gcc errors
 
 
 Version 0.24.0:

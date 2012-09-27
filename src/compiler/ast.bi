@@ -987,9 +987,7 @@ declare function astTypeIniClone _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astDataStmtBegin _
-	( _
-	) as ASTNODE ptr
+declare function astDataStmtBegin( ) as ASTNODE ptr
 
 declare function astDataStmtStore _
 	( _
@@ -997,10 +995,7 @@ declare function astDataStmtStore _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astDataStmtEnd _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+declare sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
 declare function astDataStmtAdd _
 	( _
