@@ -10,14 +10,6 @@
 #include once "flist.bi"
 #include once "lex.bi"
 
-'' flags that are stored in ctx to know what part of the output hWriteFile
-'' should write to
-enum section_e
-	SECTION_HEAD
-	SECTION_BODY
-	SECTION_FOOT
-end enum
-
 type IRCALLARG
     vr as IRVREG ptr
     level as integer
@@ -212,18 +204,22 @@ private function sectionInsideProc( ) as integer
 end function
 
 private sub sectionEnd( )
+	dim as SECTIONENTRY ptr parent = any, child = any
+
 	assert( ctx.section >= 0 )
 
 	if( ctx.section > 0 ) then
-		'' Append to parent section
-		with( ctx.sections(ctx.section-1) )
-			if( .old ) then
-				.text = ctx.sections(ctx.section).text
-				.old = FALSE
+		'' Append to parent section, if anything was written
+		parent = @ctx.sections(ctx.section-1)
+		child = @ctx.sections(ctx.section)
+		if( child->old = FALSE ) then
+			if( parent->old ) then
+				parent->text = child->text
+				parent->old = FALSE
 			else
-				.text += ctx.sections(ctx.section).text
+				parent->text += child->text
 			end if
-		end with
+		end if
 	end if
 
 	ctx.section -= 1
@@ -704,8 +700,8 @@ private sub hEmitFuncProto _
 		return
 	end if
 
-	var oldsection = ctx.section
-	ctx.section = SECTION_HEAD
+	'' All procedure declarations go into the toplevel header
+	sectionGosub( 0 )
 
 	'' gcc builtin? gen a wrapper..
 	if( symbGetIsGccBuiltin( s ) ) then
@@ -714,7 +710,7 @@ private sub hEmitFuncProto _
 		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) + ";" )
 	end if
 
-	ctx.section = oldsection
+	sectionReturn( )
 
 end sub
 
