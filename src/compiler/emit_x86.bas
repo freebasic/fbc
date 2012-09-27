@@ -994,14 +994,9 @@ private sub hWriteFooter _
 
 end sub
 
-'':::::
-private sub hWriteBss _
-	( _
-		byval s as FBSYMBOL ptr )
-
-    do while( s <> NULL )
-
-    	select case symbGetClass( s )
+private sub hWriteBss( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteBss( symbGetNamespaceTbHead( s ) )
@@ -1010,15 +1005,14 @@ private sub hWriteBss _
 		case FB_SYMBCLASS_SCOPE
 			hWriteBss( symbGetScopeSymbTbHead( s ) )
 
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		hDeclVariable( s )
+		'' variable?
+		case FB_SYMBCLASS_VAR
+			hDeclVariable( s )
 
-    	end select
+		end select
 
-    	s = s->next
-    loop
-
+		s = s->next
+	wend
 end sub
 
 '':::::
@@ -1050,7 +1044,6 @@ private sub hEmitVarConst _
 
 	hEmitConstHeader( )
 
-
 	'' some SSE instructions require operands to be 16-byte aligned
 	if( s->var_.align ) then
 		hALIGN ( s->var_.align )
@@ -1070,14 +1063,9 @@ private sub hEmitVarConst _
 
 end sub
 
-'':::::
-private sub hWriteConst _
-	( _
-		byval s as FBSYMBOL ptr )
-
-	do while( s <> NULL )
-
-		select case symbGetClass( s )
+private sub hWriteConst( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteConst( symbGetNamespaceTbHead( s ) )
@@ -1092,18 +1080,12 @@ private sub hWriteConst _
 		end select
 
 		s = s->next
-	loop
-
+	wend
 end sub
 
-'':::::
-private sub hWriteData _
-	( _
-		byval s as FBSYMBOL ptr )
-
-	do while( s <> NULL )
-
-		select case symbGetClass( s )
+private sub hWriteData( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteData( symbGetNamespaceTbHead( s ) )
@@ -1119,8 +1101,7 @@ private sub hWriteData _
 		end select
 
 		s = s->next
-	loop
-
+	wend
 end sub
 
 '':::::
@@ -6756,24 +6737,23 @@ private sub _procEnd _
 
 end sub
 
-private sub _procAllocStaticVars(byval s as FBSYMBOL ptr)
-    do while( s <> NULL )
+private sub _procAllocStaticVars( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
+		'' scope block? recursion..
+		case FB_SYMBCLASS_SCOPE
+			_procAllocStaticVars( symbGetScopeSymbTbHead( s ) )
 
-    	select case s->class
-    	'' scope block? recursion..
-    	case FB_SYMBCLASS_SCOPE
-    		_procAllocStaticVars( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		'' static?
-    		if( symbIsStatic( s ) ) then
+		'' variable?
+		case FB_SYMBCLASS_VAR
+			'' static?
+			if( symbIsStatic( s ) ) then
 				hDeclVariable( s )
 			end if
 		end select
 
-    	s = s->next
-    loop
+		s = symbGetNext( s )
+	wend
 end sub
 
 '':::::

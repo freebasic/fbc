@@ -69,6 +69,7 @@ Version 0.25.0:
 - ASM backend: -NaN float constants were emitted as +NaN
 - C backend: Local UDT declarations were emitted in the scope they were first used, not where they were declared
 - C backend: DATA statement declarations could be emitted in the wrong order, causing gcc errors
+- C backend: Static variables with destructors were emitted as locals despite needing to be visible to destructor wrapper functions
 
 
 Version 0.24.0:

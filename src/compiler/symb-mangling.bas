@@ -685,77 +685,76 @@ private function hMangleVariable  _
     '' class
     ''class_str = hGetClass( sym )
 
-    '' id
-    suffix_str = NULL
-    suffix_len = 0
+	'' id
+	suffix_str = NULL
+	suffix_len = 0
 
-    '' alias explicitly given?
-    if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
-    	id_str = sym->id.alias
-
-    else
+	'' alias explicitly given?
+	if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
+		id_str = sym->id.alias
+	else
 		'' shared, public, extern or inside a ns?
 		isglobal = (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 			   	  		 FB_SYMBATTRIB_EXTERN or _
 			 				  		 FB_SYMBATTRIB_SHARED or _
 			 				  		 FB_SYMBATTRIB_COMMON)) <> 0
 
-
 		if( isglobal or docpp ) then
+			suffix_len = 0
 
-    		suffix_len = 0
-
-    		'' BASIC? use the upper-cased name
-    		if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-    			'' high-level?
+			'' BASIC? use the upper-cased name
+			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+				'' high-level?
 				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-    				suffix_str = @"$"
-    				suffix_len = 1
+					suffix_str = @"$"
+					suffix_len = 1
 				end if
 
 				id_str = sym->id.name
-
 			'' else, the case-sensitive name saved in the alias..
 			else
-	    		id_str = sym->id.alias
+				id_str = sym->id.alias
 			end if
 
-    		'' suffixed?
-    		if( symbIsSuffixed( sym ) ) then
-    			if( suffix_len = 0 ) then
-    				suffix_str = @typecodeTB( symbGetType( sym ) )
-    			else
-    				static as string tmp
-    				tmp = typecodeTB( symbGetType( sym ) ) + "$"
-    				suffix_str = strptr( tmp )
-    			end if
-
-    			suffix_len += 1
-    		end if
-
-		else
-    		'' high-level?
-			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-    			'' BASIC? use the upper-cased name
-    			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-					id_str = sym->id.name
-
-    				'' suffixed?
-    				if( symbIsSuffixed( sym ) ) then
-    					static as string tmp
-    					tmp = typecodeTB( symbGetType( sym ) ) + "$"
-    					suffix_str = strptr( tmp )
-    					suffix_len = 2
-    				else
-    					suffix_str = @"$"
-    					suffix_len = 1
-    				end if
-
-				'' else, the case-sensitive name saved in the alias..
+			'' suffixed?
+			if( symbIsSuffixed( sym ) ) then
+				if( suffix_len = 0 ) then
+					suffix_str = @typecodeTB( symbGetType( sym ) )
 				else
-	    			id_str = sym->id.alias
+					static as string tmp
+					tmp = typecodeTB( symbGetType( sym ) ) + "$"
+					suffix_str = strptr( tmp )
 				end if
-
+				suffix_len += 1
+			end if
+		else
+			'' high-level?
+			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+				'' ir-hlc emits statics with dtors as globals,
+				'' so they need a unique name. Other statics are
+				'' still emitted locally, so they can keep their
+				'' own name, like other local vars.
+				if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
+					id_str = hMakeTmpStrNL( )
+				else
+					'' BASIC? use the upper-cased name
+					if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+						id_str = sym->id.name
+						'' suffixed?
+						if( symbIsSuffixed( sym ) ) then
+							static as string tmp
+							tmp = typecodeTB( symbGetType( sym ) ) + "$"
+							suffix_str = strptr( tmp )
+							suffix_len = 2
+						else
+							suffix_str = @"$"
+							suffix_len = 1
+						end if
+					'' else, the case-sensitive name saved in the alias..
+					else
+						id_str = sym->id.alias
+					end if
+				end if
 			else
 				'' static?
 				if( symbIsStatic( sym ) ) then

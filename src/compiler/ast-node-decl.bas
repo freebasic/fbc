@@ -117,6 +117,7 @@ end function
 
 function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
+		'' Emit local variable declarations in-line for the C backend
 		if( symbIsLocal( n->sym ) ) then
 			irEmitDECL( n->sym )
 		end if

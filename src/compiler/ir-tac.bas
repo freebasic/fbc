@@ -412,8 +412,8 @@ private sub _scopeEnd _
 
 end sub
 
-private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
-	emitProcAllocStaticVars(head_sym)
+private sub _procAllocStaticVars( byval head_sym as FBSYMBOL ptr )
+	emitProcAllocStaticVars( head_sym )
 end sub
 
 '':::::

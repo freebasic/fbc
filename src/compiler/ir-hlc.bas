@@ -820,8 +820,11 @@ private sub hEmitStruct _
 
 	symbResetIsBeingEmitted( s )
 
-	'' Emit methods (not part of the struct anymore, but they will include
-	'' references to self (this))
+	'' Emit method declarations for this UDT from here, because hEmitDecls()
+	'' that is usually used to emit declarations of called procedures does
+	'' not check UDT methods.
+	'' The method declarations are not part of the struct anymore,
+	'' but they will include references to it (the THIS pointer).
 	e = symbGetCompSymbTb( s ).head
 	do while( e <> NULL )
 		'' method?
@@ -1177,40 +1180,53 @@ private function _getOptionValue _
 
 end function
 
-'':::::
-private sub _procBegin _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub _procBegin( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.iniline = lexLineNum( )
-
 end sub
 
-'':::::
-private sub _procEnd _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+private sub _procEnd( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.endline = lexLineNum( )
-
 end sub
 
-'':::::
-private sub _scopeBegin _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
+private sub _scopeBegin( byval s as FBSYMBOL ptr )
 end sub
 
-'':::::
-private sub _scopeEnd _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
+private sub _scopeEnd( byval s as FBSYMBOL ptr )
+end sub
 
+private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
+	dim as integer section = any
+
+	''
+	'' Emit all statics with dtor into the toplevel header section,
+	'' so their dtor wrappers can see them.
+	''
+	'' This can't be done for all statics, since they can use local UDTs,
+	'' and emitting those as globals too would be hard. For static with
+	'' dtors though we can be sure they're not using local UDTs, because
+	'' UDTs with dtors aren't allowed inside scopes.
+	''
+
+	section = sectionGosub( 0 )
+
+	while( sym )
+		select case( symbGetClass( sym ) )
+		'' scope block? recursion..
+		case FB_SYMBCLASS_SCOPE
+			_procAllocStaticVars( symbGetScopeSymbTbHead( sym ) )
+
+		'' variable?
+		case FB_SYMBCLASS_VAR
+			'' static?
+			if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
+				hEmitVariable( sym )
+			end if
+		end select
+
+		sym = symbGetNext( sym )
+	wend
+
+	sectionReturn( section )
 end sub
 
 '':::::
@@ -2320,6 +2336,12 @@ private sub _emitMem _
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	'' Emit locals/statics locally, except statics with dtor - those are
+	'' handled in _procAllocStaticVars().
+	if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
+		exit sub
+	end if
+
 	hEmitVariable( sym )
 end sub
 
@@ -2687,7 +2709,7 @@ sub irHLC_ctor()
 		NULL, _
 		@_scopeBegin, _
 		@_scopeEnd, _
-		NULL, _
+		@_procAllocStaticVars, _
 		@_emitConvert, _
 		@_emitLabel, _
 		@_emitLabel, _

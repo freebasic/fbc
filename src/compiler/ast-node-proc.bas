@@ -179,10 +179,7 @@ private sub hProcFlush _
     end if
 
 	'' Emit static local variables
-	'' (for the C backend, this is already done in astScopeAllocLocals())
-	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
-		irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
-	end if
+	irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )

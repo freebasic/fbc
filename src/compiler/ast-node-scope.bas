@@ -634,24 +634,42 @@ end sub
 sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr s = any
 
-	'' Used for both scope and proc locals/statics
+	'' Emit/allocate variables local to a procedure or scope block
 
 	s = symtbhead
 	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-		'' For the C backend, emit static vars from here too, since in
-		'' C static vars can be declared inside scopes as in FB.
-		'' The irProcAllocStaticVars() later does nothing.
+		''
+		'' C backend: Most locals (including statics) are emitted from
+		'' astLoadDECL(), assuming they have DECL nodes, so they will
+		'' start shadowing variables from parent scopes not earlier
+		'' than they should.
+		''
+		'' Behind the scenes, statics with dtors are actually emitted
+		'' during irProcAllocStaticVars() because they're special:
+		'' They're emitted as globals so the dtor wrappers can see them.
+		''
+		'' The only cases of locals that don't have DECL nodes seem to
+		'' be temp vars. Since their names are unique, there's no
+		'' problem with var shadowing and we can emit them all at the
+		'' top of the scope from here.
+		''
 		while( s )
-			'' temp var? (all other locals/statics are emitted
-			'' from astLoadDECL(), assuming they have DECL nodes)
-			if( symbIsVar( s ) and (not symbIsParam( s )) and symbIsTemp( s ) ) then
+			'' temp var?
+			if( symbIsVar( s ) and symbIsTemp( s ) ) then
+				assert( (symbIsShared( s ) = FALSE) and (symbIsParam( s ) = FALSE) )
+				'' Fake a DECL to emit the variable declaration
 				irEmitDECL( s )
 			end if
 			s = s->next
 		wend
 	else
-		'' For the ASM backend, ignore static vars here,
-		'' irProcAllocStaticVars() will handle them later.
+		''
+		'' ASM backend: All locals except statics or shared vars
+		'' are allocated from here (i.e. the backend reserves the stack
+		'' space for them). Parameters are allocated from here too.
+		''
+		'' statics are handled by irProcAllocStaticVars() later.
+		''
 		while( s )
 			'' non-shared/static variable?
 			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
