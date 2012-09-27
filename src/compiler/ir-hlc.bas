@@ -23,8 +23,44 @@ type IRCALLARG
     level as integer
 end type
 
+'' The stack of nested sections allows us to go back and emit text to
+'' the headers of parent sections, while already working on emitting
+'' something else in an inner section.
+'' (most commonly used for UDT declarations, which are only emitted
+''  when they're needed by something else that's being emitted)
+''
+'' index 0 is the "toplevel" section,
+'' index 1 is the "body" where procedures are emitted into,
+'' the rest is used for nested procedure/scope blocks.
+''
+'' "body" is separate from "toplevel" to allow adding declarations to
+'' "toplevel", while the procedures are appended to "body", one after
+'' another. Then, once all procedures are emitted, "body" is closed,
+'' and is appended to "toplevel". At that point we're done emitting
+'' anyways and don't need to add stuff to toplevel's header anymore.
+''
+'' This kind of container/body pair is not currently needed for procs/scopes,
+'' because there we emit declarations "in line" instead of moving all to the
+'' top of the scope. For the toplevel emitting all at once makes sense because
+'' it is more efficient to check the symbol tables for called procedures only
+'' once during _emitEnd() instead of once during every _emitProcBegin().
+'' Note that _emitBegin() is called before parsing has even started,
+'' so the global declarations can't be emitted from there already.
+
+const MAX_SECTIONS = FB_MAXSCOPEDEPTH + 1
+
+type SECTIONENTRY
+	text		as string
+	old		as integer '' old junk text (that is only kept around to keep the string allocated)?
+	indent		as integer '' current indendation level to be used when emitting lines into this section
+end type
+
 type IRHLCCTX
-	identcnt			as integer     ' how many levels of indent
+	sections(0 to MAX_SECTIONS-1)	as SECTIONENTRY
+	section				as integer '' Current section to write to
+	sectiongosublevel		as integer
+	origsection			as integer
+
 	regcnt				as integer     ' temporary labels counter
 	lblcnt				as integer
 	tmpcnt				as integer
@@ -40,11 +76,6 @@ type IRHLCCTX
 	asm_i				as integer '' next operand/symbol index
 	asm_output			as string  '' output constraints in gcc's syntax
 	asm_input			as string  '' input constraints in gcc's syntax
-
-	section				as section_e   ' current section to write to
-	head_txt			as string      ' buffer for header text
-	body_txt			as string      ' buffer for body text
-	foot_txt			as string      ' buffer for footer text
 end type
 
 enum EMITTYPE_OPTIONS
@@ -117,9 +148,6 @@ private sub _init(byval backend as FB_BACKEND)
 
 	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_FPUIMMEDIATES or _
 	             IR_OPT_NOINLINEOPS )
-
-	' initialize the current section
-	ctx.section = SECTION_HEAD
 end sub
 
 private sub _end()
@@ -127,66 +155,120 @@ private sub _end()
 	flistEnd( @ctx.vregTB )
 end sub
 
-'':::::
+'' "Begin/end" to be used to opening/closing sections whenever opening/closing
+'' procs/scopes and also for the special sections 0 (header) and 1 (body).
+private sub sectionBegin( )
+	ctx.section += 1
+	assert( ctx.section < MAX_SECTIONS )
+	'' Tell next hWriteLine() to overwrite instead of appending,
+	'' to overwrite pre-existing string data, keeping the string allocated
+	with( ctx.sections(ctx.section) )
+		.old = TRUE
+		if( ctx.section > 0 ) then
+			'' Use at least the parent section's indentation
+			'' (some emitting functions will temporarily increase
+			'' it for code nested inside {} etc.)
+			.indent = ctx.sections(ctx.section-1).indent
+		else
+			'' Start indendation at zero TAB's
+			.indent = 0
+		end if
+	end with
+end sub
+
+'' Write line to current section (indentation & newline are automatically added)
+private sub sectionWriteLine( byval s as zstring ptr )
+	with( ctx.sections(ctx.section) )
+		if( .old ) then
+			if( .indent > 0 ) then
+				.text = string( .indent, TABCHAR )
+				.text += *s
+			else
+				.text = *s
+			end if
+			.old = FALSE
+		else
+			if( .indent > 0 ) then
+				.text += string( .indent, TABCHAR )
+			end if
+			.text += *s
+		end if
+		.text += NEWLINE
+	end with
+end sub
+
+private sub sectionIndent( )
+	ctx.sections(ctx.section).indent += 1
+end sub
+
+private sub sectionUnindent( )
+	assert( ctx.sections(ctx.section).indent > 0 )
+	ctx.sections(ctx.section).indent -= 1
+end sub
+
+private function sectionInsideProc( ) as integer
+	'' 0 and 1 are toplevel, 2+ means inside proc
+	function = (ctx.section >= 2)
+end function
+
+private sub sectionEnd( )
+	assert( ctx.section >= 0 )
+
+	if( ctx.section > 0 ) then
+		'' Append to parent section
+		with( ctx.sections(ctx.section-1) )
+			if( .old ) then
+				.text = ctx.sections(ctx.section).text
+				.old = FALSE
+			else
+				.text += ctx.sections(ctx.section).text
+			end if
+		end with
+	end if
+
+	ctx.section -= 1
+end sub
+
+'' "Gosub" for temporarily writing to another section than the current one
+private sub sectionGosub( byval section as integer )
+	'' One "jump" to a previous section is allowed, but only one since
+	'' we don't use a stack to backtrack. It's possible though that
+	'' sectionGosub/Return() are used recursively.
+	if( ctx.sectiongosublevel = 0 ) then
+		ctx.origsection = ctx.section
+		ctx.section = section
+	else
+		assert( ctx.section = section )
+	end if
+	ctx.sectiongosublevel += 1
+end sub
+
+'' "Return" to restore the previous current section
+private sub sectionReturn( )
+	assert( ctx.sectiongosublevel > 0 )
+	ctx.sectiongosublevel -= 1
+	if( ctx.sectiongosublevel = 0 ) then
+		ctx.section = ctx.origsection
+	end if
+end sub
+
+'' Main emitting function
+'' Writes out line of code to current section, and adds #line's
 private sub hWriteLine _
 	( _
-		byval s as zstring ptr = NULL, _
-		byval addcommas as integer = TRUE, _
+		byval s as zstring ptr, _
 		byval noline as integer = FALSE _
 	)
 
-	static as string ln, idstr, dbgln
+	static as string ln
 
-#macro writeToSection(ln)
-	' write it out to the current section
-	select case as const ctx.section
-	case SECTION_HEAD
-		ctx.head_txt += ln
-	case SECTION_BODY
-		ctx.body_txt += ln
-	case SECTION_FOOT
-		ctx.foot_txt += ln
-	end select
-#endmacro
-
-	if( s <> NULL ) then
-		'' the redundancy here is needed to keep string allocated and speed up concatenation, DON'T CHANGE!
-
-		if( ctx.identcnt > 0 ) then
-			idstr = string( ctx.identcnt, TABCHAR )
-		end if
-
-		if( env.clopt.debug and noline = FALSE ) then
-			if( ctx.identcnt > 0 ) then
-				dbgln = idstr
-				dbgln += "#line "
-			else
-				dbgln = "#line "
-			end if
-
-			dbgln += ctx.linenum & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" & NEWLINE
-
-			writeToSection( dbgln )
-		end if
-
-		if( ctx.identcnt > 0 ) then
-			ln = idstr
-			ln += *s
-		else
-			ln = *s
-		end if
-
-		if( addcommas ) then
-			ln += ";"
-		end if
-
-		ln += NEWLINE
-
-	else
-		ln = NEWLINE
+	if( env.clopt.debug and (noline = FALSE) ) then
+		ln = "#line " + str( ctx.linenum )
+		ln += " """ + hReplace( env.inf.name, "\", $"\\" ) + """"
+		sectionWriteLine( ln )
 	end if
 
-	writeToSection( ln )
+	sectionWriteLine( s )
 
 end sub
 
@@ -402,12 +484,8 @@ private function hGetUDTName _
 
 end function
 
-'':::::
-private sub hEmitUDT _
-	( _
-		byval s as FBSYMBOL ptr, _
-		byval is_ptr as integer _
-	)
+private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
+	dim as integer section = any
 
 	if( s = NULL ) then
 		return
@@ -417,28 +495,41 @@ private sub hEmitUDT _
 		return
 	end if
 
-	var oldsection = ctx.section
-	if( symbIsLocal( s ) = false ) then
-		ctx.section = SECTION_HEAD
+	if( symbIsLocal( s ) ) then
+		'' Write declaration to corresponding scope
+		'' (FB_MAINSCOPE=0 maps to section index 1)
+		section = 1 + symbGetScope( s )
+
+		'' Local to FB main? Convert to explicit main() function...
+		'' (should only happen while emitting main(), since we won't
+		'' see main's locals from elsewhere)
+		if( symbGetScope( s ) = FB_MAINSCOPE ) then
+			section += 1
+		end if
+	else
+		'' Write to toplevel
+		section = 0
 	end if
+
+	sectionGosub( section )
 
 	select case as const symbGetClass( s )
 	case FB_SYMBCLASS_ENUM
 		symbSetIsEmitted( s )
-		hWriteLine( "typedef int " & hGetUDTName( s ) & ";", FALSE, FALSE )
+		hWriteLine( "typedef int " + hGetUDTName( s ) + ";" )
 
 	case FB_SYMBCLASS_STRUCT
 		hEmitStruct( s, is_ptr )
 
 	case FB_SYMBCLASS_PROC
 		if( symbGetIsFuncPtr( s ) ) then
-			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ), TRUE )
+			hWriteLine( "typedef " + hEmitProcHeader( s, EMITPROC_ISPROTO or EMITPROC_ISPROCPTR ) + ";" )
 			symbSetIsEmitted( s )
 		end if
 
 	end select
 
-	ctx.section = oldsection
+	sectionReturn( )
 end sub
 
 '' Returns "[N]" (N = array size) if the symbol is an array or a fixlen string.
@@ -496,10 +587,10 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 
 	'' allocation modifier
 	if( symbIsCommon( sym ) ) then
-		hWriteLine( "extern " + ln, TRUE )
+		hWriteLine( "extern " + ln + ";" )
 		ln += " __attribute__((common))"
 	elseif( symbGetAttrib( sym ) and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN) ) then
-		hWriteLine( "extern " + ln, TRUE )
+		hWriteLine( "extern " + ln + ";" )
 
 		'' just an extern that was never allocated? exit..
 		if( symbIsExtern( sym ) ) then
@@ -511,7 +602,7 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 		ln += " = " + *varini
 	end if
 
-	hWriteLine( ln )
+	hWriteLine( ln + ";" )
 end sub
 
 '':::::
@@ -574,6 +665,30 @@ private sub hEmitVariable _
 
 end sub
 
+private sub hEmitGccBuiltinWrapper( byval sym as FBSYMBOL ptr )
+	dim as integer count = any
+	dim as FBSYMBOL ptr param = any
+	dim as string params
+
+	count = 0
+	param = symbGetProcLastParam( sym )
+
+	while( param )
+		params += "temp_ppparam$" + str( count )
+
+		param = symbGetProcPrevParam( sym, param )
+		if( param ) then
+			params += ", "
+		end if
+
+		count += 1
+	wend
+
+	params = *symbGetMangledName( sym ) + "( " + params + " )"
+
+	hWriteLine( "#define " + params + " __builtin_" + params, TRUE )
+end sub
+
 private sub hEmitFuncProto _
 	( _
 		byval s as FBSYMBOL ptr, _
@@ -599,24 +714,9 @@ private sub hEmitFuncProto _
 
 	'' gcc builtin? gen a wrapper..
 	if( symbGetIsGccBuiltin( s ) ) then
-		var cnt = 0
-		var param = symbGetProcLastParam( s )
-		var params = ""
-		do while( param <> NULL )
-			params += "temp_ppparam$" & cnt
-
-			param = symbGetProcPrevParam( s, param )
-			if param then
-				params += ", "
-			end if
-
-			cnt += 1
-		loop
-
-		hWriteLine( "#define " & *symbGetMangledName( s ) & "( " & params & " ) " & _
-					"__builtin_" & *symbGetMangledName( s ) & "( " & params & " )", FALSE, TRUE )
+		hEmitGccBuiltinWrapper( s )
 	else
-		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) )
+		hWriteLine( hEmitProcHeader( s, EMITPROC_ISPROTO ) + ";" )
 	end if
 
 	ctx.section = oldsection
@@ -629,7 +729,7 @@ private sub hEmitStruct _
 		byval is_ptr as integer _
 	)
 
-	dim as string ln
+	dim as string ln, id
 	dim as integer skip = any
 
 	var tname = "struct"
@@ -637,56 +737,53 @@ private sub hEmitStruct _
 		tname = "union"
 	end if
 
-    '' Already emitting this UDT currently? This means there is a circular
-    '' dependency between this UDT and one (or multiple) other UDT(s).
-    if( symbGetIsBeingEmitted( s ) ) then
-        '' Is this struct referenced through only a pointer? Then we can create a
-        '' forward reference.
-        if( is_ptr ) then
+	'' Already in the process of emitting this UDT?
+	if( symbGetIsBeingEmitted( s ) ) then
+		'' This means there is a circular dependency with another UDT.
+		'' One of the references can be a pointer only though,
+		'' because UDTs cannot contain each-other, so this can always
+		'' be solved by using a forward reference.
+		if( is_ptr ) then
+			'' Emit a forward reference for this struct (if not yet done),
+			'' and remember it for emitting later.
+			'' HACK: reusing the accessed flag (that's used by variables only)
+			if( symbGetIsAccessed( s ) = FALSE ) then
+				symbSetIsAccessed( s )
+				ln = "typedef " + tname
+				ln += " _" + hGetUDTName( s, TRUE )
+				ln += " " + hGetUDTName( s, FALSE ) + ";"
+				hWriteLine( ln )
+			end if
+			exit sub
+		end if
+	end if
 
-            '' Emit a forward reference to this struct (if not yet done),
-            '' and remember it for emitting later.
-            '' HACK: reusing the accessed flag (that's used by variables only)
-            if( symbGetIsAccessed( s ) = FALSE ) then
-                symbSetIsAccessed( s )
-                hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ), TRUE )
-            end if
+	symbSetIsBeingEmitted( s )
 
-            return
-        end if
-
-        '' No forward reference can be created, because the struct is used
-        '' directly (not through a pointer). It must be declared before its
-        '' parent is.
-    end if
-
-    symbSetIsBeingEmitted( s )
-
-	'' check every field, for non-emitted subtypes
+	'' Emit types of fields
 	var e = symbGetUDTFirstElm( s )
 	do while( e <> NULL )
 		hEmitUDT( symbGetSubtype( e ), typeIsPtr( symbGetType( e ) ) )
 		e = symbGetUDTNextElm( e )
 	loop
 
-    '' Has this UDT been emitted in the mean time? (maybe one of the fields
-    '' did that)
-    if( symbGetIsEmitted( s ) ) then
-        return
-    end if
+	'' Has this UDT been emitted in the mean time?
+	'' (due to one of the fields causing a circular dependency)
+	if( symbGetIsEmitted( s ) ) then
+		exit sub
+	end if
 
-    '' We'll emit it now.
-    symbSetIsEmitted( s )
+	'' Emit it now
+	symbSetIsEmitted( s )
 
 	'' UDT name
-	dim as string id
 	if( symbGetName( s ) = NULL ) then
 		id = *hMakeTmpStrNL( )
 	else
 		id = hGetUDTName( s, TRUE )
 	end if
 
-	hWriteLine( "typedef " + tname + " _" + id + " {", FALSE )
+	hWriteLine( "typedef " + tname + " _" + id + " {", TRUE )
 
 	'' Alignment (field = N)
 	var attrib = ""
@@ -699,7 +796,7 @@ private sub hEmitStruct _
 	end if
 
 	'' Write out the elements
-	ctx.identcnt += 1
+	sectionIndent( )
 	e = symbGetUDTFirstElm( s )
 	while( e )
 		''
@@ -720,24 +817,24 @@ private sub hEmitStruct _
 
 		if( skip = FALSE ) then
 			ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
-			ln += " "
-			ln += *symbGetName( e )
+			ln += " " + *symbGetName( e )
 			ln += hEmitArrayDecl( e )
 			ln += attrib
+			ln += ";"
 			hWriteLine( ln, TRUE )
 		end if
 
 		e = symbGetUDTNextElm( e )
 	wend
-	ctx.identcnt -= 1
 
-    '' Close UDT body
-	hWriteLine( "} " & id, TRUE )
+	'' Close UDT body
+	sectionUnindent( )
+	hWriteLine( "} " + id + ";", TRUE )
 
 	symbResetIsBeingEmitted( s )
 
 	'' Emit methods (not part of the struct anymore, but they will include
-    '' references to self (this))
+	'' references to self (this))
 	e = symbGetCompSymbTb( s ).head
 	do while( e <> NULL )
 		'' method?
@@ -746,8 +843,8 @@ private sub hEmitStruct _
 				hEmitFuncProto( e, FALSE )
 			end if
 		end if
-    	e = e->next
-    loop
+		e = e->next
+	loop
 
 end sub
 
@@ -804,17 +901,17 @@ end sub
 private sub hEmitTypedefs( )
 
 	'' typedef's for debugging
-	hWriteLine( "typedef char byte", TRUE )
-	hWriteLine( "typedef unsigned char ubyte", TRUE )
-	hWriteLine( "typedef unsigned short ushort", TRUE )
-	hWriteLine( "typedef int integer", TRUE )
-	hWriteLine( "typedef unsigned int uinteger", TRUE )
-	hWriteLine( "typedef unsigned long ulong", TRUE )
-	hWriteLine( "typedef long long longint", TRUE )
-	hWriteLine( "typedef unsigned long long ulongint", TRUE )
-	hWriteLine( "typedef float single", TRUE )
-	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
-	hWriteLine( "typedef char fixstr", TRUE )
+	hWriteLine( "typedef char byte;", TRUE )
+	hWriteLine( "typedef unsigned char ubyte;", TRUE )
+	hWriteLine( "typedef unsigned short ushort;", TRUE )
+	hWriteLine( "typedef int integer;", TRUE )
+	hWriteLine( "typedef unsigned int uinteger;", TRUE )
+	hWriteLine( "typedef unsigned long ulong;", TRUE )
+	hWriteLine( "typedef long long longint;", TRUE )
+	hWriteLine( "typedef unsigned long long ulongint;", TRUE )
+	hWriteLine( "typedef float single;", TRUE )
+	hWriteLine( "typedef struct _string { char *data; int len; int size; } string;", TRUE )
+	hWriteLine( "typedef char fixstr;", TRUE )
 
 	'' Target-dependant wchar type
 	dim as string wchartype
@@ -831,7 +928,7 @@ private sub hEmitTypedefs( )
 		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
 		wchartype = "integer"
 	end select
-	hWriteLine( "typedef " + wchartype + " wchar", TRUE )
+	hWriteLine( "typedef " + wchartype + " wchar;", TRUE )
 
 end sub
 
@@ -870,20 +967,22 @@ private sub hWriteFTOI _
 	end if
 
 	'' TODO: x86 specific
-	hWriteLine( "static inline " + rtype_str + " fb_" + fname +  " ( " + ptype_str + " value ) {", FALSE )
-	ctx.identcnt += 1
-		hWriteLine( "volatile " + rtype_str + " result" )
-		hWriteLine( "__asm__(", FALSE, TRUE )
-		ctx.identcnt += 1
-			hWriteLine( """fld" + ptype_suffix + " %1;"""  , FALSE, TRUE )
-			hWriteLine( """fistp" + rtype_suffix + " %0;""", FALSE, TRUE )
-			hWriteLine( ":""=m"" (result)", FALSE, TRUE )
-			hWriteLine( ":""m"" (value)"  , FALSE, TRUE )
-		ctx.identcnt -= 1
-		hWriteLine( ")", TRUE, TRUE )
-		hWriteLine( "return result" )
-	ctx.identcnt -= 1
-	hWriteLine( "}", FALSE )
+	hWriteLine( "", TRUE )
+	hWriteLine( "static inline " + rtype_str + " fb_" + fname +  "( " + ptype_str + " value )", TRUE )
+	hWriteLine( "{", TRUE )
+	sectionIndent( )
+		hWriteLine( "volatile " + rtype_str + " result;", TRUE )
+		hWriteLine( "__asm__(", TRUE )
+		sectionIndent( )
+			hWriteLine( """fld" + ptype_suffix + " %1;"""  , TRUE )
+			hWriteLine( """fistp" + rtype_suffix + " %0;""", TRUE )
+			hWriteLine( ":""=m"" (result)", TRUE )
+			hWriteLine( ":""m"" (value)"  , TRUE )
+		sectionUnindent( )
+		hWriteLine( ");", TRUE )
+		hWriteLine( "return result;", TRUE )
+	sectionUnindent( )
+	hWriteLine( "}", TRUE )
 
 end sub
 
@@ -916,11 +1015,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUL ) ) ) then
-		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoul( v ) (ulongint)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUI ) ) ) then
-		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoui( v ) (uinteger)fb_ftosl( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSI ) ) or _
@@ -932,19 +1031,19 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSS ) ) ) then
-		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoss( v ) (short)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUS ) ) ) then
-		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftous( v ) (ushort)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOSB ) ) ) then
-		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftosb( v ) (byte)fb_ftosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( FTOUB ) ) ) then
-		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_ftoub( v ) (ubyte)fb_ftosi( v )", TRUE )
 	end if
 
 	'' double
@@ -955,11 +1054,11 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUL ) ) ) then
-		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoul( v ) (ulongint)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUI ) ) ) then
-		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoui( v ) (uinteger)fb_dtosl( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSI ) ) or _
@@ -971,28 +1070,24 @@ private sub hEmitFTOIBuiltins( )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSS ) ) ) then
-		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoss( v ) (short)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUS ) ) ) then
-		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtous( v ) (ushort)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOSB ) ) ) then
-		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtosb( v ) (byte)fb_dtosi( v )", TRUE )
 	end if
 
 	if( symbGetIsCalled( PROCLOOKUP( DTOUB ) ) ) then
-		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", FALSE, TRUE )
+		hWriteLine( "#define fb_dtoub( v ) (ubyte)fb_dtosi( v )", TRUE )
 	end if
 
 end sub
 
-'':::::
-private function _emitBegin _
-	( _
-	) as integer
-
+private function _emitBegin( ) as integer
 	if( hFileExists( env.outf.name ) ) then
 		kill env.outf.name
 	end if
@@ -1002,42 +1097,39 @@ private function _emitBegin _
 		return FALSE
 	end if
 
-	ctx.identcnt = 0
+	ctx.section = -1
+	ctx.sectiongosublevel = 0
+
 	ctx.regcnt = 0
 	ctx.lblcnt = 0
 	ctx.tmpcnt = 0
-	ctx.head_txt = ""
-	ctx.body_txt = ""
-	ctx.foot_txt = ""
 	ctx.linenum = 0
 
-	ctx.section = SECTION_HEAD
+	'' header
+	sectionBegin( )
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, NULL, 0 )
 	end if
 
-	hWriteLine( "// Compilation of " & env.inf.name & " started at " & time & " on " & date, FALSE, TRUE )
+	hWriteLine( "// Compilation of " + env.inf.name + " started at " + time( ) + " on " + date( ), TRUE )
+	hWriteLine( "", TRUE )
 
 	hEmitTypedefs( )
 
-	ctx.section = SECTION_BODY
+	'' body
+	sectionBegin( )
 
 	function = TRUE
-
 end function
 
-'':::::
-private sub _emitEnd _
-	( _
-		byval tottime as double _
-	)
+private sub _emitEnd( byval tottime as double )
+	'' Switch to header section temporarily
+	sectionGosub( 0 )
 
-	' Add the decls on the end of the header
-	ctx.section = SECTION_HEAD
-
-	hEmitFTOIBuiltins( )
-
+	'' Append global declarations to the header of the toplevel section.
+	'' This must be done during _emitEnd() instead of _emitBegin() because
+	'' _emitBegin() is called even before any input code is parsed.
 	hEmitDataStmt( )
 
 	'' Emit proc decls first (because of function pointer initializers referencing procs)
@@ -1046,17 +1138,22 @@ private sub _emitEnd _
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
 
-	ctx.section = SECTION_FOOT
+	hEmitFTOIBuiltins( )
 
-	hWriteLine( "// Total compilation time: " & tottime & " seconds. ", FALSE, TRUE )
+	sectionReturn( )
 
-	' flush all sections to file
-	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
+	'' body (is appended to header section)
+	sectionEnd( )
+
+	hWriteLine( "", TRUE )
+	hWriteLine( "// Total compilation time: " + str( tottime ) + " seconds. ", TRUE )
+
+	'' Emit & close the main section
+	if( ctx.sections(0).old = FALSE ) then
+		if( put( #env.outf.num, , ctx.sections(0).text ) <> 0 ) then
+		end if
 	end if
-	if( put( #env.outf.num, , ctx.body_txt ) <> 0 ) then
-	end if
-	if( put( #env.outf.num, , ctx.foot_txt ) <> 0 ) then
-	end if
+	sectionEnd( )
 
 	''
 	if( close( #env.outf.num ) <> 0 ) then
@@ -1065,6 +1162,8 @@ private sub _emitEnd _
 
 	env.outf.num = 0
 
+	assert( ctx.sectiongosublevel = 0 )
+	assert( ctx.section = -1 )
 end sub
 
 '':::::
@@ -1479,7 +1578,7 @@ private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) 
 
 	dim as string expr
 
-	'' For literal strings, just print the text, not the label
+	'' For literal strings, just emit the text, not the label
 	if( symbGetIsLiteral( sym ) ) then
 		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
 			expr += "L"""
@@ -1671,8 +1770,8 @@ end function
 private sub _emitLabel( byval label as FBSYMBOL ptr )
 	'' Only when inside normal procedures
 	'' (NAKED procedures don't increase the indentation)
-	if( ctx.identcnt > 0 ) then
-		hWriteLine( *symbGetMangledName( label ) + ":", TRUE )
+	if( sectionInsideProc( ) ) then
+		hWriteLine( *symbGetMangledName( label ) + ":;" )
 	end if
 end sub
 
@@ -1699,15 +1798,16 @@ private sub _emitJmpTb _
 	select case op
 	case AST_JMPTB_BEGIN
 		ctx.jmptbsym = label
-		hWriteLine( "static const void * " & *symbGetMangledName( label ) & "[] = {", FALSE )
-		ctx.identcnt += 1
+		hWriteLine( "static const void * " & *symbGetMangledName( label ) & "[] = {" )
+		sectionIndent( )
 
 	case AST_JMPTB_END
-		ctx.identcnt -= 1
-		hWriteLine( "(void *)0 }", TRUE )
+		hWriteLine( "(void *)0" )
+		sectionUnindent( )
+		hWriteLine( "};" )
 
 	case AST_JMPTB_LABEL
-		hWriteLine( "&&" & *symbGetMangledName( label ) & ",", FALSE )
+		hWriteLine( "&&" + *symbGetMangledName( label ) + "," )
 	end select
 
 end sub
@@ -1741,9 +1841,9 @@ private sub hEmitVregExpr _
 			end if
 		End If
 
-		hWriteLine( ln, FALSE, TRUE )
+		hWriteLine( ln, TRUE )
 	else
-		hWriteLine( hVregToStr( vr ) & " = (" & expr & ")" )
+		hWriteLine( hVregToStr( vr ) + " = (" + expr + ");" )
 	end if
 
 end sub
@@ -1912,6 +2012,7 @@ private sub _emitBop _
 			ln += hVregToStr( v2 )
 			ln += ") goto "
 			ln += *symbGetMangledName( ex )
+			ln += ";"
 			hWriteLine( ln )
 		end if
 	case else
@@ -2027,7 +2128,7 @@ private sub _emitLoadRes _
 	)
 
 	_emitStore( vr, v1 )
-	hWriteLine( "return " & hVregToStr( vr ) )
+	hWriteLine( "return " + hVregToStr( vr ) + ";" )
 
 end sub
 
@@ -2134,7 +2235,7 @@ private sub hDoCall _
 	var ln = hEmitCallArgs( level )
 
 	if( vr = NULL ) then
-		hWriteLine( *pname & ln )
+		hWriteLine( *pname + ln + ";" )
 	else
 		hLoadVreg( vr )
         hEmitVregExpr( vr, *pname & ln, TRUE )
@@ -2186,7 +2287,7 @@ private sub _emitJumpPtr _
 		byval v1 as IRVREG ptr _
 	)
 
-	hWriteLine( "goto *" & hVregToStr( v1 ) )
+	hWriteLine( "goto *" + hVregToStr( v1 ) + ";" )
 
 end sub
 
@@ -2199,7 +2300,7 @@ private sub _emitBranch _
 
 	select case op
 	case AST_OP_JMP
-		hWriteLine( "goto " & *symbGetMangledName( label ) )
+		hWriteLine( "goto " + *symbGetMangledName( label ) + ";" )
 	case else
 		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 	end select
@@ -2217,9 +2318,9 @@ private sub _emitMem _
 
 	select case op
 	case AST_OP_MEMCLEAR
-		hWriteLine("__builtin_memset( " & hVregToStr( v1 ) & ", 0, " & hVregToStr( v2 ) & " )", TRUE )
+		hWriteLine( "__builtin_memset( " + hVregToStr( v1 ) + ", 0, " + hVregToStr( v2 ) + " );" )
 	case AST_OP_MEMMOVE
-		hWriteLine("__builtin_memcpy( " & hVregToStr( v1 ) & ", " & hVregToStr( v2 ) & ", " & bytes & " )", TRUE )
+		hWriteLine( "__builtin_memcpy( " + hVregToStr( v1 ) + ", " + hVregToStr( v2 ) + ", " + str(  bytes ) + " );" )
 	end select
 
 end sub
@@ -2236,31 +2337,25 @@ private sub _emitDBG _
 		byval ex as integer _
 	)
 
- 	if( op = AST_OP_DBG_LINEINI ) then
- 		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", $"\\" ) & """", FALSE, TRUE )
- 		ctx.linenum = ex
+	if( op = AST_OP_DBG_LINEINI ) then
+		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", $"\\" ) & """", TRUE )
+		ctx.linenum = ex
 	end if
 
 end sub
 
-'':::::
-private sub _emitComment _
-	( _
-		byval text as zstring ptr _
-	)
+private sub _emitComment( byval text as zstring ptr )
+	static as string s
 
-    static as string s
-
-    s = *text
-    s = trim(s)
+	s = *text
+	s = trim( s )
 
 	if( len( s ) > 0 ) then
-        if( right( s, 1 ) = "\" ) then
-            s += "not_an_escape"
-        end if
-		hWriteLine( "// " & s, FALSE, TRUE )
+		if( right( s, 1 ) = "\" ) then
+			s += "not_an_escape"
+		end if
+		hWriteLine( "// " + s, TRUE )
 	end if
-
 end sub
 
 private function hGetMangledNameForASM( byval sym as FBSYMBOL ptr ) as string
@@ -2299,7 +2394,7 @@ private sub _emitAsmBegin( )
 
 	'' Only when inside normal procedures
 	'' (NAKED procedures don't increase the indentation)
-	if( ctx.identcnt > 0 ) then
+	if( sectionInsideProc( ) ) then
 		ctx.asm_line += " __volatile__"
 	end if
 
@@ -2307,7 +2402,7 @@ private sub _emitAsmBegin( )
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		ctx.asm_line += """"
-		if( ctx.identcnt > 0 ) then
+		if( sectionInsideProc( ) ) then
 			ctx.asm_line += $"\t"
 		end if
 		ctx.asm_i = 0
@@ -2324,7 +2419,7 @@ private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
 	dim as string id
 
 	'' In NAKED procedure?
-	if( ctx.identcnt = 0 ) then
+	if( sectionInsideProc( ) = FALSE ) then
 		ctx.asm_line += hGetMangledNameForASM( sym )
 		exit sub
 	end if
@@ -2355,7 +2450,7 @@ end sub
 
 private sub _emitAsmEnd( )
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		if( ctx.identcnt > 0 ) then
+		if( sectionInsideProc( ) ) then
 			ctx.asm_line += $"\n"
 		end if
 
@@ -2363,7 +2458,7 @@ private sub _emitAsmEnd( )
 
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
-		if( ctx.identcnt > 0 ) then
+		if( sectionInsideProc( ) ) then
 			ctx.asm_line += " : " + ctx.asm_output
 			ctx.asm_line += " : " + ctx.asm_input
 
@@ -2378,7 +2473,7 @@ private sub _emitAsmEnd( )
 		end if
 	end if
 
-	ctx.asm_line += " )"
+	ctx.asm_line += " );"
 
 	hWriteLine( ctx.asm_line )
 end sub
@@ -2498,7 +2593,6 @@ private sub _emitVarIniScopeEnd( )
 	hVarIniSeparator( )
 end sub
 
-'':::::
 private sub _emitProcBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2507,7 +2601,7 @@ private sub _emitProcBegin _
 
 	dim as string mangled
 
-	hWriteLine( )
+	hWriteLine( "", TRUE )
 
 	if( env.clopt.debug ) then
 		_emitDBG( AST_OP_DBG_LINEINI, proc, proc->proc.ext->dbg.iniline )
@@ -2518,8 +2612,8 @@ private sub _emitProcBegin _
 	'' __attribute__((naked)) on x86
 	if( symbIsNaked( proc ) ) then
 		mangled = hGetMangledNameForASM( proc )
-		hWriteLine( "__asm__( "".globl " + mangled + """ )", TRUE, TRUE )
-		hWriteLine( "__asm__( """ + mangled + ":"" )", TRUE, TRUE )
+		hWriteLine( "__asm__( "".globl " + mangled + """ );", TRUE )
+		hWriteLine( "__asm__( """ + mangled + ":"" );", TRUE )
 		exit sub
 	end if
 
@@ -2534,14 +2628,15 @@ private sub _emitProcBegin _
 	end select
 #endif
 
-	hWriteLine( hEmitProcHeader( proc, 0 ), FALSE, TRUE )
+	sectionBegin( )
 
-	hWriteLine( "{", FALSE, TRUE )
-	ctx.identcnt += 1
+	hWriteLine( hEmitProcHeader( proc, 0 ), TRUE )
+
+	hWriteLine( "{", TRUE )
+	sectionIndent( )
 
 end sub
 
-'':::::
 private sub _emitProcEnd _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -2557,36 +2652,28 @@ private sub _emitProcEnd _
 		'' Emit .size like ASM backend, for Linux
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			mangled = hGetMangledNameForASM( proc )
-			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ )", TRUE, TRUE )
+			hWriteLine( "__asm__( "".size " + mangled + ", .-" + mangled + """ );", TRUE )
 		end if
 		exit sub
 	end if
 
-	ctx.identcnt -= 1
-	hWriteLine( "}", FALSE, TRUE )
+	sectionUnindent( )
+	hWriteLine( "}", TRUE )
+
+	sectionEnd( )
 
 end sub
 
-'':::::
-private sub _emitScopeBegin _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-	hWriteLine( "{", FALSE, TRUE )
-	ctx.identcnt += 1
-
+private sub _emitScopeBegin( byval s as FBSYMBOL ptr )
+	sectionBegin( )
+	hWriteLine( "{", TRUE )
+	sectionIndent( )
 end sub
 
-'':::::
-private sub _emitScopeEnd _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
-	ctx.identcnt -= 1
-	hWriteLine( "}", TRUE, TRUE )
-
+private sub _emitScopeEnd( byval s as FBSYMBOL ptr )
+	sectionUnindent( )
+	hWriteLine( "}", TRUE )
+	sectionEnd( )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
