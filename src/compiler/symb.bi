@@ -1065,12 +1065,14 @@ declare function symbAddConst _
 
 declare function symbStructBegin _
 	( _
+		byval symtb as FBSYMBOLTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval baseStruct as FBSYMBOL ptr = NULL _
+		byval base_ as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddField _
@@ -1688,15 +1690,8 @@ declare function symbCloneConst _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCloneVar _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbCloneStruct _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbCloneLabel _
 	( _
@@ -1754,10 +1749,7 @@ declare function symbGetDefaultCallConv _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-declare function symbVarCheckAccess _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
+declare function symbVarCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbCheckConstAssign _
 	( _
@@ -1768,7 +1760,6 @@ declare function symbCheckConstAssign _
 		byval mode as FB_PARAMMODE = 0, _
 		byref misses as integer = 0 _
 	) as integer
-
 
 declare function symbAllocOvlCallArg _
 	( _

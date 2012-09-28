@@ -554,11 +554,11 @@ private function hTypeAdd _
 
 	function = NULL
 
-	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
+	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
+		s = symbStructBegin( NULL, parent, hMakeTmpStr( ), NULL, isunion, align, NULL, 0 )
 	end if
 
 	'' Comment? SttSeparator

@@ -166,10 +166,10 @@ private sub hAddRTTI _
 
 	'' create a virtual-table struct (extends $fb_BaseVT)
 	var sname = "_ZTV" + mname + "_type"
-	var vtableType = symbStructBegin( NULL, sname, sname, FALSE, 0, symb.rtti.fb_baseVT )
-		
+	var vtableType = symbStructBegin( NULL, NULL, sname, sname, FALSE, 0, symb.rtti.fb_baseVT, 0 )
+
 	'' TODO: add this symbol's virtual methods as function pointers with "this" as the first param
-	
+
 	symbStructEnd( vtableType, TRUE )
 	
 	'' create the run-time info instance ($fb_RTTI)
@@ -1067,8 +1067,8 @@ end sub
 sub symbCompRTTIInit()
 	static as FBARRAYDIM dTB(0)
 
-    '' create the $fb_RTTI struct
-    var rtti = symbStructBegin( NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0 )
+	'' create the $fb_RTTI struct
+	var rtti = symbStructBegin( NULL, NULL, "$fb_RTTI", "$fb_RTTI", FALSE, 0, NULL, 0 )
 	symb.rtti.fb_rtti = rtti
 
 	'' stdlibVT as any ptr
@@ -1095,7 +1095,7 @@ sub symbCompRTTIInit()
 	symbStructEnd( rtti )
 
 	'' create the $fb_BaseVT struct
-    var baseVT = symbStructBegin( NULL, "$fb_BaseVT", "$fb_BaseVT", FALSE, 0 )
+	var baseVT = symbStructBegin( NULL, NULL, "$fb_BaseVT", "$fb_BaseVT", FALSE, 0, NULL, 0 )
 	symb.rtti.fb_baseVT = baseVT
     
 	'' dim nullPtr as any ptr
@@ -1115,7 +1115,7 @@ sub symbCompRTTIInit()
 	symbStructEnd( baseVT )
 
 	'' create the $fb_ObjectVT struct (extends $fb_BaseVT)
-	var objVT = symbStructBegin( NULL, "$fb_ObjectVT", "$fb_ObjectVT", FALSE, 0, baseVT )
+	var objVT = symbStructBegin( NULL, NULL, "$fb_ObjectVT", "$fb_ObjectVT", FALSE, 0, baseVT, 0 )
 
 	symbStructEnd( objVT, TRUE )
 
@@ -1127,7 +1127,7 @@ sub symbCompRTTIInit()
 		ptypename = @"OBJECT"
 	end if
 
-	var obj = symbStructBegin( NULL, ptypename, "$fb_Object", FALSE, 0 )
+	var obj = symbStructBegin( NULL, NULL, ptypename, "$fb_Object", FALSE, 0, NULL, 0 )
     symb.rtti.fb_object = obj
 
 	symbSetHasRTTI( obj )

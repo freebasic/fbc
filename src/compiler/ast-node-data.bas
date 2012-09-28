@@ -270,21 +270,15 @@ end function
 private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
 
-   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC$", NULL, FALSE, 1 )
+	ast.data.desc = symbStructBegin( NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0 )
 
 	'' type	as short
-	symbAddField( ast.data.desc, _
-				  "type", _
-				  0, dTB(), _
-				  FB_DATATYPE_SHORT, NULL, _
-				  2, 0 )
+	symbAddField( ast.data.desc, "type", 0, dTB(), _
+	              FB_DATATYPE_SHORT, NULL, 2, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
-	symbAddField( ast.data.desc, _
-				  "node", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-				  FB_POINTERSIZE, 0 )
+	symbAddField( ast.data.desc, "node", 0, dTB(), _
+	              typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, 0 )
 
 	symbStructEnd( ast.data.desc )
 end sub

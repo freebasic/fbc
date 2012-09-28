@@ -479,7 +479,7 @@ function symbNewSymbol _
 		else
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
-    end if
+	end if
 
     if( hashtb = NULL ) then
     	hashtb = symb.hashtb

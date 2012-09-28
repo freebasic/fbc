@@ -18,15 +18,19 @@
 '':::::
 function symbStructBegin _
 	( _
+		byval symtb as FBSYMBOLTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval base_ as FBSYMBOL ptr _
+		byval base_ as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-    function = NULL
+	dim as FBSYMBOL ptr s = any
+
+	function = NULL
 
     '' no explict alias given?
     if( id_alias = NULL ) then
@@ -36,12 +40,9 @@ function symbStructBegin _
     	end if
     end if
 
-    var s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   	   NULL, _
-    				   	   NULL, NULL, _
-    				   	   FB_SYMBCLASS_STRUCT, _
-    				   	   id, id_alias, _
-    				   	   FB_DATATYPE_STRUCT, NULL )
+	s = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, symtb, NULL, _
+	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
+	                   FB_DATATYPE_STRUCT, NULL, attrib )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -79,7 +80,7 @@ function symbStructBegin _
 	s->udt.dbg.typenum = INVALID
 
 	s->udt.ext = NULL
-	
+
 	'' extending another UDT?
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
@@ -98,7 +99,6 @@ function symbStructBegin _
 	end if
 
 	function = s
-
 end function
 
 '':::::
@@ -752,44 +752,27 @@ sub symbStructEnd _
 
 end sub
 
-'':::::
-function symbCloneStruct _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr clone = any, fld = any
 
 	'' assuming only simple structs will be cloned (ie: the ones
 	'' created by symbAddArrayDesc())
 
-	clone = symbStructBegin( NULL, _
-						 	 hMakeTmpStrNL( ), _
-						 	 NULL, _
-						 	 (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
-							 sym->udt.align )
+	clone = symbStructBegin( NULL, NULL, hMakeTmpStrNL( ), NULL, _
+	                         (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
+	                         sym->udt.align, NULL, 0 )
 
-
-    fld = sym->udt.ns.symtb.head
-    do while( fld <> NULL )
-    	symbAddField( clone, _
-    				  symbGetName( fld ), _
-    				  0, _
-    				  dTB(), _
-    				  symbGetType( fld ), _
-    				  symbGetSubType( fld ), _
-    				  fld->lgt, _
-    				  0 )
-
-
+	fld = sym->udt.ns.symtb.head
+	while( fld )
+		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
+		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0 )
 		fld = fld->next
-	loop
+	wend
 
 	symbStructEnd( clone )
 
 	function = clone
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
