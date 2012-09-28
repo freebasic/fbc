@@ -1329,9 +1329,8 @@ function astProcAddStaticInstance _
     wrap = listNewNode( dtorlist )
 
 	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
-						FB_DATATYPE_VOID, NULL, _
-						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
-						FB_FUNCMODE_CDECL )
+	                    FB_DATATYPE_VOID, NULL, _
+	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )
 
     wrap->proc = proc
     wrap->sym = sym
@@ -1378,10 +1377,9 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 
 	'' sub ctorname|dtorname cdecl( ) constructor|destructor
 	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
-						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-						FB_DATATYPE_VOID, NULL, _
-						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
-						FB_FUNCMODE_CDECL )
+	                    iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
+	                    FB_DATATYPE_VOID, NULL, _
+	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )
 	if( is_ctor ) then
 		symbAddGlobalCtor( proc )
 	else
