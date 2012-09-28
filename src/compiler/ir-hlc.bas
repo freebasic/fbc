@@ -256,10 +256,19 @@ enum EMITPROC_OPTIONS
 	EMITPROC_ISPROCPTR = &h2
 end enum
 
-private sub hAppendCtorAttrib( byref ln as string, byval proc as FBSYMBOL ptr )
+private sub hAppendCtorAttrib _
+	( _
+		byref ln as string, _
+		byval proc as FBSYMBOL ptr, _
+		byval in_front as integer _
+	)
+
 	dim as integer priority = any
 
 	if( proc->stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR) ) then
+		if( in_front = FALSE ) then
+			ln += " "
+		end if
 		ln += "__attribute__(( "
 		if( proc->stats and FB_SYMBSTATS_GLOBALCTOR ) then
 			ln += "constructor"
@@ -273,6 +282,9 @@ private sub hAppendCtorAttrib( byref ln as string, byval proc as FBSYMBOL ptr )
 		end if
 
 		ln += " ))"
+		if( in_front ) then
+			ln += " "
+		end if
 	end if
 end sub
 
@@ -286,8 +298,7 @@ private function hEmitProcHeader _
 
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
-		hAppendCtorAttrib( ln, proc )
-		ln += " "
+		hAppendCtorAttrib( ln, proc, TRUE )
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
@@ -426,8 +437,7 @@ private function hEmitProcHeader _
 		end select
 #endif
 		'' ctor/dtor flags on prototypes
-		ln += " "
-		hAppendCtorAttrib( ln, proc )
+		hAppendCtorAttrib( ln, proc, FALSE )
 	end if
 
 	function = ln
