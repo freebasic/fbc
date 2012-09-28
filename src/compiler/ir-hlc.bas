@@ -272,7 +272,7 @@ private sub hAppendCtorAttrib( byref ln as string, byval proc as FBSYMBOL ptr )
 			ln += "( " + str( priority ) + " )"
 		end if
 
-		ln += " )) "
+		ln += " ))"
 	end if
 end sub
 
@@ -287,6 +287,7 @@ private function hEmitProcHeader _
 	if( options = 0 ) then
 		'' ctor/dtor flags on bodies
 		hAppendCtorAttrib( ln, proc )
+		ln += " "
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
@@ -425,6 +426,7 @@ private function hEmitProcHeader _
 		end select
 #endif
 		'' ctor/dtor flags on prototypes
+		ln += " "
 		hAppendCtorAttrib( ln, proc )
 	end if
 
