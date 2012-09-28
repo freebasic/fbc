@@ -138,7 +138,7 @@ sub testVaNext cdecl(byval n as integer, ...)
 		p = va_next(p, T)
 	#endmacro
 
-	dim as any ptr p = va_first()
+	dim as integer ptr p = va_first()
 
 	for i as integer = 1 to n
 		dim as integer siz = *p
