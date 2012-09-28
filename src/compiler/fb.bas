@@ -239,7 +239,6 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	parserSetCtx( )
 	symbInit( ismain )
-	hlpInit( )
 	errInit( )
 	astInit( )
 	irInit( env.clopt.backend )
@@ -265,7 +264,6 @@ sub fbEnd()
 	irEnd( )
 	astEnd( )
 	errEnd( )
-	hlpEnd( )
 	symbEnd( )
 
 	erase infileTb

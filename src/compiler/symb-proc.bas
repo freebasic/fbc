@@ -994,7 +994,7 @@ function symbAddProcPtr _
 	end if
 
 	'' create a new prototype
-	sym = symbAddPrototype( proc, id, hMakeTmpStrNL(), dtype, subtype, _
+	sym = symbAddPrototype( proc, id, symbUniqueId( ), dtype, subtype, _
 	                        0, mode, options or FB_SYMBOPT_DECLARING or _
 	                                 FB_SYMBOPT_PRESERVECASE )
 
@@ -1138,12 +1138,7 @@ function symbAddParam _
 
 end function
 
-'':::::
-function symbAddProcResultParam _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
     static as string id
@@ -1158,13 +1153,9 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-   	id = *hMakeTmpStrNL( )
-    s = symbAddVarEx( id, NULL, _
-    				  FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
-    				  0, dTB(), _
-    				  FB_SYMBATTRIB_PARAMBYREF, _
-    				  FB_SYMBOPT_PRESERVECASE )
-
+	id = *symbUniqueId( )
+	s = symbAddVarEx( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	                  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
@@ -1175,7 +1166,6 @@ function symbAddProcResultParam _
 	symbSetIsDeclared( s )
 
 	function = s
-
 end function
 
 function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr

@@ -430,11 +430,6 @@ type IR_VTBL
 	( _
 		byval reg as integer _
 	)
-
-	makeTmpStr as function  _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
 end type
 
 enum IR_OPT
@@ -630,10 +625,6 @@ declare sub irEnd()
 #define irGetVRValueI(v) v->value.int
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
-
-#define hMakeTmpStr( ) ir.vtbl.makeTmpStr( TRUE )
-
-#define hMakeTmpStrNL( ) ir.vtbl.makeTmpStr( FALSE )
 
 
 ''

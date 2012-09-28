@@ -149,7 +149,7 @@ function symbAddArrayDesc _
 	'' field?
 	if( symbIsField( array ) ) then
 		static as string tmp
-		tmp = *hMakeTmpStrNL( )
+		tmp = *symbUniqueId( )
 		id = strptr( tmp )
 		'' Only store an alias if in BASIC mangling
 		if( array->mangling <> FB_MANGLING_BASIC ) then
@@ -177,7 +177,7 @@ function symbAddArrayDesc _
 		'' otherwise, create a temporary name..
 		else
 			static as string tmp
-			tmp = *hMakeTmpStrNL( )
+			tmp = *symbUniqueId( )
 			id = strptr( tmp )
 			'' Only store an alias if in BASIC mangling
 			if( array->mangling <> FB_MANGLING_BASIC ) then
@@ -227,7 +227,7 @@ function symbAddArrayDesc _
 
 	'' Create descriptor UDT in same symtb, and preserving the
 	'' FB_SYMBATTRIB_LOCAL too if the descriptor has it.
-	desctype = hCreateDescType( symtb, dimensions, hMakeTmpStrNL( ), _
+	desctype = hCreateDescType( symtb, dimensions, symbUniqueId( ), _
 	                            symbGetType( array ), symbGetSubType( array ), _
 	                            attrib and FB_SYMBATTRIB_LOCAL )
 
@@ -486,7 +486,6 @@ function symbAddVarEx _
 	end if
 
 	function = s
-
 end function
 
 '':::::
@@ -520,7 +519,7 @@ function symbAddTempVar _
 	dim as FB_SYMBOPT options = FB_SYMBOPT_NONE
 
 	'' With the unique id, creating the var should always succeed
-	id = *hMakeTmpStrNL( )
+	id = *symbUniqueId( )
 
 	attrib = FB_SYMBATTRIB_TEMP
 	if( checkstatic ) then

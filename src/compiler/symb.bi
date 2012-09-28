@@ -1126,10 +1126,7 @@ declare function symbAddProcParam _
 		byval optexpr as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddProcResultParam _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbAddPrototype _
 	( _
@@ -1583,6 +1580,10 @@ declare function symbCanDuplicate _
 		byval head_sym as FBSYMBOL ptr, _
 		byval s as FBSYMBOL ptr _
 	) as integer
+
+declare function symbUniqueId( ) as zstring ptr
+declare function symbUniqueLabel( ) as zstring ptr
+declare function symbMakeProfileLabelName( ) as zstring ptr
 
 declare function symbGetMangledName _
 	( _

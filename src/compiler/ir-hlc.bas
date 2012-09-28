@@ -52,9 +52,7 @@ type IRHLCCTX
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
 
-	regcnt				as integer     ' temporary labels counter
-	lblcnt				as integer
-	tmpcnt				as integer
+	regcnt				as integer      '' register counter used to name vregs
 	vregTB				as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	jmptbsym			as FBSYMBOL ptr
@@ -762,7 +760,7 @@ private sub hEmitStruct _
 
 	'' UDT name
 	if( symbGetName( s ) = NULL ) then
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	else
 		id = hGetUDTName( s, TRUE )
 	end if
@@ -1086,8 +1084,6 @@ private function _emitBegin( ) as integer
 	ctx.sectiongosublevel = 0
 
 	ctx.regcnt = 0
-	ctx.lblcnt = 0
-	ctx.tmpcnt = 0
 	ctx.linenum = 0
 
 	'' header
@@ -1248,26 +1244,6 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 
 	sectionReturn( section )
 end sub
-
-'':::::
-private function _makeTmpStr _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
-
-	static as zstring * 6 + 10 + 1 res
-
-	if( islabel ) then
-		res = "label$" & ctx.lblcnt
-		ctx.lblcnt += 1
-	else
-		res = "tmp$" & ctx.tmpcnt
-		ctx.tmpcnt += 1
-	end if
-
-	function = @res
-
-end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -2844,8 +2820,7 @@ sub irHLC_ctor()
 		NULL, _
 		NULL, _
 		NULL, _
-		NULL, _
-		@_makeTmpStr _
+		NULL _
 	)
 
 	ir.vtbl = _vtbl

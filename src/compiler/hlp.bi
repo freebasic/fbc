@@ -9,14 +9,6 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare sub hlpInit _
-	( _
-	)
-
-declare sub hlpEnd _
-	( _
-	)
-
 declare function hMatchText _
 	( _
 		byval txt as zstring ptr _
@@ -87,9 +79,7 @@ declare function hToPow2 _
 		byval value as uinteger _
 	) as uinteger
 
-declare function hJumpTbAllocSym _
-	( _
-	) as any ptr
+declare function hJumpTbAllocSym( ) as any ptr
 
 declare function hFloatToStr _
 	( _

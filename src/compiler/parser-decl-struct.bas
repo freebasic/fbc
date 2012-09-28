@@ -345,7 +345,7 @@ private sub hTypeMultElementDecl _
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: fake an id
-			id = *hMakeTmpStr( )
+			id = *symbUniqueLabel( )
 		end select
 
 	    bits = 0
@@ -456,7 +456,7 @@ private sub hTypeElementDecl _
     case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		id = *hMakeTmpStr( )
+		id = *symbUniqueLabel( )
 		dtype = FB_DATATYPE_INVALID
     end select
 
@@ -558,7 +558,7 @@ private function hTypeAdd _
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( NULL, parent, hMakeTmpStr( ), NULL, isunion, align, NULL, 0 )
+		s = symbStructBegin( NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0 )
 	end if
 
 	'' Comment? SttSeparator
@@ -930,7 +930,7 @@ function cTypeDecl _
 
 		lexEatToken( @id )
 	else
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	end if
 
 	'' AS?

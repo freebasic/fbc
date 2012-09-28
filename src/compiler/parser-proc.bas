@@ -259,7 +259,7 @@ private function hGetId _
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id, skip until next '('
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				*dtype = FB_DATATYPE_INVALID
 				hSkipUntil( CHAR_LPRNT )
 				return NULL
@@ -270,7 +270,7 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: fake an id, skip until next '('
-			*id = *hMakeTmpStr( )
+			*id = *symbUniqueLabel( )
 			*dtype = FB_DATATYPE_INVALID
 			hSkipUntil( CHAR_LPRNT )
 			return NULL
@@ -279,7 +279,7 @@ private function hGetId _
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id, skip until next '('
-		*id = *hMakeTmpStr( )
+		*id = *symbUniqueLabel( )
 		*dtype = FB_DATATYPE_INVALID
 		hSkipUntil( CHAR_LPRNT )
 		return NULL
@@ -468,7 +468,7 @@ function cProcCallingConv _
 end function
 
 #define CREATEFAKEID( proc ) _
-	symbAddProc( proc, hMakeTmpStr( ), NULL, dtype, subtype, attrib, mode )
+	symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, attrib, mode )
 
 '':::::
 private function hDoNesting _
@@ -1852,7 +1852,7 @@ function cCtorHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-	#define CREATEFAKE() symbAddProc( proc, hMakeTmpStr( ), NULL, _
+	#define CREATEFAKE() symbAddProc( proc, symbUniqueLabel( ), NULL, _
 	                                  FB_DATATYPE_VOID, NULL, attrib, mode )
 
     dim as integer lgt = any, is_extern = any, is_ctor = any

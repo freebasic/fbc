@@ -146,7 +146,7 @@ private sub hAddForwardRef _
             if( subtype = NULL ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake a symbol
-				subtype = symbAddFwdRef( hMakeTmpStr( ) )
+				subtype = symbAddFwdRef( symbUniqueLabel( ) )
             end if
         end if
     end if
@@ -220,7 +220,7 @@ private function hReadId( ) as zstring ptr
     case else
         errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
         '' error recovery: fake an id
-        id = *hMakeTmpStr( )
+        id = *symbUniqueLabel( )
     end select
 
     function = @id

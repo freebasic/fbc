@@ -110,7 +110,7 @@ private sub hMainBegin( )
 		attrib = FB_SYMBATTRIB_PRIVATE
 		'' if it's high level, give it a random name
 		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-			id = *hMakeTmpStrNL()
+			id = *symbUniqueId( )
 		end if
 	end if
 

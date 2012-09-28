@@ -759,7 +759,7 @@ function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	'' assuming only simple structs will be cloned (ie: the ones
 	'' created by symbAddArrayDesc())
 
-	clone = symbStructBegin( NULL, NULL, hMakeTmpStrNL( ), NULL, _
+	clone = symbStructBegin( NULL, NULL, symbUniqueId( ), NULL, _
 	                         (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
 	                         sym->udt.align, NULL, 0 )
 

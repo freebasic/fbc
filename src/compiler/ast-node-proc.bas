@@ -1328,7 +1328,7 @@ function astProcAddStaticInstance _
     ''
     wrap = listNewNode( dtorlist )
 
-	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
+	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), NULL, _
 	                    FB_DATATYPE_VOID, NULL, _
 	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )
 
@@ -1376,7 +1376,7 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 	dim as FBSYMBOL ptr proc = any
 
 	'' sub ctorname|dtorname cdecl( ) constructor|destructor
-	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
+	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), _
 	                    iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
 	                    FB_DATATYPE_VOID, NULL, _
 	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL )

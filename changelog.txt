@@ -72,6 +72,7 @@ Version 0.25.0:
 - C backend: Static variables with destructors were emitted as locals despite needing to be visible to destructor wrapper functions
 - The C backend does no longer allow/disallow different cast()s than the ASM backend
 - C backend: +/- INF/NaN float constants didn't work
+- C backend: Using threadcreate() could cause duplicate function pointer typedefs errors
 
 
 Version 0.24.0:

@@ -568,7 +568,7 @@ private function hGetId _
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			else
 				*id = *lexGetText( )
@@ -585,7 +585,7 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: fake an id
-			*id = *hMakeTmpStr( )
+			*id = *symbUniqueLabel( )
 			suffix = FB_DATATYPE_INVALID
 
 		'' QB mode..
@@ -597,7 +597,7 @@ private function hGetId _
 			if( suffix = FB_DATATYPE_INVALID ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			end if
 		end if
@@ -605,7 +605,7 @@ private function hGetId _
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		*id = *hMakeTmpStr( )
+		*id = *symbUniqueLabel( )
 		suffix = FB_DATATYPE_INVALID
 	end select
 
@@ -928,10 +928,8 @@ private function hCallStaticCtor _
 	end if
 
 	'' create a static flag
-	flag = symbAddVarEx( hMakeTmpStr(), NULL, _
-					  	 FB_DATATYPE_INTEGER, NULL, 0, _
-					  	 0, dTB(), _
-					     FB_SYMBATTRIB_STATIC )
+	flag = symbAddVarEx( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
+	                     0, dTB(), FB_SYMBATTRIB_STATIC )
 
 	tree = astNewLINK( tree, _
 					   astNewDECL( flag, NULL ) )

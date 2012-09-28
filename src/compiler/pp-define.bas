@@ -1042,7 +1042,7 @@ function ppDefine _
 			'' defines have no dups or respect namespaces
 			errReportEx( FB_ERRMSG_DUPDEFINITION, @defname )
 			'' error recovery: fake an id
-			defname = *hMakeTmpStr( )
+			defname = *symbUniqueLabel( )
 		end if
 	else
 		sym = NULL
@@ -1068,7 +1068,7 @@ function ppDefine _
 				case else
 					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 					'' error recovery: fake a param
-					lastparam = symbAddDefineParam( lastparam, hMakeTmpStr( ) )
+					lastparam = symbAddDefineParam( lastparam, symbUniqueLabel( ) )
 				end select
 
 				if( lastparam = NULL ) then

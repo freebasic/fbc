@@ -24,12 +24,7 @@
 	( (env.clopt.backend = FB_BACKEND_GAS) and _
 	  (env.clopt.gosubsetjmp = FALSE) )
 
-'':::::
-sub astGosubAddInit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
-
+sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr sym = any
 	dim as ASTNODE ptr var_decl = any
@@ -38,7 +33,7 @@ sub astGosubAddInit _
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
 	end if
-	
+
 	if( symbGetProcStatGosub( proc ) ) then
 		exit sub
 	end if
@@ -49,7 +44,6 @@ sub astGosubAddInit _
 
 		'' DIM "{gosubctx}" as integer = 0
 		dtype = FB_DATATYPE_INTEGER
-
 	else
 
 		'' create a local pointer to the gosub stack
@@ -58,23 +52,19 @@ sub astGosubAddInit _
 
 		'' DIM "{gosubctx}" as GOSUBCTX = NULL
 		dtype = typeAddrOf( FB_DATATYPE_VOID )
-
 	end if
 
-	sym = symbAddVarEx( hMakeTmpStr(), NULL, _
-						 dtype, NULL, 0, _
-						 0, dTB(), _
-						 FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
+	sym = symbAddVarEx( symbUniqueLabel( ), NULL, dtype, NULL, 0, 0, dTB(), _
+	                    FB_SYMBATTRIB_NONE, FB_SYMBOPT_UNSCOPE )
 
 	var_decl = astNewDECL( sym, NULL )
 
 	symbSetIsDeclared( sym )
-	
+
 	astAddUnscoped( var_decl )
 
 	symbSetProcGosubSym( proc, sym )
 	symbSetProcStatGosub( proc )
-
 end sub
 
 sub astGosubAddJmp _

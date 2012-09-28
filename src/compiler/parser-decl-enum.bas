@@ -90,7 +90,7 @@ sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
 					if( (symbIsGlobalNamespc( )) or (parser.scope > FB_MAINSCOPE) ) then
 						errReport( FB_ERRMSG_DUPDEFINITION )
 						'' error recovery: fake an id
-						id = *hMakeTmpStr( )
+						id = *symbUniqueLabel( )
 					else
 						id = *lexGetText( )
 					end if
@@ -168,9 +168,9 @@ sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 		id = *lexGetText( )
 		lexSkipToken( )
 
-    case else
-    	id = *hMakeTmpStrNL( )
-    end select
+	case else
+		id = *symbUniqueId( )
+	end select
 
 	'' [ALIAS "id"]
 	dim as zstring ptr palias = cAliasAttribute()
@@ -179,7 +179,7 @@ sub cEnumDecl(byval attrib as FB_SYMBATTRIB)
 	if( e = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		e = symbAddEnum( hMakeTmpStr( ), NULL, FB_SYMBATTRIB_NONE )
+		e = symbAddEnum( symbUniqueLabel( ), NULL, FB_SYMBATTRIB_NONE )
 	end if
 
 	'' EXPLICIT?

@@ -9,26 +9,6 @@
 #include once "lex.bi"
 #include once "dstr.bi"
 
-type FBHLPCTX
-	profilecnt  as uinteger
-end type
-
-
-''globals
-	dim shared ctx as FBHLPCTX
-
-'':::::
-sub hlpInit
-
-	ctx.profilecnt = 0
-
-end sub
-
-'':::::
-sub hlpEnd
-
-end sub
-
 '':::::
 function hMatchText _
 	( _
@@ -98,21 +78,6 @@ function hHexUInt _
 	loop
 
 	function = p
-
-end function
-
-'':::::
-function hMakeProfileLabelName _
-	( _
-	) as zstring ptr static
-
-	static as zstring * 4 + 8 + 1 res
-
-	res = "LP_" + *hHexUInt( ctx.profilecnt )
-
-	ctx.profilecnt += 1
-
-	function = @res
 
 end function
 
@@ -553,30 +518,18 @@ conv_int:
 
 end sub
 
-'':::::
-function hJumpTbAllocSym _
-	( _
-		_
-	) as any ptr
-
-	dim as zstring * FB_MAXNAMELEN+1 sname = any
+function hJumpTbAllocSym( ) as any ptr
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
 
-	sname = *hMakeTmpStr( )
-
-	s = symbAddVarEx( @sname, NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, _
-					  1, dTB(), _
-					  FB_SYMBATTRIB_SHARED )
+	s = symbAddVarEx( symbUniqueLabel( ), NULL, _
+	                  typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, _
+	                  1, dTB(), FB_SYMBATTRIB_SHARED )
 
 	symbSetIsJumpTb( s )
-
 	symbSetIsInitialized( s )
 
 	function = s
-
 end function
 
 '':::::

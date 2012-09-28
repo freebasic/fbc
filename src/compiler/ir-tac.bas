@@ -18,8 +18,6 @@ type IRTAC_CTX
 
 	vregTB			as TFLIST
 
-	tmpcnt		as uinteger
-
 	asm_line		as string
 end type
 
@@ -153,7 +151,6 @@ declare sub _flush _
 private sub _init(byval backend as FB_BACKEND)
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
-	ctx.tmpcnt = 0
 
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
@@ -415,28 +412,6 @@ end sub
 private sub _procAllocStaticVars( byval head_sym as FBSYMBOL ptr )
 	emitProcAllocStaticVars( head_sym )
 end sub
-
-'':::::
-private function _makeTmpStr _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
-
-	static as zstring * 4 + 8 + 1 res
-
-	if( islabel ) then
-		res = ".Lt_"
-	else
-		res = "Lt_"
-	end if
-
-	res += *hHexUInt( ctx.tmpcnt )
-
-	ctx.tmpcnt += 1
-
-	function = @res
-
-end function
 
 '':::::
 private sub _emitLabel _
@@ -2742,8 +2717,7 @@ sub irTAC_ctor()
 		@_getDistance, _
 		@_loadVr, _
 		@_storeVr, _
-		@_xchgTOS, _
-		@_makeTmpStr _
+		@_xchgTOS _
 	)
 
 	ir.vtbl = _vtbl

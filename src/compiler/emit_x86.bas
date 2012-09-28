@@ -1278,8 +1278,8 @@ private sub hClearLocals _
 			outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
 			outp( "mov ecx," & cunsg(bytestoclear) \ 8 )
 			outp( "pxor mm0, mm0" )
-		    lname = *hMakeTmpStr( )
-		    hLABEL( lname )
+			lname = *symbUniqueLabel( )
+			hLABEL( lname )
 			outp( "movq [edi], mm0" )
 			outp( "add edi, 8" )
 			outp( "dec ecx" )
@@ -1363,7 +1363,7 @@ private sub hCreateFrame _
 
 		if( env.clopt.target = FB_COMPTARGET_DOS ) then
 			if( env.clopt.profile ) then
-				lprof = hMakeProfileLabelName()
+				lprof = symbMakeProfileLabelName( )
 
 				outEx(".section .data" + NEWLINE )
 				outEx( ".balign 4" + NEWLINE )
@@ -1676,7 +1676,7 @@ private sub hULONG2DBL _
 
 	dim as string label, aux, ostr
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 0, TRUE )
 	ostr = "cmp " + aux + ", 0"
@@ -3840,7 +3840,7 @@ private sub hSHIFTL _
 		dim as integer eaxindest, edxindest, ecxindest
 		dim as integer ofs
 
-		label = *hMakeTmpStr( )
+		label = *symbUniqueLabel( )
 
 		hPUSH( dst2 )
 		hPUSH( dst1 )
@@ -4431,7 +4431,7 @@ private sub hCMPL _
 	hPrepOperand64( svreg, src1, src2 )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -4440,7 +4440,7 @@ private sub hCMPL _
 	ostr = "cmp " + dst2 + COMMA + src2
 	outp ostr
 
-	falselabel = *hMakeTmpStr( )
+	falselabel = *symbUniqueLabel( )
 
 	'' set the boolean result?
 	if( rvreg <> NULL ) then
@@ -4495,7 +4495,7 @@ private sub hCMPI _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -4597,7 +4597,7 @@ private sub hCMPF _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -5207,8 +5207,8 @@ private sub _emitSGNL _
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
-	label1 = *hMakeTmpStr( )
-	label2 = *hMakeTmpStr( )
+	label1 = *symbUniqueLabel( )
+	label2 = *symbUniqueLabel( )
 
 	ostr = "cmp " + dst2 + ", 0"
 	outp ostr
@@ -5239,7 +5239,7 @@ private sub _emitSGNI _
 
 	hPrepOperand( dvreg, dst )
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	ostr = "cmp " + dst + ", 0"
 	outp ostr
@@ -5265,7 +5265,7 @@ private sub _emitSGNF _
 
 	hPrepOperand( dvreg, dst )
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
     iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 

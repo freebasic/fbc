@@ -18,6 +18,11 @@ end type
 type FB_MANGLECTX
 	flist			as TFLIST					'' of FB_MANGLEABBR
 	cnt				as integer
+
+	tempstr			as zstring * 6 + 10 + 1
+	uniqueidcount		as integer
+	uniquelabelcount	as integer
+	profilelabelcount	as integer
 end type
 
 const FB_INITMANGARGS = 96
@@ -75,21 +80,51 @@ declare function hGetProcParamsTypeCode _
 		"P" _                   '' pointer
 	}
 
-'':::::
 sub symbMangleInit( )
-
 	flistInit( @ctx.flist, FB_INITMANGARGS, len( FB_MANGLEABBR ) )
-
 	ctx.cnt = 0
-
+	ctx.uniqueidcount = 0
+	ctx.uniquelabelcount = 0
+	ctx.profilelabelcount = 0
 end sub
 
-'':::::
 sub symbMangleEnd( )
-
 	flistEnd( @ctx.flist  )
-
 end sub
+
+function symbUniqueId( ) as zstring ptr
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		ctx.tempstr = "tmp$"
+		ctx.tempstr += str( ctx.uniqueidcount )
+	else
+		ctx.tempstr = "Lt_"
+		ctx.tempstr += *hHexUInt( ctx.uniqueidcount )
+	end if
+
+	ctx.uniqueidcount += 1
+
+	function = @ctx.tempstr
+end function
+
+function symbUniqueLabel( ) as zstring ptr
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		ctx.tempstr = "label$"
+		ctx.tempstr += str( ctx.uniquelabelcount )
+		ctx.uniquelabelcount += 1
+	else
+		ctx.tempstr = ".Lt_"
+		ctx.tempstr += *hHexUInt( ctx.uniqueidcount )
+		ctx.uniqueidcount += 1
+	end if
+
+	function = @ctx.tempstr
+end function
+
+function symbMakeProfileLabelName( ) as zstring ptr
+	ctx.tempstr = "LP_" + *hHexUInt( ctx.profilelabelcount )
+	ctx.profilelabelcount += 1
+	function = @ctx.tempstr
+end function
 
 '':::::
 function symbGetDBGName _
@@ -735,7 +770,7 @@ private function hMangleVariable  _
 				'' still emitted locally, so they can keep their
 				'' own name, like other local vars.
 				if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
-					id_str = hMakeTmpStrNL( )
+					id_str = symbUniqueId( )
 				else
 					'' BASIC? use the upper-cased name
 					if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
@@ -758,7 +793,7 @@ private function hMangleVariable  _
 			else
 				'' static?
 				if( symbIsStatic( sym ) ) then
-					id_str = hMakeTmpStrNL( )
+					id_str = symbUniqueId( )
 				'' local..
 				else
 					id_str = irProcGetFrameRegName( )

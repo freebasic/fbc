@@ -1226,10 +1226,7 @@ declare function astFindLocalSymbol _
 		byval n as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-declare sub astGosubAddInit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
+declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
 declare sub astGosubAddJmp _
 	( _

@@ -1155,23 +1155,17 @@ private function hVarAddUndecl _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-    s = symbAddVarEx( id, NULL, _
-    				  dtype, NULL, 0, _
-    				  0, dTB(), _
-    				  attrib, _
-    				  options )
-
-    if( s = NULL ) then
+	s = symbAddVarEx( id, NULL, dtype, NULL, 0, 0, dTB(), attrib, options )
+	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: fake an id
-		s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, dTB(), attrib )
+		s = symbAddVar( symbUniqueLabel( ), dtype, NULL, 0, dTB(), attrib )
 	else
 		var_ = astNewDECL( s, NULL )
 
 		'' move to function scope?
 		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
 			astAddUnscoped( var_ )
-
 		'' respect the scope..
 		else
 			astAdd( var_ )
@@ -1179,7 +1173,6 @@ private function hVarAddUndecl _
 	end if
 
 	function = s
-
 end function
 
 '':::::

@@ -141,7 +141,7 @@ private sub hULONG2DBL _
 
 	dim as string label, aux, ostr
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 0, TRUE )
 	ostr = "cmp " + aux + ", 0"
@@ -1589,7 +1589,7 @@ private sub hCMPF_SSE _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if

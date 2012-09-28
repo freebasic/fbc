@@ -224,7 +224,7 @@ function astDataStmtAdd _
 
 		if( (lastlabel = NULL) or (ast.data.lastlbl = lastlabel) ) then
 			'' no label at all/still under the same label
-			id = *hMakeTmpStr( )
+			id = *symbUniqueLabel( )
 		else
 			ast.data.lastlbl = lastlabel
 
@@ -255,7 +255,7 @@ function astDataStmtAdd _
 		return sym
 	end if
 
-	sym = symbAddVarEx( id, hMakeTmpStr( ), _
+	sym = symbAddVarEx( id, symbUniqueLabel( ), _
 	                    FB_DATATYPE_STRUCT, ast.data.desc, sizeof( FB_DATADESC ), _
 	                    1, dTB(), _
 	                    FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
