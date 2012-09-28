@@ -488,8 +488,13 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 			section += 1
 		end if
 
-		'' assuming it's the same or a parent scope
-		assert( section <= ctx.section )
+		'' Switching from a parent to a child scope isn't allowed,
+		'' the UDT declaration will be forced to be emitted in the
+		'' parent scope anyways, since apparently that's where we
+		'' need it. (used by _procAllocStaticVars())
+		if( section > ctx.section ) then
+			section = ctx.section
+		end if
 	else
 		'' Write to toplevel
 		section = 0
@@ -590,7 +595,7 @@ private sub hEmitVar( byval sym as FBSYMBOL ptr, byval varini as zstring ptr )
 end sub
 
 private sub hEmitVariable( byval s as FBSYMBOL ptr )
-    '' already allocated?
+	'' already allocated?
 	if( symbGetVarIsAllocated( s ) ) then
 		return
 	end if
@@ -598,44 +603,42 @@ private sub hEmitVariable( byval s as FBSYMBOL ptr )
 	symbSetVarIsAllocated( s )
 
 	'' literal? don't emit..
-    if( symbGetIsLiteral( s ) ) then
-    	return
+	if( symbGetIsLiteral( s ) ) then
+		return
 	end if
 
 	'' initialized? only if not local or local and static
 	if( symbGetIsInitialized( s ) and (symbIsLocal( s ) = FALSE or symbIsStatic( s ))  ) then
 
 		'' extern or jump-tb?
-    	if( symbIsExtern( s ) ) then
+		if( symbIsExtern( s ) ) then
 			return
 		elseif( symbGetIsJumpTb( s ) ) then
 			return
 		end if
 
-    	'' never referenced?
-    	if( symbIsLocal( s ) = FALSE ) then
-    		if( symbGetIsAccessed( s ) = FALSE ) then
+		'' never referenced?
+		if( symbIsLocal( s ) = FALSE ) then
+			if( symbGetIsAccessed( s ) = FALSE ) then
 				'' not public?
-    	    	if( symbIsPublic( s ) = FALSE ) then
-    	    		return
-    	    	end if
+				if( symbIsPublic( s ) = FALSE ) then
+					return
+				end if
 			end if
 		end if
 
-		astTypeIniFlush( s->var_.initree, _
-						 s, _
-						 AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
+		astTypeIniFlush( s->var_.initree, s, AST_INIOPT_ISINI or AST_INIOPT_ISSTATIC )
 
 		s->var_.initree = NULL
 		return
 	end if
 
-    '' dynamic? only the array descriptor is emitted
+	'' dynamic? only the array descriptor is emitted
 	if( symbGetIsDynamic( s ) ) then
 		return
 	end if
 
-    '' a string or array descriptor?
+	'' a string or array descriptor?
 	if( symbGetLen( s ) <= 0 ) then
 		return
 	end if
@@ -1189,6 +1192,7 @@ private sub _scopeEnd( byval s as FBSYMBOL ptr )
 end sub
 
 private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr desc = any
 	dim as integer section = any
 
 	''
@@ -1211,9 +1215,31 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 
 		'' variable?
 		case FB_SYMBCLASS_VAR
-			'' static?
+			'' static with dtor?
 			if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
 				hEmitVariable( sym )
+
+				''
+				'' Check whether it's a dynamic array with a corresponding
+				'' descriptor that needs to be emitted instead.
+				'' (it won't be detected by above check itself,
+				'' as it's of FB_ARRAYDESC type)
+				''
+				'' It's the descriptor that matters for dynamic
+				'' arrays - the dynamic array symbol itself is
+				'' not even emitted by hEmitVariable().
+				''
+				'' Note that for static locals the descriptor and the
+				'' descriptor UDT will be local too, but since we're
+				'' emitting to the toplevel section, the descriptor
+				'' will end up there, and hEmitUDT() isn't allowed
+				'' to emit the descriptor UDT locally.
+				'' (this way we force it to be emitted globally)
+				''
+				desc = symbGetArrayDescriptor( sym )
+				if( desc ) then
+					hEmitVariable( desc )
+				end if
 			end if
 		end select
 
@@ -2380,10 +2406,24 @@ private sub _emitMem _
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr array = any
+
 	'' Emit locals/statics locally, except statics with dtor - those are
-	'' handled in _procAllocStaticVars().
+	'' handled in _procAllocStaticVars(), including their dynamic array
+	'' descriptors (if any).
 	if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
 		exit sub
+	end if
+
+	'' Check whether it's a dynamic array descriptor with a back link to
+	'' the corresponding array that needs to be checked instead...
+	'' (the descriptor needs to be handled like the array)
+	assert( symbIsVar( sym ) )
+	array = sym->var_.desc.array
+	if( array ) then
+		if( symbIsStatic( array ) and symbHasDtor( array ) ) then
+			exit sub
+		end if
 	end if
 
 	hEmitVariable( sym )
