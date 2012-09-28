@@ -494,29 +494,19 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
-'':::::
 function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval res as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE PTR lhs = any
-
-    lhs = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )
-
-	'' proc returns an UDT?
-    select case symbGetType( proc )
-    case FB_DATATYPE_STRUCT
-		'' pointer? deref
-		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
-			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
-		end if
-	'case FB_DATATYPE_CLASS
-		' ...
-	end select
-
-	function = lhs
+	'' proc returns UDT in hidden byref UDT param?
+	if( (symbGetType( proc ) = FB_DATATYPE_STRUCT) and _
+	    typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+		function = astNewDEREF( astNewVAR( res, 0, typeAddrOf( FB_DATATYPE_STRUCT ), symbGetSubtype( res ) ) )
+	else
+		function = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )
+	end if
 
 end function
 
