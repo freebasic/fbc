@@ -35,7 +35,7 @@ sub singleAlias cdecl ()
     dim x3 as c = @x1
     dim x4 as d = (1, 2, 3)
     dim p as UDT ptr = @x4
-    dim pp as UDT ptr = @p
+    dim pp as UDT ptr ptr = @p
     dim ppp as e = @pp
 
     CU_ASSERT_EQUAL( x1, 5 )
