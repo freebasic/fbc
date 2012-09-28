@@ -1753,14 +1753,17 @@ private function hEmitVreg _
 		dim as integer is_carray = symbIsCArray( vreg->sym )
 		dim as integer do_deref = have_offset or is_carray
 
-		dim as integer is_ptr = _
-			symbIsParamByRef( vreg->sym ) or _
-			symbIsImport( vreg->sym ) or _
-			typeIsPtr( symbGetType( vreg->sym ) ) or _
-			is_carray
+		dim as integer is_ptr = typeIsPtr( symbGetType( vreg->sym ) )
+		dim as integer symdtype = symbGetType( vreg->sym )
+
+		'' Emitted as pointer?
+		if( symbIsParamByRef( vreg->sym ) or symbIsImport( vreg->sym ) or is_carray ) then
+			is_ptr or= TRUE
+			symdtype = typeAddrOf( symdtype )
+		end if
 
 		'' Different types?
-		if( (vreg->dtype <> symbGetType( vreg->sym )) or _
+		if( (vreg->dtype <> symdtype) or _
 		    (vreg->subtype <> symbGetSubType( vreg->sym )) ) then
 			do_cast = TRUE
 
@@ -1768,19 +1771,17 @@ private function hEmitVreg _
 			'' b) struct <-> any other: ensure valid C syntax
 
 			'' different data classes?
-			do_deref or= (typeGetClass( vreg->dtype ) <> typeGetClass( symbGetType( vreg->sym ) ))
+			do_deref or= (typeGetClass( vreg->dtype ) <> typeGetClass( symdtype ))
 
 			'' any structs involved? (note: FBSTRINGs are structs in the C code too!)
 			select case( typeGet( vreg->dtype ) )
 			case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
 				do_deref = TRUE
 			case else
-				if( is_ptr = FALSE ) then
-					select case( typeGet( symbGetType( vreg->sym ) ) )
-					case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
-						do_deref = TRUE
-					end select
-				end if
+				select case( typeGet( symdtype ) )
+				case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
+					do_deref = TRUE
+				end select
 			end select
 		end if
 
