@@ -2316,11 +2316,30 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		fbcAddTemp( asmfile )
 	end if
 
-	ln = "-S -nostdlib -nostdinc " + _
-	     "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable " + _
-	     "-finline -ffast-math -fomit-frame-pointer -fno-math-errno -fno-trapping-math -frounding-math -fno-strict-aliasing "
+	ln += "-S -nostdlib -nostdinc "
+	ln += "-Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable "
+
+	'' helps finding ir-hlc bugs
+	ln += "-Werror-implicit-function-declaration "
 
 	ln += "-O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) ) + " "
+
+	'' Do not let gcc make assumptions about pointers; FB isn't strict about it.
+	ln += "-fno-strict-aliasing "
+
+	'' The rtlib sets its own rounding mode, don't let gcc make assumptions.
+	ln += "-frounding-math "
+
+	'' ?
+	ln += "-fno-math-errno "
+
+	'' Note: we shouldn't use some options like e.g. -ffast-math, because
+	'' they cause incompatibilities with the ASM backend. For example:
+	''    dim as double d = INF
+	''    print d - d
+	'' prints -NaN (IND) under the ASM backend because the FPU does the
+	'' subtraction, however with the C backend with, gcc -ffast-math
+	'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) ) then
 		ln += "-g "
