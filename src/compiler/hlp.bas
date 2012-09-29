@@ -131,7 +131,11 @@ function hFloatToStr _
 		end if
 
 	case else
-		function = str( value )
+		if( typ = FB_DATATYPE_DOUBLE ) then
+			function = str( value )
+		else
+			function = str( csng( value ) )
+		end if
 	end select
 
 end function
