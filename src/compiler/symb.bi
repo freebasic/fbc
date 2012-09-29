@@ -1128,27 +1128,16 @@ declare function symbAddProcParam _
 
 declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function symbAddPrototype _
+declare function symbAddProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as const zstring ptr, _
-		byval aliasname as const zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
 		byval mode as integer, _
-		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
-	) as FBSYMBOL ptr
-
-declare function symbAddProc _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
+		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
 declare function symbAddOperator _
@@ -1998,8 +1987,6 @@ declare function symbGetUDTBaseLevel _
 #define symbIsConst(s) (s->class = FB_SYMBCLASS_CONST)
 
 #define symbIsProc(s) (s->class = FB_SYMBCLASS_PROC)
-
-#define symbIsProcArg(s) (s->class = FB_SYMBCLASS_PARAM)
 
 #define symbIsDefine(s) (s->class = FB_SYMBCLASS_DEFINE)
 

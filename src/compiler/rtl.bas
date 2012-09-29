@@ -281,9 +281,9 @@ sub rtlAddIntrinsicProcs _
 					procdef->alias = pname
 				end if
 
-				proc = symbAddPrototype( proc, pname, procdef->alias, _
-				                         procdef->dtype, NULL, attrib, callconv, _
-				                         FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				proc = symbAddProc( proc, pname, procdef->alias, _
+				                    procdef->dtype, NULL, attrib, callconv, _
+				                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
 			else

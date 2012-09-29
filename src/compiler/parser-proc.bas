@@ -468,7 +468,7 @@ function cProcCallingConv _
 end function
 
 #define CREATEFAKEID( proc ) _
-	symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, attrib, mode )
+	symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
 
 '':::::
 private function hDoNesting _
@@ -670,13 +670,12 @@ function cProcHeader _
 
 	'' prototype?
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
-    	if( proc = NULL ) then
+		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
+		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-    	end if
-
-    	return proc
-    end if
+		end if
+		return proc
+	end if
 
 	'' function body..
 	dim as integer priority = any
@@ -689,15 +688,14 @@ function cProcHeader _
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-
-    	if( head_proc = NULL ) then
+		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+		if( head_proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 			'' error recovery: create a fake symbol
 			proc = CREATEFAKEID( proc )
-    	else
-    		proc = head_proc
-    	end if
+		else
+			proc = head_proc
+		end if
 
     '' another proc or proto defined already..
     else
@@ -722,17 +720,17 @@ function cProcHeader _
 					errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 				end if
 
-    			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-    			'' dup def?
-			if( head_proc = NULL ) then
+				head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+				'' dup def?
+				if( head_proc = NULL ) then
 					errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 					'' error recovery: create a fake symbol
 					return CREATEFAKEID( proc )
-    			end if
+				end if
 
-    			proc = head_proc
-    		end if
-    	end if
+				proc = head_proc
+			end if
+		end if
 
     	if( head_proc <> proc ) then
     		'' already parsed?
@@ -1741,15 +1739,14 @@ function cPropertyHeader _
 
 	'' prototype?
 	if( is_prototype ) then
-    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
-    	if( proc = NULL ) then
+		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
+		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-    	end if
+		end if
 
 		setUdtPropertyFlags(parent, is_indexed, is_get)
-
-    	return proc
-    end if
+		return proc
+	end if
 
 	'' function body..
 
@@ -1762,15 +1759,14 @@ function cPropertyHeader _
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-
-    	if( head_proc = NULL ) then
+		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+		if( head_proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 			'' error recovery: create a fake symbol
 			proc = CREATEFAKEID( proc )
-    	else
-    		proc = head_proc
-    	end if
+		else
+			proc = head_proc
+		end if
 
     '' another proc or proto defined already..
     else
@@ -1796,17 +1792,16 @@ function cPropertyHeader _
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 			end if
 
-    		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-    		'' dup def?
-    		if( head_proc = NULL ) then
+			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+			'' dup def?
+			if( head_proc = NULL ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 				'' error recovery: create a fake symbol
 				return CREATEFAKEID( proc )
-    		end if
+			end if
 
-    		proc = head_proc
-
-    	else
+			proc = head_proc
+		else
     		'' already parsed?
     		if( symbGetIsDeclared( head_proc ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
@@ -1852,8 +1847,8 @@ function cCtorHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-	#define CREATEFAKE() symbAddProc( proc, symbUniqueLabel( ), NULL, _
-	                                  FB_DATATYPE_VOID, NULL, attrib, mode )
+	#define CREATEFAKE() symbAddProc( proc, symbUniqueLabel( ), NULL, FB_DATATYPE_VOID, NULL, _
+	                                  attrib, mode, FB_SYMBOPT_DECLARING )
 
     dim as integer lgt = any, is_extern = any, is_ctor = any
     dim as FBSYMBOL ptr proc = any, parent = any

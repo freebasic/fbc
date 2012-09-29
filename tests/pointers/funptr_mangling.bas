@@ -1,7 +1,5 @@
 # include "fbcu.bi"
 
-
-
 namespace fbc_tests.pointers.funcptr_mangling
 
 ''
@@ -22,28 +20,25 @@ type foo
     fn as sub (byval as foo ptr)
 end type
 
-
-sub bar_cb( byval p as baz ptr )
+private sub bar_cb( byval p as baz ptr )
 end sub
 
-sub foo_cb( byval p as foo ptr )
+private sub foo_cb( byval p as foo ptr )
 end sub
 
-sub test cdecl ()
-
+private sub test cdecl( )
 	dim as foo f
 	dim as bar b
-	
 	f.fn = @foo_cb
 	b.fn = @bar_cb
-
 end sub
 
-private sub ctor () constructor
+private sub ctor( ) constructor
+	fbcu.add_suite( "tests/pointers/funcptr_mangling" )
+	fbcu.add_test( "test", @test )
 
-	fbcu.add_suite("fbc_tests.pointers.funcptr_mangling")
-	fbcu.add_test("test", @test)
-
+	subfoo1( )
+	subfoo2( )
 end sub
 
 end namespace
