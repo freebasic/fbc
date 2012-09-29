@@ -136,7 +136,15 @@ private sub hCONVConstEvalFlt _
 		'' DOUBLE to SINGLE|DOUBLE
 		if( to_dtype = FB_DATATYPE_SINGLE ) then
 			'' Truncate DOUBLE to SINGLE
-			v->con.val.float = csng( v->con.val.float )
+			dim as single f = any
+			f = v->con.val.float
+			v->con.val.float = f
+
+			'' Alternative, relying on the fixed CSNG() of FB 0.25:
+			'v->con.val.float = csng( v->con.val.float )
+			'' (currently it's better to use the explicit temp var
+			''  as done above, to avoid the broken CSNG() when
+			''  bootstrapping with FB 0.24 or even earlier versions)
 		end if
 
 	case FB_DATATYPE_LONGINT
