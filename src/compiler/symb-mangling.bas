@@ -775,16 +775,31 @@ private function hMangleVariable  _
 					'' BASIC? use the upper-cased name
 					if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 						id_str = sym->id.name
-						'' suffixed?
+
+						static as string tmp
+
+						'' Using '$' to prevent collision with C keywords etc.
+						'' ('$' isn't allowed as part of FB ids)
+						tmp = "$"
+
+						'' Type suffix?
 						if( symbIsSuffixed( sym ) ) then
-							static as string tmp
-							tmp = typecodeTB( symbGetType( sym ) ) + "$"
-							suffix_str = strptr( tmp )
-							suffix_len = 2
-						else
-							suffix_str = @"$"
-							suffix_len = 1
+							'' Encode the type to prevent collisions with other variables
+							'' using the same base id but different type suffix.
+							tmp += typecodeTB( symbGetType( sym ) ) + "$"
 						end if
+
+						'' Append the scope level to prevent collisions with symbols
+						'' from parent scopes or from the toplevel namespace.
+						'' Note: locals from the main scope will start at level 0,
+						'' while locals from procedures start at level 1,
+						'' but that's ok as long as globals aren't suffixed with
+						'' a level at all.
+						tmp += str( sym->scope )
+
+						suffix_str = strptr( tmp )
+						suffix_len = len( tmp )
+
 					'' else, the case-sensitive name saved in the alias..
 					else
 						id_str = sym->id.alias
