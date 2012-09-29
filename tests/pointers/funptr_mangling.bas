@@ -36,9 +36,6 @@ end sub
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/pointers/funcptr_mangling" )
 	fbcu.add_test( "test", @test )
-
-	subfoo1( )
-	subfoo2( )
 end sub
 
 end namespace
