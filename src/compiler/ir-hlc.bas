@@ -302,8 +302,10 @@ private function hEmitProcHeader _
 	end if
 
 	if( (options and EMITPROC_ISPROCPTR) = 0 ) then
-		if( symbIsExport( proc ) ) then
-			ln += "__declspec(dllexport) "
+		if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
+			if( symbIsExport( proc ) ) then
+				ln += "__declspec( dllexport ) "
+			end if
 		end if
 
 		if( symbIsPrivate( proc ) ) then

@@ -587,6 +587,7 @@ end type
 enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
 	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
+	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 end enum
 
 type FBTARGET

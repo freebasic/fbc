@@ -6584,7 +6584,7 @@ private sub _close _
 	hWriteBss( symbGetGlobalTbHead( ) )
 
 	''
-	if( env.clopt.export ) then
+	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
 		hWriteExport( symbGetGlobalTbHead( ) )
 	end if
 

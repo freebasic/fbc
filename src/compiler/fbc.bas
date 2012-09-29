@@ -511,7 +511,7 @@ private function hLinkFiles( ) as integer
 			end select
 		end if
 
-		'' export all symbols declared as EXPORT
+		'' Add all symbols to the dynamic symbol table
 		if( (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) or _
 		    fbGetOption( FB_COMPOPT_EXPORT ) ) then
 			ldcline += " --export-dynamic"

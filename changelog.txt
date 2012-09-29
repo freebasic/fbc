@@ -73,6 +73,7 @@ Version 0.25.0:
 - The C backend does no longer allow/disallow different cast()s than the ASM backend
 - C backend: +/- INF/NaN float constants didn't work
 - C backend: Using threadcreate() could cause duplicate function pointer typedefs errors
+- EXPORT will now be ignored when compiling for non-win32 targets
 
 
 Version 0.24.0:
