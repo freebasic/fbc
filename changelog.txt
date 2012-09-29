@@ -75,6 +75,7 @@ Version 0.25.0:
 - C backend: Using threadcreate() could cause duplicate function pointer typedefs errors
 - EXPORT will now be ignored when compiling for non-win32 targets
 - C backend: Dereferences on constants casted to pointer types (e.g. "*cptr(byte ptr, 0)") were not emitted correctly
+- C backend: frac() returned x - int(x) instead of x - fix(x) (different for negative values)
 
 
 Version 0.24.0:
