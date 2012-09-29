@@ -1693,26 +1693,40 @@ private function hEmitVreg _
 	) as string
 
 	dim as string s
-	dim as integer do_cast = FALSE
+	dim as integer do_cast = any, have_offset = any
+
+	do_cast = FALSE
 
 	select case as const( vreg->typ )
 	case IR_VREGTYPE_VAR, IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
 		if( vreg->sym = NULL ) then
-			'' No symbol attached, but vidx instead
+			'' No symbol attached, but vidx instead, unless the
+			'' address was given as a constant,
+			'' e.g. in derefs like *cptr(byte ptr, 0),
+			'' then there is neither a symbol nor vidx,
+			'' but just the "offset".
+			''    (*(vregtype*)offset)
 			''    (*(vregtype*)vidx)
 			''    (*(vregtype*)((ubyte*)vidx + offset))
 			s += "(*(" + hEmitType( vreg->dtype, vreg->subtype, EMITTYPE_ADDPTR ) + ")"
 
-			if( vreg->ofs <> 0 ) then
-				s += "((ubyte*)"
+			if( vreg->vidx ) then
+				have_offset = (vreg->ofs <> 0)
+
+				if( have_offset ) then
+					s += "((ubyte*)"
+				end if
+
+				'' recursion
+				s += hEmitVreg( vreg->vidx )
+
+				if( have_offset ) then
+					s += " + " + str( vreg->ofs ) + ")"
+				end if
+			else
+				s += str( vreg->ofs )
 			end if
 
-			'' recursion
-			s += hEmitVreg( vreg->vidx )
-
-			if( vreg->ofs <> 0 ) then
-				s += " + " + str( vreg->ofs ) + ")"
-			end if
 			s += ")"
 
 			exit select
@@ -1757,7 +1771,7 @@ private function hEmitVreg _
 		''        (*(vregtype*)&sym)
 		''        (*(vregtype*)((ubyte*)&sym + offset))
 
-		dim as integer have_offset = (vreg->ofs <> 0) or (vreg->vidx <> NULL)
+		have_offset = ((vreg->ofs <> 0) or (vreg->vidx <> NULL))
 
 		'' Check whether to do plain access or deref/addrof trick
 		'' - any offset? use trick, to allow doing +offset
