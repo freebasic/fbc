@@ -325,6 +325,10 @@ private function hStepExpression _
 	'' pointer counter?
 	if( typeIsPtr( lhs_dtype ) ) then
 		length = symbCalcDerefLen( lhs_dtype, lhs_subtype )
+		if( length <= 0 ) then
+			errReport( FB_ERRMSG_INCOMPLETETYPE )
+			length = 1
+		end if
 
 		'' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
