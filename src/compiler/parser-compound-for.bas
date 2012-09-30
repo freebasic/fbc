@@ -316,29 +316,26 @@ private function hStepExpression _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
+	dim as integer length = any
+
 	'' This function generates the AST node for
 	'' the STEP variable, which is used in hFlushSelfBOP
 	'' as the right-hand-side to the FOR += operation.
 
-    '' pointer counter?
-    if ( typeIsPtr( lhs_dtype ) ) then
+	'' pointer counter?
+	if( typeIsPtr( lhs_dtype ) ) then
+		length = symbCalcDerefLen( lhs_dtype, lhs_subtype )
 
-	    '' is STEP a complex expression?
+		'' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
-
 			'' Creates an AST node with a binary expression.
 			'' The left hand side of the expression is the
 			'' STEP variable in a FOR block, the right-hand-side
 			'' is an unsigned integer constant derived from the
 			'' width of the counter variable.
-
 			function = astNewBOP( AST_OP_MUL, _
 			                      astNewVAR( rhs->sym, 0, FB_DATATYPE_INTEGER ), _
-			                      astNewCONSTi( symbCalcLen( typeDeref( lhs_dtype ), _
-			                                                 lhs_subtype, _
-			                                                 FALSE ), _
-			                                    FB_DATATYPE_UINT ) )
-
+			                      astNewCONSTi( length ) )
 		'' constant STEP
 		else
 
@@ -346,21 +343,13 @@ private function hStepExpression _
 			'' The value of the constant is calculated by
 			'' taking the STEP value, and multiplying it by
 			'' the width of the counter type.
-
-			function = astNewCONSTi( rhs->value.int * symbCalcLen( typeDeref( lhs_dtype ), _
-			                                                       lhs_subtype, _
-			                                                       FALSE ), _
-			                         FB_DATATYPE_INTEGER )
-
+			function = astNewCONSTi( rhs->value.int * length )
 		end if
-
-    '' regular variable counter
-    else
-
-        '' no calculation needed
-        function = hElmToExpr( rhs )
-
-    end if
+	'' regular variable counter
+	else
+		'' no calculation needed
+		function = hElmToExpr( rhs )
+	end if
 
 end function
 

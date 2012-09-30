@@ -1361,6 +1361,12 @@ declare function symbCalcLen _
 		byval unpadlen as integer = FALSE _
 	) as integer
 
+declare function symbCalcDerefLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr  _
+	) as integer
+
 declare function symbAllocFloatConst _
 	( _
 		byval value as double, _

@@ -1883,6 +1883,31 @@ function symbCalcLen _
 
 end function
 
+function symbCalcDerefLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr  _
+	) as integer
+
+	dim as integer length = any
+
+	assert( typeIsPtr( dtype ) )
+
+	length = symbCalcLen( typeDeref( dtype ), subtype )
+
+	'' incomplete type?
+	if( length = 0 ) then
+		'' ANY PTR?
+		if( dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+			'' treat as BYTE PTR
+			length = 1
+		end if
+		'' (for anything else, we return 0 to indicate the error)
+	end if
+
+	function = length
+end function
+
 function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 	'' Neither private nor protected? Always ok.
 	if( (sym->attrib and (FB_SYMBATTRIB_VIS_PRIVATE or FB_SYMBATTRIB_VIS_PROTECTED)) = 0 ) then

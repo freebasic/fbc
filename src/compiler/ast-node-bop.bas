@@ -653,17 +653,11 @@ private function hDoPointerArith _
     	end select
     end if
 
-    '' calc len( *p )
-    lgt = symbCalcLen( typeDeref( astGetDataType( p ) ), astGetSubType( p ) )
-
-
-	'' incomplete type?
-	if( lgt = 0 ) then
-		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> typeAddrOf( FB_DATATYPE_VOID ) ) then
-			exit function
-		end if
-		lgt = 1
+	'' calc len( *p )
+	lgt = symbCalcDerefLen( astGetDataType( p ), astGetSubType( p ) )
+	if( lgt <= 0 ) then
+		'' incomplete type
+		exit function
 	end if
 
     '' another pointer?
