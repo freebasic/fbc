@@ -280,7 +280,7 @@ private sub hFlushBOP _
 	lhs_expr = hElmToExpr( lhs )
 	rhs_expr = hElmToExpr( rhs )
 
-    '' attempt to build "lhs op rhs"
+	'' attempt to build "lhs op rhs"
 	expr = astNewBOP( op, lhs_expr, rhs_expr, ex, AST_OPOPT_NONE )
 
 	'' fail?
@@ -290,8 +290,8 @@ private sub hFlushBOP _
 		exit sub
 	end if
 
-    '' UDT?
-	if( astGetDataType( lhs ) = FB_DATATYPE_STRUCT ) then
+	'' UDT?
+	if( lhs->dtype = FB_DATATYPE_STRUCT ) then
 		'' handle dtors, etc
 		expr = astUpdComp2Branch( expr, ex, TRUE )
 
@@ -370,8 +370,8 @@ private sub hFlushSelfBOP _
 	dim as ASTNODE ptr lhs_expr = any, rhs_expr = any, expr = any
 	dim as FBSYMBOL ptr lhs_subtype = symbGetSubtype( lhs->sym )
 
-	lhs_expr = astNewVAR( lhs->sym, 0, astGetFullType( lhs ), lhs_subtype )
-    rhs_expr = hStepExpression( astGetFullType( lhs ), lhs_subtype, rhs )
+	lhs_expr = astNewVAR( lhs->sym, 0, lhs->dtype, lhs_subtype )
+	rhs_expr = hStepExpression( lhs->dtype, lhs_subtype, rhs )
 
 	'' attept to create the '+=' expression
 	expr = astNewSelfBOP( op, lhs_expr, rhs_expr )
@@ -388,26 +388,19 @@ private sub hFlushSelfBOP _
 
 end sub
 
-'':::::
-private function hCallCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+private function hCallCtor( byval sym as FBSYMBOL ptr ) as integer
 	dim as ASTNODE ptr expr = cInitializer( sym, FB_INIOPT_ISINI )
-    if( expr = NULL ) then
-    	return FALSE
-    end if
+	if( expr = NULL ) then
+		exit function
+	end if
 
-    expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
-    if( expr = NULL ) then
-    	return FALSE
-    end if
+	expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
+	if( expr = NULL ) then
+		exit function
+	end if
 
 	astAdd( expr )
-
 	function = TRUE
-
 end function
 
 private sub hForAssign _
@@ -792,7 +785,7 @@ function cForStmtBegin _
 
 	dim as integer dtype = astGetDataType( idexpr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
-	
+
 	if( typeIsConst( astGetFullType( idexpr ) ) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 	end if
