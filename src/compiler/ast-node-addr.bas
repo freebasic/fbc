@@ -94,12 +94,7 @@ function astLoadOFFSET _
 
 end function
 
-'':::::
-private sub removeNullPtrCheck _
-	( _
-		byval l as ASTNODE ptr _
-	)
-
+private sub hRemoveNullPtrCheck( byval l as ASTNODE ptr )
 	dim as ASTNODE ptr n = any, t = any
 
 	'' ptr checks must be removed because a null pointer is ok
@@ -138,23 +133,58 @@ private sub removeNullPtrCheck _
 			end select
 		loop
 	end select
-
 end sub
 
-'':::::
-function astNewADDROF _
+private function hAddrofDerefConst2Const _
 	( _
-		byval l as ASTNODE ptr _
+		byval l as ASTNODE ptr, _
+		byval deref as ASTNODE ptr, _
+		byval is_field as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr ll = any
+
+	assert( deref->class = AST_NODECLASS_DEREF )
+
+	if( env.clopt.extraerrchk ) then
+		hRemoveNullPtrCheck( deref )
+	end if
+
+	ll = deref->l
+
+	'' @*cptr( foo ptr, const )  ->  cast( foo ptr, const )
+	'' Note: astNewDEREF() stores the CONST value into its
+	'' ASTNODE.ptr.ofs field and then uses a NULL lhs.
+	if( ll = NULL ) then
+		ll = astNewCONV( typeAddrOf( l->dtype ), l->subtype, astNewCONSTi( deref->ptr.ofs ) )
+		astDelTree( l )
+		return ll
+	end if
+
+	'' assuming a CONST lhs is always put into ASTNODE.ptr.ofs
+	'' and then deleted by astNewDEREF()
+	assert( ll->class <> AST_NODECLASS_CONST )
+
+	if( is_field = FALSE ) then
+		'' @[var] to nothing (can't be local or field)
+		if( deref->ptr.ofs = 0 ) then
+			astDelNode( deref )
+			if( deref <> l ) then
+				astDelNode( l )
+			end if
+			return ll
+		end if
+	end if
+
+	function = NULL
+end function
+
+function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr n = any
 
 	if( l = NULL ) then
 		return NULL
 	end if
-
-	subtype = l->subtype
 
 	'' skip any casting if they won't do any conversion
 	dim as ASTNODE ptr t = l
@@ -164,69 +194,19 @@ function astNewADDROF _
 		end if
 	end if
 
-	select case as const t->class
+	n = NULL
+
+	select case( t->class )
 	case AST_NODECLASS_DEREF
-		if( env.clopt.extraerrchk ) then
-           	removeNullPtrCheck( t )
-		end if
-
-		n = t->l
-		
-		'' handle error recovery
-		if( n = NULL ) then
-			return NULL
-		end if
-		
-		'' @*const to const
-		if( n->class = AST_NODECLASS_CONST ) then
-			astDelNode( t )
-			if( t <> l ) then
-				astDelNode( l )
-			end if
-			return n
-		end if
-
-		'' @[var] to nothing (can't be local or field)
-		if( t->ptr.ofs = 0 ) then
-			astDelNode( t )
-			if( t <> l ) then
-				astDelNode( l )
-			end if
-			return n
-		end if
+		n = hAddrofDerefConst2Const( l, t, FALSE )
 
 	case AST_NODECLASS_FIELD
 		'' @0->field to const
 		n = t->l
 		if( n->class = AST_NODECLASS_DEREF ) then
-			if( env.clopt.extraerrchk ) then
-           		removeNullPtrCheck( n )
-           	end if
-
-			dim as ASTNODE ptr nn = n->l
-			if( nn <> NULL ) then
-				'' abs address?
-				if( nn->class = AST_NODECLASS_CONST ) then
-					astDelNode( n )
-					astDelNode( t )
-					if( t <> l ) then
-						astDelNode( l )
-					end if
-					return nn
-				end if
-
-			'' just an offset..
-			else
-				'' !!!FIXME!!! should use LONG in 64-bit adressing mode
-				nn = astNewCONSTi( n->ptr.ofs, FB_DATATYPE_INTEGER )
-
-				astDelNode( n )
-				astDelNode( t )
-				if( t <> l ) then
-					astDelNode( l )
-				end if
-				return nn
-			end if
+			n = hAddrofDerefConst2Const( l, n, TRUE )
+		else
+			n = NULL
 		end if
 
 	case AST_NODECLASS_VAR
@@ -247,7 +227,7 @@ function astNewADDROF _
 			end if
 		end if
 
-    case AST_NODECLASS_IDX
+	case AST_NODECLASS_IDX
 		'' try to remove the idx node if it's a constant expr
 		t = astOptimizeTree( t )
 		if( t <> l ) then
@@ -277,16 +257,16 @@ function astNewADDROF _
 
 	end select
 
-	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDROF, _
-					typeAddrOf( astGetFullType( l ) ), _
-					subtype )
+	if( n ) then
+		return n
+	end if
 
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_ADDROF, typeAddrOf( l->dtype ), l->subtype )
 	n->op.op = AST_OP_ADDROF
 	n->l = l
 
 	function = n
-
 end function
 
 '':::::

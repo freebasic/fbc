@@ -76,6 +76,7 @@ Version 0.25.0:
 - EXPORT will now be ignored when compiling for non-win32 targets
 - C backend: Dereferences on constants casted to pointer types (e.g. "*cptr(byte ptr, 0)") were not emitted correctly
 - C backend: frac() returned x - int(x) instead of x - fix(x) (different for negative values)
+- Expressions like "@*cast(integer ptr, 123)", i.e. taking the address of a dereferenced type-casted constant, were rejected or caused parsing inconsistencies
 
 
 Version 0.24.0:

@@ -632,15 +632,8 @@ declare function cHighestPrecExpr _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-declare function cDerefExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cAddrOfExpression _
-	( _
-		_
-	) as ASTNODE ptr
+declare function cDerefExpression( ) as ASTNODE ptr
+declare function cAddrOfExpression( ) as ASTNODE ptr
 
 declare function cTypeConvExpr _
 	( _
