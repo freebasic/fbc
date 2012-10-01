@@ -127,9 +127,6 @@ private function hEmitProcHeader _
 
 	dim as string ln
 
-	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
-
 	''
 	'' Calling convention (default if none specified is Cdecl as in C)
 	''
@@ -142,8 +139,11 @@ private function hEmitProcHeader _
 	''
 	select case as const( symbGetProcMode( proc ) )
 	case FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL_MS, FB_FUNCMODE_PASCAL
-		ln += " x86_stdcallcc"
+		ln += "x86_stdcallcc "
 	end select
+
+	'' Function result type (is 'void' for subs)
+	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), symbGetSubType( proc ), EMITTYPE_ISRESULT )
 
 	ln += " "
 
