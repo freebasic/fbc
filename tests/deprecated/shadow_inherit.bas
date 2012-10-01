@@ -1,4 +1,3 @@
-
 ' TEST_MODE : COMPILE_AND_RUN_OK
 
 assert(__FB_OPTION_EXPLICIT__ = 0)

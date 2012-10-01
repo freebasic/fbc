@@ -14,8 +14,8 @@ sub lenString cdecl()
 
 	CU_ASSERT(len("123") = 3)
 
-	''CU_ASSERT(len(string(3, "a")) = 3) '' Conflicts with len(string). TODO: could be allowed by checking for '('
-	CU_ASSERT(len((string(3, "a"))) = 3) '' This works, with extra parentheses which can't be used around types
+	CU_ASSERT( len( string( 3, "a" ) ) = 3 )  '' Relies on disambiguation from len(string) via the '(' in 'string('
+	CU_ASSERT( len( (string( 3, "a" )) ) = 3 ) '' Not ambiguous
 end sub
 
 namespace ns
@@ -114,8 +114,8 @@ sub sizeofExpression cdecl()
 	CU_ASSERT(   len(a orelse b) = 4)
 	CU_ASSERT(sizeof(a orelse b) = 4)
 
-	''CU_ASSERT(   len(x(0)) = 4) '' TODO: allow by checking for '('
-	''CU_ASSERT(sizeof(x(0)) = 4)
+	CU_ASSERT(   len(x(0)) = 4)
+	CU_ASSERT(sizeof(x(0)) = 4)
 
 	CU_ASSERT(   len(p[0]) = 4)
 	CU_ASSERT(sizeof(p[0]) = 4)

@@ -1,6 +1,4 @@
-
 ' TEST_MODE : COMPILE_AND_RUN_OK
-
 
 	a = 1
 	scope 

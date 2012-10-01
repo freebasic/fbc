@@ -35,3 +35,15 @@
 #ifndef empty3
 #error  empty1 should be defined
 #endif
+
+#define f1(a)
+f1()
+
+#define f2(a) a
+f2()
+
+#define f3(a,b,c)
+f3(,,)
+
+#define f4(a,b,c) a b c
+f4(,,)

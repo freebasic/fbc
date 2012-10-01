@@ -1,164 +1,166 @@
 ''
-'' wxWindows-c example, by dumbledore
+'' wx-c wxWindow example, by dumbledore
 ''
 
 
-#include once "wx-c/wx.bi"
+#Include "wx-c/wx.bi"
 
-const FRAME_W = 500
-const FRAME_H = 400
+Const FRAME_W = 500
+Const FRAME_H = 400
 
 ''
 '' ids
 ''
-enum
+Enum
 	ID_FRAME
 	ID_PANEL
 	ID_CLICKMEBUTTON
 	ID_EXITBUTTON
 	ID_DIAG_EXITBUTTON
-end enum
+End Enum
 
-declare function app_oninit_cb () as integer
-declare function app_onexit_cb () as integer
+Declare Function app_oninit_cb WXCALL () As wxBool
+Declare Function app_onexit_cb WXCALL () As wxInt
 
 ''
 '' globals
 ''
-	dim shared as wxApp ptr app
-	dim shared as wxFrame ptr frame
-   	dim shared as wxDialog ptr dialog
+	Dim Shared As wxApp Ptr app
+	Dim Shared As wxFrame Ptr frame
+   	Dim Shared As wxDialog Ptr dialog
 
 '':::::
 ''
 '' main  
 ''
-  	app = wxApp( )
+  	app = wxApp_ctor( )
   	wxApp_RegisterVirtual( app, @app_oninit_cb, @app_onexit_cb )
   	wxApp_Run( 0, 0 )
   	
-	end 0
+	End 0
 
 '':::::
 ''
 '' dialog's exit button callback
 ''
-sub diag_exitbutton_cb(byval event as wxEvent ptr, byval iListener as integer)
+Sub diag_exitbutton_cb(ByVal event As wxEvent Ptr, ByVal iListener As Integer)
 
 	wxDialog_EndModal( dialog, 0 )
 	
-end sub
+End Sub
 
 '':::::
 ''
 '' panel's click-me button callback
 ''
-sub panel_clickmebutton_cb (byval event as wxEvent ptr, byval iListener as integer)
+Sub panel_clickmebutton_cb (ByVal event As wxEvent Ptr, ByVal iListener As Integer)
    
 	wxDialog_ShowModal( dialog )
    
-end sub
+End Sub
 
 '':::::
 ''
 '' panel's exit button callback
 ''
-sub panel_exitbutton_cb (byval event as wxEvent ptr, byval iListener as integer)
+Sub panel_exitbutton_cb (ByVal event As wxEvent Ptr, ByVal iListener As Integer)
    
 	wxWindow_Close( frame, 0 )
    
-end sub
+End Sub
 
 '':::::
 ''
 '' on init callback
 ''
-function app_oninit_cb () as integer
-	dim as integer ypos, size
+Function app_oninit_cb WXCALL () As wxBool
+	Dim As Integer ypos, size
    
 	'' create the main window
-   	frame = wxFrame( )
-   	wxFrame_Create( frame, 0, ID_FRAME, "Welcome to WX-C", _
-   				   	wxSize( 200, 200 ), wxSize( FRAME_W, FRAME_H ), _
-   				   	wxDEFAULT_FRAME_STYLE, "frame" )
+   	frame = wxFrame_ctor( )
+   	wxFrame_Create( frame, 0, ID_FRAME, wxString_ctorUTF8("Welcome to WX-C"), _
+   				   	200, 200, FRAME_W, FRAME_H, _
+   				   	wxFRAME_DEFAULT_STYLE, WX_NULL )
    
    	'' make a dialog
-   	dialog = wxDialog( )
-   	wxDialog_create( dialog, frame, -1, "Press Exit",_
-   					 wxSize( 10, 10 ), wxSize( 500, 400 ), _
-   				     wxDEFAULT_FRAME_STYLE, 0 )
+   	dialog = wxDialog_ctor( )
+   	wxDialog_Create( dialog, frame, -1, wxString_ctorUTF8("Press Exit"),_
+   					 10, 10, 500, 400, _
+   				     wxFRAME_DEFAULT_STYLE, 0 )
    
    	'' add widgets to the dialog
    	size = 27
    	ypos=1
 
-   	wxButton_Create( wxButton( ), dialog, -1, "&Goto", _
-   					wxSize( 405, ypos ), wxSize( 85, -1), 0, 0, 0 )
+   	wxButton_Create( wxButton_ctor( ), dialog, -1, wxString_ctorUTF8("&Goto"), _
+   					405, ypos, 85, -1, 0, 0, 0 )
    	ypos += size
    
-   	wxButton_Create( wxButton(), dialog, -1, "&Select", _
-   					 wxSize( 405, ypos ), wxSize( 85, -1 ), 0, 0, 0 )
+   	wxButton_Create( wxButton_ctor( ), dialog, -1, wxString_ctorUTF8("&Select"), _
+   					 405, ypos, 85, -1, 0, 0, 0 )
    	ypos += size
    
-   	wxButton_create( wxButton( ), dialog, -1, "E&dit", _
-   					 wxsize( 405, ypos ), wxSize( 85, -1 ), 0, 0, 0 )
+   	wxButton_Create( wxButton_ctor( ), dialog, -1, wxString_ctorUTF8("E&dit"), _
+   					 405, ypos, 85, -1, 0, 0, 0 )
    	ypos += size
    
-   	wxButton_create( wxButton( ), dialog, -1, "&Add", _
-   					 wxsize( 405, ypos), wxSize( 85,-1 ), 0, 0, 0 )
+   	wxButton_Create( wxButton_ctor( ), dialog, -1, wxString_ctorUTF8("&Add"), _
+   					 405, ypos, 85, -1, 0, 0, 0 )
    	ypos += size
    
-   	dim as wxButton ptr diag_exitbutton = wxButton()
-   	wxbutton_create( diag_exitbutton, dialog, ID_DIAG_EXITBUTTON, "&Exit", _
-   					 wxsize( 405, ypos ), wxSize( 85,-1 ), 0, 0, 0 )
+   	Dim As wxButton Ptr diag_exitbutton = wxButton_ctor( )
+   	wxButton_Create( diag_exitbutton, dialog, ID_DIAG_EXITBUTTON, wxString_ctorUTF8("&Exit"), _
+   					 405, ypos, 85, -1, 0, 0, 0 )
    
    	wxEvtHandler_proxy( diag_exitbutton, @diag_exitbutton_cb )
-   	wxEvtHandler_connect( diag_exitbutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_DIAG_EXITBUTTON, -1, 0 )
+   	wxEvtHandler_Connect( diag_exitbutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_DIAG_EXITBUTTON, -1, 0 )
 
-   	dim as wxListBox ptr selector = wxListBox( )
+   	Dim As wxListBox Ptr selector = wxListBox_ctor( )
    	wxListBox_Create( selector, dialog, -1, _
-   					  wxSize( -1, -1), wxSize( 400, 350 ), 0, 0, _
-   					  wxLB_SINGLE or wxLB_NEEDED_SB or wxLB_HSCROLL, 0, 0 )
+   					  wxPoint_ctor(-1, -1), wxSize_ctor(400, 350), 0, _
+   					  wxLB_SINGLE Or wxLB_NEED_SB Or wxLB_HSCROLL, 0, 0 )
    	
-   	dim as wxFont ptr font = wxFont( 10, wxMODERN, wxNORMAL, wxNORMAL, 0, 0, 0 )
+   	Dim As wxFont Ptr font = wxFont_ctor( 10, wxMODERN, wxNORMAL, wxNORMAL, 0, 0, 0 )
    	wxWindow_SetFont( selector, font )
    	
-   	dim as integer i
-   	for i = 0 to 15
-   		wxListBox_Append( selector, "list item " + str( i+1 ) )
-   	next i
+   	Dim As Integer i
+   	Dim As wxArrayString Ptr tempString = wxArrayString_ctor( )
+   	For i = 0 To 15
+   		wxArrayString_Add( tempString, wxString_ctorUTF8("list item " + Str( i+1 )) )
+   		wxListBox_InsertItems( selector, tempString, i )
+   		wxArrayString_Clear( tempString )
+   	Next i
    
    	'' create the main panel
-   	dim as wxPanel ptr panel = wxPanel( )
-   	wxPanel_Create( panel, frame, ID_PANEL, 0, 0, 0, 0 )
+   	Dim As wxPanel Ptr panel = wxPanel_ctor2( frame, ID_PANEL, -1, -1, -1, -1, 0, 0 )
    
    	'' create a text widget
    	'' we're not using this thing for any events so it gets an id of -1
-   	dim as wxTextCtrl ptr text = wxTextCtrl( )
-   	wxTextCtrl_Create( text, panel, -1, "Hello from wx-c in fb!", _
-   					   wxsize( 8, 8 ), wxsize( FRAME_W - 24, FRAME_H - 200 ), _
+   	Dim As wxTextCtrl Ptr text = wxTextCtrl_ctor( )
+   	wxTextCtrl_Create( text, panel, -1, wxString_ctorUTF8("Hello from wx-c in fb!"), _
+   					   8, 8, FRAME_W - 24, FRAME_H - 200, _
    					   wxVSCROLL, 0, 0 )
    					   
    	wxTextCtrl_SetFont( text, font )
    
    	'' make a button (sending a wxsize(-1,-1) means take the default size - 
    	'' you can specify just x or y as -1 if you want the other one to be a fixed size
-   	dim as wxButton ptr panel_clickmebutton = wxButton( )
-   	wxButton_Create( panel_clickmebutton, panel, ID_CLICKMEBUTTON, "Click me!", _
-   					 wxsize( FRAME_W\2 - 100, FRAME_H - 60 ), wxsize( -1, -1 ), 0, 0, 0 )
+   	Dim As wxButton Ptr panel_clickmebutton = wxButton_ctor( )
+   	wxButton_Create( panel_clickmebutton, panel, ID_CLICKMEBUTTON, wxString_ctorUTF8("Click me!"), _
+   					 FRAME_W\2 - 100, FRAME_H - 60, -1, -1, 0, 0, 0 )
    
    	'' connect the button to the button event handler sub
    	wxEvtHandler_proxy( panel_clickmebutton, @panel_clickmebutton_cb )
-   	wxEvtHandler_connect( panel_clickmebutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_CLICKMEBUTTON, -1, 0 )
+   	wxEvtHandler_Connect( panel_clickmebutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_CLICKMEBUTTON, -1, 0 )
 
    	''
-   	dim as wxButton ptr panel_exitbutton = wxButton( )
-   	wxButton_Create( panel_exitbutton, panel, ID_EXITBUTTON, "Exit", _
-   					 wxsize( FRAME_W\2 + 40, FRAME_H - 60 ), wxsize( -1, -1 ), 0, 0, 0 )
+   	Dim As wxButton Ptr panel_exitbutton = wxButton_ctor( )
+   	wxButton_Create( panel_exitbutton, panel, ID_EXITBUTTON, wxString_ctorUTF8("Exit"), _
+   					 FRAME_W\2 + 40, FRAME_H - 60, -1, -1, 0, 0, 0 )
    
    	'' connect the button to the button event handler sub
    	wxEvtHandler_proxy( panel_exitbutton, @panel_exitbutton_cb )
-   	wxEvtHandler_connect( panel_exitbutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_EXITBUTTON, -1, 0 )
+   	wxEvtHandler_Connect( panel_exitbutton, wxEvent_EVT_COMMAND_BUTTON_CLICKED( ), ID_EXITBUTTON, -1, 0 )
    
    	'' center it
    	wxWindow_CenterOnScreen( frame, wxBOTH )
@@ -166,18 +168,18 @@ function app_oninit_cb () as integer
    	'' show window
    	wxWindow_Show( frame, 1 )
 
-	function = wxApp_OnInit( app )
+	Function = wxApp_OnInit( app )
 	
-end function
+End Function
 
 '':::::
 ''
 '' on exit callback
 ''
-function app_onexit_cb () as integer
+Function app_onexit_cb () As Integer
 
-	wxMsgBox( 0, "Bye Bye...", "Window Closed!", 0, wxSize( -1, -1 ) )
+	wxMsgBox( 0, wxString_ctorUTF8("Bye Bye..."), wxString_ctorUTF8("Window Closed!"), 0, -1, -1 )
 
-	function = wxApp_OnExit( app )
+	Function = wxApp_OnExit( app )
 	
-end function
+End Function

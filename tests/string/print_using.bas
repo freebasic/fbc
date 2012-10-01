@@ -1,7 +1,7 @@
 # include "fbcu.bi"
 
 #define REMOVE_TEMP_FILE
-'#define PRINT_IF_UNEQUAL
+#define PRINT_IF_UNEQUAL
 
 #define QT(s) ("""" & (s) & """")
 
@@ -128,7 +128,7 @@ private sub test_sng( _
 	'' decimal vals getting corrupted in Double test
 
 	PRINT_USING( fmt & "_!", csng(num), cmp & "!" )
-	if( do_dbl ) then 
+	if( do_dbl ) then
 		PRINT_USING( fmt & "_#", cdbl(num), cmp & "#" )
 	end if
 
@@ -195,14 +195,14 @@ sub numtest cdecl ()
 	fmt = "": cmp = "": num_ull = 0
 	for i = 1 to 20
 		num_ull = num_ull * 10 + i mod 10
-		
+
 		fmt &= "#"
 		cmp &= i mod 10
 
 		test_ull( fmt, num_ull, cmp )
 	next i
 
-	'' Test that Singles can get double precision (except with "&") 
+	'' Test that Singles can get double precision (except with "&")
 	'' (Note that a Single can easily store 2^-10 without loss of precision)
 	test_sng2( "#.##########, &", 2^-10, 2^-10, "0.0009765625, 9.765625E-4" )
 
@@ -351,20 +351,36 @@ sub fmttest cdecl ()
 
 end sub
 
-sub infnantest cdecl ()
+sub infnanindtest cdecl ()
 
 	OPEN_FILE( "print_using_infnantest.txt" )
 
 	dim as single one = 1.0, zero = 0.0
+	dim as single inf = one / zero
+	dim as single ind = inf - inf
+	dim as single nan = cvs(mki(&h7f800001))
 
-	#define MY_INF (one / zero)
-	#define MY_NAN abs(zero / zero)
+	dim as string fmt = "+#.####"
 
-	test_sng( "+###",  MY_INF, "+INF" )
-	test_sng( "+###", -MY_INF, "-INF" )
+	test_sng( fmt,  inf, "+1.#INF" )
+	test_sng( fmt, -inf, "-1.#INF" )
 
-	test_sng( "+###",  MY_NAN, "+NAN" )
-	test_sng( "+###", -MY_NAN, "-NAN" )
+	test_sng( fmt,  nan, "+1.#NAN" )
+	test_sng( fmt, -nan, "-1.#NAN" )
+
+	test_sng( fmt, ind, "-1.#IND" )
+
+	test_sng( "&",  inf,  "1.#INF" )
+	test_sng( "&", -inf, "-1.#INF" )
+
+	test_sng( "&", ind,        "-1.#IND" )
+	test_sng( "#.####", ind,  "%-1.#IND" )
+	test_sng( "##.####", ind,  "-1.#IND" )
+	test_sng( "##.###",  ind, "%-1.$00" )
+	test_sng( "##.##",  ind,  "%-1.$0" )
+	test_sng( "##.#",  ind,   "%-1.$" )
+	test_sng( "##.",  ind,    "%-1." )
+	test_sng( "##",  ind,     "%-1" )
 
 	CLOSE_TEST_FILE()
 
@@ -421,7 +437,7 @@ sub strtest cdecl ()
 			test_sng( "&", -cdbl(n), "-1.E+" & i )
 
 		end if
-		
+
 		n *= 10
 
 	next i
@@ -446,8 +462,13 @@ sub strtest cdecl ()
 	test_dbl( "&", 1.234E+15, "1234" & string(15-3, "0") )
 	test_dbl( "&", 1.234E+16, "1.234E+16" )
 
+	test_sng( "&", 1.E-9, "1.E-9", 0 )
+	test_sng( "&", 1.E-10, "1.E-10", 0 )
 	test_sng( "&", 1.E+9, "1.E+9", 0 )
 	test_sng( "&", 1.E+10, "1.E+10", 0 )
+
+	test_dbl( "&", 1.E-99, "1.E-99" )
+	test_dbl( "&", 1.E-100, "1.E-100" )
 	test_dbl( "&", 1.E+99, "1.E+99" )
 	test_dbl( "&", 1.E+100, "1.E+100" )
 
@@ -461,7 +482,7 @@ sub ctor () constructor
 	fbcu.add_test("statement parsing test", @stmttest)
 	fbcu.add_test("number test", @numtest)
 	fbcu.add_test("format parsing test", @fmttest)
-	fbcu.add_test("inf/nan printing test", @infnantest)
+	fbcu.add_test("inf/nan/ind printing test", @infnanindtest)
 	fbcu.add_test("string format test", @strtest)
 
 end sub

@@ -1,7 +1,7 @@
 Version 0.24.0:
 
 [changed]
-- -target option now accepts system triplets (known from gcc/binutils), note: -target win32 will now look for bin/win32-ld[.exe] instead of bin/win32/ld[.exe]
+- -target option now accepts system triplets (known from gcc/binutils)
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
 - fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
 - __FB_UNIX__ and __FB_PCOS__ now work like the other target defines (check via #ifdef)
@@ -16,16 +16,26 @@ Version 0.24.0:
 - ImageCreate() and Reset(streamno) now set the runtime error code, which can be retrieved with Err()
 - Allow CONST STRING parameters in string.bi/datetime.bi functions
 - wstring Input is now subject to the same 4096 characters length limit like the normal [z]string Input
+- #3492598: FB-only overloaded operators now use Itanium C++ ABI-compatible name mangling
+- The bitwise NOT operator is now mangled as bitwise not ('~' in C++) instead of logical negation ('!' in C++)
+- The '= ANY' intializer on variables or fields will now prevent the default constructor call (if any), instead of generating a warning message, requiring the variable or field to be initialized with an explicit constructor call. It still won't affect destructor calls though.
+- #3051592: crt/errno.bi now uses __errno_location() to access errno on Linux
+- The NAKED keyword is now disallowed under -gen gcc because gcc doesn't support naked functions on x86
+- DELETE on something that's not a pointer now always triggers an error, not just a warning
+- The -target option is no longer case-sensitive
+- Linux standalone fbc won't try to use tools from PATH anymore
+- PRINT USING now prints Inf/Nan/Ind values the same way, e.g. "1.#INF"
 
 [added]
+- Single inheritance for classes: TYPE Child EXTENDS Parent
+- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
+- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
+- THREADCALL keyword for starting functions in a new thread with parameters passed to them (requires libFFI)
 - EVENT_MOUSE_HWHEEL for X11
 - __DATE_ISO__ for returning the compile date in "yyyy-mm-dd" format
 - fbc can now be built for installation into MinGW/DJGPP
 - Support for windres instead of GoRC when installing into MinGW or cross-compiling from a non-win32 system
 - The .def file generated when building a DLL is now preserved if -R was given
-- Single inheritance for classes: TYPE Child EXTENDS Parent
-- BASE keyword for explicit base class access inside methods: BASE.member (as opposed to THIS.member)
-- Runtime type information (RTTI) for classes extending other classes or the new builtin OBJECT class: IF variable IS SomeClass THEN ...
 - 'fbc -static' option to tell the linker to link against static libraries if installed
 - CONST may now be specified in front of the bodies of CONST methods, not just in the declaration, same as for STATIC
 - "Real" Rnd() algorithm (activate via 'Randomize(, 5)') using Win32 Crypto APIs or Linux /dev/urandom
@@ -59,6 +69,11 @@ Version 0.24.0:
 - Updated header for Mini-XML 2.7 header update
 - New header for ZeroMQ 2.1.10
 - Updated header for cryptlib 3.4.1
+- Wstrings are now allowed in Print Using
+- Len(), Sizeof() and Typeof() can now be used on function calls and array accesses even if they have the same identifier as a type
+- Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
+- FIELD = N can now be used on nested anonymous TYPEs/UNIONs
+- IIF()'s with constant conditions are now evaluated at compile-time
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
@@ -127,6 +142,38 @@ Version 0.24.0:
 - C backend: Taking address of module-level labels was broken (used by module-level error handling code)
 - C backend: Wstring literals outside variable initializers were emitted assuming sizeof(wstring) = 2, causing buffer overflows on Linux (where sizeof(wstring) = 4)
 - C backend: wchar type didn't match gcc's, breaking global fixed-length wstring initializers
+- Unused bits (padding) in UDTs with bitfields could be left uninitialized by type initializers
+- C backend #3421351: Wrong code for bitfield assignment when the target bitfield expression had nested field accesses
+- #3509495: Delete[] on derived UDTs with destructors caused a compiler crash
+- Overload resolution treated pointer arguments as uintegers, allowing them to match integer parameters
+- Any Ptr arguments were seen as ambiguous even if there was a fully matching overload
+- #3479361: Derived UDTs were allowed to access their base UDT's private fields
+- Local arrays in methods didn't have access to private/protected destructors
+- 'LET(fields...) = UDT' in methods didn't have access to private/protected fields
+- Access to member constants wasn't always checking visibility
+- ERASE and field declarations didn't check c/dtor visibility
+- #3490779: -exx and -profile broke Naked procedures due to implicit RTL calls; now no more implicit code will be added (this change affects error handling/profiling calls for naked procedures, and member constructor/destructor calls in naked constructors/destructors)
+- Compiler crash on naked constructors/destructors
+- Early return from an UDT destructor prevented destruction of the UDT's fields
+- #3489950: BASE() disabled implicit field construction and vtbl pointer setup in constructors
+- #3479349: No error was shown when a constructor couldn't initialize the base UDT (i.e. when the base UDT didn't have a default constructor and there was no BASE() used either)
+- #3479355: POD base UDTs weren't cleared by constructors
+- #3474348: Multiple REDIMs on COMMON array were disallowed
+- #3344224: Copy constructor, Let operator and destructor were added to UDTs having field initializers but no complex fields
+- Implicit default and copy constructors (and also a Let overload and a destructor, if needed) will now be generated for derived UDTs which don't have either of them yet, if their base has a default constructor. If it has only non-default constructors, an error will be shown.
+- Derived UDT constructors could implicitly use their base UDT's private default constructor
+- #3372520, C backend: Buggy type initialization through pointers (i.e. NEW)
+- #2855461: REDIM/ERASE on an array of UDT objects with non-parameterless default constructor was allowed, causing junk to be passed to the constructor parameters as the rtlib's REDIM implementation doesn't expect having to pass arguments
+- ERASE could be used on an array of UDT objects with only non-default constructor
+- EXTERN declarations of UDT variables with only non-default constructor caused an error
+- Possible compiler crash when invoking variadic macro without specifying any argument text for the vararg ("...") parameter
+- Macro arguments can now be completely empty (no space required anymore to get it to work)
+- C backend: global constructor/destructor priorities were not emitted
+- Win32: incorrect Inkey() values for Alt-7/Alt-8 (Thanks to DodgeRules for find/fix)
+- Mismatched parentheses in various translated headers
+- Concatenations could fail on some combinations of const/non-const and string/wstring operands
+- Concatenations involving const strings could return const results, which could prevent them being passed to functions
+- Some incorrect definitions/constants in commctrl.bi (thanks to VANYA for fix)
 
 
 Version 0.23.0:
@@ -210,7 +257,7 @@ Version 0.21.1:
 
 [fixed]
 - #3034516: Remove trailing backslash from #macro line in inc/ode/odemath.bi
-- gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position. 
+- gfxlib's x11 window didn't detect the mouse being outside the window sometimes because it checked only the mouse's y position.
 - Added some missing FB_UNLOCK()'s to the rtlib
 
 
@@ -671,7 +718,7 @@ Version 0.17 Beta:
 - symbols declared inside namespaces using keyword names (like INPUT, PRINT, etc) are now allowed (v1c)
 - even with an explicit alias, symbols will be mangled if declared inside a namespace (v1c)
 - thread*, cond* and mutex* ids are now "any ptr", not integers, to allow easy and safe migration to 64-bit platforms in future (v1c)
-- string fields in UDT's are now pseudo-objects, with that change, UDT's containing those fields can only be initialized if a 
+- string fields in UDT's are now pseudo-objects, with that change, UDT's containing those fields can only be initialized if a
   constructor is explicitly defined (v1c)
 - pointers to z|wtrings can't be passed byval to string params directly anymore, dereference them first (v1c)
 - pointers to byte|ubyte arrays can't be passed byval to string params directly anymore, use type casting (v1c)
@@ -750,7 +797,7 @@ Version 0.17 Beta:
 - multiple EXIT and CONTINUE levels support (EXIT FOR, FOR or CONTINUE DO, DO, DO, etc) (v1c)
 - the __FB_BUILD_DATE__, __FB_BUILD_TIME__, and __FB_BUILD_SIGNATURE__ intrinsic defines, see wiki for details. (cha0s)
 - DyLibSymbol is now overloaded; it can take a short as the second arg, to specify the proc's ordinal. Patch by voodooattack
-- the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see 
+- the TYPEOF() compiler intrinsic, which substitues the type of the variable given in it's place, "dim as typeof(foo) bar"... see
   http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTypeof for details (cha0s)
 - the win32 DirectX gfx driver will now go fullscreen on the nearest monitor when the user presses Alt-Enter/maximize (DrV)
 
