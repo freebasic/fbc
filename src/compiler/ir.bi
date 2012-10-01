@@ -444,7 +444,6 @@ enum IR_OPT
 
 	IR_OPT_ADDRCISC      = &h00010000  '' complex addressing modes (base+idx*disp)
 	IR_OPT_NOINLINEOPS   = &h00020000  '' "Complex" math operators unavailable?
-	IR_OPT_HIGHLEVEL     = &h00040000  '' Preserve the high level constructions?
 end enum
 
 type IRCTX

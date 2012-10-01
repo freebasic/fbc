@@ -65,7 +65,7 @@ sub cAsmCode()
 					doskip = TRUE
 				end if
 
-			elseif( irGetOption( IR_OPT_HIGHLEVEL ) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
+			elseif( (env.clopt.backend = FB_BACKEND_GCC) orelse emitIsKeyword( lcase(text) ) = FALSE ) then
 				dim as FBSYMBOL ptr base_parent = any
 
 				chain_ = cIdentifier( base_parent )

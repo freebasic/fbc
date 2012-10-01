@@ -575,8 +575,8 @@ function astNewCONV _
 		return l
 	end if
 
-	'' high-level IR?
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' C backend?
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		'' special case: if it's a float to int, use a builtin function
 		if( (ldclass = FB_DATACLASS_FPOINT) and (typeGetClass( to_dtype ) = FB_DATACLASS_INTEGER) ) then
 			return rtlMathFTOI( l, to_dtype )

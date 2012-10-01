@@ -105,8 +105,8 @@ private sub hMainBegin( )
 	var id = fbGetEntryPoint( )
 	if( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		attrib = FB_SYMBATTRIB_PRIVATE
-		'' if it's high level, give it a random name
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		'' Use a random name for the C backend
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			id = *symbUniqueId( )
 		end if
 	end if

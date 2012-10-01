@@ -703,8 +703,8 @@ private function hGetReturnType _
 	if( res = FB_DATATYPE_VOID ) then
 		res = typeAddrOf( dtype )
 	else
-		'' high-level IR? don't change anything
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		'' C backend? don't change anything
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			res = dtype
 		end if
 	end if

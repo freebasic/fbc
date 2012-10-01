@@ -795,7 +795,7 @@ private sub hLoadProcResult _
 	case FB_DATATYPE_STRING
 		n = rtlStrAllocTmpResult( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			n = astNewLOAD( n, dtype, TRUE )
 		end if
 

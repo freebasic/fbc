@@ -379,10 +379,10 @@ sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
     expr = astNewIDX( astNewVAR( tbsym, -minval * FB_POINTERSIZE, typeAddrOf( FB_DATATYPE_VOID ) ), _
     				  idxexpr, typeAddrOf( FB_DATATYPE_VOID ), NULL )
 
-	'' not high-level IR? emit the jump before the table
-	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
-    	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-    end if
+	'' ASM backend? emit the jump before the table
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+	end if
 
     '' emit table
     astAdd( astNewJMPTB_Begin( tbsym ) )
@@ -403,9 +403,9 @@ sub cSelConstStmtEnd(byval stk as FB_CMPSTMTSTK ptr)
     astAdd( astNewJMPTB_End( tbsym ) )
 
 	'' high-level IR? emit the jump after the table
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-    	astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-    end if
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
+		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
+	end if
 
     '' emit exit label
     astAdd( astNewLABEL( stk->select.endlabel ) )

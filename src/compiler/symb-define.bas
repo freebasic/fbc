@@ -299,11 +299,8 @@ private function hDefFpmode_cb ( ) as string
 
 end function
 
-'':::::
 private function hDefGcc_cb( ) as string static
-
-	function = str( irGetOption( IR_OPT_HIGHLEVEL ) )
-
+	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
 end function
 
 '':::::

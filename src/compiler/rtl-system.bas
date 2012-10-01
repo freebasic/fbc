@@ -716,7 +716,7 @@ function rtlInitApp _
 
 	is_exe = (env.clopt.outtype <> FB_OUTTYPE_DYNAMICLIB)
 
-	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		'' call __monstartup() on win32/cygwin if profiling
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN

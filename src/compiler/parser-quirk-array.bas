@@ -175,7 +175,7 @@ function cSwapStmt() as integer
 	''   <SWAP i, f> or <SWAP f, i>.
 	''
 	dim as integer use_pushpop = TRUE
-	use_pushpop and= (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE)
+	use_pushpop and= (env.clopt.backend = FB_BACKEND_GAS)
 	use_pushpop and= (typeGetSize( ldtype ) = typeGetSize( rdtype ))
 	use_pushpop and= (typeGetClass( ldtype ) = typeGetClass( rdtype ))
 	use_pushpop and= (astIsBITFIELD( l ) = FALSE)

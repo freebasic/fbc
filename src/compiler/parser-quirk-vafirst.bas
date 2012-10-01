@@ -48,8 +48,8 @@ function cVAFunct() as ASTNODE ptr
 		hMatchRPRNT( )
 	end if
 
-	'' high-level IR? va_* not supported
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' C backend? va_* not supported
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC, TRUE )
 
 		'' error recovery: fake an expr

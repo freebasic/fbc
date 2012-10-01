@@ -88,8 +88,7 @@ private sub _init( )
 	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
-	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_CPUSELFBOPS or _
-	             IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
+	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
 
 	' initialize the current section
 	ctx.section = SECTION_HEAD

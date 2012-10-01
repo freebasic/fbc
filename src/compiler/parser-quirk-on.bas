@@ -102,8 +102,8 @@ function cGOTBStmt _
 					  idxexpr, _
 					  typeAddrOf( FB_DATATYPE_VOID ), NULL )
 
-	'' not high-level IR? emit the jump before the table
-	if( (irGetOption( IR_OPT_HIGHLEVEL ) = FALSE) or (isgoto = FALSE) ) then
+	'' ASM backend? emit the jump before the table
+	if( (env.clopt.backend = FB_BACKEND_GAS) or (isgoto = FALSE) ) then
 		if( isgoto ) then
 			astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
 		else
@@ -121,16 +121,15 @@ function cGOTBStmt _
 
 	astAdd( astNewJMPTB_End( tbsym ) )
 
-	'' high-level IR? emit the jump after the table
-	if( irGetOption( IR_OPT_HIGHLEVEL and isgoto ) ) then
+	'' C backend? emit the jump after the table
+	if( (env.clopt.backend = FB_BACKEND_GCC) and isgoto ) then
 		astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
-    end if
+	end if
 
 	'' emit exit label
 	astAdd( astNewLABEL( exitlabel ) )
 
 	function = TRUE
-
 end function
 
 '':::::

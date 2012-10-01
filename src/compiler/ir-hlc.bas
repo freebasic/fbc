@@ -99,9 +99,7 @@ dim shared as IRHLCCTX ctx
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
-
-	irSetOption( IR_OPT_HIGHLEVEL or IR_OPT_FPUIMMEDIATES or _
-	             IR_OPT_NOINLINEOPS )
+	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_NOINLINEOPS )
 end sub
 
 private sub _end( )

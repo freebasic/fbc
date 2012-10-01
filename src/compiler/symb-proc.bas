@@ -1102,7 +1102,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	end if
 
 	dim as const zstring ptr id = NULL
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		id = @"fb$result"
 	end if
 

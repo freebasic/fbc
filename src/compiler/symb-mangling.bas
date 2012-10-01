@@ -93,7 +93,7 @@ sub symbMangleEnd( )
 end sub
 
 function symbUniqueId( ) as zstring ptr
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else
@@ -107,7 +107,7 @@ function symbUniqueId( ) as zstring ptr
 end function
 
 function symbUniqueLabel( ) as zstring ptr
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		ctx.tempstr = "label$"
 		ctx.tempstr += str( ctx.uniquelabelcount )
 		ctx.uniquelabelcount += 1
@@ -252,7 +252,7 @@ function symbGetMangledName _
 	sym->id.mangled = id_mangled
 
 	'' silly periods..
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
 			hReplaceChar( id_mangled, asc( "." ), asc( "$" ) )
 		end if
@@ -518,8 +518,8 @@ private function hAddUnderscore _
 	if( inited = FALSE ) then
 		inited = TRUE
 
-		'' high-level IR? don't add anything..
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		'' C backend? don't add anything..
+		if( env.clopt.backend = FB_BACKEND_GCC ) then
 			res = FALSE
 		else
 			res = ((env.target.options and FB_TARGETOPT_UNDERSCORE) <> 0)
@@ -634,7 +634,7 @@ private function hGetVarPrefix _
 	end if
 
 	'' imported? Windows only..
-	if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
+	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		isimport = symbIsImport( sym )
 	end if
 
@@ -739,8 +739,8 @@ private function hMangleVariable  _
 
 			'' BASIC? use the upper-cased name
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
-				'' high-level?
-				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+				'' C backend?
+				if( env.clopt.backend = FB_BACKEND_GCC ) then
 					suffix_str = @"$"
 					suffix_len = 1
 				end if
@@ -763,8 +763,8 @@ private function hMangleVariable  _
 				suffix_len += 1
 			end if
 		else
-			'' high-level?
-			if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+			'' C backend?
+			if( env.clopt.backend = FB_BACKEND_GCC ) then
 				'' ir-hlc emits statics with dtors as globals,
 				'' so they need a unique name. Other statics are
 				'' still emitted locally, so they can keep their
@@ -926,8 +926,8 @@ private function hGetProcSuffix _
 		return NULL
 	end if
 
-	'' high-level IR? don't add anything..
-	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+	'' C backend? don't add anything..
+	if( env.clopt.backend = FB_BACKEND_GCC ) then
 		return NULL
 	end if
 
