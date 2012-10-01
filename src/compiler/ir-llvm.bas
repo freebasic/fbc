@@ -1748,7 +1748,7 @@ private sub _emitLoadRes _
 	)
 
 	_emitStore( vr, v1 )
-	hWriteLine( "return " & hVregToStr( vr ) )
+	hWriteLine( "ret " + hEmitType( vr->dtype, vr->subtype ) + " " + hVregToStr( vr ) )
 
 end sub
 
