@@ -652,9 +652,13 @@ private function hGetVarPrefix _
 		end if
 
 	else
+		'' Note: This adds the _Z prefix to all global variables,
+		'' unlike GCC, which does C++ mangling only for globals inside
+		'' namespaces, but not globals from the toplevel namespace.
 		if( isimport ) then
-			function = @"__imp__Z"
-
+			'' win32 import prefix + win32 underscore + C++ prefix
+			'' __imp_ + _ + _Z
+			function = @"__imp___Z"
 		else
 			if( hAddUnderscore( ) ) then
 				function = @"__Z"
