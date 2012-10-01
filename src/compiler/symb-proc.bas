@@ -63,28 +63,28 @@ function symbCalcProcParamLen _
 
 	'' assumes dtype has const info stripped
 
-    select case as const mode
-    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-    	function = FB_POINTERSIZE
+	select case as const( mode )
+	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+		function = FB_POINTERSIZE
 
-    case FB_PARAMMODE_BYVAL
-    	select case as const dtype
-    	case FB_DATATYPE_STRING
-    		return FB_POINTERSIZE
+	case FB_PARAMMODE_BYVAL
+		select case( dtype )
+		case FB_DATATYPE_STRING
+			return FB_POINTERSIZE
 
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		'' has a dtor, copy ctor or virtual methods? pass a copy..
-    		if( symbIsTrivial( subtype ) = FALSE ) then
-    			return FB_POINTERSIZE
-    		end if
-    	end select
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' has a dtor, copy ctor or virtual methods? pass a copy..
+			if( symbCompIsTrivial( subtype ) = FALSE ) then
+				return FB_POINTERSIZE
+			end if
+		end select
 
-    	function = symbCalcLen( dtype, subtype )
+		function = symbCalcLen( dtype, subtype )
 
-    case else
-    	function = 0
+	case else
+		function = 0
 
-    end select
+	end select
 
 end function
 
@@ -457,13 +457,7 @@ private function hAddOvlProc _
 
     '' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
-						  proc, _
-						  symtb, hashtb, _
-						  FB_SYMBCLASS_PROC, _
-						  id, id_alias, _
-					      dtype, subtype, _
-					      attrib )
-
+	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -507,11 +501,8 @@ private function hAddOpOvlProc _
 
 	'' if it's not the type casting op, overloaded as an ordinary proc
 	if( op <> AST_OP_CAST ) then
-		return hAddOvlProc( proc, ovl_head_proc, _
-							symtb, hashtb, _
-							NULL, id_alias, _
-							dtype, subtype, attrib, _
-							FALSE )
+		return hAddOvlProc( proc, ovl_head_proc, symtb, hashtb, NULL, id_alias, _
+		                    dtype, subtype, attrib, FALSE )
 	end if
 
 	'' type casting, must check the return type, not the parameter..
@@ -538,13 +529,8 @@ private function hAddOpOvlProc _
 	end if
 
     '' add it
-	proc = symbNewSymbol( FB_SYMBOPT_NONE, _
-						  proc, _
-						  symtb, hashtb, _
-						  FB_SYMBCLASS_PROC, _
-						  NULL, id_alias, _
-					      dtype, subtype, _
-					      attrib )
+	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
+	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib )
 
 	'' there's no id so it can't be added to the chain list
 
@@ -552,10 +538,12 @@ private function hAddOpOvlProc _
 
 end function
 
-'':::::
 private function hSetupProc _
 	( _
 		byval sym as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
+		byval symtb as FBSYMBOLTB ptr, _
+		byval hashtb as FBHASHTB ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
@@ -566,9 +554,7 @@ private function hSetupProc _
 	) as FBSYMBOL ptr
 
     dim as integer stats = any, preserve_case = any
-    dim as FBSYMBOL ptr proc = any, head_proc = any, parent = any
-	dim as FBSYMBOLTB ptr symbtb = any
-	dim as FBHASHTB ptr hashtb = any
+	dim as FBSYMBOL ptr proc = any, head_proc = any
 
     function = NULL
 
@@ -595,17 +581,6 @@ private function hSetupProc _
     	stats = FB_SYMBSTATS_HASALIAS
     end if
 
-	'' move to global ns? (needed for function ptr protos)
-	if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
-		parent = @symbGetGlobalNamespc( )
-		symbtb = @symbGetGlobalTb( )
-		hashtb = @symbGetGlobalHashTb( )
-	else
-		parent = symbGetCurrentNamespc( )
-    	symbtb = @symbGetCompSymbTb( parent )
-    	hashtb = @symbGetCompHashTb( parent )
-	end if
-
 	head_proc = NULL
 
 	'' ctor/dtor?
@@ -614,50 +589,41 @@ private function hSetupProc _
 
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
-        	head_proc = symbGetCompCtorHead( parent )
-        else
-        	head_proc = symbGetCompDtor( parent )
-        end if
+			head_proc = symbGetCompCtorHead( parent )
+		else
+			head_proc = symbGetCompDtor( parent )
+		end if
 
-        '' not overloaded yet? just add it
-        if( head_proc = NULL ) then
+		'' not overloaded yet? just add it
+		if( head_proc = NULL ) then
 			if( symbIsLocal( parent ) ) then
 				attrib or= FB_SYMBATTRIB_LOCAL
 			end if
 
-			proc = symbNewSymbol( FB_SYMBOPT_NONE, _
-								  sym, _
-					  	  	  	  symbtb, hashtb, _
-					  	  	  	  FB_SYMBCLASS_PROC, _
-					  	  	  	  NULL, id_alias, _
-				   	  	  	  	  FB_DATATYPE_VOID, NULL, _
-				   	  	  	  	  attrib )
+			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
+			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
+			                      FB_DATATYPE_VOID, NULL, attrib )
 
 			'' ctor?
 			if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
-        		symbSetCompCtorHead( parent, proc )
-        	else
-        		symbSetCompDtor( parent, proc )
-        	end if
-
-        '' otherwise, try to overload
-        else
+				symbSetCompCtorHead( parent, proc )
+			else
+				symbSetCompDtor( parent, proc )
+			end if
+		'' otherwise, try to overload
+		else
 			'' dtor?
 			if( (attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0 ) then
 				'' can't overload
 				return NULL
 			end if
 
-			proc = hAddOvlProc( sym, head_proc, _
-								symbtb, hashtb, _
-								NULL, id_alias, _
-							    FB_DATATYPE_VOID, NULL, _
-							    attrib, _
-							    FALSE )
+			proc = hAddOvlProc( sym, head_proc, symtb, hashtb, NULL, id_alias, _
+			                    FB_DATATYPE_VOID, NULL, attrib, FALSE )
 			if( proc = NULL ) then
 				exit function
 			end if
-        end if
+		end if
 
 		'' ctor? check for special ctors..
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
@@ -686,23 +652,16 @@ private function hSetupProc _
 				end if
 			end if
 
-			proc = symbNewSymbol( FB_SYMBOPT_NONE, _
-								  sym, _
-					  	  	  	  symbtb, hashtb, _
-					  	  	  	  FB_SYMBCLASS_PROC, _
-					  	  	  	  NULL, id_alias, _
-				   	  	  	  	  dtype, subtype, _
-				   	  	  	  	  attrib )
+			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
+			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
+			                      dtype, subtype, attrib )
 
         	symbSetCompOpOvlHead( parent, proc )
 
         '' otherwise, try to overload
         else
-			proc = hAddOpOvlProc( sym, head_proc, _
-								  symbtb, hashtb, _
-								  op, id_alias, _
-								  dtype, subtype, _
-								  attrib )
+			proc = hAddOpOvlProc( sym, head_proc, symtb, hashtb, op, id_alias, _
+			                      dtype, subtype, attrib )
 			if( proc = NULL ) then
 				exit function
 			end if
@@ -723,22 +682,13 @@ add_proc:
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
 
-		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, _
-							  sym, _
-						  	  symbtb, hashtb, _
-						  	  FB_SYMBCLASS_PROC, _
-						  	  id, id_alias, _
-					   	  	  dtype, subtype, _
-					   	  	  attrib )
+		proc = symbNewSymbol( options or FB_SYMBOPT_DOHASH, sym, symtb, hashtb, _
+		                      FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
 
 		'' dup def?
 		if( proc = NULL ) then
 			'' is the dup a proc symbol?
-			head_proc = symbLookupByNameAndClass( parent, _
-										   	   	  id, _
-										   	   	  FB_SYMBCLASS_PROC, _
-										   	   	  preserve_case, _
-										   	   	  FALSE )
+			head_proc = symbLookupByNameAndClass( parent, id, FB_SYMBCLASS_PROC, preserve_case, FALSE )
 			if( head_proc = NULL ) then
 				exit function
 			end if
@@ -751,12 +701,8 @@ add_proc:
 			end if
 
 			'' try to overload..
-			proc = hAddOvlProc( sym, head_proc, _
-								symbtb, hashtb, _
-								id, id_alias, _
-								dtype, subtype, _
-								attrib, _
-								preserve_case )
+			proc = hAddOvlProc( sym, head_proc, symtb, hashtb, id, id_alias, _
+			                    dtype, subtype, attrib, preserve_case )
 			if( proc = NULL ) then
 				exit function
 			end if
@@ -847,13 +793,11 @@ add_proc:
 	'proc->proc.returnMethod = returnMethod
 #endif
 
-
 	function = proc
 
 end function
 
-'':::::
-function symbAddPrototype _
+function symbAddProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
@@ -865,42 +809,22 @@ function symbAddPrototype _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    function = NULL
+	dim as FBSYMBOL ptr parent = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
 
-	proc = hSetupProc( proc, id, id_alias, dtype, subtype, attrib, mode, options )
-	if( proc = NULL ) then
-		exit function
-	end if
+	'' Procedure prototypes are always added to the current namespace,
+	'' the current scope is ignored here -- they're not allowed inside
+	'' scopes anyways.
+	parent = symbGetCurrentNamespc( )
+	symtb = @symbGetCompSymbTb( parent )
+	hashtb = @symbGetCompHashTb( parent )
 
-	function = proc
-
-end function
-
-'':::::
-function symbAddProc _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval id as zstring ptr, _
-		byval id_alias as zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer _
-	) as FBSYMBOL ptr
-
-    function = NULL
-
-	proc = hSetupProc( proc, id, id_alias, dtype, subtype, _
-	                   attrib, mode, FB_SYMBOPT_DECLARING )
-	if( proc = NULL ) then
-		exit function
-	end if
-
-	function = proc
+	function = hSetupProc( proc, parent, symtb, hashtb, id, id_alias, _
+	                       dtype, subtype, attrib, mode, options )
 
 end function
 
-'':::::
 function symbAddOperator _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -913,30 +837,22 @@ function symbAddOperator _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = NULL
-
-	''
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
 	end if
 	proc->proc.ext->opovl.op = op
 
-	''
-	sym = hSetupProc( proc, NULL, id_alias, dtype, subtype, _
-	                  attrib, mode, options )
-
+	sym = symbAddProc( proc, NULL, id_alias, dtype, subtype, attrib, mode, options )
 	if( sym = NULL ) then
 		symbFreeProcExt( proc )
 		exit function
 	end if
 
 	function = sym
-
 end function
 
-'':::::
 function symbAddCtor _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -945,37 +861,9 @@ function symbAddCtor _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
-
-    dim as FBSYMBOL ptr sym = any, parent = any
-
-    function = NULL
-
-	sym = hSetupProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, _
-	                  attrib, mode, options )
-
-	if( sym = NULL ) then
-		exit function
-	end if
-
-	parent = symbGetNamespace( sym )
-
-	'' check if it's copy constructor
-	if( symbIsConstructor( sym ) ) then
-		if( symbGetCompCopyCtor( parent ) = sym ) then
-			symbSetHasCopyCtor( parent )
-		end if
-
-		symbSetHasCtor( parent )
-
-	else
-		symbSetHasDtor( parent )
-	end if
-
-	function = sym
-
+	function = symbAddProc( proc, NULL, id_alias, FB_DATATYPE_VOID, NULL, attrib, mode, options )
 end function
 
-'':::::
 function symbAddProcPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -987,37 +875,56 @@ function symbAddProcPtr _
 	dim as zstring ptr id = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, parent = any
-	dim as FB_SYMBOPT options = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
+
+	''
+	'' The procptr prototypes are mangled, allowing them to be re-used.
+	''
+	'' This must be done in order to make equal procptrs use the same proto
+	'' symbol for their subtype, because we're doing type equality checks
+	'' via "dtype = dtype" and "subtype = subtype". There is no special
+	'' equality check for procptrs, hence this mangling must ensure that
+	'' equal procptrs re-use the same proto symbols.
+	''
 
 	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
 
-    '' if in main (or inside a NS), add the func ptr to the main table
-    if( parser.scope = FB_MAINSCOPE ) then
+	if( parser.scope = FB_MAINSCOPE ) then
+		'' When outside scopes, it's a global, because whichever symbol
+		'' uses this procptr proto can be globally visible (global vars,
+		'' procs, etc.)
 		parent = @symbGetGlobalNamespc( )
-		options = FB_SYMBOPT_MOVETOGLOB
-    else
-    	parent = symbGetCurrentNamespc( )
-    	options = 0
+		symtb = @symbGetCompSymbTb( parent )
+		hashtb = @symbGetCompHashTb( parent )
+	else
+		'' If inside a scope, make the procptr proto local too, because
+		'' it could use local symbols, while it itself can only be used
+		'' by local symbols, not by globals (globals cannot be declared
+		'' inside scopes).
+		parent = symbGetCurrentNamespc( )
+		symtb = symb.symtb                    '' symtb of current scope
+		hashtb = @symbGetCompHashTb( parent ) '' hashtb of current namespace
+		assert( hashtb = symb.hashtb )
 	end if
 
 	'' already exists? (it's ok to use LookupAt, literal str's are always
 	'' prefixed with {fbsc}, there will be no clashes with func ptr mangled names)
-    chain_ = symbLookupAt( parent, id, TRUE, FALSE )
+	chain_ = symbLookupAt( parent, id, TRUE, FALSE )
 	if( chain_ <> NULL ) then
 		return chain_->sym
 	end if
 
 	'' create a new prototype
-	sym = symbAddPrototype( proc, id, hMakeTmpStrNL(), dtype, subtype, _
-	                        0, mode, options or FB_SYMBOPT_DECLARING or _
-	                                 FB_SYMBOPT_PRESERVECASE )
+	sym = hSetupProc( proc, parent, symtb, hashtb, id, symbUniqueId( ), _
+	                  dtype, subtype, 0, mode, _
+	                  FB_SYMBOPT_DECLARING or FB_SYMBOPT_PRESERVECASE )
 
 	if( sym <> NULL ) then
 		symbSetIsFuncPtr( sym )
 	end if
 
 	function = sym
-
 end function
 
 '':::::
@@ -1100,30 +1007,30 @@ function symbAddParam _
 	dtype = symbGetFullType( param )
 
 	select case as const param->param.mode
-    case FB_PARAMMODE_BYVAL
-    	attrib = FB_SYMBATTRIB_PARAMBYVAL
+	case FB_PARAMMODE_BYVAL
+		attrib = FB_SYMBATTRIB_PARAMBYVAL
 
-    	select case symbGetType( param )
-    	'' byval string? it's actually an pointer to a zstring
-    	case FB_DATATYPE_STRING
-    		attrib = FB_SYMBATTRIB_PARAMBYREF
-    		dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
+		select case( symbGetType( param ) )
+		'' byval string? it's actually an pointer to a zstring
+		case FB_DATATYPE_STRING
+			attrib = FB_SYMBATTRIB_PARAMBYREF
+			dtype = typeJoin( dtype, FB_DATATYPE_CHAR )
 
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		'' has a dtor, copy ctor or virtual methods? it's a copy..
-    		if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
-    			attrib = FB_SYMBATTRIB_PARAMBYREF
-    		end if
-    	end select
+		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+			'' has a dtor, copy ctor or virtual methods? it's a copy..
+			if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+				attrib = FB_SYMBATTRIB_PARAMBYREF
+			end if
+		end select
 
 	case FB_PARAMMODE_BYREF
-	    attrib = FB_SYMBATTRIB_PARAMBYREF
+		attrib = FB_SYMBATTRIB_PARAMBYREF
 
 	case FB_PARAMMODE_BYDESC
-    	attrib = FB_SYMBATTRIB_PARAMBYDESC
+		attrib = FB_SYMBATTRIB_PARAMBYDESC
 
 	case else
-    	exit function
+		exit function
 	end select
 
 	'' "this"?
@@ -1136,14 +1043,10 @@ function symbAddParam _
 		attrib or= FB_SYMBATTRIB_SUFFIXED
 	end if
 
-    s = symbAddVarEx( symbol, NULL, _
-    				  dtype, param->subtype, 0, _
-    				  0, dTB(), _
-    				  attrib )
-
-    if( s = NULL ) then
-    	return NULL
-    end if
+	s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, dTB(), attrib )
+	if( s = NULL ) then
+		return NULL
+	end if
 
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
     symbSetIsDeclared( s )
@@ -1156,12 +1059,7 @@ function symbAddParam _
 
 end function
 
-'':::::
-function symbAddProcResultParam _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
     static as string id
@@ -1176,13 +1074,9 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-   	id = *hMakeTmpStrNL( )
-    s = symbAddVarEx( id, NULL, _
-    				  FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
-    				  0, dTB(), _
-    				  FB_SYMBATTRIB_PARAMBYREF, _
-    				  FB_SYMBOPT_PRESERVECASE )
-
+	id = *symbUniqueId( )
+	s = symbAddVarEx( id, NULL, FB_DATATYPE_STRUCT, proc->subtype, FB_POINTERSIZE, _
+	                  0, dTB(), FB_SYMBATTRIB_PARAMBYREF, FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = symbAllocProcExt( )
@@ -1193,7 +1087,6 @@ function symbAddProcResultParam _
 	symbSetIsDeclared( s )
 
 	function = s
-
 end function
 
 function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr

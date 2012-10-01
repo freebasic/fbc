@@ -10,32 +10,46 @@
 #include once "ast.bi"
 
 '' [ALIAS "id"]
-function cAliasAttribute() as zstring ptr
-	static as zstring * (FB_MAXNAMELEN+1) aliasid
+function cAliasAttribute( ) as zstring ptr
+	static as zstring * FB_MAXNAMELEN+1 aliasid
 
-	if (lexGetToken() = FB_TK_ALIAS) then
-		lexSkipToken()
+	if( lexGetToken( ) = FB_TK_ALIAS ) then
+		lexSkipToken( )
 
-		if (lexGetClass() = FB_TKCLASS_STRLITERAL) then
-			lexEatToken(aliasid)
-			return @aliasid
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			aliasid = *lexGetText( )
+			lexSkipToken( )
+
+			if( len( aliasid ) > 0 ) then
+				function = @aliasid
+			else
+				errReport( FB_ERRMSG_EMPTYALIASSTRING )
+			end if
+		else
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
-
-		errReport(FB_ERRMSG_SYNTAXERROR)
 	end if
-
-	return NULL
 end function
 
 '' [LIB "string"]
-sub cLibAttribute()
-	if (lexGetToken() = FB_TK_LIB) then
-		lexSkipToken()
-		if (lexGetClass() <> FB_TKCLASS_STRLITERAL) then
-			errReport(FB_ERRMSG_SYNTAXERROR)
+sub cLibAttribute( )
+	dim as zstring ptr libname = any
+
+	if( lexGetToken( ) = FB_TK_LIB ) then
+		lexSkipToken( )
+
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			libname = lexGetText( )
+
+			if( len( *libname ) > 0 ) then
+				fbAddLib( libname )
+			else
+				errReport( FB_ERRMSG_EMPTYLIBSTRING )
+			end if
+
+			lexSkipToken( )
 		else
-			fbAddLib(lexGetText())
-			lexSkipToken()
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 	end if
 end sub
@@ -245,7 +259,7 @@ private function hGetId _
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id, skip until next '('
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				*dtype = FB_DATATYPE_INVALID
 				hSkipUntil( CHAR_LPRNT )
 				return NULL
@@ -256,7 +270,7 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: fake an id, skip until next '('
-			*id = *hMakeTmpStr( )
+			*id = *symbUniqueLabel( )
 			*dtype = FB_DATATYPE_INVALID
 			hSkipUntil( CHAR_LPRNT )
 			return NULL
@@ -265,7 +279,7 @@ private function hGetId _
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id, skip until next '('
-		*id = *hMakeTmpStr( )
+		*id = *symbUniqueLabel( )
 		*dtype = FB_DATATYPE_INVALID
 		hSkipUntil( CHAR_LPRNT )
 		return NULL
@@ -454,7 +468,7 @@ function cProcCallingConv _
 end function
 
 #define CREATEFAKEID( proc ) _
-	symbAddProc( proc, hMakeTmpStr( ), NULL, dtype, subtype, attrib, mode )
+	symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
 
 '':::::
 private function hDoNesting _
@@ -478,11 +492,6 @@ end function
 
 private sub cNakedAttribute( byval pattrib as integer ptr )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
-		'' Naked isn't supported by the C backend, because gcc doesn't
-		'' support __attribute__((naked)) on x86.
-		if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-			errReport( FB_ERRMSG_STMTUNSUPPORTEDINGCC )
-		end if
 		lexSkipToken( )
 		*pattrib or= FB_SYMBATTRIB_NAKED
 	end if
@@ -661,13 +670,12 @@ function cProcHeader _
 
 	'' prototype?
 	if( (options and FB_PROCOPT_ISPROTO) <> 0 ) then
-    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
-    	if( proc = NULL ) then
+		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
+		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-    	end if
-
-    	return proc
-    end if
+		end if
+		return proc
+	end if
 
 	'' function body..
 	dim as integer priority = any
@@ -680,15 +688,14 @@ function cProcHeader _
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-
-    	if( head_proc = NULL ) then
+		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+		if( head_proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 			'' error recovery: create a fake symbol
 			proc = CREATEFAKEID( proc )
-    	else
-    		proc = head_proc
-    	end if
+		else
+			proc = head_proc
+		end if
 
     '' another proc or proto defined already..
     else
@@ -713,17 +720,17 @@ function cProcHeader _
 					errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 				end if
 
-    			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-    			'' dup def?
-			if( head_proc = NULL ) then
+				head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+				'' dup def?
+				if( head_proc = NULL ) then
 					errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 					'' error recovery: create a fake symbol
 					return CREATEFAKEID( proc )
-    			end if
+				end if
 
-    			proc = head_proc
-    		end if
-    	end if
+				proc = head_proc
+			end if
+		end if
 
     	if( head_proc <> proc ) then
     		'' already parsed?
@@ -1732,15 +1739,14 @@ function cPropertyHeader _
 
 	'' prototype?
 	if( is_prototype ) then
-    	proc = symbAddPrototype( proc, @id, palias, dtype, subtype, attrib, mode )
-    	if( proc = NULL ) then
+		proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
+		if( proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
-    	end if
+		end if
 
 		setUdtPropertyFlags(parent, is_indexed, is_get)
-
-    	return proc
-    end if
+		return proc
+	end if
 
 	'' function body..
 
@@ -1753,15 +1759,14 @@ function cPropertyHeader _
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
     	end if
 
-    	head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-
-    	if( head_proc = NULL ) then
+		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+		if( head_proc = NULL ) then
 			errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 			'' error recovery: create a fake symbol
 			proc = CREATEFAKEID( proc )
-    	else
-    		proc = head_proc
-    	end if
+		else
+			proc = head_proc
+		end if
 
     '' another proc or proto defined already..
     else
@@ -1787,17 +1792,16 @@ function cPropertyHeader _
 				errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 			end if
 
-    		head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode )
-    		'' dup def?
-    		if( head_proc = NULL ) then
+			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_DECLARING )
+			'' dup def?
+			if( head_proc = NULL ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 				'' error recovery: create a fake symbol
 				return CREATEFAKEID( proc )
-    		end if
+			end if
 
-    		proc = head_proc
-
-    	else
+			proc = head_proc
+		else
     		'' already parsed?
     		if( symbGetIsDeclared( head_proc ) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
@@ -1843,8 +1847,8 @@ function cCtorHeader _
 		byval is_prototype as integer _
 	) as FBSYMBOL ptr
 
-	#define CREATEFAKE() symbAddProc( proc, hMakeTmpStr( ), NULL, _
-	                                  FB_DATATYPE_VOID, NULL, attrib, mode )
+	#define CREATEFAKE() symbAddProc( proc, symbUniqueLabel( ), NULL, FB_DATATYPE_VOID, NULL, _
+	                                  attrib, mode, FB_SYMBOPT_DECLARING )
 
     dim as integer lgt = any, is_extern = any, is_ctor = any
     dim as FBSYMBOL ptr proc = any, parent = any
@@ -2197,7 +2201,7 @@ function cProcStmtEnd( ) as integer
 	proc_res = symbGetProcResult( parser.currproc )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
-			if (parser.currproc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+			if( symbIsNaked( parser.currproc ) = FALSE ) then
 				errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
 			end if
 		end if

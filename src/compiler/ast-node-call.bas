@@ -27,28 +27,22 @@ sub astCallEnd
 
 end sub
 
-'':::::
 private sub hAllocTempStruct _
 	( _
 		byval n as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
-	) static
+	)
 
 	n->call.tmpres = NULL
 
 	'' follow GCC 3.x's ABI
 	if( symbGetUDTInRegister( sym ) = FALSE ) then
-
 		'' create a temp struct (can't be static, could be an object)
-		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, _
-									     symbGetSubtype( sym ), _
-									     FALSE, _
-									     FALSE )
+		n->call.tmpres = symbAddTempVar( FB_DATATYPE_STRUCT, symbGetSubtype( sym ), FALSE )
 
-		if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+		if( symbHasDtor( sym ) ) then
 			astDtorListAdd( n->call.tmpres )
 		end if
-
 	end if
 
 end sub
@@ -340,6 +334,10 @@ function astLoadCALL _
 			end if
 		end if
 
+		if( l->class = AST_NODECLASS_CONV ) then
+			astUpdateCONVFD2FS( l, arg->dtype, FALSE )
+		end if
+
 		'' flush the arg expression
 		vr = astLoad( l )
 		astDelNode( l )
@@ -385,10 +383,11 @@ function astLoadCALLCTOR _
 		return NULL
 	end if
 
+	'' flush the ctor CALL to initialize the temp var
 	astLoad( n->l )
 	astDelNode( n->l )
 
-	'' return the anon var
+	'' return the VAR access to the temp var
 	vr = astLoad( n->r )
 	astDelNode( n->r )
 
@@ -459,14 +458,14 @@ sub astReplaceSymbolOnCALL _
 		n->call.tmpres = new_sym
 
 		'' add to temp dtor list?
-		if( symbGetHasDtor( symbGetSubtype( new_sym ) ) ) then
+		if( symbHasDtor( new_sym ) ) then
 			astDtorListAdd( new_sym )
 		end if
 	end if
 
-    '' temp strings list
-    scope
-	    dim as AST_TMPSTRLIST_ITEM ptr s = any
+	'' temp strings list
+	scope
+		dim as AST_TMPSTRLIST_ITEM ptr s = any
 		s = n->call.strtail
 		do while( s <> NULL )
 			if( s->sym = old_sym ) then
@@ -476,8 +475,8 @@ sub astReplaceSymbolOnCALL _
 			astReplaceSymbolOnTree( s->srctree, old_sym, new_sym )
 
 			s = s->prev
-    	loop
-    end scope
+		loop
+	end scope
 
 end sub
 
@@ -491,7 +490,7 @@ function astGetCALLResUDT(byval expr as ASTNODE ptr) as ASTNODE ptr
 	    (typeIsPtr( symbGetUDTRetType( subtype ) ) = FALSE) ) then
 		'' move to a temp var
 		'' (note: if it's being returned in regs, there's no DTOR)
-		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
+		dim as FBSYMBOL ptr tmp = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE )
 		expr = astNewASSIGN( astBuildVarField( tmp ), expr, AST_OPOPT_DONTCHKOPOVL )
 		function = astNewLINK( astBuildVarField( tmp ), expr )
 	else

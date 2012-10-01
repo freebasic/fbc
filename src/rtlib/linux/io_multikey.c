@@ -18,12 +18,6 @@ static void keyboard_exit(void);
 #include "../fb_private_hdynload.h"
 #include "../unix/fb_private_scancodes_x11.h"
 
-typedef Display *(*XOPENDISPLAY)(char *);
-typedef int (*XCLOSEDISPLAY)(Display *);
-typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);
-typedef int (*XDISPLAYKEYCODES)(Display *, int *, int *);
-typedef KeySym (*XKEYCODETOKEYSYM)(Display *, KeyCode, int);
-
 typedef struct {
     XOPENDISPLAY OpenDisplay;
     XCLOSEDISPLAY CloseDisplay;
@@ -31,24 +25,20 @@ typedef struct {
     XDISPLAYKEYCODES DisplayKeycodes;
     XKEYCODETOKEYSYM KeycodeToKeysym;
 } X_FUNCS;
-#endif
 
-static pid_t main_pid;
-
-#ifndef DISABLE_X11
 static Display *display;
 static FB_DYLIB xlib = NULL;
 static X_FUNCS X = { NULL };
 #endif
 
+static pid_t main_pid;
 static int key_fd, key_old_mode, key_leds;
-
-static unsigned char key_state[128], scancode[256];
+static unsigned char key_state[128];
 static unsigned short key_buffer[KEY_BUFFER_SIZE], key_head, key_tail;
 static int (*old_getch)(void);
 static void (*gfx_save)(void);
 static void (*gfx_restore)(void);
-static void (*gfx_key_handler)(int);
+static void (*gfx_key_handler)(int, int, int, int);
 
 static const char pad_numlock_ascii[NUM_PAD_KEYS] = "0123456789+-*/\r,.";
 static const char pad_ascii[NUM_PAD_KEYS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '+', '-', '*', '/', '\r', 0, 0 };
@@ -73,7 +63,7 @@ static const unsigned char kernel_to_scancode[] = {
 	SC_F6,			SC_F7,			SC_F8,			SC_F9,
 	SC_F10,			SC_NUMLOCK,		SC_SCROLLLOCK,	SC_HOME,
 	SC_UP,			SC_PAGEUP,		SC_MINUS,		SC_LEFT,
-	0,				SC_RIGHT,		SC_PLUS,		SC_END,
+	SC_CLEAR,		SC_RIGHT,		SC_PLUS,		SC_END,
 	SC_DOWN,		SC_PAGEDOWN,	SC_0,			SC_DELETE,
 	0,				0,				SC_BACKSLASH,	SC_F11,
 	SC_F12,			0,				0,				0,
@@ -107,7 +97,7 @@ static int keyboard_console_getch(void)
 static void keyboard_console_handler(void)
 {
 	unsigned char buffer[128], scancode;
-	int pressed, repeated, num_bytes, i, ascii, extended;
+	int pressed, repeated, num_bytes, i, key, extended;
 	int vt, orig_vt;
 	struct kbentry entry;
 	struct vt_stat vt_state;
@@ -117,7 +107,7 @@ static void keyboard_console_handler(void)
 		for (i = 0; i < num_bytes; i++) {
 			scancode = kernel_to_scancode[buffer[i] & 0x7F];
 			pressed = (buffer[i] & 0x80) ^ 0x80;
-			repeated = ((key_state[scancode]) && (pressed));
+			repeated = pressed && key_state[scancode];
 			key_state[scancode] = pressed;
 
 			/* Since we took over keyboard control, we have to map our keypresses to ascii
@@ -125,32 +115,16 @@ static void keyboard_console_handler(void)
 
 			extended = 0;
 			switch (scancode) {
-				case SC_CAPSLOCK:	if (pressed) key_leds ^= LED_CAP; break;
-				case SC_NUMLOCK:	if (pressed) key_leds ^= LED_NUM; break;
-				case SC_SCROLLLOCK:	if (pressed) key_leds ^= LED_SCR; break;
-				case SC_UP:			extended = 'H'; break;
-				case SC_DOWN:		extended = 'P'; break;
-				case SC_LEFT:		extended = 'K'; break;
-				case SC_RIGHT:		extended = 'M'; break;
-				case SC_INSERT:		extended = 'R'; break;
-				case SC_DELETE:		extended = 'S'; break;
-				case SC_HOME:		extended = 'G'; break;
-				case SC_END:		extended = 'O'; break;
-				case SC_PAGEUP:		extended = 'I'; break;
-				case SC_PAGEDOWN:	extended = 'Q'; break;
-				case SC_F1:			extended = ';'; break;
-				case SC_F2:			extended = '<'; break;
-				case SC_F3:			extended = '='; break;
-				case SC_F4:			extended = '>'; break;
-				case SC_F5:			extended = '?'; break;
-				case SC_F6:			extended = '@'; break;
-				case SC_F7:			extended = 'A'; break;
-				case SC_F8:			extended = 'B'; break;
-				case SC_F9:			extended = 'C'; break;
-				case SC_F10:		extended = 'D'; break;
+			case SC_CAPSLOCK:   if (pressed) key_leds ^= LED_CAP; break;
+			case SC_NUMLOCK:    if (pressed) key_leds ^= LED_NUM; break;
+			case SC_SCROLLLOCK: if (pressed) key_leds ^= LED_SCR; break;
+			default:
+				extended = fb_hScancodeToExtendedKey( scancode );
+				break;
 			}
 
-			entry.kb_table = 0;
+			/* Fill in kbentry struct for KDGKBENT query */
+			entry.kb_table = 0; /* modifier table */
 			if (key_state[SC_LSHIFT] || key_state[SC_RSHIFT])
 				entry.kb_table |= 0x1;
 			if (key_state[SC_ALTGR])
@@ -159,40 +133,40 @@ static void keyboard_console_handler(void)
 				entry.kb_table |= 0x4;
 			if (key_state[SC_ALT])
 				entry.kb_table |= 0x8;
-
-			entry.kb_index = scancode;
+			entry.kb_index = scancode; /* keycode */
 			ioctl(key_fd, KDGKBENT, &entry);
+
 			if (scancode == SC_BACKSPACE)
-				ascii = 8;
+				key = 8;
 			else if (entry.kb_value == K_NOSUCHMAP)
-				ascii = 0;
+				key = 0;
 			else {
-				ascii = KVAL(entry.kb_value);
+				key = KVAL(entry.kb_value);
 				switch (KTYP(entry.kb_value)) {
 					case KT_LETTER:
 						if (key_leds & LED_CAP)
-							ascii ^= 0x20;
+							key ^= 0x20;
 						break;
 					case KT_LATIN:
 					case KT_ASCII:
 						break;
 					case KT_PAD:
-						if (ascii < NUM_PAD_KEYS) {
+						if (key < NUM_PAD_KEYS) {
 							if (key_leds & LED_NUM)
-								ascii = pad_numlock_ascii[ascii];
+								key = pad_numlock_ascii[key];
 							else
-								ascii = pad_ascii[ascii];
+								key = pad_ascii[key];
 						}
 						else
-							ascii = 0;
+							key = 0;
 						break;
 					case KT_SPEC:
 						if (scancode == SC_ENTER)
-							ascii = '\r';
+							key = '\r';
 						break;
 					case KT_CONS:
-						vt = ascii + 1;
-						if ((pressed) && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0)) {
+						vt = key + 1;
+						if( pressed && (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) ) {
 							orig_vt = vt_state.v_active;
 							if (vt != orig_vt) {
 								if (__fb_con.gfx_exit) {
@@ -208,33 +182,36 @@ static void keyboard_console_handler(void)
 									gfx_restore();
 								}
 								memset(key_state, FALSE, 128);
+							} else {
+								key_state[scancode] = FALSE;
 							}
-							else
-								key_state[scancode] = 0;
 							extended = 0;
 						}
 
 					/* fallthrough */
 					default:
-						ascii = 0;
+						key = 0;
 						break;
 				}
 			}
-			
-			if (extended)
-				ascii = 0x100 | extended;
-			if ((pressed) && (ascii)) {
-				key_buffer[key_tail] = ascii;
+
+			if( extended )
+				key = extended;
+
+			if( pressed && key ) {
+				key_buffer[key_tail] = key;
 				if (((key_tail + 1) & (KEY_BUFFER_SIZE - 1)) == key_head)
 					key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
 				key_tail = (key_tail + 1) & (KEY_BUFFER_SIZE - 1);
 			}
-			
-			if (gfx_key_handler)
-				gfx_key_handler((repeated ? 0x100 : 0) | (pressed ? 0x80 : 0) | (int)scancode | (ascii << 16));
+
+			if( gfx_key_handler )
+				gfx_key_handler( pressed, repeated, scancode, key );
 		}
 	}
-	if (key_state[0x1D] & key_state[0x2E])
+
+	/* CTRL + C */
+	if( key_state[SC_CONTROL] && key_state[SC_C] )
 		kill(main_pid, SIGINT);
 }
 
@@ -250,7 +227,7 @@ static void keyboard_x11_handler(void)
 	memset(key_state, FALSE, 128);
 	for (i = 0; i < 256; i++) {
 		if (keymap[i / 8] & (1 << (i & 0x7)))
-			key_state[scancode[i]] = TRUE;
+			key_state[fb_x11keycode_to_scancode[i]] = TRUE;
 	}
 }
 #endif
@@ -261,9 +238,7 @@ static int keyboard_init(void)
 	const char *funcs[] = {
 		"XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
 	};
-	KeySym keysym;
 #endif
-	int keycode_min, keycode_max, i, j;
 	struct termios term;
 
 	main_pid = getpid();
@@ -300,18 +275,7 @@ static int keyboard_init(void)
 		if (!display)
 			return -1;
 
-		X.DisplayKeycodes(display, &keycode_min, &keycode_max);
-		if (keycode_min < 0) keycode_min = 0;
-		if (keycode_max > 255) keycode_max = 255;
-
-		for (i = keycode_min; i <= keycode_max; i++) {
-			keysym = X.KeycodeToKeysym(display, i, 0);
-			if (keysym != NoSymbol) {
-				for (j = 0; (fb_keysym_to_scancode[j].scancode) && (fb_keysym_to_scancode[j].keysym != keysym); j++)
-					;
-				scancode[i] = fb_keysym_to_scancode[j].scancode;
-			}
-		}
+		fb_hInitX11KeycodeToScancodeTb( display, X.DisplayKeycodes, X.KeycodeToKeysym );
 
 		fb_hXTermInitFocus();
 		__fb_con.keyboard_handler = keyboard_x11_handler;
@@ -320,7 +284,7 @@ static int keyboard_init(void)
 
 	__fb_con.keyboard_init = keyboard_init;
 	__fb_con.keyboard_exit = keyboard_exit;
-	
+
 	return 0;
 }
 
@@ -366,7 +330,13 @@ int fb_ConsoleMultikey(int scancode)
 	return res;
 }
 
-int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int))
+int fb_hConsoleGfxMode
+	(
+		void (*gfx_exit)(void),
+		void (*save)(void),
+		void (*restore)(void),
+		void (*key_handler)(int, int, int, int)
+	)
 {
 	BG_LOCK();
 	__fb_con.gfx_exit = gfx_exit;
@@ -384,8 +354,7 @@ int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restor
 			return -1;
 		}
 		ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
-	}
-	else {
+	} else {
 		if (key_fd >= 0) {
 			ioctl(key_fd, KDSETMODE, KD_TEXT);
 			keyboard_exit();

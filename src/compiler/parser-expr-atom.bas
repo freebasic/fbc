@@ -260,31 +260,27 @@ private function hFindId _
 
   			'' quirk-keyword?
   			case FB_SYMBCLASS_KEYWORD
-  				
   				'' BASE?
   				if( lexGetToken() = FB_TK_BASE ) then
   					return hBaseMemberAccess( )
   				else
   					return cQuirkFunction( sym )
-  				EndIf
+				end if
 
 			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
-				if( symbGetHasCtor( sym ) ) then
+				if( symbGetCompCtorHead( sym ) ) then
 					'' skip ID, ctorCall() is also used by type<>(...)
 					lexSkipToken( )
 					return cCtorCall( sym )
 				end if
 
 			case FB_SYMBCLASS_TYPEDEF
-           		'' typedef of a TYPE/CLASS?
-           		select case symbGetType( sym )
-           		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-						'' skip ID, ctorCall() is also used by type<>(...)
-						lexSkipToken( )
-						return cCtorCall( symbGetSubtype( sym ) )
-					end if
-           		end select
+				'' typedef of a TYPE/CLASS?
+				if( symbHasCtor( sym ) ) then
+					'' skip ID, ctorCall() is also used by type<>(...)
+					lexSkipToken( )
+					return cCtorCall( symbGetSubtype( sym ) )
+				end if
 
 			end select
 

@@ -1,3 +1,86 @@
+Version 0.25.0:
+
+[changed]
+- -c, -r and -pp options will now complement each-other when used together, instead of partially overwriting each-other and thus causing weird behaviour
+- getkey()/inkey() under Linux X11 graphics mode will now return the FB extended keycode for DELETE (&h53FF or &hFF &h53) instead of ASCII DEL (&h7F), for consistency with console-mode and other platforms
+- ScreenEvent() won't return extended keycodes anymore in the EVENT.ascii field under the Linux X11 graphics driver
+- Removed compile-time errors for float division by constant zero; it will result in INF again, for consistency with the evaluation at run-time
+- Overflows when converting constants to SINGLE/DOUBLE won't cause "math overflow" errors anymore
+- Overflows in constant conversions to SINGLE will now trigger "overflow in constant conversion" warnings, like conversions to integer types do
+- Constant conversions to DOUBLE are not checked for overflows anymore, since DOUBLE can hold all SINGLE/INTEGER/LONGINT values (although, with varying precision)
+- Doing "udtvar.constructor( ... )" or "udtvar.destructor( )" won't automatically add a constructor/destructor anymore, but instead show an error
+
+[added]
+- Updated headers for caca 0.99.beta18 (caca.bi = new API, caca0.bi = old API)
+- Updated header for libzip 0.10.1
+- fbc -asm att|intel option (affects -gen gcc only)
+- fbc -rr and -RR options for preserving the final .asm file (useful with -gen gcc where -r/-R preserve the .c file; same as -r/-R under -gen gas)
+- SELECT CASE won't use a temporary variable anymore if the given expression is just a plain variable access already
+- SC_CLEAR constant for FB scancode &h4C (numpad 5, a.k.a. clear key) in fbgfx.bi
+- SC_ALTGR constant (&h64) in fbgfx.bi, corresponding to the rtlib
+- Constant overflow warnings for array boundaries, array/pointer/string indexing, CONST declarations
+- NAKED support for the C backend, using GCC inline asm
+- ALIAS "" or LIB "" will now result in a compiler error
+
+[fixed]
+- libzip headers: zip_stat struct was unnecessarily named zip_stat_, breaking the libzip example
+- QuickLZ 1.5.0 header & example
+- "fbc libfoo.a" showed usage notes, instead of compiling like "fbc -l foo"
+- GOTO jumping over the implicit wstring variable initialization of a SELECT CASE wstring into one of its CASE blocks will now show an error instead of only a warning
+- GOTO jumping over the implicit variable initialization of a SELECT CASE (on anything except strings) into one of its CASE blocks will no longer show a false-positive "branch crossing ..." warning
+- 'SELECT CASE str1 + str2' was broken and behaved like 'SELECT CASE str2'
+- Inconsistent warning message on implicit number to ptr conversions
+- Rename case-insensitive naming clashes in IUP3 header defines
+- Compiler crash on UDT/enum comparisons (0.24 inheritance regression)
+- win/dsound.bi - LPDSENUMCALLBACKW was missing the closing 'W' (thanks to VANYA for find/fix)
+- #2131139: "SELECT CASE wstring" allowed integer expressions in "CASE"
+- #3549349: The namespace prefix of constants on the left hand-side of assignments was being ignored by the parser, allowing the constant's identifier to match other symbols
+- .o files are now linked in the exact order indicated by given .bas modules, .o files, .a files, or -a options on the fbc command line
+- getkey() under X11 graphics mode on Linux didn't return proper extended key codes like in console-mode
+- getkey() under DOS console-mode didn't encode extended key codes as a 2-byte code using &hFF, causing them to collide with normal key codes
+- GooCanvas examples were #including gtk/goocanvas.bi instead of goocanvas.bi
+- SQLite 3 header didn't compile due to missing forward declarations and a missing #include "crt/stdarg.bi"
+- Potential X11 gfxlib2 driver crash on window maximization despite GFX_NO_SWITCH
+- gfxlib2 X11 driver didn't recognize the numpad keys with numlock off
+- Linux multikey() will now recognize the CLEAR key (both under linux and xterm terminals)
+- gfxlib2 X11 driver returned &h4A instead of SC_MINUS (&h0C) for the "subtract" key on the numpad with numlock off, now it matches win32; the other "add/divide/multiply" keys are remapped this way aswell.
+- On Win32 or DOS, __PATH__ could return the current working directory of the compiler instead of the source file's parent directory
+- .stabs output could omit the source file's path, preventing gdb from finding the correct file
+- Win32 cond*() functions won't crash anymore when given NULL arguments; Unix condwait() won't crash anymore when given NULL instead of a valid mutex pointer
+- internal error in ThreadCall parser, potentially causing compiler crashes or miscompilation
+- Warnings could still be shown even after the "Too many errors, exiting" message
+- ASM backend: Unsigned integer multiplications did not preserve EDX in some cases
+- ASM backend: DOUBLEs being cast to SINGLE will now be truncated to SINGLE, as if an assignment to a SINGLE variable was made
+- Multiple run-time library symbols have been removed from the global FB namespace: __main, mcount, _monstartup, rename, __divdi3, __udivdi3, __moddi3, __umoddi3, __fixunsdfdi
+- Fixed-size arrays/UDTs > 2 GiB will now result in a compile-time error, instead of causing internal integer overflows
+- SSE emitter: float2int conversions using movss/movlpd could generate illegal ASM
+- ASM backend: A faulty optimization could cause array accesses to be mis-compiled
+- More consistent optimization of (foo + constant1) * constant2 (using distribution)
+- GOTO jumping over variable declarations of UDTs with non-default constructors only was not an error like in case of UDTs with default constructors
+- EXIT FUNCTION in combination with RETURN with complex function result UDT was accepted, leaving the result UDT unconstructed
+- Complex function result UDTs were not constructed if neither FUNCTION= nor RETURN were used
+- No error was shown when complex function result UDTs were left unconstructed when using FUNCTION= because the UDT had no default constructor
+- #3554189: "SWAP parent, child" was allowed (where child is an UDT derived from the parent UDT) even though "child = parent" assignments are not allowed
+- #3544952: Static arrays of forward-referenced derived UDT pointers failed to compile
+- #3538470: Expressions such as "(Type<MyUDT>( )).myfield" could crash the compiler or be miscompiled
+- C backend: Local variables could shadow other variables from parent scopes or the toplevel namespace, or even in the same scope but above its DIM statement
+- C backend: Bitfields were emitted as plain fields, making such structures unnecessarily big
+- #3571432: LIB "" crashed the compiler
+- ASM backend: -NaN float constants were emitted as +NaN
+- C backend: Local UDT declarations were emitted in the scope they were first used, not where they were declared
+- C backend: DATA statement declarations could be emitted in the wrong order, causing gcc errors
+- C backend: Static variables with destructors were emitted as locals despite needing to be visible to destructor wrapper functions
+- The C backend does no longer allow/disallow different cast()s than the ASM backend
+- C backend: +/- INF/NaN float constants didn't work
+- C backend: Using threadcreate() could cause duplicate function pointer typedefs errors
+- EXPORT will now be ignored when compiling for non-win32 targets
+- C backend: Dereferences on constants casted to pointer types (e.g. "*cptr(byte ptr, 0)") were not emitted correctly
+- C backend: frac() returned x - int(x) instead of x - fix(x) (different for negative values)
+- Expressions like "@*cast(integer ptr, 123)", i.e. taking the address of a dereferenced type-casted constant, were rejected or caused parsing inconsistencies
+- FOR loops with ANY PTR counter used a zero step size or zero step size multiplier, instead of 1 as for BYTE PTR, generating an infinite loop
+- FOR loops with FWDREF PTR counters were allowed, despite the incomplete type, causing zero step size to be used (as above)
+
+
 Version 0.24.0:
 
 [changed]

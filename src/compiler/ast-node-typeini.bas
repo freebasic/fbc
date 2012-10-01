@@ -356,11 +356,11 @@ private function hCallCtorList _
 	fldexpr = astBuildVarField( basesym, fld, n->typeini.ofs )
 
 	if( elements > 1 ) then
-    	dim as FBSYMBOL ptr cnt, label, iter
+		dim as FBSYMBOL ptr cnt, label, iter
 
-    	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    	label = symbAddLabel( NULL )
-    	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+		label = symbAddLabel( NULL )
+		iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		flush_tree = astNewLINK( flush_tree, astBuildVarAssign( iter, astNewADDROF( fldexpr ) ) )
 
@@ -474,7 +474,6 @@ private function hFlushTree _
 				end if
 			end if
 
-			assert( astCheckASSIGN( lside, n->l ) )
 			lside = astNewASSIGN( lside, n->l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 			assert( lside <> NULL )
 			flush_tree = astNewLINK( flush_tree, lside )
@@ -551,35 +550,41 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( symbGetFullType( sym ), _
-								   symbGetSubtype( sym ), _
-								   expr )
+				if( typeIsPtr( symbGetFullType( sym ) ) ) then
+					'' Cast pointers to ANY PTR first to prevent issues with derived UDT ptrs,
+					'' which astNewCONV() currently doesn't allow to be casted to/from other ptr
+					'' types directly. Used at least by array descriptor initialization.
+					'' Pointer is pointer anyways, it shouldn't make a difference to the backend.
+					expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
+				end if
 
-                '' shouldn't happen, but..
+				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr )
+				assert( expr <> NULL )
+
+				'' shouldn't happen, but..
 				if( expr = NULL ) then
-			   		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					expr = astNewCONSTi( 0 )
 				end if
 			end if
 
-			if( expr <> NULL ) then
-				select case as const sdtype
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+			select case as const( sdtype )
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+				irEmitVARINI64( sdtype, astGetValLong( expr ) )
 
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
 
-				case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-					if( FB_LONGSIZE = len( integer ) ) then
-						irEmitVARINIi( sdtype, astGetValInt( expr ) )
-					else
-						irEmitVARINI64( sdtype, astGetValLong( expr ) )
-					end if
-
-				case else
+			case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
+				if( FB_LONGSIZE = len( integer ) ) then
 					irEmitVARINIi( sdtype, astGetValInt( expr ) )
-				end select
-			end if
+				else
+					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+				end if
+
+			case else
+				irEmitVARINIi( sdtype, astGetValInt( expr ) )
+			end select
 		end if
 
 	'' literal string..
@@ -922,9 +927,7 @@ function astTypeIniCheckScope _
 				 						   FB_SYMBATTRIB_STATIC or _
 										   FB_SYMBATTRIB_DESCRIPTOR or _
 				 						   FB_SYMBATTRIB_TEMP)) = 0) ) then
-
-					function = TRUE
-					exit function
+					return TRUE
 				end if
 
 			end if
@@ -933,15 +936,13 @@ function astTypeIniCheckScope _
 
 		if( n->l <> NULL ) then
 			if( astTypeIniCheckScope( n->l ) ) then
-				function = TRUE
-				exit function
+				return TRUE
 			end if
 		end if
 
 		if( n->r <> NULL ) then
 			if( astTypeIniCheckScope( n->r ) ) then
-				function = TRUE
-				exit function
+				return TRUE
 			end if
 		end if
 
@@ -965,7 +966,7 @@ private function hWalk _
 	if( n->class = AST_NODECLASS_TYPEINI ) then
 		'' Create a temporary variable which is initialized by the
 		'' astTypeIniFlush() below.
-		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE, FALSE )
+		sym = symbAddTempVar( astGetFullType( n ), n->subtype, FALSE )
 
 		'' Update the parent node in the original tree to access the
 		'' temporary variable, instead of the TYPEINI. (it could be an

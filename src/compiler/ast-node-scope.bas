@@ -631,35 +631,59 @@ sub astScopeDestroyVars(byval symtbtail as FBSYMBOL ptr)
 	wend
 end sub
 
-sub astScopeAllocLocals(byval symtbhead as FBSYMBOL ptr)
-	'' Used for both scope and proc locals/statics
+sub astScopeAllocLocals( byval symtbhead as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr s = any
 
-	'' For the C emitter, let static vars be allocated here too, so they're
-	'' emitted inside the procedure. The irProcAllocStaticVars() later does
-	'' nothing.
-	'' Otherwise for the ASM emitter, ignore static vars here via the
-	'' filter mask; irProcAllocStaticVars() will handle them later.
-	dim as integer mask = any
-	if (irGetOption(IR_OPT_HIGHLEVEL)) then
-		mask = FB_SYMBATTRIB_SHARED
-	else
-		mask = FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
-	end if
+	'' Emit/allocate variables local to a procedure or scope block
 
-	dim as FBSYMBOL ptr s = symtbhead
-	while (s)
-		'' non-shared/static variable?
-		if (symbIsVar(s) andalso ((s->attrib and mask) = 0)) then
-			'' Procedure parameter?
-			if (symbIsParam(s)) then
-				s->ofs = irProcAllocArg(parser.currproc, s, iif(symbIsParamByVal(s), s->lgt, FB_POINTERSIZE))
-			else
-				s->ofs = irProcAllocLocal(parser.currproc, s, s->lgt * symbGetArrayElements(s))
+	s = symtbhead
+	if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
+		''
+		'' C backend: Most locals (including statics) are emitted from
+		'' astLoadDECL(), assuming they have DECL nodes, so they will
+		'' start shadowing variables from parent scopes not earlier
+		'' than they should.
+		''
+		'' Behind the scenes, statics with dtors are actually emitted
+		'' during irProcAllocStaticVars() because they're special:
+		'' They're emitted as globals so the dtor wrappers can see them.
+		''
+		'' The only cases of locals that don't have DECL nodes seem to
+		'' be temp vars. Since their names are unique, there's no
+		'' problem with var shadowing and we can emit them all at the
+		'' top of the scope from here.
+		''
+		while( s )
+			'' temp var?
+			if( symbIsVar( s ) and symbIsTemp( s ) ) then
+				assert( (symbIsShared( s ) = FALSE) and (symbIsParam( s ) = FALSE) )
+				'' Fake a DECL to emit the variable declaration
+				irEmitDECL( s )
 			end if
-			symbSetVarIsAllocated(s)
-		end if
-		s = s->next
-	wend
+			s = s->next
+		wend
+	else
+		''
+		'' ASM backend: All locals except statics or shared vars
+		'' are allocated from here (i.e. the backend reserves the stack
+		'' space for them). Parameters are allocated from here too.
+		''
+		'' statics are handled by irProcAllocStaticVars() later.
+		''
+		while( s )
+			'' non-shared/static variable?
+			if( symbIsVar( s ) and ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0) ) then
+				'' Procedure parameter?
+				if( symbIsParam( s ) ) then
+					s->ofs = irProcAllocArg( parser.currproc, s, iif( symbIsParamByVal( s ), s->lgt, FB_POINTERSIZE ) )
+				else
+					s->ofs = irProcAllocLocal( parser.currproc, s, s->lgt * symbGetArrayElements( s ) )
+				end if
+				symbSetVarIsAllocated( s )
+			end if
+			s = s->next
+		wend
+	end if
 end sub
 
 '':::::

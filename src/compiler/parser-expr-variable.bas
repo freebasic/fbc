@@ -9,22 +9,24 @@
 #include once "parser.bi"
 #include once "ast.bi"
 
-'':::::
-private function hCheckIndex _
-	( _
-		byval expr as ASTNODE ptr _
-	) as ASTNODE ptr
-
+private function hCheckIndex( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	'' if index isn't an integer, convert
-	select case as const typeGet( astGetDataType( expr ) )
-	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+	select case( typeGet( astGetDataType( expr ) ) )
+	case FB_DATATYPE_INTEGER
 
 	case FB_DATATYPE_POINTER
+		'' Disallow pointers explicitly, because they can be converted
+		'' to integer fine, but we don't want to allow pointers as indices.
 		errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
 	case else
+		'' Show overflow warning for big constant -> integer conversion
+		if( astIsCONST( expr ) ) then
+			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
+		end if
+
 		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE )
@@ -34,7 +36,6 @@ private function hCheckIndex _
 	end select
 
 	function = expr
-
 end function
 
 '':::::
@@ -236,10 +237,8 @@ end function
 '':::::
 '' MemberId       =   ID ArrayIdx?
 ''
-private function hMemberId _
-	( _
-		byval parent as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
+	dim as FBSYMBOL ptr res = any
 
 	if( parent = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDUDT, TRUE )
@@ -257,28 +256,18 @@ private function hMemberId _
 		return NULL
 	end select
 
-    dim as FBSYMBOL ptr res = NULL
-    select case as const lexGetToken( )
+	res = NULL
 
+	select case( lexGetToken( ) )
 	case FB_TK_CONSTRUCTOR
 		res = symbGetCompCtorHead( parent )
-		if( res = NULL ) then
-			symbCompAddDefCtor( parent )
-			res = symbGetCompCtorHead( parent )
-		end if
-
 	case FB_TK_DESTRUCTOR
 		res = symbGetCompDtor( parent )
-		if( res = NULL ) then
-			symbCompAddDefDtor( parent )
-			res = symbGetCompDtor( parent )
-		end if
-
-    end select
+	end select
 
 	if( res ) then
 		return res
-    end if
+	end if
 
     dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
     if( chain_ = NULL ) then
@@ -1166,23 +1155,17 @@ private function hVarAddUndecl _
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
-    s = symbAddVarEx( id, NULL, _
-    				  dtype, NULL, 0, _
-    				  0, dTB(), _
-    				  attrib, _
-    				  options )
-
-    if( s = NULL ) then
+	s = symbAddVarEx( id, NULL, dtype, NULL, 0, 0, dTB(), attrib, options )
+	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: fake an id
-		s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, dTB(), attrib )
+		s = symbAddVar( symbUniqueLabel( ), dtype, NULL, 0, dTB(), attrib )
 	else
 		var_ = astNewDECL( s, NULL )
 
 		'' move to function scope?
 		if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
 			astAddUnscoped( var_ )
-
 		'' respect the scope..
 		else
 			astAdd( var_ )
@@ -1190,7 +1173,6 @@ private function hVarAddUndecl _
 	end if
 
 	function = s
-
 end function
 
 '':::::

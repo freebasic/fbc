@@ -9,7 +9,7 @@
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
 '#DEFINE __USE_GTK3__
-#INCLUDE "gtk/goocanvas.bi"
+#INCLUDE "goocanvas.bi"
 
 #DEFINE LEFT_    50.0
 #DEFINE RIGHT_  350.0

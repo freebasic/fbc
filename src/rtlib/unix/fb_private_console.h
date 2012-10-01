@@ -68,6 +68,12 @@ int fb_hGetCh(int remove);
 int fb_hXTermInitFocus(void);
 void fb_hXTermExitFocus(void);
 int fb_hXTermHasFocus(void);
-int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void), void (*key_handler)(int));
+int fb_hConsoleGfxMode
+	(
+		void (*gfx_exit)(void),
+		void (*save)(void),
+		void (*restore)(void),
+		void (*key_handler)(int, int, int, int)
+	);
 int fb_hInitConsole(void);
 void fb_hExitConsole(void);

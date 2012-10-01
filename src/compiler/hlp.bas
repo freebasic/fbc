@@ -9,26 +9,6 @@
 #include once "lex.bi"
 #include once "dstr.bi"
 
-type FBHLPCTX
-	profilecnt  as uinteger
-end type
-
-
-''globals
-	dim shared ctx as FBHLPCTX
-
-'':::::
-sub hlpInit
-
-	ctx.profilecnt = 0
-
-end sub
-
-'':::::
-sub hlpEnd
-
-end sub
-
 '':::::
 function hMatchText _
 	( _
@@ -102,21 +82,6 @@ function hHexUInt _
 end function
 
 '':::::
-function hMakeProfileLabelName _
-	( _
-	) as zstring ptr static
-
-	static as zstring * 4 + 8 + 1 res
-
-	res = "LP_" + *hHexUInt( ctx.profilecnt )
-
-	ctx.profilecnt += 1
-
-	function = @res
-
-end function
-
-'':::::
 function hFloatToStr _
 	( _
 		byval value as double, _
@@ -133,17 +98,17 @@ function hFloatToStr _
 	case &h7FF00000UL, &hFFF00000UL
 		if( typ = FB_DATATYPE_DOUBLE ) then
 			typ = FB_DATATYPE_LONGINT
-			if( expval >= 0 ) then
-				function = "0x7FF0000000000000"
-			else
+			if( expval and &h80000000 ) then
 				function = "0xFFF0000000000000"
+			else
+				function = "0x7FF0000000000000"
 			end if
 		else
 			typ = FB_DATATYPE_INTEGER
-			if( expval >= 0 ) then
-				function = "0x7F800000"
-			else
+			if( expval and &h80000000 ) then
 				function = "0xFF800000"
+			else
+				function = "0x7F800000"
 			end if
 		end if
 
@@ -151,14 +116,26 @@ function hFloatToStr _
 	case &h7FF80000UL, &hFFF80000UL
 		if( typ = FB_DATATYPE_DOUBLE ) then
 			typ = FB_DATATYPE_LONGINT
-			function = "0x7FF8000000000000"
+			if( expval and &h80000000 ) then
+				function = "0xFFF8000000000000"
+			else
+				function = "0x7FF8000000000000"
+			end if
 		else
 			typ = FB_DATATYPE_INTEGER
-			function = "0x7FF00000"
+			if( expval and &h80000000 ) then
+				function = "0xFFC00000"
+			else
+				function = "0x7FC00000"
+			end if
 		end if
 
 	case else
-		function = str( value )
+		if( typ = FB_DATATYPE_DOUBLE ) then
+			function = str( value )
+		else
+			function = str( csng( value ) )
+		end if
 	end select
 
 end function
@@ -421,6 +398,26 @@ function pathStripDiv( byref path as string ) as string
 	function = path
 end function
 
+function pathIsAbsolute( byval path as zstring ptr ) as integer
+#if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
+	if( (*path)[0] <> 0 ) then
+		select case( (*path)[1] )
+		case asc( ":" )
+			'' C:...
+			function = TRUE
+#ifdef __FB_WIN32__
+		case asc( "\" )
+			'' \\... UNC path
+			function = ((*path)[0] = asc( "\" ))
+#endif
+		end select
+	end if
+#else
+	'' /...
+	function = ((*path)[0] = asc( "/" ))
+#endif
+end function
+
 '':::::
 function hToPow2 _
 	( _
@@ -525,30 +522,18 @@ conv_int:
 
 end sub
 
-'':::::
-function hJumpTbAllocSym _
-	( _
-		_
-	) as any ptr
-
-	dim as zstring * FB_MAXNAMELEN+1 sname = any
+function hJumpTbAllocSym( ) as any ptr
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
 
-	sname = *hMakeTmpStr( )
-
-	s = symbAddVarEx( @sname, NULL, _
-					  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-					  FB_POINTERSIZE, _
-					  1, dTB(), _
-					  FB_SYMBATTRIB_SHARED )
+	s = symbAddVarEx( symbUniqueLabel( ), NULL, _
+	                  typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, _
+	                  1, dTB(), FB_SYMBATTRIB_SHARED )
 
 	symbSetIsJumpTb( s )
-
 	symbSetIsInitialized( s )
 
 	function = s
-
 end function
 
 '':::::
@@ -608,31 +593,6 @@ function hCurDir( ) as string
 	'' except when it points to the file system root, instead of
 	'' some directory (e.g. C:\ on Win32 or / on Unix).
 	function = pathStripDiv( curdir( ) )
-end function
-
-function hEnvDir( ) as string
-	dim as string s
-
-#if defined(__FB_WIN32__) Or defined(__FB_DOS__)
-  #define hIsAbsolutePath( path ) path[1] = asc(":")
-#else
-  #define hIsAbsolutePath( path ) path[0] = asc("/")
-#endif
-
-	'' absolute path given?
-	if( hIsAbsolutePath( env.inf.name ) ) then
-		s = hStripFilename( env.inf.name )
-	else
-		'' relative path
-		s = hCurDir( )
-
-		'' not in the original directory?
-		if( instr( env.inf.name, "/" ) > 0 ) then
-			s += FB_HOST_PATHDIV + pathStripDiv( hStripFilename( env.inf.name ) )
-		end if
-	end if
-
-	function = pathStripDiv( s )
 end function
 
 function hIsValidSymbolName( byval sym as zstring ptr ) as integer

@@ -14,15 +14,15 @@ private sub namespaceBegin _
 		byval sym as FBSYMBOL ptr _
 	)
 
-	if (sym = NULL) then
+	if( sym = NULL ) then
 		'' Fake id for anonymous namespaces or error recovery
-		sym = symbAddNamespace(hMakeTmpStr(), NULL)
+		sym = symbAddNamespace( symbUniqueLabel( ), NULL )
 	end if
 
 	stk->nspc.sym = sym
 	stk->nspc.levels = 1
 
-	symbNestBegin(sym, FALSE)
+	symbNestBegin( sym, FALSE )
 end sub
 
 '':::::
@@ -112,7 +112,7 @@ function cNamespaceStmtBegin _
 			if( symbIsNamespace( sym ) = FALSE ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 				'' error recovery: fake an id
-				id = *hMakeTmpStr( )
+				id = *symbUniqueLabel( )
 				sym = NULL
 			else
 				'' not the same hash tb?

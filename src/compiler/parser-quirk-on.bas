@@ -64,7 +64,7 @@ function cGOTBStmt _
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			if( l < FB_MAXGOTBITEMS ) then
 				'' error recovery: fake an label
-				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FB_SYMBOPT_NONE )
+				labelTB(l) = symbAddLabel( symbUniqueLabel( ), FB_SYMBOPT_NONE )
 			end if
 		end select
 

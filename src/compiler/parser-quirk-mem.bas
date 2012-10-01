@@ -19,7 +19,9 @@ function cOperatorNew _
 
 	dim as integer dtype = any, lgt = any
 	dim as FBSYMBOL ptr subtype = any, tmp = any
-	dim as integer do_clear = TRUE
+	dim as integer has_ctor = any, has_defctor = any, do_clear = any
+
+	do_clear = TRUE
 
 	'' NEW
 	lexSkipToken( )
@@ -49,13 +51,8 @@ function cOperatorNew _
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end select
 
-	dim as integer has_ctor = FALSE, has_defctor = FALSE
-
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = symbGetHasCtor( subtype )
-		has_defctor = (symbGetCompDefCtor( subtype ) <> NULL)
-	end select
+	has_ctor = typeHasCtor( dtype, subtype )
+	has_defctor = typeHasDefCtor( dtype, subtype )
 
 	'' '['?
     if( lexGetToken( ) = CHAR_LBRACKET ) then
@@ -117,7 +114,7 @@ function cOperatorNew _
 	end if
 
 	'' temp pointer
-	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, , FALSE )
+	tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 	'' Constructor?
 	dim as ASTNODE ptr ctor_expr = NULL
@@ -264,15 +261,11 @@ sub cOperatorDelete()
 	end if
 
 	'' check visibility
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		dim as FBSYMBOL ptr dtor = symbGetCompDtor( subtype )
-		if( dtor <> NULL ) then
-			if( symbCheckAccess( dtor ) = FALSE ) then
-				errReport( FB_ERRMSG_NOACCESSTODTOR )
-			end if
+	if( typeHasDtor( dtype, subtype ) ) then
+		if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
+			errReport( FB_ERRMSG_NOACCESSTODTOR )
 		end if
-	end select
+	end if
 
 	expr = astNewMEM( op, _
 					  ptr_expr, _

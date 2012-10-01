@@ -710,10 +710,7 @@ function cAssignmentOrPtrCall _
 	dim as ASTNODE ptr tree = NULL
 
 	if( exprcnt > 0 ) then
-		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), _
-										  astGetSubtype( expr ), _
-										  FALSE, _
-										  FALSE )
+		tmp = symbAddTempVar( typeAddrOf( astGetFulltype( expr ) ), astGetSubtype( expr ), FALSE )
 		'' tmp = @expr
 		tree = astBuildVarAssign( tmp, astNewADDROF( expr ) )
 	end if

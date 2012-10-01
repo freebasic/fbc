@@ -103,7 +103,7 @@ end function
  '':::::
 private function hDefPath_cb( ) as string static
 
-	function = hEnvDir( )
+	function = fbGetInputFileParentDir( )
 
 end function
 

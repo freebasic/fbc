@@ -181,6 +181,23 @@ function cEndStatement( ) as integer
 	function = rtlExitApp( errlevel )
 end function
 
+private function hCheckForCtorResult( ) as integer
+	function = FB_ERRMSG_OK
+	if( symbHasCtor( parser.currproc ) ) then
+		if( symbGetProcStatReturnUsed( parser.currproc ) ) then
+			'' EXIT FUNCTION cannot be allowed in combination
+			'' with RETURN and a ctor result, because it would
+			'' not call the result constructor.
+			function = FB_ERRMSG_MISSINGRETURNFORCTORRESULT
+		else
+			'' EXIT FUNCTION used, and no RETURN yet:
+			'' make it behave like FUNCTION=, to ensure the result ctor
+			'' is called at the top.
+			symbSetProcStatAssignUsed( parser.currproc )
+		end if
+	end if
+end function
+
 '':::::
 #macro hExitError( errnum )
 	errReport( errnum )
@@ -331,18 +348,24 @@ sub cExitStatement()
 					 (FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OPERATOR or _
 					  FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
 					errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
+				else
+					errnum = hCheckForCtorResult( )
 				end if
 			else
 				errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
 			end if
 
 		case FB_TK_PROPERTY
-			if( symbIsProperty( parser.currproc ) = FALSE ) then
+			if( symbIsProperty( parser.currproc ) ) then
+				errnum = hCheckForCtorResult( )
+			else
 				errnum = FB_ERRMSG_ILLEGALOUTSIDEANPROPERTY
 			end if
 
 		case FB_TK_OPERATOR
-			if( symbIsOperator( parser.currproc ) = FALSE ) then
+			if( symbIsOperator( parser.currproc ) ) then
+				errnum = hCheckForCtorResult( )
+			else
 				errnum = FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR
 			end if
 

@@ -18,7 +18,7 @@ type IRTAC_CTX
 
 	vregTB			as TFLIST
 
-	tmpcnt		as uinteger
+	asm_line		as string
 end type
 
 declare sub hFlushUOP _
@@ -111,11 +111,7 @@ declare sub hFlushDBG _
 		byval ex as integer _
 	)
 
-declare sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
+declare sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 
 declare sub hFreeIDX _
 	( _
@@ -127,11 +123,6 @@ declare sub hFreeREG _
 	( _
 		byval vreg as IRVREG ptr, _
 		byval force as integer = FALSE _
-	)
-
-declare sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
 	)
 
 declare sub hFreePreservedRegs _
@@ -160,7 +151,6 @@ declare sub _flush _
 private sub _init( )
 	ctx.tacidx = NULL
 	ctx.taccnt = 0
-	ctx.tmpcnt = 0
 
 	flistInit( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
@@ -419,29 +409,9 @@ private sub _scopeEnd _
 
 end sub
 
-private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
-	emitProcAllocStaticVars(head_sym)
+private sub _procAllocStaticVars( byval head_sym as FBSYMBOL ptr )
+	emitProcAllocStaticVars( head_sym )
 end sub
-
-'':::::
-private function _makeTmpStr _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
-
-	static as zstring * 4 + 8 + 1 res
-
-	if( islabel ) then
-		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
-	else
-		res = "Lt_" + *hHexUInt( ctx.tmpcnt )
-	end if
-
-	ctx.tmpcnt += 1
-
-	function = @res
-
-end function
 
 '':::::
 private sub _emitLabel _
@@ -569,33 +539,17 @@ private sub _emitUop _
 
 end sub
 
-'':::::
-private sub _emitConvert _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	) static
-
-	select case symb_dtypeTB(typeGet( dtype )).class
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
+	select case( symb_dtypeTB(typeGet( v1->dtype )).class )
 	case FB_DATACLASS_INTEGER
 		_emit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
 		_emit( AST_OP_TOFLT, v1, v2, NULL )
 	end select
-
 end sub
 
-'':::::
-private sub _emitStore _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
-
+private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	_emit( AST_OP_ASSIGN, v1, v2, NULL )
-
 end sub
 
 '':::::
@@ -758,6 +712,10 @@ private sub _emitMem _
 
 end sub
 
+private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	'' Nothing to do - used by C backend
+end sub
+
 '':::::
 private sub _emitDBG _
 	( _
@@ -770,24 +728,29 @@ private sub _emitDBG _
 
 end sub
 
-'':::::
-private sub _emitComment _
-	( _
-		byval text as zstring ptr _
-	) static
-
+private sub _emitComment( byval text as zstring ptr )
 	_emit( AST_OP_LIT_COMMENT, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
-
 end sub
 
-'':::::
-private sub _emitASM _
-	( _
-		byval text as zstring ptr _
-	) static
+private sub _emitAsmBegin( )
+	ctx.asm_line = ""
+end sub
 
-	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
+private sub _emitAsmText( byval text as zstring ptr )
+	ctx.asm_line += *text
+end sub
 
+private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
+	ctx.asm_line += *symbGetMangledName( sym )
+	if( symbGetOfs( sym ) > 0 ) then
+		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
+	elseif( symbGetOfs( sym ) < 0 ) then
+		ctx.asm_line += str( symbGetOfs( sym ) )
+	end if
+end sub
+
+private sub _emitAsmEnd( )
+	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ctx.asm_line ) ) ) )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -1718,6 +1681,8 @@ private sub hFlushUOP _
 		emitFIX( v1 )
 	case AST_OP_FRAC
 		emitFRAC( v1 )
+	case AST_OP_CONVFD2FS
+		emitCONVFD2FS( v1 )
 
 	case AST_OP_SIN
 		emitSIN( v1 )
@@ -2425,26 +2390,15 @@ private sub hFlushDBG _
 
 end sub
 
-'':::::
-private sub hFlushLIT _
-	( _
-		byval op as integer, _
-		byval ex as any ptr _
-	)
-
-	dim as zstring ptr text = cast( zstring ptr, ex )
-
+private sub hFlushLIT( byval op as integer, byval text as zstring ptr )
 	select case op
 	case AST_OP_LIT_COMMENT
 		emitComment( text )
-
 	case AST_OP_LIT_ASM
 		emitASM( text )
-
 	end select
 
 	ZstrFree( text )
-
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2589,22 +2543,15 @@ private sub _loadVR _
 		vreg->regFamily = IR_REG_SSE
 	end if
 
-
 end sub
 
-'':::::
-private sub hCreateTMPVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	) static
-
+private sub hCreateTMPVAR( byval vreg as IRVREG ptr )
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
-		vreg->sym = symbAddTempVar( vreg->dtype, NULL, TRUE )
+		vreg->sym = symbAddAndAllocateTempVar( vreg->dtype )
 		vreg->ofs = symbGetOfs( vreg->sym )
 		vreg->reg = INVALID
 	end if
-
 end sub
 
 '':::::
@@ -2703,7 +2650,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 ( _
 	@_init, _
 	@_end, _
-	@_flush, _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
@@ -2715,7 +2661,6 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_scopeBegin, _
 	@_scopeEnd, _
 	@_procAllocStaticVars, _
-	@_emit, _
 	@_emitConvert, _
 	@_emitLabel, _
 	@_emitLabelNF, _
@@ -2723,7 +2668,10 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@_emitPushArg, _
-	@_emitASM, _
+	@_emitAsmBegin, _
+	@_emitAsmText, _
+	@_emitAsmSymb, _
+	@_emitAsmEnd, _
 	@_emitComment, _
 	@_emitJmpTb, _
 	@_emitBop, _
@@ -2743,6 +2691,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitMem, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _
+	@_emitDECL, _
 	@_emitDBG, _
 	@_emitVarIniBegin, _
 	@_emitVarIniEnd, _
@@ -2767,6 +2716,5 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_getDistance, _
 	@_loadVr, _
 	@_storeVr, _
-	@_xchgTOS, _
-	@_makeTmpStr _
+	@_xchgTOS _
 )

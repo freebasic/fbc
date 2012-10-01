@@ -8,7 +8,7 @@
 ' FB translation by TJF, 2011
 ' Details: http://library.gnome.org/devel/goocanvas/unstable/
 
-#INCLUDE "gtk/goocanvas.bi"
+#INCLUDE "goocanvas.bi"
 
 FUNCTION on_focus_in CDECL(BYVAL item AS GooCanvasItem PTR, _
                            BYVAL target AS GooCanvasItem PTR, _

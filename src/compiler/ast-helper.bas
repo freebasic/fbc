@@ -122,34 +122,25 @@ function astBuildVarDtorCall _
 
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
-		do_free = FALSE
-
 		'' dynamic?
 		if( symbIsDynamic( s ) ) then
 			do_free = TRUE
-
 		else
-		     '' has dtor?
-		     select case symbGetType( s )
-		     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			 	do_free = symbGetHasDtor( symbGetSubtype( s ) )
-			 end select
+			'' has dtor?
+			do_free = symbHasDtor( s )
 		end if
 
 		if( do_free ) then
 			expr = astNewVAR( s, 0, symbGetFullType( s ), symbGetSubtype( s ) )
-
 			if( symbIsDynamic( s ) ) then
 				function = rtlArrayErase( expr, check_access )
 			else
 				function = rtlArrayClear( expr, FALSE, check_access )
 			end if
-
 		'' array of dyn strings?
 		elseif( symbGetType( s ) = FB_DATATYPE_STRING ) then
 			function = rtlArrayStrErase( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 		end if
-
 	else
 		select case symbGetType( s )
 		'' dyn string?
@@ -163,19 +154,15 @@ function astBuildVarDtorCall _
 			'' that must be deallocated.
 			function = rtlStrDelete( astNewVAR( s, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) )
 
-		'' struct or class?
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' has dtor?
-			if( symbGetHasDtor( symbGetSubtype( s ) ) ) then
-				dim as FBSYMBOL ptr subtype = symbGetSubtype( s )
-
+		case else
+			'' UDT var with dtor?
+			if( symbHasDtor( s ) ) then
 				if( check_access ) then
-					if( symbCheckAccess( symbGetCompDtor( subtype ) ) = FALSE ) then
+					if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( s ) ) ) = FALSE ) then
 						errReport( FB_ERRMSG_NOACCESSTODTOR )
 					end if
 				end if
-
-				function = astBuildDtorCall( subtype, astNewVAR( s, 0, symbGetFullType( s ), subtype ) )
+				function = astBuildDtorCall( symbGetSubtype( s ), astNewVAR( s, 0, symbGetFullType( s ), symbGetSubtype( s ) ) )
 			end if
 		end select
 	end if
@@ -406,7 +393,7 @@ function astCALLCTORToCALL _
 	astDelTree( n->r )
 
 	'' remove anon symbol
-	if( symbGetHasDtor( symbGetSubtype( sym ) ) ) then
+	if( symbHasDtor( sym ) ) then
 		'' if the temp has a dtor it was added to the dtor list,
 		'' remove it too
 		astDtorListDel( sym )
@@ -507,29 +494,19 @@ function astBuildProcAddrof(byval proc as FBSYMBOL ptr) as ASTNODE ptr
 	function = astNewADDROF(astNewVAR(proc, 0, FB_DATATYPE_FUNCTION, proc))
 end function
 
-'':::::
 function astBuildProcResultVar _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval res as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE PTR lhs = any
-
-    lhs = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )
-
-	'' proc returns an UDT?
-    select case symbGetType( proc )
-    case FB_DATATYPE_STRUCT
-		'' pointer? deref
-		if( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
-			lhs = astNewDEREF( lhs, FB_DATATYPE_STRUCT, symbGetSubtype( res ) )
-		end if
-	'case FB_DATATYPE_CLASS
-		' ...
-	end select
-
-	function = lhs
+	'' proc returns UDT in hidden byref UDT param?
+	if( (symbGetType( proc ) = FB_DATATYPE_STRUCT) and _
+	    typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ) ) then
+		function = astNewDEREF( astNewVAR( res, 0, typeAddrOf( FB_DATATYPE_STRUCT ), symbGetSubtype( res ) ) )
+	else
+		function = astNewVAR( res, 0, symbGetFullType( res ), symbGetSubtype( res ) )
+	end if
 
 end function
 

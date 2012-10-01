@@ -33,18 +33,11 @@ end type
 '' globals
 	dim shared ctx as FBCTX
 
-
-'':::::
 sub parserSelectStmtInit( )
-
 	ctx.base = 0
-
 end sub
 
-'':::::
 sub parserSelectStmtEnd( )
-
-
 end sub
 
 '':::::
@@ -105,63 +98,77 @@ sub cSelectStmtBegin()
 	'' add exit label
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
-	'' store expression into a temp var
+	sym = NULL
 	dtype = astGetFullType( expr )
 	subtype = astGetSubType( expr )
 
-	select case typeGet( dtype )
-	'' fixed-len or zstring? temp will be a var-len string..
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		dtype = FB_DATATYPE_STRING
-	end select
-
-    '' not a wstring?
-	if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
-		sym = symbAddTempVar( dtype, subtype )
-
-		'' Remove temp flag to have its dtor called at scope breaks/end
-		'' (needed at least in case the temporary is a string)
-		symbUnsetIsTemp( sym )
-
-		expr = astNewASSIGN( astNewVAR( sym, 0, dtype, subtype, TRUE ), expr )
-		if( expr <> NULL ) then
-			astAdd( expr )
-		end if
+	if( astIsVAR( expr ) ) then
+		'' No need to copy to a temp var when the expression is just
+		'' a var already (note: might be type-casted, so better use
+		'' the AST node's type, not the symbol's)
+		sym = astGetSymbol( expr )
+		assert( sym )
+		assert( symbIsTemp( sym ) = FALSE )
 	else
-		'' the wstring must be allocated() but size
-		'' is unknown at compile-time, do:
+		'' Store expression into a temp var
+		select case typeGet( dtype )
+		'' fixed-len or zstring? temp will be a var-len string..
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			dtype = FB_DATATYPE_STRING
+		end select
 
-		''  dim wstring ptr tmp
-		sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ), NULL )
+		'' not a wstring?
+		if( typeGet( dtype ) <> FB_DATATYPE_WCHAR ) then
+			'' dim temp as dtype
+			sym = symbAddTempVar( dtype, subtype )
 
-		'' Remove temp flag to have it considered for dtor calling
-		symbUnsetIsTemp( sym )
+			'' Remove temp flag to have its dtor called at scope breaks/end
+			'' (needed at least in case the temporary is a string)
+			symbUnsetIsTemp( sym )
 
-		'' Mark it as "dynamic wstring" so it will be deallocated with
-		'' WstrFree() at scope breaks/end
-		symbSetIsWstring( sym )
+			'' Anything besides FBSTRINGs doesn't need to be cleared
+			'' (this also silences "branch crossing ..." warnings when
+			'' jumping over a SELECT CASE integer into a CASE block)
+			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
+				symbSetDontInit( sym )
+			end if
 
-		'' side-effect?
-		if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
-			astAdd( astRemSideFx( expr ) )
-		end if
+			astAdd( astNewDECL( sym, NULL ) )
 
-		'' tmp = WstrAlloc( len( expr ) )
-		astAdd( astNewASSIGN( astNewVAR( sym, _
-										 0, _
-										 typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+			astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), expr ) )
+		else
+			'' the wstring must be allocated() but size
+			'' is unknown at compile-time, do:
 
-		'' *tmp = expr
-		expr = astNewASSIGN( astNewDEREF( astNewVAR( sym, _
-								  		 		     0, _
-								  		 		     typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-								  	      FB_DATATYPE_WCHAR, _
-								  	      NULL ), _
-				      		 expr )
+			'' dim temp as wstring ptr
+			sym = symbAddTempVar( typeAddrOf( FB_DATATYPE_WCHAR ) )
 
-		if( expr <> NULL ) then
-			astAdd( expr )
+			'' Remove temp flag to have it considered for dtor calling
+			symbUnsetIsTemp( sym )
+
+			'' Mark it as "dynamic wstring" so it will be deallocated with
+			'' WstrFree() at scope breaks/end
+			symbSetIsWstring( sym )
+
+			'' Pretent "= ANY" was used - even though the fake wstring
+			'' is pretended to have a constructor, we don't need the
+			'' default clear done by astNewDECL()
+			symbSetDontInit( sym )
+
+			astAdd( astNewDECL( sym, NULL ) )
+
+			'' side-effect?
+			if( astIsClassOnTree( AST_NODECLASS_CALL, expr ) <> NULL ) then
+				astAdd( astRemSideFx( expr ) )
+			end if
+
+			'' tmp = WstrAlloc( len( expr ) )
+			astAdd( astNewASSIGN( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
+			                      rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+
+			'' *tmp = expr
+			astAdd( astNewASSIGN( astNewDEREF( astNewVAR( sym, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+			                      expr ) )
 		end if
 	end if
 
@@ -181,7 +188,7 @@ end sub
 ''CaseExpression  =   (Expression (TO Expression)?)?
 ''				  |   (IS REL_OP Expression)? .
 ''
-private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
+private sub hCaseExpression( byval dtype as integer, byref casectx as FBCASECTX )
 	casectx.op = AST_OP_EQ
 
 	'' IS REL_OP Expression
@@ -225,18 +232,6 @@ private sub hCaseExpression(byval dtype as integer, byref casectx as FBCASECTX)
 	end if
 end sub
 
-'':::::
-'' if it's a wstring, do "if *tmp op expr"
-#define NEWCASEVAR(symbol,dtype) 					_
-	iif( typeGet( dtype ) <> FB_DATATYPE_WCHAR, 				_
-		 astNewVAR( symbol, 0, dtype ), 			_
-		 astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ), _
-					  FB_DATATYPE_WCHAR, 			_
-					  NULL ) 						_
-	   )
-
-
-'':::::
 private function hFlushCaseExpr _
 	( _
 		byref casectx as FBCASECTX, _
@@ -245,33 +240,28 @@ private function hFlushCaseExpr _
 		byval inilabel as FBSYMBOL ptr, _
 		byval nxtlabel as FBSYMBOL ptr, _
 		byval islast as integer _
-	) as integer static
+	) as integer
 
 	dim as ASTNODE ptr expr = any
 
+	'' if it's the fake "dynamic wstring", do "if *tmp op expr"
+	#define NEWCASEVAR( symbol, dtype ) _
+		iif( symbGetIsWstring( symbol ), _
+		     astNewDEREF( astNewVAR( symbol, 0, typeAddrOf( FB_DATATYPE_WCHAR ) ) ), _
+		     astNewVAR( symbol, 0, dtype ) )
+
+	expr = NEWCASEVAR( sym, dtype )
+
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
-        expr = NEWCASEVAR( sym, dtype )
-
 		if( islast ) then
-			expr = astNewBOP( astGetInverseLogOp( casectx.op ), _
-						  	  expr, _
-						  	  casectx.expr1, _
-						  	  nxtlabel, _
-						  	  AST_OPOPT_NONE )
-
+			expr = astNewBOP( astGetInverseLogOp( casectx.op ), expr, _
+			                  casectx.expr1, nxtlabel, AST_OPOPT_NONE )
 		else
-			expr = astNewBOP( casectx.op, _
-						  	  expr, _
-						  	  casectx.expr1, _
-						  	  inilabel, _
-						  	  AST_OPOPT_NONE )
+			expr = astNewBOP( casectx.op, expr, _
+			                  casectx.expr1, inilabel, AST_OPOPT_NONE )
 		end if
-
 	else
-		expr = NEWCASEVAR( sym, dtype )
-
 		expr = astNewBOP( AST_OP_LT, expr, casectx.expr1, nxtlabel, AST_OPOPT_NONE )
-
 		if( expr = NULL ) then
 			return FALSE
 		end if
@@ -279,7 +269,6 @@ private function hFlushCaseExpr _
 		astAdd( expr )
 
 		expr = NEWCASEVAR( sym, dtype )
-
 		if( islast ) then
 			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nxtlabel, AST_OPOPT_NONE )
 		else
@@ -294,15 +283,14 @@ private function hFlushCaseExpr _
 	astAdd( expr )
 
 	function = TRUE
-
 end function
 
 '':::::
 ''SelectStmtNext   =    CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
 ''
 function cSelectStmtNext( ) as integer
-	dim as FBSYMBOL ptr sym = any, il = any, nl = any
-	dim as integer dtype = any, cnt = any, i = any, cntbase = any
+	dim as FBSYMBOL ptr il = any, nl = any
+	dim as integer cnt = any, i = any, cntbase = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
@@ -360,11 +348,8 @@ function cSelectStmtNext( ) as integer
 	cnt = 0
 	cntbase = ctx.base
 
-	sym = stk->select.sym
-	dtype = stk->select.dtype
-
 	do
-		hCaseExpression( dtype, ctx.caseTB(cntbase + cnt) )
+		hCaseExpression( stk->select.dtype, ctx.caseTB(cntbase + cnt) )
 		cnt += 1
 
 		if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -380,7 +365,6 @@ function cSelectStmtNext( ) as integer
 	il = symbAddLabel( NULL )
 
 	for i = 0 to cnt-1
-
 		if( i < cnt-1 ) then
 			'' add next label
 			nl = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -389,11 +373,8 @@ function cSelectStmtNext( ) as integer
 		end if
 
 		if( ctx.caseTB(cntbase+i).typ <> FB_CASETYPE_ELSE ) then
-			if( hFlushCaseExpr( ctx.caseTB(cntbase+i), _
-								sym, dtype, _
-								il, nl, _
-								i = cnt-1 ) = FALSE ) then
-
+			if( hFlushCaseExpr( ctx.caseTB(cntbase+i), stk->select.sym, _
+			                    stk->select.dtype, il, nl, i = cnt-1 ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 		end if
@@ -402,7 +383,6 @@ function cSelectStmtNext( ) as integer
 			'' emit next label
 			astAdd( astNewLABEL( nl ) )
 		end if
-
 	next
 
  	ctx.base -= cnt
@@ -416,14 +396,12 @@ function cSelectStmtNext( ) as integer
 	stk->select.casecnt += 1
 
 	function = TRUE
-
 end function
 
 '':::::
 ''SelectStmtEnd =   END SELECT .
 ''
 function cSelectStmtEnd as integer
-	dim as integer dtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE

@@ -101,27 +101,25 @@ enum FB_SYMBSTATS
     FB_SYMBSTATS_GLOBALCTOR   = &h00010000
     FB_SYMBSTATS_GLOBALDTOR   = &h00020000
     FB_SYMBSTATS_CANTDUP      = &h00040000
-    FB_SYMBSTATS_HASCTOR      = &h00080000
-    FB_SYMBSTATS_HASCOPYCTOR  = &h00100000
-    FB_SYMBSTATS_HASDTOR      = &h00200000
-    FB_SYMBSTATS_HASRTTI   	  = &h00400000
+    FB_SYMBSTATS_GCCBUILTIN   = &h00080000  '' procs only
+    FB_SYMBSTATS_IRHLCBUILTIN = &h00100000  '' procs only
+                            ''= &h00200000
+    FB_SYMBSTATS_HASRTTI      = &h00400000
     FB_SYMBSTATS_CANTUNDEF    = &h00800000
-    FB_SYMBSTATS_UNIONFIELD   = &h01000000
-    FB_SYMBSTATS_RTL_CONST    = &h02000000
+    FB_SYMBSTATS_UNIONFIELD   = &h01000000  '' fields only
+    FB_SYMBSTATS_RTL_CONST    = &h02000000  '' params only
     FB_SYMBSTATS_EMITTED      = &h04000000		'' needed by high-level IRs, to avoid emitting structs etc twice
     FB_SYMBSTATS_BEINGEMITTED = &h08000000		'' ditto, for circular dependencies with structs
 
     '' reuse - take care
-    FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD
-    FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED
-    FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT
-    FB_SYMBSTATS_IRHLCBUILTIN   = FB_SYMBSTATS_CANTDUP
-    FB_SYMBSTATS_GCCBUILTIN		= FB_SYMBSTATS_HASCTOR
+    FB_SYMBSTATS_PROCEMITTED    = FB_SYMBSTATS_UNIONFIELD  '' procs only
+    FB_SYMBSTATS_CTORINITED     = FB_SYMBSTATS_INITIALIZED '' ctor method procs only
+    FB_SYMBSTATS_EXCLPARENT     = FB_SYMBSTATS_DONTINIT    '' procs only
 
 	'' A wchar ptr var that needs deallocating at scope breaks/end.
 	'' (Cheap dynamic wstring used by the 'SELECT CASE wstring' temporary,
 	'' there is no real FB_DATATYPE_WSTRING yet)
-	FB_SYMBSTATS_WSTRING = FB_SYMBSTATS_UNIONFIELD
+	FB_SYMBSTATS_WSTRING = FB_SYMBSTATS_UNIONFIELD '' vars only
 end enum
 
 '' symbol attributes mask
@@ -156,7 +154,7 @@ enum FB_SYMBATTRIB
 					''= &h02000000
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
-	FB_SYMBATTRIB_NAKED         = &h10000000
+	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
 	FB_SYMBATTRIB_ABSTRACT      = &h20000000
 	FB_SYMBATTRIB_VIRTUAL       = &h40000000
 
@@ -409,19 +407,13 @@ type FB_STRUCT_DBG
 	typenum			as integer
 end type
 
-type FB_ANON_METHODS
-	ctor_head		as FBSYMBOL_ ptr
-	defctor			as FBSYMBOL_ ptr			'' default ctor
-	copyctor		as FBSYMBOL_ ptr			'' copy ctor
-	dtor			as FBSYMBOL_ ptr			'' destructor
-	clone			as FBSYMBOL_ ptr
-end type
-
 type FB_STRUCTEXT
-	anon			as FB_ANON_METHODS
-	opovlTb ( _
-				0 to AST_OP_SELFOPS-1 _
-			) 		as FBSYMBOL_ ptr
+	ctorhead		as FBSYMBOL_ ptr			'' ctor head (first overload proc) or NULL
+	defctor			as FBSYMBOL_ ptr			'' default ctor or NULL
+	copyctor		as FBSYMBOL_ ptr			'' copy ctor or NULL
+	dtor			as FBSYMBOL_ ptr			'' destructor or NULL
+	clone			as FBSYMBOL_ ptr			'' LET overload proc or NULL
+	opovlTb(0 to AST_OP_SELFOPS-1) as FBSYMBOL_ ptr
 	vtable			as FBSYMBOL_ ptr			'' virtual-functions table struct
 	rtti			as FBSYMBOL_ ptr			'' Run-Time Type Info struct
 end type
@@ -1052,9 +1044,10 @@ declare function symbAddTempVar _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr = NULL, _
-		byval doalloc as integer = FALSE, _
 		byval checkstatic as integer = TRUE _
 	) as FBSYMBOL ptr
+
+declare function symbAddAndAllocateTempVar( byval dtype as integer ) as FBSYMBOL ptr
 
 declare function symbAddArrayDesc _
 	( _
@@ -1073,12 +1066,14 @@ declare function symbAddConst _
 
 declare function symbStructBegin _
 	( _
+		byval symtb as FBSYMBOLTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval baseStruct as FBSYMBOL ptr = NULL _
+		byval base_ as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
 declare function symbAddField _
@@ -1132,32 +1127,18 @@ declare function symbAddProcParam _
 		byval optexpr as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-declare function symbAddProcResultParam _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbAddPrototype _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval symbol as const zstring ptr, _
-		byval aliasname as const zstring ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
-		byval mode as integer, _
-		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
-	) as FBSYMBOL ptr
+declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbAddProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
+		byval id as const zstring ptr, _
+		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval attrib as integer, _
-		byval mode as integer _
+		byval mode as integer, _
+		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
 declare function symbAddOperator _
@@ -1367,18 +1348,24 @@ declare sub symbDelFromChainList _
 		byval s as FBSYMBOL ptr _
 	)
 
-declare function symbNewArrayDim _
+declare sub symbAddArrayDim _
 	( _
 		byval s as FBSYMBOL ptr, _
 		byval lower as integer, _
 		byval upper as integer _
-	) as FBVARDIM ptr
+	)
 
 declare function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval unpadlen as integer = FALSE _
+	) as integer
+
+declare function symbCalcDerefLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr  _
 	) as integer
 
 declare function symbAllocFloatConst _
@@ -1432,6 +1419,15 @@ declare function symbCalcArrayDiff _
 		byval lgt as integer _
 	) as integer
 
+declare function symbCheckArraySize _
+	( _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval lgt as integer, _
+		byval is_on_stack as integer, _
+		byval allow_ellipsis as integer _
+	) as integer
+
 declare function symbCheckLabels _
 	( _
 		byval symtbhead as FBSYMBOL ptr _
@@ -1461,6 +1457,10 @@ declare function symbIsProcOverloadOf _
 		byval proc as FBSYMBOL ptr, _
 		byval parent as FBSYMBOL ptr _
 	) as integer
+
+declare function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
+declare function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
+declare function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbIsArray _
 	( _
@@ -1499,6 +1499,24 @@ declare function typeToUnsigned _
 	) as integer
 
 declare function typeRemap _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasDefCtor _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+declare function typeHasDtor _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -1558,6 +1576,10 @@ declare function symbCanDuplicate _
 		byval head_sym as FBSYMBOL ptr, _
 		byval s as FBSYMBOL ptr _
 	) as integer
+
+declare function symbUniqueId( ) as zstring ptr
+declare function symbUniqueLabel( ) as zstring ptr
+declare function symbMakeProfileLabelName( ) as zstring ptr
 
 declare function symbGetMangledName _
 	( _
@@ -1624,6 +1646,17 @@ declare sub symbSetDefType _
 		byval typ as integer _
 	)
 
+declare function symbCompIsTrivial( byval sym as FBSYMBOL ptr ) as integer
+declare sub symbSetCompCtorHead( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbCheckCompCtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare sub symbSetCompDtor( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare function symbGetCompCtorHead( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDefCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompCopyCtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbGetCompDtor( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare sub symbCheckCompClone( byval sym as FBSYMBOL ptr, byval proc as FBSYMBOL ptr )
+declare function symbGetCompCloneProc( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+
 declare function symbGetCompOpOvlHead _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -1634,65 +1667,6 @@ declare sub symbSetCompOpOvlHead _
 	( _
 		byval syn as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
-	)
-
-declare sub symbCheckCompClone _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare function symbGetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare sub symbSetCompCtorHead _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare sub symbCheckCompCtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare function symbGetCompDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbGetCompCopyCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbGetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare sub symbSetCompDtor _
-	( _
-		byval sym as FBSYMBOL ptr, _
-		byval proc as FBSYMBOL ptr _
-	)
-
-declare function symbGetCompCloneProc _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare sub symbCompAddDefCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)
-
-declare sub symbCompAddDefDtor _
-	( _
-		byval sym as FBSYMBOL ptr _
 	)
 
 declare sub symbCompAddDefMembers _
@@ -1713,15 +1687,8 @@ declare function symbCloneConst _
 		byval sym as FBSYMBOL ptr _
 	) as FBSYMBOL ptr
 
-declare function symbCloneVar _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
-declare function symbCloneStruct _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+declare function symbCloneVar( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function symbCloneLabel _
 	( _
@@ -1779,10 +1746,7 @@ declare function symbGetDefaultCallConv _
 		byval subtype as FBSYMBOL ptr _
 	) as integer
 
-declare function symbVarCheckAccess _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
+declare function symbVarCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
 declare function symbCheckConstAssign _
 	( _
@@ -1793,7 +1757,6 @@ declare function symbCheckConstAssign _
 		byval mode as FB_PARAMMODE = 0, _
 		byref misses as integer = 0 _
 	) as integer
-
 
 declare function symbAllocOvlCallArg _
 	( _
@@ -1946,15 +1909,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsUnique(s) ((s->stats and FB_SYMBSTATS_CANTDUP) <> 0)
 #define symbSetIsUnique(s) s->stats or= FB_SYMBSTATS_CANTDUP
 
-#define symbGetHasCtor(s) ((s->stats and FB_SYMBSTATS_HASCTOR) <> 0)
-#define symbSetHasCtor(s) s->stats or= FB_SYMBSTATS_HASCTOR
-
-#define symbGetHasCopyCtor(s) ((s->stats and FB_SYMBSTATS_HASCOPYCTOR) <> 0)
-#define symbSetHasCopyCtor(s) s->stats or= FB_SYMBSTATS_HASCOPYCTOR
-
-#define symbGetHasDtor(s) ((s->stats and FB_SYMBSTATS_HASDTOR) <> 0)
-#define symbSetHasDtor(s) s->stats or= FB_SYMBSTATS_HASDTOR
-
 #define symbGetHasRTTI(s) ((s->stats and FB_SYMBSTATS_HASRTTI) <> 0)
 #define symbSetHasRTTI(s) s->stats or= FB_SYMBSTATS_HASRTTI
 
@@ -2040,8 +1994,6 @@ declare function symbGetUDTBaseLevel _
 #define symbIsConst(s) (s->class = FB_SYMBCLASS_CONST)
 
 #define symbIsProc(s) (s->class = FB_SYMBCLASS_PROC)
-
-#define symbIsProcArg(s) (s->class = FB_SYMBCLASS_PARAM)
 
 #define symbIsDefine(s) (s->class = FB_SYMBCLASS_DEFINE)
 
@@ -2384,15 +2336,13 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsLiteralConst(s) ((s->attrib and FB_SYMBATTRIB_LITCONST) <> 0)
 
+#define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
+
 #define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
 
 #define symbIsVirtual(s) ((s->attrib and FB_SYMBATTRIB_VIRTUAL) <> 0)
 
 #define symbGetProcStaticLocals(s) ((s->attrib and FB_SYMBATTRIB_STATICLOCALS) <> 0)
-
-#define symbIsTrivial(s) ((s->stats and (FB_SYMBSTATS_HASCOPYCTOR or _
-										 FB_SYMBSTATS_HASDTOR or _
-										 FB_SYMBSTATS_HASRTTI)) = 0)
 
 #define symbIsSuffixed(s) ((s->attrib and FB_SYMBATTRIB_SUFFIXED) <> 0)
 

@@ -142,6 +142,7 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"int"     ), _ '' AST_OP_FLOOR
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"fix"     ), _ '' AST_OP_FIX
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"frac"    ), _ '' AST_OP_FRAC
+	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"convd2s" ), _ '' AST_OP_CONVFD2FS
 	(AST_NODECLASS_UOP   , AST_OPFLAGS_NONE, @"swzrep"  ), _ '' AST_OP_SWZ_REPEAT
 	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"*"       ), _ '' AST_OP_DEREF
 	(AST_NODECLASS_ADDROF, AST_OPFLAGS_NONE, @"->"      ), _ '' AST_OP_FLDDEREF
@@ -203,9 +204,13 @@ sub astInit( )
     astProcListInit( )
     astDataStmtInit( )
     astMiscInit( )
+
+	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
 
 sub astEnd( )
+	listEnd( @ast.asmtoklist )
+
 	astMiscEnd( )
 	astProcListEnd( )
     astCallEnd( )
@@ -279,7 +284,7 @@ function astRemSideFx _
 	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		'' tmp = @b
 		t = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
@@ -301,7 +306,7 @@ function astRemSideFx _
 
 	'' simple type..
 	case else
-		tmp = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( dtype, subtype, FALSE )
 
 		'' tmp = n
 		t = astNewASSIGN( astNewVAR( tmp, 0, dtype, subtype ), n )

@@ -4,7 +4,7 @@
 ' (de) http://www.freebasic-portal.de/code-beispiele/grafik-und-fonts/zeichnen-mit-goocanval-ein-graph-226.html
 
 '#DEFINE __USE_GTK3__
-#INCLUDE ONCE "gtk/goocanvas.bi"
+#INCLUDE ONCE "goocanvas.bi"
 
 ' Some globals
 CONST Xmax = 1000, Ymax = 1000, Smin = 0.1

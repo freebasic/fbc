@@ -24,6 +24,7 @@ Sub CompressFile( ByRef infile As String, ByRef outfile As String )
     Dim As UByte Ptr inBuffer, outBuffer
     Dim As UInteger CSize, FSize
     Dim As Integer FF
+    Dim As qlz_state_compress ptr state_compress = Allocate(qlz_get_setting(1))
 
     FF = FreeFile()
     If Open(infile For Binary Access Read As #FF) <> 0 Then
@@ -33,12 +34,12 @@ Sub CompressFile( ByRef infile As String, ByRef outfile As String )
 
     FSize = LOF(FF)
     inBuffer = Allocate(FSize)
-    outBuffer = Allocate(QLZ_BUFFER_SIZE(FSize))
-
     Get #FF, , *inBuffer, FSize
     Close #FF
 
-    CSize = qlz_compress(inBuffer, outBuffer, FSize)
+    outBuffer = Allocate(FSize + 400)
+
+    CSize = qlz_compress(inBuffer, outBuffer, FSize, state_compress)
     If CSize = 0 Then
         Print "Compression failed!"
         End 3
@@ -55,6 +56,7 @@ Sub CompressFile( ByRef infile As String, ByRef outfile As String )
 
     Deallocate(inBuffer)
     Deallocate(outBuffer)
+    DeAllocate(state_compress)
 
     Print "Uncompressed file: " & FSize & " bytes"
     Print "Compressed file: " & CSize & " bytes"
@@ -65,6 +67,7 @@ Sub DecompressFile( ByRef infile As String, ByRef outfile As String )
     Dim As UByte Ptr inBuffer, outBuffer
     Dim As UInteger CSize, FSize
     Dim As UByte FF
+    Dim state_decompress As qlz_state_decompress Ptr = Allocate(qlz_get_setting(2))
 
     FF = FreeFile()
     If Open(infile For Binary Access Read As #FF) <> 0 Then
@@ -75,12 +78,11 @@ Sub DecompressFile( ByRef infile As String, ByRef outfile As String )
     FSize = LOF(FF)
     inBuffer = Allocate(FSize)
     Get #FF, , *inBuffer, FSize
-
     Close #FF
 
     outBuffer = Allocate(qlz_size_decompressed(inBuffer))
 
-    CSize = qlz_decompress(inBuffer, outBuffer)
+    CSize = qlz_decompress(inBuffer, outBuffer, state_decompress)
     If CSize = 0 Then
         Print "Decompression failed, or uncompressed file is empty!"
         End 6
@@ -97,6 +99,7 @@ Sub DecompressFile( ByRef infile As String, ByRef outfile As String )
 
     Deallocate(inBuffer)
     Deallocate(outBuffer)
+    DeAllocate(state_decompress)
 
     Print "Compressed file: " & FSize & " bytes"
     Print "Uncompressed file: " & CSize & " bytes"

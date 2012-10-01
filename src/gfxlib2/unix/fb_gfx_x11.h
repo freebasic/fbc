@@ -28,7 +28,6 @@ typedef struct X11DRIVER
 	XRRScreenConfiguration *config;
 	int w, h, depth, visual_depth, flags;
 	int refresh_rate, display_offset;
-	unsigned char keymap[256];
 	int (*init)(void);
 	void (*exit)(void);
 	void (*update)(void);

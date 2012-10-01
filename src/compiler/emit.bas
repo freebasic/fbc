@@ -521,24 +521,15 @@ private function hNewSYMOP _
 
 end function
 
-'':::::
-private function hNewLIT _
-	( _
-		byval text as zstring ptr, _
-		byval isasm as integer _
-	) as EMIT_NODE ptr static
-
-	dim as EMIT_NODE ptr n
+private sub hNewLIT( byval text as zstring ptr, byval isasm as integer )
+	dim as EMIT_NODE ptr n = any
 
 	n = hNewNode( EMIT_NODECLASS_LIT, isasm )
 
 	n->lit.isasm = isasm
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text = *text
-
-	function = n
-
-end function
+end sub
 
 '':::::
 private function hNewJMPTB _
@@ -1297,6 +1288,10 @@ function emitFRAC _
 
 end function
 
+function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
+	function = hNewUOP( EMIT_OP_CONVFD2FS, dvreg )
+end function
+
 '':::::
 function emitSIN _
 	( _
@@ -1498,41 +1493,18 @@ end function
 '' MISC
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-function emitCOMMENT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
+sub emitCOMMENT( byval text as zstring ptr )
+	hNewLIT( "##" + *text, FALSE )
+end sub
 
-	function = hNewLIT( "##" + *text, FALSE )
-
-end function
-
-'':::::
-function emitASM _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-    dim as integer c
-
-    function = hNewLIT( text, TRUE )
+sub emitASM( byval text as zstring ptr )
+	hNewLIT( text, TRUE )
 
 	'' reset reg usage
-	for c = 0 to EMIT_REGCLASSES-1
+	for c as integer = 0 to EMIT_REGCLASSES-1
 		EMIT_REGTRASHALL( c )						'' can't check the reg usage
 	next
-
-end function
-
-'':::::
-function emitLIT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr static
-
-	function = hNewLIT( text, FALSE )
-
-end function
+end sub
 
 '':::::
 function emitALIGN _

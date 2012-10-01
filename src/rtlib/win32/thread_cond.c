@@ -112,6 +112,8 @@ FBCALL FBCOND *fb_CondCreate( void )
 
 FBCALL void fb_CondDestroy( FBCOND *cond )
 {
+	if( !cond )
+		return;
 	DeleteCriticalSection( &cond->waiters_count_lock );
 	__condops.destroy( cond );
 	free( cond );
@@ -120,6 +122,9 @@ FBCALL void fb_CondDestroy( FBCOND *cond )
 FBCALL void fb_CondSignal( FBCOND *cond )
 {
 	int has_waiters;
+
+	if( !cond )
+		return;
 
 	EnterCriticalSection( &cond->waiters_count_lock );
 	has_waiters = cond->waiters_count > 0;
@@ -132,12 +137,16 @@ FBCALL void fb_CondSignal( FBCOND *cond )
 
 FBCALL void fb_CondBroadcast( FBCOND *cond )
 {
-	__condops.broadcast( cond );
+	if( cond ) {
+		__condops.broadcast( cond );
+	}
 }
 
 FBCALL void fb_CondWait( FBCOND *cond, FBMUTEX *mutex )
 {
-	__condops.wait( cond, mutex );
+	if( cond && mutex ) {
+		__condops.wait( cond, mutex );
+	}
 }
 
 /* SignalObjectAndWait version */

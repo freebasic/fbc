@@ -223,7 +223,7 @@ private sub hCheckConstAndPointerOps _
 		byval rdtype as FB_DATATYPE _
 	)
 
-	'' check constant
+	'' lhs marked CONST? disallow the assignment then.
 	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 		return
@@ -335,9 +335,11 @@ function astCheckASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
+				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
+					r = astNewCONV( ldtype, NULL, r )
+					if( r = NULL ) then
+						exit function
+					end if
 				end if
 			end if
 
@@ -345,20 +347,25 @@ function astCheckASSIGN _
 				exit function
 			end if
 		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
-			end if
-		end if
 	end if
 
 	function = TRUE
+end function
 
+function astCheckASSIGNToType _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr l = any
+
+	l = astNewVAR( NULL, 0, ldtype, lsubtype )
+
+	function = astCheckASSIGN( l, r )
+
+	astDelTree( l )
 end function
 
 '':::::
@@ -415,9 +422,7 @@ function astNewASSIGN _
 
 		if( check_letop ) then
 			proc = symbFindSelfBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
-
 			if( proc <> NULL ) then
-
 				dim as ASTNODE ptr result = any
 
 				'' if this is a variable initialization, we have to
@@ -437,10 +442,10 @@ function astNewASSIGN _
 
 				'' build a proc call
 				return astNewLINK( result, astBuildCall( proc, l, r ) )
-			else
-				if( err_num <> FB_ERRMSG_OK ) then
-					return NULL
-				end if
+			end if
+
+			if( err_num <> FB_ERRMSG_OK ) then
+				return NULL
 			end if
 		end if
 	end if
@@ -609,13 +614,15 @@ function astNewASSIGN _
 		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
-				if( r = NULL ) then
-					exit function
+				if( astCheckConst( ldtype, r, TRUE ) = FALSE ) then
+					r = astNewCONV( ldtype, NULL, r )
+					if( r = NULL ) then
+						exit function
+					end if
 				end if
 			end if
 
-			'' let the fpu do the convertion if any operand
+			'' let the fpu do the conversion if any operand
 			'' is a float (unless a special case must be handled)
 			dim as integer doconv = TRUE
 			if( irGetOption( IR_OPT_HIGHLEVEL ) = FALSE ) then
@@ -628,16 +635,6 @@ function astNewASSIGN _
 
 			if( doconv ) then
 				r = astNewCONV( ldfull, l->subtype, r )
-				if( r = NULL ) then
-					exit function
-				end if
-			end if
-		end if
-	else
-		'' check for overflows
-		if( typeGetClass( rdtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( r ) ) then
-				r = astCheckConst( ldtype, r )
 				if( r = NULL ) then
 					exit function
 				end if
@@ -663,6 +660,10 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	r = n->r
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
+	end if
+
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, l->dtype, FALSE )
 	end if
 
 	vs = astLoad( r )

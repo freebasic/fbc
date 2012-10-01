@@ -43,7 +43,7 @@ FBCALL void fb_CondBroadcast( FBCOND *cond )
 
 FBCALL void fb_CondWait( FBCOND *cond, FBMUTEX *mutex )
 {
-	if( cond ) {
+	if( cond && mutex ) {
 		pthread_cond_wait( &cond->id, &mutex->id );
 	}
 }

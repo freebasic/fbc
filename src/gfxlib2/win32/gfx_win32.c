@@ -400,10 +400,12 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 				else
 					e.type = EVENT_KEY_RELEASE;
 				e.scancode = fb_hVirtualToScancode(wVkCode);
+
+				/* Don't return extended keycodes in the ascii field */
 				e.ascii = ((key < 0) || (key > 0xFF)) ? 0 : key;
 
 				/* We don't want to enter the menu ... */
-				if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
+				if( wVkCode == VK_F10 || wVkCode == VK_MENU || key == KEY_QUIT )
 					return FALSE;
 			}
 			break;
@@ -426,7 +428,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_CLOSE:
-			fb_hPostKey(0x6BFF); /* ALT + F4 */
+			fb_hPostKey( KEY_QUIT ); /* ALT + F4 */
 			e.type = EVENT_WINDOW_CLOSE;
 			fb_hPostEvent(&e);
 			return FALSE;

@@ -568,7 +568,7 @@ private function hGetId _
 			if( (parent = NULL) or (parser.scope > FB_MAINSCOPE) ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			else
 				*id = *lexGetText( )
@@ -585,7 +585,7 @@ private function hGetId _
 		if( env.clopt.lang <> FB_LANG_QB ) then
 			errReport( FB_ERRMSG_DUPDEFINITION )
 			'' error recovery: fake an id
-			*id = *hMakeTmpStr( )
+			*id = *symbUniqueLabel( )
 			suffix = FB_DATATYPE_INVALID
 
 		'' QB mode..
@@ -597,7 +597,7 @@ private function hGetId _
 			if( suffix = FB_DATATYPE_INVALID ) then
 				errReport( FB_ERRMSG_DUPDEFINITION )
 				'' error recovery: fake an id
-				*id = *hMakeTmpStr( )
+				*id = *symbUniqueLabel( )
 				suffix = FB_DATATYPE_INVALID
 			end if
 		end if
@@ -605,7 +605,7 @@ private function hGetId _
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		*id = *hMakeTmpStr( )
+		*id = *symbUniqueLabel( )
 		suffix = FB_DATATYPE_INVALID
 	end select
 
@@ -763,10 +763,8 @@ private function hVarInitDefault _
 		end if
 	else
 		'' Complain about lack of default ctor if there are others
-		if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-			if( symbGetHasCtor( symbGetSubtype( sym ) ) ) then
-				errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
-			end if
+		if( symbHasCtor( sym ) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
 	end if
 
@@ -867,17 +865,8 @@ private function hVarInit _
 
 	'' static or shared?
 	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-
-    	dim as integer has_ctor = FALSE
-
-    	select case symbGetType( sym )
-    	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    		has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    	end select
-
 		'' only if it's not an object, static or global instances are allowed
-		if( has_ctor = FALSE ) then
-
+		if( symbHasCtor( sym ) = FALSE ) then
 			if( astTypeIniIsConst( initree ) = FALSE ) then
 				errReport( FB_ERRMSG_EXPECTEDCONST )
 				'' error recovery: discard the tree
@@ -885,10 +874,8 @@ private function hVarInit _
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		'' if it is an object, don't allow local references
 		else
-
 			if( astTypeIniCheckScope( initree ) = TRUE ) then
 				errReport( FB_ERRMSG_INVALIDINITIALIZER )
 				'' error recovery: discard the tree
@@ -896,9 +883,7 @@ private function hVarInit _
 				initree = NULL
 				symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
 			end if
-
 		end if
-
 	end if
 
 	function = initree
@@ -943,10 +928,8 @@ private function hCallStaticCtor _
 	end if
 
 	'' create a static flag
-	flag = symbAddVarEx( hMakeTmpStr(), NULL, _
-					  	 FB_DATATYPE_INTEGER, NULL, 0, _
-					  	 0, dTB(), _
-					     FB_SYMBATTRIB_STATIC )
+	flag = symbAddVarEx( symbUniqueLabel( ), NULL, FB_DATATYPE_INTEGER, NULL, 0, _
+	                     0, dTB(), FB_SYMBATTRIB_STATIC )
 
 	tree = astNewLINK( tree, _
 					   astNewDECL( flag, NULL ) )
@@ -1065,25 +1048,19 @@ private function hFlushInitializer _
 						   astTypeIniFlush( initree, sym, AST_INIOPT_ISINI ) )
 	end if
 
-    dim as integer has_ctor = FALSE
-    select case symbGetType( sym )
-    case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	has_ctor = symbGetHasCtor( symbGetSubtype( sym ) )
-    end select
-
 	'' not an object?
-    if( has_ctor = FALSE ) then
-    	'' let emit flush it..
-    	symbSetTypeIniTree( sym, initree )
+	if( symbHasCtor( sym ) = FALSE ) then
+		'' let emit flush it..
+		symbSetTypeIniTree( sym, initree )
 
-    	'' no dtor?
-    	if( has_dtor = FALSE ) then
-    		return hFlushDecl( var_decl )
-    	end if
+		'' no dtor?
+		if( has_dtor = FALSE ) then
+			return hFlushDecl( var_decl )
+		end if
 
-    	'' must be added to the dtor list..
-    	initree = NULL
-    end if
+		'' must be added to the dtor list..
+		initree = NULL
+	end if
 
     '' don't let emit handle this global/static symbol
     symbGetStats( sym ) and= not FB_SYMBSTATS_INITIALIZED
@@ -1337,24 +1314,25 @@ function hVarDeclEx _
 				end if
 			end if
 
-			'' "array too big for stack" check for static local arrays
-			if( (attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
-				if( symbCalcArrayElements( dimensions, dTB() ) * lgt > env.clopt.stacksize ) then
-					if( is_dynamic = FALSE ) then
-						errReportWarn( FB_WARNINGMSG_HUGEARRAYONSTACK )
-					end if
+			'' "array too big" check
+			if( is_dynamic = FALSE ) then
+				if( symbCheckArraySize( dimensions, dTB(), lgt, _
+				                        ((attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0), _
+				                        has_ellipsis ) = FALSE ) then
+					errReport( FB_ERRMSG_ARRAYTOOBIG )
+					'' error recovery: use small array
+					dimensions = 1
+					dTB(0).lower = 0
+					dTB(0).upper = 0
 				end if
 			end if
 		end if
 
 		'' don't allow COMMON object instances
 		if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
-			select case as const typeGet( dtype )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				if( symbGetHasCtor( subtype ) or symbGetHasDtor( subtype ) ) then
-					errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
-				end if
-			end select
+			if( typeHasCtor( dtype, subtype ) or typeHasDtor( dtype, subtype ) ) then
+				errReport( FB_ERRMSG_COMMONCANTBEOBJINST, TRUE )
+			end if
 		end if
 
     	if( is_dynamic ) then
@@ -1373,12 +1351,8 @@ function hVarDeclEx _
 
 		if( sym <> NULL ) then
 			is_decl = symbGetIsDeclared( sym )
-			if( symbGetType( sym ) = FB_DATATYPE_STRUCT ) then
-				'' has a default ctor?
-				has_defctor = symbGetCompDefCtor( symbGetSubtype( sym ) ) <> NULL
-				'' dtor?
-				has_dtor = symbGetCompDtor( symbGetSubtype( sym ) ) <> NULL
-			end if
+			has_defctor = symbHasDefCtor( sym )
+			has_dtor = symbHasDtor( sym )
 			if( has_ellipsis ) then
 				sym->var_.array.has_ellipsis = TRUE
 			end if
@@ -1613,6 +1587,38 @@ function hMatchEllipsis _
 
 end function
 
+private function hIntConstExprValue( byval defaultvalue as integer ) as integer
+	dim as ASTNODE ptr expr = any
+
+	expr = cExpression( )
+
+	if( expr ) then
+		if( astIsCONST( expr ) ) then
+			'' Array bounds are integers, show "overflow in constant conversion" warnings
+			'' when given bigger constants (uinteger, longint, ...)
+			if( astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE ) = FALSE ) then
+				expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+			end if
+		else
+			astDelTree( expr )
+			expr = NULL
+		end if
+	end if
+
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		'' error recovery: fake an expr
+		if( lexGetToken( ) <> FB_TK_TO ) then
+			hSkipUntil( CHAR_COMMA )
+		end if
+		expr = astNewCONSTi( defaultvalue )
+	end if
+
+	function = astGetValueAsInt( expr )
+
+	astDelTree( expr )
+end function
+
 '':::::
 ''ArrayDecl       =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1627,7 +1633,6 @@ function cStaticArrayDecl _
 	) as integer
 
     dim as integer i = any
-    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -1646,6 +1651,7 @@ function cStaticArrayDecl _
     do
 		dim as integer dimension_has_ellipsis = FALSE
 
+		'' First value - lower bound or upper bound
 		if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 			dimension_has_ellipsis = TRUE
 			'' This is for the case of '( ... )' with the lower bound being
@@ -1653,65 +1659,32 @@ function cStaticArrayDecl _
 			'' to dTB(i).upper below.
 			dTB(i).lower = FB_ARRAYDIM_UNKNOWN
 		else
-			'' Expression
-			expr = cExpression( )
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				if( astIsCONST( expr ) = FALSE ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			dTB(i).lower = astGetValueAsInt( expr )
-			astDelNode( expr )
+			'' Expression (integer constant)
+			dTB(i).lower = hIntConstExprValue( env.opt.base )
 		end if
 
-        '' TO
-    	if( lexGetToken( ) = FB_TK_TO ) then
-    		lexSkipToken( )
+		'' TO
+		if( lexGetToken( ) = FB_TK_TO ) then
+			lexSkipToken( )
 
 			if( dimension_has_ellipsis ) then
 				errReport( FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND )
 				exit function
 			end if
 
+			'' Second value - upper bound
 			if( iif( allow_ellipsis, hMatchEllipsis( ), FALSE ) ) then
 				dimension_has_ellipsis = TRUE
 				dTB(i).upper = FB_ARRAYDIM_UNKNOWN
 			else
-				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDCONST )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-				else
-					if( astIsCONST( expr ) = FALSE ) then
-						errReport( FB_ERRMSG_EXPECTEDCONST )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				dTB(i).upper = astGetValueAsInt( expr )
-				astDelNode( expr )
+				'' Expression (integer constant)
+				dTB(i).upper = hIntConstExprValue( dTB(i).lower )
 			end if
-
-    	else
-    	    dTB(i).upper = dTB(i).lower
-    		dTB(i).lower = env.opt.base
-    	end if
+		else
+			'' First value was upper bound, not lower, use default for lower
+			dTB(i).upper = dTB(i).lower
+			dTB(i).lower = env.opt.base
+		end if
 
 		'' Don't check when we have ellipsis, as upper will be set to FB_ARRAYDIM_UNKNOWN
 		if( dimension_has_ellipsis = FALSE ) then
@@ -1753,6 +1726,46 @@ function cStaticArrayDecl _
 
 end function
 
+private function hIntExpr( byval defaultexpr as ASTNODE ptr ) as ASTNODE ptr
+	dim as ASTNODE ptr expr = any, intexpr = any
+
+	expr = cExpression( )
+
+	if( expr ) then
+		if( astIsCONST( expr ) ) then
+			'' Array bounds are integers, show "overflow in constant conversion" warnings
+			'' when given bigger constants (uinteger, longint, ...)
+			astCheckConst( FB_DATATYPE_INTEGER, expr, TRUE )
+		end if
+
+		'' expression must be integral (no strings, etc.)
+		intexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		if( intexpr ) then
+			expr = intexpr
+		else
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			astDelTree( expr )
+			expr = NULL
+		end if
+	else
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: fake an expr
+		if( lexGetToken( ) <> FB_TK_TO ) then
+			hSkipUntil( CHAR_COMMA )
+		end if
+	end if
+
+	if( expr = NULL ) then
+		if( defaultexpr ) then
+			expr = astCloneTree( defaultexpr )
+		else
+			expr = astNewCONSTi( env.opt.base )
+		end if
+	end if
+
+	function = expr
+end function
+
 '':::::
 ''ArrayDecl    	  =   '(' Expression (TO Expression)?
 ''                             (',' Expression (TO Expression)?)*
@@ -1765,7 +1778,6 @@ function cArrayDecl _
 	) as integer
 
 	dim as integer i = any
-	dim as ASTNODE ptr expr = any, i_expr = any
 
 	function = FALSE
 
@@ -1780,39 +1792,7 @@ function cArrayDecl _
 			exprTB(i,0) = NULL
 		else
 			'' Expression
-			expr = cExpression( )
-
-			if( expr = NULL ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				'' error recovery: fake an expr
-				if( lexGetToken( ) <> FB_TK_TO ) then
-					hSkipUntil( CHAR_COMMA )
-				end if
-				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-			else
-				'' check if non-numeric
-				select case as const astGetDataType( expr )
-				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end select
-
-				'' make sure expr is integral
-				i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-				if( i_expr <> NULL ) then
-					expr = i_expr
-				else
-					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					'' error recovery: fake an expr
-					astDelTree( expr )
-					expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-				end if
-			end if
-
-			exprTB(i,0) = expr
+			exprTB(i,0) = hIntExpr( NULL )
 		end if
 
 		'' TO
@@ -1829,35 +1809,7 @@ function cArrayDecl _
 				exprTB(i,1) = NULL
 			else
 				'' Expression
-				expr = cExpression( )
-				if( expr = NULL ) then
-					errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-					'' error recovery: skip to next ',' and fake an expr
-					hSkipUntil( CHAR_COMMA )
-					expr = astCloneTree( exprTB(i,0) )
-				else
-					'' check if non-numeric
-					select case as const astGetDataType( expr )
-					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						expr = astCloneTree( exprTB(i,0) )
-					end select
-
-					'' make sure expr is integral
-					i_expr = astNewCONV(FB_DATATYPE_INTEGER, expr->subtype, expr)
-
-					if( i_expr <> NULL ) then
-						expr = i_expr
-					else
-						errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-						'' error recovery: fake an expr
-						astDelTree( expr )
-						expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
-					end if
-				end if
-
-				exprTB(i,1) = expr
+				exprTB(i,1) = hIntExpr( exprTB(i,0) )
 			end if
 		else
 			exprTB(i,1) = exprTB(i,0)
@@ -1991,7 +1943,10 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
 
 		'' check for special types
-		dim as integer has_ctor = FALSE, has_dtor = FALSE
+		dim as integer has_ctor = any, has_dtor = any
+
+		has_ctor = typeHasCtor( dtype, subtype )
+		has_dtor = typeHasDtor( dtype, subtype )
 
 		select case as const typeGetDtAndPtrOnly( dtype )
 		'' wstrings not allowed...
@@ -2006,12 +1961,6 @@ sub cAutoVarDecl(byval attrib as FB_SYMBATTRIB)
 		'' zstring... convert to string
 		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 			dtype = FB_DATATYPE_STRING
-
-		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			'' any ctor?
-			has_ctor = symbGetHasCtor( subtype )
-			'' dtor?
-			has_dtor = symbGetCompDtor( subtype ) <> NULL
 
 		'' if it's a function pointer and not a fun ptr prototype, create one
 		case typeAddrOf( FB_DATATYPE_FUNCTION )

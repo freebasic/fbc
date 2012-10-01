@@ -1166,18 +1166,18 @@
 	 			) _
 	 		} _
 		), _
-		/' rename cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
+		/' fb_rename alias "rename" cdecl ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer '/ _
 		( _
-			@FB_RTL_FILERENAME, NULL, _
+			@FB_RTL_FILERENAME, @"rename", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
 	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
-					FB_DATATYPE_STRING, FB_PARAMMODE_BYVAL, FALSE _
+					typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _
@@ -2370,12 +2370,12 @@ function rtlFileRename _
 
     proc = astNewCALL( PROCLOOKUP( FILERENAME ) )
 
-    '' byval filename_old as string
+	'' byval filename_old as zstring ptr
     if( astNewARG( proc, filename_old ) = NULL ) then
  		exit function
  	end if
 
-    '' byval filename_new as integer
+	'' byval filename_new as zstring ptr
     if( astNewARG( proc, filename_new ) = NULL ) then
  		exit function
  	end if

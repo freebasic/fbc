@@ -567,23 +567,6 @@ end enum
 #include once "symb.bi"
 
 ''
-enum FB_ASMTOK_TYPE
-	FB_ASMTOK_SYMB
-	FB_ASMTOK_TEXT
-end enum
-
-type FB_ASMTOK
-	type			as FB_ASMTOK_TYPE
-
-	union
-		sym			as FBSYMBOL ptr
-		text		as zstring ptr
-	end union
-
-	next			as FB_ASMTOK ptr
-end type
-
-''
 enum FBFILE_FORMAT
 	FBFILE_FORMAT_ASCII
 	FBFILE_FORMAT_UTF8
@@ -604,6 +587,7 @@ end type
 enum FB_TARGETOPT
 	FB_TARGETOPT_UNIX       = &h00000001  '' Unix?
 	FB_TARGETOPT_UNDERSCORE = &h00000002  '' Underscore prefix for symbols?
+	FB_TARGETOPT_EXPORT     = &h00000004  '' Support for exporting symbols from DLLs?
 end enum
 
 type FBTARGET
@@ -693,6 +677,7 @@ end type
 
 #include once "hlp.bi"
 
+declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 

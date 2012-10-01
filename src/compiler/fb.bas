@@ -104,8 +104,8 @@ declare sub	parserSetCtx ( )
 dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 { _
 	_ '' id       size_t             wchar               fbcall               stdcall
-	( @"win32"  , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNDERSCORE ), _
-	( @"cygwin" , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNIX or FB_TARGETOPT_UNDERSCORE ), _
+	( @"win32"  , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNDERSCORE or FB_TARGETOPT_EXPORT ), _
+	( @"cygwin" , FB_DATATYPE_UINT , FB_DATATYPE_USHORT, FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNIX or FB_TARGETOPT_UNDERSCORE or FB_TARGETOPT_EXPORT ), _
 	( @"linux"  , FB_DATATYPE_UINT , FB_DATATYPE_UINT  , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNIX ), _
 	( @"dos"    , FB_DATATYPE_ULONG, FB_DATATYPE_UBYTE , FB_FUNCMODE_CDECL  , FB_FUNCMODE_STDCALL_MS , FB_TARGETOPT_UNDERSCORE ), _
 	( @"xbox"   , FB_DATATYPE_ULONG, FB_DATATYPE_UINT  , FB_FUNCMODE_STDCALL, FB_FUNCMODE_STDCALL    , FB_TARGETOPT_UNDERSCORE ), _
@@ -239,7 +239,6 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	parserSetCtx( )
 	symbInit( ismain )
-	hlpInit( )
 	errInit( )
 	astInit( )
 	irInit( )
@@ -265,7 +264,6 @@ sub fbEnd()
 	irEnd( )
 	astEnd( )
 	errEnd( )
-	hlpEnd( )
 	symbEnd( )
 
 	erase infileTb
@@ -286,30 +284,37 @@ sub fbGlobalInit()
 	strlistInit(@env.preincludes, FB_INITINCFILES)
 	strlistInit(@env.includepaths, FB_INITINCFILES)
 
-	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
-	env.clopt.fputype		= FB_DEFAULT_FPUTYPE
-	env.clopt.fpmode		= FB_DEFAULT_FPMODE
-	env.clopt.vectorize		= FB_DEFAULT_VECTORIZELEVEL
-	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
-	env.clopt.target		= FB_DEFAULT_TARGET
-	env.clopt.lang			= FB_DEFAULT_LANG
-	env.clopt.forcelang		= FALSE
-	env.clopt.backend		= FB_DEFAULT_BACKEND
-	env.clopt.debug			= FALSE
-	env.clopt.errorcheck	= FALSE
-	env.clopt.resumeerr 	= FALSE
-	env.clopt.warninglevel 	= 0
-	env.clopt.export		= FALSE
-	env.clopt.showerror		= TRUE
-	env.clopt.multithreaded	= FALSE
-	env.clopt.profile       = FALSE
-	env.clopt.extraerrchk	= FALSE
-	env.clopt.msbitfields	= FALSE
-	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
-	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
-	env.clopt.extraopt      = FB_EXTRAOPT_NONE
-	env.clopt.optlevel		= 0
+	'' default settings
+	env.clopt.outtype       = FB_DEFAULT_OUTTYPE
 	env.clopt.pponly        = FALSE
+
+	env.clopt.backend       = FB_DEFAULT_BACKEND
+	env.clopt.target        = FB_DEFAULT_TARGET
+	env.clopt.cputype       = FB_DEFAULT_CPUTYPE
+	env.clopt.fputype       = FB_DEFAULT_FPUTYPE
+	env.clopt.fpmode        = FB_DEFAULT_FPMODE
+	env.clopt.vectorize     = FB_DEFAULT_VECTORIZELEVEL
+	env.clopt.optlevel      = 0
+	env.clopt.asmsyntax     = FB_ASMSYNTAX_ATT '' Note: does not affect -gen gas
+
+	env.clopt.lang          = FB_DEFAULT_LANG
+	env.clopt.forcelang     = FALSE
+
+	env.clopt.debug         = FALSE
+	env.clopt.errorcheck    = FALSE
+	env.clopt.extraerrchk   = FALSE
+	env.clopt.resumeerr     = FALSE
+	env.clopt.profile       = FALSE
+
+	env.clopt.warninglevel  = 0
+	env.clopt.showerror     = TRUE
+	env.clopt.maxerrors     = FB_DEFAULT_MAXERRORS
+	env.clopt.pdcheckopt    = FB_PDCHECK_NONE
+
+	env.clopt.gosubsetjmp   = FALSE
+	env.clopt.export        = FALSE
+	env.clopt.multithreaded = FALSE
+	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 
 	updateLangOptions( )
@@ -328,184 +333,136 @@ sub fbAddPreInclude(byref file as string)
 	strlistAppend(@env.preincludes, file)
 end sub
 
-'':::::
-sub fbSetOption _
-	( _
-		byval opt as integer, _
-		byval value as integer _
-	)
-
-	select case as const opt
-	case FB_COMPOPT_DEBUG
-		env.clopt.debug = value
-
-	case FB_COMPOPT_CPUTYPE
-		env.clopt.cputype = value
-
-	case FB_COMPOPT_FPUTYPE
-		env.clopt.fputype = value
-
-	case FB_COMPOPT_FPMODE
-		env.clopt.fpmode = value
-
-	case FB_COMPOPT_VECTORIZE
-		env.clopt.vectorize = value
-
-	case FB_COMPOPT_ERRORCHECK
-		env.clopt.errorcheck = value
-
+sub fbSetOption( byval opt as integer, byval value as integer )
+	select case as const( opt )
 	case FB_COMPOPT_OUTTYPE
 		env.clopt.outtype = value
+	case FB_COMPOPT_PPONLY
+		env.clopt.pponly = value
 
-	case FB_COMPOPT_RESUMEERROR
-		env.clopt.resumeerr = value
-
-	case FB_COMPOPT_WARNINGLEVEL
-		env.clopt.warninglevel = value
-
-	case FB_COMPOPT_EXPORT
-		env.clopt.export = value
-
-	case FB_COMPOPT_SHOWERROR
-		env.clopt.showerror = value
-
-	case FB_COMPOPT_MULTITHREADED
-		env.clopt.multithreaded = value
-
-	case FB_COMPOPT_PROFILE
-		env.clopt.profile = value
-
+	case FB_COMPOPT_BACKEND
+		env.clopt.backend = value
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
 		updateTargetOptions( )
-
-	case FB_COMPOPT_EXTRAERRCHECK
-		env.clopt.extraerrchk = value
-
-	case FB_COMPOPT_MSBITFIELDS
-		env.clopt.msbitfields = value
-
-	case FB_COMPOPT_MAXERRORS
-		env.clopt.maxerrors = value
+	case FB_COMPOPT_CPUTYPE
+		env.clopt.cputype = value
+	case FB_COMPOPT_FPUTYPE
+		env.clopt.fputype = value
+	case FB_COMPOPT_FPMODE
+		env.clopt.fpmode = value
+	case FB_COMPOPT_VECTORIZE
+		env.clopt.vectorize = value
+	case FB_COMPOPT_OPTIMIZELEVEL
+		env.clopt.optlevel = value
+	case FB_COMPOPT_ASMSYNTAX
+		env.clopt.asmsyntax = value
 
 	case FB_COMPOPT_LANG
 		env.clopt.lang = value
 		updateLangOptions( )
-
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
 
+	case FB_COMPOPT_DEBUG
+		env.clopt.debug = value
+	case FB_COMPOPT_ERRORCHECK
+		env.clopt.errorcheck = value
+	case FB_COMPOPT_RESUMEERROR
+		env.clopt.resumeerr = value
+	case FB_COMPOPT_EXTRAERRCHECK
+		env.clopt.extraerrchk = value
+	case FB_COMPOPT_PROFILE
+		env.clopt.profile = value
+
+	case FB_COMPOPT_WARNINGLEVEL
+		env.clopt.warninglevel = value
+	case FB_COMPOPT_SHOWERROR
+		env.clopt.showerror = value
+	case FB_COMPOPT_MAXERRORS
+		env.clopt.maxerrors = value
 	case FB_COMPOPT_PEDANTICCHK
 		env.clopt.pdcheckopt = value
 
-	case FB_COMPOPT_BACKEND
-		env.clopt.backend = value
-
-	case FB_COMPOPT_EXTRAOPT
-		env.clopt.extraopt = value
-
-	case FB_COMPOPT_OPTIMIZELEVEL
-		env.clopt.optlevel = value
-
-	case FB_COMPOPT_PPONLY
-		env.clopt.pponly = value
-
+	case FB_COMPOPT_GOSUBSETJMP
+		env.clopt.gosubsetjmp = value
+	case FB_COMPOPT_EXPORT
+		env.clopt.export = value
+	case FB_COMPOPT_MSBITFIELDS
+		env.clopt.msbitfields = value
+	case FB_COMPOPT_MULTITHREADED
+		env.clopt.multithreaded = value
 	case FB_COMPOPT_STACKSIZE
 		env.clopt.stacksize = value
 		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
 			env.clopt.stacksize = FB_MINSTACKSIZE
 		end if
-
 	end select
-
 end sub
 
-'':::::
-function fbGetOption _
-	( _
-		byval opt as integer _
-	) as integer
-
-	select case as const opt
-	case FB_COMPOPT_DEBUG
-		function = env.clopt.debug
-
-	case FB_COMPOPT_CPUTYPE
-		function = env.clopt.cputype
-
-	case FB_COMPOPT_FPUTYPE
-		function = env.clopt.fputype
-
-	case FB_COMPOPT_FPMODE
-		function = env.clopt.fpmode
-
-	case FB_COMPOPT_VECTORIZE
-		function = env.clopt.vectorize
-
-	case FB_COMPOPT_ERRORCHECK
-		function = env.clopt.errorcheck
-
+function fbGetOption( byval opt as integer ) as integer
+	select case as const( opt )
 	case FB_COMPOPT_OUTTYPE
 		function = env.clopt.outtype
-
-	case FB_COMPOPT_RESUMEERROR
-		function = env.clopt.resumeerr
-
-	case FB_COMPOPT_WARNINGLEVEL
-		function = env.clopt.warninglevel
-
-	case FB_COMPOPT_EXPORT
-		function = env.clopt.export
-
-	case FB_COMPOPT_SHOWERROR
-		function = env.clopt.showerror
-
-	case FB_COMPOPT_MULTITHREADED
-		function = env.clopt.multithreaded
-
-	case FB_COMPOPT_PROFILE
-		function = env.clopt.profile
-
-	case FB_COMPOPT_TARGET
-		function = env.clopt.target
-
-	case FB_COMPOPT_EXTRAERRCHECK
-		function = env.clopt.extraerrchk
-
-	case FB_COMPOPT_MSBITFIELDS
-		function = env.clopt.msbitfields
-
-	case FB_COMPOPT_MAXERRORS
-		function = env.clopt.maxerrors
-
-	case FB_COMPOPT_LANG
-		function = env.clopt.lang
-
-	case FB_COMPOPT_FORCELANG
-		function = env.clopt.forcelang
-
-	case FB_COMPOPT_PEDANTICCHK
-		function = env.clopt.pdcheckopt
-
-	case FB_COMPOPT_BACKEND
-		function = env.clopt.backend
-
-	case FB_COMPOPT_EXTRAOPT
-		function = env.clopt.extraopt
-
-	case FB_COMPOPT_OPTIMIZELEVEL
-		function = env.clopt.optlevel
-
 	case FB_COMPOPT_PPONLY
 		function = env.clopt.pponly
 
+	case FB_COMPOPT_BACKEND
+		function = env.clopt.backend
+	case FB_COMPOPT_TARGET
+		function = env.clopt.target
+	case FB_COMPOPT_CPUTYPE
+		function = env.clopt.cputype
+	case FB_COMPOPT_FPUTYPE
+		function = env.clopt.fputype
+	case FB_COMPOPT_FPMODE
+		function = env.clopt.fpmode
+	case FB_COMPOPT_VECTORIZE
+		function = env.clopt.vectorize
+	case FB_COMPOPT_OPTIMIZELEVEL
+		function = env.clopt.optlevel
+	case FB_COMPOPT_ASMSYNTAX
+		function = env.clopt.asmsyntax
+
+	case FB_COMPOPT_LANG
+		function = env.clopt.lang
+	case FB_COMPOPT_FORCELANG
+		function = env.clopt.forcelang
+
+	case FB_COMPOPT_DEBUG
+		function = env.clopt.debug
+	case FB_COMPOPT_ERRORCHECK
+		function = env.clopt.errorcheck
+	case FB_COMPOPT_RESUMEERROR
+		function = env.clopt.resumeerr
+	case FB_COMPOPT_EXTRAERRCHECK
+		function = env.clopt.extraerrchk
+	case FB_COMPOPT_PROFILE
+		function = env.clopt.profile
+
+	case FB_COMPOPT_WARNINGLEVEL
+		function = env.clopt.warninglevel
+	case FB_COMPOPT_SHOWERROR
+		function = env.clopt.showerror
+	case FB_COMPOPT_MAXERRORS
+		function = env.clopt.maxerrors
+	case FB_COMPOPT_PEDANTICCHK
+		function = env.clopt.pdcheckopt
+
+	case FB_COMPOPT_GOSUBSETJMP
+		function = env.clopt.gosubsetjmp
+	case FB_COMPOPT_EXPORT
+		function = env.clopt.export
+	case FB_COMPOPT_MSBITFIELDS
+		function = env.clopt.msbitfields
+	case FB_COMPOPT_MULTITHREADED
+		function = env.clopt.multithreaded
 	case FB_COMPOPT_STACKSIZE
-		functioN = env.clopt.stacksize
+		function = env.clopt.stacksize
 
 	case else
-		function = FALSE
+		function = 0
 	end select
-
 end function
 
 '':::::
@@ -595,6 +552,18 @@ function fbGetModuleEntry( ) as string static
 
 	function = "fb_ctor__" + sname
 
+end function
+
+function fbGetInputFileParentDir( ) as string
+	dim as string s
+
+	'' Input file name is using a relative path?
+	if( pathIsAbsolute( env.inf.name ) = FALSE ) then
+		'' Then build the absolute path based on curdir()
+		s = hCurDir( ) + FB_HOST_PATHDIV
+	end if
+
+	function = pathStripDiv( hStripFilename( s + env.inf.name ) )
 end function
 
 '' Used to add libs found during parsing (#inclib, Lib "...", rtl-* callbacks)
@@ -762,7 +731,7 @@ private function is_rootpath( byref path as zstring ptr ) as integer
 			function = TRUE
 		else
 			'' quirky drive letters...
-			*path = left( hEnvDir( ), 1 ) + ":" + *path
+			*path = left( fbGetInputFileParentDir( ), 1 ) + ":" + *path
 			function = TRUE
 		end if
 	end if

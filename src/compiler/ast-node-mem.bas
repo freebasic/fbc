@@ -66,9 +66,9 @@ private function hCallCtorList _
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any
     dim as ASTNODE ptr tree = any
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+	label = symbAddLabel( NULL )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 	'' iter = @vector[0]
 	tree = astBuildVarAssign( iter, ptr_expr )
@@ -102,47 +102,25 @@ private function hNewOp _
 		byval placement_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as integer do_init = FALSE, has_ctor = FALSE, save_elmts = FALSE
+	dim as FBSYMBOL ptr ptr_sym = any
+	dim as ASTNODE ptr new_expr = any, len_expr = any, tree = any
+	dim as integer do_init = any, save_elmts = any, clone_elmts = any
 
-	'' check ctor or initialization
-	select case typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_ctor = symbGetHasCtor( subtype )
-	end select
+	'' note: assuming ptr_expr will be an ordinary temp var
+	ptr_sym = astGetSymbol( ptr_expr )
+	tree = NULL
+	do_init = (init_expr <> NULL)
+	save_elmts = FALSE
+	clone_elmts = FALSE
 
-	if( has_ctor ) then
-		'' no explicit ctor call?
-		if( init_expr = NULL ) then
-			'' default ctor?
-			do_init = symbGetCompDefCtor( subtype ) <> NULL
-		else
-			do_init = TRUE
-		end if
+	'' still initialize if no explicit ctor call was given,
+	'' in case it has a default ctor.
+	do_init or= ((not do_init) and typeHasDefCtor( dtype, subtype ))
 
-		'' save elements count?
-		if( op = AST_OP_NEW_VEC ) then
-			save_elmts = symbGetCompDtor( subtype ) <> NULL
-		end if
-
-	else
-		'' save elements count?
-		if( op = AST_OP_NEW_VEC ) then
-			select case typeGet( dtype )
-			case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-				save_elmts = symbGetHasDtor( subtype )
-			end select
-		end if
-
-		do_init = init_expr <> NULL
+	'' save elements count?
+	if( op = AST_OP_NEW_VEC ) then
+		save_elmts = typeHasDtor( dtype, subtype )
 	end if
-
-    '' note: assuming ptr_expr will be an ordinary temp var
-    dim as FBSYMBOL ptr ptr_sym = astGetSymbol( ptr_expr )
-
-	dim as ASTNODE ptr tree = NULL
-
-	dim as ASTNODE ptr new_expr = any, len_expr = any
-	dim as integer clone_elmts = FALSE
 
 	'' elms *= sizeof( typeof( expr ) )
 	if( save_elmts or (do_init and (op = AST_OP_NEW_VEC)) ) then
@@ -150,7 +128,6 @@ private function hNewOp _
 		if( astIsClassOnTree( AST_NODECLASS_CALL, elmts_expr ) <> NULL ) then
 			tree = astRemSideFx( elmts_expr )
 		end if
-
 		clone_elmts = TRUE
 	end if
 
@@ -160,7 +137,7 @@ private function hNewOp _
 
 	dim as ASTNODE ptr bytes_expr = NULL
 
-	if( (do_init = FALSE) and (do_clear = TRUE) ) then
+	if( (do_init = FALSE) and do_clear ) then
 		bytes_expr = astCloneTree( len_expr )
 	end if
 
@@ -233,7 +210,7 @@ private function hNewOp _
     end if
 
 	'' just a init-tree?
-	if( has_ctor = FALSE ) then
+	if( typeHasCtor( dtype, subtype ) = FALSE ) then
 		astDelTree( ptr_expr )
 
 		return astNewLINK( tree, _
@@ -286,10 +263,10 @@ private function hCallDtorList _
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
-    cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
-    label = symbAddLabel( NULL )
-    iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
-    elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
+	label = symbAddLabel( NULL )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
+	elmts = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
@@ -339,13 +316,6 @@ private function hDelOp _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as integer has_dtor = FALSE
-
-	select case as const typeGet( dtype )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		has_dtor = symbGetCompDtor( subtype ) <> NULL
-	end select
-
 	dim as ASTNODE ptr tree = NULL
 
 	'' side-effect?
@@ -363,7 +333,7 @@ private function hDelOp _
 					   			  AST_OPOPT_NONE ) )
 
 	'' call dtors?
-	if( has_dtor ) then
+	if( typeHasDtor( dtype, subtype ) ) then
 		if( op = AST_OP_DEL_VEC ) then
 			tree = astNewLINK( tree, _
 							   hCallDtorList( astCloneTree( ptr_expr ), _

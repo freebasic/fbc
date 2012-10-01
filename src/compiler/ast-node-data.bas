@@ -7,15 +7,9 @@
 #include once "ir.bi"
 #include once "ast.bi"
 
-declare sub hCreateDataDesc _
-	( _
-	)
+declare sub hCreateDataDesc( )
 
-'':::::
-sub astDataStmtInit _
-	( _
-	)
-
+sub astDataStmtInit( )
 	ast.data.lastsym = NULL
 	ast.data.firstsym = NULL
 	ast.data.lastlbl = NULL
@@ -24,14 +18,9 @@ sub astDataStmtInit _
 	'' allocated at module-level or it would be removed if RESTORE
 	'' was used with a forward-label inside a proc)
 	hCreateDataDesc( )
-
 end sub
 
-'':::::
-function astDataStmtBegin _
-	( _
-	) as ASTNODE ptr
-
+function astDataStmtBegin( ) as ASTNODE ptr
     dim as ASTNODE ptr n = any
 
 	'' alloc new node
@@ -40,10 +29,8 @@ function astDataStmtBegin _
 	n->data.elmts = 0
 
 	function = n
-
 end function
 
-'':::::
 function astDataStmtStore _
 	( _
 		byval tree as ASTNODE ptr, _
@@ -107,11 +94,7 @@ function astDataStmtStore _
 
 end function
 
-'':::::
-sub astDataStmtEnd _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
     dim as FBSYMBOL ptr array = any, elm = any
     dim as integer i = any, id = any
@@ -121,7 +104,7 @@ sub astDataStmtEnd _
     '' add the last node: the link
     astDataStmtStore( tree, NULL )
 
-    '' create a static shared array(0 to data->elements-1) as FB_DATASTMT symbol
+	'' create/lookup the datadesc array symbol for the last symbol
 
 	array = astDataStmtAdd( NULL, tree->data.elmts )
 
@@ -185,7 +168,7 @@ sub astDataStmtEnd _
     symbSetTypeIniTree( array, initree )
     symbSetIsInitialized( array )
 
-	'' link the last data to this one
+	'' Link the previous DATA stmt to this new one
 	if( ast.data.lastsym <> NULL ) then
     	'' lastarray(ubound(lastarray)).next = @array(0)
     	initree = symbGetTypeIniTree( astGetLastDataStmtSymbol( ) )
@@ -209,37 +192,21 @@ sub astDataStmtEnd _
     									 ast.data.desc ) )
 	end if
 
-	ast.data.lastsym = array
+	'' datadesc arrays can reference the next datadesc array (link to next
+	'' DATA stmt as patched in above) or previous ones (those that were
+	'' pre-declared for RESTORE <label>).
+	'' For the C backend we must set up a reverse linked list allowing it to
+	'' cleanly emit the datadesc arrays without running into declaration
+	'' order issues.
+	array->var_.data.prev = ast.data.lastsym
 
+	ast.data.lastsym = array
 	if( ast.data.firstsym = NULL ) then
 		ast.data.firstsym = array
 	end if
 
 end sub
 
-'':::::
-private function hCreateDataId _
-	( _
-	) as zstring ptr
-
-    static as string id
-
-    dim as FBSYMBOL ptr label = symbGetLastLabel( )
-
-    if( (label = NULL) or (ast.data.lastlbl = label) ) then
-    	return hMakeTmpStr( )
-    end if
-
-    ast.data.lastlbl = label
-
-    '' create a id that can be lookup by RESTORE later
-    id = FB_DATASTMT_PREFIX + *symbGetName( label )
-
-    function = strptr( id )
-
-end function
-
-'':::::
 function astDataStmtAdd _
 	( _
 		byval label as FBSYMBOL ptr, _
@@ -247,75 +214,71 @@ function astDataStmtAdd _
 	) as FBSYMBOL ptr
 
 	static as string id
-    static as FBARRAYDIM dTB(0 to 0)
-    dim as FBSYMBOL ptr sym = any
+	static as FBARRAYDIM dTB(0 to 0)
+	dim as FBSYMBOL ptr sym = any, lastlabel = any
 
 	if( label = NULL ) then
-		id = *hCreateDataId( )
-		dTB(0).upper = elements - 1
+		'' Called for DATA statement end, or RESTORE without label
+		'' Create the static datadesc array
+		lastlabel = symbGetLastLabel( )
 
+		if( (lastlabel = NULL) or (ast.data.lastlbl = lastlabel) ) then
+			'' no label at all/still under the same label
+			id = *symbUniqueLabel( )
+		else
+			ast.data.lastlbl = lastlabel
+
+			'' static datadesc array id specifically for that label
+			'' (it may be looked up by RESTORE later, see below)
+			id = FB_DATASTMT_PREFIX + *symbGetName( lastlabel )
+		end if
+
+		dTB(0).upper = elements - 1
 	else
+		'' Called for RESTORE <label>
+		'' static datadesc array id specifically for that label
+		'' (if <label> is a forward reference, then this datadesc array
+		''  may be looked up by astDataStmtEnd() later,
+		''  when the corresponding DATA is found)
 		id = FB_DATASTMT_PREFIX + *symbGetName( label )
 		dTB(0).upper = 0
 	end if
 
-    sym = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-    						    	id, _
-    						    	FB_SYMBCLASS_VAR, _
-    						    	TRUE, _
-    						    	FALSE )
-    '' already declared?
-	if( sym <> NULL ) then
-    	if( label = NULL ) then
-			'' reset the array dimensions
-    		symbSetArrayDimTb( sym, 1, dTB() )
-    	end if
+	sym = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), id, FB_SYMBCLASS_VAR, TRUE, FALSE )
 
+	'' already declared?
+	if( sym <> NULL ) then
+		if( label = NULL ) then
+			'' reset the array dimensions
+			symbSetArrayDimTb( sym, 1, dTB() )
+		end if
 		return sym
 	end if
 
-	sym = symbAddVarEx( id, _
-					  	hMakeTmpStr( ), _
-					  	FB_DATATYPE_STRUCT, _
-					  	ast.data.desc, _
-					  	len( FB_DATADESC ), _
-					  	1, _
-					  	dTB(), _
-					  	FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
-					  	FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+	sym = symbAddVarEx( id, symbUniqueLabel( ), _
+	                    FB_DATATYPE_STRUCT, ast.data.desc, sizeof( FB_DATADESC ), _
+	                    1, dTB(), _
+	                    FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC, _
+	                    FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
-	sym->var_.data.prev = astGetLastDataStmtSymbol( )
+	'' (set by astDataStmtEnd())
+	sym->var_.data.prev = NULL
 
 	function = sym
-
 end function
 
-'':::::
-private sub hCreateDataDesc _
-	( _
-	)
-
+private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
 
-   	ast.data.desc = symbStructBegin( NULL, "__FB_DATADESC$", NULL, FALSE, 1 )
+	ast.data.desc = symbStructBegin( NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0 )
 
 	'' type	as short
-	symbAddField( ast.data.desc, _
-				  "type", _
-				  0, dTB(), _
-				  FB_DATATYPE_SHORT, NULL, _
-				  2, 0 )
+	symbAddField( ast.data.desc, "type", 0, dTB(), _
+	              FB_DATATYPE_SHORT, NULL, 2, 0 )
 
 	'' node	as FB_DATASTMT_NODE (no need to create an UNION, all fields are pointers)
-	symbAddField( ast.data.desc, _
-				  "node", _
-				  0, dTB(), _
-				  typeAddrOf( FB_DATATYPE_VOID ), NULL, _
-				  FB_POINTERSIZE, 0 )
+	symbAddField( ast.data.desc, "node", 0, dTB(), _
+	              typeAddrOf( FB_DATATYPE_VOID ), NULL, FB_POINTERSIZE, 0 )
 
-    ''
 	symbStructEnd( ast.data.desc )
-
 end sub
-
-

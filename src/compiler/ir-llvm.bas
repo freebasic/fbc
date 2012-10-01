@@ -40,6 +40,8 @@ type IRHLCCTX
 	varini				as string
 	variniscopelevel		as integer
 
+	asm_line			as string  '' line of inline asm built up by _emitAsm*()
+
 	section				as section_e   ' current section to write to
 	head_txt			as string      ' buffer for header text
 	body_txt			as string      ' buffer for body text
@@ -190,7 +192,7 @@ private function hEmitProcHeader _
 
 				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 					'' has a dtor, copy ctor or virtual methods? it's a copy..
-					if( symbIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
+					if( symbCompIsTrivial( symbGetSubtype( param ) ) = FALSE ) then
 						type_options = EMITTYPE_ADDPTR
 					end if
 				end select
@@ -518,7 +520,7 @@ private sub hEmitStruct( byval s as FBSYMBOL ptr )
 	if( symbGetName( s ) ) then
 		ln += hGetUDTName( s )
 	else
-		ln += "%" + *hMakeTmpStrNL( )
+		ln += "%" + *symbUniqueId( )
 	end if
 
 	ln += " = type { "
@@ -854,20 +856,6 @@ private function _getOptionValue( byval opt as IR_OPTIONVALUE ) as integer
 	end select
 end function
 
-private sub _emit _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
-
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-
-end sub
-
 private sub _procBegin( byval proc as FBSYMBOL ptr )
 	proc->proc.ext->dbg.iniline = lexLineNum( )
 end sub
@@ -900,11 +888,6 @@ private function _procAllocLocal _
 
 end function
 
-private function _procGetFrameRegName( ) as const zstring ptr
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	function = NULL
-end function
-
 private sub _scopeBegin( byval s as FBSYMBOL ptr )
 end sub
 
@@ -914,20 +897,6 @@ end sub
 private sub _procAllocStaticVars(byval head_sym as FBSYMBOL ptr)
 	/' do nothing '/
 end sub
-
-private function _makeTmpStr( byval islabel as integer ) as zstring ptr
-	static as zstring * 6 + 10 + 1 res
-
-	if( islabel ) then
-		res = "label$" & ctx.lblcnt
-		ctx.lblcnt += 1
-	else
-		res = "tmp$" & ctx.tmpcnt
-		ctx.tmpcnt += 1
-	end if
-
-	function = @res
-end function
 
 private function hNewVR _
 	( _
@@ -1479,11 +1448,6 @@ private sub _emitLabel( byval label as FBSYMBOL ptr )
 	hWriteLine( *symbGetMangledName( label ) + ":" )
 end sub
 
-private sub _emitReturn( byval bytestopop as integer )
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
 private sub _emitJmpTb _
 	( _
 		byval op as AST_JMPTB_OP, _
@@ -1747,28 +1711,18 @@ private sub _emitUop _
 
 end sub
 
-private sub _emitConvert _
-	( _
-		byval to_dtype as integer, _
-		byval to_subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
-
+private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	hLoadVreg( v1 )
 	hLoadVreg( v2 )
-
-	var add_cast = typeGet( to_dtype ) <> FB_DATATYPE_STRUCT
-	
+	var add_cast = typeGet( v1->dtype ) <> FB_DATATYPE_STRUCT
 	hEmitVregExpr( v1, hVregToStr( v2, add_cast ), FALSE, add_cast )
-
 end sub
 
 private sub _emitStore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 	if( v1 <> v2 ) then
 		'' casting needed?
 		if( (v1->dtype <> v2->dtype) or (v1->subtype <> v2->subtype) ) then
-			_emitConvert( v1->dtype, v1->subtype, v1, v2 )
+			_emitConvert( v1, v2 )
 		else
 			hLoadVreg( v1 )
 			hLoadVreg( v2 )
@@ -1795,14 +1749,6 @@ private sub _emitLoadRes _
 	_emitStore( vr, v1 )
 	hWriteLine( "return " & hVregToStr( vr ) )
 
-end sub
-
-private sub _emitStack( byval op as integer, byval v1 as IRVREG ptr )
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
-private sub _emitPushUDT( byval v1 as IRVREG ptr, byval lgt as integer )
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
 end sub
 
 private sub _emitPushArg _
@@ -1911,11 +1857,6 @@ private sub _emitCallPtr _
 
 end sub
 
-private sub _emitStackAlign( byval bytes as integer )
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
 private sub _emitJumpPtr( byval v1 as IRVREG ptr )
 	hWriteLine( "goto *" & hVregToStr( v1 ) )
 end sub
@@ -1947,6 +1888,10 @@ private sub _emitMem _
 
 end sub
 
+private sub _emitDECL( byval sym as FBSYMBOL ptr )
+	'' Nothing to do - used by C backend
+end sub
+
 private sub _emitDBG _
 	( _
 		byval op as integer, _
@@ -1965,8 +1910,25 @@ private sub _emitComment( byval text as zstring ptr )
 	hWriteLine( "; " + *text )
 end sub
 
-private sub _emitASM( byval text as zstring ptr )
-	hWriteLine( "__asm__ ( " + *text + " )" )
+private sub _emitAsmBegin( )
+	ctx.asm_line = ""
+end sub
+
+private sub _emitAsmText( byval text as zstring ptr )
+	ctx.asm_line += *text
+end sub
+
+private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
+	ctx.asm_line += *symbGetMangledName( sym )
+	if( symbGetOfs( sym ) > 0 ) then
+		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
+	elseif( symbGetOfs( sym ) < 0 ) then
+		ctx.asm_line += str( symbGetOfs( sym ) )
+	end if
+end sub
+
+private sub _emitAsmEnd( )
+	hWriteLine( ctx.asm_line )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2128,48 +2090,10 @@ private sub _emitScopeEnd( byval s as FBSYMBOL ptr )
 	hWriteLine( "}" )
 end sub
 
-private sub _flush( )
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
-private function _getDistance( byval vreg as IRVREG ptr ) as uinteger
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-	function = 0
-end function
-
-private sub _loadVR _
-	( _
-		byval reg as integer, _
-		byval vreg as IRVREG ptr, _
-		byval doload as integer _
-	)
-
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
-private sub _storeVR _
-	( _
-		byval vreg as IRVREG ptr, _
-		byval reg as integer _
-	)
-
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
-private sub _xchgTOS( byval reg as integer )
-	/' do nothing '/
-	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-end sub
-
 static as IR_VTBL irllvm_vtbl = _
 ( _
 	@_init, _
 	@_end, _
-	@_flush, _
 	@_emitBegin, _
 	@_emitEnd, _
 	@_getOptionValue, _
@@ -2177,19 +2101,21 @@ static as IR_VTBL irllvm_vtbl = _
 	@_procEnd, _
 	@_procAllocArg, _
 	@_procAllocLocal, _
-	@_procGetFrameRegName, _
+	NULL, _
 	@_scopeBegin, _
 	@_scopeEnd, _
 	@_procAllocStaticVars, _
-	@_emit, _
 	@_emitConvert, _
 	@_emitLabel, _
 	@_emitLabel, _
-	@_emitReturn, _
+	NULL, _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@_emitPushArg, _
-	@_emitASM, _
+	@_emitAsmBegin, _
+	@_emitAsmText, _
+	@_emitAsmSymb, _
+	@_emitAsmEnd, _
 	@_emitComment, _
 	@_emitJmpTb, _
 	@_emitBop, _
@@ -2198,17 +2124,18 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitSpillRegs, _
 	@_emitLoad, _
 	@_emitLoadRes, _
-	@_emitStack, _
-	@_emitPushUDT, _
+	NULL, _
+	NULL, _
 	@_emitAddr, _
 	@_emitCall, _
 	@_emitCallPtr, _
-	@_emitStackAlign, _
+	NULL, _
 	@_emitJumpPtr, _
 	@_emitBranch, _
 	@_emitMem, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _
+	@_emitDECL, _
 	@_emitDBG, _
 	@_emitVarIniBegin, _
 	@_emitVarIniEnd, _
@@ -2230,9 +2157,8 @@ static as IR_VTBL irllvm_vtbl = _
 	@_allocVrPtr, _
 	@_allocVrOfs, _
 	@_setVregDataType, _
-	@_getDistance, _
-	@_loadVr, _
-	@_storeVr, _
-	@_xchgTOS, _
-	@_makeTmpStr _
+	NULL, _
+	NULL, _
+	NULL, _
+	NULL _
 )

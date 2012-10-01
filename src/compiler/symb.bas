@@ -479,7 +479,7 @@ function symbNewSymbol _
 		else
 			attrib or= FB_SYMBATTRIB_LOCAL
 		end if
-    end if
+	end if
 
     if( hashtb = NULL ) then
     	hashtb = symb.hashtb
@@ -1580,6 +1580,23 @@ end sub
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+function symbHasCtor( byval sym as FBSYMBOL ptr ) as integer
+	'' shouldn't be called on structs - can directly use symbGetCompCtorHead()
+	assert( symbIsStruct( sym ) = FALSE )
+	'' Handle vars, params, function results, etc.
+	function = typeHasCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDefCtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDefCtor( sym->typ, sym->subtype )
+end function
+
+function symbHasDtor( byval sym as FBSYMBOL ptr ) as integer
+	assert( symbIsStruct( sym ) = FALSE )
+	function = typeHasDtor( sym->typ, sym->subtype )
+end function
+
 '':::::
 function symbIsArray _
 	( _
@@ -1864,6 +1881,31 @@ function symbCalcLen _
 
 	end select
 
+end function
+
+function symbCalcDerefLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr  _
+	) as integer
+
+	dim as integer length = any
+
+	assert( typeIsPtr( dtype ) )
+
+	length = symbCalcLen( typeDeref( dtype ), subtype )
+
+	'' incomplete type?
+	if( length = 0 ) then
+		'' ANY PTR?
+		if( dtype = typeAddrOf( FB_DATATYPE_VOID ) ) then
+			'' treat as BYTE PTR
+			length = 1
+		end if
+		'' (for anything else, we return 0 to indicate the error)
+	end if
+
+	function = length
 end function
 
 function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
@@ -2166,7 +2208,11 @@ sub symbDump_( byval s as FBSYMBOL ptr )
 	color oldcolor
 
 	if( s->typ and FB_DATATYPE_INVALID ) then
-		print "<invalid>";
+		if( s->class = FB_SYMBCLASS_KEYWORD ) then
+			print "<keyword>";
+		else
+			print "<invalid>";
+		end if
 	else
 		'' UDTs themselves are FB_DATATYPE_STRUCT, but with NULL subtype,
 		'' so treat that as special case, so symbTypeToStr() doesn't crash.

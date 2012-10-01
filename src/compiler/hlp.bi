@@ -9,14 +9,6 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare sub hlpInit _
-	( _
-	)
-
-declare sub hlpEnd _
-	( _
-	)
-
 declare function hMatchText _
 	( _
 		byval txt as zstring ptr _
@@ -79,16 +71,15 @@ declare function hGetFileExt _
 
 declare sub hReplaceSlash( byval s as zstring ptr, byval char as integer )
 
-declare function pathStripDiv(byref path as string) as string
+declare function pathStripDiv( byref path as string ) as string
+declare function pathIsAbsolute( byval path as zstring ptr ) as integer
 
 declare function hToPow2 _
 	( _
 		byval value as uinteger _
 	) as uinteger
 
-declare function hJumpTbAllocSym _
-	( _
-	) as any ptr
+declare function hJumpTbAllocSym( ) as any ptr
 
 declare function hFloatToStr _
 	( _
@@ -102,7 +93,6 @@ declare function hCheckFileFormat _
 	) as integer
 
 declare function hCurDir( ) as string
-declare function hEnvDir( ) as string
 
 declare function hHexUInt _
 	( _

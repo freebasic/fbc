@@ -14,43 +14,44 @@
 '' constant folding optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub hOptConstRemNeg _
-	( _
-		byval n as ASTNODE ptr, _
-		byval p as ASTNODE ptr _
-	)
+private sub hOptConstRemNeg( byval n as ASTNODE ptr )
 
-	dim as ASTNODE ptr l = any, r = any
-
-	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
-	if( p <> NULL ) then
-		if( astIsUOP( n, AST_OP_NEG ) ) then
-			l = n->l
-			if( l->class = AST_NODECLASS_VAR ) then
-				if( astIsBOP( p, AST_OP_ADD ) ) then
-					r = p->r
-					if( astIsCONST( r ) ) then
-						p->op.op = AST_OP_SUB
-						p->l = p->r
-						p->r = n->l
-						astDelNode( n )
-						exit sub
-					end if
-				end if
-			end if
-		end if
-	end if
+	dim as ASTNODE ptr l = any, r = any, ll = any
 
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptConstRemNeg( l, n )
+		hOptConstRemNeg( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptConstRemNeg( r, n )
+		hOptConstRemNeg( r )
+	end if
+
+	''
+	''    -var + const        ->     const - var
+	''
+	''         BOP(+)                  BOP(-)
+	''         /     \                 /   \
+	''     UOP(-)    CONST    ->    CONST  VAR
+	''      /
+	''    VAR
+	''
+
+	if( astIsBOP( n, AST_OP_ADD ) ) then
+		l = n->l
+		r = n->r
+		if( astIsUOP( l, AST_OP_NEG ) and astIsCONST( r ) ) then
+			ll = n->l->l
+			if( astIsVAR( ll ) ) then
+				'' BOP(+) -> BOP(-)
+				n->op.op = AST_OP_SUB
+				n->l = r
+				n->r = ll
+				astDelNode( l )
+			end if
+		end if
 	end if
 
 end sub
@@ -662,19 +663,83 @@ private function hOptConstDistMUL _
 		return NULL
 	end if
 
-	'' check any MUL BOP node with a constant at the right leaf and then scan
-	'' the left leaf for ADD BOP nodes, applying the distributive, deleting those
-	'' nodes and adding the result of all sums to a new node
-	'' (this will handle for ex. 2 * (3 + a * 2) that will become 6 + a * 4 (with Accum2's help))
+	'' walk, bottom-up, to optimize children first, potentially making the
+	'' transformation possible here.
+	l = n->l
+	if( l <> NULL ) then
+		n->l = hOptConstDistMUL( l )
+	end if
+
+	r = n->r
+	if( r <> NULL ) then
+		n->r = hOptConstDistMUL( r )
+	end if
+
+	''
+	'' Multiplication is distributive, i.e.
+	''
+	''      (a + b) * c
+	''    = a * c + b * c
+	''
+	'' This optimization does exactly that transformation,
+	'' but only for constant summands:
+	''
+	''      (a + 3 + b) * 2
+	''    = (a + b) * 2 + 3 * 2
+	''    = (a + b) * 2 + 6
+	''
+	''      (1 + a + 2 + b) * 3
+	''    = (a + b) * 3 + (1 + 2) * 3
+	''    = (a + b) * 3 + 3 * 3
+	''    = (a + b) * 3 + 9
+	''
+	'' i.e. constant summands are pulled out of the inner expression,
+	'' then multiplicated with the constant factor of the MUL, and then
+	'' that value is ADDed back on top. The MUL is left in to handle the
+	'' part of the expression with non-constant summands.
+	'' (We know there are non-constant summands, because any fully constant
+	'' ADD BOPs were precalculated by astNewBOP()'s constant folding)
+	''
+	'' This transformation can open up further optimization possibilities,
+	'' for example, this:
+	''      (a * 2 + 3) * 2
+	''    = a * 2 * 2 + 3 * 2
+	''    = a * 2 * 2 + 6
+	'' will be turned into
+	''    = a * 4 + 6
+	'' by the constant accumulation optimizations.
+	''
+	'' Or, as another example, this:
+	''      ((a + 1) * 2) * 3
+	''    = (a * 2 + 1 * 2) * 3
+	''    = (a * 2 + 2) * 3
+	'' allows for the same transformation to be applied again, as a result
+	'' of applying it the first time, to get:
+	''    = a * 2 * 3 + 2 * 3
+	''    = a * 2 * 3 + 6
+	'' which will be turned into
+	''    = a * 6 + 6
+	'' by the constant accumulation optimizations.
+	'' Applying this transformation repeatedly on the same tree however
+	'' can only work when walking the tree bottom-up.
+	''
+
+	'' 1. Check for a MUL BOP node with a CONST rhs (assuming astNewBOP()
+	''    swapped lhs/rhs if the CONST was on lhs, so only one thing has
+	''    to be checked here)
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
 		if( astIsCONST( r ) ) then
 			if( n->op.op = AST_OP_MUL ) then
 
+				'' 2. Scan the lhs for ADD BOPs with CONST rhs (hConstDistMUL())
+				''  - Sums up the CONST summands of all such ADDs
+				''  - Removes these ADDs (possibly leaving in other non-const summands)
 				v.dtype = FB_DATATYPE_INVALID
 				n->l = hConstDistMUL( n->l, @v )
 
 				if( v.dtype <> FB_DATATYPE_INVALID ) then
+					'' 3. Multiplicate the sum with the MUL's CONST rhs
 					select case as const v.dtype
 					case FB_DATATYPE_LONGINT
 
@@ -791,22 +856,12 @@ mul_int:				select case as const astGetDataType( r )
 						r = astNewCONSTi( v.val.int, v.dtype )
 					end select
 
+					'' 4. Use an ADD BOP to add the result on top
 					n = astNewBOP( AST_OP_ADD, n, r )
 				end if
 
 			end if
 		end if
-	end if
-
-	'' walk
-	l = n->l
-	if( l <> NULL ) then
-		n->l = hOptConstDistMUL( l )
-	end if
-
-	r = n->r
-	if( r <> NULL ) then
-		n->r = hOptConstDistMUL( r )
 	end if
 
 	function = n
@@ -821,10 +876,19 @@ private sub hOptConstIdxMult _
 
 	dim as ASTNODE ptr l = n->l
 
-	'' if top of tree = idx * lgt, and lgt < 10, save lgt and delete the * node
+	''
+	'' If top of tree = idx * lgt, and lgt is in the 1..9 range,
+	'' then the length multiplier can be put into ASTNODE.idx.mult,
+	'' allowing the x86 ASM emitter to generate better code.
+	''
+	'' This only works if the multiplier is 1..9 and neither 6 nor 7,
+	'' see also hPrepOperand() and hGetIdxName().
+	''
+
 	if( astIsBOP(l, AST_OP_MUL ) ) then
 		dim as ASTNODE ptr lr = l->r
 		if( astIsCONST( lr ) ) then
+			'' ASM backend?
 			if( irGetOption( IR_OPT_ADDRCISC ) ) then
 				dim as integer c = any
 				select case as const astGetDataType( lr )
@@ -845,12 +909,18 @@ private sub hOptConstIdxMult _
 					c = cint( lr->con.val.int )
 				end select
 
-				if( c < 10 ) then
+				if( (c >= 1) and (c <= 9) ) then
 					dim as integer delnode = any
+
 					select case as const c
 					case 6, 7
+						'' Not supported by ASM backend
+						'' (C backend could probably handle it, but there's no point)
 						delnode = FALSE
+
 					case 3, 5, 9
+						'' The x86 ASM backend supports 3, 5, 9 as a special case,
+						'' but it's only possible if there isn't already an offset
 						delnode = TRUE
 						'' x86 assumption: not possible if there's already an index (EBP)
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
@@ -2515,7 +2585,7 @@ function astOptimizeTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	hOptConstAccum2( n )
 
-	hOptConstRemNeg( n, NULL )
+	hOptConstRemNeg( n )
 
 	n = hOptConstIDX( n )
 

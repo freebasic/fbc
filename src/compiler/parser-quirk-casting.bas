@@ -118,26 +118,22 @@ function cTypeConvExpr _
 
 end function
 
-'':::::
-'' AnonUDT			=	TYPE ('<' SymbolType '>')? '(' ... ')'
-function cAnonUDT _
-	( _
-		_
-	) as ASTNODE ptr
+'' AnonUDT  =  TYPE ('<' SymbolType '>')? '(' ... ')'
+function cAnonUDT( ) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr subtype = any
-    dim as integer dtype = any, lgt = any
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any, lgt = any
 
-    function = NULL
+	function = NULL
 
 	'' TYPE
 	lexSkipToken( )
 
-    '' ('<' SymbolType '>')?
-    if( lexGetToken( ) = FB_TK_LT ) then
-    	lexSkipToken( )
+	'' ('<' SymbolType '>')?
+	if( lexGetToken( ) = FB_TK_LT ) then
+		lexSkipToken( )
 
-        '' get UDT or intrinsic type
+		'' get UDT or intrinsic type
 		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
@@ -149,23 +145,21 @@ function cAnonUDT _
 			subtype = NULL
 		end if
 
-    	'' '>'
-    	if( lexGetToken( ) <> FB_TK_GT ) then
+		'' '>'
+		if( lexGetToken( ) <> FB_TK_GT ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			'' error recovery: skip until next '>'
 			hSkipUntil( FB_TK_GT, TRUE )
-    	else
-    		lexSkipToken( )
-    	end if
-
-    else
-    	'' use the type from the left-hand expression,
-    	'' this allows totally anonymous types.
-    	subtype = parser.ctxsym
-    	dtype   = parser.ctx_dtype
+		else
+			lexSkipToken( )
+		end if
+	else
+		'' use the type from the left-hand expression,
+		'' this allows totally anonymous types.
+		subtype = parser.ctxsym
+		dtype   = parser.ctx_dtype
 
 		if( subtype <> NULL ) then
-
 			dtype = FB_DATATYPE_STRUCT
 
 			'' typedef? resolve..
@@ -173,34 +167,29 @@ function cAnonUDT _
 				subtype = symbGetSubtype( subtype )
 			end if
 
-	    	if( subtype = NULL ) then
+			if( subtype = NULL ) then
 				errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 				'' error recovery: fake a node
 				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-	    	end if
+			end if
 
-	    	if( symbIsStruct( subtype ) = FALSE ) then
+			if( symbIsStruct( subtype ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				'' error recovery: fake a node
 				return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
-
-    end if
-
-    '' has a ctor?
-    if( subtype <> NULL ) then
-	    if( symbGetHasCtor( subtype ) ) then
-	    	return cCtorCall( subtype )
-	    end if
 	end if
 
-    '' alloc temp var
-    dim as FBSYMBOL ptr sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+	'' has a ctor?
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		if( symbGetCompCtorHead( subtype ) ) then
+			return cCtorCall( subtype )
+		end if
+	end if
 
-    '' let the initializer do the rest..
-    function = cInitializer( sym, FB_INIOPT_NONE )
+	'' alloc temp var and then parse the rest as var initializer
+	function = cInitializer( symbAddTempVar( dtype, subtype, FALSE ), _
+	                         FB_INIOPT_NONE )
 
 end function
-
-

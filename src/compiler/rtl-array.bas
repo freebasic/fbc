@@ -403,7 +403,7 @@ function rtlArrayRedim _
 		'' Assuming there aren't any other ctors if there is no default one,
 		'' because if it were possible to declare such a dynamic array,
 		'' the rtlib couldn't REDIM it.
-		assert( iif( ctor = NULL, (symbGetHasCtor( subtype ) = FALSE) or (errGetCount( ) > 0), TRUE ) )
+		assert( iif( ctor = NULL, (symbGetCompCtorHead( subtype ) = NULL) or (errGetCount( ) > 0), TRUE ) )
 	case else
 		ctor = NULL
 		dtor = NULL
@@ -452,7 +452,6 @@ function rtlArrayRedim _
 					   FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
-
     else
 		hCheckDefCtor( ctor, FALSE, FALSE )
 		hCheckDtor( dtor, FALSE, FALSE )
@@ -589,7 +588,7 @@ function rtlArrayClear _
 
 		'' No default ctor, but others? Then the rtlib cannot just clear
 		'' that array of objects.
-		if( (ctor = NULL) and symbGetHasCtor( subtype ) ) then
+		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
 			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
 		end if
 	case else

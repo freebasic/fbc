@@ -399,12 +399,9 @@ private sub hBOPConstFoldFlt _
 		l->con.val.float = l->con.val.float * r->con.val.float
 
 	case AST_OP_DIV
-		'' report error for 'constant / 0'
-		if( r->con.val.float = 0.0 ) then
-			errReport( FB_ERRMSG_DIVBYZERO )
-		else
-			l->con.val.float = l->con.val.float / r->con.val.float
-		end if
+		'' Note: no division by zero error here - we should return
+		'' INF instead, just like with (l / r) at runtime
+		l->con.val.float = l->con.val.float / r->con.val.float
 
     case AST_OP_POW
 		l->con.val.float = l->con.val.float ^ r->con.val.float
@@ -656,17 +653,11 @@ private function hDoPointerArith _
     	end select
     end if
 
-    '' calc len( *p )
-    lgt = symbCalcLen( typeDeref( astGetDataType( p ) ), astGetSubType( p ) )
-
-
-	'' incomplete type?
-	if( lgt = 0 ) then
-		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> typeAddrOf( FB_DATATYPE_VOID ) ) then
-			exit function
-		end if
-		lgt = 1
+	'' calc len( *p )
+	lgt = symbCalcDerefLen( astGetDataType( p ), astGetSubType( p ) )
+	if( lgt <= 0 ) then
+		'' incomplete type
+		exit function
 	end if
 
     '' another pointer?
@@ -837,18 +828,37 @@ end function
 
 #endmacro
 
-'':::::
-private function hCmpDynType _
+private function hCheckDerefWcharPtr _
 	( _
 		byval l as ASTNODE ptr, _
-		byval r as ASTNODE ptr _
-	) as ASTNODE ptr
-	
-	'' all checks already done at parser level
-	
-	return rtlOOPIsTypeOf( l, r )
-	
-End Function
+		byval pldtype as integer ptr, _
+		byval r as ASTNODE ptr, _
+		byval rdtype as integer _
+	) as integer
+
+	dim as ASTNODE ptr ll = any
+
+	'' Disallow if it's not a DEREF'ed wcharptr
+	if( l->class <> AST_NODECLASS_DEREF ) then
+		exit function
+	end if
+
+	'' Disallow if it's a fake dynamic string
+	ll = l->l
+	if( ll ) then
+		if( ll->class = AST_NODECLASS_VAR ) then
+			if( symbGetIsWstring( ll->sym ) ) then
+				exit function
+			end if
+		end if
+	end if
+
+	'' remap the type or the optimizer can
+	'' make a wrong assumption
+	*pldtype = typeJoin( *pldtype, env.target.wchar )
+
+	function = TRUE
+end function
 
 '':::::
 function astNewBOP _
@@ -878,10 +888,9 @@ function astNewBOP _
 	case AST_OP_CONCAT
 		hToStr( l, r )
 		op = AST_OP_ADD
-
 	case AST_OP_IS
-		return hCmpDynType( l, r )
-	End Select
+		return rtlOOPIsTypeOf( l, r )
+	end select
 
 	ldtype = astGetFullType( l )
 	rdtype = astGetFullType( r )
@@ -1032,23 +1041,19 @@ function astNewBOP _
 				exit function
 			end select
 
-		'' one is not a string..
+		'' One is not a string, but e.g. an integer. Disallow if the
+		'' other is not a DEREF'ed wchar ptr - this allows comparisons
+		'' such as "wstringptr[index] = someinteger", i.e. a simplified
+		'' form of string indexing when dealing with a DEREF'ed ptr.
 		else
 			if( typeGet( ldtype ) = FB_DATATYPE_WCHAR ) then
-				'' don't allow, unless it's a deref pointer
-				if( l->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( l, @ldtype, r, rdtype ) = FALSE ) then
 					exit function
 				end if
-				'' remap the type or the optimizer can
-				'' make a wrong assumption
-				ldtype = typeJoin( ldtype, env.target.wchar )
-
 			else
-				'' same as above..
-				if( r->class <> AST_NODECLASS_DEREF ) then
+				if( hCheckDerefWcharPtr( r, @rdtype, l, ldtype ) = FALSE ) then
 					exit function
 				end if
-				rdtype = typeJoin( rdtype, env.target.wchar )
 			end if
 		end if
 
@@ -1425,13 +1430,8 @@ function astNewBOP _
 			end select
 			op = AST_OP_ADD
 
-		'' report error for 'x / 0'
-		case AST_OP_DIV
-			if( r->con.val.float = 0 ) then
-				errReport( FB_ERRMSG_DIVBYZERO )
-			end if
-
 		'' report error for 'x \ 0', 'x mod 0'
+		'' Note: no error for 'x / 0', that should just return INF
 		case AST_OP_INTDIV, AST_OP_MOD
 			if( r->con.val.int = 0 ) then
 				errReport( FB_ERRMSG_DIVBYZERO )
@@ -1602,7 +1602,7 @@ function astNewSelfBOP _
 
 		dtype = astGetFullType( l )
 		subtype = astGetSubType( l )
-		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+		tmp = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 		'' tmp = @lvalue
 		ll = astNewASSIGN( astNewVAR( tmp, 0, typeAddrOf( dtype ), subtype ), _
@@ -1666,6 +1666,13 @@ function astLoadBOP _
 
 	if( (l = NULL) or (r = NULL) ) then
 		return NULL
+	end if
+
+	if( l->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( l, n->dtype, TRUE )
+	end if
+	if( r->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( r, n->dtype, TRUE )
 	end if
 
 	'' need some other algo here to select which operand is better to evaluate

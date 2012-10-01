@@ -203,7 +203,7 @@ private sub hFieldInit( byval parent as FBSYMBOL ptr, byval sym as FBSYMBOL ptr 
 				subtype = symbGetSubtype( sym )
 
 				'' Does it have any constructors? (Then we must call one to initialize this field)
-				if( symbGetHasCtor( subtype ) ) then
+				if( symbGetCompCtorHead( subtype ) ) then
 					'' Does it have a default constructor?
 					defctor = symbGetCompDefCtor( subtype )
 					if( defctor ) then
@@ -345,7 +345,7 @@ private sub hTypeMultElementDecl _
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			'' error recovery: fake an id
-			id = *hMakeTmpStr( )
+			id = *symbUniqueLabel( )
 		end select
 
 	    bits = 0
@@ -365,6 +365,18 @@ private sub hTypeMultElementDecl _
 						bits = 0
 					end if
 				end if
+			end if
+		end if
+
+		'' array?
+		if( dims > 0 ) then
+			'' "array too big" check
+			if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+				errReport( FB_ERRMSG_ARRAYTOOBIG )
+				'' error recovery: use small array
+				dims = 1
+				dTB(0).lower = 0
+				dTB(0).upper = 0
 			end if
 		end if
 
@@ -444,7 +456,7 @@ private sub hTypeElementDecl _
     case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an id
-		id = *hMakeTmpStr( )
+		id = *symbUniqueLabel( )
 		dtype = FB_DATATYPE_INVALID
     end select
 
@@ -477,6 +489,18 @@ private sub hTypeElementDecl _
 
 	'' SymbolType
 	hSymbolType( dtype, subtype, lgt )
+
+	'' array?
+	if( dims > 0 ) then
+		'' "array too big" check
+		if( symbCheckArraySize( dims, dTB(), lgt, FALSE, FALSE ) = FALSE ) then
+			errReport( FB_ERRMSG_ARRAYTOOBIG )
+			'' error recovery: use small array
+			dims = 1
+			dTB(0).lower = 0
+			dTB(0).upper = 0
+		end if
+	end if
 
 	''
 	if( bits <> 0 ) then
@@ -530,11 +554,11 @@ private function hTypeAdd _
 
 	function = NULL
 
-	s = symbStructBegin( parent, id, id_alias, isunion, align, baseSubtype )
+	s = symbStructBegin( NULL, parent, id, id_alias, isunion, align, baseSubtype, 0 )
 	if( s = NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		'' error recovery: create a fake symbol
-		s = symbStructBegin( parent, hMakeTmpStr( ), NULL, isunion, align )
+		s = symbStructBegin( NULL, parent, symbUniqueLabel( ), NULL, isunion, align, NULL, 0 )
 	end if
 
 	'' Comment? SttSeparator
@@ -906,7 +930,7 @@ function cTypeDecl _
 
 		lexEatToken( @id )
 	else
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	end if
 
 	'' AS?
@@ -1000,7 +1024,7 @@ function cTypeDecl _
 
 	'' byval params to self?
 	if( symbGetUdtHasRecByvalParam( sym ) ) then
-		if( symbIsTrivial( sym ) = FALSE ) then
+		if( symbCompIsTrivial( sym ) = FALSE ) then
 			hPatchByvalParamsToSelf( sym )
 		end if
 	end if

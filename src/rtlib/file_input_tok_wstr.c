@@ -14,7 +14,7 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
         size_t len;
         res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, TRUE );
         if( (res != FB_RTERROR_OK) || (len == 0) )
-            return WEOF;
+            return FB_WEOF;
 
         return c;
     }
@@ -22,7 +22,7 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
     else
     {
 		if( ctx->index >= FB_STRSIZE( &ctx->str.len ) )
-			return WEOF;
+			return FB_WEOF;
 		else
 			return (unsigned char)ctx->str.data[ctx->index++];
 	}
@@ -67,7 +67,7 @@ static FB_WCHAR hSkipWhiteSpc
 	do
 	{
 		c = hReadChar( ctx );
-		if( c == WEOF )
+		if( c == FB_WEOF )
 			break;
 	} while( (c == _LC(' ')) || (c == _LC('\t')) );
 
@@ -88,7 +88,7 @@ static void hSkipDelimiter
 	switch( c )
 	{
 	case _LC(','):
-	case WEOF:
+	case FB_WEOF:
 		break;
 
     case _LC('\n'):
@@ -127,7 +127,7 @@ void fb_FileInputNextTokenWstr
 
 	c = hSkipWhiteSpc( ctx );
 
-	while( (c != WEOF) && (len < max_chars) )
+	while( (c != FB_WEOF) && (len < max_chars) )
 	{
 		switch( c )
 		{

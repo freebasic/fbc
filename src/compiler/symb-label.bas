@@ -53,16 +53,15 @@ function symbAddLabel _
 
 		'' add the new label
 		if( (options and FB_SYMBOPT_CREATEALIAS) = 0 ) then
-    		id_alias = symbol
+			id_alias = symbol
 		else
-			id_alias = hMakeTmpStr( )
+			id_alias = symbUniqueLabel( )
 		end if
 
 		id = symbol
-
 	else
 		id = NULL
-		id_alias = hMakeTmpStr( )
+		id_alias = symbUniqueLabel( )
 	end if
 
     if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then

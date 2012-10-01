@@ -204,27 +204,19 @@ sub rtlAddIntrinsicProcs _
 
 							i += 1
 							with procdef->paramTb(i)
-
 								'' add it
 								'' Note: using FBCALL for the function pointer.
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddPrototype( inner_proc, NULL, hMakeTmpStrNL( ), _
-								                           .dtype, NULL, 0, env.target.fbcall, _
-								                           FB_SYMBOPT_DECLARING )
-
-								if( subtype <> NULL ) then
-									symbSetIsFuncPtr( subtype )
-								end if
+								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, env.target.fbcall )
 
 								'' due to the ambiguity (need to say it's optional to
 								'' even get to this point), the symbol's return type will
 								'' be what specifies if the parent symbol is optional
-                                if( .isopt = FALSE ) then
-                                	attrib = 0
-                                end if
-
+								if( .isopt = FALSE ) then
+									attrib = 0
+								end if
 							end with
 
 							param_optval = NULL
@@ -265,34 +257,33 @@ sub rtlAddIntrinsicProcs _
 				attrib or= FB_SYMBATTRIB_SUFFIXED
 			end if
 
-			''
+			'' Note: for operators, this is the AST_OP_* value, not a valid zstring ptr
 			dim as const zstring ptr pname = procdef->name
-
-			'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
-			if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
-				if( fbLangIsSet( FB_LANG_QB ) ) then
-					if( procdef->alias = NULL ) then
-						static as string tmp_alias
-						tmp_alias = *pname
-						procdef->alias = strptr( tmp_alias )
-        			end if
-
-        			static as string tmp_name
-        			tmp_name = "__" + *pname
-        			pname = strptr( tmp_name )
-				end if
-			end if
-
-			''
-			if( procdef->alias = NULL ) then
-				procdef->alias = pname
-			end if
 
 			'' ordinary proc?
 			if( (procdef->options and FB_RTL_OPT_OPERATOR) = 0 ) then
-				proc = symbAddPrototype( proc, pname, procdef->alias, _
-				                         procdef->dtype, NULL, attrib, callconv, _
-				                         FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
+				'' add the '__' prefix if the proc wasn't present in QB and we are in '-lang qb' mode
+				if( (procdef->options and FB_RTL_OPT_NOQB) <> 0 ) then
+					if( fbLangIsSet( FB_LANG_QB ) ) then
+						if( procdef->alias = NULL ) then
+							static as string tmp_alias
+							tmp_alias = *pname
+							procdef->alias = strptr( tmp_alias )
+						end if
+
+						static as string tmp_name
+						tmp_name = "__" + *pname
+						pname = strptr( tmp_name )
+					end if
+				end if
+
+				if( procdef->alias = NULL ) then
+					procdef->alias = pname
+				end if
+
+				proc = symbAddProc( proc, pname, procdef->alias, _
+				                    procdef->dtype, NULL, attrib, callconv, _
+				                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			'' operator..
 			else

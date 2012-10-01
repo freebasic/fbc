@@ -86,7 +86,7 @@ private function hTmpStrListAdd _
 	t->prev = parent->call.strtail
 	parent->call.strtail = t
 
-	s = symbAddTempVar( dtype, NULL, FALSE, FALSE )
+	s = symbAddTempVar( dtype, NULL, FALSE )
 
 	t->sym = s
 	if( copyback ) then
@@ -403,12 +403,7 @@ private sub hCheckByRefArg _
 
 		case else
 			'' scalars: store param to a temp var and pass it
-			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE, FALSE ), _
-									 	   0, _
-									 	   dtype, _
-									 	   subtype ), _
-							    arg, _
-							    AST_OPOPT_DONTCHKPTR )
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype, FALSE ), 0, dtype, subtype ), arg, AST_OPOPT_DONTCHKPTR )
 		end select
 
 	end select
@@ -655,7 +650,7 @@ private sub hUDTPassByval _
 	dim as ASTNODE ptr arg = n->l
 
 	'' no dtor, copy-ctor or virtual members?
-	if( symbIsTrivial( symbGetSubtype( param ) ) ) then
+	if( symbCompIsTrivial( symbGetSubtype( param ) ) ) then
 		dim as FBSYMBOL ptr subtype = arg->subtype
 
 		'' not returned in registers?
@@ -683,17 +678,14 @@ private sub hUDTPassByval _
 
 	'' non-trivial type, pass a pointer to a temp copy
 	dim as FBSYMBOL ptr tmp = any
-	tmp = symbAddTempVar( symbGetFullType( param ), _
-						  symbGetSubtype( param ), _
-						  FALSE, _
-						  FALSE )
+	tmp = symbAddTempVar( symbGetFullType( param ), symbGetSubtype( param ), FALSE )
 
 	arg = astNewCALLCTOR( astBuildCopyCtorCall( astBuildVarField( tmp ), arg ), _
 						  astBuildVarField( tmp ) )
 
 	hBuildByrefArg( n, arg )
 
-	if( symbGetHasDtor( symbGetSubtype( param ) ) ) then
+	if( symbHasDtor( param ) ) then
 		astDtorListAdd( tmp )
 	end if
 
@@ -707,42 +699,32 @@ private function hImplicitCtor _
 		byval n as ASTNODE ptr _
 	) as integer
 
-   	static as integer rec_cnt = 0
+	static as integer rec_cnt = 0
+	dim as ASTNODE ptr arg = any
+	dim as FBSYMBOL ptr tmp = any
+	dim as integer is_ctorcall = any
 
-   	dim as FBSYMBOL ptr subtype = symbGetSubtype( param )
-   	dim as integer param_dtype = symbGetType( param )
+	if( symbHasCtor( param ) = FALSE ) then
+		exit function
+	end if
 
-   	if( symbGetHasCtor( subtype ) = FALSE ) then
-   		return FALSE
-   	end if
+	'' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
+	if( rec_cnt <> 0 ) then
+		exit function
+	end if
 
-    '' recursion? (astBuildImplicitCtorCall() will call newARG with the same expr)
-    if( rec_cnt <> 0 ) then
-    	return FALSE
-    end if
+	'' try calling any ctor with the expression
+	rec_cnt += 1
+	arg = astBuildImplicitCtorCall( symbGetSubtype( param ), n->l, n->arg.mode, is_ctorcall )
+	rec_cnt -= 1
 
-    dim as integer is_ctorcall = any
+	if( is_ctorcall = FALSE ) then
+		exit function
+	end if
 
-    '' try calling any ctor with the expression
-    rec_cnt += 1
-    dim as ASTNODE ptr arg = astBuildImplicitCtorCall( subtype, _
-    												   n->l, _
-    												   n->arg.mode, _
-    												   is_ctorcall )
-    rec_cnt -= 1
+	tmp = symbAddTempVar( symbGetType( param ), symbGetSubtype( param ), FALSE )
 
-    if( is_ctorcall = FALSE ) then
-    	return NULL
-    end if
-
-    dim as FBSYMBOL ptr tmp = symbAddTempVar( param_dtype, _
-    				  						  subtype, _
-    				  						  FALSE, _
-    				  						  FALSE )
-
-    n->l = astNewCALLCTOR( astPatchCtorCall( arg, _
-    										 astBuildVarField( tmp ) ), _
-    					   astBuildVarField( tmp ) )
+	n->l = astNewCALLCTOR( astPatchCtorCall( arg, astBuildVarField( tmp ) ), astBuildVarField( tmp ) )
 
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYVAL ) then
 		hUDTPassByval( parent, param, n )
@@ -750,12 +732,11 @@ private function hImplicitCtor _
 		hBuildByrefArg( n, n->l )
 	end if
 
-	if( symbGetHasDtor( subtype ) ) then
+	if( symbHasDtor( param ) ) then
 		astDtorListAdd( tmp )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -813,10 +794,7 @@ private function hCheckUDTParam _
 				dim as FBSYMBOL ptr tmp = any
 
 				'' (note: if it's being returned in regs, there's no DTOR)
-				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, _
-									  arg->subtype, _
-									  FALSE, _
-									  FALSE )
+				tmp = symbAddTempVar( FB_DATATYPE_STRUCT, arg->subtype, FALSE )
 
 				n->l = astNewLink( astNewADDROF( astBuildVarField( tmp ) ), _
 								   astNewASSIGN( astBuildVarField( tmp ), _
@@ -980,70 +958,10 @@ private function hCheckParam _
 		exit function
 	end select
 
-	'' different types? convert..
-	dim as integer do_conv = any
-
-	do_conv = typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )
-	if( do_conv = FALSE ) then
-		do_conv = typeGetClass( param_dtype ) <> typeGetClass( arg_dtype )
-	end if
-
-	if( do_conv ) then
-		'' enum args are only allowed to be passed enum or int params
-		if( (param_dtype = FB_DATATYPE_ENUM) or _
-			(arg_dtype = FB_DATATYPE_ENUM) ) then
-			if( typeGetClass( param_dtype ) <> _
-				typeGetClass( arg_dtype ) ) then
-				hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
-			end if
-		end if
-
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
-			'' skip any casting if they won't do any conversion
-			dim as ASTNODE ptr t = arg
-			if( arg->class = AST_NODECLASS_CONV ) then
-				if( arg->cast.doconv = FALSE ) then
-					t = arg->l
-				end if
-			end if
-
-			'' param diff than arg can't passed by ref if it's a var/array/ptr
-			select case as const t->class
-			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-			     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
-				hParamError( parent )
-				exit function
-			end select
-		end if
-
-		'' const?
-		if( astIsCONST( arg ) ) then
-			arg = astCheckConst( symbGetType( param ), arg )
-			if( arg = NULL ) then
-				exit function
-			end if
-			arg_dtype = astGetDatatype( arg )
-		end if
-
-		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
-		if( arg = NULL ) then
-			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
-			exit function
-		end if
-		arg_dtype = astGetDatatype( arg )
-
-		n->l = arg
-
-	else
-		'' check for overflows
-		if( typeGetClass( arg_dtype ) = FB_DATACLASS_FPOINT ) then
-			if( astIsCONST( arg ) ) then
-				arg = astCheckConst( symbGetType( param ), arg )
-				if( arg = NULL ) then
-					exit function
-				end if
-				arg_dtype = astGetDatatype( arg )
-			end if
+	'' enum args are only allowed to be passed enum or int params
+	if( (param_dtype = FB_DATATYPE_ENUM) or (arg_dtype = FB_DATATYPE_ENUM) ) then
+		if( typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ) ) then
+			hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 	end if
 
@@ -1060,17 +978,64 @@ private function hCheckParam _
 						exit function
 					else
 						hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
-					End If
-					  
+					end if
 				else
 					hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 				end if
-				
+			end if
+		end if
+	elseif( typeIsPtr( arg_dtype ) ) then
+		hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+	end if
+
+	'' different types? convert..
+	if( param_dtype <> arg_dtype ) then
+		'' Cannot pass BYREF if different size/class, but we do allow
+		'' passing INTEGER vars to BYREF AS UINTEGER params etc.
+		if( (typeGetSize( param_dtype ) <> typeGetSize( arg_dtype )) or _
+		    (typeGetClass( param_dtype ) <> typeGetClass( arg_dtype ))    ) then
+			if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
+				'' skip any casting if they won't do any conversion
+				dim as ASTNODE ptr t = arg
+				if( arg->class = AST_NODECLASS_CONV ) then
+					if( arg->cast.doconv = FALSE ) then
+						t = arg->l
+					end if
+				end if
+
+				'' param diff than arg can't passed by ref if it's a var/array/ptr
+				'' (cannot pass a bytevar (1 byte) to BYREF INTEGER (4 bytes) param,
+				''  that could cause a segfault)
+				select case as const t->class
+				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+				     AST_NODECLASS_FIELD, AST_NODECLASS_DEREF
+					hParamError( parent )
+					exit function
+				end select
+
+				'' If it's an rvalue expression though then it's ok,
+				'' because it will be stored into a temp var of the
+				'' same type as the BYREF param. Then that temp var
+				'' is given to the BYREF param, and then it's safe.
 			end if
 		end if
 
-    elseif( typeIsPtr( arg_dtype ) ) then
-    	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+		'' const?
+		if( astIsCONST( arg ) ) then
+			'' show "overflow in constant conversion" warnings
+			if( astCheckConst( symbGetType( param ), arg, FALSE ) = FALSE ) then
+				hParamWarning( parent, FB_WARNINGMSG_CONVOVERFLOW )
+			end if
+		end if
+
+		arg = astNewCONV( symbGetFullType( param ), symbGetSubtype( param ), arg )
+		if( arg = NULL ) then
+			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
+		arg_dtype = astGetDatatype( arg )
+
+		n->l = arg
 	end if
 
 	'' byref arg? check if a temp param isn't needed
@@ -1090,7 +1055,6 @@ private function hCreateOptArg _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree = symbGetParamOptExpr( param )
-	dim as integer param_dtype = symbGetType( param )
 
 	if( tree = NULL ) then
 		return NULL
@@ -1104,7 +1068,7 @@ private function hCreateOptArg _
 	end if
 
 	'' UDT?
-	if( param_dtype = FB_DATATYPE_STRUCT ) then
+	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
 		'' update the counters
 		astTypeIniUpdCnt( tree )
 	end if

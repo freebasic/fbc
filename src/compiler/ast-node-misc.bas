@@ -70,52 +70,92 @@ function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = NULL
 end function
 
+private function astAsmAppend _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval typ as integer _
+	) as ASTASMTOK ptr
+
+	dim as ASTASMTOK ptr asmtok = any
+
+	asmtok = listNewNode( @ast.asmtoklist )
+
+	if( tail ) then
+		tail->next = asmtok
+	end if
+	asmtok->type = typ
+	asmtok->next = NULL
+
+	function = asmtok
+end function
+
+function astAsmAppendText _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval text as zstring ptr _
+	) as ASTASMTOK ptr
+
+	tail = astAsmAppend( tail, AST_ASMTOK_TEXT )
+
+	tail->text = ZstrAllocate( len( *text ) )
+	*tail->text = *text
+
+	function = tail
+end function
+
+function astAsmAppendSymb _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTASMTOK ptr
+
+	tail = astAsmAppend( tail, AST_ASMTOK_SYMB )
+
+	tail->sym = sym
+
+	function = tail
+end function
+
 '' ASM (l = NULL; r = NULL)
-function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr
+function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_ASM, FB_DATATYPE_INVALID )
 
-	n->asm.head = listhead
+	n->asm.tokhead = asmtokhead
 
 	function = n
 end function
 
 function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as FB_ASMTOK ptr node = any, nxt = any
-    dim as string asmline
-
-	asmline = ""
-
-	node = n->asm.head
-	do while( node <> NULL )
-		nxt = node->next
-
-		if( ast.doemit ) then
-			select case node->type
-			case FB_ASMTOK_SYMB
-				if( irGetOption( IR_OPT_HIGHLEVEL ) ) then
-					asmline += *symbGetMangledName( node->sym )
-				else
-					asmline += emitGetVarName( node->sym )
-				end if
-			case FB_ASMTOK_TEXT
-				asmline += *node->text
-			end select
-		end if
-
-		if( node->type = FB_ASMTOK_TEXT ) then
-			ZstrFree( node->text )
-		end if
-
-		listDelNode( @parser.asmtoklist, node )
-		node = nxt
-	loop
+	dim as ASTASMTOK ptr node = any, nxt = any
 
 	if( ast.doemit ) then
-		if( len( asmline ) > 0 ) then
-			irEmitASM( asmline )
-		end if
+		irEmitAsmBegin( )
+	end if
+
+	node = n->asm.tokhead
+	while( node )
+		nxt = node->next
+
+		select case( node->type )
+		case AST_ASMTOK_TEXT
+			if( ast.doemit ) then
+				irEmitAsmText( node->text )
+			end if
+			ZstrFree( node->text )
+		case AST_ASMTOK_SYMB
+			if( ast.doemit ) then
+				irEmitAsmSymb( node->sym )
+			end if
+		end select
+
+		listDelNode( @ast.asmtoklist, node )
+		node = nxt
+	wend
+
+	if( ast.doemit ) then
+		irEmitAsmEnd( )
 	end if
 
 	function = NULL
@@ -505,6 +545,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_FLOOR"           , '/ @"FLOOR"        /' , 0 '/ ), _
 	( /' @"AST_OP_FIX"             , '/ @"FIX"          /' , 0 '/ ), _
 	( /' @"AST_OP_FRAC"            , '/ @"FRAC"         /' , 0 '/ ), _
+	( /' @"AST_OP_CONVFD2FS"       , '/ @"CONVFD2FS"    /' , 0 '/ ), _
 	( /' @"AST_OP_SWZREP"          , '/ @"SWZREP"       /' , 0 '/ ), _
 	( /' @"AST_OP_DEREF"           , '/ @"DEREF"        /' , 0 '/ ), _
 	( /' @"AST_OP_FLDDEREF"        , '/ @"FLDDEREF"     /' , 0 '/ ), _

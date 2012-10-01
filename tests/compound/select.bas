@@ -1,8 +1,5 @@
 # include "fbcu.bi"
 
-
-
-
 namespace fbc_tests.compound.select_
 
 const FALSE = 0
@@ -242,8 +239,190 @@ const TEST = -100
 
 end sub
 
-sub ctor () constructor
+private sub testStringConcat cdecl( )
+	dim as string s = "a"
 
+	select case( s + "b" )
+	case "ab"
+
+	case "b"
+		CU_FAIL( )
+	case else
+		CU_FAIL( )
+	end select
+end sub
+
+#macro check( expr, expectedvalue )
+	select case expr
+	case expectedvalue
+	case else
+		CU_FAIL( )
+	end select
+#endmacro
+
+type SmallUdt
+	as integer a
+end type
+
+type SmallUdt2 field = 1
+	as short a
+	as short b
+end type
+
+type BigUdt
+	as integer a, b, c, d, e, f
+end type
+
+type BitfieldsUdt
+	a : 1 as integer
+	b : 1 as integer
+end type
+
+private function returnInteger123( ) as integer
+	function = 123
+end function
+
+private function returnUIntegerMax( ) as uinteger
+	function = &hFFFFFFFFu
+end function
+
+private function returnLongint123( ) as longint
+	function = 123ll
+end function
+
+private function returnULongintMax( ) as ulongint
+	function = &hFFFFFFFFFFFFFFFFull
+end function
+
+function returnSmallUdt( ) as SmallUdt
+	function = type( 123 )
+end function
+
+function returnSmallUdt2( ) as SmallUdt2
+	function = type( 123, 456 )
+end function
+
+function returnBigUdt( ) as BigUdt
+	function = type( 123, 456, 0, 0, 0, 0 )
+end function
+
+dim shared as integer globali = 123
+dim shared as integer globalarray(0 to 1) = { 123, 456 }
+
+private sub testExpressions cdecl( )
+	scope
+		static as integer statici = 123
+		static as integer staticarray(0 to 1) = { 123, 456 }
+		dim as integer i = 123
+		dim as integer array(0 to 1) = { 123, 456 }
+		dim as integer ptr p = @array(0)
+		dim as integer ix = 0
+
+		check( i, 123 )
+		check( statici, 123 )
+		check( globali, 123 )
+		check( i + 1, 124 )
+		check( i = 123, -1 )
+		check( -i, -123 )
+		check( *p, 123 )
+		check( p[1], 456 )
+		check( p[ix], 123 )
+
+		check( array(0), 123 )
+		check( array(1), 456 )
+		check( array(ix), 123 )
+		check( staticarray(0), 123 )
+		check( staticarray(1), 456 )
+		check( staticarray(ix), 123 )
+		check( globalarray(0), 123 )
+		check( globalarray(1), 456 )
+		check( globalarray(ix), 123 )
+	end scope
+
+	scope
+		dim as BigUdt udt = ( 123, 456, 0, 0, 0, 0 )
+		check( udt.a, 123 )
+		check( udt.b, 456 )
+
+		dim as BitfieldsUdt bitfields = ( 1, 0 )
+		check( bitfields.a, 1 )
+		check( bitfields.b, 0 )
+	end scope
+
+	scope
+		check( returnInteger123( ), 123 )
+		check( returnUIntegerMax( ), &hFFFFFFFFu )
+		check( returnLongint123( ), 123ll )
+		check( returnULongintMax( ), &hFFFFFFFFFFFFFFFFull )
+		check( returnSmallUdt( ).a, 123 )
+		check( returnSmallUdt2( ).a, 123 )
+		check( returnSmallUdt2( ).b, 456 )
+		check( returnBigUdt( ).a, 123 )
+		check( returnBigUdt( ).b, 456 )
+	end scope
+
+	scope
+		dim as string s = "123"
+		dim as string * 3 f = "123"
+		dim as zstring * 4 z = "123"
+		dim as wstring * 4 w = wstr( "123" )
+		dim as string ptr ps = @s
+		dim as zstring ptr pz = @z
+		dim as wstring ptr pw = @w
+
+		check( s, "123" )
+		check( f, "123" )
+		check( z, "123" )
+		check( w, wstr( "123" ) )
+		check( *ps, "123" )
+		check( *pz, "123" )
+		check( *pw, wstr( "123" ) )
+
+		check( lcase( s ), "123" )
+		check( lcase( f ), "123" )
+		check( lcase( z ), "123" )
+		check( lcase( w ), wstr( "123" ) )
+		check( lcase( *ps ), "123" )
+		check( lcase( *pz ), "123" )
+		check( lcase( *pw ), wstr( "123" ) )
+
+		check( s + "123", "123123" )
+		check( f + "123", "123123" )
+		check( z + "123", "123123" )
+		check( w + wstr( "123" ), wstr( "123123" ) )
+		check( *ps + "123", "123123" )
+		check( *pz + "123", "123123" )
+		check( *pw + wstr( "123" ), wstr( "123123" ) )
+	end scope
+end sub
+
+dim shared as integer wstringcalls, integercalls
+
+private function sidefxInteger( ) as integer
+	integercalls += 1
+	function = 123
+end function
+
+private function sidefxWstring( ) as wstring ptr
+	static w as wstring * 10
+
+	wstringcalls += 1
+	w = wstr( "123" )
+
+	function = @w
+end function
+
+private sub testSidefx cdecl( )
+	CU_ASSERT( integercalls = 0 )
+	check( sidefxInteger( ), 123 )
+	CU_ASSERT( integercalls = 1 )
+
+	CU_ASSERT( wstringcalls = 0 )
+	check( *sidefxWstring( ), wstr( "123" ) )
+	CU_ASSERT( wstringcalls = 1 )
+end sub
+
+sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests-compound:select")
 	fbcu.add_test("test single1", @test_single_1)
 	fbcu.add_test("test single2", @test_single_2)
@@ -251,7 +430,9 @@ sub ctor () constructor
 	fbcu.add_test("test range2", @test_range_2)
 	fbcu.add_test("test is1", @test_is_1)
 	fbcu.add_test("test is2", @test_is_2)
-
+	fbcu.add_test("SELECT CASE s + s", @testStringConcat)
+	fbcu.add_test("All kinds of expressions", @testExpressions)
+	fbcu.add_test("side effects", @testSidefx)
 end sub
 
 end namespace

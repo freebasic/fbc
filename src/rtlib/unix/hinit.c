@@ -13,6 +13,7 @@
 #endif
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <locale.h>
 
 FBCONSOLE __fb_con;
 
@@ -370,6 +371,31 @@ static void hInit( void )
 void fb_hInit( void )
 {
 	hInit( );
+
+	/* Set locale for mbstowcs() (as used by fb_wstr_ConvFromA()) */
+	setlocale( LC_ALL, "" );
+
+	/**
+	 * The current locale setting can be retrieved with setlocale( 0, 0 ):
+	 *     printf("setlocale( 0, 0 ) == %s\n", setlocale( 0, 0 ));
+	 * Checking it is useful for debugging.
+	 *
+	 * The default locale is "C" which is just plain 7-bit ASCII.
+	 * For example, with "C", our mbstowcs() calls fail to convert UTF-8
+	 * (which is commonly used on GNU/Linux nowadays) zstrings to wchar_t.
+	 * This means wstr() alias fb_StrToWstr() produces an empty wstring
+	 * instead of converting.
+	 *
+	 * setlocale( LC_ALL, "" ) should set the locale to the one given by
+	 * the LC_* or LANG environment variables. Typically it will be
+	 * something like "en_US.UTF-8". This should allow mbstowcs() to work
+	 * well on current GNU/Linux systems.
+	 *
+	 * It's also possible to set a specific locale via setlocale():
+	 *     setlocale( LC_ALL, "en_US.UTF-8" );
+	 * available locales can typically be viewed by running the "locale -a"
+	 * command in a terminal.
+	 */
 
 #ifdef HOST_LINUX
 	/* Permissions for port I/O */

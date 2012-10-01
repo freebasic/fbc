@@ -141,7 +141,7 @@ private sub hULONG2DBL _
 
 	dim as string label, aux, ostr
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 0, TRUE )
 	ostr = "cmp " + aux + ", 0"
@@ -602,10 +602,10 @@ private sub _emitLOADF2L_SSE _
 		if( svreg->typ = IR_VREGTYPE_REG ) then
 			outp "sub esp, 8"
 			if( sdsize > 4 ) then
-				outp "movlpd " + dtypeTB(dvreg->dtype).mname + " [esp]" + COMMA + src
+				outp "movlpd qword ptr [esp]" + COMMA + src
 				outp "fld qword ptr [esp]"
 			else
-				outp "movss " + dtypeTB(dvreg->dtype).mname + " [esp]" + COMMA + src
+				outp "movss dword ptr [esp]" + COMMA + src
 				outp "fld dword ptr [esp]"
 			end if
 			outp "add esp, 8"
@@ -1589,7 +1589,7 @@ private sub hCMPF_SSE _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if

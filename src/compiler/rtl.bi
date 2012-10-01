@@ -119,11 +119,11 @@
 #define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
 #define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
 
-#define FB_RTL_LONGINTDIV				"__divdi3"
-#define FB_RTL_ULONGINTDIV				"__udivdi3"
-#define FB_RTL_LONGINTMOD				"__moddi3"
-#define FB_RTL_ULONGINTMOD				"__umoddi3"
-#define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
+#define FB_RTL_LONGINTDIV				"fb___divdi3"
+#define FB_RTL_ULONGINTDIV				"fb___udivdi3"
+#define FB_RTL_LONGINTMOD				"fb___moddi3"
+#define FB_RTL_ULONGINTMOD				"fb___umoddi3"
+#define FB_RTL_DBL2ULONGINT				"fb___fixunsdfdi"
 
 #define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
 #define FB_RTL_ARRAYREDIM_OBJ			"fb_ArrayRedimObj"
@@ -146,9 +146,9 @@
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
-#define FB_RTL_INITCRTCTOR 				"__main"
+#define FB_RTL_INITCRTCTOR 				"fb___main"
 #define FB_RTL_END 						"fb_End"
-#define FB_RTL_ATEXIT					"{atexit}"
+#define FB_RTL_ATEXIT					"fb_atexit"
 
 #define FB_RTL_DATARESTORE 				"fb_DataRestore"
 #define FB_RTL_DATAREADSTR 				"fb_DataReadStr"
@@ -299,7 +299,7 @@
 #define FB_RTL_FILELOCKLARGE 			"fb_FileLockLarge"
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
 #define FB_RTL_FILEUNLOCKLARGE 			"fb_FileUnlockLarge"
-#define FB_RTL_FILERENAME 				"rename"
+#define FB_RTL_FILERENAME 				"fb_rename"
 
 #define FB_RTL_WIDTH 					"fb_Width"
 #define FB_RTL_WIDTHDEV 				"fb_WidthDev"
@@ -334,11 +334,8 @@
 #define FB_RTL_GFXSCREENSET 			"fb_GfxScreen"
 #define FB_RTL_GFXSCREENSETQB 			"fb_GfxScreenQB"
 #define FB_RTL_GFXSCREENRES 			"fb_GfxScreenRes"
-#define FB_RTL_GFXEVENT					"fb_GfxEvent"
 #define FB_RTL_GFXIMAGECREATE			"fb_GfxImageCreate"
 #define FB_RTL_GFXIMAGECREATEQB			"fb_GfxImageCreateQB"
-#define FB_RTL_GFXGETMOUSE  			"fb_GfxGetMouse"
-#define FB_RTL_GFXGETJOYSTICK  			"fb_GfxGetJoystick"
 
 #define FB_RTL_GFXPUTTRANS				"fb_hPutTrans"
 #define FB_RTL_GFXPUTPSET				"fb_hPutPSet"
@@ -351,8 +348,8 @@
 #define FB_RTL_GFXPUTADD				"fb_hPutAdd"
 #define FB_RTL_GFXPUTCUSTOM				"fb_hPutCustom"
 
-#define FB_RTL_PROFILEMCOUNT            "mcount"
-#define FB_RTL_PROFILEMONSTARTUP        "_monstartup"
+#define FB_RTL_PROFILEMCOUNT            "fb_mcount"
+#define FB_RTL_PROFILEMONSTARTUP        "fb__monstartup"
 
 #define FB_RTL_GOSUBPUSH                "fb_GosubPush"
 #define FB_RTL_GOSUBPOP                 "fb_GosubPop"
@@ -1717,30 +1714,6 @@ declare function rtlGfxImageCreate _
 		byval cexpr as ASTNODE ptr, _
 		byval dexpr as ASTNODE ptr, _
 		byval flags as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxGetMouse _
-	( _
-		byval x_expr as ASTNODE ptr, _
-		byval y_expr as ASTNODE ptr, _
-		byval w_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		byval c_expr as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxGetJoystick _
-	( _
-		byval id_expr as ASTNODE ptr, _
-		byval b_expr as ASTNODE ptr, _
-		a_expr() as ASTNODE ptr, _
-		byval is_func as integer _
-	) as ASTNODE ptr
-
-declare function rtlGfxEvent _
-	( _
-		byval e_expr as ASTNODE ptr, _
-		byval is_func as integer _
 	) as ASTNODE ptr
 
 declare function rtlProfileCall_mcount( ) as ASTNODE ptr

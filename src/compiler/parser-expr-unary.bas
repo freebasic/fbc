@@ -359,11 +359,7 @@ end function
 '':::::
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
-function cDerefExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
+function cDerefExpression( ) as ASTNODE ptr
     dim as integer derefcnt = any
     dim as ASTNODE ptr expr = any
 
@@ -387,14 +383,9 @@ function cDerefExpression _
 		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
-	function = astBuildMultiDeref( derefcnt, _
-								   expr, _
-								   astGetFullType( expr ), _
-								   astGetSubType( expr ) )
-
+	function = astBuildMultiDeref( derefcnt, expr, astGetFullType( expr ), astGetSubType( expr ) )
 end function
 
-'':::::
 private function hProcPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -427,7 +418,7 @@ private function hProcPtrBody _
 	'' taking the address of an method? pointer to methods not supported yet..
 	if( symbIsMethod( proc ) ) then
 		errReportEx( FB_ERRMSG_ACCESSTONONSTATICMEMBER, symbGetFullProcName( proc ) )
-		return NULL
+		return astNewCONSTi( 0 )
 	end if
 
 	if( symbCheckAccess( proc ) = FALSE ) then
@@ -440,11 +431,9 @@ private function hProcPtrBody _
 		callback( proc )
 	end if
 
-	function = astBuildProcAddrof(proc)
-
+	function = astBuildProcAddrof( proc )
 end function
 
-'':::::
 private function hVarPtrBody _
 	( _
 		byval base_parent as FBSYMBOL ptr, _
@@ -455,7 +444,7 @@ private function hVarPtrBody _
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a node
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end if
 
 	'' skip any casting if they won't do any conversion
@@ -475,34 +464,37 @@ private function hVarPtrBody _
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: fake a node
 			astDelTree( expr )
-			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return astNewCONSTi( 0 )
 		end if
 
 	case else
 		errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" )
 		'' error recovery: fake a node
 		astDelTree( expr )
-		return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		return astNewCONSTi( 0 )
 	end select
 
 	'' check op overloading
 	scope
-    	dim as FBSYMBOL ptr proc = any
-    	dim as FB_ERRMSG err_num = any
+		dim as FBSYMBOL ptr proc = any
+		dim as FB_ERRMSG err_num = any
 
 		proc = symbFindSelfUopOvlProc( AST_OP_ADDROF, expr, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, expr, NULL )
+			expr = astBuildCall( proc, expr, NULL )
+			if( expr = NULL ) then
+				expr = astNewCONSTi( 0 )
+			end if
+			return expr
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
-				return NULL
+				return astNewCONSTi( 0 )
 			end if
 		end if
 	end scope
 
 	function = astNewADDROF( expr )
-
 end function
 
 '':::::
@@ -511,11 +503,7 @@ end function
 '' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
+function cAddrOfExpression( ) as ASTNODE ptr
 	dim as ASTNODE ptr expr = NULL
 
 	'' '@' (Proc ('('')')? | Variable)
@@ -536,8 +524,7 @@ function cAddrOfExpression _
   		dim as FBSYMBOL ptr sym = NULL, base_parent = NULL
 
 		if( check_id ) then
-			chain_ = cIdentifier( base_parent, _
-							  	  FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+			chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		end if
 
@@ -545,12 +532,10 @@ function cAddrOfExpression _
 		if( sym <> NULL ) then
 			lexSkipToken( )
 			return hProcPtrBody( base_parent, sym )
-
 		'' anything else..
 		else
 			return hVarPtrBody( base_parent, chain_ )
 		end if
-
 	end if
 
 	select case as const lexGetToken( )
@@ -566,10 +551,7 @@ function cAddrOfExpression _
 			return astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
-    	expr = hVarPtrBody( NULL, NULL )
-		if( expr = FALSE ) then
-			return NULL
-		end if
+		expr = hVarPtrBody( NULL, NULL )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -607,9 +589,6 @@ function cAddrOfExpression _
 		end if
 
 		expr = hProcPtrBody( base_parent, sym )
-		if( expr = NULL ) then
-			return NULL
-		end if
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then

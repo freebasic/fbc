@@ -223,13 +223,13 @@ sub edbgEmitHeader _
 	ctx.incfile 	= NULL
 
 	'' emit source file name
-    lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	emitWriteStr( ".file " + QUOTE + *hEscape( filename ) + QUOTE, TRUE )
 
 	'' directory
-    if( instr( *filename, "/" ) = 0 ) then
+	if( pathIsAbsolute( filename ) = FALSE ) then
 		hEmitSTABS( STAB_TYPE_SO, hCurDir( ) + FB_HOST_PATHDIV, 0, 0, lname )
-    end if
+	end if
 
 	'' file name
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
@@ -267,7 +267,7 @@ sub edbgEmitFooter( ) static
 	emitSECTION( IR_SECTION_CODE, 0 )
 
 	'' no checkings after this
-	lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, lname )
 
 	hLABEL( lname )
@@ -655,7 +655,7 @@ sub edbgEmitProcFooter _
     ''
     hDeclLocalVars( proc, proc, initlabel, exitlabel )
 
-	lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 	hLABEL( lname )
 
 	'' emit end proc (FUN with a null string)
@@ -1157,7 +1157,7 @@ sub edbgIncludeBegin _
 
 	emitSECTION( IR_SECTION_CODE, 0 )
 
-	lname = *hMakeTmpStr( )
+	lname = *symbUniqueLabel( )
 
 	hEmitSTABS( STAB_TYPE_SOL, filename, 0, 0, lname )
 

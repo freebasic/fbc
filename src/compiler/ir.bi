@@ -96,10 +96,6 @@ type IR_VTBL
 	init as sub( )
 	end as sub( )
 
-	flush as sub _
-	( _
-	)
-
 	emitBegin as function _
 	( _
 	) as integer
@@ -152,25 +148,9 @@ type IR_VTBL
 		byval s as FBSYMBOL ptr _
 	)
 
-	procAllocStaticVars as sub(byval head_sym as FBSYMBOL ptr)
+	procAllocStaticVars as sub( byval head_sym as FBSYMBOL ptr )
 
-	emit as sub _
-	( _
-		byval op as integer, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr, _
-		byval vr as IRVREG ptr, _
-		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
-	)
-
-	emitConvert as sub _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitConvert as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitLabel as sub _
 	( _
@@ -207,10 +187,10 @@ type IR_VTBL
 		byval level as integer _
 	)
 
-	emitASM as sub _
-	( _
-		byval text as zstring ptr _
-	)
+	emitAsmBegin as sub( )
+	emitAsmText as sub( byval text as zstring ptr )
+	emitAsmSymb as sub( byval sym as FBSYMBOL ptr )
+	emitAsmEnd as sub( )
 
 	emitComment as sub _
 	( _
@@ -240,11 +220,7 @@ type IR_VTBL
 		byval vr as IRVREG ptr _
 	)
 
-	emitStore as sub _
-	( _
-		byval v1 as IRVREG ptr, _
-		byval v2 as IRVREG ptr _
-	)
+	emitStore as sub( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	emitSpillRegs as sub _
 	( _
@@ -329,6 +305,8 @@ type IR_VTBL
 	( _
 		byval s as FBSYMBOL ptr _
 	)
+
+	emitDECL as sub( byval sym as FBSYMBOL ptr )
 
 	emitDBG as sub _
 	( _
@@ -452,11 +430,6 @@ type IR_VTBL
 	( _
 		byval reg as integer _
 	)
-
-	makeTmpStr as function  _
-	( _
-		byval islabel as integer _
-	) as zstring ptr
 end type
 
 enum IR_OPT
@@ -536,8 +509,6 @@ declare sub irEnd( )
 
 #define irEmitEnd(tottime) ir.vtbl.emitEnd( tottime )
 
-#define irEmit(op, v1, v2, vr, ex1, ex2) ir.vtbl.emit( op, v1, v2, vr, ex1, ex2 )
-
 #define irEmitPROCBEGIN(proc, initlabel) ir.vtbl.emitProcBegin( proc, initlabel )
 
 #define irEmitPROCEND(proc, initlabel, exitlabel) ir.vtbl.emitProcEnd( proc, initlabel, exitlabel )
@@ -564,7 +535,7 @@ declare sub irEnd( )
 
 #define irEmitVARINISCOPEEND( ) ir.vtbl.emitVarIniScopeEnd( )
 
-#define irEmitCONVERT(dtype, stype, v1, v2) ir.vtbl.emitConvert( dtype, stype, v1, v2 )
+#define irEmitCONVERT( v1, v2 ) ir.vtbl.emitConvert( v1, v2 )
 
 #define irEmitLABEL(label) ir.vtbl.emitLabel( label )
 
@@ -572,13 +543,14 @@ declare sub irEnd( )
 
 #define irEmitPUSHARG(vr, plen, level) ir.vtbl.emitPushArg( vr, plen, level )
 
-#define irEmitASM(text) ir.vtbl.emitASM( text )
+#define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
+#define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )
+#define irEmitAsmSymb( sym )  ir.vtbl.emitAsmSymb( sym )
+#define irEmitAsmEnd( )       ir.vtbl.emitAsmEnd( )
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
 #define irEmitJMPTB(op, dtype, label) ir.vtbl.emitJmpTb( op, dtype, label )
-
-#define irFlush() ir.vtbl.flush( )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 
@@ -630,6 +602,8 @@ declare sub irEnd( )
 
 #define irEmitDBG(op, proc, ex) ir.vtbl.emitDBG( op, proc, ex )
 
+#define irEmitDECL( sym ) ir.vtbl.emitDECL( sym )
+
 
 #define irIsREG(v) (v->typ = IR_VREGTYPE_REG)
 
@@ -652,10 +626,6 @@ declare sub irEnd( )
 #define irGetVRValueI(v) v->value.int
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
-
-#define hMakeTmpStr( ) ir.vtbl.makeTmpStr( TRUE )
-
-#define hMakeTmpStrNL( ) ir.vtbl.makeTmpStr( FALSE )
 
 
 ''

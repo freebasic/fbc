@@ -594,30 +594,39 @@ function astGetValueAsULongInt _
 
 end function
 
-'':::::
-function astGetValueAsDouble _
-	( _
-		byval n as ASTNODE ptr _
-	) as double
+function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
+	select case as const( astGetDataType( n ) )
+	case FB_DATATYPE_ULONGINT
+		'' without cunsg(), &hFFFFFFFFFFFFFFFFull would be seen as -1,
+		'' causing the double to be -1 instead of the huge value...
+		function = cdbl( cunsg( astGetValLong( n ) ) )
 
-  	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = cdbl( astGetValLong( n ) )
+	case FB_DATATYPE_LONGINT
+		function = cdbl( astGetValLong( n ) )
 
-  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-  		function = astGetValFloat( n )
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		function = astGetValFloat( n )
 
-  	case FB_DATATYPE_LONG, FB_DATATYPE_ULONG
-  	    if( FB_LONGSIZE = len( integer ) ) then
-  	    	function = cdbl( astGetValLong( n ) )
-  	    else
-  	    	function = cdbl( astGetValInt( n ) )
-  	    end if
+	case FB_DATATYPE_ULONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = cdbl( cunsg( astGetValLong( n ) ) )
+		else
+			function = cdbl( cunsg( astGetValInt( n ) ) )
+		end if
 
-  	case else
-  		function = cdbl( astGetValInt( n ) )
-  	end select
+	case FB_DATATYPE_LONG
+		if( FB_LONGSIZE = len( integer ) ) then
+			function = cdbl( astGetValLong( n ) )
+		else
+			function = cdbl( astGetValInt( n ) )
+		end if
 
+	case FB_DATATYPE_UINT
+		function = cdbl( cunsg( astGetValInt( n ) ) )
+
+	case else
+		function = cdbl( astGetValInt( n ) )
+	end select
 end function
 
 '':::::
@@ -672,106 +681,92 @@ end sub
 '' checks
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
 function astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval show_warn as integer _
+	) as integer
 
+	dim as integer result = any
+	dim as double dval = any, dmin = any, dmax = any
+	dim as longint lval = any
+
+	result = TRUE
+
+	''
 	'' x86/32-bit assumptions
 	'' assuming dtype has been stripped of const info
+	''
+	'' We don't want to show overflow warnings for conversions where only
+	'' the sign differs, such as integer <-> uinteger, because in that case
+	'' there is no data/precision loss. Technically speaking there can be
+	'' overflows in such a conversion, but it's trivial to convert back
+	'' and nothing is lost. It would probably be rather annoying to have
+	'' warnings about it in many cases, such as:
+	''    dim a as uinteger = -1
+	''    dim b as uinteger = 1 shl 31
+	''
 
-    select case as const dtype
-    case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		dim as double dval = any, dmin = any, dmax = any
+	select case as const( dtype )
+	''case FB_DATATYPE_DOUBLE
+		'' DOUBLE can hold all the other dtype's values;
+		'' perhaps not with 100% precision (e.g. huge ULONGINTs will
+		'' lose some least-significant digits), but the DOUBLE doesn't
+		'' overflow to INF (the same can be seen with SINGLEs, but at
+		'' least those can be overflown with really huge DOUBLEs).
+		'' Thus, no checks are needed for DOUBLE.
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
-			dmin = 1.175494351e-38
-			dmax = 3.402823466e+38
-		else
-			dmin = 2.2250738585072014e-308
-			dmax = 1.7976931348623147e+308
-		end if
+	case FB_DATATYPE_SINGLE
+		'' anything to SINGLE: show warning when out of SINGLE limits
+		dmin = 1.401298e-45
+		dmax = 3.402823e+38
 
+		'' using abs() because limits apply regardless of sign
 		dval = abs( astGetValueAsDouble( n ) )
-    	if( dval <> 0 ) then
-    		if( (dval < dmin) or (dval > dmax) ) then
-    			errReport( FB_ERRMSG_MATHOVERFLOW, TRUE )
+
+		'' checking against zero because it's the only integral number
+		'' that is < dmin after abs(), and it shouldn't cause an
+		'' overflow warning.
+		if( dval <> 0 ) then
+			result = ((dval >= dmin) and (dval <= dmax))
+		end if
+
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
+	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+	     FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+	     FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
+	     FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
+
+		select case as const( typeGetSize( dtype ) )
+		case 1
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -128) and (lval <= 255))
+		case 2
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -32768) and (lval <= 65535))
+		case 4
+			lval = astGetValueAsLongInt( n )
+			result = ((lval >= -2147483648u) and (lval <= 4294967295u))
+		case 8
+			'' longints can hold most other type's values, except floats
+			'' float?
+			if( typeGetClass( astGetDataType( n ) ) = FB_DATACLASS_FPOINT ) then
+				dval = astGetValueAsDouble( n )
+				result = ((dval >= -9223372036854775808ull) and _
+					  (dval <= 18446744073709551615ull))
 			end if
-		end if
-
-	case FB_DATATYPE_LONGINT
-
-chk_long:
-		'' unsigned constant?
-		if( typeIsSigned( astGetDataType( n ) ) = FALSE ) then
-			'' too big?
-			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
-				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-			end if
-		end if
-
-	case FB_DATATYPE_ULONGINT
-
-chk_ulong:
-		'' signed constant?
-		if( typeIsSigned( astGetDataType( n ) ) ) then
-			'' too big?
-			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
-				n = astNewCONV( dtype, NULL, n )
-				errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-			end if
-		end if
-
-    case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, _
-    	 FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
-
-chk_int:
-		dim as longint lval = any
-
-		lval = astGetValueAsLongInt( n )
-		if( (lval < ast_minlimitTB( dtype )) or _
-			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
-			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-
-    case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
-    	 FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
-    	 FB_DATATYPE_UINT
-
-chk_uint:
-		dim as ulongint ulval = any
-
-		ulval = astGetValueAsULongInt( n )
-		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
-			(ulval > ast_maxlimitTB( dtype )) ) then
-			n = astNewCONV( dtype, NULL, n )
-			errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
-		end if
-
-	case FB_DATATYPE_LONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			goto chk_int
-		else
-			goto chk_long
-		end if
-
-	case FB_DATATYPE_ULONG
-		if( FB_LONGSIZE = len( integer ) ) then
-			goto chk_uint
-		else
-			goto chk_ulong
-		end if
+		end select
 
 	case FB_DATATYPE_BITFIELD
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 
-	function = n
+	if( show_warn and (result = FALSE) ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
 
+	function = result
 end function
 
 '':::::
@@ -795,7 +790,10 @@ function astPtrCheck _
 		if (astIsCONST(expr) = FALSE) then
 			exit function
 		end if
-		return (astGetValInt(expr) = 0)
+		if( typeGetClass( edtype ) = FB_DATACLASS_INTEGER ) then
+			return (astGetValueAsLongint( expr ) = 0)
+		end if
+		return FALSE
 	end if
 
 	'' different constant masks?
@@ -1232,6 +1230,16 @@ sub astSetType _
 
 	case AST_NODECLASS_FIELD
 		astSetType( n->l, dtype, subtype )
+
+	case AST_NODECLASS_CALLCTOR
+		'' Propagate type change up to the temp VAR access, since that's
+		'' what will be returned by astLoadCALLCTOR().
+		astSetType( n->r, dtype, subtype )
+
+		'' This happens with field accesses on a CALLCTOR expression
+		'' such as (UDT( )).field. The access to offset 0 of the temp
+		'' UDT var is optimized out, causing the CALLCTOR expression to
+		'' be changed over to the field's dtype for a "direct" access.
 
 	end select
 

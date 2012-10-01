@@ -41,7 +41,6 @@ function symbAddConst _
 
 end function
 
-'':::::
 function symbAllocFloatConst _
 	( _
 		byval value as double, _
@@ -61,37 +60,26 @@ function symbAllocFloatConst _
 	id += svalue
 
 	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), _
-								   @id, _
-								   dtype, _
-								   TRUE, _
-								   FALSE )
+	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *hMakeTmpStrNL( )
+	id_alias = *symbUniqueId( )
 
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
-	s = symbAddVarEx( @id, @id_alias, _
-					  dtype, NULL, _
-					  0, _
-					  0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
+	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
-	''
 	s->var_.littext = ZstrAllocate( len( svalue ) )
 	*s->var_.littext = svalue
 
 	function = s
-
 end function
 
-
-'':::::
 function symbAllocIntConst _
 	( _
 		byval value as integer, _
@@ -111,30 +99,24 @@ function symbAllocIntConst _
 	id += svalue
 
 	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), _
-								   @id, _
-								   dtype, _
-								   TRUE, _
-								   FALSE )
+	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *hMakeTmpStrNL( )
+	id_alias = *symbUniqueId( )
 
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
-	''
 	s->var_.littext = ZstrAllocate( len( svalue ) )
 	*s->var_.littext = svalue
 
 	function = s
-
 end function
 
 '':::::
@@ -157,32 +139,25 @@ function symbAllocLongIntConst _
 	id += svalue
 
 	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
-	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), _
-								   @id, _
-								   dtype, _
-								   TRUE, _
-								   FALSE )
+	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), @id, dtype, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *hMakeTmpStrNL( )
+	id_alias = *symbUniqueId( )
 
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE )
 
-	''
 	s->var_.littext = ZstrAllocate( len( svalue ) )
 	*s->var_.littext = svalue
 
 	function = s
-
 end function
-
 
 '':::::
 function symbAllocStrConst _
@@ -209,40 +184,29 @@ function symbAllocStrConst _
 		id = "{fbsc}"
 		id += *sname
 	else
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	end if
 
-	''
-	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-								  @id, _
-								  FB_SYMBCLASS_VAR, _
-								  TRUE, _
-								  FALSE )
+	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), @id, FB_SYMBCLASS_VAR, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *hMakeTmpStrNL( )
+	id_alias = *symbUniqueId( )
 
 	'' lgt += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @id, @id_alias, _
-					  FB_DATATYPE_CHAR, NULL, _
-					  lgt + 1, _
-					  0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
+	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, lgt + 1, 0, dTB(), _
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
-	''
 	s->var_.littext = ZstrAllocate( strlen )
 	*s->var_.littext = *sname
 
 	function = s
-
 end function
 
-'':::::
 function symbAllocWStrConst _
 	( _
 		byval sname as wstring ptr, _
@@ -271,52 +235,35 @@ function symbAllocWStrConst _
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
-		id = *hMakeTmpStrNL( )
+		id = *symbUniqueId( )
 	end if
 
-	''
-	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
-								  @id, _
-								  FB_SYMBCLASS_VAR, _
-								  TRUE, _
-								  FALSE )
+	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), @id, FB_SYMBCLASS_VAR, TRUE, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	id_alias = *hMakeTmpStrNL( )
+	id_alias = *symbUniqueId( )
 
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @id, @id_alias, _
-					  FB_DATATYPE_WCHAR, NULL, _
-					  (lgt+1) * len( wstring ), _
-					  0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
-					  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
+	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt+1) * len( wstring ), 0, dTB(), _
+	                  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+	                  FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
-	''
 	s->var_.littextw = WstrAllocate( strlen )
 	*s->var_.littextw = *sname
 
 	function = s
-
 end function
 
-'':::::
-sub symbDelConst _
-	( _
-		byval s as FBSYMBOL ptr _
-	)
-
+sub symbDelConst( byval s as FBSYMBOL ptr )
     if( s = NULL ) then
     	exit sub
     end if
 
     '' if it's a string, the symbol attached will be deleted be delVar()
-
 	symbFreeSymbol( s )
-
 end sub
 
 '':::::

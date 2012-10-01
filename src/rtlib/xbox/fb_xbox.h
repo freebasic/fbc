@@ -22,3 +22,9 @@ typedef long fb_off_t;
 #define Executive 0
 #define KernelMode 0
 #define UserMode 1
+
+/* These functions are not present in the OpenXDK's headers */
+int swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
+double wcstod(const wchar_t*, wchar_t**);
+unsigned long wcstoul(const wchar_t *, wchar_t **, int);
+unsigned long long  wcstoull(const wchar_t * __restrict__, wchar_t ** __restrict__, int);

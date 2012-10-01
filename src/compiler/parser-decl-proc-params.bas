@@ -128,7 +128,7 @@ private function hOptionalExpr _
     select case as const typeGet( dtype )
     '' UDT? let SymbolInit() build a tree..
     case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+		sym = symbAddTempVar( dtype, subtype, FALSE )
 
     	expr = cInitializer( sym, FB_INIOPT_ISINI )
     	if( expr = NULL ) then
@@ -141,18 +141,14 @@ private function hOptionalExpr _
 
     '' anything else..
 	case else
-    	expr = cExpression( )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
+		expr = cExpression( )
+		if( expr = NULL ) then
+			exit function
+		end if
 
-    	'' check for invalid types..
-    	static as ASTNODE lside
-
-    	astBuildVAR( @lside, NULL, 0, dtype, subtype )
-
-    	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-        	exit function
+		'' check for invalid types
+		if( astCheckASSIGNToType( dtype, subtype, expr ) = FALSE ) then
+			exit function
 		end if
 
     end select

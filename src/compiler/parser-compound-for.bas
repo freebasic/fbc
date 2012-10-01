@@ -217,6 +217,11 @@ private function hAllocTemp _
 		symbUnsetIsTemp(s)
 	end if
 
+	'' Add DECL node for it, so the C backend can emit it correctly
+	'' (vars not marked as temp must have DECL nodes instead)
+	symbSetDontInit( s )
+	astAdd( astNewDECL( s, NULL ) )
+
     function = s
 
 end function
@@ -275,7 +280,7 @@ private sub hFlushBOP _
 	lhs_expr = hElmToExpr( lhs )
 	rhs_expr = hElmToExpr( rhs )
 
-    '' attempt to build "lhs op rhs"
+	'' attempt to build "lhs op rhs"
 	expr = astNewBOP( op, lhs_expr, rhs_expr, ex, AST_OPOPT_NONE )
 
 	'' fail?
@@ -285,8 +290,8 @@ private sub hFlushBOP _
 		exit sub
 	end if
 
-    '' UDT?
-	if( astGetDataType( lhs ) = FB_DATATYPE_STRUCT ) then
+	'' UDT?
+	if( lhs->dtype = FB_DATATYPE_STRUCT ) then
 		'' handle dtors, etc
 		expr = astUpdComp2Branch( expr, ex, TRUE )
 
@@ -311,29 +316,30 @@ private function hStepExpression _
 		byval rhs as FB_CMPSTMT_FORELM ptr _
 	) as ASTNODE ptr
 
+	dim as integer length = any
+
 	'' This function generates the AST node for
 	'' the STEP variable, which is used in hFlushSelfBOP
 	'' as the right-hand-side to the FOR += operation.
 
-    '' pointer counter?
-    if ( typeIsPtr( lhs_dtype ) ) then
+	'' pointer counter?
+	if( typeIsPtr( lhs_dtype ) ) then
+		length = symbCalcDerefLen( lhs_dtype, lhs_subtype )
+		if( length <= 0 ) then
+			errReport( FB_ERRMSG_INCOMPLETETYPE )
+			length = 1
+		end if
 
-	    '' is STEP a complex expression?
+		'' is STEP a complex expression?
 		if( rhs->sym <> NULL ) then
-
 			'' Creates an AST node with a binary expression.
 			'' The left hand side of the expression is the
 			'' STEP variable in a FOR block, the right-hand-side
 			'' is an unsigned integer constant derived from the
 			'' width of the counter variable.
-
 			function = astNewBOP( AST_OP_MUL, _
 			                      astNewVAR( rhs->sym, 0, FB_DATATYPE_INTEGER ), _
-			                      astNewCONSTi( symbCalcLen( typeDeref( lhs_dtype ), _
-			                                                 lhs_subtype, _
-			                                                 FALSE ), _
-			                                    FB_DATATYPE_UINT ) )
-
+			                      astNewCONSTi( length ) )
 		'' constant STEP
 		else
 
@@ -341,21 +347,13 @@ private function hStepExpression _
 			'' The value of the constant is calculated by
 			'' taking the STEP value, and multiplying it by
 			'' the width of the counter type.
-
-			function = astNewCONSTi( rhs->value.int * symbCalcLen( typeDeref( lhs_dtype ), _
-			                                                       lhs_subtype, _
-			                                                       FALSE ), _
-			                         FB_DATATYPE_INTEGER )
-
+			function = astNewCONSTi( rhs->value.int * length )
 		end if
-
-    '' regular variable counter
-    else
-
-        '' no calculation needed
-        function = hElmToExpr( rhs )
-
-    end if
+	'' regular variable counter
+	else
+		'' no calculation needed
+		function = hElmToExpr( rhs )
+	end if
 
 end function
 
@@ -372,8 +370,8 @@ private sub hFlushSelfBOP _
 	dim as ASTNODE ptr lhs_expr = any, rhs_expr = any, expr = any
 	dim as FBSYMBOL ptr lhs_subtype = symbGetSubtype( lhs->sym )
 
-	lhs_expr = astNewVAR( lhs->sym, 0, astGetFullType( lhs ), lhs_subtype )
-    rhs_expr = hStepExpression( astGetFullType( lhs ), lhs_subtype, rhs )
+	lhs_expr = astNewVAR( lhs->sym, 0, lhs->dtype, lhs_subtype )
+	rhs_expr = hStepExpression( lhs->dtype, lhs_subtype, rhs )
 
 	'' attept to create the '+=' expression
 	expr = astNewSelfBOP( op, lhs_expr, rhs_expr )
@@ -390,26 +388,19 @@ private sub hFlushSelfBOP _
 
 end sub
 
-'':::::
-private function hCallCtor _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as integer
-
+private function hCallCtor( byval sym as FBSYMBOL ptr ) as integer
 	dim as ASTNODE ptr expr = cInitializer( sym, FB_INIOPT_ISINI )
-    if( expr = NULL ) then
-    	return FALSE
-    end if
+	if( expr = NULL ) then
+		exit function
+	end if
 
-    expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
-    if( expr = NULL ) then
-    	return FALSE
-    end if
+	expr = astTypeIniFlush( expr, sym, AST_INIOPT_ISINI )
+	if( expr = NULL ) then
+		exit function
+	end if
 
 	astAdd( expr )
-
 	function = TRUE
-
 end function
 
 private sub hForAssign _
@@ -638,7 +629,6 @@ private sub hForStep _
 			astDelNode( expr )
 
 			isconst += 1
-
 		else
 			iscomplex = TRUE
 
@@ -662,13 +652,11 @@ private sub hForStep _
 	else
 		iscomplex = TRUE
 
-		if( stk->for.explicit_step = TRUE ) then
+		if( stk->for.explicit_step ) then
 			'' generate a symbol using the expression's type
 			stk->for.stp.sym = hAllocTemp( dtype, subtype )
 			stk->for.stp.dtype = symbGetType( stk->for.end.sym )
-		end if
 
-		if( stk->for.explicit_step ) then
 			'' build constructor call
 			if( hCallCtor( stk->for.stp.sym ) = FALSE ) then
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
@@ -797,7 +785,7 @@ function cForStmtBegin _
 
 	dim as integer dtype = astGetDataType( idexpr )
 	dim as FBSYMBOL ptr subtype = astGetSubType( idexpr )
-	
+
 	if( typeIsConst( astGetFullType( idexpr ) ) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
 	end if
@@ -807,7 +795,7 @@ function cForStmtBegin _
 
 	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 		flags or= FOR_ISUDT
-		if( symbGetHasCtor( symbGetSubtype( astGetSymbol( idexpr ) ) ) ) then
+		if( symbHasCtor( astGetSymbol( idexpr ) ) ) then
 			flags or= FOR_HASCTOR
 		end if
 

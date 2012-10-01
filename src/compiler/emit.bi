@@ -66,6 +66,7 @@ enum EMIT_NODEOP
 
 	EMIT_OP_FIX
 	EMIT_OP_FRAC
+	EMIT_OP_CONVFD2FS
 
 	EMIT_OP_SWZREP
 
@@ -296,15 +297,9 @@ type EMIT_VTBL
 		byref r2 as integer _
 	)
 
-	getVarName as function _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string
-
 	procGetFrameRegName as function _
 	( _
 	) as const zstring ptr
-
 
 	procBegin as sub _
 	( _
@@ -411,20 +406,8 @@ declare function emitGetRegClass _
 		byval dclass as integer _
 	) as REGCLASS ptr
 
-declare function emitASM _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitCOMMENT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
-
-declare function emitLIT _
-	( _
-		byval text as zstring ptr _
-	) as EMIT_NODE ptr
+declare sub emitCOMMENT( byval text as zstring ptr )
+declare sub emitASM( byval text as zstring ptr )
 
 declare function emitJMPTB _
 	( _
@@ -694,6 +677,8 @@ declare function emitFRAC _
 		byval dvreg as IRVREG ptr _
 	) as EMIT_NODE ptr
 
+declare function emitCONVFD2FS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr
+
 declare function emitSWZREP _
 	( _
 		byval dvreg as IRVREG ptr _
@@ -856,8 +841,6 @@ declare sub emitFlush _
 
 
 #define emitGetOptionValue( opt ) emit.vtbl.getOptionValue( opt )
-
-#define emitGetVarName( s ) emit.vtbl.getVarName( s )
 
 #define emitIsKeyword( text ) emit.vtbl.isKeyword( text )
 

@@ -178,8 +178,8 @@ private sub hProcFlush _
     	irEmitPROCEND( sym, p->block.initlabel, p->block.exitlabel )
     end if
 
-    '' emit static local variables
-    irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
+	'' Emit static local variables
+	irProcAllocStaticVars( symbGetProcSymbTbHead( sym ) )
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )
@@ -449,7 +449,7 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 
 	' Don't allocate anything for a naked function, because they will be allowed
 	' at ebp-N, which won't exist, no result is needed either
-	if( irGetOption( IR_OPT_HIGHLEVEL ) orelse (sym->attrib and FB_SYMBATTRIB_NAKED) = 0 ) then
+	if( symbIsNaked( sym ) = FALSE ) then
 		'' alloc parameters
 		hDeclProcParams( sym )
 
@@ -537,33 +537,36 @@ private function hCheckErrHnd _
 
 end function
 
-'':::::
 private function hCallResultCtor _
 	( _
 		byval head_node as ASTNODE ptr, _
 		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr res = any, subtype = any
+	dim as FBSYMBOL ptr res = any, defctor = any
 
-    subtype = symbGetSubtype( sym )
+	'' UDT with default ctor? (if there is none, nothing needs to be done)
+	defctor = symbGetCompDefCtor( symbGetSubtype( sym ) )
+	if( defctor = NULL ) then
+		'' No default ctor, but others? Must show an error, because we
+		'' cannot leave the result unconstructed. It would be nicer to
+		'' detect & show this error at the top of the function already,
+		'' but that's not possible because of RETURN which doesn't
+		'' require a defctor...
+		if( symbHasCtor( sym ) ) then
+			errReport( FB_ERRMSG_RESULTHASNODEFCTOR )
+		end if
+		return head_node
+	end if
 
-    if( symbGetCompDefCtor( subtype ) = NULL ) then
-    	return head_node
-    end if
+	res = symbGetProcResult( sym )
+	if( res = NULL ) then
+		return head_node
+	end if
 
-    res = symbGetProcResult( sym )
-    if( res = NULL ) then
-    	return head_node
-    end if
-
-    head_node = astAddAfter( _
-    				astBuildCtorCall( subtype, _
-    							   	  astBuildProcResultVar( sym, res ) ), _
-    			 	head_node )
-
-	function = head_node
-
+	function = astAddAfter( astBuildCtorCall( symbGetSubtype( sym ), _
+	                                          astBuildProcResultVar( sym, res ) ), _
+	                        head_node )
 end function
 
 '':::::
@@ -600,7 +603,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 	'' No need to worry about any "explicit" code though (any statements),
 	'' including local variables and possibly resulting destructor calls;
 	'' they are "the coders fault", not ours.
-	enable_implicit_code = ((sym->attrib and FB_SYMBATTRIB_NAKED) = 0)
+	enable_implicit_code = not symbIsNaked( sym )
 
 	if( errGetCount( ) = 0 ) then
 		'' Constructor?
@@ -653,13 +656,20 @@ function astProcEnd( byval callrtexit as integer ) as integer
 			end if
 		end if
 
-		if( irGetOption( IR_OPT_HIGHLEVEL ) or enable_implicit_code ) then
+		if( enable_implicit_code ) then
 			'' if it's a function, load result
 			if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-
 				select case symbGetType( sym )
 				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-					if( symbGetProcStatAssignUsed( sym ) ) then
+					'' Add result ctor call to the top of the function,
+					'' a) if FUNCTION= (and/or EXIT FUNCTION) was used,
+					'' b) or if neither FUNCTION= nor RETURN was used,
+					'' but not if RETURN was used, because that already
+					'' calls the copy ctor at every RETURN.
+					'' This way the result will be constructed properly,
+					'' even if nothing was explicitly returned.
+					if( symbGetProcStatAssignUsed( sym ) or _
+					    (not symbGetProcStatReturnUsed( sym )) ) then
 						head_node = hCallResultCtor( head_node, sym )
 					end if
 				end select
@@ -865,9 +875,9 @@ private function hCallCtorList _
 		elements = symbGetArrayElements( this_ )
 	end if
 
-	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE, FALSE )
+	cnt = symbAddTempVar( FB_DATATYPE_INTEGER, NULL, FALSE )
 	label = symbAddLabel( NULL )
-	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE, FALSE )
+	iter = symbAddTempVar( typeAddrOf( dtype ), subtype, FALSE )
 
 	'' Instance?
 	if( fld <> NULL ) then
@@ -916,35 +926,27 @@ private function hCallFieldCtor _
 		byval fld as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as FBSYMBOL ptr subtype = any
-
 	'' Do not initialize?
 	if( symbGetDontInit( fld ) ) then
 		exit function
 	end if
 
-	select case symbGetType( fld )
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-		subtype = symbGetSubtype( fld )
+	'' has a default ctor too?
+	if( symbHasDefCtor( fld ) ) then
+		'' !!!FIXME!!! assuming only static arrays will be allowed in fields
 
-		'' has a default ctor too?
-		if( symbGetCompDefCtor( subtype ) <> NULL ) then
-			'' !!!FIXME!!! assuming only static arrays will be allowed in fields
-
-			'' not an array?
-			if( (symbGetArrayDimensions( fld ) = 0) or _
-			    (symbGetArrayElements( fld ) = 1) ) then
-
-				'' ctor( this.field )
-				function = astBuildCtorCall( subtype, astBuildInstPtr( this_, fld ) )
-			'' array..
-			else
-				function = hCallCtorList( TRUE, this_, fld )
-			end if
-
-			exit function
+		'' not an array?
+		if( (symbGetArrayDimensions( fld ) = 0) or _
+		    (symbGetArrayElements( fld ) = 1) ) then
+			'' ctor( this.field )
+			function = astBuildCtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) )
+		'' array..
+		else
+			function = hCallCtorList( TRUE, this_, fld )
 		end if
-	end select
+
+		exit function
+	end if
 
 	'' bitfield?
 	if( symbGetType( fld ) = FB_DATATYPE_BITFIELD ) then
@@ -1073,7 +1075,7 @@ private function hCallBaseCtor _
 		end if
 	'' No default ctor, but others? Then BASE() should have been used,
 	'' since a ctor must be called, but we cannot do it automatically.
-	elseif( symbGetHasCtor( subtype ) ) then
+	elseif( symbGetCompCtorHead( subtype ) ) then
 		errReport( FB_ERRMSG_NOBASEINIT )
 	end if
 
@@ -1133,8 +1135,7 @@ private sub hCallFieldDtor _
 		byval fld as FBSYMBOL ptr _
 	)
 
-	select case symbGetType( fld )
-	case FB_DATATYPE_STRING
+	if( symbGetType( fld ) = FB_DATATYPE_STRING ) then
 		var fldexpr = astBuildInstPtr( this_, fld )
 
 		'' not an array?
@@ -1144,24 +1145,20 @@ private sub hCallFieldDtor _
 		else
 			astAdd( rtlArrayStrErase( fldexpr ) )
 		end if
-
-	case FB_DATATYPE_STRUCT
-		var subtype = symbGetSubtype( fld )
-
-		'' has a dtor too?
-		if( symbGetHasDtor( subtype ) ) then
+	else
+		'' UDT field with dtor?
+		if( symbHasDtor( fld ) ) then
 			'' not an array?
 			if( (symbGetArrayDimensions( fld ) = 0) or _
 			    (symbGetArrayElements( fld ) = 1) ) then
-
 				'' dtor( this.field )
-				astAdd( astBuildDtorCall( subtype, astBuildInstPtr( this_, fld ) ) )
+				astAdd( astBuildDtorCall( symbGetSubtype( fld ), astBuildInstPtr( this_, fld ) ) )
 			else
 				astAdd( hCallCtorList( FALSE, this_, fld ) )
 			end if
 		end if
+	end if
 
-	end Select
 end sub
 
 private sub hCallFieldDtors _
@@ -1331,10 +1328,8 @@ function astProcAddStaticInstance _
     ''
     wrap = listNewNode( dtorlist )
 
-	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), NULL, _
-						FB_DATATYPE_VOID, NULL, _
-						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
-						FB_FUNCMODE_CDECL )
+	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), NULL, FB_DATATYPE_VOID, NULL, _
+	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
     wrap->proc = proc
     wrap->sym = sym
@@ -1380,11 +1375,11 @@ private sub hGlobCtorBegin( byval is_ctor as integer )
 	dim as FBSYMBOL ptr proc = any
 
 	'' sub ctorname|dtorname cdecl( ) constructor|destructor
-	proc = symbAddProc( symbPreAddProc( NULL ), hMakeTmpStr( ), _
-						iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
-						FB_DATATYPE_VOID, NULL, _
-						FB_SYMBATTRIB_PRIVATE or FB_SYMBOPT_DECLARING, _
-						FB_FUNCMODE_CDECL )
+	proc = symbAddProc( symbPreAddProc( NULL ), symbUniqueLabel( ), _
+	                    iif( is_ctor, @FB_GLOBCTORNAME, @FB_GLOBDTORNAME ), _
+	                    FB_DATATYPE_VOID, NULL, FB_SYMBATTRIB_PRIVATE, _
+	                    FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+
 	if( is_ctor ) then
 		symbAddGlobalCtor( proc )
 	else

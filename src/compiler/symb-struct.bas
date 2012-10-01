@@ -18,15 +18,19 @@
 '':::::
 function symbStructBegin _
 	( _
+		byval symtb as FBSYMBOLTB ptr, _
 		byval parent as FBSYMBOL ptr, _
 		byval id as const zstring ptr, _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval base_ as FBSYMBOL ptr _
+		byval base_ as FBSYMBOL ptr, _
+		byval attrib as integer _
 	) as FBSYMBOL ptr
 
-    function = NULL
+	dim as FBSYMBOL ptr s = any
+
+	function = NULL
 
     '' no explict alias given?
     if( id_alias = NULL ) then
@@ -36,12 +40,9 @@ function symbStructBegin _
     	end if
     end if
 
-    var s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   	   NULL, _
-    				   	   NULL, NULL, _
-    				   	   FB_SYMBCLASS_STRUCT, _
-    				   	   id, id_alias, _
-    				   	   FB_DATATYPE_STRUCT, NULL )
+	s = symbNewSymbol( FB_SYMBOPT_DOHASH, NULL, symtb, NULL, _
+	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
+	                   FB_DATATYPE_STRUCT, NULL, attrib )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -79,7 +80,7 @@ function symbStructBegin _
 	s->udt.dbg.typenum = INVALID
 
 	s->udt.ext = NULL
-	
+
 	'' extending another UDT?
 	if( base_ <> NULL ) then
 		static as FBARRAYDIM dTB(0 to 0)
@@ -98,7 +99,6 @@ function symbStructBegin _
 	end if
 
 	function = s
-
 end function
 
 '':::::
@@ -129,7 +129,7 @@ private function hGetRealLen _
 end function
 
 '':::::
-private function hCalcALign _
+private function hCalcAlign _
 	( _
 		byval lgt as integer, _
 		byval ofs as integer, _
@@ -182,6 +182,27 @@ private function hCalcALign _
 		function = (align - (ofs and (align - 1))) and (align-1)
 	end if
 
+end function
+
+private function hCheckUDTSize _
+	( _
+		byval udtlen as uinteger, _
+		byval fieldlen as uinteger, _
+		byval fieldpad as uinteger _
+	) as integer
+
+	dim as ulongint n = any
+
+	n = udtlen
+	n += fieldlen
+	n += fieldpad
+
+	if( n > &h7FFFFFFFull ) then
+		function = FALSE
+		errReport( FB_ERRMSG_UDTTOOBIG )
+	else
+		function = TRUE
+	end if
 end function
 
 '':::::
@@ -291,7 +312,7 @@ function symbAddField _
 
 	''
 	if( updateudt ) then
-		pad = hCalcALign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
+		pad = hCalcAlign( lgt, parent->ofs, parent->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -326,8 +347,14 @@ function symbAddField _
 
 				end if
 			end if
+		end if
 
+		'' Check whether adding this field would make the UDT be too big
+		if( hCheckUDTSize( parent->ofs, lgt, pad ) ) then
 			parent->ofs += pad
+		else
+			'' error recovery: don't add this field
+			updateudt = FALSE
 		end if
 
 		'' update largest field len
@@ -390,10 +417,8 @@ function symbAddField _
 
 	symbSetArrayDimensions( sym, dimensions )
 	if( dimensions > 0 ) then
-		dim as integer i
-		for i = 0 to dimensions-1
-			if( symbNewArrayDim( sym, dTB(i).lower, dTB(i).upper ) = NULL ) then
-			end if
+		for i as integer = 0 to dimensions-1
+			symbAddArrayDim( sym, dTB(i).lower, dTB(i).upper )
 		next
 	end if
 
@@ -423,20 +448,18 @@ function symbAddField _
 			symbSetUDTHasPtrField( base_parent )
 		end if
 
-		if( symbGetHasCtor( subtype ) ) then
+		if( symbGetCompCtorHead( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-										  FB_UDTOPT_ISANON)) <> 0 ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_CTORINUNION )
 			else
 				symbSetUDTHasCtorField( parent )
 			end if
 		end if
 
-		if( symbGetHasDtor( subtype ) ) then
+		if( symbGetCompDtor( subtype ) ) then
 			'' if it's an anon udt, it or parent is an UNION
-			if( (parent->udt.options and (FB_UDTOPT_ISUNION or _
-										  FB_UDTOPT_ISANON)) <> 0 ) then
+			if( (parent->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0 ) then
 				errReport( FB_ERRMSG_DTORINUNION )
 			else
 				symbSetUDTHasDtorField( parent )
@@ -496,12 +519,8 @@ sub symbInsertInnerUDT _
 
 	if( (parent->udt.options and FB_UDTOPT_ISUNION) = 0 ) then
 		'' calc padding (should be aligned like if an UDT field was being added)
-		pad = hCalcALign( 0, _
-						  parent->ofs, _
-						  parent->udt.align, _
-						  FB_DATATYPE_STRUCT, _
-						  inner )
-		if( pad > 0 ) then
+		pad = hCalcAlign( 0, parent->ofs, parent->udt.align, FB_DATATYPE_STRUCT, inner )
+		if( hCheckUDTSize( parent->ofs, 0, pad ) ) then
 			parent->ofs += pad
 		end if
 	end if
@@ -593,7 +612,7 @@ private function hGetReturnType _
 
 	'' udt has a dtor, copy-ctor or virtual methods? it's never
 	'' returned in registers
-	if( symbIsTrivial( sym ) = FALSE ) then
+	if( symbCompIsTrivial( sym ) = FALSE ) then
 		return typeAddrOf( dtype )
 	end if
 
@@ -714,8 +733,8 @@ sub symbStructEnd _
 	'' do round?
 	if( sym->udt.align <> 1 ) then
 		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcALign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
-		if( pad > 0 ) then
+		pad = hCalcAlign( 0, sym->lgt, sym->udt.align, FB_DATATYPE_STRUCT, sym )
+		if( hCheckUDTSize( sym->lgt, 0, pad ) ) then
 			sym->lgt += pad
 		end if
 	end if
@@ -733,44 +752,27 @@ sub symbStructEnd _
 
 end sub
 
-'':::::
-function symbCloneStruct _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
-
+function symbCloneStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr clone = any, fld = any
 
 	'' assuming only simple structs will be cloned (ie: the ones
 	'' created by symbAddArrayDesc())
 
-	clone = symbStructBegin( NULL, _
-						 	 hMakeTmpStrNL( ), _
-						 	 NULL, _
-						 	 (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
-							 sym->udt.align )
+	clone = symbStructBegin( NULL, NULL, symbUniqueId( ), NULL, _
+	                         (sym->udt.options and FB_UDTOPT_ISUNION) <> 0, _
+	                         sym->udt.align, NULL, 0 )
 
-
-    fld = sym->udt.ns.symtb.head
-    do while( fld <> NULL )
-    	symbAddField( clone, _
-    				  symbGetName( fld ), _
-    				  0, _
-    				  dTB(), _
-    				  symbGetType( fld ), _
-    				  symbGetSubType( fld ), _
-    				  fld->lgt, _
-    				  0 )
-
-
+	fld = sym->udt.ns.symtb.head
+	while( fld )
+		symbAddField( clone, symbGetName( fld ), 0, dTB(), _
+		              symbGetType( fld ), symbGetSubType( fld ), fld->lgt, 0 )
 		fld = fld->next
-	loop
+	wend
 
 	symbStructEnd( clone )
 
 	function = clone
-
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

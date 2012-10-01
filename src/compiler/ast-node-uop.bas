@@ -260,10 +260,8 @@ function astNewUOP _
 	case AST_OP_FRAC
 		'' integer?
 		if( dclass = FB_DATACLASS_INTEGER ) then
-			if op = AST_OP_FRAC then
-				'' return zero (opimization should eliminate 'AND 0' tree if no classes on o)
-				return astNewBOP(AST_OP_AND, o, astNewCONSTi(0, dtype))
-			end if
+			'' return zero (opimization should eliminate 'AND 0' tree if no classes on o)
+			return astNewBOP(AST_OP_AND, o, astNewCONSTi(0, dtype))
 		end if
 
 	'' '+'? do nothing..
@@ -384,6 +382,10 @@ function astLoadUOP _
 
 	if( o = NULL ) then
 		return NULL
+	end if
+
+	if( o->class = AST_NODECLASS_CONV ) then
+		astUpdateCONVFD2FS( o, n->dtype, TRUE )
 	end if
 
 	v1 = astLoad( o )

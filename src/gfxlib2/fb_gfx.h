@@ -97,22 +97,6 @@
 #define PUT_MODE_BLEND		9
 #define PUT_MODES			10
 
-#define KEY_BUFFER_LEN		16
-
-#define KEY_QUIT		0x100
-#define KEY_UP			0x101
-#define KEY_DOWN		0x102
-#define KEY_LEFT		0x103
-#define KEY_RIGHT		0x104
-#define KEY_INS			0x105
-#define KEY_DEL			0x106
-#define KEY_HOME		0x107
-#define KEY_END			0x108
-#define KEY_PAGE_UP		0x109
-#define KEY_PAGE_DOWN		0x10A
-#define KEY_F(n)		(0x10A + (n))
-#define KEY_MAX_SPECIALS	(KEY_F(10) - 0x100 + 1)
-
 #define WINDOW_TITLE_SIZE	128
 
 #define EVENT_KEY_PRESS				1

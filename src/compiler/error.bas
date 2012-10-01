@@ -112,6 +112,8 @@ end type
 		@"Expected ';'", _
 		@"Undefined label", _
 		@"Too many array dimensions", _
+		@"Array too big", _
+		@"User Defined Type too big", _
 		@"Expected scalar counter", _
 		@"Illegal outside a CONSTRUCTOR, DESTRUCTOR, FUNCTION, OPERATOR, PROPERTY or SUB block", _
 		@"Expected var-len array", _
@@ -146,7 +148,6 @@ end type
 		@"Executable not found", _
 		@"Array out-of-bounds", _
 		@"Missing command-line option for", _
-		@"Math overflow", _
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _
 		@"Illegal inside a compound statement or scoped block", _
@@ -228,9 +229,11 @@ end type
 		@"ERASE on UDT with non-parameterless default constructor", _
 		@"This symbol cannot be undefined", _
 		@"Either 'RETURN' or 'FUNCTION =' should be used when returning objects with default constructors", _
+		@"Missing RETURN to copy-construct function result", _
 		@"Invalid assignment/conversion", _
 		@"Invalid array subscript", _
 		@"TYPE or CLASS has no default constructor", _
+		@"Function result TYPE has no default constructor", _
 		@"Base UDT without default constructor; missing BASE() initializer", _
 		@"Base UDT without default constructor; missing default constructor implementation in derived UDT", _
 		@"Base UDT without default constructor; missing copy constructor implementation in derived UDT", _
@@ -327,7 +330,9 @@ end type
 		@"Casting derived UDT pointer from incompatible pointer type", _
 		@"Casting derived UDT pointer from unrelated UDT pointer type", _
 		@"Casting derived UDT pointer to incompatible pointer type", _
-		@"Casting derived UDT pointer to unrelated UDT pointer type" _
+		@"Casting derived UDT pointer to unrelated UDT pointer type", _
+		@"ALIAS name string is empty", _
+		@"LIB name string is empty" _
 	}
 
 
@@ -545,6 +550,10 @@ sub errReportWarnEx _
 	end if
 
 	if( warningMsgs(msgnum).level < env.clopt.warninglevel ) then
+		exit sub
+	end if
+
+	if( errctx.hide_further_messages ) then
 		exit sub
 	end if
 

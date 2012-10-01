@@ -458,6 +458,38 @@ private function hGetIdxName _
 
     if( vi <> NULL ) then
     	mult = vreg->mult
+		''
+		'' For x86 ASM, a multiplier/scaling factor can be given right
+		'' as part of address/indexing expression. It can be a power
+		'' of two in the range 1..8, i.e. one of {1, 2, 4, 8}.
+		''
+		''  For example, assuming a variable at ebp-N, holding a valid array index,
+		''  and the corresponding dword array at ebp-M:
+		''
+		''      mov eax, dword ptr [ebp-N]       ; Load array index variable from stack
+		''      mov dword ptr [ebp+eax*4-M], 0   ; Store 0 into element eax of the dword array
+		''
+		''  instead of:
+		''
+		''      mov eax, dword ptr [ebp-N]
+		''      imul eax, 4
+		''      mov dword ptr [ebp+eax-M], 0
+		''
+		'' We can support {3, 5, 9} multipliers by emitting them as
+		'' *2+1, *4+1, *8+1 respectively (with addone = TRUE).
+		''
+		'' 6 and 7 cannot be supported.
+		''
+		'' Besides that, since the "addone" form uses up the "offset"
+		'' part from the [base + (index*mult) + offset] form, it can
+		'' only be used if the offset isn't needed in combination with
+		'' the base. This means the "addone" form cannot be used with
+		'' things from stack (ebp-N), but only globals.
+		''
+
+		assert( (mult >= 1) and (mult <= 9) )
+		assert( (mult <> 6) and (mult <> 7) )
+
 		if( mult > 1 ) then
 			addone = FALSE
 			select case mult
@@ -470,6 +502,7 @@ private function hGetIdxName _
 			iname += str( mult )
 
 			if( addone ) then
+				assert( vreg->ofs = 0 )
 				iname += "+"
 				iname += *rname
 			end if
@@ -510,6 +543,8 @@ sub hPrepOperand _
 		else
 			operand = "["
 		end if
+
+		'' base + (index*mult) + offset
 
 		'' variable or index
 		dim as zstring ptr idx_op
@@ -959,14 +994,9 @@ private sub hWriteFooter _
 
 end sub
 
-'':::::
-private sub hWriteBss _
-	( _
-		byval s as FBSYMBOL ptr )
-
-    do while( s <> NULL )
-
-    	select case symbGetClass( s )
+private sub hWriteBss( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteBss( symbGetNamespaceTbHead( s ) )
@@ -975,15 +1005,14 @@ private sub hWriteBss _
 		case FB_SYMBCLASS_SCOPE
 			hWriteBss( symbGetScopeSymbTbHead( s ) )
 
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		hDeclVariable( s )
+		'' variable?
+		case FB_SYMBCLASS_VAR
+			hDeclVariable( s )
 
-    	end select
+		end select
 
-    	s = s->next
-    loop
-
+		s = s->next
+	wend
 end sub
 
 '':::::
@@ -1015,7 +1044,6 @@ private sub hEmitVarConst _
 
 	hEmitConstHeader( )
 
-
 	'' some SSE instructions require operands to be 16-byte aligned
 	if( s->var_.align ) then
 		hALIGN ( s->var_.align )
@@ -1035,14 +1063,9 @@ private sub hEmitVarConst _
 
 end sub
 
-'':::::
-private sub hWriteConst _
-	( _
-		byval s as FBSYMBOL ptr )
-
-	do while( s <> NULL )
-
-		select case symbGetClass( s )
+private sub hWriteConst( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteConst( symbGetNamespaceTbHead( s ) )
@@ -1057,18 +1080,12 @@ private sub hWriteConst _
 		end select
 
 		s = s->next
-	loop
-
+	wend
 end sub
 
-'':::::
-private sub hWriteData _
-	( _
-		byval s as FBSYMBOL ptr )
-
-	do while( s <> NULL )
-
-		select case symbGetClass( s )
+private sub hWriteData( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
 		'' name space?
 		case FB_SYMBCLASS_NAMESPACE
 			hWriteData( symbGetNamespaceTbHead( s ) )
@@ -1084,8 +1101,7 @@ private sub hWriteData _
 		end select
 
 		s = s->next
-	loop
-
+	wend
 end sub
 
 '':::::
@@ -1262,8 +1278,8 @@ private sub hClearLocals _
 			outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
 			outp( "mov ecx," & cunsg(bytestoclear) \ 8 )
 			outp( "pxor mm0, mm0" )
-		    lname = *hMakeTmpStr( )
-		    hLABEL( lname )
+			lname = *symbUniqueLabel( )
+			hLABEL( lname )
 			outp( "movq [edi], mm0" )
 			outp( "add edi, 8" )
 			outp( "dec ecx" )
@@ -1323,7 +1339,7 @@ private sub hCreateFrame _
 	dim as zstring ptr lprof
 
 	' No frame for naked functions
-	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	if( symbIsNaked( proc ) = FALSE ) then
 
     	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
@@ -1347,7 +1363,7 @@ private sub hCreateFrame _
 
 		if( env.clopt.target = FB_COMPTARGET_DOS ) then
 			if( env.clopt.profile ) then
-				lprof = hMakeProfileLabelName()
+				lprof = symbMakeProfileLabelName( )
 
 				outEx(".section .data" + NEWLINE )
 				outEx( ".balign 4" + NEWLINE )
@@ -1388,7 +1404,7 @@ private sub hDestroyFrame _
 	) static
 
 	' don't do anything for naked functions, except the .size at the end
-	if (proc->attrib and FB_SYMBATTRIB_NAKED) = 0 then
+	if( symbIsNaked( proc ) = FALSE ) then
 
     	dim as integer bytestoalloc
 
@@ -1431,15 +1447,10 @@ end sub
 '' implementation
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private sub _emitLIT _
-	( _
-		byval s as zstring ptr )
-    dim ostr as string
-
-    ostr = *s + NEWLINE
+private sub _emitLIT( byval s as zstring ptr )
+	dim ostr as string
+	ostr = *s + NEWLINE
 	outEX( ostr )
-
 end sub
 
 '':::::
@@ -1665,7 +1676,7 @@ private sub hULONG2DBL _
 
 	dim as string label, aux, ostr
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	hPrepOperand( svreg, aux, FB_DATATYPE_INTEGER, 0, TRUE )
 	ostr = "cmp " + aux + ", 0"
@@ -3017,19 +3028,31 @@ private sub _emitSUBF _
 
 end sub
 
-'':::::
-private sub _emitMULI _
-	( _
-		byval dvreg as IRVREG ptr, _
-		byval svreg as IRVREG ptr _
-	) static
+private sub _emitMULI( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+	dim as integer eaxfree = any, edxfree = any, eaxinsource = any
+	dim as integer eaxindest = any, edxindest = any, edxtrashed = any
+	dim as string eax, edx, dst, src, ostr
 
-    dim eaxfree as integer, edxfree as integer
-    dim edxtrashed as integer
-    dim eaxinsource as integer, eaxindest as integer, edxindest as integer
-    dim eax as string, edx as string
-    dim ostr as string
-    dim dst as string, src as string
+	#if __FB_DEBUG__
+		dim as integer backupcount = 0
+		#define BACKUPS( x ) backupcount = backupcount x
+	#else
+		#define BACKUPS( x )
+	#endif
+
+	'' This essentially does:
+	''    dvreg = dvreg * svreg
+	'' Unsigned integer multiplication:
+	''    MUL src<byte>   -  AX      = AL * src
+	''    MUL src<word>   -  DX:AX   = AX * src
+	''    MUL src<dword>  -  EDX:EAX = EAX * src
+	'' i.e. eax/edx are overwritten with the result, which means care must
+	'' taken to preserve & restore them if they're already used.
+	''
+	'' src is one operand, dst in eax the other, + dst recieves the result:
+	''    mov eax, dst
+	''    mul src
+	''    mov dst, eax
 
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
@@ -3049,66 +3072,126 @@ private sub _emitMULI _
     	edx = "dx"
     end if
 
-	if( (eaxinsource) or (svreg->typ = IR_VREGTYPE_IMM) ) then
+	'' src uses eax or is an immediate?
+	if( eaxinsource or (svreg->typ = IR_VREGTYPE_IMM) ) then
+		'' Store src somewhere else a) to free up eax for the other
+		'' operand, or b) because MUL doesn't take immediates
 		edxtrashed = TRUE
-		if( edxindest ) then
+		if( edxfree = FALSE ) then
 			hPUSH( "edx" )
-			if( dvreg->typ <> IR_VREGTYPE_REG ) then
+			BACKUPS( +1 )
+			'' edx will be overwritten -- if dst uses edx but isn't stored
+			'' in edx, it's value must be backed up in addition to edx.
+			if( edxindest and (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				'' Using dst as dword instead of plain dst
 				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH( ostr )
+				BACKUPS( +1 )
 			end if
-		elseif( edxfree = FALSE ) then
-			hPUSH( "edx" )
 		end if
-
 		hMOV( edx, src )
 		src = edx
 	else
 		edxtrashed = FALSE
+		'' since edx isn't getting trashed by us before the MUL,
+		'' an edx backup is only needed if edx is used and dst <> edx.
+		'' (MUL will trash edx, but at that point we don't need edx's
+		'' value anymore if dst = edx, because it was just MUL input)
+		if( edxfree = FALSE ) then
+			if( (edxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				hPUSH( "edx" )
+				BACKUPS( +1 )
+			end if
+		end if
 	end if
 
+	'' dst <> eax?
 	if( (eaxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
-		if( (edxindest) and (edxtrashed) ) then
+		'' dst access no longer possible?
+		if( edxindest and edxtrashed ) then
+			''  a) backup1 = edx    b) backup1 = edx = dst
+			''     backup2 = dst
+			'' After storing dst into eax, the dst backup has
+			'' served its purpose and is popped/overwritten.
 			if( eaxfree = FALSE ) then
-				outp "xchg eax, [esp]"
+				'' overwrite dst backup with eax backup
+				outp( "xchg eax, [esp]" )
 			else
-				hPOP "eax"
+				'' pop dst into eax
+				hPOP( "eax" )
+				BACKUPS( -1 )
 			end if
 		else
+			''  a) backup1 = edx    b) no backups yet
 			if( eaxfree = FALSE ) then
-				hPUSH "eax"
+				'' add eax backup
+				hPUSH( "eax" )
+				BACKUPS( +1 )
 			end if
-			hMOV eax, dst
+
+			'' can use dst directly (can be "mov eax, [eax+...]")
+			hMOV( eax, dst )
 		end if
 	end if
 
-	ostr = "mul " + src
-	outp ostr
+	outp( "mul " + src )
+
+	'' store result from eax into dst if dst <> eax
+	'' dst access may depend on edx or eax, they must be restored
+	'' from stack first, without losing the MUL result in eax.
 
 	if( eaxindest = FALSE ) then
-		if( edxindest and dvreg->typ <> IR_VREGTYPE_REG ) then
-			hPOP "edx"					'' edx= tos (eax)
-			outp "xchg edx, [esp]"			'' tos= edx; edx= dst
-		end if
+		if( edxindest and (dvreg->typ <> IR_VREGTYPE_REG) ) then
+			'' dst uses edx but dst <> edx
+			'' 1st backup = edx
+			if( eaxfree = FALSE ) then
+				'' 2nd backup = eax
+				hMOV( "edx", "[esp+4]" )  '' restore edx for dst access
+				hMOV( dst, eax )          '' store result from eax/ax
+				hMOV( "eax", "[esp]" )    '' restore eax, now that the result was read
+				outp( "add esp, 8" )      '' remove both backups from stack
+				BACKUPS( -2 )
+			else
+				hPOP( "edx" )     '' restore edx for dst access
+				hMOV( dst, eax )  '' store result from eax/ax
+				BACKUPS( -1 )
+			end if
+		else
+			'' a) dst = edx    no edx backup, but perhaps eax
+			'' b) dst <> edx   edx & eax backups if they were used
 
-		hMOV dst, eax
+			'' can access dst freely (uses neither edx nor eax)
+			hMOV( dst, eax )  '' store result from eax/ax
+			if( eaxfree = FALSE ) then
+				hPOP( "eax" )
+				BACKUPS( -1 )
+			end if
 
-		if( eaxfree = FALSE ) then
-			hPOP "eax"
+			'' dst <> edx? (edx was only preserved until after the MUL if dst <> edx)
+			if( (edxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+				if( edxfree = FALSE ) then
+					hPOP( "edx" )
+					BACKUPS( -1 )
+				end if
+			end if
 		end if
 	else
+		'' a) dst = eax
+		'' b) dst = [eax+...]
+		'' dst <> eax?
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			hMOV "edx", "eax"			'' edx= eax
-			hPOP "eax"					'' restore eax
-			hMOV dst, edx				'' [eax+...] = edx
+			hMOV( "edx", "eax" )  '' move result out of the way
+			hPOP( "eax" )         '' restore eax to access dst
+			hMOV( dst, edx )      '' store result from edx/dx (well, actually eax/ax)
+			BACKUPS( -1 )
+		end if
+		if( edxfree = FALSE ) then
+			hPOP( "edx" )
+			BACKUPS( -1 )
 		end if
 	end if
 
-	if( edxtrashed ) then
-		if( (edxfree = FALSE) and (edxindest = FALSE) ) then
-			hPOP "edx"
-		end if
-	end if
+	assert( backupcount = 0 )
 
 end sub
 
@@ -3757,7 +3840,7 @@ private sub hSHIFTL _
 		dim as integer eaxindest, edxindest, ecxindest
 		dim as integer ofs
 
-		label = *hMakeTmpStr( )
+		label = *symbUniqueLabel( )
 
 		hPUSH( dst2 )
 		hPUSH( dst1 )
@@ -4348,7 +4431,7 @@ private sub hCMPL _
 	hPrepOperand64( svreg, src1, src2 )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -4357,7 +4440,7 @@ private sub hCMPL _
 	ostr = "cmp " + dst2 + COMMA + src2
 	outp ostr
 
-	falselabel = *hMakeTmpStr( )
+	falselabel = *symbUniqueLabel( )
 
 	'' set the boolean result?
 	if( rvreg <> NULL ) then
@@ -4412,7 +4495,7 @@ private sub hCMPI _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -4514,7 +4597,7 @@ private sub hCMPF _
 	hPrepOperand( svreg, src )
 
 	if( label = NULL ) then
-		lname = *hMakeTmpStr( )
+		lname = *symbUniqueLabel( )
 	else
 		lname = *symbGetMangledName( label )
 	end if
@@ -5124,8 +5207,8 @@ private sub _emitSGNL _
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
-	label1 = *hMakeTmpStr( )
-	label2 = *hMakeTmpStr( )
+	label1 = *symbUniqueLabel( )
+	label2 = *symbUniqueLabel( )
 
 	ostr = "cmp " + dst2 + ", 0"
 	outp ostr
@@ -5156,7 +5239,7 @@ private sub _emitSGNI _
 
 	hPrepOperand( dvreg, dst )
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
 	ostr = "cmp " + dst + ", 0"
 	outp ostr
@@ -5182,7 +5265,7 @@ private sub _emitSGNF _
 
 	hPrepOperand( dvreg, dst )
 
-	label = *hMakeTmpStr( )
+	label = *symbUniqueLabel( )
 
     iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
 
@@ -5331,132 +5414,88 @@ private sub _emitEXP _
 	outp "fstp st(1)"
 end sub
 
-
-
-''::::
-#macro hFpuChangeRC( cw_reg, mode )
-	scope
-		static as string ostr
-		outp "sub esp, 4"
-		outp "fnstcw [esp]"
-		hMOV cw_reg, "[esp]"
-		if( mode <> "11" ) then
-			ostr = "and " + cw_reg + ", 0b1111001111111111"
-			outp ostr
-		end if
-		ostr = "or " + cw_reg +  (", 0b0000" + mode + "0000000000")
-		outp ostr
-		hPUSH cw_reg
-		outp "fldcw [esp]"
-		outp "add esp, 4"
-	end scope
-#endmacro
-
-''::::
-#macro hFpuRoundRestore( )
-	outp "fldcw [esp]"
-	outp "add esp, 4"
-#endmacro
-
-'':::::
-private sub _emitFLOOR _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
+private sub hFpuChangeRC( byref regname as string, byval mode as zstring ptr )
+	outp( "sub esp, 4" )
+	outp( "fnstcw [esp]" )
+	hMOV( regname, "[esp]" )
+	if( *mode <> "11" ) then
+		outp( "and " + regname + ", 0b1111001111111111" )
 	end if
-
-	'' round down toward -infinity
-	hFpuChangeRC( cw_regname, "01" )
-
-	outp "frndint"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
-	end if
-
+	outp( "or " + regname +  (", 0b0000" + *mode + "0000000000") )
+	hPUSH( regname )
+	outp( "fldcw [esp]" )
+	outp( "add esp, 4" )
 end sub
 
-'':::::
-private sub _emitFIX _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
+private sub hEmitFloatFunc( byval func as integer )
+	dim as integer reg, preservereg
+	dim as string regname
 
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	'' dst = floor( abs( dst ) ) * sng( dst )
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
+	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	if( reg = INVALID ) then
+		reg = EMIT_REG_EAX
+		preservereg = TRUE
 	end if
 
-	'' chop truncating toward 0
-	hFpuChangeRC( cw_regname, "11" )
+	regname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	outp "frndint"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
+	if( preservereg ) then
+		hPUSH( regname )
 	end if
 
+	select case( func )
+	case 1
+		'' st(0) = floor( st(0) )
+		'' round down toward -infinity
+		hFpuChangeRC( regname, "01" )
+		outp( "frndint" )
+	case 2
+		'' st(0) = floor( abs( st(0) ) ) * sng( st(0) )
+		'' chop truncating toward 0
+		hFpuChangeRC( regname, "11" )
+		outp( "frndint" )
+	case 3
+		'' st(0) = st(0) - floor( st(0) )
+		'' chop truncating toward 0
+		hFpuChangeRC( regname, "11" )
+		outp( "fld st(0)" )
+		outp( "frndint" )
+		outp( "fsubp" )
+	end select
+
+	'' restore FPU rounding
+	outp( "fldcw [esp]" )
+	outp( "add esp, 4" )
+
+	if( preservereg ) then
+		hPOP( regname )
+	end if
 end sub
 
-'':::::
-private sub _emitFRAC _
-	( _
-		byval dvreg as IRVREG ptr _
-	) static
-
-	dim as integer cw_reg, isfree
-	dim as string cw_regname
-
-	'' dst = dst - floor( dst )
-
-	cw_reg = hFindFreeReg( FB_DATACLASS_INTEGER )
-	cw_regname = *hGetRegName( FB_DATATYPE_INTEGER, cw_reg )
-
-	isfree = hIsRegFree( FB_DATACLASS_INTEGER, cw_reg )
-
-	if( isfree = FALSE ) then
-		hPUSH( cw_regname )
-	end if
-
-	'' chop truncating toward 0
-	hFpuChangeRC( cw_regname, "11" )
-
-	outp "fld st(0)"
-	outp "frndint"
-	outp "fsubp"
-
-	hFpuRoundRestore( )
-
-	if( isfree = FALSE ) then
-		hPOP( cw_regname )
-	end if
-
+private sub _emitFLOOR( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 1 )
 end sub
 
+private sub _emitFIX( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 2 )
+end sub
+
+private sub _emitFRAC( byval dvreg as IRVREG ptr )
+	hEmitFloatFunc( 3 )
+end sub
+
+private sub _emitCONVFD2FS( byval dvreg as IRVREG ptr )
+	assert( dvreg->typ = IR_VREGTYPE_REG )
+	assert( dvreg->regFamily = IR_REG_FPU_STACK )
+
+	'' fld stores into st(0) but doesn't convert from
+	'' qword to dword, a dword temp var must be used,
+	'' in order to get the truncation
+	outp( "sub esp, 4" )
+	outp( "fstp dword ptr [esp]" )
+	outp( "fld dword ptr [esp]" )
+	outp( "add esp, 4" )
+end sub
 
 '':::::
 private sub _emitXchgTOS _
@@ -6386,6 +6425,7 @@ end sub
         _
 		EMIT_CBENTRY(FIX), _
 		EMIT_CBENTRY(FRAC), _
+		EMIT_CBENTRY(CONVFD2FS), _
 	   _
 		NULL, _
 	   _
@@ -6544,7 +6584,7 @@ private sub _close _
 	hWriteBss( symbGetGlobalTbHead( ) )
 
 	''
-	if( env.clopt.export ) then
+	if( env.clopt.export and (env.target.options and FB_TARGETOPT_EXPORT) ) then
 		hWriteExport( symbGetGlobalTbHead( ) )
 	end if
 
@@ -6572,32 +6612,6 @@ private sub _close _
 	env.outf.num = 0
 
 end sub
-
-'':::::
-private function _getVarName _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as string static
-
-	dim as string sname
-
-	if( s <> NULL ) then
-		sname = *symbGetMangledName( s )
-
-		if( symbGetOfs( s ) > 0 ) then
-			sname += "+" + str( symbGetOfs( s ) )
-
-		elseif( symbGetOfs( s ) < 0 ) then
-			sname += str( symbGetOfs( s ) )
-		end if
-
-		function = sname
-
-	else
-		function = ""
-	end if
-
-end function
 
 '':::::
 private function _procGetFrameRegName _
@@ -6723,24 +6737,23 @@ private sub _procEnd _
 
 end sub
 
-private sub _procAllocStaticVars(byval s as FBSYMBOL ptr)
-    do while( s <> NULL )
+private sub _procAllocStaticVars( byval s as FBSYMBOL ptr )
+	while( s )
+		select case( symbGetClass( s ) )
+		'' scope block? recursion..
+		case FB_SYMBCLASS_SCOPE
+			_procAllocStaticVars( symbGetScopeSymbTbHead( s ) )
 
-    	select case s->class
-    	'' scope block? recursion..
-    	case FB_SYMBCLASS_SCOPE
-    		_procAllocStaticVars( symbGetScopeSymbTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		'' static?
-    		if( symbIsStatic( s ) ) then
+		'' variable?
+		case FB_SYMBCLASS_VAR
+			'' static?
+			if( symbIsStatic( s ) ) then
 				hDeclVariable( s )
 			end if
 		end select
 
-    	s = s->next
-    loop
+		s = symbGetNext( s )
+	wend
 end sub
 
 '':::::
@@ -7028,7 +7041,6 @@ function emitGasX86_ctor _
 		@_isRegPreserved, _
 		@_getFreePreservedReg, _
 		@_getResultReg, _
-		@_getVarName, _
 		@_procGetFrameRegName, _
 		@_procBegin, _
 		@_procEnd, _

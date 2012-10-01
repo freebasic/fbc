@@ -47,7 +47,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 	), _
 		/' __main CDECL ( ) as void '/ _
 		( _
-			@FB_RTL_INITCRTCTOR, NULL, _
+			@FB_RTL_INITCRTCTOR, @"__main", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
@@ -633,12 +633,9 @@ sub rtlSystemModEnd( )
 
 end sub
 
-
-
-'':::::
-function rtlCpuCheck( ) as integer static
-	dim as ASTNODE ptr proc, cpu
-	dim as FBSYMBOL ptr s, label
+private function rtlCpuCheck( ) as integer
+	dim as ASTNODE ptr proc = any, cpu = any
+	dim as FBSYMBOL ptr s = any, label = any
 
 	function = FALSE
 
@@ -700,13 +697,11 @@ function rtlCpuCheck( ) as integer static
 		end if
 		astAdd( proc )
 
-
 		'' end if
 		astAdd( astNewLABEL( label ) )
 	end if
 
 	function = TRUE
-
 end function
 
 '':::::
@@ -750,8 +745,12 @@ function rtlInitApp _
 		'' fb_InitSignals( )
 		astAdd( astNewCALL( PROCLOOKUP( INITSIGNALS ), NULL ) )
 
-		'' Check CPU type
-		rtlCpuCheck( )
+		'' Checking the CPU for features is only needed on x86
+		'' TODO: x86 assumption
+		'if( fbIsX86( ) ) then
+			'' Check CPU type
+			rtlCpuCheck( )
+		'end if
 	end if
 
 	function = proc

@@ -114,6 +114,8 @@ end type
 type AST_NODE_IDX
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
+	'' Note: the multiplier field is used in combination with x86 ASM-backend specific
+	'' optimizations only, see hOptConstIdxMult().
 end type
 
 type AST_NODE_PTR
@@ -136,13 +138,25 @@ type AST_NODE_LIT
 	text			as zstring ptr
 end type
 
-type FB_ASMTOK_ as FB_ASMTOK
+enum AST_ASMTOKTYPE
+	AST_ASMTOK_TEXT
+	AST_ASMTOK_SYMB
+end enum
 
-type AST_NODE_ASM
-	head			as FB_ASMTOK_ ptr
+type ASTASMTOK
+	type		as AST_ASMTOKTYPE
+	union
+		sym	as FBSYMBOL ptr
+		text	as zstring ptr
+	end union
+	next		as ASTASMTOK ptr
 end type
 
-type AST_NODE_OP                                  	'' used by: bop, uop, conv & addr
+type AST_NODE_ASM
+	tokhead as ASTASMTOK ptr
+end type
+
+type AST_NODE_OP  '' used by: bop, uop, addr
 	op				as integer
 	options 		as AST_OPOPT
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
@@ -225,6 +239,7 @@ end type
 
 type AST_NODE_CAST
 	doconv 			as integer						'' do conversion (TRUE or FALSE)
+	do_convfd2fs		as integer  '' whether or not to ensure truncation in double2single conversions
 end type
 
 ''
@@ -319,6 +334,8 @@ type ASTCTX
 
 	dtorlist		as TLIST						'' temp dtors list
 	flushdtorlist	as integer
+
+	asmtoklist		as TLIST  '' inline ASM token nodes
 end Type
 
 #include once "ir.bi"
@@ -523,6 +540,13 @@ declare function astNewOvlCONV _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
+declare sub astUpdateCONVFD2FS _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval is_expr as integer _
+	)
+
 declare function astNewBOP _
 	( _
 		byval op as integer, _
@@ -721,10 +745,19 @@ declare function astNewLIT _
 		byval text as zstring ptr _
 	) as ASTNODE ptr
 
-declare function astNewASM _
+declare function astAsmAppendText _
 	( _
-		byval listhead as FB_ASMTOK_ ptr _
-	) as ASTNODE ptr
+		byval tail as ASTASMTOK ptr, _
+		byval text as zstring ptr _
+	) as ASTASMTOK ptr
+
+declare function astAsmAppendSymb _
+	( _
+		byval tail as ASTASMTOK ptr, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTASMTOK ptr
+
+declare function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 
 declare function astNewJMPTB_Label _
 	( _
@@ -818,12 +851,20 @@ declare function astOptAssignment _
 declare function astCheckConst _
 	( _
 		byval dtype as integer, _
-		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+		byval n as ASTNODE ptr, _
+		byval show_warn as integer _
+	) as integer
 
 declare function astCheckASSIGN _
 	( _
 		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+declare function astCheckASSIGNToType _
+	( _
+		byval ldtype as integer, _
+		byval lsubtype as FBSYMBOL ptr, _
 		byval r as ASTNODE ptr _
 	) as integer
 
@@ -946,9 +987,7 @@ declare function astTypeIniClone _
 		byval tree as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare function astDataStmtBegin _
-	( _
-	) as ASTNODE ptr
+declare function astDataStmtBegin( ) as ASTNODE ptr
 
 declare function astDataStmtStore _
 	( _
@@ -956,10 +995,7 @@ declare function astDataStmtStore _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-declare sub astDataStmtEnd _
-	( _
-		byval tree as ASTNODE ptr _
-	)
+declare sub astDataStmtEnd( byval tree as ASTNODE ptr )
 
 declare function astDataStmtAdd _
 	( _
@@ -1190,10 +1226,7 @@ declare function astFindLocalSymbol _
 		byval n as ASTNODE ptr _
 	) as FBSYMBOL ptr
 
-declare sub astGosubAddInit _
-	( _
-		byval proc as FBSYMBOL ptr _
-	)
+declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 
 declare sub astGosubAddJmp _
 	( _

@@ -177,8 +177,6 @@ type PARSERCTX
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
 
-	asmtoklist		as TLIST					'' inline ASM list
-
 	ovlarglist		as TLIST					'' used to resolve calls to overloaded functions
 
 	'' hacks
@@ -634,15 +632,8 @@ declare function cHighestPrecExpr _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as ASTNODE ptr
 
-declare function cDerefExpression _
-	( _
-		_
-	) as ASTNODE ptr
-
-declare function cAddrOfExpression _
-	( _
-		_
-	) as ASTNODE ptr
+declare function cDerefExpression( ) as ASTNODE ptr
+declare function cAddrOfExpression( ) as ASTNODE ptr
 
 declare function cTypeConvExpr _
 	( _
@@ -749,8 +740,8 @@ declare function cAsmBlock _
 		_
 	) as integer
 
-declare function cAliasAttribute() as zstring ptr
-declare sub cLibAttribute()
+declare function cAliasAttribute( ) as zstring ptr
+declare sub cLibAttribute( )
 declare sub cConstOrStaticAttribute( byval pattrib as integer ptr )
 
 declare function cProcReturnMethod _

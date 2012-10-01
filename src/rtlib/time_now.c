@@ -1,7 +1,7 @@
 /* NOW function */
 
-#include <time.h>
 #include "fb.h"
+#include <time.h>
 
 /*:::::*/
 FBCALL double fb_Now( void )
