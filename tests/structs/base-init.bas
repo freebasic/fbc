@@ -274,6 +274,54 @@ namespace baseinitIsCtorSpecific2
 	end sub
 end namespace
 
+namespace simple
+	type TBase
+		dim baseField as integer = 1234
+		declare constructor( )
+		declare constructor( value as integer )
+	end type
+
+	constructor Tbase( )
+	end constructor
+
+	constructor TBase( value as integer )
+		baseField = value
+	end constructor
+
+	type TFoo extends TBase
+		dim fooField as integer = 5678
+		declare constructor( )
+		declare constructor( value as integer )
+		declare constructor( baseValue as integer, value as integer )
+	end type
+
+	constructor TFoo( )
+	end constructor
+
+	constructor TFoo( value as integer )
+		fooField = value
+	end constructor
+
+	constructor TFoo( baseValue as integer, value as integer )
+		base( baseValue )
+		fooField = value
+	end constructor
+
+	private sub test cdecl( )
+		dim f1 as TFoo
+		CU_ASSERT( f1.baseField = 1234 )
+		CU_ASSERT( f1.fooField = 5678 )
+
+		dim f2 as TFoo = (-3456)
+		CU_ASSERT( f2.baseField = 1234 )
+		CU_ASSERT( f2.fooField = -3456 )
+
+		dim f3 as TFoo = TFoo(3333, 4444)
+		CU_ASSERT( f3.baseField = 3333 )
+		CU_ASSERT( f3.fooField = 4444 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/based-init" )
 	fbcu.add_test( "Implicit base default ctor call", @implicitBaseDefCtor.test )
@@ -285,6 +333,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "POD base UDTs must be cleared", @podBase.test )
 	fbcu.add_test( "BASE() affects a single ctor only 1", @baseinitIsCtorSpecific1.test )
 	fbcu.add_test( "BASE() affects a single ctor only 2", @baseinitIsCtorSpecific2.test )
+	fbcu.add_test( "Simple base field initialization", @simple.test )
 end sub
 
 end namespace

@@ -1,6 +1,7 @@
 Version 0.24.0:
 
 [changed]
+- add a "special exception" to gfxlib2 license to allow linking into executables under more relaxed terms (the same as the rtlib)
 - -target option now accepts system triplets (known from gcc/binutils)
 - By default even the non-standalone fbc is now relocatable and relies on exepath()
 - fbc no longer includes full ldscripts, a supplemental snippet (fbextra.x) is passed to the linker instead (except for the DOS/DJGPP version which still relies on a modified ldscript)
@@ -24,7 +25,8 @@ Version 0.24.0:
 - DELETE on something that's not a pointer now always triggers an error, not just a warning
 - The -target option is no longer case-sensitive
 - Linux standalone fbc won't try to use tools from PATH anymore
-- PRINT USING now prints Inf/Nan/Ind values the same way, e.g. "1.#INF"
+- PRINT USING now prints Inf/Nan/Ind values in the same style as QB, e.g. "1.#INF"
+- PRINT USING now disallows commas between expressions (they had the same effect as semi-colons)
 
 [added]
 - Single inheritance for classes: TYPE Child EXTENDS Parent
@@ -74,6 +76,7 @@ Version 0.24.0:
 - Same type/expression disambiguation for Peek/Poke as for Len/Sizeof/Typeof
 - FIELD = N can now be used on nested anonymous TYPEs/UNIONs
 - IIF()'s with constant conditions are now evaluated at compile-time
+- Updated headers for PCRE library 8.31
 
 [fixed]
 - Subtracting pointers from numbers, e.g. (i-p) was being allowed, rearranging to (p-i)
@@ -174,6 +177,7 @@ Version 0.24.0:
 - Concatenations could fail on some combinations of const/non-const and string/wstring operands
 - Concatenations involving const strings could return const results, which could prevent them being passed to functions
 - Some incorrect definitions/constants in commctrl.bi (thanks to VANYA for fix)
+- The Unix rtlib initialization code could start waiting for a response from the terminal without ensuring to have sent the escape sequence first (missing fflush(stdout)), thus blocking on the stdin read until some other input arrived (e.g. pressing ENTER)
 
 
 Version 0.23.0:

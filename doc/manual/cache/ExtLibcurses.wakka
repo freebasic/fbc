@@ -4,7 +4,7 @@ Standardized console user interface library
 Website: http://pdcurses.sourceforge.net/ and http://www.gnu.org/software/ncurses/
 Platforms supported: DOS, ""Win32"", Linux
 Headers to include: curses.bi
-Header versions: pdcurses 3.4, curses from 2005
+Header versions: pdcurses 3.4, ncurses from 2005
 Note: On ""Win32"" systems pdcurses is used, on Linux it uses the standard ncurses library.
 
 {{fbdoc item="ex"}}
@@ -14,40 +14,24 @@ Note: On ""Win32"" systems pdcurses is used, on Linux it uses the standard ncurs
 initscr()
 cbreak()
 noecho()
+start_color()
 
-if (has_colors( )) then
-	dim as short f, b
-	start_color()
+'' The default pair 0 will have the console's default colors
 
-	pair_content( 0, @f, @b )
-	printw(!"pair 0 contains (%d,%d)\n", f, b)
-	getch()
+'' Set pair 1 to be white/blue
+init_pair(1, COLOR_WHITE, COLOR_BLUE)
 
-	printw(!"Initializing pair 1 to red/black\n")
-	init_pair(1, COLOR_RED, COLOR_BLACK)
-	attrset(COLOR_PAIR(1))
-	printw(!"RED/BLACK\n")
-	getch()
+'' Select pair 1, so from now on output will be white text on blue background
+attrset(COLOR_PAIR(1))
 
-	printw(!"Initializing pair 2 to white/blue\n")
-	init_pair(2, COLOR_WHITE, COLOR_BLUE)
-	attrset(COLOR_PAIR(2))
-	printw(!"WHITE/BLUE\n")
-	getch()
+printw(!"Hello, world!\n")
 
-	printw(!"Resetting colors to pair 0\n")
-	attrset(COLOR_PAIR(0))
-	printw(!"Default Colors\n")
-	getch()
+'' Reset to pair 0
+attrset(COLOR_PAIR(0))
 
-	printw(!"Resetting colors to pair 1\n")
-	attrset(COLOR_PAIR(1))
-	printw(!"RED/BLACK\n")
-	getch()
-else
-	printw("This demo requires a color terminal")
-	getch()
-end if
+'' Sleep
+printw(!"Waiting for keypress...\n")
+getch()
 
 endwin()
 %%

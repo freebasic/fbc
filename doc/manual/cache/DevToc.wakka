@@ -6,13 +6,15 @@ This area of the Wiki is for documenting everything about the compiler and the r
 
 	{{fbdoc item="keyword" value="DevBuild|Compiling a Development Version of FreeBASIC"}}
 	{{fbdoc item="keyword" value="DevFbcTestSuite|Running the FreeBASIC test suite"}}
+	{{fbdoc item="keyword" value="DevNormalVsStandalone|Normal vs. Standalone"}}
+	{{fbdoc item="keyword" value="DevMakingReleases|Notes on the creation of FB releases"}}
+	
 	{{fbdoc item="keyword" value="DevTranslateHeader|C Header Translation Tutorial"}}
 	{{fbdoc item="keyword" value="DevHeaderStyleGuide|Header Style Guidelines"}}
 	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index (header status)"}}
 
 {{fbdoc item="section" value="Compiler internals"}}
 
-	{{fbdoc item="keyword" value="DevDirTree|Installation directory tree"}}
 	{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
 	{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
 	{{fbdoc item="keyword" value="DevFbcMem|Memory management"}}

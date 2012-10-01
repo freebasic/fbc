@@ -83,6 +83,8 @@ Do
 			Print "program window lost focus"
 		Case EVENT_WINDOW_CLOSE
 			End
+		Case EVENT_MOUSE_HWHEEL
+			Print "horizontal mouse wheel moved to position " & e.w
 		End Select
 	End If
 

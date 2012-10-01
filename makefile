@@ -72,6 +72,7 @@
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
 #   -DDISABLE_GPM    build without gpm.h (disables Linux GetMouse)
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
+#   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file.
@@ -103,8 +104,6 @@ CFLAGS := -Wfatal-errors -O2
 FBFLAGS := -maxerr 1
 AR = $(TARGET_PREFIX)ar
 CC = $(TARGET_PREFIX)gcc
-INSTALL_PROGRAM := install
-INSTALL_FILE := install -m 644
 prefix := /usr/local
 
 # Determine the makefile's directory, this may be a relative path when
@@ -276,6 +275,11 @@ endif
 
 ifneq ($(filter cygwin dos win32,$(TARGET_OS)),)
   EXEEXT := .exe
+  INSTALL_PROGRAM := cp
+  INSTALL_FILE := cp
+else
+  INSTALL_PROGRAM := install
+  INSTALL_FILE := install -m 644
 endif
 
 newcompiler := src/compiler/obj
@@ -338,7 +342,7 @@ ALLCFLAGS += $(CFLAGS)
 # compiler headers and modules
 FBC_BI  := $(wildcard $(srcdir)/compiler/*.bi)
 FBC_BAS := $(wildcard $(srcdir)/compiler/*.bas)
-FBC_BAS := $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS))
+FBC_BAS := $(sort $(patsubst $(srcdir)/compiler/%.bas,$(newcompiler)/%.o,$(FBC_BAS)))
 
 ifndef DISABLE_OBJINFO
   ifndef ENABLE_FBBFD
@@ -419,7 +423,7 @@ all: compiler rtlib gfxlib2
 
 src src/compiler src/rtlib src/gfxlib2 bin lib \
 $(newcompiler) $(newlibfb) $(newlibfbmt) $(newlibfbgfx) $(libdir) \
-$(prefix)/inc $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
+$(prefix) $(prefix)/bin $(prefix)/inc $(prefix)/include $(prefix)/include/$(FB_NAME) $(prefix)/lib $(prefixlib):
 	mkdir $@
 
 .PHONY: compiler
@@ -430,7 +434,7 @@ endif
 compiler: $(newcompiler) $(FBC_EXE)
 
 $(FBC_EXE): $(FBC_BAS) $(FBC_BFDWRAPPER)
-	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $(newcompiler)/*.o
+	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $@ $^
 
 $(FBC_BAS): $(newcompiler)/%.o: %.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
@@ -455,7 +459,13 @@ $(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfb)/*.o
+ifeq ($(TARGET_OS),dos)
+  # Avoid hitting the command line length limit (the libfb.a ar command line
+  # is very long...)
+	$(QUIET_AR)$(AR) rcs $@ $(newlibfb)/*.o
+else
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
+endif
 
 $(LIBFB_C): $(newlibfb)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
@@ -464,7 +474,7 @@ $(LIBFB_S): $(newlibfb)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfbmt)/*.o
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBMT_C): $(newlibfbmt)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
@@ -477,7 +487,7 @@ gfxlib2: lib $(libdir) src src/gfxlib2
 gfxlib2: $(newlibfbgfx) $(libdir)/libfbgfx.a
 
 $(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
-	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $(newlibfbgfx)/*.o
+	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 
 $(LIBFBGFX_C): $(newlibfbgfx)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
@@ -488,19 +498,27 @@ $(LIBFBGFX_S): $(newlibfbgfx)/%.o: %.s $(LIBFBGFX_H)
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
+ifdef ENABLE_STANDALONE
+install-compiler:
+else
 install-compiler: $(prefix)/bin
+endif
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
+ifdef ENABLE_STANDALONE
 install-includes: $(prefixinclude)
-	cp -r $(rootdir)inc/* $<
+else
+install-includes: $(prefix)/include $(prefixinclude)
+endif
+	cp -r $(rootdir)inc/* $(prefixinclude)
 
-install-rtlib: $(prefixlib)
+install-rtlib: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a $(prefixlib)/
   ifndef DISABLE_MT
 	$(INSTALL_FILE) $(libdir)/libfbmt.a $(prefixlib)/
   endif
 
-install-gfxlib2: $(prefixlib)
+install-gfxlib2: $(prefix)/lib $(prefixlib)
 	$(INSTALL_FILE) $(libdir)/libfbgfx.a $(prefixlib)/
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2

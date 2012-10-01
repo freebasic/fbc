@@ -14,6 +14,10 @@ TXT         = $(TITLE).txt
 TXTZIP      = $(TITLE)-txt.zip
 WAKKAZIP    = $(TITLE)-wakka.zip
 
+ifdef QUIET
+  HIDE := > /dev/null
+endif
+
 ################################################################################
 
 all: $(CHMZIP) $(FBHELPZIP) $(HTMLZIP) $(TXTZIP) $(WAKKAZIP)
@@ -22,10 +26,10 @@ all: $(CHMZIP) $(FBHELPZIP) $(HTMLZIP) $(TXTZIP) $(WAKKAZIP)
 # chm
 
 html/fbdoc.hhp:
-	$(FBDOC) -chm
+	$(FBDOC) -chm $(HIDE)
 
 html/fbdoc.chm: html/fbdoc.hhp
-	-$(HHC) $<
+	-$(HHC) $< $(HIDE)
 
 $(CHM): html/fbdoc.chm
 	cp $< $@
@@ -37,7 +41,7 @@ $(CHMZIP): $(CHM)
 # fbhelp
 
 fbhelp/DocToc.txt:
-	$(FBDOC) -fbhelp
+	$(FBDOC) -fbhelp $(HIDE)
 
 fbhelp/fbhelp.dat: fbhelp/DocToc.txt
 	$(MAKEFBHELP)
@@ -52,7 +56,7 @@ $(FBHELPZIP): $(FBHELP)
 # html
 
 html/DocToc.html:
-	$(FBDOC) -chm
+	$(FBDOC) -chm $(HIDE)
 
 html/00index.html: html/DocToc.html
 	cp $< $@
@@ -64,7 +68,7 @@ $(HTMLZIP): html/00index.html
 # txt
 
 txt/fbdoc.txt:
-	$(FBDOC) -txt
+	$(FBDOC) -txt $(HIDE)
 
 $(TXT): txt/fbdoc.txt
 	cp $< $@

@@ -10,9 +10,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 		BG_LOCK();
 
 #ifdef HOST_LINUX
-		fflush(stdin);
-		fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
-		if (fscanf(stdin, "\e[%d;%dR", &y, &x) != 2)
+		if( fb_hTermQuery( SEQ_QUERY_CURSOR, &y, &x ) == FALSE )
 #endif
 		{
 			x = __fb_con.cur_x;

@@ -2,17 +2,21 @@
 Waits until a specified time has elapsed, or a key is pressed.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Sleep** [[KeyPgOverload overload]] ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 )
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sleep** ( [[KeyPgByval byval]] //amount// [[KeyPgAs as]] [[KeyPgInteger integer]] , [[KeyPgByval byval]] //keyflag// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	**Sleep** [ //amount// [, //keyflag// ]]
+	//result// = **Sleep** ( //amount//, //keyflag// )
 ##
 {{fbdoc item="param"}}
 	##//amount//##
 		Optional number of milliseconds to wait (default is to wait for a key press).
 	##//keyflag//##
-		Optional flag; give it a value of 1 to specify that the wait cannot be interrupted by a key press.
+		Optional flag; give it a value of ##0## for a normal sleep, or ##1## to specify that the wait cannot be interrupted by a key press.
+
+{{fbdoc item="ret"}}
+	Returns ##1## if ##//keyflag//## was not a valid value (i.e. something other than ##0## or ##1##) to indicate failure, or ##0## otherwise.
 
 {{fbdoc item="desc"}}
 	##**Sleep**## will wait until ##//amount//## milliseconds (can be seconds in //[[CompilerOptlang -lang qb]]//, see below) given elapsed (if any value was passed) or until the user presses a key. If ##//amount//## is below 100 ms then ##**Sleep**## will always wait the full requested amount (key presses are ignored).

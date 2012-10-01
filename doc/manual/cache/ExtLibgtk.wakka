@@ -5,7 +5,41 @@ Website: http://www.gtk.org
 Platforms supported: ""Win32"", Linux
 Headers to include: gtk/gtk.bi
 Example Usage: yes, in examples/libraries/Gtk/
+Header version: 2.24.6 and 3.2.2
 
+By default, gtk/gtk.bi will use the GTK+ 2.24 API.
+Define ""__USE_GTK_OLD__"" before including gtk/gtk.bi to use GTK+ >= 2.0 and < 2.16.
+Define ""__USE_GTK3__"" before including gtk/gtk.bi to use GTK+ >= 3.0.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/libraries/gtk.bas"}}%%(freebasic)
+#include once "gtk/gtk.bi"
+
+dim shared as GtkWidget ptr win
+
+private sub on_clicked cdecl(byval button as GtkButton ptr, byval userdata as gpointer)
+	static as integer clickcount = 0
+	clickcount += 1
+	gtk_window_set_title(GTK_WINDOW(win), "clicked " & clickcount & " times")
+end sub
+
+gtk_init(NULL, NULL)
+
+win = gtk_window_new(GTK_WINDOW_TOPLEVEL)
+gtk_window_set_title(GTK_WINDOW(win), "A small GTK+ example")
+gtk_window_set_default_size(GTK_WINDOW(win), 300, 200)
+gtk_container_set_border_width(GTK_CONTAINER(win), 20)
+
+g_signal_connect(G_OBJECT(win), "destroy", G_CALLBACK(@gtk_main_quit), NULL)
+
+dim as GtkWidget ptr button = gtk_button_new_with_label("Click me!")
+gtk_container_add(GTK_CONTAINER(win), button)
+
+g_signal_connect(G_OBJECT(button), "clicked", G_CALLBACK(@on_clicked), NULL)
+
+gtk_widget_show_all(win)
+
+gtk_main()
+%%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}
-   

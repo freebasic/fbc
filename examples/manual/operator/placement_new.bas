@@ -8,29 +8,29 @@
 
 '' "placement new" example
 
-type Rational
-	as integer	numerator, denominator
-end type
+Type Rational
+	As Integer	numerator, denominator
+End Type
 
-scope
+Scope
 	
 	'' allocate some memory to construct as a Rational
-	dim as any ptr ap = callocate(len(Rational))
+	Dim As Any Ptr ap = CAllocate(Len(Rational))
 	
 	'' make the placement new call
-	dim as Rational ptr r = new (ap) Rational( 3, 4 )
+	Dim As Rational Ptr r = New (ap) Rational( 3, 4 )
 	
 	'' you can see, the addresses are the same, just having different types in the compiler
-	print ap, r
+	Print ap, r
 	
 	'' confirm all is okay
-	print r->numerator & "/" & r->denominator
+	Print r->numerator & "/" & r->denominator
 
 	'' destroying must be done explicitly, because delete will automatically free the memory
 	'' and that isn't always okay when using placement new. ALWAYS explicitly call the destructor.
-	r->destructor( )
+	r->Destructor( )
 	
 	'' we explicitly allocated, so we explicitly deallocate
-	deallocate( ap )
+	Deallocate( ap )
 
-end scope
+End Scope

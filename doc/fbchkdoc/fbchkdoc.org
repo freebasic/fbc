@@ -3,7 +3,7 @@ cache_dir      = ../manual/cache/
 web_cache_dir  = ../manual/cache.web/
 dev_cache_dir  = ../manual/cache.dev/
 image_dir      = ../manual/html/images/
-fb_dir         = ../../FreeBASIC/
+fb_dir         = ../../
 
 [web]
 web_wiki_url = http://www.freebasic.net/wiki/wikka.php

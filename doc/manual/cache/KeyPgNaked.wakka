@@ -18,6 +18,8 @@ Write functions without prolog/epilog code
 
 {{fbdoc item="desc"}}
 	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm Asm]]## without any unnecessary overhead.
+	
+	 **Warning:** Before fbc version 0.24, ##**Naked**## is not compatible with use of the compiler option //[[CompilerOptexx -exx]]// or //[[CompilerOptprofile -profile]]// (because of program stack pollution by code that is only meant for normal functions).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/naked.bas"}}%%(freebasic)

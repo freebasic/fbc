@@ -1,54 +1,74 @@
-{{fbdoc item="title" value="BASE"}}----
+{{fbdoc item="title" value="BASE (member access)"}}----
 Provides explicit access to base type members in methods of a ##[[KeyPgType Type]]##
 
 {{fbdoc item="syntax"}}##
 	**base**.//member//
 	**base** [ .**base** ... ] .//member//
-//or//
-	**base**()
 ##
 {{fbdoc item="desc"}}
-	##**Base**## provides a way to explicitly access members of a specific base type, in the context of methods of a user-defined type derived from another type using ##[[KeyPgExtends Extends]]##. This is especially useful when local variables or members of a derived type override a base type's members if they are using the same identifiers. ##**Base**## then allows unambiguous access to the base type. By using ##**Base**## repeatedly, as in ##base.base.base.member##, it is possible to access any desired base type, in case there are multiple levels of inheritance.
+	##**Base**## provides a way to explicitly access members of a specific base type, in the context of methods of a user-defined type derived from another type using ##[[KeyPgExtends Extends]]##.
 	
-	##**Base**## can also be used to call base type constructors from within a derived type's constructors, in order to ensure the base type is properly initialized. Currently this appears to be a shortcut for ##**Base**.[[KeyPgConstructor Constructor]]()##.
+	By using ##**Base**## repeatedly, as in ##base.base.base.member##, it is possible to access any desired base type, in case there are multiple levels of inheritance.
+	
+	##**Base**## is especially useful when local variables or members of a derived type override a base type's members by using the same identifiers. ##**Base**## then allows unambiguous access to the base type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/base.bas"}}%%(freebasic)
-type Parent
-	as integer a
-	declare constructor(byval as integer)
-	declare sub show()
-end type
+Type Parent
+	As Integer a
+	Declare Constructor(ByVal As Integer = 0)
+	Declare Sub show()
+End Type
 
-constructor Parent(byval a as integer)
-	this.a = a
-end constructor
+Constructor Parent(ByVal a As Integer = 0)
+	This.a = a
+End Constructor
 
-sub Parent.show()
-	print "parent", a
-end sub
+Sub Parent.show()
+	Print "parent", a
+End Sub
 
-type Child extends Parent
-	as integer a
-	declare constructor(byval as integer)
-	declare sub show()
-end type
+Type Child extends Parent
+	As Integer a
+	Declare Constructor(ByVal As Integer = 0)
+	Declare Sub show()
+End Type
 
-constructor Child(byval a as integer)
+Constructor Child(ByVal a As Integer = 0)
 	'' Call base type's constructor
-	base(a * 2)
-	this.a = a
-end constructor
+	Base(a * 3)
+	This.a = a
+End Constructor
 
-sub Child.show()
+Sub Child.show()
 	'' Call base type's show() method, not ours
-	base.show()
-	
+	Base.show()
+   
 	'' Show both a fields, the base type's and ours'
-	print "child", base.a, a
-end sub
+	Print "child", Base.a, a
+End Sub
 
-dim as Child x = Child(3)
+Type GrandChild extends Child
+	As Integer a
+	Declare Constructor(ByVal As Integer = 0)
+	Declare Sub show()
+End Type
+
+Constructor GrandChild(ByVal a As Integer = 0)
+	'' Call base type's constructor
+	Base(a * 2)
+	This.a = a
+End Constructor
+
+Sub GrandChild.show()
+	'' Call base type's show() method, not ours
+	Base.show()
+   
+	'' Show both a fields, the base.base type's, the base type's and ours'
+	Print "grandchild", Base.Base.a, Base.a, a
+End Sub
+
+Dim As GrandChild x = GrandChild(3)
 x.show()
 %%
 {{fbdoc item="lang"}}
@@ -58,6 +78,7 @@ x.show()
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgBaseInit Base (initializer)]]##
 	- ##[[KeyPgThis This]]##
 	- ##[[KeyPgType Type]]##
 	- ##[[KeyPgExtends Extends]]##

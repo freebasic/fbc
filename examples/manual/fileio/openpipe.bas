@@ -6,11 +6,19 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpenPipe
 '' --------
 
-Dim text As String
-Open Pipe "fbc.exe" For Input As #1
-Print "Output of fbc:"
-Do While Not EOF(1)
-   Line Input #1, text
-   Print text
+'' This example uses Open Pipe to run a shell command and retrieve its output. 
+#ifdef __FB_UNIX__
+Const TEST_COMMAND = "ls *"
+#else
+Const TEST_COMMAND = "dir *.*"
+#endif
+
+Open Pipe TEST_COMMAND For Input As #1
+
+Dim As String ln
+Do Until EOF(1)
+	Line Input #1, ln
+	Print ln
 Loop
+
 Close #1

@@ -6,4 +6,4 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDots
 '' --------
 
-Declare Function FOO cdecl (X As Integer, ...) As Integer
+Declare Function foo cdecl (x As Integer, ...) As Integer

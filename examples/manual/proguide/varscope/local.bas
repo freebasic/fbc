@@ -39,7 +39,7 @@ Function some_function( ) As Integer
   '' Error; can't see local module-level vars
   '' print local_moduleLevel2
 
-  function = 0
+  Function = 0
 
 End Function
 

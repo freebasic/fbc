@@ -17,11 +17,11 @@ This is a list of function prototypes in the standard C library in alphabetical 
 	**{{anchor name="TIME|Time"}}**
 
 {{fbdoc item="desc"}}
-	The Comments column contains a very brief description of the use of the function. The list is not complete, however it provides information on the major functions in the C Runtime Library. It should, at the very least, indicate what functions are available in the standard C library allow you to do more investigation on your own.  Some of the C library functions documented elsewhere may not be available in FreeBASIC.  Check the appropriate include file for more information. 
+	The Comments column contains a very brief description of the use of the function. The list is not complete, however it provides information on the major functions in the C Runtime Library. It should, at the very least, indicate what functions are available in the standard C library allow you to do more investigation on your own.  Some of the C library functions documented elsewhere may not be available in ""FreeBASIC"".  Check the appropriate include file for more information. 
 
-	**Note:** The following prototypes are not the official FreeBASIC prototypes (see the include files), however, they will give you enough information to properly use the functions. 
+	**Note:** The following prototypes are not the official ""FreeBASIC"" prototypes (see the include files), however, they will give you enough information to properly use the functions. 
 
-	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude #include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ##include "crt/math.bi"## or ##include "crt\math.bi"##, our just ##include "crt.bi"## including all the others.
+	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude #include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ###include "crt/math.bi"## or ###include "crt\math.bi"##, our just ###include "crt.bi"## including all the others.
 
 	The Prototype column contains the following information: 
 		- The name of the function; 
@@ -29,6 +29,8 @@ This is a list of function prototypes in the standard C library in alphabetical 
 		- The data-type of the value returned by the function. 
 
 	For example **##atoi(a as zstring ptr) as integer##** means that the function **##atoi##** returns a value of type **integer** and requires a character **zstring ptr** as its argument. 
+
+	**Note:** In order to make calling the C runtime functions very easy, any string type argument may be directly passed to a procedure referring to a parameter declared as 'zstring ptr'. The compiler performs itself an automatic conversion (without warning message) between string and 'zstring ptr'.
 
 {{anchor name="ALPHA"}}{{fbdoc item="section" value="Alphabetical List"}}
 

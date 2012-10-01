@@ -70,9 +70,11 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgConstQualifier|CONST (Qualifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
+	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgLong|LONG"}}
 	- {{fbdoc item="keyword" value="KeyPgLongint|LONGINT"}}
+	- {{fbdoc item="keyword" value="KeyPgObject|OBJECT"}}
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
@@ -155,7 +157,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintusingPp|PRINT USING #"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
@@ -308,6 +309,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
 	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpIs|IS (Run-time type information operator)"}}
 	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
 	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
 	- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
@@ -452,6 +454,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
 	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
+	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
+	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
 	- {{fbdoc item="keyword" value="KeyPgByref|BYREF"}}
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
 	- {{fbdoc item="keyword" value="KeyPgCall|CALL"}}
@@ -495,7 +499,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgGoto|GOTO"}}
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
-	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
+	- {{fbdoc item="keyword" value="KeyPgIs|IS (Select Case)"}}
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
 	- {{fbdoc item="keyword" value="KeyPgFornext|FOR...NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgLoop|LOOP"}}

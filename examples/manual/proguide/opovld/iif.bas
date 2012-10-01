@@ -9,4 +9,4 @@
 Dim i As Integer = 420
 Dim p As Integer Ptr = @i
 
-Dim result As Integer = IIf( p, *p, cint( 20 / 4 ) )
+Dim result As Integer = IIf( p, *p, CInt( 20 / 4 ) )

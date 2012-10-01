@@ -105,6 +105,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}
 	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}}
 {{fbdoc item="section" value="B"}}
+	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
 	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 	- {{fbdoc item="keyword" value="KeyPgBin|BIN"}}
@@ -392,7 +393,6 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintusingPp|PRINT USING #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR"}}

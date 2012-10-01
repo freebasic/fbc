@@ -46,11 +46,11 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	/* add null-term */
 	temp[bytes] = '\0';
 
-	fputs( ENTER_UTF8, __fb_con.f_out );
+	fputs( ENTER_UTF8, stdout );
 
-	fputs( temp, __fb_con.f_out );
+	fputs( temp, stdout );
 
-	fputs( EXIT_UTF8, __fb_con.f_out );
+	fputs( EXIT_UTF8, stdout );
 
 	/* update x and y coordinates.. */
 	for( ; chars; chars--, buffer++ )
@@ -65,7 +65,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 		}
 	}
 
-	fflush( __fb_con.f_out );
+	fflush( stdout );
 }
 
 void fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask )

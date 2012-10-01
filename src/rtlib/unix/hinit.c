@@ -1,5 +1,8 @@
 /* libfb initialization for Unix */
 
+/* for getpgid() */
+#define _GNU_SOURCE 1
+
 #include "../fb.h"
 #include "fb_private_console.h"
 #include "../fb_private_thread.h"
@@ -62,6 +65,23 @@ static void signal_handler(int sig)
 	raise(sig);
 }
 
+int fb_hTermQuery( int code, int *val1, int *val2 )
+{
+	fflush( stdin );
+
+	if( fb_hTermOut( code, 0, 0 ) == FALSE )
+		return FALSE;
+
+	switch( code ) {
+	case SEQ_QUERY_WINDOW:
+		return (fscanf( stdin, "\e[8;%d;%dt", val1, val2 ) == 2);
+	case SEQ_QUERY_CURSOR:
+		return (fscanf( stdin, "\e[%d;%dR", val1, val2 ) == 2);
+	}
+
+	return FALSE;
+}
+
 static void console_resize(int sig)
 {
 	unsigned char *char_buffer, *attr_buffer;
@@ -72,11 +92,10 @@ static void console_resize(int sig)
 		return;
 
 	win.ws_row = 0xFFFF;
-	ioctl(__fb_con.h_out, TIOCGWINSZ, &win);
+	ioctl( STDOUT_FILENO, TIOCGWINSZ, &win );
 	if (win.ws_row == 0xFFFF) {
 #ifdef HOST_LINUX
-		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
-		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
+		if( fb_hTermQuery( SEQ_QUERY_WINDOW, &r, &c ) ) {
 			win.ws_row = r;
 			win.ws_col = c;
 		}
@@ -104,15 +123,11 @@ static void console_resize(int sig)
 	__fb_con.h = win.ws_row;
 	__fb_con.w = win.ws_col;
 #ifdef HOST_LINUX
-	fflush(stdin);
-	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
-	if( fscanf(stdin, "\e[%d;%dR", &__fb_con.cur_y, &__fb_con.cur_x) != 2 ) {
+	if( fb_hTermQuery( SEQ_QUERY_CURSOR, &__fb_con.cur_y, &__fb_con.cur_x ) == FALSE )
+#endif
+	{
 		__fb_con.cur_y = __fb_con.cur_x = 1;
 	}
-#else
-	/* !!!TODO!!! reset cursor to known position? */
-	__fb_con.cur_y = __fb_con.cur_x = 1;
-#endif
 
 	signal(SIGWINCH, console_resize);
 }
@@ -124,29 +139,31 @@ int fb_hTermOut( int code, int param1, int param2 )
 	char *str;
 
 	if (!__fb_con.inited)
-		return -1;
+		return FALSE;
 
-	fflush(stdout);
 	if (code > SEQ_MAX) {
 		switch (code) {
-			case SEQ_SET_COLOR_EX:
-				fprintf(__fb_con.f_out, "\e[%dm", param1);
-				break;
-			
-			default:
-				fputs(extra_seq[code - SEQ_EXTRA], __fb_con.f_out);
-				break;
+		case SEQ_SET_COLOR_EX:
+			if( fprintf( stdout, "\e[%dm", param1 ) < 4 )
+				return FALSE;
+			break;
+		default:
+			if( fputs( extra_seq[code - SEQ_EXTRA], stdout ) == EOF )
+				return FALSE;
+			break;
 		}
-	}
-	else {
+	} else {
 		if (!__fb_con.seq[code])
-			return -1;
+			return FALSE;
 		str = tgoto(__fb_con.seq[code], param1, param2);
 		if (!str)
-			return -1;
+			return FALSE;
 		tputs(str, 1, putchar);
 	}
-	return 0;
+
+	fflush( stdout );
+
+	return TRUE;
 }
 
 int fb_hInitConsole( )
@@ -157,9 +174,7 @@ int fb_hInitConsole( )
 		return -1;
 
 	/* Init terminal I/O */
-	__fb_con.f_out = stdout;
-	__fb_con.h_out = fileno(stdout);
-	if (!isatty(__fb_con.h_out) || !isatty(fileno(stdin)))
+	if( !isatty( STDOUT_FILENO ) || !isatty( STDIN_FILENO ) )
 		return -1;
 	__fb_con.f_in = fopen("/dev/tty", "r+b");
 	if (!__fb_con.f_in)
@@ -167,17 +182,17 @@ int fb_hInitConsole( )
 	__fb_con.h_in = fileno(__fb_con.f_in);
 	
 	/* Cannot control console if process was started in background */
-	if (tcgetpgrp(__fb_con.h_out) != getpgid(0))
+	if( tcgetpgrp( STDOUT_FILENO ) != getpgid( 0 ) )
 		return -1;
 
 	/* Output setup */
-	if (tcgetattr(__fb_con.h_out, &__fb_con.old_term_out))
+	if( tcgetattr( STDOUT_FILENO, &__fb_con.old_term_out ) )
 		return -1;
 	memcpy(&term_out, &__fb_con.old_term_out, sizeof(term_out));
 	term_out.c_oflag |= OPOST;
-	if (tcsetattr(__fb_con.h_out, TCSANOW, &term_out))
+	if( tcsetattr( STDOUT_FILENO, TCSANOW, &term_out ) )
 		return -1;
-	
+
 	/* Input setup */
 	if (tcgetattr(__fb_con.h_in, &__fb_con.old_term_in))
 		return -1;
@@ -191,13 +206,12 @@ int fb_hInitConsole( )
 	/* No timeout, just don't block */
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
-
 	if (tcsetattr(__fb_con.h_in, TCSANOW, &term_in))
 		return -1;
+
 	/* Don't block */
 	__fb_con.old_in_flags = fcntl(__fb_con.h_in, F_GETFL, 0);
-	__fb_con.in_flags = __fb_con.old_in_flags | O_NONBLOCK;
-	fcntl(__fb_con.h_in, F_SETFL, __fb_con.in_flags);
+	fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags | O_NONBLOCK);
 
 #ifdef HOST_LINUX
 	if (__fb_con.inited == INIT_CONSOLE)
@@ -248,7 +262,7 @@ void fb_hExitConsole( void )
 		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
 		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
-		tcsetattr(__fb_con.h_out, TCSANOW, &__fb_con.old_term_out);
+		tcsetattr( STDOUT_FILENO, TCSANOW, &__fb_con.old_term_out );
 
 		/* Restore old console keyboard state */
 		fcntl(__fb_con.h_in, F_SETFL, __fb_con.old_in_flags);

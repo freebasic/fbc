@@ -1,4 +1,5 @@
 #include "../fb.h"
+#include <sys/select.h>
 
 FBCALL void fb_Delay( int msecs )
 {

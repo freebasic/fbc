@@ -3,21 +3,23 @@ Specifies that a member procedure is read only.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] **Const** //membertype// //membername// ...
+		[[KeyPgDeclare declare]] **Const** ( [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgConstructor Constructor]] | [[KeyPgDestructor Destructor]] | [[KeyPgProperty Property]] | [[KeyPgOperator Operator]] ) //membername// ...
 	End Type
 ##
 {{fbdoc item="param"}}
 	##//typename//##
 		Name of a user defined data type.
-	##//membertype//##
-		##[[KeyPgMemberSub Sub]]## or ##[[KeyPgMemberFunction Function]]##.
 	##//membername// ...##
 		Name of the member to declare or define with parameter list or return value following.
 
 {{fbdoc item="desc"}}
-	Specifies that the ##//membertype//## immediately to the right of the ##**Const**## qualifier is to be considered as read only.  Read-only (##**Const**##) declarations are a measure of type safety that can be read as 'promises not to change.'  The compiler uses the const declarations to check operations on variables and parameters and generate an error at compile time if their data could potentially change.  There is no runtime overhead for using ##**Const**## qualifiers since all of the checks are made at compile time.
-
-	##**Const**##, when used preceding ##//membertype//## at the beginning of a declaration indicates that the hidden ##[[KeyPgThis This]]## parameter is considered read-only.  The declaration can be read as 'invoking ##//membertype//## promises not to change ##//typename//##', and the compiler will error if the member procedure tries to change any of the data fields, or calls a non-const member procedure.  Member procedures can not be both ##**Const**## and ##[[KeyPgStaticMember Static]]## since static member procedures do not have a hidden ##[[KeyPgThis This]]## parameter.
+	Specifies that a method does not change the object it is called on. The hidden ##[[KeyPgThis This]]## parameter will be considered read-only. The declaration can be read as 'invoking ##//membername//## promises not to change ##//typename//##', and the compiler will error if the member procedure tries to change any of the data fields, or calls a non-const member procedure. 
+	
+	Read-only (##**Const**##) declarations are a measure of type safety that can be read as 'promises not to change.'  The compiler uses the const declarations to check operations on variables and parameters and generate an error at compile time if their data could potentially change.  There is no runtime overhead for using ##**Const**## qualifiers since all of the checks are made at compile time.
+	
+	Member procedures can not be both ##**Const**## and ##[[KeyPgStaticMember Static]]## since static member procedures do not have a hidden ##[[KeyPgThis This]]## parameter.
+	
+	Since fbc version 0.24, ##**Const**## is allowed (as for keyword Static) in front of member procedure bodies, not just in the declaration (the coherence with declaration is checked by compiler). When the procedure body is far from the declaration, it may be suitable to have here the information.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/const-proc.bas"}}%%(freebasic)

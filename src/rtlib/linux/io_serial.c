@@ -2,6 +2,7 @@
 
 #include "../fb.h"
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <signal.h>
 #include <fcntl.h>
 

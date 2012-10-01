@@ -14,7 +14,7 @@ Returns a substring of a string
 	##//str//##
 		The source string.
 	##//start//##
-		The start position in ##//str//## of the substring.
+		The start position in ##//str//## of the substring. The first character starts at position 1.
 	##//n//##
 		The substring length, in characters.
 

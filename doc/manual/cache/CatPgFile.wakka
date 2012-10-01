@@ -71,8 +71,6 @@ Statements and procedures for working with files and devices.
 		Reads a line of text from a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}==
 		Writes text data to a file or device.
-	=={{fbdoc item="keyword" value="KeyPgPrintusingPp|PRINT # USING"}}==
-		Writes formatted text data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPutfileio|PUT #"}}==
 		Writes arbitrary data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgGetfileio|GET #"}}==

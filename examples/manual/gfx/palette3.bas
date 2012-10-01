@@ -7,11 +7,10 @@
 '' --------
 
 ' Getting whole palette, form 3.
-Dim pal(1 To 256) As Integer
-Dim i As Integer
+Dim pal(0 To 255) As Integer
 Screen 13
 Palette Get Using pal
-For i = 1 To 16
-	Print "Color"; i; " ="; Hex(pal(i))
+For i As Integer = 0 To 15
+	Print Using "Color ## = &"; i; Hex(pal(i), 6)
 Next i
 Sleep

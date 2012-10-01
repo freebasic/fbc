@@ -6,28 +6,21 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCommand
 '' --------
 
-''
-'' command-line arguments example
-''
+Print "program launched via: " & Command(0)
 
- 	Print "exe name= "; Command( 0 )
+Dim As Integer i = 1
+Do
+	Dim As String arg = Command(i)
+	If Len(arg) = 0 Then
+		Exit Do
+	End If
 
- 	Dim argc As Integer, argv As String
+	Print "command line argument " & i & " = """ & arg & """"
+	i += 1
+Loop
 
- 	argc = 1
- 	Do
- 		argv = Command( argc )
+If i = 1 Then
+	Print "(no command line arguments)"
+End If
 
- 		If( Len( argv ) = 0 ) Then
- 			Exit Do
- 		End If
-
- 		Print "arg"; argc; " = """; argv; """"
-
- 		argc += 1
- 	Loop
-
- 	If( argc = 1 ) Then
- 		Print "(no arguments)"
- 	End If
- 	Print "The complete list: ";Command
+Sleep

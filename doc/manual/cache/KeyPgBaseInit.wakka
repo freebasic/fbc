@@ -1,0 +1,68 @@
+{{fbdoc item="title" value="BASE (initializer)"}}----
+Specifies an initializer for the base UDT in derived [[KeyPgType UDT]] constructors
+
+{{fbdoc item="syntax"}}##
+	**base** ( //constructor-parameters...// )
+//or://
+	**base** //UDT-initializer//
+##
+{{fbdoc item="desc"}}
+	The ##**Base**## initializer can be used at the top of constructors of derived UDTs. It allows to specify an explicit constructor call or UDT initializer to be used to initialize the base object. It will replace the implicit default initialization, and must appear above any other statements in the constructor it is used in.
+	
+	Note: Unlike "##**Base( )**##", a "##[[KeyPgBase Base]].[[KeyPgConstructor Constructor]]( )##" statement does not replace the implicit default initialization done by the constructor of a derived UDT, and can usually not be used legally, because it would result in two constructor calls for the base object.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/baseinit1.bas"}}%%(freebasic)
+type SimpleParent
+	as integer a, b, c
+end type
+
+type Child extends SimpleParent
+	declare constructor( )
+end type
+
+constructor Child( )
+	'' Simple UDT initializer
+	base( 1, 2, 3 )
+end constructor
+%%
+
+{{fbdoc item="filename" value="examples/manual/udt/baseinit2.bas"}}%%(freebasic)
+type ComplexParent
+	as integer i
+	declare constructor( byval as integer )
+end type
+
+constructor ComplexParent( byval i as integer )
+	this.i = i
+end constructor
+
+type Child extends ComplexParent
+	declare constructor( )
+	declare constructor( byref as Child )
+end type
+
+constructor Child( )
+	'' Base UDT constructor call
+	base( 1 )
+end constructor
+
+constructor Child( byref rhs as Child )
+	'' Base UDT constructor call
+	base( rhs.i )
+end constructor
+%%
+{{fbdoc item="lang"}}
+	- Methods are only supported in the //[[CompilerOptlang -lang fb]]// dialect, hence ##**Base**## has no function in other dialects.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgBase Base (member access)]]##
+	- ##[[KeyPgThis This]]##
+	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgOptionBase Option Base]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

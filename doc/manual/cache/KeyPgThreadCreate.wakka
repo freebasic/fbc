@@ -30,17 +30,17 @@ Starts a user-defined procedure in a separate execution thread
 {{fbdoc item="ex"}}
 
 	{{fbdoc item="filename" value="examples/manual/threads/threads1.bas"}}%%(freebasic)
-'' Threading syncronyzation using Mutexes
+'' Threading synchronization using Mutexes
 '' If you comment out the lines containing "MutexLock" and "MutexUnlock",
 '' the threads will not be in sync and some of the data may be printed
 '' out of place.
 
 Const MAX_THREADS = 10
 
-Dim Shared As Any ptr ttylock
+Dim Shared As Any Ptr ttylock
 
 '' Teletype unfurls some text across the screen at a given location
-Sub teletype( text As String, x As Integer, y As Integer )
+Sub teletype( ByRef text As String, ByVal x As Integer, ByVal y As Integer )
 	''
 	'' This MutexLock makes simultaneously running threads wait for each
 	'' other, so only one at a time can continue and print output.

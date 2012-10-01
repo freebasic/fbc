@@ -28,17 +28,17 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 
 	    Print fname,
 
-	    If out_attr And fbDirectory Then
+	    If (out_attr And fbDirectory) <> 0 Then
 	        Print "- directory";
 	        dircount += 1
 	    Else
 	        Print "- file";
 	        filecount += 1
 	    End If
-	    If out_attr And fbReadOnly Then Print ", read-only";
-	    If out_attr And fbHidden Then Print ", hidden";
-	    If out_attr And fbSystem Then Print ", system";
-	    If out_attr And fbArchive Then Print ", archived";
+	    If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
+	    If (out_attr And fbHidden) <> 0 Then Print ", hidden";
+	    If (out_attr And fbSystem) <> 0 Then Print ", system";
+	    If (out_attr And fbArchive) <> 0 Then Print ", archived";
 	    Print
 
 	End If

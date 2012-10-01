@@ -86,6 +86,7 @@ Section Install
 
     SetOutPath $INSTDIR
     File "open-console.exe"
+    File "fblogo.ico"
     WriteIniStr "$INSTDIR\wiki.url" "InternetShortcut" "URL" "${URL_WIKI}"
 
     ; Startmenu
@@ -113,6 +114,7 @@ Section Uninstall
     ; makescript will put all files to remove here
     ;;;UNINSTALL;;;
 
+    Delete "$INSTDIR\fblogo.ico"
     Delete "$INSTDIR\open-console.exe"
     Delete "$INSTDIR\wiki.url"
 

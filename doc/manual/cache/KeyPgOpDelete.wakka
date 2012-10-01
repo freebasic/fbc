@@ -31,7 +31,7 @@ end type
 
 scope
 
-	' Create and initialize a Rational, and store it's address.
+	' Create and initialize a Rational, and store its address.
 	dim p as Rational ptr = new Rational(3, 4)
 
 	print p->numerator & "/" & p->denominator

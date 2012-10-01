@@ -17,22 +17,42 @@ Declares a union user defined type.
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory. The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType Type]]## . Since they occupy the same space, only a single element can be used. 
+	Unions are similar to a ##[[KeyPgType Type]]## structure, except that the elements of a union occupy the same space in memory (but unlike Type, Union can not contain variable-length strings, and more generally fields with constructors or destructors). The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType Type]]##. Since they occupy the same space, only a single element can be used. 
 
-	Unnamed unions can be nested inside a type structure and unnamed types can be nested inside an union . See Example.
+	Unnamed unions can be nested inside a type structure and unnamed types can be nested inside an union. See Example.
 
-	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##.  All members of a union are public and access control is not supported.
+	Unions support member functions including ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgMemberFunction Function]]##, ##[[KeyPgOperator Operator]]##, ##[[KeyPgProperty Property]]## and ##[[KeyPgMemberSub Sub]]##. All members of a union are public and access control is not supported.
 
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)
-'define our union
+' Example 1: bitfields.
+type unitType
+ union
+  dim attributeMask as uinteger
+  type    ' 32-bit uintegers can support up to 32 attributes.
+   isMilitary         : 1 as uinteger
+   isMerchant         : 1 as uinteger
+  end type
+ end union
+end type
+
+dim myunit as unitType
+myunit.isMilitary = 1
+myunit.isMerchant = 1
+print myunit.isMilitary    ' Result: 1.
+print myunit.isMerchant    ' Result: 1.
+print myunit.attributeMask ' Result: 3.
+sleep
+
+' Example 2.
+' Define our union.
 union AUnion
 	a as ubyte
 	b as integer
 end union
-'define a composite type
+' Define a composite type.
 type CompType
 	s as string * 20
 	ui as byte 'Flag to tell us what to use in union.
@@ -42,19 +62,19 @@ type CompType
 	end union
 end type
 
-'Flags to let us know what to use in union.
-'You can only use a single element of a union.
+' Flags to let us know what to use in union.
+' You can only use a single element of a union.
 const IsInteger = 1
 const IsUByte = 2
 
 dim MyUnion as AUnion
 dim MyComposite as CompType
 
-'Can only set one value in union
+' Can only set one value in union.
 MyUnion.a = 128
 
 MyComposite.s = "Type + Union"
-MyComposite.ui = IsInteger 'Tells us this is an integer union
+MyComposite.ui = IsInteger ' Tells us this is an integer union.
 MyComposite.bu = 1500
 
 print "Union: ";MyUnion.a
@@ -82,3 +102,4 @@ sleep
 	- ##[[KeyPgType Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
+   

@@ -12,10 +12,10 @@ Gets the most-significant byte (MSB, or //hi-byte//) of the least-significant wo
 		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
 
 {{fbdoc item="ret"}}
-	Returns the MSB value of the LSW of `##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##`.
+	Returns the MSB value of the LSW of ##[[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//)##.
 
 {{fbdoc item="desc"}}
-	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of the MSB of its LSW. It behaves as `##[[KeyPgHibyte Hibyte]]([[KeyPgLoWord Loword]](//expr//))##`.
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of the MSB of its LSW. It behaves as ##[[KeyPgHibyte Hibyte]]([[KeyPgLoWord Loword]](//expr//))##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/hibyte.bas"}}%%(freebasic)

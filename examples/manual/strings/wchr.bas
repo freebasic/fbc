@@ -6,5 +6,5 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWchr
 '' --------
 
-Print "the character represented by the UNICODE code of 934 is:"; WChr(934)
-Print "multiple UNICODE characters:"; WChr(933, 934, 935)
+Print "The character represented by the UNICODE code of 934 is: "; WChr(934)
+Print "Multiple UNICODE characters: "; WChr(933, 934, 935)

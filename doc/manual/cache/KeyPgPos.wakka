@@ -16,7 +16,7 @@ Returns the horizontal (left to right) position of the text cursor
 	Returns the horizontal position of the text cursor.
 
 {{fbdoc item="desc"}}
-Returns the horizontal (left to right) position of the text cursor. The leftmost column is number ##1##.
+	Returns the horizontal (left to right) position of the text cursor. The leftmost column is number ##1##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/pos.bas"}}%%(freebasic)

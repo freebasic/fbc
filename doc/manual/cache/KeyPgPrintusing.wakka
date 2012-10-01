@@ -1,19 +1,23 @@
 {{fbdoc item="title" value="PRINT USING"}}----
-Outputs formatted text to the screen
+Outputs formatted text to the screen or output device
 
 {{fbdoc item="syntax"}}##
-	**Print Using** //formatstring// **;** [ //expressionlist// ]
+	[[KeyPgPrint Print]] [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
 ##
 {{fbdoc item="param"}}
+	##//filenum//##
+		The file number of a file or device opened for ##[[KeyPgOutput Output]]## or ##[[KeyPgAppend Append]]##.  (Alternatively ##[[KeyPgLprint Lprint]]## may be used where appropriate, instead of ##[[KeyPgPrintpp Print #]]##)
+	##//printexpressionlist//##
+		Optional preceding list of items to print, separated by commas (##,##) or semi-colons (##;##) (see ##[[KeyPgPrint Print]]## for more details).
 	##//formatstring//##
 		Format string to use.
 	##//expressionlist//##
-		List of items to print, separated by semi-colons.
+		List of items to format, separated by semi-colons (##;##).
 
 {{fbdoc item="desc"}}
 	Print to screen various expressions using a format determined by the ##//formatstring//## parameter. Internally, ##**Print Using**## uses a buffer size of 2048 bytes: while it is highly unlikely that this buffer would be filled, it should be noted that output would be truncated should this limit be reached.
 
-	If no expression list is given, the format string will be printed up to the first special marker.  Note that the semi-colon after the format string is still necessary, even if no expression list is given.
+	If no expression list is given, the format string will be printed up to the first special marker.  Note that the semi-colon after ##//formatstring//## is still necessary, even if no expression list is given.
 
 	The format string dictates how the expressions are to be formatted when output to the screen, indicated by the use of special marker characters. There are markers for formatting both string and numeric output:
 
@@ -30,6 +34,8 @@ Outputs formatted text to the screen
 	If a numerical value cannot fit in the number of digits indicated by the format string, the formatting is adapted to fit the number, possibly switching to scientific notation, and the number is printed preceded by the percent ##"%"## character. E.g., the number ##1234## with a ##//formatstring//## of ##"""##.##"""## would be printed as ##"%1234.00"##.
 
 	All other characters within the format string are printed as they appear.
+
+	A new-line character is printed after the values in the expression list unless the expression list is followed by a semicolon (##;##).
 
 {{fbdoc item="ex"}}
 
@@ -49,7 +55,7 @@ The last day in the year is 31 Dec%%
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgPrintusingPp Print # Using]]##
+	- ##[[KeyPgPrintpp Print #]]##
 	- ##[[KeyPgFormat Format]]##
 	- ##[[KeyPgUsing Using]]##
 	- ##[[KeyPgPalette Palette Using]]##

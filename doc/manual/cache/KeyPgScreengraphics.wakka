@@ -2,7 +2,12 @@
 Initializes a graphics mode using QB-like mode numbers
 
 {{fbdoc item="syntax"}}##
-	**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]
+
+	##//[[CompilerOptlang -lang fb|fblite]]// dialects:##
+		**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]
+		**Screen** , [ //active_page// ] [, [ //visible_page// ]]
+	##//[[CompilerOptlang -lang qb]]// dialect:##
+		**Screen** [ //mode// ] [, [ //colormode// ] [, [ //active_page// ] [, [ //visible_page// ]]]]
  ##
 {{fbdoc item="param"}}
 	##//mode//## 
@@ -15,6 +20,12 @@ Initializes a graphics mode using QB-like mode numbers
 		Are used to select several things as graphics driver, fullscreen mode. There are constants predefined in the ##fbgfx.bi## file ready to use.  See below for available flags.
 	##//refresh_rate//##
 		requests a refresh rate.  If it is not available in the present card or the parameter is omitted, ""FreeBASIC"" chooses the rate automatically.
+	##//active_page//##
+		Used to set the active page, where printing/drawing commands take effect
+	##//visible_page//##
+		Used to set the visible page, which is shown to the user
+	##//colormode//##
+		Unused - allowed for compatibility with the QB syntax
 
 {{fbdoc item="desc"}}
 	##**Screen**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or [[OpenGL]] graphics mode, depending on the ##//flags//## setting.
@@ -119,13 +130,16 @@ Sleep
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the usage is:
-		##**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]##
+		##**Screen** //mode// [, [//depth//] [, [//num_pages//] [, [//flags//] [, [//refresh_rate//]]]]]##
+	  or:
+		##**Screen** , [//active_page//] [, [//visible_page//]]]##
+
 	- In the //[[CompilerOptlang -lang qb]]// dialect, the usage is:
-		##**Screen** [//mode//] [,[//active_page//][,[//visible_page//]]]##
+		##**Screen** [//mode//] [, [colormode] [, [//active_page//] [, [//visible_page//]]]]##
 
 {{fbdoc item="diff"}}
 	- None in the //[[CompilerOptlang -lang qb]]// dialect.
-	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters ""FreeBASIC"" supports only //mode// and redefines the rest. The use of ##**Screen** ,,apage,vpage## to swap screen pages is only available in the //[[CompilerOptlang -lang qb]]// dialect. 
+	- In QB the syntax was ##**Screen** //mode//,//colormode//,//active_page//,//visible_page//##. Of those parameters ""FreeBASIC"" supports only //mode// and redefines the rest. The use of ##**Screen** ,, apage,vpage## to swap screen pages is only available in the //[[CompilerOptlang -lang qb]]// dialect.
 	- ##[[KeyPgScreenset Screenset]]## should be used in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
 
 {{fbdoc item="see"}}

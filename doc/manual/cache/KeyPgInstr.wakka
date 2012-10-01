@@ -16,7 +16,7 @@ Locates the first occurrence of a substring or character within a string
 	##//substring//##
 		The substring to find.
 	##//start//##
-		The position in ##//str//## at which the search will begin.
+		The position in ##//str//## at which the search will begin. The first character starts at position 1.
 
 {{fbdoc item="ret"}}
 	The position of the first occurrence of ##//substring//## in ##//str//##.

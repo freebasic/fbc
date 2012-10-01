@@ -7,7 +7,7 @@
 '' --------
 
 /* mydll.c :
-	compile With
+	compile with
 	  gcc -shared -Wl,--strip-all -o mydll.dll mydll.c
 */
 __declspec( dllexport ) int MyDll_Data = 0x1234;

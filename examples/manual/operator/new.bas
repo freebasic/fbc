@@ -12,7 +12,7 @@ End Type
 
 Scope
 
-	' Create and initialize a Rational, and store it's address.
+	' Create and initialize a "rational" and store its address.
 	Dim p As Rational Ptr = New Rational(3, 4)
 
 	Print p->numerator & "/" & p->denominator
@@ -24,7 +24,7 @@ End Scope
 
 Scope
 
-	' Allocate memory for 100 integers, store the address of the first one.
+	' Allocate memory for 100 integers and store the address of the first one.
 	Dim p As Integer Ptr = New Integer[100]
 
 	' Assign some values to the integers in the array.

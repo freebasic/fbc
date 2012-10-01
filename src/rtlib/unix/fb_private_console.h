@@ -39,10 +39,10 @@ typedef struct FBCONSOLE
 {
 	int inited;
 	int term_type;
-	int h_out, h_in;
-	FILE *f_out, *f_in;
+	int h_in;
+	FILE *f_in;
 	struct termios old_term_out, old_term_in;
-	int in_flags, old_in_flags;
+	int old_in_flags;
 	int fg_color, bg_color;
 	int cur_x, cur_y;
 	int w, h;
@@ -62,6 +62,7 @@ typedef struct FBCONSOLE
 
 extern FBCONSOLE __fb_con;
 
+int fb_hTermQuery( int code, int *val1, int *val2 );
 int fb_hTermOut(int code, int param1, int param2);
 int fb_hGetCh(int remove);
 int fb_hXTermInitFocus(void);

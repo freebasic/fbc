@@ -6,4 +6,4 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdtime
 '' --------
 
-Print "CompileTime: ";__TIME__
+Print "Compile Time: " & __TIME__

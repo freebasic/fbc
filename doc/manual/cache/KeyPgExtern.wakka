@@ -11,7 +11,7 @@ Declares a variable, array or object having external linkage
 		An alternate external name for the variable, array or object.
 
 {{fbdoc item="desc"}}
-	Declares ##//symbolname//## as an external name, meaning it is global to external modules. ##**Extern**## only declares variables, arrays and objects, and does not define them (different from ##[[KeyPgCommon Common]]## or ##[[KeyPgDim Dim]]##). It also has the effect of making ##//symbolname//## a //shared// name, meaning it is visible within procedures (see ##[[KeyPgShared Shared]]##).
+	Declares ##//symbolname//## as an external name, meaning it is global to external modules. ##**Extern**## only declares variables, arrays and objects, and does not define them (different from ##[[KeyPgCommon Common]]## or ##[[KeyPgDim Dim]]##). It also has the effect of making ##//symbolname//## a //shared// name, meaning it is visible within procedures (see ##[[KeyPgShared Shared]]##). A ##//symbolname//## declared as external name can be (re)defined (using Dim or Redim) only in a single external module.
 
 	If ##[[KeyPgAlias Alias]]## is used, ##//aliasname//## will be used as the external name rather than ##//symbolname//##, and its case will be preserved.
 	

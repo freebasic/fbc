@@ -15,19 +15,19 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	An archive is a group or files or a single file packed into a container format and usually compressed before or afterward. Typical container formats are GNU Tar and Zip. Typical compression formats are Gzip and Zip.
 
 **argument**
-	Data that is passed to a procedure. The procedure refers to this data using the parameter(s) in it's parameter list.
+	Data that is passed to a procedure. The procedure refers to this data using the parameter(s) in its parameter list.
 
 **argument passing convention**
 	The method in which arguments are passed to procedures, being either ##[[KeyPgByref by reference]]## or ##[[KeyPgByval by value]]##.  See [[ProPgPassingArguments Passing Arguments to Procedures]].
 
 **array (container)**
-	A collection of data whose elements are stored contiguously in memory (one after the other, in increasing order). Because of this, an array offers random-access to it's elements (any element can be accessed at any time). Insertion or removal of elements anywhere but at the back of the container requires that those elements that follow be relocated, so a linked-list is typically preferred when insertion or removal needs to be efficient.
+	A collection of data whose elements are stored contiguously in memory (one after the other, in increasing order). Because of this, an array offers random-access to its elements (any element can be accessed at any time). Insertion or removal of elements anywhere but at the back of the container requires that those elements that follow be relocated, so a linked-list is typically preferred when insertion or removal needs to be efficient.
 
 **assembler**
 	A component in the tool chain for translating source code in to executable programs.  The assembler converts the low level assembly instruction mnemonics emitted by the compiler to object code.
 
 **assignment**
-	Assignment is one of the fundamental operations of computing.  All it means is copying a value into the memory location pointed at by a variable.  The value might be a literal, another variable, or the result of some expression. For an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, this involves calling one of it's assignment operators. Not to be confused with initialization.
+	Assignment is one of the fundamental operations of computing.  All it means is copying a value into the memory location pointed at by a variable.  The value might be a literal, another variable, or the result of some expression. For an instance of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##, this involves calling one of its assignment operators. Not to be confused with initialization.
 
 **automatic storage**
 	Refers to storage on the call stack. Local procedure variables, objects and arrays with automatic storage are allocated when the procedure is called, initialized when defined, destroyed (in the case of objects) when leaving the scope they're declared in and deallocated when returning from the procedure.
@@ -121,7 +121,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Refers to the internal data structure used by the compiler and runtime library for managing variable length strings and arrays.
 
 **destroy (TYPE or CLASS)**
-	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, it's destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete Delete]]## is called with a pointer to an object.
+	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, its destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete Delete]]## is called with a pointer to an object.
 
 **destructor (module)**
 	A special type of module-level procedure that is automatically called at program termination. See ##[[KeyPgModuleDestructor Destructor (Module)]]##.
@@ -222,7 +222,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A kind of source file that typically contains type definitions and declarations for variables and procedures that one or more other source files refer to. In general, these files provide a public interface to some module or modules, although a file that is [[KeyPgInclude #include]]d can contain any text whatsoever.
 
 **initialization**
-	The act of giving a variable a value at the point of it's creation. For object instances, this involves calling one of it's constructors. Not to be confused with assignment, which gives an already existing variable another value.
+	The act of giving a variable a value at the point of its creation. For object instances, this involves calling one of its constructors. Not to be confused with assignment, which gives an already existing variable another value.
 
 **instance**
 	An instantiated object of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
@@ -271,13 +271,13 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Variables associated with a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##. Member data can be static or non-static.
 
 **member function**
-	A procedure associated with a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##. Member functions have full access rights to the members of it's type or class, and can be static or non-static.
+	A procedure associated with a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##. Member functions have full access rights to the members of its type or class, and can be static or non-static.
 
 **method**
 	See **member function**.
 
 **module**
-	A source file in it's entirety, including any ##include files## that may be present as well. Typically, a module is a logical unit of code, containing parts of a program that relate to one another. For example, if making a game, one may separate the procedures needed for error logging from the procedures that control graphics into their own modules.
+	A source file in its entirety, including any ##include files## that may be present as well. Typically, a module is a logical unit of code, containing parts of a program that relate to one another. For example, if making a game, one may separate the procedures needed for error logging from the procedures that control graphics into their own modules.
 
 @@{{anchor name="Index|Back to top"}}@@
 

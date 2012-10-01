@@ -9,7 +9,7 @@ The library supports various drivers depending on the platform:
 
 	- ""Win32"":
 		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_ddraw_win32.c; (gfxlib2/driver_ddraw_win32.c)]]
-		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 and (some ?) 0.18.x ("banding effects"), not fixed in 0.21 SVN. [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_gdi_win32.c; (gfxlib2/driver_gdi_win32.c)]]
+		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 and (some ?) 0.18.x ("banding effects"), not fixed in 0.21 SVN (needs retest with 0.23). [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600 (forum discussion: p=106600)]] [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_gdi_win32.c; (gfxlib2/driver_gdi_win32.c)]]
 		- **##OpenGL##** [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_opengl_win32.c; (gfxlib2/driver_opengl_win32.c)]]
 
 	- ""Linux & others"":
@@ -23,6 +23,7 @@ The library supports various drivers depending on the platform:
 		- **##VESA banked##** compatible with very old VESA 1.x implementations [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vesa_bnk_dos.c; (gfxlib2/driver_vesa_bnk_dos.c)]]
 		- **##VESA linear##** needs VESA version at least 2.0, usually faster than banked VESA [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vesa_lin_dos.c; (gfxlib2/driver_vesa_lin_dos.c)]]
 		- **##VGA##** [[http://fbc.git.sourceforge.net/git/gitweb.cgi?p=fbc/fbc;a=blob;f=gfxlib2/driver_vga_dos.c; (gfxlib2/driver_vga_dos.c)]]
+		- Bug note: [[KeyPgPalette Palette]] doesn't work well [[http://freebasic.net/forum/viewtopic.php?t=12691 (forum discussion: t=12691 2008)]] [[http://freebasic.net/forum/viewtopic.php?t=19980 (forum discussion: t=19980 2012)]]
 
 ##[[KeyPgScreencontrol Screencontrol]]## can be used (SET_DRIVER_NAME 103) to override the default driver preferences. 
 

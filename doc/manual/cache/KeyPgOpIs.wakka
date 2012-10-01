@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Operator Is (Run-time type information)"}}----
-Checks whether an object is compatible to a type derived from its type
+Checks whether an object is compatible to a type derived from its runtime-type
 
 {{fbdoc item="syntax"}}##
 	//result// = //expression// **Is**  //typename//
@@ -8,13 +8,15 @@ Checks whether an object is compatible to a type derived from its type
 	##//expression//##
 		The expression to check, an object of a type that is directly or indirectly derived from ##[[KeyPgObject Object]]##.
 	##//typename//##
-		The child type to check for. This type must be directly or indirectly derived from the type of //expression//.
+		The child type to check for. This type must be directly or indirectly derived from the type of //expression// (the runtime-type of the object).
 
 {{fbdoc item="ret"}}
-	Returns negative one (##-1##) if the expression is an object of type ##//typename//## or one of its derived types, or zero (##0##) if it's an object of an incompatible type.
+	Returns negative one (##-1##) if the expression is an object of real-type ##//typename//## or one of its base-types derived from the //expression// type, or zero (##0##) if it's an object of an incompatible type.
 
 {{fbdoc item="desc"}}
 	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on run-time type information, it can only be used with types that are derived from the built-in ##[[KeyPgObject Object]]## type. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
+	
+	The ##**Is**## operator is successful not only for the real-type (the "lowest"), but also for its base-types, as long as they are still below the type of //expression// (the runtime-type). In order to determine the real-type, all possibilities from lowest to highest must be checked.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/is.bas"}}%%(freebasic)

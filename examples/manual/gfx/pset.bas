@@ -6,8 +6,8 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPset
 '' --------
 
-' Set an appropriate Screen mode.
-Screen 14
+' Set an appropriate screen mode - 320 x 240 x 8bpp indexed color
+ScreenRes 320, 240, 8
 
 ' Plot a pixel at the coordinates 100, 100, Color 15. (white)
 PSet (100, 100), 15
@@ -32,5 +32,5 @@ Locate 1: Print "Pixel plotted at 150 + 60, 150 + 60"
 ' Wait for a keypress
 Sleep
 
-' Close the program
+' Explicit end of program
 End

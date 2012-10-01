@@ -26,7 +26,7 @@ Clears or initializes some memory
 dim array(0 to 99) as integer
 
 'clear the contents of the array to 0, starting with the first element
-clear array(1), , 100 * sizeof(integer)
+clear array(0), , 100 * sizeof(integer)
 
 
 'allocate 20 bytes of memory

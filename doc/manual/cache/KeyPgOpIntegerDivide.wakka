@@ -49,7 +49,7 @@ Output:
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpDivide Operator \ (Floating-point divide)]]
+	- [[KeyPgOpDivide Operator / (Floating-point divide)]]
 	- [[KeyPgOpModulus Operator Mod (Modulus)]]
 	- [[CatPgMath Mathematical Functions]]
 

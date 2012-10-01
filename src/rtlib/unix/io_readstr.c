@@ -43,12 +43,12 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 				buffer[pos++] = ch[0] = k;
 				fb_ConsolePrintBuffer(ch, 0);
 				if (x == cols)
-					fputc('\n', __fb_con.f_out);
+					fputc( '\n', stdout );
 			}
 		}
 	} while (k != '\r');
 
-	fputc('\n', __fb_con.f_out);
+	fputc( '\n', stdout );
 	buffer[pos] = '\0';
 
 	return buffer;

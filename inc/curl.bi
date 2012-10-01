@@ -1187,7 +1187,8 @@ enum CURLoption
   CINIT(POSTFIELDSIZE_LARGE, OFF_T, 120)
 
   /' Enable/disable the TCP Nagle algorithm '/
-  CINIT(TCP_NODELAY, LONG, 121)
+  ''CINIT(TCP_NODELAY, LONG, 121) '' TCP_NODELAY is defined by winsock2.bi
+  CURLOPT_TCP_NODELAY = CURLOPTTYPE_LONG + 121
 
   /' 122 OBSOLETE, used in 7.12.3. Gone in 7.13.0 '/
   /' 123 OBSOLETE. Gone in 7.16.0 '/

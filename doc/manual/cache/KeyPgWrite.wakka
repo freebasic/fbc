@@ -9,9 +9,9 @@ Outputs a comma-separated list of values to the screen
 		Comma-separated list of items to print
 
 {{fbdoc item="desc"}}
-	Outputs the values in ##//expressionlist//## to the screen. The values are separated with commas, and strings are enclosed in double quotes. Numeric values greater than zero (0) and less than one (1) are prefixed with a zero (0) if none is given (e.g., a value of ##-.123## will be output as ##-0.123##). Extra zeroes are truncated.
+	Outputs the values in ##//expressionlist//## to the screen. The values are separated with commas, and strings are enclosed in double quotes. Numeric values with an absolute value of less than one are prefixed with a zero (##0##) if none is given (e.g. ##0.5##, ##-0.123##).  Floating-point numbers with absolute values greater than or equal to ##10^16##, or with absolute values greater than ##0## and less than ##10^-5## are printed in scientific notation (e.g. ##1.8e+019##, ##3e-005##)
 
-	If no expression list is given, **Write** outputs a carriage return.
+	If no expression list is given, ##**Write**## outputs a carriage return.
 
 {{fbdoc item="ex"}}
 
@@ -34,7 +34,7 @@ write i, d, s
 %%
 
 {{fbdoc item="diff"}}
-	- None
+	- QBASIC might print format floating-point values in slightly different ways.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWritePp Write #]]##
