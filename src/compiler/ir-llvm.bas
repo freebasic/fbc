@@ -802,6 +802,7 @@ private function _emitBegin( ) as integer
 	hWriteLine( "%double = type double" )
 	hWriteLine( "%string = type { i8*, i32, i32 }" )
 	hWriteLine( "%fixstr = type i8" )
+	hWriteLine( "%char = type i8" )
 	hWriteLine( "%wchar = type i" + str( typeGetBits( env.target.wchar ) ) )
 
 	ctx.section = SECTION_BODY
