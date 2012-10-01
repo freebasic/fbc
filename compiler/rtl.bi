@@ -160,7 +160,6 @@
 #define FB_RTL_DATAREADUBYTE 			"fb_DataReadUByte"
 #define FB_RTL_DATAREADUSHORT 			"fb_DataReadUShort"
 #define FB_RTL_DATAREADUINT 			"fb_DataReadUInt"
-#define FB_RTL_DATAREADPTR 				"fb_DataReadPtr"
 #define FB_RTL_DATAREADULONGINT 		"fb_DataReadULongint"
 #define FB_RTL_DATAREADSINGLE 			"fb_DataReadSingle"
 #define FB_RTL_DATAREADDOUBLE 			"fb_DataReadDouble"
@@ -556,7 +555,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DATAREADUBYTE
 	FB_RTL_IDX_DATAREADUSHORT
 	FB_RTL_IDX_DATAREADUINT
-	FB_RTL_IDX_DATAREADPTR
 	FB_RTL_IDX_DATAREADULONGINT
 	FB_RTL_IDX_DATAREADSINGLE
 	FB_RTL_IDX_DATAREADDOUBLE
@@ -804,7 +802,7 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_QBONLY	  = &h00000100                  '' -lang qb only
 	FB_RTL_OPT_NOFB		  = &h00000200                  '' anything but -lang fb
 	FB_RTL_OPT_FBONLY	  = &h00000400                  ''
- 	FB_RTL_OPT_DUPDECL	  = &h00000800 					'' overloaded procs pointing to the same symbol
+	FB_RTL_OPT_IRHLCBUILTIN   = &h00000800                  '' proc will be emitted by ir-hlc as needed, not declared as if it was a public one from rtlib
  	FB_RTL_OPT_GCCBUILTIN = &h00001000					'' GCC builtin, don't redeclare, create a wrapper
 	FB_RTL_OPT_NOGCC	  = &h00002000                  '' anything but -gen gcc
 end enum

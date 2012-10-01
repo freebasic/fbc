@@ -29,7 +29,6 @@ type IRHLCCTX
 	lblcnt				as integer
 	tmpcnt				as integer
 	vregTB				as TFLIST
-	forwardlist			as TFLIST
 	callargs			as TLIST        '' IRCALLARG's during emitPushArg/emitCall[Ptr]
 	jmptbsym			as FBSYMBOL ptr
 	linenum				as integer
@@ -66,11 +65,7 @@ declare function hVregToStr _
 		byval addcast as integer = TRUE _
 	) as string
 
-declare sub hEmitStruct _
-	( _
-		byval s as FBSYMBOL ptr, _
-        byval is_ptr as integer _
-	)
+declare sub hEmitStruct( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 
 declare sub _emitDBG _
 	( _
@@ -84,7 +79,6 @@ dim shared as IRHLCCTX ctx
 
 private sub _init( )
 	flistInit( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
-	flistInit( @ctx.forwardlist, 32, len( FBSYMBOL ptr ) )
 	listInit( @ctx.callargs, 32, sizeof(IRCALLARG), LIST_FLAGS_NOCLEAR )
 
 	irSetOption( IR_OPT_HIGHLEVEL or _
@@ -101,7 +95,6 @@ end sub
 
 private sub _end( )
 	listEnd( @ctx.callargs )
-	flistEnd( @ctx.forwardlist )
 	flistEnd( @ctx.vregTB )
 end sub
 
@@ -520,8 +513,9 @@ private sub hEmitFuncProto _
 		return
 	end if
 
-	'' overloaded procs pointing to the same symbol (used by the RTL)?
-	if( symbGetIsDupDecl( s ) ) then
+	'' One of our built-in FTOI routines? Those are declared by
+	'' hEmitFTOIBuiltins(), not here.
+	if( symbGetIsIrHlcBuiltin( s ) ) then
 		return
 	end if
 
@@ -586,7 +580,6 @@ private sub hEmitStruct _
             if( symbGetIsAccessed( s ) = FALSE ) then
                 symbSetIsAccessed( s )
                 hWriteLine( "typedef " & tname  &  " _" & hGetUDTName( s, TRUE ) & " " & hGetUDTName( s, FALSE ), TRUE )
-                *cast( FBSYMBOL ptr ptr, flistNewItem( @ctx.forwardlist ) ) = s
             end if
 
             return
@@ -637,34 +630,17 @@ private sub hEmitStruct _
 
 	'' Write out the elements
 	ctx.identcnt += 1
-
 	e = symbGetUDTFirstElm( s )
+	dim as string ln
 	do while( e <> NULL )
-        var subtype = symbGetSubtype( e )
-
-        var ln = ""
-        if( subtype <> s ) then
-			ln = hEmitType( symbGetType( e ), subtype ) + " "
-        else
-        	ln = tname + " _" + id + " *"
-        end if
-
-        ln += *symbGetName( e )
-        ln += hEmitArrayDecl( e )
-
-        /' the bitfield calcs are done by FB
-        if( symbGetType( e ) = FB_DATATYPE_BITFIELD ) then
-        	ln += " :" & subtype->bitfld.bits
-        end if
-        '/
-
-        ln += attrib
-
-        hWriteLine( ln, TRUE )
-
+		ln = hEmitType( symbGetType( e ), symbGetSubtype( e ) )
+		ln += " "
+		ln += *symbGetName( e )
+		ln += hEmitArrayDecl( e )
+		ln += attrib
+		hWriteLine( ln, TRUE )
 		e = symbGetUDTNextElm( e )
 	loop
-
 	ctx.identcnt -= 1
 
     '' Close UDT body
@@ -737,23 +713,6 @@ private sub hEmitDataStmt _
 end sub
 
 '':::::
-private sub hEmitForwardDecls( )
-
-	if( ctx.forwardlist.lastitem = NULL ) then
-		return
-	end if
-
-	dim as FBSYMBOL ptr s = flistGetHead( @ctx.forwardlist )
-	do while( s <> NULL )
-		hEmitUDT( s, FALSE )
-		s = flistGetNext( s )
-	loop
-
-	flistReset( @ctx.forwardlist )
-
-end sub
-
-'':::::
 private sub hEmitTypedefs( )
 
 	'' typedef's for debugging
@@ -769,21 +728,22 @@ private sub hEmitTypedefs( )
 	hWriteLine( "typedef struct _string { char *data; int len; int size; } string", TRUE )
 	hWriteLine( "typedef char fixstr", TRUE )
 
-    '' Target-dependant wchar type
-    dim as string wchartype
-
-    select case as const env.target.wchar.type
-    case FB_DATATYPE_UBYTE      '' DOS
-        wchartype = "ubyte"
-    case FB_DATATYPE_USHORT     '' Windows, cygwin
-        wchartype = "ushort"
-    case FB_DATATYPE_UINT       '' Linux & co
-        wchartype = "uinteger"
-    case else
-		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    hWriteLine( "typedef " + wchartype + " wchar", TRUE )
+	'' Target-dependant wchar type
+	dim as string wchartype
+	select case as const( env.target.wchar.type )
+	case FB_DATATYPE_UBYTE      '' DOS
+		wchartype = "ubyte"
+	case FB_DATATYPE_USHORT     '' Windows, cygwin
+		wchartype = "ushort"
+	case else                   '' Linux & co
+		'' Normally our wstring type is unsigned, but gcc's wchar_t
+		'' is signed, and we must the exact same or else fixed-length
+		'' wstring initializers (VarIniWstr) using L"abc" wouldn't work.
+		'' (If this is a problem, then VarIniWstr must be changed to
+		'' emit wstring initializers as { L'a', L'b', L'c', 0 } instead)
+		wchartype = "integer"
+	end select
+	hWriteLine( "typedef " + wchartype + " wchar", TRUE )
 
 end sub
 
@@ -988,8 +948,6 @@ private sub _emitEnd _
 
 	'' Then the variables
 	hEmitDecls( symbGetGlobalTbHead( ), FALSE )
-
-	hEmitForwardDecls( )
 
 	ctx.section = SECTION_FOOT
 
@@ -1499,25 +1457,30 @@ private function hEmitDouble( byval value as double ) as string
 	return s
 end function
 
+private sub hAddrOfSymbol( byval sym as FBSYMBOL ptr, byref s as string )
+	s += "&"
+	'' Use && to get the address of labels (used by error handling code)
+	if( symbIsLabel( sym ) ) then
+		s += "&"
+	end if
+end sub
+
 private function hEmitOffset( byval sym as FBSYMBOL ptr, byval ofs as integer ) as string
 
 	dim as string expr
 
 	'' For literal strings, just print the text, not the label
 	if( symbGetIsLiteral( sym ) ) then
-		select case symbGetType( sym )
-		case FB_DATATYPE_CHAR
+		if( symbGetType( sym ) = FB_DATATYPE_WCHAR ) then
+			expr += "L"""
+			expr += hEscapeToHexW( symbGetVarLitTextW( sym ) )
+			expr += """"
+		else
 			expr += """" + *hEscape( symbGetVarLitText( sym ) ) + """"
-		case FB_DATATYPE_WCHAR
-            '' wstr("a") becomes (wchar *)"\141\0\0"
-            '' (The last \0 and the implicit NULL terminator form the wchar NULL terminator)
-			expr += "(wchar*)""" + *hEscapeW( symbGetVarLitTextW( sym ) ) + $"\0"""
-		case else
-			errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-		end select
+		end if
 	else
-        expr += "&"
-        '' Name of the array that's being accessed, or the function in @func, etc
+		hAddrOfSymbol( sym, expr )
+		'' Name of the array that's being accessed, or the function in @func, etc
 		expr += *symbGetMangledName( sym )
 	end if
 
@@ -1574,12 +1537,7 @@ private function hVregToStr _
 						operand += "(ubyte *)"
 					end if
 
-                    '' Emit && to get the address value of labels (used by -exx code)
-                    if( symbIsLabel( vreg->sym ) ) then
-                        operand += "&"
-                    end if
-
-                    operand += "&"
+					hAddrOfSymbol( vreg->sym, operand )
 				else
 					if( addcast ) then
 						operand += "("
@@ -2384,6 +2342,7 @@ private sub _emitVarIniStr _
 		byval litstr as zstring ptr, _
 		byval litlgt as integer _
 	)
+	'' "..."
 	hEmitVarIniStr( totlgt, hEscape( litstr ), litlgt )
 end sub
 
@@ -2393,8 +2352,9 @@ private sub _emitVarIniWstr _
 		byval litstr as wstring ptr, _
 		byval litlgt as integer _
 	)
+	'' L"..."
 	ctx.varini += "L"
-	hEmitVarIniStr( totlgt, hEscapeUCN( litstr ), litlgt )
+	hEmitVarIniStr( totlgt, hEscapeToHexW( litstr ), litlgt )
 end sub
 
 private sub _emitVarIniPad( byval bytes as integer )

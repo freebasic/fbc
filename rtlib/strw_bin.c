@@ -19,7 +19,7 @@ static FB_WCHAR *hBin ( unsigned int num, int len, int digits )
 		totdigs = len << 3;
 
 	/* alloc temp string, chars won't be above 127 */
-    dst = fb_wstr_AllocTemp( digits );
+	dst = fb_wstr_AllocTemp( totdigs );
 	if( dst == NULL )
 		return NULL;
 

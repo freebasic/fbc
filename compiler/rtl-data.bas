@@ -142,18 +142,6 @@
 	 			) _
 	 		} _
 		), _
-		/' fb_DataReadUInt ( byref dst as uinteger ) as void '/ _
-		( _
-			@FB_RTL_DATAREADPTR, @FB_RTL_DATAREADUINT, _
-	 		FB_DATATYPE_VOID, FB_USE_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_DUPDECL, _
-	 		1, _
-	 		{ _
-	 			( _
-	 				typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE _
-	 			) _
-	 		} _
-		), _
 		/' fb_DataReadULongint ( byref dst as ulongint ) as void '/ _
 		( _
 			@FB_RTL_DATAREADULONGINT, NULL, _
@@ -284,7 +272,16 @@ function rtlDataRead _
 		exit function						'' illegal
 
 	case FB_DATATYPE_POINTER
-		f = PROCLOOKUP( DATAREADPTR )
+#if 0
+		'' TODO: 64bit
+		if( env.target.is_64bit ) then
+			f = PROCLOOKUP( DATAREADULONGINT )
+		else
+#endif
+			f = PROCLOOKUP( DATAREADUINT )
+#if 0
+		end if
+#endif
 
 	case else
 		exit function

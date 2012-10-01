@@ -311,8 +311,8 @@ sub rtlAddIntrinsicProcs _
 					symbSetIsThrowable( proc )
 				end if
 
-				if( (procdef->options and FB_RTL_OPT_DUPDECL) <> 0 ) then
-					symbSetIsDupDecl( proc )
+				if( (procdef->options and FB_RTL_OPT_IRHLCBUILTIN) <> 0 ) then
+					symbSetIsIrHlcBuiltin( proc )
 				end if
 
 				if( (procdef->options and FB_RTL_OPT_GCCBUILTIN) <> 0 ) then

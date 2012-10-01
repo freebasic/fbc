@@ -566,9 +566,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftosl cdecl ( byval x as single ) as long '/ _
 		( _
-			@FB_RTL_FTOSL, @"fb_ftosl", _
+			@FB_RTL_FTOSL, @FB_RTL_FTOSL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -578,9 +578,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtosl cdecl ( byval x as double ) as long '/ _
 		( _
-			@FB_RTL_DTOSL, @"fb_dtosl", _
+			@FB_RTL_DTOSL,@FB_RTL_DTOSL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -590,9 +590,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftosi cdecl ( byval x as single ) as integer '/ _
 		( _
-			@FB_RTL_FTOSI, @"fb_ftosi", _
+			@FB_RTL_FTOSI, @FB_RTL_FTOSI, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -602,9 +602,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtosi cdecl ( byval x as double ) as integer '/ _
 		( _
-			@FB_RTL_DTOSI, @"fb_dtosi", _
+			@FB_RTL_DTOSI, @FB_RTL_DTOSI, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -614,9 +614,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftoss cdecl ( byval x as single ) as short '/ _
 		( _
-			@FB_RTL_FTOSS, @"fb_ftoss", _
+			@FB_RTL_FTOSS, @FB_RTL_FTOSS, _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -626,9 +626,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtoss cdecl ( byval x as double ) as short '/ _
 		( _
-			@FB_RTL_DTOSS, @"fb_dtoss", _
+			@FB_RTL_DTOSS, @FB_RTL_DTOSS, _
 			FB_DATATYPE_SHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -638,9 +638,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftosb cdecl ( byval x as single ) as byte '/ _
 		( _
-			@FB_RTL_FTOSB, @"fb_ftosb", _
+			@FB_RTL_FTOSB, @FB_RTL_FTOSB, _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -650,9 +650,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtosb cdecl ( byval x as double ) as byte '/ _
 		( _
-			@FB_RTL_DTOSB, @"fb_dtosb", _
+			@FB_RTL_DTOSB, @FB_RTL_DTOSB, _
 			FB_DATATYPE_BYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -662,9 +662,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftoul cdecl ( byval x as single ) as long '/ _
 		( _
-			@FB_RTL_FTOUL, @"fb_ftoul", _
+			@FB_RTL_FTOUL, @FB_RTL_FTOUL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -674,9 +674,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtoul cdecl ( byval x as double ) as long '/ _
 		( _
-			@FB_RTL_DTOUL, @"fb_dtoul", _
+			@FB_RTL_DTOUL, @FB_RTL_DTOUL, _
 			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -686,9 +686,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftoui cdecl ( byval x as single ) as integer '/ _
 		( _
-			@FB_RTL_FTOUI, @"fb_ftoui", _
+			@FB_RTL_FTOUI, @FB_RTL_FTOUI, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -698,9 +698,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtoui cdecl ( byval x as double ) as integer '/ _
 		( _
-			@FB_RTL_DTOUI, @"fb_dtoui", _
+			@FB_RTL_DTOUI, @FB_RTL_DTOUI, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -710,9 +710,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftous cdecl ( byval x as single ) as short '/ _
 		( _
-			@FB_RTL_FTOUS, @"fb_ftous", _
+			@FB_RTL_FTOUS, @FB_RTL_FTOUS, _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -722,9 +722,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtous cdecl ( byval x as double ) as short '/ _
 		( _
-			@FB_RTL_DTOUS, @"fb_dtous", _
+			@FB_RTL_DTOUS, @FB_RTL_DTOUS, _
 			FB_DATATYPE_USHORT, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -734,9 +734,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' ftoub cdecl ( byval x as single ) as byte '/ _
 		( _
-			@FB_RTL_FTOUB, @"fb_ftoub", _
+			@FB_RTL_FTOUB, @FB_RTL_FTOUB, _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
@@ -746,9 +746,9 @@ declare function 	hRndREAL_cb		( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' dtoub cdecl ( byval x as double ) as byte '/ _
 		( _
-			@FB_RTL_DTOUB, @"fb_dtoub", _
+			@FB_RTL_DTOUB, @FB_RTL_DTOUB, _
 			FB_DATATYPE_UBYTE, FB_FUNCMODE_CDECL, _
-			NULL, FB_RTL_OPT_DUPDECL, _
+			NULL, FB_RTL_OPT_IRHLCBUILTIN, _
 			1, _
 	 		{ _
 	 			( _
