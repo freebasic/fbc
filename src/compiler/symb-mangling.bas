@@ -871,21 +871,6 @@ private function hGetProcIdentifier _
 
     static as string res
 
-    '' property?
-    if( symbIsProperty( sym ) ) then
-    	static as string tmp
-    	tmp = *id
-
-    	'' GET?
-    	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-    		tmp += "__get__"
-    	else
-    		tmp += "__set__"
-    	end if
-
-    	id = strptr( tmp )
-    end if
-
     res = str( len( *id ) )
     res += *id
 
@@ -1331,6 +1316,21 @@ private function hMangleProc  _
 				'' else, the case-sensitive name saved in the alias..
 				else
 	    			id_str = sym->id.alias
+				end if
+
+				'' property?
+				if( symbIsProperty( sym ) ) then
+					static as string tmp
+					tmp = *id_str
+
+					'' GET?
+					if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+						tmp += "__get__"
+					else
+						tmp += "__set__"
+					end if
+
+					id_str = strptr( tmp )
 				end if
 			end if
 		end if
