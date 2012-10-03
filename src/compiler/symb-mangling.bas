@@ -187,7 +187,7 @@ private sub hMangleCompType( byval sym as FBSYMBOL ptr )
 end sub
 
 function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
-	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
+	if( sym->id.mangled ) then
 		return sym->id.mangled
 	end if
 
@@ -202,8 +202,6 @@ function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	case else
 		return sym->id.alias
 	end select
-
-	sym->stats or= FB_SYMBSTATS_MANGLED
 
 	'' Periods in symbol names?  not allowed in C, must be replaced.
 	if( env.clopt.backend = FB_BACKEND_GCC ) then
